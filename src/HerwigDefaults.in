@@ -108,6 +108,8 @@ create /Herwig++/RhoDMatrixPropagator theRhoDMatrixPropagator
 create /Herwig++/SplittingGenerator theSplittingGenerator
 create /Herwig++/ShowerAlphaQCD theIS_ShowerAlphaQCD
 create /Herwig++/ShowerAlphaQCD theFS_ShowerAlphaQCD
+create /Herwig++/ShowerAlphaQED theIS_ShowerAlphaQED
+create /Herwig++/ShowerAlphaQED theFS_ShowerAlphaQED
 create /Herwig++/DrellYanMECorrection theDrellYanMECorrection
 set stdShowerHandler:GlobalParameters /Defaults/theGlobalParameters
 set stdShowerHandler:MECorrections theMECorrections
@@ -125,6 +127,8 @@ set theBackwardShowerEvolver:RhoDMatrixPropagator theRhoDMatrixPropagator
 set theBackwardShowerEvolver:ForwardShowerEvolver theForwardShowerEvolver
 set theSplittingGenerator:IS_ShowerAlphaQCD theIS_ShowerAlphaQCD
 set theSplittingGenerator:FS_ShowerAlphaQCD theFS_ShowerAlphaQCD
+set theSplittingGenerator:IS_ShowerAlphaQED theIS_ShowerAlphaQED
+set theSplittingGenerator:FS_ShowerAlphaQED theFS_ShowerAlphaQED
 set theSplittingGenerator:ShowerConstrainer theShowerConstrainer
 insert theMECorrections:VecMECorrection[0] theDrellYanMECorrection
 #insert theKinematicsReconstructor:VecSpecialProcesses[0] DISME

@@ -22,8 +22,10 @@ set theMECorrections:OnOffComposeMECorrectionMode 0
 set theDrellYanMECorrection:OnOffMECorrectionMode 0
 set theIS_ShowerAlphaQCD:ScaleFactor 1.0
 set theFS_ShowerAlphaQCD:ScaleFactor 1.0
+set theIS_ShowerAlphaQED:ScaleFactor 1.0
+set theFS_ShowerAlphaQED:ScaleFactor 1.0
 set theSplittingGenerator:OnOffQCDinteractionMode 1
-set theSplittingGenerator:OnOffQEDinteractionMode 0
+set theSplittingGenerator:OnOffQEDinteractionMode 1
 set theSplittingGenerator:OnOffEWKinteractionMode 0
 set theSplittingGenerator:OnOffISRMode 0
 set theSplittingGenerator:OnOffISR_QCDMode 1
@@ -45,7 +47,14 @@ set theSplittingGenerator:OnOffGtoDDbarsplittingMode 1
 set theSplittingGenerator:OnOffGtoSSbarsplittingMode 1
 set theSplittingGenerator:OnOffGtoCCbarsplittingMode 0
 set theSplittingGenerator:OnOffGtoBBbarsplittingMode 0
-set theSplittingGenerator:OnOffGtoTTbarsplittingMode 0
+# only for test purposes (no mass implemented in GtoQQbarSplitfun!):
+set theSplittingGenerator:OnOffGtoTTbarsplittingMode 1
+set theSplittingGenerator:OnOffUtoUGammasplittingMode 1
+set theSplittingGenerator:OnOffDtoDGammasplittingMode 1
+set theSplittingGenerator:OnOffStoSGammasplittingMode 1
+set theSplittingGenerator:OnOffCtoCGammasplittingMode 1
+set theSplittingGenerator:OnOffBtoBGammasplittingMode 1
+set theSplittingGenerator:OnOffTtoTGammasplittingMode 1
 #
 cd /Defaults/Handlers/Hadronization/Cluster
 set theColourReconnector:ClReco 0
@@ -76,7 +85,11 @@ set SimpleLEPGenerator:DebugLevel 1
 set SimpleLEPGenerator:PrintEvent 10
 set SimpleLEPGenerator:Strategy /Defaults/Pythia7Strategy
 set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+<<<<<<< SimpleLEP.in
+#set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+=======
 set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+>>>>>>> 1.3
 set /Defaults/Particles/Z0:NominalMass 92
 #
 saverun SimpleLEP SimpleLEPGenerator
