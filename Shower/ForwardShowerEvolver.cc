@@ -14,6 +14,7 @@
 #include "Pythia7/Repository/EventGenerator.h"
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
+#include "QtildaShowerKinematics1to2.h"
 #include "SplitFun1to2.h"
 //#include "ShowerColourLine.h"
 #include "Pythia7/EventRecord/ColourLine.h"
@@ -185,9 +186,12 @@ timeLikeShower( tPartCollHdlPtr ch,
 	// *** ACHTUNG *** set the recent scales at which the particles are produced
 	// here might be the place to introduce angular ordering
 	const ShowerIndex::InteractionType interaction = splitFun->interactionType(); 
-	const Energy scale = part->showerKinematics()->qtilde(); 
-	showerProduct1->setEvolutionScale(interaction, scale);
-	showerProduct2->setEvolutionScale(interaction, scale);
+	const Energy scale = part->showerKinematics()->qtilde();
+	double zz = dynamic_ptr_cast<Ptr<QtildaShowerKinematics1to2>::transient_pointer>(part->showerKinematics())->z();
+	// note that 1st child gets z, 2nd gets (1-z) by our convention.
+	
+	showerProduct1->setEvolutionScale(interaction, zz*scale);
+	showerProduct2->setEvolutionScale(interaction, (1.-zz)*scale);
 
 	// Set the Sudakov kinematics variables of the branching products.
 //         vector<double> sudAlphaProducts;

@@ -15,7 +15,7 @@
 // 
 
 #include "ShowerAlpha.h"
-
+#include "ShowerIndex.h"
 namespace Herwig {
 
 using namespace Pythia7;

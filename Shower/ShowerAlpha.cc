@@ -9,6 +9,7 @@
 #include "Pythia7/Persistency/PersistentOStream.h"
 #include "Pythia7/Persistency/PersistentIStream.h"
 #include "Pythia7/Interface/Parameter.h"
+#include "Pythia7/Interface/Reference.h" 
 
 using namespace Herwig;
 
@@ -17,12 +18,14 @@ ShowerAlpha::~ShowerAlpha() {}
 
 
 void ShowerAlpha::persistentOutput(PersistentOStream & os) const {
-  os << _scaleFactor;
+  os << _pointerShowerConstrainer
+     << _scaleFactor;
 }
 
 
 void ShowerAlpha::persistentInput(PersistentIStream & is, int) {
-  is >> _scaleFactor;
+  is >> _pointerShowerConstrainer
+     >> _scaleFactor;
 }
 
 
@@ -40,5 +43,10 @@ void ShowerAlpha::Init() {
     ("ScaleFactor", "Factor that multiplies the scale argument, mu, of the running alpha.",
      &ShowerAlpha::_scaleFactor, 0, 1.0 , 0.0 , 10.0);
 
+  static Reference<ShowerAlpha,ShowerConstrainer> 
+    interfaceShowerConstrainer("ShowerConstrainer", 
+			       "A reference to the ShowerConstrainer object", 
+			       &Herwig::ShowerAlpha::_pointerShowerConstrainer,
+			       false, false, true, false);
 }
 

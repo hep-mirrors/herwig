@@ -111,8 +111,24 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
   tmax = sqr(root_tmax); 
   t = sqr(root_t); 
 
-  mc2 = 1.0*GeV2;
+  //  mc2 = 1.0*GeV2;
+  mc2 = sqr(_minScale)/4.;
   t = tmax; 
+
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+    CurrentGenerator::log() << "SudakovFormFactor::gettz(): extreme ____________________________________________" << endl
+			    << "  called with q = " << sqrt(tmax)/GeV 
+			    << " and mc = " << sqrt(mc2)/GeV << " (GeV)" << endl; 
+  }
+
+  if ( tmax <= 4.*mc2 ) {
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) 
+      CurrentGenerator::log() << "  | tmax < 4mc2! return with (sqrt(t)/GeV, z) = (" 	 
+			      << root_t/GeV << ", "
+			      << z << ")" << endl; 
+    root_t = -1;
+    return; 
+  }
 
   // the veto algorithm
   do {
@@ -126,24 +142,34 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     z = guessz(z0, z1); 
     t = guesst(mc2, told); 
 
-//     cerr << "(mc2, told | z0, z, z1 | t) = ("
-// 	 << mc2/GeV2 << ", "
-// 	 << told/GeV2 << " | "
-// 	 << z0 << ", "
-//  	 << z << ", "
-// 	 << z1 << " | "
-// 	 << t/GeV2 << ")" << endl; 
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+      CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
+			      << sqrt(told)/GeV << "->"
+			      << sqrt(t)/GeV << " | "
+			      << z0 << ", "
+			      << z << ", "
+			      << z1 << ")" 
+			      << endl; 
+    }
 
     // actual values for z-limits
     z0 = sqrt(mc2/t); 
     z1 = 1.-sqrt(mc2/t); 
-
-    // check whether to reject or not (THE VETO)
+    
+    // *** ACHTUNG *** collect some sort of statistics of the
+    // likelihood of single vetoes in order to check the most likely
+    // 1st and only if this fails the 2nd etc 
     veto = false; 
    
     // still inside PS?
     if ((z < z0 || z > z1) && t > 4.*mc2) { 
       veto = true; 
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
+				<< z0 << ", "
+				<< z << ", "
+				<< z1 << ")" << endl;  
+      }
       //      psv++; 
       //     cout << "PS (" << vc+1 << ", " << psv << ")" << endl;
 
@@ -165,6 +191,9 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
       sF->overestimateIntegratedFun(z);
     if (UseRandom::rnd() > ratio) { 
       veto = true; 
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
+      }
       //      hitv++;
       //      cout << "HI (" << vc+1 << ", " << hitv << ")" << endl;
     }
@@ -173,6 +202,9 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     if ( UseRandom::rnd() > _alpha->value(z*(1.-z)*t)/
 	 _alpha->overestimateValue() ) {
       veto = true; 
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	CurrentGenerator::log() << "  X veto on as(q2)/as" << endl;
+      }
       // asv++; 
     }
 
@@ -185,6 +217,9 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     if (t < 4.*mc2) {
       veto = false; 
       t = -1; 
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	CurrentGenerator::log() << "  | return with no branching, t < 4mc2" << endl;
+      }
     }
 	
 //    if (veto) {
@@ -209,8 +244,14 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
 //   cerr << "---> accepted (t, z) = (" 	 
 //        << t << ", "
 //        << z << ")" << endl; 
+  if (t > 0) root_t = sqrt(t);
+  else root_t = -1; ;
 
-  root_t = sqrt(t);
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+    CurrentGenerator::log() << "  return with (sqrt(t)/GeV, z) = (" 	 
+			    << root_t/GeV << ", "
+			    << z << ")" << endl; 
+  }
 
   return;
 }

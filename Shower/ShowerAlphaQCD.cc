@@ -27,7 +27,9 @@ void ShowerAlphaQCD::Init() {
 
 double ShowerAlphaQCD::value(const Energy2 scale) {
 
-  double val = alpha_s(scale, 1.0*GeV2, 1);
+  //  double val = alpha_s(scale, 1.0*GeV2, 1);
+  // q2min could as well be independent of that scale! 
+  double val = alpha_s(scale, sqr(_pointerShowerConstrainer->cutoffQScale(ShowerIndex::QCD)), 1);
 
   // ***ACHTUNG*** just a call to the simpler dummy function used
   // previously in SG's fragmentation programs

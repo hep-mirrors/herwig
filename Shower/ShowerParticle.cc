@@ -84,41 +84,16 @@ void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
   while( !yet.empty() ) { 
     dum = yet.back(); 
     yet.pop_back(); 
-//     cerr << "dum = " << dum << ", " << dum->data().PDGName() 
-// 	 << "; " << dum->children().size() << " children." << endl 
-// 	 << "  colourLines = [" 
-// 	 << dum->colourLine() << ", " 
-// 	 << dum->antiColourLine() << "]" << endl 
-// 	 << "    in colour = ["
-// 	 << dum->incomingColour() << ", " 
-// 	 << dum->incomingAntiColour() << "]" << endl 
-// 	 << "   out colour = ["
-// 	 << dum->outgoingColour() << ", " 
-// 	 << dum->outgoingAntiColour() << "]" << endl 
-// 	 << "   neighbours = ["
-// 	 << dum->colourNeighbour() << ", " 
-// 	 << dum->antiColourNeighbour() << "]" << endl; 
     for ( ParticleVector::const_iterator cit = dum->children().begin(); 
 	  cit != dum->children().end(); ++cit ) {      
-      //      cerr << "Ch: " << *cit << ", " << (*cit)->data().PDGName() << endl;  
       yet.push_back( dynamic_ptr_cast<tPPtr>(*cit) ); 
       addCh.push_back( *cit ); 
     }
     while( !addCh.empty() ) {       
-      //      cerr << "add " << addCh.back() << ", " << addCh.back()->data().PDGName() 
-      //	   << " to " << dum << ", " << dum->data().PDGName() << endl;  
-      //      bool check; 
-//       if(addCh.back()->children().empty()) {
-// 	sp->addParticle(addCh.back());
-//       } else {
-// 	sp->addIntermediate(addCh.back());
-//       }
-//       sp->addParticle(dynamic_ptr_cast<tPPtr>(addCh.back()));
       sp->addDecayNoCol(dum, addCh.back());    
-      // cerr << (check ? "ok! " : "not ok! ") << endl; 
+      // sp->addDecayProduct(dum, dynamic_ptr_cast<tPPtr>(addCh.back()));    
       addCh.pop_back(); 
     }
-    // cerr << "." << endl;  
   }
 }
 

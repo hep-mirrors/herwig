@@ -21,7 +21,9 @@ inline IBPtr ShowerAlphaQCD::fullclone() const {
 
   // replace with more sensible minimum 
 inline double ShowerAlphaQCD::overestimateValue() {
-  return value(1.0*GeV2);
+  // return value(1.0*GeV2);
+  // could as well be independent of that scale! 
+  return value(sqr(_pointerShowerConstrainer->cutoffQScale(ShowerIndex::QCD)));
 }
 
 }

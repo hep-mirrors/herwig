@@ -14,7 +14,8 @@ inline ShowerAlpha::ShowerAlpha() :
 
 inline ShowerAlpha::ShowerAlpha(const ShowerAlpha & x)
   : Pythia7::HandlerBase(x),
-	     _scaleFactor( x._scaleFactor )
+    _scaleFactor( x._scaleFactor ),
+    _pointerShowerConstrainer( x._pointerShowerConstrainer )
 {}
 
 

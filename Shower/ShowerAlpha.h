@@ -30,6 +30,7 @@
 
 #include "Pythia7/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
+#include "ShowerConstrainer.h"
 
 namespace Herwig {
 
@@ -93,6 +94,9 @@ private:
   //  Private and non-existent assignment operator.
 
   double _scaleFactor;
+
+protected:
+  Ptr<ShowerConstrainer>::pointer _pointerShowerConstrainer;
 
 };
 

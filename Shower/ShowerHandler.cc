@@ -501,8 +501,8 @@ void ShowerHandler::debuggingInfo() {
     generator()->log() << "  Shower finished - summary:" << endl;
   
   // stuff that goes to STDOUT comes here:
-  if ( generator()->currentEventNumber() < 1000 )
-    cout << "# event no " << generator()->currentEventNumber() << endl; 
+//   if ( generator()->currentEventNumber() < 1000 )
+//     cout << "# event no " << generator()->currentEventNumber() << endl; 
 
   tShowerParticleVector fs;
   for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
@@ -513,7 +513,7 @@ void ShowerHandler::debuggingInfo() {
 			   << ", Q = " << (*cit)->momentum().mass()/MeV 
 			   << ", q = " << (*cit)->momentum()/MeV << " (MeV)"
 			   <<endl;
-	(*cit)->deepPrintInfo();
+	//	(*cit)->deepPrintInfo(); // writes some showerinfo to STDOUT, obsolete (?)
       }
       //cout << (*cit)->sumParentsMomenta() << endl;      
       if ( (*cit)->isFinalState() ) {
@@ -542,32 +542,32 @@ void ShowerHandler::debuggingInfo() {
     pcm += (*cit)->momentum();     
   }
   Energy root_s = pcm.m();
-  if ( generator()->currentEventNumber() < 1000 )
-    cout << "# shapes: root(s)*lam[i]*n[i] | lam[i] | n[i]" << endl;
-  for (int i=0; i<3; i++) {
-    if ( generator()->currentEventNumber() < 1000 )
-      cout << "666 " << root_s*lam[i]*n[i][0] << " " 
-	   << root_s*lam[i]*n[i][1] << " " 
-	   << root_s*lam[i]*n[i][2] << " " 
-	   << lam[i] << " " << n[i] << endl;
-  }
-  double C_parameter = 3.*(lam[0]*lam[1] + lam[1]*lam[2] + lam[2]*lam[0]);
-  double D_parameter = 27.*(lam[0]*lam[1]*lam[2]);
+//   if ( generator()->currentEventNumber() < 1000 )
+//     cout << "# shapes: root(s)*lam[i]*n[i] | lam[i] | n[i]" << endl;
+//   for (int i=0; i<3; i++) {
+//     if ( generator()->currentEventNumber() < 1000 )
+//       cout << "666 " << root_s*lam[i]*n[i][0] << " " 
+// 	   << root_s*lam[i]*n[i][1] << " " 
+// 	   << root_s*lam[i]*n[i][2] << " " 
+// 	   << lam[i] << " " << n[i] << endl;
+//   }
+//   double C_parameter = 3.*(lam[0]*lam[1] + lam[1]*lam[2] + lam[2]*lam[0]);
+//   double D_parameter = 27.*(lam[0]*lam[1]*lam[2]);
 
-  double lam1, lam2, lam3; 
-  double dumd; 
-  lam1 = lam[0]; lam2 = lam[1]; lam3 = lam[2]; 
-  if (lam1 < lam2) {dumd = lam1; lam1 = lam2; lam2 = dumd; }
-  if (lam1 < lam3) {dumd = lam1; lam1 = lam3; lam3 = dumd; }
-  if (lam2 < lam3) {dumd = lam2; lam2 = lam3; lam3 = dumd; }
-  if ( generator()->currentEventNumber() < 1000 )
-    cout << "# shapes C = " << C_parameter
-	 << ", D = " << D_parameter << endl
-	 << "# (lam1, lam2, lam3) = (" << lam1 << ", " << lam2 << ", " 
-	 << lam3 << ")" << endl; 
-  // this one gives 'blocks':
-  if ( generator()->currentEventNumber() < 1000 )
-    cout << endl;
+//   double lam1, lam2, lam3; 
+//   double dumd; 
+//   lam1 = lam[0]; lam2 = lam[1]; lam3 = lam[2]; 
+//   if (lam1 < lam2) {dumd = lam1; lam1 = lam2; lam2 = dumd; }
+//   if (lam1 < lam3) {dumd = lam1; lam1 = lam3; lam3 = dumd; }
+//   if (lam2 < lam3) {dumd = lam2; lam2 = lam3; lam3 = dumd; }
+//   if ( generator()->currentEventNumber() < 1000 )
+//     cout << "# shapes C = " << C_parameter
+// 	 << ", D = " << D_parameter << endl
+// 	 << "# (lam1, lam2, lam3) = (" << lam1 << ", " << lam2 << ", " 
+// 	 << lam3 << ")" << endl; 
+//   // this one gives 'blocks':
+//   if ( generator()->currentEventNumber() < 1000 )
+//     cout << endl;
 
   // book some histograms
 
@@ -599,54 +599,15 @@ void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {
   // ColourLine ones; and finally then write them in the Event Record     
   StepPtr pstep;
   pstep = ch->newStep();
-  //  printStep(pstep, "after creation of step"); 
-
   for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
        cit != _particles.end(); ++cit ) {
     if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
       pstep->addDecayNoCol((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
-      //pstep->addIntermediate(*cit);
-      //pstep->removeParticle((*cit)->getP7base());
-      //   cerr << (check ? "1st ok" : "1st not ok!") << endl; 
-      //pstep->removeParticle(dynamic_ptr_cast<tPPtr>(*cit));
-      //      pstep->addIntermediate(dynamic_ptr_cast<tPPtr>(*cit));
-      //      pstep->addIntermediate((*cit)->getP7base());
+      // pstep->addDecayProduct((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
       (*cit)->addChildrenEvtRec(pstep);   
-      //      pstep->removeParticle((*cit));
     }
-  }
-
-  /*
-  //  pick out the final state for every particle from the hard subprocess
-  //  tShowerParticleVector fs;
-  for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
-       cit != _particles.end(); ++cit ) {
-    if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
-      tShowerParticleVector thisfs = (*cit)->getFSChildren();
-      cerr << "Try to add " << thisfs.size() 
-	   << " children to " << (*cit)->data().PDGName() << "-jet." << endl;       
-//       cerr << dynamic_ptr_cast<tPPtr>((*cit)) << " "
-// 	   << (*cit) << " "
-// 	   << dynamic_ptr_cast<tPPtr>((*cit)->original()) << " " 
-// 	   << (*cit)->getP7base() << " " << endl;
-      for (tShowerParticleVector::iterator pit = thisfs.begin(); 	   
-	   pit != thisfs.end(); ++pit ) {
-	bool check = pstep->addDecayProduct((*cit)->getP7base(), 
-					    dynamic_ptr_cast<tPPtr>(*pit)); 
-	cerr << (check == true ? "Y" : "N");
-      }
-      cerr << endl; 
-    }    
-  }
-
-  pstep->fixColourFlow();
-  */
-  //  printStep(pstep, "After filling it"); 
-  
-  // do something much, much more sophisticated here, taking care of proper
-  // parent/child relationships!
-  //  pstep->addDecayProduct( pstep->particles(), fs.begin(), fs.end() );  
-  
+  }  
+  printStep(pstep, "after filling");
 }
 
 

@@ -483,11 +483,13 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	tSudakovFormFactorPtr candidateSudakov = cit->second;
 	Energy candidateNewQ = 0*MeV;
 	if ( candidateSudakov ) {
-	  // *** ACHTUNG *** some preliminary angular ordering...
-	  // the z-factor should be put in here by hand.
-	  candidateNewQ = candidateSudakov->
-	    generateNextBranching( ch, particle.evolutionScales()[i], reverseAngularOrder );
-
+	  // check size of scales beforehand...
+	  if ( particle.evolutionScales()[i] > 
+	       _pointerShowerConstrainer->cutoffQScale(index.interaction) ) {	    	  
+	    candidateNewQ = candidateSudakov->
+	      generateNextBranching( ch, particle.evolutionScales()[i], 
+				     reverseAngularOrder );
+	  } else candidateNewQ = 0*GeV; 
 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	    generator()->log() << "  trying "
 			       << candidateSudakov->splitFun()->idEmitter() << " -> ("
@@ -501,10 +503,9 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 			       << " -> " 
 			       << (candidateNewQ/MeV > 0 ? candidateNewQ/MeV : 0)
 			       << ") MeV"  << endl;
-	  }
-	  
-	  if ( ( candidateNewQ > newQ  &&  ! reverseAngularOrder ) ||
-	       ( candidateNewQ < newQ  &&  reverseAngularOrder ) ) {
+	  }	  
+	  if ( ( candidateNewQ > newQ  &&  candidateNewQ < particle.evolutionScales()[i] && ! reverseAngularOrder ) ||
+	       ( candidateNewQ < newQ  &&  candidateNewQ > particle.evolutionScales()[i] && reverseAngularOrder ) ) {
 	    newQ = candidateNewQ;
 	    sudakov = candidateSudakov;
 	  } 
@@ -514,7 +515,7 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
   }
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "  " << particle.data().PDGName();
+    generator()->log() << "  " << particle.data().PDGName() << ": ";
       //		       << " [" << particle.number() << "]: ";
     if( sudakov ) 
       generator()->log() << sudakov->splitFun()->idEmitter() << " -> ("
