@@ -78,7 +78,7 @@ void ClusterFissioner::Init() {
 void ClusterFissioner::fission(const StepPtr &pstep) {
   /*****************
    * Loop over the (input) collection of cluster pointers, and store in 
-   * the vector  vecSplitCluPtr  all the clusters that need to be split
+   * the vector  splitClusters  all the clusters that need to be split
    * (these are beam clusters, if soft underlying event is off, and 
    *  heavy non-beam clusters).
    ********************/
@@ -97,7 +97,7 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
  
     /**************
      * Skip 3-component clusters that have been redefined (as 2-component 
-     * clusters). or not available clusters. The latter check is indeed 
+     * clusters) or not available clusters. The latter check is indeed 
      * redundant now, but it is used for possible future extensions in which, 
      * for some reasons, some of the clusters found by ClusterFinder are tagged
      * straight away as not available.

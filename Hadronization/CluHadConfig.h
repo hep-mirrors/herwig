@@ -1,18 +1,20 @@
 // -*- C++ -*-
 #ifndef HERWIG_CluHadConfig_H
 #define HERWIG_CluHadConfig_H
-//
-// This is the declaration of the <!id>CluHadConfig.h<!!id> header file.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// Handy header file to be included in all Hadronization classes. <BR>
-// It contains only some useful typedefs.
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:Herwig.html">Herwig.h</a>,
-// 
+/*! \file CluHadConfig.h 
+ *  \brief This file contains the typedef declarations used in Hadronization
+ *  \author Philip Stephens
+ *  \author Alberto Ribon
+ *  \ingroup Hadronization
+ *
+ * This is the declaration of the CluHadConfig.h header file.
+ *
+ * Handy header file to be included in all Hadronization classes. <BR>
+ * It contains only some useful typedefs.
+ *
+ * See also:
+ * Herwig.h
+ */ 
 
 #include "Herwig++/Config/Herwig.h"
 
@@ -59,6 +61,7 @@ namespace Herwig {
   typedef Ptr<HadronSelector>::transient_pointer tHadronSelectorPtr;
 } // end Herwig namespace
 
+/*! \defgroup Hadronization */
 
 #endif // HERWIG_CluHadConfig_H 
 

@@ -1,8 +1,9 @@
 cd /Defaults/Handlers/UnderlyingEvent
 #
 library libUA5.so
-create Herwig++::UA5 theUA5
+create Herwig++::UA5Handler theUA5
 #
-set theUA5::GlobalParameters /Defaults/theGlobalParameters
-set theUA5::ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
-set theUA5::ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
+set theUA5:GlobalParameters /Defaults/theGlobalParameters
+set theUA5:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
+set theUA5:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
+set theUA5:Splitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter

@@ -98,7 +98,7 @@ dnl KTJETPATH="/var/nwork/pcck/gieseke/mc/ktjet"
 dnl KTJETLIBS="-L$KTJETPATH/lib -lKtEvent"
 AC_MSG_CHECKING([KTJETPATH is])
 if test -z "$KTJETPATH"; then
-  KTJETPATH="***No KtJet path set...don't know how to continue!***"
+  KTJETPATH="***No KtJet path set...won't build KtJet interface***"
 fi
 AC_MSG_RESULT("$KTJETPATH")
 AC_MSG_CHECKING([KTJETLIBS is])
@@ -110,7 +110,7 @@ AC_MSG_RESULT("$KTJETLIBS")
 AMEGICLIBS="-lAmegic -lAmplitude -lAmplTools -lISR -lModel -lPhasespace -lProcess -lString -lVector -lZfunctions"
 AC_MSG_CHECKING([AMEGICPATH is])
 if test -z "$AMEGICPATH"; then	
-  AMEGICPATH="***No AMEGIC path set...don't know how to continue!***"
+  AMEGICPATH="***No AMEGIC path set...won't build AMEGIC interface***"
 fi
 AC_MSG_RESULT("$AMEGICPATH")
 

@@ -47,13 +47,7 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   _component.push_back(new_ptr(Particle(*p1))); 
   _component.push_back(new_ptr(Particle(*p2))); 
   if(p3) _component.push_back(new_ptr(Particle(*p3)));
-  
-  /*  if(p3) _component.resize(3);
-  else _component.resize(2);
-  _component[0](*p1);
-  _component[1](*p2);
-  if(p3) _component[2](*p3);
-  */
+
   _isPerturbative.push_back(initPerturbative(p1));
   _isPerturbative.push_back(initPerturbative(p2));
   if(p3) _isPerturbative.push_back(initPerturbative(p3));
@@ -147,7 +141,6 @@ void Cluster::calculateX() {
       dmax = _globalParameters->maxDisplacement();
     }
     // Get the positions and displacements of the two components (Lab frame).
-    //    CollecCompPtr::const_iterator cit = _collecCompPtr.begin();
     LorentzPoint pos1 = _component[0]->vertex();
     Lorentz5Momentum p1 = _component[0]->momentum();
     LorentzDistance displace1 = 

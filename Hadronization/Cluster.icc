@@ -21,12 +21,6 @@ namespace Herwig {
     return _numComp;
   }
 
-  //inline string Cluster::PDGName() const { return "Cluster"; }
-
-  //inline long Cluster::id() const { return _id; }
-
-  //inline string Cluster::genericName() const { return "Cluster"; }
-
   inline void Cluster::setMass(const Energy inputMass) {
     Lorentz5Momentum m = momentum();
     m.setMass(inputMass);

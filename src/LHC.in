@@ -9,13 +9,14 @@ set theGlobalParameters:MinVirtuality2 0.1*GeV2
 set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
 #
 cd /Defaults/Generators
-set LHCGenerator:NumberOfEvents 1000000
+set LHCGenerator:NumberOfEvents 10
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 1000
 set LHCGenerator:MaxErrors 100
 set LHCGenerator:Strategy /Defaults/ThePEGStrategy
-#set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
+set LHCGenerator:EventHandler:LuminosityFunction:Energy 500.0
 set /Defaults/Particles/Z0:NominalMass 92
 #
 saverun LHC LHCGenerator
+#run LHC LHCGenerator

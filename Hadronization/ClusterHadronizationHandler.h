@@ -1,48 +1,29 @@
 // -*- C++ -*-
 #ifndef HERWIG_ClusterHadronizationHandler_H
 #define HERWIG_ClusterHadronizationHandler_H
-//
-// This is the declaration of the <!id>ClusterHadronizationHandler<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// This class is the main driver of the Cluster Hadronization: it is 
-// responsible for the proper handling of all other specific collaborating
-// classes (<!class>PartonSplitter<!!class>, <!class>ClusterFinder<!!class>, 
-// <!class>ColourReconnector<!!class>, 
-// <!class>ClusterFissioner<!!class>, <!class>LightClusterDecayer<!!class>, 
-// <!class>ClusterDecayer<!!class>) 
-// and for the storing of the produced particles in the Event record.
-// 
-// Important implementation detail: the private member <!id>_collecCluPtr<!!id>
-// is the collection of all Cluster class objects that are created during the 
-// whole cluster hadronization. This collection is initially cleaned, and 
-// then it is passed to the collaborating classes which are responsible to 
-// fill it properly. <BR>
-// The elements of this collection, which are cluster objects, are properly
-// interconnected in such a way to store the full, complete information about
-// their origin, evolution, and end. This allows both to get at any time any
-// information we could need (even for future, extensive changes) and to fully
-// debug the cluster hadronization. <BR>
-//
-// Notice that the access to the <!class>GlobalParameters<!!class> class 
-// instance is provided only to allow non-interfaced and non-persistent classes
-// (<!class>Cluster<!!class>) to access the global parameters and/or to drawn 
-// random numbers. This is done in the run initialization, <!id>doinitrun()
-// <!!id>, by setting static pointers defined in those non-interfaced and 
-// non-persistent classes.
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:GlobalParameters.html">GlobalParameters.h</a>, <BR>
-// <a href="http:PartonSplitter.html">PartonSplitter.h</a>, <BR>
-// <a href="http:ClusterFinder.html">ClusterFinder.h</a>, <BR>
-// <a href="http:ColourReconnector.html">ColourReconnector.h</a>, <BR>
-// <a href="http:ClusterFissioner.html">ClusterFissioner.h</a>, <BR>
-// <a href="http:LightClusterDecayer.html">LightClusterDecayer.h</a>, <BR>
-// <a href="http:ClusterDecayer.html">ClusterDecayer.h</a>, <BR>
-// <a href="http:Cluster.html">Cluster.h</a>.
-// 
+/*! \class Herwig::ClusterHadronizationHandler ClusterHadronizationHandler.h "Herwig++\Hadronization\ClusterHadronizationHandler.h"
+ * \brief Class that controls the cluster hadronization algorithm.
+ * \author Philip Stephens
+ * \author Alberto Ribon
+ * \ingroup Hadronization
+ *
+ * This class is the main driver of the cluster hadronization: it is 
+ * responsible for the proper handling of all other specific collaborating
+ * classes PartonSplitter, ClusterFinder, ColourReconnector, ClusterFissioner, 
+ * LightClusterDecayer, ClusterDecayer; 
+ * and for the storing of the produced particles in the Event record.
+ * 
+ * Notice that the access to the GlobalParameters class 
+ * instance is provided only to allow non-interfaced and non-persistent classes
+ * (Cluster) to access the global parameters and/or to draw 
+ * random numbers. This is done in the run initialization, doinitrun()
+ * by setting static pointers defined in those non-interfaced and 
+ * non-persistent classes.
+ *
+ * See also: GlobalParameters.h, PartonSplitter.h, ClusterFinder.h,
+ * ColourReconnector.h, ClusterFissioner.h, LightClusterDecayer.h,
+ * ClusterDecayer.h, Cluster.h.
+ */ 
 
 #include <ThePEG/Handlers/HadronizationHandler.h>
 #include "Herwig++/Utilities/GlobalParameters.h"
@@ -68,28 +49,30 @@ public:
   inline ClusterHadronizationHandler();
   inline ClusterHadronizationHandler(const ClusterHadronizationHandler &);
   virtual ~ClusterHadronizationHandler();
-  // Standard ctors and dtor.
 
 public:
 
   virtual void handle(PartialCollisionHandler & ch, const tPVector & tagged,
 		      const Hint & hint) throw(Veto, Stop, Exception);
-  // The main method which manages the all cluster hadronization.
+  /*!< The main method which manages the all cluster hadronization.
+   *
+   * This routine directs "traffic". It determines which function is called
+   * and on which particles/clusters. This function also handles the 
+   * situation of vetos on the hadronization.
+   */
 
 public:
 
   void persistentOutput(PersistentOStream &) const;
   void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
 
   static void Init();
-  // Standard Init function used to initialize the interfaces.
+  //!< Standard Init function used to initialize the interfaces.
 
 protected:
 
   inline virtual IBPtr clone() const;
   inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
 
 protected:
 
@@ -97,43 +80,48 @@ protected:
   inline virtual void doinit() throw(InitException);
   virtual void doinitrun(); 
   inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
 
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
+  //!< Change all pointers to Interfaced objects to corresponding clones.
 
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
+  //!< Return pointers to all Interfaced objects refered to by this.
 
 private:
 
   static ClassDescription<ClusterHadronizationHandler> initClusterHadronizationHandler;
-  // Describe a concrete class with persistent data.
+  //!< Describe a concrete class with persistent data.
 
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &);
-  // Private and non-existent assignment operator.
+  //!< Private and non-existent assignment operator.
 
   void printStep(tStepPtr ptrStep, const string & title);
-  // Print the step for debugging.
+  //!< Print the step for debugging.
 
   void debuggingInfo(PartialCollisionHandler & ch, ClusterVector &);
-  // Print information about the final, complete collections of clusters
-  // for debugging.
+  //!< Print information about the final, complete collections of clusters.
  
   GlobParamPtr           _globalParameters;
+  //!< This is a pointer to a Herwig::GlobalParameters object.
   PartonSplitterPtr      _partonSplitter;
+  //!< This is a pointer to a Herwig::PartonSplitter object.
   ClusterFinderPtr       _clusterFinder;
+  //!< This is a pointer to a Herwig::ClusterFinder object.
   ColourReconnectorPtr   _colourReconnector;
+  //!< This is a pointer to a Herwig::ColourReconnector object.
   ClusterFissionerPtr    _clusterFissioner;
+  //!< This is a pointer to a Herwig::ClusterFissioner object.
   LightClusterDecayerPtr _lightClusterDecayer;
+  //!< This is a pointer to a Herwig::LightClusterDecayer object.
   ClusterDecayerPtr      _clusterDecayer; 
+  //!< This is a pointer to a Herwig::ClusterDecayer object.
 };
 
 
 }
 
-// CLASSDOC OFF
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 namespace ThePEG {
 
@@ -157,6 +145,8 @@ struct ClassTraits<Herwig::ClusterHadronizationHandler>: public ClassTraitsBase<
 };
 
 }
+
+#endif // DOXYGEN
 
 #include "ClusterHadronizationHandler.icc"
 

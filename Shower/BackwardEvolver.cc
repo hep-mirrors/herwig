@@ -64,9 +64,10 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "BackwardEvolver::spaceLikeShower "
 		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() 
-		       << endl;
+		       << "   EventNumber=" 
+		       << generator()->currentEventNumber() << endl;
   }
+  cout << endl << "Process is " << *ch->currentEvent() << endl;
 
   bool hasEmitted = false;
   tShowerParticlePtr part = particle;

@@ -61,6 +61,7 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     generator()->log() << *pstep;
     generator()->log() << "################################################\n";
   }
+  cout << "Splitting\n";
   // Loop over all of the particles in the event.
   for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
     if ( (**pit).data().id() == ParticleID::g ) {     // gluon
@@ -91,6 +92,7 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	  // ... write the code
 	  // splitSpaceLikeGluon(*pit,ptrQ,ptrQbar);      
 	  // ... write the code
+	  cout << "Spacelike gluon!\n";
 	} else {
 	  generator()->logWarning( Exception("PartonSplitter::split "
 					     "***Gluon on the mass shell (m=0)***", 
@@ -176,7 +178,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
 }
 
 
-void PartonSplitter::splitSpaceLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptrQbar){
+/*void PartonSplitter::splitSpaceLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptrQbar){
   // write the code
 }
 
@@ -185,7 +187,7 @@ void PartonSplitter::splitSpaceLikeSeaQuark(tcPPtr ptrSeaQ0, PPtr & ptrGluon, PP
   // write the code
 }
 
-
+*/
 void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & newPartons) {
 
   // Print information about all coloured particles present before the

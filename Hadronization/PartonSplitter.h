@@ -1,19 +1,19 @@
 // -*- C++ -*-
 #ifndef HERWIG_PartonSplitter_H
 #define HERWIG_PartonSplitter_H
-//
-// This is the declaration of the <!id>PartonSplitter<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// This class does all of the nonperturbative parton splittings needed <BR>
-// immediately after the end of the showering (both initial and final), <BR>
-// as very first step of the cluster hadronization.
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:GlobalParameters.html">GlobalParameters.h</a>.
-// 
+/*! \class Herwig::PartonSplitter PartonSplitter.h "Herwig++\Hadronization\PartonSplitter.h"
+ * \brief This class splits the gluons from the end of the shower.
+ * \author Philip Stephens
+ * \author Alberto Ribon
+ * \ingroup Hadronization
+ *
+ * This class does all of the nonperturbative parton splittings needed 
+ * immediately after the end of the showering (both initial and final),
+ * as very first step of the cluster hadronization.
+ *
+ * See also:
+ * GlobalParameters.h.
+ */
 
 #include "CluHadConfig.h"
 #include <ThePEG/Handlers/HandlerBase.h>
@@ -38,10 +38,10 @@ public:
 public:
 
   void split(const tPVector & tagged, tStepPtr pstep);
-  // It does the nonperturbative splitting of:
-  // time-like gluons; space-like gluons; space-like sea-quark (or antiquark)
-  // (in the latter case, the produced soft gluon is then splitted in valence
-  // quarks). The new particles produced are added to the event record.
+  /*!< This method does the nonperturbative splitting of:
+   * time-like gluons. At the end of the shower the gluons should be
+   * on a "physical" mass shell and should therefore be time-like.
+   */
  
 public:
 
@@ -50,7 +50,7 @@ public:
   // Standard functions for writing and reading from persistent streams.
 
   static void Init();
-  // Standard Init function used to initialize the interfaces.
+  //!< Standard Init function used to initialize the interfaces.
 
 protected:
 
@@ -67,51 +67,53 @@ protected:
 
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
+  //!< Change all pointers to Interfaced objects to corresponding clones.
 
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
+  //!< Return pointers to all Interfaced objects refered to by this.
 
 private:
 
   static ClassDescription<PartonSplitter> initPartonSplitter;
-  // Describe a concrete class with persistent data.
+  //!< Describe a concrete class with persistent data.
 
   PartonSplitter & operator=(const PartonSplitter &);
-  //  Private and non-existent assignment operator.
+  //!<  Private and non-existent assignment operator.
 
   void splitTimeLikeGluon(tcPPtr ptrGluon,                   // input        
 			  PPtr & ptrQ, PPtr & ptrQbar);      // output
-  // Given in input a pointer to a time-like gluon, it forces
-  // a nonperturbative quark - anti-quark splitting, returning
-  // the pointers to these produced two new particles. 
-  // If something wrong happens, it will returns null pointers.
+  /*!< Given in input a pointer to a time-like gluon, it forces
+   * a nonperturbative quark - anti-quark splitting, returning
+   * the pointers to these produced two new particles. 
+   * If something wrong happens, it will returns null pointers.
+   */
   
-  void splitSpaceLikeGluon(tcPPtr ptrGluon,                  // input       
-			   PPtr & ptrQ, PPtr & ptrQbar);     // output
+  //void splitSpaceLikeGluon(tcPPtr ptrGluon,                  // input       
+  //			   PPtr & ptrQ, PPtr & ptrQbar);     // output
   // Given in input a pointer to a space-like gluon, it forces
   // a nonperturbative quark - anti-quark splitting, returning
   // the pointers to these produced two new particles. 
   // If something wrong happens, it will returns null pointers.
   
-  void splitSpaceLikeSeaQuark(tcPPtr ptrSeaQ0,                   // input
-  			      PPtr & ptrGluon, PPtr & ptrSeaQ1); // output
+  //void splitSpaceLikeSeaQuark(tcPPtr ptrSeaQ0,                   // input
+  //			      PPtr & ptrGluon, PPtr & ptrSeaQ1); // output
   // Given in input a pointer to a space-like sea quark, it forces 
   // a nonperturbative soft gluon emission, returning the pointers 
   // to the emitted gluon and the sea quark after the emission. 
   // If something wrong happens, it will return null pointers.
 
   void debuggingInfo(const tPVector & tagged, const set<tPPtr> & newPartons);
-  // Print full information for debugging.
+  //!< Print full information for debugging.
 
   GlobParamPtr _globalParameters;  
+  //!< Pointer to a Herwig::GlobalParameters object for using global variables.
 
 };
 
 
 }
 
-// CLASSDOC OFF
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 namespace ThePEG {
 
@@ -136,8 +138,9 @@ struct ClassTraits<Herwig::PartonSplitter>:
   // (except the base class).
 };
 
-
 }
+
+#endif // DOXYGEN
 
 #include "PartonSplitter.icc"
 

@@ -115,7 +115,7 @@ handle(PartialCollisionHandler & ch, const tPVector & tagged,
        const Hint & hint) throw(Veto, Stop, Exception) {
   ClusterVector clusters;
   StepPtr pstep = ch.newStep();
- 
+
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }

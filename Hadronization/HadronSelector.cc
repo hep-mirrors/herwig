@@ -347,7 +347,7 @@ chooseHadronPair(const Energy cluMass, const long id1, const long id2,
 				  getParticleData(lighthad.second)->mass());
   if(_ClusterDKMode == 0) return hw64(cluMass, id1, id2, PCMax, maxFlav);
   else if(_ClusterDKMode==1) return kupco(cluMass, id1, id2, PCMax, maxFlav);
-  else return newkupco(cluMass, id1, id2, PCMax, maxFlav); 
+  else return hwpp(cluMass, id1, id2, PCMax, maxFlav); 
 }
 
 pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1, 
@@ -566,9 +566,9 @@ pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
   }
   return hadPair;
 }
-pair<long,long> HadronSelector::newkupco(const Energy cluMass, const long id1,
-					 const long id2, Energy PCMax, 
-					 int maxFlav) { 
+pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
+			  	     const long id2, Energy PCMax, 
+				     int maxFlav) { 
   multiset<Kupco> weights;
   pair<long,long> hadPair = pair<long,long>(0,0);
   

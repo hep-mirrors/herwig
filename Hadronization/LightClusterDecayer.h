@@ -1,35 +1,35 @@
 // -*- C++ -*-
 #ifndef HERWIG_LightClusterDecayer_H
 #define HERWIG_LightClusterDecayer_H
-//
-// This is the declaration of the <!id>LightClusterDecayer<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// This is the class that performs the decay of light clusters into 
-// only one hadron. The major difficulty is that a kinematical reshuffling
-// is necessary, between the cluster under consideration and its
-// "neighbouring" clusters, to conserve energy-momentum in one-body decay.
-// Notice that, differently from what happens in Fortran Herwig,
-// light (that is below the threshold for the production of the lightest 
-// pair of hadrons with the proper flavours) fission products, produced 
-// by the fission of heavy clusters in <!class>ClusterFissioner<!!class> 
-// have been already "decayed" into single hadron (the lightest one 
-// with proper flavour) by the same latter class, without require 
-// any reshuffling. Therefore the light clusters that are treated in 
-// this <!id>LightClusterDecayer<!!id> class are produced directly 
-// (originally) by the <!class>ClusterFinder<!!class>. 
-//	
-// Notice:
-// <UL>
-//  <LI> The choice of the candidate cluster with whom to reshuffle momentum 
-//       is based on the minimal space-time distance from the light cluster.
-// </UL>
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:HadronSelector.html">HadronSelector.h</a>.
-// 
+/*! \class Herwig::LightClusterDecayer LightClusterDecayer.h "Herwig++\Hadronization\LightClusterDecayer.h"
+ * \brief This class performs the decay of light clusters into a single hadron.
+ * \author Philip Stephens
+ * \author Alberto Ribon
+ * \ingroup Hadronization
+ *
+ * This is the class that performs the decay of light clusters into 
+ * only one hadron. The major difficulty is that a kinematical reshuffling
+ * is necessary, between the cluster under consideration and its
+ * "neighbouring" clusters, to conserve energy-momentum in one-body decay.
+ * Notice that, differently from what happens in Fortran Herwig,
+ * light (that is below the threshold for the production of the lightest 
+ * pair of hadrons with the proper flavours) fission products, produced 
+ * by the fission of heavy clusters in ClusterFissioner 
+ * have been already "decayed" into single hadron (the lightest one 
+ * with proper flavour) by the same latter class, without require 
+ * any reshuffling. Therefore the light clusters that are treated in 
+ * this LightClusterDecayer class are produced directly 
+ * (originally) by the ClusterFinder. 
+ *	
+ * Notice:
+ * - The choice of the candidate cluster with whom to reshuffle momentum 
+ *   is based on the minimal space-time distance from the light cluster.
+ * - An alternate choice of what is considered a "neighbour" could be
+ *   implemented but was not considered for Herwig++.
+ *
+ * See also:
+ * HadronSelector.h.
+ */ 
 
 #include <ThePEG/Handlers/HandlerBase.h>
 #include <ThePEG/EventRecord/Step.h>
@@ -42,9 +42,6 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-  //class Cluster; // forward declaration
-
-
 class LightClusterDecayer: public ThePEG::HandlerBase {
 
 public:
@@ -52,13 +49,14 @@ public:
   inline LightClusterDecayer();
   inline LightClusterDecayer(const LightClusterDecayer &);
   virtual ~LightClusterDecayer();
-  // Standard ctors and dtor.
 
   bool decay(const StepPtr &);
-  //    throw (Veto, Stop, Exception);
-  // It does the decay of light hadron in one hadron: this requires
-  // also a kinematical reshuffling for energy-momentum conservation
-  // (this is done explicitly by the (private) method reshuffling() ).
+  /*!< This method does the decay of light hadron in one hadron.
+   *
+   * This method requires a kinematical reshuffling for energy-momentum 
+   *conservation. This is done explicitly by the (private) method 
+   * reshuffling().
+   */
 
 public:
 
@@ -67,7 +65,7 @@ public:
   // Standard functions for writing and reading from persistent streams.
 
   static void Init();
-  // Standard Init function used to initialize the interfaces.
+  //!< Standard Init function used to initialize the interfaces.
 
 protected:
 
@@ -84,34 +82,41 @@ protected:
 
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
+  //!< Change all pointers to Interfaced objects to corresponding clones.
 
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
+  //!< Return pointers to all Interfaced objects refered to by this.
 
 private:
 
   static ClassDescription<LightClusterDecayer> initLightClusterDecayer;
-  // Describe a concrete class with persistent data.
+  //!< Describe a concrete class with persistent data.
 
   LightClusterDecayer & operator=(const LightClusterDecayer &);
-  //  Private and non-existent assignment operator.
+  //!< Private and non-existent assignment operator.
 
   bool reshuffling( const long, tClusterPtr, tClusterPtr,
 		    const StepPtr &, tClusterVector &) 
     throw (Veto, Stop, Exception); 
-  // This (private) method, called by decay(), takes care of the kinematical
-  // reshuffling necessary for energy-momentum conservation.
+  /*!< This (private) method, called by decay(), takes care of the kinematical
+   * reshuffling necessary for energy-momentum conservation.
+   */
   
   Ptr<HadronSelector>::pointer _hadronsSelector;
-
+  //!< A pointer to a Herwig::HadronSelector object used for producing hadrons.
   double _B1Lim;
+  /*!< A parameter used for determining when b clusters are too light.
+   *
+   * This parameter is used for setting the lower threshold, \f$ t \f$ as
+   * \f[ t' = t(1 + r B^1_{\rm lim}) \f]
+   * where \f$ r \f$ is a random number [0,1].
+   */
 
 };
 
 }
 
-// CLASSDOC OFF
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 namespace ThePEG {
 
@@ -135,6 +140,8 @@ struct ClassTraits<Herwig::LightClusterDecayer>: public ClassTraitsBase<Herwig::
 };
 
 }
+
+#endif // DOXYGEN STUFF
 
 #include "LightClusterDecayer.icc"
 

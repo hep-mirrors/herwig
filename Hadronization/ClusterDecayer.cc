@@ -79,7 +79,6 @@ void ClusterDecayer::decay(const StepPtr &pstep)
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
   // into single hadron) then decay them into two hadrons.
-  //cout << "Event is = " << endl << *pstep->collision()->event() << endl;
   ClusterVector clusters; 
   for (ParticleSet::iterator it = pstep->particles().begin();
        it!= pstep->particles().end(); it++) { 
