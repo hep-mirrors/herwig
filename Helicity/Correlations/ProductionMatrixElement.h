@@ -26,10 +26,10 @@
 // #include "ProductionMatrixElement.xh"
 
 namespace Herwig {
+using ThePEG::Helicity::RhoDMatrix;
 namespace Helicity {
 
 using namespace ThePEG;
-using ThePEG::Helicity::RhoDMatrix;
 
 class ProductionMatrixElement: public Base {  
       
