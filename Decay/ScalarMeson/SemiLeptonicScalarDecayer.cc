@@ -250,8 +250,12 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
     }
   int mode=(abs(decay[1]->id())-11)/12;
   // construct the lepton current
-  vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,ichan,
-							      inpart,decay));
+  Energy scale;
+  ParticleVector leptons;
+  leptons.push_back(decay[decay.size()-2]);
+  leptons.push_back(decay[decay.size()-1]);
+  vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,
+							     ichan,scale,leptons));
   // work out the mapping for the lepton vector
   vector<int> constants(decay.size()+1), ispin(decay.size()),ihel(decay.size()+1);
   int itemp=1; unsigned int imes=0;
@@ -289,12 +293,11 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   double ckm(1.);
   if(iq<=6)
     {
-      if(iq%2==0){ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);}
-      else{ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);}
-      //      cout << "testing the CKM factor " << iq << " " << ia << " " << ckm << endl;
+      if(iq%2==0){ckm = SM().CKM(abs(iq)/2-1,(abs(ia)-1)/2);}
+      else{ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);}
     }
   // return the answer
-  double me= 0.5*(newME.contract(temp)).real()*_GF*_GF;
+  double me= 0.5*(newME.contract(temp)).real()*_GF*_GF*ckm;
   return me;  
 }
  
