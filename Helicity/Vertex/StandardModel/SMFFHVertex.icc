@@ -20,6 +20,7 @@ inline SMFFHVertex::SMFFHVertex()
   setList(first,second,third);
   // set up for the couplings
   _couplast=0.;_idlast=0;_q2last=0.;_masslast=0.;
+  _mw=0.;_sw=0.;
 }
 
 inline SMFFHVertex::SMFFHVertex(const SMFFHVertex & x)

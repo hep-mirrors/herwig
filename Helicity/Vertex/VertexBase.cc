@@ -118,14 +118,17 @@ vector<PDPtr> VertexBase::search(int iloc,int idd)
 	      std::cerr << "Invalid _particle index for ilist search" << std::endl;
 	      break;
 	    }
-	  if(_npoint<=3)
+	  if(found)
 	    {
-	      out.push_back(_particlea[ix]);
-	      out.push_back(_particleb[ix]);
-	      out.push_back(_particlec[ix]);
+	      if(_npoint>=3)
+		{
+		  out.push_back(_particlea[ix]);
+		  out.push_back(_particleb[ix]);
+		  out.push_back(_particlec[ix]);
+		}
+	      if(_npoint>=4){out.push_back(_particled[ix]);}
+	      if(_npoint==5){out.push_back(_particlee[ix]);}
 	    }
-	  if(_npoint<=4){out.push_back(_particled[ix]);}
-	  if(_npoint==5){out.push_back(_particlee[ix]);}
 	}
     }
   return out;
