@@ -373,6 +373,7 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
 		    generator()->logWarning(Exception(s.str(),
 						      Exception::warning));
 		    if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {
+>>>>>>> 1.3
 		      generator()->log() << "         ===>"
 					 << "  i=" << i << "  idQ=" << idQ 
 					 << "  signQ=" << signQ  << endl 

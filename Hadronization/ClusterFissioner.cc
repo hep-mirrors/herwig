@@ -622,7 +622,9 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
     // iv)  otherwise      both Mclu1 and Mclu2 are extracted from the exponential
     //                     distribution,
     if ( iRemnant == 0  ||  iRemnant == 2 ) { 
-      Mclu1 = pow( rnd( Mmin_toExp1, Mmax_toExp1) , 1.0/exponent1 );
+      // Mclu1 = pow( rnd( Mmin_toExp1, Mmax_toExp1) , 1.0/exponent1 );
+      Mclu1 = m1 + (Mclu - m1 - m2)*pow( rnd(), 1.0/exponent1 );
+      // cout << Mclu1 << " ";
     } else { 
       double r1 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
       if ( r1 > rmin ) {
@@ -632,7 +634,9 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
       }
     }
     if ( iRemnant == 0  ||  iRemnant == 1 ) { 
-      Mclu2 = pow( rnd( Mmin_toExp2, Mmax_toExp2) , 1.0/exponent2 );
+      // Mclu2 = pow( rnd( Mmin_toExp2, Mmax_toExp2) , 1.0/exponent2 );
+      Mclu2 = m2 + (Mclu - m1 - m2)*pow( rnd(), 1.0/exponent2 );
+      // cout << Mclu2 << " " << exponent1 << " " << exponent2 << endl;
     } else {
       double r2 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
       if ( r2 > rmin ) {
