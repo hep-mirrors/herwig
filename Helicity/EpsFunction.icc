@@ -1,0 +1,40 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EpsFunction class.
+//
+//  Author: Peter Richardson
+//
+
+namespace Herwig {
+namespace Helicity {
+
+using namespace ThePEG;
+
+inline LorentzPolarizationVector EpsFunction::product(Lorentz5Momentum p1,
+						      Lorentz5Momentum p2,
+						      Lorentz5Momentum p3)
+{
+  // array to contain the answer
+  Complex vect[4];
+  // calculate some useful differences
+  Energy2 diffxy = p1.px()*p2.py()-p1.py()*p2.px();
+  Energy2 diffxz = p1.px()*p2.pz()-p1.pz()*p2.px();
+  Energy2 diffxt = p1.px()*p2.e() -p1.e() *p2.px();
+  Energy2 diffyz = p1.py()*p2.pz()-p1.pz()*p2.py();
+  Energy2 diffyt = p1.py()*p2.e() -p1.e() *p2.py();
+  Energy2 diffzt = p1.pz()*p2.e() -p1.e() *p2.pz();
+  // x component
+  vect[0] =  p3.pz()*diffyt- p3.e()*diffyz-p3.py()*diffzt; 
+  // y component
+  vect[1] =  p3.e() *diffxz-p3.pz()*diffxt+p3.px()*diffzt;
+  // z component 
+  vect[2] = -p3.e() *diffxy+p3.py()*diffxt-p3.px()*diffyt;
+  // time component
+  vect[3] = -p3.pz()*diffxy+p3.py()*diffxz-p3.px()*diffyz;
+  // return the answer
+  return LorentzPolarizationVector(vect[0],vect[1],vect[2],vect[3]);
+}
+
+}
+}
