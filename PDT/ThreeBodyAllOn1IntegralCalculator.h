@@ -255,7 +255,6 @@ private:
    */
   virtual AbsFunction *_clone() const;
 
-    
 public:
  
   /**
