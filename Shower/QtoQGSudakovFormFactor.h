@@ -36,7 +36,7 @@ public:
 
   virtual Energy generateNextBranching( tPartCollHdlPtr ch, 
   					const Energy startingScale,
-  					const bool reverseAngularOrder = false ) const;
+  					const bool reverseAngularOrder = false );
   // It returns the scale of the next branching; if there is no 
   // branching then it returns Energy().
   // The <!id>ch<!!id> argument is used only for Initial State branching,

@@ -12,10 +12,7 @@ inline SplitFun1to2::SplitFun1to2()
     _id1( 0 ),
     _m1( Energy() ),
     _id2( 0 ),
-    _m2( Energy() ), 
-    _qtilde2( Energy2() ), 
-    _z( 0 ),  
-    _phi( 0 ) 
+    _m2( Energy() )
 {}
 
 
@@ -24,10 +21,7 @@ inline SplitFun1to2::SplitFun1to2(const SplitFun1to2 & x)
     _id1( x._id1 ),
     _m1( x._m1 ),
     _id2( x._id2 ),
-    _m2( x._m2 ), 
-    _qtilde2( x._qtilde2 ), 
-    _z( x._z ),  
-    _phi( x._phi ) 
+    _m2( x._m2 ) 
 {}
 
 
@@ -80,19 +74,6 @@ inline long SplitFun1to2::idSecondProduct() const {
 inline Energy SplitFun1to2::massSecondProduct() const {
   return _m2;
 }
-
-inline Energy2 SplitFun1to2::qtilde2() const {
-  return _qtilde2;
-}
-
-inline double SplitFun1to2::z() const {
-  return _z;
-}
-
-inline double SplitFun1to2::phi() const {
-  return _phi;
-}
-
 
 }
 

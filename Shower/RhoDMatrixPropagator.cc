@@ -364,7 +364,7 @@ evaluateAmplitude( const tShoParPtr particle,                                   
 	dynamic_ptr_cast< tQtildaShoKin1to2Ptr >( particle->showerKinematics() );
       if ( shoKin ) {
 	double z = shoKin->z();
-	Energy2 qtilde2 = sqr( shoKin->qtilda() );
+	Energy2 qtilde2 = sqr( shoKin->qtilde() );
 	double phi = shoKin->phi();
 	amplitudeValue = splitFun1to2->
 	  fullFunWithHelicities( z, qtilde2, phi, helicities[0], helicities[1], helicities[2] );

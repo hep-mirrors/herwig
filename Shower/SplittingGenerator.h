@@ -70,34 +70,45 @@ public:
   virtual ~SplittingGenerator();
   // Standard ctors and dtor.
 
-  pair<Energy, tSudakovFormFactorPtr> chooseForwardBranching 
+  pair<ShoKinPtr, tSudakovFormFactorPtr> chooseForwardBranching 
   ( tPartCollHdlPtr ch, ShowerParticle & particle, 
     const bool reverseAngularOrder = false ) const; 
   // It chooses a new forward branching for the time-like particle. 
-  // The method returns the new scale, and the pointer to the Sudakov
-  // form factor associated with the chosen emission. In the case no
-  // branching has been generated, the new scale and the pointer are
-  // null ( Energy() , tSudakovFormFactorPtr() ).
-  // In the case that <!id>reverseAngularOrder<!!id> is true, the new scale
-  // is greater than the initial one: this is used for the forward
-  // evolution of a on-shell decaying particle.
+  // The method returns a pair of pointers: <BR>
+  // --- a pointer to a <!id>ShowerKinematics<!!id> object, which 
+  //     contains the information about the new scale and all other
+  //     kinematics variables that need to be generated simultaneously; <BR>
+  // --- a pointer to the <!id>SudakovFormFactor<!!id> object associated 
+  //     with the chosen emission. <BR>
+  // In the case no branching has been generated, both the returned 
+  // pointers are null ( ShoKinPtr() , tSudakovFormFactorPtr() ).
+  // In the case that <!id>reverseAngularOrder<!!id> is true, 
+  // the new scale is greater than the initial one: this is used for 
+  // the forward evolution of a on-shell decaying particle.
 
-  pair<Energy, tSudakovFormFactorPtr> chooseBackwardBranching
+  pair<ShoKinPtr, tSudakovFormFactorPtr> chooseBackwardBranching
   ( tPartCollHdlPtr ch, ShowerParticle & particle ) const; 
   // Similar to the previous method, but for the backward evolution of
   // a space-like input particle. 
   // Notice that the PartialCollisionHandler object, <!id>ch<!!id>, 
   // is necessary to access the PDFs.
 
-  ShoKinPtr generateBranchingKinematics 
+  bool generateBranchingKinematics 
   ( tPartCollHdlPtr ch, ShowerParticle & particle,
-    const Energy & scale, const tSudakovFormFactorPtr sudakov ) const; 
-  // Given the particle and the (accepted) new branching
-  // specified by the its scale and the pointer to the Sudakov 
-  // form factor associated with the branching, the method generates 
-  // the kinematics of the branching, and return a pointer to a 
-  // <!class>ShowerKinematics<!!class> object where the information 
-  // about the kinematics of the branching is kept.
+    tShoKinPtr showerKin, const tSudakovFormFactorPtr sudakov ) const; 
+  // Given the particle, a pointer to the <!id>ShowerKinematics<!!id> 
+  // object which has been created and at least partially filled during
+  // the branching selection, and the pointer to the <!SudakovFormFactor<!!id>
+  // object associated with such selected branching, the method completes
+  // the kinematics of the branching, storing the results in the same
+  // <!id>ShowerKinematics<!!id> object specified in input.
+  // Notice that, it can be that this method does nothing, because
+  // the kinematics of the branching has been already completely
+  // determined during <!id>chooseForwardBranching<!!id> or
+  // <!id>chooseBackwardBranching<!!id>.
+  // The method returns true if the full generation of the kinematics
+  // of the branching has succeeded (even in the case that nothing
+  // has to be done in this method); false otherwise.
 
   inline const tShowerAlphaPtr pointerIS_ShowerAlphaQCD() const;
   inline const tShowerAlphaPtr pointerFS_ShowerAlphaQCD() const;

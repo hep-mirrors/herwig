@@ -123,33 +123,46 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
 
   // Final State Radiation
   if ( _pointerSplittingGenerator->isFSRadiationON() ) {
+    // Remember that is not allowed to add element to a STL container
+    // while you are iterating over it. Therefore an additional, temporary,
+    // container must be used.
+    CollecShoParPtr particlesToShower;
     for ( CollecShoParPtr::const_iterator cit = particles.begin();
 	  cit != particles.end(); ++cit ) {
       if ( (*cit)->isFinalState() ) {
-	bool hasEmitted = _pointerForwardShowerEvolver->
-	  timeLikeShower( ch, showerConstrainer, meCorrection, *cit, particles );
-	// Fill  _mapShowerHardJets  with  (*cit, hasEmitted);
-	if ( _mapShowerHardJets.find( *cit ) != _mapShowerHardJets.end() ) {
-	  ( _mapShowerHardJets.find( *cit ) )->second = hasEmitted;
-	} else {
-	  _mapShowerHardJets.insert( pair<tShoParPtr, bool>( *cit, hasEmitted ) );
-	}
+	particlesToShower.insert( particlesToShower.end(), *cit );
+      }
+    }
+    for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
+	  cit != particlesToShower.end(); ++cit ) {
+      bool hasEmitted = _pointerForwardShowerEvolver->
+	timeLikeShower( ch, showerConstrainer, meCorrection, *cit, particles );
+      // Fill  _mapShowerHardJets  with  (*cit, hasEmitted);
+      if ( _mapShowerHardJets.find( *cit ) != _mapShowerHardJets.end() ) {
+	( _mapShowerHardJets.find( *cit ) )->second = hasEmitted;
+      } else {
+	_mapShowerHardJets.insert( pair<tShoParPtr, bool>( *cit, hasEmitted ) );
       }
     }
   }
 
   // Initial State Radiation
   if ( _pointerSplittingGenerator->isISRadiationON() ) {
-    for ( CollecShoParPtr::iterator it = particles.begin();
-	  it != particles.end(); ++it ) {
-      if ( ! (*it)->isFinalState() ) {
-	bool hasEmitted = _pointerBackwardShowerEvolver->
-	  spaceLikeShower( ch, showerConstrainer, meCorrection, *it, particles );
-	if ( _mapShowerHardJets.find( *it ) != _mapShowerHardJets.end() ) {
-	  ( _mapShowerHardJets.find( *it ) )->second = hasEmitted;
-	} else {
-	  _mapShowerHardJets.insert( pair<tShoParPtr, bool>( *it, hasEmitted ) );
-	}
+    CollecShoParPtr particlesToShower;
+    for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
+	  cit != particlesToShower.end(); ++cit ) {
+      if ( ! (*cit)->isFinalState() ) {
+	particlesToShower.insert( particlesToShower.end(), *cit );
+      }
+    }
+    for ( CollecShoParPtr::iterator it = particlesToShower.begin();
+	  it != particlesToShower.end(); ++it ) {
+      bool hasEmitted = _pointerBackwardShowerEvolver->
+	spaceLikeShower( ch, showerConstrainer, meCorrection, *it, particles );
+      if ( _mapShowerHardJets.find( *it ) != _mapShowerHardJets.end() ) {
+	( _mapShowerHardJets.find( *it ) )->second = hasEmitted;
+      } else {
+	_mapShowerHardJets.insert( pair<tShoParPtr, bool>( *it, hasEmitted ) );
       }
     }
   }

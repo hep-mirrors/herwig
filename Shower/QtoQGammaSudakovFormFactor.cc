@@ -41,13 +41,17 @@ void QtoQGammaSudakovFormFactor::Init() {
 
 Energy QtoQGammaSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch, 
 							  const Energy startingScale,
-							  const bool reverseAngularOrder) const {
+							  const bool reverseAngularOrder) {
 
-  Energy newScale = Energy();
+  // First reset the internal kinematics variables that can
+  // have been eventually set in the previous call to thie method.
+  _q = Energy();
+  _z = 0.0;
+  _phi = 0.0; 
 
-  //***LOOKHERE*** TO BE FILLED
+  //***LOOKHERE*** GENERATE  _q , AND EVENTUALLY ALSO  _z  AND  _phi
 
-  return newScale;
+  return _q;
 
 }
 

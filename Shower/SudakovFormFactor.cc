@@ -25,5 +25,12 @@ void SudakovFormFactor::Init() {
 }
 
 
+void SudakovFormFactor::reset() {
+  _q = Energy();
+  _z = 0.0;
+  _phi = 0.0;
+} 
+
+
 void SudakovFormFactor::setupLookupTables() {}
 

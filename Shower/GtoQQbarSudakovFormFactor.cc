@@ -43,21 +43,25 @@ void GtoQQbarSudakovFormFactor::Init() {
 
 Energy GtoQQbarSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch, 
 							 const Energy startingScale,
-							 const bool reverseAngularOrder) const {
+							 const bool reverseAngularOrder) {
 
-  Energy newScale = Energy();
+  // First reset the internal kinematics variables that can
+  // have been eventually set in the previous call to thie method.
+  _q = Energy();
+  _z = 0.0;
+  _phi = 0.0; 
 
-  //***LOOKHERE*** TO BE FILLED
-
- if (reverseAngularOrder) {
-    newScale = startingScale / UseRandom::rnd(); 
+  //***LOOKHERE*** GENERATE  _q , AND EVENTUALLY ALSO  _z  AND  _phi
+  //               BELOW IS JUST A TEMPORARY FAKE
+  if (reverseAngularOrder) {
+    _q = startingScale / UseRandom::rnd();
   } else {
-    newScale = startingScale * UseRandom::rnd();
+    _q = startingScale * UseRandom::rnd();
   }
-  
-  // first toy
-
-  return newScale;
+  _z = 0.0;
+  _phi = ( UseRandom::rndbool() ? 1.0 : -1.0 ) * 3.1415*UseRandom::rnd();
+ 
+  return _q;
 
 }
 

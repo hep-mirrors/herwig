@@ -373,12 +373,13 @@ bool SplittingGenerator::isFSRadiationON(const ShowerIndex::InteractionType inte
 }
 
 
-pair<Energy, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
+pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
 ( tPartCollHdlPtr ch, ShowerParticle & particle, const bool reverseAngularOrder ) const {
   
   Energy newQ = Energy();
   tSudakovFormFactorPtr sudakov = tSudakovFormFactorPtr();
   
+  // First, find the eventual branching, corresponding to the highest scale.
   for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
     ShowerIndex index;
     index.id = particle.data().id(); 
@@ -391,8 +392,8 @@ pair<Energy, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
 	tSudakovFormFactorPtr candidateSudakov = cit->second;
 	Energy candidateNewQ = Energy();
 	if ( candidateSudakov ) {
-	  candidateNewQ = candidateSudakov->generateNextBranching( ch, particle.evolutionScales()[i],
-								   reverseAngularOrder );
+	  candidateNewQ = candidateSudakov->
+	    generateNextBranching( ch, particle.evolutionScales()[i], reverseAngularOrder );
 	  if ( ( candidateNewQ > newQ  &&  ! reverseAngularOrder ) ||
 	       ( candidateNewQ < newQ  &&  reverseAngularOrder ) ) {
 	    newQ = candidateNewQ;
@@ -403,17 +404,54 @@ pair<Energy, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
     }
   }
 
-  return pair<Energy,tSudakovFormFactorPtr>( newQ, sudakov );
+  // Then, if a branching has been selected, create the proper 
+  // ShowerKinematics object which contains the kinematics information
+  // about such branching. Notice that the cases 1->2 and 1->3
+  // branching should be treated separately.
+  if ( newQ && sudakov ) {
+    if ( sudakov->splitFun() ) {
+
+      // For the time being we are considering only 1->2 branching
+      tSplitFun1to2Ptr splitFun = 
+	dynamic_ptr_cast< tSplitFun1to2Ptr >( sudakov->splitFun() );
+      if ( splitFun ) {	  
+	Lorentz5Momentum p = particle.momentum();
+	//***LOOKHERE*** We choose  n  naively for the time being.  
+	Lorentz5Momentum n = Lorentz5Momentum( - p.vect(), p.vect().mag() );
+	
+	Ptr< FS_QtildaShowerKinematics1to2 >::pointer showerKin = 
+	  new_ptr (FS_QtildaShowerKinematics1to2( p, n, p.mass()) );
+
+        showerKin->qtilde( newQ );
+	showerKin->z( sudakov->z() );
+	showerKin->phi( sudakov->phi() );
+
+        //***LOOKHERE*** Fill here or in  generateBranchingKinematics 
+        //               the alpha, beta ...
+        //               Notice that you can always access the shower
+	//               kinematics information of the parent of  particle
+	//                 particle->parent()->showerKinematics()
+        //               This can help in determining the shower kinematics
+        //               of  particle .
+
+	return pair<ShoKinPtr,tSudakovFormFactorPtr>( showerKin, sudakov );
+
+      }
+    }
+  }
+  
+  return pair<ShoKinPtr,tSudakovFormFactorPtr>( ShoKinPtr(), tSudakovFormFactorPtr() );
 
 }
  
 
-pair<Energy, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranching
+pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranching
 ( tPartCollHdlPtr ch, ShowerParticle & particle ) const {
   
   Energy newQ = Energy();
   tSudakovFormFactorPtr sudakov = tSudakovFormFactorPtr();
   
+  // First, find the eventual branching, corresponding to the highest scale.
   for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
     ShowerIndex index;
     index.id = particle.data().id(); 
@@ -436,48 +474,44 @@ pair<Energy, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranching
     }
   }
 
-  return pair<Energy,tSudakovFormFactorPtr>( newQ, sudakov );
+  // Then, if a branching has been selected, create the proper 
+  // ShowerKinematics object which contains the kinematics information
+  // about such branching. Notice that the cases 1->2 and 1->3
+  // branching should be treated separately.
+  if ( newQ && sudakov ) {
+    if ( sudakov->splitFun() ) {
+
+      // For the time being we are considering only 1->2 branching
+      tSplitFun1to2Ptr splitFun = 
+	dynamic_ptr_cast< tSplitFun1to2Ptr >( sudakov->splitFun() );
+      if ( splitFun ) {	  
+
+        //***LOOKHERE*** Do something similar as in chooseForwardBranching
+        //               but use IS_QtildaShowerKinematics1to2 instead.
+
+      }
+    }
+  }
+
+  return pair<ShoKinPtr,tSudakovFormFactorPtr>( ShoKinPtr(), tSudakovFormFactorPtr() );
 
 }
 
 
-ShoKinPtr SplittingGenerator::generateBranchingKinematics 
+bool SplittingGenerator::generateBranchingKinematics 
 ( tPartCollHdlPtr ch, ShowerParticle & particle,
-  const Energy & scale, const tSudakovFormFactorPtr sudakov ) const {
+  tShoKinPtr showerKin, const tSudakovFormFactorPtr sudakov ) const {
 
+  bool isOK = true;
 
-  //***LOOKHERE*** From the input it is possible to separate the case
-  //               of 1->2 splitting from 1->3; similarly, it is possible
-  //               to separate between the Final State Radiation case and
-  //               the Initial State Radiation one.
-  //               Then, at the end, do something like the following:
+  //***LOOKHERE*** Complete the kinematics of the branching by filling
+  //               the eventual missing bits of the ShowerKinematics
+  //               object created, and already at least partially filled,
+  //               by  chooseForwardBranching  or  chooseBackwardBranching.
+  //               Notice that this part could remain empty if such 
+  //               ShowerKinematics object is already completely filled.
 
-  if ( particle.momentum().m2() > 0 ) {  // PUT SOME MEANINGFUL CONDITION
-    
-    if ( sudakov && sudakov->splitFun() ) {
-      tSplitFun1to2Ptr sudaSplitFun1to2 = 
-	dynamic_ptr_cast< tSplitFun1to2Ptr >( sudakov->splitFun() );
-      if ( sudaSplitFun1to2 ) {
-
-	Energy2 qt2 = sudaSplitFun1to2->qtilde2(); 
-	double z = sudaSplitFun1to2->z();
-	double phi = sudaSplitFun1to2->phi();
-	// ***ACHTUNG*** we'll come back and fix it. 
-	// We have to create a ShowerKinematics object
-
-	Lorentz5Momentum p = particle.momentum();
-	Lorentz5Momentum n = Lorentz5Momentum( - p.vect(), p.vect().mag() );
-
-	return new_ptr(FS_QtildaShowerKinematics1to2( p, n, p.mass()));
-
-      }
-    }
-
-    return new_ptr( FS_QtildaShowerKinematics1to2() );  // PASS PARAMETERS
-  } else {
-    return new_ptr( IS_QtildaShowerKinematics1to2() );  // PASS PARAMETERS
-  }
-
+  return isOK;
 }
  
 

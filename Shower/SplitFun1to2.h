@@ -122,9 +122,6 @@ private:
   long _id2;
   Energy _m2;
 
-  Energy2 _qtilde2;
-  double _z; 
-  double _phi; 
 };
 
 }

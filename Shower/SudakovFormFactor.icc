@@ -7,6 +7,9 @@
 namespace Herwig {
 
 inline SudakovFormFactor::SudakovFormFactor() :
+  _q( Energy() ),
+  _z( 0.0 ),
+  _phi ( 0.0 ),
   _minScale( Energy() ),
   _maxScale( Energy() )
 {}
@@ -14,6 +17,9 @@ inline SudakovFormFactor::SudakovFormFactor() :
 
 inline SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
   : Pythia7::HandlerBase(x),
+	     _q( x._q ),
+	     _z( x._z ),
+	     _phi( x._phi ),
 	     _splitFun( x._splitFun ),
 	     _alpha( x._alpha ),
 	     _minScale( x._minScale ),
@@ -24,7 +30,10 @@ inline SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
 inline SudakovFormFactor::SudakovFormFactor 
 (const SplitFunPtr inputSplitFun, const tShowerAlphaPtr inputShowerAlpha, 
  const Energy inputMinScale, const Energy inputMaxScale) 
-  : _splitFun( inputSplitFun ),
+  : _q( Energy() ),
+    _z( 0.0 ),
+    _phi( 0.0 ),
+    _splitFun( inputSplitFun ),
     _alpha( inputShowerAlpha ),
     _minScale( inputMinScale ), 
     _maxScale( inputMaxScale )
@@ -40,6 +49,14 @@ inline tShowerAlphaPtr SudakovFormFactor::alpha() const {
   return _alpha;
 }
 
+
+inline double SudakovFormFactor::z() const {
+  return _z;
+}
+
+inline double SudakovFormFactor::phi() const {
+  return _phi;
+}
 
 //----------------------------------------------------------------------
 

@@ -67,8 +67,8 @@ public:
   // and only after the jet kinematics reconstruction.
   // (performed by the <!class>KinematicsReconstructor<!!class> class).
 
-  inline Energy qtilda() const;
-  inline void qtilda( const Energy inputQtilda );
+  inline Energy qtilde() const;
+  inline void qtilde( const Energy inputQtilde );
   inline double z() const;
   inline void z( const double inputZ );
   inline double phi() const;
@@ -109,7 +109,7 @@ private:
   QtildaShowerKinematics1to2 & operator=(const QtildaShowerKinematics1to2 &);
   //  Private and non-existent assignment operator.
 
-  Energy _qtilda;
+  Energy _qtilde;
   double _z;
   double _phi;
   double _alpha;

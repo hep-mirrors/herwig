@@ -11,14 +11,6 @@
 // It also treats the special case of the showering of a time-like decaying particle, <BR>
 // in which the emissions have reversed angular ordering. <BR>
 //
-// ***LOOKHERE*** At the moment at least, the class has no member data
-//                and it has only one method. So it could be easily
-//                replaced with a method in <!id>InsideRangeShowerEvolver<!!id>.
-//                The same of course for <!id>BackwardShowerEvolver<!!id> class.
-//                However, we could end up with a too giant class
-//                <!id>InsideRangeShowerEvolver<!!id>, so I prefer to keep
-//                the classes <!id>ForwardShowerEvolver<!!id> and <!id>BackwardShowerEvolver<!!id>.
-//
 // CLASSDOC SUBSECTION See also:
 //
 // <a href="http:SplittingGenerator.html">SplittingGenerator.h</a>, <BR>

@@ -14,6 +14,7 @@
 #include "Pythia7/Repository/EventGenerator.h"
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
+#include "SplitFun1to2.h"
 
 using namespace Herwig;
 
@@ -85,30 +86,77 @@ timeLikeShower( tPartCollHdlPtr ch,
 
     //***LOOKHERE***  update rhoD matrix of  part ;
 
-    pair<Energy, tSudakovFormFactorPtr> pairScaleSudakov = 
+    pair<ShoKinPtr, tSudakovFormFactorPtr> pairShowerKinSudakov = 
       _pointerSplittingGenerator->chooseForwardBranching(ch, *part, specialDecay);
 
     //***LOOKHERE***  accept it according to the  showerConstrainer  and soft correction;
 
-    if ( pairScaleSudakov.first == Energy()  ||  
-	 pairScaleSudakov.second == tSudakovFormFactorPtr() ) {
+    if ( pairShowerKinSudakov.first == ShoKinPtr()  ||  
+	 pairShowerKinSudakov.second == tSudakovFormFactorPtr() ) {
 
       //***LOOKHERE*** rhoD propagation;
 
     } else {
 
       hasEmitted = true;
-      ShoKinPtr shoKin = _pointerSplittingGenerator->
-	generateBranchingKinematics(ch, *part, pairScaleSudakov.first, 
-				    pairScaleSudakov.second);
-      //FINISH  pairScaleSudakov.second->splitFun()->idEmitter()
-      //FINISH pairScaleSudakov.second->splitFun()->massEmitter()
-		       
-      // create the new ShowerParticles and then call the  part
-      //      method  addChildren( children );
-      // store them into both collecShoPar and particlesYetToShower;
-      // store also the shoKin;
-      
+      if ( _pointerSplittingGenerator->
+	   generateBranchingKinematics(ch, *part, pairShowerKinSudakov.first, 
+				       pairShowerKinSudakov.second) ) {
+
+	// Assign the splitting function and the shower kinematics
+	// to the emitting particle.
+	part->showerKinematics( pairShowerKinSudakov.first );
+	part->splitFun( pairShowerKinSudakov.second->splitFun() ); 
+
+        // For the time being we are considering only 1->2 branching
+	tSplitFun1to2Ptr splitFun = 
+	  dynamic_ptr_cast< tSplitFun1to2Ptr >( pairShowerKinSudakov.second->splitFun() );
+	if ( splitFun ) {	  
+
+          // Create the ShowerParticle objects for the two children
+	  // of the emitting particle; set the parent/child relationship;
+	  // add them to the  collecShoPar  and  particlesYetToShower  collections.
+	  // Notice that the momenta of the shower products is not set: only
+	  // at the end of the showering, during the kinematics reconstruction
+	  // such momenta are calculated and set.
+	  ShoParPtr showerProduct1 = new_ptr( ShowerParticle() );
+	  ShoParPtr showerProduct2 = new_ptr( ShowerParticle() );
+	  showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
+	  showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
+
+	  if ( splitFun->interactionType() == ShowerIndex::QCD ) {
+
+	    //***LOOKHERE*** In the case the splitting is of QCD type
+            //               the colour or anticolour line for the two
+	    //               children must be set. A part the case of
+            //               a gluon splitting in quark-antiquark, a new
+	    //               colour line must be created...
+            //               Probably the SplitFun1to2 class should have
+	    //               some methods that provide information about
+	    //               the colour connection about the emitting
+	    //               particle and the children products...
+            //  
+            //               showerProduct1->setAntiColourLine(...);
+            //               showerProduct1->setColourLine(...);
+            //               showerProduct2->setAntiColourLine(...);
+            //               showerProduct2->setColourLine(...);
+
+	  }
+
+          part->addChild( showerProduct1 );
+          part->addChild( showerProduct2 );
+	  collecShoPar.insert( collecShoPar.end(), showerProduct1 );
+	  collecShoPar.insert( collecShoPar.end(), showerProduct2 );
+          particlesYetToShower.push_back( showerProduct1 );
+          particlesYetToShower.push_back( showerProduct2 );
+         
+	}
+      } else {
+	// Something goes wrong: Skip the event!
+        throw Exception("ForwardShowerEvolver::timeLikeShower "
+                        "***Skip event: problem in the shower kinematics***",
+                        Exception::eventerror);            
+      }
     }
 
   } while ( ! particlesYetToShower.empty() );

@@ -9,7 +9,7 @@ namespace Herwig {
 
 inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2() 
   : ShowerKinematics(),
-    _qtilda( Energy() ),
+    _qtilde( Energy() ),
     _z( 0.0 ),
     _phi( 0.0 ),
     _alpha( 0.0 ),
@@ -26,7 +26,7 @@ inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2()
 
 inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 & x)
   : ShowerKinematics(x), 
-  _qtilda( x._qtilda ),
+  _qtilde( x._qtilde ),
   _z( x._z ),
   _phi( x._phi ),
   _alpha( x._alpha ),
@@ -45,7 +45,7 @@ inline QtildaShowerKinematics1to2::
 QtildaShowerKinematics1to2( const Lorentz5Momentum & p, const Lorentz5Momentum & n,
 			    const Energy inputOnShellMass ) 
   : ShowerKinematics(),
-    _qtilda( Energy() ),
+    _qtilde( Energy() ),
     _z( 0.0 ),
     _phi( 0.0 ),
     _alpha( 1.0 ),      // <--- Note
@@ -60,11 +60,11 @@ QtildaShowerKinematics1to2( const Lorentz5Momentum & p, const Lorentz5Momentum &
 {}
 
 
-inline Energy QtildaShowerKinematics1to2::qtilda() const {
-  return _qtilda;
+inline Energy QtildaShowerKinematics1to2::qtilde() const {
+  return _qtilde;
 }
-inline void QtildaShowerKinematics1to2::qtilda( const Energy inputQtilda ) {
-  _qtilda = inputQtilda;
+inline void QtildaShowerKinematics1to2::qtilde( const Energy inputQtilde ) {
+  _qtilde = inputQtilde;
 }
 
 inline double QtildaShowerKinematics1to2::z() const {
