@@ -26,7 +26,7 @@ using ThePEG::Helicity::LorentzTensor;
  *  It uses the DecayIntegrator class for the phase space and implements the 
  *  me2 member of the DecayIntegrator to give the matrix element as
  *
- *  \f[ \sum_{\rm spins}|\mathcal{M}|^2 = \sum_{\rm spins} \epsilon^{\mu\nu} T_{\mu\nu} \f]
+ *  \f[ \mathcal{M} =  \epsilon^{\mu\nu} T_{\mu\nu} \f]
  *
  *  where \f$\epsilon^{\mu\nu}\f$ is the polarization tensor of the decaying tensor
  *  meson and \f$J_{\mu\nu}\f$ is the hadronic tensor supplied by the
