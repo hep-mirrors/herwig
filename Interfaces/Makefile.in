@@ -1,8 +1,8 @@
-LIBOBJECTS := libHwAmegic.so libHwKtJet.so
+OBJECTS = libHwAmegic.so libHwKtJet.so
 
 SOURCES := $(wildcard *.cc)
 
-OBJECTS := $(SOURCES:.cc=.o)
+LIBOBJECTS := $(SOURCES:.cc=.o)
 
 HWLIBS = -lHwUtils -lHwHadronization -lHwShower -lHwDecay -lHwME
 
@@ -20,11 +20,16 @@ AmegicInterface.o: AmegicInterface.cc
 
 KtJetInterface.o: KtJetInterface.cc
 	$(CXX) -c $(CXXEXT) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(KTJETINCLUDES) $<
+
+INCLUDEFILES := $(wildcard *.*h*) $(wildcard *.icc) $(wildcard *.tcc)
+LIBFILES := $(OBJECTS)
+INCLUDEDIR = Interfaces
+
 include ../Config/Makefile.common
 
 CXXDEBUGFLAG = -g 
 
-lib: $(LIBOBJECTS)
+lib: $(OBJECTS)
 
 %.exe:
 

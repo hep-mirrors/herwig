@@ -6,9 +6,9 @@ PROGS   := Herwig testKtJet
 
 HWLIBS = -lHwHadronization -lHwUtils -lHwDecay -lHwShower -lHwME -lHwWaveFunction -lUA5 -lHwCorrelations -lHwVertex -lHwTVertex -lHwVVertex -lHwSVertex -lHwStandardModel -lHwSMVertex -lHwRSVertex -lHwRSModel -lHwPDT -lHwVMDecay -lHwTMDecay  -lHwSMDecay -lHwWeakCurrent -lHwFormFactor -lHwTauDecay -lHwBaryonDecay -lHwPerturbativeDecay
 
-KTJETPATH = -I@KTJETPATH@
+KTJETPATH = -I***No KtJet path set...won't build KtJet interface***
 
-KTJETLIBS = -lHwKtJet @KTJETLIBS@
+KTJETLIBS = -lHwKtJet -L***No KtJet path set...won't build KtJet interface***/lib -lKtEvent
 
 .PHONY: Lib
 
@@ -19,6 +19,22 @@ all: LEP testKtJet
 
 include ../Config/Makefile.common
 
+install-local: Herwig++ HerwigDefaults.rpo
+	mkdir -p $(INSTALLSHARE)
+	if [ ! -z "$(INSTALLSHARE)/PDF" ]; then \
+	   mkdir -p $(INSTALLSHARE)/PDF; \
+	   cp -r ../PDF/mrst $(INSTALLSHARE)/PDF; \
+	fi
+	cp LEP.in LEPbb.in LHC.in $(INSTALLSHARE) 
+	cp Decays.in Hadronization.in HerwigParticles.in Hw64Decays.in \
+	   Shower.in ThePEGParticles.in UnderlyingEvent.in $(INSTALLSHARE)
+	sed -e s:../PDF/mrst:$(INSTALLSHARE)/PDF/mrst:g HerwigDefaults.in > $(INSTALLSHARE)/HerwigDefaults.in
+	cp HerwigDefaults.rpo $(INSTALLSHARE)
+	ln -sfn $(INSTALLLIB) $(PREFIX)/lib/Herwig++/current
+	mkdir -p $(INSTALLBIN)
+	cp Herwig++ $(INSTALLBIN)
+	chmod 755 $(INSTALLBIN)/Herwig++
+
 CXXDEBUGFLAG = -g
 
 check: LEP
@@ -26,7 +42,7 @@ check: LEP
 lib:
 
 LEP: Herwig++
-	Herwig++ init; Herwig++ read LEP.in
+	export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(RPATH) ; ./Herwig++ init ; ./Herwig++ read LEP.in
 
 Lib:
 	cd .. ; $(MAKE) -$(MAKEFLAGS) lib
@@ -38,11 +54,13 @@ $(PROGS): ../Hadronization/libHwHadronization.so ../Utilities/libHwUtils.so \
 	../Decay/libHwDecay.so
 
 Herwig++: Herwig++.o
-	export LD_RUN_PATH=$(RPATH); $(CXX) $(CXXEXT) $(LINKFLAGS) $(CXXDEBUGFLAG) -o $@ $< -L$(SRCDIR)/lib $(HWLIBS) $(LIBS)
+	$(CXX) $(CXXEXT) $(LINKFLAGS) $(CXXDEBUGFLAG) -o $@ $< -L$(SRCDIR)/lib $(HWLIBS) $(LIBS)
 
 testKtJet: testKtJet.o
-	export LD_RUN_PATH=$(RPATH); $(CXX) $(CXXEXT) $(LINKFLAGS) $(CXXDEBUGFLAG) -o $@ $< -L$(SRCDIR)/lib $(HWLIBS) $(LIBS) $(KTJETLIBS)
+	$(CXX) $(CXXEXT) $(LINKFLAGS) $(CXXDEBUGFLAG) -o $@ $< -L$(SRCDIR)/lib $(HWLIBS) $(LIBS) $(KTJETLIBS)
 
 testKtJet.o: testKtJet.cc
 	$(CXX) -c $(CXXFLAGS) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(CXXEXT) $(KTJETPATH) $<  
 
+HerwigDefaults.rpo: HerwigDefaults.in Herwig++
+	export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(RPATH) ; ./Herwig++ init 

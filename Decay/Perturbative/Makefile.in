@@ -4,6 +4,10 @@ SOURCES := $(wildcard *.cc)
 
 LIBOBJECTS := $(SOURCES:.cc=.o)
 
+INCLUDEFILES := $(wildcard *.*h*) $(wildcard *.icc) $(wildcard *.tcc)
+LIBFILES := $(OBJECTS)
+INCLUDEDIR = Decay/Perturbative
+
 include ../../Config/Makefile.common
 
 $(OBJECTS): $(LIBOBJECTS)

@@ -30,6 +30,18 @@ THEPEGPATH = @THEPEGPATH@
 
 THEPEGLIB = @THEPEGLIB@
 
+PREFIX = @prefix@
+
+INCLUDEINSTALL = $(PREFIX)/include
+
+INSTALLINCLUDE = $(PREFIX)/include/Herwig++
+
+INSTALLSHARE = $(PREFIX)/share/Herwig++
+
+INSTALLLIB = $(PREFIX)/lib/Herwig++/$(VERSION)
+
+INSTALLBIN = $(PREFIX)/bin
+
 INCLUDES = -I$(SRCDIR)/.. -I$(THEPEGPATH)/include -I$(CLHEPPATH)/include
 
 DLLIB = -ldl
@@ -69,5 +81,11 @@ tagsfile:
 
 clean:
 	rm -f $(CHECKPROGS) $(PROGS) $(LIBRARIES) *.o *.so a.out 
+
+install: install-local
+	if [ ! -z "$(INCLUDEFILES)" ]; then mkdir -p $(INSTALLINCLUDE)/$(INCLUDEDIR); cp $(INCLUDEFILES) $(INSTALLINCLUDE)/$(INCLUDEDIR); fi
+	if [ ! -z "$(LIBFILES)" ]; then mkdir -p $(INSTALLLIB); cp $(LIBFILES) $(INSTALLLIB); fi
+
+install-local:
 
 

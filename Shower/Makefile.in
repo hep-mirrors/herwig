@@ -6,6 +6,10 @@ HEADERS := $(wildcard *.h)
 
 LIBOBJECTS := $(SOURCES:.cc=.o)
 
+INCLUDEFILES := $(wildcard *.*h*) $(wildcard *.icc) $(wildcard *.tcc)
+LIBFILES := $(OBJECTS)
+INCLUDEDIR = Shower
+
 include ../Config/Makefile.common
 
 $(OBJECTS): $(LIBOBJECTS)
