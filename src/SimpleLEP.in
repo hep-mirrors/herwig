@@ -14,16 +14,27 @@ cd /Defaults/Handlers/Shower
 set theRhoDMatrixPropagator:OnOffRhoDPropagationMode 0
 set theShowerConstrainer:OnOffMultiScaleShowerMode 0
 set theShowerConstrainer:OnOffDecayBeforeShowerMode 0
-set theShowerConstrainer:CutoffQCDMassScale 1.0*GeV
-set theShowerConstrainer:CutoffQEDMassScale 0.0005*GeV
+set theShowerConstrainer:CutoffQCDMassScale 0.75*GeV
+set theShowerConstrainer:CutoffQEDMassScale 0.75*GeV
 set theShowerConstrainer:CutoffEWKMassScale 91.0*GeV
+set theShowerConstrainer:cutoffKinScale 0.4*GeV
 set theMECorrections:OnOffMECorrectionMode 0
 set theMECorrections:OnOffComposeMECorrectionMode 0
 set theDrellYanMECorrection:OnOffMECorrectionMode 0
 set theIS_ShowerAlphaQCD:ScaleFactor 1.0
+#set theIS_ShowerAlphaQCD:ShowerConstrainer theShowerConstrainer
 set theFS_ShowerAlphaQCD:ScaleFactor 1.0
+#set theFS_ShowerAlphaQCD:ShowerConstrainer theShowerConstrainer
 set theIS_ShowerAlphaQED:ScaleFactor 1.0
+#set theIS_ShowerAlphaQED:ShowerConstrainer theShowerConstrainer
 set theFS_ShowerAlphaQED:ScaleFactor 1.0
+set theIS_ShowerAlphaQCD:NPAlphaS 2
+set theFS_ShowerAlphaQCD:NPAlphaS 2
+set theIS_ShowerAlphaQCD:Qmin 0.630882*GeV
+set theFS_ShowerAlphaQCD:Qmin 0.630882*GeV
+#set theIS_ShowerAlphaQCD:Qmin 12.345*GeV
+#set theFS_ShowerAlphaQCD:Qmin 12.345*GeV
+#set theFS_ShowerAlphaQED:ShowerConstrainer theShowerConstrainer
 set theSplittingGenerator:OnOffQCDinteractionMode 1
 set theSplittingGenerator:OnOffQEDinteractionMode 1
 set theSplittingGenerator:OnOffEWKinteractionMode 0
@@ -45,8 +56,8 @@ set theSplittingGenerator:OnOffGtoGGsplittingMode 1
 set theSplittingGenerator:OnOffGtoUUbarsplittingMode 1
 set theSplittingGenerator:OnOffGtoDDbarsplittingMode 1
 set theSplittingGenerator:OnOffGtoSSbarsplittingMode 1
-set theSplittingGenerator:OnOffGtoCCbarsplittingMode 0
-set theSplittingGenerator:OnOffGtoBBbarsplittingMode 0
+set theSplittingGenerator:OnOffGtoCCbarsplittingMode 1
+set theSplittingGenerator:OnOffGtoBBbarsplittingMode 1
 # only for test purposes (no mass implemented in GtoQQbarSplitfun!):
 set theSplittingGenerator:OnOffGtoTTbarsplittingMode 1
 set theSplittingGenerator:OnOffUtoUGammasplittingMode 1
@@ -78,11 +89,12 @@ set theHadronsSelector:SngWt      1.0
 set theHadronsSelector:DecWt      1.0
 #
 cd /Defaults/Generators
-set SimpleLEPGenerator:EventHandler:MinWeight 0.2
+#set SimpleLEPGenerator:EventHandler:MinWeight 0.2
 set SimpleLEPGenerator:NumberOfEvents 1000000
 #set SimpleLEPGenerator:RandomNumberGenerator:Seed 12345678 
 set SimpleLEPGenerator:DebugLevel 1
 set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:MaxErrors 100
 set SimpleLEPGenerator:Strategy /Defaults/Pythia7Strategy
 set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
 set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
