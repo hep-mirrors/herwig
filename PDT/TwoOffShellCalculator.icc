@@ -1,0 +1,56 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TwoOffShellCalculator class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline TwoOffShellCalculator::TwoOffShellCalculator() {}
+
+inline TwoOffShellCalculator::TwoOffShellCalculator(const TwoOffShellCalculator & x)
+  : WidthCalculatorBase(x),_themass(x._themass),_minmass(x._minmass),
+    _mother(x._mother), _oneoffwidth(x._oneoffwidth), _massptr(x._massptr)
+{
+  _Integrator = new GaussianIntegral(0.,1.);
+  _integrand  = new 
+    TwoOffShellIntegrand(this,_massptr->nominalMass()*_massptr->nominalMass(),
+			 _massptr->nominalWidth()*_massptr->nominalMass());
+}
+
+inline TwoOffShellCalculator::TwoOffShellCalculator(int inloc,
+						    WidthCalculatorBasePtr inwidth, 
+						    GenericMassGeneratorPtr inmass,
+						    Energy inmin, Energy inother)
+{
+  _themass=inloc;
+  _minmass=inmin;
+  _mother=inother;
+  _oneoffwidth=inwidth;
+  _massptr=inmass;
+  _Integrator = new GaussianIntegral(0.,1.);
+  _integrand  = new 
+    TwoOffShellIntegrand(this,_massptr->nominalMass()*_massptr->nominalMass(),
+			 _massptr->nominalWidth()*_massptr->nominalMass());
+}
+
+inline void TwoOffShellCalculator::resetMass(int id,Energy inmass) 
+{_oneoffwidth->resetMass(id,inmass);}
+
+inline Energy TwoOffShellCalculator::getMass(const int id) const
+{return _oneoffwidth->getMass(id);}
+
+inline Energy TwoOffShellCalculator::otherMass(const int id) const
+{return _oneoffwidth->otherMass(id);}
+
+// the integrand
+inline  Energy TwoOffShellCalculator::dGamma(Energy min)
+{
+  _oneoffwidth->resetMass(_themass,min);
+  double wgt = (_oneoffwidth->partialWidth(_scale));
+  wgt*=(_massptr->weight(min));
+  return wgt;
+}
+
+}

@@ -1,0 +1,45 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TwoBodyAllOnCalculator class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr inwidth, 
+					       int inmode, Energy inm1, Energy inm2)
+{
+   _widthgen=inwidth;
+   _mode=inmode;
+   _mass1=inm1;
+   _mass2=inm2;
+}
+
+inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator() {}
+
+inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator(const TwoBodyAllOnCalculator & x)
+  :  WidthCalculatorBase(x),_mode(x._mode), _mass1(x._mass1),
+     _mass2(x._mass2), _widthgen(x._widthgen) {}
+
+inline void TwoBodyAllOnCalculator::resetMass(int ipart,Energy mass)
+{
+  if(ipart==1){_mass1=mass;}
+  else if(ipart==2){_mass2=mass;}
+  else{cerr << "unknown particle" << endl;}
+}
+
+inline Energy TwoBodyAllOnCalculator::getMass(const int ipart) const
+{
+  if(ipart==1){return _mass1;}
+  else if(ipart==2){return _mass2;}
+  else{cerr << "unknown particle" << endl;return 0.;}
+}
+
+inline Energy TwoBodyAllOnCalculator::otherMass(const int ipart) const
+{
+  if(ipart==1){return _mass2;}
+  else if(ipart==2){return _mass1;}
+  else{cerr << "unknown particle" << endl;return 0.;}
+}
+}

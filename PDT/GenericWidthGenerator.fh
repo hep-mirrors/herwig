@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GenericWidthGenerator class.
+//
+#ifndef ThePEG_GenericWidthGenerator_FH
+#define ThePEG_GenericWidthGenerator_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class GenericWidthGenerator;
+ThePEG_DECLARE_CLASS_POINTERS(GenericWidthGenerator,GenericWidthGeneratorPtr);
+
+}
+
+#endif

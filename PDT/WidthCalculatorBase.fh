@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the WidthCalculatorBase class.
+//
+#ifndef HERWIG_WidthCalculatorBase_FH
+#define HERWIG_WidthCalculatorBase_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class WidthCalculatorBase;
+ThePEG_DECLARE_CLASS_POINTERS(WidthCalculatorBase,WidthCalculatorBasePtr);
+
+}
+
+#endif

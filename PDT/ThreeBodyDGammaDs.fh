@@ -1,0 +1,15 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ThreeBodyDGammaDs class.
+//
+#ifndef HERWIG_ThreeBodyDGammaDs_FH
+#define HERWIG_ThreeBodyDGammaDs_FH
+
+namespace ThePEG {
+
+class ThreeBodyDGammaDs;
+ThePEG_DECLARE_CLASS_POINTERS(ThreeBodyDGammaDs,ThreeBodyDGammaDsPtr);
+
+}
+
+#endif

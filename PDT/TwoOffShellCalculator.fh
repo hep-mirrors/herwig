@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the TwoOffShellCalculator class.
+//
+#ifndef HERWIG_TwoOffShellCalculator_FH
+#define HERWIG_TwoOffShellCalculator_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class TwoOffShellCalculator;
+ThePEG_DECLARE_CLASS_POINTERS(TwoOffShellCalculator,TwoOffShellCalculatorPtr);
+
+}
+
+#endif

@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the OneOffShellCalculator class.
+//
+#ifndef HERWIG_OneOffShellCalculator_FH
+#define HERWIG_OneOffShellCalculator_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class OneOffShellCalculator;
+ThePEG_DECLARE_CLASS_POINTERS(OneOffShellCalculator,OneOffShellCalculatorPtr);
+
+}
+
+#endif

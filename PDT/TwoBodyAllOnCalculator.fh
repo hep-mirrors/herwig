@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the TwoBodyAllOnCalculator class.
+//
+#ifndef HERWIG_TwoBodyAllOnCalculator_FH
+#define HERWIG_TwoBodyAllOnCalculator_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class TwoBodyAllOnCalculator;
+ThePEG_DECLARE_CLASS_POINTERS(TwoBodyAllOnCalculator,TwoBodyAllOnCalculatorPtr);
+
+}
+
+#endif

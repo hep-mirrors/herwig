@@ -1,0 +1,142 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GenericWidthGenerator class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline GenericWidthGenerator::GenericWidthGenerator() 
+{
+  // default paramter settings
+  _initialize=false;
+  _BRnorm=true;
+  _BRminimum=0.01;
+  _npoints=50;
+  _mass=0.;
+  _prefactor=0.;
+}
+
+inline GenericWidthGenerator::GenericWidthGenerator(const GenericWidthGenerator & x)
+  : WidthGenerator(x), _theParticle(x._theParticle), _decaymodes(x._decaymodes),
+    _mass(x._mass), _prefactor(x._prefactor), _MEtype(x._MEtype), 
+    _MEcode(x._MEcode),_MEmass1(x._MEmass1), _MEmass2(x._MEmass2), 
+    _MEcoupling(x._MEcoupling), _modeon(x._modeon), _intermasses(x._intermasses),
+    _interwidths(x._interwidths),_noofentries(x._noofentries), 
+    _initialize(x._initialize), _BRnorm(x._BRnorm), _npoints(x._npoints),
+    _interpolators(x._interpolators), _BRminimum(x._BRminimum) {}
+
+inline IBPtr GenericWidthGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr GenericWidthGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void GenericWidthGenerator::doupdate() throw(UpdateException) {
+  WidthGenerator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void GenericWidthGenerator::dofinish() {
+  WidthGenerator::dofinish();
+}
+
+inline void GenericWidthGenerator::doinitrun() {
+  WidthGenerator::doinitrun();
+  setInterpolators();
+}
+
+inline void GenericWidthGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  WidthGenerator::rebind(trans);
+}
+
+inline IVector GenericWidthGenerator::getReferences() {
+  IVector ret = WidthGenerator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+  
+inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const
+ {return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);}
+
+
+inline Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const
+{
+   Energy gamma;
+   if(_MEtype[imode]==0){gamma=_MEcoupling[imode]*_theParticle->width();}
+   else if(_MEtype[imode]==1){gamma=partial2BodyWidth(imode,q);}
+   else if(_MEtype[imode]==2){gamma=(*_interpolators[imode])(q);}
+   else{cout << "Unknown type of mode " << _MEtype[imode] << endl;gamma=0.;}
+   return gamma;
+}
+
+inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
+						       Energy m2) const
+ {
+   if(q<m1+m2){return 0.;}
+   // calcluate the decay momentum
+   Energy q2=q*q;
+   Energy m02=_mass*_mass;
+   Energy m12=m1*m1, m22=m2*m2;
+   Energy pcm = 0.5*sqrt(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q;
+   double pcm2=pcm*pcm;
+   Energy gam=0.;
+   // V -> P P
+   if(_MEcode[imode]==0)
+     {gam=pcm2*pcm/6./pi/q2;}
+   // V -> P V
+   else if(_MEcode[imode]==1)
+     {gam=pcm2*pcm/12./pi/m02;}
+   // V -> f fbar
+   else if(_MEcode[imode]==2)
+     {gam=pcm/12./pi*(q2*(2.*q2-m12-m22+6.*m1*m2)-(m12-m22)*(m12-m22))/q2/q2;}
+   // P -> VV
+   else if(_MEcode[imode]==3)
+     {gam=0.25*pcm2*pcm/m02/pi;}
+   // A -> VP 
+   else if(_MEcode[imode]==4)
+     {gam = pcm*(2.*pcm2+3.*m12)/24./pi/m02;}
+   // V -> VV
+   else if(_MEcode[imode]==5)
+     {gam = pcm2*pcm/3./pi/m02*(1.+m12/m02+m22/m02);}
+   // S -> SS
+   else if(_MEcode[imode]==6)
+     {gam = pcm/8./pi/q2*m02;}
+   // T -> PP
+   else if(_MEcode[imode]==7)
+     {gam = pcm2*pcm2*pcm/60./pi/q2/m02;}
+   // T -> VP
+   else if(_MEcode[imode]==8)
+     {gam = pcm2*pcm2*pcm/40./pi/m02/m02;}
+   // T -> VV
+   else if(_MEcode[imode]==9)
+     {gam = pcm/6./pi/q2/q2/m02*(6.*q2*(pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
+			     -10.*(m12-m22)*(m12-m22)*pcm2);}
+   // P -> PV
+   else if(_MEcode[imode]==10)
+     {gam = pcm*pcm2/2./pi/m22;}
+   // P -> PT
+   else if(_MEcode[imode]==11)
+     {gam=pcm2*pcm2*pcm/12./pi*q2/m12/m12/m02;}
+   return gam*_MEcoupling[imode]*_MEcoupling[imode];
+ }
+
+}

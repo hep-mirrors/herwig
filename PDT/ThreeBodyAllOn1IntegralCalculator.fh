@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ThreeBodyAllOn1IntegralCalculator class.
+//
+#ifndef HERWIG_ThreeBodyAllOn1IntegralCalculator_FH
+#define HERWIG_ThreeBodyAllOn1IntegralCalculator_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ThreeBodyAllOn1IntegralCalculator;
+ThePEG_DECLARE_CLASS_POINTERS(ThreeBodyAllOn1IntegralCalculator,ThreeBodyAllOn1IntegralCalculatorPtr);
+
+}
+
+#endif
