@@ -1,5 +1,5 @@
 SUBDIRS = Config Utilities Decay Hadronization Shower \
-	  MatrixElement src
+	  MatrixElement PDF src
 #Interfaces \
 
 DISTFILES = README Makefile configure configure.in
