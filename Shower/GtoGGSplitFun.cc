@@ -94,8 +94,8 @@ void GtoGGSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
     firstProductShoColinePair.second = secondProductShoColinePair.first 
       = new_ptr( ShowerColourLine() );    
   } else {
-    firstProductShoColinePair.second = parentShoColinePair.first;
-    secondProductShoColinePair.first = parentShoColinePair.second;
+    secondProductShoColinePair.first = parentShoColinePair.first;
+    firstProductShoColinePair.second = parentShoColinePair.second;
     firstProductShoColinePair.first = secondProductShoColinePair.second 
       = new_ptr( ShowerColourLine() );    
   }
