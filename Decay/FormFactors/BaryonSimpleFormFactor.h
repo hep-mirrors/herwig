@@ -250,7 +250,7 @@ template <>
 struct ClassTraits<Herwig::BaryonSimpleFormFactor>
   : public ClassTraitsBase<Herwig::BaryonSimpleFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++:@BaryonSimpleFormFactor"; }
+  static string className() { return "Herwig++::BaryonSimpleFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
