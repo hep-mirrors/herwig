@@ -99,10 +99,6 @@ public:
   // The indefinite integral of the overestimated splitting function
   // <!id>overestimateIntegratedFun(z)<!!id> and its inverse. 
 
-  inline Energy2 qtilde2() const; 
-  inline double z() const; 
-  inline double phi() const; 
-
 public:
 
   static void Init();
