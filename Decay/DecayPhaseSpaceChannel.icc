@@ -1,0 +1,149 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DecayPhaseSpaceChannel class.
+//
+// Author: Peter Richardson
+// 
+
+namespace Herwig {
+using namespace ThePEG;
+
+// default constructor
+inline DecayPhaseSpaceChannel::DecayPhaseSpaceChannel()  {}
+  
+inline DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(const DecayPhaseSpaceChannel & x)
+  : Interfaced(x) , _intpart(x._intpart), _jactype(x._jactype), _intmass(x._intmass),
+    _intwidth(x._intwidth), _intpower(x._intpower), _intdau1(x._intdau1), 
+    _intdau2(x._intdau2), _intext(x._intext), _extpart(x._extpart), _extmass(x._extmass)
+  {}
+  
+// clone method
+inline IBPtr DecayPhaseSpaceChannel::clone() const {
+  return new_ptr(*this);
+}
+  
+// full clone method
+inline IBPtr DecayPhaseSpaceChannel::fullclone() const {
+  return new_ptr(*this);
+}
+
+// update method  
+inline void DecayPhaseSpaceChannel::doupdate() throw(UpdateException) {
+  Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+  //  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+  //  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+  //  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+  //  touch()
+  // Touch if anything has changed.
+}
+ 
+// do finish method 
+inline void DecayPhaseSpaceChannel::dofinish() {
+  Interfaced::dofinish();
+}
+  
+// initrun method
+inline void DecayPhaseSpaceChannel::doinitrun() {
+  Interfaced::doinitrun();
+}
+  
+// rebonid method  
+inline void DecayPhaseSpaceChannel::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Interfaced::rebind(trans);
+}
+  
+// get references method  
+inline IVector DecayPhaseSpaceChannel::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+// generate the mass of an intermediate
+inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper)
+{
+  Energy mass=0;
+  Energy mres = _intmass[ires]; 
+  Energy wres = _intwidth[ires];
+  Energy2 mres2= mres*mres;
+  Energy2 wmres= mres*wres;
+  if(lower>upper)
+    {cerr << "DecayPhaseSpaceChannel::generateMass not allowed" << endl;}
+  // use a Breit-Wigner
+  if(_jactype[ires]==0)
+    {
+      double rhomin = atan((lower*lower-mres2)/wmres);
+      double rhomax = atan((upper*upper-mres2)/wmres)-rhomin;
+      double rho = rhomin+rhomax*CurrentGenerator::current().rnd();
+      mass = sqrt(mres2+wmres*tan(rho));
+    }
+  else
+    {cerr<< "Unknown type of Jacobian in DecayPhaseSpaceChannel::generateMass" << endl;}
+  return mass;
+}
+ 
+// return the weight for a given resonance
+inline double DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
+						 Energy lower,Energy upper)
+{
+  Energy mres = _intmass[ires]; 
+  Energy wres = _intwidth[ires];
+  Energy2 mres2= mres*mres;
+  Energy2 wmres= mres*wres;
+  double wgt=0.;
+  if(lower>upper) 
+    {cerr << "DecayPhaseSpaceChannel::generateMass not allowed" << endl;} 
+  // use a Breit-Wigner 
+  if(_jactype[ires]==0) 
+    { 
+      double rhomin = atan((lower*lower-mres2)/wmres); 
+      double rhomax = atan((upper*upper-mres2)/wmres)-rhomin;
+      wgt = wmres/rhomax/((moff*moff-mres2)*(moff*moff-mres2)+wmres*wmres);
+    } 
+  else 
+    {cerr<< "Unknown type of Jacobian in DecayPhaseSpaceChannel::massWeight" << endl;} 
+  return wgt;
+}
+
+// return the external particles
+inline PDVector DecayPhaseSpaceChannel::externalParticles() const {return _extpart;}
+
+
+// add a new intermediate particle
+inline void DecayPhaseSpaceChannel::addIntermediate(PDPtr part,int jac,double power,
+						    int dau1,int dau2)
+{
+  _intpart.push_back(part);
+  _jactype.push_back(jac);
+  _intpower.push_back(power);
+  _intdau1.push_back(dau1); 
+  _intdau2.push_back(dau2);
+}
+
+// set the external particles
+inline void DecayPhaseSpaceChannel::setExternal(PDVector in) {_extpart=in;}
+
+// reset the mass and width of an intermediate particle
+inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,Energy width)
+{
+  int idin=part->id();
+  for(unsigned int ix=0;ix<_intpart.size();++ix)
+    {
+      if(_intpart[ix] && _intpart[ix]->id()==idin)
+	{_intmass[ix] =mass;_intwidth[ix]=width;}
+    }
+}
+
+}
