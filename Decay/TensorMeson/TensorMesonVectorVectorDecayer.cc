@@ -55,10 +55,13 @@ bool TensorMesonVectorVectorDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector TensorMesonVectorVectorDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
   int imode=-1;
-  int id=parent.id(),id1=children[0]->id(),id2=children[1]->id();
   unsigned int ix=0;
+  int id=parent.id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
   do 
     {
       if(id==_incoming[ix])
@@ -70,8 +73,7 @@ ParticleVector TensorMesonVectorVectorDecayer::decay(const DecayMode & dm,
     }
   while(ix<_incoming.size()&&imode<0);
   // generate the decay
-  generate(false,imode,parent,children);
-  return children;
+  return generate(false,false,imode,parent);
 }
 
 
@@ -108,7 +110,7 @@ void TensorMesonVectorVectorDecayer::Init() {
      &TensorMesonVectorVectorDecayer::_outgoing2,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<TensorMesonVectorVectorDecayer,double> interfaceCoupling
+  static ParVector<TensorMesonVectorVectorDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorVectorDecayer::_coupling,
@@ -124,9 +126,7 @@ void TensorMesonVectorVectorDecayer::Init() {
 
 // the hadronic tensor
 vector<LorentzTensor> 
-TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,
-					const int imode,
-					const int, 
+TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int, 
 					const Particle & inpart,
 					const ParticleVector & decay) const
 {
@@ -186,6 +186,7 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,
   // main loop to compute the tensors
   Complex e1e2;
   LorentzTensor output;
+  double fact = _coupling[imode()]/inpart.mass();
   for(unsigned int ix=0;ix<3;++ix)
     {
       for(unsigned int iy=0;iy<3;++iy)
@@ -195,11 +196,56 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,
 	    +p1p2*( LorentzTensor(pol[0][ix],pol[1][iy])
 		   +LorentzTensor(pol[1][iy],pol[0][ix]))
 	    +(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*met;
-	  output*=_coupling[imode];
+	  output*=fact;
 	  temp.push_back(output);
 	}
     }
+  // testing the matrix element
+  /*
+  Energy2 m02=inpart.mass()*inpart.mass();
+  Energy2 m12=decay[0]->mass()*decay[0]->mass();
+  Energy2 m22=decay[1]->mass()*decay[1]->mass();
+  double root = inpart.mass()*inpart.mass()*(inpart.mass()*inpart.mass()
+					     -2.*decay[0]->mass()*decay[0]->mass()
+					     -2.*decay[1]->mass()*decay[1]->mass())
+    +decay[0]->mass()*decay[0]->mass()*(decay[0]->mass()*decay[0]->mass()
+					-2.*decay[1]->mass()*decay[1]->mass())
+    +decay[1]->mass()*decay[1]->mass()*decay[1]->mass()*decay[1]->mass();
+  Energy pcm =0.5*sqrt(root)/inpart.mass();
+  Energy2 pcm2=pcm*pcm;
+
+  cout << "testing the matrix element VV " 
+       << 2.*fact*fact/15./m02*(6.*m02*(pcm2*pcm2+5.*(m12*m22+pcm2*(m12+m22)))
+			       -10.*(m12-m22)*(m12-m22)*pcm2) << endl;
+
+
+
+*/
   // return the answer
   return temp;
+}
+bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+						   double & coupling) const
+{
+  int imode=-1;
+  int id=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
+  unsigned int ix=0;
+  do 
+    {
+      if(id==_incoming[ix])
+	{
+	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
+	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
+	}
+      ++ix;
+    }
+  while(ix<_incoming.size()&&imode<0);
+  coupling=_coupling[imode]*dm.parent()->mass();
+  mecode=9;
+  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
 }
 }

@@ -18,6 +18,29 @@ inline TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer()
   // f'_2 -> gamma gamma
   _incoming.push_back(335);_outgoing1.push_back( 22);_outgoing2.push_back(22);
   _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  // chi_b(2P) decays
+  _incoming.push_back(100555);_outgoing1.push_back(553);_outgoing2.push_back(223);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(100555);_outgoing1.push_back(553);_outgoing2.push_back(22);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(100555);_outgoing1.push_back(100553);_outgoing2.push_back(22);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(100555);_outgoing1.push_back(333);_outgoing2.push_back(333);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  // chi_c decays
+  _incoming.push_back(445);_outgoing1.push_back(443);_outgoing2.push_back(22);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(445);_outgoing1.push_back(323);_outgoing2.push_back(-323);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(445);_outgoing1.push_back(313);_outgoing2.push_back(-313);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(445);_outgoing1.push_back(333);_outgoing2.push_back(333);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  _incoming.push_back(445);_outgoing1.push_back(22);_outgoing2.push_back(22);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
+  // chi_b(1P) decays
+  _incoming.push_back(555);_outgoing1.push_back(553);_outgoing2.push_back(22);
+  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
 }
 
 inline TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer(const TensorMesonVectorVectorDecayer & x)
@@ -59,10 +82,17 @@ inline void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
     {throw InitException() << "Inconsistent parameters TensorMesonVectorVectorDecayer" 
 			   << Exception::abortnow;}
   // set up the integration channels
-  vector<bool> dummyon;
-  vector<double> dummyweights;
+  vector<double> wgt;
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {setMode(ix,_maxweight[ix],dummyon,dummyweights);}
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoing1[ix]);
+      extpart[2]=getParticleData(_outgoing2[ix]);
+      mode = new DecayPhaseSpaceMode(extpart,this);
+      addMode(mode,_maxweight[ix],wgt);
+    }
 }
 
 inline void TensorMesonVectorVectorDecayer::dofinish() {
@@ -71,14 +101,6 @@ inline void TensorMesonVectorVectorDecayer::dofinish() {
 
 inline void TensorMesonVectorVectorDecayer::doinitrun() {
   TensorMesonDecayerBase::doinitrun();
-  PDVector particles(3);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      particles[0]=getParticleData(_incoming[ix]);
-      particles[1]=getParticleData(_outgoing1[ix]);
-      particles[2]=getParticleData(_outgoing2[ix]);
-      initializePhaseSpace(ix,particles);
-    }
 }
 
 inline void TensorMesonVectorVectorDecayer::rebind(const TranslationMap & trans)

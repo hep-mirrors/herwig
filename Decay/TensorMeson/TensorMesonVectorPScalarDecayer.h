@@ -2,22 +2,8 @@
 #ifndef HERWIG_TensorMesonVectorPScalarDecayer_H
 #define HERWIG_TensorMesonVectorPScalarDecayer_H
 //
-// This is the declaration of the <!id>TensorMesonVectorPScalarDecayer<!!id> class.
+// This is the declaration of the TensorMesonVectorPScalarDecayer class.
 //
-// CLASSDOC SUBSECTION Description:
-//
-//  The <!id>TensorMesonVectorPScalarDecayer<!!id> class handles the decay of
-//  a tensor meson to a vector and a pseudoscalar. Examples of this decay
-//  are a+2 -> rho pi or a_2 pi gamma.
-//
-//  The class inherits from the <id>TensorMesonDecayerBase<!id> class and implements
-//  the virtual decayTensor method to calculate the tensor for the decay.
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="TensorMesonDecayerBase.html">TensorMesonDecayer.h</a>.
-// 
-
 #include "TensorMesonDecayerBase.h"
 // #include "TensorMesonVectorPScalarDecayer.fh"
 // #include "TensorMesonVectorPScalarDecayer.xh"
@@ -25,113 +11,256 @@
 namespace Herwig {
 using namespace ThePEG;
 
+/** \ingroup Decay
+ *
+ *  The <code>TensorMesonVectorPScalarDecayer</code> class handles the decay of
+ *  a tensor meson to a vector and a pseudoscalar. Examples of this decay
+ *  are \f$a_2\to\rho\pi\f$ or \f$a_2 \to\pi \gamma\f$.
+ *
+ *  \f[T^{\mu\nu} = p_P^\mu\epsilon^{\nu\alpha\beta\gamma}p_{V\alpha}
+ *                                       \epsilon_{V\alpha}p_{P\gamma}\f]
+ *
+ *  The class inherits from the <code>TensorMesonDecayerBase</code> class and implements
+ *  the virtual decayTensor method to calculate the tensor for the decay.
+ *
+ *  The incoming tensor mesons together with their decay products and the coupling 
+ *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
+ *  for the decays can be calculated using the Initialize interface of the
+ *  DecayIntegrator class or specified using the interface.
+ *
+ *  The incoming and outgoing particles, couplings and maximum weights for
+ *  many of the common \f$T\to PV\f$ decays are specified in the default
+ *  constructor.
+ *
+ * @see TensorMesonDecayerBase
+ * 
+ */
 class TensorMesonVectorPScalarDecayer: public TensorMesonDecayerBase {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
   inline TensorMesonVectorPScalarDecayer();
+
+  /**
+   * Copy-constructor.
+   */
   inline TensorMesonVectorPScalarDecayer(const TensorMesonVectorPScalarDecayer &);
+
+  /**
+   * Destructor.
+   */
   virtual ~TensorMesonVectorPScalarDecayer();
-  // Standard ctors and dtor.
+  //@}
 
 public: 
 
-  vector<LorentzTensor> decayTensor(const bool, const int, const int, 
-				    const Particle &,
-				    const ParticleVector &) const;
-  // the hadronic tensor
+  /**
+   * Accept member which is called at initialization to see if this Decayer can
+   * handle a given decay mode. This version checks the particles against the 
+   * list of allowed incoming  and outgoing mesons.
+   * @param dm The DecayMode
+   * @return Whether the mode can be handled.
+   */
+  virtual bool accept(const DecayMode & dm) const;
+  
+  /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. This version uses PDG codes to
+   * work which mode is being simulated and the generate member of the 
+   * DecayIntegrator class for the phase-space  generation.
+   * @param dm The DecayMode
+   * @param part The Particle instant being decayed.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+
+  /**
+   * The hadronic tensor. This returns the tensor described above.
+   * @param vertex Construct the information for spin correlations.
+   * @param ichan The phase-space channel to calculate the current for.
+   * @param inpart The decaying particle
+   * @param outpart The decay products
+   * @return The hadronic currents for the decay.
+   */
+  virtual vector<LorentzTensor> 
+  decayTensor(const bool vertex, const int ichan,const Particle & inpart, 
+	       const ParticleVector & outpart) const;
+
+  /**
+   * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
+   * @param dm The DecayMode
+   * @param mecode The code for the matrix element as described
+   *               in the GenericWidthGenerator class, in this case 8.
+   * @param coupling The coupling for the matrix element.
+   * @return True or False if this mode can be handled.
+   */
+  bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
 
 public:
 
-  virtual bool accept(const DecayMode &) const;
-  // return true if this decayer can perfom the decay specified by the
-  // given decay mode.
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
 
-  virtual ParticleVector decay(const DecayMode &, const Particle &) const;
-  // for a given decay mode and a given particle instance, perform the
-  // decay and return the decay products.
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
-
-public:
-
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
-
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
   static void Init();
-  // Standard Init function used to initialize the interfaces.
 
 protected:
 
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
 
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+  
 protected:
-
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
   inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void doinitrun();
-  inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
 
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
+   */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
 
+  /**
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
+   */
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
+  //@}
 
 private:
 
+  /**
+   * Describe a concrete class with persistent data.
+   */
   static ClassDescription<TensorMesonVectorPScalarDecayer> initTensorMesonVectorPScalarDecayer;
-  // Describe a concrete class with persistent data.
 
+  /**
+   * Private and non-existent assignment operator.
+   */
   TensorMesonVectorPScalarDecayer & operator=(const TensorMesonVectorPScalarDecayer &);
-  // Private and non-existent assignment operator.
 
 private:
 
+  /**
+   * PDG codes for the incoming particles
+   */
   vector<int> _incoming;
-  // PDG codes for the incoming particles
 
-  vector<int> _outgoingV,_outgoingP;
-  // PDG codes for the outgoing particles
+  /**
+   * PDG codes for the outgoing vector
+   */
+  vector<int> _outgoingV;
 
-  vector<double> _coupling;
-  // coupling for the decay
+  /**
+   * PDG codes for the outgoing pseudoscalar
+   */
+  vector<int> _outgoingP;
 
+  /**
+   * coupling for the decay
+   */
+  vector<InvEnergy2> _coupling;
+
+  /**
+   * max weight ofr the decay
+   */
   vector<double> _maxweight;
-  // max weight ofr the decay
 };
 
 }
 
-// CLASSDOC OFF
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
 
-// The following template specialization informs ThePEG about the
-// base class of Herwig::TensorMesonVectorPScalarDecayer.
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of Herwig::TensorMesonVectorPScalarDecayer.
+ */
 template <>
 struct BaseClassTrait<Herwig::TensorMesonVectorPScalarDecayer,1> {
+    /** Typedef of the base class of TensorMesonVectorPScalarDecayer. */
   typedef Herwig::TensorMesonDecayerBase NthBase;
 };
 
-// The following template specialization informs ThePEG about the
-// name of this class and the shared object where it is defined.
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
 template <>
-struct ClassTraits<Herwig::TensorMesonVectorPScalarDecayer>
+ struct ClassTraits<Herwig::TensorMesonVectorPScalarDecayer>
   : public ClassTraitsBase<Herwig::TensorMesonVectorPScalarDecayer> {
-  static string className() { return "/Herwig++/TensorMesonVectorPScalarDecayer"; }
-  // Return the class name.
-  static string library() { return "libHwTMDecay.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
-};
+   /** Return the class name.*/
+   static string className() { return "Herwig++::TensorMesonVectorPScalarDecayer"; }
+   /**
+    * Return the name of the shared library to be loaded to get
+    * access to this class and every other class it uses
+    * (except the base class).
+    */
+   static string library() { return "libHwTMDecay.so"; }
+   
+ };
 
 }
 

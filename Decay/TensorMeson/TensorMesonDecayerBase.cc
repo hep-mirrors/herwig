@@ -15,15 +15,19 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/TensorSpinInfo.h"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+
 
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::tcTensorSpinPtr;
 using ThePEG::Helicity::TensorSpinInfo;
+using ThePEG::Helicity::LorentzPolarizationVector;
 using ThePEG::Helicity::RhoDMatrix;
 using Herwig::Helicity::TensorWaveFunction;
 using Herwig::Helicity::incoming;
+
 
 TensorMesonDecayerBase::~TensorMesonDecayerBase() {}
 
@@ -54,8 +58,7 @@ void TensorMesonDecayerBase::Init() {
 }
 
 // matrix elememt for the process
-double TensorMesonDecayerBase::me2(bool vertex,
-				   const int imode, const int ichan,
+double TensorMesonDecayerBase::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {
@@ -68,8 +71,7 @@ double TensorMesonDecayerBase::me2(bool vertex,
   // if the spin info object exists use it
   if(inspin)
     {
-      for(int ix=-2;ix<3;++ix)
-	{inten.push_back(inspin->getDecayBasisState(ix));}
+      for(int ix=-2;ix<3;++ix){inten.push_back(inspin->getDecayBasisState(ix));}
       inspin->decay();
       rhoin=inspin->rhoMatrix();
     }
@@ -96,8 +98,7 @@ double TensorMesonDecayerBase::me2(bool vertex,
       const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
     }
   // calculate the decay tensor
-  vector<LorentzTensor> tensor=decayTensor(vertex,imode,ichan,
-					   inpart,decay);
+  vector<LorentzTensor> tensor=decayTensor(vertex,ichan,inpart,decay);
   // work out the mapping for the tensor vector
   vector<int> constants(decay.size()+1),
     ispin(decay.size()),ihel(decay.size()+1);
@@ -120,22 +121,10 @@ double TensorMesonDecayerBase::me2(bool vertex,
 	}
       // loop over the helicities of the incoming vector meson
       for(int thel=-2;thel<3;++thel)
-	{
-	  ihel[0]=thel;
-	  newME(ihel)= inten[thel+2]*tensor[hhel];
-	}
+	{ihel[0]=thel;newME(ihel)= inten[thel+2]*tensor[hhel];}
     }
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();
 }
-				   
-// the hadronic tensor (does nothing)
-vector<LorentzTensor> 
-TensorMesonDecayerBase::decayTensor(const bool vertex, 
-				    const int imode, const int ichan,
-				    const Particle & inpart,
-				    const ParticleVector & decay) const
-{vector<LorentzTensor> temp; return temp;}
-
 }

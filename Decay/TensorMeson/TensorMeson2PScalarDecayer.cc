@@ -50,10 +50,13 @@ bool TensorMeson2PScalarDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector TensorMeson2PScalarDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
   int imode=-1;
-  int id=parent.id(),id1=children[0]->id(),id2=children[1]->id();
   unsigned int ix=0;
+  int id=parent.id();
   do 
     {
       if(id==_incoming[ix])
@@ -65,8 +68,7 @@ ParticleVector TensorMeson2PScalarDecayer::decay(const DecayMode & dm,
     }
   while(ix<_incoming.size()&&imode<0);
   // generate the decay
-  generate(false,imode,parent,children);
-  return children;
+  return generate(false,false,imode,parent);
 }
 
 
@@ -103,7 +105,7 @@ void TensorMeson2PScalarDecayer::Init() {
      &TensorMeson2PScalarDecayer::_outgoing2,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<TensorMeson2PScalarDecayer,double> interfaceCoupling
+  static ParVector<TensorMeson2PScalarDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMeson2PScalarDecayer::_coupling,
@@ -118,9 +120,7 @@ void TensorMeson2PScalarDecayer::Init() {
 
 // the hadronic tensor
 vector<LorentzTensor> 
-TensorMeson2PScalarDecayer::decayTensor(const bool vertex,
-					const int imode,
-					const int, 
+TensorMeson2PScalarDecayer::decayTensor(const bool vertex,const int, 
 					const Particle & inpart,
 					const ParticleVector & decay) const
 {
@@ -136,8 +136,33 @@ TensorMeson2PScalarDecayer::decayTensor(const bool vertex,
 	}
     }
   // calcluate the current
-  temp.push_back(_coupling[imode]*LorentzTensor(decay[0]->momentum(),
-						decay[1]->momentum()));
+  temp.push_back(_coupling[imode()]/inpart.mass()*
+		 LorentzTensor(decay[0]->momentum(),decay[1]->momentum()));
   return temp;
+}
+
+bool TensorMeson2PScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+					       double & coupling) const
+{
+  int imode=-1;
+  int id=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
+  unsigned int ix=0;
+  do 
+    {
+      if(id==_incoming[ix])
+	{
+	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
+	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
+	}
+      ++ix;
+    }
+  while(ix<_incoming.size()&&imode<0);
+  coupling=_coupling[imode]*dm.parent()->mass();
+  mecode=7;
+  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
 }
 }

@@ -60,10 +60,14 @@ bool TensorMesonVectorPScalarDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector TensorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
   int imode=-1;
-  int id=parent.id(),id1=children[0]->id(),id2=children[1]->id();
+  int id=parent.id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
   unsigned int ix=0;
+  PDVector particles(3);
   do 
     {
       if(id==_incoming[ix])
@@ -75,8 +79,7 @@ ParticleVector TensorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
     }
   while(ix<_incoming.size()&&imode<0);
   // generate the decay
-  generate(false,imode,parent,children);
-  return children;
+  return generate(false,false,imode,parent);
 }
 
 void TensorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const
@@ -112,7 +115,7 @@ void TensorMesonVectorPScalarDecayer::Init() {
      &TensorMesonVectorPScalarDecayer::_outgoingP,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<TensorMesonVectorPScalarDecayer,double> interfaceCoupling
+  static ParVector<TensorMesonVectorPScalarDecayer,InvEnergy2> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorPScalarDecayer::_coupling,
@@ -128,9 +131,7 @@ void TensorMesonVectorPScalarDecayer::Init() {
 
 // the hadronic tensor
 vector<LorentzTensor> 
-TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,
-					     const int imode,
-					     const int, 
+TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,const int, 
 					     const Particle & inpart,
 					     const ParticleVector & decay) const
 {
@@ -138,7 +139,7 @@ TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,
   vector<LorentzTensor> temp;
   // work out which is the vector
   unsigned int ivec,isca;
-  if(decay[0]->id()==_outgoingV[imode]){ivec=0;isca=1;}
+  if(decay[0]->id()==_outgoingV[imode()]){ivec=0;isca=1;}
   else{ivec=1;isca=0;}
   // set up the spin information for ther decay products
   vector<LorentzPolarizationVector> outvec;
@@ -154,9 +155,10 @@ TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,
   // calculate the current
   VectorWaveFunction vwave(decay[ivec]->momentum(),decay[ivec]->dataPtr(),outgoing);
   LorentzPolarizationVector eps;
+  double fact=_coupling[imode()]/inpart.mass();
   for(int ix=-1;ix<2;++ix)
     {
-      if(ix==0&&_outgoingV[imode]==ParticleID::gamma)
+      if(ix==0&&_outgoingV[imode()]==ParticleID::gamma)
 	{
 	  if(vertex){vspin->setBasisState(ix,LorentzPolarizationVector());}
 	  temp.push_back(LorentzTensor());
@@ -165,8 +167,9 @@ TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,
 	{
 	  vwave.reset(ix);
 	  if(vertex){vspin->setBasisState(ix,vwave.Wave());}
-	  eps=_coupling[imode]*EpsFunction::product(decay[ivec]->momentum(),vwave.Wave(),
-						    decay[isca]->momentum());
+	  eps=fact*EpsFunction::product(decay[ivec]->momentum(),
+						      vwave.Wave(),
+						      decay[isca]->momentum());
 	  temp.push_back(LorentzTensor(decay[isca]->momentum(),eps));
 	}
     }
@@ -174,4 +177,28 @@ TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,
   return temp;
 }
 
+bool TensorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+						   double & coupling) const
+{
+  int imode=-1;
+  int id=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
+  unsigned int ix=0;
+  do 
+    {
+      if(id==_incoming[ix])
+	{
+	  if((id1==_outgoingP[ix]&&id2==_outgoingV[ix])||
+	     (id2==_outgoingP[ix]&&id1==_outgoingV[ix])){imode=ix;}
+	}
+      ++ix;
+    }
+  while(ix<_incoming.size()&&imode<0);
+  coupling=_coupling[imode]*dm.parent()->mass()*dm.parent()->mass();
+  mecode=8;
+  return id1==_outgoingP[imode]&&id2==_outgoingV[imode];
+}
 }
