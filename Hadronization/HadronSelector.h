@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef HERWIG_HadronsSelector_H
-#define HERWIG_HadronsSelector_H
+#ifndef HERWIG_HadronSelector_H
+#define HERWIG_HadronSelector_H
 //
 // This is the declaration of the <!id>HadronsSelector<!!id> class.
 //
@@ -23,13 +23,13 @@ namespace Herwig {
 using namespace Pythia7;
 
 
-class HadronsSelector: public Pythia7::HandlerBase {
+class HadronSelector: public Pythia7::HandlerBase {
 
 public:
 
-  inline HadronsSelector();
-  inline HadronsSelector(const HadronsSelector &);
-  virtual ~HadronsSelector();
+  inline HadronSelector();
+  inline HadronSelector(const HadronSelector &);
+  virtual ~HadronSelector();
   // Standard ctors and dtor.
 
 public:
@@ -50,25 +50,29 @@ public:
   // Return the nominal mass of the hadron with id returned by the previous method.
 
   pair<long,long> 
-  lightestHadronsPair(const long id1, const long id2, const long id3=0) const;
+  lightestHadronPair(const long id1, const long id2, const long id3=0) const;
   // Given the id of two (or three) constituents of a cluster, it returns
   // the id of the two lightest hadrons with proper flavour numbers.
   // Furthermore, the first of the two hadron must have the constituent with
   // id1, and the second must have the constituent with id2. 
   // At the moment it does *nothing* in the case that also id3 is present.
 
-  Energy massLightestHadronsPair(const long id1, const long id2, const long id3=0) 
+  Energy massLightestHadronPair(const long id1, const long id2, const long id3=0) 
     const;
   // Return the sum of the nominal masses of the two hadrons with id returned 
   // by the previous method.
 
-  pair<long,long> chooseHadronsPair(const Energy cluMass, const long id1, const long id2, 
+  pair<long,long> chooseHadronPair(const Energy cluMass, const long id1, const long id2, 
 				    const long id3=0) throw(Veto, Stop, Exception);
   // Given the mass of a cluster and the ids of its two (or three) constituents, 
   // it returns the pair of ids of the two hadrons with proper flavour numbers.
   // Furthermore, the first of the two hadron must have the constituent with
   // id1, and the second must have the constituent with id2. 
   // At the moment it does *nothing* in the case that also id3 is present.
+
+  pair<long,long> newkupco(const Energy, const long, const long, Energy, int);
+  pair<long,long> kupco(const Energy, const long, const long, Energy, int);
+  pair<long,long> hw64(const Energy, const long, const long, Energy, int);
 
   inline double pwtDquark()  const;
   inline double pwtUquark()  const;
@@ -102,10 +106,10 @@ protected:
 
 private:
 
-  static ClassDescription<HadronsSelector> initHadronsSelector;
+  static ClassDescription<HadronSelector> initHadronSelector;
   // Describe a concrete class with persistent data.
 
-  HadronsSelector & operator=(const HadronsSelector &);
+  HadronSelector & operator=(const HadronSelector &);
   //  Private and non-existent assignment operator.
 
 private:
@@ -132,7 +136,7 @@ private:
   // Build the big table of hadrons and related structures.
   // It calls the method  fillDataHadrons. 
 
-  int fillDataHadrons();
+  void fillHadronData();
   // Methods responsibles to fill the hadrons input data (weights).
   // This is the method that one should update when new or updated
   // hadron data is available. Remember always to check whether the
@@ -141,6 +145,11 @@ private:
   // automatically to zero, which means that they will never be produced.
   
 private: // data members
+
+  double specialWeight(long); // Calculates a special weight specific to 
+                              // a given hadron
+  bool mixingState(long);     // Is given id a part of a mixing state
+  double mixingStateWeight(long); // weight of given mixing state
 
   // Parameters
   double _PwtDquark;
@@ -208,35 +217,38 @@ private: // data members
     double wt;             // mixing factor
     double overallWeight;  // (2*J+1)*wt*swtef
     Energy mass;
+    HadronInfo() : id(0), ptrData(tPDPtr()), swtef(1.), wt(1.0), overallWeight(0.0) {}
+    bool operator<(const HadronInfo &x) const { return mass < x.mass; }
+    void rescale(double x) const { 
+      const_cast<HadronInfo*>(this)->overallWeight *= x; 
+    }
   };
-  enum ConstNumber { NumHadrons = 4000, NumQuarksDiquarks = 20, MaxNumTries = 1000,
-                     Lmax = 3, Jmax = 4, Nmax = 4};  // L,J,N max values for excited mesons.
-  vector<HadronInfo> _vecHad;  // Only hadrons with id > 0; no anti-hadrons!
-                               // The first element _vecHad[0] is empty.
-  vector<double> _Pwt;         // Weights for quarks and diquarks; element [0] empty.
-  enum Flavours { D=1, U, S, C, B, DD, UD, UU, SD, SU, SS,
-                  CD, CU, CS, CC, BD, BU, BS, BC, BB };
-  class HadronLocation {
-    friend PersistentOStream & operator<< ( PersistentOStream & os, const HadronLocation & hl ) {
-      os << hl.first << hl.last << hl.lightest;
-      return os;
-    }
-    friend PersistentIStream & operator>> ( PersistentIStream & is, HadronLocation & hl ) {
-      is >> hl.first >> hl.last >> hl.lightest;
-      return is;
-    }
+  typedef set<HadronInfo> KupcoData;
+
+  class Kupco {
   public:
-    int first;     // position in vecRes of the first    resonance of that flavour
-    int last;      // position in vecRes of the last     resonance of that flavour
-    int lightest;  // position in vecRes of the lightest resonance of that flavour
+    long idQ;
+    long idHad1;
+    long idHad2;
+    double weight;
+    bool operator<(const Kupco &x) const { return weight < x.weight; }
+    bool operator==(const Kupco &x) const { return weight == x.weight; }
+    bool operator>(const Kupco &x) const { return weight > x.weight; }
   };
-  vector< vector<HadronLocation> > _locHad;
-  // Only the following elements of  _locHad[i][j]  are really used:
-  //   D <= i <= B  and   i <= j <= NumQuarksDiquarks
-  // and symmetric _locHad[j][i]  
 
+  // Make them enums so arrays can be statically allocated
+  enum ConstNumber { NumFlavs = 20,  Lmax = 3, Jmax = 4, Nmax = 4};  
+                    // L,J,N max values for excited mesons.
+  //const int NumFlavs = 11; // D U S C B UU UD DD US DS SS
+  //const int NumFlavs = 20; // D U ... SB CB BB
+  enum Flavs { D = 0, U, S, C, B, DD, DU, UU, DS, US, SS, 
+	       DC, UC, SC, CC, DB, UB, SB, CB, BB };  // These are extras, but not used?
+  KupcoData _table[NumFlavs][NumFlavs];
+  vector<double> _Pwt;         // Weights for quarks and diquarks; element [0] empty.
+  double _Repwt[Lmax][Jmax][Nmax];  // Weights for excited mesons;
+  int _ClusterDKMode;  // whether to use hw64, kupco or newkupco
+  int _trial;
 };
-
 }
 
 // CLASSDOC OFF
@@ -246,15 +258,15 @@ namespace Pythia7 {
 // The following template specialization informs Pythia7 about the
 // base class of HadronsSelector.
 template <>
-struct BaseClassTrait<Herwig::HadronsSelector,1> {
+struct BaseClassTrait<Herwig::HadronSelector,1> {
   typedef Pythia7::HandlerBase NthBase;
 };
 
 // The following template specialization informs Pythia7 about the
 // name of this class and the shared object where it is defined.
 template <>
-struct ClassTraits<Herwig::HadronsSelector>: public ClassTraitsBase<Herwig::HadronsSelector> {
-  static string className() { return "/Herwig++/HadronsSelector"; }
+struct ClassTraits<Herwig::HadronSelector>: public ClassTraitsBase<Herwig::HadronSelector> {
+  static string className() { return "/Herwig++/HadronSelector"; }
   // Return the class name.
   static string library() { return "libHwHadronization.so"; }
   // Return the name of the shared library to be loaded to get
@@ -264,6 +276,6 @@ struct ClassTraits<Herwig::HadronsSelector>: public ClassTraitsBase<Herwig::Hadr
 
 }
 
-#include "HadronsSelector.icc"
+#include "HadronSelector.icc"
 
 #endif /* HERWIG_HadronsSelector_H */
