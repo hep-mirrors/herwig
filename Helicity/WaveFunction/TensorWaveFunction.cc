@@ -12,15 +12,19 @@ namespace Herwig {
 namespace Helicity {
 
 // calculate the actual wavefunction
-void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
+void TensorWaveFunction::calculateWaveFunction(int ihel, VectorPhase tphase)
 {
-  int ipart=getDirection();
+  Direction dir=direction();
+  if(dir==intermediate){cerr << "In TensorWaveFunction::calcluateWaveFunction "
+			     << "particle must be incoming or outgoing not intermediate" 
+			     << endl;}
   // check for a valid helicty combination
   if((ihel<=2 && ihel>=-2   && mass() >0.) || 
      ((ihel==2 || ihel==-2) && mass()==0.)) 
     {
       // extract the momentum components
-      Energy ppx=-ipart*px(),ppy=-ipart*py(),ppz=-ipart*pz(),pee=-ipart*e(),pmm=mass();
+      double fact=-1.; if(dir==incoming){fact=1.;}
+      Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
       // calculate some kinematic quantites;
       Energy pt = ppx*ppx+ppy*ppy;
       Energy pabs = sqrt(pt+ppz*ppz);
@@ -32,10 +36,10 @@ void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
 	{
 	  // calculate the overall phase
 	  complex<double>phase;
-	  if(iphase==1)
+	  if(tphase==Phase)
 	    {
 	      if(pt==0.){phase=1.;}
-	      else{phase = complex<double>(ppx,ipart*ppy)/pt;}
+	      else{phase = complex<double>(ppx,-fact*ppy)/pt;}
 	    }
 	  else{phase = 1.;} 
 	  phase = phase/sqrt(2.);
@@ -46,7 +50,7 @@ void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
 	      if(ppz<0){sgnz=-1.;}
 	      else{sgnz=1.;}
 	      epsp[0]=-phase;
-	      epsp[1]= sgnz*phase*complex<double>(0,ipart);
+	      epsp[1]= sgnz*phase*complex<double>(0,-fact);
 	      epsp[2]=0.;
 	      epsp[3]=0.;
 	    }
@@ -55,9 +59,9 @@ void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
 	      double opabs=1./pabs;
 	      double opt  =1./pt;
 	      epsp[0]=phase*complex<double>(-ppz*ppx*opabs*opt,
-					  -ipart*ppy*opt);
+					  fact*ppy*opt);
 	      epsp[1]=phase*complex<double>(-ppz*ppy*opabs*opt,
-					  +ipart*ppx*opt);
+					  -fact*ppx*opt);
 	      epsp[2]=pt*opabs*phase;
 	      epsp[3]=0.;
 	    }
@@ -67,10 +71,10 @@ void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
 	{
 	  // calculate the overall phase
 	  complex<double> phase;
-	  if(iphase==1)
+	  if(tphase==Phase)
 	    {
 	      if(pt==0.){phase=1.;}
-	      else{phase = complex<double>(ppx,-ipart*ppy)/pt;}
+	      else{phase = complex<double>(ppx,fact*ppy)/pt;}
 	    }
 	  else{phase = 1.;}
 	  phase = phase/sqrt(2.);
@@ -81,7 +85,7 @@ void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
 	      if(ppz<0){sgnz=-1.;}
 	      else{sgnz=1.;}
 	      epsm[0]= phase;
-	      epsm[1]= sgnz*phase*complex<double>(0,ipart);
+	      epsm[1]= sgnz*phase*complex<double>(0,-fact);
 	      epsm[2]=0.;
 	      epsm[3]=0.;
 	    }
@@ -90,9 +94,9 @@ void TensorWaveFunction::calculateWaveFunction(int iphase,int ihel)
 	      double opabs=1./pabs;
 	      double opt  =1./pt;
 	      epsm[0]=phase*complex<double>(ppz*ppx*opabs*opt,
-					  -ipart*ppy*opt);
+					  fact*ppy*opt);
 	      epsm[1]=phase*complex<double>(ppz*ppy*opabs*opt,
-					   +ipart*ppx*opt);
+					   -fact*ppx*opt);
 	      epsm[2]=-pt*opabs*phase;
 	      epsm[3]=0.;
 	    }

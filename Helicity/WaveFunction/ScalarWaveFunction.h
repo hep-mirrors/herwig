@@ -35,44 +35,45 @@ public:
 
   // use a 5-momentum
   inline ScalarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,
-			    Complex,int);
+			    Complex,Direction);
 
   // set all components of momentum
   inline ScalarWaveFunction(Energy,Energy,Energy,Energy,Energy,
-			    const tcPDPtr &,Complex,int);
+			    const tcPDPtr &,Complex,Direction);
 
   // set 4-momentum components
   inline ScalarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,
-			    Complex,int);
+			    Complex,Direction);
 
   // set 4-momentum
-  inline ScalarWaveFunction(LorentzVector,const tcPDPtr &,Complex,int);
+  inline ScalarWaveFunction(LorentzVector,const tcPDPtr &,Complex,Direction);
 
   // set mass zero momentum
-  inline ScalarWaveFunction(Energy,const tcPDPtr &,Complex,int);
+  inline ScalarWaveFunction(Energy,const tcPDPtr &,Complex,Direction);
 
   // set 4 momentum and mass
   inline ScalarWaveFunction(LorentzVector,Energy,
-			    const tcPDPtr &,Complex,int);
+			    const tcPDPtr &,Complex,Direction);
 
   // default constructors (set the momentum and zero the Wavefunction)
   // use 5 momentum
-  inline ScalarWaveFunction(Lorentz5Momentum,const tcPDPtr &,int); 
+  inline ScalarWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction); 
 
   // set all components of momentum
-  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,int);
+  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,
+			    Direction);
 
   // set 4-momentum components 
-  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int);
+  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction);
 
   // set 4-momentum 
-  inline ScalarWaveFunction(LorentzVector,const tcPDPtr &,int);
+  inline ScalarWaveFunction(LorentzVector,const tcPDPtr &,Direction);
 
   // set mass zero momentum
-  inline ScalarWaveFunction(Energy,const tcPDPtr &,int);
+  inline ScalarWaveFunction(Energy,const tcPDPtr &,Direction);
 
   // set 4 momentum and mass
-  inline ScalarWaveFunction(LorentzVector,Energy,const tcPDPtr &,int);
+  inline ScalarWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction);
 
   // default constructor
   inline ScalarWaveFunction();
@@ -95,10 +96,10 @@ public:
   // functions to reset the wavefunction and momentum (to speed the code up)  
   // reset functions
   // reset the momentum, particle type and direction
-  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, int);
+  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, Direction);
 
   // reset the momentum and particle type
-  inline void reset(const Lorentz5Momentum &,int);
+  inline void reset(const Lorentz5Momentum &,Direction);
 
   // reset the momentum
   inline void reset(const Lorentz5Momentum &);
@@ -107,7 +108,7 @@ public:
   inline void reset(Complex);
 
   // reset the particle type and direction
-  inline void reset(const tcPDPtr &,int);
+  inline void reset(const tcPDPtr &,Direction);
 
   // reset the particle type
   inline void reset(const tcPDPtr &);

@@ -11,11 +11,20 @@
 
 namespace Herwig {
 namespace Helicity {
+using ThePEG::Helicity::DiracRep;
+using ThePEG::Helicity::HaberDRep;
+using ThePEG::Helicity::HELASDRep;
+using ThePEG::Helicity::SpinorType;
+using ThePEG::Helicity::u_type;
+using ThePEG::Helicity::v_type;
 
 // calculate the Wavefunction
-void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
+void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 {
-  int ipart=getDirection();
+  Direction dir=direction();
+  if(dir==intermediate){cerr << "In SpinorBarWaveFunction::calcluateWaveFunction "
+			     << "particle must be incoming or outgoing not intermediate" 
+			     << endl;}
   // check ihelicity is O.K.
   if(ihel!=1 && ihel!=-1)
     {
@@ -26,7 +35,8 @@ void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
   else
     {
       // extract the momentum components
-      Energy ppx=-ipart*px(),ppy=-ipart*py(),ppz=-ipart*pz(),pee=-ipart*e(),pmm=mass();
+      double fact=-1.; if(dir==incoming){fact=1.;}
+      Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
       // define and calculate some kinematic quantities
       Energy ptran  = ppx*ppx+ppy*ppy;
       Energy pabs   = sqrt(ptran+ppz*ppz);
@@ -36,7 +46,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
       // we are using
       complex <double> hel_wf[2];
       // compute the + spinor for + helicty particles and - helicity antiparticles
-      if((ipart>0 && ihel== 1) || (ipart<0 && ihel==-1))
+      if((dir==outgoing && ihel== 1) || (dir==incoming && ihel==-1))
 	{
 	  // no transverse momentum 
 	  if(ptran==0.)
@@ -98,13 +108,13 @@ void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
 	}
       // decide which definition of the spinors we are using
       Energy eplusm,eminusm,upper,lower,eplusp,eminusp;
-      switch(idirac)
+      switch(dirac)
 	{
 	  // Haber lower energy
-	case 1:
+	case HaberDRep:
 	  eplusm = sqrt(pee+pmm);
 	  eminusm = pabs/eplusm;
-	  if(ipart>0)
+	  if(dir==outgoing)
 	    {
 	      upper = eplusm;
 	      if(ihel==1) 
@@ -121,7 +131,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
 		{lower =-eplusm;}
 	    }
 	  break;
-	case 2:
+	case HELASDRep:
 	  // HELAS
 	  eplusp = sqrt(pee+pabs);
 	  if(pmm!=0.) 
@@ -129,7 +139,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
 	  else
 	    {eminusp=0.;}
 	  // set up the coefficients for the different cases
-	  if(ipart>0)
+	  if(dir==outgoing)
 	    {
 	      if(ihel==1)
 		{
@@ -158,14 +168,12 @@ void SpinorBarWaveFunction::calculateWaveFunction(int idirac, int ihel)
 	  break;
 	}
       // now finally we can construct the spinors
-      cout << "testing the wavefunction for" << idirac << endl;
-      if(ipart<0)
-	{_wf=LorentzSpinorBar(idirac,2,upper*hel_wf[0],upper*hel_wf[1],
-			      lower*hel_wf[0],lower*hel_wf[1]);}
+      if(dir==incoming)
+	{_wf=LorentzSpinorBar(upper*hel_wf[0],upper*hel_wf[1],
+			      lower*hel_wf[0],lower*hel_wf[1],v_type,dirac);}
       else
-	{_wf=LorentzSpinorBar(idirac,1,upper*hel_wf[0],upper*hel_wf[1],
-			      lower*hel_wf[0],lower*hel_wf[1]);}
-      cout << "testing the rep" << _wf.Rep() << endl;
+	{_wf=LorentzSpinorBar(upper*hel_wf[0],upper*hel_wf[1],
+			      lower*hel_wf[0],lower*hel_wf[1],u_type,dirac);}
     }
 }
 

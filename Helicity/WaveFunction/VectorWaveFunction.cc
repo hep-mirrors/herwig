@@ -13,27 +13,31 @@ namespace Herwig {
 namespace Helicity {
 
 // calculate the Wavefunction
-void VectorWaveFunction::calculateWaveFunction(int iphase, int ihel)
+void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
 {
-  int ipart=getDirection();
+  Direction dir=direction();
+  if(dir==intermediate){cerr << "In VectorWaveFunction::calcluateWaveFunction "
+			     << "particle must be incoming or outgoing not intermediate" 
+			     << endl;}
   // check a valid helicity combination
   if(((ihel==1 || ihel==-1 || ihel==0) && mass() >0.) ||
      ((ihel==1 || ihel==-1           ) && mass()==0.))
     {
       // extract the momentum components
-      Energy ppx=-ipart*px(),ppy=-ipart*py(),ppz=-ipart*pz(),pee=-ipart*e(),pmm=mass();
+      double fact=-1.; if(dir==incoming){fact=1.;}
+      Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
       // calculate some kinematic quantites;
       Energy pt = ppx*ppx+ppy*ppy;
       Energy pabs = sqrt(pt+ppz*ppz);
       pt = sqrt(pt);
       // overall phase of the vector
       complex<double> phase;
-      if(iphase==1)
+      if(vphase==Phase)
 	{
 	  if(pt==0. || ihel==0)
 	    {phase=1.;}
 	  else
-	    {phase = complex<double>(ppx,ipart*ihel*ppy)/pt;}
+	    {phase = complex<double>(ppx,-fact*ihel*ppy)/pt;}
 	}
       else
 	{
@@ -50,7 +54,7 @@ void VectorWaveFunction::calculateWaveFunction(int iphase, int ihel)
 	      if(ppz<0){sgnz=-1.;}
 	      else{sgnz=1.;}
 	      _wf[0]=-complex<double>(ihel)*phase;
-	      _wf[1]= sgnz*phase*complex<double>(0,ipart);
+	      _wf[1]= sgnz*phase*complex<double>(0,-fact);
 	      _wf[2]=0.;
 	      _wf[3]=0.;
 	    }
@@ -59,9 +63,9 @@ void VectorWaveFunction::calculateWaveFunction(int iphase, int ihel)
 	      double opabs=1./pabs;
 	      double opt  =1./pt;
 	      _wf[0]=phase*complex<double>(-ihel*ppz*ppx*opabs*opt,
-					  -ipart*ppy*opt);
+					  fact*ppy*opt);
 	      _wf[1]=phase*complex<double>(-ihel*ppz*ppy*opabs*opt,
-					   +ipart*ppx*opt);
+					   -fact*ppx*opt);
 	      _wf[2]=ihel*pt*opabs*phase;
 	      _wf[3]=0.;
 	    }

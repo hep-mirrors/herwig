@@ -38,6 +38,8 @@
 namespace Herwig {
 namespace Helicity {
 
+enum VectorPhase { Phase, NoPhase};
+
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
 
@@ -51,55 +53,60 @@ public:
 			    const Complex &,const Complex &, const Complex &);
   
   // use a 5-momentum (default phase choice)
-  inline VectorWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,Direction);
   // use a 5-momentum (specify phase choice)
-  inline VectorWaveFunction(int, const Lorentz5Momentum &,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,Direction,
+			    VectorPhase);
 
   // set all components of momentum (default phase choice)
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,int,
+			    Direction);
   // set all components of momentum (specify phase choice)
-  inline VectorWaveFunction(int,Energy,Energy,Energy,Energy,Energy,
-			    const tcPDPtr &,int,int);
+  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,
+			    const tcPDPtr &,int,Direction,VectorPhase);
 
   // set 4-momentum components (default phase choice)
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,Direction);
   // set 4-momentum components (specify phase choice)
-  inline VectorWaveFunction(int,Energy,Energy,Energy,Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,Direction,
+			    VectorPhase);
 
   // set 4-momentum (default phase choice)
-  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,int,Direction);
   // set 4-momentum (specify phase choice)
-  inline VectorWaveFunction(int,LorentzVector,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,int,Direction,VectorPhase);
 
   // set mass zero momentum (default phase choice)
-  inline VectorWaveFunction(Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(Energy,const tcPDPtr &,int,Direction);
   // set mass zero momentum (specify phase choice)
-  inline VectorWaveFunction(int,Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(Energy,const tcPDPtr &,int,Direction,VectorPhase);
 
   // set 4 momentum and mass (default phase choice)
-  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,Direction);
   // set 4 momentum and mass (specify phase choice)
-  inline VectorWaveFunction(int, LorentzVector,Energy,const tcPDPtr &,int,int);
+  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,Direction,
+			    VectorPhase);
 
   // default constructors (set the momentum and zero the Wavefunction)
 
   // use 5 momentum
-  inline VectorWaveFunction(Lorentz5Momentum,const tcPDPtr &,int); 
+  inline VectorWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction); 
 
   // set all components of momentum
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,int);
+  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,
+			    Direction);
 
   // set 4-momentum components 
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int);
+  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction);
 
   // set 4-momentum 
-  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,int);
+  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,Direction);
 
   // set mass zero momentum
-  inline VectorWaveFunction(Energy,const tcPDPtr &,int);
+  inline VectorWaveFunction(Energy,const tcPDPtr &,Direction);
 
   // set 4 momentum and mass
-  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,int);
+  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction);
 
   // default constructor
   inline VectorWaveFunction();
@@ -134,10 +141,10 @@ public:
   // reset functions
 
   // reset the momentum, particle type and direction
-  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, int);
+  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, Direction);
 
   // reset the momentum and direction
-  inline void reset(const Lorentz5Momentum &,int);
+  inline void reset(const Lorentz5Momentum &,Direction);
 
   // reset the momentum
   inline void reset(const Lorentz5Momentum &);
@@ -146,10 +153,10 @@ public:
   // default phase choice
   inline void reset(int);
   // specify phase choice
-  inline void reset(int,int);
+  inline void reset(int,VectorPhase);
 
   // reset the particle type and direction
-  inline void reset(const tcPDPtr &,int);
+  inline void reset(const tcPDPtr &,Direction);
 
   // reset the particle type
   inline void reset(const tcPDPtr &);
@@ -163,7 +170,7 @@ private:
   // default phase choice
   inline void calculateWaveFunction(int);
   // specify phase choice
-  void calculateWaveFunction(int,int);
+  void calculateWaveFunction(int,VectorPhase);
 
   // check particle spin and set pointer
   inline void checkParticle(const tcPDPtr &);
@@ -174,7 +181,7 @@ private:
   LorentzPolarizationVector _wf;
   
   // default definition of the phase 
-  static const int _ivector_default=2;
+  static const VectorPhase _default_phase=NoPhase;
 
 };
 }

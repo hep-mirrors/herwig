@@ -13,7 +13,7 @@ using namespace ThePEG;
 inline ScalarWaveFunction::ScalarWaveFunction(const Lorentz5Momentum &p,
 					      const tcPDPtr & part, Complex wave)
 {
-  setDirection(0);
+  direction(intermediate);
   setMomentum(p);
   checkParticle(part);
   _wf=wave;
@@ -22,9 +22,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(const Lorentz5Momentum &p,
 // use a 5 momentum
 inline ScalarWaveFunction::ScalarWaveFunction(const Lorentz5Momentum & p,
 					      const tcPDPtr & part,Complex wave,
-					      int ipart)  
+					      Direction dir)  
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(p);
   _wf=wave;
   checkParticle(part);
@@ -34,9 +34,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(const Lorentz5Momentum & p,
 inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee, Energy mm,
 					      const tcPDPtr & part, Complex wave,
-					      int ipart) 
+					      Direction dir) 
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(px,py,pz,ee,mm);
   _wf=wave;
   checkParticle(part);
@@ -46,9 +46,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee,
 					      const tcPDPtr & part, Complex wave,
-					      int ipart)
+					      Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(px,py,pz,ee);
   _wf=wave;
   checkParticle(part);
@@ -57,9 +57,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 // set 4-momentum
 inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
 					      const tcPDPtr & part, Complex wave,
-					      int ipart)
+					      Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(pin);
   _wf=wave;
   checkParticle(part);
@@ -68,9 +68,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
 // set mass zero momentum	
 inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
 					      const tcPDPtr & part, Complex wave,
-					      int ipart)
+					      Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(mm);
   _wf=wave;
   checkParticle(part);
@@ -79,9 +79,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
 // set 4 momentum and mass
 inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
 					      const tcPDPtr & part, Complex wave,
-					      int ipart)
+					      Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(pin,mm); 
   _wf=wave; 
   checkParticle(part);
@@ -91,9 +91,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
 
 // use a 5 momentum
 inline ScalarWaveFunction::ScalarWaveFunction(Lorentz5Momentum p,
-					      const tcPDPtr & part,int ipart)
+					      const tcPDPtr & part,Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(p);
   _wf=0.;
   checkParticle(part);
@@ -102,9 +102,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Lorentz5Momentum p,
 // set all components of momentum
 inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee, Energy mm,
-					      const tcPDPtr & part,int ipart)
+					      const tcPDPtr & part,Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(px,py,pz,ee,mm);
   _wf=0.; 
   checkParticle(part);
@@ -113,9 +113,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 // set 4-momentum components 
 inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee,
-					      const tcPDPtr & part,int ipart)
+					      const tcPDPtr & part,Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(px,py,pz,ee);
   _wf=0.;
   checkParticle(part);
@@ -123,9 +123,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 
 // set 4-momentum 
 inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
-					      const tcPDPtr & part,int ipart) 
+					      const tcPDPtr & part,Direction dir) 
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(pin);
   _wf=0.; 
   checkParticle(part);
@@ -133,9 +133,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
 
 // set mass zero momentum
 inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
-					      const tcPDPtr & part,int ipart)
+					      const tcPDPtr & part,Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(mm);
   _wf=0.;
   checkParticle(part);
@@ -143,9 +143,9 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
 
 // set 4 momentum and mass
 inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
-					      const tcPDPtr & part,int ipart) 
+					      const tcPDPtr & part,Direction dir) 
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(pin,mm);
   _wf=0.;
   checkParticle(part);
@@ -154,7 +154,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
 // default constructor
 inline ScalarWaveFunction::ScalarWaveFunction()
 {
-  setDirection(0);
+  direction(intermediate);
   setMomentum();
   _wf=0.;
 }
@@ -202,17 +202,17 @@ inline Complex & ScalarWaveFunction::operator () (int)
 
 // reset the momentum, particle type and direction
 inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin, const tcPDPtr & part,
-				 int ipart)
+				 Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   checkParticle(part);
   setMomentum(pin);
 }
 
 // reset the momentum and direction
-inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin, int ipart)
+inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin, Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   setMomentum(pin);
 }
 
@@ -226,9 +226,9 @@ inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin)
 inline void ScalarWaveFunction::reset(Complex wf){_wf=wf;}
 
 // reset the particle type and direction
-inline void ScalarWaveFunction::reset(const tcPDPtr & part,int ipart)
+inline void ScalarWaveFunction::reset(const tcPDPtr & part,Direction dir)
 {
-  setDirection(ipart);
+  direction(dir);
   checkParticle(part);
 }
 

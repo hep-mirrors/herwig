@@ -39,6 +39,7 @@ namespace Herwig {
 
 using ThePEG::Helicity::LorentzSpinorBar;
 using ThePEG::Helicity::HelicityDefinitions;
+using ThePEG::Helicity::DiracRep;
 
 namespace Helicity {
 
@@ -54,84 +55,88 @@ public:
   inline SpinorBarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,Complex,
 			       Complex,Complex,Complex);
   // use a 5-momentum and specify all components (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,const Lorentz5Momentum &,const tcPDPtr &,Complex,
-			       Complex,Complex,Complex);
+  inline SpinorBarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,Complex,
+			       Complex,Complex,Complex,DiracRep);
   
   // use a 5-momentum and a LorentzSpinorBar 
   inline SpinorBarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,
 			       LorentzSpinorBar &);
   
   // use a 5-momentum (default Dirac representation)
-  inline SpinorBarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,Direction);
   // use a 5-momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,const Lorentz5Momentum &,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,
+			       int,Direction,DiracRep);
   
   // set all components of momentum (default Dirac representation)
   inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,Energy,
-			       const tcPDPtr &,int,int);
+			       const tcPDPtr &,int,Direction);
   // set all components of momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Energy,Energy,Energy,Energy,Energy,
-			       const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,Energy,
+			       const tcPDPtr &,int,Direction,DiracRep);
   
   // set 4-momentum components (default Dirac representation)
-  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,
+			       Direction);
   // set 4-momentum components (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Energy,Energy,Energy,Energy,const tcPDPtr &,
-			       int,int);
+  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,
+			       int,Direction,DiracRep);
   
   // set 4-momentum (default Dirac representation)
-  inline SpinorBarWaveFunction(LorentzVector,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(LorentzVector,const tcPDPtr &,int,Direction);
   // set 4-momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,LorentzVector,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(LorentzVector,const tcPDPtr &,int,Direction,DiracRep);
   
   // set mass zero momentum (default Dirac representation)
-  inline SpinorBarWaveFunction(Energy,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(Energy,const tcPDPtr &,int,Direction);
   // set mass zero momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Energy,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(Energy,const tcPDPtr &,int,Direction,DiracRep);
   
   // set 4 momentum and mass (default Dirac representation)
-  inline SpinorBarWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,Direction);
   // set 4 momentum and mass (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,LorentzVector,Energy,const tcPDPtr &,int,int);
+  inline SpinorBarWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,Direction,
+			       DiracRep);
   
   // default constructors (set the momentum and zero the Wavefunction)
   
   // use 5 momentum (default Dirac representation)
-  inline SpinorBarWaveFunction(Lorentz5Momentum,const tcPDPtr &,int); 
+  inline SpinorBarWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction); 
   // use 5 momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Lorentz5Momentum,const tcPDPtr &,int); 
+  inline SpinorBarWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction,DiracRep); 
   
   // set all components of momentum (default Dirac representation)
   inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,Energy,
-			       const tcPDPtr &,int);
+			       const tcPDPtr &,Direction);
   // set all components of momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Energy,Energy,Energy,Energy,Energy,
-			       const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,Energy,
+			       const tcPDPtr &,Direction,DiracRep);
   
   // set 4-momentum components (default Dirac representation)
-  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction);
   // set 4-momentum components (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Energy,Energy,Energy,Energy,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction,
+			       DiracRep);
   
   // set 4-momentum (default Dirac representation)
-  inline SpinorBarWaveFunction(LorentzVector,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(LorentzVector,const tcPDPtr &,Direction);
   // set 4-momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,LorentzVector,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(LorentzVector,const tcPDPtr &,Direction,DiracRep);
   
   // set mass zero momentum (default Dirac representation)
-  inline SpinorBarWaveFunction(Energy,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(Energy,const tcPDPtr &,Direction);
   // set mass zero momentum (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,Energy,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(Energy,const tcPDPtr &,Direction,DiracRep);
   
   // set 4 momentum and mass (default Dirac representation)
-  inline SpinorBarWaveFunction(LorentzVector,Energy,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction);
   // set 4 momentum and mass (specify Dirac representation)
-  inline SpinorBarWaveFunction(int,LorentzVector,Energy,const tcPDPtr &,int);
+  inline SpinorBarWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction,DiracRep);
   
   // default constructor (default Dirac representation)
   inline SpinorBarWaveFunction();
   // default constructor (specify Dirac representation)
-  inline SpinorBarWaveFunction(int);
+  inline SpinorBarWaveFunction(DiracRep);
   
   // destructor
   inline ~SpinorBarWaveFunction();
@@ -163,43 +168,46 @@ public:
   // reset functions
 
   // reset momentum, particle type and direction
-  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, int);
+  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, Direction);
 
   // reset momentum and direction
-  inline void reset(const Lorentz5Momentum &,int);
+  inline void reset(const Lorentz5Momentum &,Direction);
 
   // reset momentum 
   inline void reset(const Lorentz5Momentum &);
 
   // reset helicity (recalculates the spinor)
   inline void reset(int );
+  // reset the helicity (calculates the new spinor) (specify Dirac representation)
+  inline void reset(int,DiracRep);
+
 
   // reset the particle type and direction
-  inline void reset(const tcPDPtr &,int);
+  inline void reset(const tcPDPtr &,Direction);
 
   // reset the particle type
   inline void reset(const tcPDPtr &);
 
 private:
 
-      // zero the wavefunction (default Dirac representation)
-      inline void zeroWaveFunction();
-      // zero the wavefunction (specify Dirac representation)
-      inline void zeroWaveFunction(int);
-
-      // calculate the wavefunction (default Dirac representation)
-      inline void calculateWaveFunction(int);
-      // calculate the wavefunction (specify Dirac representation)
-      void calculateWaveFunction(int,int);
-
-      // check particle spin and set pointer
-      inline void checkParticle(const tcPDPtr &);
-
+  // zero the wavefunction (default Dirac representation)
+  inline void zeroWaveFunction();
+  // zero the wavefunction (specify Dirac representation)
+  inline void zeroWaveFunction(DiracRep);
+  
+  // calculate the wavefunction (default Dirac representation)
+  inline void calculateWaveFunction(int);
+  // calculate the wavefunction (specify Dirac representation)
+  void calculateWaveFunction(int,DiracRep);
+  
+  // check particle spin and set pointer
+  inline void checkParticle(const tcPDPtr &);
+  
 private:
-
-      // storage of the Lorentz SpinorBar wavefunction
-      LorentzSpinorBar _wf;
-
+  
+  // storage of the Lorentz SpinorBar wavefunction
+  LorentzSpinorBar _wf;
+  
 };
 }
 }
