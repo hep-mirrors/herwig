@@ -118,8 +118,7 @@ VectorMesonCurrent::current(bool vertex, const int imode, const int ichan,
       hwtemp= dynamic_ptr_cast<VectorSpinPtr>(vtemp);
     }
   // calculate the vectors
-  VectorWaveFunction wave(VectorWaveFunction(decay[0]->momentum(),
-					     decay[0]->dataPtr(),outgoing));
+  VectorWaveFunction wave(decay[0]->momentum(), decay[0]->dataPtr(), outgoing);
   for(int iy=-1;iy<2;++iy)
     {
       wave.reset(iy);
