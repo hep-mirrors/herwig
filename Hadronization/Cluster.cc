@@ -44,10 +44,16 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
     cerr << "Cluster Particle Data not defined. Cannot complete Hadronization "
 	 << "without ParticleData for id " << ExtraParticleID::Cluster << endl;
   }
-  _component.push_back(p1); 
-  _component.push_back(p2); 
-  _component.push_back(p3);
-
+  _component.push_back(new_ptr(Particle(*p1))); 
+  _component.push_back(new_ptr(Particle(*p2))); 
+  if(p3) _component.push_back(new_ptr(Particle(*p3)));
+  
+  /*  if(p3) _component.resize(3);
+  else _component.resize(2);
+  _component[0](*p1);
+  _component[1](*p2);
+  if(p3) _component[2](*p3);
+  */
   _isPerturbative.push_back(initPerturbative(p1));
   _isPerturbative.push_back(initPerturbative(p2));
   if(p3) _isPerturbative.push_back(initPerturbative(p3));
@@ -81,7 +87,7 @@ Cluster::Cluster(tcEventPDPtr x)
     _numComp(0),
     _id(0) {}
     
-Cluster::~Cluster() { /*cout << "Destroying Cluster" << flush << endl;*/ _component.clear(); }    
+Cluster::~Cluster() { /*cout << "Destroying Cluster" << flush << endl; _component.clear(); */}    
 
 Cluster::Cluster(const Cluster &x) 
   : Particle(x),

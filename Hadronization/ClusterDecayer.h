@@ -42,7 +42,7 @@ public:
   virtual ~ClusterDecayer();
   // Standard ctors and dtor.
 
-  void decay(const StepPtr&, ClusterVector & clusters) 
+  void decay(const StepPtr&) 
     throw(Veto, Stop, Exception);
   // Decays all clusters (not already decayed into a single hadron) into hadrons. 
 

@@ -194,7 +194,8 @@ namespace Herwig {
 
     bool        _isAvailable;
     tClusterPtr _reshufflingPartner; // transient to avoid cycles
-    tParticleVector _component;
+    ParticleVector _component;
+    //   vector<Particle> _component;
     vector<bool> _isBeamRemnant;
     vector<bool> _isPerturbative;
     int _numComp;

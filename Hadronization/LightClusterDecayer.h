@@ -54,8 +54,8 @@ public:
   virtual ~LightClusterDecayer();
   // Standard ctors and dtor.
 
-  void decay(const StepPtr &, ClusterVector & clusters) 
-    throw (Veto, Stop, Exception);
+  bool decay(const StepPtr &);
+  //    throw (Veto, Stop, Exception);
   // It does the decay of light hadron in one hadron: this requires
   // also a kinematical reshuffling for energy-momentum conservation
   // (this is done explicitly by the (private) method reshuffling() ).

@@ -132,17 +132,54 @@ handle(PartialCollisionHandler & ch, const tPVector & tagged,
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {
     printStep(pstep,"After ClusterFinder");
   }
+
+  bool lightOK = false;
+  short tried = 0;
+  while (!lightOK && tried++ < 10) {
+    pstep = ch.newStep();
+    _colourReconnector->rearrange(ch,pstep,clusters);
+    _clusterFissioner->fission(pstep);
+
+    if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {
+      printStep(pstep,"After ClusterFissioner");
+    }
+
+    pstep = ch.newStep();
+    lightOK = _lightClusterDecayer->decay(pstep);
+    if (!lightOK) {
+      ch.popStep(); ch.popStep(); 
+      if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
+	generator()->log() << "CluHad::handle(): throw away " 
+			   << tried 
+			   << ". attempt of LightClusterDecayer!" 
+			   << endl;
+      }
+      generator()->out() << "CluHad::handle(): throw away " 
+			 << tried 
+			 << ". attempt of LightClusterDecayer!" 
+			 << endl 
+			 << "  in evt#" << generator()->currentEventNumber() 
+			 << endl;	
+    }
+  } 
+  if (!lightOK)
+    throw Exception("CluHad::handle(): tried LightClusterDecayer 10 times!", Exception::eventerror);
   
-  pstep = ch.newStep();
-  _colourReconnector->rearrange(ch,pstep,clusters);
-  _clusterFissioner->fission(pstep, clusters);
-  
-  pstep = ch.newStep();
-  _lightClusterDecayer->decay(pstep, clusters);
-  _clusterDecayer->decay(pstep, clusters);
-  
+  if (lightOK && tried > 1 && HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) 
+    printStep(pstep,"After LightClusterDecayer");
+
+  _clusterDecayer->decay(pstep);
+
   // Debugging
   if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
+    for (int j=4; j<6; j++) {
+      cStepPtr temp = ch.currentCollision()->step(j); 
+      for (ParticleSet::iterator it = temp->all().begin();
+	   it!= temp->all().end(); it++) { 
+	if((*it)->id() == ExtraParticleID::Cluster) 
+	  clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
+      }
+    }
     debuggingInfo(ch, clusters);
   }
 
@@ -371,7 +408,8 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
 			   << pc(i)->data().constituentMass()
 			   << "   current=" << pc(i)->mass()
 			   << "   invariant=" << pc(i)->momentum().m() 
-			   << endl;
+			   << endl
+			   << *pc(i) << endl;
 	if(ptrClu->isStatusInitial()) {
 	  invDistInitialComponent_BeamVtx += 
 	    (pc(i)->vertex() - vertexPosition).mag();

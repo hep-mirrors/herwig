@@ -82,7 +82,7 @@ public:
   virtual ~ClusterFissioner();
   // Standard ctors and dtor.
 
-  void fission(const StepPtr &, ClusterVector & clusters);
+  void fission(const StepPtr &);
   // Split either heavy clusters or beam clusters recursively until all 
   // children have mass below some threshold. 
   // For beam clusters, they are split only if the soft underlying event

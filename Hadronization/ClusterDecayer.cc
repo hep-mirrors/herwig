@@ -73,19 +73,38 @@ void ClusterDecayer::Init() {
 }
 
 
-void ClusterDecayer::decay(const StepPtr &pstep, ClusterVector& clusters) 
+void ClusterDecayer::decay(const StepPtr &pstep) 
   throw(Veto, Stop, Exception) {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
   // into single hadron) then decay them into two hadrons.
- 
+  ClusterVector clusters; 
+  for (ParticleSet::iterator it = pstep->particles().begin();
+       it!= pstep->particles().end(); it++) { 
+    if((*it)->id() == ExtraParticleID::Cluster) 
+      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
+  }
   for (ClusterVector::const_iterator it = clusters.begin();
 	 it != clusters.end(); ++it) {
     if ((*it)->isAvailable() && !(*it)->isStatusFinal() 
 	&& (*it)->isReadyToDecay()) {   
       decayIntoTwoHadrons(pstep, *it);
     }
+  }
+  
+  if (HERWIG_DEBUG_LEVEL == 66) {
+    cout << "Generating Kupco tables for Mclu = 500*GeV " 
+	 << "(see Hadronization/HadronSelector.cc for Details)" << endl; 
+    short ii, jj; 
+    for (ii=1; ii<6; ii++) for (jj=1; jj<6; jj++) {
+      cout << "#=======================================" 
+	   << "=======================================" << endl
+	   << "#--- (" << ii << ", " << jj << ") ---" 
+	   << endl;
+      _hadronsSelector->chooseHadronsPair(500*GeV,ii,-jj);
+      cout << endl; 
+    }  
   }
 }
 

@@ -75,7 +75,7 @@ void ClusterFissioner::Init() {
 }
 
 
-void ClusterFissioner::fission(const StepPtr &pstep, ClusterVector &clusters)
+void ClusterFissioner::fission(const StepPtr &pstep)
 {
 
   // Loop over the (input) collection of cluster pointers, and store in 
@@ -112,6 +112,14 @@ void ClusterFissioner::fission(const StepPtr &pstep, ClusterVector &clusters)
 
   vector<tClusterPtr> splitClusters; 
   int numBeamClusters = 0;
+
+  ClusterVector clusters; 
+  for (ParticleSet::iterator it = pstep->particles().begin();
+       it!= pstep->particles().end(); it++) { 
+    if((*it)->id() == ExtraParticleID::Cluster) 
+      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
+  }
+
   for(ClusterVector::iterator it = clusters.begin() ; 
       it != clusters.end() ; ++it) {
  
@@ -623,12 +631,6 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
   // the method gives up and returns false; otherwise, when it succeeds, it
   // returns true. 
   
-  // Initialization for the power-like ("normal") mass distribution
-  //double Mmin_toExp1 = pow( m1+m , exponent1 );
-  //double Mmax_toExp1 = pow( Mclu  , exponent1 );
-  //double Mmin_toExp2 = pow( m2+m , exponent2 );
-  //double Mmax_toExp2 = pow( Mclu  , exponent2 );
-
   // Initialization for the exponential ("soft") mass distribution.
   InvEnergy b = 2.0 / average;
   Energy max  = Mclu - m1 - m2 - 2.0*m;
@@ -637,7 +639,6 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
     rmin = exp(-b*max);
   } 
   int counter = 0, max_loop = 1000;
-
   do {    
     // The choice of which of the two mass distributions to use for each of the
     // two cluster children is dictated by  iRemnant, as follows:
@@ -650,9 +651,12 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
     // iv)  otherwise      both Mclu1 and Mclu2 are extracted from the exponential
     //                     distribution,
     if ( iRemnant == 0  ||  iRemnant == 2 ) { 
-      // Mclu1 = pow( rnd( Mmin_toExp1, Mmax_toExp1) , 1.0/exponent1 );
-      Mclu1 = m1 + (Mclu - m1 - m2)*pow( rnd(), 1.0/exponent1 );
-      // cout << Mclu1 << " ";
+      // Albertos: Mclu1 = pow( rnd( Mmin_toExp1, Mmax_toExp1) , 1.0/exponent1 );
+      // HERWIG:   Mclu1 = m1 + (Mclu - m1 - m2)*pow( rnd(), 1.0/exponent1 );
+      // more efficient version, same density but taking into account 
+      // 'in phase space from' beforehand      
+      Mclu1 = pow(rnd(pow(Mclu-m1-m2-m, exponent1), pow(m, exponent1)), 
+		  1./exponent1) + m1;
     } else { 
       double r1 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
       if ( r1 > rmin ) {
@@ -662,9 +666,10 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
       }
     }
     if ( iRemnant == 0  ||  iRemnant == 1 ) { 
-      // Mclu2 = pow( rnd( Mmin_toExp2, Mmax_toExp2) , 1.0/exponent2 );
-      Mclu2 = m2 + (Mclu - m1 - m2)*pow( rnd(), 1.0/exponent2 );
-      // cout << Mclu2 << " " << exponent1 << " " << exponent2 << endl;
+      // Albertos: Mclu2 = pow( rnd( Mmin_toExp2, Mmax_toExp2) , 1.0/exponent2 );
+      // HERWIG:   Mclu2 = m2 + (Mclu - m1 - m2)*pow( rnd(), 1.0/exponent2 );
+      Mclu2 = pow(rnd(pow(Mclu-m1-m2-m, exponent2), pow(m, exponent2)), 
+		  1./exponent2) + m2;
     } else {
       double r2 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
       if ( r2 > rmin ) {

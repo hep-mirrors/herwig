@@ -58,9 +58,8 @@ void LightClusterDecayer::Init() {
 }
 
 
-void LightClusterDecayer::decay(const StepPtr &pstep, 
-				ClusterVector & clusters) 
-  throw (Veto, Stop, Exception) {
+bool LightClusterDecayer::decay(const StepPtr &pstep) {
+  //  throw (Veto, Stop, Exception) {
 
   // Loop over all clusters, and for those that were not heavy enough
   // to undergo to fission, check if they are below the threshold
@@ -96,6 +95,12 @@ void LightClusterDecayer::decay(const StepPtr &pstep,
   // otherwise, the would-be redefined cluster could have undefined
   // components). 
   vector<tClusterPtr> redefinedClusters;
+  ClusterVector clusters; 
+  for (ParticleSet::iterator it = pstep->particles().begin();
+       it!= pstep->particles().end(); it++) { 
+    if((*it)->id() == ExtraParticleID::Cluster) 
+      clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
+  }
 
   for (ClusterVector::iterator it = clusters.begin();
        it != clusters.end(); ++it) {
@@ -200,9 +205,9 @@ void LightClusterDecayer::decay(const StepPtr &pstep,
       // Loop sequentially the multimap.
       multimap<Length,tClusterPtr>::const_iterator mmapIt = candidates.begin();
       bool found = false;
-      while (!found && mmapIt != candidates.end()) {
+      while (!found && mmapIt  != candidates.end()) {
 	found = reshuffling(idhad, *it, (*mmapIt).second, pstep, redefinedClusters);
-	++mmapIt;
+	if (!found) ++mmapIt;
       }
       
       if (!found) {
@@ -214,7 +219,7 @@ void LightClusterDecayer::decay(const StepPtr &pstep,
 	      numCluAvailable++;
 	    } else if((*iter)->isAvailable() && (*iter)->hasBeenReshuffled()) {
 	      numCluAlreadyReshuffled++;
-	    }         
+	    }
 	  }
 	  generator()->log() << "LightClusterDecayer::decay "
 			     << " (just before throwing the exception) " << endl 
@@ -223,9 +228,10 @@ void LightClusterDecayer::decay(const StepPtr &pstep,
 			     << "  still available=" << numCluAvailable 
 			     << endl << endl;
 	}
-	throw Exception("LightClusterDecayer::decay "
-			"***Skip event: too light clusters (reshuffling problem)***",
-			Exception::eventerror);
+// 	throw Exception("LightClusterDecayer::decay "
+// 			"***Skip event: too light clusters (reshuffling problem)***",
+// 			Exception::eventerror);
+	return false; 
       } 
       
       // Debugging.
@@ -256,7 +262,7 @@ void LightClusterDecayer::decay(const StepPtr &pstep,
        it != redefinedClusters.end(); ++it) {
     clusters.push_back(*it);
   }
-
+  return true;
 }
 
 
@@ -309,7 +315,6 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   pSystem.rescaleMass();  // set the mass as the invariant of the quadri-vector
   Energy mSystem = pSystem.mass();
   Energy mclu2 = cluPtr2->mass();
-  //bool normalSecondCluster = true;
   //***TRICK***: uncomment the following line and replace it to the 
   //             if statement below if you want to test  LightClusterDecayer
   //             with a huge statistics.
@@ -318,32 +323,9 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   Energy mLHP2 = _hadronsSelector->massLightestHadronsPair(part3->id(), part4->id());
   Energy mLH2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
 
-//   cerr << "LCD masses (sys c1 c2 | had1 LH2 LHP2): " << mSystem << " "
-//        << cluPtr1->mass() << " "
-//        << mclu2 << " | "
-//        << mhad1 << " "
-//        << mLH2 << " "
-//        << mLHP2 << endl;
-
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
   else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
   else return false;
-
-  /*  if ( mSystem > mhad1 + mclu2 ) {
-    LDOptions = RedClu;
-  } else {    
-    mclu2 = _hadronsSelector->massLightestHadronsPair(part3->id(), part4->id());    
-    if (mSystem > mhad1 + mclu2 ) {
-      LDOptions = HadPair;
-    } else {
-      mclu2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
-      if ( mSystem > mhad1 + mclu2 ) { 
-	LDOptions = SingleHad;
-      } else {	
-	return false;   
-      }
-    }
-    }*/
 
   // Let's call from now on "Sys" the system of the two clusters, and
   // had1 (of mass mhad1) the lightest hadron in which the first
@@ -368,17 +350,6 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
 
   // Sanity check (normally skipped) to see if the energy-momentum is conserved.
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
-
-//     cerr << "LCDD: " << mSystem << " "
-// 	 << cluPtr1->mass() << " "
-// 	 << mclu2 << " | "
-// 	 << mhad1 << " "
-// 	 << mLH2 << " "
-// 	 << mLHP2 << endl
-// 	 << "  pSyst = " << pSystem << endl 
-// 	 << "  phad1 = " << phad1 << endl 
-// 	 << "  pclu2 = " << pclu2 << endl;
-    
     Lorentz5Momentum diff = pSystem - ( phad1 + pclu2 );
     Energy ediff = fabs( diff.m() );
     if ( ediff > 1e-3*GeV ) {
@@ -423,7 +394,7 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
     // light cluster (cluster "1").
     // The rationale of this is to preserve completely all of the information.
     ClusterPtr cluPtr2new = ClusterPtr();
-    if (part3 && part4) cluPtr2new = new_ptr(Cluster(part3,part4)); 
+    if(part3 && part4) cluPtr2new = new_ptr(Cluster(part3,part4));
 
     cluPtr2new->set5Momentum( pclu2 );
     cluPtr2new->setVertex( cluPtr2->vertex() );
@@ -443,10 +414,10 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
     // but then later should not necessary be the same), and furthermore it allows
     // us not to loose any information, in the sense that we can always, later on,
     // to find the original momenta of the two components before the reshuffling.
-    Lorentz5Momentum p3 = part3->momentum();
+    Lorentz5Momentum p3 = part3->momentum(); //p3new->momentum();
     p3.boost( - (cluPtr2->momentum()).boostVector() );  // from LAB to clu2 (old) frame
     p3.boost( pclu2.boostVector() );    // from clu2 (new) to LAB frame
-    Lorentz5Momentum p4 = part4->momentum();
+    Lorentz5Momentum p4 = part4->momentum(); //p4new->momentum();
     p4.boost( - (cluPtr2->momentum()).boostVector() );  // from LAB to clu2 (old) frame 
     p4.boost( pclu2.boostVector() );    // from clu2 (new) to LAB frame    
     cluPtr2new->particle(0)->set5Momentum(p3);

@@ -320,8 +320,6 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
     Energy sumWeight = Energy();  // store the sum weight on the table.
     int flav1 = convertIdToFlavour(id1);
     int flav2 = convertIdToFlavour(id2);
-//     cerr << "--- new Cluster, Mc/MeV = " << cluMass/MeV << endl;
-//     cerr << id1 << " " << id2 << " " << flav1 << " " << flav2 << endl;
     if(flav1 != 0  &&  flav2 !=0 ) {
       for(int i=D; i <= numConsideredQuarksDiquarks; ++i) {
 // 	cerr << "i = " << i
@@ -420,10 +418,84 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
       int iChan;
       double sumWt = 0.0;
       double r = rnd()*sumWeight;
-      for(iChan = 0; iChan<numChan; iChan++) {
-	sumWt += kupcoTable[iChan].weight;
-	if(r <= sumWt) break;
+      //      double sumBar = 0.;
+//       for(iChan = 0; iChan<numChan; iChan++) {
+// 	if ((kupcoTable[iChan].idHad1 < 10000 
+// 	     && kupcoTable[iChan].idHad1 >= 1000) || 
+// 	    (kupcoTable[iChan].idHad2 < 10000 
+// 	     && kupcoTable[iChan].idHad2 >= 1000)) {
+// 	  sumBar += kupcoTable[iChan].weight; }
+// 	cerr << "h1 = " << kupcoTable[iChan].idHad1
+// 	     << " h2 = " << kupcoTable[iChan].idHad2 << endl
+// 	     << " P(h1, h2) = " << kupcoTable[iChan].weight 
+// 	     << ", hadwt1 "
+// 	     << _vecHad[convertIdToFlavour(kupcoTable[iChan].idHad1)].overallWeight
+// 	     << ", hadWt2 = " 
+// 	     << _vecHad[convertIdToFlavour(kupcoTable[iChan].idHad2)].overallWeight
+// 	     << endl; 
+	
+//       }
+
+      // print the full Kupco table for 
+      if (cluMass > 499*GeV && generator()->currentEventNumber() == 1 
+	  && HERWIG_DEBUG_LEVEL == 66) {
+	Energy M[6], P[6], pcm; 
+	double sumw[6];
+	int k, fl1, fl2;
+	for (k=0; k<6; k++) sumw[k] = 0.0;
+	M[0] = .5*GeV; M[1] = 1*GeV; M[2] = 2*GeV; M[3] = 4*GeV; 
+	M[4] = 16*GeV; M[5] = 32*GeV; 
+	for(iChan = 0; iChan<numChan; iChan++) {
+	  fl1 = kupcoTable[iChan].idHad1;
+	  fl2 = kupcoTable[iChan].idHad2;
+	  pcm = Kinematics::
+	    pstarTwoBodyDecay(cluMass, getParticleData(fl1)->mass(), 
+			      getParticleData(fl2)->mass());
+// 	  cerr << cluMass << " " 
+// 	       << getParticleData(fl1)->mass() << " " 
+// 	       << getParticleData(fl2)->mass() << " " 
+// 	       << pcm/GeV << endl; 
+	  for (k=0; k<6; k++) {
+	    P[k] = Kinematics::
+	      pstarTwoBodyDecay(M[k], getParticleData(fl1)->mass(), 
+				getParticleData(fl2)->mass());
+	    if (pcm > 0) sumw[k] += kupcoTable[iChan].weight/pcm*P[k];	
+	  }	  
+	}
+	for(iChan = 0; iChan<numChan; iChan++) {
+	  fl1 = kupcoTable[iChan].idHad1;
+	  fl2 = kupcoTable[iChan].idHad2;
+	  cout << setw(3) << iChan 
+	       << setw(6) << kupcoTable[iChan].idQ
+	       << setw(9) << kupcoTable[iChan].idHad1
+	       << setw(9) << kupcoTable[iChan].idHad2
+	       << setw(15) << getParticleData(kupcoTable[iChan].idHad1)->PDGName()
+	       << setw(15) << getParticleData(kupcoTable[iChan].idHad2)->PDGName();
+	  for (k=0; k<6; k++) {
+	    pcm = Kinematics::
+	      pstarTwoBodyDecay(cluMass, getParticleData(fl1)->mass(), 
+				getParticleData(fl2)->mass());
+	    P[k] = Kinematics::
+	      pstarTwoBodyDecay(M[k], getParticleData(fl1)->mass(), 
+				getParticleData(fl2)->mass());
+	    if (pcm > 0 && sumw[k] > 0) {
+	      cout << setw(10) << setprecision(4) 
+		   << kupcoTable[iChan].weight/pcm*P[k]/sumw[k];	
+	    } else {
+	      if (pcm > 0) cout << setw(8) << setprecision(5) << sumw[k];
+	      else cout << setw(8) << setprecision(5) << "-1";
+	    }
+	  }
+	  cout << endl;
+	}
       }
+//       cerr << "r = " << r 
+// 	   << ", sum = " << sumWeight
+// 	   << ", selected ch#" << iChan 
+// 	   << ", h1 = " << kupcoTable[iChan].idHad1
+// 	   << ", h2 = " << kupcoTable[iChan].idHad2
+// 	   << ", P(B) = " << sumBar/sumWeight
+// 	   << endl;
       
 	
       // Take the lightest pair if too many attempts failed
@@ -433,6 +505,11 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
 			 "***Too many failed attempts, take lightest pair*** ",
 			 Exception::warning));
       */
+
+      for(iChan = 0; iChan<numChan; iChan++) {
+	sumWt += kupcoTable[iChan].weight;	
+	if(r <= sumWt) break;
+      }
 
       if(iChan == numChan) {
 	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair"
