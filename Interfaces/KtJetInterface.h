@@ -14,6 +14,7 @@
 //
 
 #include "KtJet/KtLorentzVector.h"
+#include "KtJet/KtEvent.h"
 #include "Pythia7/Config/Pythia7.h"
 #include "Herwig++/Config/Herwig.h"
 #include "Pythia7/Repository/Strategy.fh"

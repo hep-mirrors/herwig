@@ -24,10 +24,10 @@ EXTRAINCLUDES = -I$(AMEGICPATH)/Include -I$(KTJETPATH)
 
 include ../Config/Makefile.common
 
-CXXDEBUGFLAG = -g
+CXXDEBUGFLAG = -g 
 
-lib: $(LIBOBJECTS)
-
+lib: $(LIBOBJECTS) 
+	cd ../lib; ln -s ../Interfaces/.so .; cd -
 %.exe:
 
 depend:
@@ -35,9 +35,11 @@ depend:
 
 libHwAmegic.so: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) AmegicInterface.o -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
 
 libHwKtJet.so: $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) KtJetInterface.o -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
 
 # DO NOT DELETE THIS LINE -- g++dep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.
@@ -69,6 +71,7 @@ AmegicInterface.o: AmegicInterface.cc \
 	 ../../Pythia7/CLHEPWrap/Transverse.fh \
 	 ../../Pythia7/CLHEPWrap/SystemOfUnits.h \
 	 ../../Pythia7/CLHEPWrap/CLHEP.h \
+	 ../../Pythia7/Utilities/UnitIO.h \
 	 ../../Pythia7/Config/Constants.h \
 	 ../../Pythia7/Config/std.h \
 	 ../../Pythia7/Config/Pointers.h \
@@ -185,6 +188,8 @@ AmegicInterface.o: AmegicInterface.cc \
 	 ../../Pythia7/EventRecord/EventInfoBase.h \
 	 ../../Pythia7/EventRecord/EventInfoBase.icc \
 	 ../../Pythia7/EventRecord/ColourLine.h \
+	 ../../Pythia7/EventRecord/ColourSinglet.h \
+	 ../../Pythia7/EventRecord/ColourSinglet.icc \
 	 ../../Pythia7/EventRecord/ColourLine.icc \
 	 ../../Pythia7/EventRecord/ColourBase.icc \
 	 ../../Pythia7/EventRecord/SpinBase.h \
@@ -242,6 +247,12 @@ KtJetInterface.o: KtJetInterface.cc \
 	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtLorentzVector.h \
 	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtUtil.h \
 	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtLorentzVector.icc \
+	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtEvent.h \
+	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtDistanceInterface.h \
+	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtJetTable.h \
+	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtRecomInterface.h \
+	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtJetTable.icc \
+	 /var/nwork/pcck/gieseke/mc/ktjet/KtJet/KtEvent.icc \
 	 ../../Pythia7/Config/Pythia7.h \
 	 ../../Pythia7/Config/config.h \
 	 ../../Pythia7/Pointer/Ptr.h \
@@ -264,6 +275,7 @@ KtJetInterface.o: KtJetInterface.cc \
 	 ../../Pythia7/CLHEPWrap/Transverse.fh \
 	 ../../Pythia7/CLHEPWrap/SystemOfUnits.h \
 	 ../../Pythia7/CLHEPWrap/CLHEP.h \
+	 ../../Pythia7/Utilities/UnitIO.h \
 	 ../../Pythia7/Config/Constants.h \
 	 ../../Pythia7/Config/std.h \
 	 ../../Pythia7/Config/Pointers.h \
@@ -304,6 +316,8 @@ KtJetInterface.o: KtJetInterface.cc \
 	 ../../Pythia7/EventRecord/EventInfoBase.h \
 	 ../../Pythia7/EventRecord/EventInfoBase.icc \
 	 ../../Pythia7/EventRecord/ColourLine.h \
+	 ../../Pythia7/EventRecord/ColourSinglet.h \
+	 ../../Pythia7/EventRecord/ColourSinglet.icc \
 	 ../../Pythia7/EventRecord/ColourLine.icc \
 	 ../../Pythia7/EventRecord/ColourBase.icc \
 	 ../../Pythia7/EventRecord/SpinBase.h \
