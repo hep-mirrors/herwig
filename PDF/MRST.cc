@@ -210,7 +210,7 @@ void MRST::readSetup(istream &is) throw(SetupException) {
 }
 
 void MRST::initialize(bool reread) {
-  if(reread) cout << "Opening file " << _file << endl;
+  //  if(reread) cout << "Opening file " << _file << endl;
   int i,n,m,k,l,j; // counters
   double dx,dq,dtemp;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -274,7 +274,7 @@ void MRST::initialize(bool reread) {
      }
      datafile.close();
 
-     cout << "File read!" << endl;
+     //     cout << "File read!" << endl;
   }
 
   // Now calculate the derivatives used for bicubic interpolation
