@@ -32,10 +32,7 @@ install: lib
 	for dir in $(SUBDIRS) lib src ; do cd $$dir ; $(MAKE) VERSION=$(VERSION) -$(MAKEFLAGS) install ; cd .. ; done
 
 doc:
-	for dir in $(SUBDIRS) ; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) doc ; cd .. ; done
-
-Doc/h2html: 
-	cd Doc; dohtml.pl; cd ..
+	@cd Doc ; $(MAKE) doc ; cd ..
 
 configure: configure.in
 	autoconf
