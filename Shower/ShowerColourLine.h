@@ -26,6 +26,7 @@
 
 // CLASSDOC SUBSECTION See also:
 //
+// <a href="http:ColourLine.html">ColourLine.h</a>,
 // <a href="http:ShowerParticle.html">ShowerParticle.h</a>,
 // 
 

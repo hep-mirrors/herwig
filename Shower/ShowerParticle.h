@@ -66,6 +66,7 @@
 //
 // CLASSDOC SUBSECTION See also:
 //
+// <a href="http:Particle.html">Particle.h</a>, <BR>
 // <a href="http:ShowerConfig.html">ShowerConfig.h</a>, <BR>
 // <a href="http:ShowerIndex.html">ShowerIndex.h</a>, <BR>
 // <a href="http:ShowerColourLine.html">ShowerColourLine.h</a>, <BR>
