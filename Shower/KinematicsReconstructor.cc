@@ -167,7 +167,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
   }
 
   atLeastOnce = false;
-  
+
   for ( MapShower::const_iterator cit = mapShowerHardJets.begin();
 	cit != mapShowerHardJets.end(); ++cit ) {
     
@@ -189,7 +189,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
 
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
 	sum_qi += tempJetKin.q.mag();
-	generator()->log() << "  reconstructed "
+	generator()->log() << "  reconstructed xxx "
 			   << cit->first->data().PDGName()
 			   << "-jet, q = "
 			   << cit->first->momentum()
@@ -643,11 +643,11 @@ solveBoost( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentu
 			     sqrt(kps + Q2), sqrt(Q2) ); 
     Lorentz5Momentum test = newq;     
     qprime = qprime - (R*test);  
-
+    //    generator()->log() << "  boohoo!" << endl;
     generator()->log() << "KinematicsReconstructor::solveBoost full _______________________________________"<< endl; 
     if (k>1. || k<0) 
       generator()->log() << "  Warning! invalid k!"<< endl; 
-    generator()->log() << "  Rotate around " << ax/ax.mag() 
+    generator()->log() << "  Rotate around " << ((ax.mag()/MeV > 1e-4) ? ax/ax.mag() : ax)
 		       << ", angle = " << delta << "." << endl
 		       << "  constr-trans = " << qprime;
     if( sqr(qprime.x()/MeV) > 1e-4 

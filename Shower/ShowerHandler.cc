@@ -20,7 +20,7 @@
 #include "Pythia7/MatrixElement/MEBase.h"
 #include "Pythia7/PDT/Decayer.h"
 #include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/MatrixElement/PhaseSpaceBase.h"
+// #include "Pythia7/MatrixElement/PhaseSpaceBase.h"
 #include "Pythia7/Handlers/XComb.h"
 #include "ShowerParticle.h"
 #include "Pythia7/EventRecord/ColourLine.h"
@@ -603,7 +603,8 @@ void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {
        cit != _particles.end(); ++cit ) {
     if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
       pstep->addDecayNoCol((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
-      // pstep->addDecayProduct((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
+      //      pstep->addDecayProduct((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit), static_cast<bool>(false));
+      //pstep->addDecayProduct(dynamic_ptr_cast<tcPPtr>((*cit)->getP7base()), dynamic_ptr_cast<tPPtr>(*cit), false);
       (*cit)->addChildrenEvtRec(pstep);   
     }
   }  

@@ -77,6 +77,7 @@ void ShowerParticle::deepPrintInfo() {
 }
 
 void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
+  //  tcPPtr dum; 
   tPPtr dum; 
   tParticleVector yet; 
   tParticleVector addCh; 
@@ -91,7 +92,8 @@ void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
     }
     while( !addCh.empty() ) {       
       sp->addDecayNoCol(dum, addCh.back());    
-      // sp->addDecayProduct(dum, dynamic_ptr_cast<tPPtr>(addCh.back()));    
+      // dum has to be a tcPPtr for this
+      // sp->addDecayProduct(dum, dynamic_ptr_cast<tPPtr>(addCh.back()), false);    
       addCh.pop_back(); 
     }
   }
