@@ -376,6 +376,11 @@ bool SplittingGenerator::isFSRadiationON(const ShowerIndex::InteractionType inte
 pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
 ( tPartCollHdlPtr ch, ShowerParticle & particle, const bool reverseAngularOrder ) const {
   
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+    generator()->log() << "SplittingGenerator::chooseForwardBranching(): "
+      		       << " ===> START DEBUGGING <=== " << endl; 
+  }
+  
   Energy newQ = Energy();
   tSudakovFormFactorPtr sudakov = tSudakovFormFactorPtr();
   
@@ -392,6 +397,8 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	tSudakovFormFactorPtr candidateSudakov = cit->second;
 	Energy candidateNewQ = Energy();
 	if ( candidateSudakov ) {
+	  // *** ACHTUNG *** some preliminary angular ordering...
+	  // the z-factor should be put in here by hand.
 	  candidateNewQ = candidateSudakov->
 	    generateNextBranching( ch, particle.evolutionScales()[i], reverseAngularOrder );
 	  if ( ( candidateNewQ > newQ  &&  ! reverseAngularOrder ) ||
@@ -402,6 +409,16 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	}
       } 
     }
+  }
+
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+    generator()->log() << "Try to split a "
+		       << particle.data().PDGName() 
+		       << " in QCD, (Q_ini -> Q_fin) = (" 
+		       << particle.evolutionScales()[ShowerIndex::QCD] 
+		       << " -> " 
+		       << newQ 
+		       << "); "  << endl;
   }
 
   // Then, if a branching has been selected, create the proper 
@@ -426,12 +443,21 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	showerKin->z( sudakov->z() );
 	showerKin->phi( sudakov->phi() );
 
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	  generator()->log() << "SplittingGenerator::chooseForwardBranching(): "
+			     << " ===> END DEBUGGING <=== " << endl; 
+	}
 	return pair<ShoKinPtr,tSudakovFormFactorPtr>( showerKin, sudakov );
 
       }
     }
   }
   
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+    generator()->log() << "SplittingGenerator::chooseForwardBranching(): "
+      		       << " ===> END DEBUGGING <=== " << endl; 
+  }
+
   return pair<ShoKinPtr,tSudakovFormFactorPtr>( ShoKinPtr(), tSudakovFormFactorPtr() );
 
 }
@@ -439,7 +465,7 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 
 pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranching
 ( tPartCollHdlPtr ch, ShowerParticle & particle ) const {
-  
+
   Energy newQ = Energy();
   tSudakovFormFactorPtr sudakov = tSudakovFormFactorPtr();
   

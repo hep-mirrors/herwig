@@ -15,6 +15,7 @@
 #include "Pythia7/Interface/RefVector.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
+#include "Pythia7/Repository/EventGenerator.h"
 
 using namespace Herwig;
 
@@ -138,7 +139,7 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
   
   // create a vector with pointers to the relevant ShowerKinematics objects.
   tCollecShoKinPtr theChildren; 
-  theChildren.clear();
+  // theChildren.clear();
 
   //***LOOKHERE*** Following the tree of children and grand-children of the 
   //               particleJetParent, find the "reconstruction fixed points"
@@ -157,8 +158,8 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
       // reconstrunct again for any child:
       if ( !reconstructTimeLikeJet( *cit ) ) {
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-	  //generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: " 
-	  //		     << "failed!" << endl; 
+	  generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: " 
+	  		     << "failed!" << endl; 
 	}
 	isOK = false; 
       }

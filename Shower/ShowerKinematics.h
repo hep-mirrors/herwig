@@ -92,12 +92,18 @@ public:
   // considered (QCD, QED, EWK, ...) as defined in <!class>ShowerIndex<!!class>. 
   // This method should be used only if <!id>isTheJetStartingPoint()<!!id> is true.
 
+  inline Energy qtilde() const;
+  inline void qtilde( const Energy inputQtilde );
+  // Access to/set the scale of the splitting.
+
 private:
 
   ShowerKinematics & operator=(const ShowerKinematics &);
   //  Private and non-existent assignment operator.
 
   bool _isTheJetStartingPoint;
+
+  Energy _qtilde;
 
 };
 

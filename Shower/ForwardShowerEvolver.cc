@@ -72,8 +72,7 @@ timeLikeShower( tPartCollHdlPtr ch,
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "ForwardShowerEvolver::timeLikeShower "
 		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() 
-		       << endl;
+		       << "EventNumber = " << generator()->currentEventNumber() << endl; 
   }
 
   bool hasEmitted = false;
@@ -90,11 +89,34 @@ timeLikeShower( tPartCollHdlPtr ch,
     pair<ShoKinPtr, tSudakovFormFactorPtr> pairShowerKinSudakov = 
       _pointerSplittingGenerator->chooseForwardBranching(ch, *part, specialDecay);
 
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      if ( pairShowerKinSudakov.first && pairShowerKinSudakov.second ) {
+	generator()->log() << "-- Yet " <<  particlesYetToShower.size() + 1
+			   << " to shower, next is (name, int) = (" 
+			   << part->data().PDGName() 
+			   << ", "
+			   << pairShowerKinSudakov.second->splitFun()->interactionType()
+			   << "), (Q_ini -> Q_fin) = (" 
+			   << part->evolutionScales()[pairShowerKinSudakov.second->splitFun()->interactionType()] 
+			   << " -> " 
+			   << pairShowerKinSudakov.first->qtilde() 
+			   << "); "  << endl;
+      } else {
+	generator()->log() << "-- No branching occured" << endl; 
+      }
+    }
+    
+
     //***LOOKHERE***  accept it according to the  showerConstrainer  and soft correction;
 
     if ( pairShowerKinSudakov.first == ShoKinPtr()  ||  
 	 pairShowerKinSudakov.second == tSudakovFormFactorPtr() ) {
 
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	generator()->log() << "-- no further splitting, rhoD propagtion should start here."
+			   << endl;
+      }
+      
       //***LOOKHERE*** rhoD propagation;
 
     } else {
@@ -137,12 +159,27 @@ timeLikeShower( tPartCollHdlPtr ch,
 	}
 	showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
 
+	// *** ACHTUNG *** set the recent scales at which the particles are produced
+	// here might be the place to intorduce angular ordering
+	const ShowerIndex::InteractionType interaction = splitFun->interactionType(); 
+	const Energy scale = part->showerKinematics()->qtilde(); 
+	showerProduct1->setEvolutionScale(interaction, scale);
+	showerProduct2->setEvolutionScale(interaction, scale);
+
 	// Set the Sudakov kinematics variables of the branching products.
         vector<double> sudAlphaProducts;
 	vector<Energy> sudPxProducts, sudPyProducts;
-        part->showerKinematics()->
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	  generator()->log() << "ForwardShowerEvolver::timeLikeShower: "
+			     << "will call updateChildren() now:" << endl; 
+	}
+	part->showerKinematics()->
 	  updateChildren( part->sudAlpha(), part->sudPx(), part->sudPy(),
 			  sudAlphaProducts, sudPxProducts, sudPyProducts );  
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	  generator()->log() << "ForwardShowerEvolver::timeLikeShower: "
+			     << "call to updateChildren() successfull!" << endl; 
+	}	
 	if ( sudAlphaProducts.size() == 2  &&
 	     sudPxProducts.size() == 2  && sudPyProducts.size() == 2 ) {
 	  showerProduct1->sudAlpha( sudAlphaProducts[0] ); 

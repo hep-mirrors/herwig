@@ -27,11 +27,11 @@ Energy GtoQQbarSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch,
   //               BELOW IS JUST A TEMPORARY FAKE
   if (reverseAngularOrder) {
     _q = startingScale / UseRandom::rnd();
+    _z = UseRandom::rnd(); 
   } else {
-    _q = startingScale * UseRandom::rnd();
+    get_qz(false, -2., .8, max(.75*GeV, splitFun()->massEmitter()), startingScale, _q, _z); 
   }
-  _z = 0.0;
-  _phi = ( UseRandom::rndbool() ? 1.0 : -1.0 ) * 3.1415*UseRandom::rnd();
+  _phi = 2.*pi*UseRandom::rnd();
  
   return _q;
 

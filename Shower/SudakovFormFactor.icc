@@ -59,5 +59,8 @@ namespace Herwig {
     return _phi;
   }
   
+  inline double SudakovFormFactor::qtilde() const {
+    return _q;
+  }
 
 }
