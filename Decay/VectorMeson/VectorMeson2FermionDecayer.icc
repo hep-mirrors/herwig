@@ -1,0 +1,120 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorMeson2FermionDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
+{
+  // rho -> e+e-, mu+mu
+  _coupling.push_back(0.118/137./0.7711/0.7711);
+  _coupling.push_back(0.118/137./0.7711/0.7711);
+  _incoming.push_back(113);
+  _incoming.push_back(113);
+  _outgoing1.push_back(11);_outgoing2.push_back(-11);
+  _outgoing1.push_back(13);_outgoing2.push_back(-13);
+  _maxweight.push_back(0.00672387);
+  _maxweight.push_back(0.00670942);
+  // omega -> e+e-, mu+mu-
+  _coupling.push_back(0.107/137./0.78257/0.78257);
+  _coupling.push_back(0.107/137./0.78257/0.78257);
+  _incoming.push_back(223);
+  _incoming.push_back(223);
+  _outgoing1.push_back(11);_outgoing2.push_back(-11);
+  _outgoing1.push_back(13);_outgoing2.push_back(-13);
+  _maxweight.push_back(0.000593333);
+  _maxweight.push_back(0.000592117);
+  // phi -> e+e-, mu+mu-
+  _coupling.push_back(0.164/137./0.78257/0.78257);
+  _coupling.push_back(0.164/137./0.78257/0.78257);
+  _incoming.push_back(333);
+  _incoming.push_back(333);
+  _outgoing1.push_back(11);_outgoing2.push_back(-11);
+  _outgoing1.push_back(13);_outgoing2.push_back(-13);
+  _maxweight.push_back(0.00125845);
+  _maxweight.push_back(0.00125756);
+}
+
+
+inline VectorMeson2FermionDecayer::VectorMeson2FermionDecayer
+(const VectorMeson2FermionDecayer & x)
+  : VectorMesonDecayerBase(x), _coupling(x._coupling), _incoming(x._incoming)
+    ,_outgoing1(x._outgoing1),_outgoing2(x._outgoing2), _maxweight(x._maxweight) {}
+
+inline IBPtr VectorMeson2FermionDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VectorMeson2FermionDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void VectorMeson2FermionDecayer::doupdate() throw(UpdateException) {
+  VectorMesonDecayerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void VectorMeson2FermionDecayer::doinit() throw(InitException) {
+  VectorMesonDecayerBase::doinit();
+  // check the parameters arew consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
+     isize!=_outgoing2.size() || isize!=_maxweight.size())
+    {cerr << "Inconsistent parameters in VectorMeson2FermionDecayer" << endl;}
+  // set up the integration channels
+  vector<bool> dummyon;
+  vector<double> dummyweights;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {setMode(ix,_maxweight[ix],dummyon,dummyweights);}
+}
+
+inline void VectorMeson2FermionDecayer::dofinish() {
+  VectorMesonDecayerBase::dofinish();
+}
+
+inline void VectorMeson2FermionDecayer::doinitrun() {
+  VectorMesonDecayerBase::doinitrun();
+  PDVector particles(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      particles[0]=getParticleData(_incoming[ix]);
+      particles[1]=getParticleData(_outgoing1[ix]);
+      particles[2]=getParticleData(_outgoing2[ix]);
+      initializePhaseSpace(ix,particles);
+      double frac=particles[1]->mass()/particles[0]->mass();frac=frac*frac;
+      cout << "testing the true answer"
+	   << 1./4./pi*_coupling[ix]*_coupling[ix]/3.*particles[0]->mass()*
+	(1+2.*frac)*sqrt(1-4.*frac) << endl;
+    }
+}
+
+
+inline void VectorMeson2FermionDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  VectorMesonDecayerBase::rebind(trans);
+}
+
+inline IVector VectorMeson2FermionDecayer::getReferences() {
+  IVector ret = VectorMesonDecayerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
