@@ -178,8 +178,19 @@ public:
   inline Complex   operator () (int inhel1,int inhel2,int outhel1,int outhel2) const;
 
   /**
-   * Access the helicity components for a 2-3 scattering. This method supplies
+   * Access the helicity components for a 2-2 scattering. This method supplies
    * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2);
+
+  /**
+   * Access the helicity components for a 2-3 scattering. This method supplies
+   * the component but does not allow it to be changed.
    * @param inhel1 The helicity of the first incoming particle.
    * @param inhel2 The helicity of the second incoming particle.
    * @param outhel1 The helicity of the first outgoing particle.
@@ -187,8 +198,8 @@ public:
    * @param outhel3 The helicity of the third outgoing particle.
    * @return The matrix element for the given helicities.
    */
-  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
-				int outhel3);
+  inline Complex   operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3) const;
 
   /**
    * Access the helicity components for a 2-3 scattering. This method supplies
@@ -204,8 +215,8 @@ public:
 				int outhel3);
 
   /**
-   * Access the helicity components for a 2-4 scattering. This method supplies
-   * the component and allows it to be changed.
+   * Access the helicity components for a 2-4 scattering.  This method supplies
+   * the component but does not allow it to be changed.
    * @param inhel1 The helicity of the first incoming particle.
    * @param inhel2 The helicity of the second incoming particle.
    * @param outhel1 The helicity of the first outgoing particle.
@@ -214,8 +225,8 @@ public:
    * @param outhel4 The helicity of the fourth outgoing particle.
    * @return The matrix element for the given helicities.
    */
-  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
-				int outhel3,int outhel4);
+  inline Complex   operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3,int outhel4) const;
 
   /**
    * Access the helicity components for a 2-4 scattering. This method supplies
@@ -233,7 +244,7 @@ public:
 
   /**
    * Access the helicity components for a 2-5 scattering. This method supplies
-   * the component and allows it to be changed.
+   * the component but does not allow it to be changed.
    * @param inhel1 The helicity of the first incoming particle.
    * @param inhel2 The helicity of the second incoming particle.
    * @param outhel1 The helicity of the first outgoing particle.
@@ -243,8 +254,8 @@ public:
    * @param outhel5 The helicity of the fifth outgoing particle.
    * @return The matrix element for the given helicities.
    */
-  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
-				int outhel3,int outhel4, int outhel5);
+  inline Complex   operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3,int outhel4, int outhel5) const;
 
   /**
    * Access the helicity components for a 2-5 scattering. This method supplies
@@ -263,7 +274,7 @@ public:
 
   /**
    * Access the helicity components for a 2-6 scattering. This method supplies
-   * the component and allows it to be changed.
+   * the component but does not allow it to be changed.
    * @param inhel1 The helicity of the first incoming particle.
    * @param inhel2 The helicity of the second incoming particle.
    * @param outhel1 The helicity of the first outgoing particle.
@@ -274,8 +285,9 @@ public:
    * @param outhel6 The helicity of the sixth outgoing particle.
    * @return The matrix element for the given helicities.
    */
-  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
-				int outhel3,int outhel4, int outhel5, int outhel6);
+  inline Complex   operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3,int outhel4, int outhel5,
+				int outhel6) const;
 
   /**
    * Access the helicity components for a 2-6 scattering. This method supplies
@@ -296,7 +308,7 @@ public:
 
   /**
    * Access the helicity components for a 2-6 scattering. This method supplies
-   * the component and allows it to be changed.
+   * the component but does not allow it to be changed.
    * @param hel The helicities of the incoming and outgoing particles
    * @return The matrix element for the given helicities.
    */
