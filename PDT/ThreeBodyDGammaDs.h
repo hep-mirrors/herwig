@@ -9,7 +9,8 @@ namespace Herwig {
 using namespace ThePEG;
 using namespace Genfun;
 
-/**
+/** \ingroup PDT
+ *
  * This class encpasulates the dGammads member of a DecayIntegrator as
  * a function to allow it to be integrated to give the width.
  *
@@ -18,20 +19,40 @@ using namespace Genfun;
  */
 class ThreeBodyDGammaDs: public Genfun::AbsFunction {
 
-  FUNCTION_OBJECT_DEF(ThreeBodyDGammaDs)
+  /**
+   * FunctionComposition operator
+   */
+  virtual FunctionComposition operator()(const AbsFunction &function) const;
 
+  /**
+   * Clone method
+   */
+   ThreeBodyDGammaDs *clone() const;
+
+private:
+
+  /**
+   * Clone method
+   */
+  virtual AbsFunction *_clone() const;
+  
 public:
 
   /**
    * Constructor
+   * @param decayer A pointer to the DecayIntegrator class
+   * @param mode The mode in the decayer being integrated.
    */
-  ThreeBodyDGammaDs(DecayIntegratorPtr,int);
+  ThreeBodyDGammaDs(DecayIntegratorPtr decayer,int mode);
   
   /**
    * Destructor
    */
   virtual ~ThreeBodyDGammaDs();
-  
+
+  /**
+   *  The number of variables for the function (in this case 5)
+   */  
   virtual unsigned int dimensionality() const ;     
   
   /**
@@ -43,6 +64,10 @@ public:
    * Retreive function value
    */
   virtual double operator ()(double) const {return 0.;}
+  
+  /**
+   * Retreive function value
+   */
   virtual double operator ()(const Argument & a) const ;
   
 private:
@@ -55,7 +80,14 @@ private:
 
 private:
 
+  /**
+   * Pointer to the decayer
+   */
   DecayIntegratorPtr _decayer;
+
+  /**
+   *  The mode from the decayer.
+   */
   int _mode;
 
 };

@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ScalarMassGenerator class.
+//
+#ifndef HERWIG_ScalarMassGenerator_FH
+#define HERWIG_ScalarMassGenerator_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ScalarMassGenerator;
+ThePEG_DECLARE_CLASS_POINTERS(ScalarMassGenerator,ScalarMassGeneratorPtr);
+
+}
+
+#endif

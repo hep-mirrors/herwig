@@ -13,73 +13,108 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup PDT
+ *
  * The <code>ThreeBodyAllOn1IntegralCalculator</code> class is designed to integrate
- * a function which gives dGamma/ds to give the partial width.
+ * a function which gives \f$d\Gamma/dm^2_{ij}\f$ to give the partial width.
  *
- *
- * <a href="WidthCalculatorBase.html">WidthCalculatorBase.h</a>.
- * 
+ * @see WidthCalculatorBase
+ * @see ThreeBodyAllOn1IntegralOuter
  */
 class ThreeBodyAllOn1IntegralCalculator: public WidthCalculatorBase {
 
 public:
 
   /**
-   * the friend classes to keep the integration members private
+   * The ThreeBodyAllOn1IntegralOuter class is a friend to keep the integration
+   *  members private.
    */
-
   friend class ThreeBodyAllOn1IntegralOuter;
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor
    */
   inline ThreeBodyAllOn1IntegralCalculator();
+
   /**
-   * Standard ctors and dtor.
+   * Copy constructor
    */
   inline ThreeBodyAllOn1IntegralCalculator(const ThreeBodyAllOn1IntegralCalculator &);
+
   /**
-   * Standard ctors and dtor.
+   * Destructor
    */
   virtual ~ThreeBodyAllOn1IntegralCalculator();
+  //@}
 
 public:
 
   /**
-   * constructor with the dgamma/ds as a function
+   * Constructor with the \f$d\Gamma/ds\f$ as a function.
+   * @param intype The types of the different integration channels.
+   * @param inmass The mass for the Jacobian for the different channels.
+   * @param inwidth The width for the Jacobian for the different channels.
+   * @param indGamma The pointer to the function which gives \f$d\Gamma/ds\f$.
+   * @param m1 The mass of the first particle.
+   * @param m2 The mass of the second particle.
+   * @param m3 The mass of the third  particle.
    */
   inline ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
-				  Genfun::AbsFunction * indGamma,
-				  Energy m1,Energy m2,Energy m3);
+					   Genfun::AbsFunction * indGamma,
+					   Energy m1,Energy m2,Energy m3);
 
   /**
-   * constructor which constructs the dgamma/ds function from a decayer
+   * Constructor which constructs the \f$d\Gamma/ds\f$ function from a decayer
+   * @param intype The types of the different integration channels.
+   * @param inmass The mass for the Jacobian for the different channels.
+   * @param inwidth The width for the Jacobian for the different channels.
+   * @param decay Pointer to the DecayIntegrator class.
+   * @param mode The mode in the DecayIntegrator we are integrating.
+   * @param m1 The mass of the first particle.
+   * @param m2 The mass of the second particle.
+   * @param m3 The mass of the third  particle.
    */
   inline ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
-				  DecayIntegratorPtr,int,
-				  Energy m1,Energy m2,Energy m3);
+					   DecayIntegratorPtr decay,int mode,
+					   Energy m1,Energy m2,Energy m3);
 
 public:
 
   /**
-   * the partial width
+   * calculate the width for a given mass
+   * @param q2 The mass squared of the decaying particle.
+   * @return The partial width.
    */
-  Energy partialWidth(Energy2) const;
+  Energy partialWidth(Energy2 q2) const;
 
   /**
-   * mass reset function
+   * Get the mass of one of the decay products.  This must be 
+   * implemented in classes inheriting from this one.
+   * @param imass The mass required.
+   * @param mass The new value.
+   * @return The mass required.
    */
-  inline void resetMass(int,Energy);
+  inline void resetMass(int imass,Energy mass);
 
   /**
-   * mass get function 
+   * Get the mass of one of the decay products.  This must be 
+   * implemented in classes inheriting from this one.
+   * @param imass The mass required.
+   * @return The mass required.
    */
-  inline Energy getMass(const int) const;
+  inline Energy getMass(const int imass) const;
 
-  inline Energy otherMass(const int) const;
+  /**
+   * Get the masses of all bar the one specified. Used to get the limits
+   * for integration.
+   * @param imass The particle not needed
+   * @return The sum of the other masses.
+   */
+  inline Energy otherMass(const int imass) const;
 
 public:
 
@@ -91,7 +126,7 @@ public:
 protected:
 
   /**
-   * the integrand
+   * The integrand
    */
   Energy integrand(double);
 
@@ -111,55 +146,40 @@ private:
 
   /**
    * which scale we are using
-   * the mass and the width for the jacobian
-   * masses of the external particles
-   * the dgammads
-   * the integrand
-   * the integrator
    */
   int _variabletype;
+
   /**
-   * which scale we are using
-   * the mass and the width for the jacobian
-   * masses of the external particles
-   * the dgammads
-   * the integrand
-   * the integrator
+   * The mass for the jacobian
    */
-  Energy _intmass,_intwidth;
+  Energy _intmass;
+
   /**
-   * which scale we are using
-   * the mass and the width for the jacobian
-   * masses of the external particles
-   * the dgammads
-   * the integrand
-   * the integrator
+   * The width for the jacobian
    */
-  mutable Energy _m[4]; mutable Energy2 _m2[4];
+  Energy _intwidth;
+
   /**
-   * which scale we are using
-   * the mass and the width for the jacobian
    * masses of the external particles
-   * the dgammads
-   * the integrand
-   * the integrator
+   */
+  mutable Energy  _m[4];
+
+  /**
+   * mass squareds of the external particles
+   */
+  mutable Energy2 _m2[4];
+
+  /**
+   * The function for the differential rate
    */
   Genfun::AbsFunction *_theDgamma;
+
   /**
-   * which scale we are using
-   * the mass and the width for the jacobian
-   * masses of the external particles
-   * the dgammads
    * the integrand
-   * the integrator
    */
   Genfun::AbsFunction *_theIntegrand;
+
   /**
-   * which scale we are using
-   * the mass and the width for the jacobian
-   * masses of the external particles
-   * the dgammads
-   * the integrand
    * the integrator
    */
   GaussianIntegral *_Integrator;
@@ -173,31 +193,31 @@ private:
 
 namespace ThePEG {
 
-template <>
 /**
  * The following template specialization informs ThePEG about the
  * base class of ThreeBodyAllOn1IntegralCalculator.
  */
+template <>
 struct BaseClassTrait<Herwig::ThreeBodyAllOn1IntegralCalculator,1> {
+  /** Typedef of the base class of ThreeBodyAllOn1IntegralCalculator. */
   typedef Herwig::WidthCalculatorBase NthBase;
 };
 
-template <>
 /**
  * The following template specialization informs ThePEG about the
  * name of this class and the shared object where it is defined.
  */
+template <>
 struct ClassTraits<Herwig::ThreeBodyAllOn1IntegralCalculator>
+  : public ClassTraitsBase<Herwig::ThreeBodyAllOn1IntegralCalculator> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::ThreeBodyAllOn1IntegralCalculator"; }
   /**
-   * Return the class name.
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  : public ClassTraitsBase<Herwig::ThreeBodyAllOn1IntegralCalculator> {
-  static string className() { return "/Herwig++/ThreeBodyAllOn1IntegralCalculator"; }
   static string library() { return "libHwPDT..so"; }
-
 };
 
 }
@@ -206,17 +226,40 @@ namespace Herwig {
 using namespace Genfun;
 using namespace ThePEG; 
 
-/**
- * the class for the integrand
+/** \ingroup PDT
+ * The class for the outer integrand of the integral of a three body decay matrix
+ * element where one of the integrals has been performed analytically.
+ * This class is used by the ThreeBodyAllOn1IntegralCalculator
+ * to perform the outer integral.
+ *
+ * @see ThreeBodyAllOnCalculator
  */
 class ThreeBodyAllOn1IntegralOuter : public Genfun::AbsFunction {
     
-FUNCTION_OBJECT_DEF(ThreeBodyAllOn1IntegralOuter)
+public:
+  
+  /**
+   * FunctionComposition operator
+   */
+  virtual FunctionComposition operator()(const AbsFunction &function) const;
+  
+  /**
+   * Clone method
+   */
+  ThreeBodyAllOn1IntegralOuter *clone() const;
+
+private:
+
+  /**
+   * Clone method
+   */
+  virtual AbsFunction *_clone() const;
+
     
 public:
  
   /**
-   * Constructor
+   * Constructor with a pointer to the ThreeBodyAllOn1IntegralCalculator
    */
   ThreeBodyAllOn1IntegralOuter(ThreeBodyAllOn1IntegralCalculatorPtr);
   
@@ -234,6 +277,7 @@ public:
    * Retreive function value
    */
   virtual double operator ()(double argument) const;
+
   /**
    * Retreive function value
    */
