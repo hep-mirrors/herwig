@@ -20,16 +20,16 @@ int main(int argc, char * argv[]) {
       }
     } else if(hw.isRunMode()) {
       std::cout << "Error: Expecting a run but there is no EventGenerator!\n"
-		<< endl;
+		<< std::endl;
     }
 
   }
   catch ( std::exception & e ) {
-    cerr << e.what() << endl;
+    std::cerr << e.what() << std::endl;
     return 1;
   }
   catch ( ... ) {
-    cerr << "Unknown Exception\n";
+    std::cerr << "Unknown Exception\n";
     return 2;
   }
 

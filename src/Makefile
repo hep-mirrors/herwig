@@ -4,7 +4,7 @@ OBJECTS := $(SOURCES:.cc=.o)
 
 PROGS   := $(SOURCES:.cc=.exe)
 
-HWLIBS = -lHwHadronization -lHw -lHwDecay -lHwShower 
+HWLIBS = -lHwHadronization -lHw -lHwDecay -lHwShower -lHwME
 
 EXTRAINCLUDES = -I/usera/stephens/projects/ktjet
 
