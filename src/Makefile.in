@@ -24,6 +24,7 @@ install-local: Herwig++ HerwigDefaults.rpo
 	if [ ! -z "$(INSTALLSHARE)/PDF" ]; then \
 	   mkdir -p $(INSTALLSHARE)/PDF; \
 	   cp -r ../PDF/mrst $(INSTALLSHARE)/PDF; \
+	   rm -rf $(INSTALLSHARE)/PDF/mrst/CVS; \
 	fi
 	cp LEP.in LEPbb.in LHC.in $(INSTALLSHARE) 
 	cp Decays.in Hadronization.in HerwigParticles.in Hw64Decays.in \
@@ -42,7 +43,7 @@ check: LEP
 lib:
 
 LEP: Herwig++
-	export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(RPATH) ; ./Herwig++ init ; ./Herwig++ read LEP.in
+	export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(RPATH) ; ./Herwig++ init ; ./Herwig++ read LEP.in ; ./Herwig++ run -N 10 LEP.run
 
 Lib:
 	cd .. ; $(MAKE) -$(MAKEFLAGS) lib
