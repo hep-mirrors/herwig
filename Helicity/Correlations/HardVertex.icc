@@ -1,0 +1,30 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HardVertex class.
+//
+// Author: Peter Richardson
+//
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+// default constructor
+inline HardVertex::HardVertex() 
+{}
+    
+// copy constructor
+inline HardVertex::HardVertex(const HardVertex & x)
+  : HelicityVertex(x), _matrixelement(x._matrixelement) {}
+    
+// get ME
+inline const ProductionMatrixElement & HardVertex::ME() const
+{return _matrixelement;}
+
+// set ME
+inline void HardVertex::ME(const ProductionMatrixElement & in) const
+{_matrixelement.reset(in);}
+
+}
+}
