@@ -227,6 +227,10 @@ double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
   ME(newme);
   double output=(newme.contract(rhoin)).real()/scale;
   if(abs(decay[0]->id())<=6){output*=3.;}
+  if(decay[0]->hasColour())
+    {decay[0]->antiColourNeighbour(decay[1]);}
+  else if(decay[1]->hasColour())
+    {decay[1]->antiColourNeighbour(decay[0]);}
   return output;
 }
 
