@@ -47,30 +47,30 @@ double ShowerAlphaQCD::value(const Energy2 scale) {
 // ***ACHTUNG*** put somthing more serious here, later
 // a parametrization of alpha_s for test purposes only
 
-double ShowerAlphaQCD::alpha_s(double q2, double q2min, int type) {
+double ShowerAlphaQCD::alpha_s(Energy2 q2, Energy2 q2min, int type) {
 
   // hier mit 4 flavours
-  double lambda = 1.0;
+  Energy lambda = 1.0;
   double val = 0.0; 
-  double lambda4 = 0.3;
+  Energy lambda4 = 0.3;
   int cflavour;
 
   // assign different lambda_QCD values for different numbers of 
   // active flavours in a smooth way
 
-  if(q2 < 1.) {
-    lambda = 0.3280;
+  if(q2 < 1.0*GeV2) {
+    lambda = 0.3280*GeV;
     cflavour = 27;
   } else {
-    if(q2 < sqr(5.)) {
+    if(q2 < sqr(5.0*GeV)) {
       lambda = lambda4;
       cflavour = 25;
     } else {
-      if(q2 < sqr(100.)) {
-	lambda = 0.2349;
+      if(q2 < sqr(100.*GeV)) {
+	lambda = 0.2349*GeV;
 	cflavour = 23;
       } else {
-	lambda = 0.1320;
+	lambda = 0.1320*GeV;
 	cflavour = 21;
       }
     }

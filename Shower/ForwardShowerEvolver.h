@@ -40,7 +40,8 @@ public:
   bool timeLikeShower( tPartCollHdlPtr ch, 
 		       const tShoConstrPtr showerConstrainer, 
 		       const tMECorrectionPtr meCorrectionPtr,
-		       tShoParPtr particle, CollecShoParPtr & collecShoPar,
+		       tShowerParticlePtr particle, 
+		       ShowerParticleVector & collecShoPar,
 		       const bool specialDecay = false ) throw (Veto, Stop, Exception); 
   // It does the forward evolution of the time-like input <!id>particle<!!id>
   // (and recursively for all its radiation products).

@@ -84,13 +84,13 @@ public:
   // Standard ctors and dtor.
 
   bool setQCDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-				     const CollecShoParPtr particles,
+				     const ShowerParticleVector particles,
                                      const bool isDecayCase = false );
   bool setQEDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-				     const CollecShoParPtr particles,
+				     const ShowerParticleVector particles,
                                      const bool isDecayCase = false );
   bool setEWKInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-				     const CollecShoParPtr particles,
+				     const ShowerParticleVector particles,
                                      const bool isDecayCase = false );
   // Given in input a collection of particles (<!id>ShowerParticle<!!id> objects),
   // each of these methods set the initial evolution scales of those particles, 
@@ -104,7 +104,7 @@ public:
   // The methods returns true, unless something wrong (inconsistencies,
   // or undefined values) happens.
 
-  pair<Energy,Energy> calculateInitialEvolutionScales(const pair<tShoParPtr,tShoParPtr> & particlePair);
+  pair<Energy,Energy> calculateInitialEvolutionScales(const pair<tShowerParticlePtr,tShowerParticlePtr> & particlePair);
   // Given a pair of particles, supposedly partners w.r.t. an interaction,
   // this method returns their initial evolution scales as a pair.
   // If something wrong happens, it returns the null ( Energy() , Energy() ) pair. 

@@ -83,7 +83,7 @@ private:
   //  Private and non-existent assignment operator.
 
   void createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch, 
-					    CollecShoParPtr & hardProcessParticles );
+					    ShowerParticleVector & hardProcessParticles );
   // From the Pythia7 particles entering the hard subprocess, create
   // the corresponding starting <!id>ShowerParticle<!!id> objects and 
   // put them in the vector <!id>hardProcessParticles<!!id>. 
@@ -97,15 +97,18 @@ private:
   void debuggingInfo();
   // Print debugging information.
 
-  void fillEvenRecord( const tPartCollHdlPtr ch );
+  void fillEventRecord( const tPartCollHdlPtr ch );
   // At the end of the Showering, transform ShowerParticle objects
   // into Pythia7 particles and fill the event record with them.
   // Notice that the parent/child relationships and the 
   // transformation from ShowerColourLine objects into Pythia7
   // ColourLine ones must be properly handled.
 
+  // print the particles in the step
+  void printStep(tStepPtr ptrStep, const string & title); 
 
-  void eventShape(const tCollecShoParPtr & p, 
+  // calculate event shape variables from a given set of particles
+  void eventShape(const tShowerParticleVector & p, 
 		  vector<double> & lam, vector<Vector3> & n);
 
   Ptr<GlobalParameters>::pointer _pointerGlobalParameters; 
@@ -113,7 +116,7 @@ private:
   Ptr<ShowerConstrainer>::pointer _pointerShowerConstrainer;
   Ptr<InsideRangeShowerEvolver>::pointer _pointerInsideRangeShowerEvolver;
 
-  CollecShoParPtr _particles;   
+  ShowerParticleVector _particles;   
  
 };
 

@@ -69,4 +69,148 @@ get_qz (bool znorm, double p, double R, Energy q0, Energy qmax, Energy &q, doubl
   }
 
   return; 
-} 
+}
+
+// inline it!
+double SudakovFormFactor::guessz (double z0, double z1) {
+  tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
+  return sF->invIntegOverIntegratedFun( sF->integOverIntegratedFun(z0) + 
+     UseRandom::rnd()*( sF->integOverIntegratedFun(z1) - 
+			sF->integOverIntegratedFun(z0) ) );
+}
+
+
+Energy2 SudakovFormFactor::guesst (Energy2 t0, Energy2 t1) {
+  tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
+  double z0, z1; 
+  z0 = sqrt(t0/t1); 
+  z1 = 1.-sqrt(t0/t1); 
+  cerr << "(t1, G(z0), G(z1), as(Q02), exponent) = (" 
+       << t1 << ", " 
+       << sF->integOverIntegratedFun(z1) << ", "
+       << sF->integOverIntegratedFun(z0) << ", "
+       << _alpha->overestimateValue()/(2.*pi) << ", "
+       << 1./( (sF->integOverIntegratedFun(z1) -
+		sF->integOverIntegratedFun(z0))* 
+	       _alpha->overestimateValue()/(2.*pi) ) 
+       << ")" << endl; 
+  return t1*pow( UseRandom::rnd(), 
+		 1./( (sF->integOverIntegratedFun(z1) -
+		       sF->integOverIntegratedFun(z0))* 
+		      _alpha->overestimateValue()/(2.*pi) )); 
+}
+
+
+void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
+
+  tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
+
+  double z0, z1, ratio;
+  Energy2 told, mc2, tmax, t; 
+  bool veto = true; 
+  tmax = sqr(root_tmax); 
+  t = sqr(root_t); 
+
+  mc2 = 1.0*GeV2;
+  t = tmax; 
+
+  // the veto algorithm
+  do {
+    
+    // remind the old value
+    told = t; 
+
+    // the larger PS-boundary in z
+    z0 = sqrt(mc2/told); 
+    z1 = 1.-sqrt(mc2/told); 
+    z = guessz(z0, z1); 
+    t = guesst(mc2, told); 
+
+    cerr << "(mc2, told | z0, z, z1 | t) = ("
+	 << mc2/GeV2 << ", "
+	 << told/GeV2 << " | "
+	 << z0 << ", "
+ 	 << z << ", "
+	 << z1 << " | "
+	 << t/GeV2 << ")" << endl; 
+
+    // actual values for z-limits
+    z0 = sqrt(mc2/t); 
+    z1 = 1.-sqrt(mc2/t); 
+
+    // check whether to reject or not (THE VETO)
+    veto = false; 
+   
+    // still inside PS?
+    if ((z < z0 || z > z1) && t > 4.*mc2) { 
+      veto = true; 
+      //      psv++; 
+      //     cout << "PS (" << vc+1 << ", " << psv << ")" << endl;
+
+    }
+
+
+    // overestimate of t-integral due to overestimate 
+    // of z-integration limits: veto on this!
+//     ratio = (int_g_gg(1.-sqrt(MC2/t)) - int_g_gg(sqrt(MC2/t)))
+//       /(int_g_gg(1.-sqrt(MC2/told)) - int_g_gg(sqrt(MC2/told))); 
+//     if (drand48() > ratio) {
+//       veto = true; 
+//       tintv++; 
+//       //      cout << "TI (" << vc+1 << ", " << tintv << ")" << endl;
+//     }; 
+
+    // hit the density? 
+    ratio = sF->integratedFun(z, t)/
+      sF->overestimateIntegratedFun(z);
+    if (UseRandom::rnd() > ratio) { 
+      veto = true; 
+      //      hitv++;
+      //      cout << "HI (" << vc+1 << ", " << hitv << ")" << endl;
+    }
+
+    // alpha_s valid? 
+    if ( UseRandom::rnd() > _alpha->value(z*(1.-z)*t)/
+	 _alpha->overestimateValue() ) {
+      veto = true; 
+      // asv++; 
+    }
+
+    // alpha_s valid? 
+//     if (z*(1.-z)*t < Q2MIN) {
+//       veto = true; 
+//     };
+
+    // is t valid at all? 
+    if (t < 4.*mc2) {
+      veto = false; 
+      t = -1; 
+    }
+	
+//    if (veto) {
+//      vc++; 
+//       cout << "(veto, ps, tint, hit, as) = ("
+// 	   << vc << ", " 
+// 	   << psv << ", " 
+// 	   << tintv << ", " 
+// 	   << hitv << ", " 
+// 	   << asv << ") " 
+// 	   << endl; 
+//	};
+    
+//     cout << "veto = " << veto << " (z0, z, z1) = (" 
+// 	 << z0 << ", "
+// 	 << z << ", "
+// 	 << z1 << ")" << endl; 
+
+
+  } while (veto); 
+
+  cerr << "---> accepted (t, z) = (" 	 
+       << t << ", "
+       << z << ")" << endl; 
+
+  root_t = sqrt(t);
+
+  return;
+}

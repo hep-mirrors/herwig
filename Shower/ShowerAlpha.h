@@ -48,7 +48,7 @@ public:
   // Pure virtual method that is supposed to return the 
   // running alpha value evaluated at the input scale.
 
-  virtual double overestimateValue(const Energy2 scale);
+  virtual double overestimateValue() = 0;
   // Virtual method, which returns by default value( scale ), 
   // and that could be overrided in a derived class in the case an 
   // overestimate approximation of the alpha value is provided. 

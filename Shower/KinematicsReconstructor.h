@@ -48,7 +48,7 @@ public:
   typedef vector<Lorentz5Momentum> VecMomenta;
   typedef vector<const Lorentz5Momentum*> CVecMomentaPtr;
 
-  typedef map<tShoParPtr, bool> MapShower;
+  typedef map<tShowerParticlePtr, bool> MapShower;
   // For a given (pointer to) shower particle, which is the parent particle 
   // of a (forward, or backward, or decaying) jet, the flag tells whether
   // or not such jet needs to be reconstructed, that is whether some 
@@ -144,12 +144,12 @@ private:
 
   typedef struct {
     Lorentz5Momentum p, q; 
-    tShoParPtr parent; 
+    tShowerParticlePtr parent; 
   } JetKinStruct;
 
   typedef vector<JetKinStruct> JetKinVect;
 
-  bool reconstructTimeLikeJet( const tShoParPtr particleJetParent );
+  bool reconstructTimeLikeJet( const tShowerParticlePtr particleJetParent );
   // Given the particle (<!class>ShowerParticle<!!class> object) that 
   // originates a forward (time-like) jet, this method reconstructs the kinematics 
   // of the jet. That is, by starting from the final grand-children (which 
@@ -165,14 +165,14 @@ private:
   // programming bugs, we let the method return false if something 
   // goes wrong.
 
-  bool reconstructSpaceLikeJet( const tShoParPtr particleJetParent );
+  bool reconstructSpaceLikeJet( const tShowerParticlePtr particleJetParent );
   // Exactly similar to the previous one, but for a space-like jet.
   // Also in this case we start from the final grand-children (which
   // are childless) of the particle which originates the jet, but in
   // this case we proceed "forward" (in the physical time picture)
   // towards the <!id>particleJetParent<!!id>.
 
-  bool reconstructSpecialTimeLikeDecayingJet( const tShoParPtr particleJetParent );
+  bool reconstructSpecialTimeLikeDecayingJet( const tShowerParticlePtr particleJetParent );
   // This is a special case of reconstruction, for a time-like jet
   // whose originating particle is a decaying particle. It is a 
   // special case, because the showering evolution is forward but

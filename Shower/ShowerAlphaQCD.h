@@ -33,6 +33,10 @@ public:
   // It returns the running alpha value evaluated at the input scale
   // multiplied by the scale factor <!id>scaleFactor()<!!id>.
 
+  inline virtual double overestimateValue();
+  // It returns the running alpha value evaluated at the input scale
+  // multiplied by the scale factor <!id>scaleFactor()<!!id>.
+
 public:
 
   static void Init();

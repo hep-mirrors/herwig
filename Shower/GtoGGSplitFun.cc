@@ -13,7 +13,7 @@ using namespace Herwig;
 GtoGGSplitFun::~GtoGGSplitFun() {}
 
 
-Complex GtoGGSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
+double GtoGGSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
 
   double val = 0.0;
 
@@ -24,7 +24,7 @@ Complex GtoGGSplitFun::fullFun( const double z, const Energy2 qtilde2, const dou
 }
 
 
-Complex GtoGGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
+double GtoGGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
 
   double val = 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
 
@@ -40,7 +40,7 @@ Complex GtoGGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
 }
 
 
-Complex GtoGGSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 ) {
+double GtoGGSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
 
@@ -51,7 +51,7 @@ Complex GtoGGSplitFun::fullFunWithHelicities( const double z, const Energy2 qtil
 }
 
 
-Complex GtoGGSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
+double GtoGGSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
 
@@ -62,17 +62,17 @@ Complex GtoGGSplitFun::integratedFunWithHelicities( const double z, const Energy
 }
 
 
-Complex GtoGGSplitFun::overestimateIntegratedFun( const double z ) {
+double GtoGGSplitFun::overestimateIntegratedFun( const double z ) {
   return 3.*(1/z + 1/(1.-z)); 
 }
 
 
-Complex GtoGGSplitFun::integOverIntegratedFun(const double z) {
+double GtoGGSplitFun::integOverIntegratedFun(const double z) {
   return 3.*log(z/(1.-z)); 
 }
 
 
-Complex GtoGGSplitFun::invIntegOverIntegratedFun(const double r) {
+double GtoGGSplitFun::invIntegOverIntegratedFun(const double r) {
   return exp(r/3.)/(1.+exp(r/3.)); 
 } 
 
@@ -92,12 +92,12 @@ void GtoGGSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
     firstProductShoColinePair.first = parentShoColinePair.first;
     secondProductShoColinePair.second = parentShoColinePair.second;
     firstProductShoColinePair.second = secondProductShoColinePair.first 
-      = new_ptr( ShowerColourLine() );    
+      = new_ptr( ColourLine() );    
   } else {
     secondProductShoColinePair.first = parentShoColinePair.first;
     firstProductShoColinePair.second = parentShoColinePair.second;
     firstProductShoColinePair.first = secondProductShoColinePair.second 
-      = new_ptr( ShowerColourLine() );    
+      = new_ptr( ColourLine() );    
   }
 
 }

@@ -29,7 +29,8 @@ Energy QtoQGammaSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch,
     _q = startingScale / UseRandom::rnd();
     _z = UseRandom::rnd(); 
   } else {
-    get_qz(true, -1.1, .1, max(750.*MeV, splitFun()->massEmitter()), startingScale, _q, _z); 
+    //    get_qz(true, -1.1, .1, max(750.*MeV, splitFun()->massEmitter()), startingScale, _q, _z); 
+    gettz(startingScale, _q, _z);
   }
   _phi = 2.*pi*UseRandom::rnd();
  

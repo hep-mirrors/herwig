@@ -19,4 +19,9 @@ inline IBPtr ShowerAlphaQCD::fullclone() const {
   return new_ptr(*this);
 }
 
+  // replace with more sensible minimum 
+inline double ShowerAlphaQCD::overestimateValue() {
+  return value(1.0*GeV2);
+}
+
 }

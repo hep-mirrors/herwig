@@ -49,7 +49,7 @@ void PartnerFinder::Init() {
 //-----------------------------------------------------------------------------
 
 bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-						  const CollecShoParPtr particles,
+						  const ShowerParticleVector particles,
 						  const bool isDecayCase ) {
   bool isOK = true;
 
@@ -71,13 +71,13 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
   // processes (as in R-parity Susy), which will show up as particles
   // without candidate colour partners, and that we will be treated a part later
   // (this means that no modifications of the following loop is needed!)
-  map<tShoParPtr, tCollecShoParPtr> mapParticleToCandidatePartners;
-  for ( CollecShoParPtr::const_iterator cit = particles.begin(); 
+  map<tShowerParticlePtr, tShowerParticleVector> mapParticleToCandidatePartners;
+  for ( ShowerParticleVector::const_iterator cit = particles.begin(); 
 	cit != particles.end(); ++cit ) {
     if ( (*cit)->data().coloured()  &&  ! (*cit)->partners()[ ShowerIndex::QCD ]  &&
 	 ( (*cit)->children().size() == 0  ||  isDecayCase ) ) {
-      tCollecShoParPtr partners;
-      for ( CollecShoParPtr::const_iterator cjt = particles.begin(); 
+      tShowerParticleVector partners;
+      for ( ShowerParticleVector::const_iterator cjt = particles.begin(); 
 	    cjt != particles.end(); ++cjt ) {
 	if ( cit != cjt  &&  (*cjt)->data().coloured() &&
 	     ( (*cit)->children().size() == 0  ||  isDecayCase ) ) { 
@@ -103,7 +103,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
 	  }
 	}
       }
-      mapParticleToCandidatePartners.insert( pair<tShoParPtr, tCollecShoParPtr>( *cit, partners ) );
+      mapParticleToCandidatePartners.insert( pair<tShowerParticlePtr, tShowerParticleVector>( *cit, partners ) );
     }
   }
 
@@ -111,8 +111,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
   // and treat only those particles that have some candidate colour partners,
   // whereas those that don't have any are collected in the vector specialCases
   // and will be treated later.
-  tCollecShoParPtr specialCases; 
-  for ( map<tShoParPtr, tCollecShoParPtr>::const_iterator cit = 
+  tShowerParticleVector specialCases; 
+  for ( map<tShowerParticlePtr, tShowerParticleVector>::const_iterator cit = 
 	  mapParticleToCandidatePartners.begin(); 
 	cit != mapParticleToCandidatePartners.end(); ++cit ) {
     if ( cit->second.size() ) {
@@ -131,7 +131,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
       int position = UseRandom::irnd( cit->second.size() );
 
       pair<Energy,Energy> pairScales = 
-	calculateInitialEvolutionScales( pair<tShoParPtr,tShoParPtr>( cit->first, 
+	calculateInitialEvolutionScales( pair<tShowerParticlePtr,tShowerParticlePtr>( cit->first, 
 								      cit->second[position] ) );
       cit->first->setEvolutionScale( ShowerIndex::QCD, pairScales.first );
       cit->first->setPartner( ShowerIndex::QCD, cit->second[position] );
@@ -157,12 +157,12 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
     // One numbers the ShowerParticles objects from 1; the other,
     // numbers the ShowerColourLine object from 501 (just to avoid
     // confusion between the two numbering). 
-    map<tShoParPtr,int> mapShoPar;
+    map<tShowerParticlePtr,int> mapShoPar;
     map<tShoColinePtr,int> mapShoColine;
     int countShoPar = 1, countShoColine = 501;
-    for ( CollecShoParPtr::const_iterator cit = particles.begin(); 
+    for ( ShowerParticleVector::const_iterator cit = particles.begin(); 
 	  cit != particles.end(); ++cit ) {
-      mapShoPar.insert( pair<tShoParPtr,int>( *cit, countShoPar++ ) );
+      mapShoPar.insert( pair<tShowerParticlePtr,int>( *cit, countShoPar++ ) );
       tShoColinePtr shoColine = tShoColinePtr();
       for ( int i = 0; i < 2; i++ ) {
 	if ( i == 0 ) {
@@ -175,7 +175,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
 	}
       }
     }
-    for ( CollecShoParPtr::const_iterator cit = particles.begin(); 
+    for ( ShowerParticleVector::const_iterator cit = particles.begin(); 
 	  cit != particles.end(); ++cit ) {
       if ( (*cit)->data().coloured()  && 
 	   ( (*cit)->children().size() == 0  ||  isDecayCase ) ) {
@@ -215,7 +215,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
 
 
 bool PartnerFinder::setQEDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-						  const CollecShoParPtr particles,
+						  const ShowerParticleVector particles,
 						  const bool isDecayCase ) {
   bool isOK = true;
 
@@ -236,7 +236,7 @@ bool PartnerFinder::setQEDInitialEvolutionScales( const tShoConstrPtr showerCons
 
 
 bool PartnerFinder::setEWKInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-						  const CollecShoParPtr particles,
+						  const ShowerParticleVector particles,
 						  const bool isDecayCase ) {
 
   bool isOK = true;
@@ -258,7 +258,7 @@ bool PartnerFinder::setEWKInitialEvolutionScales( const tShoConstrPtr showerCons
 
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialEvolutionScales( const pair<tShoParPtr,tShoParPtr> & particlePair ) {
+calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePtr> & particlePair ) {
   Energy firstQ = Energy();
   Energy secondQ = Energy();
 

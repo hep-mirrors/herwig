@@ -387,6 +387,12 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
   
   // First, find the eventual branching, corresponding to the highest scale.
   for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
+
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+      generator()->log() << "SplittingGenerator::chooseForwardBranching(): "
+			 << "ShowerIndex = " << i << endl; 
+    }
+
     ShowerIndex index;
     index.id = abs( particle.data().id() ); 
     index.interaction = ShowerIndex::int2Interaction( i );
@@ -445,9 +451,9 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	    ->momentum();
 	  pcm = p; 
 	  pcm.boost( (p + ppartner).findBoostToCM() );	  
-	  th = (pi/100.);
+	  th = (pi);
 	  nnorm = pcm.vect().mag(); 
-	  nnorm*=10000.;
+	  nnorm*=1.;
 	  Vector3 nv = cos(th)*pcm.vect().unit() 
 	    + sin(th)*pcm.vect().orthogonal().unit(); 
 	  n = Lorentz5Momentum( 0.0, nnorm*nv ); 
@@ -460,8 +466,10 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 			       << ", pcm = " << pcm << endl;
 	  }
 	} else {
-	  p = particle.parent()->showerKinematics()->getBasis()[0];
-	  n = particle.parent()->showerKinematics()->getBasis()[1];
+	  p = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+	                     ->showerKinematics()->getBasis()[0];
+	  n = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+	                     ->showerKinematics()->getBasis()[1];
 	} 
 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {

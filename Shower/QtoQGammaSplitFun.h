@@ -34,10 +34,10 @@ public:
 
   inline QtoQGammaSplitFun( const long inputIdQuark, const Energy inputMassQuark );
 
-  virtual Complex fullFun( const double z, const Energy2 qtilde2, const double phi );
-  virtual Complex integratedFun( const double z, const Energy2 qtilde2);
-  virtual Complex fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 );
-  virtual Complex integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 );
+  virtual double fullFun( const double z, const Energy2 qtilde2, const double phi );
+  virtual double integratedFun( const double z, const Energy2 qtilde2);
+  virtual double fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 );
+  virtual double integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 );
   // These virtual methods return the exact values of the 
   // Leading Order splitting function <I>Q-&GT;QGamma</I>
   // evaluated in terms of some combinations of:

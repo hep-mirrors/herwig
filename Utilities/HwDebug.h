@@ -54,7 +54,7 @@
 
 #ifndef HERWIG_HwDebug_H
 #define HERWIG_HwDebug_H
-
+#include "Herwig++/Utilities/SmplHist.h"
 
 namespace Herwig {
 
@@ -73,9 +73,9 @@ namespace Herwig {
       extreme = 100,
 
       // Specific for the HardSubprocess part
-      minimal_HardSubprocess = minimal,
-      full_HardSubprocess    = full,
-      extreme_HardSubprocess = extreme,
+      minimal_HardSubprocess = extreme + 1,
+      full_HardSubprocess    = extreme + 1,
+      extreme_HardSubprocess = extreme + 1,
 
       // Specific for the Shower part
       minimal_Shower = minimal,
@@ -87,17 +87,24 @@ namespace Herwig {
       full_Hadronization    = full,
       extreme_Hadronization = extreme,
 
-      // Specific for the Shower part
-      minimal_Decay = minimal,
-      full_Decay    = full,
-      extreme_Decay = extreme
+      // Specific for the Decay part
+      minimal_Decay = extreme+1,
+      full_Decay    = extreme+1,
+      extreme_Decay = extreme+1
 
     };
     // The different levels.
 
     static int level;
     // The current level.
-    
+
+    static SampleHistogram lambda1Histo;
+    static SampleHistogram lambda2Histo;
+    static SampleHistogram lambda3Histo;
+    static SampleHistogram CparameterHisto;
+    static SampleHistogram DparameterHisto;
+    static SampleHistogram multiplicityHisto;
+
   };
 
 

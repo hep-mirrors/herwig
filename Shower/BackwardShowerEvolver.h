@@ -39,7 +39,8 @@ public:
   bool spaceLikeShower( tPartCollHdlPtr ch, 
 		        const tShoConstrPtr showerConstrainer, 
 		        const tMECorrectionPtr meCorrectionPtr,
-		        tShoParPtr particle, CollecShoParPtr & collecShoPar ) 
+		        tShowerParticlePtr particle, 
+			ShowerParticleVector & collecShoPar ) 
     throw (Veto, Stop, Exception);
   // It does the backward evolution of the space-like input <!id>particle<!!id> 
   // (and recursively for all its time-like radiation products).

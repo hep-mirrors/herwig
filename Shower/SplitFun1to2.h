@@ -23,7 +23,8 @@
 #include "SplitFun.h"
 #include "Pythia7/PDT/ParticleData.h"
 #include "Pythia7/PDT/EnumParticles.h"
-#include "ShowerColourLine.h"
+//#include "ShowerColourLine.h"
+#include "Pythia7/EventRecord/ColourLine.h"
 
 
 namespace Herwig {
@@ -54,15 +55,15 @@ public:
   inline Energy massSecondProduct() const;
   // PDG ids and masses of the two emission products.
 
-  virtual Complex fullFun( const double z, const Energy2 qtilde2, 
+  virtual double fullFun( const double z, const Energy2 qtilde2, 
 			   const double phi ) = 0;
-  virtual Complex integratedFun( const double z, const Energy2 qtilde2 ) = 0;
-  virtual Complex fullFunWithHelicities( const double z, 
+  virtual double integratedFun( const double z, const Energy2 qtilde2 ) = 0;
+  virtual double fullFunWithHelicities( const double z, 
 					 const Energy2 qtilde2, 
 					 const double phi, 
 					 const int h0, const int h1, 
 					 const int h2 ) = 0;
-  virtual Complex integratedFunWithHelicities( const double z,
+  virtual double integratedFunWithHelicities( const double z,
 					       const Energy2 qtilde2, 
 					       const int h0, const int h1, 
 					       const int h2 ) = 0;
@@ -74,11 +75,11 @@ public:
   // returned value is complex, although for standard QCD it is indeed
   // real.  
 
-  virtual Complex overestimateFullFun( const double z, const double phi );
-  virtual Complex overestimateIntegratedFun( const double z );
-  virtual Complex overestimateFullFunWithHelicities( const double z, const double phi,
+  virtual double overestimateFullFun( const double z, const double phi );
+  virtual double overestimateIntegratedFun( const double z );
+  virtual double overestimateFullFunWithHelicities( const double z, const double phi,
 						     const int h0, const int h1, const int h2 );
-  virtual Complex overestimateIntegratedFunWithHelicities( const double z,
+  virtual double overestimateIntegratedFunWithHelicities( const double z,
 							   const int h0, const int h1, const int h2 );  
   // Virtual methods that could be overrided in a derived class in the
   // case it is known some approximate expressions for the exact
@@ -90,8 +91,8 @@ public:
   // functions and hence their integrals and inverses not depend on
   // qtilde2 since these are supposed to be as simple as possible.
 
-  virtual Complex integOverIntegratedFun(const double z); 
-  virtual Complex invIntegOverIntegratedFun(const double r); 
+  virtual double integOverIntegratedFun(const double z); 
+  virtual double invIntegOverIntegratedFun(const double r); 
   // The indefinite integral of the overestimated splitting function
   // <!id>overestimateIntegratedFun(z)<!!id> and its inverse. 
 

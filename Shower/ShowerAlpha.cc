@@ -42,7 +42,3 @@ void ShowerAlpha::Init() {
 
 }
 
-
-double ShowerAlpha::overestimateValue(const Energy2 scale) {
-  return value( scale );
-}

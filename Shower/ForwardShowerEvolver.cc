@@ -15,11 +15,12 @@
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
 #include "SplitFun1to2.h"
-#include "ShowerColourLine.h"
+//#include "ShowerColourLine.h"
+#include "Pythia7/EventRecord/ColourLine.h"
 #include "ShowerConfig.h"
 
 using namespace Herwig;
-
+using namespace Pythia7;
 
 ForwardShowerEvolver::~ForwardShowerEvolver() {}
 
@@ -66,8 +67,8 @@ bool ForwardShowerEvolver::
 timeLikeShower( tPartCollHdlPtr ch, 
 		const tShoConstrPtr showerConstrainer, 
 		const tMECorrectionPtr meCorrectionPtr,
-		tShoParPtr particle, 
-		CollecShoParPtr & collecShoPar,
+		tShowerParticlePtr particle, 
+		ShowerParticleVector & collecShoPar,
 		const bool specialDecay )  throw (Veto, Stop, Exception) {
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -83,12 +84,12 @@ timeLikeShower( tPartCollHdlPtr ch,
   }
 
   bool hasEmitted = false;
-  vector<tShoParPtr> particlesYetToShower;
+  tShowerParticleVector particlesYetToShower;
   particlesYetToShower.push_back( particle );
 
   do {
 
-    tShoParPtr part = particlesYetToShower.back();
+    tShowerParticlePtr part = particlesYetToShower.back();
     particlesYetToShower.pop_back();
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -145,8 +146,8 @@ timeLikeShower( tPartCollHdlPtr ch,
 
       // Assign the splitting function and the shower kinematics
       // to the emitting particle.
-      part->showerKinematics( pairShowerKinSudakov.first );
-      part->splitFun( pairShowerKinSudakov.second->splitFun() ); 
+      part->setShowerKinematics( pairShowerKinSudakov.first );
+      part->setSplitFun( pairShowerKinSudakov.second->splitFun() ); 
       
       // For the time being we are considering only 1->2 branching
       tSplitFun1to2Ptr splitFun = 
@@ -166,17 +167,20 @@ timeLikeShower( tPartCollHdlPtr ch,
 	// Notice that the momenta of the shower products is not set: only
 	// at the end of the showering, during the kinematics reconstruction
 	// such momenta are calculated and set.
-	ShoParPtr showerProduct1 = new_ptr( ShowerParticle() );
-	ShoParPtr showerProduct2 = new_ptr( ShowerParticle() );
+	ShowerParticlePtr showerProduct1;
+	ShowerParticlePtr showerProduct2;
 	if ( part->data().id() > 0 ) {
-	  showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
+	  showerProduct1 = new_ptr(ShowerParticle(
+                                getParticleData(splitFun->idFirstProduct())));
 	} else {
-	  showerProduct1->dataPtr( getParticleData( - splitFun->idFirstProduct() ) );
+	  showerProduct1 = new_ptr(ShowerParticle(
+				getParticleData(-splitFun->idFirstProduct())));
 	}
-	showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
+	showerProduct2 = new_ptr(ShowerParticle( 
+                                getParticleData(splitFun->idSecondProduct())));
 
 	// *** ACHTUNG *** set the recent scales at which the particles are produced
-	// here might be the place to intorduce angular ordering
+	// here might be the place to introduce angular ordering
 	const ShowerIndex::InteractionType interaction = splitFun->interactionType(); 
 	const Energy scale = part->showerKinematics()->qtilde(); 
 	showerProduct1->setEvolutionScale(interaction, scale);
@@ -198,11 +202,10 @@ timeLikeShower( tPartCollHdlPtr ch,
 // 	  showerProduct2->sudPy( sudPyProducts[1] ); 
 // 	}
 
-	CollecShoParPtr theChildren; 
+	ParticleVector theChildren; 
 	theChildren.push_back( showerProduct1 ); 
 	theChildren.push_back( showerProduct2 ); 
 	part->showerKinematics()->updateChildren( part, theChildren ); 
-
 
 	// In the case of splittings which involves coloured particles,
         // set properly the colour flow of the branching.
@@ -248,7 +251,7 @@ timeLikeShower( tPartCollHdlPtr ch,
 	  map<tShoColinePtr,int> mapShoColine;
 	  int countShoColine = 601;
 	  for ( int i=0; i<3; i++ ) {
-	    tShoParPtr theParticle;
+	    tShowerParticlePtr theParticle;
 	    if ( i == 0 ) {
 	      theParticle = part;
 	      generator()->log() << "\t   parent:     ";
@@ -280,9 +283,55 @@ timeLikeShower( tPartCollHdlPtr ch,
 	      generator()->log() << "0";
 	    }
 	    generator()->log() << endl;
-	  } // for 
+	  } // for 		  
 	} // debug full 
-	
+
+	if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Shower ) {      
+	  generator()->log() << "  full colour information: " << endl
+			     << "  parent = " << part
+			     << ", " << part->data().PDGName() << endl
+			     << "  colourLines = [" 
+			     << part->colourLine() << ", " 
+			     << part->antiColourLine() << "]" << endl 
+			     << "    in colour = ["
+			     << part->incomingColour() << ", " 
+			     << part->incomingAntiColour() << "]" << endl 
+			     << "   out colour = ["
+			     << part->outgoingColour() << ", " 
+			     << part->outgoingAntiColour() << "]" << endl 
+			     << "   neighbours = ["
+			     << part->colourNeighbour() << ", " 
+			     << part->antiColourNeighbour() << "]" << endl
+			     << "  child1 = " << showerProduct1 
+			     << ", " << showerProduct1->data().PDGName() << endl
+			     << "  colourLines = [" 
+			     << showerProduct1->colourLine() << ", " 
+			     << showerProduct1->antiColourLine() << "]" << endl 
+			     << "    in colour = ["
+			     << showerProduct1->incomingColour() << ", " 
+			     << showerProduct1->incomingAntiColour() << "]" << endl 
+			     << "   out colour = ["
+			     << showerProduct1->outgoingColour() << ", " 
+			     << showerProduct1->outgoingAntiColour() << "]" << endl 
+			     << "   neighbours = ["
+			     << showerProduct1->colourNeighbour() << ", " 
+			     << showerProduct1->antiColourNeighbour() << "]" << endl
+			     << "  child2 = " << showerProduct2 
+			     << ", " << showerProduct2->data().PDGName() << endl
+			     << "  colourLines = [" 
+			     << showerProduct2->colourLine() << ", " 
+			     << showerProduct2->antiColourLine() << "]" << endl 
+			     << "    in colour = ["
+			     << showerProduct2->incomingColour() << ", " 
+			     << showerProduct2->incomingAntiColour() << "]" << endl 
+			     << "   out colour = ["
+			     << showerProduct2->outgoingColour() << ", " 
+			     << showerProduct2->outgoingAntiColour() << "]" << endl 
+			     << "   neighbours = ["
+			     << showerProduct2->colourNeighbour() << ", " 
+			     << showerProduct2->antiColourNeighbour() << "]" << endl;
+	} // extreme
+
 	if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower       
 	     && generator()->currentEventNumber() < 1000) {
 	  generator()->log() << "->" << showerProduct1->data().PDGName()

@@ -12,7 +12,7 @@ using namespace Herwig;
 QtoQGammaSplitFun::~QtoQGammaSplitFun() {}
 
 
-Complex QtoQGammaSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
+double QtoQGammaSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
 
   double val = 0.0;
 
@@ -23,18 +23,7 @@ Complex QtoQGammaSplitFun::fullFun( const double z, const Energy2 qtilde2, const
 }
 
 
-Complex QtoQGammaSplitFun::integratedFun( const double z, const Energy2 qtilde2) {
-
-  double val = 0.0;
-
-  //***LOOKHERE*** WRITE THE CODE FOR THE LEADING ORDER Q->QGamma
-  
-  return val;
-
-}
-
-
-Complex QtoQGammaSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 ) {
+double QtoQGammaSplitFun::integratedFun( const double z, const Energy2 qtilde2) {
 
   double val = 0.0;
 
@@ -45,7 +34,18 @@ Complex QtoQGammaSplitFun::fullFunWithHelicities( const double z, const Energy2 
 }
 
 
-Complex QtoQGammaSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
+double QtoQGammaSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 ) {
+
+  double val = 0.0;
+
+  //***LOOKHERE*** WRITE THE CODE FOR THE LEADING ORDER Q->QGamma
+  
+  return val;
+
+}
+
+
+double QtoQGammaSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
 

@@ -8,114 +8,13 @@
 #include "Pythia7/EventRecord/Particle.h"
 #include "ShowerIndex.h"
 
+#define ShowerCast(a) (dynamic_ptr_cast<ShowerParticlePtr>(a))
+#define tShowerCast(a) (dynamic_ptr_cast<tShowerParticlePtr>(a))
+
 using namespace Herwig;
+using namespace Pythia7;
 
-
-ShowerParticle::ShowerParticle()
-  : _pdptr( Pythia7::tcPDPtr() ),
-    _parent( tShoParPtr() ),
-    _isFinalState( true ),
-    _sudAlpha( 1.0 ), 
-    _sudBeta( -1.0 ), 
-    _sudPx( Energy() ),
-    _sudPy( Energy() ),
-    _splitFun( tSplitFunPtr() ),
-    _decayer( tDecayerPtr() ),
-    _showerKinematics( tShoKinPtr() ),
-    _scales( ShowerIndex::NumInteractionTypes ),
-    _partners( ShowerIndex::NumInteractionTypes ),
-    _rhoDUpdate( false ),
-    _rhoD( 2, vector< std::complex<double> >(2) ),
-    _reconstructionFixedPoint( false )
-{ 
-  // Initialize the scales to the lowest Energy value, and null partners.
-  for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
-    _scales[i] = Energy();
-    _partners[i] = tShoParPtr();
-  }
-
-  // Initialize _rhoD matrix to the 2x2 identity, normalisee to trace equal 1.
-  _rhoD[0][0] = 0.5;
-  _rhoD[0][1] = 0.0;
-  _rhoD[1][0] = 0.0;
-  _rhoD[1][1] = 0.5;
-}
-
-
-ShowerParticle::~ShowerParticle() {}
-
-
-ShowerParticle::ShowerParticle(const Pythia7::Particle & inputP7Particle)
-  : _pdptr( Pythia7::tcPDPtr() ),
-    _parent( tShoParPtr() ),
-    _isFinalState( true ),
-    _sudAlpha( 1.0 ),
-    _sudBeta( -1.0 ),
-    _sudPx( Energy() ),
-    _sudPy( Energy() ),
-    _splitFun( tSplitFunPtr() ),
-    _decayer( tDecayerPtr() ),
-    _showerKinematics( tShoKinPtr() ),
-    _scales( ShowerIndex::NumInteractionTypes ),
-    _partners( ShowerIndex::NumInteractionTypes ),
-    _rhoDUpdate( false ),
-    _rhoD( 2, vector< std::complex<double> >(2) ), 
-    _reconstructionFixedPoint( false )  
-{
-  // Initialize the scales to the lowest Energy value, and null partners.
-  for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
-    _scales[i] = Energy();
-    _partners[i] = tShoParPtr();
-  }
-
-  // Initialize _rhoD matrix to the 2x2 identity, normalisee to trace equal 1.
-  _rhoD[0][0] = 0.5;
-  _rhoD[0][1] = 0.0;
-  _rhoD[1][0] = 0.0;
-  _rhoD[1][1] = 0.5;
-
-  dataPtr( inputP7Particle.dataPtr() );
-  momentum( inputP7Particle.momentum() );
-  position( inputP7Particle.labVertex() );
-  //***LOOKHERE*** Notice that the colour lines should be set not here 
-  //               but at the beginning of ShowerHandler::cascade() 
-} 
-
-
-Pythia7::PPtr ShowerParticle::createPythia7Particle() const {
-  PPtr particleP7 = getParticle( data().id() );
-  if ( particleP7 ) {
-    particleP7->set5Momentum( momentum() );
-    particleP7->setLabVertex( position() );
-    //***LOOKHERE*** Notice that the parent/children relationships
-    //               and the colour lines should be set not here but 
-    //               at the end of ShowerHandler::cascade() 
-  }
-  return particleP7;
-}
-
-
-void ShowerParticle::deepTransform(const LorentzRotation & r) {
-//   cerr << "ShowerParticle::deepTransform: " << endl; 
-//   if ( this->parent() ) {
-//     cerr << "  " << this->parent()->data().PDGName(); 
-//   } else {
-//     cerr << "  *"; 
-//   }
-//   cerr << " <- " << this->data().PDGName() << " -> ";
-//   for (CollecShoParPtr::const_iterator cit = children().begin(); 
-//        cit != children().end(); ++cit) {
-//     cerr << (*cit)->data().PDGName() << " ";
-//   }
-//   cerr << endl; 
-  transform(r);
-  for (CollecShoParPtr::const_iterator cit = children().begin(); 
-       cit != children().end(); ++cit) {
-    (*cit)->deepTransform(r);   
-    //    cerr << "  call " << (*cit)->data().PDGName() << endl;
-  }
-}
-
+ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 
 void ShowerParticle::printInfo() {
   cout << this->data().id() << " " 
@@ -124,15 +23,15 @@ void ShowerParticle::printInfo() {
   Lorentz5Momentum dum = sumParentsMomenta() - momentum(); 
   cout << dum.x() << " " << dum.y() << " " 
        << dum.z() << " " << dum.t() << " " << children().size() << "\t";
-  if( parent() ) {
-    cout << "<" << parent()
-	 << "," << parent()->data().PDGName() << "> ";
+  if( parents().size() ) {
+    cout << "<" << parents()[0]
+	 << "," << parents()[0]->data().PDGName() << "> ";
   } else {
     cout << "<> ";
   }
   cout << "[" << this << "," << this->data().PDGName() << "] {"; 
   if ( children().size() > 0 ) {
-    for (CollecShoParPtr::const_iterator cit = children().begin(); 
+    for (ParticleVector::const_iterator cit = children().begin(); 
 	 cit != children().end(); ++cit) {
       cout << "[" << (*cit) << "," << (*cit)->data().PDGName() << "]";
     }
@@ -141,57 +40,116 @@ void ShowerParticle::printInfo() {
     cout << "} ";
   }
   cout << endl; 
+  if( parents().size() ) {
+    cout << "col " << parents()[0]->data().PDGName() << " > ";
+  } else {
+    cout << " > ";
+  }
+  cout << this->data().PDGName() << " > ("; 
+  if ( children().size() > 0 ) {
+    for (ParticleVector::const_iterator jit = children().begin(); 
+	 jit != children().end(); ++jit) {
+      cout << (*jit)->data().PDGName() << " ";
+    }
+    cout << ") [";
+  } else {
+    cout << " ) [";
+  }
+  cout << colourLine() << ", " 
+       << antiColourLine() << "] ["
+       << incomingColour() << ", " 
+       << incomingAntiColour() << "] ["
+       << outgoingColour() << ", " 
+       << outgoingAntiColour() << "] ["
+       << colourNeighbour() << ", " 
+       << antiColourNeighbour() << "]" << endl; 
 }
 
+ShowerParticle::~ShowerParticle() { }
 
 void ShowerParticle::deepPrintInfo() {
   printInfo();
-  for (CollecShoParPtr::const_iterator cit = children().begin(); 
+  for (ParticleVector::const_iterator cit = children().begin(); 
        cit != children().end(); ++cit) {
-    (*cit)->deepPrintInfo();   
+    ShowerParticlePtr s = ShowerCast(*cit);
+    if(s) s->deepPrintInfo();   
   }
 }
- 
+
+void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
+  tPPtr dum; 
+  tParticleVector yet; 
+  tParticleVector addCh; 
+  yet.push_back( dynamic_ptr_cast<tPPtr>(this) );  
+  while( !yet.empty() ) { 
+    dum = yet.back(); 
+    yet.pop_back(); 
+//     cerr << "dum = " << dum << ", " << dum->data().PDGName() 
+// 	 << "; " << dum->children().size() << " children." << endl 
+// 	 << "  colourLines = [" 
+// 	 << dum->colourLine() << ", " 
+// 	 << dum->antiColourLine() << "]" << endl 
+// 	 << "    in colour = ["
+// 	 << dum->incomingColour() << ", " 
+// 	 << dum->incomingAntiColour() << "]" << endl 
+// 	 << "   out colour = ["
+// 	 << dum->outgoingColour() << ", " 
+// 	 << dum->outgoingAntiColour() << "]" << endl 
+// 	 << "   neighbours = ["
+// 	 << dum->colourNeighbour() << ", " 
+// 	 << dum->antiColourNeighbour() << "]" << endl; 
+    for ( ParticleVector::const_iterator cit = dum->children().begin(); 
+	  cit != dum->children().end(); ++cit ) {      
+      //      cerr << "Ch: " << *cit << ", " << (*cit)->data().PDGName() << endl;  
+      yet.push_back( dynamic_ptr_cast<tPPtr>(*cit) ); 
+      addCh.push_back( *cit ); 
+    }
+    while( !addCh.empty() ) {       
+      //      cerr << "add " << addCh.back() << ", " << addCh.back()->data().PDGName() 
+      //	   << " to " << dum << ", " << dum->data().PDGName() << endl;  
+      //      bool check; 
+//       if(addCh.back()->children().empty()) {
+// 	sp->addParticle(addCh.back());
+//       } else {
+// 	sp->addIntermediate(addCh.back());
+//       }
+//       sp->addParticle(dynamic_ptr_cast<tPPtr>(addCh.back()));
+      sp->addDecayNoCol(dum, addCh.back());    
+      // cerr << (check ? "ok! " : "not ok! ") << endl; 
+      addCh.pop_back(); 
+    }
+    // cerr << "." << endl;  
+  }
+}
+
 
 Lorentz5Momentum ShowerParticle::sumParentsMomenta() {
   Lorentz5Momentum dum; 
-  if ( parent() ) dum = parent()->sumParentsMomenta();
+  if (parents().size() == 1) {
+    tShowerParticlePtr s = tShowerCast(parents()[0]);
+    if (s) dum = s->sumParentsMomenta();
+  }
   return dum += momentum(); 
 }
 
-// CollecShoParPtr ShowerParticle::getFSChildren() {
-//   CollecShoParPtr dum; 
-//   for (CollecShoParPtr::const_iterator cit = children().begin(); 
-//        cit != children().end(); ++cit) {
-//     cerr << " " << (*cit)->data().PDGName();
-//     if ( (*cit)->isReconstructionFixedPoint() ) {
-//       dum.push_back( *cit ); 
-//     } else {
-//       (*cit)->getFSChildren();
-//     }
-//   }
-//   cerr << "]"; 
-//   return dum; 
-// }	
 
-
-tCollecShoParPtr ShowerParticle::getFSChildren() {
-  tCollecShoParPtr fs;   
+tShowerParticleVector ShowerParticle::getFSChildren() {
+  tShowerParticleVector fs;   
   if ( this->children().empty() ) {
     fs.push_back( this ); 
   } else {
-    tCollecShoParPtr yet; 
+    tShowerParticleVector yet; 
     yet.push_back( this ); 
-    tShoParPtr dum; 
+    tShowerParticlePtr dum; 
     while (! yet.empty() ) {
       dum = yet.back(); 
       yet.pop_back(); 
-      for (CollecShoParPtr::const_iterator cit = dum->children().begin(); 
+      for (ParticleVector::const_iterator cit = dum->children().begin(); 
 	   cit != dum->children().end(); ++cit) {
-	if ( (*cit)->isReconstructionFixedPoint() ) {
-	  fs.push_back( *cit ); 
+	if ( ShowerCast(*cit)->isReconstructionFixedPoint() ) {
+	  fs.push_back( ShowerCast(*cit) ); 
 	} else {
-	  yet.push_back( *cit ); 
+	  yet.push_back( ShowerCast(*cit) ); 
 	}
       }
     } 
@@ -200,9 +158,9 @@ tCollecShoParPtr ShowerParticle::getFSChildren() {
 }	
 
 
-bool ShowerParticle::addChildren(const tCollecShoParPtr & inputChildren) {
-  bool isOK = true;
-  if (! children().empty() ) {
+//bool ShowerParticle::addChildren(const tCollecShoParPtr & inputChildren) {
+//bool isOK = true;
+//if (! children().empty() ) {
     // When the current particle has already children (this would happen,
     // under normal conditions without bugs, if that particle has decayed 
     // before showering) then find between the (new)  inputChildren
@@ -212,31 +170,31 @@ bool ShowerParticle::addChildren(const tCollecShoParPtr & inputChildren) {
     // bugs is lurking somewhere; otherwise, transfer the original
     // children (decay products) of the current particle to the
     // one with the same identity in the (new)  inputChildren.
-    long idParticle = data().id();
-    tShoParPtr partAfterEmission = tShoParPtr();
-    for ( tCollecShoParPtr::const_iterator cit = inputChildren.begin();
-	  cit != inputChildren.end(); ++cit ) {
-      if ( (*cit)->data().id() == idParticle ) {
-	partAfterEmission = *cit;
-      } 
-    }    
-    if ( partAfterEmission  &&  partAfterEmission->children().empty() ) {
-      for ( CollecShoParPtr::const_iterator cit = children().begin();
-	    cit != children().end(); ++cit ) {
-	partAfterEmission->addChild( *cit );
-      }    
-      _children.clear();
-    } else {  
-      isOK = false;  // something wrong.
-    }
-  }
-  if ( isOK ) {
-    // Add normally the (new) children one by one, setting their parent pointers.
-    for ( tCollecShoParPtr::const_iterator cit = inputChildren.begin();
-	  cit != inputChildren.end(); ++cit ) {
-      addChild( *cit );
-    }
-  }
-  return isOK;
-}
+//  long idParticle = data().id();
+//  tShowerParticlePtr partAfterEmission = tShowerParticlePtr();
+//  for ( tShowerParticleVector::const_iterator cit = inputChildren.begin();
+//  cit != inputChildren.end(); ++cit ) {
+//    if ( (*cit)->data().id() == idParticle ) {
+//partAfterEmission = *cit;
+//    } 
+//  }    
+//  if ( partAfterEmission  &&  partAfterEmission->children().empty() ) {
+//    for ( ShowerParticleVector::const_iterator cit = children().begin();
+//    cit != children().end(); ++cit ) {
+//partAfterEmission->addChild( *cit );
+//    }    
+//    _children.clear();
+// } else {  
+//    isOK = false;  // something wrong.
+//  }
+//}
+//if ( isOK ) {
+//  // Add normally the (new) children one by one, setting their parent pointers.
+//  for ( tShowerParticleVector::const_iterator cit = inputChildren.begin();
+//  cit != inputChildren.end(); ++cit ) {
+//    addChild( *cit );
+//  }
+//}
+//return isOK;
+//}
 

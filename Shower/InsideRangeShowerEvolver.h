@@ -44,7 +44,7 @@ class InsideRangeShowerEvolver: public Pythia7::HandlerBase {
 
 public:
 
-  typedef map<tShoParPtr, bool> MapShower;
+  typedef map<tShowerParticlePtr, bool> MapShower;
   // See the comment on class <!class>KinematicsReconstructor<!!class> about this typedef.
 
   typedef vector<MapShower> CollecMapShower;
@@ -66,7 +66,7 @@ public:
   void showerNormally( tPartCollHdlPtr ch, 
 		       const tShoConstrPtr showerConstrainer, 
 		       const tMECorrectionPtr meCorrection,
-		       CollecShoParPtr & particles,
+		       ShowerParticleVector & particles,
 		       bool skipKinReco = false ) throw (Veto, Stop, Exception);
   // It does the normal showering of the particles entering the hard subprocess.
   // The <!id>ParticleCollisionHandler<!!id> object is needed to access the PDF.
@@ -75,13 +75,13 @@ public:
   void showerDecay( tPartCollHdlPtr ch, 
 		    const tShoConstrPtr showerConstrainer, 
 		    const tMECorrectionPtr meCorrection,
-		    CollecShoParPtr & particles ) throw (Veto, Stop, Exception);
+		    ShowerParticleVector & particles ) throw (Veto, Stop, Exception);
   // It does the (special) showering of a decay.
 
   void showerGlobally( tPartCollHdlPtr & ch,  
 		       const tShoConstrPtr showerConstrainer, 
 		       const tMECorrectionPtr meCorrection,
-		       CollecShoParPtr & particles,
+		       ShowerParticleVector & particles,
 		       bool skipKinReco = false ) throw (Veto, Stop, Exception);
   // It does the overall showering, between two width scales 
   // (or from a width scale and to the end). It is used only
@@ -91,7 +91,7 @@ public:
   // If <!id>skipKinReco<!!id> is true, then the kinematics reconstruction is skipped.
 
   void setEffectiveGluonMass( const Energy effectiveGluonMass,
-			      const CollecShoParPtr & particles ) throw (Veto, Stop, Exception);
+			      const ShowerParticleVector & particles ) throw (Veto, Stop, Exception);
   // It forces the final state gluons on the effective gluon mass shell
   // (rather than on the physical massless shell). It also set properly
   // the various flags that are needed for the kinematics reconstruction

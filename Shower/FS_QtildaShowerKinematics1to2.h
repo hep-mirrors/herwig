@@ -49,8 +49,8 @@ public:
   // at this moment and we will obtain instead beta only later, 
   // using <!id>updateParent()<!!id>.
 
-  virtual void updateChildren( const tShoParPtr theParent, 
-			     const CollecShoParPtr theChildren );
+  virtual void updateChildren( const tShowerParticlePtr theParent, 
+			       const ParticleVector theChildren );
   // Along with the showering evolution --- going forward for
   // time-like (forward) evolution, and going backward for space-like
   // (backward) evolution --- the kinematical variables of the
@@ -59,13 +59,13 @@ public:
   // <!class>ForwardShowerEvolver<!!class>.  ***ACHTUNG*** Might be
   // extended to update colour connections as well.
 
-  virtual void updateParent( const tShoParPtr theParent, 
-			     const CollecShoParPtr theChildren );
+  virtual void updateParent( const tShowerParticlePtr theParent, 
+			     const ParticleVector theChildren );
   // update the parent Kinematics from the knowledge of the kinematics
   // of the children.  This method will be used by the 
   // <!class>KinematicsReconstructor<!!class>.
 
-  virtual void updateLast( const tShoParPtr theLast );
+  virtual void updateLast( const tShowerParticlePtr theLast );
   // update the kinematical data of a particle when a reconstruction
   // fixpoint was found.  This will highly depend on the kind of
   // kinematics chosen and will be defined in the inherited concrete

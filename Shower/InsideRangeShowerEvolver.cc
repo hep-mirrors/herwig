@@ -99,7 +99,7 @@ void InsideRangeShowerEvolver::clear() {
 void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch, 
 					       const tShoConstrPtr showerConstrainer, 
 					       const tMECorrectionPtr meCorrection,
-					       CollecShoParPtr & particles,
+					       ShowerParticleVector & particles,
 					       bool skipKinReco ) 
   throw (Veto, Stop, Exception) {
 
@@ -131,14 +131,14 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
       // Remember that is not allowed to add element to a STL container
       // while you are iterating over it. Therefore an additional, temporary,
       // container must be used.
-      CollecShoParPtr particlesToShower;
-      for ( CollecShoParPtr::const_iterator cit = particles.begin();
+      ShowerParticleVector particlesToShower;
+      for ( ShowerParticleVector::const_iterator cit = particles.begin();
 	    cit != particles.end(); ++cit ) {
 	if ( (*cit)->isFinalState() ) {
 	  particlesToShower.insert( particlesToShower.end(), *cit );
 	}
       }
-      for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
+      for ( ShowerParticleVector::const_iterator cit = particlesToShower.begin();
 	    cit != particlesToShower.end(); ++cit ) {
 	bool hasEmitted = _pointerForwardShowerEvolver->
 	  timeLikeShower( ch, showerConstrainer, meCorrection, *cit, particles );
@@ -146,28 +146,28 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
 	if ( _mapShowerHardJets.find( *cit ) != _mapShowerHardJets.end() ) {
 	  ( _mapShowerHardJets.find( *cit ) )->second = hasEmitted;
 	} else {
-	  _mapShowerHardJets.insert( pair<tShoParPtr, bool>( *cit, hasEmitted ) );
+	  _mapShowerHardJets.insert( pair<tShowerParticlePtr, bool>( *cit, hasEmitted ) );
 	}
       }
     }
 
     // Initial State Radiation
     if ( _pointerSplittingGenerator->isISRadiationON() ) {
-      CollecShoParPtr particlesToShower;
-      for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
+      ShowerParticleVector particlesToShower;
+      for ( ShowerParticleVector::const_iterator cit = particlesToShower.begin();
 	    cit != particlesToShower.end(); ++cit ) {
 	if ( ! (*cit)->isFinalState() ) {
 	  particlesToShower.insert( particlesToShower.end(), *cit );
 	}
       }
-      for ( CollecShoParPtr::iterator it = particlesToShower.begin();
+      for ( ShowerParticleVector::iterator it = particlesToShower.begin();
 	    it != particlesToShower.end(); ++it ) {
 	bool hasEmitted = _pointerBackwardShowerEvolver->
 	  spaceLikeShower( ch, showerConstrainer, meCorrection, *it, particles );
 	if ( _mapShowerHardJets.find( *it ) != _mapShowerHardJets.end() ) {
 	  ( _mapShowerHardJets.find( *it ) )->second = hasEmitted;
 	} else {
-	  _mapShowerHardJets.insert( pair<tShoParPtr, bool>( *it, hasEmitted ) );
+	  _mapShowerHardJets.insert( pair<tShowerParticlePtr, bool>( *it, hasEmitted ) );
 	}
       }
     }
@@ -192,7 +192,7 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
 void InsideRangeShowerEvolver::showerDecay( tPartCollHdlPtr ch, 
 					    const tShoConstrPtr showerConstrainer, 
 					    const tMECorrectionPtr meCorrection,
-					    CollecShoParPtr & particles ) 
+					    ShowerParticleVector & particles ) 
   throw (Veto, Stop, Exception) {
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -241,7 +241,7 @@ void InsideRangeShowerEvolver::showerDecay( tPartCollHdlPtr ch,
 void InsideRangeShowerEvolver::showerGlobally( tPartCollHdlPtr & ch, 
 					       const tShoConstrPtr showerConstrainer, 
 					       const tMECorrectionPtr meCorrection,
-					       CollecShoParPtr & particles,
+					       ShowerParticleVector & particles,
 					       bool skipKinReco )
   throw (Veto, Stop, Exception) {
 
@@ -299,7 +299,7 @@ void InsideRangeShowerEvolver::showerGlobally( tPartCollHdlPtr & ch,
 
 
 void InsideRangeShowerEvolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
-						      const CollecShoParPtr & particles ) 
+						      const ShowerParticleVector & particles ) 
   throw (Veto, Stop, Exception) {
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -308,6 +308,17 @@ void InsideRangeShowerEvolver::setEffectiveGluonMass( const Energy effectiveGluo
 		       << "   EventNumber=" << generator()->currentEventNumber() 
 		       << endl;
   }
+
+  for(ShowerParticleVector::const_iterator pit = particles.begin(); 
+      pit != particles.end(); ++pit) {   
+    if ( (*pit)->data().id() == 21 ) {
+      Lorentz5Momentum dum = (*pit)->momentum(); 
+      dum.setMass( effectiveGluonMass ); 
+      (*pit)->set5Momentum( dum );
+    }
+  }
+
+  // ***ACHTUNG!*** still flags to be set...
 
   //***LOOKHERE*** 
   //               for each final state particles { 

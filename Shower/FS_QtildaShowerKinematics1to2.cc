@@ -98,14 +98,15 @@ updateChildren( const double parentSudAlpha, const Energy parentSudPx,
 }
 
 
-void FS_QtildaShowerKinematics1to2::updateChildren( const tShoParPtr theParent, 
-						    const CollecShoParPtr theChildren ) {
+void FS_QtildaShowerKinematics1to2::updateChildren( const tShowerParticlePtr theParent, 
+						    const ParticleVector theChildren ) {
 
   if (theChildren.size() != 2) {
     CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() " 
 			    << "Warning! too many children!" << endl;      
   } else {
-    
+    ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
+    ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
     double dqtilde = qtilde();
     double dz = z(); 
     double dphi = phi();
@@ -131,8 +132,8 @@ void FS_QtildaShowerKinematics1to2::updateChildren( const tShoParPtr theParent,
     }
 
     // determine alphas of children according to interpretation of z
-    theChildren[0]->sudAlpha( dz*theParent->sudAlpha() ); 
-    theChildren[1]->sudAlpha( (1.-dz)*theParent->sudAlpha() ); 
+    c1->sudAlpha( dz*theParent->sudAlpha() ); 
+    c2->sudAlpha( (1.-dz)*theParent->sudAlpha() ); 
     
     // determine transverse momenta of children
     Energy pPerp; 
@@ -151,22 +152,22 @@ void FS_QtildaShowerKinematics1to2::updateChildren( const tShoParPtr theParent,
 			      << sqrt(dm2)/dqtilde << "!" << endl;
     }
 
-    theChildren[0]->sudPx( pPerp*cos(dphi) + dz*theParent->sudPx() );
-    theChildren[0]->sudPy( pPerp*sin(dphi) + dz*theParent->sudPy() );
-    theChildren[1]->sudPx( - pPerp*cos(dphi) + (1.-dz)*theParent->sudPx() );
-    theChildren[1]->sudPy( - pPerp*sin(dphi) + (1.-dz)*theParent->sudPy() );
+    c1->sudPx( pPerp*cos(dphi) + dz*theParent->sudPx() );
+    c1->sudPy( pPerp*sin(dphi) + dz*theParent->sudPy() );
+    c2->sudPx( - pPerp*cos(dphi) + (1.-dz)*theParent->sudPx() );
+    c2->sudPy( - pPerp*sin(dphi) + (1.-dz)*theParent->sudPy() );
 
     // dump all output
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log()  << "  result (alpha1, alpha2), pPerp = (" 
-			       << theChildren[0]->sudAlpha() << ", " 
-			       << theChildren[1]->sudAlpha() << ", " 
+			       << c1->sudAlpha() << ", " 
+			       << c2->sudAlpha() << ", " 
 			       << pPerp << endl
 			       << "  result (px1, py1), (px2, py2) = (" 
-			       << theChildren[0]->sudPx() << ", " 
-			       << theChildren[0]->sudPy() << "), (" 
-			       << theChildren[1]->sudPx() << ", " 
-			       << theChildren[1]->sudPy() << ")" 
+			       << c1->sudPx() << ", " 
+			       << c1->sudPy() << "), (" 
+			       << c2->sudPx() << ", " 
+			       << c2->sudPy() << ")" 
 			       << endl 
 			       << "FS_QtildaShowerKinematics1to2::updateChildren() "
 			       << "==> end extreme <== " << endl;
@@ -176,30 +177,32 @@ void FS_QtildaShowerKinematics1to2::updateChildren( const tShoParPtr theParent,
 
 
 void FS_QtildaShowerKinematics1to2::
-updateParent( const tShoParPtr theParent, 
-	      const CollecShoParPtr theChildren ) {
+updateParent( const tShowerParticlePtr theParent, 
+	      const ParticleVector theChildren ) {
 
   if (theChildren.size() != 2) {
     CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateParent() " 
 			    << "Warning! too many children!" << endl;      
   } else {
-    theParent->sudBeta( theChildren[0]->sudBeta() + theChildren[1]->sudBeta() ); 
-    theParent->momentum( theChildren[0]->momentum() + theChildren[1]->momentum() ); 
+    ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
+    ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
+    theParent->sudBeta( c1->sudBeta() + c2->sudBeta() ); 
+    theParent->set5Momentum( c1->momentum() + c2->momentum() ); 
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
       CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateParent(): "	 
 			      << endl 
 			      << "  set beta = " << theParent->sudBeta() 
 			      << " = " 
-			      << theChildren[0]->sudBeta() 
+			      << c1->sudBeta() 
 			      << " + " 
-			      << theChildren[1]->sudBeta() << "." 
+			      << c2->sudBeta() << "." 
 			      << endl
 			      << "  set q = " << theParent->momentum()
 			      << endl
-			      << "        = " << theChildren[0]->momentum()
+			      << "        = " << c1->momentum()
 			      << endl 
-			      << "        + " << theChildren[1]->momentum()
+			      << "        + " << c2->momentum()
 			      << endl
 			      << "  q_sud = " 
 			      << sudakov2Momentum( theParent->sudAlpha(), 
@@ -215,11 +218,15 @@ updateParent( const tShoParPtr theParent,
 }
 
 
-void FS_QtildaShowerKinematics1to2::updateLast( const tShoParPtr theLast ) {
+void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast ) {
 
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  theLast->sudBeta( (sqr(theLast->data().mass()) + theLast->sudPperp2() 
+  
+  Energy theMass; 
+  if ( theLast->data().id() == 21 ) theMass = theLast->momentum().mass(); 
+  else theMass = theLast->data().mass(); 
+  theLast->sudBeta( (sqr(theMass) + theLast->sudPperp2() 
   		     - sqr( theLast->sudAlpha() )*_pVector.m2())
   		    / ( 2.*theLast->sudAlpha()*_pVector*_nVector ) ); 
 
@@ -237,7 +244,7 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShoParPtr theLast ) {
   }
       
   // set that new momentum    
-  theLast->momentum(  sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
+  theLast->set5Momentum(  sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
 					theLast->sudPx(), theLast->sudPy() )  );
 }
 

@@ -63,11 +63,11 @@ void BackwardShowerEvolver::Init() {
 
 //------------------------------------------------------------------------------
 
-bool BackwardShowerEvolver::spaceLikeShower( tPartCollHdlPtr ch, 
-					     const tShoConstrPtr showerConstrainer, 
-					     const tMECorrectionPtr meCorrectionPtr,
-					     tShoParPtr particle, 
-					     CollecShoParPtr & collecShoPar ) 
+bool BackwardShowerEvolver::spaceLikeShower(tPartCollHdlPtr ch, 
+					    const tShoConstrPtr showerConstrainer, 
+					    const tMECorrectionPtr meCorrectionPtr,
+					    tShowerParticlePtr particle, 
+					    ShowerParticleVector &collecShoPar ) 
   throw (Veto, Stop, Exception) {
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -78,8 +78,8 @@ bool BackwardShowerEvolver::spaceLikeShower( tPartCollHdlPtr ch,
   }
 
   bool hasEmitted = false;
-  tShoParPtr spaceLikePart = particle;
-  vector<tShoParPtr> particlesYetToShower;   // only time-like particles
+  tShowerParticlePtr spaceLikePart = particle;
+  tShowerParticleVector particlesYetToShower;   // only time-like particles
 
   do {
 
@@ -89,7 +89,7 @@ bool BackwardShowerEvolver::spaceLikeShower( tPartCollHdlPtr ch,
     //                accept it according to the  showerConstrainer  and soft correction;
     //                if ( does not branch ) {
     //                  rhoD propagation;
-    //                  spaceLikePart = tShoParPtr();
+    //                  spaceLikePart = tShowerParticlePtr();
     //                } else {
     //                  hasEmitted = true;
 		        _pointerSplittingGenerator->
@@ -115,7 +115,7 @@ bool BackwardShowerEvolver::spaceLikeShower( tPartCollHdlPtr ch,
 
     //***LOOKHERE***  update rhoD of part;
 
-    tShoParPtr part = particlesYetToShower.back();
+    tShowerParticlePtr part = particlesYetToShower.back();
     particlesYetToShower.pop_back();
     hasEmitted = hasEmitted || 
       _pointerForwardShowerEvolver->timeLikeShower(ch, showerConstrainer, meCorrectionPtr,

@@ -76,37 +76,40 @@
 #include "ShowerConfig.h"
 #include "Pythia7/Handlers/HandlerBase.h"
 #include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
-#include "Pythia7/CLHEPWrap/LorentzRotation.h"
 #include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/PDT/Decayer.h"
+#include "Pythia7/EventRecord/Particle.h"
+#include "Pythia7/EventRecord/Step.h"
 #include "ShowerKinematics.h"
 #include "ShowerIndex.h"
-#include "ShowerColourLine.h"
+//#include "ShowerColourLine.h"
 
 
 namespace Herwig {
 
 using namespace Pythia7;
 
-class Pythia7::Particle;   // forward declaration
+  //class Pythia7::Particle;   // forward declaration
 
-
-class ShowerParticle: public Pythia7::HandlerBase {
-
+class ShowerParticle: public Particle {
+private:
+  //inline ShowerParticle();
+  PPtr temp;
 public:
+  inline void * operator new(size_t);
+  inline void operator delete(void *, size_t);
 
-  ShowerParticle();
+  inline ShowerParticle(tcEventPDPtr);
   inline ShowerParticle(const ShowerParticle &);
+  inline ShowerParticle(const Particle &);
   virtual ~ShowerParticle();
   // Standard ctors and dtor.
 
-  explicit ShowerParticle(const Pythia7::Particle & inputP7Particle);
+  //explicit ShowerParticle(const Pythia7::Particle & inputP7Particle);
   // Create a <!id>ShowerParticle<!!id> object from a <!id>Pythia7::Particle<!!id> object.
   // This is useful at the beginning of the Showering, when we receive
   // the Pythia7 particles (in the event record) from the hard subprocess.
 
-  PPtr createPythia7Particle() const;
+  //PPtr createPythia7Particle() const;
   // Create a <!id>Pythia7::Particle<!!id> object from this <!id>ShowerParticle<!!id> object.
   // This is useful at the end of the Showering, when we have to update
   // the event record with Pythia7 particles, using some of the 
@@ -114,62 +117,63 @@ public:
   // (which ones depends on the degree of detail of the showering we want to keep
   //  in the event record). 
 
-  inline const ParticleData & data() const;
-  inline tcPDPtr dataPtr() const { return _pdptr; }
-  inline void dataPtr(const tcPDPtr & inputParticleDataPtr);
+  //inline const ParticleData & data() const;
+  //inline tcPDPtr dataPtr() const { return _pdptr; }
+  //inline void dataPtr(const tcPDPtr & inputParticleDataPtr);
   // Access/Set the particle data.
 
-  inline const Lorentz5Momentum & momentum() const;
-  inline void momentum(const Lorentz5Momentum & inputMomentum);
+  //inline const Lorentz5Momentum & momentum() const;
+  //inline void momentum(const Lorentz5Momentum & inputMomentum);
   // Access/Set the 5-momentum vector of the component (parton or diquark).
 
-  inline const LorentzPoint & position() const;
-  inline void position(const LorentzPoint & inputPosition);
+  //inline const LorentzPoint & position() const;
+  //inline void position(const LorentzPoint & inputPosition);
   // Access/Set the particle 4-position. It is eventually used by the
   // Hadronization (for the colour reconnection).
 
-  inline void transform(const LorentzRotation & r);
-  void deepTransform(const LorentzRotation & r);
-  inline void deepBoost(double bx, double by, double bz);
+  //inline void transform(const LorentzRotation & r);
+  //void deepTransform(const LorentzRotation & r);
+  //inline void deepBoost(double bx, double by, double bz);
   // Do Lorentz transformations on this particle and its decay products.
   // ***LOOKHERE*** TO BE DEFINED : MAY BE IS ENOUGH ONE OF THE TWO
 
-  inline tShoColinePtr antiColourLine() const;
-  inline tShoColinePtr colourLine(bool anti = false) const;
+  //inline tShoColinePtr antiColourLine() const;
+  //inline tShoColinePtr colourLine(bool anti = false) const;
   // Return the colour lines to which this particle is connected.
 
-  inline void setAntiColourLine(ShoColinePtr);
-  inline void setColourLine(ShoColinePtr, bool anti = false);
+  //inline void setAntiColourLine(ShoColinePtr);
+  //inline void setColourLine(ShoColinePtr, bool anti = false);
   // Set the colour lines to which this particle is connected.
 
-  inline tShoParPtr parent() const;
-  inline void parent(const tShoParPtr inputParent);
+  //inline tShoParPtr parent() const;
+  //inline void parent(const tShoParPtr inputParent);
   // Access/Set the parent particle. 
   // Notice that in the case of backward evolution splitting,
   // the parent is the one with higher (space-like) virtuality,
   // that is "closer" to the hard subprocess
 
   inline bool isFinalState() const;
-  inline void isFinalState( const bool inputIsFinalState );
+  inline void setFinalState( const bool );
   // Access/Set the flag that tells if the particle is final state
   // or initial state.
 
   inline bool isFromHardSubprocess() const;
-  // It returns true is the particle has not parent, which means
+  inline void setFromHardSubprocess(const bool);
+  // It returns true is the particle has no parent, which means
   // that it is connected directly to the hard subprocess
   // (incoming if it is space-like, outgoing it is time-like);
   // in all other cases, it returns false.  
 
-  inline const CollecShoParPtr & children() const;
+  //inline const ShowerParticleVector & children() const;
   // Return a const reference to the collection of decay products.
 
-  inline void addChild(const tShoParPtr inputChild);
+  //inline void addChild(const tShowerParticlePtr);
   // Add a child, setting child's parent pointer accordingly.
 
-  inline void removeChildren();
+  //inline void removeChildren();
   // remove collection of children.
 
-  bool addChildren(const tCollecShoParPtr & inputChildren);
+  bool addChildren(const tShowerParticleVector &);
   // Add a collection of children, setting children's parent pointer
   // accordingly. The input children can be either the decay products
   // of this particle, or the radiated particle and emitting particle
@@ -181,13 +185,13 @@ public:
   // then the method returns false; otherwise true.
 
   inline double sudAlpha() const;
-  inline void sudAlpha(const double inputSudAlpha);
+  inline void sudAlpha(const double);
   inline double sudBeta() const;
-  inline void sudBeta(const double inputSudBeta);
+  inline void sudBeta(const double);
   inline Energy sudPx() const;
-  inline void sudPx(const Energy inputSudPx);
+  inline void sudPx(const Energy);
   inline Energy sudPy() const;
-  inline void sudPy(const Energy inputSudPy);
+  inline void sudPy(const Energy);
   inline Energy sudPperp() const;
   inline Energy2 sudPperp2() const;
   // Access/Set Sudakov variables.
@@ -203,42 +207,42 @@ public:
   // whereas the <!id>momentum<!id> member describes the "final", "real" one. 
 
   inline tSplitFunPtr splitFun() const;
-  inline void splitFun(const tSplitFunPtr inputSplitFun);
+  inline void setSplitFun(const tSplitFunPtr);
   // Access/Set the <!class>SplitFun<!!class> object responsible of the 
   // eventual branching of this particle.
 
-  inline tDecayerPtr decayer() const;
-  inline void decayer(const tDecayerPtr inputDecayer);
+  //  inline tDecayerPtr decayer() const;
+  //inline void decayer(const tDecayerPtr inputDecayer);
   // Access/Set the <!id>Decayer<!!id> object responsible of the 
   // eventual decay of this particle.
 
   inline ShoKinPtr & showerKinematics();
-  inline void showerKinematics(const ShoKinPtr inputShowerKinematics);
+  inline void setShowerKinematics(const ShoKinPtr);
   // Access/Set the <!class>ShowerKinematics<!!class> object.
 
   inline vector<Energy> evolutionScales() const;
-  inline const vector<tShoParPtr> & partners() const;
+  inline const tShowerParticleVector & partners() const;
   // Return (a const reference to) the vector of evolution scales
   // (q-tilda scales) and of (pointers to) the partners corresponding to each 
   // considered interaction types (QCD, QED, EWK,...) defined in <!class>ShowerIndex<!!class>. 
   // The vector of (pointers to) the partners is needed only as the
   // most general way to decide in which frame the shower is described.
 
-  inline void setEvolutionScale(const ShowerIndex::InteractionType interaction, 
-				const Energy scale);
-  inline void setPartner(const ShowerIndex::InteractionType interaction, 
-			 const tShoParPtr partner);
+  inline void setEvolutionScale(const ShowerIndex::InteractionType, 
+				const Energy);
+  inline void setPartner(const ShowerIndex::InteractionType, 
+			 const tShowerParticlePtr);
   // Set the scale/partner for the specified interaction.
 
   inline bool isRhoDUpdate() const;
-  inline void isRhoDUpdate(const bool inputRhoDUpdate);
+  inline void setRhoDUpdate(const bool);
   // Access/Set the flag that tells if the rho-D matrix has been updated.
 
   inline ComplexMatrix & rhoD();
   // Access the rho-D (spin density matrix or decay matrix) of the particle.
 
   inline bool isReconstructionFixedPoint() const;
-  inline void isReconstructionFixedPoint(const bool inputIsDecaying);
+  inline void setReconstructionFixedPoint(const bool);
   // Access/Set the flag that tells if the particle should be
   // treated in a special way during the kinematics reconstruction
   // (see <!class>KinematicsReconstructor<!!class> class). 
@@ -256,17 +260,22 @@ public:
   void deepPrintInfo();
   // print info of all children
 
+  void addChildrenEvtRec(const tStepPtr);
+
   Lorentz5Momentum sumParentsMomenta();
   // get the sum of all parents momenta (only for plotting)
 
-  tCollecShoParPtr getFSChildren();
+  tShowerParticleVector getFSChildren();
   // get a list of all children of _particle that are in the final
   // state
 
+  inline tPPtr getP7base();
+  inline void setP7base(const tPPtr& );
+
 protected:
 
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
+  inline virtual PPtr clone() const;
+  inline virtual PPtr fullclone() const;
   // Standard clone methods.
 
 private:
@@ -274,30 +283,49 @@ private:
   ShowerParticle & operator=(const ShowerParticle &);
   //  Private and non-existent assignment operator.
 
-  tcPDPtr _pdptr;
-  Lorentz5Momentum _momentum;
-  LorentzPoint _position;
-  ShoColinePtr _antiColourLine;
-  ShoColinePtr _colourLine;
-  tShoParPtr _parent;
   bool _isFinalState;
-  CollecShoParPtr _children;
+  bool _rhoDUpdate;
+  bool _reconstructionFixedPoint;
+  bool _isFromHardSubprocess;
+
   double _sudAlpha;
   double _sudBeta;
+
   Energy _sudPx;
   Energy _sudPy;
-  tSplitFunPtr _splitFun;
-  tDecayerPtr _decayer;        
+
+  tSplitFunPtr _splitFun;        
   ShoKinPtr _showerKinematics;
+
   vector<Energy> _scales;
-  vector<tShoParPtr> _partners;
-  bool _rhoDUpdate;
+  tShowerParticleVector _partners;
   ComplexMatrix _rhoD;
-  bool _reconstructionFixedPoint;
+
+  tPPtr _p7base;
+
+  static ClassDescription<ShowerParticle> initShowerParticle;
  
 };
 
 }
+
+namespace Pythia7 {
+
+template <>
+struct BaseClassTrait<Herwig::ShowerParticle,1> {
+  typedef EventRecordBase NthBase;
+};
+ 
+template <>
+struct ClassTraits<Herwig::ShowerParticle>: 
+    public ClassTraitsBase<Herwig::ShowerParticle> {
+  static string className() { return "/Herwig++/ShowerParticle"; }
+  static TPtr create() { return TPtr::Create(Herwig::ShowerParticle(tcEventPDPtr())); }
+};
+
+}
+
+
 
 #include "ShowerParticle.icc"
 

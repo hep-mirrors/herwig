@@ -27,6 +27,7 @@
 #include "Pythia7/Pointer/RCPtr.h"
 #include "Herwig++/Config/GlobalParameters.h"
 #include "SplitFun.h"
+#include "SplitFun1to2.h"
 #include "ShowerAlpha.h"
 
 
@@ -120,6 +121,13 @@ protected:
   // 1/(1-z) with z0 = m/q and z0 < z < 1-z0; or (if znorm==false)
   // flatter, as z^2+(1-z)^2 with z0 < z < 1.
   void get_qz (bool znorm, double p, double R, Energy q0, Energy qmax, Energy &q, double &z);
+
+  // three utility methods, very similar to those of the test
+  // programs.  They do what their name sais and are adopted to the
+  // abstract nature of SplitFun as well.
+  double guessz (double z0, double z1);
+  Energy2 guesst (Energy2 t0, Energy2 t1);
+  void gettz (Energy2 tmax, Energy2 &t, double &z);
 
 private:
 

@@ -12,7 +12,7 @@ using namespace Herwig;
 GtoQQbarSplitFun::~GtoQQbarSplitFun() {}
 
 
-Complex GtoQQbarSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
+double GtoQQbarSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
 
   double val = 0.0;
 
@@ -23,7 +23,7 @@ Complex GtoQQbarSplitFun::fullFun( const double z, const Energy2 qtilde2, const 
 }
 
 
-Complex GtoQQbarSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
+double GtoQQbarSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
 
   double val = 1./2.*(sqr(z) + sqr(1.-z));
 
@@ -36,7 +36,7 @@ Complex GtoQQbarSplitFun::integratedFun( const double z, const Energy2 qtilde2 )
 }
 
 
-Complex GtoQQbarSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi,
+double GtoQQbarSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi,
 						 const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
@@ -48,7 +48,7 @@ Complex GtoQQbarSplitFun::fullFunWithHelicities( const double z, const Energy2 q
 }
 
 
-Complex GtoQQbarSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
+double GtoQQbarSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
 
@@ -59,17 +59,17 @@ Complex GtoQQbarSplitFun::integratedFunWithHelicities( const double z, const Ene
 }
 
 
-Complex GtoQQbarSplitFun::overestimateIntegratedFun( const double z ) {
+double GtoQQbarSplitFun::overestimateIntegratedFun( const double z ) {
   return 1./2.; 
 }
 
 
-Complex GtoQQbarSplitFun::integOverIntegratedFun(const double z) {
+double GtoQQbarSplitFun::integOverIntegratedFun(const double z) {
   return z/2.; 
 }
 
 
-Complex GtoQQbarSplitFun::invIntegOverIntegratedFun(const double r) {
+double GtoQQbarSplitFun::invIntegOverIntegratedFun(const double r) {
   return 2.*r; 
 }
 

@@ -17,6 +17,7 @@
 #include "Pythia7/Interface/Switch.h"
 #include "QtildaShowerKinematics1to2.h"
 #include "SplitFun1to2.h"
+#include "Pythia7/PDT/DecayMode.h"
 // #include "Pythia7/MatrixElement/Amplitude.h"
 
 using namespace Herwig;
@@ -59,13 +60,13 @@ void RhoDMatrixPropagator::Init() {
 // ------------------------------ PUBLIC ---------------------------------------
 
 double RhoDMatrixPropagator::matrixElement( const tMEPtr hardSubME,  
-					    const CollecShoParPtr & collecShoPar,
-					    const tShoParPtr aParticle ) {
+					    const ShowerParticleVector & collecShoPar,
+					    const tShowerParticlePtr aParticle ) {
   double result = 1.0;
   if ( isRhoDPropagationON() ) {
     result = 0.0;
     if ( setVertexPointer(hardSubME,aParticle) ) {
-      CollecShoParPtr particles;
+      ShowerParticleVector particles;
       findVertexParticles(collecShoPar, aParticle, particles);
       result = matrixElement(particles);
     }
@@ -75,13 +76,13 @@ double RhoDMatrixPropagator::matrixElement( const tMEPtr hardSubME,
 
 
 bool RhoDMatrixPropagator::computeRhoD( const tMEPtr hardSubME, 
-				        const CollecShoParPtr & collecShoPar,
-				        const tShoParPtr theParticle ) {
+				        const ShowerParticleVector & collecShoPar,
+				        const tShowerParticlePtr theParticle ) {
   bool isOK = true;
   if ( isRhoDPropagationON() ) {
     isOK = setVertexPointer(hardSubME,theParticle);
     if ( isOK ) {
-      CollecShoParPtr particles;
+      ShowerParticleVector particles;
       findVertexParticles(collecShoPar, theParticle, particles);
       if ( computeRhoD(theParticle,particles) ) {
 	normalize( theParticle->rhoD() );
@@ -97,7 +98,7 @@ bool RhoDMatrixPropagator::computeRhoD( const tMEPtr hardSubME,
 // ------------------------------ PRIVATE ---------------------------------------
 
 bool RhoDMatrixPropagator::setVertexPointer( const tMEPtr hardSubME, 
-					     const tShoParPtr particlePtr ) {
+					     const tShowerParticlePtr particlePtr ) {
   // First set to null the three possible "vertex" pointers
   _hardSubME = hardSubME;
   _decayer = tDecayerPtr();
@@ -120,8 +121,8 @@ bool RhoDMatrixPropagator::setVertexPointer( const tMEPtr hardSubME,
       if ( particlePtr->splitFun() ) {
 	_splitFun = particlePtr->splitFun();
 	foundVertex = true;
-      } else if ( particlePtr->decayer() ) {
-	_decayer = particlePtr->decayer();
+      } else if(particlePtr->decayMode()) {
+	_decayer = particlePtr->decayMode()->decayer();
 	foundVertex = true;
       }
     }
@@ -130,9 +131,9 @@ bool RhoDMatrixPropagator::setVertexPointer( const tMEPtr hardSubME,
 } 
 
 
-void RhoDMatrixPropagator::findVertexParticles( const CollecShoParPtr & collecShoPar,
-					        const tShoParPtr aParticle,
-					        CollecShoParPtr & particles ) {
+void RhoDMatrixPropagator::findVertexParticles( const ShowerParticleVector & collecShoPar,
+					        const tShowerParticlePtr aParticle,
+					        ShowerParticleVector & particles ) {
   // Given a pointer  aParticle  to a shower particle, the output of this
   // method is the vector  particles  filled with all the pointers 
   // (including  aParticle  itself) to the shower particles entering
@@ -147,7 +148,7 @@ void RhoDMatrixPropagator::findVertexParticles( const CollecShoParPtr & collecSh
   // ShowerParticle ones as we want.
   if ( ! aParticle ) return; 
   if ( _hardSubME ) {
-    for ( CollecShoParPtr::const_iterator cit = collecShoPar.begin();
+    for ( ShowerParticleVector::const_iterator cit = collecShoPar.begin();
 	  cit != collecShoPar.end(); ++cit ) {
       if ( (*cit)->isFromHardSubprocess() ) {
 	particles.push_back( *cit );
@@ -155,9 +156,9 @@ void RhoDMatrixPropagator::findVertexParticles( const CollecShoParPtr & collecSh
     }
   } else if ( _decayer || _splitFun ) {
     particles.push_back( aParticle );
-    for ( CollecShoParPtr::const_iterator cit = aParticle->children().begin();
+    for ( ParticleVector::const_iterator cit = aParticle->children().begin();
 	  cit != aParticle->children().end(); ++cit ) {
-      particles.push_back( *cit );
+      particles.push_back( dynamic_ptr_cast<ShowerParticlePtr>(*cit));
     }
   }
 }
@@ -192,7 +193,7 @@ bool RhoDMatrixPropagator::normalize( ComplexMatrix & matrix ) {
 }
 
 
-double RhoDMatrixPropagator::matrixElement( const CollecShoParPtr & particles ) {
+double RhoDMatrixPropagator::matrixElement( const ShowerParticleVector & particles ) {
   // This method returns the real value obtained by the product of all the
   // rho-D matrices entering the vertex and the amplitude and its
   // conjugate, summing over all helicity indeces.
@@ -255,8 +256,8 @@ double RhoDMatrixPropagator::matrixElement( const CollecShoParPtr & particles ) 
 }
 
 
-bool RhoDMatrixPropagator::computeRhoD( const tShoParPtr theParticle, 
-				        const CollecShoParPtr & particles ) {
+bool RhoDMatrixPropagator::computeRhoD( const tShowerParticlePtr theParticle, 
+				        const ShowerParticleVector & particles ) {
   //  particles  is a vector of pointers to all the particles (objects
   // of class ShowerParticle) entering the same vertex. This method 
   // computes the rhoD matrix of one of them, pointed by  theParticle  ,
@@ -328,7 +329,7 @@ bool RhoDMatrixPropagator::computeRhoD( const tShoParPtr theParticle,
 
 
 void RhoDMatrixPropagator::
-evaluateAmplitude( const tShoParPtr particle,                                           // in
+evaluateAmplitude( const tShowerParticlePtr particle,                                           // in
 		   const tcPDVector & dataParticles,                                    // in
 		   const vector<Lorentz5Momentum> & momenta,                            // in
 		   const vector<int> & helicities, const vector<int> & helicitiesPrime, // in

@@ -6,122 +6,125 @@
 
 namespace Herwig {
 
+using namespace Pythia7;
+
+  //  inline ShowerParticle::ShowerParticle() {}
+inline void * ShowerParticle::operator new(size_t) {
+  return FixedAllocator<ShowerParticle>::allocate();
+}
+ 
+inline void ShowerParticle::operator delete(void * p, size_t) {
+  FixedAllocator<ShowerParticle>::deallocate(p);
+}
 
 inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
-  :  _pdptr(x._pdptr),
-     _momentum(x._momentum),
-     _position(x._position),
-     _antiColourLine(x._antiColourLine),
-     _colourLine(x._colourLine),
-     _parent(x._parent),
+  :  Particle(x),
      _isFinalState(x._isFinalState),
-     _children(x._children),
+     _rhoDUpdate(x._rhoDUpdate),
+     _reconstructionFixedPoint(x._reconstructionFixedPoint),
+    // this was still missing 
+     _isFromHardSubprocess( x._isFromHardSubprocess ),
      _sudAlpha(x._sudAlpha),
      _sudBeta(x._sudBeta),
      _sudPx(x._sudPx),
      _sudPy(x._sudPy),
      _splitFun(x._splitFun),
-     _decayer(x._decayer),
      _showerKinematics(x._showerKinematics),
      _scales(x._scales),
      _partners(x._partners),
-     _rhoDUpdate(x._rhoDUpdate),
      _rhoD(x._rhoD),
-     _reconstructionFixedPoint(x._reconstructionFixedPoint)
+     _p7base( PPtr() )
 {}
 
-  
-inline const Lorentz5Momentum & ShowerParticle::momentum() const {
-  return _momentum;
-}
-
-inline void ShowerParticle::momentum(const Lorentz5Momentum & inputMomentum) {
-  _momentum = inputMomentum;
-}
-
-
-inline const LorentzPoint & ShowerParticle::position() const {
-  return _position;
-}
-
-inline void ShowerParticle::position(const LorentzPoint & inputPosition) {
-  _position = inputPosition;
-}
-
-
-inline const ParticleData & ShowerParticle::data() const {
-  return *_pdptr;
-}
-
-inline void ShowerParticle::dataPtr(const tcEventPDPtr & inputParticleDataPtr) {
-  _pdptr = inputParticleDataPtr;
-}
-
-
-inline tShoColinePtr ShowerParticle::antiColourLine() const {
-  return _antiColourLine;
-}
-
-inline tShoColinePtr ShowerParticle::colourLine(bool anti) const {
-  if ( anti ) return antiColourLine();
-  return _colourLine;
-}
-
-inline void ShowerParticle::setAntiColourLine(ShoColinePtr inputAntiColourLine) {
-  _antiColourLine = inputAntiColourLine;
-}
-
-inline void ShowerParticle::setColourLine(ShoColinePtr inputColourLine, bool anti) {
-  if ( anti ) {
-    setAntiColourLine(inputColourLine);
-  } else {
-    _colourLine = inputColourLine;
+inline ShowerParticle::ShowerParticle(const Particle &x)
+  : Particle(x),
+    _isFinalState( true ),
+    _rhoDUpdate( false ),
+    _reconstructionFixedPoint( false ),
+    // this was still missing 
+    _isFromHardSubprocess( false ),
+    _sudAlpha( 1.0 ),
+    _sudBeta( -1.0 ),
+    _sudPx( Energy() ),
+    _sudPy( Energy() ),
+    _splitFun( tSplitFunPtr() ),
+    _showerKinematics( tShoKinPtr() ),
+    _scales( ShowerIndex::NumInteractionTypes ),
+    _partners( ShowerIndex::NumInteractionTypes ),
+    _rhoD( 2, vector< std::complex<double> >(2) ),
+     _p7base( PPtr() )
+{
+  for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
+    _scales[i] = Energy();
+    _partners[i] = tShowerParticlePtr();
   }
+  
+  // Initialize _rhoD matrix to the 2x2 identity, normalise to trace equal 1.
+  _rhoD[0][0] = 0.5;
+  _rhoD[0][1] = 0.0;
+  _rhoD[1][0] = 0.0;
+  _rhoD[1][1] = 0.5;
 }
 
+inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
+  : Particle(x),
+    _isFinalState( true ),
+    _rhoDUpdate( false ),
+    _reconstructionFixedPoint( false ),
+    // this was still missing 
+    _isFromHardSubprocess( false ),
+    _sudAlpha( 1.0 ),
+    _sudBeta( -1.0 ),
+    _sudPx( Energy() ),
+    _sudPy( Energy() ),
+    _splitFun( tSplitFunPtr() ),
+    _showerKinematics( tShoKinPtr() ),
+    _scales( ShowerIndex::NumInteractionTypes ),
+    _partners( ShowerIndex::NumInteractionTypes ),
+    _rhoD( 2, vector< std::complex<double> >(2) ),
+    _p7base( PPtr() )
+{
+  // Initialize the scales to the lowest Energy value, and null partners.
+  for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
+    _scales[i] = Energy();
+    _partners[i] = tShowerParticlePtr();
+  }  
 
-inline tShoParPtr ShowerParticle::parent() const {
-  return _parent;
+  // Initialize _rhoD matrix to the 2x2 identity, normalise to trace equal 1.
+  _rhoD[0][0] = 0.5;
+  _rhoD[0][1] = 0.0;
+  _rhoD[1][0] = 0.0;
+  _rhoD[1][1] = 0.5;
 }
-
-inline void ShowerParticle::parent(const tShoParPtr inputParent) {
-  _parent = inputParent;
-}
-
 
 inline bool ShowerParticle::isFinalState() const {
   return _isFinalState;
 }
 
-inline void ShowerParticle::isFinalState(const bool inputIsFinalState) {
+inline void ShowerParticle::setFinalState(const bool inputIsFinalState) {
   _isFinalState = inputIsFinalState;
 }
 
 
 inline bool ShowerParticle::isFromHardSubprocess() const {
-  return ( ! parent() );
+  return _isFromHardSubprocess;
 }
 
-
-inline const CollecShoParPtr & ShowerParticle::children() const {
-  return _children;
+inline void ShowerParticle::setFromHardSubprocess(const bool val) 
+{
+  _isFromHardSubprocess = val;
 }
 
-inline void ShowerParticle::transform(const LorentzRotation & r) {
-  _momentum = r*_momentum; 
-  _position = r*_position;
-}
+  //inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
+  //if ( inputChild ) {
+  // _children.push_back(inputChild);
+  //inputChild->parent(this);
+  //} 
+  //}
 
-inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
-  if ( inputChild ) {
-    _children.push_back(inputChild);
-    inputChild->parent(this);
-  }  
-}
-
-inline void ShowerParticle::removeChildren() {
-  _children.clear(); 
-}
+  //inline void ShowerParticle::removeChildren() {
+  //_children.clear(); 
+  //}
   
 inline double ShowerParticle::sudAlpha() const {
   return _sudAlpha;
@@ -163,25 +166,25 @@ inline tSplitFunPtr ShowerParticle::splitFun() const {
   return _splitFun;
 }
 
-inline void ShowerParticle::splitFun(const tSplitFunPtr inputSplitFun) {
+inline void ShowerParticle::setSplitFun(const tSplitFunPtr inputSplitFun) {
   _splitFun = inputSplitFun;
 }
 
 
-inline tDecayerPtr ShowerParticle::decayer() const {
-  return _decayer;
-}
+  //inline tDecayerPtr ShowerParticle::decayer() const {
+  //return _decayer;
+  //}
 
-inline void ShowerParticle::decayer(const tDecayerPtr inputDecayer) {
-  _decayer = inputDecayer;
-}
+  //inline void ShowerParticle::decayer(const tDecayerPtr inputDecayer) {
+  //_decayer = inputDecayer;
+  //}
 
 
 inline ShoKinPtr & ShowerParticle::showerKinematics() {
   return _showerKinematics;
 }
 
-inline void ShowerParticle::showerKinematics(const ShoKinPtr inputShowerKinematics) {
+inline void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
   _showerKinematics = inputShowerKinematics;
 }
 
@@ -190,7 +193,7 @@ inline vector<Energy> ShowerParticle::evolutionScales() const {
   return _scales;
 }
 
-inline const vector<tShoParPtr> & ShowerParticle::partners() const {
+inline const tShowerParticleVector & ShowerParticle::partners() const {
   return _partners;
 }
 
@@ -201,7 +204,7 @@ inline void ShowerParticle::setEvolutionScale(const ShowerIndex::InteractionType
 }
 
 inline void ShowerParticle::setPartner(const ShowerIndex::InteractionType interaction, 
-				       const tShoParPtr partner) {
+				       const tShowerParticlePtr partner) {
   _partners[interaction] = partner;
 }
 
@@ -210,7 +213,7 @@ inline bool ShowerParticle::isRhoDUpdate() const {
   return _rhoDUpdate;
 }
 
-inline void ShowerParticle::isRhoDUpdate(const bool inputRhoDUpdate) {
+inline void ShowerParticle::setRhoDUpdate(const bool inputRhoDUpdate) {
   _rhoDUpdate = inputRhoDUpdate;
 }
 
@@ -224,19 +227,25 @@ inline bool ShowerParticle::isReconstructionFixedPoint() const {
   return _reconstructionFixedPoint || children().empty() ;
 }
 
-inline void ShowerParticle::isReconstructionFixedPoint(const bool inputIsDecaying) {
+inline void ShowerParticle::setReconstructionFixedPoint(const bool inputIsDecaying) {
   _reconstructionFixedPoint = inputIsDecaying;
 }
 
-
-inline IBPtr ShowerParticle::clone() const {
-  return new_ptr(*this);
+inline tPPtr ShowerParticle::getP7base() {
+  return _p7base; 
 }
 
-inline IBPtr ShowerParticle::fullclone() const {
-  return new_ptr(*this);
+inline void ShowerParticle::setP7base(const tPPtr & x) {
+  _p7base = x; 
 }
 
+inline PPtr ShowerParticle::clone() const {
+  return dynamic_ptr_cast<PPtr>(ptr_new<ShowerParticlePtr>(*this));
+}
+
+inline PPtr ShowerParticle::fullclone() const {
+  return clone();
+}
 
 }
 

@@ -12,7 +12,7 @@ using namespace Herwig;
 QtoQGSplitFun::~QtoQGSplitFun() {}
 
 
-Complex QtoQGSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
+double QtoQGSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {
 
   double val = 0.0;
 
@@ -23,7 +23,7 @@ Complex QtoQGSplitFun::fullFun( const double z, const Energy2 qtilde2, const dou
 }
 
 
-Complex QtoQGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
+double QtoQGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
 
   Energy2 m2 = sqr(massEmitter()); 
 
@@ -36,7 +36,7 @@ Complex QtoQGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
 }
 
 
-Complex QtoQGSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 ) {
+double QtoQGSplitFun::fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
 
@@ -47,7 +47,7 @@ Complex QtoQGSplitFun::fullFunWithHelicities( const double z, const Energy2 qtil
 }
 
 
-Complex QtoQGSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
+double QtoQGSplitFun::integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 ) {
 
   double val = 0.0;
 
@@ -58,17 +58,17 @@ Complex QtoQGSplitFun::integratedFunWithHelicities( const double z, const Energy
 }
 
 
-Complex QtoQGSplitFun::overestimateIntegratedFun( const double z ) {
+double QtoQGSplitFun::overestimateIntegratedFun( const double z ) {
   return 2.*4./3./(1.-z); 
 }
 
 
-Complex QtoQGSplitFun::integOverIntegratedFun(const double z) {
+double QtoQGSplitFun::integOverIntegratedFun(const double z) {
   return -8./3.*log(1.-z); 
 }
 
 
-Complex QtoQGSplitFun::invIntegOverIntegratedFun(const double r) {
+double QtoQGSplitFun::invIntegOverIntegratedFun(const double r) {
   return 1. - exp(- 3.*r/8.); 
 }
 
@@ -94,11 +94,11 @@ void QtoQGSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
   if ( parentShoColinePair.first ) { // the parent is a quark
     secondProductShoColinePair.first = parentShoColinePair.first;
     firstProductShoColinePair.first = secondProductShoColinePair.second 
-      = new_ptr( ShowerColourLine() );
+      = new_ptr( ColourLine() );
   } else if ( parentShoColinePair.second ) { // the parent is an antiquark
     secondProductShoColinePair.second = parentShoColinePair.second;
     firstProductShoColinePair.second = secondProductShoColinePair.first 
-      = new_ptr( ShowerColourLine() );
+      = new_ptr( ColourLine() );
   }
 
 }

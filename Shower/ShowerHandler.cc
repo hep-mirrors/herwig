@@ -24,8 +24,10 @@
 #include "Pythia7/Handlers/XComb.h"
 #include "ShowerParticle.h"
 #include "Pythia7/EventRecord/ColourLine.h"
-#include "ShowerColourLine.h"
+//#include "ShowerColourLine.h"
 #include "Pythia7/CLHEPWrap/Matrix.h"
+#include "Pythia7/PDT/DecayMode.h"
+#include "Pythia7/EventRecord/Step.h"
 
 using namespace Herwig;
 
@@ -92,7 +94,8 @@ void ShowerHandler::cascade() {
   }
 
   tPartCollHdlPtr ch = collisionHandler();
-
+  //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
+  //		   ch->currentStep()->particles().end());
   // const Hint & theHint = hint();	    // OK: COMMENTED TO AVOID COMPILATION WARNINGS
   // const PDF & theFirstPDF = firstPDF();  // OK: COMMENTED TO AVOID COMPILATION WARNINGS
   // const PDF & theSecondPDF = secondPDF();// OK: COMMENTED TO AVOID COMPILATION WARNINGS
@@ -102,7 +105,7 @@ void ShowerHandler::cascade() {
   // the corresponding starting ShowerParticle objects and put them
   // in the vector hardProcessParticles (not directly in _particles
   // because we could throw away the all showering and restart it).
-  // CollecShoParPtr hardProcessParticles;
+  // ShowerParticleVector hardProcessParticles;
   //  createShowerParticlesFromP7Particles( ch, hardProcessParticles );
 
   const int maxNumFailures = 100;
@@ -119,18 +122,20 @@ void ShowerHandler::cascade() {
       // even more cleaning... ***ACHTUNG*** find something much, much
       // more sophisticated to save old properties. In particular for
       // the multiscaleshower...
-      CollecShoParPtr hardProcessParticles;
+      ShowerParticleVector hardProcessParticles;
       hardProcessParticles.clear();
       createShowerParticlesFromP7Particles( ch, hardProcessParticles );
 
       // Fill _particles with the particles from the hard subprocess
-      for ( CollecShoParPtr::const_iterator cit = hardProcessParticles.begin();
+      for ( ShowerParticleVector::const_iterator cit = hardProcessParticles.begin();
 	    cit != hardProcessParticles.end(); ++cit ) {
-	_particles.push_back( *cit );      
+	if(*cit) { 
+	  _particles.push_back( *cit );      
+	}
       }
 
       // clean up children from previous trial showers:
-      //      for ( CollecShoParPtr::iterator it = _particles.begin(); 
+      //      for ( ShowerParticleVector::iterator it = _particles.begin(); 
       // 	    it != _particles.end(); ++it) {
       //	(*it)->removeChildren(); 
       //}
@@ -158,7 +163,7 @@ void ShowerHandler::cascade() {
 
       Energy largestWidth = Energy();
       if ( _pointerShowerConstrainer->isMultiScaleShowerON() ) {      
-        for ( CollecShoParPtr::const_iterator cit = _particles.begin();
+        for ( ShowerParticleVector::const_iterator cit = _particles.begin();
 	      cit != _particles.end(); ++cit ) {
 	  if ( (*cit)->children().size() ) {
 	    if ( (*cit)->data().width() > largestWidth ) { 
@@ -199,21 +204,21 @@ void ShowerHandler::cascade() {
         // new container, and adding to the initial one the new particles
         // that are produced by the showering.
 
-        CollecShoParPtr currentFinalOrInitialParticles;
-        for ( CollecShoParPtr::const_iterator cit = _particles.begin();
+        ShowerParticleVector currentFinalOrInitialParticles;
+        for ( ShowerParticleVector::const_iterator cit = _particles.begin();
 	      cit != _particles.end(); ++cit ) {
 	  if ( (*cit)->children().size() == 0 ) {
 	    currentFinalOrInitialParticles.insert( currentFinalOrInitialParticles.end() , *cit );
 	  }
 	}
 
-        for ( CollecShoParPtr::iterator it = currentFinalOrInitialParticles.begin();
+        for ( ShowerParticleVector::iterator it = currentFinalOrInitialParticles.begin();
 	      it != currentFinalOrInitialParticles.end(); ++it ) {
 	  
 	  Energy particleWidth = (*it)->data().width();
 	  if ( particleWidth >= largestWidth ) {
 
-            CollecShoParPtr decayParticles;
+            ShowerParticleVector decayParticles;
 	    // Decay the particle *it (need pointer to Decayer)
             // and put the decaying ShowerParticle object and all its
             // decay products (for each of them we need to create a
@@ -244,7 +249,7 @@ void ShowerHandler::cascade() {
             // also of the global largest width for all possible
             // decaying systems.  
             Energy largestWidthDecayingSystem = Energy();
-	    for ( CollecShoParPtr::const_iterator cit = decayParticles.begin();
+	    for ( ShowerParticleVector::const_iterator cit = decayParticles.begin();
 		  cit != decayParticles.end(); ++cit ) {
 	      if ( (*cit)->data().width() > largestWidthDecayingSystem ) { 
 		largestWidthDecayingSystem = (*cit)->data().width();
@@ -264,7 +269,7 @@ void ShowerHandler::cascade() {
             // Notice that the first particle in  decayParticles  must be
             // skipped because it corresponds to the decaying particle
             // which was already in  _particles .
-	    CollecShoParPtr::const_iterator cit = decayParticles.begin();
+	    ShowerParticleVector::const_iterator cit = decayParticles.begin();
             do {
 	      ++cit;
 	      _particles.insert( _particles.end(), *cit );
@@ -276,7 +281,7 @@ void ShowerHandler::cascade() {
 
         // Find now the new largest width between all current final state particles.
 	Energy newLargestWidth = Energy();
-        for ( CollecShoParPtr::const_iterator cit = _particles.begin();
+        for ( ShowerParticleVector::const_iterator cit = _particles.begin();
 	      cit != _particles.end(); ++cit ) {
 	  if ( (*cit)->children().size() ) {
 	    if ( (*cit)->data().width() > newLargestWidth ) { 
@@ -306,9 +311,12 @@ void ShowerHandler::cascade() {
       // In the case Herwig++ Cluster Hadronization model is used for the
       // hadronization, set all final state gluons on the effective mass
       // shell (rather on the physical massless shell).
-      if ( _pointerGlobalParameters->isPythia7StringFragmentationON() ) {
+      if ( !_pointerGlobalParameters->isPythia7StringFragmentationON() ) {
 	_pointerInsideRangeShowerEvolver->setEffectiveGluonMass
 	  ( _pointerGlobalParameters->effectiveGluonMass() , _particles );
+      } else { 
+	_pointerInsideRangeShowerEvolver->setEffectiveGluonMass
+	  ( 0 , _particles );
       }
 
       // Do the final kinematics reconstruction
@@ -328,8 +336,6 @@ void ShowerHandler::cascade() {
     }    
   } // end main while loop
 
-  fillEvenRecord( ch );  
-
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {    
     debuggingInfo();
@@ -338,48 +344,35 @@ void ShowerHandler::cascade() {
 			 << " ===> END DEBUGGING <=== "
 			 << endl;
   }
-
+  fillEventRecord( ch );  
 }
-
 
 void ShowerHandler::
 createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch, 
-				      CollecShoParPtr & hardProcessParticles ) {
-
-  // We need a map which keeps track of the correspondence between
-  // the Pythia7 particles which enter the hard subprocess and
-  // the ShowerParticles objects we create from these Pythia7 particles.
-  // Similarly, in order to properly reproduce the colour connections. 
-  // we also need a map of pointers to all Pythia7 ColourLine objects 
-  // which are referenced by these Pythia7 particles, and the corresponding
-  // ShowerColourLine objects that we will create later on.
-  map<tPPtr,tShoParPtr> mapP7toShowerParticle;
-  map<tColinePtr,ShoColinePtr> mapP7toShowerColine;
+				      ShowerParticleVector & hardProcessParticles ) {
 
   // Incoming (initial state) particles (indeed the partons entering
   // the hard subprocess, not the beam hadrons). 
-  for ( int i=1; i<=2; ++i ) {
-    tPPtr p7part = tPPtr();
-    if ( i == 1 && ch->lastPartons().first ) {
-      p7part = ch->lastPartons().first;
-    } else if ( i == 2 && ch->lastPartons().second ) {
-      p7part = ch->lastPartons().second;      
+  //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
+  //			   ch->currentStep()->particles().end());
+  ShowerParticlePtr part;
+  
+  if(ch->lastPartons().first ) {
+    part = ptr_new<ShowerParticlePtr>(*ch->lastPartons().first);
+    if ( part ) {
+      part->setFromHardSubprocess(true);
+      part->setP7base(ch->lastPartons().first); 
+      part->setFinalState(false);
+      hardProcessParticles.push_back(part);
     }
-    if ( p7part ) {      
-      hardProcessParticles.push_back( new_ptr( ShowerParticle( *p7part ) ) );    
-      tShoParPtr shopart = hardProcessParticles.back();
-      shopart->isFinalState( false );
-      mapP7toShowerParticle.insert( pair<tPPtr,tShoParPtr>(p7part,shopart) );
-      if ( p7part->colourLine() &&
-	   mapP7toShowerColine.find( p7part->colourLine() ) == mapP7toShowerColine.end() ) {
-	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( p7part->colourLine(), 
-								   ShoColinePtr() ) );
-      }
-      if ( p7part->antiColourLine() &&
-	   mapP7toShowerColine.find( p7part->antiColourLine() ) == mapP7toShowerColine.end() ) {
-	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( p7part->antiColourLine(), 
-								   ShoColinePtr() ) );
-      }
+  } 
+  if(ch->lastPartons().second ) {
+    part = ptr_new<ShowerParticlePtr>(*ch->lastPartons().second);
+    if ( part ) {
+      part->setFromHardSubprocess(true);
+      part->setP7base(ch->lastPartons().second); 
+      part->setFinalState(false);
+      hardProcessParticles.push_back(part); 
     }
   }
 
@@ -390,74 +383,20 @@ createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch,
   for ( ParticleSet::const_iterator cit = ch->currentStep()->particles().begin();
 	cit != ch->currentStep()->particles().end(); ++cit ) {
     if ( remnantSet.find( (*cit)->original() ) == remnantSet.end() ) {
-      hardProcessParticles.push_back( new_ptr( ShowerParticle( **cit ) ) );    
-      mapP7toShowerParticle.insert( pair<tPPtr,tShoParPtr>( *cit, hardProcessParticles.back() ) );
-      if ( (*cit)->colourLine() &&
-	   mapP7toShowerColine.find( (*cit)->colourLine() ) == mapP7toShowerColine.end() ) {
-	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( (*cit)->colourLine(), 
-								   ShoColinePtr() ) );
-      }
-      if ( (*cit)->antiColourLine() &&
-	   mapP7toShowerColine.find( (*cit)->antiColourLine() ) == mapP7toShowerColine.end() ) {
-	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( (*cit)->antiColourLine(), 
-								    ShoColinePtr() ) );
-      }
+      part = ptr_new<ShowerParticlePtr>(**cit);
+      part->setFromHardSubprocess(true);      
+      part->setP7base(*cit); 
+      hardProcessParticles.push_back(part);
     }
-  }
-
-  // Now that we have the map:  Pythia7 particle  ===>  ShowerParticle object
-  // we can complete the other map:
-  //        Pythia7 ColourLine object ===>  ShowerColourLine object
-  // which, at the moment, only has the first entry (key), whereas
-  // the second part (value of the map) is null. We want to create a
-  // ShowerColourLine object for each Pythia7 ColourLine object which
-  // is actually used for the colour connection between the particles
-  // involved in the hard subprocess, but not in the case that such
-  // ColourLine object is used to connect with the a beam remnant. 
-  for ( map<tColinePtr,ShoColinePtr>::iterator colineIt = mapP7toShowerColine.begin();
-	colineIt != mapP7toShowerColine.end(); ++colineIt ) {
-
-    // Loop over  coloured()  Pythia7 particles connected to this coline.
-    // If the Pythia7 particle is in the map (therefore it is not a remnant)
-    // then create a new ShowerColourLine object if the considered Pythia7
-    // ColourLine object has not yet a corresponding ShowerColourLine object,
-    // and then add to it, as coloured ShowerParticle object, the one
-    // corresponding to the above Pythia7 particle, if this was not already
-    // done before.
-    for ( tPVector::const_iterator p7partIt = colineIt->first->coloured().begin();
-	  p7partIt != colineIt->first->coloured().end(); ++p7partIt ) {
-      if ( mapP7toShowerParticle.find( *p7partIt ) != mapP7toShowerParticle.end() ) {
-	if ( ! colineIt->second ) {
-	  colineIt->second = new_ptr( ShowerColourLine() );
-	} 
-	if ( ! mapP7toShowerParticle.find( *p7partIt )->second->colourLine() ) { 
-	  colineIt->second->addColoured( mapP7toShowerParticle.find( *p7partIt )->second );
-	}
-      }
-    }
-
-    // As above, but considering now anti-coloured particles. 
-    for ( tPVector::const_iterator p7partIt = colineIt->first->antiColoured().begin();
-	  p7partIt != colineIt->first->antiColoured().end(); ++p7partIt ) {
-      if ( mapP7toShowerParticle.find( *p7partIt ) != mapP7toShowerParticle.end() ) {
-	if ( ! colineIt->second ) {
-	  colineIt->second = new_ptr( ShowerColourLine() );
-	} 
-	if ( ! mapP7toShowerParticle.find( *p7partIt )->second->antiColourLine() ) { 
-	  colineIt->second->addAntiColoured( mapP7toShowerParticle.find( *p7partIt )->second );
-	}
-      }
-    }
-
-  }  
+  }    
 
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
     generator()->log() << "  Total number of initial Shower particles : " 
-		       << hardProcessParticles.size() << endl
-                       << "  Total number of colour lines : " 
-		       << mapP7toShowerColine.size() << endl;
-    for ( CollecShoParPtr::const_iterator cit = hardProcessParticles.begin();
+		       << hardProcessParticles.size() << endl;
+      //<< "  Total number of colour lines : " 
+      //	       << mapP7toShowerColine.size() << endl;
+    for ( ShowerParticleVector::const_iterator cit = hardProcessParticles.begin();
 	  cit != hardProcessParticles.end(); ++cit ) {
       generator()->log() << "\t" << (**cit).data().PDGName() 
 			 << "  p=" << (**cit).momentum()
@@ -472,8 +411,8 @@ void ShowerHandler::fillPositions() {
 
   // Put on the vector  particlesToExamine  the particles that come
   // directly from the hard subprocess. 
-  vector<tShoParPtr> particlesToExamine;
-  for ( CollecShoParPtr::const_iterator cit = _particles.begin();
+  ParticleVector particlesToExamine;
+  for ( ShowerParticleVector::const_iterator cit = _particles.begin();
 	cit != _particles.end(); ++cit ) {
     if ( (*cit)->isFromHardSubprocess() ) {
       particlesToExamine.push_back( *cit );
@@ -488,7 +427,7 @@ void ShowerHandler::fillPositions() {
   // until the vector  particlesToExamine  is empty.
   while ( ! particlesToExamine.empty() ) {
 
-    tShoParPtr particle = particlesToExamine.back();
+    PPtr particle = particlesToExamine.back();
     particlesToExamine.pop_back();
 
     // See Mark Smith's thesis, page 121, formula (4.106), for the  
@@ -496,7 +435,7 @@ void ShowerHandler::fillPositions() {
     // Notice that the displacement is already expressed in the Lab frame,
     // therefore no boost is necessary.
     double lambda;
-    if ( particle->decayer() ) { // unstable, decayed particle
+    if ( !particle->data().stable() ) { // unstable, decayed particle
       lambda = particle->momentum().m() / particle->data().width();
     } else {                     // not decayed particle
       lambda = particle->momentum().mag2() / _pointerGlobalParameters->minVirtuality2(); 
@@ -509,11 +448,11 @@ void ShowerHandler::fillPositions() {
       ( sqrt( sqr( particle->momentum().mag2() - particle->momentum().m2() ) +
 	      sqr( particle->momentum().mag2() / lambda ) ) / GeV );
 
-    particle->position( particle->position() + distance ); // update the position.
+    particle->setLabVertex( particle->labVertex() + distance ); // update the position.
          
-    for ( CollecShoParPtr::const_iterator cit = particle->children().begin();
+    for ( ParticleVector::const_iterator cit = particle->children().begin();
 	  cit != particle->children().end(); ++cit ) {
-      (*cit)->position( particle->position() ); // initialize the position.
+      (*cit)->setLabVertex( particle->labVertex()); // initialize the position.
       particlesToExamine.push_back( *cit );
     }
 
@@ -562,8 +501,8 @@ void ShowerHandler::debuggingInfo() {
   if ( generator()->currentEventNumber() < 1000 )
     cout << "# event no " << generator()->currentEventNumber() << endl; 
 
-  tCollecShoParPtr fs;
-  for (CollecShoParPtr::const_iterator cit = _particles.begin(); 
+  tShowerParticleVector fs;
+  for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
        cit != _particles.end(); ++cit ) {
     if ( (*cit)->isFromHardSubprocess() ) {
       if ( generator()->currentEventNumber() < 1000 ) {
@@ -575,7 +514,7 @@ void ShowerHandler::debuggingInfo() {
       }
       //cout << (*cit)->sumParentsMomenta() << endl;      
       if ( (*cit)->isFinalState() ) {
-	tCollecShoParPtr thisfs = (*cit)->getFSChildren();
+	tShowerParticleVector thisfs = (*cit)->getFSChildren();
 	fs.insert(fs.end(), thisfs.begin(), thisfs.end()); 
       }
     }    
@@ -586,7 +525,7 @@ void ShowerHandler::debuggingInfo() {
 
   // to play with events in Mathematica, get lists of final state particles...
 //   cout << "{";
-//   for(tCollecShoParPtr::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
+//   for(tShowerParticleVector::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
 //     cout << "{" 
 // 	 << (*cit)->momentum().vect().x() << ", "
 // 	 << (*cit)->momentum().vect().y() << ", "
@@ -596,7 +535,7 @@ void ShowerHandler::debuggingInfo() {
 //   cout << "}"; 
 
   Lorentz5Momentum pcm = Lorentz5Momentum(); 
-  for(tCollecShoParPtr::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
+  for(tShowerParticleVector::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
     pcm += (*cit)->momentum();     
   }
   Energy root_s = pcm.m();
@@ -629,13 +568,13 @@ void ShowerHandler::debuggingInfo() {
 
   // book some histograms
 
-  HwDebug::lambda1Histo += lam1; 
+/*  HwDebug::lambda1Histo += lam1; 
   HwDebug::lambda2Histo += lam2;
   HwDebug::lambda3Histo += lam3; 
   HwDebug::CparameterHisto += C_parameter; 
   HwDebug::DparameterHisto += D_parameter; 
   HwDebug::multiplicityHisto += fs.size();
-
+  
   if ( generator()->currentEventNumber() < 1000 || 
        (generator()->currentEventNumber() % 1000) == 0 ) {
     HwDebug::lambda1Histo.printGnuplot("plots/lambda1.dat");
@@ -645,29 +584,99 @@ void ShowerHandler::debuggingInfo() {
     HwDebug::DparameterHisto.printGnuplot("plots/Dpara.dat"); 
     HwDebug::multiplicityHisto.printGnuplot("plots/multiplicity.dat");
   }
-
+*/
 }
 
 
-void ShowerHandler::fillEvenRecord( const tPartCollHdlPtr ch ) {  
+void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {  
 
   // Transform some of the ShowerParticles object in Pythia7 particles,
   // set properly the parent/child relationships and treat carefully 
   // the transformation from ShowerColourLine objects into Pythia7
   // ColourLine ones; and finally then write them in the Event Record     
-  //   StepPtr pstep = ch.newStep();
-  // ***LOOKHERE*** --- code here ---
+  StepPtr pstep;
+  pstep = ch->newStep();
+  printStep(pstep, "after creation of step"); 
 
+  for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
+       cit != _particles.end(); ++cit ) {
+    if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
+      pstep->addDecayNoCol((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
+      //pstep->addIntermediate(*cit);
+      //pstep->removeParticle((*cit)->getP7base());
+      //   cerr << (check ? "1st ok" : "1st not ok!") << endl; 
+      //pstep->removeParticle(dynamic_ptr_cast<tPPtr>(*cit));
+      //      pstep->addIntermediate(dynamic_ptr_cast<tPPtr>(*cit));
+      //      pstep->addIntermediate((*cit)->getP7base());
+      (*cit)->addChildrenEvtRec(pstep);   
+      //      pstep->removeParticle((*cit));
+    }
+  }
+
+  /*
+  //  pick out the final state for every particle from the hard subprocess
+  //  tShowerParticleVector fs;
+  for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
+       cit != _particles.end(); ++cit ) {
+    if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
+      tShowerParticleVector thisfs = (*cit)->getFSChildren();
+      cerr << "Try to add " << thisfs.size() 
+	   << " children to " << (*cit)->data().PDGName() << "-jet." << endl;       
+//       cerr << dynamic_ptr_cast<tPPtr>((*cit)) << " "
+// 	   << (*cit) << " "
+// 	   << dynamic_ptr_cast<tPPtr>((*cit)->original()) << " " 
+// 	   << (*cit)->getP7base() << " " << endl;
+      for (tShowerParticleVector::iterator pit = thisfs.begin(); 	   
+	   pit != thisfs.end(); ++pit ) {
+	bool check = pstep->addDecayProduct((*cit)->getP7base(), 
+					    dynamic_ptr_cast<tPPtr>(*pit)); 
+	cerr << (check == true ? "Y" : "N");
+      }
+      cerr << endl; 
+    }    
+  }
+
+  pstep->fixColourFlow();
+  */
+  printStep(pstep, "After filling it"); 
+  
+  // do something much, much more sophisticated here, taking care of proper
+  // parent/child relationships!
+  //  pstep->addDecayProduct( pstep->particles(), fs.begin(), fs.end() );  
+  
 }
 
 
-  // utility method
-void ShowerHandler::eventShape(const tCollecShoParPtr & p, 
+void ShowerHandler::printStep(tStepPtr ptrStep, const string & title) {
+  generator()->log() << "[[[ ShowerHandler::printStep " << title << endl;
+  for ( ParticleSet::const_iterator it = ptrStep->particles().begin();
+  	 it != ptrStep->particles().end(); ++it ) {
+    generator()->log() << "  " << (*it)->data().PDGName() 
+		       << " " << (*it)->number() 
+		       << "<"
+		       << (*it)->parents().size()
+		       << "> ("
+		       << (*it)->children().size()
+		       << ") [" << ( (*it)->colourNeighbour() ? 
+				     (*it)->colourNeighbour()->number() : 0 ) 
+		       << "," << ( (*it)->antiColourNeighbour() ? 
+				   (*it)->antiColourNeighbour()->number() : 0 )
+                       << "] " << (*it)->momentum().m() 
+		       << ", " << (*it)->momentum() 
+		       << endl;     
+  }
+  generator()->log() << "]]] ShowerHandler::printStep " << title << endl;
+}
+
+
+
+// utility method
+void ShowerHandler::eventShape(const tShowerParticleVector & p, 
 				vector<double> & lam, vector<Vector3> & n) {
 
   // get cm-frame
   Lorentz5Momentum pcm = Lorentz5Momentum(); 
-  for(tCollecShoParPtr::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
+  for(tShowerParticleVector::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
     pcm += (*cit)->momentum();     
   }
   Vector3 beta = pcm.findBoostToCM(); 
@@ -682,7 +691,7 @@ void ShowerHandler::eventShape(const tCollecShoParPtr & p,
   Vector3 sumvec = Vector3();
   
   // get Theta_ij
-  for(tCollecShoParPtr::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
+  for(tShowerParticleVector::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
     Lorentz5Momentum dum = (*cit)->momentum();
     dum.boost( beta );
     Vector3 pvec = dum.vect();

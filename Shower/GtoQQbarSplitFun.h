@@ -34,19 +34,19 @@ public:
 
   inline GtoQQbarSplitFun( const long inputIdQuark, const Energy inputMassQuark );
 
-  virtual Complex fullFun( const double z, const Energy2 qtilde2, const double phi );
-  virtual Complex integratedFun( const double z, const Energy2 qtilde2 );
-  virtual Complex fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 );
-  virtual Complex integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 );
+  virtual double fullFun( const double z, const Energy2 qtilde2, const double phi );
+  virtual double integratedFun( const double z, const Energy2 qtilde2 );
+  virtual double fullFunWithHelicities( const double z, const Energy2 qtilde2, const double phi, const int h0, const int h1, const int h2 );
+  virtual double integratedFunWithHelicities( const double z, const Energy2 qtilde2, const int h0, const int h1, const int h2 );
   // These virtual methods return the exact values of the 
   // Leading Order splitting function <I>G-&GT;QQbar</I>
   // evaluated in terms of some combinations of:
   // <!id>z<!!id> variable, <!id>phi<!!id> azimuthal angle, and
   // helicities of the three particles.
 
-  virtual Complex overestimateIntegratedFun( const double z );
-  virtual Complex integOverIntegratedFun(const double z); 
-  virtual Complex invIntegOverIntegratedFun(const double r); 
+  virtual double overestimateIntegratedFun( const double z );
+  virtual double integOverIntegratedFun(const double z); 
+  virtual double invIntegOverIntegratedFun(const double r); 
 
   virtual void colourConnection( const ShoColinePair & parentShoColinePair,
 				 ShoColinePair & firstProductShoColinePair,

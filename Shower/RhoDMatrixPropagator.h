@@ -73,8 +73,8 @@ public:
   // This method returns true (false) if the rhoD propagation 
   // is switched ON (OFF).
 
-  double matrixElement( const tMEPtr hardSubME, const CollecShoParPtr & collecShoPar,
-		        const tShoParPtr aParticle ); 
+  double matrixElement( const tMEPtr hardSubME, const ShowerParticleVector & collecShoPar,
+		        const tShowerParticlePtr aParticle ); 
   // Given <!id>aParticle<!!id> coming from a given vertex <BR>
   // --- this must be the decaying particle in the case of a decay vertex; 
   // or the emitting particle in the case of a splitting vertex; or any of the 
@@ -88,8 +88,8 @@ public:
   // In the case the <!id>onoffSwitchMode<!!id> is <I>0 (OFF)</I>, the method 
   // does nothing and returns <I>1.0</I>.
     
-  bool computeRhoD( const tMEPtr hardSubME, const CollecShoParPtr & collecShoPar,
-		    const tShoParPtr theParticle ); 
+  bool computeRhoD( const tMEPtr hardSubME, const ShowerParticleVector & collecShoPar,
+		    const tShowerParticlePtr theParticle ); 
   // It computes the rhoD matrix of <!id>theParticle<!!id> in terms of the rhoD 
   // matrices of the other particles entering the same vertex, and the
   // amplitude (and its conjugate) of the vertex. The "vertex" can be
@@ -148,7 +148,7 @@ private:
   // (that is the new matrix has trace equal <I>1</I>) and returns true; 
   // otherwise it returns false.
 
-  void evaluateAmplitude( const tShoParPtr particle, 
+  void evaluateAmplitude( const tShowerParticlePtr particle, 
 			  const tcPDVector & dataParticles, 
 			  const vector<Lorentz5Momentum> & momenta, 
 			  const vector<int> & helicities, const vector<int> & helicitiesPrime, 
@@ -186,17 +186,17 @@ private:
   // The method returns false if there is not anymore other index 
   // configurations to be considered; true otherwise.
 
-  double matrixElement( const CollecShoParPtr & particles ); 
+  double matrixElement( const ShowerParticleVector & particles ); 
   // Given all of the <!id>particles<!!id> coming from the same vertex, it computes
   // the real matrix element to be used to generate such vertex.
   // If something goes wrong, the method returns <I>0</I>.
 
-  bool computeRhoD( const tShoParPtr theParticle, const CollecShoParPtr & particles ); 
+  bool computeRhoD( const tShowerParticlePtr theParticle, const ShowerParticleVector & particles ); 
   // Given all of the <!id>particles<!!id> coming from the same vertex, it computes
   // the rhoD matrix of one of them, <!id>theParticle<!!id> . 
   // It returns true if it succeed, false otherwise.
 
-  bool setVertexPointer( const tMEPtr hardSubME, const tShoParPtr particlePtr ); 
+  bool setVertexPointer( const tMEPtr hardSubME, const tShowerParticlePtr particlePtr ); 
   // It sets the hard subprocess matrix element pointer, or the decayer pointer, 
   // or the splitFun pointer depending if the vertex to which the <!id>particlePtr<!!id> 
   // is connected to is respectively a hard subprocess vertex, a decay vertex, 
@@ -212,8 +212,8 @@ private:
   // only when we want to consider the hard process as vertex.
   // The method returns false if it does not succeed, true otherwise.
 
-  void findVertexParticles( const CollecShoParPtr & collecShoPar , const tShoParPtr aParticle,
-			    CollecShoParPtr & particles );
+  void findVertexParticles( const ShowerParticleVector & collecShoPar , const tShowerParticlePtr aParticle,
+			    ShowerParticleVector & particles );
   // This method puts in the vector <!id>particles<!!id> all the particles 
   // (indeed pointers to ShowerParticles objects) that belong to
   // the same "vertex" (hard subprocess, or decay, or splitting) as

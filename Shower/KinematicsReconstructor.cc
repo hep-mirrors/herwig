@@ -183,7 +183,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
       if ( gottaBoost ) {
 	dum = cit->first->momentum();
 	dum.boost( beta_cm ); 
-	cit->first->momentum( dum );
+	cit->first->set5Momentum( dum );
       }
       tempJetKin.q = cit->first->momentum();       
       jetKinematics.push_back( tempJetKin );  
@@ -268,13 +268,13 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
     generator()->log() << ", p_cm = " << p_cm << endl;
     for ( JetKinVect::const_iterator it = jetKinematics.begin();
 	  it != jetKinematics.end(); ++it ) {
-      tCollecShoParPtr fs = it->parent->getFSChildren();
+      tShowerParticleVector fs = it->parent->getFSChildren();
       generator()->log() << (it->parent)->data().PDGName()
 			 << "-jet, Q = " << (it->parent)->momentum().m()
 			 << ", q = " << (it->parent)->momentum()
  			 << ". " << fs.size() 
  			 << " ch:" << endl; 
-      for ( tCollecShoParPtr::const_iterator jt = fs.begin(); 
+      for ( tShowerParticleVector::const_iterator jt = fs.begin(); 
 	    jt != fs.end(); ++jt ) {
 	generator()->log() << "  " << (*jt)->data().PDGName()
 			   << ", q = " << (*jt)->momentum()
@@ -308,7 +308,7 @@ void KinematicsReconstructor::reconstructDecayJets( const MapShower & mapShowerD
 }
 
 
-bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJetParent ) {
+bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr particleJetParent ) {
   bool isOK = true;
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
@@ -329,10 +329,11 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
   if( !(particleJetParent->isReconstructionFixedPoint()) ) {
 
     // if not a reconstruction fixpoint, dig deeper for all children:
-    for ( CollecShoParPtr::const_iterator cit = particleJetParent->children().begin();
+    for ( ParticleVector::const_iterator cit = particleJetParent->children().begin();
 	  cit != particleJetParent->children().end(); ++cit ) {
       // reconstrunct again for any child:
-      if ( !reconstructTimeLikeJet( *cit ) ) {
+      if ( !reconstructTimeLikeJet( dynamic_ptr_cast<ShowerParticlePtr>(*cit)))
+      {
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
 	  generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: " 
 	  		     << "failed!" << endl; 
@@ -348,7 +349,7 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
       generator()->log() << "  * found fixpoint: "
 			 << particleJetParent->data().PDGName()
 			 << ", gets m = " 
-			 << particleJetParent->data().mass()
+			 << particleJetParent->momentum().mass()
 			 << " #children = " 
 			 << particleJetParent->children().size()
 			 << endl;
@@ -357,7 +358,8 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
     // unfortunately the particleJetParent doesn't have his own
     // showerkinematics but this works fine and keeps the updateLast
     // in the ShowerKinematics class.
-    particleJetParent->parent()->showerKinematics()->updateLast( particleJetParent );    
+    dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
+      ->showerKinematics()->updateLast( particleJetParent );    
   }
 
   // recursion has reached an endpoint once, ie we can reconstruct the
@@ -386,7 +388,7 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
 }
 
 
-bool KinematicsReconstructor::reconstructSpaceLikeJet( const tShoParPtr particleJetParent ) {
+bool KinematicsReconstructor::reconstructSpaceLikeJet( const tShowerParticlePtr particleJetParent ) {
   bool isOK = true;
 
   //***LOOKHERE*** The methods should be basically identical to the 
@@ -403,7 +405,7 @@ bool KinematicsReconstructor::reconstructSpaceLikeJet( const tShoParPtr particle
  
 
 bool KinematicsReconstructor::
-reconstructSpecialTimeLikeDecayingJet( const tShoParPtr particleJetParent ) {
+reconstructSpecialTimeLikeDecayingJet( const tShowerParticlePtr particleJetParent ) {
   bool isOK = true;
 
   //***LOOKHERE*** Differently from the two previous methods, in this
