@@ -6,7 +6,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "EtaPiGammaGammaDecayer.fh"
-#include "ThePEG/ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 namespace Herwig {

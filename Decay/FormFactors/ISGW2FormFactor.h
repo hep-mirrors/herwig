@@ -5,8 +5,8 @@
 // This is the declaration of the ISGW2FormFactor class.
 //
 #include "ScalarFormFactor.h"
-#include "ThePEG/ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/ThePEG/PDT/ParticleData.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "ISGW2FormFactor.fh"
 
 namespace Herwig {
