@@ -52,6 +52,10 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    vector<Lorentz5Momentum> products(5);
    vector<Energy> masses(5);
 
+   if( HERWIG_DEBUG_LEVEL >= HwDebug::full) {
+     generator()->log() << "Hw64Decay::Decaying " << p.PDGName() << " via " << dm.tag() << "...\n";
+   }
+
    if(numProds > 5) { 
      generator()->log() << "Number of particles to decay is greater then 5\n"
                         << "Hw64Decayer cannot handle these decays properly. "
@@ -157,6 +161,10 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    // in pythia7, this is a simple hack to work most of the time. Needs to be fixed/checked. 
    reorderProducts(rval);
 
+   if( HERWIG_DEBUG_LEVEL >= HwDebug::full) {
+     generator()->log() << "Hw64Decay::Decaying " << "...Done\n";
+   }
+
    return rval;
 }
    
@@ -184,7 +192,7 @@ void Hw64Decayer::setParticleMomentum(ParticleVector &out, ParticleMSet particle
 void Hw64Decayer::reorderProducts(ParticleVector &out) const {
    ParticleVector in = out;
    out.clear();
-   for(int i = 0; i<in.size(); i++) {
+   for(unsigned int i = 0; i<in.size(); i++) {
       if(in[i]->id() == ParticleID::g) out.push_back(in[i]);
       else out.insert(out.begin(),in[i]);
    }
@@ -258,13 +266,13 @@ void Hw64Decayer::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
 
    // Some code to check distribution of angles...
    // Now lets find dist of angle between 1 and 2
-   double L1 = sqrt((p1.px()*p1.px()) + (p1.py()*p1.py()) + (p1.pz()*p1.pz()));
+   //double L1 = sqrt((p1.px()*p1.px()) + (p1.py()*p1.py()) + (p1.pz()*p1.pz()));
    double L2 = sqrt((p2.px()*p2.px()) + (p2.py()*p2.py()) + (p2.pz()*p2.pz()));
    double L3 = sqrt((p3.px()*p3.px()) + (p3.py()*p3.py()) + (p3.pz()*p3.pz()));
-   double L23 = sqrt((p23.px()*p23.px()) + (p23.py()*p23.py()) + (p23.pz()*p23.pz()));
-   double dot12 = (p1.px()*p2.px()) + (p1.py()*p2.py()) + (p1.pz()*p2.pz());
-   double dot13 = (p1.px()*p3.px()) + (p1.py()*p3.py()) + (p1.pz()*p3.pz());
-   double dot123 = (p1.px()*p23.px()) + (p1.py()*p23.py()) + (p1.pz()*p23.pz());
+   //double L23 = sqrt((p23.px()*p23.px()) + (p23.py()*p23.py()) + (p23.pz()*p23.pz()));
+   //double dot12 = (p1.px()*p2.px()) + (p1.py()*p2.py()) + (p1.pz()*p2.pz());
+   //double dot13 = (p1.px()*p3.px()) + (p1.py()*p3.py()) + (p1.pz()*p3.pz());
+   //double dot123 = (p1.px()*p23.px()) + (p1.py()*p23.py()) + (p1.pz()*p23.pz());
    double dot23 = (p2.px()*p3.px()) + (p2.py()*p3.py()) + (p2.pz()*p3.pz());
    cout << dot23/(L2*L3) << "\t" << "1.0" << endl;
 }
@@ -334,7 +342,7 @@ void Hw64Decayer::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 				Lorentz5Momentum &p4, Lorentz5Momentum &p5) 
 const {
   // once more, using the same variable names as fortran code
-  double b,c,aa,bb,cc,dd,ee,ff,tt,sq,s1,rs1,gg,s2,rs2,hh,s3,pp,qq,rr,ss,temp;
+  double b,c,aa,bb,cc,dd,ee,ff,tt,s1,rs1,gg,s2,rs2,hh,s3,pp,qq,rr,ss,temp;
 
   b = p0.mass()-p1.mass();
   c = p2.mass()+p3.mass()+p4.mass()+p5.mass();
