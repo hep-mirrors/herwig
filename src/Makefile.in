@@ -24,7 +24,7 @@ install-local: Herwig++ HerwigDefaults.rpo
 	if [ ! -z "$(INSTALLSHARE)/PDF" ]; then \
 	   mkdir -p $(INSTALLSHARE)/PDF; \
 	   cp -r ../PDF/mrst $(INSTALLSHARE)/PDF; \
-	   rm -rf $(INSTALLSHARE)/PDF/mrst/CVS; \
+	   find $(INSTALLSHARE)/PDF/mrst -name 'CVS' | xargs rm -rf; \
 	fi
 	cp LEP.in LEPbb.in LHC.in $(INSTALLSHARE) 
 	cp Decays.in Hadronization.in HerwigParticles.in Hw64Decays.in \
