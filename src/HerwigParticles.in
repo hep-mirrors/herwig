@@ -6,30 +6,30 @@
 create /Pythia7/ParticleData /Defaults/Particles/psi_d
 setup /Defaults/Particles/psi_d 30443 psi_d 3.770 0.0 0.0 0.0  0 0  2  0
 defaultparticle /Defaults/Particles/psi_d
-create /Pythia7/ParticleData /Defaults/Particles/V-quark
-setup /Defaults/Particles/V-quark 7 V-quark 200.000 0.0 0.0 0.0 -1 0 1 0
-defaultparticle /Defaults/Particles/V-quark
-create /Pythia7/ParticleData /Defaults/Particles/A-quark
-setup /Defaults/Particles/A-quark 8 A-quark 400.000 0.0 0.0 0.0  2 0 1 0
-defaultparticle /Defaults/Particles/A-quark
-create /Pythia7/ParticleData /Defaults/Particles/Vbar-quark
-setup /Defaults/Particles/Vbar-quark -7 Vbar-quark 200.000 0.0 0.0 0.0  1 0 1 0
-defaultparticle /Defaults/Particles/Vbar-quark
-create /Pythia7/ParticleData /Defaults/Particles/Abar-quark
-setup /Defaults/Particles/Abar-quark -8 Abar-quark 400.000 0.0 0.0 0.0 -2 0 1 0
-defaultparticle /Defaults/Particles/Abar-quark
-makeanti /Defaults/Particles/V-quark /Defaults/Particles/Vbar-quark
-makeanti /Defaults/Particles/A-quark /Defaults/Particles/Abar-quark
-create /Pythia7/ParticleData /Defaults/Particles/a_00
-setup /Defaults/Particles/a_00 9000111 a_00 0.996 0.0 0.0 0.0  0 0  0  0
-defaultparticle /Defaults/Particles/a_00
-create /Pythia7/ParticleData /Defaults/Particles/a_0+
-setup /Defaults/Particles/a_0+ 9000211 a_0+ 0.996 0.0 0.0 0.0  1 0  0  0
-defaultparticle /Defaults/Particles/a_0+
-create /Pythia7/ParticleData /Defaults/Particles/a_0-
-setup /Defaults/Particles/a_0- -9000211 a_0- 0.996 0.0 0.0 0.0 -1 0  0  0
-defaultparticle /Defaults/Particles/a_0-
-makeanti /Defaults/Particles/a_0+ /Defaults/Particles/a_0-
+#create /Pythia7/ParticleData /Defaults/Particles/V-quark
+#setup /Defaults/Particles/V-quark 7 V-quark 200.000 0.0 0.0 0.0 -1 0 1 0
+#defaultparticle /Defaults/Particles/V-quark
+#create /Pythia7/ParticleData /Defaults/Particles/A-quark
+#setup /Defaults/Particles/A-quark 8 A-quark 400.000 0.0 0.0 0.0  2 0 1 0
+#defaultparticle /Defaults/Particles/A-quark
+#create /Pythia7/ParticleData /Defaults/Particles/Vbar-quark
+#setup /Defaults/Particles/Vbar-quark -7 Vbar-quark 200.000 0.0 0.0 0.0  1 0 1 0
+#defaultparticle /Defaults/Particles/Vbar-quark
+#create /Pythia7/ParticleData /Defaults/Particles/Abar-quark
+#setup /Defaults/Particles/Abar-quark -8 Abar-quark 400.000 0.0 0.0 0.0 -2 0 1 0
+#defaultparticle /Defaults/Particles/Abar-quark
+#makeanti /Defaults/Particles/V-quark /Defaults/Particles/Vbar-quark
+#makeanti /Defaults/Particles/A-quark /Defaults/Particles/Abar-quark
+#create /Pythia7/ParticleData /Defaults/Particles/a_00
+#setup /Defaults/Particles/a_00 9000111 a_00 0.996 0.0 0.0 0.0  0 0  0  0
+#defaultparticle /Defaults/Particles/a_00
+#create /Pythia7/ParticleData /Defaults/Particles/a_0+
+#setup /Defaults/Particles/a_0+ 9000211 a_0+ 0.996 0.0 0.0 0.0  1 0  0  0
+#defaultparticle /Defaults/Particles/a_0+
+#create /Pythia7/ParticleData /Defaults/Particles/a_0-
+#setup /Defaults/Particles/a_0- -9000211 a_0- 0.996 0.0 0.0 0.0 -1 0  0  0
+#defaultparticle /Defaults/Particles/a_0-
+#makeanti /Defaults/Particles/a_0+ /Defaults/Particles/a_0-
 create /Pythia7/ParticleData /Defaults/Particles/f0p0
 setup /Defaults/Particles/f0p0 9010221 f0p0 0.996 0.0 0.0 0.0  0 0  0  0
 defaultparticle /Defaults/Particles/f0p0

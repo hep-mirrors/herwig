@@ -35,6 +35,7 @@ create /Pythia7/Matcher<Lepton> /Defaults/Matchers/MatchLepton
 create /Pythia7/Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
 create /Pythia7/Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
 read Pythia7Particles.in
+read HerwigParticles.in
 mkdir /Defaults/MatrixElements
 mkdir /Defaults/Partons
 mkdir /Defaults/Handlers
