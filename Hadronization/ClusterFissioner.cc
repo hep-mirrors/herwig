@@ -83,33 +83,33 @@ void ClusterFissioner::fission(const StepPtr &pstep)
   // (these are beam clusters, if soft underlying event is off, and 
   //  heavy non-beam clusters).
 
-//   cerr << "all lightest Hadrons" << endl
-//        << "i -j mass" << endl;
 // a quick table to check thresholds... 
-//   for (int ii=1; ii<=5; ii++) for (int jj=1; jj<=5; jj++) {
-//     pair<long, long> pairId = _hadronsSelector->lightestHadronsPair(ii,-jj);
-//     long idL = _hadronsSelector->lightestHadron(ii, -jj);
-//     Energy mm1, mm2, mcsum;
-//     mm1 = getParticleData(ii)->constituentMass();
-//     mm2 = getParticleData(-jj)->constituentMass();
-//     mcsum = mm1+mm2;
-//     double mth = pow(pow(_ClMax, _ClPow) + pow(mcsum, _ClPow), 1./_ClPow)/MeV;
-//     cerr << ii << " " << jj << setw(6) << mcsum << " | " 
-// 	 << setw(7) << getParticleData(idL)->PDGName() 
-// 	 << setw(7) << getParticleData(idL)->mass()/MeV 
-// 	 << " | " 
-// 	 << setw(7) << mth << " > "
-// 	 << setw(7) << _hadronsSelector->massLightestHadronsPair(ii,-jj)/MeV
-// 	 << " ["
-// 	 << setw(6) << getParticleData( pairId.first )->PDGName() << " "
-// 	 << setw(6) << getParticleData( pairId.second )->PDGName() << " "
-// 	 << setw(6) << getParticleData( pairId.first )->mass()/MeV << " "
-// 	 << setw(6) << getParticleData( pairId.second )->mass()/MeV << "]"
-// 	 << setw(6) << getParticleData( pairId.first )->id() << " "
-// 	 << setw(6) << getParticleData( pairId.second )->id() << "]"
-// 	 << endl; 
-//   }
-
+  if (generator()->currentEventNumber() == 1 
+      && HERWIG_DEBUG_LEVEL == 67) {    
+    for (int ii=1; ii<=5; ii++) for (int jj=1; jj<=5; jj++) {
+      pair<long, long> pairId = _hadronsSelector->lightestHadronsPair(ii,-jj);
+      long idL = _hadronsSelector->lightestHadron(ii, -jj);
+      Energy mm1, mm2, mcsum;
+      mm1 = getParticleData(ii)->constituentMass();
+      mm2 = getParticleData(-jj)->constituentMass();
+      mcsum = mm1+mm2;
+      double mth = pow(pow(_ClMax, _ClPow) + pow(mcsum, _ClPow), 1./_ClPow)/MeV;
+      cout << ii << " " << jj << setw(6) << mcsum << " | " 
+	   << setw(7) << getParticleData(idL)->PDGName() 
+	   << setw(7) << getParticleData(idL)->mass()/MeV 
+	   << " | " 
+	   << setw(7) << mth << " > "
+	   << setw(7) << _hadronsSelector->massLightestHadronsPair(ii,-jj)/MeV
+	   << " ["
+	   << setw(6) << getParticleData( pairId.first )->PDGName() << " "
+	   << setw(6) << getParticleData( pairId.second )->PDGName() << " "
+	   << setw(6) << getParticleData( pairId.first )->mass()/MeV << " "
+	   << setw(6) << getParticleData( pairId.second )->mass()/MeV << "]"
+	   << setw(6) << getParticleData( pairId.first )->id() << " "
+	   << setw(6) << getParticleData( pairId.second )->id() << "]"
+	   << endl; 
+    }
+  }
   vector<tClusterPtr> splitClusters; 
   int numBeamClusters = 0;
 
