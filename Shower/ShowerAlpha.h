@@ -36,10 +36,13 @@ namespace Herwig {
 
 using namespace Pythia7;
 
+class SplittingGenerator; 
+
 class ShowerAlpha: public Pythia7::HandlerBase {
 
 public:
 
+  friend class SplittingGenerator;
   inline ShowerAlpha();
   inline ShowerAlpha(const ShowerAlpha &);
   virtual ~ShowerAlpha();
@@ -96,8 +99,8 @@ private:
   double _scaleFactor;
 
 protected:
-  Ptr<ShowerConstrainer>::pointer _pointerShowerConstrainer;
-
+  ShoConstrPtr _pointerShowerConstrainer;
+  void setSC(ShoConstrPtr scp); 
 };
 
 }

@@ -126,6 +126,12 @@ public:
 
   //--- SWITCHES ---
 
+  void setSCtoAlpha(ShoConstrPtr p);
+  void setISQED(ShowerAlphaPtr p);
+  void setFSQED(ShowerAlphaPtr p);
+  void setISQCD(ShowerAlphaPtr p);
+  void setFSQCD(ShowerAlphaPtr p);
+
   bool isInteractionON(const ShowerIndex::InteractionType interaction) const;
   // It returns true/false if interaction type specified in input is on/off.
 

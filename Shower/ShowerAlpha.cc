@@ -18,19 +18,21 @@ ShowerAlpha::~ShowerAlpha() {}
 
 
 void ShowerAlpha::persistentOutput(PersistentOStream & os) const {
-  os << _pointerShowerConstrainer
-     << _scaleFactor;
+  os << _scaleFactor;
 }
 
 
 void ShowerAlpha::persistentInput(PersistentIStream & is, int) {
-  is >> _pointerShowerConstrainer
-     >> _scaleFactor;
+  is >> _scaleFactor;
 }
 
 
 AbstractClassDescription<ShowerAlpha> ShowerAlpha::initShowerAlpha;
 // Definition of the static class description member.
+
+void ShowerAlpha::setSC(ShoConstrPtr scp) {
+  _pointerShowerConstrainer = scp; 
+}
 
 
 void ShowerAlpha::Init() {
@@ -43,10 +45,11 @@ void ShowerAlpha::Init() {
     ("ScaleFactor", "Factor that multiplies the scale argument, mu, of the running alpha.",
      &ShowerAlpha::_scaleFactor, 0, 1.0 , 0.0 , 10.0);
 
-  static Reference<ShowerAlpha,ShowerConstrainer> 
-    interfaceShowerConstrainer("ShowerConstrainer", 
-			       "A reference to the ShowerConstrainer object", 
-			       &Herwig::ShowerAlpha::_pointerShowerConstrainer,
-			       false, false, true, false);
+
+//   static Reference<ShowerAlpha,ShowerConstrainer> 
+//     interfaceShowerConstrainer("ShowerConstrainer", 
+// 			       "A reference to the ShowerConstrainer object", 
+// 			       &Herwig::ShowerAlpha::_pointerShowerConstrainer,
+// 			       false, false, true, false);
 }
 

@@ -115,6 +115,7 @@ void SplittingGenerator::persistentInput(PersistentIStream & is, int) {
      >> _pointerIS_ShowerAlphaQED
      >> _pointerFS_ShowerAlphaQED  
      >> _pointerShowerConstrainer;  
+  setSCtoAlpha(_pointerShowerConstrainer);
 }
 
 
@@ -400,29 +401,62 @@ void SplittingGenerator::Init() {
 
   static Reference<SplittingGenerator,ShowerAlpha> interfaceIS_ShowerAlphaQED
     ("IS_ShowerAlphaQED", "A reference to the IS_ShowerAlphaQED object", 
-     &Herwig::SplittingGenerator::_pointerIS_ShowerAlphaQED, false, false, true, false);
+     &Herwig::SplittingGenerator::_pointerIS_ShowerAlphaQED, false, false, true, false, 
+     &Herwig::SplittingGenerator::setISQED, 0, 0);
   
   static Reference<SplittingGenerator,ShowerAlpha> interfaceFS_ShowerAlphaQED
     ("FS_ShowerAlphaQED", "A reference to the FS_ShowerAlphaQED object", 
-     &Herwig::SplittingGenerator::_pointerFS_ShowerAlphaQED, false, false, true, false);
+     &Herwig::SplittingGenerator::_pointerFS_ShowerAlphaQED, false, false, true, false,
+     &Herwig::SplittingGenerator::setFSQED, 0, 0);
   // up to here.
 
   static Reference<SplittingGenerator,ShowerAlpha> interfaceIS_ShowerAlphaQCD
     ("IS_ShowerAlphaQCD", "A reference to the IS_ShowerAlphaQCD object", 
-     &Herwig::SplittingGenerator::_pointerIS_ShowerAlphaQCD, false, false, true, false);
-  
+     &Herwig::SplittingGenerator::_pointerIS_ShowerAlphaQCD, false, false, true, false,
+     &Herwig::SplittingGenerator::setISQCD, 0, 0);
+
   static Reference<SplittingGenerator,ShowerAlpha> interfaceFS_ShowerAlphaQCD
     ("FS_ShowerAlphaQCD", "A reference to the FS_ShowerAlphaQCD object", 
-     &Herwig::SplittingGenerator::_pointerFS_ShowerAlphaQCD, false, false, true, false);
+     &Herwig::SplittingGenerator::_pointerFS_ShowerAlphaQCD, false, false, true, false, 
+     &Herwig::SplittingGenerator::setFSQCD, 0, 0);
   
   static Reference<SplittingGenerator,ShowerConstrainer> interfaceShowerConstrainer
     ("ShowerConstrainer", "A reference to the ShowerConstrainer object", 
-     &Herwig::SplittingGenerator::_pointerShowerConstrainer, false, false, true, false);
+     &Herwig::SplittingGenerator::_pointerShowerConstrainer, false, false, true, false, 
+     &Herwig::SplittingGenerator::setSCtoAlpha, 0, 0);
   
 }
 
 
 //--------------------------------------------------------------------------------
+
+void SplittingGenerator::setSCtoAlpha(ShoConstrPtr p) {
+  _pointerShowerConstrainer = p; 
+  if ( _pointerIS_ShowerAlphaQCD ) _pointerIS_ShowerAlphaQCD->setSC(p);
+  if ( _pointerFS_ShowerAlphaQCD ) _pointerFS_ShowerAlphaQCD->setSC(p);
+  if ( _pointerIS_ShowerAlphaQED ) _pointerIS_ShowerAlphaQED->setSC(p);
+  if ( _pointerFS_ShowerAlphaQED ) _pointerFS_ShowerAlphaQED->setSC(p);
+}
+
+void SplittingGenerator::setISQED(ShowerAlphaPtr p) {
+  _pointerIS_ShowerAlphaQED = p;
+  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
+}
+
+void SplittingGenerator::setFSQED(ShowerAlphaPtr p) {
+  _pointerFS_ShowerAlphaQED = p;
+  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
+}
+
+void SplittingGenerator::setISQCD(ShowerAlphaPtr p) {
+  _pointerIS_ShowerAlphaQCD = p;
+  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
+}
+
+void SplittingGenerator::setFSQCD(ShowerAlphaPtr p) {
+  _pointerFS_ShowerAlphaQCD = p;
+  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
+}
 
 bool SplittingGenerator::isInteractionON(const ShowerIndex::InteractionType interaction) const {
   int mode = 0;
