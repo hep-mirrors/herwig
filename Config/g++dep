@@ -53,10 +53,10 @@ _EOF_
 g++ -MM $* | grep -v /CLHEP/ | \
 sed -e 's; \./; ;g' $SED | \
 awk '   BEGIN	    { start = 1 }
-	/.* : .*.*/ { printf ("%s : %s \\\n", $1, $3) ; start = 4 }
+	/:/ {  print ""; printf $1 " " $2 " " $3 ; if (NF>3) { printf "\\" } ; print "" ; start = 4 }
 		    { for ( i = start; i < NF ; i++ ) 
-			if ( $i != "\\" ) print " ", $i, "\\"
-		      if ( $i != "\\" ) print " ", $NF
+			if ( $i != "\\" ) print "\t", $i, "\\"
+		      if ( $i != "\\" ) print "\t", $NF
 		      start = 1
 		    }
 ' >> $TMP
