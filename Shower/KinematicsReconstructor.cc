@@ -16,6 +16,7 @@
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 
@@ -79,9 +80,11 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 
   bool atLeastOnce = false;
   MapShower::const_iterator cit;
-  for(cit = hardJets.begin(); cit != hardJets.begin(); cit++) {
+  for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
     atLeastOnce = false;
-    if(cit->second && !cit->first->isFinalState()) {
+    //    if(cit->second && !cit->first->isFinalState()) {
+    cout << "reconstructHardJets..." << endl;
+    if(!cit->first->isFinalState()) {
       atLeastOnce |= reconstructSpaceLikeJet(cit->first);
     }
     if(atLeastOnce) {
@@ -419,18 +422,50 @@ bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr pa
 }
 
 
-bool KinematicsReconstructor::reconstructSpaceLikeJet( const tShowerParticlePtr particleJetParent ) {
+bool KinematicsReconstructor::
+reconstructSpaceLikeJet( const tShowerParticlePtr p) {
   bool isOK = true;
-
-  //***LOOKHERE*** The methods should be basically identical to the 
-  //               previous one (because we define "parent" the particle
-  //               closer to the hard subprocess, therefore the iteration
-  //               through the parent/children pointers is exactly the same
-  //               regardless whether we are moving forward or backward
-  //               in time: the movement is the same w.r.t the hard subprocess!).
-  //               The only difference can be eventually in the ShowerKinematics
-  //               objects...
-
+  if(p->parents()[0]->id() < 99) {
+    cout << "recoSLJet part = " << p << ", going back..." << endl; 
+    if (!reconstructSpaceLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(
+				 p->parents()[0]))) {
+      isOK = false;
+    }
+    cout << "back done." << endl;
+  } else {
+    if(p->children().size() == 2) {
+      cout << "recoSLJet part = " << p << ", last..." << endl;
+      dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
+	->showerKinematics()->updateLast(p);    
+      cout << "last done." << endl;
+    }
+  }
+  if(!p->isFromHardSubprocess()) {
+    cout << "  recoSLJet part = " << p << ", updating Children..." << endl;
+    cerr << "  " 
+	 << p
+	 << " (" << p->id() << ")"
+	 << ", " 
+	 << p->children()[0] 
+	 << " (" << p->children()[0]->id() << ")"
+	 << ", "
+	 << p->children()[1] 
+	 << " (" << p->children()[1]->id() << ")"
+	 << endl;
+    dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
+      ->showerKinematics()->updateParent(p, p->children());
+    cout << "  p0    = " << p->momentum() << endl
+	 << "  p1+p2 = " 
+	 << p->children()[0]->momentum() + p->children()[1]->momentum()
+	 << endl
+	 << "  p1    = " 
+	 << p->children()[0]->momentum() 
+	 << endl 
+	 << "  p2    = "
+	 << p->children()[1]->momentum()
+	 << endl;
+    cout << "  update done." << endl;      
+  }
   return isOK;
 }
  

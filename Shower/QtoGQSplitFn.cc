@@ -23,13 +23,13 @@ double QtoGQSplitFn::P(const double z, const Energy2 qtilde2,
 }
 
 double QtoGQSplitFn::overestimateP(const double z, const IdList &) { 
-  return 2.*4./3./z; 
+  return 8./3./z; 
 }
 
-double QtoGQSplitFn::integOverP(const double z) { return -8./3.*log(z); }
+double QtoGQSplitFn::integOverP(const double z) { return 8./3.*log(z); }
 
 double QtoGQSplitFn::invIntegOverP(const double r) {
-  return 1. - exp(- 3.*r/8.); 
+  return exp(3.*r/8.); 
 }
 
 

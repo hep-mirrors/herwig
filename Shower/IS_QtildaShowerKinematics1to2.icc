@@ -13,5 +13,9 @@ inline IS_QtildaShowerKinematics1to2::IS_QtildaShowerKinematics1to2() {}
 inline IS_QtildaShowerKinematics1to2::IS_QtildaShowerKinematics1to2(const IS_QtildaShowerKinematics1to2 & x)
   : QtildaShowerKinematics1to2(x) {}
 
+inline IS_QtildaShowerKinematics1to2::
+IS_QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
+			       const Lorentz5Momentum & n ) :
+  QtildaShowerKinematics1to2( p, n ) {}
 
 }

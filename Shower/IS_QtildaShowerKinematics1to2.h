@@ -29,6 +29,8 @@ public:
 
   inline IS_QtildaShowerKinematics1to2();
   inline IS_QtildaShowerKinematics1to2(const IS_QtildaShowerKinematics1to2 &);
+  inline IS_QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
+					const Lorentz5Momentum & n );
   virtual ~IS_QtildaShowerKinematics1to2();
   // Standard ctors and dtor.
 
@@ -50,6 +52,12 @@ public:
   // of the children.  This method will be used by the 
   // <!class>KinematicsReconstructor<!!class>.
 
+
+  virtual void updateChildren( const tShowerParticlePtr theParent, 
+			       const ParticleVector theChildren );
+  virtual void updateParent( const tShowerParticlePtr theParent, 
+			     const ParticleVector theChildren );
+  virtual void updateLast( const tShowerParticlePtr theLast );
 
   virtual Energy jetMass();
   // The method returns the mass of jet. 

@@ -129,8 +129,10 @@ void Evolver::showerNormally(tPartCollHdlPtr ch,
       }
       for(ShowerParticleVector::iterator it = particlesToShower.begin();
 	    it != particlesToShower.end(); ++it ) {
+	cout << "Evolver with " << *it << endl;
 	_mapShowerHardJets[*it] = _backwardEvolver->
-		spaceLikeShower(ch, showerVariables, *it, particles);
+	  spaceLikeShower(ch, showerVariables, *it, particles);
+	cout << "Evolver." << endl;
       }
     }
 
@@ -270,7 +272,6 @@ bool Evolver::reconstructKinematics( tPartCollHdlPtr & ch )
 			 beamHadrons.second->momentum(),
 			 ch->lastME() ); 
   setDoneMapShower(_mapShowerHardJets);
-  return ok; 
-  
+  return ok;   
 }
 

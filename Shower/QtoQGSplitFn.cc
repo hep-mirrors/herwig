@@ -22,7 +22,7 @@ double QtoQGSplitFn::P(const double z, const Energy2 qtilde2,
 }
 
 double QtoQGSplitFn::overestimateP(const double z, const IdList &) { 
-  return 2.*4./3./(1.-z); 
+  return 8./3./(1.-z); 
 }
 
 double QtoQGSplitFn::integOverP(const double z) { return -8./3.*log(1.-z); }
@@ -55,6 +55,5 @@ void QtoQGSplitFn::colourConnection(const ShoColinePair &parent,
     second.second = parent.second;
     first.second = second.first = new_ptr(ColourLine());
   }
-
 }
 

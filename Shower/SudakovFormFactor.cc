@@ -89,6 +89,16 @@ double SudakovFormFactor::guessz (double z0, double z1) {
 
 Energy2 SudakovFormFactor::guesst(Energy2 t0, Energy2 t1, double z0, double z1)
 {
+//   cout << endl << sqrt(t0)/GeV << " < " 
+//        << sqrt(t1)/GeV << endl
+//        << z0 << ", " << z1 << endl
+//        << _splittingFn->integOverP(z0)
+//        << ", " << flush;
+//   cout << _splittingFn->integOverP(z1)
+//        << endl
+//        << _alpha->overestimateValue() << ", "
+//        << _alpha->value(sqr(91.2)*GeV2)
+//        << endl << (2.*pi) << "......." << endl;
   return t1*pow(UseRandom::rnd(), 
 		 1./((_splittingFn->integOverP(z1) -
 		      _splittingFn->integOverP(z0))* 

@@ -440,7 +440,7 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
   double x = particle.x();
-  cout << "Calling cBB with " << index << " and x = " << x << endl;
+  cout << "Calling cBB with " << &particle << " and x = " << x << endl;
   if(_bbranchings.find(index) == _bbranchings.end()) 
     return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
@@ -461,11 +461,11 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
       cout << "Looking at splitting " << cit->second.second[0] << "->" 
 	   << cit->second.second[1] << ","
 	   << cit->second.second[2] << ";"
-	   << " and particle evolution scale " <<particle.evolutionScales()[i];
+	   << " Q = " << particle.evolutionScales()[i]/GeV;
       candidateNewQ = candidateSudakov->
         generateNextSpaceBranching(particle.evolutionScales()[i],
 				   cit->second.second, p, pdf, particle.x());
-      cout << "; q/GeV is = " << candidateNewQ/GeV << endl;
+      cout << "; q = " << candidateNewQ/GeV << " [GeV]" << endl;
       if(candidateNewQ > newQ) {
 	newQ = candidateNewQ;
 	sudakov = candidateSudakov;
@@ -486,9 +486,42 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
       // For the time being we are considering only 1->2 branching
       tSplittingFnPtr splitFun = sudakov->splittingFn();
       if(splitFun) {	  
+	Lorentz5Momentum p, n, ppartner, pcm;
+	if(particle.isFromHardSubprocess()) {
+	  p = particle.momentum();
+	  ppartner = particle.partners()[sudakov->splittingFn()->
+					 interactionType()]->momentum();
+	  pcm = p; 
+	  pcm.boost((p + ppartner).findBoostToCM());	  
+	  n = Lorentz5Momentum( 0.0, -pcm.vect() ); 
+	  n.boost( -(p + ppartner).findBoostToCM() );
+	} else {
+	  p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
+	    ->showerKinematics()->getBasis()[0];
+	  n = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
+	    ->showerKinematics()->getBasis()[1];
+	} 
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	  generator()->log() << "  create ShowerKinematics with " 
+			     << endl 
+			     << "  p = " << p << endl 
+			     << "  n = " << n << endl;
+	}
 
-        //***LOOKHERE*** Do something similar as in chooseForwardBranching
-        //               but use IS_QtildaShowerKinematics1to2 instead.
+	Ptr<IS_QtildaShowerKinematics1to2>::pointer showerKin = new_ptr(IS_QtildaShowerKinematics1to2(p, n));
+
+        showerKin->qtilde(newQ);
+        showerKin->setResScale(sudakov->resScale());
+	showerKin->setKinScale(sudakov->kinScale()); 
+	showerKin->z(newZ);
+	showerKin->phi(newPhi);
+
+	cout << "cBB found branching, shoKin = "
+	     << showerKin << endl
+	     << "  Q = " << newQ/GeV 
+	     << ", z = " << newZ 
+	     << ", phi = " << newPhi << endl;
+	return Branching(showerKin, sudakov, ids);
 
       }
     }
