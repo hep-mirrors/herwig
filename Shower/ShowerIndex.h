@@ -50,8 +50,8 @@ namespace Herwig {
 
   struct ShowerIndex {
 
-    friend PersistentOStream & operator<< (PersistentOStream & os, const ShowerIndex & x);
-    friend PersistentIStream & operator>> (PersistentIStream & is, ShowerIndex & x);
+    friend PersistentOStream & operator<<(PersistentOStream & os, const ShowerIndex & x);
+    friend PersistentIStream & operator>>(PersistentIStream & is, ShowerIndex & x);
     // This operator overloading is necessary in order to store persistently
     // the multimap of &LT; key = showerIndex object, value = pointer to Sudakov object &GT;
     // (in class <!class>SplittingGenerator<!!class>).
@@ -67,8 +67,8 @@ namespace Herwig {
     // This operator overloading is necessary in order to use <!id>ShowerIndex<!!id>
     // as a key of a multimap (used in class <!class>SplittingGenerator<!!class>).
 
-    static InteractionType int2Interaction(const int position);
-    static TimeOrderType   int2TimeOrder(const int position);
+    //static InteractionType int2Interaction(const int position);
+    //static TimeOrderType   int2TimeOrder(const int position);
     // These conversion static methods are necessary for overloading
     // the input operator&LT;&LT; (see above), because it is a compiling 
     // error if you try to convert an int to a enum const (whereas

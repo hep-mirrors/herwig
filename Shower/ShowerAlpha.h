@@ -30,7 +30,7 @@
 
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
-#include "ShowerConstrainer.h"
+#include "ShowerVariables.h"
 
 namespace Herwig {
 
@@ -99,8 +99,8 @@ private:
   double _scaleFactor;
 
 protected:
-  ShoConstrPtr _pointerShowerConstrainer;
-  void setSC(ShoConstrPtr scp); 
+  ShowerVarsPtr _pointerShowerVariables;
+  void setSV(ShowerVarsPtr scp); 
 };
 
 }

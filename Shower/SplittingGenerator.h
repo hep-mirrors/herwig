@@ -22,9 +22,9 @@
 //
 // ***LOOKHERE*** --- the idea is to keep this class not responsible
 //                    for creating new ShowerParticle objects, and
-//                    independent from ShowerConstrainer: therefore
+//                    independent from ShowerVariables: therefore
 //                    the checking that the chosen candidate branching
-//                    is acceptable according to the vetos in ShowerConstrainer
+//                    is acceptable according to the vetos in ShowerVariables
 //                    and then, if accepted, the creation of the ShowerParticle
 //                    created from the branching, should all be done in
 //                    in ForwardShowerEvolver and BackwardShowerEvolver.
@@ -42,7 +42,7 @@
 //
 // <a href="http:ShowerIndex.html">ShowerIndex.h</a>, <BR>
 // <a href="http:SudakovFormFactor.html">SudakovFormFactor.h</a>, <BR>
-// <a href="http:ShowerConstrainer.html">ShowerConstrainer.h</a>, <BR>
+// <a href="http:ShowerVariables.html">ShowerVariables.h</a>, <BR>
 // <a href="http:SplitFun.html">SplitFun.h</a>.
 // 
 
@@ -52,14 +52,25 @@
 #include "ThePEG/Handlers/PartialCollisionHandler.h"
 #include "ShowerIndex.h"
 #include "SudakovFormFactor.h"
-#include "ShowerConstrainer.h"
-
+#include "ShowerVariables.h"
+#include "ThePEG/Utilities/StringUtils.h"
+#include "ShowerKinematics.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 class ShowerParticle;          // forward declaration
+
+struct Branching { 
+   ShoKinPtr first;
+   tSudakovPtr second; 
+   IdList third; 
+   Branching(ShoKinPtr a, tSudakovPtr b, IdList c) {
+      first = a; second = b; third = c; 
+   }
+   Branching() {}
+};
 
 class SplittingGenerator: public ThePEG::HandlerBase {
 
@@ -70,9 +81,8 @@ public:
   virtual ~SplittingGenerator();
   // Standard ctors and dtor.
 
-  pair<ShoKinPtr, tSudakovFormFactorPtr> chooseForwardBranching 
-  ( tPartCollHdlPtr ch, ShowerParticle & particle, 
-    const bool reverseAngularOrder = false ) const; 
+  Branching chooseForwardBranching(tPartCollHdlPtr, ShowerParticle &,
+                                   const bool reverseAngOrd = false) const; 
   // It chooses a new forward branching for the time-like particle. 
   // The method returns a pair of pointers: <BR>
   // --- a pointer to a <!id>ShowerKinematics<!!id> object, which 
@@ -81,7 +91,7 @@ public:
   // --- a pointer to the <!id>SudakovFormFactor<!!id> object associated 
   //     with the chosen emission. <BR>
   // In the case no branching has been generated, both the returned 
-  // pointers are null ( ShoKinPtr() , tSudakovFormFactorPtr() ).
+  // pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
   // In the case that <!id>reverseAngularOrder<!!id> is true, 
   // the new scale is greater than the initial one: this is used for 
   // the forward evolution of a on-shell decaying particle.
@@ -89,16 +99,14 @@ public:
   // a warning should be sent to the log file: in this case, 
   // exceptions seem unnecessary.
 
-  pair<ShoKinPtr, tSudakovFormFactorPtr> chooseBackwardBranching
-  ( tPartCollHdlPtr ch, ShowerParticle & particle ) const; 
+  Branching chooseBackwardBranching(tPartCollHdlPtr, ShowerParticle&) const;
   // Similar to the previous method, but for the backward evolution of
   // a space-like input particle. 
   // Notice that the PartialCollisionHandler object, <!id>ch<!!id>, 
   // is necessary to access the PDFs.
 
-  void generateBranchingKinematics 
-  ( tPartCollHdlPtr ch, ShowerParticle & particle,
-    tShoKinPtr showerKin, const tSudakovFormFactorPtr sudakov ) const; 
+  void generateBranchingKinematics(tPartCollHdlPtr, ShowerParticle&, 
+				   Branching&) const;
   // Given the particle, a pointer to the <!id>ShowerKinematics<!!id> 
   // object which has been created and at least partially filled during
   // the branching selection, and the pointer to the <!SudakovFormFactor<!!id>
@@ -113,24 +121,20 @@ public:
   // this should never ever happen) a warning should be sent to
   // the log file: in this case exceptions seem unnecessary.
 
-  inline const tShowerAlphaPtr pointerIS_ShowerAlphaQCD() const;
-  inline const tShowerAlphaPtr pointerFS_ShowerAlphaQCD() const;
+  inline const tShowerAlphaPtr showerAlphaQCD() const;
   // Access to the Initial and Final State Radiation QCD running alphas.
 
-  inline const tShowerAlphaPtr pointerIS_ShowerAlphaQED() const;
-  inline const tShowerAlphaPtr pointerFS_ShowerAlphaQED() const;
+  inline const tShowerAlphaPtr showerAlphaQED() const;
   // Access to the QED coupling (a bit too complicated for my taste...)
 
-  inline const ShoConstrPtr & pointerShowerConstrainer() const;
-  // Access to the ShowerConstrainer (maybe is not needed).
+  inline const ShowerVarsPtr & showerVariables() const;
+  // Access to the ShowerVariables (maybe is not needed).
 
   //--- SWITCHES ---
 
-  void setSCtoAlpha(ShoConstrPtr p);
-  void setISQED(ShowerAlphaPtr p);
-  void setFSQED(ShowerAlphaPtr p);
-  void setISQCD(ShowerAlphaPtr p);
-  void setFSQCD(ShowerAlphaPtr p);
+  void setSVtoAlpha(ShowerVarsPtr p);
+  void setQED(ShowerAlphaPtr p);
+  void setQCD(ShowerAlphaPtr p);
 
   bool isInteractionON(const ShowerIndex::InteractionType interaction) const;
   // It returns true/false if interaction type specified in input is on/off.
@@ -146,33 +150,6 @@ public:
   // ragardless of the switch, if either the corresponding interaction switch 
   // (see method <!id>isInteractionON<!!id>) is off, or if the global initial or final 
   // state radiation (see overloaded methods above without argument) is off.
-
-  inline bool isUtoUGsplittingON() const;  
-  inline bool isDtoDGsplittingON() const;  
-  inline bool isStoSGsplittingON() const;  
-  inline bool isCtoCGsplittingON() const;  
-  inline bool isBtoBGsplittingON() const;  
-  inline bool isTtoTGsplittingON() const;  
-  inline bool isGtoGGsplittingON() const;  
-  inline bool isGtoUUbarsplittingON() const;  
-  inline bool isGtoDDbarsplittingON() const;  
-  inline bool isGtoSSbarsplittingON() const;  
-  inline bool isGtoCCbarsplittingON() const;  
-  inline bool isGtoBBbarsplittingON() const;  
-  inline bool isGtoTTbarsplittingON() const;  
-  // It returns true/false if the corresponding splitting function is on/off.
-  // However, they return false, ragardless of the switch, if the 
-  // corresponding interaction switch (see method <!id>isInteractionON<!!id>) is off. 
-  // ***LOOKHERE*** Similar switches should be defined for Q->QGamma and
-  //                other splitting functions. 
-
-  // such as these 
-  inline bool isUtoUGammasplittingON() const;  
-  inline bool isDtoDGammasplittingON() const;  
-  inline bool isStoSGammasplittingON() const;  
-  inline bool isCtoCGammasplittingON() const;  
-  inline bool isBtoBGammasplittingON() const;  
-  inline bool isTtoTGammasplittingON() const;  
 
 public:
 
@@ -190,7 +167,7 @@ protected:
   // Standard clone methods.
 
 protected:
-
+  string addSplitting(string);
   inline virtual void doupdate() throw(UpdateException);
   inline virtual void doinit() throw(InitException);
   inline virtual void doinitrun();
@@ -212,13 +189,14 @@ private:
   SplittingGenerator & operator=(const SplittingGenerator &);
   // Private and non-existent assignment operator.
 
-  void initializeRun();
+  //void initializeRun();
   // It is called once, at the beginning of the run, to create all
   // of the splitting function and Sudakov form factor objects. 
   // The splitting function objects are then kept by the corresponding
   // Sudakov form factor objects. The latter are kept in a multimap
   // with key given by a ShowerIndex object.
 
+  void addToMap(long&, IdList &, SudakovPtr &);
   void debuggingInfo();
   // Print, in the log file, debugging information.
 
@@ -233,35 +211,15 @@ private:
   int _FSR_QCDMode;
   int _FSR_QEDMode;
   int _FSR_EWKMode;
-  int _UtoUGsplittingMode;
-  int _DtoDGsplittingMode;
-  int _StoSGsplittingMode;
-  int _CtoCGsplittingMode;
-  int _BtoBGsplittingMode;
-  int _TtoTGsplittingMode;
-  int _GtoGGsplittingMode;
-  int _GtoUUbarsplittingMode;
-  int _GtoDDbarsplittingMode;
-  int _GtoSSbarsplittingMode;
-  int _GtoCCbarsplittingMode;
-  int _GtoBBbarsplittingMode;
-  int _GtoTTbarsplittingMode;  
-  // new switches
-  int _UtoUGammasplittingMode;  
-  int _DtoDGammasplittingMode;  
-  int _StoSGammasplittingMode;  
-  int _CtoCGammasplittingMode;  
-  int _BtoBGammasplittingMode;  
-  int _TtoTGammasplittingMode;  
 
-  ShowerAlphaPtr _pointerIS_ShowerAlphaQCD;
-  ShowerAlphaPtr _pointerFS_ShowerAlphaQCD;
-  ShowerAlphaPtr _pointerIS_ShowerAlphaQED;
-  ShowerAlphaPtr _pointerFS_ShowerAlphaQED;
-  ShoConstrPtr _pointerShowerConstrainer;
+  ShowerAlphaPtr _showerAlphaQCD;
+  ShowerAlphaPtr _showerAlphaQED;
+  ShowerVarsPtr _showerVariables;
    
-  typedef multimap<ShowerIndex,SudakovFormFactorPtr> CollecIndexSudakov;
-  CollecIndexSudakov _multimapSudakov;
+  typedef pair<SudakovPtr,IdList> BranchingElement;
+  typedef multimap<long,BranchingElement> BranchingList;
+  typedef pair<long, BranchingElement> BranchingInsert; 
+  BranchingList _branchings;
 
 };
 

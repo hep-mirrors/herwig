@@ -13,7 +13,7 @@
 #include "ThePEG/Repository/EventGenerator.h" 
 #include "ThePEG/Repository/UseRandom.h" 
 #include "Herwig++/Utilities/HwDebug.h"
-#include "ShowerConstrainer.h"
+#include "ShowerVariables.h"
 #include "ShowerParticle.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
@@ -22,35 +22,27 @@ using namespace Herwig;
 
 PartnerFinder::~PartnerFinder() {}
 
+void PartnerFinder::persistentOutput(PersistentOStream & os) const {}
 
-void PartnerFinder::persistentOutput(PersistentOStream & os) const {
-  // os << ;
-}
-
-
-void PartnerFinder::persistentInput(PersistentIStream & is, int) {
-  // is >> ;
-}
-
+void PartnerFinder::persistentInput(PersistentIStream & is, int) {}
 
 ClassDescription<PartnerFinder> PartnerFinder::initPartnerFinder;
 // Definition of the static class description member.
-
 
 void PartnerFinder::Init() {
 
   static ClassDocumentation<PartnerFinder> documentation
     ("This class is responsible for finding the partners for each interaction types ",
-     "and within the evolution scale range specified by the ShowerConstrainer ",
+     "and within the evolution scale range specified by the ShowerVariables ",
      "then to determine the initial evolution scales for each pair of partners.");
 
 }
 
 //-----------------------------------------------------------------------------
 
-bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-						  const ShowerParticleVector particles,
-						  const bool isDecayCase ) {
+bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
+						 const ShowerParticleVector particles,
+						 const bool isDecayCase) {
   bool isOK = true;
 
   // Loop over  particles  and consider only coloured particles which don't
@@ -71,39 +63,37 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
   // processes (as in R-parity Susy), which will show up as particles
   // without candidate colour partners, and that we will be treated a part later
   // (this means that no modifications of the following loop is needed!)
-  map<tShowerParticlePtr, tShowerParticleVector> mapParticleToCandidatePartners;
-  for ( ShowerParticleVector::const_iterator cit = particles.begin(); 
-	cit != particles.end(); ++cit ) {
-    if ( (*cit)->data().coloured()  &&  ! (*cit)->partners()[ ShowerIndex::QCD ]  &&
-	 ( (*cit)->children().size() == 0  ||  isDecayCase ) ) {
+  typedef map<tShowerParticlePtr, tShowerParticleVector> PartnerMap;
+  PartnerMap candidatePartners;
+  ShowerParticleVector::const_iterator cit, cjt;
+  for(cit = particles.begin(); cit != particles.end(); ++cit) {
+    if((*cit)->data().coloured() && !(*cit)->partners()[ShowerIndex::QCD] &&
+       ((*cit)->children().size() == 0 || isDecayCase )) {
       tShowerParticleVector partners;
-      for ( ShowerParticleVector::const_iterator cjt = particles.begin(); 
-	    cjt != particles.end(); ++cjt ) {
-	if ( cit != cjt  &&  (*cjt)->data().coloured() &&
-	     ( (*cit)->children().size() == 0  ||  isDecayCase ) ) { 
+      for(cjt = particles.begin(); cjt != particles.end(); cjt++) {
+	if(cit != cjt && (*cjt)->data().coloured() &&
+	   ((*cit)->children().size() == 0 || isDecayCase)) { 
 	  bool isPartner = false;
-	  if ( ( (*cit)->isFinalState()  &&  ! (*cjt)->isFinalState() )  ||
-	       ( ! (*cit)->isFinalState()  &&  (*cjt)->isFinalState() ) ) {
-	    if ( ( (*cit)->colourLine()  &&  
-		   (*cit)->colourLine() == (*cjt)->colourLine() )  ||
-		 ( (*cit)->antiColourLine()  &&  
-		   (*cit)->antiColourLine() == (*cjt)->antiColourLine() ) ) {
+	  if(((*cit)->isFinalState() && !(*cjt)->isFinalState()) ||
+	       (!(*cit)->isFinalState() && (*cjt)->isFinalState())) {
+	    if(((*cit)->colourLine() &&  
+		(*cit)->colourLine() == (*cjt)->colourLine()) ||
+	       ((*cit)->antiColourLine()  &&  
+		(*cit)->antiColourLine() == (*cjt)->antiColourLine())) {
 	      isPartner = true;
 	    }
 	  } else { 
-	    if ( ( (*cit)->colourLine()  && 
-		   (*cit)->colourLine() == (*cjt)->antiColourLine() )  ||
-		 ( (*cit)->antiColourLine()  && 
-		   (*cit)->antiColourLine() == (*cjt)->colourLine() ) ) {
+	    if(((*cit)->colourLine()  && 
+		(*cit)->colourLine() == (*cjt)->antiColourLine())  ||
+	       ((*cit)->antiColourLine()  && 
+		(*cit)->antiColourLine() == (*cjt)->colourLine())) {
 	      isPartner = true;
 	    }
 	  } 
-	  if ( isPartner ) {
-	    partners.push_back( *cjt );
-	  }
+	  if(isPartner) partners.push_back(*cjt); 
 	}
       }
-      mapParticleToCandidatePartners.insert( pair<tShowerParticlePtr, tShowerParticleVector>( *cit, partners ) );
+      candidatePartners[*cit] = partners;
     }
   }
 
@@ -112,10 +102,9 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
   // whereas those that don't have any are collected in the vector specialCases
   // and will be treated later.
   tShowerParticleVector specialCases; 
-  for ( map<tShowerParticlePtr, tShowerParticleVector>::const_iterator cit = 
-	  mapParticleToCandidatePartners.begin(); 
-	cit != mapParticleToCandidatePartners.end(); ++cit ) {
-    if ( cit->second.size() ) {
+  PartnerMap::const_iterator it;
+  for(it = candidatePartners.begin(); it != candidatePartners.end(); ++it) {
+    if(it->second.size()) {
 
       //***LOOKHERE*** In the case of more than one candidate colour partners,
       //               our treatment is based on two assumptions:
@@ -128,18 +117,18 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
       //                  does not have to be necessarily "i".
       //               To me (A.R.) both assumptions seem reasonable, but
       //               I am not 100% sure! Be careful...
-      int position = UseRandom::irnd( cit->second.size() );
+      int position = UseRandom::irnd(it->second.size());
 
       pair<Energy,Energy> pairScales = 
-	calculateInitialEvolutionScales( pair<tShowerParticlePtr,tShowerParticlePtr>( cit->first, cit->second[position] ), showerConstrainer);
-      cit->first->setEvolutionScale( ShowerIndex::QCD, pairScales.first );
-      cit->first->setPartner( ShowerIndex::QCD, cit->second[position] );
-    } else {
-      specialCases.push_back( cit->first );
-    }
+	calculateInitialEvolutionScales(ShowerPPair(it->first, 
+						    it->second[position]),
+			                showerVariables);
+      it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
+      it->first->setPartner(ShowerIndex::QCD, it->second[position]);
+    } else specialCases.push_back(it->first);
   } 
 
-  if ( specialCases.size() ) {
+  if(specialCases.size()) {
 
     //***LOOKHERE*** ADD TREATMENT OF SPECIAL CASES (BARYON-VIOLATING PROCESSES)
     //               AT THE MOMENT ONLY A WARNING IS ISSUED.
@@ -212,9 +201,9 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
 }
 
 
-bool PartnerFinder::setQEDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-						  const ShowerParticleVector particles,
-						  const bool isDecayCase ) {
+bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
+						 const ShowerParticleVector particles,
+						 const bool isDecayCase) {
   bool isOK = true;
 
   //***LOOKHERE*** To be implemented only if you want to have electromagnetic
@@ -233,20 +222,19 @@ bool PartnerFinder::setQEDInitialEvolutionScales( const tShoConstrPtr showerCons
   // in order to test the possibility of multiple interactions that compete in the 
   // shower.  The partners have to be determined according to some physical 
   // idea, i.e. they should be CHARGE partners and not colour partners. 
-
-  for ( ShowerParticleVector::const_iterator cit = particles.begin(); 
-	cit != particles.end(); ++cit ) {
-    (*cit)->setEvolutionScale(ShowerIndex::QED, (*cit)->evolutionScales()[ ShowerIndex::QCD ]); 
-    (*cit)->setPartner(ShowerIndex::QED, (*cit)->partners()[ ShowerIndex::QCD ]); 
+  ShowerParticleVector::const_iterator cit;
+  for(cit = particles.begin(); cit != particles.end(); ++cit) {
+    (*cit)->setEvolutionScale(ShowerIndex::QED, (*cit)->evolutionScales()[ShowerIndex::QCD]); 
+    (*cit)->setPartner(ShowerIndex::QED, (*cit)->partners()[ShowerIndex::QCD]); 
   }
 
   return isOK;
 }
 
 
-bool PartnerFinder::setEWKInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-						  const ShowerParticleVector particles,
-						  const bool isDecayCase ) {
+bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVariables,
+						 const ShowerParticleVector particles,
+						 const bool isDecayCase) {
 
   bool isOK = true;
 
@@ -267,18 +255,14 @@ bool PartnerFinder::setEWKInitialEvolutionScales( const tShoConstrPtr showerCons
 
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePtr> & particlePair, const tShoConstrPtr showerConstrainer) {
+calculateInitialEvolutionScales(const ShowerPPair &particlePair, 
+		                const tShowerVarsPtr showerVariables) {
   Energy firstQ = Energy();
   Energy secondQ = Energy();
 
   //***LOOKHERE***  Use the kinematical relationships between the 4-momenta
   //                of the pair of particles to calculate their initial
   //                evolution scales: firstQ and secondQ. 
-  //                BELOW IT IS JUST A SIMPLE FAKE, JUST TO GET SOME VALUES
-
-//   double angle = particlePair.first->momentum().vect().angle( particlePair.second->momentum().vect() );
-//   firstQ  = particlePair.first->momentum().e() * angle;
-//   secondQ = particlePair.second->momentum().e() * angle;
 
   Lorentz5Momentum p1, p2; 
   Lorentz5Momentum p, n; 
@@ -288,7 +272,7 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
   p.boost((p1+p2).findBoostToCM());
   n = Lorentz5Momentum(0.0, -p.vect()); 
   firstQ = sqrt(2.*p*(p+n)); 
-  p = p2; 
+  p = p2;
   p.boost((p1+p2).findBoostToCM());
   n = Lorentz5Momentum(0.0, - p.vect()); 
   secondQ = sqrt(2.*p*(p+n));   
@@ -297,7 +281,7 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
   // only a hack for the moment! comment/uncomment for normal/asymmetric
   // if desired. 
   // get asymmetric distribution in x, xbar plane: 
-  if (showerConstrainer->asyPS()) {
+  if (showerVariables->asyPS()) {
     Energy Q = sqrt(sqr(p1+p2)); 
     double r = p1.m()/Q; 
     //double v = sqrt(1.-sqr(r)); 
@@ -316,7 +300,7 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
   }
   // swap the above values for even eventnumbers, 
   // (ie uncorrelated or randomly)
-  if (showerConstrainer->rndPS()) {  
+  if (showerVariables->rndPS()) {  
     Energy temp; 
     if (generator()->currentEventNumber()%2) {
       temp = firstQ; firstQ = secondQ; secondQ = temp;     

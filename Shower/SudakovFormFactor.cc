@@ -8,18 +8,25 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 
+ClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
 
+SudakovFormFactor::SudakovFormFactor() : _q(), _z( 0.0 ), _phi(0.0) {}
+  
+SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
+  : _q(x._q), _z(x._z), _phi(x._phi), _splittingFn(x._splittingFn),
+    _alpha(x._alpha) {} 
+ 
 SudakovFormFactor::~SudakovFormFactor() {}
-
 
 void SudakovFormFactor::setupLookupTables() {}
 
-void SudakovFormFactor::
-get_qz (bool znorm, double p, double R, Energy q0, Energy qmax, Energy &q, double &z) {
-
+void SudakovFormFactor::get_qz(bool znorm, double p, double R, Energy q0, 
+			       Energy qmax, Energy &q, double &z) {
   double z0 = .5; 
   Energy qmin; 
   qmin = pow( (pow(q0, 1.+p) - R*pow(100.*GeV, 1.+p))/(1.-R), 1./(1.+p) ); 
@@ -73,82 +80,57 @@ get_qz (bool znorm, double p, double R, Energy q0, Energy qmax, Energy &q, doubl
 
 // inline it!
 double SudakovFormFactor::guessz (double z0, double z1) {
-  tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
-  return sF->invIntegOverIntegratedFun( sF->integOverIntegratedFun(z0) + 
-     UseRandom::rnd()*( sF->integOverIntegratedFun(z1) - 
-			sF->integOverIntegratedFun(z0) ) );
+  return _splittingFn->invIntegOverP(_splittingFn->integOverP(z0) + 
+     UseRandom::rnd()*(_splittingFn->integOverP(z1) - 
+		       _splittingFn->integOverP(z0)));
 }
 
 
-Energy2 SudakovFormFactor::guesst (Energy2 t0, Energy2 t1, double z0, double z1) {
-  tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
-//   double z0, z1; 
-//   z0 = sqrt(t0/t1); 
-//   z1 = 1.-sqrt(t0/t1); 
-//   cerr << "(t1, G(z0), G(z1), as(Q02), exponent) = (" 
-//        << t1 << ", " 
-//        << sF->integOverIntegratedFun(z1) << ", "
-//        << sF->integOverIntegratedFun(z0) << ", "
-//        << _alpha->overestimateValue()/(2.*pi) << ", "
-//        << 1./( (sF->integOverIntegratedFun(z1) -
-// 		sF->integOverIntegratedFun(z0))* 
-// 	       _alpha->overestimateValue()/(2.*pi) ) 
-//        << ")" << endl; 
-  return t1*pow( UseRandom::rnd(), 
-		 1./( (sF->integOverIntegratedFun(z1) -
-		       sF->integOverIntegratedFun(z0))* 
-		      _alpha->overestimateValue()/(2.*pi) )); 
+Energy2 SudakovFormFactor::guesst(Energy2 t0, Energy2 t1, double z0, double z1)
+{
+  return t1*pow(UseRandom::rnd(), 
+		 1./((_splittingFn->integOverP(z1) -
+		      _splittingFn->integOverP(z0))* 
+		     _alpha->overestimateValue()/(2.*pi))); 
 }
 
-
-void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
-
-  tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
-
+void SudakovFormFactor::gettz(Energy root_tmax, Energy &root_t, double &z, 
+			      const IdList &ids) {
   double z0, z1, ratio;
   Energy2 told, t0, tmax, t, tmin; 
   bool veto = true; 
   tmax = sqr(root_tmax); 
   t = sqr(root_t); 
-//   // Energy kinCutoff = _minScale;
-//   Energy kinCutoff = kinScale();
-//   bool glueEmits = false; 
-//   if (sF->idEmitter() == 21) glueEmits = true; 
-//   if ( glueEmits ) { 
-//     // have a cutoff of 
-//     //    t0 = 16.*sqr(max(_minScale, sF->massFirstProduct()));    
-//     //    t0 = sqr(max(_minScale, 4.*sF->massFirstProduct()));    
-//     t0 = sqr(max(kinCutoff, sF->massFirstProduct()));    
-//   } else {
-//     t0 = sqr(max(kinCutoff, sF->massEmitter()));    
-//   }
-
   Energy kinCutoff;
-  bool glueEmits = false; 
-  if (sF->idEmitter() == 21) glueEmits = true; 
-  if ( glueEmits ) { 
+  bool glueEmits = (ids[0]==ParticleID::g);  
+  Energy m0 = CurrentGenerator::current().getParticleData(ids[0])->mass();
+  Energy m1 = CurrentGenerator::current().getParticleData(ids[1])->mass();
+  if(glueEmits) { 
     //    kinCutoff = (kinScale() - 0.15*sF->massFirstProduct())/2.3;
-    kinCutoff = (kinScale() - 0.3*sF->massFirstProduct())/2.3;
-    t0 = sqr(max(kinCutoff, sF->massFirstProduct()));    
+    kinCutoff = (kinScale() - 0.3*m1)/2.3;
+    t0 = sqr(max(kinCutoff, m1));    
   } else {
     //    kinCutoff = (kinScale() - 0.15*sF->massEmitter())/2.3;
-    kinCutoff = (kinScale() - 0.3*sF->massEmitter())/2.3;
-    t0 = sqr(max(kinCutoff, sF->massEmitter()));    
+    kinCutoff = (kinScale() - 0.3*m0)/2.3;
+    t0 = sqr(max(kinCutoff, m0));    
   }
   t = tmax; 
-  tmin = max(t0, sqr(_minScale));
-
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "SudakovFormFactor::gettz(): extreme ____________________________________________" << endl
+  tmin = max(t0, sqr(resScale()));
+  
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+    CurrentGenerator::log() << "SudakovFormFactor::gettz(): extreme "
+			    << "____________________________________________" 
+			    << endl
 			    << "  called with q = " << sqrt(tmax)/GeV 
-			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)" << endl; 
+			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)" 
+			    << endl; 
   }
 
-  if ( tmax <= t0 ) {
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) 
-      CurrentGenerator::log() << "  | tmax < t0! return with (sqrt(t)/GeV, z) = (" 	 
-			      << root_t/GeV << ", "
-			      << z << ")" << endl; 
+  if(tmax <= t0) {
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) 
+      CurrentGenerator::log() << "  | tmax < t0! return with (sqrt(t)/GeV, z) "
+			      << "= (" << root_t/GeV << ", " << z << ")" 
+			      << endl; 
     root_t = -1;
     return; 
   }
@@ -176,7 +158,7 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     t = guesst(t0, told, z0, z1); 
     z = guessz(z0, z1); 
 
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
       CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
 			      << sqrt(told)/GeV << "->"
 			      << sqrt(t)/GeV << " | "
@@ -200,12 +182,12 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     // likelihood of single vetoes in order to check the most likely
     // 1st and only if this fails the 2nd etc 
     veto = false; 
-   
+    
     // still inside PS?
     if ((z < z0 || z > z1) && t > tmin) { 
       veto = true; 
       //  psest++;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+      if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
 	CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
 				<< z0 << ", "
 				<< z << ", "
@@ -217,7 +199,7 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
 	if (sqr(z*(1.-z))*t < t0) {
 	  veto = true; 
 	  // psveto++;
-	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
 	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
 	  }
 	}
@@ -225,27 +207,15 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
 	if (sqr(1.-z)*(t*sqr(z) - t0) < z*sqr(kinCutoff)) {
 	  veto = true; 
 	  //  psveto++;
-	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
 	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
 	  }
 	}
       } 
     }
-
-    // overestimate of t-integral due to overestimate 
-    // of z-integration limits: veto on this!
-//     ratio = (int_g_gg(1.-sqrt(MC2/t)) - int_g_gg(sqrt(MC2/t)))
-//       /(int_g_gg(1.-sqrt(MC2/told)) - int_g_gg(sqrt(MC2/told))); 
-//     if (drand48() > ratio) {
-//       veto = true; 
-//       tintv++; 
-//       //      cout << "TI (" << vc+1 << ", " << tintv << ")" << endl;
-//     }; 
-
     // hit the density? 
-    ratio = sF->integratedFun(z, t)/
-      sF->overestimateIntegratedFun(z);
-    if (!veto && UseRandom::rnd() > ratio) { 
+    ratio = _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
+    if(!veto && UseRandom::rnd() > ratio) { 
       veto = true; 
       //pgveto++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
@@ -256,15 +226,9 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     Energy2 pt2;
     // simple argument of alpha_s
     pt2 = sqr(z*(1.-z))*t;
-    // better argument of alpha_s is the actual pt...
-//     if (glueEmits) {
-//       pt2 = sqr(z*(1.-z))*t - t0;
-//     } else {
-//       pt2 = sqr((1.-z))*(sqr(z)*t - t0) - z*sqr(kinCutoff);
-//     }
 
-    if ( !veto && UseRandom::rnd() > _alpha->value(pt2)/
-	 _alpha->overestimateValue() ) {
+    if(!veto && UseRandom::rnd() > _alpha->value(pt2)/
+       _alpha->overestimateValue() ) {
       veto = true; 
       //asveto++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
@@ -287,28 +251,6 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     }
   } while (veto); 
 
-//   cerr << "---> accepted (t, z) = (" 	 
-//        << t << ", "
-//        << z << ")" 
-//  cerr << "(calls, ps-est, ps, P/g, as, sum) \\ (per call) = " 
-//       << endl << flush; 
-//   cerr << "(" << calls << ", "
-//        << psest << ", "
-//        << psveto << ", "
-//        << pgveto << ", "
-//        << asveto << ", " 
-//        << psest+psveto+pgveto+asveto << ") ("
-//        << double(psest)/double(calls) << ", "
-//        << double(psveto)/double(calls) << ", "
-//        << double(pgveto)/double(calls) << ", "
-//        << double(asveto)/double(calls) << ", " 
-//        << double(psest+psveto+pgveto+asveto)/double(calls) << ")\r";
-// ran this for a good number of events. Variations should only appear with
-// crazy parameters...
-
-// (4211, 268, 2271, 1459, 1147, 5145) (0.0636428, 0.539302, 0.346474, 0.272382, 1.2218)
-
-
   if (t > 0) root_t = sqrt(t);
   else root_t = -1; ;
 
@@ -319,4 +261,52 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
   }
 
   return;
+}
+
+Energy SudakovFormFactor::generateNextBranching(const Energy startingScale,
+						const IdList &ids,
+						const bool reverseAngularOrder)
+{
+  // First reset the internal kinematics variables that can
+  // have been eventually set in the previous call to thie method.
+  _q = Energy();
+  _z = 0.0;
+  _phi = 0.0; 
+  if (reverseAngularOrder) {
+    _q = startingScale / UseRandom::rnd();
+    _z = UseRandom::rnd(); 
+  } else gettz(startingScale, _q, _z, ids);
+  _phi = 2.*pi*UseRandom::rnd();
+ 
+  return _q;
+}
+
+void SudakovFormFactor::Init() {
+  static ClassDocumentation<SudakovFormFactor> documentation
+    ("Class that, given a splitting function, returns values for Sudakov.");
+
+  static Reference<SudakovFormFactor,SplittingFunction>
+    interfaceSplittingFunction("SplittingFunction",
+			       "A reference to the SplittingFunction object",
+			       &Herwig::SudakovFormFactor::_splittingFn,
+			       false, false, true, false);
+  static Reference<SudakovFormFactor,ShowerAlpha>
+    interfaceAlpha("Alpha",
+		   "A reference to the Alpha object",
+		   &Herwig::SudakovFormFactor::_alpha,
+		   false, false, true, false);
+
+  static Reference<SudakovFormFactor,ShowerVariables>
+    interfaceVariables("Variables",
+		   "A reference to the ShowerVariables object",
+		   &Herwig::SudakovFormFactor::_variables,
+		   false, false, true, false);
+}
+
+void SudakovFormFactor::persistentOutput(PersistentOStream &out) const {
+  out << _splittingFn << _alpha << _variables;
+}
+
+void SudakovFormFactor::persistentInput(PersistentIStream &in, int) {
+  in >> _splittingFn >> _alpha >> _variables;
 }

@@ -206,8 +206,8 @@ public:
   // <!id>ShowerParticle<!!id> object during the showering evolution, 
   // whereas the <!id>momentum<!id> member describes the "final", "real" one. 
 
-  inline tSplitFunPtr splitFun() const;
-  inline void setSplitFun(const tSplitFunPtr);
+  inline tSplittingFnPtr splitFun() const;
+  inline void setSplittingFn(const tSplittingFnPtr);
   // Access/Set the <!class>SplitFun<!!class> object responsible of the 
   // eventual branching of this particle.
 
@@ -234,11 +234,11 @@ public:
 			 const tShowerParticlePtr);
   // Set the scale/partner for the specified interaction.
 
-  inline bool isRhoDUpdate() const;
-  inline void setRhoDUpdate(const bool);
+  //inline bool isRhoDUpdate() const;
+  //inline void setRhoDUpdate(const bool);
   // Access/Set the flag that tells if the rho-D matrix has been updated.
 
-  inline ComplexMatrix & rhoD();
+  //inline ComplexMatrix & rhoD();
   // Access the rho-D (spin density matrix or decay matrix) of the particle.
 
   inline bool isReconstructionFixedPoint() const;
@@ -269,8 +269,8 @@ public:
   // get a list of all children of _particle that are in the final
   // state
 
-  inline tPPtr getP7base();
-  inline void setP7base(const tPPtr& );
+  inline tPPtr getThePEGBase();
+  inline void setThePEGBase(const tPPtr& );
 
 protected:
 
@@ -284,7 +284,7 @@ private:
   //  Private and non-existent assignment operator.
 
   bool _isFinalState;
-  bool _rhoDUpdate;
+  //bool _rhoDUpdate;
   bool _reconstructionFixedPoint;
   bool _isFromHardSubprocess;
 
@@ -294,14 +294,14 @@ private:
   Energy _sudPx;
   Energy _sudPy;
 
-  tSplitFunPtr _splitFun;        
+  tSplittingFnPtr _splitFun;        
   ShoKinPtr _showerKinematics;
 
   vector<Energy> _scales;
   tShowerParticleVector _partners;
-  ComplexMatrix _rhoD;
+  //ComplexMatrix _rhoD;
 
-  tPPtr _p7base;
+  tPPtr _thePEGBase;
 
   static ClassDescription<ShowerParticle> initShowerParticle;
  

@@ -10,7 +10,7 @@
 // <OL>
 //  <LI> it finds the partners (pairs of ShowerParticles objects) <BR> 
 //       for each interaction types (QCD,QED,EWK...) and within the <BR>
-//       scale range specified by the <!class>ShowerConstrainer<!!class> object;
+//       scale range specified by the <!class>ShowerVariables<!!class> object;
 //  <LI> for each pair of partners (and interaction therefore) <BR>
 //       it sets the initial evolution scales of both of them.
 // </OL>
@@ -74,6 +74,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
+
 class PartnerFinder: public ThePEG::HandlerBase {
 
 public:
@@ -83,20 +85,20 @@ public:
   virtual ~PartnerFinder();
   // Standard ctors and dtor.
 
-  bool setQCDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-				     const ShowerParticleVector particles,
-                                     const bool isDecayCase = false );
-  bool setQEDInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-				     const ShowerParticleVector particles,
-                                     const bool isDecayCase = false );
-  bool setEWKInitialEvolutionScales( const tShoConstrPtr showerConstrainer,
-				     const ShowerParticleVector particles,
-                                     const bool isDecayCase = false );
+  bool setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
+				    const ShowerParticleVector particles,
+                                    const bool isDecayCase = false);
+  bool setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
+				    const ShowerParticleVector particles,
+                                    const bool isDecayCase = false);
+  bool setEWKInitialEvolutionScales(const tShowerVarsPtr showerVariables,
+				    const ShowerParticleVector particles,
+                                    const bool isDecayCase = false);
   // Given in input a collection of particles (<!id>ShowerParticle<!!id> objects),
   // each of these methods set the initial evolution scales of those particles, 
   // between the ones given in input, that do not have yet their evolution scale set, 
   // according to a given interaction type (QCD, QED, EWK,...), and within the 
-  // constraints specified in the <!id>showerConstrainer<!!id> object. 
+  // constraints specified in the <!id>showerVariables<!!id> object. 
   // The input collection of particles can be either the full collection of 
   // showering particles (kept in the main class <!class>ShowerHandler<!!class>),
   // in the case isDecayCase is false, or simply, in the case isDecayCase is true,
@@ -104,7 +106,8 @@ public:
   // The methods returns true, unless something wrong (inconsistencies,
   // or undefined values) happens.
 
-  pair<Energy,Energy> calculateInitialEvolutionScales(const pair<tShowerParticlePtr,tShowerParticlePtr> & particlePair, const tShoConstrPtr showerConstrainer);
+  pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &particlePair, 
+		                                      const tShowerVarsPtr showerVariables);
   // Given a pair of particles, supposedly partners w.r.t. an interaction,
   // this method returns their initial evolution scales as a pair.
   // If something wrong happens, it returns the null ( Energy() , Energy() ) pair. 

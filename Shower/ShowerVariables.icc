@@ -1,0 +1,193 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerVariables class.
+//
+
+namespace Herwig {
+
+inline ShowerVariables::ShowerVariables() :
+  _multiScaleShowerMode( 1 ), 
+  _decayBeforeShowerMode( 0 ),
+  _cutoffQCDMassScale( 1.0*GeV ),
+  // ***ACHTUNG*** to be set in the init-file, later! 
+  _cutoffQEDMassScale( 0.51*MeV ),
+  _cutoffEWKMassScale( 91.0*GeV ),
+  _kinCutoffScale( .75*GeV ),
+  _MECorrMode(1),
+  _qqgPSMode(0),
+  _stopShowerAtMassScale( Energy() ),
+  _vetoAbovePtScale( HUGEMASS ), 
+  _vetoBelowPtScale( Energy() ), 
+  _largestPtQ(Energy()),
+  _largestPtQbar(Energy())
+{}
+
+
+inline ShowerVariables::ShowerVariables(const ShowerVariables & x)
+  : ThePEG::HandlerBase(x),
+	     _multiScaleShowerMode( x._multiScaleShowerMode ), 
+	     _decayBeforeShowerMode( x._decayBeforeShowerMode ), 
+	     _cutoffQCDMassScale( x._cutoffQCDMassScale ),
+	     _cutoffQEDMassScale( x._cutoffQEDMassScale ),
+	     _cutoffEWKMassScale( x._cutoffEWKMassScale ),
+             _kinCutoffScale( x._kinCutoffScale ),
+             _MECorrMode( x._MECorrMode ),
+             _qqgPSMode(x._qqgPSMode),
+             _stopShowerAtMassScale( x._stopShowerAtMassScale ),
+	     _vetoAbovePtScale( x._vetoAbovePtScale ), 
+	     _vetoBelowPtScale( x._vetoBelowPtScale ),
+             _largestPtQ(x._largestPtQ),
+             _largestPtQbar(x._largestPtQbar),
+	     _particlesDecayBeforeShower( x._particlesDecayBeforeShower )
+{}
+
+
+inline int ShowerVariables::isMultiScaleShowerON() const {
+  return _multiScaleShowerMode;
+}
+
+
+inline int ShowerVariables::isDecayBeforeShowerON() const {
+  return _decayBeforeShowerMode;
+}
+
+inline bool ShowerVariables::hasToDecayBeforeShower(const long id) const {
+  return ( _particlesDecayBeforeShower.find( abs(id) ) != 
+	   _particlesDecayBeforeShower.end() ); 
+}
+
+
+inline void ShowerVariables::doinit() throw(InitException) {
+  ThePEG::HandlerBase::doinit();
+  initialize();
+}
+
+
+inline Energy ShowerVariables::convertMassScaleToQScale(const Energy inputMassScale) const {
+  // ***LOOKHERE***: convert on the fly:  Mass Scale -> Q Scale
+  return inputMassScale * 1.0;   // To be changed
+}
+
+inline Energy ShowerVariables::convertQScaleToMassScale(const Energy inputQScale) const {
+  // ***LOOKHERE***: convert on the fly:  Q scale -> Mass scale
+  return inputQScale * 1.0;   // To be changed
+}
+
+inline Energy ShowerVariables::stopShowerAtMassScale() const {
+  return _stopShowerAtMassScale;
+}
+
+inline void ShowerVariables::stopShowerAtMassScale(const Energy inputStopShowerAtMassScale) {
+  _stopShowerAtMassScale = inputStopShowerAtMassScale;
+}
+
+inline Energy ShowerVariables::stopShowerAtQScale() const {
+  return convertMassScaleToQScale(_stopShowerAtMassScale);
+}
+
+inline void ShowerVariables::stopShowerAtQScale(const Energy inputStopShowerAtQScale) {
+  _stopShowerAtMassScale = convertQScaleToMassScale(inputStopShowerAtQScale);
+}
+
+inline Energy ShowerVariables::kinScale() const {
+  return _kinCutoffScale;
+}
+
+inline Energy ShowerVariables::vetoAbovePtScale() const {
+  return _vetoAbovePtScale;
+}
+
+inline bool ShowerVariables::MECOn() const {
+  return _MECorrMode > 0; 
+}
+
+inline bool ShowerVariables::hardMEC() const {
+  return (_MECorrMode == 1 || _MECorrMode == 2); 
+}
+
+inline bool ShowerVariables::softMEC() const {
+  return (_MECorrMode == 1 || _MECorrMode > 2); 
+}
+
+inline bool ShowerVariables::asyPS() const {
+  return (_qqgPSMode > 0); 
+}
+
+inline bool ShowerVariables::rndPS() const {
+  return (_qqgPSMode == 2); 
+}
+
+inline void ShowerVariables::vetoAbovePtScale(const Energy inputVetoAbovePtScale) {
+  _vetoAbovePtScale = inputVetoAbovePtScale;
+}
+
+inline Energy ShowerVariables::vetoBelowPtScale() const {
+  return _vetoBelowPtScale;
+}
+
+inline void ShowerVariables::vetoBelowPtScale(const Energy inputVetoBelowPtScale) {
+  _vetoBelowPtScale = inputVetoBelowPtScale;
+}
+
+inline Energy ShowerVariables::largestPtQ() const {
+  return _largestPtQ;
+}
+
+inline Energy ShowerVariables::largestPtQbar() const {
+  return _largestPtQbar;
+}
+
+inline void ShowerVariables::setLargestPtQ(const Energy pt) {
+  _largestPtQ = pt;
+}
+
+inline void ShowerVariables::setLargestPtQbar(const Energy pt) {
+  _largestPtQbar = pt;
+}
+
+//------------------------------------------------------------------------
+
+inline IBPtr ShowerVariables::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ShowerVariables::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ShowerVariables::doupdate() throw(UpdateException) {
+  ThePEG::HandlerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ShowerVariables::dofinish() {
+  ThePEG::HandlerBase::dofinish();
+}
+
+inline void ShowerVariables::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  ThePEG::HandlerBase::rebind(trans);
+}
+
+inline IVector ShowerVariables::getReferences() {
+  IVector ret = ThePEG::HandlerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

@@ -30,8 +30,8 @@ void ShowerAlpha::persistentInput(PersistentIStream & is, int) {
 AbstractClassDescription<ShowerAlpha> ShowerAlpha::initShowerAlpha;
 // Definition of the static class description member.
 
-void ShowerAlpha::setSC(ShoConstrPtr scp) {
-  _pointerShowerConstrainer = scp; 
+void ShowerAlpha::setSV(ShowerVarsPtr scp) {
+  _pointerShowerVariables = scp; 
 }
 
 
@@ -46,10 +46,10 @@ void ShowerAlpha::Init() {
      &ShowerAlpha::_scaleFactor, 0, 1.0 , 0.0 , 10.0);
 
 
-//   static Reference<ShowerAlpha,ShowerConstrainer> 
-//     interfaceShowerConstrainer("ShowerConstrainer", 
-// 			       "A reference to the ShowerConstrainer object", 
-// 			       &Herwig::ShowerAlpha::_pointerShowerConstrainer,
+//   static Reference<ShowerAlpha,ShowerVariables> 
+//     interfaceShowerVariables("ShowerVariables", 
+// 			       "A reference to the ShowerVariables object", 
+// 			       &Herwig::ShowerAlpha::_pointerShowerVariables,
 // 			       false, false, true, false);
 }
 

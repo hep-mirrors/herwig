@@ -30,17 +30,13 @@ namespace Herwig {
   typedef vector<ShowerParticlePtr> ShowerParticleVector;
   typedef vector<tShowerParticlePtr> tShowerParticleVector;
 
-  class SplitFun;
-  typedef Ptr<SplitFun>::pointer SplitFunPtr;
-  typedef Ptr<SplitFun>::transient_pointer tSplitFunPtr;
-
-  class SplitFun1to2;
-  typedef Ptr<SplitFun1to2>::pointer SplitFun1to2Ptr;
-  typedef Ptr<SplitFun1to2>::transient_pointer tSplitFun1to2Ptr;
+  class SplittingFunction;
+  typedef Ptr<SplittingFunction>::pointer SplittingFnPtr;
+  typedef Ptr<SplittingFunction>::transient_pointer tSplittingFnPtr;
 
   class SudakovFormFactor;
-  typedef Ptr<SudakovFormFactor>::pointer SudakovFormFactorPtr;
-  typedef Ptr<SudakovFormFactor>::transient_pointer tSudakovFormFactorPtr;
+  typedef Ptr<SudakovFormFactor>::pointer SudakovPtr;
+  typedef Ptr<SudakovFormFactor>::transient_pointer tSudakovPtr;
 
   class ShowerKinematics;
   typedef Ptr<ShowerKinematics>::pointer ShoKinPtr;
@@ -53,18 +49,19 @@ namespace Herwig {
   typedef vector<Complex>       ComplexVector;
   typedef vector<ComplexVector> ComplexMatrix;
 
-  class MECorrection;
-  typedef Ptr<MECorrection>::pointer MECorrectionPtr;
-  typedef Ptr<MECorrection>::transient_pointer tMECorrectionPtr;
+  //class MECorrection;
+  //typedef Ptr<MECorrection>::pointer MECorrectionPtr;
+  //typedef Ptr<MECorrection>::transient_pointer tMECorrectionPtr;
 
-  class ShowerConstrainer;
-  typedef Ptr<ShowerConstrainer>::pointer ShoConstrPtr;
-  typedef Ptr<ShowerConstrainer>::transient_pointer tShoConstrPtr;
+  class ShowerVariables;
+  typedef Ptr<ShowerVariables>::pointer ShowerVarsPtr;
+  typedef Ptr<ShowerVariables>::transient_pointer tShowerVarsPtr;
 
   class ShowerAlpha;
   typedef Ptr<ShowerAlpha>::pointer ShowerAlphaPtr;
   typedef Ptr<ShowerAlpha>::transient_pointer tShowerAlphaPtr;
 
+  typedef vector<long> IdList;
 } // end Herwig namespace
 
 

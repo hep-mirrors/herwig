@@ -15,24 +15,14 @@
 #include "ThePEG/Handlers/PartialCollisionHandler.h"
 #include "ThePEG/Repository/FullEventGenerator.h"
 #include "ShowerAlpha.h"
-#include "SplitFun.h"
-#include "SplitFun1to2.h"
-#include "IS_QtoQGSplitFun.h"
-#include "FS_QtoQGSplitFun.h"
-#include "IS_QtoQGammaSplitFun.h"
-#include "FS_QtoQGammaSplitFun.h"
-#include "QtoQGSudakovFormFactor.h"
-#include "QtoQGammaSudakovFormFactor.h"
-#include "IS_GtoGGSplitFun.h"
-#include "FS_GtoGGSplitFun.h"
-#include "GtoGGSudakovFormFactor.h"
-#include "IS_GtoQQbarSplitFun.h"
-#include "FS_GtoQQbarSplitFun.h"
-#include "GtoQQbarSudakovFormFactor.h"
+#include "SplittingFunction.h"
+#include "SudakovFormFactor.h"
 #include "IS_QtildaShowerKinematics1to2.h"
 #include "FS_QtildaShowerKinematics1to2.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ShowerConfig.h"
+#include "ThePEG/Interface/Command.h"
+#include "ThePEG/Repository/Repository.h"
 
 using namespace Herwig;
 
@@ -41,81 +31,19 @@ SplittingGenerator::~SplittingGenerator() {}
 
 
 void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _QCDinteractionMode
-     << _QEDinteractionMode
-     << _EWKinteractionMode
-     << _ISR_Mode
-     << _ISR_QCDMode
-     << _ISR_QEDMode
-     << _ISR_EWKMode
-     << _FSR_Mode
-     << _FSR_QCDMode
-     << _FSR_QEDMode
-     << _FSR_EWKMode
-     << _UtoUGsplittingMode
-     << _DtoDGsplittingMode
-     << _StoSGsplittingMode
-     << _CtoCGsplittingMode
-     << _BtoBGsplittingMode
-     << _TtoTGsplittingMode
-     << _GtoGGsplittingMode
-     << _GtoUUbarsplittingMode
-     << _GtoDDbarsplittingMode
-     << _GtoSSbarsplittingMode
-     << _GtoCCbarsplittingMode
-     << _GtoBBbarsplittingMode
-     << _GtoTTbarsplittingMode
-     << _UtoUGammasplittingMode
-     << _DtoDGammasplittingMode
-     << _StoSGammasplittingMode
-     << _CtoCGammasplittingMode
-     << _BtoBGammasplittingMode
-     << _TtoTGammasplittingMode
-     << _pointerIS_ShowerAlphaQCD
-     << _pointerFS_ShowerAlphaQCD  
-     << _pointerIS_ShowerAlphaQED
-     << _pointerFS_ShowerAlphaQED  
-     << _pointerShowerConstrainer;  
+  os << _QCDinteractionMode << _QEDinteractionMode << _EWKinteractionMode
+     << _ISR_Mode << _ISR_QCDMode << _ISR_QEDMode << _ISR_EWKMode
+     << _FSR_Mode << _FSR_QCDMode << _FSR_QEDMode << _FSR_EWKMode
+     << _showerAlphaQCD << _showerAlphaQED << _showerVariables << _branchings;
 }
 
 
 void SplittingGenerator::persistentInput(PersistentIStream & is, int) {
-  is >>	_QCDinteractionMode
-     >>	_QEDinteractionMode
-     >>	_EWKinteractionMode
-     >>	_ISR_Mode
-     >>	_ISR_QCDMode
-     >>	_ISR_QEDMode
-     >>	_ISR_EWKMode
-     >>	_FSR_Mode
-     >>	_FSR_QCDMode
-     >>	_FSR_QEDMode
-     >>	_FSR_EWKMode
-     >>	_UtoUGsplittingMode
-     >>	_DtoDGsplittingMode
-     >>	_StoSGsplittingMode
-     >>	_CtoCGsplittingMode
-     >>	_BtoBGsplittingMode
-     >>	_TtoTGsplittingMode
-     >>	_GtoGGsplittingMode
-     >>	_GtoUUbarsplittingMode
-     >>	_GtoDDbarsplittingMode
-     >>	_GtoSSbarsplittingMode
-     >>	_GtoCCbarsplittingMode
-     >>	_GtoBBbarsplittingMode
-     >>	_GtoTTbarsplittingMode
-     >> _UtoUGammasplittingMode
-     >> _DtoDGammasplittingMode
-     >> _StoSGammasplittingMode
-     >> _CtoCGammasplittingMode
-     >> _BtoBGammasplittingMode
-     >> _TtoTGammasplittingMode
-     >> _pointerIS_ShowerAlphaQCD
-     >> _pointerFS_ShowerAlphaQCD  
-     >> _pointerIS_ShowerAlphaQED
-     >> _pointerFS_ShowerAlphaQED  
-     >> _pointerShowerConstrainer;  
-  setSCtoAlpha(_pointerShowerConstrainer);
+  is >>	_QCDinteractionMode >> _QEDinteractionMode >> _EWKinteractionMode
+     >>	_ISR_Mode >> _ISR_QCDMode >> _ISR_QEDMode >> _ISR_EWKMode 
+     >> _FSR_Mode >> _FSR_QCDMode >> _FSR_QEDMode >> _FSR_EWKMode
+     >> _showerAlphaQCD >> _showerAlphaQED >> _showerVariables >> _branchings;
+  setSVtoAlpha(_showerVariables);
 }
 
 
@@ -222,240 +150,83 @@ void SplittingGenerator::Init() {
     ("OnOffFSR_EWKMode",
      "Choice of the on-off EWK interaction switch mode",
      &SplittingGenerator::_FSR_EWKMode, 1, false, false);
+
   static SwitchOption interfaceFSR_EWKMode0
     (interfaceFSR_EWKMode,"FSR_EWK-OFF","EWK FSR is OFF", 0);
+
   static SwitchOption interfaceFSR_EWKMode1
     (interfaceFSR_EWKMode,"FSR_EWK-ON","EWK FSR is ON", 1);
 
-  static Switch<SplittingGenerator, int> interfaceUtoUGsplittingMode
-    ("OnOffUtoUGsplittingMode",
-     "Choice of the on-off  U -> U G  splitting switch mode",
-     &SplittingGenerator::_UtoUGsplittingMode, 1, false, false);
-  static SwitchOption interfaceUtoUGsplittingMode0
-    (interfaceUtoUGsplittingMode,"UtoUG-OFF","U -> U G splitting is OFF", 0);
-  static SwitchOption interfaceUtoUGsplittingMode1
-    (interfaceUtoUGsplittingMode,"UtoUG-ON","U -> U G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceDtoDGsplittingMode
-    ("OnOffDtoDGsplittingMode",
-     "Choice of the on-off  D -> D G  splitting switch mode",
-     &SplittingGenerator::_DtoDGsplittingMode, 1, false, false);
-  static SwitchOption interfaceDtoDGsplittingMode0
-    (interfaceDtoDGsplittingMode,"DtoDG-OFF","D -> D G splitting is OFF", 0);
-  static SwitchOption interfaceDtoDGsplittingMode1
-    (interfaceDtoDGsplittingMode,"DtoDG-ON","D -> D G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceStoSGsplittingMode
-    ("OnOffStoSGsplittingMode",
-     "Choice of the on-off  S -> S G  splitting switch mode",
-     &SplittingGenerator::_StoSGsplittingMode, 1, false, false);
-  static SwitchOption interfaceStoSGsplittingMode0
-    (interfaceStoSGsplittingMode,"StoSG-OFF","S -> S G splitting is OFF", 0);
-  static SwitchOption interfaceStoSGsplittingMode1
-    (interfaceStoSGsplittingMode,"StoSG-ON","S -> S G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceCtoCGsplittingMode
-    ("OnOffCtoCGsplittingMode",
-     "Choice of the on-off  C -> C G  splitting switch mode",
-     &SplittingGenerator::_CtoCGsplittingMode, 1, false, false);
-  static SwitchOption interfaceCtoCGsplittingMode0
-    (interfaceCtoCGsplittingMode,"CtoCG-OFF","C -> C G splitting is OFF", 0);
-  static SwitchOption interfaceCtoCGsplittingMode1
-    (interfaceCtoCGsplittingMode,"CtoCG-ON","C -> C G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceBtoBGsplittingMode
-    ("OnOffBtoBGsplittingMode",
-     "Choice of the on-off  B -> B G  splitting switch mode",
-     &SplittingGenerator::_BtoBGsplittingMode, 1, false, false);
-  static SwitchOption interfaceBtoBGsplittingMode0
-    (interfaceBtoBGsplittingMode,"BtoBG-OFF","B -> B G splitting is OFF", 0);
-  static SwitchOption interfaceBtoBGsplittingMode1
-    (interfaceBtoBGsplittingMode,"BtoBG-ON","B -> B G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceTtoTGsplittingMode
-    ("OnOffTtoTGsplittingMode",
-     "Choice of the on-off  T -> T G  splitting switch mode",
-     &SplittingGenerator::_TtoTGsplittingMode, 1, false, false);
-  static SwitchOption interfaceTtoTGsplittingMode0
-    (interfaceTtoTGsplittingMode,"TtoTG-OFF","T -> T G splitting is OFF", 0);
-  static SwitchOption interfaceTtoTGsplittingMode1
-    (interfaceTtoTGsplittingMode,"TtoTG-ON","T -> T G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoGGsplittingMode
-    ("OnOffGtoGGsplittingMode",
-     "Choice of the on-off  G -> G G  splitting switch mode",
-     &SplittingGenerator::_GtoGGsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoGGsplittingMode0
-    (interfaceGtoGGsplittingMode,"GtoGG-OFF","G -> G G splitting is OFF", 0);
-  static SwitchOption interfaceGtoGGsplittingMode1
-    (interfaceGtoGGsplittingMode,"GtoGG-ON","G -> G G splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoUUbarsplittingMode
-    ("OnOffGtoUUbarsplittingMode",
-     "Choice of the on-off  G -> U Ubar  splitting switch mode",
-     &SplittingGenerator::_GtoUUbarsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoUUbarsplittingMode0
-    (interfaceGtoUUbarsplittingMode,"GtoUUbar-OFF","G -> U Ubar splitting is OFF", 0);
-  static SwitchOption interfaceGtoUUbarsplittingMode1
-    (interfaceGtoUUbarsplittingMode,"GtoUUbar-ON","G -> U Ubar splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoDDbarsplittingMode
-    ("OnOffGtoDDbarsplittingMode",
-     "Choice of the on-off  G -> D Dbar  splitting switch mode",
-     &SplittingGenerator::_GtoDDbarsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoDDbarsplittingMode0
-    (interfaceGtoDDbarsplittingMode,"GtoDDbar-OFF","G -> D Dbar splitting is OFF", 0);
-  static SwitchOption interfaceGtoDDbarsplittingMode1
-    (interfaceGtoDDbarsplittingMode,"GtoDDbar-ON","G -> D Dbar splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoSSbarsplittingMode
-    ("OnOffGtoSSbarsplittingMode",
-     "Choice of the on-off  G -> S Sbar  splitting switch mode",
-     &SplittingGenerator::_GtoSSbarsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoSSbarsplittingMode0
-    (interfaceGtoSSbarsplittingMode,"GtoSSbar-OFF","G -> S Sbar splitting is OFF", 0);
-  static SwitchOption interfaceGtoSSbarsplittingMode1
-    (interfaceGtoSSbarsplittingMode,"GtoSSbar-ON","G -> S Sbar splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoCCbarsplittingMode
-    ("OnOffGtoCCbarsplittingMode",
-     "Choice of the on-off  G -> C Cbar  splitting switch mode",
-     &SplittingGenerator::_GtoCCbarsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoCCbarsplittingMode0
-    (interfaceGtoCCbarsplittingMode,"GtoCCbar-OFF","G -> C Cbar splitting is OFF", 0);
-  static SwitchOption interfaceGtoCCbarsplittingMode1
-    (interfaceGtoCCbarsplittingMode,"GtoCCbar-ON","G -> C Cbar splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoBBbarsplittingMode
-    ("OnOffGtoBBbarsplittingMode",
-     "Choice of the on-off  G -> B Bbar  splitting switch mode",
-     &SplittingGenerator::_GtoBBbarsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoBBbarsplittingMode0
-    (interfaceGtoBBbarsplittingMode,"GtoBBbar-OFF","G -> B Bbar splitting is OFF", 0);
-  static SwitchOption interfaceGtoBBbarsplittingMode1
-    (interfaceGtoBBbarsplittingMode,"GtoBBbar-ON","G -> B Bbar splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceGtoTTbarsplittingMode
-    ("OnOffGtoTTbarsplittingMode",
-     "Choice of the on-off  G -> T Tbar  splitting switch mode",
-     &SplittingGenerator::_GtoTTbarsplittingMode, 1, false, false);
-  static SwitchOption interfaceGtoTTbarsplittingMode0
-    (interfaceGtoTTbarsplittingMode,"GtoTTbar-OFF","G -> T Tbar splitting is OFF", 0);
-  static SwitchOption interfaceGtoTTbarsplittingMode1
-    (interfaceGtoTTbarsplittingMode,"GtoTTbar-ON","G -> T Tbar splitting is ON", 1);
-
-  // this is new:
-  static Switch<SplittingGenerator, int> interfaceUtoUGammasplittingMode
-    ("OnOffUtoUGammasplittingMode",
-     "Choice of the on-off  U -> U Gamma  splitting switch mode",
-     &SplittingGenerator::_UtoUGammasplittingMode, 1, false, false);
-  static SwitchOption interfaceUtoUGammasplittingMode0
-    (interfaceUtoUGammasplittingMode,"UtoUGamma-OFF","U -> U Gamma splitting is OFF", 0);
-  static SwitchOption interfaceUtoUGammasplittingMode1
-    (interfaceUtoUGammasplittingMode,"UtoUGamma-ON","U -> U Gamma splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceDtoDGammasplittingMode
-    ("OnOffDtoDGammasplittingMode",
-     "Choice of the on-off  D -> D Gamma  splitting switch mode",
-     &SplittingGenerator::_DtoDGammasplittingMode, 1, false, false);
-  static SwitchOption interfaceDtoDGammasplittingMode0
-    (interfaceDtoDGammasplittingMode,"DtoDGamma-OFF","D -> D Gamma splitting is OFF", 0);
-  static SwitchOption interfaceDtoDGammasplittingMode1
-    (interfaceDtoDGammasplittingMode,"DtoDGamma-ON","D -> D Gamma splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceStoSGammasplittingMode
-    ("OnOffStoSGammasplittingMode",
-     "Choice of the on-off  S -> S Gamma  splitting switch mode",
-     &SplittingGenerator::_StoSGammasplittingMode, 1, false, false);
-  static SwitchOption interfaceStoSGammasplittingMode0
-    (interfaceStoSGammasplittingMode,"StoSGamma-OFF","S -> S Gamma splitting is OFF", 0);
-  static SwitchOption interfaceStoSGammasplittingMode1
-    (interfaceStoSGammasplittingMode,"StoSGamma-ON","S -> S Gamma splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceCtoCGammasplittingMode
-    ("OnOffCtoCGammasplittingMode",
-     "Choice of the on-off  C -> C Gamma  splitting switch mode",
-     &SplittingGenerator::_CtoCGammasplittingMode, 1, false, false);
-  static SwitchOption interfaceCtoCGammasplittingMode0
-    (interfaceCtoCGammasplittingMode,"CtoCGamma-OFF","C -> C Gamma splitting is OFF", 0);
-  static SwitchOption interfaceCtoCGammasplittingMode1
-    (interfaceCtoCGammasplittingMode,"CtoCGamma-ON","C -> C Gamma splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceBtoBGammasplittingMode
-    ("OnOffBtoBGammasplittingMode",
-     "Choice of the on-off  B -> B Gamma  splitting switch mode",
-     &SplittingGenerator::_BtoBGammasplittingMode, 1, false, false);
-  static SwitchOption interfaceBtoBGammasplittingMode0
-    (interfaceBtoBGammasplittingMode,"BtoBGamma-OFF","B -> B Gamma splitting is OFF", 0);
-  static SwitchOption interfaceBtoBGammasplittingMode1
-    (interfaceBtoBGammasplittingMode,"BtoBGamma-ON","B -> B Gamma splitting is ON", 1);
-
-  static Switch<SplittingGenerator, int> interfaceTtoTGammasplittingMode
-    ("OnOffTtoTGammasplittingMode",
-     "Choice of the on-off  T -> T Gamma  splitting switch mode",
-     &SplittingGenerator::_TtoTGammasplittingMode, 1, false, false);
-  static SwitchOption interfaceTtoTGammasplittingMode0
-    (interfaceTtoTGammasplittingMode,"TtoTGamma-OFF","T -> T Gamma splitting is OFF", 0);
-  static SwitchOption interfaceTtoTGammasplittingMode1
-    (interfaceTtoTGammasplittingMode,"TtoTGamma-ON","T -> T Gamma splitting is ON", 1);
-
   static Reference<SplittingGenerator,ShowerAlpha> interfaceIS_ShowerAlphaQED
-    ("IS_ShowerAlphaQED", "A reference to the IS_ShowerAlphaQED object", 
-     &Herwig::SplittingGenerator::_pointerIS_ShowerAlphaQED, false, false, true, false, 
-     &Herwig::SplittingGenerator::setISQED, 0, 0);
-  
-  static Reference<SplittingGenerator,ShowerAlpha> interfaceFS_ShowerAlphaQED
-    ("FS_ShowerAlphaQED", "A reference to the FS_ShowerAlphaQED object", 
-     &Herwig::SplittingGenerator::_pointerFS_ShowerAlphaQED, false, false, true, false,
-     &Herwig::SplittingGenerator::setFSQED, 0, 0);
+    ("ShowerAlphaQED", "A reference to the IS_ShowerAlphaQED object", 
+     &Herwig::SplittingGenerator::_showerAlphaQED, false, false, true, false, 
+     &Herwig::SplittingGenerator::setQED, 0, 0);
   // up to here.
 
   static Reference<SplittingGenerator,ShowerAlpha> interfaceIS_ShowerAlphaQCD
-    ("IS_ShowerAlphaQCD", "A reference to the IS_ShowerAlphaQCD object", 
-     &Herwig::SplittingGenerator::_pointerIS_ShowerAlphaQCD, false, false, true, false,
-     &Herwig::SplittingGenerator::setISQCD, 0, 0);
+    ("ShowerAlphaQCD", "A reference to the IS_ShowerAlphaQCD object", 
+     &Herwig::SplittingGenerator::_showerAlphaQCD, false, false, true, false,
+     &Herwig::SplittingGenerator::setQCD, 0, 0);
 
-  static Reference<SplittingGenerator,ShowerAlpha> interfaceFS_ShowerAlphaQCD
-    ("FS_ShowerAlphaQCD", "A reference to the FS_ShowerAlphaQCD object", 
-     &Herwig::SplittingGenerator::_pointerFS_ShowerAlphaQCD, false, false, true, false, 
-     &Herwig::SplittingGenerator::setFSQCD, 0, 0);
-  
-  static Reference<SplittingGenerator,ShowerConstrainer> interfaceShowerConstrainer
-    ("ShowerConstrainer", "A reference to the ShowerConstrainer object", 
-     &Herwig::SplittingGenerator::_pointerShowerConstrainer, false, false, true, false, 
-     &Herwig::SplittingGenerator::setSCtoAlpha, 0, 0);
-  
+  static Reference<SplittingGenerator,ShowerVariables> interfaceShowerVariables
+    ("ShowerVariables", "A reference to the ShowerVariables object", 
+     &Herwig::SplittingGenerator::_showerVariables, false, false, true, false, 
+     &Herwig::SplittingGenerator::setSVtoAlpha, 0, 0);
+
+  static Command<SplittingGenerator> interfaceAddSplitting
+    ("AddSplitting",
+     "Adds another splitting to the list of splittings considered "
+     "in the shower. Command is a->b,c; SplittingFn, where Sudakov "
+     "is the name of a created Sudakov object.",
+     &SplittingGenerator::addSplitting);
 }
 
+string SplittingGenerator::addSplitting(string arg) {
+  string partons = StringUtils::car(arg);
+  string sudakov = StringUtils::cdr(arg);
+  vector<tPDPtr> products;
+  string::size_type next = partons.find("->");
+  if(next == string::npos) 
+    return "Error: Invalid string for splitting " + arg;
+  if(partons.find(';') == string::npos) 
+    return "Error: Invalid string for splitting " + arg;
+  tPDPtr parent = Repository::findParticle(partons.substr(0,next));
+  partons = partons.substr(next+2);
+  do {
+    next = min(partons.find(','), partons.find(';'));
+    tPDPtr pdp = Repository::findParticle(partons.substr(0,next));
+    partons = partons.substr(next+1);
+    if(pdp) products.push_back(pdp);
+    else return "Error: Could not create splitting from " + arg;
+  } while(partons[0] != ';' && partons.size());
+  SudakovPtr s;
+  s = dynamic_ptr_cast<SudakovPtr>(Repository::TraceObject(sudakov));
+  if(!s) cerr << "Error: Could not load Sudakov " << sudakov << endl;
+  IdList ids;
+  ids.push_back(parent->id());
+  for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
+    ids.push_back((*it)->id());
+  long i = parent->id();
+  addToMap(i,ids,s);
+  return "";
+}
 
 //--------------------------------------------------------------------------------
 
-void SplittingGenerator::setSCtoAlpha(ShoConstrPtr p) {
-  _pointerShowerConstrainer = p; 
-  if ( _pointerIS_ShowerAlphaQCD ) _pointerIS_ShowerAlphaQCD->setSC(p);
-  if ( _pointerFS_ShowerAlphaQCD ) _pointerFS_ShowerAlphaQCD->setSC(p);
-  if ( _pointerIS_ShowerAlphaQED ) _pointerIS_ShowerAlphaQED->setSC(p);
-  if ( _pointerFS_ShowerAlphaQED ) _pointerFS_ShowerAlphaQED->setSC(p);
+void SplittingGenerator::setSVtoAlpha(ShowerVarsPtr p) {
+  _showerVariables = p; 
+  if (_showerAlphaQCD) _showerAlphaQCD->setSV(p);
+  if (_showerAlphaQED) _showerAlphaQED->setSV(p);
 }
 
-void SplittingGenerator::setISQED(ShowerAlphaPtr p) {
-  _pointerIS_ShowerAlphaQED = p;
-  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
+void SplittingGenerator::setQED(ShowerAlphaPtr p) {
+  _showerAlphaQED = p;
+  if(_showerVariables) p->setSV(_showerVariables);
 }
 
-void SplittingGenerator::setFSQED(ShowerAlphaPtr p) {
-  _pointerFS_ShowerAlphaQED = p;
-  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
-}
-
-void SplittingGenerator::setISQCD(ShowerAlphaPtr p) {
-  _pointerIS_ShowerAlphaQCD = p;
-  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
-}
-
-void SplittingGenerator::setFSQCD(ShowerAlphaPtr p) {
-  _pointerFS_ShowerAlphaQCD = p;
-  if ( _pointerShowerConstrainer ) p->setSC(_pointerShowerConstrainer);
+void SplittingGenerator::setQCD(ShowerAlphaPtr p) {
+  _showerAlphaQCD = p;
+  if(_showerVariables) p->setSV(_showerVariables);
 }
 
 bool SplittingGenerator::isInteractionON(const ShowerIndex::InteractionType interaction) const {
@@ -464,6 +235,7 @@ bool SplittingGenerator::isInteractionON(const ShowerIndex::InteractionType inte
   case ShowerIndex::QCD : mode = _QCDinteractionMode; break; 
   case ShowerIndex::QED : mode = _QEDinteractionMode; break; 
   case ShowerIndex::EWK : mode = _EWKinteractionMode; break; 
+  default: break;
   }
   return mode;
 }
@@ -475,6 +247,7 @@ bool SplittingGenerator::isISRadiationON(const ShowerIndex::InteractionType inte
     case ShowerIndex::QCD : mode = _ISR_QCDMode; break; 
     case ShowerIndex::QED : mode = _ISR_QEDMode; break; 
     case ShowerIndex::EWK : mode = _ISR_EWKMode; break; 
+    default: break;
     }
   }
   return mode;
@@ -487,39 +260,39 @@ bool SplittingGenerator::isFSRadiationON(const ShowerIndex::InteractionType inte
     case ShowerIndex::QCD : mode = _FSR_QCDMode; break; 
     case ShowerIndex::QED : mode = _FSR_QEDMode; break; 
     case ShowerIndex::EWK : mode = _FSR_EWKMode; break; 
+    default: break;
     }
   }
   return mode;
 }
 
 
-pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
-( tPartCollHdlPtr ch, ShowerParticle & particle, const bool reverseAngularOrder ) const {
-  
+Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
+		                                     ShowerParticle &particle,
+						     const bool reverseAngOrd) const {
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "SplittingGenerator::chooseForwardBranching(): full _____________________________" << endl; 
   }
   
   Energy newQ = Energy();
-  tSudakovFormFactorPtr sudakov = tSudakovFormFactorPtr();
-  
-  // First, find the eventual branching, corresponding to the highest scale.
-  for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
+  double newZ = 0.0; 
+  double newPhi = 0.0;
+  tSudakovPtr sudakov = tSudakovPtr();
+  IdList ids;
 
-    ShowerIndex index;
-    index.id = abs( particle.data().id() ); 
-    index.interaction = ShowerIndex::int2Interaction( i );
-    index.timeFlag = ShowerIndex::FS; 
-    if ( _multimapSudakov.find( index ) != _multimapSudakov.end() ) {
-      for ( CollecIndexSudakov::const_iterator cit =  
-	      _multimapSudakov.lower_bound( index ); 
-	    cit != _multimapSudakov.upper_bound( index ); ++cit ) {
-	tSudakovFormFactorPtr candidateSudakov = cit->second;
-	Energy candidateNewQ = 0*MeV;
-	if ( candidateSudakov ) {
+  // First, find the eventual branching, corresponding to the highest scale.
+  long index = abs(particle.data().id());
+  if(_branchings.find(index) == _branchings.end()) 
+    return Branching(ShoKinPtr(), SudakovPtr(), IdList());
+  for(BranchingList::const_iterator cit = _branchings.lower_bound(index); 
+      cit != _branchings.upper_bound(index); ++cit) {
+    //if(cit->second.second[0] != index) continue;
+    tSudakovPtr candidateSudakov = cit->second.first;
+    Energy candidateNewQ = 0*MeV;
+    ShowerIndex::InteractionType i = candidateSudakov->interactionType();
+    if(candidateSudakov) {
 	  // check size of scales beforehand...
-	  if ( particle.evolutionScales()[i] > 
-	       _pointerShowerConstrainer->cutoffQScale(index.interaction) ) {
+      if(particle.evolutionScales()[i] > _showerVariables->cutoffQScale(i)) {
 	  // use this condition for roughly only one gluon per quark
 	  // in the asymmetric case...
 // 	  if ( (particle.evolutionScales()[i] > 172.0*GeV
@@ -528,62 +301,46 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 // 		   && particle.evolutionScales()[i] < 48.05*GeV) ) {
 	  // ... and this one in the symmetric case
 //	  if (particle.evolutionScales()[i] > 90.0*GeV) {
-	    candidateNewQ = candidateSudakov->
-	      generateNextBranching( ch, particle.evolutionScales()[i], 
-				     reverseAngularOrder );
+        candidateNewQ = candidateSudakov->
+                           generateNextBranching(particle.evolutionScales()[i], 
+		    	               cit->second.second, reverseAngOrd);
 		//	    }
-	  } else candidateNewQ = 0*GeV; 
-	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      } else candidateNewQ = 0*GeV; 
+      if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
 	    generator()->log() << "  trying "
-			       << candidateSudakov->splitFun()->idEmitter() << " -> ("
-			       << (dynamic_ptr_cast<tSplitFun1to2Ptr>(candidateSudakov->splitFun()))->
-	      idFirstProduct() << ", "
-			       << (dynamic_ptr_cast<tSplitFun1to2Ptr>(candidateSudakov->splitFun()))->
-	      idSecondProduct() << ") in "
-			       << candidateSudakov->splitFun()->interactionType() << "; "
+			       << particle.data().id() << " -> ("
+	                       << cit->second.second[1] << ", "
+	                       << cit->second.second[2] << ") in "
+			       << candidateSudakov->interactionType() << "; "
 			       << "(Q0 -> Q) = (" 
-			       << particle.evolutionScales()[index.interaction]/MeV
+			       << particle.evolutionScales()[i]/MeV
 			       << " -> " 
 			       << (candidateNewQ/MeV > 0 ? candidateNewQ/MeV : 0)
 			       << ") MeV"  << endl;
-	  }	  
-	  if ( ( candidateNewQ > newQ  &&  candidateNewQ < particle.evolutionScales()[i] && ! reverseAngularOrder ) ||
-	       ( candidateNewQ < newQ  &&  candidateNewQ > particle.evolutionScales()[i] && reverseAngularOrder ) ) {
+      }	  
+      if((!reverseAngOrd && candidateNewQ > newQ && 
+	      candidateNewQ < particle.evolutionScales()[i]) || 
+	     (reverseAngOrd && candidateNewQ < newQ && 
+	      candidateNewQ > particle.evolutionScales()[i])) { 
 	    newQ = candidateNewQ;
 	    sudakov = candidateSudakov;
-	  } 
-	}
+	    ids = cit->second.second;
+	    newZ = sudakov->z();
+	    newPhi = sudakov->phi();
       } 
     }
   }
-
-//   short pin, pout1, pout2; 
-//   if( sudakov ) {
-//     pin = abs(particle.data().id()); 
-//     pout1 = min( abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
-// 		    idFirstProduct()), 
-// 		abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
-// 		    idSecondProduct()) ); 
-//     pout2 = max( abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
-// 		    idFirstProduct()), 
-// 		abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
-// 		    idSecondProduct()) ); 
-//     cerr << pin << " " << pout1 << " " << pout2 << " " 
-// 	 << sudakov->qtilde() << " " << sudakov->z() << endl;
-//   }
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "  " << particle.data().PDGName() << ": ";
       //		       << " [" << particle.number() << "]: ";
-    if( sudakov ) {
-      generator()->log() << sudakov->splitFun()->idEmitter() << " -> ("
-			 << (dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
-	idFirstProduct() << ", "
-			 << (dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
-	idSecondProduct() << ") in "
-			 << sudakov->splitFun()->interactionType() << "; "
+    if(sudakov) {
+      generator()->log() << particle.data().id() << " -> ("
+	                 << ids[1] << ", "
+	                 << ids[2] << ") in "
+			 << sudakov->interactionType() << "; "
 			 << "(Q0 -> Q) = (" 
-			 << particle.evolutionScales()[sudakov->splitFun()->interactionType()]/MeV 
+			 << particle.evolutionScales()[sudakov->interactionType()]/MeV 
 			 << " -> " 
 			 << (newQ/MeV > 0 ? newQ/MeV : 0)
 			 << ") MeV"  << endl;    
@@ -595,30 +352,29 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
   // ShowerKinematics object which contains the kinematics information
   // about such branching. Notice that the cases 1->2 and 1->3
   // branching should be treated separately.
-  if ( newQ && sudakov ) {
-    if ( sudakov->splitFun() ) {
+  if(newQ && sudakov) {
+    if(sudakov->splittingFn()) {
 
       // For the time being we are considering only 1->2 branching
-      tSplitFun1to2Ptr splitFun = 
-	dynamic_ptr_cast< tSplitFun1to2Ptr >( sudakov->splitFun() );
-      if ( splitFun ) {	  
+      tSplittingFnPtr splitFun = sudakov->splittingFn();
+      if(splitFun) {	  
 	Lorentz5Momentum p, n, ppartner, pcm;
 	double th;
 	Energy nnorm;
-	if ( particle.isFromHardSubprocess() ) {
+	if(particle.isFromHardSubprocess()) {
 	  p = particle.momentum();
 	  //***LOOKHERE*** We choose  n  naively for the time being.  
 	  // Lorentz5Momentum n = Lorentz5Momentum( 0.0, - p.vect() ); 
 	  // for test purposes: n points into the negative z-direction:
-	  ppartner = particle.partners()[sudakov->splitFun()->interactionType()]
-	    ->momentum();
+	  ppartner = particle.partners()[sudakov->splittingFn()->
+					 interactionType()]->momentum();
 	  pcm = p; 
-	  pcm.boost( (p + ppartner).findBoostToCM() );	  
+	  pcm.boost((p + ppartner).findBoostToCM());	  
 	  th = (pi);
 	  nnorm = pcm.vect().mag(); 
 	  nnorm*=1.;
-	  Vector3 nv = cos(th)*pcm.vect().unit() 
-	    + sin(th)*pcm.vect().orthogonal().unit(); 
+	  Vector3 nv = cos(th)*pcm.vect().unit() + 
+	    sin(th)*pcm.vect().orthogonal().unit();
 	  n = Lorentz5Momentum( 0.0, nnorm*nv ); 
 	  n.boost( -(p + ppartner).findBoostToCM() );
 	  // n = Lorentz5Momentum( 2000.0, 3000.0, -1000.0, sqrt(14.)*1000.0); 
@@ -641,21 +397,21 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 			     << "  p = " << p << endl 
 			     << "  n = " << n << endl;
 	}
-	
-	Ptr< FS_QtildaShowerKinematics1to2 >::pointer showerKin = 
-	  new_ptr (FS_QtildaShowerKinematics1to2( p, n ) );
 
-        showerKin->qtilde( newQ );
-        showerKin->setResScale( sudakov->resScale() );
-	showerKin->setKinScale( sudakov->kinScale() ); 
-	showerKin->z( sudakov->z() );
-	showerKin->phi( sudakov->phi() );
+	Ptr<FS_QtildaShowerKinematics1to2>::pointer showerKin = 
+	  new_ptr(FS_QtildaShowerKinematics1to2(p, n));
+
+        showerKin->qtilde(newQ);
+        showerKin->setResScale(sudakov->resScale());
+	showerKin->setKinScale(sudakov->kinScale()); 
+	showerKin->z(newZ);
+	showerKin->phi(newPhi);
 
 // 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 // 	  generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________" << endl; 
 // 	}
 
-	return pair<ShoKinPtr,tSudakovFormFactorPtr>( showerKin, sudakov );
+	return Branching(showerKin, sudakov, ids);
       }
     }
   }
@@ -664,34 +420,37 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 //     generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________" << endl; 
 //   }
   
-  return pair<ShoKinPtr,tSudakovFormFactorPtr>( ShoKinPtr(), tSudakovFormFactorPtr() );
+  return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
 
 }
  
 
-pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranching
-( tPartCollHdlPtr ch, ShowerParticle & particle ) const {
-
+Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
+			                              ShowerParticle &particle) const {
   Energy newQ = Energy();
-  tSudakovFormFactorPtr sudakov = tSudakovFormFactorPtr();
+  tSudakovPtr sudakov = tSudakovPtr();
+  IdList ids;
   
   // First, find the eventual branching, corresponding to the highest scale.
-  for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
-    ShowerIndex index;
-    index.id = abs( particle.data().id() ); 
-    index.interaction = ShowerIndex::int2Interaction( i );
-    index.timeFlag = ShowerIndex::IS; 
-    if ( _multimapSudakov.find( index ) != _multimapSudakov.end() ) {
-      for ( CollecIndexSudakov::const_iterator cit =  
-	      _multimapSudakov.lower_bound( index ); 
-	    cit != _multimapSudakov.upper_bound( index ); ++cit ) {
-	tSudakovFormFactorPtr candidateSudakov = cit->second;
+  for(int i = 0; i < ShowerIndex::NumInteractionTypes; ++i) {
+    //ShowerIndex index;
+    //index.id = abs( particle.data().id() ); 
+    //index.interaction = ShowerIndex::int2Interaction( i );
+    //index.timeFlag = ShowerIndex::IS; 
+    long index = abs(particle.data().id());
+    if(_branchings.find(index) != _branchings.end()) {
+      for(BranchingList::const_iterator cit = _branchings.lower_bound(index); 
+	    cit != _branchings.upper_bound(index); ++cit ) {
+	tSudakovPtr candidateSudakov = cit->second.first;
 	Energy candidateNewQ = Energy();
-	if ( candidateSudakov ) {
-	  candidateNewQ = candidateSudakov->generateNextBranching( ch, particle.evolutionScales()[i] );
-	  if ( candidateNewQ > newQ ) {
+	if(candidateSudakov) {
+	  candidateNewQ = candidateSudakov->
+		  generateNextBranching(particle.evolutionScales()[i],
+				        cit->second.second);
+	  if(candidateNewQ > newQ) {
 	    newQ = candidateNewQ;
 	    sudakov = candidateSudakov;
+	    ids = cit->second.second;
 	  } 
 	}
       } 
@@ -702,13 +461,12 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranchi
   // ShowerKinematics object which contains the kinematics information
   // about such branching. Notice that the cases 1->2 and 1->3
   // branching should be treated separately.
-  if ( newQ && sudakov ) {
-    if ( sudakov->splitFun() ) {
+  if(newQ && sudakov) {
+    if(sudakov->splittingFn()) {
 
       // For the time being we are considering only 1->2 branching
-      tSplitFun1to2Ptr splitFun = 
-	dynamic_ptr_cast< tSplitFun1to2Ptr >( sudakov->splitFun() );
-      if ( splitFun ) {	  
+      tSplittingFnPtr splitFun = sudakov->splittingFn();
+      if(splitFun) {	  
 
         //***LOOKHERE*** Do something similar as in chooseForwardBranching
         //               but use IS_QtildaShowerKinematics1to2 instead.
@@ -717,15 +475,14 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranchi
     }
   }
 
-  return pair<ShoKinPtr,tSudakovFormFactorPtr>( ShoKinPtr(), tSudakovFormFactorPtr() );
+  return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
 
 }
 
 
-void SplittingGenerator::generateBranchingKinematics 
-( tPartCollHdlPtr ch, ShowerParticle & particle,
-  tShoKinPtr showerKin, const tSudakovFormFactorPtr sudakov ) const {
-
+void SplittingGenerator::generateBranchingKinematics(tPartCollHdlPtr ch,
+	                                             ShowerParticle &particle,
+					             Branching &b) const {
   //***LOOKHERE*** Complete the kinematics of the branching by filling
   //               the eventual missing bits of the ShowerKinematics
   //               object created, and already at least partially filled,
@@ -735,456 +492,26 @@ void SplittingGenerator::generateBranchingKinematics
 
 }
  
-
-void SplittingGenerator::initializeRun() {
-
-  tFEGPtr fulleg = dynamic_ptr_cast<tFEGPtr>( generator() );
-  Energy maxCMEnergy = Energy();
-  if (fulleg) maxCMEnergy = fulleg->maximumCMEnergy(); 
-
-  ShowerIndex index;
-  SplitFunPtr splitFun;
-  SudakovFormFactorPtr sudakov;
-  Energy minQValue = Energy();
-  Energy maxQValue = _pointerShowerConstrainer->convertMassScaleToQScale( maxCMEnergy );  
-  // *** ACHTUNG *** create interface to parameter!
-  Energy kinQ0 = _pointerShowerConstrainer->kinScale();
-
-  //===========
-  //=== QCD ===
-  //===========
-  index.interaction = ShowerIndex::QCD;
-  minQValue = _pointerShowerConstrainer->cutoffQScale( index.interaction );
-  if ( isInteractionON( index.interaction ) ) {
-
-    index.id = ParticleID::d; //--- D ---
-    //---  D -> D + G  ---
-    if ( isDtoDGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) ); 
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-
-    index.id = ParticleID::u; //--- U ---
-    //---  U -> U + G  ---
-    if ( isUtoUGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );   
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) ); 
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-
-    index.id = ParticleID::s; //--- S ---
-    //---  S -> S + G  ---
-    if ( isStoSGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) ); 
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-
-    index.id = ParticleID::c; //--- C ---
-    //---  C -> C + G  ---
-    if ( isCtoCGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-
-    index.id = ParticleID::b; //--- B ---
-    //---  B -> B + G  ---
-    if ( isBtoBGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-
-    index.id = ParticleID::t; //--- T ---
-    //---  T -> T + G  ---
-    if ( isTtoTGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-
-    index.id = ParticleID::g; //--- GLUON ---
-    //---  G -> G + G  ---
-    if ( isGtoGGsplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoGGSplitFun() );
-	sudakov  = new_ptr( GtoGGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoGGSplitFun() );     
-	sudakov  = new_ptr( GtoGGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-    //---  G -> U + Ubar  ---
-    if ( isGtoUUbarsplittingON() ) { 
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::u,
-						 getParticleData( ParticleID::u )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::u,
-						 getParticleData( ParticleID::u )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }    
-    //---  G -> D + Dbar  ---
-    if ( isGtoDDbarsplittingON() ) { 
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::d,
-						 getParticleData( ParticleID::d )->mass() ) );     
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::d,
-						 getParticleData( ParticleID::d )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-    //---  G -> S + Sbar  ---
-    if ( isGtoSSbarsplittingON() ) { 
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::s,
-						 getParticleData( ParticleID::s )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::s,
-						 getParticleData( ParticleID::s )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-    //---  G -> C + Cbar  ---
-    if ( isGtoCCbarsplittingON() ) { 
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::c,
-						 getParticleData( ParticleID::c )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::c,
-						 getParticleData( ParticleID::c )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-    //---  G -> B + Bbar  ---
-    if ( isGtoBBbarsplittingON() ) { 
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::b,
-						 getParticleData( ParticleID::b )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::b,
-						 getParticleData( ParticleID::b )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }    
-    //---  G -> T + Tbar  ---
-    if ( isGtoTTbarsplittingON() ) { 
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::t,
-						 getParticleData( ParticleID::t )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::t,
-						 getParticleData( ParticleID::t )->mass() ) );
-	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue, kinQ0 ) );
-        sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
-    
-  } // === end QCD ===
-
-  //===========
-  //=== QED ===
-  //===========
-  index.interaction = ShowerIndex::QED;
-  minQValue = _pointerShowerConstrainer->cutoffQScale( index.interaction );
-  if ( isInteractionON( index.interaction ) ) {
-
-    index.id = ParticleID::u; //--- U ---
-    //---  U -> U + Gamma  ---
-    if ( isUtoUGammasplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
- 
-    index.id = ParticleID::d; //--- D ---
-    //---  D -> D + Gamma  ---
-    if ( isDtoDGammasplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
- 
-    index.id = ParticleID::s; //--- S ---
-    //---  S -> S + Gamma  ---
-    if ( isStoSGammasplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
- 
-    index.id = ParticleID::c; //--- C ---
-    //---  C -> C + Gamma  ---
-    if ( isCtoCGammasplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
- 
-    index.id = ParticleID::b; //--- B ---
-    //---  B -> B + Gamma  ---
-    if ( isBtoBGammasplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
- 
-    index.id = ParticleID::t; //--- T ---
-    //---  T -> T + Gamma  ---
-    if ( isTtoTGammasplittingON() ) {
-      if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-      if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
-	sudakov->setupLookupTables();
-	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-      }
-    }
- 
-  } // === end QED ===
-  
-  //===========
-  //=== EWK ===
-  //===========
-  index.interaction = ShowerIndex::EWK;
-  minQValue = _pointerShowerConstrainer->cutoffQScale( index.interaction );
-  if ( isInteractionON( index.interaction ) ) {
-
-    //...
-
-  } // === end EWK ===
-
-  // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    debuggingInfo();
-  }
-
+void SplittingGenerator::addToMap(long &i, IdList &ids, SudakovPtr &s) {
+   if(isISRadiationON(s->splittingFn()->interactionType()) || 
+      isFSRadiationON(s->splittingFn()->interactionType())) {
+     //i.timeFlag = ShowerIndex::IS;
+      _branchings.insert(BranchingInsert(i,BranchingElement(s,ids)));
+   }
 }
-
 
 void SplittingGenerator::debuggingInfo() {
 
-  generator()->log() << "SplittingGenerator::debuggingInfo() begin ______________________________________" << endl; 
+  generator()->log() << "SplittingGenerator::debuggingInfo() begin"
+		     << " ______________________________________" << endl; 
   generator()->log() << "  no of initialized Sudakov FF's = " 
-		     << _multimapSudakov.size() << endl
+		     << _branchings.size() << endl
 		     << "  id\t" << "int\t" << "timeFlag" << endl;
-  for ( CollecIndexSudakov::const_iterator cit = _multimapSudakov.begin();
-  	cit != _multimapSudakov.end(); ++cit ) {
-    generator()->log() << "  " << cit->first.id 
-		       << "\t" << cit->first.interaction 
-		       << "\t" << cit->first.timeFlag 
+  for(BranchingList::const_iterator cit = _branchings.begin();
+      cit != _branchings.end(); ++cit) {
+    generator()->log() << "  " << cit->first
+		       << "\t" << cit->second.first->splittingFn()->interactionType()
+      //	       << "\t" << cit->first.timeFlag 
 		       << endl;
   }
 

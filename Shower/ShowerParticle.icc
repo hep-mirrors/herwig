@@ -20,7 +20,7 @@ inline void ShowerParticle::operator delete(void * p, size_t) {
 inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
   :  Particle(x),
      _isFinalState(x._isFinalState),
-     _rhoDUpdate(x._rhoDUpdate),
+     //     _rhoDUpdate(x._rhoDUpdate),
      _reconstructionFixedPoint(x._reconstructionFixedPoint),
     // this was still missing 
      _isFromHardSubprocess( x._isFromHardSubprocess ),
@@ -32,14 +32,14 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
      _showerKinematics(x._showerKinematics),
      _scales(x._scales),
      _partners(x._partners),
-     _rhoD(x._rhoD),
-     _p7base( PPtr() )
+     //_rhoD(x._rhoD),
+     _thePEGBase( PPtr() )
 {}
 
 inline ShowerParticle::ShowerParticle(const Particle &x)
   : Particle(x),
     _isFinalState( true ),
-    _rhoDUpdate( false ),
+    //_rhoDUpdate( false ),
     _reconstructionFixedPoint( false ),
     // this was still missing 
     _isFromHardSubprocess( false ),
@@ -47,12 +47,12 @@ inline ShowerParticle::ShowerParticle(const Particle &x)
     _sudBeta( -1.0 ),
     _sudPx( Energy() ),
     _sudPy( Energy() ),
-    _splitFun( tSplitFunPtr() ),
+    _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes ),
     _partners( ShowerIndex::NumInteractionTypes ),
-    _rhoD( 2, vector< std::complex<double> >(2) ),
-     _p7base( PPtr() )
+    //_rhoD( 2, vector< std::complex<double> >(2) ),
+     _thePEGBase( PPtr() )
 {
   for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
     _scales[i] = Energy();
@@ -60,16 +60,16 @@ inline ShowerParticle::ShowerParticle(const Particle &x)
   }
   
   // Initialize _rhoD matrix to the 2x2 identity, normalise to trace equal 1.
-  _rhoD[0][0] = 0.5;
-  _rhoD[0][1] = 0.0;
-  _rhoD[1][0] = 0.0;
-  _rhoD[1][1] = 0.5;
+  //_rhoD[0][0] = 0.5;
+  //_rhoD[0][1] = 0.0;
+  //_rhoD[1][0] = 0.0;
+  //_rhoD[1][1] = 0.5;
 }
 
 inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
   : Particle(x),
     _isFinalState( true ),
-    _rhoDUpdate( false ),
+    //_rhoDUpdate( false ),
     _reconstructionFixedPoint( false ),
     // this was still missing 
     _isFromHardSubprocess( false ),
@@ -77,12 +77,12 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _sudBeta( -1.0 ),
     _sudPx( Energy() ),
     _sudPy( Energy() ),
-    _splitFun( tSplitFunPtr() ),
+    _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes ),
     _partners( ShowerIndex::NumInteractionTypes ),
-    _rhoD( 2, vector< std::complex<double> >(2) ),
-    _p7base( PPtr() )
+    //_rhoD( 2, vector< std::complex<double> >(2) ),
+    _thePEGBase( PPtr() )
 {
   // Initialize the scales to the lowest Energy value, and null partners.
   for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
@@ -91,10 +91,10 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
   }  
 
   // Initialize _rhoD matrix to the 2x2 identity, normalise to trace equal 1.
-  _rhoD[0][0] = 0.5;
-  _rhoD[0][1] = 0.0;
-  _rhoD[1][0] = 0.0;
-  _rhoD[1][1] = 0.5;
+  //_rhoD[0][0] = 0.5;
+  //_rhoD[0][1] = 0.0;
+  //_rhoD[1][0] = 0.0;
+  //_rhoD[1][1] = 0.5;
 }
 
 inline bool ShowerParticle::isFinalState() const {
@@ -162,12 +162,12 @@ inline Energy2 ShowerParticle::sudPperp2() const {
   return ( sqr(_sudPx) + sqr(_sudPy) );
 }
 
-inline tSplitFunPtr ShowerParticle::splitFun() const {
+inline tSplittingFnPtr ShowerParticle::splitFun() const {
   return _splitFun;
 }
 
-inline void ShowerParticle::setSplitFun(const tSplitFunPtr inputSplitFun) {
-  _splitFun = inputSplitFun;
+inline void ShowerParticle::setSplittingFn(const tSplittingFnPtr sf) {
+  _splitFun = sf;
 }
 
 
@@ -204,7 +204,7 @@ inline void ShowerParticle::setPartner(const ShowerIndex::InteractionType intera
 }
 
 
-inline bool ShowerParticle::isRhoDUpdate() const {
+/*inline bool ShowerParticle::isRhoDUpdate() const {
   return _rhoDUpdate;
 }
 
@@ -216,7 +216,7 @@ inline void ShowerParticle::setRhoDUpdate(const bool inputRhoDUpdate) {
 inline ComplexMatrix & ShowerParticle::rhoD() {
   return _rhoD;
 }
-
+*/
 
 inline bool ShowerParticle::isReconstructionFixedPoint() const {
   return _reconstructionFixedPoint || children().empty() ;
@@ -226,12 +226,12 @@ inline void ShowerParticle::setReconstructionFixedPoint(const bool inputIsDecayi
   _reconstructionFixedPoint = inputIsDecaying;
 }
 
-inline tPPtr ShowerParticle::getP7base() {
-  return _p7base; 
+inline tPPtr ShowerParticle::getThePEGBase() {
+  return _thePEGBase; 
 }
 
-inline void ShowerParticle::setP7base(const tPPtr & x) {
-  _p7base = x; 
+inline void ShowerParticle::setThePEGBase(const tPPtr & x) {
+  _thePEGBase = x; 
 }
 
 inline PPtr ShowerParticle::clone() const {

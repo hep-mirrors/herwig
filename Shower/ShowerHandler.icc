@@ -12,11 +12,11 @@ inline ShowerHandler::ShowerHandler() {}
 
 inline ShowerHandler::ShowerHandler(const ShowerHandler & x)
   : ThePEG::CascadeHandler(x),
-	     _pointerGlobalParameters( x._pointerGlobalParameters ), 
-	     _pointerMECorrections( x._pointerMECorrections ),
-	     _pointerShowerConstrainer( x._pointerShowerConstrainer ),
-	     _pointerInsideRangeShowerEvolver( x._pointerInsideRangeShowerEvolver ),
-             _particles( x._particles )
+    _globalParameters( x._globalParameters ), 
+    //_pointerMECorrections( x._pointerMECorrections ),
+    _showerVariables( x._showerVariables ),
+    _evolver( x._evolver ),
+    _particles( x._particles )
 {}
 
 

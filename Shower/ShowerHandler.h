@@ -15,16 +15,16 @@
 // <a href="http:CascadeHandler.html">CascadeHandler.h</a>, <BR>
 // <a href="http:InsideRangeShowerEvolver.html">InsideRangeShowerEvolver.h</a>, <BR>
 // <a href="http:MECorrections.html">MECorrections.h</a>, <BR>
-// <a href="http:ShowerConstrainer.html">ShowerConstrainer.h</a>, <BR>
+// <a href="http:ShowerVariables.html">ShowerVariables.h</a>, <BR>
 // <a href="http:ShowerParticle.html">ShowerParticle.h</a>
 // 
 
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerParticle.h"
-#include "MECorrections.h"
-#include "ShowerConstrainer.h"
-#include "InsideRangeShowerEvolver.h"
+//#include "MECorrections.h"
+#include "ShowerVariables.h"
+#include "Evolver.h"
 
 namespace Herwig {
 
@@ -82,8 +82,8 @@ private:
   ShowerHandler & operator=(const ShowerHandler &);
   //  Private and non-existent assignment operator.
 
-  void createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch, 
-					    ShowerParticleVector & hardProcessParticles );
+  void convertToShowerParticles(const tPartCollHdlPtr ch, 
+				ShowerParticleVector & hardProcessParticles);
   // From the ThePEG particles entering the hard subprocess, create
   // the corresponding starting <!id>ShowerParticle<!!id> objects and 
   // put them in the vector <!id>hardProcessParticles<!!id>. 
@@ -113,10 +113,10 @@ private:
 
   // calculate hard ME correction
   void hardMEC(const tPartCollHdlPtr ch);
-  Ptr<GlobalParameters>::pointer _pointerGlobalParameters; 
-  Ptr<MECorrections>::pointer _pointerMECorrections;
-  Ptr<ShowerConstrainer>::pointer _pointerShowerConstrainer;
-  Ptr<InsideRangeShowerEvolver>::pointer _pointerInsideRangeShowerEvolver;
+  Ptr<GlobalParameters>::pointer _globalParameters; 
+  //Ptr<MECorrections>::pointer _MECorrections;
+  Ptr<ShowerVariables>::pointer _showerVariables;
+  Ptr<Evolver>::pointer _evolver;
 
   ShowerParticleVector _particles;   
  
