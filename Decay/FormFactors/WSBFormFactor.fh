@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the WSBFormFactor class.
+//
+#ifndef HERWIG_WSBFormFactor_FH
+#define HERWIG_WSBFormFactor_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class WSBFormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(WSBFormFactor,WSBFormFactorPtr);
+
+}
+
+#endif

@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ISGW2FormFactor class.
+//
+#ifndef HERWIG_ISGW2FormFactor_FH
+#define HERWIG_ISGW2FormFactor_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ISGW2FormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(ISGW2FormFactor,ISGW2FormFactorPtr);
+
+}
+
+#endif

@@ -1,0 +1,395 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ISGW2FormFactor class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline ISGW2FormFactor::ISGW2FormFactor() 
+{
+  // the quark masses
+  _mdown    = 0.33*GeV;
+  _mup      = 0.33*GeV;
+  _mstrange = 0.55*GeV;
+  _mcharm   = 1.82*GeV;
+  _mbottom  = 5.20*GeV;
+  // 1 1S0 parameters
+  // the wavefunction parameters
+  _beta1S0ud = 0.41*GeV;
+  _beta1S0us = 0.44*GeV;
+  _beta1S0ss = 0.53*GeV;
+  _beta1S0cu = 0.45*GeV;
+  _beta1S0cs = 0.56*GeV;
+  _beta1S0ub = 0.43*GeV;
+  _beta1S0sb = 0.54*GeV;
+  _beta1S0cc = 0.88*GeV;
+  _beta1S0bc = 0.92*GeV;
+  // 1 3S1 parameters
+  // the wavefunction parameters
+  _beta3S1ud = 0.30*GeV;
+  _beta3S1us = 0.33*GeV;
+  _beta3S1ss = 0.37*GeV;
+  _beta3S1cu = 0.38*GeV;
+  _beta3S1cs = 0.44*GeV;
+  _beta3S1ub = 0.40*GeV;
+  _beta3S1sb = 0.49*GeV;
+  _beta3S1cc = 0.62*GeV;
+  _beta3S1bc = 0.75*GeV;
+  // 1P parameters
+  // the wavefunction parameters
+  _beta1Pud = 0.28*GeV;
+  _beta1Pus = 0.30*GeV;
+  _beta1Pss = 0.33*GeV;
+  _beta1Pcu = 0.33*GeV;
+  _beta1Pcs = 0.38*GeV;
+  _beta1Pub = 0.35*GeV;
+  _beta1Psb = 0.41*GeV;
+  _beta1Pcc = 0.52*GeV;
+  _beta1Pbc = 0.60*GeV;
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      for(unsigned int iy=0;iy<5;++iy)
+	{
+	  _beta1P[ ix][iy]=0.;
+	  _massPoh[ix][iy]=0.;
+	  _massPth[ix][iy]=0.;
+	  _beta1S0[ix][iy]=0.;
+	  _mass1S0[ix][iy]=0.; 
+	  _beta3S1[ix][iy]=0.;
+	}
+    }
+  // relativistic correction factors
+  _CfDrho     = 0.889;
+  _CfDKstar   = 0.928;
+  _CfDsKstar  = 0.873;
+  _CfDsphi    = 0.911;
+  _CfBrho     = 0.905;
+  _CfBDstar   = 0.989;
+  _CfBsKstar  = 0.892;
+  _CfBsDstar  = 0.984;
+  _CfBcDstar  = 0.868;
+  _CfBcpsi    = 0.967;
+  _CfBcBsstar = 1.000;
+  _CfBcBstar  = 1.000;
+  // to the 1S vector mesons
+  addFormFactor(-541, 10443,1,-4, 5, 4); 
+  addFormFactor(-541, 10423,1,-2, 5, 4); 
+  addFormFactor(-541,-10533,1, 5,-4,-3); 
+  addFormFactor(-541,-10513,1, 5,-4,-1); 
+  addFormFactor( 531,-10433,1, 3,-5,-4); 
+  addFormFactor( 531,-10323,1, 3,-5,-2); 
+  addFormFactor( 511,-10413,1, 1,-5,-4); 
+  addFormFactor( 511,-10213,1, 1,-5,-2); 
+  addFormFactor(-521, 10423,1,-2, 5, 4); 
+  addFormFactor(-521, 10113,1,-2, 5, 2); 
+  addFormFactor(-521, 10223,1,-2, 5, 2); 
+  addFormFactor(-521, 10333,1,-2, 5, 2); 
+  addFormFactor( 431, 10223,1,-3, 4, 3); 
+  addFormFactor( 431, 10333,1,-3, 4, 3); 
+  addFormFactor( 431,-10313,1,-3, 4, 1); 
+  addFormFactor( 421,-10323,1,-2, 4, 3); 
+  addFormFactor( 421,-10213,1,-2, 4, 1); 
+  addFormFactor( 411,-10313,1,-1, 4, 3); 
+  addFormFactor( 411, 10113,1,-1, 4, 1); 
+  addFormFactor( 411, 10223,1,-1, 4, 1); 
+  addFormFactor( 411, 10333,1,-1, 4, 1);
+  addFormFactor(-541, 20443,1,-4, 5, 4); 
+  addFormFactor(-541,-20423,1,-4, 5, 2);
+  addFormFactor(-541,-20533,1, 5,-4,-3); 
+  addFormFactor(-541,-20513,1, 5,-4,-1); 
+  addFormFactor( 531,-20433,1, 3,-5,-4); 
+  addFormFactor( 531,-20323,1, 3,-5,-2); 
+  addFormFactor( 511,-20413,1, 1,-5,-4); 
+  addFormFactor( 511,-20213,1, 1,-5,-2); 
+  addFormFactor(-521, 20423,1,-2, 5, 4); 
+  addFormFactor(-521, 20113,1,-2, 5, 2); 
+  addFormFactor(-521, 20223,1,-2, 5, 2); 
+  addFormFactor(-521, 20333,1,-2, 5, 2); 
+  addFormFactor( 431, 20223,1,-3, 4, 3); 
+  addFormFactor( 431, 20333,1,-3, 4, 3); 
+  addFormFactor( 431,-20313,1,-3, 4, 1); 
+  addFormFactor( 421,-20323,1,-2, 4, 3); 
+  addFormFactor( 421,-20213,1,-2, 4, 1); 
+  addFormFactor( 411,-20313,1,-1, 4, 3); 
+  addFormFactor( 411, 20113,1,-1, 4, 1); 
+  addFormFactor( 411, 20223,1,-1, 4, 1); 
+  addFormFactor( 411, 20333,1,-1, 4, 1);
+  addFormFactor(-541, 443  ,1,-4, 5, 4); 
+  addFormFactor(-541,-423  ,1,-4, 5, 2);
+  addFormFactor(-541,-533  ,1, 5,-4,-3);
+  addFormFactor(-541,-513  ,1, 5,-4,-1);
+  addFormFactor( 531,-433  ,1, 3,-5,-4); 
+  addFormFactor( 531,-323  ,1, 3,-5,-2); 
+  addFormFactor( 511,-413  ,1, 1,-5,-4); 
+  addFormFactor( 511,-213  ,1, 1,-5,-2); 
+  addFormFactor(-521, 423  ,1,-2, 5, 4); 
+  addFormFactor(-521, 113  ,1,-2, 5, 2); 
+  addFormFactor(-521, 223  ,1,-2, 5, 2); 
+  addFormFactor(-521, 333  ,1,-2, 5, 2); 
+  addFormFactor( 431, 223  ,1,-3, 4, 3); 
+  addFormFactor( 431, 333  ,1,-3, 4, 3);  
+  addFormFactor( 431, 313  ,1,-3, 4, 1); 
+  addFormFactor( 421,-323  ,1,-2, 4, 3); 
+  addFormFactor( 421,-213  ,1,-2, 4, 1); 
+  addFormFactor( 411,-313  ,1,-1, 4, 3); 
+  addFormFactor( 411, 113  ,1,-1, 4, 1); 
+  addFormFactor( 411, 223  ,1,-1, 4, 1); 
+  addFormFactor( 411, 333  ,1,-1, 4, 1);
+  // the decay modes
+  // to the 1P scalar mesons
+  addFormFactor(-541, 10441,0, 4, 5, 4);
+  addFormFactor(-541, 10421,0, 4, 5, 2);
+  addFormFactor(-541,-10531,0, 5,-4,-3);
+  addFormFactor(-541,-10511,0, 5,-4,-1);
+  addFormFactor( 531,-10431,0, 3,-5,-4);
+  addFormFactor( 531,-10321,0, 3,-5,-2);
+  addFormFactor( 511,-10411,0, 1,-5,-4);
+  addFormFactor( 511,-10211,0, 1,-5,-2);
+  addFormFactor(-521, 10421,0,-2, 5, 4);
+  addFormFactor(-521, 10111,0,-2, 5, 2);
+  addFormFactor(-521, 10221,0,-2, 5, 2);
+  addFormFactor(-521, 10331,0,-2, 5, 2);
+  addFormFactor( 431, 10221,0,-3, 4, 3);
+  addFormFactor( 431, 10331,0,-3, 4, 3);
+  addFormFactor( 431,-10311,0,-3, 4, 1);
+  addFormFactor( 421,-10321,0,-2, 4, 3);
+  addFormFactor( 421,-10211,0,-2, 4, 1);
+  addFormFactor( 411,-10311,0,-1, 4, 4);
+  addFormFactor( 411, 10111,0,-1, 4, 1);
+  addFormFactor( 411, 10221,0,-1, 4, 1);
+  addFormFactor( 411, 10331,0,-1, 4, 1);
+  // to the 1S scalar mesons   
+  addFormFactor(-541, 441,0,-4, 5, 4);
+  addFormFactor(-541,-421,0,-4, 5, 2);
+  addFormFactor(-541,-531,0, 5,-4,-3);
+  addFormFactor(-541,-511,0, 5,-4,-1);
+  addFormFactor( 531,-431,0, 3,-5,-4);
+  addFormFactor( 531,-321,0, 3,-5,-2);
+  addFormFactor( 511,-411,0, 1,-5,-4);
+  addFormFactor( 511,-211,0, 1,-5,-2);
+  addFormFactor(-521, 421,0,-2, 5, 4);
+  addFormFactor(-521, 111,0,-2, 5, 2);
+  addFormFactor(-521, 221,0,-2, 5, 2);
+  addFormFactor(-521, 331,0,-2, 5, 2);
+  addFormFactor( 431, 221,0,-3, 4, 3);
+  addFormFactor( 431, 331,0,-3, 4, 3);
+  addFormFactor( 431, 311,0,-3, 4, 1);
+  addFormFactor( 421,-321,0,-2, 4, 3);
+  addFormFactor( 421,-211,0,-2, 4, 1);
+  addFormFactor( 411,-311,0,-1, 4, 3);
+  addFormFactor( 411, 111,0,-1, 4, 1);
+  addFormFactor( 411, 221,0,-1, 4, 1);
+  addFormFactor( 411, 331,0,-1, 4, 1);
+}			     
+			     
+inline ISGW2FormFactor::ISGW2FormFactor(const ISGW2FormFactor & x)
+  : ScalarFormFactor(x),_mdown(x._mdown),_mup(x._mup),
+    _mstrange(x._mstrange),_mcharm(x._mcharm),_mbottom(x._mbottom),_mquark(x._mquark),
+    _beta1S0ud(x._beta1S0ud),_beta1S0us(x._beta1S0us),_beta1S0ss(x._beta1S0ss),
+    _beta1S0cu(x._beta1S0cu),_beta1S0cs(x._beta1S0cs),_beta1S0ub(x._beta1S0ub),
+    _beta1S0sb(x._beta1S0sb),_beta1S0cc(x._beta1S0cc),_beta1S0bc(x._beta1S0bc),
+    _beta3S1ud(x._beta3S1ud),_beta3S1us(x._beta3S1us),_beta3S1ss(x._beta3S1ss),
+    _beta3S1cu(x._beta3S1cu),_beta3S1cs(x._beta3S1cs),_beta3S1ub(x._beta3S1ub),
+    _beta3S1sb(x._beta3S1sb),_beta3S1cc(x._beta3S1cc),_beta3S1bc(x._beta3S1bc),
+    _beta1Pud(x._beta1Pud),_beta1Pus(x._beta1Pus),
+    _beta1Pss(x._beta1Pss),_beta1Pcu(x._beta1Pcu),_beta1Pcs(x._beta1Pcs),
+    _beta1Pub(x._beta1Pub),_beta1Psb(x._beta1Psb),_beta1Pcc(x._beta1Pcc),
+    _beta1Pbc(x._beta1Pbc),_alphamuQM(x._alphamuQM),_alphaQ(x._alphaQ) ,
+    _CfDrho(x._CfDrho),
+    _CfDKstar(x._CfDKstar),_CfDsKstar(x._CfDsKstar),_CfDsphi(x._CfDsphi),
+    _CfBrho(x._CfBrho),_CfBDstar(x._CfBDstar),_CfBsKstar(x._CfBsKstar),
+    _CfBsDstar(x._CfBsDstar),_CfBcDstar(x._CfBcDstar),_CfBcpsi(x._CfBcpsi),
+    _CfBcBsstar(x._CfBcBsstar),_CfBcBstar(x._CfBcBstar)
+{
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      for(unsigned int iy=0;iy<5;++iy)
+	{
+	  _beta1S0[ix][iy]=x._beta1S0[ix][iy];
+	  _beta3S1[ix][iy]=x._beta3S1[ix][iy];
+	  _beta1P[ ix][iy]=x._beta1P[ ix][iy];
+	  _mass1S0[ix][iy]=x._mass1S0[ix][iy];
+	  _massPoh[ix][iy]=x._massPoh[ix][iy];
+	  _massPth[ix][iy]=x._massPth[ix][iy]; 
+	}
+    }
+}
+
+inline IBPtr ISGW2FormFactor::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ISGW2FormFactor::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ISGW2FormFactor::doupdate() throw(UpdateException) {
+  ScalarFormFactor::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ISGW2FormFactor::doinit() throw(InitException) {
+  ScalarFormFactor::doinit();
+  // set up the quark masses
+  _mquark.resize(5);
+  _mquark[0]=_mdown;
+  _mquark[1]=_mup;
+  _mquark[2]=_mstrange;
+  _mquark[3]=_mcharm;
+  _mquark[4]=_mbottom;
+  // set up the beta values
+  _beta1S0[0][0] = _beta1S0ud;_beta3S1[0][0] = _beta3S1ud;_beta1P[0][0] = _beta1Pud;
+  _beta1S0[1][0] = _beta1S0ud;_beta3S1[1][0] = _beta3S1ud;_beta1P[1][0] = _beta1Pud;
+  _beta1S0[2][0] = _beta1S0us;_beta3S1[2][0] = _beta3S1us;_beta1P[2][0] = _beta1Pus;
+  _beta1S0[3][0] = _beta1S0cu;_beta3S1[3][0] = _beta3S1cu;_beta1P[3][0] = _beta1Pcu;
+  _beta1S0[4][0] = _beta1S0ub;_beta3S1[4][0] = _beta3S1ub;_beta1P[4][0] = _beta1Pub;
+  _beta1S0[0][1] = _beta1S0ud;_beta3S1[0][1] = _beta3S1ud;_beta1P[0][1] = _beta1Pud;
+  _beta1S0[1][1] = _beta1S0ud;_beta3S1[1][1] = _beta3S1ud;_beta1P[1][1] = _beta1Pud;
+  _beta1S0[2][1] = _beta1S0us;_beta3S1[2][1] = _beta3S1us;_beta1P[2][1] = _beta1Pus;
+  _beta1S0[3][1] = _beta1S0cu;_beta3S1[3][1] = _beta3S1cu;_beta1P[3][1] = _beta1Pcu;
+  _beta1S0[4][1] = _beta1S0ub;_beta3S1[4][1] = _beta3S1ub;_beta1P[4][1] = _beta1Pub;
+  _beta1S0[0][2] = _beta1S0us;_beta3S1[0][2] = _beta3S1us;_beta1P[0][2] = _beta1Pus;
+  _beta1S0[1][2] = _beta1S0us;_beta3S1[1][2] = _beta3S1us;_beta1P[1][2] = _beta1Pus;
+  _beta1S0[2][2] = _beta1S0ss;_beta3S1[2][2] = _beta3S1ss;_beta1P[2][2] = _beta1Pss;
+  _beta1S0[3][2] = _beta1S0cs;_beta3S1[3][2] = _beta3S1cs;_beta1P[3][2] = _beta1Pcs;
+  _beta1S0[4][2] = _beta1S0sb;_beta3S1[4][2] = _beta3S1sb;_beta1P[4][2] = _beta1Psb;
+  _beta1S0[0][3] = _beta1S0cu;_beta3S1[0][3] = _beta3S1cu;_beta1P[0][3] = _beta1Pcu;
+  _beta1S0[1][3] = _beta1S0cu;_beta3S1[1][3] = _beta3S1cu;_beta1P[1][3] = _beta1Pcu;
+  _beta1S0[2][3] = _beta1S0cs;_beta3S1[2][3] = _beta3S1cs;_beta1P[2][3] = _beta1Pcs;
+  _beta1S0[3][3] = _beta1S0cc;_beta3S1[3][3] = _beta3S1cc;_beta1P[3][3] = _beta1Pcc;
+  _beta1S0[4][3] = _beta1S0bc;_beta3S1[4][3] = _beta3S1bc;_beta1P[4][3] = _beta1Pbc;
+  _beta1S0[0][4] = _beta1S0ub;_beta3S1[0][4] = _beta3S1ub;_beta1P[0][4] = _beta1Pub;
+  _beta1S0[1][4] = _beta1S0ub;_beta3S1[1][4] = _beta3S1ub;_beta1P[1][4] = _beta1Pub;
+  _beta1S0[2][4] = _beta1S0sb;_beta3S1[2][4] = _beta3S1sb;_beta1P[2][4] = _beta1Psb;
+  _beta1S0[3][4] = _beta1S0bc;_beta3S1[3][4] = _beta3S1bc;_beta1P[3][4] = _beta1Pbc;
+  _beta1S0[4][4] = 0.0       ;_beta3S1[4][4] = 0.0       ;_beta1P[4][4] = 0.0      ;
+  // value of alpha_S at the quark masses
+  for(unsigned int ix=0;ix<_mquark.size();++ix)
+    {
+      _alphaQ.push_back(alphaS(_mquark[ix]*_mquark[ix]));
+      if(_alphaQ[ix]>_alphamuQM){_alphaQ[ix]=_alphamuQM;}
+    }
+  // set up the values of mbar
+  // 1S0
+  _mass1S0[0][0] = 0.75*getParticleData(113)->mass()+0.25*getParticleData(111)->mass();
+  _mass1S0[1][0] = 0.75*getParticleData(213)->mass()+0.25*getParticleData(211)->mass();
+  _mass1S0[2][0] = 0.75*getParticleData(313)->mass()+0.25*getParticleData(311)->mass();
+  _mass1S0[3][0] = 0.75*getParticleData(413)->mass()+0.25*getParticleData(411)->mass();
+  _mass1S0[4][0] = 0.75*getParticleData(513)->mass()+0.25*getParticleData(511)->mass();
+  _mass1S0[0][1] = 0.75*getParticleData(213)->mass()+0.25*getParticleData(211)->mass();
+  _mass1S0[1][1] = 0.75*getParticleData(113)->mass()+0.25*getParticleData(111)->mass();
+  _mass1S0[2][1] = 0.75*getParticleData(323)->mass()+0.25*getParticleData(321)->mass();
+  _mass1S0[3][1] = 0.75*getParticleData(423)->mass()+0.25*getParticleData(421)->mass();
+  _mass1S0[4][1] = 0.75*getParticleData(523)->mass()+0.25*getParticleData(521)->mass();
+  _mass1S0[0][2] = 0.75*getParticleData(313)->mass()+0.25*getParticleData(311)->mass();
+  _mass1S0[1][2] = 0.75*getParticleData(323)->mass()+0.25*getParticleData(321)->mass();
+  _mass1S0[2][2] = 0.75*getParticleData(333)->mass()+0.25*getParticleData(331)->mass();
+  _mass1S0[3][2] = 0.75*getParticleData(433)->mass()+0.25*getParticleData(431)->mass(); 
+  _mass1S0[4][2] = 0.75*getParticleData(533)->mass()+0.25*getParticleData(531)->mass(); 
+  _mass1S0[0][3] = 0.75*getParticleData(413)->mass()+0.25*getParticleData(411)->mass(); 
+  _mass1S0[1][3] = 0.75*getParticleData(423)->mass()+0.25*getParticleData(421)->mass();
+  _mass1S0[2][3] = 0.75*getParticleData(433)->mass()+0.25*getParticleData(431)->mass();
+  _mass1S0[3][3] = 0.75*getParticleData(443)->mass()+0.25*getParticleData(441)->mass();
+  _mass1S0[4][3] = 0.75*getParticleData(543)->mass()+0.25*getParticleData(541)->mass();
+  _mass1S0[0][4] = 0.75*getParticleData(513)->mass()+0.25*getParticleData(511)->mass(); 
+  _mass1S0[1][4] = 0.75*getParticleData(523)->mass()+0.25*getParticleData(521)->mass();
+  _mass1S0[2][4] = 0.75*getParticleData(533)->mass()+0.25*getParticleData(531)->mass();
+  _mass1S0[3][4] = 0.75*getParticleData(543)->mass()+0.25*getParticleData(541)->mass();
+  _mass1S0[4][4] = 0.75*getParticleData(553)->mass()+0.25*getParticleData(551)->mass();
+  //  1p 1/2
+  _massPoh[0][0]=.75*getParticleData(20113)->mass()+.25*getParticleData(10111)->mass();
+  _massPoh[1][0]=.75*getParticleData(20213)->mass()+.25*getParticleData(10211)->mass();
+  _massPoh[2][0]=.75*getParticleData(20313)->mass()+.25*getParticleData(10311)->mass();
+  _massPoh[3][0]=.75*getParticleData(20413)->mass()+.25*getParticleData(10411)->mass();
+  _massPoh[4][0]=.75*getParticleData(20513)->mass()+.25*getParticleData(10511)->mass();
+  _massPoh[0][1]=.75*getParticleData(20213)->mass()+.25*getParticleData(10211)->mass();
+  _massPoh[1][1]=.75*getParticleData(20113)->mass()+.25*getParticleData(10111)->mass();
+  _massPoh[2][1]=.75*getParticleData(20323)->mass()+.25*getParticleData(10321)->mass();
+  _massPoh[3][1]=.75*getParticleData(20423)->mass()+.25*getParticleData(10421)->mass();
+  _massPoh[4][1]=.75*getParticleData(20523)->mass()+.25*getParticleData(10521)->mass();
+  _massPoh[0][2]=.75*getParticleData(20313)->mass()+.25*getParticleData(10311)->mass();
+  _massPoh[1][2]=.75*getParticleData(20323)->mass()+.25*getParticleData(10321)->mass();
+  _massPoh[2][2]=.75*getParticleData(20333)->mass()+.25*getParticleData(10331)->mass();
+  _massPoh[3][2]=.75*getParticleData(20433)->mass()+.25*getParticleData(10431)->mass();
+  _massPoh[4][2]=.75*getParticleData(20533)->mass()+.25*getParticleData(10531)->mass();
+  _massPoh[0][3]=.75*getParticleData(20413)->mass()+.25*getParticleData(10411)->mass();
+  _massPoh[1][3]=.75*getParticleData(20423)->mass()+.25*getParticleData(10421)->mass();
+  _massPoh[2][3]=.75*getParticleData(20433)->mass()+.25*getParticleData(10431)->mass();
+  _massPoh[3][3]=.75*getParticleData(20443)->mass()+.25*getParticleData(10441)->mass();
+  _massPoh[4][3]=.75*getParticleData(20543)->mass()+.25*getParticleData(10541)->mass();
+  _massPoh[0][4]=.75*getParticleData(20513)->mass()+.25*getParticleData(10511)->mass();
+  _massPoh[1][4]=.75*getParticleData(20523)->mass()+.25*getParticleData(10521)->mass();
+  _massPoh[2][4]=.75*getParticleData(20533)->mass()+.25*getParticleData(10531)->mass();
+  _massPoh[3][4]=.75*getParticleData(20543)->mass()+.25*getParticleData(10541)->mass();
+  _massPoh[4][4]=.75*getParticleData(20553)->mass()+.25*getParticleData(10551)->mass();
+  //  1p 3/2
+  _massPth[0][0]=.625*getParticleData(115)->mass()+.375*getParticleData(10113)->mass();
+  _massPth[1][0]=.625*getParticleData(215)->mass()+.375*getParticleData(10213)->mass();
+  _massPth[2][0]=.625*getParticleData(315)->mass()+.375*getParticleData(10313)->mass();
+  _massPth[3][0]=.625*getParticleData(415)->mass()+.375*getParticleData(10413)->mass();
+  _massPth[4][0]=.625*getParticleData(515)->mass()+.375*getParticleData(10513)->mass();
+  _massPth[0][1]=.625*getParticleData(215)->mass()+.375*getParticleData(10213)->mass();
+  _massPth[1][1]=.625*getParticleData(115)->mass()+.375*getParticleData(10113)->mass();
+  _massPth[2][1]=.625*getParticleData(325)->mass()+.375*getParticleData(10323)->mass();
+  _massPth[3][1]=.625*getParticleData(425)->mass()+.375*getParticleData(10423)->mass();
+  _massPth[4][1]=.625*getParticleData(525)->mass()+.375*getParticleData(10523)->mass();
+  _massPth[0][2]=.625*getParticleData(315)->mass()+.375*getParticleData(10313)->mass();
+  _massPth[1][2]=.625*getParticleData(325)->mass()+.375*getParticleData(10323)->mass();
+  _massPth[2][2]=.625*getParticleData(335)->mass()+.375*getParticleData(10333)->mass();
+  _massPth[3][2]=.625*getParticleData(435)->mass()+.375*getParticleData(10433)->mass();
+  _massPth[4][2]=.625*getParticleData(535)->mass()+.375*getParticleData(10533)->mass();
+  _massPth[0][3]=.625*getParticleData(415)->mass()+.375*getParticleData(10413)->mass();
+  _massPth[1][3]=.625*getParticleData(425)->mass()+.375*getParticleData(10423)->mass();
+  _massPth[2][3]=.625*getParticleData(435)->mass()+.375*getParticleData(10433)->mass();
+  _massPth[3][3]=.625*getParticleData(445)->mass()+.375*getParticleData(10443)->mass();
+  _massPth[4][3]=.625*getParticleData(545)->mass()+.375*getParticleData(10543)->mass();
+  _massPth[0][4]=.625*getParticleData(515)->mass()+.375*getParticleData(10513)->mass();
+  _massPth[1][4]=.625*getParticleData(525)->mass()+.375*getParticleData(10523)->mass();
+  _massPth[2][4]=.625*getParticleData(535)->mass()+.375*getParticleData(10533)->mass();
+  _massPth[3][4]=.625*getParticleData(545)->mass()+.375*getParticleData(10543)->mass();
+  _massPth[4][4]=.625*getParticleData(555)->mass()+.375*getParticleData(10553)->mass();
+}
+
+
+inline void ISGW2FormFactor::dofinish() {
+  ScalarFormFactor::dofinish();
+}
+
+inline void ISGW2FormFactor::doinitrun() {
+  ScalarFormFactor::doinitrun();
+}
+
+inline void ISGW2FormFactor::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  ScalarFormFactor::rebind(trans);
+}
+
+inline IVector ISGW2FormFactor::getReferences() {
+  IVector ret = ScalarFormFactor::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+inline double ISGW2FormFactor::alphaS(Energy2 q2) const
+{
+  double scale=q2/GeV2;
+  return 0.25*exp(-scale)+0.15*exp(-scale/10.)+0.2*exp(-scale/1000.);
+  //  double output=min(0.6,SM().alphaS(q2));
+  //  return output;
+}
+}

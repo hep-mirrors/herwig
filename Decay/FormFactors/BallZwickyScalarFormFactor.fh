@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BallZwickyScalarFormFactor class.
+//
+#ifndef Herwig_BallZwickyScalarFormFactor_FH
+#define Herwig_BallZwickyScalarFormFactor_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class BallZwickyScalarFormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(BallZwickyScalarFormFactor,BallZwickyScalarFormFactorPtr);
+
+}
+
+#endif

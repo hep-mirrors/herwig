@@ -1,0 +1,166 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ISGWFormFactor class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline ISGWFormFactor::ISGWFormFactor() 
+{
+  // default values of the parameters
+  // fudge factor
+  _kappa=0.7;
+  // quark masses
+  _mdown   =0.33*GeV;
+  _mup     =0.33*GeV;
+  _mstrange=0.55*GeV;
+  _mcharm  =1.82*GeV;
+  _mbottom =5.12*GeV;
+  // beta values
+  _betaSud = 0.31*GeV;
+  _betaSus = 0.34*GeV;
+  _betaSuc = 0.39*GeV;
+  _betaSub = 0.41*GeV;
+  _betaPud = 0.27*GeV;
+  _betaPus = 0.30*GeV;
+  _betaPuc = 0.34*GeV;
+  // the scalar-scalar form-factors
+  addFormFactor(ParticleID::D0     ,ParticleID::Kminus  ,0,-2, 4, 3);
+  addFormFactor(ParticleID::D0     ,ParticleID::piminus ,0,-2, 4, 1);
+  addFormFactor(ParticleID::Dplus  ,ParticleID::Kbar0   ,0,-1, 4, 3);
+  addFormFactor(ParticleID::Dplus  ,ParticleID::pi0     ,0,-1, 4, 1);
+  addFormFactor(ParticleID::Dplus  ,ParticleID::eta     ,0,-1, 4, 1);
+  addFormFactor(ParticleID::Dplus  ,ParticleID::etaprime,0,-1, 4, 1);
+  addFormFactor(ParticleID::D_splus,ParticleID::eta     ,0,-3, 4, 3);
+  addFormFactor(ParticleID::D_splus,ParticleID::etaprime,0,-3, 4, 3);
+  addFormFactor(ParticleID::D_splus,ParticleID::Kbar0   ,0,-3, 4, 1);
+  addFormFactor(ParticleID::Bminus ,ParticleID::D0      ,0,-2, 5, 4);
+  addFormFactor(ParticleID::Bminus ,10421               ,0,-2, 5, 4);
+  addFormFactor(ParticleID::Bminus ,ParticleID::pi0     ,0,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,ParticleID::eta     ,0,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,ParticleID::etaprime,0,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,10111               ,0,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,10221               ,0,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,10331               ,0,-2, 5, 2);
+  addFormFactor(ParticleID::B0     ,ParticleID::Dminus  ,0, 1,-5,-4);
+  addFormFactor(ParticleID::B0     ,-10411              ,0, 1,-5,-4);
+  addFormFactor(ParticleID::B0     ,ParticleID::piminus ,0, 1,-5,-2);
+  addFormFactor(ParticleID::B0     ,-10211              ,0, 1,-5,-2);
+  // the scalar-vector form-factors
+  addFormFactor(ParticleID::B0     ,-413                ,1, 1,-5,-4);
+  addFormFactor(ParticleID::B0     ,-10413              ,1, 1,-5,-4);
+  addFormFactor(ParticleID::B0     ,-20413              ,1, 1,-5,-4);
+  addFormFactor(ParticleID::B0     ,ParticleID::rhominus,1, 1,-5,-2);
+  addFormFactor(ParticleID::B0     ,ParticleID::b_1minus,1, 1,-5,-2);
+  addFormFactor(ParticleID::B0     ,ParticleID::a_1minus,1, 1,-5,-2);
+  addFormFactor(ParticleID::Bminus ,423                 ,1,-2, 5, 4);
+  addFormFactor(ParticleID::Bminus ,10423               ,1,-2, 5, 4);
+  addFormFactor(ParticleID::Bminus ,20423               ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,ParticleID::rho0    ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,ParticleID::omega   ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,ParticleID::b_10    ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,ParticleID::a_10    ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,20223               ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,20333               ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,10223               ,1,-2, 5, 2);
+  addFormFactor(ParticleID::Bminus ,10333               ,1,-2, 5, 2);
+  addFormFactor(ParticleID::D0     ,-323                ,1,-2, 4, 3);
+  addFormFactor(ParticleID::D0     ,-10323              ,1,-2, 4, 3);
+  addFormFactor(ParticleID::D0     ,-20323              ,1,-2, 4, 3);
+  addFormFactor(ParticleID::D0     ,-213                ,1,-2, 4, 1);
+  addFormFactor(ParticleID::Dplus  ,-313                ,1,-1, 4, 3);
+  addFormFactor(ParticleID::Dplus  ,-10313              ,1,-1, 4, 3);
+  addFormFactor(ParticleID::Dplus  ,-20313              ,1,-1, 4, 3);
+  addFormFactor(ParticleID::Dplus  ,113                 ,1,-1, 4, 1);
+  addFormFactor(ParticleID::Dplus  ,223                 ,1,-1, 4, 1);
+  addFormFactor(ParticleID::D_splus,-313                ,1,-3, 4, 1);
+  addFormFactor(ParticleID::D_splus,333                 ,1,-3, 4, 3);
+  // the scalar-tensor form-factors
+  addFormFactor(ParticleID::B0     ,-415                ,2, 1,-5, 4);
+  addFormFactor(ParticleID::B0     ,-215                ,2, 1,-5, 2);
+  addFormFactor(ParticleID::Bminus , 425                ,2,-2, 5,-4);
+  addFormFactor(ParticleID::Bminus , 115                ,2,-2, 5,-2);
+  addFormFactor(ParticleID::Bminus , 225                ,2,-2, 5,-2);
+  addFormFactor(ParticleID::Bminus , 335                ,2,-2, 5,-2);
+  addFormFactor(ParticleID::D0     ,-325                ,2,-2, 4, 3);
+  addFormFactor(ParticleID::Dplus  ,-315                ,2,-1, 4, 3);
+}
+
+inline ISGWFormFactor::ISGWFormFactor(const ISGWFormFactor & x)
+  : ScalarFormFactor(x), _kappa(x._kappa), _mdown(x._mdown),_mup(x._mup),
+    _mstrange(x._mstrange),_mcharm(x._mcharm),_mbottom(x._mbottom), _mquark(x._mquark),
+    _betaSud(x._betaSud),_betaSus(x._betaSus),_betaSuc(x._betaSuc),
+    _betaSub(x._betaSub),_betaS(x._betaS), _betaPud(x._betaPud),_betaPus(x._betaPus),
+    _betaPuc(x._betaPuc), _betaP(x._betaP) {}
+
+inline IBPtr ISGWFormFactor::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ISGWFormFactor::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ISGWFormFactor::doupdate() throw(UpdateException) {
+  ScalarFormFactor::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ISGWFormFactor::doinit() throw(InitException) {
+  ScalarFormFactor::doinit();
+  // set up the quark masses
+  _mquark.resize(5);
+  _mquark[0]=_mdown;
+  _mquark[1]=_mup;
+  _mquark[2]=_mstrange;
+  _mquark[3]=_mcharm;
+  _mquark[4]=_mbottom;
+  // and the beta values
+  _betaS.resize(4);
+  _betaS[0] = _betaSud;
+  _betaS[1] = _betaSus;
+  _betaS[2] = _betaSuc;
+  _betaS[3] = _betaSub;
+  _betaP.resize(3);
+  _betaP[0] = _betaPud;
+  _betaP[1] = _betaPus;
+  _betaP[2] = _betaPuc;
+}
+
+inline void ISGWFormFactor::dofinish() {
+  ScalarFormFactor::dofinish();
+}
+
+inline void ISGWFormFactor::doinitrun() {
+  ScalarFormFactor::doinitrun();
+}
+
+inline void ISGWFormFactor::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  ScalarFormFactor::rebind(trans);
+}
+
+inline IVector ISGWFormFactor::getReferences() {
+  IVector ret = ScalarFormFactor::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+
