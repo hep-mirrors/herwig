@@ -396,13 +396,20 @@ createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch,
 		       << hardProcessParticles.size() << endl;
       //<< "  Total number of colour lines : " 
       //	       << mapP7toShowerColine.size() << endl;
+    Lorentz5Momentum p_in = Lorentz5Momentum();
+    Lorentz5Momentum p_out = Lorentz5Momentum();
     for ( ShowerParticleVector::const_iterator cit = hardProcessParticles.begin();
 	  cit != hardProcessParticles.end(); ++cit ) {
       generator()->log() << "\t" << (**cit).data().PDGName() 
 			 << "  p=" << (**cit).momentum()
 			 << ( (**cit).isFinalState() ? ", out" : ", in" )
 			 << endl;
+      if ((**cit).isFinalState()) p_out += (**cit).momentum(); 
+      else p_in += (**cit).momentum(); 
     }
+    generator()->log() << "  p_in  = " << p_in << endl
+		       << "  p_out = " << p_out << endl
+		       << "  diff  = " << p_in - p_out << endl; 
   }  
 }
 

@@ -16,7 +16,7 @@
 #include "PartnerFinder.h"
 #include "ShowerParticle.h"
 #include "Pythia7/MatrixElement/MEBase.h" 
-#include "Pythia7/MatrixElement/PhaseSpaceBase.h"
+// #include "Pythia7/MatrixElement/PhaseSpaceBase.h"
 #include "Pythia7/Handlers/XComb.h"
 
 using namespace Herwig;
