@@ -88,9 +88,10 @@ public:
   inline tFFVTPtr  vertexFFVGR() const;
 
   /**
-   * Pointer to the object handling the \f$G\to VVV\f\$ vertex.
+   * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
   inline tVVVTPtr  vertexVVVGR() const;
+  //@}
   
 public:
   
@@ -216,7 +217,7 @@ private:
   FFVTPtr _theFFVGRVertex;
 
   /**
-   * Pointer to the object handling the \f$G\to VVV\f\$ vertex.
+   * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
   VVVTPtr _theVVVGRVertex;
   
