@@ -15,8 +15,8 @@ using ThePEG::Helicity::DiracRep;
 using ThePEG::Helicity::HaberDRep;
 using ThePEG::Helicity::HELASDRep;
 using ThePEG::Helicity::SpinorType;
-using ThePEG::Helicity::u_type;
-using ThePEG::Helicity::v_type;
+using ThePEG::Helicity::u_spinortype;
+using ThePEG::Helicity::v_spinortype;
 
 // calculate the Wavefunction
 void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
@@ -170,10 +170,10 @@ void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
       // now finally we can construct the spinors
       if(dir==incoming)
 	{_wf=LorentzSpinorBar(upper*hel_wf[0],upper*hel_wf[1],
-			      lower*hel_wf[0],lower*hel_wf[1],v_type,dirac);}
+			      lower*hel_wf[0],lower*hel_wf[1],v_spinortype,dirac);}
       else
 	{_wf=LorentzSpinorBar(upper*hel_wf[0],upper*hel_wf[1],
-			      lower*hel_wf[0],lower*hel_wf[1],u_type,dirac);}
+			      lower*hel_wf[0],lower*hel_wf[1],u_spinortype,dirac);}
     }
 }
 

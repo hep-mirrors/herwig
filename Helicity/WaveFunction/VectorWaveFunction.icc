@@ -23,17 +23,6 @@ inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr
   setX(s1);setY(s2);setZ(s3);setT(s4);
 }
 
-// use a 5 momentum (default phase choice)
-inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,
-					      const tcPDPtr & part,int ihel,
-					      Direction dir)  
-{
-  direction(dir);
-  setMomentum(p);
-  checkParticle(part);
-  calculateWaveFunction(ihel);
-}
-
 // use a 5 momentum (specify phase choice)
 inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,
 					      const tcPDPtr & part,int ihel,
@@ -43,18 +32,6 @@ inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,
   setMomentum(p);
   checkParticle(part);
   calculateWaveFunction(ihel,phase);
-}
-
-// set all components of momentum (default phase choice)
-inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
-					      Energy pz, Energy ee, Energy mm,
-					      const tcPDPtr & part, int ihel,
-					      Direction dir) 
-{
-  direction(dir);
-  setMomentum(px,py,pz,ee,mm);
-  checkParticle(part);
-  calculateWaveFunction(ihel);
 }
 
 // set all components of momentum (specify phase choice)
@@ -69,18 +46,6 @@ inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
   calculateWaveFunction(ihel,phase);
 }
 
-// set 4-momentum components  (default phase choice)
-inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
-					      Energy pz, Energy ee,
-					      const tcPDPtr & part, int ihel,
-					      Direction dir)
-{
-  direction(dir);
-  setMomentum(px,py,pz,ee); 
-  checkParticle(part);
-  calculateWaveFunction(ihel);
-}
-
 // set 4-momentum components (specify phase choice)
 inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee,
@@ -91,17 +56,6 @@ inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
   setMomentum(px,py,pz,ee); 
   checkParticle(part);
   calculateWaveFunction(ihel,phase);
-}
-
-// set 4-momentum  (default phase choice)
-inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,
-					      const tcPDPtr & part, int ihel,
-					      Direction dir)
-{
-  direction(dir);
-  setMomentum(pin);
-  checkParticle(part);
-  calculateWaveFunction(ihel);
 }
 
 // set 4-momentum (specify phase choice)
@@ -115,17 +69,6 @@ inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,
   calculateWaveFunction(ihel,phase);
 }
 
-// set mass zero momentum (default phase choice)
-inline VectorWaveFunction::VectorWaveFunction(Energy mm,
-					      const tcPDPtr & part, int ihel,
-					      Direction dir)
-{
-  direction(dir);
-  setMomentum(mm);
-  checkParticle(part);
-  calculateWaveFunction(ihel);
-}
-
 // set mass zero momentum (specify phase choice)
 inline VectorWaveFunction::VectorWaveFunction(Energy mm, const tcPDPtr & part, int ihel,
 					      Direction dir, VectorPhase phase)
@@ -134,17 +77,6 @@ inline VectorWaveFunction::VectorWaveFunction(Energy mm, const tcPDPtr & part, i
   setMomentum(mm);
   checkParticle(part);
   calculateWaveFunction(ihel,phase);
-}
-
-// set 4 momentum and mass (default phase choice)
-inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,Energy mm,
-					      const tcPDPtr & part, int ihel,
-					      Direction dir)
-{
-  direction(dir);
-  setMomentum(pin,mm); 
-  checkParticle(part); 
-  calculateWaveFunction(ihel);
 }
 
 // set 4 momentum and mass (specify phase choice)
@@ -296,10 +228,6 @@ inline void VectorWaveFunction::reset(const Lorentz5Momentum & pin)
 {setMomentum(pin);}
 
 // reset the helicity (recalculation the polarization vector)
-// default phase choice
-inline void VectorWaveFunction::reset(int ihel)
-{calculateWaveFunction(ihel);}
-// specfic phase choice
 inline void VectorWaveFunction::reset(int ihel, VectorPhase phase)
 {calculateWaveFunction(ihel,phase);}
 
@@ -321,10 +249,6 @@ inline void VectorWaveFunction::checkParticle(const tcPDPtr & in)
   if(iSpin()!=3)
     {cerr << "Calculating Vector WaveFunction for non-spin 1 Particle" << endl;}
 }
-
-// calculate the wavefunction for the default phase choice
-inline void VectorWaveFunction::calculateWaveFunction(int ihel)
-{calculateWaveFunction(ihel,_default_phase);}
 
 }
 }

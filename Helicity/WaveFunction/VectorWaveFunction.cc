@@ -32,7 +32,7 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
       pt = sqrt(pt);
       // overall phase of the vector
       complex<double> phase;
-      if(vphase==Phase)
+      if(vphase==vector_phase)
 	{
 	  if(pt==0. || ihel==0)
 	    {phase=1.;}

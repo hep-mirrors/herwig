@@ -12,7 +12,7 @@ namespace Herwig {
 namespace Helicity {
 
 // calculate the actual wavefunction
-void TensorWaveFunction::calculateWaveFunction(int ihel, VectorPhase tphase)
+void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
 {
   Direction dir=direction();
   if(dir==intermediate){cerr << "In TensorWaveFunction::calcluateWaveFunction "
@@ -36,7 +36,7 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, VectorPhase tphase)
 	{
 	  // calculate the overall phase
 	  complex<double>phase;
-	  if(tphase==Phase)
+	  if(tphase==tensor_phase)
 	    {
 	      if(pt==0.){phase=1.;}
 	      else{phase = complex<double>(ppx,-fact*ppy)/pt;}
@@ -71,7 +71,7 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, VectorPhase tphase)
 	{
 	  // calculate the overall phase
 	  complex<double> phase;
-	  if(tphase==Phase)
+	  if(tphase==tensor_phase)
 	    {
 	      if(pt==0.){phase=1.;}
 	      else{phase = complex<double>(ppx,fact*ppy)/pt;}
