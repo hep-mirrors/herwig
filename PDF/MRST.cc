@@ -72,27 +72,27 @@ double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
   switch(parton->id()) {
   case ParticleID::b:
   case ParticleID::bbar:
-    return max(table[bot], 0.0);
+    return table[bot];
   case ParticleID::c:
   case ParticleID::cbar:
-    return max(table[chm], 0.0);
+    return table[chm];
   case ParticleID::s:
   case ParticleID::sbar:
-    return max(table[str], 0.0);
+    return table[str];
   case ParticleID::u:
-    return max(neutron? (table[dnSea] + (anti? 0.0: table[dnValence])) :
-               (table[upSea] + (anti? 0.0: table[upValence])), 0.0);
+    return (neutron? (table[dnSea] + (anti? 0.0: table[dnValence])) :
+	    (table[upSea] + (anti? 0.0: table[upValence])));
   case ParticleID::ubar:
-    return max(neutron? (table[dnSea] + (anti? table[dnValence]: 0.0)) :
-	       (table[upSea] + (anti? table[upValence]: 0.0)), 0.0);
+    return (neutron? (table[dnSea] + (anti? table[dnValence]: 0.0)) :
+	       (table[upSea] + (anti? table[upValence]: 0.0)));
   case ParticleID::d:
-    return max(neutron? (table[upSea] + (anti? 0.0: table[upValence])) :
-	       (table[dnSea] + (anti? 0.0: table[dnValence])), 0.0);
+    return (neutron? (table[upSea] + (anti? 0.0: table[upValence])) :
+	       (table[dnSea] + (anti? 0.0: table[dnValence])));
   case ParticleID::dbar:
-    return max(neutron? (table[upSea] + (anti? table[upValence]: 0.0)) :
-	       (table[dnSea] + (anti? table[dnValence]: 0.0)), 0.0);
+    return (neutron? (table[upSea] + (anti? table[upValence]: 0.0)) :
+	       (table[dnSea] + (anti? table[dnValence]: 0.0)));
   case ParticleID::g:
-    return max(table[glu], 0.0);
+    return table[glu];
   }
   return 0.0;
 }
@@ -115,17 +115,17 @@ double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
   bool neutron = abs(particle->id()) == ParticleID::n0;
   switch(parton->id()) {
   case ParticleID::u:
-    return max(neutron? (anti? 0.0: table[dnValence]): 
-	       (anti? 0.0: table[upValence]), 0.0);
+    return (neutron? (anti? 0.0: table[dnValence]): 
+	    (anti? 0.0: table[upValence]));
   case ParticleID::ubar:
-    return max(neutron? (anti? table[dnValence]: 0.0): 
-	       (anti? table[upValence]: 0.0), 0.0);
+    return (neutron? (anti? table[dnValence]: 0.0): 
+	    (anti? table[upValence]: 0.0));
   case ParticleID::d:
-    return max(neutron? (anti? 0.0: table[upValence]): 
-	       (anti? 0.0: table[dnValence]), 0.0);
+    return (neutron? (anti? 0.0: table[upValence]): 
+	    (anti? 0.0: table[dnValence]));
   case ParticleID::dbar:
-    return max(neutron? (anti? table[upValence]: 0.0): 
-	       (anti? table[dnValence]: 0.0), 0.0);
+    return (neutron? (anti? table[upValence]: 0.0): 
+	    (anti? table[dnValence]: 0.0));
   }
   return 0.0;
 }
