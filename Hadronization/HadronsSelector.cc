@@ -317,7 +317,7 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
     // Fill Kupco's cluster decay channel table (starting from [0])
     // with all channels above threshold.
     int numChan = 0; // it counts the number of cluster decay channel.
-    Energy maxWeight = Energy();  // store the maximum weight on the table.
+    Energy sumWeight = Energy();  // store the sum weight on the table.
     int flav1 = convertIdToFlavour(id1);
     int flav2 = convertIdToFlavour(id2);
 //     cerr << "--- new Cluster, Mc/MeV = " << cluMass/MeV << endl;
@@ -353,7 +353,8 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
 		} else {
 		  Energy weight = _Pwt[i] * pCmStar * 
 		    _vecHad[iH1].overallWeight * _vecHad[iH2].overallWeight; 
-		  if(weight > maxWeight) maxWeight = weight;
+		  //if(weight > maxWeight) maxWeight = weight;
+		  sumWeight += weight;
 		  int signQ = 0;
 		  long idQ = convertFlavourToId(i);
 		  if((CheckId::canBeMeson(id1,-idQ) || 
@@ -408,24 +409,39 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
     
     // Choose one decay channel.
     if ( numChan > 0 ) {
-      int numTries = 0;
+      /*int numTries = 0;
       int iChan;
       do {
 	// draw a flat random integer number [0,numChan[
 	iChan = irnd(0,numChan); 
       } while(maxWeight*rnd() > kupcoTable[iChan].weight  &&  
-	      ++numTries < MaxNumTries);
-      // Take the lightest pair if too many attempts failed.
-      if(numTries >= MaxNumTries) {
-	hadPair = lightestHadronsPair(id1,id2);	
+      ++numTries < MaxNumTries);*/
+
+      int iChan;
+      double sumWt = 0.0;
+      double r = rnd()*sumWeight;
+      for(iChan = 0; iChan<numChan; iChan++) {
+	sumWt += kupcoTable[iChan].weight;
+	if(r <= sumWt) break;
+      }
+      
+	
+      // Take the lightest pair if too many attempts failed
+      /*if(numTries >= MaxNumTries) {
+	hadPair = lightestHadronsPair(id1,id2);
 	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair"
 			 "***Too many failed attempts, take lightest pair*** ",
 			 Exception::warning));
-      } else {
-	hadPair = pair<long,long>(kupcoTable[iChan].idHad1, 
-				  kupcoTable[iChan].idHad2);
-	//	cerr << hadPair.first << " " << hadPair.second << endl; 
+      */
+
+      if(iChan == numChan) {
+	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair"
+			            "***No channel found! Setting to last*** ",
+					  Exception::warning));
+	iChan = numChan-1;
       }
+      hadPair = pair<long,long>(kupcoTable[iChan].idHad1, 
+				kupcoTable[iChan].idHad2);
     }
     
     // Safety checks and debugging infos, usually skipped.
@@ -439,7 +455,7 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
 			     << "   id1=" << id1 << "   id2=" << id2 
 			     << "   id3=" << id3 << endl << endl;
 	}
-      } else if(maxWeight < 1.0e-9*GeV) {
+      } else if(sumWeight < 1.0e-9*GeV) {
 	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair "
 				   "***very low maxWeight  in kupcoTable*** ",
 				   Exception::warning));
@@ -452,8 +468,8 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
       if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {    
 	generator()->log() << "\t --- Kupco's Table --- : cluMass=" << cluMass 
 			   << "  id1=" << id1 << "  id2=" << id2 << endl
-			   << "\t numChan=" << numChan << "   maxWeight=" 
-			   << maxWeight << endl;
+			   << "\t numChan=" << numChan << "   sumWeight=" 
+			   << sumWeight << endl;
 	for(int ich=0; ich < numChan; ++ich) {
 	  generator()->log() << "\t \t" << ich << "   idQ=" 
 			     << kupcoTable[ich].idQ
