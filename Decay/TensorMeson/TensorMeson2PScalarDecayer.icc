@@ -1,0 +1,171 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TensorMeson2PScalarDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
+{
+  // a_2 -> eta pi
+  _incoming.push_back(115);_outgoing1.push_back( 221);_outgoing2.push_back(111);
+  _coupling.push_back(23.69/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(215);_outgoing1.push_back( 221);_outgoing2.push_back(211);
+  _coupling.push_back(23.69/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-215);_outgoing1.push_back( 221);_outgoing2.push_back(-211);
+  _coupling.push_back(23.69/GeV);_maxweight.push_back(0.);
+  // a_2 -> eta' pi
+  _incoming.push_back(115);_outgoing1.push_back( 331);_outgoing2.push_back(111);
+  _coupling.push_back(51.45/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(215);_outgoing1.push_back( 331);_outgoing2.push_back(211);
+  _coupling.push_back(51.45/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-215);_outgoing1.push_back( 331);_outgoing2.push_back(-211);
+  _coupling.push_back(51.45/GeV);_maxweight.push_back(0.);
+  // a_2 -> K K
+  _incoming.push_back(115);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _coupling.push_back(7.36/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(115);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _coupling.push_back(7.36/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(215);_outgoing1.push_back( 321);_outgoing2.push_back(-311);
+  _coupling.push_back(10.41/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-215);_outgoing1.push_back(-321);_outgoing2.push_back(311);
+  _coupling.push_back(10.41/GeV);_maxweight.push_back(0.);
+  // f_2 -> pi+pi-
+  _incoming.push_back(225);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _coupling.push_back(18.54/GeV);_maxweight.push_back(0.);
+  // f_2 -> pi0pi0
+  _incoming.push_back(225);_outgoing1.push_back( 111);_outgoing2.push_back(111);
+  _coupling.push_back(13.10/GeV);_maxweight.push_back(0.);
+  // f_2 -> etaeta
+  _incoming.push_back(225);_outgoing1.push_back( 221);_outgoing2.push_back(221);
+  _coupling.push_back(8.245/GeV);_maxweight.push_back(0.);
+  // f_2 -> K+K-
+  _incoming.push_back(225);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _coupling.push_back(11.03/GeV);_maxweight.push_back(0.);
+  // f_2 -> K0 K0bar
+  _incoming.push_back(225);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _coupling.push_back(11.38/GeV);_maxweight.push_back(0.);
+  // f'_2 -> K+K-
+  _incoming.push_back(335);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _coupling.push_back(14.93/GeV);_maxweight.push_back(0.);
+  // f'_2 -> K0 K0bar
+  _incoming.push_back(335);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _coupling.push_back(15.16/GeV);_maxweight.push_back(0.);
+  // f'_2 -> etaeta
+  _incoming.push_back(335);_outgoing1.push_back( 221);_outgoing2.push_back(221);
+  _coupling.push_back(2.86/GeV);_maxweight.push_back(0.);
+  // f'_2 -> pi+pi-
+  _incoming.push_back(335);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _coupling.push_back(0.877/GeV);_maxweight.push_back(0.);
+  // f'_2 -> pi0pi0
+  _incoming.push_back(335);_outgoing1.push_back( 111);_outgoing2.push_back(111);
+  _coupling.push_back(0.62/GeV);_maxweight.push_back(0.);
+
+  // K_2+ -> K+eta
+  _incoming.push_back( 325);_outgoing1.push_back( 321);_outgoing2.push_back(221);
+  _coupling.push_back(1.44/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-325);_outgoing1.push_back(-321);_outgoing2.push_back(221);
+  _coupling.push_back(1.44/GeV);_maxweight.push_back(0.);
+  // K_20 -> K0eta
+  _incoming.push_back( 315);_outgoing1.push_back( 311);_outgoing2.push_back(221);
+  _coupling.push_back(1.44/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-315);_outgoing1.push_back(-311);_outgoing2.push_back(221);
+  _coupling.push_back(1.44/GeV);_maxweight.push_back(0.);
+  // K_2+ -> K+ pi0
+  _incoming.push_back( 325);_outgoing1.push_back( 321);_outgoing2.push_back(111);
+  _coupling.push_back(8.30/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-325);_outgoing1.push_back(-321);_outgoing2.push_back(111);
+  _coupling.push_back(8.30/GeV);_maxweight.push_back(0.);
+  // K_2+ -> K0 pi+
+  _incoming.push_back( 325);_outgoing1.push_back( 311);_outgoing2.push_back(211);
+  _coupling.push_back(11.74/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-325);_outgoing1.push_back(-311);_outgoing2.push_back(-211);
+  _coupling.push_back(11.74/GeV);_maxweight.push_back(0.);
+  // K_20 -> K0 pi0
+  _incoming.push_back( 315);_outgoing1.push_back( 311);_outgoing2.push_back(111);
+  _coupling.push_back(8.68/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-315);_outgoing1.push_back(-311);_outgoing2.push_back(111);
+  _coupling.push_back(8.68/GeV);_maxweight.push_back(0.);
+  // K+20 -> K+ pi-
+  _incoming.push_back( 315);_outgoing1.push_back( 321);_outgoing2.push_back(211);
+  _coupling.push_back(12.28/GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-315);_outgoing1.push_back(-321);_outgoing2.push_back(-211);
+  _coupling.push_back(12.28/GeV);_maxweight.push_back(0.);
+}
+
+inline TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer(const TensorMeson2PScalarDecayer & x)
+  : TensorMesonDecayerBase(x), _incoming(x._incoming), _outgoing1(x._outgoing1),
+    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight) {}
+
+inline IBPtr TensorMeson2PScalarDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TensorMeson2PScalarDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void TensorMeson2PScalarDecayer::doupdate() throw(UpdateException) {
+  TensorMesonDecayerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
+  TensorMesonDecayerBase::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters TensorMeson2PScalarDecayer" 
+			   << Exception::abortnow;}
+  // set up the integration channels
+  vector<bool> dummyon;
+  vector<double> dummyweights;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {setMode(ix,_maxweight[ix],dummyon,dummyweights);}
+}
+
+inline void TensorMeson2PScalarDecayer::dofinish() {
+  TensorMesonDecayerBase::dofinish();
+}
+
+inline void TensorMeson2PScalarDecayer::doinitrun() {
+  TensorMesonDecayerBase::doinitrun();
+  PDVector particles(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      particles[0]=getParticleData(_incoming[ix]);
+      particles[1]=getParticleData(_outgoing1[ix]);
+      particles[2]=getParticleData(_outgoing2[ix]);
+      initializePhaseSpace(ix,particles);
+    }
+}
+
+inline void TensorMeson2PScalarDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  TensorMesonDecayerBase::rebind(trans);
+}
+
+inline IVector TensorMeson2PScalarDecayer::getReferences() {
+  IVector ret = TensorMesonDecayerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
