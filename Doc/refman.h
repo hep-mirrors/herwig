@@ -34,6 +34,10 @@ Standard Model.
 These classes are used for particle density functions.
 */
 
+/** \defgroup Shower Shower classes
+These classes are used for the Showering.
+*/
+
 /** \defgroup UnderlyingEvent UnderlyingEvent classes
 These classes are used for the underlying event.
 */
