@@ -224,7 +224,7 @@ inline void ThreePionCLEOCurrent::doinit() throw(InitException) {
     }
   // parameters for the breit-wigners
   _mpic=getParticleData(ParticleID::piplus)->mass();
-  _mpi0=getParticleData(ParticleID::piminus)->mass();
+  _mpi0=getParticleData(ParticleID::pi0)->mass();
   // momenta of the decay products for on-shell particles
   _psigmacc=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpic,_mpic);
   _psigma00=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpi0,_mpi0);
@@ -359,7 +359,7 @@ inline void ThreePionCLEOCurrent::inita1width(int iopt)
 				 widthgenC->width(_a1mass*_a1mass));
       // loop to give the values
       Energy2 moff2=0.; Energy moff;
-      cout << "Calculating running a_1 width" << endl;
+      cout << "Calculating running a_1 width " << endl;
       Energy charged,neutral,kaon;
       _a1runq2.resize(0);_a1runwidth.resize(0);
       for(;moff2<=mtau2;moff2+=step)
@@ -375,7 +375,11 @@ inline void ThreePionCLEOCurrent::inita1width(int iopt)
 	    {kaon=0.;}
 	  total=charged+neutral+kaon;
 	  _a1runwidth.push_back(total);
-	  cout << moff2 << " " << total << endl;
+	  cout << moff2/GeV2 << "              " 
+	       << total*moff/GeV2    << "              " 
+	       << charged*moff/GeV2  << "              " 
+	       << neutral*moff/GeV2  << "              " 
+	       << kaon   *moff/GeV2  << endl;
 	}
       delete inmeN;delete inmeC; delete widthgenN;delete widthgenC;
     }
@@ -423,7 +427,7 @@ inline double ThreePionCLEOCurrent::a1MatrixElement(int iopt,Energy2 q2, Energy2
       double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
       p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
       // calculate the form factors
-      CLEOFormFactor(2,-1,q2,s1,s2,s3,F1,F2,F3);
+      CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
     }
   // construct the momenta for the 3 charged mode 
   else
@@ -441,7 +445,7 @@ inline double ThreePionCLEOCurrent::a1MatrixElement(int iopt,Energy2 q2, Energy2
       double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
       p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
       // calculate the form factors
-      CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
+      CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
     }
   // construct a vector with the current
   Complex current[4];

@@ -121,7 +121,7 @@ void ThreePionCLEOCurrent::Init() {
      &ThreePionCLEOCurrent::_mK, GeV, 0.496*GeV, 0.0*GeV, 10.0*GeV,
      false, false, true);
 
-  static Parameter<ThreePionCLEOCurrent,Energy> interfaceKStatMass
+  static Parameter<ThreePionCLEOCurrent,Energy> interfaceKStarMass
     ("KStarMass",
      "The mass of the k* meson",
      &ThreePionCLEOCurrent::_mKstar, GeV, 0.894*GeV, 0.0*GeV, 10.0*GeV,
@@ -409,7 +409,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
       else if(ichan==8){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
     }
   else
-    {throw DecayIntegratorError() << "ThreePionCLEOCurrent Unknown Decay" 
+    {throw DecayIntegratorError() << "ThreePionCLEOCurrent Unknown Decay" << imode
 				  << Exception::abortnow;}
   // identical particle factors
   double fact=0.70710678;
