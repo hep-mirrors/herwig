@@ -113,6 +113,13 @@ public:
    * @param width The new width of the intermediate.
    */
   inline void resetIntermediate(tcPDPtr part,Energy mass,Energy width);
+
+  /*
+   * Reset the one of the daughters
+   * @param oldp The id of the particle being reset
+   * @param newp The id of the particle replacing it
+   */
+  inline void resetDaughter(int oldp, int newp);
   //@}
 
 protected:

@@ -159,4 +159,11 @@ inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,
 	  _intmass2[ix]=mass*mass;_intmwidth[ix]=mass*width;}}
 }
 
+inline void DecayPhaseSpaceChannel::resetDaughter(int oldp,int newp)
+{
+  for(unsigned int ix=0;ix<_intdau1.size();++ix)
+    {if(_intdau1[ix]==oldp){_intdau1[ix]=newp;}}
+  for(unsigned int ix=0;ix<_intdau2.size();++ix)
+    {if(_intdau2[ix]==oldp){_intdau2[ix]=newp;}}
+}
 }

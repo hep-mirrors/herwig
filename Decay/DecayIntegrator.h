@@ -93,7 +93,8 @@ public:
   
   /**
    * For a given decay mode and a given particle instance, perform the
-   * decay and return the decay products.
+   * decay and return the decay products. As this is the base class this
+   * is not implemented.
    * @param dm The DecayMode
    * @param part The Particle instant being decayed.
    * @return The vector of particles produced in the decay.
@@ -111,6 +112,8 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
+   * This function is purely virtual and must be implemented in classes inheriting
+   * from DecayIntegrator.
    * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
    * @param part The decaying Particle.
@@ -118,7 +121,7 @@ public:
    * @return The matrix element squared for the phase-space configuration.
    */
   virtual double me2(bool vertex, const int ichan, const Particle & part,
-		      const ParticleVector & decay) const;
+		      const ParticleVector & decay) const=0;
   
   /**
    * The helicity amplitude matrix element for spin correlations.

@@ -81,7 +81,6 @@ public:
   virtual ~DecayPhaseSpaceMode();
   //@}
 
-
   /**
    * Access to the external particles.
    * @param ix The external particle required.
@@ -126,34 +125,6 @@ public:
    */
   inline void resetIntermediate(tcPDPtr part, Energy mass, Energy width);
 
-protected:
-
-  /** @name Set-up, Initialization and Access Members */
-  //@{
-  /**
-   * Initialise the phase space.
-   * @param init Perform the initialization.
-   */
-  void initializePhaseSpace(bool init);
-
-
-
-
-  /**
-   * Set the integration parameters
-   * @param iter The number of iterations to use for initialization.
-   * @param points The number of points to use for each iteration during initialization.
-   * @param ntry The number of tries to generate a decay.
-   */
-  inline void setIntegrate(int iter,int points,int ntry);
-
-  /**
-   * Set the partial width to use for normalization. This is the partial width
-   * in the WidthGenerator object.
-   * @param in The partial width to use.
-   */
-  void setPartialWidth(int in);
-
   /**
    * Get the maximum weight for the decay.
    * @return The maximum weight.
@@ -179,6 +150,30 @@ protected:
    */
   inline void setWeights(const vector<double> in) const;
 
+protected:
+
+  /** @name Set-up, Initialization and Access Members */
+  //@{
+  /**
+   * Initialise the phase space.
+   * @param init Perform the initialization.
+   */
+  void initializePhaseSpace(bool init);
+
+  /**
+   * Set the integration parameters
+   * @param iter The number of iterations to use for initialization.
+   * @param points The number of points to use for each iteration during initialization.
+   * @param ntry The number of tries to generate a decay.
+   */
+  inline void setIntegrate(int iter,int points,int ntry);
+
+  /**
+   * Set the partial width to use for normalization. This is the partial width
+   * in the WidthGenerator object.
+   * @param in The partial width to use.
+   */
+  void setPartialWidth(int in);
 
   //@}
 

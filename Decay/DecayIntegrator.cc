@@ -103,16 +103,6 @@ void DecayIntegrator::Init() {
    
 }
 
-// return the matrix element squared
-double DecayIntegrator::me2(bool vertex, const int ichan, const Particle &,
-			    const ParticleVector & decay) const 
-{
-  throw DecayIntegratorError() << "DecayIntegrator::me2 is a virtual function"
-			       << " and should have been overridden" 
-			       << Exception::abortnow; 
-  return 0.;
-}
-
 // output info on the integrator
 ostream & operator<<(ostream & os, const DecayIntegrator & decay)
 {
