@@ -16,7 +16,6 @@
 extern const int SampleHistogramMinimum;
 extern const int SampleHistogramMaximum;
 
-using namespace std;
 
 
 /** \ingroup Utilities
