@@ -62,7 +62,7 @@ set /Defaults/StandardModel:EW/CKM /Defaults/CKM
 
 cd /Defaults/MatrixElements
 create /Pythia7/MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
-create /Pythia7/PS2to2Generic PS2to2Generic
+# new pythia: create /Pythia7/PS2to2Generic PS2to2Generic
 create /Pythia7/MEGG2GG MEGG2GG libP7MEQCD.so
 create /Pythia7/MEQG2QG MEQG2QG
 create /Pythia7/MEQQ2GG MEQQ2GG
@@ -71,15 +71,15 @@ create /Pythia7/MEQq2Qq MEQq2Qq
 create /Pythia7/MEGG2QQ MEGG2QQ
 create /Pythia7/MEQQ2qq MEQQ2qq
 create /Pythia7/MEqq2qq MEqq2qq
-set MEee2gZ2qq:PhaseSpaceGenerator PS2to2Generic
-set MEGG2GG:PhaseSpaceGenerator PS2to2Generic
-set MEQG2QG:PhaseSpaceGenerator PS2to2Generic
-set MEQQ2QQ:PhaseSpaceGenerator PS2to2Generic
-set MEQq2Qq:PhaseSpaceGenerator PS2to2Generic
-set MEGG2QQ:PhaseSpaceGenerator PS2to2Generic
-set MEQQ2qq:PhaseSpaceGenerator PS2to2Generic
-set MEqq2qq:PhaseSpaceGenerator PS2to2Generic
-set MEQQ2GG:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEee2gZ2qq:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEGG2GG:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEQG2QG:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEQQ2QQ:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEQq2Qq:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEGG2QQ:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEQQ2qq:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEqq2qq:PhaseSpaceGenerator PS2to2Generic
+# new Pythia7: set MEQQ2GG:PhaseSpaceGenerator PS2to2Generic
 
 cd /Defaults/Handlers/Hadronization/String
 library libP7String.so
@@ -111,6 +111,12 @@ create /Herwig++/ShowerAlphaQCD theIS_ShowerAlphaQCD
 create /Herwig++/ShowerAlphaQCD theFS_ShowerAlphaQCD
 create /Herwig++/ShowerAlphaQED theIS_ShowerAlphaQED
 create /Herwig++/ShowerAlphaQED theFS_ShowerAlphaQED
+# a few default values, may be overwritten in .in 
+set theShowerConstrainer:cutoffKinScale 0.75*GeV
+set theIS_ShowerAlphaQCD:NPAlphaS 1
+set theFS_ShowerAlphaQCD:NPAlphaS 1
+set theIS_ShowerAlphaQCD:Qmin 0.630882*GeV
+set theFS_ShowerAlphaQCD:Qmin 0.630882*GeV
 create /Herwig++/DrellYanMECorrection theDrellYanMECorrection
 set stdShowerHandler:GlobalParameters /Defaults/theGlobalParameters
 set stdShowerHandler:MECorrections theMECorrections
@@ -136,6 +142,10 @@ insert theMECorrections:VecMECorrection[0] theDrellYanMECorrection
 
 cd /Defaults/Handlers/Hadronization/Cluster
 library libHwHadronization.so
+# Create ClusterData info
+create /Pythia7/ParticleData /Defaults/Particles/Cluster
+setup /Defaults/Particles/Cluster 81 Cluster 0.00990 0.0 0.0 0.0  0 0  0  0
+defaultparticle /Defaults/Particles/Cluster
 create /Herwig++/ClusterHadronizationHandler stdCluHadHandler
 create /Herwig++/PartonSplitter thePartonSplitter
 create /Herwig++/ClusterFinder theClusterFinder
@@ -166,19 +176,19 @@ set thePartonSplitter:GlobalParameters /Defaults/theGlobalParameters
 
 
 cd /Defaults/Partons
-create /Pythia7/PDFApproximator DefaultApproximator
+# new pythia: create /Pythia7/PDFApproximator DefaultApproximator
 create /Pythia7/NoRemnants NoRemnants
 create /Pythia7/NoPDF NoPDF
 set NoPDF:RemnantHandler NoRemnants
-set NoPDF:Approximator DefaultApproximator
+# new pythia: set NoPDF:Approximator DefaultApproximator
 create /Pythia7/LeptonLeptonRemnant SimpleLeptonRemnants LeptonLeptonRemnant.so
 create /Pythia7/LeptonLeptonPDF SimpleLeptonPDF LeptonLeptonPDF.so
 set SimpleLeptonPDF:RemnantHandler SimpleLeptonRemnants
-set SimpleLeptonPDF:Approximator DefaultApproximator
+# new pythia: set SimpleLeptonPDF:Approximator DefaultApproximator
 set /Defaults/Particles/e-:PDF SimpleLeptonPDF
 set /Defaults/Particles/e+:PDF SimpleLeptonPDF
 library GRVBase.so
-create /Pythia7/QCDApproxPDF QCDApproximator QCDApproxPDF.so
+# new pythia: create /Pythia7/QCDApproxPDF QCDApproximator QCDApproxPDF.so
 create /Pythia7/GRV94L GRV94L GRV94L.so
 create /Pythia7/GRV94M GRV94M GRV94M.so
 create /Pythia7/BaryonRemnants BaryonRemnants BaryonRemnants.so
@@ -186,9 +196,9 @@ set BaryonRemnants:FlavourGenerator /Defaults/Handlers/Hadronization/String/stdL
 set BaryonRemnants:ZGenerator /Defaults/Handlers/Hadronization/String/stdLundZGenerator
 set BaryonRemnants:PtGeneratorQ /Defaults/Handlers/Hadronization/String/stdLundPtGenerator
 set GRV94L:RemnantHandler BaryonRemnants
-set GRV94L:Approximator QCDApproximator
+# new pythia: set GRV94L:Approximator QCDApproximator
 set GRV94M:RemnantHandler BaryonRemnants
-set GRV94M:Approximator QCDApproximator
+# new pythia: set GRV94M:Approximator QCDApproximator
 
 set /Defaults/Particles/p+:PDF GRV94L
 set /Defaults/Particles/pbar-:PDF GRV94L
@@ -207,12 +217,24 @@ set /Defaults/Particles/h0:DefaultSpin 1
 set /Defaults/Particles/h0:Spin 1
 
 cd /Defaults/Handlers
-create /Pythia7/TrivialExtractor TrivialExtractor TrivialExtractor.so
-set TrivialExtractor:NoPDF /Defaults/Partons/NoPDF
-create /Pythia7/SingleExtractor SingleExtractor SingleExtractor.so
-set SingleExtractor:NoPDF /Defaults/Partons/NoPDF
-create /Pythia7/SimpleExtractor SimpleExtractor SimpleExtractor.so
-set SimpleExtractor:NoPDF /Defaults/Partons/NoPDF
+# new pythia: create /Pythia7/TrivialExtractor TrivialExtractor TrivialExtractor.so
+# new pythia: set TrivialExtractor:NoPDF /Defaults/Partons/NoPDF
+# new pythia: create /Pythia7/SingleExtractor SingleExtractor SingleExtractor.so
+# new pythia: set SingleExtractor:NoPDF /Defaults/Partons/NoPDF
+# new pythia: create /Pythia7/SimpleExtractor SimpleExtractor SimpleExtractor.so
+# new pythia: set SimpleExtractor:NoPDF /Defaults/Partons/NoPDF
+# LESTER: Created next five lines:
+create /Pythia7/PartonExtractor StandardExtractor
+set StandardExtractor:NoPDF /Defaults/Partons/NoPDF
+set StandardExtractor:FlatSHatY 1
+create /Pythia7/PartonExtractor EEExtractor
+set EEExtractor:NoPDF /Defaults/Partons/NoPDF
+
+# LESTER: added to stop Seg Fault! (new pythia version)
+create /Pythia7/DecayHandler StandardDecayHandler
+
+# LESTER: added to stop Seg Fault! (new pythia version)
+create /Pythia7/ACDCSampler ACDCSampler ACDCSampler.so
 
 create /Pythia7/EventHandler SimpleLEPHandler
 create /Pythia7/FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
@@ -221,7 +243,8 @@ set SimpleLEPHandler:LuminosityFunction FixedLEPLuminosity
 
 create /Pythia7/SubProcessHandler SimpleEE2QQ
 insert SimpleEE2QQ:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2qq
-set SimpleEE2QQ:PartonExtractor SimpleExtractor
+# LESTER: Changed Simple to EE in following line:
+set SimpleEE2QQ:PartonExtractor EEExtractor
 insert SimpleLEPHandler:SubProcessHandlers[0] SimpleEE2QQ
 set SimpleLEPHandler:BeamA /Defaults/Particles/e-
 set SimpleLEPHandler:BeamB /Defaults/Particles/e+
@@ -235,6 +258,9 @@ set SimpleLEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Clust
 
 ###PHIL### set SimpleLEPHandler:DecayHandler /Defaults/Handlers/Decay/stdDecayHandler
 #***endLOOKHERE***
+
+#LESTER: added:
+set SimpleLEPHandler:Sampler ACDCSampler
 
 
 create /Pythia7/EventHandler SimpleLHCHandler
@@ -250,7 +276,8 @@ insert SimpleQCD:MatrixElements[4] /Defaults/MatrixElements/MEGG2QQ
 insert SimpleQCD:MatrixElements[5] /Defaults/MatrixElements/MEQQ2qq
 insert SimpleQCD:MatrixElements[6] /Defaults/MatrixElements/MEqq2qq
 insert SimpleQCD:MatrixElements[7] /Defaults/MatrixElements/MEQQ2GG
-set SimpleQCD:PartonExtractor SimpleExtractor
+# LESTER: Changes Simple to Standard in following line:
+set SimpleQCD:PartonExtractor StandardExtractor
 insert SimpleLHCHandler:SubProcessHandlers[0] SimpleQCD
 set SimpleLHCHandler:BeamA /Defaults/Particles/p+
 set SimpleLHCHandler:BeamB /Defaults/Particles/p+
