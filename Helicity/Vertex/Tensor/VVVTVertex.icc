@@ -6,18 +6,16 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-inline VVVTVertex::VVVTVertex() {}
+inline VVVTVertex::VVVTVertex() 
+{
+  // number of particles
+  setNpoint(4);
+  // spins
+  setSpin(3,3,3,5);
+}
 
 inline VVVTVertex::VVVTVertex(const VVVTVertex & x)
   : VertexBase(x) {}
-
-inline IBPtr VVVTVertex::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr VVVTVertex::fullclone() const {
-  return new_ptr(*this);
-}
 
 inline void VVVTVertex::doupdate() throw(UpdateException) {
   VertexBase::doupdate();

@@ -21,7 +21,7 @@ void VVSVertex::persistentOutput(PersistentOStream & os) const {}
     
 void VVSVertex::persistentInput(PersistentIStream & is, int) {}
     
-ClassDescription<VVSVertex> VVSVertex::initVVSVertex;
+AbstractClassDescription<VVSVertex> VVSVertex::initVVSVertex;
 // Definition of the static class description member.
     
 void VVSVertex::Init() {

@@ -7,18 +7,16 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SSSVertex::SSSVertex() {}
+inline SSSVertex::SSSVertex() 
+{
+  // number of external particles
+  setNpoint(3);
+  // spins of external particles
+  setSpin(1,1,1);
+}
 
 inline SSSVertex::SSSVertex(const SSSVertex & x)
   : Herwig::Helicity::VertexBase(x) {}
-
-inline IBPtr SSSVertex::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr SSSVertex::fullclone() const {
-  return new_ptr(*this);
-}
 
 inline void SSSVertex::doupdate() throw(UpdateException) {
   Herwig::Helicity::VertexBase::doupdate();

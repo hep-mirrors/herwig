@@ -19,13 +19,13 @@ void VVVVVertex::persistentOutput(PersistentOStream & os) const {}
 
 void VVVVVertex::persistentInput(PersistentIStream & is, int) {}
     
-ClassDescription<VVVVVertex> VVVVVertex::initVVVVVertex;
+AbstractClassDescription<VVVVVertex> VVVVVertex::initVVVVVertex;
 // Definition of the static class description member.
     
 void VVVVVertex::Init() {
       
 static ClassDocumentation<VVVVVertex> documentation
-  ("There is no documentation for the \\classname{VVVVVertex} class");
+  ("The \\classname{VVVVVertex} class is the implementation of the 4-vector vertex");
  
 }
 

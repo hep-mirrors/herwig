@@ -70,13 +70,7 @@ public:
 				 const TensorWaveFunction&,DiracRep=defaultDRep);
   // set the couplings
   virtual void setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr);
-  
-protected:
-  
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
-  
+
 protected:
   
   inline virtual void doupdate() throw(UpdateException);
@@ -94,7 +88,7 @@ protected:
   
 private:
   
-  static ClassDescription<FFTVertex> initFFTVertex;
+  static AbstractClassDescription<FFTVertex> initFFTVertex;
   // Describe a concrete class with persistent data.
   
   FFTVertex & operator=(const FFTVertex &);

@@ -19,7 +19,7 @@ void SSTVertex::persistentOutput(PersistentOStream & os) const { }
 
 void SSTVertex::persistentInput(PersistentIStream & is, int) { }
 
-ClassDescription<SSTVertex> SSTVertex::initSSTVertex;
+AbstractClassDescription<SSTVertex> SSTVertex::initSSTVertex;
 // Definition of the static class description member.
 
 void SSTVertex::Init() {

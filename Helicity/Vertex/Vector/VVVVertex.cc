@@ -23,7 +23,7 @@ void VVVVertex::persistentInput(PersistentIStream & is, int) {
   ;
 }
     
-ClassDescription<VVVVertex> VVVVertex::initVVVVertex;
+AbstractClassDescription<VVVVertex> VVVVertex::initVVVVertex;
 // Definition of the static class description member.
   
 void VVVVertex::Init() {

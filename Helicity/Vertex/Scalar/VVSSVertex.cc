@@ -19,7 +19,7 @@ void VVSSVertex::persistentOutput(PersistentOStream & os) const {}
   
 void VVSSVertex::persistentInput(PersistentIStream & is, int) {}
   
-ClassDescription<VVSSVertex> VVSSVertex::initVVSSVertex;
+AbstractClassDescription<VVSSVertex> VVSSVertex::initVVSSVertex;
 // Definition of the static class description member.
     
 void VVSSVertex::Init() {

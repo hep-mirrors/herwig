@@ -8,18 +8,16 @@ namespace Helicity {
 using namespace ThePEG;
 
 
-inline FFTVertex::FFTVertex() {}
+inline FFTVertex::FFTVertex() 
+{
+  // number of particles
+  setNpoint(3);
+  // spins
+  setSpin(2,2,5);
+}
 
 inline FFTVertex::FFTVertex(const FFTVertex & x)
   : VertexBase(x) {}
-
-inline IBPtr FFTVertex::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr FFTVertex::fullclone() const {
-  return new_ptr(*this);
-}
 
 inline void FFTVertex::doupdate() throw(UpdateException) {
   VertexBase::doupdate();

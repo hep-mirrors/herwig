@@ -1,4 +1,4 @@
-// -*- C++ -*-
+#// -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
 // the FFVTVertex class.
@@ -8,18 +8,16 @@ namespace Herwig{
 namespace Helicity{
 using namespace ThePEG;
 
-inline FFVTVertex::FFVTVertex() {}
+inline FFVTVertex::FFVTVertex() 
+{
+  // number of particles
+  setNpoint(4);
+  // spins
+  setSpin(2,2,3,5);
+}
 
 inline FFVTVertex::FFVTVertex(const FFVTVertex & x)
   : VertexBase(x) {}
-
-inline IBPtr FFVTVertex::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr FFVTVertex::fullclone() const {
-  return new_ptr(*this);
-}
 
 inline void FFVTVertex::doupdate() throw(UpdateException) {
   VertexBase::doupdate();

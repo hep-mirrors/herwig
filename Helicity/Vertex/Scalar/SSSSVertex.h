@@ -56,12 +56,6 @@ public:
   
 protected:
   
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
-  
-protected:
-  
   inline virtual void doupdate() throw(UpdateException);
   inline virtual void doinit() throw(InitException);
   inline virtual void doinitrun();
@@ -77,7 +71,7 @@ protected:
   
 private:
   
-  static ClassDescription<SSSSVertex> initSSSSVertex;
+  static AbstractClassDescription<SSSSVertex> initSSSSVertex;
   // Describe a concrete class with persistent data.
   
   SSSSVertex & operator=(const SSSSVertex &);

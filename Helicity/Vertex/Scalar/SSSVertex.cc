@@ -19,7 +19,7 @@ void SSSVertex::persistentOutput(PersistentOStream & os) const {}
 
 void SSSVertex::persistentInput(PersistentIStream & is, int) {}
     
-ClassDescription<SSSVertex> SSSVertex::initSSSVertex;
+AbstractClassDescription<SSSVertex> SSSVertex::initSSSVertex;
 // Definition of the static class description member.
 
 void SSSVertex::Init() {

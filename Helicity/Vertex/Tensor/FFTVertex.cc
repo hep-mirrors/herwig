@@ -20,7 +20,7 @@ void FFTVertex::persistentOutput(PersistentOStream & os) const { }
 void FFTVertex::persistentInput(PersistentIStream & is, int) { }
     
 // Definition of the static class description member
-ClassDescription<FFTVertex> FFTVertex::initFFTVertex;
+AbstractClassDescription<FFTVertex> FFTVertex::initFFTVertex;
     
 void FFTVertex::Init() {
   
