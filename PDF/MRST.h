@@ -11,7 +11,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace std;
 
 static const int np=8;
 static const int nx=49;
