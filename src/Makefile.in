@@ -4,7 +4,7 @@ OBJECTS := $(SOURCES:.cc=.o)
 
 PROGS   := Herwig testKtJet
 
-HWLIBS = -lHwHadronization -lHwUtils -lHwDecay -lHwShower -lHwME
+HWLIBS = -lHwHadronization -lHwUtils -lHwDecay -lHwShower -lHwME -lHwWaveFunction -lUA5 -lHwCorrelations -lHwVertex -lHwTVertex -lHwVVertex -lHwSVertex -lHwStandardModel -lHwSMVertex -lHwRSVertex -lHwRSModel -lHwPDT -lHwVMDecay -lHwTMDecay  -lHwSMDecay -lHwWeakCurrent -lHwFormFactor -lHwTauDecay -lHwBaryonDecay -lHwPerturbativeDecay
 
 KTJETPATH = -I@KTJETPATH@
 
