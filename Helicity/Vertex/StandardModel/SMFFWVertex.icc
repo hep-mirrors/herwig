@@ -1,0 +1,101 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the StandardModelFFWVertex class.
+//
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+inline SMFFWVertex::SMFFWVertex() 
+{
+  // particles for the vertex
+  vector<int> first,second,third;
+  // particles for outgoing W-
+  for(unsigned int ix=1;ix<6;ix+=2)
+    {
+      for(unsigned int iy=2;iy<7;iy+=2)
+	{first.push_back(-ix);second.push_back(iy);third.push_back(-24);}
+    }
+  // particles for outgoing W+
+  for(unsigned int ix=2;ix<7;ix+=2)
+    {
+      for(unsigned int iy=1;iy<6;iy+=2)
+	{first.push_back(-ix);second.push_back(iy);third.push_back(24);}
+    }
+  setList(first,second,third);
+  // set up for the couplings
+  for(int ix=0;ix<2;++ix){for(int iy=0;iy<2;++iy){_ckm[ix][iy]=0.;}};
+  _q2last=0.;_couplast=0.;
+}
+  
+inline SMFFWVertex::SMFFWVertex(const SMFFWVertex & x)
+  : Herwig::Helicity::FFVVertex(x), _theSM(x._theSM),
+    _theCKM(x._theCKM),
+    _couplast(x._couplast),_q2last(x._q2last) 
+{for(int ix=0;ix<2;++ix){for(int iy=0;iy<2;++iy){_ckm[ix][iy]=x._ckm[ix][iy];}}}
+
+inline IBPtr SMFFWVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMFFWVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SMFFWVertex::doupdate() throw(UpdateException) {
+  Herwig::Helicity::FFVVertex::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void SMFFWVertex::doinit() throw(InitException) {
+  Herwig::Helicity::FFVVertex::doinit();
+  // cast the CKM object to the HERWIG one
+  ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
+    hwCKM=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer>(_theCKM);
+  if(hwCKM)
+    {
+      vector< vector<Complex > > CKM;
+      CKM = hwCKM->getUnsquaredMatrix(_theSM->families());
+      for(unsigned int ix=0;ix<3;++ix)
+	{for(unsigned int iy=0;iy<3;++iy){_ckm[ix][iy]=CKM[ix][iy];}}
+    }
+  else
+    {throw InitException();}
+}
+
+inline void SMFFWVertex::dofinish() {
+  Herwig::Helicity::FFVVertex::dofinish();
+}
+
+inline void SMFFWVertex::doinitrun() {
+  Herwig::Helicity::FFVVertex::doinitrun();
+}
+
+inline void SMFFWVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Herwig::Helicity::FFVVertex::rebind(trans);
+}
+
+inline IVector SMFFWVertex::getReferences() {
+  IVector ret = Herwig::Helicity::FFVVertex::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+}

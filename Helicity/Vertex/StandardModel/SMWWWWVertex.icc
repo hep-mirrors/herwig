@@ -1,0 +1,104 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMWWWWVertex class.
+//
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+inline SMWWWWVertex::SMWWWWVertex() 
+{
+  // particles
+  vector<int> first,second,third,fourth;
+  first.push_back(24);
+  first.push_back(23);
+  first.push_back(22);
+  first.push_back(22);
+  second.push_back(-24);
+  second.push_back(24);
+  second.push_back(24);
+  second.push_back(24);
+  third.push_back(24);
+  third.push_back(23);
+  third.push_back(22);
+  third.push_back(23);
+  fourth.push_back(-24);
+  fourth.push_back(-24);
+  fourth.push_back(-24);
+  fourth.push_back(-24);
+  setList(first,second,third,fourth);
+  // coupling
+  _q2last=0.;_couplast=0.;
+}
+
+inline SMWWWWVertex::SMWWWWVertex(const SMWWWWVertex & x)
+  : VVVVVertex(x),_theSM(x._theSM), _gamma(x._gamma), _Z0(x._Z0),
+    _wplus(x._wplus), _wminus(x._wminus) , _couplast(x._couplast),_q2last(x._q2last),
+    _sw2(x._sw2) ,_cw2(x._cw2) {for(int ix=0;ix<4;++ix){_vfact[ix]=x._vfact[ix];}}
+inline IBPtr SMWWWWVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMWWWWVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SMWWWWVertex::doupdate() throw(UpdateException) {
+  VVVVVertex::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void SMWWWWVertex::doinit() throw(InitException) {
+  VVVVVertex::doinit();
+  // couplings
+  _sw2 = _theSM->sin2ThetaW();
+  _cw2 = 1.-_sw2;
+  double sw = sqrt(_sw2);
+  double cw = sqrt(_cw2);
+  _vfact[0] = -1./_sw2;
+  _vfact[1] = _cw2/_sw2;
+  _vfact[2] = 1.;
+  _vfact[3] = cw/sw;
+  // pointer for intermediate particles
+  _gamma  = getParticleData(ThePEG::ParticleID::gamma);
+  _Z0     = getParticleData(ThePEG::ParticleID::Z0);
+  _wplus  = getParticleData(ThePEG::ParticleID::Wplus);
+  _wminus = getParticleData(ThePEG::ParticleID::Wminus);
+}
+
+inline void SMWWWWVertex::dofinish() {
+  VVVVVertex::dofinish();
+}
+
+inline void SMWWWWVertex::doinitrun() {
+  VVVVVertex::doinitrun();
+}
+
+inline void SMWWWWVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  VVVVVertex::rebind(trans);
+}
+
+inline IVector SMWWWWVertex::getReferences() {
+  IVector ret = VVVVVertex::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+}

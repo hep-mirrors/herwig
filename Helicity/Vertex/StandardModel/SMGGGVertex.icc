@@ -1,0 +1,76 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMGGGVertex class.
+//
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+inline SMGGGVertex::SMGGGVertex() 
+{
+  // the particles
+  vector<int> first,second,third;
+  first.push_back(21);second.push_back(21);third.push_back(21);
+  setList(first,second,third);
+  // the coupling
+  _couplast=0.;_q2last=0.;
+}
+
+inline SMGGGVertex::SMGGGVertex(const SMGGGVertex & x)
+  : VVVVertex(x) , _theSM(x._theSM ), _couplast(x._couplast),
+    _q2last(x._q2last)
+  {}
+
+inline IBPtr SMGGGVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMGGGVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SMGGGVertex::doupdate() throw(UpdateException) {
+  VVVVertex::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void SMGGGVertex::doinit() throw(InitException) {
+  VVVVertex::doinit();
+}
+
+inline void SMGGGVertex::dofinish() {
+  VVVVertex::dofinish();
+}
+
+inline void SMGGGVertex::doinitrun() {
+  VVVVertex::doinitrun();
+}
+
+inline void SMGGGVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  VVVVertex::rebind(trans);
+}
+
+inline IVector SMGGGVertex::getReferences() {
+  IVector ret = VVVVertex::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+}

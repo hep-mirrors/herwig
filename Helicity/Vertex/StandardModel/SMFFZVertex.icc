@@ -1,0 +1,96 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMFFZVertex class.
+//
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+inline SMFFZVertex::SMFFZVertex() 
+{
+  // set the couplings to zero (will be initialised from the SM object in doinit)
+  for(int ix=0;ix<17;++ix){_gl[ix]=0.;_gr[ix]=0.;};_q2last=0.;_couplast=0.;
+  // PDG codes for the particles
+  vector<int> first,second,third;
+  // the quarks
+  for(unsigned int ix=1;ix<7;++ix)
+    {first.push_back(-ix);second.push_back(ix);third.push_back(23);}
+  // the leptons
+  for(unsigned int ix=11;ix<17;++ix)
+    {first.push_back(-ix);second.push_back(ix);third.push_back(23);}
+  setList(first,second,third);
+}
+
+inline SMFFZVertex::SMFFZVertex(const SMFFZVertex & x)
+  : FFVVertex(x), _theSM(x._theSM), _couplast(x._couplast),
+    _q2last(x._q2last)
+{for(int ix=0;ix<17;++ix){_gl[ix]=x._gl[ix];_gr[ix]=x._gr[ix];}}
+
+inline IBPtr SMFFZVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMFFZVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SMFFZVertex::doupdate() throw(UpdateException) {
+  FFVVertex::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void SMFFZVertex::doinit() throw(InitException) {
+  double sw2=_theSM->sin2ThetaW();
+  double fact = 0.25/sqrt(sw2*(1.-sw2));
+  for(int ix=1;ix<4;++ix)
+    {
+      _gl[2*ix-1]  = fact*((_theSM->vd())+(_theSM->ad()));
+      _gl[2*ix ]   = fact*((_theSM->vu())+(_theSM->au()));
+      _gl[2*ix+9 ] = fact*((_theSM->ve())+(_theSM->ae()));
+      _gl[2*ix+10] = fact*((_theSM->vnu())+(_theSM->anu()));
+      _gr[2*ix-1]  = fact*((_theSM->vd())-(_theSM->ad()));
+      _gr[2*ix ]   = fact*((_theSM->vu())-(_theSM->au()));
+      _gr[2*ix+9 ] = fact*((_theSM->ve())-(_theSM->ae()));
+      _gr[2*ix+10] = fact*((_theSM->vnu())-(_theSM->anu()));
+    }
+  _couplast=0.;
+  _q2last=0.; 
+  FFVVertex::doinit();
+}
+
+inline void SMFFZVertex::dofinish() {
+  FFVVertex::dofinish();
+}
+
+inline void SMFFZVertex::doinitrun() {
+  FFVVertex::doinitrun();
+}
+
+inline void SMFFZVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  FFVVertex::rebind(trans);
+}
+
+inline IVector SMFFZVertex::getReferences() {
+  IVector ret = FFVVertex::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+}
