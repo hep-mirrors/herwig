@@ -132,7 +132,7 @@ SampleHistogram::printGnuplot(char* name)
       << "# by SampleHistogram::printGnuplot (simply GNUPLOT plot with histeps)" << endl
       << "# " << this->samples() << " entries, mean +/- sigma = " 
       << this->mean() << " +/- " << this->stdDev() << endl
-      << "# (1) xmid (2) entr (3) entr norm (4) estd err (5) err norm (6) xlow (7) xhi"
+      << "# 1:xmid 2:entr 3:entr n1 4:estd err 5:err n1 6:xlow 7:xhi 8:entr/tot"
       << endl;
 
   double delta = (bucketLimit[1] - bucketLimit[0])/2.;
@@ -143,7 +143,8 @@ SampleHistogram::printGnuplot(char* name)
 	<< (bucketCount[i+1] == 0 ? 0.0 : 1/sqrt(bucketCount[i+1])) << "\t"
 	<< (bucketCount[i+1] == 0 ? 0.0 : 1/sqrt(bucketCount[i+1])/(2.*delta*(this->samples()))) << "\t"
 	<< bucketLimit[i] << "\t" 
-	<< bucketLimit[i] + 2.*delta
+	<< bucketLimit[i] + 2.*delta << "\t"
+	<< (double) bucketCount[i+1]/(this->samples()) << "\t"
 	<< "\n";
   }
   out.close();

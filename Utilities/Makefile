@@ -316,4 +316,14 @@ Smearing.o: Smearing.cc Smearing.h\
 	 ../../Pythia7/Repository/RandomGenerator.icc \
 	 ../../Pythia7/Repository/UseRandom.icc
 
+SmplHist.o: SmplHist.cc SmplHist.h\
+	 SmplStat.h
+
+SmplStat.o: SmplStat.cc SmplStat.h
+	 SmplStat.h
+
+testhisto.o: testhisto.cc SmplHist.h\
+	 SmplStat.h \
+	 /usera/gieseke/work/usrlocal/include/g++-v3/backward/iostream.h
+
 # IF YOU PUT ANYTHING HERE IT WILL GO AWAY
