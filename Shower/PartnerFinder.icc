@@ -6,7 +6,8 @@
 
 namespace Herwig {
 
-inline PartnerFinder::PartnerFinder() {}
+inline PartnerFinder::PartnerFinder() : _approach(0)
+{}
 
 inline PartnerFinder::PartnerFinder(const PartnerFinder & x)
   : ThePEG::HandlerBase(x)
