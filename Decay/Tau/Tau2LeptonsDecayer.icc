@@ -1,0 +1,117 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Tau2LeptonsDecayer class.
+//
+//  Author: Peter Richardson 
+//
+
+namespace Herwig {
+
+using namespace ThePEG;
+  
+inline Tau2LeptonsDecayer::Tau2LeptonsDecayer() 
+{
+  // parameters for the integrators
+  _electronwgt=1.215E-9;_muonwgt=1.065E-9;
+  _elon.push_back(true );_elon.push_back(false);
+  _muon.push_back(false);_muon.push_back(true);
+  _elwgt.push_back(1.0);_elwgt.push_back(0.0);
+  _muwgt.push_back(0.0);_muwgt.push_back(1.0);
+}
+  
+inline Tau2LeptonsDecayer::Tau2LeptonsDecayer(const Tau2LeptonsDecayer & x)
+  : TauDecayerBase(x), _electronwgt(x._electronwgt), _muonwgt(x._muonwgt),
+    _elon(x._elon), _muon(x._muon), _elwgt(x._elwgt), _muwgt(x._muwgt) {}
+  
+inline IBPtr Tau2LeptonsDecayer::clone() const {
+  return new_ptr(*this);
+}
+  
+inline IBPtr Tau2LeptonsDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+  
+inline void Tau2LeptonsDecayer::doupdate() throw(UpdateException) {
+  TauDecayerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+  //  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+  //  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+  //  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+  //  touch()
+  // Touch if anything has changed.
+}
+  
+inline void Tau2LeptonsDecayer::doinit() throw(InitException) {
+  TauDecayerBase::doinit();
+  // initialise the integration channels ofr the two decay modes
+  vector<PDVector> extpart; extpart.resize(2);
+  // external particles for the decay tau -> e nu nu
+  extpart[0].push_back(getParticleData(ParticleID::tauminus));
+  extpart[0].push_back(getParticleData(ParticleID::nu_tau));
+  extpart[0].push_back(getParticleData(ParticleID::eminus));
+  extpart[0].push_back(getParticleData(ParticleID::nu_ebar));
+  // external particles for the decay tau -> mu nu nu
+  extpart[1].push_back(getParticleData(ParticleID::tauminus));
+  extpart[1].push_back(getParticleData(ParticleID::nu_tau));
+  extpart[1].push_back(getParticleData(ParticleID::muminus));
+  extpart[1].push_back(getParticleData(ParticleID::nu_mubar));
+  // setup the channels
+  tPDPtr wminus=getParticleData(ParticleID::Wminus);
+  for(unsigned int ix=0;ix<2;++ix)
+    {
+      Ptr<Herwig::DecayPhaseSpaceChannel>::pointer
+	newchannel= new_ptr(DecayPhaseSpaceChannel());
+      newchannel->addIntermediate(getParticleData(ParticleID::tauminus),
+				  0,0.0,-1,1);
+      newchannel->addIntermediate(wminus,0,0.0,2,3);
+      newchannel->setExternal(extpart[ix]);
+      newchannel->init();
+      addChannel(newchannel);
+    }
+  // set up the channels
+  setMode(0,_electronwgt,_elon,_elwgt);
+  setMode(1,_muonwgt,_muon,_muwgt);
+}
+  
+inline void Tau2LeptonsDecayer::dofinish() {
+  TauDecayerBase::dofinish();
+}
+  
+inline void Tau2LeptonsDecayer::doinitrun() {
+  TauDecayerBase::doinitrun();
+  // initialisation of the decay modes
+  PDVector particles;
+  particles.push_back(getParticleData(ParticleID::tauminus));
+  particles.push_back(getParticleData(ParticleID::nu_tau));
+  // initialise the electron channels
+  particles.push_back(getParticleData(ParticleID::eminus));
+  particles.push_back(getParticleData(ParticleID::nu_ebar));
+  initializePhaseSpace(0,particles);
+  // initialise the muon channels
+  particles[2]=getParticleData(ParticleID::muminus);
+  particles[3]=getParticleData(ParticleID::nu_mubar);
+  initializePhaseSpace(1,particles);
+}
+  
+inline void Tau2LeptonsDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  TauDecayerBase::rebind(trans);
+}
+  
+inline IVector Tau2LeptonsDecayer::getReferences() {
+  IVector ret = TauDecayerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+  
+}

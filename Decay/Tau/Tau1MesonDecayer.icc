@@ -1,0 +1,105 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Tau1MesonDecayer class.
+//
+//  Author: Peter Richardson
+//
+
+namespace Herwig {
+  using namespace ThePEG;
+
+  inline Tau1MesonDecayer::Tau1MesonDecayer() 
+  {
+    // values of the weights for the default parameters
+    _piwgt    = 2.43783e-10;
+    _kwgt     = 1.60620e-11;
+    _rhowgt   = 5.53530e-10;
+    _kstarwgt = 2.16547e-11;
+    // default values of the decay constants
+    _fpi    = 130.7*MeV;
+    _fk     = 159.8*MeV;
+    _grho   = 0.115276*GeV2;
+    _gkstar = 0.115276*GeV2;
+  }
+  
+  inline Tau1MesonDecayer::Tau1MesonDecayer(const Tau1MesonDecayer & x)
+    : TauDecayerBase(x), _fpi(x._fpi), _fk(x._fk),
+      _grho(x._grho), _gkstar(x._gkstar),
+      _piwgt(x._piwgt), _kwgt(x._kwgt), 
+      _rhowgt(x._rhowgt), _kstarwgt(x._kstarwgt) {}
+  
+  inline IBPtr Tau1MesonDecayer::clone() const {
+    return new_ptr(*this);
+  }
+  
+  inline IBPtr Tau1MesonDecayer::fullclone() const {
+    return new_ptr(*this);
+  }
+  
+  inline void Tau1MesonDecayer::doupdate() throw(UpdateException) {
+    TauDecayerBase::doupdate();
+    // First update base class.
+    bool redo = touched();
+    // redo if touched.
+    //  UpdateChecker::check(aDependentMember, redo);
+    // Update referenced objects on which this depends redo is set to true
+    // if the dependent object is touched.
+    //  for_each(ContainerOfDependencies, UpdateChecker(redo));
+    // Update a container of references.
+    //  for_each(MapOfDependencies, UpdateMapChecker(redo));
+    // Update a map of references.
+    if ( !redo ) return;
+    // return if nothing has been touched. Otherwise do the actual update.
+    //  touch()
+    // Touch if anything has changed.
+  }
+  
+  inline void Tau1MesonDecayer::doinit() throw(InitException) {
+    TauDecayerBase::doinit();
+    // set up the four integration channels (these are all flat phase space in this case)
+    vector<double> wgtdummy; vector<bool> ondummy;
+    setMode(0,_piwgt,ondummy,wgtdummy);
+    setMode(1,_kwgt,ondummy,wgtdummy);
+    setMode(2,_rhowgt,ondummy,wgtdummy);
+    setMode(3,_kstarwgt,ondummy,wgtdummy);
+  }
+  
+  inline void Tau1MesonDecayer::dofinish() {
+    TauDecayerBase::dofinish();
+  }
+  
+  inline void Tau1MesonDecayer::doinitrun() {
+    PDVector particles;
+    particles.push_back(getParticleData(ParticleID::tauminus));
+    particles.push_back(getParticleData(ParticleID::nu_tau));
+    // initialise the decayer for each of the modes it is handling
+    // initialise the pion mode
+    particles.push_back(getParticleData(ParticleID::piminus));
+    initializePhaseSpace(0,particles);
+    // initialise the kaon mode
+    particles[2]=getParticleData(ParticleID::Kminus);
+    initializePhaseSpace(1,particles);
+    // initialise the rho mode
+    particles[2]=getParticleData(ParticleID::rhominus);
+    initializePhaseSpace(2,particles);
+    // initialise the kstar mode
+    particles[2]=getParticleData(ParticleID::Kstarplus);
+    initializePhaseSpace(3,particles);
+    // initialise the base case
+    TauDecayerBase::doinitrun();
+  }
+  
+  inline void Tau1MesonDecayer::rebind(const TranslationMap & trans)
+    throw(RebindException) {
+    // dummy = trans.translate(dummy);
+    TauDecayerBase::rebind(trans);
+  }
+  
+  inline IVector Tau1MesonDecayer::getReferences() {
+    IVector ret = TauDecayerBase::getReferences();
+    // ret.push_back(dummy);
+    return ret;
+  }
+  
+}
