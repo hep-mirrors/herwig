@@ -177,13 +177,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
       tempJetKin.parent = cit->first; 
       tempJetKin.p = cit->first->momentum();
       if ( gottaBoost ) tempJetKin.p.boost( beta_cm ); 
-      if ( cit->second ) 
-	atLeastOnce = ( reconstructTimeLikeJet( cit->first ) || atLeastOnce ); 
-//       if ( gottaBoost ) {
-// 	dum = cit->first->momentum();
-// 	dum.boost( beta_cm ); 
-// 	cit->first->set5Momentum( dum ); //?
-//       }
+      atLeastOnce = (reconstructTimeLikeJet(cit->first) || atLeastOnce); 
       tempJetKin.q = cit->first->momentum();       
       jetKinematics.push_back( tempJetKin );  
 
@@ -363,8 +357,33 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr p
     // unfortunately the particleJetParent doesn't have his own
     // showerkinematics but this works fine and keeps the updateLast
     // in the ShowerKinematics class.
-    dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
-      ->showerKinematics()->updateLast( particleJetParent );    
+    if (dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])) {      
+      dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
+	->showerKinematics()->updateLast( particleJetParent );    
+    } else {
+      Energy dm = particleJetParent->data().constituentMass(); 
+      if (dm != particleJetParent->momentum().m()) {
+	Lorentz5Momentum dum =  particleJetParent->momentum();
+	dum.setMass(dm); 
+	dum.rescaleRho(); 
+	particleJetParent->setMomentum(dum); 
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+	  generator()->log() << "KinematicsReconstructor::recTLJet: ";
+	  generator()->log() << "set untouched " 
+			     << particleJetParent->data().PDGName()
+			     << " to m = " 
+			     << dm/GeV
+			     << " GeV" << endl; 
+	}
+      } else {
+	// *** ACHTUNG! *** find some way to tell the calling method
+	// reconstructHardJets() that the particle doesn't need
+	// rescaling, ie the subsequent 'rescaling/boost' could be
+	// obsolete.  Only important when a hard process radiates
+	// rarely.  Definitely not important for e+e- -> jets! 
+	// simply returning 'false' collides with another check. 
+      }
+    }
   }
 
   // recursion has reached an endpoint once, ie we can reconstruct the
@@ -426,12 +445,12 @@ reconstructSpecialTimeLikeDecayingJet( const tShowerParticlePtr particleJetParen
  
 
 
-double KinematicsReconstructor::momConsEq(const double & k, const Energy & root_s, 
+double KinematicsReconstructor::momConsEq(const double & k, 
+					  const Energy & root_s, 
 					  const JetKinVect & jets) {
   Energy dum = Energy(); 
-  for( JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it ) { 
-    dum += sqrt( (it->q).mass2() + sqr(k)*((it->p).vect().mag2()) );
-  }
+  for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) 
+    dum += sqrt( (it->q).m2() + sqr(k)*(it->p).vect().mag2() );
   return( dum - root_s ); 
 }
 
@@ -441,7 +460,7 @@ const double KinematicsReconstructor::solveKfactor( const Energy & root_s,
   Energy2 s = sqr(root_s);
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
-    generator()->log() << "KinematicsReconstructor::solveKFactor: extreme _________________________________" << endl;
+    generator()->log() << "KinematicsReconstructor::solveKFactor: extreme ________________________________" << endl;
   }
 
   if ( jets.size() < 2) { 
@@ -450,7 +469,6 @@ const double KinematicsReconstructor::solveKfactor( const Energy & root_s,
 			   << endl;
     }    
   } else if ( jets.size() == 2 ) {
-    
     if ( momConsEq( 0.0, root_s, jets ) < 0.0 ) {
       if ( sqr((root_s - jets[0].p.t() - jets[1].p.t())/MeV) < 1.e-4
 	   && sqr((jets[0].p.x()+jets[1].p.x())/MeV) < 1.e-4

@@ -329,7 +329,10 @@ void ShowerHandler::cascade() {
       fillPositions();
 
       keepTrying = false;
-      if (!recons) keepTrying = true; 
+      if (!recons) {
+	if (countFailures++ < maxNumFailures) keepTrying = true; 
+	else throw Exception::eventerror; 	
+      }
     } // end of try
     catch ( std::exception & e ) {
       countFailures++;
@@ -529,9 +532,9 @@ void ShowerHandler::debuggingInfo() {
       }
     }    
   }
-  vector<Vector3> n; 
-  vector<double> lam; 
-  eventShape(fs, lam, n);
+  //vector<Vector3> n; 
+  //vector<double> lam; 
+  //eventShape(fs, lam, n);
 
   // to play with events in Mathematica, get lists of final state particles...
 //   cout << "{";

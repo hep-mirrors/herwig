@@ -277,10 +277,48 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
   //                evolution scales: firstQ and secondQ. 
   //                BELOW IT IS JUST A SIMPLE FAKE, JUST TO GET SOME VALUES
 
-  double angle = particlePair.first->momentum().vect().angle( particlePair.second->momentum().vect() );
-  firstQ  = particlePair.first->momentum().e() * angle;
-  secondQ = particlePair.second->momentum().e() * angle;
-  
+//   double angle = particlePair.first->momentum().vect().angle( particlePair.second->momentum().vect() );
+//   firstQ  = particlePair.first->momentum().e() * angle;
+//   secondQ = particlePair.second->momentum().e() * angle;
+
+  Lorentz5Momentum p1, p2; 
+  Lorentz5Momentum p, n; 
+  p1 = particlePair.first->momentum(); 
+  p2 = particlePair.second->momentum(); 
+  p = p1; 
+  p.boost((p1+p2).findBoostToCM());
+  n = Lorentz5Momentum(0.0, -p.vect()); 
+  firstQ = sqrt(2.*p*n); 
+  p = p2; 
+  p.boost((p1+p2).findBoostToCM());
+  n = Lorentz5Momentum(0.0, - p.vect()); 
+  secondQ = sqrt(2.*p*n);   
+
+  ////////////////////////////////////////////////////////////////////////////
+  // only a hack for the moment! comment/uncomment for normal/asymmetric
+  // if desired. 
+  // get asymmetric distribution in x, xbar plane: 
+//   Energy Q = sqrt(sqr(p1+p2)); 
+//   double r = p1.m()/Q; 
+//   //double v = sqrt(1.-sqr(r)); 
+//   if (particlePair.first->id() < 6 && particlePair.first->id() > 0) { 
+//     firstQ = 2.0*Q*sqrt(1.-2.*r); 
+//     secondQ = sqr(Q)/firstQ; 
+//     //secondQ = Q*(1.+v)*(firstQ/Q*(1.-v) + v*(1.+v))/(4.*firstQ/Q+sqr(v)-1.);
+//   } else if (particlePair.first->id() > -6 && particlePair.first->id() < 0) { 
+//     secondQ = 2.0*Q*sqrt(1.-2.*r); 
+//     firstQ = sqr(Q)/secondQ;    
+//     //firstQ = Q*(1.+v)*(secondQ/Q*(1.-v) + v*(1.+v))/(4.*secondQ/Q+sqr(v)-1.);
+//   }
+
+//   // swap the above values for even eventnumbers, 
+//   // (ie uncorrelated or randomly)
+//   Energy temp; 
+//   if (generator()->currentEventNumber()%2) {
+//     temp = firstQ; firstQ = secondQ; secondQ = temp;     
+//   }
+  ////////////////////////////////////////////////////////////////////////////
+
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
     generator()->log() << "PartnerFinder::calculateInitialEvolutionScales full ____________________________" << endl
@@ -288,8 +326,8 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
                        << "\t p = " << particlePair.first->momentum() << endl
 		       << "\t second:  " << particlePair.second->data().PDGName() 
                        << "\t p = " << particlePair.second->momentum() << endl
-                       << "\t angle = " << angle 
-		       << ", firstQ = " << firstQ / GeV 
+      //    << "\t angle = " << angle 
+		       << "\t firstQ = " << firstQ / GeV 
 		       << " GeV, secondQ = " << secondQ / GeV << " GeV " << endl;
   }
   

@@ -270,7 +270,6 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast
 			    << "  set beta = " << theLast->sudBeta() 
 			    << endl
 			    << "  used (sqrt(q2)=m, alpha, perp2, p.n) = (" 
-      //			    << sqr(theLast->data().mass()) << ", "
 			    << theMass << ", "
 			    << theLast->sudAlpha() << ", "
 			    << theLast->sudPperp2() << ", "

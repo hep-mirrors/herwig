@@ -519,7 +519,12 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	if ( candidateSudakov ) {
 	  // check size of scales beforehand...
 	  if ( particle.evolutionScales()[i] > 
-	       _pointerShowerConstrainer->cutoffQScale(index.interaction) ) {	    	  
+	       _pointerShowerConstrainer->cutoffQScale(index.interaction) ) {
+	    // use this condition for roughly only one gluon per quark
+// 	  if ( (particle.evolutionScales()[i] > 172.0*GeV
+// 		&& particle.evolutionScales()[i] < 175.0*GeV) 
+// 	       || (particle.evolutionScales()[i] > 47.7*GeV
+// 		   && particle.evolutionScales()[i] < 48.05*GeV) ) {
 	    candidateNewQ = candidateSudakov->
 	      generateNextBranching( ch, particle.evolutionScales()[i], 
 				     reverseAngularOrder );
