@@ -1,0 +1,325 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ProductionMatrixElement class.
+//
+// Author: Peter Richardson
+//
+
+namespace Herwig {
+namespace Helicity {
+
+using namespace ThePEG;
+
+// default constructor  
+inline ProductionMatrixElement::ProductionMatrixElement() {}
+    
+// copy constructor
+inline ProductionMatrixElement::ProductionMatrixElement(const 
+							ProductionMatrixElement & x)
+  : Base(x) ,_nout(x._nout),_inspin(x._inspin),_outspin(x._outspin),
+    _matrixelement(x._matrixelement), _constants(x._constants) 
+{}
+
+// constructor for 2-2 scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1,int in2,
+							int out1,int out2)
+{
+  _nout=2;
+  _inspin.resize(2);
+  _inspin[0]=in1; _inspin[1]=in2;
+  _outspin.push_back(out1);_outspin.push_back(out2);
+  setMESize();
+}
+
+// constructor for 2-3 scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1, int in2, 
+							int out1,int out2,int out3)
+{
+  _inspin.resize(2);
+  _nout=3; _inspin[0]=in1; _inspin[1]=in2;
+  _outspin.push_back(out1);_outspin.push_back(out2);_outspin.push_back(out3);
+  setMESize();
+}
+
+// constructor for 2-4 scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1, int in2
+							,int out1,int out2,int out3,
+							int out4)
+{
+  _nout=4;
+  _inspin.resize(2);
+  _inspin[0]=in1; _inspin[1]=in2;
+  _outspin.push_back(out1);_outspin.push_back(out2);
+  _outspin.push_back(out3);_outspin.push_back(out4);
+  setMESize();
+}
+
+// constructor for 2-5 scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1, int in2,
+							int out1,int out2,int out3,
+							int out4,int out5)
+{
+  _nout=5;
+  _inspin.resize(2);
+  _inspin[0]=in1; _inspin[1]=in2;
+  _outspin.push_back(out1);_outspin.push_back(out2);
+  _outspin.push_back(out3);_outspin.push_back(out4);_outspin.push_back(out5);
+  setMESize();
+}
+
+// constructor for 2-6 scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1, int in2,
+							int out1,int out2,int out3,
+							int out4,int out5,int out6)
+{
+  _nout=6;
+  _inspin.resize(2);
+  _inspin[0]=in1; _inspin[1]=in2;
+  _outspin.push_back(out1);_outspin.push_back(out2);
+  _outspin.push_back(out3);_outspin.push_back(out4);
+  _outspin.push_back(out5);_outspin.push_back(out6);
+  setMESize();
+}
+
+// constructor for 2-n scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1, int in2,
+							vector<int> out)
+{
+  _inspin.resize(2);
+  _nout=out.size(); _inspin[0]=in1; _inspin[1]=in2;
+  _outspin=out;setMESize();
+}
+
+// set the size of the vector containing the matrix element
+inline void ProductionMatrixElement::setMESize()
+{
+  int isize=_inspin[0]*_inspin[1];
+  for(unsigned int ix=0;ix<_outspin.size();++ix){isize*=_outspin[ix];}
+  // zero the matrix element
+  _matrixelement.resize(isize,0.);
+  // set up the constants for the mapping of helicity to vectro index
+  _constants.resize(_outspin.size()+3);
+  int temp=1;
+  for(unsigned int ix=_outspin.size()+1;ix>1;--ix)
+    {temp*=_outspin[ix-2];_constants[ix]=temp;}
+  temp*=_inspin[1];_constants[1]=temp;
+  temp*=_inspin[0];_constants[0]=temp;
+  _constants[_outspin.size()+2]=1;
+}
+
+// get the spins of the incoming particles particle
+inline vector<int> ProductionMatrixElement::inspin(){return _inspin;}
+
+// get the spins of the outgoing particles
+inline vector<int> ProductionMatrixElement::outspin(){return _outspin;}
+
+// access to the individual helicity components (2-2 scattering)
+inline Complex   ProductionMatrixElement::operator () 
+  (int in1,int in2,int out1,int out2) const
+{
+  // check this is really a 2-2 matrix element
+  if(_outspin.size()!=2)
+    {
+      cerr << "Requested component of 2-2 matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  unsigned int iloc=0,itemp;
+  itemp = ( _inspin[0]+1)/2+ in1-int( _inspin[0]%2==0&& in1>0);
+  iloc+=itemp*_constants[1];
+  itemp = ( _inspin[1]+1)/2+ in2-int( _inspin[1]%2==0&& in2>0);
+  iloc+=itemp*_constants[2];
+  itemp = (_outspin[0]+1)/2+out1-int(_outspin[0]%2==0&&out1>0);
+  iloc+=itemp*_constants[3];
+  itemp = (_outspin[1]+1)/2+out2-int(_outspin[1]%2==0&&out2>0);
+  iloc+=itemp*_constants[4];
+  if(iloc>=_matrixelement.size())
+    {cerr << "Invalid component of 2-2 matrix element requested" << endl;
+    return 0.;}
+  return _matrixelement[iloc];
+}
+
+// access to the individual helicity components (2-3 scattering)
+inline Complex   ProductionMatrixElement::operator () 
+  (int in1,int in2,int out1,int out2,int out3) const
+{
+  if(_outspin.size()!=3)
+    {
+      cerr << "Requested component of 2-3 matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  // map the indices to the location in the vector
+  vector<int> ivec(5);ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  return (*this)(ivec);
+}
+
+// access to the individual helicity components (2-4 scattering)
+inline Complex   ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3,int out4) const
+{
+  if(_outspin.size()!=4)
+    {
+      cerr << "Requested component of 2-4 matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  vector<int> ivec(6);ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  ivec[5]=out4;
+  return (*this)(ivec);
+}
+
+
+// access to the individual helicity components (2-5 scattering)
+inline Complex   ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3,int out4, int out5) const
+{
+  if(_outspin.size()!=5)
+    {
+      cerr << "Requested component of 2-4 matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  vector<int> ivec(7);ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  ivec[5]=out4;ivec[6]=out5;
+  return (*this)(ivec);
+}
+
+
+// access to the individual helicity components (2-6 scattering)
+inline Complex   ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3,int out4, int out5, int out6) const
+{
+  if(_outspin.size()!=6)
+    {
+      cerr << "Requested component of 2-6 matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  vector<int> ivec(8);ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  ivec[5]=out4;ivec[6]=out5;ivec[7]=out6;
+  return (*this)(ivec);
+}
+
+
+// access to the individual helicity components (2-n scattering)
+inline Complex   ProductionMatrixElement::operator () 
+  (vector<int> in) const
+{
+  if(_outspin.size()!=in.size())
+    {
+      cerr << "Requested component of 2-" << in.size() 
+	   << " matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  unsigned int iloc=0,itemp;
+  // incoming particles
+  for(unsigned int ix=0;ix<2;++ix)
+    {
+      itemp = (_inspin[ix]+1)/2+in[ix]-int(_inspin[ix]%2==0 &&in[ix]>0);
+      iloc+=itemp*_constants[ix+1];
+    }
+  // outgoing particles
+  for(unsigned int ix=2;ix<in.size();++ix)
+    {
+      itemp = (_outspin[ix-2]+1)/2+in[ix]-int(_outspin[ix-2]%2&&in[ix]>0);
+      iloc+=itemp*_constants[ix+1];
+    }
+  if(iloc>=_matrixelement.size())
+    {cerr << "Invalid component of 2-n matrix element requested" << endl;
+    return 0.;}
+  return _matrixelement[iloc];
+}
+
+// set the individual helicity components (2-2 scattering)
+inline Complex & ProductionMatrixElement::operator () (int in1,int in2,int out1,int out2)
+{
+  static Complex dummy=0.;
+  unsigned int iloc=0,itemp;
+  itemp = ( _inspin[0]+1)/2+ in1-int( _inspin[0]%2==0&& in1>0);
+  iloc+=itemp*_constants[1];
+  itemp = ( _inspin[1]+1)/2+ in2-int( _inspin[1]%2==0&& in2>0);
+  iloc+=itemp*_constants[2];
+  itemp = (_outspin[0]+1)/2+out1-int(_outspin[0]%2==0&&out1>0);
+  iloc+=itemp*_constants[3];
+  itemp = (_outspin[1]+1)/2+out2-int(_outspin[1]%2==0&&out2>0);
+  iloc+=itemp*_constants[4];
+  if(iloc>=_matrixelement.size())
+    {cerr << "Invalid component of 2-2 matrix element requested" << endl;
+    return dummy;}
+  return _matrixelement[iloc];
+}
+
+// set the individual helicity components (2-3 scattering)
+inline Complex & ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3)
+{
+  vector<int> ivec(5);
+  ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  return (*this)(ivec);
+}
+
+// set the individual helicity components (2-4 scattering)
+inline Complex & ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3, int out4)
+{
+  vector<int> ivec(6);
+  ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  ivec[5]=out4;
+  return (*this)(ivec);
+}
+
+// set the individual helicity components (2-5 scattering)
+inline Complex & ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3, int out4, int out5)
+{
+  vector<int> ivec(7);
+  ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  ivec[5]=out4; ivec[6]=out5;
+  return (*this)(ivec);
+}
+
+// set the individual helicity components (2-6 scattering)
+inline Complex & ProductionMatrixElement::operator ()
+  (int in1,int in2,int out1,int out2,int out3, int out4, int out5, int out6)
+{
+  vector<int> ivec(8);
+  ivec[0]=in1;ivec[1]=in2;ivec[2]=out1;ivec[3]=out2;ivec[4]=out3;
+  ivec[5]=out4; ivec[6]=out5; ivec[7]=out6;
+  return (*this)(ivec);
+}
+
+inline Complex & ProductionMatrixElement::operator ()
+  (vector<int> in)
+{
+  static Complex dummy=0;
+  if(_outspin.size()!=in.size())
+    {
+      cerr << "Requested component of 2-" << in.size() 
+	   << " matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; 
+      return dummy;
+    }
+  unsigned int iloc=0,itemp;
+  // incoming particles
+  for(unsigned int ix=0;ix<2;++ix)
+    {
+      itemp = (_inspin[ix]+1)/2+in[ix]-int(_inspin[ix]%2==0 &&in[ix]>0);
+      iloc+=itemp*_constants[ix+1];
+    }
+  // outgoing particles
+  for(unsigned int ix=2;ix<in.size();++ix)
+    {
+      itemp = (_outspin[ix-2]+1)/2+in[ix]-int(_outspin[ix-2]%2&&in[ix]>0);
+      iloc+=itemp*_constants[ix+1];
+    }
+  if(iloc>=_matrixelement.size())
+    {cerr << "Invalid component of 2-n matrix element requested" << endl;
+    return dummy;}
+  return _matrixelement[iloc];
+}
+
+// reset the matrix element
+inline void ProductionMatrixElement::reset(const ProductionMatrixElement & x) const
+{
+  _nout = x._nout;
+  _inspin = x._inspin;
+  _outspin =x._outspin;
+  _matrixelement=x._matrixelement;
+  _constants=x._constants;
+}
+
+
+
+}
+}
