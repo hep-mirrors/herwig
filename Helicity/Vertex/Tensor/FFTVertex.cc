@@ -32,9 +32,6 @@ void FFTVertex::Init() {
   
 }
 
-// coupling
-void FFTVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c){;}
-
 // function to evaluate the vertex
 Complex FFTVertex::evaluate(Energy2 q2,const SpinorWaveFunction & sp,
 				    const SpinorBarWaveFunction & sbar,

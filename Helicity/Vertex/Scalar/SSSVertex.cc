@@ -28,13 +28,11 @@ void SSSVertex::Init() {
     ("The \\classname{SSSVertex} class is the implementation of the SSS"
      "vertex. All such vertices shoud inherit from it");
 }
- 
-// calcuate the coupling
-void SSSVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c){;}
 
 // evaluate the vertex
-Complex SSSVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
-					const ScalarWaveFunction & sca2, 
+Complex SSSVertex::evaluate(Energy2 q2,
+			    const ScalarWaveFunction & sca1,
+			    const ScalarWaveFunction & sca2, 
 			    const ScalarWaveFunction & sca3)
 {
   tcPDPtr Psca1 = sca1.getParticle();

@@ -35,11 +35,6 @@ void FFVVertex::Init() {
      " the virtual setCoupling member to calculate the coupling");
 }
 
-// duumy setCoupling member
-void FFVVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c)
- {throw HelicityConsistencyError() <<"FFVVertex::setCoupling is virtual and "
-				   << "should be overridden" << Exception::abortnow;}
-
 // evalulate the full vertex
 Complex FFVVertex::evaluate(Energy2 q2,
 			    const SpinorWaveFunction & sp, 

@@ -27,77 +27,144 @@ class ScalarWaveFunction : public WaveFunctionBase {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Default constructors (set the momentum and Wavefunction).
+   * Constructor, set the momentum and Wavefunction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
    */
-  inline ScalarWaveFunction(const Lorentz5Momentum &,
-			    const tcPDPtr &,Complex);
+  inline ScalarWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
+			    Complex wave);
 
   /**
-   * Use a 5-momentum.
+   * Constructor, set the momentum, direction and Wavefunction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,
-			    Complex,Direction);
+  inline ScalarWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
+			    Complex wave,Direction dir);
 
   /**
-   * Set all components of momentum.
+   * Constructor, set all components of momentum, mass, direction
+   * and Wavefunction.
+   * @param px The x-component of the momentum.
+   * @param py The x-component of the momentum.
+   * @param pz The x-component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,Energy,
-			    const tcPDPtr &,Complex,Direction);
+  inline ScalarWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
+			    const tcPDPtr & part,Complex wave,Direction dir);
 
   /**
-   * Set 4-momentum components.
+   * Constructor, set all components of momentum, direction and Wavefunction.
+   * @param px The x-component of the momentum.
+   * @param py The x-component of the momentum.
+   * @param pz The x-component of the momentum.
+   * @param E  The energy.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,
-			    Complex,Direction);
+  inline ScalarWaveFunction(Energy px,Energy py,Energy pz,Energy E,const tcPDPtr & part,
+			    Complex wave,Direction dir);
 
   /**
-   * Set 4-momentum.
+   * Constructor, set the momentum, direction and Wavefunction.
+   * @param p The 4-momentum.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector,const tcPDPtr &,Complex,Direction);
+  inline ScalarWaveFunction(LorentzVector p,const tcPDPtr & part,Complex wave,
+			    Direction dir);
 
   /**
-   * Set mass zero momentum.
+   * Constructor, set the mass, direction and Wavefunction.
+   * @param m The mass.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Energy,const tcPDPtr &,Complex,Direction);
+  inline ScalarWaveFunction(Energy m,const tcPDPtr & part,Complex wave,Direction dir);
 
   /**
-   * Set 4 momentum and mass.
+   * Constructor, set the momentum, mass, direction and Wavefunction.
+   * @param p The 4-momentum.
+   * @param m The mass.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector,Energy,
-			    const tcPDPtr &,Complex,Direction);
+  inline ScalarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Complex wave,
+			    Direction dir);
 
   /**
-   * Default constructors (set the momentum and zero the Wavefunction)
-   * use 5 momentum.
+   * Constructor,set the 5-momentum and zero the wavefunction.
+   * @param p The 5-momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction); 
+  inline ScalarWaveFunction(Lorentz5Momentum p,const tcPDPtr & part,Direction dir); 
 
   /** 
-   * Set all components of momentum.
+   * Constructor, set all components of momentum, mass, direction and zero the
+   * wavefunction.
+   * @param px The x-component of the momentum.
+   * @param py The x-component of the momentum.
+   * @param pz The x-component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass. 
+   * @param part The ParticleData pointer
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,
-			    Direction);
+  inline ScalarWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
+			    const tcPDPtr & part, Direction dir);
 
   /**
-   * Set 4-momentum components.
+   * Constructor, set all components of momentum, direction and zero the 
+   * wavefunction.
+   * @param px The x-component of the momentum.
+   * @param py The x-component of the momentum.
+   * @param pz The x-component of the momentum.
+   * @param E  The energy.
+   * @param part The ParticleData pointer
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction);
+  inline ScalarWaveFunction(Energy px,Energy py,Energy pz,Energy E, 
+			    const tcPDPtr & part,Direction dir);
 
   /**
-   * Set 4-momentum.
+   * Constructor, set the momentum, direction and zero the wavefunction.
+   * @param p The 4-momentum.
+   * @param part The ParticleData pointer
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector,const tcPDPtr &,Direction);
+  inline ScalarWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir);
 
   /**
-   * Set mass zero momentum.
+   * Constructor, set the mass, direction and zero the wavefunction.
+   * @param m The mass.
+   * @param part The ParticleData pointer
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(Energy,const tcPDPtr &,Direction);
+  inline ScalarWaveFunction(Energy m,const tcPDPtr & part,Direction dir);
 
   /**
-   * Set 4 momentum and mass.
+   * Constructor, set the momentum, mass, direction and zero the wavefunction
+   * @param p The 4-momentum.
+   * @param m The mass.
+   * @param part The ParticleData pointer
+   * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction);
+  inline ScalarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
 
   /**
    * Default constructor.
@@ -108,14 +175,19 @@ public:
    * Destructor.
    */
   inline ~ScalarWaveFunction();
+  //@}
 
   /**
    * Subscript operator for the wavefunction.
+   * This is provided for consistency with the other wavefunctions and returns
+   * the wavefunction regardless of the index.
    */
   inline Complex operator ()(int ) const;
 
   /**
-   * Set components by index..
+   * Set components by index.
+   * This is provided for consistency with the other wavefunctions and sets
+   * the wavefunction regardless of the index.
    */
   inline Complex & operator () (int);
 
@@ -132,43 +204,55 @@ public:
   /**
    * Functions to reset the wavefunction and momentum (to speed the code up).
    */
-
+  //@{
   /**
    * Reset the momentum, particle type and direction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, Direction);
+  inline void reset(const Lorentz5Momentum & p, const tcPDPtr & part, Direction dir);
 
   /**
    * Reset the momentum and particle type.
+   * @param p The momentum.
+   * @param dir The direction.
    */
-  inline void reset(const Lorentz5Momentum &,Direction);
+  inline void reset(const Lorentz5Momentum & p,Direction dir);
 
   /**
    * Reset the momentum.
+   * @param p The momentum.
    */
-  inline void reset(const Lorentz5Momentum &);
+  inline void reset(const Lorentz5Momentum & p);
 
   /**
    * Reset the wavefunction.
+   * @param wave The wavefunction
    */
-  inline void reset(Complex);
+  inline void reset(Complex wave);
 
   /**
    * Reset the particle type and direction.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline void reset(const tcPDPtr &,Direction);
+  inline void reset(const tcPDPtr & part,Direction dir);
 
   /**
    * Reset the particle type.
+   * @param part The ParticleData pointer.
    */
-  inline void reset(const tcPDPtr &);
-  
+  inline void reset(const tcPDPtr & part);
+  //@}  
+
 private:
   
   /**
    * Check the particle type.
+   * @param part The ParticleData pointer.
    */
-  inline void checkParticle(const tcPDPtr &);
+  inline void checkParticle(const tcPDPtr & part);
 
 private:
 

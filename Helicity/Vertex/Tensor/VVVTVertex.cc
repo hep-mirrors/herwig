@@ -29,8 +29,7 @@ void VVVTVertex::Init() {
      " helicity amplitude calculation of the vector-vector-vector-tensor"
      " vertex. All such vertices should inherit from it.");
 }
-// coupling
-void VVVTVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c, tcPDPtr d){;}
+
 // function to evaluate the vertex
 Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     				 const VectorWaveFunction & vec2,

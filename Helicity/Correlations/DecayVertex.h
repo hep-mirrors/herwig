@@ -3,7 +3,7 @@
 #define HERWIG_DecayVertex_H
 //
 // This is the declaration of the DecayVertex class.
-
+//
 #include <ThePEG/Helicity/HelicityVertex.h>
 #include "DecayMatrixElement.h"
 // #include "DecayVertex.fh"
@@ -19,8 +19,8 @@ using ThePEG::Helicity::HelicityVertex;
  *
  *  The DecayVertex class is designed to implement the vertex
  *  for a decay for use with the spin correlation algorithm. 
- *  It inherits from elicityVertex class of ThePEG and implements 
- *  the methods to calculate the rho and D matrices.
+ *  It inherits from HelicityVertex class of ThePEG and implements 
+ *  the methods to calculate the \f$\rho\f$ and \f$D\f$ matrices.
  *
  *  It uses the DecayMatrixElement class to store the matrix element and
  *  it is this class which performs the calculations of the matrices.
@@ -32,22 +32,42 @@ using ThePEG::Helicity::HelicityVertex;
 class DecayVertex: public HelicityVertex {
       
 public:
-  
+    
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline DecayVertex();
+
+  /**
+   * Copy-constructor.
+   */
   inline DecayVertex(const DecayVertex &);
+
+  /**
+   * Destructor.
+   */
   virtual ~DecayVertex();
+  //@}
   
 public:
   
   /**
-   * Set and get the matrix element.
+   *  Access to the matrix element
+   */
+  //@{
+  /**
+   * Get the matrix element
    */
   inline const DecayMatrixElement & ME() const;
+
+  /**
+   * Set the matrix element
+   */
   inline void ME(const DecayMatrixElement &) const;
-  
+  //@}  
+
 public:
   
   /**
@@ -58,13 +78,14 @@ public:
 public:
   
   /**
-   * Methods to calculate the rho and D matrices.
+   * Method to calculate the \f$\rho\f$ matrix for one of the decay products
+   * @param iprod The product we are calculating the \f$\rho\f$ matrix for.
    */
-  virtual RhoDMatrix getRhoMatrix(int);
+  virtual RhoDMatrix getRhoMatrix(int iprod);
 
   /**
-   * Mthod to get the rho matrix for a given outgoing particle
-   * and to get the D matrix for an incoming particle.
+   * Method to calculate the \f$D\f$ matrix for the decaying particle. It this
+   * case the argument is a dummy.
    */
   virtual RhoDMatrix getDMatrix(int);
   
@@ -100,6 +121,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::Helicity::DecayVertex,1> {
+    /** Typedef of the base class of DecayVertex. */
     typedef Herwig::Helicity::HelicityVertex NthBase;
   };
   
@@ -114,14 +136,14 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/Helicity/DecayVertex"; }
+    static string className() { return "Herwig++::Helicity::DecayVertex"; }
 
     /**
      * Return the name of the shared library to be loaded to get
      * access to this class and every other class it uses
      * (except the base class).
      */
-    static string library() { return "HwCorrelations.so"; }
+    static string library() { return "libHwCorrelations.so"; }
 
   };
   

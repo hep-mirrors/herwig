@@ -30,46 +30,125 @@ class EpsFunction {
   
 public:
   
-  /** 
-   * Various functions to return the contraction of the vectors with 
-   * the epsilon function.
-   */ 
-  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
-						  const Lorentz5Momentum &,
-						  const Lorentz5Momentum &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum & v1,
+						  const Lorentz5Momentum & v2,
+						  const Lorentz5Momentum & v3);
 
-  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
-						  const Lorentz5Momentum &,
-						  const Lorentz5Momentum &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector & v1,
+						  const Lorentz5Momentum & v2,
+						  const Lorentz5Momentum & v3);
 
-  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
-						  const LorentzPolarizationVector &,
-						  const Lorentz5Momentum &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum & v1,
+						  const LorentzPolarizationVector & v2,
+						  const Lorentz5Momentum & v3);
 
-  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
-						  const Lorentz5Momentum &,
-						  const LorentzPolarizationVector &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum & v1,
+						  const Lorentz5Momentum & v2,
+						  const LorentzPolarizationVector & v3);
 
-  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
-						  const LorentzPolarizationVector &,
-						  const Lorentz5Momentum &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector & v1,
+						  const LorentzPolarizationVector & v2,
+						  const Lorentz5Momentum & v3);
 
-  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
-						  const LorentzPolarizationVector &,
-						  const LorentzPolarizationVector &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum & v1,
+						  const LorentzPolarizationVector & v2,
+						  const LorentzPolarizationVector & v3);
 
-  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
-						  const Lorentz5Momentum &,
-						  const LorentzPolarizationVector &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector & v1,
+						  const Lorentz5Momentum & v2,
+						  const LorentzPolarizationVector & v3);
 
-  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
-						  const LorentzPolarizationVector &,
-						  const LorentzPolarizationVector &);
+  /**
+   *  Return the product 
+   *  \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   * @param v1 The first  vector \f$v_{1\alpha}\f$.
+   * @param v2 The second vector \f$v_{2\alpha}\f$.
+   * @param v3 The third  vector \f$v_{3\alpha}\f$.
+   * @return The product 
+   * \f$\epsilon^{\mu\alpha\beta\gamma}v_{1\alpha}v_{2\beta}v_{3\gamma}\f$.
+   */
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector & v1,
+						  const LorentzPolarizationVector & v2,
+						  const LorentzPolarizationVector & v3);
 
 private:
-  
+
+  /**
+   * This is a static class so the constructor is private.
+   */  
   EpsFunction();
+
+  /**
+   * This is a static class so the copy-constructor is private. 
+   */
   EpsFunction(const EpsFunction & x);
+
+  /**
+   * This is a statoc class so the assignment operator is private.
+   */
   EpsFunction & operator=(const EpsFunction & x);
   
 };

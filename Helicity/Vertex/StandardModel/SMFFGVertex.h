@@ -3,7 +3,7 @@
 #define HERWIG_SMFFGVertex_H
 //
 // This is the declaration of the SMFFGVertex class.
-
+//
 #include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Utilities/Rebinder.h"
@@ -23,20 +23,41 @@ class SMFFGVertex: public FFVVertex {
   
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline SMFFGVertex();
+
+  /**
+   * Copy-constructor.
+   */
   inline SMFFGVertex(const SMFFGVertex &);
+
+  /**
+   * Destructor.
+   */
   virtual ~SMFFGVertex();
-  
+  //@}  
+
 public:
   
-  /** 
-   * Standard functions for writing and reading from persistent streams.
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -44,38 +65,76 @@ public:
   static void Init();
   
   /**
-   * Calculate the couplings.
+   * Calculate the couplings. 
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
    */
-  void setCoupling(Energy2,tcPDPtr, tcPDPtr, tcPDPtr);
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
   
 protected:
   
+  /** @name Clone Methods. */
+  //@{
   /**
-   * Standard clone methods.
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
 protected:
   
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void doinitrun();
-  inline virtual void dofinish();
-  
+
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  
+
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
   
 private:
   
@@ -99,9 +158,17 @@ private:
   /**
    * Storage of the couplings.
    */
+  //@{
+  /**
+   *  The last value of the strong coupling calculated.
+   */
   Complex _couplast;
-  Energy2 _q2last;
 
+  /**
+   *  The scale \f$q^2\f$ at which the coupling was last evaluated.
+   */
+  Energy2 _q2last;
+  //@}
 };   
 }
 }
@@ -116,6 +183,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::Helicity::SMFFGVertex,1> {
+    /** Typedef of the base class of SMFFGVertex. */
     typedef Herwig::Helicity::FFVVertex NthBase;
   };
   
@@ -130,7 +198,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/Helicity/SMFFGVertex"; }
+    static string className() { return "Herwig++::Helicity::SMFFGVertex"; }
 
     /**
      * Return the name of the shared library to be loaded to get

@@ -33,15 +33,14 @@ using namespace ThePEG;
  *
  *  When calculating the wavefunction the direction of the particle is used,
  *
- *  \e i.e.
- * - ipart=-1 (incoming) calculates a u spinor
- * - ipart=+1 (outgoing) calculates a v spinor
+ *  \e i.e. 
+ *  - incoming calculates a \f$u\f$ spinor.
+ *  - outgoing calculates a \f$v\f$ spinor.
  *
  *  The spinors are calculated using a Clebsch-Gordon decomposition in the rest-frame
  *  for a massive particle and boosted to the lab-frame. For massless particles the
- *  calculation is performed in the lab-frame (N.B. there are only two helicities +/-3/2
- *  in this case.)
- *
+ *  calculation is performed in the lab-frame (N.B. there are only two helicities
+ *  \f$\pm\frac32\f$ in this case.)
  *
  * @see WaveFunctionBase
  * @see LorentzRSSpinor
@@ -55,104 +54,221 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * Use a 5-momentum and specify all components
+   * Constructor, set the momentum and the components of the spinor and Dirac
+   * matrix representation.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param xs1 The first  spinor component of the \f$x\f$ vector.
+   * @param xs2 The second spinor component of the \f$x\f$ vector.
+   * @param xs3 The third  spinor component of the \f$x\f$ vector.
+   * @param xs4 The fourth spinor component of the \f$x\f$ vector.
+   * @param ys1 The first  spinor component of the \f$y\f$ vector.
+   * @param ys2 The second spinor component of the \f$y\f$ vector.
+   * @param ys3 The third  spinor component of the \f$y\f$ vector.
+   * @param ys4 The fourth spinor component of the \f$y\f$ vector.
+   * @param zs1 The first  spinor component of the \f$z\f$ vector.
+   * @param zs2 The second spinor component of the \f$z\f$ vector.
+   * @param zs3 The third  spinor component of the \f$z\f$ vector.
+   * @param zs4 The fourth spinor component of the \f$z\f$ vector.
+   * @param ts1 The first  spinor component of the \f$t\f$ vector.
+   * @param ts2 The second spinor component of the \f$t\f$ vector.
+   * @param ts3 The third  spinor component of the \f$t\f$ vector.
+   * @param ts4 The fourth spinor component of the \f$t\f$ vector.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,
-			      Complex,Complex,Complex,Complex,
-			      Complex,Complex,Complex,Complex,
-			      Complex,Complex,Complex,Complex,
-			      Complex,Complex,Complex,Complex,DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
+			      Complex xs1, Complex xs2, Complex xs3, Complex xs4,
+			      Complex ys1, Complex ys2, Complex ys3, Complex ys4,
+			      Complex zs1, Complex zs2, Complex zs3, Complex zs4,
+			      Complex ts1, Complex ts2, Complex ts3, Complex ts4,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * Use a 5-momentum and a LorentzRSSpinor
+   * Constructor, set the momentum and the wavefunction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param wave The wavefunction.
    */
-  inline RSSpinorWaveFunction(const Lorentz5Momentum &,
-			      const tcPDPtr &,LorentzRSSpinor &);
+  inline RSSpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
+			      LorentzRSSpinor & wave);
 
   /**
-   * use a 5-momentum 
+   * Constructor, set the momentum, helicity, direction and Dirac representation.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,Direction,
-			      DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,int ihel,
+			      Direction dir,DiracRep drep=defaultDRep);
 
   /**
-   * set all components of momentum 
+   * Constructor, set the momentum components and mass, helicity, direction and
+   * Dirac representation.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Energy,Energy,Energy,Energy,Energy,
-			      const tcPDPtr &,int,Direction,DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
+			      const tcPDPtr & part,int ihel,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set 4-momentum components 
+   * Constructor, set the momentum components, helicity, direction and
+   * Dirac representation.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,
-			      Direction,DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(Energy px,Energy py,Energy pz,Energy E,
+			      const tcPDPtr & part,int ihel,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set 4-momentum
+   * Constructor, set the 4-momentum, helicity, direction and
+   * Dirac representation.
+   * @param p the 4-momentum
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(LorentzVector,const tcPDPtr &,int,
-			      Direction,DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(LorentzVector p,const tcPDPtr & part,int ihel,
+			      Direction dir,DiracRep drep=defaultDRep);
   
   /**
-   * set mass zero momentum 
+   * Constructor, set the mass and zero the momentum, set the helicity, direction and
+   * Dirac representation.
+   * @param m The mass.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Energy,const tcPDPtr &,int,Direction,
-			      DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(Energy m,const tcPDPtr & part,int ihel,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set 4 momentum and mass
+   * Constructor, set the 4-momentum, mass, helicity, direction and
+   * Dirac representation.
+   * @param p the 4-momentum
+   * @param m The mass.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,Direction,
-			      DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,int ihel,
+			      Direction dir,DiracRep drep=defaultDRep);
 
   /**
-   * default constructors (set the momentum and zero the Wavefunction)
-   * use 5 momentum 
+   * Constructor, set the momentum, direction and Diracrepresentation, zero the 
+   * wavefunction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction,
-			    DiracRep=defaultDRep); 
-
+  inline RSSpinorWaveFunction(Lorentz5Momentum p,const tcPDPtr & part,Direction dir,
+			      DiracRep drep=defaultDRep); 
 
   /**
-   * set all components of momentum 
+   * Constructor, set the momentum components, mass, direction and
+   * Dirac representation, zero the wavefunction.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,
-			    Direction,DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
+			      const tcPDPtr & part,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set 4-momentum components (default Dirac representation)
+   * Constructor, set the momentum components, direction and
+   * Dirac representation, zero the wavefunction.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction,
-			    DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(Energy px,Energy py,Energy pz,Energy E,
+			      const tcPDPtr & part,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set 4-momentum
+   * Constructor set the 4-momentum, direction and
+   * Dirac representation, zero the wavefunction.
+   * @param p The 4-momentum
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(LorentzVector,const tcPDPtr &,Direction,
-			    DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set mass zero momentum
+   * Constructor set the mass, direction and
+   * Dirac representation, zero the momentum and wavefunction.
+   * @param m The mass.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(Energy,const tcPDPtr &,Direction,DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(Energy m,const tcPDPtr & part,Direction dir,
+			      DiracRep drep=defaultDRep);
 
   /**
-   * set 4 momentum and mass 
+   * Constructor set the 4-momentum, mass, direction and
+   * Dirac representation, zero the wavefunction.
+   * @param p The 4-momentum
+   * @param m The mass.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   * @param drep The Dirac representation.
    */
-  inline RSSpinorWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction,
-			    DiracRep=defaultDRep);
+  inline RSSpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+			      Direction dir,DiracRep drep=defaultDRep);
 
   /**
-   * default constructor
+   * Default constructor
    */
   inline RSSpinorWaveFunction(DiracRep=defaultDRep);
 
   /**
-   * destructor 
+   * Destructor 
    */
   inline ~RSSpinorWaveFunction();
   //@}
 
+  /**
+   * Assignment. 
+   */
+  inline RSSpinorWaveFunction & operator = (const RSSpinorWaveFunction &);
+
+  /**
+   *  Access to the wavefunction and its components.
+   */
+  //@{
   /**
    * subscript operator for the wavefunction
    * Set components by index.
@@ -165,195 +281,236 @@ public:
   inline Complex & operator () (int,int);
 
   /**
-   * Assignment. 
-   */
-  inline RSSpinorWaveFunction & operator = (const RSSpinorWaveFunction &);
-
-  /**
    * return wavefunction as LorentzRSSpinor
    */
   inline LorentzRSSpinor Wave() const;
 
   /**
-   * Get components
+   * Get first spinor component for the x vector
    */
   inline Complex xs1() const;
-  /**
-   * Get components
-   */
-  inline Complex xs2() const;
-  /**
-   * Get components
-   */
-  inline Complex xs3() const;
-  /**
-   * Get components
-   */
-  inline Complex xs4() const;
-  /**
-   * Get components
-   */
-  inline Complex ys1() const;
-  /**
-   * Get components
-   */
-  inline Complex ys2() const;
-  /**
-   * Get components
-   */
-  inline Complex ys3() const;
-  /**
-   * Get components
-   */
-  inline Complex ys4() const;
-  /**
-   * Get components
-   */
-  inline Complex zs1() const;
-  /**
-   * Get components
-   */
-  inline Complex zs2() const;
-  /**
-   * Get components
-   */
-  inline Complex zs3() const;
-  /**
-   * Get components
-   */
-  inline Complex zs4() const;
-  /**
-   * Get components
-   */
-  inline Complex ts1() const;
-  /**
-   * Get components
-   */
-  inline Complex ts2() const;
-  /**
-   * Get components
-   */
-  inline Complex ts3() const;
-  /**
-   * Get components
-   */
-  inline Complex ts4() const;
 
   /**
-   * Set components
+   * Get second spinor component for the x vector
+   */
+  inline Complex xs2() const;
+
+  /**
+   * Get third  spinor component for the x vector
+   */
+  inline Complex xs3() const;
+
+  /**
+   * Get fourth  spinor component for the x vector
+   */
+  inline Complex xs4() const;
+
+  /**
+   * Get first spinor component for the y vector
+   */
+  inline Complex ys1() const;
+
+  /**
+   * Get second spinor component for the y vector
+   */
+  inline Complex ys2() const;
+  
+  /**
+   * Get third spinor component for the y vector
+   */
+  inline Complex ys3() const;
+  
+  /**
+   * Get fourth spinor component for the y vector
+   */
+  inline Complex ys4() const;
+  
+  /**
+   * Get first spinor component for the z vector
+   */
+  inline Complex zs1() const;
+  
+  /**
+   * Get second spinor component for the z vector
+   */
+  inline Complex zs2() const;
+  
+  /**
+   * Get third spinor component for the z vector
+   */
+  inline Complex zs3() const;
+  
+  /**
+   * Get fourth spinor component for the z vector
+   */
+  inline Complex zs4() const;
+  
+  /**
+   * Get first spinor component for the t vector
+   */
+  inline Complex ts1() const;
+  
+  /**
+   * Get second spinor component for the t vector
+   */
+  inline Complex ts2() const;
+  
+  /**
+   * Get third spinor component for the t vector
+   */
+  inline Complex ts3() const;
+  
+  /**
+   * Get fourth spinor component for the t vector
+   */
+  inline Complex ts4() const;
+  
+  /**
+   * Set first spinor component for the x vector
    */
   inline void setXS1(Complex);
+  
   /**
-   * Set components
+   * Set second spinor component for the x vector
    */
   inline void setXS2(Complex);
+  
   /**
-   * Set components
+   * Set third spinor component for the x vector
    */
   inline void setXS3(Complex);
+  
   /**
-   * Set components
+   * Set fourth spinor component for the x vector
    */
   inline void setXS4(Complex);
+  
   /**
-   * Set components
+   * Set first spinor component for the y vector
    */
   inline void setYS1(Complex);
+  
   /**
-   * Set components
+   * Set second spinor component for the y vector
    */
   inline void setYS2(Complex);
+  
   /**
-   * Set components
+   * Set third spinor component for the y vector
    */
   inline void setYS3(Complex);
+  
   /**
-   * Set components
+   * Set fourth spinor component for the y vector
    */
   inline void setYS4(Complex);
+  
   /**
-   * Set components
+   * Set first spinor component for the z vector
    */
   inline void setZS1(Complex);
+  
   /**
-   * Set components
+   * Set second spinor component for the z vector
    */
   inline void setZS2(Complex);
+  
   /**
-   * Set components
+   * Set third spinor component for the z vector
    */
   inline void setZS3(Complex);
+  
   /**
-   * Set components
+   * Set fourth spinor component for the z vector
    */
   inline void setZS4(Complex);
+  
   /**
-   * Set components
+   * Set first spinor component for the t vector
    */
   inline void setTS1(Complex);
+  
   /**
-   * Set components
+   * Set second spinor component for the t vector
    */
   inline void setTS2(Complex);
+  
   /**
-   * Set components
+   * Set third spinor component for the t vector
    */
   inline void setTS3(Complex);
+  
   /**
-   * Set components
+   * Set fourth spinor component for the t vector
    */
   inline void setTS4(Complex);
+  //@}
 
   /**
    * reset functions
    */
+  //@{
+  /**
+   * Reset the momentum, particle type and direction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
+   */
+  inline void reset(const Lorentz5Momentum & p, const tcPDPtr & part, Direction dir);
+
+  /** 
+   * Reset the momentum and direction
+   * @param p The momentum.
+   * @param dir The direction
+   */
+  inline void reset(const Lorentz5Momentum & p,Direction dir);
 
   /**
-   * reset momentum, particle type and direction
+   * Reset the momentum.
+   * @param p The momentum.
    */
-  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, Direction);
+  inline void reset(const Lorentz5Momentum & p);
 
   /**
-   * reset momentum and particle type
+   * Reset the helicity (calculates the new spinor).
+   * @param ihel The helicity
+   * @param drep The Dirac matrix representation.
    */
-  inline void reset(const Lorentz5Momentum &,Direction);
+  inline void reset(int ihel,DiracRep drep=defaultDRep);
 
   /**
-   * reset the momentum
+   * Reset particle type and direction.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline void reset(const Lorentz5Momentum &);
+  inline void reset(const tcPDPtr & part,Direction dir);
 
   /**
-   * reset the helicity (calculates the new spinor)
+   * Reset particle type.
+   * @param part The ParticleData pointer.
    */
-  inline void reset(int,DiracRep=defaultDRep);
-
-  /**
-   * reset the particle type and direction
-   */
-  inline void reset(const tcPDPtr &,Direction);
-
-  /**
-   * reset the particle type
-   */
-  inline void reset(const tcPDPtr &);
+  inline void reset(const tcPDPtr & part);
+  //@}
 
 private:
 
   /**
-   * zero the wavefunction
+   * Zero the wavefunction.
    */
   inline void zeroWaveFunction(DiracRep=defaultDRep);
 
   /**
-   * calcuate the wavefunction
+   * Calcuate the wavefunction.
+   * @param ihel The helicity
+   * @param drep The Dirac matrix representation.
    */
-  void calculateWaveFunction(int,DiracRep=defaultDRep);
+  void calculateWaveFunction(int ihel,DiracRep drep=defaultDRep);
 
   /**
-   * check particle spin and set pointer
+   * Check particle spin and set pointer.
+   * @param part The ParticleData pointer.
    */
-  inline void checkParticle(const tcPDPtr &);
+  inline void checkParticle(const tcPDPtr & part);
 
 private:
 

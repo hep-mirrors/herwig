@@ -35,9 +35,6 @@ void VVVVertex::Init() {
      " the virtual setCoupling member to calculate the coupling");
   
 }
- 
-// calcuate the coupling
-void VVVVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c){;}
 
 // evaluate the vertex
 Complex VVVVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1,

@@ -3,20 +3,31 @@
 #define HERWIG_VectorWaveFunction_H
 //
 // This is the declaration of the VectorWaveFunction class.
-
+//
 #include "WaveFunctionBase.h"
 #include <ThePEG/Helicity/LorentzPolarizationVector.h>
 
 namespace Herwig {
 namespace Helicity {
 
-enum VectorPhase {vector_phase, vector_nophase, default_vector_phase=vector_nophase};
+/** \ingroup Helicity
+ * Definition of the enumerated values of the phase to include in the 
+ * calculation of the polarization vector.
+ */
+enum VectorPhase 
+{
+  vector_phase, /**< Include the phase factor.*/
+  vector_nophase, /**< No phase-factor. */
+  default_vector_phase=vector_nophase /**< Default option.*/
+};
 
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
 
 /** \ingroup Helicity
+ *
  *  \author Peter Richardson
+ *
  *  The VectorWaveFunction class is designed to store the wavefunction
  *  of a vector in a form suitable for use in helicity amplitude calculations 
  *  of the matrix element using a similar philosophy to the FORTRAN HELAS code.
@@ -30,8 +41,8 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  *
  *  There are two choices available for the calculation of the wavefunction.
  *  These are set using the VectorPhase enumeration which specifies a default choice.
- *  The first choice, vector_phase, includes a phase factor exp(+/- i phi) for the 
- *  +/- helicity states while the second, vector_nophase, does not.
+ *  The first choice, vector_phase, includes a phase factor \f$\exp(\pm i \phi)\f$
+ *  for the \f$\pm\f$ helicity states while the second, vector_nophase, does not.
  *
  *  @see WaveFunctionBase
  *  @see LorentzPolarizationVector
@@ -40,92 +51,177 @@ class VectorWaveFunction : public WaveFunctionBase {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Default constructors (set the momentum and Wavefunction)
+   * Constructor, set the momentum and Wavefunction, the direction can also
+   * be specified. 
+   * @param p The momentum.
+   * @param part The ParticleData pointer
+   * @param wave The wavefunction, \e i.e. the polarization vector.
+   * @param dir The direction of the particle.
    */
+  inline VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,
+			    const LorentzPolarizationVector & wave,
+			    Direction dir=intermediate);
 
   /**
-   * use a 5-momentum and a LorentzPolarizationVector
+   * Constructor, set the momentum and components of the wavefunction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer
+   * @param x The x component of the polarization vector
+   * @param y The y component of the polarization vector
+   * @param z The z component of the polarization vector
+   * @param t The t component of the polarization vector
    */
-  inline VectorWaveFunction(const Lorentz5Momentum &,tcPDPtr,
-			    const LorentzPolarizationVector &,Direction=intermediate);
-
-  /**
-   * use a 5-momentum and specify all components.
-   */
-  inline VectorWaveFunction(const Lorentz5Momentum &,tcPDPtr,const Complex &,
-			    const Complex &,const Complex &, const Complex &);
+  inline VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,const Complex & x,
+			    const Complex & y,const Complex & z, const Complex & t);
   
   /**
-   * Use a 5-momentum (specify phase choice).
+   * Constructor, set the momentum, helicity and direction, optionally the choice
+   * of the phase.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity.
+   * @param dir The direction.
+   * @param phase The phase choice.
    */
-  inline VectorWaveFunction(const Lorentz5Momentum &,const tcPDPtr &,int,Direction,
-			    VectorPhase=default_vector_phase);
+  inline VectorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
+			    int ihel,Direction dir,
+			    VectorPhase phase=default_vector_phase);
 
   /**
-   * Set all components of momentum (specify phase choice).
+   * Constructor, set the momentum components and mass, helicity and direction,
+   * optionally the choice of the phase.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity.
+   * @param dir The direction.
+   * @param phase The phase choice.
    */
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,
-			    int,Direction,VectorPhase=default_vector_phase);
+  inline VectorWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
+			    const tcPDPtr & part,int ihel,Direction dir,
+			    VectorPhase phase=default_vector_phase);
 
   /**
-   * Set 4-momentum components (specify phase choice).
+   * Constructor, set the momentum components, helicity and direction,
+   * optionally the choice of the phase.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity.
+   * @param dir The direction.
+   * @param phase The phase choice.
    */
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,int,Direction,
-			    VectorPhase=default_vector_phase);
+  inline VectorWaveFunction(Energy px,Energy py,Energy pz,Energy E,const tcPDPtr & part,
+			    int ihel,Direction dir,
+			    VectorPhase phase=default_vector_phase);
 
   /**
-   * Set 4-momentum (specify phase choice).
+   * Constructor, set the 4-momentum, helicity and direction,
+   * optionally the choice of the phase.
+   * @param p The 4-momentum.
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity.
+   * @param dir The direction.
+   * @param phase The phase choice.
    */
-  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,int,Direction,
-			    VectorPhase=default_vector_phase);
+  inline VectorWaveFunction(LorentzVector p,const tcPDPtr & part,int ihel,Direction dir,
+			    VectorPhase phase=default_vector_phase);
 
   /**
-   * Set mass zero momentum (specify phase choice).
+   * Constructor, set the mass, zero the momentum and set the helicity and direction,
+   * optionally the choice of the phase.
+   * @param m The mass. 
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity.
+   * @param dir The direction.
+   * @param phase The phase choice.
    */
-  inline VectorWaveFunction(Energy,const tcPDPtr &,int,Direction,
-			    VectorPhase=default_vector_phase);
+  inline VectorWaveFunction(Energy m,const tcPDPtr & part,int ihel,Direction dir,
+			    VectorPhase phase=default_vector_phase);
 
   /**
-   * Set 4 momentum and mass (specify phase choice).
+   * Constructor, set the 4-momentum, mass, helicity and direction,
+   * optionally the choice of the phase.
+   * @param p The 4-momentum.
+   * @param m The mass. 
+   * @param part The ParticleData pointer.
+   * @param ihel The helicity.
+   * @param dir The direction.
+   * @param phase The phase choice.
    */
-  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,int,Direction,
-			    VectorPhase=default_vector_phase);
+  inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,int ihel,
+			    Direction dir,VectorPhase phase=default_vector_phase);
 
   /**
-   * Default constructors (set the momentum and zero the Wavefunction).
+   * Constructor, set the 5-momentum and direction, zero the wavefunction.
+   * @param p The 5-momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
+  inline VectorWaveFunction(Lorentz5Momentum p,const tcPDPtr & part,Direction dir); 
 
   /**
-   * Use 5 momentum. 
+   * Constructor, set the momentum components, mass and direction,
+   * zero the wavefunction.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline VectorWaveFunction(Lorentz5Momentum,const tcPDPtr &,Direction); 
+  inline VectorWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
+			    const tcPDPtr & part,Direction dir);
 
   /**
-   * Set all components of momentum.
+   * Constructor, set the momentum components and direction,
+   * zero the wavefunction.
+   * @param px The x component of the momentum.
+   * @param py The y component of the momentum.
+   * @param pz The z component of the momentum.
+   * @param E  The energy.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,Energy,const tcPDPtr &,
-			    Direction);
+  inline VectorWaveFunction(Energy px,Energy py,Energy pz,Energy E,const tcPDPtr & part,
+			    Direction dir);
 
   /**
-   * Set 4-momentum components.
+   * Constructor, set the 4-momentum  and direction,
+   * zero the wavefunction.
+   * @param p The 4-momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline VectorWaveFunction(Energy,Energy,Energy,Energy,const tcPDPtr &,Direction);
+  inline VectorWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir);
 
   /**
-   * Set 4-momentum.
+   * Constructor, set the mass   and direction,
+   * zero the wavefunction and momentum.
+   * @param m The mass.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline VectorWaveFunction(LorentzVector,const tcPDPtr &,Direction);
+  inline VectorWaveFunction(Energy m,const tcPDPtr & part,Direction dir);
 
-  /**
-   * Set mass zero momentum.
+  /**  
+   * Constructor, set the 4-momentum, mass  and direction,
+   * zero the wavefunction.
+   * @param p The 4-momentum.
+   * @param m The mass.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline VectorWaveFunction(Energy,const tcPDPtr &,Direction);
-
-  /**
-   * Set 4 momentum and mass.
-   */
-  inline VectorWaveFunction(LorentzVector,Energy,const tcPDPtr &,Direction);
+  inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
 
   /**
    * Default constructor.
@@ -136,7 +232,18 @@ public:
    * Destructor.
    */
   inline ~VectorWaveFunction();
+  //@}
 
+
+  /**
+   * Assignment. 
+   */
+  inline VectorWaveFunction & operator = (const VectorWaveFunction &);
+
+  /**
+   *  Access to the wavefunction and its components.
+   */
+  //@{
   /**
    * Subscript operator for the wavefunction.
    */
@@ -148,64 +255,97 @@ public:
   inline Complex & operator () (int);
 
   /**
-   * Assignment. 
-   */
-  inline VectorWaveFunction & operator = (const VectorWaveFunction &);
-
-  /**
    * Return wavefunction as polarization vector. 
    */
   inline LorentzPolarizationVector Wave() const;
   
   /**
-   * Get position and time.
+   * Get x component.
    */
   inline Complex x() const;
+  
+  /**
+   * Get y component.
+   */
   inline Complex y() const;
+  
+  /**
+   * Get z component.
+   */
   inline Complex z() const;
+  
+  /**
+   * Get t component.
+   */
   inline Complex t() const;
   
   /**
-   * Set position and time.
+   * Set x component
    */
   inline void setX(const Complex&);
+  
+  /**
+   * Set y component
+   */
   inline void setY(const Complex&);
+  
+  /**
+   * Set z component
+   */
   inline void setZ(const Complex&);
+  
+  /**
+   * Set t component
+   */
   inline void setT(const Complex&);
+  //@}
 
   /**
    * Reset functions.
    */
-
+  //@{
   /**
    * Reset the momentum, particle type and direction.
+   * @param p The momentum.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline void reset(const Lorentz5Momentum &, const tcPDPtr &, Direction);
+  inline void reset(const Lorentz5Momentum & p, const tcPDPtr & part, Direction dir);
 
   /**
-   * Reset the momentum and direction.
+   * Reset the momentum and particle type.
+   * @param p The momentum.
+   * @param dir The direction.
    */
-  inline void reset(const Lorentz5Momentum &,Direction);
+  inline void reset(const Lorentz5Momentum & p,Direction dir);
 
   /**
    * Reset the momentum.
+   * @param p The momentum.
    */
-  inline void reset(const Lorentz5Momentum &);
+  inline void reset(const Lorentz5Momentum & p);
 
   /**
    * Reset the helicity (recalculation the polarization vector).
+   * @param ihel The new helicity.
+   * @param phase The phase choice.
    */
-  inline void reset(int,VectorPhase=default_vector_phase);
+  inline void reset(int ihel,VectorPhase phase=default_vector_phase);
 
   /**
    * Reset the particle type and direction.
+   * @param part The ParticleData pointer.
+   * @param dir The direction.
    */
-  inline void reset(const tcPDPtr &,Direction);
+  inline void reset(const tcPDPtr & part,Direction dir);
 
   /**
    * Reset the particle type.
+   * @param part The ParticleData pointer.
    */
-  inline void reset(const tcPDPtr &);
+  inline void reset(const tcPDPtr & part);
+  //@}
+
 
 private:
 
@@ -214,20 +354,19 @@ private:
    */
   inline void zeroWaveFunction();
 
-  /** 
-   * Calcuate the wavefunction default phase choice.
-   */
-  inline void calculateWaveFunction(int);
   
   /**
-   * Specify phase choice.
+   * Calculate the wavefunction
+   * @param ihel The helicity.
+   * @param phase The phase choice.
    */
-  void calculateWaveFunction(int,VectorPhase=default_vector_phase);
+  void calculateWaveFunction(int ihel,VectorPhase phase=default_vector_phase);
 
   /**
-   * Check particle spin and set pointer.
+   * Check the particle type.
+   * @param part The ParticleData pointer.
    */
-  inline void checkParticle(const tcPDPtr &);
+  inline void checkParticle(const tcPDPtr & part);
 
 private:
   

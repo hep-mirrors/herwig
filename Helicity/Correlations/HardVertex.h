@@ -21,7 +21,7 @@ using namespace ThePEG;
  *  The HardVertex class is designed to implement the vertex for a 
  *  hard interaction for the Herwig++ spin correlation algorithm. 
  *  It inherits from the HelicityVertex class of ThePEG and implements 
- *  the methods to calculate the rho and D matrices.
+ *  the methods to calculate the \f$\rho\f$ and \f$D\f$ matrices.
  * 
  *  The ProductionMatrixElement class is used to store the matrix element
  *  and this class performs the calculations of the matrices.
@@ -34,20 +34,40 @@ class HardVertex: public HelicityVertex {
   
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline HardVertex();
+
+  /**
+   * Copy-constructor.
+   */
   inline HardVertex(const HardVertex &);
+
+  /**
+   * Destructor.
+   */
   virtual ~HardVertex();
+  //@}
   
 public:
   
   /**
-   * Set and get the matrix element.
+   *  Access to the matrix element
+   */
+  //@{
+  /**
+   * Get the matrix element
    */
   inline const ProductionMatrixElement & ME() const;
+
+  /**
+   * Set the matrix element
+   */
   inline void ME(const ProductionMatrixElement &) const;
+  //@}
   
 public:
 
@@ -59,15 +79,16 @@ public:
 public:
   
   /**
-   * Methods to calculate the rho and D matrices.
+   * Method to calculate the \f$\rho\f$ matrix for one of the outgoing particles
+   * @param iout The outgoing particle we are calculating the \f$\rho\f$ matrix for.
    */
-  virtual RhoDMatrix getRhoMatrix(int);
+  virtual RhoDMatrix getRhoMatrix(int iout);
 
   /**
-   * Method to get the rho matrix for a given outgoing particle
-   * and the D matrix for an incoming particle.
+   * Method to calculate the \f$D\f$ matrix for an incoming particle.
+   * @param in The incoming particle we are calculating the \f$D\f$ matrix for.
    */
-  virtual RhoDMatrix getDMatrix(int);
+  virtual RhoDMatrix getDMatrix(int in);
   
 private:
   
@@ -83,8 +104,10 @@ private:
   
 private:
   
+  /**
+   * Storage of the matrix element.
+   */
   ProductionMatrixElement _matrixelement;
-  vector<double> _rubbish;
   
 };
 
@@ -100,6 +123,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::Helicity::HardVertex,1> {
+    /** Typedef of the base class of HardVertex. */
     typedef ThePEG::Helicity::HelicityVertex NthBase;
   };
   
@@ -114,14 +138,14 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/Helicity/HardVertex"; }
+    static string className() { return "Herwig++::Helicity::HardVertex"; }
 
     /**
      * Return the name of the shared library to be loaded to get
      * access to this class and every other class it uses
      * (except the base class).
      */
-    static string library() { return "HwCorrelations.so"; }
+    static string library() { return "libHwCorrelations.so"; }
 
   };
   

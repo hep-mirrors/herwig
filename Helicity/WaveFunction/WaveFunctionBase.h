@@ -11,8 +11,18 @@
 
 namespace Herwig {
 namespace Helicity {
-enum Direction {incoming,outgoing,intermediate};
 using namespace ThePEG;
+
+/** \ingroup Helicity
+ *  Definition of the enumerated values used for the direction of the 
+ *  particles in the calculation of the wavefunction.
+ */
+enum Direction 
+{
+  incoming, /**< An incoming particle. */
+  outgoing, /**< An outgoing particle. */
+  intermediate /**< An intermediate particle. */
+};
 
 /** \ingroup Helicity
  *  \author Peter Richardson
@@ -24,7 +34,7 @@ using namespace ThePEG;
  * This class contains the storage of the particle type and 5-momentum 
  * and methods to set/access this information.
  *
- * The methods for the wavefunction itself will we implemented in the classes
+ * The methods for the wavefunction itself will be implemented in the classes
  * derived from this one for the specific spin type, for example scalar, spinor,
  * vector and tensor. 
  *
@@ -32,26 +42,37 @@ using namespace ThePEG;
  *  @see SpinorWaveFunction
  *  @see SpinorBarWaveFunction
  *  @see VectorWaveFunction
+ *  @see RSSpinorWaveFunction
+ *  @see RSSpinorBarWaveFunction
  *  @see TensorWaveFunction
  */
 class WaveFunctionBase{
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * Default constructor.
    */
   inline WaveFunctionBase();
 
   /**
-   * Virtual destructor to keep compiler happy.
+   * Destructor.
    */
   ~WaveFunctionBase();
+  //@}
 
   /**
-   * Subscript operator to access momentum.
+   * Access to the momentum components and mass
    */
-  inline Energy operator [](int) const;
+  //@{
+  /**
+   * Subscript operator to access momentum.
+   * @param iloc The required component 0,1,2 is \f$p_x\f$, \f$p_y\f$, \f$p_z\f$,
+   * 3 is \f$E\f$ and 4 is the mass.
+   */
+  inline Energy operator [](int iloc) const;
 
   /**
    * Get the x component of the momentum.
@@ -79,14 +100,20 @@ public:
   inline Energy mass() const;
 
   /**
-   * Get offshell mass squared.
+   * Get off-shell mass squared.
    */
   inline Energy2 m2() const;
 
   /**
-   * Set components of the momentum.
+   *  Access to the 5-momentum
    */
+  inline const Lorentz5Momentum & getMomentum() const ;
+  //@}
 
+  /**
+   * Set the components of the momentum and the mass
+   */
+  //@{
   /**
    * Set the x component of the momentum.
    */
@@ -111,7 +138,6 @@ public:
    * Set the mass.
    */
   inline void setMass(Energy);
-
   /**
    * Set 5 momentum.
    */
@@ -119,34 +145,52 @@ public:
 
   /**
    * Set all components of momentum.
+   * @param px The x-component of the momentum.
+   * @param py The x-component of the momentum.
+   * @param pz The x-component of the momentum.
+   * @param E  The energy.
+   * @param m  The mass.
    */
-  inline void setMomentum(Energy,Energy,Energy,Energy,Energy);
+  inline void setMomentum(Energy px,Energy py,Energy pz,Energy E,Energy m);
 
   /** 
    * Set 4-momentum components.
+   * @param px The x-component of the momentum.
+   * @param py The x-component of the momentum.
+   * @param pz The x-component of the momentum.
+   * @param E  The energy.
    */
-  inline void setMomentum(Energy,Energy,Energy,Energy);
+  inline void setMomentum(Energy px,Energy py,Energy pz,Energy E);
 
   /** 
-   * Set 4-momentum. 
+   * Set 4-momentum using a vector.
+   * @param p The momentum.
    */
-  inline void setMomentum(LorentzVector);
+  inline void setMomentum(LorentzVector p);
 
   /**
-   * Set mass zero momentum.
+   * Set mass and zero momentum.
+   * @param m The mass
    */
-  inline void setMomentum(Energy);
+  inline void setMomentum(Energy m);
 
   /**
    * Set 4 momentum and mass.
+   * @param p The momentum.
+   * @param m The mass
    */
-  inline void setMomentum(LorentzVector,Energy);
+  inline void setMomentum(LorentzVector p,Energy m);
 
   /**
-   * Zero the 4 momentum.
+   * Zero the 4 momentum and mass.
    */
   inline void setMomentum();
+  //@}
 
+  /**
+   *  Access to the particle properties
+   */
+  //@{
   /** 
    * Get the particle id.
    */
@@ -155,7 +199,7 @@ public:
   /** 
    * Get 2s+1 for the particle.
    */
-  inline int iSpin();
+  inline PDT::Spin iSpin();
 
   /**
    * Get the particle pointer.
@@ -163,11 +207,15 @@ public:
   inline const tcPDPtr & getParticle() const;
 
   /** 
-   * Direction of particle.
+   * Get the direction of particle.
    */
-  inline Direction direction();
-  inline void direction(Direction);
-  inline const Lorentz5Momentum & getMomentum() const ;
+  inline Herwig::Helicity::Direction direction();
+
+  /**
+   * Set the direction of the particle
+   */
+  inline void direction(Herwig::Helicity::Direction);
+  //@}
 
 protected:
 

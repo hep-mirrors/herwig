@@ -29,9 +29,6 @@ static ClassDocumentation<VVVVVertex> documentation
  
 }
 
-// calcuate the coupling
-void VVVVVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c, tcPDPtr d){;}
-
 // calculate the vertex
 Complex VVVVVertex::evaluate(Energy2 q2 , int iopt, 
 			     const VectorWaveFunction & vec1,

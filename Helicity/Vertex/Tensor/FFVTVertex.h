@@ -3,7 +3,7 @@
 #define HERWIG_FFVTVertex_H
 //
 // This is the declaration of the FFVTVertex class.
-
+//
 #include "Herwig++/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -28,26 +28,54 @@ using namespace ThePEG;
  *  All implementations of this vertex should inherit from it and implement the
  *  virtual setCoupling member.
  *
+ *  The form of the vertex is
+ * \f[\frac{ig\kappa}4t^a_{nm}\bar{f_2}(C_{\mu\nu,\rho\sigma}-g_{\mu\nu}g_{\rho\sigma})
+ * \gamma^\sigma f_1\epsilon_{3\rho}\epsilon_4^{\mu\nu}\f]
+ *  where
+ *  -\f$C_{\mu\nu,\rho\sigma}=g_{\mu\rho}g_{\nu\sigma}+g_{\mu\sigma}g_{\nu\rho}
+ *         -g_{\mu\nu}g_{\rho\sigma}\f$.
+ *
  *  @see VertexBase
  */
 class FFVTVertex: public VertexBase {
       
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline FFVTVertex();
+
+  /**
+   * Copy-constructor.
+   */
   inline FFVTVertex(const FFVTVertex &);
+
+  /**
+   * Destructor.
+   */
   virtual ~FFVTVertex();
-  
+  //@}  
+
 public:
   
+  /** @name Functions used by the persistent I/O system. */
+  //@{
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -57,50 +85,141 @@ public:
 public:
   
   /**
-   * Evaluate the vertex.
+   * Members to calculate the helicity amplitude expressions for vertices
+   * and off-shell particles.
    */
-  Complex evaluate(Energy2,const SpinorWaveFunction &,
-		   const SpinorBarWaveFunction &,
-		   const VectorWaveFunction &, const TensorWaveFunction &);
-  TensorWaveFunction evaluate(Energy2,int, tcPDPtr,const SpinorWaveFunction &,
-			      const SpinorBarWaveFunction &,
-			      const VectorWaveFunction &);
-  VectorWaveFunction evaluate(Energy2,int, tcPDPtr, const SpinorWaveFunction &,
-			      const SpinorBarWaveFunction &, 
-			      const TensorWaveFunction &);
-  SpinorWaveFunction evaluate(Energy2,int, tcPDPtr,const SpinorWaveFunction &,
-			      const VectorWaveFunction &,
-			      const TensorWaveFunction &);
-  SpinorBarWaveFunction evaluate(Energy2,int, tcPDPtr,const SpinorBarWaveFunction &,
-				 const VectorWaveFunction &,
-				 const TensorWaveFunction &);
-  virtual void setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr,tcPDPtr);
+  //@{
+  /**
+   * Evalulate the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param vec3  The wavefunction for the vector.
+   * @param ten4  The wavefunction for the tensor.
+   */
+  Complex evaluate(Energy2 q2,const SpinorWaveFunction & sp1,
+		   const SpinorBarWaveFunction & sbar2,
+		   const VectorWaveFunction & vec3, const TensorWaveFunction & ten4);
+
+  /**
+   * Evaluate the off-shell tensor coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell tensor.
+   * @param out The ParticleData pointer for the off-shell tensor.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param vec3  The wavefunction for the vector.
+   */
+  TensorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
+			      const SpinorWaveFunction & sp1,
+			      const SpinorBarWaveFunction & sbar2,
+			      const VectorWaveFunction & vec3);
+
+  /**
+   * Evaluate the off-shell vector coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell vector.
+   * @param out The ParticleData pointer for the off-shell vector.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param ten4  The wavefunction for the tensor.
+   */
+  VectorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
+			      const SpinorWaveFunction & sp1,
+			      const SpinorBarWaveFunction & sbar2, 
+			      const TensorWaveFunction & ten4);
+
+  /**
+   * Evaluate the off-shell spinor coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell spinor.
+   * @param out The ParticleData pointer for the off-shell spinor.
+   * @param sp1   The wavefunction for the ferimon.
+   * @param vec3  The wavefunction for the vector.
+   * @param ten4  The wavefunction for the tensor.
+   */
+  SpinorWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
+			      const SpinorWaveFunction & sp1,
+			      const VectorWaveFunction & vec3,
+			      const TensorWaveFunction & ten4);
+
+  /**
+   * Evaluate the off-shell barred spinor coming from the vertex.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param iopt Option of the shape of the Breit-Wigner for the off-shell barred spinor.
+   * @param out The ParticleData pointer for the off-shell barred spinor.
+   * @param sbar2 The wavefunction for the antifermion.
+   * @param vec3  The wavefunction for the vector.
+   * @param ten4  The wavefunction for the tensor.
+   */
+  SpinorBarWaveFunction evaluate(Energy2 q2,int iopt, tcPDPtr out,
+				 const SpinorBarWaveFunction & sbar2,
+				 const VectorWaveFunction & vec3,
+				 const TensorWaveFunction & ten4);
+  //@}
+
+  /**
+   * Calculate the couplings. This method is virtual and must be implemented in 
+   * classes inheriting from this.
+   * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
+   * @param part1 The ParticleData pointer for the first  particle.
+   * @param part2 The ParticleData pointer for the second particle.
+   * @param part3 The ParticleData pointer for the third  particle.
+   * @param part4 The ParticleData pointer for the fourth  particle.
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,
+			   tcPDPtr part3, tcPDPtr part4)=0;
   
 protected:
   
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void doinitrun();
-  inline virtual void dofinish();
-  
+
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  
+
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
   
 private:
   
   /**
-   * Describe a concrete class with persistent data.
+   * Describe an abstract base class with persistent data.
    */
   static AbstractClassDescription<FFVTVertex> initFFVTVertex;
   
@@ -123,6 +242,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::Helicity::FFVTVertex,1> {
+  /** Typedef of the base class of FFVTVertex. */
     typedef Herwig::Helicity::VertexBase NthBase;
   };
   
@@ -137,7 +257,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/Helicity/FFVTVertex"; }
+    static string className() { return "Herwig++::Helicity::FFVTVertex"; }
 
     /**
      * Return the name of the shared library to be loaded to get

@@ -19,8 +19,8 @@ using ThePEG::Helicity::RhoDMatrix;
 /** \ingroup Helicity
  *  \author Peter Richardson
  *
- *  Implementation of the complex matrix element for a decay
- *  an arbitary number of external particles are supported.
+ *  Implementation of the complex matrix element for a decay.
+ *  An arbitary number of external particles are supported.
  *
  *  @see RhoDMatrix
  *  @see ProductionMatrixElement
@@ -30,47 +30,96 @@ class DecayMatrixElement: public Base {
   
 public:
       
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
   inline DecayMatrixElement();
 
   /** 
-   * Constructor for two body decay. 
+   * Constructor for two body decay.
+   * @param inspin \f$2S+1\f$ for the decaying particle
+   * @param outspin1 \f$2S+1\f$ for the first  decay product.
+   * @param outspin2 \f$2S+1\f$ for the second decay product.
    */
-  inline DecayMatrixElement(int,int,int);
+  inline DecayMatrixElement(int inspin,int outspin1,int outspin2);
 
   /** 
    * Constructor for three body decay. 
+   * @param inspin \f$2S+1\f$ for the decaying particle
+   * @param outspin1 \f$2S+1\f$ for the first  decay product.
+   * @param outspin2 \f$2S+1\f$ for the second decay product.
+   * @param outspin3 \f$2S+1\f$ for the third  decay product.
    */
-  inline DecayMatrixElement(int,int,int,int);
+  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3);
 
   /** 
    * Constructor for four body decay.
+   * @param inspin \f$2S+1\f$ for the decaying particle
+   * @param outspin1 \f$2S+1\f$ for the first  decay product.
+   * @param outspin2 \f$2S+1\f$ for the second decay product.
+   * @param outspin3 \f$2S+1\f$ for the third  decay product.
+   * @param outspin4 \f$2S+1\f$ for the fourth decay product.
    */
-  inline DecayMatrixElement(int,int,int,int,int);
+  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3,
+			    int outspin4);
 
   /**
    * Constructor for five body decay.
+   * @param inspin \f$2S+1\f$ for the decaying particle
+   * @param outspin1 \f$2S+1\f$ for the first  decay product.
+   * @param outspin2 \f$2S+1\f$ for the second decay product.
+   * @param outspin3 \f$2S+1\f$ for the third  decay product.
+   * @param outspin4 \f$2S+1\f$ for the fourth decay product.
+   * @param outspin5 \f$2S+1\f$ for the fifth  decay product.
    */
-  inline DecayMatrixElement(int,int,int,int,int,int);
+  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3,
+			    int outspin4,int outspin5);
 
   /** 
    * Constructor for six body decay.
+   * @param inspin \f$2S+1\f$ for the decaying particle
+   * @param outspin1 \f$2S+1\f$ for the first  decay product.
+   * @param outspin2 \f$2S+1\f$ for the second decay product.
+   * @param outspin3 \f$2S+1\f$ for the third  decay product.
+   * @param outspin4 \f$2S+1\f$ for the fourth decay product.
+   * @param outspin5 \f$2S+1\f$ for the fifth  decay product.
+   * @param outspin6 \f$2S+1\f$ for the sixth  decay product.
    */
-  inline DecayMatrixElement(int,int,int,int,int,int,int);
+  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3,
+			    int outspin4,int outspin5,int outspin6);
 
   /** 
-   * Constructors for arbitray body decay.
+   * Constructor for arbitray body decay.
+   * @param inspin \f$2S+1\f$ for the decaying particle
+   * @param outspin \f$2S+1\f$ for the decay products.
    */
-  inline DecayMatrixElement(int,vector<int>);
-  inline DecayMatrixElement(vector<int>);
+  inline DecayMatrixElement(int inspin,vector<int> outspin);
 
   /** 
-   * Standard ctors and dtor.
+   * Constructor for arbitray body decay.
+   * @param extspin  \f$2S+1\f$ external particles.
+   */
+  inline DecayMatrixElement(vector<int> extspin);
+
+  /**
+   * Copy-constructor.
    */
   inline DecayMatrixElement(const DecayMatrixElement &);
+
+  /**
+   * Destructor.
+   */
   virtual ~DecayMatrixElement();
-  
+  //@}  
+
 public: 
       
+  /**
+   * Access to the spins of the particles
+   */
+  //@{
   /** 
    * Get the spin of the incoming particle.
    */
@@ -80,66 +129,160 @@ public:
    * Get the spins of the outgoing particles.
    */
   inline vector<int> outspin();
+  //@}
 
 public:
 
+  /**
+   * Spin Density matrices
+   */
+  //@{
   /** 
    * Calculate the decay matrix for this decay.
+   * @param rhoout The \f$D\f$ matrix for this decay.
    */
-  RhoDMatrix calculateDMatrix(vector<RhoDMatrix>);
+  RhoDMatrix calculateDMatrix(vector<RhoDMatrix> rhoout);
 
   /** 
-   * Calculate the rho matrix for a given outgoing particle.
+   * Calculate the \f$\rho\f$ matrix for a given outgoing particle.
+   * @param ipart The outgoing particle the \f$\rho\f$ matrix is needed for
+   * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
+   * @param rhoout he \f$D\f$ matrices for the other decay products.
    */
-  RhoDMatrix calculateRhoMatrix(int,RhoDMatrix,vector<RhoDMatrix>);
+  RhoDMatrix calculateRhoMatrix(int ipart,RhoDMatrix rhoin,vector<RhoDMatrix> rhoout);
 
   /** 
-   * Contract the matrix element with the rho matrix of the 
-   * incoming particle.
+   * Contract the matrix element with the \f$\rho\f$ matrix of the 
+   * incoming particle. The spins of the decay products are summed over.
+   * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
    */
-  inline Complex contract(RhoDMatrix &);
+  inline Complex contract(RhoDMatrix & rhoin);
+  //@}
 
 public:
   
   /** 
    * Access to the individual helicity components. 
    */
+  //@{
+  /** 
+   * Get the helicity components for a two body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   */
+  inline Complex   operator () (int inhel,int outhel1,int outhel2) const;
 
   /** 
-   * 2 body decay.
+   * Set the helicity components for a two body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
    */
-  inline Complex   operator () (int,int,int) const;
-  inline Complex & operator () (int,int,int);
+  inline Complex & operator () (int inhel,int outhel1,int outhel2);
 
   /** 
-   * 3 body decay. 
+   * Get the helicity components for a three body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
    */
-  inline Complex   operator () (int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int);
+  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3) const;
+
+  /** 
+   * Set the helicity components for a three body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   */
+  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3);
+
+  /** 
+   * Get the helicity components for a four body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   * @param outhel4 The helicity of the fourth decay product.
+   */
+  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3,
+				int outhel4) const;
+
+  /** 
+   * Set the helicity components for a four body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   * @param outhel4 The helicity of the fourth decay product.
+   */
+  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3,
+				int outhel4);
+
+  /** 
+   * Get the helicity components for a five body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   * @param outhel4 The helicity of the fourth decay product.
+   * @param outhel5 The helicity of the fifth  decay product.
+   */
+  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3,
+				int outhel4,int outhel5) const;
+
+  /** 
+   * Set the helicity components for a five body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   * @param outhel4 The helicity of the fourth decay product.
+   * @param outhel5 The helicity of the fifth  decay product.
+   */
+  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3,
+				int outhel4,int outhel5);
+
+  /** 
+   * Get the helicity components for a six body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   * @param outhel4 The helicity of the fourth decay product.
+   * @param outhel5 The helicity of the fifth  decay product.
+   * @param outhel6 The helicity of the sixth  decay product.
+   */
+  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3,
+				int outhel4,int outhel5,int outhel6) const;
+
+  /** 
+   * Set the helicity components for a six body decay
+   * @param inhel The helicity of the decaying particle.
+   * @param outhel1 The helicity of the first  decay product.
+   * @param outhel2 The helicity of the second decay product.
+   * @param outhel3 The helicity of the third  decay product.
+   * @param outhel4 The helicity of the fourth decay product.
+   * @param outhel5 The helicity of the fifth  decay product.
+   * @param outhel6 The helicity of the sixth  decay product.
+   */
+  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3,
+				int outhel4,int outhel5,int outhel6);
 
   /**
-   * 4 body decay.
+   * Get the helicity components for an \f$n\f$-body decay.
+   * @param exthel The helicities of the external particles.
    */
-  inline Complex   operator () (int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int);
+  inline Complex   operator () (vector<int> exthel) const;
 
   /**
-   * 5 body decay.
+   * Set the helicity components for an \f$n\f$-body decay.
+   * @param exthel The helicities of the external particles.
    */
-  inline Complex   operator () (int,int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int,int);
-
-  /**
-   * 6 body decay.
-   */
-  inline Complex   operator () (int,int,int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int,int,int);
-
-  /**
-   * n body decay.
-   */
-  inline Complex   operator () (vector<int>) const;
-  inline Complex & operator () (vector<int>);
+  inline Complex & operator () (vector<int> exthel);
+  //@}
   
 public:
   
@@ -214,6 +357,7 @@ namespace ThePEG {
  */
 template <>
 struct BaseClassTrait<Herwig::Helicity::DecayMatrixElement,1> {
+    /** Typedef of the base class of DecayMatrixElement. */
   typedef Base NthBase;
 };
 
@@ -228,14 +372,14 @@ struct ClassTraits<Herwig::Helicity::DecayMatrixElement>
   /**
    * Return the class name.
    */
-  static string className() { return "/Herwig++/Helicity/DecayMatrixElement"; }
+  static string className() { return "Herwig++::Helicity::DecayMatrixElement"; }
 
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "hwCorrelations.so"; }
+  static string library() { return "libHwCorrelations.so"; }
 
 };
 

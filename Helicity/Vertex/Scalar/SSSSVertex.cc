@@ -30,9 +30,6 @@ void SSSSVertex::Init() {
      "all vertices of trhis type should inherit from it");
 }
 
-// calcuate the coupling
-void SSSSVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c,tcPDPtr d){;}
-
 // evaluate the vertex
 Complex SSSSVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
 			     const ScalarWaveFunction & sca2, 

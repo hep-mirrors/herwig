@@ -30,8 +30,6 @@ void FFVTVertex::Init() {
      "vertex. All such vertices should inherit from it.");
 
 }
-// coupling
-void FFVTVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c, tcPDPtr d){;}
 
 // function to evaluate the vertex
 Complex FFVTVertex::evaluate(Energy q2, const SpinorWaveFunction & sp,

@@ -29,9 +29,6 @@ static ClassDocumentation<VVSSVertex> documentation
    "amplitude calculation of the vector-vector-scalar-scalar vertex."
    "All classes for this type of vertex should inherit from it.");
 }
-
-// function for the coupling
-void VVSSVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr,tcPDPtr){;}
  
 // evaluate the vertex
 Complex VVSSVertex::evaluate(Energy2 q2,const VectorWaveFunction & vec1,

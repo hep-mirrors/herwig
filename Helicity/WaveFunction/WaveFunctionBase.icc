@@ -100,7 +100,7 @@ inline void WaveFunctionBase::setParticle(const tcPDPtr & in)
 }
 inline int WaveFunctionBase::id()
 {int it=_particle->id(); return it;}
-inline int WaveFunctionBase::iSpin() {return _particle->iSpin();}
+inline PDT::Spin WaveFunctionBase::iSpin() {return _particle->iSpin();}
 // get the particle pointer
 inline const tcPDPtr & WaveFunctionBase::getParticle() const {return _particle;}
 inline void WaveFunctionBase::checkParticle(const tcPDPtr & in){setParticle(in);}

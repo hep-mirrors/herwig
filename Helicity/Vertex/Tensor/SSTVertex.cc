@@ -30,8 +30,6 @@ void SSTVertex::Init() {
  ", all such vertices should inherit from it");
   
 }
-// set coupling member
-void SSTVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c){;}
 // evaluate the vertex
 Complex SSTVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
     				const ScalarWaveFunction & sca2,

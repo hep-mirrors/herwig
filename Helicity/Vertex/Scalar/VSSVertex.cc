@@ -31,9 +31,6 @@ static ClassDocumentation<VSSVertex> documentation
  
 }
 
-// evaluate the coupling
-void VSSVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr c){;}
-
 // evaluate the vertex
 Complex VSSVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec,
 			    const ScalarWaveFunction & sca1,

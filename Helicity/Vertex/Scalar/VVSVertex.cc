@@ -33,9 +33,6 @@ void VVSVertex::Init() {
   
 }
 
-// calculate the couplings
-void VVSVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr){;}
-
 // evaluate the vertex
 Complex VVSVertex::evaluate(Energy2 q2,const VectorWaveFunction & vec1,
 			    const VectorWaveFunction & vec2, 
