@@ -5,10 +5,10 @@
 //
 
 #include "Smearing.h"
-#include "Pythia7/Repository/UseRandom.h"
+#include <ThePEG/Repository/UseRandom.h>
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 bool Smearing::gaussianSmearing( const double mean, const double sigma, double & x ) {

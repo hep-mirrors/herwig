@@ -21,7 +21,7 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class IS_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
 

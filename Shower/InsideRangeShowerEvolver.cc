@@ -5,19 +5,19 @@
 //
 
 #include "InsideRangeShowerEvolver.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-// #include "Pythia7/Interface/Parameter.h" 
-#include "Pythia7/Interface/Reference.h" 
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+// #include "ThePEG/Interface/Parameter.h" 
+#include "ThePEG/Interface/Reference.h" 
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "MECorrection.h"
 #include "PartnerFinder.h"
 #include "ShowerParticle.h"
-#include "Pythia7/MatrixElement/MEBase.h" 
-// #include "Pythia7/MatrixElement/PhaseSpaceBase.h"
-#include "Pythia7/Handlers/XComb.h"
+#include "ThePEG/MatrixElement/MEBase.h" 
+// #include "ThePEG/MatrixElement/PhaseSpaceBase.h"
+#include "ThePEG/Handlers/XComb.h"
 
 using namespace Herwig;
 

@@ -2,7 +2,7 @@
 #include "Herwig++/Utilities/HerwigRun.h"
 
 int main(int argc, char * argv[]) {
-  using namespace Pythia7;
+  using namespace ThePEG;
   tPVector fs;
   //KtJet::KtEvent ev;
   Herwig::KtJetInterface kint;

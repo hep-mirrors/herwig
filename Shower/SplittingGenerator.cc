@@ -5,15 +5,15 @@
 //
 
 #include "SplittingGenerator.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/Interface/Switch.h"
-#include "Pythia7/Interface/Reference.h"
-#include "Pythia7/PDT/EnumParticles.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/PDT/EnumParticles.h"
 #include "ShowerParticle.h"
-#include "Pythia7/Handlers/PartialCollisionHandler.h"
-#include "Pythia7/Repository/FullEventGenerator.h"
+#include "ThePEG/Handlers/PartialCollisionHandler.h"
+#include "ThePEG/Repository/FullEventGenerator.h"
 #include "ShowerAlpha.h"
 #include "SplitFun.h"
 #include "SplitFun1to2.h"
@@ -520,14 +520,18 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	  // check size of scales beforehand...
 	  if ( particle.evolutionScales()[i] > 
 	       _pointerShowerConstrainer->cutoffQScale(index.interaction) ) {
-	    // use this condition for roughly only one gluon per quark
+	  // use this condition for roughly only one gluon per quark
+	  // in the asymmetric case...
 // 	  if ( (particle.evolutionScales()[i] > 172.0*GeV
 // 		&& particle.evolutionScales()[i] < 175.0*GeV) 
 // 	       || (particle.evolutionScales()[i] > 47.7*GeV
 // 		   && particle.evolutionScales()[i] < 48.05*GeV) ) {
+	  // ... and this one in the symmetric case
+//	  if (particle.evolutionScales()[i] > 90.0*GeV) {
 	    candidateNewQ = candidateSudakov->
 	      generateNextBranching( ch, particle.evolutionScales()[i], 
 				     reverseAngularOrder );
+		//	    }
 	  } else candidateNewQ = 0*GeV; 
 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	    generator()->log() << "  trying "
@@ -634,7 +638,8 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	  generator()->log() << "  create ShowerKinematics with " 
 			     << endl 
-			     << "  p = " << p << " and n = " << n << endl;
+			     << "  p = " << p << endl 
+			     << "  n = " << n << endl;
 	}
 	
 	Ptr< FS_QtildaShowerKinematics1to2 >::pointer showerKin = 

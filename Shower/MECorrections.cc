@@ -5,13 +5,13 @@
 //
 
 #include "MECorrections.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/Interface/RefVector.h"
-#include "Pythia7/Interface/Switch.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
 

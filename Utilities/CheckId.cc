@@ -8,7 +8,7 @@
 #include "Herwig++/Utilities/HwDebug.h"
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 long CheckId::diquarkId(const long id1, const long id2) {
@@ -50,14 +50,14 @@ bool CheckId::canBeBaryon(const long id1, const long id2, const long id3) {
 bool CheckId::hasBeauty(const long id1, const long id2, const long id3) {
   bool result = false;
   if ( id2 == 0  &&  id3 == 0 ) {
-    result = ( abs(id1) == ParticleID::b                            ||   // quark
+    result = ( abs(id1) == ThePEG::ParticleID::b                            ||   // quark
 	       isDiquarkWithB(id1)                                  ||   // diquark
-	       isMeson(id1) && (abs(id1)/100)%10  == ParticleID::b  ||   // meson
-	       isBaryon(id1) && (abs(id1)/1000)%10 == ParticleID::b );   // baryon
+	       isMeson(id1) && (abs(id1)/100)%10  == ThePEG::ParticleID::b  ||   // meson
+	       isBaryon(id1) && (abs(id1)/1000)%10 == ThePEG::ParticleID::b );   // baryon
   } else {
-    result = ( abs(id1) == ParticleID::b  ||  isDiquarkWithB(id1)  || 
-	       abs(id2) == ParticleID::b  ||  isDiquarkWithB(id2)  || 
-	       abs(id3) == ParticleID::b  ||  isDiquarkWithB(id3) ); 
+    result = ( abs(id1) == ThePEG::ParticleID::b  ||  isDiquarkWithB(id1)  || 
+	       abs(id2) == ThePEG::ParticleID::b  ||  isDiquarkWithB(id2)  || 
+	       abs(id3) == ThePEG::ParticleID::b  ||  isDiquarkWithB(id3) ); 
   }
   return result;
 }  
@@ -66,17 +66,17 @@ bool CheckId::hasBeauty(const long id1, const long id2, const long id3) {
 bool CheckId::hasCharm(const long id1, const long id2, const long id3) {
   bool result = false;
   if ( id2 == 0  &&  id3 == 0 ) {
-    result = ( abs(id1) == ParticleID::c                                || // quark
+    result = ( abs(id1) == ThePEG::ParticleID::c                                || // quark
 	       isDiquarkWithC(id1)                                      || // diquark
-	       isMeson(id1) && ( (abs(id1)/100)%10   == ParticleID::c  ||  // meson no b
-				 (abs(id1)/10)%10    == ParticleID::c ) || // meson with b
-	       isBaryon(id1) && ( (abs(id1)/1000)%10 == ParticleID::c  ||  // baryon no b
-				  (abs(id1)/100)%10  == ParticleID::c  ||  // baryon with b
-				  (abs(id1)/10)%10   == ParticleID::c ) ); // baryon with b
+	       isMeson(id1) && ( (abs(id1)/100)%10   == ThePEG::ParticleID::c  ||  // meson no b
+				 (abs(id1)/10)%10    == ThePEG::ParticleID::c ) || // meson with b
+	       isBaryon(id1) && ( (abs(id1)/1000)%10 == ThePEG::ParticleID::c  ||  // baryon no b
+				  (abs(id1)/100)%10  == ThePEG::ParticleID::c  ||  // baryon with b
+				  (abs(id1)/10)%10   == ThePEG::ParticleID::c ) ); // baryon with b
   } else {
-    result = ( abs(id1) == ParticleID::c  ||  isDiquarkWithC(id1)  || 
-	       abs(id2) == ParticleID::c  ||  isDiquarkWithC(id2)  || 
-	       abs(id3) == ParticleID::c  ||  isDiquarkWithC(id3) ); 
+    result = ( abs(id1) == ThePEG::ParticleID::c  ||  isDiquarkWithC(id1)  || 
+	       abs(id2) == ThePEG::ParticleID::c  ||  isDiquarkWithC(id2)  || 
+	       abs(id3) == ThePEG::ParticleID::c  ||  isDiquarkWithC(id3) ); 
   }
   return result;
 }  
@@ -87,15 +87,15 @@ bool CheckId::hasStrangeness(const long id1, const long id2, const long id3) {
   // the other overloaded method in the case of a meson.
   bool result = false;
   if ( id2 == 0  &&  id3 == 0 ) {
-    result = ( abs(id1) == ParticleID::s                                || // quark
+    result = ( abs(id1) == ThePEG::ParticleID::s                                || // quark
 	       isDiquarkWithS(id1)                                      || // diquark
-	       isBaryon(id1) && ( (abs(id1)/1000)%10 == ParticleID::s  || // baryon no c/b
-				  (abs(id1)/100)%10  == ParticleID::s  || // baryon with c/b
-				  (abs(id1)/10)%10   == ParticleID::s ) );// baryon with c/b
+	       isBaryon(id1) && ( (abs(id1)/1000)%10 == ThePEG::ParticleID::s  || // baryon no c/b
+				  (abs(id1)/100)%10  == ThePEG::ParticleID::s  || // baryon with c/b
+				  (abs(id1)/10)%10   == ThePEG::ParticleID::s ) );// baryon with c/b
   } else {
-    result = ( abs(id1) == ParticleID::s  ||  isDiquarkWithS(id1)  || 
-	       abs(id2) == ParticleID::s  ||  isDiquarkWithS(id2)  || 
-	       abs(id3) == ParticleID::s  ||  isDiquarkWithS(id3) ); 
+    result = ( abs(id1) == ThePEG::ParticleID::s  ||  isDiquarkWithS(id1)  || 
+	       abs(id2) == ThePEG::ParticleID::s  ||  isDiquarkWithS(id2)  || 
+	       abs(id3) == ThePEG::ParticleID::s  ||  isDiquarkWithS(id3) ); 
   }  
   return result;         
 }
@@ -108,9 +108,9 @@ bool CheckId::hasStrangeness(const long id, const double rnd) {
   if ( isMeson(id) ) {  
     long id1 = (abs(id)/100)%10;
     long id2 = (abs(id)/10)%10;    
-    if ( id1 != id2  &&  ( id1 == ParticleID::s  ||  id2 == ParticleID::s ) ) {
+    if ( id1 != id2  &&  ( id1 == ThePEG::ParticleID::s  ||  id2 == ThePEG::ParticleID::s ) ) {
       result = true;  // Simple case, no mixing.
-    } else if ( id1 == id2  &&  ( id1 == ParticleID::s  ||  id1 == 2 ) ) {
+    } else if ( id1 == id2  &&  ( id1 == ThePEG::ParticleID::s  ||  id1 == 2 ) ) {
 
       // Consider now the most difficult case: mesons which are a
       // u ubar , d dbar , s sbar  admixtures.
@@ -124,30 +124,30 @@ bool CheckId::hasStrangeness(const long id, const double rnd) {
       double f0mix  = idealAngleMix;  //  missing - f_0(1370) 
       double f1mix  = idealAngleMix;  //  f_1(1420) - f_1(1285)
       double f2mix  = +26.0;          //  f'_2 - f_2
-      // double omhmix = idealAngleMix;  //  missing - omega(1650)     NOT FOUND in Pythia7
-      // double et2mix = idealAngleMix;  //  eta_2(1645) - eta_2(1870) NOT FOUND in Pythia7
-      // double ph3mix = +28.0;          //  phi_3 - omega_3           NOT FOUND in Pythia7
+      // double omhmix = idealAngleMix;  //  missing - omega(1650)     NOT FOUND in ThePEG
+      // double et2mix = idealAngleMix;  //  eta_2(1645) - eta_2(1870) NOT FOUND in ThePEG
+      // double ph3mix = +28.0;          //  phi_3 - omega_3           NOT FOUND in ThePEG
       
       int order = 1;   // 1 for the first of the pair; 2 for the second one
       double angleMix  = 999.9;
       switch ( abs(id) ) {
 	
-      case ParticleID::eta :      angleMix = etamix; break;
-      case ParticleID::etaprime : angleMix = etamix; order = 2; break;
+      case ThePEG::ParticleID::eta :      angleMix = etamix; break;
+      case ThePEG::ParticleID::etaprime : angleMix = etamix; order = 2; break;
 	
-      case ParticleID::phi :      angleMix = phimix; break;
-      case ParticleID::omega :    angleMix = phimix; order = 2; break;
+      case ThePEG::ParticleID::phi :      angleMix = phimix; break;
+      case ThePEG::ParticleID::omega :    angleMix = phimix; order = 2; break;
 	
-      case ParticleID::hprime_1 : angleMix = h1mix; break;
-      case ParticleID::h_1 :      angleMix = h1mix; order = 2; break;
+      case ThePEG::ParticleID::hprime_1 : angleMix = h1mix; break;
+      case ThePEG::ParticleID::h_1 :      angleMix = h1mix; order = 2; break;
 	
-      case ParticleID::f_0 :      angleMix = f0mix; order = 2; break;
+      case ThePEG::ParticleID::f_0 :      angleMix = f0mix; order = 2; break;
 	
-      case ParticleID::fprime_1 : angleMix = f1mix; break;
-      case ParticleID::f_1 :      angleMix = f1mix; order = 2; break;
+      case ThePEG::ParticleID::fprime_1 : angleMix = f1mix; break;
+      case ThePEG::ParticleID::f_1 :      angleMix = f1mix; order = 2; break;
 	
-      case ParticleID::fprime_2 : angleMix = f2mix; break;
-      case ParticleID::f_2 :      angleMix = f2mix; order = 2; break;
+      case ThePEG::ParticleID::fprime_2 : angleMix = f2mix; break;
+      case ThePEG::ParticleID::f_2 :      angleMix = f2mix; order = 2; break;
 	
       }
       

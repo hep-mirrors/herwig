@@ -5,7 +5,7 @@
 cd /Defaults/
 set theGlobalParameters:EffectiveGluonMass 0.750*GeV
 set theGlobalParameters:HadronizationScale 0.5*GeV
-set theGlobalParameters:OnOffPythia7StringFragmentationMode 0
+#set theGlobalParameters:OnOffPythia7StringFragmentationMode 0
 set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
 set theGlobalParameters:MinVirtuality2 0.1*GeV2
 set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
@@ -17,7 +17,7 @@ set theShowerConstrainer:OnOffDecayBeforeShowerMode 0
 set theShowerConstrainer:CutoffQCDMassScale 0.75*GeV
 set theShowerConstrainer:CutoffQEDMassScale 0.75*GeV
 set theShowerConstrainer:CutoffEWKMassScale 91.0*GeV
-set theShowerConstrainer:cutoffKinScale 0.25*GeV
+set theShowerConstrainer:cutoffKinScale 0.75*GeV
 set theMECorrections:OnOffMECorrectionMode 0
 set theMECorrections:OnOffComposeMECorrectionMode 0
 set theDrellYanMECorrection:OnOffMECorrectionMode 0
@@ -77,14 +77,14 @@ set theClusterDecayer:ClDir1 1
 set theClusterDecayer:ClDir2 1
 set theClusterDecayer:ClSmr1 0.0
 set theClusterDecayer:ClSmr2 0.0
-set theHadronsSelector:PwtDquark  1.0
-set theHadronsSelector:PwtUquark  1.0
-set theHadronsSelector:PwtSquark  1.0
-set theHadronsSelector:PwtCquark  1.0
-set theHadronsSelector:PwtBquark  1.0
-set theHadronsSelector:PwtDIquark 1.0
-set theHadronsSelector:SngWt      1.0
-set theHadronsSelector:DecWt      1.0
+set theHadronSelector:PwtDquark  1.0
+set theHadronSelector:PwtUquark  1.0
+set theHadronSelector:PwtSquark  1.0
+set theHadronSelector:PwtCquark  1.0
+set theHadronSelector:PwtBquark  1.0
+set theHadronSelector:PwtDIquark 1.0
+set theHadronSelector:SngWt      1.0
+set theHadronSelector:DecWt      1.0
 #
 
 #these are commented in HerwigDefaults.in
@@ -96,7 +96,7 @@ set theHadronsSelector:DecWt      1.0
 cd /Defaults/MatrixElements
 create /Herwig++/MEee2gZ2bb MEee2gZ2bb libHwME.so
 #set MEee2gZ2bb:PhaseSpaceGenerator PS2to2Generic
-create /Pythia7/SubProcessHandler SimpleEE2BB
+create /ThePEG/SubProcessHandler SimpleEE2BB
 insert SimpleEE2BB:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2bb
 set SimpleEE2BB:PartonExtractor /Defaults/Handlers/StandardExtractor
 set /Defaults/Handlers/SimpleLEPHandler:SubProcessHandlers[0] SimpleEE2BB
@@ -109,7 +109,7 @@ set SimpleLEPGenerator:NumberOfEvents 100000
 set SimpleLEPGenerator:DebugLevel 1
 set SimpleLEPGenerator:PrintEvent 10
 set SimpleLEPGenerator:MaxErrors 100
-set SimpleLEPGenerator:Strategy /Defaults/Pythia7Strategy
+set SimpleLEPGenerator:Strategy /Defaults/ThePEGStrategy
 set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
 set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
 set /Defaults/Particles/Z0:NominalMass 92

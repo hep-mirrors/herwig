@@ -5,19 +5,19 @@
 //
 
 #include "ClusterHadronizationHandler.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/Interface/Parameter.h" 
-#include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/Handlers/CollisionHandler.h"
-#include "Pythia7/Handlers/Hint.h"
-#include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/EventRecord/Particle.h"
-#include "Pythia7/EventRecord/Step.h"
-#include "Pythia7/PDT/PDT.h"   
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/Interface/Parameter.h> 
+#include <ThePEG/Interface/Reference.h>
+#include <ThePEG/Handlers/CollisionHandler.h>
+#include <ThePEG/Handlers/Hint.h>
+#include <ThePEG/PDT/ParticleData.h>
+#include <ThePEG/EventRecord/Particle.h>
+#include <ThePEG/EventRecord/Step.h>
+#include <ThePEG/PDT/PDT.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
 #include "Herwig++/Utilities/Smearing.h"
@@ -26,7 +26,7 @@
 #include <iostream>
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 ClusterHadronizationHandler::~ClusterHadronizationHandler() {}

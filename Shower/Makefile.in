@@ -1,0 +1,14 @@
+OBJECTS = libHwShower.so
+
+SOURCES := $(wildcard *.cc)
+
+HEADERS := $(wildcard *.h)
+
+LIBOBJECTS := $(SOURCES:.cc=.o)
+
+include ../Config/Makefile.common
+
+$(OBJECTS): $(LIBOBJECTS)
+	@cd $(SRCDIR)/lib; rm -f $(LIBOBJECTS)
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $(LIBOBJECTS) -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib

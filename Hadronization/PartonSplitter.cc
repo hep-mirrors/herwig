@@ -5,18 +5,18 @@
 //
 
 #include "PartonSplitter.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/EventRecord/Step.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Reference.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/EventRecord/Step.h>
+#include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/HwDebug.h"
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 PartonSplitter::~PartonSplitter() {}
@@ -63,7 +63,6 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
   }
   // Loop over all of the particles in the event.
   for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
-    
     if ( (**pit).data().id() == ParticleID::g ) {     // gluon
 
       if ( (**pit).momentum().m2() > 0.0 ){           // time like
@@ -76,6 +75,10 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	pstep->addDecayProduct(*pit,ptrQ);
 	pstep->addDecayProduct(*pit,ptrQbar);
         pstep->fixColourFlow();       	
+	
+// 	cout << (**pit).id() << ", " << (**pit).momentum() << endl
+// 	     << ptrQ->id() << ", " << ptrQ->momentum() << endl
+// 	     << ptrQbar->id() << ", " << ptrQbar->momentum() << endl;
 
         // Debugging
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
@@ -99,7 +102,7 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
       }
     } else {
       // write a method in Herwig++/Utilities/CheckId (or use/add 
-      //  Pythia7/PDT/StandardMatchers.h) for checking if it is a 
+      //  ThePEG/PDT/StandardMatchers.h) for checking if it is a 
       // sea quark or antiquark
       //if ( ( (**pit).momentum().m2() < 0.0 ) &&               // space like and
       //     ( SeaQuarkMatcher::Check( (**pit).data() ) ||         // (sea quark or

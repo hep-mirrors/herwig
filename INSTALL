@@ -1,0 +1,25 @@
+22/7/03: Philip Stephens
+To install Herwig++ you must have ThePEG, CLHEP and gcc v3 or 
+greater. Then set the environment variables CLHEPPATH and THEPEGPATH
+to the location of the respected packages. If the includes are not
+in CLHEPPATH/include or THEPEGPATH/include then also set the env
+variables CLHEPINCLUDES and/or THEPEGINCLUDES to the appropriate
+place. Currently, ThePEG libraries are required to be in 
+THEPEGPATH/lib/ThePEG (the libCLHEP.so created by ThePEG should also
+be in that directory). You may need to create a symbolic link at 
+this location. The static CLHEP library should be in
+CLHEPPATH/lib. Also, for building the KtJetInterface and the 
+AmegicInterface libraries you must set AMEGICPATH and KTJETPATH 
+variables and individually in the Interfaces directory compile 
+the interfaces.
+
+Then just type:
+
+./configure
+make
+make check
+
+This will run the Herwig++ init and Herwig++ read LEP.in commands.
+If these don't core dump then the program is working properly and
+the libraries have been created. make install will be implemented
+and tested later.

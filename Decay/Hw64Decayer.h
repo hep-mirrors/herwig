@@ -16,18 +16,18 @@
 // <a href="Decayer.html">Decayer.h</a>.
 // 
 
-#include "Pythia7/Config/Pythia7.h"
-#include "Pythia7/PDT/Decayer.h"
-#include "Pythia7/Handlers/HandlerBase.h"
-#include "Pythia7/Interface/Interfaced.h"
-#include "Pythia7/PDT/DecayMode.h"
-#include "Pythia7/Repository/Strategy.fh"
+#include <ThePEG/Config/ThePEG.h>
+#include <ThePEG/PDT/Decayer.h>
+#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
+#include <ThePEG/PDT/DecayMode.h>
+#include <ThePEG/Repository/Strategy.fh>
 #include "DecayConfig.h"
 #include <fstream>
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class Hw64Decayer: public Decayer {
 
@@ -76,35 +76,21 @@ private:
 
   int MECode;
 
-  void oneBodyDecay(Lorentz5Momentum, Lorentz5Momentum &) const;
+  static void oneBodyDecay(Lorentz5Momentum, Lorentz5Momentum &);
   // Perform a one body decay, used for K
   // two body decay is handled in static class Kinematics
-  void threeBodyDecay(Lorentz5Momentum  , Lorentz5Momentum &, 
-		      Lorentz5Momentum &, Lorentz5Momentum &) const;
-  // Perform a three body decay. Should also be uniform version in Kinematics
-  void fourBodyDecay(Lorentz5Momentum  , Lorentz5Momentum &,
-		     Lorentz5Momentum &, Lorentz5Momentum &,
-		     Lorentz5Momentum &) const;
-  // Perform a uniform four body decay, should move to Kinematics
-  void fiveBodyDecay(Lorentz5Momentum  , Lorentz5Momentum &,
-		     Lorentz5Momentum &, Lorentz5Momentum &,
-		     Lorentz5Momentum &, Lorentz5Momentum &) const;
-  // Perform a uniform five body decay, again should move to Kinematics
 
-  double EMMasslessWt(double, double, double, double) const;
-  // Weighting of phase space for EM points
+  static double VAWt(double*); //, double, double, double) const;
+  // Weighting of phase space for V-A matrix elements
 
-  double PhaseSpaceWt() const;
+  //double PhaseSpaceWt() const;
   // Flat phase space weight (1.0)
 
   //double randomAzimuthal(double, double &, double &) const;
-  void setParticleMomentum(ParticleVector &, ParticleMSet, vector<Lorentz5Momentum>) const;
+  void setParticleMomentum(ParticleVector &, ParticleMSet, 
+			   vector<Lorentz5Momentum>) const;
   // Sets the momentum in the vector to be the momentum of the particle vector
   // where is the particles are of the type given in the ParticleMSet
-
-  void reorderProducts(ParticleVector &) const;
-  // Routine to set products up to utilize the order dependent colour connectiongs
-  // of pythia 7
 
   static ClassDescription<Hw64Decayer> initHw64Decayer;
 
@@ -114,7 +100,7 @@ private:
 
 }
 
-namespace Pythia7 {
+namespace ThePEG {
 
 template <>
 struct BaseClassTrait<Herwig::Hw64Decayer,1> {

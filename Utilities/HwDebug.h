@@ -107,6 +107,9 @@ namespace Herwig {
     static SampleHistogram CparameterHisto;
     static SampleHistogram DparameterHisto;
     static SampleHistogram multiplicityHisto;
+    static SampleHistogram multHist1;
+    static SampleHistogram multHist2;
+    static SampleHistogram multHist3;
 
   };
 

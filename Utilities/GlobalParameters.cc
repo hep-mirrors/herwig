@@ -5,14 +5,14 @@
 //
 
 #include "GlobalParameters.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Interface/Parameter.h"
-#include "Pythia7/Interface/Switch.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Interface/Switch.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 GlobalParameters::~GlobalParameters() {}
@@ -71,15 +71,15 @@ void GlobalParameters::Init() {
      "soft underlying event is ON", 1);
 
  static Switch<GlobalParameters, int> interfaceStringFragmentationMode
-    ("OnOffPythia7StringFragmentationMode",
-     "Choice of the Pythia7 string fragmentation switch mode.",
+    ("OnOffThePEGStringFragmentationMode",
+     "Choice of the ThePEG string fragmentation switch mode.",
      &GlobalParameters::_stringFragmentationMode, 0, false, false);
   static SwitchOption interfaceStringFragmentationMode0
     (interfaceStringFragmentationMode,"StringFragmentation-OFF", 
-     "Pythia7 string fragmentation is OFF", 0);
+     "ThePEG string fragmentation is OFF", 0);
   static SwitchOption interfaceStringFragmentationMode1
     (interfaceStringFragmentationMode,"StringFragmentation-ON",
-     "Pythia7 string fragmentation is ON", 1);
+     "ThePEG string fragmentation is ON", 1);
 
   static Parameter<GlobalParameters,Energy2> interfaceMinVirtuality2 
     ("MinVirtuality2",

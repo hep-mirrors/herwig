@@ -1,64 +1,20 @@
+This is a prerelease of Herwig++ for e+e- collisions.  This version is
+only distributed for tutorial purposes during the workshop
+Monte Carlo Tools for the LHC (CERN, July 2003). 
 
- (last update: 16 April 2002)
+DO NOT USE IT FOR SERIOUS PHYSICS STUDIES! 
 
- What you need:
- ==============
+What you need:
+==============
+- Linux operating system;
+- GNU C/C++ compiler  gcc > 3.2, see
+  http://www.gnu.org/directory/gcc.html
+- CLHEP version 1.8.0.0  or higher. See
+  http://wwwasd.web.cern.ch/wwwasd/lhc++/clhep/DISTRIBUTION/clhep.html
+- ThePEG v1.0 (alpha release) 
+  http://www.thep.lu.se/ThePEG/>ThePEG
 
- --- Linux operating system;
+See INSTALL for installation instructions. 
 
- --- GNU C/C++ compiler  gcc  version  3.0.4
-
- --- CLHEP version 1.7.0.0  installed in:
-                                           /your/first/choice/
-     with subdirectories: ---   lib/  where there is libCLHEP.a
-                          ---   include/CLHEP  where there is the source code
-
- --- Pythia7 (latest update) installed in:
-                                           /your/second/choice/Pythia7
-
-
- Step to follow:
- ===============
-
-  1)  Set the environmental variables:  CLHEPPATH , LD_LIBRARY_PATH , PYTHIA7PATH
-      (and *NOT* instead modified configure.in)   as follows:
-
-      > set  CLHEPPATH=/your/first/choice
-      > set  LD_LIBRARY_PATH=$CLHEPPATH/lib
-      > set  PYTHIA7PATH=/your/second/choice/
-
-      NB) It can be that you have to specify also the compiler library:
-          suppose it is in  /path/forgcc/lib/  then replace the above
-          definition for LD_LIBRARY_PATH as follows:
-            > set LD_LIBRARY_PATH=/path/forgcc/lib/:$CLHEPPATH/lib/          
-
- 2)  build Pythia7 : 
-
-      % cd /your/second/choice/Pythia7/
-      % make current
-
-
- 3)  build Herwig++ :
-
-      % cd /your/third/choice/Herwig++ 
-      % make current
-
- 4)  %  cd src
-
-     %  setupHerwig.exe -init      
-            ===> to build the repository  * HerwigDefaults.rpo *
-
-     %  setupHerwig.exe SimpleLEP.in
-            ===> to build the generator  * SimpleLEP.run *
-
-     %  runHerwig.exe SimpleLEP.run
-            ===> see the output in  * SimpleLEP.out *  and messages in 
-                 the log file       * SimpleLEP.log *
-                 If you want a long list of debugging information 
-                 (which you can find in  SimpleLEP.log):
-                     % runHerwig.exe -dHw n SimpleLEP.run
-                 where n = 1  for moderate checking information
-                       n = 10 for full debugging information
-
-      
+Philip Stephens, Stefan Gieseke (21 July 2003)
 

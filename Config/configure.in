@@ -18,12 +18,12 @@ if test -z "$CLHEPLIB"; then
   CLHEPLIB="CLHEP"
 fi
 
-if test -z "$PYTHIA7PATH"; then
-PYTHIA7PATH=
+if test -z "$THEPEGPATH"; then
+THEPEGPATH=
 fi
 
-if test -z "$PYTHIA7LIB"; then
-  PYTHIA7LIB="-lP7Repo -lP7Handlers -lP7PDF -lP7ME -lP7Event -lP7PDT -lP7SM -lP7Inter -lPythia7"
+if test -z "$THEPEGLIB"; then
+  THEPEGLIB="-lThePEGRepo -lThePEGHandlers -lThePEGPDF -lThePEGME -lThePEGEvent -lThePEGPDT -lThePEGSM -lThePEGInter -lThePEG"
 fi
 
 UILDDIR=`pwd`
@@ -33,8 +33,8 @@ AC_SUBST(ARFLAGS)
 AC_SUBST(RANLIB)
 AC_SUBST(CLHEPPATH)
 AC_SUBST(CLHEPLIB)
-AC_SUBST(PYTHIA7PATH)
-AC_SUBST(PYTHIA7LIB)
+AC_SUBST(THEPEGPATH)
+AC_SUBST(THEPEGLIB)
 AC_SUBST(BUILDDIR)
 AC_CONFIG_HEADER(config.h)
 AC_OUTPUT(../Doc/h2html Makefile.common)

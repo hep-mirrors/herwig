@@ -40,13 +40,13 @@
 // <a href="http:ShowerParticle.html">ShowerParticle.h</a>, <BR>
 // <a href="http:SplittingGenerator.html">SplittingGenerator.h</a>.
 // 
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 
 namespace Herwig {
 
-  using namespace Pythia7;
+  using namespace ThePEG;
 
   struct ShowerIndex {
 

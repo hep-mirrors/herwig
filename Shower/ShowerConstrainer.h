@@ -55,16 +55,16 @@
 // <a href="http:ShowerIndex.html">ShowerIndex.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
-#include "Herwig++/Config/GlobalParameters.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerIndex.h"
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class ShowerConstrainer: public Pythia7::HandlerBase {
+class ShowerConstrainer: public ThePEG::HandlerBase {
 
 public:
 
@@ -122,6 +122,26 @@ public:
 
   static Energy HUGEMASS; // Use to initialize some scales.
 
+  inline Energy largestPtQ() const;
+  inline void setLargestPtQ(const Energy pt);
+  inline Energy largestPtQbar() const;
+  inline void setLargestPtQbar(const Energy pt);
+  // Access/set <I>Pt</I> of hardest emission so far.
+
+  // Query the switch for Matrix Element Corrections. 
+  inline bool MECOn() const;
+  // Any ME correction?   
+  inline bool hardMEC() const;
+  // any hard ME correction? 
+  inline bool softMEC() const;
+  // any soft ME correction? 
+  inline bool asyPS() const;
+  // assign asymmetric initial condition to parton shower, random or
+  // not? If not random, then quark gets larger initial scale.
+  inline bool rndPS() const;
+  // asymmetric parton shower phase space, random choice for jet with
+  // large initial scale?
+
 public:
 
   void persistentOutput(PersistentOStream &) const;
@@ -169,28 +189,30 @@ private:
   Energy _cutoffQEDMassScale; // Low-energy cutoff mass scale for QED radiation
   Energy _cutoffEWKMassScale; // Low-energy cutoff mass scale for EWK radiation
   Energy _kinCutoffScale; //shape the phase space 
-
+  int _MECorrMode; 
+  int _qqgPSMode; 
   Energy _stopShowerAtMassScale;
   Energy _vetoAbovePtScale;
   Energy _vetoBelowPtScale;
+  Energy _largestPtQ;
+  Energy _largestPtQbar;
   set<long> _particlesDecayBeforeShower;
-
 };
 
 }
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ShowerConstrainer.
 template <>
 struct BaseClassTrait<Herwig::ShowerConstrainer,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ShowerConstrainer>: public ClassTraitsBase<Herwig::ShowerConstrainer> {

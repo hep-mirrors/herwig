@@ -7,20 +7,20 @@
 //
 
 #include "HadronSelector.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Interface/Parameter.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/PDT/ParticleData.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/SmplHist.h"
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 //static SampleHistogram hist = SampleHistogram(0.0,0.5,0.001);
 
@@ -76,7 +76,7 @@ void HadronSelector::Init() {
 		       &HadronSelector::_PwtBquark, 0, 1.0, 0.0, 10.0);
   static Parameter<HadronSelector,double>
     interfacePwtDIquark("PwtDIquark","Weight for choosing a DIquark",
-			&HadronSelector::_PwtDIquark, 0, 1.0, 0.0, 10.0);
+			&HadronSelector::_PwtDIquark, 0, 1.0, 0.0, 100.0);
   static Parameter<HadronSelector,double>
     interfaceSngWt("SngWt","Weight for singlet baryons",
                   &HadronSelector::_SngWt, 0, 1.0, 0.0, 10.0);
@@ -161,6 +161,26 @@ massLightestHadron(const long id1, const long id2, const long id3) const {
   return mass;
 }
 
+Energy HadronSelector::massLightestBaryonPair(const long id1, 
+					      const long id2) const {
+  // Make sure that we don't have any diquarks as input, return arbitrarily
+  // large value if we do
+  static const Energy numericMax = 1e10*GeV;
+  if(abs(id1) > ParticleID::t || abs(id2) > ParticleID::t) return numericMax;
+  int f1 = convertIdToFlavour(id1);
+  int f2 = convertIdToFlavour(id2);
+  int currentLow = DD;
+  Energy currentSum = numericMax; 
+  for(int i = DD; i<=BB; i++) {
+    if(_table[f1][i].size() == 0 || _table[i][f2].size() == 0) continue; 
+    Energy s = _table[f1][i].begin()->mass + _table[i][f2].begin()->mass;
+    if(currentSum > s) {
+      currentSum = s;
+      currentLow = i;
+    }
+  }
+  return currentSum;
+}
 
 pair<long,long> HadronSelector::
 lightestHadronPair(const long id1, const long id2, const long id3) const {
@@ -320,6 +340,8 @@ chooseHadronPair(const Energy cluMass, const long id1, const long id2,
   int maxFlav = BB;
   if(id1 >= DD || id2 >= DD) maxFlav = B;
   pair<long,long> lighthad = lightestHadronPair(id1,id2);
+  if(lighthad.first == 0 || lighthad.second == 0) 
+     cout << "We have 0's! First id = " << id1 << " second = " << id2 << endl;
   Energy PCMax = Kinematics::pstarTwoBodyDecay(cluMass, 
 				  getParticleData(lighthad.first)->mass(),
 				  getParticleData(lighthad.second)->mass());
@@ -403,8 +425,8 @@ pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
   //    u, d, s, c, b, ud, dd, uu, sd, su, ss, 
   //                   cd, cu, cs, cc, bd, bu, bs, bc, bb
   // otherwise only u, d, s, c, b. 
-  int numFlavs = BB;
-  if(CheckId::isDiquark(id1) || CheckId::isDiquark(id2)) numFlavs = B;
+  //int numFlavs = BB;
+  //if(CheckId::isDiquark(id1) || CheckId::isDiquark(id2)) numFlavs = B;
   
   // Fill Kupco's cluster decay channel table with all channels 
   // above threshold.
@@ -544,182 +566,96 @@ pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
   }
   return hadPair;
 }
-
 pair<long,long> HadronSelector::newkupco(const Energy cluMass, const long id1,
 					 const long id2, Energy PCMax, 
 					 int maxFlav) { 
-  
-  pair<long,long> hadPair = pair<long,long>(0,0);
   multiset<Kupco> weights;
-    
-  // If both id1 and id2 are not diquarks, then the possible Q values 
-  // (of the Q Qbar pair from the vacuum) are assumed to be: 
-  //    u, d, s, c, b, ud, dd, uu, sd, su, ss, 
-  //                   cd, cu, cs, cc, bd, bu, bs, bc, bb
-  // otherwise only u, d, s, c, b. 
-  int numFlavs = BB;
-  if(CheckId::isDiquark(id1) || CheckId::isDiquark(id2)) numFlavs = B;
+  pair<long,long> hadPair = pair<long,long>(0,0);
   
   // Fill Kupco's cluster decay channel table with all channels 
   // above threshold.
-  Energy sumWeight = Energy();  // store the sum weight on the table.
-  //Energy maxWeight = Energy();
+  Energy sumWeight = 0.0;  // store the sum weight on the table.
   Energy p, weight;
-  map<long,int> particleCounts;
   int flav1 = convertIdToFlavour(id1);
   int flav2 = convertIdToFlavour(id2);
-  if(flav1 != -1  &&  flav2 !=-1 ) {
-    while(hadPair.first == 0 || hadPair.second == 0) {
-        int flav = int(rnd()*double(maxFlav));
-	double fac = 1.0;
-	if(flav1 == flav && flav2 == flav) fac *= 0.5;
-        if(rnd() > fac*_Pwt[flav]) continue;
-	if(cluMass > (_table[flav1][flav].begin()->mass + 
-		      _table[flav][flav2].begin()->mass)) {
-	    for(KupcoData::iterator H1 = _table[flav1][flav].begin();
-	        H1 != _table[flav1][flav].end(); H1++) {
-	        for(KupcoData::iterator H2 = _table[flav][flav2].begin();
-	            H2 != _table[flav][flav2].end(); H2++) {
-		    if(cluMass < H1->mass + H2->mass) break;
-		    p=Kinematics::pstarTwoBodyDecay(cluMass,H1->mass,H2->mass);
-		    if(p < Energy()) break; // shouldn't get here
-		    weight = p*H1->overallWeight*H2->overallWeight;
-		    weight /= PCMax;
-		    int signQ = 0;
-		    long idQ = convertFlavourToId(flav);
-#define check(a,b) (CheckId::canBeMeson(a,b) || CheckId::canBeBaryon(a,b))
-		    if(check(id1,-idQ) && check(idQ,id2)) signQ = +1;
-		    else if(check(id1,idQ) && check(-idQ,id2)) signQ = -1;
-#undef check
-		    int signHad1 = 0, signHad2 = 0;
-		    if(signQ != 0) {
-		        signHad1 = signHadron(id1,-signQ*idQ, H1->id);
-			signHad2 = signHadron(id2, signQ*idQ, H2->id);
-		    }
-		    if(signHad1 && signHad2) {
-		        Kupco a;
-			a.idQ = signQ*idQ;
-			a.idHad1 = signHad1*H1->id;
-			a.idHad2 = signHad2*H2->id;
-			a.weight = weight;
-			weights.insert(a);
-		    } else {
-                        ostringstream os;
-			os << "HadronSelector:newkupco ****Inconsistent hadron"
-			   << " pair****";
-			generator()->logWarning(Exception(os.str(),
-						Exception::warning));
-		    }
-		}
-	    }
-	}
-	if(weights.size() > 0) {
-            multiset<Kupco>::iterator it;
-	    double sumWt=0.0,r;
-	    sumWeight = 0.0;
-	    for(it = weights.begin(); it != weights.end(); it++)
-	        sumWeight += it->weight;
-	    r = rnd(sumWeight);
-	    for(it = weights.begin(); it != weights.end(); it++) {
-	        sumWt += it->weight;
-		if(sumWt >= r) break;
-	    }
-	    if(it == weights.end()) weights.clear();
-	    else hadPair = pair<long,long>(it->idHad1,it->idHad2);
-	} else weights.clear();
-    }
+  weights.clear();
+  int startFlav = D;
+  // Choose the meson sector if between 0 and 1/(1+B), otherwise choose 
+  // baryon sector
+  //Energy a = massLightestBaryonPair(id1,id2);
+  if(cluMass > massLightestBaryonPair(id1,id2)) {
+    double r = rnd();
+    if(r < 1./(1.+pwtDIquark())) { startFlav = D; maxFlav = B; }
+    else { startFlav = DD; maxFlav = BB; }
+  } else { startFlav = D; maxFlav = B; }
 
-    /*
-    for(int i=D; i <= maxFlav; ++i) {
-      if(cluMass > (_table[flav1][i].begin()->mass + _table[flav2][i].begin()->mass)) { 
-	// Loop over all hadron pairs with given flavour.
-	for(KupcoData::iterator H1 = _table[flav1][i].begin(); 
-	    H1 != _table[flav1][i].end(); H1++) {
-	  for(KupcoData::iterator H2 = _table[i][flav2].begin();
-	      H2 != _table[i][flav2].end(); H2++) {
-	    if(cluMass < H1->mass + H2->mass) break;
-	    p = Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
-	    if(p > Energy()) {  // the hadrons are above threshold.
-	      weight = _Pwt[i]*p*H1->overallWeight*H2->overallWeight;
-	      weight /= PCMax;
-	      //weight /= _table[flav1][i].size();
-	      //weight /= _table[i][flav2].size();
-	      //weight /= (_table[flav1][i].size() + _table[i][flav2].size())/2;
-	      //if(weight > maxWeight || maxWeight==0.) maxWeight = weight;
-	      //sumWeight += weight;
-	      int signQ = 0;
-	      long idQ = convertFlavourToId(i);
+  if(flav1 == -1  ||  flav2 ==-1 ) return pair<long,long>(0,0);
+
+  //cout << "startflav = " << startFlav << " and maxFlav = " << maxFlav << " cluMass = " << cluMass << " a is " << a << endl;
+  for(int i=startFlav; i <= maxFlav; ++i) {
+    if(cluMass > (_table[flav1][i].begin()->mass + 
+		  _table[i][flav2].begin()->mass)) { 
+      // Loop over all hadron pairs with given flavour.
+      for(KupcoData::iterator H1 = _table[flav1][i].begin(); 
+	  H1 != _table[flav1][i].end(); H1++) {
+	for(KupcoData::iterator H2 = _table[i][flav2].begin();
+	    H2 != _table[i][flav2].end(); H2++) {
+	  if(cluMass < H1->mass + H2->mass) break;
+	  p = Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
+	  if(p > Energy()) {  // the hadrons are above threshold.
+	    weight = _Pwt[i]*p*H1->overallWeight*H2->overallWeight;
+	    int signQ = 0;
+	    long idQ = convertFlavourToId(i);
 #define m(a,c) CheckId::canBeMeson(a,c)
 #define b(a,c) CheckId::canBeBaryon(a,c)
-	      if((m(id1,-idQ) || b(id1,-idQ)) && (m(idQ,id2) || b(idQ,id2)))
-		signQ = +1;
-	      else if((m(id1,idQ) || b(id1,idQ)) && (m(-idQ,id2) || b(-idQ,id2)))
-		signQ = -1;
+	    if((m(id1,-idQ) || b(id1,-idQ)) && 
+	       (m(idQ,id2) || b(idQ,id2)))
+	      signQ = +1;
+	    else if((m(id1,idQ) || b(id1,idQ)) && 
+		    (m(-idQ,id2) || b(-idQ,id2)))
+	      signQ = -1;
 #undef m
 #undef b
-	      int signHad1 = 0, signHad2 = 0;
-	      if(signQ != 0) {
-		signHad1 = signHadron(id1, -signQ*idQ, H1->id);
-		signHad2 = signHadron(id2,  signQ*idQ, H2->id);
-	      }
-	      if(signHad1 != 0  &&  signHad2 != 0) {
-		Kupco a;
-		a.idQ = signQ * idQ;
-		a.idHad1 = signHad1 * H1->id;
-		a.idHad2 = signHad2 * H2->id;
-		a.weight = weight;
-		particleCounts[a.idHad1]++;
-		if(a.idHad1 != a.idHad2) particleCounts[a.idHad2]++;
-		//particleCounts[a.idHad2]++;
-		//particleCounts[abs(H1->id)]++;
-		//particleCounts[abs(H2->id)]++;
-		//sumWeight += a.weight;
-		//weights.push_back(a);
-		weights.insert(a);
-	      } else {
-		ostringstream s;
-		s << "HadronSelector::chooseHadronsPair " 
-		  << "***Inconsistent Hadron*** signQ " << signQ 
-		  << ", " << signHad1 << ", " << signHad2;
-		generator()->logWarning(Exception(s.str(),
-						  Exception::warning));
-	      }
-	    } // if pCmstar > 
-	  } // for Had2
-	} // for Had1
-      } // if clumass
-    } // for i
-  } // if flav1 != 0
-  
+	    int signHad1 = 0, signHad2 = 0;
+	    if(signQ != 0) {
+	      signHad1 = signHadron(id1, -signQ*idQ, H1->id);
+	      signHad2 = signHadron(id2,  signQ*idQ, H2->id);
+	    }
+	    if(signHad1 != 0  &&  signHad2 != 0) {
+	      Kupco a;
+	      a.idQ = signQ * idQ;
+	      a.idHad1 = signHad1 * H1->id;
+	      a.idHad2 = signHad2 * H2->id;
+	      a.weight = weight;
+	      sumWeight += weight;
+	      weights.insert(a);
+	      //cout << "adding weight for " << a.idHad1 << "x" << a.idHad2 
+	      //   << " = " << weight << endl;
+	    } else {
+	      ostringstream s;
+	      s << "HadronSelector::chooseHadronsPair " 
+		<< "***Inconsistent Hadron*** signQ " << signQ 
+		<< ", " << signHad1 << ", " << signHad2;
+	      generator()->logWarning(Exception(s.str(),
+						Exception::warning));
+	    }
+	  } // if pCmstar > 
+	} // for Had2
+      } // for Had1
+    } // if clumass
+  } // for i
+
   // Choose one decay channel.
   if ( weights.size() > 0 ) {
     multiset<Kupco>::iterator it;
     double sumWt = 0.0;
     double r;
-    
-    sumWeight = 0.0;
-    //for(iChan = 0; iChan<weights.size(); iChan++) {
-    for(it = weights.begin(); it != weights.end(); it++) {
-      //sumWeight += it->weight;
-      //double div = (particleCounts[it->idHad1]+particleCounts[it->idHad2])/2;
-      double a = particleCounts[it->idHad1];
-      double b = particleCounts[it->idHad2];
-      //sumWeight+=it->weight/(sqrt(a+b/2));
-      sumWeight+=it->weight/(a*b);
-    }
     r = rnd(sumWeight);
     for(it = weights.begin(); it != weights.end(); it++) {
-      //sumWt += weights[iChan].weight;
-      //sumWt += it->weight;
-      //cout << it->idHad1 << " count is " << particleCounts[it->idHad1] << ","
-      //   << it->idHad2 << " count is " << particleCounts[it->idHad2]
-      //   << endl;
-      double a = particleCounts[abs(it->idHad1)];
-      double b = particleCounts[abs(it->idHad2)];
-      //cout << it->idHad1 << ", " << it->idHad2 << "-->" << (a+b)/2 << endl;
-      //sumWt += it->weight/(sqrt(a+b/2));
-      sumWt += it->weight/(a*b);
-      if(r <= sumWt) break;
+      //cout << "Looking at " << it->idHad1 << "x" << it->idHad2 << " = " 
+      //   << it->weight << endl;
+      sumWt += it->weight;
+      if(r<=sumWt) break;
     }
     if(it == weights.end()) {
       ostringstream os;
@@ -728,13 +664,10 @@ pair<long,long> HadronSelector::newkupco(const Energy cluMass, const long id1,
 	 << " Sum of weights is " << sumWeight << " r is " << r << " sumwt is "
 	 << sumWt;
       generator()->logWarning(Exception(os.str(), Exception::warning));
-      //iChan = numChan-1;
       it = weights.begin();
     }
-    //hadPair = pair<long,long>(weights[iChan].idHad1, weights[iChan].idHad2);
     hadPair = pair<long,long>(it->idHad1, it->idHad2);
-    */
-  }
+  } 
   return hadPair;
 }
 
@@ -983,9 +916,12 @@ void HadronSelector::initialize() {
   _Pwt[B]  = _PwtBquark;
   _Pwt[DD] =       _PwtDIquark * _PwtDquark * _PwtDquark;
   _Pwt[DU] = 0.5 * _PwtDIquark * _PwtUquark * _PwtDquark;
+  //_Pwt[DU] = _PwtDIquark * _PwtUquark * _PwtDquark;
   _Pwt[UU] =       _PwtDIquark * _PwtUquark * _PwtUquark;
   _Pwt[DS] = 0.5 * _PwtDIquark * _PwtSquark * _PwtDquark;
+  //_Pwt[DS] = _PwtDIquark * _PwtSquark * _PwtDquark;
   _Pwt[US] = 0.5 * _PwtDIquark * _PwtSquark * _PwtUquark;
+  //_Pwt[US] = _PwtDIquark * _PwtSquark * _PwtUquark;
   _Pwt[SS] =       _PwtDIquark * _PwtSquark * _PwtSquark;
   // Commenting out heavy di-quark weights
   _Pwt[DC] = 0.0;
@@ -1134,6 +1070,15 @@ void HadronSelector::fillHadronData() {
       _table[U][U].insert(a);
       if(_ClusterDKMode == 0 && a.overallWeight > maxdd) 
 	maxdd = a.overallWeight;
+    } else if((flav1 == 1 && flav2 == 11) || (flav1 == 11 && flav2 == 1) ||
+	      (flav1 == 2 && flav2 == 22) || (flav1 == 22 && flav2 == 2) ||
+	      (flav1 == 3 && flav2 == 33) || (flav1 == 33 && flav2 == 3)) {
+      if(_ClusterDKMode != 0) a.overallWeight = 1.5*a.wt*a.swtef*nj;
+      else a.overallWeight = a.wt * nj;
+      _table[flavToIndex[flav1]][flavToIndex[flav2]].insert(a);
+      _table[flavToIndex[flav2]][flavToIndex[flav1]].insert(a);
+      if(_ClusterDKMode == 0 && a.overallWeight > maxrest)
+	maxrest = a.overallWeight;
     } else {
       if(_ClusterDKMode != 0) a.overallWeight = a.wt * a.swtef * nj;
       else a.overallWeight = a.wt * nj;
@@ -1276,7 +1221,7 @@ double HadronSelector::mixingStateWeight(long id) {
 
   //***LOOKHERE*** The following three mixing cases are at the 
   //               moment comment out because the corresponding
-  //               particles are not (yet) present in Pythia7/PDT/EnumParticles.h.
+  //               particles are not (yet) present in ThePEG/PDT/EnumParticles.h.
   //               The PDG Ids and masses of these particles are
   //               (according to Herwig 6.3) the following: 
   //                  omega(1650) : id = 30223 ,  m = 1649 MeV 

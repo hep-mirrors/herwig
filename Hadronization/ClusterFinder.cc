@@ -5,20 +5,20 @@
 //
 
 #include "ClusterFinder.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/Handlers/PartialCollisionHandler.h"
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/Repository/EventGenerator.h"
-#include "Pythia7/EventRecord/Collision.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/Handlers/PartialCollisionHandler.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/Repository/EventGenerator.h>
+#include <ThePEG/EventRecord/Collision.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
 #include "Cluster.h"
 
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 ClusterFinder::~ClusterFinder() {}
@@ -146,7 +146,9 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	} 
       }
     }
-
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme) {
+       generator()->log() << "Got to here!\n";
+    }
     // Sanity checks (normally skipped) to see if the found cluster is 
     // sensible, that is: it has at least 2 components; none of its components
     // is a gluon (because after the gluon splitting step no gluons should be
@@ -176,7 +178,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	}
       }
       for (int i=0; i<iElement; ++i) {
-	if ( connected[i]->id() == Pythia7::ParticleID::g ) {
+	if ( connected[i]->id() == ThePEG::ParticleID::g ) {
 	  generator()->logWarning(Exception("ClusterFinder::formClusters "
 				"***Still gluons after gluon splitting***",
 					     Exception::warning) );
@@ -241,6 +243,9 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       }
     }  // end sanity checks
 
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme) {
+      generator()->log() << "Now past the sanity checks\n";
+    }
 #undef ci
 #undef cli
 #undef acli

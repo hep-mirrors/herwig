@@ -5,7 +5,7 @@
 //
 
 #include "GtoGGSplitFun.h"
-#include "Pythia7/Repository/UseRandom.h"
+#include "ThePEG/Repository/UseRandom.h"
 
 using namespace Herwig;
 

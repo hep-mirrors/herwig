@@ -17,18 +17,18 @@
 // <a href="http:RhoDMatrixPropagator.html">RhoDMatrixPropagator.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
-#include "Herwig++/Config/GlobalParameters.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
 #include "SplittingGenerator.h"
 #include "RhoDMatrixPropagator.h"
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class ForwardShowerEvolver: public Pythia7::HandlerBase {
+class ForwardShowerEvolver: public ThePEG::HandlerBase {
 
 public:
 
@@ -56,6 +56,9 @@ public:
   // contain, at the beginning of the method, either the full collection
   // of <!id>ShowerParticle<!!id> already created so far by the showering, 
   // or being empty: the choice is up to the caller).  
+
+private:
+  bool MEVeto(tcPPtr, const Energy &, const double &);
 
 public:
 
@@ -103,16 +106,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ForwardShowerEvolver.
 template <>
 struct BaseClassTrait<Herwig::ForwardShowerEvolver,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ForwardShowerEvolver>: public ClassTraitsBase<Herwig::ForwardShowerEvolver> {

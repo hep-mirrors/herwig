@@ -3,8 +3,8 @@
 #
 #read HerwigParticles.in
 #
-library libP7Handlers.so
-create /Pythia7/DecayHandler /Defaults/Handlers/StandardDecayHandler
+library libThePEGHandlers.so
+create /ThePEG/DecayHandler /Defaults/Handlers/StandardDecayHandler
 #set /Defaults/Handlers/SimpleLEPHandler:DecayHandler /Defaults/Handlers/theDecayHandler
 #
 mkdir /Defaults/Decays/
@@ -14,11 +14,27 @@ create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME0
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME100
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME101
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME130
+create /Herwig++/HeavyDecayer /Defaults/Decays/HvyDecayME0
+create /Herwig++/HeavyDecayer /Defaults/Decays/HvyDecayME100
+create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME0
+create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME100
+create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME101
+create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME130
 #
 set /Defaults/Decays/DecayME0:MECode 0
 set /Defaults/Decays/DecayME100:MECode 100 
 set /Defaults/Decays/DecayME101:MECode 101
 set /Defaults/Decays/DecayME130:MECode 130
+set /Defaults/Decays/HvyDecayME0:MECode 0
+set /Defaults/Decays/HvyDecayME100:MECode 100
+set /Defaults/Decays/QDecayME0:MECode 0
+set /Defaults/Decays/QDecayME100:MECode 100
+set /Defaults/Decays/QDecayME101:MECode 101
+set /Defaults/Decays/QDecayME130:MECode 130
+set /Defaults/Decays/QDecayME0:GlobalParameters /Defaults/theGlobalParameters
+set /Defaults/Decays/QDecayME100:GlobalParameters /Defaults/theGlobalParameters
+set /Defaults/Decays/QDecayME101:GlobalParameters /Defaults/theGlobalParameters
+set /Defaults/Decays/QDecayME130:GlobalParameters /Defaults/theGlobalParameters
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files

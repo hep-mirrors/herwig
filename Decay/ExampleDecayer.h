@@ -18,15 +18,15 @@
 // <a href="http:.html">.h</a>.
 // 
 
-#include "Pythia7/PDT/Decayer.h"
+#include <ThePEG/PDT/Decayer.h>
 
 
 namespace Herwig {
 
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class ExampleDecayer: public Pythia7::Decayer {
+class ExampleDecayer: public ThePEG::Decayer {
 
 public:
 
@@ -89,16 +89,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ExampleDecayer.
 template <>
 struct BaseClassTrait<Herwig::ExampleDecayer,1> {
-  typedef Pythia7::Decayer NthBase;
+  typedef ThePEG::Decayer NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ExampleDecayer>: public ClassTraitsBase<Herwig::ExampleDecayer> {

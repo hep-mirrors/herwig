@@ -28,17 +28,17 @@
 // <a href="http:ShowerAlphaQCD.html">ShowerAlphaQCD.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
 #include "ShowerConstrainer.h"
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class SplittingGenerator; 
 
-class ShowerAlpha: public Pythia7::HandlerBase {
+class ShowerAlpha: public ThePEG::HandlerBase {
 
 public:
 
@@ -107,16 +107,16 @@ protected:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ShowerAlpha.
 template <>
 struct BaseClassTrait<Herwig::ShowerAlpha,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ShowerAlpha>: public ClassTraitsBase<Herwig::ShowerAlpha> {

@@ -5,11 +5,11 @@
 //
 
 #include "MECorrection.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/Interface/Switch.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/Reference.h" 
+#include "ThePEG/Interface/Switch.h"
 
 using namespace Herwig;
 

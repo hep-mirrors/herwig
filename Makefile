@@ -1,40 +1,52 @@
-SUBDIRS = Config Shower Hadronization Decay MatrixElement Utilities  
-#SUBDIRS = Config Shower Hadronization Decay Utilities  
+SUBDIRS = Config Utilities Decay Hadronization Shower \
+	  MatrixElement src
+#Interfaces \
+
+DISTFILES = README Makefile configure configure.in
+
+VERSION = 0.9
+
+TAG = Herwig++-$(VERSION)
 
 .PHONY: lib all depend clean nodebug setup
 
-all: current
+all: lib
 
-current: lib
-	cd src ;  $(MAKE) -$(MAKEFLAGS) current ; cd ..
+check: lib
+	cd src ;  $(MAKE) -$(MAKEFLAGS) check ; cd ..
 
-lib: setup
-	for dir in $(SUBDIRS) lib; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) lib CXXDEBUGFLAG=-g CXXOPTFLAG=""; cd .. ; done
+lib:
+	for dir in $(SUBDIRS) lib; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) lib; cd .. ; done
 
-nodebug: setup
-	for dir in $(SUBDIRS) lib; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) lib ; cd .. ; done
+clean: 
+	for dir in $(SUBDIRS) lib src; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) clean ; cd .. ; done
 
-clean:
-	for dir in $(SUBDIRS) lib src; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) clean ; cd .. ; done;
-	cd Config/; rm Makefile.common configure config.h config.cache config.log config.status; cd ../src/; rm *.rpo *.run *.out *.log *.tex; cd ../Doc/; rm *.html; cd ..;
+distclean: clean
+	cd src ; $(MAKE) -$(MAKEFLAGS) distclean ; cd .. 
+	rm -f config.cache config.status config.log Config/Makefile.common Config/config.h
 
-depend: setup
-	for dir in $(SUBDIRS) src; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) depend ; cd .. ; done
+depend: 
+	for dir in $(SUBDIRS) src ; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) depend ; cd .. ; done
 
-setup: Config/Makefile.common Config/config.h
+install: lib
+	for dir in $(SUBDIRS) lib src ; do cd $$dir ; $(MAKE) VERSION=$(VERSION) -$(MAKEFLAGS) install ; cd .. ; done
 
-Config/Makefile.common: Config/Makefile.common.in Config/configure
-	cd Config/; ./configure; cd ../
+doc:
+	for dir in $(SUBDIRS) ; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) doc ; cd .. ; done
 
-Config/config.h: Config/config.h.in Config/configure
-	cd Config/; ./configure; cd ../
+Doc/h2html: 
+	cd Doc; dohtml.pl; cd ..
 
-Config/configure: Config/configure.in
-	cd Config/; autoconf
+configure: configure.in
+	autoconf
 
-
-
-
+dist: doc
+	rm -rf $(TAG)
+	mkdir -p $(TAG)/Herwig
+	cp $(DISTFILES) $(TAG)/Herwig
+	for dir in $(SUBDIRS) src Doc lib Templates ; do cd $$dir ; $(MAKE) -$(MAKEFLAGS) TAGDIR=$(TAG)/Herwig VERSION=$(VERSION) dist ; cd .. ; done
+	tar czf $(TAG).tgz $(TAG)
+	rm -rf $(TAG)
 
 
 

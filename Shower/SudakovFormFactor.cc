@@ -5,9 +5,9 @@
 //
 
 #include "SudakovFormFactor.h"
-#include "Pythia7/Repository/UseRandom.h"
+#include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/CurrentGenerator.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -110,19 +110,31 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
   bool veto = true; 
   tmax = sqr(root_tmax); 
   t = sqr(root_t); 
-  // Energy kinCutoff = _minScale;
-  Energy kinCutoff = kinScale();
+//   // Energy kinCutoff = _minScale;
+//   Energy kinCutoff = kinScale();
+//   bool glueEmits = false; 
+//   if (sF->idEmitter() == 21) glueEmits = true; 
+//   if ( glueEmits ) { 
+//     // have a cutoff of 
+//     //    t0 = 16.*sqr(max(_minScale, sF->massFirstProduct()));    
+//     //    t0 = sqr(max(_minScale, 4.*sF->massFirstProduct()));    
+//     t0 = sqr(max(kinCutoff, sF->massFirstProduct()));    
+//   } else {
+//     t0 = sqr(max(kinCutoff, sF->massEmitter()));    
+//   }
+
+  Energy kinCutoff;
   bool glueEmits = false; 
   if (sF->idEmitter() == 21) glueEmits = true; 
   if ( glueEmits ) { 
-    // have a cutoff of 
-    //    t0 = 16.*sqr(max(_minScale, sF->massFirstProduct()));    
-    //    t0 = sqr(max(_minScale, 4.*sF->massFirstProduct()));    
+    //    kinCutoff = (kinScale() - 0.15*sF->massFirstProduct())/2.3;
+    kinCutoff = (kinScale() - 0.3*sF->massFirstProduct())/2.3;
     t0 = sqr(max(kinCutoff, sF->massFirstProduct()));    
   } else {
+    //    kinCutoff = (kinScale() - 0.15*sF->massEmitter())/2.3;
+    kinCutoff = (kinScale() - 0.3*sF->massEmitter())/2.3;
     t0 = sqr(max(kinCutoff, sF->massEmitter()));    
   }
-
   t = tmax; 
   tmin = max(t0, sqr(_minScale));
 
@@ -141,9 +153,9 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     return; 
   }
 
-  long psest, psveto, pgveto, asveto; 
-  psest = psveto = pgveto = asveto = 0;
-
+  //  static long psest, psveto, pgveto, asveto, calls; 
+  //  psest = psveto = pgveto = asveto = 0;
+  //  calls++;
   // the veto algorithm loop
   do {
     
@@ -192,7 +204,7 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     // still inside PS?
     if ((z < z0 || z > z1) && t > tmin) { 
       veto = true; 
-      psest++;
+      //  psest++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
 				<< z0 << ", "
@@ -204,7 +216,7 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
       if (glueEmits) {
 	if (sqr(z*(1.-z))*t < t0) {
 	  veto = true; 
-	  psveto++;
+	  // psveto++;
 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
 	  }
@@ -212,14 +224,14 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
       } else {
 	if (sqr(1.-z)*(t*sqr(z) - t0) < z*sqr(kinCutoff)) {
 	  veto = true; 
-	  psveto++;
+	  //  psveto++;
 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
 	  }
 	}
       } 
     }
-	
+
     // overestimate of t-integral due to overestimate 
     // of z-integration limits: veto on this!
 //     ratio = (int_g_gg(1.-sqrt(MC2/t)) - int_g_gg(sqrt(MC2/t)))
@@ -233,24 +245,34 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     // hit the density? 
     ratio = sF->integratedFun(z, t)/
       sF->overestimateIntegratedFun(z);
-    if (UseRandom::rnd() > ratio) { 
+    if (!veto && UseRandom::rnd() > ratio) { 
       veto = true; 
-      pgveto++;
+      //pgveto++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
       }
     }
     // alpha_s valid? 
-    if ( UseRandom::rnd() > _alpha->value(sqr(z*(1.-z))*t)/
+    Energy2 pt2;
+    // simple argument of alpha_s
+    pt2 = sqr(z*(1.-z))*t;
+    // better argument of alpha_s is the actual pt...
+//     if (glueEmits) {
+//       pt2 = sqr(z*(1.-z))*t - t0;
+//     } else {
+//       pt2 = sqr((1.-z))*(sqr(z)*t - t0) - z*sqr(kinCutoff);
+//     }
+
+    if ( !veto && UseRandom::rnd() > _alpha->value(pt2)/
 	 _alpha->overestimateValue() ) {
       veto = true; 
-      asveto++;
+      //asveto++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	CurrentGenerator::log() << "  X veto on as(q2)/as = " 
-				<< _alpha->value(sqr(z*(1.-z))*t)
+				<< _alpha->value(pt2)
 				<< "/" << _alpha->overestimateValue() 
 				<< " = " 
-				<< _alpha->value(sqr(z*(1.-z))*t)/_alpha->overestimateValue() 
+				<< _alpha->value(pt2)/_alpha->overestimateValue() 
 				<< endl;
       }
     }
@@ -268,12 +290,25 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
 //   cerr << "---> accepted (t, z) = (" 	 
 //        << t << ", "
 //        << z << ")" 
-//        << "(est, ps, P/g, as) = (" 
+//  cerr << "(calls, ps-est, ps, P/g, as, sum) \\ (per call) = " 
+//       << endl << flush; 
+//   cerr << "(" << calls << ", "
 //        << psest << ", "
 //        << psveto << ", "
 //        << pgveto << ", "
-//        << asveto << ")"
-//        << endl; 
+//        << asveto << ", " 
+//        << psest+psveto+pgveto+asveto << ") ("
+//        << double(psest)/double(calls) << ", "
+//        << double(psveto)/double(calls) << ", "
+//        << double(pgveto)/double(calls) << ", "
+//        << double(asveto)/double(calls) << ", " 
+//        << double(psest+psveto+pgveto+asveto)/double(calls) << ")\r";
+// ran this for a good number of events. Variations should only appear with
+// crazy parameters...
+
+// (4211, 268, 2271, 1459, 1147, 5145) (0.0636428, 0.539302, 0.346474, 0.272382, 1.2218)
+
+
   if (t > 0) root_t = sqrt(t);
   else root_t = -1; ;
 

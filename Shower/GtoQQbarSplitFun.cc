@@ -24,15 +24,10 @@ double GtoQQbarSplitFun::fullFun( const double z, const Energy2 qtilde2, const d
 
 
 double GtoQQbarSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
-
-  double val = 1./2.*(sqr(z) + sqr(1.-z));
-
-  // ***ACHTUNG*** generally this will depend on the q, qbar masses
-  // and the scale qtilde2!  may be dangerous in the case of heavy
-  // quark production that wouldn't be kinematically allowed!
-
+  double zz = z*(1.-z);
+  double term = 2.*sqr(massFirstProduct())/zz/qtilde2; 
+  double val = 1./2.*(1.-2.*zz+term);
   return val;
-
 }
 
 

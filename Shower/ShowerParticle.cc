@@ -5,14 +5,14 @@
 //
 
 #include "ShowerParticle.h"
-#include "Pythia7/EventRecord/Particle.h"
+#include "ThePEG/EventRecord/Particle.h"
 #include "ShowerIndex.h"
 
 #define ShowerCast(a) (dynamic_ptr_cast<ShowerParticlePtr>(a))
 #define tShowerCast(a) (dynamic_ptr_cast<tShowerParticlePtr>(a))
 
 using namespace Herwig;
-using namespace Pythia7;
+using namespace ThePEG;
 
 ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 
@@ -91,7 +91,9 @@ void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
       addCh.push_back( *cit ); 
     }
     while( !addCh.empty() ) {       
-      sp->addDecayNoCol(dum, addCh.back());    
+      //      sp->addDecayProduct(dum, addCh.back(), false);    
+      //      sp->addDecayNoCol(dum, addCh.back());    
+      sp->addDecayNoCheck(dum, addCh.back());    
       // dum has to be a tcPPtr for this
       // sp->addDecayProduct(dum, dynamic_ptr_cast<tPPtr>(addCh.back()), false);    
       addCh.pop_back(); 
@@ -134,6 +136,10 @@ tShowerParticleVector ShowerParticle::getFSChildren() {
   return fs; 
 }	
 
+
+void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
+  _showerKinematics = inputShowerKinematics;
+}
 
 //bool ShowerParticle::addChildren(const tCollecShoParPtr & inputChildren) {
 //bool isOK = true;

@@ -58,9 +58,10 @@ SampleHistogram::SampleHistogram(double low, double high, double width)
       if (width > -1) {
 	cerr << "Herwig++/Utilities/SampleHistogram::SampleHistogram(): zero bins!" << endl;
       }
-      int bins = - int(width);
+      int bins = -int(width);
       width = (high - low)/(bins);
-      howManyBuckets = int((high - low) / width) + 1;            
+      //      howManyBuckets = int((high - low) / width) + 2;            
+      howManyBuckets = bins+2;            
     } else {     
       howManyBuckets = int((high - low) / width) + 2;
     }
@@ -74,6 +75,18 @@ SampleHistogram::SampleHistogram(double low, double high, double width)
 	lim += width;
     }
     bucketLimit[howManyBuckets-1] = HUGE_VAL;	/* from math.h */
+}
+
+SampleHistogram::SampleHistogram(double loVals[], int size)
+{
+  howManyBuckets = size+1;
+  bucketCount = new int[howManyBuckets];
+  bucketLimit = new double[howManyBuckets];
+  for (int i = 0; i < howManyBuckets; i++) {
+    bucketCount[i] = 0;
+    bucketLimit[i] = loVals[i];
+  }
+  bucketLimit[howManyBuckets-1] = HUGE_VAL;	/* from math.h */
 }
 
 SampleHistogram::~SampleHistogram()
@@ -118,8 +131,47 @@ SampleHistogram::printBuckets(ostream& s)
 }
 
 
-void
-SampleHistogram::printGnuplot(char* name)
+// void SampleHistogram::printGnuplot(char* name)
+// {
+//   ofstream out(name);
+//   if (!out) {
+//     cerr << "SampleHistoGram::printGnuplot: ERROR! Can't open file" << endl;
+//   }
+
+//   time_t now_t;
+//   now_t = time(0);
+//   out << "# created " << ctime(&now_t)
+//       << "# by SampleHistogram::printGnuplot" 
+//       << " (simply GNUPLOT plot with histeps)" << endl
+//       << "# " << this->samples() << " entries, mean +/- sigma = " 
+//       << this->mean() << " +/- " << this->stdDev() << endl
+//       << "# 1:xmid 2:entr 3:entr n1 4:estd err " 
+//       << "5:err n1 6:xlow 7:xhi 8:entr/tot"
+//       << endl;
+  
+//   double delta;
+//   double norm = 0.0; 
+//   for(int i = 0; i < howManyBuckets-2; i++) 
+//     norm += double(bucketCount[i+1])*(bucketLimit[i+1] - bucketLimit[i]);
+
+//   for(int i = 0; i < howManyBuckets-2; i++) {
+//     delta = (bucketLimit[i+1] - bucketLimit[i])/2.;
+//     out << bucketLimit[i] + delta << "\t" 
+// 	<< bucketCount[i+1] << "\t"
+// 	<< bucketCount[i+1]/norm << "\t"
+// 	<< (bucketCount[i+1] == 0 ? 0.0 : sqrt(double(bucketCount[i+1])))
+// 	<< "\t"
+// 	<< (bucketCount[i+1] == 0 ? 0.0 : sqrt(double(bucketCount[i+1]))/norm) 
+// 	<< "\t"
+// 	<< bucketLimit[i] << "\t" 
+// 	<< bucketLimit[i] + 2.*delta << "\t"
+// 	<< (double) bucketCount[i+1]/(this->samples()) << "\t"
+// 	<< "\n";
+//   }
+//   out.close();
+//}
+
+void SampleHistogram::printGnuplot(char* name)
 {
   ofstream out(name);
   if (!out) {
@@ -135,13 +187,18 @@ SampleHistogram::printGnuplot(char* name)
       << "# 1:xmid 2:entr 3:entr n1 4:estd err 5:err n1 6:xlow 7:xhi 8:entr/tot"
       << endl;
 
-  double delta = (bucketLimit[1] - bucketLimit[0])/2.;
+  double delta;
   for(int i = 0; i < howManyBuckets-1; i++) {
+    delta = (bucketLimit[i+1] - bucketLimit[i])/2.;
     out << bucketLimit[i] + delta << "\t" 
 	<< bucketCount[i+1] << "\t"
 	<< bucketCount[i+1]/(2.*delta*(this->samples())) << "\t"
-	<< (bucketCount[i+1] == 0 ? 0.0 : 1/sqrt(bucketCount[i+1])) << "\t"
-	<< (bucketCount[i+1] == 0 ? 0.0 : 1/sqrt(bucketCount[i+1])/(2.*delta*(this->samples()))) << "\t"
+	<< (bucketCount[i+1] == 0 ? 0.0 : 
+	    1./sqrt(double(bucketCount[i+1]))) 
+	<< "\t"
+	<< (bucketCount[i+1] == 0 ? 0.0 : 
+	    sqrt(double(bucketCount[i+1]))/(2.*delta*(this->samples()))) 
+	<< "\t"
 	<< bucketLimit[i] << "\t" 
 	<< bucketLimit[i] + 2.*delta << "\t"
 	<< (double) bucketCount[i+1]/(this->samples()) << "\t"

@@ -5,17 +5,17 @@
 //
 
 #include "PartnerFinder.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-// #include "Pythia7/Interface/Parameter.h" 
-#include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/Repository/EventGenerator.h" 
-#include "Pythia7/Repository/UseRandom.h" 
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+// #include "ThePEG/Interface/Parameter.h" 
+#include "ThePEG/Interface/Reference.h" 
+#include "ThePEG/Repository/EventGenerator.h" 
+#include "ThePEG/Repository/UseRandom.h" 
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ShowerConstrainer.h"
 #include "ShowerParticle.h"
-#include "Pythia7/PDT/EnumParticles.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
 using namespace Herwig;
 
@@ -131,8 +131,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
       int position = UseRandom::irnd( cit->second.size() );
 
       pair<Energy,Energy> pairScales = 
-	calculateInitialEvolutionScales( pair<tShowerParticlePtr,tShowerParticlePtr>( cit->first, 
-								      cit->second[position] ) );
+	calculateInitialEvolutionScales( pair<tShowerParticlePtr,tShowerParticlePtr>( cit->first, cit->second[position] ), showerConstrainer);
       cit->first->setEvolutionScale( ShowerIndex::QCD, pairScales.first );
       cit->first->setPartner( ShowerIndex::QCD, cit->second[position] );
     } else {
@@ -268,7 +267,7 @@ bool PartnerFinder::setEWKInitialEvolutionScales( const tShoConstrPtr showerCons
 
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePtr> & particlePair ) {
+calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePtr> & particlePair, const tShoConstrPtr showerConstrainer) {
   Energy firstQ = Energy();
   Energy secondQ = Energy();
 
@@ -288,35 +287,41 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
   p = p1; 
   p.boost((p1+p2).findBoostToCM());
   n = Lorentz5Momentum(0.0, -p.vect()); 
-  firstQ = sqrt(2.*p*n); 
+  firstQ = sqrt(2.*p*(p+n)); 
   p = p2; 
   p.boost((p1+p2).findBoostToCM());
   n = Lorentz5Momentum(0.0, - p.vect()); 
-  secondQ = sqrt(2.*p*n);   
+  secondQ = sqrt(2.*p*(p+n));   
 
   ////////////////////////////////////////////////////////////////////////////
   // only a hack for the moment! comment/uncomment for normal/asymmetric
   // if desired. 
   // get asymmetric distribution in x, xbar plane: 
-//   Energy Q = sqrt(sqr(p1+p2)); 
-//   double r = p1.m()/Q; 
-//   //double v = sqrt(1.-sqr(r)); 
-//   if (particlePair.first->id() < 6 && particlePair.first->id() > 0) { 
-//     firstQ = 2.0*Q*sqrt(1.-2.*r); 
-//     secondQ = sqr(Q)/firstQ; 
-//     //secondQ = Q*(1.+v)*(firstQ/Q*(1.-v) + v*(1.+v))/(4.*firstQ/Q+sqr(v)-1.);
-//   } else if (particlePair.first->id() > -6 && particlePair.first->id() < 0) { 
-//     secondQ = 2.0*Q*sqrt(1.-2.*r); 
-//     firstQ = sqr(Q)/secondQ;    
-//     //firstQ = Q*(1.+v)*(secondQ/Q*(1.-v) + v*(1.+v))/(4.*secondQ/Q+sqr(v)-1.);
-//   }
-
-//   // swap the above values for even eventnumbers, 
-//   // (ie uncorrelated or randomly)
-//   Energy temp; 
-//   if (generator()->currentEventNumber()%2) {
-//     temp = firstQ; firstQ = secondQ; secondQ = temp;     
-//   }
+  if (showerConstrainer->asyPS()) {
+    Energy Q = sqrt(sqr(p1+p2)); 
+    double r = p1.m()/Q; 
+    //double v = sqrt(1.-sqr(r)); 
+    if (particlePair.first->id() < 6 && particlePair.first->id() > 0) { 
+      firstQ = 2.0*Q*sqrt(1.-2.*r); 
+      secondQ = sqr(Q)/firstQ; 
+      //secondQ = Q*(1.+v)*(firstQ/Q*(1.-v) +
+      //v*(1.+v))/(4.*firstQ/Q+sqr(v)-1.);
+    } else if (particlePair.first->id() > -6 
+	       && particlePair.first->id() < 0) { 
+      secondQ = 2.0*Q*sqrt(1.-2.*r); 
+      firstQ = sqr(Q)/secondQ;    
+      //firstQ = Q*(1.+v)*(secondQ/Q*(1.-v) +
+      //v*(1.+v))/(4.*secondQ/Q+sqr(v)-1.);
+    }
+  }
+  // swap the above values for even eventnumbers, 
+  // (ie uncorrelated or randomly)
+  if (showerConstrainer->rndPS()) {  
+    Energy temp; 
+    if (generator()->currentEventNumber()%2) {
+      temp = firstQ; firstQ = secondQ; secondQ = temp;     
+    }
+  }
   ////////////////////////////////////////////////////////////////////////////
 
   // Debugging

@@ -11,19 +11,19 @@
 // The choice of a pair of hadrons is made using Kupco's method. <BR>
 //
 
-#include "Pythia7/Handlers/HandlerBase.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
+#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 #include "CluHadConfig.h"
 
 
 namespace Herwig {
 
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 
-class HadronSelector: public Pythia7::HandlerBase {
+class HadronSelector: public ThePEG::HandlerBase {
 
 public:
 
@@ -59,6 +59,7 @@ public:
 
   Energy massLightestHadronPair(const long id1, const long id2, const long id3=0) 
     const;
+  Energy massLightestBaryonPair(const long id1, const long id2) const;
   // Return the sum of the nominal masses of the two hadrons with id returned 
   // by the previous method.
 
@@ -140,7 +141,7 @@ private:
   // Methods responsibles to fill the hadrons input data (weights).
   // This is the method that one should update when new or updated
   // hadron data is available. Remember always to check whether the
-  // new hadrons are present or not in the Pythia7/PDT/EnumParticles.h 
+  // new hadrons are present or not in the ThePEG/PDT/EnumParticles.h 
   // if not, then the weights associated to those particles are set
   // automatically to zero, which means that they will never be produced.
   
@@ -253,16 +254,16 @@ private: // data members
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of HadronsSelector.
 template <>
 struct BaseClassTrait<Herwig::HadronSelector,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::HadronSelector>: public ClassTraitsBase<Herwig::HadronSelector> {

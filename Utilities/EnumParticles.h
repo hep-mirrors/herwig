@@ -1,7 +1,7 @@
 #ifndef HERWIG_EnumParticles_H
 #define HERWIG_EnumParticles_H
 
-#include "Pythia7/PDT/EnumParticles.h"
+#include <ThePEG/PDT/EnumParticles.h>
 
 namespace Herwig {
 namespace ExtraParticleID {

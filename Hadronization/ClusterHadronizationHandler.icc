@@ -10,7 +10,7 @@ namespace Herwig {
 inline ClusterHadronizationHandler::ClusterHadronizationHandler() {}
 
 
-inline ClusterHadronizationHandler::ClusterHadronizationHandler(const ClusterHadronizationHandler & x) : Pythia7::HadronizationHandler(x) , 
+inline ClusterHadronizationHandler::ClusterHadronizationHandler(const ClusterHadronizationHandler & x) : ThePEG::HadronizationHandler(x) , 
   _globalParameters(x._globalParameters ),
   _partonSplitter(x._partonSplitter ),
   _clusterFinder(x._clusterFinder ),
@@ -33,7 +33,7 @@ inline IBPtr ClusterHadronizationHandler::fullclone() const {
 
 
 inline void ClusterHadronizationHandler::doupdate() throw(UpdateException) {
-  Pythia7::HadronizationHandler::doupdate();
+  ThePEG::HadronizationHandler::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -52,24 +52,24 @@ inline void ClusterHadronizationHandler::doupdate() throw(UpdateException) {
 
 
 inline void ClusterHadronizationHandler::doinit() throw(InitException) {
-  Pythia7::HadronizationHandler::doinit();
+  ThePEG::HadronizationHandler::doinit();
 }
 
 
 inline void ClusterHadronizationHandler::dofinish() {
-  Pythia7::HadronizationHandler::dofinish();
+  ThePEG::HadronizationHandler::dofinish();
 }
 
 
 inline void ClusterHadronizationHandler::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  Pythia7::HadronizationHandler::rebind(trans);
+  ThePEG::HadronizationHandler::rebind(trans);
 }
 
 
 inline IVector ClusterHadronizationHandler::getReferences() {
-  IVector ret = Pythia7::HadronizationHandler::getReferences();
+  IVector ret = ThePEG::HadronizationHandler::getReferences();
   // ret.push_back(dummy);
   return ret;
 }

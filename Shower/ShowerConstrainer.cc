@@ -5,11 +5,11 @@
 //
 
 #include "ShowerConstrainer.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/Interface/Parameter.h"
-#include "Pythia7/Interface/Switch.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 
 
 using namespace Herwig;
@@ -25,6 +25,8 @@ void ShowerConstrainer::persistentOutput(PersistentOStream & os) const {
      << _cutoffQEDMassScale
      << _cutoffEWKMassScale
      << _kinCutoffScale
+     << _MECorrMode
+     << _qqgPSMode
      << _particlesDecayBeforeShower;
 }
 
@@ -36,6 +38,8 @@ void ShowerConstrainer::persistentInput(PersistentIStream & is, int) {
      >> _cutoffQEDMassScale
      >> _cutoffEWKMassScale
      >> _kinCutoffScale
+     >> _MECorrMode
+     >> _qqgPSMode
      >> _particlesDecayBeforeShower;
 }
 
@@ -59,6 +63,33 @@ void ShowerConstrainer::Init() {
     (interfaceMultiScaleShowerMode,"MultiScaleShower-OFF","multi-scale shower is OFF", 0);
   static SwitchOption interfaceMultiScaleShowerMode1
     (interfaceMultiScaleShowerMode,"MultiScaleShower-ON","multi-scale shower is ON", 1);
+  
+  static Switch<ShowerConstrainer, int> ifaceMECorrMode
+    ("MECorrMode",
+     "Choice of the ME Correction Mode",
+     &ShowerConstrainer::_MECorrMode, 1, false, false);
+  static SwitchOption off
+    (ifaceMECorrMode,"MEC-off","MECorrections off", 0);
+  static SwitchOption on
+    (ifaceMECorrMode,"MEC-on","hard+soft on", 1);
+  static SwitchOption hard
+    (ifaceMECorrMode,"MEC-hard","only hard on", 2);
+  static SwitchOption soft
+    (ifaceMECorrMode,"MEC-soft","only soft on", 3);
+
+  static Switch<ShowerConstrainer, int> ifaceqqgPSMode
+    ("qqgPSMode",
+     "Choice of initial conditions, tested for qqg only",
+     &ShowerConstrainer::_qqgPSMode, 0, false, false);
+  static SwitchOption symm
+    (ifaceqqgPSMode,"PS-symm",
+     "most symmetric choice of initial conditions (default)", 0);
+  static SwitchOption asy
+    (ifaceqqgPSMode,"PS-asy",
+     "most asymmetric choice of initial conditions, quark larger Q0", 1);
+  static SwitchOption rnd
+    (ifaceqqgPSMode,"PS-rnd",
+     "asymmetric, large Q0 assigned randomly", 2);
 
   static Switch<ShowerConstrainer, int> interfaceDecayBeforeShowerMode
     ("OnOffDecayBeforeShowerMode",

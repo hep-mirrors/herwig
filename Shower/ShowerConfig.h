@@ -11,16 +11,16 @@
 //
 
 #include "Herwig++/Config/Herwig.h"
-#include "Pythia7/Config/Complex.h" 
+#include "ThePEG/Config/Complex.h" 
 
 
 namespace Herwig { 
 
-  using namespace Pythia7;
+  using namespace ThePEG;
 
-  class Pythia7::ColourLine;
-  typedef Ptr<Pythia7::ColourLine>::pointer ShoColinePtr;
-  typedef Ptr<Pythia7::ColourLine>::transient_pointer tShoColinePtr;
+  class ThePEG::ColourLine;
+  typedef Ptr<ThePEG::ColourLine>::pointer ShoColinePtr;
+  typedef Ptr<ThePEG::ColourLine>::transient_pointer tShoColinePtr;
   typedef pair<ShoColinePtr,ShoColinePtr> ShoColinePair;
   typedef pair<tShoColinePtr,tShoColinePtr> tShoColinePair;
 
@@ -49,7 +49,7 @@ namespace Herwig {
   typedef vector<tShoKinPtr> tCollecShoKinPtr;
 
   // For rho-D (spin density matrix and decay matrix) matrices  
-  // // // typedef std::complex<double> Complex; // Now in Pythia7/Config/Complex.h 
+  // // // typedef std::complex<double> Complex; // Now in ThePEG/Config/Complex.h 
   typedef vector<Complex>       ComplexVector;
   typedef vector<ComplexVector> ComplexMatrix;
 

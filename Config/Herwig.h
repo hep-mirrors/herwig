@@ -14,7 +14,7 @@
 //        g++ -c -DHERWIG_NO_DEBUG ) <BR>
 //
 
-#include "Pythia7/Config/Pythia7.h"
+#include "ThePEG/Config/ThePEG.h"
 
 //***LOOKHERE***  #define HERWIG_NO_DEBUG  1
 

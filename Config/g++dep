@@ -50,10 +50,10 @@ _EOF_
 
 # put every dependency on one line 
 #
-g++ -MM $* | grep -v /CLHEP/ | \
+g++ -MM $* | grep -v /CLHEP/ | grep -v /ThePEG/ | \
 sed -e 's; \./; ;g' $SED | \
 awk '   BEGIN	    { start = 1 }
-	/:/ {  print ""; printf $1 " " $2 " " $3 ; if (NF>3) { printf "\\" } ; print "" ; start = 4 }
+	/:/ {  print ""; printf $1 " " $2 " " $3 ; if (NF>=3) { printf "\\" } ; print "" ; start = 4 }
 		    { for ( i = start; i < NF ; i++ ) 
 			if ( $i != "\\" ) print "\t", $i, "\\"
 		      if ( $i != "\\" ) print "\t", $NF

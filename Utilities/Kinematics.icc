@@ -21,12 +21,12 @@ namespace Herwig {
   }
 
 
-  void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,                         
+  /*  void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,                         
 				const double m1, const double m2,                 
 				const double cosThetaStar1, const double phiStar1, 
 				Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
     twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2);
   }
-
+  */
 
 }

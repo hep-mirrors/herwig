@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef PYTHIA7_MEee2gZ2bb_H
-#define PYTHIA7_MEee2gZ2bb_H
+#ifndef HERWIG_MEee2gZ2bb_H
+#define HERWIG_MEee2gZ2bb_H
 //
 // This is the declaration of the <!id>MEee2gZ2bb<!!id> class.
 //
@@ -19,9 +19,9 @@
 // <a href="http:ME2to2QCD.html">ME2to2QCD.h</a>.
 // 
 
-#include "Pythia7/MatrixElement/ME2to2QCD.h"
+#include <ThePEG/MatrixElement/ME2to2QCD.h>
 
-namespace Pythia7 {
+namespace ThePEG {
 
 class MEee2gZ2bb: public ME2to2QCD {
 

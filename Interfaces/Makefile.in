@@ -1,0 +1,41 @@
+LIBOBJECTS := libHwAmegic.so libHwKtJet.so
+
+SOURCES := $(wildcard *.cc)
+
+OBJECTS := $(SOURCES:.cc=.o)
+
+HWLIBS = -lHwUtils -lHwHadronization -lHwShower -lHwDecay -lHwME
+
+AMEGICLIBS = @AMEGICLIBS@
+AMEGICPATH = @AMEGICPATH@
+AMEGICINCLUDES = -I$(AMEGICPATH)/Include
+
+KTJETPATH = @KTJETPATH@
+KTJETINCLUDES = -I$(KTJETPATH)
+
+.PHONY: Lib
+
+AmegicInterface.o: AmegicInterface.cc
+	$(CXX) -c $(CXXEXT) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(AMEGICINCLUDES) $<
+
+KtJetInterface.o: KtJetInterface.cc
+	$(CXX) -c $(CXXEXT) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(KTJETINCLUDES) $<
+include ../Config/Makefile.common
+
+CXXDEBUGFLAG = -g 
+
+lib: $(LIBOBJECTS)
+
+%.exe:
+
+libHwAmegic.so: AmegicInterface.o
+	@cd $(SRCDIR)/lib; rm -f $@
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
+
+libHwKtJet.so: KtJetInterface.o
+	@cd $(SRCDIR)/lib; rm -f $@
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
+
+

@@ -5,9 +5,9 @@
 //
 
 #include "ShowerAlphaQCD.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Interface/Switch.h"
-#include "Pythia7/Interface/Parameter.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/Parameter.h"
 
 using namespace Herwig;
 
@@ -49,7 +49,7 @@ void ShowerAlphaQCD::Init() {
   static SwitchOption intAsTypeExx1
     (intAsType, "AsTypeExx1 ", "quad from 100 down to as(Q_min)", 5);
   static SwitchOption intAsTypeExx2
-    (intAsType, "AsTypeExx1 ", "const = 100 below Q_min", 6);
+    (intAsType, "AsTypeExx2 ", "const = 100 below Q_min", 6);
 
   // default such that as(Qmin) = 1 in the current parametrization.
   // min = Lambda3
@@ -60,7 +60,7 @@ void ShowerAlphaQCD::Init() {
 
 
 double ShowerAlphaQCD::value(const Energy2 scale) {
-  //  OR CALL THE ONE DEFINED IN PYTHIA7 (see class Pythia7::O1AlphaS)
+  //  OR CALL THE ONE DEFINED IN PYTHIA7 (see class ThePEG::O1AlphaS)
   //  double val = alpha_s(scale, sqr(0.33197*GeV), _asType); gives xe+15...
   // chosen alpha_s(.39GeV) = 176.3 as a maximum value...
   //  double val = alpha_s(scale, sqr(0.630882*GeV), _asType); // gives as = 1

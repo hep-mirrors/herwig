@@ -5,7 +5,7 @@
 //
 
 #include "DrellYanMECorrection.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 

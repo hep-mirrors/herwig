@@ -25,9 +25,9 @@
 // <a href="http:SplittingGenerator.html">SplittingGenerator.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
-#include "Pythia7/Handlers/PartialCollisionHandler.h"
-#include "Herwig++/Config/GlobalParameters.h"
+#include "ThePEG/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/PartialCollisionHandler.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerConfig.h"
 #include "PartnerFinder.h"
 #include "ForwardShowerEvolver.h"
@@ -38,9 +38,9 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class InsideRangeShowerEvolver: public Pythia7::HandlerBase {
+class InsideRangeShowerEvolver: public ThePEG::HandlerBase {
 
 public:
 
@@ -106,7 +106,7 @@ public:
   // first with massless gluons (which is the standard procedure) 
   // and then with gluons put on the effective mass shell (in the
   // case we want to use Herwig++ cluster hadronization for the
-  // hadronization rather than Pythia7 string fragmentation).
+  // hadronization rather than ThePEG string fragmentation).
 
 public:
 
@@ -185,16 +185,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of InsideRangeShowerEvolver.
 template <>
 struct BaseClassTrait<Herwig::InsideRangeShowerEvolver,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::InsideRangeShowerEvolver>: public ClassTraitsBase<Herwig::InsideRangeShowerEvolver> {

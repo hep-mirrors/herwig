@@ -22,7 +22,7 @@ inline HadronSelector::HadronSelector() :
 {}
 
 inline HadronSelector::HadronSelector(const HadronSelector & x)
-  : Pythia7::HandlerBase(x),
+  : ThePEG::HandlerBase(x),
     _PwtDquark( x._PwtDquark ),
     _PwtUquark( x._PwtUquark ),
     _PwtSquark( x._PwtSquark ),
@@ -52,7 +52,7 @@ inline IBPtr HadronSelector::fullclone() const {
 
 
 inline void HadronSelector::doupdate() throw(UpdateException) {
-  Pythia7::HandlerBase::doupdate();
+  ThePEG::HandlerBase::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -71,25 +71,25 @@ inline void HadronSelector::doupdate() throw(UpdateException) {
 
 
 inline void HadronSelector::doinit() throw(InitException) {
-  Pythia7::HandlerBase::doinit();
+  ThePEG::HandlerBase::doinit();
   initialize();
 }
 
 
 inline void HadronSelector::dofinish() {
-  Pythia7::HandlerBase::dofinish();
+  ThePEG::HandlerBase::dofinish();
 }
 
 
 inline void HadronSelector::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  Pythia7::HandlerBase::rebind(trans);
+  ThePEG::HandlerBase::rebind(trans);
 }
 
 
 inline IVector HadronSelector::getReferences() {
-  IVector ret = Pythia7::HandlerBase::getReferences();
+  IVector ret = ThePEG::HandlerBase::getReferences();
   // ret.push_back(dummy);
   return ret;
 }

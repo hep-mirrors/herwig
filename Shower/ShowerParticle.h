@@ -7,19 +7,19 @@
 // CLASSDOC SUBSECTION Description:
 //
 // This class represents a particle in the showering process. <BR> 
-// It has much less information than the Pythia7 Particle, and it has some <BR> 
+// It has much less information than the ThePEG Particle, and it has some <BR> 
 // specifics information useful only during the showering process. <BR>
 //
 // Notice that:
 // <UL>
 //   <LI> <!id>ShowerParticle<!!id> needs to inherit from <!id>HandlerBase<!!id> <BR>
 //        (rather than, more simply, from <!id>ReferenceCounted<!!id>) becuse it needs <BR>
-//        to create a <!id>Pythia7::Particle<!!id> object, and therefore the method <BR>
+//        to create a <!id>ThePEG::Particle<!!id> object, and therefore the method <BR>
 //        <!id>HandlerBase::getParticle( id )<!!id> is used. 
 //   <LI> it has been necessary to define a new class <!class>ShowerColourLine<!!class> <BR>
 //        in order to represent colour lines between <!id>ShowerParticle<!!id> objects <BR>
-//        because the similar Pythia7 class <!id>ColourLine<!!id> can be used only <BR>
-//        with Pythia7 Particle. 
+//        because the similar ThePEG class <!id>ColourLine<!!id> can be used only <BR>
+//        with ThePEG Particle. 
 //   <LI> for forward evolution, it is clear what does mean parent/child; <BR>
 //        for backward evolution, however, it depends whether we want <BR>
 //        to keep a physical picture or a Monte-Carlo effective one. <BR>
@@ -74,11 +74,11 @@
 // 
 
 #include "ShowerConfig.h"
-#include "Pythia7/Handlers/HandlerBase.h"
-#include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/EventRecord/Particle.h"
-#include "Pythia7/EventRecord/Step.h"
+#include "ThePEG/Handlers/HandlerBase.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/EventRecord/Particle.h"
+#include "ThePEG/EventRecord/Step.h"
 #include "ShowerKinematics.h"
 #include "ShowerIndex.h"
 //#include "ShowerColourLine.h"
@@ -86,9 +86,9 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-  //class Pythia7::Particle;   // forward declaration
+  //class ThePEG::Particle;   // forward declaration
 
 class ShowerParticle: public Particle {
 private:
@@ -104,15 +104,15 @@ public:
   virtual ~ShowerParticle();
   // Standard ctors and dtor.
 
-  //explicit ShowerParticle(const Pythia7::Particle & inputP7Particle);
-  // Create a <!id>ShowerParticle<!!id> object from a <!id>Pythia7::Particle<!!id> object.
+  //explicit ShowerParticle(const ThePEG::Particle & inputP7Particle);
+  // Create a <!id>ShowerParticle<!!id> object from a <!id>ThePEG::Particle<!!id> object.
   // This is useful at the beginning of the Showering, when we receive
-  // the Pythia7 particles (in the event record) from the hard subprocess.
+  // the ThePEG particles (in the event record) from the hard subprocess.
 
-  //PPtr createPythia7Particle() const;
-  // Create a <!id>Pythia7::Particle<!!id> object from this <!id>ShowerParticle<!!id> object.
+  //PPtr createThePEGParticle() const;
+  // Create a <!id>ThePEG::Particle<!!id> object from this <!id>ShowerParticle<!!id> object.
   // This is useful at the end of the Showering, when we have to update
-  // the event record with Pythia7 particles, using some of the 
+  // the event record with ThePEG particles, using some of the 
   // <!id>ShowerParticle<!!id> objects produced by the showering 
   // (which ones depends on the degree of detail of the showering we want to keep
   //  in the event record). 
@@ -217,7 +217,7 @@ public:
   // eventual decay of this particle.
 
   inline ShoKinPtr & showerKinematics();
-  inline void setShowerKinematics(const ShoKinPtr);
+  void setShowerKinematics(const ShoKinPtr);
   // Access/Set the <!class>ShowerKinematics<!!class> object.
 
   inline vector<Energy> evolutionScales() const;
@@ -309,7 +309,7 @@ private:
 
 }
 
-namespace Pythia7 {
+namespace ThePEG {
 
 template <>
 struct BaseClassTrait<Herwig::ShowerParticle,1> {

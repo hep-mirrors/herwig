@@ -12,19 +12,19 @@
 //
 // NB) Other useful kinematical methods (and probably even those
 //     implemented in Kinematics class!) are in
-//         Pythia7/Utilities/UtilityBase.h
+//         ThePEG/Utilities/UtilityBase.h
 //
 
 #include "Herwig++/Config/Herwig.h"
-#include "Pythia7/CLHEPWrap/ThreeVector.h"
-#include "Pythia7/CLHEPWrap/LorentzRotation.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include <ThePEG/CLHEPWrap/ThreeVector.h>
+#include <ThePEG/CLHEPWrap/LorentzRotation.h>
+#include <ThePEG/Repository/EventGenerator.h>
 
 
 namespace Herwig {
 
 
-  using namespace Pythia7;
+  using namespace ThePEG;
 
 
   class MyKinematics {

@@ -44,8 +44,8 @@
 // <a href="http:Cluster.html">Cluster.h</a>.
 // 
 
-#include "Pythia7/Handlers/HadronizationHandler.h"
-#include "Herwig++/Config/GlobalParameters.h"
+#include <ThePEG/Handlers/HadronizationHandler.h>
+#include "Herwig++/Utilities/GlobalParameters.h"
 #include "PartonSplitter.h"
 #include "ClusterFinder.h"
 #include "ColourReconnector.h"
@@ -58,7 +58,7 @@
 namespace Herwig {
 
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 
 class ClusterHadronizationHandler: public HadronizationHandler {
@@ -135,16 +135,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ClusterHadronizationHandler.
 template <>
 struct BaseClassTrait<Herwig::ClusterHadronizationHandler,1> {
   typedef HadronizationHandler NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ClusterHadronizationHandler>: public ClassTraitsBase<Herwig::ClusterHadronizationHandler> {

@@ -19,13 +19,13 @@
 // 
 
 #include "ShowerKinematics.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class QtildaShowerKinematics1to2: public ShowerKinematics {
 

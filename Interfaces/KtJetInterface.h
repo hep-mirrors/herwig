@@ -30,13 +30,15 @@ class KtJetInterface {
  public:
   KtJetInterface() {}
   ~KtJetInterface() {}
+
+  inline void clearMap() { Kt2PythiaMap.clear(); }
   // Standard ctors and dtor
 
  public:
   vector<KtLorentzVector> convertToKtVectorList(tPVector &); 
   int getThePEGID(KtLorentzVector &);
  private:
-  KtLorentzVector convertToKtVector(PPtr);
+  KtLorentzVector convertToKtVector(const PPtr &);
   std::map<int, int> Kt2PythiaMap;
 };
 

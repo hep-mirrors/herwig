@@ -5,13 +5,13 @@
 //
 
 #include "Kinematics.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
-#include "Pythia7/CLHEPWrap/LorentzVector.h"
-#include "Pythia7/CLHEPWrap/LorentzRotation.h"
+#include <ThePEG/CLHEPWrap/Lorentz5Vector.h>
+#include <ThePEG/CLHEPWrap/LorentzVector.h>
+#include <ThePEG/CLHEPWrap/LorentzRotation.h>
 #include <math.h>
 
 using namespace Herwig;
-using namespace Pythia7;
+using namespace ThePEG;
 
 
 void MyKinematics::twoBodyDecay(const Lorentz5Momentum & p,  

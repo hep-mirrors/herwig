@@ -3,38 +3,38 @@ mkdir /Dummy/Decayers
 mkdir /Defaults
 mkdir /Defaults/Matchers
 mkdir /Defaults/Particles
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY0
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY0
 setup /Dummy/Decayers/PYDECY0 0
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY1
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY1
 setup /Dummy/Decayers/PYDECY1 1
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY2
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY2
 setup /Dummy/Decayers/PYDECY2 2
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY3
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY3
 setup /Dummy/Decayers/PYDECY3 3
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY4
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY4
 setup /Dummy/Decayers/PYDECY4 4
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY11
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY11
 setup /Dummy/Decayers/PYDECY11 11
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY12
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY12
 setup /Dummy/Decayers/PYDECY12 12
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY13
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY13
 setup /Dummy/Decayers/PYDECY13 13
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY32
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY32
 setup /Dummy/Decayers/PYDECY32 32
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY41
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY41
 setup /Dummy/Decayers/PYDECY41 41
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY42
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY42
 setup /Dummy/Decayers/PYDECY42 42
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY48
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY48
 setup /Dummy/Decayers/PYDECY48 48
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY53
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY53
 setup /Dummy/Decayers/PYDECY53 53
-create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY102
+create /ThePEG/PYDECYDummy /Dummy/Decayers/PYDECY102
 setup /Dummy/Decayers/PYDECY102 102
-create /Pythia7/Matcher<Lepton> /Defaults/Matchers/MatchLepton
-create /Pythia7/Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
-create /Pythia7/Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
-read Pythia7Particles.in
+create /ThePEG/Matcher<Lepton> /Defaults/Matchers/MatchLepton
+create /ThePEG/Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
+create /ThePEG/Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
+read ThePEGParticles.in
 read HerwigParticles.in
 mkdir /Defaults/MatrixElements
 mkdir /Defaults/Partons
@@ -50,46 +50,46 @@ mkdir /Defaults/Handlers/Hadronization/Cluster
 #***endLOOKHERE***
 
 
-create /Pythia7/Pythia7Strategy /Defaults/Pythia7Strategy Pythia7Strategy.so
-create /Pythia7/StandardRandom /Defaults/Random
-create /Pythia7/StandardModelBase /Defaults/StandardModel
-create /Pythia7/O1AlphaS /Defaults/AlphaS O1AlphaS.so
+create /ThePEG/ThePEGStrategy /Defaults/ThePEGStrategy ThePEGStrategy.so
+create /ThePEG/StandardRandom /Defaults/Random
+create /ThePEG/StandardModelBase /Defaults/StandardModel
+create /ThePEG/O1AlphaS /Defaults/AlphaS O1AlphaS.so
 set /Defaults/StandardModel:QCD/RunningAlphaS /Defaults/AlphaS
-create /Pythia7/SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
+create /ThePEG/SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
 set /Defaults/StandardModel:EW/RunningAlphaEM /Defaults/AlphaEM
-create /Pythia7/StandardCKM /Defaults/CKM StandardCKM.so
+create /ThePEG/StandardCKM /Defaults/CKM StandardCKM.so
 set /Defaults/StandardModel:EW/CKM /Defaults/CKM
 
 cd /Defaults/MatrixElements
-create /Pythia7/MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
-# new pythia: create /Pythia7/PS2to2Generic PS2to2Generic
-create /Pythia7/MEGG2GG MEGG2GG libP7MEQCD.so
-create /Pythia7/MEQG2QG MEQG2QG
-create /Pythia7/MEQQ2GG MEQQ2GG
-create /Pythia7/MEQQ2QQ MEQQ2QQ
-create /Pythia7/MEQq2Qq MEQq2Qq
-create /Pythia7/MEGG2QQ MEGG2QQ
-create /Pythia7/MEQQ2qq MEQQ2qq
-create /Pythia7/MEqq2qq MEqq2qq
-# new Pythia7: set MEee2gZ2qq:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEGG2GG:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEQG2QG:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEQQ2QQ:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEQq2Qq:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEGG2QQ:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEQQ2qq:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEqq2qq:PhaseSpaceGenerator PS2to2Generic
-# new Pythia7: set MEQQ2GG:PhaseSpaceGenerator PS2to2Generic
+create /ThePEG/MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
+# new pythia: create /ThePEG/PS2to2Generic PS2to2Generic
+create /ThePEG/MEGG2GG MEGG2GG libThePEGMEQCD.so
+create /ThePEG/MEQG2QG MEQG2QG
+create /ThePEG/MEQQ2GG MEQQ2GG
+create /ThePEG/MEQQ2QQ MEQQ2QQ
+create /ThePEG/MEQq2Qq MEQq2Qq
+create /ThePEG/MEGG2QQ MEGG2QQ
+create /ThePEG/MEQQ2qq MEQQ2qq
+create /ThePEG/MEqq2qq MEqq2qq
+# new ThePEG: set MEee2gZ2qq:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEGG2GG:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEQG2QG:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEQQ2QQ:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEQq2Qq:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEGG2QQ:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEQQ2qq:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEqq2qq:PhaseSpaceGenerator PS2to2Generic
+# new ThePEG: set MEQQ2GG:PhaseSpaceGenerator PS2to2Generic
 
-cd /Defaults/Handlers/Hadronization/String
-library libP7String.so
-create /Pythia7/LundFragHandler stdLundFragHandler
-create /Pythia7/LundPtGenerator stdLundPtGenerator
-set stdLundFragHandler:LundPtGenerator stdLundPtGenerator
-create /Pythia7/LundZGenerator stdLundZGenerator
-set stdLundFragHandler:LundZGenerator stdLundZGenerator
-create /Pythia7/LundFlavourGenerator stdLundFlavourGenerator
-set stdLundFragHandler:LundFlGenerator stdLundFlavourGenerator
+#cd /Defaults/Handlers/Hadronization/String
+#library libThePEGString.so
+#create /ThePEG/LundFragHandler stdLundFragHandler
+#create /ThePEG/LundPtGenerator stdLundPtGenerator
+#set stdLundFragHandler:LundPtGenerator stdLundPtGenerator
+#create /ThePEG/LundZGenerator stdLundZGenerator
+#set stdLundFragHandler:LundZGenerator stdLundZGenerator
+#create /ThePEG/LundFlavourGenerator stdLundFlavourGenerator
+#set stdLundFragHandler:LundFlGenerator stdLundFlavourGenerator
 
 
 #***LOOKHERE***
@@ -143,7 +143,7 @@ insert theMECorrections:VecMECorrection[0] theDrellYanMECorrection
 cd /Defaults/Handlers/Hadronization/Cluster
 library libHwHadronization.so
 # Create ClusterData info
-create /Pythia7/ParticleData /Defaults/Particles/Cluster
+create /ThePEG/ParticleData /Defaults/Particles/Cluster
 setup /Defaults/Particles/Cluster 81 Cluster 0.00990 0.0 0.0 0.0  0 0  0  0
 defaultparticle /Defaults/Particles/Cluster
 create /Herwig++/ClusterHadronizationHandler stdCluHadHandler
@@ -153,7 +153,7 @@ create /Herwig++/ColourReconnector theColourReconnector
 create /Herwig++/ClusterFissioner theClusterFissioner
 create /Herwig++/LightClusterDecayer theLightClusterDecayer
 create /Herwig++/ClusterDecayer theClusterDecayer
-create /Herwig++/HadronsSelector theHadronsSelector
+create /Herwig++/HadronSelector theHadronSelector
 set stdCluHadHandler:GlobalParameters /Defaults/theGlobalParameters
 set stdCluHadHandler:PartonSplitter thePartonSplitter
 set stdCluHadHandler:ClusterFinder theClusterFinder
@@ -161,47 +161,41 @@ set stdCluHadHandler:ColourReconnector theColourReconnector
 set stdCluHadHandler:ClusterFissioner theClusterFissioner
 set stdCluHadHandler:LightClusterDecayer theLightClusterDecayer
 set stdCluHadHandler:ClusterDecayer theClusterDecayer
-set theClusterFissioner:HadronsSelector theHadronsSelector 
+set theClusterFissioner:HadronSelector theHadronSelector 
 set theClusterFissioner:GlobalParameters /Defaults/theGlobalParameters 
-set theLightClusterDecayer:HadronsSelector theHadronsSelector
-set theClusterDecayer:HadronsSelector theHadronsSelector
+set theLightClusterDecayer:HadronSelector theHadronSelector
+set theClusterDecayer:HadronSelector theHadronSelector
 set theClusterDecayer:GlobalParameters /Defaults/theGlobalParameters
 set thePartonSplitter:GlobalParameters /Defaults/theGlobalParameters
 
 ###PHIL### cd /Defaults/Handlers/Decay
-###PHIL### library libP7Handlers.so
-###PHIL### create /Pythia7/DecayHandler stdDecayHandler
+###PHIL### library libThePEGHandlers.so
+###PHIL### create /ThePEG/DecayHandler stdDecayHandler
 
 #***endLOOKHERE
 
 
 cd /Defaults/Partons
-# new pythia: create /Pythia7/PDFApproximator DefaultApproximator
-create /Pythia7/NoRemnants NoRemnants
-create /Pythia7/NoPDF NoPDF
+# new pythia: create /ThePEG/PDFApproximator DefaultApproximator
+create /ThePEG/NoRemnants NoRemnants
+create /ThePEG/NoPDF NoPDF
 set NoPDF:RemnantHandler NoRemnants
 # new pythia: set NoPDF:Approximator DefaultApproximator
-create /Pythia7/LeptonLeptonRemnant SimpleLeptonRemnants LeptonLeptonRemnant.so
-create /Pythia7/LeptonLeptonPDF SimpleLeptonPDF LeptonLeptonPDF.so
+create /ThePEG/LeptonLeptonRemnant SimpleLeptonRemnants LeptonLeptonRemnant.so
+create /ThePEG/LeptonLeptonPDF SimpleLeptonPDF LeptonLeptonPDF.so
 set SimpleLeptonPDF:RemnantHandler SimpleLeptonRemnants
 # new pythia: set SimpleLeptonPDF:Approximator DefaultApproximator
 set /Defaults/Particles/e-:PDF SimpleLeptonPDF
 set /Defaults/Particles/e+:PDF SimpleLeptonPDF
 library GRVBase.so
-# new pythia: create /Pythia7/QCDApproxPDF QCDApproximator QCDApproxPDF.so
-create /Pythia7/GRV94L GRV94L GRV94L.so
-create /Pythia7/GRV94M GRV94M GRV94M.so
-create /Pythia7/BaryonRemnants BaryonRemnants BaryonRemnants.so
-set BaryonRemnants:FlavourGenerator /Defaults/Handlers/Hadronization/String/stdLundFlavourGenerator
-set BaryonRemnants:ZGenerator /Defaults/Handlers/Hadronization/String/stdLundZGenerator
-set BaryonRemnants:PtGeneratorQ /Defaults/Handlers/Hadronization/String/stdLundPtGenerator
+create /ThePEG/GRV94L GRV94L GRV94L.so
+create /ThePEG/GRV94M GRV94M GRV94M.so
+create /ThePEG/BaryonRemnants BaryonRemnants BaryonRemnants.so
 set GRV94L:RemnantHandler BaryonRemnants
-# new pythia: set GRV94L:Approximator QCDApproximator
 set GRV94M:RemnantHandler BaryonRemnants
-# new pythia: set GRV94M:Approximator QCDApproximator
 
-set /Defaults/Particles/p+:PDF GRV94L
-set /Defaults/Particles/pbar-:PDF GRV94L
+#set /Defaults/Particles/p+:PDF GRV94L
+#set /Defaults/Particles/pbar-:PDF GRV94L
 
 set /Defaults/Particles/g:DefaultSpin 3
 set /Defaults/Particles/g:Spin 3
@@ -217,31 +211,33 @@ set /Defaults/Particles/h0:DefaultSpin 1
 set /Defaults/Particles/h0:Spin 1
 
 cd /Defaults/Handlers
-# new pythia: create /Pythia7/TrivialExtractor TrivialExtractor TrivialExtractor.so
+# new pythia: create /ThePEG/TrivialExtractor TrivialExtractor TrivialExtractor.so
 # new pythia: set TrivialExtractor:NoPDF /Defaults/Partons/NoPDF
-# new pythia: create /Pythia7/SingleExtractor SingleExtractor SingleExtractor.so
+# new pythia: create /ThePEG/SingleExtractor SingleExtractor SingleExtractor.so
 # new pythia: set SingleExtractor:NoPDF /Defaults/Partons/NoPDF
-# new pythia: create /Pythia7/SimpleExtractor SimpleExtractor SimpleExtractor.so
+# new pythia: create /ThePEG/SimpleExtractor SimpleExtractor SimpleExtractor.so
 # new pythia: set SimpleExtractor:NoPDF /Defaults/Partons/NoPDF
 # LESTER: Created next five lines:
-create /Pythia7/PartonExtractor StandardExtractor
+create /ThePEG/PartonExtractor StandardExtractor
 set StandardExtractor:NoPDF /Defaults/Partons/NoPDF
 set StandardExtractor:FlatSHatY 1
-create /Pythia7/PartonExtractor EEExtractor
+create /ThePEG/PartonExtractor EEExtractor
 set EEExtractor:NoPDF /Defaults/Partons/NoPDF
 
 # LESTER: added to stop Seg Fault! (new pythia version)
-create /Pythia7/DecayHandler StandardDecayHandler
+create /ThePEG/DecayHandler StandardDecayHandler
+# PHIL: added new decay handler for partonic decays
+create /Herwig++/HwDecayHandler PartonicDecayHandler
 
 # LESTER: added to stop Seg Fault! (new pythia version)
-create /Pythia7/ACDCSampler ACDCSampler ACDCSampler.so
+create /ThePEG/ACDCSampler ACDCSampler ACDCSampler.so
 
-create /Pythia7/EventHandler SimpleLEPHandler
-create /Pythia7/FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
+create /ThePEG/EventHandler SimpleLEPHandler
+create /ThePEG/FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
 set FixedLEPLuminosity:Energy 91.2
 set SimpleLEPHandler:LuminosityFunction FixedLEPLuminosity
 
-create /Pythia7/SubProcessHandler SimpleEE2QQ
+create /ThePEG/SubProcessHandler SimpleEE2QQ
 insert SimpleEE2QQ:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2qq
 # LESTER: Changed Simple to EE in following line:
 set SimpleEE2QQ:PartonExtractor EEExtractor
@@ -263,11 +259,11 @@ set SimpleLEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Clust
 set SimpleLEPHandler:Sampler ACDCSampler
 
 
-create /Pythia7/EventHandler SimpleLHCHandler
-create /Pythia7/FixedCMSLuminosity FixedLHCLuminosity
+create /ThePEG/EventHandler SimpleLHCHandler
+create /ThePEG/FixedCMSLuminosity FixedLHCLuminosity
 set FixedLHCLuminosity:Energy 14000.0
 set SimpleLHCHandler:LuminosityFunction FixedLHCLuminosity
-create /Pythia7/SubProcessHandler SimpleQCD
+create /ThePEG/SubProcessHandler SimpleQCD
 insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGG2GG
 insert SimpleQCD:MatrixElements[1] /Defaults/MatrixElements/MEQG2QG
 insert SimpleQCD:MatrixElements[2] /Defaults/MatrixElements/MEQQ2QQ
@@ -294,30 +290,30 @@ set SimpleLHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Clust
 
 
 cd /Defaults/Generators
-create /Pythia7/FullEventGenerator SimpleLEPGenerator
+create /ThePEG/FullEventGenerator SimpleLEPGenerator
 set SimpleLEPGenerator:RandomNumberGenerator /Defaults/Random
 set SimpleLEPGenerator:StandardModelParameters /Defaults/StandardModel
 set SimpleLEPGenerator:EventHandler /Defaults/Handlers/SimpleLEPHandler
-create /Pythia7/KinematicalCuts EECuts
+create /ThePEG/KinematicalCuts EECuts
 set EECuts:LeptonMatcher /Defaults/Matchers/MatchLepton
 set EECuts:SubProcess/MHatMin 22.36
 set SimpleLEPGenerator:EventHandler:Cuts EECuts
 
-create /Pythia7/FullEventGenerator SimpleLHCGenerator
+create /ThePEG/FullEventGenerator SimpleLHCGenerator
 set SimpleLHCGenerator:RandomNumberGenerator /Defaults/Random
 set SimpleLHCGenerator:StandardModelParameters /Defaults/StandardModel
 set SimpleLHCGenerator:EventHandler /Defaults/Handlers/SimpleLHCHandler
-create /Pythia7/KinematicalCuts QCDCuts
+create /ThePEG/KinematicalCuts QCDCuts
 set QCDCuts:LeptonMatcher /Defaults/Matchers/MatchLepton
 set QCDCuts:SubProcess/ScaleMin 25.0
 set QCDCuts:SubProcess/PTHatMin 5.0
 set SimpleLHCGenerator:EventHandler:Cuts QCDCuts
 
 # This will read in all the standard hadron decay modes and add
-# the new particles that are used in HERWIG 6.4, but not in Pythia7
+# the new particles that are used in HERWIG 6.4, but not in ThePEG
 read Decays.in
 #
 
-cd /
+#cd /
 
 

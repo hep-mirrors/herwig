@@ -28,7 +28,7 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class GtoGGGSplitFun: public SplitFun1to3 {
 

@@ -5,7 +5,7 @@
 //
 
 #include "ShowerKinematics.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "ShowerIndex.h"
 
 using namespace Herwig;

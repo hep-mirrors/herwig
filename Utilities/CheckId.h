@@ -21,17 +21,17 @@
 // and  anti-diquarks  (id < 0)  not made with  t  ( anti-t ) component. 
 //
 // NB) Other useful methods (even some implemented in CheckId class!)
-//      are in  Pythia7/PDT/StandardMatchers.h
+//      are in  ThePEG/PDT/StandardMatchers.h
 //
 
 #include "Herwig++/Config/Herwig.h"
-#include "Pythia7/PDT/EnumParticles.h"
+#include <ThePEG/PDT/EnumParticles.h>
 
 
 namespace Herwig {
 
 
-  using namespace Pythia7;
+  using namespace ThePEG;
 
 
   class CheckId {

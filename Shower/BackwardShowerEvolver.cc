@@ -5,13 +5,13 @@
 //
 
 #include "BackwardShowerEvolver.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-// #include "Pythia7/Interface/Parameter.h" 
-#include "Pythia7/Interface/Reference.h" 
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+// #include "ThePEG/Interface/Parameter.h" 
+#include "ThePEG/Interface/Reference.h" 
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
 
@@ -103,7 +103,7 @@ bool BackwardShowerEvolver::spaceLikeShower(tPartCollHdlPtr ch,
     // 
     //                NB) To access the PDF:
     //                      PDF myPDF = ch.pdf( parton );
-    //                    where parton is a pointer to a Pythia7 particle
+    //                    where parton is a pointer to a ThePEG particle
     //                    and the method returns a PDF object for the given
     //                    particle. Such method is defined in LastXCombInfo
     //                    from which PartialCollisionHandler inherits from.

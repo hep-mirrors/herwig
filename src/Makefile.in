@@ -1,0 +1,48 @@
+SOURCES := Herwig++.cc
+
+OBJECTS := $(SOURCES:.cc=.o)
+
+PROGS   := Herwig testKtJet
+
+HWLIBS = -lHwHadronization -lHwUtils -lHwDecay -lHwShower -lHwME
+
+KTJETPATH = -I@KTJETPATH@
+
+KTJETLIBS = -lHwKtJet @KTJETLIBS@
+
+.PHONY: Lib
+
+all: LEP testKtJet
+
+.o: .cc
+	$(CXX) -c $(CXXFLAGS) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(CXXEXT) $<
+
+include ../Config/Makefile.common
+
+CXXDEBUGFLAG = -g
+
+check: LEP
+
+lib:
+
+LEP: Herwig++
+	Herwig++ init; Herwig++ read LEP.in
+
+Lib:
+	cd .. ; $(MAKE) -$(MAKEFLAGS) lib
+
+current: $(PROGS)
+
+$(PROGS): ../Hadronization/libHwHadronization.so ../Utilities/libHwUtils.so \
+	../Shower/libHwShower.so ../MatrixElement/libHwME.so \
+	../Decay/libHwDecay.so
+
+Herwig++: Herwig++.o
+	export LD_RUN_PATH=$(RPATH); $(CXX) $(CXXEXT) $(LINKFLAGS) $(CXXDEBUGFLAG) -o $@ $< -L$(SRCDIR)/lib $(HWLIBS) $(LIBS)
+
+testKtJet: testKtJet.o
+	export LD_RUN_PATH=$(RPATH); $(CXX) $(CXXEXT) $(LINKFLAGS) $(CXXDEBUGFLAG) -o $@ $< -L$(SRCDIR)/lib $(HWLIBS) $(LIBS) $(KTJETLIBS)
+
+testKtJet.o: testKtJet.cc
+	$(CXX) -c $(CXXFLAGS) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(CXXEXT) $(KTJETPATH) $<  
+

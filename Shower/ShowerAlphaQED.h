@@ -18,7 +18,7 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class ShowerAlphaQED: public ShowerAlpha {
 
@@ -68,16 +68,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ShowerAlphaQED.
 template <>
 struct BaseClassTrait<Herwig::ShowerAlphaQED,1> {
   typedef Herwig::ShowerAlpha NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ShowerAlphaQED>: public ClassTraitsBase<Herwig::ShowerAlphaQED> {

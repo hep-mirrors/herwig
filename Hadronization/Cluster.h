@@ -72,18 +72,18 @@
 // 
 
 #include "CluHadConfig.h"
-#include "Pythia7/Pointer/Ptr.h"
-#include "Pythia7/Pointer/ReferenceCounted.h"
-#include "Pythia7/Pointer/PtrTraits.h"
-#include "Pythia7/Pointer/RCPtr.h"
-#include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/EventRecord/Particle.h"
+#include <ThePEG/Pointer/Ptr.h>
+#include <ThePEG/Pointer/ReferenceCounted.h>
+#include <ThePEG/Pointer/PtrTraits.h>
+#include <ThePEG/Pointer/RCPtr.h>
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include <ThePEG/EventRecord/Particle.h>
 #include "Herwig++/Utilities/EnumParticles.h"
 #include <iostream>
 
 namespace Herwig {
 
-  using namespace Pythia7;
+  using namespace ThePEG;
  
   class Cluster : public Particle {
 
@@ -204,7 +204,7 @@ namespace Herwig {
 
 } // end namespace Herwig  
 
-namespace Pythia7 {
+namespace ThePEG {
 
 template <>
 struct BaseClassTrait<Herwig::Cluster,1> {

@@ -14,17 +14,17 @@
 // <a href="http:Herwig.html">Herwig.h</a>.
 // 
 
-#include "Pythia7/Interface/Interfaced.h"
+#include <ThePEG/Interface/Interfaced.h>
 #include "Herwig++/Config/Herwig.h"
-#include "Pythia7/CLHEPWrap/SystemOfUnits.h"
-#include "Pythia7/CLHEPWrap/PhysicalConstants.h"
+#include <ThePEG/CLHEPWrap/SystemOfUnits.h>
+#include <ThePEG/CLHEPWrap/PhysicalConstants.h>
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class GlobalParameters: public Pythia7::Interfaced {
+class GlobalParameters: public ThePEG::Interfaced {
 
 public:
 
@@ -57,8 +57,8 @@ public:
   // considering the widths of W, Z, top as a scale in the showering,
   // it is enough to set this parameter above such widths.        
 
-  inline bool isPythia7StringFragmentationON() const;
-  // It returns true/false according if the Pythia7 string fragmentation
+  inline bool isThePEGStringFragmentationON() const;
+  // It returns true/false according if the ThePEG string fragmentation
   // model is switched on/off. In the case is off, the usual
   // Herwig++ cluster hadronization model will be used for the
   // hadronization.   
@@ -128,16 +128,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of GlobalParameters.
 template <>
 struct BaseClassTrait<Herwig::GlobalParameters,1> {
-  typedef Pythia7::Interfaced NthBase;
+  typedef ThePEG::Interfaced NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::GlobalParameters>: public ClassTraitsBase<Herwig::GlobalParameters> {

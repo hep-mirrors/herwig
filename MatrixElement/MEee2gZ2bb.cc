@@ -5,21 +5,21 @@
 //
 
 #include "MEee2gZ2bb.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/Utilities/Timer.h"
-#include "Pythia7/Repository/EventGenerator.h"
-#include "Pythia7/StandardModel/StandardModelBase.h"
-#include "Pythia7/Handlers/XComb.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/Utilities/Timer.h>
+#include <ThePEG/Repository/EventGenerator.h>
+#include <ThePEG/StandardModel/StandardModelBase.h>
+#include <ThePEG/Handlers/XComb.h>
 
 #ifdef PYTHIA7_TEMPLATES_IN_CC_FILE
 // #include "MEee2gZ2qq.tcc"
 #endif
 
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 MEee2gZ2bb::MEee2gZ2bb()
   : coefs(20), mZ2(0.0*GeV2), GZ2(0.0*GeV2), lastCont(0.0), lastBW(0.0) {}

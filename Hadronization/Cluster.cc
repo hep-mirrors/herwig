@@ -5,23 +5,23 @@
 //
 
 #include "Cluster.h"
-#include "Pythia7/Repository/UseRandom.h"
-#include "Pythia7/Repository/CurrentGenerator.h"
+#include <ThePEG/Repository/UseRandom.h>
+#include <ThePEG/Repository/CurrentGenerator.h>
 #include <iostream>
 #include <iomanip>
 #include <cctype>
-#include "Pythia7/EventRecord/Step.h"
-#include "Pythia7/EventRecord/Event.h"
-#include "Pythia7/EventRecord/ColourLine.h"
-#include "Pythia7/Utilities/Rebinder.h"
-#include "Pythia7/Config/algorithm.h"
-#include "Pythia7/EventRecord/ParticleTraits.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/PDT/DecayMode.h"
+#include <ThePEG/EventRecord/Step.h>
+#include <ThePEG/EventRecord/Event.h>
+#include <ThePEG/EventRecord/ColourLine.h>
+#include <ThePEG/Utilities/Rebinder.h>
+#include <ThePEG/Config/algorithm.h>
+#include <ThePEG/EventRecord/ParticleTraits.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/PDT/DecayMode.h>
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 GlobParamPtr Cluster::_globalParameters = GlobParamPtr();
 

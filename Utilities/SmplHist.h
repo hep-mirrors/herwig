@@ -32,8 +32,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 extern const int SampleHistogramMinimum;
 extern const int SampleHistogramMaximum;
 
+using namespace std;
+
+
 class SampleHistogram : public SampleStatistic 
 {
+
 protected:
     short howManyBuckets;
     int *bucketCount;
@@ -42,7 +46,7 @@ protected:
 public:
     
   SampleHistogram(double low, double hi, double bucketWidth = -1.0);
-  
+  SampleHistogram(double loVals[], int size);
   ~SampleHistogram();
   
   void reset();

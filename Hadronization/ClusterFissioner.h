@@ -18,9 +18,9 @@
 // then the beam remnant clusters are treated exactly as "normal" clusters,
 // with the only exception of the mass spectrum used to generate the
 // cluster children masses. For non-beam clusters, the masses of the cluster
-// children are drawn from a power-like mass distribution; for beam clusters,
+// children are draw from a power-like mass distribution; for beam clusters,
 // according to the value of the flag <!id>_IOpRem<!!id>, either both 
-// children masses are drawn from a fast-decreasing exponential mass 
+// children masses are draw from a fast-decreasing exponential mass 
 // distribution (case <!id>_IOpRem == 0<!!id>, or, indendently by 
 // <!id>_IOpRem<!!id>, in the special case that the beam cluster contains two 
 // beam remnants), or one mass from the exponential distribution (corresponding
@@ -56,24 +56,24 @@
 // CLASSDOC SUBSECTION See also:
 //
 // <a href="http:GlobalParameters.html">GlobalParameters.h</a>, <BR>
-// <a href="http:HadronsSelector.html">HadronsSelector.h</a>.
+// <a href="http:HadronSelector.html">HadronSelector.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include <ThePEG/Handlers/HandlerBase.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
-#include "Herwig++/Config/GlobalParameters.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
 
 
 namespace Herwig {
 
 
-using namespace Pythia7;
+using namespace ThePEG;
 
   //class Cluster;          // forward declaration
 
 
-class ClusterFissioner: public Pythia7::HandlerBase {
+class ClusterFissioner: public ThePEG::HandlerBase {
 
 public:
 
@@ -91,7 +91,7 @@ public:
   // In the case beam clusters will be split, the procedure is exactly
   // the same as for normal non-beam clusters, with the only exception
   // of the mass spectrum from which to draw the masses of the two 
-  // cluster children (see method <!id>drawnChildrenMasses<!!id> for details).
+  // cluster children (see method <!id>drawChildrenMasses<!!id> for details).
     
 public:
 
@@ -130,77 +130,76 @@ private:
   ClusterFissioner & operator=(const ClusterFissioner &);
   // Private and non-existent assignment operator.
 
-  void cut(tClusterPtr cluPtr, const StepPtr&, ClusterVector &clusters);
+  void cut(tClusterPtr, const StepPtr&, ClusterVector&);
+public:
+  typedef pair<PPtr,PPtr> PPair;
+  typedef pair<PPair,PPair> cutType;
+  cutType cut(tClusterPtr &);
   // Split the input cluster (which can be either an heavy non-beam
-  // cluster or a beam cluster) recursively until all children have
-  // mass below some threshold. The "output" consists of all children and
-  // grand-children clusters that are coming from the fission of the input 
-  // cluster: all of these clusters (indeed the pointers to them) are added 
-  // in the container  collecCluPtr. In the (rare) cases in which 
-  // one of the two fission products is light (that is below the 
-  // mass of the two lightest hadrons with proper flavour numbers)
-  // then a hadron (the lightest one) is created instead of a cluster
-  // and the parent heavy cluster has a single cluster child and a
-  // single hadron child, rather than two cluster children as usual.
-  // Notice that this method treats also beam clusters, besides
-  // heavy non-beam clusters: the difference between these two types
-  // of clusters is only in the mass spectrum used to generate the
-  // cluster children masses (see method drawnChildrenMasses).
+  // cluster or a beam cluster). The result is two pairs of particles. The
+  // first element of each pair is new cluster/hadron, while the second
+  // element of each pair is the particle drawn from the vacuum to create
+  // the new cluster/hadron.
+  // Notice that this method treats also beam clusters by using a different
+  // mass spectrum used to generate the cluster child masses (see method
+  // drawChildMass).
 
-  long drawnNewFlavour() const;
+private:
+  PPair produceHadron(const long id1, const long id2, Lorentz5Momentum &a,
+		      LorentzPoint &b) const;
+  PPair produceCluster(tPPtr &p1, const long id, Lorentz5Momentum &a, 
+		       LorentzPoint &b, Lorentz5Momentum &c, 
+		       Lorentz5Momentum &d, const bool rem) const;
+  // This routine produces a new cluster with the flavours given by p1 and id.
+  // The new 5 momentum is a and the parent momentum are c and d. C is for the
+  // p1 and d is for the new particle id. rem specifies whether the existing
+  // particle is a beam remnant or not.
+
+  long drawNewFlavour() const;
   // Return the id ( >0 ) of the quark-antiquark pair from the vacuum
   // needed for fission of an heavy cluster. Equal probabilities
   // are assumed for quarks  u , d , s . 
 
-  bool drawnChildrenMasses(const Energy Mclu, const Energy m1, const Energy m2, 
-			   const Energy m3, Energy & Mclu1, Energy & Mclu2,
-			   const double exponent1, const double exponent2,
-                           const Energy average, const int iRemnant) const; 
-  // Drawn the masses (Mclu1, Mclu2) of the the two clusters children produced 
-  // by the fission of an heavy cluster (of mass Mclu). m1, m2 are the masses
-  // of the constituents of the cluster; m3 is the mass of the quark extract from
-  // the vacuum (together with its antiparticle). 
-  // Two mass distributions can be used for the children cluster masses:
-  // 1) power-like mass distribution ("normal" mass) with power exponent1 
-  //    and exponent2 for the two cluster children respectively; 
+  void drawChildMass(const Energy M, const Energy m1, const Energy m2, 
+		     const Energy m3, Energy & Mc, const double exp,
+                           const double b, const bool rem) const; 
+  // Draw the masses Mc of the the cluster child produced 
+  // by the fission of an heavy cluster (of mass M). m1, m2 are the masses
+  // of the constituents of the cluster; m3 is the mass of the quark extract 
+  // from the vacuum (together with its antiparticle). The algorithm produces
+  // the mass of the cluster formed with consituent m1.
+  // Two mass distributions can be used for the child cluster mass:
+  // 1) power-like mass distribution ("normal" mass) with power exp 
   // 2) fast-decreasing exponential mass distribution ("soft" mass) with 
-  //    average given by  average  method parameter.
+  //    rmin. rmin is given by exp(-2*maxPS/average) where average is the
+  //    given by the average method parameter.
   // The choice of which mass distribution should be used for each of the two
-  // cluster children is dictated by the integer  iRemnant, as follows:
-  // i)   iRemnant == 0  then both Mclu1 and Mclu2 are "normal" masses;
-  // ii)  iRemnant == 1  then Mclu1 is a "soft" mass, whereas Mclu2 is a "normal" one;
-  // iii) iRemnant == 2  then Mclu1 is a "normal" mass, whereas Mclu2 is a "soft" one;
-  // iv)  otherwise           both Mclu1 and Mclu2 are "soft" masses.
-  // Case i) is the standard one, always used for non-beam clusters;
-  // case ii) and iii) occur for beam clusters with only one beam remnant and
-  // when the flag _IOpRem is 1 (which is also its default value) which means 
-  // that the cluster child containing the beam remnant should have "soft" mass
-  // whereas the other one should have "normal" mass;
-  // case iv), finally, occur for beam clusters with two beam remnants 
-  // (regardless of the value of _IOpRem) or when _IOpRem is 0 which means 
-  // that both cluster children masses should be soft.
-  // Notice that, if the soft underlying event is on, then the beam clusters
-  // are tagged as not available, therefore they will not be treated by
-  // Cluster Fissioner (and the other Cluster Hadronization classes as well).
+  // cluster children is dictated by the bool rem. If _IOpRem is 0, the
+  // soft distribution is always used.
   // Finally, sometimes, when the phase space available is tiny, many attempts 
-  // fail to produce a pair of masses kinematically acceptable, and in these cases 
-  // it gives up returning false; otherwise it returns true when the splitting succeeds.
+  // fail to produce a pair of masses kinematically acceptable; in these cases 
+  // it gives up returning false, otherwise it returns true when the splitting 
+  // succeeds.
 
-  void calculateKinematics(const Lorentz5Momentum & pClu, const Lorentz5Momentum & p0Q1, 
-			   const bool decayOneHadronClu1, const bool decayOneHadronClu2,
-			   Lorentz5Momentum & pClu1, Lorentz5Momentum & pClu2,      
-			   Lorentz5Momentum & pQ1, Lorentz5Momentum & pQbar,      
-			   Lorentz5Momentum & pQ, Lorentz5Momentum & pQ2bar ) const;
-  // Determine the full kinematics of the fission of an heavy cluster C -> C1 + C2
+  void calculateKinematics(const Lorentz5Momentum &pClu, 
+		           const Lorentz5Momentum &p0Q1, 
+			   const bool toHadron1, const bool toHadron2,
+			   Lorentz5Momentum &pClu1, Lorentz5Momentum &pClu2, 
+			   Lorentz5Momentum &pQ1, Lorentz5Momentum &pQb, 
+			   Lorentz5Momentum &pQ2, Lorentz5Momentum &pQ2b) const;
+  // Determine the full kinematics of the fission of an heavy cluster 
+  // C -> C1 + C2
   
-  void calculatePositions( const Lorentz5Momentum & pClu, const LorentzPoint & positionClu,
-			   const Lorentz5Momentum & pClu1, const Lorentz5Momentum & pClu2, 
-			   LorentzPoint & positionClu1, LorentzPoint & positionClu2 ) const;
+  void calculatePositions(const Lorentz5Momentum &pClu, 
+		          const LorentzPoint & positionClu,
+			  const Lorentz5Momentum & pClu1, 
+			  const Lorentz5Momentum & pClu2, 
+			  LorentzPoint & positionClu1, 
+			  LorentzPoint & positionClu2 ) const;
   // Determine the positions of the two children clusters.
 
   HadronSelectorPtr _hadronsSelector;
-  GlobParamPtr       _globalParameters;  
-
+  GlobParamPtr      _globalParameters;  
   Energy _ClMax;
   double _ClPow;
   double _PSplt1;
@@ -215,16 +214,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ClusterFissioner.
 template <>
 struct BaseClassTrait<Herwig::ClusterFissioner,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ClusterFissioner>: public ClassTraitsBase<Herwig::ClusterFissioner> {

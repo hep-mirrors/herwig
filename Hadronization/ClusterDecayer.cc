@@ -5,13 +5,13 @@
 //
 
 #include "ClusterDecayer.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/Interface/Parameter.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Reference.h> 
+#include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/CheckId.h"
@@ -19,7 +19,7 @@
 #include "Cluster.h"
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 ClusterDecayer::~ClusterDecayer() {}
@@ -47,8 +47,8 @@ void ClusterDecayer::Init() {
     ("This class is responsible for the two-body decays of normal clusters");
 
   static Reference<ClusterDecayer,HadronSelector> 
-    interfaceHadronsSelector("HadronsSelector", 
-                             "A reference to the HadronsSelector object", 
+    interfaceHadronSelector("HadronSelector", 
+                             "A reference to the HadronSelector object", 
                              &Herwig::ClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
   static Reference<ClusterDecayer,GlobalParameters> 
@@ -79,6 +79,7 @@ void ClusterDecayer::decay(const StepPtr &pstep)
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
   // into single hadron) then decay them into two hadrons.
+  //cout << "Event is = " << endl << *pstep->collision()->event() << endl;
   ClusterVector clusters; 
   for (ParticleSet::iterator it = pstep->particles().begin();
        it!= pstep->particles().end(); it++) { 
@@ -89,7 +90,9 @@ void ClusterDecayer::decay(const StepPtr &pstep)
 	 it != clusters.end(); ++it) {
     if ((*it)->isAvailable() && !(*it)->isStatusFinal() 
 	&& (*it)->isReadyToDecay()) {   
-      decayIntoTwoHadrons(pstep, *it);
+      pair<PPtr,PPtr> prod = decayIntoTwoHadrons(*it);
+      pstep->addDecayProduct(*it,prod.first);
+      pstep->addDecayProduct(*it,prod.second);
     }
   }
   
@@ -109,8 +112,7 @@ void ClusterDecayer::decay(const StepPtr &pstep)
 }
 
 
-void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep, 
-					 tClusterPtr ptr) 
+pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
   throw(Veto, Stop, Exception) {
 
   // To decay the cluster into two hadrons one must distinguish between
@@ -140,7 +142,7 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
       generator()->log() << "         ===>" << " num components = " << ptr->numComponents()
 			 << endl << endl;
     }
-    return;
+    return pair<PPtr,PPtr>();
   }
      
   // Extract the id and particle pointer of the two components of the cluster.
@@ -298,14 +300,9 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
     }
   }
 
-  // Choose here the hadron pair.
-//   cerr << "evt #" << generator()->currentEventNumber()
-//        << " cluster #" << ptr->number() << endl;
-  //cout << "Calling chooseHadronPair with " << id1 << ", " << id2 << "\n";
   pair<long,long> idPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
-							       id1,id2);
+							      id1,id2);
 
-  //cout << "Returned " << idPair.first << ", " << idPair.second << endl;
   // Create the two hadron particle objects with the specified id.
   PPtr ptrHad1 = getParticle(idPair.first);
   PPtr ptrHad2 = getParticle(idPair.second);
@@ -340,11 +337,11 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
 
     //ptr->addChild(ptrHad1);
     //ptr->addChild(ptrHad2);
-    pstep->addDecayProduct(ptr , ptrHad1);
-    pstep->addDecayProduct(ptr , ptrHad2);
+    //pstep->addDecayProduct(ptr , ptrHad1);
+    //pstep->addDecayProduct(ptr , ptrHad2);
     
     // Sanity check (normally skipped) to see if the energy-momentum is conserved.
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
+    /* if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
       Lorentz5Momentum diff = pClu - ( pHad1 + pHad2 );
       Energy ediff = fabs( diff.m() );
       if ( ediff > 1e-3*GeV ) {
@@ -362,9 +359,10 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
 	}      
       }
     }
-    
+    */
+
   }
-  
+  return pair<PPtr,PPtr>(ptrHad1,ptrHad2);
 }
 
 

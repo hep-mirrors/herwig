@@ -6,8 +6,8 @@
 
 #include "FS_QtildaShowerKinematics1to2.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/EventGenerator.h"
-#include "Pythia7/Repository/CurrentGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -141,20 +141,18 @@ void FS_QtildaShowerKinematics1to2::updateChildren( const tShowerParticlePtr the
     Energy2 dm2 = Energy2(); 
     Energy pPerp, kinCutoff; 
     // kinCutoff = .15*GeV;
-    kinCutoff = kinScale();
+    //    kinCutoff = kinScale();
     bool inps = true; 
     if (glueEmits) {
-      // dm2 = c1->data().mass(); 
-      //      dm2 = sqr(max(resScale(), 4.*c1->data().mass()));    
-      //      dm2 = sqr(max(kinCutoff, 4.*c1->data().mass()));    
+      //      kinCutoff = (kinScale() - 0.15*c1->data().mass())/2.3;
+      kinCutoff = (kinScale() - 0.3*c1->data().mass())/2.3;
       dm2 = sqr(max(kinCutoff, c1->data().mass()));    
       if ( sqr(dz*(1.-dz)*dqtilde) - dm2 > 0 ) 
-	//	pPerp = sqrt(sqr(dz*(1.-dz)*dqtilde) - dm2);
 	pPerp = sqrt(sqr(dz*(1.-dz)*dqtilde) - dm2);
       else inps = false;
     } else {
-      // dm2 = sqr( theParent->data().mass() ); 
-      //      dm2 = sqr(max(resScale(), theParent->data().mass()));
+      //      kinCutoff = (kinScale() - 0.15*theParent->data().mass())/2.3;
+      kinCutoff = (kinScale() - 0.3*theParent->data().mass())/2.3;
       dm2 = sqr(max(kinCutoff, theParent->data().mass()));
       if ( sqr(1.-dz)*(sqr( dz*dqtilde ) - dm2) > dz*sqr(kinCutoff) ) 
 	pPerp = sqrt( sqr(1.-dz)*(sqr( dz*dqtilde ) - dm2) - dz*sqr(kinCutoff) );
@@ -280,6 +278,8 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast
   // set that new momentum    
   theLast->set5Momentum(  sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
 					theLast->sudPx(), theLast->sudPy() )  );
+  // gives error message (note that we usually avoid the 5th component
+  // anyway) theLast->momentum().setMass(theMass);
 }
 
 

@@ -5,13 +5,13 @@
 //
 
 #include "LightClusterDecayer.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Interface/Parameter.h"
-#include "Pythia7/Interface/Reference.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-#include "Pythia7/PDT/EnumParticles.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Interface/Reference.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+#include <ThePEG/PDT/EnumParticles.h>
+#include <ThePEG/Repository/EventGenerator.h>
 #include "Cluster.h"
 #include "HadronSelector.h"
 #include "Herwig++/Utilities/HwDebug.h"
@@ -20,7 +20,7 @@
 
 
 using namespace Herwig;
-// using namespace Pythia7;
+// using namespace ThePEG;
 
 
 LightClusterDecayer::~LightClusterDecayer() {}
@@ -46,8 +46,8 @@ void LightClusterDecayer::Init() {
     ("There is the class responsible for the one-hadron decay of light clusters");
 
   static Reference<LightClusterDecayer,HadronSelector> 
-    interfaceHadronsSelector("HadronsSelector", 
-			     "A reference to the HadronsSelector object", 
+    interfaceHadronSelector("HadronSelector", 
+			     "A reference to the HadronSelector object", 
 			     &Herwig::LightClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
   

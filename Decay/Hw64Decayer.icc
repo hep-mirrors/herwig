@@ -6,11 +6,11 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 inline Hw64Decayer::Hw64Decayer() { } 
 
-inline Hw64Decayer::Hw64Decayer(const Hw64Decayer & x) : Pythia7::Decayer(x) 
+inline Hw64Decayer::Hw64Decayer(const Hw64Decayer & x) : ThePEG::Decayer(x) 
 {
   MECode = x.MECode;
 }
@@ -26,26 +26,26 @@ inline IBPtr Hw64Decayer::fullclone() const {
 }
 
 inline void Hw64Decayer::doupdate() throw(UpdateException) {
-   Pythia7::HandlerBase::doupdate();
+   ThePEG::HandlerBase::doupdate();
    return;
 }
 
 inline void Hw64Decayer::doinit() throw(InitException) {
-   Pythia7::HandlerBase::doinit();
+   ThePEG::HandlerBase::doinit();
 }
 
 inline void Hw64Decayer::dofinish() {
-   Pythia7::HandlerBase::dofinish();
+   ThePEG::HandlerBase::dofinish();
 }
 
 inline IVector Hw64Decayer::getReferences() {
-  IVector ret = Pythia7::Decayer::getReferences();
+  IVector ret = ThePEG::Decayer::getReferences();
   return ret;
 }
 
 inline void Hw64Decayer::rebind(const TranslationMap &trans) 
                                 throw(RebindException) {
-   Pythia7::Interfaced::rebind(trans);
+   ThePEG::Interfaced::rebind(trans);
 }
 
 }

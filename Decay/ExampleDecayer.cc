@@ -5,14 +5,14 @@
 //
 
 #include "ExampleDecayer.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-// #include "Pythia7/Interface/Parameter.h" 
-// #include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/EventRecord/Particle.h"
-#include "Pythia7/PDT/PDT.h"   
-#include "Pythia7/PDT/EnumParticles.h"
+#include <ThePEG/Interface/ClassDocumentation.h>
+#include <ThePEG/Persistency/PersistentOStream.h>
+#include <ThePEG/Persistency/PersistentIStream.h>
+// #include <ThePEG/Interface/Parameter.h" 
+// #include <ThePEG/Interface/Reference.h" 
+#include <ThePEG/EventRecord/Particle.h>
+#include <ThePEG/PDT/PDT.h>
+#include <ThePEG/PDT/EnumParticles.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "DecayConfig.h"
 

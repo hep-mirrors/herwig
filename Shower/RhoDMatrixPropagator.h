@@ -46,21 +46,21 @@
 // <a href="http:ShowerParticle.html">ShowerParticle.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
-#include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/MatrixElement/MEBase.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include "ThePEG/MatrixElement/MEBase.h"
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class Pythia7::PartialCollisionHandler;  // forward declaration
-class Pythia7::Decayer;                  // forward declaration
+class ThePEG::PartialCollisionHandler;  // forward declaration
+class ThePEG::Decayer;                  // forward declaration
 
 
-class RhoDMatrixPropagator: public Pythia7::HandlerBase {
+class RhoDMatrixPropagator: public ThePEG::HandlerBase {
 
 public:
 
@@ -220,7 +220,7 @@ private:
   // the the input particle <!id>aParticle<!!id>. It needs the collection of
   // all shower particles only in the case that the vertex is the
   // hard subprocess (because the subprocess object would give only
-  // the incoming and outgoing Pythia7 particles that enter the
+  // the incoming and outgoing ThePEG particles that enter the
   // hard subprocess, but not the ShowerParticle objects we want.
 
   // In order to access the amplitude of the "vertex", as a function of 
@@ -239,16 +239,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of RhoDMatrixPropagator.
 template <>
 struct BaseClassTrait<Herwig::RhoDMatrixPropagator,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::RhoDMatrixPropagator>: public ClassTraitsBase<Herwig::RhoDMatrixPropagator> {

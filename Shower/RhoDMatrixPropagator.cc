@@ -5,20 +5,20 @@
 //
 
 #include "RhoDMatrixPropagator.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ShowerParticle.h"
-#include "Pythia7/Handlers/PartialCollisionHandler.h"
-#include "Pythia7/PDT/Decayer.h"
+#include "ThePEG/Handlers/PartialCollisionHandler.h"
+#include "ThePEG/PDT/Decayer.h"
 #include "SplitFun.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Interface/Switch.h"
+#include "ThePEG/Interface/Switch.h"
 #include "QtildaShowerKinematics1to2.h"
 #include "SplitFun1to2.h"
-#include "Pythia7/PDT/DecayMode.h"
-// #include "Pythia7/MatrixElement/Amplitude.h"
+#include "ThePEG/PDT/DecayMode.h"
+// #include "ThePEG/MatrixElement/Amplitude.h"
 
 using namespace Herwig;
 
@@ -144,7 +144,7 @@ void RhoDMatrixPropagator::findVertexParticles( const ShowerParticleVector & col
   //  collecShoPar  in order to find the ones that belong to the hard
   // subprocess: in fact, the subprocess methods
   //  _subprocess->incoming()   and   _subprocess->outgoing()
-  // cannot be used because they return Pythia7 particle objects, not
+  // cannot be used because they return ThePEG particle objects, not
   // ShowerParticle ones as we want.
   if ( ! aParticle ) return; 
   if ( _hardSubME ) {

@@ -17,6 +17,7 @@ int main(int argc, char * argv[]) {
 	// use (for step s)
 	// tPVector particles = hw.getFinalState(s);
 	// Then do analysis
+	std::cout << "Generated event: " << i+1 << " of " << hw.getN() << "\r" << std::flush;
       }
     } else if(hw.isRunMode()) {
       std::cout << "Error: Expecting a run but there is no EventGenerator!\n"
@@ -32,7 +33,7 @@ int main(int argc, char * argv[]) {
     std::cerr << "Unknown Exception\n";
     return 2;
   }
-
+  std::cout << std::endl;
   return 0;
 }
 

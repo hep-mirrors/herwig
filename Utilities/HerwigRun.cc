@@ -1,7 +1,7 @@
 #include "HerwigRun.h"
 
 using namespace Herwig;
-using namespace Pythia7;
+using namespace ThePEG;
 
 const string usage = " init|read|run "
                    " [-N num-events] [-seed random-generator-seed] "
@@ -71,7 +71,7 @@ HerwigRun::HerwigRun(int argc, char **argv)
   }
 
   if ( Status == INIT ) {
-    breakPythia7();
+    breakThePEG();
     {
       HoldFlag<> setup(InterfaceBase::NoReadOnly);
       if ( repoin.empty() ) repoin = "HerwigDefaults.in";
@@ -82,7 +82,7 @@ HerwigRun::HerwigRun(int argc, char **argv)
     Repository::save(repo);
   } else if(Status == READ) {
     Repository::load(repo);
-    breakPythia7();
+    breakThePEG();
     if ( run.size() && run != "-" ) {
       ifstream is(run.c_str());
       Repository::read(is, std::cout);
@@ -101,7 +101,7 @@ EGPtr HerwigRun::eventGenerator() {
   if(!egCreated) {
     PersistentIStream is(run);
     is >> eg;
-    breakPythia7();
+    breakThePEG();
     egCreated = true;
     if ( seed > 0 ) eg->random().setSeed(seed);
     return eg;
@@ -146,7 +146,7 @@ void HerwigRun::printHelp(std::ostream &out) {
       << "These are optional commands\n"
       << "==============================================================\n"
       << "-N      - Set number of events in the run\n"
-      << "-d      - Sets the Pythia7 debug level (see Pythia7::Debug)\n"
+      << "-d      - Sets the ThePEG debug level (see ThePEG::Debug)\n"
       << "-dHw    - Sets the Herwig debug level (see Herwig::Debug)\n"
       << "-r      - Changes the repository file from HerwigDefaults.rpo\n"
       << "-i      - Changes the repo input file from HerwigDefaults.in\n"
@@ -157,6 +157,15 @@ void HerwigRun::printHelp(std::ostream &out) {
       << "==============================================================\n";
 }
 
+StepVector HerwigRun::getSteps(EventPtr e) {
+  if(!e) e = lastEvent;
+  if(!e) {
+    std::cerr << "Invalid request: HerwigRun::getSteps on a null event\n";
+    return StepVector();
+  }
+  return e->primaryCollision()->steps();
+}
+
 tPVector HerwigRun::getFinalState(int step, EventPtr e) {
   if(!e) e = lastEvent;
   if(!e) {
@@ -165,6 +174,33 @@ tPVector HerwigRun::getFinalState(int step, EventPtr e) {
   }
   if(step < 0) return e->getFinalState();
   else return e->primaryCollision()->step(step)->getFinalState();
+}
+
+ParticleSet HerwigRun::getAllParticles(int step, EventPtr e) {
+  if(!e) e = lastEvent;
+  if(!e) {
+    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
+    return ParticleSet();
+  }
+  return e->primaryCollision()->step(step)->all();
+}
+
+ParticleSet HerwigRun::getIntermediates(int step, EventPtr e) {
+  if(!e) e = lastEvent;
+  if(!e) {
+    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
+    return ParticleSet();
+  }
+  return e->primaryCollision()->step(step)->intermediates();
+}
+
+ParticleSet HerwigRun::getOutgoing(int step, EventPtr e) {
+  if(!e) e = lastEvent;
+  if(!e) {
+    std::cerr << "Invalid request: HerwigRun::getFinalState on a null event\n";
+    return ParticleSet();
+  }
+  return e->primaryCollision()->step(step)->particles();
 }
 
 bool HerwigRun::preparedToRun() {

@@ -18,7 +18,7 @@
 
 namespace Herwig { 
 
-  using namespace Pythia7;
+  using namespace ThePEG;
 
   class Cluster;
   typedef Ptr<Cluster>::pointer ClusterPtr;

@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
   //  inline ShowerParticle::ShowerParticle() {}
 inline void * ShowerParticle::operator new(size_t) {
@@ -180,17 +180,12 @@ inline void ShowerParticle::setSplitFun(const tSplitFunPtr inputSplitFun) {
   //}
 
 
-inline ShoKinPtr & ShowerParticle::showerKinematics() {
-  return _showerKinematics;
-}
-
-inline void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
-  _showerKinematics = inputShowerKinematics;
-}
-
-
 inline vector<Energy> ShowerParticle::evolutionScales() const {
   return _scales;
+}
+
+inline ShoKinPtr & ShowerParticle::showerKinematics() {
+  return _showerKinematics;
 }
 
 inline const tShowerParticleVector & ShowerParticle::partners() const {

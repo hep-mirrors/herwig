@@ -7,15 +7,15 @@
 #include "KinematicsReconstructor.h"
 #include "ShowerParticle.h"
 #include "ShowerConfig.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
-// #include "Pythia7/Interface/Parameter.h" 
-#include "Pythia7/Interface/Reference.h" 
-#include "Pythia7/Interface/RefVector.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+// #include "ThePEG/Interface/Parameter.h" 
+#include "ThePEG/Interface/Reference.h" 
+#include "ThePEG/Interface/RefVector.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
-#include "Pythia7/Repository/EventGenerator.h"
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
 
@@ -361,7 +361,13 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr p
       dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
 	->showerKinematics()->updateLast( particleJetParent );    
     } else {
-      Energy dm = particleJetParent->data().constituentMass(); 
+      Energy dm; 
+      if (particleJetParent->id() == 21) 
+	// trying to get the effective gluon mass through with the 
+	// usually unused 5th momentum component...
+	dm = particleJetParent->momentum().mass();
+      else
+	dm = particleJetParent->data().constituentMass(); 
       if (dm != particleJetParent->momentum().m()) {
 	Lorentz5Momentum dum =  particleJetParent->momentum();
 	dum.setMass(dm); 

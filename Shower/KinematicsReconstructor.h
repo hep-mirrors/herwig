@@ -28,19 +28,19 @@
 // <a href="http:ShowerKinematics.html">ShowerKinematics.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
-#include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/MatrixElement/MEBase.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include "ThePEG/MatrixElement/MEBase.h"
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class Lorentz5Vector;
 
-class KinematicsReconstructor: public Pythia7::HandlerBase {
+class KinematicsReconstructor: public ThePEG::HandlerBase {
 
 public:
 
@@ -288,16 +288,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of KinematicsReconstructor.
 template <>
 struct BaseClassTrait<Herwig::KinematicsReconstructor,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::KinematicsReconstructor>: public ClassTraitsBase<Herwig::KinematicsReconstructor> {

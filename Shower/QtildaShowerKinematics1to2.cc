@@ -6,9 +6,9 @@
 
 #include "QtildaShowerKinematics1to2.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Pythia7/Repository/EventGenerator.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
-#include "Pythia7/Repository/CurrentGenerator.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 

@@ -1,0 +1,27 @@
+#
+create /ThePEG/ParticleData /Defaults/Particles/Cluster
+setup /Defaults/Particles/Cluster 81 Cluster 0.00990 0.0 0.0 0.0  0 0  0  0
+#
+cd /Defaults/Handlers/Hadronization/Cluster
+set stdCluHadHandler:PartonSplitter:GlobalParameters:EffectiveGluonMass 0.750*GeV
+set stdCluHadHandler:ColourReconnector:ClReco 0
+set stdCluHadHandler:ColourReconnector:PReco  1.0/9.0
+set stdCluHadHandler:ClusterFissioner:GlobalParameters:IsOnSoftUnderlyingEvent 0
+set stdCluHadHandler:ClusterFissioner:ClMax  3.35*GeV
+set stdCluHadHandler:ClusterFissioner:ClPow  2.0
+set stdCluHadHandler:ClusterFissioner:PSplt1 1.0
+set stdCluHadHandler:ClusterFissioner:PSplt2 1.0
+set stdCluHadHandler:LightClusterDecayer:B1Lim 0.0
+set stdCluHadHandler:ClusterDecayer:ClDir1 1
+set stdCluHadHandler:ClusterDecayer:ClDir2 1
+set stdCluHadHandler:ClusterDecayer:ClSmr1 0.0
+set stdCluHadHandler:ClusterDecayer:ClSmr2 0.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:PwtDquark  1.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:PwtUquark  1.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:PwtSquark  1.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:PwtCquark  1.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:PwtBquark  1.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:PwtDIquark 0.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:SngWt      1.0
+set stdCluHadHandler:ClusterDecayer:HadronSelector:DecWt      1.0
+#

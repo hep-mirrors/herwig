@@ -7,9 +7,9 @@
 
 namespace Herwig { 
 
-  using namespace Pythia7;
+  using namespace ThePEG;
 
-PYTHIA7_DECLARE_CLASS_POINTERS(Hw64Decayer, Hw64DecayerPtr);
+ThePEG_DECLARE_CLASS_POINTERS(Hw64Decayer, Hw64DecayerPtr);
 
 } // end Herwig namespace
 

@@ -18,7 +18,7 @@ inline ClusterFissioner::ClusterFissioner() :
 
 
 inline ClusterFissioner::ClusterFissioner(const ClusterFissioner & x)
-  : Pythia7::HandlerBase(x),
+  : ThePEG::HandlerBase(x),
 	     _hadronsSelector( x._hadronsSelector ),
 	     _globalParameters( x._globalParameters ),
 	     _ClMax( x._ClMax ),
@@ -41,7 +41,7 @@ inline IBPtr ClusterFissioner::fullclone() const {
 
 
 inline void ClusterFissioner::doupdate() throw(UpdateException) {
-  Pythia7::HandlerBase::doupdate();
+  ThePEG::HandlerBase::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -60,24 +60,24 @@ inline void ClusterFissioner::doupdate() throw(UpdateException) {
 
 
 inline void ClusterFissioner::doinit() throw(InitException) {
-  Pythia7::HandlerBase::doinit();
+  ThePEG::HandlerBase::doinit();
 }
 
 
 inline void ClusterFissioner::dofinish() {
-  Pythia7::HandlerBase::dofinish();
+  ThePEG::HandlerBase::dofinish();
 }
 
 
 inline void ClusterFissioner::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  Pythia7::HandlerBase::rebind(trans);
+  ThePEG::HandlerBase::rebind(trans);
 }
 
 
 inline IVector ClusterFissioner::getReferences() {
-  IVector ret = Pythia7::HandlerBase::getReferences();
+  IVector ret = ThePEG::HandlerBase::getReferences();
   // ret.push_back(dummy);
   return ret;
 }

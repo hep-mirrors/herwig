@@ -28,18 +28,18 @@
 // 
 
 #include "ShowerConfig.h"
-#include "Pythia7/Pointer/Ptr.h"
-#include "Pythia7/Pointer/ReferenceCounted.h"
-#include "Pythia7/Pointer/PtrTraits.h"
-#include "Pythia7/Pointer/RCPtr.h"
-#include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Pointer/Ptr.h"
+#include "ThePEG/Pointer/ReferenceCounted.h"
+#include "ThePEG/Pointer/PtrTraits.h"
+#include "ThePEG/Pointer/RCPtr.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "ShowerParticle.h"
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class ShowerKinematics: public ReferenceCounted {
 

@@ -14,26 +14,26 @@
 //
 // CLASSDOC SUBSECTION See also:
 //
-// <a href="http:HadronsSelector.html">HadronsSelector.h</a>.
+// <a href="http:HadronSelector.html">HadronSelector.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
-#include "Pythia7/EventRecord/Step.h"
+#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
-#include "Herwig++/Config/GlobalParameters.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
 
 
 namespace Herwig {
 
 
-using namespace Pythia7;
+using namespace ThePEG;
 
   //class Cluster;             // forward declaration
-class Pythia7::Particle;   // forward declaration
+class ThePEG::Particle;   // forward declaration
 
 
-class ClusterDecayer: public Pythia7::HandlerBase {
+class ClusterDecayer: public ThePEG::HandlerBase {
 
 public:
 
@@ -83,10 +83,12 @@ private:
   ClusterDecayer & operator=(const ClusterDecayer &);
   //  Private and non-existent assignment operator.
 
-  void decayIntoTwoHadrons(const StepPtr&, tClusterPtr ptr) 
+public:
+  pair<PPtr,PPtr> decayIntoTwoHadrons(tClusterPtr ptr) 
     throw(Veto, Stop, Exception);
   // It decays the cluster into two hadrons. 
 
+private:
   void calculatePositions( const Lorentz5Momentum &, const LorentzPoint &, 
 			   const Lorentz5Momentum &, const Lorentz5Momentum &,
 			   LorentzPoint &, LorentzPoint &) const;
@@ -109,16 +111,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of ClusterDecayer.
 template <>
 struct BaseClassTrait<Herwig::ClusterDecayer,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::ClusterDecayer>: public ClassTraitsBase<Herwig::ClusterDecayer> {

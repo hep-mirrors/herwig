@@ -7,13 +7,14 @@ using namespace ThePEG;
 vector<KtJet::KtLorentzVector> KtJetInterface::convertToKtVectorList(tPVector &pv) {
   vector<KtLorentzVector> rval;
   for(tPVector::iterator it = pv.begin(); it != pv.end(); it++) {
-    rval.push_back(KtJetInterface::convertToKtVector(*it));
+    //rval.push_back(KtJetInterface::convertToKtVector(*it));
+    rval.push_back(KtJet::KtLorentzVector((*it)->momentum()));
     Kt2PythiaMap[rval.back().getID()] = (*it)->number();
   }
   return rval;
 }
    
-KtLorentzVector KtJetInterface::convertToKtVector(PPtr p) {
+KtLorentzVector KtJetInterface::convertToKtVector(const PPtr &p) {
   return KtJet::KtLorentzVector(p->momentum());
 }
 

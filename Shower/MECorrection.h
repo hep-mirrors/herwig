@@ -28,7 +28,7 @@
 // Notice that:
 // <UL>
 //  <LI> The approach to Matrix Element correction is quite different than <BR>
-//       in Fortran Herwig. In fact, because Pythia7 allows to have more <BR>
+//       in Fortran Herwig. In fact, because ThePEG allows to have more <BR>
 //       processes competing to each other, we allow the basic <I>-&GT;N</I> <BR>
 //       process and the <I>-&GT;N+1</I> one to compete to each other. <BR>
 //       Therefore, in the case that the <I>-&GT;N+1</I> process has been <BR>
@@ -44,7 +44,7 @@
 //       whether the all generated event will be kept or rejected, is described <BR>
 //       in the <!id>KinematicalCut<!!id> object accessible from either <BR> 
 //       <!id>hardProcessME()<!!id> or <!id>decayProcessME()<!!id>.  
-//  <LI> ***LOOKHERE*** We are assuming that in Pythia7 there is a mechanism <BR>
+//  <LI> ***LOOKHERE*** We are assuming that in ThePEG there is a mechanism <BR>
 //       (not yet implemented indeed) which allows to know that for each <BR>
 //       process with M.E. correction, two processes must compete with each <BR>
 //       other: the basic <I>-&GT;N</I> process and the <I>-&GT;N+Jet</I> one.   
@@ -56,20 +56,20 @@
 // <a href="http:DrellYanMECorrection.html">DrellYanMECorrection.h</a>,
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
+#include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
-#include "Herwig++/Config/GlobalParameters.h"
-#include "Pythia7/MatrixElement/MEBase.h"
-#include "Pythia7/PDT/Decayer.h"
-#include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include "ThePEG/MatrixElement/MEBase.h"
+#include "ThePEG/PDT/Decayer.h"
+#include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
-class MECorrection: public Pythia7::HandlerBase {
+class MECorrection: public ThePEG::HandlerBase {
 
 public:
 
@@ -168,16 +168,16 @@ private:
 
 // CLASSDOC OFF
 
-namespace Pythia7 {
+namespace ThePEG {
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // base class of MECorrection.
 template <>
 struct BaseClassTrait<Herwig::MECorrection,1> {
-  typedef Pythia7::HandlerBase NthBase;
+  typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs Pythia7 about the
+// The following template specialization informs ThePEG about the
 // name of this class and the shared object where it is defined.
 template <>
 struct ClassTraits<Herwig::MECorrection>: public ClassTraitsBase<Herwig::MECorrection> {

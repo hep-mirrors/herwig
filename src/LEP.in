@@ -1,11 +1,11 @@
 # This will read in all the standard hadron decay modes and add
-# the new particles that are used in HERWIG 6.4, but not in Pythia7
+# the new particles that are used in HERWIG 6.4, but not in ThePEG
 #read Decays.in
 #
 cd /Defaults/
 set theGlobalParameters:EffectiveGluonMass 0.750*GeV
 set theGlobalParameters:HadronizationScale 0.5*GeV
-set theGlobalParameters:OnOffPythia7StringFragmentationMode 0
+set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
 set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
 set theGlobalParameters:MinVirtuality2 0.1*GeV2
 set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
@@ -14,10 +14,13 @@ cd /Defaults/Handlers/Shower
 set theRhoDMatrixPropagator:OnOffRhoDPropagationMode 0
 set theShowerConstrainer:OnOffMultiScaleShowerMode 0
 set theShowerConstrainer:OnOffDecayBeforeShowerMode 0
+set theShowerConstrainer:qqgPSMode 0
+set theShowerConstrainer:MECorrMode 1
 set theShowerConstrainer:CutoffQCDMassScale 0.75*GeV
 set theShowerConstrainer:CutoffQEDMassScale 0.75*GeV
 set theShowerConstrainer:CutoffEWKMassScale 91.0*GeV
-set theShowerConstrainer:cutoffKinScale 0.4*GeV
+#set theShowerConstrainer:cutoffKinScale 0.75*GeV
+set theShowerConstrainer:cutoffKinScale 2.0*GeV
 set theMECorrections:OnOffMECorrectionMode 0
 set theMECorrections:OnOffComposeMECorrectionMode 0
 set theDrellYanMECorrection:OnOffMECorrectionMode 0
@@ -79,25 +82,27 @@ set theClusterDecayer:ClDir1 1
 set theClusterDecayer:ClDir2 1
 set theClusterDecayer:ClSmr1 0.0
 set theClusterDecayer:ClSmr2 0.0
-set theHadronsSelector:PwtDquark  1.0
-set theHadronsSelector:PwtUquark  1.0
-set theHadronsSelector:PwtSquark  1.0
-set theHadronsSelector:PwtCquark  1.0
-set theHadronsSelector:PwtBquark  1.0
-set theHadronsSelector:PwtDIquark 1.0
-set theHadronsSelector:SngWt      1.0
-set theHadronsSelector:DecWt      1.0
+set theHadronSelector:PwtDquark  1.0
+set theHadronSelector:PwtUquark  1.0
+set theHadronSelector:PwtSquark  1.0
+set theHadronSelector:PwtCquark  1.0
+set theHadronSelector:PwtBquark  1.0
+set theHadronSelector:PwtDIquark 1.0
+set theHadronSelector:SngWt      1.0
+set theHadronSelector:DecWt      1.0
+set theHadronSelector:DKMode 2
 #
 cd /Defaults/Generators
 #set SimpleLEPGenerator:EventHandler:MinWeight 0.2
 set SimpleLEPGenerator:NumberOfEvents 1000000
-#set SimpleLEPGenerator:RandomNumberGenerator:Seed 12345678 
+set SimpleLEPGenerator:RandomNumberGenerator:Seed 31122001
 set SimpleLEPGenerator:DebugLevel 1
-set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:PrintEvent 1000
 set SimpleLEPGenerator:MaxErrors 100
-set SimpleLEPGenerator:Strategy /Defaults/Pythia7Strategy
+set SimpleLEPGenerator:Strategy /Defaults/ThePEGStrategy
 set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
-set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+#set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
+set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 set /Defaults/Particles/Z0:NominalMass 92
 #
 saverun LEP SimpleLEPGenerator

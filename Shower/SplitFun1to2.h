@@ -21,15 +21,15 @@
 // 
 
 #include "SplitFun.h"
-#include "Pythia7/PDT/ParticleData.h"
-#include "Pythia7/PDT/EnumParticles.h"
+#include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/PDT/EnumParticles.h"
 //#include "ShowerColourLine.h"
-#include "Pythia7/EventRecord/ColourLine.h"
+#include "ThePEG/EventRecord/ColourLine.h"
 
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 
 class SplitFun1to2: public SplitFun {
 
