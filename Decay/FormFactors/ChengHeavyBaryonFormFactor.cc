@@ -205,14 +205,13 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
    Vfact *=Vfact;
    double Afact = (1.-delta*delta/mA/mA)/(1.-q2/mA/mA);
    Afact *=Afact;
-   Energy msum=m0+m1;
    g1v = _f1[iloc]*Vfact;
-   g2v = _f2[iloc]*Vfact*msum;
-   g3v = _f3[iloc]*Vfact*msum*msum;
+   g2v = _f2[iloc]*Vfact;
+   g3v = _f3[iloc]*Vfact;
    g4v = 0.;
    g1a =-_g1[iloc]*Afact;
-   g2a =-_g2[iloc]*Afact*msum;
-   g3a =-_g3[iloc]*Afact*msum*msum;
+   g2a =-_g2[iloc]*Afact;
+   g3a =-_g3[iloc]*Afact;
    g4a = 0.;
 }
 
