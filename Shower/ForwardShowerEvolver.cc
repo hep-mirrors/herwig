@@ -73,9 +73,10 @@ timeLikeShower( tPartCollHdlPtr ch,
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << endl 
-		       << "ForwardShowerEvolver::timeLikeShower "
-		       << " ===> START DEBUGGING <=== "
-		       << "EventNumber = " << generator()->currentEventNumber() << endl; 
+		       << "ForwardShowerEvolver::timeLikeShower() Evt #"
+		       << generator()->currentEventNumber() 
+		       << "\t full __________________________"
+		       << endl; 
   }
 
   if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower 
@@ -94,7 +95,9 @@ timeLikeShower( tPartCollHdlPtr ch,
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
       generator()->log() << "-- Yet " <<  particlesYetToShower.size() + 1
-			 << ". next " << part->data().PDGName() << endl; 
+			 << ". next " << part->data().PDGName() 
+	//			 << " [" << part->number() << "]"
+			 << endl; 
     }
 
     if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower
@@ -111,7 +114,7 @@ timeLikeShower( tPartCollHdlPtr ch,
       if ( pairShowerKinSudakov.first && pairShowerKinSudakov.second ) {
 	generator()->log() << "  branching (int, Q_i -> Q_f) = (" 
 			   << pairShowerKinSudakov.second->splitFun()->interactionType()
-			   << ", " 
+			   << "  " 
 			   << part->evolutionScales()[pairShowerKinSudakov.second->splitFun()->interactionType()]
 			   << " -> " 
 			   << pairShowerKinSudakov.first->qtilde()
@@ -127,7 +130,7 @@ timeLikeShower( tPartCollHdlPtr ch,
 	 pairShowerKinSudakov.second == tSudakovFormFactorPtr() ) {
 
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	generator()->log() << "-- no further splitting, rhoD propagtion should start here."
+	generator()->log() << "-- no further splitting."
 			   << endl;
       }
       if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower 
@@ -286,51 +289,51 @@ timeLikeShower( tPartCollHdlPtr ch,
 	  } // for 		  
 	} // debug full 
 
-	if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Shower ) {      
-	  generator()->log() << "  full colour information: " << endl
-			     << "  parent = " << part
-			     << ", " << part->data().PDGName() << endl
-			     << "  colourLines = [" 
-			     << part->colourLine() << ", " 
-			     << part->antiColourLine() << "]" << endl 
-			     << "    in colour = ["
-			     << part->incomingColour() << ", " 
-			     << part->incomingAntiColour() << "]" << endl 
-			     << "   out colour = ["
-			     << part->outgoingColour() << ", " 
-			     << part->outgoingAntiColour() << "]" << endl 
-			     << "   neighbours = ["
-			     << part->colourNeighbour() << ", " 
-			     << part->antiColourNeighbour() << "]" << endl
-			     << "  child1 = " << showerProduct1 
-			     << ", " << showerProduct1->data().PDGName() << endl
-			     << "  colourLines = [" 
-			     << showerProduct1->colourLine() << ", " 
-			     << showerProduct1->antiColourLine() << "]" << endl 
-			     << "    in colour = ["
-			     << showerProduct1->incomingColour() << ", " 
-			     << showerProduct1->incomingAntiColour() << "]" << endl 
-			     << "   out colour = ["
-			     << showerProduct1->outgoingColour() << ", " 
-			     << showerProduct1->outgoingAntiColour() << "]" << endl 
-			     << "   neighbours = ["
-			     << showerProduct1->colourNeighbour() << ", " 
-			     << showerProduct1->antiColourNeighbour() << "]" << endl
-			     << "  child2 = " << showerProduct2 
-			     << ", " << showerProduct2->data().PDGName() << endl
-			     << "  colourLines = [" 
-			     << showerProduct2->colourLine() << ", " 
-			     << showerProduct2->antiColourLine() << "]" << endl 
-			     << "    in colour = ["
-			     << showerProduct2->incomingColour() << ", " 
-			     << showerProduct2->incomingAntiColour() << "]" << endl 
-			     << "   out colour = ["
-			     << showerProduct2->outgoingColour() << ", " 
-			     << showerProduct2->outgoingAntiColour() << "]" << endl 
-			     << "   neighbours = ["
-			     << showerProduct2->colourNeighbour() << ", " 
-			     << showerProduct2->antiColourNeighbour() << "]" << endl;
-	} // extreme
+// 	if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Shower ) {      
+// 	  generator()->log() << "  full colour information: " << endl
+// 			     << "  parent = " << part
+// 			     << ", " << part->data().PDGName() << endl
+// 			     << "  colourLines = [" 
+// 			     << part->colourLine() << ", " 
+// 			     << part->antiColourLine() << "]" << endl 
+// 			     << "    in colour = ["
+// 			     << part->incomingColour() << ", " 
+// 			     << part->incomingAntiColour() << "]" << endl 
+// 			     << "   out colour = ["
+// 			     << part->outgoingColour() << ", " 
+// 			     << part->outgoingAntiColour() << "]" << endl 
+// 			     << "   neighbours = ["
+// 			     << part->colourNeighbour() << ", " 
+// 			     << part->antiColourNeighbour() << "]" << endl
+// 			     << "  child1 = " << showerProduct1 
+// 			     << ", " << showerProduct1->data().PDGName() << endl
+// 			     << "  colourLines = [" 
+// 			     << showerProduct1->colourLine() << ", " 
+// 			     << showerProduct1->antiColourLine() << "]" << endl 
+// 			     << "    in colour = ["
+// 			     << showerProduct1->incomingColour() << ", " 
+// 			     << showerProduct1->incomingAntiColour() << "]" << endl 
+// 			     << "   out colour = ["
+// 			     << showerProduct1->outgoingColour() << ", " 
+// 			     << showerProduct1->outgoingAntiColour() << "]" << endl 
+// 			     << "   neighbours = ["
+// 			     << showerProduct1->colourNeighbour() << ", " 
+// 			     << showerProduct1->antiColourNeighbour() << "]" << endl
+// 			     << "  child2 = " << showerProduct2 
+// 			     << ", " << showerProduct2->data().PDGName() << endl
+// 			     << "  colourLines = [" 
+// 			     << showerProduct2->colourLine() << ", " 
+// 			     << showerProduct2->antiColourLine() << "]" << endl 
+// 			     << "    in colour = ["
+// 			     << showerProduct2->incomingColour() << ", " 
+// 			     << showerProduct2->incomingAntiColour() << "]" << endl 
+// 			     << "   out colour = ["
+// 			     << showerProduct2->outgoingColour() << ", " 
+// 			     << showerProduct2->outgoingAntiColour() << "]" << endl 
+// 			     << "   neighbours = ["
+// 			     << showerProduct2->colourNeighbour() << ", " 
+// 			     << showerProduct2->antiColourNeighbour() << "]" << endl;
+// 	} // extreme
 
 	if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower       
 	     && generator()->currentEventNumber() < 1000) {
@@ -351,11 +354,11 @@ timeLikeShower( tPartCollHdlPtr ch,
       
   } while ( ! particlesYetToShower.empty() );
     
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "ForwardShowerEvolver::timeLikeShower "
-		       << " ===> END DEBUGGING <=== " 
-		       << endl;
-  }
+//   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+//     generator()->log() << "ForwardShowerEvolver::timeLikeShower "
+// 		       << " ===> END DEBUGGING <=== " 
+// 		       << endl;
+//   }
   
   return hasEmitted;
   

@@ -24,13 +24,7 @@ double QtoQGammaSplitFun::fullFun( const double z, const Energy2 qtilde2, const 
 
 
 double QtoQGammaSplitFun::integratedFun( const double z, const Energy2 qtilde2) {
-
-  double val = 0.0;
-
-  //***LOOKHERE*** WRITE THE CODE FOR THE LEADING ORDER Q->QGamma
-  
-  return val;
-
+  return (1. + sqr(z))/(1.-z); 
 }
 
 
@@ -56,6 +50,22 @@ double QtoQGammaSplitFun::integratedFunWithHelicities( const double z, const Ene
 }
 
 
+double QtoQGammaSplitFun::overestimateIntegratedFun( const double z ) {
+  return 2./(1.-z); 
+}
+
+
+double QtoQGammaSplitFun::integOverIntegratedFun(const double z) {
+  return -2.*log(1.-z); 
+}
+
+
+double QtoQGammaSplitFun::invIntegOverIntegratedFun(const double r) {
+  return 1. - exp(-r/2.); 
+}
+
+
+
 void QtoQGammaSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
 					  ShoColinePair & firstProductShoColinePair,
 					  ShoColinePair & secondProductShoColinePair ) {
@@ -66,6 +76,7 @@ void QtoQGammaSplitFun::colourConnection( const ShoColinePair & parentShoColineP
     return;
   }
   
+  // second should be Gamma, doesn't get colour, of course. 
   firstProductShoColinePair = parentShoColinePair;
   secondProductShoColinePair = ShoColinePair();
 

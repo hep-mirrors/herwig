@@ -44,6 +44,10 @@ public:
   // <!id>z<!!id> variable, <!id>phi<!!id> azimuthal angle, and 
   // helicities of the three particles.
 
+  virtual double overestimateIntegratedFun( const double z ); 
+  virtual double integOverIntegratedFun(const double z); 
+  virtual double invIntegOverIntegratedFun(const double r); 
+
   virtual void colourConnection( const ShoColinePair & parentShoColinePair,
 				 ShoColinePair & firstProductShoColinePair,
 				 ShoColinePair & secondProductShoColinePair );

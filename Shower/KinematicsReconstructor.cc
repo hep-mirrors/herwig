@@ -60,8 +60,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
   throw (Veto, Stop, Exception) {
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "KinematicsReconstructor::reconstructHardJets: "
-		       << " ===> START DEBUGGING <=== " << endl;
+    generator()->log() << "KinematicsReconstructor::reconstructHardJets: full _____________________________"<< endl; 
   }
   
   //***LOOKHERE***  First, treat the initial state, as follows.
@@ -259,8 +258,8 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
       generator()->log() << "  ok!" 
 			 << endl;      
     }
-    generator()->log() << "KinematicsReconstructor::reconstructHardJets: "
-		       << " ===> END DEBUGGING <=== " << endl;
+//     generator()->log() << "KinematicsReconstructor::reconstructHardJets: "
+// 		       << " ===> END DEBUGGING <=== " << endl;
   }
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower 
@@ -311,10 +310,10 @@ void KinematicsReconstructor::reconstructDecayJets( const MapShower & mapShowerD
 bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr particleJetParent ) {
   bool isOK = true;
   
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: "
-		       << " ===> START DEBUGGING <=== " << endl;
-  }
+//   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+//     generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: "
+// 		       << " ===> START DEBUGGING <=== " << endl;
+//   }
 
   //***LOOKHERE*** Following the tree of children and grand-children of the 
   //               particleJetParent, find the "reconstruction fixed points"
@@ -346,11 +345,12 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr p
     // it is a reconstruction fixpoint, ie kinematical data has to be available 
     // check this    
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-      generator()->log() << "  * found fixpoint: "
+      generator()->log() << "KinematicsReconstructor::recTLJet: ";
+      generator()->log() << "fixpoint: "
 			 << particleJetParent->data().PDGName()
-			 << ", gets m = " 
+			 << ", m = " 
 			 << particleJetParent->momentum().mass()
-			 << " #children = " 
+			 << " #ch = " 
 			 << particleJetParent->children().size()
 			 << endl;
     }
@@ -369,20 +369,21 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr p
     particleJetParent->showerKinematics()
       ->updateParent( particleJetParent, particleJetParent->children() );      
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-      generator()->log() << "  * reconstruct "
+      generator()->log() << "KinematicsReconstructor::recTLJet: ";
+      generator()->log() << "recon "
 			 << particleJetParent->data().PDGName()
-			 << ", gets sqrt(q2) = " 
+			 << ", sqrt(q2) = " 
 			 << particleJetParent->momentum().m()
-			 << " #children = " 
+			 << " #ch = " 
 			 << particleJetParent->children().size()
 			 << endl;
     }
   }
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-	generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: "
-			   << " ===> END DEBUGGING <=== " << endl;
-  }
+//   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+// 	generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: "
+// 			   << " ===> END DEBUGGING <=== " << endl;
+//   }
 
   return isOK;
 }
@@ -435,8 +436,7 @@ const double KinematicsReconstructor::solveKfactor( const Energy & root_s,
   Energy2 s = sqr(root_s);
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
-    generator()->log() << "KinematicsReconstructor::solveKFactor: "
-		       << "==> start debugging <== " << endl;
+    generator()->log() << "KinematicsReconstructor::solveKFactor: extreme _________________________________" << endl;
   }
 
   if ( jets.size() < 2) { 
@@ -474,9 +474,9 @@ const double KinematicsReconstructor::solveKfactor( const Energy & root_s,
       }
     } else {
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
-	generator()->log() << "  Warning! can't find a k! return -1!" << endl 
-			   << "KinematicsReconstructor::solveKFactor: "
-			   << "==> end debugging <== " << endl;
+	generator()->log() << "  Warning! can't find a k! return -1!" << endl; 
+// 			   << "KinematicsReconstructor::solveKFactor: "
+// 			   << "==> end debugging <== " << endl;
       }
       return -1.; 
     }
@@ -509,10 +509,10 @@ const double KinematicsReconstructor::solveKfactor( const Energy & root_s,
 			     << endl; 
 	} 
 	if( momConsEq( k2, root_s, jets ) == 0. ) {
-	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
-	    generator()->log() << "KinematicsReconstructor::solveKFactor: "
-			       << "==> end debugging <== " << endl;
-	  }
+// 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
+// 	    generator()->log() << "KinematicsReconstructor::solveKFactor: "
+// 			       << "==> end debugging <== " << endl;
+// 	  }
 	  return k2; 
 	} else {
 	  k = (k1+k2)/2.;
@@ -523,16 +523,16 @@ const double KinematicsReconstructor::solveKfactor( const Energy & root_s,
 	  } 
 	}
       } 
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
-	generator()->log() << "KinematicsReconstructor::solveKFactor: "
-			   << "==> end debugging <== " << endl;
-      }
+//       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
+// 	generator()->log() << "KinematicsReconstructor::solveKFactor: "
+// 			   << "==> end debugging <== " << endl;
+//       }
       return k1; 	  
     } else {
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
-	generator()->log() << "  Warning! haven't found a k! return -1!" << endl 
-			   << "KinematicsReconstructor::solveKFactor: "
-			   << "==> end debugging <== " << endl;
+	generator()->log() << "  Warning! haven't found a k! return -1!" << endl; 
+// 			   << "KinematicsReconstructor::solveKFactor: "
+// 			   << "==> end debugging <== " << endl;
       }
       return -1.; 
     }
@@ -644,8 +644,7 @@ solveBoost( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentu
     Lorentz5Momentum test = newq;     
     qprime = qprime - (R*test);  
 
-    generator()->log() << "KinematicsReconstructor::solveBoost: "
-		       << "==> start debugging <== " << endl;
+    generator()->log() << "KinematicsReconstructor::solveBoost full _______________________________________"<< endl; 
     if (k>1. || k<0) 
       generator()->log() << "  Warning! invalid k!"<< endl; 
     generator()->log() << "  Rotate around " << ax/ax.mag() 
@@ -661,8 +660,8 @@ solveBoost( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentu
       generator()->log() << " ok!" 
 			 << endl;      
     }    
-    generator()->log() << "KinematicsReconstructor::solveBoost: "
-		       << "==> end debugging <== " << endl;
+//     generator()->log() << "KinematicsReconstructor::solveBoost: "
+// 		       << "==> end debugging <== " << endl;
   }
   return R;
 }

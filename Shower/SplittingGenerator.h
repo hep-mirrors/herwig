@@ -117,6 +117,10 @@ public:
   inline const tShowerAlphaPtr pointerFS_ShowerAlphaQCD() const;
   // Access to the Initial and Final State Radiation QCD running alphas.
 
+  inline const tShowerAlphaPtr pointerIS_ShowerAlphaQED() const;
+  inline const tShowerAlphaPtr pointerFS_ShowerAlphaQED() const;
+  // Access to the QED coupling (a bit too complicated for my taste...)
+
   inline const ShoConstrPtr & pointerShowerConstrainer() const;
   // Access to the ShowerConstrainer (maybe is not needed).
 
@@ -155,6 +159,14 @@ public:
   // corresponding interaction switch (see method <!id>isInteractionON<!!id>) is off. 
   // ***LOOKHERE*** Similar switches should be defined for Q->QGamma and
   //                other splitting functions. 
+
+  // such as these 
+  inline bool isUtoUGammasplittingON() const;  
+  inline bool isDtoDGammasplittingON() const;  
+  inline bool isStoSGammasplittingON() const;  
+  inline bool isCtoCGammasplittingON() const;  
+  inline bool isBtoBGammasplittingON() const;  
+  inline bool isTtoTGammasplittingON() const;  
 
 public:
 
@@ -228,9 +240,18 @@ private:
   int _GtoCCbarsplittingMode;
   int _GtoBBbarsplittingMode;
   int _GtoTTbarsplittingMode;  
+  // new switches
+  int _UtoUGammasplittingMode;  
+  int _DtoDGammasplittingMode;  
+  int _StoSGammasplittingMode;  
+  int _CtoCGammasplittingMode;  
+  int _BtoBGammasplittingMode;  
+  int _TtoTGammasplittingMode;  
 
   ShowerAlphaPtr _pointerIS_ShowerAlphaQCD;
   ShowerAlphaPtr _pointerFS_ShowerAlphaQCD;
+  ShowerAlphaPtr _pointerIS_ShowerAlphaQED;
+  ShowerAlphaPtr _pointerFS_ShowerAlphaQED;
   ShoConstrPtr _pointerShowerConstrainer;
    
   typedef multimap<ShowerIndex,SudakovFormFactorPtr> CollecIndexSudakov;

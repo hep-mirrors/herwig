@@ -85,15 +85,15 @@ Energy2 SudakovFormFactor::guesst (Energy2 t0, Energy2 t1) {
   double z0, z1; 
   z0 = sqrt(t0/t1); 
   z1 = 1.-sqrt(t0/t1); 
-  cerr << "(t1, G(z0), G(z1), as(Q02), exponent) = (" 
-       << t1 << ", " 
-       << sF->integOverIntegratedFun(z1) << ", "
-       << sF->integOverIntegratedFun(z0) << ", "
-       << _alpha->overestimateValue()/(2.*pi) << ", "
-       << 1./( (sF->integOverIntegratedFun(z1) -
-		sF->integOverIntegratedFun(z0))* 
-	       _alpha->overestimateValue()/(2.*pi) ) 
-       << ")" << endl; 
+//   cerr << "(t1, G(z0), G(z1), as(Q02), exponent) = (" 
+//        << t1 << ", " 
+//        << sF->integOverIntegratedFun(z1) << ", "
+//        << sF->integOverIntegratedFun(z0) << ", "
+//        << _alpha->overestimateValue()/(2.*pi) << ", "
+//        << 1./( (sF->integOverIntegratedFun(z1) -
+// 		sF->integOverIntegratedFun(z0))* 
+// 	       _alpha->overestimateValue()/(2.*pi) ) 
+//        << ")" << endl; 
   return t1*pow( UseRandom::rnd(), 
 		 1./( (sF->integOverIntegratedFun(z1) -
 		       sF->integOverIntegratedFun(z0))* 
@@ -126,13 +126,13 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     z = guessz(z0, z1); 
     t = guesst(mc2, told); 
 
-    cerr << "(mc2, told | z0, z, z1 | t) = ("
-	 << mc2/GeV2 << ", "
-	 << told/GeV2 << " | "
-	 << z0 << ", "
- 	 << z << ", "
-	 << z1 << " | "
-	 << t/GeV2 << ")" << endl; 
+//     cerr << "(mc2, told | z0, z, z1 | t) = ("
+// 	 << mc2/GeV2 << ", "
+// 	 << told/GeV2 << " | "
+// 	 << z0 << ", "
+//  	 << z << ", "
+// 	 << z1 << " | "
+// 	 << t/GeV2 << ")" << endl; 
 
     // actual values for z-limits
     z0 = sqrt(mc2/t); 
@@ -206,9 +206,9 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
 
   } while (veto); 
 
-  cerr << "---> accepted (t, z) = (" 	 
-       << t << ", "
-       << z << ")" << endl; 
+//   cerr << "---> accepted (t, z) = (" 	 
+//        << t << ", "
+//        << z << ")" << endl; 
 
   root_t = sqrt(t);
 

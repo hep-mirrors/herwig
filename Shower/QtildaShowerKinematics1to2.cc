@@ -65,9 +65,7 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) {
   }  
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "QtildaShowerKinematics1to2::sudakov2Momentum(): " 
-			    << "==> start <==="
-			    << endl;  
+    CurrentGenerator::log() << "QtildaShowerKinematics1to2::sudakov2Momentum(): extreme ________________________" << endl;  
   }
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
@@ -207,11 +205,11 @@ sudakov2Momentum(double alpha, double beta, Energy px, Energy py) {
 			    << endl; 
   }
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "QtildaShowerKinematics1to2::sudakov2Momentum(): " 
-			    << "==> end <==="
-			    << endl;  
-  }
+//   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+//     CurrentGenerator::log() << "QtildaShowerKinematics1to2::sudakov2Momentum(): " 
+// 			    << "==> end <==="
+// 			    << endl;  
+//   }
 
   return dq; 
   

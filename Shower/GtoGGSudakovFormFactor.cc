@@ -30,9 +30,9 @@ Energy GtoGGSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch,
     _z = UseRandom::rnd(); 
   } else {
     //    get_qz(true, -1.1, .15, max(750.*MeV, splitFun()->massEmitter()), startingScale, _q, _z); 
-    cerr << "GtoGG Sudakov called with t0 = " 
-	 << sqr(startingScale)/GeV2 << "GeV2, q0 = " 
-	 << startingScale/GeV << "GeV"<< endl; 
+//     cerr << "GtoGG Sudakov called with t0 = " 
+// 	 << sqr(startingScale)/GeV2 << "GeV2, q0 = " 
+// 	 << startingScale/GeV << "GeV"<< endl; 
     gettz(startingScale, _q, _z);
   }
   _phi = 2.*pi*UseRandom::rnd();

@@ -104,9 +104,9 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
   throw (Veto, Stop, Exception) {
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "InsideRangeShowerEvolver::showerNormally "
-		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() 
+    generator()->log() << "InsideRangeShowerEvolver::showerNormally(): Evt #" 
+		       << generator()->currentEventNumber() 
+		       << "\t _______________________"
 		       << endl;
   }
 
@@ -180,11 +180,11 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
       reconstructed = true;     
     }
     
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << "InsideRangeShowerEvolver::showerNormally "
-			 << " ===> END DEBUGGING <=== " 
-			 << endl;
-    }
+//     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+//       generator()->log() << "InsideRangeShowerEvolver::showerNormally "
+// 			 << " ===> END DEBUGGING <=== " 
+// 			 << endl;
+//     }
   }
 }
 
@@ -302,12 +302,12 @@ void InsideRangeShowerEvolver::setEffectiveGluonMass( const Energy effectiveGluo
 						      const ShowerParticleVector & particles ) 
   throw (Veto, Stop, Exception) {
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "InsideRangeShowerEvolver::setEffectiveGluonMass "
-		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() 
-		       << endl;
-  }
+//   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+//     generator()->log() << "InsideRangeShowerEvolver::setEffectiveGluonMass "
+// 		       << " ===> START DEBUGGING <=== "
+// 		       << "   EventNumber=" << generator()->currentEventNumber() 
+// 		       << endl;
+//   }
 
   for(ShowerParticleVector::const_iterator pit = particles.begin(); 
       pit != particles.end(); ++pit) {   
@@ -332,11 +332,11 @@ void InsideRangeShowerEvolver::setEffectiveGluonMass( const Energy effectiveGluo
   //                 }
   //               }
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "InsideRangeShowerEvolver::setEffectiveGluonMass "
-		       << " ===> END DEBUGGING <=== " 
-		       << endl;
-  }
+//   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+//     generator()->log() << "InsideRangeShowerEvolver::setEffectiveGluonMass "
+// 		       << " ===> END DEBUGGING <=== " 
+// 		       << endl;
+//   }
 
 }
 

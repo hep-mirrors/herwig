@@ -31,7 +31,13 @@ inline SplittingGenerator::SplittingGenerator()
     _GtoSSbarsplittingMode( 1 ),
     _GtoCCbarsplittingMode( 1 ),
     _GtoBBbarsplittingMode( 1 ),
-    _GtoTTbarsplittingMode( 1 )
+    _GtoTTbarsplittingMode( 1 ),
+    _UtoUGammasplittingMode( 1 ),
+    _DtoDGammasplittingMode( 1 ),
+    _StoSGammasplittingMode( 1 ),
+    _CtoCGammasplittingMode( 1 ),
+    _BtoBGammasplittingMode( 1 ),
+    _TtoTGammasplittingMode( 1 )
 {}
 
 
@@ -61,8 +67,16 @@ inline SplittingGenerator::SplittingGenerator(const SplittingGenerator & x)
   _GtoCCbarsplittingMode( x._GtoCCbarsplittingMode ),
   _GtoBBbarsplittingMode( x._GtoBBbarsplittingMode ),
   _GtoTTbarsplittingMode( x._GtoTTbarsplittingMode ),
+  _UtoUGammasplittingMode( x._UtoUGammasplittingMode ),
+  _DtoDGammasplittingMode( x._DtoDGammasplittingMode ),
+  _StoSGammasplittingMode( x._StoSGammasplittingMode ),
+  _CtoCGammasplittingMode( x._CtoCGammasplittingMode ),
+  _BtoBGammasplittingMode( x._BtoBGammasplittingMode ),
+  _TtoTGammasplittingMode( x._TtoTGammasplittingMode ),
   _pointerIS_ShowerAlphaQCD( x._pointerIS_ShowerAlphaQCD ),
   _pointerFS_ShowerAlphaQCD( x._pointerFS_ShowerAlphaQCD ),
+  _pointerIS_ShowerAlphaQED( x._pointerIS_ShowerAlphaQED ),
+  _pointerFS_ShowerAlphaQED( x._pointerFS_ShowerAlphaQED ),
   _pointerShowerConstrainer( x._pointerShowerConstrainer )
 {}
 
@@ -73,6 +87,14 @@ inline const tShowerAlphaPtr SplittingGenerator::pointerIS_ShowerAlphaQCD() cons
 
 inline const tShowerAlphaPtr SplittingGenerator::pointerFS_ShowerAlphaQCD() const {
   return _pointerFS_ShowerAlphaQCD;
+}
+
+inline const tShowerAlphaPtr SplittingGenerator::pointerIS_ShowerAlphaQED() const {
+  return _pointerIS_ShowerAlphaQED;
+}
+
+inline const tShowerAlphaPtr SplittingGenerator::pointerFS_ShowerAlphaQED() const {
+  return _pointerFS_ShowerAlphaQED;
 }
 
 
@@ -140,6 +162,30 @@ inline bool SplittingGenerator::isGtoBBbarsplittingON() const {
   
 inline bool SplittingGenerator::isGtoTTbarsplittingON() const {
   return ( isInteractionON( ShowerIndex::QCD ) && _GtoTTbarsplittingMode );
+}
+  
+inline bool SplittingGenerator::isUtoUGammasplittingON() const {
+  return ( isInteractionON( ShowerIndex::QED ) && _UtoUGammasplittingMode );
+}
+  
+inline bool SplittingGenerator::isDtoDGammasplittingON() const {
+  return ( isInteractionON( ShowerIndex::QED ) && _DtoDGammasplittingMode );
+}
+  
+inline bool SplittingGenerator::isStoSGammasplittingON() const {
+  return ( isInteractionON( ShowerIndex::QED ) && _StoSGammasplittingMode );
+}
+  
+inline bool SplittingGenerator::isCtoCGammasplittingON() const {
+  return ( isInteractionON( ShowerIndex::QED ) && _CtoCGammasplittingMode );
+}
+  
+inline bool SplittingGenerator::isBtoBGammasplittingON() const {
+  return ( isInteractionON( ShowerIndex::QED ) && _BtoBGammasplittingMode );
+}
+  
+inline bool SplittingGenerator::isTtoTGammasplittingON() const {
+  return ( isInteractionON( ShowerIndex::QED ) && _TtoTGammasplittingMode );
 }
   
 

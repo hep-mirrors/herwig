@@ -27,7 +27,7 @@ double QtoQGSplitFun::integratedFun( const double z, const Energy2 qtilde2 ) {
 
   Energy2 m2 = sqr(massEmitter()); 
 
-  m2 = 0;  // ***ACHTUNG*** generally neq 0!
+  // m2 = 0;  // ***ACHTUNG*** generally neq 0!
 
   double val = 4./3.*(1. + sqr(z) - 2.*m2/(qtilde2*z))/(1.-z);
 

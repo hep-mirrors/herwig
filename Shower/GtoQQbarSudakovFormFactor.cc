@@ -30,9 +30,9 @@ Energy GtoQQbarSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch,
     _z = UseRandom::rnd(); 
   } else {
     //    get_qz(false, -1.1, .3, max(.75*GeV, splitFun()->massEmitter()), startingScale, _q, _z); 
-    cerr << "GtoQQbar Sudakov called with q0^2 = " 
-	 << sqr(startingScale)/GeV2 << "GeV2, q0 = " 
-	 << startingScale/GeV << "GeV"<< endl; 
+//     cerr << "GtoQQbar Sudakov called with t0 = " 
+// 	 << sqr(startingScale)/GeV2 << "GeV2, q0 = " 
+// 	 << startingScale/GeV << "GeV"<< endl; 
     gettz(startingScale, _q, _z);
   }
   _phi = 2.*pi*UseRandom::rnd();

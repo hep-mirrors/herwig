@@ -151,8 +151,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
   
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "PartnerFinder::debuggingInfo "
-		       << " ===> START DEBUGGING <=== " << endl;
+    generator()->log() << "PartnerFinder::debuggingInfo full ______________________________________________" << endl;
     // To have a nice output, it is convenient to define two maps.
     // One numbers the ShowerParticles objects from 1; the other,
     // numbers the ShowerColourLine object from 501 (just to avoid
@@ -206,8 +205,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
                            << "\t \t Partner = " << numShoPartner << endl; 
       }
     }
-    generator()->log() << "PartnerFinder::debuggingInfo "
-		       << " ===> END DEBUGGING <=== " << endl;
+//     generator()->log() << "PartnerFinder::debuggingInfo "
+// 		       << " ===> END DEBUGGING <=== " << endl;
   }
   
   return isOK;
@@ -230,6 +229,17 @@ bool PartnerFinder::setQEDInitialEvolutionScales( const tShoConstrPtr showerCons
   //                    particle2->evolutionScales()[ ShowerIndex::QED ] = scale; 
   //                    particle1->partners()[ ShowerIndex::QED ] = particle2; 
   //                    particle2->partners()[ ShowerIndex::QED ] = particle1; 
+
+  // ***ACHTUNG!*** just copy the scales and partners from the QCD method 
+  // in order to test the possibility of multiple interactions that compete in the 
+  // shower.  The partners have to be determined according to some physical 
+  // idea, i.e. they should be CHARGE partners and not colour partners. 
+
+  for ( ShowerParticleVector::const_iterator cit = particles.begin(); 
+	cit != particles.end(); ++cit ) {
+    (*cit)->setEvolutionScale(ShowerIndex::QED, (*cit)->evolutionScales()[ ShowerIndex::QCD ]); 
+    (*cit)->setPartner(ShowerIndex::QED, (*cit)->partners()[ ShowerIndex::QCD ]); 
+  }
 
   return isOK;
 }
@@ -273,14 +283,14 @@ calculateInitialEvolutionScales( const pair<tShowerParticlePtr,tShowerParticlePt
   
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "PartnerFinder::calculateInitialEvolutionScales " << endl
-		       << "\t first  : " << particlePair.first->data().PDGName() 
+    generator()->log() << "PartnerFinder::calculateInitialEvolutionScales full ____________________________" << endl
+		       << "\t first:   " << particlePair.first->data().PDGName() 
                        << "\t p = " << particlePair.first->momentum() << endl
-		       << "\t second : " << particlePair.second->data().PDGName() 
+		       << "\t second:  " << particlePair.second->data().PDGName() 
                        << "\t p = " << particlePair.second->momentum() << endl
                        << "\t angle = " << angle 
-		       << "\t firstQ = " << firstQ / GeV 
-		       << "\t secondQ = " << secondQ / GeV << "  (GeV) " << endl;
+		       << ", firstQ = " << firstQ / GeV 
+		       << " GeV, secondQ = " << secondQ / GeV << " GeV " << endl;
   }
   
   return pair<Energy,Energy>(firstQ, secondQ);

@@ -88,9 +88,9 @@ void ShowerHandler::cascade() {
 
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "ShowerHandler::debuggingInfo "
-		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() << endl;
+    generator()->log() << "ShowerHandler::debuggingInfo() Evt #" << generator()->currentEventNumber() 
+		       << "\t _______________________________________" << endl; 
+		      
   }
 
   tPartCollHdlPtr ch = collisionHandler();
@@ -400,7 +400,7 @@ createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch,
 	  cit != hardProcessParticles.end(); ++cit ) {
       generator()->log() << "\t" << (**cit).data().PDGName() 
 			 << "  p=" << (**cit).momentum()
-			 << ( (**cit).isFinalState() ? "   OUTGOING" : "   INCOMING" )
+			 << ( (**cit).isFinalState() ? ", out" : ", in" )
 			 << endl;
     }
   }  
@@ -462,40 +462,43 @@ void ShowerHandler::fillPositions() {
 
 
 void ShowerHandler::debuggingInfo() {
-
+  
+  if ( generator()->currentEventNumber() < 1000 )
+    generator()->log() << "ShowerHandler::debuggingInfo(): ________________________________________________" << endl; 
   if ( generator()->currentEventNumber() == 1 ) {
     // Preliminary information to print only once.
-    generator()->log() << " --- Info for GlobalParameters  --- " << endl
-		       << "\t isOnStringFrag = " 
+    generator()->log() << "  Info for GlobalParameters:" << endl
+		       << "  isOnStringFrag = " 
 		       << ( _pointerGlobalParameters->isPythia7StringFragmentationON() ? 
-			    "YES" : "NO" )
-		       << "   effective gluon mass = " 
+			    "YES" : "NO" ) 
+		       << endl
+		       << "  effective gluon mass = " 
 		       << _pointerGlobalParameters->effectiveGluonMass() / GeV 
-		       << "   hadronization scale = " 
+		       << endl
+		       << "  hadronization scale = " 
 		       << _pointerGlobalParameters->hadronizationScale() / GeV 
 		       << "  [GeV] " << endl
-		       << " --- Info for ShowerConstrainer --- " << endl
-		       << "\t SWITCHES :  multi-scale = " 
+		       << "  Info for ShowerConstrainer: " << endl
+		       << "  switches:  multi-scale = " 
 		       << _pointerShowerConstrainer->isMultiScaleShowerON()
-		       << "   decay before = " 
+		       << ", decay before = " 
 		       << _pointerShowerConstrainer->isDecayBeforeShowerON() 
-		       << "   gluino? = " 
+		       << ", gluino? = " 
 		       << ( _pointerShowerConstrainer->hasToDecayBeforeShower(1000021) ? 
-			    " YES " : " NO " )  
+			    "Y" : "N" )  
 		       << endl
-		       << "\t PARAMETERS : cutoff :  QCD = "
+		       << "  cutoff-parameters:  QCD = "
 		       << _pointerShowerConstrainer->cutoffMassScale(ShowerIndex::QCD) / GeV 
-		       << "   QED = "  
+		       << ", QED = "  
 		       << _pointerShowerConstrainer->cutoffMassScale(ShowerIndex::QED) / GeV 
-		       << "   EWK = "  
+		       << ", EWK = "  
 		       << _pointerShowerConstrainer->cutoffMassScale(ShowerIndex::EWK) / GeV 
-		       << "   [GeV] " 
+		       << " [GeV] " 
 		       << endl; 
   }
 
   if ( generator()->currentEventNumber() < 1000 )
-    generator()->log() << "--- Shower finished - summary ---" << endl;
-
+    generator()->log() << "  Shower finished - summary:" << endl;
   
   // stuff that goes to STDOUT comes here:
   if ( generator()->currentEventNumber() < 1000 )
@@ -596,7 +599,7 @@ void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {
   // ColourLine ones; and finally then write them in the Event Record     
   StepPtr pstep;
   pstep = ch->newStep();
-  printStep(pstep, "after creation of step"); 
+  //  printStep(pstep, "after creation of step"); 
 
   for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
        cit != _particles.end(); ++cit ) {
@@ -638,7 +641,7 @@ void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {
 
   pstep->fixColourFlow();
   */
-  printStep(pstep, "After filling it"); 
+  //  printStep(pstep, "After filling it"); 
   
   // do something much, much more sophisticated here, taking care of proper
   // parent/child relationships!

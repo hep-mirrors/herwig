@@ -40,8 +40,8 @@ updateChildren( const double parentSudAlpha, const Energy parentSudPx,
 
   // dump all input 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() "
-			    << "==> start extreme <== " << endl
+    CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() extreme ________________________" 
+			    << endl
 			    << "  called with (qtilde, z, phi) = (" 
 			    << dqtilde << ", " << dz << ", " << dphi << ") " << endl
 			    << "  input (alpha, px, py) = (" 
@@ -85,9 +85,9 @@ updateChildren( const double parentSudAlpha, const Energy parentSudPx,
 			     << pPerp << endl
 			     << "  result (px1, py1), (px2, py2) = (" 
 			     << sudPxVect[0] << ", " << sudPyVect[0] << "), (" 
-			     << sudPxVect[1] << ", " << sudPyVect[1] << ")" << endl
-			     << "FS_QtildaShowerKinematics1to2::updateChildren() "
-			     << "==> end extreme <== " << endl;
+			     << sudPxVect[1] << ", " << sudPyVect[1] << ")" << endl;
+// 			     << "FS_QtildaShowerKinematics1to2::updateChildren() "
+// 			     << "==> end extreme <== " << endl;
   }
 
 //   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -190,7 +190,7 @@ updateParent( const tShowerParticlePtr theParent,
     theParent->set5Momentum( c1->momentum() + c2->momentum() ); 
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateParent(): "	 
+      CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateParent(): full ____________________________"	 
 			      << endl 
 			      << "  set beta = " << theParent->sudBeta() 
 			      << " = " 
@@ -231,7 +231,7 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast
   		    / ( 2.*theLast->sudAlpha()*_pVector*_nVector ) ); 
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateLast(): "	 
+    CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateLast(): full ______________________________"	 
 			    << endl 
 			    << "  set beta = " << theLast->sudBeta() 
 			    << endl
