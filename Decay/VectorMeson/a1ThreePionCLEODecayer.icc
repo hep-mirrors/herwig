@@ -21,7 +21,8 @@ inline a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
   // sigma mass and width
   _sigmamass = 0.860*GeV;_sigmawidth =0.880*GeV;
   // overall coupling for the decay
-  _coupling = 1.619/GeV;
+  //  _coupling = 1.619/GeV;
+  _coupling=51.197275/GeV;
   // couplings and phases for the different channels
   // p-wave rho and rho prime
   _rhomagP.push_back(1.)  ;_rhophaseP.push_back(0.);
@@ -45,22 +46,22 @@ inline a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
   _threewgts[3 ]= 0.0867505;_threewgts[4 ]= 0.0895405;_threewgts[5 ]= 0.0898378;
   _threewgts[6 ]= 0.0918808;_threewgts[7 ]= 0.0919970;_threewgts[8 ]= 0.0711382;
   _threewgts[9 ]= 0.0734318;_threewgts[10]= 0.0807660;_threewgts[11]= 0.0812191;
-  _threemax=1.38754;
+  _threemax=1.38754E3;
   for(unsigned int ix=12;ix<21;++ix){_onechan[ix]=true;}
   _onewgts[12]= 0.1253590;_onewgts[13]= 0.1244660;_onewgts[14]= 0.1297050;
   _onewgts[15]= 0.1303310;_onewgts[16]= 0.1272090;_onewgts[17]= 0.1281130;
   _onewgts[18]= 0.0994781;_onewgts[19]= 0.0646946;_onewgts[20]= 0.0706432;
-  _onemax=1.23756;
+  _onemax=1.23756E3;
   for(unsigned int ix=21;ix<30;++ix){_zerochan[ix]=true;}
   _zerowgts[21]= 0.1314300;_zerowgts[22]= 0.1310050;_zerowgts[23]= 0.1284550;
   _zerowgts[24]= 0.0934043;_zerowgts[25]= 0.0942500;_zerowgts[26]= 0.0946263;
   _zerowgts[27]= 0.1071220;_zerowgts[28]= 0.1088450;_zerowgts[29]= 0.1108630;
-  _zeromax=0.0716349;
+  _zeromax=0.0716349E3;
   for(unsigned int ix=30;ix<39;++ix){_twochan[ix]=true;}
   _twowgts[30]= 0.1240640;_twowgts[31]= 0.1248810;_twowgts[32]= 0.1300810;
   _twowgts[33]= 0.1312690;_twowgts[34]= 0.1273870;_twowgts[35]= 0.1289640;
   _twowgts[36]= 0.1001290;_twowgts[37]= 0.0644940;_twowgts[38]= 0.0687322;
-  _twomax=2.43819;
+  _twomax=2.43819E3;
 }
   
 inline a1ThreePionCLEODecayer::a1ThreePionCLEODecayer(const a1ThreePionCLEODecayer & x)

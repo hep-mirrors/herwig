@@ -176,4 +176,5 @@ namespace ThePEG {
 // #include "a1ThreePionCLEODecayer.tcc"
 #endif
 
+
 #endif /* HERWIG_a1ThreePionCLEODecayer_H */

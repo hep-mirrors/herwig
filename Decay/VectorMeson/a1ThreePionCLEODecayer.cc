@@ -6,6 +6,9 @@
 
 #include "a1ThreePionCLEODecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
+#include "ThePEG/Interface/Switch.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "a1ThreePionCLEODecayer.tcc"
@@ -102,7 +105,212 @@ void a1ThreePionCLEODecayer::Init() {
   static ClassDocumentation<a1ThreePionCLEODecayer> documentation
     ("The \\classname{a1ThreePionCLEODecayer} class performs the decay of the "
      "a_1 to three pions using the model of CLEO");
-  
+
+  static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhomass
+    ("RhoMasses",
+     "The masses of the different rho resonnaces",
+     &a1ThreePionCLEODecayer::_rhomass,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhowidth
+    ("RhoWidths",
+     "The widths of the different rho resonnaces",
+     &a1ThreePionCLEODecayer::_rhowidth,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_2Mass
+    ("f_2Mass",
+     "The mass of the f_2 meson",
+     &a1ThreePionCLEODecayer::_f2mass, GeV, 1.275*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_2Width
+    ("f_2Width",
+     "The width of the f_2 meson",
+     &a1ThreePionCLEODecayer::_f2width, GeV, 0.185*GeV, 0.0*GeV, 1.0*GeV,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_0Mass
+    ("f_0Mass",
+     "The mass of the f_0 meson",
+     &a1ThreePionCLEODecayer::_f0mass, GeV, 1.186*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,Energy> interfacef_0Width
+    ("f_0Width",
+     "The width of the f_0 meson",
+     &a1ThreePionCLEODecayer::_f0width, GeV, 0.350*GeV, 0.0*GeV, 1.0*GeV,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,Energy> interfacesigmaMass
+    ("sigmaMass",
+     "The mass of the sigma meson",
+     &a1ThreePionCLEODecayer::_sigmamass, GeV, 0.860*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,Energy> interfacesigmaWidth
+    ("sigmaWidth",
+     "The width of the sigma meson",
+     &a1ThreePionCLEODecayer::_sigmawidth, GeV, 0.880*GeV, 0.0*GeV, 2.0*GeV,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,InvEnergy> interfaceCoupling
+    ("Coupling",
+     "The overall coupling for the decay",
+     &a1ThreePionCLEODecayer::_coupling, 1./GeV, 51.197275/GeV, -0./GeV, 1000./GeV,
+     false, false, false);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfacerhomagP
+    ("RhoPWaveMagnitude",
+     "The magnitude of the couplings for the p-wave rho currents",
+     &a1ThreePionCLEODecayer::_rhomagP,
+     0, 0, 0, 0, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfacerhophaseP
+    ("RhoPWavePhase",
+     "The phase of the couplings for the p-wave rho currents",
+     &a1ThreePionCLEODecayer::_rhophaseP,
+     0, 0, 0, 0, 2.*pi, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,InvEnergy2> interfacerhomagD
+    ("RhoDWaveMagnitude",
+     "The magnitude of the couplings for the d-wave rho currents",
+     &a1ThreePionCLEODecayer::_rhomagD,
+     0, 0, 0, 0, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfacerhophaseD
+    ("RhoDWavePhase",
+     "The phase of the couplings for the d-wave rho currents",
+     &a1ThreePionCLEODecayer::_rhophaseD,
+     0, 0, 0, 0, 2.*pi, false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfacef0Phase
+    ("f0Phase",
+     "The phase of the f_0 scalar current",
+     &a1ThreePionCLEODecayer::_f0phase, 0.54*pi, 0.0, 2.*pi,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfacef2Phase
+    ("f2Phase",
+     "The phase of the f_2 tensor current",
+     &a1ThreePionCLEODecayer::_f2phase, 0.56*pi, 0.0, 2.*pi,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfacesigmaPhase
+    ("sigmaPhase",
+     "The phase of the sigma scalar current",
+     &a1ThreePionCLEODecayer::_sigmaphase, 0.23*pi, 0.0, 2.*pi,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfacef0Magnitude
+    ("f0Magnitude",
+     "The magnitude of the f_0 scalar current",
+     &a1ThreePionCLEODecayer::_f0mag, 0.77, 0.0, 10,
+     false, false, true);
+
+
+  static Parameter<a1ThreePionCLEODecayer,InvEnergy2> interfacef2Magnitude
+    ("f2Magnitude",
+     "The magnitude of the f_2 tensor current",
+     &a1ThreePionCLEODecayer::_f2mag, 1./GeV2, 0.71/GeV2, 0./GeV2, 10./GeV2,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfacesigmaMagnitude
+    ("sigmaMagnitude",
+     "The magnitude of the sigma scalar current",
+     &a1ThreePionCLEODecayer::_sigmamag, 2.1, 0.0, 10,
+     false, false, true);
+
+  static Switch<a1ThreePionCLEODecayer,bool> interfaceLocalParameters
+    ("LocalParameters",
+     "Use local values of the intermediate resonances masses and widths",
+     &a1ThreePionCLEODecayer::_localparameters, true, false, false);
+  static SwitchOption interfaceLocalParametersLocal
+    (interfaceLocalParameters,
+     "Local",
+     "Use the local values",
+     true);
+  static SwitchOption interfaceLocalParametersDefault
+    (interfaceLocalParameters,
+     "Default",
+     "Use the values from the particleData objects",
+     false);
+
+  static ParVector<a1ThreePionCLEODecayer,bool> interfacezerochan
+    ("AllNeutralChannels",
+     "The channels to use for the integration of the decay a_1^0->pi0pi0pi0",
+     &a1ThreePionCLEODecayer::_zerochan,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfacezerowgts
+    ("AllNeutralWeights",
+     "The weights of the different channels to use for the integration of"
+     " the decay a_1^0->pi0pi0pi0",
+     &a1ThreePionCLEODecayer::_zerowgts,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,bool> interfaceonechan
+    ("OneChargedChannels",
+     "The channels to use for the integration of the decay a_1^+->pi+pi0pi0",
+     &a1ThreePionCLEODecayer::_onechan,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfaceonewgts
+    ("OneChargedWeights",
+     "The weights of the different channels to use for the integration of"
+     " the decay a_1^+->pi+pi0pi0",
+     &a1ThreePionCLEODecayer::_onewgts,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,bool> interfacetwochan
+    ("TwoChargedChannels",
+     "The channels to use for the integration of the decay a_1^0->pi+pi-pi0",
+     &a1ThreePionCLEODecayer::_twochan,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfacetwowgts
+    ("TwoChargedWeights",
+     "The weights of the different channels to use for the integration of"
+     " the decay a_1^0->pi+pi-pi0",
+     &a1ThreePionCLEODecayer::_twowgts,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,bool> interfacethreechan
+    ("ThreeChargedChannels",
+     "The channels to use for the integration of the decay a_1^+->pi+pi+pi-",
+     &a1ThreePionCLEODecayer::_threechan,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static ParVector<a1ThreePionCLEODecayer,double> interfacethreewgts
+    ("ThreeChargedWeights",
+     "The weights of the different channels to use for the integration of"
+     " the decay a_1^+->pi+pi+pi-",
+     &a1ThreePionCLEODecayer::_threewgts,
+     0, 0, 0, -10000, 10000, false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfaceZeroMax
+    ("ZeroMax",
+     "The maximum weight for the integration fo the channel a_1^0->pi0pi0pi0",
+     &a1ThreePionCLEODecayer::_zeromax, 0.0716349E3, 0.0, 10000.0,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfaceOneMax
+    ("OneMax",
+     "The maximum weight for the integration fo the channel a_1^+->pi+pi0pi0",
+     &a1ThreePionCLEODecayer::_onemax,1.23756E3, 0.0, 10000.0,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfaceTwoMax
+    ("TwoMax",
+     "The maximum weight for the integration fo the channel a_1^0->pi+pi-pi0",
+     &a1ThreePionCLEODecayer::_twomax,2.43819E3, 0.0, 10000.0,
+     false, false, true);
+
+  static Parameter<a1ThreePionCLEODecayer,double> interfaceThreeMax
+    ("ThreeMax",
+     "The maximum weight for the integration fo the channel a_1^+->pi+pi+pi-",
+     &a1ThreePionCLEODecayer::_threemax, 1.38754E3, 0.0, 10000.0,
+     false, false, true);
 }
 
 // hadronic current
