@@ -1,0 +1,199 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SplittingGenerator class.
+//
+
+namespace Herwig {
+
+
+inline SplittingGenerator::SplittingGenerator() 
+  : _QCDinteractionMode( 1 ),
+    _QEDinteractionMode( 0 ),
+    _EWKinteractionMode( 0 ),
+    _ISR_Mode( 0 ),
+    _ISR_QCDMode( 1 ),
+    _ISR_QEDMode( 1 ),
+    _ISR_EWKMode( 1 ),
+    _FSR_Mode( 1 ),
+    _FSR_QCDMode( 1 ),
+    _FSR_QEDMode( 1 ),
+    _FSR_EWKMode( 1 ),
+    _UtoUGsplittingMode( 1 ),
+    _DtoDGsplittingMode( 1 ),
+    _StoSGsplittingMode( 1 ),
+    _CtoCGsplittingMode( 1 ),
+    _BtoBGsplittingMode( 1 ),
+    _TtoTGsplittingMode( 1 ),
+    _GtoGGsplittingMode( 1 ),
+    _GtoUUbarsplittingMode( 1 ),
+    _GtoDDbarsplittingMode( 1 ),
+    _GtoSSbarsplittingMode( 1 ),
+    _GtoCCbarsplittingMode( 1 ),
+    _GtoBBbarsplittingMode( 1 ),
+    _GtoTTbarsplittingMode( 1 )
+{}
+
+
+inline SplittingGenerator::SplittingGenerator(const SplittingGenerator & x)
+  : Pythia7::HandlerBase(x), 
+  _QCDinteractionMode( x._QCDinteractionMode ),
+  _QEDinteractionMode( x._QEDinteractionMode ),
+  _EWKinteractionMode( x._EWKinteractionMode ),
+  _ISR_Mode( x._ISR_Mode ),
+  _ISR_QCDMode( x._ISR_QCDMode ),
+  _ISR_QEDMode( x._ISR_QEDMode ),
+  _ISR_EWKMode( x._ISR_EWKMode ),
+  _FSR_Mode( x._FSR_Mode ),
+  _FSR_QCDMode( x._FSR_QCDMode ),
+  _FSR_QEDMode( x._FSR_QEDMode ),
+  _FSR_EWKMode( x._FSR_EWKMode ),
+  _UtoUGsplittingMode( x._UtoUGsplittingMode ),
+  _DtoDGsplittingMode( x._DtoDGsplittingMode ),
+  _StoSGsplittingMode( x._StoSGsplittingMode ),
+  _CtoCGsplittingMode( x._CtoCGsplittingMode ),
+  _BtoBGsplittingMode( x._BtoBGsplittingMode ),
+  _TtoTGsplittingMode( x._TtoTGsplittingMode ),
+  _GtoGGsplittingMode( x._GtoGGsplittingMode ),
+  _GtoUUbarsplittingMode( x._GtoUUbarsplittingMode ),
+  _GtoDDbarsplittingMode( x._GtoDDbarsplittingMode ),
+  _GtoSSbarsplittingMode( x._GtoSSbarsplittingMode ),
+  _GtoCCbarsplittingMode( x._GtoCCbarsplittingMode ),
+  _GtoBBbarsplittingMode( x._GtoBBbarsplittingMode ),
+  _GtoTTbarsplittingMode( x._GtoTTbarsplittingMode ),
+  _pointerIS_ShowerAlphaQCD( x._pointerIS_ShowerAlphaQCD ),
+  _pointerFS_ShowerAlphaQCD( x._pointerFS_ShowerAlphaQCD ),
+  _pointerShowerConstrainer( x._pointerShowerConstrainer )
+{}
+
+
+inline const tShowerAlphaPtr SplittingGenerator::pointerIS_ShowerAlphaQCD() const {
+  return _pointerIS_ShowerAlphaQCD;
+}
+
+inline const tShowerAlphaPtr SplittingGenerator::pointerFS_ShowerAlphaQCD() const {
+  return _pointerFS_ShowerAlphaQCD;
+}
+
+
+inline const ShoConstrPtr & SplittingGenerator::pointerShowerConstrainer() const {
+  return _pointerShowerConstrainer;
+}
+
+
+inline bool SplittingGenerator::isISRadiationON() const {
+  return _ISR_Mode;
+}  
+
+inline bool SplittingGenerator::isFSRadiationON() const {
+  return _FSR_Mode;
+}
+
+
+inline bool SplittingGenerator::isUtoUGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _UtoUGsplittingMode );
+}
+  
+inline bool SplittingGenerator::isDtoDGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _DtoDGsplittingMode );
+}
+  
+inline bool SplittingGenerator::isStoSGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _StoSGsplittingMode );
+}
+  
+inline bool SplittingGenerator::isCtoCGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _CtoCGsplittingMode );
+}
+  
+inline bool SplittingGenerator::isBtoBGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _BtoBGsplittingMode );
+}
+  
+inline bool SplittingGenerator::isTtoTGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _TtoTGsplittingMode );
+}
+  
+inline bool SplittingGenerator::isGtoGGsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoGGsplittingMode );
+}
+
+inline bool SplittingGenerator::isGtoUUbarsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoUUbarsplittingMode );
+}
+  
+inline bool SplittingGenerator::isGtoDDbarsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoDDbarsplittingMode );
+}
+  
+inline bool SplittingGenerator::isGtoSSbarsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoSSbarsplittingMode );
+}
+  
+inline bool SplittingGenerator::isGtoCCbarsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoCCbarsplittingMode );
+}
+  
+inline bool SplittingGenerator::isGtoBBbarsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoBBbarsplittingMode );
+}
+  
+inline bool SplittingGenerator::isGtoTTbarsplittingON() const {
+  return ( isInteractionON( ShowerIndex::QCD ) && _GtoTTbarsplittingMode );
+}
+  
+
+inline void SplittingGenerator::doinitrun() {
+  Pythia7::HandlerBase::doinitrun();
+  initializeRun();
+}
+
+//--------------------------------------------------------------------------
+
+inline IBPtr SplittingGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SplittingGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SplittingGenerator::doupdate() throw(UpdateException) {
+  Pythia7::HandlerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void SplittingGenerator::doinit() throw(InitException) {
+  Pythia7::HandlerBase::doinit();
+}
+
+inline void SplittingGenerator::dofinish() {
+  Pythia7::HandlerBase::dofinish();
+}
+
+inline void SplittingGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Pythia7::HandlerBase::rebind(trans);
+}
+
+inline IVector SplittingGenerator::getReferences() {
+  IVector ret = Pythia7::HandlerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

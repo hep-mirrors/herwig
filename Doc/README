@@ -1,0 +1,21 @@
+ (Last update: 26-Mar-2002)
+
+ If in this directory (Herwig++/Doc) the .html files already exist,
+ and are updated, then simply open:
+
+     file:///your-path/Herwig++/Doc/main.html
+
+ with your browser, to see the list of all Herwig++ classes,
+ organized according to the Herwig++/ subdirectory where they are
+ defined. You can then navigate them, following the links.
+ 
+ If you need instead to create or update the .html files, then you
+ have to run first: 
+
+ $ dohtml.pl
+
+ ( which is a Perl script that must be executed in the same directory 
+   (Herwig++/Doc). This script calls the awk script h2html.awk, that 
+   has been copied from Pythia7/Doc ).
+
+ N.B. there is no link to Pythia7 classes.

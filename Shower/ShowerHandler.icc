@@ -1,0 +1,70 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerHandler class.
+//
+
+namespace Herwig {
+
+
+inline ShowerHandler::ShowerHandler() {}
+
+
+inline ShowerHandler::ShowerHandler(const ShowerHandler & x)
+  : Pythia7::CascadeHandler(x),
+	     _pointerGlobalParameters( x._pointerGlobalParameters ), 
+	     _pointerMECorrections( x._pointerMECorrections ),
+	     _pointerShowerConstrainer( x._pointerShowerConstrainer ),
+	     _pointerInsideRangeShowerEvolver( x._pointerInsideRangeShowerEvolver ),
+             _particles( x._particles )
+{}
+
+
+inline IBPtr ShowerHandler::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ShowerHandler::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ShowerHandler::doupdate() throw(UpdateException) {
+  Pythia7::CascadeHandler::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ShowerHandler::doinit() throw(InitException) {
+  Pythia7::CascadeHandler::doinit();
+}
+
+inline void ShowerHandler::dofinish() {
+  Pythia7::CascadeHandler::dofinish();
+}
+
+inline void ShowerHandler::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Pythia7::CascadeHandler::rebind(trans);
+}
+
+inline IVector ShowerHandler::getReferences() {
+  IVector ret = Pythia7::CascadeHandler::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+
+}

@@ -1,0 +1,34 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QtoQGSplitFun class.
+//
+
+namespace Herwig {
+
+
+inline QtoQGSplitFun::QtoQGSplitFun() 
+  : SplitFun1to2() {}
+
+
+inline QtoQGSplitFun::QtoQGSplitFun(const QtoQGSplitFun & x)
+  : SplitFun1to2(x) {}
+
+
+inline QtoQGSplitFun::
+QtoQGSplitFun( const long inputIdQuark ) 
+  : SplitFun1to2( ShowerIndex::QCD, inputIdQuark, inputIdQuark, ParticleID::g ) 
+{}
+  
+
+inline QtoQGSplitFun::
+QtoQGSplitFun( const long inputIdQuark, const Energy inputMassQuark )
+  : SplitFun1to2( ShowerIndex::QCD, 
+		  inputIdQuark, inputMassQuark, inputIdQuark, inputMassQuark,
+		  ParticleID::g, getParticleData( ParticleID::g )->mass() )
+  {}
+
+
+}
+
+

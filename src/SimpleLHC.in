@@ -1,0 +1,91 @@
+cd /Defaults/
+set theGlobalParameters:EffectiveGluonMass 0.750*GeV
+set theGlobalParameters:HadronizationScale 0.5*GeV
+set theGlobalParameters:OnOffPythia7StringFragmentationMode 0
+set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
+set theGlobalParameters:MinVirtuality2 0.1*GeV2
+set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+#
+cd /Defaults/Handlers/Shower
+set theRhoDMatrixPropagator:OnOffRhoDPropagationMode 1
+set theShowerConstrainer:OnOffMultiScaleShowerMode 1
+set theShowerConstrainer:OnOffDecayBeforeShowerMode 0
+set theShowerConstrainer:CutoffQCDMassScale 0.0*GeV
+set theShowerConstrainer:CutoffQEDMassScale 0.0005*GeV
+set theShowerConstrainer:CutoffEWKMassScale 91.0*GeV
+set theMECorrections:OnOffMECorrectionMode 0
+set theMECorrections:OnOffComposeMECorrectionMode 0
+set theDrellYanMECorrection:OnOffMECorrectionMode 0
+set theIS_ShowerAlphaQCD:ScaleFactor 1.0
+set theFS_ShowerAlphaQCD:ScaleFactor 1.0
+set theSplittingGenerator:OnOffQCDinteractionMode 1
+set theSplittingGenerator:OnOffQEDinteractionMode 0
+set theSplittingGenerator:OnOffEWKinteractionMode 0
+set theSplittingGenerator:OnOffISRMode 1
+set theSplittingGenerator:OnOffISR_QCDMode 1
+set theSplittingGenerator:OnOffISR_QEDMode 1
+set theSplittingGenerator:OnOffISR_EWKMode 1
+set theSplittingGenerator:OnOffFSRMode 1
+set theSplittingGenerator:OnOffFSR_QCDMode 1
+set theSplittingGenerator:OnOffFSR_QEDMode 1
+set theSplittingGenerator:OnOffFSR_EWKMode 1
+set theSplittingGenerator:OnOffUtoUGsplittingMode 1
+set theSplittingGenerator:OnOffDtoDGsplittingMode 1
+set theSplittingGenerator:OnOffStoSGsplittingMode 1
+set theSplittingGenerator:OnOffCtoCGsplittingMode 1
+set theSplittingGenerator:OnOffBtoBGsplittingMode 1
+set theSplittingGenerator:OnOffTtoTGsplittingMode 1
+set theSplittingGenerator:OnOffGtoGGsplittingMode 1
+set theSplittingGenerator:OnOffGtoUUbarsplittingMode 1
+set theSplittingGenerator:OnOffGtoDDbarsplittingMode 1
+set theSplittingGenerator:OnOffGtoSSbarsplittingMode 1
+set theSplittingGenerator:OnOffGtoCCbarsplittingMode 1
+set theSplittingGenerator:OnOffGtoBBbarsplittingMode 1
+set theSplittingGenerator:OnOffGtoTTbarsplittingMode 1
+#
+cd /Defaults/Handlers/Hadronization/Cluster
+set theColourReconnector:ClReco 0
+set theColourReconnector:PReco  1.0/9.0
+set theClusterFissioner:ClMax  3.35*GeV
+set theClusterFissioner:ClPow  2.0
+set theClusterFissioner:PSplt1 1.0
+set theClusterFissioner:PSplt2 1.0
+set theLightClusterDecayer:B1Lim 0.0
+set theClusterDecayer:ClDir1 1
+set theClusterDecayer:ClDir2 1
+set theClusterDecayer:ClSmr1 0.0
+set theClusterDecayer:ClSmr2 0.0
+set theHadronsSelector:PwtDquark  1.0
+set theHadronsSelector:PwtUquark  1.0
+set theHadronsSelector:PwtSquark  1.0
+set theHadronsSelector:PwtCquark  1.0
+set theHadronsSelector:PwtBquark  1.0
+set theHadronsSelector:PwtDIquark 1.0
+set theHadronsSelector:SngWt      1.0
+set theHadronsSelector:DecWt      1.0
+#
+cd /Defaults/Generators
+set SimpleLEPGenerator:EventHandler:MinWeight 0.2
+set SimpleLEPGenerator:NumberOfEvents 10000
+#set SimpleLEPGenerator:RandomNumberGenerator:Seed 12345678
+set SimpleLEPGenerator:DebugLevel 1
+set SimpleLEPGenerator:PrintEvent 10
+set SimpleLEPGenerator:Strategy /Defaults/Pythia7Strategy
+set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set /Defaults/Particles/Z0:NominalMass 92
+#
+cd /Defaults/Generators
+set SimpleLHCGenerator:EventHandler:MinWeight 0.9
+set SimpleLHCGenerator:EventHandler:StatLevel 4
+set SimpleLHCGenerator:NumberOfEvents 10000
+#set SimpleLHCGenerator:RandomNumberGenerator:Seed 12345678
+set SimpleLHCGenerator:DebugLevel 1
+set SimpleLHCGenerator:PrintEvent 10
+set SimpleLHCGenerator:Strategy /Defaults/Pythia7Strategy
+set /Defaults/AlphaS:LambdaFlav 4
+set /Defaults/AlphaS:LambdaQCD 0.2322
+set QCDCuts:Collision/X1Min 0.0000001
+set QCDCuts:Collision/X2Min 0.0000001
+set /Defaults/MatrixElements/MEGG2QQ:MaxFlavour 4
+set /Defaults/MatrixElements/MEQQ2qq:MaxFlavour 4
+saverun SimpleLHC SimpleLHCGenerator

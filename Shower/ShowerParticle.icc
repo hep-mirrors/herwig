@@ -1,0 +1,195 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerParticle class.
+//
+
+namespace Herwig {
+
+
+inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
+  :  _pdptr(x._pdptr),
+     _momentum(x._momentum),
+     _position(x._position),
+     _antiColourLine(x._antiColourLine),
+     _colourLine(x._colourLine),
+     _parent(x._parent),
+     _isFinalState(x._isFinalState),
+     _children(x._children),
+     _splitFun(x._splitFun),
+     _decayer(x._decayer),
+     _showerKinematics(x._showerKinematics),
+     _scales(x._scales),
+     _partners(x._partners),
+     _rhoDUpdate(x._rhoDUpdate),
+     _rhoD(x._rhoD),
+     _reconstructionFixedPoint(x._reconstructionFixedPoint)
+{}
+
+  
+inline const Lorentz5Momentum & ShowerParticle::momentum() const {
+  return _momentum;
+}
+
+inline void ShowerParticle::momentum(const Lorentz5Momentum & inputMomentum) {
+  _momentum = inputMomentum;
+}
+
+
+inline const LorentzPoint & ShowerParticle::position() const {
+  return _position;
+}
+
+inline void ShowerParticle::position(const LorentzPoint & inputPosition) {
+  _position = inputPosition;
+}
+
+
+inline const ParticleData & ShowerParticle::data() const {
+  return *_pdptr;
+}
+
+inline void ShowerParticle::dataPtr(const tcEventPDPtr & inputParticleDataPtr) {
+  _pdptr = inputParticleDataPtr;
+}
+
+
+inline tColinePtr ShowerParticle::antiColourLine() const {
+  return _antiColourLine;
+}
+
+inline tColinePtr ShowerParticle::colourLine(bool anti) const {
+  if ( anti ) return antiColourLine();
+  return _colourLine;
+}
+
+inline void ShowerParticle::setAntiColourLine(tColinePtr inputAntiColourLine) {
+  _antiColourLine = inputAntiColourLine;
+}
+
+inline void ShowerParticle::setColourLine(tColinePtr inputColourLine, bool anti) {
+  if ( anti ) {
+    setAntiColourLine(inputColourLine);
+  } else {
+    _colourLine = inputColourLine;
+  }
+}
+
+
+inline tShoParPtr ShowerParticle::parent() const {
+  return _parent;
+}
+
+inline void ShowerParticle::parent(const tShoParPtr inputParent) {
+  _parent = inputParent;
+}
+
+
+inline bool ShowerParticle::isFinalState() const {
+  return _isFinalState;
+}
+
+inline void ShowerParticle::isFinalState(const bool inputIsFinalState) {
+  _isFinalState = inputIsFinalState;
+}
+
+
+inline bool ShowerParticle::isFromHardSubprocess() const {
+  return ( ! parent() );
+}
+
+
+inline const CollecShoParPtr & ShowerParticle::children() const {
+  return _children;
+}
+
+inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
+  if ( inputChild ) {
+    _children.push_back(inputChild);
+    inputChild->parent(this);
+  }  
+}
+
+
+inline tSplitFunPtr ShowerParticle::splitFun() const {
+  return _splitFun;
+}
+
+inline void ShowerParticle::splitFun(const tSplitFunPtr inputSplitFun) {
+  _splitFun = inputSplitFun;
+}
+
+
+inline tDecayerPtr ShowerParticle::decayer() const {
+  return _decayer;
+}
+
+inline void ShowerParticle::decayer(const tDecayerPtr inputDecayer) {
+  _decayer = inputDecayer;
+}
+
+
+inline ShoKinPtr & ShowerParticle::showerKinematics() {
+  return _showerKinematics;
+}
+
+inline void ShowerParticle::showerKinematics(const ShoKinPtr inputShowerKinematics) {
+  _showerKinematics = inputShowerKinematics;
+}
+
+
+inline vector<Energy> ShowerParticle::evolutionScales() const {
+  return _scales;
+}
+
+inline const vector<tShoParPtr> & ShowerParticle::partners() const {
+  return _partners;
+}
+
+
+inline void ShowerParticle::setEvolutionScale(const ShowerIndex::InteractionType interaction, 
+					      const Energy scale) {
+  _scales[interaction] = scale;
+}
+
+inline void ShowerParticle::setPartner(const ShowerIndex::InteractionType interaction, 
+				       const tShoParPtr partner) {
+  _partners[interaction] = partner;
+}
+
+
+inline bool ShowerParticle::isRhoDUpdate() const {
+  return _rhoDUpdate;
+}
+
+inline void ShowerParticle::isRhoDUpdate(const bool inputRhoDUpdate) {
+  _rhoDUpdate = inputRhoDUpdate;
+}
+
+
+inline ComplexMatrix & ShowerParticle::rhoD() {
+  return _rhoD;
+}
+
+
+inline bool ShowerParticle::isReconstructionFixedPoint() const {
+  return _reconstructionFixedPoint || children().empty() ;
+}
+
+inline void ShowerParticle::isReconstructionFixedPoint(const bool inputIsDecaying) {
+  _reconstructionFixedPoint = inputIsDecaying;
+}
+
+
+inline IBPtr ShowerParticle::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ShowerParticle::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+}
+
+

@@ -1,0 +1,100 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Component class.
+//
+
+namespace Herwig {
+
+   
+  inline Component::Component(const long id) : 
+    _id(id), 
+    _perturbative(false),
+    _beamRemnant(false)
+  {}    
+    
+
+  inline Component::Component(const Component & x) : 
+    _pptr(x._pptr),  
+    _id(x._id), 
+    _perturbative(x._perturbative),
+    _beamRemnant(x._beamRemnant),
+    _momentum(x._momentum),
+    _position(x._position)    
+  {};
+
+
+  inline Component::~Component(){}
+
+
+  inline void Component::setPointerGlobalParameters( Ptr<GlobalParameters>::pointer 
+						     inputPointerGlobalParameters ) {
+    _pointerGlobalParameters = inputPointerGlobalParameters;
+  }
+
+
+  inline long Component::id() const {
+    return _id;
+  }
+
+  inline void Component::id(const long inputId) {
+    _id = inputId;
+  }
+
+
+  inline const Energy Component::mass() const {
+    return _momentum.mass();
+  }
+
+  inline void Component::mass(const Energy & inputMass) {
+    _momentum.setMass(inputMass);  
+  }
+
+
+  inline tPPtr Component::pointerParticle() const {
+    return _pptr; 
+  }
+
+  inline void Component::pointerParticle(tPPtr inputPptr) {
+    _pptr = inputPptr; 
+  }
+
+  
+  inline bool Component::isPerturbative() const {
+    return _perturbative;
+  }
+
+  inline void Component::isPerturbative(const bool inputPerturbative) {
+    _perturbative = inputPerturbative;
+  }
+
+
+  inline bool Component::isBeamRemnant() const {
+    return _beamRemnant;
+  }
+
+  inline void Component::isBeamRemnant(const bool inputBeamRemnant) {
+    _beamRemnant = inputBeamRemnant;
+  }
+
+
+  inline const Lorentz5Momentum & Component::momentum() const {
+    return _momentum;
+  }
+
+  inline void Component::momentum(const Lorentz5Momentum & inputMomentum) {
+    _momentum = inputMomentum;
+  }
+
+
+  inline const LorentzPoint & Component::position() const {
+    return _position;
+  }
+
+  inline void Component::position(const LorentzPoint & inputPosition) {
+    _position = inputPosition;
+  }
+
+
+}
+

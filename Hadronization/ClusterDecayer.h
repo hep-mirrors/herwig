@@ -1,0 +1,134 @@
+// -*- C++ -*-
+#ifndef HERWIG_ClusterDecayer_H
+#define HERWIG_ClusterDecayer_H
+//
+// This is the declaration of the <!id>ClusterDecayer<!!id> class.
+//
+// CLASSDOC SUBSECTION Description:
+//
+// This class decays the "normal" clusters (that is the ones not too heavy <BR> 
+// to be splitted, and not too light to decay into one hadron). <BR>
+// These clusters decay into two hadrons, but it is straightforward <BR>
+// to extend to the case of three body decays (in the case that one is <BR>
+// insterested to explore this possibilities...). 
+//
+// CLASSDOC SUBSECTION See also:
+//
+// <a href="http:HadronsSelector.html">HadronsSelector.h</a>.
+// 
+
+#include "Pythia7/Handlers/HandlerBase.h"
+#include "CluHadConfig.h"
+#include "HadronsSelector.h"
+#include "Herwig++/Config/GlobalParameters.h"
+
+
+namespace Herwig {
+
+
+using namespace Pythia7;
+
+class Cluster;             // forward declaration
+class Pythia7::Particle;   // forward declaration
+
+
+class ClusterDecayer: public Pythia7::HandlerBase {
+
+public:
+
+  inline ClusterDecayer();
+  inline ClusterDecayer(const ClusterDecayer &);
+  virtual ~ClusterDecayer();
+  // Standard ctors and dtor.
+
+  void decay(CollecCluPtr & collecCluPtr) throw(Veto, Stop, Exception);
+  // Decays all clusters (not already decayed into a single hadron) into hadrons. 
+
+public:
+
+  void persistentOutput(PersistentOStream &) const;
+  void persistentInput(PersistentIStream &, int);
+  // Standard functions for writing and reading from persistent streams.
+
+  static void Init();
+  // Standard Init function used to initialize the interfaces.
+
+protected:
+
+  inline virtual IBPtr clone() const;
+  inline virtual IBPtr fullclone() const;
+  // Standard clone methods.
+
+protected:
+
+  inline virtual void doupdate() throw(UpdateException);
+  inline virtual void doinit() throw(InitException);
+  inline virtual void dofinish();
+  // Standard Interfaced virtual functions.
+
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+  // Change all pointers to Interfaced objects to corresponding clones.
+
+  inline virtual IVector getReferences();
+  // Return pointers to all Interfaced objects refered to by this.
+
+private:
+
+  static ClassDescription<ClusterDecayer> initClusterDecayer;
+  // Describe a concrete class with persistent data.
+
+  ClusterDecayer & operator=(const ClusterDecayer &);
+  //  Private and non-existent assignment operator.
+
+  void decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exception);
+  // It decays the cluster into two hadrons. 
+
+  void calculatePositions( const Lorentz5Momentum & pClu, const LorentzPoint & positionClu, 
+			   const Lorentz5Momentum & pHad1, const Lorentz5Momentum & pHad2,
+			   LorentzPoint & positionHad1, LorentzPoint & positionHad2 ) const;
+  // It calculates the positions of the children hadrons by 
+  // gaussian smearing, with width inversely proportional to 
+  // the cluster mass. around the parent cluster position.
+
+  Ptr<HadronsSelector>::pointer _pointerHadronsSelector;
+  Ptr<GlobalParameters>::pointer _pointerGlobalParameters;
+  
+  int _ClDir1;
+  int _ClDir2;
+  double _ClSmr1;
+  double _ClSmr2;
+
+};
+
+
+}
+
+// CLASSDOC OFF
+
+namespace Pythia7 {
+
+// The following template specialization informs Pythia7 about the
+// base class of ClusterDecayer.
+template <>
+struct BaseClassTrait<Herwig::ClusterDecayer,1> {
+  typedef Pythia7::HandlerBase NthBase;
+};
+
+// The following template specialization informs Pythia7 about the
+// name of this class and the shared object where it is defined.
+template <>
+struct ClassTraits<Herwig::ClusterDecayer>: public ClassTraitsBase<Herwig::ClusterDecayer> {
+  static string className() { return "/Herwig++/ClusterDecayer"; }
+  // Return the class name.
+  static string library() { return "libHwHadronization.so"; }
+  // Return the name of the shared library to be loaded to get
+  // access to this class and every other class it uses
+  // (except the base class).
+};
+
+}
+
+#include "ClusterDecayer.icc"
+
+#endif /* HERWIG_ClusterDecayer_H */

@@ -1,0 +1,48 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the CheckId class.
+//
+ 
+namespace Herwig {
+
+
+  inline bool CheckId::isQuark(const long id) {
+    // Notice that top is not included, and the sign of id is not considered.
+    return abs(id) >= 1  &&  abs(id) <= 5;
+  }
+
+  inline bool CheckId::isDiquark(const long id) {
+    // Diquarks must have 4 digits, with the second least significant equal to 0.
+    return id/10000 == 0  &&  (id/1000)%10  &&  (id/100)%10  &&  (id/10)%10 == 0  &&  id%10;
+  }
+
+  inline bool CheckId::isDiquarkWithB(const long id) {
+    return isDiquark(id)  &&  (abs(id)/1000)%10 == ParticleID::b;
+  }
+
+  inline bool CheckId::isDiquarkWithC(const long id) {
+    return ( isDiquark(id)  &&  
+	     ( (abs(id)/1000)%10 == ParticleID::c  || (abs(id)/100)%10 == ParticleID::c ) );
+  }
+
+  inline bool CheckId::isDiquarkWithS(const long id) {
+    return ( isDiquark(id)  &&  
+	     ( (abs(id)/1000)%10 == ParticleID::s  || (abs(id)/100)%10 == ParticleID::s ) );
+  }
+
+  inline bool CheckId::canBeMeson(const long id1, const long id2) {
+    // Mesons are made of quark (id>0) and anti-quark (id<0) 
+    return isQuark(id1)  &&  isQuark(id2)  &&  id1*id2 < 0;
+  }
+
+  inline bool CheckId::isMeson(const long id) {
+    return  (id/10)%10  &&  (id/100)%10  &&  (id/1000)%10 == 0;
+  }
+
+  inline bool CheckId::isBaryon(const long id) {
+    return  (id/10)%10  &&  (id/100)%10  &&  (id/1000)%10;
+  }
+
+
+}

@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GtoQQbarSplitFun class.
+//
+
+namespace Herwig {
+
+
+inline GtoQQbarSplitFun::GtoQQbarSplitFun()
+  : SplitFun1to2() {}
+
+
+inline GtoQQbarSplitFun::GtoQQbarSplitFun(const GtoQQbarSplitFun & x)
+  : SplitFun1to2(x) {}
+
+
+inline GtoQQbarSplitFun::
+GtoQQbarSplitFun( const long inputIdQuark ) 
+  : SplitFun1to2( ShowerIndex::QCD, ParticleID::g, inputIdQuark, -inputIdQuark) 
+{}
+  
+
+inline GtoQQbarSplitFun::
+GtoQQbarSplitFun( const long inputIdQuark, const Energy inputMassQuark)
+  : SplitFun1to2( ShowerIndex::QCD, 
+		  ParticleID::g, getParticleData( ParticleID::g )->mass(),
+		  inputIdQuark, inputMassQuark, -inputIdQuark, inputMassQuark )
+  {}
+
+
+}

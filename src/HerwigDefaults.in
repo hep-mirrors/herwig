@@ -1,0 +1,286 @@
+mkdir /Dummy
+mkdir /Dummy/Decayers
+mkdir /Defaults
+mkdir /Defaults/Matchers
+mkdir /Defaults/Particles
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY0
+setup /Dummy/Decayers/PYDECY0 0
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY1
+setup /Dummy/Decayers/PYDECY1 1
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY2
+setup /Dummy/Decayers/PYDECY2 2
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY3
+setup /Dummy/Decayers/PYDECY3 3
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY4
+setup /Dummy/Decayers/PYDECY4 4
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY11
+setup /Dummy/Decayers/PYDECY11 11
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY12
+setup /Dummy/Decayers/PYDECY12 12
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY13
+setup /Dummy/Decayers/PYDECY13 13
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY32
+setup /Dummy/Decayers/PYDECY32 32
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY41
+setup /Dummy/Decayers/PYDECY41 41
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY42
+setup /Dummy/Decayers/PYDECY42 42
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY48
+setup /Dummy/Decayers/PYDECY48 48
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY53
+setup /Dummy/Decayers/PYDECY53 53
+create /Pythia7/PYDECYDummy /Dummy/Decayers/PYDECY102
+setup /Dummy/Decayers/PYDECY102 102
+create /Pythia7/Matcher<Lepton> /Defaults/Matchers/MatchLepton
+create /Pythia7/Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
+create /Pythia7/Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
+read Pythia7Particles.in
+mkdir /Defaults/MatrixElements
+mkdir /Defaults/Partons
+mkdir /Defaults/Handlers
+mkdir /Defaults/Generators
+mkdir /Defaults/Handlers/Hadronization/String
+
+
+#***LOOKHERE***
+mkdir /Defaults/Handlers/Shower
+mkdir /Defaults/Handlers/Hadronization/Cluster
+###PHIL### mkdir /Defaults/Handlers/Decay
+#***endLOOKHERE***
+
+
+create /Pythia7/Pythia7Strategy /Defaults/Pythia7Strategy Pythia7Strategy.so
+create /Pythia7/StandardRandom /Defaults/Random
+create /Pythia7/StandardModelBase /Defaults/StandardModel
+create /Pythia7/O1AlphaS /Defaults/AlphaS O1AlphaS.so
+set /Defaults/StandardModel:QCD/RunningAlphaS /Defaults/AlphaS
+create /Pythia7/SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
+set /Defaults/StandardModel:EW/RunningAlphaEM /Defaults/AlphaEM
+create /Pythia7/StandardCKM /Defaults/CKM StandardCKM.so
+set /Defaults/StandardModel:EW/CKM /Defaults/CKM
+
+cd /Defaults/MatrixElements
+create /Pythia7/MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
+create /Pythia7/PS2to2Generic PS2to2Generic
+create /Pythia7/MEGG2GG MEGG2GG libP7MEQCD.so
+create /Pythia7/MEQG2QG MEQG2QG
+create /Pythia7/MEQQ2GG MEQQ2GG
+create /Pythia7/MEQQ2QQ MEQQ2QQ
+create /Pythia7/MEQq2Qq MEQq2Qq
+create /Pythia7/MEGG2QQ MEGG2QQ
+create /Pythia7/MEQQ2qq MEQQ2qq
+create /Pythia7/MEqq2qq MEqq2qq
+set MEee2gZ2qq:PhaseSpaceGenerator PS2to2Generic
+set MEGG2GG:PhaseSpaceGenerator PS2to2Generic
+set MEQG2QG:PhaseSpaceGenerator PS2to2Generic
+set MEQQ2QQ:PhaseSpaceGenerator PS2to2Generic
+set MEQq2Qq:PhaseSpaceGenerator PS2to2Generic
+set MEGG2QQ:PhaseSpaceGenerator PS2to2Generic
+set MEQQ2qq:PhaseSpaceGenerator PS2to2Generic
+set MEqq2qq:PhaseSpaceGenerator PS2to2Generic
+set MEQQ2GG:PhaseSpaceGenerator PS2to2Generic
+
+cd /Defaults/Handlers/Hadronization/String
+library libP7String.so
+create /Pythia7/LundFragHandler stdLundFragHandler
+create /Pythia7/LundPtGenerator stdLundPtGenerator
+set stdLundFragHandler:LundPtGenerator stdLundPtGenerator
+create /Pythia7/LundZGenerator stdLundZGenerator
+set stdLundFragHandler:LundZGenerator stdLundZGenerator
+create /Pythia7/LundFlavourGenerator stdLundFlavourGenerator
+set stdLundFragHandler:LundFlGenerator stdLundFlavourGenerator
+
+
+#***LOOKHERE***
+create /Herwig++/GlobalParameters /Defaults/theGlobalParameters GlobalParameters.so
+
+cd /Defaults/Handlers/Shower
+library libHwShower.so
+create /Herwig++/ShowerHandler stdShowerHandler
+create /Herwig++/MECorrections theMECorrections
+create /Herwig++/ShowerConstrainer theShowerConstrainer
+create /Herwig++/InsideRangeShowerEvolver theInsideRangeShowerEvolver
+create /Herwig++/PartnerFinder thePartnerFinder
+create /Herwig++/ForwardShowerEvolver theForwardShowerEvolver
+create /Herwig++/BackwardShowerEvolver theBackwardShowerEvolver
+create /Herwig++/KinematicsReconstructor theKinematicsReconstructor
+create /Herwig++/RhoDMatrixPropagator theRhoDMatrixPropagator
+create /Herwig++/SplittingGenerator theSplittingGenerator
+create /Herwig++/ShowerAlphaQCD theIS_ShowerAlphaQCD
+create /Herwig++/ShowerAlphaQCD theFS_ShowerAlphaQCD
+create /Herwig++/DrellYanMECorrection theDrellYanMECorrection
+set stdShowerHandler:GlobalParameters /Defaults/theGlobalParameters
+set stdShowerHandler:MECorrections theMECorrections
+set stdShowerHandler:ShowerConstrainer theShowerConstrainer
+set stdShowerHandler:InsideRangeShowerEvolver theInsideRangeShowerEvolver
+set theInsideRangeShowerEvolver:PartnerFinder thePartnerFinder
+set theInsideRangeShowerEvolver:ForwardShowerEvolver theForwardShowerEvolver
+set theInsideRangeShowerEvolver:BackwardShowerEvolver theBackwardShowerEvolver
+set theInsideRangeShowerEvolver:KinematicsReconstructor theKinematicsReconstructor
+set theInsideRangeShowerEvolver:SplittingGenerator theSplittingGenerator
+set theForwardShowerEvolver:SplittingGenerator theSplittingGenerator
+set theForwardShowerEvolver:RhoDMatrixPropagator theRhoDMatrixPropagator
+set theBackwardShowerEvolver:SplittingGenerator theSplittingGenerator
+set theBackwardShowerEvolver:RhoDMatrixPropagator theRhoDMatrixPropagator
+set theBackwardShowerEvolver:ForwardShowerEvolver theForwardShowerEvolver
+set theSplittingGenerator:IS_ShowerAlphaQCD theIS_ShowerAlphaQCD
+set theSplittingGenerator:FS_ShowerAlphaQCD theFS_ShowerAlphaQCD
+set theSplittingGenerator:ShowerConstrainer theShowerConstrainer
+insert theMECorrections:VecMECorrection[0] theDrellYanMECorrection
+#insert theKinematicsReconstructor:VecSpecialProcesses[0] DISME
+
+cd /Defaults/Handlers/Hadronization/Cluster
+library libHwHadronization.so
+create /Herwig++/ClusterHadronizationHandler stdCluHadHandler
+create /Herwig++/PartonSplitter thePartonSplitter
+create /Herwig++/ClusterFinder theClusterFinder
+create /Herwig++/ColourReconnector theColourReconnector
+create /Herwig++/ClusterFissioner theClusterFissioner
+create /Herwig++/LightClusterDecayer theLightClusterDecayer
+create /Herwig++/ClusterDecayer theClusterDecayer
+create /Herwig++/HadronsSelector theHadronsSelector
+set stdCluHadHandler:GlobalParameters /Defaults/theGlobalParameters
+set stdCluHadHandler:PartonSplitter thePartonSplitter
+set stdCluHadHandler:ClusterFinder theClusterFinder
+set stdCluHadHandler:ColourReconnector theColourReconnector
+set stdCluHadHandler:ClusterFissioner theClusterFissioner
+set stdCluHadHandler:LightClusterDecayer theLightClusterDecayer
+set stdCluHadHandler:ClusterDecayer theClusterDecayer
+set theClusterFissioner:HadronsSelector theHadronsSelector 
+set theClusterFissioner:GlobalParameters /Defaults/theGlobalParameters 
+set theLightClusterDecayer:HadronsSelector theHadronsSelector
+set theClusterDecayer:HadronsSelector theHadronsSelector
+set theClusterDecayer:GlobalParameters /Defaults/theGlobalParameters
+set thePartonSplitter:GlobalParameters /Defaults/theGlobalParameters
+
+###PHIL### cd /Defaults/Handlers/Decay
+###PHIL### library libP7Handlers.so
+###PHIL### create /Pythia7/DecayHandler stdDecayHandler
+
+#***endLOOKHERE
+
+
+cd /Defaults/Partons
+create /Pythia7/PDFApproximator DefaultApproximator
+create /Pythia7/NoRemnants NoRemnants
+create /Pythia7/NoPDF NoPDF
+set NoPDF:RemnantHandler NoRemnants
+set NoPDF:Approximator DefaultApproximator
+create /Pythia7/LeptonLeptonRemnant SimpleLeptonRemnants LeptonLeptonRemnant.so
+create /Pythia7/LeptonLeptonPDF SimpleLeptonPDF LeptonLeptonPDF.so
+set SimpleLeptonPDF:RemnantHandler SimpleLeptonRemnants
+set SimpleLeptonPDF:Approximator DefaultApproximator
+set /Defaults/Particles/e-:PDF SimpleLeptonPDF
+set /Defaults/Particles/e+:PDF SimpleLeptonPDF
+library GRVBase.so
+create /Pythia7/QCDApproxPDF QCDApproximator QCDApproxPDF.so
+create /Pythia7/GRV94L GRV94L GRV94L.so
+create /Pythia7/GRV94M GRV94M GRV94M.so
+create /Pythia7/BaryonRemnants BaryonRemnants BaryonRemnants.so
+set BaryonRemnants:FlavourGenerator /Defaults/Handlers/Hadronization/String/stdLundFlavourGenerator
+set BaryonRemnants:ZGenerator /Defaults/Handlers/Hadronization/String/stdLundZGenerator
+set BaryonRemnants:PtGeneratorQ /Defaults/Handlers/Hadronization/String/stdLundPtGenerator
+set GRV94L:RemnantHandler BaryonRemnants
+set GRV94L:Approximator QCDApproximator
+set GRV94M:RemnantHandler BaryonRemnants
+set GRV94M:Approximator QCDApproximator
+
+set /Defaults/Particles/p+:PDF GRV94L
+set /Defaults/Particles/pbar-:PDF GRV94L
+
+set /Defaults/Particles/g:DefaultSpin 3
+set /Defaults/Particles/g:Spin 3
+set /Defaults/Particles/gamma:DefaultSpin 3
+set /Defaults/Particles/gamma:Spin 3
+set /Defaults/Particles/Z0:DefaultSpin 3
+set /Defaults/Particles/Z0:Spin 3
+set /Defaults/Particles/W+:DefaultSpin 3
+set /Defaults/Particles/W+:Spin 3
+set /Defaults/Particles/W-:DefaultSpin 3
+set /Defaults/Particles/W-:Spin 3
+set /Defaults/Particles/h0:DefaultSpin 1
+set /Defaults/Particles/h0:Spin 1
+
+cd /Defaults/Handlers
+create /Pythia7/TrivialExtractor TrivialExtractor TrivialExtractor.so
+set TrivialExtractor:NoPDF /Defaults/Partons/NoPDF
+create /Pythia7/SingleExtractor SingleExtractor SingleExtractor.so
+set SingleExtractor:NoPDF /Defaults/Partons/NoPDF
+create /Pythia7/SimpleExtractor SimpleExtractor SimpleExtractor.so
+set SimpleExtractor:NoPDF /Defaults/Partons/NoPDF
+
+create /Pythia7/EventHandler SimpleLEPHandler
+create /Pythia7/FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
+set FixedLEPLuminosity:Energy 91.2
+set SimpleLEPHandler:LuminosityFunction FixedLEPLuminosity
+
+create /Pythia7/SubProcessHandler SimpleEE2QQ
+insert SimpleEE2QQ:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2qq
+set SimpleEE2QQ:PartonExtractor SimpleExtractor
+insert SimpleLEPHandler:SubProcessHandlers[0] SimpleEE2QQ
+set SimpleLEPHandler:BeamA /Defaults/Particles/e-
+set SimpleLEPHandler:BeamB /Defaults/Particles/e+
+
+
+#***LOOKHERE***
+set SimpleLEPHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
+
+###set SimpleLEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/String/stdLundFragHandler
+set SimpleLEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
+
+###PHIL### set SimpleLEPHandler:DecayHandler /Defaults/Handlers/Decay/stdDecayHandler
+#***endLOOKHERE***
+
+
+create /Pythia7/EventHandler SimpleLHCHandler
+create /Pythia7/FixedCMSLuminosity FixedLHCLuminosity
+set FixedLHCLuminosity:Energy 14000.0
+set SimpleLHCHandler:LuminosityFunction FixedLHCLuminosity
+create /Pythia7/SubProcessHandler SimpleQCD
+insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGG2GG
+insert SimpleQCD:MatrixElements[1] /Defaults/MatrixElements/MEQG2QG
+insert SimpleQCD:MatrixElements[2] /Defaults/MatrixElements/MEQQ2QQ
+insert SimpleQCD:MatrixElements[3] /Defaults/MatrixElements/MEQq2Qq
+insert SimpleQCD:MatrixElements[4] /Defaults/MatrixElements/MEGG2QQ
+insert SimpleQCD:MatrixElements[5] /Defaults/MatrixElements/MEQQ2qq
+insert SimpleQCD:MatrixElements[6] /Defaults/MatrixElements/MEqq2qq
+insert SimpleQCD:MatrixElements[7] /Defaults/MatrixElements/MEQQ2GG
+set SimpleQCD:PartonExtractor SimpleExtractor
+insert SimpleLHCHandler:SubProcessHandlers[0] SimpleQCD
+set SimpleLHCHandler:BeamA /Defaults/Particles/p+
+set SimpleLHCHandler:BeamB /Defaults/Particles/p+
+
+
+#***LOOKHERE***
+set SimpleLHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
+
+#### set SimpleLHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/String/stdLundFragHandler
+set SimpleLHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
+
+###PHIL### set SimpleLHCHandler:DecayHandler /Defaults/Handlers/Decay/stdDecayHandler
+#***endLOOKHERE***
+
+
+cd /Defaults/Generators
+create /Pythia7/FullEventGenerator SimpleLEPGenerator
+set SimpleLEPGenerator:RandomNumberGenerator /Defaults/Random
+set SimpleLEPGenerator:StandardModelParameters /Defaults/StandardModel
+set SimpleLEPGenerator:EventHandler /Defaults/Handlers/SimpleLEPHandler
+create /Pythia7/KinematicalCuts EECuts
+set EECuts:LeptonMatcher /Defaults/Matchers/MatchLepton
+set EECuts:SubProcess/MHatMin 22.36
+set SimpleLEPGenerator:EventHandler:Cuts EECuts
+
+create /Pythia7/FullEventGenerator SimpleLHCGenerator
+set SimpleLHCGenerator:RandomNumberGenerator /Defaults/Random
+set SimpleLHCGenerator:StandardModelParameters /Defaults/StandardModel
+set SimpleLHCGenerator:EventHandler /Defaults/Handlers/SimpleLHCHandler
+create /Pythia7/KinematicalCuts QCDCuts
+set QCDCuts:LeptonMatcher /Defaults/Matchers/MatchLepton
+set QCDCuts:SubProcess/ScaleMin 25.0
+set QCDCuts:SubProcess/PTHatMin 5.0
+set SimpleLHCGenerator:EventHandler:Cuts QCDCuts
+
+cd /
+
+

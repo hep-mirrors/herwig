@@ -1,0 +1,127 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Cluster class.
+//
+
+namespace Herwig {
+
+
+  inline Cluster::Cluster(const Cluster & x) : 
+    _isAvailable(x._isAvailable), 
+    _momentum(x._momentum), 
+    _position(x._position), 
+    _collecCompPtr(x._collecCompPtr), 
+    _parentCluPtr(x._parentCluPtr), 
+    _reshufflingPartnerCluPtr(x._reshufflingPartnerCluPtr),
+    _collecChildCluPtr(x._collecChildCluPtr), 
+    _collecChildHadPtr(x._collecChildHadPtr)
+  {}
+
+
+  inline Cluster::~Cluster() {}
+
+
+  inline void Cluster::setPointerGlobalParameters( Ptr<GlobalParameters>::pointer 
+						   inputPointerGlobalParameters ) {
+    _pointerGlobalParameters = inputPointerGlobalParameters;
+  }
+
+
+  inline int Cluster::numComponents() const {
+    return _collecCompPtr.size();
+  }
+
+
+  inline Energy Cluster::mass() const {
+    return _momentum.mass();
+  }
+
+  inline void Cluster::mass(const Energy inputMass) {
+    return _momentum.setMass(inputMass);
+  }
+
+
+  inline const Lorentz5Momentum & Cluster::momentum() const {
+    return _momentum;
+  }
+
+  inline void Cluster::momentum(const Lorentz5Momentum & momentum) {
+    _momentum = momentum;
+  }
+
+
+  inline const LorentzPoint & Cluster::position() const {
+    return _position;
+  }
+
+  inline void Cluster::position(const LorentzPoint & position) {
+    _position = position;
+  }
+
+
+  inline const CollecCompPtr & Cluster::components() const {
+    return _collecCompPtr;
+  }
+
+
+  inline tCluPtr Cluster::parentCluster() const {
+    return _parentCluPtr;
+  }
+
+  inline void Cluster::parentCluster(const tCluPtr inputCluPtr) {
+    _parentCluPtr = inputCluPtr;
+  } 
+
+
+  inline tCluPtr Cluster::reshufflingPartnerCluster() const {
+    return _reshufflingPartnerCluPtr;
+  }
+
+  inline void Cluster::reshufflingPartnerCluster(const tCluPtr inputCluPtr) {
+    _reshufflingPartnerCluPtr = inputCluPtr;
+  } 
+
+
+  inline const CollecCluPtr & Cluster::childrenClusters() const {
+    return _collecChildCluPtr;
+  }
+
+
+  inline const PVector & Cluster::childrenHadrons() const {
+    return _collecChildHadPtr;
+  }
+
+
+  inline bool Cluster::isAvailable() const {
+    return _isAvailable;
+  }
+
+  inline void Cluster::isAvailable(bool inputAvailable) {
+    _isAvailable = inputAvailable;
+  }
+
+
+  inline bool Cluster::isStatusInitial() const {
+    return ! _parentCluPtr;
+  }
+
+  inline bool Cluster::isReadyToDecay() const {
+    return ( _collecChildCluPtr.size() == 0  &&  _collecChildHadPtr.size() == 0 );
+  }
+
+  inline bool Cluster::isRedefined() const {
+    return ( _collecChildCluPtr.size() == 1  &&  _collecChildHadPtr.size() == 0 );
+  }
+
+  inline bool Cluster::hasBeenReshuffled() const {
+    return _reshufflingPartnerCluPtr;
+  }
+
+  inline bool Cluster::isStatusFinal() const {
+    return ( _collecChildHadPtr.size() > 0);
+  }
+
+
+}
+

@@ -1,0 +1,39 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the IS_GtoQQbarSplitFun class.
+//
+
+namespace Herwig {
+
+
+inline IS_GtoQQbarSplitFun::IS_GtoQQbarSplitFun() 
+  : GtoQQbarSplitFun() {}
+
+
+inline IS_GtoQQbarSplitFun::IS_GtoQQbarSplitFun(const IS_GtoQQbarSplitFun & x)
+  : GtoQQbarSplitFun(x) {}
+
+
+inline IS_GtoQQbarSplitFun::
+IS_GtoQQbarSplitFun( const long inputIdQuark ) 
+  : GtoQQbarSplitFun( inputIdQuark )
+{}
+  
+
+inline IS_GtoQQbarSplitFun::
+IS_GtoQQbarSplitFun( const long inputIdQuark, const Energy inputMassQuark)
+  : GtoQQbarSplitFun( inputIdQuark, inputMassQuark )
+{}
+
+
+inline IBPtr IS_GtoQQbarSplitFun::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr IS_GtoQQbarSplitFun::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+}

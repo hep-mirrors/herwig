@@ -1,0 +1,34 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GtoQQbarSudakovFormFactor class.
+//
+
+namespace Herwig {
+
+
+inline GtoQQbarSudakovFormFactor::GtoQQbarSudakovFormFactor() 
+  : SudakovFormFactor() {}
+
+
+inline GtoQQbarSudakovFormFactor::GtoQQbarSudakovFormFactor(const GtoQQbarSudakovFormFactor & x)
+  : SudakovFormFactor(x) {}
+
+
+inline GtoQQbarSudakovFormFactor::
+GtoQQbarSudakovFormFactor( const SplitFunPtr inputSplitFun, 
+			const tShowerAlphaPtr inputShowerAlpha,
+			const Energy inputInfScale, const Energy inputSupScale ) :
+  SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale) {}
+  
+
+inline IBPtr GtoQQbarSudakovFormFactor::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr GtoQQbarSudakovFormFactor::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+}

@@ -1,0 +1,73 @@
+# -*- makefile -*-
+SRCDIR = ..
+
+CXX = @CXX@
+
+CXXFLAGS = -ansi -pedantic -Wall
+
+###CXXOPTFLAG = -O
+CXXOPTFLAG =
+
+CXXDLFLAGS = -shared
+
+CXXDEBUGFLAG = -g
+
+CXXEXT = -fpic
+
+DEFS =
+
+AR = @AR@
+
+ARFLAGS = @ARFLAGS@
+
+RANLIB = @RANLIB@
+
+CLHEPPATH = @CLHEPPATH@
+
+CLHEPLIB = @CLHEPLIB@
+
+PYTHIA7PATH = @PYTHIA7PATH@
+
+PYTHIA7LIB = @PYTHIA7LIB@
+
+INCLUDES = -I../../ -I$(PYTHIA7PATH) -I$(CLHEPPATH)/include
+
+DLLIB = -ldl
+
+LIBS = -L$(PYTHIA7PATH)/Pythia7/lib $(PYTHIA7LIB) -L$(CLHEPPATH)/lib -l$(CLHEPLIB) -lm $(DLLIB)
+
+LINKFLAGS = -rdynamic
+
+RPATH = ../lib:$(PYTHIA7PATH)/Pythia7/lib
+
+all: depend lib
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(CXXEXT) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $<
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
+
+%.so: %.o
+	@rm -f $(SRCDIR)/lib/$<
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
+
+.cc.s:
+	$(CXX) -S $(CXXFLAGS) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(CXXEXT) $<
+
+depend:
+	$(SRCDIR)/Config/g++dep $(INCLUDES) $(SOURCES) $(CHECKSOURCES)
+
+lib: $(OBJECTS)
+
+assembler: $(DOTSS)
+
+tags: *cc *h
+	ctags --c++ --language=c++ --ignore-indentation --members --typedefs-and-c++ --no-warn --update $?
+
+tagsfile:
+	ctags --c++ --language=c++ --ignore-indentation --members --typedefs-and-c++ --no-warn  *cc *h
+
+clean:
+	rm -f $(CHECKPROGS) $(PROGS) $(LIBRARIES) *.o *.so a.out 
+
+

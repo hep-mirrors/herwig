@@ -1,0 +1,39 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the FS_QtoQGSplitFun class.
+//
+
+namespace Herwig {
+
+
+inline FS_QtoQGSplitFun::FS_QtoQGSplitFun()
+  : QtoQGSplitFun() {}
+
+
+inline FS_QtoQGSplitFun::FS_QtoQGSplitFun(const FS_QtoQGSplitFun & x)
+  : QtoQGSplitFun(x) {}
+
+
+inline FS_QtoQGSplitFun::
+FS_QtoQGSplitFun( const long inputIdQuark ) 
+  : QtoQGSplitFun( inputIdQuark )
+{}
+  
+
+inline FS_QtoQGSplitFun::
+FS_QtoQGSplitFun( const long inputIdQuark, const Energy inputMassQuark )
+  : QtoQGSplitFun( inputIdQuark, inputMassQuark )
+{}
+
+
+inline IBPtr FS_QtoQGSplitFun::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr FS_QtoQGSplitFun::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+}

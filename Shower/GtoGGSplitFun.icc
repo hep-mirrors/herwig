@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GtoGGSplitFun class.
+//
+
+namespace Herwig {
+
+
+inline GtoGGSplitFun::GtoGGSplitFun()
+  : SplitFun1to2( ShowerIndex::QCD, ParticleID::g, ParticleID::g, ParticleID::g ) 
+{}
+
+
+inline GtoGGSplitFun::GtoGGSplitFun(const GtoGGSplitFun & x)
+  : SplitFun1to2(x) {}
+
+
+}

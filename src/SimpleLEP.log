@@ -1,0 +1,3487 @@
+* A warning exception occurred while generating event number 0: 
+MECorrections::initializeRun ***Some inconsistency in a MECorrection*** 
+         ===>
+	 hardProcessME()         : 0
+	 hardProcessPlusJetME()  : 0
+	 decayProcessME()        : 0
+	 decayProcessPlusJetME() : 0
+
+SplittingGenerator::debuggingInfo  ===> START DEBUGGING <=== 
+	 _multimapSudakov SIZE = 10
+ Index:  id=1  interaction=0  timeFlag=1
+ Index:  id=2  interaction=0  timeFlag=1
+ Index:  id=3  interaction=0  timeFlag=1
+ Index:  id=4  interaction=0  timeFlag=1
+ Index:  id=5  interaction=0  timeFlag=1
+ Index:  id=6  interaction=0  timeFlag=1
+ Index:  id=21  interaction=0  timeFlag=1
+ Index:  id=21  interaction=0  timeFlag=1
+ Index:  id=21  interaction=0  timeFlag=1
+ Index:  id=21  interaction=0  timeFlag=1
+SplittingGenerator::debuggingInfo  ===> END DEBUGGING <=== 
+ShowerHandler::debuggingInfo  ===> START DEBUGGING <===    EventNumber=1
+  Total number of initial Shower particles : 6
+	 ShowerParticle: e-  isFinalState = NO
+	 ShowerParticle: e+  isFinalState = NO
+	 ShowerParticle: gamma  isFinalState = YES
+	 ShowerParticle: gamma  isFinalState = YES
+	 ShowerParticle: ubar  isFinalState = YES
+	 ShowerParticle: u  isFinalState = YES
+InsideRangeShowerEvolver::showerNormally  ===> START DEBUGGING <===    EventNumber=1
+PartnerFinder::calculateInitialEvolutionScales 
+	 first  : ubar	 p = (-3719.66,32056,32217;45600)
+	 second : u	 p = (3719.66,-32056,-32217;45600)
+	 angle = 3.14159	 firstQ = 143.257	 secondQ = 143.257  (GeV) 
+PartnerFinder::debuggingInfo  ===> START DEBUGGING <=== 
+	 particle = ubar   partner = u
+	 particle = u   partner = ubar
+PartnerFinder::debuggingInfo  ===> END DEBUGGING <=== 
+ForwardShowerEvolver::timeLikeShower  ===> START DEBUGGING <===    EventNumber=1
+ForwardShowerEvolver::timeLikeShower  ===> END DEBUGGING <=== 
+ForwardShowerEvolver::timeLikeShower  ===> START DEBUGGING <===    EventNumber=1
+ForwardShowerEvolver::timeLikeShower  ===> END DEBUGGING <=== 
+ForwardShowerEvolver::timeLikeShower  ===> START DEBUGGING <===    EventNumber=1
+ForwardShowerEvolver::timeLikeShower  ===> END DEBUGGING <=== 
+ForwardShowerEvolver::timeLikeShower  ===> START DEBUGGING <===    EventNumber=1
+ForwardShowerEvolver::timeLikeShower  ===> END DEBUGGING <=== 
+InsideRangeShowerEvolver::showerNormally  ===> END DEBUGGING <=== 
+ --- Info for GlobalParameters  --- 
+	 isOnStringFrag = NO   effective gluon mass = 0.75   hadronization scale = 0.5  [GeV] 
+ --- Info for ShowerConstrainer --- 
+	 SWITCHES :  multi-scale = 0   decay before = 0   gluino? =  YES 
+	 PARAMETERS : cutoff :  QCD = 1   QED = 0.0005   EWK = 91   [GeV] 
+ShowerHandler::debuggingInfo  ===> END DEBUGGING <=== 
+ ^^^ Begin Print Step ^^^ : At the beginning of ClusterHadronizationHandler
+	gamma	9	0	0	-5.26797e-20	(0,0,6.98743e-12;6.98743e-12)
+	gamma	8	0	0	-1.41134e-14	(0,0,-2.00029e-06;2.00029e-06)
+	ubar	7	6	0	5.6	(-3719.66,32056,32217;45600)
+	u	6	0	7	5.6	(3719.66,-32056,-32217;45600)
+ ^^^ End Print Step ^^^ 
+PartonSplitter::debuggingInfo ===> START DEBUGGING <===    EventNumber=1
+  INITIAL PARTONS : num = 2
+  NEW     PARTONS : num = 0
+  --- Parton --- 1
+	 id = -2     ubar
+	 masses:  constituent=325  current=5.6  invariant=5.6
+	 momentum= (-3719.66,32056,32217;45600)
+	 scale=91200
+	 AntiColour line :  1
+  --- Parton --- 2
+	 id = 2     u
+	 masses:  constituent=325  current=5.6  invariant=5.6
+	 momentum= (3719.66,-32056,-32217;45600)
+	 scale=91200
+	 Colour line :  1
+ 	 NO New Partons 
+PartonSplitter::debuggingInfo ===> END DEBUGGING <=== 
+ ^^^ Begin Print Step ^^^ : After PartonSplitter
+	gamma	9	0	0	-5.26797e-20	(0,0,6.98743e-12;6.98743e-12)
+	gamma	8	0	0	-1.41134e-14	(0,0,-2.00029e-06;2.00029e-06)
+	ubar	7	6	0	5.6	(-3719.66,32056,32217;45600)
+	u	6	0	7	5.6	(3719.66,-32056,-32217;45600)
+ ^^^ End Print Step ^^^ 
+ClusterFinder::formClusters : *** extreme debugging ***
+ 	 num clusters=1
+ 	 --- Cluster information : begin --- 
+ 	 Cluster number 1
+ 	 	 numComponents=2 sumConstituentMasses=650 mass=91200 
+ 	 	 component ids -2  2  
+ 	 --- Cluster information : end --- 
+
+ ^^^ Begin Print Step ^^^ : After ClusterFinder
+	gamma	9	0	0	-5.26797e-20	(0,0,6.98743e-12;6.98743e-12)
+	gamma	8	0	0	-1.41134e-14	(0,0,-2.00029e-06;2.00029e-06)
+	ubar	7	6	0	5.6	(-3719.66,32056,32217;45600)
+	u	6	0	7	5.6	(3719.66,-32056,-32217;45600)
+ ^^^ End Print Step ^^^ 
+ClusterFissioner::fission   ===> START DEBUGGING <===    EventNumber=1
+   Number Initial Clusters = 1
+   Number of Beam Clusters = 0
+ClusterFissioner::fission   ===> END DEBUGGING <=== 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-6.06665e-13,5.22824e-12,5.2545e-12;1.0559e-11)	 invariant length = 7.49536e-12  [mm] 
+	 distanceClu2 = (5.5867e-13,-4.81462e-12,-4.8388e-12;1.11474e-11)	 invariant length = 8.79532e-12  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (2.80014e-13,-2.41316e-12,-2.42528e-12;4.56341e-12)	 invariant length = 3.00682e-12  [mm] 
+	 distanceClu2 = (-3.19375e-13,2.75238e-12,2.7662e-12;4.08087e-12)	 invariant length = 1.1507e-12  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-3.94491e-14,3.39972e-13,3.41679e-13;5.82634e-13)	 invariant length = 3.24932e-13  [mm] 
+	 distanceClu2 = (2.29245e-14,-1.97563e-13,-1.98556e-13;7.85211e-13)	 invariant length = 7.33195e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (2.72859e-14,-2.3515e-13,-2.36331e-13;3.63818e-13)	 invariant length = 1.43077e-13  [mm] 
+	 distanceClu2 = (-2.65023e-14,2.28396e-13,2.29543e-13;3.73424e-13)	 invariant length = 1.84088e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (7.79293e-14,-6.71594e-13,-6.74967e-13;2.02017e-12)	 invariant length = 1.78e-12  [mm] 
+	 distanceClu2 = (-1.06556e-13,9.18299e-13,9.22911e-13;1.66923e-12)	 invariant length = 1.03921e-12  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-2.4456e-14,2.10762e-13,2.1182e-13;5.32942e-13)	 invariant length = 4.40614e-13  [mm] 
+	 distanceClu2 = (2.83996e-14,-2.44747e-13,-2.45977e-13;4.84597e-13)	 invariant length = 3.37078e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (5.92196e-14,-5.10354e-13,-5.12917e-13;9.4193e-13)	 invariant length = 6.0015e-13  [mm] 
+	 distanceClu2 = (-6.28289e-14,5.41459e-13,5.44178e-13;8.97682e-13)	 invariant length = 4.61063e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-1.45551e-13,1.25435e-12,1.26065e-12;4.75488e-12)	 invariant length = 4.40738e-12  [mm] 
+	 distanceClu2 = (2.20166e-13,-1.89739e-12,-1.90692e-12;3.84015e-12)	 invariant length = 2.73164e-12  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (5.2801e-14,-4.55039e-13,-4.57324e-13;1.37067e-12)	 invariant length = 1.2082e-12  [mm] 
+	 distanceClu2 = (-6.70454e-14,5.77796e-13,5.80698e-13;1.19605e-12)	 invariant length = 8.68891e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-1.83443e-14,1.58091e-13,1.58885e-13;4.7106e-13)	 invariant length = 4.13913e-13  [mm] 
+	 distanceClu2 = (2.01004e-14,-1.73225e-13,-1.74095e-13;4.49532e-13)	 invariant length = 3.75977e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (2.55505e-14,-2.20194e-13,-2.213e-13;7.77236e-13)	 invariant length = 7.11326e-13  [mm] 
+	 distanceClu2 = (-4.17674e-14,3.59951e-13,3.61759e-13;5.78429e-13)	 invariant length = 2.69075e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (1.96528e-14,-1.69367e-13,-1.70218e-13;4.48404e-13)	 invariant length = 3.7818e-13  [mm] 
+	 distanceClu2 = (-2.5386e-14,2.18776e-13,2.19875e-13;3.78119e-13)	 invariant length = 2.14759e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-1.22028e-13,1.05163e-12,1.05691e-12;2.50846e-12)	 invariant length = 2.01357e-12  [mm] 
+	 distanceClu2 = (1.38211e-13,-1.1911e-12,-1.19708e-12;2.31006e-12)	 invariant length = 1.57021e-12  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (5.28106e-14,-4.55122e-13,-4.57407e-13;7.09843e-13)	 invariant length = 2.91084e-13  [mm] 
+	 distanceClu2 = (-5.28388e-14,4.55365e-13,4.57652e-13;7.09497e-13)	 invariant length = 2.89469e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-7.22158e-14,6.22355e-13,6.25481e-13;9.67004e-13)	 invariant length = 3.89011e-13  [mm] 
+	 distanceClu2 = (2.9738e-14,-2.56282e-13,-2.57569e-13;1.48775e-12)	 invariant length = 1.44239e-12  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (5.58745e-14,-4.81526e-13,-4.83944e-13;7.25246e-13)	 invariant length = 2.38308e-13  [mm] 
+	 distanceClu2 = (-3.57612e-14,3.08189e-13,3.09737e-13;9.71818e-13)	 invariant length = 8.67314e-13  [mm] 
+ClusterFissioner::calculatePositions : *** extreme debugging ***
+	 distanceClu1 = (-2.6133e-14,2.25214e-13,2.26345e-13;5.34472e-13)	 invariant length = 4.27813e-13  [mm] 
+	 distanceClu2 = (2.41452e-14,-2.08083e-13,-2.09128e-13;5.5884e-13)	 invariant length = 4.74011e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 1.55079
+	 --- Kupco's Table --- : cluMass=1195.56  id1=-1  id2=2
+	 numChan=21   maxWeight=499.693
+	 	0   idQ=-1   idHad1=221   idHad2=211   weight=166.32
+	 	1   idQ=-1   idHad1=331   idHad2=211   weight=23.9346
+	 	2   idQ=-1   idHad1=333   idHad2=211   weight=0.0245689
+	 	3   idQ=-1   idHad1=223   idHad2=211   weight=481.734
+	 	4   idQ=-1   idHad1=10221   idHad2=211   weight=62.7647
+	 	5   idQ=-1   idHad1=111   idHad2=211   weight=290.901
+	 	6   idQ=-1   idHad1=111   idHad2=10211   weight=74.3837
+	 	7   idQ=-1   idHad1=111   idHad2=213   weight=499.693
+	 	8   idQ=-1   idHad1=10111   idHad2=211   weight=72.6009
+	 	9   idQ=-1   idHad1=113   idHad2=211   weight=496.033
+	 	10   idQ=-2   idHad1=211   idHad2=221   weight=166.32
+	 	11   idQ=-2   idHad1=211   idHad2=331   weight=23.9346
+	 	12   idQ=-2   idHad1=211   idHad2=333   weight=0.0245689
+	 	13   idQ=-2   idHad1=211   idHad2=223   weight=481.734
+	 	14   idQ=-2   idHad1=211   idHad2=10221   weight=62.7647
+	 	15   idQ=-2   idHad1=211   idHad2=111   weight=290.901
+	 	16   idQ=-2   idHad1=211   idHad2=10111   weight=72.6009
+	 	17   idQ=-2   idHad1=211   idHad2=113   weight=496.033
+	 	18   idQ=-2   idHad1=10211   idHad2=111   weight=74.3837
+	 	19   idQ=-2   idHad1=213   idHad2=111   weight=499.693
+	 	20   idQ=-3   idHad1=-311   idHad2=321   weight=334.198
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.19556  [GeV] 
+	 smearingWidth = 1.65049e-13  [mm] 
+	 distanceHad1  = (1.6967e-12,-4.81534e-13,1.60543e-12;2.69663e-13)	 invariant length: = -2.36967e-12  [mm] 
+	 distanceHad2  = (-1.63128e-16,-2.68876e-13,1.07229e-13;-1.41357e-15)	 invariant length: = -2.89465e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 1.78202
+	 --- Kupco's Table --- : cluMass=699.427  id1=1  id2=-1
+	 numChan=4   maxWeight=320.655
+	 	0   idQ=1   idHad1=221   idHad2=111   weight=11.1907
+	 	1   idQ=1   idHad1=111   idHad2=221   weight=11.1907
+	 	2   idQ=1   idHad1=111   idHad2=111   weight=80.6535
+	 	3   idQ=2   idHad1=-211   idHad2=211   weight=320.655
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 0.699427  [GeV] 
+	 smearingWidth = 2.82127e-13  [mm] 
+	 distanceHad1  = (-1.4445e-13,-2.16098e-15,3.38023e-14;-4.01892e-14)	 invariant length: = -1.42821e-13  [mm] 
+	 distanceHad2  = (-1.12616e-12,-2.38202e-13,-8.27925e-14;7.43538e-14)	 invariant length: = -1.15165e-12  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 0.695402
+	 --- Kupco's Table --- : cluMass=913.116  id1=-2  id2=1
+	 numChan=8   maxWeight=217.713
+	 	0   idQ=-1   idHad1=-211   idHad2=221   weight=97.3126
+	 	1   idQ=-1   idHad1=-211   idHad2=111   weight=217.713
+	 	2   idQ=-1   idHad1=-211   idHad2=113   weight=52.1218
+	 	3   idQ=-1   idHad1=-213   idHad2=111   weight=77.3117
+	 	4   idQ=-2   idHad1=221   idHad2=-211   weight=97.3126
+	 	5   idQ=-2   idHad1=111   idHad2=-211   weight=217.713
+	 	6   idQ=-2   idHad1=111   idHad2=-213   weight=77.3117
+	 	7   idQ=-2   idHad1=113   idHad2=-211   weight=52.1218
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 0.913116  [GeV] 
+	 smearingWidth = 2.16103e-13  [mm] 
+	 distanceHad1  = (1.80785e-13,-1.84016e-15,3.88679e-13;-1.80844e-13)	 invariant length: = -3.88656e-13  [mm] 
+	 distanceHad2  = (-3.15377e-15,-3.21791e-13,3.5613e-13;-2.85609e-13)	 invariant length: = -3.85766e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 1.30322
+	 --- Kupco's Table --- : cluMass=2041.81  id1=-1  id2=3
+	 numChan=66   maxWeight=5349.27
+	 	0   idQ=-1   idHad1=221   idHad2=-311   weight=317.093
+	 	1   idQ=-1   idHad1=221   idHad2=-10311   weight=83.5885
+	 	2   idQ=-1   idHad1=221   idHad2=-313   weight=771.856
+	 	3   idQ=-1   idHad1=221   idHad2=-10313   weight=449.946
+	 	4   idQ=-1   idHad1=221   idHad2=-20313   weight=299.138
+	 	5   idQ=-1   idHad1=221   idHad2=-315   weight=408.071
+	 	6   idQ=-1   idHad1=331   idHad2=-311   weight=96.5038
+	 	7   idQ=-1   idHad1=331   idHad2=-313   weight=177.474
+	 	8   idQ=-1   idHad1=333   idHad2=-311   weight=0.163325
+	 	9   idQ=-1   idHad1=333   idHad2=-313   weight=0.261717
+	 	10   idQ=-1   idHad1=223   idHad2=-311   weight=1181.5
+	 	11   idQ=-1   idHad1=223   idHad2=-313   weight=2612.8
+	 	12   idQ=-1   idHad1=10333   idHad2=-311   weight=1.90073e-30
+	 	13   idQ=-1   idHad1=10223   idHad2=-311   weight=834.281
+	 	14   idQ=-1   idHad1=10221   idHad2=-311   weight=336.284
+	 	15   idQ=-1   idHad1=10221   idHad2=-313   weight=567.38
+	 	16   idQ=-1   idHad1=20333   idHad2=-311   weight=1.70663e-30
+	 	17   idQ=-1   idHad1=20223   idHad2=-311   weight=693.066
+	 	18   idQ=-1   idHad1=335   idHad2=-311   weight=7.80877
+	 	19   idQ=-1   idHad1=225   idHad2=-311   weight=1140.8
+	 	20   idQ=-1   idHad1=111   idHad2=-311   weight=477.613
+	 	21   idQ=-1   idHad1=111   idHad2=-10311   weight=253.836
+	 	22   idQ=-1   idHad1=111   idHad2=-313   weight=1226.49
+	 	23   idQ=-1   idHad1=111   idHad2=-10313   weight=904.403
+	 	24   idQ=-1   idHad1=111   idHad2=-20313   weight=790.524
+	 	25   idQ=-1   idHad1=111   idHad2=-315   weight=1263.74
+	 	26   idQ=-1   idHad1=10111   idHad2=-311   weight=341.256
+	 	27   idQ=-1   idHad1=10111   idHad2=-313   weight=597.614
+	 	28   idQ=-1   idHad1=113   idHad2=-311   weight=1190.74
+	 	29   idQ=-1   idHad1=113   idHad2=-313   weight=2655.22
+	 	30   idQ=-1   idHad1=10113   idHad2=-311   weight=760.569
+	 	31   idQ=-1   idHad1=20113   idHad2=-311   weight=761.835
+	 	32   idQ=-1   idHad1=115   idHad2=-311   weight=1069.11
+	 	33   idQ=-2   idHad1=211   idHad2=-321   weight=955.876
+	 	34   idQ=-2   idHad1=211   idHad2=-10321   weight=506.749
+	 	35   idQ=-2   idHad1=211   idHad2=-323   weight=2457.61
+	 	36   idQ=-2   idHad1=211   idHad2=-10323   weight=1806.62
+	 	37   idQ=-2   idHad1=211   idHad2=-20323   weight=1578.41
+	 	38   idQ=-2   idHad1=211   idHad2=-325   weight=2548.24
+	 	39   idQ=-2   idHad1=10211   idHad2=-321   weight=684.244
+	 	40   idQ=-2   idHad1=10211   idHad2=-323   weight=1210.88
+	 	41   idQ=-2   idHad1=213   idHad2=-321   weight=2387.73
+	 	42   idQ=-2   idHad1=213   idHad2=-323   weight=5349.27
+	 	43   idQ=-2   idHad1=10213   idHad2=-321   weight=1528.9
+	 	44   idQ=-2   idHad1=20213   idHad2=-321   weight=1531.42
+	 	45   idQ=-2   idHad1=215   idHad2=-321   weight=2154.17
+	 	46   idQ=-3   idHad1=-311   idHad2=221   weight=242.581
+	 	47   idQ=-3   idHad1=-311   idHad2=331   weight=504.586
+	 	48   idQ=-3   idHad1=-311   idHad2=333   weight=1981.46
+	 	49   idQ=-3   idHad1=-311   idHad2=223   weight=0.38955
+	 	50   idQ=-3   idHad1=-311   idHad2=10333   weight=1013.95
+	 	51   idQ=-3   idHad1=-311   idHad2=10223   weight=0
+	 	52   idQ=-3   idHad1=-311   idHad2=10221   weight=0
+	 	53   idQ=-3   idHad1=-311   idHad2=20333   weight=910.408
+	 	54   idQ=-3   idHad1=-311   idHad2=20223   weight=0
+	 	55   idQ=-3   idHad1=-311   idHad2=335   weight=586.959
+	 	56   idQ=-3   idHad1=-311   idHad2=225   weight=60.7078
+	 	57   idQ=-3   idHad1=-10311   idHad2=221   weight=63.9464
+	 	58   idQ=-3   idHad1=-313   idHad2=221   weight=590.481
+	 	59   idQ=-3   idHad1=-313   idHad2=331   weight=927.952
+	 	60   idQ=-3   idHad1=-313   idHad2=333   weight=3175.15
+	 	61   idQ=-3   idHad1=-313   idHad2=223   weight=0.861459
+	 	62   idQ=-3   idHad1=-313   idHad2=10221   weight=0
+	 	63   idQ=-3   idHad1=-10313   idHad2=221   weight=344.215
+	 	64   idQ=-3   idHad1=-20313   idHad2=221   weight=228.845
+	 	65   idQ=-3   idHad1=-315   idHad2=221   weight=312.18
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 2.04181  [GeV] 
+	 smearingWidth = 9.66433e-14  [mm] 
+	 distanceHad1  = (1.0599e-13,2.45117e-14,-6.24635e-15;2.19657e-13)	 invariant length: = 1.90723e-13  [mm] 
+	 distanceHad2  = (8.15078e-14,5.96237e-14,1.18497e-15;-6.49768e-14)	 invariant length: = -7.7317e-14  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 2.78318
+	 --- Kupco's Table --- : cluMass=1449.52  id1=2  id2=-3
+	 numChan=14   maxWeight=1297.6
+	 	0   idQ=1   idHad1=211   idHad2=311   weight=630.791
+	 	1   idQ=1   idHad1=211   idHad2=313   weight=1297.6
+	 	2   idQ=1   idHad1=211   idHad2=10313   weight=218.714
+	 	3   idQ=1   idHad1=213   idHad2=311   weight=1044.26
+	 	4   idQ=2   idHad1=221   idHad2=321   weight=182.265
+	 	5   idQ=2   idHad1=221   idHad2=323   weight=91.6552
+	 	6   idQ=2   idHad1=223   idHad2=321   weight=506.015
+	 	7   idQ=2   idHad1=111   idHad2=321   weight=316.384
+	 	8   idQ=2   idHad1=111   idHad2=323   weight=654.657
+	 	9   idQ=2   idHad1=111   idHad2=10323   weight=120.361
+	 	10   idQ=2   idHad1=113   idHad2=321   weight=524.968
+	 	11   idQ=3   idHad1=321   idHad2=221   weight=139.435
+	 	12   idQ=3   idHad1=321   idHad2=223   weight=0.166837
+	 	13   idQ=3   idHad1=323   idHad2=221   weight=70.1175
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.44952  [GeV] 
+	 smearingWidth = 1.36132e-13  [mm] 
+	 distanceHad1  = (-8.64208e-15,3.53887e-14,6.80612e-14;1.20912e-13)	 invariant length: = 9.30613e-14  [mm] 
+	 distanceHad2  = (-4.51754e-14,-3.31533e-13,9.2441e-15;5.55701e-14)	 invariant length: = -3.30079e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=0	 CM angle = 0
+	 --- Kupco's Table --- : cluMass=2922.89  id1=2  id2=-2
+	 numChan=381   maxWeight=15785.6
+	 	0   idQ=1   idHad1=211   idHad2=-211   weight=1454.76
+	 	1   idQ=1   idHad1=211   idHad2=-10211   weight=1291.79
+	 	2   idQ=1   idHad1=211   idHad2=-213   weight=4071.03
+	 	3   idQ=1   idHad1=211   idHad2=-10213   weight=3592.34
+	 	4   idQ=1   idHad1=211   idHad2=-20213   weight=3593.61
+	 	5   idQ=1   idHad1=211   idHad2=-215   weight=5796.23
+	 	6   idQ=1   idHad1=10211   idHad2=-211   weight=1291.79
+	 	7   idQ=1   idHad1=10211   idHad2=-10211   weight=1080.99
+	 	8   idQ=1   idHad1=10211   idHad2=-213   weight=3501.55
+	 	9   idQ=1   idHad1=10211   idHad2=-10213   weight=2851.25
+	 	10   idQ=1   idHad1=10211   idHad2=-20213   weight=2853.07
+	 	11   idQ=1   idHad1=10211   idHad2=-215   weight=4474.83
+	 	12   idQ=1   idHad1=213   idHad2=-211   weight=4071.03
+	 	13   idQ=1   idHad1=213   idHad2=-10211   weight=3501.55
+	 	14   idQ=1   idHad1=213   idHad2=-213   weight=11196.5
+	 	15   idQ=1   idHad1=213   idHad2=-10213   weight=9478.79
+	 	16   idQ=1   idHad1=213   idHad2=-20213   weight=9483.48
+	 	17   idQ=1   idHad1=213   idHad2=-215   weight=15088.4
+	 	18   idQ=1   idHad1=10213   idHad2=-211   weight=3592.34
+	 	19   idQ=1   idHad1=10213   idHad2=-10211   weight=2851.25
+	 	20   idQ=1   idHad1=10213   idHad2=-213   weight=9478.79
+	 	21   idQ=1   idHad1=10213   idHad2=-10213   weight=7089.22
+	 	22   idQ=1   idHad1=10213   idHad2=-20213   weight=7096.24
+	 	23   idQ=1   idHad1=10213   idHad2=-215   weight=10722.8
+	 	24   idQ=1   idHad1=20213   idHad2=-211   weight=3593.61
+	 	25   idQ=1   idHad1=20213   idHad2=-10211   weight=2853.07
+	 	26   idQ=1   idHad1=20213   idHad2=-213   weight=9483.48
+	 	27   idQ=1   idHad1=20213   idHad2=-10213   weight=7096.24
+	 	28   idQ=1   idHad1=20213   idHad2=-20213   weight=7103.26
+	 	29   idQ=1   idHad1=20213   idHad2=-215   weight=10736
+	 	30   idQ=1   idHad1=215   idHad2=-211   weight=5796.23
+	 	31   idQ=1   idHad1=215   idHad2=-10211   weight=4474.83
+	 	32   idQ=1   idHad1=215   idHad2=-213   weight=15088.4
+	 	33   idQ=1   idHad1=215   idHad2=-10213   weight=10722.8
+	 	34   idQ=1   idHad1=215   idHad2=-20213   weight=10736
+	 	35   idQ=1   idHad1=215   idHad2=-215   weight=15785.6
+	 	36   idQ=2   idHad1=221   idHad2=221   weight=177.237
+	 	37   idQ=2   idHad1=221   idHad2=331   weight=62.0567
+	 	38   idQ=2   idHad1=221   idHad2=333   weight=0.108868
+	 	39   idQ=2   idHad1=221   idHad2=223   weight=703.682
+	 	40   idQ=2   idHad1=221   idHad2=10333   weight=2.12016e-30
+	 	41   idQ=2   idHad1=221   idHad2=10223   weight=626.801
+	 	42   idQ=2   idHad1=221   idHad2=10221   weight=221.495
+	 	43   idQ=2   idHad1=221   idHad2=20333   weight=2.09012e-30
+	 	44   idQ=2   idHad1=221   idHad2=20223   weight=598.478
+	 	45   idQ=2   idHad1=221   idHad2=335   weight=22.7593
+	 	46   idQ=2   idHad1=221   idHad2=225   weight=974.62
+	 	47   idQ=2   idHad1=221   idHad2=111   weight=254.399
+	 	48   idQ=2   idHad1=221   idHad2=10111   weight=222.604
+	 	49   idQ=2   idHad1=221   idHad2=113   weight=705.897
+	 	50   idQ=2   idHad1=221   idHad2=10113   weight=611.727
+	 	51   idQ=2   idHad1=221   idHad2=20113   weight=611.981
+	 	52   idQ=2   idHad1=221   idHad2=115   weight=981.275
+	 	53   idQ=2   idHad1=331   idHad2=221   weight=62.0567
+	 	54   idQ=2   idHad1=331   idHad2=331   weight=21.125
+	 	55   idQ=2   idHad1=331   idHad2=333   weight=0.0368057
+	 	56   idQ=2   idHad1=331   idHad2=223   weight=243.211
+	 	57   idQ=2   idHad1=331   idHad2=10333   weight=6.64234e-31
+	 	58   idQ=2   idHad1=331   idHad2=10223   weight=207.37
+	 	59   idQ=2   idHad1=331   idHad2=10221   weight=75.0526
+	 	60   idQ=2   idHad1=331   idHad2=20333   weight=6.48868e-31
+	 	61   idQ=2   idHad1=331   idHad2=20223   weight=193.642
+	 	62   idQ=2   idHad1=331   idHad2=335   weight=6.78149
+	 	63   idQ=2   idHad1=331   idHad2=225   weight=315.848
+	 	64   idQ=2   idHad1=331   idHad2=111   weight=89.9651
+	 	65   idQ=2   idHad1=331   idHad2=10111   weight=75.5684
+	 	66   idQ=2   idHad1=331   idHad2=113   weight=244.206
+	 	67   idQ=2   idHad1=331   idHad2=10113   weight=200.106
+	 	68   idQ=2   idHad1=331   idHad2=20113   weight=200.23
+	 	69   idQ=2   idHad1=331   idHad2=115   weight=314.75
+	 	70   idQ=2   idHad1=333   idHad2=221   weight=0.108868
+	 	71   idQ=2   idHad1=333   idHad2=331   weight=0.0368057
+	 	72   idQ=2   idHad1=333   idHad2=333   weight=6.40129e-05
+	 	73   idQ=2   idHad1=333   idHad2=223   weight=0.425347
+	 	74   idQ=2   idHad1=333   idHad2=10333   weight=1.13046e-33
+	 	75   idQ=2   idHad1=333   idHad2=10223   weight=0.358596
+	 	76   idQ=2   idHad1=333   idHad2=10221   weight=0.130609
+	 	77   idQ=2   idHad1=333   idHad2=20333   weight=1.10111e-33
+	 	78   idQ=2   idHad1=333   idHad2=20223   weight=0.332774
+	 	79   idQ=2   idHad1=333   idHad2=335   weight=0.0113486
+	 	80   idQ=2   idHad1=333   idHad2=225   weight=0.543034
+	 	81   idQ=2   idHad1=333   idHad2=111   weight=0.158196
+	 	82   idQ=2   idHad1=333   idHad2=10111   weight=0.131569
+	 	83   idQ=2   idHad1=333   idHad2=113   weight=0.427184
+	 	84   idQ=2   idHad1=333   idHad2=10113   weight=0.344956
+	 	85   idQ=2   idHad1=333   idHad2=20113   weight=0.345187
+	 	86   idQ=2   idHad1=333   idHad2=115   weight=0.539527
+	 	87   idQ=2   idHad1=223   idHad2=221   weight=703.682
+	 	88   idQ=2   idHad1=223   idHad2=331   weight=243.211
+	 	89   idQ=2   idHad1=223   idHad2=333   weight=0.425347
+	 	90   idQ=2   idHad1=223   idHad2=223   weight=2777.07
+	 	91   idQ=2   idHad1=223   idHad2=10333   weight=8.01614e-30
+	 	92   idQ=2   idHad1=223   idHad2=10223   weight=2425.47
+	 	93   idQ=2   idHad1=223   idHad2=10221   weight=866.268
+	 	94   idQ=2   idHad1=223   idHad2=20333   weight=7.87301e-30
+	 	95   idQ=2   idHad1=223   idHad2=20223   weight=2293.64
+	 	96   idQ=2   idHad1=223   idHad2=335   weight=84.3408
+	 	97   idQ=2   idHad1=223   idHad2=225   weight=3737.74
+	 	98   idQ=2   idHad1=223   idHad2=111   weight=1014.77
+	 	99   idQ=2   idHad1=223   idHad2=10111   weight=871.333
+	 	100   idQ=2   idHad1=223   idHad2=113   weight=2787.02
+	 	101   idQ=2   idHad1=223   idHad2=10113   weight=2355.49
+	 	102   idQ=2   idHad1=223   idHad2=20113   weight=2356.68
+	 	103   idQ=2   idHad1=223   idHad2=115   weight=3746.8
+	 	104   idQ=2   idHad1=10333   idHad2=221   weight=2.12016e-30
+	 	105   idQ=2   idHad1=10333   idHad2=331   weight=6.64234e-31
+	 	106   idQ=2   idHad1=10333   idHad2=333   weight=1.13046e-33
+	 	107   idQ=2   idHad1=10333   idHad2=223   weight=8.01614e-30
+	 	108   idQ=2   idHad1=10333   idHad2=10333   weight=1.32611e-62
+	 	109   idQ=2   idHad1=10333   idHad2=10223   weight=5.85403e-30
+	 	110   idQ=2   idHad1=10333   idHad2=10221   weight=2.32347e-30
+	 	111   idQ=2   idHad1=10333   idHad2=20333   weight=1.17411e-62
+	 	112   idQ=2   idHad1=10333   idHad2=20223   weight=4.89691e-30
+	 	113   idQ=2   idHad1=10333   idHad2=225   weight=8.05882e-30
+	 	114   idQ=2   idHad1=10333   idHad2=111   weight=3.1526e-30
+	 	115   idQ=2   idHad1=10333   idHad2=10111   weight=2.35429e-30
+	 	116   idQ=2   idHad1=10333   idHad2=113   weight=8.07087e-30
+	 	117   idQ=2   idHad1=10333   idHad2=10113   weight=5.36123e-30
+	 	118   idQ=2   idHad1=10333   idHad2=20113   weight=5.36982e-30
+	 	119   idQ=2   idHad1=10333   idHad2=115   weight=7.55431e-30
+	 	120   idQ=2   idHad1=10223   idHad2=221   weight=626.801
+	 	121   idQ=2   idHad1=10223   idHad2=331   weight=207.37
+	 	122   idQ=2   idHad1=10223   idHad2=333   weight=0.358596
+	 	123   idQ=2   idHad1=10223   idHad2=223   weight=2425.47
+	 	124   idQ=2   idHad1=10223   idHad2=10333   weight=5.85403e-30
+	 	125   idQ=2   idHad1=10223   idHad2=10223   weight=1970.41
+	 	126   idQ=2   idHad1=10223   idHad2=10221   weight=733.065
+	 	127   idQ=2   idHad1=10223   idHad2=20333   weight=5.63507e-30
+	 	128   idQ=2   idHad1=10223   idHad2=20223   weight=1788.45
+	 	129   idQ=2   idHad1=10223   idHad2=335   weight=54.5784
+	 	130   idQ=2   idHad1=10223   idHad2=225   weight=2923.35
+	 	131   idQ=2   idHad1=10223   idHad2=111   weight=917.224
+	 	132   idQ=2   idHad1=10223   idHad2=10111   weight=739.597
+	 	133   idQ=2   idHad1=10223   idHad2=113   weight=2437.69
+	 	134   idQ=2   idHad1=10223   idHad2=10113   weight=1874.83
+	 	135   idQ=2   idHad1=10223   idHad2=20113   weight=1876.46
+	 	136   idQ=2   idHad1=10223   idHad2=115   weight=2872.54
+	 	137   idQ=2   idHad1=10221   idHad2=221   weight=221.495
+	 	138   idQ=2   idHad1=10221   idHad2=331   weight=75.0526
+	 	139   idQ=2   idHad1=10221   idHad2=333   weight=0.130609
+	 	140   idQ=2   idHad1=10221   idHad2=223   weight=866.268
+	 	141   idQ=2   idHad1=10221   idHad2=10333   weight=2.32347e-30
+	 	142   idQ=2   idHad1=10221   idHad2=10223   weight=733.065
+	 	143   idQ=2   idHad1=10221   idHad2=10221   weight=266.437
+	 	144   idQ=2   idHad1=10221   idHad2=20333   weight=2.26539e-30
+	 	145   idQ=2   idHad1=10221   idHad2=20223   weight=681.706
+	 	146   idQ=2   idHad1=10221   idHad2=335   weight=23.4614
+	 	147   idQ=2   idHad1=10221   idHad2=225   weight=1112.26
+	 	148   idQ=2   idHad1=10221   idHad2=111   weight=321.609
+	 	149   idQ=2   idHad1=10221   idHad2=10111   weight=268.353
+	 	150   idQ=2   idHad1=10221   idHad2=113   weight=869.944
+	 	151   idQ=2   idHad1=10221   idHad2=10113   weight=705.921
+	 	152   idQ=2   idHad1=10221   idHad2=20113   weight=706.381
+	 	153   idQ=2   idHad1=10221   idHad2=115   weight=1106.2
+	 	154   idQ=2   idHad1=20333   idHad2=221   weight=2.09012e-30
+	 	155   idQ=2   idHad1=20333   idHad2=331   weight=6.48868e-31
+	 	156   idQ=2   idHad1=20333   idHad2=333   weight=1.10111e-33
+	 	157   idQ=2   idHad1=20333   idHad2=223   weight=7.87301e-30
+	 	158   idQ=2   idHad1=20333   idHad2=10333   weight=1.17411e-62
+	 	159   idQ=2   idHad1=20333   idHad2=10223   weight=5.63507e-30
+	 	160   idQ=2   idHad1=20333   idHad2=10221   weight=2.26539e-30
+	 	161   idQ=2   idHad1=20333   idHad2=20333   weight=9.97552e-63
+	 	162   idQ=2   idHad1=20333   idHad2=20223   weight=4.62349e-30
+	 	163   idQ=2   idHad1=20333   idHad2=225   weight=7.62227e-30
+	 	164   idQ=2   idHad1=20333   idHad2=111   weight=3.11562e-30
+	 	165   idQ=2   idHad1=20333   idHad2=10111   weight=2.29724e-30
+	 	166   idQ=2   idHad1=20333   idHad2=113   weight=7.9291e-30
+	 	167   idQ=2   idHad1=20333   idHad2=10113   weight=5.11669e-30
+	 	168   idQ=2   idHad1=20333   idHad2=20113   weight=5.12576e-30
+	 	169   idQ=2   idHad1=20333   idHad2=115   weight=7.05367e-30
+	 	170   idQ=2   idHad1=20223   idHad2=221   weight=598.478
+	 	171   idQ=2   idHad1=20223   idHad2=331   weight=193.642
+	 	172   idQ=2   idHad1=20223   idHad2=333   weight=0.332774
+	 	173   idQ=2   idHad1=20223   idHad2=223   weight=2293.64
+	 	174   idQ=2   idHad1=20223   idHad2=10333   weight=4.89691e-30
+	 	175   idQ=2   idHad1=20223   idHad2=10223   weight=1788.45
+	 	176   idQ=2   idHad1=20223   idHad2=10221   weight=681.706
+	 	177   idQ=2   idHad1=20223   idHad2=20333   weight=4.62349e-30
+	 	178   idQ=2   idHad1=20223   idHad2=20223   weight=1578.68
+	 	179   idQ=2   idHad1=20223   idHad2=335   weight=39.4627
+	 	180   idQ=2   idHad1=20223   idHad2=225   weight=2586.16
+	 	181   idQ=2   idHad1=20223   idHad2=111   weight=881.768
+	 	182   idQ=2   idHad1=20223   idHad2=10111   weight=688.94
+	 	183   idQ=2   idHad1=20223   idHad2=113   weight=2306.88
+	 	184   idQ=2   idHad1=20223   idHad2=10113   weight=1679.01
+	 	185   idQ=2   idHad1=20223   idHad2=20113   weight=1680.89
+	 	186   idQ=2   idHad1=20223   idHad2=115   weight=2503.67
+	 	187   idQ=2   idHad1=335   idHad2=221   weight=22.7593
+	 	188   idQ=2   idHad1=335   idHad2=331   weight=6.78149
+	 	189   idQ=2   idHad1=335   idHad2=333   weight=0.0113486
+	 	190   idQ=2   idHad1=335   idHad2=223   weight=84.3408
+	 	191   idQ=2   idHad1=335   idHad2=10223   weight=54.5784
+	 	192   idQ=2   idHad1=335   idHad2=10221   weight=23.4614
+	 	193   idQ=2   idHad1=335   idHad2=20223   weight=39.4627
+	 	194   idQ=2   idHad1=335   idHad2=225   weight=65.9193
+	 	195   idQ=2   idHad1=335   idHad2=111   weight=34.2815
+	 	196   idQ=2   idHad1=335   idHad2=10111   weight=23.8811
+	 	197   idQ=2   idHad1=335   idHad2=113   weight=85.0529
+	 	198   idQ=2   idHad1=335   idHad2=10113   weight=47.0692
+	 	199   idQ=2   idHad1=335   idHad2=20113   weight=47.2042
+	 	200   idQ=2   idHad1=335   idHad2=115   weight=54.8316
+	 	201   idQ=2   idHad1=225   idHad2=221   weight=974.62
+	 	202   idQ=2   idHad1=225   idHad2=331   weight=315.848
+	 	203   idQ=2   idHad1=225   idHad2=333   weight=0.543034
+	 	204   idQ=2   idHad1=225   idHad2=223   weight=3737.74
+	 	205   idQ=2   idHad1=225   idHad2=10333   weight=8.05882e-30
+	 	206   idQ=2   idHad1=225   idHad2=10223   weight=2923.35
+	 	207   idQ=2   idHad1=225   idHad2=10221   weight=1112.26
+	 	208   idQ=2   idHad1=225   idHad2=20333   weight=7.62227e-30
+	 	209   idQ=2   idHad1=225   idHad2=20223   weight=2586.16
+	 	210   idQ=2   idHad1=225   idHad2=335   weight=65.9193
+	 	211   idQ=2   idHad1=225   idHad2=225   weight=4235.83
+	 	212   idQ=2   idHad1=225   idHad2=111   weight=1435.28
+	 	213   idQ=2   idHad1=225   idHad2=10111   weight=1123.93
+	 	214   idQ=2   idHad1=225   idHad2=113   weight=3759.12
+	 	215   idQ=2   idHad1=225   idHad2=10113   weight=2747.34
+	 	216   idQ=2   idHad1=225   idHad2=20113   weight=2750.37
+	 	217   idQ=2   idHad1=225   idHad2=115   weight=4105.72
+	 	218   idQ=2   idHad1=111   idHad2=221   weight=254.399
+	 	219   idQ=2   idHad1=111   idHad2=331   weight=89.9651
+	 	220   idQ=2   idHad1=111   idHad2=333   weight=0.158196
+	 	221   idQ=2   idHad1=111   idHad2=223   weight=1014.77
+	 	222   idQ=2   idHad1=111   idHad2=10333   weight=3.1526e-30
+	 	223   idQ=2   idHad1=111   idHad2=10223   weight=917.224
+	 	224   idQ=2   idHad1=111   idHad2=10221   weight=321.609
+	 	225   idQ=2   idHad1=111   idHad2=20333   weight=3.11562e-30
+	 	226   idQ=2   idHad1=111   idHad2=20223   weight=881.768
+	 	227   idQ=2   idHad1=111   idHad2=335   weight=34.2815
+	 	228   idQ=2   idHad1=111   idHad2=225   weight=1435.28
+	 	229   idQ=2   idHad1=111   idHad2=111   weight=363.799
+	 	230   idQ=2   idHad1=111   idHad2=10111   weight=323.016
+	 	231   idQ=2   idHad1=111   idHad2=113   weight=1017.63
+	 	232   idQ=2   idHad1=111   idHad2=10113   weight=898.317
+	 	233   idQ=2   idHad1=111   idHad2=20113   weight=898.634
+	 	234   idQ=2   idHad1=111   idHad2=115   weight=1449.46
+	 	235   idQ=2   idHad1=10111   idHad2=221   weight=222.604
+	 	236   idQ=2   idHad1=10111   idHad2=331   weight=75.5684
+	 	237   idQ=2   idHad1=10111   idHad2=333   weight=0.131569
+	 	238   idQ=2   idHad1=10111   idHad2=223   weight=871.333
+	 	239   idQ=2   idHad1=10111   idHad2=10333   weight=2.35429e-30
+	 	240   idQ=2   idHad1=10111   idHad2=10223   weight=739.597
+	 	241   idQ=2   idHad1=10111   idHad2=10221   weight=268.353
+	 	242   idQ=2   idHad1=10111   idHad2=20333   weight=2.29724e-30
+	 	243   idQ=2   idHad1=10111   idHad2=20223   weight=688.94
+	 	244   idQ=2   idHad1=10111   idHad2=335   weight=23.8811
+	 	245   idQ=2   idHad1=10111   idHad2=225   weight=1123.93
+	 	246   idQ=2   idHad1=10111   idHad2=111   weight=323.016
+	 	247   idQ=2   idHad1=10111   idHad2=10111   weight=270.248
+	 	248   idQ=2   idHad1=10111   idHad2=113   weight=874.976
+	 	249   idQ=2   idHad1=10111   idHad2=10113   weight=712.812
+	 	250   idQ=2   idHad1=10111   idHad2=20113   weight=713.267
+	 	251   idQ=2   idHad1=10111   idHad2=115   weight=1118.71
+	 	252   idQ=2   idHad1=113   idHad2=221   weight=705.897
+	 	253   idQ=2   idHad1=113   idHad2=331   weight=244.206
+	 	254   idQ=2   idHad1=113   idHad2=333   weight=0.427184
+	 	255   idQ=2   idHad1=113   idHad2=223   weight=2787.02
+	 	256   idQ=2   idHad1=113   idHad2=10333   weight=8.07087e-30
+	 	257   idQ=2   idHad1=113   idHad2=10223   weight=2437.69
+	 	258   idQ=2   idHad1=113   idHad2=10221   weight=869.944
+	 	259   idQ=2   idHad1=113   idHad2=20333   weight=7.9291e-30
+	 	260   idQ=2   idHad1=113   idHad2=20223   weight=2306.88
+	 	261   idQ=2   idHad1=113   idHad2=335   weight=85.0529
+	 	262   idQ=2   idHad1=113   idHad2=225   weight=3759.12
+	 	263   idQ=2   idHad1=113   idHad2=111   weight=1017.63
+	 	264   idQ=2   idHad1=113   idHad2=10111   weight=874.976
+	 	265   idQ=2   idHad1=113   idHad2=113   weight=2796.91
+	 	266   idQ=2   idHad1=113   idHad2=10113   weight=2368.24
+	 	267   idQ=2   idHad1=113   idHad2=20113   weight=2369.42
+	 	268   idQ=2   idHad1=113   idHad2=115   weight=3769.5
+	 	269   idQ=2   idHad1=10113   idHad2=221   weight=611.727
+	 	270   idQ=2   idHad1=10113   idHad2=331   weight=200.106
+	 	271   idQ=2   idHad1=10113   idHad2=333   weight=0.344956
+	 	272   idQ=2   idHad1=10113   idHad2=223   weight=2355.49
+	 	273   idQ=2   idHad1=10113   idHad2=10333   weight=5.36123e-30
+	 	274   idQ=2   idHad1=10113   idHad2=10223   weight=1874.83
+	 	275   idQ=2   idHad1=10113   idHad2=10221   weight=705.921
+	 	276   idQ=2   idHad1=10113   idHad2=20333   weight=5.11669e-30
+	 	277   idQ=2   idHad1=10113   idHad2=20223   weight=1679.01
+	 	278   idQ=2   idHad1=10113   idHad2=335   weight=47.0692
+	 	279   idQ=2   idHad1=10113   idHad2=225   weight=2747.34
+	 	280   idQ=2   idHad1=10113   idHad2=111   weight=898.317
+	 	281   idQ=2   idHad1=10113   idHad2=10111   weight=712.812
+	 	282   idQ=2   idHad1=10113   idHad2=113   weight=2368.24
+	 	283   idQ=2   idHad1=10113   idHad2=10113   weight=1772.3
+	 	284   idQ=2   idHad1=10113   idHad2=20113   weight=1774.06
+	 	285   idQ=2   idHad1=10113   idHad2=115   weight=2680.7
+	 	286   idQ=2   idHad1=20113   idHad2=221   weight=611.981
+	 	287   idQ=2   idHad1=20113   idHad2=331   weight=200.23
+	 	288   idQ=2   idHad1=20113   idHad2=333   weight=0.345187
+	 	289   idQ=2   idHad1=20113   idHad2=223   weight=2356.68
+	 	290   idQ=2   idHad1=20113   idHad2=10333   weight=5.36982e-30
+	 	291   idQ=2   idHad1=20113   idHad2=10223   weight=1876.46
+	 	292   idQ=2   idHad1=20113   idHad2=10221   weight=706.381
+	 	293   idQ=2   idHad1=20113   idHad2=20333   weight=5.12576e-30
+	 	294   idQ=2   idHad1=20113   idHad2=20223   weight=1680.89
+	 	295   idQ=2   idHad1=20113   idHad2=335   weight=47.2042
+	 	296   idQ=2   idHad1=20113   idHad2=225   weight=2750.37
+	 	297   idQ=2   idHad1=20113   idHad2=111   weight=898.634
+	 	298   idQ=2   idHad1=20113   idHad2=10111   weight=713.267
+	 	299   idQ=2   idHad1=20113   idHad2=113   weight=2369.42
+	 	300   idQ=2   idHad1=20113   idHad2=10113   weight=1774.06
+	 	301   idQ=2   idHad1=20113   idHad2=20113   weight=1775.82
+	 	302   idQ=2   idHad1=20113   idHad2=115   weight=2684.01
+	 	303   idQ=2   idHad1=115   idHad2=221   weight=981.275
+	 	304   idQ=2   idHad1=115   idHad2=331   weight=314.75
+	 	305   idQ=2   idHad1=115   idHad2=333   weight=0.539527
+	 	306   idQ=2   idHad1=115   idHad2=223   weight=3746.8
+	 	307   idQ=2   idHad1=115   idHad2=10333   weight=7.55431e-30
+	 	308   idQ=2   idHad1=115   idHad2=10223   weight=2872.54
+	 	309   idQ=2   idHad1=115   idHad2=10221   weight=1106.2
+	 	310   idQ=2   idHad1=115   idHad2=20333   weight=7.05367e-30
+	 	311   idQ=2   idHad1=115   idHad2=20223   weight=2503.67
+	 	312   idQ=2   idHad1=115   idHad2=335   weight=54.8316
+	 	313   idQ=2   idHad1=115   idHad2=225   weight=4105.72
+	 	314   idQ=2   idHad1=115   idHad2=111   weight=1449.46
+	 	315   idQ=2   idHad1=115   idHad2=10111   weight=1118.71
+	 	316   idQ=2   idHad1=115   idHad2=113   weight=3769.5
+	 	317   idQ=2   idHad1=115   idHad2=10113   weight=2680.7
+	 	318   idQ=2   idHad1=115   idHad2=20113   weight=2684.01
+	 	319   idQ=2   idHad1=115   idHad2=115   weight=3946.39
+	 	320   idQ=3   idHad1=321   idHad2=-321   weight=1375.56
+	 	321   idQ=3   idHad1=321   idHad2=-10321   weight=1042.89
+	 	322   idQ=3   idHad1=321   idHad2=-323   weight=3824.75
+	 	323   idQ=3   idHad1=321   idHad2=-10323   weight=3341.99
+	 	324   idQ=3   idHad1=321   idHad2=-20323   weight=3172.01
+	 	325   idQ=3   idHad1=321   idHad2=-325   weight=5225.25
+	 	326   idQ=3   idHad1=10321   idHad2=-321   weight=1042.89
+	 	327   idQ=3   idHad1=10321   idHad2=-10321   weight=306.23
+	 	328   idQ=3   idHad1=10321   idHad2=-323   weight=2620.21
+	 	329   idQ=3   idHad1=10321   idHad2=-10323   weight=1606.97
+	 	330   idQ=3   idHad1=10321   idHad2=-20323   weight=1090.64
+	 	331   idQ=3   idHad1=10321   idHad2=-325   weight=1577.09
+	 	332   idQ=3   idHad1=323   idHad2=-321   weight=3824.75
+	 	333   idQ=3   idHad1=323   idHad2=-10321   weight=2620.21
+	 	334   idQ=3   idHad1=323   idHad2=-323   weight=10421.6
+	 	335   idQ=3   idHad1=323   idHad2=-10323   weight=8671.81
+	 	336   idQ=3   idHad1=323   idHad2=-20323   weight=8027.89
+	 	337   idQ=3   idHad1=323   idHad2=-325   weight=13142.9
+	 	338   idQ=3   idHad1=10323   idHad2=-321   weight=3341.99
+	 	339   idQ=3   idHad1=10323   idHad2=-10321   weight=1606.97
+	 	340   idQ=3   idHad1=10323   idHad2=-323   weight=8671.81
+	 	341   idQ=3   idHad1=10323   idHad2=-10323   weight=6181.35
+	 	342   idQ=3   idHad1=10323   idHad2=-20323   weight=5119.93
+	 	343   idQ=3   idHad1=10323   idHad2=-325   weight=8110.92
+	 	344   idQ=3   idHad1=20323   idHad2=-321   weight=3172.01
+	 	345   idQ=3   idHad1=20323   idHad2=-10321   weight=1090.64
+	 	346   idQ=3   idHad1=20323   idHad2=-323   weight=8027.89
+	 	347   idQ=3   idHad1=20323   idHad2=-10323   weight=5119.93
+	 	348   idQ=3   idHad1=20323   idHad2=-20323   weight=3713.13
+	 	349   idQ=3   idHad1=20323   idHad2=-325   weight=5568.76
+	 	350   idQ=3   idHad1=325   idHad2=-321   weight=5225.25
+	 	351   idQ=3   idHad1=325   idHad2=-10321   weight=1577.09
+	 	352   idQ=3   idHad1=325   idHad2=-323   weight=13142.9
+	 	353   idQ=3   idHad1=325   idHad2=-10323   weight=8110.92
+	 	354   idQ=3   idHad1=325   idHad2=-20323   weight=5568.76
+	 	355   idQ=3   idHad1=325   idHad2=-325   weight=8108.36
+	 	356   idQ=-1103   idHad1=2112   idHad2=-2112   weight=4477.55
+	 	357   idQ=-1103   idHad1=2112   idHad2=-2114   weight=7781.7
+	 	358   idQ=-1103   idHad1=2114   idHad2=-2112   weight=7781.7
+	 	359   idQ=-1103   idHad1=2114   idHad2=-2114   weight=12552.9
+	 	360   idQ=-2101   idHad1=2212   idHad2=-2212   weight=2240.95
+	 	361   idQ=-2101   idHad1=2212   idHad2=-2214   weight=3895.89
+	 	362   idQ=-2101   idHad1=2214   idHad2=-2212   weight=3895.89
+	 	363   idQ=-2101   idHad1=2214   idHad2=-2214   weight=6289.01
+	 	364   idQ=-2203   idHad1=2224   idHad2=-2224   weight=12603.1
+	 	365   idQ=-3101   idHad1=3122   idHad2=-3122   weight=1887.94
+	 	366   idQ=-3101   idHad1=3122   idHad2=-3212   weight=1792.52
+	 	367   idQ=-3101   idHad1=3122   idHad2=-3214   weight=3017.99
+	 	368   idQ=-3101   idHad1=3212   idHad2=-3122   weight=1792.52
+	 	369   idQ=-3101   idHad1=3212   idHad2=-3212   weight=1689.55
+	 	370   idQ=-3101   idHad1=3212   idHad2=-3214   weight=2755.4
+	 	371   idQ=-3101   idHad1=3214   idHad2=-3122   weight=3017.99
+	 	372   idQ=-3101   idHad1=3214   idHad2=-3212   weight=2755.4
+	 	373   idQ=-3101   idHad1=3214   idHad2=-3214   weight=3762.49
+	 	374   idQ=-3201   idHad1=3222   idHad2=-3222   weight=1698.49
+	 	375   idQ=-3201   idHad1=3222   idHad2=-3224   weight=2770.4
+	 	376   idQ=-3201   idHad1=3224   idHad2=-3222   weight=2770.4
+	 	377   idQ=-3201   idHad1=3224   idHad2=-3224   weight=3783.6
+	 	378   idQ=-3303   idHad1=3322   idHad2=-3322   weight=2551.41
+	 	379   idQ=-3303   idHad1=3322   idHad2=-3324   weight=2644.69
+	 	380   idQ=-3303   idHad1=3324   idHad2=-3322   weight=2644.69
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 2.92289  [GeV] 
+	 smearingWidth = 6.7511e-14  [mm] 
+	 distanceHad1  = (-4.65592e-13,2.62591e-15,-1.62674e-13;1.17931e-13)	 invariant length: = -4.78893e-13  [mm] 
+	 distanceHad2  = (1.20428e-13,-1.55798e-13,2.76394e-15;2.66398e-14)	 invariant length: = -1.95125e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 1.7771
+	 --- Kupco's Table --- : cluMass=2180.04  id1=-2  id2=2
+	 numChan=171   maxWeight=6971.43
+	 	0   idQ=-1   idHad1=-211   idHad2=211   weight=1081.05
+	 	1   idQ=-1   idHad1=-211   idHad2=10211   weight=861.408
+	 	2   idQ=-1   idHad1=-211   idHad2=213   weight=2848.18
+	 	3   idQ=-1   idHad1=-211   idHad2=10213   weight=2201.34
+	 	4   idQ=-1   idHad1=-211   idHad2=20213   weight=2203.06
+	 	5   idQ=-1   idHad1=-211   idHad2=215   weight=3409.69
+	 	6   idQ=-1   idHad1=-10211   idHad2=211   weight=861.408
+	 	7   idQ=-1   idHad1=-10211   idHad2=10211   weight=469.972
+	 	8   idQ=-1   idHad1=-10211   idHad2=213   weight=1939.59
+	 	9   idQ=-1   idHad1=-213   idHad2=211   weight=2848.18
+	 	10   idQ=-1   idHad1=-213   idHad2=10211   weight=1939.59
+	 	11   idQ=-1   idHad1=-213   idHad2=213   weight=6971.43
+	 	12   idQ=-1   idHad1=-213   idHad2=10213   weight=3835.55
+	 	13   idQ=-1   idHad1=-213   idHad2=20213   weight=3846
+	 	14   idQ=-1   idHad1=-213   idHad2=215   weight=4622.36
+	 	15   idQ=-1   idHad1=-10213   idHad2=211   weight=2201.34
+	 	16   idQ=-1   idHad1=-10213   idHad2=213   weight=3835.55
+	 	17   idQ=-1   idHad1=-20213   idHad2=211   weight=2203.06
+	 	18   idQ=-1   idHad1=-20213   idHad2=213   weight=3846
+	 	19   idQ=-1   idHad1=-215   idHad2=211   weight=3409.69
+	 	20   idQ=-1   idHad1=-215   idHad2=213   weight=4622.36
+	 	21   idQ=-2   idHad1=221   idHad2=221   weight=123.288
+	 	22   idQ=-2   idHad1=221   idHad2=331   weight=38.7446
+	 	23   idQ=-2   idHad1=221   idHad2=333   weight=0.0661608
+	 	24   idQ=-2   idHad1=221   idHad2=223   weight=465.865
+	 	25   idQ=-2   idHad1=221   idHad2=10333   weight=9.17055e-31
+	 	26   idQ=-2   idHad1=221   idHad2=10223   weight=349.047
+	 	27   idQ=-2   idHad1=221   idHad2=10221   weight=135.815
+	 	28   idQ=-2   idHad1=221   idHad2=20333   weight=8.59963e-31
+	 	29   idQ=-2   idHad1=221   idHad2=20223   weight=302.79
+	 	30   idQ=-2   idHad1=221   idHad2=335   weight=7.084
+	 	31   idQ=-2   idHad1=221   idHad2=225   weight=496.622
+	 	32   idQ=-2   idHad1=221   idHad2=111   weight=183.822
+	 	33   idQ=-2   idHad1=221   idHad2=10111   weight=137.491
+	 	34   idQ=-2   idHad1=221   idHad2=113   weight=469.013
+	 	35   idQ=-2   idHad1=221   idHad2=10113   weight=324.75
+	 	36   idQ=-2   idHad1=221   idHad2=20113   weight=325.165
+	 	37   idQ=-2   idHad1=221   idHad2=115   weight=477.082
+	 	38   idQ=-2   idHad1=331   idHad2=221   weight=38.7446
+	 	39   idQ=-2   idHad1=331   idHad2=331   weight=9.95924
+	 	40   idQ=-2   idHad1=331   idHad2=333   weight=0.0156989
+	 	41   idQ=-2   idHad1=331   idHad2=223   weight=135.842
+	 	42   idQ=-2   idHad1=331   idHad2=10223   weight=49.0002
+	 	43   idQ=-2   idHad1=331   idHad2=10221   weight=33.161
+	 	44   idQ=-2   idHad1=331   idHad2=111   weight=60.4151
+	 	45   idQ=-2   idHad1=331   idHad2=10111   weight=34.3053
+	 	46   idQ=-2   idHad1=331   idHad2=113   weight=137.614
+	 	47   idQ=-2   idHad1=333   idHad2=221   weight=0.0661608
+	 	48   idQ=-2   idHad1=333   idHad2=331   weight=0.0156989
+	 	49   idQ=-2   idHad1=333   idHad2=333   weight=2.3593e-05
+	 	50   idQ=-2   idHad1=333   idHad2=223   weight=0.226298
+	 	51   idQ=-2   idHad1=333   idHad2=10221   weight=0.0507652
+	 	52   idQ=-2   idHad1=333   idHad2=111   weight=0.104477
+	 	53   idQ=-2   idHad1=333   idHad2=10111   weight=0.0531986
+	 	54   idQ=-2   idHad1=333   idHad2=113   weight=0.229767
+	 	55   idQ=-2   idHad1=223   idHad2=221   weight=465.865
+	 	56   idQ=-2   idHad1=223   idHad2=331   weight=135.842
+	 	57   idQ=-2   idHad1=223   idHad2=333   weight=0.226298
+	 	58   idQ=-2   idHad1=223   idHad2=223   weight=1708.13
+	 	59   idQ=-2   idHad1=223   idHad2=10223   weight=1074.56
+	 	60   idQ=-2   idHad1=223   idHad2=10221   weight=468.521
+	 	61   idQ=-2   idHad1=223   idHad2=20223   weight=768.512
+	 	62   idQ=-2   idHad1=223   idHad2=225   weight=1284.65
+	 	63   idQ=-2   idHad1=223   idHad2=111   weight=708.16
+	 	64   idQ=-2   idHad1=223   idHad2=10111   weight=477.487
+	 	65   idQ=-2   idHad1=223   idHad2=113   weight=1723.81
+	 	66   idQ=-2   idHad1=223   idHad2=10113   weight=921.336
+	 	67   idQ=-2   idHad1=223   idHad2=20113   weight=924.07
+	 	68   idQ=-2   idHad1=223   idHad2=115   weight=1063.97
+	 	69   idQ=-2   idHad1=10333   idHad2=221   weight=9.17055e-31
+	 	70   idQ=-2   idHad1=10333   idHad2=111   weight=1.77254e-30
+	 	71   idQ=-2   idHad1=10333   idHad2=113   weight=9.04408e-31
+	 	72   idQ=-2   idHad1=10223   idHad2=221   weight=349.047
+	 	73   idQ=-2   idHad1=10223   idHad2=331   weight=49.0002
+	 	74   idQ=-2   idHad1=10223   idHad2=223   weight=1074.56
+	 	75   idQ=-2   idHad1=10223   idHad2=10221   weight=78.1377
+	 	76   idQ=-2   idHad1=10223   idHad2=111   weight=576.355
+	 	77   idQ=-2   idHad1=10223   idHad2=10111   weight=126.714
+	 	78   idQ=-2   idHad1=10223   idHad2=113   weight=1102.88
+	 	79   idQ=-2   idHad1=10221   idHad2=221   weight=135.815
+	 	80   idQ=-2   idHad1=10221   idHad2=331   weight=33.161
+	 	81   idQ=-2   idHad1=10221   idHad2=333   weight=0.0507652
+	 	82   idQ=-2   idHad1=10221   idHad2=223   weight=468.521
+	 	83   idQ=-2   idHad1=10221   idHad2=10223   weight=78.1377
+	 	84   idQ=-2   idHad1=10221   idHad2=10221   weight=108.439
+	 	85   idQ=-2   idHad1=10221   idHad2=111   weight=213.562
+	 	86   idQ=-2   idHad1=10221   idHad2=10111   weight=113.072
+	 	87   idQ=-2   idHad1=10221   idHad2=113   weight=475.329
+	 	88   idQ=-2   idHad1=20333   idHad2=221   weight=8.59963e-31
+	 	89   idQ=-2   idHad1=20333   idHad2=111   weight=1.72216e-30
+	 	90   idQ=-2   idHad1=20223   idHad2=221   weight=302.79
+	 	91   idQ=-2   idHad1=20223   idHad2=223   weight=768.512
+	 	92   idQ=-2   idHad1=20223   idHad2=111   weight=528.327
+	 	93   idQ=-2   idHad1=20223   idHad2=113   weight=809.395
+	 	94   idQ=-2   idHad1=335   idHad2=221   weight=7.084
+	 	95   idQ=-2   idHad1=335   idHad2=111   weight=17.6347
+	 	96   idQ=-2   idHad1=225   idHad2=221   weight=496.622
+	 	97   idQ=-2   idHad1=225   idHad2=223   weight=1284.65
+	 	98   idQ=-2   idHad1=225   idHad2=111   weight=862.812
+	 	99   idQ=-2   idHad1=225   idHad2=113   weight=1349.02
+	 	100   idQ=-2   idHad1=111   idHad2=221   weight=183.822
+	 	101   idQ=-2   idHad1=111   idHad2=331   weight=60.4151
+	 	102   idQ=-2   idHad1=111   idHad2=333   weight=0.104477
+	 	103   idQ=-2   idHad1=111   idHad2=223   weight=708.16
+	 	104   idQ=-2   idHad1=111   idHad2=10333   weight=1.77254e-30
+	 	105   idQ=-2   idHad1=111   idHad2=10223   weight=576.355
+	 	106   idQ=-2   idHad1=111   idHad2=10221   weight=213.562
+	 	107   idQ=-2   idHad1=111   idHad2=20333   weight=1.72216e-30
+	 	108   idQ=-2   idHad1=111   idHad2=20223   weight=528.327
+	 	109   idQ=-2   idHad1=111   idHad2=335   weight=17.6347
+	 	110   idQ=-2   idHad1=111   idHad2=225   weight=862.812
+	 	111   idQ=-2   idHad1=111   idHad2=111   weight=270.408
+	 	112   idQ=-2   idHad1=111   idHad2=10111   weight=215.462
+	 	113   idQ=-2   idHad1=111   idHad2=113   weight=711.897
+	 	114   idQ=-2   idHad1=111   idHad2=10113   weight=550.758
+	 	115   idQ=-2   idHad1=111   idHad2=20113   weight=551.189
+	 	116   idQ=-2   idHad1=111   idHad2=115   weight=853.207
+	 	117   idQ=-2   idHad1=10111   idHad2=221   weight=137.491
+	 	118   idQ=-2   idHad1=10111   idHad2=331   weight=34.3053
+	 	119   idQ=-2   idHad1=10111   idHad2=333   weight=0.0531986
+	 	120   idQ=-2   idHad1=10111   idHad2=223   weight=477.487
+	 	121   idQ=-2   idHad1=10111   idHad2=10223   weight=126.714
+	 	122   idQ=-2   idHad1=10111   idHad2=10221   weight=113.072
+	 	123   idQ=-2   idHad1=10111   idHad2=111   weight=215.462
+	 	124   idQ=-2   idHad1=10111   idHad2=10111   weight=117.493
+	 	125   idQ=-2   idHad1=10111   idHad2=113   weight=484.129
+	 	126   idQ=-2   idHad1=113   idHad2=221   weight=469.013
+	 	127   idQ=-2   idHad1=113   idHad2=331   weight=137.614
+	 	128   idQ=-2   idHad1=113   idHad2=333   weight=0.229767
+	 	129   idQ=-2   idHad1=113   idHad2=223   weight=1723.81
+	 	130   idQ=-2   idHad1=113   idHad2=10333   weight=9.04408e-31
+	 	131   idQ=-2   idHad1=113   idHad2=10223   weight=1102.88
+	 	132   idQ=-2   idHad1=113   idHad2=10221   weight=475.329
+	 	133   idQ=-2   idHad1=113   idHad2=20223   weight=809.395
+	 	134   idQ=-2   idHad1=113   idHad2=225   weight=1349.02
+	 	135   idQ=-2   idHad1=113   idHad2=111   weight=711.897
+	 	136   idQ=-2   idHad1=113   idHad2=10111   weight=484.129
+	 	137   idQ=-2   idHad1=113   idHad2=113   weight=1739.29
+	 	138   idQ=-2   idHad1=113   idHad2=10113   weight=955.005
+	 	139   idQ=-2   idHad1=113   idHad2=20113   weight=957.629
+	 	140   idQ=-2   idHad1=113   idHad2=115   weight=1146.27
+	 	141   idQ=-2   idHad1=10113   idHad2=221   weight=324.75
+	 	142   idQ=-2   idHad1=10113   idHad2=223   weight=921.336
+	 	143   idQ=-2   idHad1=10113   idHad2=111   weight=550.758
+	 	144   idQ=-2   idHad1=10113   idHad2=113   weight=955.005
+	 	145   idQ=-2   idHad1=20113   idHad2=221   weight=325.165
+	 	146   idQ=-2   idHad1=20113   idHad2=223   weight=924.07
+	 	147   idQ=-2   idHad1=20113   idHad2=111   weight=551.189
+	 	148   idQ=-2   idHad1=20113   idHad2=113   weight=957.629
+	 	149   idQ=-2   idHad1=115   idHad2=221   weight=477.082
+	 	150   idQ=-2   idHad1=115   idHad2=223   weight=1063.97
+	 	151   idQ=-2   idHad1=115   idHad2=111   weight=853.207
+	 	152   idQ=-2   idHad1=115   idHad2=113   weight=1146.27
+	 	153   idQ=-3   idHad1=-321   idHad2=321   weight=971.856
+	 	154   idQ=-3   idHad1=-321   idHad2=10321   weight=464.15
+	 	155   idQ=-3   idHad1=-321   idHad2=323   weight=2482.65
+	 	156   idQ=-3   idHad1=-321   idHad2=10323   weight=1750.35
+	 	157   idQ=-3   idHad1=-321   idHad2=20323   weight=1468.16
+	 	158   idQ=-3   idHad1=-321   idHad2=325   weight=2339.82
+	 	159   idQ=-3   idHad1=-10321   idHad2=321   weight=464.15
+	 	160   idQ=-3   idHad1=-323   idHad2=321   weight=2482.65
+	 	161   idQ=-3   idHad1=-323   idHad2=323   weight=5643.47
+	 	162   idQ=-3   idHad1=-10323   idHad2=321   weight=1750.35
+	 	163   idQ=-3   idHad1=-20323   idHad2=321   weight=1468.16
+	 	164   idQ=-3   idHad1=-325   idHad2=321   weight=2339.82
+	 	165   idQ=1103   idHad1=-2112   idHad2=2112   weight=2210.35
+	 	166   idQ=1103   idHad1=-2112   idHad2=2114   weight=714.791
+	 	167   idQ=1103   idHad1=-2114   idHad2=2112   weight=714.791
+	 	168   idQ=2101   idHad1=-2212   idHad2=2212   weight=1109.59
+	 	169   idQ=2101   idHad1=-2212   idHad2=2214   weight=408.602
+	 	170   idQ=2101   idHad1=-2214   idHad2=2212   weight=408.602
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 2.18004  [GeV] 
+	 smearingWidth = 9.05153e-14  [mm] 
+	 distanceHad1  = (4.92011e-15,-1.46325e-13,-8.43207e-14;-2.03147e-14)	 invariant length: = -1.67728e-13  [mm] 
+	 distanceHad2  = (2.72223e-13,-1.18532e-13,-1.78257e-14;-4.07913e-14)	 invariant length: = -2.94633e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 2.53074
+	 --- Kupco's Table --- : cluMass=1765.15  id1=-3  id2=1
+	 numChan=38   maxWeight=2712.41
+	 	0   idQ=-1   idHad1=311   idHad2=221   weight=257.128
+	 	1   idQ=-1   idHad1=311   idHad2=331   weight=66.6931
+	 	2   idQ=-1   idHad1=311   idHad2=333   weight=0.106566
+	 	3   idQ=-1   idHad1=311   idHad2=223   weight=899.857
+	 	4   idQ=-1   idHad1=311   idHad2=10223   weight=401.156
+	 	5   idQ=-1   idHad1=311   idHad2=10221   weight=223.895
+	 	6   idQ=-1   idHad1=311   idHad2=111   weight=403.18
+	 	7   idQ=-1   idHad1=311   idHad2=10111   weight=230.768
+	 	8   idQ=-1   idHad1=311   idHad2=113   weight=911.479
+	 	9   idQ=-1   idHad1=311   idHad2=10113   weight=243.563
+	 	10   idQ=-1   idHad1=311   idHad2=20113   weight=246.913
+	 	11   idQ=-1   idHad1=10311   idHad2=111   weight=139.149
+	 	12   idQ=-1   idHad1=313   idHad2=221   weight=540.228
+	 	13   idQ=-1   idHad1=313   idHad2=223   weight=1229.48
+	 	14   idQ=-1   idHad1=313   idHad2=111   weight=969.503
+	 	15   idQ=-1   idHad1=313   idHad2=113   weight=1317.87
+	 	16   idQ=-1   idHad1=10313   idHad2=111   weight=590.812
+	 	17   idQ=-1   idHad1=20313   idHad2=111   weight=453.27
+	 	18   idQ=-1   idHad1=315   idHad2=111   weight=688.985
+	 	19   idQ=-2   idHad1=321   idHad2=-211   weight=807.101
+	 	20   idQ=-2   idHad1=321   idHad2=-10211   weight=464.219
+	 	21   idQ=-2   idHad1=321   idHad2=-213   weight=1831.17
+	 	22   idQ=-2   idHad1=321   idHad2=-10213   weight=512.684
+	 	23   idQ=-2   idHad1=321   idHad2=-20213   weight=519.041
+	 	24   idQ=-2   idHad1=10321   idHad2=-211   weight=276.425
+	 	25   idQ=-2   idHad1=323   idHad2=-211   weight=1944.17
+	 	26   idQ=-2   idHad1=323   idHad2=-213   weight=2712.41
+	 	27   idQ=-2   idHad1=10323   idHad2=-211   weight=1177.95
+	 	28   idQ=-2   idHad1=20323   idHad2=-211   weight=901.444
+	 	29   idQ=-2   idHad1=325   idHad2=-211   weight=1400.21
+	 	30   idQ=-3   idHad1=221   idHad2=311   weight=196.707
+	 	31   idQ=-3   idHad1=221   idHad2=313   weight=413.282
+	 	32   idQ=-3   idHad1=331   idHad2=311   weight=348.715
+	 	33   idQ=-3   idHad1=333   idHad2=311   weight=1292.86
+	 	34   idQ=-3   idHad1=223   idHad2=311   weight=0.296689
+	 	35   idQ=-3   idHad1=223   idHad2=313   weight=0.405368
+	 	36   idQ=-3   idHad1=10223   idHad2=311   weight=0
+	 	37   idQ=-3   idHad1=10221   idHad2=311   weight=0
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.76515  [GeV] 
+	 smearingWidth = 1.1179e-13  [mm] 
+	 distanceHad1  = (-2.02731e-13,-2.86068e-13,4.34139e-13;-7.79302e-14)	 invariant length: = -5.52575e-13  [mm] 
+	 distanceHad2  = (3.30607e-16,-7.35215e-13,-1.81994e-14;1.25666e-13)	 invariant length: = -7.24624e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 2.61594
+	 --- Kupco's Table --- : cluMass=1531.73  id1=1  id2=-1
+	 numChan=50   maxWeight=1689.62
+	 	0   idQ=1   idHad1=221   idHad2=221   weight=70.054
+	 	1   idQ=1   idHad1=221   idHad2=331   weight=6.83906
+	 	2   idQ=1   idHad1=221   idHad2=223   weight=203.918
+	 	3   idQ=1   idHad1=221   idHad2=111   weight=119.408
+	 	4   idQ=1   idHad1=221   idHad2=10111   weight=4.24546
+	 	5   idQ=1   idHad1=221   idHad2=113   weight=210.401
+	 	6   idQ=1   idHad1=331   idHad2=221   weight=6.83906
+	 	7   idQ=1   idHad1=331   idHad2=111   weight=31.3114
+	 	8   idQ=1   idHad1=333   idHad2=111   weight=0.0508078
+	 	9   idQ=1   idHad1=223   idHad2=221   weight=203.918
+	 	10   idQ=1   idHad1=223   idHad2=111   weight=416.99
+	 	11   idQ=1   idHad1=10223   idHad2=111   weight=221.706
+	 	12   idQ=1   idHad1=10221   idHad2=111   weight=106.11
+	 	13   idQ=1   idHad1=20223   idHad2=111   weight=144.571
+	 	14   idQ=1   idHad1=225   idHad2=111   weight=243.341
+	 	15   idQ=1   idHad1=111   idHad2=221   weight=119.408
+	 	16   idQ=1   idHad1=111   idHad2=331   weight=31.3114
+	 	17   idQ=1   idHad1=111   idHad2=333   weight=0.0508078
+	 	18   idQ=1   idHad1=111   idHad2=223   weight=416.99
+	 	19   idQ=1   idHad1=111   idHad2=10223   weight=221.706
+	 	20   idQ=1   idHad1=111   idHad2=10221   weight=106.11
+	 	21   idQ=1   idHad1=111   idHad2=20223   weight=144.571
+	 	22   idQ=1   idHad1=111   idHad2=225   weight=243.341
+	 	23   idQ=1   idHad1=111   idHad2=111   weight=188.47
+	 	24   idQ=1   idHad1=111   idHad2=10111   weight=108.909
+	 	25   idQ=1   idHad1=111   idHad2=113   weight=422.307
+	 	26   idQ=1   idHad1=111   idHad2=10113   weight=181.551
+	 	27   idQ=1   idHad1=111   idHad2=20113   weight=182.241
+	 	28   idQ=1   idHad1=111   idHad2=115   weight=192.478
+	 	29   idQ=1   idHad1=10111   idHad2=221   weight=4.24546
+	 	30   idQ=1   idHad1=10111   idHad2=111   weight=108.909
+	 	31   idQ=1   idHad1=113   idHad2=221   weight=210.401
+	 	32   idQ=1   idHad1=113   idHad2=111   weight=422.307
+	 	33   idQ=1   idHad1=10113   idHad2=111   weight=181.551
+	 	34   idQ=1   idHad1=20113   idHad2=111   weight=182.241
+	 	35   idQ=1   idHad1=115   idHad2=111   weight=192.478
+	 	36   idQ=2   idHad1=-211   idHad2=211   weight=753.042
+	 	37   idQ=2   idHad1=-211   idHad2=10211   weight=434.621
+	 	38   idQ=2   idHad1=-211   idHad2=213   weight=1689.62
+	 	39   idQ=2   idHad1=-211   idHad2=10213   weight=719.783
+	 	40   idQ=2   idHad1=-211   idHad2=20213   weight=722.569
+	 	41   idQ=2   idHad1=-211   idHad2=215   weight=751.983
+	 	42   idQ=2   idHad1=-10211   idHad2=211   weight=434.621
+	 	43   idQ=2   idHad1=-213   idHad2=211   weight=1689.62
+	 	44   idQ=2   idHad1=-10213   idHad2=211   weight=719.783
+	 	45   idQ=2   idHad1=-20213   idHad2=211   weight=722.569
+	 	46   idQ=2   idHad1=-215   idHad2=211   weight=751.983
+	 	47   idQ=3   idHad1=311   idHad2=-311   weight=582.131
+	 	48   idQ=3   idHad1=311   idHad2=-313   weight=920.154
+	 	49   idQ=3   idHad1=313   idHad2=-311   weight=920.154
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.53173  [GeV] 
+	 smearingWidth = 1.28826e-13  [mm] 
+	 distanceHad1  = (-3.70649e-13,6.21393e-14,6.49109e-17;-2.13753e-13)	 invariant length: = -3.09115e-13  [mm] 
+	 distanceHad2  = (-6.70324e-14,1.7666e-13,-2.43201e-13;7.62742e-14)	 invariant length: = -2.98381e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 1.07001
+	 --- Kupco's Table --- : cluMass=1033.54  id1=-1  id2=2
+	 numChan=11   maxWeight=299.584
+	 	0   idQ=-1   idHad1=221   idHad2=211   weight=128.294
+	 	1   idQ=-1   idHad1=223   idHad2=211   weight=274.923
+	 	2   idQ=-1   idHad1=111   idHad2=211   weight=249.099
+	 	3   idQ=-1   idHad1=111   idHad2=213   weight=299.584
+	 	4   idQ=-1   idHad1=113   idHad2=211   weight=293.748
+	 	5   idQ=-2   idHad1=211   idHad2=221   weight=128.294
+	 	6   idQ=-2   idHad1=211   idHad2=223   weight=274.923
+	 	7   idQ=-2   idHad1=211   idHad2=111   weight=249.099
+	 	8   idQ=-2   idHad1=211   idHad2=113   weight=293.748
+	 	9   idQ=-2   idHad1=213   idHad2=111   weight=299.584
+	 	10   idQ=-3   idHad1=-311   idHad2=321   weight=146.273
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.03354  [GeV] 
+	 smearingWidth = 1.90924e-13  [mm] 
+	 distanceHad1  = (-3.96871e-13,-1.51075e-13,9.00436e-13;-3.36083e-13)	 invariant length: = -9.37103e-13  [mm] 
+	 distanceHad2  = (8.07569e-14,-2.90662e-13,8.14851e-15;-2.90436e-13)	 invariant length: = -8.1971e-14  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 2.15678
+	 --- Kupco's Table --- : cluMass=1821.13  id1=1  id2=-3
+	 numChan=44   maxWeight=3377.21
+	 	0   idQ=1   idHad1=221   idHad2=311   weight=269.588
+	 	1   idQ=1   idHad1=221   idHad2=313   weight=591.166
+	 	2   idQ=1   idHad1=331   idHad2=311   weight=73.258
+	 	3   idQ=1   idHad1=333   idHad2=311   weight=0.119324
+	 	4   idQ=1   idHad1=223   idHad2=311   weight=959.782
+	 	5   idQ=1   idHad1=223   idHad2=313   weight=1588.7
+	 	6   idQ=1   idHad1=10223   idHad2=311   weight=510.009
+	 	7   idQ=1   idHad1=10221   idHad2=311   weight=248.975
+	 	8   idQ=1   idHad1=20223   idHad2=311   weight=261.529
+	 	9   idQ=1   idHad1=225   idHad2=311   weight=459.511
+	 	10   idQ=1   idHad1=111   idHad2=311   weight=418.375
+	 	11   idQ=1   idHad1=111   idHad2=10311   weight=164.122
+	 	12   idQ=1   idHad1=111   idHad2=313   weight=1022.8
+	 	13   idQ=1   idHad1=111   idHad2=10313   weight=657.554
+	 	14   idQ=1   idHad1=111   idHad2=20313   weight=526.245
+	 	15   idQ=1   idHad1=111   idHad2=315   weight=814.238
+	 	16   idQ=1   idHad1=10111   idHad2=311   weight=255.288
+	 	17   idQ=1   idHad1=113   idHad2=311   weight=970.789
+	 	18   idQ=1   idHad1=113   idHad2=313   weight=1657.9
+	 	19   idQ=1   idHad1=10113   idHad2=311   weight=393.297
+	 	20   idQ=1   idHad1=20113   idHad2=311   weight=395.467
+	 	21   idQ=1   idHad1=115   idHad2=311   weight=157.247
+	 	22   idQ=2   idHad1=-211   idHad2=321   weight=837.469
+	 	23   idQ=2   idHad1=-211   idHad2=10321   weight=326.696
+	 	24   idQ=2   idHad1=-211   idHad2=323   weight=2050.66
+	 	25   idQ=2   idHad1=-211   idHad2=10323   weight=1311.88
+	 	26   idQ=2   idHad1=-211   idHad2=20323   weight=1048.21
+	 	27   idQ=2   idHad1=-211   idHad2=325   weight=1650.51
+	 	28   idQ=2   idHad1=-10211   idHad2=321   weight=512.975
+	 	29   idQ=2   idHad1=-213   idHad2=321   weight=1949.27
+	 	30   idQ=2   idHad1=-213   idHad2=323   weight=3377.21
+	 	31   idQ=2   idHad1=-10213   idHad2=321   weight=802.394
+	 	32   idQ=2   idHad1=-20213   idHad2=321   weight=806.64
+	 	33   idQ=2   idHad1=-215   idHad2=321   weight=414.749
+	 	34   idQ=3   idHad1=311   idHad2=221   weight=206.239
+	 	35   idQ=3   idHad1=311   idHad2=331   weight=383.041
+	 	36   idQ=3   idHad1=311   idHad2=333   weight=1447.63
+	 	37   idQ=3   idHad1=311   idHad2=223   weight=0.316447
+	 	38   idQ=3   idHad1=311   idHad2=10223   weight=0
+	 	39   idQ=3   idHad1=311   idHad2=10221   weight=0
+	 	40   idQ=3   idHad1=311   idHad2=20223   weight=0
+	 	41   idQ=3   idHad1=311   idHad2=225   weight=24.4529
+	 	42   idQ=3   idHad1=313   idHad2=221   weight=452.251
+	 	43   idQ=3   idHad1=313   idHad2=223   weight=0.523805
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.82113  [GeV] 
+	 smearingWidth = 1.08354e-13  [mm] 
+	 distanceHad1  = (2.2582e-13,-6.37501e-14,2.91369e-13;3.32903e-15)	 invariant length: = -3.7409e-13  [mm] 
+	 distanceHad2  = (-5.45832e-14,2.70436e-13,1.68295e-15;2.02452e-13)	 invariant length: = -1.87432e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 2.45936
+	 --- Kupco's Table --- : cluMass=909.933  id1=-2  id2=3
+	 numChan=2   maxWeight=298.563
+	 	0   idQ=-1   idHad1=-211   idHad2=-311   weight=298.563
+	 	1   idQ=-2   idHad1=111   idHad2=-321   weight=151.168
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 0.909933  [GeV] 
+	 smearingWidth = 2.16859e-13  [mm] 
+	 distanceHad1  = (2.06959e-13,-2.14857e-13,3.69679e-13;-1.41074e-13)	 invariant length: = -4.53604e-13  [mm] 
+	 distanceHad2  = (2.63232e-13,-1.28488e-15,-4.39544e-14;6.68232e-13)	 invariant length: = 6.12625e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 0.621262
+	 --- Kupco's Table --- : cluMass=1441.2  id1=3  id2=-2
+	 numChan=14   maxWeight=1279.54
+	 	0   idQ=1   idHad1=-311   idHad2=-211   weight=626.061
+	 	1   idQ=1   idHad1=-311   idHad2=-213   weight=1018.71
+	 	2   idQ=1   idHad1=-313   idHad2=-211   weight=1279.54
+	 	3   idQ=1   idHad1=-10313   idHad2=-211   weight=165.065
+	 	4   idQ=2   idHad1=-321   idHad2=221   weight=180.095
+	 	5   idQ=2   idHad1=-321   idHad2=223   weight=492.887
+	 	6   idQ=2   idHad1=-321   idHad2=111   weight=314.025
+	 	7   idQ=2   idHad1=-321   idHad2=113   weight=512.276
+	 	8   idQ=2   idHad1=-323   idHad2=221   weight=41.424
+	 	9   idQ=2   idHad1=-323   idHad2=111   weight=645.686
+	 	10   idQ=2   idHad1=-10323   idHad2=111   weight=96.7073
+	 	11   idQ=3   idHad1=221   idHad2=-321   weight=137.775
+	 	12   idQ=3   idHad1=221   idHad2=-323   weight=31.69
+	 	13   idQ=3   idHad1=223   idHad2=-321   weight=0.162508
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.4412  [GeV] 
+	 smearingWidth = 1.36919e-13  [mm] 
+	 distanceHad1  = (-3.61178e-14,8.982e-14,4.46778e-14;-2.3566e-13)	 invariant length: = 2.1016e-13  [mm] 
+	 distanceHad2  = (1.44151e-14,1.1867e-13,-5.01654e-14;1.54201e-13)	 invariant length: = 8.34927e-14  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 0.670317
+	 --- Kupco's Table --- : cluMass=1432.81  id1=-2  id2=2
+	 numChan=42   maxWeight=1496.43
+	 	0   idQ=-1   idHad1=-211   idHad2=211   weight=702.68
+	 	1   idQ=-1   idHad1=-211   idHad2=10211   weight=359.522
+	 	2   idQ=-1   idHad1=-211   idHad2=213   weight=1496.43
+	 	3   idQ=-1   idHad1=-211   idHad2=10213   weight=405.959
+	 	4   idQ=-1   idHad1=-211   idHad2=20213   weight=409.652
+	 	5   idQ=-1   idHad1=-10211   idHad2=211   weight=359.522
+	 	6   idQ=-1   idHad1=-213   idHad2=211   weight=1496.43
+	 	7   idQ=-1   idHad1=-10213   idHad2=211   weight=405.959
+	 	8   idQ=-1   idHad1=-20213   idHad2=211   weight=409.652
+	 	9   idQ=-2   idHad1=221   idHad2=221   weight=60.4426
+	 	10   idQ=-2   idHad1=221   idHad2=223   weight=143
+	 	11   idQ=-2   idHad1=221   idHad2=111   weight=109.089
+	 	12   idQ=-2   idHad1=221   idHad2=113   weight=151.895
+	 	13   idQ=-2   idHad1=331   idHad2=111   weight=26.2396
+	 	14   idQ=-2   idHad1=333   idHad2=111   weight=0.0412739
+	 	15   idQ=-2   idHad1=223   idHad2=221   weight=143
+	 	16   idQ=-2   idHad1=223   idHad2=111   weight=368.332
+	 	17   idQ=-2   idHad1=10223   idHad2=111   weight=153.41
+	 	18   idQ=-2   idHad1=10221   idHad2=111   weight=87.1451
+	 	19   idQ=-2   idHad1=20223   idHad2=111   weight=47.7395
+	 	20   idQ=-2   idHad1=225   idHad2=111   weight=93.9604
+	 	21   idQ=-2   idHad1=111   idHad2=221   weight=109.089
+	 	22   idQ=-2   idHad1=111   idHad2=331   weight=26.2396
+	 	23   idQ=-2   idHad1=111   idHad2=333   weight=0.0412739
+	 	24   idQ=-2   idHad1=111   idHad2=223   weight=368.332
+	 	25   idQ=-2   idHad1=111   idHad2=10223   weight=153.41
+	 	26   idQ=-2   idHad1=111   idHad2=10221   weight=87.1451
+	 	27   idQ=-2   idHad1=111   idHad2=20223   weight=47.7395
+	 	28   idQ=-2   idHad1=111   idHad2=225   weight=93.9604
+	 	29   idQ=-2   idHad1=111   idHad2=111   weight=175.894
+	 	30   idQ=-2   idHad1=111   idHad2=10111   weight=90.2001
+	 	31   idQ=-2   idHad1=111   idHad2=113   weight=374.045
+	 	32   idQ=-2   idHad1=111   idHad2=10113   weight=104.465
+	 	33   idQ=-2   idHad1=111   idHad2=20113   weight=105.36
+	 	34   idQ=-2   idHad1=10111   idHad2=111   weight=90.2001
+	 	35   idQ=-2   idHad1=113   idHad2=221   weight=151.895
+	 	36   idQ=-2   idHad1=113   idHad2=111   weight=374.045
+	 	37   idQ=-2   idHad1=10113   idHad2=111   weight=104.465
+	 	38   idQ=-2   idHad1=20113   idHad2=111   weight=105.36
+	 	39   idQ=-3   idHad1=-321   idHad2=321   weight=519.229
+	 	40   idQ=-3   idHad1=-321   idHad2=323   weight=527.834
+	 	41   idQ=-3   idHad1=-323   idHad2=321   weight=527.834
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.43281  [GeV] 
+	 smearingWidth = 1.3772e-13  [mm] 
+	 distanceHad1  = (-6.79902e-14,-2.14246e-13,-1.33497e-13;-2.20348e-13)	 invariant length: = -1.40684e-13  [mm] 
+	 distanceHad2  = (1.48506e-14,2.45716e-13,3.14248e-14;7.01389e-15)	 invariant length: = -2.48063e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=0	 CM angle = 0
+	 --- Kupco's Table --- : cluMass=1236.86  id1=-2  id2=1
+	 numChan=21   maxWeight=545.712
+	 	0   idQ=-1   idHad1=-211   idHad2=221   weight=175.582
+	 	1   idQ=-1   idHad1=-211   idHad2=331   weight=29.6019
+	 	2   idQ=-1   idHad1=-211   idHad2=333   weight=0.037533
+	 	3   idQ=-1   idHad1=-211   idHad2=223   weight=528.676
+	 	4   idQ=-1   idHad1=-211   idHad2=10221   weight=86.3543
+	 	5   idQ=-1   idHad1=-211   idHad2=111   weight=301.499
+	 	6   idQ=-1   idHad1=-211   idHad2=10111   weight=94.7087
+	 	7   idQ=-1   idHad1=-211   idHad2=113   weight=542.33
+	 	8   idQ=-1   idHad1=-10211   idHad2=111   weight=96.0465
+	 	9   idQ=-1   idHad1=-213   idHad2=111   weight=545.712
+	 	10   idQ=-2   idHad1=221   idHad2=-211   weight=175.582
+	 	11   idQ=-2   idHad1=331   idHad2=-211   weight=29.6019
+	 	12   idQ=-2   idHad1=333   idHad2=-211   weight=0.037533
+	 	13   idQ=-2   idHad1=223   idHad2=-211   weight=528.676
+	 	14   idQ=-2   idHad1=10221   idHad2=-211   weight=86.3543
+	 	15   idQ=-2   idHad1=111   idHad2=-211   weight=301.499
+	 	16   idQ=-2   idHad1=111   idHad2=-10211   weight=96.0465
+	 	17   idQ=-2   idHad1=111   idHad2=-213   weight=545.712
+	 	18   idQ=-2   idHad1=10111   idHad2=-211   weight=94.7087
+	 	19   idQ=-2   idHad1=113   idHad2=-211   weight=542.33
+	 	20   idQ=-3   idHad1=-321   idHad2=311   weight=369.864
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.23686  [GeV] 
+	 smearingWidth = 1.59539e-13  [mm] 
+	 distanceHad1  = (-1.0919e-13,-6.25356e-14,-7.89619e-15;1.5392e-14)	 invariant length: = -1.25134e-13  [mm] 
+	 distanceHad2  = (-5.29843e-13,4.07182e-14,-1.22273e-15;4.00067e-13)	 invariant length: = -3.4977e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 0.964419
+	 --- Kupco's Table --- : cluMass=952.271  id1=2  id2=-1
+	 numChan=10   maxWeight=227.956
+	 	0   idQ=1   idHad1=211   idHad2=221   weight=107.75
+	 	1   idQ=1   idHad1=211   idHad2=223   weight=132.903
+	 	2   idQ=1   idHad1=211   idHad2=111   weight=227.956
+	 	3   idQ=1   idHad1=211   idHad2=113   weight=161.488
+	 	4   idQ=1   idHad1=213   idHad2=111   weight=171.502
+	 	5   idQ=2   idHad1=221   idHad2=211   weight=107.75
+	 	6   idQ=2   idHad1=223   idHad2=211   weight=132.903
+	 	7   idQ=2   idHad1=111   idHad2=211   weight=227.956
+	 	8   idQ=2   idHad1=111   idHad2=213   weight=171.502
+	 	9   idQ=2   idHad1=113   idHad2=211   weight=161.488
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 0.952271  [GeV] 
+	 smearingWidth = 2.07217e-13  [mm] 
+	 distanceHad1  = (1.04988e-13,3.56339e-14,-1.29754e-12;1.03331e-13)	 invariant length: = -1.29816e-12  [mm] 
+	 distanceHad2  = (7.11804e-13,4.05256e-15,7.18036e-14;-2.84238e-13)	 invariant length: = -6.56541e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 0.70321
+	 --- Kupco's Table --- : cluMass=1804.2  id1=-1  id2=1
+	 numChan=92   maxWeight=4275.27
+	 	0   idQ=-1   idHad1=221   idHad2=221   weight=93.7829
+	 	1   idQ=-1   idHad1=221   idHad2=331   weight=24.2317
+	 	2   idQ=-1   idHad1=221   idHad2=333   weight=0.0385995
+	 	3   idQ=-1   idHad1=221   idHad2=223   weight=328.002
+	 	4   idQ=-1   idHad1=221   idHad2=10223   weight=140.72
+	 	5   idQ=-1   idHad1=221   idHad2=10221   weight=81.1934
+	 	6   idQ=-1   idHad1=221   idHad2=111   weight=147.009
+	 	7   idQ=-1   idHad1=221   idHad2=10111   weight=83.7559
+	 	8   idQ=-1   idHad1=221   idHad2=113   weight=332.27
+	 	9   idQ=-1   idHad1=221   idHad2=10113   weight=76.2519
+	 	10   idQ=-1   idHad1=221   idHad2=20113   weight=77.7263
+	 	11   idQ=-1   idHad1=331   idHad2=221   weight=24.2317
+	 	12   idQ=-1   idHad1=331   idHad2=223   weight=49.3587
+	 	13   idQ=-1   idHad1=331   idHad2=111   weight=44.1872
+	 	14   idQ=-1   idHad1=331   idHad2=113   weight=54.1231
+	 	15   idQ=-1   idHad1=333   idHad2=221   weight=0.0385995
+	 	16   idQ=-1   idHad1=333   idHad2=223   weight=0.018679
+	 	17   idQ=-1   idHad1=333   idHad2=111   weight=0.0747
+	 	18   idQ=-1   idHad1=333   idHad2=113   weight=0.0444398
+	 	19   idQ=-1   idHad1=223   idHad2=221   weight=328.002
+	 	20   idQ=-1   idHad1=223   idHad2=331   weight=49.3587
+	 	21   idQ=-1   idHad1=223   idHad2=333   weight=0.018679
+	 	22   idQ=-1   idHad1=223   idHad2=223   weight=1011.81
+	 	23   idQ=-1   idHad1=223   idHad2=10221   weight=105.169
+	 	24   idQ=-1   idHad1=223   idHad2=111   weight=543.849
+	 	25   idQ=-1   idHad1=223   idHad2=10111   weight=138.6
+	 	26   idQ=-1   idHad1=223   idHad2=113   weight=1037.79
+	 	27   idQ=-1   idHad1=10333   idHad2=111   weight=9.50472e-31
+	 	28   idQ=-1   idHad1=10223   idHad2=221   weight=140.72
+	 	29   idQ=-1   idHad1=10223   idHad2=111   weight=382.677
+	 	30   idQ=-1   idHad1=10221   idHad2=221   weight=81.1934
+	 	31   idQ=-1   idHad1=10221   idHad2=223   weight=105.169
+	 	32   idQ=-1   idHad1=10221   idHad2=111   weight=153.848
+	 	33   idQ=-1   idHad1=10221   idHad2=113   weight=132.828
+	 	34   idQ=-1   idHad1=20333   idHad2=111   weight=8.86108e-31
+	 	35   idQ=-1   idHad1=20223   idHad2=111   weight=323.281
+	 	36   idQ=-1   idHad1=335   idHad2=111   weight=7.29953
+	 	37   idQ=-1   idHad1=225   idHad2=111   weight=531.162
+	 	38   idQ=-1   idHad1=111   idHad2=221   weight=147.009
+	 	39   idQ=-1   idHad1=111   idHad2=331   weight=44.1872
+	 	40   idQ=-1   idHad1=111   idHad2=333   weight=0.0747
+	 	41   idQ=-1   idHad1=111   idHad2=223   weight=543.849
+	 	42   idQ=-1   idHad1=111   idHad2=10333   weight=9.50472e-31
+	 	43   idQ=-1   idHad1=111   idHad2=10223   weight=382.677
+	 	44   idQ=-1   idHad1=111   idHad2=10221   weight=153.848
+	 	45   idQ=-1   idHad1=111   idHad2=20333   weight=8.86108e-31
+	 	46   idQ=-1   idHad1=111   idHad2=20223   weight=323.281
+	 	47   idQ=-1   idHad1=111   idHad2=335   weight=7.29953
+	 	48   idQ=-1   idHad1=111   idHad2=225   weight=531.162
+	 	49   idQ=-1   idHad1=111   idHad2=111   weight=222.987
+	 	50   idQ=-1   idHad1=111   idHad2=10111   weight=156.169
+	 	51   idQ=-1   idHad1=111   idHad2=113   weight=548.344
+	 	52   idQ=-1   idHad1=111   idHad2=10113   weight=351.096
+	 	53   idQ=-1   idHad1=111   idHad2=20113   weight=351.628
+	 	54   idQ=-1   idHad1=111   idHad2=115   weight=504.722
+	 	55   idQ=-1   idHad1=10111   idHad2=221   weight=83.7559
+	 	56   idQ=-1   idHad1=10111   idHad2=223   weight=138.6
+	 	57   idQ=-1   idHad1=10111   idHad2=111   weight=156.169
+	 	58   idQ=-1   idHad1=10111   idHad2=113   weight=160.426
+	 	59   idQ=-1   idHad1=113   idHad2=221   weight=332.27
+	 	60   idQ=-1   idHad1=113   idHad2=331   weight=54.1231
+	 	61   idQ=-1   idHad1=113   idHad2=333   weight=0.0444398
+	 	62   idQ=-1   idHad1=113   idHad2=223   weight=1037.79
+	 	63   idQ=-1   idHad1=113   idHad2=10221   weight=132.828
+	 	64   idQ=-1   idHad1=113   idHad2=111   weight=548.344
+	 	65   idQ=-1   idHad1=113   idHad2=10111   weight=160.426
+	 	66   idQ=-1   idHad1=113   idHad2=113   weight=1062.98
+	 	67   idQ=-1   idHad1=10113   idHad2=221   weight=76.2519
+	 	68   idQ=-1   idHad1=10113   idHad2=111   weight=351.096
+	 	69   idQ=-1   idHad1=20113   idHad2=221   weight=77.7263
+	 	70   idQ=-1   idHad1=20113   idHad2=111   weight=351.628
+	 	71   idQ=-1   idHad1=115   idHad2=111   weight=504.722
+	 	72   idQ=-2   idHad1=211   idHad2=-211   weight=891.24
+	 	73   idQ=-2   idHad1=211   idHad2=-10211   weight=624.023
+	 	74   idQ=-2   idHad1=211   idHad2=-213   weight=2193.93
+	 	75   idQ=-2   idHad1=211   idHad2=-10213   weight=1401.43
+	 	76   idQ=-2   idHad1=211   idHad2=-20213   weight=1403.57
+	 	77   idQ=-2   idHad1=211   idHad2=-215   weight=2012.92
+	 	78   idQ=-2   idHad1=10211   idHad2=-211   weight=624.023
+	 	79   idQ=-2   idHad1=10211   idHad2=-213   weight=651.247
+	 	80   idQ=-2   idHad1=213   idHad2=-211   weight=2193.93
+	 	81   idQ=-2   idHad1=213   idHad2=-10211   weight=651.247
+	 	82   idQ=-2   idHad1=213   idHad2=-213   weight=4275.27
+	 	83   idQ=-2   idHad1=10213   idHad2=-211   weight=1401.43
+	 	84   idQ=-2   idHad1=20213   idHad2=-211   weight=1403.57
+	 	85   idQ=-2   idHad1=215   idHad2=-211   weight=2012.92
+	 	86   idQ=-3   idHad1=-311   idHad2=311   weight=752.405
+	 	87   idQ=-3   idHad1=-311   idHad2=313   weight=1676.08
+	 	88   idQ=-3   idHad1=-311   idHad2=10313   weight=328.418
+	 	89   idQ=-3   idHad1=-313   idHad2=311   weight=1676.08
+	 	90   idQ=-3   idHad1=-313   idHad2=313   weight=935.032
+	 	91   idQ=-3   idHad1=-10313   idHad2=311   weight=328.418
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 1.8042  [GeV] 
+	 smearingWidth = 1.09371e-13  [mm] 
+	 distanceHad1  = (2.85297e-15,3.37259e-13,-5.22347e-16;2.97831e-13)	 invariant length: = -1.58269e-13  [mm] 
+	 distanceHad2  = (-1.7943e-14,8.42416e-14,3.95797e-13;-8.79751e-13)	 invariant length: = 7.80953e-13  [mm] 
+ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***
+	 isotropic=1	 CM angle = 1.83898
+	 --- Kupco's Table --- : cluMass=2079.69  id1=1  id2=-1
+	 numChan=153   maxWeight=6320.19
+	 	0   idQ=1   idHad1=221   idHad2=221   weight=115.636
+	 	1   idQ=1   idHad1=221   idHad2=331   weight=35.1939
+	 	2   idQ=1   idHad1=221   idHad2=333   weight=0.0595446
+	 	3   idQ=1   idHad1=221   idHad2=223   weight=430.974
+	 	4   idQ=1   idHad1=221   idHad2=10333   weight=6.7691e-31
+	 	5   idQ=1   idHad1=221   idHad2=10223   weight=303.534
+	 	6   idQ=1   idHad1=221   idHad2=10221   weight=122.616
+	 	7   idQ=1   idHad1=221   idHad2=20333   weight=6.01938e-31
+	 	8   idQ=1   idHad1=221   idHad2=20223   weight=250.987
+	 	9   idQ=1   idHad1=221   idHad2=335   weight=1.79353
+	 	10   idQ=1   idHad1=221   idHad2=225   weight=413.318
+	 	11   idQ=1   idHad1=221   idHad2=111   weight=174.096
+	 	12   idQ=1   idHad1=221   idHad2=10111   weight=124.439
+	 	13   idQ=1   idHad1=221   idHad2=113   weight=434.342
+	 	14   idQ=1   idHad1=221   idHad2=10113   weight=276.177
+	 	15   idQ=1   idHad1=221   idHad2=20113   weight=276.648
+	 	16   idQ=1   idHad1=221   idHad2=115   weight=386.041
+	 	17   idQ=1   idHad1=331   idHad2=221   weight=35.1939
+	 	18   idQ=1   idHad1=331   idHad2=331   weight=7.74908
+	 	19   idQ=1   idHad1=331   idHad2=333   weight=0.0110242
+	 	20   idQ=1   idHad1=331   idHad2=223   weight=117.788
+	 	21   idQ=1   idHad1=331   idHad2=10221   weight=24.26
+	 	22   idQ=1   idHad1=331   idHad2=111   weight=56.2033
+	 	23   idQ=1   idHad1=331   idHad2=10111   weight=25.8
+	 	24   idQ=1   idHad1=331   idHad2=113   weight=119.833
+	 	25   idQ=1   idHad1=333   idHad2=221   weight=0.0595446
+	 	26   idQ=1   idHad1=333   idHad2=331   weight=0.0110242
+	 	27   idQ=1   idHad1=333   idHad2=333   weight=1.2543e-05
+	 	28   idQ=1   idHad1=333   idHad2=223   weight=0.191439
+	 	29   idQ=1   idHad1=333   idHad2=10221   weight=0.0307269
+	 	30   idQ=1   idHad1=333   idHad2=111   weight=0.096774
+	 	31   idQ=1   idHad1=333   idHad2=10111   weight=0.0346038
+	 	32   idQ=1   idHad1=333   idHad2=113   weight=0.195548
+	 	33   idQ=1   idHad1=223   idHad2=221   weight=430.974
+	 	34   idQ=1   idHad1=223   idHad2=331   weight=117.788
+	 	35   idQ=1   idHad1=223   idHad2=333   weight=0.191439
+	 	36   idQ=1   idHad1=223   idHad2=223   weight=1541.77
+	 	37   idQ=1   idHad1=223   idHad2=10223   weight=793.072
+	 	38   idQ=1   idHad1=223   idHad2=10221   weight=399.828
+	 	39   idQ=1   idHad1=223   idHad2=20223   weight=278.952
+	 	40   idQ=1   idHad1=223   idHad2=225   weight=544.266
+	 	41   idQ=1   idHad1=223   idHad2=111   weight=665.152
+	 	42   idQ=1   idHad1=223   idHad2=10111   weight=410.21
+	 	43   idQ=1   idHad1=223   idHad2=113   weight=1559.07
+	 	44   idQ=1   idHad1=223   idHad2=10113   weight=574.053
+	 	45   idQ=1   idHad1=223   idHad2=20113   weight=578.329
+	 	46   idQ=1   idHad1=10333   idHad2=221   weight=6.7691e-31
+	 	47   idQ=1   idHad1=10333   idHad2=111   weight=1.56587e-30
+	 	48   idQ=1   idHad1=10223   idHad2=221   weight=303.534
+	 	49   idQ=1   idHad1=10223   idHad2=223   weight=793.072
+	 	50   idQ=1   idHad1=10223   idHad2=111   weight=526.696
+	 	51   idQ=1   idHad1=10223   idHad2=113   weight=831.433
+	 	52   idQ=1   idHad1=10221   idHad2=221   weight=122.616
+	 	53   idQ=1   idHad1=10221   idHad2=331   weight=24.26
+	 	54   idQ=1   idHad1=10221   idHad2=333   weight=0.0307269
+	 	55   idQ=1   idHad1=10221   idHad2=223   weight=399.828
+	 	56   idQ=1   idHad1=10221   idHad2=10221   weight=71.2747
+	 	57   idQ=1   idHad1=10221   idHad2=111   weight=198.098
+	 	58   idQ=1   idHad1=10221   idHad2=10111   weight=78.1453
+	 	59   idQ=1   idHad1=10221   idHad2=113   weight=407.819
+	 	60   idQ=1   idHad1=20333   idHad2=221   weight=6.01938e-31
+	 	61   idQ=1   idHad1=20333   idHad2=111   weight=1.51272e-30
+	 	62   idQ=1   idHad1=20223   idHad2=221   weight=250.987
+	 	63   idQ=1   idHad1=20223   idHad2=223   weight=278.952
+	 	64   idQ=1   idHad1=20223   idHad2=111   weight=476.176
+	 	65   idQ=1   idHad1=20223   idHad2=113   weight=378.549
+	 	66   idQ=1   idHad1=335   idHad2=221   weight=1.79353
+	 	67   idQ=1   idHad1=335   idHad2=111   weight=15.0953
+	 	68   idQ=1   idHad1=225   idHad2=221   weight=413.318
+	 	69   idQ=1   idHad1=225   idHad2=223   weight=544.266
+	 	70   idQ=1   idHad1=225   idHad2=111   weight=778.413
+	 	71   idQ=1   idHad1=225   idHad2=113   weight=684.308
+	 	72   idQ=1   idHad1=111   idHad2=221   weight=174.096
+	 	73   idQ=1   idHad1=111   idHad2=331   weight=56.2033
+	 	74   idQ=1   idHad1=111   idHad2=333   weight=0.096774
+	 	75   idQ=1   idHad1=111   idHad2=223   weight=665.152
+	 	76   idQ=1   idHad1=111   idHad2=10333   weight=1.56587e-30
+	 	77   idQ=1   idHad1=111   idHad2=10223   weight=526.696
+	 	78   idQ=1   idHad1=111   idHad2=10221   weight=198.098
+	 	79   idQ=1   idHad1=111   idHad2=20333   weight=1.51272e-30
+	 	80   idQ=1   idHad1=111   idHad2=20223   weight=476.176
+	 	81   idQ=1   idHad1=111   idHad2=335   weight=15.0953
+	 	82   idQ=1   idHad1=111   idHad2=225   weight=778.413
+	 	83   idQ=1   idHad1=111   idHad2=111   weight=257.762
+	 	84   idQ=1   idHad1=111   idHad2=10111   weight=200.093
+	 	85   idQ=1   idHad1=111   idHad2=113   weight=669.062
+	 	86   idQ=1   idHad1=111   idHad2=10113   weight=499.778
+	 	87   idQ=1   idHad1=111   idHad2=20113   weight=500.231
+	 	88   idQ=1   idHad1=111   idHad2=115   weight=764.845
+	 	89   idQ=1   idHad1=10111   idHad2=221   weight=124.439
+	 	90   idQ=1   idHad1=10111   idHad2=331   weight=25.8
+	 	91   idQ=1   idHad1=10111   idHad2=333   weight=0.0346038
+	 	92   idQ=1   idHad1=10111   idHad2=223   weight=410.21
+	 	93   idQ=1   idHad1=10111   idHad2=10221   weight=78.1453
+	 	94   idQ=1   idHad1=10111   idHad2=111   weight=200.093
+	 	95   idQ=1   idHad1=10111   idHad2=10111   weight=84.4131
+	 	96   idQ=1   idHad1=10111   idHad2=113   weight=417.953
+	 	97   idQ=1   idHad1=113   idHad2=221   weight=434.342
+	 	98   idQ=1   idHad1=113   idHad2=331   weight=119.833
+	 	99   idQ=1   idHad1=113   idHad2=333   weight=0.195548
+	 	100   idQ=1   idHad1=113   idHad2=223   weight=1559.07
+	 	101   idQ=1   idHad1=113   idHad2=10223   weight=831.433
+	 	102   idQ=1   idHad1=113   idHad2=10221   weight=407.819
+	 	103   idQ=1   idHad1=113   idHad2=20223   weight=378.549
+	 	104   idQ=1   idHad1=113   idHad2=225   weight=684.308
+	 	105   idQ=1   idHad1=113   idHad2=111   weight=669.062
+	 	106   idQ=1   idHad1=113   idHad2=10111   weight=417.953
+	 	107   idQ=1   idHad1=113   idHad2=113   weight=1576.11
+	 	108   idQ=1   idHad1=113   idHad2=10113   weight=627.329
+	 	109   idQ=1   idHad1=113   idHad2=20113   weight=631.222
+	 	110   idQ=1   idHad1=10113   idHad2=221   weight=276.177
+	 	111   idQ=1   idHad1=10113   idHad2=223   weight=574.053
+	 	112   idQ=1   idHad1=10113   idHad2=111   weight=499.778
+	 	113   idQ=1   idHad1=10113   idHad2=113   weight=627.329
+	 	114   idQ=1   idHad1=20113   idHad2=221   weight=276.648
+	 	115   idQ=1   idHad1=20113   idHad2=223   weight=578.329
+	 	116   idQ=1   idHad1=20113   idHad2=111   weight=500.231
+	 	117   idQ=1   idHad1=20113   idHad2=113   weight=631.222
+	 	118   idQ=1   idHad1=115   idHad2=221   weight=386.041
+	 	119   idQ=1   idHad1=115   idHad2=111   weight=764.845
+	 	120   idQ=2   idHad1=-211   idHad2=211   weight=1030.44
+	 	121   idQ=2   idHad1=-211   idHad2=10211   weight=799.893
+	 	122   idQ=2   idHad1=-211   idHad2=213   weight=2676.84
+	 	123   idQ=2   idHad1=-211   idHad2=10213   weight=1997.2
+	 	124   idQ=2   idHad1=-211   idHad2=20213   weight=1999.02
+	 	125   idQ=2   idHad1=-211   idHad2=215   weight=3055.78
+	 	126   idQ=2   idHad1=-10211   idHad2=211   weight=799.893
+	 	127   idQ=2   idHad1=-10211   idHad2=10211   weight=337.652
+	 	128   idQ=2   idHad1=-10211   idHad2=213   weight=1675.4
+	 	129   idQ=2   idHad1=-213   idHad2=211   weight=2676.84
+	 	130   idQ=2   idHad1=-213   idHad2=10211   weight=1675.4
+	 	131   idQ=2   idHad1=-213   idHad2=213   weight=6320.19
+	 	132   idQ=2   idHad1=-213   idHad2=10213   weight=2533.27
+	 	133   idQ=2   idHad1=-213   idHad2=20213   weight=2548.68
+	 	134   idQ=2   idHad1=-10213   idHad2=211   weight=1997.2
+	 	135   idQ=2   idHad1=-10213   idHad2=213   weight=2533.27
+	 	136   idQ=2   idHad1=-20213   idHad2=211   weight=1999.02
+	 	137   idQ=2   idHad1=-20213   idHad2=213   weight=2548.68
+	 	138   idQ=2   idHad1=-215   idHad2=211   weight=3055.78
+	 	139   idQ=3   idHad1=311   idHad2=-311   weight=913.02
+	 	140   idQ=3   idHad1=311   idHad2=-10311   weight=350.043
+	 	141   idQ=3   idHad1=311   idHad2=-313   weight=2272.43
+	 	142   idQ=3   idHad1=311   idHad2=-10313   weight=1473.85
+	 	143   idQ=3   idHad1=311   idHad2=-20313   weight=1143.27
+	 	144   idQ=3   idHad1=311   idHad2=-315   weight=1732.22
+	 	145   idQ=3   idHad1=10311   idHad2=-311   weight=350.043
+	 	146   idQ=3   idHad1=313   idHad2=-311   weight=2272.43
+	 	147   idQ=3   idHad1=313   idHad2=-313   weight=4747.75
+	 	148   idQ=3   idHad1=10313   idHad2=-311   weight=1473.85
+	 	149   idQ=3   idHad1=20313   idHad2=-311   weight=1143.27
+	 	150   idQ=3   idHad1=315   idHad2=-311   weight=1732.22
+	 	151   idQ=-2101   idHad1=2112   idHad2=-2112   weight=891.043
+	 	152   idQ=-2203   idHad1=2212   idHad2=-2212   weight=1793.01
+ClusterDecayer::calculatePositions : *** extreme debugging ***
+	 cluster mass  = 2.07969  [GeV] 
+	 smearingWidth = 9.48828e-14  [mm] 
+	 distanceHad1  = (1.04716e-13,-2.18585e-14,2.9575e-15;9.01497e-14)	 invariant length: = -5.76631e-14  [mm] 
+	 distanceHad2  = (6.3295e-16,3.64277e-13,4.48875e-14;-1.77959e-13)	 invariant length: = -3.21004e-13  [mm] 
+ ^^^ Begin Print Step ^^^ : After recordAfterClusterDecays
+	a_0+	45	0	0	983.5	(181.678,1076.13,1673.84;2227.12)
+	rho-	44	0	0	766.9	(-519.806,1837.86,1254.77;2410.5)
+	pi-	43	0	0	139.57	(143.229,986.296,399.69;1082.83)
+	rho+	42	0	0	766.9	(-943.329,5908.96,6530.19;8890.29)
+	omega	41	0	0	781.94	(34.6079,14.5449,-78.955;786.812)
+	pi+	40	0	0	139.57	(-24.8078,-99.0023,-5.92652;173.008)
+	pi-	39	0	0	139.57	(-14.388,123.995,124.618;224.925)
+	rho0	38	0	0	768.5	(-760.864,6557.12,6590.05;9359.17)
+	pi0	37	0	0	134.98	(-367.729,105.704,324.616;519.609)
+	eta	36	0	0	547.45	(34.8656,2762.91,2558.41;3805.26)
+	pi0	35	0	0	134.98	(-194.998,-164.665,46.3087;292.409)
+	K*-	34	0	0	891.6	(387.51,-1494.4,-1713.7;2472.87)
+	K-	33	0	0	493.6	(-191.428,232.795,391.817;698.57)
+	pi0	32	0	0	134.98	(164.898,-4.16292,-162.037;267.739)
+	K*_2+	31	0	0	1425	(300.099,-1933.37,-1578;2889.41)
+	pi-	30	0	0	139.57	(-79.5452,32.6369,-332.277;370.513)
+	pi0	29	0	0	134.98	(-182.458,52.5334,75.8211;244.988)
+	rho+	28	0	0	766.9	(98.183,673.749,654.109;1216.38)
+	pi+	27	0	0	139.57	(167.43,-368.973,-26.1821;429.347)
+	rho-	26	0	0	766.9	(-217.742,802.562,461.949;1221.9)
+	eta'	25	0	0	957.77	(47.214,1657.63,1439.39;2395.65)
+	K0	24	0	0	497.67	(-248.564,77.6036,304.563;638.937)
+	b_1+	23	0	0	1231	(-203.051,-983.641,-565.809;1686.5)
+	rho-	22	0	0	766.9	(365.915,-419.915,-844.796;1269.66)
+	a_2-	21	0	0	1318	(650.522,-5606.2,-5634.35;8083.05)
+	a_1+	20	0	0	1230	(1785.16,-15384.5,-15461.8;21919.2)
+	K0	19	0	0	497.67	(49.6625,-2125.1,-2259.26;3141.73)
+	pi+	18	0	0	139.57	(201.55,-39.8481,83.4325;262.014)
+	K_1-	17	0	0	1290	(570.271,-134.467,-458.487;1489.16)
+	pi+	16	0	0	139.57	(-534.916,-170.223,152.267;598.143)
+	rho0	15	0	0	768.5	(-288.207,2377.38,2417;3488.19)
+	pi-	14	0	0	139.57	(-53.3472,566.129,541.295;797.388)
+	pi+	13	0	0	139.57	(303.222,-104.924,-310.363;467.716)
+	pi-	12	0	0	139.57	(-264.622,-227.731,-23.9625;376.749)
+	rho+	11	0	0	766.9	(-425.257,2570.22,2162.19;3471.32)
+	pi0	10	0	0	134.98	(29.0386,844.391,1269.57;1530.97)
+	gamma	9	0	0	-5.26797e-20	(0,0,6.98743e-12;6.98743e-12)
+	gamma	8	0	0	-1.41134e-14	(0,0,-2.00029e-06;2.00029e-06)
+ ^^^ End Print Step ^^^ 
+ClusterHadronizationHandler::debuggingInfo  %%% BEGIN  PRELIMINARY INFOS %%% 
+	 id=21   g  mass:  nominal=0 constituent=0 iSpin=3
+	 id=1   d  mass:  nominal=9.9 constituent=325 iSpin=2
+	 id=2   u  mass:  nominal=5.6 constituent=325 iSpin=2
+	 id=3   s  mass:  nominal=199 constituent=500 iSpin=2
+	 id=4   c  mass:  nominal=1350 constituent=1600 iSpin=2
+	 id=5   b  mass:  nominal=4500 constituent=5000 iSpin=2
+	 id=1103   dd_1  mass:  nominal=771.33 constituent=650 iSpin=3
+	 id=2101   ud_0  mass:  nominal=579.33 constituent=650 iSpin=1
+	 id=3101   sd_0  mass:  nominal=804.73 constituent=825 iSpin=1
+	 id=4101   cd_0  mass:  nominal=1969.08 constituent=1925 iSpin=1
+	 id=5101   bd_0  mass:  nominal=5388.97 constituent=5325 iSpin=1
+	 id=2203   uu_1  mass:  nominal=771.33 constituent=650 iSpin=3
+	 id=3201   su_0  mass:  nominal=804.73 constituent=825 iSpin=1
+	 id=4201   cu_0  mass:  nominal=1969.08 constituent=1925 iSpin=1
+	 id=5201   bu_0  mass:  nominal=5388.97 constituent=5325 iSpin=1
+	 id=3303   ss_1  mass:  nominal=1093.61 constituent=1000 iSpin=3
+	 id=4301   cs_0  mass:  nominal=2154.32 constituent=2100 iSpin=1
+	 id=5301   bs_0  mass:  nominal=5567.25 constituent=5500 iSpin=1
+	 id=4403   cc_1  mass:  nominal=3275.31 constituent=3200 iSpin=3
+	 id=5401   bc_0  mass:  nominal=6671.43 constituent=6600 iSpin=1
+	 id=5503   bb_1  mass:  nominal=10073.5 constituent=10000 iSpin=3
+ eta:    iSpin=1   spin=0
+ mu:     iSpin=2   spin=3.29106e-13
+ phi:    iSpin=3   spin=6.58212e-13
+ Omega-: iSpin=4   spin=9.87318e-13
+ClusterHadronizationHandler::debuggingInfo  %%% END  PRELIMINARY INFOS %%% 
+ClusterHadronizationHandler::debuggingInfo  ===> START DEBUGGING <===    EventNumber=1
+  Total number of clusters in _collecCluPtr : 35
+  Lab vertex of current collision : (0,0,0;0)  [mm]
+  --- Cluster --- 1
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-3719.66,32056,32217;45600)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 7
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (3719.66,-32056,-32217;45600)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 6
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 charge (sum components) = 3.70255e-17
+	 sumConstituentMasses    = 650
+	 mass              = 91200
+	 momentum          = (0,0,2.00028e-06;91200)
+	 position          = (0,0,0;0)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 1
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 0
+	 reshufflingPartner= 0
+	 childrenClusters  = 2   3   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (0,0,2.00028e-06;91200)
+	 NO childrenHadrons 
+  --- Cluster --- 2
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-2830.86,24396.3,24518.8;34705.5)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 7
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (644.911,-5557.84,-5585.75;7912.76)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 650
+	 mass              = 33138.9
+	 momentum          = (-2185.94,18838.4,18933.1;42618.2)
+	 position          = (-6.06665e-13,5.22824e-12,5.2545e-12;1.0559e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 1
+	 reshufflingPartner= 0
+	 childrenClusters  = 16   17   
+	  --> sumChargeChildrenClusters = -1
+	  --> sumMomentumChildrenClusters = (-2185.94,18838.4,18933.1;42618.2)
+	 NO childrenHadrons 
+  --- Cluster --- 3
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (3074.16,-26493.1,-26626.2;37688.1)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 6
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-888.217,7654.65,7693.09;10893.7)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 40522.3
+	 momentum          = (2185.94,-18838.4,-18933.1;48581.8)
+	 position          = (5.5867e-13,-4.81462e-12,-4.8388e-12;1.11474e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 1
+	 reshufflingPartner= 0
+	 childrenClusters  = 4   5   
+	  --> sumChargeChildrenClusters = 1
+	  --> sumMomentumChildrenClusters = (2185.94,-18838.4,-18933.1;48581.8)
+	 NO childrenHadrons 
+  --- Cluster --- 4
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (3009.29,-25934,-26064.3;36892.9)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 6
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-124.173,1070.12,1075.5;1556.57)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 15079.1
+	 momentum          = (2885.12,-24863.9,-24988.8;38449.4)
+	 position          = (1.14055e-12,-9.82921e-12,-9.87858e-12;1.88885e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 3
+	 reshufflingPartner= 0
+	 childrenClusters  = 10   11   
+	  --> sumChargeChildrenClusters = 1
+	  --> sumMomentumChildrenClusters = (2885.12,-24863.9,-24988.8;38449.4)
+	 NO childrenHadrons 
+  --- Cluster --- 5
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-759.84,6548.3,6581.19;9320.69)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (60.6677,-522.834,-525.46;811.646)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 5403.45
+	 momentum          = (-699.173,6025.47,6055.73;10132.3)
+	 position          = (3.95914e-13,-3.41199e-12,-3.42912e-12;1.34507e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 3
+	 reshufflingPartner= 0
+	 childrenClusters  = 6   7   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (-699.173,6025.47,6055.73;10132.3)
+	 NO childrenHadrons 
+  --- Cluster --- 6
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-369.344,3183.01,3198.99;4539.51)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (-26.8746,231.605,232.768;462.784)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 1195.56
+	 momentum          = (-396.219,3414.61,3431.76;5002.29)
+	 position          = (2.46552e-13,-2.12478e-12,-2.13545e-12;1.53103e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 5
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 111   pi0   mass = 134.98
+	 	 momentum        = (29.0386,844.391,1269.57;1530.97)
+	 	 labVertex       = (1.68315e-12,-3.64791e-13,1.72276e-12;1.91093e-11)
+	 	 angles:  CM = 1.55079   Lab = 0.220175
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 213   rho+   mass = 766.9
+	 	 momentum        = (-425.257,2570.22,2162.19;3471.32)
+	 	 labVertex       = (2.76269e-13,-2.65117e-12,-2.28703e-12;1.48444e-11)
+	 	 angles:  CM = 1.55079   Lab = 0.0985369
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 1
+	  --> sumMomentumChildrenHadrons = (-396.219,3414.61,3431.76;5002.29)
+  --- Cluster --- 7
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (54.1962,-467.063,-469.408;739.631)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-357.15,3077.92,3093.38;4390.41)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 650
+	 mass              = 3538.9
+	 momentum          = (-302.954,2610.86,2623.97;5130.04)
+	 position          = (3.373e-13,-2.90685e-12,-2.92145e-12;1.44773e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 5
+	 reshufflingPartner= 0
+	 childrenClusters  = 8   9   
+	  --> sumChargeChildrenClusters = -1
+	  --> sumMomentumChildrenClusters = (-302.954,2610.86,2623.97;5130.04)
+	 NO childrenHadrons 
+  --- Cluster --- 8
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (32.0176,-275.927,-277.313;509.597)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (6.58248,-56.7277,-57.0126;334.868)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 699.427
+	 momentum          = (38.6001,-332.655,-334.326;844.465)
+	 position          = (3.45709e-13,-2.97932e-12,-2.99428e-12;1.46536e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 7
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -211   pi-   mass = 139.57
+	 	 momentum        = (-264.622,-227.731,-23.9625;376.749)
+	 	 labVertex       = (1.98463e-13,-2.95739e-12,-2.93626e-12;1.4582e-11)
+	 	 angles:  CM = 1.78202   Lab = 1.11055
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 211   pi+   mass = 139.57
+	 	 momentum        = (303.222,-104.924,-310.363;467.716)
+	 	 labVertex       = (-7.74078e-13,-3.27243e-12,-3.13226e-12;1.48341e-11)
+	 	 angles:  CM = 1.78202   Lab = 0.778679
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (38.6001,-332.655,-334.326;844.465)
+  --- Cluster --- 9
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-293.538,2529.71,2542.42;3613.18)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (-48.0158,413.8,415.878;672.395)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 650
+	 mass              = 913.116
+	 momentum          = (-341.554,2943.51,2958.29;4285.58)
+	 position          = (2.66914e-13,-2.30026e-12,-2.31182e-12;1.53596e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 7
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -211   pi-   mass = 139.57
+	 	 momentum        = (-53.3472,566.129,541.295;797.388)
+	 	 labVertex       = (4.37446e-13,-2.21374e-12,-1.83433e-12;1.56965e-11)
+	 	 angles:  CM = 0.695402   Lab = 0.0283612
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 113   rho0   mass = 768.5
+	 	 momentum        = (-288.207,2377.38,2417;3488.19)
+	 	 labVertex       = (3.62864e-13,-3.47613e-12,-2.81405e-12;1.41367e-11)
+	 	 angles:  CM = 0.695402   Lab = 0.00654314
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = -1
+	  --> sumMomentumChildrenHadrons = (-341.554,2943.51,2958.29;4285.58)
+  --- Cluster --- 10
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (2639.53,-22747.4,-22861.7;32360.1)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 6
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-40.9778,353.146,354.92;598.318)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -3.70255e-17
+	 sumConstituentMasses    = 650
+	 mass              = 8452.53
+	 momentum          = (2598.55,-22394.3,-22506.7;32958.4)
+	 position          = (1.72578e-12,-1.48727e-11,-1.49474e-11;2.62805e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 4
+	 reshufflingPartner= 0
+	 childrenClusters  = 14   15   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (2598.55,-22394.3,-22506.7;32958.4)
+	 NO childrenHadrons 
+  --- Cluster --- 11
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-78.0001,672.204,675.58;1009.94)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (364.568,-3141.84,-3157.62;4481.11)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 4220.16
+	 momentum          = (286.568,-2469.64,-2482.04;5491.04)
+	 position          = (1.18822e-12,-1.02401e-11,-1.02915e-11;2.00808e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 4
+	 reshufflingPartner= 0
+	 childrenClusters  = 12   13   
+	  --> sumChargeChildrenClusters = 1
+	  --> sumMomentumChildrenClusters = (286.568,-2469.64,-2482.04;5491.04)
+	 NO childrenHadrons 
+  --- Cluster --- 12
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-60.5216,521.575,524.194;810.005)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 3    s     component mass = 500
+	 	 momentum        = (95.8767,-826.265,-830.414;1277.3)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1.85128e-17
+	 sumConstituentMasses    = 825
+	 mass              = 2041.81
+	 momentum          = (35.3551,-304.69,-306.22;2087.3)
+	 position          = (1.19259e-12,-1.02777e-11,-1.03293e-11;2.05247e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 11
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 211   pi+   mass = 139.57
+	 	 momentum        = (-534.916,-170.223,152.267;598.143)
+	 	 labVertex       = (1.30238e-12,-1.02859e-11,-1.03685e-11;2.07483e-11)
+	 	 angles:  CM = 1.30322   Lab = 1.51653
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = -10323   K_1-   mass = 1290
+	 	 momentum        = (570.271,-134.467,-458.487;1489.16)
+	 	 labVertex       = (1.27291e-12,-1.02078e-11,-1.03178e-11;2.04506e-11)
+	 	 angles:  CM = 1.30322   Lab = 0.895686
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (35.3551,-304.69,-306.22;2087.3)
+  --- Cluster --- 13
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (230.286,-1984.61,-1994.57;2841.77)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -3    sbar     component mass = 500
+	 	 momentum        = (20.9266,-180.346,-181.251;561.974)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 825
+	 mass              = 1449.52
+	 momentum          = (251.213,-2164.95,-2175.82;3403.74)
+	 position          = (1.25808e-12,-1.08421e-11,-1.08966e-11;2.10012e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 11
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 211   pi+   mass = 139.57
+	 	 momentum        = (201.55,-39.8481,83.4325;262.014)
+	 	 labVertex       = (1.26229e-12,-1.09175e-11,-1.09398e-11;2.11286e-11)
+	 	 angles:  CM = 2.78318   Lab = 1.6362
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 311   K0   mass = 497.67
+	 	 momentum        = (49.6625,-2125.1,-2259.26;3141.73)
+	 	 labVertex       = (1.24704e-12,-1.14679e-11,-1.1183e-11;2.16051e-11)
+	 	 angles:  CM = 2.78318   Lab = 0.0713914
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 1
+	  --> sumMomentumChildrenHadrons = (251.213,-2164.95,-2175.82;3403.74)
+  --- Cluster --- 14
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (2410.86,-20776.8,-20881.2;29557)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 6
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (24.8204,-213.902,-214.977;445.208)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -3.70255e-17
+	 sumConstituentMasses    = 650
+	 mass              = 2922.89
+	 momentum          = (2435.69,-20990.7,-21096.1;30002.2)
+	 position          = (2.24626e-12,-1.93583e-11,-1.94555e-11;3.26894e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 10
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 20213   a_1+   mass = 1230
+	 	 momentum        = (1785.16,-15384.5,-15461.8;21919.2)
+	 	 labVertex       = (1.9357e-12,-2.06917e-11,-2.0961e-11;3.46672e-11)
+	 	 angles:  CM = 0   Lab = 0
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = -215   a_2-   mass = 1318
+	 	 momentum        = (650.522,-5606.2,-5634.35;8083.05)
+	 	 labVertex       = (2.47761e-12,-2.047e-11,-2.04134e-11;3.41621e-11)
+	 	 angles:  CM = 0   Lab = 0
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (2435.69,-20990.7,-21096.1;30002.2)
+  --- Cluster --- 15
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-33.6536,290.026,291.483;525.2)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (196.517,-1693.58,-1702.09;2430.96)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 3.70255e-17
+	 sumConstituentMasses    = 650
+	 mass              = 2180.04
+	 momentum          = (162.863,-1403.56,-1410.6;2956.16)
+	 position          = (1.75676e-12,-1.51398e-11,-1.52158e-11;2.68779e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 10
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -213   rho-   mass = 766.9
+	 	 momentum        = (365.915,-419.915,-844.796;1269.66)
+	 	 labVertex       = (1.7649e-12,-1.53138e-11,-1.5328e-11;2.69995e-11)
+	 	 angles:  CM = 1.7771   Lab = 2.71668
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 10213   b_1+   mass = 1231
+	 	 momentum        = (-203.051,-983.641,-565.809;1686.5)
+	 	 labVertex       = (2.02937e-12,-1.52616e-11,-1.5237e-11;2.69308e-11)
+	 	 angles:  CM = 1.7771   Lab = 0.37025
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (162.863,-1403.56,-1410.6;2956.16)
+  --- Cluster --- 16
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-2335.65,20128.6,20229.7;28635)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 7
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = 3    s     component mass = 500
+	 	 momentum        = (291.619,-2513.17,-2525.8;3609.81)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 825
+	 mass              = 20293.3
+	 momentum          = (-2044.03,17615.4,17703.9;32244.8)
+	 position          = (-1.1075e-12,9.5444e-12,9.59233e-12;1.81169e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 2
+	 reshufflingPartner= 0
+	 childrenClusters  = 26   27   
+	  --> sumChargeChildrenClusters = -1
+	  --> sumMomentumChildrenClusters = (-2044.03,17615.4,17703.9;32244.8)
+	 NO childrenHadrons 
+  --- Cluster --- 17
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (350.789,-3023.1,-3038.28;4312.65)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -3    sbar     component mass = 500
+	 	 momentum        = (-492.702,4246.1,4267.43;6060.79)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1.85128e-17
+	 sumConstituentMasses    = 825
+	 mass              = 10226.5
+	 momentum          = (-141.913,1223.01,1229.15;10373.4)
+	 position          = (-5.76829e-13,4.97111e-12,4.99608e-12;1.3315e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 2
+	 reshufflingPartner= 0
+	 childrenClusters  = 18   19   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (-141.913,1223.01,1229.15;10373.4)
+	 NO childrenHadrons 
+  --- Cluster --- 18
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (285.238,-2458.18,-2470.52;3511.85)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-175.488,1512.36,1519.95;2175.75)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 5526.17
+	 momentum          = (109.749,-945.819,-950.569;5687.6)
+	 position          = (-5.42291e-13,4.67346e-12,4.69693e-12;1.45953e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 17
+	 reshufflingPartner= 0
+	 childrenClusters  = 22   23   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (109.749,-945.819,-950.569;5687.6)
+	 NO childrenHadrons 
+  --- Cluster --- 19
+	 numComponents     = 2
+	 Component 1
+	 	 id = -3    sbar     component mass = 500
+	 	 momentum        = (-312.876,2696.36,2709.9;3868.05)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (61.2136,-527.538,-530.187;817.782)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1.85128e-17
+	 sumConstituentMasses    = 825
+	 mass              = 3526.86
+	 momentum          = (-251.662,2168.83,2179.72;4685.84)
+	 position          = (-6.61436e-13,5.70025e-12,5.72887e-12;1.46681e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 17
+	 reshufflingPartner= 0
+	 childrenClusters  = 20   21   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (-251.662,2168.83,2179.72;4685.84)
+	 NO childrenHadrons 
+  --- Cluster --- 20
+	 numComponents     = 2
+	 Component 1
+	 	 id = -3    sbar     component mass = 500
+	 	 momentum        = (-214.219,1846.14,1855.41;2673.32)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (12.8685,-110.9,-111.457;361.265)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1.85128e-17
+	 sumConstituentMasses    = 825
+	 mass              = 1765.15
+	 momentum          = (-201.35,1735.24,1743.95;3034.59)
+	 position          = (-7.19421e-13,6.19996e-12,6.2311e-12;1.54907e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 19
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 311   K0   mass = 497.67
+	 	 momentum        = (-248.564,77.6036,304.563;638.937)
+	 	 labVertex       = (-9.20429e-13,5.89905e-12,6.65032e-12;1.55275e-11)
+	 	 angles:  CM = 2.53074   Lab = 0.761587
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 331   eta'   mass = 957.77
+	 	 momentum        = (47.214,1657.63,1439.39;2395.65)
+	 	 labVertex       = (-7.02349e-13,5.32048e-12,6.0679e-12;1.49659e-11)
+	 	 angles:  CM = 2.53074   Lab = 3.01533
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (-201.35,1735.24,1743.95;3034.59)
+  --- Cluster --- 21
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (35.8268,-308.755,-310.306;546.377)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-86.139,742.345,746.073;1104.87)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 1531.73
+	 momentum          = (-50.3122,433.59,435.767;1651.25)
+	 position          = (-6.66807e-13,5.74654e-12,5.7754e-12;1.50498e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 19
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -213   rho-   mass = 766.9
+	 	 momentum        = (-217.742,802.562,461.949;1221.9)
+	 	 labVertex       = (-1.03091e-12,5.75222e-12,5.71873e-12;1.48491e-11)
+	 	 angles:  CM = 2.61594   Lab = 2.83996
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 211   pi+   mass = 139.57
+	 	 momentum        = (167.43,-368.973,-26.1821;429.347)
+	 	 labVertex       = (-7.36076e-13,5.94247e-12,5.55157e-12;1.5115e-11)
+	 	 angles:  CM = 2.61594   Lab = 2.37175
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (-50.3122,433.59,435.767;1651.25)
+  --- Cluster --- 22
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (266.372,-2295.6,-2307.12;3281.64)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-72.3478,623.493,626.624;944.596)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 650
+	 mass              = 3493.34
+	 momentum          = (194.025,-1672.1,-1680.5;4226.24)
+	 position          = (-5.00558e-13,4.3138e-12,4.33547e-12;1.54715e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 18
+	 reshufflingPartner= 0
+	 childrenClusters  = 24   25   
+	  --> sumChargeChildrenClusters = -1
+	  --> sumMomentumChildrenClusters = (194.025,-1672.1,-1680.5;4226.24)
+	 NO childrenHadrons 
+  --- Cluster --- 23
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-88.4776,762.5,766.329;1132.31)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (4.20246,-36.2168,-36.3987;329.058)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 1033.54
+	 momentum          = (-84.2752,726.283,729.93;1461.37)
+	 position          = (-5.73791e-13,4.94492e-12,4.96976e-12;1.50659e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 18
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 213   rho+   mass = 766.9
+	 	 momentum        = (98.183,673.749,654.109;1216.38)
+	 	 labVertex       = (-9.62245e-13,4.72132e-12,5.7973e-12;1.51529e-11)
+	 	 angles:  CM = 1.07001   Lab = 0.186641
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 111   pi0   mass = 134.98
+	 	 momentum        = (-182.458,52.5334,75.8211;244.988)
+	 	 labVertex       = (-4.62424e-13,4.39047e-12,4.71279e-12;1.44502e-11)
+	 	 angles:  CM = 1.07001   Lab = 2.11232
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 1
+	  --> sumMomentumChildrenHadrons = (-84.2752,726.283,729.93;1461.37)
+  --- Cluster --- 24
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (223.461,-1925.78,-1935.46;2758.66)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -3    sbar     component mass = 500
+	 	 momentum        = (-2.90667,25.0496,25.1754;501.268)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1.85128e-17
+	 sumConstituentMasses    = 825
+	 mass              = 1821.13
+	 momentum          = (220.554,-1900.73,-1910.28;3259.93)
+	 position          = (-4.51877e-13,3.89427e-12,3.91383e-12;1.6178e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 22
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -211   pi-   mass = 139.57
+	 	 momentum        = (-79.5452,32.6369,-332.277;370.513)
+	 	 labVertex       = (-2.34845e-13,3.90626e-12,4.28132e-12;1.59722e-11)
+	 	 angles:  CM = 2.15678   Lab = 0.929501
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 325   K*_2+   mass = 1425
+	 	 momentum        = (300.099,-1933.37,-1578;2889.41)
+	 	 labVertex       = (-4.94557e-13,4.06213e-12,3.81242e-12;1.62498e-11)
+	 	 angles:  CM = 2.15678   Lab = 3.03196
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (220.554,-1900.73,-1910.28;3259.93)
+  --- Cluster --- 25
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-27.2677,234.993,236.173;466.227)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 3    s     component mass = 500
+	 	 momentum        = (0.738065,-6.36063,-6.39258;500.082)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 825
+	 mass              = 909.933
+	 momentum          = (-26.5297,228.632,229.781;966.309)
+	 position          = (-5.10269e-13,4.39749e-12,4.41958e-12;1.5717e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 22
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 111   pi0   mass = 134.98
+	 	 momentum        = (164.898,-4.16292,-162.037;267.739)
+	 	 labVertex       = (-2.99668e-13,4.15125e-12,4.75771e-12;1.56005e-11)
+	 	 angles:  CM = 2.45936   Lab = 2.17237
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = -321   K-   mass = 493.6
+	 	 momentum        = (-191.428,232.795,391.817;698.57)
+	 	 labVertex       = (-2.66249e-13,4.56178e-12,4.54203e-12;1.64076e-11)
+	 	 angles:  CM = 2.45936   Lab = 2.74569
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = -1
+	  --> sumMomentumChildrenHadrons = (-26.5297,228.632,229.781;966.309)
+  --- Cluster --- 26
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-1975.33,17023.4,17108.9;24218.1)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 7
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (71.6499,-617.478,-620.579;936.566)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 3.70255e-17
+	 sumConstituentMasses    = 650
+	 mass              = 9387.01
+	 momentum          = (-1903.68,16405.9,16488.3;25154.7)
+	 position          = (-1.55405e-12,1.33928e-11,1.34601e-11;2.39499e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 16
+	 reshufflingPartner= 0
+	 childrenClusters  = 30   31   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (-1903.68,16405.9,16488.3;25154.7)
+	 NO childrenHadrons 
+  --- Cluster --- 27
+	 numComponents     = 2
+	 Component 1
+	 	 id = 3    s     component mass = 500
+	 	 momentum        = (216.607,-1866.71,-1876.09;2702.08)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-356.959,3076.27,3091.72;4388.07)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 825
+	 mass              = 6878.21
+	 momentum          = (-140.352,1209.55,1215.63;7090.16)
+	 position          = (-1.12057e-12,9.65704e-12,9.70554e-12;1.96953e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 16
+	 reshufflingPartner= 0
+	 childrenClusters  = 28   29   
+	  --> sumChargeChildrenClusters = -1
+	  --> sumMomentumChildrenClusters = (-140.352,1209.55,1215.63;7090.16)
+	 NO childrenHadrons 
+  --- Cluster --- 28
+	 numComponents     = 2
+	 Component 1
+	 	 id = 3    s     component mass = 500
+	 	 momentum        = (194.739,-1678.26,-1686.69;2439.14)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-2.22771,19.1984,19.2948;326.145)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 825
+	 mass              = 1441.2
+	 momentum          = (192.511,-1659.06,-1667.39;2765.28)
+	 position          = (-1.08061e-12,9.31272e-12,9.35949e-12;2.0265e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 27
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -323   K*-   mass = 891.6
+	 	 momentum        = (387.51,-1494.4,-1713.7;2472.87)
+	 	 labVertex       = (-1.15553e-12,9.7369e-12,9.74021e-12;1.9653e-11)
+	 	 angles:  CM = 0.621262   Lab = 0.108841
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 111   pi0   mass = 134.98
+	 	 momentum        = (-194.998,-164.665,46.3087;292.409)
+	 	 labVertex       = (-1.04911e-12,9.28411e-12,9.16131e-12;2.04843e-11)
+	 	 angles:  CM = 0.621262   Lab = 1.83259
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = -1
+	  --> sumMomentumChildrenHadrons = (192.511,-1659.06,-1667.39;2765.28)
+  --- Cluster --- 29
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-323.63,2789.04,2803.04;3980.72)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (-9.23384,79.5771,79.9768;344.15)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 3.70255e-17
+	 sumConstituentMasses    = 650
+	 mass              = 1432.81
+	 momentum          = (-332.863,2868.61,2883.02;4324.87)
+	 position          = (-1.18951e-12,1.02512e-11,1.03027e-11;2.05887e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 27
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 221   eta   mass = 547.45
+	 	 momentum        = (34.8656,2762.91,2558.41;3805.26)
+	 	 labVertex       = (-1.1669e-12,9.25614e-12,9.38445e-12;1.92418e-11)
+	 	 angles:  CM = 0.670317   Lab = 0.0996872
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 111   pi0   mass = 134.98
+	 	 momentum        = (-367.729,105.704,324.616;519.609)
+	 	 labVertex       = (-1.20819e-12,1.07858e-11,1.06245e-11;2.11616e-11)
+	 	 angles:  CM = 0.670317   Lab = 0.843375
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (-332.863,2868.61,2883.02;4324.87)
+  --- Cluster --- 30
+	 numComponents     = 2
+	 Component 1
+	 	 id = -2    ubar     component mass = 325
+	 	 momentum        = (-720.19,6206.6,6237.77;8834.92)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 1
+	 	 isBeamRemnant   = 0
+	 	 HAS pointed Particle :   number = 7
+	 	 	 positions: labVertex=(0,0,0;0)   lifeLength=(0,0,0;0)
+	 	 	 masses:   constituent=325   current=5.6   invariant=5.6
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (-55.0612,474.517,476.9;749.17)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1
+	 sumConstituentMasses    = 650
+	 mass              = 1236.86
+	 momentum          = (-775.252,6681.11,6714.67;9584.09)
+	 position          = (-1.94368e-12,1.67506e-11,1.68348e-11;2.87422e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 26
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 113   rho0   mass = 768.5
+	 	 momentum        = (-760.864,6557.12,6590.05;9359.17)
+	 	 labVertex       = (-2.04015e-12,1.65785e-11,1.67167e-11;2.85493e-11)
+	 	 angles:  CM = 0   Lab = 0
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = -211   pi-   mass = 139.57
+	 	 momentum        = (-14.388,123.995,124.618;224.925)
+	 	 labVertex       = (-2.76336e-12,1.92891e-11,1.93439e-11;3.23876e-11)
+	 	 angles:  CM = 0   Lab = 0
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = -1
+	  --> sumMomentumChildrenHadrons = (-775.252,6681.11,6714.67;9584.09)
+  --- Cluster --- 31
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (68.2115,-587.846,-590.799;897.153)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-1196.64,10312.6,10364.4;14673.4)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 7146.62
+	 momentum          = (-1128.43,9724.78,9773.62;15570.6)
+	 position          = (-1.77608e-12,1.53062e-11,1.53831e-11;2.70303e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 26
+	 reshufflingPartner= 0
+	 childrenClusters  = 32   33   
+	  --> sumChargeChildrenClusters = 1
+	  --> sumMomentumChildrenClusters = (-1128.43,9724.78,9773.62;15570.6)
+	 NO childrenHadrons 
+  --- Cluster --- 32
+	 numComponents     = 2
+	 Component 1
+	 	 id = 2    u     component mass = 325
+	 	 momentum        = (33.5092,-288.782,-290.232;523.81)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-23.709,204.324,205.351;436.01)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1
+	 sumConstituentMasses    = 650
+	 mass              = 952.271
+	 momentum          = (9.80012,-84.4574,-84.8815;959.82)
+	 position          = (-1.76886e-12,1.5244e-11,1.53206e-11;2.72845e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 31
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 211   pi+   mass = 139.57
+	 	 momentum        = (-24.8078,-99.0023,-5.92652;173.008)
+	 	 labVertex       = (-1.66222e-12,1.52654e-11,1.40088e-11;2.75023e-11)
+	 	 angles:  CM = 0.964419   Lab = 0.792711
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 223   omega   mass = 781.94
+	 	 momentum        = (34.6079,14.5449,-78.955;786.812)
+	 	 labVertex       = (-1.05997e-12,1.52732e-11,1.54177e-11;2.69986e-11)
+	 	 angles:  CM = 0.964419   Lab = 2.15724
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 1
+	  --> sumMomentumChildrenHadrons = (9.80012,-84.4574,-84.8815;959.82)
+  --- Cluster --- 33
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-1158.28,9982.03,10032.2;14203.3)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (20.0506,-172.796,-173.664;407.486)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 4332.1
+	 momentum          = (-1138.23,9809.23,9858.5;14610.7)
+	 position          = (-2.00744e-12,1.73001e-11,1.7387e-11;2.99962e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 0
+	 parentCluster     = 31
+	 reshufflingPartner= 0
+	 childrenClusters  = 34   35   
+	  --> sumChargeChildrenClusters = 0
+	  --> sumMomentumChildrenClusters = (-1138.23,9809.23,9858.5;14610.7)
+	 NO childrenHadrons 
+  --- Cluster --- 34
+	 numComponents     = 2
+	 Component 1
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-779.496,6717.69,6751.43;9561.51)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (-20.6033,177.559,178.45;411.608)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = -1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 1804.2
+	 momentum          = (-800.1,6895.25,6929.88;9973.12)
+	 position          = (-2.23601e-12,1.92699e-11,1.93667e-11;3.28307e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 33
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = 213   rho+   mass = 766.9
+	 	 momentum        = (-943.329,5908.96,6530.19;8890.29)
+	 	 labVertex       = (-2.45257e-12,2.14981e-11,2.12666e-11;3.57627e-11)
+	 	 angles:  CM = 0.70321   Lab = 0.0534192
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = -211   pi-   mass = 139.57
+	 	 momentum        = (143.229,986.296,399.69;1082.83)
+	 	 labVertex       = (-1.9895e-12,1.70751e-11,1.7472e-11;2.98179e-11)
+	 	 angles:  CM = 0.70321   Lab = 0.45606
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (-800.1,6895.25,6929.88;9973.12)
+  --- Cluster --- 35
+	 numComponents     = 2
+	 Component 1
+	 	 id = 1    d     component mass = 325
+	 	 momentum        = (10.6093,-91.4306,-91.8898;350.058)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 Component 2
+	 	 id = -1    dbar     component mass = 325
+	 	 momentum        = (-348.737,3005.41,3020.51;4287.56)
+	 	 position        = (0,0,0;0)
+	 	 isPerturbative  = 0
+	 	 isBeamRemnant   = 0
+	 	 NO pointed Particle 
+	 charge (sum components) = 1.85128e-17
+	 sumConstituentMasses    = 650
+	 mass              = 2079.69
+	 momentum          = (-338.128,2913.98,2928.62;4637.62)
+	 position          = (-2.07284e-12,1.78637e-11,1.79534e-11;3.09276e-11)
+	 isBeamCluster     = 0
+	 isStatusInitial   = 0
+	 isReadyToDecay    = 0
+	 isRedefined       = 0
+	 hasBeenReshuffled = 0
+	 isStatusFinal     = 1
+	 parentCluster     = 33
+	 reshufflingPartner= 0
+	 NO childrenClusters 
+	 num childrenHadrons  = 2
+	 Hadron 1
+	 	 id = -213   rho-   mass = 766.9
+	 	 momentum        = (-519.806,1837.86,1254.77;2410.5)
+	 	 labVertex       = (-1.98059e-12,1.79493e-11,1.80644e-11;3.10851e-11)
+	 	 angles:  CM = 1.83898   Lab = 2.90371
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 Hadron 2
+	 	 id = 10211   a_0+   mass = 983.5
+	 	 momentum        = (181.678,1076.13,1673.84;2227.12)
+	 	 labVertex       = (-2.07214e-12,1.82274e-11,1.79977e-11;3.11043e-11)
+	 	 angles:  CM = 1.83898   Lab = 0.272868
+	 	 num parents = 2
+	 	 Parent 1
+	 	 	 id = -2   ubar
+	 	 	 momentum  = (-3719.66,32056,32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+	 	 Parent 2
+	 	 	 id = 2   u
+	 	 	 momentum  = (3719.66,-32056,-32217;45600)
+	 	 	 labVertex = (0,0,0;0)
+
+	  --> sumChargeChildrenHadrons = 0
+	  --> sumMomentumChildrenHadrons = (-338.128,2913.98,2928.62;4637.62)
+ ---------- Begin analysis of produced Hadrons ---------- 
+  Cluster (Initial) 1
+	 made of the following  2  partons 
+	 	 id = -2   ubar   number = 7   (-3719.66,32056,32217;45600)
+	 	 id = 2   u   number = 6   (3719.66,-32056,-32217;45600)
+	 has produced the following  36  hadrons 
+	 	 id = -211   pi-   (-53.3472,566.129,541.295;797.388)
+	 	 id = 113   rho0   (-288.207,2377.38,2417;3488.19)
+	 	 id = -211   pi-   (-264.622,-227.731,-23.9625;376.749)
+	 	 id = 211   pi+   (303.222,-104.924,-310.363;467.716)
+	 	 id = 111   pi0   (29.0386,844.391,1269.57;1530.97)
+	 	 id = 213   rho+   (-425.257,2570.22,2162.19;3471.32)
+	 	 id = 211   pi+   (201.55,-39.8481,83.4325;262.014)
+	 	 id = 311   K0   (49.6625,-2125.1,-2259.26;3141.73)
+	 	 id = 211   pi+   (-534.916,-170.223,152.267;598.143)
+	 	 id = -10323   K_1-   (570.271,-134.467,-458.487;1489.16)
+	 	 id = -213   rho-   (365.915,-419.915,-844.796;1269.66)
+	 	 id = 10213   b_1+   (-203.051,-983.641,-565.809;1686.5)
+	 	 id = 20213   a_1+   (1785.16,-15384.5,-15461.8;21919.2)
+	 	 id = -215   a_2-   (650.522,-5606.2,-5634.35;8083.05)
+	 	 id = -213   rho-   (-217.742,802.562,461.949;1221.9)
+	 	 id = 211   pi+   (167.43,-368.973,-26.1821;429.347)
+	 	 id = 311   K0   (-248.564,77.6036,304.563;638.937)
+	 	 id = 331   eta'   (47.214,1657.63,1439.39;2395.65)
+	 	 id = 213   rho+   (98.183,673.749,654.109;1216.38)
+	 	 id = 111   pi0   (-182.458,52.5334,75.8211;244.988)
+	 	 id = 111   pi0   (164.898,-4.16292,-162.037;267.739)
+	 	 id = -321   K-   (-191.428,232.795,391.817;698.57)
+	 	 id = -211   pi-   (-79.5452,32.6369,-332.277;370.513)
+	 	 id = 325   K*_2+   (300.099,-1933.37,-1578;2889.41)
+	 	 id = 221   eta   (34.8656,2762.91,2558.41;3805.26)
+	 	 id = 111   pi0   (-367.729,105.704,324.616;519.609)
+	 	 id = -323   K*-   (387.51,-1494.4,-1713.7;2472.87)
+	 	 id = 111   pi0   (-194.998,-164.665,46.3087;292.409)
+	 	 id = -213   rho-   (-519.806,1837.86,1254.77;2410.5)
+	 	 id = 10211   a_0+   (181.678,1076.13,1673.84;2227.12)
+	 	 id = 213   rho+   (-943.329,5908.96,6530.19;8890.29)
+	 	 id = -211   pi-   (143.229,986.296,399.69;1082.83)
+	 	 id = 211   pi+   (-24.8078,-99.0023,-5.92652;173.008)
+	 	 id = 223   omega   (34.6079,14.5449,-78.955;786.812)
+	 	 id = 113   rho0   (-760.864,6557.12,6590.05;9359.17)
+	 	 id = -211   pi-   (-14.388,123.995,124.618;224.925)
+	 Total Charge Partons = 3.70255e-17
+	 Total Charge Hadrons = 0
+	 Total Momentum Partons = (0,0,2.00028e-06;91200)
+	 Total Momentum Hadrons = (-2.06075e-11,1.87697e-10,2.00047e-06;91200)
+	   ---> Diff Momentum = (2.06075e-11,-1.87697e-10,-1.8828e-10;1.74623e-10)
+ ---------- End analysis of produced Hadrons ---------- 
+ClusterHadronizationHandler::debuggingInfo  ===> END DEBUGGING <=== 
+
+
+ClusterHadronizationHandler::debuggingInfo  ===> BEGIN ***FINAL STATISTICS*** <=== 
+
+	1)  id=-10323   K_1-   1 per event;   fraction=2.77778 %
+	2)  id=-323   K*-   1 per event;   fraction=2.77778 %
+	3)  id=-321   K-   1 per event;   fraction=2.77778 %
+	4)  id=-215   a_2-   1 per event;   fraction=2.77778 %
+	5)  id=-213   rho-   3 per event;   fraction=8.33333 %
+	6)  id=-211   pi-   5 per event;   fraction=13.8889 %
+	7)  id=111   pi0   5 per event;   fraction=13.8889 %
+	8)  id=113   rho0   2 per event;   fraction=5.55556 %
+	9)  id=211   pi+   5 per event;   fraction=13.8889 %
+	10)  id=213   rho+   3 per event;   fraction=8.33333 %
+	11)  id=221   eta   1 per event;   fraction=2.77778 %
+	12)  id=223   omega   1 per event;   fraction=2.77778 %
+	13)  id=311   K0   2 per event;   fraction=5.55556 %
+	14)  id=325   K*_2+   1 per event;   fraction=2.77778 %
+	15)  id=331   eta'   1 per event;   fraction=2.77778 %
+	16)  id=10211   a_0+   1 per event;   fraction=2.77778 %
+	17)  id=10213   b_1+   1 per event;   fraction=2.77778 %
+	18)  id=20213   a_1+   1 per event;   fraction=2.77778 %
+
+	 Counts for position statistics 
+	 	   statNumberInitialComponents =2
+	 	   statNumberInitialClusters   =1
+	 	   statNumberClusters          =35
+	 	   statNumberFinalClusters     =18
+	 	   statNumberChildClusters     =34
+	 	   statNumberChildHadrons      =36
+	 	   statNumberReshufflingClusterParters =0
+
+	 Invariant (space-time) Distance (in millimeters) : 
+	 	 | initial component - beam vertex | = 0
+	 	 | initial component - cluster | = 0
+	 	 | initial cluster - beam vertex | = 0
+	 	 | any cluster - beam vertex | = 1.37778e-11
+	 	 | final cluster - beam vertex | = 1.51617e-11
+	 	 | final hadron - beam vertex | = 1.52533e-11
+	 	 | parent cluster - child cluster | = 1.35512e-12
+	 	 | parent cluster - child hadron | = -3.21527e-13
+	 	 | light cluster - reshuffling partner cluster | = 0
+
+	 Lab space distance (abs) (in millimeters) : 
+	 	 | initial component - beam vertex | = 0
+	 	 | initial component - cluster | = 0
+	 	 | initial cluster - beam vertex | = 0
+	 	 | any cluster - beam vertex | = 1.27238e-11
+	 	 | final cluster - beam vertex | = 1.39799e-11
+	 	 | final hadron - beam vertex | = 1.42056e-11
+	 	 | parent cluster - child cluster | = 2.16802e-12
+	 	 | parent cluster - child hadron | = 9.25959e-13
+	 	 | light cluster - reshuffling partner cluster | = 0
+
+
+	 Clusters:  BeamCluster  average number  = 0
+	            Initial      average number  = 1
+	            Final        average number  = 18
+	            1-Hadron     average number  = 0  fraction=0
+	            Reshuffled   average number  = 0  fraction=0
+	            3-Component  average number  = 0  fraction=0
+
+	 Average Hadron Multiplicity = 36
+	 Mesons:  36 per event;    fraction=100 %
+	 Baryons: 0 per event;    fraction=0 %
+	 b-Hadrons    = 0 per event;    fraction=0 %
+	 c-Hadrons    = 0 per event;    fraction=0 %
+	 s-Hadrons    = 8 per event;    fraction=22.2222 %
+	 u,d-Hadrons  = 28 per event;    fraction=77.7778 %
+	 	 pi+  = 5 per event;    fraction=13.8889 %
+	 	 pi0  = 5 per event;    fraction=13.8889 %
+	 	 pi-  = 5 per event;    fraction=13.8889 %
+
+ClusterHadronizationHandler::debuggingInfo  ===> END ***FINAL STATISTICS*** <=== 
+
+******************************************************************************
+Event number 1 (id: SimpleLEP) performed by SimpleLEPHandler
+==============================================================================
+
+--- Colliding particles:
+  1        e-      11  (3,9)   
+                                 0.000     0.000    45.600    45.600     0.001
+  2        e+     -11  (4,8)   
+                                 0.000     0.000   -45.600    45.600     0.001
+------------------------------------------------------------------------------
+Primary sub-process performed by MEee2gZ2qq
+--- incoming:
+  3        e-      11 [1] (5)   
+                                 0.000     0.000    45.600    45.600     0.001
+  4        e+     -11 [2] (5)   
+                                 0.000     0.000   -45.600    45.600     0.001
+--- intermediates:
+  5        Z0      23 [3,4] (6,7)   
+                                 0.000     0.000     0.000    91.200    91.200
+--- outgoing:
+  6         u       2 [5] (10..45)  >7 {+1}
+                                 3.720   -32.056   -32.217    45.600     0.006
+  7      ubar      -2 [5] (10..45)  6> {-1}
+                                -3.720    32.056    32.217    45.600     0.006
+------------------------------------------------------------------------------
+Step 1
+--- intermediates:
+  3        e-      11 [1] (5)   
+                                 0.000     0.000    45.600    45.600     0.001
+  4        e+     -11 [2] (5)   
+                                 0.000     0.000   -45.600    45.600     0.001
+  5        Z0      23 [3,4] (6,7)   
+                                 0.000     0.000     0.000    91.200    91.200
+--- final:
+  6         u       2 [5] (10..45)  >7 {+1}
+                                 3.720   -32.056   -32.217    45.600     0.006
+  7      ubar      -2 [5] (10..45)  6> {-1}
+                                -3.720    32.056    32.217    45.600     0.006
+  8     gamma      22 [2]    
+                                 0.000     0.000    -0.000     0.000    -0.000
+  9     gamma      22 [1]    
+                                 0.000     0.000     0.000     0.000    -0.000
+------------------------------------------------------------------------------
+     Sum of momenta:                 0         0         0      91.2      91.2
+------------------------------------------------------------------------------
+Step 2
+--- final:
+  6         u       2 [5] (10..45)  >7 {+1}
+                                 3.720   -32.056   -32.217    45.600     0.006
+  7      ubar      -2 [5] (10..45)  6> {-1}
+                                -3.720    32.056    32.217    45.600     0.006
+  8     gamma      22 [2]    
+                                 0.000     0.000    -0.000     0.000    -0.000
+  9     gamma      22 [1]    
+                                 0.000     0.000     0.000     0.000    -0.000
+------------------------------------------------------------------------------
+     Sum of momenta:                 0         0         0      91.2      91.2
+------------------------------------------------------------------------------
+Step 3
+--- final:
+  8     gamma      22 [2]    
+                                 0.000     0.000    -0.000     0.000    -0.000
+  9     gamma      22 [1]    
+                                 0.000     0.000     0.000     0.000    -0.000
+ 10       pi0     111 [7,6]    
+                                 0.029     0.844     1.270     1.531     0.135
+ 11      rho+     213 [7,6]    
+                                -0.425     2.570     2.162     3.471     0.767
+ 12       pi-    -211 [7,6]    
+                                -0.265    -0.228    -0.024     0.377     0.140
+ 13       pi+     211 [7,6]    
+                                 0.303    -0.105    -0.310     0.468     0.140
+ 14       pi-    -211 [7,6]    
+                                -0.053     0.566     0.541     0.797     0.140
+ 15      rho0     113 [7,6]    
+                                -0.288     2.377     2.417     3.488     0.768
+ 16       pi+     211 [7,6]    
+                                -0.535    -0.170     0.152     0.598     0.140
+ 17      K_1-  -10323 [7,6]    
+                                 0.570    -0.134    -0.458     1.489     1.290
+ 18       pi+     211 [7,6]    
+                                 0.202    -0.040     0.083     0.262     0.140
+ 19        K0     311 [7,6]    
+                                 0.050    -2.125    -2.259     3.142     0.498
+ 20      a_1+   20213 [7,6]    
+                                 1.785   -15.385   -15.462    21.919     1.230
+ 21      a_2-    -215 [7,6]    
+                                 0.651    -5.606    -5.634     8.083     1.318
+ 22      rho-    -213 [7,6]    
+                                 0.366    -0.420    -0.845     1.270     0.767
+ 23      b_1+   10213 [7,6]    
+                                -0.203    -0.984    -0.566     1.686     1.231
+ 24        K0     311 [7,6]    
+                                -0.249     0.078     0.305     0.639     0.498
+ 25      eta'     331 [7,6]    
+                                 0.047     1.658     1.439     2.396     0.958
+ 26      rho-    -213 [7,6]    
+                                -0.218     0.803     0.462     1.222     0.767
+ 27       pi+     211 [7,6]    
+                                 0.167    -0.369    -0.026     0.429     0.140
+ 28      rho+     213 [7,6]    
+                                 0.098     0.674     0.654     1.216     0.767
+ 29       pi0     111 [7,6]    
+                                -0.182     0.053     0.076     0.245     0.135
+ 30       pi-    -211 [7,6]    
+                                -0.080     0.033    -0.332     0.371     0.140
+ 31     K*_2+     325 [7,6]    
+                                 0.300    -1.933    -1.578     2.889     1.425
+ 32       pi0     111 [7,6]    
+                                 0.165    -0.004    -0.162     0.268     0.135
+ 33        K-    -321 [7,6]    
+                                -0.191     0.233     0.392     0.699     0.494
+ 34       K*-    -323 [7,6]    
+                                 0.388    -1.494    -1.714     2.473     0.892
+ 35       pi0     111 [7,6]    
+                                -0.195    -0.165     0.046     0.292     0.135
+ 36       eta     221 [7,6]    
+                                 0.035     2.763     2.558     3.805     0.547
+ 37       pi0     111 [7,6]    
+                                -0.368     0.106     0.325     0.520     0.135
+ 38      rho0     113 [7,6]    
+                                -0.761     6.557     6.590     9.359     0.768
+ 39       pi-    -211 [7,6]    
+                                -0.014     0.124     0.125     0.225     0.140
+ 40       pi+     211 [7,6]    
+                                -0.025    -0.099    -0.006     0.173     0.140
+ 41     omega     223 [7,6]    
+                                 0.035     0.015    -0.079     0.787     0.782
+ 42      rho+     213 [7,6]    
+                                -0.943     5.909     6.530     8.890     0.767
+ 43       pi-    -211 [7,6]    
+                                 0.143     0.986     0.400     1.083     0.140
+ 44      rho-    -213 [7,6]    
+                                -0.520     1.838     1.255     2.410     0.767
+ 45      a_0+   10211 [7,6]    
+                                 0.182     1.076     1.674     2.227     0.984
+------------------------------------------------------------------------------
+     Sum of momenta:         -2.06e-14  1.93e-13  1.81e-13      91.2      91.2
+
+The following exception classes were reported in this run:
+N7Pythia79ExceptionE (1 times)

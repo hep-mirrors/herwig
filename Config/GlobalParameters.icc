@@ -1,0 +1,114 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GlobalParameters class.
+//
+
+namespace Herwig {
+
+
+inline GlobalParameters::GlobalParameters() :
+  _effectiveGluonMass( 0.750*GeV ), 
+  _hadronizationScale( 0.5*GeV ), 
+  _stringFragmentationMode( 0 ),
+  _softUnderlyingEventMode( 0 ),
+  _minVirtuality2( 0.1*GeV2 ),
+  _maxDisplacement( 1.0e-10*millimeter )
+{}
+
+
+inline GlobalParameters::GlobalParameters(const GlobalParameters & x)
+  : Pythia7::Interfaced(x),
+	     _effectiveGluonMass( x._effectiveGluonMass ),
+	     _hadronizationScale( x._hadronizationScale ), 
+	     _stringFragmentationMode( x._stringFragmentationMode ),
+	     _softUnderlyingEventMode( x._softUnderlyingEventMode ),
+	     _minVirtuality2( x._minVirtuality2 ),
+	     _maxDisplacement( x._maxDisplacement )
+{}
+
+
+inline Energy GlobalParameters::effectiveGluonMass() const {
+  return _effectiveGluonMass;
+}
+
+
+inline Energy GlobalParameters::hadronizationScale() const {
+  return _hadronizationScale;
+}
+
+
+inline bool GlobalParameters::isPythia7StringFragmentationON() const {
+  return _stringFragmentationMode;
+}
+
+
+inline bool GlobalParameters::isSoftUnderlyingEventON() const {
+  return _softUnderlyingEventMode;
+}
+
+
+inline Energy2 GlobalParameters::minVirtuality2() const {
+  return _minVirtuality2;
+}
+
+
+inline Length GlobalParameters::maxDisplacement() const {
+  return _maxDisplacement;
+}
+
+
+inline double GlobalParameters::conversionFactorGeVtoMillimeter() const {
+  return hbarc / ( GeV * millimeter );
+}
+
+//----------------------------------------------------------------
+
+inline IBPtr GlobalParameters::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr GlobalParameters::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void GlobalParameters::doupdate() throw(UpdateException) {
+  Pythia7::Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void GlobalParameters::doinit() throw(InitException) {
+  Pythia7::Interfaced::doinit();
+}
+
+inline void GlobalParameters::dofinish() {
+  Pythia7::Interfaced::dofinish();
+}
+
+inline void GlobalParameters::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Pythia7::Interfaced::rebind(trans);
+}
+
+inline IVector GlobalParameters::getReferences() {
+  IVector ret = Pythia7::Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+

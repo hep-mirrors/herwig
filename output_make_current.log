@@ -1,0 +1,115 @@
+cd Config/; autoconf
+cd Config/; ./configure; cd ../
+creating cache ./config.cache
+checking for g++... g++
+checking for ar... ar
+checking for ranlib... ranlib
+updating cache ./config.cache
+creating ./config.status
+creating ../Doc/h2html
+sed: can't read ./../Doc/h2html.in: No such file or directory
+creating Makefile.common
+creating config.h
+for dir in Config Shower Hadronization Decay MatrixElement Utilities   lib; do cd $dir ; make - lib CXXDEBUGFLAG=-g CXXOPTFLAG=""; cd .. ; done
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/Config'
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include GlobalParameters.cc
+g++ -ansi -pedantic -Wall -g  -shared GlobalParameters.o -o GlobalParameters.so
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/Config'
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/Shower'
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include BackwardShowerEvolver.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include DrellYanMECorrection.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ForwardShowerEvolver.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include FS_GtoGGGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include FS_GtoGGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include FS_GtoQQbarSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include FS_QtildaShowerKinematics1to2.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include FS_QtoQGammaSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include FS_QtoQGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include GtoGGGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include GtoGGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include GtoGGSudakovFormFactor.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include GtoQQbarSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include GtoQQbarSudakovFormFactor.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include InsideRangeShowerEvolver.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include IS_GtoGGGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include IS_GtoGGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include IS_GtoQQbarSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include IS_QtildaShowerKinematics1to2.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include IS_QtoQGammaSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include IS_QtoQGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include KinematicReshuffler.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include KinematicsReconstructor.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include MECorrection.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include MECorrections.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include PartnerFinder.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include QtildaShowerKinematics1to2.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include QtoQGammaSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include QtoQGammaSudakovFormFactor.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include QtoQGSplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include QtoQGSudakovFormFactor.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include RhoDMatrixPropagator.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerAlpha.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerAlphaQCD.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerConstrainer.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerHandler.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerIndex.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerKinematics.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ShowerParticle.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include SplitFun1to2.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include SplitFun1to3.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include SplitFun.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include SplittingGenerator.cc
+SplittingGenerator.cc: In method `Herwig::ShoKinPtr 
+   Herwig::SplittingGenerator::generateBranchingKinematics(Pythia7::Pointer::TransientRCPtr<Pythia7::PartialCollisionHandler>,
+   Herwig::ShowerParticle&, const Energy&, 
+   Pythia7::Pointer::TransientRCPtr<Herwig::SudakovFormFactor>) const':
+SplittingGenerator.cc:462: warning: unused variable `Energy2 qt2'
+SplittingGenerator.cc:463: warning: unused variable `double z'
+SplittingGenerator.cc:464: warning: unused variable `double phi'
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include SudakovFormFactor.cc
+g++ -ansi -pedantic -Wall -g  -shared BackwardShowerEvolver.o DrellYanMECorrection.o ForwardShowerEvolver.o FS_GtoGGGSplitFun.o FS_GtoGGSplitFun.o FS_GtoQQbarSplitFun.o FS_QtildaShowerKinematics1to2.o FS_QtoQGammaSplitFun.o FS_QtoQGSplitFun.o GtoGGGSplitFun.o GtoGGSplitFun.o GtoGGSudakovFormFactor.o GtoQQbarSplitFun.o GtoQQbarSudakovFormFactor.o InsideRangeShowerEvolver.o IS_GtoGGGSplitFun.o IS_GtoGGSplitFun.o IS_GtoQQbarSplitFun.o IS_QtildaShowerKinematics1to2.o IS_QtoQGammaSplitFun.o IS_QtoQGSplitFun.o KinematicReshuffler.o KinematicsReconstructor.o MECorrection.o MECorrections.o PartnerFinder.o QtildaShowerKinematics1to2.o QtoQGammaSplitFun.o QtoQGammaSudakovFormFactor.o QtoQGSplitFun.o QtoQGSudakovFormFactor.o RhoDMatrixPropagator.o ShowerAlpha.o ShowerAlphaQCD.o ShowerConstrainer.o ShowerHandler.o ShowerIndex.o ShowerKinematics.o ShowerParticle.o SplitFun1to2.o SplitFun1to3.o SplitFun.o SplittingGenerator.o SudakovFormFactor.o -o libHwShower.so
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/Shower'
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/Hadronization'
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include Cluster.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ClusterDecayer.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ClusterFinder.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ClusterFissioner.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ClusterHadronizationHandler.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ColourReconnector.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include Component.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include HadronsSelector.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include LightClusterDecayer.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include PartonSplitter.cc
+g++ -ansi -pedantic -Wall -g  -shared Cluster.o ClusterDecayer.o ClusterFinder.o ClusterFissioner.o ClusterHadronizationHandler.o ColourReconnector.o Component.o HadronsSelector.o LightClusterDecayer.o PartonSplitter.o -o libHwHadronization.so
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/Hadronization'
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/Decay'
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include ExampleDecayer.cc
+g++ -ansi -pedantic -Wall -g  -shared ExampleDecayer.o -o libHwDecay.so
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/Decay'
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/MatrixElement'
+g++ -ansi -pedantic -Wall -g  -shared  -o libHwShower.so
+g++: No input files
+make[1]: *** [libHwShower.so] Error 1
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/MatrixElement'
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/Utilities'
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include CheckId.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include HwDebug.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include Kinematics.cc
+g++ -c -ansi -pedantic -Wall -fpic -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include Smearing.cc
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/Utilities'
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/lib'
+g++ -ansi -pedantic -Wall -g  -shared CheckId.o HwDebug.o Kinematics.o Smearing.o -o libHw.so
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/lib'
+cd src ;  make - current ; cd ..
+make[1]: Entering directory `/var/nwork/pcck/ribon/Herwig++/src'
+g++ -c -ansi -pedantic -Wall  -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include -fpic runHerwig.cc
+export LD_RUN_PATH=../lib:/var/nwork/pcck/ribon/Pythia7/lib; g++ -fpic -rdynamic -g -o runHerwig.exe runHerwig.o -L../lib -lHwHadronization -lHw -L/var/nwork/pcck/ribon/Pythia7/lib -lP7Repo -lP7Handlers -lP7PDF -lP7ME -lP7Event -lP7PDT -lP7SM -lP7Inter -lPythia7 -L/var/nwork/pcck/ribon/lhcxx/lib -lCLHEP -lm -ldl
+g++ -c -ansi -pedantic -Wall  -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include -fpic setupHerwig.cc
+export LD_RUN_PATH=../lib:/var/nwork/pcck/ribon/Pythia7/lib; g++ -fpic -rdynamic -g -o setupHerwig.exe setupHerwig.o -L../lib -lHwHadronization -lHw -L/var/nwork/pcck/ribon/Pythia7/lib -lP7Repo -lP7Handlers -lP7PDF -lP7ME -lP7Event -lP7PDT -lP7SM -lP7Inter -lPythia7 -L/var/nwork/pcck/ribon/lhcxx/lib -lCLHEP -lm -ldl
+g++ -c -ansi -pedantic -Wall  -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include -fpic testClusterHadronization.cc
+export LD_RUN_PATH=../lib:/var/nwork/pcck/ribon/Pythia7/lib; g++ -fpic -rdynamic -g -o testClusterHadronization.exe testClusterHadronization.o -L../lib -lHwHadronization -lHw -L/var/nwork/pcck/ribon/Pythia7/lib -lP7Repo -lP7Handlers -lP7PDF -lP7ME -lP7Event -lP7PDT -lP7SM -lP7Inter -lPythia7 -L/var/nwork/pcck/ribon/lhcxx/lib -lCLHEP -lm -ldl
+g++ -c -ansi -pedantic -Wall  -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include -fpic testDecay.cc
+export LD_RUN_PATH=../lib:/var/nwork/pcck/ribon/Pythia7/lib; g++ -fpic -rdynamic -g -o testDecay.exe testDecay.o -L../lib -lHwHadronization -lHw -L/var/nwork/pcck/ribon/Pythia7/lib -lP7Repo -lP7Handlers -lP7PDF -lP7ME -lP7Event -lP7PDT -lP7SM -lP7Inter -lPythia7 -L/var/nwork/pcck/ribon/lhcxx/lib -lCLHEP -lm -ldl
+g++ -c -ansi -pedantic -Wall  -g   -I../../ -I/var/nwork/pcck/ribon -I/var/nwork/pcck/ribon/lhcxx/include -fpic testShower.cc
+export LD_RUN_PATH=../lib:/var/nwork/pcck/ribon/Pythia7/lib; g++ -fpic -rdynamic -g -o testShower.exe testShower.o -L../lib -lHwHadronization -lHw -L/var/nwork/pcck/ribon/Pythia7/lib -lP7Repo -lP7Handlers -lP7PDF -lP7ME -lP7Event -lP7PDT -lP7SM -lP7Inter -lPythia7 -L/var/nwork/pcck/ribon/lhcxx/lib -lCLHEP -lm -ldl
+make[1]: Leaving directory `/var/nwork/pcck/ribon/Herwig++/src'

@@ -1,0 +1,72 @@
+ (Last update: 16-Apr-2002)
+
+ THIS FILE CONTAINS SOME INFORMATION ABOUT THE CLASS STRUCTURE
+ IN THIS DIRECTORY, AND SOME NOTES ABOUT THE CLASSES.
+
+
+ --- Class Structure. The main class is  *ClusterHadronizationHandler*
+     It interacts with the following classes:
+        *PartonSplitter*
+        *ClusterFinder*
+        *ColourReconnector*
+        *ClusterFissioner*
+        *LightClusterDecayer*
+        *ClusterDecayer*
+     all of these classes uses the fundamental (low-level) classes:
+        *Cluster*  
+        *Component*
+     Furthermore *ClusterFissioner*, *LightClusterDecayer*, and *ClusterDecayer*
+     use the class  *HadronsSelector*.
+
+
+ --- Class:  *PartonSplitter*  has still empty methods for the
+     splitting of space-like and/or space-like with sea quark. 
+
+      
+ --- Beam clusters: all the clusters are contained in the container
+      _collecCluPtr  in the main driver class  ClusterHadronizationHandler,
+     including the beam clusters (defined as clusters having at least one
+     beam remnant between their components) which can be identified by
+     the logical method  Cluster::isBeamCluster(). These beam clusters
+     are properly treated in the Cluster Hadronization if the soft
+     underlying event is switched off. In the case it is switched on,
+     the beam clusters are tagged as not available (that is the logical
+     method  Cluster::isAvailable()  returns false), and are ignored
+     during the hadronization (although present in  _collecCluPtr).
+     When, in the future, the soft underlying event is implemented,
+     it will be necessary, in some way, to pass these beam clusters
+     from  ClusterHadronizationHandler  to the class responsible for
+     the soft underlying event. It should be quite straightforward!
+
+
+ --- Class:  *LightClusterDecayer*  the choice of the candidate 
+     reshuffling partner cluster, with whom the light cluster exchanged
+     momenta, is based on the minimal space-time distance from the
+     light cluster, between the available clusters. 
+
+
+ --- Extensive debugging information on the full Cluster Hadronization 
+     are produced by running with the switch -dHw10  for example:
+
+            runHerwig.exe -dHw10 SimpleLEP.run
+
+     (or even more with: -dHw100)
+     The debugging information are then in  SimpleLEP.log.
+     Notice that you can also control the number of events (max
+     default is 10000) with -N , for example:
+
+            runHerwig.exe -N 100 -dHw 10 SimpleLEP.run
+
+
+ --- The class  *HadronsSelector* , which implements Kupco's
+     method for the selection of a pair of hadrons giving the
+     flavour of the cluster, contains all hadrons as in PDG 2000. 
+     However, because at the moment Pythia7 does not include 
+     many of them, you can either comment out the lines
+     corresponding to the missing particles, or uncomment (use)
+     them, but in the latter case you will get a (single)
+     warning during initialization ( which means when running:
+     $ setupHewig.exe SimpleLEP.in ) saying that such particles 
+     are not found in Pythia7 and therefore they will not be produced 
+     (i.e. their overall weights are set to zero).
+

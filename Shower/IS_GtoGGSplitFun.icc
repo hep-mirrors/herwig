@@ -1,0 +1,28 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the IS_GtoGGSplitFun class.
+//
+
+namespace Herwig {
+
+
+inline IS_GtoGGSplitFun::IS_GtoGGSplitFun()
+  : GtoGGSplitFun() 
+{}
+
+
+inline IS_GtoGGSplitFun::IS_GtoGGSplitFun(const IS_GtoGGSplitFun & x)
+  : GtoGGSplitFun(x) {}
+
+
+inline IBPtr IS_GtoGGSplitFun::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr IS_GtoGGSplitFun::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+}

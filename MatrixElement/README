@@ -1,0 +1,9 @@
+ (Last update: 12-Apr-2002)
+
+ This directory contains classes derived from the abstract class
+      Pythia7/MatrixElement/MEBase.h
+ which represent hard 2->N subprocess matrix elements.
+ These classes can be just stand-alone processes, or they can be
+ the "plus jet" correction processes associated with the 
+ matching of hard subprocesses with parton showers.
+ 

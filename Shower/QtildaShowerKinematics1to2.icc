@@ -1,0 +1,143 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QtildaShowerKinematics1to2 class.
+//
+
+namespace Herwig {
+
+
+inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2() 
+  : ShowerKinematics(),
+    _qtilda( Energy() ),
+    _z( 0.0 ),
+    _phi( 0.0 ),
+    _alpha( 0.0 ),
+    _beta( 0.0 ),
+    _qPerp1( Energy() ),
+    _qPerp2( Energy() ),
+    _pPerp1( Energy() ),
+    _pPerp2( Energy() ),
+    _onShellMass( Energy() ),
+    _pVector( Lorentz5Momentum() ),
+    _nVector( Lorentz5Momentum() )
+{}
+
+
+inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 & x)
+  : ShowerKinematics(x), 
+  _qtilda( x._qtilda ),
+  _z( x._z ),
+  _phi( x._phi ),
+  _alpha( x._alpha ),
+  _beta( x._beta ),
+  _qPerp1( x._qPerp1 ),
+  _qPerp2( x._qPerp2 ),
+  _pPerp1( x._pPerp1 ),
+  _pPerp2( x._pPerp2 ),
+  _onShellMass( x._onShellMass ),
+  _pVector( x._pVector ),
+  _nVector( x._nVector )
+{}
+
+
+inline QtildaShowerKinematics1to2::
+QtildaShowerKinematics1to2( const Lorentz5Momentum & p, const Lorentz5Momentum & n,
+			    const Energy inputOnShellMass ) 
+  : ShowerKinematics(),
+    _qtilda( Energy() ),
+    _z( 0.0 ),
+    _phi( 0.0 ),
+    _alpha( 1.0 ),      // <--- Note
+    _beta( 0.0 ),
+    _qPerp1( Energy() ),
+    _qPerp2( Energy() ),
+    _pPerp1( Energy() ),
+    _pPerp2( Energy() ),
+    _onShellMass( inputOnShellMass ),
+    _pVector( p ),
+    _nVector( n )
+{}
+
+
+inline Energy QtildaShowerKinematics1to2::qtilda() const {
+  return _qtilda;
+}
+inline void QtildaShowerKinematics1to2::qtilda( const Energy inputQtilda ) {
+  _qtilda = inputQtilda;
+}
+
+inline double QtildaShowerKinematics1to2::z() const {
+  return _z;
+}
+inline void QtildaShowerKinematics1to2::z( const double inputZ ) {
+  _z = inputZ;
+}
+
+inline double QtildaShowerKinematics1to2::phi() const {
+  return _phi;
+}
+inline void QtildaShowerKinematics1to2::phi( const double inputPhi ) {
+  _phi = inputPhi;
+}
+
+
+inline double QtildaShowerKinematics1to2::alpha() const {
+  return _alpha;
+}
+inline void QtildaShowerKinematics1to2::alpha( const double inputAlpha ) {
+  _alpha = inputAlpha;
+}
+
+inline double QtildaShowerKinematics1to2::beta() const {
+  return _beta;
+}
+inline void QtildaShowerKinematics1to2::beta( const double inputBeta ) {
+  _beta = inputBeta;
+}
+
+inline Energy QtildaShowerKinematics1to2::qPerp1() const {
+  return _qPerp1;
+}
+inline void QtildaShowerKinematics1to2::qPerp1( const Energy inputQPerp1 ) {
+  _qPerp1 = inputQPerp1;
+}
+
+inline Energy QtildaShowerKinematics1to2::qPerp2() const {
+  return _qPerp2;
+}
+inline void QtildaShowerKinematics1to2::qPerp2( const Energy inputQPerp2 ) {
+  _qPerp2 = inputQPerp2;
+}
+
+inline Energy QtildaShowerKinematics1to2::pPerp1() const {
+  return _pPerp1;
+}
+inline void QtildaShowerKinematics1to2::pPerp1( const Energy inputPPerp1 ) {
+  _pPerp1 = inputPPerp1;
+}
+
+inline Energy QtildaShowerKinematics1to2::pPerp2() const {
+  return _pPerp2;
+}
+inline void QtildaShowerKinematics1to2::pPerp2( const Energy inputPPerp2 ) {
+  _pPerp2 = inputPPerp2;
+}
+
+inline Energy QtildaShowerKinematics1to2::onShellMass() const {
+  return _onShellMass;
+}
+inline void QtildaShowerKinematics1to2::onShellMass( const Energy inputOnShellMass ) {
+  _onShellMass = inputOnShellMass;
+}
+
+inline const Lorentz5Momentum & QtildaShowerKinematics1to2::pVector() const {
+  return _pVector;
+}
+
+inline const Lorentz5Momentum & QtildaShowerKinematics1to2::nVector() const {
+  return _nVector;
+}
+
+
+}

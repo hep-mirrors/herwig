@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DrellYanMECorrection class.
+//
+
+namespace Herwig {
+
+inline DrellYanMECorrection::DrellYanMECorrection() {}
+
+inline DrellYanMECorrection::DrellYanMECorrection(const DrellYanMECorrection & x)
+  : MECorrection(x) {}
+
+inline IBPtr DrellYanMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DrellYanMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

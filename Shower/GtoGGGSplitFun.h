@@ -1,0 +1,86 @@
+// -*- C++ -*-
+#ifndef HERWIG_GtoGGGSplitFun_H
+#define HERWIG_GtoGGGSplitFun_H
+//
+// This is the declaration of the <!id>GtoGGGSplitFun<!!id> class.
+//
+// CLASSDOC SUBSECTION Description:
+//
+// This class is an abstract class which describes the common <BR>
+// part of the <I>G-&GT;GGG</I> splitting function for both Initial State <BR> 
+// and Final State Radiation. It should factorize the common <BR>
+// expression at LO, a part the coupling constant which is <BR>
+// kept separated for I.S.R. and F.S.R. for systematics evaluation.
+//
+// ***LOOKHERE***  This class is currently kept empty; however, 
+//                 if you have to implement it, you should proceed 
+//                 similarly to the <!class>GtoGGSplitFun<!!class> class.
+//
+// CLASSDOC SUBSECTION See also:
+//
+// <a href="http:SplitFun1to3.html">SplitFun1to3.h</a>, <BR>
+// <a href="http:IS_GtoGGGSplitFun.html">IS_GtoGGGSplitFun.h</a>, <BR>
+// <a href="http:FS_GtoGGGSplitFun.html">FS_GtoGGGSplitFun.h</a>.
+// 
+
+#include "SplitFun1to3.h"
+
+
+namespace Herwig {
+
+using namespace Pythia7;
+
+class GtoGGGSplitFun: public SplitFun1to3 {
+
+public:
+
+  inline GtoGGGSplitFun();
+  inline GtoGGGSplitFun(const GtoGGGSplitFun &);
+  virtual ~GtoGGGSplitFun();
+  // Standard ctors and dtor.
+
+public:
+
+  static void Init();
+  // Standard Init function used to initialize the interfaces.
+
+private:
+
+  static AbstractClassDescription<GtoGGGSplitFun> initGtoGGGSplitFun;
+  // Describe an abstract base class with persistent data.
+
+  GtoGGGSplitFun & operator=(const GtoGGGSplitFun &);
+  //  Private and non-existent assignment operator.
+
+};
+
+}
+
+// CLASSDOC OFF
+
+namespace Pythia7 {
+
+// The following template specialization informs Pythia7 about the
+// base class of GtoGGGSplitFun.
+template <>
+struct BaseClassTrait<Herwig::GtoGGGSplitFun,1> {
+  typedef Herwig::SplitFun1to3 NthBase;
+};
+
+// The following template specialization informs Pythia7 about the
+// name of this class and the shared object where it is defined.
+template <>
+struct ClassTraits<Herwig::GtoGGGSplitFun>: public ClassTraitsBase<Herwig::GtoGGGSplitFun> {
+  static string className() { return "/Herwig++/GtoGGGSplitFun"; }
+  // Return the class name.
+  static string library() { return "libHwShower.so"; }
+  // Return the name of the shared library to be loaded to get
+  // access to this class and every other class it uses
+  // (except the base class).
+};
+
+}
+
+#include "GtoGGGSplitFun.icc"
+
+#endif /* HERWIG_GtoGGGSplitFun_H */
