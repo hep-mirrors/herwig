@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NonLeptonicOmegaDecayer class.
+//
+#ifndef HERWIG_NonLeptonicOmegaDecayer_FH
+#define HERWIG_NonLeptonicOmegaDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class NonLeptonicOmegaDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(NonLeptonicOmegaDecayer,NonLeptonicOmegaDecayerPtr);
+
+}
+
+#endif

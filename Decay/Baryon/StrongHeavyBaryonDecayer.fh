@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the StrongHeavyBaryonDecayer class.
+//
+#ifndef HERWIG_StrongHeavyBaryonDecayer_FH
+#define HERWIG_StrongHeavyBaryonDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class StrongHeavyBaryonDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(StrongHeavyBaryonDecayer,StrongHeavyBaryonDecayerPtr);
+
+}
+
+#endif

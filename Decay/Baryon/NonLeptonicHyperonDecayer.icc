@@ -1,0 +1,111 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the NonLeptonicHyperonDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer() 
+{
+  // lambda -> p pi-
+  _incomingB.push_back(3122);_outgoingB.push_back(2212);_outgoingM.push_back(-211);
+  _A.push_back(3.25e-7);_B.push_back(23.4e-7);
+  _maxweight.push_back(1.);
+  // lambda -> n p0
+  _incomingB.push_back(3122);_outgoingB.push_back(2112);_outgoingM.push_back(111);
+  _A.push_back(-2.30e-7);_B.push_back(-16.5e-7);
+  _maxweight.push_back(1.);
+  // xi-    -> lambda pi-
+  _incomingB.push_back(3312);_outgoingB.push_back(3122);_outgoingM.push_back(-211);
+  _A.push_back(-4.51e-7);_B.push_back(14.8e-7);
+  _maxweight.push_back(1.);
+  // xi0    -> lambda pi0
+  _incomingB.push_back(3322);_outgoingB.push_back(3122);_outgoingM.push_back(111);
+  _A.push_back(3.18e-7);_B.push_back(-10.7e-7);
+  _maxweight.push_back(1.);
+  // sigma+ -> p pi0
+  _incomingB.push_back(3222);_outgoingB.push_back(2212);_outgoingM.push_back(111);
+  _A.push_back(-2.93e-7);_B.push_back(32.5e-7);
+  _maxweight.push_back(1.);
+  // sigma- -> n pi-
+  _incomingB.push_back(3112);_outgoingB.push_back(2112);_outgoingM.push_back(-211);
+  _A.push_back(4.27e-7);_B.push_back(-1.52e-7);
+  _maxweight.push_back(1.);
+  // sigma+ -> n pi+
+  _incomingB.push_back(3222);_outgoingB.push_back(2112);_outgoingM.push_back(211);
+  _A.push_back(0.13e-7);_B.push_back(44.4e-7);
+  _maxweight.push_back(1.);
+}
+
+inline NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer(const NonLeptonicHyperonDecayer & x)
+  : Baryon1MesonDecayerBase(x), _incomingB(x._incomingB),_outgoingB(x._outgoingB),
+    _outgoingM(x._outgoingM),_A(x._A),_B(x._B), _maxweight(x._maxweight) {}
+
+inline IBPtr NonLeptonicHyperonDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr NonLeptonicHyperonDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void NonLeptonicHyperonDecayer::doupdate() throw(UpdateException) {
+  Baryon1MesonDecayerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void NonLeptonicHyperonDecayer::doinit() throw(InitException) {
+  Baryon1MesonDecayerBase::doinit();
+  // set up the decay modes
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  double wgtmax;
+  vector<double> wgt(1,1.);
+  for(unsigned int ix=0;ix<_incomingB.size();++ix)
+    {
+      extpart[0]=getParticleData(_incomingB[ix]);
+      extpart[1]=getParticleData(_outgoingB[ix]);
+      extpart[2]=getParticleData(_outgoingM[ix]);
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      if(_maxweight.size()>numberModes()){wgtmax=_maxweight[numberModes()];}
+      else{wgtmax=1.;}
+      addMode(mode,wgtmax,wgt);
+    }
+}
+
+inline void NonLeptonicHyperonDecayer::dofinish() {
+  Baryon1MesonDecayerBase::dofinish();
+}
+
+inline void NonLeptonicHyperonDecayer::doinitrun() {
+  Baryon1MesonDecayerBase::doinitrun();
+}
+
+inline void NonLeptonicHyperonDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Baryon1MesonDecayerBase::rebind(trans);
+}
+
+inline IVector NonLeptonicHyperonDecayer::getReferences() {
+  IVector ret = Baryon1MesonDecayerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

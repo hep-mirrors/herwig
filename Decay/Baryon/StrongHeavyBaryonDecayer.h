@@ -1,0 +1,324 @@
+// -*- C++ -*-
+#ifndef HERWIG_StrongHeavyBaryonDecayer_H
+#define HERWIG_StrongHeavyBaryonDecayer_H
+// This is the declaration of the StrongHeavyBaryonDecayer class.
+
+#include "Baryon1MesonDecayerBase.h"
+#include "StrongHeavyBaryonDecayer.fh"
+
+namespace Herwig {
+using namespace ThePEG;
+
+/**
+ *  The <code>StrongHeavyBaryonDecayer</code> class implements the strong
+ *  decays of charm baryons using the results of 
+ *  hep-ph/9904421.
+ *
+ *
+ * @see Baryon1MesonDecayerBase.
+ * 
+ */
+class StrongHeavyBaryonDecayer: public Baryon1MesonDecayerBase {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
+  inline StrongHeavyBaryonDecayer();
+
+  /**
+   * Copy-constructor.
+   */
+  inline StrongHeavyBaryonDecayer(const StrongHeavyBaryonDecayer &);
+
+  /**
+   * Destructor.
+   */
+  virtual ~StrongHeavyBaryonDecayer();
+  //@}
+
+public:
+
+  /**
+   * Accept member which is called at initialization to see if this Decayer can
+   * handle a given decay mode. This version tests the PDG codes against those which
+   * are allowed.
+   * @param dm The DecayMode
+   * @return Whether the mode can be handled.
+   *
+   */
+  virtual bool accept(const DecayMode & dm) const;
+
+  /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. This version works out which
+   * of the modes is required and uses the generate member of the DecayIntegrator
+   * class to generate the decay.
+   * @param dm The DecayMode
+   * @param part The Particle instant being decayed.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
+
+protected:
+
+  /**
+   *  Coupling Members.
+   */
+  //@{
+  /**
+   * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
+   * @param imode The mode
+   * @param A The coupling \f$A\f$ described above.
+   * @param B The coupling \f$B\f$ described above.
+   */
+  virtual void halfHalfScalarCoupling(int imode, Complex& A,Complex& B) const;
+
+  /**
+   * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar. 
+   * @param imode The mode
+   * @param A The coupling \f$A\f$ described above.
+   * @param B The coupling \f$B\f$ described above.
+   */
+  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  //@}
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
+  //@}
+
+private:
+
+  /**
+   * Describe a concrete class with persistent data.
+   */
+  static ClassDescription<StrongHeavyBaryonDecayer> initStrongHeavyBaryonDecayer;
+
+  /**
+   * Private and non-existent assignment operator.
+   */
+  StrongHeavyBaryonDecayer & operator=(const StrongHeavyBaryonDecayer &);
+
+private:
+
+  /**
+   * Strong coupling for the \f$\Sigma_c\to\Lambda_c\pi\f$.
+   */
+  InvEnergy _gsigma_clambda_cpi;
+
+  /**
+   * strong coupling for \f$\Xi^*_c\to\Xi_c\pi\f$.
+   */
+  InvEnergy _gxistar_cxi_cpi;
+
+  /**
+   * Strong coupling for \f$\Lambda_{c1}\to\Sigma_c\pi\f$.
+   */
+  double _flambda_c1sigma_cpi;
+
+  /**
+   * Strong coupling for \f$\Lambda_{c1}^*\to\Sigma_c\pi\f$.
+   */
+  InvEnergy2 _flambda_c1starsigma_cpi;
+
+  /**
+   * Strong coupling for the \f$\Sigma_b\to\Lambda_b\pi\f$.
+   */
+  InvEnergy _gsigma_blambda_bpi;
+
+  /**
+   * Strong coupling for \f$\Xi^*_b \to \Xi_b \pi\f$.
+   */
+  InvEnergy _gxistar_bxi_bpi;
+
+  /**
+   * Strong coupling for \f$\Lambda_{b1} \to \Sigma_b \pi\f$.
+   */
+  double _flambda_b1sigma_bpi;
+
+  /**
+   * Strong coupling for \f$\Lambda_{b1}^* \to \Sigma_b \pi\f$.
+   */
+  InvEnergy2 _flambda_b1starsigma_bpi;
+
+  /**
+   * PDG code for the incoming baryons
+   */
+  vector<int> _incoming;
+
+  /**
+   * PDG code for the outgoing baryons
+   */
+  vector<int> _outgoingB;
+
+  /**
+   * PDG code for the outgoing mesons.
+   */
+  vector<int> _outgoingM;
+
+  /**
+   * max weight
+   */
+  vector<double> _maxweight;
+
+  /**
+   * The couplings for the different modes.
+   */
+  //@{
+  /**
+   * The first A coupling
+   */
+  vector<double> _A1;
+
+  /**
+   * The second A coupling
+   */
+  vector<double> _A2;
+
+  /**
+   * The third A coupling
+   */
+  vector<double> _A3;
+  /**
+   * The first B coupling
+   */
+  vector<double> _B1;
+  /**
+   * The second B coupling
+   */
+  vector<double> _B2;
+  /**
+   * The third B coupling
+   */
+  vector<double> _B3;
+  //@}
+};
+
+}
+
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of StrongHeavyBaryonDecayer.
+ */
+template <>
+ struct BaseClassTrait<Herwig::StrongHeavyBaryonDecayer,1> {
+    /** Typedef of the base class of StrongHeavyBaryonDecayer. */
+  typedef Herwig::Baryon1MesonDecayerBase NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::StrongHeavyBaryonDecayer>
+  : public ClassTraitsBase<Herwig::StrongHeavyBaryonDecayer> {
+  /** Return the class name.*/
+  static string className() { return "Herwig++::StrongHeavyBaryonDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "libHwBaryonDecay.so"; }
+
+};
+
+}
+
+#include "StrongHeavyBaryonDecayer.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "StrongHeavyBaryonDecayer.tcc"
+#endif
+
+#endif /* HERWIG_StrongHeavyBaryonDecayer_H */
