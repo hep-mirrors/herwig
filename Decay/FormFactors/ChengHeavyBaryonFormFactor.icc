@@ -158,7 +158,8 @@ inline void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
 	{
 	  _f1.push_back(2.*_Nfi[ix]/sqrt(3.)*(1.+0.5*lambda*(1./mq+1./mQ)));
 	  _f2.push_back(_Nfi[ix]*msum/sqrt(3.)/mi*(1.+0.5*lambda*(1./mq+1./mQ)));
-	  _f3.push_back(-_Nfi[ix]*msum/mi/sqrt(3.)*(1.+0.5*lambda*(1./mq+1./mQ)));
+	  _f3.push_back(-_Nfi[ix]*msum*msum/mi/mi/sqrt(3.)*
+			(1.+0.5*lambda*(1./mq+1./mQ)));
 	  _g1.push_back(-2./sqrt(3.)*_Nfi[ix]);
 	  _g2.push_back(-_Nfi[ix]*msum/sqrt(3.)*lambda/mq/mi);
 	  _g3.push_back(-_f3.back());
