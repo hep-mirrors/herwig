@@ -3,7 +3,7 @@ SRCDIR = ..
 
 CXX = @CXX@
 
-CXXFLAGS = -ansi -pedantic -Wall
+CXXFLAGS = -ansi -pedantic -Wall 
 
 ###CXXOPTFLAG = -O
 CXXOPTFLAG =

@@ -1,0 +1,126 @@
+cd /Defaults/Handlers/Shower
+library libHwShower.so
+create Herwig++::ShowerHandler stdShowerHandler
+#create Herwig++::MECorrections theMECorrections
+create Herwig++::ShowerVariables theShowerVariables
+create Herwig++::Evolver theEvolver
+create Herwig++::PartnerFinder thePartnerFinder
+create Herwig++::ForwardEvolver theForwardEvolver
+create Herwig++::BackwardEvolver theBackwardEvolver
+create Herwig++::KinematicsReconstructor theKinematicsReconstructor
+#create Herwig++::RhoDMatrixPropagator theRhoDMatrixPropagator
+create Herwig++::SplittingGenerator theSplittingGenerator
+create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
+#create Herwig++::ShowerAlphaQCD theFS_ShowerAlphaQCD
+create Herwig++::ShowerAlphaQED theShowerAlphaQED
+#create Herwig++::ShowerAlphaQED theFS_ShowerAlphaQED
+#create Herwig++::DrellYanMECorrection theDrellYanMECorrection
+
+# a few default values, may be overwritten in .in 
+set theShowerVariables:cutoffKinScale 0.75*GeV
+set theShowerAlphaQCD:NPAlphaS 1
+#set theFS_ShowerAlphaQCD:NPAlphaS 1
+set theShowerAlphaQCD:Qmin 0.630882*GeV
+#set theFS_ShowerAlphaQCD:Qmin 0.630882*GeV
+set stdShowerHandler:GlobalParameters /Defaults/theGlobalParameters
+#set stdShowerHandler:MECorrections theMECorrections
+set stdShowerHandler:ShowerVariables theShowerVariables
+set stdShowerHandler:Evolver theEvolver
+set theEvolver:PartnerFinder thePartnerFinder
+set theEvolver:ForwardEvolver theForwardEvolver
+set theEvolver:BackwardEvolver theBackwardEvolver
+set theEvolver:KinematicsReconstructor theKinematicsReconstructor
+set theEvolver:SplittingGenerator theSplittingGenerator
+set theForwardEvolver:SplittingGenerator theSplittingGenerator
+#set theForwardEvolver:RhoDMatrixPropagator theRhoDMatrixPropagator
+set theBackwardEvolver:SplittingGenerator theSplittingGenerator
+#set theBackwardShowerEvolver:RhoDMatrixPropagator theRhoDMatrixPropagator
+set theBackwardEvolver:ForwardEvolver theForwardEvolver
+set theSplittingGenerator:ShowerAlphaQCD theShowerAlphaQCD
+#set theSplittingGenerator:FS_ShowerAlphaQCD theFS_ShowerAlphaQCD
+set theSplittingGenerator:ShowerAlphaQED theShowerAlphaQED
+#set theSplittingGenerator:FS_ShowerAlphaQED theFS_ShowerAlphaQED
+set theSplittingGenerator:ShowerVariables theShowerVariables
+#insert theMECorrections:VecMECorrection[0] theDrellYanMECorrection
+#
+cd /Defaults/Handlers/Shower
+#set theRhoDMatrixPropagator:OnOffRhoDPropagationMode 0
+set theShowerVariables:OnOffMultiScaleShowerMode 0
+set theShowerVariables:OnOffDecayBeforeShowerMode 0
+set theShowerVariables:qqgPSMode 0
+set theShowerVariables:MECorrMode 0
+set theShowerVariables:CutoffQCDMassScale 0.75*GeV
+set theShowerVariables:CutoffQEDMassScale 0.75*GeV
+set theShowerVariables:CutoffEWKMassScale 91.0*GeV
+#set theShowerVariables:cutoffKinScale 0.75*GeV
+set theShowerVariables:cutoffKinScale 2.0*GeV
+#set theMECorrections:OnOffMECorrectionMode 0
+#set theMECorrections:OnOffComposeMECorrectionMode 0
+#set theDrellYanMECorrection:OnOffMECorrectionMode 0
+set theShowerAlphaQCD:ScaleFactor 1.0
+#set theIS_ShowerAlphaQCD:ShowerConstrainer theShowerConstrainer
+#set theShowerAlphaQCD:ScaleFactor 1.0
+#set theFS_ShowerAlphaQCD:ShowerConstrainer theShowerConstrainer
+set theShowerAlphaQED:ScaleFactor 1.0
+#set theIS_ShowerAlphaQED:ShowerConstrainer theShowerConstrainer
+#set theFS_ShowerAlphaQED:ScaleFactor 1.0
+set theShowerAlphaQCD:NPAlphaS 2
+#set theShowerAlphaQCD:NPAlphaS 2
+set theShowerAlphaQCD:Qmin 0.630882*GeV
+#set theFS_ShowerAlphaQCD:Qmin 0.630882*GeV
+#set theIS_ShowerAlphaQCD:Qmin 12.345*GeV
+#set theFS_ShowerAlphaQCD:Qmin 12.345*GeV
+#set theFS_ShowerAlphaQED:ShowerConstrainer theShowerConstrainer
+set theSplittingGenerator:OnOffQCDinteractionMode 1
+set theSplittingGenerator:OnOffQEDinteractionMode 1
+set theSplittingGenerator:OnOffEWKinteractionMode 0
+set theSplittingGenerator:OnOffISRMode 0
+set theSplittingGenerator:OnOffISR_QCDMode 1
+set theSplittingGenerator:OnOffISR_QEDMode 1
+set theSplittingGenerator:OnOffISR_EWKMode 1
+set theSplittingGenerator:OnOffFSRMode 1
+set theSplittingGenerator:OnOffFSR_QCDMode 1
+set theSplittingGenerator:OnOffFSR_QEDMode 1
+set theSplittingGenerator:OnOffFSR_EWKMode 1
+# Lets set up all the splittings
+create Herwig++::QtoQGSplitFn theQtoQGSplitFn
+create Herwig++::GtoQQbarSplitFn theGtoQQbarSplitFn
+create Herwig++::GtoGGSplitFn theGtoGGSplitFn
+create Herwig++::QtoQGammaSplitFn theQtoQGammaSplitFn
+# Now the Sudakovs
+create Herwig++::SudakovFormFactor QtoQGSudakov
+create Herwig++::SudakovFormFactor GtoGGSudakov
+create Herwig++::SudakovFormFactor GtoQQbarSudakov
+create Herwig++::SudakovFormFactor QtoQGammaSudakov
+set QtoQGSudakov:SplittingFunction theQtoQGSplitFn
+set QtoQGSudakov:Alpha theShowerAlphaQCD
+set QtoQGSudakov:Variables theShowerVariables
+set GtoGGSudakov:SplittingFunction theGtoGGSplitFn
+set GtoGGSudakov:Alpha theShowerAlphaQCD
+set GtoGGSudakov:Variables theShowerVariables
+set GtoQQbarSudakov:SplittingFunction theGtoQQbarSplitFn
+set GtoQQbarSudakov:Alpha theShowerAlphaQCD
+set GtoQQbarSudakov:Variables theShowerVariables
+set QtoQGammaSudakov:SplittingFunction theQtoQGammaSplitFn
+set QtoQGammaSudakov:Alpha theShowerAlphaQED
+set QtoQGammaSudakov:Variables theShowerVariables
+# Now add all the splittings
+set theSplittingGenerator:AddSplitting u->u,g; QtoQGSudakov
+set theSplittingGenerator:AddSplitting d->d,g; QtoQGSudakov
+set theSplittingGenerator:AddSplitting s->s,g; QtoQGSudakov
+set theSplittingGenerator:AddSplitting c->c,g; QtoQGSudakov
+set theSplittingGenerator:AddSplitting b->b,g; QtoQGSudakov
+set theSplittingGenerator:AddSplitting t->t,g; QtoQGSudakov
+set theSplittingGenerator:AddSplitting g->g,g; GtoGGSudakov
+set theSplittingGenerator:AddSplitting g->u,ubar; GtoQQbarSudakov
+set theSplittingGenerator:AddSplitting g->d,dbar; GtoQQbarSudakov
+set theSplittingGenerator:AddSplitting g->s,sbar; GtoQQbarSudakov
+set theSplittingGenerator:AddSplitting g->c,cbar; GtoQQbarSudakov
+set theSplittingGenerator:AddSplitting g->b,bbar; GtoQQbarSudakov
+set theSplittingGenerator:AddSplitting g->t,tbar; GtoQQbarSudakov
+set theSplittingGenerator:AddSplitting u->u,gamma; QtoQGammaSudakov
+set theSplittingGenerator:AddSplitting d->d,gamma; QtoQGammaSudakov
+set theSplittingGenerator:AddSplitting s->s,gamma; QtoQGammaSudakov
+set theSplittingGenerator:AddSplitting c->c,gamma; QtoQGammaSudakov
+set theSplittingGenerator:AddSplitting b->b,gamma; QtoQGammaSudakov
+set theSplittingGenerator:AddSplitting t->t,gamma; QtoQGammaSudakov

@@ -3,10 +3,6 @@
 #
 #read HerwigParticles.in
 #
-library libThePEGHandlers.so
-create /ThePEG/DecayHandler /Defaults/Handlers/StandardDecayHandler
-#set /Defaults/Handlers/SimpleLEPHandler:DecayHandler /Defaults/Handlers/theDecayHandler
-#
 mkdir /Defaults/Decays/
 library libHwDecay.so
 #

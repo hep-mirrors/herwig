@@ -1,50 +1,42 @@
-#LIBOBJECT := libHwInterfaces.so
-LIBOBJECTS := libHwKtJet.so libHwEvtShapes.so
+# Generated automatically from Makefile.in by configure.
+LIBOBJECTS := libHwAmegic.so libHwKtJet.so
 
 SOURCES := $(wildcard *.cc)
 
 OBJECTS := $(SOURCES:.cc=.o)
 
-#PROGS   := $(SOURCES:.cc=.exe)
+HWLIBS = -lHwUtils -lHwHadronization -lHwShower -lHwDecay -lHwME
 
-HWLIBS = -lHw -lHwHadronization -lHwShower -lHwDecay
+AMEGICLIBS = -lAmegic -lAmplitude -lAmplTools -lISR -lModel -lPhasespace -lProcess -lString -lVector -lZfunctions
+AMEGICPATH = /usera/stephens/projects/AMEGIC++-1.0
+AMEGICINCLUDES = -I$(AMEGICPATH)/Include
 
-EXTRALIBS = -lEventShapes
-
-KTJETPATH = /usera/gieseke/work/mc/ktjet
-
-JETPATH = /usera/gieseke/work/mc/Jet_EventShape_Finders
-
-#EXTRAINCLUDES = -I$(AMEGICPATH)/Include -I$(KTJETPATH) -I$(JETPATH)  -I$(ROOTPATH)/include
-EXTRAINCLUDES = -I$(KTJETPATH) -I$(JETPATH)  -I$(ROOTSYS)/include
+KTJETPATH = /var/nwork/pcck/gieseke/mc/ktjet
+KTJETINCLUDES = -I$(KTJETPATH)
 
 .PHONY: Lib
 
-%.o: %.cc
-	$(CXX) -c -ansi $(CXXEXT) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(EXTRAINCLUDES) $<
+AmegicInterface.o: AmegicInterface.cc
+	$(CXX) -c $(CXXEXT) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(AMEGICINCLUDES) $<
 
+KtJetInterface.o: KtJetInterface.cc
+	$(CXX) -c $(CXXEXT) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(KTJETINCLUDES) $<
 include ../Config/Makefile.common
 
-CXXDEBUGFLAG = -g
+CXXDEBUGFLAG = -g 
 
 lib: $(LIBOBJECTS)
 
 %.exe:
 
-#depend:
-#	$(SRCDIR)/Config/g++dep $(INCLUDES) $(EXTRAINCLUDES) $(SOURCES) $(CHECKSOURCES)
+libHwAmegic.so: AmegicInterface.o
+	@cd $(SRCDIR)/lib; rm -f $@
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
 
-#libHwAmegic.so: $(OBJECTS)
-#	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) AmegicInterface.o -o $@
-
-libHwKtJet.so: KtJetInterface.o 
-	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) KtJetInterface.o -o $@
-
-libHwEvtShapes.so: EvtShapes.o
-	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) EvtShapes.o -o $@
-
-# DO NOT DELETE THIS LINE -- g++dep uses it.
-# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.
+libHwKtJet.so: KtJetInterface.o
+	@cd $(SRCDIR)/lib; rm -f $@
+	$(CXX) $(CXXFLAGS) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(CXXDLFLAGS) $< -o $@
+	@ln -f -s `pwd`/$@ $(SRCDIR)/lib
 
 
-# IF YOU PUT ANYTHING HERE IT WILL GO AWAY

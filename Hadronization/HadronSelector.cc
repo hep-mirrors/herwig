@@ -85,7 +85,7 @@ void HadronSelector::Init() {
                   &HadronSelector::_DecWt, 0, 1.0, 0.0, 10.0);
 
   static Parameter<HadronSelector,int>
-    interfaceCDKM("DKMode","Decay mode for Clusters...hw64=0,kupco,newkupco",
+    interfaceCDKM("DKMode","Decay mode for Clusters...hw64=0,kupco,default",
                   &HadronSelector::_ClusterDKMode, 0, 0, 0, 2);
 
   static Parameter<HadronSelector,int>

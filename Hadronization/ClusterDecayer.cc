@@ -303,6 +303,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   pair<long,long> idPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
 							      id1,id2);
 
+  //cout << "Returned " << idPair.first << ", " << idPair.second << endl;
   // Create the two hadron particle objects with the specified id.
   PPtr ptrHad1 = getParticle(idPair.first);
   PPtr ptrHad2 = getParticle(idPair.second);

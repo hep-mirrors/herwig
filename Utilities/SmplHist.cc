@@ -192,9 +192,9 @@ void SampleHistogram::printGnuplot(char* name)
     delta = (bucketLimit[i+1] - bucketLimit[i])/2.;
     out << bucketLimit[i] + delta << "\t" 
 	<< bucketCount[i+1] << "\t"
-	<< bucketCount[i+1]/(2.*delta*(this->samples())) << "\t"
+	<< (double) bucketCount[i+1]/(2.*delta*this->samples()) << "\t"
 	<< (bucketCount[i+1] == 0 ? 0.0 : 
-	    1./sqrt(double(bucketCount[i+1]))) 
+	    sqrt(double(bucketCount[i+1]))) 
 	<< "\t"
 	<< (bucketCount[i+1] == 0 ? 0.0 : 
 	    sqrt(double(bucketCount[i+1]))/(2.*delta*(this->samples()))) 
@@ -203,6 +203,42 @@ void SampleHistogram::printGnuplot(char* name)
 	<< bucketLimit[i] + 2.*delta << "\t"
 	<< (double) bucketCount[i+1]/(this->samples()) << "\t"
 	<< "\n";
+  }
+  out.close();
+}
+
+void SampleHistogram::printMoments(char* name, double Nmax, double dN, 
+				   double x0, double x1) {
+  ofstream out(name);
+  if (!out) {
+    cerr << "SampleHistoGram::printMoments: ERROR! Can't open file" << endl;
+  }
+
+  time_t now_t;
+  now_t = time(0);
+  out << "# created " << ctime(&now_t)
+      << "# by SampleHistogram::printMoments(..., "
+      << Nmax << ", " << dN << ")" << endl
+      << "# " << this->samples() << " entries, mean +/- sigma = " 
+      << this->mean() << " +/- " << this->stdDev() << endl;
+
+  double x0N, x1N, delta, hi;
+  for (double N=dN; N < Nmax; N += dN) {
+    double fN = 0.0;
+    for(int i = 0; i < howManyBuckets-1; i++) {
+      x0N = pow(bucketLimit[i], N);
+      x1N = pow(bucketLimit[i+1], N);
+      delta = (bucketLimit[i+1] - bucketLimit[i]);
+      if (delta > 0 && this->samples() > 0 
+	  && bucketLimit[i] >= x0 && bucketLimit[i] <= x1
+	  && bucketLimit[i+1] >= x0 && bucketLimit[i+1] <= x1) {
+	hi = (double) bucketCount[i+1]/(delta*(this->samples()));
+	fN += hi*(x1N-x0N)/N;
+      }
+    }
+    out << N 
+	<< "  " 
+	<< fN << endl;
   }
   out.close();
 }

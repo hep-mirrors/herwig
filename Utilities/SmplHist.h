@@ -58,6 +58,7 @@ public:
   int inBucket(int i);
   void printBuckets(std::ostream&);
   void printGnuplot(char* name);
+  void printMoments(char*,double,double,double,double);
 };
 
 

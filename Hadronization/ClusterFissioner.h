@@ -200,6 +200,7 @@ private:
 
   HadronSelectorPtr _hadronsSelector;
   GlobParamPtr      _globalParameters;  
+
   Energy _ClMax;
   double _ClPow;
   double _PSplt1;
