@@ -1,0 +1,35 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the RunningMassBase class.
+//
+
+#include "RunningMassBase.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+RunningMassBase::~RunningMassBase() {}
+
+void RunningMassBase::persistentOutput(PersistentOStream & os) const {
+  os << ounit(_theMass, GeV);
+}
+
+void RunningMassBase::persistentInput(PersistentIStream & is, int) {
+  is >> iunit(_theMass, GeV);
+}
+
+AbstractClassDescription<RunningMassBase> RunningMassBase::initRunningMassBase;
+// Definition of the static class description member.
+
+void RunningMassBase::Init() {
+ 
+  static ClassDocumentation<RunningMassBase> documentation
+    ("The \\classname{RunningMassBase} class is the base class for running mass"
+     "calculations");
+  
+}
+}
