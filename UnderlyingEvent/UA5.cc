@@ -12,8 +12,9 @@ using namespace ThePEG;
 using namespace Herwig;
 
 // Default constructor
-UA5Handler::UA5Handler() {}
-
+UA5Handler::UA5Handler() : _N1(9.11), _N2(0.115), _N3(-9.5),_K1(0.029),_K2(-0.104),
+			   _M1(0.4), _M2(2.), _P1(5.2),_P2(3.0),_P3(5.2),_probSoft(1.0),
+			   _enhanceCM(1.) {}  
 // Copy constructor
 UA5Handler::UA5Handler(const UA5Handler &h) :
   _globalParams(h._globalParams),
