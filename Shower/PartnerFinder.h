@@ -106,12 +106,19 @@ public:
   // The methods returns true, unless something wrong (inconsistencies,
   // or undefined values) happens.
 
-  pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &particlePair, 
-		                                      const tShowerVarsPtr showerVariables);
+  pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &, 
+		                                      const tShowerVarsPtr);
+  pair<Energy,Energy> calculateFinalFinalScales(const ShowerPPair &,
+		                                const tShowerVarsPtr);
+  pair<Energy,Energy> calculateInitialInitialScales(const ShowerPPair &,
+		                                    const tShowerVarsPtr);
+  pair<Energy,Energy> calculateInitialFinalScales(const ShowerPPair &,
+		                                  const tShowerVarsPtr);
   // Given a pair of particles, supposedly partners w.r.t. an interaction,
   // this method returns their initial evolution scales as a pair.
-  // If something wrong happens, it returns the null ( Energy() , Energy() ) pair. 
-  // This method is used by the above <!id>setXXXInitialEvolutionScales<!!id> methods.
+  // If something wrong happens, it returns the null (Energy(),Energy()) pair. 
+  // This method is used by the above <!id>setXXXInitialEvolutionScales<!!id> 
+  // methods.
 
 public:
 
@@ -149,6 +156,7 @@ private:
 
   PartnerFinder & operator=(const PartnerFinder &);
   //  Private and non-existent assignment operator.
+  int _approach;
 
 };
 

@@ -176,6 +176,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    if(products[0] == Lorentz5Momentum()) {
      generator()->log() << "The Decay mode " << dm.tag() << " cannot "
 	                << "proceed, not enough phase space\n";   
+     return ParticleVector();
    }
    setParticleMomentum(rval, productParticles, products);
 

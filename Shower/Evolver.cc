@@ -118,6 +118,21 @@ void Evolver::showerNormally(tPartCollHdlPtr ch,
   // catch the possibility of an impossible kinematic reconstruction
   ShowerParticleVector::const_iterator cit;
   while(!reconstructed) {
+    // Initial State Radiation
+    if(_splittingGenerator->isISRadiationON()) {
+      ShowerParticleVector particlesToShower;
+      // This may not be right at all!
+      for(cit = particles.begin(); cit != particles.end(); ++cit) {
+	if(!(*cit)->isFinalState()) {
+	  particlesToShower.push_back(*cit);
+	}
+      }
+      for(ShowerParticleVector::iterator it = particlesToShower.begin();
+	    it != particlesToShower.end(); ++it ) {
+	_mapShowerHardJets[*it] = _backwardEvolver->
+		spaceLikeShower(ch, showerVariables, *it, particles);
+      }
+    }
 
     // Final State Radiation
     if(_splittingGenerator->isFSRadiationON()) {
@@ -132,22 +147,6 @@ void Evolver::showerNormally(tPartCollHdlPtr ch,
 	  cit != particlesToShower.end(); ++cit) {
 	_mapShowerHardJets[*cit] = _forwardEvolver->
 		 timeLikeShower(ch, showerVariables, *cit, particles);
-      }
-    }
-
-    // Initial State Radiation
-    if(_splittingGenerator->isISRadiationON()) {
-      ShowerParticleVector particlesToShower;
-      // This may not be right at all!
-      for(cit = particles.begin(); cit != particles.end(); ++cit) {
-	if(!(*cit)->isFinalState()) {
-	  particlesToShower.push_back(*cit);
-	}
-      }
-      for(ShowerParticleVector::iterator it = particlesToShower.begin();
-	    it != particlesToShower.end(); ++it ) {
-	_mapShowerHardJets[*it] = _backwardEvolver->
-		spaceLikeShower(ch, showerVariables, *it, particles);
       }
     }
 

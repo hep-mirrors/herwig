@@ -38,16 +38,23 @@ public:
   virtual ~SudakovFormFactor();
   // Standard ctors and dtor.
 
-  virtual Energy generateNextBranching(const Energy startingScale,
-				       const IdList &ids,
-				       const bool reverseAngularOrder = false);
-  // Pure virtual method, to be defined in concrete derived classes.
+  virtual Energy generateNextTimeBranching(const Energy startingScale,
+				           const IdList &ids,
+				           const bool revOrd = false);
   // It returns the scale of the next branching; if there is no 
   // branching then it returns Energy().
   // The <!id>ch<!!id> argument is used only for Initial State branching,
-  // to get access to the PDFs; the <!id>reverseOrdering<!!id> is used 
+  // to get access to the PDFs; the <!id>revOrd<!!id> is used 
   // (when it is not equal to the default, false, value) only for 
   // Final State branching of a decaying on-shell particle. 
+  virtual Energy generateNextSpaceBranching(const Energy startingScale,
+		                            const IdList &ids,
+					    tcPDPtr beam,
+					    const tcPDFPtr &pdf,
+					    double x,
+					    const bool revOrd = false);
+  // Same as above but for a space like branching, needs PDF of object. If
+  // none is given then the veto algorithm isn't used for pdf
 
   virtual void setupLookupTables();
   // This virtual method is defined as empty, and it should be
@@ -111,8 +118,23 @@ protected:
   // abstract nature of SplitFun as well.
   double guessz (double z0, double z1);
   Energy2 guesst (Energy2 t0, Energy2 t1, double z0, double z1);
-  void gettz (Energy2 tmax, Energy2 &t, double &z, const IdList &);
+  //void gettz (Energy2 tmax, Energy2 &t, double &z, const IdList &);
+  void initialize(Energy2 &t0, Energy2 &tmin, Energy2 &tmax, 
+		  Energy &kinCutoff, Energy &m);
+  void guess(double &z, double &z0, double &z1,
+	     Energy2 &t, Energy2 &tmax, Energy2 &tmin, Energy2 &t0,
+	     Energy &kinCutoff, bool glueEmits);
 
+  // The different veto algorithms
+  bool PSVeto(const double &z, const double &z0, const double &z1,
+	      const Energy2 &t, const Energy2 &tmin, const Energy2 &t0,
+	      const Energy &kinCutoff, bool glueEmits);
+  bool SplittingFnVeto(const double &z, const Energy2 &t, const IdList &ids);
+  bool alphaSVeto(const double &z, const Energy2 &t);
+  bool tVeto(Energy2 &t, const Energy2 &tmin);
+  bool PDFVeto(const double &z, const Energy2 &t, const double &x,
+	       const tcPDFPtr &pdf, const tcPDPtr &parton, 
+	       const tcPDPtr &beam);
 private:
 
   SudakovFormFactor & operator=(const SudakovFormFactor &);

@@ -10,6 +10,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/PDF/PDFBase.h"
 
 using namespace Herwig;
 
@@ -94,193 +95,267 @@ Energy2 SudakovFormFactor::guesst(Energy2 t0, Energy2 t1, double z0, double z1)
 		     _alpha->overestimateValue()/(2.*pi))); 
 }
 
-void SudakovFormFactor::gettz(Energy root_tmax, Energy &root_t, double &z, 
-			      const IdList &ids) {
-  double z0, z1, ratio;
-  Energy2 told, t0, tmax, t, tmin; 
-  bool veto = true; 
-  tmax = sqr(root_tmax); 
-  t = sqr(root_t); 
-  Energy kinCutoff;
-  bool glueEmits = (ids[0]==ParticleID::g);  
-  Energy m0 = CurrentGenerator::current().getParticleData(ids[0])->mass();
-  Energy m1 = CurrentGenerator::current().getParticleData(ids[1])->mass();
-  if(glueEmits) { 
-    //    kinCutoff = (kinScale() - 0.15*sF->massFirstProduct())/2.3;
-    kinCutoff = (kinScale() - 0.3*m1)/2.3;
-    t0 = sqr(max(kinCutoff, m1));    
-  } else {
-    //    kinCutoff = (kinScale() - 0.15*sF->massEmitter())/2.3;
-    kinCutoff = (kinScale() - 0.3*m0)/2.3;
-    t0 = sqr(max(kinCutoff, m0));    
-  }
-  t = tmax; 
-  tmin = max(t0, sqr(resScale()));
-  
-  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "SudakovFormFactor::gettz(): extreme "
-			    << "____________________________________________" 
+void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 &tmax,
+		                   Energy &kinCutoff, Energy &m) {
+  kinCutoff = (kinScale() - 0.3*m)/2.3;
+  t0 = sqr(max(kinCutoff,m));
+  tmin = max(t0,sqr(resScale()));
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+    CurrentGenerator::log() << "SudakovFormFactor::initialize(): extreme "
+	                    << "____________________________________________"
 			    << endl
-			    << "  called with q = " << sqrt(tmax)/GeV 
-			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)" 
+			    << "  called with q = " << sqrt(tmax)/GeV
+			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)"
+			    << endl;
+  }
+  if(tmax <= t0) {
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+      CurrentGenerator::log() << "  | tmax < t0! return with (sqrt(t)/GeV, z) "
+			      << "= (" << _q/GeV << ", " << _z << "),"
+			      << endl;
+    }
+    _q = -1.;
+  }
+}
+
+void SudakovFormFactor::guess(double &z, double &z0, double &z1,
+		              Energy2 &t, Energy2 &tmax, Energy2 &tmin, 
+			      Energy2 &t0,
+			      Energy &kinCutoff, bool glueEmits) {
+  
+  Energy2 told = t;
+  
+  // the larger PS-boundary in z (could be part of ShowerKinematics, really!)
+  if (glueEmits) {
+    z0 = (1.-sqrt(1.-4.*sqrt(t0/t)))/2.;
+    z1 = (1.+sqrt(1.-4.*sqrt(t0/t)))/2.;
+  } else {
+    z0 = sqrt(t0/t)/2.;
+    z1 = 1.-kinCutoff/sqrt(t)/2.; // a little overestimate...
+  }
+
+  // quick hack gives no more branching without PS
+  // if (z0>z1) z1=z0;
+  t = guesst(t0, told, z0, z1); 
+  z = guessz(z0, z1); 
+
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+    CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
+		            << sqrt(told)/GeV << "->"
+			    << sqrt(t)/GeV << " | "
+			    << z0 << ", "
+			    << z << ", "
+			    << z1 << ")" 
 			    << endl; 
   }
 
-  if(tmax <= t0) {
-    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) 
-      CurrentGenerator::log() << "  | tmax < t0! return with (sqrt(t)/GeV, z) "
-			      << "= (" << root_t/GeV << ", " << z << ")" 
-			      << endl; 
-    root_t = -1;
-    return; 
+  // actual values for z-limits
+  if (glueEmits) {
+    z0 = (1.-sqrt(1.-4.*sqrt(t0/t)))/2.;
+    z1 = (1.+sqrt(1.-4.*sqrt(t0/t)))/2.;
+  } else {
+    z0 = sqrt(t0/t)/2.;
+    z1 = 1.-kinCutoff/sqrt(t)/2.;
+    //z1 = 1.-0.1;
   }
+}  
 
-  //  static long psest, psveto, pgveto, asveto, calls; 
-  //  psest = psveto = pgveto = asveto = 0;
-  //  calls++;
-  // the veto algorithm loop
-  do {
-    
-    // remind the old value
-    told = t; 
-
-    // the larger PS-boundary in z (could be part of ShowerKinematics, really!)
-    if (glueEmits) {
-      z0 = (1.-sqrt(1.-4.*sqrt(t0/told)))/2.;
-      z1 = (1.+sqrt(1.-4.*sqrt(t0/told)))/2.;
-    } else {
-      z0 = sqrt(t0/told)/2.;
-      z1 = 1.-kinCutoff/sqrt(told)/2.; // a little overestimate...
-    }
-
-    // quick hack gives no more branching without PS
-    // if (z0>z1) z1=z0;
-    t = guesst(t0, told, z0, z1); 
-    z = guessz(z0, z1); 
-
+bool SudakovFormFactor::PSVeto(const double &z, const double &z0, 
+			       const double &z1, const Energy2 &t, 
+			       const Energy2 &tmin, const Energy2 &t0,
+			       const Energy &kinCutoff, bool glueEmits) {
+  // still inside PS?
+  if((z < z0 || z > z1) && t > tmin) { 
+    //  psest++;
     if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-      CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
-			      << sqrt(told)/GeV << "->"
-			      << sqrt(t)/GeV << " | "
+      CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
 			      << z0 << ", "
 			      << z << ", "
-			      << z1 << ")" 
-			      << endl; 
+			      << z1 << ")" << endl;  
     }
-
-    // actual values for z-limits
+    return true;
+  } else {
+    // still REALLY inside PS? (overestimated allowed PS)
     if (glueEmits) {
-      z0 = (1.-sqrt(1.-4.*sqrt(t0/t)))/2.;
-      z1 = (1.+sqrt(1.-4.*sqrt(t0/t)))/2.;
-    } else {
-      z0 = sqrt(t0/t)/2.;
-      z1 = 1.-kinCutoff/sqrt(t)/2.;
-      //z1 = 1.-0.1;
-    }
-    
-    // *** ACHTUNG *** collect some sort of statistics of the
-    // likelihood of single vetoes in order to check the most likely
-    // 1st and only if this fails the 2nd etc 
-    veto = false; 
-    
-    // still inside PS?
-    if ((z < z0 || z > z1) && t > tmin) { 
-      veto = true; 
-      //  psest++;
-      if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-	CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
-				<< z0 << ", "
-				<< z << ", "
-				<< z1 << ")" << endl;  
+      if (sqr(z*(1.-z))*t < t0) {
+        if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+          CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
+	}
+	return true;
       }
     } else {
-      // still REALLY inside PS? (onverestimated allowed PS)
-      if (glueEmits) {
-	if (sqr(z*(1.-z))*t < t0) {
-	  veto = true; 
-	  // psveto++;
-	  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
-	  }
+      if (sqr(1.-z)*(t*sqr(z) - t0) < z*sqr(kinCutoff)) {
+        if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+	  CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
 	}
-      } else {
-	if (sqr(1.-z)*(t*sqr(z) - t0) < z*sqr(kinCutoff)) {
-	  veto = true; 
-	  //  psveto++;
-	  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
-	  }
-	}
-      } 
-    }
-    // hit the density? 
-    ratio = _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
-    if(!veto && UseRandom::rnd() > ratio) { 
-      veto = true; 
-      //pgveto++;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
+	return true;
       }
-    }
-    // alpha_s valid? 
-    Energy2 pt2;
-    // simple argument of alpha_s
-    pt2 = sqr(z*(1.-z))*t;
-
-    if(!veto && UseRandom::rnd() > _alpha->value(pt2)/
-       _alpha->overestimateValue() ) {
-      veto = true; 
-      //asveto++;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	CurrentGenerator::log() << "  X veto on as(q2)/as = " 
-				<< _alpha->value(pt2)
-				<< "/" << _alpha->overestimateValue() 
-				<< " = " 
-				<< _alpha->value(pt2)/_alpha->overestimateValue() 
-				<< endl;
-      }
-    }
-    // is t valid at all? 
-    if (t < tmin) {
-      //    if (t < t0) {
-      veto = false; 
-      t = -1; 
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	CurrentGenerator::log() << "  | return with no branching, t < t0" << endl;
-      }
-    }
-  } while (veto); 
-
-  if (t > 0) root_t = sqrt(t);
-  else root_t = -1; ;
-
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "  return with (sqrt(t)/GeV, z) = (" 	 
-			    << root_t/GeV << ", "
-			    << z << ")" << endl; 
+    } 
   }
-
-  return;
+  return false;
 }
 
-Energy SudakovFormFactor::generateNextBranching(const Energy startingScale,
-						const IdList &ids,
-						const bool reverseAngularOrder)
+bool SudakovFormFactor::SplittingFnVeto(const double &z, const Energy2 &t, 
+					const IdList &ids) {
+  // hit the density? 
+  double ratio;
+  ratio = _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
+  if(UseRandom::rnd() > ratio) { 
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+      CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool SudakovFormFactor::alphaSVeto(const double &z, const Energy2 &t) {
+  // alpha_s valid? 
+  Energy2 pt2;
+  // simple argument of alpha_s
+  pt2 = sqr(z*(1.-z))*t;
+
+  if(UseRandom::rnd() > _alpha->value(pt2)/_alpha->overestimateValue()) {
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+      CurrentGenerator::log() << "  X veto on as(q2)/as = " 
+	            	      << _alpha->value(pt2)
+			      << "/" << _alpha->overestimateValue() 
+			      << " = " 
+			      << _alpha->value(pt2)/_alpha->overestimateValue() 
+			      << endl;
+    }
+    return true;
+  }
+  return false;
+}
+
+bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 &tmin) {
+  // is t valid at all? 
+  if(t < tmin) {
+    t = -1.; 
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+      CurrentGenerator::log() << "  | return with no branching, t < t0" 
+			      << endl;
+    }
+    return true;
+  }
+  return false;
+}
+ 
+bool SudakovFormFactor::PDFVeto(const double &z, const Energy2 &t, 
+				const double &x,
+				const tcPDFPtr &pdf, const tcPDPtr &parton, 
+				const tcPDPtr &beam) {
+  double factor = 1.0; // needs to be adjusted;
+  if(!pdf) return false;
+  double ratio = pdf->xfx(beam,parton,t,x/z)/pdf->xfx(beam,parton,t,x);
+  if(ratio > factor*UseRandom::rnd()) {
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+      CurrentGenerator::log() << "  PDFVeto failed: ratio = " << ratio << endl;
+    }  
+    return true;
+  }
+  return false;
+}
+ 
+Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
+						    const IdList &ids,
+						    const bool reverseAO)
 {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to thie method.
   _q = Energy();
   _z = 0.0;
   _phi = 0.0; 
-  if (reverseAngularOrder) {
+  if (reverseAO) {
     _q = startingScale / UseRandom::rnd();
     _z = UseRandom::rnd(); 
-  } else gettz(startingScale, _q, _z, ids);
+  } else {
+    double z0,z1;
+    Energy2 t,t0,tmax,tmin;
+    Energy kinCutoff;
+    bool glueEmits = (ids[0]==ParticleID::g);
+    Energy m0 = CurrentGenerator::current().getParticleData(ids[0])->mass();
+    Energy m1 = CurrentGenerator::current().getParticleData(ids[1])->mass();
+    tmax = sqr(startingScale);
+    t = tmax;
+    if(glueEmits) initialize(t0,tmin,tmax,kinCutoff,m1);
+    else initialize(t0,tmin,tmax,kinCutoff,m0);
+    if(_q < 0.) return _q;
+    do { 
+      guess(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits);
+      // Our t is too low now, terminate guesses
+      if(tVeto(t,tmin)) break;
+    } while(PSVeto(_z,z0,z1,t,tmin,t0,kinCutoff,glueEmits) ||
+	    SplittingFnVeto(_z,t,ids) || 
+	    alphaSVeto(_z,t));
+    if(t > 0) _q = sqrt(t);
+    else _q = -1.;
+  }
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+    CurrentGenerator::log() << "Sudakov::generateNextTimeBranching(): "
+			    << "return with (q/GeV, z) = ("
+	                    << _q/GeV << ", " << _z << ")" << endl;
+  }
   _phi = 2.*pi*UseRandom::rnd();
  
   return _q;
 }
 
+Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
+			                             const IdList &ids,
+						     tcPDPtr beam,
+						     const tcPDFPtr &pdf,
+						     double x,
+						     const bool revOrd) {
+  _q = Energy();
+  _z = 0.0;
+  _phi = 0.0;
+  if(revOrd) {
+    _q = startingQ / UseRandom::rnd();
+    _z = UseRandom::rnd();
+  } else {
+    // All the variables needed
+    double z0,z1;
+    Energy2 t,t0,tmax,tmin;
+    Energy kinCutoff;
+    bool glueEmits = (ids[0]==ParticleID::g);
+
+    // Different order, incoming parton is id =  1, outgoing are id=0,2
+    Energy m0 = CurrentGenerator::current().getParticleData(ids[0])->mass();
+    Energy m1 = CurrentGenerator::current().getParticleData(ids[1])->mass();
+    tmax = sqr(startingQ);
+    t = tmax;
+    tcPDPtr parton = CurrentGenerator::current().getParticleData(ids[1]);
+
+    // Initialize the variables
+    if(glueEmits) initialize(t0,tmin,tmax,kinCutoff,m1);
+    else initialize(t0,tmin,tmax,kinCutoff,m0);
+    if(_q < 0.) return _q;
+
+    // Now do the veto algorithm
+    do { 
+      guess(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits);
+      if(tVeto(t,tmin)) break;
+    } while(PSVeto(_z,z0,z1,t,tmin,t0,kinCutoff,glueEmits) ||
+	    SplittingFnVeto(_z,t,ids) || 
+	    alphaSVeto(_z,t) || 
+	    PDFVeto(_z,t,x,pdf,parton,beam));
+    if(t > 0) _q = sqrt(t);
+    else _q = -1.;
+  }
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+    CurrentGenerator::log() << "Sudakov::generateNextSpaceBranching(): "
+			    << "return with (q/GeV, z) = ("
+	                    << _q/GeV << ", " << _z << ")" << endl;
+  }
+
+  _phi = 2.*pi*UseRandom::rnd();
+  
+  return _q;
+}
+
+    
 void SudakovFormFactor::Init() {
   static ClassDocumentation<SudakovFormFactor> documentation
     ("Class that, given a splitting function, returns values for Sudakov.");
@@ -296,11 +371,11 @@ void SudakovFormFactor::Init() {
 		   &Herwig::SudakovFormFactor::_alpha,
 		   false, false, true, false);
 
-  static Reference<SudakovFormFactor,ShowerVariables>
-    interfaceVariables("Variables",
-		   "A reference to the ShowerVariables object",
-		   &Herwig::SudakovFormFactor::_variables,
-		   false, false, true, false);
+  static Reference<SudakovFormFactor,ShowerVariables> interfaceVars
+    ("Variables",
+     "A reference to the ShowerVariables object",
+     &Herwig::SudakovFormFactor::_variables,
+     false, false, true, false);
 }
 
 void SudakovFormFactor::persistentOutput(PersistentOStream &out) const {

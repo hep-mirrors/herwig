@@ -33,20 +33,6 @@ QtildaShowerKinematics1to2( const Lorentz5Momentum & p,
 {}
 
 
-inline double QtildaShowerKinematics1to2::z() const {
-  return _z;
-}
-inline void QtildaShowerKinematics1to2::z( const double inputZ ) {
-  _z = inputZ;
-}
-
-inline double QtildaShowerKinematics1to2::phi() const {
-  return _phi;
-}
-inline void QtildaShowerKinematics1to2::phi( const double inputPhi ) {
-  _phi = inputPhi;
-}
-
 inline const Lorentz5Momentum & QtildaShowerKinematics1to2::pVector() const {
   return _pVector;
 }

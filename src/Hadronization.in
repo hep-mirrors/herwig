@@ -30,10 +30,10 @@ set thePartonSplitter:GlobalParameters /Defaults/theGlobalParameters
 cd /Defaults/Handlers/Hadronization/Cluster
 set theColourReconnector:ClReco 0
 set theColourReconnector:PReco  1.0/9.0
-set theClusterFissioner:ClMax  3.35*GeV
+set theClusterFissioner:ClMax  3.2*GeV
 set theClusterFissioner:ClPow  2.0
 set theClusterFissioner:PSplt1 1.0
-set theClusterFissioner:PSplt2 1.0
+set theClusterFissioner:PSplt2 0.33
 set theLightClusterDecayer:B1Lim 0.0
 set theClusterDecayer:ClDir1 1
 set theClusterDecayer:ClDir2 1
@@ -41,10 +41,10 @@ set theClusterDecayer:ClSmr1 0.0
 set theClusterDecayer:ClSmr2 0.0
 set theHadronSelector:PwtDquark  1.0
 set theHadronSelector:PwtUquark  1.0
-set theHadronSelector:PwtSquark  1.0
+set theHadronSelector:PwtSquark  0.85
 set theHadronSelector:PwtCquark  1.0
 set theHadronSelector:PwtBquark  1.0
-set theHadronSelector:PwtDIquark 1.0
+set theHadronSelector:PwtDIquark 0.55
 set theHadronSelector:SngWt      1.0
-set theHadronSelector:DecWt      1.0
+set theHadronSelector:DecWt      0.7
 set theHadronSelector:DKMode 2

@@ -46,6 +46,20 @@ inline void ShowerKinematics::setKinScale( const Energy inputQ ) {
   _kinQ0 = inputQ;
 }
 
+inline double ShowerKinematics::z() const {
+  return _z;
+}
+inline void ShowerKinematics::z( const double inputZ ) {
+  _z = inputZ;
+}
+
+inline double ShowerKinematics::phi() const {
+  return _phi;
+}
+inline void ShowerKinematics::phi( const double inputPhi ) {
+  _phi = inputPhi;
+}
+
 }
 
 

@@ -167,7 +167,9 @@ protected:
   // Standard clone methods.
 
 protected:
-  string addSplitting(string);
+  string addFinalSplitting(string);
+  string addInitialSplitting(string);
+  string addSplitting(string,bool);
   inline virtual void doupdate() throw(UpdateException);
   inline virtual void doinit() throw(InitException);
   inline virtual void doinitrun();
@@ -196,7 +198,7 @@ private:
   // Sudakov form factor objects. The latter are kept in a multimap
   // with key given by a ShowerIndex object.
 
-  void addToMap(long&, IdList &, SudakovPtr &);
+  void addToMap(IdList &, SudakovPtr &, bool);
   void debuggingInfo();
   // Print, in the log file, debugging information.
 
@@ -219,7 +221,9 @@ private:
   typedef pair<SudakovPtr,IdList> BranchingElement;
   typedef multimap<long,BranchingElement> BranchingList;
   typedef pair<long, BranchingElement> BranchingInsert; 
-  BranchingList _branchings;
+  // Lists of the branchings and the appropriate sudakov
+  BranchingList _fbranchings;
+  BranchingList _bbranchings;
 
 };
 

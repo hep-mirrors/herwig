@@ -53,10 +53,10 @@ void KinematicsReconstructor::Init() {
 
 // ------------------------------------------------------------------------
 
-bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHardJets,
-						   const Lorentz5Momentum & pBeamHadron1,
-						   const Lorentz5Momentum & pBeamHadron2,
-                                                   const tcMEPtr specialHardProcess ) 
+bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
+						  const Lorentz5Momentum &pB1,
+						  const Lorentz5Momentum &pB2,
+                                                  const tcMEPtr sHardProcess) 
   throw (Veto, Stop, Exception) {
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
@@ -78,17 +78,18 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
   // ***ACHTUNG!*** tried this below: 
 
   bool atLeastOnce = false;
-  for ( MapShower::const_iterator cit = mapShowerHardJets.begin();
-	cit != mapShowerHardJets.end(); ++cit ) {
+  MapShower::const_iterator cit;
+  for(cit = hardJets.begin(); cit != hardJets.begin(); cit++) {
     atLeastOnce = false;
-    if ( cit->second && !cit->first->isFinalState() ) {
-      atLeastOnce = ( atLeastOnce || reconstructSpaceLikeJet( cit->first ) ); 
+    if(cit->second && !cit->first->isFinalState()) {
+      atLeastOnce |= reconstructSpaceLikeJet(cit->first);
     }
-    if ( atLeastOnce ) {
+    if(atLeastOnce) {
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-	generator()->log() << "-- found initial state jets, try to boost them" << endl; 
+	generator()->log() << "-- found initial state jets, try to boost them" 
+		           << endl; 
       }      
-      if ( !specialHardProcess ) {
+      if(!sHardProcess) {
 	// solveOverallCMFrameBoost()
       } else { 
 	// check which special hard process and call eg 
@@ -98,47 +99,49 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
     }
   }
 
-  //***LOOKHERE***  Second, do the overall CM boost, as follows.
-  //                --------------------------------------------
-  //                If ( not specialHardSubprocess ) Then  
-  //                  Boost every outgoing jets (that is jets originated from 
-  //                  an outgoing particle from the hard subprocess, but not
-  //                  the forward jets coming from the initial state radiation)
-  //                  from the Lab -> to the hard subprocess frame, using
-  //                      pHard1Initial + pHard2Initial
-  //                  as momentum of that frame. Then boost back, using this
-  //                  time the new hard subprocess frame (obtained from the
-  //                  method  solveOverallCMframeBoost(...) )
-  //                      pHard1Final + pHard2Final .   
-  //                Else
-  //                    check which specialHardSubprocess we have.
-  //                    In the case of D.I.S. , boost only the outgoing jet 
-  //                    (that is the one originated from the outgoing parton from 
-  //                     the hard subprocess lepton + parton -> lepton' + parton')
-  //                    from the Lab -> to the hard subprocess frame, using
-  //                        pLepton + pHardInitial
-  //                    as momentum of that frame. Then boost back, using this
-  //                    time the new hard subprocess frame (obtained from the
-  //                    method  solveSpecialDIS_CMframeBoost(...) )
-  //                        pLepton + pHardFinal .   
-  //  
+  /********
+   * Second, do the overall CM boost, as follows.
+   * --------------------------------------------
+   *  If not specialHardSubprocess Then  
+   *    Boost every outgoing jet (that is jets originated from 
+   *    an outgoing particle from the hard subprocess, but not
+   *    the forward jets coming from the initial state radiation)
+   *    from the Lab -> to the hard subprocess frame, using
+   *        pHard1Initial + pHard2Initial
+   *    as momentum of that frame. Then boost back, using this
+   *    time the new hard subprocess frame (obtained from the
+   *    method  solveOverallCMframeBoost(...) )
+   *        pHard1Final + pHard2Final .   
+   *  Else
+   *      check which specialHardSubprocess we have.
+   *      In the case of D.I.S., boost only the outgoing jet 
+   *      (that is the one originated from the outgoing parton from 
+   *       the hard subprocess lepton + parton -> lepton' + parton')
+   *      from the Lab -> to the hard subprocess frame, using
+   *          pLepton + pHardInitial
+   *      as momentum of that frame. Then boost back, using this
+   *      time the new hard subprocess frame (obtained from the
+   *      method  solveSpecialDIS_CMframeBoost(...) )
+   *          pLepton + pHardFinal .   
+   *******/
   // ***ACHTUNG!*** hasn't been implemented since nothing special is
   // expected for the LEP case.
 
-  //***LOOKHERE!*** Third, treat the final state, as follows.
-  //                -----------------------------------------
-  //                Loop again over the map, and for each outgoing hard particle 
-  //                with flag true
-  //                  call  reconstructTimeLikeJet(...)
-  //                Then, if such method has being called at least once, then 
-  //                  call  solveKfactor(...)
-  //                and then  
-  //                  call  solveBoost(...)  
-  //                and then deep boost the particle with the boost returned 
-  //                by the latter method.
-  //               
-  //                If any of the above methods fails, throw an Exception. 
-  
+  /********
+   * Third, treat the final state, as follows.
+   * -----------------------------------------
+   * Loop again over the map, and for each outgoing hard particle 
+   * with flag true
+   *   call  reconstructTimeLikeJet(...)
+   * Then, if such method has being called at least once, then 
+   *   call  solveKfactor(...)
+   * and then  
+   *   call  solveBoost(...)  
+   * and then deep boost the particle with the boost returned 
+   * by the latter method.
+   * 
+   * If any of the above methods fails, throw an Exception. 
+   *******/ 
   // collection of pointers to initial hard particle and jet momenta
   // for final boosts
   // CVecMomentaPtr jetsMomentaPtr; 
@@ -151,15 +154,14 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
   Energy sum_qi = Energy(); 
 
   // find out whether we're in cm or not:
-  for ( MapShower::const_iterator cit = mapShowerHardJets.begin();
-	cit != mapShowerHardJets.end(); ++cit ) {
+  for(cit = hardJets.begin(); cit != hardJets.end(); ++cit) {
     p_cm += cit->first->momentum(); 
   }
 
   Vector3 beta_cm = p_cm.findBoostToCM();
-  if ( beta_cm.mag() > 1e-12 ) gottaBoost = true;   
+  if(beta_cm.mag() > 1e-12) gottaBoost = true;   
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
     generator()->log() << "  p_cm = " << p_cm
 		       << ", beta_cm = " << beta_cm
 		       << ", boost? " << (gottaBoost ? "yes" : "no")
@@ -168,20 +170,19 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
 
   atLeastOnce = false;
 
-  for ( MapShower::const_iterator cit = mapShowerHardJets.begin();
-	cit != mapShowerHardJets.end(); ++cit ) {
-    
-    if ( cit->first->isFinalState() ) {            
-
+  for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
+    if(cit->first->isFinalState()) {
       JetKinStruct tempJetKin;      
       tempJetKin.parent = cit->first; 
       tempJetKin.p = cit->first->momentum();
-      if ( gottaBoost ) tempJetKin.p.boost( beta_cm ); 
-      atLeastOnce = (reconstructTimeLikeJet(cit->first) || atLeastOnce); 
-      tempJetKin.q = cit->first->momentum();       
-      jetKinematics.push_back( tempJetKin );  
 
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+      if(gottaBoost) tempJetKin.p.boost(beta_cm); 
+      //atLeastOnce = (reconstructTimeLikeJet(cit->first) || atLeastOnce); 
+      atLeastOnce |= reconstructTimeLikeJet(cit->first);
+      tempJetKin.q = cit->first->momentum();       
+      jetKinematics.push_back(tempJetKin);  
+
+      if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {    
 	sum_qi += tempJetKin.q.mag();
 	generator()->log() << "  reconstructed "
 			   << cit->first->data().PDGName()
@@ -204,45 +205,44 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
   }
  
   double k = 0.0; 
-  if ( atLeastOnce ) {
-    k = solveKfactor( p_cm.mag(), jetKinematics );
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+  if(atLeastOnce) {
+    k = solveKfactor(p_cm.mag(), jetKinematics);
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {    
       generator()->log() << "  reshuffling with k = " << k << endl; 
-      if ( k < 0. || k > 1. ) {
+      if(k < 0. || k > 1.) {
 	generator()->log() << "  Warning! k outside 0..1. sum_qi > root_s ? " 
 			   << (sum_qi > p_cm.mag() ? "yes" : "no") << endl
 			   << "  VETO on this reconstruction -> restart shower! "
 			   << endl;
       }
     }
-    if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower   
-	 && generator()->currentEventNumber() < 1000 ) {    
+    if(HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower &&  
+       generator()->currentEventNumber() < 1000) {    
       generator()->log() << "reshuffling with k = " << k; 
-      if ( k < 0. || k > 1. ) {
+      if(k < 0. || k > 1.) {
 	generator()->log() << " VETO -> restart shower! " << endl;
       }
     }
-    if ( k < 0. || k > 1. ) return false; 
+    if(k < 0. || k > 1.) return false; 
   }
 
-  for ( JetKinVect::iterator it = jetKinematics.begin();
-	it != jetKinematics.end(); ++it ) {
+  for(JetKinVect::iterator it = jetKinematics.begin();
+      it != jetKinematics.end(); ++it) {
     LorentzRotation Trafo = LorentzRotation(); 
-    if ( atLeastOnce ) Trafo = solveBoost(k, it->q, it->p);
-    if ( gottaBoost ) Trafo.boost( -beta_cm );
-    if ( atLeastOnce || gottaBoost ) it->parent->deepTransform( Trafo );
+    if(atLeastOnce) Trafo = solveBoost(k, it->q, it->p);
+    if(gottaBoost) Trafo.boost(-beta_cm);
+    if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
   }
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {    
     Lorentz5Momentum p_cm_after = Lorentz5Momentum(); 
-    for ( MapShower::const_iterator cit = mapShowerHardJets.begin();
-	  cit != mapShowerHardJets.end(); ++cit ) {
+    for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
       p_cm_after += cit->first->momentum(); 
     }
     generator()->log() << "  reshuffling finished: p_cm  = " << p_cm << endl
 		       << "                        p_cm' = " << p_cm_after << endl;
     p_cm_after = p_cm - p_cm_after; 
-    if( sqr(p_cm_after.x()/MeV) > 1e-4 
+    if(sqr(p_cm_after.x()/MeV) > 1e-4 
 	|| sqr(p_cm_after.y()/MeV) > 1e-4
 	|| sqr(p_cm_after.z()/MeV) > 1e-4 
 	|| sqr(p_cm_after.t()/MeV) > 1e-4 ) {
@@ -256,7 +256,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
 // 		       << " ===> END DEBUGGING <=== " << endl;
   }
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower) {
     generator()->log() << ", p_cm = " << p_cm << endl;
     for ( JetKinVect::const_iterator it = jetKinematics.begin();
 	  it != jetKinematics.end(); ++it ) {
@@ -285,7 +285,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
 }
 
 
-void KinematicsReconstructor::reconstructDecayJets( const MapShower & mapShowerDecayJets )
+void KinematicsReconstructor::reconstructDecayJets(const MapShower &decayJets)
   throw (Veto, Stop, Exception) {
 
   //***LOOKHERE***  Loop over the map, until you get the decaying particle. 
@@ -306,7 +306,7 @@ void KinematicsReconstructor::reconstructDecayJets( const MapShower & mapShowerD
 }
 
 
-bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr particleJetParent ) {
+bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent) {
   bool isOK = true;
   
 //   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
@@ -362,7 +362,7 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShowerParticlePtr p
 	->showerKinematics()->updateLast( particleJetParent );    
     } else {
       Energy dm; 
-      if (particleJetParent->id() == 21) 
+      if (particleJetParent->id() == ParticleID::g) 
 	// trying to get the effective gluon mass through with the 
 	// usually unused 5th momentum component...
 	dm = particleJetParent->momentum().mass();

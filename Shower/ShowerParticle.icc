@@ -20,7 +20,6 @@ inline void ShowerParticle::operator delete(void * p, size_t) {
 inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
   :  Particle(x),
      _isFinalState(x._isFinalState),
-     //     _rhoDUpdate(x._rhoDUpdate),
      _reconstructionFixedPoint(x._reconstructionFixedPoint),
     // this was still missing 
      _isFromHardSubprocess( x._isFromHardSubprocess ),
@@ -28,6 +27,7 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
      _sudBeta(x._sudBeta),
      _sudPx(x._sudPx),
      _sudPy(x._sudPy),
+     _x(x._x),
      _splitFun(x._splitFun),
      _showerKinematics(x._showerKinematics),
      _scales(x._scales),
@@ -39,7 +39,6 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
 inline ShowerParticle::ShowerParticle(const Particle &x)
   : Particle(x),
     _isFinalState( true ),
-    //_rhoDUpdate( false ),
     _reconstructionFixedPoint( false ),
     // this was still missing 
     _isFromHardSubprocess( false ),
@@ -47,6 +46,7 @@ inline ShowerParticle::ShowerParticle(const Particle &x)
     _sudBeta( -1.0 ),
     _sudPx( Energy() ),
     _sudPy( Energy() ),
+    _x(1.0),
     _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes ),
@@ -58,18 +58,11 @@ inline ShowerParticle::ShowerParticle(const Particle &x)
     _scales[i] = Energy();
     _partners[i] = tShowerParticlePtr();
   }
-  
-  // Initialize _rhoD matrix to the 2x2 identity, normalise to trace equal 1.
-  //_rhoD[0][0] = 0.5;
-  //_rhoD[0][1] = 0.0;
-  //_rhoD[1][0] = 0.0;
-  //_rhoD[1][1] = 0.5;
 }
 
 inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
   : Particle(x),
     _isFinalState( true ),
-    //_rhoDUpdate( false ),
     _reconstructionFixedPoint( false ),
     // this was still missing 
     _isFromHardSubprocess( false ),
@@ -77,6 +70,7 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _sudBeta( -1.0 ),
     _sudPx( Energy() ),
     _sudPy( Energy() ),
+    _x(1.0),
     _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes ),
@@ -89,12 +83,6 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _scales[i] = Energy();
     _partners[i] = tShowerParticlePtr();
   }  
-
-  // Initialize _rhoD matrix to the 2x2 identity, normalise to trace equal 1.
-  //_rhoD[0][0] = 0.5;
-  //_rhoD[0][1] = 0.0;
-  //_rhoD[1][0] = 0.0;
-  //_rhoD[1][1] = 0.5;
 }
 
 inline bool ShowerParticle::isFinalState() const {

@@ -24,7 +24,8 @@ inline SplittingGenerator::SplittingGenerator(const SplittingGenerator & x)
     _FSR_Mode(x._FSR_Mode), _FSR_QCDMode(x._FSR_QCDMode),
     _FSR_QEDMode(x._FSR_QEDMode), _FSR_EWKMode(x._FSR_EWKMode),
     _showerAlphaQCD(x._showerAlphaQCD), _showerAlphaQED(x._showerAlphaQED),
-    _showerVariables(x._showerVariables), _branchings(x._branchings)
+    _showerVariables(x._showerVariables), _fbranchings(x._fbranchings),
+    _bbranchings(x._bbranchings)
 {}
 
 

@@ -271,7 +271,8 @@ public:
 
   inline tPPtr getThePEGBase();
   inline void setThePEGBase(const tPPtr& );
-
+  inline void x(double x) { _x = x; }
+  inline double x() { return _x; }
 protected:
 
   inline virtual PPtr clone() const;
@@ -293,6 +294,7 @@ private:
 
   Energy _sudPx;
   Energy _sudPy;
+  double _x;
 
   tSplittingFnPtr _splitFun;        
   ShoKinPtr _showerKinematics;

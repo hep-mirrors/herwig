@@ -365,6 +365,7 @@ convertToShowerParticles(const tPartCollHdlPtr ch,
       part->setFromHardSubprocess(true);
       part->setThePEGBase(ch->lastPartons().first); 
       part->setFinalState(false);
+      part->x(ch->lastX1());
       hardProcessParticles.push_back(part);
     }
   } 
@@ -374,6 +375,7 @@ convertToShowerParticles(const tPartCollHdlPtr ch,
       part->setFromHardSubprocess(true);
       part->setThePEGBase(ch->lastPartons().second); 
       part->setFinalState(false);
+      part->x(ch->lastX2());
       hardProcessParticles.push_back(part); 
     }
   }

@@ -141,7 +141,7 @@ bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch,
 	 fb.second->splittingFn()->interactionType() == ShowerIndex::QCD &&
 	 abs(part->id()) < 7) {
 	
-	double d_z = fb.second->z();
+	double d_z = fb.first->z();
 	Energy d_qt = fb.first->qtilde();
 	Energy2 d_m2 = part->momentum().m2();
 	Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
@@ -322,7 +322,7 @@ bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch,
 			       << ">" 
 			       << fb.first->qtilde()
 			       << "; "
-			       << fb.second->z()
+			       << fb.first->z()
 			       << ")"
 			       << endl;
 	  } // minimal debug

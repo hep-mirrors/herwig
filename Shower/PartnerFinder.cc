@@ -16,6 +16,7 @@
 #include "ShowerVariables.h"
 #include "ShowerParticle.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/Interface/Parameter.h"
 
 using namespace Herwig;
 
@@ -35,6 +36,11 @@ void PartnerFinder::Init() {
     ("This class is responsible for finding the partners for each interaction types ",
      "and within the evolution scale range specified by the ShowerVariables ",
      "then to determine the initial evolution scales for each pair of partners.");
+  static Parameter<PartnerFinder,int> approach
+    ("Approximation",
+     "This is a test variable to consider the different approaches of "
+     "which colour dipoles of a hard process will shower.",
+     &PartnerFinder::_approach, 0, 1, 0);
 
 }
 
@@ -66,7 +72,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   typedef map<tShowerParticlePtr, tShowerParticleVector> PartnerMap;
   PartnerMap candidatePartners;
   ShowerParticleVector::const_iterator cit, cjt;
-  for(cit = particles.begin(); cit != particles.end(); ++cit) {
+  // Confusing...not correct either... changed by PJS 6/2/04
+  /*for(cit = particles.begin(); cit != particles.end(); ++cit) {
     if((*cit)->data().coloured() && !(*cit)->partners()[ShowerIndex::QCD] &&
        ((*cit)->children().size() == 0 || isDecayCase )) {
       tShowerParticleVector partners;
@@ -95,7 +102,30 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
       }
       candidatePartners[*cit] = partners;
     }
+  }*/
+  for(cit = particles.begin(); cit != particles.end(); ++cit) {
+    if(!(*cit)->data().coloured()) continue;
+    // We now have a coloured particle
+    tShowerParticleVector partners;
+    for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
+      if(!(*cjt)->data().coloured()) continue;
+      bool isPartner = false;
+#define FS(a) (*a)->isFinalState()
+#define CL(a) (*a)->colourLine()
+#define ACL(a) (*a)->antiColourLine()
+      if((FS(cit) && !FS(cjt)) || (!FS(cit) && FS(cjt)) &&
+         ((CL(cit) && CL(cit)==CL(cjt)) || (ACL(cit) && ACL(cit)==ACL(cjt))))
+	 isPartner = true;
+      else if((CL(cit) && CL(cit)==ACL(cjt)) || (ACL(cit) && ACL(cit)==CL(cjt)))
+	 isPartner = true;
+      if(isPartner) partners.push_back(*cjt);
+    }
+    candidatePartners[*cit] = partners;
   }
+#undef FS
+#undef CL
+#undef ACL
+
 
   // Loop now over the map we have just filled (mapParticleToCandidatePartners)
   // and treat only those particles that have some candidate colour partners,
@@ -115,16 +145,30 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
       //                  if for a particle "i" its selected colour partner is  
       //                  the particle "j", then the colour partner of "j" 
       //                  does not have to be necessarily "i".
-      //               To me (A.R.) both assumptions seem reasonable, but
-      //               I am not 100% sure! Be careful...
       int position = UseRandom::irnd(it->second.size());
 
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(it->first, 
 						    it->second[position]),
 			                showerVariables);
-      it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
-      it->first->setPartner(ShowerIndex::QCD, it->second[position]);
+      switch(_approach) {
+        case 0: // Totally random
+         it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
+         it->first->setPartner(ShowerIndex::QCD, it->second[position]);
+	 break;
+	case 1: // Partner is also set, if it has already been set, pick 50/50
+	 if(!it->first->partners()[ShowerIndex::QCD] || UseRandom::rndbool()) {
+	   it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
+	   it->first->setPartner(ShowerIndex::QCD, it->second[position]);
+	 }
+	 if(!it->second[position]->partners()[ShowerIndex::QCD] ||
+	    UseRandom::rndbool()) {
+	   it->second[position]->setEvolutionScale(ShowerIndex::QCD, 
+			                           pairScales.second);
+	   it->second[position]->setPartner(ShowerIndex::QCD, it->first);
+	 }
+	 break;
+      }
     } else specialCases.push_back(it->first);
   } 
 
@@ -257,12 +301,81 @@ bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVari
 pair<Energy,Energy> PartnerFinder::
 calculateInitialEvolutionScales(const ShowerPPair &particlePair, 
 		                const tShowerVarsPtr showerVariables) {
+  if(particlePair.first->isFinalState() && particlePair.second->isFinalState())
+    return calculateFinalFinalScales(particlePair, showerVariables);
+  else if(particlePair.first->isFinalState() && 
+          !particlePair.second->isFinalState()) {
+    ShowerPPair a(particlePair.second, particlePair.first);
+    pair<Energy,Energy> rval = calculateInitialFinalScales(a,showerVariables);
+    return pair<Energy,Energy>(rval.second,rval.first);
+  }
+  else if(!particlePair.first->isFinalState() && 
+	  particlePair.second->isFinalState())
+    return calculateInitialFinalScales(particlePair,showerVariables);
+  else
+    return calculateInitialInitialScales(particlePair,showerVariables);
+}
+
+pair<Energy,Energy> PartnerFinder::
+calculateInitialFinalScales(const ShowerPPair &ppair, const tShowerVarsPtr s) {
+  /********
+   * In this case from JHEP 12(2003)045 we find the conditiongs
+   * ktilda_b = (1+c) and ktilda_c = (1+2c)
+   * We also find that c = m_c^2/Q^2. The process is a+b->c where
+   * particle a is not colour connected (considered as a colour singlet).
+   * Therefore we simply find that q_b = sqrt(Q^2+m_c^2) and 
+   * q_c = sqrt(Q^2+2 m_c^2)
+   * We also assume that the first particle in the pair is the initial
+   * state particle and the second is the final state one (c)
+   *********/
+  Lorentz5Momentum p1, p2, p;
+  p1 = ppair.first->momentum();
+  p2 = ppair.second->momentum();
+  p = p1+p2;
+  p.boost(p.findBoostToCM());
+  Energy2 mc2 = ppair.second->mass();
+  Energy Q2 = p*p;
+  return pair<Energy,Energy>(sqrt(Q2+mc2), sqrt(Q2+2*mc2));
+}
+
+pair<Energy,Energy> PartnerFinder::
+calculateInitialInitialScales(const ShowerPPair &ppair, const tShowerVarsPtr s)
+{
+  /*******
+   * This case is quite simple. From JHEP 12(2003)045 we find the condition
+   * that ktilda_b = ktilda_c = 1. In this case we have the process
+   * b+c->a so we need merely boost to the CM frame of the two incoming
+   * particles and then qtilda is equal to the energy in that frame
+   **********/
+  Lorentz5Momentum p1, p2, p;
+  p1 = ppair.first->momentum();
+  p2 = ppair.second->momentum();
+  p = p1+p2;
+  p.boost((p1+p2).findBoostToCM());
+  Energy Q = sqrt(p*p);
+  return pair<Energy,Energy>(Q,Q);
+}
+
+pair<Energy,Energy> PartnerFinder::
+calculateFinalFinalScales(const ShowerPPair &particlePair,
+		          const tShowerVarsPtr showerVariables) {
   Energy firstQ = Energy();
   Energy secondQ = Energy();
 
-  //***LOOKHERE***  Use the kinematical relationships between the 4-momenta
-  //                of the pair of particles to calculate their initial
-  //                evolution scales: firstQ and secondQ. 
+  /********
+   * Using JHEP 12(2003)045 we find that we need ktilda = 1/2(1+b-c+lambda)
+   * ktilda = qtilda^2/Q^2 therefore qtilda = sqrt(ktilda*Q^2)
+   * This is found from
+   *   x -> a abar
+   *   Px = 1/2 Q(1,0,0), 
+   *   Pa = 1/2 Q(1+b-c,0,lambda), 
+   *   Pabar = 1/2 Q(1-b+c,0,-lambda)
+   *   so nabar = 1/2 Q(lambda,0,-lambda)
+   * and we find (Pa+Pabar)(Pa+nabar) = 1/2 Q^2(1+b-c+lambda) which
+   * is exactly the condition we want for qtilda^2.
+   * We also find that this also applies for the ktilda for the abar
+   * particle, where we flip b and c.
+   *************/
 
   Lorentz5Momentum p1, p2; 
   Lorentz5Momentum p, n; 

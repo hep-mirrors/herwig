@@ -139,8 +139,8 @@ set LEPHandler:BeamA /Defaults/Particles/e-
 set LEPHandler:BeamB /Defaults/Particles/e+
 set LEPHandler:Sampler /Defaults/ACDCSampler
 set LEPHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LEPHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
+#set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
+#set LEPHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 
 # Create LHCHandler
 create ThePEG::EventHandler LHCHandler
@@ -152,8 +152,8 @@ set LHCHandler:BeamA /Defaults/Particles/p+
 set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
+#set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
+#set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 
 # Now the LEPGenerator
 cd /Defaults/Generators

@@ -36,14 +36,15 @@ public:
   virtual ~QtildaShowerKinematics1to2();
   // Standard ctors and dtor.
 
-  inline QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
-				     const Lorentz5Momentum & n );
+  inline QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
+				    const Lorentz5Momentum & n);
   // Creator with the two defining vectors <!id>p<!!id> and <!id>n<!!id> 
 
-  virtual void updateChildren( const double parentSudAlpha, 
-			       const Energy parentSudPx, const Energy parentSudPy, 
-                               vector<double> & sudAlphaVect, 
-			       vector<Energy> & sudPxVect, vector<Energy> & sudPyVect ) = 0;
+  virtual void updateChildren(const double parentAlpha, 
+			      const Energy parentPx, const Energy parentPy, 
+                              vector<double> & alphaVect, 
+			      vector<Energy> & pxVect, 
+			      vector<Energy> & pyVect) = 0;
   // Along with the showering evolution --- going forward for
   // time-like (forward) evolution, and going backward for space-like
   // (backward) evolution --- the Sudakov variables associated to the
@@ -53,8 +54,8 @@ public:
   // at this moment and we will obtain instead beta only later, 
   // using <!id>updateParent()<!!id>.
 
-  virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ParticleVector theChildren ) = 0;
+  virtual void updateChildren(const tShowerParticlePtr theParent, 
+			      const ParticleVector theChildren) = 0;
   // Along with the showering evolution --- going forward for
   // time-like (forward) evolution, and going backward for space-like
   // (backward) evolution --- the kinematical variables of the
@@ -63,13 +64,13 @@ public:
   // <!class>ForwardShowerEvolver<!!class>.  ***ACHTUNG*** Might be
   // extended to update colour connections as well.
 
-  virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ParticleVector theChildren ) = 0;
+  virtual void updateParent(const tShowerParticlePtr theParent, 
+			    const ParticleVector theChildren) = 0;
   // update the parent Kinematics from the knowledge of the kinematics
   // of the children.  This method will be used by the 
   // <!class>KinematicsReconstructor<!!class>.
 
-  virtual void updateLast( const tShowerParticlePtr theLast ) = 0;
+  virtual void updateLast(const tShowerParticlePtr theLast) = 0;
   // update the kinematical data of a particle when a reconstruction
   // fixpoint was found.  This will highly depend on the kind of
   // kinematics chosen and will be defined in the inherited concrete
@@ -90,10 +91,6 @@ public:
   // and <I>n</I>, which in turn are members of the concrete class
   // <!class>QtildaShowerKinematics1to2<!!class>.
 
-  inline double z() const;
-  inline void z( const double inputZ );
-  inline double phi() const;
-  inline void phi( const double inputPhi );
   // Access/set to the generated kinematics variables of the splitting <I>1-&GT;2</I>.
 
   inline const Lorentz5Momentum & pVector() const;

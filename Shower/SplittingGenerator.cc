@@ -23,6 +23,7 @@
 #include "ShowerConfig.h"
 #include "ThePEG/Interface/Command.h"
 #include "ThePEG/Repository/Repository.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 
 using namespace Herwig;
 
@@ -34,7 +35,8 @@ void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
   os << _QCDinteractionMode << _QEDinteractionMode << _EWKinteractionMode
      << _ISR_Mode << _ISR_QCDMode << _ISR_QEDMode << _ISR_EWKMode
      << _FSR_Mode << _FSR_QCDMode << _FSR_QEDMode << _FSR_EWKMode
-     << _showerAlphaQCD << _showerAlphaQED << _showerVariables << _branchings;
+     << _showerAlphaQCD << _showerAlphaQED << _showerVariables << _bbranchings
+     << _fbranchings;
 }
 
 
@@ -42,7 +44,8 @@ void SplittingGenerator::persistentInput(PersistentIStream & is, int) {
   is >>	_QCDinteractionMode >> _QEDinteractionMode >> _EWKinteractionMode
      >>	_ISR_Mode >> _ISR_QCDMode >> _ISR_QEDMode >> _ISR_EWKMode 
      >> _FSR_Mode >> _FSR_QCDMode >> _FSR_QEDMode >> _FSR_EWKMode
-     >> _showerAlphaQCD >> _showerAlphaQED >> _showerVariables >> _branchings;
+     >> _showerAlphaQCD >> _showerAlphaQED >> _showerVariables >> _bbranchings
+     >> _fbranchings;
   setSVtoAlpha(_showerVariables);
 }
 
@@ -174,14 +177,27 @@ void SplittingGenerator::Init() {
      &Herwig::SplittingGenerator::setSVtoAlpha, 0, 0);
 
   static Command<SplittingGenerator> interfaceAddSplitting
-    ("AddSplitting",
+    ("AddFinalSplitting",
      "Adds another splitting to the list of splittings considered "
-     "in the shower. Command is a->b,c; SplittingFn, where Sudakov "
-     "is the name of a created Sudakov object.",
-     &SplittingGenerator::addSplitting);
+     "in the shower. Command is a->b,c; Sudakov",
+     &SplittingGenerator::addFinalSplitting);
+  static Command<SplittingGenerator> interfaceAddInitialSplitting
+    ("AddInitialSplitting",
+     "Adds another splitting to the list of initial splittings to consider "
+     "in the shower. Command is a->b,c; Sudakov. Here the particle a is the "
+     "particle that is PRODUCED by the splitting. b is the initial state "
+     "particle that is splitting in the shower.",
+     &SplittingGenerator::addInitialSplitting);
 }
 
-string SplittingGenerator::addSplitting(string arg) {
+string SplittingGenerator::addFinalSplitting(string arg) {
+  return addSplitting(arg,true);
+}
+string SplittingGenerator::addInitialSplitting(string arg) {
+  return addSplitting(arg,false);
+}
+
+string SplittingGenerator::addSplitting(string arg, bool final) {
   string partons = StringUtils::car(arg);
   string sudakov = StringUtils::cdr(arg);
   vector<tPDPtr> products;
@@ -206,8 +222,7 @@ string SplittingGenerator::addSplitting(string arg) {
   ids.push_back(parent->id());
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
     ids.push_back((*it)->id());
-  long i = parent->id();
-  addToMap(i,ids,s);
+  addToMap(ids,s,final);
   return "";
 }
 
@@ -282,29 +297,19 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
 
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
-  if(_branchings.find(index) == _branchings.end()) 
+  if(_fbranchings.find(index) == _fbranchings.end()) 
     return Branching(ShoKinPtr(), SudakovPtr(), IdList());
-  for(BranchingList::const_iterator cit = _branchings.lower_bound(index); 
-      cit != _branchings.upper_bound(index); ++cit) {
-    //if(cit->second.second[0] != index) continue;
+  for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
+      cit != _fbranchings.upper_bound(index); ++cit) {
     tSudakovPtr candidateSudakov = cit->second.first;
     Energy candidateNewQ = 0*MeV;
     ShowerIndex::InteractionType i = candidateSudakov->interactionType();
     if(candidateSudakov) {
-	  // check size of scales beforehand...
+      // check size of scales beforehand...
       if(particle.evolutionScales()[i] > _showerVariables->cutoffQScale(i)) {
-	  // use this condition for roughly only one gluon per quark
-	  // in the asymmetric case...
-// 	  if ( (particle.evolutionScales()[i] > 172.0*GeV
-// 		&& particle.evolutionScales()[i] < 175.0*GeV) 
-// 	       || (particle.evolutionScales()[i] > 47.7*GeV
-// 		   && particle.evolutionScales()[i] < 48.05*GeV) ) {
-	  // ... and this one in the symmetric case
-//	  if (particle.evolutionScales()[i] > 90.0*GeV) {
-        candidateNewQ = candidateSudakov->
-                           generateNextBranching(particle.evolutionScales()[i], 
+        candidateNewQ = candidateSudakov->generateNextTimeBranching(
+				       particle.evolutionScales()[i], 
 		    	               cit->second.second, reverseAngOrd);
-		//	    }
       } else candidateNewQ = 0*GeV; 
       if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
 	    generator()->log() << "  trying "
@@ -430,33 +435,47 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
   Energy newQ = Energy();
   tSudakovPtr sudakov = tSudakovPtr();
   IdList ids;
-  
+  double newZ, newPhi;  
+
   // First, find the eventual branching, corresponding to the highest scale.
-  for(int i = 0; i < ShowerIndex::NumInteractionTypes; ++i) {
-    //ShowerIndex index;
-    //index.id = abs( particle.data().id() ); 
-    //index.interaction = ShowerIndex::int2Interaction( i );
-    //index.timeFlag = ShowerIndex::IS; 
-    long index = abs(particle.data().id());
-    if(_branchings.find(index) != _branchings.end()) {
-      for(BranchingList::const_iterator cit = _branchings.lower_bound(index); 
-	    cit != _branchings.upper_bound(index); ++cit ) {
-	tSudakovPtr candidateSudakov = cit->second.first;
-	Energy candidateNewQ = Energy();
-	if(candidateSudakov) {
-	  candidateNewQ = candidateSudakov->
-		  generateNextBranching(particle.evolutionScales()[i],
-				        cit->second.second);
-	  if(candidateNewQ > newQ) {
-	    newQ = candidateNewQ;
-	    sudakov = candidateSudakov;
-	    ids = cit->second.second;
-	  } 
-	}
+  long index = abs(particle.data().id());
+  double x = particle.x();
+  cout << "Calling cBB with " << index << " and x = " << x << endl;
+  if(_bbranchings.find(index) == _bbranchings.end()) 
+    return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
+  for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
+      cit != _bbranchings.upper_bound(index); ++cit ) {
+    tSudakovPtr candidateSudakov = cit->second.first;
+    ShowerIndex::InteractionType i = candidateSudakov->interactionType();
+    Energy candidateNewQ = Energy();
+    if(candidateSudakov) {
+      // The parton we are IS radiating should have one parent which is
+      // the beam particle. If this isn't the case, we must be
+      // backward evolving for a decay shower. In that case give a null
+      // pdf pointer
+      Ptr<BeamParticleData>::tcp p = 
+	dynamic_ptr_cast<Ptr<BeamParticleData>::tcp>(particle.parents()[0]);
+      tcPDFPtr pdf;
+      if(p) pdf = p->pdf();
+      else pdf = tcPDFPtr();
+      cout << "Looking at splitting " << cit->second.second[0] << "->" 
+	   << cit->second.second[1] << ","
+	   << cit->second.second[2] << ";"
+	   << " and particle evolution scale " <<particle.evolutionScales()[i];
+      candidateNewQ = candidateSudakov->
+        generateNextSpaceBranching(particle.evolutionScales()[i],
+				   cit->second.second, p, pdf, particle.x());
+      cout << "; q/GeV is = " << candidateNewQ/GeV << endl;
+      if(candidateNewQ > newQ) {
+	newQ = candidateNewQ;
+	sudakov = candidateSudakov;
+	ids = cit->second.second;
+	newZ = sudakov->z();
+	newPhi = sudakov->phi();
       } 
     }
-  }
-
+  } 
+  
   // Then, if a branching has been selected, create the proper 
   // ShowerKinematics object which contains the kinematics information
   // about such branching. Notice that the cases 1->2 and 1->3
@@ -492,11 +511,13 @@ void SplittingGenerator::generateBranchingKinematics(tPartCollHdlPtr ch,
 
 }
  
-void SplittingGenerator::addToMap(long &i, IdList &ids, SudakovPtr &s) {
-   if(isISRadiationON(s->splittingFn()->interactionType()) || 
-      isFSRadiationON(s->splittingFn()->interactionType())) {
+void SplittingGenerator::addToMap(IdList &ids, SudakovPtr &s, bool final) {
+   if(isISRadiationON(s->splittingFn()->interactionType()) && !final) {
+      _bbranchings.insert(BranchingInsert(ids[1],BranchingElement(s,ids)));
+   } 
+   if(isFSRadiationON(s->splittingFn()->interactionType()) && final) {
      //i.timeFlag = ShowerIndex::IS;
-      _branchings.insert(BranchingInsert(i,BranchingElement(s,ids)));
+      _fbranchings.insert(BranchingInsert(ids[0],BranchingElement(s,ids)));
    }
 }
 
@@ -505,10 +526,10 @@ void SplittingGenerator::debuggingInfo() {
   generator()->log() << "SplittingGenerator::debuggingInfo() begin"
 		     << " ______________________________________" << endl; 
   generator()->log() << "  no of initialized Sudakov FF's = " 
-		     << _branchings.size() << endl
+		     << _fbranchings.size() << endl
 		     << "  id\t" << "int\t" << "timeFlag" << endl;
-  for(BranchingList::const_iterator cit = _branchings.begin();
-      cit != _branchings.end(); ++cit) {
+  for(BranchingList::const_iterator cit = _fbranchings.begin();
+      cit != _fbranchings.end(); ++cit) {
     generator()->log() << "  " << cit->first
 		       << "\t" << cit->second.first->splittingFn()->interactionType()
       //	       << "\t" << cit->first.timeFlag 
