@@ -387,8 +387,12 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
     }
   // construct the lepton current
   int mode=(abs(decay[1]->id())-11)/12;
+  Energy scale;
+  ParticleVector leptons;
+  leptons.push_back(decay[decay.size()-2]);
+  leptons.push_back(decay[decay.size()-1]);
   vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,ichan,
-							      inpart,decay));
+							     scale,leptons));
   // work out the mapping for the lepton vector
   vector<int> constants(decay.size()+1), ispin(decay.size()),ihel(decay.size()+1);
   int itemp=1; unsigned int ibar=0;
@@ -742,8 +746,12 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
     }
   // construct the lepton current
   int mode=(abs(decay[1]->id())-11)/12;
+  Energy scale;
+  ParticleVector leptons;
+  leptons.push_back(decay[decay.size()-2]);
+  leptons.push_back(decay[decay.size()-1]);
   vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,ichan,
-							      inpart,decay));
+							     scale,leptons));
   // work out the mapping for the lepton vector
   vector<int> ispin(decay.size()),ihel(decay.size()+1);
   for(int ix=int(decay.size()-1);ix>=0;--ix){ispin[ix]=decay[ix]->data().iSpin();}
