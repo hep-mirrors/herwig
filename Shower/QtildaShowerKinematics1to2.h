@@ -10,8 +10,6 @@
 // state radiation kinematics for <I>1 -&GT; 2</I> branchings and for <BR>
 // the choice of Qtilda as evolution variable. <BR>
 //
-//   *** LOOKHERE***  VERY PRELIMINARY!!! 
-//
 // CLASSDOC SUBSECTION See also:
 //
 // <a href="http:ShowerKinematics.html">ShowerKinematics.h</a>, <BR>
@@ -80,15 +78,7 @@ public:
   inline const Lorentz5Momentum & nVector() const;
   // Access to the <!id>p<!!id> and <!id>n<!!id> vectors used to described the kinematics.
 
-public:
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
 private:
-
-  static AbstractClassDescription<QtildaShowerKinematics1to2> initQtildaShowerKinematics1to2;
-  // Describe an abstract base class with persistent data.
 
   QtildaShowerKinematics1to2 & operator=(const QtildaShowerKinematics1to2 &);
   //  Private and non-existent assignment operator.
@@ -99,31 +89,6 @@ private:
   Lorentz5Momentum _pVector;  //***LOOKHERE*** Re-think where to put them. 
   Lorentz5Momentum _nVector;  
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of QtildaShowerKinematics1to2.
-template <>
-struct BaseClassTrait<Herwig::QtildaShowerKinematics1to2,1> {
-  typedef Herwig::ShowerKinematics NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::QtildaShowerKinematics1to2>: public ClassTraitsBase<Herwig::QtildaShowerKinematics1to2> {
-  static string className() { return "/Herwig++/QtildaShowerKinematics1to2"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

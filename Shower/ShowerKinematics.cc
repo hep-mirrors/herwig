@@ -5,7 +5,6 @@
 //
 
 #include "ShowerKinematics.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
 #include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
 #include "ShowerIndex.h"
 
@@ -13,18 +12,6 @@ using namespace Herwig;
 
 
 ShowerKinematics::~ShowerKinematics() {}
-
-
-AbstractClassDescription<ShowerKinematics> ShowerKinematics::initShowerKinematics;
-// Definition of the static class description member.
-
-
-void ShowerKinematics::Init() {
-
-  static ClassDocumentation<ShowerKinematics> documentation
-    ("This abstract class is the base for all other shower kinematics classes.");
-
-}
 
 
 Lorentz5Momentum ShowerKinematics::

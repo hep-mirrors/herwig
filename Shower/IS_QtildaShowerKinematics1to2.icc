@@ -6,17 +6,12 @@
 
 namespace Herwig {
 
+
 inline IS_QtildaShowerKinematics1to2::IS_QtildaShowerKinematics1to2() {}
+
 
 inline IS_QtildaShowerKinematics1to2::IS_QtildaShowerKinematics1to2(const IS_QtildaShowerKinematics1to2 & x)
   : QtildaShowerKinematics1to2(x) {}
 
-inline IBPtr IS_QtildaShowerKinematics1to2::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr IS_QtildaShowerKinematics1to2::fullclone() const {
-  return new_ptr(*this);
-}
 
 }

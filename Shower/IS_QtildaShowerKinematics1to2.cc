@@ -5,37 +5,11 @@
 //
 
 #include "IS_QtildaShowerKinematics1to2.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
-#include "Pythia7/Persistency/PersistentOStream.h"
-#include "Pythia7/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
 
 IS_QtildaShowerKinematics1to2::~IS_QtildaShowerKinematics1to2() {}
-
-
-void IS_QtildaShowerKinematics1to2::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-
-void IS_QtildaShowerKinematics1to2::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-
-ClassDescription<IS_QtildaShowerKinematics1to2> 
-IS_QtildaShowerKinematics1to2::initIS_QtildaShowerKinematics1to2;
-// Definition of the static class description member.
-
-
-void IS_QtildaShowerKinematics1to2::Init() {
-
-  static ClassDocumentation<IS_QtildaShowerKinematics1to2> documentation
-    ("This (concrete) class provides the specific Intial State shower kinematics information.");
-
-}
 
 
 void IS_QtildaShowerKinematics1to2::
