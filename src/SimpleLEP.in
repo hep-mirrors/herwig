@@ -79,7 +79,7 @@ set theHadronsSelector:DecWt      1.0
 #
 cd /Defaults/Generators
 set SimpleLEPGenerator:EventHandler:MinWeight 0.2
-set SimpleLEPGenerator:NumberOfEvents 10000
+set SimpleLEPGenerator:NumberOfEvents 1000000
 #set SimpleLEPGenerator:RandomNumberGenerator:Seed 12345678 
 set SimpleLEPGenerator:DebugLevel 1
 set SimpleLEPGenerator:PrintEvent 10
