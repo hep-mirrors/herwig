@@ -1,4 +1,4 @@
- (Last update: 16-Apr-2002)
+ (Last update: 28-May-2002)
 
  THIS FILE CONTAINS SOME INFORMATION ABOUT THE CLASS STRUCTURE
  IN THIS DIRECTORY, AND SOME NOTES ABOUT THE CLASSES.
@@ -27,6 +27,7 @@
                     ShowerKinematics <--- QtildaShowerKinematics1to2 <--- IS_... , FS_... 
                                              (and similar to define)
                     ShowerParticle      
+                     ShowerColourLine
                      ShowerIndex
 
 
@@ -155,6 +156,26 @@
           set theSplittingGenerator:OnOffFSR_EWKMode 1
         
 
+ --- WHAT IS NEEDED FOR rho-D PROPAGATION
+     ------------------------------------
+     The main class  RhoDMatrixPropagator  is basically 
+     completed; what need to be done is to write some code
+     in  ShowerHandler::cascade()  and  
+         ForwardShowerEvolver:timeLikeShower  and
+         BackwardShowerEvolver::spaceLikeShower
+     (look to the string ***LOOKHERE*** in the corresponding
+      .cc files) which proper deals with such rho and D matrices
+     in ShowerParticles objects and that uses the above
+     main class  RhoDMatrixPropagator.
+     Where most of the work must be done, is in writing
+     the amplitude for all the hard subprocesses and decays:
+     in practice, for each hard subprocess or decay process
+     a concrete class, which inherit from 
+          Pythia7/MatrixElement/Amplitude.h 
+     must be defined, and its virtual methods must be 
+     implemented. 
+      
+    
  --- ADD A NEW MATRIX ELEMENT CORRECTION
      -----------------------------------
      If you want to add a new matrix element correction, for 
@@ -180,7 +201,15 @@
         and then set the reference to it (and similarly also for the 
         reference to the object associated to the matrix element of 
         the basic process  e q -> e q) in theDISMECorrection.
-         
+     5) create in  Herwig++/MatrixElement/  two new classes:
+         i) one derived from
+               Pythia7/MatrixElement/MEBase.h  
+            which contains the 2->N+Jet matrix element;
+        ii) one derived from
+               Pythia7/MatrixElement/Amplitude.h
+            which contains the amplitude for the 2->N+Jet process
+            (used for rho-D propagation).
+
 
  --- CHANGE KINEMATICS SHOWERING VARIABLES
      -------------------------------------
@@ -208,6 +237,13 @@
             IS_QtildaShowerKinematics1to2 
             FS_QtildaShowerKinematics1to2
         w.r.t. QtildaShowerKinematics1to2
+     4) in  SplittingGenerator::chooseForwardBranching  and
+            SplittingGenerator::chooseBackwardBranching  
+        you have to create explicitly the proper kind of 
+        kinematics object you want.
+     5) Probably also the class  KinematicsReconstructor
+        needs some writing to properly deal with the new
+        kinematics variables.
 
 
  --- ADD A NEW INTERACTION TYPE OF BREMSSTRAHLUNG
@@ -234,4 +270,42 @@
         the initial state radiation, and, independently, for 
         final state radiation.
 
+
+ --- ADD 1->3 SPLITTING FUNCTIONS: FOR EXAMPLE G->GGG
+     ------------------------------------------------
+     For NLLog parton showers one needs 1->3 splitting functions:
+     G->G+G+G. In order to do this:
+     1) Fill the already existing, but empty, classes:
+          SplitFun1to3, GtoGGGSplitFun, 
+          IS_GtoGGGSplitFun, FS_GtoGGGSplitFun
+        in a similar way as done, for example, for G->G+G.
+     2) Create the class  GtoGGGSudakovFormFactor  which 
+        inherits from SudakovFormFactor, in a similar way
+        as done for G->G+G.
+     3) Create the classes  QtildaShowerKinematics1to3  and
+        the derived  IS_QtildaShowerKinematics1to3
+        and          FS_QtildaShowerKinematics1to3
+        similarly to what as been done for 1->2 case.
+     4) In  SplittingGenerator  class do the following:
+        a) add a switch for switching on/off the G->G+G+G vertex
+        b) in  initializeRun()  create an object
+           for each of the following classes:
+           IS_GtoGGGSplitFun  ,  IS_GtoGGGSudakovFormFactor
+           FS_GtoGGGSplitFun  ,  FS_GtoGGGSudakovFormFactor
+        c) in  chooseForwardBranching  (and  chooseBackwardBranching)
+           dynamic_ptr_cast  to the class SplitFun1to3, and create an
+           object of class  FS_QtildaShowerKinematics1to3  
+           similarly to what has been done already for the 1->2 case.
+        d) in  generateBranchingKinematics  do eventually something
+           for the 1->3 case similarly to what has been done for
+           the 1->2 case.
+     5) In  ForwardShowerEvolver::timeLikeShower  
+        (and similarly in  BackwardShowerEvolver::spaceLikeShower )
+        dynamic_ptr_cast  to the class SplitFun1to3, and then
+        create the ShowerParticle objects corresponding to the
+        shower products,... similarly to what has been done for
+        the 1->2 case.
+     6) Probably also in  KinematicsReconstructor  one should 
+        deal with  QtildaShowerKinematics1to3 , in a similar way
+        as it is done for the 1->2 case.
 
