@@ -15,15 +15,15 @@
 
 #include "KtJet/KtLorentzVector.h"
 #include "KtJet/KtEvent.h"
-#include "Pythia7/Config/Pythia7.h"
+#include "ThePEG/Config/ThePEG.h"
 #include "Herwig++/Config/Herwig.h"
-#include "Pythia7/Repository/Strategy.fh"
+#include "ThePEG/Repository/Strategy.fh"
 #include <fstream>
 #include <map>
 
 namespace Herwig {
 
-using namespace Pythia7;
+using namespace ThePEG;
 using namespace KtJet;
 
 class KtJetInterface {
@@ -34,7 +34,7 @@ class KtJetInterface {
 
  public:
   vector<KtLorentzVector> convertToKtVectorList(tPVector &); 
-  int getPythia7ID(KtLorentzVector &);
+  int getThePEGID(KtLorentzVector &);
  private:
   KtLorentzVector convertToKtVector(PPtr);
   std::map<int, int> Kt2PythiaMap;

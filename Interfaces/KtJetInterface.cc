@@ -1,8 +1,8 @@
 #include "Herwig++/Interfaces/KtJetInterface.h"
-#include "Pythia7/EventRecord/Particle.h"
+#include "ThePEG/EventRecord/Particle.h"
 
 using namespace Herwig;
-using namespace Pythia7;
+using namespace ThePEG;
 
 vector<KtJet::KtLorentzVector> KtJetInterface::convertToKtVectorList(tPVector &pv) {
   vector<KtLorentzVector> rval;
@@ -17,6 +17,6 @@ KtLorentzVector KtJetInterface::convertToKtVector(PPtr p) {
   return KtJet::KtLorentzVector(p->momentum());
 }
 
-int KtJetInterface::getPythia7ID(KtJet::KtLorentzVector &kv) {
+int KtJetInterface::getThePEGID(KtJet::KtLorentzVector &kv) {
   return Kt2PythiaMap[kv.getID()];
 }
