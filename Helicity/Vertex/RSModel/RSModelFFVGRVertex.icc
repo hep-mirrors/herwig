@@ -1,0 +1,104 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the RSModelFFVGRVertex class.
+//
+namespace Herwig{
+namespace Helicity {
+using namespace ThePEG;
+
+inline RSModelFFVGRVertex::RSModelFFVGRVertex() 
+{
+  vector<int> first,second,third,fourth;
+  for(unsigned int ix=1;ix<7;++ix)
+    {
+      first.push_back(-ix);second.push_back(ix);
+      third.push_back(22);fourth.push_back(39);
+    }
+  for(unsigned int ix=11;ix<17;++ix)
+    {
+      first.push_back(-ix);second.push_back(ix);
+      third.push_back(22);fourth.push_back(39);
+    }
+  for(unsigned int ix=1;ix<7;++ix)
+    {
+      first.push_back(-ix);second.push_back(ix);
+      third.push_back(21);fourth.push_back(39);
+    }
+  setList(first,second,third,fourth);
+}
+
+inline RSModelFFVGRVertex::RSModelFFVGRVertex(const RSModelFFVGRVertex & x)
+  : FFVTVertex(x) , _theModel(x._theModel), _theKappa(x._theKappa)
+{
+  for(int ix=0;ix<17;++ix){_charge[ix]=x._charge[ix];}
+  for(int ix=0;ix<2 ;++ix){_couplast[ix]=x._couplast[ix];_q2last[ix]=x._q2last[ix];}
+}
+
+inline IBPtr RSModelFFVGRVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr RSModelFFVGRVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void RSModelFFVGRVertex::doupdate() throw(UpdateException) {
+  FFVTVertex::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void RSModelFFVGRVertex::doinit() throw(InitException) {
+  FFVTVertex::doinit();
+  for(int ix=1;ix<4;++ix)
+    {
+      _charge[2*ix-1]  = (_theModel->ed());
+      _charge[2*ix ]   = (_theModel->eu());
+      _charge[2*ix+9 ] = (_theModel->ee());
+      _charge[2*ix+10] = (_theModel->enu());
+    }
+  for(int ix=0;ix<2;++ix)
+    {
+      _couplast[ix] = 0.;
+      _q2last[ix]=0.;
+    }
+  Ptr<Herwig::RSModel>::transient_const_pointer 
+    hwRS=dynamic_ptr_cast<Ptr<Herwig::RSModel>::transient_const_pointer>(_theModel);
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+}
+
+inline void RSModelFFVGRVertex::dofinish() {
+  FFVTVertex::dofinish();
+}
+
+inline void RSModelFFVGRVertex::doinitrun() {
+  FFVTVertex::doinitrun();
+}
+
+inline void RSModelFFVGRVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  FFVTVertex::rebind(trans);
+}
+
+inline IVector RSModelFFVGRVertex::getReferences() {
+  IVector ret = FFVTVertex::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+}

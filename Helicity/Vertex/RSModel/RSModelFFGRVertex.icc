@@ -1,0 +1,82 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the RSModelFFGRVertex class.
+//
+
+namespace Herwig {
+namespace Helicity{
+using namespace ThePEG;
+
+inline RSModelFFGRVertex::RSModelFFGRVertex() 
+{
+  // PDG codes for the particles
+  vector<int> first,second,third;
+  // the quarks
+  for(unsigned int ix=1;ix<7;++ix)
+    {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
+  // the leptons
+  for(unsigned int ix=11;ix<17;++ix)
+    {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
+  setList(first,second,third);
+}
+
+inline RSModelFFGRVertex::RSModelFFGRVertex(const RSModelFFGRVertex & x)
+  : FFTVertex(x), _theModel(x._theModel), _theKappa(x._theKappa) {}
+
+inline IBPtr RSModelFFGRVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr RSModelFFGRVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void RSModelFFGRVertex::doupdate() throw(UpdateException) {
+  FFTVertex::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void RSModelFFGRVertex::doinit() throw(InitException) {
+  FFTVertex::doinit();
+  Ptr<Herwig::RSModel>::transient_const_pointer 
+    hwRS=dynamic_ptr_cast<Ptr<Herwig::RSModel>::transient_const_pointer>(_theModel);
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+  else{throw InitException();}
+}
+
+inline void RSModelFFGRVertex::dofinish() {
+  FFTVertex::dofinish();
+}
+
+inline void RSModelFFGRVertex::doinitrun() {
+  FFTVertex::doinitrun();
+}
+
+inline void RSModelFFGRVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  FFTVertex::rebind(trans);
+}
+
+inline IVector RSModelFFGRVertex::getReferences() {
+  IVector ret = FFTVertex::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+}
