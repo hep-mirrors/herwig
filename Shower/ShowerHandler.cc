@@ -123,14 +123,14 @@ void ShowerHandler::cascade() {
       _particles.clear();
       _showerVariables->reset();     
       _evolver->clear();
-
+      
       // even more cleaning... ***ACHTUNG*** find something much, much
       // more sophisticated to save old properties. In particular for
       // the multiscaleshower...
       ShowerParticleVector hardProcessParticles;
       hardProcessParticles.clear();
       convertToShowerParticles( ch, hardProcessParticles );
-
+      
       // Fill _particles with the particles from the hard subprocess
       ShowerParticleVector::const_iterator cit;
       for(cit = hardProcessParticles.begin(); 
@@ -166,7 +166,7 @@ void ShowerHandler::cascade() {
         // satisfies the above condition.
         // ***LOOKHERE*** --- code here --- 
       }
-
+      
       Energy largestWidth = Energy();
       if(_showerVariables->isMultiScaleShowerON()) {      
         for(ShowerParticleVector::const_iterator cit = _particles.begin();
@@ -193,10 +193,11 @@ void ShowerHandler::cascade() {
       if(largestWidth < _globalParameters->hadronizationScale()) {  
 	skipKinReco = true;
       }      
-
-      _showerVariables->stopShowerAtMassScale(largestWidth); 
-      _showerVariables->vetoBelowPtScale(largestWidth);  //***MAYBE NOT NEEDED***
-
+      
+      _showerVariables->stopShowerAtMassScale(largestWidth);
+      // ***MAYBE NOT NEEDED***
+      _showerVariables->vetoBelowPtScale(largestWidth);  
+	
       _evolver->showerNormally(ch, _showerVariables, _particles, skipKinReco);
 
       // The following loop is done only for multi-scale showering.
@@ -208,7 +209,7 @@ void ShowerHandler::cascade() {
         // current initial and final states; then we can loop over the
         // new container, and adding to the initial one the new particles
         // that are produced by the showering.
-
+	
         ShowerParticleVector currentFinalOrInitialParticles;
         for(cit = _particles.begin(); cit != _particles.end(); ++cit) {
 	  if((*cit)->children().size() == 0) {
@@ -226,24 +227,24 @@ void ShowerHandler::cascade() {
             // decay products (for each of them we need to create a
             // ShowerParticle object) in the collection decayParticles.
             // ***LOOKHERE*** --- code here ---
-
+	    
 	    /* tMECorrectionPtr softMEDecayCorrection = tMECorrectionPtr();
-	    if ( _MECorrections->isMECorrectionsON()  &&
-		 ( ( ! isMECorrectionApplied ) || 
-		   ( isMECorrectionApplied  &&  _MECorrections->isComposeMECorrectionsON() )
-		   ) ) {
-	      // if ( _MECorrections->getMECorrection( "decayer pointer" ) {
-	      //    isMECorrectionApplied = true;
-	      //    if ( _MECorrections->
-              //         getMECorrection( "decayer pointer" )->decayProcessPlusJetME() ) {
-	      //      _MECorrections->getMECorrection( ch->lastME() )->hardMECorrection();
-	      //    } else { 
-	      //      softMEDecayCorrection = _MECorrections->
-              //                              getMECorrection( "decayer pointer" );
+	       if ( _MECorrections->isMECorrectionsON()  &&
+	       ( ( ! isMECorrectionApplied ) || 
+	       ( isMECorrectionApplied  &&  _MECorrections->isComposeMECorrectionsON() )
+	       ) ) {
+	       // if ( _MECorrections->getMECorrection( "decayer pointer" ) {
+	       //    isMECorrectionApplied = true;
+	       //    if ( _MECorrections->
+	       //         getMECorrection( "decayer pointer" )->decayProcessPlusJetME() ) {
+	       //      _MECorrections->getMECorrection( ch->lastME() )->hardMECorrection();
+	       //    } else { 
+	       //      softMEDecayCorrection = _MECorrections->
+	       //                              getMECorrection( "decayer pointer" );
 	      //    }
               // }
 	      }*/
-
+	    
             // In order to proper treat exceptional cases in which 
             // a decay product has larger width than the decaying parent, 
             // we have to keep track of the largest width for each
@@ -260,10 +261,11 @@ void ShowerHandler::cascade() {
 	    if(largestWidthDecayingSystem > largestWidth) {
 	      largestWidth = largestWidthDecayingSystem;
 	    }
-
+	    
 	    _showerVariables->stopShowerAtMassScale(largestWidthDecayingSystem); 
-	    _showerVariables->vetoBelowPtScale(largestWidthDecayingSystem);  //***MAYBE NOT NEEDED***
-
+	    //***MAYBE NOT NEEDED***
+	    _showerVariables->vetoBelowPtScale(largestWidthDecayingSystem);  
+   
 	    _evolver->showerDecay(ch, _showerVariables, decayParticles);
             
 	    // Add the particles in  decayParticles  in  _particles .
@@ -277,10 +279,11 @@ void ShowerHandler::cascade() {
 	    } while ( cit != decayParticles.end() );
 	    decayParticles.clear();
           }
-
+	  
         } // end for loop
-
-        // Find now the new largest width between all current final state particles.
+	
+        // Find now the new largest width between all current final 
+	// state particles.
 	Energy newLargestWidth = Energy();
         for(cit = _particles.begin();
 	    cit != _particles.end(); ++cit) {
@@ -292,13 +295,15 @@ void ShowerHandler::cascade() {
 	}
 	if(newLargestWidth < _globalParameters->hadronizationScale()) {  
 	  newLargestWidth = Energy();
-	  skipKinReco = true;          // to avoid to do twice the kinematics reco
+	  // to avoid to do twice the kinematics reco
+	  skipKinReco = true;          
 	}                              
 
 	Energy savedVetoAbovePtScale = _showerVariables->vetoAbovePtScale();
 	
 	_showerVariables->stopShowerAtMassScale(newLargestWidth);
-	_showerVariables->vetoBelowPtScale(newLargestWidth); //***MAYBE NOT NEEDED***
+	// ***MAYBE NOT NEEDED***
+	_showerVariables->vetoBelowPtScale(newLargestWidth); 
 	_showerVariables->vetoAbovePtScale(largestWidth);
 	
 	_evolver->showerGlobally(ch,_showerVariables,_particles,skipKinReco);
@@ -346,7 +351,7 @@ void ShowerHandler::cascade() {
 			 << " ===> END DEBUGGING <=== "
 			 << endl;
   }
-  fillEventRecord( ch );  
+  fillEventRecord(ch);  
 }
 
 void ShowerHandler::
@@ -423,10 +428,10 @@ void ShowerHandler::fillPositions() {
   // Put on the vector  particlesToExamine  the particles that come
   // directly from the hard subprocess. 
   ParticleVector particlesToExamine;
-  for ( ShowerParticleVector::const_iterator cit = _particles.begin();
-	cit != _particles.end(); ++cit ) {
-    if ( (*cit)->isFromHardSubprocess() ) {
-      particlesToExamine.push_back( *cit );
+  for(ShowerParticleVector::const_iterator cit = _particles.begin();
+      cit != _particles.end(); ++cit) {
+    if((*cit)->isFromHardSubprocess()) {
+      particlesToExamine.push_back(*cit);
     }
   }
 
@@ -449,22 +454,25 @@ void ShowerHandler::fillPositions() {
     if ( !particle->data().stable() ) { // unstable, decayed particle
       lambda = particle->momentum().m() / particle->data().width();
     } else {                     // not decayed particle
-      lambda = particle->momentum().mag2() / _globalParameters->minVirtuality2(); 
+      lambda = particle->momentum().mag2() / 
+	                 _globalParameters->minVirtuality2(); 
     }
-    LorentzDistance distance( _globalParameters->conversionFactorGeVtoMillimeter() 
-			      * particle->momentum().vect() / GeV, 
-			      _globalParameters->conversionFactorGeVtoMillimeter() 
-			      * particle->momentum().e() / GeV );
-    distance *= log ( 1.0 / rnd() ) / 
-      ( sqrt( sqr( particle->momentum().mag2() - particle->momentum().m2() ) +
-	      sqr( particle->momentum().mag2() / lambda ) ) / GeV );
+    LorentzDistance 
+      distance(_globalParameters->conversionFactorGeVtoMillimeter() 
+	       * particle->momentum().vect() / GeV, 
+	       _globalParameters->conversionFactorGeVtoMillimeter() 
+	       * particle->momentum().e() / GeV );
+    distance *= log(1.0/rnd()) / 
+      (sqrt(sqr(particle->momentum().mag2() - particle->momentum().m2()) +
+	    sqr(particle->momentum().mag2() / lambda)) / GeV);
 
-    particle->setLabVertex( particle->labVertex() + distance ); // update the position.
+    // update the position.
+    particle->setLabVertex(particle->labVertex() + distance); 
          
-    for ( ParticleVector::const_iterator cit = particle->children().begin();
-	  cit != particle->children().end(); ++cit ) {
-      (*cit)->setLabVertex( particle->labVertex()); // initialize the position.
-      particlesToExamine.push_back( *cit );
+    for(ParticleVector::const_iterator cit = particle->children().begin();
+	cit != particle->children().end(); ++cit) {
+      (*cit)->setLabVertex(particle->labVertex()); // initialize the position.
+      particlesToExamine.push_back(*cit);
     }
   }
 }
@@ -601,29 +609,79 @@ void ShowerHandler::debuggingInfo() {
 }
 
 
-void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {  
+void ShowerHandler::fillEventRecord(const tPartCollHdlPtr ch) {  
 
   // Transform some of the ShowerParticles object in ThePEG particles,
   // set properly the parent/child relationships and treat carefully 
   // the transformation from ShowerColourLine objects into ThePEG
   // ColourLine ones; and finally then write them in the Event Record     
   StepPtr pstep;
-  pstep = ch->newStep();
-  for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
-       cit != _particles.end(); ++cit ) {
-    if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
-      //pstep->addDecayProduct(dynamic_ptr_cast<tcPPtr>((*cit)->getP7base()), 
-      //			     dynamic_ptr_cast<tPPtr>(*cit), 
-      //			     false);
-
-      //      pstep->addDecayNoCol((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
-      pstep->addDecayNoCheck((*cit)->getThePEGBase(), dynamic_ptr_cast<tPPtr>(*cit));
-      (*cit)->addChildrenEvtRec(pstep);   
-    }
+  //pstep = ch->newStep();
+  pstep = ch->currentStep(); // if we don't have a step yet, one is created
+  ShowerParticleVector::iterator it;
+  for(it = _particles.begin(); it != _particles.end(); ++it ) {
+    PPtr p = dynamic_ptr_cast<PPtr>(*it);
+    if((*it)->isFromHardSubprocess() && (*it)->isFinalState()) {
+      //pstep->addDecayNoCheck((*it)->getThePEGBase(), p);
+      //			     dynamic_ptr_cast<tPPtr>(*cit));
+      pstep->setCopy((*it)->getThePEGBase(),p);
+      //(*cit)->addChildrenEvtRec(pstep);   
+      addFinalStateShower((*it),pstep);
+    } else if((*it)->isFromHardSubprocess()) { 
+      // Otherwise it is a initial state shower particle
+      addInitialStateShower(p,pstep,false);
+      pstep->setCopy((*it)->getThePEGBase(),p,false);
+    } 
   }  
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) printStep(pstep, "after filling");
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) 
+    printStep(pstep, "after filling");
 }
 
+void ShowerHandler::addFinalStateShower(ShowerParticlePtr &p, StepPtr &s) {
+  tPPtr dum; 
+  tParticleVector yet; 
+  tParticleVector addCh;
+  ParticleVector::const_iterator cit;
+  yet.push_back(p);  
+  while(!yet.empty()) { 
+    dum = yet.back(); 
+    yet.pop_back(); 
+    for(cit = dum->children().begin(); cit != dum->children().end(); ++cit) { 
+      yet.push_back(*cit); 
+      addCh.push_back(*cit); 
+    }
+    while(!addCh.empty()) {           
+      s->addDecayNoCheck(dum, addCh.back());
+      addCh.pop_back(); 
+    }
+  }  
+}
+
+// Recursive function
+void ShowerHandler::addInitialStateShower(PPtr &p, StepPtr &s, bool doit) {
+  // Each parton here should only have one parent
+  if(p->parents().size()) { 
+    // we have parents, call recursively, should only have one parent however
+    PPtr parent = const_ptr_cast<PPtr>(p->parents()[0]);
+    addInitialStateShower(parent,s);
+  }
+  if(doit) {
+    for(int i = 0; i<p->children().size(); i++) {
+      if(p->children()[i]->children().size()) {
+	// Add it only as an intermediate, if it is a shower intermediate
+	// add the child is a final state shower particle,
+	// then we add the final state shower from the children
+	s->addIntermediate(p->children()[i]);
+	ShowerParticlePtr shoChild = 
+	  dynamic_ptr_cast<ShowerParticlePtr>(p->children()[i]);
+	if(shoChild && shoChild->isFinalState())
+	  addFinalStateShower(shoChild,s);
+      } else {
+	s->addDecayProduct(p->children()[i]);
+      }
+    }
+  }
+}
 
 void ShowerHandler::printStep(tStepPtr ptrStep, const string & title) {
   generator()->log() << "[[[ ShowerHandler::printStep " << title << endl;

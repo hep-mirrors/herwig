@@ -81,16 +81,16 @@ void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
   tPPtr dum; 
   tParticleVector yet; 
   tParticleVector addCh; 
-  yet.push_back( dynamic_ptr_cast<tPPtr>(this) );  
-  while( !yet.empty() ) { 
+  yet.push_back(dynamic_ptr_cast<tPPtr>(this));  
+  while(!yet.empty()) { 
     dum = yet.back(); 
     yet.pop_back(); 
-    for ( ParticleVector::const_iterator cit = dum->children().begin(); 
-	  cit != dum->children().end(); ++cit ) {      
-      yet.push_back( dynamic_ptr_cast<tPPtr>(*cit) ); 
-      addCh.push_back( *cit ); 
+    for(ParticleVector::const_iterator cit = dum->children().begin(); 
+	cit != dum->children().end(); ++cit) { 
+      yet.push_back(dynamic_ptr_cast<tPPtr>(*cit)); 
+      addCh.push_back(*cit); 
     }
-    while( !addCh.empty() ) {       
+    while(!addCh.empty()) {       
       //      sp->addDecayProduct(dum, addCh.back(), false);    
       //      sp->addDecayNoCol(dum, addCh.back());    
       sp->addDecayNoCheck(dum, addCh.back());    

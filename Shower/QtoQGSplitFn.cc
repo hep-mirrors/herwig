@@ -33,8 +33,8 @@ double QtoQGSplitFn::invIntegOverP(const double r) {
 
 
 void QtoQGSplitFn::colourConnection(const ShoColinePair &parent,
-				     ShoColinePair &first,
-				     ShoColinePair &second) {
+				    ShoColinePair &first,
+				    ShoColinePair &second) {
 
   // Return immediately if the input is inconsistent.
   if ((!parent.first && !parent.second) || (parent.first && parent.second)) 

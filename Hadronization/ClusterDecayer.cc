@@ -123,13 +123,13 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   // In the former case instead, if proper flag are activated, the two body 
   // decay is assumed to "remember" the direction of the constituents inside 
   // the cluster, in the cluster frame. The actual smearing of the hadron 
-  // directions around the direction of the constituents, in the cluster frame, 
-  // can be different between non-b hadrons and b-hadrons, but is given by the 
-  // same functional form:
+  // directions around the direction of the constituents, in the cluster 
+  // frame, can be different between non-b hadrons and b-hadrons, but is given
+  // by the same functional form:
   //          cosThetaSmearing = 1 + smearFactor * log( rnd() )
   // (repeated until cosThetaSmearing > -1)
   // where the factor smearFactor is different between b- and non-b hadrons.
-
+  //
   // We need to require (at least at the moment, maybe in the future we 
   // could change it) that the cluster has exactly two components. 
   // If this is not the case, then send a warning because it is not suppose 
@@ -196,12 +196,12 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   // the momentum, in the cluster parent frame, smeared around the
   // direction of its constituent (for Had1 is the one pointed by
   // ptr1, and for Had2 is the one pointed by ptr2).
-  // This happens only if the flag _ClDir? is 1 and the constituent is
+  // This happens only if the flag _ClDirX is 1 and the constituent is
   // perturbative (that is not coming from nonperturbative gluon splitting
   // or cluster fission). In the case that both the hadrons satisfy this
   // two requirements (of course only one must be treated, because the other
-  // one will have the momentum automatically fixed by the momentum conservation) 
-  // then more priority is given in the case of a b-hadron.
+  // one will have the momentum automatically fixed by the momentum 
+  // conservation) then more priority is given in the case of a b-hadron.
   // Finally, in the case that the two hadrons have same priority, then
   // we choose randomly, with equal probability, one of the two. 
 

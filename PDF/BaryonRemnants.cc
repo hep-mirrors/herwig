@@ -46,7 +46,7 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
   const {
   LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
   double x = pb.xi();
-  double eps = pb.eps();
+  //double eps = pb.eps();
   pb.remnantWeight(1.0);
   PVector rem;
   
@@ -79,47 +79,44 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
     for(iq1 = 0; iq1 < 3; iq1++) {
       iq2 = (iq1+1)%3;
       iq3 = (iq2+1)%3;
-      // This is the id of the diquark (spin 3/2) that accompanies iq1
+      // This is the id of the diquark (spin 1) that accompanies iq1
       int idq = 1000*max(info.flav[iq2], info.flav[iq3]) +
  	         100*min(info.flav[iq2], info.flav[iq3]) + 3;
       info.flavsel.insert(3.0, make_pair(info.flav[iq1], idq));
       if(info.flav[iq2] == info.flav[iq3]) continue;
-      // If they are different, we have spin 1/2 combination too
+      // If they are different, we have spin 0 combination too
       info.flavsel.insert(1.0, make_pair(info.flav[iq1], idq-2));
     }
   }
   BaryonRemInfo &info = *ip;
   
-  if(info.maybeValence){// &&
-    //     rndbool(pb.pdf()->xfvx(pb.particleData(), pb.partonData(),
-    //		    abs(pb.scale()), pb.xi(), pb.eps()),
-    //     pb.pdf()->xfx(pb.particleData(), pb.partonData(),
-    //		   abs(pb.scale()), pb.xi(), pb.eps()))) {
+  if(info.maybeValence){
     int idqr = 1000*max(info.valenceFlav[0], info.valenceFlav[1]) +
                 100*min(info.valenceFlav[0], info.valenceFlav[1]) + 3;
-    // Also include the chance for spin 1/2 combination
+    // Also include the chance for spin 0 combination
     if(info.valenceFlav[0] != info.valenceFlav[1] && rnd() < 0.25) idqr-=2;
     rem.push_back(getParticleData(info.sign*idqr)->produceParticle());
   } else {
     pair<int,int> r = info.flavsel.select(generator()->random());
     int iqr = r.first * info.sign;
     int idqr = r.second * info.sign;
-
+    /*** 
+     * We just want to randomly pick a diquark and put it in as the remnant.
+     * This needs to be handled properly at the end of the initial state shower
+     * as this method assumes that the parton drawn from the pdf must initial 
+     * state shower and the remnant is associated with the final element of 
+     * that shower, not the one involved in the hard subprocess.
+     * For the Parton Extractor we must provide valid colour connections, 
+     * this is very annoying!
+     ***/
     if(info.iq == ParticleID::g) {
-      // Assume gluon came from a valence quark, iqr
-      rem.push_back(getParticleData(iqr)->produceParticle());
-      rem.push_back(getParticleData(idqr)->produceParticle());
-    } else {
-      /****
-       * We assume that the initial state shower will handle the remnants
-       * that aren't colour connected to the outgoing parton. This
-       * means we randomly pick a quark or diquark from the incoming hadron
-       * and the appropriate one is the only remnant product.
-       ****/
-      if(info.iq*iqr < 0) 
-	rem.push_back(getParticleData(iqr)->produceParticle());
-      else 
-	rem.push_back(getParticleData(idqr)->produceParticle());
+      rem.push_back(getParticleData(info.sign*idqr)->produceParticle());
+      rem.push_back(getParticleData(info.sign*iqr)->produceParticle());
+    } else { // Must be a sea quark
+      if(info.iq < 0) 
+	rem.push_back(getParticleData(info.sign*iqr)->produceParticle());
+      else
+	rem.push_back(getParticleData(info.sign*idqr)->produceParticle());
     }
   }
 

@@ -52,6 +52,19 @@ public:
   // of <!id>ShowerParticle<!!id> already created so far by the showering, 
   // or being empty: the choice is up to the caller).  
 
+private:
+  // This routine is used to generate the ShowerKinematics object in the 
+  // forced splitting
+  ShoKinPtr forcedSplitting(const ShowerParticle &, Energy, Energy);
+  // This routine sets all the properties of the new particles from the 
+  // splitting: it fixes the hadron parent/children relations due to the 
+  // splitting and the colour information
+  void createBranching(ShowerParticlePtr, ShowerParticlePtr, 
+		       ShowerParticlePtr, Energy, 
+		       ShowerIndex::InteractionType);
+  // This routine sets the colour connections for a backwards branching
+  void setColour(ShowerParticlePtr&, ShowerParticlePtr&, ShowerParticlePtr&);
+		 
 public:
 
   void persistentOutput(PersistentOStream &) const;

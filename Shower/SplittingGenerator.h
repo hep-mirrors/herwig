@@ -151,6 +151,12 @@ public:
   // (see method <!id>isInteractionON<!!id>) is off, or if the global initial or final 
   // state radiation (see overloaded methods above without argument) is off.
 
+  tSplittingFnPtr getSplittingFunction(long id1, long id2, bool initial=true);
+  // This method returns the splitting function associated with the two
+  // ids. The first is the particle splitting, the second is the first
+  // 'product' of that splitting (see initial vs. final splitting syntax)
+  // The final bool value indicates whether this is a search over the final
+  // or initial state branchings
 public:
 
   void persistentOutput(PersistentOStream &) const;

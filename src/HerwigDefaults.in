@@ -8,6 +8,7 @@ mkdir /Defaults/Handlers
 mkdir /Defaults/Generators
 mkdir /Defaults/Handlers/Shower
 mkdir /Defaults/Handlers/Hadronization/Cluster
+mkdir /Defaults/Handlers/UnderlyingEvent
 
 create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton
 create ThePEG::Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
@@ -83,6 +84,9 @@ cd /Defaults
 create Herwig++::GlobalParameters theGlobalParameters GlobalParameters.so
 read Shower.in
 read Hadronization.in
+# This must be after the Hadronization if the underlying event uses any
+# objects from the hadronization (for example like UA5)
+read UnderlyingEvent.in 
 create Herwig++::HwDecayHandler /Defaults/Handlers/PartonicDecayHandler
 
 cd /Defaults/Partons
@@ -152,6 +156,8 @@ set LHCHandler:BeamA /Defaults/Particles/p+
 set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
+# Mike: uncomment this line to tie the UA5 model into the program
+#set LEPHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theUA5
 #set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
 #set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 

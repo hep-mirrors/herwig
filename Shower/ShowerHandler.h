@@ -104,6 +104,12 @@ private:
   // transformation from ShowerColourLine objects into ThePEG
   // ColourLine ones must be properly handled.
 
+  // Two functions to add the shower to the event record. The first
+  // is recursive in nature, but uses a queue to achieve the same result.
+  // The initial state one is recursive explicitly
+  void addFinalStateShower(ShowerParticlePtr &, StepPtr &);
+  void addInitialStateShower(PPtr &, StepPtr &, bool doit=true);
+
   // print the particles in the step
   void printStep(tStepPtr ptrStep, const string & title); 
 

@@ -554,6 +554,22 @@ void SplittingGenerator::addToMap(IdList &ids, SudakovPtr &s, bool final) {
    }
 }
 
+tSplittingFnPtr SplittingGenerator::getSplittingFunction(long id1, long id2, 
+							 bool init) {
+  BranchingList *bl;
+  BranchingList::const_iterator cit;
+  int idx;
+  if(init) { bl = &_bbranchings; idx = 0; }
+  else { bl = &_fbranchings; idx = 1; }
+  long index = abs(id1);
+  if(bl->find(index) == bl->end()) return tSplittingFnPtr();
+  for(cit = bl->lower_bound(index); cit != bl->upper_bound(index); ++cit) {
+    if(cit->second.second[idx] == abs(id2)) 
+      return cit->second.first->splittingFn();
+  }
+  return tSplittingFnPtr();
+}
+
 void SplittingGenerator::debuggingInfo() {
 
   generator()->log() << "SplittingGenerator::debuggingInfo() begin"
