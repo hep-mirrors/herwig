@@ -185,14 +185,14 @@ void  BaryonThreeQuarkModelFormFactor::
 				 Energy m1, Complex & f1v,Complex & f2v,
 				 Complex & f3v,Complex & f4v,Complex & f1a,
 				 Complex & f2a,Complex & f3a,Complex & f4a )
- {
-   // work out which light quark constant to use
-   double lambdabar;unsigned int ioff(0);
-   if(abs(id1)==4334)
-     {lambdabar=_Lambdass/_LambdaQ;ioff=_order+1;}
-   else if(abs(id1)==4234||abs(id1)==4134||abs(id1)==3324)
-     {lambdabar=_Lambdasq/_LambdaQ;ioff=_order+1;}
-   else{lambdabar=_Lambdaqq/_LambdaQ;}
+{
+  // work out which light quark constant to use
+  double lambdabar;unsigned int ioff(0);
+  if(abs(id1)==4334)
+    {lambdabar=_Lambdass/_LambdaQ;ioff=_order+1;}
+  else if(abs(id1)==4234||abs(id1)==4134||abs(id1)==3324)
+    {lambdabar=_Lambdasq/_LambdaQ;ioff=_order+1;}
+  else{lambdabar=_Lambdaqq/_LambdaQ;}
   // the omega value
   double omega=.5/m0/m1*(m0*m0+m1*m1-q2);
   // calculate the form factor
