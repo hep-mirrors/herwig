@@ -61,7 +61,7 @@
 
 #include "Pythia7/Handlers/HandlerBase.h"
 #include "CluHadConfig.h"
-#include "HadronsSelector.h"
+#include "HadronSelector.h"
 #include "Herwig++/Config/GlobalParameters.h"
 
 
@@ -198,7 +198,7 @@ private:
 			   LorentzPoint & positionClu1, LorentzPoint & positionClu2 ) const;
   // Determine the positions of the two children clusters.
 
-  HadronsSelectorPtr _hadronsSelector;
+  HadronSelectorPtr _hadronsSelector;
   GlobParamPtr       _globalParameters;  
 
   Energy _ClMax;

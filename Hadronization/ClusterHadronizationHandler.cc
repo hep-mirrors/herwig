@@ -168,7 +168,9 @@ handle(PartialCollisionHandler & ch, const tPVector & tagged,
   if (lightOK && tried > 1 && HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) 
     printStep(pstep,"After LightClusterDecayer");
 
+  // cout << "Before decay\n";
   _clusterDecayer->decay(pstep);
+  // cout << "After decay\n";
 
   // Debugging
   if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    

@@ -47,7 +47,7 @@ void ClusterFissioner::Init() {
   static ClassDocumentation<ClusterFissioner> documentation
     ("Class responsibles for chopping up the clusters");
 
-  static Reference<ClusterFissioner,HadronsSelector> 
+  static Reference<ClusterFissioner,HadronSelector> 
     interfaceHadronsSelector("HadronsSelector", 
                              "A reference to the HadronsSelector object", 
                              &Herwig::ClusterFissioner::_hadronsSelector,
@@ -87,7 +87,7 @@ void ClusterFissioner::fission(const StepPtr &pstep)
   if (generator()->currentEventNumber() == 1 
       && HERWIG_DEBUG_LEVEL == 67) {    
     for (int ii=1; ii<=5; ii++) for (int jj=1; jj<=5; jj++) {
-      pair<long, long> pairId = _hadronsSelector->lightestHadronsPair(ii,-jj);
+      pair<long, long> pairId = _hadronsSelector->lightestHadronPair(ii,-jj);
       long idL = _hadronsSelector->lightestHadron(ii, -jj);
       Energy mm1, mm2, mcsum;
       mm1 = getParticleData(ii)->constituentMass();
@@ -99,7 +99,7 @@ void ClusterFissioner::fission(const StepPtr &pstep)
 	   << setw(7) << getParticleData(idL)->mass()/MeV 
 	   << " | " 
 	   << setw(7) << mth << " > "
-	   << setw(7) << _hadronsSelector->massLightestHadronsPair(ii,-jj)/MeV
+	   << setw(7) << _hadronsSelector->massLightestHadronPair(ii,-jj)/MeV
 	   << " ["
 	   << setw(6) << getParticleData( pairId.first )->PDGName() << " "
 	   << setw(6) << getParticleData( pairId.second )->PDGName() << " "
@@ -349,12 +349,12 @@ void ClusterFissioner::cut(tClusterPtr cluPtr, const StepPtr &pstep,
     // procedure that would be necessary if we used LightClusterDecayer
     // to decay the light cluster to the lightest hadron.   
     bool decayOneHadronClu1 = false;
-    if ( Mclu1 < _hadronsSelector->massLightestHadronsPair(idQ1,-idNew)) { 
+    if ( Mclu1 < _hadronsSelector->massLightestHadronPair(idQ1,-idNew)) { 
       Mclu1 =  _hadronsSelector->massLightestHadron(idQ1,-idNew);          
       decayOneHadronClu1 = true;
     }
     bool decayOneHadronClu2 = false;
-    if ( Mclu2 < _hadronsSelector->massLightestHadronsPair(idQ2,idNew)) { 
+    if ( Mclu2 < _hadronsSelector->massLightestHadronPair(idQ2,idNew)) { 
       Mclu2 =  _hadronsSelector->massLightestHadron(idQ2,idNew);           
       decayOneHadronClu2 = true;
     }

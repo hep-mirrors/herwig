@@ -46,7 +46,7 @@ void ClusterDecayer::Init() {
   static ClassDocumentation<ClusterDecayer> documentation
     ("This class is responsible for the two-body decays of normal clusters");
 
-  static Reference<ClusterDecayer,HadronsSelector> 
+  static Reference<ClusterDecayer,HadronSelector> 
     interfaceHadronsSelector("HadronsSelector", 
                              "A reference to the HadronsSelector object", 
                              &Herwig::ClusterDecayer::_hadronsSelector,
@@ -102,7 +102,7 @@ void ClusterDecayer::decay(const StepPtr &pstep)
 	   << "=======================================" << endl
 	   << "#--- (" << ii << ", " << jj << ") ---" 
 	   << endl;
-      _hadronsSelector->chooseHadronsPair(500*GeV,ii,-jj);
+      _hadronsSelector->chooseHadronPair(500*GeV,ii,-jj);
       cout << endl; 
     }  
   }
@@ -301,9 +301,11 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
   // Choose here the hadron pair.
 //   cerr << "evt #" << generator()->currentEventNumber()
 //        << " cluster #" << ptr->number() << endl;
-  pair<long,long> idPair = _hadronsSelector->chooseHadronsPair(ptr->mass(),
+  //cout << "Calling chooseHadronPair with " << id1 << ", " << id2 << "\n";
+  pair<long,long> idPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
 							       id1,id2);
 
+  //cout << "Returned " << idPair.first << ", " << idPair.second << endl;
   // Create the two hadron particle objects with the specified id.
   PPtr ptrHad1 = getParticle(idPair.first);
   PPtr ptrHad2 = getParticle(idPair.second);

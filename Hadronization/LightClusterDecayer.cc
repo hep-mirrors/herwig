@@ -13,7 +13,7 @@
 #include "Pythia7/PDT/EnumParticles.h"
 #include "Pythia7/Repository/EventGenerator.h"
 #include "Cluster.h"
-#include "HadronsSelector.h"
+#include "HadronSelector.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/CheckId.h"
@@ -45,7 +45,7 @@ void LightClusterDecayer::Init() {
   static ClassDocumentation<LightClusterDecayer> documentation
     ("There is the class responsible for the one-hadron decay of light clusters");
 
-  static Reference<LightClusterDecayer,HadronsSelector> 
+  static Reference<LightClusterDecayer,HadronSelector> 
     interfaceHadronsSelector("HadronsSelector", 
 			     "A reference to the HadronsSelector object", 
 			     &Herwig::LightClusterDecayer::_hadronsSelector,
@@ -154,8 +154,7 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     // Notice that we don't need real masses (drawn by a Breit-Wigner 
     // distribution) because the lightest pair of hadrons does not involve
     // any broad resonance.
-    Energy threshold = _hadronsSelector->massLightestHadronsPair(idQ1,idQ2);
-    
+    Energy threshold = _hadronsSelector->massLightestHadronPair(idQ1,idQ2);
     // Special for b-flavour: it allows one-hadron decays also above threshold.
     if ( CheckId::hasBeauty(idQ1,idQ2) ) {
       threshold *= (1.0 + rnd()*_B1Lim); 
@@ -320,7 +319,7 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   //             with a huge statistics.
   // // // if ( mSystem  <  (mhad1 + mclu2)*(1.0 + rnd()*5.0) ) {
   bool singleHadron = false;
-  Energy mLHP2 = _hadronsSelector->massLightestHadronsPair(part3->id(), part4->id());
+  Energy mLHP2 = _hadronsSelector->massLightestHadronPair(part3->id(), part4->id());
   Energy mLH2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
 
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 

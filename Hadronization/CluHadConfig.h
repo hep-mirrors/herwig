@@ -54,9 +54,9 @@ namespace Herwig {
   typedef Ptr<ClusterDecayer>::pointer ClusterDecayerPtr;
   typedef Ptr<ClusterDecayer>::transient_pointer tClusterDecayerPtr;
 
-  class HadronsSelector;
-  typedef Ptr<HadronsSelector>::pointer HadronsSelectorPtr;
-  typedef Ptr<HadronsSelector>::transient_pointer tHadronsSelectorPtr;
+  class HadronSelector;
+  typedef Ptr<HadronSelector>::pointer HadronSelectorPtr;
+  typedef Ptr<HadronSelector>::transient_pointer tHadronSelectorPtr;
 } // end Herwig namespace
 
 

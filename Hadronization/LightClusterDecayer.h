@@ -34,7 +34,7 @@
 #include "Pythia7/Handlers/HandlerBase.h"
 #include "Pythia7/EventRecord/Step.h"
 #include "CluHadConfig.h"
-#include "HadronsSelector.h"
+#include "HadronSelector.h"
 
 
 namespace Herwig {
@@ -103,7 +103,7 @@ private:
   // This (private) method, called by decay(), takes care of the kinematical
   // reshuffling necessary for energy-momentum conservation.
   
-  Ptr<HadronsSelector>::pointer _hadronsSelector;
+  Ptr<HadronSelector>::pointer _hadronsSelector;
 
   double _B1Lim;
 

@@ -20,7 +20,7 @@
 #include "Pythia7/Handlers/HandlerBase.h"
 #include "Pythia7/EventRecord/Step.h"
 #include "CluHadConfig.h"
-#include "HadronsSelector.h"
+#include "HadronSelector.h"
 #include "Herwig++/Config/GlobalParameters.h"
 
 
@@ -94,7 +94,7 @@ private:
   // gaussian smearing, with width inversely proportional to 
   // the cluster mass. around the parent cluster position.
 
-  Ptr<HadronsSelector>::pointer _hadronsSelector;
+  Ptr<HadronSelector>::pointer _hadronsSelector;
   Ptr<GlobalParameters>::pointer _globalParameters;
   
   int _ClDir1;
