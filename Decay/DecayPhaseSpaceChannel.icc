@@ -13,9 +13,11 @@ using namespace ThePEG;
 inline DecayPhaseSpaceChannel::DecayPhaseSpaceChannel()  {}
   
 inline DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(const DecayPhaseSpaceChannel & x)
-  : Interfaced(x) , _intpart(x._intpart), _jactype(x._jactype), _intmass(x._intmass),
-    _intwidth(x._intwidth), _intpower(x._intpower), _intdau1(x._intdau1), 
-    _intdau2(x._intdau2), _intext(x._intext), _extpart(x._extpart), _extmass(x._extmass)
+  : Interfaced(x) , _mode(x._mode),
+    _intpart(x._intpart), _jactype(x._jactype), _intmass(x._intmass),
+    _intwidth(x._intwidth), _intmass2(x._intmass2), _intmwidth(x._intmwidth),
+    _intpower(x._intpower), _intdau1(x._intdau1), 
+    _intdau2(x._intdau2), _intext(x._intext)
   {}
   
 // clone method
@@ -60,7 +62,7 @@ inline void DecayPhaseSpaceChannel::doinitrun() {
 // rebonid method  
 inline void DecayPhaseSpaceChannel::rebind(const TranslationMap & trans)
   throw(RebindException) {
-  // dummy = trans.translate(dummy);
+  //_mode = trans.translate(_mode);
   Interfaced::rebind(trans);
 }
   
@@ -75,51 +77,65 @@ inline IVector DecayPhaseSpaceChannel::getReferences() {
 inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper)
 {
   Energy mass=0;
-  Energy mres = _intmass[ires]; 
-  Energy wres = _intwidth[ires];
-  Energy2 mres2= mres*mres;
-  Energy2 wmres= mres*wres;
   if(lower>upper)
-    {cerr << "DecayPhaseSpaceChannel::generateMass not allowed" << endl;}
+    {throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass not allowed";}
   // use a Breit-Wigner
   if(_jactype[ires]==0)
     {
-      double rhomin = atan((lower*lower-mres2)/wmres);
-      double rhomax = atan((upper*upper-mres2)/wmres)-rhomin;
+      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
+      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
       double rho = rhomin+rhomax*CurrentGenerator::current().rnd();
-      mass = sqrt(mres2+wmres*tan(rho));
+      mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
     }
+  // use a power-law
+  else if(_jactype[ires]==1)
+    {
+      double rhomin = pow(lower*lower,_intpower[ires]+1.);
+      double rhomax = pow(upper*upper,_intpower[ires]+1.)-rhomin;
+      double rho = rhomin+rhomax*CurrentGenerator::current().rnd();
+      mass = pow(rho,0.5/(_intpower[ires]+1.));
+    }
+  else if(_jactype[ires]==2)
+    {mass = _intmass[ires];}
   else
-    {cerr<< "Unknown type of Jacobian in DecayPhaseSpaceChannel::generateMass" << endl;}
+    {throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
+				  << "DecayPhaseSpaceChannel::generateMass";}
   return mass;
 }
  
 // return the weight for a given resonance
-inline double DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
-						 Energy lower,Energy upper)
+inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
+						     Energy lower,Energy upper)
 {
-  Energy mres = _intmass[ires]; 
-  Energy wres = _intwidth[ires];
-  Energy2 mres2= mres*mres;
-  Energy2 wmres= mres*wres;
   double wgt=0.;
   if(lower>upper) 
-    {cerr << "DecayPhaseSpaceChannel::generateMass not allowed" << endl;} 
+    {throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
+				  << ires << "   " << _intpart[ires]->id() << "   " 
+				  << moff;} 
   // use a Breit-Wigner 
   if(_jactype[ires]==0) 
     { 
-      double rhomin = atan((lower*lower-mres2)/wmres); 
-      double rhomax = atan((upper*upper-mres2)/wmres)-rhomin;
-      wgt = wmres/rhomax/((moff*moff-mres2)*(moff*moff-mres2)+wmres*wmres);
+      double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]); 
+      double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
+      Energy2 moff2=moff*moff-_intmass2[ires];
+      wgt = _intmwidth[ires]/rhomax/(moff2*moff2+_intmwidth[ires]*_intmwidth[ires]);
     } 
+  // power law
+  else if(_jactype[ires]==1)
+    {
+      double rhomin = pow(lower*lower,_intpower[ires]+1.);
+      double rhomax = pow(upper*upper,_intpower[ires]+1.)-rhomin;
+      wgt = (_intpower[ires]+1.)/rhomax*pow(moff*moff,_intpower[ires]);
+    }
+  else if(_jactype[ires]==2)
+    {
+      wgt = 1./pi/_intmwidth[ires];
+    }
   else 
-    {cerr<< "Unknown type of Jacobian in DecayPhaseSpaceChannel::massWeight" << endl;} 
+    {throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
+				  << "DecayPhaseSpaceChannel::massWeight";} 
   return wgt;
 }
-
-// return the external particles
-inline PDVector DecayPhaseSpaceChannel::externalParticles() const {return _extpart;}
-
 
 // add a new intermediate particle
 inline void DecayPhaseSpaceChannel::addIntermediate(PDPtr part,int jac,double power,
@@ -132,18 +148,15 @@ inline void DecayPhaseSpaceChannel::addIntermediate(PDPtr part,int jac,double po
   _intdau2.push_back(dau2);
 }
 
-// set the external particles
-inline void DecayPhaseSpaceChannel::setExternal(PDVector in) {_extpart=in;}
-
 // reset the mass and width of an intermediate particle
-inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,Energy width)
+inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,
+						      Energy width)
 {
   int idin=part->id();
   for(unsigned int ix=0;ix<_intpart.size();++ix)
-    {
-      if(_intpart[ix] && _intpart[ix]->id()==idin)
-	{_intmass[ix] =mass;_intwidth[ix]=width;}
-    }
+    {if(_intpart[ix] && _intpart[ix]->id()==idin)
+	{_intmass[ix] =mass;_intwidth[ix]=width;
+	  _intmass2[ix]=mass*mass;_intmwidth[ix]=mass*width;}}
 }
 
 }

@@ -16,7 +16,12 @@ namespace Herwig {
 using namespace ThePEG;
 using namespace Genfun;
   
-ThreeBodyIntegrator::~ThreeBodyIntegrator() {}
+ThreeBodyIntegrator::~ThreeBodyIntegrator() 
+{
+  if(_theInnerIntegrand){delete _theInnerIntegrand;}
+  if(_theOuterIntegrand){delete _theOuterIntegrand;}
+  //if(_theME){delete _theME;}
+}
   
 void ThreeBodyIntegrator::Init() {
   
@@ -29,8 +34,11 @@ static ClassDocumentation<ThreeBodyIntegrator> documentation
 void ThreeBodyIntegrator::outerVariables(const double & x, double & low, double & upp)
 {
   // first convert the value of x into the value of souter
-  _souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
-				       _channelwidth[_thechannel]*tan(x));
+  if(_channelmass[_thechannel]>0)
+    {_souter = _channelmass[_thechannel]*(_channelmass[_thechannel]+
+					   _channelwidth[_thechannel]*tan(x));}
+  else
+    {_souter = pow(x,1./(_channelwidth[_thechannel]+1.));}
   // now the limits of the inner integral
   Energy ea(0.),eb(0.),eam(0.),ebm(0.);
   Energy rs=sqrt(_souter);
@@ -95,19 +103,28 @@ double ThreeBodyIntegrator::innerIntegrand(const double & y)
 	  sjac=s23;
 	  break;
 	}
-      rm2=_channelmass[ix]*_channelmass[ix];
-      rw2 = _channelwidth[ix]*_channelwidth[ix];
-      term = (sjac-rm2)*(sjac-rm2)+rw2*rm2;
-      term = _channelweights[ix]/term;
+      if(_channelmass[ix]>0)
+	{
+	  rm2=_channelmass[ix]*_channelmass[ix];
+	  rw2 = _channelwidth[ix]*_channelwidth[ix];
+	  term = (sjac-rm2)*(sjac-rm2)+rw2*rm2;
+	  term = _channelweights[ix]*_channelmass[ix]*_channelwidth[ix]/term;
+	}
+      else
+	{
+	  term = _channelweights[ix]*(_channelwidth[ix]+1.)*
+	    pow(sjac,_channelwidth[ix]);
+	}
       jacdem+=term;
     }
   // now computer the matrix element
-  Genfun::Argument a(4); a[0]=_m2[0];a[1]=s12;a[2]=s13;a[3]=s23;
+  Genfun::Argument a(7); a[0]=_m2[0];a[1]=s12;a[2]=s13;a[3]=s23;
+  a[4]=_m[1];a[5]=_m[2];a[6]=_m[3];
   return (*_theME)(a)/jacdem;
 }
 
 // calculate the width for a given mass
-Energy ThreeBodyIntegrator::width(Energy2 q2)
+Energy ThreeBodyIntegrator::width(Energy2 q2) const
 {
   _m[0] = sqrt(q2);
   _m2[0]=q2;
@@ -134,15 +151,24 @@ Energy ThreeBodyIntegrator::width(Energy2 q2)
 	  break;
 	}
       // transform them
-      upp = atan((upp-_channelmass[ix]*_channelmass[ix])/
-		 _channelmass[ix]/_channelwidth[ix]);
-      low =  atan((low-_channelmass[ix]*_channelmass[ix])/
-		  _channelmass[ix]/_channelwidth[ix]);
+      if(_channelmass[ix]>0)
+	{
+	  upp = atan((upp-_channelmass[ix]*_channelmass[ix])/
+		     _channelmass[ix]/_channelwidth[ix]);
+	  low =  atan((low-_channelmass[ix]*_channelmass[ix])/
+		      _channelmass[ix]/_channelwidth[ix]);
+	}
+      else
+	{
+	  upp = pow(upp,_channelwidth[ix]+1.);
+	  low = pow(low,_channelwidth[ix]+1.);
+	}
       // perform the integral using my Gaussian quadature class
       _thechannel=ix;
       GaussianIntegral *intb= new GaussianIntegral(low,upp);
       value = _channelweights[ix]*(*intb)[*_theOuterIntegrand];
-      value=value/_channelmass[ix]/_channelwidth[ix];
+      delete intb;
+      value=value;
       sum+= value;
     }
   // final factors

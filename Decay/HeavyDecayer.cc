@@ -171,6 +171,3 @@ void HeavyDecayer::persistentInput(PersistentIStream &is, int i) { is >> MECode;
 
 double HeavyDecayer::VAWt(double *temp) 
 { return (temp[1]-temp[0])*(temp[0]-temp[2])*temp[3]; }
-
-//double HeavyDecayer::PhaseSpaceWt() const { return 1.0; }
-

@@ -2,175 +2,375 @@
 #ifndef HERWIG_DecayPhaseSpaceChannel_H
 #define HERWIG_DecayPhaseSpaceChannel_H
 //
-// This is the declaration of the <!id>DecayPhaseSpaceChannel<!!id> class.
+// This is the declaration of the DecayPhaseSpaceChannel class.
 //
-// CLASSDOC SUBSECTION Description:
-//
-// This class is designed to store the information needed for a given
-// phase-space channel for use by the multi-channel phase space decayer
-// and perform the generation of the phase-space for that channel.
-//
-// The decay channel is specified as a series of 1->2 decays to either
-// external particles or other intermediates. For each intermediate
-// the Jacobian to be used can be either a Breit-Wigner(0) or a power-law
-// (1).
-//
-// The class is then capable of generating a phase-space point using this
-// channel and computing the weight of a given point for use in a multi-channel
-// phase-space integration using the <!id>DecayIntegrator<!!id> class.
-//
-// The class is designed so that the phase-space channels can either by specified
-// using the addIntermediate and setExternal methods directly or via the repository.
-// (In practice at the moment all the channels are constructed by the relevant decayers
-//  using the former method at the moment.)
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="DecayIntegrator.html">DecayIntegrator.h</a>.
-// 
-// Author: Peter Richardson
-
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
+#include "DecayPhaseSpaceChannel.fh"
+#include "DecayIntegrator.h"
+#include "DecayPhaseSpaceMode.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
+  /** \ingroup Decay
+   *
+   * This class is designed to store the information needed for a given
+   * phase-space channel for use by the multi-channel phase space decayer
+   * and perform the generation of the phase space for that channel.
+   *
+   * The decay channel is specified as a series of \f$1\to2\f$ decays to either
+   * external particles or other intermediates. For each intermediate
+   * the Jacobian to be used can be either a Breit-Wigner(0) or a power-law
+   * (1).
+   *
+   * The class is then capable of generating a phase-space point using this
+   * channel and computing the weight of a given point for use in a multi-channel
+   * phase space integration using the <code>DecayPhaseSpaceMode</code> class.
+   *
+   * The class is designed so that the phase-space channels can either by specified
+   * using the addIntermediate method directly or via the repository.
+   * (In practice at the moment all the channels are constructed by the relevant decayers
+   *  using the former method at the moment.)
+   *
+   * @see DecayPhaseSpaceMode
+   * @see DecayIntegrator
+   *
+   * @author  Peter Richardson
+   */
+
 class DecayPhaseSpaceChannel: public Interfaced {
 
-friend ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
+  /**
+   *  A friend output operator to allow the channel to be outputted for
+   * debugging purposes
+   */
+  friend ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
+
+  /**
+   * DecayPhaseSpaceMode is a friend to avoid making many of the phase space
+   * generation members public.
+   */
+  friend class DecayPhaseSpaceMode;
 
 public:
     
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
   inline DecayPhaseSpaceChannel();
+
+  /**
+   * Constructor with a pointer to a <code>DecayPhaseSpaceMode</code>. This 
+   * is the constructor which should normally be used in decayers.
+   */
+  DecayPhaseSpaceChannel(DecayPhaseSpaceModePtr);
+
+  /**
+   * Copy-constructor.
+   */
   inline DecayPhaseSpaceChannel(const DecayPhaseSpaceChannel &);
+
+  /**
+   * Destructor.
+   */
   virtual ~DecayPhaseSpaceChannel();
-  // Standard ctors and dtor.
-  
-public:
-    
-  vector<Lorentz5Momentum> generateMomenta(const Lorentz5Momentum &);
-  // generate the momenta of the external particles
-  
-  double generateWeight(const vector<Lorentz5Momentum> &);
-  // generate the weight for this channel given a phase space configuration
-  
-  inline PDVector externalParticles() const;
-  // return the external particles
-  
-  inline void addIntermediate(PDPtr,int,double,int,int);
-  // add a new intermediate particle
-  
-  inline void setExternal(PDVector);
-  // set the external particles
-  
-  inline void resetIntermediate(tcPDPtr,Energy,Energy);
-  // reset the properties of an intermediate particle
-  
-  void generateIntermediates(const Particle &, ParticleVector &);
-  // generate the final-state particles including the intermediate resonances
+  //@}
   
 public:
   
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
+  /** @name Set-up Members */
+  //@{
+  /**
+   * Add a new intermediate particle
+   * @param part A pointer to the particle data object for the intermediate.
+   * @param jac  The jacobian to be used for the generation of the particle's mass
+   * 0 is a Breit-Wigner and 1 is a power-law
+   * @param power The power to beb used for the mass generation if a power law
+   * mass distribution is chosen.
+   * @param dau1 The first daughter. If this is postive it is the \f$dau1\f$th
+   * outgoing particle (0 is the incoming particle), if it is negative it is the 
+   * \f$|dau1|\f$ intermediate. The intermediates are specified in the order they
+   * are added with 0 being the incoming particle.
+   * @param dau2 The first daughter. If this is postive it is the \f$dau2\f$th
+   * outgoing particle (0 is the incoming particle), if it is negative it is the 
+   * \f$|dau2|\f$ intermediate. The intermediates are specified in the order they
+   * are added with 0 being the incoming particle.
+   */
+  inline void addIntermediate(PDPtr part,int jac,double power,int dau1,int dau2);
   
+  /**
+   * Reset the properties of an intermediate particle. This member is used
+   * when a Decayer is used a different value for either the mass or width
+   * of a resonace to that in the ParticleData object. This improves the 
+   * efficiency of the integration.
+   * @param part A pointer to the particle data object for the intermediate.
+   * @param mass The new mass of the intermediate
+   * @param width The new width of the intermediate.
+   */
+  inline void resetIntermediate(tcPDPtr part,Energy mass,Energy width);
+  //@}
+
+protected:
+
+  /** @name Phase-Space Generation Members */
+  //@{
+  /**
+   * Generate the momenta of the external particles. This member uses the masses
+   * of the external particles generated by the DecayPhaseMode class and the
+   * intermediates for the channel to generate the momenta of the decay products.
+   * @param pin The momenta of the decay products. This is outputed by the member.
+   * @param massext The masses of the particles. This is to allow inclusion of
+   * off-shell effects for the external particles.
+   */
+  vector<Lorentz5Momentum> generateMomenta(const Lorentz5Momentum & pin,
+					   vector<Energy> massext);
+  
+  /**
+   * Generate the weight for this channel given a phase space configuration.
+   * This member generates the weight for a given phase space configuration
+   * and is used by the DecayPhaseSpaceMode class to compute the denominator
+   * of the weight in the multi-channel integration.
+   * @param output The momenta of the outgoing particles.
+   */
+  double generateWeight(const vector<Lorentz5Momentum> & output);
+
+  /**
+   * Generate the final-state particles including the intermediate resonances.
+   * This method takes the outgoing particles and adds the intermediate particles
+   * specified by this phase-space channel. This is to allow a given set of 
+   * intermediates to be specified even when there is interference between different
+   * intermediate states.
+   * @param cc Whether the particles are the mode specified or its charge conjugate.
+   * @param in The incoming particles.
+   * @param out The outgoing particles.
+   * 
+   */
+  void generateIntermediates(bool cc,const Particle & in, ParticleVector & out);
+  //@}
+  
+public:
+  
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
   static void Init();
-  // Standard Init function used to initialize the interfaces.
-  
   
 protected:
   
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
   
 protected:
   
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
   inline virtual void doupdate() throw(UpdateException);
-  virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
   inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
-  
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
+   */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
-  
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
+   */
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
+  //@}
   
 private:
   
+  /**
+   * Describe a concrete class with persistent data.
+   */
   static ClassDescription<DecayPhaseSpaceChannel> initDecayPhaseSpaceChannel;
-  // Describe a concrete class with persistent data.
   
+  /**
+   * Private and non-existent assignment operator.
+   */
   DecayPhaseSpaceChannel & operator=(const DecayPhaseSpaceChannel &);
-  // Private and non-existent assignment operator.
   
 private:
   
-  inline Energy generateMass(int,Energy,Energy);
-  // generate the mass of a resonance
+  /** @name Mass Generation Members */
+  //@{
+  /**
+   * Generate the mass of a resonance.
+   * @param ires The resonance to be generated.
+   * @param lower The lower limit on the particle's mass.
+   * @param upper The upper limit on the particle's mass. 
+   */
+  inline Energy generateMass(int ires,Energy lower,Energy upper);
   
-  inline double massWeight(int,Energy,Energy,Energy);
-  // return the weight for a given resonance
-  
+  /**
+   * Return the weight for a given resonance.
+   * @param ires The resonance to be generated.
+   * @param moff The mass of the resonance.
+   * @param lower The lower limit on the particle's mass.
+   * @param upper The upper limit on the particle's mass. 
+   */
+  inline InvEnergy2 massWeight(int ires, Energy moff,Energy lower,Energy upper);
+  //@}  
+
 private:
   
-  // properties of intermediate particles
+  /**
+   * pointer to the mode
+   */
+  DecayPhaseSpaceModePtr _mode;
+
+  /**
+   * Pointers to the particle data objects of the intermediate particles
+   */
   vector <PDPtr> _intpart;
-  // intermediate particles
+
+  /**
+   * The type of jacobian to be used for the intermediates.
+   */
   vector <int> _jactype;
-  // type of jacobian
+
+  /**
+   * The mass of the intermediates.
+   */
   vector<Energy> _intmass;
-  // mass of particle
+
+  /**
+   * The width of the intermediates.
+   */
   vector<Energy> _intwidth;
-  // width of particle
+
+  /**
+   * The mass squared of the intermediate particles.
+   */
+  vector<Energy2> _intmass2;
+
+  /**
+   * The mass times the width for the intermediate particles.
+   */
+  vector<Energy2>_intmwidth;
+
+  /**
+   * The power for the intermediate resonance.
+   */
   vector<double> _intpower;
-  // power for jacobian if needed
+
+  /**
+   * The first daughter of the intermediate resonance.
+   */
   vector<int> _intdau1; 
-  //first daughter
+
+  /**
+   *  The second daughter of the intermediate resonance.
+   */
   vector<int> _intdau2;
-  // second daughter
+
+  /**
+   * The external particles that an intermediate particle final decays to.
+   */
   vector< vector<int> > _intext;
-  // external particles for the intermediates
-  
-  // properties of the external particles
-  vector <PDPtr> _extpart;
-  vector <Energy> _extmass;
   
 };
 
 ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
-// write the phase space channel to a stream
+/**
+ * write the phase space channel to a stream
+ * exception for this class and those inheriting from it
+ */
+class DecayPhaseSpaceError: public Exception {};
 }
 
-// CLASSDOC OFF
 
 namespace ThePEG {
 
-// The following template specialization informs ThePEG about the
-// base class of DecayPhaseSpaceChannel.
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of DecayPhaseSpaceChannel.
+ */
 template <>
+
 struct BaseClassTrait<Herwig::DecayPhaseSpaceChannel,1> {
+  /** Typedef of the base class of DecayPhaseSpaceChannel */
   typedef Interfaced NthBase;
 };
 
-// The following template specialization informs ThePEG about the
-// name of this class and the shared object where it is defined.
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
 template <>
+
 struct ClassTraits<Herwig::DecayPhaseSpaceChannel>
   : public ClassTraitsBase<Herwig::DecayPhaseSpaceChannel> {
-  static string className() { return "/Herwig++/DecayPhaseSpaceChannel"; }
-  // Return the class name.
-  static string library() { return "libHwnewDecay.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
+    /**  Return the class name.*/
+  static string className() { return "Herwig++::DecayPhaseSpaceChannel"; }
+   /**
+    * Return the name of the shared library to be loaded to get
+    * access to this class and every other class it uses
+    * (except the base class).
+    */
+  static string library() { return "libHwDecay.so"; }
+
 };
 
 }

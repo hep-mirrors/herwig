@@ -18,15 +18,26 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/PDT/GenericMassGenerator.h"
 #include "ThePEG/Utilities/Timer.h"
+#include "DecayPhaseSpaceMode.h"
+#include "Herwig++/PDT/WidthCalculatorBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
+// copy constructor
+DecayIntegrator::DecayIntegrator(const DecayIntegrator & x)
+  : Decayer(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry), _modes(x._modes),
+    _Initialize(x._Initialize) {}
+
+// destructor
 DecayIntegrator::~DecayIntegrator() {}
 
+// dummy accept method
 bool DecayIntegrator::accept(const DecayMode & dm) const {return false;}
 
+// dummy decay method
 ParticleVector DecayIntegrator::decay(const DecayMode & dm,
 				      const Particle & parent) const {
   ParticleVector children = dm.produceProducts();
@@ -34,13 +45,11 @@ ParticleVector DecayIntegrator::decay(const DecayMode & dm,
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os << _channels <<_Initialize << _MaxWeight << _niter << _npoint << _ntry 
-     << _channelon << _channelwgts;
+  os <<_Initialize << _modes << _niter << _npoint << _ntry;
   }
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >> _channels >>_Initialize >> _MaxWeight >> _niter >> _npoint >> _ntry
-     >> _channelon >> _channelwgts;
+  is >>_Initialize >> _modes >> _niter >> _npoint >> _ntry;
 }
   
 AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
@@ -48,10 +57,10 @@ AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
   
 void DecayIntegrator::Init() {
     
-  static RefVector<DecayIntegrator,DecayPhaseSpaceChannel> interfaceChannels
-    ("Channels",
-     "The phase space integration channels.",
-     &DecayIntegrator::_channels, 0, false, false, true, true);
+  static RefVector<DecayIntegrator,DecayPhaseSpaceMode> interfaceModes
+    ("Modes",
+     "The phase space integration modes.",
+     &DecayIntegrator::_modes, 0, false, false, true, true); 
   
   static ClassDocumentation<DecayIntegrator> documentation
     ("The \\classname{DecayIntegrator} class is a base decayer class "
@@ -73,7 +82,7 @@ void DecayIntegrator::Init() {
      "off",
      "Use the maximum weight and channel weights supplied for the integration",
      false);
-  
+
   static Parameter<DecayIntegrator,int> interfaceIteration
     ("Iteration",
      "Number of iterations for the initialization of the phase space",
@@ -91,321 +100,169 @@ void DecayIntegrator::Init() {
      "Number of attempts to generate the decay",
      &DecayIntegrator::_ntry, 500, 0, 100000,
      false, false, true);
-  
+   
 }
 
 // return the matrix element squared
-double DecayIntegrator::me2(bool vertex,
-			    const int imode, const int ichan, const Particle &,
-			    const ParticleVector & decay) const {return 0.;}
-
-// flat phase space generation and weight
-double DecayIntegrator::flatPhaseSpace(const Particle & inpart,
-				       ParticleVector & outpart) const
+double DecayIntegrator::me2(bool vertex, const int ichan, const Particle &,
+			    const ParticleVector & decay) const 
 {
-  double wgt=0.;
-  // masses of the particles
-  Energy inmass=inpart.mass();
-  vector<Energy> mass;
-  // momenta of the particles
-  vector<Lorentz5Momentum> part;
-  part.resize(outpart.size());
-  // generate the mass of the outgoing particles
-  for(unsigned int ix=0;ix<outpart.size();++ix)
-    {mass.push_back((outpart[ix]->dataPtr())->generateMass());}
-  // two body decay
-  if(outpart.size()==2)
-    {
-      double ctheta,phi;
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(inpart.momentum(), mass[0], mass[1],
-			       ctheta, phi,part[0],part[1]);
-      wgt = Kinematics::CMMomentum(inmass,mass[0],mass[1])/8./pi/inmass/inmass;
-      outpart[0]->setMomentum(part[0]);
-      outpart[1]->setMomentum(part[1]);
-    }
-  else
-    {cout << "only the two body decay is currently implemented" << endl;}
-  return wgt;
-}
-
-// initialise the phase space
-void DecayIntegrator::initializePhaseSpace(const unsigned int imode,
-					   const PDVector & decay)
-{
-  if(!_Initialize){return;}
-  // create a particle vector from the particle data one
-  ThePEG::PPtr inpart=decay[0]->produceParticle();
-  ParticleVector particles;
-  for(unsigned int ix=1;ix<decay.size();++ix)
-    {particles.push_back(decay[ix]->produceParticle());}
-  // now if using flat phase space
-  _MaxWeight[imode]=0.;
-  double wsum=0.,wsqsum=0.;
-  double totsum(0.),totsq(0.);
-  if(_channels.size()==0)
-    {
-      double wgt;
-      Energy m0;
-      for(int ix=0;ix<_npoint;++ix)
-	{
-	  // set the mass of the decaying particle
-	  m0 = (inpart->dataPtr())->generateMass();
-	  inpart->set5Momentum(Lorentz5Momentum(0.0,0.0,0.0,m0,m0));
-	  // generate the weight for this point
-	  int ichan;
-	  wgt = weight(imode,ichan,*inpart,particles);
-	  if(wgt>_MaxWeight[imode]){_MaxWeight[imode]=wgt;}
-	  wsum=wsum+wgt;
-	  wsqsum=wsqsum+wgt*wgt;
-	}
-      wsum=wsum/_npoint;
-      wsqsum=wsqsum/_npoint-wsum*wsum;
-      if(wsqsum<0.){wsqsum=0.;}
-      wsqsum=sqrt(wsqsum/_npoint);
-      // ouptut the information on the initialisation
-      cout << "Initialized the phase space for the decay " 
-	   << decay[0]->PDGName() << " -> ";
-      for(unsigned int ix=1,N=decay.size();ix<N;++ix)
-	{cout << decay[ix]->PDGName() << " ";}
-      cout << endl;
-      cout << "The partial width is " << wsum << " +/- " << wsqsum << " MeV" << endl;
-      cout << "The maximum weight is " << _MaxWeight[imode] << endl;
-    }
-  else
-    {
-      // ensure that the starting weights add up to one
-      double temp=0.;
-      for(unsigned int ix=0;ix<_channels.size();++ix)
-	{if(_channelon[imode][ix]){temp+=_channelwgts[imode][ix];}}
-      for(unsigned int ix=0;ix<_channels.size();++ix)
-	{if(_channelon[imode][ix]){_channelwgts[imode][ix]/=temp;}}
-      for(int iy=0;iy<_niter;++iy)
-	{
-	  // zero the maximum weight
-	  _MaxWeight[imode]=0.;
-	  vector<double> wsum(_channels.size(),0.),wsqsum(_channels.size(),0.);
-	  vector<int> nchan(_channels.size(),0);
-	  totsum = 0.; totsq = 0.;
-	  for(int ix=0;ix<_npoint;++ix)
-	    {
-	      double wgt;
-	      Energy m0;
-	      m0 = (inpart->dataPtr())->generateMass();
-	      inpart->set5Momentum(Lorentz5Momentum(0.0,0.0,0.0,m0,m0));
-	      // generate the weight for this point
-	      int ichan;
-	      wgt = weight(imode,ichan,*inpart,particles);
-	      if(wgt>_MaxWeight[imode]){_MaxWeight[imode]=wgt;}
-	      wsum[ichan]=wsum[ichan]+wgt;
-	      totsum+=wgt;
-	      wsqsum[ichan]=wsqsum[ichan]+wgt*wgt;
-	      totsq+=wgt*wgt;
-	      ++nchan[ichan];
-	    }
-	  totsum=totsum/_npoint;
-	  totsq=totsq/_npoint-totsum*totsum;
-	  if(totsq<0.){totsq=0.;}
-	  totsq=sqrt(totsq/_npoint);
-	  cout << "The partial width is " << iy << " " 
-	       << totsum << " +/- " << totsq << " MeV" << endl;
-	  // compute the individual terms
-	  double total(0.);
-	  for(unsigned int ix=0;ix<_channels.size();++ix)
-	    {
-	      if(nchan[ix]!=0)
-		{
-		  wsum[ix]=wsum[ix]/nchan[ix];
-		  wsqsum[ix]=wsqsum[ix]/nchan[ix]-wsum[ix]*wsum[ix];
-		  if(wsqsum[ix]<0.){wsqsum[ix]=0.;}
-		  wsqsum[ix]=sqrt(wsqsum[ix]/nchan[ix]);
-		}
-	      else
-		{
-		  wsum[ix]=0;
-		  wsqsum[ix]=0;
-		}
-	      total+=sqrt(wsqsum[ix])*_channelwgts[imode][ix];
-	    }
-	  double temp;
-	  for(unsigned int ix=0;ix<_channels.size();++ix)
-	    {
-	      temp=sqrt(wsqsum[ix])*_channelwgts[imode][ix]/total;
-	      _channelwgts[imode][ix]=temp;
-	    }
-	}
-      // ouptut the information on the initialisation
-      cout << "Initialized the phase space for the decay " 
-	   << decay[0]->PDGName() << " -> ";
-      for(unsigned int ix=1,N=decay.size();ix<N;++ix)
-	{cout << decay[ix]->PDGName() << " ";}
-      cout << endl;
-      cout << "The partial width is " << totsum << " +/- " << totsq << " MeV" << endl;
-      cout << "The maximum weight is " << _MaxWeight[imode] << endl;
-      cout << "The weights for the different phase space channels are " << endl;
-      for(unsigned int ix=0,N=_channels.size();ix<N;++ix)
-	{
-	  cout << "Channel " << ix << " was switched ";
-	  if(_channelon[imode][ix]){cout << "on";}
-	  else{cout << "off";}
-	  cout << " and had weight " << _channelwgts[imode][ix] << endl;
-	}
-    }
-}
-  
-// generate a phase-space point using multichannel phase space
-double DecayIntegrator::channelPhaseSpace(unsigned int imode,
-					  int & ichan, const Particle & inpart,
-					  ParticleVector & outpart) const
-{
-  // select the channel
-  vector<Lorentz5Momentum> momenta;
-  double wgt=rnd();
-  // select a channel
-  ichan=-1;
-  do
-    {
-      ++ichan;
-      if(_channelon[imode][ichan]){wgt-=_channelwgts[imode][ichan];}
-    }
-  while(ichan<int(_channels.size())&&wgt>0.);
-  // generate the momenta
-  momenta=_channels[ichan]->generateMomenta(inpart.momentum());
-  // compute the denominator of the weight
-  wgt=0.;
-  for(unsigned int ix=0;ix<_channels.size();++ix)
-    {
-      if(_channelon[imode][ix])
-	{
-	  wgt+=_channelwgts[imode][ix]*_channels[ix]->generateWeight(momenta);
-	}
-    }
-  // now we need to set the momenta of the particles
-  PDVector extpart=_channels[ichan]->externalParticles();
-  vector<bool> done(extpart.size(),false);done[0]=true;
-  bool found; int id;
-  if(inpart.id()==extpart[0]->id())
-    {
-      for(unsigned int iy=0;iy<outpart.size();++iy)
-	{
-	  found = false;
-	  id=outpart[iy]->id();
-	  unsigned int ix=0;
-	  do
-	    {
-	      ++ix;
-	      if(!done[ix]&&extpart[ix]->id()==id)
-		{
-		  done[ix]=true;
-		  outpart[iy]->setMomentum(momenta[ix]);
-		  found=true;
-		}
-	    }
-	  while(!found&&ix<extpart.size()-1);
-	  if(!found)
-	    {
-	      cerr << "error in DecayIntegrator::channelPhaseSpace can't find particle"
-		   << id << " for channel" << ichan << endl;
-	      cout << "testing the id" << inpart.id() << "   " << extpart[0]->id()<<endl;
-	    }
-	}
-    }
-  else
-    {
-      tcPDPtr anti;
-      for(unsigned int iy=0;iy<outpart.size();++iy)
-	{
-	  found = false;
-	  anti=(outpart[iy]->dataPtr())->CC();
-	  if(anti){id=anti->id();}
-	  else{id=outpart[iy]->id();}
-	  unsigned int ix=0;
-	  do 
-	    {
-	      ++ix;
-	      if(!done[ix]&&extpart[ix]->id()==id)
-		{
-		  done[ix]=true;
-		  outpart[iy]->setMomentum(momenta[ix]);
-		  found=true;
-		}
-	    }
-	  while(!found&&ix<extpart.size()-1);
-	  if(!found)
-	    {
-	      cerr << "error in DecayIntegrator::channelPhaseSpace can't find particle"
-		   << id << " for channel" << ichan << endl;
-	      cout << "testing the idB " << inpart.id() << "   " << extpart[0]->id()<<endl;
-	    }
-	}
-    }
-  // return the weight
-  return 1./wgt;
-}
-
-// generate the decay
-void DecayIntegrator::generate(bool intermediates,
-			       unsigned int imode, const Particle & inpart,
-			       ParticleVector & particles) const
-{
-  // construct a new particle which is at rest
-  tcSpinInfoPtr tempspin =dynamic_ptr_cast<tcSpinInfoPtr>(inpart.spinInfo());
-  Particle inrest=inpart;
-  Hep3Vector boostv = -inpart.momentum().boostVector();
-  LorentzMomentum test = inpart.momentum();
-  inrest.setMomentum(test.boost(boostv));
-  int ncount=0; double wgt;
-  do
-    {
-      int ichan;
-      wgt=weight(imode,ichan,inrest,particles);
-      ++ncount;
-      if(wgt>_MaxWeight[imode]){_MaxWeight[imode]=wgt;}
-    }
-  while(_MaxWeight[imode]*rnd()>wgt&&ncount<_ntry);
-  if(ncount>=_ntry){particles.resize(0); return;}
-  // set up the vertex for spin correlations
-  const_ptr_cast<tPPtr>(&inpart)->spinInfo(inrest.spinInfo());
-  constructVertex(inpart,particles);
-  // return if intermediate particles not required
-  if(_channelwgts[imode].size()==0||!intermediates)
-    {
-      Hep3Vector boostv = inpart.momentum().boostVector();
-      LorentzMomentum test;
-      for(unsigned int ix=0;ix<particles.size();++ix)
-	{
-	  test=particles[ix]->momentum();
-	  particles[ix]->setMomentum(test.boost(boostv));
-	}
-    }
-  // find the intermediate particles
-  else
-    {
-      // select the channel
-      int ichan=selectChannel(imode,inpart,particles);
-      Hep3Vector boostv = -inpart.momentum().boostVector();
-      LorentzMomentum test;
-      for(unsigned int ix=0;ix<particles.size();++ix)
-	{
-	  test=particles[ix]->momentum();
-	  particles[ix]->setMomentum(test.boost(boostv));
-	}
-      // generate the particle vector
-      _channels[ichan]->generateIntermediates(inpart,particles);
-    }
-  return;
+  throw DecayIntegratorError() << "DecayIntegrator::me2 is a virtual function"
+			       << " and should have been overridden" 
+			       << Exception::abortnow; 
+  return 0.;
 }
 
 // output info on the integrator
 ostream & operator<<(ostream & os, const DecayIntegrator & decay)
 {
-  os << "The integrator has " << decay._channels.size() << " channels"  << endl;
- for(unsigned int ix=0;ix<decay._channels.size();++ix)
+  os << "The integrator has " << decay._modes.size() << " modes"  << endl;
+ for(unsigned int ix=0;ix<decay._modes.size();++ix)
    {
-     os << "Information on channel " << ix << endl;
-     os << *(decay._channels[ix]);
+     os << "Information on mode " << ix << endl;
+     os << *(decay._modes[ix]);
    }
  return os;
 }
 
+// generate the momenta for the decay
+ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int & imode,
+					 const Particle & inpart) const
+ {
+   _imode=imode;
+   return _modes[imode]->generate(inter,cc,inpart);
+ }  
+
+
+  // initialization for a run
+void DecayIntegrator::doinitrun() {
+  Decayer::doinitrun();
+  CurrentGenerator::current().log() << "testing start of the initialisation for " 
+				    << this->fullName() << endl;
+  for(unsigned int ix=0;ix<_modes.size();++ix)
+    {
+      _modes[ix]->initrun();
+      _imode=ix;_modes[ix]->initializePhaseSpace(_Initialize);
+    }
+}
+
+// add a new mode
+void DecayIntegrator::addMode(DecayPhaseSpaceModePtr in,double maxwgt,
+				     const vector<double> inwgt) const
+{
+  _modes.push_back(in);
+  in->setMaxWeight(maxwgt);
+  in->setWeights(inwgt);
+  in->setIntegrate(_niter,_npoint,_ntry);
+  in->init();
+}
+
+// reset the properities of all intermediates
+void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width)
+{
+  for(unsigned int ix=0,N=_modes.size();ix<N;++ix)
+    {_modes[ix]->resetIntermediate(part,mass,width);}
+} 
+
+bool DecayIntegrator::twoBodyMEcode(const DecayMode & dm, int &, double &) const
+{
+  throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::twoBodyMEcode"
+			       << " method this must be overwritten in the classes "
+			       << "inheriting from DecayIntegrator where it is needed"
+			       << Exception::runerror;
+}
+
+// the matrix element to be integrated for the me
+double DecayIntegrator::threeBodyMatrixElement(int,Energy2,Energy2,Energy2,Energy2,
+					       Energy,Energy,Energy)
+{
+  throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
+			       << "method. This must be overwritten in the classes "
+			       << "inheriting from DecayIntegrator where it is needed"
+			       << Exception::runerror;
+}
+
+  // the differential three body decay rate with one integral performed
+double DecayIntegrator::threeBodydGammads(int,Energy2,Energy2,Energy,Energy,Energy)
+{
+  throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
+			       <<"method. This must be overwritten in the classes "
+			       << "inheriting from DecayIntegrator where it is needed"
+			       << Exception::runerror;
+}
+
+WidthCalculatorBasePtr DecayIntegrator::threeBodyMEIntegrator(const DecayMode & dm) const
+{return WidthCalculatorBasePtr();}
+
+
+// set the code for the partial width
+void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode)
+{
+  vector<int> extid;
+  tcPDPtr cc;
+  int nfound=0;
+  int ifound;unsigned int ix=0;
+  int nmax=1;
+  if(dm.parent()->CC()){nmax=2;}
+  if(_modes.size()==0){return;}
+  do 
+    {
+      ifound=-1;
+      extid.resize(0);
+      cc = _modes[ix]->externalParticles(0)->CC();
+      // check the parent
+      if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id())
+	{
+	  extid.push_back(_modes[ix]->externalParticles(0)->id());
+	  for(unsigned int iy=1,N=_modes[ix]->numberofParticles();iy<N;++iy)
+	    {extid.push_back(_modes[ix]->externalParticles(iy)->id());}
+	}
+      else if(cc&&dm.parent()->id()==cc->id())
+	{
+	  extid.push_back(cc->id());
+	  for(unsigned int iy=1,N=_modes[ix]->numberofParticles();iy<N;++iy)
+	    {
+	      cc = _modes[ix]->externalParticles(iy)->CC();
+	      if(cc){extid.push_back(cc->id());}
+	      else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
+	    }
+	}
+      // if the parents match
+      if(!extid.empty())
+	{
+	  vector<bool> matched(extid.size(),false);bool done;
+	  unsigned int nmatched=0,iy;int id;
+	  ParticleMSet::const_iterator pit = dm.products().begin();
+	  do
+	    {
+	      id=(**pit).id();
+	      done=false;
+	      iy=1;
+	      do 
+		{
+		  if(id==extid[iy]&&!matched[iy])
+		    {matched[iy]=true;++nmatched;done=true;}
+		  ++iy;
+		}
+	      while(iy<extid.size()&&!done);
+	      ++pit;
+	    }
+	  while(pit!=dm.products().end());
+	  if(nmatched==extid.size()-1){ifound=ix;++nfound;}
+	}
+      ++ix;
+      if(ifound>=0){_modes[ifound]->setPartialWidth(imode);}
+    }
+  while(nfound<nmax&&ix<_modes.size());
+}
+
+// output the information for the database
+void DecayIntegrator::dataBaseOutput(ofstream & output)
+{output << " where ThePEGName=\" " << fullName() << "\";";}
+
+// pointer to a mode
+tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix)
+{
+  return _modes[ix];
+}
 }

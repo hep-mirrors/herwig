@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DecayPhaseSpaceChannel class.
+//
+#ifndef HERWIG_DecayPhaseSpaceChannel_FH
+#define HERWIG_DecayPhaseSpaceChannel_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class DecayPhaseSpaceChannel;
+ThePEG_DECLARE_CLASS_POINTERS(DecayPhaseSpaceChannel,DecayPhaseSpaceChannelPtr);
+
+}
+
+#endif

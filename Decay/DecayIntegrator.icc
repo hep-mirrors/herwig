@@ -7,22 +7,15 @@
 // 
 
 namespace Herwig {
-  
 using namespace ThePEG;
-using Helicity::DVertexPtr;
-using ThePEG::Helicity::VertexPtr;
-using ThePEG::Helicity::tcSpinInfoPtr;
-using Helicity::DecayVertex;
 
 // default constructor  
-inline DecayIntegrator::DecayIntegrator() {_niter=10;_npoint=10000;_ntry=500;}
-  
-// copy constructor
-inline DecayIntegrator::DecayIntegrator(const DecayIntegrator & x)
-  : Decayer(x), _channels(x._channels),
-    _channelwgts(x._channelwgts), _channelon(x._channelon), 
-    _MaxWeight(x._MaxWeight), _Initialize(x._Initialize),
-    _niter(x._niter), _npoint(x._npoint), _ntry(x._ntry) {}
+inline DecayIntegrator::DecayIntegrator() {
+  _niter=10;
+  _npoint=10000;
+  _ntry=500;
+  _Initialize=false;
+}
   
 inline void DecayIntegrator::doupdate() throw(UpdateException) {
   Decayer::doupdate();
@@ -50,10 +43,6 @@ inline void DecayIntegrator::dofinish() {
   Decayer::dofinish();
 }
   
-inline void DecayIntegrator::doinitrun() {
-  Decayer::doinitrun();
-}
-  
 inline void DecayIntegrator::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
@@ -66,132 +55,18 @@ inline IVector DecayIntegrator::getReferences() {
   return ret;
 }
 
-
-// set the maximum weight for the integration
-inline void DecayIntegrator::setMaxWeight(const unsigned int imode, double wgt) const
-{
-  // add a new mode if needed
-  if(imode>=_MaxWeight.size()){_MaxWeight.push_back(wgt);}
-  // otherwise change existing one
-  else{_MaxWeight[imode]=wgt;}
-}
-
-// get the maximum weight for the integration
-inline double DecayIntegrator::getMaxWeight(const unsigned int imode) const 
-{return _MaxWeight[imode];}
-
-// return the phase space weight for a given point
-inline double DecayIntegrator::weight(unsigned int imode,
-				      int & ichan, const Particle & inpart,
-				      ParticleVector & particles) const
-{
-  double mewgt=0.,phwgt=0.;ichan=0;
-  // generate the phase space point and get the weight
-  if(_channels.size()==0){phwgt = flatPhaseSpace(inpart,particles);} 
-  else{phwgt = channelPhaseSpace(imode,ichan,inpart,particles);}
-  // generate the matrix element
-  mewgt = me2(true,imode,-1,inpart,particles);
-  return mewgt*phwgt;
-}
-
-// add a new channel
-inline void DecayIntegrator::addChannel(Ptr<Herwig::DecayPhaseSpaceChannel>::pointer in)
-{_channels.push_back(in);}
-
-// return the number of channels
-inline unsigned int DecayIntegrator::numberChannels() const{return _channels.size();}
-
-// set the weights for the different channels
-inline void DecayIntegrator::setWeights(const unsigned int imode,
-					const vector<double> in) const
-{
-  // add a new mode if needed
-  if(imode>=_channelwgts.size()){_channelwgts.push_back(in);}
-  // otherwise change existing one
-  else{_channelwgts[imode]=in;}
-}
-
-// get the weights for the different channels
-inline vector<double> DecayIntegrator::getWeights(const unsigned int imode ) const 
-{return _channelwgts[imode];}
-
-// set which channels are being used
-inline void DecayIntegrator::setOn(const unsigned int imode, 
-				   const vector<bool> in) const 
-{
-  // add a new mode if needed
-  if(imode>=_channelon.size()){_channelon.push_back(in);}
-  // otherwise change existing one
-  else{_channelon[imode]=in;}
-}
-
-// reset the properties of one of the intermediate particles
-inline void DecayIntegrator::resetIntermediate(int ichan, tcPDPtr part,
-					       Energy mass, Energy width)
-{_channels[ichan]->resetIntermediate(part,mass,width);}
-// set the parameters for a given mode
-inline void DecayIntegrator::setMode(const unsigned int imode, double maxwgt,
-				     const vector<bool> inon, 
-				     const vector<double> inwgt) const
-{
-  setMaxWeight(imode,maxwgt);setOn(imode,inon);setWeights(imode,inwgt);
-  if(inon.size()!=inwgt.size())
-    {cerr << "DecayIntegrator::setMode different sizes of weights"  
-	  <<" and channels switched on" << endl;}
-  if(inwgt.size()!=_channels.size())
-    {cerr << "decayIntegrator::setMode different sizes for weights"
-	  <<" and integration channels " 
-	  << _channels.size() << " " << inwgt.size() << endl;}
-}
-
-// select which phase-space channel to use to output the particles
-inline int DecayIntegrator::selectChannel(const unsigned int imode,
-					  const Particle & inpart,
-					  ParticleVector & particles) const
-{
-  // if using flat phase-space don't need to do this
-  if(_channelwgts[imode].size()==0){return 0;}
-  vector<double> mewgts(_channels.size(),0.0);
-  double total=0.;
-  for(unsigned int ix=0;ix<_channels.size();++ix)
-    {
-      if(_channelon[imode][ix])
-	{mewgts[ix]=me2(false,imode,ix,inpart,particles);}
-      else{mewgts[ix]=0.;}
-      total+=mewgts[ix];
-    }
-  // randomly pick a channel
-  total*=rnd();
-  int ichan=-1;
-  do
-    {
-      ++ichan;
-      if(_channelon[imode][ichan]){total-=mewgts[ichan];}
-    }
-  while(ichan<int(_channels.size())&&total>0.);
-  return ichan;
-}
-
 // set and get the matrix element
 inline const DecayMatrixElement & DecayIntegrator::ME() const
 {return _matrixelement;}
 
+// access to the matrix element calculated for the decay
 inline void DecayIntegrator::ME(const DecayMatrixElement & in) const
 {_matrixelement.reset(in);}
 
-// construct the vertex for spin corrections
-inline void DecayIntegrator::constructVertex(const Particle & inpart, 
-					     const ParticleVector & decay) const
-{
-  // construct the decay vertex
-  VertexPtr vertex=new_ptr(DecayVertex());
-  DVertexPtr Dvertex=dynamic_ptr_cast<DVertexPtr>(vertex);
-  // set the incoming particle for the decay vertex
-  dynamic_ptr_cast<tcSpinInfoPtr>(inpart.spinInfo())->setDecayVertex(vertex);
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    {
-      dynamic_ptr_cast<tcSpinInfoPtr>(decay[ix]->spinInfo())->setProductionVertex(vertex);}
-  // set the matrix element
-  Dvertex->ME().reset(ME());
-}
+// mode currently being generated
+inline int DecayIntegrator::imode() const {return _imode;}
+inline void DecayIntegrator::imode(int in){_imode=in;}
+// number of decay modes
+inline unsigned int  DecayIntegrator::numberModes() const {return _modes.size();}
+
 }
