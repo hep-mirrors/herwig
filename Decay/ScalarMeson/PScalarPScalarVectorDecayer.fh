@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PScalarPScalarVectorDecayer class.
+//
+#ifndef HERWIG_PScalarPScalarVectorDecayer_FH
+#define HERWIG_PScalarPScalarVectorDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class PScalarPScalarVectorDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(PScalarPScalarVectorDecayer,PScalarPScalarVectorDecayerPtr);
+
+}
+
+#endif

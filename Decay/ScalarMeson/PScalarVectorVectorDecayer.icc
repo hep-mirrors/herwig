@@ -5,6 +5,7 @@
 //
 
 namespace Herwig {
+using namespace ThePEG;
 
 inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer() 
 {
@@ -14,17 +15,68 @@ inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer()
   // decya eta- > rho gamma
   _incoming.push_back(331);_outgoing1.push_back(113);_outgoing2.push_back(22);
   _coupling.push_back(0.4011/GeV);_maxweight.push_back(0.0595797);
-  /*
   // decay pi -> gamma gamma
   _incoming.push_back(111);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.0178/GeV);_maxweight.push_back(0.);
+  _coupling.push_back(0.017790143/GeV);_maxweight.push_back(0.);
   // decay eta -> gamma gamma
   _incoming.push_back(221);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.0168/GeV);_maxweight.push_back(0.);
+  _coupling.push_back(0.017639430/GeV);_maxweight.push_back(0.);
   // decay eta' -> gamma gamma
   _incoming.push_back(331);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.0221/GeV);_maxweight.push_back(0.);
-  */
+  _coupling.push_back(0.022135772/GeV);_maxweight.push_back(0.);
+  // decay eta_c -> rho rho
+  _incoming.push_back(441);_outgoing1.push_back(213);_outgoing2.push_back(-213);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(441);_outgoing1.push_back(113);_outgoing2.push_back( 113);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  // decay eta-c -> phi phi
+  _incoming.push_back(441);_outgoing1.push_back(333);_outgoing2.push_back(333);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  // decay eta-c -> gamma gamma
+  _incoming.push_back(441);_outgoing1.push_back(22);_outgoing2.push_back(22);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  // decay eta_c -> K* K*
+  _incoming.push_back(441);_outgoing1.push_back(323);_outgoing2.push_back(-323);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(441);_outgoing1.push_back(313);_outgoing2.push_back(-313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  // D meson to two vector decays
+  _incoming.push_back(421);_outgoing1.push_back(-323);_outgoing2.push_back(213);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(421);_outgoing1.push_back(-313);_outgoing2.push_back(113);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(421);_outgoing1.push_back(-313);_outgoing2.push_back(223);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(421);_outgoing1.push_back(-313);_outgoing2.push_back(313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(421);_outgoing1.push_back(333);_outgoing2.push_back(-313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(421);_outgoing1.push_back(333);_outgoing2.push_back(22);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(421);_outgoing1.push_back(333);_outgoing2.push_back(113);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(323);_outgoing2.push_back(-213);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(313);_outgoing2.push_back(113);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(313);_outgoing2.push_back(223);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(-313);_outgoing2.push_back(313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(333);_outgoing2.push_back(313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(333);_outgoing2.push_back(22);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-421);_outgoing1.push_back(333);_outgoing2.push_back(113);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(411);_outgoing1.push_back(323);_outgoing2.push_back(-313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(411);_outgoing1.push_back(213);_outgoing2.push_back(-313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-411);_outgoing1.push_back(-323);_outgoing2.push_back(313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
+  _incoming.push_back(-411);_outgoing1.push_back(-213);_outgoing2.push_back(313);
+  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
 }
 
 inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer(const PScalarVectorVectorDecayer & x)
@@ -63,12 +115,20 @@ inline void PScalarVectorVectorDecayer::doinit() throw(InitException) {
   unsigned int isize=_coupling.size();
   if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
      isize!=_outgoing2.size() || isize!=_maxweight.size())
-    {cerr << "Inconsistent parameters in PScalarVectorVectorDecayer" << endl;}
+    {throw InitException() << "Inconsistent parameters in PScalarVectorVectorDecayer" 
+			   << Exception::abortnow;}
   // set up the integration channels
-  vector<bool> dummyon;
-  vector<double> dummyweights;
+  vector<double> wgt;
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {setMode(ix,_maxweight[ix],dummyon,dummyweights);}
+    {
+      extpart[0] = getParticleData(_incoming[ix]);
+      extpart[1] = getParticleData(_outgoing1[ix]);
+      extpart[2] = getParticleData(_outgoing2[ix]);
+      mode = new DecayPhaseSpaceMode(extpart,this);
+      addMode(mode,_maxweight[ix],wgt);
+    }
 }
 
 inline void PScalarVectorVectorDecayer::dofinish() {
@@ -77,18 +137,6 @@ inline void PScalarVectorVectorDecayer::dofinish() {
 
 inline void PScalarVectorVectorDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  PDVector particles(3);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      particles[0]=getParticleData(_incoming[ix]);
-      particles[1]=getParticleData(_outgoing1[ix]);
-      particles[2]=getParticleData(_outgoing2[ix]);
-      initializePhaseSpace(ix,particles);
-      // test the analytic answer
-      Energy m0=particles[0]->mass();Energy2 m02=m0*m0;
-      Energy m1=particles[1]->mass();
-      Energy m2=particles[2]->mass();
-    }
 }
 
 inline void PScalarVectorVectorDecayer::rebind(const TranslationMap & trans)

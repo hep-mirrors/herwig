@@ -22,6 +22,7 @@
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -80,29 +81,31 @@ bool PScalarVectorFermionsDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector PScalarVectorFermionsDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
   // workout which mode we are doing
   int imode=-1;
-  int id0=parent.id(),id1=children[0]->id(),id2=children[1]->id(),id3=children[2]->id();
+  int id0=parent.id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit; int id2=(**pit).id();
+  ++pit; int id3=(**pit).id();
   unsigned int ix=0;
   do
     {
       if(_incoming[ix]==id0)
-      {
-	if((id1==_outgoingV[ix]&&id2==_outgoingf[ix]&&id3==_outgoinga[ix])||
-	   (id1==_outgoingV[ix]&&id3==_outgoingf[ix]&&id2==_outgoinga[ix])||
-	   (id2==_outgoingV[ix]&&id1==_outgoingf[ix]&&id3==_outgoinga[ix])||
-	   (id2==_outgoingV[ix]&&id3==_outgoingf[ix]&&id1==_outgoinga[ix])||
-	   (id3==_outgoingV[ix]&&id1==_outgoingf[ix]&&id2==_outgoinga[ix])||
-	   (id3==_outgoingV[ix]&&id2==_outgoingf[ix]&&id1==_outgoinga[ix]))
-	  {imode=ix;}
+	{
+	  if((id1==_outgoingV[ix]&&id2==_outgoingf[ix]&&id3==_outgoinga[ix])||
+	     (id1==_outgoingV[ix]&&id3==_outgoingf[ix]&&id2==_outgoinga[ix])||
+	     (id2==_outgoingV[ix]&&id1==_outgoingf[ix]&&id3==_outgoinga[ix])||
+	     (id2==_outgoingV[ix]&&id3==_outgoingf[ix]&&id1==_outgoinga[ix])||
+	     (id3==_outgoingV[ix]&&id1==_outgoingf[ix]&&id2==_outgoinga[ix])||
+	     (id3==_outgoingV[ix]&&id2==_outgoingf[ix]&&id1==_outgoinga[ix]))
+	    {imode=ix;}
 	}
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
   // perform the decay
-  generate(false,imode,parent,children);
-  return children;
+  return generate(false,false,imode,parent);
 }
 
 
@@ -136,12 +139,6 @@ void PScalarVectorFermionsDecayer::Init() {
     ("OutgoingVector",
      "The PDG code for the outgoing pseudoscalar",
      &PScalarVectorFermionsDecayer::_outgoingV,
-     0, 0, 0, -10000, 10000, false, false, true);
-
-  static ParVector<PScalarVectorFermionsDecayer,int> interfaceOutcomingF
-    ("OutgoingFermion",
-     "The PDG code for the outgoing fermion",
-     &PScalarVectorFermionsDecayer::_outgoingf,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<PScalarVectorFermionsDecayer,int> interfaceOutcomingA
@@ -191,8 +188,7 @@ void PScalarVectorFermionsDecayer::Init() {
 
 }
 
-double PScalarVectorFermionsDecayer::me2(bool vertex, 
-					 const int imode, const int ichan,
+double PScalarVectorFermionsDecayer::me2(bool vertex, const int ichan,
 					 const Particle & inpart,
 					 const ParticleVector & decay) const
 {
@@ -204,7 +200,7 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
   if(inspin)
     {inspin->decayed(true);}
   else if(inpart.spinInfo())
-    {throw DecayIntegratorError() << "Wrong type of spin info for th incoming particle"
+    {throw DecayIntegratorError() << "Wrong type of spin info for the incoming particle"
 				  << " in PScalarVectorFermionsDecayer::me2()" 
 				  << Exception::abortnow;}
   else
@@ -219,9 +215,9 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
   for(unsigned int ix=0;ix<decay.size();++ix)
     {
       id=decay[ix]->id();
-      if(id==_outgoingV[imode]){ivec=ix;}
-      else if(id==_outgoingf[imode]){iferm=ix;}
-      else if(id==_outgoinga[imode]){ianti=ix;}
+      if(id==_outgoingV[imode()]){ivec=ix;}
+      else if(id==_outgoingf[imode()]){iferm=ix;}
+      else if(id==_outgoinga[imode()]){ianti=ix;}
     }
   // set up the spin info for the outgoing particles
   tcVectorSpinPtr vspin;
@@ -254,11 +250,11 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
       // spinor for the fermion
       fwave.reset(ix);
       wavebar.push_back(fwave.Wave());
-      fspin->setBasisState(ix,wavebar[(ix+1)/2].bar());
+      if(vertex){fspin->setBasisState(ix,wavebar[(ix+1)/2].bar());}
       // spinorbar for the antifermion
       awave.reset(ix);
       wave.push_back(awave.Wave());
-      aspin->setBasisState(ix,wave[(ix+1)/2]);
+      if(vertex){aspin->setBasisState(ix,wave[(ix+1)/2]);}
     }    
   // calculate the wavefunctions for the outgoing vectors
   LorentzPolarizationVector vwave[3];
@@ -278,13 +274,13 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
   pff.rescaleMass();
   Energy2 mff2=pff.mass()*pff.mass();
   // compute the prefactor
-  Complex pre=_coupling[imode];
+  Complex pre=_coupling[imode()];
   pre /= mff2;
   // the VMD factor
-  if(_includeVMD[imode]>0)
+  if(_includeVMD[imode()]>0)
     {
-      Energy2 mrho2=_VMDmass[imode]*_VMDmass[imode];
-      Energy2 mwrho=_VMDmass[imode]*_VMDwidth[imode];
+      Energy2 mrho2=_VMDmass[imode()]*_VMDmass[imode()];
+      Energy2 mwrho=_VMDmass[imode()]*_VMDwidth[imode()];
       pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
     }
   LorentzPolarizationVector eps,fcurrent;
@@ -292,18 +288,19 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
   // compute the matrix element
   DecayMatrixElement newME(1,ispin);
   ispin.resize(4);ispin[0]=0;
+  Complex s1s4,s2s3,s3s2,s4s1,s1s3,s2s4,s3s1,s4s2;
   for(unsigned int ix=0;ix<2;++ix)
     {
       for(unsigned int iy=0;iy<2;++iy)
 	{
-	  Complex s1s4 = wavebar[iy].s1()*wave[ix].s4();
-	  Complex s2s3 = wavebar[iy].s2()*wave[ix].s3();
-	  Complex s3s2 = wavebar[iy].s3()*wave[ix].s2();
-	  Complex s4s1 = wavebar[iy].s4()*wave[ix].s1();
-	  Complex s1s3 = wavebar[iy].s1()*wave[ix].s3();
-	  Complex s2s4 = wavebar[iy].s2()*wave[ix].s4();
-	  Complex s3s1 = wavebar[iy].s3()*wave[ix].s1();
-	  Complex s4s2 = wavebar[iy].s4()*wave[ix].s2();
+	  s1s4 = wavebar[iy].s1()*wave[ix].s4();
+	  s2s3 = wavebar[iy].s2()*wave[ix].s3();
+	  s3s2 = wavebar[iy].s3()*wave[ix].s2();
+	  s4s1 = wavebar[iy].s4()*wave[ix].s1();
+	  s1s3 = wavebar[iy].s1()*wave[ix].s3();
+	  s2s4 = wavebar[iy].s2()*wave[ix].s4();
+	  s3s1 = wavebar[iy].s3()*wave[ix].s1();
+	  s4s2 = wavebar[iy].s4()*wave[ix].s2();
 	  // calculate the current
 	  if(defaultDRep==HaberDRep)
 	    {
@@ -324,7 +321,7 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
 	  // compute the current for this part
 	  eps = EpsFunction::product(decay[ivec]->momentum(),pff,fcurrent);
 	  ispin[iferm+1]=2*iy-1;ispin[ianti+1]=2*ix-1;
-	  for(unsigned int iz=01;iz<3;++iz)
+	  for(unsigned int iz=0;iz<3;++iz)
 	    {ispin[ivec+1]=iz-1;newME(ispin)=pre*(vwave[iz]*eps);}
 	}	  
     }
@@ -334,4 +331,85 @@ double PScalarVectorFermionsDecayer::me2(bool vertex,
   return me;
 }
 
+// method to return an object to calculate the 3 or higher body partial width
+WidthCalculatorBasePtr 
+PScalarVectorFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
+{
+  // workout which mode we are doing
+  int imode=-1;
+  int id0=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit; int id2=(**pit).id();
+  ++pit; int id3=(**pit).id();
+  unsigned int ix=0;
+  do
+    {
+      if(_incoming[ix]==id0)
+      {
+	if((id1==_outgoingV[ix]&&id2==_outgoingf[ix]&&id3==_outgoinga[ix])||
+	   (id1==_outgoingV[ix]&&id3==_outgoingf[ix]&&id2==_outgoinga[ix])||
+	   (id2==_outgoingV[ix]&&id1==_outgoingf[ix]&&id3==_outgoinga[ix])||
+	   (id2==_outgoingV[ix]&&id3==_outgoingf[ix]&&id1==_outgoinga[ix])||
+	   (id3==_outgoingV[ix]&&id1==_outgoingf[ix]&&id2==_outgoinga[ix])||
+	   (id3==_outgoingV[ix]&&id2==_outgoingf[ix]&&id1==_outgoinga[ix]))
+	  {imode=ix;}
+	}
+      ++ix;
+    }
+  while(imode<0&&ix<_incoming.size());
+  // get the masses we need
+  Energy m[3]={getParticleData(_outgoingV[imode])->mass(),
+	       getParticleData(_outgoingf[imode])->mass(),
+	       getParticleData(_outgoinga[imode])->mass()};
+  return new_ptr(ThreeBodyAllOn1IntegralCalculator(3,-1000.,-0.9,
+						   const_ptr_cast<tDecayIntegratorPtr>(this),
+						   imode,m[0],m[1],m[2]));
 }
+
+
+double PScalarVectorFermionsDecayer::threeBodydGammads(int imodeb,Energy2 q2,
+						       Energy2 mff2, Energy m1, 
+						       Energy m2, Energy m3)
+{
+  // the masses of the external particles
+  Energy q=sqrt(q2);
+  Energy2 m12=m1*m1;
+  Energy2 m22=m2*m2;
+  Energy2 m32=m3*m3;
+  // calculate the prefactor
+  Complex pre=_coupling[imodeb],ii(0.,1.);
+  pre /= mff2;
+  // the VMD factor
+  if(_includeVMD[imodeb]>0)
+    {
+      Energy2 mrho2=_VMDmass[imodeb]*_VMDmass[imodeb];
+      Energy2 mwrho=_VMDmass[imodeb]*_VMDwidth[imodeb];
+      pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
+    }
+  double factor=real(pre*conj(pre));
+  // compute the pieces from the integration limits
+  Energy mff=sqrt(mff2);
+  Energy e2star = 0.5*(mff2-m32+m22)/mff;
+  Energy e1star = 0.5*(q2-mff2-m12)/mff;
+  Energy e1sm = sqrt(e1star*e1star-m12);
+  Energy e2sm = sqrt(e2star*e2star-m22);
+  Energy2 a = 2*e1star*e2star+m12+m22;
+  Energy2 b = 2*e1sm*e2sm;
+  // term independent of s3
+  double me = 2*b*(2*(m12*(mff2*mff2 + 4*mff2*m2*m3 -(m22 - m32)*(m22 - m32)) + 
+		      2*m2*(m12 +m22)*m3*(-mff2 +m22 + q2))
+		   +(m12 +m22)*(m12 +m22)*(-mff2 +m22 - 2*m2*m3 - m32)
+		   -(mff2 +m22 + 2*m2*m3 - m32)*(-mff2 +m22 + q2)*(-mff2 +m22 + q2));
+  // linear term
+  me+= 2.*a*b*(2*(-mff2*mff2 - (m22 - m32)*(m12 - q2) + 
+		  mff2*(m12 + m22 + m32 + q2)));
+  // quadratic term
+  me+=-4.*mff2*b*(3.*a*a+b*b)/3.;
+  me*=-factor;
+  // phase space factors
+  return me/256./pi/pi/pi/q2/q;
+}
+}
+
+

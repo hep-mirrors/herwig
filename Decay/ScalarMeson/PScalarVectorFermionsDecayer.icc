@@ -12,33 +12,33 @@ inline PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer()
   // pi0 -> gamma e+e-
   _incoming.push_back(111);;_outgoingV.push_back( 22);
   _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _coupling.push_back(0.00762*sqrt(2.)/GeV);_maxweight.push_back(1.91707e-07);
+  _coupling.push_back(0.00761872/GeV);_maxweight.push_back(1.91707e-07);
   _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7771*GeV);_VMDwidth.push_back(0.1492*GeV);
+  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
   // eta -> gamma e+e-
   _incoming.push_back(221);;_outgoingV.push_back( 22);
   _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _coupling.push_back(0.00720*sqrt(2.)/GeV);_maxweight.push_back(1.81184e-05);
+  _coupling.push_back(0.007554164/GeV);_maxweight.push_back(1.81184e-05);
   _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7771*GeV);_VMDwidth.push_back(0.1492*GeV);
+  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
   // eta -> gamma mu+mu-
   _incoming.push_back(221);;_outgoingV.push_back( 22);
   _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.00720*sqrt(2.)/GeV);_maxweight.push_back(6.87786e-07);
+  _coupling.push_back(0.007554164/GeV);_maxweight.push_back(6.87786e-07);
   _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7771*GeV);_VMDwidth.push_back(0.1492*GeV);
+  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
   // eta' -> gamma e+e-
   _incoming.push_back(331);;_outgoingV.push_back( 22);
   _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _coupling.push_back(0.00947*sqrt(2.)/GeV);_maxweight.push_back(0.000413269);
+  _coupling.push_back(0.009479619/GeV);_maxweight.push_back(0.000413269);
   _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7771*GeV);_VMDwidth.push_back(0.1492*GeV);
-  // eta' -> gamma mu+mu-
+  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  // eta' -> gamma mu+mu-  
   _incoming.push_back(331);;_outgoingV.push_back( 22);
   _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.00947*sqrt(2.)/GeV);_maxweight.push_back(4.7742e-05);
+  _coupling.push_back(0.009479619*sqrt(2.)/GeV);_maxweight.push_back(4.7742e-05);
   _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7771*GeV);_VMDwidth.push_back(0.1492*GeV);
+  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
 }
 
 inline PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer(const PScalarVectorFermionsDecayer & x)
@@ -85,28 +85,22 @@ inline void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
   // create the integration channel for each mode 
   PDVector extpart(4);
   tPDPtr gamma=getParticleData(ParticleID::gamma);
-  Ptr<Herwig::DecayPhaseSpaceChannel>::pointer newchannel;
+  DecayPhaseSpaceChannelPtr newchannel;
+  DecayPhaseSpaceModePtr mode;
+  vector<double> wgt(1,1.);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       extpart[0] = getParticleData(_incoming[ix]);
       extpart[1] = getParticleData(_outgoingV[ix]);
       extpart[2] = getParticleData(_outgoingf[ix]);
       extpart[3] = getParticleData(_outgoinga[ix]);
-      newchannel=new_ptr(DecayPhaseSpaceChannel());
+      mode = new DecayPhaseSpaceMode(extpart,this);
+      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
       newchannel->addIntermediate(gamma     ,1,-1.1, 2,3);
-      newchannel->setExternal(extpart);
       newchannel->init();
-      addChannel(newchannel);
-    }
- // set up the integration channels
-  vector<bool> dummyon(_incoming.size(),false);
-  vector<double> dummyweights(_incoming.size(),0.0);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix>0){dummyon[ix-1]=false;dummyweights[ix-1]=0.;}
-      dummyon[ix]=true;dummyweights[ix]=1.;
-      setMode(ix,_maxweight[ix],dummyon,dummyweights);
+      mode->addChannel(newchannel);
+      addMode(mode,_maxweight[ix],wgt);
     }
   // set up the values for the VMD factor if needed (copy the default mass and width 
   //                                                 into the array)
@@ -126,15 +120,6 @@ inline void PScalarVectorFermionsDecayer::dofinish() {
 
 inline void PScalarVectorFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  PDVector particles(4);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      particles[0]=getParticleData(_incoming[ix]);
-      particles[1]=getParticleData(_outgoingV[ix]);
-      particles[2]=getParticleData(_outgoingf[ix]);
-      particles[3]=getParticleData(_outgoinga[ix]);
-      initializePhaseSpace(ix,particles);
-    }
 }
 
 inline void PScalarVectorFermionsDecayer::rebind(const TranslationMap & trans)

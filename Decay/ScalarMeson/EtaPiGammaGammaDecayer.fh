@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EtaPiGammaGammaDecayer class.
+//
+#ifndef HERWIG_EtaPiGammaGammaDecayer_FH
+#define HERWIG_EtaPiGammaGammaDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class EtaPiGammaGammaDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(EtaPiGammaGammaDecayer,EtaPiGammaGammaDecayerPtr);
+
+}
+
+#endif

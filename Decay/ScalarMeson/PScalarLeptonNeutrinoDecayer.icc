@@ -1,0 +1,129 @@
+ // -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PScalarLeptonNeutrinoDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() 
+{
+  // the fermi constant
+  _GF=1.16639E-5/GeV2;
+  // pion decay
+  _incoming.push_back(211);_decayconstant.push_back(127.4*MeV);_leptons.push_back(2);
+  _maxweighte.push_back(1.0);_maxweightmu.push_back(1.0);_maxweighttau.push_back(0.0);
+  // kaon decay
+  _incoming.push_back(321);_decayconstant.push_back(35.5555*MeV);_leptons.push_back(2);
+  _maxweighte.push_back(1.0);_maxweightmu.push_back(1.0);_maxweighttau.push_back(0.0);
+  // D_s decay
+  _incoming.push_back(431);_decayconstant.push_back(200.0*MeV);_leptons.push_back(3);
+  _maxweighte.push_back(1.0);_maxweightmu.push_back(1.0);_maxweighttau.push_back(1.0);
+  // D decay
+  _incoming.push_back(411);_decayconstant.push_back(200.0*MeV);_leptons.push_back(3);
+  _maxweighte.push_back(1.0);_maxweightmu.push_back(1.0);_maxweighttau.push_back(1.0);
+  // B_c decay
+  _incoming.push_back(541);_decayconstant.push_back(200.0*MeV);_leptons.push_back(3);
+  _maxweighte.push_back(1.0);_maxweightmu.push_back(1.0);_maxweighttau.push_back(1.0);
+}
+
+inline PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer(const PScalarLeptonNeutrinoDecayer & x)
+  : DecayIntegrator(x), _incoming(x._incoming), _decayconstant(x._decayconstant),
+    _leptons(x._leptons),_maxweighte(x._maxweighte),_maxweightmu(x._maxweightmu),
+    _maxweighttau(x._maxweighttau), _GF(x._GF)
+
+{}
+
+inline IBPtr PScalarLeptonNeutrinoDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr PScalarLeptonNeutrinoDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void PScalarLeptonNeutrinoDecayer::doupdate() throw(UpdateException) {
+  DecayIntegrator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // create the integration channels
+  PDVector extpart(3);  
+  tPDPtr nu[3]={getParticleData(ParticleID::nu_e),
+		getParticleData(ParticleID::nu_mu),
+		getParticleData(ParticleID::nu_tau)};
+  tPDPtr nubar[3]={getParticleData(ParticleID::nu_ebar),
+		   getParticleData(ParticleID::nu_mubar),
+		   getParticleData(ParticleID::nu_taubar)};
+  tPDPtr lep[3]={getParticleData(ParticleID::eminus),
+		 getParticleData(ParticleID::muminus),
+		 getParticleData(ParticleID::tauminus)};
+  tPDPtr lepbar[3]={getParticleData(ParticleID::eplus),
+		    getParticleData(ParticleID::muplus),
+		    getParticleData(ParticleID::tauplus)};
+  int charge;
+  vector<double> dummyweights;
+  double wgt;
+  DecayPhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      charge=extpart[0]->iCharge();
+      for(int iy=0;iy<_leptons[ix];++iy)
+	{
+	  if(charge>0)
+	    {
+	      extpart[1]=lepbar[iy];
+	      extpart[2]=nu[iy];
+	    }\
+	  else
+	    {
+	      extpart[1]=lep[iy];
+	      extpart[2]=nubar[iy];
+	    }
+	  mode = new DecayPhaseSpaceMode(extpart,this);
+	  if(iy==0){wgt=_maxweighte[ix];}
+	  else if(iy==1){wgt=_maxweightmu[ix];}
+	  else{wgt=_maxweighttau[ix];}
+	  addMode(mode,wgt,dummyweights);
+	}
+    }
+}
+
+inline void PScalarLeptonNeutrinoDecayer::dofinish() {
+  DecayIntegrator::dofinish();
+}
+
+inline void PScalarLeptonNeutrinoDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+}
+
+inline void PScalarLeptonNeutrinoDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  DecayIntegrator::rebind(trans);
+}
+
+inline IVector PScalarLeptonNeutrinoDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

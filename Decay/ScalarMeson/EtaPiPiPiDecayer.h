@@ -1,64 +1,61 @@
 // -*- C++ -*-
-#ifndef THEPEG_PScalarVectorFermionsDecayer_H
-#define THEPEG_PScalarVectorFermionsDecayer_H
-//
-// This is the declaration of the PScalarVectorFermionsDecayer class.
-//
+#ifndef HERWIG_EtaPiPiPiDecayer_H
+#define HERWIG_EtaPiPiPiDecayer_H
+// This is the declaration of the EtaPiPiPiDecayer class.
+
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-// #include "PScalarVectorFermionsDecayer.fh"
-// #include "PScalarVectorFermionsDecayer.xh"
+#include "EtaPiPiPiDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
-/**  \ingroup Decay
+/** \ingroup Decay
  *
- * The <code>PScalarVectorFermionsDecayer</code> class is designed for the decay of a 
- * pseudoscalar meson to a spin-1 particle and a fermion-antifermion pair. In practice
- * these decays are of the form \f$\gamma\ell^+\ell^-\f$ and the propagator of
- * the off-shell boson is taken to be \f$\frac1{m^2_{f\bar{f}}}\f$.
- * There is also the option of including a vector meson dominance
- * form-factor.
+ * The <code>EtaPiPiPiDecayer</code> class is designed for the simulation of
+ * the decay of the \f$\eta\f$ or \f$eta'\f$ to either \f$\pi^+\pi^-\pi^0\f$ 
+ * or \f$\pi^0\pi^0\pi^0\f$ and the decay of the \f$eta'\f$ to 
+ * \f$\pi^+\pi^-\eta\f$ or \f$\pi^0\pi^0\eta\f$
  *
- *  In this case the matrix element is
- *  \f[\mathcal{M} = \frac{g}{m^2_{f\bar{f}}}
- *                   \epsilon^{\mu\nu\alpha\beta}p_{V\mu}\epsilon_{V\nu}
- *                   \bar{u}(p_f)\gamma_\alpha v(p_{\bar{f}}) p_{f\bar{f}\beta}
- *  \f]
- *  It includes the option of a vector meson dominance (VMD) type form factor  
- *  \f$\frac{-M^2+i\Gamma M}{(m^2_{f\bar{f}}-M^2+i\Gamma M)}\f$.
- *    
- *  The incoming pseudoscalar meson, the outgoing vector, the fermion and antifermion
- *  and the coupling can be specified using the relevant interfaces.
+ *  The matrix element takes the form 
+ * \f[ \mathcal{M} = g\left[1+ay+by^2+cx^2\right],\f]
+ *  where 
+ * \f[x = \frac{\sqrt{3}(t-u)}{2M_0(M_0-m_1-m_2-m_3)},\f]
+ * \f[y = \frac{(m_1+m_2+m_3)((M_0-m_3)^2-s)}{2M_0(m_1+m_2)(M_0-m_1-m_2-m_3)}-1,\f]
+ *  where 
+ * - \f$m_{1,2,3}\f$ are the masses of the outgoing mesons
+ * - \f$u = (p_0-p_1)^2\f$,
+ * - \f$t = (p_0-p_2)^2\f$,
+ * - \f$s = (p_0-p_3)^2\f$.
+ *
+ *  This form is taken from hep-ph/0301058 as are the experimental results for 
+ * the constants which are used where available and the theory results which are
+ * used when there is no experimental data. 
  *
  * @see DecayIntegrator
- * @see PScalarVectorVectorDecayer
- * @see PScalar4FermionsDecayer
  * 
- *  \author Peter Richardson
- *
  */
-class PScalarVectorFermionsDecayer: public DecayIntegrator {
+class EtaPiPiPiDecayer: public DecayIntegrator {
 
 public:
+
 
   /** @name Standard constructors and destructors. */
   //@{
   /**
    * Default constructor.
    */
-  inline PScalarVectorFermionsDecayer();
+  inline EtaPiPiPiDecayer();
 
   /**
    * Copy-constructor.
    */
-  inline PScalarVectorFermionsDecayer(const PScalarVectorFermionsDecayer &);
+  inline EtaPiPiPiDecayer(const EtaPiPiPiDecayer &);
 
   /**
    * Destructor.
    */
-  virtual ~PScalarVectorFermionsDecayer();
+  virtual ~EtaPiPiPiDecayer();
   //@}
 
 public:
@@ -205,64 +202,45 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<PScalarVectorFermionsDecayer> initPScalarVectorFermionsDecayer;
+  static ClassDescription<EtaPiPiPiDecayer> initEtaPiPiPiDecayer;
 
   /**
    * Private and non-existent assignment operator.
    */
-  PScalarVectorFermionsDecayer & operator=(const PScalarVectorFermionsDecayer &);
+  EtaPiPiPiDecayer & operator=(const EtaPiPiPiDecayer &);
 
 private:
 
   /**
-   * coupling for a decay
-   */
-  vector<double> _coupling;
-
-  /**
-   * the PDG codes for the incoming particles
+   * the id of the incoming particle
    */
   vector<int> _incoming;
 
   /**
-   * the PDG codes for the outgoing vector
+   * the id of the last neutral meson
    */
-  vector<int> _outgoingV;
+  vector<int> _outgoing;
 
   /**
-   * the PDG codes for the outgoing fermion
+   * whether the pions are charged or neutral
    */
-  vector<int> _outgoingf;
+  vector<bool> _charged;
 
   /**
-   * the PDG codes for the outgoing antifermion
+   * the prefactor for the decay
    */
-  vector<int> _outgoinga;
+  vector<double> _prefactor;
 
   /**
-   * maximum weight for a decay
+   * the constants for the matrix elements
+   */
+  vector<double> _a,_b,_c;
+
+  /**
+   * maximum weights
    */
   vector<double> _maxweight;
 
-  /**
-   * Include the VMD factor
-   */
-  vector<int> _includeVMD;
-
-  /**
-   * PDG code for thte particle to use in the VMD factor.
-   */
-  vector<int> _VMDid;
-
-  /**
-   * Mass to use in the VMD factor.
-   */
-  vector<Energy> _VMDmass;
-
-  /**
-   * Width to use in the VMD factor.
-   */
-  vector<Energy> _VMDwidth;
 };
 
 }
@@ -274,11 +252,11 @@ namespace ThePEG {
 
 /**
  * The following template specialization informs ThePEG about the
- * base class of PScalarVectorFermionsDecayer.
+ * base class of EtaPiPiPiDecayer.
  */
 template <>
-struct BaseClassTrait<Herwig::PScalarVectorFermionsDecayer,1> {
-    /** Typedef of the base class of PScalarVectorFermionsDecayer. */
+struct BaseClassTrait<Herwig::EtaPiPiPiDecayer,1> {
+    /** Typedef of the base class of  EtaPiPiPiDecayer. */
   typedef Herwig::DecayIntegrator NthBase;
 };
 
@@ -287,24 +265,24 @@ struct BaseClassTrait<Herwig::PScalarVectorFermionsDecayer,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
- struct ClassTraits<Herwig::PScalarVectorFermionsDecayer>
-  : public ClassTraitsBase<Herwig::PScalarVectorFermionsDecayer> {
-   /** Return the class name.*/
-   static string className() { return "Herwig++::PScalarVectorFermionsDecayer"; }
-   /**
-    * Return the name of the shared library to be loaded to get
-    * access to this class and every other class it uses
-    * (except the base class).
-    */
-   static string library() { return "libHwSMDecay.so"; }
+struct ClassTraits<Herwig::EtaPiPiPiDecayer>
+  : public ClassTraitsBase<Herwig::EtaPiPiPiDecayer> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::EtaPiPiPiDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "libHwSMDecay.so"; }
 
 };
 
 }
 
-#include "PScalarVectorFermionsDecayer.icc"
+#include "EtaPiPiPiDecayer.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarVectorFermionsDecayer.tcc"
+// #include "EtaPiPiPiDecayer.tcc"
 #endif
 
-#endif /* THEPEG_PScalarVectorFermionsDecayer_H */
+#endif /* HERWIG_EtaPiPiPiDecayer_H */

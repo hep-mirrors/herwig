@@ -1,45 +1,35 @@
 // -*- C++ -*-
-#ifndef THEPEG_PScalarVectorFermionsDecayer_H
-#define THEPEG_PScalarVectorFermionsDecayer_H
-//
-// This is the declaration of the PScalarVectorFermionsDecayer class.
-//
+#ifndef HERWIG_PScalarLeptonNeutrinoDecayer_H
+#define HERWIG_PScalarLeptonNeutrinoDecayer_H
+// This is the declaration of the PScalarLeptonNeutrinoDecayer class.
+
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-// #include "PScalarVectorFermionsDecayer.fh"
-// #include "PScalarVectorFermionsDecayer.xh"
+#include "PScalarLeptonNeutrinoDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /**  \ingroup Decay
  *
- * The <code>PScalarVectorFermionsDecayer</code> class is designed for the decay of a 
- * pseudoscalar meson to a spin-1 particle and a fermion-antifermion pair. In practice
- * these decays are of the form \f$\gamma\ell^+\ell^-\f$ and the propagator of
- * the off-shell boson is taken to be \f$\frac1{m^2_{f\bar{f}}}\f$.
- * There is also the option of including a vector meson dominance
- * form-factor.
+ * The <code>PScalarLeptonNeutrinoDecayer</code> class is designed for the decay of 
+ * pseudoscalar mesons to a lepton and a neutrino. Although it can be used
+ * for charged pion and kaon decays it is mainly intended for the leptonic
+ * decays of bottom and charm mesons.
  *
- *  In this case the matrix element is
- *  \f[\mathcal{M} = \frac{g}{m^2_{f\bar{f}}}
- *                   \epsilon^{\mu\nu\alpha\beta}p_{V\mu}\epsilon_{V\nu}
- *                   \bar{u}(p_f)\gamma_\alpha v(p_{\bar{f}}) p_{f\bar{f}\beta}
- *  \f]
- *  It includes the option of a vector meson dominance (VMD) type form factor  
- *  \f$\frac{-M^2+i\Gamma M}{(m^2_{f\bar{f}}-M^2+i\Gamma M)}\f$.
- *    
- *  The incoming pseudoscalar meson, the outgoing vector, the fermion and antifermion
- *  and the coupling can be specified using the relevant interfaces.
+ *  The matrix element is given by 
+ * \f[\mathcal{M} = f_PG_FV_{CKM}m_l\bar{u}(p_{\ell})(1-\gamma_5)v(p_\nu),\f]
+ * where
+ * - \f$f_P\f$ is the pseudoscalar decay constant.
+ * - \f$G_F\f$ is the Fermi constant
+ * - \f$V_{CKM}\f$ is the relevant CKM matrix element
+ * - \f$p_\ell\f$ is the momentum of the charged lepton
+ * - \f$p_\nu\f$ is the momentum of the neutrino
  *
  * @see DecayIntegrator
- * @see PScalarVectorVectorDecayer
- * @see PScalar4FermionsDecayer
  * 
- *  \author Peter Richardson
- *
  */
-class PScalarVectorFermionsDecayer: public DecayIntegrator {
+class PScalarLeptonNeutrinoDecayer: public DecayIntegrator {
 
 public:
 
@@ -48,17 +38,17 @@ public:
   /**
    * Default constructor.
    */
-  inline PScalarVectorFermionsDecayer();
+  inline PScalarLeptonNeutrinoDecayer();
 
   /**
    * Copy-constructor.
    */
-  inline PScalarVectorFermionsDecayer(const PScalarVectorFermionsDecayer &);
+  inline PScalarLeptonNeutrinoDecayer(const PScalarLeptonNeutrinoDecayer &);
 
   /**
    * Destructor.
    */
-  virtual ~PScalarVectorFermionsDecayer();
+  virtual ~PScalarLeptonNeutrinoDecayer();
   //@}
 
 public:
@@ -93,26 +83,6 @@ public:
    */
   double me2(bool vertex, const int ichan,const Particle & part,
 	     const ParticleVector & decay) const;
-
-  /**
-   * Method to return an object to calculate the 3 body partial width.
-   * @param dm The DecayMode
-   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
-   */
-  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
-  
-  /**
-   * The differential three body decay rate with one integral performed.
-   * @param imode The mode for which the matrix element is needed.
-   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
-   * @param s  The invariant mass which still needs to be integrate over.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
-   * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
-   */
-  virtual double threeBodydGammads(int imode,Energy q2, Energy2 s,Energy m1,Energy m2,
-				   Energy m3);
 
 public:
 
@@ -153,9 +123,9 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-
+  
 protected:
-
+  
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -205,64 +175,51 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<PScalarVectorFermionsDecayer> initPScalarVectorFermionsDecayer;
+  static ClassDescription<PScalarLeptonNeutrinoDecayer> initPScalarLeptonNeutrinoDecayer;
 
   /**
    * Private and non-existent assignment operator.
    */
-  PScalarVectorFermionsDecayer & operator=(const PScalarVectorFermionsDecayer &);
+  PScalarLeptonNeutrinoDecayer & operator=(const PScalarLeptonNeutrinoDecayer &);
 
 private:
 
   /**
-   * coupling for a decay
-   */
-  vector<double> _coupling;
-
-  /**
-   * the PDG codes for the incoming particles
+   * the PDG code for the incoming particle
    */
   vector<int> _incoming;
 
   /**
-   * the PDG codes for the outgoing vector
+   * the meson decay constant for a particular particle multiplied by the CKM matrix
+   * element, \e i.e. \f$f_pV_{CKM}\f$
    */
-  vector<int> _outgoingV;
+  vector<Energy> _decayconstant;
 
   /**
-   * the PDG codes for the outgoing fermion
+   * which outgoing leptons are allowed for a particular decay
    */
-  vector<int> _outgoingf;
+  vector<int> _leptons;
 
   /**
-   * the PDG codes for the outgoing antifermion
+   * the maximum weight for the integration of a given decay to \f$e\nu_e\f$.
    */
-  vector<int> _outgoinga;
+  vector<double> _maxweighte;
 
   /**
-   * maximum weight for a decay
+   * the maximum weight for the integration of a given decay to \f$\mu\nu_\mu\f$.
    */
-  vector<double> _maxweight;
+  vector<double> _maxweightmu;
 
   /**
-   * Include the VMD factor
+   * the maximum weight for the integration of a given decay to \f$\tau\nu_\tau\f$.
    */
-  vector<int> _includeVMD;
+  vector<double> _maxweighttau;
 
   /**
-   * PDG code for thte particle to use in the VMD factor.
+   * the fermi constant
    */
-  vector<int> _VMDid;
+  InvEnergy2 _GF;
 
-  /**
-   * Mass to use in the VMD factor.
-   */
-  vector<Energy> _VMDmass;
-
-  /**
-   * Width to use in the VMD factor.
-   */
-  vector<Energy> _VMDwidth;
 };
 
 }
@@ -272,13 +229,13 @@ private:
 
 namespace ThePEG {
 
+template <>
 /**
  * The following template specialization informs ThePEG about the
- * base class of PScalarVectorFermionsDecayer.
+ * base class of PScalarLeptonNeutrinoDecayer.
  */
-template <>
-struct BaseClassTrait<Herwig::PScalarVectorFermionsDecayer,1> {
-    /** Typedef of the base class of PScalarVectorFermionsDecayer. */
+struct BaseClassTrait<Herwig::PScalarLeptonNeutrinoDecayer,1> {
+    /** Typedef of the base class of PScalarLeptonNeutrinoDecayer. */
   typedef Herwig::DecayIntegrator NthBase;
 };
 
@@ -287,24 +244,24 @@ struct BaseClassTrait<Herwig::PScalarVectorFermionsDecayer,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
- struct ClassTraits<Herwig::PScalarVectorFermionsDecayer>
-  : public ClassTraitsBase<Herwig::PScalarVectorFermionsDecayer> {
-   /** Return the class name.*/
-   static string className() { return "Herwig++::PScalarVectorFermionsDecayer"; }
-   /**
-    * Return the name of the shared library to be loaded to get
-    * access to this class and every other class it uses
-    * (except the base class).
-    */
-   static string library() { return "libHwSMDecay.so"; }
+struct ClassTraits<Herwig::PScalarLeptonNeutrinoDecayer>
+  : public ClassTraitsBase<Herwig::PScalarLeptonNeutrinoDecayer> {
+  /** Return the class name.*/
+  static string className() { return "Herwig++::PScalarLeptonNeutrinoDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "libHwSMDecay.so"; }
 
 };
 
 }
 
-#include "PScalarVectorFermionsDecayer.icc"
+#include "PScalarLeptonNeutrinoDecayer.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarVectorFermionsDecayer.tcc"
+// #include "PScalarLeptonNeutrinoDecayer.tcc"
 #endif
 
-#endif /* THEPEG_PScalarVectorFermionsDecayer_H */
+#endif /* HERWIG_PScalarLeptonNeutrinoDecayer_H */

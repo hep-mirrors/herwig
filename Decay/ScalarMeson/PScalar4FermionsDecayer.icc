@@ -1,0 +1,128 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PScalar4FermionsDecayer class.
+//
+
+namespace Herwig {
+  using namespace ThePEG;
+
+inline PScalar4FermionsDecayer::PScalar4FermionsDecayer() 
+{
+  // pi0 -> e+e- e+e-
+  _incoming.push_back(111);_outgoing1.push_back(11);_outgoing2.push_back(11);
+  _coupling.push_back(0.025159062/GeV);_maxweight.push_back(7.8356e-06);
+  _includeVMD.push_back(2);_VMDid.push_back(113);
+  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+}
+
+inline PScalar4FermionsDecayer::PScalar4FermionsDecayer(const PScalar4FermionsDecayer & x)
+  : DecayIntegrator(x), _coupling(x._coupling), _incoming(x._incoming),
+    _outgoing1(x._outgoing1),_outgoing2(x._outgoing2),_maxweight(x._maxweight),
+    _includeVMD(x._includeVMD),_VMDid(x._VMDid),_VMDmass(x._VMDmass),
+    _VMDwidth(x._VMDwidth)
+ {}
+
+
+inline IBPtr PScalar4FermionsDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr PScalar4FermionsDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void PScalar4FermionsDecayer::doupdate() throw(UpdateException) {
+  DecayIntegrator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void PScalar4FermionsDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check the parameters are consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoing1.size() || isize!=_outgoing2.size()||
+     isize!=_maxweight.size() || isize!=_includeVMD.size()|| isize!=_VMDid.size()    ||
+     isize!=_VMDmass.size()  || isize!=_VMDwidth.size())
+    {throw InitException() << "Inconsistent parameters in PScalar4FermionsDecayer"
+			   << Exception::abortnow;}
+  // create the integration channels for each mode 
+  PDVector extpart(5);
+  tPDPtr gamma=getParticleData(ParticleID::gamma);
+  DecayPhaseSpaceChannelPtr newchannel;
+  DecayPhaseSpaceModePtr mode;
+  vector<double> wgt;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0] = getParticleData(_incoming[ix]);
+      extpart[1] = getParticleData( _outgoing1[ix]);
+      extpart[2] = getParticleData(-_outgoing1[ix]);
+      extpart[3] = getParticleData( _outgoing2[ix]);
+      extpart[4] = getParticleData(-_outgoing2[ix]);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      // first channel always need this
+      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+      newchannel->addIntermediate(extpart[0],0, 0.0,-1,-2);
+      newchannel->addIntermediate(gamma     ,1,-1.1, 1,2);
+      newchannel->addIntermediate(gamma     ,1,-1.1, 3,4);
+      newchannel->init();
+      mode->addChannel(newchannel);
+      if(_outgoing1[ix]==_outgoing2[ix])
+	{
+	  newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+	  newchannel->addIntermediate(extpart[0],0, 0.0,-1,-2);
+	  newchannel->addIntermediate(gamma     ,1,-1.1, 3,2);
+	  newchannel->addIntermediate(gamma     ,1,-1.1, 1,4);
+	  newchannel->init();
+	  mode->addChannel(newchannel);
+	  wgt.resize(2);wgt[0]=0.5;wgt[1]=0.5;
+	}
+      else{wgt.resize(1);wgt[0]=1.;}
+      addMode(mode,_maxweight[ix],wgt);
+    }
+  // set up the values for the VMD factor if needed (copy the default mass and width 
+  //                                                 into the array)
+  for(unsigned ix=0;ix<isize;++ix)
+    {
+      if(_includeVMD[ix]==1)
+	{
+	  _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
+	  _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
+	}
+    }
+}
+
+inline void PScalar4FermionsDecayer::dofinish() {
+  DecayIntegrator::dofinish();
+}
+
+inline void PScalar4FermionsDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+}
+
+inline void PScalar4FermionsDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  DecayIntegrator::rebind(trans);
+}
+
+inline IVector PScalar4FermionsDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

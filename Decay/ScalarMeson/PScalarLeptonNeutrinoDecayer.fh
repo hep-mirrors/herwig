@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PScalarLeptonNeutrinoDecayer class.
+//
+#ifndef HERWIG_PScalarLeptonNeutrinoDecayer_FH
+#define HERWIG_PScalarLeptonNeutrinoDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class PScalarLeptonNeutrinoDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(PScalarLeptonNeutrinoDecayer,PScalarLeptonNeutrinoDecayerPtr);
+
+}
+
+#endif

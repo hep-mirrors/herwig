@@ -1,0 +1,285 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ScalarScalarScalarDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline ScalarScalarScalarDecayer::ScalarScalarScalarDecayer() 
+{
+  // f_0(980) to pi pi
+  _incoming.push_back(9010221);_outgoing1.push_back(111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(9010221);_outgoing1.push_back(211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  // f_0(980) to K K 
+  _incoming.push_back(9010221);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _coupling.push_back(5.921*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(9010221);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(5.921*GeV);_maxweight.push_back(1.);
+  // f_0(1370) to pi pi
+  _incoming.push_back(10221);_outgoing1.push_back(111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10221);_outgoing1.push_back(211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  // f_0(1370) to pi' pi
+  _incoming.push_back(10221);_outgoing1.push_back(100111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10221);_outgoing1.push_back(100211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10221);_outgoing1.push_back(211);_outgoing2.push_back(-100211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  // f_0(1370) to K K 
+  _incoming.push_back(10221);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _coupling.push_back(5.921*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10221);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(5.921*GeV);_maxweight.push_back(1.);
+  // f_0(1710) to pi pi
+  _incoming.push_back(10331);_outgoing1.push_back(111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10331);_outgoing1.push_back(211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  // f_0(1710) to K K 
+  _incoming.push_back(10331);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _coupling.push_back(5.921*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10331);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(5.921*GeV);_maxweight.push_back(1.);
+  // sigma to pi pi
+  _incoming.push_back(9000221);_outgoing1.push_back(111);_outgoing2.push_back(111);
+  _coupling.push_back(1.*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(9000221);_outgoing1.push_back(211);_outgoing2.push_back(-211);
+  _coupling.push_back(1.*GeV);_maxweight.push_back(1.);
+  // a_0 to eta pi
+  _incoming.push_back( 9000111);_outgoing1.push_back(221);_outgoing2.push_back( 111);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 9000211);_outgoing1.push_back(221);_outgoing2.push_back( 211);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-9000211);_outgoing1.push_back(221);_outgoing2.push_back(-211);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  // a_0 to K K
+  _incoming.push_back( 9000111);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 9000111);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 9000211);_outgoing1.push_back(321);_outgoing2.push_back(-311);
+  _coupling.push_back(3.171*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-9000211);_outgoing1.push_back(311);_outgoing2.push_back(-321);
+  _coupling.push_back(3.171*GeV);_maxweight.push_back(1.);
+  // a'_0 to eta pi
+  _incoming.push_back( 10111);_outgoing1.push_back(221);_outgoing2.push_back( 111);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10211);_outgoing1.push_back(221);_outgoing2.push_back( 211);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10211);_outgoing1.push_back(221);_outgoing2.push_back(-211);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  // a'_0 to eta' pi
+  _incoming.push_back( 10111);_outgoing1.push_back(331);_outgoing2.push_back( 111);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10211);_outgoing1.push_back(331);_outgoing2.push_back( 211);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10211);_outgoing1.push_back(331);_outgoing2.push_back(-211);
+  _coupling.push_back(3.027*GeV);_maxweight.push_back(1.);
+  // a'_0 to K K
+  _incoming.push_back( 10111);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10111);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10211);_outgoing1.push_back(321);_outgoing2.push_back(-311);
+  _coupling.push_back(3.171*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10211);_outgoing1.push_back(311);_outgoing2.push_back(-321);
+  _coupling.push_back(3.171*GeV);_maxweight.push_back(1.);
+  // f_0(1370) to eta eta  
+  _incoming.push_back( 10221);_outgoing1.push_back(221);_outgoing2.push_back(221);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // f_0(1710) to eta eta  
+  _incoming.push_back( 10331);_outgoing1.push_back(221);_outgoing2.push_back(221);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // f_0(1370) to sigma sigma  
+  _incoming.push_back( 10221);_outgoing1.push_back(9000221);
+  _outgoing2.push_back(9000221);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // K_0* to K pi
+  _incoming.push_back( 10311);_outgoing1.push_back( 311);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10311);_outgoing1.push_back(-311);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10321);_outgoing1.push_back( 321);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10321);_outgoing1.push_back(-321);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10311);_outgoing1.push_back( 321);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10311);_outgoing1.push_back(-321);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10321);_outgoing1.push_back( 311);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10321);_outgoing1.push_back(-311);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // D_0* to D pi
+  _incoming.push_back( 10411);_outgoing1.push_back( 411);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10411);_outgoing1.push_back(-411);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10421);_outgoing1.push_back( 421);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10421);_outgoing1.push_back(-421);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10411);_outgoing1.push_back( 421);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10411);_outgoing1.push_back(-421);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10421);_outgoing1.push_back( 411);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10421);_outgoing1.push_back(-411);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // B_0* to B pi
+  _incoming.push_back( 10511);_outgoing1.push_back( 511);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10511);_outgoing1.push_back(-511);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10521);_outgoing1.push_back( 521);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10521);_outgoing1.push_back(-521);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10511);_outgoing1.push_back( 521);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10511);_outgoing1.push_back(-521);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 10521);_outgoing1.push_back( 511);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10521);_outgoing1.push_back(-511);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // K' to K_* pi
+  _incoming.push_back( 100311);_outgoing1.push_back( 10311);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-100311);_outgoing1.push_back(-10311);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 100321);_outgoing1.push_back( 10321);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-100321);_outgoing1.push_back(-10321);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 100311);_outgoing1.push_back( 10321);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-100311);_outgoing1.push_back(-10321);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back( 100321);_outgoing1.push_back( 10311);_outgoing2.push_back( 211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-100321);_outgoing1.push_back(-10311);_outgoing2.push_back(-211);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // D_s0* to D_s pi
+  _incoming.push_back( 10431);_outgoing1.push_back( 431);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10431);_outgoing1.push_back(-431);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // B_s0* to B_s pi
+  _incoming.push_back( 10531);_outgoing1.push_back( 531);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(-10531);_outgoing1.push_back(-531);_outgoing2.push_back( 111);
+  _coupling.push_back(2.242*GeV);_maxweight.push_back(1.);
+  // eta'' to a_0 pi
+  _incoming.push_back(100221);_outgoing1.push_back(9000111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(100221);_outgoing1.push_back(9000211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(100221);_outgoing1.push_back(211);_outgoing2.push_back(-9000211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  // eta''' to a_0 pi
+  _incoming.push_back(9020221);_outgoing1.push_back(9000111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(9020221);_outgoing1.push_back(9000211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(9020221);_outgoing1.push_back(211);_outgoing2.push_back(-9000211);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(9020221);_outgoing1.push_back(221);_outgoing2.push_back(9000221);
+  _coupling.push_back(2.961*GeV);_maxweight.push_back(1.);
+  // eta'' to sigma eta
+  _incoming.push_back(100221);_outgoing1.push_back(9000221);_outgoing2.push_back(221);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  // chi_0c decays
+  _incoming.push_back(10441);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10441);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10441);_outgoing1.push_back(211);_outgoing2.push_back(-211);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10441);_outgoing1.push_back(111);_outgoing2.push_back(111);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+  _incoming.push_back(10441);_outgoing1.push_back(221);_outgoing2.push_back(221);
+  _coupling.push_back(2.093*GeV);_maxweight.push_back(1.);
+}
+
+inline ScalarScalarScalarDecayer::ScalarScalarScalarDecayer(const ScalarScalarScalarDecayer & x)
+  : DecayIntegrator(x), _incoming(x._incoming), _outgoing1(x._outgoing1),
+    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight) {}
+
+inline IBPtr ScalarScalarScalarDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ScalarScalarScalarDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ScalarScalarScalarDecayer::doupdate() throw(UpdateException) {
+  DecayIntegrator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ScalarScalarScalarDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check the parameters arew consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
+     isize!=_outgoing2.size() || isize!=_maxweight.size())
+    {throw InitException() << "Inconsistent parameters in ScalarScalarScalarDecayer" 
+			   << Exception::abortnow;}
+  // set up the integration channels
+  vector<double> wgt;
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0] = getParticleData(_incoming[ix]);
+      extpart[1] = getParticleData(_outgoing1[ix]);
+      extpart[2] = getParticleData(_outgoing2[ix]);
+      mode = new DecayPhaseSpaceMode(extpart,this);
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
+
+inline void ScalarScalarScalarDecayer::dofinish() {
+  DecayIntegrator::dofinish();
+}
+
+inline void ScalarScalarScalarDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+}
+
+inline void ScalarScalarScalarDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  DecayIntegrator::rebind(trans);
+}
+
+inline IVector ScalarScalarScalarDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
