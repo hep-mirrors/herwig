@@ -47,8 +47,7 @@ void ThreeMesonCurrentBase::Init() {
 // the hadronic currents    
 vector<LorentzPolarizationVector> 
 ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan, 
-				    const Particle & inpart,
-				    const ParticleVector & decay) const
+			       Energy & scale,const ParticleVector & decay) const
 {
   // storage for the currents
   vector<LorentzPolarizationVector> temp;
@@ -59,6 +58,8 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q=0;
   for(unsigned int ix=decay.size()-3;ix<decay.size();++ix){q+=decay[ix]->momentum();}
+  q.rescaleMass();
+  scale=q.mass();
   Energy2 q2=q.m2();
   Energy2 s1 = decay[decay.size()-2]->momentum().m2()+
   decay[decay.size()-1]->momentum().m2()+
@@ -71,7 +72,7 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
     2.*decay[decay.size()-3]->momentum().dot(decay[decay.size()-2]->momentum());
   complex<double> F1,F2,F3,F4,F5;
   calculateFormFactors(ichan,imode,q2,s1,s2,s3,F1,F2,F3,F4,F5);
-  if(inpart.id()==ParticleID::tauplus){F5=conj(F5);}
+  //if(inpart.id()==ParticleID::tauplus){F5=conj(F5);}
   // the first three form-factors
   LorentzPolarizationVector vect;
   vect = (F2-F1)*decay[decay.size()-1]->momentum()
@@ -85,7 +86,7 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
 				       decay[decay.size()-2]->momentum(),
 				       decay[decay.size()-1]->momentum());
   // factor to get dimensions correct
-  temp.push_back(inpart.mass()*vect);
+  temp.push_back(q.mass()*vect);
   return temp;
 }
 

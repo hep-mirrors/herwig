@@ -32,7 +32,7 @@ using namespace ThePEG;
  *  In this case the current is given by
  *  \f[ J^\mu = \left(g^{\mu\nu}-\frac{q^\mu q^\nu}{q^2}\right)
  *   \left[F_1(p_2-p_3)^\mu +F_2(p_3-p_1)^\mu+F_3(p_1-p_2)^\mu\right]
- *  +q^\muF_4
+ *  +q^\mu F_4
  *  +F_5\epsilon^{\mu\alpha\beta\gamma}p_1^\alpha p_2^\beta p_3^\gamma
  *  \f]
  * where
@@ -98,14 +98,13 @@ public:
    * Hadronic current. This version returns the hadronic current described above.
    * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
-   * @param ichan The phase-space channel the current is needed for
-   * @param inpart The decaying particle.
+   * @param ichan The phase-space channel the current is needed for.
+   * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan, 
-						     const Particle & inpart,
+						     const int ichan,Energy & scale,
 						     const ParticleVector & decay) const;
 
   /**
