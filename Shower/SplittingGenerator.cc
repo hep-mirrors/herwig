@@ -547,11 +547,26 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
       } 
     }
   }
+
+//   short pin, pout1, pout2; 
+//   if( sudakov ) {
+//     pin = abs(particle.data().id()); 
+//     pout1 = min( abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
+// 		    idFirstProduct()), 
+// 		abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
+// 		    idSecondProduct()) ); 
+//     pout2 = max( abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
+// 		    idFirstProduct()), 
+// 		abs((dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
+// 		    idSecondProduct()) ); 
+//     cerr << pin << " " << pout1 << " " << pout2 << " " 
+// 	 << sudakov->qtilde() << " " << sudakov->z() << endl;
+//   }
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "  " << particle.data().PDGName() << ": ";
       //		       << " [" << particle.number() << "]: ";
-    if( sudakov ) 
+    if( sudakov ) {
       generator()->log() << sudakov->splitFun()->idEmitter() << " -> ("
 			 << (dynamic_ptr_cast<tSplitFun1to2Ptr>(sudakov->splitFun()))->
 	idFirstProduct() << ", "
@@ -562,8 +577,8 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 			 << particle.evolutionScales()[sudakov->splitFun()->interactionType()]/MeV 
 			 << " -> " 
 			 << (newQ/MeV > 0 ? newQ/MeV : 0)
-			 << ") MeV"  << endl;
-    else 
+			 << ") MeV"  << endl;    
+    } else 
       generator()->log() << " won't branch." << endl; 
   }
 
@@ -621,6 +636,8 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	  new_ptr (FS_QtildaShowerKinematics1to2( p, n ) );
 
         showerKin->qtilde( newQ );
+        showerKin->setResScale( sudakov->resScale() );
+	showerKin->setKinScale( sudakov->kinScale() ); 
 	showerKin->z( sudakov->z() );
 	showerKin->phi( sudakov->phi() );
 
@@ -720,6 +737,8 @@ void SplittingGenerator::initializeRun() {
   SudakovFormFactorPtr sudakov;
   Energy minQValue = Energy();
   Energy maxQValue = _pointerShowerConstrainer->convertMassScaleToQScale( maxCMEnergy );  
+  // *** ACHTUNG *** create interface to parameter!
+  Energy kinQ0 = _pointerShowerConstrainer->kinScale();
 
   //===========
   //=== QCD ===
@@ -735,7 +754,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) ); 
+						    minQValue, maxQValue, kinQ0 ) ); 
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -743,7 +762,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -756,7 +775,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -764,7 +783,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );   
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) ); 
+						    minQValue, maxQValue, kinQ0 ) ); 
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -777,7 +796,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) ); 
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -785,7 +804,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -798,7 +817,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -806,7 +825,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -819,7 +838,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -827,7 +846,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -840,7 +859,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -848,7 +867,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -861,7 +880,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_GtoGGSplitFun() );
 	sudakov  = new_ptr( GtoGGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -869,7 +888,7 @@ void SplittingGenerator::initializeRun() {
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_GtoGGSplitFun() );     
 	sudakov  = new_ptr( GtoGGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						    minQValue, maxQValue ) );
+						    minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -881,7 +900,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::u,
 						 getParticleData( ParticleID::u )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -890,7 +909,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::u,
 						 getParticleData( ParticleID::u )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -902,7 +921,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::d,
 						 getParticleData( ParticleID::d )->mass() ) );     
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -911,7 +930,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::d,
 						 getParticleData( ParticleID::d )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -923,7 +942,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::s,
 						 getParticleData( ParticleID::s )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -932,7 +951,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::s,
 						 getParticleData( ParticleID::s )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -944,7 +963,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::c,
 						 getParticleData( ParticleID::c )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -953,7 +972,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::c,
 						 getParticleData( ParticleID::c )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -965,7 +984,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::b,
 						 getParticleData( ParticleID::b )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -974,7 +993,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::b,
 						 getParticleData( ParticleID::b )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -986,7 +1005,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::t,
 						 getParticleData( ParticleID::t )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -995,7 +1014,7 @@ void SplittingGenerator::initializeRun() {
 	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::t,
 						 getParticleData( ParticleID::t )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
-						       minQValue, maxQValue ) );
+						       minQValue, maxQValue, kinQ0 ) );
         sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -1016,14 +1035,14 @@ void SplittingGenerator::initializeRun() {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -1035,14 +1054,14 @@ void SplittingGenerator::initializeRun() {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -1054,14 +1073,14 @@ void SplittingGenerator::initializeRun() {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -1073,14 +1092,14 @@ void SplittingGenerator::initializeRun() {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -1092,14 +1111,14 @@ void SplittingGenerator::initializeRun() {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
@@ -1111,14 +1130,14 @@ void SplittingGenerator::initializeRun() {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue, kinQ0 ) );
 	sudakov->setupLookupTables();
 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
       }

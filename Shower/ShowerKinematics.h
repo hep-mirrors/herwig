@@ -126,7 +126,12 @@ public:
   inline Energy qtilde() const;
   inline void qtilde( const Energy inputQtilde );
   // Access to/set the scale of the splitting.
-
+  inline Energy resScale() const;
+  inline void setResScale( const Energy inputQ );
+  // Access to/set the resolution scale of the splitting.
+  inline Energy kinScale() const;
+  inline void setKinScale( const Energy inputQ );
+  // Access to/set a cutoff scale of the splitting.
 
 private:
 
@@ -136,7 +141,8 @@ private:
   bool _isTheJetStartingPoint;
 
   Energy _qtilde;
-
+  Energy _q0;
+  Energy _kinQ0;
 };
 
 }

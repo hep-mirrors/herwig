@@ -18,8 +18,9 @@ namespace Herwig {
   inline GtoQQbarSudakovFormFactor::
   GtoQQbarSudakovFormFactor( const SplitFunPtr inputSplitFun, 
 			     const tShowerAlphaPtr inputShowerAlpha,
-			     const Energy inputInfScale, const Energy inputSupScale ) :
-    SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale) {}
+			     const Energy inputInfScale, const Energy inputSupScale, 
+			     const Energy inQ0 ) :
+    SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale, inQ0) {}
   
 
 }

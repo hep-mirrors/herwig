@@ -13,6 +13,7 @@ inline ShowerConstrainer::ShowerConstrainer() :
   // ***ACHTUNG*** to be set in the init-file, later! 
   _cutoffQEDMassScale( 0.51*MeV ),
   _cutoffEWKMassScale( 91.0*GeV ),
+  _kinCutoffScale( .75*GeV ),
   _stopShowerAtMassScale( Energy() ),
   _vetoAbovePtScale( HUGEMASS ), 
   _vetoBelowPtScale( Energy() )
@@ -26,7 +27,8 @@ inline ShowerConstrainer::ShowerConstrainer(const ShowerConstrainer & x)
 	     _cutoffQCDMassScale( x._cutoffQCDMassScale ),
 	     _cutoffQEDMassScale( x._cutoffQEDMassScale ),
 	     _cutoffEWKMassScale( x._cutoffEWKMassScale ),
-	     _stopShowerAtMassScale( x._stopShowerAtMassScale ),
+             _kinCutoffScale( x._kinCutoffScale ),
+             _stopShowerAtMassScale( x._stopShowerAtMassScale ),
 	     _vetoAbovePtScale( x._vetoAbovePtScale ), 
 	     _vetoBelowPtScale( x._vetoBelowPtScale ),
 	     _particlesDecayBeforeShower( x._particlesDecayBeforeShower )
@@ -78,6 +80,10 @@ inline Energy ShowerConstrainer::stopShowerAtQScale() const {
 
 inline void ShowerConstrainer::stopShowerAtQScale(const Energy inputStopShowerAtQScale) {
   _stopShowerAtMassScale = convertQScaleToMassScale(inputStopShowerAtQScale);
+}
+
+inline Energy ShowerConstrainer::kinScale() const {
+  return _kinCutoffScale;
 }
 
 inline Energy ShowerConstrainer::vetoAbovePtScale() const {

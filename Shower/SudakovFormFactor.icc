@@ -12,7 +12,8 @@ namespace Herwig {
     _z( 0.0 ),
     _phi ( 0.0 ),
     _minScale( Energy() ),
-    _maxScale( Energy() )
+    _maxScale( Energy() ),
+    _kinQ0 ( Energy() )
   {}
   
   
@@ -23,20 +24,22 @@ namespace Herwig {
       _splitFun( x._splitFun ),
       _alpha( x._alpha ),
       _minScale( x._minScale ),
-      _maxScale( x._maxScale )
+      _maxScale( x._maxScale ), 
+      _kinQ0 ( x._kinQ0 )
   {}
   
   
   inline SudakovFormFactor::SudakovFormFactor 
   (const SplitFunPtr inputSplitFun, const tShowerAlphaPtr inputShowerAlpha, 
-   const Energy inputMinScale, const Energy inputMaxScale) 
+   const Energy inputMinScale, const Energy inputMaxScale, const Energy inQ0) 
     : _q( Energy() ),
       _z( 0.0 ),
       _phi( 0.0 ),
       _splitFun( inputSplitFun ),
       _alpha( inputShowerAlpha ),
       _minScale( inputMinScale ), 
-      _maxScale( inputMaxScale )
+      _maxScale( inputMaxScale ), 
+      _kinQ0( inQ0 )
   {}  
   
   
@@ -63,4 +66,11 @@ namespace Herwig {
     return _q;
   }
 
+  inline double SudakovFormFactor::resScale() const {
+    return _minScale;
+  }
+
+  inline double SudakovFormFactor::kinScale() const {
+    return _kinQ0;
+  }
 }

@@ -537,11 +537,11 @@ void ShowerHandler::debuggingInfo() {
 //   }
 //   cout << "}"; 
 
-  Lorentz5Momentum pcm = Lorentz5Momentum(); 
-  for(tShowerParticleVector::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
-    pcm += (*cit)->momentum();     
-  }
-  Energy root_s = pcm.m();
+//   Lorentz5Momentum pcm = Lorentz5Momentum(); 
+//   for(tShowerParticleVector::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
+//     pcm += (*cit)->momentum();     
+//   }
+//   Energy root_s = pcm.m();
 //   if ( generator()->currentEventNumber() < 1000 )
 //     cout << "# shapes: root(s)*lam[i]*n[i] | lam[i] | n[i]" << endl;
 //   for (int i=0; i<3; i++) {
@@ -607,7 +607,7 @@ void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {
       (*cit)->addChildrenEvtRec(pstep);   
     }
   }  
-  printStep(pstep, "after filling");
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) printStep(pstep, "after filling");
 }
 
 

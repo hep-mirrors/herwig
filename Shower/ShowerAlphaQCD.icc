@@ -9,7 +9,10 @@ namespace Herwig {
 inline ShowerAlphaQCD::ShowerAlphaQCD() {}
 
 inline ShowerAlphaQCD::ShowerAlphaQCD(const ShowerAlphaQCD & x)
-  : ShowerAlpha(x) {}
+  : ShowerAlpha(x) {
+  _Qmin = x._Qmin,
+  _asType = x._asType;
+}
 
 inline IBPtr ShowerAlphaQCD::clone() const {
   return new_ptr(*this);
@@ -17,13 +20,6 @@ inline IBPtr ShowerAlphaQCD::clone() const {
 
 inline IBPtr ShowerAlphaQCD::fullclone() const {
   return new_ptr(*this);
-}
-
-  // replace with more sensible minimum 
-inline double ShowerAlphaQCD::overestimateValue() {
-  // return value(1.0*GeV2);
-  // could as well be independent of that scale! 
-  return value(sqr(_pointerShowerConstrainer->cutoffQScale(ShowerIndex::QCD)));
 }
 
 }

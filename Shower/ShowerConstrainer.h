@@ -97,6 +97,8 @@ public:
   Energy cutoffQScale(const ShowerIndex::InteractionType interaction) const;
   // It returns the low energy cutoff <I>mass/Q </I> scale for the 
   // interaction type specified in input.
+  inline Energy kinScale() const;
+  // specifies a kinematic cutoff used in the parton shower phase space. 
 
   void reset();
   // It resets all the scales, and vetos.
@@ -166,6 +168,7 @@ private:
   Energy _cutoffQCDMassScale; // Low-energy cutoff mass scale for QCD radiation
   Energy _cutoffQEDMassScale; // Low-energy cutoff mass scale for QED radiation
   Energy _cutoffEWKMassScale; // Low-energy cutoff mass scale for EWK radiation
+  Energy _kinCutoffScale; //shape the phase space 
 
   Energy _stopShowerAtMassScale;
   Energy _vetoAbovePtScale;

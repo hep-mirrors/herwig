@@ -349,6 +349,8 @@ timeLikeShower( tPartCollHdlPtr ch,
 			     << part->evolutionScales()[pairShowerKinSudakov.second->splitFun()->interactionType()]
 			     << ">" 
 			     << pairShowerKinSudakov.first->qtilde()
+			     << "; "
+			     << pairShowerKinSudakov.second->z()
 			     << ")"
 			     << endl;
 

@@ -32,7 +32,8 @@ public:
 
   inline GtoGGSudakovFormFactor( const SplitFunPtr inputSplitFun, 
 				 const tShowerAlphaPtr inputShowerAlpha,
-				 const Energy inputInfScale, const Energy inputSupScale );
+				 const Energy inputInfScale, const Energy inputSupScale, 
+				 const Energy inQ0 );
 
   virtual Energy generateNextBranching( tPartCollHdlPtr ch, 
   					const Energy startingScale,

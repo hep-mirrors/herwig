@@ -24,6 +24,7 @@ void ShowerConstrainer::persistentOutput(PersistentOStream & os) const {
      << _cutoffQCDMassScale
      << _cutoffQEDMassScale
      << _cutoffEWKMassScale
+     << _kinCutoffScale
      << _particlesDecayBeforeShower;
 }
 
@@ -34,6 +35,7 @@ void ShowerConstrainer::persistentInput(PersistentIStream & is, int) {
      >> _cutoffQCDMassScale
      >> _cutoffQEDMassScale
      >> _cutoffEWKMassScale
+     >> _kinCutoffScale
      >> _particlesDecayBeforeShower;
 }
 
@@ -82,6 +84,12 @@ void ShowerConstrainer::Init() {
 			"low energy cutoff mass scale for EWK radiation  (unit [GeV])",
 			&ShowerConstrainer::_cutoffEWKMassScale, GeV, 
 			91.0*GeV, 0.0*GeV, 1000.0*GeV);
+
+  static Parameter<ShowerConstrainer,Energy>
+    interfaceKinScale ("cutoffKinScale",
+		       "kinematic cutoff scale for the parton shower phase space (unit [GeV])",
+		       &ShowerConstrainer::_kinCutoffScale, GeV, 
+		       0.75*GeV, 0.001*GeV, 10.0*GeV);
 
 }
 

@@ -80,11 +80,11 @@ double SudakovFormFactor::guessz (double z0, double z1) {
 }
 
 
-Energy2 SudakovFormFactor::guesst (Energy2 t0, Energy2 t1) {
+Energy2 SudakovFormFactor::guesst (Energy2 t0, Energy2 t1, double z0, double z1) {
   tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
-  double z0, z1; 
-  z0 = sqrt(t0/t1); 
-  z1 = 1.-sqrt(t0/t1); 
+//   double z0, z1; 
+//   z0 = sqrt(t0/t1); 
+//   z1 = 1.-sqrt(t0/t1); 
 //   cerr << "(t1, G(z0), G(z1), as(Q02), exponent) = (" 
 //        << t1 << ", " 
 //        << sF->integOverIntegratedFun(z1) << ", "
@@ -106,41 +106,63 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
   tSplitFun1to2Ptr sF = dynamic_ptr_cast<tSplitFun1to2Ptr>(_splitFun);
 
   double z0, z1, ratio;
-  Energy2 told, mc2, tmax, t; 
+  Energy2 told, t0, tmax, t, tmin; 
   bool veto = true; 
   tmax = sqr(root_tmax); 
   t = sqr(root_t); 
+  // Energy kinCutoff = _minScale;
+  Energy kinCutoff = kinScale();
+  bool glueEmits = false; 
+  if (sF->idEmitter() == 21) glueEmits = true; 
+  if ( glueEmits ) { 
+    // have a cutoff of 
+    //    t0 = 16.*sqr(max(_minScale, sF->massFirstProduct()));    
+    //    t0 = sqr(max(_minScale, 4.*sF->massFirstProduct()));    
+    t0 = sqr(max(kinCutoff, sF->massFirstProduct()));    
+  } else {
+    t0 = sqr(max(kinCutoff, sF->massEmitter()));    
+  }
 
-  //  mc2 = 1.0*GeV2;
-  mc2 = sqr(_minScale)/4.;
   t = tmax; 
+  tmin = max(t0, sqr(_minScale));
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
     CurrentGenerator::log() << "SudakovFormFactor::gettz(): extreme ____________________________________________" << endl
 			    << "  called with q = " << sqrt(tmax)/GeV 
-			    << " and mc = " << sqrt(mc2)/GeV << " (GeV)" << endl; 
+			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)" << endl; 
   }
 
-  if ( tmax <= 4.*mc2 ) {
+  if ( tmax <= t0 ) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) 
-      CurrentGenerator::log() << "  | tmax < 4mc2! return with (sqrt(t)/GeV, z) = (" 	 
+      CurrentGenerator::log() << "  | tmax < t0! return with (sqrt(t)/GeV, z) = (" 	 
 			      << root_t/GeV << ", "
 			      << z << ")" << endl; 
     root_t = -1;
     return; 
   }
 
-  // the veto algorithm
+  long psest, psveto, pgveto, asveto; 
+  psest = psveto = pgveto = asveto = 0;
+
+  // the veto algorithm loop
   do {
     
     // remind the old value
     told = t; 
 
-    // the larger PS-boundary in z
-    z0 = sqrt(mc2/told); 
-    z1 = 1.-sqrt(mc2/told); 
+    // the larger PS-boundary in z (could be part of ShowerKinematics, really!)
+    if (glueEmits) {
+      z0 = (1.-sqrt(1.-4.*sqrt(t0/told)))/2.;
+      z1 = (1.+sqrt(1.-4.*sqrt(t0/told)))/2.;
+    } else {
+      z0 = sqrt(t0/told)/2.;
+      z1 = 1.-kinCutoff/sqrt(told)/2.; // a little overestimate...
+    }
+
+    // quick hack gives no more branching without PS
+    // if (z0>z1) z1=z0;
+    t = guesst(t0, told, z0, z1); 
     z = guessz(z0, z1); 
-    t = guesst(mc2, told); 
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
@@ -153,8 +175,14 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     }
 
     // actual values for z-limits
-    z0 = sqrt(mc2/t); 
-    z1 = 1.-sqrt(mc2/t); 
+    if (glueEmits) {
+      z0 = (1.-sqrt(1.-4.*sqrt(t0/t)))/2.;
+      z1 = (1.+sqrt(1.-4.*sqrt(t0/t)))/2.;
+    } else {
+      z0 = sqrt(t0/t)/2.;
+      z1 = 1.-kinCutoff/sqrt(t)/2.;
+      //z1 = 1.-0.1;
+    }
     
     // *** ACHTUNG *** collect some sort of statistics of the
     // likelihood of single vetoes in order to check the most likely
@@ -162,20 +190,36 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
     veto = false; 
    
     // still inside PS?
-    if ((z < z0 || z > z1) && t > 4.*mc2) { 
+    if ((z < z0 || z > z1) && t > tmin) { 
       veto = true; 
+      psest++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
 				<< z0 << ", "
 				<< z << ", "
 				<< z1 << ")" << endl;  
       }
-      //      psv++; 
-      //     cout << "PS (" << vc+1 << ", " << psv << ")" << endl;
-
+    } else {
+      // still REALLY inside PS? (onverestimated allowed PS)
+      if (glueEmits) {
+	if (sqr(z*(1.-z))*t < t0) {
+	  veto = true; 
+	  psveto++;
+	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
+	  }
+	}
+      } else {
+	if (sqr(1.-z)*(t*sqr(z) - t0) < z*sqr(kinCutoff)) {
+	  veto = true; 
+	  psveto++;
+	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	    CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
+	  }
+	}
+      } 
     }
-
-
+	
     // overestimate of t-integral due to overestimate 
     // of z-integration limits: veto on this!
 //     ratio = (int_g_gg(1.-sqrt(MC2/t)) - int_g_gg(sqrt(MC2/t)))
@@ -191,59 +235,45 @@ void SudakovFormFactor::gettz (Energy root_tmax, Energy &root_t, double &z) {
       sF->overestimateIntegratedFun(z);
     if (UseRandom::rnd() > ratio) { 
       veto = true; 
+      pgveto++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
       }
-      //      hitv++;
-      //      cout << "HI (" << vc+1 << ", " << hitv << ")" << endl;
     }
-
     // alpha_s valid? 
-    if ( UseRandom::rnd() > _alpha->value(z*(1.-z)*t)/
+    if ( UseRandom::rnd() > _alpha->value(sqr(z*(1.-z))*t)/
 	 _alpha->overestimateValue() ) {
       veto = true; 
+      asveto++;
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	CurrentGenerator::log() << "  X veto on as(q2)/as" << endl;
+	CurrentGenerator::log() << "  X veto on as(q2)/as = " 
+				<< _alpha->value(sqr(z*(1.-z))*t)
+				<< "/" << _alpha->overestimateValue() 
+				<< " = " 
+				<< _alpha->value(sqr(z*(1.-z))*t)/_alpha->overestimateValue() 
+				<< endl;
       }
-      // asv++; 
     }
-
-    // alpha_s valid? 
-//     if (z*(1.-z)*t < Q2MIN) {
-//       veto = true; 
-//     };
-
     // is t valid at all? 
-    if (t < 4.*mc2) {
+    if (t < tmin) {
+      //    if (t < t0) {
       veto = false; 
       t = -1; 
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	CurrentGenerator::log() << "  | return with no branching, t < 4mc2" << endl;
+	CurrentGenerator::log() << "  | return with no branching, t < t0" << endl;
       }
     }
-	
-//    if (veto) {
-//      vc++; 
-//       cout << "(veto, ps, tint, hit, as) = ("
-// 	   << vc << ", " 
-// 	   << psv << ", " 
-// 	   << tintv << ", " 
-// 	   << hitv << ", " 
-// 	   << asv << ") " 
-// 	   << endl; 
-//	};
-    
-//     cout << "veto = " << veto << " (z0, z, z1) = (" 
-// 	 << z0 << ", "
-// 	 << z << ", "
-// 	 << z1 << ")" << endl; 
-
-
   } while (veto); 
 
 //   cerr << "---> accepted (t, z) = (" 	 
 //        << t << ", "
-//        << z << ")" << endl; 
+//        << z << ")" 
+//        << "(est, ps, P/g, as) = (" 
+//        << psest << ", "
+//        << psveto << ", "
+//        << pgveto << ", "
+//        << asveto << ")"
+//        << endl; 
   if (t > 0) root_t = sqrt(t);
   else root_t = -1; ;
 

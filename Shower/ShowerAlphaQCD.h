@@ -33,7 +33,7 @@ public:
   // It returns the running alpha value evaluated at the input scale
   // multiplied by the scale factor <!id>scaleFactor()<!!id>.
 
-  inline virtual double overestimateValue();
+  virtual double overestimateValue();
   // It returns the running alpha value evaluated at the input scale
   // multiplied by the scale factor <!id>scaleFactor()<!!id>.
 
@@ -41,6 +41,9 @@ public:
 
   static void Init();
   // Standard Init function used to initialize the interfaces.
+
+  void persistentOutput(PersistentOStream & os) const;
+  void persistentInput(PersistentIStream & is, int);
 
 protected:
 
@@ -57,12 +60,28 @@ private:
   //  Private and non-existent assignment operator.
 
 private: 
+
+  double alphaTwoLoop(Energy q, Energy lam, short nf); 
+  // the two-loop parametrization of alpha_s
+
+  pair<short, Energy> getLamNfTwoLoop(Energy q); 
+  // hacked in masses by hand for the moment before proper
+  // interfacing...  obtained lambda solutions numerically in
+  // Mathematica with my alphas.m using two-loop alphas from PDT2002
+  // and as(M_Z=91.2GeV) = 0.118 *** ACHTUNG! *** this HAS to be done
+  // automatically acc to the masses and as(M_Z) given by the PDT
+  // class (which is supposed to be up-to-date)
+
   double alpha_s(double q2, double q2min, int type); 
   // A toy parametrization of alpha_s with different parametrizations
   // of the IR behaviour, below <!id>q2min<!!id>, set by
   // <!id>type<!!id>.  Default is <!id>type = 1<!!id>,
   // i.e. <!id>alpha_s<!!id> = 0 below <!id>q2min<!!id>.
 
+  int _asType;
+  Energy _Qmin; 
+
+  void test(int i);
 };
 
 }
@@ -77,6 +96,8 @@ template <>
 struct BaseClassTrait<Herwig::ShowerAlphaQCD,1> {
   typedef Herwig::ShowerAlpha NthBase;
 };
+
+
 
 // The following template specialization informs Pythia7 about the
 // name of this class and the shared object where it is defined.
