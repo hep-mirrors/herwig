@@ -7,6 +7,10 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/** \ingroup PDF
+ *
+ *  Some comment should be provided!
+ */
 class MRSTData : public Interfaced {
  public:
   MRSTData();
@@ -18,7 +22,9 @@ class MRSTData : public Interfaced {
 
   static void Init();
 
-  // This routine is what must be defined for each dataset
+  /**
+   * This routine is what must be defined for each dataset.
+   */
   virtual double value(int,int,int) = 0;
  protected:
   virtual void doinit() throw(InitException);

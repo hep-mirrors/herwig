@@ -17,6 +17,10 @@
 
 namespace Herwig {
 
+/** \ingroup Utilities
+ *
+ *  Some comment should be provided!
+ */
 class HerwigRun {
  public:
   enum RunStatus { UNKNOWN, INIT, READ, RUN };

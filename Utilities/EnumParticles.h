@@ -4,12 +4,18 @@
 #include <ThePEG/PDT/EnumParticles.h>
 
 namespace Herwig {
+
 namespace ExtraParticleID {
+
+/** \ingroup Utilities
+ *
+ */  
 enum ParticleCodes {
   Cluster = 81 
 };
 
 }
+
 }
 
 #endif

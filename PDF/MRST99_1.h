@@ -7,6 +7,10 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/** \ingroup PDF
+ *
+ *  Some comment should be provided!
+ */
 class MRST99_1 : public MRSTData {
  public:
   MRST99_1();

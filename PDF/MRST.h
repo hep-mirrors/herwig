@@ -27,27 +27,37 @@ static const double mb2=18.5;
 
 typedef Ptr<MRSTData>::pointer MRSTDatPtr;
 
+/** \ingroup PDF
+ *
+ *  Some comment should be provided!
+ */
 class MRST : public PDFBase {
  public:
   MRST();
   MRST(const MRST &);
   virtual ~MRST();
 
+  /**
+   * Return true if this PDF can handle the extraction of parton from the
+   * given particle ie. if the particle is a proton or neutron.
+   */
   virtual bool canHandleParticle(tcPDPtr particle) const;
-  // Return true if this PDF can handle the extraction of parton from the
-  // given particle ie. if the particle is a proton or neutron.
 
+  /**
+   * Return the parton types which are described by these parton
+   * densities.
+   */
   virtual cPDVector partons(tcPDPtr p) const;
-  // Return the parton types which are described by these parton
-  // densities.
 
+  /**
+   * Return the true pdf for the given parameters, with the momentum
+   * fraction given as l=log(1/x) and simply x respectively.
+   */
   virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double l, Energy2 particleScale = 0.0*GeV2) const;
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double x, double eps = 0.0,
                      Energy2 particleScale = 0.0*GeV2) const;
-  // Return the true pdf for the given parameters, with the momentum
-  // fraction given as l=log(1/x) and simply x respectively.
 
   virtual double xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double l, Energy2 particleScale = 0.0*GeV2) const;
@@ -55,28 +65,39 @@ class MRST : public PDFBase {
                       double x, double eps = 0.0,
                       Energy2 particleScale = 0.0*GeV2) const;
 
+  /**
+   * Standard functions for writing and reading from persistent streams.
+   */
   void persistentOutput(PersistentOStream &) const;
   void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
 
+  /**
+   * Standard Init function used to initialize the interface.
+   */
   static void Init();
-  // Standard Init function used to initialize the interface.
   
   virtual IBPtr clone() const;
   virtual IBPtr fullclone() const;
+
  protected:
 
+  /**
+   * Standard Interfaced virtual functions.
+   */
   virtual void doupdate() throw(UpdateException);
   virtual void doinit() throw(InitException);
   //virtual void doinitrun();
   virtual void dofinish();
-  // Standard Interfaced virtual functions.
 
+  /**
+   * Change all pointers to Interfaced objects to corresponding clones.
+   */
   virtual void rebind(const TranslationMap & trans) throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
 
+  /**
+   * Return pointers to all Interfaced objects refered to by this.
+   */
   virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
 
 private:
 
@@ -88,8 +109,10 @@ private:
 
   static ClassDescription<MRST> initMRST;
 
+  /**
+   * Private and non-existent assignment operator.
+   */
   MRST & operator=(const MRST &);
-  //  Private and non-existent assignment operator.
 
   double data[np+1][nx+1][nq+1];
 
@@ -105,7 +128,9 @@ private:
   double polderivative(double x1, double x2, double x3,
 		       double y1, double y2, double y3);
 
-  // This function calculates the values for the given x and q
+  /**
+   * This function calculates the values for the given x and q
+   */
   void update(double x, double q);
 };
 

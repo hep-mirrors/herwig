@@ -2,21 +2,7 @@
 #ifndef HERWIG_Interpolator_H
 #define HERWIG_Interpolator_H
 //
-// This is the declaration of the <!id>Interpolator<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-//  This class implments a polynominal interpolation of a table of values, it is
-//  based on the interpolation code in FORTRAN HERWIG and uses the GenericFunctions
-//  classes of CLHEP
-//  
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:.html">.h</a>,
-// <a href="http:.html">.h</a>.
-// 
-//  Author: Peter Richardson
-//
+// This is the declaration of the Interpolator class.
 
 #include <vector>
 #include <cmath>
@@ -29,42 +15,66 @@ namespace Herwig {
 using namespace Genfun;
 using std::vector;
 
+/** \ingroup Utilities
+ *  \author Peter Richardson
+ *
+ *  This class implments a polynominal interpolation of a table of values, it is
+ *  based on the interpolation code in FORTRAN HERWIG and uses the GenericFunctions
+ *  classes of CLHEP.
+ */
 class Interpolator: public Genfun:: AbsFunction {
 
   FUNCTION_OBJECT_DEF(Interpolator)
     
 public:
   
-  // constructor with data as vectors
+  /**
+   * Constructor with data as vectors.
+   */
   Interpolator(vector<double> f, vector<double> x, int order);
 
-  // Copy constructor
+  /**
+   * Copy constructor.
+   */
   Interpolator(const Interpolator &right);
   
+  /**
+   * Standard ctors and dtor.
+   */
   virtual ~Interpolator();
-  // Standard ctors and dtor.
   
-  // Retreive function value
+  /**
+   * Retreive function value.
+   */
   virtual double operator ()(double argument) const;
   virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
   
 private:
   
-  // It is illegal to assign a function
+  /**
+   * It is illegal to assign a function.
+   */
   const Interpolator & operator=(const Interpolator &right);
   
 private:
   
+  /**
+   * The x values.
+   */
   vector<double> _xval;
-  // the x values
+
+  /**
+   * the function values.
+   */
   vector<double> _fun;
-  // the function values
+
+  /**
+   * the order of interpolation.
+   */
   unsigned int _order;
-  // the order of interpolation
+
 };
   
 }
-
-// CLASSDOC OFF
 
 #endif /* HERWIG_Interpolator_H */
