@@ -498,11 +498,9 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranchi
 }
 
 
-bool SplittingGenerator::generateBranchingKinematics 
+void SplittingGenerator::generateBranchingKinematics 
 ( tPartCollHdlPtr ch, ShowerParticle & particle,
   tShoKinPtr showerKin, const tSudakovFormFactorPtr sudakov ) const {
-
-  bool isOK = true;
 
   //***LOOKHERE*** Complete the kinematics of the branching by filling
   //               the eventual missing bits of the ShowerKinematics
@@ -511,7 +509,6 @@ bool SplittingGenerator::generateBranchingKinematics
   //               Notice that this part could remain empty if such 
   //               ShowerKinematics object is already completely filled.
 
-  return isOK;
 }
  
 

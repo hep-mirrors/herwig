@@ -85,6 +85,9 @@ public:
   // In the case that <!id>reverseAngularOrder<!!id> is true, 
   // the new scale is greater than the initial one: this is used for 
   // the forward evolution of a on-shell decaying particle.
+  // If something goes wrong (but this should never ever happen) 
+  // a warning should be sent to the log file: in this case, 
+  // exceptions seem unnecessary.
 
   pair<ShoKinPtr, tSudakovFormFactorPtr> chooseBackwardBranching
   ( tPartCollHdlPtr ch, ShowerParticle & particle ) const; 
@@ -93,7 +96,7 @@ public:
   // Notice that the PartialCollisionHandler object, <!id>ch<!!id>, 
   // is necessary to access the PDFs.
 
-  bool generateBranchingKinematics 
+  void generateBranchingKinematics 
   ( tPartCollHdlPtr ch, ShowerParticle & particle,
     tShoKinPtr showerKin, const tSudakovFormFactorPtr sudakov ) const; 
   // Given the particle, a pointer to the <!id>ShowerKinematics<!!id> 
@@ -106,9 +109,9 @@ public:
   // the kinematics of the branching has been already completely
   // determined during <!id>chooseForwardBranching<!!id> or
   // <!id>chooseBackwardBranching<!!id>.
-  // The method returns true if the full generation of the kinematics
-  // of the branching has succeeded (even in the case that nothing
-  // has to be done in this method); false otherwise.
+  // As for the latter two methods, if something goes wrong (but
+  // this should never ever happen) a warning should be sent to
+  // the log file: in this case exceptions seem unnecessary.
 
   inline const tShowerAlphaPtr pointerIS_ShowerAlphaQCD() const;
   inline const tShowerAlphaPtr pointerFS_ShowerAlphaQCD() const;

@@ -99,76 +99,72 @@ timeLikeShower( tPartCollHdlPtr ch,
     } else {
 
       hasEmitted = true;
-      if ( _pointerSplittingGenerator->
-	   generateBranchingKinematics(ch, *part, pairShowerKinSudakov.first, 
-				       pairShowerKinSudakov.second) ) {
 
-	// Assign the splitting function and the shower kinematics
-	// to the emitting particle.
-	part->showerKinematics( pairShowerKinSudakov.first );
-	part->splitFun( pairShowerKinSudakov.second->splitFun() ); 
+      _pointerSplittingGenerator->
+	generateBranchingKinematics(ch, *part, pairShowerKinSudakov.first, 
+				    pairShowerKinSudakov.second); 
 
-        // For the time being we are considering only 1->2 branching
-	tSplitFun1to2Ptr splitFun = 
-	  dynamic_ptr_cast< tSplitFun1to2Ptr >( pairShowerKinSudakov.second->splitFun() );
-	if ( splitFun ) {	  
-
-          // Create the ShowerParticle objects for the two children
-	  // of the emitting particle; set the parent/child relationship;
-	  // add them to the  collecShoPar  and  particlesYetToShower  collections.
-	  // Notice that the momenta of the shower products is not set: only
-	  // at the end of the showering, during the kinematics reconstruction
-	  // such momenta are calculated and set.
-	  ShoParPtr showerProduct1 = new_ptr( ShowerParticle() );
-	  ShoParPtr showerProduct2 = new_ptr( ShowerParticle() );
-	  showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
-	  showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
-
-	  if ( splitFun->interactionType() == ShowerIndex::QCD ) {
-
-	    //***LOOKHERE*** In the case the splitting is of QCD type
-            //               the colour or anticolour line for the two
-	    //               children must be set. A part the case of
-            //               a gluon splitting in quark-antiquark, a new
-	    //               colour line must be created...
-            //               Probably the SplitFun1to2 class should have
-	    //               some methods that provide information about
-	    //               the colour connection about the emitting
-	    //               particle and the children products...
-            //  
-            //               showerProduct1->setAntiColourLine(...);
-            //               showerProduct1->setColourLine(...);
-            //               showerProduct2->setAntiColourLine(...);
-            //               showerProduct2->setColourLine(...);
-
-	  }
-
-          part->addChild( showerProduct1 );
-          part->addChild( showerProduct2 );
-	  collecShoPar.insert( collecShoPar.end(), showerProduct1 );
-	  collecShoPar.insert( collecShoPar.end(), showerProduct2 );
-          particlesYetToShower.push_back( showerProduct1 );
-          particlesYetToShower.push_back( showerProduct2 );
-         
+      // Assign the splitting function and the shower kinematics
+      // to the emitting particle.
+      part->showerKinematics( pairShowerKinSudakov.first );
+      part->splitFun( pairShowerKinSudakov.second->splitFun() ); 
+      
+      // For the time being we are considering only 1->2 branching
+      tSplitFun1to2Ptr splitFun = 
+	dynamic_ptr_cast< tSplitFun1to2Ptr >( pairShowerKinSudakov.second->splitFun() );
+      if ( splitFun ) {	  
+	
+	// Create the ShowerParticle objects for the two children
+	// of the emitting particle; set the parent/child relationship;
+	// add them to the  collecShoPar  and  particlesYetToShower  collections.
+	// Notice that the momenta of the shower products is not set: only
+	// at the end of the showering, during the kinematics reconstruction
+	// such momenta are calculated and set.
+	ShoParPtr showerProduct1 = new_ptr( ShowerParticle() );
+	ShoParPtr showerProduct2 = new_ptr( ShowerParticle() );
+	showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
+	showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
+	
+	if ( splitFun->interactionType() == ShowerIndex::QCD ) {
+	  
+	  //***LOOKHERE*** In the case the splitting is of QCD type
+	  //               the colour or anticolour line for the two
+	  //               children must be set. A part the case of
+	  //               a gluon splitting in quark-antiquark, a new
+	  //               colour line must be created...
+	  //               Probably the SplitFun1to2 class should have
+	  //               some methods that provide information about
+	  //               the colour connection about the emitting
+	  //               particle and the children products...
+	  //  
+	  //               showerProduct1->setAntiColourLine(...);
+	  //               showerProduct1->setColourLine(...);
+	  //               showerProduct2->setAntiColourLine(...);
+	  //               showerProduct2->setColourLine(...);
+	  
 	}
-      } else {
-	// Something goes wrong: Skip the event!
-        throw Exception("ForwardShowerEvolver::timeLikeShower "
-                        "***Skip event: problem in the shower kinematics***",
-                        Exception::eventerror);            
+	
+	part->addChild( showerProduct1 );
+	part->addChild( showerProduct2 );
+	collecShoPar.insert( collecShoPar.end(), showerProduct1 );
+	collecShoPar.insert( collecShoPar.end(), showerProduct2 );
+	particlesYetToShower.push_back( showerProduct1 );
+	particlesYetToShower.push_back( showerProduct2 );
+	
       }
+
     }
-
+      
   } while ( ! particlesYetToShower.empty() );
-
+    
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "ForwardShowerEvolver::timeLikeShower "
 		       << " ===> END DEBUGGING <=== " 
 		       << endl;
   }
-
+  
   return hasEmitted;
-
+  
 }
 
 
