@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SMWZDecayer class.
+//
+#ifndef HERWIG_SMWZDecayer_FH
+#define HERWIG_SMWZDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class SMWZDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(SMWZDecayer,SMWZDecayerPtr);
+
+}
+
+#endif
