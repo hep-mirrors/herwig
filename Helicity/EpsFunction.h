@@ -36,9 +36,38 @@ public:
   
   // various functions to return the contraction of the vectors with the epsilon
   // function 
-  static inline LorentzPolarizationVector product(Lorentz5Momentum,Lorentz5Momentum,
-						  Lorentz5Momentum);
-  
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
+						  const Lorentz5Momentum &,
+						  const Lorentz5Momentum &);
+
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
+						  const Lorentz5Momentum &,
+						  const Lorentz5Momentum &);
+
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
+						  const LorentzPolarizationVector &,
+						  const Lorentz5Momentum &);
+
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
+						  const Lorentz5Momentum &,
+						  const LorentzPolarizationVector &);
+
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
+						  const LorentzPolarizationVector &,
+						  const Lorentz5Momentum &);
+
+  static inline LorentzPolarizationVector product(const Lorentz5Momentum &,
+						  const LorentzPolarizationVector &,
+						  const LorentzPolarizationVector &);
+
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
+						  const Lorentz5Momentum &,
+						  const LorentzPolarizationVector &);
+
+  static inline LorentzPolarizationVector product(const LorentzPolarizationVector &,
+						  const LorentzPolarizationVector &,
+						  const LorentzPolarizationVector &);
+
 private:
   
   EpsFunction();
