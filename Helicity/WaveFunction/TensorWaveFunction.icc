@@ -1,0 +1,353 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TensorWaveFunction class.
+//
+// Author: Peter Richardson
+//
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+// default constructors (set the momentum and Wavefunction)
+inline TensorWaveFunction::TensorWaveFunction(const Lorentz5Momentum & p,
+					      const tcPDPtr & part,
+					      Complex xx,Complex xy,Complex xz,
+					      Complex xt,Complex yx,Complex yy,
+					      Complex yz,Complex yt,Complex zx,
+					      Complex zy,Complex zz,Complex zt,
+					      Complex tx,Complex ty,Complex tz,
+					      Complex tt)
+{
+  setDirection(0);setMomentum(p);checkParticle(part);
+  setXX(xx);setXY(xy);setXZ(xz);setXT(xt);
+  setYX(yx);setYY(yy);setYZ(yz);setYT(yt);
+  setZX(zx);setZY(zy);setZZ(zz);setZT(zt);
+  setTX(tx);setTY(ty);setTZ(tz);setTT(tt);
+}
+			    
+// Use a 5-momentum (default phase choice)
+inline TensorWaveFunction::TensorWaveFunction(const Lorentz5Momentum & p,
+					      const tcPDPtr & part,int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}	
+		    
+// Use a 5-momentum (specify phase choice)
+inline TensorWaveFunction::TensorWaveFunction(int phase,const Lorentz5Momentum & p,
+					      const tcPDPtr & part,int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// set all components of momentum (default phase choice)
+inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set all components of momentum (specify phase choice)
+inline TensorWaveFunction::TensorWaveFunction(int phase,Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// set 4-momentum components  (default phase choice)
+inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4-momentum components  (specify phase choice)
+inline TensorWaveFunction::TensorWaveFunction(int phase,Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// set 4-momentum  (default phase choice)
+inline TensorWaveFunction::TensorWaveFunction(LorentzVector pin,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4-momentum  (specify phase choice)
+inline TensorWaveFunction::TensorWaveFunction(int phase,LorentzVector pin,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// set mass zero momentum (default phase choice)
+inline TensorWaveFunction::TensorWaveFunction(Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm); 
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set mass zero momentum (specify phase choice)
+inline TensorWaveFunction::TensorWaveFunction(int phase,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm); 
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// set 4 momentum and mass (default phase choice)
+inline TensorWaveFunction::TensorWaveFunction(LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4 momentum and mass (specify phase choice)
+inline TensorWaveFunction::TensorWaveFunction(int phase,LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// default constructors (set the momentum and zero the Wavefunction)
+
+// use 5 momentum
+inline TensorWaveFunction::TensorWaveFunction(Lorentz5Momentum p,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(p); 
+  checkParticle(part); 
+  zeroWaveFunction();
+}
+
+// set all components of momentum
+inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4-momentum components 
+inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee); 
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4-momentum 
+inline TensorWaveFunction::TensorWaveFunction(LorentzVector pin,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set mass zero momentum
+inline TensorWaveFunction::TensorWaveFunction(Energy mm,
+					      const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm); 
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4 momentum and mass
+inline TensorWaveFunction::TensorWaveFunction(LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// default constructor
+inline TensorWaveFunction::TensorWaveFunction()
+{
+  setDirection(0);
+  setMomentum();
+  zeroWaveFunction();
+}
+
+// destructor
+inline TensorWaveFunction::~TensorWaveFunction(){;}
+
+// subscript operator
+inline Complex TensorWaveFunction::operator ()(int i, int j) const
+{
+  if(i<0 || i >3 || j<0 || j>3)
+    {
+      std::cerr << "TensorWaveFunction requested for invalid index" 
+		<< i << " " << j << std::endl;
+      return 0.;
+    }
+  return _wf(i,j);
+}
+
+// Set components by index.
+inline Complex & TensorWaveFunction::operator () (int i,int j)
+{
+  static Complex dummy;
+  if(i>=0 &&i<=3 && j>=0 && j<=3)
+    {return _wf(i,j);}
+  else
+    {
+      cerr << "Invalid index " << i << "," << j 
+	   << " called for TensorWaveFunction" << endl;
+      return dummy;
+    }
+}
+
+// Assignment
+inline TensorWaveFunction  & TensorWaveFunction::operator = 
+(const TensorWaveFunction & w)
+{
+  setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
+  _wf=w.Wave();
+  setParticle(w.getParticle());
+  return *this;
+}
+
+// return wavefunction as polarization vector
+inline LorentzTensor TensorWaveFunction::Wave() const{return _wf;}
+
+// Get components
+inline Complex TensorWaveFunction::xx() const{return _wf.xx();}
+inline Complex TensorWaveFunction::yx() const{return _wf.yx();}
+inline Complex TensorWaveFunction::zx() const{return _wf.zx();}
+inline Complex TensorWaveFunction::tx() const{return _wf.tx();}
+inline Complex TensorWaveFunction::xy() const{return _wf.xy();}
+inline Complex TensorWaveFunction::yy() const{return _wf.yy();}
+inline Complex TensorWaveFunction::zy() const{return _wf.zy();}
+inline Complex TensorWaveFunction::ty() const{return _wf.ty();}
+inline Complex TensorWaveFunction::xz() const{return _wf.xz();}
+inline Complex TensorWaveFunction::yz() const{return _wf.yz();}
+inline Complex TensorWaveFunction::zz() const{return _wf.zz();}
+inline Complex TensorWaveFunction::tz() const{return _wf.tz();}
+inline Complex TensorWaveFunction::xt() const{return _wf.xt();}
+inline Complex TensorWaveFunction::yt() const{return _wf.yt();}
+inline Complex TensorWaveFunction::zt() const{return _wf.zt();}
+inline Complex TensorWaveFunction::tt() const{return _wf.tt();}
+
+// Set Components
+inline void TensorWaveFunction::setXX(Complex in){_wf.setXX(in);}
+inline void TensorWaveFunction::setYX(Complex in){_wf.setYX(in);}
+inline void TensorWaveFunction::setZX(Complex in){_wf.setZX(in);}
+inline void TensorWaveFunction::setTX(Complex in){_wf.setTX(in);}
+inline void TensorWaveFunction::setXY(Complex in){_wf.setXY(in);}
+inline void TensorWaveFunction::setYY(Complex in){_wf.setYY(in);}
+inline void TensorWaveFunction::setZY(Complex in){_wf.setZY(in);}
+inline void TensorWaveFunction::setTY(Complex in){_wf.setTY(in);}
+inline void TensorWaveFunction::setXZ(Complex in){_wf.setXZ(in);}
+inline void TensorWaveFunction::setYZ(Complex in){_wf.setYZ(in);}
+inline void TensorWaveFunction::setZZ(Complex in){_wf.setZZ(in);}
+inline void TensorWaveFunction::setTZ(Complex in){_wf.setTZ(in);}
+inline void TensorWaveFunction::setXT(Complex in){_wf.setXT(in);}
+inline void TensorWaveFunction::setYT(Complex in){_wf.setYT(in);}
+inline void TensorWaveFunction::setZT(Complex in){_wf.setZT(in);}
+inline void TensorWaveFunction::setTT(Complex in){_wf.setTT(in);}
+
+
+// reset functions
+
+// reset momentum, particle type and direction
+inline void TensorWaveFunction::reset(const Lorentz5Momentum & pin, const tcPDPtr & part,
+				 int ipart)
+{setDirection(ipart);checkParticle(part);setMomentum(pin);}
+
+// reset momentum and direction
+inline void TensorWaveFunction::reset(const Lorentz5Momentum & pin, int ipart)
+{setDirection(ipart);setMomentum(pin);}
+
+// reset momentum
+inline void TensorWaveFunction::reset(const Lorentz5Momentum & pin)
+{setMomentum(pin);}
+
+// reset helicity (recalculate the tensor )
+// default phase choice
+inline void TensorWaveFunction::reset(int ihel)
+{calculateWaveFunction(ihel);}
+inline void TensorWaveFunction::reset(int phase,int ihel)
+{calculateWaveFunction(phase,ihel);}
+
+// reset particle type and direction
+inline void TensorWaveFunction::reset(const tcPDPtr & part,int ipart)
+{setDirection(ipart);checkParticle(part);}
+
+// reset particle type
+inline void TensorWaveFunction::reset(const tcPDPtr & part)
+{checkParticle(part);}	
+
+// zero the wavefunction
+inline void TensorWaveFunction::zeroWaveFunction()
+{for(int i=0;i<4;++i){for(int j=0;j<4;++j){_wf(i,j)=0.;}}}
+
+// caculate the wavefunction (default phase choice)
+inline void TensorWaveFunction::calculateWaveFunction(int ihel)
+{calculateWaveFunction(_ivector_default,ihel);}
+
+// check particle spin and set pointer
+inline void TensorWaveFunction::checkParticle(const tcPDPtr & in)
+{
+  setParticle(in);
+  if(iSpin()!=5)
+    {cerr << "Calculating Tensor WaveFunction for non-spin 2 Particle" << endl;}
+}
+
+
+}
+}

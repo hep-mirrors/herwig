@@ -1,0 +1,106 @@
+// non-inlined functions of VectorWaveFunction class
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the VectorWaveFunction class.
+//
+// Author: Peter Richardson
+//
+
+#include "VectorWaveFunction.h"
+
+namespace Herwig {
+namespace Helicity {
+
+// calculate the Wavefunction
+void VectorWaveFunction::calculateWaveFunction(int iphase, int ihel)
+{
+  int ipart=getDirection();
+  // check a valid helicity combination
+  if(((ihel==1 || ihel==-1 || ihel==0) && mass() >0.) ||
+     ((ihel==1 || ihel==-1           ) && mass()==0.))
+    {
+      // extract the momentum components
+      Energy ppx=-ipart*px(),ppy=-ipart*py(),ppz=-ipart*pz(),pee=-ipart*e(),pmm=mass();
+      // calculate some kinematic quantites;
+      Energy pt = ppx*ppx+ppy*ppy;
+      Energy pabs = sqrt(pt+ppz*ppz);
+      pt = sqrt(pt);
+      // overall phase of the vector
+      complex<double> phase;
+      if(iphase==1)
+	{
+	  if(pt==0. || ihel==0)
+	    {phase=1.;}
+	  else
+	    {phase = complex<double>(ppx,ipart*ihel*ppy)/pt;}
+	}
+      else
+	{
+	  phase = 1.;
+	}
+      if(ihel!=0) phase = phase/sqrt(2.);
+      // first the +/-1 helicity states
+      if(ihel==1 || ihel==-1)
+	{
+	  // first the no pt case
+	  if(pt==0.)
+	    {
+	      double sgnz;
+	      if(ppz<0){sgnz=-1.;}
+	      else{sgnz=1.;}
+	      _wf[0]=-complex<double>(ihel)*phase;
+	      _wf[1]= sgnz*phase*complex<double>(0,ipart);
+	      _wf[2]=0.;
+	      _wf[3]=0.;
+	    }
+	  else
+	    {
+	      double opabs=1./pabs;
+	      double opt  =1./pt;
+	      _wf[0]=phase*complex<double>(-ihel*ppz*ppx*opabs*opt,
+					  -ipart*ppy*opt);
+	      _wf[1]=phase*complex<double>(-ihel*ppz*ppy*opabs*opt,
+					   +ipart*ppx*opt);
+	      _wf[2]=ihel*pt*opabs*phase;
+	      _wf[3]=0.;
+	    }
+	}
+      // 0 component for massive vectors
+      else
+	{
+	  if(pabs==0)
+	    {
+	      _wf[0] = 0.;
+	      _wf[1] = 0.;
+	      _wf[2] = 1.;
+	      _wf[3] = 0.;
+	    }
+	  else
+	    {
+	      double empabs=pee/pmm/pabs;
+	      _wf[0] = empabs*ppx;
+	      _wf[1] = empabs*ppy;
+	      _wf[2] = empabs*ppz;
+	      _wf[3] = pabs/pmm;
+	    }
+	}
+    }
+  // special return the momentum as a check of gauge invariance
+  else if(ihel==10)
+    {
+      _wf[0] = px();
+      _wf[1] = py();
+      _wf[2] = pz();
+      _wf[3] = e();
+    }
+  // issue warning and return zero
+  else
+    {
+      cerr << "Invalid Helicity = " << ihel << " requested for Vector" << endl;
+      for(int ix=0;ix<4;++ix){_wf[ix]=0.;}
+    }
+}
+
+}
+}

@@ -1,0 +1,320 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorWaveFunction class.
+//
+// Author: Peter Richardson
+//
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+// default constructors (set the momentum and Wavefunction)
+
+// use a 5-momentum and specify all components
+inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,
+					      const Complex & s1, const Complex & s2,
+					      const Complex & s3, const Complex & s4)
+{
+  setDirection(0);
+  setMomentum(p);
+  checkParticle(part);
+  setX(s1);setY(s2);setZ(s3);setT(s4);
+}
+
+// use a 5 momentum (default phase choice)
+inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,
+					      const tcPDPtr & part,int ihel, int ipart)  
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// use a 5 momentum (specify phase choice)
+inline VectorWaveFunction::VectorWaveFunction(int phase, const Lorentz5Momentum & p,
+					      const tcPDPtr & part,int ihel, int ipart)  
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(phase, ihel);
+}
+
+// set all components of momentum (default phase choice)
+inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set all components of momentum (specify phase choice)
+inline VectorWaveFunction::VectorWaveFunction(int phase, Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  calculateWaveFunction(phase, ihel);
+}
+
+// set 4-momentum components  (default phase choice)
+inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee); 
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4-momentum components (specify phase choice)
+inline VectorWaveFunction::VectorWaveFunction(int phase, Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee); 
+  checkParticle(part);
+  calculateWaveFunction(phase, ihel);
+}
+
+// set 4-momentum  (default phase choice)
+inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4-momentum (specify phase choice)
+inline VectorWaveFunction::VectorWaveFunction(int phase, LorentzVector pin,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(phase, ihel);
+}
+
+// set mass zero momentum (default phase choice)
+inline VectorWaveFunction::VectorWaveFunction(Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set mass zero momentum (specify phase choice)
+inline VectorWaveFunction::VectorWaveFunction(int phase, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  calculateWaveFunction(phase,ihel);
+}
+
+// set 4 momentum and mass (default phase choice)
+inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin,mm); 
+  checkParticle(part); 
+  calculateWaveFunction(ihel);
+}
+
+// set 4 momentum and mass (specify phase choice)
+inline VectorWaveFunction::VectorWaveFunction(int phase, LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin,mm); 
+  checkParticle(part); 
+  calculateWaveFunction(phase, ihel);
+}
+
+// default constructors (set the momentum and zero the Wavefunction)
+
+// use a 5 momentum
+inline VectorWaveFunction::VectorWaveFunction(Lorentz5Momentum p,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set all components of momentum
+inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4-momentum components 
+inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4-momentum 
+inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set mass zero momentum
+inline VectorWaveFunction::VectorWaveFunction(Energy mm,
+					      const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4 momentum and mass
+inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// default constructor
+inline VectorWaveFunction::VectorWaveFunction()
+{
+  setDirection(0);
+  setMomentum();
+  zeroWaveFunction();
+}
+
+// descructor
+inline VectorWaveFunction::~VectorWaveFunction(){;}
+
+// subscript operator
+inline Complex VectorWaveFunction::operator ()(int i) const
+{
+  if(i<0 || i>3)
+    {
+      std::cerr << "VectorWaveFunction requested for invalid index" << std::endl;
+      return 0.;
+    }
+  return _wf[i];
+}
+
+
+// Set components by index.
+inline Complex & VectorWaveFunction::operator () (int i)
+{
+  static Complex dummy;
+  if(i>=0 &&i<=3)
+    {return _wf(i);}
+  else
+    {cerr << "Invalid index " << i << " called for VectorWaveFunction" << endl;
+    return dummy;}
+}
+
+// Assignment. 
+inline VectorWaveFunction & VectorWaveFunction::operator = (const VectorWaveFunction & w)
+{
+  setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
+  _wf=w.Wave();
+  setParticle(w.getParticle());
+  return *this;
+}
+
+// return wavefunction as polarization vector
+inline LorentzPolarizationVector VectorWaveFunction::Wave() const{return _wf;}
+
+// Get position and time.
+inline Complex VectorWaveFunction::x() const {return _wf.x();}
+inline Complex VectorWaveFunction::y() const {return _wf.y();}
+inline Complex VectorWaveFunction::z() const {return _wf.z();}
+inline Complex VectorWaveFunction::t() const {return _wf.t();}
+
+// Set position and time.
+inline void VectorWaveFunction::setX(const Complex &in){_wf.setX(in);}
+inline void VectorWaveFunction::setY(const Complex &in){_wf.setY(in);}
+inline void VectorWaveFunction::setZ(const Complex &in){_wf.setZ(in);}
+inline void VectorWaveFunction::setT(const Complex &in){_wf.setT(in);}
+
+// reset functions
+
+
+// reset the momentum, particle type and direction
+inline void VectorWaveFunction::reset(const Lorentz5Momentum & pin, const tcPDPtr & part,
+				 int ipart)
+{setDirection(ipart);checkParticle(part);setMomentum(pin);}
+
+// reset the momentum and direction
+inline void VectorWaveFunction::reset(const Lorentz5Momentum & pin, int ipart)
+{setDirection(ipart);setMomentum(pin);}
+
+// reset the momentum
+inline void VectorWaveFunction::reset(const Lorentz5Momentum & pin)
+{setMomentum(pin);}
+
+// reset the helicity (recalculation the polarization vector)
+// default phase choice
+inline void VectorWaveFunction::reset(int ihel)
+{calculateWaveFunction(ihel);}
+// specfic phase choice
+inline void VectorWaveFunction::reset(int phase,int ihel)
+{calculateWaveFunction(phase,ihel);}
+
+// reset the particle type and direction
+inline void VectorWaveFunction::reset(const tcPDPtr & part,int ipart)
+{setDirection(ipart);checkParticle(part);}
+
+// reset the particle type
+inline void VectorWaveFunction::reset(const tcPDPtr & part)
+{checkParticle(part);}	
+
+// zero the wavefunction
+inline void VectorWaveFunction::zeroWaveFunction(){_wf=LorentzPolarizationVector();}
+
+// check the particles
+inline void VectorWaveFunction::checkParticle(const tcPDPtr & in)
+{
+  setParticle(in);
+  if(iSpin()!=3)
+    {cerr << "Calculating Vector WaveFunction for non-spin 1 Particle" << endl;}
+}
+
+// calculate the wavefunction for the default phase choice
+inline void VectorWaveFunction::calculateWaveFunction(int ihel)
+{calculateWaveFunction(_ivector_default,ihel);}
+
+}
+}

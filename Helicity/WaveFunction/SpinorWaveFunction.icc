@@ -1,0 +1,434 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SpinorWaveFunction class.
+//
+// Author: Peter Richardson
+//
+
+namespace Herwig {
+using ThePEG::Helicity::LorentzSpinor;
+using ThePEG::Helicity::HelicityDefinitions;
+namespace Helicity {
+using namespace ThePEG;
+
+// constructors
+
+
+// use a 5-momentum and specify all components (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum &p,
+					      const tcPDPtr & part,
+					      Complex s1, Complex s2,
+					      Complex s3, Complex s4) 
+{
+  setDirection(0);
+  setMomentum(p);
+  checkParticle(part);
+  _wf = LorentzSpinor(0,s1,s2,s3,s4);
+}	
+// use a 5-momentum and specify all components (specifiy Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac,const Lorentz5Momentum &p,
+					      const tcPDPtr & part,
+					      Complex s1, Complex s2,
+					      Complex s3, Complex s4) 
+{
+  setDirection(0);
+  setMomentum(p);
+  checkParticle(part);
+  _wf = LorentzSpinor(dirac,0,s1,s2,s3,s4);
+}	
+
+// use a 5-momentum and a LorentzSpinor
+inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
+					      const tcPDPtr & part,
+					      LorentzSpinor & inspin)
+{
+  setDirection(0);
+  setMomentum(p);
+  checkParticle(part); 
+  _wf=inspin;
+}
+
+// use a 5 momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
+					      const tcPDPtr & part,int ihel, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// use a 5-momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, const Lorentz5Momentum & p,
+					      const tcPDPtr & part,int ihel, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(dirac,ihel);
+}
+
+// set all components of momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart
+					      ) 
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set all components of momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  calculateWaveFunction(dirac,ihel);
+}
+
+// set 4-momentum components (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ihel, int ipart
+					      )
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4-momentum components (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  calculateWaveFunction(dirac,ihel);
+}
+
+// set 4-momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,
+					      const tcPDPtr & part, int ihel, int ipart
+ 					      )
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4-momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, LorentzVector pin,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(dirac,ihel);
+}
+
+// set mass zero momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart
+					      )
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set mass zero momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  calculateWaveFunction(dirac,ihel);
+}
+
+// set 4 momentum and mass (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart
+					      )
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel);
+}
+
+// set 4 momentum and mass (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ihel, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  calculateWaveFunction(dirac,ihel);
+}
+
+// default constructors (set the momentum and zero the Wavefunction)
+
+// use a 5 momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Lorentz5Momentum p,
+					      const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// use a 5 momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Lorentz5Momentum p,
+					      const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  setMomentum(p);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set all components of momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set all components of momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Energy px, Energy py,
+					      Energy pz, Energy ee, Energy mm,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set 4-momentum components (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4-momentum components (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Energy px, Energy py,
+					      Energy pz, Energy ee,
+					      const tcPDPtr & part, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set 4-momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4-momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, LorentzVector pin,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set mass zero momentum (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(Energy mm,
+					      const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set mass zero momentum (specify Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, Energy mm,
+					      const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  setMomentum(mm);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set 4 momentum and mass (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  zeroWaveFunction();
+}
+
+// set 4 momentum and mass
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac, LorentzVector pin,Energy mm,
+					      const tcPDPtr & part, int ipart) 
+{
+  setDirection(ipart);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// default constructor (default Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction()
+{
+  setDirection(0);
+  setMomentum();
+  zeroWaveFunction();
+}
+
+// default constructor (specfiy Dirac representation)
+inline SpinorWaveFunction::SpinorWaveFunction(int dirac)
+{
+  setDirection(0);
+  setMomentum();
+  zeroWaveFunction(dirac);
+}
+
+// descructor
+inline SpinorWaveFunction::~SpinorWaveFunction(){;}
+
+// subscript operator
+inline Complex SpinorWaveFunction::operator ()(int i) const
+{
+  if(i<0 || i>3)
+    {std::cerr << "SpinorWaveFunction requested for invalid index" << std::endl;
+    return 0.;}
+  return _wf[i];
+}
+// Set components by index.
+inline Complex & SpinorWaveFunction::operator () (int i)
+{
+  static Complex dummy;
+  if(i>=0 &&i<=3)
+    {return _wf(i);}
+  else
+    {cerr << "Invalid index " << i << " called for SpinorWaveFunction" << endl;
+    return dummy;}
+}
+
+// Assignment. 
+inline SpinorWaveFunction & SpinorWaveFunction::operator = (const SpinorWaveFunction & w)
+{
+  setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
+  _wf=w._wf;
+  setParticle(w.getParticle());
+  return *this;
+}
+
+// return the wavefunction as a LorentzSpinor
+inline LorentzSpinor SpinorWaveFunction::Wave() const{return _wf;}
+
+// Get components
+inline Complex SpinorWaveFunction::s1() const {return _wf.s1();}
+inline Complex SpinorWaveFunction::s2() const {return _wf.s2();}
+inline Complex SpinorWaveFunction::s3() const {return _wf.s3();}
+inline Complex SpinorWaveFunction::s4() const {return _wf.s4();}
+
+// Set components
+inline void SpinorWaveFunction::setS1(Complex in){_wf.setS1(in);}
+inline void SpinorWaveFunction::setS2(Complex in){_wf.setS2(in);}
+inline void SpinorWaveFunction::setS3(Complex in){_wf.setS3(in);}
+inline void SpinorWaveFunction::setS4(Complex in){_wf.setS4(in);}
+
+
+// reset functions
+
+// momentum, particle type and direction
+inline void SpinorWaveFunction::reset(const Lorentz5Momentum & pin, const tcPDPtr & part,
+				      int ipart)
+{
+  setDirection(ipart);
+  checkParticle(part);
+  setMomentum(pin);
+}
+
+// reset momentum and particle type
+inline void SpinorWaveFunction::reset(const Lorentz5Momentum & pin, int ipart)
+{
+  setDirection(ipart);
+  setMomentum(pin);
+}
+
+// reset momentum
+inline void SpinorWaveFunction::reset(const Lorentz5Momentum & pin)
+{
+  setMomentum(pin);
+}
+
+// reset the helicity (calculates the new spinor  (default Dirac representation)
+inline void SpinorWaveFunction::reset(int ihel)
+{calculateWaveFunction(ihel);}
+
+// reset the helicity (calculates the new spinor (specify Dirac representation)
+inline void SpinorWaveFunction::reset(int dirac, int ihel)
+{calculateWaveFunction(dirac,ihel);}
+
+// reset the particle type and direction
+inline void SpinorWaveFunction::reset(const tcPDPtr & part,int ipart)
+{
+  setDirection(ipart);
+  checkParticle(part);
+}
+
+// reset the particle type
+inline void SpinorWaveFunction::reset(const tcPDPtr & part)
+{checkParticle(part);}	
+
+// zero the wavefunction (set default Dirac representation)
+inline void SpinorWaveFunction::zeroWaveFunction()
+{_wf=LorentzSpinor();}
+
+// zero the wavefunction (set specify Dirac representation)
+inline void SpinorWaveFunction::zeroWaveFunction(int dirac)
+{_wf=LorentzSpinor(dirac,0);}
+
+// calcuate the wavefunction (default Dirac representation)
+inline void SpinorWaveFunction::calculateWaveFunction(int ihel)
+{calculateWaveFunction(HelicityDefinitions::getDirac(),ihel);}
+
+// check the particles
+inline void SpinorWaveFunction::checkParticle(const tcPDPtr & in)
+{
+  setParticle(in);
+  if(iSpin()!=2)
+    {cerr << "Calculating Spinor WaveFunction for non-spin 1/2 Particle" << endl;}
+}
+
+}
+}
