@@ -292,7 +292,7 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
   }
 
   pair<long,long> hadPair = pair<long,long>(0,0);
- 
+
   if (id3 == 0) {    // The method assums id3 == 0    
     // Define Kupco's table of possible cluster decay channels. 
     // The first element is [0] (not, [1], as vecHad).
@@ -320,8 +320,20 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
     Energy maxWeight = Energy();  // store the maximum weight on the table.
     int flav1 = convertIdToFlavour(id1);
     int flav2 = convertIdToFlavour(id2);
+//     cerr << "--- new Cluster, Mc/MeV = " << cluMass/MeV << endl;
+//     cerr << id1 << " " << id2 << " " << flav1 << " " << flav2 << endl;
     if(flav1 != 0  &&  flav2 !=0 ) {
       for(int i=D; i <= numConsideredQuarksDiquarks; ++i) {
+// 	cerr << "i = " << i
+// 	     << "| M1 M2 = "
+// 	     << _vecHad[_locHad[flav1][i].lightest].mass/MeV 
+// 	     << " " 
+// 	     << _vecHad[_locHad[flav2][i].lightest].mass/MeV
+// 	     << " - M1+M2 = "
+// 	     << (_vecHad[_locHad[flav1][i].lightest].mass
+// 		 + _vecHad[_locHad[flav2][i].lightest].mass)/MeV
+// 	     << "MeV "
+// 	     << endl;
 	if(cluMass > (_vecHad[_locHad[flav1][i].lightest].mass +  
 		      _vecHad[_locHad[flav2][i].lightest].mass)) { 
 	  // Loop over all hadron pairs with given flavour.
@@ -386,13 +398,13 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
 					 << signHad2 << endl  << endl;
 		    }
 		  }
-		}
-	      }
-	    }
-	  }
-	}
-      }
-    }
+		} // if numChan > 
+	      } // if pCmstar > 
+	    } // for Had2
+	  } // for Had1
+	} // if clumass
+      } // for i
+    } // if flav1 != 0
     
     // Choose one decay channel.
     if ( numChan > 0 ) {
@@ -405,13 +417,14 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2,
 	      ++numTries < MaxNumTries);
       // Take the lightest pair if too many attempts failed.
       if(numTries >= MaxNumTries) {
-	hadPair = lightestHadronsPair(id1,id2);
+	hadPair = lightestHadronsPair(id1,id2);	
 	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair"
 			 "***Too many failed attempts, take lightest pair*** ",
 			 Exception::warning));
       } else {
 	hadPair = pair<long,long>(kupcoTable[iChan].idHad1, 
 				  kupcoTable[iChan].idHad2);
+	//	cerr << hadPair.first << " " << hadPair.second << endl; 
       }
     }
     

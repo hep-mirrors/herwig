@@ -280,6 +280,8 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
   }
 
   // Choose here the hadron pair.
+//   cerr << "evt #" << generator()->currentEventNumber()
+//        << " cluster #" << ptr->number() << endl;
   pair<long,long> idPair = _hadronsSelector->chooseHadronsPair(ptr->mass(),
 							       id1,id2);
 
@@ -288,9 +290,11 @@ void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep,
   PPtr ptrHad2 = getParticle(idPair.second);
 
   if (!ptrHad1  ||  !ptrHad2) {
-    generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons "
-				       "***Cannot create the two hadrons***", 
-				       Exception::warning) );
+    ostringstream s;
+    s << "ClusterDecayer::decayIntoTwoHadrons ***Cannot create the two hadrons***"
+      << idPair.first << " and " << idPair.second;
+    cerr << s.str() << endl;
+    generator()->logWarning( Exception(s.str(), Exception::warning) );
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
       generator()->log() << "         ===>" 
 			 << " id1=" << id1 << " id2=" << id2 

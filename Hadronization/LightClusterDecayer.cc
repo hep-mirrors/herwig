@@ -309,20 +309,41 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   pSystem.rescaleMass();  // set the mass as the invariant of the quadri-vector
   Energy mSystem = pSystem.mass();
   Energy mclu2 = cluPtr2->mass();
-  bool normalSecondCluster = true;
-
-
+  //bool normalSecondCluster = true;
   //***TRICK***: uncomment the following line and replace it to the 
   //             if statement below if you want to test  LightClusterDecayer
   //             with a huge statistics.
   // // // if ( mSystem  <  (mhad1 + mclu2)*(1.0 + rnd()*5.0) ) {
-    if ( mSystem < mhad1 + mclu2 ) {
-    mclu2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
-    if ( mSystem < mhad1 + mclu2 ) { 
+  bool singleHadron = false;
+  Energy mLHP2 = _hadronsSelector->massLightestHadronsPair(part3->id(), part4->id());
+  Energy mLH2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
+
+//   cerr << "LCD masses (sys c1 c2 | had1 LH2 LHP2): " << mSystem << " "
+//        << cluPtr1->mass() << " "
+//        << mclu2 << " | "
+//        << mhad1 << " "
+//        << mLH2 << " "
+//        << mLHP2 << endl;
+
+  if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
+  else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
+  else return false;
+
+  /*  if ( mSystem > mhad1 + mclu2 ) {
+    LDOptions = RedClu;
+  } else {    
+    mclu2 = _hadronsSelector->massLightestHadronsPair(part3->id(), part4->id());    
+    if (mSystem > mhad1 + mclu2 ) {
+      LDOptions = HadPair;
+    } else {
+      mclu2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
+      if ( mSystem > mhad1 + mclu2 ) { 
+	LDOptions = SingleHad;
+      } else {	
 	return false;   
+      }
     }
-    normalSecondCluster = false;  // second cluster must decay into a single hadron
-  }   
+    }*/
 
   // Let's call from now on "Sys" the system of the two clusters, and
   // had1 (of mass mhad1) the lightest hadron in which the first
@@ -347,6 +368,17 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
 
   // Sanity check (normally skipped) to see if the energy-momentum is conserved.
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
+
+//     cerr << "LCDD: " << mSystem << " "
+// 	 << cluPtr1->mass() << " "
+// 	 << mclu2 << " | "
+// 	 << mhad1 << " "
+// 	 << mLH2 << " "
+// 	 << mLHP2 << endl
+// 	 << "  pSyst = " << pSystem << endl 
+// 	 << "  phad1 = " << phad1 << endl 
+// 	 << "  pclu2 = " << pclu2 << endl;
+    
     Lorentz5Momentum diff = pSystem - ( phad1 + pclu2 );
     Energy ediff = fabs( diff.m() );
     if ( ediff > 1e-3*GeV ) {
@@ -370,12 +402,13 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   cluPtr1->reshufflingPartnerCluster( cluPtr2 );
   cluPtr2->reshufflingPartnerCluster( cluPtr1 );
 
-  if ( ! normalSecondCluster ) {  
+  if(singleHadron) {  
 
     // In the case that also the cluster reshuffling partner is light
     // it is decayed into a single hadron, *without* creating the
     // redefined cluster (this choice is justified in order to avoid
     // clusters that could have undefined components).
+
     long idhad2 = _hadronsSelector->lightestHadron(part3->id(), part4->id());
     PPtr ptrhad2 = getParticle( idhad2 );
     ptrhad2->set5Momentum( pclu2 );            
@@ -440,7 +473,7 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
       }
     }
 
-  } // end of  if ( ! normalSecondCluster ) 
+  } // end of  if (singleHadron) 
 
 
   return true;

@@ -364,7 +364,9 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
     int i=1;
     for (ClusterVector::const_iterator it = clusters.begin();
 	 it != clusters.end(); ++it) {
-      generator()->log() << " \t Cluster number " << i++ << endl 
+      generator()->log() << " \t Cluster number " 
+			 << (*it)->number() << " ("
+			 << i++ << "th)" << endl 
 			 << " \t \t numComponents=" << (*it)->numComponents()
 			 << " sumConstituentMasses=" 
 			 << (*it)->sumConstituentMasses()
