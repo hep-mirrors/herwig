@@ -19,14 +19,6 @@ inline VertexBase::VertexBase(const VertexBase & x)
     _npoint(x._npoint), _nsize(x._nsize), _inpart(x._inpart), _iinpart(x._iinpart),
     _outpart(x._outpart), _ioutpart(x._ioutpart)
 {}
-
-inline IBPtr VertexBase::clone() const {
-  return new_ptr(*this);
-}
-  
-inline IBPtr VertexBase::fullclone() const {
-  return new_ptr(*this);
-}
     
 inline void VertexBase::doupdate() throw(UpdateException) {
   Interfaced::doupdate();

@@ -143,16 +143,10 @@ protected:
 
   // calculate propagator multiplied by coupling
   inline Complex normPropagator(int, Energy2,tcPDPtr);
-
-protected:
-  
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
     
 private:
   
-  static ClassDescription<Herwig::Helicity::VertexBase> initVertexBase;
+  static AbstractClassDescription<Herwig::Helicity::VertexBase> initVertexBase;
   // Describe a concrete class with persistent data.
   
   VertexBase & operator=(const VertexBase &);

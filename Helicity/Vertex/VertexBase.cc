@@ -31,11 +31,11 @@ void VertexBase::persistentInput(PersistentIStream & is, int) {
      >> _particlea >> _particleb >> _particlec >> _particled >> _particlee;
 }
     
-ClassDescription<VertexBase> VertexBase::initVertexBase;
+AbstractClassDescription<VertexBase> VertexBase::initVertexBase;
 // Definition of the static class description member.
   
 void VertexBase::Init() {
-  
+ 
   static Parameter<VertexBase,int> interfacenpoint
     ("NPoint",
      "The number of extermal particles interacting at the Vertex.",
@@ -80,7 +80,7 @@ void VertexBase::Init() {
   static ClassDocumentation<VertexBase> documentation
     ("The \\classname{VertexBase} class is designed to be the base class"
      "of all vertices in Herwig++");
-  
+
 }
 
 // find particles with a given id    
