@@ -7,7 +7,10 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline StandardCKM::StandardCKM()
-  : theta12(0.222357), theta13(0.0003150), theta23(0.039009), delta(1.35819) {}
+//  : theta12(0.222357), theta13(0.0003150), theta23(0.039009), delta(1.35819)
+// values changed to latest PDG numbers (i.e. PDG 2004)
+  : theta12(0.2262), theta13(0.0037), theta23(0.0413), delta(1.05)
+ {}
 
 inline StandardCKM::StandardCKM(const StandardCKM & x)
   : CKMBase(x), theta12(x.theta12), theta13(x.theta13), theta23(x.theta23),
