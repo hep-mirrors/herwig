@@ -119,6 +119,8 @@ namespace Herwig {
 
     bool isBeamRemnant(int) const;
     void setBeamRemnant(int,bool);
+
+    int clusterId() const { return _id; }
   public:
 
     inline tClusterPtr reshufflingPartnerCluster() const;
