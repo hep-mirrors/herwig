@@ -1,0 +1,313 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the RSSpinorBarWaveFunction class.
+//
+// Author: Peter Richardson
+//
+namespace Herwig {
+using ThePEG::Helicity::LorentzRSSpinorBar;
+namespace Helicity {
+using namespace ThePEG;
+
+// constructors
+
+// use a 5-momentum and specify all components (specifiy Dirac representation)
+inline RSSpinorBarWaveFunction::
+RSSpinorBarWaveFunction(const Lorentz5Momentum &p, const tcPDPtr & part,
+			Complex xs1, Complex xs2, Complex xs3, Complex xs4,
+			Complex ys1, Complex ys2, Complex ys3, Complex ys4,
+			Complex zs1, Complex zs2, Complex zs3, Complex zs4,
+			Complex ts1, Complex ts2, Complex ts3, Complex ts4,
+			DiracRep dirac) 
+{
+  direction(intermediate);
+  setMomentum(p);
+  checkParticle(part);
+  _wf = LorentzRSSpinorBar(xs1,xs2,xs3,xs4,ys1,ys2,ys3,ys4,
+			   zs1,zs2,zs3,zs4,ts1,ts2,ts3,ts4,dirac);
+}	
+
+// use a 5-momentum and a LorentzRSSpinorBar
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(const Lorentz5Momentum & p,
+							const tcPDPtr & part,
+							LorentzRSSpinorBar & inspin)
+{
+  direction(intermediate);
+  setMomentum(p);
+  checkParticle(part); 
+  _wf=inspin;
+}
+
+// use a 5-momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(const Lorentz5Momentum & p,
+							const tcPDPtr & part,int ihel,
+							Direction dir, DiracRep dirac) 
+{
+  direction(dir);
+  setMomentum(p);
+  checkParticle(part);
+  calculateWaveFunction(ihel,dirac);
+}
+
+
+// set all components of momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
+							Energy pz, Energy ee, Energy mm,
+							const tcPDPtr & part, int ihel,
+							Direction dir, DiracRep dirac) 
+{
+  direction(dir);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part); 
+  calculateWaveFunction(ihel,dirac);
+}
+
+// set 4-momentum components (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
+							Energy pz, Energy ee,
+							const tcPDPtr & part, int ihel,
+							Direction dir, DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  calculateWaveFunction(ihel,dirac);
+}
+
+// set 4-momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,
+							const tcPDPtr & part,int ihel,
+							Direction dir, DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(pin);
+  checkParticle(part);
+  calculateWaveFunction(ihel,dirac);
+}
+
+// set mass zero momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy mm, const tcPDPtr & part,
+							int ihel, Direction dir,
+							DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel,dirac);
+}
+
+// set 4 momentum and mass (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy mm,
+							const tcPDPtr & part, int ihel,
+							Direction dir, DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  calculateWaveFunction(ihel,dirac);
+}
+
+// default constructors (set the momentum and zero the Wavefunction)
+
+// use a 5 momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Lorentz5Momentum p,
+							const tcPDPtr & part,
+							Direction dir, DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(p);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set all components of momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
+							Energy pz, Energy ee, Energy mm,
+							const tcPDPtr & part,
+							Direction dir,DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(px,py,pz,ee,mm);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set 4-momentum components (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
+							Energy pz, Energy ee,
+							const tcPDPtr & part,
+							Direction dir,DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(px,py,pz,ee);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set 4-momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,
+							const tcPDPtr & part,
+							Direction dir, DiracRep dirac) 
+{
+  direction(dir);
+  setMomentum(pin);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set mass zero momentum (specify Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy mm,const tcPDPtr & part,
+							Direction dir,DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(mm);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// set 4 momentum and mass
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy mm,
+							const tcPDPtr & part,
+							Direction dir,DiracRep dirac) 
+{
+  direction(dir);
+  setMomentum(pin,mm);
+  checkParticle(part);
+  zeroWaveFunction(dirac);
+}
+
+// default constructor (specfiy Dirac representation)
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(DiracRep dirac)
+{
+  direction(intermediate);
+  setMomentum();
+  zeroWaveFunction(dirac);
+}
+
+// descructor
+inline RSSpinorBarWaveFunction::~RSSpinorBarWaveFunction(){;}
+
+// subscript operator
+inline Complex RSSpinorBarWaveFunction::operator ()(int i,int j) const
+{
+  if(i<0 || i>3 || j<0 || j>3)
+    {std::cerr << "RSSpinorBarWaveFunction requested for invalid index" 
+	       << i << " " << j<< std::endl;
+    return 0.;}
+  return _wf(i,j);
+}
+// Set components by index.
+inline Complex & RSSpinorBarWaveFunction::operator () (int i, int j)
+{
+  static Complex dummy;
+  if(i>=0 &&i<=3|| j<0 || j>3)
+    {return _wf(i,j);}
+  else
+    {cerr << "Invalid index " << i << " " << j 
+	  << " called for RSSpinorBarWaveFunction" << endl;
+    return dummy;}
+}
+
+// Assignment. 
+inline RSSpinorBarWaveFunction & 
+RSSpinorBarWaveFunction::operator = (const RSSpinorBarWaveFunction & w)
+{
+  setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
+  _wf=w._wf;
+  setParticle(w.getParticle());
+  return *this;
+}
+
+// return the wavefunction as a LorentzRSSpinorBar
+inline LorentzRSSpinorBar RSSpinorBarWaveFunction::Wave() const{return _wf;}
+
+// Get components
+inline Complex RSSpinorBarWaveFunction::xs1() const {return _wf.xs1();}
+inline Complex RSSpinorBarWaveFunction::xs2() const {return _wf.xs2();}
+inline Complex RSSpinorBarWaveFunction::xs3() const {return _wf.xs3();}
+inline Complex RSSpinorBarWaveFunction::xs4() const {return _wf.xs4();}
+inline Complex RSSpinorBarWaveFunction::ys1() const {return _wf.ys1();}
+inline Complex RSSpinorBarWaveFunction::ys2() const {return _wf.ys2();}
+inline Complex RSSpinorBarWaveFunction::ys3() const {return _wf.ys3();}
+inline Complex RSSpinorBarWaveFunction::ys4() const {return _wf.ys4();}
+inline Complex RSSpinorBarWaveFunction::zs1() const {return _wf.zs1();}
+inline Complex RSSpinorBarWaveFunction::zs2() const {return _wf.zs2();}
+inline Complex RSSpinorBarWaveFunction::zs3() const {return _wf.zs3();}
+inline Complex RSSpinorBarWaveFunction::zs4() const {return _wf.zs4();}
+inline Complex RSSpinorBarWaveFunction::ts1() const {return _wf.ts1();}
+inline Complex RSSpinorBarWaveFunction::ts2() const {return _wf.ts2();}
+inline Complex RSSpinorBarWaveFunction::ts3() const {return _wf.ts3();}
+inline Complex RSSpinorBarWaveFunction::ts4() const {return _wf.ts4();}
+
+// Set components
+inline void RSSpinorBarWaveFunction::setXS1(Complex in){_wf.setXS1(in);}
+inline void RSSpinorBarWaveFunction::setXS2(Complex in){_wf.setXS2(in);}
+inline void RSSpinorBarWaveFunction::setXS3(Complex in){_wf.setXS3(in);}
+inline void RSSpinorBarWaveFunction::setXS4(Complex in){_wf.setXS4(in);}
+inline void RSSpinorBarWaveFunction::setYS1(Complex in){_wf.setYS1(in);}
+inline void RSSpinorBarWaveFunction::setYS2(Complex in){_wf.setYS2(in);}
+inline void RSSpinorBarWaveFunction::setYS3(Complex in){_wf.setYS3(in);}
+inline void RSSpinorBarWaveFunction::setYS4(Complex in){_wf.setYS4(in);}
+inline void RSSpinorBarWaveFunction::setZS1(Complex in){_wf.setZS1(in);}
+inline void RSSpinorBarWaveFunction::setZS2(Complex in){_wf.setZS2(in);}
+inline void RSSpinorBarWaveFunction::setZS3(Complex in){_wf.setZS3(in);}
+inline void RSSpinorBarWaveFunction::setZS4(Complex in){_wf.setZS4(in);}
+inline void RSSpinorBarWaveFunction::setTS1(Complex in){_wf.setTS1(in);}
+inline void RSSpinorBarWaveFunction::setTS2(Complex in){_wf.setTS2(in);}
+inline void RSSpinorBarWaveFunction::setTS3(Complex in){_wf.setTS3(in);}
+inline void RSSpinorBarWaveFunction::setTS4(Complex in){_wf.setTS4(in);}
+
+// reset functions
+
+// momentum, particle type and direction
+inline void RSSpinorBarWaveFunction::reset(const Lorentz5Momentum & pin,
+					const tcPDPtr & part, Direction dir)
+{
+  direction(dir);
+  checkParticle(part);
+  setMomentum(pin);
+}
+
+// reset momentum and particle type
+inline void RSSpinorBarWaveFunction::reset(const Lorentz5Momentum & pin, Direction dir)
+{
+  direction(dir);
+  setMomentum(pin);
+}
+
+// reset momentum
+inline void RSSpinorBarWaveFunction::reset(const Lorentz5Momentum & pin)
+{
+  setMomentum(pin);
+}
+
+// reset the helicity (calculates the new spinor (specify Dirac representation)
+inline void RSSpinorBarWaveFunction::reset(int ihel,DiracRep dirac)
+{calculateWaveFunction(ihel,dirac);}
+
+// reset the particle type and direction
+inline void RSSpinorBarWaveFunction::reset(const tcPDPtr & part,Direction dir)
+{
+  direction(dir);
+  checkParticle(part);
+}
+
+// reset the particle type
+inline void RSSpinorBarWaveFunction::reset(const tcPDPtr & part)
+{checkParticle(part);}	
+
+// zero the wavefunction (set specify Dirac representation)
+inline void RSSpinorBarWaveFunction::zeroWaveFunction(DiracRep dirac)
+{_wf=LorentzRSSpinorBar(dirac);}
+
+// check the particles
+inline void RSSpinorBarWaveFunction::checkParticle(const tcPDPtr & in)
+{
+  setParticle(in);
+  if(iSpin()!=4)
+    {cerr << "Calculating RSSpinorBarWaveFunction for non-spin 3/2 Particle" << endl;}
+}
+
+}
+}
