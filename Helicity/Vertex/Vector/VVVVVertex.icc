@@ -1,0 +1,80 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VVVVVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+inline VVVVVertex::VVVVVertex() {}
+
+inline VVVVVertex::VVVVVertex(const VVVVVertex & x)
+  : VertexBase(x) {}
+
+inline IBPtr VVVVVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VVVVVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void VVVVVertex::doupdate() throw(UpdateException) {
+  VertexBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void VVVVVertex::doinit() throw(InitException) {
+  VertexBase::doinit();
+}
+
+inline void VVVVVertex::dofinish() {
+  VertexBase::dofinish();
+}
+
+inline void VVVVVertex::doinitrun() {
+  VertexBase::doinitrun();
+}
+
+inline void VVVVVertex::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  VertexBase::rebind(trans);
+}
+
+inline IVector VVVVVertex::getReferences() {
+  IVector ret = VertexBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+// set order of particles
+inline void VVVVVertex::setOrder(int ia,int ib, int ic, int id)
+{_iorder[0]=ia;_iorder[1]=ib;_iorder[2]=ic;_iorder[3]=id;}
+// set type of vertex
+inline void VVVVVertex::setType(int in){_itype=in;}
+// intermediate particles
+inline void VVVVVertex::setIntermediate(tcPDPtr a,tcPDPtr b,
+					Complex ca, Complex cb)
+{
+  _inter[0]=a;_inter[1]=b;
+  _coup[0]=ca;_coup[1]=cb;
+}
+
+}
+}
