@@ -86,4 +86,6 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0,int id1,Energy,Energy,
   f3v = 0.;
   f3a = 0.;
 }
+
+void BaryonSimpleFormFactor::dataBaseOutput(ofstream&) {;}
 }

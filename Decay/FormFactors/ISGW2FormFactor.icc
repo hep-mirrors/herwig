@@ -8,7 +8,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline ISGW2FormFactor::ISGW2FormFactor() 
-{
+{ 
+  // values of a_S at matching scale
+  _alphamuQM=0.6;
   // the quark masses
   _mdown    = 0.33*GeV;
   _mup      = 0.33*GeV;
@@ -73,6 +75,51 @@ inline ISGW2FormFactor::ISGW2FormFactor()
   _CfBcpsi    = 0.967;
   _CfBcBsstar = 1.000;
   _CfBcBstar  = 1.000;
+  // the decay modes
+  // to the 1S scalar mesons   
+  addFormFactor(-541, 441,0,-4, 5, 4);
+  addFormFactor(-541,-421,0,-4, 5, 2);
+  addFormFactor(-541,-531,0, 5,-4,-3);
+  addFormFactor(-541,-511,0, 5,-4,-1);
+  addFormFactor( 531,-431,0, 3,-5,-4);
+  addFormFactor( 531,-321,0, 3,-5,-2);
+  addFormFactor( 511,-411,0, 1,-5,-4);
+  addFormFactor( 511,-211,0, 1,-5,-2);
+  addFormFactor(-521, 421,0,-2, 5, 4);
+  addFormFactor(-521, 111,0,-2, 5, 2);
+  addFormFactor(-521, 221,0,-2, 5, 2);
+  addFormFactor(-521, 331,0,-2, 5, 2);
+  addFormFactor( 431, 221,0,-3, 4, 3);
+  addFormFactor( 431, 331,0,-3, 4, 3);
+  addFormFactor( 431, 311,0,-3, 4, 1);
+  addFormFactor( 421,-321,0,-2, 4, 3);
+  addFormFactor( 421,-211,0,-2, 4, 1);
+  addFormFactor( 411,-311,0,-1, 4, 3);
+  addFormFactor( 411, 111,0,-1, 4, 1);
+  addFormFactor( 411, 221,0,-1, 4, 1);
+  addFormFactor( 411, 331,0,-1, 4, 1);
+  // to the 1P scalar mesons
+  addFormFactor(-541, 10441,0, 4, 5, 4);
+  addFormFactor(-541, 10421,0, 4, 5, 2);
+  addFormFactor(-541,-10531,0, 5,-4,-3);
+  addFormFactor(-541,-10511,0, 5,-4,-1);
+  addFormFactor( 531,-10431,0, 3,-5,-4);
+  addFormFactor( 531,-10321,0, 3,-5,-2);
+  addFormFactor( 511,-10411,0, 1,-5,-4);
+  addFormFactor( 511,-10211,0, 1,-5,-2);
+  addFormFactor(-521, 10421,0,-2, 5, 4);
+  addFormFactor(-521, 10111,0,-2, 5, 2);
+  addFormFactor(-521, 10221,0,-2, 5, 2);
+  addFormFactor(-521, 10331,0,-2, 5, 2);
+  addFormFactor( 431, 10221,0,-3, 4, 3);
+  addFormFactor( 431, 10331,0,-3, 4, 3);
+  addFormFactor( 431,-10311,0,-3, 4, 1);
+  addFormFactor( 421,-10321,0,-2, 4, 3);
+  addFormFactor( 421,-10211,0,-2, 4, 1);
+  addFormFactor( 411,-10311,0,-1, 4, 4);
+  addFormFactor( 411, 10111,0,-1, 4, 1);
+  addFormFactor( 411, 10221,0,-1, 4, 1);
+  addFormFactor( 411, 10331,0,-1, 4, 1);
   // to the 1S vector mesons
   addFormFactor(-541, 10443,1,-4, 5, 4); 
   addFormFactor(-541, 10423,1,-2, 5, 4); 
@@ -137,51 +184,6 @@ inline ISGW2FormFactor::ISGW2FormFactor()
   addFormFactor( 411, 113  ,1,-1, 4, 1); 
   addFormFactor( 411, 223  ,1,-1, 4, 1); 
   addFormFactor( 411, 333  ,1,-1, 4, 1);
-  // the decay modes
-  // to the 1P scalar mesons
-  addFormFactor(-541, 10441,0, 4, 5, 4);
-  addFormFactor(-541, 10421,0, 4, 5, 2);
-  addFormFactor(-541,-10531,0, 5,-4,-3);
-  addFormFactor(-541,-10511,0, 5,-4,-1);
-  addFormFactor( 531,-10431,0, 3,-5,-4);
-  addFormFactor( 531,-10321,0, 3,-5,-2);
-  addFormFactor( 511,-10411,0, 1,-5,-4);
-  addFormFactor( 511,-10211,0, 1,-5,-2);
-  addFormFactor(-521, 10421,0,-2, 5, 4);
-  addFormFactor(-521, 10111,0,-2, 5, 2);
-  addFormFactor(-521, 10221,0,-2, 5, 2);
-  addFormFactor(-521, 10331,0,-2, 5, 2);
-  addFormFactor( 431, 10221,0,-3, 4, 3);
-  addFormFactor( 431, 10331,0,-3, 4, 3);
-  addFormFactor( 431,-10311,0,-3, 4, 1);
-  addFormFactor( 421,-10321,0,-2, 4, 3);
-  addFormFactor( 421,-10211,0,-2, 4, 1);
-  addFormFactor( 411,-10311,0,-1, 4, 4);
-  addFormFactor( 411, 10111,0,-1, 4, 1);
-  addFormFactor( 411, 10221,0,-1, 4, 1);
-  addFormFactor( 411, 10331,0,-1, 4, 1);
-  // to the 1S scalar mesons   
-  addFormFactor(-541, 441,0,-4, 5, 4);
-  addFormFactor(-541,-421,0,-4, 5, 2);
-  addFormFactor(-541,-531,0, 5,-4,-3);
-  addFormFactor(-541,-511,0, 5,-4,-1);
-  addFormFactor( 531,-431,0, 3,-5,-4);
-  addFormFactor( 531,-321,0, 3,-5,-2);
-  addFormFactor( 511,-411,0, 1,-5,-4);
-  addFormFactor( 511,-211,0, 1,-5,-2);
-  addFormFactor(-521, 421,0,-2, 5, 4);
-  addFormFactor(-521, 111,0,-2, 5, 2);
-  addFormFactor(-521, 221,0,-2, 5, 2);
-  addFormFactor(-521, 331,0,-2, 5, 2);
-  addFormFactor( 431, 221,0,-3, 4, 3);
-  addFormFactor( 431, 331,0,-3, 4, 3);
-  addFormFactor( 431, 311,0,-3, 4, 1);
-  addFormFactor( 421,-321,0,-2, 4, 3);
-  addFormFactor( 421,-211,0,-2, 4, 1);
-  addFormFactor( 411,-311,0,-1, 4, 3);
-  addFormFactor( 411, 111,0,-1, 4, 1);
-  addFormFactor( 411, 221,0,-1, 4, 1);
-  addFormFactor( 411, 331,0,-1, 4, 1);
 }			     
 			     
 inline ISGW2FormFactor::ISGW2FormFactor(const ISGW2FormFactor & x)

@@ -105,4 +105,6 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int mode,int id0, int id1, Energy m0, Ener
   f2a = (m0+m1)*_g2[mode]; 
 }
 
+void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream&) {;}
+
 }
