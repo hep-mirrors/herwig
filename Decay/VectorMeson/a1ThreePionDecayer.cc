@@ -25,7 +25,6 @@ using namespace ThePEG;
 using namespace Helicity;
 using namespace ThePEG::Helicity;
 using ThePEG::Helicity::ScalarSpinInfo;
-using ThePEG::Helicity::tcSpinInfoPtr;
   
 a1ThreePionDecayer::~a1ThreePionDecayer() {}
   
@@ -61,39 +60,28 @@ bool a1ThreePionDecayer::accept(const DecayMode & dm) const {
   
 ParticleVector a1ThreePionDecayer::decay(const DecayMode & dm,
 					 const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  // work out which mode we are doing
-  int id=parent.id(),nplus=0;
-  if(id==ParticleID::a_10||id==ParticleID::a_1plus){id=ParticleID::piplus;}
-  else{id=ParticleID::piminus;}
-  for(unsigned int ix=0;ix<children.size();++ix)
-    {if(children[ix]->id()==id){++nplus;}}
-  int imode=0;
-  if(nplus==0){imode=0;}
-  else if(nplus==2){imode=3;}
-  else if(nplus==1&&parent.id()==ParticleID::a_10){imode=2;}
-  else{imode=1;}
-  // perform the decay
-  generate(true,imode,parent,children);
-  return children;
+  ParticleMSet::const_iterator pit  = dm.products().begin();
+  ParticleMSet::const_iterator pend = dm.products().end();
+  int ncharged=0;
+  for( ; pit!=pend;++pit){if(abs((**pit).id())==ParticleID::piplus){++ncharged;}}
+  bool cc = parent.id()==ParticleID::a_1minus;
+  return generate(true,cc,ncharged,parent);
 }
   
   
 void a1ThreePionDecayer::persistentOutput(PersistentOStream & os) const {
   os << _rhomass << _rhowidth << _prho << _hm2 << _rhoD << _dhdq2m2 <<  _sigmamass
      << _sigmawidth << _psigma << _mpi << _mpi2 << _lambda2 << _a1mass2 << _zsigma 
-     << _rhocoupling << _coupling 
-     << _localparameters << _zerochan << _onechan << _twochan 
-     << _threechan << _zerowgts << _onewgts << _twowgts << _threewgts << _zeromax
+     << _rhocoupling << _coupling << _localparameters << _zerowgts << _onewgts 
+     << _twowgts << _threewgts << _zeromax
      << _onemax << _twomax << _threemax << _coupling;
 }
   
 void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _rhomass >> _rhowidth >> _prho >> _hm2 >> _rhoD >> _dhdq2m2 >>  _sigmamass
      >> _sigmawidth >> _psigma >> _mpi >> _mpi2 >> _lambda2 >> _a1mass2 >> _zsigma 
-     >> _rhocoupling >> _coupling 
-     >> _localparameters >> _zerochan >> _onechan >> _twochan 
-     >> _threechan >> _zerowgts >> _onewgts >> _twowgts >> _threewgts >> _zeromax
+     >> _rhocoupling >> _coupling >> _localparameters >> _zerowgts >> _onewgts 
+     >> _twowgts >> _threewgts >> _zeromax
      >> _onemax >> _twomax >> _threemax >> _coupling;
 }
 
@@ -153,23 +141,11 @@ void a1ThreePionDecayer::Init() {
      &a1ThreePionDecayer::_sigmawidth, GeV, 0.8*GeV, 0.0*GeV, 10.0*GeV,
      false, false, true);
 
-  static ParVector<a1ThreePionDecayer,bool> interfacezerochan
-    ("AllNeutralChannels",
-     "The channels to use for the integration of the decay a_1^0->pi0pi0pi0",
-     &a1ThreePionDecayer::_zerochan,
-     0, 0, 0, -10000, 10000, false, false, true);
-
   static ParVector<a1ThreePionDecayer,double> interfacezerowgts
     ("AllNeutralWeights",
      "The weights of the different channels to use for the integration of"
      " the decay a_1^0->pi0pi0pi0",
      &a1ThreePionDecayer::_zerowgts,
-     0, 0, 0, -10000, 10000, false, false, true);
-
-  static ParVector<a1ThreePionDecayer,bool> interfaceonechan
-    ("OneChargedChannels",
-     "The channels to use for the integration of the decay a_1^+->pi+pi0pi0",
-     &a1ThreePionDecayer::_onechan,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<a1ThreePionDecayer,double> interfaceonewgts
@@ -179,23 +155,11 @@ void a1ThreePionDecayer::Init() {
      &a1ThreePionDecayer::_onewgts,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<a1ThreePionDecayer,bool> interfacetwochan
-    ("TwoChargedChannels",
-     "The channels to use for the integration of the decay a_1^0->pi+pi-pi0",
-     &a1ThreePionDecayer::_twochan,
-     0, 0, 0, -10000, 10000, false, false, true);
-
   static ParVector<a1ThreePionDecayer,double> interfacetwowgts
     ("TwoChargedWeights",
      "The weights of the different channels to use for the integration of"
      " the decay a_1^0->pi+pi-pi0",
      &a1ThreePionDecayer::_twowgts,
-     0, 0, 0, -10000, 10000, false, false, true);
-
-  static ParVector<a1ThreePionDecayer,bool> interfacethreechan
-    ("ThreeChargedChannels",
-     "The channels to use for the integration of the decay a_1^+->pi+pi+pi-",
-     &a1ThreePionDecayer::_threechan,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<a1ThreePionDecayer,double> interfacethreewgts
@@ -241,20 +205,11 @@ void a1ThreePionDecayer::Init() {
      &a1ThreePionDecayer::_rhowidth,
      0, 0, 0, -10000, 10000, false, false, true);
 
-
-  //  static Parameter<a1ThreePionDecayer,Complex> interfaceSigmaCoupling
-  //  ("SigmaCoupling",
-  //   "The relative coupling of the sigma with respect to the rho",
-  //  &a1ThreePionDecayer::_zsigma, Complex(1.269,0.591), -1.0e12, 1.0e12,
-  //  false, false, false);
-
-  // need to add the rho coupling here if we get complex to work
-
 }
 
 // hadronic current
 vector<LorentzPolarizationVector> 
-a1ThreePionDecayer::decayCurrent(const bool vertex, const int imode, const int ichan, 
+a1ThreePionDecayer::decayCurrent(const bool vertex, const int ichan, 
 				 const Particle & inpart,
 				 const ParticleVector &outpart) const
 {
@@ -283,7 +238,7 @@ a1ThreePionDecayer::decayCurrent(const bool vertex, const int imode, const int i
   // work out which decay mode we are doing
   idtemp=inpart.id();
   // a_10 -> pi0pi0pi0
-  if(imode==0)
+  if(imode()==0)
     {
       // the momenta
       Lorentz5Momentum pa=outpart[1]->momentum()+outpart[2]->momentum();
@@ -318,7 +273,7 @@ a1ThreePionDecayer::decayCurrent(const bool vertex, const int imode, const int i
       output *=_zsigma*0.4082482904638631*Q.mass2();
     }
   // a_1+ -> pi0pi0pi+
-  else if(imode==1)
+  else if(imode()==1)
     {
       if(idtemp==ParticleID::a_1minus){ipip[0]=ipim[0];}
       Lorentz5Momentum pa=outpart[ipip[0]]->momentum()+outpart[ipi0[1]]->momentum();
@@ -351,7 +306,7 @@ a1ThreePionDecayer::decayCurrent(const bool vertex, const int imode, const int i
       output *=0.7071067811865476;
     }
   // a_10->pi+pi-pi0
-  else if(imode==2)
+  else if(imode()==2)
     {
       // the momenta
       Lorentz5Momentum pa=outpart[ipi0[0]]->momentum()+outpart[ipim[0]]->momentum();
@@ -381,7 +336,7 @@ a1ThreePionDecayer::decayCurrent(const bool vertex, const int imode, const int i
 	}
     }
   // a1+ -> pi+pi+pi-
-  else if(imode==3)
+  else if(imode()==3)
     {
       // change the order  if needed
       if(idtemp==ParticleID::a_1minus)

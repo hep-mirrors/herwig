@@ -11,7 +11,7 @@ using namespace ThePEG;
 inline VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
   // omega decay
   _incoming.push_back(223);
-  _coupling.push_back(14.70*6.01*2./GeV);
+  _coupling.push_back(175.2663/GeV);
   _directcoupling.push_back(0.);_directphase.push_back(0.);
   _rho2coupling.push_back(0.);_rho2phase.push_back(0.);
   _rho3coupling.push_back(0.);_rho3phase.push_back(0.);
@@ -20,15 +20,15 @@ inline VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
   _rho2wgt.push_back(-1.0); 
   _rho3wgt.push_back(-1.0);
   _rho1mass.push_back(0.7711*GeV); 
-  _rho2mass.push_back(1.4500*GeV);
+  _rho2mass.push_back(1.4650*GeV);
   _rho3mass.push_back(1.7000*GeV); 
-  _rho1width.push_back(0.145*GeV); 
-  _rho2width.push_back(0.145*GeV);
-  _rho3width.push_back(0.145*GeV);
-  _defaultmass.push_back(-1);
+  _rho1width.push_back(0.1492*GeV); 
+  _rho2width.push_back(0.3100*GeV);
+  _rho3width.push_back(0.2400*GeV);
+  _defaultmass.push_back(true);
   // phi decay
   _incoming.push_back(333);
-  _coupling.push_back(0.780*6.01*2./GeV);
+  _coupling.push_back(9.4240292/GeV);
   _directcoupling.push_back(1.295970E-6);_directphase.push_back(2.47);
   _rho2coupling.push_back(0.);_rho2phase.push_back(0.);
   _rho3coupling.push_back(0.);_rho3phase.push_back(0.);
@@ -40,10 +40,10 @@ inline VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
   _rho2mass.push_back(1.4500*GeV);
   _rho3mass.push_back(1.7000*GeV); 
   _rho1width.push_back(0.1439*GeV); 
-  _rho2width.push_back(0.145*GeV);
-  _rho3width.push_back(0.145*GeV);
-  _defaultmass.push_back(-1);
-  
+  _rho2width.push_back(0.3100*GeV);
+  _rho3width.push_back(0.2400*GeV);
+  _defaultmass.push_back(false);
+  _mpi0=0.;_mpic=0.;
 }
 
 inline VectorMeson3PionDecayer::VectorMeson3PionDecayer(const VectorMeson3PionDecayer & x)
@@ -56,7 +56,7 @@ inline VectorMeson3PionDecayer::VectorMeson3PionDecayer(const VectorMeson3PionDe
     _rho1width(x._rho1width), _rho2width(x._rho2width), _rho3width(x._rho3width),
     _defaultmass(x._defaultmass), _rho0const(x._rho0const), _rhocconst(x._rhocconst),
     _rhomass(x._rhomass), _rhomass2(x._rhomass2), _ccoupling(x._ccoupling),
-    _firstchannel(x._firstchannel) {}
+    _mpic(x._mpic), _mpi0(x._mpi0) {}
 
 inline IBPtr VectorMeson3PionDecayer::clone() const {
   return new_ptr(*this);
@@ -120,21 +120,19 @@ inline void VectorMeson3PionDecayer::doinit() throw(InitException) {
   rhop[1] = getParticleData(100213);
   rhop[2] = getParticleData(30213);
   // create the integration channels for the decay
-  Ptr<Herwig::DecayPhaseSpaceChannel>::pointer newchannel;
-  vector<vector <bool> >   chanon( _incoming.size());
-  vector<vector <double> > chanwgt(_incoming.size());
+  DecayPhaseSpaceModePtr mode;
+  DecayPhaseSpaceChannelPtr newchannel;
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
-      _firstchannel.push_back(numberChannels());
-      chanon[ix].resize(numberChannels(),false);
-      chanwgt[ix].resize(numberChannels(),0.);
       extpart[0]=getParticleData(int(_incoming[ix]));
+      mode = new DecayPhaseSpaceMode(extpart,this);
       // decide which rho resonances to add
       double  temp[3] = {_rho1wgt[ix]  ,_rho2wgt[ix]  ,_rho3wgt[ix]  };
       Energy  mass[3] = {_rho1mass[ix] ,_rho2mass[ix] ,_rho3mass[ix] };
       Energy width[3] = {_rho1width[ix],_rho2width[ix],_rho3width[ix]};
+      vector<double> wgt;
       // set the mass parameters to the default if needed
-      if(_defaultmass[ix]<0)
+      if(_defaultmass[ix])
 	{
 	  _rho1mass[ix] = rhom[0]->mass(); _rho1width[ix] = rhom[0]->width();
 	  _rho2mass[ix] = rhom[1]->mass(); _rho2width[ix] = rhom[1]->width();
@@ -147,52 +145,39 @@ inline void VectorMeson3PionDecayer::doinit() throw(InitException) {
 	  if(temp[iy]>0)
 	    {
 	      // set the weights for the channels
-	      for(unsigned int iz=0;iz<3;++iz)
-		{
-		  chanon[ix].push_back(true);
-		  chanwgt[ix].push_back(temp[iy]/3./sumwgt);
-		}
+	      for(unsigned int iz=0;iz<3;++iz){wgt.push_back(temp[iy]/3./sumwgt);}
 	      // rho0 channel
-	      newchannel=new_ptr(DecayPhaseSpaceChannel());
+	      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
 	      newchannel->addIntermediate(extpart[0],0,0.0,-1,1);
 	      newchannel->addIntermediate(rho0[iy]  ,0,0.0, 2,3);
-	      newchannel->setExternal(extpart);
 	      newchannel->init();
-	      addChannel(newchannel);
-	      if(_defaultmass[ix]>0)
-		{resetIntermediate(numberChannels()-1,rho0[iy],mass[iy],width[iy]);}
+	      mode->addChannel(newchannel);
+	      if(!_defaultmass[ix])
+		{resetIntermediate(rho0[iy],mass[iy],width[iy]);}
 	      // rho+ channel
-	      newchannel=new_ptr(DecayPhaseSpaceChannel());
+	      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
 	      newchannel->addIntermediate(extpart[0],0,0.0,-1,3);
 	      newchannel->addIntermediate(rhop[iy]  ,0,0.0, 1,2);
-	      newchannel->setExternal(extpart);
 	      newchannel->init();
-	      addChannel(newchannel);
-	      if(_defaultmass[ix]>0)
-		{resetIntermediate(numberChannels()-1,rhop[iy],mass[iy],width[iy]);}
+	      mode->addChannel(newchannel);
+	      if(!_defaultmass[ix])
+		{resetIntermediate(rhop[iy],mass[iy],width[iy]);}
 	      // rho- channel
-	      newchannel=new_ptr(DecayPhaseSpaceChannel());
+	      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
 	      newchannel->addIntermediate(extpart[0],0,0.0,-1,2);
 	      newchannel->addIntermediate(rhom[iy]  ,0,0.0, 1,3);
-	      newchannel->setExternal(extpart);
 	      newchannel->init();
-	      addChannel(newchannel);
-	      if(_defaultmass[ix]>0)
-		{resetIntermediate(numberChannels()-1,rhom[iy],mass[iy],width[iy]);}
+	      mode->addChannel(newchannel);
+	      if(!_defaultmass[ix])
+		{mode->resetIntermediate(rhom[iy],mass[iy],width[iy]);}
+	      addMode(mode,_maxwgt[ix],wgt);
 	    }
 	}
     }
-  // set up the different modes
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      chanon[ix].resize(numberChannels(),false);
-      chanwgt[ix].resize(numberChannels(),0.);
-      setMode(ix,_maxwgt[ix],chanon[ix],chanwgt[ix]);
-    }
   // work out the masses and constants for the running widths
   Energy pcm;
-  Energy mpi0=getParticleData(ParticleID::pi0)->mass();
-  Energy mpic=getParticleData(ParticleID::piplus)->mass();
+  _mpi0=getParticleData(ParticleID::pi0)->mass();
+  _mpic=getParticleData(ParticleID::piplus)->mass();
   Complex ii(0.,1.);
   _rhomass.resize(_incoming.size()); _rhomass2.resize(_incoming.size());
   _rho0const.resize(_incoming.size()); _rhocconst.resize( _incoming.size());
@@ -207,17 +192,17 @@ inline void VectorMeson3PionDecayer::doinit() throw(InitException) {
       _rhomass2[ix].push_back(_rho2mass[ix]*_rho2mass[ix]);
       _rhomass2[ix].push_back(_rho3mass[ix]*_rho3mass[ix]);
       // set up the constants for the running width
-      pcm=Kinematics::pstarTwoBodyDecay(_rho1mass[ix],mpic,mpic);
+      pcm=Kinematics::pstarTwoBodyDecay(_rho1mass[ix],_mpic,_mpic);
       _rho0const[ix].push_back(_rho1mass[ix]*_rho1mass[ix]*_rho1width[ix]/(pcm*pcm*pcm));
-      pcm=Kinematics::pstarTwoBodyDecay(_rho2mass[ix],mpic,mpic);
+      pcm=Kinematics::pstarTwoBodyDecay(_rho2mass[ix],_mpic,_mpic);
       _rho0const[ix].push_back(_rho2mass[ix]*_rho2mass[ix]*_rho2width[ix]/(pcm*pcm*pcm));
-      pcm=Kinematics::pstarTwoBodyDecay(_rho3mass[ix],mpic,mpic);
+      pcm=Kinematics::pstarTwoBodyDecay(_rho3mass[ix],_mpic,_mpic);
       _rho0const[ix].push_back(_rho3mass[ix]*_rho3mass[ix]*_rho3width[ix]/(pcm*pcm*pcm));
-      pcm=Kinematics::pstarTwoBodyDecay(_rho1mass[ix],mpi0,mpic);
+      pcm=Kinematics::pstarTwoBodyDecay(_rho1mass[ix],_mpi0,_mpic);
       _rhocconst[ix].push_back(_rho1mass[ix]*_rho1mass[ix]*_rho1width[ix]/(pcm*pcm*pcm));
-      pcm=Kinematics::pstarTwoBodyDecay(_rho2mass[ix],mpi0,mpic);
+      pcm=Kinematics::pstarTwoBodyDecay(_rho2mass[ix],_mpi0,_mpic);
       _rhocconst[ix].push_back(_rho2mass[ix]*_rho2mass[ix]*_rho2width[ix]/(pcm*pcm*pcm));
-      pcm=Kinematics::pstarTwoBodyDecay(_rho3mass[ix],mpi0,mpic);
+      pcm=Kinematics::pstarTwoBodyDecay(_rho3mass[ix],_mpi0,_mpic);
       _rhocconst[ix].push_back(_rho3mass[ix]*_rho3mass[ix]*_rho3width[ix]/(pcm*pcm*pcm));
       // set the complex coupling constants
       _ccoupling[ix].push_back(1.);
@@ -236,15 +221,6 @@ inline void VectorMeson3PionDecayer::dofinish() {
 
 inline void VectorMeson3PionDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
-  PDVector extpart(4);
-  extpart[1]=getParticleData(ParticleID::pi0);
-  extpart[2]=getParticleData(ParticleID::piplus);
-  extpart[3]=getParticleData(ParticleID::piminus);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0]=getParticleData(int(_incoming[ix]));
-      initializePhaseSpace(ix,extpart);
-    }
 }
 
 inline void VectorMeson3PionDecayer::rebind(const TranslationMap & trans)

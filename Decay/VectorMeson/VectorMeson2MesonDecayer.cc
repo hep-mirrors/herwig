@@ -15,8 +15,8 @@
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 using ThePEG::Helicity::ScalarSpinInfo;
-using ThePEG::Helicity::tcSpinInfoPtr;
 
 VectorMeson2MesonDecayer::~VectorMeson2MesonDecayer() {}
   
@@ -48,9 +48,12 @@ bool VectorMeson2MesonDecayer::accept(const DecayMode & dm) const {
 ParticleVector VectorMeson2MesonDecayer::decay(const DecayMode & dm,
 					       const Particle & parent) const 
 {
-  ParticleVector children = dm.produceProducts();
   int imode=-1;
-  int id=parent.id(),id1=children[0]->id(),id2=children[1]->id();
+  int id=parent.id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
   unsigned int ix=0;
   do 
     {
@@ -63,8 +66,8 @@ ParticleVector VectorMeson2MesonDecayer::decay(const DecayMode & dm,
     }
   while(ix<_incoming.size()&&imode<0);
   // generate the decay
-  generate(false,imode,parent,children);
-  return children;
+  bool cc=false;
+  return generate(false,cc,imode,parent);
 }
    
 void VectorMeson2MesonDecayer::persistentOutput(PersistentOStream & os) const
@@ -118,7 +121,7 @@ void VectorMeson2MesonDecayer::Init() {
 
 // the hadronic currents    
 vector<LorentzPolarizationVector>  
-VectorMeson2MesonDecayer::decayCurrent(const bool vertex, const int imode, const int, 
+VectorMeson2MesonDecayer::decayCurrent(const bool vertex, const int, 
 				       const Particle & inpart,
 				       const ParticleVector & decay) const
 {
@@ -134,9 +137,34 @@ VectorMeson2MesonDecayer::decayCurrent(const bool vertex, const int imode, const
 	}
     }
   // calculate the current
-  Lorentz5Momentum ptemp=_coupling[imode]*(decay[0]->momentum()-decay[1]->momentum());
-  temp.push_back(LorentzPolarizationVector(ptemp));
+  LorentzPolarizationVector vtemp=_coupling[imode()]/inpart.mass()*
+    (decay[0]->momentum()-decay[1]->momentum());
+  temp.push_back(LorentzPolarizationVector(vtemp));
   return temp;
 }
-
+ 
+bool VectorMeson2MesonDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+					     double & coupling) const
+{
+  int imode=-1;
+  int id=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
+  unsigned int ix=0;
+  do 
+    {
+      if(id==_incoming[ix])
+	{
+	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
+	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
+	}
+      ++ix;
+    }
+  while(ix<_incoming.size()&&imode<0);
+  coupling=_coupling[imode];
+  mecode=0;
+  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
+}
 }

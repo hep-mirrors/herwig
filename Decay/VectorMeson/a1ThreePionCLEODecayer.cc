@@ -18,6 +18,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig{
 using namespace ThePEG;
@@ -58,21 +59,12 @@ bool a1ThreePionCLEODecayer::accept(const DecayMode & dm) const {
   
 ParticleVector a1ThreePionCLEODecayer::decay(const DecayMode & dm,
 					     const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  // work out which mode we are doing
-  int id=parent.id(),nplus=0;
-  if(id==ParticleID::a_10||id==ParticleID::a_1plus){id=ParticleID::piplus;}
-  else{id=ParticleID::piminus;}
-  for(unsigned int ix=0;ix<children.size();++ix)
-    {if(children[ix]->id()==id){++nplus;}}
-  int imode=0;
-  if(nplus==0){imode=0;}
-  else if(nplus==2){imode=3;}
-  else if(nplus==1&&parent.id()==ParticleID::a_10){imode=2;}
-  else{imode=1;}
-  // perform the decay
-  generate(true,imode,parent,children);
-  return children;
+  ParticleMSet::const_iterator pit  = dm.products().begin();
+  ParticleMSet::const_iterator pend = dm.products().end();
+  int ncharged=0;
+  for( ; pit!=pend;++pit){if(abs((**pit).id())==ParticleID::piplus){++ncharged;}}
+  bool cc = parent.id()==ParticleID::a_1minus;
+  return generate(true,cc,ncharged,parent);
 }
   
 void a1ThreePionCLEODecayer::persistentOutput(PersistentOStream & os) const {
@@ -81,20 +73,18 @@ void a1ThreePionCLEODecayer::persistentOutput(PersistentOStream & os) const {
      << _psigmacc << _psigma00 << _mpi0 << _mpic << _coupling << _rhomagP << _rhophaseP 
      << _rhocoupP << _rhomagD << _rhophaseD << _rhocoupD <<_f2mag << _f2phase << _f2coup 
      << _f0mag << _f0phase << _f0coup << _sigmamag << _sigmaphase << _sigmacoup 
-     << _localparameters << _zerochan << _onechan << _twochan << _threechan << _zerowgts 
-     << _onewgts << _twowgts << _threewgts << _zeromax << _onemax << _twomax 
-     << _threemax;
+     << _localparameters << _zerowgts << _onewgts << _twowgts << _threewgts 
+     << _zeromax << _onemax << _twomax << _threemax;
 }
   
 void a1ThreePionCLEODecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _rhomass >> _rhowidth >> _prhocc >> _prhoc0 >> _f2mass >> _f2width >> _pf2cc 
-     >> _pf200 >> _f0mass >> _f0width >> _pf0cc >> _pf000 >> _sigmamass >> _sigmawidth
-     >> _psigmacc >> _psigma00 >> _mpi0 >> _mpic >> _coupling >> _rhomagP >> _rhophaseP 
-     >> _rhocoupP >> _rhomagD >> _rhophaseD >> _rhocoupD>>_f2mag >> _f2phase >> _f2coup 
-     >> _f0mag >> _f0phase >> _f0coup >> _sigmamag >> _sigmaphase >> _sigmacoup 
-     >> _localparameters >> _zerochan >> _onechan >> _twochan >> _threechan >> _zerowgts 
-     >> _onewgts >> _twowgts >> _threewgts >> _zeromax >> _onemax >> _twomax 
-     >> _threemax;
+  is >> _rhomass >> _rhowidth >> _prhocc >> _prhoc0 >> _f2mass >> _f2width >> _pf2cc
+     >> _pf200 >> _f0mass >> _f0width >> _pf0cc >> _pf000 >> _sigmamass >> _sigmawidth 
+     >> _psigmacc >> _psigma00 >> _mpi0 >> _mpic >> _coupling >> _rhomagP >> _rhophaseP
+     >> _rhocoupP >> _rhomagD >> _rhophaseD >> _rhocoupD>>_f2mag >> _f2phase >> _f2coup
+     >> _f0mag >> _f0phase >> _f0coup >> _sigmamag >> _sigmaphase >> _sigmacoup
+     >> _localparameters >> _zerowgts >> _onewgts >> _twowgts >> _threewgts
+     >> _zeromax >> _onemax >> _twomax >> _threemax;
 }
   
 ClassDescription<a1ThreePionCLEODecayer> a1ThreePionCLEODecayer::inita1ThreePionCLEODecayer;
@@ -236,23 +226,11 @@ void a1ThreePionCLEODecayer::Init() {
      "Use the values from the particleData objects",
      false);
 
-  static ParVector<a1ThreePionCLEODecayer,bool> interfacezerochan
-    ("AllNeutralChannels",
-     "The channels to use for the integration of the decay a_1^0->pi0pi0pi0",
-     &a1ThreePionCLEODecayer::_zerochan,
-     0, 0, 0, -10000, 10000, false, false, true);
-
   static ParVector<a1ThreePionCLEODecayer,double> interfacezerowgts
     ("AllNeutralWeights",
      "The weights of the different channels to use for the integration of"
      " the decay a_1^0->pi0pi0pi0",
      &a1ThreePionCLEODecayer::_zerowgts,
-     0, 0, 0, -10000, 10000, false, false, true);
-
-  static ParVector<a1ThreePionCLEODecayer,bool> interfaceonechan
-    ("OneChargedChannels",
-     "The channels to use for the integration of the decay a_1^+->pi+pi0pi0",
-     &a1ThreePionCLEODecayer::_onechan,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,double> interfaceonewgts
@@ -262,23 +240,11 @@ void a1ThreePionCLEODecayer::Init() {
      &a1ThreePionCLEODecayer::_onewgts,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<a1ThreePionCLEODecayer,bool> interfacetwochan
-    ("TwoChargedChannels",
-     "The channels to use for the integration of the decay a_1^0->pi+pi-pi0",
-     &a1ThreePionCLEODecayer::_twochan,
-     0, 0, 0, -10000, 10000, false, false, true);
-
   static ParVector<a1ThreePionCLEODecayer,double> interfacetwowgts
     ("TwoChargedWeights",
      "The weights of the different channels to use for the integration of"
      " the decay a_1^0->pi+pi-pi0",
      &a1ThreePionCLEODecayer::_twowgts,
-     0, 0, 0, -10000, 10000, false, false, true);
-
-  static ParVector<a1ThreePionCLEODecayer,bool> interfacethreechan
-    ("ThreeChargedChannels",
-     "The channels to use for the integration of the decay a_1^+->pi+pi+pi-",
-     &a1ThreePionCLEODecayer::_threechan,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,double> interfacethreewgts
@@ -315,47 +281,89 @@ void a1ThreePionCLEODecayer::Init() {
 
 // hadronic current
 vector<LorentzPolarizationVector> 
-a1ThreePionCLEODecayer::decayCurrent(const bool vertex, const int imode,
+a1ThreePionCLEODecayer::decayCurrent(const bool vertex,
 				     const int ichan,const Particle & inpart,
 				     const ParticleVector &outpart) const
 {
-  //overall factor
-  double fact=_coupling;
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
   Energy2 q2=Q.mass2();
   // construct the spin info objects if needed
   if(vertex)
-    {
-      for(unsigned int ix=0;ix<outpart.size();++ix)
-	{
-	  SpinPtr stemp= new_ptr(ScalarSpinInfo(outpart[ix]->momentum(),true));
-	  outpart[ix]->spinInfo(stemp);
-	}
-    }
+    {for(unsigned int ix=0;ix<outpart.size();++ix)
+	{outpart[ix]->spinInfo(new_ptr(ScalarSpinInfo(outpart[ix]->momentum(),true)));}}
   // identify the mesons
-  int npi0=0,npiplus=0,npiminus=0,idtemp;
-  unsigned int iloc[3],ipi0[3],ipim[3],ipip[3];
-  for(unsigned int ix=0; ix<outpart.size();++ix)
-    {
-      idtemp=outpart[ix]->id();
-      if(idtemp==ParticleID::piplus){ipip[npiplus]=ix;++npiplus;}
-      else if(idtemp==ParticleID::piminus){ipim[npiminus]=ix;++npiminus;}
-      else if(idtemp==ParticleID::pi0){ipi0[npi0]=ix;++npi0;}
-    }
-  // work out which decay mode we are doing
-  idtemp=inpart.id();
+  unsigned int iloc[3]={iloc[0]=0,iloc[1]=1,iloc[2]=2};
+  if(imode()==1){iloc[0]=1;iloc[1]=2;iloc[2]=0;}
+  // calculate the invariants and form factors
   Complex F1=0.,F2=0.,F3=0.;
-  // a_1^0->pi0pi0pi0
-  if(imode==0)
+  Lorentz5Momentum ps1=outpart[iloc[1]]->momentum()+outpart[iloc[2]]->momentum();
+  Lorentz5Momentum ps2=outpart[iloc[0]]->momentum()+outpart[iloc[2]]->momentum();
+  Lorentz5Momentum ps3=outpart[iloc[0]]->momentum()+outpart[iloc[1]]->momentum();
+  ps1.rescaleMass();ps2.rescaleMass();ps3.rescaleMass();
+  Energy s1=ps1.mass2(),s2=ps2.mass2(),s3=ps3.mass2();
+  formFactors(imode(),ichan,q2,s1,s2,s3,F1,F2,F3);
+  // use the form-factors to compute the current
+  LorentzPolarizationVector output=
+     F1*outpart[iloc[1]]->momentum()-F1*outpart[iloc[2]]->momentum()
+    -F2*outpart[iloc[2]]->momentum()+F2*outpart[iloc[0]]->momentum()
+    +F3*outpart[iloc[0]]->momentum()-F3*outpart[iloc[1]]->momentum();
+  vector<LorentzPolarizationVector> temp;temp.push_back(output);
+  return temp;
+}
+
+// matrix element for the running a_1 width
+double a1ThreePionCLEODecayer::threeBodyMatrixElement(int iopt,Energy2 q2, Energy2 s3,
+						      Energy2 s2,Energy2 s1,
+						      Energy m1,Energy m2,Energy m3)
+{
+  Energy m12=m1*m1,m22=m2*m2,m32=m3*m3;
+  // calculate the form factors
+  Complex F1=0.,F2=0.,F3=0.;
+  formFactors(iopt,-1,q2,s1,s2,s3,F1,F2,F3);
+  // analytic calculation of the matrix element
+  double dot1=( F1*conj(F1)*(2.*m22+2.*m32-s1)+F2*conj(F2)*(2.*m12+2.*m32-s2)
+	       +F3*conj(F3)*(2.*m12+2.*m22-s3)-F1*conj(F2)*( s1+s2-s3-4.*m32)
+	       +F1*conj(F3)*( s1-s2+s3-4.*m22)-F2*conj(F3)*(-s1+s2+s3-4.*m12)).real();
+  Complex dot2 = 0.5*(F1*(s3-m32-s2+m22)-F2*(s1-m12-s3+m32)+F3*(s2-m22-s1+m12));
+  return (-dot1+(dot2*conj(dot2)).real()/q2)/3.;
+}
+
+WidthCalculatorBasePtr 
+a1ThreePionCLEODecayer::threeBodyMEIntegrator(const DecayMode & dm) const
+{
+  ParticleMSet::const_iterator pit  = dm.products().begin();
+  ParticleMSet::const_iterator pend = dm.products().end();
+  int ncharged=0;
+  for( ; pit!=pend;++pit){if(abs((**pit).id())==ParticleID::piplus){++ncharged;}}
+  // integrator to perform the integral
+  vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
+  vector<int> intype;intype.push_back(2);intype.push_back(3);
+  Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
+  Energy wrho=getParticleData(ParticleID::rhoplus)->width();
+  vector<double> inmass;inmass.push_back(mrho);inmass.push_back(mrho);
+  vector<double> inwidth;inwidth.push_back(wrho);inwidth.push_back(wrho);
+  Energy m[3];
+  if(ncharged==0)     {m[0]=_mpi0;m[1]=_mpi0;m[2]=_mpi0;}
+  else if(ncharged==1){m[0]=_mpi0;m[1]=_mpi0;m[2]=_mpic;}
+  else if(ncharged==2){m[0]=_mpic;m[1]=_mpic;m[2]=_mpi0;}
+  else                {m[0]=_mpic;m[1]=_mpic;m[2]=_mpic;}
+  return new_ptr(ThreeBodyAllOnCalculator(inweights,intype,inmass,inwidth,
+					  const_ptr_cast<tDecayIntegratorPtr>(this),
+					  ncharged,m[0],m[1],m[2]));
+}
+
+// calculate the form factos
+void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
+					 Energy2 q2,Energy2 s1,Energy2 s2,
+					 Energy2 s3,Complex & F1,
+					 Complex& F2,Complex& F3) const
+{
+  double fact=_coupling;
+  // a_1^0 pi0 pi0 pi0 mode
+  if(iopt==0)
     {
       fact*=0.40824829;
-      Lorentz5Momentum ps1=outpart[1]->momentum()+outpart[2]->momentum();
-      Lorentz5Momentum ps2=outpart[0]->momentum()+outpart[2]->momentum();
-      Lorentz5Momentum ps3=outpart[0]->momentum()+outpart[1]->momentum();
-      ps1.rescaleMass();ps2.rescaleMass();ps3.rescaleMass();
-      iloc[0]=ipi0[0];iloc[1]=ipi0[1];iloc[2]=ipi0[2];
-      Energy2 s1=ps1.mass2(),s2=ps2.mass2(),s3=ps3.mass2();
       // compute the breit wigners we need
       Complex sigbws1 = sigmaBreitWigner(s1,1);
       Complex sigbws2 = sigmaBreitWigner(s2,1);
@@ -383,40 +391,32 @@ a1ThreePionCLEODecayer::decayCurrent(const bool vertex, const int imode,
 	  F2+=_f2coup*( 0.5*(s3-s1)*f2bws2-Dfact1+Dfact3);
 	  F3+=_f2coup*(-0.5*(s1-s2)*f2bws3-Dfact1+Dfact2);
 	}
-      else if(ichan==21){F2=-2./3.*_sigmacoup*sigbws1;F3=-2./3.*_sigmacoup*sigbws1;}
-      else if(ichan==22){F1=-2./3.*_sigmacoup*sigbws2;F3=+2./3.*_sigmacoup*sigbws2;}
-      else if(ichan==23){F1= 2./3.*_sigmacoup*sigbws3;F2= 2./3.*_sigmacoup*sigbws3;}
-      else if(ichan==24)
+      else if(ichan==0){F2=-2./3.*_sigmacoup*sigbws1;F3=-2./3.*_sigmacoup*sigbws1;}
+      else if(ichan==1){F1=-2./3.*_sigmacoup*sigbws2;F3=+2./3.*_sigmacoup*sigbws2;}
+      else if(ichan==2){F1= 2./3.*_sigmacoup*sigbws3;F2= 2./3.*_sigmacoup*sigbws3;}
+      else if(ichan==3)
 	{
 	  Complex Dfact1 = 1./18.*(4.*_mpi0*_mpi0-s1)*(q2+s1-_mpi0*_mpi0)/s1*f2bws1;
 	  F1+=_f2coup*0.5*(s3-s2)*f2bws1;F2-=_f2coup*Dfact1; F3-=_f2coup*Dfact1;
 	}
-      else if(ichan==25)
+      else if(ichan==4)
 	{
 	  Complex Dfact2 = 1./18.*(4.*_mpi0*_mpi0-s2)*(q2+s2-_mpi0*_mpi0)/s2*f2bws2;
 	  F2+=_f2coup*0.5*(s3-s1)*f2bws2;F1-=_f2coup*Dfact2;F3+=_f2coup*Dfact2;
 	}
-      else if(ichan==26)
+      else if(ichan==5)
 	{
 	  Complex Dfact3 = 1./18.*(4.*_mpi0*_mpi0-s3)*(q2-_mpi0*_mpi0+s3)/s3*f2bws3;
 	  F3+=-_f2coup*0.5*(s1-s2)*f2bws3;F1+=_f2coup*Dfact3;F2+=_f2coup*Dfact3;
 	}
-      else if(ichan==27){F2=-2./3.*_f0coup*f0bws1;F3=-2./3.*_f0coup*f0bws1;}
-      else if(ichan==28){F1=-2./3.*_f0coup*f0bws2;F3=+2./3.*_f0coup*f0bws2;}
-      else if(ichan==29){F1= 2./3.*_f0coup*f0bws3;F2= 2./3.*_f0coup*f0bws3;}
+      else if(ichan==6){F2=-2./3.*_f0coup*f0bws1;F3=-2./3.*_f0coup*f0bws1;}
+      else if(ichan==7){F1=-2./3.*_f0coup*f0bws2;F3=+2./3.*_f0coup*f0bws2;}
+      else if(ichan==8){F1= 2./3.*_f0coup*f0bws3;F2= 2./3.*_f0coup*f0bws3;}
     }
-  // a_1^+ ->pi0pi0pi+
-  else if(imode==1)
+  // a_1^+ -> pi0 pi0 pi+
+  else if(iopt==1)
     {
       fact*=0.70710678;
-      if(idtemp==ParticleID::a_1minus){ipip[0]=ipim[0];}
-      iloc[0]=ipi0[0];iloc[1]=ipi0[1];iloc[2]=ipip[0];
-      // compute the breit-wigners we need
-      Lorentz5Momentum ps1=outpart[ipi0[1]]->momentum()+outpart[ipip[0]]->momentum();
-      Lorentz5Momentum ps2=outpart[ipi0[0]]->momentum()+outpart[ipip[0]]->momentum();
-      Lorentz5Momentum ps3=outpart[ipi0[0]]->momentum()+outpart[ipi0[1]]->momentum();
-      ps1.rescaleMass();ps2.rescaleMass();ps3.rescaleMass();
-      Energy2 s1=ps1.mass2(),s2=ps2.mass2(),s3=ps3.mass2();
       // compute the breit wigners we need
       Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
       for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
@@ -452,43 +452,37 @@ a1ThreePionCLEODecayer::decayCurrent(const bool vertex, const int imode,
 	  F1+=Dfact3;F2+=Dfact3;
 	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
 	}
-      else if(ichan%2==0&&ichan>=12&&ichan<=16)
+      else if(ichan%2==0&&ichan<=4)
 	{
-	  unsigned int ires=(ichan-12)/2;
+	  unsigned int ires=ichan/2;
 	  if(ires<_rhocoupP.size()){F1+=_rhocoupP[ires]*rhos1bw[ires];}
 	  Energy2 Dfact2=-1./3.*((s3-_mpic*_mpic)-(s2-_mpi0*_mpi0));
 	  if(ires<_rhocoupD.size())
 	    {F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
 	    F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];}
 	}
-      else if(ichan%2==1&&ichan>=3&&ichan<=17)
+      else if(ichan%2==1&&ichan<=5)
 	{
-	  unsigned int ires=(ichan-13)/2;
+	  unsigned int ires=(ichan-1)/2;
 	  if(ires<_rhocoupP.size()){F2+=_rhocoupP[ires]*rhos2bw[ires];}
 	  Energy2 Dfact1=-1./3.*((s3-_mpic*_mpic)-(s1-_mpi0*_mpi0));
 	  if(ires<_rhocoupD.size())
 	    {F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
 	    F3-=_rhocoupD[ires]*Dfact1*rhos2bw[ires];}
 	}
-      else if(ichan==18){F1+=2./3.*_sigmacoup*sigbw;F2+=2./3.*_sigmacoup*sigbw;}
-      else if(ichan==19)
+      else if(ichan==6){F1+=2./3.*_sigmacoup*sigbw;F2+=2./3.*_sigmacoup*sigbw;}
+      else if(ichan==7)
 	{
 	  Complex Dfact3=1./18./s3*_f2coup*(q2-_mpic*_mpic+s3)*(4.*_mpi0*_mpi0-s3)*f2bw;
 	  F1+=Dfact3;F2+=Dfact3;
 	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
 	  
 	}
-      else if(ichan==20){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
+      else if(ichan==8){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
     }
   // a_1^0 ->pi+pi-pi0
-  else if(imode==2)
+  else if(iopt==2)
     {
-      iloc[0]=ipip[0];iloc[1]=ipim[0];iloc[2]=ipi0[0];
-      Lorentz5Momentum ps1=outpart[ipim[0]]->momentum()+outpart[ipi0[0]]->momentum();
-      Lorentz5Momentum ps2=outpart[ipip[0]]->momentum()+outpart[ipi0[0]]->momentum();
-      Lorentz5Momentum ps3=outpart[ipip[0]]->momentum()+outpart[ipim[0]]->momentum();
-      ps1.rescaleMass();ps2.rescaleMass();ps3.rescaleMass();
-      Energy2 s1=ps1.mass2(),s2=ps2.mass2(),s3=ps3.mass2();
       // compute the breit wigners we need
       Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
       for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
@@ -525,47 +519,37 @@ a1ThreePionCLEODecayer::decayCurrent(const bool vertex, const int imode,
 	  F1+=Dfact3;F2+=Dfact3;
 	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
 	}
-      else if(ichan%2==0&&ichan>=30&&ichan<=34)
+      else if(ichan%2==0&&ichan<=4)
 	{
-	  unsigned int ires=(ichan-30)/2;
+	  unsigned int ires=ichan/2;
 	  if(ires<_rhocoupP.size()){F1+=_rhocoupP[ires]*rhos1bw[ires];}
 	  Energy2 Dfact2=-1./3.*(s3-_mpi0*_mpi0-s2+_mpic*_mpic);
 	  if(ires<_rhocoupD.size())
 	    {F2+=Dfact2*_rhocoupD[ires]*rhos1bw[ires];
 	    F3+=_rhocoupD[ires]*Dfact2*rhos1bw[ires];}
 	}
-      else if(ichan%2==1&&ichan>=31&&ichan<=35)
+      else if(ichan%2==1&&ichan<=5)
 	{
-	  unsigned int ires=(ichan-31/2);
+	  unsigned int ires=(ichan-1)/2;
 	  if(ires<_rhocoupP.size()){F2+=_rhocoupP[ires]*rhos2bw[ires];}
 	  Energy2 Dfact1=-1./3.*(s3-_mpi0*_mpi0-s1+_mpic*_mpic);
 	  if(ires<_rhocoupD.size())
 	    {F1+=Dfact1*_rhocoupD[ires]*rhos2bw[ires];
 	    F3-=_rhocoupD[ires]*-Dfact1*rhos2bw[ires];}
 	}
-      else if(ichan==36){F1+=2./3.*_sigmacoup*sigbw;F2+=2./3.*_sigmacoup*sigbw;}
-      else if(ichan==37)
+      else if(ichan==6){F1+=2./3.*_sigmacoup*sigbw;F2+=2./3.*_sigmacoup*sigbw;}
+      else if(ichan==7)
 	{
 	  Complex Dfact3=1./18./s3*_f2coup*(q2-_mpi0*_mpi0+s3)*(4.*_mpic*_mpic-s3)*f2bw;
 	  F1+=Dfact3;F2+=Dfact3;
 	  F3-=0.5*_f2coup*(s1-s2)*f2bw;
 	}
-      else if(ichan==38){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
+      else if(ichan==8){F1+=2./3.*_f0coup*f0bw;F2+=2./3.*_f0coup*f0bw;}
     }
-  // a_1^+ ->pi+pi+pi-
-  else if(imode==3)
+  // a_1^+ -> pi+ pi+ pi- mode
+  else
     {
       fact*=0.70710678;
-      // change the order  if needed
-      if(idtemp==ParticleID::a_1minus)
-	{npi0=ipip[0];ipip[0]=ipim[0];ipip[1]=ipim[1];ipim[0]=npi0;}
-      iloc[0]=ipip[0];iloc[1]=ipip[1];iloc[2]=ipim[0];
-      // compute the breit-wigners we need
-      Lorentz5Momentum ps1=outpart[ipip[1]]->momentum()+outpart[ipim[0]]->momentum();
-      Lorentz5Momentum ps2=outpart[ipip[0]]->momentum()+outpart[ipim[0]]->momentum();
-      Lorentz5Momentum ps3=outpart[ipip[0]]->momentum()+outpart[ipip[1]]->momentum();
-      ps1.rescaleMass();ps2.rescaleMass();ps3.rescaleMass();
-      Energy2 s1=ps1.mass2(),s2=ps2.mass2(),s3=ps3.mass2();
       // compute the breit wigners we need
       Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
       for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
@@ -638,14 +622,6 @@ a1ThreePionCLEODecayer::decayCurrent(const bool vertex, const int imode,
       else if(ichan==10){F2-=2./3.*_f0coup*f0bws1;F3-=2./3.*_f0coup*f0bws1;}
       else if(ichan==11){F1-=2./3.*_f0coup*f0bws2;F3+=2./3.*_f0coup*f0bws2;}
     }
-  // use the form-factors to compute the current
-  LorentzPolarizationVector output=
-     F1*outpart[iloc[1]]->momentum()-F1*outpart[iloc[2]]->momentum()
-    -F2*outpart[iloc[2]]->momentum()+F2*outpart[iloc[0]]->momentum()
-    +F3*outpart[iloc[0]]->momentum()-F3*outpart[iloc[1]]->momentum();
-  output*=fact;
-  vector<LorentzPolarizationVector> temp;temp.push_back(output);
-  return temp;
-}
-}
-  
+  F1*=fact;F2*=fact;F3*=fact;
+} 
+} 

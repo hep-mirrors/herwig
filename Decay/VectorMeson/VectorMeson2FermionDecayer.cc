@@ -21,6 +21,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using namespace ThePEG::Helicity;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::LorentzPolarizationVector;
@@ -63,10 +64,13 @@ bool VectorMeson2FermionDecayer::accept(const DecayMode & dm) const
 
 ParticleVector VectorMeson2FermionDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
   // workout which mode we are doing
   int imode=-1;
-  int id=parent.id(),id1=children[0]->id(),id2=children[1]->id();
+  int id=parent.id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
   unsigned int ix=0;
   do
     {
@@ -79,8 +83,8 @@ ParticleVector VectorMeson2FermionDecayer::decay(const DecayMode & dm,
     }
   while(imode<0&&ix<_incoming.size());
   // perform the decay
-  generate(false,imode,parent,children);
-  return children;
+  bool cc=false;
+  return generate(false,cc,imode,parent);
 }
 
 
@@ -110,13 +114,13 @@ void VectorMeson2FermionDecayer::Init() {
 
   static ParVector<VectorMeson2FermionDecayer,int> interfaceOutcoming1
     ("FirstOutgoing",
-     "The PDG code for the first outgoing particle",
+     "The PDG code for the outgoing fermion",
      &VectorMeson2FermionDecayer::_outgoing1,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<VectorMeson2FermionDecayer,int> interfaceOutcoming2
     ("SecondOutgoing",
-     "The PDG code for the second outgoing particle",
+     "The PDG code for the second outgoing anti-fermion",
      &VectorMeson2FermionDecayer::_outgoing2,
      0, 0, 0, -10000, 10000, false, false, true);
 
@@ -137,12 +141,12 @@ void VectorMeson2FermionDecayer::Init() {
 
 // the hadronic currents    
 vector<LorentzPolarizationVector>  
-VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int imode, const int, 
+VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int, 
 					 const Particle & inpart,
 					 const ParticleVector & decay) const
   {
     // prefactor
-    double pre=_coupling[imode];
+    double pre=_coupling[imode()]/inpart.mass();
     // storage for the current
     vector<LorentzPolarizationVector> temp;
     // find the fermion and the antifermion
@@ -183,9 +187,10 @@ VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int imode, con
 	aspin->setBasisState(ix,wavebar[(ix+1)/2].bar());
       }
     // now compute the currents
-    Complex vec[4],ii(0.,1.);
+    Complex ii(0.,1.);
     temp.resize(4);
     unsigned int iloc;
+    LorentzPolarizationVector vec;
     for(unsigned int ix=0;ix<2;++ix)
       {
 	for(unsigned int iy=0;iy<2;++iy)
@@ -219,12 +224,36 @@ VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int imode, con
 	    if(iferm<ianti){iloc=2*ix+iy;}
 	    else{iloc=2*iy+ix;}
 	    // add it to the vector
-	    temp[iloc]=LorentzPolarizationVector(pre*vec[0],pre*vec[1],
-						 pre*vec[2],pre*vec[3]);
+	    temp[iloc]=pre*vec;
 	  }
       }
     // return the answer
     return temp;
   }
+
+bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
+						double & coupling) const
+{
+  int imode=-1;
+  int id=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
+  unsigned int ix=0;
+  do
+    {
+      if(_incoming[ix]==id)
+	{
+	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
+	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
+	}
+      ++ix;
+    }
+  while(imode<0&&ix<_incoming.size());
+  coupling=_coupling[imode];
+  mecode=2;
+  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
+ }
 }
 

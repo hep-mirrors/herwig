@@ -17,6 +17,8 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Helicity/EpsFunction.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "Herwig++/Decay/ThreeBodyIntegrator.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -50,7 +52,6 @@ bool VectorMeson3PionDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector VectorMeson3PionDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
   // workout which mode we are doing
   int imode=-1;
   int id=parent.id();
@@ -62,8 +63,8 @@ ParticleVector VectorMeson3PionDecayer::decay(const DecayMode & dm,
     }
   while(imode<0&&ix<_incoming.size());
   // perform the decay
-  generate(true,imode,parent,children);
-  return children;
+  bool cc=false;
+  return generate(true,cc,imode,parent);
 }
 
 
@@ -72,8 +73,8 @@ void VectorMeson3PionDecayer::persistentOutput(PersistentOStream & os) const {
      << _directphase << _rho2phase << _rho3phase 
      << _maxwgt << _rho1wgt << _rho2wgt << _rho3wgt << _rho1mass << _rho2mass
      << _rho3mass << _rho1width << _rho2width << _rho3width << _defaultmass 
-     << _rho0const << _rhocconst << _rhomass << _rhomass2 << _ccoupling 
-     << _firstchannel;
+     << _rho0const << _rhocconst << _rhomass << _rhomass2 << _ccoupling
+     << _mpi0 << _mpic;
 }
 
 void VectorMeson3PionDecayer::persistentInput(PersistentIStream & is, int) {
@@ -81,8 +82,8 @@ void VectorMeson3PionDecayer::persistentInput(PersistentIStream & is, int) {
      >> _directphase >> _rho2phase >> _rho3phase 
      >> _maxwgt >> _rho1wgt >> _rho2wgt >> _rho3wgt >> _rho1mass >> _rho2mass
      >> _rho3mass >> _rho1width >> _rho2width >> _rho3width >> _defaultmass
-     >> _rho0const >> _rhocconst >> _rhomass >> _rhomass2 >> _ccoupling 
-     >> _firstchannel;
+     >> _rho0const >> _rhocconst >> _rhomass >> _rhomass2 >> _ccoupling
+     >> _mpi0 >> _mpic;
 }
 
 ClassDescription<VectorMeson3PionDecayer> VectorMeson3PionDecayer::initVectorMeson3PionDecayer;
@@ -209,7 +210,8 @@ void VectorMeson3PionDecayer::Init() {
      "The width of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3width,
      0, 0, 0, -10000, 10000, false, false, true);
-  static ParVector<VectorMeson3PionDecayer,double> interfaceDefaultParam
+
+  static ParVector<VectorMeson3PionDecayer,bool> interfaceDefaultParam
     ("DefaultParameters",
      "If less than zero the default rho masses and widths are used, otherwise "
      "the values specified in the rhomass and width arrays are used,",
@@ -220,12 +222,10 @@ void VectorMeson3PionDecayer::Init() {
 
 // the hadronic currents   
 vector<LorentzPolarizationVector> 
-VectorMeson3PionDecayer::decayCurrent(const bool vertex, const int imode,
-				      const int ichan, 
+VectorMeson3PionDecayer::decayCurrent(const bool vertex,const int ichan, 
 				      const Particle & inpart,
 				      const ParticleVector & decay) const
 {
-  int ichannow=_firstchannel[imode];
   // create the spin information if needed
   if(vertex)
     {
@@ -246,8 +246,8 @@ VectorMeson3PionDecayer::decayCurrent(const bool vertex, const int imode,
     }
   // work out the prefactor
   Complex pre=0,resfact,ii(0.,1.);
-  if(ichan<0){pre=_ccoupling[imode][3];}
-  Energy pcm,mpi0=decay[ipi0]->mass(),mpip=decay[ipip]->mass(),mpim=decay[ipim]->mass();
+  if(ichan<0){pre=_ccoupling[imode()][3];}
+  Energy pcm;
   // work out the direct invariant masses needed
   Lorentz5Momentum temp=decay[ipip]->momentum()+decay[ipim]->momentum();
   temp.rescaleMass();
@@ -259,60 +259,143 @@ VectorMeson3PionDecayer::decayCurrent(const bool vertex, const int imode,
   temp.rescaleMass();
   Energy mrhom=temp.mass();
   // contribution of the resonances
+  int ichannow=-3;
   for(unsigned int ix=0;ix<3;++ix)
     {
-      if((ix==0 && _rho1wgt[imode]>0.) || 
-	 (ix==1 && _rho2wgt[imode]>0.) ||
-	 (ix==2 && _rho3wgt[imode]>0.))
+      ichannow+=3;
+      if((ix==0 && _rho1wgt[imode()]>0.) || 
+	 (ix==1 && _rho2wgt[imode()]>0.) ||
+	 (ix==2 && _rho3wgt[imode()]>0.))
 	{
 	  if(ichan<0)
 	    {
 	      // rho0 contribution
-	      pcm = Kinematics::pstarTwoBodyDecay(mrho0,mpip,mpim);
-	      resfact = 1./(mrho0*mrho0-_rhomass2[imode][ix]
-			    +ii*pcm*pcm*pcm*_rho0const[imode][ix]/mrho0);
+	      pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	      resfact = 1./(mrho0*mrho0-_rhomass2[imode()][ix]
+			    +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
 	      // rho+ contribution
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhop,mpip,mpi0);
-	      resfact+= 1./(mrhop*mrhop-_rhomass2[imode][ix]
-			    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrhop);
+	      pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	      resfact+= 1./(mrhop*mrhop-_rhomass2[imode()][ix]
+			    +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
 	      // rho- contribution
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhom,mpim,mpi0);
-	      resfact+= 1./(mrhom*mrhom-_rhomass2[imode][ix]
-			    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrhom);
-	      resfact*=_ccoupling[imode][ix];
+	      pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	      resfact+= 1./(mrhom*mrhom-_rhomass2[imode()][ix]
+			    +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+	      resfact*=_ccoupling[imode()][ix];
 	      // add the contribution
 	    }
 	  else if(ichan==ichannow)
 	    {
-	      pcm = Kinematics::pstarTwoBodyDecay(mrho0,mpip,mpim);
-	      resfact = 1./(mrho0*mrho0-_rhomass2[imode][ix]
-			    +ii*pcm*pcm*pcm*_rho0const[imode][ix]/mrho0);
+	      pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	      resfact = 1./(mrho0*mrho0-_rhomass2[imode()][ix]
+			    +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+	      resfact*=_ccoupling[imode()][ix];
 	    }
 	  else if(ichan==ichannow+1)
 	    {
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhop,mpip,mpi0);
-	      resfact+= 1./(mrhop*mrhop-_rhomass2[imode][ix]
-			    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrhop);
+	      pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	      resfact+= 1./(mrhop*mrhop-_rhomass2[imode()][ix]
+			    +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+	      resfact*=_ccoupling[imode()][ix];
 	    }
 	  else if(ichan==ichannow+2)
 	    {
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhom,mpim,mpi0);
-	      resfact+= 1./(mrhom*mrhom-_rhomass2[imode][ix]
-			    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrhom);
-	      resfact*=_ccoupling[imode][ix];
+	      pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	      resfact+= 1./(mrhom*mrhom-_rhomass2[imode()][ix]
+			    +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+	      resfact*=_ccoupling[imode()][ix];
 	    }
 	  pre+=resfact;
 	  ichannow+=3;
 	}
     }
   // overall coupling
-  pre *=_coupling[imode];
+  pre *=_coupling[imode()];
   // polarization vector piece
   LorentzPolarizationVector pol=Helicity::EpsFunction::product(decay[ipi0]->momentum(),
 							       decay[ipip]->momentum(),
 							       decay[ipim]->momentum());
   pol *=pre;
   return vector<LorentzPolarizationVector>(1,pol);
+}
+
+double VectorMeson3PionDecayer::threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,
+						       Energy2 s2,Energy2 s1,
+						       Energy m1,Energy m2,Energy m3)
+{
+  Lorentz5Momentum p1,p2,p3; Energy2 ee1,ee2,ee3;Energy pp1,pp2,pp3;
+  Energy q=sqrt(q2);
+  Energy2 mpi2c=_mpic*_mpic;
+  Energy2 mpi20=_mpi0*_mpi0;
+  p1.setE(0.5*(q2+mpi20-s1)/q); ee1=p1.e()*p1.e(); pp1=sqrt(ee1-mpi20);
+  p2.setE(0.5*(q2+mpi2c-s2)/q); ee2=p2.e()*p2.e(); pp2=sqrt(ee2-mpi2c);
+  p3.setE(0.5*(q2+mpi2c-s3)/q); ee3=p3.e()*p3.e(); pp3=sqrt(ee3-mpi2c);
+  // take momentum of 1 parallel to z axis
+  p1.setPx(0.);p1.setPy(0.);p1.setPz(pp1);
+  // construct 2 
+  double cos2 = 0.5*(ee1+ee2-ee3-mpi20)/pp1/pp2;
+  p2.setPx(pp2*sqrt(1.-cos2*cos2)); p2.setPy(0.); p2.setPz(-pp2*cos2);
+  // construct 3
+  double cos3 = 0.5*(ee1-ee2+ee3-mpi20)/pp1/pp3;
+  p3.setPx(-pp3*sqrt(1.-cos3*cos3)); p3.setPy(0.); p3.setPz(-pp3*cos3); 
+  // compute the prefactor
+  Complex pre=_ccoupling[imode][3],resfact,ii(0.,1.);
+  // rho0 contribution
+  Energy pcm,mrho1=sqrt(s1),mrho2=sqrt(s2),mrho3=sqrt(s3);
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      // rho0 contribution
+      pcm = Kinematics::pstarTwoBodyDecay(mrho1,_mpic,_mpic);
+      resfact = 1./(mrho1*mrho1-_rhomass2[imode][ix]
+		    +ii*pcm*pcm*pcm*_rho0const[imode][ix]/mrho1);
+      // rho+ contribution
+      pcm = Kinematics::pstarTwoBodyDecay(mrho2,_mpic,_mpi0);
+      resfact+= 1./(mrho2*mrho3-_rhomass2[imode][ix]
+		    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho2);
+      // rho- contribution
+      pcm = Kinematics::pstarTwoBodyDecay(mrho3,_mpic,_mpi0);
+      resfact+= 1./(mrho3*mrho3-_rhomass2[imode][ix]
+		    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho3);
+      resfact*=_ccoupling[imode][ix];
+      // add the contribution
+      pre+=resfact;
+    }
+  pre*=_coupling[imode];
+  ThePEG::Helicity::LorentzPolarizationVector current=pre*
+    Helicity::EpsFunction::product(p1,p2,p3);
+  Complex temp=current*(current.conjugate());
+  return -temp.real()/3.;
+} 
+
+WidthCalculatorBasePtr 
+VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
+{
+  // workout which mode we are doing
+  int imode=-1;
+  int id=dm.parent()->id();
+  unsigned int ix=0;
+  do
+    {
+      if(_incoming[ix]==id){imode=ix;}
+      ++ix;
+    }
+  while(imode<0&&ix<_incoming.size());
+  // construct the integrator
+  vector<double> inweights;inweights.push_back(1./3.);inweights.push_back(1./3.);
+  inweights.push_back(1./3.);
+  vector<int> intype;intype.push_back(1);intype.push_back(2);intype.push_back(3);
+  Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
+  Energy wrho=getParticleData(ParticleID::rhoplus)->width();
+  vector<double> inmass;inmass.push_back(mrho);
+  inmass.push_back(mrho);inmass.push_back(mrho);
+  vector<double> inwidth;inwidth.push_back(wrho);
+  inwidth.push_back(wrho);inwidth.push_back(wrho);
+  tcDecayIntegratorPtr decayer=this;
+  WidthCalculatorBasePtr output(
+    new_ptr(ThreeBodyAllOnCalculator(inweights,intype,inmass,inwidth,
+				     const_ptr_cast<tDecayIntegratorPtr>(decayer),
+				     imode,_mpi0,_mpic,_mpic)));
+  return output;
 }
 }
 

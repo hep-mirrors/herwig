@@ -2,21 +2,8 @@
 #ifndef HERWIG_a1ThreePionCLEODecayer_H
 #define HERWIG_a1ThreePionCLEODecayer_H
 //
-// This is the declaration of the <!id>a1ThreePionCLEODecayer<!!id> class.
+// This is the declaration of the a1ThreePionCLEODecayer class.
 //
-// CLASSDOC SUBSECTION Description:
-//
-//  The  <!id>a1ThreePionCLEODecayer<!!id> class is designed to implement the decay
-//  of the a_1 to three pions using the model of Phys.Rev.D61:012002,2000,
-//  (hep-ex/9902022) (CLEO) which was fitted to the one charged and two neutral pion
-//  channel for the charged a_1 decay in tau -> a_1 -> three pi. The other modes
-//  are then infered from this using isospin. 
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="VectorMesonDecayerBase.html">VectorMesonDecayerBase.h</a>.
-// 
-
 #include "VectorMesonDecayerBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
 // #include "a1ThreePionCLEODecayer.fh"
@@ -26,147 +13,622 @@ namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
 
+/** \ingroup Decay
+ *
+ *  The  <code>a1ThreePionCLEODecayer</code> class is designed to implement the decay
+ *  of the \f$a_1\f$ to three pions using the model of Phys.Rev.D61:012002,2000,
+ *  (hep-ex/9902022) (CLEO) which was fitted to the one charged and two neutral pion
+ *  channel for the charged \f$a_1\f$ decay in \f$\tau \to a_1 -> \pi\pi\pi\f$.
+ *  The other modes are infered from this using isospin. This is a sophisticated model
+ *  including the coupling of the \f$a_1\f$ to the \f$\rho\f$, \f$\rho(1450)\f$, 
+ *  \f$f(1370)\f$ and \f$\sigma\f$ sigma mesons.
+ *
+ *  In this case the current is given by
+ *  \f[J^\mu = F_1(p_2-p_3)^\mu+F_2(p_3-p_1)^\mu+F_3(p_1-p_2)^\mu.\f]
+ *
+ *
+ * The form factors for the \f$a_1^0 \to \pi^0 \pi^0 \pi^0\f$ mode are
+ * \f[F_1=
+ * \phantom{-}\frac23\left(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3)\right)
+ *	   -\frac23\left(g_\sigma B^S_\sigma(s_2)+g_{f_0}B^S_{f_0}(s_2)\right)
+ *         +g_{f_2}\left(\frac12(s_3-s_2)B^D_{f_2}(s_1)
+ *   -\frac1{18}\frac{(4m_{\pi^0}^2-s_2)(q^2+s_2-m_{\pi^0}^2)}{s_2}B^D_{f_2}(s_2)
+ *   +\frac1{18}\frac{(4m_{\pi^0}^2-s_3)(q^2-m_{\pi^0}^2+s_3)}{s_3}B^D_{f_2}(s_3)\right)
+ *\f]
+ *
+ * \f[F_2=\phantom{-}\frac23(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3))
+ *          -\frac23(g_\sigma B^S_\sigma(s_1)+g_{f_0}B^S_{f_0}(s_1))
+ *          +g_{f_2}\left( \frac12(s_3-s1)B^D_{f_2}(s_2)
+ *   -\frac1{18}\frac{(4m_{\pi^0}^2-s_1)(q^2+s_1-m_{\pi^0}^2)}{s_1}B^D_{f_2}(s_1)
+ *   +\frac1{18}\frac{(4m_{\pi^0}^2-s_3)(q^2-m_{\pi^0}^2+s_3)}{s_3}B^D_{f_2}(s_3)\right)
+ *\f]
+ * \f[F_3=-\frac23(g_\sigma B^S_\sigma(s_1)+g_{f_0}B^S_{f_0}(s_1))
+ *          +\frac23(g_\sigma B^S_\sigma(s_2)+g_{f_0}B^S_{f_0}(s_2))
+ *          +g_{f_2}\left( \frac12(s_1-s_2)B^D_{f_2}(s_3)
+ *  -\frac1{18}\frac{(4m_{\pi^0}^2-s_1)(q^2+s_1-m_{\pi^0}^2)}{s_1}B^D_{f_2}(s_1)
+ *  +\frac1{18}\frac{(4m_{\pi^0}^2-s_2)(q^2+s_2-m_{\pi^0}^2)}{s_2}B^D_{f_2}(s_2)\right)
+ *\f]
+ *
+ * The form factors for the \f$a_1^+ \to \pi^0 \pi^0 \pi^+\f$ mode are
+ *
+ * \f[F_1=\sum_k\left\{-\frac{g^P_{\rho_k}}3B_{\rho_k}^P(s_1)
+ *          -g^D_{\rho_k}B_{\rho_k}^P(s_2)
+ *                        \left((s_3-m_{\pi^+}^2)-(s_1-m_{\pi^0}^2)\right)\right\}
+ *     +\frac23\left(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3)\right)     
+ * +\frac{g_{f_2}}{18s_3}(q^2-m_{\pi^+}^2+s_3)(4m_{\pi^0}^2-s_3)B^D_{f_2}(s_3)
+ *\f]
+ *
+ * \f[F_2=\sum_k\left\{-\frac13g^P_{\rho_k}B_{\rho_k}^P(s_2)
+ *         -g^D_{\rho_k}B_{\rho_k}^P(s_1)
+ *                       \left((s_3-m_{\pi^+}^2)-(s_2-m_{\pi^0}^2)\right)\right\}
+ *     +\frac23\left(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3)\right)
+ * +\frac1{18s_3}g_{f_2}(q^2-m_{\pi^+}^2+s_3)(4m_{\pi^0}^2-s_3)B^D_{f_2}(s_3)
+ *\f]
+ *
+ * \f[F_3=\sum_k g^D_{\rho_k}\left\{ 
+ *     -\frac13B_{\rho_k}^P(s_1)\left((s_3-m_{\pi^+}^2)-(s_2-m_{\pi^0}^2)\right)
+ *     +\frac13B_{\rho_k}^P(s_2)\left((s_3-m_{\pi^+}^2)-(s_1-m_{\pi^0}^2)\right)\right\}
+ *  -\frac{g_{f_2}}2(s_1-s_2)B^D_{f_2}(s_3)\f]
+ * 
+ * The form factors for \f$a_1^0\to\pi^+\pi^-\pi^0\f$.
+ *
+ * \f[F_1=\sum_k\left\{g^P_{\rho_k}B_{\rho_k}^P(s_1)
+ *    -\frac{g^D_{\rho_k}}3B_{\rho_k}^P(s_2)(s_3-m_{\pi^0}^2-s_1+m_{\pi^+}^2)\right\}
+ * +\frac23\left(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3)\right)
+ * +\frac{g_{f_2}}{18s_3}(q^2-m_{\pi^0}^2+s_3)(4m_{\pi^+}^2-s_3)B^D_{f_2}(s_3)\f]
+ *
+ * \f[F_2=\sum_k\left\{g^P_{\rho_k}B_{\rho_k}^P(s_2)
+ *    -\frac{g^D_{\rho_k}}3B_{\rho_k}^P(s_1)(s_3-m_{\pi^0}^2-s_2+m_{\pi^+}^2)\right\}
+ * +\frac23\left(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3)\right)
+ * +\frac{g_{f_2}}{18s_3}(q^2-m_{\pi^0}^2+s_3)(4m_{\pi^+}^2-s_3)B^D_{f_2}(s_3)\f]
+ *
+ * \f[F_3=\sum_k
+ *   g^D_{\rho_k}\left\{-\frac13B_{\rho_k}^P(s_1)(s_3-m_{\pi^0}^2-s_2+m_{\pi^+}^2)
+ *                       +\frac13B_{\rho_k}^P(s_2)(s_3-m_{\pi^0}^2-s_1+m_{\pi^+}^2)
+ *			\right\}
+ * -\frac{g_{f_2}}2(s_1-s_2)B^D_{f_2}(s_3)\f]
+ * 
+ *  The form factors for  \f$a_1^+\to \pi^+ \pi^+ \pi^-\f$ mode
+ *
+ * \f[F_1=\sum_k\left\{-g^P_{\rho_k}B_{\rho_k}^P(s_1)
+ *                       -\frac{g^D_{\rho_k}}3B_{\rho_k}^P(s_2)(s_1-s_3)\right\}
+ *    -\frac23\left(g_\sigma B^S_\sigma(s_2)+g_{f_0} B^S_{f_0}(s_2)\right) 
+ *    +g_{f_2}\left(\frac12(s_3-s_2)B^D_{f_2}(s_1)
+ *    -\frac1{18s_2}(4m_{\pi^+}^2-s_2)(q^2+s_2-m_{\pi^+}^2)B^D_{f_2}(s_2)\right)\f]
+ *
+ * \f[F_2=\sum_k\left\{-g^P_{\rho_k}B_{\rho_k}^P(s_2)
+ *                       -\frac{g^D_{\rho_k}}3B_{\rho_k}^P(s_1)(s_2-s_3)\right\}
+ *    -\frac23\left(g_\sigma B^S_\sigma(s_1)+g_{f_0} B^S_{f_0}(s_1)\right)
+ *    +g_{f_2}\left(\frac12(s_3-s_1)B^D_{f_2}(s_2)
+ *    -\frac1{18s_1}(4m_{\pi^+}^2-s_1)(q^2+s_1-m_{\pi^+}^2)B^D_{f_2}(s_1)\right)\f]
+ *
+ * \f[F_3=\sum_k
+ *     -g^D_{\rho_k}\left( \frac13(s_2-s_3)B_{\rho_k}^P(s_1)
+ *                        -\frac13(s_1-s_3)B_{\rho_k}^P(s_2)\right)
+ *   -\frac23\left(g_\sigma B^S_\sigma(s_1)+g_{f_0}B^S_{f_0}(s_1)\right)
+ *   +\frac23\left(g_\sigma B^S_\sigma(s_2)+g_{f_0}B^S_{f_0}(s_2)\right)\f]
+ *\f[
+ *   +g_{f_2}\left(-\frac1{18s_1}(4m_{\pi^+}^2-s_1)(q^2+s_1-m_{\pi^+}^2)B^D_{f_2}(s_1)
+ *            +\frac1{18s_2}(4m_{\pi^+}^2-s_2)(q^2+s_2-m_{\pi^+}^2)B^D_{f_2}(s_2)\right)\f]
+ *
+ * where
+ *
+ * - \f$g_{f_2}\f$ is the coupling of the \f$f_2\f$ to the \f$a_1\f$
+ * - \f$g_{f_0}\f$ is the coupling of the \f$f_0(1370)\f$ to the \f$a_1\f$
+ * - \f$g_{\sigma}\f$ is the coupling of the \f$\sigma\f$ to the \f$a_1\f$
+ * - \f$g^P_{\rho_k}\f$ is the \f$p\f$-wave coupling of the \f$\rho_k\f$ multiplet
+ *     to the \f$a_1\f$.
+ * - \f$g^D_{\rho_k}\f$ is the \f$d\f$-wave coupling of the \f$\rho_k\f$ multiplet
+ *     to the \f$a_1\f$.
+ * - \f$s_3=m^2_{12}\f$ is the invariant mass squared of particles 1 and 2.
+ * - \f$s_2=m^2_{13}\f$ is the invariant mass squared of particles 1 and 3.
+ * - \f$s_1=m^2_{23}\f$ is the invariant mass squared of particles 2 and 3.
+ *
+ * The Breit-Wigner factors are given by
+    \f$B^L_Y(s_i) = \frac{m^2_Y}{m^2_Y-s_i)+im_Y\Gamma^{Y,L}(s_i)}\f$
+ * where
+ * \f$\Gamma^{Y,L}(s_i) = \Gamma^Y\left(\frac{p(s_i)}{p(M_Y}\right)^{2L+1}\frac{m_Y}{\sqrt{s_i}}\f$
+ * \f$m_Y\f$ and \f$\Gamma^Y\f$ are the mass and width of the particle \f$Y\f$ 
+ * respectively. \f$p(s_i)\f$ is the momentum of the outgoing pion in the 
+ * rest frame of the resonanc \f$Y\f$.
+ *
+ * @see ThreePionCLEOCurrent
+ * @see VectorMesonDecayerBase
+ *
+ */
 class a1ThreePionCLEODecayer: public VectorMesonDecayerBase {
   
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
   inline a1ThreePionCLEODecayer();
+
+  /**
+   * Copy-constructor.
+   */
   inline a1ThreePionCLEODecayer(const a1ThreePionCLEODecayer &);
+
+  /**
+   * Destructor.
+   */
   virtual ~a1ThreePionCLEODecayer();
-  // Standard ctors and dtor.
+  //@}
+
+public:
+  
+  /**
+   * Accept member which is called at initialization to see if this Decayer can
+   * handle a given decay mode. This version checks the particles against the 
+   * list of allowed incoming  and outgoing mesons.
+   * @param dm The DecayMode
+   * @return Whether the mode can be handled.
+   */
+  virtual bool accept(const DecayMode & dm) const;
+  
+  /**
+   * For a given decay mode and a given particle instance, perform the
+   * decay and return the decay products. This version uses PDG codes to
+   * work which mode is being simulated and the generate member of the 
+   * DecayIntegrator class for the phase-space  generation.
+   * @param dm The DecayMode
+   * @param part The Particle instant being decayed.
+   * @return The vector of particles produced in the decay.
+   */
+  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+  
+  /**
+   * The hadronic current. This returns the current 
+   * described above.
+   * @param vertex Construct the information for spin correlations.
+   * @param ichan The phase-space channel to calculate the current for.
+   * @param inpart The decaying particle
+   * @param outpart The decay products
+   * @return The hadronic currents for the decay.
+   */
+  virtual vector<LorentzPolarizationVector> 
+  decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
+	       const ParticleVector & outpart) const;
+
+  /**
+   * Method to return an object to calculate the 3 body partial width.
+   * @param dm The DecayMode
+   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
+   */
+  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
+
+  /**
+   * The matrix element to be integrated for the three-body decays as a function
+   * of the invariant masses of pairs of the outgoing particles.
+   * @param imode The mode for which the matrix element is needed.
+   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The matrix element
+   */
+  virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
+					Energy2 s1,Energy m1,Energy m2,Energy m3);
   
 public:
   
-  virtual bool accept(const DecayMode &) const;
-  // return true if this decayer can perfom the decay specified by the
-  // given decay mode.
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
   
-  virtual ParticleVector decay(const DecayMode &, const Particle &) const;
-  // for a given decay mode and a given particle instance, perform the
-  // decay and return the decay products.
-  
-  virtual vector<LorentzPolarizationVector> decayCurrent(const  bool, const int,
-							 const int, const Particle &,
-							 const ParticleVector &) const;
-  // the hadronic currents    
-  
-public:
-  
-  void persistentOutput(PersistentOStream &) const;
-    void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
-  
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
   static void Init();
-  // Standard Init function used to initialize the interfaces.
   
 protected:
   
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
   
 protected:
   
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
   inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
   inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
-  
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
+   */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
-  
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
+   */
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
+  //@}
   
 private:
   
+  /**
+   * Describe a concrete class with persistent data.
+   */
   static ClassDescription<a1ThreePionCLEODecayer> inita1ThreePionCLEODecayer;
-  // Describe a concrete class with persistent data.
   
+  /**
+   * Private and non-existent assignment operator.
+   */
   a1ThreePionCLEODecayer & operator=(const a1ThreePionCLEODecayer &);
-  // Private and non-existent assignment operator.
   
 private:
 
-  // breit wigner for the rho
-  inline Complex rhoBreitWigner(int, Energy2,int) const;
+  /**
+   * Breit wigner for the \f$\rho\f$, \f$B^P_{\rho_k}(q^2)\f$.
+   * @param ires The \f$\rho\f$ multiplet to used.
+   * @param q2 The scale, \f$q^2\f$.
+   * @param icharge Which pion masses to use for the momentum calculation
+   * @return The Breit-Wigner
+   */
+  inline Complex rhoBreitWigner(int ires, Energy2 q2,int icharge) const;
 
-  // breit wigner for the sigma
-  inline Complex sigmaBreitWigner(Energy2,int) const;
+  /**
+   * Breit wigner for the \f$\sigma\f$, \f$B^S_\sigma(q^2)\f$.
+   * @param q2 The scale, \f$q^2\f$.
+   * @param icharge Which pion masses to use for the momentum calculation
+   * @return The Breit-Wigner
+   */
+  inline Complex sigmaBreitWigner(Energy2 q2,int icharge) const;
   
-  // breit wigner for the f_0
-  inline Complex f0BreitWigner(Energy2,int) const;
+  /**
+   * Breit wigner for the \f$f_0(1370)\f$, \f$B^S_{f_0}(q^2)\f$.
+   * @param q2 The scale, \f$q^2\f$.
+   * @param icharge Which pion masses to use for the momentum calculation
+   * @return The Breit-Wigner
+   */
+  inline Complex f0BreitWigner(Energy2 q2,int icharge) const;
 
-  // breit wigner for the f_2
-  inline Complex f2BreitWigner(Energy2,int) const;
+  /**
+   * Breit wigner for the \f$f_2\f$, \f$B^D_{f_2}(q^2)\f$.
+   * @param q2 The scale, \f$q^2\f$.
+   * @param icharge Which pion masses to use for the momentum calculation
+   * @return The Breit-Wigner
+   */
+  inline Complex f2BreitWigner(Energy2 q2,int icharge) const;
   
+  /**
+   * Calculate the form factors
+   * @param iopt The mode being calculated in the order given above
+   * @param ichan The phase space channel in the order given in the doinit member.
+   * @param q2 The sacale \f$q^2\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param F1 The form factor \f$F_1\f$.
+   * @param F2 The form factor \f$F_2\f$.
+   * @param F3 The form factor \f$F_3\f$.
+   * 
+   */
+  void formFactors(int iopt,int ichan,Energy2 q2,Energy2 s1,Energy2 s2,
+		   Energy2 s3,Complex & F1,Complex& F2,Complex& F3) const;
+
 private:
-  
-  vector<Energy> _rhomass,_rhowidth,_prhocc,_prhoc0;
-  // masses and widths of the rho resonaces and parameters for breit-wigner
-  Energy _f2mass,_f2width,_pf2cc,_pf200,_f0mass,_f0width,_pf0cc,_pf000;
-  // masses and widths of the f_2(1270) and f_0(1370)
-  Energy _sigmamass,_sigmawidth,_psigmacc,_psigma00;
-  // mass and width of the sigma meson and parameters for breit-wigner
-  Energy _mpi0,_mpic;
-  // masses of the pions
 
+  /**
+   * Masses of the rho resonaces
+   */
+  vector<Energy> _rhomass;
+
+  /**
+   * Widths of the rho resonaces
+   */
+  vector<Energy> _rhowidth;
+
+  /**
+   * Momentum of the particles produced in charged rho decay
+   */
+  vector<Energy> _prhocc;
+
+  /**
+   * Momentum of the particles produced in neutral rho decay
+   */
+  vector<Energy> _prhoc0;
+
+  /**
+   * Mass of the \f$f_2\f$.
+   */
+  Energy _f2mass;
+
+  /**
+   * Width of the \f$f_2\f$.
+   */
+  Energy _f2width;
+
+  /**
+   * Momentum for the decay of the \f$f_2\f$ to two charged pions.
+   */
+  Energy _pf2cc;
+
+  /**
+   * Momentum for the decay of the \f$f_2\f$ to two neutral pions.
+   */
+  Energy _pf200;
+
+  /**
+   * Mass of the \f$f_0(1370)\f$.
+   */
+  Energy _f0mass;
+
+  /**
+   * Width of the \f$f_0(1370)\f$.
+   */
+  Energy _f0width;
+
+  /**
+   * Momentum for the decay of the \f$f_0(1370)\f$ to two charged pions.
+   */
+  Energy _pf0cc;
+
+  /**
+   * Momentum for the decay of the \f$f_0(1370)\f$ to two neutral pions.
+   */
+  Energy _pf000;
+
+  /**
+   * Mass of the \f$\sigma\f$ meson.
+   */
+  Energy _sigmamass;
+
+  /**
+   * Width of the \f$\sigma\f$ meson.
+   */
+  Energy _sigmawidth;
+
+  /**
+   * Momentum for the decay of the \f$\sigma\f$ to two charged pions.
+   */
+  Energy _psigmacc;
+
+  /**
+   * Momentum for the decay of the \f$\sigma\f$ to two neutral pions.
+   */
+  Energy _psigma00;
+
+  /**
+   * Mass of the neutral pion
+   */
+  Energy _mpi0;
+
+  /**
+   * Mass of the charged pion
+   */
+  Energy _mpic;
+
+  /**
+   * overall coupling for the decay
+   */
   InvEnergy _coupling;
-  // overall coupling for the decay
 
-  vector<double> _rhomagP,_rhophaseP;
+  /**
+   * Magnitude of the \f$p\f$-wave couplings of the rho resonance, \f$g^P_{\rho_k}\f$, 
+   * (\f$\beta_{1,2}\f$ in the CLEO paper.)
+   */
+  vector<double> _rhomagP;
+
+  /**
+   * Phase of the \f$p\f$-wave couplings of the rho resonance, \f$g^P_{\rho_k}\f$,
+   * (\f$\beta_{1,2}\f$ in the CLEO paper.)
+   */
+  vector<double> _rhophaseP;
+
+  /**
+   *\f$p\f$-wave couplings of the rho resonance, \f$g^P_{\rho_k}\f$, 
+   * (\f$\beta_{1,2}\f$ in the CLEO paper.)
+   */
   vector<Complex> _rhocoupP;
-  vector<InvEnergy2> _rhomagD;vector<double>_rhophaseD;
+
+  /**
+   * Magnitude of the \f$d\f$-wave couplings of the rho resonance, \f$g^D_{\rho_k}\f$,
+   * (\f$\beta_{3,4}\f$ in the CLEO paper.)
+   */
+  vector<InvEnergy2> _rhomagD;
+
+  /**
+   * Phase of the \f$d\f$-wave couplings of the rho resonance, \f$g^D_{\rho_k}\f$, 
+   * (\f$\beta_{3,4}\f$ in the CLEO paper.)
+   */
+  vector<double>_rhophaseD;
+
+  /**
+   * \f$d\f$-wave couplings of the rho resonance, \f$g^D_{\rho_k}\f$,
+   * (\f$\beta_{3,4}\f$ in the CLEO paper.)
+   */
   vector<complex<InvEnergy2> > _rhocoupD;
-  // couplings of the rho resonances (beta1-4 in CLEO paper)
 
-  InvEnergy2 _f2mag;double _f2phase;
+  /**
+   * Magntiude of the coupling of the \f$f_2\f$ resonance, \f$g_{f_2}\f$,
+   * (\f$\beta_5\f$ in the CLEO paper.)
+   */
+  InvEnergy2 _f2mag;
+
+  /**
+   * Phase of the coupling of the \f$f_2\f$ resonance, \f$g_{f_2}\f$,
+   * (\f$\beta_5\f$ in the CLEO paper.)
+   */
+  double _f2phase;
+
+  /**
+   * Coupling of the \f$f_2\f$ resonance, \f$g_{f_2}\f$,
+   * (\f$\beta_5\f$ in the CLEO paper.)
+   */
   complex<InvEnergy2> _f2coup;
-  // couplings of the f_2 resonance (beta5)
 
-  double _f0mag,_f0phase;
+  /**
+   * Magntiude of the coupling of the \f$f_0(1370)\f$ resonance, \f$g_{f_0}\f$,
+   * (\f$\beta_6\f$ in the CLEO paper.)
+   */
+  double _f0mag;
+
+  /**
+   * Phase of the coupling of the \f$f_0(1370)\f$ resonance, \f$g_{f_0}\f$,
+   * (\f$\beta_6\f$ in the CLEO paper.)
+   */
+  double _f0phase;
+
+  /**
+   * Coupling of the \f$f_0(1370)\f$ resonance, \f$g_{f_0}\f$,
+   * (\f$\beta_6\f$ in the CLEO paper.)
+   */
   Complex _f0coup;
-  // couplings of the f_0 resonance (beta6)
 
-  double _sigmamag,_sigmaphase;
+  /**
+   * Magntiude of the coupling of the \f$\sigma\f$ resonance, \f$g_\sigma\f$,
+   * (\f$\beta_7\f$ in the CLEO paper.)
+   */
+  double _sigmamag;
+
+  /**
+   * Phase of the coupling of the \f$\sigma\f$ resonance, \f$g_\sigma\f$,
+   * (\f$\beta_7\f$ in the CLEO paper.)
+   */
+  double _sigmaphase;
+
+  /**
+   * Coupling of the \f$\sigma\f$ resonance, \f$g_\sigma\f$,
+   * (\f$\beta_7\f$ in the CLEO paper.)
+   */
   Complex _sigmacoup;
-  // couplings of the sigma resonance (beta7)
 
+  /**
+   * Use local values of the mass parameters
+   */
   bool _localparameters;
-  // use local values of the mass parameters
   
-  mutable vector<bool> _zerochan,_onechan,_twochan,_threechan;
-  mutable vector<double> _zerowgts,_onewgts,_twowgts,_threewgts;
-  mutable double _zeromax,_onemax,_twomax,_threemax;
-  // parameters for the multi-channel integration
+  /**
+   * Weights for the channels for the zero charged pion channel.
+   */
+  mutable vector<double> _zerowgts;
+  
+  /**
+   * Weights for the channels for the one charged pion channel.
+   */
+  mutable vector<double> _onewgts;
+  
+  /**
+   * Weights for the channels for the two charged pion channel.
+   */
+  mutable vector<double> _twowgts;
+  
+  /**
+   * Weights for the channels for the three charged pion channel.
+   */
+  mutable vector<double> _threewgts;
+
+  /**
+   * Maximum weight for the zero charged pion channel.
+   */
+  mutable double _zeromax;
+
+  /**
+   * Maximum weight for the one charged pion channel.
+   */
+  mutable double _onemax;
+
+  /**
+   * Maximum weight for the two charged pion channel.
+   */
+  mutable double _twomax;
+
+  /**
+   * Maximum weight for the three charged pion channel.
+   */
+  mutable double _threemax;
 };
   
 }
 
-// CLASSDOC OFF
 
 namespace ThePEG {
   
-  // The following template specialization informs ThePEG about the
-  // base class of a1ThreePionCLEODecayer.
+  /**
+   * The following template specialization informs ThePEG about the
+   * base class of a1ThreePionCLEODecayer.
+   */
   template <>
   struct BaseClassTrait<Herwig::a1ThreePionCLEODecayer,1> {
+    /** Typedef of the base class of a1ThreePionCLEODecayer. */
     typedef Herwig::VectorMesonDecayerBase NthBase;
   };
   
-  // The following template specialization informs ThePEG about the
-  // name of this class and the shared object where it is defined.
   template <>
+  /**
+   * The following template specialization informs ThePEG about the
+   * name of this class and the shared object where it is defined.
+   */
   struct ClassTraits<Herwig::a1ThreePionCLEODecayer>
     : public ClassTraitsBase<Herwig::a1ThreePionCLEODecayer> {
-    static string className() { return "/Herwig++/a1ThreePionCLEODecayer"; }
-    // Return the class name.
+    /** Return the class name. */
+    static string className() { return "Herwig++::a1ThreePionCLEODecayer"; }
+    /**
+     * Return the name of the shared library to be loaded to get
+     * access to this class and every other class it uses
+     * (except the base class).
+     */
     static string library() { return "libHwVMDecay.so"; }
-    // Return the name of the shared library to be loaded to get
-    // access to this class and every other class it uses
-    // (except the base class).
+
   };
   
 }

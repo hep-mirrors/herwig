@@ -12,7 +12,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/Correlations/DecayVertex.h"
+//#include "Herwig++/Helicity/Correlations/DecayVertex.h"
 #include "ThePEG/Helicity/VectorSpinInfo.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 
@@ -32,14 +32,13 @@ VectorMesonDecayerBase::~VectorMesonDecayerBase() {}
 bool VectorMesonDecayerBase::accept(const DecayMode & dm) const {
   return false;
 }
-  
+
 ParticleVector VectorMesonDecayerBase::decay(const DecayMode & dm,
 					     const Particle & parent) const {
   ParticleVector children = dm.produceProducts();
   return children;
 }
-  
-  
+
 void VectorMesonDecayerBase::persistentOutput(PersistentOStream & os) const {
 }
   
@@ -48,7 +47,7 @@ void VectorMesonDecayerBase::persistentInput(PersistentIStream & is, int) {
   
 AbstractClassDescription<VectorMesonDecayerBase> VectorMesonDecayerBase::initVectorMesonDecayerBase;
 // Definition of the static class description member.
-  
+
 void VectorMesonDecayerBase::Init() {
   
   static ClassDocumentation<VectorMesonDecayerBase> documentation
@@ -57,8 +56,7 @@ void VectorMesonDecayerBase::Init() {
   
 }
 
-double VectorMesonDecayerBase::me2(bool vertex, 
-				   const int imode, const int ichan,
+double VectorMesonDecayerBase::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {
@@ -71,7 +69,8 @@ double VectorMesonDecayerBase::me2(bool vertex,
   // if the spin info object exists use it
   if(inspin&&inpart.spinInfo())
     {
-      for(int ix=-1;ix<2;++ix){invec.push_back(inspin->getDecayBasisState(ix));}
+      for(int ix=-1;ix<2;++ix)
+	{invec.push_back(inspin->getDecayBasisState(ix));}
       inspin->decay();
       rhoin = inspin->rhoMatrix();
     }
@@ -98,7 +97,7 @@ double VectorMesonDecayerBase::me2(bool vertex,
       const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
     }
   // calculate the decay current
-  vector<LorentzPolarizationVector> current=decayCurrent(vertex,imode,ichan,
+  vector<LorentzPolarizationVector> current=decayCurrent(vertex,ichan,
 							 inpart,decay);
   // work out the mapping for the current vector
   vector<int> constants(decay.size()+1), ispin(decay.size()),ihel(decay.size()+1);
@@ -131,11 +130,4 @@ double VectorMesonDecayerBase::me2(bool vertex,
   return newME.contract(rhoin).real();
 }
 
-// the hadronic currents (does nothing
-vector<LorentzPolarizationVector> 
-VectorMesonDecayerBase::decayCurrent(const bool vertex, 
-				     const int imode, const int ichan,
-				     const Particle & inpart,
-				     const ParticleVector & decay) const
-{vector<LorentzPolarizationVector> temp; return temp;}
 }

@@ -1,42 +1,30 @@
 // -*- C++ -*-
-#ifndef HERWIG_VectorMesonPScalarFermionsDecayer_H
-#define HERWIG_VectorMesonPScalarFermionsDecayer_H
+#ifndef HERWIG_PVectorMesonVectorPScalarDecayer_H
+#define HERWIG_PVectorMesonVectorPScalarDecayer_H
 //
-// This is the declaration of the VectorMesonPScalarFermionsDecayer class.
+// This is the declaration of the PVectorMesonVectorPScalarDecayer class.
 //
 #include "VectorMesonDecayerBase.h"
-// #include "VectorMesonPScalarFermionsDecayer.fh"
-// #include "VectorMesonPScalarFermionsDecayer.xh"
+#include "PVectorMesonVectorPScalarDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Decay
  *
- * The <code>VectorMesonPScalarFermionsDecayer</code> class is designed to perform the
- * decay of a vector meson to a pesudo scalar and a fermion-antifermion pair according
- * to a current which is the \f$V\to VP\f$ vertex combined with the branching of the
- * vector into a fermion-antifermion pair.
+ *  This class is designed for the decay of a pseudovector meson to a spin-1
+ *  particle, either a vector meson or a photon, and a pseudoscalar meson.
+ *  The current for the decay is
  *
- *  The current is
- *  \f[J^\mu = \frac{g}{(p_f+p_{\bar f})^2}\epsilon^{\mu\nu\alpha\beta} p_{0\nu}
- *             (p_f+p_{\bar f})_\alpha
- *             \bar{u}(p_f)\gamma_\beta v(p_{\bar f})
- *  \f]
- *
- *  It includes the option of a vector meson dominance (VMD) type form factor  
- *  \f$\frac{-M^2+i\Gamma M}{(m^2_{ff}-M^2+i\Gamma M)}\f$.
- *
- *  The incoming and outgoing meson together with the types of fermions can be
- *  specified using the interfaces.
+ *  \f[ J^\mu = g\left[ p_V \cdot p_0 \epsilon_V^\mu  
+ *                     -p_V^\mu \epsilon_V \cdot p_0\right]\f]
  *
  * @see VectorMesonDecayerBase
- * @see VectorMesonVectorPScalarDecayer
  * 
  *  \author Peter Richardson
  *
  */
-class VectorMesonPScalarFermionsDecayer: public VectorMesonDecayerBase {
+class PVectorMesonVectorPScalarDecayer: public VectorMesonDecayerBase {
 
 public:
 
@@ -45,17 +33,17 @@ public:
   /**
    * Default constructor.
    */
-  inline VectorMesonPScalarFermionsDecayer();
+  inline PVectorMesonVectorPScalarDecayer();
 
   /**
    * Copy-constructor.
    */
-  inline VectorMesonPScalarFermionsDecayer(const VectorMesonPScalarFermionsDecayer &);
+  inline PVectorMesonVectorPScalarDecayer(const PVectorMesonVectorPScalarDecayer &);
 
   /**
    * Destructor.
    */
-  virtual ~VectorMesonPScalarFermionsDecayer();
+  virtual ~PVectorMesonVectorPScalarDecayer();
   //@}
 
 public:
@@ -63,7 +51,7 @@ public:
   /**
    * Accept member which is called at initialization to see if this Decayer can
    * handle a given decay mode. This version checks the particles against the 
-   * list of allowed incoming and outgoing mesons and fermions.
+   * list of allowed incoming and outgoing mesons.
    * @param dm The DecayMode
    * @return Whether the mode can be handled.
    */
@@ -79,7 +67,7 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
-  
+
   /**
    * The hadronic current. This returns the current 
    *  described above.
@@ -92,26 +80,6 @@ public:
   virtual vector<LorentzPolarizationVector> 
   decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
 	       const ParticleVector & outpart) const;
-
-  /**
-   * Method to return an object to calculate the 3 body partial width.
-   * @param dm The DecayMode
-   * @return A pointer to a WidthCalculatorBase object capable of calculating the width
-   */
-  virtual WidthCalculatorBasePtr threeBodyMEIntegrator(const DecayMode & dm) const;
-
-  /**
-   * The differential three body decay rate with one integral performed.
-   * @param imode The mode for which the matrix element is needed.
-   * @param q2 The scale, \e i.e. the mass squared of the decaying particle.
-   * @param s  The invariant mass which still needs to be integrate over.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
-   * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
-   */
-  virtual double threeBodydGammads(int imode,Energy q2, Energy2 s,Energy m1,Energy m2,
-				   Energy m3);
 
 public:
 
@@ -135,6 +103,16 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+
+  /**
+   * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
+   * @param dm The DecayMode
+   * @param mecode The code for the matrix element as described
+   *               in the GenericWidthGenerator class, in this case 4.
+   * @param coupling The coupling for the matrix element.
+   * @return True or False if this mode can be handled.
+   */
+  bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
 
 protected:
 
@@ -204,64 +182,39 @@ private:
   /**
    * Describe a concrete class with persistent data.
    */
-  static ClassDescription<VectorMesonPScalarFermionsDecayer> initVectorMesonPScalarFermionsDecayer;
+  static ClassDescription<PVectorMesonVectorPScalarDecayer> initPVectorMesonVectorPScalarDecayer;
 
   /**
    * Private and non-existent assignment operator.
    */
-  VectorMesonPScalarFermionsDecayer & operator=(const VectorMesonPScalarFermionsDecayer &);
+  PVectorMesonVectorPScalarDecayer & operator=(const PVectorMesonVectorPScalarDecayer &);
 
 private:
-  
-  /**
-   * coupling for a decay
-   */
-  vector<double> _coupling;
 
   /**
-   * PDG codes for the incoming particle
+   * Coupling for a decay
+   */
+  vector<InvEnergy> _coupling;
+
+  /**
+   * PDG codes for the incoming particles
    */
   vector<int> _incoming;
 
   /**
-   * PDG codes for the outgoing meson.
+   * PDG codes for the outgoing vector
+   */
+  vector<int> _outgoingV;
+
+  /**
+   * PDG codes for the outgoing pseudoscalar mesons.
    */
   vector<int> _outgoingP;
 
   /**
-   * PDG codes for the outgoing fermion.
-   */
-  vector<int> _outgoingf;
-
-  /**
-   * PDG codes for the outgoing antifermion.
-   */
-  vector<int> _outgoinga;
-
-  /**
-   * Maximum weight for a decay
+   * maximum weight for a decay
    */
   vector<double> _maxweight;
-
-  /**
-   * Include the VMD form factor.
-   */
-  vector<int> _includeVMD;
-
-  /**
-   * PDG code for the particle mass and width to use for the VMD form factor.
-   */
-  vector<int> _VMDid;
-
-  /**
-   * Mass for the VMD form factor.
-   */
-  vector<Energy> _VMDmass;
-
-  /**
-   * Width for the VMD form factor.
-   */
-  vector<Energy> _VMDwidth;
 
 };
 
@@ -274,11 +227,11 @@ namespace ThePEG {
 
 /**
  * The following template specialization informs ThePEG about the
- * base class of Herwig::VectorMesonPScalarFermionsDecayer.
+ * base class of PVectorMesonVectorPScalarDecayer.
  */
 template <>
-struct BaseClassTrait<Herwig::VectorMesonPScalarFermionsDecayer,1> {
-    /** Typedef of the base class of VectorMesonPScalarFermionsDecayer. */
+struct BaseClassTrait<Herwig::PVectorMesonVectorPScalarDecayer,1> {
+    /** Typedef of the base class of PVectorMesonVectorPScalarDecayer. */
   typedef Herwig::VectorMesonDecayerBase NthBase;
 };
 
@@ -287,24 +240,24 @@ struct BaseClassTrait<Herwig::VectorMesonPScalarFermionsDecayer,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::VectorMesonPScalarFermionsDecayer>
-  : public ClassTraitsBase<Herwig::VectorMesonPScalarFermionsDecayer> {
+struct ClassTraits<Herwig::PVectorMesonVectorPScalarDecayer>
+  : public ClassTraitsBase<Herwig::PVectorMesonVectorPScalarDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::VectorMesonPScalarFermionsDecayer"; }
+  static string className() { return "Herwig++::PVectorMesonVectorPScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwVNDecay.so"; }
+  static string library() { return "libHwVMDecay.so"; }
 
 };
 
 }
 
-#include "VectorMesonPScalarFermionsDecayer.icc"
+#include "PVectorMesonVectorPScalarDecayer.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonPScalarFermionsDecayer.tcc"
+// #include "PVectorMesonVectorPScalarDecayer.tcc"
 #endif
 
-#endif /* HERWIG_VectorMesonPScalarFermionsDecayer_H */
+#endif /* HERWIG_PVectorMesonVectorPScalarDecayer_H */
