@@ -50,6 +50,62 @@ using Helicity::outgoing;
 
 TauDecayer::~TauDecayer() {}
 
+
+void TauDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // make sure the current got initialised
+  _current->init();
+  // set up the phase-space channels
+  DecayPhaseSpaceModePtr mode;
+  DecayPhaseSpaceChannelPtr channel;
+  PDVector extpart(2),ptemp;
+  extpart[0] = getParticleData(ParticleID::tauminus);
+  extpart[1] = getParticleData(ParticleID::nu_tau);
+  Energy mtau= extpart[0]->mass();
+  double maxweight;
+  vector<double> channelwgts;
+  int iq,ia;
+  _modemap.resize(0);
+  for(unsigned int ix=0;ix<_current->numberOfModes();++ix)
+    {
+      // get the external particles for this mode
+      extpart.resize(2);
+      ptemp=_current->particles(-3,ix,iq,ia);
+      for(unsigned int iy=0;iy<ptemp.size();++iy){extpart.push_back(ptemp[iy]);}
+      // create the mode
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      // create the first piece of the channel
+      channel = new_ptr(DecayPhaseSpaceChannel(mode));
+      channel->addIntermediate(extpart[0],0,0.0,-1,1);
+      bool done=_current->createMode(-3,ix,mode,2,1,channel,mtau);
+      if(done)
+	{
+	  // the maximum weight and the channel weights
+	  // the maximum
+	  if(_wgtmax.size()>numberModes()){maxweight=_wgtmax[numberModes()];}
+	  else{maxweight=0.;}
+	  // the weights for the channel
+	  if(_wgtloc.size()>numberModes()&&
+	     _wgtloc[numberModes()]+mode->numberChannels()<=_weights.size())
+	    {
+	      vector<double>::iterator start=_weights.begin()+_wgtloc[numberModes()];
+	      vector<double>::iterator end  =start+mode->numberChannels();
+	      channelwgts=vector<double>(start,end);
+	    }
+	  else
+	    {channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));}
+	  _modemap.push_back(ix);
+	  // special for the two body modes
+	  if(extpart.size()==3)
+	    {
+	      channelwgts.resize(0);
+	      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+	    }
+	  addMode(mode,maxweight,channelwgts);
+	}
+    }
+}
+
 bool TauDecayer::accept(const DecayMode & dm) const {
   bool allowed=false;
   // find the neutrino 
@@ -72,7 +128,7 @@ bool TauDecayer::accept(const DecayMode & dm) const {
 }
 
 ParticleVector TauDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+				 const Particle & parent) const {
   // find the ids of the particles for the decay current
   ParticleMSet::const_iterator pit = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
@@ -275,16 +331,23 @@ TauDecayer::leptonCurrent(bool vertex, const Particle & inpart,
 }
 
 // combine the currents to give the matrix element
-double TauDecayer::me2(bool vertex, const int ichan,
-			   const Particle & inpart,
-			   const ParticleVector & decay) const
+double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
+		       const ParticleVector & decay) const
 {
   // map the mode to those in the current
   int mode=_modemap[imode()];
-  // calculate the lepton and hadron currents
-  vector<LorentzPolarizationVector> hadron(_current->current(vertex,mode,ichan,
-							     inpart,decay));
+  // calculate the lepton current
   vector<LorentzPolarizationVector> lepton(leptonCurrent(vertex,inpart,decay));
+  // get the particles for the hadronic current
+  ParticleVector::const_iterator start=decay.begin()+1;
+  ParticleVector::const_iterator end  =decay.end();
+  ParticleVector hadpart(start,end);
+  // calculate the hadron current
+  Energy q;
+  vector<LorentzPolarizationVector> hadron(_current->current(vertex,mode,ichan,
+							     q,hadpart));
+  // prefactor
+  double pre = pow(inpart.mass()/q,int(hadpart.size()-2));pre*=pre;
   // get the spin density matrix for the decaying particle
   RhoDMatrix temp(2); temp.average();
   if(inpart.spinInfo())
@@ -346,8 +409,7 @@ double TauDecayer::me2(bool vertex, const int ichan,
       else{ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);}
     }
   // return the answer
-  double me= 0.5*ckm*(newME.contract(temp)).real()*_GF*_GF;
-  return me;  
+  return 0.5*pre*ckm*(newME.contract(temp)).real()*_GF*_GF;
 }
 
 // output the setup information for the particle database
