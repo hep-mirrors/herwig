@@ -122,9 +122,9 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
          int IPDG = abs(p.id());
          double m1, m2, m3;
          if(IPDG >= 1000)
-	         m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
-				 else
-					 m1 = 0.0;
+	   m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
+	 else
+	   m1 = 0.0;
          m2 = generator()->getParticleData((IPDG/100)%10)->mass();
          m3 = generator()->getParticleData((IPDG/10)%10)->mass();
          xs = 1.0 - Math::absmax<double>(m1, Math::absmax<double>(m2, m3))/(m1+m2+m3);
@@ -132,8 +132,8 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 	 // Do decay, repeat until meets condition
          do {
             threeBodyDecay(p.momentum(), products[1], products[2], products[0]);
-            dot1 = p.momentum().dot(products[2]);
-            dot2 = p.momentum().dot(products[1]);
+            dot1 = p.momentum().dot(products[1]);
+            dot2 = p.momentum().dot(products[0]);
          } while(dot1*(wtmx-dot1-xs*dot2) < generator()->rnd()*wtmx2);
       } 
  
