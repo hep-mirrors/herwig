@@ -2,13 +2,7 @@
 #ifndef HERWIG_ShowerConfig_H
 #define HERWIG_ShowerConfig_H
 //
-// This is the declaration of the <!id>ShowerConfig<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// Handy header file to be included in all Shower classes. <BR>
-// It contains only some useful typedefs.
-//
+// This is the declaration of the ShowerConfig class.
 
 #include "Herwig++/Config/Herwig.h"
 #include "ThePEG/Config/Complex.h" 
@@ -17,6 +11,12 @@
 namespace Herwig { 
 
   using namespace ThePEG;
+
+  /** \ingroup Shower
+   *  
+   *  Handy header file to be included in all Shower classes.
+   *  It contains only some useful typedefs.
+   */
 
   class ThePEG::ColourLine;
   typedef Ptr<ThePEG::ColourLine>::pointer ShoColinePtr;
@@ -62,6 +62,7 @@ namespace Herwig {
   typedef Ptr<ShowerAlpha>::transient_pointer tShowerAlphaPtr;
 
   typedef vector<long> IdList;
+
 } // end Herwig namespace
 
 

@@ -105,9 +105,15 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   }*/
   for(cit = particles.begin(); cit != particles.end(); ++cit) {
     if(!(*cit)->data().coloured()) continue;
+//     cout << "PF: cit = " << (*cit)->id() << ", " << *cit 
+// 	 << " [" << (*cit)->colourLine() << ", " 
+// 	 << (*cit)->antiColourLine() << "]" << endl; 
     // We now have a coloured particle
     tShowerParticleVector partners;
     for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
+//       cout << "  PF: cjt = " << (*cjt)->id() << ", " << *cjt 
+// 	   << " [" << (*cjt)->colourLine() << ", " 
+// 	   << (*cjt)->antiColourLine() << "]" << endl; 
       if(!(*cjt)->data().coloured()) continue;
       bool isPartner = false;
 #define FS(a) (*a)->isFinalState()
@@ -117,8 +123,50 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
          ((CL(cit) && CL(cit)==CL(cjt)) || (ACL(cit) && ACL(cit)==ACL(cjt))))
 	 isPartner = true;
       else if((CL(cit) && CL(cit)==ACL(cjt)) || (ACL(cit) && ACL(cit)==CL(cjt)))
-	 isPartner = true;
+	isPartner = true;
       if(isPartner) partners.push_back(*cjt);
+    }
+//     cout << "Initial conditions: "
+// 	 << (*cit) << " (" << (*cit)->id() 
+// 	 << ") has " << partners.size() << " partners" << endl; 
+    if (partners.size() == 0) {
+//       cout << "No Partners among the showerParticles, " 
+// 	   << "looking among the remnants..." << endl
+// 	   << (*cit)->colourLine() << endl
+// 	   << (*cit)->antiColourLine() << endl << flush;
+      if ((*cit)->colourLine()) 
+// 	cout << (*cit)->colourLine()->startParticle() << endl
+// 	     << (*cit)->colourLine()->endParticle() << endl << flush;
+      if ((*cit)->antiColourLine()) 
+// 	cout << (*cit)->antiColourLine()->startParticle() << endl
+// 	     << (*cit)->antiColourLine()->endParticle() << endl << flush;
+      // set colourpartners 'by hand' from colourLine information
+      // this should also give us access to the remnants
+      if (CL(cit)) {
+	if (CL(cit)->startParticle() == (*cit)) {
+	  if (CL(cit)->endParticle()) {
+	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(CL(cit)->endParticle()));
+	  }
+	} else if (CL(cit)->endParticle() == (*cit)) {
+	  if (CL(cit)->startParticle()) {
+	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(CL(cit)->startParticle()));
+	  }
+	}
+      }
+      if (ACL(cit)) {
+	if (ACL(cit)->startParticle() == (*cit)) {
+	  if (ACL(cit)->endParticle()) {
+	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(ACL(cit)->endParticle()));
+	  }
+	} else if (ACL(cit)->endParticle() == (*cit)) {
+	  if (ACL(cit)->startParticle()) {
+	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(ACL(cit)->startParticle()));
+	  }
+	}
+      }
+      for(unsigned int i = 0; i < partners.size(); i++) {
+	//	cout << "set partner by hand: " << partners[i] << endl;
+      }
     }
     candidatePartners[*cit] = partners;
   }
@@ -226,7 +274,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 	}
 	int numShoPartner = 0;
 	if ( (*cit)->partners()[ ShowerIndex::QCD ]  &&
-              mapShoPar.find( (*cit)->partners()[ ShowerIndex::QCD ] ) != mapShoPar.end() ) {
+	     mapShoPar.find( (*cit)->partners()[ ShowerIndex::QCD ] ) != mapShoPar.end() ) {
 	  numShoPartner = mapShoPar.find( (*cit)->partners()[ ShowerIndex::QCD ] )->second;   
 	}
 	generator()->log() << "\t" << "Particle number = " << numShoParticle  
@@ -237,8 +285,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
                            << "\t \t Partner = " << numShoPartner << endl; 
       }
     }
-//     generator()->log() << "PartnerFinder::debuggingInfo "
-// 		       << " ===> END DEBUGGING <=== " << endl;
+    generator()->log() << "PartnerFinder::debuggingInfo "
+		       << "end ___________________________________" << endl;
   }
   
   return isOK;

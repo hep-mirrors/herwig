@@ -95,10 +95,10 @@ bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch,
       else ptMax = showerVariables->largestPtQbar();
     }
     particle->undecay();
-
     tShowerParticleVector particlesYetToShower;
     particlesYetToShower.push_back(particle);
     Branching fb;
+
     do {
       tShowerParticlePtr part = particlesYetToShower.back();
       particlesYetToShower.pop_back();
@@ -167,8 +167,9 @@ bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch,
 	}
       }
       if(vetoed) break;
- 
+
       if(fb.first == ShoKinPtr() || fb.second == tSudakovPtr()) {
+
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	  generator()->log() << "-- no further splitting."
 			     << endl;
@@ -221,7 +222,9 @@ bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch,
 	  // note that 1st child gets z, 2nd gets (1-z) by our convention.
 	  showerProduct1->setEvolutionScale(interaction, zz*scale);
 	  showerProduct2->setEvolutionScale(interaction, (1.-zz)*scale);
-	  
+	  showerProduct1->setInitiatesTLS(false);
+	  showerProduct2->setInitiatesTLS(false);
+
 	  ParticleVector theChildren; 
 	  theChildren.push_back(showerProduct1); 
 	  theChildren.push_back(showerProduct2); 
@@ -332,6 +335,7 @@ bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch,
   } // while (vetoed)
   return hasEmitted;  
 }
+
 
 
 bool ForwardEvolver::MEVeto(tcPPtr p, const Energy &q, const double &z) {

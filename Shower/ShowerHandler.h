@@ -2,22 +2,7 @@
 #ifndef HERWIG_ShowerHandler_H
 #define HERWIG_ShowerHandler_H
 //
-// This is the declaration of the <!id>ShowerHandler<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// This class is the main driver of the shower: it is responsible for <BR>
-// the proper handling of all other specific collaborating classes <BR>
-// and for the storing of the produced particles in the event record.
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:CascadeHandler.html">CascadeHandler.h</a>, <BR>
-// <a href="http:InsideRangeShowerEvolver.html">InsideRangeShowerEvolver.h</a>, <BR>
-// <a href="http:MECorrections.html">MECorrections.h</a>, <BR>
-// <a href="http:ShowerVariables.html">ShowerVariables.h</a>, <BR>
-// <a href="http:ShowerParticle.html">ShowerParticle.h</a>
-// 
+// This is the declaration of the ShowerHandler class.
 
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
@@ -31,94 +16,143 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/** \ingroup Shower
+ *
+ *  This class is the main driver of the shower: it is responsible for 
+ *  the proper handling of all other specific collaborating classes
+ *  and for the storing of the produced particles in the event record.
+ * 
+ *  @see CascadeHandler
+ *  @see InsideRangeShowerEvolver
+ *  @see MECorrections
+ *  @see ShowerVariables
+ *  @see ShowerParticle
+ */
 class ShowerHandler: public ThePEG::CascadeHandler {
 
 public:
 
+  /**
+   * Standard ctors and dtor.
+   */
   inline ShowerHandler();
   inline ShowerHandler(const ShowerHandler &);
   virtual ~ShowerHandler();
-  // Standard ctors and dtor.
 
 public:
 
+  /**
+   * The main method which manages the all showering.
+   */
   virtual void cascade();
-  // The main method which manages the all showering.
 
 public:
 
+  /**
+   * Standard functions for writing and reading from persistent streams.
+   */
   void persistentOutput(PersistentOStream &) const;
   void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
 
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
   static void Init();
-  // Standard Init function used to initialize the interfaces.
 
 protected:
 
+  /**
+   * Standard clone methods.
+   */
   inline virtual IBPtr clone() const;
   inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
 
 protected:
 
+  /**
+   * Standard Interfaced virtual functions.
+   */
   inline virtual void doupdate() throw(UpdateException);
   inline virtual void doinit() throw(InitException);
   inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
 
+  /**
+   * Change all pointers to Interfaced objects to corresponding clones.
+   */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
 
+  /**
+   * Return pointers to all Interfaced objects refered to by this.
+   */
   inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
 
 private:
 
+  /**
+   * Describe a concrete class with persistent data.
+   */
   static ClassDescription<ShowerHandler> initShowerHandler;
-  // Describe a concrete class with persistent data.
 
+  /**
+   * Private and non-existent assignment operator.
+   */
   ShowerHandler & operator=(const ShowerHandler &);
-  //  Private and non-existent assignment operator.
 
+  /**
+   * From the ThePEG particles entering the hard subprocess, create
+   * the corresponding starting ShowerParticle objects and 
+   * put them in the vector hardProcessParticles. 
+   * Notice that the transformation from ThePEG ColourLine 
+   * objects into ShowerColourLine ones must be properly handled.
+   */
   void convertToShowerParticles(const tPartCollHdlPtr ch, 
 				ShowerParticleVector & hardProcessParticles);
-  // From the ThePEG particles entering the hard subprocess, create
-  // the corresponding starting <!id>ShowerParticle<!!id> objects and 
-  // put them in the vector <!id>hardProcessParticles<!!id>. 
-  // Notice that the transformation from ThePEG <!id>ColourLine<!!id> 
-  // objects into <!id>ShowerColourLine<!!id> ones must be properly handled.
 
+  /**
+   * It fills the positions information for all the ShowerParticle 
+   * objects in _particles, at the end of the showering.
+   */
   void fillPositions();
-  // It fills the positions information for all the ShowerParticle 
-  // objects in _particles, at the end of the showering.
 
+  /**
+   * Print debugging information.
+   */
   void debuggingInfo();
-  // Print debugging information.
 
+  /**
+   * At the end of the Showering, transform ShowerParticle objects
+   * into ThePEG particles and fill the event record with them.
+   * Notice that the parent/child relationships and the 
+   * transformation from ShowerColourLine objects into ThePEG
+   * ColourLine ones must be properly handled.
+   */
   void fillEventRecord( const tPartCollHdlPtr ch );
-  // At the end of the Showering, transform ShowerParticle objects
-  // into ThePEG particles and fill the event record with them.
-  // Notice that the parent/child relationships and the 
-  // transformation from ShowerColourLine objects into ThePEG
-  // ColourLine ones must be properly handled.
 
-  // Two functions to add the shower to the event record. The first
-  // is recursive in nature, but uses a queue to achieve the same result.
-  // The initial state one is recursive explicitly
+  /**
+   * Two functions to add the shower to the event record. The first
+   * is recursive in nature, but uses a queue to achieve the same result.
+   * The initial state one is recursive explicitly.
+   */
   void addFinalStateShower(ShowerParticlePtr &, StepPtr &);
   void addInitialStateShower(PPtr &, StepPtr &, bool doit=true);
 
-  // print the particles in the step
+  /**
+   * Print the particles in the step.
+   */
   void printStep(tStepPtr ptrStep, const string & title); 
 
-  // calculate event shape variables from a given set of particles
+  /**
+   * Calculate event shape variables from a given set of particles.
+   */
   void eventShape(const tShowerParticleVector & p, 
 		  vector<double> & lam, vector<Vector3> & n);
 
-  // calculate hard ME correction
+  /**
+   * Calculate hard ME correction.
+   */
   void hardMEC(const tPartCollHdlPtr ch);
+
   Ptr<GlobalParameters>::pointer _globalParameters; 
   //Ptr<MECorrections>::pointer _MECorrections;
   Ptr<ShowerVariables>::pointer _showerVariables;
@@ -130,27 +164,35 @@ private:
 
 }
 
-// CLASSDOC OFF
 
 namespace ThePEG {
 
-// The following template specialization informs ThePEG about the
-// base class of ShowerHandler.
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of ShowerHandler.
+ */
 template <>
 struct BaseClassTrait<Herwig::ShowerHandler,1> {
   typedef ThePEG::CascadeHandler NthBase;
 };
 
-// The following template specialization informs ThePEG about the
-// name of this class and the shared object where it is defined.
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
 template <>
 struct ClassTraits<Herwig::ShowerHandler>: public ClassTraitsBase<Herwig::ShowerHandler> {
+  /**
+   * Return the class name.
+   */
   static string className() { return "/Herwig++/ShowerHandler"; }
-  // Return the class name.
+
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
   static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

@@ -55,17 +55,52 @@ updateParent( const tShowerParticlePtr theParent,
   double mz = 1.-c1->showerKinematics()->z();
   double cphi = cos(c1->showerKinematics()->phi());
   double sphi = sqrt(1.-sqr(cphi));
+//   Energy pt = sqrt(sqr((1.-mz)*c1->showerKinematics()->qtilde()) - 
+// 		   (1.-mz)*sqr(kinCutoff));
   Energy pt = sqrt(sqr(mz*c1->showerKinematics()->qtilde()) - 
-		   (1.-mz)*sqr(kinCutoff));
+ 		   (1.-mz)*sqr(kinCutoff));
   Energy kx = mz*theParent->sudPx() - cphi*pt;
   Energy ky = mz*theParent->sudPy() - sphi*pt; 
   double alpha = theParent->sudAlpha();
+  cout << "  updateParent: theParent->sudAlpha() = "
+       << theParent->sudAlpha() << endl
+       << "  theParent->id() = "
+       << theParent->id() << endl;
 
+  cout << "  (z, pt, alpha) = ("
+       << 1.-mz << ", "
+       << pt << ", " 
+       << alpha << ")" << endl
+       << "  (cphi, kx, ky) = (" 
+       << cphi << ", "
+       << kx << ", "
+       << ky << ")" << endl;
   // on-shell child
   c2->sudAlpha(mz*alpha);
   c2->sudPx(kx);
   c2->sudPy(ky);
-  c2->sudBeta( (sqr(c2->data().mass())+c2->sudPperp2())/alpha/p_dot_n() );
+  
+  
+  // hack to debug IS shower!  Make massive gluons here dependent on
+  // OnOffFSShower switch...
+  double beta = 0.0;
+  if (c2->data().id() == 21) {
+    beta = (sqr(750*MeV)+c2->sudPperp2())
+      /c2->sudAlpha()/p_dot_n()/2.;
+  } else {
+    beta = (sqr(c2->data().constituentMass())+c2->sudPperp2())
+      /c2->sudAlpha()/p_dot_n()/2.;
+  }
+
+  cout << "  (m, beta, sudPerp2) = (" 
+       << c2->data().mass() << ", " 
+       << beta << ", " << c2->sudPperp2() << ")" << endl
+       << "  (alpha, p.n) = (" << c2->sudAlpha() << ", " << p_dot_n() << ")" << endl
+       << "  (m2+pt2, 2 alpha p.n) = (" 
+       << sqr(c2->data().mass())+c2->sudPperp2() 
+       << ", " << c2->sudAlpha()*p_dot_n()*2. << ")" << endl;
+  
+  c2->sudBeta(beta);
   c2->set5Momentum(sudakov2Momentum(c2->sudAlpha(), c2->sudBeta(), 
 				    c2->sudPx(), c2->sudPy()));
   // spacelike child:
@@ -75,16 +110,29 @@ updateParent( const tShowerParticlePtr theParent,
   c1->sudPx(theParent->sudPy() - c2->sudPy());
   c1->set5Momentum(theParent->momentum() - c2->momentum()); 
 
+  cout << "  After 'reconstruction': "
+       << "  p->momentum() = " << theParent->momentum() << endl
+       << "  c1->momentum() = " << c1->momentum() << endl
+       << "  c2->momentum() = " << c2->momentum() 
+       << ", m2 = " << c2->momentum().m2() 
+       << ", mass = " << c2->momentum().mass() << endl;
 }
 
 
 void IS_QtildaShowerKinematics1to2::
 updateLast( const tShowerParticlePtr theLast ) {
-  theLast->sudAlpha(1.0);
-  theLast->sudBeta(0.0);
+  //  theLast->sudAlpha(1.0);
+  //  cout << "theLast->x() = " << theLast->x() << endl;
+  theLast->sudAlpha(theLast->x());
+  //  theLast->sudBeta(0.0);
+  theLast->sudBeta(sqr(theLast->data().mass())/
+		   theLast->sudAlpha()/p_dot_n()/2.);
   theLast->sudPx(0.0*GeV);
   theLast->sudPy(0.0*GeV);
-  theLast->set5Momentum(_pVector);
+  //  theLast->set5Momentum(_pVector);
+  theLast->set5Momentum(
+    sudakov2Momentum(theLast->sudAlpha(), theLast->sudBeta(), 
+		     theLast->sudPx(), theLast->sudPy()));
 }
 
 
@@ -97,5 +145,3 @@ Energy IS_QtildaShowerKinematics1to2::jetMass() {
   return mass;
 
 }
-
-

@@ -335,7 +335,7 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
       } 
     }
   }
-  
+
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "  " << particle.data().PDGName() << ": ";
       //		       << " [" << particle.number() << "]: ";
@@ -353,6 +353,7 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
       generator()->log() << " won't branch." << endl; 
   }
 
+
   // Then, if a branching has been selected, create the proper 
   // ShowerKinematics object which contains the kinematics information
   // about such branching. Notice that the cases 1->2 and 1->3
@@ -362,11 +363,48 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
 
       // For the time being we are considering only 1->2 branching
       tSplittingFnPtr splitFun = sudakov->splittingFn();
+
+      // find out whether we had a spacelike branching before. 
+
+      bool fromHard = false, parentHas = false, siblingHas = false, 
+	initiatesTLS = false; 
+      
+      if (particle.isFromHardSubprocess()) fromHard = true;
+//       cerr << particle.parents()[0]
+// 	   << endl; 
+//       cerr << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+// 	   << endl; 
+      
+      ShowerParticlePtr partest = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0]); 
+
+      if (partest && partest->showerKinematics()) parentHas = true;
+      partest = dynamic_ptr_cast<ShowerParticlePtr>(*(particle.siblings().begin()));
+      if (partest && partest->showerKinematics()) siblingHas = true;
+      if (particle.initiatesTLS()) initiatesTLS = true;
+      
+//       cout << "fromHard, parentHas, siblingHas, initiatesTLS = " 
+// 	   << (fromHard ? "y":"n") << ", " 
+// 	   << (parentHas ? "y":"n") << ", "
+// 	   << (siblingHas ? "y":"n") << ", " 
+// 	   << (initiatesTLS ? "y":"n") << flush << endl;
+	
+//       if (!(parentHas || fromHard) && siblingHas) {
+// 	cout << "Partner..." << endl;
+// 	cout << particle.partners()[splitFun->interactionType()] << ", "
+// 	     << particle.partners()[splitFun->interactionType()]->id()
+// 	     << particle.partners()[splitFun->interactionType()]->momentum()
+// 	     << endl; 
+//       }
+
+  
       if(splitFun) {	  
+
 	Lorentz5Momentum p, n, ppartner, pcm;
 	double th;
 	Energy nnorm;
-	if(particle.isFromHardSubprocess()) {
+	//	if(particle.isFromHardSubprocess()) {
+	//	if (fromHard || siblingHas && !parentHas) {
+	if (fromHard || initiatesTLS) {
 	  p = particle.momentum();
 	  //***LOOKHERE*** We choose  n  naively for the time being.  
 	  // Lorentz5Momentum n = Lorentz5Momentum( 0.0, - p.vect() ); 
@@ -390,11 +428,26 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
 			       << "  and    p in cm = " << pcm << endl;
 	  }
 	} else {
+		
+// 	  cout << " " << particle.parents().size() << flush << endl;
+// 	  cout << particle.parents()[0] << flush << endl;
+// 	  cout << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+// 	       << flush << endl;
+// 	  cout << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+// 	    ->showerKinematics() << flush << endl;
+// 	  cout << particle.parents()[0]->id() << flush << endl;
+// 	  for(tParticleSet::const_iterator cit = particle.siblings().begin(); 
+// 	      cit != particle.siblings().end(); cit++) {
+// 	    cout << (*cit)->id() << ", ";
+// 	  }
+// 	  cout << flush << endl; 
 	  p = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
 	                     ->showerKinematics()->getBasis()[0];
 	  n = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
 	                     ->showerKinematics()->getBasis()[1];
 	} 
+
+
 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	  generator()->log() << "  create ShowerKinematics with " 
@@ -424,11 +477,10 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
 //   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 //     generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________" << endl; 
 //   }
-  
   return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
 
 }
- 
+
 
 Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
 			                              ShowerParticle &particle) const {
@@ -440,9 +492,12 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
   double x = particle.x();
-  cout << "Calling cBB with " << &particle << " and x = " << x << endl;
-  if(_bbranchings.find(index) == _bbranchings.end()) 
+  cout << "Called cBB with " << &particle << ", id = " 
+       << particle.id() << " and x = " << x << endl;
+  if(_bbranchings.find(index) == _bbranchings.end()) {
+    cout << "  no branchings..." << endl;
     return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
+  }
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
     tSudakovPtr candidateSudakov = cit->second.first;
@@ -453,6 +508,11 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
       // the beam particle. If this isn't the case, we must be
       // backward evolving for a decay shower. In that case give a null
       // pdf pointer
+//       cout << "A " << flush;
+//       cout << "particle.parents().size() = " << particle.parents().size()
+// 	   << flush << endl;
+//       cout << ", particle.parents()[0] = " 
+// 	   << particle.parents()[0] << flush << endl;
       Ptr<BeamParticleData>::tcp p = 
 	dynamic_ptr_cast<Ptr<BeamParticleData>::tcp>(particle.parents()[0]);
       tcPDFPtr pdf;
@@ -461,11 +521,11 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
       cout << "Looking at splitting " << cit->second.second[0] << "->" 
 	   << cit->second.second[1] << ","
 	   << cit->second.second[2] << ";"
-	   << " Q = " << particle.evolutionScales()[i]/GeV;
+	   << " Q = " << particle.evolutionScales()[i]/GeV << flush;
       candidateNewQ = candidateSudakov->
         generateNextSpaceBranching(particle.evolutionScales()[i],
 				   cit->second.second, p, pdf, particle.x());
-      cout << "; q = " << candidateNewQ/GeV << " [GeV]" << endl;
+      cout << "; q = " << candidateNewQ/GeV << " [GeV]" << flush << endl;
       if(candidateNewQ > newQ) {
 	newQ = candidateNewQ;
 	sudakov = candidateSudakov;
@@ -486,15 +546,22 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
       // For the time being we are considering only 1->2 branching
       tSplittingFnPtr splitFun = sudakov->splittingFn();
       if(splitFun) {	  
-	Lorentz5Momentum p, n, ppartner, pcm;
+	Lorentz5Momentum p, n, pthis, ppartner, pcm;
 	if(particle.isFromHardSubprocess()) {
-	  p = particle.momentum();
-	  ppartner = particle.partners()[sudakov->splittingFn()->
-					 interactionType()]->momentum();
-	  pcm = p; 
-	  pcm.boost((p + ppartner).findBoostToCM());	  
-	  n = Lorentz5Momentum( 0.0, -pcm.vect() ); 
-	  n.boost( -(p + ppartner).findBoostToCM() );
+// 	  cout << particle.parents().size() 
+// 	       << " parents. parents()[0]->id() = " 
+// 	       << particle.parents()[0]->id() << endl;
+
+// 	  pthis = particle.momentum();
+// 	  ppartner = particle.partners()[sudakov->splittingFn()->
+// 					 interactionType()]->momentum();
+// 	  pcm = pthis; 
+// 	  pcm.boost((pthis + ppartner).findBoostToCM());	  
+	  pcm = particle.parents()[0]->momentum();
+	  p = Lorentz5Momentum(0.0, pcm.vect());
+	  n = Lorentz5Momentum(0.0, -pcm.vect()); 
+// 	  p.boost( -(pthis + ppartner).findBoostToCM() );
+// 	  n.boost( -(pthis + ppartner).findBoostToCM() );
 	} else {
 	  p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
 	    ->showerKinematics()->getBasis()[0];

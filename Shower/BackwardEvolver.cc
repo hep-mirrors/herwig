@@ -72,12 +72,28 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
   bool hasEmitted = false;
   tShowerParticlePtr part = particle;
   tShowerParticleVector particlesYetToShower;   // only time-like particles
+  Energy q0g = (showerVars->kinScale()-0.003*GeV)/2.3;
 
   do {
-
+    bool cant = false;
     cout << "-- BackwardEvolver, part = " << part << "." << endl; 
     Branching bb = _splittingGenerator->chooseBackwardBranching(ch, *part);
-    if(bb.first == ShoKinPtr() || bb.second == tSudakovPtr()) {      
+    if (bb.first != ShoKinPtr()) {
+      double yy = 1.+sqr(q0g/bb.first->qtilde())/2.;
+      double zm = yy - sqrt(sqr(yy)-1.); 
+      double xp = part->x()/bb.first->z();
+      // xp > zm^3 is super-safe enough for yet another emission!
+      //      if (xp > zm*zm*zm) {
+      if (xp > zm*zm*zm) {
+	cout << "  BE: Can't split again! " << endl;
+	cant = true;
+      } else {
+	cout << "  check: xp = " << xp << ", zm = " << zm << endl
+	     << "  pessimistic check: xp/zm = " 
+	     << xp/zm << ", xp/zm^2 = " << xp/zm/zm <<  endl;
+      }
+    }
+    if(bb.first == ShoKinPtr() || bb.second == tSudakovPtr() || cant) {      
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	generator()->log() << "-- no further backward branching."
 			   << endl;
@@ -88,10 +104,28 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
       hasEmitted = true;
       
       // Assign the splitting function and the shower kinematics
-      // to the emitting particle.
+      // to the emitting particle.      
       part->setShowerKinematics(bb.first);
       part->setSplittingFn(bb.second->splittingFn()); 
       
+      // check for additional angular ordering...
+      static long calls=0, violated=0;
+      if(part->children()[0]) {
+	cerr << "1"; 
+	calls++;
+	ShoKinPtr sk;
+	if (dynamic_ptr_cast<ShowerParticlePtr>(part->children()[0])) {
+	  sk = dynamic_ptr_cast<ShowerParticlePtr>(part->children()[0])->showerKinematics();
+	  if ( bb.first->qtilde() > 
+	       (1.-bb.first->z())/(1.-sk->z())*sk->qtilde()) {
+	    cout << "Angular Ordering Violated!" << endl;
+	  cerr << "x";
+	  violated++;
+	  cerr << double(violated)/double(calls) << " emissions violated ang ordering." << endl;
+	  }
+	}
+      }
+
       // For the time being we are considering only 1->2 branching
       tSplittingFnPtr splitF = bb.second->splittingFn();
       if(splitF) {	
@@ -108,8 +142,13 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
 	ShowerParticlePtr otherChild = new_ptr(
           ShowerParticle(getParticleData(id2)));
 	otherChild->setFinalState(true);
+	otherChild->setInitiatesTLS(true);
 	newParent->setFinalState(false);
 	//newParent->setFromHardSubprocess(true);
+
+	// make sure, otherChild is included in TL shower.
+	allShowerParticles.insert(allShowerParticles.end(), otherChild);
+	allShowerParticles.insert(allShowerParticles.end(), newParent);
 
 	cout << "Branching " 
 	     << id0 << " -> "
@@ -142,6 +181,8 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
    * may be changed later.
    ****/
   long hadronId = part->parents()[0]->id();
+//   cout << part->parents()[0]->id() << ", " 
+//        << part->parents().size() << endl << flush;
   Energy oldQ;
   Energy minQ;
   long quarks[3];
@@ -151,21 +192,25 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
     quarks[0] = hadronId % 10;
     quarks[1] = (hadronId/10)%10;
     quarks[2] = (hadronId/100)%10;
+    cout << "Constituents are " << quarks[0] << ", " 
+	 << quarks[1] << ", " << quarks[2] << endl;
     if(quarks[2] == 0) maxIdx = 2; // we have a meson
     oldQ = part->evolutionScales()[ShowerIndex::QCD];
 
     // Look first at sea quarks, these must go to a gluon, we then handle
     // the gluons in the next step
-    if(part->id() != quarks[0] || part->id() != quarks[1] || 
-       part->id() != quarks[2] || part->id() != ParticleID::g) { 
-      cout << "Particle is a sea quark\n"; 
+    //    cout << "A" << flush;
+    if(part->id() != quarks[0] && part->id() != quarks[1] && 
+       part->id() != quarks[2] && part->id() != ParticleID::g) { 
+      cout << "Particle is a sea quark\n" << flush; 
       // determine some bounds for qtilde
       minQ = _splittingGenerator->showerVariables()->kinScale();
-      cout << "CutOff = " << minQ << " and oldQ = " << oldQ << endl;
+      cout << "delta = " << minQ/GeV << " and oldQ = " << oldQ/GeV << endl;
       // Create Shower Kinematics
       part->setSplittingFn(_splittingGenerator->
 			   getSplittingFunction(part->id(),
 						ParticleID::g));
+      cout << "got SplitFun " << part->splitFun() << endl;
       ShoKinPtr kinematics = forcedSplitting(*part,oldQ,minQ);
       part->setShowerKinematics(kinematics);
 
@@ -178,6 +223,10 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
       otherChild->setFinalState(true);
       //newParent->setFromHardSubprocess(true);
 
+      // make sure, otherChild is included in TL shower.
+      allShowerParticles.insert(allShowerParticles.end(), otherChild);
+      allShowerParticles.insert(allShowerParticles.end(), newParent);
+
       createBranching(part,newParent,otherChild,kinematics->qtilde(),inter);
 
       // Store the old data so we can do the gluon splitting
@@ -187,7 +236,7 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
       // Put into list so it will be final showered
       //allShowerParticles.push_back(otherChild);
       //allShowerParticles.push_back(newParent);
-      cout << "Created gluon splitting, gluon has scale " << oldQ << endl;
+      cout << "Created gluon splitting, gluon has scale " << oldQ/GeV << endl;
     }
     // We now handle the gluons, either it is where the shower terminated or
     // it has been created by splitting a sea quark
@@ -196,7 +245,7 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
       cout << "Particle is a gluon\n";
         // determine some bounds for qtilde
       minQ = _splittingGenerator->showerVariables()->kinScale();
-      cout << "CutOff = " << minQ << " and oldQ = " << oldQ << endl;
+      cout << "CutOff = " << minQ/GeV << " and oldQ = " << oldQ/GeV << endl;
 
       // Create new particles, splitting is q->g q
       // First choose which q
@@ -204,6 +253,7 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
       cout << "Chosen to split into " << quarks[idx] << endl;
       part->setSplittingFn(_splittingGenerator->
 			   getSplittingFunction(ParticleID::g, quarks[idx]));
+      cout << "got SplitFun " << part->splitFun() << endl;
 
       // Create Shower Kinematics
       ShoKinPtr kinematics = forcedSplitting(*part,oldQ,minQ);
@@ -221,11 +271,11 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
       createBranching(part,newParent,otherChild,kinematics->qtilde(),inter);
 
       // Add these so that they will be treated properly later
-      //allShowerParticles.push_back(otherChild);
+      allShowerParticles.push_back(otherChild);
       allShowerParticles.push_back(newParent);
       //newParent->setFromHardSubprocess(true);
       part = newParent;
-      cout << "Created final splitting " << kinematics->qtilde() 
+      cout << "Created final splitting " << kinematics->qtilde()/GeV 
 	   << ", " << kinematics->z() << endl;    
     } else {
       // Otherwise figure out which particle we have ended on so we ignore it
@@ -236,18 +286,24 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
     }
     // set remnant. 
     tPPtr hadron;
+//     cout << part << endl << flush
+// 	 << part->parents().size() << flush << endl;
     if(part->parents().size() == 1) hadron = part->parents()[0];
     else cerr << "no remnant present!" << endl;
 
     // First decide what the remnant is
     long remId;
     int sign, spin;
+    cout << "C" << endl << flush;
     if(maxIdx == 2) { // Meson hadronic state
       remId = quarks[(idx+1)%2];
+      cout << "D" << endl << flush;
     } else { // Baryonic hadron
       // Get the other 2 elements of the array
       long id1 = quarks[(idx+1)%2];
       long id2 = quarks[(idx+2)%2];
+      // hack... ask Phil about that assignment!
+      if (abs(id1) > abs(id2)) swap(id1, id2);
       sign = (id1 < 0) ? -1 : 1; // Needed for the spin 0/1 part
       remId = id2*1000+id1*100;
       // Now decide if we have spin 0 diquark or spin 1 diquark
@@ -257,33 +313,79 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
 
       // Create the remnant and set its momentum, also reset all of the decay 
       // products from the hadron
-      PPtr newRemnant = new_ptr(Particle(getParticleData(remId)));
+      cout << "E" << endl << flush;
+      cout << remId << ", " << flush 
+	   << getParticleData(remId) << flush << endl; 
+      //      PPtr newRemnant = new_ptr(Particle(getParticleData(remId)));
+      ShowerParticlePtr newRemnant = new_ptr(ShowerParticle(getParticleData(remId)));
+      cout << "F" << endl 
+	   << newRemnant << ", " 
+	   << hadron << ", " 
+	   << hadron->momentum() << endl << flush;
+      cout << remId << ", " << flush << endl;  
+      //      cout << newRemnant->id() << flush << endl; 
+      cout << part << ", " << part->x() << flush << endl; 
       newRemnant->setMomentum((1-part->x())*hadron->momentum());
+      cout << "G" << flush << endl; 
+//       cerr << "remId = " << remId << ", 1-x = " 
+// 	   << 1-part->x() << ", h->mom = " << hadron->momentum() << endl; 
+//       cerr << newRemnant << endl;
+//      cout << "New Remnant id = " << newRemnant->id() << flush << endl
+//	   << "New Remnant momentum = " << newRemnant->momentum() 
+//	   << flush << endl;
+      //      cerr << "#children before = " << hadron->children().size() << endl;
       for(int i = hadron->children().size()-1; i!= -1; i--) {
 	PPtr child = hadron->children()[i];
+	cout << "  Hadron " << hadron << " has child " << child
+	     << ", i = " << i << ", id = " << child->id() 
+	     << ", " << (part == child ? " =  part":"") << endl << flush;
 	hadron->removeChild(child);
 	if(part != child) ch->currentStep()->removeParticle(child);
       }
       // Add the remnant to the step, this will be changed again if the
       // shower is vetoed. Set the colour connections as well
+//       cerr << newRemnant->momentum() << endl;
+//       cerr << "#children after = " << hadron->children().size() << endl;
+//       cerr << "hadron = " << hadron 
+// 	   << ", newRemnant = " << newRemnant << endl;
+      cout << "Calling addChild() with parent = " << hadron
+	   << " and child = " << newRemnant << endl << flush;
+      cout << "1" << flush;
       hadron->addChild(newRemnant);
+      cout << "2" << flush;
       //ch->currentStep()->addDecayProduct(hadron,newRemnant);
       hadron->addChild(part);
-      if(part->id() > 0) part->antiColourNeighbour(newRemnant);
-      else part->colourNeighbour(newRemnant);
+      cout << "3" << flush << endl;
+
+      if (part->id() < 0) part->colourNeighbour(newRemnant);      
+      else part->antiColourNeighbour(newRemnant);      
+
+      cout << "After fixing colour connections..." << endl; 
+      cout << "  Hadron " << hadron << " has children " << endl;
+      for(int i = hadron->children().size()-1; i!= -1; i--) {
+	PPtr child = hadron->children()[i];
+	cout << child << ", i = " << i << ", id = " << child->id() 
+	     << ", " << (part == child ? " =  part":"") 
+	     << ", " << child->colourLine() 
+	     << ", " << child->antiColourLine()
+	     << endl << flush;
+      }
+      
+
     }
+    cout << "Z" << endl << flush;
   }
   // Do we veto the whole shower after the final state showering or do we
   // seperately veto the initial state shower and final state shower?
 
   // do timelike evolution of new particles here? 
   // I think not before 1st reconstruction! 
-  //   while(!particlesYetToShower.empty()) {
-  //     tShowerParticlePtr part = particlesYetToShower.back();
-  //     particlesYetToShower.pop_back();
-  //     hasEmitted = hasEmitted || 
-  //      _forwardEvolver->timeLikeShower(ch, showerVars, part, allShowerParticles);
-  //   } 
+//   while(!particlesYetToShower.empty()) {
+//     tShowerParticlePtr part = particlesYetToShower.back();
+//     particlesYetToShower.pop_back();
+//     hasEmitted = hasEmitted || 
+//       _forwardEvolver->timeLikeShower(ch, showerVars, part, allShowerParticles);
+//   } 
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "BackwardEvolver::spaceLikeShower "
@@ -299,38 +401,79 @@ ShoKinPtr BackwardEvolver::forcedSplitting(const ShowerParticle &particle,
   // Now generate the new z and qtilde
   Energy newQ;
   double newZ,z0,z1;
-  double randQ = UseRandom::rnd();
-  double randZ = UseRandom::rnd();
+  Energy kinCutoff;
+  ShowerVarsPtr vars = _splittingGenerator->showerVariables();;
+  if ( particle.id() == ParticleID::g ) {
+    kinCutoff = (vars->kinScale() - 0.3*(particle.children()[0])->mass())/2.3;
+  } else {
+    kinCutoff = (vars->kinScale() - 0.3*particle.data().mass())/2.3;
+  }
   // Generate z with the same distributions as for regular splittings
   tSplittingFnPtr sf = particle.splitFun();
   // Bounds on z
-  //if(particle.id() == ParticleID::g) z0 = (1.-sqrt(1.-4.*minQ/lastQ))/2.;
-  //else z0 = minQ/lastQ/2.;
-  z0 = minQ/lastQ/2.;
-  z1 = 1-z0;
-  if(!sf) {
-    if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower) {
-      generator()->log() << "The particle has no splitting function!"
-			 << " Will use flat in z distribution." << endl;
+  z0 = particle.x();
+  double yy = 1.+sqr(kinCutoff/lastQ)/2.;
+  z1 = yy - sqrt(sqr(yy)-1.); 
+  //  z1 = 1.;
+  bool cant;
+  do {
+    cant = false;
+    double randQ = UseRandom::rnd();
+    double randZ = UseRandom::rnd();
+    if(!sf) {
+      if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower) {
+	generator()->log() << "The particle has no splitting function!"
+			   << " Will use flat in z distribution." << endl;
+      }
+      newZ = z0 + (z1-z0)*randZ;
+      cout << "Particle has no SplitFun()!, " 
+	   << z0 << " < " << newZ << " < " << z1 << endl;
+    } else {
+      cout << "Trying " << z0 << " < z < " << z1 << " " 
+	   << "sf = " << sf << endl;
+      newZ = sf->invIntegOverP(sf->integOverP(z0) 
+			       + randZ*(sf->integOverP(z1) - 
+					sf->integOverP(z0)));
     }
-    newZ = (z1-z0)*randZ;
-  } else {
-    cout << "Trying to generate z we have a splitting fn of " << sf << endl;
-    newZ = sf->invIntegOverP(sf->integOverP(z0) + randZ*(sf->integOverP(z1) - 
-							 sf->integOverP(z0)));
-  }
-  // For the qtilde lets just start with a simple distribution weighted towards
-  // the lower value: dP/dQ = 1/Q -> Q(R) = Q0^(1-R) Qmax^R
-  newQ = pow(minQ,1-randQ)*pow(lastQ,randQ);
+    // For the qtilde lets just start with a simple distribution
+    // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
+    // Q0^(1-R) Qmax^R
+    //    newQ = pow(minQ,1-randQ)*pow(lastQ,randQ);
+    newQ = pow(kinCutoff, 1-randQ)*pow(lastQ,randQ);
+    cout << "  newQ = " << newQ/GeV << ", newZ = " << newZ << endl;
+    // find out whether a next splitting would be possible
+    
+    if (particle.id() != ParticleID::g) { 
+      //      Energy q0g = (vars->kinScale()-0.0015*GeV)/2.3;
+      Energy q0g = (vars->kinScale())/2.3;
+      yy = 1.+sqr(q0g/newQ)/2.;
+      double zm = yy - sqrt(sqr(yy)-1.); 
+      double xp = particle.x()/newZ;
+      //      if (xp > zm*zm) {
+      if (xp > zm) {
+	cout << "  Forced: Can't split again! xp = " << xp << " > zm = " << zm << endl;
+	cant = true;
+      }      
+    }
+    cout << (sqr((1.-newZ)*newQ) > newZ*sqr(kinCutoff) ? 
+	     "  pt ok":"  pt not ok") << endl;
+    // check kinematics...
+  } while(sqr((1.-newZ)*newQ) < newZ*sqr(kinCutoff) || cant);
 
-  Lorentz5Momentum p, n, ppartner, pcm;
+  Lorentz5Momentum p, n, pthis, ppartner, pcm;
   if(particle.isFromHardSubprocess()) {
-    p = particle.momentum();
-    ppartner = particle.partners()[ShowerIndex::QCD]->momentum();
-    pcm = p; 
-    pcm.boost((p + ppartner).findBoostToCM());	  
-    n = Lorentz5Momentum( 0.0, -pcm.vect() ); 
-    n.boost( -(p + ppartner).findBoostToCM() );
+//     pthis = particle.momentum();
+//     cout << "parent is " << particle.parents()[0]->id() << endl;
+//     ppartner = particle.partners()[ShowerIndex::QCD]->momentum();
+//     pcm = pthis; 
+//     pcm.boost((pthis + ppartner).findBoostToCM());	  
+//     p = Lorentz5Momentum(0.0, pcm.vect());
+//     n = Lorentz5Momentum(0.0, -pcm.vect()); 
+//     p.boost( -(pthis + ppartner).findBoostToCM() );
+//     n.boost( -(pthis + ppartner).findBoostToCM() );
+    pcm = particle.parents()[0]->momentum();
+    p = Lorentz5Momentum(0.0, pcm.vect());
+    n = Lorentz5Momentum(0.0, -pcm.vect()); 
   } else {
     p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
       ->showerKinematics()->getBasis()[0];
@@ -348,7 +491,6 @@ ShoKinPtr BackwardEvolver::forcedSplitting(const ShowerParticle &particle,
     new_ptr(IS_QtildaShowerKinematics1to2(p, n));
 
   // Phi is uniform
-  ShowerVarsPtr vars = _splittingGenerator->showerVariables();;
   showerKin->qtilde(newQ);
   showerKin->setResScale(vars->cutoffQScale(ShowerIndex::QCD));
   showerKin->setKinScale(vars->kinScale()); 
@@ -391,9 +533,12 @@ void BackwardEvolver::createBranching(ShowerParticlePtr part,
   // Print some messages
   cout << "  new x = " 
        << newParent->x() << endl;
-  cout << "  | new parent   = " << newParent << endl;
-  cout << "  |-- child 0    = " << newParent->children()[0] << endl;
-  cout << "  |-- child 1    = " << newParent->children()[1] << endl; 
+  cout << "  | new parent   = " << newParent->number() << " ("
+       << newParent << ")" << endl;
+  cout << "  |-- child 0    = " << newParent->children()[0]->number() 
+       << " (" << newParent->children()[0] << ")" << endl;
+  cout << "  |-- child 1    = " << newParent->children()[1]->number() 
+       << " (" << newParent->children()[1] << ")" << endl; 
 
   // Now fix the hadrons connections
   tPPtr hadron;
@@ -420,12 +565,26 @@ void BackwardEvolver::setColour(ShowerParticlePtr &newParent,
   ShoColinePair child2 = ShoColinePair();
 
   if(child1.first && child1.second) { // We had a colour octet
-    if(newParent->id() < 0) { // a 3 bar state
-      parent.second = child1.second;
-      child2.second = child1.first;
-    } else { // colour triplet
-      parent.first = child1.first;
-      child2.first = child1.second;
+    if(newParent->id() == ParticleID::g) {
+      if (UseRandom::rndbool()) {
+	parent.first = child1.first;
+	child2.first = child1.second;
+	parent.second = new_ptr(ColourLine());
+	child2.second = parent.second;
+      } else {
+	parent.second = child1.second;
+	child2.second = child1.first;
+	parent.first = new_ptr(ColourLine());
+	child2.first = parent.first;
+      }
+    } else {
+      if(newParent->id() < 0) { // a 3 bar state
+	parent.second = child1.second;
+	child2.second = child1.first;
+      } else { // colour triplet
+	parent.first = child1.first;
+	child2.first = child1.second;
+      }
     }
   } else if(child1.first) { // The child is a colour triplet
     if(newParent->hasColour() && newParent->hasAntiColour()) { // colour octet
@@ -451,4 +610,10 @@ void BackwardEvolver::setColour(ShowerParticlePtr &newParent,
   if(parent.second) parent.second->addAntiColoured(newParent);
   if(child2.first) child2.first->addColoured(otherChild);
   if(child2.second) child2.second->addAntiColoured(otherChild);
+  cout << "p  c = " << parent.first  << endl
+       << "p  a = " << parent.second << endl
+       << "c1 c = " << child1.first  << endl
+       << "c1 a = " << child1.second << endl
+       << "c2 c = " << child2.first  << endl
+       << "c2 a = " << child2.second << endl;
 }

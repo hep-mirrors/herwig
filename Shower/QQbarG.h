@@ -3,24 +3,44 @@
 #include "ShowerConfig.h"
 #include "ShowerParticle.h"
 //#include "ThePEG/Repository/UseRandom.h"
+
 using namespace ThePEG;
+
 namespace Herwig {
 
+/** \ingroup Shower
+ *  
+ *  A comment should be added!
+ */
 class QQbarG {
+
 public:
-  // constructors: 
-  // given Q and m, symmetric kappa_ini by default: 
+
+  /**
+   * Constructors
+   * given Q and m, symmetric kappa_ini by default: 
+   */
   QQbarG(Energy Q, Energy m);
-  // give kta explicitly
+
+  /**
+   * Give kta explicitly
+   */
   QQbarG(Energy Q, Energy m, double k);
+
   ~QQbarG();
-  // set initial conditions in various ways.  
-  // kappa~_(antiquark) is always adjusted.
+
+  /**
+   * Set initial conditions in various ways.
+   * kappa~_(antiquark) is always adjusted.
+   */
   void setKtilde(double);
   void setKtildeSymm();
   void setKtildeLargest();
   void setKtildeSmallest();
-  // the ratio of ME/PS for Vector exchange
+
+  /**
+   * The ratio of ME/PS for Vector exchange.
+   */
   double getRatioV(double, double);
   double qWeight(double, double); 
   double qbarWeight(double, double);
@@ -36,30 +56,54 @@ public:
   inline Energy getM() {return d_m;};
   
 private:
-  // cm energy and mass 
+
+  /**
+   * CM energy and mass.
+   */
   Energy d_Q, d_m;
-  // the parameters rho and v, to be calculated in the constructor. 
+
+  /**
+   * The parameters rho and v, to be calculated in the constructor. 
+   */
   double d_rho, d_v; 
-  // the initial kappa-tilde values for radiation from quark and
-  // antiquark resp. S
+
+  /**
+   * The initial kappa-tilde values for radiation from quark and
+   * antiquark resp. 
+   */
   double d_kt1, d_kt2;
 
 private:
+
   void setRho(double);
-  // set second value, given the first
+
+  /**
+   * Set second value, given the first.
+   */
   void setKtilde2();
-  // get x, xbar from kappa~, z
+
+  /**
+   * Get x, xbar from kappa~, z.
+   */
   void getXXbar(double, double, double &, double &);
-  // cm energy and quark mass, to be given in constructor, only to
-  // determine rho/v. kappa...
-  // helper
+
+  /**
+   * CM energy and quark mass, to be given in constructor, only to
+   * determine rho/v. kappa...
+   * helper.
+   */
   double u(double);
-  // the ME, given x1, x2
+
+  /**
+   * The ME, given x1, x2.
+   */
   double PS(double, double);
 
 public:
+
   double MEV(double, double);
   double MEA(double, double);
+
 };
 
 }

@@ -2,17 +2,7 @@
 #ifndef HERWIG_ShowerAlphaQED_H
 #define HERWIG_ShowerAlphaQED_H
 //
-// This is the declaration of the <!id>ShowerAlphaQED<!!id> class.
-//
-// CLASSDOC SUBSECTION Description:
-//
-// This concrete class provides the definition of the 
-// pure virtual function <!id>value(scale)<!!id>.
-//
-// CLASSDOC SUBSECTION See also:
-//
-// <a href="http:ShowerAlpha.html">ShowerAlpha.h</a>,
-// 
+// This is the declaration of the ShowerAlphaQED class.
 
 #include "ShowerAlpha.h"
 
@@ -20,73 +10,108 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/** \ingroup Shower
+ *  
+ *  This concrete class provides the definition of the 
+ *  pure virtual function value(scale).
+ *
+ *  @see ShowerAlpha
+ */
 class ShowerAlphaQED: public ShowerAlpha {
 
 public:
 
+  /**
+   * Standard ctors and dtor.
+   */
   inline ShowerAlphaQED();
   inline ShowerAlphaQED(const ShowerAlphaQED &);
   virtual ~ShowerAlphaQED();
-  // Standard ctors and dtor.
 
-  // the following two methods are equivalent to the QCD ones 
-  // and are necessary to make use of the virtuality of ShowerAlpha
-  // at other places. 
+  /**
+   * The following two methods are equivalent to the QCD ones 
+   * and are necessary to make use of the virtuality of ShowerAlpha
+   * at other places. 
+   */
+
+  /**
+   * It returns the running alpha value evaluated at the input scale
+   * multiplied by the scale factor scaleFactor().
+   */
   virtual double value(const Energy2 scale);
-  // It returns the running alpha value evaluated at the input scale
-  // multiplied by the scale factor <!id>scaleFactor()<!!id>.
 
+  /**
+   * It returns the running alpha value evaluated at the input scale
+   * multiplied by the scale factor scaleFactor().
+   */
   inline virtual double overestimateValue();
-  // It returns the running alpha value evaluated at the input scale
-  // multiplied by the scale factor <!id>scaleFactor()<!!id>.
 
 public:
 
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
   static void Init();
-  // Standard Init function used to initialize the interfaces.
 
 protected:
 
+  /**
+   * Standard clone methods.
+   */
   inline virtual IBPtr clone() const;
   inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
 
 private:
 
+  /**
+   * Describe an concrete class with persistent data.
+   */
   static ClassDescription<ShowerAlphaQED> initShowerAlphaQED;
-  // Describe an concrete class with persistent data.
 
+  /**
+   * Private and non-existent assignment operator.
+   */
   ShowerAlphaQED & operator=(const ShowerAlphaQED &);
-  //  Private and non-existent assignment operator.
 
 private: 
+
   double _alpha; 
   
 };
 
 }
 
-// CLASSDOC OFF
 
 namespace ThePEG {
 
-// The following template specialization informs ThePEG about the
-// base class of ShowerAlphaQED.
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of ShowerAlphaQED.
+ */
 template <>
 struct BaseClassTrait<Herwig::ShowerAlphaQED,1> {
   typedef Herwig::ShowerAlpha NthBase;
 };
 
-// The following template specialization informs ThePEG about the
-// name of this class and the shared object where it is defined.
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
 template <>
-struct ClassTraits<Herwig::ShowerAlphaQED>: public ClassTraitsBase<Herwig::ShowerAlphaQED> {
+struct ClassTraits<Herwig::ShowerAlphaQED>: 
+    public ClassTraitsBase<Herwig::ShowerAlphaQED> {
+
+  /**
+   * Return the class name.
+   */
   static string className() { return "/Herwig++/ShowerAlphaQED"; }
-  // Return the class name.
+
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
   static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

@@ -112,7 +112,7 @@ void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 &tmax,
   tmin = max(t0,sqr(resScale()));
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
     CurrentGenerator::log() << "SudakovFormFactor::initialize(): extreme "
-	                    << "____________________________________________"
+	                    << "_______________________________________"
 			    << endl
 			    << "  called with q = " << sqrt(tmax)/GeV
 			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)"
@@ -128,10 +128,9 @@ void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 &tmax,
   }
 }
 
-void SudakovFormFactor::guess(double &z, double &z0, double &z1,
-		              Energy2 &t, Energy2 &tmax, Energy2 &tmin, 
-			      Energy2 &t0,
-			      Energy &kinCutoff, bool glueEmits) {
+void SudakovFormFactor::
+guessTimeLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax, 
+	      Energy2 &tmin, Energy2 &t0, Energy &kinCutoff, bool glueEmits) {
   
   Energy2 told = t;
   
@@ -169,6 +168,36 @@ void SudakovFormFactor::guess(double &z, double &z0, double &z1,
     //z1 = 1.-0.1;
   }
 }  
+
+
+void SudakovFormFactor::
+guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax, 
+	       Energy2 &tmin, Energy2 &t0, Energy &kinCutoff, bool glueEmits, 
+	       const double &x) {
+  
+  Energy2 told = t;
+  // the overestimated PS-boundary in z
+  z0 = x;
+  double yy = 1.+sqr(kinCutoff)/t/2.;
+  z1 = yy - sqrt(sqr(yy)-1.); 
+  t = guesst(t0, told, z0, z1); 
+  z = guessz(z0, z1); 
+
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
+    CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
+		            << sqrt(told)/GeV << "->"
+			    << sqrt(t)/GeV << " | "
+			    << z0 << ", "
+			    << z << ", "
+			    << z1 << ")" 
+			    << endl; 
+  }
+
+  // actual values for z-limits
+  yy = 1.+sqr(kinCutoff)/t/2.;
+  z1 = yy - sqrt(sqr(yy)-1.); 
+ }  
+
 
 bool SudakovFormFactor::PSVeto(const double &z, const double &z0, 
 			       const double &z1, const Energy2 &t, 
@@ -219,12 +248,7 @@ bool SudakovFormFactor::SplittingFnVeto(const double &z, const Energy2 &t,
   return false;
 }
 
-bool SudakovFormFactor::alphaSVeto(const double &z, const Energy2 &t) {
-  // alpha_s valid? 
-  Energy2 pt2;
-  // simple argument of alpha_s
-  pt2 = sqr(z*(1.-z))*t;
-
+bool SudakovFormFactor::alphaSVeto(Energy2 pt2) {
   if(UseRandom::rnd() > _alpha->value(pt2)/_alpha->overestimateValue()) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  X veto on as(q2)/as = " 
@@ -293,12 +317,12 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
     else initialize(t0,tmin,tmax,kinCutoff,m0);
     if(_q < 0.) return _q;
     do { 
-      guess(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits);
+      guessTimeLike(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits);
       // Our t is too low now, terminate guesses
       if(tVeto(t,tmin)) break;
     } while(PSVeto(_z,z0,z1,t,tmin,t0,kinCutoff,glueEmits) ||
 	    SplittingFnVeto(_z,t,ids) || 
-	    alphaSVeto(_z,t));
+	    alphaSVeto(sqr(_z*(1.-_z))*t));
     if(t > 0) _q = sqrt(t);
     else _q = -1.;
   }
@@ -345,13 +369,14 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
 
     // Now do the veto algorithm
     do { 
-      guess(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits);
+      guessSpaceLike(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits, x);
+      if(z0 > z1) break;
       if(tVeto(t,tmin)) break;
-    } while(PSVeto(_z,z0,z1,t,tmin,t0,kinCutoff,glueEmits) ||
-	    SplittingFnVeto(_z,t,ids) || 
-	    alphaSVeto(_z,t) || 
+    } while(_z > z1 || 
+	    SplittingFnVeto(_z,t/sqr(_z),ids) || 
+	    alphaSVeto(sqr(1.-_z)*t) || 
 	    PDFVeto(_z,t,x,pdf,parton,beam));
-    if(t > 0) _q = sqrt(t);
+    if(t > 0 && z0 < z1) _q = sqrt(t);
     else _q = -1.;
   }
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {

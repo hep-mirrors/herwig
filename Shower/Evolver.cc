@@ -117,25 +117,34 @@ void Evolver::showerNormally(tPartCollHdlPtr ch,
   bool reconstructed = false; 
   // catch the possibility of an impossible kinematic reconstruction
   ShowerParticleVector::const_iterator cit;
-  while(!reconstructed) {
-    // Initial State Radiation
-    if(_splittingGenerator->isISRadiationON()) {
-      ShowerParticleVector particlesToShower;
-      // This may not be right at all!
-      for(cit = particles.begin(); cit != particles.end(); ++cit) {
-	if(!(*cit)->isFinalState()) {
-	  particlesToShower.push_back(*cit);
-	}
-      }
-      for(ShowerParticleVector::iterator it = particlesToShower.begin();
-	    it != particlesToShower.end(); ++it ) {
-	cout << "Evolver with " << *it << endl;
-	_mapShowerHardJets[*it] = _backwardEvolver->
-	  spaceLikeShower(ch, showerVariables, *it, particles);
-	cout << "Evolver." << endl;
-      }
-    }
+//   while(!reconstructed) {
+//     // Initial State Radiation
+//     if(_splittingGenerator->isISRadiationON()) {
+//       ShowerParticleVector particlesToShower;
+//       // This may not be right at all!
+//       for(cit = particles.begin(); cit != particles.end(); ++cit) {
+// 	if(!(*cit)->isFinalState()) {
+// 	  particlesToShower.push_back(*cit);
+// 	}
+//       }
+//       for(ShowerParticleVector::iterator it = particlesToShower.begin();
+// 	    it != particlesToShower.end(); ++it ) {
+// 	cout << "Evolver with " << *it << endl;
+// 	_mapShowerHardJets[*it] = _backwardEvolver->
+// 	  spaceLikeShower(ch, showerVariables, *it, particles);
+// 	cout << "Evolver." << endl;
+//       }
+//     }
+//     reconstructed = reconstructISKinematics(ch);
+//   }
+//   cout << "Successful reconstruction of IS shower!" << endl;
 
+//   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
+//     _partnerFinder->setQCDInitialEvolutionScales(showerVariables, particles);
+//   }
+
+  reconstructed = false;
+  while(!reconstructed) {
     // Final State Radiation
     if(_splittingGenerator->isFSRadiationON()) {
       // Remember that is not allowed to add element to a STL container
@@ -144,19 +153,37 @@ void Evolver::showerNormally(tPartCollHdlPtr ch,
       ShowerParticleVector particlesToShower;
       for(cit = particles.begin(); cit != particles.end(); ++cit) {
 	if((*cit)->isFinalState()) particlesToShower.push_back(*cit);
+
       }
+// has to be switched on for e+e-!
+//      cout << "Resetting partners..." << endl;
+      if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
+	_partnerFinder->setQCDInitialEvolutionScales(showerVariables, 
+						     particlesToShower);
+      }
+      
+      //      cout << "FS shower loop... " << flush << endl;
       for(cit = particlesToShower.begin(); 
 	  cit != particlesToShower.end(); ++cit) {
+	//	cout << (*cit)->id() << ", " << *cit << flush;
 	_mapShowerHardJets[*cit] = _forwardEvolver->
-		 timeLikeShower(ch, showerVariables, *cit, particles);
+	  timeLikeShower(ch, showerVariables, *cit, particles);
       }
-    }
+      //      cout << "." << endl << flush;
+      //      cout << "FS shower complete." << endl << flush;
 
-    if(!skipKinReco) {
-      reconstructed = reconstructKinematics( ch );
-    } else { 
-      reconstructed = true;     
-    }
+      if(!skipKinReco) {
+	reconstructed = reconstructKinematics( ch );
+      } else { 
+	reconstructed = true;     
+      }
+     
+//       cout << "reconstructed = " 
+// 	   << (reconstructed ? "true" : "false")
+// 	   << endl; 
+//       cout << "FS reconstruction complete." << endl;
+      
+    } else reconstructed = true;
   }
 }
 
@@ -250,6 +277,15 @@ void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
 }
 
     
+bool Evolver::reconstructISKinematics( tPartCollHdlPtr & ch ) 
+  throw (Veto, Stop, Exception) {
+  bool ok = _kinematicsReconstructor->
+    reconstructHardISJets(_mapShowerHardJets);  
+  setDoneMapShower(_mapShowerHardJets);
+  return ok;   
+}
+
+
 bool Evolver::reconstructKinematics( tPartCollHdlPtr & ch ) 
   throw (Veto, Stop, Exception) {
 

@@ -197,8 +197,11 @@ void ShowerHandler::cascade() {
       _showerVariables->stopShowerAtMassScale(largestWidth);
       // ***MAYBE NOT NEEDED***
       _showerVariables->vetoBelowPtScale(largestWidth);  
-	
+      
+      //      cout << "calling _evolver->showerNormally..." << endl; 
+      //      skipKinReco = true;
       _evolver->showerNormally(ch, _showerVariables, _particles, skipKinReco);
+      //      cout << "_evolver->showerNormally done." << endl; 
 
       // The following loop is done only for multi-scale showering.
       while(largestWidth > _globalParameters->hadronizationScale()) {  
@@ -324,7 +327,13 @@ void ShowerHandler::cascade() {
       }
 
       // Do the final kinematics reconstruction
+      //      cout << "calling _evolver->reconstructKinematics(ch);" << endl;
       bool recons = _evolver->reconstructKinematics(ch);
+      //      cout << "_evolver->reconstructKinematics(ch) done" << endl;
+      
+      // set true anyway for test purposes...
+      recons = true;
+
 
       // Fill the positions information for all the ShowerParticle objects
       // in _particles. It is done at this stage in order to avoid the
@@ -338,6 +347,7 @@ void ShowerHandler::cascade() {
 	else throw Exception::eventerror; 	
       }
     } // end of try
+    catch (Veto &v) {cout << "throwing again!" << endl; throw v;}
     catch ( std::exception & e ) {
       countFailures++;
     }    
@@ -351,7 +361,9 @@ void ShowerHandler::cascade() {
 			 << " ===> END DEBUGGING <=== "
 			 << endl;
   }
+  //  cout << "Calling fillEventRecord()..." << endl << flush;
   fillEventRecord(ch);  
+  //  cout << "...finished fillEventRecord()." << endl << flush;
 }
 
 void ShowerHandler::
@@ -682,6 +694,7 @@ void ShowerHandler::addInitialStateShower(PPtr &p, StepPtr &s, bool doit) {
     }
   }
 }
+
 
 void ShowerHandler::printStep(tStepPtr ptrStep, const string & title) {
   generator()->log() << "[[[ ShowerHandler::printStep " << title << endl;

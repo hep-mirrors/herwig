@@ -54,6 +54,354 @@ void KinematicsReconstructor::Init() {
 
 // ------------------------------------------------------------------------
 
+
+double myrap(const Lorentz5Momentum &p) {
+  if (p.e() < p.z()) {
+    return 999999999999.9;
+  } else {
+    return p.rapidity();
+  }
+}
+
+
+void boostChain(tPPtr p, const Vector3 &bv) {
+  if (p->parents()[0] && p->parents()[0]->id() == 21 
+      || abs(p->parents()[0]->id()) < 7) {
+    boostChain(p->parents()[0], bv);
+  }
+  p->boost(bv);
+}
+
+
+bool KinematicsReconstructor::
+reconstructHardISJets(const MapShower &hardJets) 
+  throw (Veto, Stop, Exception) {
+
+  bool atLeastOnce = false;
+  std::vector<Lorentz5Momentum> p;
+  std::vector<Lorentz5Momentum> pq;
+  std::vector<Lorentz5Momentum> p_in;
+  MapShower::const_iterator cit;
+  for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
+    p_in.push_back(cit->first->momentum());
+    atLeastOnce = false;
+    cout << "reconstructHardJets..." << endl << flush;
+    if(!cit->first->isFinalState()) {
+      atLeastOnce |= reconstructSpaceLikeJet(cit->first);
+      p.push_back(cit->first->momentum());
+      if (cit->first->showerKinematics()) {
+	pq.push_back(cit->first->showerKinematics()->getBasis()[0]);
+      } else {
+	//	pq.push_back(cit->first->momentum());
+	if (cit->first->parents().size() > 0) {
+	  pq.push_back(cit->first->parents()[0]->momentum());
+	} else {
+	  cerr << "  Shower/KinematicsReconstructor::reconstructHardJets: "
+	       << "Warning, bad pq!!!"
+	       << endl;
+	  pq.push_back(cit->first->momentum());
+	}
+      }
+    }
+  }
+
+  cout << "printing p..." << endl;
+  for(unsigned int i = 0; i < p.size(); i++) cout << p[i] << endl;
+  cout << "printing pq..." << endl;
+  for(unsigned int i = 0; i < pq.size(); i++) cout << pq[i] << endl;
+  cout << "printing p_in..." << endl;
+  for(unsigned int i = 0; i < p_in.size(); i++) cout << p_in[i] << endl;
+
+  cout << "  computing initial DY kinematics..." << endl;
+  double x1, x2;
+  x1 = p_in[0].z()/pq[0].z();
+  x2 = p_in[1].z()/pq[1].z();
+
+  Energy MDY = (p_in[0] + p_in[1]).m();
+  Energy2 S = (pq[0]+pq[1]).m2();
+  double yDY = (p_in[0] + p_in[1]).rapidity();
+
+  cout << "  x1 = " << x1 << ", x2 = " << x2 << endl
+       << "  MDY = " << MDY/GeV << " = " << sqrt(S*x1*x2)/GeV << endl
+       << "  |yDY| = " << abs(yDY) << " = " << abs(0.5*log(x1/x2)) << endl;
+  
+
+  if(atLeastOnce && p.size() == 2 && pq.size() == 2) {
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+      generator()->log() << "-- found initial state jets, try to boost them" 
+			 << endl; 
+    }      
+    // find alphas and betas in terms of desired basis      
+    Energy2 p12 = pq[0]*pq[1];
+    //    Energy2 S = 2.*p12;
+    double a1, a2, b1, b2;
+    Lorentz5Momentum p1p, p2p;
+    a1 = p[0]*pq[1]/p12;
+    b1 = p[0]*pq[0]/p12;
+    a2 = p[1]*pq[1]/p12;
+    b2 = p[1]*pq[0]/p12;
+    p1p = p[0] - a1*pq[0] - b1*pq[1];
+    p2p = p[1] - a2*pq[0] - b2*pq[1];
+    cout << "KinReco spacelike Jet setup reconstruction..." << endl
+	 << "  p1  = " << p[0] << endl
+	 << "      = " << a1 << " pq[0] + "
+	 << b1 << " pq[1] " << endl 
+	 << "        + " << p1p << endl 
+	 << "      = " 
+	 << a1*pq[0] + b1*pq[1] + p1p << endl
+	 << "  p2  = " << p[1] << endl
+	 << "      = " << a2 << " pq[0] + "
+	 << b2 << " pq[1] " << endl 
+	 << "        + " << p2p << endl 
+	 << "      = " 
+	 << a2*pq[0] + b2*pq[1] + p2p << endl
+	 << "  Sudakov basis and decomposition checks..." << endl
+	 << "  pq[0] = " << pq[0] << endl
+	 << "  pq[1] = " << pq[1] << endl
+	 << "  pq[0]^2 = " << pq[0]*pq[0] 
+	 << ", pq[1]^2 = " << pq[1]*pq[1] 
+	 << ", pq[0].pq[1] = " << p12 << endl
+	 << "  p1p.pq[0] = " << p1p*pq[0]
+	 << ", p1p.pq[1] = " << p1p*pq[1] << endl
+	 << "  p2p.pq[0] = " << p2p*pq[0]
+	 << ", p2p.pq[1] = " << p2p*pq[1] << endl
+	 << "  p[0] + p[1] = " << p[0] + p[1] << endl;
+
+    cout << "  We want to restore  M = " << MDY << endl;
+    cout << "                      y = " << yDY << endl;
+    cout << "  Now:                M = " << (p[0]+p[1]).m() << endl;
+//     if ((p[0]+p[1]).m()/GeV < 0) {      
+//       cout << "Throwing an exception..." << endl;      
+//       throw Exception() << Exception::eventerror;
+//     } else 
+    cout << "                      y = " << myrap(p[0]+p[1]) << endl;
+    // compute kappa12
+    Energy2 A, B, C;
+    double kp = 1.0, rad;
+    A = a1*b2*S;
+    B = sqr(MDY) - (a1*b1+a2*b2)*S - sqr(p1p+p2p);
+    C = a2*b1*S; 
+    rad = 1.-4.*A*C/sqr(B);
+    if (rad >= 0) {
+      kp = B/(2.*A)*(1.+sqrt(rad));
+      cout << "  Resulting kp = " << kp << endl;
+    } else {
+      cout << "WARNING! Can't get kappa_pm!" << endl;
+    }
+    
+    // now compute k1, k2
+    double k1 = 1.0, k2 = 1.0;
+    rad = kp*(b1+kp*b2)/(kp*a1+a2)*(x1/x2);   
+    if (rad > 0) {
+      k1 = sqrt(rad);
+      k2 = kp/k1;
+      cout << "  Plus:  k1 = " << k1 << ", k2 = " << k2 << endl; 
+    } else {
+      cout << "WARNING! Can't get k1p, k2p!" << endl;
+    }
+
+    double beta1 = getBeta((a1+b1), (a1-b1), 
+			   (k1*a1+b1/k1), (k1*a1-b1/k1));
+    double beta2 = getBeta((a2+b2), (a2-b2), 
+			   (a2/k2+k2*b2), (a2/k2-k2*b2));
+    cout << "  found boost parameters: beta1 = " << beta1 
+	 << ", beta2 = " << beta2 << endl;
+    
+    if (pq[0].z() > 0) {beta1 = -beta1; beta2 = -beta2;}
+    // check
+    Lorentz5Momentum p0, p1;
+    Vector3 betaboost;
+    betaboost = Vector3(0, 0, beta1);
+    p0 = p[0].boost(betaboost);
+    betaboost = Vector3(0, 0, beta2);;
+    p1 = p[1].boost(betaboost);
+    cout << "  p0+p1 after boost..." << endl
+	 << "  p0 = " << p0 << endl
+	 << "  p1 = " << p1 << endl
+	 << "  M/MDY = " << (p0+p1).m() 
+	 << "/" << MDY 
+	 << " = " << (p0+p1).m()/MDY << endl 
+	 << "  y/yDY = " 
+	 << myrap(p[0]+p[1])
+	 << "/" << yDY 
+      	 << " = " << myrap(p[0]+p[1])/yDY
+	 << endl;
+    cout << "  Check: ";
+    if (abs((p0+p1).m()/MDY-1.0) > 1e-5) {
+      cout << "M bad! delta = " << abs((p0+p1).m()/MDY-1.0) << ". ";
+    } else {
+      cout << "M ok. ";
+    }
+    if (abs(myrap(p0+p1)/yDY-1.0) > 1e-5) {
+      cout << "y bad! delta = " << abs(myrap(p0+p1)/yDY-1.0) 
+	   << "." << endl;
+    } else {
+      cout << "y ok." << endl;
+    }
+
+    tPVector toBoost;
+    for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
+      toBoost.push_back(cit->first);
+    }
+
+    // before boost
+    cout << "Check before boosts.  toBoost contains last two partons. " << endl
+	 << "  M = " 
+	 << (toBoost[0]->momentum() + toBoost[1]->momentum()).m() 
+	 << ", y = " 
+	 << (toBoost[0]->momentum() + toBoost[1]->momentum()).rapidity()
+	 << endl;
+
+    cout << "toBoost[0]->id() = " 
+	 << toBoost[0]->id()
+	 << ", ->momentum() = "
+	 << toBoost[0]->momentum() 
+	 << endl
+	 << "->children().size() = " 
+	 << toBoost[0]->children().size()
+	 << ", [0]->id() = " 
+	 << toBoost[0]->children()[0]->id()
+	 << ", [0]->momentum() = " 
+	 << toBoost[0]->children()[0]->momentum()
+	 << endl
+	 << "toBoost[1]->id() = " 
+	 << toBoost[1]->id()
+	 << ", ->momentum() = " 
+	 << toBoost[1]->momentum()
+	 << endl
+	 << "->children().size() = " 
+	 << toBoost[1]->children().size()
+	 << ", [0]->id() = " 
+	 << toBoost[1]->children()[0]->id()
+	 << ", momentum() = " 
+	 << toBoost[1]->children()[0]->momentum()
+	 << endl
+	 << "total parton momentum = "
+	 << toBoost[0]->momentum() + toBoost[1]->momentum() 
+	 << endl;
+
+    betaboost = Vector3(0, 0, beta1);
+    boostChain(toBoost[0], betaboost);
+    betaboost = Vector3(0, 0, beta2);
+    boostChain(toBoost[1], betaboost);
+    
+    cout << "Check after boosts.  toBoost contains last two partons. " << endl
+	 << "  M = " 
+	 << (toBoost[0]->momentum() + toBoost[1]->momentum()).m() 
+	 << ", y = " 
+	 << (toBoost[0]->momentum() + toBoost[1]->momentum()).rapidity()
+	 << endl;
+
+    cout << "toBoost[0]->id() = " 
+	 << toBoost[0]->id()
+	 << ", ->momentum() = "
+	 << toBoost[0]->momentum() 
+	 << endl
+	 << "->children().size() = " 
+	 << toBoost[0]->children().size()
+	 << ", [0]->id() = " 
+	 << toBoost[0]->children()[0]->id()
+	 << ", [0]->momentum() = " 
+	 << toBoost[0]->children()[0]->momentum()
+	 << endl
+	 << "toBoost[1]->id() = " 
+	 << toBoost[1]->id()
+	 << ", ->momentum() = " 
+	 << toBoost[1]->momentum()
+	 << endl
+	 << "->children().size() = " 
+	 << toBoost[1]->children().size()
+	 << ", [0]->id() = " 
+	 << toBoost[1]->children()[0]->id()
+	 << ", momentum() = " 
+	 << toBoost[1]->children()[0]->momentum()
+	 << endl
+	 << "total parton momentum = " 
+	 << toBoost[0]->momentum() + toBoost[1]->momentum() 
+	 << endl;
+
+
+    // consider DY pair...
+
+    vector<Lorentz5Momentum> pDY;
+    pDY.push_back(toBoost[0]->children()[0]->children()[0]->momentum());
+    pDY.push_back(toBoost[0]->children()[0]->children()[1]->momentum());
+
+    cout << "DY pair momenta, no boost: " << endl 
+	 << "  p0 = " << pDY[0] << endl
+	 << "  p1 = " << pDY[1] << endl
+	 << "  p0+p1 = " << pDY[0] + pDY[1]  << endl
+	 << "  M = " << (pDY[0] + pDY[1]).m() << endl
+	 << "  y = " << (pDY[0] + pDY[1]).rapidity() << endl;
+    
+    Vector3 boostRest = (pDY[0] + pDY[1]).findBoostToCM();
+    Vector3 boostNewF = (toBoost[0]->momentum() + toBoost[1]->momentum())
+      .boostVector();
+    (pDY[0].boost(boostRest)).boost(boostNewF);
+    (pDY[1].boost(boostRest)).boost(boostNewF);
+    
+    cout << "DY pair momenta, after boost: " << endl 
+	 << "  p0 = " << pDY[0] << endl
+	 << "  p1 = " << pDY[1] << endl
+	 << "  p0+p1 = " << pDY[0] + pDY[1]  << endl
+	 << "  M = " << (pDY[0] + pDY[1]).m() << endl
+	 << "  y = " << (pDY[0] + pDY[1]).rapidity() << endl;
+    
+    // actually boost DY Vector Boson and DY leptons:
+    toBoost[0]->children()[0]->boost(boostRest);
+    toBoost[0]->children()[0]->boost(boostNewF);
+    toBoost[0]->children()[0]->children()[0]->boost(boostRest);
+    toBoost[0]->children()[0]->children()[0]->boost(boostNewF);
+    toBoost[0]->children()[0]->children()[1]->boost(boostRest);
+    toBoost[0]->children()[0]->children()[1]->boost(boostNewF);    
+
+    pDY.clear();
+    pDY.push_back(toBoost[0]->children()[0]->children()[0]->momentum());
+    pDY.push_back(toBoost[0]->children()[0]->children()[1]->momentum());
+
+    cout << "DY pair momenta, after boost, check from Evt Record: " << endl 
+	 << "  p0 = " << pDY[0] << endl
+	 << "  p1 = " << pDY[1] << endl
+	 << "  p0+p1 = " << pDY[0] + pDY[1]  << endl
+	 << "  M = " << (pDY[0] + pDY[1]).m() << endl
+	 << "  y = " << (pDY[0] + pDY[1]).rapidity() << endl;
+
+    // 	 << pq[0] + pq[1] << endl
+    // 	 << "               = pq[0] = " << pq0bb << endl
+// 	 << "               + pq[1] = " << pq1bb << endl;
+//     Lorentz5Momentum p1old, p1new, p2old, p2new;
+//     Vector3 betaboost;
+//     // for 'plus' solution
+//     // first jet
+//     p1old = a1*pq0bb + b1*pq1bb;
+//     p1new = k1p*a1*pq0bb + b1/k1p*pq1bb; 
+//     betaboost = -beta1p*p1old.vect()/p1old.vect().mag();
+//         cout << "  betaboost = " << betaboost << endl
+// 	 << "  p1old =      " << p1old  << endl
+// 	 << "  p1new =      " << p1new << endl;
+//     p1old.boost(betaboost);
+//     cout << "  from boost = " << p1old << endl; 
+//     p1new.boost(-betacm);
+//     cout << "  p1 in original frame = " << p1new << endl;
+
+//     // second jet
+//     p2old = a2*pq0bb + b2*pq1bb;
+//     p2new = k2p*a2*pq0bb + b2/k2p*pq1bb; 
+//     betaboost = -beta2p*p2old.vect()/p2old.vect().mag();
+//         cout << "  betaboost = " << betaboost << endl
+// 	 << "  p2old =      " << p2old  << endl
+// 	 << "  p2new =      " << p2new << endl;
+//     p2old.boost(betaboost);
+//     cout << "  from boost = " << p2old << endl;     
+//     p2new.boost(-betacm);
+//     cout << "  p2 in original frame = " << p2new << endl;
+
+    
+  }
+  return true;
+}
+
+
 bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 						  const Lorentz5Momentum &pB1,
 						  const Lorentz5Momentum &pB2,
@@ -64,43 +412,6 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
     generator()->log() << "KinematicsReconstructor::reconstructHardJets: full _____________________________"<< endl; 
   }
   
-  //***LOOKHERE***  First, treat the initial state, as follows.
-  //                -------------------------------------------
-  //                Loop over the map, and for each incoming hard particle 
-  //                with flag true
-  //                  call  reconstructSpaceLikeJet(...)  . 
-  //                Then, if such method has being called at least once, then 
-  //                If ( not specialHardSubprocess ) Then 
-  //                    call  solveOverallCMframeBoost(...)
-  //                Else
-  //                    check which specialHardSubprocess we have.
-  //                    In the case of D.I.S. 
-  //                       call  solveSpecialDIS_CMframeBoost(...)
-  // ***ACHTUNG!*** tried this below: 
-
-  bool atLeastOnce = false;
-  MapShower::const_iterator cit;
-  for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
-    atLeastOnce = false;
-    //    if(cit->second && !cit->first->isFinalState()) {
-    cout << "reconstructHardJets..." << endl;
-    if(!cit->first->isFinalState()) {
-      atLeastOnce |= reconstructSpaceLikeJet(cit->first);
-    }
-    if(atLeastOnce) {
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-	generator()->log() << "-- found initial state jets, try to boost them" 
-		           << endl; 
-      }      
-      if(!sHardProcess) {
-	// solveOverallCMFrameBoost()
-      } else { 
-	// check which special hard process and call eg 
-	// in the DIS case 
-	// solveSpecialDIS_CMframeBoost()
-      }
-    }
-  }
 
   /********
    * Second, do the overall CM boost, as follows.
@@ -145,6 +456,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
    * 
    * If any of the above methods fails, throw an Exception. 
    *******/ 
+
   // collection of pointers to initial hard particle and jet momenta
   // for final boosts
   // CVecMomentaPtr jetsMomentaPtr; 
@@ -157,6 +469,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
   Energy sum_qi = Energy(); 
 
   // find out whether we're in cm or not:
+  MapShower::const_iterator cit;
   for(cit = hardJets.begin(); cit != hardJets.end(); ++cit) {
     p_cm += cit->first->momentum(); 
   }
@@ -171,7 +484,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 		       << endl;
   }
 
-  atLeastOnce = false;
+  bool atLeastOnce = false;
 
   for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
     if(cit->first->isFinalState()) {
@@ -242,8 +555,10 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
     for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
       p_cm_after += cit->first->momentum(); 
     }
-    generator()->log() << "  reshuffling finished: p_cm  = " << p_cm << endl
-		       << "                        p_cm' = " << p_cm_after << endl;
+    generator()->log() << "  reshuffling finished: p_cm  = " 
+		       << p_cm << endl
+		       << "                        p_cm' = " 
+		       << p_cm_after << endl;
     p_cm_after = p_cm - p_cm_after; 
     if(sqr(p_cm_after.x()/MeV) > 1e-4 
 	|| sqr(p_cm_after.y()/MeV) > 1e-4
@@ -278,8 +593,10 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 	sumch += (*jt)->momentum(); 
       }
       generator()->log() << "  jet-parent q = " << sumch << endl
-			 << "    children q = " << (it->parent)->momentum() << endl
-			 << "          diff = " << (it->parent)->momentum() - sumch 
+			 << "    children q = " 
+			 << (it->parent)->momentum() << endl
+			 << "          diff = " 
+			 << (it->parent)->momentum() - sumch 
 			 << endl;
     }
   }
@@ -361,8 +678,19 @@ bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr pa
     // showerkinematics but this works fine and keeps the updateLast
     // in the ShowerKinematics class.
     if (dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])) {      
-      dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
-	->showerKinematics()->updateLast( particleJetParent );    
+//       cout << "b " 
+// 	   << particleJetParent->id() << endl 
+// 	   << particleJetParent->parents().size() << endl 
+// 	   << "id = " << particleJetParent->parents()[0]->id() << endl 
+// 	   << dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
+// 	   << endl 
+// 	   << dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])->showerKinematics()      
+// 	   << flush << endl; 
+      if (dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
+	  ->showerKinematics()) {
+	dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
+	  ->showerKinematics()->updateLast( particleJetParent );          
+      }
     } else {
       Energy dm; 
       if (particleJetParent->id() == ParticleID::g) 
@@ -425,7 +753,7 @@ bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr pa
 bool KinematicsReconstructor::
 reconstructSpaceLikeJet( const tShowerParticlePtr p) {
   bool isOK = true;
-  if(p->parents()[0]->id() < 99) {
+  if(abs(p->parents()[0]->id()) < 99) {
     cout << "recoSLJet part = " << p << ", going back..." << endl; 
     if (!reconstructSpaceLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(
 				 p->parents()[0]))) {
@@ -435,14 +763,20 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) {
   } else {
     if(p->children().size() == 2) {
       cout << "recoSLJet part = " << p << ", last..." << endl;
-      dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
-	->showerKinematics()->updateLast(p);    
-      cout << "last done." << endl;
+      if (dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])) {
+	dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
+	  ->showerKinematics()->updateLast(p);    
+	cout << "last done." << endl << flush;
+      } else {
+	cout << "last done (no update, assuming particle hasn't split!)" 
+	     << endl;
+      }
     }
   }
-  if(!p->isFromHardSubprocess()) {
+  if(!p->isFromHardSubprocess() && 
+     dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])) {
     cout << "  recoSLJet part = " << p << ", updating Children..." << endl;
-    cerr << "  " 
+    cout << "  " 
 	 << p
 	 << " (" << p->id() << ")"
 	 << ", " 
@@ -678,7 +1012,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
 			 << "KinematicsReconstructor::solveBoostBeta: "
 			 << "==> end debugging <== " << endl;
     }
-
+    
     return Vector3(0., 0., 0.); 
   }
 }
