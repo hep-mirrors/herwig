@@ -361,7 +361,7 @@ template <>
  struct ClassTraits<Herwig::BallZwickyVectorFormFactor>
   : public ClassTraitsBase<Herwig::BallZwickyVectorFormFactor> {
   /** Return the class name. */
-  static string className() { return "ThePEG::BallZwickyVectorFormFactor"; }
+  static string className() { return "Herwig++::BallZwickyVectorFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
