@@ -232,7 +232,9 @@ void Hw64Decayer::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
    c = p2.mass() + p3.mass();
 
    if(b<c) {
-      generator()->log() << "No Phase space available for decay\n";
+      generator()->log() << "***Hw64Decay::threeBodyDecay*** No Phase space available for decay"
+                         << "\t0: " << p0.mass() << "-->1: " << p1.mass() << " 2: " << p2.mass()
+	                 << " 3: " << p3.mass() << endl;
    }
 
    d = fabs(p2.mass()-p3.mass());
