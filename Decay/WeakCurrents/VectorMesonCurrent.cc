@@ -103,24 +103,23 @@ PDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, 
 
 vector<LorentzPolarizationVector> 
 VectorMesonCurrent::current(bool vertex, const int imode, const int ichan, 
-			    const Particle & inpart,
-			    const ParticleVector & decay) const
+			    Energy & scale,const ParticleVector & decay) const
 {
-  unsigned int imes=decay.size()-1;
+  scale=decay[0]->mass();
   // polarization vector
   vector<LorentzPolarizationVector> temp;
-  Energy fact=_decay_constant[imode]/inpart.mass();
+  Energy fact(_decay_constant[imode]/decay[0]->mass());
   // set up the spin information for the particle
   VectorSpinPtr hwtemp;
   if(vertex)
     {
-      SpinPtr vtemp = new_ptr(VectorSpinInfo(decay[imes]->momentum(),true));
-      decay[imes]->spinInfo(vtemp);
+      SpinPtr vtemp(new_ptr(VectorSpinInfo(decay[0]->momentum(),true)));
+      decay[0]->spinInfo(vtemp);
       hwtemp= dynamic_ptr_cast<VectorSpinPtr>(vtemp);
     }
   // calculate the vectors
-  VectorWaveFunction wave=VectorWaveFunction(decay[imes]->momentum(),
-					     decay[imes]->dataPtr(),outgoing);
+  VectorWaveFunction wave(VectorWaveFunction(decay[0]->momentum(),
+					     decay[0]->dataPtr(),outgoing));
   for(int iy=-1;iy<2;++iy)
     {
       wave.reset(iy);

@@ -13,12 +13,12 @@ inline VectorMesonCurrent::VectorMesonCurrent()
   addDecayMode(2,-1);
   _id.push_back(323);_decay_constant.push_back(sqrt(2.)*0.115276*GeV2);
   addDecayMode(2,-3);
-  _id.push_back(20213);_decay_constant.push_back(sqrt(2.)*0.099588*GeV2);
+  _id.push_back(20213);_decay_constant.push_back(0.3531654*GeV2);
   addDecayMode(2,-1);
   _id.push_back(443);_decay_constant.push_back(1.223*GeV2);
   addDecayMode(4,-4);
   _id.push_back(100443);_decay_constant.push_back(1.08*GeV2);
-  addDecayMode(2,-1);
+  addDecayMode(4,-4);
   _id.push_back(433);_decay_constant.push_back(0.509*GeV2);
   addDecayMode(4,-3);
   _id.push_back(413);_decay_constant.push_back(0.402*GeV2);
