@@ -16,6 +16,10 @@
 //        (rather than, more simply, from <!id>ReferenceCounted<!!id>) becuse it needs <BR>
 //        to create a <!id>Pythia7::Particle<!!id> object, and therefore the method <BR>
 //        <!id>HandlerBase::getParticle( id )<!!id> is used. 
+//   <LI> it has been necessary to define a new class <!class>ShowerColourLine<!!class> <BR>
+//        in order to represent colour lines between <!id>ShowerParticle<!!id> objects <BR>
+//        because the similar Pythia7 class <!id>ColourLine<!!id> can be used only <BR>
+//        with Pythia7 Particle. 
 //   <LI> for forward evolution, it is clear what does mean parent/child; <BR>
 //        for backward evolution, however, it depends whether we want <BR>
 //        to keep a physical picture or a Monte-Carlo effective one. <BR>
@@ -55,12 +59,6 @@
 // </UL>
 //
 // ***LOOKHERE*** <BR>
-//   --- The color and anticolor lines have been defined as
-//       transient pointers, but indeed they should be reference
-//       counted pointers because some color (or anticolor) lines
-//       will be created during the showering. But, for some
-//       reason, I got a compilation error if I forced them to
-//       be reference counted pointers... <BR>
 //   --- The decayer has been defined as a transient pointer,
 //       but maybe it shouldn't be transient at all, if for example
 //       such decayer is not referenced by any other object... <BR> 
@@ -70,6 +68,7 @@
 //
 // <a href="http:ShowerConfig.html">ShowerConfig.h</a>, <BR>
 // <a href="http:ShowerIndex.html">ShowerIndex.h</a>, <BR>
+// <a href="http:ShowerColourLine.html">ShowerColourLine.h</a>, <BR>
 // <a href="http:ShowerKinematics.html">ShowerKinematics.h</a>.
 // 
 
@@ -82,6 +81,7 @@
 #include "Pythia7/PDT/Decayer.h"
 #include "ShowerKinematics.h"
 #include "ShowerIndex.h"
+#include "ShowerColourLine.h"
 
 
 namespace Herwig {
@@ -132,12 +132,12 @@ public:
   // Do Lorentz transformations on this particle and its decay products.
   // ***LOOKHERE*** TO BE DEFINED : MAY BE IS ENOUGH ONE OF THE TWO
 
-  inline tColinePtr antiColourLine() const;
-  inline tColinePtr colourLine(bool anti = false) const;
+  inline tShoColinePtr antiColourLine() const;
+  inline tShoColinePtr colourLine(bool anti = false) const;
   // Return the colour lines to which this particle is connected.
 
-  inline void setAntiColourLine(tColinePtr);
-  inline void setColourLine(tColinePtr, bool anti = false);
+  inline void setAntiColourLine(ShoColinePtr);
+  inline void setColourLine(ShoColinePtr, bool anti = false);
   // Set the colour lines to which this particle is connected.
 
   inline tShoParPtr parent() const;
@@ -236,8 +236,8 @@ private:
   tcPDPtr _pdptr;
   Lorentz5Momentum _momentum;
   LorentzPoint _position;
-  tColinePtr _antiColourLine;
-  tColinePtr _colourLine;
+  ShoColinePtr _antiColourLine;
+  ShoColinePtr _colourLine;
   tShoParPtr _parent;
   bool _isFinalState;
   CollecShoParPtr _children;

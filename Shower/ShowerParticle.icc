@@ -54,20 +54,20 @@ inline void ShowerParticle::dataPtr(const tcEventPDPtr & inputParticleDataPtr) {
 }
 
 
-inline tColinePtr ShowerParticle::antiColourLine() const {
+inline tShoColinePtr ShowerParticle::antiColourLine() const {
   return _antiColourLine;
 }
 
-inline tColinePtr ShowerParticle::colourLine(bool anti) const {
+inline tShoColinePtr ShowerParticle::colourLine(bool anti) const {
   if ( anti ) return antiColourLine();
   return _colourLine;
 }
 
-inline void ShowerParticle::setAntiColourLine(tColinePtr inputAntiColourLine) {
+inline void ShowerParticle::setAntiColourLine(ShoColinePtr inputAntiColourLine) {
   _antiColourLine = inputAntiColourLine;
 }
 
-inline void ShowerParticle::setColourLine(tColinePtr inputColourLine, bool anti) {
+inline void ShowerParticle::setColourLine(ShoColinePtr inputColourLine, bool anti) {
   if ( anti ) {
     setAntiColourLine(inputColourLine);
   } else {

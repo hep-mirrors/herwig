@@ -59,3 +59,9 @@ Complex SplitFun1to2::invIntegOverIntegratedFun(const double r) {
   return 0.;
 }
 
+
+void SplitFun1to2::colourConnection( const ShoColinePair & parentShoColinePair,
+				     ShoColinePair & firstProductShoColinePair,
+				     ShoColinePair & secondProductShoColinePair ) {}
+
+

@@ -82,12 +82,41 @@ private:
   ShowerHandler & operator=(const ShowerHandler &);
   //  Private and non-existent assignment operator.
 
+  void createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch, 
+					    CollecShoParPtr & hardProcessParticles );
+  // From the Pythia7 particles entering the hard subprocess, create
+  // the corresponding starting <!id>ShowerParticle<!!id> objects and 
+  // put them in the vector <!id>hardProcessParticles<!!id>. 
+  // Notice that the transformation from Pythia7 <!id>ColourLine<!!id> 
+  // objects into <!id>ShowerColourLine<!!id> ones must be properly handled.
+
+  void fixColorLines( tPPtr p7part, tShoParPtr shopart, 
+		      map<tColinePtr,tShoColinePtr> & mapColine );
+  // Method used by the previous method 
+  // <!id>createShowerParticlesFromP7Particles<!!id>
+  // to set for the <!id>ShowerParticle<!!id> object <!id>shopart<!!id>, 
+  // corresponding to the Pythia7 particle <!id>p7part<!!id>, 
+  // the same colour line structure in terms of <!id>ShowerColourLine<!!id>
+  // objects instead of (Pythia7) <!id>ColourLine<!!id> ones. 
+  // The map <!id>mapColine<!!id>, which has as key a pointer to a 
+  // <!id>ColourLine<!!id> object and as element the pointer to 
+  // the corresponding <!id>ShowerColourLine<!!id> objet, is useful
+  // to check whether or not a new colour line has been already
+  // considered, avoiding double counting. 
+
   void fillPositions();
   // It fills the positions information for all the ShowerParticle 
   // objects in _particles, at the end of the showering.
 
   void debuggingInfo();
   // Print debugging information.
+
+  void fillEvenRecord( const tPartCollHdlPtr ch );
+  // At the end of the Showering, transform ShowerParticle objects
+  // into Pythia7 particles and fill the event record with them.
+  // Notice that the parent/child relationships and the 
+  // transformation from ShowerColourLine objects into Pythia7
+  // ColourLine ones must be properly handled.
 
   Ptr<GlobalParameters>::pointer _pointerGlobalParameters; 
   Ptr<MECorrections>::pointer _pointerMECorrections;

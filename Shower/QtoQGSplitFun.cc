@@ -86,3 +86,33 @@ Complex QtoQGSplitFun::invIntegOverIntegratedFun(const double r) {
 }
 
 
+void QtoQGSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
+				      ShoColinePair & firstProductShoColinePair,
+				      ShoColinePair & secondProductShoColinePair ) {
+
+  // Return immediately if the input is inconsistent.
+  if ( ( ! parentShoColinePair.first  &&  ! parentShoColinePair.second ) ||
+       ( parentShoColinePair.first  &&  parentShoColinePair.second ) ) {
+    return;
+  }
+  
+  // Initialize
+  firstProductShoColinePair = secondProductShoColinePair = ShoColinePair();
+
+  // The first branching product is considered to be the quark 
+  // and the second the gluon. The colour line of the parent
+  // is one of the two colour lines of the gluon, whereas the
+  // other one of the latter is a new colour line which is
+  // also share by the first product (the quark).
+  if ( parentShoColinePair.first ) { // the parent is a quark
+    secondProductShoColinePair.first = parentShoColinePair.first;
+    firstProductShoColinePair.first = secondProductShoColinePair.second 
+      = new_ptr( ShowerColourLine() );
+  } else if ( parentShoColinePair.second ) { // the parent is an antiquark
+    secondProductShoColinePair.second = parentShoColinePair.second;
+    firstProductShoColinePair.second = secondProductShoColinePair.first 
+      = new_ptr( ShowerColourLine() );
+  }
+
+}
+

@@ -49,6 +49,10 @@ public:
   virtual Complex integOverIntegratedFun(const double z); 
   virtual Complex invIntegOverIntegratedFun(const double r); 
 
+  virtual void colourConnection( const ShoColinePair & parentShoColinePair,
+				 ShoColinePair & firstProductShoColinePair,
+				 ShoColinePair & secondProductShoColinePair );
+  // See long comment on this method on class <!class>SplitFun1to2<!!class>.
 
 public:
 

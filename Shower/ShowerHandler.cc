@@ -23,6 +23,8 @@
 #include "Pythia7/MatrixElement/PhaseSpaceBase.h"
 #include "Pythia7/Handlers/XComb.h"
 #include "ShowerParticle.h"
+#include "Pythia7/EventRecord/ColourLine.h"
+#include "ShowerColourLine.h"
 
 using namespace Herwig;
 
@@ -81,6 +83,13 @@ void ShowerHandler::Init() {
 
 void ShowerHandler::cascade() {
 
+  // Debugging
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+    generator()->log() << "ShowerHandler::debuggingInfo "
+		       << " ===> START DEBUGGING <=== "
+		       << "   EventNumber=" << generator()->currentEventNumber() << endl;
+  }
+
   tPartCollHdlPtr ch = collisionHandler();
 
   // const Hint & theHint = hint();	    // OK: COMMENTED TO AVOID COMPILATION WARNINGS
@@ -93,41 +102,7 @@ void ShowerHandler::cascade() {
   // in the vector hardProcessParticles (not directly in _particles
   // because we could throw away the all showering and restart it).
   CollecShoParPtr hardProcessParticles;
-
-  // Incoming (initial state) particles
-  const PPair theIncomingParticlePair = ch->currentStep()->incoming();
-  if ( theIncomingParticlePair.first ) {
-    hardProcessParticles.push_back( new_ptr( ShowerParticle( *theIncomingParticlePair.first ) ) );    
-    (hardProcessParticles.back())->isFinalState( false );
-  }
-  if ( theIncomingParticlePair.second ) {
-    hardProcessParticles.push_back( new_ptr( ShowerParticle( *theIncomingParticlePair.second ) ) );    
-    (hardProcessParticles.back())->isFinalState( false );
-  }
-
-  // Outgoing (final state) particles. Notice that we don't need to
-  // set true the flag ShowerParticle::isFinalState because it is
-  // set true by default. 
-  ParticleSet theCurrentParticleSet = ch->currentStep()->particles();
-  for ( ParticleSet::const_iterator cit = theCurrentParticleSet.begin();
-	cit != theCurrentParticleSet.end(); ++cit ) {
-    hardProcessParticles.push_back( new_ptr( ShowerParticle( **cit ) ) );    
-  }
-
-  // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "ShowerHandler::debuggingInfo "
-		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() << endl
-		       << "  Total number of initial Shower particles : " 
-		       << hardProcessParticles.size() << endl; 
-    for ( CollecShoParPtr::const_iterator cit = hardProcessParticles.begin();
-	  cit != hardProcessParticles.end(); ++cit ) {
-      generator()->log() << "\t ShowerParticle: " << (**cit).data().PDGName() 
-	                 << "  isFinalState = " << ( (**cit).isFinalState() ? "YES" : "NO" )
-			 << endl;      
-    }
-  }
+  createShowerParticlesFromP7Particles( ch, hardProcessParticles );
 
   const int maxNumFailures = 100;
   int countFailures = 0;
@@ -339,10 +314,7 @@ void ShowerHandler::cascade() {
     }    
   } // end main while loop
 
-  // Transform some of the ShowerParticles object in Pythia7 Particles, and
-  // then write them in the Event Record     
-  //   StepPtr pstep = ch.newStep();
-  // ***LOOKHERE*** --- code here ---
+  fillEvenRecord( ch );  
 
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
@@ -350,6 +322,144 @@ void ShowerHandler::cascade() {
     generator()->log() << "ShowerHandler::debuggingInfo "
 		       << " ===> END DEBUGGING <=== "
 		       << endl;
+  }
+
+}
+
+
+void ShowerHandler::
+createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch, 
+				      CollecShoParPtr & hardProcessParticles ) {
+
+  // To properly translate the (Pythia7) ColourLine objects into 
+  // ShowerColourLine objects, we need a map which has as key the
+  // pointer to a ColourLine object and as element the pointer to 
+  // the corresponding ShowerColourLine objet.
+  map<tColinePtr,tShoColinePtr> mapColine;
+
+  // Incoming (initial state) particles
+  const PPair theIncomingParticlePair = ch->currentStep()->incoming();
+  for ( int i=1; i<=2; ++i ) {
+    tPPtr p7part = tPPtr();
+    if ( i == 1 && theIncomingParticlePair.first ) {
+      p7part = theIncomingParticlePair.first;
+    } else if ( i == 2 && theIncomingParticlePair.second ) {
+      p7part = theIncomingParticlePair.second;      
+    }
+    if ( p7part ) {      
+      hardProcessParticles.push_back( new_ptr( ShowerParticle( *p7part ) ) );    
+      tShoParPtr shopart = hardProcessParticles.back();
+      shopart->isFinalState( false );
+      fixColorLines( p7part, shopart, mapColine );
+    }
+  }
+
+  // Outgoing (final state) particles. Notice that we don't need to
+  // set true the flag ShowerParticle::isFinalState because it is
+  // set true by default. 
+  ParticleSet theCurrentParticleSet = ch->currentStep()->particles();
+  for ( ParticleSet::const_iterator cit = theCurrentParticleSet.begin();
+	cit != theCurrentParticleSet.end(); ++cit ) {
+    hardProcessParticles.push_back( new_ptr( ShowerParticle( **cit ) ) );    
+    fixColorLines( *cit, hardProcessParticles.back(), mapColine );
+  }
+
+  // Debugging
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+    generator()->log() << "  Total number of initial Shower particles : " 
+		       << hardProcessParticles.size() << endl; 
+    for ( CollecShoParPtr::const_iterator cit = hardProcessParticles.begin();
+	  cit != hardProcessParticles.end(); ++cit ) {
+      generator()->log() << "\t ShowerParticle: " << (**cit).data().PDGName() 
+	                 << "  isFinalState = " << ( (**cit).isFinalState() ? "YES" : "NO" )
+			 << endl;      
+    }
+    // Now, check that for each Pythia7 ColourLine object there is 
+    // a corresponding ShowerColourLine one, and that both have 
+    // exactly the same coloured and antiColoured particles attached
+    // to them (although, of course, for ColourLine object we have 
+    // Pythia7 particles attached to it, whereas for ShowerColourLine
+    // object we have ShowerParticle objects attached to it).
+    generator()->log() << "\t --- Colour line info --- " << endl;
+    int count = 0;
+    for ( map<tColinePtr,tShoColinePtr>::const_iterator cit = mapColine.begin();
+	  cit != mapColine.end(); ++cit ) {
+      generator()->log() << "\t   colour line number = " << ++count << endl;
+      if ( cit->first->coloured().size() ) {
+	generator()->log() << "\t \t Pythia7 coloured list: ";
+	for ( tPVector::const_iterator cjt = cit->first->coloured().begin();
+	      cjt != cit->first->coloured().end(); ++cjt ) {
+	  generator()->log() << (*cjt)->data().PDGName() << "  ";
+	}
+	generator()->log() << endl;
+      }
+      if ( cit->second->coloured().size() ) {
+	generator()->log() << "\t \t Shower coloured list: ";
+	for ( tCollecShoParPtr::const_iterator cjt = cit->second->coloured().begin();
+	      cjt != cit->second->coloured().end(); ++cjt ) {
+	  generator()->log() << (*cjt)->data().PDGName() << "  ";
+	}
+	generator()->log() << endl;
+      }
+      if ( cit->first->antiColoured().size() ) {
+	generator()->log() << "\t \t Pythia7 antiColoured list: ";
+	for ( tPVector::const_iterator cjt = cit->first->antiColoured().begin();
+	      cjt != cit->first->antiColoured().end(); ++cjt ) {
+	  generator()->log() << (*cjt)->data().PDGName() << "  ";
+	}
+	generator()->log() << endl;
+      }
+      if ( cit->second->antiColoured().size() ) {
+	generator()->log() << "\t \t Shower antiColoured list: ";
+	for ( tCollecShoParPtr::const_iterator cjt = cit->second->antiColoured().begin();
+	      cjt != cit->second->antiColoured().end(); ++cjt ) {
+	  generator()->log() << (*cjt)->data().PDGName() << "  ";
+	}
+	generator()->log() << endl;
+      }
+    }
+  }
+
+}
+
+
+void ShowerHandler::fixColorLines( tPPtr p7part, tShoParPtr shopart, 
+				   map<tColinePtr,tShoColinePtr> & mapColine ) {
+  
+  if ( ! p7part  ||  ! shopart ) return; // It should never happen!
+
+  tColinePtr coline = p7part->colourLine();
+  if ( coline ) {
+    if ( mapColine.find( coline ) == mapColine.end() ) {
+      // coline has not been found in the map, therefore a new
+      // ShowerColourLine must be created; then add shopart to
+      // the coloured shower particles attached to it (notice
+      // that the method ShowerColourLine::addColoured automatically
+      // set the colour line of the particle); and finally
+      // insert a new element on the map.
+      ShoColinePtr shoColine = new_ptr( ShowerColourLine() );
+      shoColine->addColoured( shopart );
+      mapColine.insert( mapColine.end(), 
+			pair<tColinePtr,tShoColinePtr>( coline, shoColine ) );
+    } else {
+      // coline has been found in the map, therefore the only
+      // thing to do is to add shopart to the coloured shower
+      // particles attached to the ShowerColourLine object
+      // which corresponds to coline.
+      mapColine.find( coline )->second->addColoured( shopart );
+    }
+  }
+  // Do exactly as above, but considering now the anti-colour.
+  coline = p7part->antiColourLine();
+  if ( coline ) {
+    if ( mapColine.find( coline ) == mapColine.end() ) {
+      ShoColinePtr shoColine = new_ptr( ShowerColourLine() );
+      shoColine->addAntiColoured( shopart );
+      mapColine.insert( mapColine.end(), 
+			pair<tColinePtr,tShoColinePtr>( coline, shoColine ) );
+    } else {
+      mapColine.find( coline )->second->addAntiColoured( shopart );
+    }
   }
 
 }
@@ -443,6 +553,17 @@ void ShowerHandler::debuggingInfo() {
 
 }
 
+
+void ShowerHandler::fillEvenRecord( const tPartCollHdlPtr ch ) {  
+
+  // Transform some of the ShowerParticles object in Pythia7 particles,
+  // set properly the parent/child relationships and treat carefully 
+  // the transformation from ShowerColourLine objects into Pythia7
+  // ColourLine ones; and finally then write them in the Event Record     
+  //   StepPtr pstep = ch.newStep();
+  // ***LOOKHERE*** --- code here ---
+
+}
 
 
 

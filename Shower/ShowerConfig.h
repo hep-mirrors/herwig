@@ -18,6 +18,12 @@ namespace Herwig {
 
   using namespace Pythia7;
 
+  class ShowerColourLine;
+  typedef Ptr<ShowerColourLine>::pointer ShoColinePtr;
+  typedef Ptr<ShowerColourLine>::transient_pointer tShoColinePtr;
+  typedef pair<ShoColinePtr,ShoColinePtr> ShoColinePair;
+  typedef pair<tShoColinePtr,tShoColinePtr> tShoColinePair;
+
   class ShowerParticle;
   typedef Ptr<ShowerParticle>::pointer ShoParPtr;
   typedef Ptr<ShowerParticle>::transient_pointer tShoParPtr;

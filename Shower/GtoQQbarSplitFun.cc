@@ -86,3 +86,20 @@ Complex GtoQQbarSplitFun::invIntegOverIntegratedFun(const double r) {
   return 2.*r; 
 }
 
+
+void GtoQQbarSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
+					 ShoColinePair & firstProductShoColinePair,
+					 ShoColinePair & secondProductShoColinePair ) {
+
+  // Return immediately if the input is inconsistent.
+  if ( ! parentShoColinePair.first  ||  ! parentShoColinePair.second ) return;
+  
+  // Initialize
+  firstProductShoColinePair = secondProductShoColinePair = ShoColinePair();
+
+  // The first branching product is considered to be the quark 
+  // and the second the anti-quark. 
+  firstProductShoColinePair.first = parentShoColinePair.first;
+  secondProductShoColinePair.second = parentShoColinePair.second;
+
+}

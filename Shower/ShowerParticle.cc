@@ -67,8 +67,8 @@ ShowerParticle::ShowerParticle(const Pythia7::Particle & inputP7Particle)
   dataPtr( inputP7Particle.dataPtr() );
   momentum( inputP7Particle.momentum() );
   position( inputP7Particle.labVertex() );
-  setAntiColourLine( inputP7Particle.antiColourLine() );
-  setColourLine( inputP7Particle.colourLine() );
+  //***LOOKHERE*** Notice that the colour lines should be set not here 
+  //               but at the beginning of ShowerHandler::cascade() 
 }
 
 
@@ -77,9 +77,9 @@ Pythia7::PPtr ShowerParticle::createPythia7Particle() const {
   if ( particleP7 ) {
     particleP7->set5Momentum( momentum() );
     particleP7->setLabVertex( position() );
-    //***LOOKHERE*** may be the parent/children should also be fixed
-    //               but it could be better to do it at the end
-    //               when all Pythia7 particles have been created.
+    //***LOOKHERE*** Notice that the parent/children relationships
+    //               and the colour lines should be set not here but 
+    //               at the end of ShowerHandler::cascade() 
   }
   return particleP7;
 }

@@ -6,6 +6,7 @@
 
 #include "GtoGGSplitFun.h"
 #include "Pythia7/Interface/ClassDocumentation.h"
+#include "Pythia7/Repository/UseRandom.h"
 
 using namespace Herwig;
 
@@ -88,4 +89,29 @@ Complex GtoGGSplitFun::invIntegOverIntegratedFun(const double r) {
   return exp(r/3.)/(1.+exp(r/3.)); 
 } 
 
+
+void GtoGGSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
+				      ShoColinePair & firstProductShoColinePair,
+				      ShoColinePair & secondProductShoColinePair ) {
+
+  // Return immediately if the input is inconsistent.
+  if ( ! parentShoColinePair.first  ||  ! parentShoColinePair.second ) return;
+  
+  // Randomly decide which of the two gluon products take the
+  // colour line passing for the colour of the parent gluon
+  // (the other will take the one passing for the anticolour of
+  //  the parent gluon).
+  if ( UseRandom::rndbool() ) {
+    firstProductShoColinePair.first = parentShoColinePair.first;
+    secondProductShoColinePair.second = parentShoColinePair.second;
+    firstProductShoColinePair.second = secondProductShoColinePair.first 
+      = new_ptr( ShowerColourLine() );    
+  } else {
+    firstProductShoColinePair.second = parentShoColinePair.first;
+    secondProductShoColinePair.first = parentShoColinePair.second;
+    firstProductShoColinePair.first = secondProductShoColinePair.second 
+      = new_ptr( ShowerColourLine() );    
+  }
+
+}
 
