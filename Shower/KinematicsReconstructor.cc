@@ -159,11 +159,11 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
   Vector3 beta_cm = p_cm.findBoostToCM();
   if ( beta_cm.mag() > 1e-12 ) gottaBoost = true;   
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "  p_cm = " << p_cm
 		       << ", beta_cm = " << beta_cm
 		       << ", boost? " << (gottaBoost ? "yes" : "no")
-		       << endl; 
+		       << endl;
   }
 
   atLeastOnce = false;
@@ -179,17 +179,17 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
       if ( gottaBoost ) tempJetKin.p.boost( beta_cm ); 
       if ( cit->second ) 
 	atLeastOnce = ( reconstructTimeLikeJet( cit->first ) || atLeastOnce ); 
-      if ( gottaBoost ) {
-	dum = cit->first->momentum();
-	dum.boost( beta_cm ); 
-	cit->first->set5Momentum( dum );
-      }
+//       if ( gottaBoost ) {
+// 	dum = cit->first->momentum();
+// 	dum.boost( beta_cm ); 
+// 	cit->first->set5Momentum( dum ); //?
+//       }
       tempJetKin.q = cit->first->momentum();       
       jetKinematics.push_back( tempJetKin );  
 
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
 	sum_qi += tempJetKin.q.mag();
-	generator()->log() << "  reconstructed xxx "
+	generator()->log() << "  reconstructed "
 			   << cit->first->data().PDGName()
 			   << "-jet, q = "
 			   << cit->first->momentum()
@@ -262,8 +262,7 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
 // 		       << " ===> END DEBUGGING <=== " << endl;
   }
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower 
-       && generator()->currentEventNumber() < 1000) {    
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {
     generator()->log() << ", p_cm = " << p_cm << endl;
     for ( JetKinVect::const_iterator it = jetKinematics.begin();
 	  it != jetKinematics.end(); ++it ) {
@@ -273,12 +272,18 @@ bool KinematicsReconstructor::reconstructHardJets( const MapShower & mapShowerHa
 			 << ", q = " << (it->parent)->momentum()
  			 << ". " << fs.size() 
  			 << " ch:" << endl; 
+      Lorentz5Momentum sumch = Lorentz5Momentum(); 
       for ( tShowerParticleVector::const_iterator jt = fs.begin(); 
 	    jt != fs.end(); ++jt ) {
 	generator()->log() << "  " << (*jt)->data().PDGName()
 			   << ", q = " << (*jt)->momentum()
 			   << endl; 
+	sumch += (*jt)->momentum(); 
       }
+      generator()->log() << "  jet-parent q = " << sumch << endl
+			 << "    children q = " << (it->parent)->momentum() << endl
+			 << "          diff = " << (it->parent)->momentum() - sumch 
+			 << endl;
     }
   }
 

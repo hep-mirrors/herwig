@@ -610,6 +610,7 @@ void ShowerHandler::fillEventRecord( const tPartCollHdlPtr ch ) {
        cit != _particles.end(); ++cit ) {
     if ( (*cit)->isFromHardSubprocess() && (*cit)->isFinalState() ) {
       pstep->addDecayNoCol((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit));
+      //      pstep->addDecayNoCol((*cit), dynamic_ptr_cast<tPPtr>(*cit));
       //      pstep->addDecayProduct((*cit)->getP7base(), dynamic_ptr_cast<tPPtr>(*cit), static_cast<bool>(false));
       //pstep->addDecayProduct(dynamic_ptr_cast<tcPPtr>((*cit)->getP7base()), dynamic_ptr_cast<tPPtr>(*cit), false);
       (*cit)->addChildrenEvtRec(pstep);   

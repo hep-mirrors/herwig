@@ -256,7 +256,10 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast
   
   Energy theMass; 
   if ( theLast->data().id() == 21 ) theMass = theLast->momentum().mass(); 
-  else theMass = theLast->data().mass(); 
+  //  else theMass = theLast->data().mass(); 
+  // use constituent mass also for quarks.  This on-shell condition belongs to
+  // NP hadronization! 
+  else theMass = theLast->data().constituentMass(); 
   theLast->sudBeta( (sqr(theMass) + theLast->sudPperp2() 
   		     - sqr( theLast->sudAlpha() )*_pVector.m2())
   		    / ( 2.*theLast->sudAlpha()*_pVector*_nVector ) ); 
