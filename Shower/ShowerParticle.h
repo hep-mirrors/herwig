@@ -115,7 +115,7 @@ public:
   //  in the event record). 
 
   inline const ParticleData & data() const;
-  inline tcPDPtr dataPtr() const;
+  inline tcPDPtr dataPtr() const { return _pdptr; }
   inline void dataPtr(const tcPDPtr & inputParticleDataPtr);
   // Access/Set the particle data.
 

@@ -8,7 +8,7 @@
 #include "Pythia7/EventRecord/Event.h"
 #include "Pythia7/Utilities/Debug.h"
 #include "Herwig++/Utilities/HwDebug.h"
-#include "Herwig++/Decay/ExampleDecayer.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 #include <fstream>
 
 // using namespace Pythia7;
@@ -20,10 +20,25 @@ void initFirstStep(StepPtr& s, const EGPtr & eg){
   //*** FILL BY HAND THE EVENT RECORD *** 
   // (Below a very simple example)
 
-  PPtr Z0    = eg->getParticle(ParticleID::Z0);
-  Momentum3 p_Z0(10.0*GeV, 10.0*GeV, 10.0*GeV);
-  Z0->set3Momentum(p_Z0);
-  s->addParticle(Z0);
+  PPtr u    = eg->getParticle(ParticleID::u);
+  PPtr ubar = eg->getParticle(ParticleID::ubar);
+  
+  Momentum3 p_u(0.0*GeV, 0.0*GeV, 10.0*GeV);
+  Momentum3 p_ubar(0.0*GeV, 0.0*GeV, -10.0*GeV);
+  
+  u->set3Momentum(p_u);
+  ubar->set3Momentum(p_ubar);
+  
+  // Let's suppose that these partons have perturbative origin,
+  // for example at scale (100*GeV)^2
+  u->scale( sqr(100.0*GeV) );
+  ubar->scale( sqr(100.0*GeV) );
+ 
+  u->antiColourNeighbour(ubar);
+  ubar->colourNeighbour(u);
+ 
+  s->addParticle(u);
+  s->addParticle(ubar);
    
 }
 
@@ -66,7 +81,7 @@ int main(int argc, char* argv[]){
   is >> eg;
   eg->initialize();
 
-  //ALB vector<tPPtr> products;  
+  vector<tPPtr> products;  
 
   breakPythia7();
 
@@ -79,19 +94,13 @@ int main(int argc, char* argv[]){
 
     StepPtr firstStep = event->newStep();   // Create an empty step.
      
-    //ALB initFirstStep(firstStep, eg);
+    initFirstStep(firstStep, eg);
 
-    PPtr Z0    = eg->getParticle(ParticleID::Z0);
-    Momentum3 p_Z0(10.0*GeV, 10.0*GeV, 10.0*GeV);
-    Z0->set3Momentum(p_Z0);
-    firstStep->addParticle(Z0);
-
-    //ALB if(products.size() ) products.clear();
+    if(products.size() ) products.clear();
 
     event = eg->partialEvent( event );
 
-    tPVector products = event->getFinalState();
-    //ALB event->selectFinalState(back_inserter(products) );
+    event->selectFinalState(back_inserter(products) );
 
     if( itry < 2 ) cout << *event;
     
@@ -101,6 +110,8 @@ int main(int argc, char* argv[]){
 
   }
   eg->finish();
+  
+  cout << "program finished." << endl; 
 
   return(0);
 }

@@ -1,3 +1,7 @@
+# This will read in all the standard hadron decay modes and add
+# the new particles that are used in HERWIG 6.4, but not in Pythia7
+read Decays.in
+#
 cd /Defaults/
 set theGlobalParameters:EffectiveGluonMass 0.750*GeV
 set theGlobalParameters:HadronizationScale 0.5*GeV

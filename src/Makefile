@@ -4,7 +4,7 @@ OBJECTS := $(SOURCES:.cc=.o)
 
 PROGS   := $(SOURCES:.cc=.exe)
 
-HWLIBS = -lHwHadronization -lHw
+HWLIBS = -lHwHadronization -lHw -lHwDecay -lHwShower
 
 .PHONY: Lib
 
