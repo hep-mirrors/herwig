@@ -25,6 +25,7 @@
 #include "ShowerParticle.h"
 #include "Pythia7/EventRecord/ColourLine.h"
 #include "ShowerColourLine.h"
+#include "Pythia7/CLHEPWrap/Matrix.h"
 
 using namespace Herwig;
 
@@ -101,8 +102,8 @@ void ShowerHandler::cascade() {
   // the corresponding starting ShowerParticle objects and put them
   // in the vector hardProcessParticles (not directly in _particles
   // because we could throw away the all showering and restart it).
-  CollecShoParPtr hardProcessParticles;
-  createShowerParticlesFromP7Particles( ch, hardProcessParticles );
+  // CollecShoParPtr hardProcessParticles;
+  //  createShowerParticlesFromP7Particles( ch, hardProcessParticles );
 
   const int maxNumFailures = 100;
   int countFailures = 0;
@@ -110,17 +111,29 @@ void ShowerHandler::cascade() {
   
   while ( keepTrying  &&  countFailures < maxNumFailures ) {       
     try {
-
       // Cleaning and initializing
       _particles.clear();
       _pointerShowerConstrainer->reset();     
       _pointerInsideRangeShowerEvolver->clear();
+
+      // even more cleaning... ***ACHTUNG*** find something much, much
+      // more sophisticated to save old properties. In particular for
+      // the multiscaleshower...
+      CollecShoParPtr hardProcessParticles;
+      hardProcessParticles.clear();
+      createShowerParticlesFromP7Particles( ch, hardProcessParticles );
 
       // Fill _particles with the particles from the hard subprocess
       for ( CollecShoParPtr::const_iterator cit = hardProcessParticles.begin();
 	    cit != hardProcessParticles.end(); ++cit ) {
 	_particles.push_back( *cit );      
       }
+
+      // clean up children from previous trial showers:
+      //      for ( CollecShoParPtr::iterator it = _particles.begin(); 
+      // 	    it != _particles.end(); ++it) {
+      //	(*it)->removeChildren(); 
+      //}
       
       bool isMECorrectionApplied = false;
       tMECorrectionPtr softMECorrection = tMECorrectionPtr();
@@ -299,7 +312,7 @@ void ShowerHandler::cascade() {
       }
 
       // Do the final kinematics reconstruction
-      _pointerInsideRangeShowerEvolver->reconstructKinematics( ch );
+      bool recons = _pointerInsideRangeShowerEvolver->reconstructKinematics( ch );
 
       // Fill the positions information for all the ShowerParticle objects
       // in _particles. It is done at this stage in order to avoid the
@@ -308,6 +321,7 @@ void ShowerHandler::cascade() {
       fillPositions();
 
       keepTrying = false;
+      if (!recons) keepTrying = true; 
     } // end of try
     catch ( std::exception & e ) {
       countFailures++;
@@ -317,11 +331,12 @@ void ShowerHandler::cascade() {
   fillEvenRecord( ch );  
 
   // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {    
     debuggingInfo();
-    generator()->log() << "ShowerHandler::debuggingInfo "
-		       << " ===> END DEBUGGING <=== "
-		       << endl;
+    if ( generator()->currentEventNumber() < 1000 )
+      generator()->log() << "ShowerHandler::debuggingInfo "
+			 << " ===> END DEBUGGING <=== "
+			 << endl;
   }
 
 }
@@ -539,6 +554,98 @@ void ShowerHandler::debuggingInfo() {
 		       << endl; 
   }
 
+  if ( generator()->currentEventNumber() < 1000 )
+    generator()->log() << "--- Shower finished - summary ---" << endl;
+
+  
+  // stuff that goes to STDOUT comes here:
+  if ( generator()->currentEventNumber() < 1000 )
+    cout << "# event no " << generator()->currentEventNumber() << endl; 
+
+  tCollecShoParPtr fs;
+  for (CollecShoParPtr::const_iterator cit = _particles.begin(); 
+       cit != _particles.end(); ++cit ) {
+    if ( (*cit)->isFromHardSubprocess() ) {
+      if ( generator()->currentEventNumber() < 1000 ) {
+	generator()->log() << "  " << (*cit)->data().PDGName() 
+			   << ", Q = " << (*cit)->momentum().mass()/MeV 
+			   << ", q = " << (*cit)->momentum()/MeV << " (MeV)"
+			   <<endl;
+	(*cit)->deepPrintInfo();
+      }
+      //cout << (*cit)->sumParentsMomenta() << endl;      
+      if ( (*cit)->isFinalState() ) {
+	tCollecShoParPtr thisfs = (*cit)->getFSChildren();
+	fs.insert(fs.end(), thisfs.begin(), thisfs.end()); 
+      }
+    }    
+  }
+  vector<Vector3> n; 
+  vector<double> lam; 
+  eventShape(fs, lam, n);
+
+  // to play with events in Mathematica, get lists of final state particles...
+//   cout << "{";
+//   for(tCollecShoParPtr::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
+//     cout << "{" 
+// 	 << (*cit)->momentum().vect().x() << ", "
+// 	 << (*cit)->momentum().vect().y() << ", "
+// 	 << (*cit)->momentum().vect().z() << "}";
+//     if (cit != fs.end()) cout << ", " << endl;
+//   }
+//   cout << "}"; 
+
+  Lorentz5Momentum pcm = Lorentz5Momentum(); 
+  for(tCollecShoParPtr::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
+    pcm += (*cit)->momentum();     
+  }
+  Energy root_s = pcm.m();
+  if ( generator()->currentEventNumber() < 1000 )
+    cout << "# shapes: root(s)*lam[i]*n[i] | lam[i] | n[i]" << endl;
+  for (int i=0; i<3; i++) {
+    if ( generator()->currentEventNumber() < 1000 )
+      cout << "666 " << root_s*lam[i]*n[i][0] << " " 
+	   << root_s*lam[i]*n[i][1] << " " 
+	   << root_s*lam[i]*n[i][2] << " " 
+	   << lam[i] << " " << n[i] << endl;
+  }
+  double C_parameter = 3.*(lam[0]*lam[1] + lam[1]*lam[2] + lam[2]*lam[0]);
+  double D_parameter = 27.*(lam[0]*lam[1]*lam[2]);
+
+  double lam1, lam2, lam3; 
+  double dumd; 
+  lam1 = lam[0]; lam2 = lam[1]; lam3 = lam[2]; 
+  if (lam1 < lam2) {dumd = lam1; lam1 = lam2; lam2 = dumd; }
+  if (lam1 < lam3) {dumd = lam1; lam1 = lam3; lam3 = dumd; }
+  if (lam2 < lam3) {dumd = lam2; lam2 = lam3; lam3 = dumd; }
+  if ( generator()->currentEventNumber() < 1000 )
+    cout << "# shapes C = " << C_parameter
+	 << ", D = " << D_parameter << endl
+	 << "# (lam1, lam2, lam3) = (" << lam1 << ", " << lam2 << ", " 
+	 << lam3 << ")" << endl; 
+  // this one gives 'blocks':
+  if ( generator()->currentEventNumber() < 1000 )
+    cout << endl;
+
+  // book some histograms
+
+  HwDebug::lambda1Histo += lam1; 
+  HwDebug::lambda2Histo += lam2;
+  HwDebug::lambda3Histo += lam3; 
+  HwDebug::CparameterHisto += C_parameter; 
+  HwDebug::DparameterHisto += D_parameter; 
+  HwDebug::multiplicityHisto += fs.size();
+
+  if ( generator()->currentEventNumber() < 1000 || 
+       (generator()->currentEventNumber() % 1000) == 0 ) {
+    HwDebug::lambda1Histo.printGnuplot("plots/lambda1.dat");
+    HwDebug::lambda2Histo.printGnuplot("plots/lambda2.dat");
+    HwDebug::lambda3Histo.printGnuplot("plots/lambda3.dat"); 
+    HwDebug::CparameterHisto.printGnuplot("plots/Cpara.dat"); 
+    HwDebug::DparameterHisto.printGnuplot("plots/Dpara.dat"); 
+    HwDebug::multiplicityHisto.printGnuplot("plots/multiplicity.dat");
+  }
+
 }
 
 
@@ -554,4 +661,101 @@ void ShowerHandler::fillEvenRecord( const tPartCollHdlPtr ch ) {
 }
 
 
+  // utility method
+void ShowerHandler::eventShape(const tCollecShoParPtr & p, 
+				vector<double> & lam, vector<Vector3> & n) {
 
+  // get cm-frame
+  Lorentz5Momentum pcm = Lorentz5Momentum(); 
+  for(tCollecShoParPtr::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
+    pcm += (*cit)->momentum();     
+  }
+  Vector3 beta = pcm.findBoostToCM(); 
+  HepSymMatrix Theta = HepSymMatrix(3);
+  for(int i=0; i<3; i++) {
+    for(int j=0; j<3; j++) {
+      Theta[i][j] = 0.0;
+    }
+  }
+  //  cout << "# beta = " << beta << endl; 
+  double sum = 0.; 
+  Vector3 sumvec = Vector3();
+  
+  // get Theta_ij
+  for(tCollecShoParPtr::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
+    Lorentz5Momentum dum = (*cit)->momentum();
+    dum.boost( beta );
+    Vector3 pvec = dum.vect();
+    sumvec += pvec;
+    sum += pvec.mag();
+//     cout << "# pvec = " << pvec << endl;
+//     cout << "# pvec[i] = (" << pvec[0] << ", " << pvec[1] << ", " << pvec[2] << ")" << endl; 
+//     cout << "# pvec.mag() = " << pvec.mag() << endl; 
+//     cout << "# sqrt(pvec^2) = " << sqrt(sqr(pvec[0]) + sqr(pvec[1]) + sqr(pvec[2])) << endl; 
+    for(int i=0; i<3; i++) {
+      for(int j=i; j<3; j++) {
+	Theta[i][j] += (pvec[i])*(pvec[j])/(pvec.mag());
+      }
+    }
+    //   cout << "# stepwise tr/sum = " << Theta.trace()/sum << endl; 
+  }
+
+  Theta /= sum;  
+    
+//   cout << "#-- Theta = " << endl; 
+//   for(int i=0; i<3; i++) {
+//     for(int j=0; j<3; j++) {
+//       cout << Theta[i][j] << "\t";
+//     }
+//     cout << endl; 
+//   }    
+
+//  cout << "# pcm = " << pcm << endl
+//       << "# sumvec = " << sumvec << endl;
+  // diagonalize it
+  HepMatrix U = diagonalize(&Theta);
+
+//   cout << "#-- Theta diagonalized = " << endl; 
+//   for(int i=0; i<3; i++) {
+//     for(int j=0; j<3; j++) {
+//       cout << Theta[i][j] << "\t";
+//     }
+//     cout << endl; 
+//   }    
+//   cout << "#-- U = " << endl; 
+//   for(int i=0; i<3; i++) {
+//     for(int j=0; j<3; j++) {
+//       cout << U[i][j] << "\t";
+//     }
+//     cout << endl; 
+//   }  
+
+  for(int i=0; i<3; i++) {
+    lam.push_back( Theta[i][i] );
+    Vector3 ndum;
+    for(int j=0; j<3; j++) {
+      ndum[j] = U[j][i]; 
+    }
+    n.push_back( ndum ); 
+  }
+  // checks
+//   double lamsum = 0.;
+//   for(int i=0; i<3; i++) {
+//     lamsum += lam[i]; 
+//     cout << "#(" << i+1 << ") lam = " 
+// 	 << lam[i] << ", n = " << n[i] << endl; 
+//   }
+//  HepVector n1, n2, n3;
+//   n1 = n[0]; 
+//   n2 = n[1]; 
+//   n3 = n[2];
+//   cout << "# n1 = " << n1 << endl 
+//        << "# n2 = " << n2 << endl 
+//        << "# n3 = " << n3 << endl ;
+//   cout << "# check othonormality of n's:" << endl 
+//        << dot(n1, n1) << "\t" << dot(n1, n2) << "\t" << dot(n1, n3) << endl
+//        << dot(n2, n1) << "\t" << dot(n2, n2) << "\t" << dot(n2, n3) << endl
+//        << dot(n3, n1) << "\t" << dot(n3, n2) << "\t" << dot(n3, n3) << endl;
+//   cout << "#    lamsum = " << lamsum << endl; 
+  
+}

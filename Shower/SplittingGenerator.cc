@@ -27,6 +27,7 @@
 #include "IS_QtildaShowerKinematics1to2.h"
 #include "FS_QtildaShowerKinematics1to2.h"
 #include "Herwig++/Utilities/HwDebug.h"
+#include "ShowerConfig.h"
 
 using namespace Herwig;
 
@@ -376,7 +377,7 @@ bool SplittingGenerator::isFSRadiationON(const ShowerIndex::InteractionType inte
 pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranching
 ( tPartCollHdlPtr ch, ShowerParticle & particle, const bool reverseAngularOrder ) const {
   
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "SplittingGenerator::chooseForwardBranching(): "
       		       << " ===> START DEBUGGING <=== " << endl; 
   }
@@ -410,9 +411,9 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
       } 
     }
   }
-
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    generator()->log() << "Try to split a "
+  
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+    generator()->log() << "  try "
 		       << particle.data().PDGName() 
 		       << " in QCD, (Q_ini -> Q_fin) = (" 
 		       << particle.evolutionScales()[ShowerIndex::QCD] 
@@ -432,23 +433,56 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
       tSplitFun1to2Ptr splitFun = 
 	dynamic_ptr_cast< tSplitFun1to2Ptr >( sudakov->splitFun() );
       if ( splitFun ) {	  
-	Lorentz5Momentum p = particle.momentum();
-	//***LOOKHERE*** We choose  n  naively for the time being.  
-	Lorentz5Momentum n = Lorentz5Momentum( - p.vect(), p.vect().mag() );
+	Lorentz5Momentum p, n, ppartner, pcm;
+	double th;
+	Energy nnorm;
+	if ( particle.isFromHardSubprocess() ) {
+	  p = particle.momentum();
+	  //***LOOKHERE*** We choose  n  naively for the time being.  
+	  // Lorentz5Momentum n = Lorentz5Momentum( 0.0, - p.vect() ); 
+	  // for test purposes: n points into the negative z-direction:
+	  ppartner = particle.partners()[sudakov->splitFun()->interactionType()]
+	    ->momentum();
+	  pcm = p; 
+	  pcm.boost( (p + ppartner).findBoostToCM() );	  
+	  th = (pi/100.);
+	  nnorm = pcm.vect().mag(); 
+	  nnorm*=10000.;
+	  Vector3 nv = cos(th)*pcm.vect().unit() 
+	    + sin(th)*pcm.vect().orthogonal().unit(); 
+	  n = Lorentz5Momentum( 0.0, nnorm*nv ); 
+	  n.boost( -(p + ppartner).findBoostToCM() );
+	  // n = Lorentz5Momentum( 2000.0, 3000.0, -1000.0, sqrt(14.)*1000.0); 
+	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	    generator()->log() << "  chosen norm = " << nnorm 
+			       << ", th = " << th << endl 
+			       << "  with partner = " << ppartner
+			       << ", pcm = " << pcm << endl;
+	  }
+	} else {
+	  p = particle.parent()->showerKinematics()->getBasis()[0];
+	  n = particle.parent()->showerKinematics()->getBasis()[1];
+	} 
+
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	  generator()->log() << "  create ShowerKinematics with " 
+			     << endl 
+			     << "  p = " << p << " and n = " << n << endl;
+	}
 	
 	Ptr< FS_QtildaShowerKinematics1to2 >::pointer showerKin = 
-	  new_ptr (FS_QtildaShowerKinematics1to2( p, n, p.mass()) );
+	  new_ptr (FS_QtildaShowerKinematics1to2( p, n ) );
 
         showerKin->qtilde( newQ );
 	showerKin->z( sudakov->z() );
 	showerKin->phi( sudakov->phi() );
 
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	  generator()->log() << "SplittingGenerator::chooseForwardBranching(): "
 			     << " ===> END DEBUGGING <=== " << endl; 
 	}
-	return pair<ShoKinPtr,tSudakovFormFactorPtr>( showerKin, sudakov );
 
+	return pair<ShoKinPtr,tSudakovFormFactorPtr>( showerKin, sudakov );
       }
     }
   }
@@ -827,34 +861,32 @@ void SplittingGenerator::initializeRun() {
   //===========
   //=== QED ===
   //===========
-  index.interaction = ShowerIndex::QED;
-  minQValue = _pointerShowerConstrainer->cutoffQScale( index.interaction );
-  if ( isInteractionON( index.interaction ) ) {
+//   index.interaction = ShowerIndex::QED;
+//   minQValue = _pointerShowerConstrainer->cutoffQScale( index.interaction );
+//   if ( isInteractionON( index.interaction ) ) {
 
-    //index.id = ParticleID::u; //--- U ---
-    ////---  U -> U + Gamma  ---
-    //if ( isUtoUGammaSplittingON() ) {
-    //	if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
-    //	  index.timeFlag = ShowerIndex::IS;
-    //	  splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-    //	  sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED,
-    //    						  minQValue, maxQValue ) );
-    //    sudakov->setupLookupTables();
-    //	  _multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-    //	}
-    //	if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
-    //	  index.timeFlag = ShowerIndex::FS;
-    //	  splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
-    //	  sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED,
-    // 						          minQValue, maxQValue ) );
-    //    sudakov->setupLookupTables();
-    //	  _multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
-    //	}
-    //}
+//     index.id = ParticleID::u; //--- U ---
+//     //---  U -> U + Gamma  ---
+//     if ( isUtoUGammaSplittingON() ) {
+//       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
+// 	index.timeFlag = ShowerIndex::IS;
+// 	splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
+// 	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED, minQValue, maxQValue ) );
+// 	sudakov->setupLookupTables();
+// 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
+//       }
+//       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
+// 	index.timeFlag = ShowerIndex::FS;
+// 	splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
+// 	sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED, minQValue, maxQValue ) );
+// 	sudakov->setupLookupTables();
+// 	_multimapSudakov.insert( pair<ShowerIndex,SudakovFormFactorPtr>( index, sudakov ) );
+//       }
+//     }
  
-    //...
+//     //...
 
-  } // === end QED ===
+//   } // === end QED ===
   
   //===========
   //=== EWK ===

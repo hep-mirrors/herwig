@@ -14,9 +14,7 @@ inline FS_QtildaShowerKinematics1to2::FS_QtildaShowerKinematics1to2(const FS_Qti
 
 inline FS_QtildaShowerKinematics1to2::
 FS_QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
-			       const Lorentz5Momentum & n,
-			       const Energy inputOnShellMass ) :
-  QtildaShowerKinematics1to2(p,n,inputOnShellMass) {}
-
+			       const Lorentz5Momentum & n ) :
+  QtildaShowerKinematics1to2( p, n ) {}
 
 }

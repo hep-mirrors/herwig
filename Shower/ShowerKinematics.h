@@ -33,6 +33,8 @@
 #include "Pythia7/Pointer/PtrTraits.h"
 #include "Pythia7/Pointer/RCPtr.h"
 #include "Herwig++/Config/GlobalParameters.h"
+#include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
+#include "ShowerParticle.h"
 
 
 namespace Herwig {
@@ -48,16 +50,20 @@ public:
   virtual ~ShowerKinematics();
   // Standard ctors and dtor.
 
+  inline ShowerKinematics( const Lorentz5Momentum & p, 
+			   const Lorentz5Momentum & n );
+  // Creator with the two defining vectors <!id>p<!!id> and <!id>n<!!id> 
+
   void isTheJetStartingPoint(const bool inputIsTheJetStartingPoint);
   bool isTheJetStartingPoint() const;
   // Set/access the flag that tells whether or not this <!id>ShowerKinematics<!!id>
   // object is associated to the starting particle of the jet: only in this
   // case it is sensible to use the two main virtual methods below.
 
-  virtual void updateChildren( const double parentSudAlpha, 
-			       const Energy parentSudPx, const Energy parentSudPy, 
-                               vector<double> & sudAlphaVect, 
+  virtual void updateChildren( const double parentSudAlpha, const Energy parentSudPx, 
+			       const Energy parentSudPy, vector<double> & sudAlphaVect, 
 			       vector<Energy> & sudPxVect, vector<Energy> & sudPyVect ) = 0;
+
   // Along with the showering evolution --- going forward for
   // time-like (forward) evolution, and going backward for space-like
   // (backward) evolution --- the Sudakov variables associated to the
@@ -67,9 +73,27 @@ public:
   // at this moment and we will obtain instead beta only later, 
   // using <!id>updateParent()<!!id>.
 
-  virtual void updateParent( tCollecShoKinPtr & shoKinChildren ) = 0;
+  virtual void updateChildren( const tShoParPtr theParent, 
+			     const CollecShoParPtr theChildren ) = 0;
+  // Along with the showering evolution --- going forward for
+  // time-like (forward) evolution, and going backward for space-like
+  // (backward) evolution --- the kinematical variables of the
+  // branching products are calculated and updated from the knowledge
+  // of the parent kinematics.  This method is used by the
+  // <!class>ForwardShowerEvolver<!!class>.  ***ACHTUNG*** Might be
+  // extended to update colour connections as well.
+
+  virtual void updateParent( const tShoParPtr theParent, 
+			     const CollecShoParPtr theChildren ) = 0;
   // update the parent Kinematics from the knowledge of the kinematics
   // of the children.  This method will be used by the 
+  // <!class>KinematicsReconstructor<!!class>.
+
+  virtual void updateLast( const tShoParPtr theLast ) = 0;
+  // update the kinematical data of a particle when a reconstruction
+  // fixpoint was found.  This will highly depend on the kind of
+  // kinematics chosen and will be defined in the inherited concrete
+  // classes. This method will be used by the
   // <!class>KinematicsReconstructor<!!class>.
 
   virtual Energy jetMass() = 0;
@@ -78,6 +102,13 @@ public:
   // It should be used only if <!id>isTheJetStartingPoint()<!!id> is true, 
   // and only after the jet kinematics reconstruction.
   // (performed by the <!class>KinematicsReconstructor<!!class> class).
+
+  virtual vector<Lorentz5Momentum> getBasis() = 0;
+  // virtual function to return a set of basis vectors, specific to
+  // the type of evolution.  this function will be used by the
+  // <!class>ForwardShowerEvolver<!!class> in order to access <I>p</I>
+  // and <I>n</I>, which in turn are members of the concrete class
+  // <!class>QtildaShowerKinematics1to2<!!class>.
 
   Lorentz5Momentum referenceFrame( const Lorentz5Momentum & particleMomentum,
 				   const vector<Lorentz5Momentum> & partnersMomenta,
@@ -95,6 +126,7 @@ public:
   inline Energy qtilde() const;
   inline void qtilde( const Energy inputQtilde );
   // Access to/set the scale of the splitting.
+
 
 private:
 

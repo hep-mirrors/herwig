@@ -20,7 +20,8 @@
 
 #include "ShowerKinematics.h"
 #include "Pythia7/CLHEPWrap/Lorentz5Vector.h"
-
+#include "Herwig++/Utilities/HwDebug.h"
+#include "Pythia7/Repository/EventGenerator.h"
 
 namespace Herwig {
 
@@ -36,10 +37,8 @@ public:
   // Standard ctors and dtor.
 
   inline QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
-				     const Lorentz5Momentum & n,
-				     const Energy inputOnShellMass );
+				     const Lorentz5Momentum & n );
   // Creator with the two defining vectors <!id>p<!!id> and <!id>n<!!id> 
-  // and the on-shell mass of the particle.
 
   virtual void updateChildren( const double parentSudAlpha, 
 			       const Energy parentSudPx, const Energy parentSudPy, 
@@ -54,9 +53,27 @@ public:
   // at this moment and we will obtain instead beta only later, 
   // using <!id>updateParent()<!!id>.
 
-  virtual void updateParent( tCollecShoKinPtr & shoKinChildren ) = 0;
+  virtual void updateChildren( const tShoParPtr theParent, 
+			     const CollecShoParPtr theChildren ) = 0;
+  // Along with the showering evolution --- going forward for
+  // time-like (forward) evolution, and going backward for space-like
+  // (backward) evolution --- the kinematical variables of the
+  // branching products are calculated and updated from the knowledge
+  // of the parent kinematics.  This method is used by the
+  // <!class>ForwardShowerEvolver<!!class>.  ***ACHTUNG*** Might be
+  // extended to update colour connections as well.
+
+  virtual void updateParent( const tShoParPtr theParent, 
+			     const CollecShoParPtr theChildren ) = 0;
   // update the parent Kinematics from the knowledge of the kinematics
   // of the children.  This method will be used by the 
+  // <!class>KinematicsReconstructor<!!class>.
+
+  virtual void updateLast( const tShoParPtr theLast ) = 0;
+  // update the kinematical data of a particle when a reconstruction
+  // fixpoint was found.  This will highly depend on the kind of
+  // kinematics chosen and will be defined in the inherited concrete
+  // classes. This method will be used by the
   // <!class>KinematicsReconstructor<!!class>.
 
   virtual Energy jetMass() = 0;
@@ -66,6 +83,13 @@ public:
   // and only after the jet kinematics reconstruction.
   // (performed by the <!class>KinematicsReconstructor<!!class> class).
 
+  virtual vector<Lorentz5Momentum> getBasis(); 
+  // virtual function to return a set of basis vectors, specific to
+  // the type of evolution.  this function will be used by the
+  // <!class>ForwardShowerEvolver<!!class> in order to access <I>p</I>
+  // and <I>n</I>, which in turn are members of the concrete class
+  // <!class>QtildaShowerKinematics1to2<!!class>.
+
   inline double z() const;
   inline void z( const double inputZ );
   inline double phi() const;
@@ -74,17 +98,24 @@ public:
 
   inline const Lorentz5Momentum & pVector() const;
   inline const Lorentz5Momentum & nVector() const;
-  // Access to the <!id>p<!!id> and <!id>n<!!id> vectors used to described the kinematics.
+  inline const double p_dot_n() const;
+  // Access to the <!id>p<!!id> and <!id>n<!!id> vectors used to describe the kinematics.
 
 private:
 
   QtildaShowerKinematics1to2 & operator=(const QtildaShowerKinematics1to2 &);
   //  Private and non-existent assignment operator.
 
+protected: 
+
   double _z;
   double _phi;
-  Lorentz5Momentum _pVector;  //***LOOKHERE*** Re-think where to put them. 
-  Lorentz5Momentum _nVector;  
+  const Lorentz5Momentum _pVector;
+  const Lorentz5Momentum _nVector;
+
+  Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py);
+  // converts a Sudakov parametrization of a momentum w.r.t. the given 
+  // basis <!id>p<!!id> and <!id>n<!!id> into a 5 momentum.
 
 };
 

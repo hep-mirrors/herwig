@@ -45,6 +45,8 @@ class KinematicsReconstructor: public Pythia7::HandlerBase {
 public:
 
   typedef vector<Lorentz5Momentum*> VecMomentaPtr;
+  typedef vector<Lorentz5Momentum> VecMomenta;
+  typedef vector<const Lorentz5Momentum*> CVecMomentaPtr;
 
   typedef map<tShoParPtr, bool> MapShower;
   // For a given (pointer to) shower particle, which is the parent particle 
@@ -71,7 +73,7 @@ public:
   static void Init();
   // Standard Init function used to initialize the interfaces.
 
-  void reconstructHardJets( const MapShower & mapShowerHardJets, 
+  bool reconstructHardJets( const MapShower & mapShowerHardJets, 
 			    const Lorentz5Momentum & pBeamHadron1,
 			    const Lorentz5Momentum & pBeamHadron2,
                             const tcMEPtr specialHardProcess = tcMEPtr() ) 
@@ -140,6 +142,13 @@ private:
   KinematicsReconstructor & operator=(const KinematicsReconstructor &);
   // Private and non-existent assignment operator.
 
+  typedef struct {
+    Lorentz5Momentum p, q; 
+    tShoParPtr parent; 
+  } JetKinStruct;
+
+  typedef vector<JetKinStruct> JetKinVect;
+
   bool reconstructTimeLikeJet( const tShoParPtr particleJetParent );
   // Given the particle (<!class>ShowerParticle<!!class> object) that 
   // originates a forward (time-like) jet, this method reconstructs the kinematics 
@@ -175,8 +184,11 @@ private:
   // object associated with the particle attached to the decaying
   // vertex, although, by definition, it does not split.
 
-  double solveKfactor( const Lorentz5Momentum & cmMomentum, 
-		       const VecMomentaPtr & jetsMomentaPtr );
+  double momConsEq(const double & k, const Energy & root_s, const JetKinVect & jets);
+  // the the term that is made to be zero for a <!id>k<!!id> that is
+  // found by the next method.
+
+  const double solveKfactor( const Energy & root_s, const JetKinVect & jets );
   // Given a vector of 5-momenta of jets, where the 3-momenta are the initial
   // ones before showering and the masses are reconstructed after the showering,
   // this method returns the overall scaling factor for the 3-momenta of the
@@ -185,11 +197,19 @@ private:
   // is equal to the one specified in input, <!id>cmMomentum<!!id>. 
   // The method returns 0 if such factor cannot be found.
   
-  Vector3 solveBoost( const double k, const Lorentz5Momentum & momentum );
-  // Given a 5-momentum and a scale factor, the method returns the Lorentz
-  // boost that transforms the 3-vector  
-  //        vec{momentum}  --->  k*vec{momentum}. 
-  // The method returns the null boost in the case no solution exists. 
+  Vector3 solveBoostBeta( const double k, const Lorentz5Momentum & newq, 
+			  const Lorentz5Momentum & oldp);
+  // Given a 5-momentum and a scale factor, the method returns the
+  // Lorentz boost that transforms the 3-vector vec{momentum} --->
+  // k*vec{momentum}. The method returns the null boost in the case no
+  // solution exists. This will only work in the case where the
+  // outgoing jet-momenta are parallel to the momenta of the particles
+  // leaving the hard subprocess. 
+
+  LorentzRotation solveBoost( const double k, const Lorentz5Momentum & newq, 
+		      const Lorentz5Momentum & oldp);
+  // More general solution, includes the case of non-parallel parent-
+  // and jet momenta, involves a bit more numerical work, however.
 
   bool solveOverallCMframeBoost( const Lorentz5Momentum & pBeamHadron1,
                                  const Lorentz5Momentum & pBeamHadron2,

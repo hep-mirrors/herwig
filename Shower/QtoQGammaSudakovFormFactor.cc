@@ -5,6 +5,7 @@
 //
 
 #include "QtoQGammaSudakovFormFactor.h"
+#include "Pythia7/Repository/UseRandom.h"
 
 using namespace Herwig;
 
@@ -23,7 +24,15 @@ Energy QtoQGammaSudakovFormFactor::generateNextBranching( tPartCollHdlPtr ch,
   _phi = 0.0; 
 
   //***LOOKHERE*** GENERATE  _q , AND EVENTUALLY ALSO  _z  AND  _phi
-
+  //               BELOW IS JUST A TEMPORARY FAKE
+  if (reverseAngularOrder) {
+    _q = startingScale / UseRandom::rnd();
+    _z = UseRandom::rnd(); 
+  } else {
+    get_qz(true, -1.1, .1, max(750.*MeV, splitFun()->massEmitter()), startingScale, _q, _z); 
+  }
+  _phi = 2.*pi*UseRandom::rnd();
+ 
   return _q;
 
 }

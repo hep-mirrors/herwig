@@ -10,29 +10,26 @@ namespace Herwig {
 inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2() 
   : ShowerKinematics(),
     _z( 0.0 ),
-    _phi( 0.0 ),
+    _phi( 0.0 ), 
     _pVector( Lorentz5Momentum() ),
     _nVector( Lorentz5Momentum() )
 {}
 
-
-inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 & x)
+inline QtildaShowerKinematics1to2::
+QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 & x) 
   : ShowerKinematics(x), 
-  _z( x._z ),
-  _phi( x._phi ),
-  _pVector( x._pVector ),
-  _nVector( x._nVector )
+    _z( x._z ),
+    _phi( x._phi ), 
+    _pVector( x._pVector ),
+    _nVector( x._nVector )
 {}
 
-
 inline QtildaShowerKinematics1to2::
-QtildaShowerKinematics1to2( const Lorentz5Momentum & p, const Lorentz5Momentum & n,
-			    const Energy inputOnShellMass ) 
-  : ShowerKinematics(),
-    _z( 0.0 ),
-    _phi( 0.0 ),
-    _pVector( p ),
-    _nVector( n )
+QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
+			    const Lorentz5Momentum & n ) :
+  ShowerKinematics(), 
+  _pVector( p ),
+  _nVector( n )
 {}
 
 
@@ -50,13 +47,17 @@ inline void QtildaShowerKinematics1to2::phi( const double inputPhi ) {
   _phi = inputPhi;
 }
 
-
 inline const Lorentz5Momentum & QtildaShowerKinematics1to2::pVector() const {
   return _pVector;
 }
 
 inline const Lorentz5Momentum & QtildaShowerKinematics1to2::nVector() const {
   return _nVector;
+}
+
+inline const double QtildaShowerKinematics1to2::p_dot_n() const {
+  return (_pVector[3]*_nVector[3] - _pVector[0]*_nVector[0] 
+	  - _pVector[1]*_nVector[1] - _pVector[2]*_nVector[2]); 
 }
 
 

@@ -12,7 +12,6 @@ inline ShowerKinematics::ShowerKinematics()
     _qtilde( Energy() )
 {}
 
-
 inline ShowerKinematics::ShowerKinematics(const ShowerKinematics & x)
   : _isTheJetStartingPoint( x._isTheJetStartingPoint ),
     _qtilde( x._qtilde )
@@ -21,6 +20,7 @@ inline ShowerKinematics::ShowerKinematics(const ShowerKinematics & x)
 inline Energy ShowerKinematics::qtilde() const {
   return _qtilde;
 }
+
 inline void ShowerKinematics::qtilde( const Energy inputQtilde ) {
   _qtilde = inputQtilde;
 }

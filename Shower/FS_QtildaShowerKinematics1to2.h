@@ -33,10 +33,8 @@ public:
   // Standard ctors and dtor.
 
   inline FS_QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
-					const Lorentz5Momentum & n,
-					const Energy inputOnShellMass );
+					const Lorentz5Momentum & n );
   // Creator with the two defining vectors <!id>p<!!id> and <!id>n<!!id> 
-  // and the on-shell mass of the particle.
 
   virtual void updateChildren( const double parentSudAlpha, 
 			       const Energy parentSudPx, const Energy parentSudPy, 
@@ -51,9 +49,27 @@ public:
   // at this moment and we will obtain instead beta only later, 
   // using <!id>updateParent()<!!id>.
 
-  virtual void updateParent( tCollecShoKinPtr & shoKinChildren );
+  virtual void updateChildren( const tShoParPtr theParent, 
+			     const CollecShoParPtr theChildren );
+  // Along with the showering evolution --- going forward for
+  // time-like (forward) evolution, and going backward for space-like
+  // (backward) evolution --- the kinematical variables of the
+  // branching products are calculated and updated from the knowledge
+  // of the parent kinematics.  This method is used by the
+  // <!class>ForwardShowerEvolver<!!class>.  ***ACHTUNG*** Might be
+  // extended to update colour connections as well.
+
+  virtual void updateParent( const tShoParPtr theParent, 
+			     const CollecShoParPtr theChildren );
   // update the parent Kinematics from the knowledge of the kinematics
   // of the children.  This method will be used by the 
+  // <!class>KinematicsReconstructor<!!class>.
+
+  virtual void updateLast( const tShoParPtr theLast );
+  // update the kinematical data of a particle when a reconstruction
+  // fixpoint was found.  This will highly depend on the kind of
+  // kinematics chosen and will be defined in the inherited concrete
+  // classes. This method will be used by the
   // <!class>KinematicsReconstructor<!!class>.
 
   virtual Energy jetMass();

@@ -16,6 +16,7 @@
 #include "ShowerKinematics.h"
 #include "SplitFun1to2.h"
 #include "ShowerColourLine.h"
+#include "ShowerConfig.h"
 
 using namespace Herwig;
 
@@ -70,9 +71,15 @@ timeLikeShower( tPartCollHdlPtr ch,
 		const bool specialDecay )  throw (Veto, Stop, Exception) {
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "ForwardShowerEvolver::timeLikeShower "
+    generator()->log() << endl 
+		       << "ForwardShowerEvolver::timeLikeShower "
 		       << " ===> START DEBUGGING <=== "
 		       << "EventNumber = " << generator()->currentEventNumber() << endl; 
+  }
+
+  if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower 
+       && generator()->currentEventNumber() < 1000) {
+    generator()->log() << "# event no " << generator()->currentEventNumber() << endl; 
   }
 
   bool hasEmitted = false;
@@ -84,6 +91,16 @@ timeLikeShower( tPartCollHdlPtr ch,
     tShoParPtr part = particlesYetToShower.back();
     particlesYetToShower.pop_back();
 
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      generator()->log() << "-- Yet " <<  particlesYetToShower.size() + 1
+			 << ". next " << part->data().PDGName() << endl; 
+    }
+
+    if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower
+	 && generator()->currentEventNumber() < 1000) {
+      generator()->log() << "-<" <<  particlesYetToShower.size() + 1
+			 << " " << part->data().PDGName();
+    }
     //***LOOKHERE***  update rhoD matrix of  part ;
 
     pair<ShoKinPtr, tSudakovFormFactorPtr> pairShowerKinSudakov = 
@@ -91,21 +108,17 @@ timeLikeShower( tPartCollHdlPtr ch,
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
       if ( pairShowerKinSudakov.first && pairShowerKinSudakov.second ) {
-	generator()->log() << "-- Yet " <<  particlesYetToShower.size() + 1
-			   << " to shower, next is (name, int) = (" 
-			   << part->data().PDGName() 
-			   << ", "
+	generator()->log() << "  branching (int, Q_i -> Q_f) = (" 
 			   << pairShowerKinSudakov.second->splitFun()->interactionType()
-			   << "), (Q_ini -> Q_fin) = (" 
-			   << part->evolutionScales()[pairShowerKinSudakov.second->splitFun()->interactionType()] 
+			   << ", " 
+			   << part->evolutionScales()[pairShowerKinSudakov.second->splitFun()->interactionType()]
 			   << " -> " 
-			   << pairShowerKinSudakov.first->qtilde() 
-			   << "); "  << endl;
+			   << pairShowerKinSudakov.first->qtilde()
+			   << "). "  << endl;
       } else {
-	generator()->log() << "-- No branching occured" << endl; 
+	generator()->log() << "  no branching." << endl; 
       }
     }
-    
 
     //***LOOKHERE***  accept it according to the  showerConstrainer  and soft correction;
 
@@ -116,7 +129,10 @@ timeLikeShower( tPartCollHdlPtr ch,
 	generator()->log() << "-- no further splitting, rhoD propagtion should start here."
 			   << endl;
       }
-      
+      if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower 
+	   && generator()->currentEventNumber() < 1000) {
+	generator()->log() << endl;
+      }      
       //***LOOKHERE*** rhoD propagation;
 
     } else {
@@ -167,28 +183,26 @@ timeLikeShower( tPartCollHdlPtr ch,
 	showerProduct2->setEvolutionScale(interaction, scale);
 
 	// Set the Sudakov kinematics variables of the branching products.
-        vector<double> sudAlphaProducts;
-	vector<Energy> sudPxProducts, sudPyProducts;
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	  generator()->log() << "ForwardShowerEvolver::timeLikeShower: "
-			     << "will call updateChildren() now:" << endl; 
-	}
-	part->showerKinematics()->
-	  updateChildren( part->sudAlpha(), part->sudPx(), part->sudPy(),
-			  sudAlphaProducts, sudPxProducts, sudPyProducts );  
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-	  generator()->log() << "ForwardShowerEvolver::timeLikeShower: "
-			     << "call to updateChildren() successfull!" << endl; 
-	}	
-	if ( sudAlphaProducts.size() == 2  &&
-	     sudPxProducts.size() == 2  && sudPyProducts.size() == 2 ) {
-	  showerProduct1->sudAlpha( sudAlphaProducts[0] ); 
-	  showerProduct1->sudPx( sudPxProducts[0] ); 
-	  showerProduct1->sudPy( sudPyProducts[0] ); 
-	  showerProduct2->sudAlpha( sudAlphaProducts[1] ); 
-	  showerProduct2->sudPx( sudPxProducts[1] ); 
-	  showerProduct2->sudPy( sudPyProducts[1] ); 
-	}
+//         vector<double> sudAlphaProducts;
+// 	vector<Energy> sudPxProducts, sudPyProducts;
+// 	part->showerKinematics()->
+// 	  updateChildren( part->sudAlpha(), part->sudPx(), part->sudPy(),
+// 			  sudAlphaProducts, sudPxProducts, sudPyProducts );  
+// 	if ( sudAlphaProducts.size() == 2  &&
+// 	     sudPxProducts.size() == 2  && sudPyProducts.size() == 2 ) {
+// 	  showerProduct1->sudAlpha( sudAlphaProducts[0] ); 
+// 	  showerProduct1->sudPx( sudPxProducts[0] ); 
+// 	  showerProduct1->sudPy( sudPyProducts[0] ); 
+// 	  showerProduct2->sudAlpha( sudAlphaProducts[1] ); 
+// 	  showerProduct2->sudPx( sudPxProducts[1] ); 
+// 	  showerProduct2->sudPy( sudPyProducts[1] ); 
+// 	}
+
+	CollecShoParPtr theChildren; 
+	theChildren.push_back( showerProduct1 ); 
+	theChildren.push_back( showerProduct2 ); 
+	part->showerKinematics()->updateChildren( part, theChildren ); 
+
 
 	// In the case of splittings which involves coloured particles,
         // set properly the colour flow of the branching.
@@ -223,9 +237,9 @@ timeLikeShower( tPartCollHdlPtr ch,
 	particlesYetToShower.push_back( showerProduct2 );	
 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  generator()->log() << " Splitting : " << part->data().PDGName()
-                             << "  ---> " << showerProduct1->data().PDGName()
-                             << "  +  " <<  showerProduct2->data().PDGName() << endl
+	  generator()->log() << "  Splitting : " << part->data().PDGName()
+                             << " --> " << showerProduct1->data().PDGName()
+                             << " + " <<  showerProduct2->data().PDGName() << endl
 			     << " \t \t \t \t    colourLine \t antiColourLine " << endl;
 	  // Create a map of pointers to ShowerColourLine object,
 	  // in order to have a nice printing of colour lines,
@@ -266,12 +280,25 @@ timeLikeShower( tPartCollHdlPtr ch,
 	      generator()->log() << "0";
 	    }
 	    generator()->log() << endl;
-	  }
-	}
+	  } // for 
+	} // debug full 
 	
-      }
+	if ( HERWIG_DEBUG_LEVEL == HwDebug::minimal_Shower       
+	     && generator()->currentEventNumber() < 1000) {
+	  generator()->log() << "->" << showerProduct1->data().PDGName()
+                             << "+" <<  showerProduct2->data().PDGName()
+			     << " (" 
+			     << pairShowerKinSudakov.second->splitFun()->interactionType()
+			     << ", " 
+			     << part->evolutionScales()[pairShowerKinSudakov.second->splitFun()->interactionType()]
+			     << ">" 
+			     << pairShowerKinSudakov.first->qtilde()
+			     << ")"
+			     << endl;
 
-    }
+	}
+      }
+    } //
       
   } while ( ! particlesYetToShower.empty() );
     

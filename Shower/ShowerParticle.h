@@ -128,6 +128,7 @@ public:
   // Access/Set the particle 4-position. It is eventually used by the
   // Hadronization (for the colour reconnection).
 
+  inline void transform(const LorentzRotation & r);
   void deepTransform(const LorentzRotation & r);
   inline void deepBoost(double bx, double by, double bz);
   // Do Lorentz transformations on this particle and its decay products.
@@ -165,6 +166,9 @@ public:
   inline void addChild(const tShoParPtr inputChild);
   // Add a child, setting child's parent pointer accordingly.
 
+  inline void removeChildren();
+  // remove collection of children.
+
   bool addChildren(const tCollecShoParPtr & inputChildren);
   // Add a collection of children, setting children's parent pointer
   // accordingly. The input children can be either the decay products
@@ -185,6 +189,7 @@ public:
   inline Energy sudPy() const;
   inline void sudPy(const Energy inputSudPy);
   inline Energy sudPperp() const;
+  inline Energy2 sudPperp2() const;
   // Access/Set Sudakov variables.
   // Notice that the <!id>ShowerKinematics<!!id> object is logically
   // associated more with the branching vertex than with the radiating 
@@ -243,6 +248,20 @@ public:
   // if <!id>decayer()<!!id> is not null, because if it emits radiation
   // the decays products will be "transferred" to the particle
   // instance after the showering).
+
+  void printInfo(); 
+  // prints info of a single particle in some predefined way, mainly
+  // for debug purposes. Used by <!id>deepPrintInfo()</!id>.
+
+  void deepPrintInfo();
+  // print info of all children
+
+  Lorentz5Momentum sumParentsMomenta();
+  // get the sum of all parents momenta (only for plotting)
+
+  tCollecShoParPtr getFSChildren();
+  // get a list of all children of _particle that are in the final
+  // state
 
 protected:
 

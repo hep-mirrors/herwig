@@ -121,64 +121,71 @@ void InsideRangeShowerEvolver::showerNormally( tPartCollHdlPtr ch,
     _pointerPartnerFinder->setEWKInitialEvolutionScales( showerConstrainer, particles );
   }
 
-  // Final State Radiation
-  if ( _pointerSplittingGenerator->isFSRadiationON() ) {
-    // Remember that is not allowed to add element to a STL container
-    // while you are iterating over it. Therefore an additional, temporary,
-    // container must be used.
-    CollecShoParPtr particlesToShower;
-    for ( CollecShoParPtr::const_iterator cit = particles.begin();
-	  cit != particles.end(); ++cit ) {
-      if ( (*cit)->isFinalState() ) {
-	particlesToShower.insert( particlesToShower.end(), *cit );
+  bool reconstructed = false; 
+  // catch the possibility of an impossible kinematic reconstruction
+
+  while ( !reconstructed ) {
+
+    // Final State Radiation
+    if ( _pointerSplittingGenerator->isFSRadiationON() ) {
+      // Remember that is not allowed to add element to a STL container
+      // while you are iterating over it. Therefore an additional, temporary,
+      // container must be used.
+      CollecShoParPtr particlesToShower;
+      for ( CollecShoParPtr::const_iterator cit = particles.begin();
+	    cit != particles.end(); ++cit ) {
+	if ( (*cit)->isFinalState() ) {
+	  particlesToShower.insert( particlesToShower.end(), *cit );
+	}
+      }
+      for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
+	    cit != particlesToShower.end(); ++cit ) {
+	bool hasEmitted = _pointerForwardShowerEvolver->
+	  timeLikeShower( ch, showerConstrainer, meCorrection, *cit, particles );
+	// Fill  _mapShowerHardJets  with  (*cit, hasEmitted);
+	if ( _mapShowerHardJets.find( *cit ) != _mapShowerHardJets.end() ) {
+	  ( _mapShowerHardJets.find( *cit ) )->second = hasEmitted;
+	} else {
+	  _mapShowerHardJets.insert( pair<tShoParPtr, bool>( *cit, hasEmitted ) );
+	}
       }
     }
-    for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
-	  cit != particlesToShower.end(); ++cit ) {
-      bool hasEmitted = _pointerForwardShowerEvolver->
-	timeLikeShower( ch, showerConstrainer, meCorrection, *cit, particles );
-      // Fill  _mapShowerHardJets  with  (*cit, hasEmitted);
-      if ( _mapShowerHardJets.find( *cit ) != _mapShowerHardJets.end() ) {
-	( _mapShowerHardJets.find( *cit ) )->second = hasEmitted;
-      } else {
-	_mapShowerHardJets.insert( pair<tShoParPtr, bool>( *cit, hasEmitted ) );
+
+    // Initial State Radiation
+    if ( _pointerSplittingGenerator->isISRadiationON() ) {
+      CollecShoParPtr particlesToShower;
+      for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
+	    cit != particlesToShower.end(); ++cit ) {
+	if ( ! (*cit)->isFinalState() ) {
+	  particlesToShower.insert( particlesToShower.end(), *cit );
+	}
+      }
+      for ( CollecShoParPtr::iterator it = particlesToShower.begin();
+	    it != particlesToShower.end(); ++it ) {
+	bool hasEmitted = _pointerBackwardShowerEvolver->
+	  spaceLikeShower( ch, showerConstrainer, meCorrection, *it, particles );
+	if ( _mapShowerHardJets.find( *it ) != _mapShowerHardJets.end() ) {
+	  ( _mapShowerHardJets.find( *it ) )->second = hasEmitted;
+	} else {
+	  _mapShowerHardJets.insert( pair<tShoParPtr, bool>( *it, hasEmitted ) );
+	}
       }
     }
-  }
 
-  // Initial State Radiation
-  if ( _pointerSplittingGenerator->isISRadiationON() ) {
-    CollecShoParPtr particlesToShower;
-    for ( CollecShoParPtr::const_iterator cit = particlesToShower.begin();
-	  cit != particlesToShower.end(); ++cit ) {
-      if ( ! (*cit)->isFinalState() ) {
-	particlesToShower.insert( particlesToShower.end(), *cit );
-      }
+    //***LOOKHERE**** global update of rhoD matrices? (maybe or maybe not)
+    
+    if ( ! skipKinReco ) {
+      reconstructed = reconstructKinematics( ch );
+    } else { 
+      reconstructed = true;     
     }
-    for ( CollecShoParPtr::iterator it = particlesToShower.begin();
-	  it != particlesToShower.end(); ++it ) {
-      bool hasEmitted = _pointerBackwardShowerEvolver->
-	spaceLikeShower( ch, showerConstrainer, meCorrection, *it, particles );
-      if ( _mapShowerHardJets.find( *it ) != _mapShowerHardJets.end() ) {
-	( _mapShowerHardJets.find( *it ) )->second = hasEmitted;
-      } else {
-	_mapShowerHardJets.insert( pair<tShoParPtr, bool>( *it, hasEmitted ) );
-      }
+    
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      generator()->log() << "InsideRangeShowerEvolver::showerNormally "
+			 << " ===> END DEBUGGING <=== " 
+			 << endl;
     }
   }
-
-  //***LOOKHERE**** global update of rhoD matrices? (maybe or maybe not)
-
-  if ( ! skipKinReco ) {
-    reconstructKinematics( ch );
-  }
-
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "InsideRangeShowerEvolver::showerNormally "
-		       << " ===> END DEBUGGING <=== " 
-		       << endl;
-  }
-  
 }
 
 
@@ -323,7 +330,7 @@ void InsideRangeShowerEvolver::setEffectiveGluonMass( const Energy effectiveGluo
 }
 
     
-void InsideRangeShowerEvolver::reconstructKinematics( tPartCollHdlPtr & ch ) 
+bool InsideRangeShowerEvolver::reconstructKinematics( tPartCollHdlPtr & ch ) 
   throw (Veto, Stop, Exception) {
 
   for ( CollecMapShower::iterator it = _collecMapShowerDecayJets.begin();
@@ -339,12 +346,13 @@ void InsideRangeShowerEvolver::reconstructKinematics( tPartCollHdlPtr & ch )
     }
   }
   PPair beamHadrons = ch->currentCollision()->incoming();
-  _pointerKinematicsReconstructor->
+  bool ok = _pointerKinematicsReconstructor->
     reconstructHardJets( _mapShowerHardJets,
-			   beamHadrons.first->momentum(),
-			   beamHadrons.second->momentum(),
-			   ch->lastME() ); 
+			 beamHadrons.first->momentum(),
+			 beamHadrons.second->momentum(),
+			 ch->lastME() ); 
   setDoneMapShower(_mapShowerHardJets);
-
+  return ok; 
+  
 }
 

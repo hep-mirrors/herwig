@@ -97,7 +97,7 @@ public:
   // the various flags that are needed for the kinematics reconstruction
   // (but the latter is not done by this method).
 
-  void reconstructKinematics( tPartCollHdlPtr & ch ) throw (Veto, Stop, Exception);
+  bool reconstructKinematics( tPartCollHdlPtr & ch ) throw (Veto, Stop, Exception);
   // It does the kinematics reconstruction and the necessary 
   // reshuffling in order to conserve energy-momentum.
   // It is used mainly by the above methods, but is also used

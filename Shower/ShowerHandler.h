@@ -26,7 +26,6 @@
 #include "ShowerConstrainer.h"
 #include "InsideRangeShowerEvolver.h"
 
-
 namespace Herwig {
 
 
@@ -105,15 +104,18 @@ private:
   // transformation from ShowerColourLine objects into Pythia7
   // ColourLine ones must be properly handled.
 
+
+  void eventShape(const tCollecShoParPtr & p, 
+		  vector<double> & lam, vector<Vector3> & n);
+
   Ptr<GlobalParameters>::pointer _pointerGlobalParameters; 
   Ptr<MECorrections>::pointer _pointerMECorrections;
   Ptr<ShowerConstrainer>::pointer _pointerShowerConstrainer;
   Ptr<InsideRangeShowerEvolver>::pointer _pointerInsideRangeShowerEvolver;
 
   CollecShoParPtr _particles;   
-  
+ 
 };
-
 
 }
 

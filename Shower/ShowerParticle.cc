@@ -25,7 +25,8 @@ ShowerParticle::ShowerParticle()
     _scales( ShowerIndex::NumInteractionTypes ),
     _partners( ShowerIndex::NumInteractionTypes ),
     _rhoDUpdate( false ),
-    _rhoD( 2, vector< std::complex<double> >(2) )
+    _rhoD( 2, vector< std::complex<double> >(2) ),
+    _reconstructionFixedPoint( false )
 { 
   // Initialize the scales to the lowest Energy value, and null partners.
   for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
@@ -58,7 +59,8 @@ ShowerParticle::ShowerParticle(const Pythia7::Particle & inputP7Particle)
     _scales( ShowerIndex::NumInteractionTypes ),
     _partners( ShowerIndex::NumInteractionTypes ),
     _rhoDUpdate( false ),
-    _rhoD( 2, vector< std::complex<double> >(2) )  
+    _rhoD( 2, vector< std::complex<double> >(2) ), 
+    _reconstructionFixedPoint( false )  
 {
   // Initialize the scales to the lowest Energy value, and null partners.
   for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
@@ -77,7 +79,7 @@ ShowerParticle::ShowerParticle(const Pythia7::Particle & inputP7Particle)
   position( inputP7Particle.labVertex() );
   //***LOOKHERE*** Notice that the colour lines should be set not here 
   //               but at the beginning of ShowerHandler::cascade() 
-}
+} 
 
 
 Pythia7::PPtr ShowerParticle::createPythia7Particle() const {
@@ -92,7 +94,112 @@ Pythia7::PPtr ShowerParticle::createPythia7Particle() const {
   return particleP7;
 }
 
+
+void ShowerParticle::deepTransform(const LorentzRotation & r) {
+//   cerr << "ShowerParticle::deepTransform: " << endl; 
+//   if ( this->parent() ) {
+//     cerr << "  " << this->parent()->data().PDGName(); 
+//   } else {
+//     cerr << "  *"; 
+//   }
+//   cerr << " <- " << this->data().PDGName() << " -> ";
+//   for (CollecShoParPtr::const_iterator cit = children().begin(); 
+//        cit != children().end(); ++cit) {
+//     cerr << (*cit)->data().PDGName() << " ";
+//   }
+//   cerr << endl; 
+  transform(r);
+  for (CollecShoParPtr::const_iterator cit = children().begin(); 
+       cit != children().end(); ++cit) {
+    (*cit)->deepTransform(r);   
+    //    cerr << "  call " << (*cit)->data().PDGName() << endl;
+  }
+}
+
+
+void ShowerParticle::printInfo() {
+  cout << this->data().id() << " " 
+       << momentum().x() << " " << momentum().y() << " " 
+       << momentum().z() << " " <<momentum().t() << " ";
+  Lorentz5Momentum dum = sumParentsMomenta() - momentum(); 
+  cout << dum.x() << " " << dum.y() << " " 
+       << dum.z() << " " << dum.t() << " " << children().size() << "\t";
+  if( parent() ) {
+    cout << "<" << parent()
+	 << "," << parent()->data().PDGName() << "> ";
+  } else {
+    cout << "<> ";
+  }
+  cout << "[" << this << "," << this->data().PDGName() << "] {"; 
+  if ( children().size() > 0 ) {
+    for (CollecShoParPtr::const_iterator cit = children().begin(); 
+	 cit != children().end(); ++cit) {
+      cout << "[" << (*cit) << "," << (*cit)->data().PDGName() << "]";
+    }
+    cout << "} ";
+  } else {
+    cout << "} ";
+  }
+  cout << endl; 
+}
+
+
+void ShowerParticle::deepPrintInfo() {
+  printInfo();
+  for (CollecShoParPtr::const_iterator cit = children().begin(); 
+       cit != children().end(); ++cit) {
+    (*cit)->deepPrintInfo();   
+  }
+}
  
+
+Lorentz5Momentum ShowerParticle::sumParentsMomenta() {
+  Lorentz5Momentum dum; 
+  if ( parent() ) dum = parent()->sumParentsMomenta();
+  return dum += momentum(); 
+}
+
+// CollecShoParPtr ShowerParticle::getFSChildren() {
+//   CollecShoParPtr dum; 
+//   for (CollecShoParPtr::const_iterator cit = children().begin(); 
+//        cit != children().end(); ++cit) {
+//     cerr << " " << (*cit)->data().PDGName();
+//     if ( (*cit)->isReconstructionFixedPoint() ) {
+//       dum.push_back( *cit ); 
+//     } else {
+//       (*cit)->getFSChildren();
+//     }
+//   }
+//   cerr << "]"; 
+//   return dum; 
+// }	
+
+
+tCollecShoParPtr ShowerParticle::getFSChildren() {
+  tCollecShoParPtr fs;   
+  if ( this->children().empty() ) {
+    fs.push_back( this ); 
+  } else {
+    tCollecShoParPtr yet; 
+    yet.push_back( this ); 
+    tShoParPtr dum; 
+    while (! yet.empty() ) {
+      dum = yet.back(); 
+      yet.pop_back(); 
+      for (CollecShoParPtr::const_iterator cit = dum->children().begin(); 
+	   cit != dum->children().end(); ++cit) {
+	if ( (*cit)->isReconstructionFixedPoint() ) {
+	  fs.push_back( *cit ); 
+	} else {
+	  yet.push_back( *cit ); 
+	}
+      }
+    } 
+  }
+  return fs; 
+}	
+
+
 bool ShowerParticle::addChildren(const tCollecShoParPtr & inputChildren) {
   bool isOK = true;
   if (! children().empty() ) {

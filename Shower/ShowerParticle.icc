@@ -107,6 +107,11 @@ inline const CollecShoParPtr & ShowerParticle::children() const {
   return _children;
 }
 
+inline void ShowerParticle::transform(const LorentzRotation & r) {
+  _momentum = r*_momentum; 
+  _position = r*_position;
+}
+
 inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
   if ( inputChild ) {
     _children.push_back(inputChild);
@@ -114,6 +119,9 @@ inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
   }  
 }
 
+inline void ShowerParticle::removeChildren() {
+  _children.clear(); 
+}
   
 inline double ShowerParticle::sudAlpha() const {
   return _sudAlpha;
@@ -147,6 +155,9 @@ inline Energy ShowerParticle::sudPperp() const {
   return sqrt( sqr(_sudPx) + sqr(_sudPy) );
 }
 
+inline Energy2 ShowerParticle::sudPperp2() const {
+  return ( sqr(_sudPx) + sqr(_sudPy) );
+}
 
 inline tSplitFunPtr ShowerParticle::splitFun() const {
   return _splitFun;

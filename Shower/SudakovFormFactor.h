@@ -114,6 +114,11 @@ protected:
   //               in the protected part because they should be
   //               used only by the derived classes.
 
+  // toy model: returns q according to powerlike (q^p) distribution
+  // with cutoff q0, qmin < q0 < qmax.  qmin is chosen such that the
+  // probability for a first branching is 1-R.  z is chosen from
+  // 1/(1-z) with z0 = m/q and z0 < z < 1-z0; or (if znorm==false)
+  // flatter, as z^2+(1-z)^2 with z0 < z < 1.
   void get_qz (bool znorm, double p, double R, Energy q0, Energy qmax, Energy &q, double &z);
 
 private:
