@@ -39,11 +39,11 @@ void IS_QtildaShowerKinematics1to2::Init() {
 
 
 void IS_QtildaShowerKinematics1to2::
-updateChildren( const Energy qtilda, const double z, const double phi,
-		const Energy Mass1, const Energy Mass2,
-		double & sudAlpha1, double & px1, double &py1,
-		double & sudAlpha2, double & px2, double &py2) {
-
+updateChildren( const double parentSudAlpha, 
+		const Energy parentSudPx, const Energy parentSudPy, 
+		vector<double> & sudAlphaVect, 
+		vector<Energy> & sudPxVect, vector<Energy> & sudPyVect ) {
+ 
   //***LOOKHERE*** WRITE THE CODE
 
 }

@@ -103,9 +103,12 @@ bool PartnerFinder::setQCDInitialEvolutionScales( const tShoConstrPtr showerCons
       if ( (*cit)->data().coloured()  && 
 	   ( (*cit)->children().size() == 0  ||  isDecayCase ) ) {
 	generator()->log() << "\t particle = " << (*cit)->data().PDGName()
-			   << "   partner = " << ( (*cit)->partners()[ ShowerIndex::QCD ] ?
-						   (*cit)->partners()[ ShowerIndex::QCD ]
-						   ->data().PDGName() : 0 ) << endl;
+	                   << "   partner = ";
+	if ( (*cit)->partners()[ ShowerIndex::QCD ] ) {
+	  generator()->log() << (*cit)->partners()[ ShowerIndex::QCD ]->data().PDGName() << endl;
+	} else {
+	  generator()->log() <<  "UNDEFINED" << endl;
+	}
       }
     }
     generator()->log() << "PartnerFinder::debuggingInfo "

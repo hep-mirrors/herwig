@@ -68,3 +68,18 @@ Complex QtoQGammaSplitFun::integratedFunWithHelicities( const double z, const En
 
 }
 
+
+void QtoQGammaSplitFun::colourConnection( const ShoColinePair & parentShoColinePair,
+					  ShoColinePair & firstProductShoColinePair,
+					  ShoColinePair & secondProductShoColinePair ) {
+
+  // Return immediately if the input is inconsistent.
+  if ( ( ! parentShoColinePair.first  &&  ! parentShoColinePair.second ) ||
+       ( parentShoColinePair.first  &&  parentShoColinePair.second ) ) {
+    return;
+  }
+  
+  firstProductShoColinePair = parentShoColinePair;
+  secondProductShoColinePair = ShoColinePair();
+
+}

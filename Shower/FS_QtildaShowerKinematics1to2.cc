@@ -40,32 +40,12 @@ void FS_QtildaShowerKinematics1to2::Init() {
 
 
 void FS_QtildaShowerKinematics1to2::
-updateChildren( const Energy qtilda, const double z, const double phi,
-		const Energy Mass1, const Energy Mass2,
-		double & sudAlpha1, double & px1, double & py1,
-		double & sudAlpha2, double & px2, double & py2) {
-  
-  //***LOOKHERE*** complete the code  
-  sudAlpha1 *= z; 
-  sudAlpha2 *= 1.-z; 
-
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "FS_QtildaShowerKinematics1to2::updateChildren() "
-		       << " ===> START DEBUGGING <=== "
-		       << "   EventNumber=" << generator()->currentEventNumber() 
-		       << endl; 
-    if ( sqr( z*qtilda ) - sqr(Mass1) < 0 ) {
-      generator()->log() << "Warning! check phase space of qtilda and z!" << endl; 
-    }
-  }
-
-  Energy pPerp = (1.-z)*sqrt( sqr( z*qtilda ) - sqr(Mass1));
-  px1 = pPerp*cos(phi) + z*px1; 
-  py1 = pPerp*sin(phi) + z*py1; 
-  px2 -= px1; 
-  py2 -= py1;
-
-  // ... TO BE COMPLETED AND checked!...
+updateChildren( const double parentSudAlpha, 
+		const Energy parentSudPx, const Energy parentSudPy, 
+		vector<double> & sudAlphaVect, 
+		vector<Energy> & sudPxVect, vector<Energy> & sudPyVect ) {
+ 
+  //***LOOKHERE*** WRITE THE CODE
 
 }
 

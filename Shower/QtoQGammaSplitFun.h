@@ -45,6 +45,13 @@ public:
   // <!id>z<!!id> variable, <!id>phi<!!id> azimuthal angle, and 
   // helicities of the three particles.
 
+  virtual void colourConnection( const ShoColinePair & parentShoColinePair,
+				 ShoColinePair & firstProductShoColinePair,
+				 ShoColinePair & secondProductShoColinePair );
+  // See long comment on this method on class <!class>SplitFun1to2<!!class>.
+  // Remember that the first branching product is considered the quark
+  // and the second one the photon.
+
 public:
 
   static void Init();

@@ -426,14 +426,6 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
 	showerKin->z( sudakov->z() );
 	showerKin->phi( sudakov->phi() );
 
-        //***LOOKHERE*** Fill here or in  generateBranchingKinematics 
-        //               the alpha, beta ...
-        //               Notice that you can always access the shower
-	//               kinematics information of the parent of  particle
-	//                 particle->parent()->showerKinematics()
-        //               This can help in determining the shower kinematics
-        //               of  particle .
-
 	return pair<ShoKinPtr,tSudakovFormFactorPtr>( showerKin, sudakov );
 
       }

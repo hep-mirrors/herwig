@@ -16,6 +16,10 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
      _parent(x._parent),
      _isFinalState(x._isFinalState),
      _children(x._children),
+     _sudAlpha(x._sudAlpha),
+     _sudBeta(x._sudBeta),
+     _sudPx(x._sudPx),
+     _sudPy(x._sudPy),
      _splitFun(x._splitFun),
      _decayer(x._decayer),
      _showerKinematics(x._showerKinematics),
@@ -108,6 +112,39 @@ inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
     _children.push_back(inputChild);
     inputChild->parent(this);
   }  
+}
+
+  
+inline double ShowerParticle::sudAlpha() const {
+  return _sudAlpha;
+}
+inline void ShowerParticle::sudAlpha(const double inputSudAlpha) {
+  _sudAlpha = inputSudAlpha;
+}
+
+inline double ShowerParticle::sudBeta() const {
+  return _sudBeta;
+}
+inline void ShowerParticle::sudBeta(const double inputSudBeta) {
+  _sudBeta = inputSudBeta;
+}
+
+inline Energy ShowerParticle::sudPx() const {
+  return _sudPx;
+}
+inline void ShowerParticle::sudPx(const Energy inputSudPx) {
+  _sudPx = inputSudPx;
+}
+
+inline Energy ShowerParticle::sudPy() const {
+  return _sudPy;
+}
+inline void ShowerParticle::sudPy(const Energy inputSudPy) {
+  _sudPy = inputSudPy;
+}
+
+inline Energy ShowerParticle::sudPperp() const {
+  return sqrt( sqr(_sudPx) + sqr(_sudPy) );
 }
 
 

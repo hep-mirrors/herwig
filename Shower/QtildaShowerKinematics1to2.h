@@ -43,16 +43,18 @@ public:
   // Creator with the two defining vectors <!id>p<!!id> and <!id>n<!!id> 
   // and the on-shell mass of the particle.
 
-  virtual void updateChildren( const Energy qtilda, const double z, const double phi,
-			       const Energy Mass1, const Energy Mass2,
-			       double & sudAlpha1, double & px1, double &py1, 
-			       double & sudAlpha2, double & px2, double &py2) = 0;
+  virtual void updateChildren( const double parentSudAlpha, 
+			       const Energy parentSudPx, const Energy parentSudPy, 
+                               vector<double> & sudAlphaVect, 
+			       vector<Energy> & sudPxVect, vector<Energy> & sudPyVect ) = 0;
   // Along with the showering evolution --- going forward for
   // time-like (forward) evolution, and going backward for space-like
-  // (backward) evolution --- the shower kinematics of the branching
-  // products is created and filled.  Note that only <I>alpha</I> and <I>p_perp</I>
-  // can be reconstructed at this moment and we will obtain beta only
-  // later, using <!id>updateParent()<!!id>
+  // (backward) evolution --- the Sudakov variables associated to the
+  // branching products are calcalted and returned, from the knowledge
+  // of the parent Sudakov variables.   
+  // Note that only <I>alpha</I> and <I>p_perp</I> can be reconstructed 
+  // at this moment and we will obtain instead beta only later, 
+  // using <!id>updateParent()<!!id>.
 
   virtual void updateParent( tCollecShoKinPtr & shoKinChildren ) = 0;
   // update the parent Kinematics from the knowledge of the kinematics
@@ -74,23 +76,6 @@ public:
   inline void phi( const double inputPhi );
   // Access/set to the generated kinematics variables of the splitting <I>1-&GT;2</I>.
 
-  inline double alpha() const;
-  inline void alpha( const double inputAlpha );
-  inline double beta() const;
-  inline void beta( const double inputBeta );
-  inline Energy qPerp1() const;
-  inline void qPerp1( const Energy inputQPerp1 );
-  inline Energy qPerp2() const;
-  inline void qPerp2( const Energy inputQPerp2 );
-  inline Energy pPerp1() const;
-  inline void pPerp1( const Energy inputPPerp1 );
-  inline Energy pPerp2() const;
-  inline void pPerp2( const Energy inputPPerp2 );
-  // Access/set to the calculated kinematics variables of the splitting <I>1-&GT;2</I>.
-
-  inline Energy onShellMass() const;
-  inline void onShellMass( const Energy inputOnShellMass );
-
   inline const Lorentz5Momentum & pVector() const;
   inline const Lorentz5Momentum & nVector() const;
   // Access to the <!id>p<!!id> and <!id>n<!!id> vectors used to described the kinematics.
@@ -111,15 +96,8 @@ private:
   Energy _qtilde;
   double _z;
   double _phi;
-  double _alpha;
-  double _beta;
-  Energy _qPerp1;
-  Energy _qPerp2;
-  Energy _pPerp1;
-  Energy _pPerp2;
-  Energy _onShellMass;
-  Lorentz5Momentum _pVector;
-  Lorentz5Momentum _nVector;
+  Lorentz5Momentum _pVector;  //***LOOKHERE*** Re-think where to put them. 
+  Lorentz5Momentum _nVector;  
 
 };
 

@@ -15,6 +15,7 @@
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
 #include "SplitFun1to2.h"
+#include "ShowerColourLine.h"
 
 using namespace Herwig;
 
@@ -124,24 +125,46 @@ timeLikeShower( tPartCollHdlPtr ch,
 	ShoParPtr showerProduct2 = new_ptr( ShowerParticle() );
 	showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
 	showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
-	
-	if ( splitFun->interactionType() == ShowerIndex::QCD ) {
-	  
-	  //***LOOKHERE*** In the case the splitting is of QCD type
-	  //               the colour or anticolour line for the two
-	  //               children must be set. A part the case of
-	  //               a gluon splitting in quark-antiquark, a new
-	  //               colour line must be created...
-	  //               Probably the SplitFun1to2 class should have
-	  //               some methods that provide information about
-	  //               the colour connection about the emitting
-	  //               particle and the children products...
-	  //  
-	  //               showerProduct1->setAntiColourLine(...);
-	  //               showerProduct1->setColourLine(...);
-	  //               showerProduct2->setAntiColourLine(...);
-	  //               showerProduct2->setColourLine(...);
-	  
+
+	// Set the Sudakov kinematics variables of the branching products.
+        vector<double> sudAlphaProducts;
+	vector<Energy> sudPxProducts, sudPyProducts;
+        part->showerKinematics()->
+	  updateChildren( part->sudAlpha(), part->sudPx(), part->sudPy(),
+			  sudAlphaProducts, sudPxProducts, sudPyProducts );  
+	if ( sudAlphaProducts.size() == 2  &&
+	     sudPxProducts.size() == 2  && sudPyProducts.size() == 2 ) {
+	  showerProduct1->sudAlpha( sudAlphaProducts[0] ); 
+	  showerProduct1->sudPx( sudPxProducts[0] ); 
+	  showerProduct1->sudPy( sudPyProducts[0] ); 
+	  showerProduct2->sudAlpha( sudAlphaProducts[1] ); 
+	  showerProduct2->sudPx( sudPxProducts[1] ); 
+	  showerProduct2->sudPy( sudPyProducts[1] ); 
+	}
+
+	// In the case of splittings which involves coloured particles,
+        // set properly the colour flow of the branching.
+	// Notice that the methods:  ShowerColourLine::addColoured  and
+	// ShowerColourLine::addAntiColoured  automatically set also,
+	// respectively, the colourLine and antiColourLine of the 
+	// ShowerParticle  object they received as argument.
+	ShoColinePair parentShoColinePair = ShoColinePair( part->colourLine(), 
+							   part->antiColourLine() );
+	ShoColinePair showerProduct1ShoColinePair = ShoColinePair();
+	ShoColinePair showerProduct2ShoColinePair = ShoColinePair();
+	splitFun->colourConnection( parentShoColinePair,
+				    showerProduct1ShoColinePair, showerProduct2ShoColinePair );
+	if ( showerProduct1ShoColinePair.first ) {
+	  showerProduct1ShoColinePair.first->addColoured( showerProduct1 );
+	}
+	if ( showerProduct1ShoColinePair.second ) {
+	  showerProduct1ShoColinePair.second->addAntiColoured( showerProduct1 );
+	}
+	if ( showerProduct2ShoColinePair.first ) {
+	  showerProduct2ShoColinePair.first->addColoured( showerProduct2 );
+	}
+	if ( showerProduct2ShoColinePair.second ) {
+	  showerProduct2ShoColinePair.second->addAntiColoured( showerProduct2 );
 	}
 	
 	part->addChild( showerProduct1 );
@@ -149,7 +172,24 @@ timeLikeShower( tPartCollHdlPtr ch,
 	collecShoPar.insert( collecShoPar.end(), showerProduct1 );
 	collecShoPar.insert( collecShoPar.end(), showerProduct2 );
 	particlesYetToShower.push_back( showerProduct1 );
-	particlesYetToShower.push_back( showerProduct2 );
+	particlesYetToShower.push_back( showerProduct2 );	
+
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	  generator()->log() << " Splitting : " << part->data().PDGName()
+                             << "  ---> " << showerProduct1->data().PDGName()
+                             << "  +  " <<  showerProduct2->data().PDGName() 
+			     << endl
+			     << " \t colourLine   antiColourLine " << endl
+	                     << " \t   parent:   " << part->data().PDGName()
+                             << "   " << part->colourLine() 
+			     << "   " << part->antiColourLine() << endl
+	                     << " \t   product1: " << showerProduct1->data().PDGName()
+                             << "   " << showerProduct1->colourLine() 
+			     << "   " << showerProduct1->antiColourLine() << endl
+	                     << " \t   product2: " << showerProduct2->data().PDGName()
+                             << "   " << showerProduct2->colourLine() 
+			     << "   " << showerProduct2->antiColourLine() << endl;
+	}
 	
       }
 

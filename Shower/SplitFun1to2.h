@@ -104,26 +104,23 @@ public:
 				 ShoColinePair & firstProductShoColinePair,
 				 ShoColinePair & secondProductShoColinePair );
   // The default definition of this method does nothing.
-  // However, QCD 1-&GT;2 splitting functions which derive from this
-  // class should override this method, in order to provide
-  // the proper colour connection between the emitting parent
-  // and the branching products. More precisely, the first argument
-  // is a pair of pointers to <!id>ShowerColourLine<!!id> objects, 
-  // which are associated with, respectively, the colour (first element
-  // of the pair) and anticolour (second element of the pair)
-  // of the emitting particle; one (but not both) of the these 
-  // two pointers can be null (this is the case for quarks/antiquarks,
-  // whereas gluons have both not null).
+  // However, splitting functions which derive from this
+  // class and that involve coloured particles should override 
+  // this method, in order to provide the proper colour connection 
+  // between the emitting parent and the branching products. 
+  // More precisely, the first argument is a pair of pointers to 
+  // <!id>ShowerColourLine<!!id> objects, which are associated with, 
+  // respectively, the colour (first element of the pair) and 
+  // anticolour (second element of the pair) of the emitting particle.
   // The other two arguments of the method are also pair of pointers
   // to <!id>ShowerColourLine<!!id> objects, for respectively the two 
   // branching products. Again, for each pair, the first element
   // is associated with the colour line and the second element
-  // is associated with the anticolur line; one (but not both)
-  // of these two elements can be null. The <!id>ShowerColourLine<!!id>
-  // objects pointed by any of the two elements of both pairs
-  // can be either one of object pointerd by the radiating parent,
-  // or can be a new one (and because of that, the pointers must be
-  // reference counted, not transient).
+  // is associated with the anticolur line.
+  // The <!id>ShowerColourLine<!!id> objects pointed by any of the 
+  // two elements of both pairs can be either one of object pointerd 
+  // by the radiating parent, or can be a new one (and because of that, 
+  // the pointers must be reference counted, not transient).
   // We prefer to use <!id>ShowerColourLine<!!id> in this method
   // rather than <!id>ShowerParticles<!!id> for two reason: first,
   // there is no coupling between <!id>SplitFun1to2<!!id> class

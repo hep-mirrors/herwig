@@ -175,6 +175,27 @@ public:
   // particle in <!id>inputChildren<!!id>). If some inconsistency is found,
   // then the method returns false; otherwise true.
 
+  inline double sudAlpha() const;
+  inline void sudAlpha(const double inputSudAlpha);
+  inline double sudBeta() const;
+  inline void sudBeta(const double inputSudBeta);
+  inline Energy sudPx() const;
+  inline void sudPx(const Energy inputSudPx);
+  inline Energy sudPy() const;
+  inline void sudPy(const Energy inputSudPy);
+  inline Energy sudPperp() const;
+  // Access/Set Sudakov variables.
+  // Notice that the <!id>ShowerKinematics<!!id> object is logically
+  // associated more with the branching vertex than with the radiating 
+  // particle itself, although it is stored in the <!id>ShowerParticle<!!id> 
+  // object associated with the branching (radiating) particle. 
+  // Furthermore, the branching products have not <!id>ShowerKinematics<!!id>
+  // object (they eventually will have one only later if they branch).
+  // Therefore this Sudakov variables can be considered as a useful
+  // representation of the temporarily, preliminary, momentum of the 
+  // <!id>ShowerParticle<!!id> object during the showering evolution, 
+  // whereas the <!id>momentum<!id> member describes the "final", "real" one. 
+
   inline tSplitFunPtr splitFun() const;
   inline void splitFun(const tSplitFunPtr inputSplitFun);
   // Access/Set the <!class>SplitFun<!!class> object responsible of the 
@@ -241,6 +262,10 @@ private:
   tShoParPtr _parent;
   bool _isFinalState;
   CollecShoParPtr _children;
+  double _sudAlpha;
+  double _sudBeta;
+  Energy _sudPx;
+  Energy _sudPy;
   tSplitFunPtr _splitFun;
   tDecayerPtr _decayer;        
   ShoKinPtr _showerKinematics;

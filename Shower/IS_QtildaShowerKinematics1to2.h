@@ -32,16 +32,18 @@ public:
   virtual ~IS_QtildaShowerKinematics1to2();
   // Standard ctors and dtor.
 
-  virtual void updateChildren( const Energy qtilda, const double z, const double phi,
-			       const Energy Mass1, const Energy Mass2,
-			       double & sudAlpha1, double & px1, double &py1,
-			       double & sudAlpha2, double & px2, double &py2);
+  virtual void updateChildren( const double parentSudAlpha, 
+			       const Energy parentSudPx, const Energy parentSudPy, 
+                               vector<double> & sudAlphaVect, 
+			       vector<Energy> & sudPxVect, vector<Energy> & sudPyVect );
   // Along with the showering evolution --- going forward for
   // time-like (forward) evolution, and going backward for space-like
-  // (backward) evolution --- the shower kinematics of the branching
-  // products is created and filled.  Note that only <I>alpha</I> and <I>p_perp</I>
-  // can be reconstructed at this moment and we will obtain beta only
-  // later, using <!id>updateParent()<!!id>
+  // (backward) evolution --- the Sudakov variables associated to the
+  // branching products are calcalted and returned, from the knowledge
+  // of the parent Sudakov variables.   
+  // Note that only <I>alpha</I> and <I>p_perp</I> can be reconstructed 
+  // at this moment and we will obtain instead beta only later, 
+  // using <!id>updateParent()<!!id>.
 
   virtual void updateParent( tCollecShoKinPtr & shoKinChildren );
   // update the parent Kinematics from the knowledge of the kinematics
