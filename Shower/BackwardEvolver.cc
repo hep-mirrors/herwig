@@ -339,7 +339,8 @@ bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch,
 	cout << "  Hadron " << hadron << " has child " << child
 	     << ", i = " << i << ", id = " << child->id() 
 	     << ", " << (part == child ? " =  part":"") << endl << flush;
-	hadron->removeChild(child);
+	//	hadron->removeChild(child);
+	hadron->abandonChild(child);
 	if(part != child) ch->currentStep()->removeParticle(child);
       }
       // Add the remnant to the step, this will be changed again if the
@@ -545,8 +546,9 @@ void BackwardEvolver::createBranching(ShowerParticlePtr part,
   if(part->parents().size() == 2) hadron = part->parents()[0];
   else cerr << "not one parent!" << endl; 
   hadron->addChild(newParent);
-  hadron->removeChild(part);
-  part->removeParent(hadron);
+  hadron->abandonChild(part);
+  //  hadron->removeChild(part);
+  //  part->removeParent(hadron);
 }
 
 void BackwardEvolver::setColour(ShowerParticlePtr &newParent,

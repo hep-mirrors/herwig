@@ -642,7 +642,8 @@ void ShowerHandler::fillEventRecord(const tPartCollHdlPtr ch) {
     } else if((*it)->isFromHardSubprocess()) { 
       // Otherwise it is a initial state shower particle
       addInitialStateShower(p,pstep,false);
-      pstep->setCopy((*it)->getThePEGBase(),p,false);
+      //pstep->setCopy((*it)->getThePEGBase(),p,false);
+      pstep->setCopy((*it)->getThePEGBase(),p);
     } 
   }  
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) 
