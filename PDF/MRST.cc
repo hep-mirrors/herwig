@@ -17,7 +17,11 @@ using namespace Herwig;
 
 MRST::MRST() {}
 
-MRST::MRST(const MRST &x) : PDFBase(x) {}//, dataPtr(x.dataPtr) {}
+MRST::MRST(const MRST &x) : PDFBase(x) {
+   for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)   
+      data[i][j][k] = x.data[i][j][k];
+   initialize(false);
+}//, dataPtr(x.dataPtr) {}
 
 MRST::~MRST() {}
 
@@ -156,12 +160,16 @@ double MRST::polderivative(double x1, double x2, double x3,
 void MRST::persistentOutput(PersistentOStream &out) const {
   //out << dataPtr;
   out << _file;
+  for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
+     out << data[i][j][k];
 }
 
 void MRST::persistentInput(PersistentIStream & in, int i) {
   //in >> dataPtr;
   in >> _file;
-  initialize();
+  for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
+     in >> data[i][j][k];
+  initialize(false);
 }
 
 void MRST::Init() {
@@ -198,10 +206,11 @@ IVector MRST::getReferences() {
 
 void MRST::readSetup(istream &is) throw(SetupException) {
   _file = dynamic_cast<istringstream*>(&is)->str();
+  initialize();
 }
 
-void MRST::initialize() {
-  cout << "Opening file " << _file << endl;
+void MRST::initialize(bool reread) {
+  if(reread) cout << "Opening file " << _file << endl;
   int i,n,m,k,l,j; // counters
   double dx,dq,dtemp;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -233,39 +242,41 @@ void MRST::initialize() {
     for(n=1; n<=nq; n++) qq[n] = log10(qq[n]);
   }
 
-  ifstream datafile;
-  datafile.open(_file.c_str());
+  if(reread) {
+     ifstream datafile;
+     datafile.open(_file.c_str());
 
-  if(datafile.bad()) { 
-    cerr << "Could not open file " << _file << "\n";
-    return;
-  }
-  for(int n=1; n<nx; n++) {
-    for(int m=1; m<=nq; m++) {
-      datafile >> data[1][n][m];
-      datafile >> data[2][n][m];
-      datafile >> data[3][n][m];
-      datafile >> data[4][n][m];
-      datafile >> data[5][n][m];
-      datafile >> data[7][n][m];
-      datafile >> data[6][n][m];
-      datafile >> data[8][n][m];
-      if(datafile.eof()) {
-	cerr << "Error while reading " << _file << endl;
-	return;
-      }
-    }
-  }
+     if(datafile.bad()) { 
+       cerr << "Could not open file " << _file << "\n";
+       return;
+     }
+     for(int n=1; n<nx; n++) {
+       for(int m=1; m<=nq; m++) {
+         datafile >> data[1][n][m];
+         datafile >> data[2][n][m];
+         datafile >> data[3][n][m];
+         datafile >> data[4][n][m];
+         datafile >> data[5][n][m];
+         datafile >> data[7][n][m];
+         datafile >> data[6][n][m];
+         datafile >> data[8][n][m];
+         if(datafile.eof()) {
+	   cerr << "Error while reading " << _file << endl;
+	   return;
+         }
+       }
+     }
   
-  datafile >> dtemp;
-  if(!datafile.eof()) {
-    cerr << "Error reading end of " << _file << endl;
-    return;
-  }
-  datafile.close();
+     datafile >> dtemp;
+     if(!datafile.eof()) {
+       cerr << "Error reading end of " << _file << endl;
+       return;
+     }
+     datafile.close();
 
-  cout << "File read!" << endl;
-  
+     cout << "File read!" << endl;
+  }
+
   // Now calculate the derivatives used for bicubic interpolation
   for (i=1;i<=np;i++) {
     // Start by calculating the first x derivatives

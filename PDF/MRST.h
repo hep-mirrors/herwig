@@ -83,7 +83,7 @@ private:
   string _file;
   //MRSTDatPtr dataPtr;
 
-  void initialize();
+  void initialize(bool reread = true);
   virtual void readSetup(istream &) throw(SetupException);
 
   static ClassDescription<MRST> initMRST;
