@@ -115,23 +115,23 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
       } else if(MECode == 101) {
          double wtmx, wtmx2, xs, dot1, dot2;
          wtmx = ( (p.mass() - products[2][5])*(p.mass() + products[2][5])
-                + (products[1][5] - products[2][5])*(products[1][5] + products[2][5]))/2.0;
+                + (products[1][5] - products[0][5])*(products[1][5] + products[0][5]))/2.0;
          wtmx2 = sqr(wtmx);
 
          // Find sum of masses of constituent particles 
          int IPDG = abs(p.id());
          double m1, m2, m3;
-         if(IPDG < 1000)
+         if(IPDG >= 1000)
 	         m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
-	       else
-				   m1 = 0.0;
+				 else
+					 m1 = 0.0;
          m2 = generator()->getParticleData((IPDG/100)%10)->mass();
          m3 = generator()->getParticleData((IPDG/10)%10)->mass();
          xs = 1.0 - Math::absmax<double>(m1, Math::absmax<double>(m2, m3))/(m1+m2+m3);
 
 	 // Do decay, repeat until meets condition
          do {
-            threeBodyDecay(p.momentum(), products[0], products[1], products[2]);
+            threeBodyDecay(p.momentum(), products[1], products[2], products[0]);
             dot1 = p.momentum().dot(products[2]);
             dot2 = p.momentum().dot(products[1]);
          } while(dot1*(wtmx-dot1-xs*dot2) < generator()->rnd()*wtmx2);
@@ -235,11 +235,11 @@ void Hw64Decayer::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
       generator()->log() << "No Phase space available for decay\n";
    }
 
-   d = abs(p2.mass()-p3.mass());
+   d = fabs(p2.mass()-p3.mass());
    aa = sqr(a); bb = sqr(b); cc = sqr(c); dd = sqr(d); ee = (b-c)*(a-d);
    a = 0.5 * (aa+bb);
    b = 0.5 * (cc+dd);
-   c = 4./sqr(a-b);
+   c = 4./(sqr(a-b));
 
    // Choose mass of subsystem 23 with prescribed distribution
    do {
@@ -274,14 +274,14 @@ void Hw64Decayer::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
    // Some code to check distribution of angles...
    // Now lets find dist of angle between 1 and 2
    //double L1 = sqrt((p1.px()*p1.px()) + (p1.py()*p1.py()) + (p1.pz()*p1.pz()));
-   double L2 = sqrt((p2.px()*p2.px()) + (p2.py()*p2.py()) + (p2.pz()*p2.pz()));
-   double L3 = sqrt((p3.px()*p3.px()) + (p3.py()*p3.py()) + (p3.pz()*p3.pz()));
+   //double L2 = sqrt((p2.px()*p2.px()) + (p2.py()*p2.py()) + (p2.pz()*p2.pz()));
+   //double L3 = sqrt((p3.px()*p3.px()) + (p3.py()*p3.py()) + (p3.pz()*p3.pz()));
    //double L23 = sqrt((p23.px()*p23.px()) + (p23.py()*p23.py()) + (p23.pz()*p23.pz()));
    //double dot12 = (p1.px()*p2.px()) + (p1.py()*p2.py()) + (p1.pz()*p2.pz());
    //double dot13 = (p1.px()*p3.px()) + (p1.py()*p3.py()) + (p1.pz()*p3.pz());
    //double dot123 = (p1.px()*p23.px()) + (p1.py()*p23.py()) + (p1.pz()*p23.pz());
-   double dot23 = (p2.px()*p3.px()) + (p2.py()*p3.py()) + (p2.pz()*p3.pz());
-   cout << dot23/(L2*L3) << "\t" << "1.0" << endl;
+   //double dot23 = (p2.px()*p3.px()) + (p2.py()*p3.py()) + (p2.pz()*p3.pz());
+   //cout << dot23/(L2*L3) << "\t" << "1.0" << endl;
 }
 
 /******
