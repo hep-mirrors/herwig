@@ -1,0 +1,85 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorMesonCurrent class.
+//
+
+namespace Herwig {
+  using namespace ThePEG;
+
+inline VectorMesonCurrent::VectorMesonCurrent() 
+{
+  _id.push_back(213);_decay_constant.push_back(0.1674*GeV2);
+  addDecayMode(2,-1);
+  _id.push_back(323);_decay_constant.push_back(sqrt(2.)*0.115276*GeV2);
+  addDecayMode(2,-3);
+  _id.push_back(20213);_decay_constant.push_back(sqrt(2.)*0.099588*GeV2);
+  addDecayMode(2,-1);
+  _id.push_back(443);_decay_constant.push_back(1.223*GeV2);
+  addDecayMode(4,-4);
+  _id.push_back(100443);_decay_constant.push_back(1.08*GeV2);
+  addDecayMode(2,-1);
+  _id.push_back(433);_decay_constant.push_back(0.509*GeV2);
+  addDecayMode(4,-3);
+  _id.push_back(413);_decay_constant.push_back(0.402*GeV2);
+  addDecayMode(4,-1);
+  _id.push_back(423);_decay_constant.push_back(0.402*GeV2);
+  addDecayMode(4,-2);
+  _id.push_back(10433);_decay_constant.push_back(0.397*GeV2);
+  addDecayMode(4,-3);
+}
+
+inline VectorMesonCurrent::VectorMesonCurrent(const VectorMesonCurrent & x)
+  : WeakDecayCurrent(x), _id(x._id), _decay_constant(x._decay_constant) {}
+
+inline IBPtr VectorMesonCurrent::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VectorMesonCurrent::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void VectorMesonCurrent::doupdate() throw(UpdateException) {
+  WeakDecayCurrent::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void VectorMesonCurrent::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+}
+
+inline void VectorMesonCurrent::dofinish() {
+  WeakDecayCurrent::dofinish();
+}
+
+inline void VectorMesonCurrent::doinitrun() {
+  WeakDecayCurrent::doinitrun();
+}
+
+inline void VectorMesonCurrent::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  WeakDecayCurrent::rebind(trans);
+}
+
+inline IVector VectorMesonCurrent::getReferences() {
+  IVector ret = WeakDecayCurrent::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ScalarMesonCurrent class.
+//
+#ifndef HERWIG_ScalarMesonCurrent_FH
+#define HERWIG_ScalarMesonCurrent_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ScalarMesonCurrent;
+ThePEG_DECLARE_CLASS_POINTERS(ScalarMesonCurrent,ScalarMesonCurrentPtr);
+
+}
+
+#endif

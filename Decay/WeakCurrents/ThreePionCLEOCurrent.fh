@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ThreePionCLEOCurrent class.
+//
+#ifndef HERWIG_ThreePionCLEOCurrent_FH
+#define HERWIG_ThreePionCLEOCurrent_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ThreePionCLEOCurrent;
+ThePEG_DECLARE_CLASS_POINTERS(ThreePionCLEOCurrent,ThreePionCLEOCurrentPtr);
+
+}
+
+#endif

@@ -1,0 +1,70 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ThreeMesonCurrentBase class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline ThreeMesonCurrentBase::ThreeMesonCurrentBase() 
+{
+  // the quarks for the different modes
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-3);
+  addDecayMode(2,-3);
+  addDecayMode(2,-3);
+  addDecayMode(2,-1);
+}
+
+inline ThreeMesonCurrentBase::ThreeMesonCurrentBase(const ThreeMesonCurrentBase & x)
+  : WeakDecayCurrent(x) {}
+
+inline void ThreeMesonCurrentBase::doupdate() throw(UpdateException) {
+  WeakDecayCurrent::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ThreeMesonCurrentBase::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+}
+
+inline void ThreeMesonCurrentBase::dofinish() {
+  WeakDecayCurrent::dofinish();
+}
+
+inline void ThreeMesonCurrentBase::doinitrun() {
+  WeakDecayCurrent::doinitrun();
+}
+
+inline void ThreeMesonCurrentBase::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  WeakDecayCurrent::rebind(trans);
+}
+
+inline IVector ThreeMesonCurrentBase::getReferences() {
+  IVector ret = WeakDecayCurrent::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
+

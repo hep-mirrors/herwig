@@ -1,0 +1,303 @@
+// -*- C++ -*-
+#ifndef HERWIG_WeakDecayCurrent_H
+#define HERWIG_WeakDecayCurrent_H
+//
+// This is the declaration of the WeakDecayCurrent class.
+//
+#include "ThePEG/Interface/Interfaced.h"
+#include "WeakDecayCurrent.fh"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig++/Decay/DecayPhaseSpaceChannel.h"
+#include "ThePEG/Helicity/LorentzPolarizationVector.h"
+
+namespace Herwig {
+using namespace ThePEG;
+using ThePEG::Helicity::LorentzPolarizationVector;
+
+/** \ingroup Decay
+ *
+ *  The <code>WeakDecayCurrent</code> class is the base class for the hadronic
+ *  currents produced in weak decays. This is designed so it can be used in
+ *  any weak decay. In general the currents which are implemented are either
+ *  simple one meson production or taken from tau decay.
+ *
+ *  In classes inheriting from this one a number of member functions must be implemented
+ *
+ * - createMode which takes a vector of partially completed DecayPhaseSpaceChannel 
+ *   and adds the extra information required for the current. This method should
+ *   assume that the particles from the current are the last ones specified in the
+ *   DecayPhaseSpaceMode. This method with then construct the DecayPhaseSpaceMode
+ *   for the decay.
+ *
+ * - particles which returns the external particles produced by the current.
+ *
+ * - current which given the decay products calculates the decay current
+ *
+ * - accept which uses the PDG codes for the particles in the current to 
+ *   decide if a given mode is allowed.
+ *
+ * - decayMode which uses the PDG codes for the particles in the current to 
+ *   workout which modes is being performed.
+ *
+ * - dataBaseOutput which should output the information on all the Interfaces so
+ *   that the WeakDecayCurrent can be reconstructed by the Herwig++ particle
+ *   properties database.
+ *
+ * @see Interfaced.
+ * 
+ */
+class WeakDecayCurrent: public Interfaced {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor
+   */
+  inline WeakDecayCurrent();
+
+  /**
+   * Copy constructor
+   */
+  inline WeakDecayCurrent(const WeakDecayCurrent &);
+
+  /**
+   * Destructor
+   */
+  virtual ~WeakDecayCurrent();
+  //@}
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
+
+public:
+
+  /** @name Methods for the construction of the phase space integrator. */
+  //@{
+  /**
+   * Complete the construction of the decay mode for integration.classes inheriting
+   * from this one.
+   * This method is purely virtual and must be implemented in the classes inheriting
+   * from WeakDecayCurrent.
+   * @param icharge The total charge of the outgoing particles in the current.
+   * @param imode   The mode in the current being asked for.
+   * @param mode    The phase space mode for the integration
+   * @param iloc    The location of the of the first particle from the current in
+   *                the list of outgoing particles.
+   * @param ires    The location of the first intermediate for the current.
+   * @param phase   The prototype phase space channel for the integration.
+   * @param upp     The maximum possible mass the particles in the current are
+   *                allowed to have.
+   * @return Whether the current was sucessfully constructed.
+   */
+  virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
+			  unsigned int iloc,unsigned int ires,
+			  DecayPhaseSpaceChannelPtr phase,Energy upp)=0;
+
+  /**
+   * The particles produced by the current. This method is purely virtual and
+   * must be implemented in classes inheriting from this one.
+   * @param icharge The total charge of the particles in the current.
+   * @param imode The mode for which the particles are being requested
+   * @param iq The PDG code for the quark
+   * @param ia The PDG code for the antiquark
+   * @return The external particles for the current.
+   */
+  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia)=0;
+  //@}
+
+  /**
+   * Return the number of modes handled by this current
+   */
+  inline unsigned int numberOfModes() const;
+
+  /**
+   * Hadronic current. This method is purely virtual and must be implemented in
+   * all classes inheriting from this one.
+   * @param vertex Construct the information needed for spin correlations
+   * @param imode The mode
+   * @param ichan The phase-space channel the current is needed for
+   * @param inpart The decaying particle.
+   * @param decay The decay products
+   * @return The current. 
+   */
+  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+						     const int ichan, 
+						     const Particle & inpart,
+						     const ParticleVector & decay) const=0;
+
+  /**
+   * Accept the decay. This method is purely virtual and must be implemented in any class
+   * inheriting from this one.
+   * @param id The id's of the particles in the current.
+   * @return Can this current have the external particles specified.
+   */
+  virtual bool accept(vector<int> id)=0;
+
+  /**
+   * Return the decay mode number for a given set of particles in the current. 
+   * This method is purely virtual and must be implemented in any class
+   * inheriting from this one.
+   * @param id The id's of the particles in the current.
+   * @return The number of the mode
+   */
+  virtual unsigned int decayMode(vector<int> id)=0;
+
+  /**
+   *  Information on a decay mode
+   * @param imode The mode
+   * @param iq The PDG code of the quark.
+   * @param ia The PDG code of the antiquark.
+   */
+  inline void decayModeInfo(unsigned int imode, int& iq, int& ia) const;
+
+  /**
+   * Output the information for the database
+   */
+  virtual void dataBaseOutput(ofstream &)=0;
+
+ protected:
+
+  /**
+   *  Add a decay mode to the list.
+   * @param iq The PDG code for the quark.
+   * @param ia The PDG code for the antiquark.
+   */
+  inline void addDecayMode(int iq,int ia);
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
+  //@}
+
+private:
+
+  /**
+   * Describe an abstract base class with persistent data.
+   */
+  static AbstractClassDescription<WeakDecayCurrent> initWeakDecayCurrent;
+
+  /**
+   * Private and non-existent assignment operator.
+   */
+  WeakDecayCurrent & operator=(const WeakDecayCurrent &);
+
+private:
+
+  /**
+   * The PDG codes for the quarks contained in the current.
+   */
+  vector<int> _quark;
+
+  /**
+   * The PDG codes for the antiquarks contained in the current.
+   */
+  vector<int> _antiquark;
+
+};
+
+}
+
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of WeakDecayCurrent.
+ */
+template <>
+struct BaseClassTrait<Herwig::WeakDecayCurrent,1> {
+  /** Typedef of the base class of WeakDecayCurrent. */
+  typedef Interfaced NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::WeakDecayCurrent>
+  : public ClassTraitsBase<Herwig::WeakDecayCurrent> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::WeakDecayCurrent"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "libHwWeakCurrent.so"; }
+
+};
+
+}
+
+#include "WeakDecayCurrent.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "WeakDecayCurrent.tcc"
+#endif
+
+#endif /* HERWIG_WeakDecayCurrent_H */

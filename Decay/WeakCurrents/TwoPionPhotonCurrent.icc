@@ -1,0 +1,146 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TwoPionPhotonCurrent class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline TwoPionPhotonCurrent::TwoPionPhotonCurrent() 
+{
+  // modes handled
+  addDecayMode(2,-1);
+  // weight of the resonances in the current
+  _resweights.push_back(1.0);_resweights.push_back(-0.1);_resweights.push_back(0.0);
+  // parameters of the rho resonaces
+  _rhoparameters=true;
+  _rhomasses.push_back(0.773*GeV);_rhomasses.push_back(1.70*GeV);
+  _rhowidths.push_back(0.145*GeV);_rhowidths.push_back(0.26*GeV);
+  // parameters fo the omega resonance
+  _omegaparameters=true;
+  _omegamass=782*MeV;_omegawidth=8.5*MeV;
+  // couplings
+  _grho   = 0.11238947*GeV2;
+  _grhoomegapi = 12.924/GeV;
+}
+
+inline TwoPionPhotonCurrent::TwoPionPhotonCurrent(const TwoPionPhotonCurrent & x)
+  : WeakDecayCurrent(x), _grho(x._grho), _grhoomegapi(x._grhoomegapi),
+    _resweights(x._resweights), _rhoparameters(x._rhoparameters),
+    _rhomasses(x._rhomasses),_rhowidths(x._rhowidths),
+    _omegaparameters(x._omegaparameters),
+    _omegamass(x. _omegamass),_omegawidth(x._omegawidth) {}
+
+inline IBPtr TwoPionPhotonCurrent::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TwoPionPhotonCurrent::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void TwoPionPhotonCurrent::doupdate() throw(UpdateException) {
+  WeakDecayCurrent::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void TwoPionPhotonCurrent::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+  // set up the rho masses and widths
+  tPDPtr temp;
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      if(ix==0){temp = getParticleData(-213);}
+      else if(ix==1){temp = getParticleData(-100213);}
+      else if(ix==2){temp = getParticleData(-30213);}
+      // if using local values
+      if(!_rhoparameters&&ix<_rhomasses.size())
+	{
+	  _rhomasses[ix]=temp->mass();
+	  _rhowidths[ix]=temp->width();
+	}
+      else
+	{
+	  _rhomasses.push_back(temp->mass());
+	  _rhowidths.push_back(temp->width());
+	}
+    }
+  // set up the omega masses and widths
+  if(!_omegaparameters)
+    {
+      temp = getParticleData(ParticleID::omega);
+      _omegamass  = temp->mass();
+      _omegawidth = temp->width();
+    }
+}
+
+inline void TwoPionPhotonCurrent::dofinish() {
+  WeakDecayCurrent::dofinish();
+}
+
+inline void TwoPionPhotonCurrent::doinitrun() {
+  WeakDecayCurrent::doinitrun();
+}
+
+inline void TwoPionPhotonCurrent::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  WeakDecayCurrent::rebind(trans);
+}
+
+inline IVector TwoPionPhotonCurrent::getReferences() {
+  IVector ret = WeakDecayCurrent::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+// calculate the F function at a given scale  
+inline complex<double> TwoPionPhotonCurrent::FFunction(Energy2 q2,int iext) const
+{
+  Complex output=0;
+  if(iext<0)
+    {for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix)
+	{output-=_resweights[ix]*BreitWigner(q2,ix);}}
+  else
+    {
+      unsigned int temp=iext;
+      if(temp<_resweights.size()&&iext <3)
+	  {output=_resweights[iext]*BreitWigner(q2,iext);}
+    }
+  output*=_grho*_grhoomegapi*sqrt(2.);
+  return output;
+  }
+
+// fixed width Breit wigner
+inline Complex TwoPionPhotonCurrent::BreitWigner(Energy2 q2,unsigned int ires) const
+{
+  static const Complex ii(0.,1.);
+  Complex denom;
+  if(ires<_rhomasses.size())
+    {denom = q2-_rhomasses[ires]*_rhomasses[ires]+ii*_rhomasses[ires]*_rhowidths[ires];}
+  else if(ires==10)
+    {denom = q2-_omegamass*_omegamass+ii*_omegamass*_omegawidth;}
+  else
+    {
+      throw DecayIntegratorError() << "Unknown resonace in " 
+				   << "TwoPionPhotonCurrent::BreitWigner" 
+				   << ires << Exception::abortnow;
+      return 0.;
+    }
+  return 1./denom;
+}
+}
