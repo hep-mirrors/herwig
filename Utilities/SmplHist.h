@@ -25,8 +25,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #endif
 #define SampleHistogram_h 1
 
-#include <iostream.h>
-#include <fstream.h>
+#include <iostream>
+#include <fstream>
 #include "SmplStat.h"
 
 extern const int SampleHistogramMinimum;
@@ -52,7 +52,7 @@ public:
   int buckets();  
   double bucketThreshold(int i);
   int inBucket(int i);
-  void printBuckets(ostream&);
+  void printBuckets(std::ostream&);
   void printGnuplot(char* name);
 };
 

@@ -83,6 +83,9 @@ namespace Herwig {
       extreme_Shower = extreme,
 
       // Specific for the Hadronization part
+//       minimal_Hadronization = extreme+1,
+//       full_Hadronization    = extreme+1,
+//       extreme_Hadronization = extreme+1,
       minimal_Hadronization = minimal,
       full_Hadronization    = full,
       extreme_Hadronization = extreme,

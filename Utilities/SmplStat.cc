@@ -18,7 +18,7 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
-#include <stream.h>
+#include <iostream>
 #include "SmplStat.h"
 #include <math.h>
 
@@ -30,6 +30,10 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define HUGE_VAL DBL_MAX
 #endif
 #endif
+
+using std::cerr; 
+using std::cout; 
+using std::endl; 
 
 SampleStatistic::SampleStatistic() {reset();}
 

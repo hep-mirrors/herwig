@@ -24,7 +24,7 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #ifdef __GNUG__
 #pragma implementation
 #endif
-#include <stream.h>
+#include <iostream>
 #include "SmplHist.h"
 #include <math.h>
 
@@ -36,6 +36,12 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define HUGE_VAL DBL_MAX
 #endif
 #endif
+
+using std::ostream;
+using std::cout;   
+using std::cerr;   
+using std::endl;   
+using std::ofstream;
 
 const int SampleHistogramMinimum = -2;
 const int SampleHistogramMaximum = -1;
