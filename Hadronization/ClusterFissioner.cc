@@ -769,12 +769,12 @@ void ClusterFissioner::calculatePositions( const Lorentz5Momentum & pClu,    // 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
   Length x1 = _pointerGlobalParameters->conversionFactorGeVtoMillimeter() * 
-	 ( Mclu*0.25 + 0.5*( pstarChild + ( pow(Mclu2,2) - pow(Mclu1,2) )/( 2.0*Mclu ) ) ) / GeV;
+	 ( Mclu*0.25 + 0.5*( pstarChild + ( sqr(Mclu2) - sqr(Mclu1) )/( 2.0*Mclu ) ) ) / GeV;
   Length t1 = ( ( Mclu / GeV ) * _pointerGlobalParameters->conversionFactorGeVtoMillimeter() 
 		     - x1 ); 
   LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
   Length x2 = _pointerGlobalParameters->conversionFactorGeVtoMillimeter() * 
-	 ( -Mclu*0.25 + 0.5*( - pstarChild + ( pow(Mclu2,2) - pow(Mclu1,2) )/( 2.0*Mclu ) ) ) / GeV;
+	 ( -Mclu*0.25 + 0.5*( - pstarChild + ( sqr(Mclu2) - sqr(Mclu1) )/( 2.0*Mclu ) ) ) / GeV;
   Length t2 = ( ( Mclu / GeV ) * _pointerGlobalParameters->conversionFactorGeVtoMillimeter() 
 		     + x2 );
   LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );

@@ -214,8 +214,8 @@ double CheckId::probabilityMixing(const double angleMix, const int order) {
   static double pi = 3.14159265358979323846;
   double prob = 1.0;
   if ( order > 0 ) {
-    if (order == 1)      prob = pow( cos( angleMix*pi/180.0 + atan( sqrt(2.0) ) ) , 2 );
-    else if (order == 2) prob = pow( sin( angleMix*pi/180.0 + atan( sqrt(2.0) ) ) , 2 );
+    if (order == 1)      prob = sqr( cos( angleMix*pi/180.0 + atan( sqrt(2.0) ) ) );
+    else if (order == 2) prob = sqr( sin( angleMix*pi/180.0 + atan( sqrt(2.0) ) ) );
   }
   return prob;
 }

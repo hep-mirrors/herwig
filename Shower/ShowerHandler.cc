@@ -393,8 +393,8 @@ void ShowerHandler::fillPositions() {
 			      _pointerGlobalParameters->conversionFactorGeVtoMillimeter() 
 			      * particle->momentum().e() / GeV );
     distance *= log ( 1.0 / rnd() ) / 
-      ( sqrt( pow( particle->momentum().mag2() - particle->momentum().m2() , 2 ) +
-	      pow( particle->momentum().mag2() / lambda , 2 ) ) / GeV );
+      ( sqrt( sqr( particle->momentum().mag2() - particle->momentum().m2() ) +
+	      sqr( particle->momentum().mag2() / lambda ) ) / GeV );
 
     particle->position( particle->position() + distance ); // update the position.
          

@@ -86,9 +86,9 @@ void Cluster::calculateX() {
     LorentzPoint pos1 = (*cit)->position();
     Lorentz5Momentum p1 = (*cit)->momentum();
     LorentzDistance displace1 = - log( UseRandom::rnd() ) * theConversionFactorGeVtoMillimeter 
-      * ( p1 / GeV ) * ( 1.0 / sqrt( pow( (*cit)->momentum().m2() / GeV2 - 
-					  (*cit)->momentum().mass2() / GeV2 , 2 ) + 
-				     pow( vmin2 / GeV2 , 2 ) ) );
+      * ( p1 / GeV ) * ( 1.0 / sqrt( sqr( (*cit)->momentum().m2() / GeV2 - 
+					  (*cit)->momentum().mass2() / GeV2 ) + 
+				     sqr( vmin2 / GeV2 ) ) );
     if ( fabs( displace1.mag() ) > dmax ) {
       displace1 *= dmax / fabs( displace1.mag() );
       cout << "Cluster::calculateX ***extreme debugging*** : MAX DISPLACEMENT " << endl;
@@ -97,9 +97,9 @@ void Cluster::calculateX() {
     LorentzPoint pos2 = (*cit)->position();
     Lorentz5Momentum p2 = (*cit)->momentum();
     LorentzDistance displace2 = - log( UseRandom::rnd() ) * theConversionFactorGeVtoMillimeter 
-      * ( p2 / GeV) * ( 1.0 / sqrt( pow( (*cit)->momentum().m2() / GeV2 - 
-					 (*cit)->momentum().mass2() / GeV2 , 2 ) + 
-				    pow( vmin2 / GeV2 , 2 ) ) );
+      * ( p2 / GeV) * ( 1.0 / sqrt( sqr( (*cit)->momentum().m2() / GeV2 - 
+					 (*cit)->momentum().mass2() / GeV2 ) + 
+				    sqr( vmin2 / GeV2 ) ) );
     if ( fabs( displace2.mag() ) > dmax ) {
       displace2 *= dmax / fabs( displace2.mag() );
       // cout << "Cluster::calculateX ***extreme debugging*** : MAX DISPLACEMENT " << endl;

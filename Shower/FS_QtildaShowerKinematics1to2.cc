@@ -47,7 +47,7 @@ updateChildren( const Energy qtilda, const double z, const double phi,
   showerKinChild1->alpha( alpha() * z );
   showerKinChild2->alpha( alpha() * (1.0 - z) );
 
-  // Energy2 pPerp2 = pow((1.0 - z), 2) * ( pow( z*qtilda, 2) - pVector().mass2() );
+  // Energy2 pPerp2 = sqr( 1.0 - z ) * ( sqr( z*qtilda ) - pVector().mass2() );
 
   // ... TO BE COMPLETED ...
 

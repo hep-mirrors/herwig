@@ -751,10 +751,10 @@ void HadronsSelector::initialize() {
 	int nq3 = ( _vecHad[i].id / 10 )  % 10;
         int nq2 = ( _vecHad[i].id / 100 ) % 10;
         if ( nq2 < nq3 ) {
-	  _vecHad[i].swtef = pow( _SngWt, 2 );   // Singlet (Lambda-like) baryon
+	  _vecHad[i].swtef = sqr(_SngWt);   // Singlet (Lambda-like) baryon
 	}
       } else {                    
-	 _vecHad[i].swtef = pow( _DecWt, 2 );    // Decuplet baryon
+	 _vecHad[i].swtef = sqr(_DecWt);    // Decuplet baryon
       }
     } else if ( 2*(nj/2) != nj ) {   // Meson
       int j  = (nj - 1) / 2;                     // Total angular momentum
@@ -772,7 +772,7 @@ void HadronsSelector::initialize() {
       }
       if (  ( l > 0  ||  j > 0  ||  n > 0 )  &&
             l >= 0  &&  l < Lmax  &&  j < Jmax  &&  n < Nmax ) {
-	_vecHad[i].swtef = pow( _Repwt[l][j][n], 2 );  // Angular or Radial excited meson
+	_vecHad[i].swtef = sqr( _Repwt[l][j][n] );  // Angular or Radial excited meson
       }    
     }
     _vecHad[i].ptrData = getParticleData( _vecHad[i].id ); 

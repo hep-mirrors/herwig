@@ -22,9 +22,9 @@ bool Smearing::gaussianSmearing( const double mean, const double sigma, double &
 bool Smearing::azimuthalSmearing( const double rho, double & vx, double & vy ) {
   double cosine = 2.0 * UseRandom::rnd() - 1.0;
   double sine   = 2.0 * UseRandom::rnd() - 1.0;
-  double cs = pow(cosine,2) + pow(sine,2);
+  double cs = sqr(cosine) + sqr(sine);
   if ( cs > 1.0  || cs <= 0.0 ) return false;
-  vx = ( pow(cosine,2) - pow(sine,2) ) * rho/cs;
+  vx = ( sqr(cosine) - sqr(sine) ) * rho/cs;
   vy = 2.0 * cosine * sine * rho/cs;  
   return true;
 }

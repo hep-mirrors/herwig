@@ -33,9 +33,9 @@ void initFirstStep(StepPtr& s, const EGPtr & eg) {
 //  
 //   // Let's suppose that these partons have perturbative origin,
 //   // for example at scale (100*GeV)^2
-//   u->scale( pow(100.0*GeV,2) );
-//   ubar->scale( pow(100.0*GeV,2) );
-//   g1->scale( pow(100.0*GeV,2) );
+//   u->scale( sqr(100.0*GeV) );
+//   ubar->scale( sqr(100.0*GeV) );
+//   g1->scale( sqr(100.0*GeV) );
 //   
 //   //***LOOKHERE*** To avoid on-shell gluon
 //   Lorentz5Momentum gluon5Momentum = Lorentz5Momentum( 0.750*GeV, p_g1);
@@ -76,11 +76,11 @@ void initFirstStep(StepPtr& s, const EGPtr & eg) {
 //   bbar->set3Momentum(p_bbar);
 //   mu->set3Momentum(p_mu);
 //   
-//   c->scale( pow(100.0*GeV,2) );
-//   cbar->scale( pow(100.0*GeV,2) );
-//   b->scale( pow(100.0*GeV,2) );
-//   bbar->scale( pow(100.0*GeV,2) );
-//   mu->scale( pow(100.0*GeV,2) );
+//   c->scale( sqr(100.0*GeV) );
+//   cbar->scale( sqr(100.0*GeV) );
+//   b->scale( sqr(100.0*GeV) );
+//   bbar->scale( sqr(100.0*GeV) );
+//   mu->scale( sqr(100.0*GeV) );
 //  
 //   c->antiColourNeighbour(bbar);
 //   cbar->colourNeighbour(b);
@@ -123,12 +123,12 @@ void initFirstStep(StepPtr& s, const EGPtr & eg) {
 //   b->set3Momentum(p_b);
 //   bbar->set3Momentum(p_bbar);
 //   
-//   strange->scale( pow(100.0*GeV,2) );
-//   strangebar->scale( pow(100.0*GeV,2) );
-//   c->scale( pow(100.0*GeV,2) );
-//   cbar->scale( pow(100.0*GeV,2) );
-//   b->scale( pow(100.0*GeV,2) );
-//   bbar->scale( pow(100.0*GeV,2) );
+//   strange->scale( sqr(100.0*GeV) );
+//   strangebar->scale( sqr(100.0*GeV) );
+//   c->scale( sqr(100.0*GeV) );
+//   cbar->scale( sqr(100.0*GeV) );
+//   b->scale( sqr(100.0*GeV) );
+//   bbar->scale( sqr(100.0*GeV) );
 //   
 //   ColinePtr l_strange = ColourLine::create(strange);
 //   ColinePtr l_c = ColourLine::create(c);
@@ -170,10 +170,10 @@ void initFirstStep(StepPtr& s, const EGPtr & eg) {
   b->set3Momentum(p_b);
   dbar->set3Momentum(p_dbar);
   bbar->set3Momentum(p_bbar);  
-  d->scale( pow(100.0*GeV,2) );
-  b->scale( pow(100.0*GeV,2) );
-  dbar->scale( pow(100.0*GeV,2) );
-  bbar->scale( pow(100.0*GeV,2) );
+  d->scale( sqr(100.0*GeV) );
+  b->scale( sqr(100.0*GeV) );
+  dbar->scale( sqr(100.0*GeV) );
+  bbar->scale( sqr(100.0*GeV) );
   
   ColinePtr line_d = ColourLine::create(d);
   ColinePtr line_b = ColourLine::create(b);

@@ -31,8 +31,8 @@ void initFirstStep(StepPtr& s, const EGPtr & eg){
   
   // Let's suppose that these partons have perturbative origin,
   // for example at scale (100*GeV)^2
-  u->scale( pow(100.0*GeV,2) );
-  ubar->scale( pow(100.0*GeV,2) );
+  u->scale( sqr(100.0*GeV) );
+  ubar->scale( sqr(100.0*GeV) );
  
   u->antiColourNeighbour(ubar);
   ubar->colourNeighbour(u);
