@@ -281,6 +281,11 @@ set QCDCuts:SubProcess/ScaleMin 25.0
 set QCDCuts:SubProcess/PTHatMin 5.0
 set SimpleLHCGenerator:EventHandler:Cuts QCDCuts
 
+# This will read in all the standard hadron decay modes and add
+# the new particles that are used in HERWIG 6.4, but not in Pythia7
+read Decays.in
+#
+
 cd /
 
 

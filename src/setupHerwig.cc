@@ -49,27 +49,26 @@ int main(int argc, char * argv[]) {
 
   try {
 
-    if ( init ) {
-      breakPythia7();
+		if ( init ) {
+    	breakPythia7();
       {
-	HoldFlag<> setup(InterfaceBase::NoReadOnly);
-	if ( file.empty() ) file = "HerwigDefaults.in";
-	ifstream is(file.c_str());
-	Repository::read(is, cout);
-	Repository::update();
+				HoldFlag<> setup(InterfaceBase::NoReadOnly);
+				if ( file.empty() ) file = "HerwigDefaults.in";
+				ifstream is(file.c_str());
+				Repository::read(is, cout);
+				Repository::update();
       }
       Repository::save(repo);
     } else {
       Repository::load(repo);
       breakPythia7();
       if ( file.size() && file != "-" ) {
-	ifstream is(file.c_str());
-	Repository::read(is, cout);
+				ifstream is(file.c_str());
+				Repository::read(is, cout);
       } else {
-	Repository::read(cin, cout, "Herwig++> ");
+				Repository::read(cin, cout, "Herwig++> ");
       }
     }
-
   }
   catch ( std::exception & e ) {
     cerr << e.what() << endl;

@@ -1,6 +1,6 @@
 # This will read in all the standard hadron decay modes and add
 # the new particles that are used in HERWIG 6.4, but not in Pythia7
-read Decays.in
+#read Decays.in
 #
 cd /Defaults/
 set theGlobalParameters:EffectiveGluonMass 0.750*GeV
@@ -76,6 +76,7 @@ set SimpleLEPGenerator:DebugLevel 1
 set SimpleLEPGenerator:PrintEvent 10
 set SimpleLEPGenerator:Strategy /Defaults/Pythia7Strategy
 set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
+set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
 set /Defaults/Particles/Z0:NominalMass 92
 #
 saverun SimpleLEP SimpleLEPGenerator
