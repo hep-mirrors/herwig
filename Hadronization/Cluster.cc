@@ -47,10 +47,12 @@ Cluster::Cluster(tPPtr p1, tPPtr p2, tPPtr p3)
   _component.push_back(p1); 
   _component.push_back(p2); 
   _component.push_back(p3);
-  for(int i = 0; i<3; i++) {
-    _isPerturbative.push_back(false);
-    _isBeamRemnant.push_back(false);
-  }
+
+  _isPerturbative.push_back(initPerturbative(p1));
+  _isPerturbative.push_back(initPerturbative(p2));
+  if(p3) _isPerturbative.push_back(initPerturbative(p3));
+  else _isPerturbative.push_back(false);
+  for(int i = 0; i<3; i++) _isBeamRemnant.push_back(false);
 
   if(p3) {
     _numComp = 3;
@@ -245,4 +247,11 @@ PPtr Cluster::clone() const {
 
 PPtr Cluster::fullclone() const {
   return clone();
+}
+
+bool Cluster::initPerturbative(tPPtr p) {
+  Energy Q0 = Energy();
+  if(_globalParameters) Q0 = _globalParameters->effectiveGluonMass();
+  if(p->scale() > Q0*Q0) return true;
+  return false;
 }

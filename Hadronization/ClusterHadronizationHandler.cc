@@ -104,8 +104,7 @@ void ClusterHadronizationHandler::Init() {
 
 
 void ClusterHadronizationHandler::doinitrun() {
-  // The run initialization is used here only to allow the non-interfaced and
-  // non-persistent classes Component and Cluster to have access to the 
+  // The run initialization is used here to all Cluster to have access to the
   // GlobalParameters class instance, via a static pointer.
   Cluster::setPointerGlobalParameters(_globalParameters);
 }
@@ -114,17 +113,15 @@ void ClusterHadronizationHandler::doinitrun() {
 void ClusterHadronizationHandler::
 handle(PartialCollisionHandler & ch, const tPVector & tagged,
        const Hint & hint) throw(Veto, Stop, Exception) {
-
   ClusterVector clusters;
-  //_clusters.clear();
   StepPtr pstep = ch.newStep();
  
-  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) { 
+  if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }
   
   _partonSplitter->split(tagged,pstep);
-  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) { 
+  if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"After PartonSplitter");
   }
   
@@ -132,10 +129,9 @@ handle(PartialCollisionHandler & ch, const tPVector & tagged,
   _clusterFinder->formClusters(ch.currentCollision(),pstep, clusters); 
   _clusterFinder->reduceToTwoComponents(pstep,clusters); 
   
-  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {
+  if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {
     printStep(pstep,"After ClusterFinder");
   }
-  //clusters.clear();
   
   pstep = ch.newStep();
   _colourReconnector->rearrange(ch,pstep,clusters);
@@ -146,13 +142,10 @@ handle(PartialCollisionHandler & ch, const tPVector & tagged,
   _clusterDecayer->decay(pstep, clusters);
   
   // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-    //debuggingInfo(ch);
-    myDebugInfo(ch, clusters);
-    }
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
+    debuggingInfo(ch, clusters);
+  }
 
-  // Needed for memory cleanup to proceed correctly. Don't know why.
-  //_clusters.clear();
   // ***LOOKHERE*** In the case of soft underlying event ON, the
   //                beam clusters are as slways contained in the
   //                _collecCluPtr, but have being tagged (by
@@ -169,6 +162,10 @@ handle(PartialCollisionHandler & ch, const tPVector & tagged,
 }
 
 
+/****************************************************************
+ * The remaining code is used for debugging purposes. The code  *
+ * itself should be of no real interest.                        *
+ ***************************************************************/
 void ClusterHadronizationHandler::printStep(tStepPtr ptrStep, const string & title) {
   generator()->log() << "############" << title << "##############" << endl;
   for ( ParticleSet::const_iterator it = ptrStep->particles().begin();
@@ -178,116 +175,74 @@ void ClusterHadronizationHandler::printStep(tStepPtr ptrStep, const string & tit
   generator()->log() << "###########################################" << endl;
 }
 
-
-/*void ClusterHadronizationHandler::recordAfterClusterDecays(tStepPtr ptrStep) {
-
-  // Loop over all clusters, but skip the ones that are not final 
-  // (the ones, by definition, that do not decay into hadrons). 
-  // Then, for each final cluster, it goes up the hierarchy through 
-  // the parent cluster pointer, until it is reached the initial
-  // cluster, that was formed during the cluster finder phase 
-  // (and whose constituents are present in the previous Event Record).
-  // Notice that this method is general enough also for the case
-  // of cluster decay into three (or even more) hadrons.
-  for (ClusterVector::const_iterator it = _clusters.begin();
-  	 it != _clusters.end(); ++it) {
-    if ( (*it)->isAvailable() && (*it)->isStatusFinal() ) {
-  
-  	// The parents of the hadrons are all of the original
-  	// quarks-antiquarks, present after the non-perturbative splitting,
-  	// that are associated, directly or indirectly, with the hadrons.
-  	// The algorithm is, de facto, recursive, but for efficiency reason
-  	// we avoid the recursion call using a dynamic vector as stack.
-  
-  	vector<tPPtr> theParents;      // particles in the last Event Record
-  	vector<tClusterPtr> theStack;  // to avoid recursion
-  	theStack.push_back( *it );
-  	do {
-  	  tClusterPtr ptrClu = theStack.back();
-  	  theStack.pop_back();        
-  	  if ( ptrClu->isStatusInitial() ) {
-	    for(int i = 0; i<ptrClu->numComponents(); i++)
-	      theParents.push_back(ptrClu->particle(i));
-  	  } else {
-	    if(ptrClu->parents()[0]->PDGName() == "Cluster")
-	    theStack.push_back(dynamic_ptr_cast<tClusterPtr>
-                               (ptrClu->parents()[0]));
-  	  }
-  	} while ( ! theStack.empty() );
-  	ptrStep->addDecayProduct( theParents.begin(), theParents.end(),
-  				  (*it)->children().begin(), 
-				  (*it)->children().end() );  
-    }
-  }
-}
-*/
-
 void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
 						ClusterVector &clusters) {
 
   // Define static variables to store statistics information to be 
   // printed out at the end of the last event.
-  static double statNumberBeamClusters      = 0;
-  static double statNumberInitialClusters   = 0;
-  static double statNumberFinalClusters     = 0;
-  static double statNumber1HadronClusters   = 0;
-  static double statNumberReshuffledClusters= 0;
-  static double statNumber3ComponentClusters= 0;
-  static double statEventHadronMultiplicity = 0;
-  static double statNumberMesons            = 0;  
-  static double	statNumberLightHadrons      = 0;  
-  static double	statNumberStrangeHadrons    = 0;  
-  static double	statNumberCharmHadrons      = 0;  
-  static double	statNumberBHadrons          = 0;  
-  static double	statNumberPlusPions         = 0;  
-  static double	statNumberNeutralPions      = 0;  
-  static double	statNumberMinusPions        = 0;  
-  static map<long,double> statHadrons;
+  static double numberBeamClusters      = 0;
+  static double numberInitialClusters   = 0;
+  static double numberFinalClusters     = 0;
+  static double number1HadronClusters   = 0;
+  static double numberReshuffledClusters= 0;
+  static double number3ComponentClusters= 0;
+  static double eventHadronMultiplicity = 0;
+  static double numberMesons            = 0;  
+  static double	numberLightHadrons      = 0;  
+  static double	numberStrangeHadrons    = 0;  
+  static double	numberCharmHadrons      = 0;  
+  static double	numberBHadrons          = 0;  
+  static double	numberPlusPions         = 0;  
+  static double	numberNeutralPions      = 0;  
+  static double	numberMinusPions        = 0;  
+  static map<long,double> hadrons;
 
-  // The variables below are related to the positions of components and
-  // clusters with respect to the collision vertex or to each other.
-  // Notice that the invariant space-time distance is positive/negative for
-  // time-like/space-like distance, respectively. Also the pure space
-  // distance in the Lab frame is reported (it is never negative).
-  // In the case of e+ - e- interactions (i.e. no clusters from the initial
-  // state radiation) the invariant distance between a cluster and its
-  // children clusters is time-like, because information could flow
-  // from the parent to the children. The distance between a final cluster
-  // and its hadron children is, in average, of type space-like, because
-  // as hadron positions we define the production vertex of the hadron,
-  // assuming being gaussian smeared, with width inversely proportional
-  // to the parent cluster mass, around the parent cluster position:
-  // therefore, being the smearing the same in the four space-time components,
-  // in average the displacement is of type space, because there are
-  // three space components against the only time one. Other invariant
-  // distances, like between a light cluster and its reshuffling partner,
-  // could be a priori equally time-like as space-like.
-  static Length statInvDistInitialComponent_BeamVtx          = Length();
-  static Length statSpaceDistInitialComponent_BeamVtx        = Length();
-  static Length statInvDistInitialComponent_Cluster          = Length();
-  static Length statSpaceDistInitialComponent_Cluster        = Length();
-  static double statNumberInitialComponents                  = 0;  
-  static Length statInvDistFinalHadron_BeamVtx               = Length();
-  static Length statSpaceDistFinalHadron_BeamVtx             = Length();
-  static double statNumberChildHadrons                       = 0;
-  static Length statInvDistInitialCluster_BeamVtx            = Length();
-  static Length statSpaceDistInitialCluster_BeamVtx          = Length();
-  // use statNumberInitialClusters for counting the entries.
-  static Length statInvDistFinalCluster_BeamVtx              = Length();
-  static Length statSpaceDistFinalCluster_BeamVtx            = Length();
-  // use statNumberFinalClusters for counting the entries.
-  static Length statInvDistAnyCluster_BeamVtx                = Length();
-  static Length statSpaceDistAnyCluster_BeamVtx              = Length();
-  static double statNumberClusters                           = 0;
-  static Length statInvDistParentCluster_ChildCluster        = Length();
-  static Length statSpaceDistParentCluster_ChildCluster      = Length();
-  static double statNumberChildClusters                      = 0;
-  static Length statInvDistParentCluster_ChildHadron         = Length();
-  static Length statSpaceDistParentCluster_ChildHadron       = Length();
-  // use count statNumberChildHadrons for counting the entries.
-  static Length statInvDistLightCluster_ReshufflingCluster   = Length();
-  static Length statSpaceDistLightCluster_ReshufflingCluster = Length();
-  static double statNumberReshufflingClusterPartners         = 0;
+  /****************************************************************************
+   * The variables below are related to the positions of components and       *
+   * clusters with respect to the collision vertex or to each other.          *
+   * Notice that the invariant space-time distance is positive/negative for   *
+   * time-like/space-like distance, respectively. Also the pure space         *
+   * distance in the Lab frame is reported (it is never negative).            *
+   * In the case of e+ - e- interactions (i.e. no clusters from the initial   *
+   * state radiation) the invariant distance between a cluster and its        *
+   * children clusters is time-like, because information could flow           *
+   * from the parent to the children. The distance between a final cluster    *
+   * and its hadron children is, in average, of type space-like, because      *
+   * as hadron positions we define the production vertex of the hadron,       *
+   * assuming being gaussian smeared, with width inversely proportional       *
+   * to the parent cluster mass, around the parent cluster position:          *
+   * therefore, being the smearing the same in the four space-time components,*
+   * in average the displacement is of type space, because there are          *
+   * three space components against the only time one. Other invariant        *
+   * distances, like between a light cluster and its reshuffling partner,     *
+   * could be a priori equally time-like as space-like.                       *
+   ***************************************************************************/
+  static Length invDistInitialComponent_BeamVtx          = Length();
+  static Length spaceDistInitialComponent_BeamVtx        = Length();
+  static Length invDistInitialComponent_Cluster          = Length();
+  static Length spaceDistInitialComponent_Cluster        = Length();
+  static double numberInitialComponents                  = 0;  
+  static Length invDistFinalHadron_BeamVtx               = Length();
+  static Length spaceDistFinalHadron_BeamVtx             = Length();
+  static double numberChildHadrons                       = 0;
+  static Length invDistInitialCluster_BeamVtx            = Length();
+  static Length spaceDistInitialCluster_BeamVtx          = Length();
+  // use numberInitialClusters for counting the entries.
+  static Length invDistFinalCluster_BeamVtx              = Length();
+  static Length spaceDistFinalCluster_BeamVtx            = Length();
+  // use numberFinalClusters for counting the entries.
+  static Length invDistAnyCluster_BeamVtx                = Length();
+  static Length spaceDistAnyCluster_BeamVtx              = Length();
+  static double numberClusters                           = 0;
+  static Length invDistParentCluster_ChildCluster        = Length();
+  static Length spaceDistParentCluster_ChildCluster      = Length();
+  static double numberChildClusters                      = 0;
+  static Length invDistParentCluster_ChildHadron         = Length();
+  static Length spaceDistParentCluster_ChildHadron       = Length();
+  // use count numberChildHadrons for counting the entries.
+  static Length invDistLightCluster_ReshufflingCluster   = Length();
+  static Length spaceDistLightCluster_ReshufflingCluster = Length();
+  static double numberReshufflingClusterPartners         = 0;
 
   // Print some information about masses only once. 
   if ( generator()->currentEventNumber() == 1 ) {
@@ -309,16 +264,18 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
       for (int j=i; j<= 5; ++j) {
 	int id = j*1000 + i*100 + 1;
 	if (i == j) id = id + 2;     // if equal quarks the less significant digit is 3 not 1
-	generator()->log() << "\t id=" << id << "   " 
-			   << getParticleData(id)->PDGName() << "  mass: "
-			   << " nominal=" << getParticleData(id)->mass()
-			   << " constituent=" << getParticleData(id)->constituentMass()
-                           << " iSpin=" << getParticleData(id)->iSpin();
+	generator()->log() 
+	  << "\t id=" << id << "   " 
+	  << getParticleData(id)->PDGName() << "  mass: "
+	  << " nominal=" << getParticleData(id)->mass()
+	  << " constituent=" << getParticleData(id)->constituentMass()
+	  << " iSpin=" << getParticleData(id)->iSpin();
 	Energy diff = fabs( getParticleData(id)->constituentMass() - 
 			    (  getParticleData(i)->constituentMass() +
 			       getParticleData(j)->constituentMass() ) );
         if ( diff > 0.001*GeV ) {
-	  generator()->log() << " <--- NOT EQUAL SUM CONSTITUENT QUARK MASSES! "; 
+	  generator()->log() 
+	    << " <--- NOT EQUAL SUM CONSTITUENT QUARK MASSES! "; 
 	} 
 	generator()->log() << endl; 
       }
@@ -327,14 +284,23 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
     // Print about spin: just four examples, spin 0, 1/2, 1, 3/2
     // The method  ParticleData::spin()  returns the spin in standard units, 
     // whereas  ParticleData::iSpin()  returns 2J+1 in units of hbar/2.
-    generator()->log() << " eta:    iSpin=" << getParticleData(ParticleID::eta)->iSpin()
-                       << "   spin=" << getParticleData(ParticleID::eta)->spin() << endl
-                       << " mu:     iSpin=" << getParticleData(ParticleID::muminus)->iSpin()
-                       << "   spin=" << getParticleData(ParticleID::muminus)->spin() << endl
-                       << " phi:    iSpin=" << getParticleData(ParticleID::phi)->iSpin()
-                       << "   spin=" << getParticleData(ParticleID::phi)->spin() << endl
-                       << " Omega-: iSpin=" << getParticleData(ParticleID::Omegaminus)->iSpin()
-                       << "   spin=" << getParticleData(ParticleID::Omegaminus)->spin() << endl;
+    generator()->log() << " eta:    iSpin=" 
+		       << getParticleData(ParticleID::eta)->iSpin()
+                       << "   spin=" 
+		       << getParticleData(ParticleID::eta)->spin() << endl
+                       << " mu:     iSpin=" 
+		       << getParticleData(ParticleID::muminus)->iSpin()
+                       << "   spin=" 
+		       << getParticleData(ParticleID::muminus)->spin() << endl
+                       << " phi:    iSpin=" 
+		       << getParticleData(ParticleID::phi)->iSpin()
+                       << "   spin=" 
+		       << getParticleData(ParticleID::phi)->spin() << endl
+                       << " Omega-: iSpin=" 
+		       << getParticleData(ParticleID::Omegaminus)->iSpin()
+                       << "   spin=" 
+		       << getParticleData(ParticleID::Omegaminus)->spin() 
+		       << endl;
     
     // Print about mixing, but only if the debugging level is 100 (see CheckId)
     CheckId::hasStrangeness( ParticleID::eta, 0.5 );
@@ -353,46 +319,31 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
                        << " %%% END  PRELIMINARY INFOS %%% " << endl;
   }
 
-  // Loop over all clusters, and print information that allows to
-  // check the logical consistency of such clusters. Before doing that,
-  // associate to each cluster an integer number which corresponds to 
-  // the order in which such cluster appear in the container _collecCluPtr,
-  // starting with 1 for the first. This is necessary in order to
-  // translate in a readable way the cross references between clusters. 
- 
-  int count = 0;
-  map<tClusterPtr,int> orderingMap;
-  for (ClusterVector::const_iterator it = clusters.begin(); 
-       it != clusters.end(); ++it) {
-    orderingMap.insert(orderingMap.end(), pair<tClusterPtr,int>(*it,++count));
-  }
-  
   LorentzPoint vertexPosition = ch.currentCollision()->vertex();
   generator()->log() << "ClusterHadronizationHandler::debuggingInfo "
                      << " ===> START DEBUGGING <=== "
-		     << "   EventNumber=" << generator()->currentEventNumber() << endl
-                     << "  Total number of clusters in _collecCluPtr : " << count << endl
-		     << "  Lab vertex of current collision : " << vertexPosition << "  [mm]" 
-		     << endl;
-                     
-  // Now detailed information cluster by cluster. Basically everything
-  // that can be checked is print out.
+		     << "   EventNumber=" << generator()->currentEventNumber() 
+		     << endl
+                     << "  Total number of clusters: " << clusters.size()
+		     << endl << "  Lab vertex of current collision : "
+		     << vertexPosition << "  [mm]" << endl;
+   
+  // Loop over all clusters, and print information that allows to
+  // check the logical consistency of such clusters.
+                    
+  for(ClusterVector::iterator it=clusters.begin(); it!=clusters.end(); it++) {
+    tClusterPtr ptrClu = *it;
+    invDistAnyCluster_BeamVtx += (ptrClu->vertex() - vertexPosition).mag();
+    spaceDistAnyCluster_BeamVtx += (ptrClu->vertex().vect() - vertexPosition.vect()).mag();
+    numberClusters++;
 
-  for ( map<tClusterPtr,int>::const_iterator it = orderingMap.begin();
-        it != orderingMap.end(); ++it ) {
-
-    tClusterPtr ptrClu = it->first;  
-    int i = it->second;      
-    statInvDistAnyCluster_BeamVtx   += (ptrClu->vertex() - vertexPosition ).mag();
-    statSpaceDistAnyCluster_BeamVtx += ( ptrClu->vertex().vect() - vertexPosition.vect() ).mag();
-    statNumberClusters++;
-
-    generator()->log() << "  --- Cluster --- " << i << endl;
+    generator()->log() << "  --- Cluster --- " << ptrClu->number() << endl;
 
     // Information about the components, including sum of charges and momenta.
     // Notice that the charge of the cluster is defined (hence no consistency
     // check is possible) as the sum of the charges of its components.
-    generator()->log() << "\t numComponents     = " << ptrClu->numComponents() << endl;
+    generator()->log() << "\t numComponents     = " << ptrClu->numComponents()
+		       << endl;
     //int j=0;
     #define pc(i) (ptrClu->particle(i))
     Lorentz5Momentum sumMomentumComponents = Lorentz5Momentum();
@@ -402,11 +353,14 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
 	                 << "\t \t id = " << pc(i)->id() << "    "
 			 << pc(i)->PDGName() 
 			 << "     component mass = " << pc(i)->mass() << endl
-	                 << "\t \t momentum        = " << pc(i)->momentum() << endl
-	                 << "\t \t position        = " << pc(i)->vertex() << endl
-	                 << "\t \t isPerturbative  = " << ptrClu->isPerturbative(i) << endl
-	                 << "\t \t isBeamRemnant   = " << ptrClu->isBeamRemnant(i) << endl;
-      if ( pc(i) ) {
+	                 << "\t \t momentum        = " << pc(i)->momentum() 
+			 << endl
+	                 << "\t \t position        = " << pc(i)->vertex() 
+			 << endl << "\t \t isPerturbative  = " 
+			 << ptrClu->isPerturbative(i) << endl
+	                 << "\t \t isBeamRemnant   = " 
+			 << ptrClu->isBeamRemnant(i) << endl;
+      if(pc(i)) {
 	generator()->log() << "\t \t HAS pointed Particle :   number = " 
 			   << pc(i)->number() << endl
 	                   << "\t \t \t positions: labVertex="
@@ -418,14 +372,16 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
 			   << "   current=" << pc(i)->mass()
 			   << "   invariant=" << pc(i)->momentum().m() 
 			   << endl;
-	if ( ptrClu->isStatusInitial() ) {
-	  statInvDistInitialComponent_BeamVtx += ( pc(i)->vertex() - vertexPosition ).mag();
-	  statInvDistInitialComponent_Cluster += ( pc(i)->vertex() - ptrClu->vertex() ).mag();
-	  statSpaceDistInitialComponent_BeamVtx += 
-	    ( pc(i)->vertex().vect() - vertexPosition.vect() ).mag();
-	  statSpaceDistInitialComponent_Cluster += 
-	    ( pc(i)->vertex().vect() - ptrClu->vertex().vect() ).mag();
-	  statNumberInitialComponents++;
+	if(ptrClu->isStatusInitial()) {
+	  invDistInitialComponent_BeamVtx += 
+	    (pc(i)->vertex() - vertexPosition).mag();
+	  invDistInitialComponent_Cluster += 
+	    (pc(i)->vertex() - ptrClu->vertex()).mag();
+	  spaceDistInitialComponent_BeamVtx += 
+	    (pc(i)->vertex().vect() - vertexPosition.vect()).mag();
+	  spaceDistInitialComponent_Cluster += 
+	    (pc(i)->vertex().vect() - ptrClu->vertex().vect()).mag();
+	  numberInitialComponents++;
 	}
       } else {
 	generator()->log() << "\t \t NO pointed Particle " << endl;  
@@ -433,116 +389,117 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
       sumMomentumComponents += pc(i)->momentum();
       sumChargeComponents += pc(i)->data().charge();      
     }
-    generator()->log() << "\t charge (sum components) = " << sumChargeComponents << endl
-		       << "\t sumConstituentMasses    = " << ptrClu->sumConstituentMasses() 
+    generator()->log() << "\t charge (sum components) = " 
+		       << sumChargeComponents << endl
+		       << "\t sumConstituentMasses    = " 
+		       << ptrClu->sumConstituentMasses() 
 		       << endl
 		       << "\t mass              = " << ptrClu->mass() << endl
-		       << "\t momentum          = " << ptrClu->momentum() << endl
-		       << "\t position          = " << ptrClu->vertex() << endl;    
+		       << "\t momentum          = " << ptrClu->momentum() 
+		       << endl << "\t position          = " 
+		       << ptrClu->vertex() << endl;    
     Lorentz5Momentum diff = sumMomentumComponents - ptrClu->momentum();
     Energy ediff = fabs( diff.m() );
     if ( ediff > 1e-3*GeV ) {
-      generator()->log() << "\t ***ERROR***: MOMENTUM NOT CONSERVED! " << endl;
-      generator()->log() << "\t  --> sumMomentumComponents = " << sumMomentumComponents << endl 
-			 << "\t      diff = " << diff << endl;
+      generator()->log() 
+	<< "\t ***ERROR***: MOMENTUM NOT CONSERVED! " << endl
+	<< "\t  --> sumMomentumComponents = " << sumMomentumComponents << endl 
+	<< "\t      diff = " << diff << endl;
     } 
-    generator()->log() << "\t isBeamCluster     = " << ptrClu->isBeamCluster() << endl;
-    if ( ptrClu->isBeamCluster() ) statNumberBeamClusters++;
+    generator()->log() << "\t isBeamCluster     = " << ptrClu->isBeamCluster()
+		       << endl;
+    if(ptrClu->isBeamCluster()) numberBeamClusters++;
 
-    if ( ! ptrClu->isAvailable() ) {
-      generator()->log() << "\t isAvailable     = " << ptrClu->isAvailable() << endl;
+    if(!ptrClu->isAvailable()) {
+      generator()->log() << "\t isAvailable     = " << ptrClu->isAvailable() 
+			 << endl;
     } else {
-
-      generator()->log() << "\t isStatusInitial   = " << ptrClu->isStatusInitial() << endl
-			 << "\t isReadyToDecay    = " << ptrClu->isReadyToDecay() << endl
-			 << "\t isRedefined       = " << ptrClu->isRedefined() << endl
-			 << "\t hasBeenReshuffled = " << ptrClu->hasBeenReshuffled() << endl
-			 << "\t isStatusFinal     = " << ptrClu->isStatusFinal() << endl;
+      generator()->log() << "\t isStatusInitial   = " 
+			 << ptrClu->isStatusInitial() << endl
+			 << "\t isReadyToDecay    = " 
+			 << ptrClu->isReadyToDecay() << endl
+			 << "\t isRedefined       = " 
+			 << ptrClu->isRedefined() << endl
+			 << "\t hasBeenReshuffled = " 
+			 << ptrClu->hasBeenReshuffled() << endl
+			 << "\t isStatusFinal     = " 
+			 << ptrClu->isStatusFinal() << endl;
 
       // Statistics information
-      if ( ptrClu->isStatusInitial() ) {
-	statInvDistInitialCluster_BeamVtx += ( ptrClu->vertex() - vertexPosition ).mag();	
-	statSpaceDistInitialCluster_BeamVtx += 
-	  ( ptrClu->vertex().vect() - vertexPosition.vect() ).mag();	
-	statNumberInitialClusters++;
+      if(ptrClu->isStatusInitial()) {
+	invDistInitialCluster_BeamVtx += 
+	  (ptrClu->vertex() - vertexPosition).mag();	
+	spaceDistInitialCluster_BeamVtx += 
+	  (ptrClu->vertex().vect() - vertexPosition.vect()).mag();	
+	numberInitialClusters++;
       }
-      if ( ptrClu->isStatusFinal() ) {
-	statInvDistFinalCluster_BeamVtx += ( ptrClu->vertex() - vertexPosition ).mag();	
-	statSpaceDistFinalCluster_BeamVtx +=
-	  ( ptrClu->vertex().vect() - vertexPosition.vect() ).mag();	
-	statNumberFinalClusters++;
+      if(ptrClu->isStatusFinal()) {
+	invDistFinalCluster_BeamVtx += (ptrClu->vertex()-vertexPosition).mag();
+	spaceDistFinalCluster_BeamVtx +=
+	  (ptrClu->vertex().vect() - vertexPosition.vect()).mag();	
+	numberFinalClusters++;
       }
-      if ( ptrClu->children().size() == 1 ) statNumber1HadronClusters++;
-      if ( ptrClu->hasBeenReshuffled() ) {
-	statNumberReshuffledClusters++;
-	if ( ptrClu->isRedefined() ) {
-	  statInvDistLightCluster_ReshufflingCluster += 
-	    ( ptrClu->vertex() - ptrClu->reshufflingPartnerCluster()->vertex() ).mag();
-	  statSpaceDistLightCluster_ReshufflingCluster += 
-	    ( ptrClu->vertex().vect() - ptrClu->reshufflingPartnerCluster()->vertex().vect() ).mag();
-	  statNumberReshufflingClusterPartners++;
+      if(ptrClu->children().size() == 1) number1HadronClusters++;
+      if(ptrClu->hasBeenReshuffled()) {
+	numberReshuffledClusters++;
+	if(ptrClu->isRedefined()) {
+	  invDistLightCluster_ReshufflingCluster += (ptrClu->vertex() -
+	    ptrClu->reshufflingPartnerCluster()->vertex()).mag();
+	  spaceDistLightCluster_ReshufflingCluster += (ptrClu->vertex().vect()-
+	    ptrClu->reshufflingPartnerCluster()->vertex().vect()).mag();
+	  numberReshufflingClusterPartners++;
 	}
-      } else if ( ptrClu->isRedefined() ) {
-	statNumber3ComponentClusters++;
+      } else if(ptrClu->isRedefined()) {
+	number3ComponentClusters++;
       }
 
       // Information about the (eventual) parent cluster. 
       int parent = 0;
-      for(int i = 0; i<ptrClu->parents().size(); i++) {
-	if(orderingMap.find(dynamic_ptr_cast<ClusterPtr>(ptrClu->parents()[i]))
-	   != orderingMap.end() ) {
-	  parent = orderingMap.find(
-	      dynamic_ptr_cast<ClusterPtr>(ptrClu->parents()[0]))->second;
+      for(unsigned int i = 0; i<ptrClu->parents().size(); i++) {
+	if(ptrClu->parents()[i]->PDGName() == "Cluster") {
+	  parent = ptrClu->parents()[i]->number();
 	  break;
-	} else {
-	  parent = -999;  // Error: it shouldn't happen!
 	}
       }
       generator()->log() << "\t parentCluster     = " << parent << endl;
       
       // Information about the (eventual) reshuffling partner cluster. 
       int reshuffling = 0;
-      if ( ptrClu->reshufflingPartnerCluster() ) {
-	if ( orderingMap.find( ptrClu->reshufflingPartnerCluster() ) != orderingMap.end() ) {
-	  reshuffling = orderingMap.find( ptrClu->reshufflingPartnerCluster() )->second;
-	} else {
-	  reshuffling = -999;  // Error: it shouldn't happen!
-	}
+      if(ptrClu->reshufflingPartnerCluster()) {
+	reshuffling = ptrClu->reshufflingPartnerCluster()->number();
       }
       generator()->log() << "\t reshufflingPartner= " << reshuffling << endl;
       
-      // Information about the (eventual) children clusters, including the check
+      // Info about the (eventual) children clusters, including the check
       // of conservation of the charge and energy-momentum.
       Lorentz5Momentum sumMomentumChildrenClusters = Lorentz5Momentum();
       Charge sumChargeChildrenClusters = Charge();
-      if ( ptrClu->children().size() ) {
+      int numChildClus = 0;
+      if(ptrClu->children().size()) {
 	generator()->log() << "\t childrenClusters  = ";
-	for ( ParticleVector::const_iterator jt = ptrClu->children().begin();
-	      jt != ptrClu->children().end(); ++jt ) {	
-	  cout << "Looking at child " << *(*jt) << endl;
-	  statInvDistParentCluster_ChildCluster += ( ptrClu->vertex() - (*jt)->vertex() ).mag();
-	  statSpaceDistParentCluster_ChildCluster += 
-	    ( ptrClu->vertex().vect() - (*jt)->vertex().vect() ).mag();
-	  statNumberChildClusters++;
-	  int child = 0;
-	  if ( orderingMap.find(dynamic_ptr_cast<ClusterPtr>(*jt)) 
-	       != orderingMap.end() ) {
-	    child=orderingMap.find(dynamic_ptr_cast<ClusterPtr>(*jt))->second;
-	  } else {
-	    child = -999;  // Error: it shouldn't happen!
+	for(ParticleVector::const_iterator jt = ptrClu->children().begin();
+	    jt != ptrClu->children().end(); ++jt) {	
+	  if((*jt)->PDGName() == "Cluster") {
+	    numChildClus++;
+	    //cout << "Looking at child " << (*jt)->number() << endl;
+	    invDistParentCluster_ChildCluster += 
+	      (ptrClu->vertex() - (*jt)->vertex()).mag();
+	    spaceDistParentCluster_ChildCluster += 
+	      (ptrClu->vertex().vect() - (*jt)->vertex().vect()).mag();
+	    numberChildClusters++;
+	    generator()->log() << (*jt)->number() << "   ";
+	    Charge sumChargeChildClustComp = Charge();
+	    // The charge of a cluster is defined as the sum of the 
+	    // charges of its components. 
+	    ClusterPtr cp = dynamic_ptr_cast<ClusterPtr>(*jt);
+	    for(int i = 0; i<cp->numComponents(); i++)
+	      sumChargeChildClustComp += cp->particle(i)->data().charge();
+	    sumChargeChildrenClusters   += sumChargeChildClustComp;
+	    sumMomentumChildrenClusters += (*jt)->momentum();
 	  }
-	  generator()->log() << child << "   ";
-	  Charge sumChargeChildrenClusterComponents = Charge();
-	  // Remind that the charge of a cluster is defined as the sum of the 
-	  // charges of its components. 
-	  ClusterPtr cp = dynamic_ptr_cast<ClusterPtr>(*jt);
-	  for(int i = 0; i<cp->numComponents(); i++)
-	    sumChargeChildrenClusterComponents += 
-	                         cp->particle(i)->data().charge();
-
-	  sumChargeChildrenClusters   += sumChargeChildrenClusterComponents;
-	  sumMomentumChildrenClusters += (*jt)->momentum();
 	}
+      }
+      if(numChildClus) {
 	generator()->log() << endl
 			   << "\t  --> sumChargeChildrenClusters = " 
 			   << sumChargeChildrenClusters << endl
@@ -554,96 +511,108 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
       
       // Information about the (eventual) children hadrons, including the check
       // of conservation of the charge and energy-momentum.
-      /*      Lorentz5Momentum sumMomentumChildrenHadrons = Lorentz5Momentum();
+      Lorentz5Momentum sumMomentumChildrenHadrons = Lorentz5Momentum();
       Charge sumChargeChildrenHadrons = Charge();
-      if ( ptrClu->children() != PVector() ) {
+      if(ptrClu->children().size() != (unsigned int)numChildClus) {
 	generator()->log() << "\t num childrenHadrons  = " 
-			   << ptrClu->childrenHadrons().size() << endl;
+			   << ptrClu->children().size()-numChildClus << endl;
 	int j = 0;
-	for ( PVector::const_iterator jt = ptrClu->childrenHadrons().begin();
-	      jt != ptrClu->childrenHadrons().end(); ++jt ) {	
-	  statInvDistFinalHadron_BeamVtx += ( (*jt)->labVertex() - vertexPosition ).mag();
-	  statSpaceDistFinalHadron_BeamVtx += 
-	    ( (*jt)->labVertex().vect() - vertexPosition.vect() ).mag();
-	  statInvDistParentCluster_ChildHadron += ( ptrClu->position() - (*jt)->labVertex() ).mag();
-	  statSpaceDistParentCluster_ChildHadron += 
-	    ( ptrClu->position().vect() - (*jt)->labVertex().vect() ).mag();
-	  statNumberChildHadrons++;
-	  generator()->log() << "\t Hadron " << ++j << endl 
-			     << "\t \t id = " << (*jt)->id() << "   " << (*jt)->PDGName() 
-			     << "   mass = " << (*jt)->mass() << endl
-			     << "\t \t momentum        = " << (*jt)->momentum() << endl
-			     << "\t \t labVertex       = " << (*jt)->labVertex() << endl;*/
+	for(PVector::const_iterator jt = ptrClu->children().begin();
+	      jt != ptrClu->children().end(); ++jt ) {	
+	  if((*jt)->PDGName() != "Cluster") {
+	    invDistFinalHadron_BeamVtx += 
+	      ((*jt)->labVertex() - vertexPosition).mag();
+	    spaceDistFinalHadron_BeamVtx += 
+	      ((*jt)->labVertex().vect() - vertexPosition.vect()).mag();
+	    invDistParentCluster_ChildHadron += 
+	      (ptrClu->labVertex() - (*jt)->labVertex()).mag();
+	    spaceDistParentCluster_ChildHadron += 
+	      (ptrClu->labVertex().vect() - (*jt)->labVertex().vect()).mag();
+	    numberChildHadrons++;
+	    generator()->log() << "\t Hadron " << ++j << endl 
+			       << "\t \t id = " << (*jt)->id() << "   " 
+			       << (*jt)->PDGName() 
+			       << "   mass = " << (*jt)->mass() << endl
+			       << "\t \t momentum        = " 
+			       << (*jt)->momentum() << endl
+			       << "\t \t labVertex       = " 
+			       << (*jt)->labVertex() << endl;
 	  // Information about the angles, in Cluster CM and in Lab frame, 
-	  // between the hadron and the component of the cluster parent from 
-	  // which the hadron come from. Although not nice, we use the fact the 
+	  // between the hadron and the component of the cluster from which
+	  // the hadron came from. Although not nice, we use the fact the 
 	  // order of cluster's components is the same as cluster's hadrons.
-      /*	  int k = 0;
+      	  int k = 0;
 	  Lorentz5Momentum pQLab = Lorentz5Momentum();
-	  for ( CollecCompPtr::const_iterator kt = ptrClu->components().begin();
-		kt != ptrClu->components().end() ; ++kt ) {
-	    if ( ++k == j ) pQLab = (*kt)->momentum();
+	  for(int i = 0; i<ptrClu->numComponents(); i++) {
+	    if(++k == j) pQLab = ptrClu->particle(i)->momentum();
 	  }
 	  Lorentz5Momentum pQCm = pQLab;
 	  pQCm.boost( - ptrClu->momentum().boostVector() ); 
 	  Lorentz5Momentum pHadCm = (*jt)->momentum();
 	  pHadCm.boost( - ptrClu->momentum().boostVector() ); 
-	  generator()->log() << "\t \t angles:  CM = "
-			     << pHadCm.vect().angle( pQCm.vect().unit() ) << "   Lab = " 
-			     << (*jt)->momentum().vect().angle( pQLab.vect().unit() ) 
-			     << endl;
-	  if ( (*jt)->parents() != tParticleVector() ) {
-	    generator()->log() << "\t \t num parents = " << (*jt)->parents().size() << endl;
+	  generator()->log() 
+	               << "\t \t angles:  CM = "
+		       << pHadCm.vect().angle(pQCm.vect().unit()) 
+		       << "   Lab = " 
+		       << (*jt)->momentum().vect().angle(pQLab.vect().unit()) 
+		       << endl;
+	  if((*jt)->parents().size()) {
+	    generator()->log() << "\t \t num parents = " 
+			       << (*jt)->parents().size() << endl;
 	    int k = 0;
-	    for ( tParticleVector::const_iterator kt = (*jt)->parents().begin();
+	    for(tParticleVector::const_iterator kt = (*jt)->parents().begin();
 		  kt != (*jt)->parents().end(); ++kt ) {	
 	      generator()->log() << "\t \t Parent " << ++k << endl
-				 << "\t \t \t id = " << (*kt)->id() << "   " << (*kt)->PDGName() 
+				 << "\t \t \t id = " << (*kt)->id() << "   " 
+				 << (*kt)->PDGName() 
 				 << endl
-				 << "\t \t \t momentum  = " << (*kt)->momentum() << endl
-				 << "\t \t \t labVertex = " << (*kt)->labVertex() << endl;
+				 << "\t \t \t momentum  = " 
+				 << (*kt)->momentum() << endl
+				 << "\t \t \t labVertex = " 
+				 << (*kt)->labVertex() << endl;
 	    }
 	  } else {      
 	    generator()->log() << "\t \t NO parents for this hadron" << endl;
 	  }	
 	  sumChargeChildrenHadrons   += (*jt)->data().charge();
 	  sumMomentumChildrenHadrons += (*jt)->momentum();
+	  generator()->log() << endl 
+			     << "\t  --> sumChargeChildrenHadrons = " 
+			     << sumChargeChildrenHadrons << endl	  
+			     << "\t  --> sumMomentumChildrenHadrons = " 
+			     << sumMomentumChildrenHadrons << endl;   
+	  } else {      
+	    generator()->log() << "\t NO childrenHadrons " << endl;
+	  }
 	}
-	generator()->log() << endl 
-			   << "\t  --> sumChargeChildrenHadrons = " 
-			   << sumChargeChildrenHadrons << endl	  
-			   << "\t  --> sumMomentumChildrenHadrons = " 
-			   << sumMomentumChildrenHadrons << endl;   
-      } else {      
-	generator()->log() << "\t NO childrenHadrons " << endl;
       }
-    
-      if ( ptrClu->childrenClusters() != CollecCluPtr()  || 
-	   ptrClu->childrenHadrons()  != PVector() ) {
-	Charge delta_ch = fabs( getParticleData(ParticleID::d)->charge() ) / 10.0; 
-	if ( fabs(sumChargeChildrenClusters + sumChargeChildrenHadrons 
+
+      if(ptrClu->children().size()) {
+	Charge delta_ch = fabs(getParticleData(ParticleID::d)->charge())/10.0;
+	if(fabs(sumChargeChildrenClusters + sumChargeChildrenHadrons 
 		  - sumChargeComponents) > delta_ch ) {
-	  generator()->log() << "\t ***ERROR***: CHARGE NOT CONSERVED! " << endl;	
+	  generator()->log() <<"\t ***ERROR***: CHARGE NOT CONSERVED! "<< endl;
 	} 
-	diff = sumMomentumChildrenClusters + sumMomentumChildrenHadrons - ptrClu->momentum();
-	ediff = fabs( diff.m() );
-	if ( ediff > 1e-3*GeV ) {
-	  if ( ptrClu->hasBeenReshuffled() ) {
+	diff = sumMomentumChildrenClusters + sumMomentumChildrenHadrons - 
+	  ptrClu->momentum();
+	ediff = fabs(diff.m());
+	if(ediff > 1e-3*GeV) {
+	  if(ptrClu->hasBeenReshuffled()) {
 	    generator()->log() << "\t ***WARNING***: MOMENTUM NOT CONSERVED"
 			       << " BUT RESHUFFLING OCCURED!" << endl; 
 	  } else {
-	    generator()->log() << "\t ***ERROR***: MOMENTUM NOT CONSERVED! " << endl;
+	    generator()->log() << "\t ***ERROR***: MOMENTUM NOT CONSERVED! " 
+			       << endl;
 	  }
-	  generator()->log() << "\t  --> sumMomentumChildren = " 
-			     << sumMomentumChildrenClusters + sumMomentumChildrenHadrons << endl 
-			     << "\t      diff = " << diff << endl;
-	} 
-	}*/
-
-    } // end else part of if ( ! ptrClu->isAvailable() )    
-      
+	  generator()->log() 
+	    << "\t  --> sumMomentumChildren = " 
+	    << sumMomentumChildrenClusters + sumMomentumChildrenHadrons << endl
+	    << "\t      diff = " << diff << endl;
+	}
+      }
+    } // end else part of if ( ! ptrClu->isAvailable() )      
   } // end main loop over clusters (indeed, over the elements of the map)
-
+  
   // We want to focus directly now on the connection between the 
   // original partons (before the cluster hadronization but after the 
   //  nonperturbative gluon splitting) and the final hadrons.
@@ -664,46 +633,44 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
   // of the Event Record interface (for example in the use of
   //      ptrStep->addDecayProduct(...)
   // in the method recordAfterClusterDecays).
-  /*
-  generator()->log() << " ---------- Begin analysis of produced Hadrons ---------- " << endl;
-  for ( map<tCluPtr,int>::const_iterator it = orderingMap.begin();
-        it != orderingMap.end(); ++it ) {
-    tCluPtr ptrClu = it->first;  
-    if ( ptrClu->isAvailable() && ptrClu->isStatusInitial() ) {
-      generator()->log() << "  Cluster (Initial) " << it->second << endl;
+  
+  generator()->log() 
+    << " ---------- Begin analysis of produced Hadrons ---------- " << endl;
+  /*for ( map<tCluPtr,int>::const_iterator it = orderingMap.begin();
+    it != orderingMap.end(); ++it ) {*/
+  for(ClusterVector::iterator it=clusters.begin(); it!=clusters.end(); it++) {
+    tClusterPtr ptrClu = (*it);  
+    if(ptrClu->isAvailable() && ptrClu->isStatusInitial()) {
+      generator()->log() << "  Cluster (Initial) " << ptrClu->number() << endl;
       bool reshuffled = false;
       vector<tPPtr> vecPartonParents;
-      for ( CollecCompPtr::const_iterator jt = ptrClu->components().begin();
-	    jt != ptrClu->components().end(); ++jt) {
-	vecPartonParents.push_back( (*jt)->pointerParticle() );
-      }
-      vector<tPPtr> vecChildrenHadrons;
-      vector<tCluPtr> theStack;  // to avoid recursion
-      theStack.push_back( ptrClu );
+      for(int i = 0; i<ptrClu->numComponents(); i++)
+	vecPartonParents.push_back(ptrClu->particle(i));
+      tParticleVector vecChildrenHadrons;
+      tClusterVector theStack;  // to avoid recursion
+      theStack.push_back(ptrClu);
       do {
-	tCluPtr ptrClu = theStack.back();
+	tClusterPtr ptrClu = theStack.back();
 	theStack.pop_back();        
-	if ( ptrClu->isStatusFinal() ) {
-	  for ( PVector::const_iterator jt = ptrClu->childrenHadrons().begin();
-		jt != ptrClu->childrenHadrons().end(); ++jt) {
-	    vecChildrenHadrons.push_back( *jt );
-	  }
-	} 
-	for ( CollecCluPtr::const_iterator jt = ptrClu->childrenClusters().begin();
-	      jt != ptrClu->childrenClusters().end(); ++jt) {
-	  theStack.push_back( *jt );
+	for(PVector::const_iterator jt = ptrClu->children().begin();
+	    jt != ptrClu->children().end(); ++jt) {
+	  if((*jt)->PDGName() == "Cluster") 
+	    theStack.push_back(dynamic_ptr_cast<ClusterPtr>(*jt));
+	  else vecChildrenHadrons.push_back(*jt);
 	}
 	if ( ptrClu->hasBeenReshuffled() ) {
 	  reshuffled = true;
 	}
-      } while ( ! theStack.empty() );    
+      } while(!theStack.empty());    
       Lorentz5Momentum sumMomentumPartons = Lorentz5Momentum();
       Charge sumChargePartons = Charge();
-      generator()->log() << "\t made of the following  " << vecPartonParents.size()
+      generator()->log() << "\t made of the following  " 
+			 << vecPartonParents.size()
 	                 << "  partons " << endl;
-      for ( vector<tPPtr>::const_iterator jt = vecPartonParents.begin();
-	    jt != vecPartonParents.end(); ++jt) {
-	generator()->log() << "\t \t id = " << (*jt)->id() << "   " << (*jt)->PDGName() 
+      for(tParticleVector::const_iterator jt = vecPartonParents.begin();
+	  jt != vecPartonParents.end(); ++jt) {
+	generator()->log() << "\t \t id = " << (*jt)->id() << "   " 
+			   << (*jt)->PDGName() 
 			   << "   number = " << (*jt)->number() << "   " 
 			   << (*jt)->momentum() << endl;
 	sumMomentumPartons += (*jt)->momentum();
@@ -711,213 +678,220 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
       }
       Lorentz5Momentum sumMomentumHadrons = Lorentz5Momentum();
       Charge sumChargeHadrons = Charge();
-      generator()->log() << "\t has produced the following  " << vecChildrenHadrons.size()
+      generator()->log() << "\t has produced the following  " 
+			 << vecChildrenHadrons.size()
 	                 << "  hadrons " << endl;
-      for ( vector<tPPtr>::const_iterator jt = vecChildrenHadrons.begin();
-	    jt != vecChildrenHadrons.end(); ++jt) {
-	generator()->log() << "\t \t id = " << (*jt)->id() << "   " << (*jt)->PDGName() 
+      for(tParticleVector::const_iterator jt = vecChildrenHadrons.begin();
+	  jt != vecChildrenHadrons.end(); ++jt) {
+	generator()->log() << "\t \t id = " << (*jt)->id() << "   " 
+			   << (*jt)->PDGName() 
 			   << "   " << (*jt)->momentum() << endl;
 	sumMomentumHadrons += (*jt)->momentum();
         sumChargeHadrons += (*jt)->data().charge();
+
         // Add here all other statistical information
-        statEventHadronMultiplicity++;
-        if ( statHadrons.find( (*jt)->id() ) != statHadrons.end() ) {
-	  statHadrons.find( (*jt)->id() )->second = statHadrons.find( (*jt)->id() )->second + 1;
+        eventHadronMultiplicity++;
+        if(hadrons.find((*jt)->id()) != hadrons.end()) {
+	  hadrons.find((*jt)->id())->second = hadrons.find((*jt)->id())->second
+	    + 1;
 	} else {
-	  statHadrons.insert( pair<long,double>( (*jt)->id(), 1.0 ) );
+	  hadrons.insert(pair<long,double>((*jt)->id(), 1.0));
 	}
-        if ( CheckId::isMeson( (*jt)->id() ) ) statNumberMesons++;  
-        if ( CheckId::hasBeauty( (*jt)->id() ) ) {
-	  statNumberBHadrons++;
-	} else if ( CheckId::hasCharm( (*jt)->id() ) ) {
-	  statNumberCharmHadrons++;
-	} else if ( CheckId::hasStrangeness( (*jt)->id(), rnd() ) ) {
-	  statNumberStrangeHadrons++;
+        if(CheckId::isMeson((*jt)->id())) numberMesons++;  
+        if(CheckId::hasBeauty((*jt)->id())) {
+	  numberBHadrons++;
+	} else if(CheckId::hasCharm((*jt)->id())) {
+	  numberCharmHadrons++;
+	} else if(CheckId::hasStrangeness((*jt)->id(), rnd())) {
+	  numberStrangeHadrons++;
 	} else {
-	  statNumberLightHadrons++;
+	  numberLightHadrons++;
 	}
-        if ( (*jt)->id() == ParticleID::piplus )  statNumberPlusPions++;  
-        if ( (*jt)->id() == ParticleID::pi0 )     statNumberNeutralPions++;  
-        if ( (*jt)->id() == ParticleID::piminus ) statNumberMinusPions++;          
+        if((*jt)->id() == ParticleID::piplus )  numberPlusPions++;  
+        if((*jt)->id() == ParticleID::pi0 )     numberNeutralPions++;  
+        if((*jt)->id() == ParticleID::piminus ) numberMinusPions++; 
       }
-      Charge delta_ch = fabs( getParticleData(ParticleID::d)->charge() ) / 10.0; 
-      if ( fabs(sumChargePartons - sumChargeHadrons) > delta_ch ) {
+      Charge delta_ch = fabs(getParticleData(ParticleID::d)->charge())/10.0; 
+      if(fabs(sumChargePartons - sumChargeHadrons) > delta_ch) {
 	generator()->log() << "\t ***ERROR***: CHARGE NOT CONSERVED! " << endl;
       } 
-      generator()->log() << "\t Total Charge Partons = " << sumChargePartons << endl
-			 << "\t Total Charge Hadrons = " << sumChargeHadrons << endl;
+      generator()->log() << "\t Total Charge Partons = " << sumChargePartons 
+			 << endl
+			 << "\t Total Charge Hadrons = " << sumChargeHadrons 
+			 << endl;
       Lorentz5Momentum diff = sumMomentumPartons - sumMomentumHadrons;
-      Energy ediff = fabs( diff.m() );
-      if ( ediff > 1e-3*GeV ) {
+      Energy ediff = fabs(diff.m());
+      if(ediff > 1e-3*GeV) {
 	generator()->log() << "\t ***ERROR***: MOMENTUM NOT CONSERVED!"
 			   << "  reshuffled=" << reshuffled << endl;
       }
-      generator()->log() << "\t Total Momentum Partons = " << sumMomentumPartons << endl
-			 << "\t Total Momentum Hadrons = " << sumMomentumHadrons << endl
-			 << "\t   ---> Diff Momentum = " << diff << endl;
+      generator()->log() 
+	<< "\t Total Momentum Partons = " << sumMomentumPartons << endl
+	<< "\t Total Momentum Hadrons = " << sumMomentumHadrons << endl
+	<< "\t   ---> Diff Momentum = " << diff << endl;
     } // end of if isAvailable && isStatusInitial
   } // endl loop over the map
-  generator()->log() << " ---------- End analysis of produced Hadrons ---------- " << endl;
+  generator()->log() 
+    << " ---------- End analysis of produced Hadrons ---------- " << endl;
 
   generator()->log() << "ClusterHadronizationHandler::debuggingInfo "
                      << " ===> END DEBUGGING <=== " << endl;
 
-  // At the end of the last event to be generated, print out statistics information.
-  if ( generator()->currentEventNumber() == generator()->N() ) {
-    generator()->log() << endl << endl << "ClusterHadronizationHandler::debuggingInfo "
-		       << " ===> BEGIN ***FINAL STATISTICS*** <=== " << endl << endl;
-    double dN = double ( generator()->N() );
+  // At the end of the last event, print out statistics information.
+  if(generator()->currentEventNumber() == generator()->N()) {
+    generator()->log() << endl << endl 
+		       << "ClusterHadronizationHandler::debuggingInfo "
+		       << " ===> BEGIN ***FINAL STATISTICS*** <=== " 
+		       << endl << endl;
+    double dN = double(generator()->N());
     int i=0;
-    for ( map<long,double>::const_iterator iter = statHadrons.begin();
-	  iter != statHadrons.end(); ++iter ) {
+    for(map<long,double>::const_iterator iter = hadrons.begin();
+	iter != hadrons.end(); ++iter ) {
       generator()->log() << "\t" << ++i << ")  id=" << iter->first << "   "
-	                 << ( getParticleData( iter->first ) ? getParticleData( iter->first )->PDGName()
-			      : "UNKNOWN" ) 
-			 << "   " << iter->second / dN << " per event;   fraction="
-			 <<  100.0 * iter->second / statEventHadronMultiplicity << " %" << endl;
+	                 << (getParticleData(iter->first) ? 
+			     getParticleData(iter->first)->PDGName()
+			     : "UNKNOWN") 
+			 << "   " << iter->second / dN 
+			 << " per event;   fraction="
+			 <<  100.0 * iter->second/eventHadronMultiplicity 
+			 << " %" << endl;
     }
-    generator()->log() << endl
-		       << "\t Counts for position statistics " << endl
-                       << "\t \t   statNumberInitialComponents =" << statNumberInitialComponents << endl
-                       << "\t \t   statNumberInitialClusters   =" << statNumberInitialClusters << endl
-                       << "\t \t   statNumberClusters          =" << statNumberClusters << endl
-                       << "\t \t   statNumberFinalClusters     =" << statNumberFinalClusters << endl
-                       << "\t \t   statNumberChildClusters     =" << statNumberChildClusters << endl
-                       << "\t \t   statNumberChildHadrons      =" << statNumberChildHadrons << endl
-                       << "\t \t   statNumberReshufflingClusterParters =" 
-		       << statNumberReshufflingClusterPartners << endl 
-		       << endl
-                       << "\t Invariant (space-time) Distance (in millimeters) : " << endl
-                       << "\t \t | initial component - beam vertex | = " 
-                       << ( statNumberInitialComponents 
-			    ? statInvDistInitialComponent_BeamVtx / statNumberInitialComponents  
-			    : 0.0 ) << endl
-                       << "\t \t | initial component - cluster | = " 
-                       << ( statNumberInitialComponents 
-			    ? statInvDistInitialComponent_Cluster / statNumberInitialComponents  
-			    : 0.0 ) << endl
-                       << "\t \t | initial cluster - beam vertex | = " 
-                       << ( statNumberInitialClusters 
-			    ? statInvDistInitialCluster_BeamVtx / statNumberInitialClusters  
-			    : 0.0 ) << endl
-                       << "\t \t | any cluster - beam vertex | = " 
-                       << ( statNumberClusters 
-			    ? statInvDistAnyCluster_BeamVtx / statNumberClusters 
-			    : 0.0 ) << endl
-                       << "\t \t | final cluster - beam vertex | = " 
-                       << ( statNumberFinalClusters 
-			    ? statInvDistFinalCluster_BeamVtx / statNumberFinalClusters  
-			    : 0.0 ) << endl
-                       << "\t \t | final hadron - beam vertex | = " 
-                       << ( statNumberChildHadrons 
-			    ? statInvDistFinalHadron_BeamVtx / statNumberChildHadrons  
-			    : 0.0 ) << endl
-                       << "\t \t | parent cluster - child cluster | = " 
-                       << ( statNumberChildClusters 
-			    ? statInvDistParentCluster_ChildCluster / statNumberChildClusters  
-			    : 0.0 ) << endl
-                       << "\t \t | parent cluster - child hadron | = " 
-                       << ( statNumberChildHadrons 
-			    ? statInvDistParentCluster_ChildHadron / statNumberChildHadrons  
-			    : 0.0 ) << endl
-                       << "\t \t | light cluster - reshuffling partner cluster | = " 
-                       << ( statNumberReshufflingClusterPartners
-			    ? statInvDistLightCluster_ReshufflingCluster 
-			    / statNumberReshufflingClusterPartners : 0.0 ) << endl
-		       << endl
-                       << "\t Lab space distance (abs) (in millimeters) : " << endl
-                       << "\t \t | initial component - beam vertex | = " 
-                       << ( statNumberInitialComponents 
-			    ? statSpaceDistInitialComponent_BeamVtx / statNumberInitialComponents  
-			    : 0.0 ) << endl
-                       << "\t \t | initial component - cluster | = " 
-                       << ( statNumberInitialComponents 
-			    ? statSpaceDistInitialComponent_Cluster / statNumberInitialComponents  
-			    : 0.0 ) << endl
-                       << "\t \t | initial cluster - beam vertex | = " 
-                       << ( statNumberInitialClusters 
-			    ? statSpaceDistInitialCluster_BeamVtx / statNumberInitialClusters  
-			    : 0.0 ) << endl
-                       << "\t \t | any cluster - beam vertex | = " 
-                       << ( statNumberClusters 
-			    ? statSpaceDistAnyCluster_BeamVtx / statNumberClusters 
-			    : 0.0 ) << endl
-                       << "\t \t | final cluster - beam vertex | = " 
-                       << ( statNumberFinalClusters 
-			    ? statSpaceDistFinalCluster_BeamVtx / statNumberFinalClusters  
-			    : 0.0 ) << endl
-                       << "\t \t | final hadron - beam vertex | = " 
-                       << ( statNumberChildHadrons 
-			    ? statSpaceDistFinalHadron_BeamVtx / statNumberChildHadrons  
-			    : 0.0 ) << endl
-                       << "\t \t | parent cluster - child cluster | = " 
-                       << ( statNumberChildClusters 
-			    ? statSpaceDistParentCluster_ChildCluster / statNumberChildClusters  
-			    : 0.0 ) << endl
-                       << "\t \t | parent cluster - child hadron | = " 
-                       << ( statNumberChildHadrons 
-			    ? statSpaceDistParentCluster_ChildHadron / statNumberChildHadrons  
-			    : 0.0 ) << endl
-                       << "\t \t | light cluster - reshuffling partner cluster | = " 
-                       << ( statNumberReshufflingClusterPartners
-			    ? statSpaceDistLightCluster_ReshufflingCluster 
-			    / statNumberReshufflingClusterPartners : 0.0 ) << endl
-                       << endl;
-    generator()->log() << endl
-                       << "\t Clusters:  BeamCluster  average number  = " 
-                       << statNumberBeamClusters / dN << endl
-                       << "\t            Initial      average number  = " 
-                       << statNumberInitialClusters / dN << endl
-                       << "\t            Final        average number  = " 
-                       << statNumberFinalClusters / dN << endl
-                       << "\t            1-Hadron     average number  = " 
-                       << statNumber1HadronClusters / dN << "  fraction="
-		       << statNumber1HadronClusters / statNumberFinalClusters << endl
-                       << "\t            Reshuffled   average number  = " 
-                       << statNumberReshuffledClusters / dN << "  fraction="
-		       << statNumberReshuffledClusters / statNumberFinalClusters << endl
-                       << "\t            3-Component  average number  = " 
-                       << statNumber3ComponentClusters / dN << "  fraction="
-		       << statNumber3ComponentClusters / statNumberFinalClusters <<endl<<endl 
-                       << "\t Average Hadron Multiplicity = " 
-                       << statEventHadronMultiplicity / dN << endl
-                       << "\t Mesons:  " << statNumberMesons / dN << " per event;    fraction="
-                       << 100.0 * statNumberMesons / statEventHadronMultiplicity << " %" << endl
-                       << "\t Baryons: " << (statEventHadronMultiplicity-statNumberMesons) / dN 
-		       << " per event;    fraction="
-                       << 100.0 * ( 1.0 - statNumberMesons / statEventHadronMultiplicity ) 
-                       << " %" << endl
-                       << "\t b-Hadrons    = " 
-                       << statNumberBHadrons / dN << " per event;    fraction="
-                       << 100.0 * statNumberBHadrons / statEventHadronMultiplicity << " %" << endl
-                       << "\t c-Hadrons    = " 
-                       << statNumberCharmHadrons / dN << " per event;    fraction="
-                       << 100.0 * statNumberCharmHadrons / statEventHadronMultiplicity << " %" << endl
-                       << "\t s-Hadrons    = " 
-                       << statNumberStrangeHadrons / dN << " per event;    fraction="
-                       << 100.0 * statNumberStrangeHadrons / statEventHadronMultiplicity << " %" << endl
-                       << "\t u,d-Hadrons  = " 
-                       << statNumberLightHadrons / dN << " per event;    fraction="
-                       << 100.0 * statNumberLightHadrons / statEventHadronMultiplicity << " %" << endl
-                       << "\t \t pi+  = " 
-                       << statNumberPlusPions / dN << " per event;    fraction="
-                       << 100.0 * statNumberPlusPions / statEventHadronMultiplicity << " %" << endl
-                       << "\t \t pi0  = " 
-                       << statNumberNeutralPions / dN << " per event;    fraction="
-                       << 100.0 * statNumberNeutralPions / statEventHadronMultiplicity << " %" << endl
-                       << "\t \t pi-  = "
-                       << statNumberMinusPions / dN << " per event;    fraction=" 
-                       << 100.0 * statNumberMinusPions / statEventHadronMultiplicity << " %" << endl;
-    generator()->log() << endl << "ClusterHadronizationHandler::debuggingInfo "
-		       << " ===> END ***FINAL STATISTICS*** <=== " << endl << endl;
-  }
-  */  
-}
-
-void ClusterHadronizationHandler::myDebugInfo(PartialCollisionHandler &ch,
-					      ClusterVector &clusters) {
-  for(ClusterVector::const_iterator it = clusters.begin(); 
-      it!=clusters.end(); it++) {
-    generator()->log() << *(*it) << endl;
+    generator()->log() 
+      << endl
+      << "\t Counts for position statistics " << endl
+      << "\t \t   numberInitialComponents =" << numberInitialComponents << endl
+      << "\t \t   numberInitialClusters   =" << numberInitialClusters << endl
+      << "\t \t   numberClusters          =" << numberClusters << endl
+      << "\t \t   numberFinalClusters     =" << numberFinalClusters << endl
+      << "\t \t   numberChildClusters     =" << numberChildClusters << endl
+      << "\t \t   numberChildHadrons      =" << numberChildHadrons << endl
+      << "\t \t   numberReshufflingClusterParters =" 
+      << numberReshufflingClusterPartners << endl 
+      << endl
+      << "\t Invariant (space-time) Distance (in millimeters) : " << endl
+      << "\t \t | initial component - beam vertex | = " 
+      << (numberInitialComponents 
+	  ? invDistInitialComponent_BeamVtx / numberInitialComponents
+	  : 0.0) << endl
+      << "\t \t | initial component - cluster | = " 
+      << (numberInitialComponents 
+	  ? invDistInitialComponent_Cluster / numberInitialComponents  
+	  : 0.0) << endl
+      << "\t \t | initial cluster - beam vertex | = " 
+      << (numberInitialClusters 
+	  ? invDistInitialCluster_BeamVtx / numberInitialClusters  
+	  : 0.0) << endl
+      << "\t \t | any cluster - beam vertex | = " 
+      << (numberClusters 
+	  ? invDistAnyCluster_BeamVtx / numberClusters 
+	  : 0.0) << endl
+      << "\t \t | final cluster - beam vertex | = " 
+      << (numberFinalClusters 
+	  ? invDistFinalCluster_BeamVtx / numberFinalClusters  
+	  : 0.0) << endl
+      << "\t \t | final hadron - beam vertex | = " 
+      << (numberChildHadrons 
+	  ? invDistFinalHadron_BeamVtx / numberChildHadrons  
+	  : 0.0) << endl
+      << "\t \t | parent cluster - child cluster | = " 
+      << (numberChildClusters 
+	  ? invDistParentCluster_ChildCluster / numberChildClusters  
+	  : 0.0) << endl
+      << "\t \t | parent cluster - child hadron | = " 
+      << (numberChildHadrons 
+	  ? invDistParentCluster_ChildHadron / numberChildHadrons  
+	  : 0.0) << endl
+      << "\t \t | light cluster - reshuffling partner cluster | = " 
+      << (numberReshufflingClusterPartners
+	  ? invDistLightCluster_ReshufflingCluster 
+	  / numberReshufflingClusterPartners : 0.0) << endl
+      << endl
+      << "\t Lab space distance (abs) (in millimeters) : " << endl
+      << "\t \t | initial component - beam vertex | = " 
+      << (numberInitialComponents 
+	  ? spaceDistInitialComponent_BeamVtx / numberInitialComponents  
+	  : 0.0) << endl
+      << "\t \t | initial component - cluster | = " 
+      << (numberInitialComponents 
+	  ? spaceDistInitialComponent_Cluster / numberInitialComponents  
+	  : 0.0) << endl
+      << "\t \t | initial cluster - beam vertex | = " 
+      << (numberInitialClusters 
+	  ? spaceDistInitialCluster_BeamVtx / numberInitialClusters  
+	  : 0.0) << endl
+      << "\t \t | any cluster - beam vertex | = " 
+      << (numberClusters 
+	  ? spaceDistAnyCluster_BeamVtx / numberClusters 
+	  : 0.0) << endl
+      << "\t \t | final cluster - beam vertex | = " 
+      << (numberFinalClusters 
+	  ? spaceDistFinalCluster_BeamVtx / numberFinalClusters  
+	  : 0.0) << endl
+      << "\t \t | final hadron - beam vertex | = " 
+      << (numberChildHadrons 
+	  ? spaceDistFinalHadron_BeamVtx / numberChildHadrons  
+	  : 0.0) << endl
+      << "\t \t | parent cluster - child cluster | = " 
+      << (numberChildClusters 
+	  ? spaceDistParentCluster_ChildCluster / numberChildClusters  
+	  : 0.0) << endl
+      << "\t \t | parent cluster - child hadron | = " 
+      << (numberChildHadrons 
+	  ? spaceDistParentCluster_ChildHadron / numberChildHadrons  
+	  : 0.0) << endl
+      << "\t \t | light cluster - reshuffling partner cluster | = " 
+      << (numberReshufflingClusterPartners
+	  ? spaceDistLightCluster_ReshufflingCluster 
+	  / numberReshufflingClusterPartners : 0.0) << endl
+      << endl;
+    generator()->log() 
+      << endl
+      << "\t Clusters:  BeamCluster  average number  = " 
+      << numberBeamClusters / dN << endl
+      << "\t            Initial      average number  = " 
+      << numberInitialClusters / dN << endl
+      << "\t            Final        average number  = " 
+      << numberFinalClusters / dN << endl
+      << "\t            1-Hadron     average number  = " 
+      << number1HadronClusters / dN << "  fraction="
+      << number1HadronClusters / numberFinalClusters << endl
+      << "\t            Reshuffled   average number  = " 
+      << numberReshuffledClusters / dN << "  fraction="
+      << numberReshuffledClusters / numberFinalClusters << endl
+      << "\t            3-Component  average number  = " 
+      << number3ComponentClusters / dN << "  fraction="
+      << number3ComponentClusters / numberFinalClusters <<endl<<endl 
+      << "\t Average Hadron Multiplicity = " 
+      << eventHadronMultiplicity / dN << endl
+      << "\t Mesons:  " << numberMesons / dN << " per event;    fraction="
+      << 100.0 * numberMesons / eventHadronMultiplicity << " %" << endl
+      << "\t Baryons: " << (eventHadronMultiplicity-numberMesons) / dN 
+      << " per event;    fraction="
+      << 100.0 * ( 1.0 - numberMesons / eventHadronMultiplicity ) 
+      << " %" << endl
+      << "\t b-Hadrons    = " 
+      << numberBHadrons / dN << " per event;    fraction="
+      << 100.0 * numberBHadrons / eventHadronMultiplicity << " %" << endl
+      << "\t c-Hadrons    = " 
+      << numberCharmHadrons / dN << " per event;    fraction="
+      << 100.0 * numberCharmHadrons / eventHadronMultiplicity << " %" << endl
+      << "\t s-Hadrons    = " 
+      << numberStrangeHadrons / dN << " per event;    fraction="
+      << 100.0 * numberStrangeHadrons / eventHadronMultiplicity << " %" << endl
+      << "\t u,d-Hadrons  = " 
+      << numberLightHadrons / dN << " per event;    fraction="
+      << 100.0 * numberLightHadrons / eventHadronMultiplicity << " %" << endl
+      << "\t \t pi+  = " 
+      << numberPlusPions / dN << " per event;    fraction="
+      << 100.0 * numberPlusPions / eventHadronMultiplicity << " %" << endl
+      << "\t \t pi0  = " 
+      << numberNeutralPions / dN << " per event;    fraction="
+      << 100.0 * numberNeutralPions / eventHadronMultiplicity << " %" << endl
+      << "\t \t pi-  = "
+      << numberMinusPions / dN << " per event;    fraction=" 
+      << 100.0 * numberMinusPions / eventHadronMultiplicity << " %" << endl;
+    generator()->log() 
+      << endl << "ClusterHadronizationHandler::debuggingInfo "
+      << " ===> END ***FINAL STATISTICS*** <=== " << endl << endl;
   }
 }

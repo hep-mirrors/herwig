@@ -596,10 +596,10 @@ bool ClusterFissioner::drawnChildrenMasses(const Energy Mclu, const Energy m1,
   // returns true. 
   
   // Initialization for the power-like ("normal") mass distribution
-  double Mmin_toExp1 = pow( m1+m , exponent1 );
-  double Mmax_toExp1 = pow( Mclu  , exponent1 );
-  double Mmin_toExp2 = pow( m2+m , exponent2 );
-  double Mmax_toExp2 = pow( Mclu  , exponent2 );
+  //double Mmin_toExp1 = pow( m1+m , exponent1 );
+  //double Mmax_toExp1 = pow( Mclu  , exponent1 );
+  //double Mmin_toExp2 = pow( m2+m , exponent2 );
+  //double Mmax_toExp2 = pow( Mclu  , exponent2 );
 
   // Initialization for the exponential ("soft") mass distribution.
   InvEnergy b = 2.0 / average;

@@ -183,7 +183,12 @@ namespace Herwig {
     void calculateX();
     // Calculate the 4-position vector of the cluster
 
+    bool initPerturbative(tPPtr p);
+    // Determines whether constituent p is perturbative or not
+
     static GlobParamPtr _globalParameters;
+    // This is needed to know whether a cluster is from a perturbative
+    // quark or not
 
     static ClassDescription<Cluster> initCluster; 
 

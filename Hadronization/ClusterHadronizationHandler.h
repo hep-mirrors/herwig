@@ -114,27 +114,20 @@ private:
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &);
   // Private and non-existent assignment operator.
 
-  //void recordAfterClusterDecays(tStepPtr ptrStep);
-  // Store on the event record the final hadrons produced at the end 
-  // of the cluster hadronization.
-
   void printStep(tStepPtr ptrStep, const string & title);
   // Print the step for debugging.
 
   void debuggingInfo(PartialCollisionHandler & ch, ClusterVector &);
   // Print information about the final, complete collections of clusters
   // for debugging.
-  void myDebugInfo(PartialCollisionHandler &, ClusterVector &);
+ 
   GlobParamPtr           _globalParameters;
   PartonSplitterPtr      _partonSplitter;
   ClusterFinderPtr       _clusterFinder;
   ColourReconnectorPtr   _colourReconnector;
   ClusterFissionerPtr    _clusterFissioner;
   LightClusterDecayerPtr _lightClusterDecayer;
-  ClusterDecayerPtr      _clusterDecayer;
- 
-  tClusterVector          _clusters;   
-
+  ClusterDecayerPtr      _clusterDecayer; 
 };
 
 
