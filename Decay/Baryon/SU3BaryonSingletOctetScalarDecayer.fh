@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SU3BaryonSingletOctetScalarDecayer class.
+//
+#ifndef HERWIG_SU3BaryonSingletOctetScalarDecayer_FH
+#define HERWIG_SU3BaryonSingletOctetScalarDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class SU3BaryonSingletOctetScalarDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(SU3BaryonSingletOctetScalarDecayer,SU3BaryonSingletOctetScalarDecayerPtr);
+
+}
+
+#endif

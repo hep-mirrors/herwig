@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SU3BaryonDecupletOctetPhotonDecayer class.
+//
+#ifndef HERWIG_SU3BaryonDecupletOctetPhotonDecayer_FH
+#define HERWIG_SU3BaryonDecupletOctetPhotonDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class SU3BaryonDecupletOctetPhotonDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(SU3BaryonDecupletOctetPhotonDecayer,SU3BaryonDecupletOctetPhotonDecayerPtr);
+
+}
+
+#endif

@@ -1,0 +1,96 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SU3BaryonSingletOctetPhotonDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer() 
+{
+  // the coupling
+  _C=0.126/GeV;
+  // the relative parities of the two baryon multiplets
+  _parity=1;
+  // PDG codes for the various ground state baryons
+  _sigma0   = 3212;
+  _lambda   = 3122;
+  // PDG codes for the excited baryon
+  _elambda  = 3124;
+}
+
+inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer(const SU3BaryonSingletOctetPhotonDecayer & x)
+  : Baryon1MesonDecayerBase(x), _C(x._C), _parity(x._parity),_sigma0(x._sigma0),
+    _lambda(x._lambda),_elambda(x._elambda),_outgoingB(x._outgoingB),
+    _maxweight(x._maxweight), 
+    _A1(x._A1),_A2(x._A2),_A3(x._A3),_B1(x._B1),_B2(x._B2),_B3(x._B3) {}
+
+inline IBPtr SU3BaryonSingletOctetPhotonDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SU3BaryonSingletOctetPhotonDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SU3BaryonSingletOctetPhotonDecayer::doupdate() throw(UpdateException) {
+  Baryon1MesonDecayerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void SU3BaryonSingletOctetPhotonDecayer::doinit() throw(InitException) {
+  Baryon1MesonDecayerBase::doinit();
+  // set up the decay modes
+  setupModes(1);
+  // set up the phase space and the couplings
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  double wgtmax;
+  vector<double> wgt(1,1.);
+  for(unsigned int ix=0;ix<_outgoingB.size();++ix)
+    {
+      extpart[0]=getParticleData(_elambda);
+      extpart[1]=getParticleData(_outgoingB[ix]);
+      extpart[2]=getParticleData(ParticleID::gamma);
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      if(_maxweight.size()>numberModes()){wgtmax=_maxweight[numberModes()];}
+      else{wgtmax=1.;}
+      addMode(mode,wgtmax,wgt);
+    }
+}
+
+inline void SU3BaryonSingletOctetPhotonDecayer::dofinish() {
+  Baryon1MesonDecayerBase::dofinish();
+}
+
+inline void SU3BaryonSingletOctetPhotonDecayer::doinitrun() {
+  Baryon1MesonDecayerBase::doinitrun();
+}
+
+inline void SU3BaryonSingletOctetPhotonDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Baryon1MesonDecayerBase::rebind(trans);
+}
+
+inline IVector SU3BaryonSingletOctetPhotonDecayer::getReferences() {
+  IVector ret = Baryon1MesonDecayerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

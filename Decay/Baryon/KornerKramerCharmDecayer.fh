@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the KornerKramerCharmDecayer class.
+//
+#ifndef HERWIG_KornerKramerCharmDecayer_FH
+#define HERWIG_KornerKramerCharmDecayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class KornerKramerCharmDecayer;
+ThePEG_DECLARE_CLASS_POINTERS(KornerKramerCharmDecayer,KornerKramerCharmDecayerPtr);
+
+}
+
+#endif
