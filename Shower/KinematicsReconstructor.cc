@@ -5,6 +5,8 @@
 //
 
 #include "KinematicsReconstructor.h"
+#include "ShowerParticle.h"
+#include "ShowerConfig.h"
 #include "Pythia7/Interface/ClassDocumentation.h"
 #include "Pythia7/Persistency/PersistentOStream.h"
 #include "Pythia7/Persistency/PersistentIStream.h"
@@ -133,6 +135,10 @@ void KinematicsReconstructor::reconstructDecayJets( const MapShower & mapShowerD
 
 bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJetParent ) {
   bool isOK = true;
+  
+  // create a vector with pointers to the relevant ShowerKinematics objects.
+  tCollecShoKinPtr theChildren; 
+  theChildren.clear();
 
   //***LOOKHERE*** Following the tree of children and grand-children of the 
   //               particleJetParent, find the "reconstruction fixed points"
@@ -143,6 +149,34 @@ bool KinematicsReconstructor::reconstructTimeLikeJet( const tShoParPtr particleJ
   //               by enforcing the energy-momentum conservation in each
   //               vertex. Stop when get back to the  particleJetParent
   //               at which point the mass of the jet should be known.
+  
+  if( !particleJetParent->isReconstructionFixedPoint() ) {
+    // if not a reconstruction fixpoint, dig deeper for all children:
+    for ( CollecShoParPtr::const_iterator cit = particleJetParent->children().begin();
+	  cit != particleJetParent->children().end(); ++cit ) {
+      // reconstrunct again for any child:
+      if ( !reconstructTimeLikeJet( *cit ) ) {
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+	  //generator()->log() << "KinematicsReconstructor::reconstructTimeLikeJet: " 
+	  //		     << "failed!" << endl; 
+	}
+	isOK = false; 
+      }
+      // apparently, fill theChildren 
+      theChildren.push_back( (*cit)->showerKinematics() ); 
+    }
+  } else {
+    // it is a reconstruction fixpoint, ie kinematical data has to be available 
+    // check this
+    // if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {    
+      // generator()->log() << particleJetParent->showerKinematics()
+    //  -> 'check some suitable variables';
+    // }
+  }
+
+  // recursion has reached an endpoint, ie we can reconstruct the
+  // kinematics from the children.
+  particleJetParent->showerKinematics()->updateParent( theChildren );
 
   return isOK;
 }

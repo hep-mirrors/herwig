@@ -33,17 +33,21 @@ public:
   // Standard ctors and dtor.
 
   virtual void updateChildren( const Energy qtilda, const double z, const double phi,
-			       const Energy onShellMassChild1, const Energy onShellMassChild2,
-			       Ptr< QtildaShowerKinematics1to2 >::pointer & showerKinChild1,
-			       Ptr< QtildaShowerKinematics1to2 >::pointer & showerKinChild2 );
-  // Along with the backward showering evolution, 
-  // the shower kinematics of the branching products is created and filled.
+			       const Energy Mass1, const Energy Mass2,
+			       double & sudAlpha1, double & px1, double &py1,
+			       double & sudAlpha2, double & px2, double &py2);
+  // Along with the showering evolution --- going forward for
+  // time-like (forward) evolution, and going backward for space-like
+  // (backward) evolution --- the shower kinematics of the branching
+  // products is created and filled.  Note that only <I>alpha</I> and <I>p_perp</I>
+  // can be reconstructed at this moment and we will obtain beta only
+  // later, using <!id>updateParent()<!!id>
 
-  virtual void updateParent( Ptr< QtildaShowerKinematics1to2 >::transient_pointer & showerKinChild1,
-			     Ptr< QtildaShowerKinematics1to2 >::transient_pointer & showerKinChild2 );
-  // After showering, moving in the reverse direction (going forward)
-  // the shower kinematics of the parent is updated (completed)
-  // from the kinematics of its children.
+  virtual void updateParent( tCollecShoKinPtr & shoKinChildren );
+  // update the parent Kinematics from the knowledge of the kinematics
+  // of the children.  This method will be used by the 
+  // <!class>KinematicsReconstructor<!!class>.
+
 
   virtual Energy jetMass();
   // The method returns the mass of jet. 

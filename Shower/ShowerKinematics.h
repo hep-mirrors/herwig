@@ -51,6 +51,11 @@ public:
   // object is associated to the starting particle of the jet: only in this
   // case it is sensible to use the two main virtual methods below.
 
+  virtual void updateParent( tCollecShoKinPtr & shoKinChildren ) = 0;
+  // update the parent Kinematics from the knowledge of the kinematics
+  // of the children.  This method will be used by the 
+  // <!class>KinematicsReconstructor<!!class>.
+
   virtual Energy jetMass() = 0;
   // Pure virtual method to be defined in derived classes.
   // It returns the mass of jet. 

@@ -45,6 +45,8 @@ namespace Herwig {
   class ShowerKinematics;
   typedef Ptr<ShowerKinematics>::pointer ShoKinPtr;
   typedef Ptr<ShowerKinematics>::transient_pointer tShoKinPtr;
+  typedef vector<ShoKinPtr> CollecShoKinPtr;
+  typedef vector<tShoKinPtr> tCollecShoKinPtr;
 
   // For rho-D (spin density matrix and decay matrix) matrices  
   // // // typedef std::complex<double> Complex; // Now in Pythia7/Config/Complex.h 

@@ -40,9 +40,9 @@ void IS_QtildaShowerKinematics1to2::Init() {
 
 void IS_QtildaShowerKinematics1to2::
 updateChildren( const Energy qtilda, const double z, const double phi,
-		const Energy onShellMassChild1, const Energy onShellMassChild2,
-		Ptr< QtildaShowerKinematics1to2 >::pointer & showerKinChild1,
-		Ptr< QtildaShowerKinematics1to2 >::pointer & showerKinChild2 ) {
+		const Energy Mass1, const Energy Mass2,
+		double & sudAlpha1, double & px1, double &py1,
+		double & sudAlpha2, double & px2, double &py2) {
 
   //***LOOKHERE*** WRITE THE CODE
 
@@ -50,8 +50,7 @@ updateChildren( const Energy qtilda, const double z, const double phi,
 
 
 void IS_QtildaShowerKinematics1to2::
-updateParent( Ptr< QtildaShowerKinematics1to2 >::transient_pointer & showerKinChild1,
-	      Ptr< QtildaShowerKinematics1to2 >::transient_pointer & showerKinChild2 ) {
+updateParent( tCollecShoKinPtr & shoKinChildren ) {
 
   //***LOOKHERE*** WRITE THE CODE
 
