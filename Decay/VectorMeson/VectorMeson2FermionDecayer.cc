@@ -26,10 +26,10 @@ using Helicity::SpinorBarWaveFunction;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using ThePEG::Helicity::FermionSpinPtr;
 using ThePEG::Helicity::FermionSpinInfo;
-using ThePEG::Helicity::HelicityDefinitions;
 using ThePEG::Helicity::DiracRep;
 using ThePEG::Helicity::HaberDRep;
 using ThePEG::Helicity::HELASDRep;
+using ThePEG::Helicity::defaultDRep;
 using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
@@ -48,7 +48,6 @@ bool VectorMeson2FermionDecayer::accept(const DecayMode & dm) const
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
-  cout << "testing the ids   " << id0 << "   " << id1 << "  " << id2 << endl;
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
   do
@@ -200,7 +199,7 @@ VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int imode, con
 	    Complex s3s1 = wavebar[iy].s3()*wave[ix].s1();
 	    Complex s4s2 = wavebar[iy].s4()*wave[ix].s2();
 	    // calculate the current
-	    if(HelicityDefinitions::getDirac()==1)
+	    if(defaultDRep==HaberDRep)
 	      {
 		vec[0] =       s1s4+s2s3-s3s2-s4s1;
 		vec[1] =  -ii*(s1s4-s2s3-s3s2+s4s1);

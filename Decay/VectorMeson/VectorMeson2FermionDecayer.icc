@@ -97,10 +97,6 @@ inline void VectorMeson2FermionDecayer::doinitrun() {
       particles[1]=getParticleData(_outgoing1[ix]);
       particles[2]=getParticleData(_outgoing2[ix]);
       initializePhaseSpace(ix,particles);
-      double frac=particles[1]->mass()/particles[0]->mass();frac=frac*frac;
-      cout << "testing the true answer"
-	   << 1./4./pi*_coupling[ix]*_coupling[ix]/3.*particles[0]->mass()*
-	(1+2.*frac)*sqrt(1-4.*frac) << endl;
     }
 }
 

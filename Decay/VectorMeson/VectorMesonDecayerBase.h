@@ -112,7 +112,7 @@ namespace ThePEG {
     : public ClassTraitsBase<Herwig::VectorMesonDecayerBase> {
     static string className() { return "/Herwig++/VectorMesonDecayerBase"; }
     // Return the class name.
-    static string library() { return "libHwnewDecay.so"; }
+    static string library() { return "libHwVMDecay.so"; }
     // Return the name of the shared library to be loaded to get
     // access to this class and every other class it uses
     // (except the base class).
