@@ -44,6 +44,10 @@ bool Hw64Decayer::accept(const DecayMode &dm) const { return true; }
  *****/
 ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 {
+   if( HERWIG_DEBUG_LEVEL >= HwDebug::full) {
+     generator()->log() << "Hw64Decay::decay called on " << p.PDGName() << "\n";
+   }
+
    ParticleVector rval;
    ParticleMSet productParticles = dm.products();
    int numProds = productParticles.size();
@@ -117,7 +121,10 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
          // Find sum of masses of constituent particles 
          int IPDG = abs(p.id());
          double m1, m2, m3;
-         m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
+         if(IPDG < 1000)
+	         m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
+	       else
+				   m1 = 0.0;
          m2 = generator()->getParticleData((IPDG/100)%10)->mass();
          m3 = generator()->getParticleData((IPDG/10)%10)->mass();
          xs = 1.0 - Math::absmax<double>(m1, Math::absmax<double>(m2, m3))/(m1+m2+m3);
@@ -311,8 +318,8 @@ void Hw64Decayer::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 
     // Since sqr is a macro, need to store rnd() in variable before sqr,
     // otherwise it will use two random numbers
-    temp = tt*s1*s2*generator()->rnd();
-  } while(sqr(pp*qq*rr*(ff-dd)) < sqr(temp));
+    temp = generator()->rnd();
+  } while(pp*qq*rr*sqr(ff-dd) < tt*s1*s2*sqr(temp));
 
   // Now we have chosen how energy fractions go, do two body decays on subsystems
   // in order to get angles 
@@ -369,8 +376,10 @@ const {
     qq = (sqr(rs1+p2.mass())-s2)*(gg-s2)/s1;
     rr = (sqr(rs2+p3.mass())-s3)*(hh-s3)/s2;
     ss = (s3-ee)*(s3-ff)/s3;
-    temp = tt*s1*s2*s3*generator()->rnd();
-  } while(sqr(pp*qq*rr*qq*(gg-dd)*(hh-ee)) < sqr(temp));
+    // Again, since sqr is a macro, the random number must be stored or
+    // two different random numbers will be used
+    temp = generator()->rnd();
+  } while(pp*qq*rr*qq*sqr((gg-dd)*(hh-ee)) < tt*s1*s2*s3*sqr(temp));
 
   // Now decay the subsystems
   double CosAngle, AzmAngle;
