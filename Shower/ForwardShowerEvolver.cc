@@ -118,12 +118,23 @@ timeLikeShower( tPartCollHdlPtr ch,
 	// Create the ShowerParticle objects for the two children
 	// of the emitting particle; set the parent/child relationship;
 	// add them to the  collecShoPar  and  particlesYetToShower  collections.
+	// Remember that we our splitting functions are associated
+	// only with particles (id>0) and not with antiparticles (id<0)
+	// (because we are assuming CP-conserving vertices): therefore
+	// the signs of the decays products must be set by hand explicitly;
+	// to simplify this, we assume that the first product must 
+	// always have the sign as the parent: q->q+g, qbar->qbar+g,
+	// g->q+qbar, etc.
 	// Notice that the momenta of the shower products is not set: only
 	// at the end of the showering, during the kinematics reconstruction
 	// such momenta are calculated and set.
 	ShoParPtr showerProduct1 = new_ptr( ShowerParticle() );
 	ShoParPtr showerProduct2 = new_ptr( ShowerParticle() );
-	showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
+	if ( part->data().id() > 0 ) {
+	  showerProduct1->dataPtr( getParticleData( splitFun->idFirstProduct() ) );
+	} else {
+	  showerProduct1->dataPtr( getParticleData( - splitFun->idFirstProduct() ) );
+	}
 	showerProduct2->dataPtr( getParticleData( splitFun->idSecondProduct() ) );
 
 	// Set the Sudakov kinematics variables of the branching products.
