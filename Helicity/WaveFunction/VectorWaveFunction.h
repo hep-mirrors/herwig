@@ -39,9 +39,18 @@ using ThePEG::Helicity::LorentzPolarizationVector;
 class VectorWaveFunction : public WaveFunctionBase {
 
 public:
-  
+
   /**
    * Default constructors (set the momentum and Wavefunction)
+   */
+
+  /**
+   * use a 5-momentum and a LorentzPolarizationVector
+   */
+  inline VectorWaveFunction(const Lorentz5Momentum &,tcPDPtr,
+			    const LorentzPolarizationVector &,Direction=intermediate);
+
+  /**
    * use a 5-momentum and specify all components.
    */
   inline VectorWaveFunction(const Lorentz5Momentum &,tcPDPtr,const Complex &,

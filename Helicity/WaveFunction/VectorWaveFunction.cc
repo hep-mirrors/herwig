@@ -20,8 +20,7 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
 			     << "particle must be incoming or outgoing not intermediate" 
 			     << endl;}
   // check a valid helicity combination
-  if(((ihel==1 || ihel==-1 || ihel==0) && mass() >0.) ||
-     ((ihel==1 || ihel==-1           ) && mass()==0.))
+  if(ihel==1 || ihel==-1||(ihel==0&&mass()>0.))
     {
       // extract the momentum components
       double fact=-1.; if(dir==incoming){fact=1.;}
@@ -31,7 +30,7 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
       Energy pabs = sqrt(pt+ppz*ppz);
       pt = sqrt(pt);
       // overall phase of the vector
-      complex<double> phase;
+      Complex phase;
       if(vphase==vector_phase)
 	{
 	  if(pt==0. || ihel==0)

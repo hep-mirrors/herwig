@@ -11,6 +11,16 @@ namespace Helicity {
 using namespace ThePEG;
 
 // default constructors (set the momentum and Wavefunction)
+// use a 5-mometum and a polarization vector
+inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,
+					      const LorentzPolarizationVector &vec,
+					      Direction dir)
+{
+  direction(dir);
+  setMomentum(p);
+  checkParticle(part);
+  _wf=vec;
+}
 
 // use a 5-momentum and specify all components
 inline VectorWaveFunction::VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,
@@ -191,7 +201,7 @@ inline Complex & VectorWaveFunction::operator () (int i)
 inline VectorWaveFunction & VectorWaveFunction::operator = (const VectorWaveFunction & w)
 {
   setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
-  _wf=w.Wave();
+  _wf=w._wf;
   setParticle(w.getParticle());
   return *this;
 }

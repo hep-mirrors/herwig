@@ -70,8 +70,7 @@ void SpinorWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 	      else
 		{rtppluspz = ptran/sqrt(pabs-ppz);} 
 	      hel_wf[0] = denominator*rtppluspz;
-	      hel_wf[1] = denominator/rtppluspz*
-		complex<double>(ppx,ppy);
+	      hel_wf[1] = denominator/rtppluspz*Complex(ppx,ppy);
 	    }
 	}
       // compute the - spinor for - helicty particles and + helicity antiparticles

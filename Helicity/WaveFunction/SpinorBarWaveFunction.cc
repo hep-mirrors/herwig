@@ -44,7 +44,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
       // first need to evalulate the 2-component helicity spinors 
       // this is the same regardless of which definition of the spinors
       // we are using
-      complex <double> hel_wf[2];
+      Complex hel_wf[2];
       // compute the + spinor for + helicty particles and - helicity antiparticles
       if((dir==outgoing && ihel== 1) || (dir==incoming && ihel==-1))
 	{
@@ -71,8 +71,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 	      else
 		{rtppluspz = ptran/sqrt(pabs-ppz);} 
 	      hel_wf[0] = denominator*rtppluspz;
-	      hel_wf[1] = denominator/rtppluspz*
-		complex<double>(ppx,-ppy);
+	      hel_wf[1] = denominator/rtppluspz*Complex(ppx,-ppy);
 	    }
 	}
       // compute the - spinor for - helicty particles and + helicity antiparticles
@@ -101,8 +100,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 		{rtppluspz = sqrt(pabs+ppz);}
 	      else
 		{rtppluspz = ptran/sqrt(pabs-ppz);}
-	      hel_wf[0] = denominator/rtppluspz*
-		complex<double>(-ppx,-ppy);
+	      hel_wf[0] = denominator/rtppluspz*Complex(-ppx,-ppy);
 	      hel_wf[1] = denominator*rtppluspz;
 	    }
 	}
