@@ -16,7 +16,7 @@
 namespace Herwig {
 
 using ThePEG::Helicity::SpinInfo;
-using ThePEG::Helicity::tcSpinInfoPtr;
+using ThePEG::Helicity::tcSpinfoPtr;
 
 namespace Helicity {
 using namespace ThePEG;
@@ -42,10 +42,10 @@ RhoDMatrix DecayVertex::getRhoMatrix(int i)
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
     {
       if(int(ix)!=i)
-	{rhoout.push_back(dynamic_ptr_cast<tcSpinInfoPtr>(outgoing()[ix])->DMatrix());}
+	{rhoout.push_back(dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix());}
     }
   // calculate the spin density matrix
-  RhoDMatrix input=dynamic_ptr_cast<tcSpinInfoPtr>(incoming()[0])->rhoMatrix();
+  RhoDMatrix input=dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->rhoMatrix();
   RhoDMatrix temp=_matrixelement.calculateRhoMatrix(i,input,rhoout);
   return temp;
 }
@@ -57,7 +57,7 @@ RhoDMatrix DecayVertex::getDMatrix(int i)
   vector<RhoDMatrix> Dout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
     {
-      Dout.push_back(dynamic_ptr_cast<tcSpinInfoPtr>(outgoing()[ix])->DMatrix());
+      Dout.push_back(dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix());
     }
   // calculate the spin density matrix and return the answer
   RhoDMatrix temp = _matrixelement.calculateDMatrix(Dout);

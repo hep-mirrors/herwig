@@ -17,7 +17,6 @@ namespace Helicity {
 using namespace ThePEG;
 
 /** \ingroup Helicity
- *  \author Peter Richardson
  *
  *  The storage of the helicity amplitude expression for the matrix element 
  *  of a hard process. Two incoming particles and an arbitary number of 
@@ -26,84 +25,291 @@ using namespace ThePEG;
  *  @see DecayMatrixElement
  *  @see RhoDMatrix
  *  @see HardVertex
+ *
+ *  \author Peter Richardson
  */
 
 class ProductionMatrixElement: public Base {  
       
 public:
-  
-  // constructor for 2-2 scattering	 
-  inline ProductionMatrixElement(int,int,int,int);
 
-  // constructor for 2-3 scattering			    
-  inline ProductionMatrixElement(int,int,int,int,int);
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Constructor for 2-1 scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out \f$2S+1\f$ for the outgoing particle.
+   */
+  inline ProductionMatrixElement(int in1,int in2,int out);
 
-  // constructor for 2-4 scattering			    
-  inline ProductionMatrixElement(int,int,int,int,int,int);
+  /**
+   * Constructor for 2-2 scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out1 \f$2S+1\f$ for the first outgoing particle.
+   * @param out2 \f$2S+1\f$ for the second outgoing particle.
+   */
+  inline ProductionMatrixElement(int in1,int in2,int out1,int out2);
 
-  // constructor for 2-5 scattering		    
-  inline ProductionMatrixElement(int,int,int,int,int,int,int);
+  /**
+   * Constructor for 2-3 scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out1 \f$2S+1\f$ for the first outgoing particle.
+   * @param out2 \f$2S+1\f$ for the second outgoing particle.
+   * @param out3 \f$2S+1\f$ for the third outgoing particle.
+   */
+  inline ProductionMatrixElement(int in1,int in2,int out1,int out2,int out3);
 
-  // constructor for 2-6 scattering
-  inline ProductionMatrixElement(int,int,int,int,int,int,int,int);
+  /**
+   * Constructor for 2-4 scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out1 \f$2S+1\f$ for the first outgoing particle.
+   * @param out2 \f$2S+1\f$ for the second outgoing particle.
+   * @param out3 \f$2S+1\f$ for the third outgoing particle.
+   * @param out4 \f$2S+1\f$ for the fourth outgoing particle.
+   */
+  inline ProductionMatrixElement(int in1,int in2,int out1,int out2,int out3, int out4);
 
-  // constructor for 2-n body process
-  inline ProductionMatrixElement(int,int,vector<int>);
+  /**
+   * Constructor for 2-5 scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out1 \f$2S+1\f$ for the first outgoing particle.
+   * @param out2 \f$2S+1\f$ for the second outgoing particle.
+   * @param out3 \f$2S+1\f$ for the third outgoing particle.
+   * @param out4 \f$2S+1\f$ for the fourth outgoing particle.
+   * @param out5 \f$2S+1\f$ for the fifth outgoing particle.
+   */
+  inline ProductionMatrixElement(int in1,int in2,int out1,int out2,int out3, int out4,
+				 int out5);
 
-  // Standard ctors and dtor.
+  /**
+   * Constructor for 2-6 scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out1 \f$2S+1\f$ for the first outgoing particle.
+   * @param out2 \f$2S+1\f$ for the second outgoing particle.
+   * @param out3 \f$2S+1\f$ for the third outgoing particle.
+   * @param out4 \f$2S+1\f$ for the fourth outgoing particle.
+   * @param out5 \f$2S+1\f$ for the fifth outgoing particle.
+   * @param out6 \f$2S+1\f$ for the sixth outgoing particle.
+   */
+  inline ProductionMatrixElement(int in1,int in2,int out1,int out2,int out3, int out4,
+				 int out5, int out6);
+
+  /**
+   * Constructor for 2-n scattering.
+   * @param in1 \f$2S+1\f$ for the first incoming particle.
+   * @param in2 \f$2S+1\f$ for the second incoming particle.
+   * @param out A vector containing \f$2S+1\f$ for the outgoing particles.
+   */
+  inline ProductionMatrixElement(int in1,int in2,vector<int> out);
+
+  /**
+   * Default constructor.
+   */
   inline ProductionMatrixElement();
+
+  /**
+   * Copy-constructor.
+   */
   inline ProductionMatrixElement(const ProductionMatrixElement &);
+
+  /**
+   * Destructor.
+   */
   virtual ~ProductionMatrixElement();
+  //@}
 
 public:
-      
-  // get the spins of the incoming particles particle
+     
+  /** @name Access to the spins of the particles. */
+  //@{
+  /**
+   * Get the spins of the incoming particles particle
+   * @return A vector containing \f$2S+1\f$ for the two incoming particles.
+   */
   inline vector<int> inspin();
 
-  // get the spins of the outgoing particles
+  /**
+   * Get the spins of the outgoing particles.
+   * @return A vector containing \f$2S+1\f$ for the outgoing particles.
+   */
   inline vector<int> outspin();
-  
+  //@}  
+
 public:
 
-  /**
-   * Access to the individual helicity components.
-   */
+  /** @name Access to the individual helicity components. */
+  //@{
 
   /**
-   * 2-2 scattering.
+   * Access the helicity components for a 2-1 scattering. This method supplies
+   * the component but does not allow it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel The helicity of the outgoing particle.
+   * @return The matrix element for the given helicities.
    */
-  inline Complex   operator () (int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int);
+  inline Complex   operator () (int inhel1,int inhel2,int outhel) const;
 
   /**
-   * 2-3 scattering.
+   * Access the helicity components for a 2-1 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel The helicity of the outgoing particle.
+   * @return The matrix element for the given helicities.
    */
-  inline Complex   operator () (int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int);
+  inline Complex & operator () (int inhel1,int inhel2,int outhel);
 
   /**
-   * 2-4 scattering.
+   * Access the helicity components for a 2-2 scattering. This method supplies
+   * the component but does not allow it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @return The matrix element for the given helicities.
    */
-  inline Complex   operator () (int,int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int,int);
+  inline Complex   operator () (int inhel1,int inhel2,int outhel1,int outhel2) const;
 
   /**
-   * 2-5 scattering.
+   * Access the helicity components for a 2-3 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @return The matrix element for the given helicities.
    */
-  inline Complex   operator () (int,int,int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int,int,int);
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3);
 
   /**
-   * 2-6 scattering.
+   * Access the helicity components for a 2-3 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @return The matrix element for the given helicities.
    */
-  inline Complex   operator () (int,int,int,int,int,int,int,int) const;
-  inline Complex & operator () (int,int,int,int,int,int,int,int);
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3);
 
   /**
-   * 2-n scattering.
+   * Access the helicity components for a 2-4 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @param outhel4 The helicity of the fourth outgoing particle.
+   * @return The matrix element for the given helicities.
    */
-  inline Complex   operator () (vector<int>) const;
-  inline Complex & operator () (vector<int>);
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3,int outhel4);
+
+  /**
+   * Access the helicity components for a 2-4 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @param outhel4 The helicity of the fourth outgoing particle.
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3, int outhel4);
+
+  /**
+   * Access the helicity components for a 2-5 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @param outhel4 The helicity of the fourth outgoing particle.
+   * @param outhel5 The helicity of the fifth outgoing particle.
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3,int outhel4, int outhel5);
+
+  /**
+   * Access the helicity components for a 2-5 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @param outhel4 The helicity of the fourth outgoing particle.
+   * @param outhel5 The helicity of the fifth outgoing particle.
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3, int outhel4, int outhel5);
+
+  /**
+   * Access the helicity components for a 2-6 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @param outhel4 The helicity of the fourth outgoing particle.
+   * @param outhel5 The helicity of the fifth outgoing particle.
+   * @param outhel6 The helicity of the sixth outgoing particle.
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3,int outhel4, int outhel5, int outhel6);
+
+  /**
+   * Access the helicity components for a 2-6 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param inhel1 The helicity of the first incoming particle.
+   * @param inhel2 The helicity of the second incoming particle.
+   * @param outhel1 The helicity of the first outgoing particle.
+   * @param outhel2 The helicity of the second outgoing particle.
+   * @param outhel3 The helicity of the third outgoing particle.
+   * @param outhel4 The helicity of the fourth outgoing particle.
+   * @param outhel5 The helicity of the fifth outgoing particle.
+   * @param outhel6 The helicity of the sixth outgoing particle.
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (int inhel1,int inhel2,int outhel1,int outhel2,
+				int outhel3, int outhel4, int outhel5, int outhel6);
+
+
+  /**
+   * Access the helicity components for a 2-6 scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param hel The helicities of the incoming and outgoing particles
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex   operator () (vector<int> hel) const;
+
+  /**
+   * Access the helicity components for a 2-n scattering. This method supplies
+   * the component and allows it to be changed.
+   * @param hel The helicities of the incoming and outgoing particles
+   * @return The matrix element for the given helicities.
+   */
+  inline Complex & operator () (vector<int> hel);
+  //@}
 
 public:
 
@@ -192,6 +398,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::Helicity::ProductionMatrixElement,1> {
+    /** Typedef of the base class of ProductionMatrixElement. */
     typedef Base NthBase;
   };
   
@@ -206,14 +413,14 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/Helicity/ProductionMatrixElement"; }
+    static string className() { return "Herwig++::Helicity::ProductionMatrixElement"; }
 
     /**
      * Return the name of the shared library to be loaded to get
      * access to this class and every other class it uses
      * (except the base class).
      */
-    static string library() { return "hwCorrelations.so"; }
+    static string library() { return "HwCorrelations.so"; }
 
   };
   

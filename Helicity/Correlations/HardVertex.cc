@@ -16,7 +16,7 @@
 namespace Herwig {
 
 using ThePEG::Helicity::SpinInfo;
-using ThePEG::Helicity::tcSpinInfoPtr;
+using ThePEG::Helicity::tcSpinfoPtr;
 
 namespace Helicity {
 using namespace ThePEG;
@@ -42,10 +42,10 @@ RhoDMatrix HardVertex::getRhoMatrix(int i)
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
     {
       if(int(ix)!=i)
-	{rhoout.push_back(dynamic_ptr_cast<tcSpinInfoPtr>(outgoing()[ix])->DMatrix());}
+	{rhoout.push_back(dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix());}
     }
   // calculate the spin density matrix
-  RhoDMatrix temp=_matrixelement.calculateRhoMatrix(i,dynamic_ptr_cast<tcSpinInfoPtr>(incoming()[0])->DMatrix(),dynamic_ptr_cast<tcSpinInfoPtr>(incoming()[1])->DMatrix(),rhoout);
+  RhoDMatrix temp=_matrixelement.calculateRhoMatrix(i,dynamic_ptr_cast<tcSpinfoPtr>(incoming()[0])->DMatrix(),dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->DMatrix(),rhoout);
   return temp;
 }
 
@@ -55,10 +55,10 @@ RhoDMatrix HardVertex::getDMatrix(int i)
   // get rho rho matrices for the outgoing particles
   vector<RhoDMatrix> rhoout;
   for(unsigned int ix=0,N=outgoing().size();ix<N;++ix)
-    {rhoout.push_back(dynamic_ptr_cast<tcSpinInfoPtr>(outgoing()[ix])->DMatrix());}
+    {rhoout.push_back(dynamic_ptr_cast<tcSpinfoPtr>(outgoing()[ix])->DMatrix());}
   // calculate the decay matrix
   int j=0;if(i==0){j=1;}
-  RhoDMatrix temp=_matrixelement.calculateDMatrix(i,dynamic_ptr_cast<tcSpinInfoPtr>(incoming()[1])->DMatrix(),rhoout);
+  RhoDMatrix temp=_matrixelement.calculateDMatrix(i,dynamic_ptr_cast<tcSpinfoPtr>(incoming()[1])->DMatrix(),rhoout);
   return temp;
 }
 }

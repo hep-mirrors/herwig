@@ -21,6 +21,15 @@ inline ProductionMatrixElement::ProductionMatrixElement(const
     _matrixelement(x._matrixelement), _constants(x._constants) 
 {}
 
+// constructor for 2-1 scattering
+inline ProductionMatrixElement::ProductionMatrixElement(int in1,int in2,int out1)
+{
+  _nout=2;
+  _inspin.resize(2);
+  _inspin[0]=in1; _inspin[1]=in2;
+  _outspin.push_back(out1);
+  setMESize();
+}
 // constructor for 2-2 scattering
 inline ProductionMatrixElement::ProductionMatrixElement(int in1,int in2,
 							int out1,int out2)
@@ -116,6 +125,28 @@ inline vector<int> ProductionMatrixElement::outspin(){return _outspin;}
 
 // access to the individual helicity components (2-2 scattering)
 inline Complex   ProductionMatrixElement::operator () 
+  (int in1,int in2,int out1) const
+{
+  // check this is really a 2-2 matrix element
+  if(_outspin.size()!=1)
+    {
+      cerr << "Requested component of 2-1 matrix element but matrix element is 2-"
+	   << _outspin.size() << endl; return 0.;}
+  unsigned int iloc=0,itemp;
+  itemp = _inspin[0]/2+ in1-int( _inspin[0]%2==0&& in1>0);
+  iloc+=itemp*_constants[1];
+  itemp = _inspin[1]/2+ in2-int( _inspin[1]%2==0&& in2>0);
+  iloc+=itemp*_constants[2];
+  itemp = _outspin[0]/2+out1-int(_outspin[0]%2==0&&out1>0);
+  iloc+=itemp*_constants[3];
+  if(iloc>=_matrixelement.size())
+    {cerr << "Invalid component of 2-1 matrix element requested" << endl;
+    return 0.;}
+  return _matrixelement[iloc];
+}
+
+// access to the individual helicity components (2-2 scattering)
+inline Complex   ProductionMatrixElement::operator () 
   (int in1,int in2,int out1,int out2) const
 {
   // check this is really a 2-2 matrix element
@@ -124,13 +155,13 @@ inline Complex   ProductionMatrixElement::operator ()
       cerr << "Requested component of 2-2 matrix element but matrix element is 2-"
 	   << _outspin.size() << endl; return 0.;}
   unsigned int iloc=0,itemp;
-  itemp = ( _inspin[0]+1)/2+ in1-int( _inspin[0]%2==0&& in1>0);
+  itemp = _inspin[0]/2+ in1-int( _inspin[0]%2==0&& in1>0);
   iloc+=itemp*_constants[1];
-  itemp = ( _inspin[1]+1)/2+ in2-int( _inspin[1]%2==0&& in2>0);
+  itemp = _inspin[1]/2+ in2-int( _inspin[1]%2==0&& in2>0);
   iloc+=itemp*_constants[2];
-  itemp = (_outspin[0]+1)/2+out1-int(_outspin[0]%2==0&&out1>0);
+  itemp = _outspin[0]/2+out1-int(_outspin[0]%2==0&&out1>0);
   iloc+=itemp*_constants[3];
-  itemp = (_outspin[1]+1)/2+out2-int(_outspin[1]%2==0&&out2>0);
+  itemp = _outspin[1]/2+out2-int(_outspin[1]%2==0&&out2>0);
   iloc+=itemp*_constants[4];
   if(iloc>=_matrixelement.size())
     {cerr << "Invalid component of 2-2 matrix element requested" << endl;
@@ -206,13 +237,13 @@ inline Complex   ProductionMatrixElement::operator ()
   // incoming particles
   for(unsigned int ix=0;ix<2;++ix)
     {
-      itemp = (_inspin[ix]+1)/2+in[ix]-int(_inspin[ix]%2==0 &&in[ix]>0);
+      itemp = _inspin[ix]/2+in[ix]-int(_inspin[ix]%2==0 &&in[ix]>0);
       iloc+=itemp*_constants[ix+1];
     }
   // outgoing particles
   for(unsigned int ix=2;ix<in.size();++ix)
     {
-      itemp = (_outspin[ix-2]+1)/2+in[ix]-int(_outspin[ix-2]%2&&in[ix]>0);
+      itemp = _outspin[ix-2]/2+in[ix]-int(_outspin[ix-2]%2&&in[ix]>0);
       iloc+=itemp*_constants[ix+1];
     }
   if(iloc>=_matrixelement.size())
@@ -221,18 +252,35 @@ inline Complex   ProductionMatrixElement::operator ()
   return _matrixelement[iloc];
 }
 
+// set the individual helicity components (2-1 scattering)
+inline Complex & ProductionMatrixElement::operator () (int in1,int in2,int out1)
+{
+  static Complex dummy=0.;
+  unsigned int iloc=0,itemp;
+  itemp = _inspin[0]/2+ in1-int( _inspin[0]%2==0&& in1>0);
+  iloc+=itemp*_constants[1];
+  itemp = _inspin[1]/2+ in2-int( _inspin[1]%2==0&& in2>0);
+  iloc+=itemp*_constants[2];
+  itemp = _outspin[0]/2+out1-int(_outspin[0]%2==0&&out1>0);
+  iloc+=itemp*_constants[3];
+  if(iloc>=_matrixelement.size())
+    {cerr << "Invalid component of 2-1 matrix element requested" << endl;
+    return dummy;}
+  return _matrixelement[iloc];
+}
+
 // set the individual helicity components (2-2 scattering)
 inline Complex & ProductionMatrixElement::operator () (int in1,int in2,int out1,int out2)
 {
   static Complex dummy=0.;
   unsigned int iloc=0,itemp;
-  itemp = ( _inspin[0]+1)/2+ in1-int( _inspin[0]%2==0&& in1>0);
+  itemp = _inspin[0]/2+ in1-int( _inspin[0]%2==0&& in1>0);
   iloc+=itemp*_constants[1];
-  itemp = ( _inspin[1]+1)/2+ in2-int( _inspin[1]%2==0&& in2>0);
+  itemp = _inspin[1]/2+ in2-int( _inspin[1]%2==0&& in2>0);
   iloc+=itemp*_constants[2];
-  itemp = (_outspin[0]+1)/2+out1-int(_outspin[0]%2==0&&out1>0);
+  itemp = _outspin[0]/2+out1-int(_outspin[0]%2==0&&out1>0);
   iloc+=itemp*_constants[3];
-  itemp = (_outspin[1]+1)/2+out2-int(_outspin[1]%2==0&&out2>0);
+  itemp = _outspin[1]/2+out2-int(_outspin[1]%2==0&&out2>0);
   iloc+=itemp*_constants[4];
   if(iloc>=_matrixelement.size())
     {cerr << "Invalid component of 2-2 matrix element requested" << endl;
@@ -294,13 +342,13 @@ inline Complex & ProductionMatrixElement::operator ()
   // incoming particles
   for(unsigned int ix=0;ix<2;++ix)
     {
-      itemp = (_inspin[ix]+1)/2+in[ix]-int(_inspin[ix]%2==0 &&in[ix]>0);
+      itemp = _inspin[ix]/2+in[ix]-int(_inspin[ix]%2==0 &&in[ix]>0);
       iloc+=itemp*_constants[ix+1];
     }
   // outgoing particles
   for(unsigned int ix=2;ix<in.size();++ix)
     {
-      itemp = (_outspin[ix-2]+1)/2+in[ix]-int(_outspin[ix-2]%2&&in[ix]>0);
+      itemp = _outspin[ix-2]/2+in[ix]-int(_outspin[ix-2]%2&&in[ix]>0);
       iloc+=itemp*_constants[ix+1];
     }
   if(iloc>=_matrixelement.size())
