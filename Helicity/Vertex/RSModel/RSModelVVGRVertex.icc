@@ -16,6 +16,7 @@ inline RSModelVVGRVertex::RSModelVVGRVertex()
   first.push_back(24);second.push_back(-24);third.push_back(39);
   first.push_back(21);second.push_back( 21);third.push_back(39);
   setList(first,second,third);
+  _theKappa=0.;
 }
 
 inline RSModelVVGRVertex::RSModelVVGRVertex(const RSModelVVGRVertex & x)

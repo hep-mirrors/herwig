@@ -26,6 +26,12 @@ inline RSModelFFVGRVertex::RSModelFFVGRVertex()
       third.push_back(21);fourth.push_back(39);
     }
   setList(first,second,third,fourth);
+  for(unsigned int ix=0;ix<17;++ix){_charge[17]=0.;}
+  _couplast[0]=0.;
+  _couplast[1]=0.;
+  _q2last[0]=0.;
+  _q2last[1]=0.;
+  _theKappa=0.;
 }
 
 inline RSModelFFVGRVertex::RSModelFFVGRVertex(const RSModelFFVGRVertex & x)
