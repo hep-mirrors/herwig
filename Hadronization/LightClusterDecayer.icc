@@ -15,7 +15,7 @@ inline LightClusterDecayer::LightClusterDecayer() :
 
 inline LightClusterDecayer::LightClusterDecayer(const LightClusterDecayer & x)
   : Pythia7::HandlerBase(x),
-	     _pointerHadronsSelector( x._pointerHadronsSelector ),
+	     _hadronsSelector( x._hadronsSelector ),
              _B1Lim( x._B1Lim )     
 {}
 

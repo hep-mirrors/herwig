@@ -18,6 +18,7 @@
 // 
 
 #include "Pythia7/Handlers/HandlerBase.h"
+#include "Pythia7/EventRecord/Step.h"
 #include "CluHadConfig.h"
 #include "HadronsSelector.h"
 #include "Herwig++/Config/GlobalParameters.h"
@@ -28,7 +29,7 @@ namespace Herwig {
 
 using namespace Pythia7;
 
-class Cluster;             // forward declaration
+  //class Cluster;             // forward declaration
 class Pythia7::Particle;   // forward declaration
 
 
@@ -41,7 +42,8 @@ public:
   virtual ~ClusterDecayer();
   // Standard ctors and dtor.
 
-  void decay(CollecCluPtr & collecCluPtr) throw(Veto, Stop, Exception);
+  void decay(const StepPtr&, ClusterVector & clusters) 
+    throw(Veto, Stop, Exception);
   // Decays all clusters (not already decayed into a single hadron) into hadrons. 
 
 public:
@@ -81,18 +83,19 @@ private:
   ClusterDecayer & operator=(const ClusterDecayer &);
   //  Private and non-existent assignment operator.
 
-  void decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exception);
+  void decayIntoTwoHadrons(const StepPtr&, tClusterPtr ptr) 
+    throw(Veto, Stop, Exception);
   // It decays the cluster into two hadrons. 
 
-  void calculatePositions( const Lorentz5Momentum & pClu, const LorentzPoint & positionClu, 
-			   const Lorentz5Momentum & pHad1, const Lorentz5Momentum & pHad2,
-			   LorentzPoint & positionHad1, LorentzPoint & positionHad2 ) const;
+  void calculatePositions( const Lorentz5Momentum &, const LorentzPoint &, 
+			   const Lorentz5Momentum &, const Lorentz5Momentum &,
+			   LorentzPoint &, LorentzPoint &) const;
   // It calculates the positions of the children hadrons by 
   // gaussian smearing, with width inversely proportional to 
   // the cluster mass. around the parent cluster position.
 
-  Ptr<HadronsSelector>::pointer _pointerHadronsSelector;
-  Ptr<GlobalParameters>::pointer _pointerGlobalParameters;
+  Ptr<HadronsSelector>::pointer _hadronsSelector;
+  Ptr<GlobalParameters>::pointer _globalParameters;
   
   int _ClDir1;
   int _ClDir2;

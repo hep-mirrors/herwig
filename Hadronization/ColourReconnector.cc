@@ -49,7 +49,7 @@ void ColourReconnector::Init() {
 
 void ColourReconnector::rearrange(PartialCollisionHandler & ch, 
 				  const StepPtr & pstep, 
-				  CollecCluPtr & collecCluPtr) 
+				  ClusterVector & clusters) 
    throw(Veto, Stop, Exception){
   // Scan the particles in the Event record, and the "usual" clusters
   // stored in collecCluPtr.

@@ -17,7 +17,6 @@
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
 #include "Cluster.h"
-#include "Component.h"
 
 
 using namespace Herwig;
@@ -28,13 +27,13 @@ ClusterFissioner::~ClusterFissioner() {}
 
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _pointerHadronsSelector << _pointerGlobalParameters
+  os << _hadronsSelector << _globalParameters
      << _ClMax << _ClPow << _PSplt1 << _PSplt2;
 }
 
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _pointerHadronsSelector >> _pointerGlobalParameters
+  is >> _hadronsSelector >> _globalParameters
      >> _ClMax >> _ClPow >> _PSplt1 >> _PSplt2;
 }
 
@@ -51,13 +50,13 @@ void ClusterFissioner::Init() {
   static Reference<ClusterFissioner,HadronsSelector> 
     interfaceHadronsSelector("HadronsSelector", 
                              "A reference to the HadronsSelector object", 
-                             &Herwig::ClusterFissioner::_pointerHadronsSelector,
+                             &Herwig::ClusterFissioner::_hadronsSelector,
 			     false, false, true, false);
 
   static Reference<ClusterFissioner,GlobalParameters> 
     interfaceGlobalParameters("GlobalParameters", 
 			      "A reference to the GlobalParameters object", 
-			      &Herwig::ClusterFissioner::_pointerGlobalParameters,
+			      &Herwig::ClusterFissioner::_globalParameters,
 			      false, false, true, false);
   
   static Parameter<ClusterFissioner,Energy>
@@ -76,38 +75,40 @@ void ClusterFissioner::Init() {
 }
 
 
-void ClusterFissioner::fission(CollecCluPtr & collecCluPtr) {
+void ClusterFissioner::fission(const StepPtr &pstep, ClusterVector &clusters)
+{
 
   // Loop over the (input) collection of cluster pointers, and store in 
   // the vector  vecSplitCluPtr  all the clusters that need to be split
   // (these are beam clusters, if soft underlying event is off, and 
   //  heavy non-beam clusters).
-  vector<tCluPtr> vecSplitCluPtr; 
+  vector<tClusterPtr> splitClusters; 
   int numBeamClusters = 0;
-  for (CollecCluPtr::iterator iter = collecCluPtr.begin() ; 
-       iter != collecCluPtr.end() ; ++iter) {
+  for(ClusterVector::iterator it = clusters.begin() ; 
+      it != clusters.end() ; ++it) {
+ 
     // Skip 3-component clusters that have been redefined (as 2-component clusters).
     // or not available clusters. The latter check is indeed redundant now, 
     // but it is used for possible future extensions in which, for some
     // reasons, some of the clusters found by ClusterFinder are tagged
     // straight away as not available.
-    if ( (*iter)->isRedefined()  ||  ! (*iter)->isAvailable() ) continue;
-    if ( (*iter)->isBeamCluster() ) {
+    if((*it)->isRedefined() || !(*it)->isAvailable()) continue;
+    if((*it)->isBeamCluster()) {
       numBeamClusters++;
       // Tagged as not available the beam clusters if soft underlying event if on.
-      if ( _pointerGlobalParameters->isSoftUnderlyingEventON() ) {
-	(*iter)->isAvailable(false);
+      if ( _globalParameters->isSoftUnderlyingEventON() ) {
+	(*it)->isAvailable(false);
       } else {
-	vecSplitCluPtr.push_back( *iter );
+	splitClusters.push_back(*it);
       }
     } else {      
       // If the cluster is heavy add it to the vector of clusters to be split.
-      if ( pow( (*iter)->mass() , _ClPow) > 
-	   pow(_ClMax, _ClPow) + pow( (*iter)->sumConstituentMasses() , _ClPow) ) {
-	  vecSplitCluPtr.push_back( *iter );
+      if(pow((*it)->mass() , _ClPow) > 
+	 pow(_ClMax, _ClPow) + pow((*it)->sumConstituentMasses(), _ClPow)) {
+	splitClusters.push_back(*it);
       }
     }
-  } // end loop over collecCluPtr
+  } // end loop over clusters
   
   // Safety check, usually skipped.
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
@@ -117,19 +118,22 @@ void ClusterFissioner::fission(CollecCluPtr & collecCluPtr) {
     // for each of the two beams, which can formed max 4 beam remnant clusters.
     if ( numBeamClusters > 4 ) {
       generator()->logWarning( Exception("ClusterFissioner::fission "
-					 "*** numBeamClusters > 4 *** ", Exception::warning) );
+		  "*** numBeamClusters > 4 *** ", Exception::warning));
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" << " numBeamClusters = " << numBeamClusters 
-			   << endl << endl;
+	generator()->log() << "         ===>" << " numBeamClusters = " 
+			   << numBeamClusters << endl << endl;
       }
     }
     // Now more debugging infos
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {
       generator()->log() << "ClusterFissioner::fission   ===> START DEBUGGING <=== "
                          << "   EventNumber=" << generator()->currentEventNumber() << endl
-                         << "   Number Initial Clusters = " << collecCluPtr.size() << endl
+                         << "   Number Initial Clusters = " << clusters.size() << endl
 			 << "   Number of Beam Clusters = " << numBeamClusters << endl;
-      generator()->log() << "ClusterFissioner::fission   ===> END DEBUGGING <=== " << endl; 
+      //      for(unsigned int i = 0; i<clusters.size(); i++)
+      //generator()->log() << *clusters[i] << endl;
+      generator()->log() << "ClusterFissioner::fission   ===> END DEBUGGING "
+			 << "<=== " << endl; 
     }  
   }
   
@@ -139,15 +143,15 @@ void ClusterFissioner::fission(CollecCluPtr & collecCluPtr) {
   // pointers  collecCluPtr : that's why  we cannot loop directly on the  collecCluPtr  
   // and we need instead the vector  vecHeavyCluPtr. In fact, it is not allowed to 
   // modify a STL container during the iteration over it!  
-  for (vector<tCluPtr>::const_iterator iter = vecSplitCluPtr.begin() ; 
-       iter != vecSplitCluPtr.end() ; ++iter) {
-    cut( *iter , collecCluPtr );
+  for (vector<tClusterPtr>::const_iterator iter = splitClusters.begin() ; 
+       iter != splitClusters.end() ; ++iter) {
+    //cout << "Calling cut on " << **iter << endl;
+    cut(*iter, pstep, clusters);
   }
-    
 }
 
-
-void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
+void ClusterFissioner::cut(tClusterPtr cluPtr, const StepPtr &pstep, 
+   			   ClusterVector &clusters) {
 
   // This method does the splitting of the cluster pointed by  cluPtr
   // and "recursively" by all of its cluster children, if heavy. All of these
@@ -162,12 +166,12 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
   // a concrete recursive function. Furthermore it requires minimal changes
   // in the case that the fission of an heavy cluster could produce more
   // than two cluster children as assumed now. 
-  vector<tCluPtr> vecCluPtr; 
-  vecCluPtr.push_back(cluPtr);
-  while ( ! vecCluPtr.empty() ) {
+  vector<tClusterPtr> clusterStack; 
+  clusterStack.push_back(cluPtr);
+  while ( ! clusterStack.empty() ) {
 
-    tCluPtr iCluPtr = vecCluPtr.back();  // consider element on the back
-    vecCluPtr.pop_back();                // delete element on the back 
+    tClusterPtr iCluPtr = clusterStack.back();  // consider element on the back
+    clusterStack.pop_back();                    // delete element on the back 
  
     // We need to require (at least at the moment, maybe in the future we 
     // could change it) that the cluster has exactly two components, 
@@ -177,55 +181,44 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
     // do nothing with (ignore) such cluster.
     if ( iCluPtr->numComponents() != 2 ) {
       generator()->logWarning( Exception("ClusterFissioner::cut "
-					 "***Still cluster with not exactly 2 components*** ", 
+	     "***Still cluster with not exactly 2 components*** ", 
 					 Exception::warning) );
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" << " num components = " << iCluPtr->numComponents()
-			   << endl << endl;
+	generator()->log() << "         ===>" << " num components = " 
+			   << iCluPtr->numComponents() << endl << endl;
       }
       continue;
     }
     
     // Extract the id and particle pointer of the two components of the cluster.
-    tCompPtr compPtr1 = tCompPtr(), compPtr2 = tCompPtr();
+    //tCompPtr compPtr1 = tCompPtr(), compPtr2 = tCompPtr();
     long idQ1 = 0, idQ2 = 0;
     tPPtr ptrQ1 = tPPtr(), ptrQ2 = tPPtr();
-    int n=0;
-    for (CollecCompPtr::const_iterator iter = iCluPtr->components().begin();
-	 iter != iCluPtr->components().end(); ++iter) {
-      n++;
-      if (n == 1) {
-        compPtr1 = (*iter);
-        idQ1 = compPtr1->id();
-	ptrQ1 = compPtr1->pointerParticle();
-      } else if (n == 2) {
-        compPtr2  = (*iter);
-	idQ2 = compPtr2->id();
-	ptrQ2 = compPtr2->pointerParticle();
-      }
-    }
-    
+    ptrQ1 = iCluPtr->particle(0);
+    if(ptrQ1) idQ1 = ptrQ1->id();
+    ptrQ2 = iCluPtr->particle(1);
+    if(ptrQ2) idQ2 = ptrQ2->id();
+
     // Sanity check (normally skipped) to control that the two components of a
     // cluster are consistent, that is they can form a meson or a baryon.
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-      if ( ! getParticleData(abs(idQ1))  ||  ! getParticleData(abs(idQ1))  ||
-	   ! compPtr1  ||  ! compPtr2 ) {
+      if (!ptrQ1  ||  !ptrQ2 || !ptrQ1->dataPtr() || !ptrQ2->dataPtr()) {
 	generator()->logWarning( Exception("ClusterFissioner::cut "
-					   "***Cluster with inconsistent components***", 
-					   Exception::warning) );
+		       "***Cluster with inconsistent components***", 
+					   Exception::warning));
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
 	  generator()->log() << "         ===>" << " idQ1=" << idQ1 
-			     << " compPtr1=" << compPtr1 << " compPtr2=" << compPtr2 
+			     << " compPtr1=" << ptrQ1 << " compPtr2=" << ptrQ2 
 			     << endl << endl;
 	}
       }
-      if ( ! CheckId::canBeMeson(idQ1,idQ2)  &&  ! CheckId::canBeBaryon(idQ1,idQ2) ) { 
+      if(!CheckId::canBeMeson(idQ1,idQ2) && !CheckId::canBeBaryon(idQ1,idQ2)) {
 	generator()->logWarning( Exception("ClusterFissioner::cut "
-					   "***The two components of the cluster are inconsistent***", 
+	 "***The two components of the cluster are inconsistent***", 
 					   Exception::warning) );
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  generator()->log() << "         ===>" 
-			     << " idQ1=" << idQ1 << " idQ2=" << idQ2 << endl << endl;
+	  generator()->log() << "         ===>"  << " idQ1=" << idQ1 
+			     << " idQ2=" << idQ2 << " " << CheckId::canBeMeson(idQ1,idQ2) << " " << CheckId::canBeBaryon(idQ1,idQ2) << "iCluPtr->#() "<<iCluPtr->number() << endl << endl;
 	}
       }
     }
@@ -234,29 +227,24 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
     // the original one. Notice that new id is initially > 0, but then it sign
     // must be consistently defined in order to produce either a meson or baryon.
     long idNew = drawnNewFlavour();      // draw the new flavour (idNew > 0)
-    if ( ! CheckId::canBeMeson(idQ1,-idNew)  &&  ! CheckId::canBeBaryon(idQ1,-idNew) ) { 
+    if(!CheckId::canBeMeson(idQ1,-idNew) && !CheckId::canBeBaryon(idQ1,-idNew))
       idNew = -idNew;
-    }
 
     // Determine the masses of the two children clusters.
     // Notice that the exponent for the assumed distribution of cluster masses
     // is different in the case of b (anti-)quark (or (anti-)diquark with b-flavour)
     Energy Mclu = iCluPtr->mass(), Mclu1 = Energy(), Mclu2 = Energy();
-    Energy m1 = getParticleData( abs(idQ1) )->constituentMass();
-    Energy m2 = getParticleData( abs(idQ2) )->constituentMass();
-    Energy m  = getParticleData( abs(idNew) )->constituentMass();
+    Energy m1 = ptrQ1->data().constituentMass();
+    Energy m2 = ptrQ2->data().constituentMass();
+    Energy m  = getParticleData(abs(idNew))->constituentMass();
 
     // Do not split in the case there is no phase space available
     // (it happens sometimes for clusters with b-flavour)
-    if ( Mclu <  m1+m + m2+m ) continue;
+    if(Mclu <  m1+m + m2+m) continue;
 
     double exponent1=_PSplt1, exponent2=_PSplt1;
-    if ( CheckId::hasBeauty(idQ1) ) {    
-      exponent1 = _PSplt2;
-    } 
-    if ( CheckId::hasBeauty(idQ2) ) {    
-      exponent2 = _PSplt2;
-    } 
+    if(CheckId::hasBeauty(idQ1)) exponent1 = _PSplt2;
+    if(CheckId::hasBeauty(idQ2)) exponent2 = _PSplt2;
 
     // Draw the masses: for normal, non-beam clusters a power-like mass distribution
     // is used, whereas for beam clusters a fast-decreasing esponential mass 
@@ -292,22 +280,18 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
     // (because the phase space available is tiny) then give up (the cluster 
     //  is not plit).
     int iRemnant = 0;
-    if ( cluPtr->isBeamCluster() ) {
-      if ( compPtr1->isBeamRemnant() ) {
+    if (cluPtr->isBeamCluster()) {
+      if ( cluPtr->isBeamRemnant(0) ) {
         iRemnant = 1;
-	if ( compPtr2->isBeamRemnant() ) {
-	  iRemnant = 10;
-	}
-      } else if ( compPtr2->isBeamRemnant() ) {
-        iRemnant = 2;
-      }
+	if (cluPtr->isBeamRemnant(1)) iRemnant = 10;
+      } else if (cluPtr->isBeamRemnant(1)) iRemnant = 2;
       if ( _IOpRem == 0 ) iRemnant += 10;
     }
     if (! drawnChildrenMasses(Mclu,m1,m2,m,Mclu1,Mclu2,
 	                      exponent1,exponent2,_BtClM,iRemnant) ) {
       continue;
     } 
-
+ 
     // New (not present in Fortran Herwig):
     // check whether the fragment masses  Mclu1  and  Mclu2  are above the 
     // threshold for the production of the lightest pair of hadrons with the 
@@ -329,23 +313,23 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
     // procedure that would be necessary if we used LightClusterDecayer
     // to decay the light cluster to the lightest hadron.   
     bool decayOneHadronClu1 = false;
-    if ( Mclu1 < _pointerHadronsSelector->massLightestHadronsPair( idQ1, -idNew ) ) { 
-      Mclu1 =  _pointerHadronsSelector->massLightestHadron( idQ1, -idNew );          
+    if ( Mclu1 < _hadronsSelector->massLightestHadronsPair(idQ1,-idNew)) { 
+      Mclu1 =  _hadronsSelector->massLightestHadron(idQ1,-idNew);          
       decayOneHadronClu1 = true;
     }
     bool decayOneHadronClu2 = false;
-    if ( Mclu2 < _pointerHadronsSelector->massLightestHadronsPair( idQ2, idNew ) ) { 
-      Mclu2 =  _pointerHadronsSelector->massLightestHadron( idQ2, idNew);           
+    if ( Mclu2 < _hadronsSelector->massLightestHadronsPair(idQ2,idNew)) { 
+      Mclu2 =  _hadronsSelector->massLightestHadron(idQ2,idNew);           
       decayOneHadronClu2 = true;
     }
     // Check if the decay kinematics is still possible: if not then 
     // force the one-hadron decay for the other cluster as well.
     if ( Mclu1 + Mclu2  >  Mclu ) {
       if ( ! decayOneHadronClu1 ) {
-	Mclu1 =  _pointerHadronsSelector->massLightestHadron( idQ1, -idNew );          
+	Mclu1 =  _hadronsSelector->massLightestHadron(idQ1, -idNew); 
 	decayOneHadronClu1 = true;	
       } else if ( ! decayOneHadronClu2 ) {
-	Mclu2 =  _pointerHadronsSelector->massLightestHadron( idQ2, idNew);           
+	Mclu2 =  _hadronsSelector->massLightestHadron(idQ2, idNew);
 	decayOneHadronClu2 = true;
       }
       // Sanity check (normally skipped) to see if at this point we still have
@@ -359,38 +343,39 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
 	    generator()->log() << "         ===>" 
 			       << " \t Cluster split : mass=" << Mclu
-			       << " components ids= " << idQ1 << " " << idQ2 << endl
-			       << " \t Clu1 : mass=" << Mclu1 << " " 
+			       << " components ids= " << idQ1 << " " << idQ2 
+			       << endl << " \t Clu1 : mass=" << Mclu1 << " " 
 			       << " components ids= " << idQ1 << " " << -idNew 
-                               << "   decayOneHadronClu1=" << decayOneHadronClu1 << endl
-			       << " \t Clu2 : mass=" << Mclu2 << " " 
+                               <<"   decayOneHadronClu1=" << decayOneHadronClu1
+			       << endl << " \t Clu2 : mass=" << Mclu2 << " " 
 			       << " components ids= " << idQ2 << " " << idNew 
-                               << "   decayOneHadronClu2=" << decayOneHadronClu2 << endl
-			       << endl;
+                               <<"   decayOneHadronClu2=" << decayOneHadronClu2
+			       << endl << endl;
 	  }
 	}
       }
     }
-    
+ 
     // Determined the (5-components) momenta (all in the LAB frame)
     Lorentz5Momentum pClu = iCluPtr->momentum(); // known
-    Lorentz5Momentum p0Q1 = compPtr1->momentum();// known (momentum of Q1 before fission)
+    Lorentz5Momentum p0Q1 = ptrQ1->momentum();// known (momentum of Q1 before fission)
     Lorentz5Momentum pClu1, pClu2, pQ1, pQone, pQtwo, pQ2; //unknown
-    pClu1.setMass( Mclu1 );
-    pClu2.setMass( Mclu2 );
-    pQ1.setMass( m1 );
-    pQ2.setMass( m2 );
-    pQone.setMass( m ); pQtwo.setMass( m );
+    pClu1.setMass(Mclu1);
+    pClu2.setMass(Mclu2);
+    pQ1.setMass(m1);
+    pQ2.setMass(m2);
+    pQone.setMass(m); 
+    pQtwo.setMass(m);
     
-    calculateKinematics( pClu, p0Q1, decayOneHadronClu1, decayOneHadronClu2, // input
-			 pClu1, pClu2, pQ1, pQone, pQtwo, pQ2 );             // output
+    calculateKinematics(pClu,p0Q1,decayOneHadronClu1,decayOneHadronClu2, // in
+			pClu1,pClu2,pQ1,pQone,pQtwo,pQ2);                // out
 
     // Determine the positions of the two children clusters.
     LorentzPoint positionClu1 = LorentzPoint();
     LorentzPoint positionClu2 = LorentzPoint();
-    calculatePositions( pClu, iCluPtr->position(), pClu1, pClu2,   // input
-			positionClu1, positionClu2 );              // output
-
+    calculatePositions(pClu, iCluPtr->vertex(), pClu1, pClu2,   // input
+		       positionClu1, positionClu2 );            // output
+   
     // The previous methods have determined the kinematics and positions
     // of C -> C1 + C2. 
     // In the case that one of the two product is light, that means either
@@ -410,65 +395,68 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
     // pointed particle). Please not make confusion of this only apparent
     // inconsistency!
 
-    if ( decayOneHadronClu1 ) {
-
-      long idhad = _pointerHadronsSelector->lightestHadron(idQ1,-idNew);      
-      PPtr ptrhad = getParticle( idhad );  // create the hadron.
-      if ( ! ptrhad ) {
-	generator()->logWarning( Exception("ClusterFissioner::cut "
-					   "***Cannot create a particle with specified id***", 
-					   Exception::warning) );
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
+    if(decayOneHadronClu1) {
+      long idhad = _hadronsSelector->lightestHadron(idQ1,-idNew);      
+      PPtr ptrhad = getParticle(idhad);  // create the hadron.
+      if(!ptrhad) {
+	generator()->logWarning(Exception("ClusterFissioner::cut "
+		"***Cannot create a particle with specified id***", 
+					  Exception::warning));
+	if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
 	  generator()->log() << "         ===>" 
 			     << " idQ1=" << idQ1 << " -idNew=" << -idNew 
 			     << " idhad=" << idhad << endl << endl;
 	}
       } else {
-	ptrhad->set5Momentum( pClu1 );
-	ptrhad->setLabVertex( positionClu1 );
-	iCluPtr->addChildrenHadrons( ptrhad );
+	ptrhad->set5Momentum(pClu1);
+	ptrhad->setLabVertex(positionClu1);
+	pstep->addDecayProduct(iCluPtr,ptrhad);
       }
 
     } else {
- 
-      // Create the two new clusters with the proper flavour. Notice the sign of
-      // idNew is necessary to produce consistent clusters (see previous comment)
-      CluPtr ptrClu1 = CluPtr();
+      // Create the two new clusters with the proper flavour. Notice the sign 
+      // of idNew is necessary to produce consistent clusters (see previous 
+      // comment)
+      ClusterPtr ptrClu1;
+      PPtr ptr2 = getParticle(-idNew);
+      pstep->addIntermediate(ptr2);
       if (ptrQ1) {
-	ptrClu1 = new_ptr( Cluster(ptrQ1, -idNew) );
+	ptrClu1 = new_ptr(Cluster(ptrQ1,ptr2));
+	ptr2->addChild(ptrClu1);
       } else {
-	ptrClu1 = new_ptr( Cluster(idQ1, -idNew) );
+	PPtr ptr1 = getParticle(idQ1);
+	ptrClu1 = new_ptr(Cluster(ptr1,ptr2));
+	ptr1->addChild(ptrClu1);
+	ptr2->addChild(ptrClu1);
+	pstep->addIntermediate(ptr1);
       }
+      ptrClu1->set5Momentum(pClu1);
+      ptrClu1->setVertex(positionClu1);
 
-      ptrClu1->momentum( pClu1 );
-      ptrClu1->position( positionClu1 );
-
-      for (CollecCompPtr::const_iterator iter = ptrClu1->components().begin();
-	   iter != ptrClu1->components().end(); ++iter) {
-	if ( (*iter)->id() == idQ1 ) {
-	  (*iter)->momentum( pQ1 );
-	} else if ( (*iter)->id() == -idNew ) {
-	  (*iter)->momentum( pQone );
-	}
+      for(int i = 0; i<ptrClu1->numComponents(); i++) {
+	if(ptrClu1->particle(i)->id() == idQ1) 
+	  ptrClu1->particle(i)->set5Momentum(pQ1);
+	else if(ptrClu1->particle(i)->id() == -idNew) 
+	  ptrClu1->particle(i)->set5Momentum(pQone);
       }
 
       // Set the parent/children relationship between the clusters, and add
       // the children clusters (indeed the pointers to them) to the collection
       // of cluster pointers  collecCluPtr. Finally, add also in the vector
       // vecCluPtr  those children that are heavy enough to be split.
-      iCluPtr->addChildrenClusters( ptrClu1 );
-      ptrClu1->parentCluster( iCluPtr ); 
-      collecCluPtr.insert( collecCluPtr.end() , ptrClu1 );
-      if ( pow( ptrClu1->mass() , _ClPow) > 
-	   pow(_ClMax, _ClPow) + pow( ptrClu1->sumConstituentMasses() , _ClPow) ) {
-	vecCluPtr.push_back( ptrClu1 );
+      //iCluPtr->addChild(ptrClu1);
+      pstep->addDecayProduct(iCluPtr, ptrClu1);
+      clusters.push_back(ptrClu1);
+      if(pow(ptrClu1->mass(), _ClPow) > 
+	 pow(_ClMax, _ClPow) + pow(ptrClu1->sumConstituentMasses(), _ClPow)) {
+	clusterStack.push_back(ptrClu1);
       } 
 
     }
+  
+    if(decayOneHadronClu2) {
 
-    if ( decayOneHadronClu2 ) {
-
-      long idhad = _pointerHadronsSelector->lightestHadron(idQ2, idNew);      
+      long idhad = _hadronsSelector->lightestHadron(idQ2, idNew);      
       PPtr ptrhad = getParticle( idhad );
       if ( ! ptrhad ) {
 	generator()->logWarning( Exception("ClusterFissioner::cut "
@@ -480,42 +468,53 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
 			     << " idhad=" << idhad << endl << endl;
 	}
       } else {
-	ptrhad->set5Momentum( pClu2 );
-	ptrhad->setLabVertex( positionClu2 );
-	iCluPtr->addChildrenHadrons( ptrhad );
+	ptrhad->set5Momentum(pClu2);
+	ptrhad->setLabVertex(positionClu2);
+	//iCluPtr->addChild(ptrhad);
+	pstep->addDecayProduct(iCluPtr,ptrhad);
       }
 
     } else {
- 
-      CluPtr ptrClu2 = CluPtr();
-      if (ptrQ2) {
-	ptrClu2 = new_ptr( Cluster(ptrQ2, idNew) );
+      ClusterPtr ptrClu2 = ClusterPtr();
+      PPtr ptr1;
+      PPtr ptr2 = getParticle(idNew);
+      pstep->addIntermediate(ptr2);
+      //ParticleVector dp;
+      //dp.push_back(ptr2);
+      if(ptrQ2) {
+	ptrClu2 = new_ptr(Cluster(ptrQ2,ptr2));
+	//dp.push_back(ptrQ2);
+	//pstep->addDecayProduct(iCluPtr,ptrQ2);
+	ptr2->addChild(ptrClu2);
       } else {
-	ptrClu2 = new_ptr( Cluster(idQ2, idNew) ); 
+	ptr1 = getParticle(idQ2);
+	ptrClu2 = new_ptr(Cluster(ptr1,ptr2));
+	///dp.push_back(ptr1);
+	pstep->addIntermediate(ptr1);
+	ptr1->addChild(ptrClu2);
+	ptr2->addChild(ptrClu2);
+	pstep->addIntermediate(ptr1);
       }
 
-      ptrClu2->momentum( pClu2 );
-      ptrClu2->position( positionClu2 );
-
-      for (CollecCompPtr::const_iterator iter = ptrClu2->components().begin();
-	   iter != ptrClu2->components().end(); ++iter) {
-	if ( (*iter)->id() == idQ2 ) {
-	  (*iter)->momentum( pQ2 );
-	} else if ( (*iter)->id() == idNew ) {
-	  (*iter)->momentum( pQtwo );
-	}
+      ptrClu2->set5Momentum(pClu2);
+      ptrClu2->setVertex(positionClu2);
+      for(int i = 0; i<ptrClu2->numComponents(); i++) {
+	if(ptrClu2->particle(i)->id() == idQ2)
+	  ptrClu2->particle(i)->set5Momentum(pQ2);
+	else if(ptrClu2->particle(i)->id() == idNew) 
+	  ptrClu2->particle(i)->set5Momentum(pQtwo);
       }
-    
-      iCluPtr->addChildrenClusters( ptrClu2 );
-      ptrClu2->parentCluster( iCluPtr ); 
-      collecCluPtr.insert( collecCluPtr.end() , ptrClu2 );
-      if ( pow( ptrClu2->mass() , _ClPow) > 
-	   pow(_ClMax, _ClPow) + pow( ptrClu2->sumConstituentMasses() , _ClPow) ) {
-	vecCluPtr.push_back( ptrClu2 );
+
+      //iCluPtr->addChild(ptrClu2); 
+      pstep->addDecayProduct(iCluPtr, ptrClu2);
+      clusters.push_back(ptrClu2);
+      if(pow(ptrClu2->mass(), _ClPow) > 
+	 pow(_ClMax, _ClPow) + pow(ptrClu2->sumConstituentMasses(), _ClPow)) {
+	clusterStack.push_back(ptrClu2);
       } 
 
     }
-
+    //cout << "Sanity check\n";
     // Sanity check (normally skipped) to see if the energy-momentum is conserved.
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
       Lorentz5Momentum diff = pClu - ( pClu1 + pClu2 );
@@ -541,7 +540,7 @@ void ClusterFissioner::cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr) {
     }
 
   }  // end of the main (while) loop over vecCluPtr
-
+  //cout << "done\n";
 }
 
 
@@ -551,9 +550,9 @@ long ClusterFissioner::drawnNewFlavour() const {
   // (which are not normalized probabilities) given
   // by the same weights as used in HadronsSelector for
   // the decay of clusters into two hadrons. 
-  double prob_d = _pointerHadronsSelector->pwtDquark();
-  double prob_u = _pointerHadronsSelector->pwtUquark();
-  double prob_s = _pointerHadronsSelector->pwtSquark();
+  double prob_d = _hadronsSelector->pwtDquark();
+  double prob_u = _hadronsSelector->pwtUquark();
+  double prob_s = _hadronsSelector->pwtSquark();
   double sum = prob_d + prob_u + prob_s;
   prob_d = prob_d / sum;
   prob_u = prob_u / sum;
@@ -561,9 +560,9 @@ long ClusterFissioner::drawnNewFlavour() const {
   int choice = rnd3(prob_u, prob_d, prob_s);
   long idNew = 0;
   switch (choice) {
-  case 0: idNew = ParticleID::u; break;  
-  case 1: idNew = ParticleID::d; break;
-  case 2: idNew = ParticleID::s; break;
+  case 0: idNew = Pythia7::ParticleID::u; break;  
+  case 1: idNew = Pythia7::ParticleID::d; break;
+  case 2: idNew = Pythia7::ParticleID::s; break;
   }
   return idNew;
 }
@@ -768,16 +767,15 @@ void ClusterFissioner::calculatePositions( const Lorentz5Momentum & pClu,    // 
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
-  Length x1 = _pointerGlobalParameters->conversionFactorGeVtoMillimeter() * 
-	 ( Mclu*0.25 + 0.5*( pstarChild + ( sqr(Mclu2) - sqr(Mclu1) )/( 2.0*Mclu ) ) ) / GeV;
-  Length t1 = ( ( Mclu / GeV ) * _pointerGlobalParameters->conversionFactorGeVtoMillimeter() 
-		     - x1 ); 
+  double GeV2mm = _globalParameters->conversionFactorGeVtoMillimeter();
+  Length x1 = GeV2mm * (Mclu*0.25 + 0.5
+                     *(pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/GeV;
+  Length t1 = ((Mclu/GeV) * GeV2mm - x1); 
   LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
-  Length x2 = _pointerGlobalParameters->conversionFactorGeVtoMillimeter() * 
-	 ( -Mclu*0.25 + 0.5*( - pstarChild + ( sqr(Mclu2) - sqr(Mclu1) )/( 2.0*Mclu ) ) ) / GeV;
-  Length t2 = ( ( Mclu / GeV ) * _pointerGlobalParameters->conversionFactorGeVtoMillimeter() 
-		     + x2 );
-  LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );
+  Length x2 = GeV2mm * (-Mclu*0.25 + 0.5
+                     *(-pstarChild + (sqr(Mclu2) - sqr(Mclu))/(2.0*Mclu)))/GeV;
+  Length t2 = ((Mclu/GeV) * GeV2mm + x2);
+  LorentzDistance distanceClu2(x2 * u.vect().unit(), t2);
 
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Hadronization ) {

@@ -6,19 +6,22 @@
 //
 // CLASSDOC SUBSECTION Description:
 //
-// This class scans through the particles in the event and produces a collection <BR>
-// of clusters, defined as a colour-singlet combinations of colour-connected particles. <BR>
-// There are no assumptions about the type (i.e. quark or diquark) or number of the <BR>
-// component particles of the cluster (however most of the time clusters are formed by <BR>
-// quark-antiquark pairs; but in special situations, as baryon-violating processes in <BR>
-// R-nonconserved Susy, three quarks (or three antiquarks) could form a cluster). <BR> 
-// Because at the moment we don't know how to handle 3-component clusters <BR>
-// (i.e. how to fission heavy ones, or how to decay clusters), we provide also a <BR>
-// separate method, <!id>reduceToTwoComponents<!!id>, which does the job of redefining <BR> 
-// these 3-component clusters as "normal" 2-component ones, simply by randomly <BR>
-// considering two (anti-) quarks as a (anti-) diquark. Notice that if in the future <BR>
-// the method <!id>reduceToTwoComponents<!!id> is modified or even eliminated, the main <BR>
-// method for finding clusters, <!id>formClusters<!!id>, will not need any change.
+// This class scans through the particles in the event and produces a 
+// collection of clusters, defined as a colour-singlet combinations of 
+// colour-connected particles. There are no assumptions about the type 
+// (i.e. quark or diquark) or number of the component particles of the 
+// cluster (however most of the time clusters are formed by quark-antiquark 
+// pairs; but in special situations, as baryon-violating processes in
+// R-nonconserved Susy, three quarks (or three antiquarks) could form a 
+// cluster). Because at the moment we don't know how to handle 3-component 
+// clusters (i.e. how to fission heavy ones, or how to decay clusters), we 
+// provide also a separate method, <!id>reduceToTwoComponents<!!id>, which 
+// does the job of redefining these 3-component clusters as "normal" 
+// 2-component ones, simply by randomly considering two (anti-) quarks as a 
+// (anti-) diquark. Notice that if in the future the method 
+// <!id>reduceToTwoComponents<!!id> is modified or even eliminated, the 
+// main method for finding clusters, <!id>formClusters<!!id>, will not need 
+// any change.
 //
 
 #include "Pythia7/Handlers/HandlerBase.h"
@@ -43,12 +46,13 @@ public:
   // Standard ctors and dtor.
 
   void formClusters(tCollPtr collisionPtr, const StepPtr & pstep, 
-		    CollecCluPtr & collecCluPtr) throw(Veto, Stop, Exception);
+		    ClusterVector & clusters) throw(Veto, Stop, Exception);
   // Form clusters starting from the list of particles in the event.
   // It also checks if the cluster is a beam cluster, that is if
   // at least one of its components is a beam remnant.
 
-  void reduceToTwoComponents(CollecCluPtr & collecCluPtr) throw(Veto, Stop, Exception);
+  void reduceToTwoComponents(const StepPtr &, ClusterVector&) 
+    throw(Veto, Stop, Exception);
   // For the eventual clusters that have three components 
   // (quark, quark, quark) or (antiquark, antiquark, antiquark),
   // it redefines them as "normal" clusters with two components:
@@ -91,7 +95,6 @@ private:
 
   ClusterFinder & operator=(const ClusterFinder &);
   //  Private and non-existent assignment operator.
-
 };
 
 }

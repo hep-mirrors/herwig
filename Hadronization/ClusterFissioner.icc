@@ -19,8 +19,8 @@ inline ClusterFissioner::ClusterFissioner() :
 
 inline ClusterFissioner::ClusterFissioner(const ClusterFissioner & x)
   : Pythia7::HandlerBase(x),
-	     _pointerHadronsSelector( x._pointerHadronsSelector ),
-	     _pointerGlobalParameters( x._pointerGlobalParameters ),
+	     _hadronsSelector( x._hadronsSelector ),
+	     _globalParameters( x._globalParameters ),
 	     _ClMax( x._ClMax ),
              _ClPow( x._ClPow ),
              _PSplt1( x._PSplt1 ),

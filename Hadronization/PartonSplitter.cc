@@ -23,12 +23,12 @@ PartonSplitter::~PartonSplitter() {}
 
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
-  os << _pointerGlobalParameters; 
+  os << _globalParameters; 
 }
 
 
 void PartonSplitter::persistentInput(PersistentIStream & is, int) {
-  is >> _pointerGlobalParameters; 
+  is >> _globalParameters; 
 }
 
 
@@ -45,7 +45,7 @@ void PartonSplitter::Init() {
   static Reference<PartonSplitter,GlobalParameters> 
     interfaceGlobalParameters("GlobalParameters", 
 			      "A reference to the GlobalParameters object", 
-			      &Herwig::PartonSplitter::_pointerGlobalParameters,
+			      &Herwig::PartonSplitter::_globalParameters,
 			      false, false, true, false);
  
 }
@@ -53,8 +53,14 @@ void PartonSplitter::Init() {
 
 void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 
-  set<tPPtr> newPartons;  // only for debugging
+  tParticleVector newPartons;  // only for debugging
 
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
+    //debuggingInfo(tagged,newPartons);
+    generator()->log() << "######## Particles before PartonSplitter #######\n";
+    generator()->log() << *pstep;
+    generator()->log() << "################################################\n";
+  }
   // Loop over all of the particles in the event.
   for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
     
@@ -64,7 +70,7 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	PPtr ptrQ = PPtr();
 	PPtr ptrQbar = PPtr();
 	splitTimeLikeGluon(*pit,ptrQ,ptrQbar);
-	Energy Q0 = _pointerGlobalParameters->effectiveGluonMass();
+	Energy Q0 = _globalParameters->effectiveGluonMass();
 	ptrQ->scale(Q0*Q0);
 	ptrQbar->scale(Q0*Q0);
 	pstep->addDecayProduct(*pit,ptrQ);
@@ -73,8 +79,8 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 
         // Debugging
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  newPartons.insert( newPartons.end(), ptrQ);
-	  newPartons.insert( newPartons.end(), ptrQbar);
+	  newPartons.push_back(ptrQ);
+	  newPartons.push_back(ptrQbar);
 	}
 
       } else {
@@ -109,7 +115,10 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
   
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-    debuggingInfo(tagged,newPartons);
+    //debuggingInfo(tagged,newPartons);
+    generator()->log() << "######## Particles after PartonSplitter ########\n";
+    generator()->log() << *pstep;
+    generator()->log() << "################################################\n";
   }
 
 }
@@ -131,8 +140,9 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
   double cosThetaStar = rnd( -1.0 , 1.0 );
   double phiStar = rnd( -pi , pi );
   Energy constituentQmass = getParticleData(newId)->constituentMass();
-  Kinematics::twoBodyDecay( ptrGluon->momentum(), constituentQmass, constituentQmass,
-			    cosThetaStar, phiStar, momentumQ, momentumQbar ); 
+  Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass, 
+			   constituentQmass, cosThetaStar, phiStar, momentumQ, 
+			   momentumQbar ); 
 
   // Create quark and anti-quark particles of the chosen flavour 
   // and set they 5-momentum (the mass is the constituent one).
@@ -190,6 +200,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
   int save_count = count;
   for (set<tPPtr>::const_iterator it = newPartons.begin(); it != newPartons.end(); ++it) {
     orderingMap.insert( orderingMap.end(), pair<tPPtr,int>(*it,++count) ); 
+    generator()->log() << "Inserting " << *(*it) << "\ninto orderingMap\n";
   }
 
   // Do the same for colour and anti-colour lines.
@@ -209,7 +220,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 		     << "  INITIAL PARTONS : num = " << save_count << endl
 		     << "  NEW     PARTONS : num = " << count - save_count << endl;
 
-  for ( map<tPPtr,int>::const_iterator it = orderingMap.begin(); 
+  /*  for ( map<tPPtr,int>::const_iterator it = orderingMap.begin(); 
 	it != orderingMap.end(); ++it ) {
     tPPtr pptr = it->first;  
     int i = it->second;  
@@ -338,8 +349,17 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	generator()->log() << endl;
       }
     }
+    cout << "done\n";
   } // end main for loop over orderingMap;
-  
+  cout << "Done\n";
+  */
+  for(tPVector::const_iterator it = tagged.begin(); it != tagged.end(); ++it) {
+    generator()->log() << *(*it) << flush;
+  }
+  for (set<tPPtr>::const_iterator it = newPartons.begin(); 
+       it != newPartons.end(); ++it) {
+    generator()->log() << *(*it) << flush;
+  }
   if ( save_count == count ) {
     generator()->log() << " \t NO New Partons " << endl;
   }

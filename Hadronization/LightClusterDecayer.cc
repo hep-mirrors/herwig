@@ -13,7 +13,6 @@
 #include "Pythia7/PDT/EnumParticles.h"
 #include "Pythia7/Repository/EventGenerator.h"
 #include "Cluster.h"
-#include "Component.h"
 #include "HadronsSelector.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/Kinematics.h"
@@ -28,12 +27,12 @@ LightClusterDecayer::~LightClusterDecayer() {}
 
 
 void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
-   os << _pointerHadronsSelector << _B1Lim;
+   os << _hadronsSelector << _B1Lim;
 }
 
 
 void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _pointerHadronsSelector >> _B1Lim; 
+  is >> _hadronsSelector >> _B1Lim; 
 }
 
 
@@ -49,7 +48,7 @@ void LightClusterDecayer::Init() {
   static Reference<LightClusterDecayer,HadronsSelector> 
     interfaceHadronsSelector("HadronsSelector", 
 			     "A reference to the HadronsSelector object", 
-			     &Herwig::LightClusterDecayer::_pointerHadronsSelector,
+			     &Herwig::LightClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
   
   static Parameter<LightClusterDecayer,Energy>
@@ -59,7 +58,8 @@ void LightClusterDecayer::Init() {
 }
 
 
-void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr) 
+void LightClusterDecayer::decay(const StepPtr &pstep, 
+				ClusterVector & clusters) 
   throw (Veto, Stop, Exception) {
 
   // Loop over all clusters, and for those that were not heavy enough
@@ -95,10 +95,10 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
   // into a single hadron, without redefining it (the reason being that,
   // otherwise, the would-be redefined cluster could have undefined
   // components). 
-  vector<CluPtr> vecNewRedefinedCluPtr;
+  vector<tClusterPtr> redefinedClusters;
 
-  for (CollecCluPtr::iterator it = collecCluPtr.begin();
-       it != collecCluPtr.end(); ++it) {
+  for (ClusterVector::iterator it = clusters.begin();
+       it != clusters.end(); ++it) {
         
     // Skip the clusters that are not available or that are 
     // heavy, intermediate, clusters that have undergone to fission,
@@ -123,26 +123,20 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
     // Extract the id and particle pointer of the two components of the cluster.
     long idQ1 = 0, idQ2 = 0;
     tPPtr ptrQ1 = tPPtr(), ptrQ2 = tPPtr();
-    int n=0;
-    for (CollecCompPtr::const_iterator jt = (*it)->components().begin();
-	 jt != (*it)->components().end(); ++jt) {
-      n++;
-      if (n == 1) {
-	idQ1  = (*jt)->id();
-	ptrQ1 = (*jt)->pointerParticle();
-      } else if (n == 2) {
-	idQ2  = (*jt)->id();
-	ptrQ2 = (*jt)->pointerParticle();
-      }
-    }
-    
+    ptrQ1 = (*it)->particle(0);
+    idQ1 = ptrQ1->id();
+    ptrQ2 = (*it)->particle(1);
+    idQ2 = ptrQ2->id();
+
     // Sanity check (normally skipped) to control that the two components of a
     // cluster are consistent, that is they can form a meson or a baryon.
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
       if ( ! CheckId::canBeMeson(idQ1,idQ2)  &&  ! CheckId::canBeBaryon(idQ1,idQ2) ) {
 	generator()->logWarning( Exception("LightClusterDecayer::decay "
-					   "***The two components of the cluster are inconsistent***", 
+	      "***The two components of the cluster are inconsistent***", 
 					   Exception::warning) );
+	std::cout << "LightClusterDecayer::decay ****the two components are "
+		  << idQ1 << " and " << idQ2 << " ***\n";
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
 	  generator()->log() << "         ===>" 
 			     << " idQ1=" << idQ1 << " idQ2=" << idQ2 << endl << endl;
@@ -155,7 +149,7 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
     // Notice that we don't need real masses (drawn by a Breit-Wigner 
     // distribution) because the lightest pair of hadrons does not involve
     // any broad resonance.
-    Energy threshold = _pointerHadronsSelector->massLightestHadronsPair(idQ1,idQ2);
+    Energy threshold = _hadronsSelector->massLightestHadronsPair(idQ1,idQ2);
     
     // Special for b-flavour: it allows one-hadron decays also above threshold.
     if ( CheckId::hasBeauty(idQ1,idQ2) ) {
@@ -168,7 +162,7 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
     
     if ( (*it)->mass() < threshold ) {
       
-      long idhad = _pointerHadronsSelector->lightestHadron(idQ1,idQ2);
+      long idhad = _hadronsSelector->lightestHadron(idQ1,idQ2);
       
       // We assume that the candidate reshuffling cluster partner, 
       // with whom the light cluster can exchange momenta,
@@ -194,37 +188,37 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
       // ordered in increasing distance values. 
       // We use a multimap, rather than a map, just for precaution against not properly 
       // defined cluster positions which could produce all identical (null) distances.
-      multimap<Length,CluPtr> candidatesMap;
-      for ( CollecCluPtr::iterator jt = collecCluPtr.begin();
-	    jt != collecCluPtr.end(); ++jt ) {
-	if ( (*jt)->isAvailable()  &&  (*jt)->isReadyToDecay()  &&  jt != it ) {
-	  Length distance = fabs ( ( (*it)->position() - (*jt)->position() ).mag() );
-	  candidatesMap.insert( pair<Length,CluPtr>( distance, *jt ) ); 
+      multimap<Length,tClusterPtr> candidates;
+      for ( ClusterVector::iterator jt = clusters.begin();
+	    jt != clusters.end(); ++jt ) {
+	if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
+	  Length distance = fabs (((*it)->vertex() - (*jt)->vertex()).mag());
+	  candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
 	}
       }
 
       // Loop sequentially the multimap.
-      multimap<Length,CluPtr>::const_iterator mmapIt = candidatesMap.begin();
+      multimap<Length,tClusterPtr>::const_iterator mmapIt = candidates.begin();
       bool found = false;
-      while ( ! found  &&  mmapIt != candidatesMap.end() ) {
-	found = reshuffling( idhad, *it, (*mmapIt).second, vecNewRedefinedCluPtr );
+      while (!found && mmapIt != candidates.end()) {
+	found = reshuffling(idhad, *it, (*mmapIt).second, pstep, redefinedClusters);
 	++mmapIt;
       }
       
-      if (! found) {
+      if (!found) {
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
 	  int numCluAvailable = 0, numCluAlreadyReshuffled = 0;
-	  for ( CollecCluPtr::const_iterator iter = collecCluPtr.begin();
-		iter != collecCluPtr.end(); ++iter ) {
+	  for (ClusterVector::const_iterator iter = clusters.begin();
+		iter != clusters.end(); ++iter ) {
 	    if ( (*iter)->isAvailable() && (*iter)->isReadyToDecay() ) {
 	      numCluAvailable++;
-	    } else if ( (*iter)->isAvailable() && (*iter)->hasBeenReshuffled() ) { 
+	    } else if((*iter)->isAvailable() && (*iter)->hasBeenReshuffled()) {
 	      numCluAlreadyReshuffled++;
 	    }         
 	  }
 	  generator()->log() << "LightClusterDecayer::decay "
 			     << " (just before throwing the exception) " << endl 
-			     << "         ===> num clusters:  all=" << collecCluPtr.size()
+			     << "         ===> num clusters:  all=" << clusters.size()
 			     << "  already reshuffled=" << numCluAlreadyReshuffled
 			     << "  still available=" << numCluAvailable 
 			     << endl << endl;
@@ -246,9 +240,9 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
 			   << " = " << (*it)->momentum() 
 			   << " + " << ((*mmapIt).second)->momentum() << endl
 	                   << "\t multimap of reshuffling candidates : size = " 
-                           << candidatesMap.size() << endl;
-	for ( multimap<Length,CluPtr>::const_iterator mmapIt = candidatesMap.begin();
-	      mmapIt != candidatesMap.end(); ++mmapIt ) {
+                           << candidates.size() << endl;
+	for(multimap<Length,tClusterPtr>::const_iterator
+	  mmapIt = candidates.begin(); mmapIt != candidates.end(); ++mmapIt ) {
 	  generator()->log() << "\t \t distance = " << (*mmapIt).first << "  [mm] " << endl;
 	}
       }
@@ -258,16 +252,19 @@ void LightClusterDecayer::decay(CollecCluPtr & collecCluPtr)
 
   // Add to  collecCluPtr  all of the redefined new clusters (indeed the 
   // pointers to them are added) contained in  vecNewRedefinedCluPtr.
-  for (vector<CluPtr>::const_iterator it = vecNewRedefinedCluPtr.begin();
-       it != vecNewRedefinedCluPtr.end(); ++it) {
-    collecCluPtr.insert( collecCluPtr.end(), *it );
+  for (tClusterVector::const_iterator it = redefinedClusters.begin();
+       it != redefinedClusters.end(); ++it) {
+    clusters.push_back(*it);
   }
 
 }
 
 
-bool LightClusterDecayer::reshuffling( const long idhad1, tCluPtr cluPtr1, tCluPtr cluPtr2,
-				       vector<CluPtr> & vecNewRedefinedCluPtr )
+bool LightClusterDecayer::reshuffling(const long idhad1, 
+				      tClusterPtr cluPtr1, 
+				      tClusterPtr cluPtr2,
+				      const StepPtr &pstep,
+				      tClusterVector & redefinedClusters )
   throw (Veto, Stop, Exception) {
 
   // This method does the reshuffling of momenta between the cluster "1", 
@@ -285,28 +282,19 @@ bool LightClusterDecayer::reshuffling( const long idhad1, tCluPtr cluPtr1, tCluP
   Energy mhad1 = ptrhad1->mass();
 
   // Let's call "3" and "4" the two constituents of the second cluster
-  tCompPtr compPtr3 = tCompPtr(), compPtr4 = tCompPtr();
-  int n=0;
-  for (CollecCompPtr::const_iterator iter = cluPtr2->components().begin();
-       iter != cluPtr2->components().end(); ++iter) {
-    n++;
-    if (n == 1) {
-      compPtr3 = (*iter);
-    } else if (n == 2) {
-      compPtr4 = (*iter);
-    }
-  }
-  
+  tPPtr part3 = cluPtr2->particle(0);
+  tPPtr part4 = cluPtr2->particle(1);
+
   // Sanity check (normally skipped) to see if the second cluster
   // is consistently defined.
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-    if ( n != 2  ||  ! compPtr3  ||  ! compPtr4 ) { 
+    if ( cluPtr2->numComponents() != 2  ||  !part3  ||  !part4 ) { 
       generator()->logWarning( Exception("LightClusterDecayer::reshuffling "
 					 "***Inconsistent cluster***", 
 					 Exception::warning) );
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" << " n=" << n 
-			   << " compPtr3=" << compPtr3 << " compPtr4=" << compPtr4 
+	generator()->log() << "         ===>" << " n=" << cluPtr2->numComponents()
+			   << " compPtr3=" << part3 << " compPtr4=" << part4 
 			   << endl << endl;
       }
     }
@@ -329,7 +317,7 @@ bool LightClusterDecayer::reshuffling( const long idhad1, tCluPtr cluPtr1, tCluP
   //             with a huge statistics.
   // // // if ( mSystem  <  (mhad1 + mclu2)*(1.0 + rnd()*5.0) ) {
     if ( mSystem < mhad1 + mclu2 ) {
-    mclu2 = _pointerHadronsSelector->massLightestHadron( compPtr3->id() , compPtr4->id() );
+    mclu2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
     if ( mSystem < mhad1 + mclu2 ) { 
 	return false;   
     }
@@ -375,9 +363,10 @@ bool LightClusterDecayer::reshuffling( const long idhad1, tCluPtr cluPtr1, tCluP
   }
 
   ptrhad1->set5Momentum( phad1 );               // set momentum of first hadron.
-  ptrhad1->setLabVertex( cluPtr1->position() ); // set hadron vertex position to the
+  ptrhad1->setLabVertex(cluPtr1->vertex()); // set hadron vertex position to the
                                                 // parent cluster position.
-  cluPtr1->addChildrenHadrons( ptrhad1 );
+  //cluPtr1->addChild(ptrhad1);
+  pstep->addDecayProduct(cluPtr1, ptrhad1);
   cluPtr1->reshufflingPartnerCluster( cluPtr2 );
   cluPtr2->reshufflingPartnerCluster( cluPtr1 );
 
@@ -387,34 +376,27 @@ bool LightClusterDecayer::reshuffling( const long idhad1, tCluPtr cluPtr1, tCluP
     // it is decayed into a single hadron, *without* creating the
     // redefined cluster (this choice is justified in order to avoid
     // clusters that could have undefined components).
-    long idhad2 = _pointerHadronsSelector->lightestHadron( compPtr3->id() , compPtr4->id() );
+    long idhad2 = _hadronsSelector->lightestHadron(part3->id(), part4->id());
     PPtr ptrhad2 = getParticle( idhad2 );
     ptrhad2->set5Momentum( pclu2 );            
-    ptrhad2->setLabVertex( cluPtr2->position() ); // set hadron vertex position to the
+    ptrhad2->setLabVertex( cluPtr2->vertex() ); // set hadron vertex position to the
                                                   // parent cluster position.
-    cluPtr2->addChildrenHadrons( ptrhad2 );   
-
+    //    cluPtr2->addChild(ptrhad2);   
+    pstep->addDecayProduct(cluPtr2, ptrhad2);
   } else {
 
-    // Create the new cluster which is the refefinitions of the cluster  
+    // Create the new cluster which is the redefinitions of the cluster  
     // partner (cluster "2") used in the reshuffling procedure of the
     // light cluster (cluster "1").
     // The rationale of this is to preserve completely all of the information.
-    CluPtr cluPtr2new = CluPtr();
-    if ( compPtr3->pointerParticle()  &&  compPtr4->pointerParticle() ) {
-	cluPtr2new = new_ptr( Cluster(compPtr3->pointerParticle(),compPtr4->pointerParticle()) ); 
-    } else if ( compPtr3->pointerParticle()  &&  ! compPtr4->pointerParticle() ) {
-      cluPtr2new = new_ptr( Cluster( compPtr3->pointerParticle(), compPtr4->id() ) ); 
-    } else if ( ! compPtr3->pointerParticle()  &&  compPtr4->pointerParticle() ) {
-      cluPtr2new = new_ptr( Cluster( compPtr4->pointerParticle(), compPtr3->id() ) ); 
-    } else { 
-      cluPtr2new = new_ptr( Cluster( compPtr3->id(), compPtr4->id() ) ); 
-    }
-    cluPtr2new->momentum( pclu2 );
-    cluPtr2new->position( cluPtr2->position() );
-    cluPtr2new->parentCluster( cluPtr2 );
-    cluPtr2->addChildrenClusters( cluPtr2new );
-    vecNewRedefinedCluPtr.push_back( cluPtr2new );
+    ClusterPtr cluPtr2new = ClusterPtr();
+    if (part3 && part4) cluPtr2new = new_ptr(Cluster(part3,part4)); 
+
+    cluPtr2new->set5Momentum( pclu2 );
+    cluPtr2new->setVertex( cluPtr2->vertex() );
+    //    cluPtr2->addChild( cluPtr2new );
+    pstep->addDecayProduct(cluPtr2, cluPtr2new);
+    redefinedClusters.push_back( cluPtr2new );
        
     // Set consistently the momenta of the two components of the second cluster
     // after the reshuffling. To do that we first calculate the momenta of the 
@@ -428,30 +410,21 @@ bool LightClusterDecayer::reshuffling( const long idhad1, tCluPtr cluPtr1, tCluP
     // but then later should not necessary be the same), and furthermore it allows
     // us not to loose any information, in the sense that we can always, later on,
     // to find the original momenta of the two components before the reshuffling.
-    Lorentz5Momentum p3 = compPtr3->momentum();
+    Lorentz5Momentum p3 = part3->momentum();
     p3.boost( - (cluPtr2->momentum()).boostVector() );  // from LAB to clu2 (old) frame
     p3.boost( pclu2.boostVector() );    // from clu2 (new) to LAB frame
-    Lorentz5Momentum p4 = compPtr4->momentum();
+    Lorentz5Momentum p4 = part4->momentum();
     p4.boost( - (cluPtr2->momentum()).boostVector() );  // from LAB to clu2 (old) frame 
     p4.boost( pclu2.boostVector() );    // from clu2 (new) to LAB frame    
-    n=0;
-    for (CollecCompPtr::const_iterator iter = cluPtr2new->components().begin();
-	 iter != cluPtr2new->components().end(); ++iter) {
-      n++;
-      if (n == 1) {
-	(*iter)->momentum( p3 );
-      } else if (n == 2) {
-	(*iter)->momentum( p4 );
-      }
-    }
-  
+    cluPtr2new->particle(0)->set5Momentum(p3);
+    cluPtr2new->particle(1)->set5Momentum(p4);
+
     // Sanity check (normally skipped) to see if the energy-momentum is conserved.
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
       Lorentz5Momentum sumMomentaComponents = Lorentz5Momentum(); 
-      for (CollecCompPtr::const_iterator iter = cluPtr2new->components().begin();
-	   iter != cluPtr2new->components().end(); ++iter) {
-	sumMomentaComponents += (*iter)->momentum();
-      }
+      for(int i = 0; i<cluPtr2new->numComponents(); i++)
+	sumMomentaComponents += cluPtr2new->particle(i)->momentum();
+
       Lorentz5Momentum diff = sumMomentaComponents - cluPtr2new->momentum(); 
       Energy ediff = fabs( diff.m() );
       if ( ediff > 1e-3*GeV ) {

@@ -26,13 +26,13 @@ ClusterDecayer::~ClusterDecayer() {}
 
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _pointerHadronsSelector << _pointerGlobalParameters 
+  os << _hadronsSelector << _globalParameters 
      << _ClDir1 << _ClDir2 << _ClSmr1 << _ClSmr2;
 }
 
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _pointerHadronsSelector >> _pointerGlobalParameters  
+  is >> _hadronsSelector >> _globalParameters  
      >> _ClDir1 >> _ClDir2 >> _ClSmr1 >> _ClSmr2;
 }
 
@@ -49,12 +49,12 @@ void ClusterDecayer::Init() {
   static Reference<ClusterDecayer,HadronsSelector> 
     interfaceHadronsSelector("HadronsSelector", 
                              "A reference to the HadronsSelector object", 
-                             &Herwig::ClusterDecayer::_pointerHadronsSelector,
+                             &Herwig::ClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
   static Reference<ClusterDecayer,GlobalParameters> 
     interfaceGlobalParameters("GlobalParameters", 
 			      "A reference to the GlobalParameters object", 
-			      &Herwig::ClusterDecayer::_pointerGlobalParameters,
+			      &Herwig::ClusterDecayer::_globalParameters,
 			      false, false, true, false);
   
   static Parameter<ClusterDecayer,int> 
@@ -73,23 +73,26 @@ void ClusterDecayer::Init() {
 }
 
 
-void ClusterDecayer::decay(CollecCluPtr & collecCluPtr) 
+void ClusterDecayer::decay(const StepPtr &pstep, ClusterVector& clusters) 
   throw(Veto, Stop, Exception) {
   // Loop over all clusters, and if they are not too heavy (that is
   // intermediate clusters that have undergone to fission) or not 
   // too light (that is final clusters that have been already decayed 
   // into single hadron) then decay them into two hadrons.
  
-  for (CollecCluPtr::const_iterator it = collecCluPtr.begin();
-	 it != collecCluPtr.end(); ++it) {
-    if ( (*it)->isAvailable()  &&  ! (*it)->isStatusFinal()  &&  (*it)->isReadyToDecay() ) {   
-      decayIntoTwoHadrons( *it );
+  for (ClusterVector::const_iterator it = clusters.begin();
+	 it != clusters.end(); ++it) {
+    if ((*it)->isAvailable() && !(*it)->isStatusFinal() 
+	&& (*it)->isReadyToDecay()) {   
+      decayIntoTwoHadrons(pstep, *it);
     }
   }
 }
 
 
-void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exception) {
+void ClusterDecayer::decayIntoTwoHadrons(const StepPtr &pstep, 
+					 tClusterPtr ptr) 
+  throw(Veto, Stop, Exception) {
 
   // To decay the cluster into two hadrons one must distinguish between
   // constituent quarks (or diquarks) that originate from perturbative
@@ -122,28 +125,18 @@ void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exceptio
   }
      
   // Extract the id and particle pointer of the two components of the cluster.
-  tCompPtr compPtr1 = tCompPtr(), compPtr2 = tCompPtr();
   long id1 = 0, id2 = 0;
   tPPtr ptr1 = tPPtr(), ptr2 = tPPtr();
-  int n=0;
-  for (CollecCompPtr::const_iterator it = ptr->components().begin();
-       it != ptr->components().end(); ++it) {
-    n++;
-    if (n == 1) {
-      compPtr1 = *it;
-      id1  = compPtr1->id();
-      ptr1 = compPtr1->pointerParticle();
-    } else if (n == 2) {
-      compPtr2 = *it;
-      id2  = compPtr2->id();
-      ptr2 = compPtr2->pointerParticle();
-    }
-  }
+  ptr1 = ptr->particle(0);
+  id1 = ptr1->id();
+  ptr2 = ptr->particle(1);
+  id2 = ptr2->id();
+
 
   // Sanity check (normally skipped) to control that the two components of a
   // cluster are consistent, that is they can form a meson or a baryon.
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-    if ( ! CheckId::canBeMeson(id1,id2)  &&  ! CheckId::canBeBaryon(id1,id2) ) {
+    if (!CheckId::canBeMeson(id1,id2) && !CheckId::canBeBaryon(id1,id2)) {
       generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons "
 					 "***The two components of the cluster are inconsistent***", 
 					 Exception::warning) );
@@ -175,8 +168,8 @@ void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exceptio
     cluSmearHad2 = _ClSmr2;
   } 
 
-  bool isOrigin1Perturbative = compPtr1->isPerturbative();
-  bool isOrigin2Perturbative = compPtr2->isPerturbative();
+  bool isOrigin1Perturbative = ptr->isPerturbative(0);
+  bool isOrigin2Perturbative = ptr->isPerturbative(1);
 
   // We have to decide which, if any, of the two hadrons will have 
   // the momentum, in the cluster parent frame, smeared around the
@@ -273,9 +266,9 @@ void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exceptio
       }
     } else {
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Hadronization ) {    
-        Lorentz5Momentum pQ = compPtr1->momentum();
+        Lorentz5Momentum pQ = ptr1->momentum();
         if ( secondHad ) {
-          pQ = compPtr2->momentum();
+          pQ = ptr2->momentum();
         }                                 
         pQ.boost( -pClu.boostVector() ); 
         generator()->log() << "ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***" << endl
@@ -287,13 +280,14 @@ void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exceptio
   }
 
   // Choose here the hadron pair.
-  pair<long,long> idPair = _pointerHadronsSelector->chooseHadronsPair(ptr->mass(),id1,id2);
+  pair<long,long> idPair = _hadronsSelector->chooseHadronsPair(ptr->mass(),
+							       id1,id2);
 
   // Create the two hadron particle objects with the specified id.
-  PPtr ptrHad1 = getParticle( idPair.first );
-  PPtr ptrHad2 = getParticle( idPair.second );
+  PPtr ptrHad1 = getParticle(idPair.first);
+  PPtr ptrHad2 = getParticle(idPair.second);
 
-  if ( ! ptrHad1  ||  ! ptrHad2 ) {
+  if (!ptrHad1  ||  !ptrHad2) {
     generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons "
 				       "***Cannot create the two hadrons***", 
 				       Exception::warning) );
@@ -307,19 +301,22 @@ void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exceptio
 
     Lorentz5Momentum pHad1, pHad2;  // 5-momentum vectors that we have to determine
     if ( secondHad ) uSmear_v3 *= -1.0;
-    Kinematics::twoBodyDecay(pClu,ptrHad1->mass(),ptrHad2->mass(),uSmear_v3,pHad1,pHad2);
-    ptrHad1->set5Momentum( pHad1 );
-    ptrHad2->set5Momentum( pHad2 );
+    Kinematics::twoBodyDecay(pClu,ptrHad1->mass(),ptrHad2->mass(),uSmear_v3,
+			     pHad1,pHad2);
+    ptrHad1->set5Momentum(pHad1);
+    ptrHad2->set5Momentum(pHad2);
 
     // Determine the positions of the two children clusters.
     LorentzPoint positionHad1 = LorentzPoint();
     LorentzPoint positionHad2 = LorentzPoint();
-    calculatePositions( pClu, ptr->position(), pHad1, pHad2, positionHad1, positionHad2 );
-    ptrHad1->setLabVertex( positionHad1 );
-    ptrHad2->setLabVertex( positionHad2 );
+    calculatePositions(pClu, ptr->vertex(), pHad1, pHad2, positionHad1, positionHad2);
+    ptrHad1->setLabVertex(positionHad1);
+    ptrHad2->setLabVertex(positionHad2);
 
-    ptr->addChildrenHadrons( ptrHad1 );
-    ptr->addChildrenHadrons( ptrHad2 );
+    //ptr->addChild(ptrHad1);
+    //ptr->addChild(ptrHad2);
+    pstep->addDecayProduct(ptr , ptrHad1);
+    pstep->addDecayProduct(ptr , ptrHad2);
     
     // Sanity check (normally skipped) to see if the energy-momentum is conserved.
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
@@ -347,15 +344,18 @@ void ClusterDecayer::decayIntoTwoHadrons(tCluPtr ptr) throw(Veto, Stop, Exceptio
 
 
 void ClusterDecayer::
-calculatePositions( const Lorentz5Momentum & pClu, const LorentzPoint & positionClu, 
-		    const Lorentz5Momentum & pHad1, const Lorentz5Momentum & pHad2, 
-		    LorentzPoint & positionHad1, LorentzPoint & positionHad2 ) const {
+calculatePositions(const Lorentz5Momentum &pClu, 
+		   const LorentzPoint &positionClu, 
+		   const Lorentz5Momentum &pHad1, 
+		   const Lorentz5Momentum &pHad2, 
+		   LorentzPoint &positionHad1, 
+		   LorentzPoint &positionHad2 ) const {
 
   // First, determine the relative positions of the children hadrons
   // with respect to their parent cluster, in the cluster reference frame,
   // assuming gaussian smearing with width inversely proportional to the 
   // parent cluster mass.
-  Length smearingWidth = _pointerGlobalParameters->conversionFactorGeVtoMillimeter() /
+  Length smearingWidth = _globalParameters->conversionFactorGeVtoMillimeter() /
     ( pClu.m() / GeV );
   LorentzDistance distanceHad1, distanceHad2;
   for ( int i = 0; i < 2; i++ ) {   // i==0 is the first hadron; i==1 is the second one
@@ -384,8 +384,8 @@ calculatePositions( const Lorentz5Momentum & pClu, const LorentzPoint & position
   // Then, boost such relative positions of the children hadrons,
   // with respect to their parent cluster,
   // from the cluster reference frame to the Lab frame.
-  distanceHad1.boost( pClu.boostVector() ); 
-  distanceHad2.boost( pClu.boostVector() );  
+  distanceHad1.boost(pClu.boostVector()); 
+  distanceHad2.boost(pClu.boostVector());  
 
   // Finally, determine the absolute positions of the children hadrons
   // in the Lab frame.

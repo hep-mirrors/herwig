@@ -17,8 +17,8 @@ inline ClusterDecayer::ClusterDecayer() :
 
 inline ClusterDecayer::ClusterDecayer(const ClusterDecayer & x)
   : Pythia7::HandlerBase(x) ,
-	     _pointerHadronsSelector( x._pointerHadronsSelector ), 	     
-	     _pointerGlobalParameters( x._pointerGlobalParameters ), 	     
+	     _hadronsSelector( x._hadronsSelector ), 	     
+	     _globalParameters( x._globalParameters ), 	     
 	     _ClDir1( x._ClDir1 ),	     
 	     _ClDir2( x._ClDir2 ),	     
 	     _ClSmr1( x._ClSmr1 ),	     

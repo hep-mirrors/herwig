@@ -22,9 +22,8 @@
 #include "Herwig++/Utilities/CheckId.h"
 #include "Herwig++/Utilities/Smearing.h"
 #include "CluHadConfig.h"
-#include "Cluster.h" 
-#include "Component.h" 
-
+#include "Cluster.h"  
+#include <iostream>
 
 using namespace Herwig;
 // using namespace Pythia7;
@@ -33,25 +32,26 @@ using namespace Herwig;
 ClusterHadronizationHandler::~ClusterHadronizationHandler() {}
 
 
-void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) const {
-  os << _pointerGlobalParameters 
-     << _pointerPartonSplitter 
-     << _pointerClusterFinder
-     << _pointerColourReconnector
-     << _pointerClusterFissioner
-     << _pointerLightClusterDecayer
-     << _pointerClusterDecayer;
+void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) 
+  const {
+  os << _globalParameters 
+     << _partonSplitter 
+     << _clusterFinder
+     << _colourReconnector
+     << _clusterFissioner
+     << _lightClusterDecayer
+     << _clusterDecayer;
 }
 
 
 void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _pointerGlobalParameters 
-     >> _pointerPartonSplitter 
-     >> _pointerClusterFinder
-     >> _pointerColourReconnector
-     >> _pointerClusterFissioner
-     >> _pointerLightClusterDecayer
-     >> _pointerClusterDecayer;
+  is >> _globalParameters 
+     >> _partonSplitter 
+     >> _clusterFinder
+     >> _colourReconnector
+     >> _clusterFissioner
+     >> _lightClusterDecayer
+     >> _clusterDecayer;
 }
 
 
@@ -66,39 +66,39 @@ void ClusterHadronizationHandler::Init() {
 
   static Reference<ClusterHadronizationHandler,GlobalParameters> 
     interfaceGlobalParameters("GlobalParameters", 
-			      "A reference to the GlobalParameters object", 
-			      &Herwig::ClusterHadronizationHandler::_pointerGlobalParameters,
-			      false, false, true, false);
+		      "A reference to the GlobalParameters object", 
+		      &Herwig::ClusterHadronizationHandler::_globalParameters,
+		      false, false, true, false);
   static Reference<ClusterHadronizationHandler,PartonSplitter> 
     interfacePartonSplitter("PartonSplitter", 
-			    "A reference to the PartonSplitter object", 
-			    &Herwig::ClusterHadronizationHandler::_pointerPartonSplitter,
-			    false, false, true, false);
+		      "A reference to the PartonSplitter object", 
+		      &Herwig::ClusterHadronizationHandler::_partonSplitter,
+		      false, false, true, false);
   static Reference<ClusterHadronizationHandler,ClusterFinder> 
     interfaceClusterFinder("ClusterFinder", 
-			   "A reference to the ClusterFinder object", 
-			   &Herwig::ClusterHadronizationHandler::_pointerClusterFinder,
-			   false, false, true, false);
+		      "A reference to the ClusterFinder object", 
+		      &Herwig::ClusterHadronizationHandler::_clusterFinder,
+		      false, false, true, false);
   static Reference<ClusterHadronizationHandler,ColourReconnector> 
     interfaceColourReconnector("ColourReconnector", 
-			       "A reference to the ColourReconnector object", 
-			       &Herwig::ClusterHadronizationHandler::_pointerColourReconnector,
-			       false, false, true, false);
+		      "A reference to the ColourReconnector object", 
+		      &Herwig::ClusterHadronizationHandler::_colourReconnector,
+		      false, false, true, false);
   static Reference<ClusterHadronizationHandler,ClusterFissioner> 
     interfaceClusterFissioner("ClusterFissioner", 
-			      "A reference to the ClusterFissioner object", 
-			      &Herwig::ClusterHadronizationHandler::_pointerClusterFissioner,
-			      false, false, true, false);
+		      "A reference to the ClusterFissioner object", 
+		      &Herwig::ClusterHadronizationHandler::_clusterFissioner,
+		      false, false, true, false);
   static Reference<ClusterHadronizationHandler,LightClusterDecayer> 
     interfaceLightClusterDecayer("LightClusterDecayer", 
-				 "A reference to the LightClusterDecayer object", 
-				 &Herwig::ClusterHadronizationHandler::_pointerLightClusterDecayer,
-				 false, false, true, false);
+		    "A reference to the LightClusterDecayer object", 
+		    &Herwig::ClusterHadronizationHandler::_lightClusterDecayer,
+		    false, false, true, false);
   static Reference<ClusterHadronizationHandler,ClusterDecayer> 
     interfaceClusterDecayer("ClusterDecayer", 
-			    "A reference to the ClusterDecayer object", 
-			    &Herwig::ClusterHadronizationHandler::_pointerClusterDecayer,
-			    false, false, true, false);
+		       "A reference to the ClusterDecayer object", 
+		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
+		       false, false, true, false);
   
 }
 
@@ -107,10 +107,7 @@ void ClusterHadronizationHandler::doinitrun() {
   // The run initialization is used here only to allow the non-interfaced and
   // non-persistent classes Component and Cluster to have access to the 
   // GlobalParameters class instance, via a static pointer.
-  Component trashComponentObject(1); // any Component instance would be fine.
-  trashComponentObject.setPointerGlobalParameters( _pointerGlobalParameters );
-  Cluster trashClusterObject(1,-2);  // any Cluster instance would be fine.
-  trashClusterObject.setPointerGlobalParameters( _pointerGlobalParameters );
+  Cluster::setPointerGlobalParameters(_globalParameters);
 }
 
 
@@ -118,80 +115,71 @@ void ClusterHadronizationHandler::
 handle(PartialCollisionHandler & ch, const tPVector & tagged,
        const Hint & hint) throw(Veto, Stop, Exception) {
 
+  ClusterVector clusters;
+  //_clusters.clear();
   StepPtr pstep = ch.newStep();
  
-  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {   // Occasional debugging
+  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }
   
-  _pointerPartonSplitter->split(tagged,pstep);
-  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {   // Occasional debugging
+  _partonSplitter->split(tagged,pstep);
+  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) { 
     printStep(pstep,"After PartonSplitter");
   }
   
-  _collecCluPtr.clear();
+  pstep = ch.newStep();
+  _clusterFinder->formClusters(ch.currentCollision(),pstep, clusters); 
+  _clusterFinder->reduceToTwoComponents(pstep,clusters); 
   
-  _pointerClusterFinder->formClusters(ch.currentCollision(),pstep,_collecCluPtr);  
-  _pointerClusterFinder->reduceToTwoComponents(_collecCluPtr);  
-    if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {   // Occasional debugging
+  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {
     printStep(pstep,"After ClusterFinder");
   }
-  
-  _pointerColourReconnector->rearrange(ch,pstep,_collecCluPtr);
-  
-  _pointerClusterFissioner->fission(_collecCluPtr);
-  
-  _pointerLightClusterDecayer->decay(_collecCluPtr);
-  
-  _pointerClusterDecayer->decay(_collecCluPtr);
+  //clusters.clear();
   
   pstep = ch.newStep();
+  _colourReconnector->rearrange(ch,pstep,clusters);
+  _clusterFissioner->fission(pstep, clusters);
   
-  recordAfterClusterDecays(pstep);    
-  if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {   // Occasional debugging
-    printStep(pstep,"After recordAfterClusterDecays");
-  }
+  pstep = ch.newStep();
+  _lightClusterDecayer->decay(pstep, clusters);
+  _clusterDecayer->decay(pstep, clusters);
   
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-    debuggingInfo(ch);
-  }
+    //debuggingInfo(ch);
+    myDebugInfo(ch, clusters);
+    }
 
-  //***LOOKHERE*** In the case of soft underlying event ON, the
-  //               beam clusters are as slways contained in the
-  //               _collecCluPtr, but have being tagged (by
-  //               ClusterFissioner) as not available, and therefore
-  //               skipped during the cluster hadronization.
-  //               At this point (end of the cluster hadronization)
-  //               it should be the responsability of this class
-  //               (ClusterHadronizationHandler) to pass these
-  //               beam clusters to the class responsible to the
-  //               soft underlying event. So, when the latter class
-  //               will be implemented, you should write few lines
-  //               of code right below here to do it.
+  // Needed for memory cleanup to proceed correctly. Don't know why.
+  //_clusters.clear();
+  // ***LOOKHERE*** In the case of soft underlying event ON, the
+  //                beam clusters are as slways contained in the
+  //                _collecCluPtr, but have being tagged (by
+  //                ClusterFissioner) as not available, and therefore
+  //                skipped during the cluster hadronization.
+  //                At this point (end of the cluster hadronization)
+  //                it should be the responsability of this class
+  //                (ClusterHadronizationHandler) to pass these
+  //                beam clusters to the class responsible to the
+  //                soft underlying event. So, when the latter class
+  //                will be implemented, you should write few lines
+  //                of code right below here to do it.
   
 }
 
 
 void ClusterHadronizationHandler::printStep(tStepPtr ptrStep, const string & title) {
-  generator()->log() << " ^^^ Begin Print Step ^^^ : " << title << endl;
+  generator()->log() << "############" << title << "##############" << endl;
   for ( ParticleSet::const_iterator it = ptrStep->particles().begin();
   	 it != ptrStep->particles().end(); ++it ) {
-    generator()->log() << "\t" << (*it)->data().PDGName() 
-		       << "\t" << (*it)->number() 
-		       << "\t" << ( (*it)->colourNeighbour() ? 
-				    (*it)->colourNeighbour()->number() : 0 ) 
-		       << "\t" << ( (*it)->antiColourNeighbour() ? 
-				    (*it)->antiColourNeighbour()->number() : 0 )
-                       << "\t" << (*it)->momentum().m() 
-		       << "\t" << (*it)->momentum() 
-		       << endl;     
+    generator()->log() << *(*it);
   }
-  generator()->log() << " ^^^ End Print Step ^^^ " << endl;
+  generator()->log() << "###########################################" << endl;
 }
 
 
-void ClusterHadronizationHandler::recordAfterClusterDecays(tStepPtr ptrStep) {
+/*void ClusterHadronizationHandler::recordAfterClusterDecays(tStepPtr ptrStep) {
 
   // Loop over all clusters, but skip the ones that are not final 
   // (the ones, by definition, that do not decay into hadrons). 
@@ -200,11 +188,9 @@ void ClusterHadronizationHandler::recordAfterClusterDecays(tStepPtr ptrStep) {
   // cluster, that was formed during the cluster finder phase 
   // (and whose constituents are present in the previous Event Record).
   // Notice that this method is general enough also for the case
-  // of cluster decay into three (or even more) hadrons. 
- 
-  for (CollecCluPtr::const_iterator it = _collecCluPtr.begin();
-  	 it != _collecCluPtr.end(); ++it) {
-  
+  // of cluster decay into three (or even more) hadrons.
+  for (ClusterVector::const_iterator it = _clusters.begin();
+  	 it != _clusters.end(); ++it) {
     if ( (*it)->isAvailable() && (*it)->isStatusFinal() ) {
   
   	// The parents of the hadrons are all of the original
@@ -213,30 +199,31 @@ void ClusterHadronizationHandler::recordAfterClusterDecays(tStepPtr ptrStep) {
   	// The algorithm is, de facto, recursive, but for efficiency reason
   	// we avoid the recursion call using a dynamic vector as stack.
   
-  	vector<tPPtr> theParents;  // particles present in the last Event Record
-  	vector<tCluPtr> theStack;  // to avoid recursion
+  	vector<tPPtr> theParents;      // particles in the last Event Record
+  	vector<tClusterPtr> theStack;  // to avoid recursion
   	theStack.push_back( *it );
   	do {
-  	  tCluPtr ptrClu = theStack.back();
+  	  tClusterPtr ptrClu = theStack.back();
   	  theStack.pop_back();        
   	  if ( ptrClu->isStatusInitial() ) {
-  	    for ( CollecCompPtr::const_iterator jt = ptrClu->components().begin();
-  		  jt != ptrClu->components().end(); ++jt) {
-  	      theParents.push_back( (*jt)->pointerParticle() );
-  	    }
+	    for(int i = 0; i<ptrClu->numComponents(); i++)
+	      theParents.push_back(ptrClu->particle(i));
   	  } else {
-  	    theStack.push_back( ptrClu->parentCluster() );
+	    if(ptrClu->parents()[0]->PDGName() == "Cluster")
+	    theStack.push_back(dynamic_ptr_cast<tClusterPtr>
+                               (ptrClu->parents()[0]));
   	  }
   	} while ( ! theStack.empty() );
   	ptrStep->addDecayProduct( theParents.begin(), theParents.end(),
-  				  (*it)->childrenHadrons().begin(), 
-				  (*it)->childrenHadrons().end() );  
+  				  (*it)->children().begin(), 
+				  (*it)->children().end() );  
     }
   }
 }
+*/
 
-
-void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
+void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
+						ClusterVector &clusters) {
 
   // Define static variables to store statistics information to be 
   // printed out at the end of the last event.
@@ -374,12 +361,12 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
   // translate in a readable way the cross references between clusters. 
  
   int count = 0;
-  map<tCluPtr,int> orderingMap;
-  for (CollecCluPtr::const_iterator it = _collecCluPtr.begin();
-  	 it != _collecCluPtr.end(); ++it) {
-    orderingMap.insert( orderingMap.end(), pair<tCluPtr,int>(*it,++count) );
+  map<tClusterPtr,int> orderingMap;
+  for (ClusterVector::const_iterator it = clusters.begin(); 
+       it != clusters.end(); ++it) {
+    orderingMap.insert(orderingMap.end(), pair<tClusterPtr,int>(*it,++count));
   }
-
+  
   LorentzPoint vertexPosition = ch.currentCollision()->vertex();
   generator()->log() << "ClusterHadronizationHandler::debuggingInfo "
                      << " ===> START DEBUGGING <=== "
@@ -391,13 +378,13 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
   // Now detailed information cluster by cluster. Basically everything
   // that can be checked is print out.
 
-  for ( map<tCluPtr,int>::const_iterator it = orderingMap.begin();
+  for ( map<tClusterPtr,int>::const_iterator it = orderingMap.begin();
         it != orderingMap.end(); ++it ) {
 
-    tCluPtr ptrClu = it->first;  
+    tClusterPtr ptrClu = it->first;  
     int i = it->second;      
-    statInvDistAnyCluster_BeamVtx   += ( ptrClu->position() - vertexPosition ).mag();
-    statSpaceDistAnyCluster_BeamVtx += ( ptrClu->position().vect() - vertexPosition.vect() ).mag();
+    statInvDistAnyCluster_BeamVtx   += (ptrClu->vertex() - vertexPosition ).mag();
+    statSpaceDistAnyCluster_BeamVtx += ( ptrClu->vertex().vect() - vertexPosition.vect() ).mag();
     statNumberClusters++;
 
     generator()->log() << "  --- Cluster --- " << i << endl;
@@ -406,52 +393,52 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
     // Notice that the charge of the cluster is defined (hence no consistency
     // check is possible) as the sum of the charges of its components.
     generator()->log() << "\t numComponents     = " << ptrClu->numComponents() << endl;
-    int j=0;
+    //int j=0;
+    #define pc(i) (ptrClu->particle(i))
     Lorentz5Momentum sumMomentumComponents = Lorentz5Momentum();
     Charge sumChargeComponents = Charge();        
-    for ( CollecCompPtr::const_iterator jt = ptrClu->components().begin();
-	  jt != ptrClu->components().end() ; ++jt ) {
-      generator()->log() << "\t Component " << ++j << endl 
-	                 << "\t \t id = " << (*jt)->id() << "    "
-			 << getParticleData( (*jt)->id() )->PDGName() 
-			 << "     component mass = " << (*jt)->mass() << endl
-	                 << "\t \t momentum        = " << (*jt)->momentum() << endl
-	                 << "\t \t position        = " << (*jt)->position() << endl
-	                 << "\t \t isPerturbative  = " << (*jt)->isPerturbative() << endl
-	                 << "\t \t isBeamRemnant   = " << (*jt)->isBeamRemnant() << endl;
-      if ( (*jt)->pointerParticle() ) {
+    for(int i = 0; i<ptrClu->numComponents(); i++) {
+      generator()->log() << "\t Component " << i << endl 
+	                 << "\t \t id = " << pc(i)->id() << "    "
+			 << pc(i)->PDGName() 
+			 << "     component mass = " << pc(i)->mass() << endl
+	                 << "\t \t momentum        = " << pc(i)->momentum() << endl
+	                 << "\t \t position        = " << pc(i)->vertex() << endl
+	                 << "\t \t isPerturbative  = " << ptrClu->isPerturbative(i) << endl
+	                 << "\t \t isBeamRemnant   = " << ptrClu->isBeamRemnant(i) << endl;
+      if ( pc(i) ) {
 	generator()->log() << "\t \t HAS pointed Particle :   number = " 
-			   << (*jt)->pointerParticle()->number() << endl
+			   << pc(i)->number() << endl
 	                   << "\t \t \t positions: labVertex="
-	                   << (*jt)->pointerParticle()->labVertex() 
+	                   << pc(i)->labVertex() 
 	                   << "   lifeLength=" 
-			   << (*jt)->pointerParticle()->lifeLength() << endl
+			   << pc(i)->lifeLength() << endl
 	                   << "\t \t \t masses:   constituent="  
-			   << (*jt)->pointerParticle()->data().constituentMass()
-			   << "   current=" << (*jt)->pointerParticle()->mass()
-			   << "   invariant=" << (*jt)->pointerParticle()->momentum().m() 
+			   << pc(i)->data().constituentMass()
+			   << "   current=" << pc(i)->mass()
+			   << "   invariant=" << pc(i)->momentum().m() 
 			   << endl;
 	if ( ptrClu->isStatusInitial() ) {
-	  statInvDistInitialComponent_BeamVtx += ( (*jt)->position() - vertexPosition ).mag();
-	  statInvDistInitialComponent_Cluster += ( (*jt)->position() - ptrClu->position() ).mag();
+	  statInvDistInitialComponent_BeamVtx += ( pc(i)->vertex() - vertexPosition ).mag();
+	  statInvDistInitialComponent_Cluster += ( pc(i)->vertex() - ptrClu->vertex() ).mag();
 	  statSpaceDistInitialComponent_BeamVtx += 
-	    ( (*jt)->position().vect() - vertexPosition.vect() ).mag();
+	    ( pc(i)->vertex().vect() - vertexPosition.vect() ).mag();
 	  statSpaceDistInitialComponent_Cluster += 
-	    ( (*jt)->position().vect() - ptrClu->position().vect() ).mag();
+	    ( pc(i)->vertex().vect() - ptrClu->vertex().vect() ).mag();
 	  statNumberInitialComponents++;
 	}
       } else {
 	generator()->log() << "\t \t NO pointed Particle " << endl;  
       }
-      sumMomentumComponents += (*jt)->momentum();
-      sumChargeComponents += getParticleData( (*jt)->id() )->charge();      
+      sumMomentumComponents += pc(i)->momentum();
+      sumChargeComponents += pc(i)->data().charge();      
     }
     generator()->log() << "\t charge (sum components) = " << sumChargeComponents << endl
 		       << "\t sumConstituentMasses    = " << ptrClu->sumConstituentMasses() 
 		       << endl
 		       << "\t mass              = " << ptrClu->mass() << endl
 		       << "\t momentum          = " << ptrClu->momentum() << endl
-		       << "\t position          = " << ptrClu->position() << endl;    
+		       << "\t position          = " << ptrClu->vertex() << endl;    
     Lorentz5Momentum diff = sumMomentumComponents - ptrClu->momentum();
     Energy ediff = fabs( diff.m() );
     if ( ediff > 1e-3*GeV ) {
@@ -474,25 +461,25 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
 
       // Statistics information
       if ( ptrClu->isStatusInitial() ) {
-	statInvDistInitialCluster_BeamVtx += ( ptrClu->position() - vertexPosition ).mag();	
+	statInvDistInitialCluster_BeamVtx += ( ptrClu->vertex() - vertexPosition ).mag();	
 	statSpaceDistInitialCluster_BeamVtx += 
-	  ( ptrClu->position().vect() - vertexPosition.vect() ).mag();	
+	  ( ptrClu->vertex().vect() - vertexPosition.vect() ).mag();	
 	statNumberInitialClusters++;
       }
       if ( ptrClu->isStatusFinal() ) {
-	statInvDistFinalCluster_BeamVtx += ( ptrClu->position() - vertexPosition ).mag();	
+	statInvDistFinalCluster_BeamVtx += ( ptrClu->vertex() - vertexPosition ).mag();	
 	statSpaceDistFinalCluster_BeamVtx +=
-	  ( ptrClu->position().vect() - vertexPosition.vect() ).mag();	
+	  ( ptrClu->vertex().vect() - vertexPosition.vect() ).mag();	
 	statNumberFinalClusters++;
       }
-      if ( ptrClu->childrenHadrons().size() == 1 ) statNumber1HadronClusters++;
+      if ( ptrClu->children().size() == 1 ) statNumber1HadronClusters++;
       if ( ptrClu->hasBeenReshuffled() ) {
 	statNumberReshuffledClusters++;
 	if ( ptrClu->isRedefined() ) {
 	  statInvDistLightCluster_ReshufflingCluster += 
-	    ( ptrClu->position() - ptrClu->reshufflingPartnerCluster()->position() ).mag();
+	    ( ptrClu->vertex() - ptrClu->reshufflingPartnerCluster()->vertex() ).mag();
 	  statSpaceDistLightCluster_ReshufflingCluster += 
-	    ( ptrClu->position().vect() - ptrClu->reshufflingPartnerCluster()->position().vect() ).mag();
+	    ( ptrClu->vertex().vect() - ptrClu->reshufflingPartnerCluster()->vertex().vect() ).mag();
 	  statNumberReshufflingClusterPartners++;
 	}
       } else if ( ptrClu->isRedefined() ) {
@@ -501,9 +488,12 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
 
       // Information about the (eventual) parent cluster. 
       int parent = 0;
-      if ( ptrClu->parentCluster() ) {
-	if ( orderingMap.find( ptrClu->parentCluster() ) != orderingMap.end() ) {
-	  parent = orderingMap.find( ptrClu->parentCluster() )->second;
+      for(int i = 0; i<ptrClu->parents().size(); i++) {
+	if(orderingMap.find(dynamic_ptr_cast<ClusterPtr>(ptrClu->parents()[i]))
+	   != orderingMap.end() ) {
+	  parent = orderingMap.find(
+	      dynamic_ptr_cast<ClusterPtr>(ptrClu->parents()[0]))->second;
+	  break;
 	} else {
 	  parent = -999;  // Error: it shouldn't happen!
 	}
@@ -525,17 +515,19 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
       // of conservation of the charge and energy-momentum.
       Lorentz5Momentum sumMomentumChildrenClusters = Lorentz5Momentum();
       Charge sumChargeChildrenClusters = Charge();
-      if ( ptrClu->childrenClusters() != CollecCluPtr() ) {
+      if ( ptrClu->children().size() ) {
 	generator()->log() << "\t childrenClusters  = ";
-	for ( CollecCluPtr::const_iterator jt = ptrClu->childrenClusters().begin();
-	      jt != ptrClu->childrenClusters().end(); ++jt ) {	
-	  statInvDistParentCluster_ChildCluster += ( ptrClu->position() - (*jt)->position() ).mag();
+	for ( ParticleVector::const_iterator jt = ptrClu->children().begin();
+	      jt != ptrClu->children().end(); ++jt ) {	
+	  cout << "Looking at child " << *(*jt) << endl;
+	  statInvDistParentCluster_ChildCluster += ( ptrClu->vertex() - (*jt)->vertex() ).mag();
 	  statSpaceDistParentCluster_ChildCluster += 
-	    ( ptrClu->position().vect() - (*jt)->position().vect() ).mag();
+	    ( ptrClu->vertex().vect() - (*jt)->vertex().vect() ).mag();
 	  statNumberChildClusters++;
 	  int child = 0;
-	  if ( orderingMap.find( *jt ) != orderingMap.end() ) {
-	    child = orderingMap.find( *jt )->second;
+	  if ( orderingMap.find(dynamic_ptr_cast<ClusterPtr>(*jt)) 
+	       != orderingMap.end() ) {
+	    child=orderingMap.find(dynamic_ptr_cast<ClusterPtr>(*jt))->second;
 	  } else {
 	    child = -999;  // Error: it shouldn't happen!
 	  }
@@ -543,10 +535,11 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
 	  Charge sumChargeChildrenClusterComponents = Charge();
 	  // Remind that the charge of a cluster is defined as the sum of the 
 	  // charges of its components. 
-	  for ( CollecCompPtr::const_iterator kt = (*jt)->components().begin();
-		kt != (*jt)->components().end() ; ++kt ) {
-	    sumChargeChildrenClusterComponents += getParticleData( (*kt)->id() )->charge();
-	  }
+	  ClusterPtr cp = dynamic_ptr_cast<ClusterPtr>(*jt);
+	  for(int i = 0; i<cp->numComponents(); i++)
+	    sumChargeChildrenClusterComponents += 
+	                         cp->particle(i)->data().charge();
+
 	  sumChargeChildrenClusters   += sumChargeChildrenClusterComponents;
 	  sumMomentumChildrenClusters += (*jt)->momentum();
 	}
@@ -561,9 +554,9 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
       
       // Information about the (eventual) children hadrons, including the check
       // of conservation of the charge and energy-momentum.
-      Lorentz5Momentum sumMomentumChildrenHadrons = Lorentz5Momentum();
+      /*      Lorentz5Momentum sumMomentumChildrenHadrons = Lorentz5Momentum();
       Charge sumChargeChildrenHadrons = Charge();
-      if ( ptrClu->childrenHadrons() != PVector() ) {
+      if ( ptrClu->children() != PVector() ) {
 	generator()->log() << "\t num childrenHadrons  = " 
 			   << ptrClu->childrenHadrons().size() << endl;
 	int j = 0;
@@ -580,12 +573,12 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
 			     << "\t \t id = " << (*jt)->id() << "   " << (*jt)->PDGName() 
 			     << "   mass = " << (*jt)->mass() << endl
 			     << "\t \t momentum        = " << (*jt)->momentum() << endl
-			     << "\t \t labVertex       = " << (*jt)->labVertex() << endl;
+			     << "\t \t labVertex       = " << (*jt)->labVertex() << endl;*/
 	  // Information about the angles, in Cluster CM and in Lab frame, 
 	  // between the hadron and the component of the cluster parent from 
 	  // which the hadron come from. Although not nice, we use the fact the 
 	  // order of cluster's components is the same as cluster's hadrons.
-	  int k = 0;
+      /*	  int k = 0;
 	  Lorentz5Momentum pQLab = Lorentz5Momentum();
 	  for ( CollecCompPtr::const_iterator kt = ptrClu->components().begin();
 		kt != ptrClu->components().end() ; ++kt ) {
@@ -645,7 +638,7 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
 			     << sumMomentumChildrenClusters + sumMomentumChildrenHadrons << endl 
 			     << "\t      diff = " << diff << endl;
 	} 
-      }
+	}*/
 
     } // end else part of if ( ! ptrClu->isAvailable() )    
       
@@ -671,7 +664,7 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
   // of the Event Record interface (for example in the use of
   //      ptrStep->addDecayProduct(...)
   // in the method recordAfterClusterDecays).
-
+  /*
   generator()->log() << " ---------- Begin analysis of produced Hadrons ---------- " << endl;
   for ( map<tCluPtr,int>::const_iterator it = orderingMap.begin();
         it != orderingMap.end(); ++it ) {
@@ -918,6 +911,13 @@ void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch) {
     generator()->log() << endl << "ClusterHadronizationHandler::debuggingInfo "
 		       << " ===> END ***FINAL STATISTICS*** <=== " << endl << endl;
   }
-  
+  */  
 }
 
+void ClusterHadronizationHandler::myDebugInfo(PartialCollisionHandler &ch,
+					      ClusterVector &clusters) {
+  for(ClusterVector::const_iterator it = clusters.begin(); 
+      it!=clusters.end(); it++) {
+    generator()->log() << *(*it) << endl;
+  }
+}

@@ -6,30 +6,31 @@
 //
 // CLASSDOC SUBSECTION Description:
 //
-// This class is the main driver of the Cluster Hadronization: it is <BR>
-// responsible for the proper handling of all other specific collaborating <BR>
+// This class is the main driver of the Cluster Hadronization: it is 
+// responsible for the proper handling of all other specific collaborating
 // classes (<!class>PartonSplitter<!!class>, <!class>ClusterFinder<!!class>, 
-// <!class>ColourReconnector<!!class>, <BR>
+// <!class>ColourReconnector<!!class>, 
 // <!class>ClusterFissioner<!!class>, <!class>LightClusterDecayer<!!class>, 
-// <!class>ClusterDecayer<!!class>) <BR>
+// <!class>ClusterDecayer<!!class>) 
 // and for the storing of the produced particles in the Event record.
 // 
-// Important implementation detail: the private member <!id>_collecCluPtr<!!id> <BR>
-// is the collection of all Cluster class objects that are created during the whole <BR>
-// cluster hadronization. This collection is initially cleaned, and then it is <BR> 
-// passed to the collaborating classes which are responsible to fill it properly. <BR>
-// The elements of this collection, which are cluster objects, are properly <BR>
-// interconnected in such a way to store the full, complete information about <BR>
-// their origin, evolution, and end. This allows both to get at any time any <BR>
-// information we could need (even for future, extensive changes) and to fully <BR>
-// debug the cluster hadronization. 
+// Important implementation detail: the private member <!id>_collecCluPtr<!!id>
+// is the collection of all Cluster class objects that are created during the 
+// whole cluster hadronization. This collection is initially cleaned, and 
+// then it is passed to the collaborating classes which are responsible to 
+// fill it properly. <BR>
+// The elements of this collection, which are cluster objects, are properly
+// interconnected in such a way to store the full, complete information about
+// their origin, evolution, and end. This allows both to get at any time any
+// information we could need (even for future, extensive changes) and to fully
+// debug the cluster hadronization. <BR>
 //
-// Notice that the access to the <!class>GlobalParameters<!!class> class instance <BR>
-// is provided only to allow non-interfaced and non-persistent classes <BR>
-// (<!class>Component<!!class> and <!class>Cluster<!!class>) to access the <BR>
-// global parameters and/or to drawn random numbers. This is done in the <BR>
-// run initialization, <!id>doinitrun()<!!id>, by setting static pointers <BR>
-// defined in those non-interfaced and non-persistent classes.
+// Notice that the access to the <!class>GlobalParameters<!!class> class 
+// instance is provided only to allow non-interfaced and non-persistent classes
+// (<!class>Cluster<!!class>) to access the global parameters and/or to drawn 
+// random numbers. This is done in the run initialization, <!id>doinitrun()
+// <!!id>, by setting static pointers defined in those non-interfaced and 
+// non-persistent classes.
 //
 // CLASSDOC SUBSECTION See also:
 //
@@ -113,26 +114,26 @@ private:
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &);
   // Private and non-existent assignment operator.
 
-  void recordAfterClusterDecays(tStepPtr ptrStep);
+  //void recordAfterClusterDecays(tStepPtr ptrStep);
   // Store on the event record the final hadrons produced at the end 
   // of the cluster hadronization.
 
   void printStep(tStepPtr ptrStep, const string & title);
   // Print the step for debugging.
 
-  void debuggingInfo(PartialCollisionHandler & ch);
+  void debuggingInfo(PartialCollisionHandler & ch, ClusterVector &);
   // Print information about the final, complete collections of clusters
   // for debugging.
-
-  Ptr<GlobalParameters>::pointer    _pointerGlobalParameters;
-  Ptr<PartonSplitter>::pointer      _pointerPartonSplitter;
-  Ptr<ClusterFinder>::pointer       _pointerClusterFinder;
-  Ptr<ColourReconnector>::pointer   _pointerColourReconnector;
-  Ptr<ClusterFissioner>::pointer    _pointerClusterFissioner;
-  Ptr<LightClusterDecayer>::pointer _pointerLightClusterDecayer;
-  Ptr<ClusterDecayer>::pointer      _pointerClusterDecayer;
+  void myDebugInfo(PartialCollisionHandler &, ClusterVector &);
+  GlobParamPtr           _globalParameters;
+  PartonSplitterPtr      _partonSplitter;
+  ClusterFinderPtr       _clusterFinder;
+  ColourReconnectorPtr   _colourReconnector;
+  ClusterFissionerPtr    _clusterFissioner;
+  LightClusterDecayerPtr _lightClusterDecayer;
+  ClusterDecayerPtr      _clusterDecayer;
  
-  CollecCluPtr _collecCluPtr;   
+  tClusterVector          _clusters;   
 
 };
 

@@ -6,49 +6,51 @@
 //
 // CLASSDOC SUBSECTION Description:
 //
-// This class does the job of chopping up either heavy clusters or beam clusters <BR>
-// in two lighter ones. The procedure is repeated recursively until all of the <BR>
-// cluster children have masses below some threshold values. <BR>
+// This class does the job of chopping up either heavy clusters or beam 
+// clusters in two lighter ones. The procedure is repeated recursively until 
+// all of the cluster children have masses below some threshold values. <BR>
 //
-// For the beam remnant clusters, at the moment what is done is the following. <BR>
-// In the case that the soft underlying event is switched on, the <BR>
-// beam remnant clusters are tagged as not available, <BR>
-// therefore they will not be treated at all during the hadronization. <BR> 
-// In the case instead that the soft underlying event is switched off, <BR>
-// then the beam remnant clusters are treated exactly as "normal" clusters, <BR> 
-// with the only exception of the mass spectrum used to generate the <BR>
-// cluster children masses. For non-beam clusters, the masses of the cluster <BR> 
-// children are drawn from a power-like mass distribution; for beam clusters, <BR>
-// according to the value of the flag <!id>_IOpRem<!!id>, either both children masses <BR>
-// are drawn from a fast-decreasing exponential mass distribution <BR>
-// (case <!id>_IOpRem == 0<!!id>, or, indendently by <!id>_IOpRem<!!id>, in the <BR>
-// special case that the beam cluster contains two beam remnants), or one mass from <BR>
-// the exponential distribution (corresponding of the cluster child <BR>
-// with the beam remnant) and the other with the usual power-like distribution <BR>
-// (case <!id>_IOpRem == 1<!!id>, which is the default one, as in Herwig 6.3).  <BR>
-// The reason behind the use of a fast-decreasing exponential distribution <BR>
-// is that to avoid a large transverse energy from the many sequential <BR>
-// fissions that would otherwise occur due to the typical large cluster <BR>
-// mass of beam clusters. Using instead an exponential distribution <BR>
-// the masses of the two cluster children will be very small (order of <I>GeV</I>). <BR>   
+// For the beam remnant clusters, at the moment what is done is the following.
+// In the case that the soft underlying event is switched on, the 
+// beam remnant clusters are tagged as not available,
+// therefore they will not be treated at all during the hadronization. 
+// In the case instead that the soft underlying event is switched off,
+// then the beam remnant clusters are treated exactly as "normal" clusters,
+// with the only exception of the mass spectrum used to generate the
+// cluster children masses. For non-beam clusters, the masses of the cluster
+// children are drawn from a power-like mass distribution; for beam clusters,
+// according to the value of the flag <!id>_IOpRem<!!id>, either both 
+// children masses are drawn from a fast-decreasing exponential mass 
+// distribution (case <!id>_IOpRem == 0<!!id>, or, indendently by 
+// <!id>_IOpRem<!!id>, in the special case that the beam cluster contains two 
+// beam remnants), or one mass from the exponential distribution (corresponding
+//  of the cluster child with the beam remnant) and the other with the usual 
+// power-like distribution (case <!id>_IOpRem == 1<!!id>, which is the 
+// default one, as in Herwig 6.3).  <BR>
+// The reason behind the use of a fast-decreasing exponential distribution 
+// is that to avoid a large transverse energy from the many sequential
+// fissions that would otherwise occur due to the typical large cluster 
+// mass of beam clusters. Using instead an exponential distribution 
+// the masses of the two cluster children will be very small (order of 
+// <I>GeV</I>). <BR>
 //
-// The rationale behind the implementation of the splitting of clusters <BR>
-// has been to preserve *all* of the information about such splitting <BR>
-// process. More explicitly, at the end of the full splitting, the <BR>
-// container of cluster (pointers) <!id>_collecCluPtr<!!id>  (which is passed to <BR>
-// this class <!class>ClusterFissioner<!!class> by the main one 
-// <!class>ClusterHadronizationHandler<!!class>) <BR>
-// does not have only the final cluster products (the onces not heavy <BR>
-// and therefore that not need split, and that are ready to be decayed <BR>
-// in hadrons) but all of the clusters, including the initial ones, <BR>
-// formed during the cluster finding stage, and all of the intermediate <BR>
-// heavy clusters that have been split. This approach has the twofold <BR>
-// advantage to provide all of the information that could be needed <BR>
-// (expecially in future developments), without any information loss, <BR>
-// and furthermore it allows a better debugging. There is, however, a <BR>
-// small price to pay: in the following stage, that is the decay of <BR>
-// clusters into hadrons, we have to iterate over all of the clusters, <BR>
-// and not directly to the final ones, although we strictly need to work <BR>
+// The rationale behind the implementation of the splitting of clusters
+// has been to preserve *all* of the information about such splitting 
+// process. More explicitly, at the end of the full splitting, the 
+// container of cluster (pointers) <!id>_collecCluPtr<!!id>  (which is passed 
+// to this class <!class>ClusterFissioner<!!class> by the main one 
+// <!class>ClusterHadronizationHandler<!!class>) 
+// does not have only the final cluster products (the onces not heavy 
+// and therefore that not need split, and that are ready to be decayed 
+// in hadrons) but all of the clusters, including the initial ones, 
+// formed during the cluster finding stage, and all of the intermediate 
+// heavy clusters that have been split. This approach has the twofold 
+// advantage to provide all of the information that could be needed 
+// (expecially in future developments), without any information loss, 
+// and furthermore it allows a better debugging. There is, however, a 
+// small price to pay: in the following stage, that is the decay of 
+// clusters into hadrons, we have to iterate over all of the clusters,
+// and not directly to the final ones, although we strictly need to work 
 // only on the latter. We think this is a minimal overhead. 
 //
 // CLASSDOC SUBSECTION See also:
@@ -68,7 +70,7 @@ namespace Herwig {
 
 using namespace Pythia7;
 
-class Cluster;          // forward declaration
+  //class Cluster;          // forward declaration
 
 
 class ClusterFissioner: public Pythia7::HandlerBase {
@@ -80,7 +82,7 @@ public:
   virtual ~ClusterFissioner();
   // Standard ctors and dtor.
 
-  void fission(CollecCluPtr & collecCluPtr);
+  void fission(const StepPtr &, ClusterVector & clusters);
   // Split either heavy clusters or beam clusters recursively until all 
   // children have mass below some threshold. 
   // For beam clusters, they are split only if the soft underlying event
@@ -128,7 +130,7 @@ private:
   ClusterFissioner & operator=(const ClusterFissioner &);
   // Private and non-existent assignment operator.
 
-  void cut(tCluPtr cluPtr, CollecCluPtr & collecCluPtr);
+  void cut(tClusterPtr cluPtr, const StepPtr&, ClusterVector &clusters);
   // Split the input cluster (which can be either an heavy non-beam
   // cluster or a beam cluster) recursively until all children have
   // mass below some threshold. The "output" consists of all children and
@@ -196,8 +198,8 @@ private:
 			   LorentzPoint & positionClu1, LorentzPoint & positionClu2 ) const;
   // Determine the positions of the two children clusters.
 
-  Ptr<HadronsSelector>::pointer _pointerHadronsSelector;
-  Ptr<GlobalParameters>::pointer _pointerGlobalParameters;  
+  HadronsSelectorPtr _hadronsSelector;
+  GlobParamPtr       _globalParameters;  
 
   Energy _ClMax;
   double _ClPow;

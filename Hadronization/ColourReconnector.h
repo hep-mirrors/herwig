@@ -38,7 +38,7 @@ public:
   // Standard ctors and dtor.
 
   void rearrange(PartialCollisionHandler & ch, const StepPtr & pstep,
-                 CollecCluPtr & collecCluPtr) throw(Veto, Stop, Exception);
+                 ClusterVector & clusters) throw(Veto, Stop, Exception);
   // Does the colour rearrangement, starting from the list of particles
   // in the event record, and the collection of "usual" clusters passed
   // in input. If the actual rearrangement is accepted, the new collection 

@@ -11,7 +11,7 @@ inline PartonSplitter::PartonSplitter() {}
 
 inline PartonSplitter::PartonSplitter(const PartonSplitter & x)
   : Pythia7::HandlerBase(x),
-	     _pointerGlobalParameters( x._pointerGlobalParameters )
+	     _globalParameters(x._globalParameters)
  {}
 
 inline IBPtr PartonSplitter::clone() const {

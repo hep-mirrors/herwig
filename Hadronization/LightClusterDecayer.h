@@ -6,23 +6,23 @@
 //
 // CLASSDOC SUBSECTION Description:
 //
-// This is the class that performs the decay of light clusters into <BR>
-// only one hadron. The major difficulty is that a kinematical reshuffling <BR>
-// is necessary, between the cluster under consideration and its <BR>
-// "neighbouring" clusters, to conserve energy-momentum in one-body decay. <BR>
-// Notice that, differently from what happens in Fortran Herwig, <BR>
-// light (that is below the threshold for the production of the lightest <BR>
-// pair of hadrons with the proper flavours) fission products, produced <BR>
-// by the fission of heavy clusters in <!class>ClusterFissioner<!!class> <BR>
-// have been already "decayed" into single hadron (the lightest one <BR>
-// with proper flavour) by the same latter class, without require <BR>
-// any reshuffling. Therefore the light clusters that are treated in <BR>
-// this <!id>LightClusterDecayer<!!id> class are produced directly <BR>
-// (originally) by the <!class>ClusterFinder<!!class>. <BR>
+// This is the class that performs the decay of light clusters into 
+// only one hadron. The major difficulty is that a kinematical reshuffling
+// is necessary, between the cluster under consideration and its
+// "neighbouring" clusters, to conserve energy-momentum in one-body decay.
+// Notice that, differently from what happens in Fortran Herwig,
+// light (that is below the threshold for the production of the lightest 
+// pair of hadrons with the proper flavours) fission products, produced 
+// by the fission of heavy clusters in <!class>ClusterFissioner<!!class> 
+// have been already "decayed" into single hadron (the lightest one 
+// with proper flavour) by the same latter class, without require 
+// any reshuffling. Therefore the light clusters that are treated in 
+// this <!id>LightClusterDecayer<!!id> class are produced directly 
+// (originally) by the <!class>ClusterFinder<!!class>. 
 //	
 // Notice:
 // <UL>
-//  <LI> The choice of the candidate cluster with whom to reshuffle momentum <BR>
+//  <LI> The choice of the candidate cluster with whom to reshuffle momentum 
 //       is based on the minimal space-time distance from the light cluster.
 // </UL>
 //
@@ -32,6 +32,7 @@
 // 
 
 #include "Pythia7/Handlers/HandlerBase.h"
+#include "Pythia7/EventRecord/Step.h"
 #include "CluHadConfig.h"
 #include "HadronsSelector.h"
 
@@ -41,7 +42,7 @@ namespace Herwig {
 
 using namespace Pythia7;
 
-class Cluster; // forward declaration
+  //class Cluster; // forward declaration
 
 
 class LightClusterDecayer: public Pythia7::HandlerBase {
@@ -53,7 +54,8 @@ public:
   virtual ~LightClusterDecayer();
   // Standard ctors and dtor.
 
-  void decay(CollecCluPtr & collecCluPtr) throw (Veto, Stop, Exception);
+  void decay(const StepPtr &, ClusterVector & clusters) 
+    throw (Veto, Stop, Exception);
   // It does the decay of light hadron in one hadron: this requires
   // also a kinematical reshuffling for energy-momentum conservation
   // (this is done explicitly by the (private) method reshuffling() ).
@@ -95,13 +97,13 @@ private:
   LightClusterDecayer & operator=(const LightClusterDecayer &);
   //  Private and non-existent assignment operator.
 
-  bool reshuffling( const long idhad1, tCluPtr cluPtr1, tCluPtr cluPtr2 ,
-		    vector<CluPtr> & vecNewRedefinedCluPtr ) 
+  bool reshuffling( const long, tClusterPtr, tClusterPtr,
+		    const StepPtr &, tClusterVector &) 
     throw (Veto, Stop, Exception); 
   // This (private) method, called by decay(), takes care of the kinematical
   // reshuffling necessary for energy-momentum conservation.
   
-  Ptr<HadronsSelector>::pointer _pointerHadronsSelector;
+  Ptr<HadronsSelector>::pointer _hadronsSelector;
 
   double _B1Lim;
 

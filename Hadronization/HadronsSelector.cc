@@ -267,8 +267,8 @@ massLightestHadronsPair(const long id1, const long id2, const long id3) const {
 
 
 pair<long,long> HadronsSelector::
-chooseHadronsPair(const Energy cluMass, const long id1, const long id2, const long id3) 
-  throw(Veto, Stop, Exception) {
+chooseHadronsPair(const Energy cluMass, const long id1, const long id2, 
+		  const long id3) throw(Veto, Stop, Exception) {
 
   // Kupco's method is used, rather than Brian's original one 
   // still in used in Fortran Herwig 6.3.
@@ -287,20 +287,19 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2, const lo
   //     the octet-singlet isoscalar mixing factor, and finally 
   //     the singlet-decuplet weight factor.
      
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization) {
     safetyCheck(id1,id2,id3);
   }
 
   pair<long,long> hadPair = pair<long,long>(0,0);
  
-  if (id3 == 0) {    // The method assums id3 == 0
-    
+  if (id3 == 0) {    // The method assums id3 == 0    
     // Define Kupco's table of possible cluster decay channels. 
     // The first element is [0] (not, [1], as vecHad).
     const int NmaxClusterDecayChannel = 3000;  // Should be enough!
     struct ClusterDecayChannel {
-      long   idQ;     // id of the created flavour of the cluster decay channel.         
-      long   idHad1;  // id of the first hadron of the cluster decay channel.              
+      long   idQ;     // id of created flavour of the cluster decay channel.
+      long   idHad1;  // id of the first hadron of the cluster decay channel. 
       long   idHad2;  // id of the second hadron of the cluster decay channel.
       Energy weight;  // weight of the cluster decay channel.
     } kupcoTable[NmaxClusterDecayChannel]; 
@@ -311,7 +310,7 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2, const lo
     //                   cd, cu, cs, cc, bd, bu, bs, bc, bb
     // otherwise only u, d, s, c, b. 
     int numConsideredQuarksDiquarks = NumQuarksDiquarks;
-    if ( CheckId::isDiquark(id1)  ||  CheckId::isDiquark(id2) ) {
+    if(CheckId::isDiquark(id1) || CheckId::isDiquark(id2)) {
       numConsideredQuarksDiquarks = B;
     }   
     
@@ -321,62 +320,70 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2, const lo
     Energy maxWeight = Energy();  // store the maximum weight on the table.
     int flav1 = convertIdToFlavour(id1);
     int flav2 = convertIdToFlavour(id2);
-    if ( flav1 != 0  &&  flav2 !=0 ) {
-      for (int i=D; i <= numConsideredQuarksDiquarks; ++i) {
-	if ( cluMass > ( _vecHad[ _locHad[flav1][i].lightest ].mass +  
-			 _vecHad[ _locHad[flav2][i].lightest ].mass ) ) {         
+    if(flav1 != 0  &&  flav2 !=0 ) {
+      for(int i=D; i <= numConsideredQuarksDiquarks; ++i) {
+	if(cluMass > (_vecHad[_locHad[flav1][i].lightest].mass +  
+		      _vecHad[_locHad[flav2][i].lightest].mass)) { 
 	  // Loop over all hadron pairs with given flavour.
-	  for (int iH1 = _locHad[flav1][i].first; iH1 <= _locHad[flav1][i].last; ++iH1) {
-	    for (int iH2 = _locHad[flav2][i].first; iH2 <= _locHad[flav2][i].last; ++iH2) {
-	      Energy pCmStar = Kinematics::pstarTwoBodyDecay( cluMass, _vecHad[iH1].mass,
-							      _vecHad[iH2].mass );
-	      if ( pCmStar > Energy() ) {  // the two hadrons are above threshold.
-		if ( numChan >= NmaxClusterDecayChannel-1 ) { // send warning and skip channel.
-		  generator()->logWarning( Exception("HadronsSelector::chooseHadronsPair "
-						     "***Exceeded NmaxClusterDecayChannel*** ",
-						     Exception::warning) );
+	  for(int iH1 = _locHad[flav1][i].first; 
+	      iH1 <= _locHad[flav1][i].last; ++iH1) {
+	    for(int iH2 = _locHad[flav2][i].first; 
+		iH2 <= _locHad[flav2][i].last; ++iH2) {
+	      Energy pCmStar = Kinematics::pstarTwoBodyDecay(cluMass, 
+				 _vecHad[iH1].mass, _vecHad[iH2].mass );
+	      if(pCmStar > Energy()) {  // the hadrons are above threshold.
+		// send warning and skip channel.
+		if(numChan >= NmaxClusterDecayChannel-1) {
+		  generator()->logWarning(Exception(
+				"HadronsSelector::chooseHadronsPair "
+				"***Exceeded NmaxClusterDecayChannel*** ",
+				Exception::warning));
 		} else {
 		  Energy weight = _Pwt[i] * pCmStar * 
 		    _vecHad[iH1].overallWeight * _vecHad[iH2].overallWeight; 
-		  if ( weight > maxWeight ) maxWeight = weight;
+		  if(weight > maxWeight) maxWeight = weight;
 		  int signQ = 0;
 		  long idQ = convertFlavourToId(i);
-		  if ( ( CheckId::canBeMeson(id1,-idQ) || 
-			 CheckId::canBeBaryon(id1,-idQ) ) &&   
-		       ( CheckId::canBeMeson(idQ,id2)  || 
-			 CheckId::canBeBaryon(idQ,id2)  ) ) {  
+		  if((CheckId::canBeMeson(id1,-idQ) || 
+		      CheckId::canBeBaryon(id1,-idQ)) &&   
+		     (CheckId::canBeMeson(idQ,id2) || 
+		      CheckId::canBeBaryon(idQ,id2))) {
 		    signQ = +1;
-		  } else if ( ( CheckId::canBeMeson(id1,idQ)  || 
-				CheckId::canBeBaryon(id1,idQ)  )  &&   
-			      ( CheckId::canBeMeson(-idQ,id2) || 
-				CheckId::canBeBaryon(-idQ,id2) ) ) {  
+		  } else if((CheckId::canBeMeson(id1,idQ) || 
+			     CheckId::canBeBaryon(id1,idQ)) &&   
+			    (CheckId::canBeMeson(-idQ,id2) || 
+			     CheckId::canBeBaryon(-idQ,id2))) {
 		    signQ = -1;
 		  }
 		  int signHad1 = 0, signHad2 = 0;
-		  if ( signQ != 0 ) {
-		    signHad1 = signHadron( id1, -signQ*idQ, _vecHad[iH1].id );
-		    signHad2 = signHadron( id2,  signQ*idQ, _vecHad[iH2].id );
+		  if(signQ != 0) {
+		    signHad1 = signHadron(id1, -signQ*idQ, _vecHad[iH1].id);
+		    signHad2 = signHadron(id2,  signQ*idQ, _vecHad[iH2].id);
 		  }
-		  if ( signHad1 != 0  &&  signHad2 != 0 ) {
+		  if(signHad1 != 0  &&  signHad2 != 0) {
 		    kupcoTable[numChan].idQ    = signQ * idQ;
 		    kupcoTable[numChan].idHad1 = signHad1 * _vecHad[iH1].id;
 		    kupcoTable[numChan].idHad2 = signHad2 * _vecHad[iH2].id;
 		    kupcoTable[numChan].weight = weight;
 		    numChan++;
 		  } else {
-		    generator()->logWarning( Exception("HadronsSelector::chooseHadronsPair "
-						       "***Inconsistent Hadron*** ",
-						       Exception::warning) );
-		    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
+		    ostringstream s;
+		    s << "HadronsSelector::chooseHadronsPair " 
+		      << "***Inconsistent Hadron*** signQ ";
+		    generator()->logWarning(Exception(s.str(),
+						      Exception::warning));
+		    if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {
 		      generator()->log() << "         ===>"
-					 << "  i=" << i << "  idQ=" << idQ << "  signQ=" << signQ 
-					 << endl << "             "
-					 << "  id1=" << id1 << "   " << -signQ*i << "   idHad1=" 
-					 << _vecHad[iH1].id  << "  signHad1=" << signHad1 
-					 << endl  << "             "
-					 << "  id2=" << id2 << "   " << signQ*i  << "   idHad2=" 
-					 << _vecHad[iH2].id  << "  signHad2=" << signHad2 << endl  
-					 << endl;
+					 << "  i=" << i << "  idQ=" << idQ 
+					 << "  signQ=" << signQ  << endl 
+					 << "             " << "  id1=" 
+					 << id1 << "   " << -signQ*i 
+					 << "   idHad1=" << _vecHad[iH1].id  
+					 << "  signHad1=" << signHad1 << endl 
+					 << "             " << "  id2=" << id2 
+					 << "   " << signQ*i  << "   idHad2=" 
+					 << _vecHad[iH2].id  << "  signHad2=" 
+					 << signHad2 << endl  << endl;
 		    }
 		  }
 		}
@@ -392,49 +399,51 @@ chooseHadronsPair(const Energy cluMass, const long id1, const long id2, const lo
       int numTries = 0;
       int iChan;
       do {
-	iChan = irnd(0,numChan);  // draw a flat random integer number [0,numChan[
-      } while ( maxWeight*rnd() > kupcoTable[iChan].weight  &&  ++numTries < MaxNumTries );
+	// draw a flat random integer number [0,numChan[
+	iChan = irnd(0,numChan); 
+      } while(maxWeight*rnd() > kupcoTable[iChan].weight  &&  
+	      ++numTries < MaxNumTries);
       // Take the lightest pair if too many attempts failed.
-      if ( numTries >= MaxNumTries ) {
+      if(numTries >= MaxNumTries) {
 	hadPair = lightestHadronsPair(id1,id2);
-	generator()->logWarning( Exception("HadronsSelector::chooseHadronsPair"
-					   "***Too many failed attempts, take lightest pair*** ", 
-					   Exception::warning) );
+	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair"
+			 "***Too many failed attempts, take lightest pair*** ",
+			 Exception::warning));
       } else {
-	hadPair = pair<long,long>( kupcoTable[iChan].idHad1 , kupcoTable[iChan].idHad2 );
+	hadPair = pair<long,long>(kupcoTable[iChan].idHad1, 
+				  kupcoTable[iChan].idHad2);
       }
     }
     
     // Safety checks and debugging infos, usually skipped.
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-      if ( numChan == 0 ) {
-	generator()->logWarning( Exception("HadronsSelector::chooseHadronsPair "
-					   "***numChan = 0  in kupcoTable*** ",
-					   Exception::warning) );
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  generator()->log() << "         ===>" 
-			     << " cluMass=" << cluMass 
-			     << "   id1=" << id1 << "   id2=" << id2 << "   id3=" << id3 
-			     << endl << endl;
+    if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization) {
+      if(numChan == 0) {
+	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair "
+					  "***numChan = 0  in kupcoTable*** ",
+					  Exception::warning));
+	if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
+	  generator()->log() << "         ===>"  << " cluMass=" << cluMass 
+			     << "   id1=" << id1 << "   id2=" << id2 
+			     << "   id3=" << id3 << endl << endl;
 	}
-      } else if ( maxWeight < 1.0e-9*GeV ) {
-	generator()->logWarning( Exception("HadronsSelector::chooseHadronsPair "
-					   "***very low maxWeight  in kupcoTable*** ",
-					   Exception::warning) );
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  generator()->log() << "         ===>" 
-			     << " cluMass=" << cluMass 
-			     << "   id1=" << id1 << "   id2=" << id2 << "   id3=" << id3 
-			     << endl << endl;
+      } else if(maxWeight < 1.0e-9*GeV) {
+	generator()->logWarning(Exception("HadronsSelector::chooseHadronsPair "
+				   "***very low maxWeight  in kupcoTable*** ",
+				   Exception::warning));
+	if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
+	  generator()->log() << "         ===>" << " cluMass=" << cluMass 
+			     << "   id1=" << id1 << "   id2=" << id2 
+			     << "   id3=" << id3 << endl << endl;
 	}
       }
-      if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {    
+      if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {    
 	generator()->log() << "\t --- Kupco's Table --- : cluMass=" << cluMass 
 			   << "  id1=" << id1 << "  id2=" << id2 << endl
-			   << "\t numChan=" << numChan << "   maxWeight=" << maxWeight 
-			   << endl;
-	for (int ich=0; ich < numChan; ++ich) {
-	  generator()->log() << "\t \t" << ich << "   idQ=" << kupcoTable[ich].idQ
+			   << "\t numChan=" << numChan << "   maxWeight=" 
+			   << maxWeight << endl;
+	for(int ich=0; ich < numChan; ++ich) {
+	  generator()->log() << "\t \t" << ich << "   idQ=" 
+			     << kupcoTable[ich].idQ
 			     << "   idHad1=" << kupcoTable[ich].idHad1 
 			     << "   idHad2=" << kupcoTable[ich].idHad2
 			     << "   weight=" << kupcoTable[ich].weight 
@@ -538,7 +547,8 @@ long HadronsSelector::convertFlavourToId(const int flavour) const {
 }
 
 
-int HadronsSelector::signHadron(const int idQ1, const int idQ2, const int idHad) const {
+int HadronsSelector::signHadron(const int idQ1, const int idQ2, 
+				const int idHad) const {
 
   // This method receives in input three PDG ids, whose the
   // first two have proper signs (corresponding to particles, id > 0, 
@@ -562,31 +572,34 @@ int HadronsSelector::signHadron(const int idQ1, const int idQ2, const int idHad)
   // given the two constituent partons.
 
   // Safety check, usually skipped.
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-    if ( ! ( getParticleData(idQ1)  &&  getParticleData(idQ2)  &&  getParticleData(idHad)  &&
-	     ( CheckId::canBeMeson(idQ1,idQ2)  && CheckId::isMeson(idHad)  ) ||
-	     ( CheckId::canBeBaryon(idQ1,idQ2) && CheckId::isBaryon(idHad) ) ) ) {
-      generator()->logWarning( Exception("HadronsSelector::signHadron "
-					 "***The input is inconsistent*** ",
-					 Exception::warning) );
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" 
-			   << " idQ1=" << idQ1 << "  idQ2=" << idQ2 << "  idHad=" << idHad 
-			   << endl << endl;
+  if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization) {
+    if(!(getParticleData(idQ1) && getParticleData(idQ2) && 
+	 getParticleData(idHad)  &&
+	 (CheckId::canBeMeson(idQ1,idQ2) && CheckId::isMeson(idHad)) ||
+	 (CheckId::canBeBaryon(idQ1,idQ2) && CheckId::isBaryon(idHad)))) {
+      generator()->logWarning(Exception("HadronsSelector::signHadron "
+				    "***The input is inconsistent*** ",
+				    Exception::warning));
+      if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
+	generator()->log() << "         ===>" << " idQ1=" << idQ1 << "  idQ2=" 
+			   << idQ2 << "  idHad=" << idHad << endl << endl;
       }
     }
   }
 
   int sign = 0;
-  if ( getParticleData(idQ1)  &&  getParticleData(idQ2)  &&  getParticleData(idHad) ) {
-    Charge chargeIn  = getParticleData(idQ1)->charge() + getParticleData(idQ2)->charge();
+  if(getParticleData(idQ1) && getParticleData(idQ2) && getParticleData(idHad)){
+    Charge chargeIn  = getParticleData(idQ1)->charge() + 
+                       getParticleData(idQ2)->charge();
     Charge chargeOut = getParticleData(idHad)->charge();
-    Charge delta_ch  = fabs( getParticleData(D)->charge() ) / 10.0; 
-    if ( fabs(chargeIn-chargeOut) < delta_ch  &&  fabs(chargeIn+chargeOut) > delta_ch ) {
+    Charge delta_ch  = fabs(getParticleData(D)->charge())/10.0; 
+    if(fabs(chargeIn-chargeOut) < delta_ch && 
+       fabs(chargeIn+chargeOut) > delta_ch) {
       sign = +1;
-    } else if ( fabs(chargeIn-chargeOut) > delta_ch  &&  fabs(chargeIn+chargeOut) < delta_ch ) {
+    } else if(fabs(chargeIn-chargeOut) > delta_ch &&  
+              fabs(chargeIn+chargeOut) < delta_ch ) {
       sign = -1;
-    } else if ( fabs(chargeIn) < delta_ch  &&  fabs(chargeOut) < delta_ch ) {  
+    } else if (fabs(chargeIn) < delta_ch && fabs(chargeOut) < delta_ch ) {  
       // In the case of same null charge, there are four cases:
       //  i) K0-like mesons, B0-like mesons, Bs-like mesons
       //     the PDG convention is to consider them "antiparticle" (idHad < 0) 
@@ -603,30 +616,31 @@ int HadronsSelector::signHadron(const int idQ1, const int idQ2, const int idHad)
       //  4) for baryons, that is when one of idQ1 and idQ2 is a (anti-) quark and 
       //     the other one is a (anti-) diquark the sign is negative when both
       //     constituents are "anti", that is both with id < 0; positive otherwise.
-      if ( CheckId::isQuark(idQ1) && CheckId::isQuark(idQ2) ) {  // meson
+      if(CheckId::isQuark(idQ1) && CheckId::isQuark(idQ2)) {  // meson
 	int idQa = abs(idQ1), idQb = abs(idQ2), dominant = idQ2;
-	if (idQa > idQb) {
+	if(idQa > idQb) {
 	  idQa = abs(idQ2); idQb = abs(idQ1); dominant = idQ1;
 	}
-	if ( ( idQa==D && idQb==S ) || ( idQa==D && idQb==B ) || ( idQa==S && idQb==B ) ) {
-	  if ( dominant < 0  ||  idHad % 10 == 0 ) {  // idHad%10 is zero for K0L,K0S
+	if((idQa==D && idQb==S)||(idQa==D && idQb==B)||(idQa==S && idQb==B)) {
+	  if (dominant < 0 || idHad%10 == 0) { // idHad%10 is zero for K0L,K0S
 	    sign = +1;
-	  } else if ( dominant > 0 ) {
+	  } else if(dominant > 0) {
 	    sign = -1;
 	  }
-	} else if ( idQa==U && idQb==C ) {
-	  if ( dominant > 0 ) {
+	} else if(idQa==U && idQb==C) {
+	  if(dominant > 0) {
 	    sign = +1;
-	  } else if ( dominant < 0 ) { 
+	  } else if(dominant < 0) { 
 	    sign = -1;
 	  } 
-	} else if ( idQa==idQb ) {
+	} else if(idQa==idQb) {
 	  sign = +1;
 	}
-      } else if ( CheckId::isDiquark(idQ1) || CheckId::isDiquark(idQ2) ) { // baryon
-	if ( idQ1 > 0  &&  idQ2 > 0 ) {
+      } else if(CheckId::isDiquark(idQ1) || CheckId::isDiquark(idQ2)) { 
+	// baryon
+	if(idQ1 > 0 && idQ2 > 0) {
 	  sign = +1;
-	} else if ( idQ1 < 0  &&  idQ2 < 0 ) {
+	} else if(idQ1 < 0 && idQ2 < 0) {
 	  sign = -1;
 	}
       }

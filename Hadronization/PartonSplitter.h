@@ -104,7 +104,7 @@ private:
   void debuggingInfo(const tPVector & tagged, const set<tPPtr> & newPartons);
   // Print full information for debugging.
 
-  Ptr<GlobalParameters>::pointer _pointerGlobalParameters;  
+  GlobParamPtr _globalParameters;  
 
 };
 
