@@ -1,0 +1,124 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorMeson2MesonDecayer class.
+//
+//  Author: Peter Richardson
+//
+
+namespace Herwig {
+
+using namespace ThePEG;
+
+inline VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() 
+{
+  // particles and couplings for the different modes
+  // rho -> pi pi
+  _incoming.push_back( 113);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _incoming.push_back( 213);_outgoing1.push_back( 111);_outgoing2.push_back( 211);
+  _incoming.push_back(-213);_outgoing1.push_back( 111);_outgoing2.push_back(-211);
+  _coupling.push_back(6.);_coupling.push_back(6.);_coupling.push_back(6.);
+  _maxweight.push_back(149.647);_maxweight.push_back(150.739);
+  _maxweight.push_back(150.739);
+  // omega -> pi pi
+  _incoming.push_back(223);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _coupling.push_back(0.184);_maxweight.push_back(0.143107);
+  // K* decays
+  _incoming.push_back( 313);_outgoing1.push_back( 321);_outgoing2.push_back(-211);
+  _incoming.push_back( 313);_outgoing1.push_back( 311);_outgoing2.push_back( 111);
+  _incoming.push_back( 323);_outgoing1.push_back( 311);_outgoing2.push_back( 211);
+  _incoming.push_back( 323);_outgoing1.push_back( 321);_outgoing2.push_back( 111);
+  _incoming.push_back(-313);_outgoing1.push_back(-321);_outgoing2.push_back( 211);
+  _incoming.push_back(-313);_outgoing1.push_back(-311);_outgoing2.push_back( 111);
+  _incoming.push_back(-323);_outgoing1.push_back(-311);_outgoing2.push_back(-211);
+  _incoming.push_back(-323);_outgoing1.push_back(-321);_outgoing2.push_back( 111);
+  _coupling.push_back(4.57);_coupling.push_back(3.23);
+  _coupling.push_back(4.57);_coupling.push_back(3.23);
+  _coupling.push_back(4.57);_coupling.push_back(3.23);
+  _coupling.push_back(4.57);_coupling.push_back(3.23);
+  _maxweight.push_back(33.3681);_maxweight.push_back(16.4871);
+  _maxweight.push_back(32.5183);_maxweight.push_back(16.9127);
+  _maxweight.push_back(33.3681);_maxweight.push_back(16.4871);
+  _maxweight.push_back(32.5183);_maxweight.push_back(16.9127);
+  // phi decays
+  _incoming.push_back( 333);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _incoming.push_back( 333);_outgoing1.push_back( 130);_outgoing2.push_back( 310);
+  _incoming.push_back( 333);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _coupling.push_back(4.48);_coupling.push_back(4.59);_coupling.push_back(2.27E-3);
+  _maxweight.push_back(2.08871);_maxweight.push_back(1.43453);
+  _maxweight.push_back(3.09906e-05);
+}
+  
+inline VectorMeson2MesonDecayer::VectorMeson2MesonDecayer(const VectorMeson2MesonDecayer & x)
+  : VectorMesonDecayerBase(x), _incoming(x._incoming), _outgoing1(x._outgoing1),
+    _outgoing2(x._outgoing2), _maxweight(x._maxweight), _coupling(x._coupling) {}
+
+inline IBPtr VectorMeson2MesonDecayer::clone() const {
+  return new_ptr(*this);
+}
+  
+inline IBPtr VectorMeson2MesonDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+  
+inline void VectorMeson2MesonDecayer::doupdate() throw(UpdateException) {
+  VectorMesonDecayerBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+  //  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+  //  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+  //  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+  //  touch()
+  // Touch if anything has changed.
+}
+  
+inline void VectorMeson2MesonDecayer::doinit() throw(InitException) {
+  VectorMesonDecayerBase::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {cerr << "Inconsistent parameters in VectorMeson2MesonDecayer" << endl;}
+  // set up the integration channels
+  vector<bool> dummyon;
+  vector<double> dummyweights;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {setMode(ix,_maxweight[ix],dummyon,dummyweights);}
+}
+  
+inline void VectorMeson2MesonDecayer::dofinish() {
+  VectorMesonDecayerBase::dofinish();
+}
+  
+inline void VectorMeson2MesonDecayer::doinitrun() {
+  VectorMesonDecayerBase::doinitrun();
+  PDVector particles(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      particles[0]=getParticleData(_incoming[ix]);
+      particles[1]=getParticleData(_outgoing1[ix]);
+      particles[2]=getParticleData(_outgoing2[ix]);
+      initializePhaseSpace(ix,particles);
+    }
+}
+  
+inline void VectorMeson2MesonDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  VectorMesonDecayerBase::rebind(trans);
+}
+  
+inline IVector VectorMeson2MesonDecayer::getReferences() {
+  IVector ret = VectorMesonDecayerBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+  
+}
