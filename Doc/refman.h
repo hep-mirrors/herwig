@@ -8,6 +8,10 @@ Herwig++ is a C++ Monte Carlo event generator.
 
 */
 
+/** \defgroup Hadronization 
+These classes are used for the Hadronization.
+*/
+
 /** \defgroup Helicity Helicity classes
 These classes are used to include spin correlation effects.
 */

@@ -1,48 +1,7 @@
 // -*- C++ -*-
 #ifndef HERWIG_Cluster_H
 #define HERWIG_Cluster_H
-/*! \class Herwig::Cluster Cluster.h "Herwig++/Hadronization/Cluster.h"
- *  \brief This class describes a cluster object.
- *  \author Philip Stephens
- *  \author Alberto Ribon
- *  \ingroup Hadronization
- *
- * This class represents a cluster, which is a colour singlet made usually
- * of two components (quark-antiquark, quark-diquark, antiquark-antidiquark)
- * or rarely by three components (quark-quark-quark, antiquark-antiquark-
- * antiquark). A reference to the container with the pointers to its 
- * Components is provided.
- *
- * The class provides access to the pointers which point to:
- *
- *     - The cluster parent. In the case that the cluster it is a fission 
- *       product of a heavy cluster the parent is a cluster. If the cluster
- *       is formed from the perturbative partons then the parents will be
- *       the colour connected partons that formed the cluster.
- *     - The children (usually two). In the case the cluster is a
- *       heavy cluster that undergoes fission the children are clusters.
- *       Occasionally the cluster has been "redefined" (re-interpreted). For 
- *       example in the case that three quark or anti-quark components 
- *       have been redefined as two components (quark+diquark, or antiquark+
- *       antidiquark).
- *     - The (eventual) reshuffling partner, necessary for energy-momentum 
- *       conservation when light clusters are decayed into single hadron. Not
- *       all clusters will have a reshuffling partner.
- *  
- * Notice that in order to determine the cluster position from the positions
- * of the components, the Cluster class needs some global parameters.
- * Because the Cluster class is neither interfaced nor persistent, 
- * a static pointer to the GlobalParameters class instance, 
- * where the global parameters are, is used. This static pointer is 
- * set via the method setPointerGlobalParameters, during the
- * run initialization, doinitrun(), in the steering class
- * ClusterHadronizationHandler.
- *
- * See also:
- * GlobalParameters.h, ClusterHadronizationHandler.h.
- */ 
 
-#include "CluHadConfig.h"
 #include <ThePEG/Pointer/Ptr.h>
 #include <ThePEG/Pointer/ReferenceCounted.h>
 #include <ThePEG/Pointer/PtrTraits.h>
@@ -51,94 +10,175 @@
 #include <ThePEG/EventRecord/Particle.h>
 #include "Herwig++/Utilities/EnumParticles.h"
 #include <iostream>
+#include "CluHadConfig.h"
 
 namespace Herwig {
 
   using namespace ThePEG;
  
+  /** \ingroup Hadronization
+   *  \class Cluster
+   *  \brief This class describes a cluster object.
+   *  \author Philip Stephens
+   *  \author Alberto Ribon
+   *
+   *  This class represents a cluster, which is a colour singlet made usually
+   *  of two components (quark-antiquark, quark-diquark, antiquark-antidiquark)
+   *  or rarely by three components (quark-quark-quark, antiquark-antiquark-
+   *  antiquark). A reference to the container with the pointers to its 
+   *  Components is provided.
+   *
+   *  The class provides access to the pointers which point to:
+   *
+   *     - The cluster parent. In the case that the cluster it is a fission 
+   *       product of a heavy cluster the parent is a cluster. If the cluster
+   *       is formed from the perturbative partons then the parents will be
+   *       the colour connected partons that formed the cluster.
+   *     - The children (usually two). In the case the cluster is a
+   *       heavy cluster that undergoes fission the children are clusters.
+   *       Occasionally the cluster has been "redefined" (re-interpreted). For 
+   *       example in the case that three quark or anti-quark components 
+   *       have been redefined as two components (quark+diquark, or antiquark+
+   *       antidiquark).
+   *     - The (eventual) reshuffling partner, necessary for energy-momentum 
+   *       conservation when light clusters are decayed into single hadron. Not
+   *       all clusters will have a reshuffling partner.
+   *  
+   *  Notice that in order to determine the cluster position from the positions
+   *  of the components, the Cluster class needs some global parameters.
+   *  Because the Cluster class is neither interfaced nor persistent, 
+   *  a static pointer to the GlobalParameters class instance, 
+   *  where the global parameters are, is used. This static pointer is 
+   *  set via the method setPointerGlobalParameters, during the
+   *  run initialization, doinitrun(), in the steering class
+   *  ClusterHadronizationHandler.
+   *
+   *  See also:
+   *  GlobalParameters.h, ClusterHadronizationHandler.h.
+   */ 
   class Cluster : public Particle {
 
   public:
 
     Cluster();
     Cluster(tcEventPDPtr);
-    Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());    
-    //!< This creates a cluster from 2 (or 3) partons.
 
+    /**
+     * This creates a cluster from 2 (or 3) partons.
+     */
+    Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());    
+
+    /**
+     * Copy constructor.
+     */
     Cluster(const Cluster &);
-    //!< Copy constructor.
+
+    /**
+     * Also a copy constructor where a particle is given not a cluster.
+     */
     Cluster(const Particle &);
-    //!< Also a copy constructor where a particle is given not a cluster.
+
     virtual ~Cluster();
 
     inline void * operator new(size_t);
     inline void operator delete(void *, size_t);  
 
-    static inline void setPointerGlobalParameters(GlobParamPtr gp);
-    //!< Set the static pointer to the GlobalParameters object.
-     /*!<
+    /**
+     * Set the static pointer to the GlobalParameters object.
      * The pointer is set in ClusterHadronizationHandler::doinitrun().
      */ 
+    static inline void setPointerGlobalParameters(GlobParamPtr gp);
 
+    /**
+     * Number of quark (diquark) constituents (normally two).    
+     */
     inline int numComponents() const;
-    //!< Number of quark (diquark) constituents (normally two).    
 
+    /**
+     * Sum of the constituent masses of the components of the cluster.    
+     */
     Energy sumConstituentMasses() const;
-    //!< Sum of the constituent masses of the components of the cluster.    
 
+    /**
+     * Set cluster mass.
+     */
     inline void setMass(const Energy inputMass);
-    //!< Set cluster mass.
 
+    /**
+     * Returns the ith constituent.
+     */
     tPPtr particle(int i) const;
-    //!< Returns the ith constituent.
 
+    /**
+     * Returns whether the ith constituent is from a perturbative process.
+     */
     bool isPerturbative(int) const;
-    //!< Returns whether the ith constituent is from a perturbative process.
 
+    /**
+     * Sets whether the ith constituent is from a perturbative process.
+     */
     void setPerturbative(int,bool);
-    //!< Sets whether the ith constituent is from a perturbative process.
 
+    /**
+     * Indicates whether the ith constituent is a beam remnant.
+     */
     bool isBeamRemnant(int) const;
-    //!< Indicates whether the ith constituent is a beam remnant.
 
+    /**
+     * Sets whether the ith constituent is a beam remnant.
+     */
     void setBeamRemnant(int,bool);
-    //!< Sets whether the ith constituent is a beam remnant.
 
+    /**
+     * Returns the clusters id, not the same as the PDG id.
+     */
     int clusterId() const { return _id; }
-    //!< Returns the clusters id, not the same as the PDG id.
 
   public:
 
+    /**
+     * Returns the cluster that was used for reshuffling.
+     */
     inline tClusterPtr reshufflingPartnerCluster() const;
-    //!< Returns the cluster that was used for reshuffling.
 
+    /**
+     * Set the pointer to the reshuffling partner cluster.
+     */
     inline void reshufflingPartnerCluster(const tClusterPtr inputCluPtr);
-    //!< Set the pointer to the reshuffling partner cluster.
 
+    /**
+     * Returns true when a constituent is a beam remnant.
+     */
     bool isBeamCluster() const;
-    //!< Returns true when a constituent is a beam remnant.
 
+    /**
+     * Sets the component (if any) that points to "part" as a beam remnant.
+     */
     void isBeamCluster(tPPtr part);
-    //!< Sets the component (if any) that points to "part" as a beam remnant.
 
+    /**
+     * Returns true if this cluster is to be handled by the hadronization.
+     */
     bool isAvailable() const;
-    //!< Returns true if this cluster is to be handled by the hadronization.
 
+    /**
+     * Sets the value of availability. 
+     */
     void isAvailable(bool inputAvailable);
-    //!< Sets the value of availability. 
 
+    /**
+     * Return true if the cluster does not have cluster parent.
+     */
     inline bool isStatusInitial() const;
-    //!< Return true if the cluster does not have cluster parent.
 
-    inline bool isReadyToDecay() const;
-    /*!< 
+    /** 
      * Return true if the cluster does not have cluster children and 
      * it is not already decayed (i.e. it does not have hadron children)
      * (to be used only after the fission of heavy clusters).    
      */
+    inline bool isReadyToDecay() const;
 
-    inline bool isRedefined() const;
-    /*!<
+    /**
      * Return true if the cluster has one and only one cluster children
      * and no hadron children: that means either that its three quarks or 
      * anti-quarks components have been redefined as two components 
@@ -150,35 +190,41 @@ namespace Herwig {
      * In both cases, the unique cluster children is the new redefined 
      * cluster. The two cases can be distinguish by the next method.  
      */
+    inline bool isRedefined() const;
 
-    inline bool hasBeenReshuffled() const;
-    /*!<
+    /**
      * Return true when it has a reshuffling partner.
      * Notice that a cluster can have  hasBeenReshuffled()  true but
      *  isRedefined()  false: this is the case of a light cluster
      * that decays into a single hadron.
      */
+    inline bool hasBeenReshuffled() const;
 
+    /**
+     * Return true if the cluster has hadron children.
+     */
     bool isStatusFinal() const;
-    //! Return true if the cluster has hadron children.
 
   private:
+
     virtual PPtr clone() const;
     virtual PPtr fullclone() const;
    
+    /**
+     * Private and non-existent assignment operator.
+     */
     Cluster & operator=(const Cluster &);
-    //!< Private and non-existent assignment operator.
 
-    void calculateP();
-    //!< Calculate the 5-momentum vector of the cluster
-    /*!<
+    /**
+     * Calculate the 5-momentum vector of the cluster
      * The 5-momentum of the cluster is given by
      * \f[ P = \sum_i p_i \f]
      * and the mass of the cluster is \f$m^2 = P^2\f$
      */
-    void calculateX();
-    //!< Calculate the 4-position vector of the cluster
-    /*!<
+    void calculateP();
+
+    /**
+     * Calculate the 4-position vector of the cluster
      * Displacement of the ith constituent given by momentum \f$p_i\f$
      * vertex \f$x_i\f$ and mass \f$m_i\f$ is 
      * \f[ D_i = -C \log(r) \frac{p_i}{\sqrt{(p_i^2 - m_i^2)^2 + v^4}} \f]
@@ -193,12 +239,17 @@ namespace Herwig {
      * These are then used to determine the value of the clusters vertex as
      * \f[ X = \frac{1}{2} ( x_1 +x_2 + s_1 D_1 + s_2 D_2). \f]
      */
+    void calculateX();
 
+    /**
+     * Determines whether constituent p is perturbative or not.
+     */
     bool initPerturbative(tPPtr p);
-    //!< Determines whether constituent p is perturbative or not
 
+    /**
+     * This is needed to determine if a cluster is from a perturbative quark.
+     */
     static GlobParamPtr _globalParameters;
-    //!< This is needed to determine if a cluster is from a perturbative quark
 
     static ClassDescription<Cluster> initCluster; 
     

@@ -1,21 +1,6 @@
 // -*- C++ -*-
 #ifndef HERWIG_ColourReconnector_H
 #define HERWIG_ColourReconnector_H
-/*! \class Herwig::ColourReconnector ColourReconnector.h "Herwig++\Hadronization\ColourReconnector.h"
- * \brief Class for changing colour reconnections of partons.
- * \author Alberto Ribon
- * \ingroup Hadronization
- *
- * This class does the nonperturbative colour rearrangement, after the 
- * nonperturbative gluon splitting and the "normal" cluster formation. 
- * It uses the list of particles in the event record, and the collections of
- * "usual" clusters which is passed to the main method. If the colour 
- * reconnection is actually accepted, then the previous collections of "usual"
- * clusters is first deleted and then the new one is created.
- *
- * Note: by default this class does nothing. It can be inherited and overridden
- * in future hadronization models.
- */
 
 #include <ThePEG/Handlers/HandlerBase.h>
 #include "CluHadConfig.h"
@@ -25,6 +10,21 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/** \ingroup Hadronization
+ *  \class ColourReconnector
+ *  \brief Class for changing colour reconnections of partons.
+ *  \author Alberto Ribon
+ * 
+ *  This class does the nonperturbative colour rearrangement, after the 
+ *  nonperturbative gluon splitting and the "normal" cluster formation. 
+ *  It uses the list of particles in the event record, and the collections of
+ *  "usual" clusters which is passed to the main method. If the colour 
+ *  reconnection is actually accepted, then the previous collections of "usual"
+ *  clusters is first deleted and then the new one is created.
+ *
+ *  Note: by default this class does nothing. It can be inherited and overridden
+ *  in future hadronization models.
+ */
 class ThePEG::PartialCollisionHandler; // forward declaration
 
 
@@ -36,23 +36,26 @@ public:
   inline ColourReconnector(const ColourReconnector &);
   virtual ~ColourReconnector();
 
-  void rearrange(PartialCollisionHandler & ch, const StepPtr & pstep,
-                 ClusterVector & clusters) throw(Veto, Stop, Exception);
-  /*!< Does the colour rearrangment.
+  /**
+   * Does the colour rearrangment.
    *
    * Does the colour rearrangement, starting from the list of particles
    * in the event record, and the collection of "usual" clusters passed
    * in input. If the actual rearrangement is accepted, the new collection 
    * of clusters is overriden to the intial one.
    */
+  void rearrange(PartialCollisionHandler & ch, const StepPtr & pstep,
+                 ClusterVector & clusters) throw(Veto, Stop, Exception);
     
 public:
 
   void persistentOutput(PersistentOStream &) const;
   void persistentInput(PersistentIStream &, int);
 
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
   static void Init();
-  //!< Standard Init function used to initialize the interfaces.
 
 protected:
 
@@ -65,25 +68,38 @@ protected:
   inline virtual void doinit() throw(InitException);
   inline virtual void dofinish();
 
+  /**
+   * Change all pointers to Interfaced objects to corresponding clones.
+   */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  //!< Change all pointers to Interfaced objects to corresponding clones.
 
+  /**
+   * Return pointers to all Interfaced objects refered to by this.
+   */
   inline virtual IVector getReferences();
-  //!< Return pointers to all Interfaced objects refered to by this.
 
 private:
 
+  /**
+   * Describe a concrete class with persistent data.
+   */
   static ClassDescription<ColourReconnector> initColourReconnector;
-  //!< Describe a concrete class with persistent data.
 
+  /**
+   * Private and non-existent assignment operator.
+   */
   ColourReconnector & operator=(const ColourReconnector &);
-  //!<  Private and non-existent assignment operator.
 
+  /**
+   * The numer of colours in the reconstruction.
+   */
   int    _ClReco;
-  //!< The numer of colours in the reconstruction.
+
+  /**
+   * The probability of a reconstruction.
+   */
   double _PReco;
-  //!< The probability of a reconstruction.
 
 };
 
@@ -94,23 +110,34 @@ private:
 
 namespace ThePEG {
 
-// The following template specialization informs ThePEG about the
-// base class of ColourReconnector.
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of ColourReconnector.
+ */
 template <>
 struct BaseClassTrait<Herwig::ColourReconnector,1> {
   typedef ThePEG::HandlerBase NthBase;
 };
 
-// The following template specialization informs ThePEG about the
-// name of this class and the shared object where it is defined.
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
 template <>
 struct ClassTraits<Herwig::ColourReconnector>: public ClassTraitsBase<Herwig::ColourReconnector> {
+
+  /**
+   * Return the class name.
+   */
   static string className() { return "/Herwig++/ColourReconnector"; }
-  // Return the class name.
+
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
   static string library() { return "libHwHadronization.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
+
 };
 
 }
