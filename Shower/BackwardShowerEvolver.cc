@@ -85,21 +85,20 @@ bool BackwardShowerEvolver::spaceLikeShower( tPartCollHdlPtr ch,
 
     //***LOOKHERE***  update rhoD matrix of  spaceLikePart;
                       pair<ShoKinPtr, tSudakovFormFactorPtr> pairShowerKinSudakov = 
-                        _pointerSplittingGenerator->chooseBackwardBranching(ch, *spaceLikePart);
+                        _pointerSplittingGenerator->chooseBackwardBranching( ch, *spaceLikePart );
     //                accept it according to the  showerConstrainer  and soft correction;
     //                if ( does not branch ) {
     //                  rhoD propagation;
     //                  spaceLikePart = tShoParPtr();
     //                } else {
     //                  hasEmitted = true;
-		        if ( _pointerSplittingGenerator->
-		      	     generateBranchingKinematics(ch, *spaceLikePart, pairShowerKinSudakov.first, 
-							 pairShowerKinSudakov.second) ) {
+		        _pointerSplittingGenerator->
+			  generateBranchingKinematics( ch, *spaceLikePart, pairShowerKinSudakov.first, 
+						       pairShowerKinSudakov.second );
     //                  create the new ShowerParticles and then store the
     //                    unique space-like one in spaceLikePart, whereas 
     //                    the others are stored into  particleYetToShower;
     //                  store also the shoKin;
-    			}
     //                }
     // 
     //                NB) To access the PDF:
