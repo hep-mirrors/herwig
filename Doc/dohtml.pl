@@ -69,7 +69,7 @@ foreach $i (@listDirs) {
                     # Use here the awk script, h2html.awk, copied from Pythia7/Doc/
 		    system("gawk -f ../Doc/h2html.awk $nameHeader > ../Doc/$nameHtml");
 		    print "\t \t \t Writing $nameHtml ... \n";
-		    print MAINHTML '    <a href="http:',"$nameHtml",'">',
+		    print MAINHTML '    <a href="',"$nameHtml",'">',
                                    $nameClass,'</a><BR>',"\n";
 		}
 	    }
@@ -124,7 +124,7 @@ foreach $i (@listDirs) {
                     # Use here the awk script, h2html.awk, copied from Pythia7/Doc/
 		    system("gawk -f ../Doc/h2html.awk $nameHeader > $HerwigDir/$nameHtml");
 		    print "\t \t \t Writing $nameHtml ... \n";
-		    print MAINHTML '    <a href="http:',"$nameHtml",'">',
+		    print MAINHTML '    <a href="',"$nameHtml",'">',
                                    $nameClass,'</a><BR>',"\n";
 		}
 	    }
