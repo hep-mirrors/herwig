@@ -1,0 +1,106 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PScalarVectorVectorDecayer class.
+//
+
+namespace Herwig {
+
+inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer() 
+{
+  // decay eta -> omega gamma
+  _incoming.push_back(331);_outgoing1.push_back(223);_outgoing2.push_back(22);
+  _coupling.push_back(0.1375/GeV);_maxweight.push_back(0.00612209);
+  // decya eta- > rho gamma
+  _incoming.push_back(331);_outgoing1.push_back(113);_outgoing2.push_back(22);
+  _coupling.push_back(0.4011/GeV);_maxweight.push_back(0.0595797);
+  /*
+  // decay pi -> gamma gamma
+  _incoming.push_back(111);_outgoing1.push_back(22);_outgoing2.push_back(22);
+  _coupling.push_back(0.0178/GeV);_maxweight.push_back(0.);
+  // decay eta -> gamma gamma
+  _incoming.push_back(221);_outgoing1.push_back(22);_outgoing2.push_back(22);
+  _coupling.push_back(0.0168/GeV);_maxweight.push_back(0.);
+  // decay eta' -> gamma gamma
+  _incoming.push_back(331);_outgoing1.push_back(22);_outgoing2.push_back(22);
+  _coupling.push_back(0.0221/GeV);_maxweight.push_back(0.);
+  */
+}
+
+inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer(const PScalarVectorVectorDecayer & x)
+  : DecayIntegrator(x), _incoming(x._incoming), _outgoing1(x._outgoing1),
+    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight) {}
+
+inline IBPtr PScalarVectorVectorDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr PScalarVectorVectorDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void PScalarVectorVectorDecayer::doupdate() throw(UpdateException) {
+  DecayIntegrator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void PScalarVectorVectorDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check the parameters arew consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
+     isize!=_outgoing2.size() || isize!=_maxweight.size())
+    {cerr << "Inconsistent parameters in PScalarVectorVectorDecayer" << endl;}
+  // set up the integration channels
+  vector<bool> dummyon;
+  vector<double> dummyweights;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {setMode(ix,_maxweight[ix],dummyon,dummyweights);}
+}
+
+inline void PScalarVectorVectorDecayer::dofinish() {
+  DecayIntegrator::dofinish();
+}
+
+inline void PScalarVectorVectorDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  PDVector particles(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      particles[0]=getParticleData(_incoming[ix]);
+      particles[1]=getParticleData(_outgoing1[ix]);
+      particles[2]=getParticleData(_outgoing2[ix]);
+      initializePhaseSpace(ix,particles);
+      // test the analytic answer
+      Energy m0=particles[0]->mass();Energy2 m02=m0*m0;
+      Energy m1=particles[1]->mass();
+      Energy m2=particles[2]->mass();
+    }
+}
+
+inline void PScalarVectorVectorDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  DecayIntegrator::rebind(trans);
+}
+
+inline IVector PScalarVectorVectorDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
