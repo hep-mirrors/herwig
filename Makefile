@@ -1,5 +1,5 @@
-#SUBDIRS = Config Shower Hadronization Decay MatrixElement Utilities  
-SUBDIRS = Config Shower Hadronization Decay Utilities  
+SUBDIRS = Config Shower Hadronization Decay MatrixElement Utilities  
+#SUBDIRS = Config Shower Hadronization Decay Utilities  
 
 .PHONY: lib all depend clean nodebug setup
 
