@@ -382,7 +382,7 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseForwardBranchin
   // First, find the eventual branching, corresponding to the highest scale.
   for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
     ShowerIndex index;
-    index.id = particle.data().id(); 
+    index.id = abs( particle.data().id() ); 
     index.interaction = ShowerIndex::int2Interaction( i );
     index.timeFlag = ShowerIndex::FS; 
     if ( _multimapSudakov.find( index ) != _multimapSudakov.end() ) {
@@ -446,7 +446,7 @@ pair<ShoKinPtr, tSudakovFormFactorPtr> SplittingGenerator::chooseBackwardBranchi
   // First, find the eventual branching, corresponding to the highest scale.
   for (int i = 0; i < ShowerIndex::NumInteractionTypes; ++i ) {
     ShowerIndex index;
-    index.id = particle.data().id(); 
+    index.id = abs( particle.data().id() ); 
     index.interaction = ShowerIndex::int2Interaction( i );
     index.timeFlag = ShowerIndex::IS; 
     if ( _multimapSudakov.find( index ) != _multimapSudakov.end() ) {
