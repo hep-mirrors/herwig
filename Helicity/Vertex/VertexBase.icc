@@ -1,0 +1,815 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VertexBase class.
+//
+
+namespace Herwig {
+namespace Helicity{
+using namespace ThePEG;
+using namespace ThePEG::Helicity;
+
+inline VertexBase::VertexBase() {_npoint=0;}
+    
+inline VertexBase::VertexBase(const VertexBase & x)
+  : Interfaced(x), _iparticlea(x._iparticlea),_iparticleb(x._iparticleb),
+    _iparticlec(x._iparticlec),_iparticled(x._iparticled),_iparticlee(x._iparticlee),
+    _particlea(x._particlea),_particleb(x._particleb),_particlec(x._particlec),
+    _particled(x._particled),_particlee(x._particlee),_ispin(x._ispin),
+    _npoint(x._npoint), _nsize(x._nsize), _inpart(x._inpart), _iinpart(x._iinpart),
+    _outpart(x._outpart), _ioutpart(x._ioutpart)
+{}
+
+inline IBPtr VertexBase::clone() const {
+  return new_ptr(*this);
+}
+  
+inline IBPtr VertexBase::fullclone() const {
+  return new_ptr(*this);
+}
+    
+inline void VertexBase::doupdate() throw(UpdateException) {
+  Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+  //  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+  //  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+  //  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+  //  touch()
+  // Touch if anything has changed.
+}
+    
+inline void VertexBase::doinit() throw(InitException) {
+  Interfaced::doinit();
+  // get the particle data points for the external particles
+  if(_npoint>=3)
+    {
+      for(unsigned int ix=0;ix<size();++ix)
+	{
+	  _particlea.push_back(getParticleData(_iparticlea[ix]));
+	  _particleb.push_back(getParticleData(_iparticleb[ix]));
+	  _particlec.push_back(getParticleData(_iparticlec[ix]));
+	}
+    }
+  if(_npoint>=4)
+    {
+      for(unsigned int ix=0;ix<size();++ix)
+	{_particled.push_back(getParticleData(_iparticled[ix]));}
+    }
+  if(_npoint==5)
+    {
+      for(unsigned int ix=0;ix<size();++ix)
+	{_particlee.push_back(getParticleData(_iparticlee[ix]));}
+    }
+  // set up the incoming and outgoing particles
+  setIncoming();
+  setOutgoing();
+}
+  
+inline void VertexBase::dofinish() {
+  Interfaced::dofinish();
+}
+  
+inline void VertexBase::doinitrun() {
+  Interfaced::doinitrun();
+}
+  
+inline void VertexBase::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Interfaced::rebind(trans);
+}
+    
+inline IVector VertexBase::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+// constructors for three point vertices
+inline VertexBase::VertexBase(int isa, int isb, int isc,
+			      vector<int> ida,vector<int> idb,vector<int> idc)
+{
+  // number of external particles
+  _npoint = 3;
+  // initialise the spins
+  setSpin(isa,isb,isc);
+  // and the particles;
+  setList(ida,idb,idc);
+}
+
+// constructors for four  point vertices
+inline VertexBase::VertexBase(int isa,int isb, int isc, int isd,
+			      vector<int> ida, vector<int> idb,
+			      vector<int> idc, vector<int> idd)
+{
+  // number of external particles
+  _npoint = 4;
+  // initialise the spins
+  setSpin(isa,isb,isc,isd);
+  // and the particles
+  setList(ida,idb,idc,idd);
+}
+
+// constructors for five point vertices
+inline VertexBase::VertexBase(int ia, int ib, int ic, int id , int ie,
+			      vector<int> ida,vector<int> idb,
+			      vector<int> idc,vector<int> idd,
+			      vector<int> ide)
+{
+  // number of external particles
+  _npoint = 5;
+  // initialise the spins
+  setSpin(ia,ib,ic,id,ie);
+  // and the particles
+  setList(ida,idb,idc,idd,ide);
+}
+
+// default constructor
+inline VertexBase::VertexBase(int nin) : _npoint(nin) {;}
+
+// output the information
+inline ostream & operator<<(ostream & os, const VertexBase & in)
+{
+  os << "Information on Vertex" << endl;
+  os << "This is an " << in._npoint << " vertex" << endl;
+  os << " Particles allowed for this Vertex" << endl;
+  for(unsigned int ix=0;ix<in._particlea.size();++ix)
+    {
+      if(in._npoint==3)
+	{
+	  os << in._particlea[ix]->id() << "   "
+	     << in._particleb[ix]->id() << "   "
+	     << in._particlec[ix]->id() << "   " << endl;
+	}
+      else if(in._npoint==4)
+	{
+	  os << in._particlea[ix]->id() << "   "
+	     << in._particleb[ix]->id() << "   "
+	     << in._particlec[ix]->id() << "   "
+	     << in._particled[ix]->id() << "   " << endl;
+	}
+      else if(in._npoint==5)
+	{
+	  os << in._particlea[ix]->id() << "   "
+	     << in._particleb[ix]->id() << "   "
+	     << in._particlec[ix]->id() << "   "
+	     << in._particled[ix]->id() << "   "
+	     << in._particlee[ix]->id() << "   " << endl;
+	}
+      else
+	{
+	  os << "Invalid number of external particles" << endl;
+	}
+    }
+  return os;
+}
+
+// setup the spins
+
+// three point vertex
+inline void VertexBase::setSpin(int ia,int ib,int ic){
+  if(_ispin.size()!=0)
+    {throw HelicityConsistencyError() << "VertexBase::setSpin the spins have already "
+				      << "been set" << Exception::warning;}
+  else if(_npoint!=3)
+    {throw HelicityConsistencyError() << "VertexBase::setSpin not a three point vertex" 
+				      << Exception::abortnow;}
+  else
+    {_ispin.push_back(ia);_ispin.push_back(ib);_ispin.push_back(ic);}
+}
+
+// four point vertex
+inline void VertexBase::setSpin(int ia,int ib,int ic, int id){
+  if(_ispin.size()!=0)
+    {throw HelicityConsistencyError() << "VertexBase::setSpin the spins have already "
+				      << "been set" << Exception::warning;}
+  else if(_npoint!=4)
+    {throw HelicityConsistencyError() << "VertexBase::setSpin not a four point vertex" 
+				      << Exception::abortnow;}
+  else
+    {_ispin.push_back(ia);_ispin.push_back(ib);_ispin.push_back(ic);
+    _ispin.push_back(id);}
+}
+
+// five point vertex
+inline void VertexBase::setSpin(int ia,int ib,int ic, int id, int ie){
+  if(_ispin.size()!=0)
+    {throw HelicityConsistencyError() << "VertexBase::setSpin the spins have already "
+				      << "been set" << Exception::warning;}
+  else if(_npoint!=5)
+    {throw HelicityConsistencyError() << "VertexBase::setSpin not a five point vertex" 
+				      << Exception::abortnow;}
+    else
+      {_ispin.push_back(ia);_ispin.push_back(ib);_ispin.push_back(ic);
+      _ispin.push_back(id);_ispin.push_back(ie);}
+}
+
+// setup the lists of particles
+
+// for a three point vertex
+inline void VertexBase::setList(vector<int> ida ,vector<int> idb, vector<int> idc)
+{
+  // check not already set
+  if(_iparticlea.size()!=0)
+    {throw HelicityConsistencyError() << "VertexBase::setList the Particles have already"
+				      << " been set" << Exception::abortnow;}
+  // check this is really a three point vertex
+  else if(_npoint!=3)
+    {throw HelicityConsistencyError() << "VertexBase::setList not a three point vertex" 
+				      << Exception::abortnow;}
+  // check all vectors have the same size
+  else if(ida.size()!=ida.size()||ida.size()!=idc.size())
+    {throw HelicityConsistencyError() << "VertexBase::setList Particle lists have " 
+				      << "different sizes" << Exception::abortnow;}
+  // set the arrays
+  else{_iparticlea=ida; _iparticleb=idb; _iparticlec=idc;}
+  _nsize = _iparticlea.size();
+}
+
+// for a four point vertex
+inline void VertexBase::setList(vector<int> ida,vector<int> idb,
+				vector<int> idc,vector<int> idd)
+{
+  // check not already set
+  if(_iparticlea.size()!=0)
+    {throw HelicityConsistencyError() << "VertexBase::setList the Particles have already"
+				      << " been set" << Exception::abortnow;}
+  // check this is really a four point vertex
+  else if(_npoint!=4)
+    {throw HelicityConsistencyError() << "VertexBase::setList not a four point vertex" 
+				      << Exception::abortnow;}
+  // check all vectors have the same size
+  else if(ida.size()!=ida.size()||ida.size()!=idc.size()||ida.size()!=idd.size())
+    {throw HelicityConsistencyError() << "VertexBase::setList Particle lists have " 
+				      << "different sizes" << Exception::abortnow;}
+  // set the arrays
+  else{_iparticlea=ida;_iparticleb=idb;_iparticlec=idc;_iparticled=idd;}
+  _nsize = _iparticlea.size();
+}
+
+inline void VertexBase::setList(vector<int> ida,vector<int> idb, vector<int> idc,
+				vector<int> idd,vector<int> ide)
+{
+  // check not already set
+  if(_iparticlea.size()!=0)
+    {throw HelicityConsistencyError() << "VertexBase::setList the Particles have already"
+				      << " been set" << Exception::abortnow;}
+  // check this is really a five point vertex
+  else if(_npoint!=5)
+    {throw HelicityConsistencyError() << "VertexBase::setList not a five point vertex" 
+				      << Exception::abortnow;}
+  // check all vectors have the same size
+  else if(ida.size()!=ida.size()||ida.size()!=idc.size()||ida.size()!=idd.size()||
+	  ida.size()!=ide.size())
+    {throw HelicityConsistencyError() << "VertexBase::setList Particle lists have " 
+				      << "different sizes" << Exception::abortnow;}
+  // set the arrays
+  else{_iparticlea=ida;_iparticleb=idb;_iparticlec=idc;_iparticled=idd;_iparticlee=ide;}
+  _nsize = _iparticlea.size();
+}
+
+// add particle to the list for a three point vertex
+inline void VertexBase::add(int ia ,int ib ,int ic)
+{
+  if(_npoint==3)
+    {
+      // add to the PDG code lists
+      _iparticlea.push_back(ia);_iparticleb.push_back(ib);_iparticlec.push_back(ic);
+      // add to the Particle data pointer lists
+      _particlea.push_back(getParticleData(ia));
+      _particleb.push_back(getParticleData(ib));
+      _particlec.push_back(getParticleData(ic));
+    }
+  else
+    {throw HelicityConsistencyError() << "This is a " << _npoint 
+				      << " vertex cannot add three particles" 
+				      << Exception::abortnow;}
+  // add to the list of outgoing particles
+  if(!outgoing(ia)){_outpart.push_back(_particlea[_nsize]);_ioutpart.push_back(ia);}
+  if(!outgoing(ib)){_outpart.push_back(_particleb[_nsize]);_ioutpart.push_back(ib);}
+  if(!outgoing(ic)){_outpart.push_back(_particlec[_nsize]);_ioutpart.push_back(ic);}
+  // add to the list of incoming particles  
+  if(_particlea[_nsize]->CC())
+    {
+      if(!incoming(-ia))
+	{
+	  _inpart.push_back(_particlea[_nsize]->CC());
+	  _iinpart.push_back(-ia);
+	}
+    }
+  else
+    {
+      if(!incoming(ia))
+	{
+	  _inpart.push_back(_particlea[_nsize]);
+	  _iinpart.push_back(ia);
+	}
+    }
+  if(_particleb[_nsize]->CC())
+    {
+      if(!incoming(-ib))
+	{
+	  _inpart.push_back(_particleb[_nsize]->CC());
+	  _iinpart.push_back(-ib);
+	}
+    }
+  else
+    {
+      if(!incoming(ib))
+	{
+	  _inpart.push_back(_particleb[_nsize]);
+	  _iinpart.push_back(ib);
+	}
+    }
+  if(_particlec[_nsize]->CC())
+    {
+      if(!incoming(-ic))
+	{
+	  _inpart.push_back(_particlec[_nsize]->CC());
+	  _iinpart.push_back(-ic);
+	}
+    }
+  else
+    {
+      if(!incoming(ic))
+	{
+	  _inpart.push_back(_particlec[_nsize]);
+	  _iinpart.push_back(ic);
+	}
+    }
+  // increment the size of the arrays
+  ++_nsize;
+}
+
+// add particle to the list for a four point vertex
+inline void VertexBase::add(int ia,int ib,int ic,int id)
+{
+  if(_npoint==4)
+    {
+      // add to the PDG code lists
+      _iparticlea.push_back(ia);_iparticleb.push_back(ib);
+      _iparticlec.push_back(ic);_iparticled.push_back(id);
+      // add to the Particle data pointer lists
+      _particlea.push_back(getParticleData(ia));
+      _particleb.push_back(getParticleData(ib));
+      _particlec.push_back(getParticleData(ic));
+      _particled.push_back(getParticleData(id));
+    }
+  {throw HelicityConsistencyError() << "This is a " << _npoint 
+				    << " vertex cannot add four particles" 
+				    << Exception::abortnow;}
+  // add to the list of outgoing particles
+  if(!outgoing(ia)){_outpart.push_back(_particlea[_nsize]);_ioutpart.push_back(ia);}
+  if(!outgoing(ib)){_outpart.push_back(_particleb[_nsize]);_ioutpart.push_back(ib);}
+  if(!outgoing(ic)){_outpart.push_back(_particlec[_nsize]);_ioutpart.push_back(ic);}
+  if(!outgoing(id)){_outpart.push_back(_particled[_nsize]);_ioutpart.push_back(id);}
+  // add to the list of incoming particles  
+  if(_particlea[_nsize]->CC())
+    {
+      if(!incoming(-ia))
+	{
+	  _inpart.push_back(_particlea[_nsize]->CC());
+	  _iinpart.push_back(-ia);
+	}
+    }
+  else
+    {
+      if(!incoming(ia))
+	{
+	  _inpart.push_back(_particlea[_nsize]);
+	  _iinpart.push_back(ia);
+	}
+    }
+  if(_particleb[_nsize]->CC())
+    {
+      if(!incoming(-ib))
+	{
+	  _inpart.push_back(_particleb[_nsize]->CC());
+	  _iinpart.push_back(-ib);
+	}
+    }
+  else
+    {
+      if(!incoming(ib))
+	{
+	  _inpart.push_back(_particleb[_nsize]);
+	  _iinpart.push_back(ib);
+	}
+    }
+  if(_particlec[_nsize]->CC())
+    {
+      if(!incoming(-ic))
+	{
+	  _inpart.push_back(_particlec[_nsize]->CC());
+	  _iinpart.push_back(-ic);
+	}
+    }
+  else
+    {
+      if(!incoming(ic))
+	{
+	  _inpart.push_back(_particlec[_nsize]);
+	  _iinpart.push_back(ic);
+	}
+    }
+  if(_particled[_nsize]->CC())
+    {
+      if(!incoming(-id))
+	{
+	  _inpart.push_back(_particled[_nsize]->CC());
+	_iinpart.push_back(-id);
+	}
+    }
+  else
+    {
+      if(!incoming(id))
+	{
+	  _inpart.push_back(_particled[_nsize]);
+	_iinpart.push_back(id);
+	}	
+    }
+  // increment the size of the arrays
+  ++_nsize;
+}
+
+// add particle to the list for a five point vertex
+inline void VertexBase::add(int ia,int ib,int ic,int id, int ie)
+{
+  if(_npoint==4)
+    {
+      // add to the PDG code lists
+      _iparticlea.push_back(ia);_iparticleb.push_back(ib);
+      _iparticlec.push_back(ic);_iparticled.push_back(id);_iparticlee.push_back(ie);
+      // add to the Particle data pointer lists
+      _particlea.push_back(getParticleData(ia));
+      _particleb.push_back(getParticleData(ib));
+      _particlec.push_back(getParticleData(ic));
+      _particled.push_back(getParticleData(id));
+      _particlee.push_back(getParticleData(ie));
+    }
+  {throw HelicityConsistencyError() << "This is a " << _npoint 
+				    << " vertex cannot add five particles" 
+				    << Exception::abortnow;}
+  // add to the list of outgoing particles
+  if(!outgoing(ia)){_outpart.push_back(_particlea[_nsize]);_ioutpart.push_back(ia);}
+  if(!outgoing(ib)){_outpart.push_back(_particleb[_nsize]);_ioutpart.push_back(ib);}
+  if(!outgoing(ic)){_outpart.push_back(_particlec[_nsize]);_ioutpart.push_back(ic);}
+  if(!outgoing(id)){_outpart.push_back(_particled[_nsize]);_ioutpart.push_back(id);}
+  if(!outgoing(ie)){_outpart.push_back(_particlee[_nsize]);_ioutpart.push_back(ie);}
+  // add to the list of incoming particles  
+  if(_particlea[_nsize]->CC())
+    {
+      if(!incoming(-ia))
+	{
+	  _inpart.push_back(_particlea[_nsize]->CC());
+	  _iinpart.push_back(-ia);
+	}
+    }
+  else
+    {
+      if(!incoming(ia))
+	{
+	  _inpart.push_back(_particlea[_nsize]);
+	  _iinpart.push_back(ia);
+	}
+    }
+  if(_particleb[_nsize]->CC())
+    {
+      if(!incoming(-ib))
+	{
+	  _inpart.push_back(_particleb[_nsize]->CC());
+	  _iinpart.push_back(-ib);
+	}
+    }
+  else
+    {
+      if(!incoming(ib))
+	{
+	  _inpart.push_back(_particleb[_nsize]);
+	  _iinpart.push_back(ib);
+	}
+    }
+  if(_particlec[_nsize]->CC())
+    {
+      if(!incoming(-ic))
+	{
+	  _inpart.push_back(_particlec[_nsize]->CC());
+	  _iinpart.push_back(-ic);
+	}
+    }
+  else
+    {
+      if(!incoming(ic))
+	{
+	  _inpart.push_back(_particlec[_nsize]);
+	  _iinpart.push_back(ic);
+	}
+    }
+  if(_particled[_nsize]->CC())
+    {
+      if(!incoming(-id))
+	{
+	  _inpart.push_back(_particled[_nsize]->CC());
+	_iinpart.push_back(-id);
+	}
+    }
+  else
+    {
+      if(!incoming(id))
+	{
+	  _inpart.push_back(_particled[_nsize]);
+	_iinpart.push_back(id);
+	}	
+    }
+  if(_particlee[_nsize]->CC())
+    {
+      if(!incoming(-ie))
+	{
+	  _inpart.push_back(_particlee[_nsize]->CC());
+	  _iinpart.push_back(-ie);
+	}
+    }
+  else
+    {
+      if(!incoming(ie))
+	{
+	  _inpart.push_back(_particlee[_nsize]);
+	_iinpart.push_back(ie);
+	}
+    }
+  // increment the size of the arrays
+  ++_nsize;
+}
+
+// number of different particle combinations allowed
+inline unsigned int VertexBase::size(){return _nsize;}
+
+// set the list of outgoing particles
+inline void VertexBase::setOutgoing()
+{
+  if(_outpart.size()==0)
+    {
+      if(_npoint>=3)
+	{
+	  for(unsigned int iy=0;iy<size();++iy)
+	    {
+	      if(!outgoing(_iparticlea[iy]))
+		{
+		  _outpart.push_back(_particlea[iy]);
+		  _ioutpart.push_back(_iparticlea[iy]);
+		}
+	      if(!outgoing(_iparticleb[iy]))
+		{
+		  _outpart.push_back(_particleb[iy]);
+		  _ioutpart.push_back(_iparticleb[iy]);
+		}
+	      if(!outgoing(_iparticlec[iy]))
+		{
+		  _outpart.push_back(_particlec[iy]);
+		  _ioutpart.push_back(_iparticlec[iy]);
+		}
+	    }
+	}
+      if(_npoint>=4)
+	{
+	  for(unsigned int iy=0;iy<size();++iy)
+	    {
+	      if(!outgoing(_iparticled[iy]))
+		{
+		  _outpart.push_back(_particled[iy]);
+		  _ioutpart.push_back(_iparticled[iy]);
+		}
+	    }
+	}
+      if(_npoint==5)
+	{
+	  for(unsigned int iy=0;iy<size();++iy)
+	    {
+	      if(!outgoing(_iparticlee[iy]))
+		{
+		  _outpart.push_back(_particlee[iy]);
+		  _ioutpart.push_back(_iparticlee[iy]);
+		}
+	    }
+	}
+    }
+  else
+    {throw HelicityConsistencyError() << "VertexBase::setOutgoing " 
+				      << "Outgoing particles already set" 
+				      << Exception::abortnow;} 
+}
+
+// set the list of incoming particles
+inline void VertexBase::setIncoming()
+{
+  if(_inpart.size()==0)
+    {
+      PDPtr temp;
+      if(_npoint>=3)
+	{
+	  for(unsigned int iy=0;iy<size();++iy)
+	    {
+	      temp =_particlea[iy]->CC();
+	      if(temp)
+		{
+		  if(!incoming(-_iparticlea[iy]))
+		    {
+		      _inpart.push_back(temp);
+		      _iinpart.push_back(-_iparticlea[iy]);
+		    }
+		}
+	      else
+		{
+		  if(!incoming(_iparticlea[iy]))
+		    {
+		      _inpart.push_back(_particlea[iy]);
+		      _iinpart.push_back(_iparticlea[iy]);
+		    }
+		}
+	      temp =_particleb[iy]->CC();
+	      if(temp)
+		{
+		  if(!incoming(-_iparticleb[iy]))
+		    {
+		      _inpart.push_back(temp);
+		      _iinpart.push_back(-_iparticleb[iy]);
+		    }
+		}
+	      else
+		{
+		  if(!incoming(_iparticleb[iy]))
+		    {
+		      _inpart.push_back(_particleb[iy]);
+		      _iinpart.push_back(_iparticleb[iy]);
+		    }
+		}
+	      temp =_particlec[iy]->CC();
+	      if(temp)
+		{
+		  if(!incoming(-_iparticlec[iy]))
+		    {
+		      _inpart.push_back(temp);
+		      _iinpart.push_back(-_iparticlec[iy]);
+		    }
+		}
+	      else
+		{
+		  if(!incoming(_iparticlec[iy]))
+		    {
+		      _inpart.push_back(_particlec[iy]);
+		      _iinpart.push_back(_iparticlec[iy]);
+		    }
+		}
+	    }
+
+	}
+      if(_npoint>=4)
+	{
+	  for(unsigned int iy=0;iy<size();++iy)
+	    {
+	      temp =_particled[iy]->CC();
+	      if(temp)
+		{
+		  if(!incoming(-_iparticled[iy]))
+		    {
+		      _inpart.push_back(temp);
+		      _iinpart.push_back(-_iparticled[iy]);
+		    }
+		}
+	      else
+		{
+		  if(!incoming(_iparticled[iy]))
+		    {
+		      _inpart.push_back(_particled[iy]);
+		      _iinpart.push_back(_iparticled[iy]);
+		    }
+		}
+	    }
+	}
+      if(_npoint==5)
+	{
+	  for(unsigned int iy=0;iy<size();++iy)
+	    {
+	      temp =_particlee[iy]->CC();
+	      if(temp)
+		{
+		  if(!incoming(-_iparticlee[iy]))
+		    {
+		      _inpart.push_back(temp);
+		      _iinpart.push_back(-_iparticlee[iy]);
+		    }
+		}
+	      else
+		{
+		  if(!incoming(_iparticlee[iy]))
+		    {
+		      _inpart.push_back(_particlee[iy]);
+		      _iinpart.push_back(_iparticlee[iy]);
+		    }
+		}
+	    }
+	}
+    }   
+  else{throw HelicityConsistencyError() << "VertexBase::setIncoming " 
+					<< "Outgoing particles already set" 
+					<< Exception::abortnow;}   
+}
+
+// set and get functions for the number of external particles
+inline int VertexBase::getNpoint(){return _npoint;}
+inline void VertexBase::setNpoint(int in){_npoint=in;}
+
+// is a particle allowed as an incoming particle
+inline bool VertexBase::incoming(int id)
+{
+  if(_iinpart.size()==0){return false;}
+  for(unsigned int ix=0;ix<_iinpart.size();++ix)
+    {if(_iinpart[ix]==id){return true;}}
+  return false;
+}
+
+// is a particle allowed as an outgoing particle
+inline bool VertexBase::outgoing(int id)
+{
+  if(_outpart.size()==0){return false;}
+  for(unsigned int ix=0;ix<_ioutpart.size();++ix)
+    {if(_ioutpart[ix]==id){return true;}}
+  return false;
+}
+
+// get the list of incoming particles
+inline vector<PDPtr> VertexBase::getIncoming()
+{return _inpart;}
+
+// get the list of outgoing particles
+inline vector<PDPtr> VertexBase::getOutgoing()
+{return _outpart;}
+
+// set the coupling
+inline void VertexBase::setNorm(const Complex & in){_norm = in;}
+
+// get the coupling
+inline const Complex & VertexBase::getNorm(){return _norm;}
+
+// calculate the propagator for a diagram
+inline Complex VertexBase::propagator(int iopt, Energy2 p2,tcPDPtr part)
+{
+  Complex prop;
+  Energy mass=part->mass();
+  Energy2 mass2=mass*mass;
+  Complex masswidth;
+  if(p2<0.){masswidth=0.;}
+  else if(iopt==1)
+    {masswidth=Complex(0.,1.)*mass*part->width();}
+  else if(iopt==2)
+    {
+      Energy p=sqrt(p2);
+      masswidth=Complex(0.,1.)*mass*
+	((part->widthGenerator())->width(*part,p));
+    }
+  else if(iopt==3)
+    {masswidth=0.;}
+  else if(iopt==4)
+    {return 1.;}
+  else
+    {throw HelicityConsistencyError() << "Unknown option in VertexBase::Propagator" 
+				      << Exception::abortnow;}
+  return 1./(p2-mass2+masswidth);
+}
+
+// propagator times coupling for a diagram
+inline Complex VertexBase::normPropagator(int iopt, Energy2 p2,tcPDPtr part)
+{
+  Complex prop;
+  Energy mass=part->mass();
+  Energy2 mass2=mass*mass;
+  Complex masswidth;
+  if(p2<0.){masswidth=0.;}
+  else if(iopt==1)
+    {masswidth=Complex(0.,1.)*mass*part->width();}
+  else if(iopt==2)
+    {
+      Energy p=sqrt(p2);
+      masswidth=Complex(0.,1.)*mass*
+	((part->widthGenerator())->width(*part,p));
+    }
+  else if(iopt==3)
+    {masswidth=0.;}
+  else if(iopt==4)
+    {return _norm;}
+  else
+    {throw HelicityConsistencyError() << "Unknown option in VertexBase::normPropagator" 
+				      << Exception::abortnow;}
+  return _norm/(p2-mass2+masswidth);
+}
+
+}
+}
