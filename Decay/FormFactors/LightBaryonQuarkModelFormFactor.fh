@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LightBaryonQuarkModelFormFactor class.
+//
+#ifndef HERWIG_LightBaryonQuarkModelFormFactor_FH
+#define HERWIG_LightBaryonQuarkModelFormFactor_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class LightBaryonQuarkModelFormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(LightBaryonQuarkModelFormFactor,LightBaryonQuarkModelFormFactorPtr);
+
+}
+
+#endif

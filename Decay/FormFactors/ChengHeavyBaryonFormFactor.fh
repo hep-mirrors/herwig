@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ChengHeavyBaryonFormFactor class.
+//
+#ifndef HERWIG_ChengHeavyBaryonFormFactor_FH
+#define HERWIG_ChengHeavyBaryonFormFactor_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ChengHeavyBaryonFormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(ChengHeavyBaryonFormFactor,ChengHeavyBaryonFormFactorPtr);
+
+}
+
+#endif

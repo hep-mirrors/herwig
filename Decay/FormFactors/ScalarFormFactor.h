@@ -83,6 +83,8 @@ using namespace ThePEG;
  *
  *  Classes inheriting from this class should specify which combinations of
  *  particles etc are allowed using the addFormFactor member.
+ *
+ * @see BaryonFormFactor
  */
 
 class ScalarFormFactor: public Interfaced {
@@ -130,6 +132,23 @@ public:
    */
   static void Init();
 
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
 public:
 
   /** @name Functions to give information about the form factors available. */
@@ -173,7 +192,7 @@ public:
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
   inline void formFactorInfo(int in,int out,int & ispin,
-					     int & spect,int & inquark, int & outquark);
+			     int & spect,int & inquark, int & outquark);
 
   /**
    * number of form factors

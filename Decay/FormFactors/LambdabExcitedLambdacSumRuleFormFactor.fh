@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LambdabExcitedLambdacSumRuleFormFactor class.
+//
+#ifndef HERWIG_LambdabExcitedLambdacSumRuleFormFactor_FH
+#define HERWIG_LambdabExcitedLambdacSumRuleFormFactor_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class LambdabExcitedLambdacSumRuleFormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(LambdabExcitedLambdacSumRuleFormFactor,LambdabExcitedLambdacSumRuleFormFactorPtr);
+
+}
+
+#endif

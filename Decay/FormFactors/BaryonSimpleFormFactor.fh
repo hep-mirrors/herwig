@@ -1,0 +1,15 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BaryonSimpleFormFactor class.
+//
+#ifndef ThePEG_BaryonSimpleFormFactor_FH
+#define ThePEG_BaryonSimpleFormFactor_FH
+
+namespace ThePEG {
+
+class BaryonSimpleFormFactor;
+ThePEG_DECLARE_CLASS_POINTERS(BaryonSimpleFormFactor,BaryonSimpleFormFactorPtr);
+
+}
+
+#endif
