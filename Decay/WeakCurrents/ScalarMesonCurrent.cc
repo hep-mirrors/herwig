@@ -99,18 +99,17 @@ bool ScalarMesonCurrent::createMode(int icharge,unsigned int imode,
 
 vector<LorentzPolarizationVector> 
 ScalarMesonCurrent::current(bool vertex, const int imode, const int ichan, 
-			    const Particle & inpart,
-			    const ParticleVector & decay) const
+			    Energy & scale,const ParticleVector & decay) const
 {
-  unsigned int imes=decay.size()-1;
+  scale = decay[0]->mass();
   // polarization vector
   vector<LorentzPolarizationVector> temp;
-  temp.push_back(_decay_constant[imode]*(decay[imes]->momentum())/inpart.mass());
+  temp.push_back(_decay_constant[imode]*(decay[0]->momentum())/decay[0]->mass());
   // set up the spin information for the particle
   if(vertex)
     {
-      SpinPtr stemp = new_ptr(ScalarSpinInfo(decay[imes]->momentum(),true));
-      decay[imes]->spinInfo(stemp);
+      SpinPtr stemp(new_ptr(ScalarSpinInfo(decay[0]->momentum(),true)));
+      decay[0]->spinInfo(stemp);
     }
   return temp;
 }
@@ -146,7 +145,3 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output)
 }
 
 }
-
-/*
-
- */

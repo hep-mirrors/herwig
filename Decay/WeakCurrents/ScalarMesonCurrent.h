@@ -109,14 +109,13 @@ public:
    * Hadronic current. This version returns the hadronic current described above.
    * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
-   * @param ichan The phase-space channel the current is needed for
-   * @param inpart The decaying particle.
+   * @param ichan The phase-space channel the current is needed for.
+   * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan, 
-						     const Particle & inpart,
+						     const int ichan, Energy & scale, 
 						     const ParticleVector & decay) const;
 
   /**
