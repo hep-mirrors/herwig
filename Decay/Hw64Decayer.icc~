@@ -1,0 +1,38 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Decayer class.
+//
+
+namespace Herwig {
+
+using namespace Pythia7;
+
+inline Hw64Decayer::Hw64Decayer() { } 
+
+inline Hw64Decayer::Hw64Decayer(const Hw64Decayer & x) : Pythia7::Decayer(x) {}
+
+inline IBPtr Hw64Decayer::clone() const {
+   Ptr<Hw64Decayer>::pointer rval = new Hw64Decayer();
+   rval->MECode = MECode;
+   return rval;
+}
+
+inline IBPtr Hw64Decayer::fullclone() const {
+   return clone();
+}
+
+inline void Hw64Decayer::doupdate() throw(UpdateException) {
+   Pythia7::HandlerBase::doupdate();
+   return;
+}
+
+inline void Hw64Decayer::doinit() throw(InitException) {
+   Pythia7::HandlerBase::doinit();
+}
+
+inline void Hw64Decayer::dofinish() {
+   Pythia7::HandlerBase::dofinish();
+}
+
+}
