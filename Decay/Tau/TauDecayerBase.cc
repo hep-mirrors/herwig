@@ -147,7 +147,8 @@ double TauDecayerBase::me2(bool vertex,
   // store the matrix element
   ME(newME);
   // return the answer
-  return 2.*(newME.contract(temp)).real()*_GF*_GF;  
+  double me= 2.*(newME.contract(temp)).real()*_GF*_GF;
+  return me;  
 }
 
 // the lepton currents for the different lepton helicities
