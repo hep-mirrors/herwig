@@ -5,24 +5,11 @@
 //
 
 #include "QtoQGSplitFun.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 
 
 QtoQGSplitFun::~QtoQGSplitFun() {}
-
-
-AbstractClassDescription<QtoQGSplitFun> QtoQGSplitFun::initQtoQGSplitFun;
-// Definition of the static class description member.
-
-
-void QtoQGSplitFun::Init() {
-
-  static ClassDocumentation<QtoQGSplitFun> documentation
-    ("This abstract class defines the exact LO splitting function Q->QG.");
-
-}
 
 
 Complex QtoQGSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {

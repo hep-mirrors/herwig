@@ -5,25 +5,12 @@
 //
 
 #include "GtoGGSplitFun.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
 #include "Pythia7/Repository/UseRandom.h"
 
 using namespace Herwig;
 
 
 GtoGGSplitFun::~GtoGGSplitFun() {}
-
-
-AbstractClassDescription<GtoGGSplitFun> GtoGGSplitFun::initGtoGGSplitFun;
-// Definition of the static class description member.
-
-
-void GtoGGSplitFun::Init() {
-
-  static ClassDocumentation<GtoGGSplitFun> documentation
-    ("This abstract class defines the exact LO splitting function G->GG.");
-
-}
 
 
 Complex GtoGGSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {

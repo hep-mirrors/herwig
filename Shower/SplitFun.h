@@ -15,8 +15,11 @@
 // <a href="http:SplitFun1to2.html">SplitFun1to2.h</a>, <BR>
 // <a href="http:SplitFun1to3.html">SplitFun1to3.h</a>.
 
-#include "Pythia7/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
+#include "Pythia7/Pointer/Ptr.h"
+#include "Pythia7/Pointer/ReferenceCounted.h"
+#include "Pythia7/Pointer/PtrTraits.h"
+#include "Pythia7/Pointer/RCPtr.h"
 #include "Herwig++/Config/GlobalParameters.h"
 #include "ShowerIndex.h"
 
@@ -25,7 +28,7 @@ namespace Herwig {
 
 using namespace Pythia7;
 
-class SplitFun: public Pythia7::HandlerBase {
+class SplitFun: public ReferenceCounted  {
 
 public:
 
@@ -52,33 +55,7 @@ public:
   inline Energy massEmitter() const;
   // PDG id and mass of the emitting (showering) particle.
 
-public:
-
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
-protected:
-
-  inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
-
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
-
-  inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
-
 private:
-
-  static AbstractClassDescription<SplitFun> initSplitFun;
-  // Describe an abstract base class with persistent data.
 
   SplitFun & operator=(const SplitFun &);
   //  Private and non-existent assignment operator.
@@ -88,31 +65,6 @@ private:
   long _idEmitter;
   Energy _mEmitter;
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of SplitFun.
-template <>
-struct BaseClassTrait<Herwig::SplitFun,1> {
-  typedef Pythia7::HandlerBase NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::SplitFun>: public ClassTraitsBase<Herwig::SplitFun> {
-  static string className() { return "/Herwig++/SplitFun"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

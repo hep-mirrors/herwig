@@ -37,44 +37,11 @@ public:
   virtual ~SplitFun1to3();
   // Standard ctors and dtor.
 
-public:
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
 private:
-
-  static AbstractClassDescription<SplitFun1to3> initSplitFun1to3;
-  // Describe an abstract base class with persistent data.
 
   SplitFun1to3 & operator=(const SplitFun1to3 &);
   //  Private and non-existent assignment operator.
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of SplitFun1to3.
-template <>
-struct BaseClassTrait<Herwig::SplitFun1to3,1> {
-  typedef Herwig::SplitFun NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::SplitFun1to3>: public ClassTraitsBase<Herwig::SplitFun1to3> {
-  static string className() { return "/Herwig++/SplitFun1to3"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

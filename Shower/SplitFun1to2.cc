@@ -5,25 +5,11 @@
 //
 
 #include "SplitFun1to2.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 
 
 SplitFun1to2::~SplitFun1to2() {}
-
-
-AbstractClassDescription<SplitFun1to2> SplitFun1to2::initSplitFun1to2;
-// Definition of the static class description member.
-
-
-void SplitFun1to2::Init() {
-
-  static ClassDocumentation<SplitFun1to2> documentation
-    ("This is the abstract class from which all 1->2 splitting function ",
-     "classes inherit from.");
-
-}
 
 
 Complex SplitFun1to2::overestimateFullFun( const double z, const double phi ) {
@@ -63,5 +49,4 @@ Complex SplitFun1to2::invIntegOverIntegratedFun(const double r) {
 void SplitFun1to2::colourConnection( const ShoColinePair & parentShoColinePair,
 				     ShoColinePair & firstProductShoColinePair,
 				     ShoColinePair & secondProductShoColinePair ) {}
-
 

@@ -528,7 +528,7 @@ void SplittingGenerator::initializeRun() {
     if ( isDtoDGsplittingON() ) {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id ) );        
+	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) ); 
         sudakov->setupLookupTables();
@@ -536,7 +536,7 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -549,7 +549,7 @@ void SplittingGenerator::initializeRun() {
     if ( isUtoUGsplittingON() ) {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id ) );
+	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -557,7 +557,7 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );   
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) ); 
         sudakov->setupLookupTables();
@@ -570,7 +570,7 @@ void SplittingGenerator::initializeRun() {
     if ( isStoSGsplittingON() ) {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) ); 
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -578,7 +578,7 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id ) );        
+	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -591,7 +591,7 @@ void SplittingGenerator::initializeRun() {
     if ( isCtoCGsplittingON() ) {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -599,7 +599,7 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id ) );     
+	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -612,7 +612,7 @@ void SplittingGenerator::initializeRun() {
     if ( isBtoBGsplittingON() ) {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -620,7 +620,7 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -633,7 +633,7 @@ void SplittingGenerator::initializeRun() {
     if ( isTtoTGsplittingON() ) {
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_QtoQGSplitFun( index.id ) );      
+	splitFun = new_ptr( IS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -641,7 +641,7 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_QtoQGSplitFun( index.id ) );     
+	splitFun = new_ptr( FS_QtoQGSplitFun( index.id, getParticleData( index.id )->mass() ) );
 	sudakov  = new_ptr( QtoQGSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						    minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -673,7 +673,8 @@ void SplittingGenerator::initializeRun() {
     if ( isGtoUUbarsplittingON() ) { 
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::u ) );  
+	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::u,
+						 getParticleData( ParticleID::u )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -681,7 +682,8 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::u ) );
+	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::u,
+						 getParticleData( ParticleID::u )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -692,7 +694,8 @@ void SplittingGenerator::initializeRun() {
     if ( isGtoDDbarsplittingON() ) { 
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::d ) );     
+	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::d,
+						 getParticleData( ParticleID::d )->mass() ) );     
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -700,7 +703,8 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::d ) );  
+	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::d,
+						 getParticleData( ParticleID::d )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -711,7 +715,8 @@ void SplittingGenerator::initializeRun() {
     if ( isGtoSSbarsplittingON() ) { 
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::s ) );  
+	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::s,
+						 getParticleData( ParticleID::s )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -719,7 +724,8 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::s ) );     
+	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::s,
+						 getParticleData( ParticleID::s )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -730,7 +736,8 @@ void SplittingGenerator::initializeRun() {
     if ( isGtoCCbarsplittingON() ) { 
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::c ) );
+	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::c,
+						 getParticleData( ParticleID::c )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -738,7 +745,8 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::c ) );  
+	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::c,
+						 getParticleData( ParticleID::c )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -749,7 +757,8 @@ void SplittingGenerator::initializeRun() {
     if ( isGtoBBbarsplittingON() ) { 
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::b ) );  
+	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::b,
+						 getParticleData( ParticleID::b )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -757,7 +766,8 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::b ) );    
+	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::b,
+						 getParticleData( ParticleID::b )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -768,7 +778,8 @@ void SplittingGenerator::initializeRun() {
     if ( isGtoTTbarsplittingON() ) { 
       if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
 	index.timeFlag = ShowerIndex::IS;
-	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::t ) );     
+	splitFun = new_ptr( IS_GtoQQbarSplitFun( ParticleID::t,
+						 getParticleData( ParticleID::t )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -776,7 +787,8 @@ void SplittingGenerator::initializeRun() {
       }
       if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
 	index.timeFlag = ShowerIndex::FS;
-	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::t ) );  
+	splitFun = new_ptr( FS_GtoQQbarSplitFun( ParticleID::t,
+						 getParticleData( ParticleID::t )->mass() ) );
 	sudakov  = new_ptr( GtoQQbarSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQCD,
 						       minQValue, maxQValue ) );
         sudakov->setupLookupTables();
@@ -798,7 +810,7 @@ void SplittingGenerator::initializeRun() {
     //if ( isUtoUGammaSplittingON() ) {
     //	if ( isISRadiationON( index.interaction ) ) {  // Initial State Radiation
     //	  index.timeFlag = ShowerIndex::IS;
-    //	  splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id ) );        
+    //	  splitFun = new_ptr( IS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
     //	  sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerIS_ShowerAlphaQED,
     //    						  minQValue, maxQValue ) );
     //    sudakov->setupLookupTables();
@@ -806,7 +818,7 @@ void SplittingGenerator::initializeRun() {
     //	}
     //	if ( isFSRadiationON( index.interaction ) ) {  // Final State Radiation
     //	  index.timeFlag = ShowerIndex::FS;
-    //	  splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id ) );     
+    //	  splitFun = new_ptr( FS_QtoQGammaSplitFun( index.id, getParticleData( index.id )->mass() ) );
     //	  sudakov  = new_ptr( QtoQGammaSudakovFormFactor( splitFun, _pointerFS_ShowerAlphaQED,
     // 						          minQValue, maxQValue ) );
     //    sudakov->setupLookupTables();

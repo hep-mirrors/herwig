@@ -7,33 +7,18 @@
 namespace Herwig {
 
 
-inline IS_QtoQGSplitFun::IS_QtoQGSplitFun() 
-  : QtoQGSplitFun() {}
+  inline IS_QtoQGSplitFun::IS_QtoQGSplitFun() 
+    : QtoQGSplitFun() {}
 
 
-inline IS_QtoQGSplitFun::IS_QtoQGSplitFun(const IS_QtoQGSplitFun & x)
-  : QtoQGSplitFun(x) {}
+  inline IS_QtoQGSplitFun::IS_QtoQGSplitFun(const IS_QtoQGSplitFun & x)
+    : QtoQGSplitFun(x) {}
 
 
-inline IS_QtoQGSplitFun::
-IS_QtoQGSplitFun( const long inputIdQuark ) 
-  : QtoQGSplitFun( inputIdQuark )
-{}
-  
-
-inline IS_QtoQGSplitFun::
-IS_QtoQGSplitFun( const long inputIdQuark, const Energy inputMassQuark )
-  : QtoQGSplitFun( inputIdQuark, inputMassQuark )
-{}
-
-
-inline IBPtr IS_QtoQGSplitFun::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr IS_QtoQGSplitFun::fullclone() const {
-  return new_ptr(*this);
-}
+  inline IS_QtoQGSplitFun::
+  IS_QtoQGSplitFun( const long inputIdQuark, const Energy inputMassQuark )
+    : QtoQGSplitFun( inputIdQuark, inputMassQuark )
+  {}
 
 
 }

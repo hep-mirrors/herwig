@@ -51,44 +51,11 @@ public:
 				 ShoColinePair & secondProductShoColinePair );
   // See long comment on this method on class <!class>SplitFun1to2<!!class>.
 
-public:
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
 private:
-
-  static AbstractClassDescription<GtoGGSplitFun> initGtoGGSplitFun;
-  // Describe an abstract base class with persistent data.
 
   GtoGGSplitFun & operator=(const GtoGGSplitFun &);
   //  Private and non-existent assignment operator.
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of GtoGGSplitFun.
-template <>
-struct BaseClassTrait<Herwig::GtoGGSplitFun,1> {
-  typedef Herwig::SplitFun1to2 NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::GtoGGSplitFun>: public ClassTraitsBase<Herwig::GtoGGSplitFun> {
-  static string className() { return "/Herwig++/GtoGGSplitFun"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

@@ -20,8 +20,11 @@
 // <a href="http:GtoQQbarSudakovFormFactor.html">GtoQQbarSudakovFormFactor.h</a>.
 // 
 
-#include "Pythia7/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
+#include "Pythia7/Pointer/Ptr.h"
+#include "Pythia7/Pointer/ReferenceCounted.h"
+#include "Pythia7/Pointer/PtrTraits.h"
+#include "Pythia7/Pointer/RCPtr.h"
 #include "Herwig++/Config/GlobalParameters.h"
 #include "SplitFun.h"
 #include "ShowerAlpha.h"
@@ -32,7 +35,7 @@ namespace Herwig {
 using namespace Pythia7;
 
 
-class SudakovFormFactor: public Pythia7::HandlerBase {
+class SudakovFormFactor: public ReferenceCounted {
 
 public:
 
@@ -90,11 +93,6 @@ public:
   // only for a 1->2 splitting, but in future other variables
   // could be added as well for describing also a 1->3 splitting.
  
-public:
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
 protected:
 
   Energy _q;
@@ -115,24 +113,7 @@ protected:
   //               in the protected part because they should be
   //               used only by the derived classes.
 
-protected:
-
-  inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void dofinish();
-  // Standard Interfaced virtual functions.
-
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-  // Change all pointers to Interfaced objects to corresponding clones.
-
-  inline virtual IVector getReferences();
-  // Return pointers to all Interfaced objects refered to by this.
-
 private:
-
-  static AbstractClassDescription<SudakovFormFactor> initSudakovFormFactor;
-  // Describe an abstract base class with persistent data.
 
   SudakovFormFactor & operator=(const SudakovFormFactor &);
   //  Private and non-existent assignment operator.
@@ -146,31 +127,6 @@ private:
   //               to implement the general methods for the numeric
   //               evaluation which are defined in the protected part.
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of SudakovFormFactor.
-template <>
-struct BaseClassTrait<Herwig::SudakovFormFactor,1> {
-  typedef Pythia7::HandlerBase NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::SudakovFormFactor>: public ClassTraitsBase<Herwig::SudakovFormFactor> {
-  static string className() { return "/Herwig++/SudakovFormFactor"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

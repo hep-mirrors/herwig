@@ -6,9 +6,9 @@
 
 namespace Herwig {
 
-inline SplitFun1to3::SplitFun1to3() {}
+  inline SplitFun1to3::SplitFun1to3() {}
 
-inline SplitFun1to3::SplitFun1to3(const SplitFun1to3 & x)
-  : SplitFun(x) {}
-
+  inline SplitFun1to3::SplitFun1to3(const SplitFun1to3 & x)
+    : SplitFun(x) {}
+  
 }

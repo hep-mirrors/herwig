@@ -6,9 +6,9 @@
 
 namespace Herwig {
 
-inline GtoGGGSplitFun::GtoGGGSplitFun() {}
-
-inline GtoGGGSplitFun::GtoGGGSplitFun(const GtoGGGSplitFun & x)
-  : SplitFun1to3(x) {}
-
+  inline GtoGGGSplitFun::GtoGGGSplitFun() {}
+  
+  inline GtoGGGSplitFun::GtoGGGSplitFun(const GtoGGGSplitFun & x)
+    : SplitFun1to3(x) {}
+  
 }

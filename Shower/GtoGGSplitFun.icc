@@ -7,13 +7,14 @@
 namespace Herwig {
 
 
-inline GtoGGSplitFun::GtoGGSplitFun()
-  : SplitFun1to2( ShowerIndex::QCD, ParticleID::g, ParticleID::g, ParticleID::g ) 
-{}
+  inline GtoGGSplitFun::GtoGGSplitFun()
+    : SplitFun1to2( ShowerIndex::QCD, ParticleID::g, Energy(),
+		    ParticleID::g, Energy(), ParticleID::g, Energy() ) 
+  {}
 
 
-inline GtoGGSplitFun::GtoGGSplitFun(const GtoGGSplitFun & x)
-  : SplitFun1to2(x) {}
-
+  inline GtoGGSplitFun::GtoGGSplitFun(const GtoGGSplitFun & x)
+    : SplitFun1to2(x) {}
+  
 
 }

@@ -7,28 +7,19 @@
 namespace Herwig {
 
 
-inline QtoQGammaSudakovFormFactor::QtoQGammaSudakovFormFactor() 
-  : SudakovFormFactor() {}
+  inline QtoQGammaSudakovFormFactor::QtoQGammaSudakovFormFactor() 
+    : SudakovFormFactor() {}
 
 
-inline QtoQGammaSudakovFormFactor::QtoQGammaSudakovFormFactor(const QtoQGammaSudakovFormFactor & x)
-  : SudakovFormFactor(x) {}
+  inline QtoQGammaSudakovFormFactor::QtoQGammaSudakovFormFactor(const QtoQGammaSudakovFormFactor & x)
+    : SudakovFormFactor(x) {}
 
 
-inline QtoQGammaSudakovFormFactor::
-QtoQGammaSudakovFormFactor( const SplitFunPtr inputSplitFun, 
-			    const tShowerAlphaPtr inputShowerAlpha,
-			    const Energy inputInfScale, const Energy inputSupScale ) :
-  SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale) {}
+  inline QtoQGammaSudakovFormFactor::
+  QtoQGammaSudakovFormFactor( const SplitFunPtr inputSplitFun, 
+			      const tShowerAlphaPtr inputShowerAlpha,
+			      const Energy inputInfScale, const Energy inputSupScale ) :
+    SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale) {}
   
-
-inline IBPtr QtoQGammaSudakovFormFactor::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr QtoQGammaSudakovFormFactor::fullclone() const {
-  return new_ptr(*this);
-}
-
 
 }

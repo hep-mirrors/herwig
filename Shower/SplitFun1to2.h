@@ -40,18 +40,13 @@ public:
   // Standard ctors and dtor.
 
   inline SplitFun1to2( const ShowerIndex::InteractionType interaction,
-		       const long inputIdEmitter,
-		       const long inputIdFirstProduct, const long inputIdSecondProduct );
-  inline SplitFun1to2( const ShowerIndex::InteractionType interaction,
 		       const long inputIdEmitter, const Energy inputMassEmitter,
 		       const long inputIdFirstProduct, const Energy inputMassFirstProduct,
 		       const long inputIdSecondProduct, const Energy inputMassSecondProduct );
-  // It Specifies the interaction type (QCD,QED,EWK,...) of the vertex <I>A -&GT; B + C</I>, 
-  // the PDG id for the emitter (<I>A</I>),
-  // the ids of the two emission products (<I>B</I> and <I>C</I>).
-  // If the mass is not specified, then the nominal mass is assumed
-  // (therefore for Susy sparticles with large widths their masses
-  //  should be given because they can be different from the nominal ones).
+  // It Specifies the interaction type (QCD,QED,EWK,...) of the vertex 
+  // <I>A -&GT; B + C</I>, the PDG id for the emitter (<I>A</I>),
+  // its mass, the ids of the two emission products (<I>B</I> and <I>C</I>).
+  // and their masses.
   
   inline long idFirstProduct() const;
   inline Energy massFirstProduct() const;
@@ -129,16 +124,7 @@ public:
   // function the same operation of setting the color lines to
   // proper particles. 
 
-public:
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces
-
-
 private:
-
-  static AbstractClassDescription<SplitFun1to2> initSplitFun1to2;
-  // Describe an abstract base class with persistent data.
 
   SplitFun1to2 & operator=(const SplitFun1to2 &);
   //  Private and non-existent assignment operator.
@@ -148,31 +134,6 @@ private:
   long _id2;
   Energy _m2;
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of SplitFun1to2.
-template <>
-struct BaseClassTrait<Herwig::SplitFun1to2,1> {
-  typedef Herwig::SplitFun NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::SplitFun1to2>: public ClassTraitsBase<Herwig::SplitFun1to2> {
-  static string className() { return "/Herwig++/SplitFun1to2"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

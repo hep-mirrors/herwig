@@ -44,54 +44,11 @@ public:
   // (when it is not equal to the default, false, value) only for 
   // Final State branching of a decaying on-shell particle. 
 
-public:
-
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
-protected:
-
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
-
 private:
-
-  static ClassDescription<GtoGGSudakovFormFactor> initGtoGGSudakovFormFactor;
-  // Describe an concrete class with persistent data.
 
   GtoGGSudakovFormFactor & operator=(const GtoGGSudakovFormFactor &);
   //  Private and non-existent assignment operator.
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of GtoGGSudakovFormFactor.
-template <>
-struct BaseClassTrait<Herwig::GtoGGSudakovFormFactor,1> {
-  typedef Herwig::SudakovFormFactor NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::GtoGGSudakovFormFactor>: public ClassTraitsBase<Herwig::GtoGGSudakovFormFactor> {
-  static string className() { return "/Herwig++/GtoGGSudakovFormFactor"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

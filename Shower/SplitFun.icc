@@ -7,88 +7,47 @@
 namespace Herwig {
 
 
-inline SplitFun::SplitFun() :
-  _interaction( ShowerIndex::UNDEFINED ),
-  _numProducts( 0 ),
-  _idEmitter( 0 ),
-  _mEmitter( Energy() )
-{}
-
-
-inline SplitFun::SplitFun(const SplitFun & x)
-  : Pythia7::HandlerBase(x),
-	     _interaction( x._interaction ),
-	     _numProducts( x._numProducts ),
-	     _idEmitter( x._idEmitter ),
-	     _mEmitter( x._mEmitter )
-{}
-
-
-inline SplitFun::SplitFun( const ShowerIndex::InteractionType interaction,
-			   const int inputNumBranchingProducts,
-			   const long inputIdEmitter, const Energy inputMassEmitter) 
-  : _interaction( interaction ),
-    _numProducts( inputNumBranchingProducts ),
-    _idEmitter( inputIdEmitter ),
-    _mEmitter( inputMassEmitter )
-{}
-
-
-inline ShowerIndex::InteractionType SplitFun::interactionType() const {
-  return _interaction;
-}
+  inline SplitFun::SplitFun() :
+    _interaction( ShowerIndex::UNDEFINED ),
+    _numProducts( 0 ),
+    _idEmitter( 0 ),
+    _mEmitter( Energy() )
+  {}
   
-inline int SplitFun::numBranchingProducts() const {
-  return _numProducts;
-}
-
-inline long SplitFun::idEmitter() const {
-  return _idEmitter;
-}
-
-inline Energy SplitFun::massEmitter() const {
-  return _mEmitter;
-}
-
-
-//----------------------------------------------------------------
-
-inline void SplitFun::doupdate() throw(UpdateException) {
-  Pythia7::HandlerBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void SplitFun::doinit() throw(InitException) {
-  Pythia7::HandlerBase::doinit();
-}
-
-inline void SplitFun::dofinish() {
-  Pythia7::HandlerBase::dofinish();
-}
-
-inline void SplitFun::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  Pythia7::HandlerBase::rebind(trans);
-}
-
-inline IVector SplitFun::getReferences() {
-  IVector ret = Pythia7::HandlerBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
+  
+  inline SplitFun::SplitFun(const SplitFun & x)
+    : _interaction( x._interaction ),
+      _numProducts( x._numProducts ),
+      _idEmitter( x._idEmitter ),
+      _mEmitter( x._mEmitter )
+  {}
+  
+  
+  inline SplitFun::SplitFun( const ShowerIndex::InteractionType interaction,
+			     const int inputNumBranchingProducts,
+			     const long inputIdEmitter, const Energy inputMassEmitter) 
+    : _interaction( interaction ),
+      _numProducts( inputNumBranchingProducts ),
+      _idEmitter( inputIdEmitter ),
+      _mEmitter( inputMassEmitter )
+  {}
+  
+  
+  inline ShowerIndex::InteractionType SplitFun::interactionType() const {
+    return _interaction;
+  }
+  
+  inline int SplitFun::numBranchingProducts() const {
+    return _numProducts;
+  }
+  
+  inline long SplitFun::idEmitter() const {
+    return _idEmitter;
+  }
+  
+  inline Energy SplitFun::massEmitter() const {
+    return _mEmitter;
+  }
+  
+  
 }

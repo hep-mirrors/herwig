@@ -7,28 +7,19 @@
 namespace Herwig {
 
 
-inline GtoGGSudakovFormFactor::GtoGGSudakovFormFactor() 
-  : SudakovFormFactor() {}
+  inline GtoGGSudakovFormFactor::GtoGGSudakovFormFactor() 
+    : SudakovFormFactor() {}
 
 
-inline GtoGGSudakovFormFactor::GtoGGSudakovFormFactor(const GtoGGSudakovFormFactor & x)
-  : SudakovFormFactor(x) {}
+  inline GtoGGSudakovFormFactor::GtoGGSudakovFormFactor(const GtoGGSudakovFormFactor & x)
+    : SudakovFormFactor(x) {}
 
 
-inline GtoGGSudakovFormFactor::
-GtoGGSudakovFormFactor( const SplitFunPtr inputSplitFun, 
-			const tShowerAlphaPtr inputShowerAlpha,
-			const Energy inputInfScale, const Energy inputSupScale ) :
-  SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale) {}
+  inline GtoGGSudakovFormFactor::
+  GtoGGSudakovFormFactor( const SplitFunPtr inputSplitFun, 
+			  const tShowerAlphaPtr inputShowerAlpha,
+			  const Energy inputInfScale, const Energy inputSupScale ) :
+    SudakovFormFactor(inputSplitFun, inputShowerAlpha, inputInfScale, inputSupScale) {}
   
-
-inline IBPtr GtoGGSudakovFormFactor::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr GtoGGSudakovFormFactor::fullclone() const {
-  return new_ptr(*this);
-}
-
 
 }

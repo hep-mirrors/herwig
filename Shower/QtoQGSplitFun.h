@@ -32,7 +32,6 @@ public:
   virtual ~QtoQGSplitFun();
   // Standard ctors and dtor.
 
-  inline QtoQGSplitFun( const long inputIdQuark );
   inline QtoQGSplitFun( const long inputIdQuark, const Energy inputMassQuark );
 
   virtual Complex fullFun( const double z, const Energy2 qtilde2, const double phi );
@@ -61,44 +60,11 @@ public:
   // Remember that the first branching product is considered the quark
   // and the second one the gluon.
 
-public:
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
 private:
-
-  static AbstractClassDescription<QtoQGSplitFun> initQtoQGSplitFun;
-  // Describe an abstract base class with persistent data.
 
   QtoQGSplitFun & operator=(const QtoQGSplitFun &);
   //  Private and non-existent assignment operator.
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of QtoQGSplitFun.
-template <>
-struct BaseClassTrait<Herwig::QtoQGSplitFun,1> {
-  typedef Herwig::SplitFun1to2 NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::QtoQGSplitFun>: public ClassTraitsBase<Herwig::QtoQGSplitFun> {
-  static string className() { return "/Herwig++/QtoQGSplitFun"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }

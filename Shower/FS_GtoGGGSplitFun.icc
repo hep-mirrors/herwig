@@ -6,17 +6,11 @@
 
 namespace Herwig {
 
-inline FS_GtoGGGSplitFun::FS_GtoGGGSplitFun() {}
 
-inline FS_GtoGGGSplitFun::FS_GtoGGGSplitFun(const FS_GtoGGGSplitFun & x)
-  : GtoGGGSplitFun(x) {}
+  inline FS_GtoGGGSplitFun::FS_GtoGGGSplitFun() {}
 
-inline IBPtr FS_GtoGGGSplitFun::clone() const {
-  return new_ptr(*this);
-}
+  inline FS_GtoGGGSplitFun::FS_GtoGGGSplitFun(const FS_GtoGGGSplitFun & x)
+    : GtoGGGSplitFun(x) {}
 
-inline IBPtr FS_GtoGGGSplitFun::fullclone() const {
-  return new_ptr(*this);
-}
 
 }

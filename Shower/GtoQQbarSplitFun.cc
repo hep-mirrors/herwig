@@ -5,24 +5,11 @@
 //
 
 #include "GtoQQbarSplitFun.h"
-#include "Pythia7/Interface/ClassDocumentation.h"
 
 using namespace Herwig;
 
 
 GtoQQbarSplitFun::~GtoQQbarSplitFun() {}
-
-
-AbstractClassDescription<GtoQQbarSplitFun> GtoQQbarSplitFun::initGtoQQbarSplitFun;
-// Definition of the static class description member.
-
-
-void GtoQQbarSplitFun::Init() {
-
-  static ClassDocumentation<GtoQQbarSplitFun> documentation
-    ("This abstract class defines the exact LO splitting function G->QQbar.");
-
-}
 
 
 Complex GtoQQbarSplitFun::fullFun( const double z, const Energy2 qtilde2, const double phi ) {

@@ -7,33 +7,18 @@
 namespace Herwig {
 
 
-inline FS_GtoQQbarSplitFun::FS_GtoQQbarSplitFun()
-  : GtoQQbarSplitFun() {}
+  inline FS_GtoQQbarSplitFun::FS_GtoQQbarSplitFun()
+    : GtoQQbarSplitFun() {}
 
 
-inline FS_GtoQQbarSplitFun::FS_GtoQQbarSplitFun(const FS_GtoQQbarSplitFun & x)
-  : GtoQQbarSplitFun(x) {}
+  inline FS_GtoQQbarSplitFun::FS_GtoQQbarSplitFun(const FS_GtoQQbarSplitFun & x)
+    : GtoQQbarSplitFun(x) {}
 
 
-inline FS_GtoQQbarSplitFun::
-FS_GtoQQbarSplitFun( const long inputIdQuark ) 
-  : GtoQQbarSplitFun( inputIdQuark )
-{}
-  
-
-inline FS_GtoQQbarSplitFun::
-FS_GtoQQbarSplitFun( const long inputIdQuark, const Energy inputMassQuark)
-  : GtoQQbarSplitFun( inputIdQuark, inputMassQuark )
-{}
-
-
-inline IBPtr FS_GtoQQbarSplitFun::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr FS_GtoQQbarSplitFun::fullclone() const {
-  return new_ptr(*this);
-}
+  inline FS_GtoQQbarSplitFun::
+  FS_GtoQQbarSplitFun( const long inputIdQuark, const Energy inputMassQuark)
+    : GtoQQbarSplitFun( inputIdQuark, inputMassQuark )
+  {}
 
 
 }

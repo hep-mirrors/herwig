@@ -52,54 +52,11 @@ public:
   // you should *not* override the virtual methods defined in the
   // base class <!class>QtoQGSplitFun<!!class>.
 
-public:
-
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
-  // Standard functions for writing and reading from persistent streams.
-
-  static void Init();
-  // Standard Init function used to initialize the interfaces.
-
-protected:
-
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  // Standard clone methods.
-
 private:
-
-  static ClassDescription<IS_QtoQGSplitFun> initIS_QtoQGSplitFun;
-  // Describe an abstract base class with persistent data.
 
   IS_QtoQGSplitFun & operator=(const IS_QtoQGSplitFun &);
   //  Private and non-existent assignment operator.
 
-};
-
-}
-
-// CLASSDOC OFF
-
-namespace Pythia7 {
-
-// The following template specialization informs Pythia7 about the
-// base class of IS_QtoQGSplitFun.
-template <>
-struct BaseClassTrait<Herwig::IS_QtoQGSplitFun,1> {
-  typedef Herwig::QtoQGSplitFun NthBase;
-};
-
-// The following template specialization informs Pythia7 about the
-// name of this class and the shared object where it is defined.
-template <>
-struct ClassTraits<Herwig::IS_QtoQGSplitFun>: public ClassTraitsBase<Herwig::IS_QtoQGSplitFun> {
-  static string className() { return "/Herwig++/IS_QtoQGSplitFun"; }
-  // Return the class name.
-  static string library() { return "libHwShower.so"; }
-  // Return the name of the shared library to be loaded to get
-  // access to this class and every other class it uses
-  // (except the base class).
 };
 
 }
