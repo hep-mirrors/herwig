@@ -28,28 +28,46 @@ class GaussianIntegral: public AbsFunctional {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Constructors (default with only the limits).
+   * Constructor (default with only the limits).
+   * @param lower The lower limit of integration.
+   * @param upper The upper limit of integration.
    */
   inline GaussianIntegral(double lower, double upper);
 
   /**
    * Specify all the parameters.
+   * @param lower The lower limit of integration.
+   * @param upper The upper limit of integration.
+   * @param abserr Absolute error.
+   * @param relerr Relative error.
+   * @param binwidth Width of the bin as a fraction of the integration region.
+   * @param maxint Maximum number of intervals
+   * @param maxeval Maximum number of function evaluations
    */
   inline GaussianIntegral(double lower, double upper, 
 			  double abserr, double relerr, double binwidth,
 			  int maxint, int maxeval);
 
   /**
-   * Standard ctors and dtor.
+   * Destructor.
    */
   ~GaussianIntegral();
+  //@}
 
   /**
    * Take the definite integral of a function between the bounds.
    */
   virtual double operator [] (const AbsFunction & function) const;
   
+  /**
+   * Reset the integration limits.
+   * @param lower The lower limit of integration.
+   * @param upper The upper limit of integration.
+   */
+  inline void resetLimits(double lower,double upper);
 private:
 
   /**
@@ -70,9 +88,14 @@ private:
   vector< vector <double> > _abscissae;
 
   /**
-   * Limits of the integral.
+   * Lower limit on the integral
    */
-  double _lower,_upper;
+  double _lower;
+
+  /**
+   * Upper limit on the integral
+   */
+  double _upper;
 
   /**
    * The parameters controlling the error.

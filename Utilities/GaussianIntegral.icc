@@ -128,4 +128,6 @@ inline void GaussianIntegral::Init()
   _abscissae.push_back(vector<double>(order96abs,order96abs+48));
 }
 
+inline void GaussianIntegral::resetLimits(double lower,double upper)
+{_lower=lower;_upper=upper;}
 }
