@@ -129,13 +129,12 @@ public:
    * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
    * @param ichan The phase-space channel the current is needed for
-   * @param inpart The decaying particle.
+   * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan, 
-						     const Particle & inpart,
+						     const int ichan,Energy & scale,  
 						     const ParticleVector & decay) const;
 
   /**
@@ -188,7 +187,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.

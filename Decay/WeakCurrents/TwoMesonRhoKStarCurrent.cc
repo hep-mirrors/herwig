@@ -34,6 +34,82 @@ using ThePEG::Helicity::ScalarSpinInfo;
 
 TwoMesonRhoKStarCurrent::~TwoMesonRhoKStarCurrent() {}
 
+void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+  // the resonances
+  tPDPtr res[6]={getParticleData(-213   ),getParticleData(-100213),
+		 getParticleData(-30213 ),getParticleData(-323   ),
+		 getParticleData(-100323),getParticleData(-30323 )};
+  // reset the masses in the form-factors if needed
+  if(_rhoparameters&&_rhomasses.size()<3)
+    {
+      for(unsigned int ix=_rhomasses.size();ix<3;++ix)
+	{
+	  _rhomasses.push_back(res[ix]->mass() );
+	  _rhowidths.push_back(res[ix]->width());
+	}
+    }
+  else
+    {
+      _rhomasses.resize(3);
+      for(unsigned int ix=0;ix<3;++ix)
+	{
+	  _rhomasses.push_back(res[ix]->mass() );
+	  _rhowidths.push_back(res[ix]->width());
+	}
+    }
+  // then the Kstar resonances
+  if(_Kstarparameters&&_Kstarmasses.size()<3)
+    {
+      for(unsigned int ix=_Kstarmasses.size();ix<3;++ix)
+	{
+	  _Kstarmasses.push_back(res[ix+3]->mass());
+	  _Kstarwidths.push_back(res[ix+3]->width());
+	}
+    }
+  else
+    {
+      _Kstarmasses.resize(3);
+      for(unsigned int ix=0;ix<3;++ix)
+	{
+	  _Kstarmasses.push_back(res[ix+3]->mass());
+	  _Kstarwidths.push_back(res[ix+3]->width());
+	}
+    }
+  // set up for the Breit Wigners
+  Energy mpi0    = getParticleData(ParticleID::pi0)->mass();
+  Energy mpiplus = getParticleData(ParticleID::piplus)->mass();
+  Energy mk0     = getParticleData(ParticleID::Kplus)->mass();
+  // rho resonances
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      _mass.push_back(_rhomasses[ix]);
+      _width.push_back(_rhowidths[ix]);
+      _mass2.push_back(_mass[ix]*_mass[ix]);
+      _massw.push_back(_mass[ix]*_width[ix]);
+      _massa.push_back(mpi0);
+      _massb.push_back(mpiplus);
+      _mom.push_back(pcm(ix,_mass[ix]));
+      _hm2.push_back(GSModelhFunction(ix,_mass[ix]));
+      _dparam.push_back(GSModelDParameter(ix));
+      _dhdq2.push_back(GSModeldhdq2Parameter(ix));
+    }
+  // Kstar resonances
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      _mass.push_back(_Kstarmasses[ix]);
+      _width.push_back(_Kstarwidths[ix]);
+      _mass2.push_back(_mass[ix+3]*_mass[ix+3]);
+      _massw.push_back(_mass[ix+3]*_width[ix+3]);
+      _massa.push_back(mk0);
+      _massb.push_back(mpiplus);
+      _mom.push_back(pcm(ix+3,_mass[ix+3]));
+      _hm2.push_back(GSModelhFunction(ix+3,_mass[ix+3]));
+      _dparam.push_back(GSModelDParameter(ix+3));
+      _dhdq2.push_back(GSModeldhdq2Parameter(ix+3));
+    }
+}
+
 void TwoMesonRhoKStarCurrent::persistentOutput(PersistentOStream & os) const {
   os << _pimodel << _Kmodel << _piwgt << _kwgt << _rhoparameters
      << _Kstarparameters << _rhomasses << _rhowidths << _Kstarmasses << _Kstarwidths
@@ -331,15 +407,15 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVector> 
-TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan, 
-				 const Particle & inpart,
-				 const ParticleVector & outpart) const
-{
-  // find the mesons
-  unsigned int imes[2]={outpart.size()-2,outpart.size()-1};
+TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
+				 Energy & scale,const ParticleVector & outpart) const
+{;
   // momentum difference and sum of the mesons
-  Lorentz5Momentum pdiff=outpart[imes[0]]->momentum()-outpart[imes[1]]->momentum();
-  Lorentz5Momentum psum =outpart[imes[0]]->momentum()+outpart[imes[1]]->momentum();
+  Lorentz5Momentum pdiff=outpart[0]->momentum()-outpart[1]->momentum();
+  // sum of the momenta
+  Lorentz5Momentum psum =outpart[0]->momentum()+outpart[1]->momentum();
+  psum.rescaleMass();
+  scale=psum.mass();
   // mass2 of vector intermediate state
   Energy2 q2=psum.m2();
   double dot = psum.dot(pdiff)/q2;
@@ -419,8 +495,8 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
     {
       for(unsigned int ix=0;ix<2;++ix)
 	{
-	  SpinPtr stemp = new_ptr(ScalarSpinInfo(outpart[imes[ix]]->momentum(),true));
-	  outpart[imes[ix]]->spinInfo(stemp);
+	  SpinPtr stemp(new_ptr(ScalarSpinInfo(outpart[0]->momentum(),true)));
+	  outpart[ix]->spinInfo(stemp);
 	}
     }
   return temp;

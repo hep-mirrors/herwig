@@ -68,88 +68,12 @@ inline void TwoMesonRhoKStarCurrent::doupdate() throw(UpdateException) {
   // Touch if anything has changed.
 }
 
-inline void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
-  WeakDecayCurrent::doinit();
-  // the resonances
-  tPDPtr res[6]={getParticleData(-213   ),getParticleData(-100213),
-		 getParticleData(-30213 ),getParticleData(-323   ),
-		 getParticleData(-100323),getParticleData(-30323 )};
-  // reset the masses in the form-factors if needed
-  if(_rhoparameters&&_rhomasses.size()<3)
-    {
-      for(unsigned int ix=_rhomasses.size();ix<3;++ix)
-	{
-	  _rhomasses.push_back(res[ix]->mass() );
-	  _rhowidths.push_back(res[ix]->width());
-	}
-    }
-  else
-    {
-      _rhomasses.resize(3);
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  _rhomasses.push_back(res[ix]->mass() );
-	  _rhowidths.push_back(res[ix]->width());
-	}
-    }
-  // then the Kstar resonances
-  if(_Kstarparameters&&_Kstarmasses.size()<3)
-    {
-      for(unsigned int ix=_Kstarmasses.size();ix<3;++ix)
-	{
-	  _Kstarmasses.push_back(res[ix+3]->mass());
-	  _Kstarwidths.push_back(res[ix+3]->width());
-	}
-    }
-  else
-    {
-      _Kstarmasses.resize(3);
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  _Kstarmasses.push_back(res[ix+3]->mass());
-	  _Kstarwidths.push_back(res[ix+3]->width());
-	}
-    }
-  // set up for the Breit Wigners
-  Energy mpi0    = getParticleData(ParticleID::pi0)->mass();
-  Energy mpiplus = getParticleData(ParticleID::piplus)->mass();
-  Energy mk0     = getParticleData(ParticleID::K0)->mass();
-  // rho resonances
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      _mass.push_back(_rhomasses[ix]);
-      _width.push_back(_rhowidths[ix]);
-      _mass2.push_back(_mass[ix]*_mass[ix]);
-      _massw.push_back(_mass[ix]*_width[ix]);
-      _massa.push_back(mpi0);
-      _massb.push_back(mpiplus);
-      _mom.push_back(pcm(ix,_mass[ix]));
-      _hm2.push_back(GSModelhFunction(ix,_mass[ix]));
-      _dparam.push_back(GSModelDParameter(ix));
-      _dhdq2.push_back(GSModeldhdq2Parameter(ix));
-    }
-  // Kstar resonances
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      _mass.push_back(_Kstarmasses[ix]);
-      _width.push_back(_Kstarwidths[ix]);
-      _mass2.push_back(_mass[ix+3]*_mass[ix+3]);
-      _massw.push_back(_mass[ix+3]*_width[ix+3]);
-      _massa.push_back(mk0);
-      _massb.push_back(mpiplus);
-      _mom.push_back(pcm(ix+3,_mass[ix+3]));
-      _hm2.push_back(GSModelhFunction(ix+3,_mass[ix+3]));
-      _dparam.push_back(GSModelDParameter(ix+3));
-      _dhdq2.push_back(GSModeldhdq2Parameter(ix+3));
-    }
-}
-
 inline void TwoMesonRhoKStarCurrent::dofinish() {
   WeakDecayCurrent::dofinish();
 }
 
 inline void TwoMesonRhoKStarCurrent::doinitrun() {
-  WeakDecayCurrent::doinitrun();
+  WeakDecayCurrent::doinitrun();  
 }
 
 inline void TwoMesonRhoKStarCurrent::rebind(const TranslationMap & trans)
