@@ -331,137 +331,125 @@ void ShowerHandler::
 createShowerParticlesFromP7Particles( const tPartCollHdlPtr ch, 
 				      CollecShoParPtr & hardProcessParticles ) {
 
-  // To properly translate the (Pythia7) ColourLine objects into 
-  // ShowerColourLine objects, we need a map which has as key the
-  // pointer to a ColourLine object and as element the pointer to 
-  // the corresponding ShowerColourLine objet.
-  map<tColinePtr,tShoColinePtr> mapColine;
+  // We need a map which keeps track of the correspondence between
+  // the Pythia7 particles which enter the hard subprocess and
+  // the ShowerParticles objects we create from these Pythia7 particles.
+  // Similarly, in order to properly reproduce the colour connections. 
+  // we also need a map of pointers to all Pythia7 ColourLine objects 
+  // which are referenced by these Pythia7 particles, and the corresponding
+  // ShowerColourLine objects that we will create later on.
+  map<tPPtr,tShoParPtr> mapP7toShowerParticle;
+  map<tColinePtr,ShoColinePtr> mapP7toShowerColine;
 
-  // Incoming (initial state) particles
-  const PPair theIncomingParticlePair = ch->currentStep()->incoming();
+  // Incoming (initial state) particles (indeed the partons entering
+  // the hard subprocess, not the beam hadrons). 
   for ( int i=1; i<=2; ++i ) {
     tPPtr p7part = tPPtr();
-    if ( i == 1 && theIncomingParticlePair.first ) {
-      p7part = theIncomingParticlePair.first;
-    } else if ( i == 2 && theIncomingParticlePair.second ) {
-      p7part = theIncomingParticlePair.second;      
+    if ( i == 1 && ch->lastPartons().first ) {
+      p7part = ch->lastPartons().first;
+    } else if ( i == 2 && ch->lastPartons().second ) {
+      p7part = ch->lastPartons().second;      
     }
     if ( p7part ) {      
       hardProcessParticles.push_back( new_ptr( ShowerParticle( *p7part ) ) );    
       tShoParPtr shopart = hardProcessParticles.back();
       shopart->isFinalState( false );
-      fixColorLines( p7part, shopart, mapColine );
+      mapP7toShowerParticle.insert( pair<tPPtr,tShoParPtr>(p7part,shopart) );
+      if ( p7part->colourLine() &&
+	   mapP7toShowerColine.find( p7part->colourLine() ) == mapP7toShowerColine.end() ) {
+	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( p7part->colourLine(), 
+								   ShoColinePtr() ) );
+      }
+      if ( p7part->antiColourLine() &&
+	   mapP7toShowerColine.find( p7part->antiColourLine() ) == mapP7toShowerColine.end() ) {
+	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( p7part->antiColourLine(), 
+								   ShoColinePtr() ) );
+      }
     }
   }
 
-  // Outgoing (final state) particles. Notice that we don't need to
-  // set true the flag ShowerParticle::isFinalState because it is
-  // set true by default. 
-  ParticleSet theCurrentParticleSet = ch->currentStep()->particles();
-  for ( ParticleSet::const_iterator cit = theCurrentParticleSet.begin();
-	cit != theCurrentParticleSet.end(); ++cit ) {
-    hardProcessParticles.push_back( new_ptr( ShowerParticle( **cit ) ) );    
-    fixColorLines( *cit, hardProcessParticles.back(), mapColine );
+  // Outgoing (final state) particles, excluding the beam remnants. 
+  // Notice that we don't need to set true the flag ShowerParticle::isFinalState 
+  // because it is set true by default. 
+  tParticleSet remnantSet = ch->currentCollision()->getRemnants();
+  for ( ParticleSet::const_iterator cit = ch->currentStep()->particles().begin();
+	cit != ch->currentStep()->particles().end(); ++cit ) {
+    if ( remnantSet.find( (*cit)->original() ) == remnantSet.end() ) {
+      hardProcessParticles.push_back( new_ptr( ShowerParticle( **cit ) ) );    
+      mapP7toShowerParticle.insert( pair<tPPtr,tShoParPtr>( *cit, hardProcessParticles.back() ) );
+      if ( (*cit)->colourLine() &&
+	   mapP7toShowerColine.find( (*cit)->colourLine() ) == mapP7toShowerColine.end() ) {
+	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( (*cit)->colourLine(), 
+								   ShoColinePtr() ) );
+      }
+      if ( (*cit)->antiColourLine() &&
+	   mapP7toShowerColine.find( (*cit)->antiColourLine() ) == mapP7toShowerColine.end() ) {
+	mapP7toShowerColine.insert( pair<tColinePtr,ShoColinePtr>( (*cit)->antiColourLine(), 
+								    ShoColinePtr() ) );
+      }
+    }
   }
+
+  // Now that we have the map:  Pythia7 particle  ===>  ShowerParticle object
+  // we can complete the other map:
+  //        Pythia7 ColourLine object ===>  ShowerColourLine object
+  // which, at the moment, only has the first entry (key), whereas
+  // the second part (value of the map) is null. We want to create a
+  // ShowerColourLine object for each Pythia7 ColourLine object which
+  // is actually used for the colour connection between the particles
+  // involved in the hard subprocess, but not in the case that such
+  // ColourLine object is used to connect with the a beam remnant. 
+  for ( map<tColinePtr,ShoColinePtr>::iterator colineIt = mapP7toShowerColine.begin();
+	colineIt != mapP7toShowerColine.end(); ++colineIt ) {
+
+    // Loop over  coloured()  Pythia7 particles connected to this coline.
+    // If the Pythia7 particle is in the map (therefore it is not a remnant)
+    // then create a new ShowerColourLine object if the considered Pythia7
+    // ColourLine object has not yet a corresponding ShowerColourLine object,
+    // and then add to it, as coloured ShowerParticle object, the one
+    // corresponding to the above Pythia7 particle, if this was not already
+    // done before.
+    for ( tPVector::const_iterator p7partIt = colineIt->first->coloured().begin();
+	  p7partIt != colineIt->first->coloured().end(); ++p7partIt ) {
+      if ( mapP7toShowerParticle.find( *p7partIt ) != mapP7toShowerParticle.end() ) {
+	if ( ! colineIt->second ) {
+	  colineIt->second = new_ptr( ShowerColourLine() );
+	} 
+	if ( ! mapP7toShowerParticle.find( *p7partIt )->second->colourLine() ) { 
+	  colineIt->second->addColoured( mapP7toShowerParticle.find( *p7partIt )->second );
+	}
+      }
+    }
+
+    // As above, but considering now anti-coloured particles. 
+    for ( tPVector::const_iterator p7partIt = colineIt->first->antiColoured().begin();
+	  p7partIt != colineIt->first->antiColoured().end(); ++p7partIt ) {
+      if ( mapP7toShowerParticle.find( *p7partIt ) != mapP7toShowerParticle.end() ) {
+	if ( ! colineIt->second ) {
+	  colineIt->second = new_ptr( ShowerColourLine() );
+	} 
+	if ( ! mapP7toShowerParticle.find( *p7partIt )->second->antiColourLine() ) { 
+	  colineIt->second->addAntiColoured( mapP7toShowerParticle.find( *p7partIt )->second );
+	}
+      }
+    }
+
+  }  
 
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
     generator()->log() << "  Total number of initial Shower particles : " 
-		       << hardProcessParticles.size() << endl; 
+		       << hardProcessParticles.size() << endl
+                       << "  Total number of colour lines : " 
+		       << mapP7toShowerColine.size() << endl;
     for ( CollecShoParPtr::const_iterator cit = hardProcessParticles.begin();
 	  cit != hardProcessParticles.end(); ++cit ) {
-      generator()->log() << "\t ShowerParticle: " << (**cit).data().PDGName() 
-	                 << "  isFinalState = " << ( (**cit).isFinalState() ? "YES" : "NO" )
-			 << endl;      
+      generator()->log() << "\t" << (**cit).data().PDGName() 
+			 << "  p=" << (**cit).momentum()
+			 << ( (**cit).isFinalState() ? "   OUTGOING" : "   INCOMING" )
+			 << endl;
     }
-    // Now, check that for each Pythia7 ColourLine object there is 
-    // a corresponding ShowerColourLine one, and that both have 
-    // exactly the same coloured and antiColoured particles attached
-    // to them (although, of course, for ColourLine object we have 
-    // Pythia7 particles attached to it, whereas for ShowerColourLine
-    // object we have ShowerParticle objects attached to it).
-    generator()->log() << "\t --- Colour line info --- " << endl;
-    int count = 0;
-    for ( map<tColinePtr,tShoColinePtr>::const_iterator cit = mapColine.begin();
-	  cit != mapColine.end(); ++cit ) {
-      generator()->log() << "\t   colour line number = " << ++count << endl;
-      if ( cit->first->coloured().size() ) {
-	generator()->log() << "\t \t Pythia7 coloured list: ";
-	for ( tPVector::const_iterator cjt = cit->first->coloured().begin();
-	      cjt != cit->first->coloured().end(); ++cjt ) {
-	  generator()->log() << (*cjt)->data().PDGName() << "  ";
-	}
-	generator()->log() << endl;
-      }
-      if ( cit->second->coloured().size() ) {
-	generator()->log() << "\t \t Shower coloured list: ";
-	for ( tCollecShoParPtr::const_iterator cjt = cit->second->coloured().begin();
-	      cjt != cit->second->coloured().end(); ++cjt ) {
-	  generator()->log() << (*cjt)->data().PDGName() << "  ";
-	}
-	generator()->log() << endl;
-      }
-      if ( cit->first->antiColoured().size() ) {
-	generator()->log() << "\t \t Pythia7 antiColoured list: ";
-	for ( tPVector::const_iterator cjt = cit->first->antiColoured().begin();
-	      cjt != cit->first->antiColoured().end(); ++cjt ) {
-	  generator()->log() << (*cjt)->data().PDGName() << "  ";
-	}
-	generator()->log() << endl;
-      }
-      if ( cit->second->antiColoured().size() ) {
-	generator()->log() << "\t \t Shower antiColoured list: ";
-	for ( tCollecShoParPtr::const_iterator cjt = cit->second->antiColoured().begin();
-	      cjt != cit->second->antiColoured().end(); ++cjt ) {
-	  generator()->log() << (*cjt)->data().PDGName() << "  ";
-	}
-	generator()->log() << endl;
-      }
-    }
-  }
-
-}
-
-
-void ShowerHandler::fixColorLines( tPPtr p7part, tShoParPtr shopart, 
-				   map<tColinePtr,tShoColinePtr> & mapColine ) {
-  
-  if ( ! p7part  ||  ! shopart ) return; // It should never happen!
-
-  tColinePtr coline = p7part->colourLine();
-  if ( coline ) {
-    if ( mapColine.find( coline ) == mapColine.end() ) {
-      // coline has not been found in the map, therefore a new
-      // ShowerColourLine must be created; then add shopart to
-      // the coloured shower particles attached to it (notice
-      // that the method ShowerColourLine::addColoured automatically
-      // set the colour line of the particle); and finally
-      // insert a new element on the map.
-      ShoColinePtr shoColine = new_ptr( ShowerColourLine() );
-      shoColine->addColoured( shopart );
-      mapColine.insert( mapColine.end(), 
-			pair<tColinePtr,tShoColinePtr>( coline, shoColine ) );
-    } else {
-      // coline has been found in the map, therefore the only
-      // thing to do is to add shopart to the coloured shower
-      // particles attached to the ShowerColourLine object
-      // which corresponds to coline.
-      mapColine.find( coline )->second->addColoured( shopart );
-    }
-  }
-  // Do exactly as above, but considering now the anti-colour.
-  coline = p7part->antiColourLine();
-  if ( coline ) {
-    if ( mapColine.find( coline ) == mapColine.end() ) {
-      ShoColinePtr shoColine = new_ptr( ShowerColourLine() );
-      shoColine->addAntiColoured( shopart );
-      mapColine.insert( mapColine.end(), 
-			pair<tColinePtr,tShoColinePtr>( coline, shoColine ) );
-    } else {
-      mapColine.find( coline )->second->addAntiColoured( shopart );
-    }
-  }
-
+  }  
 }
 
 

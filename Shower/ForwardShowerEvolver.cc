@@ -188,18 +188,48 @@ timeLikeShower( tPartCollHdlPtr ch,
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	  generator()->log() << " Splitting : " << part->data().PDGName()
                              << "  ---> " << showerProduct1->data().PDGName()
-                             << "  +  " <<  showerProduct2->data().PDGName() 
-			     << endl
-			     << " \t colourLine   antiColourLine " << endl
-	                     << " \t   parent:   " << part->data().PDGName()
-                             << "   " << part->colourLine() 
-			     << "   " << part->antiColourLine() << endl
-	                     << " \t   product1: " << showerProduct1->data().PDGName()
-                             << "   " << showerProduct1->colourLine() 
-			     << "   " << showerProduct1->antiColourLine() << endl
-	                     << " \t   product2: " << showerProduct2->data().PDGName()
-                             << "   " << showerProduct2->colourLine() 
-			     << "   " << showerProduct2->antiColourLine() << endl;
+                             << "  +  " <<  showerProduct2->data().PDGName() << endl
+			     << " \t \t \t \t    colourLine \t antiColourLine " << endl;
+	  // Create a map of pointers to ShowerColourLine object,
+	  // in order to have a nice printing of colour lines,
+	  // numbered from 601 onwards, instead of printing 
+	  // physical memory addresses.
+	  map<tShoColinePtr,int> mapShoColine;
+	  int countShoColine = 601;
+	  for ( int i=0; i<3; i++ ) {
+	    tShoParPtr theParticle;
+	    if ( i == 0 ) {
+	      theParticle = part;
+	      generator()->log() << "\t   parent:     ";
+	    } else if ( i == 1 ) {
+	      theParticle = showerProduct1;
+	      generator()->log() << "\t   product1:   ";
+	    } else if ( i == 2 ) {
+	      theParticle = showerProduct2;
+	      generator()->log() << "\t   product1:   ";
+	    }
+	    generator()->log() << theParticle->data().PDGName() << "\t \t";
+	    if ( theParticle->colourLine() ) {
+	      if ( mapShoColine.find( theParticle->colourLine() ) == mapShoColine.end() ) {
+		mapShoColine.insert( pair<tShoColinePtr,int>( theParticle->colourLine(), 
+							      countShoColine++ ) );
+	      }
+	      generator()->log() << mapShoColine.find( theParticle->colourLine() )->second;
+	    } else {
+	      generator()->log() << "0";
+	    }
+	    generator()->log() << "\t \t";
+	    if ( theParticle->antiColourLine() ) {
+	      if ( mapShoColine.find( theParticle->antiColourLine() ) == mapShoColine.end() ) {
+		mapShoColine.insert( pair<tShoColinePtr,int>( theParticle->antiColourLine(), 
+							      countShoColine++ ) );
+	      }
+	      generator()->log() << mapShoColine.find( theParticle->antiColourLine() )->second;
+	    } else {
+	      generator()->log() << "0";
+	    }
+	    generator()->log() << endl;
+	  }
 	}
 	
       }
