@@ -18,19 +18,32 @@ class RunningMassBase: public Interfaced {
   
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline RunningMassBase();
+
+  /**
+   * Copy-constructor.
+   */
   inline RunningMassBase(const RunningMassBase &);
+
+  /**
+   * Destructor.
+   */
   virtual ~RunningMassBase();
+  //@}
   
 public:
   
   /**
-   * Return the running mass for a given scale and particle type.
+   * Return the running mass for a given scale \f$q^2\f$ and particle type.
+   * @param q2 The scale \f$q^2\f$.
+   * @param part The ParticleData pointer
    */
-  virtual Energy value(Energy2 ,tcPDPtr) const = 0;
+  virtual Energy value(Energy2 q2,tcPDPtr part) const = 0;
  
   /**
    * Return the masses used.
@@ -38,15 +51,28 @@ public:
   virtual vector<Energy> mass() const = 0;
 
   /**
-   * Return the ith element of the mass array.
+   * Return the \f$i\f$th element of the mass array.
+   * @param i The element to return
    */
-  inline Energy massElement(unsigned int) const;
+  inline Energy massElement(unsigned int i) const;
+
+public:
+  
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
 
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -55,31 +81,49 @@ public:
   
 protected:
   
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void doinitrun();
-  inline virtual void dofinish();
-  
+
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  
+
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
-  
-private:
-  
-  /**
-   * Flavour thresholds and the masses, set at initialization.
-   */
-  vector<Energy> _theMass;
+  //@}
 
 private:
   
@@ -92,11 +136,17 @@ private:
    * Private and non-existent assignment operator.
    */
   RunningMassBase & operator=(const RunningMassBase &);
+  
+private:
+  
+  /**
+   * Flavour thresholds and the masses, set at initialization.
+   */
+  vector<Energy> _theMass;
 
 };
 
 }
-
 
 namespace ThePEG {
 
@@ -106,6 +156,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::RunningMassBase,1> {
+    /** Typedef of the base class of RunningMassBase. */
     typedef Interfaced NthBase;
   };
   
@@ -120,7 +171,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/RunningMassBase"; }
+    static string className() { return "Herwig++::RunningMassBase"; }
 
     /**
      * Return the name of the shared library to be loaded to get

@@ -20,30 +20,55 @@ class RunningMass: public RunningMassBase {
   
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline RunningMass();
+
+  /**
+   * Copy-constructor.
+   */
   inline RunningMass(const RunningMass &);
+
+  /**
+   * Destructor.
+   */
   virtual ~RunningMass();
-  
+  //@}  
+
 public:
   
   /**
-   * Return the running mass for a given scale and particle type.
+   * Return the running mass for a given scale \f$q^2\f$ and particle type.
+   * @param q2 The scale \f$q^2\f$.
+   * @param part The ParticleData pointer
    */
-  virtual Energy value(Energy2 ,tcPDPtr) const;
+  virtual Energy value(Energy2 q2,tcPDPtr part) const;
   
   /**
    * Return the masses used.
    */
   virtual vector<Energy> mass() const;
 
+public:
+  
+  /** @name Functions used by the persistent I/O system. */
+  //@{
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
@@ -52,33 +77,67 @@ public:
   
 protected:
   
+  /** @name Clone Methods. */
+  //@{
   /**
-   * Standard clone methods.
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
-  
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
 protected:
   
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void doinitrun();
-  inline virtual void dofinish();
-  
+
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  
+
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
-  
+  //@}
+    
 private:
   
   /**
@@ -91,6 +150,8 @@ private:
    */
   RunningMass & operator=(const RunningMass &);
   
+private:
+
   /**
    * Order in alphaS.
    */
@@ -100,7 +161,16 @@ private:
    * The maximum number of flavours.
    */
   unsigned int _theMaxFlav;
-  vector<double> _thePower,_theCoefficient;
+
+  /**
+   * The power for the running mass calculation.
+   */
+  vector<double> _thePower;
+
+  /**
+   * The coefficients for the running mass calculation.
+   */
+  vector<double> _theCoefficient;
 
   /**
    * Pointer to the StandardModel object.
@@ -120,6 +190,7 @@ namespace ThePEG {
    */
   template <>
   struct BaseClassTrait<Herwig::RunningMass,1> {
+    /** Typedef of the base class of RunningMass. */
     typedef Herwig::RunningMassBase NthBase;
   };
   
@@ -134,7 +205,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "/Herwig++/RunningMass"; }
+    static string className() { return "Herwig++::RunningMass"; }
 
     /**
      * Return the name of the shared library to be loaded to get

@@ -29,71 +29,219 @@ class StandardModel: public StandardModelBase {
   /**
    * Some typedefs for the pointers to vertices.
    */
+  //@{
+  /**
+   *  Pointer to a fermion-fermion-vector vertex
+   */
   typedef Ptr<Herwig::Helicity::FFVVertex>::pointer FFVPtr;
+
+  /**
+   *  Transient pointer to a fermion-fermion-vector vertex
+   */
   typedef Ptr<Herwig::Helicity::FFVVertex>::transient_pointer tFFVPtr;
+
+  /**
+   *  Pointer to a vector-vector-vector vertex
+   */
   typedef Ptr<Herwig::Helicity::VVVVertex>::pointer VVVPtr;
+
+  /**
+   *  Transient pointer to a vector-vector-vector vertex
+   */
   typedef Ptr<Herwig::Helicity::VVVVertex>::transient_pointer tVVVPtr;
+
+  /**
+   *  Pointer to a fermion-fermion-scalar vertex
+   */
   typedef Ptr<Herwig::Helicity::FFSVertex>::pointer FFSPtr;
+
+  /**
+   * Transient oointer to a fermion-fermion-scalar vertex
+   */
   typedef Ptr<Herwig::Helicity::FFSVertex>::transient_pointer tFFSPtr;
+
+  /**
+   *  Pointer to a vector-vector-scalar vertex
+   */
   typedef Ptr<Herwig::Helicity::VVSVertex>::pointer VVSPtr;
+
+  /**
+   *  Transient pointer to a vector-vector-scalar vertex
+   */
   typedef Ptr<Herwig::Helicity::VVSVertex>::transient_pointer tVVSPtr;
+
+  /**
+   *  Pointer to a vector-vector-vector-vector vertex
+   */
   typedef Ptr<Herwig::Helicity::VVVVVertex>::pointer VVVVPtr;
+
+  /**
+   * Transient pointer to a vector-vector-vector-vector vertex
+   */
   typedef Ptr<Herwig::Helicity::VVVVVertex>::transient_pointer tVVVVPtr;
+
+  /**
+   * Pointer to the RunningMassBase object 
+   */
   typedef Ptr<Herwig::RunningMassBase>::pointer runPtr;
+
+  /**
+   * Transient pointer to the RunningMassBase object 
+   */
   typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
+  //@}
 
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline StandardModel();
+
+  /**
+   * Copy-constructor.
+   */
   inline StandardModel(const StandardModel &);
+
+  /**
+   * Destructor.
+   */
   virtual ~StandardModel();
+  //@}
   
 public:
   
+  /** @name Functions used by the persistent I/O system. */
+  //@{
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
   
   /**
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+
+public:
   
   /**
    * The left and right couplings of the Z^0 including sin and cos theta_W.  
    */
+  //@{
+  /**
+   *  The left-handed coupling of a neutrino
+   */
   inline double lnu() const;
+
+  /**
+   *  The left-handed coupling of a charged lepton.
+   */
   inline double le() const;
+
+  /**
+   *  The left-handed coupling of an up type quark.
+   */
   inline double lu() const;
+
+  /**
+   *  The left-handed coupling of a down type quark.
+   */
   inline double ld() const;
+
+  /**
+   *  The right-handed coupling of a neutrino
+   */
   inline double rnu() const;
+
+  /**
+   *  The right-handed coupling of a charged lepton.
+   */
   inline double re() const;
+
+  /**
+   *  The right-handed coupling of an up type quark.
+   */
   inline double ru() const;
+
+  /**
+   *  The right-handed coupling of a down type quark.
+   */
   inline double rd() const;
-  
+  //@}
+
   /**
    * Pointers to the objects handling the vertices.
    */
-  inline tFFVPtr  vertexFFZ() const;
-  inline tFFVPtr  vertexFFP() const;
-  inline tFFVPtr  vertexFFG() const;
-  inline tFFVPtr  vertexFFW() const;
-  inline tFFSPtr  vertexFFH() const;
-  inline tVVVPtr  vertexGGG() const;
-  inline tVVVPtr  vertexWWW() const;
-  inline tVVSPtr  vertexWWH() const;
-  inline tVVVVPtr vertexWWWW() const;
-  inline tVVVVPtr vertexGGGG() const;
-  
+  //@{
   /**
-   * Return the running mass for a given scale and particle type.
+   * Pointer to the fermion-fermion-Z vertex
    */
-  inline double mass(Energy2 scale,tcPDPtr) const;
+  inline tFFVPtr  vertexFFZ() const;
+
+  /**
+   * Pointer to the fermion-fermion-photon vertex
+   */
+  inline tFFVPtr  vertexFFP() const;
+
+  /**
+   * Pointer to the fermion-fermion-gluon vertex
+   */
+  inline tFFVPtr  vertexFFG() const;
+
+  /**
+   * Pointer to the fermion-fermion-W vertex
+   */
+  inline tFFVPtr  vertexFFW() const;
+
+  /**
+   * Pointer to the fermion-fermion-Higgs vertex
+   */
+  inline tFFSPtr  vertexFFH() const;
+
+  /**
+   * Pointer to the triple gluon vertex
+   */
+  inline tVVVPtr  vertexGGG() const;
+
+  /**
+   * Pointer to the triple electroweak gauge boson vertex.
+   */
+  inline tVVVPtr  vertexWWW() const;
+
+  /**
+   * Pointer to the two electroweak gauge boson Higgs vertex.
+   */
+  inline tVVSPtr  vertexWWH() const;
+
+  /**
+   * Pointer to the quartic electroweak gauge boson vertex.
+   */
+  inline tVVVVPtr vertexWWWW() const;
+
+  /**
+   * Pointer to the quartic gluon vertex
+   */
+  inline tVVVVPtr vertexGGGG() const;
+  //@}  
+
+  /**
+   * Return the running mass for a given scale \f$q^2\f$ and particle type.
+   * @param scale The scale \f$q^2\f$.
+   * @param part The ParticleData object for the particle
+   */
+  inline double mass(Energy2 scale,tcPDPtr part) const;
   
   /**
    * Return a pointer to the object handling the running mass.
@@ -102,33 +250,67 @@ public:
   
 protected:
   
+  /** @name Clone Methods. */
+  //@{
   /**
-   * Standard clone methods.
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
   
 protected:
   
-  /** 
-   * Standard Interfaced virtual functions.
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
-  inline virtual void doinit() throw(InitException);
-  inline virtual void doinitrun();
-  inline virtual void dofinish();
-  
+
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
-  
+
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
-  
+  //@}
+
 private:
   
   /**
@@ -141,36 +323,63 @@ private:
    */
   StandardModel & operator=(const StandardModel &);
   
+private:
+
   /**
-   * Pointers to the vertices standard model fermion-antifermion 
-   * gauge boson couplings.
+   * Pointers to the vertices for Standard Model helicity amplitude
+   * calculations.
+   */
+  //@{
+  /**
+   * Pointer to the fermion-fermion-Z vertex
    */
   FFVPtr _theFFZVertex;
+
+  /**
+   * Pointer to the fermion-fermion-photon vertex
+   */
   FFVPtr _theFFPVertex;
+
+  /**
+   * Pointer to the fermion-fermion-gluon vertex
+   */
   FFVPtr _theFFGVertex;
+
+  /**
+   * Pointer to the fermion-fermion-W vertex
+   */
   FFVPtr _theFFWVertex;
 
   /**
-   * Standard model fermion-antifermion scalar couplings.
+   * Pointer to the fermion-fermion-Higgs vertex
    */
   FFSPtr _theFFHVertex;
 
   /**
-   * Standard model vector-vector-scalar couplings.
+   * Pointer to the two electroweak gauge boson Higgs vertex.
    */
   VVSPtr _theWWHVertex;
 
   /**
-   * Standard model vector-vector-vector couplings.
+   * Pointer to the triple gluon vertex
    */
   VVVPtr _theGGGVertex;
+
+  /**
+   * Pointer to the triple electroweak gauge boson vertex.
+   */
   VVVPtr _theWWWVertex;
 
   /**
-   * Standard model vector-vector-vector couplings.
+   * Pointer to the quartic gluon vertex
    */
   VVVVPtr _theGGGGVertex;
+
+  /**
+   * Pointer to the quartic electroweak gauge boson vertex.
+   */
   VVVVPtr _theWWWWVertex;
+  //@}
 
   /**
    * The running mass.
@@ -191,6 +400,7 @@ namespace ThePEG {
  */
 template <>
 struct BaseClassTrait<Herwig::StandardModel,1> {
+    /** Typedef of the base class of StandardModel. */
   typedef StandardModelBase NthBase;
 };
 
@@ -205,7 +415,7 @@ struct ClassTraits<Herwig::StandardModel>
   /**
    * Return the class name.
    */
-  static string className() { return "/Herwig++/StandardModel"; }
+  static string className() { return "Herwig++::StandardModel"; }
 
   /**
    * Return the name of the shared library to be loaded to get

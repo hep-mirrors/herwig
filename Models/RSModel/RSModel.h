@@ -13,16 +13,60 @@
 namespace Herwig {
 using namespace ThePEG;
 
-typedef Ptr<Herwig::Helicity::FFTVertex>::pointer FFTPtr;
-typedef Ptr<Herwig::Helicity::FFTVertex>::transient_pointer tFFTPtr;
-typedef Ptr<Herwig::Helicity::VVTVertex>::pointer VVTPtr;
-typedef Ptr<Herwig::Helicity::VVTVertex>::transient_pointer tVVTPtr;
-typedef Ptr<Herwig::Helicity::SSTVertex>::pointer SSTPtr;
-typedef Ptr<Herwig::Helicity::SSTVertex>::transient_pointer tSSTPtr;
-typedef Ptr<Herwig::Helicity::FFVTVertex>::pointer FFVTPtr;
-typedef Ptr<Herwig::Helicity::FFVTVertex>::transient_pointer tFFVTPtr;
-typedef Ptr<Herwig::Helicity::VVVTVertex>::pointer VVVTPtr;
-typedef Ptr<Herwig::Helicity::VVVTVertex>::transient_pointer tVVVTPtr;
+  /**
+   * Some typedefs for the pointers to vertices.
+   */
+  //@{
+  /**
+   * Pointer to the fermion-fermion-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::FFTVertex>::pointer FFTPtr;
+
+  /**
+   * Transient pointer to the fermion-fermion-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::FFTVertex>::transient_pointer tFFTPtr;
+
+  /**
+   * Pointer to the vector-vector-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::VVTVertex>::pointer VVTPtr;
+
+  /**
+   * Transient pointer to the vector-vector-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::VVTVertex>::transient_pointer tVVTPtr;
+
+  /**
+   * Pointer to the scalar-scalar-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::SSTVertex>::pointer SSTPtr;
+
+  /**
+   * Transient pointer to the scalar-scalar-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::SSTVertex>::transient_pointer tSSTPtr;
+
+  /**
+   * Pointer to the fermion-fermion-vector-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::FFVTVertex>::pointer FFVTPtr;
+
+  /**
+   * Transient pointer to the fermion-fermion-vector-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::FFVTVertex>::transient_pointer tFFVTPtr;
+
+  /**
+   * Pointer to the vector-vector-vector-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::VVVTVertex>::pointer VVVTPtr;
+
+  /**
+   * Transient pointer to the vector-vector-vector-tensor vertex
+   */
+  typedef Ptr<Herwig::Helicity::VVVTVertex>::transient_pointer tVVVTPtr;
+  //@}
 
 /** \ingroup Models
  *
