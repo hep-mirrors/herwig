@@ -1,6 +1,0 @@
-This file contains any messages produced by compilers while
-running configure, to aid debugging if configure makes a mistake.
-
-configure:531: checking for g++
-configure:573: checking for ar
-configure:608: checking for ranlib
