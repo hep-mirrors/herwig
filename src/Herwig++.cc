@@ -20,7 +20,7 @@ int main(int argc, char * argv[]) {
 	// tPVector particles = hw.getFinalState(s);
 	// Then do analysis
       }
-    } else {
+    } else if(hw.isRunMode()) {
       std::cout << "Error: Expecting a run but there is no EventGenerator!\n"
 		<< endl;
     }
