@@ -43,7 +43,7 @@ check: LEP
 lib:
 
 LEP: Herwig++
-	export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(RPATH) ; ./Herwig++ init ; ./Herwig++ read LEP.in ; ./Herwig++ run -N 10 LEP.run
+	export LD_LIBRARY_PATH=$(RPATH):$(LD_LIBRARY_PATH) ; ./Herwig++ init ; ./Herwig++ read LEP.in ; ./Herwig++ run -N 10 LEP.run
 
 Lib:
 	cd .. ; $(MAKE) -$(MAKEFLAGS) lib
@@ -64,4 +64,4 @@ testKtJet.o: testKtJet.cc
 	$(CXX) -c $(CXXFLAGS) $(COMPILER_FLAG) $(CXXDEBUGFLAG) $(CXXOPTFLAG) $(DEFS) $(INCLUDES) $(CXXEXT) $(KTJETPATH) $<  
 
 HerwigDefaults.rpo: HerwigDefaults.in Herwig++
-	export LD_LIBRARY_PATH=$(LD_LIBRARY_PATH):$(RPATH) ; ./Herwig++ init 
+	export LD_LIBRARY_PATH=$(RPATH):$(LD_LIBRARY_PATH) ; ./Herwig++ init 
