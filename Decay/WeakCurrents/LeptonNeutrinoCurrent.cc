@@ -101,33 +101,33 @@ PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVector> 
-LeptonNeutrinoCurrent::current(bool vertex, const int imode, const int ichan, 
-			       const Particle & inpart,
-			       const ParticleVector & outpart) const
+LeptonNeutrinoCurrent::current(bool vertex, const int imode, const int ichan,
+			       Energy & scale,const ParticleVector & outpart) const
 {
+  Lorentz5Momentum q=outpart[0]->momentum()+outpart[1]->momentum();q.rescaleMass();
+  scale=q.mass();
   // storage for the currents
   vector<LorentzPolarizationVector> temp;
-  unsigned int inu=outpart.size()-1,ilep=outpart.size()-2;
   // construct the spin information objects for the  decay products
   FermionSpinPtr lepspin,nuspin;
   if(vertex)
     {
-      SpinPtr slep=new_ptr(FermionSpinInfo(outpart[ilep]->momentum(),true));
-      outpart[ilep]->spinInfo(slep);
+      SpinPtr slep=new_ptr(FermionSpinInfo(outpart[0]->momentum(),true));
+      outpart[0]->spinInfo(slep);
       lepspin=dynamic_ptr_cast<FermionSpinPtr>(slep);
-      SpinPtr snu =new_ptr(FermionSpinInfo(outpart[inu ]->momentum(),true));
-      outpart[inu ]->spinInfo(snu );
+      SpinPtr snu =new_ptr(FermionSpinInfo(outpart[1 ]->momentum(),true));
+      outpart[1 ]->spinInfo(snu );
       nuspin =dynamic_ptr_cast<FermionSpinPtr>(snu);
     }
   // lepton wavefunctions for the different helicities
   vector<LorentzSpinor> wave;
   vector<LorentzSpinorBar> wavebar;
-  if(outpart[ilep]->id()>0)
+  if(outpart[0]->id()>0)
     {
-      SpinorWaveFunction nu =SpinorWaveFunction(outpart[inu]->momentum(),
-						outpart[inu]->dataPtr(),outgoing);
-      SpinorBarWaveFunction lep=SpinorBarWaveFunction(outpart[ilep]->momentum(),
-						      outpart[ilep]->dataPtr(),outgoing);
+      SpinorWaveFunction nu =SpinorWaveFunction(outpart[1]->momentum(),
+						outpart[1]->dataPtr(),outgoing);
+      SpinorBarWaveFunction lep=SpinorBarWaveFunction(outpart[0]->momentum(),
+						      outpart[0]->dataPtr(),outgoing);
       for(int ix=-1;ix<2;ix+=2)
 	{
 	  nu.reset(ix);wave.push_back(nu.Wave());
@@ -138,10 +138,10 @@ LeptonNeutrinoCurrent::current(bool vertex, const int imode, const int ichan,
     }
   else
     {
-      SpinorWaveFunction lep=SpinorWaveFunction(outpart[ilep]->momentum(),
-						outpart[ilep]->dataPtr(),outgoing);
-      SpinorBarWaveFunction nu=SpinorBarWaveFunction(outpart[inu]->momentum(),
-						     outpart[inu]->dataPtr(),outgoing);
+      SpinorWaveFunction lep=SpinorWaveFunction(outpart[0]->momentum(),
+						outpart[0]->dataPtr(),outgoing);
+      SpinorBarWaveFunction nu=SpinorBarWaveFunction(outpart[1]->momentum(),
+						     outpart[1]->dataPtr(),outgoing);
       for(int ix=-1;ix<2;ix+=2)
 	{
 	  lep.reset(ix);wave.push_back(lep.Wave());
@@ -184,7 +184,7 @@ LeptonNeutrinoCurrent::current(bool vertex, const int imode, const int ichan,
 	      vec[3] =    2.*(s3s1+s4s2);
 	    }
 	  // location in the vector
-	  if(outpart[ilep]->id()>0){iloc=2*iy+ix;}
+	  if(outpart[0]->id()>0){iloc=2*iy+ix;}
 	  else{iloc=2*ix+iy;}
 	  // add it to the vector
 	  temp[iloc]=vec;

@@ -461,31 +461,30 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
  
 // the hadronic currents    
 vector<LorentzPolarizationVector> 
-FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int ichan, 
-				    const Particle & inpart,
-				    const ParticleVector & decay) const
+FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int ichan,
+				    Energy & scale,const ParticleVector & decay) const
 {
   LorentzPolarizationVector output;
-  double fact=1.;
+  double fact(1.);
   // construct the spininfo objects if needed
   if(vertex)
     {
-      for(unsigned int ix=1;ix<decay.size();++ix)
+      for(unsigned int ix=0;ix<decay.size();++ix)
 	{
 	  SpinPtr temp=new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true));
 	  decay[ix]->spinInfo(temp);
 	}
     }
+  // the momenta of the particles
+  Lorentz5Momentum q1(decay[3]->momentum()),q2(decay[1]->momentum()),
+    q3(decay[0]->momentum()),q4(decay[2]->momentum());
+  Lorentz5Momentum Q=q1+q2+q3+q4;Q.rescaleMass();
+  scale = Q.mass();
   // decide which decay mode
   // three charged pions
   if(imode==1)
     {
       // momenta of the particles
-      Lorentz5Momentum q1=decay[decay.size()-4]->momentum();
-      Lorentz5Momentum q2=decay[decay.size()-2]->momentum();
-      Lorentz5Momentum q3=decay[decay.size()-3]->momentum();
-      Lorentz5Momentum q4=decay[decay.size()-1]->momentum();
-      Lorentz5Momentum Q=q1+q2+q3+q4;Q.rescaleMass();
       LorentzPolarizationVector veca1rho,vecomega,veca1sig;
       if(ichan<0)
 	{
@@ -529,11 +528,6 @@ FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int icha
   else if(imode==0)
     {
       // momenta of the particles
-      Lorentz5Momentum q1=decay[decay.size()-4]->momentum();
-      Lorentz5Momentum q2=decay[decay.size()-3]->momentum();
-      Lorentz5Momentum q3=decay[decay.size()-2]->momentum();
-      Lorentz5Momentum q4=decay[decay.size()-1]->momentum();
-      Lorentz5Momentum Q=q1+q2+q3+q4;Q.rescaleMass();
       LorentzPolarizationVector veca1rho,veca1sig;
       if(ichan<0)
 	{
@@ -563,12 +557,12 @@ FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int icha
       output*=gFunction(Q.mass2(),0);
       // this is sqrt(1/3!) for identical particles
       fact*=0.40824829046386631;
-    }
+    }     
   else
     {throw DecayIntegratorError() << "Unknown decay mode in the " 
 				  << "FourPionNovosibirskCurrent::"
-				  << "hadronCurrent()" << Exception::abortnow;}       
-  output*=fact*inpart.mass()*inpart.mass();
+				  << "hadronCurrent()" << Exception::abortnow;}  
+  output*=fact*Q.mass2();
   vector<LorentzPolarizationVector> temp; 
   temp.push_back(output);
   return temp;

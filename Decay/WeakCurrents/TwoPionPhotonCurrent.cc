@@ -201,42 +201,42 @@ bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int imode,
 // the hadronic currents    
 vector<LorentzPolarizationVector> 
 TwoPionPhotonCurrent::current(bool vertex, const int imode, const int ichan, 
-			      const Particle & inpart,
-			      const ParticleVector & decay) const
+			      Energy & scale,const ParticleVector & decay) const
 {
   vector<LorentzPolarizationVector> temp;
   LorentzPolarizationVector vect;
   // locate the particles
-  unsigned int ipi0=decay.size()-2,ipic=decay.size()-3,igamma=decay.size()-1;
-  Lorentz5Momentum pout=decay[ipi0]->momentum()+decay[igamma]->momentum()
-    +decay[ipic]->momentum();
+  Lorentz5Momentum pout=decay[1]->momentum()+decay[2]->momentum()+decay[0]->momentum();
   // overall hadronic mass
+  pout.rescaleMass();
   Energy2 q2 = pout.m2();
   // mass of the omega
-  pout = decay[igamma]->momentum()+decay[ipi0]->momentum();
+  pout = decay[2]->momentum()+decay[1]->momentum();
+  pout.rescaleMass();
+  scale=pout.mass();
   Energy s2  = pout.m2();
   // compute the prefactor
-  complex<double> prefactor=-FFunction(0.,-1)*FFunction(q2,ichan)*inpart.mass()*
+  complex<double> prefactor=-FFunction(0.,-1)*FFunction(q2,ichan)*pout.mass()*
     sqrt(2.*pi*generator()->standardModel()->alphaEM())*BreitWigner(s2,10);
   // dot products which don't depend on the polarization vector
-  Energy2 dot12 = decay[igamma]->momentum().dot(decay[ipi0]->momentum());
-  Energy2 dot13 = decay[igamma]->momentum().dot(decay[ipic]->momentum());
-  Energy2 dot23 = decay[ipi0]->momentum().dot(decay[ipic]->momentum());
-  Energy2 mpi2  = decay[ipic]->mass()*decay[ipic]->mass();
+  Energy2 dot12 = decay[2]->momentum().dot(decay[1]->momentum());
+  Energy2 dot13 = decay[2]->momentum().dot(decay[0]->momentum());
+  Energy2 dot23 = decay[1]->momentum().dot(decay[0]->momentum());
+  Energy2 mpi2  = decay[0]->mass()*decay[0]->mass();
   // construct the spininfomation objects for the decay products
   VectorSpinPtr hwtemp;
   if(vertex)
     {
-      SpinPtr spi0=new_ptr(ScalarSpinInfo(decay[ipi0]->momentum(),true));
-      decay[ipi0]->spinInfo(spi0);
-      SpinPtr spic=new_ptr(ScalarSpinInfo(decay[ipic]->momentum(),true));
-      decay[ipic]->spinInfo(spic);
-      SpinPtr sgamma=new_ptr(VectorSpinInfo(decay[igamma]->momentum(),true));
-      decay[igamma]->spinInfo(sgamma);
+      SpinPtr spi0=new_ptr(ScalarSpinInfo(decay[1]->momentum(),true));
+      decay[1]->spinInfo(spi0);
+      SpinPtr spic=new_ptr(ScalarSpinInfo(decay[0]->momentum(),true));
+      decay[0]->spinInfo(spic);
+      SpinPtr sgamma=new_ptr(VectorSpinInfo(decay[2]->momentum(),true));
+      decay[2]->spinInfo(sgamma);
       hwtemp= dynamic_ptr_cast<VectorSpinPtr>(sgamma);
     }
   // loop over the photon polarizations
-  VectorWaveFunction photon(decay[igamma]->momentum(),decay[igamma]->dataPtr(),
+  VectorWaveFunction photon(decay[2]->momentum(),decay[2]->dataPtr(),
 			    outgoing);
   complex<double> dote2,dote3,coeffa,coeffb,coeffc;
   for(int ihel=-1;ihel<2;++ihel)
@@ -247,15 +247,15 @@ TwoPionPhotonCurrent::current(bool vertex, const int imode, const int ichan,
 	  if(vertex){hwtemp->setBasisState(ihel,photon.Wave());}
 	  // obtain the dot products we need
 	  dote2 =
-	    +photon.t()*decay[ipi0]->momentum().e()
-	    -photon.x()*decay[ipi0]->momentum().px()
-	    -photon.y()*decay[ipi0]->momentum().py()
-	    -photon.z()*decay[ipi0]->momentum().pz();
+	    +photon.t()*decay[1]->momentum().e()
+	    -photon.x()*decay[1]->momentum().px()
+	    -photon.y()*decay[1]->momentum().py()
+	    -photon.z()*decay[1]->momentum().pz();
 	  dote3 =
-	    +photon.t()*decay[ipic]->momentum().e()
-	    -photon.x()*decay[ipic]->momentum().px()
-	    -photon.y()*decay[ipic]->momentum().py()
-	    -photon.z()*decay[ipic]->momentum().pz();
+	    +photon.t()*decay[0]->momentum().e()
+	    -photon.x()*decay[0]->momentum().px()
+	    -photon.y()*decay[0]->momentum().py()
+	    -photon.z()*decay[0]->momentum().pz();
 	  // now compute the coefficients
 	  coeffa = mpi2*dot13-dot12*(dot23-dot13);
 	  coeffb = dote2*dot13-dote3*dot12;
@@ -264,8 +264,8 @@ TwoPionPhotonCurrent::current(bool vertex, const int imode, const int ichan,
 	  for(unsigned int ix=0;ix<4;++ix)
 	    {vect[ix]=
 		 photon(ix)*coeffa
-	       -decay[ipi0]->momentum()[ix]*coeffb
-	       +decay[igamma]->momentum()[ix]*coeffc;
+	       -decay[1]->momentum()[ix]*coeffb
+	       +decay[2]->momentum()[ix]*coeffc;
 	      vect[ix]*=prefactor;
 	    }
 	  temp.push_back(LorentzPolarizationVector(vect[0],vect[1],

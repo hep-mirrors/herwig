@@ -120,14 +120,13 @@ public:
    * Hadronic current. This version calculates the four pion current described above.
    * @param vertex Construct the information needed for spin correlations
    * @param imode The mode
-   * @param ichan The phase-space channel the current is needed for
-   * @param inpart The decaying particle.
+   * @param ichan The phase-space channel the current is needed for.
+   * @param scale The invariant mass of the particles in the current.
    * @param decay The decay products
    * @return The current. 
    */
   virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan, 
-						     const Particle & inpart,
+						     const int ichan,Energy & scale, 
 						     const ParticleVector & decay) const;
 
   /**
@@ -332,7 +331,7 @@ protected:
   inline double gFunction(Energy2 q2, int ichan) const;
 
   /**
-   * The d parameter in \f$rho\f$ the propagator.
+   * The d parameter in \f$\rho\f$ the propagator.
    */
   inline Energy2 DParameter() const ;
 
