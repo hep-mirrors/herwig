@@ -6,6 +6,10 @@
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
+#include <istream>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 using namespace std;
 using namespace ThePEG;
@@ -13,7 +17,7 @@ using namespace Herwig;
 
 MRST::MRST() {}
 
-MRST::MRST(const MRST &x) : PDFBase(x), dataPtr(x.dataPtr) {}
+MRST::MRST(const MRST &x) : PDFBase(x) {}//, dataPtr(x.dataPtr) {}
 
 MRST::~MRST() {}
 
@@ -150,27 +154,33 @@ double MRST::polderivative(double x1, double x2, double x3,
 }
 
 void MRST::persistentOutput(PersistentOStream &out) const {
-  out << dataPtr;
+  //out << dataPtr;
+  out << _file;
 }
 
 void MRST::persistentInput(PersistentIStream & in, int i) {
-  in >> dataPtr;
+  //in >> dataPtr;
+  in >> _file;
+  initialize();
 }
 
 void MRST::Init() {
   static ClassDocumentation<MRST> docMRST("MRST");
 
-  static Reference<MRST,MRSTData> interfaceData
+  /*static Reference<MRST,MRSTData> interfaceData
     ("Data",
      "This is the MRSTData derived class with the desired data loaded.",
      &MRST::dataPtr, false, false, true, false);
+  */
 }
 
 void MRST::doupdate() throw(UpdateException) { PDFBase::doupdate(); }
 void MRST::doinit() throw(InitException) { 
   PDFBase::doinit();
-  initialize();
+  //  initialize();
 }
+//void MRST::doinitrun() { PDFBase::doinitrun(); initialize(); }
+
 void MRST::dofinish() { PDFBase::dofinish(); }
 
 void MRST::rebind(const TranslationMap & trans) throw(RebindException) {
@@ -182,12 +192,16 @@ IBPtr MRST::fullclone() const { return clone(); }
 
 IVector MRST::getReferences() { 
   IVector rval = PDFBase::getReferences(); 
-  rval.push_back(dataPtr);
+  //rval.push_back(dataPtr);
   return rval;
 }
 
+void MRST::readSetup(istream &is) throw(SetupException) {
+  _file = dynamic_cast<istringstream*>(&is)->str();
+}
+
 void MRST::initialize() {
-  
+  cout << "Opening file " << _file << endl;
   int i,n,m,k,l,j; // counters
   double dx,dq,dtemp;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -219,26 +233,59 @@ void MRST::initialize() {
     for(n=1; n<=nq; n++) qq[n] = log10(qq[n]);
   }
 
+  ifstream datafile;
+  datafile.open(_file.c_str());
+
+  if(datafile.bad()) { 
+    cerr << "Could not open file " << _file << "\n";
+    return;
+  }
+  for(int n=1; n<nx; n++) {
+    for(int m=1; m<=nq; m++) {
+      datafile >> data[1][n][m];
+      datafile >> data[2][n][m];
+      datafile >> data[3][n][m];
+      datafile >> data[4][n][m];
+      datafile >> data[5][n][m];
+      datafile >> data[7][n][m];
+      datafile >> data[6][n][m];
+      datafile >> data[8][n][m];
+      if(datafile.eof()) {
+	cerr << "Error while reading " << _file << endl;
+	return;
+      }
+    }
+  }
+  
+  datafile >> dtemp;
+  if(!datafile.eof()) {
+    cerr << "Error reading end of " << _file << endl;
+    return;
+  }
+  datafile.close();
+
+  cout << "File read!" << endl;
+  
   // Now calculate the derivatives used for bicubic interpolation
   for (i=1;i<=np;i++) {
     // Start by calculating the first x derivatives
     // along the first x value
     dx=xx[2]-xx[1];
     for (m=1;m<=nq;m++)
-      f1[i][1][m]=(dataPtr->value(i,2,m)-dataPtr->value(i,1,m))/dx;
+      f1[i][1][m]=(data[i][2][m]-data[i][1][m])/dx;
     // The along the rest (up to the last)
     for (k=2;k<nx;k++) {
       for (m=1;m<=nq;m++) {
 	f1[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
-				  dataPtr->value(i,k-1,m),
-				  dataPtr->value(i,k,m),
-				  dataPtr->value(i,k+1,m));
+				  data[i][k-1][m],
+				  data[i][k][m],
+				  data[i][k+1][m]);
       }
     }
     // Then for the last column
     dx=xx[nx]-xx[nx-1];
     for (m=1;m<=nq;m++)
-      f1[i][nx][m]=(dataPtr->value(i,nx,m)-dataPtr->value(i,nx-1,m))/dx;
+      f1[i][nx][m]=(data[i][nx][m]-data[i][nx-1][m])/dx;
     
 
     if ((i!=5)&&(i!=7)) {
@@ -246,19 +293,19 @@ void MRST::initialize() {
       // Along the first qq value
       dq=qq[2]-qq[1];
       for (k=1;k<=nx;k++)
-	f2[i][k][1]=(dataPtr->value(i,k,2)-dataPtr->value(i,k,1))/dq;
+	f2[i][k][1]=(data[i][k][2]-data[i][k][1])/dq;
       // The rest up to the last qq value
       for (m=2;m<nq;m++) {
 	for (k=1;k<=nx;k++)
 	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
-				    dataPtr->value(i,k,m-1),
-				    dataPtr->value(i,k,m),
-				    dataPtr->value(i,k,m+1));
+				    data[i][k][m-1],
+				    data[i][k][m],
+				    data[i][k][m+1]);
       }
       // then for the last row
       dq=qq[nq]-qq[nq-1];
       for (k=1;k<=nx;k++)
-	f2[i][k][nq]=(dataPtr->value(i,k,nq)-dataPtr->value(i,k,nq-1))/dq;
+	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
       // Now, calculate the cross derivatives.
       // Calculate these as x-derivatives of the y-derivatives
@@ -291,20 +338,20 @@ void MRST::initialize() {
       // Along the first qq value above the threshold
       dq=qq[nqc0+1]-qq[nqc0];
       for (k=1;k<=nx;k++)
-	f2[i][k][m]=(dataPtr->value(i,k,m+1)-dataPtr->value(i,k,m))/dq;
+	f2[i][k][m]=(data[i][k][m+1]-data[i][k][m])/dq;
 
       // The rest up to the last qq value
       for (m=nqc0+1;m<nq;m++) {
 	for (k=1;k<=nx;k++)
 	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
-				    dataPtr->value(i,k,m-1),
-				    dataPtr->value(i,k,m),
-				    dataPtr->value(i,k,m+1));
+				    data[i][k][m-1],
+				    data[i][k][m],
+				    data[i][k][m+1]);
       }
       // then for the last row
       dq=qq[nq]-qq[nq-1];
       for (k=1;k<=nx;k++)
-	f2[i][k][nq]=(dataPtr->value(i,k,nq)-dataPtr->value(i,k,nq-1))/dq;
+	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
       // Now, calculate the cross derivatives.
       // Calculate these as x-derivatives of the y-derivatives
@@ -335,20 +382,20 @@ void MRST::initialize() {
       // Along the first qq value above the threshold
       dq=qq[nqb0+1]-qq[nqb0];
       for (k=1;k<=nx;k++)
-	f2[i][k][m]=(dataPtr->value(i,k,m+1)-dataPtr->value(i,k,m))/dq;
+	f2[i][k][m]=(data[i][k][m+1]-data[i][k][m])/dq;
 
       // The rest up to the last qq value
       for (m=nqb0+1;m<nq;m++) {
 	for (k=1;k<=nx;k++)
 	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
-				    dataPtr->value(i,k,m-1),
-				    dataPtr->value(i,k,m),
-				    dataPtr->value(i,k,m+1));
+				    data[i][k][m-1],
+				    data[i][k][m],
+				    data[i][k][m+1]);
       }
       // then for the last row
       dq=qq[nq]-qq[nq-1];
       for (k=1;k<=nx;k++)
-	f2[i][k][nq]=(dataPtr->value(i,k,nq)-dataPtr->value(i,k,nq-1))/dq;
+	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
       // Now, calculate the cross derivatives.
       // Calculate these as x-derivatives of the y-derivatives
@@ -378,10 +425,10 @@ void MRST::initialize() {
 	d1d2=d1*d2;
 	
 	// Iterate around the grid and store the values of f, f_x, f_y and f_xy
-	y[1]=dataPtr->value(i,n,m);
-	y[2]=dataPtr->value(i,n+1,m);
-	y[3]=dataPtr->value(i,n+1,m+1);
-	y[4]=dataPtr->value(i,n,m+1);
+	y[1]=data[i][n][m];
+	y[2]=data[i][n+1][m];
+	y[3]=data[i][n+1][m+1];
+	y[4]=data[i][n][m+1];
 	
 	y1[1]=f1[i][n][m];
 	y1[2]=f1[i][n+1][m];

@@ -68,6 +68,7 @@ class MRST : public PDFBase {
 
   virtual void doupdate() throw(UpdateException);
   virtual void doinit() throw(InitException);
+  //virtual void doinitrun();
   virtual void dofinish();
   // Standard Interfaced virtual functions.
 
@@ -79,17 +80,19 @@ class MRST : public PDFBase {
 
 private:
 
-  //string _file;
-  MRSTDatPtr dataPtr;
+  string _file;
+  //MRSTDatPtr dataPtr;
 
-  void initialize();//string);
-  //string setFilename(string);
+  void initialize();
+  virtual void readSetup(istream &) throw(SetupException);
+
   static ClassDescription<MRST> initMRST;
 
   MRST & operator=(const MRST &);
   //  Private and non-existent assignment operator.
 
- 
+  double data[np+1][nx+1][nq+1];
+
  private:
   static double xx[nx+1];
   static double qq[nq+1];
