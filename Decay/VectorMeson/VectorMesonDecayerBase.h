@@ -24,7 +24,7 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  *  It uses the DecayIntegrator class for the phase space and implements the 
  *  me2 member of the DecayIntegrator to give the matrix element as
  *
- *  \f[ \sum_{\rm spins}|\mathcal{M}|^2 = \sum_{\rm spins} \epsilon^\mu J_\mu \f]
+ *  \f[ \mathcal{M} = \epsilon^\mu J_\mu \f]
  *
  *  where \f$\epsilon^\mu\f$ is the polarization vector of the decaying vector
  *  meson and \f$J_\mu\f$ is the hadronic current supplied by the decayCurrent member.
