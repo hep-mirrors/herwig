@@ -45,3 +45,10 @@ These classes are used for the underlying event.
 /** \defgroup Utilities Utilities classes
 These classes provide general utilities.
 */
+
+/** \defgroup Decay Decay classes
+These classes perform the decays
+*/
+/** \defgroup PDT Particle Data class
+Particle properties classses.
+*/
