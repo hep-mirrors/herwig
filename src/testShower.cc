@@ -110,6 +110,8 @@ int main(int argc, char* argv[]){
 
   }
   eg->finish();
+  
+  cout << "program finished." << endl; 
 
   return(0);
 }
