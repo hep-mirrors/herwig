@@ -1,13 +1,11 @@
-#include "Herwig++/Utilities/HerwigRun.cc"
+#include "Herwig++/Utilities/HerwigRun.h"
 // Any headers needed for analysis go here
 
 
 
 int main(int argc, char * argv[]) {
-  using namespace Pythia7;
-
   try {
-    HerwigRun hw(argc,argv);
+    Herwig::HerwigRun hw(argc,argv);
 
     if (hw.isRunMode() && hw.preparedToRun()) {
       for(int i = 0; i<hw.getN(); i++) {
