@@ -70,14 +70,14 @@ dnl check CLHEP first
 AC_MSG_CHECKING([that CLHEP works])
 AC_TRY_LINK(
 #include <CLHEP/Random/Random.h>
-,HepRandom r; r.flat();
+,using namespace CLHEP; HepRandom r; r.flat();
 , AC_MSG_RESULT([yes])
 , AC_MSG_RESULT([no])
 AC_MSG_ERROR([CLHEP must be installed to continue.]))
 
 dnl check ThePEG now
 LIBS="$oldLIBS $THEPEGLIB -ldl -lCLHEP"
-LDFLAGS="$oldLDFLAGS  $CLHEPINCLUDE -L$THEPEGPATH/lib/ThePEG/current"
+LDFLAGS="$oldLDFLAGS  $CLHEPINCLUDE -L$THEPEGPATH/lib/ThePEG/current -L$CLHEPPATH/lib"
 CXXFLAGS="$oldCXXFLAGS $THEPEGINCLUDE"
 
 
@@ -137,5 +137,12 @@ AC_OUTPUT(Config/Makefile.common Decay/Makefile Hadronization/Makefile \
           Interfaces/Makefile MatrixElement/Makefile Shower/Makefile \
        	  Utilities/Makefile src/Makefile UnderlyingEvent/Makefile \
           PDF/Makefile Helicity/WaveFunction/Makefile \
-          Helicity/Correlations/Makefile Decay/Tau/Makefile Decay/VectorMeson/Makefile)
+          Helicity/Correlations/Makefile Decay/FormFactors/Makefile PDT/Makefile \
+          Makefile Helicity/Vertex/Makefile Helicity/Vertex/Vector/Makefile \
+          Helicity/Vertex/Scalar/Makefile Helicity/Vertex/Tensor/Makefile \
+          Helicity/Vertex/StandardModel/Makefile Helicity/Vertex/RSModel/Makefile \
+          Decay/VectorMeson/Makefile Decay/TensorMeson/Makefile \
+          Decay/ScalarMeson/Makefile Decay/WeakCurrents/Makefile \
+          Models/RSModel/Makefile Models/StandardModel/Makefile Decay/Tau/Makefile \
+          Decay/Baryon/Makefile Decay/Perturbative/Makefile )
  
