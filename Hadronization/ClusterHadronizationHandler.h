@@ -59,7 +59,7 @@ public:
    * and on which particles/clusters. This function also handles the 
    * situation of vetos on the hadronization.
    */
-  virtual void handle(PartialCollisionHandler & ch, const tPVector & tagged,
+  virtual void handle(EventHandler & ch, const tPVector & tagged,
 		      const Hint & hint) throw(Veto, Stop, Exception);
 
 public:
@@ -115,7 +115,7 @@ private:
   /**
    * Print information about the final, complete collections of clusters.
    */
-  void debuggingInfo(PartialCollisionHandler & ch, ClusterVector &);
+  void debuggingInfo(EventHandler & ch, ClusterVector &);
  
   /**
    * This is a pointer to a Herwig::GlobalParameters object.

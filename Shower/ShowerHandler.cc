@@ -10,7 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 // #include "ThePEG/Interface/Parameter.h" 
 #include "ThePEG/Interface/Reference.h" 
-#include "ThePEG/Handlers/CollisionHandler.h"
+//#include "ThePEG/Handlers/CollisionHandler.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/Hint.h"
@@ -94,7 +94,7 @@ void ShowerHandler::cascade() {
 		      
   }
 
-  tPartCollHdlPtr ch = collisionHandler();
+  tEHPtr ch = eventHandler();
   //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
   //		   ch->currentStep()->particles().end());
   // const Hint & theHint = hint();	    // OK: COMMENTED TO AVOID COMPILATION WARNINGS
@@ -367,7 +367,7 @@ void ShowerHandler::cascade() {
 }
 
 void ShowerHandler::
-convertToShowerParticles(const tPartCollHdlPtr ch,
+convertToShowerParticles(const tEHPtr ch,
 			 ShowerParticleVector & hardProcessParticles) {
 
   // Incoming (initial state) particles (indeed the partons entering
@@ -621,7 +621,7 @@ void ShowerHandler::debuggingInfo() {
 }
 
 
-void ShowerHandler::fillEventRecord(const tPartCollHdlPtr ch) {  
+void ShowerHandler::fillEventRecord(const tEHPtr ch) {  
 
   // Transform some of the ShowerParticles object in ThePEG particles,
   // set properly the parent/child relationships and treat carefully 
@@ -818,7 +818,7 @@ void ShowerHandler::eventShape(const tShowerParticleVector & p,
 //   cout << "#    lamsum = " << lamsum << endl; 
 }
 
-void ShowerHandler::hardMEC(const tPartCollHdlPtr ch) {
+void ShowerHandler::hardMEC(const tEHPtr ch) {
   PVector qq; 
   for (ParticleSet::const_iterator cit=ch->currentStep()->particles().begin();
        cit != ch->currentStep()->particles().end(); ++cit )

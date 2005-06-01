@@ -53,7 +53,7 @@ void LightClusterDecayer::Init() {
   
   static Parameter<LightClusterDecayer,Energy>
     interfaceB1Lim ("B1Lim","one-hadron decay of b-cluster over threshold",
-                    &LightClusterDecayer::_B1Lim, 0, 0.0, 0.0, 100.0);
+                    &LightClusterDecayer::_B1Lim, 0, 0.0, 0.0, 100.0,false,false,false);
 
 }
 

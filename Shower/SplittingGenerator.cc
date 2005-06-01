@@ -12,7 +12,7 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ShowerParticle.h"
-#include "ThePEG/Handlers/PartialCollisionHandler.h"
+//#include "ThePEG/Handlers/PartialCollisionHandler.h"
 #include "ThePEG/Repository/FullEventGenerator.h"
 #include "ShowerAlpha.h"
 #include "SplittingFunction.h"
@@ -282,7 +282,7 @@ bool SplittingGenerator::isFSRadiationON(const ShowerIndex::InteractionType inte
 }
 
 
-Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
+Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 		                                     ShowerParticle &particle,
 						     const bool reverseAngOrd) const {
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -482,7 +482,7 @@ Branching SplittingGenerator::chooseForwardBranching(tPartCollHdlPtr ch,
 }
 
 
-Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
+Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
 			                              ShowerParticle &particle) const {
   Energy newQ = Energy();
   tSudakovPtr sudakov = tSudakovPtr();
@@ -599,7 +599,7 @@ Branching SplittingGenerator::chooseBackwardBranching(tPartCollHdlPtr ch,
 }
 
 
-void SplittingGenerator::generateBranchingKinematics(tPartCollHdlPtr ch,
+void SplittingGenerator::generateBranchingKinematics(tEHPtr ch,
 	                                             ShowerParticle &particle,
 					             Branching &b) const {
   //***LOOKHERE*** Complete the kinematics of the branching by filling

@@ -5,7 +5,7 @@
 // This is the declaration of the InsideRangeShowerEvolver class.
 
 #include "ThePEG/Handlers/HandlerBase.h"
-#include "ThePEG/Handlers/PartialCollisionHandler.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerConfig.h"
 #include "PartnerFinder.h"
@@ -74,7 +74,7 @@ public:
    * access the PDF. If skipKinReco is true, then the kinematics 
    * reconstruction is skipped.
    */
-  void showerNormally(tPartCollHdlPtr ch, 
+  void showerNormally(tEHPtr ch, 
 		      const tShowerVarsPtr showerVariables, 
 		      //const tMECorrectionPtr meCorrection,
 		      ShowerParticleVector & particles,
@@ -83,7 +83,7 @@ public:
   /**
    * It does the (special) showering of a decay.
    */
-  void showerDecay(tPartCollHdlPtr ch, 
+  void showerDecay(tEHPtr ch, 
 		   const tShowerVarsPtr showerVariables, 
 		   //const tMECorrectionPtr meCorrection,
 		   ShowerParticleVector &) throw (Veto, Stop, Exception);
@@ -97,7 +97,7 @@ public:
    * PDF. If skipKinReco is true, then the kinematics 
    * reconstruction is skipped.
    */
-  void showerGlobally(tPartCollHdlPtr & ch,  
+  void showerGlobally(tEHPtr & ch,  
 		      const tShowerVarsPtr showerVariables, 
 		      //const tMECorrectionPtr meCorrection,
 		      ShowerParticleVector & particles,
@@ -123,9 +123,9 @@ public:
    * case we want to use Herwig++ cluster hadronization for the
    * hadronization rather than ThePEG string fragmentation).
    */
-  bool reconstructISKinematics(tPartCollHdlPtr & ch) 
+  bool reconstructISKinematics(tEHPtr & ch) 
     throw (Veto, Stop, Exception);
-  bool reconstructKinematics(tPartCollHdlPtr & ch) 
+  bool reconstructKinematics(tEHPtr & ch) 
     throw (Veto, Stop, Exception);
 
 public:

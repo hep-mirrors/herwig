@@ -53,12 +53,12 @@ public:
 
   /**
    * Look through all \a tagged particled and decay all unstable ones.
-   * @param ch the PartialCollisionHandler in charge of the generation.
+   * @param ch the PartialCollisionHandler (now EventHandler) in charge of the generation.
    * @param tagged the vector of particles to consider. If empty, all
    * final state particles in the current Step is considered.
    * @param hint a possible Hint which is ignored in this implementation.
    */
-  virtual void handle(PartialCollisionHandler & ch, const tPVector & tagged,
+  virtual void handle(EventHandler & ch, const tPVector & tagged,
 		      const Hint & hint)
     ThePEG_THROW_SPEC((Veto, Stop, Exception));
 

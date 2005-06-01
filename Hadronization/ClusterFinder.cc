@@ -8,7 +8,7 @@
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/Handlers/PartialCollisionHandler.h>
+// #include <ThePEG/Handlers/PartialCollisionHandler.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/EventRecord/Collision.h>

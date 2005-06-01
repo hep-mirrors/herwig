@@ -106,7 +106,7 @@ private:
    * Notice that the transformation from ThePEG ColourLine 
    * objects into ShowerColourLine ones must be properly handled.
    */
-  void convertToShowerParticles(const tPartCollHdlPtr ch, 
+  void convertToShowerParticles(const tEHPtr ch, 
 				ShowerParticleVector & hardProcessParticles);
 
   /**
@@ -127,7 +127,7 @@ private:
    * transformation from ShowerColourLine objects into ThePEG
    * ColourLine ones must be properly handled.
    */
-  void fillEventRecord( const tPartCollHdlPtr ch );
+  void fillEventRecord( const tEHPtr ch );
 
   /**
    * Two functions to add the shower to the event record. The first
@@ -151,7 +151,7 @@ private:
   /**
    * Calculate hard ME correction.
    */
-  void hardMEC(const tPartCollHdlPtr ch);
+  void hardMEC(const tEHPtr ch);
 
   Ptr<GlobalParameters>::pointer _globalParameters; 
   //Ptr<MECorrections>::pointer _MECorrections;

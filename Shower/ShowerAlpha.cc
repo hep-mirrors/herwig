@@ -43,7 +43,7 @@ void ShowerAlpha::Init() {
 
   static Parameter<ShowerAlpha,double> interfaceShowerAlpha 
     ("ScaleFactor", "Factor that multiplies the scale argument, mu, of the running alpha.",
-     &ShowerAlpha::_scaleFactor, 0, 1.0 , 0.0 , 10.0);
+     &ShowerAlpha::_scaleFactor, 0, 1.0 , 0.0 , 10.0,false,false,false);
 
 
 //   static Reference<ShowerAlpha,ShowerVariables> 

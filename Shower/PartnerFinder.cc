@@ -40,7 +40,7 @@ void PartnerFinder::Init() {
     ("Approximation",
      "This is a test variable to consider the different approaches of "
      "which colour dipoles of a hard process will shower.",
-     &PartnerFinder::_approach, 0, 1, 0);
+     &PartnerFinder::_approach, 0, 1, 0,false,false,false);
 
 }
 

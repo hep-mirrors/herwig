@@ -49,7 +49,7 @@ public:
    * of ShowerParticle already created so far by the showering, 
    * or being empty: the choice is up to the caller).  
    */
-  bool timeLikeShower( tPartCollHdlPtr ch, 
+  bool timeLikeShower( tEHPtr ch, 
 		       const tShowerVarsPtr showerVariables, 
 		       //const tMECorrectionPtr meCorrectionPtr,
 		       tShowerParticlePtr particle, 

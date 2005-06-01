@@ -61,16 +61,16 @@ void ClusterFissioner::Init() {
   
   static Parameter<ClusterFissioner,Energy>
     interfaceClMax ("ClMax","cluster max mass  (unit [GeV])",
-                    &ClusterFissioner::_ClMax, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV);
+                    &ClusterFissioner::_ClMax, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
   static Parameter<ClusterFissioner,double>
     interfaceClPow ("ClPow","cluster mass exponent",
-                    &ClusterFissioner::_ClPow, 0, 2.0, 0.0, 10.0);
+                    &ClusterFissioner::_ClPow, 0, 2.0, 0.0, 10.0,false,false,false);
   static Parameter<ClusterFissioner,double>
     interfacePSplt1 ("PSplt1","cluster mass splitting param for u,d,s,c",
-                    &ClusterFissioner::_PSplt1, 0, 1.0, 0.0, 10.0);
+                    &ClusterFissioner::_PSplt1, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<ClusterFissioner,double>
     interfacePSplt2 ("PSplt2","cluster mass splitting param for b",
-                    &ClusterFissioner::_PSplt2, 0, 1.0, 0.0, 10.0);
+                    &ClusterFissioner::_PSplt2, 0, 1.0, 0.0, 10.0,false,false,false);
 
 }
 

@@ -29,10 +29,10 @@ int main(int argc, char * argv[]) {
     std::cerr << e.what() << std::endl;
     return 1;
   }
-  catch ( ... ) {
-    std::cerr << "Unknown Exception\n";
-    return 2;
-  }
+  //  catch ( ... ) {
+  // std::cerr << "Unknown Exception\n";
+  //return 2;
+  //}
   std::cout << std::endl;
   return 0;
 }

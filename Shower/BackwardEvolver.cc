@@ -55,7 +55,7 @@ void BackwardEvolver::Init() {
 
 //------------------------------------------------------------------------------
 
-bool BackwardEvolver::spaceLikeShower(tPartCollHdlPtr ch, 
+bool BackwardEvolver::spaceLikeShower(tEHPtr ch, 
 				      const tShowerVarsPtr showerVars, 
 				      tShowerParticlePtr particle, 
 				      ShowerParticleVector &allShowerParticles)

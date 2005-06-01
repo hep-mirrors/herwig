@@ -2,7 +2,7 @@
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Handlers/CollisionHandler.h>
+// #include <ThePEG/Handlers/Handler.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Handlers/DecayHandler.h>
 #include "Herwig++/Hadronization/Cluster.h"
@@ -77,58 +77,58 @@ void UA5Handler::Init() {
 
   static Parameter<UA5Handler,double>
     interfaceN1("N1", "Parameter N1 in the mean charge multiplicity",
-                &Herwig::UA5Handler::_N1,9.11,0.,1000.);
+                &Herwig::UA5Handler::_N1,9.11,0.,1000.,false,false,false);
 
   static Parameter<UA5Handler,double>
     interfaceN2("N2", "Parameter N2 in the mean charge multiplicity",
-                &Herwig::UA5Handler::_N2,0.115,0.,1000.);
+                &Herwig::UA5Handler::_N2,0.115,0.,1000.,false,false,false);
 
   static Parameter<UA5Handler,double>
     interfaceN3("N3", "Parameter N3 in the mean charge multiplicity",
-                &Herwig::UA5Handler::_N3,-9.5,-1000.,1000.);
+                &Herwig::UA5Handler::_N3,-9.5,-1000.,1000.,false,false,false);
 
   static Parameter<UA5Handler,double>
     interfaceK1("K1", 
 		"Parameter K1 used to generate the multiplicity distribution",
-                &Herwig::UA5Handler::_K1,0.029,0.,1000.);
+                &Herwig::UA5Handler::_K1,0.029,0.,1000.,false,false,false);
 
   static Parameter<UA5Handler,double>
     interfaceK2("K2", 
 		"Parameter K2 used to generate the multiplicity distribution",
-                &Herwig::UA5Handler::_K2,-0.104,-100.,100.);
+                &Herwig::UA5Handler::_K2,-0.104,-100.,100.,false,false,false);
 
   static Parameter<UA5Handler,double>
     interfaceM1("M1", "Parameter M1 used to generate soft cluster mass",
-                &Herwig::UA5Handler::_M1,0.4,0.,100.);
+                &Herwig::UA5Handler::_M1,0.4,0.,100.,false,false,false);
 
   static Parameter<UA5Handler,double>
     interfaceM2("M2", "Parameter M2 used to generate soft cluster mass",
-                &Herwig::UA5Handler::_M2,2.0,0.,100.);  
+                &Herwig::UA5Handler::_M2,2.0,0.,100.,false,false,false);  
 
    static Parameter<UA5Handler,double>
     interfaceP1("P1", "Slope used to generate the pt of the u,d soft clusters",
-                &Herwig::UA5Handler::_P1,5.2,0.,100.); 
+                &Herwig::UA5Handler::_P1,5.2,0.,100.,false,false,false); 
    
    static Parameter<UA5Handler,double>
     interfaceP2("P2", "Slope used to generate the pt of the s,c soft clusters",
-                &Herwig::UA5Handler::_P2,3.0,0.,100.);    
+                &Herwig::UA5Handler::_P2,3.0,0.,100.,false,false,false);    
 
    static Parameter<UA5Handler,double>
     interfaceP3("P3", "Slope used to generate the pt of the qq soft clusters",
-                &Herwig::UA5Handler::_P3,5.2,0.,100.); 
+                &Herwig::UA5Handler::_P3,5.2,0.,100.,false,false,false); 
 
    static Parameter<UA5Handler,double>
     interfaceProbSoft("Prob", "Probability of underlying event",
-		      &Herwig::UA5Handler::_probSoft,1.0,0.,1.); 
+		      &Herwig::UA5Handler::_probSoft,1.0,0.,1.,false,false,false); 
 
    static Parameter<UA5Handler,double>
     interfaceEnhance("Enhance", 
 		     "Enhancement of the CM energy in the mult distribution",
-		     &Herwig::UA5Handler::_enhanceCM,1.0,0.,10.);    
+		     &Herwig::UA5Handler::_enhanceCM,1.0,0.,10.,false,false,false);    
 }
 
 // This is the routine that is called to start the algorithm. 
-void UA5Handler::handle(PartialCollisionHandler &ch, const tPVector &tagged,
+void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 			const Hint &hint) throw(Veto,Stop,Exception) {
 
   /*****

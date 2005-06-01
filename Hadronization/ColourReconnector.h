@@ -25,7 +25,7 @@ using namespace ThePEG;
  *  Note: by default this class does nothing. It can be inherited and overridden
  *  in future hadronization models.
  */
-class ThePEG::PartialCollisionHandler; // forward declaration
+//class ThePEG::PartialCollisionHandler; // forward declaration
 
 
 class ColourReconnector: public ThePEG::HandlerBase {
@@ -44,7 +44,7 @@ public:
    * in input. If the actual rearrangement is accepted, the new collection 
    * of clusters is overriden to the intial one.
    */
-  void rearrange(PartialCollisionHandler & ch, const StepPtr & pstep,
+  void rearrange(EventHandler & ch, const StepPtr & pstep,
                  ClusterVector & clusters) throw(Veto, Stop, Exception);
     
 public:

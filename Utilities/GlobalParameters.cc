@@ -51,13 +51,13 @@ void GlobalParameters::Init() {
     ("EffectiveGluonMass",
      "Nonperturbative effective gluon mass  (unit [GeV])",
      &GlobalParameters::_effectiveGluonMass, 
-     GeV, 0.750*GeV, 0.0*GeV, 10.0*GeV);
+     GeV, 0.750*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
 
   static Parameter<GlobalParameters,Energy> interfaceHadronizationScale 
     ("HadronizationScale",
      "Hadronization scale, above which the decay affect the multi-scale showering  (unit [GeV])",
      &GlobalParameters::_hadronizationScale, 
-     GeV, 0.5*GeV, 0.0*GeV, 10.0*GeV);
+     GeV, 0.5*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
 
  static Switch<GlobalParameters, int> interfaceSoftUnderlyingEventMode
     ("OnOffSoftUnderlyingEventMode",
@@ -84,13 +84,13 @@ void GlobalParameters::Init() {
   static Parameter<GlobalParameters,Energy2> interfaceMinVirtuality2 
     ("MinVirtuality2",
      "Minimum virtuality^2 of partons to use in calculating distances  (unit [GeV2]).",
-     &GlobalParameters::_minVirtuality2, GeV2, 0.1*GeV2, 0.0*GeV2, 10.0*GeV2);
+     &GlobalParameters::_minVirtuality2, GeV2, 0.1*GeV2, 0.0*GeV2, 10.0*GeV2,false,false,false);
 
   static Parameter<GlobalParameters,Length> interfaceMaxDisplacement 
     ("MaxDisplacement",
      "Maximum displacement that is allowed for a particle  (unit [millimeter]).",
      &GlobalParameters::_maxDisplacement, millimeter, 1.0e-10*millimeter, 
-     0.0*millimeter, 1.0e-9*millimeter);
+     0.0*millimeter, 1.0e-9*millimeter,false,false,false);
 
 }
 

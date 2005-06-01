@@ -138,7 +138,7 @@ insert /Defaults/ThePEGStrategy:LocalParticles[0] /Defaults/Particles/e+
 
 cd /Defaults/Handlers
 # Create LEPHandler
-create ThePEG::EventHandler LEPHandler
+create ThePEG::StandardEventHandler LEPHandler 
 create ThePEG::FixedCMSLuminosity FixedLEPLuminosity FixedCMSLuminosity.so
 set FixedLEPLuminosity:Energy 91.2
 set LEPHandler:LuminosityFunction FixedLEPLuminosity
@@ -151,7 +151,7 @@ set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/std
 set LEPHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 
 # Create LHCHandler
-create ThePEG::EventHandler LHCHandler
+create ThePEG::StandardEventHandler LHCHandler 
 create ThePEG::FixedCMSLuminosity FixedLHCLuminosity
 set FixedLHCLuminosity:Energy 14000.0
 set LHCHandler:LuminosityFunction FixedLHCLuminosity
@@ -167,7 +167,7 @@ set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/the
 
 # Now the LEPGenerator
 cd /Defaults/Generators
-create ThePEG::FullEventGenerator LEPGenerator
+create ThePEG::EventGenerator LEPGenerator
 set LEPGenerator:RandomNumberGenerator /Defaults/Random
 set LEPGenerator:StandardModelParameters /Defaults/StandardModel
 set LEPGenerator:EventHandler /Defaults/Handlers/LEPHandler
@@ -177,7 +177,7 @@ set EECuts:SubProcess/MHatMin 22.36
 set LEPGenerator:EventHandler:Cuts EECuts
 
 # And the LHCGenerator
-create ThePEG::FullEventGenerator LHCGenerator
+create ThePEG::EventGenerator LHCGenerator
 set LHCGenerator:RandomNumberGenerator /Defaults/Random
 set LHCGenerator:StandardModelParameters /Defaults/StandardModel
 set LHCGenerator:EventHandler /Defaults/Handlers/LHCHandler

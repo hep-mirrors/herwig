@@ -104,23 +104,23 @@ void ShowerVariables::Init() {
     interfaceCutoffQCD ("CutoffQCDMassScale",
 			"low energy cutoff mass scale for QCD radiation  (unit [GeV])",
 			&ShowerVariables::_cutoffQCDMassScale, GeV, 
-			0.0*GeV, 0.0*GeV, 10.0*GeV);
+			0.0*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
   static Parameter<ShowerVariables,Energy>
     interfaceCutoffQED ("CutoffQEDMassScale",
 			"low energy cutoff mass scale for QED radiation  (unit [GeV])",
 			&ShowerVariables::_cutoffQEDMassScale, GeV, 
-			0.0005*GeV, 0.0*GeV, 10.0*GeV);
+			0.0005*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
   static Parameter<ShowerVariables,Energy>
     interfaceCutoffEWK ("CutoffEWKMassScale",
 			"low energy cutoff mass scale for EWK radiation  (unit [GeV])",
 			&ShowerVariables::_cutoffEWKMassScale, GeV, 
-			91.0*GeV, 0.0*GeV, 1000.0*GeV);
+			91.0*GeV, 0.0*GeV, 1000.0*GeV,false,false,false);
 
   static Parameter<ShowerVariables,Energy>
     interfaceKinScale ("cutoffKinScale",
 		       "kinematic cutoff scale for the parton shower phase space (unit [GeV])",
 		       &ShowerVariables::_kinCutoffScale, GeV, 
-		       0.75*GeV, 0.001*GeV, 10.0*GeV);
+		       0.75*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
 
 }
 

@@ -58,7 +58,7 @@ void ForwardEvolver::Init() {
 
 //-----------------------------------------------------------------------------
 
-bool ForwardEvolver::timeLikeShower(tPartCollHdlPtr ch, 
+bool ForwardEvolver::timeLikeShower(tEHPtr ch, 
 				    const tShowerVarsPtr showerVariables, 
 				    //const tMECorrectionPtr meCorrectionPtr,
 				    tShowerParticlePtr particle, 

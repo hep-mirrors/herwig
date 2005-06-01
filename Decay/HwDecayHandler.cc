@@ -5,7 +5,7 @@
 //
 
 #include "HwDecayHandler.h"
-#include "ThePEG/Handlers/CollisionHandler.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Handlers/Hint.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -32,7 +32,7 @@ using Helicity::SpinfoPtr;
 HwDecayHandler::~HwDecayHandler() {}
 
 void HwDecayHandler::
-handle(PartialCollisionHandler & ch, const tPVector & tagged,
+handle(EventHandler & ch, const tPVector & tagged,
        const Hint & hint) ThePEG_THROW_SPEC((Veto, Stop, Exception)) {
   // First go through the tagged particles for unstable ones
   Timer<46> timer("HwDecayHandler::handle");

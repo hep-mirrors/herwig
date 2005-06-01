@@ -10,7 +10,7 @@
 #include <ThePEG/Utilities/Timer.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/StandardModel/StandardModelBase.h>
-#include <ThePEG/Handlers/XComb.h>
+#include <ThePEG/Handlers/StandardXComb.h>
 
 #ifdef PYTHIA7_TEMPLATES_IN_CC_FILE
 // #include "MEee2gZ2qq.tcc"

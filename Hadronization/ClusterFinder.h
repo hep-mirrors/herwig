@@ -11,7 +11,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-class ThePEG::PartialCollisionHandler;  // forward declaration
+  //class ThePEG::PartialCollisionHandler;  // forward declaration
 
 /*! \ingroup Hadronization
  *  \class ClusterFinder

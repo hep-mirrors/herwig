@@ -59,16 +59,16 @@ void ClusterDecayer::Init() {
   
   static Parameter<ClusterDecayer,int> 
     interfaceClDir1 ("ClDir1", "cluster direction for non-b quarks",
-                     &ClusterDecayer::_ClDir1, 0, 1 , 0 , 1);
+                     &ClusterDecayer::_ClDir1, 0, 1 , 0 , 1,false,false,false);
   static Parameter<ClusterDecayer,int> 
     interfaceClDir2 ("ClDir2", "cluster direction for b quark",
-                     &ClusterDecayer::_ClDir2, 0, 1 , 0 , 1);
+                     &ClusterDecayer::_ClDir2, 0, 1 , 0 , 1,false,false,false);
   static Parameter<ClusterDecayer,double> 
     interfaceClSmr1 ("ClSmr1", "cluster direction Gaussian smearing for non-b quark",
-                     &ClusterDecayer::_ClSmr1, 0, 0.0 , 0.0 , 2.0);
+                     &ClusterDecayer::_ClSmr1, 0, 0.0 , 0.0 , 2.0,false,false,false);
   static Parameter<ClusterDecayer,double> 
     interfaceClSmr2 ("ClSmr2", "cluster direction Gaussian smearing for b quark",
-                     &ClusterDecayer::_ClSmr2, 0, 0.0 , 0.0 , 2.0);
+                     &ClusterDecayer::_ClSmr2, 0, 0.0 , 0.0 , 2.0,false,false,false);
   
 }
 

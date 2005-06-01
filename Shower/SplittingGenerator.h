@@ -7,7 +7,7 @@
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "ShowerConfig.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
-#include "ThePEG/Handlers/PartialCollisionHandler.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include "ShowerIndex.h"
 #include "SudakovFormFactor.h"
 #include "ShowerVariables.h"
@@ -97,7 +97,7 @@ public:
    * a warning should be sent to the log file: in this case, 
    * exceptions seem unnecessary.
    */
-  Branching chooseForwardBranching(tPartCollHdlPtr, ShowerParticle &,
+  Branching chooseForwardBranching(tEHPtr, ShowerParticle &,
                                    const bool reverseAngOrd = false) const; 
 
   /**
@@ -106,7 +106,7 @@ public:
    * Notice that the PartialCollisionHandler object, ch, 
    * is necessary to access the PDFs.
    */
-  Branching chooseBackwardBranching(tPartCollHdlPtr, ShowerParticle&) const;
+  Branching chooseBackwardBranching(tEHPtr, ShowerParticle&) const;
 
   /**
    * Given the particle, a pointer to the ShowerKinematics
@@ -122,7 +122,7 @@ public:
    * this should never ever happen) a warning should be sent to
    * the log file: in this case exceptions seem unnecessary.
    */
-  void generateBranchingKinematics(tPartCollHdlPtr, ShowerParticle&, 
+  void generateBranchingKinematics(tEHPtr, ShowerParticle&, 
 				   Branching&) const;
 
   /**

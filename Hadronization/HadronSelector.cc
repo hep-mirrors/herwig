@@ -61,36 +61,36 @@ void HadronSelector::Init() {
 
   static Parameter<HadronSelector,double>
     interfacePwtDquark("PwtDquark","Weight for choosing a quark D",
-		       &HadronSelector::_PwtDquark, 0, 1.0, 0.0, 10.0);
+		       &HadronSelector::_PwtDquark, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfacePwtUquark("PwtUquark","Weight for choosing a quark U",
-		       &HadronSelector::_PwtUquark, 0, 1.0, 0.0, 10.0);
+		       &HadronSelector::_PwtUquark, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfacePwtSquark("PwtSquark","Weight for choosing a quark S",
-		       &HadronSelector::_PwtSquark, 0, 1.0, 0.0, 10.0);
+		       &HadronSelector::_PwtSquark, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfacePwtCquark("PwtCquark","Weight for choosing a quark C",
-		       &HadronSelector::_PwtCquark, 0, 1.0, 0.0, 10.0);
+		       &HadronSelector::_PwtCquark, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfacePwtBquark("PwtBquark","Weight for choosing a quark B",
-		       &HadronSelector::_PwtBquark, 0, 1.0, 0.0, 10.0);
+		       &HadronSelector::_PwtBquark, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfacePwtDIquark("PwtDIquark","Weight for choosing a DIquark",
-			&HadronSelector::_PwtDIquark, 0, 1.0, 0.0, 100.0);
+			&HadronSelector::_PwtDIquark, 0, 1.0, 0.0, 100.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfaceSngWt("SngWt","Weight for singlet baryons",
-                  &HadronSelector::_SngWt, 0, 1.0, 0.0, 10.0);
+                  &HadronSelector::_SngWt, 0, 1.0, 0.0, 10.0,false,false,false);
   static Parameter<HadronSelector,double>
     interfaceDecWt("DecWt","Weight for decuplet baryons",
-                  &HadronSelector::_DecWt, 0, 1.0, 0.0, 10.0);
+                  &HadronSelector::_DecWt, 0, 1.0, 0.0, 10.0,false,false,false);
 
   static Parameter<HadronSelector,int>
     interfaceCDKM("DKMode","Decay mode for Clusters...hw64=0,kupco,default",
-                  &HadronSelector::_ClusterDKMode, 0, 0, 0, 2);
+                  &HadronSelector::_ClusterDKMode, 0, 0, 0, 2,false,false,false);
 
   static Parameter<HadronSelector,int>
     interfaceTrials("Trial","Debug param for trials...pions=1,spin<3,<4",
-		  &HadronSelector::_trial, 0, 0, 0, 5);
+		  &HadronSelector::_trial, 0, 0, 0, 5,false,false,false);
 }
 
 

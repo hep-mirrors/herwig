@@ -10,7 +10,7 @@
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Interface/Parameter.h> 
 #include <ThePEG/Interface/Reference.h>
-#include <ThePEG/Handlers/CollisionHandler.h>
+#include <ThePEG/Handlers/EventHandler.h>
 #include <ThePEG/Handlers/Hint.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
@@ -111,7 +111,7 @@ void ClusterHadronizationHandler::doinitrun() {
 
 
 void ClusterHadronizationHandler::
-handle(PartialCollisionHandler & ch, const tPVector & tagged,
+handle(EventHandler & ch, const tPVector & tagged,
        const Hint & hint) throw(Veto, Stop, Exception) {
   ClusterVector clusters;
   StepPtr pstep = ch.newStep();
@@ -214,7 +214,7 @@ void ClusterHadronizationHandler::printStep(tStepPtr ptrStep, const string & tit
   generator()->log() << "###########################################" << endl;
 }
 
-void ClusterHadronizationHandler::debuggingInfo(PartialCollisionHandler & ch,
+void ClusterHadronizationHandler::debuggingInfo(EventHandler & ch,
 						ClusterVector &clusters) {
 
   // Define static variables to store statistics information to be 

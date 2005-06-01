@@ -404,8 +404,7 @@ reconstructHardISJets(const MapShower &hardJets)
 
 bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 						  const Lorentz5Momentum &pB1,
-						  const Lorentz5Momentum &pB2,
-                                                  const tcMEPtr sHardProcess) 
+						  const Lorentz5Momentum &pB2)
   throw (Veto, Stop, Exception) {
   
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    

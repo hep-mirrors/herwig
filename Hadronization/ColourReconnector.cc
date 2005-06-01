@@ -39,15 +39,15 @@ void ColourReconnector::Init() {
 
   static Parameter<ColourReconnector,int>
     interfaceClReco ("ClReco","colour reconnection option",
-                     &ColourReconnector::_ClReco, 0, 0, 0, 1);
+                     &ColourReconnector::_ClReco, 0, 0, 0, 1,false,false,false);
   static Parameter<ColourReconnector,double>
     interfacePReco ("PReco","probability of colour reconnection",
-                     &ColourReconnector::_PReco, 0, (1.0/9.0) , 0.0, 1.0);
+                     &ColourReconnector::_PReco, 0, (1.0/9.0) , 0.0, 1.0,false,false,false);
   
 }
 
 
-void ColourReconnector::rearrange(PartialCollisionHandler & ch, 
+void ColourReconnector::rearrange(EventHandler & ch, 
 				  const StepPtr & pstep, 
 				  ClusterVector & clusters) 
    throw(Veto, Stop, Exception){

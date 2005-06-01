@@ -6,7 +6,7 @@
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "Herwig++/Hadronization/PartonSplitter.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
-#include <ThePEG/Handlers/PartialCollisionHandler.h>
+#include <ThePEG/Handlers/EventHandler.h>
  
 
 namespace Herwig {
@@ -67,7 +67,7 @@ public:
    /**
     * This is the routine that starts the algorithm.
     */
-   virtual void handle(PartialCollisionHandler &ch, const tPVector &tagged,
+   virtual void handle(EventHandler &ch, const tPVector &tagged,
 		       const Hint &hint) 
      throw(Veto,Stop,Exception);
 

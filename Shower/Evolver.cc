@@ -89,7 +89,7 @@ void Evolver::clear() {
 }
 
 
-void Evolver::showerNormally(tPartCollHdlPtr ch, 
+void Evolver::showerNormally(tEHPtr ch, 
 			     const tShowerVarsPtr showerVariables, 
 			     //const tMECorrectionPtr meCorrection,
 			     ShowerParticleVector & particles,
@@ -188,7 +188,7 @@ void Evolver::showerNormally(tPartCollHdlPtr ch,
 }
 
 
-void Evolver::showerDecay(tPartCollHdlPtr ch, 
+void Evolver::showerDecay(tEHPtr ch, 
 			  const tShowerVarsPtr showerVariables, 
 			  //const tMECorrectionPtr meCorrection,
 			  ShowerParticleVector & particles ) 
@@ -210,7 +210,7 @@ void Evolver::showerDecay(tPartCollHdlPtr ch,
 }
 
 
-void Evolver::showerGlobally(tPartCollHdlPtr & ch, 
+void Evolver::showerGlobally(tEHPtr & ch, 
 			     const tShowerVarsPtr showerVariables, 
 			     //const tMECorrectionPtr meCorrection,
 			     ShowerParticleVector & particles,
@@ -277,7 +277,7 @@ void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
 }
 
     
-bool Evolver::reconstructISKinematics( tPartCollHdlPtr & ch ) 
+bool Evolver::reconstructISKinematics( tEHPtr & ch ) 
   throw (Veto, Stop, Exception) {
   bool ok = _kinematicsReconstructor->
     reconstructHardISJets(_mapShowerHardJets);  
@@ -286,7 +286,7 @@ bool Evolver::reconstructISKinematics( tPartCollHdlPtr & ch )
 }
 
 
-bool Evolver::reconstructKinematics( tPartCollHdlPtr & ch ) 
+bool Evolver::reconstructKinematics( tEHPtr & ch ) 
   throw (Veto, Stop, Exception) {
 
   for(MapShowerVector::iterator it = _mapShowerDecayJets.begin();
@@ -305,8 +305,7 @@ bool Evolver::reconstructKinematics( tPartCollHdlPtr & ch )
   bool ok = _kinematicsReconstructor->
     reconstructHardJets( _mapShowerHardJets,
 			 beamHadrons.first->momentum(),
-			 beamHadrons.second->momentum(),
-			 ch->lastME() ); 
+			 beamHadrons.second->momentum());
   setDoneMapShower(_mapShowerHardJets);
   return ok;   
 }

@@ -5,7 +5,7 @@
 // This is the declaration of the BackwardShowerEvolver class.
 
 #include "ThePEG/Handlers/HandlerBase.h"
-#include "ThePEG/Handlers/PartialCollisionHandler.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerConfig.h"
 #include "SplittingGenerator.h"
@@ -49,7 +49,7 @@ public:
    * of ShowerParticle already created so far by the showering, 
    * or being empty: the choice is up to the caller).
    */
-  bool spaceLikeShower( tPartCollHdlPtr ch, 
+  bool spaceLikeShower( tEHPtr ch, 
 		        const tShowerVarsPtr showerVariables, 
 		        //const tMECorrectionPtr meCorrectionPtr,
 		        tShowerParticlePtr particle, 

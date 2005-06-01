@@ -107,8 +107,8 @@ public:
    */
   bool reconstructHardJets( const MapShower & mapShowerHardJets, 
 			    const Lorentz5Momentum & pBeamHadron1,
-			    const Lorentz5Momentum & pBeamHadron2,
-                            const tcMEPtr specialHardProcess = tcMEPtr() ) 
+			    const Lorentz5Momentum & pBeamHadron2)
+
     throw (Veto, Stop, Exception);
 
   /**

@@ -55,7 +55,7 @@ void ShowerAlphaQCD::Init() {
   // min = Lambda3
   static Parameter<ShowerAlphaQCD,Energy> intQmin
     ("Qmin", "Q < Qmin is treated with NP parametrization of as (unit [GeV])",
-     &ShowerAlphaQCD::_Qmin, GeV, 0.630882*GeV, 0.330445*GeV, 100.0*GeV);
+     &ShowerAlphaQCD::_Qmin, GeV, 0.630882*GeV, 0.330445*GeV, 100.0*GeV,false,false,false);
 }
 
 
