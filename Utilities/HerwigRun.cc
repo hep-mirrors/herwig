@@ -1,4 +1,6 @@
 #include "HerwigRun.h"
+#include <ThePEG/Utilities/SystemUtils.h>
+#include <ThePEG/Utilities/StringUtils.h>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -43,9 +45,8 @@ HerwigRun::HerwigRun(int argc, char **argv)
 
   string spaths = SystemUtils::getenv("HERWIG_USER_MODULES");
   vector<string> vpaths = StringUtils::split(spaths, ":");
-  for(int i = 0; i<vpaths.size(); i++) DynamicLoader::appendPath(vpaths[i]);
-  //DynamicLoader::appendPath(ThePEG_path);
-  //DynamicLoader::appendPath(Herwig_path);
+  for(unsigned int i = 0; i<vpaths.size(); i++) 
+    DynamicLoader::appendPath(vpaths[i]);
 
   for ( int iarg = 2; iarg < argc; ++iarg ) {
     std::string arg = argv[iarg];
