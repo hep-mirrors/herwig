@@ -48,7 +48,7 @@ set theSplittingGenerator:OnOffISRMode 1
 set theSplittingGenerator:OnOffISR_QCDMode 1
 set theSplittingGenerator:OnOffISR_QEDMode 1
 set theSplittingGenerator:OnOffISR_EWKMode 1
-set theSplittingGenerator:OnOffFSRMode 0
+set theSplittingGenerator:OnOffFSRMode 1
 set theSplittingGenerator:OnOffFSR_QCDMode 1
 set theSplittingGenerator:OnOffFSR_QEDMode 1
 set theSplittingGenerator:OnOffFSR_EWKMode 1

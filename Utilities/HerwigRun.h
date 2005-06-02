@@ -19,7 +19,9 @@ namespace Herwig {
 
 /** \ingroup Utilities
  *
- *  Some comment should be provided!
+ *  This class is used to setup all the default command line arguments for
+ *  Herwig++. This class provides a simple interface to many of ThePEG 
+ *  structures used to store the event. 
  */
 class HerwigRun {
  public:
