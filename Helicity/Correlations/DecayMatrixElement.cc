@@ -37,46 +37,27 @@ RhoDMatrix DecayMatrixElement::calculateDMatrix(vector<RhoDMatrix> rhoout)
   // vectors for the helicities
   vector<int> ihel1(_outspin.size()+1),ihel2(_outspin.size()+1);
   // rhomatrix to be returned
-  RhoDMatrix output(_inspin);
-  // make sure that this is zeroed
-  for(int ix=0;ix<_inspin;++ix)
-    {
-      int ixa=ix-_inspin/2;if(_inspin%2==0&&ixa>=0){++ixa;}
-      for(int iy=0;iy<_inspin;++iy)
-	{
-	  int iya=iy-_inspin/2;if(_inspin%2==0&&iya>=0){++iya;}
-	  output(ixa,iya)=0.;
-	}
-    }
+  RhoDMatrix output(_inspin);output.zero();
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
-  for(unsigned int ix=0;ix<_matrixelement.size();++ix)
+  unsigned int ix,iy,iz;
+  int ixa,iya;
+  for(ix=0;ix<_matrixelement.size();++ix)
     {
       // map the vector index to the helicities
-      for(int ixa=_outspin.size();ixa>0;--ixa)
-	{
-	  ihel1[ixa]=(ix%_constants[ixa])/_constants[ixa+1]-int(_outspin[ixa-1]/2);
-	  if(_outspin[ixa-1]%2==0&&ihel1[ixa]>=0){++ihel1[ixa];}
-	}
-      ihel1[0]=(ix%_constants[0])/_constants[1]-int(_inspin/2);
-      if(_inspin%2==0&&ihel1[0]>=0){++ihel1[0];}
+      for(ixa=_outspin.size();ixa>=0;--ixa)
+	{ihel1[ixa]=(ix%_constants[ixa])/_constants[ixa+1];}
       // inner loop
-      for(unsigned int iy=0;iy<_matrixelement.size();++iy)
+      for(iy=0;iy<_matrixelement.size();++iy)
 	{
 	  // map the vector index to the helicities	   
-	  for(unsigned int iya=_outspin.size();iya>0;--iya)
-	    {
-	      ihel2[iya]=(iy%_constants[iya])/_constants[iya+1]
-		-int(_outspin[iya-1]/2);
-	      if(_outspin[iya-1]%2==0&&ihel2[iya]>=0){++ihel2[iya];}
-	    }
-	  ihel2[0]=(iy%_constants[0])/_constants[1]-int(_inspin/2);
-	  if(_inspin%2==0&&ihel2[0]>=0){++ihel2[0];}
+	  for(iya=_outspin.size();iya>=0;--iya)
+	    {ihel2[iya]=(iy%_constants[iya])/_constants[iya+1];}
 	  // matrix element piece
 	  temp=_matrixelement[ix]*conj(_matrixelement[iy]);
 	  // spin density matrices for the outgoing particles
-	  for(unsigned int iz=0;iz<_outspin.size();++iz)
+	  for(iz=0;iz<_outspin.size();++iz)
 	    {temp*=rhoout[iz](ihel1[iz+1],ihel2[iz+1]);}
 	  output(ihel1[0],ihel2[0])+=temp;
 	}
@@ -98,34 +79,25 @@ RhoDMatrix DecayMatrixElement::calculateRhoMatrix(int id,RhoDMatrix rhoin,
   // loop over all helicity components of the matrix element
   // outer loop
   Complex temp;
-  for(unsigned int ix=0;ix<_matrixelement.size();++ix)
+  unsigned int ix,iy,iz;
+  int ixa,iya;
+  for(ix=0;ix<_matrixelement.size();++ix)
     {
       // map the vector index to the helicities
-      for(unsigned int ixa=_outspin.size();ixa>0;--ixa)
-	{
-	  ihel1[ixa]=(ix%_constants[ixa])/_constants[ixa+1]-int(_outspin[ixa-1]/2);
-	  if(_outspin[ixa-1]%2==0&&ihel1[ixa]>=0){++ihel1[ixa];}
-	}
-      ihel1[0]=(ix%_constants[0])/_constants[1]-int(_inspin/2);
-      if(_inspin%2==0&&ihel1[0]>=0){++ihel1[0];}
+      for(ixa=_outspin.size();ixa>=0;--ixa)
+	{ihel1[ixa]=(ix%_constants[ixa])/_constants[ixa+1];}
       // inner loop
-      for(unsigned int iy=0;iy<_matrixelement.size();++iy)
+      for(iy=0;iy<_matrixelement.size();++iy)
 	{
 	  // map the vector index to the helicities	   
-	  for(unsigned int iya=_outspin.size();iya>0;--iya)
-	    {
-	      ihel2[iya]=(iy%_constants[iya])/_constants[iya+1]
-		-int(_outspin[iya-1]/2);
-	      if(_outspin[iya-1]%2==0&&ihel2[iya]>=0){++ihel2[iya];}
-	    }
-	  ihel2[0]=(iy%_constants[0])/_constants[1]-int(_inspin/2);
-	  if(_inspin%2==0&&ihel2[0]>=0){++ihel2[0];}
+	  for(iya=_outspin.size();iya>=0;--iya)
+	    {ihel2[iya]=(iy%_constants[iya])/_constants[iya+1];}
 	  // matrix element piece
 	  temp=_matrixelement[ix]*conj(_matrixelement[iy]);
 	  // spin denisty matrix for the incoming particle
 	  temp*=rhoin(ihel1[0],ihel2[0]);
 	  // spin density matrix for the outgoing particles
-	  for(unsigned int iz=0;iz<_outspin.size()-1;++iz)
+	  for(iz=0;iz<_outspin.size()-1;++iz)
 	    {
 	      if(int(iz)<id){temp*=rhoout[iz](ihel1[iz+1],ihel2[iz+1]);}
 	      else{temp*=rhoout[iz](ihel1[iz+2],ihel2[iz+2]);}
@@ -137,6 +109,27 @@ RhoDMatrix DecayMatrixElement::calculateRhoMatrix(int id,RhoDMatrix rhoin,
   // return the answer
   output.normalize();
   return output;
+}
+
+// contract the matrix element with the rho matrix of the incoming particle
+Complex DecayMatrixElement::contract(RhoDMatrix &in)
+{
+  unsigned int ispin(abs(int(_inspin)));
+  Complex me=0.;
+  unsigned int ix,inhel1,inhel2;
+  for(ix=0;ix<_constants[1];++ix)
+    {
+      for(inhel1=0;inhel1<ispin;++inhel1)
+	{
+	  for(inhel2=0;inhel2<ispin;++inhel2)
+	    {
+	      // compute the term
+	      me+=_matrixelement[inhel1*_constants[1]+ix]*
+		conj(_matrixelement[inhel2*_constants[1]+ix])*in(inhel1,inhel2);
+	    }
+	}
+    }
+  return me;
 }
 
 }

@@ -20,14 +20,15 @@ inline DecayMatrixElement::DecayMatrixElement(const DecayMatrixElement & x)
     _matrixelement(x._matrixelement), _constants(x._constants) {}
   
 // constructor for two body decay
-inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2)
+inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,PDT::Spin out1,PDT::Spin out2)
 {
   _nout=2; _inspin=in;_outspin.push_back(out1);_outspin.push_back(out2);
   setMESize();
 }
 
 // constructor for three body decay
-inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3)
+inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,PDT::Spin out1,PDT::Spin out2,
+					      PDT::Spin out3)
 {
   _nout=3; _inspin=in;_outspin.push_back(out1);_outspin.push_back(out2);
   _outspin.push_back(out3);
@@ -35,8 +36,8 @@ inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3)
 }
 
 // constructor for four body decay
-inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3,
-					      int out4)
+inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,PDT::Spin out1,PDT::Spin out2,
+					      PDT::Spin out3,PDT::Spin out4)
 {
   _nout=4; _inspin=in;_outspin.push_back(out1);_outspin.push_back(out2);
   _outspin.push_back(out3);_outspin.push_back(out4);
@@ -44,8 +45,9 @@ inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3,
 }
 
 // constructor for five body decay
-inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3,
-					      int out4,int out5)
+inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,PDT::Spin out1,PDT::Spin out2,
+					      PDT::Spin out3,PDT::Spin out4,
+					      PDT::Spin out5)
 {
   _nout=5; _inspin=in;_outspin.push_back(out1);_outspin.push_back(out2);
   _outspin.push_back(out3);_outspin.push_back(out4);_outspin.push_back(out5);
@@ -53,8 +55,9 @@ inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3,
 }
 
 // constructor for six body decay
-inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3,
-					      int out4,int out5,int out6)
+inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,PDT::Spin out1,PDT::Spin out2,
+					      PDT::Spin out3,PDT::Spin out4,
+					      PDT::Spin out5,PDT::Spin out6)
 {
   _nout=6; _inspin=in;_outspin.push_back(out1);_outspin.push_back(out2);
   _outspin.push_back(out3);_outspin.push_back(out4);_outspin.push_back(out5);
@@ -63,15 +66,15 @@ inline DecayMatrixElement::DecayMatrixElement(int in,int out1,int out2,int out3,
 }
 
 // constructor for arbitary body decay
-inline DecayMatrixElement::DecayMatrixElement(int in,vector<int> out)
+inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,vector<PDT::Spin> out)
 {_nout=out.size(); _inspin=in;_outspin=out;setMESize();}
 
 // constructor for arbitray body decay
-inline DecayMatrixElement::DecayMatrixElement(vector<int> out)
+inline DecayMatrixElement::DecayMatrixElement(vector<PDT::Spin> out)
 {
   _nout=out.size();
   _inspin=out[0];
-  _outspin=vector<int>(out.begin()+1,out.end());
+  _outspin=vector<PDT::Spin>(out.begin()+1,out.end());
   setMESize();
 }  
 
@@ -79,13 +82,10 @@ inline DecayMatrixElement::DecayMatrixElement(vector<int> out)
 inline void DecayMatrixElement::setMESize()
 {
   int isize=_inspin;
-  for(unsigned int ix=0;ix<_outspin.size();++ix)
-    {
-      isize*=_outspin[ix];
-    }
+  for(unsigned int ix=0;ix<_outspin.size();++ix){isize*=_outspin[ix];}
   // zero the matrix element
   _matrixelement.resize(isize,0.);
-  // set up the constants for the mapping of helicity to vectro index
+  // set up the constants for the mapping of helicity to vector index
   _constants.resize(_outspin.size()+2);
   int temp=1;
   for(unsigned int ix=_outspin.size();ix>0;--ix)
@@ -107,159 +107,160 @@ inline void DecayMatrixElement::reset(const DecayMatrixElement & x) const
 }
 
 // get the spins of the incoming particles 
-inline int DecayMatrixElement::inspin(){return _inspin;}
+inline PDT::Spin DecayMatrixElement::inspin(){return _inspin;}
 
 // get the spins of the outgoing particles
-inline vector<int> DecayMatrixElement::outspin(){return _outspin;}
+inline vector<PDT::Spin> DecayMatrixElement::outspin(){return _outspin;}
 
 // access a component for a two body decay
-inline Complex DecayMatrixElement::operator() (int ia,int ib,int ic) const
+inline Complex DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+					       unsigned int ic) const
 {
-  vector<int> itemp(3);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
+  vector<unsigned int> itemp(3);
+  itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
   return (*this)(itemp);
 }
 
 // access a component of a three body decay
-inline Complex DecayMatrixElement::operator() (int ia,int ib,int ic,int id) const
+inline Complex DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+					       unsigned int ic,unsigned int id) const
 {
-  vector<int> itemp(4);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;
+  vector<unsigned int> itemp(4);
+  itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;
   return (*this)(itemp);
 }
 
 // access a component of a four body decay
-inline Complex DecayMatrixElement::operator() (int ia,int ib,int ic,int id,
-						       int ie) const
+inline Complex DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+					       unsigned int ic,unsigned int id,
+					       unsigned int ie) const
 {
-  vector<int> itemp(5);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;itemp[4]=ie;
+  vector<unsigned int> itemp(5);
+  itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;itemp[4]=ie;
   return (*this)(itemp);
 }
 
 // access a component of a five body decay
-inline Complex DecayMatrixElement::operator() (int ia,int ib,int ic,int id,
-						       int ie,int ig) const
+inline Complex DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+					       unsigned int ic,unsigned int id,
+					       unsigned int ie,unsigned int ig) const
 {
-  vector<int> itemp(6);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
+  vector<unsigned int> itemp(6);
+  itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
   itemp[3]=id;itemp[4]=ie;itemp[5]=ig;
   return (*this)(itemp);
 }
 
 // access a component of a six body decay
-inline Complex DecayMatrixElement::operator() (int ia,int ib,int ic,int id,
-						       int ie,int ig, int ih) const
+inline Complex DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+					       unsigned int ic,unsigned int id,
+					       unsigned int ie,unsigned int ig,
+					       unsigned int ih) const
 {
-  vector<int> itemp(7);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
+  vector<unsigned int> itemp(7);
+  itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
   itemp[3]=id;itemp[4]=ie;itemp[5]=ig;itemp[6]=ih;
   return (*this)(itemp);
 }
 
 // access a component 
-inline Complex DecayMatrixElement::operator () (vector<int> in) const
+inline Complex DecayMatrixElement::operator () (vector<unsigned int> in) const
 {
   if(in.size()!=_outspin.size()+1)
-    {cerr << "Requested the components of a " << in.size()-1 
-	  << " body decay but this decay is " << _outspin.size() << endl; return 0.;}
-  unsigned int iloc=0,itemp;
-  // contribution  for the incoming particle
-  itemp = _inspin/2+ in[0]-int( _inspin%2==0&& in[0]>0);
-  iloc+=itemp*_constants[1];
-  // contributions for the outgoing particles
-  for(unsigned int ix=1;ix<in.size();++ix)
     {
-      itemp =  (_outspin[ix-1]+1)/2+in[ix]-int(_outspin[ix-1]%2==0&&in[ix]>0);
-      iloc+=itemp*_constants[ix+1];
+      throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Requested the components of a " << in.size()-1 
+	<< " body decay but this decay is " << _outspin.size() 
+	<< Exception::abortnow;
+      return 0.;
     }
+  // contribution  for the incoming particle
+  unsigned int iloc(in[0]*_constants[1]);
+  // contributions for the outgoing particles
+  for(unsigned int ix=1;ix<in.size();++ix){iloc+=in[ix]*_constants[ix+1];}
   if(iloc>=_matrixelement.size())
-    {cerr << "Invalid component of decay matrix element requested " << iloc << endl;
-    return 0.;}
+    {
+      throw ThePEG::Helicity::HelicityConsistencyError() << "Invalid component of " 
+							 << "decay matrix element " 
+							 << "requested " << iloc 
+							 << Exception::abortnow;
+      return 0.;
+    }
   return _matrixelement[iloc];
 }
 
 // set a component for a two body decay
-inline Complex & DecayMatrixElement::operator() (int ia,int ib,int ic) 
+inline Complex & DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+						 unsigned int ic) 
 {
-  vector<int> itemp(3);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
+  vector<unsigned int> itemp(3);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
   return (*this)(itemp);
 }
 
 // set a component of a three body decay
-inline Complex & DecayMatrixElement::operator() (int ia,int ib,int ic,int id) 
+inline Complex & DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+						 unsigned int ic,unsigned int id) 
 {
-  vector<int> itemp(4);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;
+  vector<unsigned int> itemp(4);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;
   return (*this)(itemp);
 }
 
 // set a component of a four body decay
-inline Complex & DecayMatrixElement::operator() (int ia,int ib,int ic,int id,
- int ie) 
+inline Complex & DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+						 unsigned int ic,unsigned int id,
+						 unsigned int ie) 
 {
-  vector<int> itemp(5);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;itemp[4]=ie;
+  vector<unsigned int> itemp(5);
+  itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;itemp[3]=id;itemp[4]=ie;
   return (*this)(itemp);
 }
 
 // set a component of a five body decay
-inline Complex & DecayMatrixElement::operator() (int ia,int ib,int ic,int id,
-							 int ie,int ig) 
+inline Complex & DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+						 unsigned int ic,unsigned int id,
+						 unsigned int ie,unsigned int ig) 
 {
-  vector<int> itemp(6);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
+  vector<unsigned int> itemp(6);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
   itemp[3]=id;itemp[4]=ie;itemp[5]=ig;
   return (*this)(itemp);
 }
 
 // set a component of a six body decay
-inline Complex & DecayMatrixElement::operator() (int ia,int ib,int ic,int id,
-							 int ie,int ig, int ih) 
+inline Complex & DecayMatrixElement::operator() (unsigned int ia,unsigned int ib,
+						 unsigned int ic,unsigned int id,
+						 unsigned int ie,unsigned int ig,
+						 unsigned int ih) 
 {
-  vector<int> itemp(7);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
+  vector<unsigned int> itemp(7);itemp[0]=ia;itemp[1]=ib;itemp[2]=ic;
   itemp[3]=id;itemp[4]=ie;itemp[5]=ig;itemp[6]=ih;
   return (*this)(itemp);
 }
 
 // set a component
-inline Complex & DecayMatrixElement::operator () (vector<int> in)
+inline Complex & DecayMatrixElement::operator () (vector<unsigned int> in)
 {
   static Complex dummy=0.;
   if(in.size()!=_outspin.size()+1)
-    {cerr << "Requested the components of a " << in.size()-1 
-	  << " body decay but this decay is " << _outspin.size() << endl; return dummy;}
-  unsigned int iloc=0,itemp;
+    {
+      throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Requested the components of a " << in.size()-1 
+	<< " body decay but this decay is " << _outspin.size() 
+	<< Exception::abortnow;
+      return dummy;
+    }
   // contribution  for the incoming particle
-  itemp = _inspin/2+ in[0]-int( _inspin%2==0&& in[0]>0);
-  iloc+=itemp*_constants[1];
+  unsigned int iloc(in[0]*_constants[1]);
   // contributions for the outgoing particles
-  for(unsigned int ix=1;ix<in.size();++ix)
-    {
-      itemp =  _outspin[ix-1]/2+in[ix]-int(_outspin[ix-1]%2==0&&in[ix]>0);
-      iloc+=itemp*_constants[ix+1];
-    }
+  for(unsigned int ix=1;ix<in.size();++ix){iloc+=in[ix]*_constants[ix+1];}
   if(iloc>=_matrixelement.size())
-    {cerr << "Invalid component of decay matrix element requested " << iloc << endl;
-    return dummy;}
-  return _matrixelement[iloc];
-}
-
-// contract the matrix element with the rho matrix of the incoming particle
-inline Complex DecayMatrixElement::contract(RhoDMatrix &in)
-{
-  Complex me=0.; int in1,in2;
-  for(int ix=0;ix<_constants[1];++ix)
     {
-      in1=0;
-      for(int inhel1=-_inspin/2;inhel1<_inspin/2+1;++inhel1)
-	{
-	  if(inhel1==0&&_inspin%2==0){++inhel1;}
-	  in2=0;
-	  for(int inhel2=-_inspin/2;inhel2<_inspin/2+1;++inhel2)
-	    {
-	      if(inhel2==0&&_inspin%2==0){++inhel2;}
-	      // compute the term
-	      me+=_matrixelement[in1*_constants[1]+ix]*
-		conj(_matrixelement[in2*_constants[1]+ix])*in(inhel1,inhel2);
-	      ++in2;
-	    }
-	  ++in1;
-	}
+      throw ThePEG::Helicity::HelicityConsistencyError() << "Invalid component of " 
+							 << "decay matrix element " 
+							 << "requested " << iloc 
+							 << Exception::abortnow;
+      return dummy;
     }
-  return me;
+  return _matrixelement[iloc];
 }
 
 }

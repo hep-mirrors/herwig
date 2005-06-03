@@ -6,6 +6,7 @@
 
 #include <ThePEG/Config/ThePEG.h>
 #include <ThePEG/Utilities/ClassDescription.h>
+#include <ThePEG/Helicity/HelicityDefinitions.h>
 #include <ThePEG/Helicity/RhoDMatrix.h>
 // #include "DecayMatrixElement.fh"
 // #include "DecayMatrixElement.xh"
@@ -43,7 +44,7 @@ public:
    * @param outspin1 \f$2S+1\f$ for the first  decay product.
    * @param outspin2 \f$2S+1\f$ for the second decay product.
    */
-  inline DecayMatrixElement(int inspin,int outspin1,int outspin2);
+  inline DecayMatrixElement(PDT::Spin inspin,PDT::Spin outspin1,PDT::Spin outspin2);
 
   /** 
    * Constructor for three body decay. 
@@ -52,7 +53,8 @@ public:
    * @param outspin2 \f$2S+1\f$ for the second decay product.
    * @param outspin3 \f$2S+1\f$ for the third  decay product.
    */
-  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3);
+  inline DecayMatrixElement(PDT::Spin inspin,PDT::Spin outspin1,
+			    PDT::Spin outspin2,PDT::Spin outspin3);
 
   /** 
    * Constructor for four body decay.
@@ -62,8 +64,8 @@ public:
    * @param outspin3 \f$2S+1\f$ for the third  decay product.
    * @param outspin4 \f$2S+1\f$ for the fourth decay product.
    */
-  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3,
-			    int outspin4);
+  inline DecayMatrixElement(PDT::Spin inspin,PDT::Spin outspin1,PDT::Spin outspin2,
+			    PDT::Spin outspin3,PDT::Spin outspin4);
 
   /**
    * Constructor for five body decay.
@@ -74,8 +76,8 @@ public:
    * @param outspin4 \f$2S+1\f$ for the fourth decay product.
    * @param outspin5 \f$2S+1\f$ for the fifth  decay product.
    */
-  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3,
-			    int outspin4,int outspin5);
+  inline DecayMatrixElement(PDT::Spin inspin,PDT::Spin outspin1,PDT::Spin outspin2,
+			    PDT::Spin outspin3,PDT::Spin outspin4,PDT::Spin outspin5);
 
   /** 
    * Constructor for six body decay.
@@ -87,21 +89,22 @@ public:
    * @param outspin5 \f$2S+1\f$ for the fifth  decay product.
    * @param outspin6 \f$2S+1\f$ for the sixth  decay product.
    */
-  inline DecayMatrixElement(int inspin,int outspin1,int outspin2,int outspin3,
-			    int outspin4,int outspin5,int outspin6);
+  inline DecayMatrixElement(PDT::Spin inspin,PDT::Spin outspin1,PDT::Spin outspin2,
+			    PDT::Spin outspin3,PDT::Spin outspin4,PDT::Spin outspin5,
+			    PDT::Spin outspin6);
 
   /** 
    * Constructor for arbitray body decay.
    * @param inspin \f$2S+1\f$ for the decaying particle
    * @param outspin \f$2S+1\f$ for the decay products.
    */
-  inline DecayMatrixElement(int inspin,vector<int> outspin);
+  inline DecayMatrixElement(PDT::Spin inspin,vector<PDT::Spin> outspin);
 
   /** 
    * Constructor for arbitray body decay.
    * @param extspin  \f$2S+1\f$ external particles.
    */
-  inline DecayMatrixElement(vector<int> extspin);
+  inline DecayMatrixElement(vector<PDT::Spin> extspin);
 
   /**
    * Copy-constructor.
@@ -123,12 +126,12 @@ public:
   /** 
    * Get the spin of the incoming particle.
    */
-  inline int inspin();
+  inline PDT::Spin inspin();
 
   /** 
    * Get the spins of the outgoing particles.
    */
-  inline vector<int> outspin();
+  inline vector<PDT::Spin> outspin();
   //@}
 
 public:
@@ -156,7 +159,7 @@ public:
    * incoming particle. The spins of the decay products are summed over.
    * @param rhoin The \f$\rho\f$ matrix for the decaying particle.
    */
-  inline Complex contract(RhoDMatrix & rhoin);
+  Complex contract(RhoDMatrix & rhoin);
   //@}
 
 public:
@@ -171,7 +174,8 @@ public:
    * @param outhel1 The helicity of the first  decay product.
    * @param outhel2 The helicity of the second decay product.
    */
-  inline Complex   operator () (int inhel,int outhel1,int outhel2) const;
+  inline Complex   operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2) const;
 
   /** 
    * Set the helicity components for a two body decay
@@ -179,7 +183,8 @@ public:
    * @param outhel1 The helicity of the first  decay product.
    * @param outhel2 The helicity of the second decay product.
    */
-  inline Complex & operator () (int inhel,int outhel1,int outhel2);
+  inline Complex & operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2);
 
   /** 
    * Get the helicity components for a three body decay
@@ -188,7 +193,8 @@ public:
    * @param outhel2 The helicity of the second decay product.
    * @param outhel3 The helicity of the third  decay product.
    */
-  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3) const;
+  inline Complex   operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3) const;
 
   /** 
    * Set the helicity components for a three body decay
@@ -197,7 +203,8 @@ public:
    * @param outhel2 The helicity of the second decay product.
    * @param outhel3 The helicity of the third  decay product.
    */
-  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3);
+  inline Complex & operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3);
 
   /** 
    * Get the helicity components for a four body decay
@@ -207,8 +214,9 @@ public:
    * @param outhel3 The helicity of the third  decay product.
    * @param outhel4 The helicity of the fourth decay product.
    */
-  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3,
-				int outhel4) const;
+  inline Complex   operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3,
+				unsigned int outhel4) const;
 
   /** 
    * Set the helicity components for a four body decay
@@ -218,8 +226,9 @@ public:
    * @param outhel3 The helicity of the third  decay product.
    * @param outhel4 The helicity of the fourth decay product.
    */
-  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3,
-				int outhel4);
+  inline Complex & operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3,
+				unsigned int outhel4);
 
   /** 
    * Get the helicity components for a five body decay
@@ -230,8 +239,9 @@ public:
    * @param outhel4 The helicity of the fourth decay product.
    * @param outhel5 The helicity of the fifth  decay product.
    */
-  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3,
-				int outhel4,int outhel5) const;
+  inline Complex   operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3,
+				unsigned int outhel4,unsigned int outhel5) const;
 
   /** 
    * Set the helicity components for a five body decay
@@ -242,8 +252,9 @@ public:
    * @param outhel4 The helicity of the fourth decay product.
    * @param outhel5 The helicity of the fifth  decay product.
    */
-  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3,
-				int outhel4,int outhel5);
+  inline Complex & operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3,
+				unsigned int outhel4,unsigned int outhel5);
 
   /** 
    * Get the helicity components for a six body decay
@@ -255,8 +266,10 @@ public:
    * @param outhel5 The helicity of the fifth  decay product.
    * @param outhel6 The helicity of the sixth  decay product.
    */
-  inline Complex   operator () (int inhel,int outhel1,int outhel2,int outhel3,
-				int outhel4,int outhel5,int outhel6) const;
+  inline Complex   operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3,
+				unsigned int outhel4,unsigned int outhel5,
+				unsigned int outhel6) const;
 
   /** 
    * Set the helicity components for a six body decay
@@ -268,20 +281,22 @@ public:
    * @param outhel5 The helicity of the fifth  decay product.
    * @param outhel6 The helicity of the sixth  decay product.
    */
-  inline Complex & operator () (int inhel,int outhel1,int outhel2,int outhel3,
-				int outhel4,int outhel5,int outhel6);
+  inline Complex & operator () (unsigned int inhel,unsigned int outhel1,
+				unsigned int outhel2,unsigned int outhel3,
+				unsigned int outhel4,unsigned int outhel5,
+				unsigned int outhel6);
 
   /**
    * Get the helicity components for an \f$n\f$-body decay.
    * @param exthel The helicities of the external particles.
    */
-  inline Complex   operator () (vector<int> exthel) const;
+  inline Complex   operator () (vector<unsigned int> exthel) const;
 
   /**
    * Set the helicity components for an \f$n\f$-body decay.
    * @param exthel The helicities of the external particles.
    */
-  inline Complex & operator () (vector<int> exthel);
+  inline Complex & operator () (vector<unsigned int> exthel);
   //@}
   
 public:
@@ -322,17 +337,17 @@ private:
   /**
    * Number of outgoing particles.
    */
-  mutable int _nout;
+  mutable unsigned int _nout;
 
   /**
    * Spin of the incoming particle as 2s+1.
    */
-  mutable int _inspin;
+  mutable PDT::Spin _inspin;
 
   /**
    * Spins of the outgonig particles.
    */
-  mutable vector<int> _outspin;
+  mutable vector<PDT::Spin> _outspin;
 
   /**
    * Storage of the matrix element, a vector is better for memory usage.
@@ -342,7 +357,7 @@ private:
   /**
    * Constants needed to map the index of the vector to a helicity structure.
    */
-  mutable vector<int> _constants;
+  mutable vector<unsigned int> _constants;
 
 };
 
