@@ -153,7 +153,6 @@ void GenericMassGenerator::doinit() throw(InitException) {
       swgt=swgt/_ninitial;
       sqwgt=sqrt(max(0.,sqwgt/_ninitial-swgt*swgt)/_ninitial);
     }
-
 }
 
 void GenericMassGenerator::dataBaseOutput(ofstream & output)

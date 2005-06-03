@@ -92,7 +92,7 @@ public:
   /**
    * Return true if this width generator can handle the given particle type.
    * @param part The particle data pointer of the particle.
-   * @return True ig this class can handle the particle and false otherwise
+   * @return True if this class can handle the particle and false otherwise
    */
   virtual bool accept(const ParticleData & part) const;
 
@@ -114,6 +114,14 @@ public:
   virtual DecayMap rate(const ParticleData & part) const;
 
   /**
+   * Return a decay map for a given particle instance. This allows us to
+   * vary the branching ratios as a function of the particles mass.
+   * @param  part The particle instance
+   * @return The decay map
+   */
+  virtual DecayMap rate (const Particle & part);
+
+  /**
    * The partial width for a given mode
    * @param m The mass, or scale, for the calculation
    * @param iloc The location of the mode in the list
@@ -124,8 +132,10 @@ public:
 
   /**
    * Output the initialisation info for the database
+   * @param output The stream to output the information to
+   * @param header output the header.
    **/
-  virtual void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream & output, bool header=true);
 
 protected:
 
@@ -145,7 +155,15 @@ protected:
    * @param m2 The mass of the second outgoing particle.
    * @return The partial width.
    */
-  inline Energy partial2BodyWidth(int iloc,Energy m0,Energy m1,Energy m2) const;
+  inline virtual Energy partial2BodyWidth(int iloc,Energy m0,Energy m1,Energy m2) const;
+
+  /**
+   * Perform the set up for a mode in classes inheriting from this one
+   * @param mode The decay mode
+   * @param decayer The decayer for the mode.
+   * @param imode The number of the mode.
+   */
+  virtual void setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer, unsigned int imode);
 
 protected:
 
@@ -178,7 +196,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -215,6 +233,29 @@ protected:
    */
   void setInterpolators();
 
+  /**
+   *  Matrix element code for a given mode 
+   * @param imode The mode.
+   */
+  inline int MEcode(int imode) const;
+
+  /**
+   *  Coupling for a given mode
+   * @param imode The mode.
+   */
+  inline double MEcoupling(int imode) const;
+
+
+  /**
+   *  The on-shell mass of the particle
+   */
+  inline Energy mass() const;
+
+  /**
+   * Initialization option for use by the inheriting classes
+   */
+  inline bool initialize() const;
+
 private:
 
   /**
@@ -237,7 +278,7 @@ private:
   /**
    * The decaymodes
    */
-  vector<cDMPtr> _decaymodes;
+  vector<DMPtr> _decaymodes;
 
   /**
    * The on-shell mass of the particle
@@ -317,6 +358,10 @@ private:
    * minimum branching ratio for the inclusion in the total running width
    */
   double _BRminimum;
+
+  /**
+   *
+   */
 };
 
 }
