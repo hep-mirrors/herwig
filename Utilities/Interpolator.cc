@@ -51,10 +51,9 @@ Interpolator::~Interpolator() {}
 double Interpolator::operator ()(double xpoint) const
 {
   // size of the vectors
-  unsigned int isize=_xval.size();
+  unsigned int isize(_xval.size());
   // workout the numer of points we need
-  unsigned int m =std::min(_order,isize);
-  unsigned int mp=m+1;
+  unsigned int m(std::min(_order,isize)),mp(m+1),ix,iy;
   // search for the point if the function increases
   int mid,iupp=isize,ilow=0;
   if(_xval[0]>_xval[_xval.size()-1])
@@ -83,9 +82,8 @@ double Interpolator::operator ()(double xpoint) const
   // copy the re-ordered interpolation points 
   vector<double> copyx,copyfun;
   // number of points
-  unsigned int npoints=_order+2-_order%2;
-  int iloc=0;
-  unsigned int icopy;
+  unsigned int npoints(_order+2-_order%2),icopy;
+  int iloc(0),i;
   do
     {
       icopy=mid+iloc;
@@ -100,9 +98,8 @@ double Interpolator::operator ()(double xpoint) const
     }
   while(copyx.size()<npoints);
   // do this interpolation
-  bool extra=npoints!=mp;
-  int i;
-  for(unsigned int ix=0;ix<m;++ix)
+  bool extra(npoints!=mp);
+  for(ix=0;ix<m;++ix)
     {
       if(extra)
 	{
@@ -110,21 +107,17 @@ double Interpolator::operator ()(double xpoint) const
 	  copyfun[m+1]=(copyfun[m+1]-copyfun[m-1])/(copyx[m+1]-copyx[m-1]);
 	}
       i=m;
-      for(unsigned int iy=ix;iy<m;++iy)
+      for(iy=ix;iy<m;++iy)
 	{
 	  icopy=i-1;
 	  copyfun[i]=(copyfun[i]-copyfun[i-1])/(copyx[i]-copyx[icopy]);
 	  --i;
 	}
     }
-  double sum=copyfun[m];
+  double sum(copyfun[m]);
   if(extra) sum=0.5*(sum+copyfun[m+1]);
   i=m-1;
-  for(unsigned int ix=0;ix<m;++ix)
-    {
-      sum=copyfun[i]+(xpoint-copyx[i])*sum;
-      --i;
-    }
+  for(ix=0;ix<m;++ix){sum=copyfun[i]+(xpoint-copyx[i])*sum;--i;}
   return sum;
 }
 
