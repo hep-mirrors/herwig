@@ -90,7 +90,13 @@ ParticleVector SMWZDecayer::decay(const DecayMode & dm,
       else{imode=(idd-1)/2+12;}
     }
   bool cc = parent.id()==ParticleID::Wminus;
-  return generate(false,cc,imode,parent);
+  ParticleVector output(generate(false,cc,imode,parent));
+  // set up the colour flow
+  if(output[0]->id()>=-6&&output[0]->id()<0)
+    {output[0]->colourNeighbour(output[1]);}
+  else if(output[0]->id()<=6&&output[0]->id()>0)
+    {output[0]->antiColourNeighbour(    output[1]);}
+  return output;
 }
 
 
@@ -140,20 +146,20 @@ void SMWZDecayer::Init() {
 
 // return the matrix element squared
 double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
-			    const ParticleVector & decay) const 
+			const ParticleVector & decay) const 
 {
   // check if the incoming particle has a spin info 
   tcVectorSpinPtr inspin;
   if(inpart.spinInfo())
     {inspin = dynamic_ptr_cast<tcVectorSpinPtr>(inpart.spinInfo());}
-  RhoDMatrix rhoin(3);rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   VectorWaveFunction inwave[3];
   // if the spin info object exists use it
   if(inspin&&inpart.spinInfo())
     {
-      for(int ix=-1;ix<2;++ix)
-	{inwave[ix+1]=VectorWaveFunction(inpart.momentum(),inpart.dataPtr(),
-					 inspin->getDecayBasisState(ix),incoming);}
+      for(unsigned int ix=0;ix<3;++ix)
+	{inwave[ix]=VectorWaveFunction(inpart.momentum(),inpart.dataPtr(),
+				       inspin->getDecayBasisState(ix),incoming);}
       inspin->decay();
       rhoin = inspin->rhoMatrix();
     }
@@ -169,10 +175,10 @@ double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
       inspin->decayed(true);
       VectorWaveFunction temp=VectorWaveFunction(inpart.momentum(),inpart.dataPtr(),
 						 incoming);
-      for(int ix=-1;ix<2;++ix)
+      for(int ix=0;ix<3;++ix)
 	{
 	  temp.reset(ix);
-	  inwave[ix+1]=temp;
+	  inwave[ix]=temp;
 	  inspin->setDecayState(ix,temp.Wave());
 	}
       const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
@@ -195,31 +201,32 @@ double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
       decay[ianti]->spinInfo(anti);
     }
   // compute the matrix element
-  DecayMatrixElement newme(3,2,2);
-  Energy2 scale=inpart.mass()*inpart.mass();
-  for(int ifm=-1;ifm<2;ifm+=2)
+  DecayMatrixElement newme(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
+  Energy2 scale(inpart.mass()*inpart.mass());
+  unsigned int ifm,ia,vhel;
+  for(ifm=0;ifm<2;++ifm)
     {
       fwave.reset(ifm);
       if(vertex){ferm->setBasisState(ifm,fwave.Wave().bar());}
-      for(int ia=-1;ia<2;ia+=2)
+      for(ia=0;ia<2;++ia)
 	{
 	  awave.reset(ia);
-	  if(vertex&&ifm==-1){anti->setBasisState(ia,awave.Wave());}
-	  for(int vhel=-1;vhel<2;++vhel)
+	  if(vertex&&ifm==0){anti->setBasisState(ia,awave.Wave());}
+	  for(vhel=0;vhel<3;++vhel)
 	    {
 	      if(inpart.id()==ParticleID::Z0)
 		{
 		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _Zvertex->evaluate(scale,awave,fwave,inwave[vhel+1]);}
+		      _Zvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
 		  else{newme(vhel,ifm,ia)=
-		      _Zvertex->evaluate(scale,awave,fwave,inwave[vhel+1]);}
+		      _Zvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
 		}
 	      else
 		{
 		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _Wvertex->evaluate(scale,awave,fwave,inwave[vhel+1]);}
+		      _Wvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
 		  else{newme(vhel,ifm,ia)=
-		      _Wvertex->evaluate(scale,awave,fwave,inwave[vhel+1]);}
+		      _Wvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
 		}
 	    }
 	}
