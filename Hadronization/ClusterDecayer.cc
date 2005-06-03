@@ -304,8 +304,14 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
 
   //cout << "Returned " << idPair.first << ", " << idPair.second << endl;
   // Create the two hadron particle objects with the specified id.
+  // temporary fix to product on-shell particles 
   PPtr ptrHad1 = getParticle(idPair.first);
   PPtr ptrHad2 = getParticle(idPair.second);
+  tPDPtr pdata= getParticleData(idPair.first);
+  PPtr ptrHad1 = pdata->produceParticle(pdata->mass());
+  pdata= getParticleData(idPair.second);
+  PPtr ptrHad2 = pdata->produceParticle(pdata->mass());
+
 
   if (!ptrHad1  ||  !ptrHad2) {
     ostringstream s;
