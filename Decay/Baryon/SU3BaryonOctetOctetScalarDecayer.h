@@ -14,19 +14,33 @@ using namespace ThePEG;
  * The <code>SU3BaryonOctetOctetScalarDecayer</code> class is a simple decayer for 
  * the strong decay of the excited baryon \f$SU(3)\f$ octets to lower lying
  * baryon octets and a pseudoscalar meson from the lightest 
- * multiplet, i.e. \f$\pi\f$, \f$K\f$, \f$\eta\f$.
+ * multiplet, i.e. \f$\pi\f$, \f$K\f$, \f$\eta\f$, etc..
  *
  * The interaction Lagrangian is taken to have the form
  *
- * \f[-\frac{s_d}{f_\pi} \left[{\rm tr} (\bar{R}p_\phi\!\!\!\not\,\{\phi,B\})\right]
- * -\frac{s_f}{f_\pi} \left[{\rm tr} (\bar{R}p_\phi\!\!\!\not\,[\phi,B])\right],\f]
- *  
+ * \f[-\frac{s_d}{4\sqrt{2}f_\pi} \left[{\rm tr} (\bar{R}p_\phi\!\!\!\!\!\!\!\!\not\,\,\,\,\,
+ *     \{\phi,B\})\right]
+ * -\frac{s_f}{4\sqrt{2}f_\pi} \left[{\rm tr}    (\bar{R}p_\phi\!\!\!\!\!\!\!\!\not\,\,\,\,\,
+ *      [\phi,B])\right],\f]
  *  where \f$R\f$ is the matrix field for the excited resonance, \f$\phi\f$ is the matrix
- *  field for the pseudoscalar mesons and \f$B\f$ is the matrix field for the ground
- *  state baryon octet.
- *  
- *  The above form is used for \f$\frac12^-\f$ excited baryon resonances and the above form with
+ *  field for the pseudoscalar mesons, \f$f_\pi\f$ is the pion decay constant
+ *  and \f$B\f$ is the matrix field for the ground
+ *  state baryon octet for the decay of a spin\f$\frac12\f$ multiplet.
+ *
+ *  The above form is used for \f$\frac12^-\f$ excited baryon resonances
+ *  and the above form with
  *  an additional \f$\gamma_5\f$ is used for excited \f$\frac12^+\f$ baryon resonances.
+
+ *  For the decay of a spin-\f$\frac32\f$ multiplet we use the form 
+ *  
+ * \f[-\frac{s_d}{4\sqrt{2}f_\pi} \left[{\rm tr} (\bar{R}^\mu p_{\phi,\mu}\{\phi,B\})\right]
+ *    -\frac{s_f}{4\sqrt{2}f_\pi} \left[{\rm tr} (\bar{R}^\mu p_{\phi,\mu} [\phi,B])\right],\f]
+ *  where \f$R^\mu\f$ is the matrix field for the excited resonance. This form is used
+ *  for \f$\frac32^+\f$ excited baryon resonances and this form with an additional
+ *  \f$\gamma_5\f$ for excited \f$\frac32^-\f$ resonances.
+ *
+ *  The decay to spin-\f$\frac32\f$ resonances in not yet implemented but can
+ *  be included if necessary.
  *
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are
  *  intended for the decay of excited baryons.
@@ -86,6 +100,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -118,18 +137,26 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfHalfScalarCoupling(int imode, Complex& A,Complex& B) const;
+  virtual void halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A,Complex& B) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  virtual void threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A,Complex& B) const;
   //@}
 
 protected:
@@ -229,7 +256,7 @@ private:
   /**
    * the relative parities of the two baryon multiplets
    */
-  int _parity;
+  bool _parity;
 
   /**
    * the pion decay constant
@@ -348,36 +375,10 @@ private:
   vector<double> _maxweight;
 
   /**
-   * The couplings for the different modes.
+   * The couplings for the different modes
    */
-  //@{
-  /**
-   * The first A coupling
-   */
-  mutable vector<double> _A1;
+  mutable vector<InvEnergy> _prefactor;
 
-  /**
-   * The second A coupling
-   */
-  mutable vector<double> _A2;
-
-  /**
-   * The third A coupling
-   */
-  mutable vector<double> _A3;
-  /**
-   * The first B coupling
-   */
-  mutable vector<double> _B1;
-  /**
-   * The second B coupling
-   */
-  mutable vector<double> _B2;
-  /**
-   * The third B coupling
-   */
-  mutable vector<double> _B3;
-  //@}
 };
 
 }

@@ -11,7 +11,8 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup Decay
+ *
  *  The <code>KornerKramerCharmDecayer</code> class implements the model of 
  *  Z.Phys.C55,659 (1992) for the non-leptonic decay of charm baryons.
  *  The couplings of the model are calculated at initialisation and stored. These
@@ -66,6 +67,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 protected:
 
   /**
@@ -75,33 +81,48 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfHalfScalarCoupling(int imode, Complex& A,Complex& B) const;
+  virtual void halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A,Complex& B) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a vector.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A1 The coupling \f$A_1\f$ described above.
    * @param A2 The coupling \f$A_2\f$ described above.
    * @param B1 The coupling \f$B_1\f$ described above.
    * @param B2 The coupling \f$B_2\f$ described above.
    */
-  virtual void halfHalfVectorCoupling(int imode,Complex& A1,Complex& A2,
+  virtual void halfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A1,Complex& A2,
 				      Complex& B1,Complex& B2) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  virtual void halfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A,Complex& B) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a vector.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A1 The coupling \f$A_1\f$ described above.
    * @param A2 The coupling \f$A_2\f$ described above.
    * @param A3 The coupling \f$A_3\f$ described above.
@@ -109,7 +130,8 @@ protected:
    * @param B2 The coupling \f$B_2\f$ described above.
    * @param B3 The coupling \f$B_3\f$ described above.
    */
-  virtual void halfThreeHalfVectorCoupling(int imode,Complex& A1,Complex& A2,Complex& A3,
+  virtual void halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A1,Complex& A2,Complex& A3,
 					   Complex& B1,Complex& B2,Complex& B3) const;
   //@}
 
@@ -359,12 +381,12 @@ private:
   /**
    * The second A coupling
    */
-  vector<double> _A2;
+  vector<InvEnergy> _A2;
 
   /**
    * The third A coupling
    */
-  vector<double> _A3;
+  vector<InvEnergy2> _A3;
   /**
    * The first B coupling
    */
@@ -372,12 +394,17 @@ private:
   /**
    * The second B coupling
    */
-  vector<double> _B2;
+  vector<InvEnergy> _B2;
   /**
    * The third B coupling
    */
-  vector<double> _B3;
+  vector<InvEnergy2> _B3;
   //@}
+
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 
 };
 

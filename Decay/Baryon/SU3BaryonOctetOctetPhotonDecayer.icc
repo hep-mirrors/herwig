@@ -15,7 +15,7 @@ inline SU3BaryonOctetOctetPhotonDecayer::SU3BaryonOctetOctetPhotonDecayer()
   _lf=-0.009/GeV;
   _ld=-0.024/GeV;
   // the relative parities of the two baryon multiplets
-  _parity=0;
+  _parity=true;
   // PDG codes for the various ground state baryons
   _proton   = 2212;
   _neutron  = 2112;
@@ -41,11 +41,9 @@ inline SU3BaryonOctetOctetPhotonDecayer::SU3BaryonOctetOctetPhotonDecayer(const 
     _proton(x._proton),_neutron(x._neutron),_sigma0(x._sigma0),_sigmap(x._sigmap),
     _sigmam(x._sigmam),_lambda(x._lambda),_xi0(x._xi0),_xim(x._xim),
     _eproton(x._eproton),_eneutron(x._eneutron),_esigma0(x._esigma0),
-    _esigmap(x._esigmap),
-    _esigmam(x._esigmam),_elambda(x._elambda),_exi0(x._exi0),_exim(x._exim),
-    _incomingB(x._incomingB),_outgoingB(x._outgoingB),
-    _maxweight(x._maxweight), 
-    _A1(x._A1),_A2(x._A2),_A3(x._A3),_B1(x._B1),_B2(x._B2),_B3(x._B3) {}
+    _esigmap(x._esigmap), _esigmam(x._esigmam),_elambda(x._elambda),_exi0(x._exi0),
+    _exim(x._exim), _incomingB(x._incomingB),_outgoingB(x._outgoingB),
+    _maxweight(x._maxweight), _prefactor(x._prefactor) {}
 
 inline IBPtr SU3BaryonOctetOctetPhotonDecayer::clone() const {
   return new_ptr(*this);
@@ -100,6 +98,12 @@ inline void SU3BaryonOctetOctetPhotonDecayer::dofinish() {
 
 inline void SU3BaryonOctetOctetPhotonDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {
+      _maxweight.resize(0);
+      for(unsigned int ix=0;ix<numberModes();++ix)
+	{_maxweight.push_back(2.*mode(ix)->maxWeight());}
+    }
 }
 
 inline void SU3BaryonOctetOctetPhotonDecayer::rebind(const TranslationMap & trans)

@@ -10,11 +10,11 @@ using namespace ThePEG;
 inline SU3BaryonDecupletOctetScalarDecayer::SU3BaryonDecupletOctetScalarDecayer() 
 {
   // couplings and off-shell parameter
-  _C=1.3;
+  _C=1.5;
   // the relative parities of the two baryon multiplets
-  _parity=0;
+  _parity=true;
   // the pion decay constant
-  _fpi=92.4*MeV;
+  _fpi=130.7*MeV;
   // PDG codes for the various octet baryons
   _proton   = 2212;
   _neutron  = 2112;
@@ -44,8 +44,7 @@ inline SU3BaryonDecupletOctetScalarDecayer::SU3BaryonDecupletOctetScalarDecayer(
     _deltap(x._deltap),_delta0(x._delta0),_deltam(x._deltam),_sigmasp(x._sigmasp),
     _sigmas0(x._sigmas0),_sigmasm(x._sigmasm),_omega(x._omega),_xism(x._xism),
     _xis0(x._xis0),_incomingB(x._incomingB),_outgoingB(x._outgoingB),
-    _outgoingM(x._outgoingM), _maxweight(x._maxweight),_A1(x._A1),_A2(x._A2),_A3(x._A3),
-    _B1(x._B1),_B2(x._B2),_B3(x._B3)
+    _outgoingM(x._outgoingM), _maxweight(x._maxweight),_prefactor(x._prefactor)
 {}
 
 inline IBPtr SU3BaryonDecupletOctetScalarDecayer::clone() const {
@@ -101,6 +100,12 @@ inline void SU3BaryonDecupletOctetScalarDecayer::dofinish() {
 
 inline void SU3BaryonDecupletOctetScalarDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {
+      _maxweight.resize(0);
+      for(unsigned int ix=0;ix<numberModes();++ix)
+	{_maxweight.push_back(2.*mode(ix)->maxWeight());}
+    }
 }
 
 inline void SU3BaryonDecupletOctetScalarDecayer::rebind(const TranslationMap & trans)

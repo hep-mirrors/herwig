@@ -23,18 +23,64 @@ using namespace ThePEG;
 
 NonLeptonicOmegaDecayer::~NonLeptonicOmegaDecayer() {}
 
+void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
+  Baryon1MesonDecayerBase::doinit();
+  // reset the masses if needed
+  if(!_localmasses)
+    {
+      _Mlambda = getParticleData(3122)->mass();
+      _Mxi     = getParticleData(3322)->mass();
+      _Momega  = getParticleData(3334)->mass();
+      _MXistar = getParticleData(3324)->mass();
+      _mpip    = getParticleData(211)->mass();
+      _mpi0    = getParticleData(111)->mass();
+      _MKp     = getParticleData(321)->mass();
+      _MK0     = getParticleData(311)->mass();
+    }
+  // calculate the couplings
+  _A.resize(3);_B.resize(3);
+  // couplings for lambda K (N.B. sign of B due to gamma_5 defn)
+  _A[0] = 0.5*_C/sqrt(3.)/_fpi*((_d-3.*_f)/(_Mlambda-_Mxi)
+			       +_hc/(_Momega-_MXistar))
+    +_CBstar/2./sqrt(3.)/_fpi*(_dstar-3.*_fstar)/(_Mlambda/_MBstar-1.);
+  _B[0] =0.;
+    //-0.5*_sc/sqrt(3.)/_fpi*(_omegad-3.*_omegaf)/(_Mlambda/_MR-1.);
+  // couplings for xi0 pi-
+  _A[1] = _C/   sqrt(2.)/_fpi*(_hc/3./(_Momega-_MXistar)
+			       +_hpi*_mpip*_mpip/2./(_MKp*_MKp-_mpip*_mpip));
+  _B[1] = 0.;
+  // couplings for xi- pi0
+  _A[2] = _C/2./         _fpi*(_hc/3./(_Momega-_MXistar)
+			       +_hpi*_mpi0*_mpi0/2./(_MK0*_MK0-_mpi0*_mpi0));
+  _B[2] = 0.;
+  // set up the decay modes
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  double wgtmax;
+  vector<double> wgt(1,1.);
+  for(unsigned int ix=0;ix<_outgoingB.size();++ix)
+    {
+      extpart[0]=getParticleData(_incomingB);
+      extpart[1]=getParticleData(_outgoingB[ix]);
+      extpart[2]=getParticleData(_outgoingM[ix]);
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      if(_maxweight.size()>numberModes()){wgtmax=_maxweight[numberModes()];}
+      else{wgtmax=1.;}
+      addMode(mode,wgtmax,wgt);
+    }
+}
+
 bool NonLeptonicOmegaDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
+  int id0(dm.parent()->id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);
   do
     {
       if(id0==_incomingB)
@@ -59,13 +105,11 @@ bool NonLeptonicOmegaDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector NonLeptonicOmegaDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  int imode=-1;
-  int id=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;bool cc;
+  int imode(-1),id(parent.id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);bool cc;
   do 
     {
       if(id==_incomingB)
@@ -116,44 +160,43 @@ void NonLeptonicOmegaDecayer::Init() {
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceDStar
     ("DStar",
      "The d* coupling from hep-ph/9905398 multiplied by MB*.",
-     &NonLeptonicOmegaDecayer::_dstar, 0.6, -10.0, 10.0,
+     &NonLeptonicOmegaDecayer::_dstar, -3.98e-7, -10.0e-7, 10.0e-7,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceFStar
     ("FStar",
      "The f* coupling from hep-ph/9905398 multiplied by MB*.",
-     &NonLeptonicOmegaDecayer::_fstar, -4., -10.0, 10.0,
+     &NonLeptonicOmegaDecayer::_fstar, 0.5e-7, -10.0e-7, 10.0e-7,
      false, false, true);
-
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceomegad
     ("omegad",
      "The omega_d coupling from hep-ph/9905398 multiplied by MR.",
-     &NonLeptonicOmegaDecayer::_omegad, 0.82, -10.0, 10.0,
+     &NonLeptonicOmegaDecayer::_omegad, -1.16e-7, -10.0e-7, 10.0e-7,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceomegaf
     ("omegaf",
      "The omega_f coupling from hep-ph/9905398 multiplied by MR.",
-     &NonLeptonicOmegaDecayer::_omegaf,-2.17, -10.0, 10.0,
+     &NonLeptonicOmegaDecayer::_omegaf, 1.53e-7, -10.0e-7, 10.0e-7,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceCBstar
     ("CBstar",
      "The C_B* coupling from hep-ph/9905398",
-     &NonLeptonicOmegaDecayer::_CBstar, 1.35, 0.0, 10.0,
+     &NonLeptonicOmegaDecayer::_CBstar, 1.35, -10.0, 10.0,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfacesc
     ("sc",
      "The sc coupling from hep-ph/9905398",
-     &NonLeptonicOmegaDecayer::_sc,-0.85, 0.0, 10.0,
+     &NonLeptonicOmegaDecayer::_sc,-0.85, -10.0, 10.0,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceC
     ("C",
      "The C coupling from hep-ph/9905398",
-     &NonLeptonicOmegaDecayer::_CBstar, 1.5, 0.0, 10.0,
+     &NonLeptonicOmegaDecayer::_C, 1.5, -10.0, 10.0,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceFpi
@@ -237,40 +280,77 @@ void NonLeptonicOmegaDecayer::Init() {
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMBstar
     ("MBstar",
      "The mass of the excited B* resonnaces",
-     &NonLeptonicOmegaDecayer::_MBstar, MeV, 1660.0*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_MBstar, MeV, 1670.0*MeV, 0.0*MeV, 10000.0*MeV,
      false, false, true);
 
   static Parameter<NonLeptonicOmegaDecayer,Energy> interfaceMR
     ("MR",
      "The mass of the excited R resonnaces",
-     &NonLeptonicOmegaDecayer::_MR, MeV, 1700.0*MeV, 0.0*MeV, 10000.0*MeV,
+     &NonLeptonicOmegaDecayer::_MR, MeV, 1620.0*MeV, 0.0*MeV, 10000.0*MeV,
      false, false, true);
 
   static Switch<NonLeptonicOmegaDecayer,bool> interfaceLocalMasses
     ("LocalMasses",
      "Use local values of all the masses for the couplings.",
-     &NonLeptonicOmegaDecayer::_localmasses, 0, false, false);
+     &NonLeptonicOmegaDecayer::_localmasses, true, false, false);
   static SwitchOption interfaceLocalMassesLocal
     (interfaceLocalMasses,
      "Local",
      "Use local values",
-     1);
+     true);
   static SwitchOption interfaceLocalMassesNonLocal
     (interfaceLocalMasses,
      "NonLocal",
      "Use values from the particle data objects",
-     0);
+     false);
 
   static ParVector<NonLeptonicOmegaDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &NonLeptonicOmegaDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 100., false, false, true);
 
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-0
-void NonLeptonicOmegaDecayer::halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const
-{A=_A[imode];B=_B[imode];}
+void NonLeptonicOmegaDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,
+							  Energy m2,Complex& A,
+							  Complex& B) const
+ {A=_A[imode]*(m0+m1);B=_B[imode]*(m0+m1);}
+
+void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  output << "set " << fullName() << ":DStar " << _dstar<< "\n";
+  output << "set " << fullName() << ":FStar " << _fstar << "\n";
+  output << "set " << fullName() << ":omegad " << _omegad<< "\n";
+  output << "set " << fullName() << ":omegaf" << _omegaf<< "\n";
+  output << "set " << fullName() << ":CBstar " << _CBstar<< "\n";
+  output << "set " << fullName() << ":sc " << _sc << "\n";
+  output << "set " << fullName() << ":C " << _C << "\n";
+  output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
+  output << "set " << fullName() << ":hc " << _hc/GeV << "\n";
+  output << "set " << fullName() << ":hpi " << _hpi<< "\n";
+  output << "set " << fullName() << ":d " << _d/GeV << "\n";
+  output << "set " << fullName() << ":f " << _f/GeV << "\n";
+  output << "set " << fullName() << ":MLambda " << _Mlambda/MeV << "\n";
+  output << "set " << fullName() << ":MXi " << _Mxi/MeV << "\n";
+  output << "set " << fullName() << ":MOmega " << _Momega/MeV << "\n";
+  output << "set " << fullName() << ":MXiStar " << _MXistar/MeV << "\n";
+  output << "set " << fullName() << ":Mpiplus " << _mpip/MeV << "\n";
+  output << "set " << fullName() << ":MKplus " << _MKp/MeV << "\n";
+  output << "set " << fullName() << ":Mpi0 " << _mpi0/MeV << "\n";
+  output << "set " << fullName() << ":MK0 " << _MK0/MeV << "\n";
+  output << "set " << fullName() << ":MBstar " << _MBstar/MeV << "\n";
+  output << "set " << fullName() << ":MR " << _MR/MeV << "\n";
+  output << "set " << fullName() << ":LocalMasses " << _localmasses << "\n";
+  for(unsigned int ix=0;ix<_maxweight.size();++ix)
+    {output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+	    << _maxweight[ix] << "\n";}
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 
 }

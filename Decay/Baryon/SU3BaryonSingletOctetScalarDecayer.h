@@ -18,7 +18,7 @@ using namespace ThePEG;
  *
  * The interaction Lagrangian is taken to have the form
  *
- * \f[-\frac{C}{f_\pi} \left[{\rm tr} (\bar{R}p_\phi\!\!\!\not\,\phi B)\right]\f]
+ * \f[\frac{2C}{f_\pi} \left[{\rm tr} (\bar{R}p_\phi\!\!\!\!\!\!\!\!\!\not\,\,\,\,\,\,\,\phi B)\right]\f]
  *  where \f$R\f$ is the field for the excited resonance, \f$\phi\f$ is the matrix
  *  field for the pseudoscalar mesons and \f$B\f$ is the matrix field for the ground
  *  state baryon octet.
@@ -27,7 +27,13 @@ using namespace ThePEG;
  *  baryon resonances and the above form with
  *  an additional \f$\gamma_5\f$ is used for excited \f$\frac12^+\f$ baryon resonances.
  *
+ *  For the decays of the spin-\f$\frac32\f$ resonances we use the form 
  *
+ * \f[\frac{2C}{f_\pi} \left[{\rm tr} (\bar{R}^\mu p_{\phi,\mu}\phi B)\right],\f]
+ *  where \f$R^\mu\f$ is the field for the excited resonance. This form is used for
+ * the spin\f$\frac32^+\f$ resonances and this form with an additional \f$gamma_5\f$
+ * for spin\f$\frac32^-\f$.
+ * 
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are
  *  intended for the decay of excited baryons.
  *
@@ -86,6 +92,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -118,18 +129,26 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfHalfScalarCoupling(int imode, Complex& A,Complex& B) const;
+  virtual void halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A,Complex& B) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar. 
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  virtual void threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A,Complex& B) const;
   //@}
 
 protected:
@@ -224,7 +243,7 @@ private:
   /**
    * the relative parities of the two baryon multiplets
    */
-  int _parity;
+  bool _parity;
 
   /**
    * the pion decay constant
@@ -277,14 +296,9 @@ private:
   //@}
 
   /**
-   * PDG code for the various excited baryon
+   * PDG code for the excited singlet \f$\Lambda\f$.
    */
   int _elambda;
-
-  /**
-   * PDG code for the incoming baryons
-   */
-  mutable vector<int> _incomingB;
 
   /**
    * PDG code for the outgoing baryons
@@ -303,33 +317,7 @@ private:
   /**
    * The couplings for the different modes.
    */
-  //@{
-  /**
-   * The first A coupling
-   */
-  mutable vector<double> _A1;
-
-  /**
-   * The second A coupling
-   */
-  mutable vector<double> _A2;
-
-  /**
-   * The third A coupling
-   */
-  mutable vector<double> _A3;
-  /**
-   * The first B coupling
-   */
-  mutable vector<double> _B1;
-  /**
-   * The second B coupling
-   */
-  mutable vector<double> _B2;
-  /**
-   * The third B coupling
-   */
-  mutable vector<double> _B3;
+  mutable vector<InvEnergy> _prefactor;
   //@}
 };
 

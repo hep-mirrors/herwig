@@ -9,11 +9,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup Decay
+ *
  *  The <code>StrongHeavyBaryonDecayer</code> class implements the strong
  *  decays of charm baryons using the results of 
  *  hep-ph/9904421.
- *
  *
  * @see Baryon1MesonDecayerBase.
  * 
@@ -27,7 +27,7 @@ public:
   /**
    * Default constructor.
    */
-  inline StrongHeavyBaryonDecayer();
+  StrongHeavyBaryonDecayer();
 
   /**
    * Copy-constructor.
@@ -63,6 +63,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -95,18 +100,57 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfHalfScalarCoupling(int imode, Complex& A,Complex& B) const;
+  virtual void halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A,Complex& B) const;
+
+  /**
+   * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
+   * This method must be implemented in any class inheriting from this one
+   * which includes \f$\frac12\to\frac32+0\f$ or \f$\frac32\to\frac12+0\f$ decays. 
+   * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
+   * @param A The coupling \f$A\f$ described above.
+   * @param B The coupling \f$B\f$ described above.
+   */
+  virtual void halfThreeHalfScalarCoupling(int imode, Energy m0, Energy m1, Energy m2,
+					   Complex& A,Complex& B) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar. 
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  virtual void threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A,Complex& B) const;
+
+  /**
+   * Couplings for spin-\f$\frac32\f$ to spin-\f$\frac32\f$ and a scalar.
+   * This method must be implemented in any class inheriting from this one
+   * which includes \f$\frac32\to\frac32+0\f$ decays. 
+   * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
+   * @param A1 The coupling \f$A_1\f$ described above.
+   * @param A2 The coupling \f$A_2\f$ described above.
+   * @param B1 The coupling \f$B_1\f$ described above.
+   * @param B2 The coupling \f$B_2\f$ described above.
+   */
+  virtual void threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+						Complex& A1,Complex& A2,
+						Complex& B1,Complex& B2) const;
   //@}
 
 protected:
@@ -202,9 +246,19 @@ private:
   double _flambda_c1sigma_cpi;
 
   /**
+   * Strong coupling for \f$\Xi_{c1}\to\Xi'_c\pi\f$.
+   */
+  double _fxi_c1xi_cpi;
+
+  /**
    * Strong coupling for \f$\Lambda_{c1}^*\to\Sigma_c\pi\f$.
    */
   InvEnergy2 _flambda_c1starsigma_cpi;
+
+  /**
+   * Strong couplng for \f$\Xi_{c1}^*\to\Xi'_c\pi\f$.
+   */
+  InvEnergy2 _fxi_c1starxi_cpi;
 
   /**
    * Strong coupling for the \f$\Sigma_b\to\Lambda_b\pi\f$.
@@ -222,9 +276,20 @@ private:
   double _flambda_b1sigma_bpi;
 
   /**
+   * Strong coupling for \f$\Xi_{b1}\to\Xi'_b\pi\f$.
+   */
+  double _fxi_b1xi_bpi;
+
+  /**
    * Strong coupling for \f$\Lambda_{b1}^* \to \Sigma_b \pi\f$.
    */
   InvEnergy2 _flambda_b1starsigma_bpi;
+
+  /**
+   * Strong couplng for \f$\Xi_{b1}^*\to\Xi'_b\pi\f$.
+   */
+  InvEnergy2 _fxi_b1starxi_bpi;
+
 
   /**
    * PDG code for the incoming baryons
@@ -249,34 +314,17 @@ private:
   /**
    * The couplings for the different modes.
    */
-  //@{
-  /**
-   * The first A coupling
-   */
-  vector<double> _A1;
+  vector<double> _prefactor;
 
   /**
-   * The second A coupling
+   * The type of matrix element
    */
-  vector<double> _A2;
+  vector<int> _modetype;
 
   /**
-   * The third A coupling
+   *  The initial size of the arrays
    */
-  vector<double> _A3;
-  /**
-   * The first B coupling
-   */
-  vector<double> _B1;
-  /**
-   * The second B coupling
-   */
-  vector<double> _B2;
-  /**
-   * The third B coupling
-   */
-  vector<double> _B3;
-  //@}
+  unsigned int _initsize;
 };
 
 }

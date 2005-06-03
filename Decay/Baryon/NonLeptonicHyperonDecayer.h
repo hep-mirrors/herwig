@@ -71,6 +71,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -103,10 +108,14 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfHalfScalarCoupling(int imode, Complex& A,Complex& B) const;
+  virtual void halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A,Complex& B) const;
 
 protected:
 
@@ -215,6 +224,10 @@ private:
    */
   vector<double> _maxweight;
 
+  /**
+   *  initial size fo the vectors
+   */
+  unsigned int _initsize;
 };
 
 }

@@ -15,6 +15,9 @@ using namespace ThePEG;
  *  weak decay of the Omega to a baryon from the lightest \f$SU(3)\f$ octet and a 
  *  pseudoscalar meson. The results are taken from hep-ph/9905398.
  *
+ *  due to problems with the size of the d-wave term and recent measurements giving
+ * the opposite sign for the \f$\alpha\f$ parameter we have set this term to zero.
+ *
  * @see Baryon1MesonDecayerBase.
  * 
  */
@@ -63,6 +66,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -95,10 +103,14 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar. 
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  virtual void threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A,Complex& B) const;
   //@}
 
 protected:
@@ -179,22 +191,26 @@ private:
 private:
 
   /**
-   * The \f$d^*\f$ coupling for the \f$B^*\f$ multiplet.
+   * The \f$d^*\f$ coupling for the \f$B^*\f$ multiplet, this is \f$d^* /M_{B^*}\f$
+   * from the paper.
    */
   double _dstar;
 
   /**
-   * The \f$f^*\f$ coupling for the \f$B^*\f$ multiplet.
+   * The \f$f^*\f$ coupling for the \f$B^*\f$ multiplet, this is \f$f^* /M_{B^*}\f$
+   * from the paper.
    */
   double _fstar;
 
   /**
-   * The \f$\omega_d\f$ coupling for the \f$R\f$ multiplet.
+   * The \f$\omega_d\f$ coupling for the \f$R\f$ multiplet, this is \f$\omega_d/M_R\f$
+   * from the paper.
    */
   double _omegad;
 
   /**
-   * The \f$\omega_f\f$ coupling for the \f$R\f$ multiplet.
+   * The \f$\omega_f\f$ coupling for the \f$R\f$ multiplet, this is \f$\omega_f/M_R\f$
+   * from the paper.
    */
   double _omegaf;
 
@@ -216,7 +232,7 @@ private:
   /**
    * The pion decay constant \f$f_\pi\f$.
    */
-  double _fpi;
+  Energy _fpi;
 
   /**
    * The \f$h_\pi\f$ pion self-coupling.
@@ -311,12 +327,12 @@ private:
   /**
    * The \f$A\f$ coefficient for the decays.
    */
-  vector<double> _A;
+  vector<InvEnergy> _A;
 
   /**
    * The \f$B\f$ coefficient for the decays.
    */
-  vector<double> _B;
+  vector<InvEnergy> _B;
 
   /**
    * The maximum weights for the decays.

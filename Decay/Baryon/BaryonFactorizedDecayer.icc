@@ -11,14 +11,19 @@ inline BaryonFactorizedDecayer::BaryonFactorizedDecayer()
 {
   // default value of the fermi constant taken from PDG 2002
   _GF = 1.16639E-5/GeV2;
+  // default values taken from PRD56, 2799
+  _a1c= 1.1;
+  _a2c=-0.5;
+  _a1b= 1.0;
+  _a2b= 0.28;
 }
 
 inline BaryonFactorizedDecayer::
 BaryonFactorizedDecayer(const BaryonFactorizedDecayer & x)
   : DecayIntegrator(x),_current(x._current), _form(x._form), _GF(x._GF),_a1b(x._a1b),
     _a2b(x._a2b),_a1c(x._a1c),_a2c(x._a2c),_currentmap(x._currentmap),
-    _formmap(x._formmap),_modetype(x._modetype),_CKMfact(x._CKMfact),
-    _wgtloc(x._wgtloc),_wgtmax(x._wgtmax),_weights(x._weights) {}
+    _formmap(x._formmap),_CKMfact(x._CKMfact),_wgtloc(x._wgtloc),_wgtmax(x._wgtmax),
+    _weights(x._weights), _theCKM(x._theCKM) {}
 
 
 inline IBPtr BaryonFactorizedDecayer::clone() const {
@@ -56,13 +61,18 @@ inline void BaryonFactorizedDecayer::doinitrun() {
   _form->initrun();
   DecayIntegrator::doinitrun();
   _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
-  for(unsigned int ix=0;ix<numberModes();++ix)
+  unsigned int ix,iy;
+  for(ix=0;ix<numberModes();++ix)
     {
       _wgtmax.push_back(mode(ix)->maxWeight());
       _wgtloc.push_back(_weights.size());
-      for(unsigned int iy=0;iy<mode(ix)->numberChannels();++iy)
+      for(iy=0;iy<mode(ix)->numberChannels();++iy)
 	{_weights.push_back(mode(ix)->channelWeight(iy));}
     }
+  //string file_name;
+  //file_name  = name()+".output";
+  //ofstream output(file_name.c_str());
+  //dataBaseOutput(output);
 }
 
 inline void BaryonFactorizedDecayer::rebind(const TranslationMap & trans)

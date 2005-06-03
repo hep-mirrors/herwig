@@ -25,23 +25,18 @@ SU3BaryonOctetDecupletScalarDecayer::~SU3BaryonOctetDecupletScalarDecayer() {}
 
 bool SU3BaryonOctetDecupletScalarDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   if(_incomingB.size()==0){setupModes(0);}
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
+  int id0(dm.parent()->id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);
   do
     {
-      //      cout << "testing the decays " << ix << "  " 
-      //	   << getParticleData(_incomingB[ix])->PDGName() << " -> " 
-      //	   << getParticleData(_outgoingB[ix])->PDGName() << "  "
-      //   << getParticleData(_outgoingM[ix])->PDGName() << endl;
       if(id0==_incomingB[ix])
 	{
 	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
@@ -64,13 +59,11 @@ bool SU3BaryonOctetDecupletScalarDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector SU3BaryonOctetDecupletScalarDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  int imode=-1;
-  int id=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;bool cc;
+  int imode(-1),id(parent.id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);bool cc;
   do 
     {
       if(id==_incomingB[ix])
@@ -99,14 +92,14 @@ void SU3BaryonOctetDecupletScalarDecayer::persistentOutput(PersistentOStream & o
   os << _C << _parity << _fpi << _proton << _neutron << _sigma0 << _sigmap 
      << _sigmam << _lambda << _xi0 << _xim << _deltapp << _deltap << _delta0 << _deltam
      << _sigmasp << _sigmas0 << _sigmasm << _omega << _xism << _xis0 << _incomingB 
-     << _outgoingB << _outgoingM << _maxweight << _A1 << _A2 << _A3 << _B1 << _B2 << _B3;
+     << _outgoingB << _outgoingM << _maxweight << _prefactor;
 }
 
 void SU3BaryonOctetDecupletScalarDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _C >> _parity >> _fpi >> _proton >> _neutron >> _sigma0 >> _sigmap 
      >> _sigmam >> _lambda >> _xi0 >> _xim >> _deltapp >> _deltap >> _delta0 >> _deltam
      >> _sigmasp >> _sigmas0 >> _sigmasm >> _omega >> _xism >> _xis0 >> _incomingB 
-     >> _outgoingB >> _outgoingM >> _maxweight >> _A1 >> _A2 >> _A3 >> _B1 >> _B2 >> _B3;
+     >> _outgoingB >> _outgoingM >> _maxweight >> _prefactor;
 }
 
 ClassDescription<SU3BaryonOctetDecupletScalarDecayer> SU3BaryonOctetDecupletScalarDecayer::initSU3BaryonOctetDecupletScalarDecayer;
@@ -122,23 +115,23 @@ void SU3BaryonOctetDecupletScalarDecayer::Init() {
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,double> interfaceCoupling
     ("Coupling",
      "The coupling for the decuplet decays.",
-     &SU3BaryonOctetDecupletScalarDecayer::_C, 1.3, -10.0, 10.0,
+     &SU3BaryonOctetDecupletScalarDecayer::_C, 1.35, -10.0, 10.0,
      false, false, true);
 
-  static Switch<SU3BaryonOctetDecupletScalarDecayer,int> interfaceParity
+  static Switch<SU3BaryonOctetDecupletScalarDecayer,bool> interfaceParity
     ("Parity",
      "The relative parities of the two multiplets.",
-     &SU3BaryonOctetDecupletScalarDecayer::_parity, 0, false, false);
+     &SU3BaryonOctetDecupletScalarDecayer::_parity, true, false, false);
   static SwitchOption interfaceParitySame
     (interfaceParity,
      "Same",
-     "The multiplets have the same parity.",
-     0);
+     "Same parity",
+     true);
   static SwitchOption interfaceParityDifferent
     (interfaceParity,
      "Different",
-     "The multiplets have different parities.",
-     1);
+     "Opposite parity",
+     false);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,Energy> interfaceFpi
     ("Fpi",
@@ -149,136 +142,153 @@ void SU3BaryonOctetDecupletScalarDecayer::Init() {
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceProton
     ("Proton",
      "The PDG code for the proton-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_proton, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_proton, 12212, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceNeutron
     ("Neutron",
      "The PDG code for the neutron-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_neutron, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_neutron, 12112, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceSigmap
     ("Sigma+",
      "The PDG code for the Sigma+-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_sigmap, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_sigmap, 13222, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceSigma0
     ("Sigma0",
      "The PDG code for the Sigma0-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_sigma0, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_sigma0, 13212, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceSigmam
     ("Sigma-",
      "The PDG code for the Sigma--like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_sigmam, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_sigmam, 13112, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceLambda
     ("Lambda",
      "The PDG code for the Lambda-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_lambda, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_lambda, 23122, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceXi0
     ("Xi0",
      "The PDG code for the Xi0-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_xi0, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_xi0, 13322, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceXim
     ("Xi-",
      "The PDG code for the Xi--like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_xim, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_xim, 13312, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceDeltapp
     ("Delta++",
      "The PDG code for the Delta++ like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_deltapp, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_deltapp, 2224, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceDeltap
     ("Delta+",
      "The PDG code for the Delta+ like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_deltap, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_deltap, 2214, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceDelta0
     ("Delta0",
      "The PDG code for the Delta0 like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_delta0, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_delta0, 2114, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceDeltam
     ("Delta-",
      "The PDG code for the Delta- like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_deltam, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_deltam, 1114, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceSigmasp
     ("Sigma*+",
      "The PDG code for the Sigma*+ like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_sigmasp, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_sigmasp, 3224, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceSigmas0
     ("Sigma*0",
      "The PDG code for the Sigma*0 like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_sigmas0, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_sigmas0, 3214, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceSigmasm
     ("Sigma*-",
      "The PDG code for the Sigma*- like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_sigmasm, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_sigmasm, 3114, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceOmega
     ("Omega",
      "The PDG code for the Omega like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_omega, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_omega, 3334, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceXis0
     ("Xi*0",
      "The PDG code for the Xi*0-like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_xis0, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_xis0, 3324, 0, 1000000,
      false, false, true);
 
   static Parameter<SU3BaryonOctetDecupletScalarDecayer,int> interfaceXism
     ("Xi*-",
      "The PDG code for the Xi*--like baryon.",
-     &SU3BaryonOctetDecupletScalarDecayer::_xism, 0, -100000, 100000,
+     &SU3BaryonOctetDecupletScalarDecayer::_xism, 3314, 0, 1000000,
      false, false, true);
 
   static ParVector<SU3BaryonOctetDecupletScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &SU3BaryonOctetDecupletScalarDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 100., false, false, true);
 
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-0
-void SU3BaryonOctetDecupletScalarDecayer::halfThreeHalfScalarCoupling(int imode,
+void SU3BaryonOctetDecupletScalarDecayer::halfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
 								      Complex& A,
 								      Complex& B) const
- {A=_A1[imode];B=_B1[imode];}
+{
+  if(_parity)
+    {
+      A=_prefactor[imode]*(m0+m1);
+      B=0.;
+    }
+  else
+    {
+      A=0.;
+      B=_prefactor[imode]*(m0+m1);
+    }
+}
 
 // couplings for spin-3/2 to spin-3/2 spin-0
 void SU3BaryonOctetDecupletScalarDecayer::
-threeHalfThreeHalfScalarCoupling(int imode,Complex& A1,Complex& A2,
+threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,Complex& A1,Complex& A2,
 				 Complex& B1,Complex& B2) const
 {
-  A1 = _A1[imode];
-  A2 = _A2[imode];
-  B1 = _B1[imode];
-  B2 = _B2[imode];
+  A2=0.;B2=0.;
+  if(_parity)
+    {
+      A1=0.;
+      B1=_prefactor[imode]*(m0+m1);
+    }
+  else
+    {
+      A1=_prefactor[imode]*(m0-m1);
+      B1=0.;
+    }
 }
-
 
 // set up the decay modes
 void SU3BaryonOctetDecupletScalarDecayer::setupModes(unsigned int iopt) const
@@ -388,40 +398,63 @@ void SU3BaryonOctetDecupletScalarDecayer::setupModes(unsigned int iopt) const
   // set up the modes
   Energy m0,m1;
   int inspin,outspin;
+  PDVector extpart(3);
   for(unsigned int ix=0;ix<outtemp.size();++ix)
     {
       if(outtemp[ix]!=0&&intemp[ix]!=0&&mestemp[ix]!=0)
 	{
-	  _incomingB.push_back(intemp[ix]);
-	  _outgoingB.push_back(outtemp[ix]);
-	  _outgoingM.push_back(mestemp[ix]);
-	  if(iopt==1)
+	  extpart[0]=getParticleData(intemp[ix]);
+	  extpart[1]=getParticleData(outtemp[ix]);
+	  extpart[2]=getParticleData(mestemp[ix]);
+	  if(extpart[0]->massMax()>extpart[1]->massMin()+extpart[2]->massMin())
 	    {
-	      m0 = getParticleData(_incomingB.back())->mass();
-	      m1 = getParticleData(_outgoingB.back())->mass();
-	      inspin  = getParticleData(_incomingB.back())->iSpin();
-	      outspin = getParticleData(_outgoingB.back())->iSpin();
-	      if(inspin==2&&outspin==4)
+	      _incomingB.push_back(intemp[ix]);
+	      _outgoingB.push_back(outtemp[ix]);
+	      _outgoingM.push_back(mestemp[ix]);
+	      if(iopt==1)
 		{
-		  if(_parity==0)
-		    {_A1.push_back(factor[ix]*(m0+m1)/_fpi);_B1.push_back(0.);}
-		  else
-		    {_A1.push_back(0.);_B1.push_back(factor[ix]*(m0+m1)/_fpi);}
-		  
-		  _A2.push_back(0.);_B2.push_back(0.);
-		  _A3.push_back(0.);_B3.push_back(0.);
-		}
-	      else if(inspin==4&&outspin==4)
-		{
-		  if(_parity==0)
-		    {_A1.push_back(factor[ix]*(m0-m1)/_fpi);_B1.push_back(0.);}
-		  else
-		    {_A1.push_back(0.);_B1.push_back(factor[ix]*(m0+m1)/_fpi);}
-		  _A2.push_back(0.);_B2.push_back(0.);
-		  _A3.push_back(0.);_B3.push_back(0.);
+		  m0 = extpart[0]->mass();inspin  = extpart[0]->iSpin();
+		  m1 = extpart[1]->mass();outspin = extpart[1]->iSpin();
+		  if(inspin==2&&outspin==4)
+		    {_prefactor.push_back(factor[ix]/_fpi);}
+		  else if(inspin==4&&outspin==4)
+		    {_prefactor.push_back(factor[ix]/_fpi);}
 		}
 	    }
 	}
     }
+}
+
+void SU3BaryonOctetDecupletScalarDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  output << "set " << fullName() << ":Coupling " << _C<< "\n";
+  output << "set " << fullName() << ":Parity " << _parity<< "\n";
+  output << "set " << fullName() << ":Fpi " << _fpi << "\n";
+  output << "set " << fullName() << ":Proton " << _proton << "\n";
+  output << "set " << fullName() << ":Neutron " << _neutron << "\n";
+  output << "set " << fullName() << ":Sigma+ " << _sigmap << "\n";
+  output << "set " << fullName() << ":Sigma0 " << _sigma0 << "\n";
+  output << "set " << fullName() << ":Sigma- " << _sigmam << "\n";
+  output << "set " << fullName() << ":Lambda " << _lambda << "\n";
+  output << "set " << fullName() << ":Xi0 " << _xi0 << "\n";
+  output << "set " << fullName() << ":Xi- " << _xim << "\n";
+  output << "set " << fullName() << ":Delta++ " << _deltapp << "\n";
+  output << "set " << fullName() << ":Delta+ " << _deltap << "\n";
+  output << "set " << fullName() << ":Delta0 " << _delta0 << "\n";
+  output << "set " << fullName() << ":Delta- " << _deltam << "\n";
+  output << "set " << fullName() << ":Sigma*+ " << _sigmasp << "\n";
+  output << "set " << fullName() << ":Sigma*0 " << _sigmas0 << "\n";
+  output << "set " << fullName() << ":Sigma*- " << _sigmasm << "\n";
+  output << "set " << fullName() << ":Omega " << _omega << "\n";
+  output << "set " << fullName() << ":Xi*0 " << _xis0 << "\n";
+  output << "set " << fullName() << ":Xi*- " << _xism << "\n";
+  for(unsigned int ix=0;ix<_maxweight.size();++ix)
+    {output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+	    << _maxweight[ix] << "\n";}
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 }

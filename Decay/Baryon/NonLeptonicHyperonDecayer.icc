@@ -12,36 +12,40 @@ inline NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer()
   // lambda -> p pi-
   _incomingB.push_back(3122);_outgoingB.push_back(2212);_outgoingM.push_back(-211);
   _A.push_back(3.25e-7);_B.push_back(23.4e-7);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(1.4);
   // lambda -> n p0
   _incomingB.push_back(3122);_outgoingB.push_back(2112);_outgoingM.push_back(111);
   _A.push_back(-2.30e-7);_B.push_back(-16.5e-7);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.7);
   // xi-    -> lambda pi-
   _incomingB.push_back(3312);_outgoingB.push_back(3122);_outgoingM.push_back(-211);
   _A.push_back(-4.51e-7);_B.push_back(14.8e-7);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(2.0);
   // xi0    -> lambda pi0
   _incomingB.push_back(3322);_outgoingB.push_back(3122);_outgoingM.push_back(111);
-  _A.push_back(3.18e-7);_B.push_back(-10.7e-7);
-  _maxweight.push_back(1.);
+  _A.push_back(3.18e-7);_B.push_back(-10.5e-7);
+  _maxweight.push_back(2.0);
   // sigma+ -> p pi0
   _incomingB.push_back(3222);_outgoingB.push_back(2212);_outgoingM.push_back(111);
   _A.push_back(-2.93e-7);_B.push_back(32.5e-7);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(1.2);
   // sigma- -> n pi-
   _incomingB.push_back(3112);_outgoingB.push_back(2112);_outgoingM.push_back(-211);
   _A.push_back(4.27e-7);_B.push_back(-1.52e-7);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(2.);
   // sigma+ -> n pi+
   _incomingB.push_back(3222);_outgoingB.push_back(2112);_outgoingM.push_back(211);
   _A.push_back(0.13e-7);_B.push_back(44.4e-7);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(1.1);
+  // initial size of the vectors
+  _initsize=_incomingB.size();
 }
 
-inline NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer(const NonLeptonicHyperonDecayer & x)
+inline NonLeptonicHyperonDecayer::
+NonLeptonicHyperonDecayer(const NonLeptonicHyperonDecayer & x)
   : Baryon1MesonDecayerBase(x), _incomingB(x._incomingB),_outgoingB(x._outgoingB),
-    _outgoingM(x._outgoingM),_A(x._A),_B(x._B), _maxweight(x._maxweight) {}
+    _outgoingM(x._outgoingM),_A(x._A),_B(x._B), _maxweight(x._maxweight), 
+    _initsize(x._initsize) {}
 
 inline IBPtr NonLeptonicHyperonDecayer::clone() const {
   return new_ptr(*this);
@@ -71,6 +75,12 @@ inline void NonLeptonicHyperonDecayer::doupdate() throw(UpdateException) {
 
 inline void NonLeptonicHyperonDecayer::doinit() throw(InitException) {
   Baryon1MesonDecayerBase::doinit();
+  unsigned int isize(_incomingB.size());
+  if(isize!=_outgoingB.size()||isize!=_outgoingM.size()||isize!=_A.size()||
+     isize!=_B.size()        ||isize!=_maxweight.size())
+    {throw InitException() << "Inconsistent parameters in "
+			   << "NonLeptonicHyperonDecayer::doinit()" 
+			   << Exception::runerror;}
   // set up the decay modes
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
@@ -94,6 +104,12 @@ inline void NonLeptonicHyperonDecayer::dofinish() {
 
 inline void NonLeptonicHyperonDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {
+      _maxweight.resize(0);
+      for(unsigned int ix=0;ix<numberModes();++ix)
+	{_maxweight.push_back(2.*mode(ix)->maxWeight());}
+    }
 }
 
 inline void NonLeptonicHyperonDecayer::rebind(const TranslationMap & trans)

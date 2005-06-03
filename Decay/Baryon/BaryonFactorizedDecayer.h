@@ -12,6 +12,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
+#include "Herwig++/Models/StandardModel/StandardCKM.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -208,6 +209,18 @@ protected:
 private:
 
   /**
+   * Find duplicate modes in the list of particles
+   * @param imode The mode we are studying
+   * @param particles The external particles for the different modes
+   * @param loc The location of the duplicate mode
+   * @param cc  If the duplicate is the charge conjugate
+   */
+  void findModes(unsigned int imode,vector<PDVector> & particles,
+		 vector<unsigned int> & loc,vector<bool> & cc);
+
+private:
+
+  /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
@@ -264,22 +277,17 @@ private:
   /**
    * Mapping of the modes to the currents
    */
-  vector<int> _currentmap;
+  vector<vector<unsigned int> > _currentmap;
 
   /**
    * Mapping of the modes to the form factors
    */
-  vector<int> _formmap;
-
-  /**
-   * type of mode
-   */
-  vector<int> _modetype;
+  vector<vector<unsigned int> > _formmap;
 
   /**
    * The CKM factors
    */
-  vector<double> _CKMfact;
+  vector<vector <Complex> > _CKMfact;
 
   /**
    * location of the weights
@@ -287,9 +295,14 @@ private:
   vector<int> _wgtloc;
 
   /**
-   * the maximum weights and the maximums
+   * the maximum weights and the weights
    */
   vector<double> _wgtmax,_weights;
+
+  /**
+   * Pointer to the CKM object.
+   */
+  Ptr<StandardCKM>::pointer _theCKM;
 };
 
 }

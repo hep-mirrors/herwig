@@ -17,13 +17,14 @@ using namespace ThePEG;
  *  from the lightest multiplet.
  *
  *  The coupling is taken to have the form
- *  \f[\frac{C}2\left[
- *  \bar{\Delta}^{\mu,abc}(Z)p_\phi^\mu\phi^i_aB^j_b\epsilon_{cij}
- * -\bar{B}^b_ip_\phi^\mu\phi^a_j(Z)\Delta^\mu_{abc}\epsilon^{cij}
+ *  \f[\frac{C}{f_pi}\left[
+ *  \bar{\Delta}^{\mu,abc}p_{\phi,\mu}\phi^i_aB^j_b\epsilon_{cij}
+ * -\bar{B}^b_ip_{\phi,\mu}\phi^a_j\Delta^\mu_{abc}\epsilon^{cij}
  *  \right],\f]
  *  where \f$\Delta^\mu_{abc}\f$ is the decuplet field, \f$B^j_b\f$
  *  is the octet field and
- *  \f$\phi^i_a\f$ is the pseudoscalar field and \f$C\f$ is the coupling for the decay.
+ *  \f$\phi^i_a\f$ is the pseudoscalar field, \f$\f_pi\f$ is the pion decay constant
+ *  and \f$C\f$ is the coupling for the decay.
  *
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are
  *  intended for the decay of excited baryons.
@@ -84,6 +85,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -116,10 +122,14 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a scalar.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A The coupling \f$A\f$ described above.
    * @param B The coupling \f$B\f$ described above.
    */
-  virtual void halfThreeHalfScalarCoupling(int imode,Complex& A,Complex& B) const;
+  virtual void threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A,Complex& B) const;
   //@}
 
 protected:
@@ -216,7 +226,7 @@ private:
   /**
    * the relative parities of the two baryon multiplets
    */
-  int _parity;
+  bool _parity;
 
   /**
    * the pion decay constant
@@ -273,52 +283,52 @@ private:
    */
   //@{
   /**
-   *  The PDG code for the \f$\Delta^{++}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Delta^{++}\f$-like member of the incoming decuplet.
    */
   int _deltapp;
 
   /**
-   *  The PDG code for the \f$\Delta^{+}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Delta^{+}\f$-like member of the incoming decuplet.
    */
   int _deltap;
 
   /**
-   *  The PDG code for the \f$\Delta^{0}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Delta^{0}\f$-like member of the incoming decuplet.
    */
   int _delta0;
 
   /**
-   *  The PDG code for the \f$\Delta^{-}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Delta^{-}\f$-like member of the incoming decuplet.
    */
   int _deltam;
 
   /**
-   *  The PDG code for the \f$\Sigma^{*+}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Sigma^{*+}\f$-like member of the incoming decuplet.
    */
   int _sigmasp;
 
   /**
-   *  The PDG code for the \f$\Sigma^{*0}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Sigma^{*0}\f$-like member of the incoming decuplet.
    */
   int _sigmas0;
 
   /**
-   *  The PDG code for the \f$\Sigma^{*-}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Sigma^{*-}\f$-like member of the incoming decuplet.
    */
   int _sigmasm;
 
   /**
-   *  The PDG code for the \f$\Omega^-\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Omega^-\f$-like member of the incoming decuplet.
    */
   int _omega;
 
   /**
-   *  The PDG code for the \f$\Xi^{*-}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Xi^{*-}\f$-like member of the incoming decuplet.
    */
   int _xism;
 
   /**
-   *  The PDG code for the \f$\Xi^{*0}\f$-like member of the outgoing decuplet.
+   *  The PDG code for the \f$\Xi^{*0}\f$-like member of the incoming decuplet.
    */
   int _xis0;
   //@}
@@ -344,36 +354,10 @@ private:
   vector<double> _maxweight;
 
   /**
-   * The couplings for the different modes.
+   * The couplings for the different modes
    */
-  //@{
-  /**
-   * The first A coupling
-   */
-  mutable vector<double> _A1;
+  mutable vector<InvEnergy> _prefactor;
 
-  /**
-   * The second A coupling
-   */
-  mutable vector<double> _A2;
-
-  /**
-   * The third A coupling
-   */
-  mutable vector<double> _A3;
-  /**
-   * The first B coupling
-   */
-  mutable vector<double> _B1;
-  /**
-   * The second B coupling
-   */
-  mutable vector<double> _B2;
-  /**
-   * The third B coupling
-   */
-  mutable vector<double> _B3;
-  //@}
 };
 
 }

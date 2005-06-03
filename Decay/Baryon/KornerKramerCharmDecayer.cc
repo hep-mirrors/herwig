@@ -47,403 +47,403 @@ KornerKramerCharmDecayer::KornerKramerCharmDecayer()
   _H3 =-0.011*GeV;
   // lambda_c to lambda pi+
   _incoming.push_back(4122);_outgoingB.push_back(3122);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0153611);
   _I1.push_back(-1./3.);_I2.push_back(-1./3.);
   _I3.push_back(-1./3.);_I4.push_back( 2./3.);_I5.push_back( 1./6.);
   _Ihat3.push_back(-1./3.);_Ihat4.push_back(2./3.);
   // lambda_c to sigma_0 pi+
   _incoming.push_back(4122);_outgoingB.push_back(3212);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00684877);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(-1./sqrt(3.));_I4.push_back(0.);_I5.push_back(-1./sqrt(12.));
   _Ihat3.push_back(1./sqrt(3.));_Ihat4.push_back(-2./sqrt(3.));
   // lambda_c to  sigma+ pi0
   _incoming.push_back(4122);_outgoingB.push_back(3222);_outgoingM.push_back(111);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00686766);
   _I1.push_back(0.);_I2.push_back(0.);
-  _I3.push_back(1./sqrt(3.));_I4.push_back(0.);
-  _I5.push_back(1./sqrt(12.));
+  _I3.push_back(1./sqrt(3.));_I4.push_back(0.);_I5.push_back(1./sqrt(12.));
   _Ihat3.push_back(-1./sqrt(3.));_Ihat4.push_back(2./sqrt(3.));
   // lambda_c+ to sigma+ eta
   _incoming.push_back(4122);_outgoingB.push_back(3222);_outgoingM.push_back(221);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00311807);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(-0.169101981);_I4.push_back(0.577350262);_I5.push_back(0.204124141);
   _Ihat3.push_back(0.408248281);_Ihat4.push_back(-0.816496562);
   // lambda_c+ to sigma+ eta'
   _incoming.push_back(4122);_outgoingB.push_back(3222);_outgoingM.push_back(331);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0267591);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.985598555);_I4.push_back(-0.577350261);_I5.push_back(0.204124147);
   _Ihat3.push_back( 0.408248294);_Ihat4.push_back(-0.816496587);
-  // lambda_c to p k0hat
+  // lambda_c to p k0
   _incoming.push_back(4122);_outgoingB.push_back(2212);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0444906);
   _I1.push_back(-1./sqrt(6.));_I2.push_back(-1./sqrt(6.));
   _I3.push_back(-2./sqrt(6.));_I4.push_back(2./sqrt(6.));_I5.push_back(0.);
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c+ to xi K+
   _incoming.push_back(4122);_outgoingB.push_back(3322);_outgoingM.push_back(321);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00533608);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(2./sqrt(6.));_I5.push_back(1./sqrt(6.));
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c to sigma+ Kbar0
   _incoming.push_back(4232);_outgoingB.push_back(3222);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.135814);
   _I1.push_back(-1./sqrt(6.));_I2.push_back(-1./sqrt(6.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
   _Ihat3.push_back(-2./sqrt(6.));_Ihat4.push_back(4./sqrt(6.));
   // xi_c to xi_0 pi+
   _incoming.push_back(4232);_outgoingB.push_back(3322);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0745085);
   _I1.push_back(1./sqrt(6.));_I2.push_back(1./sqrt(6.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
   _Ihat3.push_back(2./sqrt(6.));_Ihat4.push_back(-4./sqrt(6.));
   // xi_c to lambda kbar0
   _incoming.push_back(4132);_outgoingB.push_back(3122);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0025821);
   _I1.push_back(1./6.);_I2.push_back(1./6.);
   _I3.push_back(2./3.);_I4.push_back(-1./3.);_I5.push_back(1./6.);
   _Ihat3.push_back(-1./3.);_Ihat4.push_back(2./3.);
   // xi_c to sigma k0
   _incoming.push_back(4132);_outgoingB.push_back(3212);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.024961);
   _I1.push_back(1./sqrt(12.));_I2.push_back(1./sqrt(12.));
   _I3.push_back(0.);_I4.push_back(-2./sqrt(12.));_I5.push_back(-1./sqrt(12.));
   _Ihat3.push_back(2./sqrt(12.));_Ihat4.push_back(-4./sqrt(12.));
   // xi_c to sigma k-
   _incoming.push_back(4132);_outgoingB.push_back(3222);_outgoingM.push_back(-321);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00250939);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(2./sqrt(6.));_I5.push_back(1./sqrt(6.));
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi0 pi0
   _incoming.push_back(4132);_outgoingB.push_back(3322);_outgoingM.push_back(111);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.000739771);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(2./sqrt(12.));_I4.push_back(-2./sqrt(12.));_I5.push_back(0.);
   _Ihat3.push_back(-2./sqrt(12.));_Ihat4.push_back(4./sqrt(12.));
   // xi_c0 to xi0 eta
   _incoming.push_back(4132);_outgoingB.push_back(3322);_outgoingM.push_back(221);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00490303);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(-0.169101981);_I4.push_back(-0.408248281);_I5.push_back(-0.288675131);
   _Ihat3.push_back(0.408248281);_Ihat4.push_back(-0.816496562);
   // xi_c0 to xi0 eta'
   _incoming.push_back(4132);_outgoingB.push_back(3322);_outgoingM.push_back(331);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0178693);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.985598555);_I4.push_back(-0.408248294);_I5.push_back(0.288675131);
   _Ihat3.push_back(0.408248294);_Ihat4.push_back(-0.816496587);
   // xi_c0 to xi- pi+
   _incoming.push_back(4132);_outgoingB.push_back(3312);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0220038);
   _I1.push_back(-1./sqrt(6.));_I2.push_back(-1./sqrt(6.));
   _I3.push_back(-2./sqrt(6.));_I4.push_back(2./sqrt(6.));_I5.push_back(0.);
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // omega_c to xi0 K0
   _incoming.push_back(4332);_outgoingB.push_back(3322);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0250268);
   _I1.push_back(1.);_I2.push_back(-1.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
   _Ihat3.push_back(2.);_Ihat4.push_back(0.);
   // lambda_c to lambda rho+
   _incoming.push_back(4122);_outgoingB.push_back(3122);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.467008);
   _I1.push_back(-1./3.);_I2.push_back(-1./3.);
   _I3.push_back(-1./3.);_I4.push_back( 2./3.);_I5.push_back( 1./6.);
   _Ihat3.push_back(-1./3.);_Ihat4.push_back(2./3.);
   // lambda_c to sigma_0 rho+
   _incoming.push_back(4122);_outgoingB.push_back(3212);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0702498);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(-1./sqrt(3.));_I4.push_back(0.);_I5.push_back(-1./sqrt(12.));
   _Ihat3.push_back(1./sqrt(3.));_Ihat4.push_back(-2./sqrt(3.));
   // lambda_c to  sigma+ rho
   _incoming.push_back(4122);_outgoingB.push_back(3222);_outgoingM.push_back(113);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0697802);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(1./sqrt(3.));_I4.push_back(0.);
   _I5.push_back(1./sqrt(12.));
   _Ihat3.push_back(-1./sqrt(3.));_Ihat4.push_back(2./sqrt(3.));
   // lambda_c to sigma+ omega
   _incoming.push_back(4122);_outgoingB.push_back(3222);_outgoingM.push_back(223);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.252355);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.57735033);_I4.push_back(0.);_I5.push_back( 0.288675151);
   _Ihat3.push_back(0.577350303);_Ihat4.push_back( -1.15470061);
   // lambda_c to simga+ phi
   _incoming.push_back(4122);_outgoingB.push_back(3222);_outgoingM.push_back(333);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0063064);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.816496614);_I4.push_back(-0.816496624);_I5.push_back(0.);
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to p k*0bar
   _incoming.push_back(4122);_outgoingB.push_back(2212);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0996461);
   _I1.push_back(-1./sqrt(6.));_I2.push_back(-1./sqrt(6.));
   _I3.push_back(-2./sqrt(6.));_I4.push_back(2./sqrt(6.));_I5.push_back(0.);
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c+ to xi K*+
   _incoming.push_back(4122);_outgoingB.push_back(3322);_outgoingM.push_back(323);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00413946);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(2./sqrt(6.));_I5.push_back(1./sqrt(6.));
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c to sigma+ K*bar0
   _incoming.push_back(4232);_outgoingB.push_back(3222);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0583248);
   _I1.push_back(-1./sqrt(6.));_I2.push_back(-1./sqrt(6.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
   _Ihat3.push_back(-2./sqrt(6.));_Ihat4.push_back(4./sqrt(6.));
   // xi_c to xi_0 rho+
   _incoming.push_back(4232);_outgoingB.push_back(3322);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(2.18754);
   _I1.push_back(1./sqrt(6.));_I2.push_back(1./sqrt(6.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
   _Ihat3.push_back(2./sqrt(6.));_Ihat4.push_back(-4./sqrt(6.));
   // xi_c to lambda k*bar0
   _incoming.push_back(4132);_outgoingB.push_back(3122);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0373243);
   _I1.push_back(1./6.);_I2.push_back(1./6.);
   _I3.push_back(2./3.);_I4.push_back(-1./3.);_I5.push_back(1./6.);
   _Ihat3.push_back(-1./3.);_Ihat4.push_back(2./3.);
   // xi_c to sigma k*0
   _incoming.push_back(4132);_outgoingB.push_back(3212);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0135937);
   _I1.push_back(1./sqrt(12.));_I2.push_back(1./sqrt(12.));
   _I3.push_back(0.);_I4.push_back(-2./sqrt(12.));_I5.push_back(-1./sqrt(12.));
   _Ihat3.push_back(2./sqrt(12.));_Ihat4.push_back(-4./sqrt(12.));
   // xi_c to sigma k*-
   _incoming.push_back(4132);_outgoingB.push_back(3222);_outgoingM.push_back(-323);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00877507);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(2./sqrt(6.));_I5.push_back(1./sqrt(6.));
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi0 rho0
   _incoming.push_back(4132);_outgoingB.push_back(3322);_outgoingM.push_back(113);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0364247);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(2./sqrt(12.));_I4.push_back(-2./sqrt(12.));_I5.push_back(0.);
   _Ihat3.push_back(-2./sqrt(12.));_Ihat4.push_back(4./sqrt(12.));
   // xi_c0 to xi0 omega
   _incoming.push_back(4132);_outgoingB.push_back(3322);_outgoingM.push_back(223);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.134395);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back( 0.57735033);_I4.push_back(-0.577350303);_I5.push_back(0.);
   _Ihat3.push_back(0.577350303);_Ihat4.push_back(-1.15470061);
   // xi_c0 to xi0 phi
   _incoming.push_back(4132);_outgoingB.push_back(3322);_outgoingM.push_back(333);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00676745);
   _I1.push_back(0.);_I2.push_back(0.);
   _I3.push_back(0.816496614);_I4.push_back(0.);_I5.push_back(0.408248312);
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi- rho+
   _incoming.push_back(4132);_outgoingB.push_back(3312);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.309733);
   _I1.push_back(-1./sqrt(6.));_I2.push_back(-1./sqrt(6.));
   _I3.push_back(-2./sqrt(6.));_I4.push_back(2./sqrt(6.));_I5.push_back(0.);
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // omega_c to xi0 K*0
   _incoming.push_back(4332);_outgoingB.push_back(3322);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.019967);
   _I1.push_back(1.);_I2.push_back(-1.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
   _Ihat3.push_back(2.);_Ihat4.push_back(0.);
   // lambda_c to sigma*0 pi+
   _incoming.push_back(4122);_outgoingB.push_back(3214);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0254397);
   _I1.push_back(0.);_I2.push_back(1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*+ pi0
   _incoming.push_back(4122);_outgoingB.push_back(3224);_outgoingM.push_back(111);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0256531);
   _I1.push_back(0.);_I2.push_back(1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*+ eta
   _incoming.push_back(4122);_outgoingB.push_back(3224);_outgoingM.push_back(221);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0299659);
   _I1.push_back(0.);_I2.push_back( 0.569036);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*+ eta'
   _incoming.push_back(4122);_outgoingB.push_back(3224);_outgoingM.push_back(331);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(4.4186e-07);
   _I1.push_back(0.);_I2.push_back(-0.097631);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to delta+ kbar0
   _incoming.push_back(4122);_outgoingB.push_back(2214);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0215801);
   _I1.push_back(0.);_I2.push_back(-2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to delta++ k-
   _incoming.push_back(4122);_outgoingB.push_back(2224);_outgoingM.push_back(-321);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0649794);
   _I1.push_back(0.);_I2.push_back(-2./sqrt(6.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to xi*0 k+
   _incoming.push_back(4122);_outgoingB.push_back(3324);_outgoingM.push_back(321);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0198121);
   _I1.push_back(0.);_I2.push_back(2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to sigma*0 Kbar0
   _incoming.push_back(4132);_outgoingB.push_back(3214);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0118739);
   _I1.push_back(0.);_I2.push_back(-1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-  // xi_c0 to sigma*0 Kbar0
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // xi_c0 to sigma*+ Kbar-
   _incoming.push_back(4132);_outgoingB.push_back(3224);_outgoingM.push_back(-321);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0240231);
   _I1.push_back(0.);_I2.push_back(-2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*0 pi0
   _incoming.push_back(4132);_outgoingB.push_back(3324);_outgoingM.push_back(111);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0173433);
   _I1.push_back(0.);_I2.push_back(-1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*0 eta
   _incoming.push_back(4132);_outgoingB.push_back(3324);_outgoingM.push_back(221);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.000939099);
   _I1.push_back(0.);_I2.push_back(0.097631);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*0 eta'
   _incoming.push_back(4132);_outgoingB.push_back(3324);_outgoingM.push_back(331);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(1.31513e-05);
   _I1.push_back(0.);_I2.push_back(-0.569036);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*- pi+
   _incoming.push_back(4132);_outgoingB.push_back(3314);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0338039);
   _I1.push_back(0.);_I2.push_back(2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to omega- K+
   _incoming.push_back(4132);_outgoingB.push_back(3334);_outgoingM.push_back(321);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00715116);
   _I1.push_back(0.);_I2.push_back(2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // omega_c0 to xi*0 kbar0
   _incoming.push_back(4332);_outgoingB.push_back(3324);_outgoingM.push_back(-311);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.00850994);
   _I1.push_back(-1./sqrt(3.));_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // omega_c0 to omega pi+
   _incoming.push_back(4332);_outgoingB.push_back(3334);_outgoingM.push_back(211);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.012698);
   _I1.push_back(-1./sqrt(3.));_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*0 rho+
   _incoming.push_back(4122);_outgoingB.push_back(3214);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0478329);
   _I1.push_back(0.);_I2.push_back(1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*+ rho0
   _incoming.push_back(4122);_outgoingB.push_back(3224);_outgoingM.push_back(113);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0476973);
   _I1.push_back(0.);_I2.push_back(1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*+ omega
   _incoming.push_back(4122);_outgoingB.push_back(3224);_outgoingM.push_back(223);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0260017);
   _I1.push_back(0.);_I2.push_back(1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to sigma*+ phi
   _incoming.push_back(4122);_outgoingB.push_back(3224);_outgoingM.push_back(333);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(3.55986e-07);
   _I1.push_back(0.);_I2.push_back(-sqrt(2.)/3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to delta+ kbar0
   _incoming.push_back(4122);_outgoingB.push_back(2214);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0988993);
   _I1.push_back(0.);_I2.push_back(-2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to delta++ k-
   _incoming.push_back(4122);_outgoingB.push_back(2224);_outgoingM.push_back(-323);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.303435);
   _I1.push_back(0.);_I2.push_back(-2./sqrt(6.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // lambda_c to xi*0 k+
   _incoming.push_back(4122);_outgoingB.push_back(3324);_outgoingM.push_back(323);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(9.70866e-05);
   _I1.push_back(0.);_I2.push_back(2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to sigma*0 Kbar0
   _incoming.push_back(4132);_outgoingB.push_back(3214);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0281627);
   _I1.push_back(0.);_I2.push_back(-1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-  // xi_c0 to sigma*0 Kbar0
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // xi_c0 to sigma*- K-
   _incoming.push_back(4132);_outgoingB.push_back(3224);_outgoingM.push_back(-323);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0575937);
   _I1.push_back(0.);_I2.push_back(-2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*0 pi0
   _incoming.push_back(4132);_outgoingB.push_back(3324);_outgoingM.push_back(113);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0480608);
   _I1.push_back(0.);_I2.push_back(-1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*0 omega
   _incoming.push_back(4132);_outgoingB.push_back(3324);_outgoingM.push_back(223);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0223044);
   _I1.push_back(0.);_I2.push_back(-1./3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // xi_c0 to xi*0 phi
   _incoming.push_back(4132);_outgoingB.push_back(3324);_outgoingM.push_back(333);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(3.187e-09);
   _I1.push_back(0.);_I2.push_back(-sqrt(2.)/3.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-  // xi_c0 to xi*- pi+
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // xi_c0 to xi*- rho+
   _incoming.push_back(4132);_outgoingB.push_back(3314);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0958052);
   _I1.push_back(0.);_I2.push_back(2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-  // xi_c0 to omega- K+
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // xi_c0 to omega- K*+
   _incoming.push_back(4132);_outgoingB.push_back(3334);_outgoingM.push_back(323);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.000205851);
   _I1.push_back(0.);_I2.push_back(2./sqrt(18.));
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-  // omega_c0 to xi*0 kbar0
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // omega_c0 to xi*0 k*bar0
   _incoming.push_back(4332);_outgoingB.push_back(3324);_outgoingM.push_back(-313);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.050904);
   _I1.push_back(-1./sqrt(3.));_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-  // omega_c0 to omega pi+
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // omega_c0 to omega rho+
   _incoming.push_back(4332);_outgoingB.push_back(3334);_outgoingM.push_back(213);
-  _maxweight.push_back(1.);
+  _maxweight.push_back(0.0814021);
   _I1.push_back(-1./sqrt(3.));_I2.push_back(0.);
   _I3.push_back(0.);_I4.push_back(0.);_I5.push_back(0.);
-  _Ihat3.push_back(2.);_Ihat4.push_back(0.);
-
+  _Ihat3.push_back(0.);_Ihat4.push_back(0.);
+  // initial size of the vectors
+  _initsize=_incoming.size();
 }
 
 void KornerKramerCharmDecayer::doinit() throw(InitException) {
@@ -452,7 +452,8 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
   unsigned int isize=_incoming.size();
   if(isize!=_I1.size()||isize!=_I2.size()||isize!=_I3.size()||isize!=_I4.size()||
      isize!=_I5.size()||isize!=_Ihat3.size()||isize!=_Ihat4.size()||
-     isize!=_incoming.size()||isize!=_outgoingB.size()||isize!=_outgoingM.size())
+     isize!=_incoming.size()||isize!=_outgoingB.size()||isize!=_outgoingM.size()||
+     isize!=_maxweight.size())
     {throw InitException() << "Inconsistent parameters in"
 			   << " KornerKramerCharmDecayer::doinit()" 
 			   << Exception::abortnow;}
@@ -461,9 +462,13 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
   Energy2 P1P2,Qplus,Qminus,gmes;
   double Fnonfact,H2,H3,A,B,A2,B2,A3,B3,Ffact[2];
   int mspin,bspin;
-  double chiplus(0.5*(_cplus*(1.+_oneNC)+_cminus*(1.-_oneNC))),
-    chiminus(0.5*(_cplus*(1.+_oneNC)-_cminus*(1.-_oneNC))),chi; 
-  InvEnergy2 pre=_GF*sqrt(SM().CKM(1,1)*SM().CKM(0,0)/2.),mform2[2];
+  double chi,
+    chiplus( 0.5*(_cplus*(1.+_oneNC)+_cminus*(1.-_oneNC))),
+    chiminus(0.5*(_cplus*(1.+_oneNC)-_cminus*(1.-_oneNC))); 
+  InvEnergy2 pre(_GF*sqrt(SM().CKM(1,1)*SM().CKM(0,0)/2.)),mform2[2];
+
+  // testing only
+  pre = _GF*0.974/sqrt(2.);
   vector<double> wgt(1,1.);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
@@ -540,13 +545,14 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	    {
 	      // non-factorizing piece of the diagrams
 	      A = -0.75*H2/m1/m2*_cminus*( (m1*P1P2-m1*m2*(m2+m3))*_I3[ix]
-					   -(m2*P1P2-m1*m2*(m1+m3))*_Ihat3[ix]);
-	      B = 0.25/m1/m2*_cminus*( 0.5*H2*Qplus*(  m1*(   _I3[ix]+2.*    _I4[ix])
-						       +m2*(_Ihat3[ix]+2.*_Ihat4[ix]))
+					  -(m2*P1P2-m1*m2*(m1+m3))*_Ihat3[ix]);
+	      B = 0.25/m1/m2*_cminus*( 0.5*H2*Qplus*( m1*(   _I3[ix]+2.*    _I4[ix])
+						     +m2*(_Ihat3[ix]+2.*_Ihat4[ix]))
 				       +H3*m1*m2*(m1+m2+m3)*12.*_I5[ix]);
 	      // the factorizing piece
 	      A +=0.25/m1/m2*chi*fmes*Qplus*(m1-m2)*(2.*_I1[ix]+_I2[ix])*Ffact[0];
 	      B +=0.25/m1/m2*chi*fmes*Qplus*(m1+m2)/3.*(4.*_I1[ix]+5.*_I2[ix])*Ffact[1];
+	      // add to vectors
 	      _A1.push_back(A*pre);_B1.push_back(B*pre);
 	      _A2.push_back(0.);_B2.push_back(0.);
 	      _A3.push_back(0.);_B3.push_back(0.);
@@ -556,7 +562,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	      // non-factorizing terms
 	      A  = -0.25*H2/m1/m2*_cminus*
 		( (m1*P1P2-m1*m2*(m2+m3))*(   _I3[ix]+2.*   _I4[ix])
-		  +(m2*P1P2-m1*m2*(m1+m3))*(_Ihat3[ix]+2.*_Ihat4[ix]));
+		 +(m2*P1P2-m1*m2*(m1+m3))*(_Ihat3[ix]+2.*_Ihat4[ix]));
 	      A2 = -0.25*H2/m1/m2*_cminus*(m1+m2+m3)*(+m1*(   _I3[ix]+2.*   _I4[ix])
 						      -m2*(_Ihat3[ix]+2.*_Ihat4[ix]));
 	      B  = +0.25/m1/m2*_cminus*(0.5*H2*Qplus*(+m1*(   _I3[ix]+2.*   _I4[ix])
@@ -570,89 +576,77 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	      A  += -0.25/m1/m2*chi*gmes*Qplus/3.*(4.*_I1[ix]+5.*_I2[ix])*Ffact[1];
 	      B  +=  0.25/m1/m2*chi*gmes*Qplus/3.*(4.*_I1[ix]+5.*_I2[ix])*Ffact[0];
 	      B2 +=  0.25/m1/m2*chi*gmes*(m1+m2)*4./3.*(_I1[ix]-_I2[ix])*Ffact[0];
-	      // conversion to make dimensionless
-	      A2 *=(m1+m2);
-	      B2 *=(m1+m2);
+	      // add to vectors
 	      _A1.push_back(A*pre);_B1.push_back(B*pre);
 	      _A2.push_back(A2*pre);_B2.push_back(B2*pre);
 	      _A3.push_back(0.);_B3.push_back(0.);
 	    }
 	  else
-	    {
-	      throw InitException() << "Invalid outgoing meson spin in"
-				    << " KornerKramerCharmDecayer::doinit()" 
-				    << Exception::abortnow;
-	    }
+	    {throw InitException() << "Invalid outgoing meson spin in"
+				   << " KornerKramerCharmDecayer::doinit()" 
+				   << Exception::abortnow;}
 	}
       else if(bspin==4)
 	{
 	  if(mspin==1)
 	    {
 	      // first the non-factorizing piece
-	      B  = -0.25/m1/m2*_cminus*H2*m1*m2*6*_I2[ix];
+	      B  = -1.5*_cminus*H2*_I2[ix];
 	      // then the factorizing piece
-	      B  += 0.25/m1/m2*chi*fmes*m2*(m1+m2)*4.*_I1[ix]*Ffact[1];
+	      B  += chi*fmes*(1.+m2/m1)*_I1[ix]*Ffact[1];
+	      // add to vectors
 	      // make the coupling dimensionless
-	      B *=(m1+m2);
-	      _A1.push_back(0.);_B1.push_back(B*pre);
-	      _A2.push_back(0.);_B2.push_back(0.);
+	      _A1.push_back(0.);_B1.push_back(0.);
+	      _A2.push_back(0.);_B2.push_back(B*pre);
 	      _A3.push_back(0.);_B3.push_back(0.);
 	    }
 	  else if(mspin==3)
 	    {
-	      double norm = 0.25/m1/m2*_cminus*H2*_I2[ix];
+	      double norm(0.75/m1/m2*_cminus*H2*_I2[ix]);
 	      // first the non-factorizing piece
-	      A  = -norm*(m1*P1P2-m1*m2*m2-m1*m2*m3)*6.;
+	      A  = -norm*m1*(P1P2-m2*(m2+m3))*2.;
 	      A2 = 0.;
-	      A3 =  norm*m1*6.;
-	      B  = -norm*m1*Qplus*3.;
-	      B2 = -norm*m1*m2*6.;
-	      B3 =  norm*m1*6.;
+	      A3 =  norm*m1*2.;
+	      B  = -norm*m1*Qplus;
+	      B2 = -norm*m1*m2*2.;
+	      B3 =  norm*m1*2.;
 	      // then the factorizing piece
-	      A  += 0.25/m1/m2*chi*gmes*Qplus*2.*_I1[ix]*Ffact[1];
+	      norm = 0.5/m1/m2*chi*gmes*_I1[ix];
+	      A  += norm*Qplus*Ffact[1];
 	      A2 += 0.;
-	      A3 +=-0.25/m1/m2*chi*gmes*4.*_I1[ix]*Ffact[1];
-	      B  += 0.25/m1/m2*chi*gmes*Qplus*2.*_I1[ix]*Ffact[0];
-	      B2 += 0.25/m1/m2*chi*gmes*m2*4.*_I1[ix]*Ffact[0];
-	      B3 +=-0.25/m1/m2*chi*gmes*4.*_I1[ix]*Ffact[0];
-	      // make the coupling dimensionless
-	      A2 *=(m1+m2);
-	      B2 *=(m1+m2);
-	      A3 *=(m1+m2)*(m1+m2);
-	      B3 *=(m1+m2)*(m1+m2);
+	      A3 +=-norm*2.*Ffact[1];
+	      B  += norm*Qplus*Ffact[0];
+	      B2 += norm*m2*2.*Ffact[0];
+	      B3 +=-norm*2.*Ffact[0];
+	      // add to vectors
 	      _A1.push_back( A*pre);_B1.push_back( B*pre);
-	      _A2.push_back(A2*pre);_B2.push_back(B2*pre);
+	      _A2.push_back(2.*A2*pre);_B2.push_back(2.*B2*pre);
 	      _A3.push_back(A3*pre);_B3.push_back(B3*pre);
 	    }
 	  else
-	    {
-	      throw InitException() << "Invalid outgoing meson spin in"
-				    << " KornerKramerCharmDecayer::doinit()" 
-				    << Exception::abortnow;
-	    }
+	    {throw InitException() << "Invalid outgoing meson spin in"
+				   << " KornerKramerCharmDecayer::doinit()" 
+				   << Exception::abortnow;}
 	}
       else
-	{
-	  throw InitException() << "Invalid outgoing baryon spin in"
-				<< " KornerKramerCharmDecayer::doinit()" 
-				<< Exception::abortnow;
-	}
+	{throw InitException() << "Invalid outgoing baryon spin in"
+			       << " KornerKramerCharmDecayer::doinit()" 
+			       << Exception::abortnow;}
     }
 }
 
 
 bool KornerKramerCharmDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
+  int id0(dm.parent()->id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);
   do
     {
       if(id0==_incoming[ix])
@@ -677,13 +671,11 @@ bool KornerKramerCharmDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector KornerKramerCharmDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  int imode=-1;
-  int id=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;bool cc;
+  int imode(-1),id(parent.id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);bool cc;
   do 
     {
       if(id==_incoming[ix])
@@ -711,17 +703,18 @@ void KornerKramerCharmDecayer::persistentOutput(PersistentOStream & os) const {
   os << _GF << _oneNC << _fpi << _FK << _frho << _fKstar << _mdcplus << _mdcminus 
      << _mscplus << _mscminus << _cplus << _cminus << _H2 << _H3 << _I1 << _I2 
      << _I3 << _I4 << _I5 << _Ihat3 << _Ihat4 << _incoming << _outgoingB 
-     << _outgoingM << _A1 << _A2 << _A3 << _B1 << _B2 << _B3;
+     << _outgoingM << _maxweight << _A1 << _A2 << _A3 << _B1 << _B2 << _B3 << _initsize;
 }
 
 void KornerKramerCharmDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _GF >> _oneNC >> _fpi >> _FK >> _frho >> _fKstar >> _mdcplus >> _mdcminus 
      >> _mscplus >> _mscminus >> _cplus >> _cminus >> _H2 >> _H3 >> _I1 >> _I2 
      >> _I3 >> _I4 >> _I5 >> _Ihat3 >> _Ihat4 >> _incoming >> _outgoingB 
-     >> _outgoingM >> _A1 >> _A2 >> _A3 >> _B1 >> _B2 >> _B3;
+     >> _outgoingM >> _maxweight >> _A1 >> _A2 >> _A3 >> _B1 >> _B2 >> _B3 >> _initsize;
 }
 
-ClassDescription<KornerKramerCharmDecayer> KornerKramerCharmDecayer::initKornerKramerCharmDecayer;
+ClassDescription<KornerKramerCharmDecayer> 
+KornerKramerCharmDecayer::initKornerKramerCharmDecayer;
 // Definition of the static class description member.
 
 void KornerKramerCharmDecayer::Init() {
@@ -746,13 +739,13 @@ void KornerKramerCharmDecayer::Init() {
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceFpi
     ("Fpi",
      "The decay constant for the pi meson.",
-     &KornerKramerCharmDecayer::_fpi, MeV, 131.7*MeV, 0.0*MeV, 200.0*MeV,
+     &KornerKramerCharmDecayer::_fpi, MeV, 131.7*MeV, 100.0*MeV, 200.0*MeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceFK
     ("FK",
      "The decay constant for the K meson",
-     &KornerKramerCharmDecayer::_FK, MeV, 160.6*MeV, 0.0*MeV, 200.0*MeV,
+     &KornerKramerCharmDecayer::_FK, MeV, 160.6*MeV, 100.0*MeV, 200.0*MeV,
      false, false, true);
 
   static Parameter<KornerKramerCharmDecayer,double> interfaceFrho
@@ -764,7 +757,7 @@ void KornerKramerCharmDecayer::Init() {
   static Parameter<KornerKramerCharmDecayer,double> interfacefKstar
     ("fKstar",
      "The decay constant for the K star meson",
-     &KornerKramerCharmDecayer::_fKstar, 0.238, -1.0e12, 1.0e12,
+     &KornerKramerCharmDecayer::_fKstar, 0.238, 0.0, 1.0,
      false, false, false);
 
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceMdcplus
@@ -815,47 +808,185 @@ void KornerKramerCharmDecayer::Init() {
      &KornerKramerCharmDecayer::_H3, GeV,-0.011*GeV, 0.0*GeV, 10.0*GeV,
      false, false, true);
 
+  static ParVector<KornerKramerCharmDecayer,double> interfaceI1
+    ("I1",
+     "The I_1 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_I1, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,double> interfaceI2
+    ("I2",
+     "The I_2 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_I2, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,double> interfaceI3
+    ("I3",
+     "The I_3 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_I3, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,double> interfaceI4
+    ("I4",
+     "The I_4 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_I4, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,double> interfaceI5
+    ("I5",
+     "The I_5 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_I5, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,double> interfaceIhat3
+    ("Ihat3",
+     "The Ihat_3 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_Ihat3, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,double> interfaceIhat4
+    ("Ihat4",
+     "The Ihat_4 invariant for the decay modes",
+     &KornerKramerCharmDecayer::_Ihat4, -1, 0., -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,int> interfaceIncoming
+    ("Incoming",
+     "The PDG code of the incoming baryon",
+     &KornerKramerCharmDecayer::_incoming, -1, 0, 0, 1000000,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,int> interfaceOutgoingB
+    ("OutgoingB",
+     "The PDG code of the outgoing baryon",
+     &KornerKramerCharmDecayer::_outgoingB, -1, 0, 0, 1000000,
+     false, false, true);
+
+  static ParVector<KornerKramerCharmDecayer,int> interfaceOutgoingM
+    ("OutgoingM",
+     "The PDG code of the outgoing meson",
+     &KornerKramerCharmDecayer::_outgoingM, -1, 0, -1000000, 1000000,
+     false, false, true);
+
   static ParVector<KornerKramerCharmDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &KornerKramerCharmDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 100., false, false, true);
 
 }
 
 // couplings for spin-1/2 to spin-1/2 spin-0
 void KornerKramerCharmDecayer::
- halfHalfScalarCoupling(int imode,Complex& A,Complex&B) const
-{
-  A =_A1[imode];B=_B1[imode];
-}
+ halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+			Complex& A,Complex&B) const
+{A =_A1[imode];B=_B1[imode];}
 
 // couplings for spin-1/2 to spin-1/2 spin-1
 void KornerKramerCharmDecayer::halfHalfVectorCoupling(int imode,
+						      Energy m0,Energy m1,Energy m2,
 						      Complex& A1,Complex& A2,
 						      Complex& B1,Complex& B2) const
 {
   // conventions changed so that A is the coefficient of the 
   // non-gamma_5 piece in the base class
   A1 = _B1[imode]; B1 = _A1[imode];
-  A2 = _B2[imode]; B2 = _A2[imode];
+  A2 = _B2[imode]*(m0+m1); B2 = _A2[imode]*(m0+m1);
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-0
 void KornerKramerCharmDecayer::halfThreeHalfScalarCoupling(int imode,
+							   Energy m0,Energy m1,Energy m2,
 							   Complex&  A, Complex& B) const
 {
   // conventions changed so that A is the coefficient of the 
   // non-gamma_5 piece in the base class
-  A = _B1[imode];B=_A1[imode];
+  A = _B2[imode]*(m0+m1);B=_A2[imode]*(m0+m1);
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-1
 void KornerKramerCharmDecayer::
-halfThreeHalfVectorCoupling(int imode, Complex& A1, Complex& A2, Complex& A3,
+halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+			    Complex& A1, Complex& A2, Complex& A3,
 			    Complex& B1, Complex& B2, Complex& B3) const
 {
-  A1=_A1[imode];A2=_A2[imode];A3=_A3[imode];
-  B1=_B1[imode];B2=_B2[imode];B3=_B3[imode];
+  A1=_A1[imode];A2=_A2[imode]*(m0+m1);A3=_A3[imode]*(m0+m1)*(m0+m1);
+  B1=_B1[imode];B2=_B2[imode]*(m0+m1);B3=_B3[imode]*(m0+m1)*(m0+m1);
+}
+ 
+void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  output << "set " << fullName() << ":GFermi " << _GF*GeV2 << "\n";
+  output << "set " << fullName() << ":OneOverNc " <<  _oneNC<< "\n";
+  output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
+  output << "set " << fullName() << ":FK " <<_FK/MeV  << "\n";
+  output << "set " << fullName() << ":Frho " << _frho << "\n";
+  output << "set " << fullName() << ":fKstar " << _fKstar << "\n";
+  output << "set " << fullName() << ":Mdcplus " << _mdcplus/GeV << "\n";
+  output << "set " << fullName() << ":Mscplus " << _mscplus/GeV << "\n";
+  output << "set " << fullName() << ":Mdcminus " << _mdcminus/GeV << "\n";
+  output << "set " << fullName() << ":Mscminus " << _mscminus/GeV << "\n";
+  output << "set " << fullName() << ":Cplus " << _cplus << "\n";
+  output << "set " << fullName() << ":Cminus " << _cminus << "\n";
+  output << "set " << fullName() << ":H2 " << _H2/GeV << "\n";
+  output << "set " << fullName() << ":H3 " << _H3/GeV << "\n";
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      if(ix<_initsize)
+	{
+	  output << "set " << fullName() << ":I1 " 
+		 << ix << " " << _I1[ix] << "\n";
+	  output << "set " << fullName() << ":I2 " 
+		 << ix << " " << _I2[ix] << "\n";
+	  output << "set " << fullName() << ":I3 " 
+		 << ix << " " << _I3[ix] << "\n";
+	  output << "set " << fullName() << ":I4 " 
+		 << ix << " " << _I4[ix] << "\n";
+	  output << "set " << fullName() << ":I5 " 
+		 << ix << " " << _I5[ix] << "\n";
+	  output << "set " << fullName() << ":Ihat3 " 
+		 << ix << " " << _Ihat3[ix] << "\n";
+	  output << "set " << fullName() << ":Ihat4 " 
+		 << ix << " " << _Ihat4[ix] << "\n";
+	  output << "set " << fullName() << ":Incoming " 
+		 << ix << " " << _incoming[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingB " 
+		 << ix << " " << _outgoingB[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingM " 
+		 << ix << " " << _outgoingM[ix] << "\n";
+	  output << "set " << fullName() << ":MaxWeight " 
+		 << ix << " " << _maxweight[ix] << "\n";
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":I1 " 
+		 << ix << " " << _I1[ix] << "\n";
+	  output << "insert " << fullName() << ":I2 " 
+		 << ix << " " << _I2[ix] << "\n";
+	  output << "insert " << fullName() << ":I3 " 
+		 << ix << " " << _I3[ix] << "\n";
+	  output << "insert " << fullName() << ":I4 " 
+		 << ix << " " << _I4[ix] << "\n";
+	  output << "insert " << fullName() << ":I5 " 
+		 << ix << " " << _I5[ix] << "\n";
+	  output << "insert " << fullName() << ":Ihat3 " 
+		 << ix << " " << _Ihat3[ix] << "\n";
+	  output << "insert " << fullName() << ":Ihat4 " 
+		 << ix << " " << _Ihat4[ix] << "\n";
+	  output << "insert " << fullName() << ":Incoming " 
+		 << ix << " " << _incoming[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingB " 
+		 << ix << " " << _outgoingB[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingM " 
+		 << ix << " " << _outgoingM[ix] << "\n";
+	  output << "insert " << fullName() << ":MaxWeight " 
+		 << ix << " " << _maxweight[ix] << "\n";
+	}
+    }
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 }

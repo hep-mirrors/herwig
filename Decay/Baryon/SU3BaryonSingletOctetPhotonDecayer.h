@@ -9,9 +9,37 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup Decay
+ *
  *  The <code>SU3BaryonSingletOctetPhotonDecayer</code> class performs the
  *  radiative decay  of an \f$SU(3)\f$ singlet baryon to an \f$SU(3)\f$ octet baryon.
+ *
+ * The Lagrangian is taken to be
+ * \f[iC\left[ {\rm tr}\left(\bar{S}\sigma_{\mu\nu}f^{\mu\nu}_+,B\right)
+ *            +{\rm tr}\left(\bar{B}\sigma_{\mu\nu}f^{\mu\nu}_+,S\right)
+ *      \right]
+ * \f]
+ *  where \f$B\f$ is the matrix field for the ground state baryon multiplet, \f$S\f$
+ *  is the singlet field and \f$f^{\mu\nu}_+\f$ is the chiral
+ * field strength tensor for the electromagentic field given by
+ * \f[ f^{\mu\nu}_+ = Q F^{\mu\nu} = \left(\begin{array}{ccc}\frac23&0&0\\
+ *                                                           0&-\frac13&0\\
+ *                                                           0&0&-\frac13
+ *     \end{array}\right) F^{\mu\nu},\f]
+ * where \f$F^{\mu\nu}\f$ is the electromagentic field strength tensor.
+ * This form is used for the case where both the singlet and the baryon multiplet
+ * have the same parity and
+ * an additional \f$\gamma_5\f$ is added for the case where the multiplets have 
+ * opposite parity.
+ *
+ * For the decay of spin-\f$\frac32\f$ baryons we use the form
+ * \f[
+ *  ir_d\left[ {\rm tr}\left(\bar{S}^\mu\gamma_\nu f^{\mu\nu}_+,B\right)
+ *            +{\rm tr}\left(\bar{B}\gamma_\nu f^{\mu\nu}_+,S^\mu\right)
+ *            \right],\f]
+ *  where \f$S^\mu\f$ is the matrix field for the excited baryon multiplet.
+ *  This form is used when the baryon's have the same parity and this form with
+ *  an additional \f$gamma_5\f$ when they have opposite parity.
  *
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are
  *  intended for the decay of excited baryons.
@@ -70,6 +98,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -102,17 +135,24 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac12\f$ and a vector.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A1 The coupling \f$A_1\f$ described above.
    * @param A2 The coupling \f$A_2\f$ described above.
    * @param B1 The coupling \f$B_1\f$ described above.
    * @param B2 The coupling \f$B_2\f$ described above.
    */
-  virtual void halfHalfVectorCoupling(int imode,Complex& A1,Complex& A2,
+  virtual void halfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				      Complex& A1,Complex& A2,
 				      Complex& B1,Complex& B2) const;
 
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a vector.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A1 The coupling \f$A_1\f$ described above.
    * @param A2 The coupling \f$A_2\f$ described above.
    * @param A3 The coupling \f$A_3\f$ described above.
@@ -120,7 +160,8 @@ protected:
    * @param B2 The coupling \f$B_2\f$ described above.
    * @param B3 The coupling \f$B_3\f$ described above.
    */
-  virtual void halfThreeHalfVectorCoupling(int imode,Complex& A1,Complex& A2,Complex& A3,
+  virtual void threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A1,Complex& A2,Complex& A3,
 					   Complex& B1,Complex& B2,Complex& B3) const;
   //@}
 
@@ -216,7 +257,7 @@ private:
   /**
    * the relative parities of the two baryon multiplets
    */
-  int _parity;
+  bool _parity;
 
   /**
    * PDG codes for the lower lying baryon octet baryons
@@ -250,34 +291,7 @@ private:
   /**
    * The couplings for the different modes.
    */
-  //@{
-  /**
-   * The first A coupling
-   */
-  mutable vector<double> _A1;
-
-  /**
-   * The second A coupling
-   */
-  mutable vector<double> _A2;
-
-  /**
-   * The third A coupling
-   */
-  mutable vector<double> _A3;
-  /**
-   * The first B coupling
-   */
-  mutable vector<double> _B1;
-  /**
-   * The second B coupling
-   */
-  mutable vector<double> _B2;
-  /**
-   * The third B coupling
-   */
-  mutable vector<double> _B3;
-  //@}
+  mutable vector<double> _prefactor;
 };
 
 }

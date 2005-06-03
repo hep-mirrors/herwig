@@ -54,11 +54,10 @@ inline void SemiLeptonicBaryonDecayer::doinitrun() {
   _maxwgt.resize(0);
   for(unsigned int ix=0;ix<numberModes();++ix)
     {_maxwgt.push_back(mode(ix)->maxWeight());}
-  if(fullName()=="/Defaults/Decays/BaryonHeavy3")
-    {
-      ofstream output("baryon.output");
-      this->dataBaseOutput(output);
-    }
+  //string file_name;
+  //file_name  = name()+".output";
+  //ofstream output(file_name.c_str());
+  //dataBaseOutput(output);
 }
 
 inline void SemiLeptonicBaryonDecayer::rebind(const TranslationMap & trans)

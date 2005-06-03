@@ -23,15 +23,14 @@ OmegaXiStarPionDecayer::~OmegaXiStarPionDecayer() {}
 
 bool OmegaXiStarPionDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
+  int id0(dm.parent()->id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
   if(id0==_idin)
     {
       if((id1==_idout&&id2==-211)||
@@ -47,9 +46,8 @@ bool OmegaXiStarPionDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector OmegaXiStarPionDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  int imode=0;
-  int id=parent.id();
-  bool cc=id!=_idin;
+  int imode(0);
+  bool cc(parent.id()!=_idin);
   // generate the decay
   return generate(false,cc,imode,parent);
 }
@@ -105,7 +103,7 @@ void OmegaXiStarPionDecayer::Init() {
   static Parameter<OmegaXiStarPionDecayer,double> interfaceMaximumWeight
     ("MaximumWeight",
      "The maximum weight for the decay",
-     &OmegaXiStarPionDecayer::_wgtmax, 1.0, -1.0e12, 1.0e12,
+     &OmegaXiStarPionDecayer::_wgtmax, 0.0032, 0., 100.,
      false, false, false);
 
   static Parameter<OmegaXiStarPionDecayer,int> interfaceIncoming
@@ -123,7 +121,8 @@ void OmegaXiStarPionDecayer::Init() {
 
 // couplings for spin-3/2 to spin-3/2 spin-0
 void OmegaXiStarPionDecayer::
-threeHalfThreeHalfScalarCoupling(int imode,Complex&A1,Complex&A2,Complex&B1,Complex&B2) const
+threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+				 Complex&A1,Complex&A2,Complex&B1,Complex&B2) const
 {
   A2=0.;
   B2=0.;
@@ -131,4 +130,20 @@ threeHalfThreeHalfScalarCoupling(int imode,Complex&A1,Complex&A2,Complex&B1,Comp
   B1=_BP+_BS;
 }
 
+void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  output << "set " << fullName() << ":Acomm " << _Acomm << "\n";
+  output << "set " << fullName() << ":AP " << _AP << "\n";
+  output << "set " << fullName() << ":AS " << _AS << "\n";
+  output << "set " << fullName() << ":BP " << _BP << "\n";
+  output << "set " << fullName() << ":BS " << _BS << "\n";
+  output << "set " << fullName() << ":MaximumWeight " << _wgtmax << "\n";
+  output << "set " << fullName() << ":Incoming " << _idin << "\n";
+  output << "set " << fullName() << ":Outgoing " << _idout << "\n";
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 }

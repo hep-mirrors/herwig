@@ -9,10 +9,23 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/**
+/** \ingroup Decay
+ *
  *  The <code>SU3BaryonDecupletOctetPhotonDecayer</code> class is designed for the decay
  *  of a deculpet baryon to an octet baryon and a photon using the SU(3) conserving
  *  term in the chiral lagrangian.
+ *
+ *  The lagrangian is taken to be
+ * \f[ \bar{B}_i^b\gamma^\nu\gamma_5\Delta^\mu_{jbc}Q_j\epsilon^{cij}F_{\mu\nu},\f]
+ *  where \f$B\f$ is the matrix field for the baryon octet, \f$\Delta\f$ is the field for
+ *  the decuplet, \f$Q\f$ is the charge matrix
+ * \f[Q  = \left(\begin{array}{ccc}\frac23&0&0\\
+ *                                                           0&-\frac13&0\\
+ *                                                           0&0&-\frac13
+ *     \end{array}\right),\f]
+ *  and \f$F^{\mu\nu}\f$ is the electromagnetic field strength. This form is used when 
+ *  the multiplets have the same parity and this form without the \f$\gamma_5\f$ if
+ *  the multiplets have opposite parity.
  *
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are
  *  intended for the decay of excited baryons.
@@ -73,6 +86,11 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -105,6 +123,9 @@ protected:
   /**
    * Couplings for spin-\f$\frac12\f$ to spin-\f$\frac32\f$ and a vector.
    * @param imode The mode
+   * @param m0 The mass of the decaying particle.
+   * @param m1 The mass of the outgoing baryon.
+   * @param m2 The mass of the outgoing meson.
    * @param A1 The coupling \f$A_1\f$ described above.
    * @param A2 The coupling \f$A_2\f$ described above.
    * @param A3 The coupling \f$A_3\f$ described above.
@@ -112,7 +133,8 @@ protected:
    * @param B2 The coupling \f$B_2\f$ described above.
    * @param B3 The coupling \f$B_3\f$ described above.
    */
-  virtual void halfThreeHalfVectorCoupling(int imode,Complex& A1,Complex& A2,Complex& A3,
+  virtual void threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+					   Complex& A1,Complex& A2,Complex& A3,
 					   Complex& B1,Complex& B2,Complex& B3) const;
   //@}
 
@@ -208,7 +230,7 @@ private:
   /**
    * the relative parities of the two baryon multiplets
    */
-  int _parity;
+  bool _parity;
 
   /**
    * PDG codes for the various octet baryons
@@ -328,34 +350,8 @@ private:
   /**
    * The couplings for the different modes.
    */
-  //@{
-  /**
-   * The first A coupling
-   */
-  mutable vector<double> _A1;
+  mutable vector<InvEnergy> _prefactor;
 
-  /**
-   * The second A coupling
-   */
-  mutable vector<double> _A2;
-
-  /**
-   * The third A coupling
-   */
-  mutable vector<double> _A3;
-  /**
-   * The first B coupling
-   */
-  mutable vector<double> _B1;
-  /**
-   * The second B coupling
-   */
-  mutable vector<double> _B2;
-  /**
-   * The third B coupling
-   */
-  mutable vector<double> _B3;
-  //@}
 };
 
 }

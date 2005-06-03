@@ -23,16 +23,15 @@ NonLeptonicHyperonDecayer::~NonLeptonicHyperonDecayer() {}
 
 bool NonLeptonicHyperonDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
   int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1=(**pit).id();++pit;
   int id2=(**pit).id();
-  unsigned int ix=0;
+  unsigned int ix(0);
   do
     {
       if(id0==_incomingB[ix])
@@ -57,13 +56,11 @@ bool NonLeptonicHyperonDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector NonLeptonicHyperonDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  int imode=-1;
-  int id=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;bool cc;
+  int imode(-1),id(parent.id());
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());++pit;
+  int id2((**pit).id());
+  unsigned int ix(0);bool cc;
   do 
     {
       if(id==_incomingB[ix])
@@ -89,11 +86,11 @@ ParticleVector NonLeptonicHyperonDecayer::decay(const DecayMode & dm,
 
 
 void NonLeptonicHyperonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incomingB << _outgoingB << _outgoingM << _A << _B << _maxweight;
+  os << _incomingB << _outgoingB << _outgoingM << _A << _B << _maxweight << _initsize;
 }
 
 void NonLeptonicHyperonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incomingB >> _outgoingB >> _outgoingM >> _A >> _B >> _maxweight;
+  is >> _incomingB >> _outgoingB >> _outgoingM >> _A >> _B >> _maxweight << _initsize;
 }
 
 ClassDescription<NonLeptonicHyperonDecayer> NonLeptonicHyperonDecayer::initNonLeptonicHyperonDecayer;
@@ -109,19 +106,19 @@ void NonLeptonicHyperonDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &NonLeptonicHyperonDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 100., false, false, true);
 
   static ParVector<NonLeptonicHyperonDecayer,int> interfaceIncomingBaryon
     ("IncomingBaryon",
      "The PDG code for the incoming baryon.",
      &NonLeptonicHyperonDecayer::_incomingB,
-     0, 0, 0, -1000000, 1000000, false, false, true);
+     0, 0, 0, 0, 1000000, false, false, true);
 
   static ParVector<NonLeptonicHyperonDecayer,int> interfaceOutgoingBaryon
     ("OutgoingBaryon",
      "The PDG code for the outgoing baryon.",
      &NonLeptonicHyperonDecayer::_outgoingB,
-     0, 0, 0, -1000000, 1000000, false, false, true);
+     0, 0, 0, 0, 1000000, false, false, true);
 
   static ParVector<NonLeptonicHyperonDecayer,int> interfaceOutgoingMeson
     ("OutgoingMeson",
@@ -143,7 +140,50 @@ void NonLeptonicHyperonDecayer::Init() {
 }
 
 // couplings for spin-1/2 to spin-1/2 spin-0
-void NonLeptonicHyperonDecayer::halfHalfScalarCoupling(int imode,Complex& A,Complex& B) const
- {A=_A[imode];B=_B[imode];}
+void NonLeptonicHyperonDecayer::halfHalfScalarCoupling(int imode,
+						       Energy m0,Energy m1,Energy m2,
+						       Complex& A,Complex& B) const
+{A=_A[imode];B=_B[imode];}
 
+void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  for(unsigned int ix=0;ix<_incomingB.size();++ix)
+    {
+      if(ix<_initsize)
+	{
+	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
+		 << _maxweight[ix] << "\n";
+	  output << "set " << fullName() << ":IncomingBaryon " << ix << " " 
+		 << _incomingB[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingBaryon " << ix << " " 
+		 << _outgoingB[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingMeson " << ix << " " 
+		 << _outgoingM[ix] << "\n";
+	  output << "set " << fullName() << ":CouplingA " << ix << " " 
+		 << _A[ix] << "\n";
+	  output << "set " << fullName() << ":CouplingB " << ix << " " 
+		 << _B[ix] << "\n";
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+		 << _maxweight[ix] << "\n";
+	  output << "insert " << fullName() << ":IncomingBaryon " << ix << " " 
+		 << _incomingB[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingBaryon " << ix << " " 
+		 << _outgoingB[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingMeson " << ix << " " 
+		 << _outgoingM[ix] << "\n";
+	  output << "insert " << fullName() << ":CouplingA " << ix << " " 
+		 << _A[ix] << "\n";
+	  output << "insert " << fullName() << ":CouplingB " << ix << " " 
+		 << _B[ix] << "\n";
+	}
+    }
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 }

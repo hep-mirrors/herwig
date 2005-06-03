@@ -10,9 +10,9 @@ using namespace ThePEG;
 inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer() 
 {
   // the coupling
-  _C=0.126/GeV;
+  _C=0.252/GeV;
   // the relative parities of the two baryon multiplets
-  _parity=1;
+  _parity=false;
   // PDG codes for the various ground state baryons
   _sigma0   = 3212;
   _lambda   = 3122;
@@ -23,8 +23,7 @@ inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer()
 inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer(const SU3BaryonSingletOctetPhotonDecayer & x)
   : Baryon1MesonDecayerBase(x), _C(x._C), _parity(x._parity),_sigma0(x._sigma0),
     _lambda(x._lambda),_elambda(x._elambda),_outgoingB(x._outgoingB),
-    _maxweight(x._maxweight), 
-    _A1(x._A1),_A2(x._A2),_A3(x._A3),_B1(x._B1),_B2(x._B2),_B3(x._B3) {}
+    _maxweight(x._maxweight), _prefactor(x._prefactor) {}
 
 inline IBPtr SU3BaryonSingletOctetPhotonDecayer::clone() const {
   return new_ptr(*this);
@@ -79,6 +78,12 @@ inline void SU3BaryonSingletOctetPhotonDecayer::dofinish() {
 
 inline void SU3BaryonSingletOctetPhotonDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {
+      _maxweight.resize(0);
+      for(unsigned int ix=0;ix<numberModes();++ix)
+	{_maxweight.push_back(2.*mode(ix)->maxWeight());}
+    }
 }
 
 inline void SU3BaryonSingletOctetPhotonDecayer::rebind(const TranslationMap & trans)

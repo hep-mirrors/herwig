@@ -10,16 +10,16 @@ using namespace ThePEG;
 inline NonLeptonicOmegaDecayer::NonLeptonicOmegaDecayer() 
 {
   // couplings for the decays
-  _fstar  =  0.6e-7;
-  _dstar  = -3.95e-7;
-  _omegad = -1.17e-7;
-  _omegaf =  1.52e-7;
+  _fstar  =  0.5e-7;
+  _dstar  = -3.98e-7;
+  _omegad = -1.16e-7;
+  _omegaf =  1.53e-7;
   _CBstar =  1.35;
   _sc     = -0.85;
   _C      =  1.50;
   _fpi    =  92.4*MeV;
   _hc     =  0.39e-7*GeV;
-  _hpi    =  3.20e-7;
+  _hpi    =  3.2e-7;
   _d      =  0.44e-7*GeV;
   _f      = -0.50e-7*GeV;
   // massses of the particles
@@ -31,25 +31,21 @@ inline NonLeptonicOmegaDecayer::NonLeptonicOmegaDecayer()
   _mpi0    =  134.977*MeV;
   _MKp     =  493.667*MeV;
   _MK0     =  497.648*MeV;
-  _MBstar  =  1670   *MeV;
-  _MR      =  1620   *MeV;
+  _MBstar  =  1620   *MeV;
+  _MR      =  1700   *MeV;
   // use local values for the masses for the couplings
-  _localmasses=false;
+  _localmasses=true;
   // the PDG codes for the modes
   _incomingB = 3334;
-  _outgoingB.resize(3);_outgoingM.resize(3);
-  _outgoingB[0] = 3122;
-  _outgoingB[1] = 3322;
-  _outgoingB[2] = 3312;
-  _outgoingM[0] =-321;
-  _outgoingM[1] =-211;
-  _outgoingM[2] = 111;
+  _outgoingB.resize(3);_outgoingM.resize(3);_maxweight.resize(3);
+  _outgoingB[0] = 3122;_outgoingM[0] =-321;_maxweight[0]=1.5;
+  _outgoingB[1] = 3322;_outgoingM[1] =-211;_maxweight[1]=0.4;
+  _outgoingB[2] = 3312;_outgoingM[2] = 111;_maxweight[2]=0.2;
 }
 
 inline NonLeptonicOmegaDecayer::NonLeptonicOmegaDecayer(const NonLeptonicOmegaDecayer & x)
   : Baryon1MesonDecayerBase(x),_dstar(x._dstar),_fstar(x._fstar),_omegad(x._omegad),
     _omegaf(x._omegaf),_CBstar(x._CBstar),_sc(x._sc),_C(x._C),_fpi(x._fpi),_hpi(x._hpi),
-
     _hc(x._hc),_d(x._d),_f(x._f),_Mlambda(x._Mlambda),_Mxi(x._Mxi),_Momega(x._Momega),
     _MXistar(x._MXistar),_mpip(x._mpip),_mpi0(x._mpi0),_MKp(x._MKp),_MK0(x._MK0),
     _MBstar(x._MBstar),_MR(x._MR), _localmasses(x._localmasses),_incomingB(x._incomingB),
@@ -82,61 +78,18 @@ inline void NonLeptonicOmegaDecayer::doupdate() throw(UpdateException) {
   // Touch if anything has changed.
 }
 
-inline void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
-  Baryon1MesonDecayerBase::doinit();
-  // reset the masses if needed
-  if(!_localmasses)
-    {
-      _Mlambda = getParticleData(3122)->mass();
-      _Mxi     = getParticleData(3322)->mass();
-      _Momega  = getParticleData(3334)->mass();
-      _MXistar = getParticleData(3324)->mass();
-      _mpip    = getParticleData(211)->mass();
-      _mpi0    = getParticleData(111)->mass();
-      _MKp     = getParticleData(321)->mass();
-      _MK0     = getParticleData(311)->mass();
-    }
-  // calculate the couplings
-  _A.resize(3);_B.resize(3);
-  // couplings for lambda K (N.B. sign of B due to gamma_5 defn)
-  _A[0] = _C/2./sqrt(3.)/_fpi*((_d-3.*_f)/(_Mlambda-_Mxi)
-			       +_hc/(_Momega-_MXistar))
-    +_CBstar/2./sqrt(3.)/_fpi*(_dstar-3.*_fstar)/(_Mlambda/_MBstar-1.);
-  _B[0] =-_sc/2./sqrt(3.)/_fpi*(_omegad-3.*_omegaf)/(_Mlambda/_MR-1.);
-  // couplings for xi0 pi-
-  _A[1] = _C/   sqrt(2.)/_fpi*(_hc/3./(_Momega-_MXistar)
-			       +_hpi*_mpip*_mpip/2./(_MKp*_MKp-_mpip*_mpip));
-  _B[1] = 0.;
-  // couplings for xi- pi0
-  _A[2] = _C/2./         _fpi*(_hc/3./(_Momega-_MXistar)
-			       +_hpi*_mpi0*_mpi0/2./(_MK0*_MK0-_mpi0*_mpi0));
-  _B[2] = 0.;
-  // set up the decay modes
-  // set up the phase space and the couplings
-  PDVector extpart(3);
-  DecayPhaseSpaceModePtr mode;
-  double wgtmax;
-  vector<double> wgt(1,1.);
-  for(unsigned int ix=0;ix<_outgoingB.size();++ix)
-    {
-      extpart[0]=getParticleData(_incomingB);
-      extpart[1]=getParticleData(_outgoingB[ix]);
-      extpart[2]=getParticleData(_outgoingM[ix]);
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-      if(_maxweight.size()>numberModes()){wgtmax=_maxweight[numberModes()];}
-      else{wgtmax=1.;}
-      addMode(mode,wgtmax,wgt);
-      _A[ix]*=(extpart[0]->mass()+extpart[1]->mass());
-      _B[ix]*=(extpart[0]->mass()+extpart[1]->mass());
-    }
-}
-
 inline void NonLeptonicOmegaDecayer::dofinish() {
   Baryon1MesonDecayerBase::dofinish();
 }
 
 inline void NonLeptonicOmegaDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {
+      _maxweight.resize(0);
+      for(unsigned int ix=0;ix<numberModes();++ix)
+	{_maxweight.push_back(2.*mode(ix)->maxWeight());}
+    }
 }
 
 inline void NonLeptonicOmegaDecayer::rebind(const TranslationMap & trans)

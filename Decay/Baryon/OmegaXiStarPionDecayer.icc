@@ -19,12 +19,12 @@ inline OmegaXiStarPionDecayer::OmegaXiStarPionDecayer()
   _BP    = 230.1e-8;
   _BS    =-100.8e-8;
   // maximum weight for the decay
-  _wgtmax=1.;
+  _wgtmax=0.0032;
 }
 
 inline OmegaXiStarPionDecayer::OmegaXiStarPionDecayer(const OmegaXiStarPionDecayer & x)
   : Baryon1MesonDecayerBase(x),_Acomm(x._Acomm),_AP(x._AP),_AS(x._AS),_BP(x._BP),
-    _BS(x._BS),_idin(x._idin),_idout(x._idout) {}
+    _BS(x._BS),_idin(x._idin),_idout(x._idout), _wgtmax(x._wgtmax) {}
 
 inline IBPtr OmegaXiStarPionDecayer::clone() const {
   return new_ptr(*this);
@@ -71,6 +71,7 @@ inline void OmegaXiStarPionDecayer::dofinish() {
 
 inline void OmegaXiStarPionDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
+  if(_Initialize){_wgtmax=2.*mode(0)->maxWeight();}
 }
 
 inline void OmegaXiStarPionDecayer::rebind(const TranslationMap & trans)
