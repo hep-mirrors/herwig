@@ -21,11 +21,13 @@ using namespace ThePEG;
 ScalarFormFactor::~ScalarFormFactor() {}
 
 void ScalarFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _incomingid << _outgoingid << _outgoingJ << _spectator << _inquark << _outquark;
+  os << _incomingid << _outgoingid << _outgoingJ << _spectator << _inquark << _outquark
+     << _numbermodes;
 }
 
 void ScalarFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _incomingid >> _outgoingid >> _outgoingJ >> _spectator >> _inquark >> _outquark;
+  is >> _incomingid >> _outgoingid >> _outgoingJ >> _spectator >> _inquark >> _outquark
+     >> _numbermodes;
 }
 
 AbstractClassDescription<ScalarFormFactor> ScalarFormFactor::initScalarFormFactor;
@@ -59,23 +61,23 @@ void ScalarFormFactor::Init() {
     ("Spectator",
      "The PDG code for the spectator quark.",
      &ScalarFormFactor::_spectator,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, -6, 6, false, false, true);
 
   static ParVector<ScalarFormFactor,int> interfaceInQuark
     ("InQuark",
      "The PDG code for the decaying quark.",
      &ScalarFormFactor::_inquark,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, -6, 6, false, false, true);
 
   static ParVector<ScalarFormFactor,int> interfaceOutQuark
     ("OutQuark",
      "The PDG code for the quark produced in the decay.",
      &ScalarFormFactor::_outquark,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, -6, 6, false, false, true);
 }
 
 // form-factor for scalar to scalar
-void ScalarFormFactor::ScalarScalarFormFactor(Energy2,int,int,int,Energy,Energy,
+void ScalarFormFactor::ScalarScalarFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
 					      Complex &,Complex &) const
 {
   throw Exception() << "Error in ScalarFormFactor::ScalarScalarFormFactor"
@@ -84,7 +86,7 @@ void ScalarFormFactor::ScalarScalarFormFactor(Energy2,int,int,int,Energy,Energy,
 }
 
 // form-factor for scalar to vector
-void ScalarFormFactor::ScalarVectorFormFactor(Energy2,int,int,int,Energy,Energy,
+void ScalarFormFactor::ScalarVectorFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
 					      Complex &,Complex &,
 					      Complex &,Complex &) const
 {
@@ -94,7 +96,7 @@ void ScalarFormFactor::ScalarVectorFormFactor(Energy2,int,int,int,Energy,Energy,
 }
 
 // form-factor for scalar to tensor
-void ScalarFormFactor::ScalarTensorFormFactor(Energy2,int,int,int,Energy,Energy,
+void ScalarFormFactor::ScalarTensorFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
 					      Complex &,Complex &,
 					      Complex &,Complex &) const
 {
@@ -104,21 +106,57 @@ void ScalarFormFactor::ScalarTensorFormFactor(Energy2,int,int,int,Energy,Energy,
 }
 
 // form-factor for scalar to scalar (sigma)
-void ScalarFormFactor::ScalarScalarSigmaFormFactorEnergy2(Energy2 q2,int iloc,int id0,
-							  int id1,Energy m0, Energy m1,
-							  Complex & fT) const
+void ScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,
+						   int id1,Energy m0, Energy m1,
+						   Complex & fT) const
 {
   throw Exception() << "Error in ScalarFormFactor::ScalarScalarSigmaFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
 }
 // form-factor for scalar to vector (sigma)
-void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,int iloc,int id0,int id1,
+void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
 						   Energy m0, Energy m1, Complex & T1,
 						   Complex & T2, Complex & T3) const
 {
   throw Exception() << "Error in ScalarFormFactor::ScalarVectorSigmaFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
+}
+void  ScalarFormFactor::dataBaseOutput(ofstream & output)
+{
+  for(unsigned int ix=0;ix<_incomingid.size();++ix)
+    {
+      if(ix<_numbermodes)
+	{
+	  output << "set " << fullName() << ":Incoming "  << ix << " " 
+		 << _incomingid[ix] << endl;
+	  output << "set " << fullName() << ":Outgoing "  << ix << " " 
+		 << _outgoingid[ix] << endl;
+	  output << "set " << fullName() << ":Spin "      << ix << " " 
+		 << _outgoingJ[ix] << endl;
+	  output << "set " << fullName() << ":Spectator " << ix << " " 
+		 << _spectator[ix] << endl;
+	  output << "set " << fullName() << ":InQuark "   << ix << " " 
+		 << _inquark[ix] << endl;
+	  output << "set " << fullName() << ":OutQuark "  << ix << " " 
+		 << _outquark[ix]<< endl;
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Incoming "  << ix << " " 
+		 << _incomingid[ix] << endl;
+	  output << "insert " << fullName() << ":Outgoing "  << ix << " " 
+		 << _outgoingid[ix] << endl;
+	  output << "insert " << fullName() << ":Spin "      << ix << " " 
+		 << _outgoingJ[ix] << endl;
+	  output << "insert " << fullName() << ":Spectator " << ix << " "
+		 << _spectator[ix] << endl;
+	  output << "insert " << fullName() << ":InQuark "   << ix << " " 
+		 << _inquark[ix] << endl;
+	  output << "insert " << fullName() << ":OutQuark "  << ix << " " 
+		 << _outquark[ix]<< endl;
+	}
+    }
 }
 }

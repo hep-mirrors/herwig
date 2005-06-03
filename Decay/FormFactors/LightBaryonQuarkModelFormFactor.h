@@ -28,7 +28,7 @@ public:
   /**
    * Default constructor
    */
-  inline LightBaryonQuarkModelFormFactor();
+  LightBaryonQuarkModelFormFactor();
 
   /**
    * Copy constructor
@@ -183,7 +183,7 @@ private:
   /**
    * The form-factor \f$f_2\f$ at \f$q^2=0\f$.
    */
-  vector<double> _f2;
+  vector<InvEnergy> _f2;
 
   /**
    * The form-factor \f$g_1\f$ at \f$q^2=0\f$.
@@ -193,7 +193,7 @@ private:
   /**
    * The form-factor \f$g_2\f$ at \f$q^2=0\f$.
    */
-  vector<double> _g2;
+  vector<InvEnergy> _g2;
 
   /**
    * The mass for the energy dependence of the \f$f_1\f$ form factor.

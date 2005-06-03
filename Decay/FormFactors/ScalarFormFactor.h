@@ -169,7 +169,7 @@ public:
    * @param id0 The PDG code for the incoming meson.
    * @param id1 The PDG code for the outgoing meson.
    */
-  inline void particleID(int iloc,int& id0,int& id1);
+  inline void particleID(unsigned int iloc,int& id0,int& id1) const;
 
   /**
    * Information on the form factor.
@@ -179,8 +179,8 @@ public:
    * @param inquark The PDG code for decaying incoming quark.
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
-  inline void formFactorInfo(int iloc,int & ispin,int & spect,int & inquark,
-			     int & outquark);
+  inline void formFactorInfo(unsigned int & iloc,int & ispin,int & spect,int & inquark,
+			     int & outquark) const;
 
   /**
    * Information on the form factor.
@@ -192,7 +192,7 @@ public:
    * @param outquark The PDG code for the outgoing quark produced in the decay.
    */
   inline void formFactorInfo(int in,int out,int & ispin,
-			     int & spect,int & inquark, int & outquark);
+			     int & spect,int & inquark, int & outquark) const;
 
   /**
    * number of form factors
@@ -217,8 +217,9 @@ public:
    * @param f0 The form factor \f$f_0\f$. 
    * @param fp The form factor \f$f_+\f$.
    */
-  virtual void ScalarScalarFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
-				      Energy m1,Complex & f0,Complex & fp) const;
+  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0,Energy m1,Complex & f0,
+				      Complex & fp) const;
 
   /**
    * The form factor for the weak decay of a scalar to a vector. This method is virtual
@@ -235,7 +236,7 @@ public:
    * @param A2 The form factor \f$A_2\f$
    * @param V  The form factor \f$V\f$
    */
-  virtual void ScalarVectorFormFactor(Energy2 q2, int iloc, int id0, int id1,
+  virtual void ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 				      Energy m0, Energy m1,Complex & A0,
 				      Complex & A1,Complex & A2, Complex & V) const;
 
@@ -254,7 +255,7 @@ public:
    * @param bp The form factor \f$b_+\f$.
    * @param bm The form factor \f$b_-\f$.
    */
-  virtual void ScalarTensorFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
 				      Energy m1, Complex & h,Complex & k,
 				      Complex & bp, Complex & bm) const;
 
@@ -271,9 +272,8 @@ public:
    * @param m1 The mass of the outgoing meson.
    * @param fT The form factor \f$f_T\f$.
    */
-  virtual void ScalarScalarSigmaFormFactorEnergy2(Energy2 q2,int iloc,int id0,int id1,
-						  Energy m0, Energy m1,
-						  Complex & fT) const;
+  virtual void ScalarScalarSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+					   Energy m0, Energy m1,Complex & fT) const;
 
   /**
    * The form factor for the weak penguin decay of a scalar meson to a vector meson. 
@@ -290,11 +290,16 @@ public:
    * @param T2 The form factor \f$T_2\f$.
    * @param T3 The form factor \f$T_3\f$.
    */
-  virtual void ScalarVectorSigmaFormFactor(Energy2 q2,int iloc,int id0,int id1,
+  virtual void ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
 					   Energy m0, Energy m1, Complex & T1,
 					   Complex & T2, Complex & T3) const;
 
   //@}
+
+  /**
+   * Output the setup information for the particle database
+   */
+  virtual void dataBaseOutput(ofstream &);
 
 protected:  
 
@@ -309,6 +314,17 @@ protected:
    */
   inline void addFormFactor(int in,int out,int spin, int spect, int inquark,
 			    int outquark);
+
+  /**
+   *  Set initial number of modes
+   * @param nmodes The number of modes.
+   */
+  inline void initialModes(unsigned int nmodes);
+
+  /**
+   * Get the initial number of modes
+   */
+  inline unsigned int initialModes();
 
 protected:
 
@@ -399,6 +415,11 @@ private:
    * the id of the outgoing quark
    */
   vector<int> _outquark;
+
+  /**
+   * The initial number of modes
+   */
+  unsigned int _numbermodes;
 
 };
 

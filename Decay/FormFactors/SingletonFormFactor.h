@@ -8,6 +8,9 @@
 #include "BaryonFormFactor.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SingletonFormFactor.fh"
+#include "CLHEP/GenericFunctions/AbsFunction.hh"
+#include "ThePEG/PDT/ParticleData.h"
+#include "Herwig++/Utilities/GaussianIntegral.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -132,7 +135,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -214,35 +217,19 @@ private:
   vector<Energy> _polemass;
 
   /**
-   *  The \f$\bar{a}\f$ parameter for the form factors
+   *  The \f$\xi\f$ parameter for the form factors.
    */
-  vector<Energy> _abar;
+  vector<double> _xi;
 
   /**
-   *  The \f$\bar{b}\f$ parameter for the form factors
+   *  The normalisation factor, \f$N_{mM}\f$, for the form factors.
    */
-  vector<Energy> _gbar;
+  vector<double> _NmM;
 
   /**
-   *  The \f$\bar{a}_+\f$ parameter for the form factors
+   *  The mass of the quark for the form factor.
    */
-  vector<double> _apbar;
-
-  /**
-   *  The \f$\bar{a}_-\f$ parameter for the form factors
-   */
-  vector<double> _ambar;
-
-  /**
-   *  The \f$\bar{g}_+\f$ parameter for the form factors
-   */
-  vector<double> _gpbar;
-
-  /**
-   *  The \f$\bar{g}_-\f$ parameter for the form factors
-   */
-  vector<double> _gmbar;
-  // the constants for the form-factors
+  vector<Energy> _mquark;
 
 };
 

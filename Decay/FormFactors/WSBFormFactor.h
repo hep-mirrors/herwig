@@ -14,7 +14,8 @@ using namespace ThePEG;
    *
    *  The WSBFormFactor class is the implementation of the form factor
    *  model of Z.Phys. C29, 637 for the semi-leptonic form factors. It includes
-   *  form factors for a number of \f$D\f$, \f$B\f$ and \f$D_s\f$ decays. In practice the parameters
+   *  form factors for a number of \f$D\f$, \f$B\f$ and \f$D_s\f$ decays. 
+   *  In practice the parameters
    *  of the model were taken from Z.Phys. C34, 103 which includes a number of
    *  decay modes which were not considered in the original paper. 
    *
@@ -38,7 +39,7 @@ public:
   /**
    * Default constructor
    */
-  inline WSBFormFactor();
+  WSBFormFactor();
 
   /**
    * Copy constructor
@@ -66,8 +67,9 @@ public:
    * @param f0 The form-factor \f$f_0\f$. 
    * @param fp The form-factor \f$f_+\f$.
    */
-  virtual void ScalarScalarFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
-				      Energy m1,Complex & f0,Complex & fp) const;
+  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0,Energy m1,
+				      Complex & f0,Complex & fp) const;
 
   /**
    * The form factor for the weak decay of a scalar to a vector.
@@ -82,10 +84,15 @@ public:
    * @param A1 The form-factor \f$A_1\f$
    * @param A2 The form-factor \f$A_2\f$
    */
-  virtual void ScalarVectorFormFactor(Energy2 q2, int iloc, int id0, int id1,
+  virtual void ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 				      Energy m0, Energy m1, Complex & V,
 				      Complex & A0,Complex & A1,Complex & A2) const;
   //@}
+
+  /**
+   * Output the setup information for the particle database
+   */
+  virtual void dataBaseOutput(ofstream &);
 
 public:
 
@@ -187,12 +194,12 @@ private:
    */
   WSBFormFactor & operator=(const WSBFormFactor &);
 
-public:
+private:
 
   /** @name Parameters for the form factors */
   //@{
   /**
-   * The form factor at q^2=0 for scalar decays.
+   * The form factor at \f$q^2=0\f$ for scalar decays.
    */
   vector<double> _F0;
 
@@ -236,6 +243,11 @@ public:
    */
   vector<Energy> _mV1;
   //@}
+
+  /**
+   * The \f$\eta-\eta'\f$ mixing angle 
+   */
+  double _thetaeta;
 };
 
 }

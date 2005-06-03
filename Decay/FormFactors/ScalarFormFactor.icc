@@ -7,12 +7,13 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ScalarFormFactor::ScalarFormFactor() {}
+inline ScalarFormFactor::ScalarFormFactor() : _numbermodes(0)
+{}
 
 inline ScalarFormFactor::ScalarFormFactor(const ScalarFormFactor & x)
   : Interfaced(x),_incomingid(x._incomingid), _outgoingid(x._outgoingid),
     _outgoingJ(x._outgoingJ), _spectator(x._spectator), _inquark(x._inquark),
-    _outquark(x._outquark) {}
+    _outquark(x._outquark),_numbermodes(x._numbermodes) {}
 
 inline IBPtr ScalarFormFactor::clone() const {
   return new_ptr(*this);
@@ -45,7 +46,7 @@ inline void ScalarFormFactor::doinit() throw(InitException) {
   // check the consistency of the parameters
   unsigned int isize=_incomingid.size();
   if(isize!=_outgoingid.size() || isize!=_outgoingJ.size()||
-     isize!=_spectator.size()       || isize!=_inquark.size()||
+     isize!=_spectator.size()  || isize!=_inquark.size()||
      isize!=_outquark.size())
     {throw InitException() << "Inconsistent parameters in ScalarFormFactor::doinit() " 
 			   << Exception::abortnow;}
@@ -109,8 +110,8 @@ inline unsigned int ScalarFormFactor::numberOfFactors() const
 {return _incomingid.size();}
 
 // information on the form factors by location in the list
-inline void ScalarFormFactor::formFactorInfo(int iloc,int & ispin,int & spect,
-					     int & inquark, int & outquark)
+inline void ScalarFormFactor::formFactorInfo(unsigned int & iloc,int & ispin,int & spect,
+					     int & inquark, int & outquark) const
 {
   ispin    = _outgoingJ[iloc];
   spect    = _spectator[iloc];
@@ -120,7 +121,8 @@ inline void ScalarFormFactor::formFactorInfo(int iloc,int & ispin,int & spect,
 
 // information on the form-factor by ids of the particles
 inline void ScalarFormFactor::formFactorInfo(int in,int out,int & ispin,
-					     int & spect,int & inquark, int & outquark)
+					     int & spect,int & inquark,
+					     int & outquark) const
 {
   bool dummy;
   unsigned int ix(formFactorNumber(in,out,dummy));
@@ -128,9 +130,13 @@ inline void ScalarFormFactor::formFactorInfo(int in,int out,int & ispin,
 }
 
 // get the particle ids for an entry
-inline void ScalarFormFactor::particleID(int iloc,int & id0,int & id1)
+inline void ScalarFormFactor::particleID(unsigned int iloc,int & id0,int & id1) const
 {
   id0=_incomingid[iloc];
   id1=_outgoingid[iloc];
 }
+inline void ScalarFormFactor::initialModes(unsigned int nmodes)
+{_numbermodes=nmodes;}
+
+inline unsigned int ScalarFormFactor::initialModes(){return _numbermodes;}
 }
