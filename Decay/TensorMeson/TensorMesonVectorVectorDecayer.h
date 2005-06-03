@@ -17,7 +17,7 @@ using namespace ThePEG;
  *  the decay of a tensor meson to two spin-1 particles. In practice, at least
  *  for the light tensor mesons, this is only the decay of a tensor meson to two
  *  photons. In principle for bottom and charm tensors this may be the decay to
- *  two vector mesons.
+ *  two vector mesons. 
  *
  *  The form of the matrix element is based on the perturbative matrix element
  *  for the decay of a graviton to two vector bosons with the neglect of a mass term
@@ -55,7 +55,7 @@ public:
   /**
    * Default constructor.
    */
-  inline TensorMesonVectorVectorDecayer();
+  TensorMesonVectorVectorDecayer();
 
   /**
    * Copy-constructor.
@@ -111,6 +111,11 @@ public:
    * @return True or False if this mode can be handled.
    */
   bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -236,6 +241,12 @@ private:
    * the maximum weight for the decay
    */
   vector<double> _maxweight;
+
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
+
 };
 
 }

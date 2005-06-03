@@ -7,45 +7,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer() 
-{
-  // a_2 -> gamma gamma
-  _incoming.push_back(115);_outgoing1.push_back( 22);_outgoing2.push_back(22);
-  _coupling.push_back(0.00743/GeV);_maxweight.push_back(0.00100581);
-  // f_2 -> gamma gamma
-  _incoming.push_back(225);_outgoing1.push_back( 22);_outgoing2.push_back(22);
-  _coupling.push_back(0.0126/GeV);_maxweight.push_back(0.00261856);
-  // f'_2 -> gamma gamma
-  _incoming.push_back(335);_outgoing1.push_back( 22);_outgoing2.push_back(22);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  // chi_b(2P) decays
-  _incoming.push_back(100555);_outgoing1.push_back(553);_outgoing2.push_back(223);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(100555);_outgoing1.push_back(553);_outgoing2.push_back(22);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(100555);_outgoing1.push_back(100553);_outgoing2.push_back(22);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(100555);_outgoing1.push_back(333);_outgoing2.push_back(333);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  // chi_c decays
-  _incoming.push_back(445);_outgoing1.push_back(443);_outgoing2.push_back(22);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(445);_outgoing1.push_back(323);_outgoing2.push_back(-323);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(445);_outgoing1.push_back(313);_outgoing2.push_back(-313);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(445);_outgoing1.push_back(333);_outgoing2.push_back(333);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  _incoming.push_back(445);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-  // chi_b(1P) decays
-  _incoming.push_back(555);_outgoing1.push_back(553);_outgoing2.push_back(22);
-  _coupling.push_back(0.00182/GeV);_maxweight.push_back(9.34851e-05);
-}
 
 inline TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer(const TensorMesonVectorVectorDecayer & x)
   : TensorMesonDecayerBase(x), _incoming(x._incoming), _outgoing1(x._outgoing1),
-    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight) {}
+    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight),
+    _initsize(x._initsize) {}
 
 inline IBPtr TensorMesonVectorVectorDecayer::clone() const {
   return new_ptr(*this);
@@ -82,7 +48,7 @@ inline void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
     {throw InitException() << "Inconsistent parameters TensorMesonVectorVectorDecayer" 
 			   << Exception::abortnow;}
   // set up the integration channels
-  vector<double> wgt;
+  vector<double> wgt(1,1.);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix)
@@ -90,7 +56,7 @@ inline void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
       extpart[0]=getParticleData(_incoming[ix]);
       extpart[1]=getParticleData(_outgoing1[ix]);
       extpart[2]=getParticleData(_outgoing2[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
       addMode(mode,_maxweight[ix],wgt);
     }
 }
@@ -101,6 +67,9 @@ inline void TensorMesonVectorVectorDecayer::dofinish() {
 
 inline void TensorMesonVectorVectorDecayer::doinitrun() {
   TensorMesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {for(unsigned int ix=0;ix<_incoming.size();++ix)
+	{_maxweight[ix] = 2.*mode(ix)->maxWeight();}}
 }
 
 inline void TensorMesonVectorVectorDecayer::rebind(const TranslationMap & trans)

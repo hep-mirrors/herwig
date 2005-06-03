@@ -21,8 +21,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::tcTensorSpinPtr;
-using ThePEG::Helicity::TensorSpinInfo;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using ThePEG::Helicity::RhoDMatrix;
 using Herwig::Helicity::TensorWaveFunction;
@@ -41,10 +39,9 @@ ParticleVector TensorMesonDecayerBase::decay(const DecayMode & dm,
   return children;
 }
 
+void TensorMesonDecayerBase::persistentOutput(PersistentOStream & os) const {}
 
-  void TensorMesonDecayerBase::persistentOutput(PersistentOStream & os) const {}
-
-  void TensorMesonDecayerBase::persistentInput(PersistentIStream & is, int) {}
+void TensorMesonDecayerBase::persistentInput(PersistentIStream & is, int) {}
 
 AbstractClassDescription<TensorMesonDecayerBase> TensorMesonDecayerBase::initTensorMesonDecayerBase;
 // Definition of the static class description member.
@@ -62,47 +59,17 @@ double TensorMesonDecayerBase::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {
-  // first check if the decaying particle has spin information
-  tcTensorSpinPtr inspin;
-  if(inpart.spinInfo())
-    {inspin=dynamic_ptr_cast<tcTensorSpinPtr>(inpart.spinInfo());}
   vector<LorentzTensor> inten;
-  RhoDMatrix rhoin(5);rhoin.average();
-  // if the spin info object exists use it
-  if(inspin)
-    {
-      for(int ix=-2;ix<3;++ix){inten.push_back(inspin->getDecayBasisState(ix));}
-      inspin->decay();
-      rhoin=inspin->rhoMatrix();
-    }
-  else if(inpart.spinInfo())
-    {
-      throw TensorDecayerError() << "Wrong type of spinInfo for the incoming particle "
-				 << "in TensorMesonDecayerBase::me2()" 
-				 << Exception::abortnow;
-    }
-  // if no spinInfo then create it
-  else
-    { 
-      SpinPtr newspin=new_ptr(TensorSpinInfo(inpart.momentum(),true));
-      inspin =dynamic_ptr_cast<tcTensorSpinPtr>(newspin);
-      inspin->decayed(true);
-      TensorWaveFunction temp=TensorWaveFunction(inpart.momentum(),
-						 inpart.dataPtr(),incoming);
-      for(int ix=-2;ix<3;++ix)
-	{
-	  temp.reset(ix);
-	  inten.push_back(temp.Wave());
-	  inspin->setDecayState(ix,inten[ix+2]);
-	}
-      const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
-    }
+  // wave functions etc for the incoming particle
+  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
+  TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
+		     true,false,vertex);
   // calculate the decay tensor
-  vector<LorentzTensor> tensor=decayTensor(vertex,ichan,inpart,decay);
+  vector<LorentzTensor> tensor(decayTensor(vertex,ichan,inpart,decay));
   // work out the mapping for the tensor vector
-  vector<int> constants(decay.size()+1),
-    ispin(decay.size()),ihel(decay.size()+1);
-  int itemp=1;
+  vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
+  vector<PDT::Spin> ispin(decay.size());
+  int itemp(1);
   for(int ix=int(decay.size()-1);ix>=0;--ix)
     {
       ispin[ix]=decay[ix]->data().iSpin();
@@ -110,18 +77,15 @@ double TensorMesonDecayerBase::me2(bool vertex, const int ichan,
     }
   constants[decay.size()]=1;
   // compute the matrix element
-  DecayMatrixElement newME(5,ispin);
+  DecayMatrixElement newME(PDT::Spin2,ispin);
   for(unsigned int hhel=0;hhel<tensor.size();++hhel)
     {
       // map the index for the hadrons to a helicity state
       for(unsigned int ix=decay.size();ix>0;--ix)
-	{
-	  ihel[ix]=(hhel%constants[ix-1])/constants[ix]-int(ispin[ix-1]/2);
-	  if(ispin[ix-1]%2==0&&ihel[ix]>-0&&ispin[ix-1]!=0){++ihel[ix];}
-	}
+	{ihel[ix]=(hhel%constants[ix-1])/constants[ix];}
       // loop over the helicities of the incoming vector meson
-      for(int thel=-2;thel<3;++thel)
-	{ihel[0]=thel;newME(ihel)= inten[thel+2]*tensor[hhel];}
+      for(ihel[0]=0;ihel[0]<5;++ihel[0])
+	{newME(ihel)=inten[ihel[0]]*tensor[hhel];}
     }
   ME(newME);
   // return the answer

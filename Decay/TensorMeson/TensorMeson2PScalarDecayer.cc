@@ -5,9 +5,10 @@
 //
 
 #include "TensorMeson2PScalarDecayer.h"
+#include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "TensorMeson2PScalarDecayer.tcc"
@@ -19,29 +20,138 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::ScalarSpinInfo;
+using Herwig::Helicity::ScalarWaveFunction;
+using Herwig::Helicity::outgoing;
+
+TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
+{
+  // a_2 -> eta pi
+  _incoming.push_back(115);_outgoing1.push_back( 221);_outgoing2.push_back(111);
+  _incoming.push_back(215);_outgoing1.push_back( 221);_outgoing2.push_back(211);
+  _coupling.push_back(10.90/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(10.90/GeV);_maxweight.push_back(2.00);
+  // a_2 -> eta' pi
+  _incoming.push_back(115);_outgoing1.push_back( 331);_outgoing2.push_back(111);
+  _incoming.push_back(215);_outgoing1.push_back( 331);_outgoing2.push_back(211);
+  _coupling.push_back(9.92/GeV);_maxweight.push_back(2.2);
+  _coupling.push_back(9.92/GeV);_maxweight.push_back(2.1);
+  // a_2 -> K K
+  _incoming.push_back(115);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _incoming.push_back(115);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _incoming.push_back(215);_outgoing1.push_back( 321);_outgoing2.push_back(-311);
+  _coupling.push_back(7.36/GeV);_maxweight.push_back(2.);
+  _coupling.push_back(7.36/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(10.41/GeV);_maxweight.push_back(2.);
+  // f_2 -> pi pi
+  _incoming.push_back(225);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _incoming.push_back(225);_outgoing1.push_back( 111);_outgoing2.push_back(111);
+  _coupling.push_back(18.73/GeV);_maxweight.push_back(2.);
+  _coupling.push_back(13.24/GeV);_maxweight.push_back(2.02);
+  // f_2 -> eta eta
+  _incoming.push_back(225);_outgoing1.push_back( 221);_outgoing2.push_back(221);
+  _coupling.push_back(8.854/GeV);_maxweight.push_back(2.15);
+  // f_2 -> KK
+  _incoming.push_back(225);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _incoming.push_back(225);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _coupling.push_back(11.03/GeV);_maxweight.push_back(2.);
+  _coupling.push_back(11.38/GeV);_maxweight.push_back(2.);
+  // f'_2 -> KK
+  _incoming.push_back(335);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _incoming.push_back(335);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _coupling.push_back(14.65/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(14.65/GeV);_maxweight.push_back(2.);
+  // f'_2 -> eta eta
+  _incoming.push_back(335);_outgoing1.push_back( 221);_outgoing2.push_back(221);
+  _coupling.push_back(9.15/GeV);_maxweight.push_back(2.02);
+  // f'_2 -> pi pi 
+  _incoming.push_back(335);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _incoming.push_back(335);_outgoing1.push_back( 111);_outgoing2.push_back(111);
+  _coupling.push_back(0.860/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(0.608/GeV);_maxweight.push_back(2.02);
+  // K_2 -> K eta
+  _incoming.push_back( 325);_outgoing1.push_back( 321);_outgoing2.push_back(221);
+  _incoming.push_back( 315);_outgoing1.push_back( 311);_outgoing2.push_back(221);
+  _coupling.push_back(1.52/GeV);_maxweight.push_back(2.2);
+  _coupling.push_back(1.52/GeV);_maxweight.push_back(2.);
+  // K_2 -> K pi
+  _incoming.push_back( 325);_outgoing1.push_back( 321);_outgoing2.push_back( 111);
+  _incoming.push_back( 325);_outgoing1.push_back( 311);_outgoing2.push_back( 211);
+  _incoming.push_back( 315);_outgoing1.push_back( 311);_outgoing2.push_back( 111);
+  _incoming.push_back( 315);_outgoing1.push_back( 321);_outgoing2.push_back(-211);
+  _coupling.push_back(8.30/GeV) ;_maxweight.push_back(2.);
+  _coupling.push_back(11.74/GeV);_maxweight.push_back(2.);
+  _coupling.push_back(8.68/GeV) ;_maxweight.push_back(2.);
+  _coupling.push_back(12.28/GeV);_maxweight.push_back(2.02);
+  // B_2 -> B pi
+  _incoming.push_back( 525);_outgoing1.push_back( 521);_outgoing2.push_back(111);
+  _incoming.push_back( 525);_outgoing1.push_back( 511);_outgoing2.push_back(211);
+  _incoming.push_back( 515);_outgoing1.push_back( 511);_outgoing2.push_back(111);
+  _incoming.push_back( 515);_outgoing1.push_back( 521);_outgoing2.push_back(-211);
+  _coupling.push_back(25.62/GeV);_maxweight.push_back(2.05);
+  _coupling.push_back(36.24/GeV);_maxweight.push_back(2.);
+  _coupling.push_back(25.62/GeV);_maxweight.push_back(2.05);
+  _coupling.push_back(36.24/GeV);_maxweight.push_back(2.02);
+  // D_2 -> D pi
+  _incoming.push_back( 425);_outgoing1.push_back( 421);_outgoing2.push_back(111);
+  _incoming.push_back( 425);_outgoing1.push_back( 411);_outgoing2.push_back(-211);
+  _incoming.push_back( 415);_outgoing1.push_back( 411);_outgoing2.push_back(111);
+  _incoming.push_back( 415);_outgoing1.push_back( 421);_outgoing2.push_back(211);
+  _coupling.push_back(13.17/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(18.62/GeV);_maxweight.push_back(2.);
+  _coupling.push_back(14.00/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(19.80/GeV);_maxweight.push_back(2.10);
+  // D_s2
+  _incoming.push_back( 435);_outgoing1.push_back( 421);_outgoing2.push_back( 321);
+  _incoming.push_back( 435);_outgoing1.push_back( 411);_outgoing2.push_back( 311);
+  _coupling.push_back(23.39/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(23.39/GeV);_maxweight.push_back(2.02);
+  // B_s2
+  _incoming.push_back( 535);_outgoing1.push_back( 521);_outgoing2.push_back(-321);
+  _incoming.push_back( 535);_outgoing1.push_back( 511);_outgoing2.push_back(-311);
+  _coupling.push_back(45.88/GeV);_maxweight.push_back(2.08);
+  _coupling.push_back(45.88/GeV);_maxweight.push_back(2.);
+  // chi_c2 to pi pi
+  _incoming.push_back( 445);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
+  _incoming.push_back( 445);_outgoing1.push_back( 111);_outgoing2.push_back( 111);
+  _coupling.push_back(0.0226/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(0.0159/GeV);_maxweight.push_back(1.62);
+  // chi_c2 to K K
+  _incoming.push_back( 445);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
+  _incoming.push_back( 445);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
+  _coupling.push_back(0.0187/GeV);_maxweight.push_back(2.02);
+  _coupling.push_back(0.0187/GeV);_maxweight.push_back(2.02);
+  // f_2 to sigma sigma
+  _incoming.push_back(225);_outgoing1.push_back(9000221);_outgoing2.push_back(9000221);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  // initial size of the vectors
+  _initsize=_incoming.size();
+}
 
 TensorMeson2PScalarDecayer::~TensorMeson2PScalarDecayer() {}
 
 bool TensorMeson2PScalarDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int id0(dm.parent()->id()),id0bar(id0);
+  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0);
   do
     {
-      if(id0==_incoming[ix])
-	{
-	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){allowed=true;}
-	}
+      if(id0   ==_incoming[ix])
+	{if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
+	    (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){allowed=true;}}
+      if(id0bar==_incoming[ix]&&!allowed)
+	{if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
+	    (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){allowed=true;}}
       ++ix;
     }
   while(ix<_incoming.size()&&!allowed);
@@ -50,25 +160,30 @@ bool TensorMeson2PScalarDecayer::accept(const DecayMode & dm) const {
 
 ParticleVector TensorMeson2PScalarDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int imode(-1);
+  int id(parent.id()),idbar(id);
+  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  int imode=-1;
-  unsigned int ix=0;
-  int id=parent.id();
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0);
+  bool cc(false);
   do 
     {
-      if(id==_incoming[ix])
-	{
-	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
-	}
+      if(id   ==_incoming[ix])
+	{if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
+	    (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){imode=ix;}}
+      if(idbar==_incoming[ix])
+	{if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
+	    (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){imode=ix;cc=true;}}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
   // generate the decay
-  return generate(false,false,imode,parent);
+  return generate(false,cc,imode,parent);
 }
 
 
@@ -91,31 +206,31 @@ void TensorMeson2PScalarDecayer::Init() {
     ("Incoming",
      "The PDG code for the incoming particle",
      &TensorMeson2PScalarDecayer::_incoming,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<TensorMeson2PScalarDecayer,int> interfaceOutcoming1
     ("FirstOutgoing",
      "The PDG code for the first outgoing particle",
      &TensorMeson2PScalarDecayer::_outgoing1,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<TensorMeson2PScalarDecayer,int> interfaceOutcoming2
     ("SecondOutgoing",
      "The PDG code for the second outgoing particle",
      &TensorMeson2PScalarDecayer::_outgoing2,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<TensorMeson2PScalarDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMeson2PScalarDecayer::_coupling,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0./GeV, 100./GeV, false, false, true);
 
   static ParVector<TensorMeson2PScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &TensorMeson2PScalarDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 100., false, false, true);
 }
 
 // the hadronic tensor
@@ -127,15 +242,9 @@ TensorMeson2PScalarDecayer::decayTensor(const bool vertex,const int,
   // storage for the tensor
   vector<LorentzTensor> temp;
   // set up the spin information for the decay products
-  if(vertex)
-    {
-      for(unsigned int ix=0;ix<decay.size();++ix)
-	{
-	  SpinPtr stemp= new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true));
-	  decay[ix]->spinInfo(stemp);
-	}
-    }
-  // calcluate the current
+  for(unsigned int ix=0;ix<decay.size();++ix)
+    {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+  // calculatebthe tensor
   temp.push_back(_coupling[imode()]/inpart.mass()*
 		 LorentzTensor(decay[0]->momentum(),decay[1]->momentum()));
   return temp;
@@ -144,25 +253,73 @@ TensorMeson2PScalarDecayer::decayTensor(const bool vertex,const int,
 bool TensorMeson2PScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 					       double & coupling) const
 {
-  int imode=-1;
-  int id=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int imode(-1);
+  int id(dm.parent()->id()),idbar(id);
+  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0); bool order;
   do 
     {
-      if(id==_incoming[ix])
+      if(id   ==_incoming[ix])
 	{
-	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
+	  if(id1==_outgoing1[ix]&&id2==_outgoing2[ix]){imode=ix;order=true;}
+	  if(id2==_outgoing1[ix]&&id1==_outgoing2[ix]){imode=ix;order=false;}
+	}
+      if(idbar==_incoming[ix]&&imode<0)
+	{
+	  if(id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix]){imode=ix;order=true;}
+	  if(id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix]){imode=ix;order=false;}
 	}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
   coupling=_coupling[imode]*dm.parent()->mass();
   mecode=7;
-  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
+  return order;
+}
+
+void TensorMeson2PScalarDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  // the rest of the parameters
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      if(ix<_initsize)
+	{
+	  output << "set " << fullName() << ":Incoming " << ix << " " 
+		 << _incoming[ix] << "\n";
+	  output << "set " << fullName() << ":FirstOutgoing " << ix << " " 
+		 << _outgoing1[ix] << "\n";
+	  output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
+		 << _outgoing2[ix] << "\n";
+	  output << "set " << fullName() << ":Coupling " << ix << " " 
+		 << _coupling[ix] << "\n";
+	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
+		 << _maxweight[ix] << "\n";
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Incoming " << ix << " " 
+		 << _incoming[ix] << "\n";
+	  output << "insert " << fullName() << ":FirstOutgoing " << ix << " " 
+		 << _outgoing1[ix] << "\n";
+	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
+		 << _outgoing2[ix] << "\n";
+	  output << "insert " << fullName() << ":Coupling " << ix << " " 
+		 << _coupling[ix] << "\n";
+	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+		 << _maxweight[ix] << "\n";
+	}
+    }
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 }

@@ -7,146 +7,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
-{
-  // a_2 -> rho pi
-  _incoming.push_back( 115);_outgoingV.push_back( 213);_outgoingP.push_back(-211);
-  _coupling.push_back(19.2/GeV2);_maxweight.push_back( 36.9762);
-  _incoming.push_back( 115);_outgoingV.push_back(-213);_outgoingP.push_back( 211);
-  _coupling.push_back(19.2/GeV2);_maxweight.push_back(36.9762);
-  _incoming.push_back( 215);_outgoingV.push_back( 113);_outgoingP.push_back( 211);
-  _coupling.push_back(19.2/GeV2);_maxweight.push_back(36.9762);
-  _incoming.push_back( 215);_outgoingV.push_back( 213);_outgoingP.push_back( 111);
-  _coupling.push_back(19.2/GeV2);_maxweight.push_back(37.4247);
-  _incoming.push_back(-215);_outgoingV.push_back( 113);_outgoingP.push_back(-211);
-  _coupling.push_back(19.2/GeV2);_maxweight.push_back(36.9762);
-  _incoming.push_back(-215);_outgoingV.push_back(-213);_outgoingP.push_back( 111);
-  _coupling.push_back(19.2/GeV2);_maxweight.push_back(37.4247);
-  // a_2+/- -> gamma pi+/-
-  _incoming.push_back( 215);_outgoingV.push_back( 22);_outgoingP.push_back( 211);
-  _coupling.push_back(0.546/GeV2);_maxweight.push_back(0.278686);
-  _incoming.push_back(-215);_outgoingV.push_back( 22);_outgoingP.push_back(-211);
-  _coupling.push_back(0.546/GeV2);_maxweight.push_back(0.278686);
-  // k_2 -> K_2 omega
-  _incoming.push_back( 315);_outgoingV.push_back(223);_outgoingP.push_back( 311);
-  _coupling.push_back(11.334/GeV2);_maxweight.push_back(3.16795);
-  _incoming.push_back(-315);_outgoingV.push_back(223);_outgoingP.push_back(-311);
-  _coupling.push_back(11.334/GeV2);_maxweight.push_back(3.16795);
-  _incoming.push_back( 325);_outgoingV.push_back(223);_outgoingP.push_back( 321);
-  _coupling.push_back(10.07/GeV2);_maxweight.push_back(2.34592);
-  _incoming.push_back(-325);_outgoingV.push_back(223);_outgoingP.push_back(-321);
-  _coupling.push_back(10.07/GeV2);_maxweight.push_back(2.34592);
-  // k_2+/- -> K+/- gamma
-  _incoming.push_back( 325);_outgoingV.push_back(22);_outgoingP.push_back( 321);
-  _coupling.push_back(0.471/GeV2);_maxweight.push_back(0.171048);
-  _incoming.push_back(-325);_outgoingV.push_back(22);_outgoingP.push_back(-321);
-  _coupling.push_back(0.471/GeV2);_maxweight.push_back(0.171048);
-  // B_c2 -> B_c gamma
-  _incoming.push_back( 545);_outgoingV.push_back(22);_outgoingP.push_back( 541);
-  _coupling.push_back(0.471/GeV2);_maxweight.push_back(0.171048);
-  _incoming.push_back(-545);_outgoingV.push_back(22);_outgoingP.push_back(-541);
-  _coupling.push_back(0.471/GeV2);_maxweight.push_back(0.171048);
-  // K_2 -> K rho
-  _incoming.push_back( 325);_outgoingV.push_back( 113);_outgoingP.push_back( 321);
-  _coupling.push_back(10.14/GeV2);_maxweight.push_back(2.74849);
-  _incoming.push_back( 325);_outgoingV.push_back( 213);_outgoingP.push_back( 311);
-  _coupling.push_back(14.33/GeV2);_maxweight.push_back(5.18328);
-  _incoming.push_back(-325);_outgoingV.push_back( 113);_outgoingP.push_back(-321);
-  _coupling.push_back(10.14/GeV2);_maxweight.push_back(2.74849);
-  _incoming.push_back(-325);_outgoingV.push_back(-213);_outgoingP.push_back(-311);
-  _coupling.push_back(14.33/GeV2);_maxweight.push_back(5.18328);
-  _incoming.push_back( 315);_outgoingV.push_back( 113);_outgoingP.push_back( 311);
-  _coupling.push_back(10.14/GeV2);_maxweight.push_back(2.9213);
-  _incoming.push_back( 315);_outgoingV.push_back(-213);_outgoingP.push_back( 321);
-  _coupling.push_back(14.33/GeV2);_maxweight.push_back(6.16207);
-  _incoming.push_back(-315);_outgoingV.push_back( 113);_outgoingP.push_back(-311);
-  _coupling.push_back(10.14/GeV2);_maxweight.push_back(2.9213);
-  _incoming.push_back(-315);_outgoingV.push_back( 213);_outgoingP.push_back(-321);
-  _coupling.push_back(14.33/GeV2);_maxweight.push_back(6.16207);
-  // K_2 -> K* pi 
-  _incoming.push_back( 325);_outgoingV.push_back( 323);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back( 325);_outgoingV.push_back( 313);_outgoingP.push_back( 211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(16.6559);
-  _incoming.push_back(-325);_outgoingV.push_back(-323);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back(-325);_outgoingV.push_back(-313);_outgoingP.push_back(-211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(16.6559);
-  _incoming.push_back( 315);_outgoingV.push_back( 313);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.54661);
-  _incoming.push_back( 315);_outgoingV.push_back( 323);_outgoingP.push_back(-211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(17.6966);
-  _incoming.push_back(-315);_outgoingV.push_back(-313);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.54661);
-  _incoming.push_back(-315);_outgoingV.push_back(-323);_outgoingP.push_back( 211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(17.6966);
-  // D_2 -> K* pi 
-  _incoming.push_back( 425);_outgoingV.push_back( 423);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back( 425);_outgoingV.push_back( 413);_outgoingP.push_back(-211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(16.6559);
-  _incoming.push_back(-425);_outgoingV.push_back(-423);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back(-425);_outgoingV.push_back(-413);_outgoingP.push_back( 211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(16.6559);
-  _incoming.push_back( 415);_outgoingV.push_back( 413);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.54661);
-  _incoming.push_back( 415);_outgoingV.push_back( 423);_outgoingP.push_back( 211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(17.6966);
-  _incoming.push_back(-415);_outgoingV.push_back(-413);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.54661);
-  _incoming.push_back(-415);_outgoingV.push_back(-423);_outgoingP.push_back(-211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(17.6966);
-  // D_s2 -> D* K
-  _incoming.push_back( 435);_outgoingV.push_back( 423);_outgoingP.push_back( 321);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back( 435);_outgoingV.push_back( 413);_outgoingP.push_back( 311);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back(-435);_outgoingV.push_back(-423);_outgoingP.push_back( 321);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back(-435);_outgoingV.push_back(-413);_outgoingP.push_back(-311);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  // B_2 -> B* pi 
-  _incoming.push_back( 525);_outgoingV.push_back( 523);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back( 525);_outgoingV.push_back( 513);_outgoingP.push_back( 211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(16.6559);
-  _incoming.push_back(-525);_outgoingV.push_back(-523);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.04664);
-  _incoming.push_back(-525);_outgoingV.push_back(-513);_outgoingP.push_back(-211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(16.6559);
-  _incoming.push_back( 515);_outgoingV.push_back( 513);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.54661);
-  _incoming.push_back( 515);_outgoingV.push_back( 523);_outgoingP.push_back(-211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(17.6966);
-  _incoming.push_back(-515);_outgoingV.push_back(-513);_outgoingP.push_back( 111);
-  _coupling.push_back(8.876/GeV2);_maxweight.push_back(8.54661);
-  _incoming.push_back(-515);_outgoingV.push_back(-523);_outgoingP.push_back( 211);
-  _coupling.push_back(12.85/GeV2);_maxweight.push_back(17.6966);
-  // D_s2
-  _incoming.push_back( 435);_outgoingV.push_back( 423);_outgoingP.push_back( 321);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  _incoming.push_back( 435);_outgoingV.push_back( 413);_outgoingP.push_back( 311);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  _incoming.push_back(-435);_outgoingV.push_back(-423);_outgoingP.push_back(-321);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  _incoming.push_back(-435);_outgoingV.push_back(-413);_outgoingP.push_back(-311);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  // B_s2
-  _incoming.push_back( 535);_outgoingV.push_back( 523);_outgoingP.push_back(-321);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  _incoming.push_back( 535);_outgoingV.push_back( 513);_outgoingP.push_back(-311);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  _incoming.push_back(-535);_outgoingV.push_back(-523);_outgoingP.push_back( 321);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  _incoming.push_back(-535);_outgoingV.push_back(-513);_outgoingP.push_back( 311);
-  _coupling.push_back(12.28/GeV2);_maxweight.push_back(36.3926);
-  
-}
-
 inline TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer(const TensorMesonVectorPScalarDecayer & x)
   : TensorMesonDecayerBase(x), _incoming(x._incoming), _outgoingV(x._outgoingV),
-    _outgoingP(x._outgoingP), _coupling(x._coupling), _maxweight(x._maxweight)  {}
+    _outgoingP(x._outgoingP), _coupling(x._coupling), _maxweight(x._maxweight),
+    _initsize(x._initsize) {}
 
 inline IBPtr TensorMesonVectorPScalarDecayer::clone() const {
   return new_ptr(*this);
@@ -202,6 +66,8 @@ inline void TensorMesonVectorPScalarDecayer::dofinish() {
 
 inline void TensorMesonVectorPScalarDecayer::doinitrun() {
   TensorMesonDecayerBase::doinitrun();
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {if(_Initialize){_maxweight[ix] = 2.*mode(ix)->maxWeight();}}
 }
 
 inline void TensorMesonVectorPScalarDecayer::rebind(const TranslationMap & trans)
