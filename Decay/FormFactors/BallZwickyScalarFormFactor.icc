@@ -7,53 +7,12 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline BallZwickyScalarFormFactor::BallZwickyScalarFormFactor() 
-{
-  double ort(1./sqrt(2.));
-  // parameters for the B to pi  form-factors
-  _r10.push_back(0.);_r20.push_back(ort*0.258);
-  _m120.push_back(-1.);_mfit20.push_back(33.81*GeV2);
-  _r1plus.push_back(ort*0.744);_r2plus.push_back(-ort*0.486);
-  _m12plus.push_back(5.32*5.32*GeV2);_mfit2plus.push_back(40.73*GeV2);
-  _r1T.push_back(ort*1.387);_r2T.push_back(-ort*1.134);
-  _m12T.push_back(5.32*5.32*GeV2);_mfit2T.push_back(32.22*GeV2);
-  addFormFactor(521, 111,0,2,-5,-2);
-  _r10.push_back(0.);_r20.push_back(0.258);
-  _m120.push_back(-1.);_mfit20.push_back(33.81*GeV2);
-  _r1plus.push_back(0.744);_r2plus.push_back(-0.486);
-  _m12plus.push_back(5.32*5.32*GeV2);_mfit2plus.push_back(40.73*GeV2);
-  _r1T.push_back(1.387);_r2T.push_back(-1.134);
-  _m12T.push_back(5.32*5.32*GeV2);_mfit2T.push_back(32.22*GeV2);
-  addFormFactor(511,-211,0,2,-5,-2);
-  // parameters for the B to K   form-factors
-  _r10.push_back(0.);_r20.push_back(0.330);
-  _m120.push_back(-1.);_mfit20.push_back(37.46*GeV2);
-  _r1plus.push_back(0.162);_r2plus.push_back(0.173);
-  _m12plus.push_back(5.41*5.41*GeV2);_mfit2plus.push_back(-1.);
-  _r1T.push_back(0.161);_r2T.push_back(0.198);
-  _m12T.push_back(5.41*5.41*GeV2);_mfit2T.push_back(-1.);
-  addFormFactor(521,321,0,2,-5,-3);
-  _r10.push_back(0.);_r20.push_back(0.330);
-  _m120.push_back(-1.);_mfit20.push_back(37.46*GeV2);
-  _r1plus.push_back(0.162);_r2plus.push_back(0.173);
-  _m12plus.push_back(5.41*5.41*GeV2);_mfit2plus.push_back(-1.);
-  _r1T.push_back(0.161);_r2T.push_back(0.198);
-  _m12T.push_back(5.41*5.41*GeV2);_mfit2T.push_back(-1.);
-  addFormFactor(511,311,0,2,-5,-3);
-  // parameters for the B to eta form-factors
-  _r10.push_back(0.);_r20.push_back(ort*0.273);
-  _m120.push_back(-1.);_mfit20.push_back(31.03*GeV2);
-  _r1plus.push_back(ort*0.122);_r2plus.push_back(ort*0.155);
-  _m12plus.push_back(5.32*5.32*GeV);_mfit2plus.push_back(-1.);
-  _r1T.push_back(ort*0.111);_r2T.push_back(ort*0.175);
-  _m12T.push_back(5.32*5.32*GeV);_mfit2T.push_back(-1.);
-  addFormFactor(521,221,0,2,-5,-2);
-}
-
-inline BallZwickyScalarFormFactor::BallZwickyScalarFormFactor(const BallZwickyScalarFormFactor & x)
+inline BallZwickyScalarFormFactor::
+BallZwickyScalarFormFactor(const BallZwickyScalarFormFactor & x)
   : ScalarFormFactor(x),_r10(x._r10),_r20(x._r20),_r1plus(x._r1plus),_r2plus(x._r2plus),
     _r1T(x._r1T),_r2T(x._r2T),_m120(x._m120),_mfit20(x._mfit20),_m12plus(x._m12plus),
-    _mfit2plus(x._mfit2plus),_m12T(x._m12T),_mfit2T(x._mfit2T) {}
+    _mfit2plus(x._mfit2plus),_m12T(x._m12T),_mfit2T(x._mfit2T), _thetaeta(x._thetaeta)
+{}
 
 inline IBPtr BallZwickyScalarFormFactor::clone() const {
   return new_ptr(*this);
@@ -100,6 +59,44 @@ inline void BallZwickyScalarFormFactor::dofinish() {
 
 inline void BallZwickyScalarFormFactor::doinitrun() {
   ScalarFormFactor::doinitrun();
+  /*
+  // output some graphs to check the answers
+  int id0,id1;
+  unsigned int iz;
+  Energy m0,m1; 
+  Energy2 q2,step(14./100.*GeV2);
+  tcPDPtr in,out;
+  Complex f0,fp,ft;
+  ofstream output("Ball.top");
+  for(unsigned int ix=0;ix<numberOfFactors();++ix)
+    {
+      particleID(ix,id0,id1);
+      in = getParticleData(id0);m0=in->mass();
+      out= getParticleData(id1);m1=out->mass();
+      output << "new frame " << endl;
+      output << "set font duplex" << endl;
+      output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
+	     << " scalar form factors \"" << endl;
+      output << "set limits x 0 14. y 0 1" << endl;
+      double rt(sqrt(2.));
+      for(iz=0;iz<3;++iz)
+	{
+	  q2=0.;
+	  for( ;q2<14.*GeV2+step;q2+=step)
+	    {
+	      ScalarScalarFormFactor(q2,ix,id0,id1,m0,m1,f0,fp);
+	      ScalarScalarSigmaFormFactor(q2,ix,id0,id1,m0,m1,ft);
+	      if(id1==111||id1==221){f0*=rt;fp*=rt;ft*=rt;}
+	      if(iz==0){output << q2/GeV2 << "   " << f0.real() << endl;}
+	      else if(iz==1){output << q2/GeV2 << "   " << fp.real() << endl;}
+	      else if(iz==2){output << q2/GeV2 << "   " << ft.real() << endl;}
+	    }
+	  if(iz==0){output      << "join red"    << endl;}
+	  else if(iz==1){output << "join blue"   << endl;}
+	  else if(iz==2){output << "join green"   << endl;}
+	}
+    }
+  */
 }
 
 inline void BallZwickyScalarFormFactor::rebind(const TranslationMap & trans)

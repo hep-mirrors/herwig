@@ -6,7 +6,6 @@
 //
 #include "ScalarFormFactor.h"
 #include "BallZwickyVectorFormFactor.fh"
-
 namespace Herwig {
 using namespace ThePEG;
 
@@ -32,7 +31,7 @@ public:
   /**
    * Default constructor
    */
-  inline BallZwickyVectorFormFactor();
+  BallZwickyVectorFormFactor();
 
   /**
    * Copy constructor
@@ -63,7 +62,7 @@ public:
    * @param A2 The form factor \f$A_2\f$
    * @param V  The form factor \f$V\f$
    */
-  void ScalarVectorFormFactor(Energy2 q2, int iloc, int id0, int id1,
+  void ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 			      Energy m0, Energy m1,Complex & A0,
 			      Complex & A1,Complex & A2, Complex & V) const;
 
@@ -79,10 +78,15 @@ public:
    * @param T2 The form factor \f$T_2\f$.
    * @param T3 The form factor \f$T_3\f$.
    */
-  void ScalarVectorSigmaFormFactor(Energy2 q2,int iloc,int id0,int id1,
+  void ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
 				   Energy m0, Energy m1, Complex & T1,
 				   Complex & T2, Complex & T3) const;
   //@}
+
+  /**
+   * Output the setup information for the particle database
+   */
+  virtual void dataBaseOutput(ofstream &);
 
 public:
 
@@ -335,6 +339,12 @@ private:
   vector<Energy2> _T3mfit2;
   // the masses for the form-factors
   //@}
+
+  /**
+   * Cut-off parameter for the switch to a small \f$q^2\f$ expansion for the \f$T_3\f$
+   * form factor.
+   */
+  Energy2 _cutoff;
 };
 
 }

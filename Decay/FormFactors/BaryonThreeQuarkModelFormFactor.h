@@ -25,7 +25,7 @@ using namespace ThePEG;
    *  also includes charm decays and bottom decays to light quarks.
    *
    *  The form factors are calculated by numerical computing the integrals from
-   *  PRD56, 348 to obtaqin the coefficients for the expansion of the form factors.
+   *  PRD56, 348 to obtain the coefficients for the expansion of the form factors.
    *
    * @see BaryonFormFactor
    */
@@ -36,11 +36,6 @@ class BaryonThreeQuarkModelFormFactor: public BaryonFormFactor {
    *  friend class for the integration of the expansion coefficents
    */
   friend class BaryonCFunction;
-
-  /**
-   *  friend class for the integration to give the partial width
-   */
-  friend class BaryonCMatrixElement;
 
 public:
 
@@ -180,7 +175,6 @@ protected:
    * @param SN The integral with the function raised to the power \f$N\f$.  
    */
   inline void SN(double y,int N,double & SNm2,double & SN);
-  // the integral of the S function
 
   /**
    *  The integrand for the coefficients of the expansion. This is a function of the
@@ -190,20 +184,7 @@ protected:
    * @param x The integration variable.
    */
   inline double integrandC(double x);
-  // the integrand for the coefficients
-
   //@}
-
-  /**
-   *  The integrand for the semi-analytic calculation of the semi-leptonic width.
-   *  This is mainly included for testing purposes.
-   * @param omega The \f$\omega\f$ parameter of the heavy quark form-factors.
-   * @param m0 The mass of the incoming baryon.
-   * @param m1 The mass of the outgoing baryon.
-   * @param type The type of the decay 
-   * @param imass The baryonic mass parameter to use.
-   */
-  inline double widthIntegrand(double omega,Energy m0, Energy m1, int type, int imass);
 
 protected:
 
@@ -219,7 +200,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -456,98 +437,6 @@ private:
 
 };
 }
-
-
-// class for the integration of the coefficients
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
-
-/** \ingroup Decay
- *  This function function uses the CLHEP Genfun classes which can access the 
- *  widthIntegrand member of the BaryonThreeQuarkModelFormFactor class. This function
- * can then be integrated to give the partial width.
- *
- */
-class BaryonCMatrixElement : public Genfun::AbsFunction {
-
-public:		   
-
-  /**
-   *  Function composition
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const; 
-
-  /**
-   * clone
-   */
-  BaryonCMatrixElement *clone() const; 
-
-private:                               
-
-  /**
-   * clone
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
-
-/**
- * The constructor
- */
- BaryonCMatrixElement(BaryonThreeQuarkModelFormFactorPtr,Energy,Energy,int,int);
-
-/** @name Standard constructors and destructors. */
-  /**
-   * The destructor
-   */
-  virtual ~BaryonCMatrixElement();
-
-  /**
-   *  The copy constructor 
-   */
-  BaryonCMatrixElement(const BaryonCMatrixElement &right);
-  //@}
-
-  /**
-   *  Retreive the function value
-   */
-  virtual double operator ()(double argument) const;
-
-  /**
-   *  Retreive the function value
-   */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-  
-private:
-  
-  /**
-   * Non-existant assignment operator. It is illegal to assign a function
-   */
-  const BaryonCMatrixElement & operator=(const BaryonCMatrixElement &right);
-  
-private:
-  
-  /**
-   *  A pointer to the form factor to supply the integrand.
-   */
-  BaryonThreeQuarkModelFormFactorPtr _formFactor;
-
-  /** The mass of the incoming baryon. */
-  Energy _m0;
-
-  /** The mass of the outgoing baryon. */
-  Energy _m1;
-
-  /** The type of decay being integrated. */
-  int _type;
-
-  /** The baryonic mass parameter. */
-  int _mass;
-
-};
-}
-
 
 #include "BaryonThreeQuarkModelFormFactor.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE

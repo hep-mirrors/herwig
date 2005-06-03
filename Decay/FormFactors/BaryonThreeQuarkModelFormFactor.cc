@@ -20,6 +20,44 @@
 namespace Herwig {
 using namespace ThePEG;
 
+void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
+  BaryonFormFactor::doinit();
+  // initialization in needed
+  if(_initialize)
+    {
+      Genfun::AbsFunction * integrand= new BaryonCFunction(this);      
+      _C0.resize(0);_C1.resize(0);_C2.resize(0);
+      GaussianIntegral *integral= new GaussianIntegral(0.,1.);
+      double pre(0.),root(2.*sqrt(6.));
+      double gamma1(1),gamma2(1),gamma3(sqrt(acos(-1.)));
+      unsigned int ix,iy;
+      for(iy=0;iy<2;++iy)
+	{
+	  if(iy==0){_mu2=_mlight*_mlight/_LambdaQ/_LambdaQ;}
+	  else{_mu2=_mstrange*_mstrange/_LambdaQ/_LambdaQ;}
+	  for(ix=0;ix<=_order;++ix)
+	    {
+	      if(ix>0){gamma1*=ix;}
+	      if(ix%2==1){gamma2*=float((ix+1)/2);gamma3*=float(ix)/2.;}
+	      if(ix%2==0){pre=pow(root,ix)/12.*gamma2/gamma1;}
+	      else{pre=pow(root,ix)/12.*gamma3/gamma1;}
+	      // for the xi_0 function
+	      _a=_mu2;_b=2.;_N=ix;
+	      _C0.push_back(pre*(*integral)[*integrand]);
+	      // for the xi_1 function
+	      _a=_mu2;_b=1.;
+	      _C1.push_back(pre*(*integral)[*integrand]);
+	      // for the xi_2 function
+	      _a=0.;
+	      _b=0.;
+	      _C2.push_back(pre*(*integral)[*integrand]);
+	    }
+	}
+      // tidy up
+      delete integrand;
+    }
+}
+
 BaryonThreeQuarkModelFormFactor::~BaryonThreeQuarkModelFormFactor() {}
 
 void BaryonThreeQuarkModelFormFactor::persistentOutput(PersistentOStream & os) const {
@@ -43,13 +81,13 @@ void BaryonThreeQuarkModelFormFactor::Init() {
   static Parameter<BaryonThreeQuarkModelFormFactor,unsigned int> interfaceOrder
     ("Order",
      "The order of terms to include in the series expansion of the form-factor.",
-     &BaryonThreeQuarkModelFormFactor::_order, 10, 0, 100,
+     &BaryonThreeQuarkModelFormFactor::_order, 10, 0, 1000,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceLightMass
     ("LightMass",
      "The mass of the light quark",
-     &BaryonThreeQuarkModelFormFactor::_mlight, GeV, .57*GeV, 0.0*GeV, 2.0*GeV,
+     &BaryonThreeQuarkModelFormFactor::_mlight, GeV, .42*GeV, 0.0*GeV, 2.0*GeV,
      false, false, true);
 
   static Parameter<BaryonThreeQuarkModelFormFactor,Energy> interfaceStrangeMass
@@ -118,7 +156,7 @@ void BaryonThreeQuarkModelFormFactor::Init() {
 }
 
 void BaryonThreeQuarkModelFormFactor::
- SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy m1,
+SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a)
 {
@@ -136,7 +174,7 @@ void BaryonThreeQuarkModelFormFactor::
   double omega=.5/m0/m1*(m0*m0+m1*m1-q2);
   // calculate the form factor
   // the phi functions
-  vector<double> phi=phiFunction(omega);
+  vector<double> phi(phiFunction(omega));
   // use the xi0 functions
   if(abs(id0)==5122||abs(id0)==5232||abs(id0)==5132)
     {
@@ -147,7 +185,8 @@ void BaryonThreeQuarkModelFormFactor::
 	  denom+=power*_C0[ix+ioff];
 	  power*=lambdabar;
 	}
-      f1v=numer/denom;f1a=-f1v;
+      f1v=numer/denom;
+      f1a=-f1v;
     }
   else
     {
@@ -160,8 +199,7 @@ void BaryonThreeQuarkModelFormFactor::
 	  power*=lambdabar;
 	}
       numer[1]/=(omega-1.);
-      double xi1=numer[0]/denom;
-      double xi2=numer[1]/denom;
+      double xi1(numer[0]/denom),xi2(numer[1]/denom);
       // the couplings in the velocity form
       Complex g1v,g1a,g2v,g2a,g3a,g3v;
       g1v = -(omega*xi1-(omega*omega-1.)*xi2)/3.;
@@ -250,6 +288,7 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output)
     {output << "insert " << fullName() << ":C1 " << ix << "   " << _C1[ix] << " \n";}
   for(unsigned int ix=0;ix<_C2.size();++ix)
     {output << "insert " << fullName() << ":C2 " << ix << "   " << _C2[ix] << " \n";}
+  BaryonFormFactor::dataBaseOutput(output);
 }
 
 }
@@ -275,6 +314,309 @@ double BaryonCFunction::operator() (double x) const
 {return _formFactor->integrandC(x);}
 
 }
+
+
+/*
+
+// from .h
+
+
+  //
+   *  The integrand for the semi-analytic calculation of the semi-leptonic width.
+   *  This is mainly included for testing purposes.
+   * @param omega The \f$\omega\f$ parameter of the heavy quark form-factors.
+   * @param m0 The mass of the incoming baryon.
+   * @param m1 The mass of the outgoing baryon.
+   * @param type The type of the decay 
+   * @param imass The baryonic mass parameter to use.
+   //
+  inline double widthIntegrand(double omega,Energy m0, Energy m1, int type, int imass);
+
+// from .icc
+
+
+
+  cout << "testing the paper form of the me" << endl;
+  // first matrix element
+  Energy m0=getParticleData(5122)->mass();
+  Energy m1=getParticleData(4122)->mass();
+  double omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+  Genfun::AbsFunction *me1=new BaryonCMatrixElement(this,m0,m1,1,0);
+  GaussianIntegral *integral= new GaussianIntegral(1.,omegamax);
+  cout << "testing lambda decay" << (*integral)[*me1]/6.582119E-22 << endl;
+  delete me1; delete integral;
+  // second matrix element
+  m0=getParticleData(5222)->mass();
+  m1=getParticleData(4222)->mass();
+  omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+  me1=new BaryonCMatrixElement(this,m0,m1,2,0);
+  integral= new GaussianIntegral(1.,omegamax);
+  cout << "testing sigma decay" << (*integral)[*me1]/6.582119E-22 << endl;
+  delete me1; delete integral;
+  // third matrix element
+  m0=getParticleData(5232)->mass();
+  m1=getParticleData(4232)->mass();
+  omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+  me1=new BaryonCMatrixElement(this,m0,m1,1,1);
+  integral= new GaussianIntegral(1.,omegamax);
+  cout << "testing xi decay" << (*integral)[*me1]/6.582119E-22 << endl;
+  delete me1; delete integral;
+  // fourth matrix element
+  m0=getParticleData(5332)->mass();
+  m1=getParticleData(4332)->mass();
+  omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+  me1=new BaryonCMatrixElement(this,m0,m1,2,2);
+  integral= new GaussianIntegral(1.,omegamax);
+  cout << "testing omega decay" << (*integral)[*me1]/6.582119E-22 << endl;
+  delete me1; delete integral;
+  // fifth matrix element
+  m0=getParticleData(5222)->mass();
+  m1=getParticleData(4224)->mass();
+  omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+  me1=new BaryonCMatrixElement(this,m0,m1,3,0);
+  integral= new GaussianIntegral(1.,omegamax);
+  cout << "testing sigma decay" << (*integral)[*me1]/6.582119E-22 << endl;
+  delete me1; delete integral;
+  // fourth matrix element
+  m0=getParticleData(5332)->mass();
+  m1=getParticleData(4334)->mass();
+  omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+  me1=new BaryonCMatrixElement(this,m0,m1,3,2);
+  integral= new GaussianIntegral(1.,omegamax);
+  cout << "testing omega decay" << (*integral)[*me1]/6.582119E-22 << endl;
+
+
+
+inline double BaryonThreeQuarkModelFormFactor::widthIntegrand(double omega,Energy m0,
+							      Energy m1, int type,
+							      int imass)
+ {
+   InvEnergy2 GF=1.16639E-5/GeV2;
+   double vcb=1.;
+   // the IW function
+   vector<double> phi=phiFunction(omega);
+   double Hpp(0.),Hmm(0.),Hp0(0.),Hm0(0.),Hppb(0.),Hmmb(0.);
+   double HA3(0.),HV3(0.),HA1(0.),HV1(0.),HA0(0.),HV0(0.);
+   double lambdabar,xit;
+   if(imass==0){lambdabar=_Lambdaqq/_LambdaQ;}
+   else if(imass==1){lambdabar=_Lambdasq/_LambdaQ;}
+   else{lambdabar=_Lambdass/_LambdaQ;}
+   if(type==1)
+     {
+       double power(1.),numer(0.),denom(0.);
+       unsigned int iy;
+       for(unsigned int ix=0;ix<=_order;++ix)
+	 {
+	   if(imass>0){iy=ix+_order+1;}
+	   else{iy=ix;}
+	   numer+=phi[ix]*power*_C0[iy];
+	   denom+=power*_C0[iy];
+	   power*=lambdabar;
+	 }
+       double xi0(numer/denom);
+       Hpp = xi0;
+       Hmm = xi0;
+       Hp0 = xi0*((m0+m1)*sqrt(omega-1.)-(m0-m1)*sqrt(omega+1.));
+       Hm0 = xi0*((m0+m1)*sqrt(omega-1.)+(m0-m1)*sqrt(omega+1.));
+     }
+   else if(type==2)
+     {
+       double power(1.),numer[2]={0.,0.},denom(0.);
+       unsigned int iy;
+       for(unsigned int ix=0;ix<=_order;++ix)
+	 {
+	   if(imass>0){iy=ix+_order+1;}
+	   else{iy=ix;}
+	   numer[0]+=phi[ix]*power*_C1[iy];
+	   denom+=power*_C1[iy];
+	   numer[1]+=power*_C2[iy]*(phi[ix]-phi[ix+2]);
+	   power*=lambdabar;
+	 }
+       numer[1]/=(omega-1.);
+       double xi1=numer[0]/denom;
+       double xi2=numer[1]/denom;
+       xit = xi1*omega-xi2*(omega*omega-1.);
+       double xiLp = xi1*(omega+2.)-xi2*(omega*omega-1.);
+       double xiLm = xi1*(omega-2.)-xi2*(omega*omega-1.);
+       //double xiLp(xit),xiLm(xit);
+       Hpp = 1./3.*xit;
+       Hmm = 1./3.*xit;
+       Hp0 = 1./3.*((m0+m1)*sqrt(omega-1.)*xiLp-(m0-m1)*xiLm*sqrt(omega+1.));
+       Hm0 = 1./3.*((m0+m1)*sqrt(omega-1.)*xiLp+(m0-m1)*xiLm*sqrt(omega+1.));
+     }
+   else
+     {
+       double power(1.),numer[2]={0.,0.},denom(0.);
+       unsigned int iy;
+       for(unsigned int ix=0;ix<=_order;++ix)
+	 {
+	   if(imass>0){iy=ix+_order+1;}
+	   else{iy=ix;}
+	   numer[0]+=phi[ix]*power*_C1[iy];
+	   denom+=power*_C1[iy];
+	   numer[1]+=power*_C2[iy]*(phi[ix]-phi[ix+2]);
+	   power*=lambdabar;
+	 }
+       numer[1]/=(omega-1.);
+       double xi1=numer[0]/denom;
+       double xi2=numer[1]/denom;
+       // the form factors
+       double N1(0.),N2(0.),N3(0.),N4(0.),K1(0.),K2(0.),K3(0.),K4(0.),orr(1./sqrt(3.));
+       N1 = orr*(xi1-(omega-1.)*xi2);
+       K1 = orr*(xi1-(omega+1.)*xi2);
+       N2 = 0.;
+       K2 = 0.;
+       N3 =-2.*orr*xi2;
+       K3 =-N3;
+       N4 = 2.*orr*xi1;
+       K4 =-2.*orr*xi1;
+       // the coefficients
+       xit  = xi1*omega-xi2*(omega*omega-1.);
+       double xiLps = xi1*(omega-1.)-xi2*(omega*omega-1.);
+       double xiLms = xi1*(omega+1.)-xi2*(omega*omega-1.);
+       Hpp  = sqrt(2.)/3.*xit;
+       Hmm  =-sqrt(2.)/3.*xit;
+       Hppb = sqrt(2./3.)*xi1;
+       Hmmb =-sqrt(2./3.)*xi1;
+       Hp0  = sqrt(2.)/3.*((m0+m1)*sqrt(omega-1.)*xiLps-(m0-m1)*xiLms*sqrt(omega+1.));
+       Hm0  = sqrt(2.)/3.*((m0+m1)*sqrt(omega-1.)*xiLps+(m0-m1)*xiLms*sqrt(omega+1.));
+       HA3 = sqrt(2.*m0*m1*(omega+1.))*K4;
+       HV3 =-sqrt(2.*m0*m1*(omega-1.))*N4;
+       HV1 = sqrt(2./3.)*sqrt(m0*m1*(omega-1.))*(N4-2.*(omega+1.)*N1);
+       HA1 = sqrt(2./3.)*sqrt(m0*m1*(omega+1.))*(K4-2.*(omega-1.)*K1);
+       HV0 = -2./sqrt(3.)*sqrt(m0*m1*(omega-1.))*((m0*omega-m1)*N4-(m0-m1)*(omega+1.)*N1
+						  +m1*(omega*omega-1.)*N2
+						  +m0*(omega*omega-1.)*N3);
+       HA0 =  2./sqrt(3.)*sqrt(m0*m1*(omega+1.))*((m0*omega-m1)*K4+(m0+m1)*(omega-1.)*K1
+						  +m1*(omega*omega-1.)*K2
+						  +m0*(omega*omega-1.)*K3);
+     }
+   // prefactors
+   double omegamax=0.5*(m0*m0+m1*m1)/m0/m1;
+   Hpp  *= -2.*sqrt(m0*m1)*(sqrt(omega-1.)-sqrt(omega+1.));
+   Hmm  *= -2.*sqrt(m0*m1)*(sqrt(omega-1.)+sqrt(omega+1.));
+   Hppb *= -2.*sqrt(m0*m1)*(sqrt(omega-1.)-sqrt(omega+1.));
+   Hmmb *= -2.*sqrt(m0*m1)*(sqrt(omega-1.)+sqrt(omega+1.));
+   Hp0  *= 1./sqrt(omegamax-omega);
+   Hm0  *= 1./sqrt(omegamax-omega);
+   HV0 *=1./sqrt(2.*m0*m1*(omegamax-omega));
+   HA0 *=1./sqrt(2.*m0*m1*(omegamax-omega));
+   double pi=acos(-1.);
+   double kw=GF*GF*vcb*vcb/8./pi/pi/pi*m1*m1*m1/6.*
+     (omegamax-omega)*sqrt(omega*omega-1.);
+   double output;
+   if(type<=2)
+     {output=kw*(Hpp*Hpp+Hmm*Hmm+Hp0*Hp0+Hm0*Hm0+Hppb*Hppb+Hmmb*Hmmb);}
+   else
+     {output=2.*kw*(HA3*HA3 +HV3*HV3+HA0*HA0+HV0*HV0+HA1*HA1+HV1*HV1);}
+   return output;
+}
+
+
+// from .cc
+
+  // output some plots for testing
+  double lambdabar;
+  ofstream output("ThreeQuark.top");
+  output << "set font duplex" << endl;
+  output << "title top \"Figure 3 from paper \"" << endl;
+  output << "set limits x 1 1.44 y 0.5 1" << endl;
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      double omegamin(1.),omegamax(1.44),step((omegamax-omegamin)/100.),omega(1.),xi;
+      unsigned int ioff(0);
+      if(ix==0){lambdabar=600*MeV/_LambdaQ;}
+      else if(ix==1){lambdabar=650*MeV/_LambdaQ;}
+      else if(ix==2){lambdabar=710*MeV/_LambdaQ;}
+      else if(ix==3){lambdabar=750*MeV/_LambdaQ;}
+      else if(ix==4){lambdabar=800*MeV/_LambdaQ;}
+      for(;omega<omegamax;omega+=step)
+	{
+	  vector<double> phi(phiFunction(omega));
+	  double power(1.),numer(0.),denom(0.);
+	  for(unsigned int iy=0;iy<=_order;++iy)
+	    {
+	      numer+=phi[iy]*power*_C0[iy+ioff];
+	      denom+=power*_C0[iy+ioff];
+	      power*=lambdabar;
+	    }
+	  xi=numer/denom;
+	  output << omega << "   " << xi << endl; 
+	}
+      if(ix==0){output << "join red" << endl;}
+      else if(ix==1){output << "join green" << endl;}
+      else if(ix==2){output << "join blue" << endl;}
+      else if(ix==3){output << "join cyan" << endl;}
+      else if(ix==4){output << "join magenta" << endl;}
+    }
+  output << "new frame " << endl;
+  output << "set font duplex" << endl;
+  output << "title top \"Figure 6 from paper \"" << endl;
+  output << "set limits x 1 1.4 y 0.5 1" << endl;
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      double omegamin(1.),omegamax(1.45),step((omegamax-omegamin)/100.),omega(1.);
+      unsigned int ioff(0);
+      if(ix==0){lambdabar=600*MeV/_LambdaQ;}
+      else if(ix==1){lambdabar=650*MeV/_LambdaQ;}
+      else if(ix==2){lambdabar=710*MeV/_LambdaQ;}
+      else if(ix==3){lambdabar=750*MeV/_LambdaQ;}
+      else if(ix==4){lambdabar=800*MeV/_LambdaQ;}
+      for(;omega<omegamax;omega+=step)
+	{
+	  vector<double> phi(phiFunction(omega));
+	  double power(1.),numer[2]={0.,0.},denom(0.);
+	  for(unsigned int iy=0;iy<=_order;++iy)
+	    {
+	      numer[0]+=phi[iy]*power*_C1[iy+ioff];
+	      denom+=power*_C1[iy+ioff];
+	      numer[1]+=power*_C2[iy+ioff]*(phi[iy]-phi[iy+2]);
+	      power*=lambdabar;
+	    }
+	  numer[1]/=(omega-1.);
+	  double xi1(numer[0]/denom),xi2(numer[1]/denom);
+	  output << omega << "   " << xi1 << endl; 
+	}
+      if(ix==0){output << "join red" << endl;}
+      else if(ix==1){output << "join green" << endl;}
+      else if(ix==2){output << "join blue" << endl;}
+      else if(ix==3){output << "join cyan" << endl;}
+      else if(ix==4){output << "join magenta" << endl;}
+    }
+  output << "new frame " << endl;
+  output << "set font duplex" << endl;
+  output << "title top \"Figure 7 from paper \"" << endl;
+  output << "set limits x 1 1.33 y 0.4 1" << endl;
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      double omegamin(1.),omegamax(1.45),step((omegamax-omegamin)/100.),omega(1.);
+      unsigned int ioff(_order+1);
+      if(ix==0){lambdabar=800*MeV/_LambdaQ;}
+      else if(ix==1){lambdabar=900*MeV/_LambdaQ;}
+      else if(ix==2){lambdabar=1000*MeV/_LambdaQ;}
+      else if(ix==3){lambdabar=1050*MeV/_LambdaQ;}
+      else if(ix==4){lambdabar=1100*MeV/_LambdaQ;}
+      for(;omega<omegamax;omega+=step)
+	{
+	  vector<double> phi(phiFunction(omega));
+	  double power(1.),numer[2]={0.,0.},denom(0.);
+	  for(unsigned int iy=0;iy<=_order;++iy)
+	    {
+	      numer[0]+=phi[iy]*power*_C1[iy+ioff];
+	      denom+=power*_C1[iy+ioff];
+	      numer[1]+=power*_C2[iy+ioff]*(phi[iy]-phi[iy+2]);
+	      power*=lambdabar;
+	    }
+	  numer[1]/=(omega-1.);
+	  double xi1(numer[0]/denom),xi2(numer[1]/denom);
+	  output << omega << "   " << xi1 << endl; 
+	}
+      if(ix==0){output << "join red" << endl;}
+      else if(ix==1){output << "join green" << endl;}
+      else if(ix==2){output << "join blue" << endl;}
+      else if(ix==3){output << "join cyan" << endl;}
+      else if(ix==4){output << "join magenta" << endl;}
+    }
 
 
 // function for the integral
@@ -305,3 +647,8 @@ double BaryonCMatrixElement::operator() (double x) const
  {return _formFactor->widthIntegrand(x,_m0,_m1,_type,_mass);}
 
 }
+
+
+
+
+ */

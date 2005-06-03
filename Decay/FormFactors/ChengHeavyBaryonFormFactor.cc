@@ -6,6 +6,7 @@
 
 #include "ChengHeavyBaryonFormFactor.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h" 
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -17,6 +18,150 @@
 
 namespace Herwig {
 using namespace ThePEG;
+ChengHeavyBaryonFormFactor::ChengHeavyBaryonFormFactor() 
+{
+  // consituent quark masses
+  _mu = 338*MeV;
+  _md = 322*MeV;
+  _ms = 510*MeV;
+  _mc = 1.6*GeV;
+  _mb = 5.0*GeV;
+  // masses for the q^2 dependence
+  _mVbc = 6.34*GeV;
+  _mVbs = 5.42*GeV;
+  _mVcs = 2.11*GeV;
+  _mVbd = 5.32*GeV;
+  _mVcu = 2.01*GeV;
+  _mAbc = 6.73*GeV;
+  _mAbs = 5.86*GeV;
+  _mAcs = 2.54*GeV;
+  _mAbd = 5.71*GeV;
+  _mAcu = 2.42*GeV;
+  double one3(1./sqrt(3.)),one2(1./sqrt(2.));
+  // lambda_b to lambda_c
+  addFormFactor(5122,4122,2,2,1,2,5,4);_Nfi.push_back(1.     );_eta.push_back(1.);
+  // lambda_b to lambda
+  addFormFactor(5122,3122,2,2,1,2,5,3);_Nfi.push_back(one3   );_eta.push_back(1.);
+  // lambda_b to n
+  addFormFactor(5122,2112,2,2,1,2,5,1);_Nfi.push_back(one2   );_eta.push_back(1.);
+  // xi_b to xi_c
+  addFormFactor(5232,4232,2,2,2,3,5,4);_Nfi.push_back(1.     );_eta.push_back(1.);
+  addFormFactor(5132,4132,2,2,1,3,5,4);_Nfi.push_back(1.     );_eta.push_back(1.);
+  // xi_b to xi
+  addFormFactor(5232,3322,2,2,2,3,5,3);_Nfi.push_back(one2   );_eta.push_back(1.);
+  addFormFactor(5132,3312,2,2,1,3,5,3);_Nfi.push_back(one2   );_eta.push_back(1.);
+  // xi_b to sigma
+  addFormFactor(5232,3212,2,2,2,3,5,1);_Nfi.push_back(0.5    );_eta.push_back(1.);
+  addFormFactor(5132,3112,2,2,1,3,5,1);_Nfi.push_back(0.5    );_eta.push_back(1.);
+  // xi_b to lambda
+  addFormFactor(5232,3122,2,2,2,3,5,1);_Nfi.push_back(one3/2.);_eta.push_back(1.);
+  // omega_b to omega_c
+  addFormFactor(5332,4332,2,2,3,3,5,4);_Nfi.push_back(1.     );_eta.push_back(-1./3.);
+  // omega_b to xi
+  addFormFactor(5332,3312,2,2,3,3,5,1);_Nfi.push_back(one3   );_eta.push_back(-1./3.);
+  // omega_b to omega_c*
+  addFormFactor(5332,4334,2,4,3,3,5,4);_Nfi.push_back(1.     );_eta.push_back(0.);
+  // omega_b to omega
+  addFormFactor(5332,3334,2,4,3,3,5,3);_Nfi.push_back(1.     );_eta.push_back(0.);
+  // omega_b to xi*
+  addFormFactor(5332,3314,2,4,3,3,5,1);_Nfi.push_back(one3   );_eta.push_back(0.);
+  // omega_c to omega
+  addFormFactor(4332,3334,2,4,3,3,4,3);_Nfi.push_back(1.     );_eta.push_back(0.);
+  // omega_c to xi*
+  addFormFactor(4332,3324,2,4,3,3,4,2);_Nfi.push_back(one3   );_eta.push_back(0.);
+  // lambda_c to lambda_0
+  addFormFactor(4122,3122,2,2,1,2,4,3);_Nfi.push_back(1./sqrt(3.));_eta.push_back(1.);
+  // xi_c to xi
+  addFormFactor(4232,3322,2,2,2,3,4,3);_Nfi.push_back(1./sqrt(3.));_eta.push_back(1.);
+  addFormFactor(4132,3312,2,2,1,3,4,3);_Nfi.push_back(1./sqrt(3.));_eta.push_back(1.);
+  // initial number of form factors
+  initialModes(numberOfFactors());
+}
+
+void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
+  BaryonFormFactor::doinit();
+  // check the parameters are consistent
+  unsigned int isize(numberOfFactors()),ix;
+  if(isize!=_eta.size()||isize!=_Nfi.size())
+    {throw InitException() << "Inconsistent paramters in ChengHeavyBaryon" 
+			   << "FormFactor::doinit() " << Exception::abortnow;}
+  Energy mi,mf,mq,mQ,lambda,delta,msum;
+  int id0,id1,inspin,outspin,isp1,isp2,inq,outq;
+  for(ix=0;ix<numberOfFactors();++ix)
+    {
+      // ids of the external particles
+      particleID(ix,id0,id1);
+      formFactorInfo(ix,inspin,outspin,isp1,isp2,inq,outq);
+      id0=abs(id0);id1=abs(id1);
+      mi=getParticleData(id0)->mass();
+      mf=getParticleData(id1)->mass();
+      msum=mi+mf;
+      // masses of the incoming and outgoing quarks
+      if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
+	 (id0==4332&&id1==3334))
+	{mq=_ms;mQ=_mc;}
+      else if((id0==4332&&id1==3322)||(id0==4332&&id1==3324))
+	{mq=_mu;mQ=_mc;}
+      else if((id0==5122&&id1==4122)||(id0==5232&&id1==4232)||(id0==5132&&id1==4132)||
+	      (id0==5332&&id1==4332)||(id0==5332&&id1==4334))
+	{mq=_mc;mQ=_mb;}
+      else if((id0==5122&&id1==3122)||(id0==5132&&id1==3312)||(id0==5232&&id1==3322)||
+	      (id0==5332&&id1==3334))
+	{mq=_ms;mQ=_mb;}
+      else if((id0==5122&&id1==2112)||(id0==5132&&id1==3112)||(id0==5232&&id1==3212)||
+	      (id0==5332&&id1==3312)||(id0==5232&&id1==3122)||(id0==5332&&id1==3314))
+	{mq=_md;mQ=_mb;}
+      else
+	{throw InitException() << "Unknown decay in ChengHeavyBaryon" 
+			       << "FormFactor::doinit() " << Exception::abortnow;}
+      // parameters
+      lambda = mf-mq;
+      delta  = mi-mf;
+      // compute the form-factors
+      if(inspin==2&&outspin==2)
+	{
+	  _f1.push_back(_Nfi[ix]*(1.-0.5*delta/mi
+				  +0.25*delta/mi/mq*(1.-0.5*lambda/mf)*
+				  (mi+mf-_eta[ix]*delta)
+				  -0.125*delta/mi/mf/mQ*lambda*(mi+mf+_eta[ix]*delta)));
+	  _f2.push_back(_Nfi[ix]*msum*(0.5/mi+0.25/mi/mq*(1.-0.5*lambda/mf)*
+				       (delta-(mi+mf)*_eta[ix])
+				       -0.125*lambda/mi/mf/mQ*(delta+(mi+mf)*_eta[ix])));
+	  _f3.push_back(_Nfi[ix]*msum*(0.5/mi-0.25/mi/mq*(1.-0.5*lambda/mf)*
+				       (mi+mf-_eta[ix]*delta)
+				       +0.125*lambda/mi/mf/mQ*(mi+mf+_eta[ix]*delta)));
+	  _g1.push_back(_Nfi[ix]*_eta[ix]*(1.+0.25*delta*lambda*(1./mi/mq-1./mf/mQ)));
+	  _g2.push_back(-0.25*msum*_Nfi[ix]*_eta[ix]*lambda*(1./mi/mq-1./mf/mQ));
+	  _g3.push_back(-0.25*msum*_Nfi[ix]*_eta[ix]*lambda*(1./mi/mq+1./mf/mQ));
+	}
+      else if(inspin==2&&outspin==4)
+	{
+	  _f1.push_back(2.*_Nfi[ix]/sqrt(3.)*(1.+0.5*lambda*(1./mq+1./mQ)));
+	  _f2.push_back(_Nfi[ix]*msum/sqrt(3.)/mi*(1.+0.5*lambda*(1./mq+1./mQ)));
+	  _f3.push_back(-_Nfi[ix]*msum*msum/mi/mf/sqrt(3.)*
+			(1.+0.5*lambda*(1./mq+1./mQ)));
+	  _g1.push_back(-2./sqrt(3.)*_Nfi[ix]);
+	  _g2.push_back(-_Nfi[ix]*msum/sqrt(3.)*lambda/mq/mi);
+	  _g3.push_back(-_f3.back());
+	}
+      else
+	{throw InitException() << "Unknown spin combination in ChengHeavyBaryon" 
+			       << "FormFactor::doinit() "  << Exception::abortnow;}
+    }
+  for(unsigned int ix=0;ix<numberOfFactors();++ix)
+    {
+      int id0,id1;
+      particleID(ix,id0,id1);
+      tcPDPtr part0=getParticleData(id0);Energy m0=part0->mass();
+      tcPDPtr part1=getParticleData(id1);Energy m1=part1->mass();
+      Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
+      if(part1->iSpin()==2)
+	{SpinHalfSpinHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
+      else
+	{SpinHalfSpinThreeHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,
+					  f4v,f1a,f2a,f3a,f4a);}
+    }
+}
 
 ChengHeavyBaryonFormFactor::~ChengHeavyBaryonFormFactor() {}
   
@@ -48,7 +193,7 @@ void ChengHeavyBaryonFormFactor::Init() {
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceUpMass
     ("DownMass",
      "The consituent mass of the down quark",
-     &ChengHeavyBaryonFormFactor::_md, GeV, 0.332*GeV, 0.0*GeV, 10.0*GeV,
+     &ChengHeavyBaryonFormFactor::_md, GeV, 0.322*GeV, 0.0*GeV, 10.0*GeV,
      false, false, true);
 
   static Parameter<ChengHeavyBaryonFormFactor,Energy> interfaceDownMass
@@ -133,6 +278,18 @@ void ChengHeavyBaryonFormFactor::Init() {
     ("AxialMasscu",
      "The axial-vector mass for the c->u transitions.",
      &ChengHeavyBaryonFormFactor::_mAcu, GeV, 2.42*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, true);
+
+  static ParVector<ChengHeavyBaryonFormFactor,double> interfaceNfi
+    ("Nfi",
+     "The prefactor for a given form factor",
+     &ChengHeavyBaryonFormFactor::_Nfi, -1, 1.0, -10.0, 10.0,
+     false, false, true);
+
+  static ParVector<ChengHeavyBaryonFormFactor,double> interfaceEta
+    ("Eta",
+     "The eta parameter for the form factor",
+     &ChengHeavyBaryonFormFactor::_eta, -1, 0.0, -10.0, 10.0,
      false, false, true);
 
 }
@@ -234,6 +391,23 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output)
   output << "set " << fullName() << ":AxialMasscs  " << _mAcs/GeV << " \n";
   output << "set " << fullName() << ":VectorMasscu " << _mVcu/GeV << " \n";
   output << "set " << fullName() << ":AxialMasscu  " << _mAcu/GeV << " \n";
+  for(unsigned int ix=0;ix<numberOfFactors();++ix)
+    {
+      if(ix<initialModes())
+	{
+	  output << "set " << fullName() << ":Nfi " << ix << "  " 
+		<< _Nfi[ix] << endl;
+	  output << "set " << fullName() << ":Eta " << ix << "  " 
+		<< _eta[ix] << endl;
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Nfi " << ix << "  " 
+		<< _Nfi[ix] << endl;
+	  output << "insert " << fullName() << ":Eta " << ix << "  " 
+		<< _eta[ix] << endl;
+	}
+    }
 }
 
 }

@@ -7,122 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline BallZwickyVectorFormFactor::BallZwickyVectorFormFactor() 
-{
-  double ort(1./sqrt(2.));
-  // parameters for the different form-factors
-  // B to rho
-  _Vr1.push_back(1.045*ort);_Vr2.push_back(-0.721*ort);
-  _VmR2.push_back(5.32*5.32*GeV2);_Vmfit2.push_back(38.34*GeV2);
-  _A0r1.push_back(1.527*ort);_A0r2.push_back(-1.220*ort);
-  _A0mR2.push_back(5.28*5.28*GeV2);_A0mfit2.push_back(33.36*GeV2);
-  _A1r1.push_back(0.240*ort);_A1r2.push_back(0.);
-  _A1mR2.push_back(-1.0);_A1mfit2.push_back(37.51*GeV2);
-  _A2r1.push_back(0.009*ort);_A2r2.push_back(0.212*ort);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(40.82*GeV2);
-  _T1r1.push_back(0.897*ort);_T1r2.push_back(-0.629*ort);
-  _T1mR2.push_back(5.32*5.32*GeV2);_T1mfit2.push_back(38.04*GeV2);
-  _T2r1.push_back(0.267*ort);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(38.59*GeV2);
-  _T3r1.push_back(0.022*ort);_T3r2.push_back(0.246*ort);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(40.88*GeV2);
-  addFormFactor(521,113,1,2,-5,-2);
-  _Vr1.push_back(1.045);_Vr2.push_back(-0.721);
-  _VmR2.push_back(5.32*5.32*GeV2);_Vmfit2.push_back(38.34*GeV2);
-  _A0r1.push_back(1.527);_A0r2.push_back(-1.220);
-  _A0mR2.push_back(5.28*5.28*GeV2);_A0mfit2.push_back(33.36*GeV2);
-  _A1r1.push_back(0.240);_A1r2.push_back(0.);
-  _A1mR2.push_back(-1.0);_A1mfit2.push_back(37.51*GeV2);
-  _A2r1.push_back(0.009);_A2r2.push_back(0.212);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(40.82*GeV2);
-  _T1r1.push_back(0.897);_T1r2.push_back(-0.629);
-  _T1mR2.push_back(5.32*5.32*GeV2);_T1mfit2.push_back(38.04*GeV2);
-  _T2r1.push_back(0.267);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(38.59*GeV2);
-  _T3r1.push_back(0.022);_T3r2.push_back(0.246);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(40.88*GeV2);
-  addFormFactor(511,-213,1,1,-5,-2);
-  // B to K*
-  _Vr1.push_back(0.923);_Vr2.push_back(-0.511);
-  _VmR2.push_back(5.32*5.32*GeV2);_Vmfit2.push_back(49.40*GeV2);
-  _A0r1.push_back(1.364);_A0r2.push_back(-0.990);
-  _A0mR2.push_back(5.28*5.28*GeV2);_A0mfit2.push_back(36.78*GeV2);
-  _A1r1.push_back(0.290);_A1r2.push_back(0.0);
-  _A1mR2.push_back(-1.);_A1mfit2.push_back(40.38*GeV2);
-  _A2r1.push_back(-0.084);_A2r2.push_back(0.342);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(52.00*GeV2);
-  _T1r1.push_back(0.823);_T1r2.push_back(-0.491);
-  _T1mR2.push_back(5.32*5.32*GeV2);_T1mfit2.push_back(46.31*GeV2);
-  _T2r1.push_back(0.333);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(41.41*GeV2);
-  _T3r1.push_back(-0.036);_T3r2.push_back(0.368);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(48.10*GeV2);
-  addFormFactor(521,323,1,2,-5,-3);
-  _Vr1.push_back(0.923);_Vr2.push_back(-0.511);
-  _VmR2.push_back(5.32*5.32*GeV2);_Vmfit2.push_back(49.40*GeV2);
-  _A0r1.push_back(1.364);_A0r2.push_back(-0.990);
-  _A0mR2.push_back(5.28*5.28*GeV2);_A0mfit2.push_back(36.78*GeV2);
-  _A1r1.push_back(0.290);_A1r2.push_back(0.);
-  _A1mR2.push_back(-1.);_A1mfit2.push_back(40.38*GeV2);
-  _A2r1.push_back(-0.084);_A2r2.push_back(0.342);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(52.00*GeV2);
-  _T1r1.push_back(0.823);_T1r2.push_back(-0.491);
-  _T1mR2.push_back(5.32*5.32*GeV2);_T1mfit2.push_back(46.31*GeV2);
-  _T2r1.push_back(0.333);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(41.41*GeV2);
-  _T3r1.push_back(-0.036);_T3r2.push_back(0.368);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(48.10*GeV2);
-  addFormFactor(511,313,1,2,-5,-3);
-  // B to omega
-  _Vr1.push_back(1.006*ort);_Vr2.push_back(-0.713*ort);
-  _VmR2.push_back(5.32*5.32*GeV2);_Vmfit2.push_back(37.45*GeV2);
-  _A0r1.push_back(1.321*ort);_A0r2.push_back(-1.040);
-  _A0mR2.push_back(5.28*5.28*GeV2);_A0mfit2.push_back(34.47*GeV2);
-  _A1r1.push_back(-0.217*ort);_A1r2.push_back(0.);
-  _A1mR2.push_back(-1.);_A1mfit2.push_back(37.01*GeV2);
-  _A2r1.push_back(0.006*ort);_A2r2.push_back(0.192*ort);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(41.24*GeV2);
-  _T1r1.push_back(0.865);_T1r2.push_back(-0.622);
-  _T1mR2.push_back(5.32*5.32*GeV2);_T1mfit2.push_back(37.19*GeV2);
-  _T2r1.push_back(0.242);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(37.95*GeV2);
-  _T3r1.push_back(0.023);_T3r2.push_back(0.220);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(40.87*GeV2);
-  addFormFactor(521,223,1,2,-5,2);
-  // B_s to K*
-  _Vr1.push_back(2.351);_Vr2.push_back(-2.039);
-  _VmR2.push_back(5.42*5.42*GeV2);_Vmfit2.push_back(33.10*GeV2);
-  _A0r1.push_back(2.813);_A0r2.push_back(-2.509);
-  _A0mR2.push_back(5.37*5.37*GeV2);_A0mfit2.push_back(31.58*GeV2);
-  _A1r1.push_back(0.231);_A1r2.push_back(0.);
-  _A1mR2.push_back(-1.);_A1mfit2.push_back(32.94*GeV2);
-  _A2r1.push_back(-0.011);_A2r2.push_back(0.192);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(40.14*GeV2);
-  _T1r1.push_back(2.047);_T1r2.push_back(-1.787);
-  _T1mR2.push_back(5.42*5.42*GeV2);_T1mfit2.push_back(32.83*GeV2);
-  _T2r1.push_back(0.260);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(33.01*GeV2);
-  _T3r1.push_back(0.043);_T3r2.push_back(0.217);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(39.38*GeV2);
-  addFormFactor(531,-323,1,3,-5,-2); 
-  // B_s to phi
-  _Vr1.push_back(1.484);_Vr2.push_back(-1.049);
-  _VmR2.push_back(5.42*5.42*GeV2);_Vmfit2.push_back(39.52*GeV2);
-  _A0r1.push_back(3.310);_A0r2.push_back(-2.835);
-  _A0mR2.push_back(5.37*5.37*GeV2);_A0mfit2.push_back(31.57*GeV2);
-  _A1r1.push_back(0.308);_A1r2.push_back(0.);
-  _A1mR2.push_back(-1.);_A1mfit2.push_back(36.54*GeV2);
-  _A2r1.push_back(-0.054);_A2r2.push_back(0.288);
-  _A2mR2.push_back(-1.);_A2mfit2.push_back(48.94*GeV2);
-  _T1r1.push_back(1.303);_T1r2.push_back(-0.954);
-  _T1mR2.push_back(5.42*5.42*GeV2);_T1mfit2.push_back(38.28*GeV2);
-  _T2r1.push_back(0.349);_T2r2.push_back(0.);
-  _T2mR2.push_back(-1.0);_T2mfit2.push_back(37.21*GeV2);
-  _T3r1.push_back(0.027);_T3r2.push_back(0.321);
-  _T3mR2.push_back(-1.);_T3mfit2.push_back(45.56*GeV2);
-  addFormFactor(531,333,1,3,-5,-3);
-}
-
 inline BallZwickyVectorFormFactor::BallZwickyVectorFormFactor(const BallZwickyVectorFormFactor & x)
   : ScalarFormFactor(x),_Vr1(x._Vr1),_Vr2(x._Vr2),_A0r1(x._A0r1),_A0r2(x._A0r2),
     _A1r1(x._A1r1),_A1r2(x._A1r2), _A2r1(x._A2r1), _A2r2(x._A2r2),_T1r1(x._T1r1),
@@ -130,7 +14,7 @@ inline BallZwickyVectorFormFactor::BallZwickyVectorFormFactor(const BallZwickyVe
     _VmR2(x._VmR2),_Vmfit2(x._Vmfit2),_A0mR2(x._A0mR2),_A0mfit2(x._A0mfit2),
     _A1mR2(x._A1mR2),_A1mfit2(x._A1mfit2),_A2mR2(x._A2mR2),_A2mfit2(x._A2mfit2),
     _T1mR2(x._T1mR2),_T1mfit2(x._T1mfit2),_T2mR2(x._T2mR2),
-    _T2mfit2(x._T2mfit2),_T3mR2(x._T3mR2),_T3mfit2(x._T3mfit2) {}
+    _T2mfit2(x._T2mfit2),_T3mR2(x._T3mR2),_T3mfit2(x._T3mfit2), _cutoff(x._cutoff) {}
 
 inline IBPtr BallZwickyVectorFormFactor::clone() const {
   return new_ptr(*this);
@@ -160,7 +44,7 @@ inline void BallZwickyVectorFormFactor::doupdate() throw(UpdateException) {
 
 inline void BallZwickyVectorFormFactor::doinit() throw(InitException) {
   ScalarFormFactor::doinit();
-  unsigned int isize=numberOfFactors();
+  unsigned int isize(numberOfFactors());
   if(isize!=_Vr1.size()||isize!=_Vr2.size()||isize!=_A0r1.size()||isize!=_A0r2.size()||
      isize!=_A1r1.size()||isize!=_A1r2.size()||isize!=_A2r1.size()||isize!=_A2r2.size()||
      isize!=_T1r1.size()||isize!=_T1r2.size()||isize!=_T2r1.size()||isize!=_T2r2.size()||
@@ -169,8 +53,7 @@ inline void BallZwickyVectorFormFactor::doinit() throw(InitException) {
      isize!=_A1mR2.size()||isize!=_A1mfit2.size()||isize!=_A2mR2.size()||
      isize!=_A2mfit2.size()||isize!=_T1mR2.size()||isize!=_T1mfit2.size()||
      isize!=_T2mR2.size()||isize!=_T2mfit2.size()||isize!=_T3mR2.size()||
-     isize!=_T3mfit2.size()
-     )
+     isize!=_T3mfit2.size())
     {throw InitException() << "Inconsistent parameters in " 
 			   << "BallZwickyScalarFormFactor::doinit()" 
 			   << Exception::abortnow;}
@@ -182,6 +65,65 @@ inline void BallZwickyVectorFormFactor::dofinish() {
 
 inline void BallZwickyVectorFormFactor::doinitrun() {
   ScalarFormFactor::doinitrun();
+  /*
+  // output some graphs to check the answers
+  int id0,id1;
+  unsigned int iz;
+  Energy m0,m1;
+  Energy2 q2,step(14./100.*GeV2);
+  tcPDPtr in,out;
+  Complex A0,A1,A2,V;
+  ofstream output("Ball.top");
+  for(unsigned int ix=0;ix<numberOfFactors();++ix)
+    {
+      particleID(ix,id0,id1);
+      in = getParticleData(id0);m0=in->mass();
+      out= getParticleData(id1);m1=out->mass();
+      output << "new frame " << endl;
+      output << "set font duplex" << endl;
+      output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
+	     << " vector form factors \"" << endl;
+      output << "set limits x 0 14. y 0 1" << endl;
+      double rt(sqrt(2.));
+      for(iz=0;iz<4;++iz)
+	{
+	  q2=0.;
+	  for( ;q2<14.*GeV2+step;q2+=step)
+	    {
+	      ScalarVectorFormFactor(q2,ix,id0,id1,m0,m1,A0,A1,A2,V);
+	      if(id1==113||id1==223){A0*=rt;A1*=rt;A2*=rt;V*=rt;}
+	      if(iz==0){output << q2/GeV2 << "   " << A0.real() << endl;}
+	      else if(iz==1){output << q2/GeV2 << "   " << A1.real() << endl;}
+	      else if(iz==2){output << q2/GeV2 << "   " << A2.real() << endl;}
+	      else if(iz==3){output << q2/GeV2 << "   " << V.real() << endl;}
+	    }
+	  if(iz==0){output      << "join red"    << endl;}
+	  else if(iz==1){output << "join blue"   << endl;}
+	  else if(iz==2){output << "join green"  << endl;}
+	  else if(iz==3){output << "join yellow" << endl;}
+	}
+      output << "new frame " << endl;
+      output << "set font duplex" << endl;
+      output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
+	     << " penguin form factors\" " << endl;
+      output << "set limits x 0 14. y 0 1" << endl;
+      for(iz=0;iz<3;++iz)
+	{
+	  q2=0.;
+	  for( ;q2<14.*GeV2+step;q2+=step)
+	    {
+	      ScalarVectorSigmaFormFactor(q2,ix,id0,id1,m0,m1,A0,A1,A2);
+	      if(id1==113||id1==223){A0*=rt;A1*=rt;A2*=rt;}
+	      if(iz==0){output << q2/GeV2 << "   " << A0.real() << endl;}
+	      else if(iz==1){output << q2/GeV2 << "   " << A1.real() << endl;}
+	      else if(iz==2){output << q2/GeV2 << "   " << A2.real() << endl;}
+	    }
+	  if(iz==0){output      << "join red"    << endl;}
+	  else if(iz==1){output << "join blue"   << endl;}
+	  else if(iz==2){output << "join green"  << endl;}
+	}
+    }
+  */
 }
 
 inline void BallZwickyVectorFormFactor::rebind(const TranslationMap & trans)

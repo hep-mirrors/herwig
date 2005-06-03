@@ -32,7 +32,7 @@ public:
   /**
    * Default constructor
    */
-  inline BallZwickyScalarFormFactor();
+  BallZwickyScalarFormFactor();
 
   /**
    * Copy constructor
@@ -60,7 +60,7 @@ public:
    * @param f0 The form-factor \f$f_0\f$. 
    * @param fp The form-factor \f$f_+\f$.
    */
-  virtual void ScalarScalarFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
 				      Energy m1,Complex & f0,Complex & fp) const;
 
   /**
@@ -73,9 +73,14 @@ public:
    * @param m1 The mass of the outgoing meson.
    * @param fT The form factor \f$f_T\f$.
    */
-  void ScalarScalarSigmaFormFactorEnergy2(Energy2 q2,int iloc,int id0,int id1,
-					  Energy m0, Energy m1,Complex & fT) const;
+  void ScalarScalarSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				   Energy m0, Energy m1,Complex & fT) const;
   //@}
+
+  /**
+   * Output the setup information for the particle database
+   */
+  virtual void dataBaseOutput(ofstream &);
 
 public:
 
@@ -246,6 +251,11 @@ private:
    */
   vector<Energy2> _mfit2T;
   //@}
+
+  /**
+   * The \f$\eta-\eta'\f$ mixing angle 
+   */
+  double _thetaeta;
 
 };
 
