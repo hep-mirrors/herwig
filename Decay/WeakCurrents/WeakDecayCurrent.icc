@@ -7,10 +7,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline WeakDecayCurrent::WeakDecayCurrent() {}
+  inline WeakDecayCurrent::WeakDecayCurrent() :_numbermodes(0) {}
 
 inline WeakDecayCurrent::WeakDecayCurrent(const WeakDecayCurrent & x)
-  : Interfaced(x), _quark(x._quark), _antiquark(x._antiquark) {}
+  : Interfaced(x), _quark(x._quark), _antiquark(x._antiquark), 
+    _numbermodes(x._numbermodes) {}
 
 inline void WeakDecayCurrent::doupdate() throw(UpdateException) {
   Interfaced::doupdate();
@@ -68,4 +69,6 @@ inline void WeakDecayCurrent::decayModeInfo(unsigned int imode, int& iq, int& ia
   if(imode<_quark.size()){iq=_quark[imode];ia=_antiquark[imode];}
   else{iq=0;ia=0;}
 }
+inline void WeakDecayCurrent::setInitialModes(unsigned int nmodes)
+{_numbermodes=nmodes;}
 }

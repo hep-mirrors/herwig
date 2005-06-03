@@ -25,6 +25,275 @@ using ThePEG::Helicity::ScalarSpinInfo;
 
 FourPionNovosibirskCurrent::~FourPionNovosibirskCurrent() {}
 
+FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() 
+{
+  // set the number of modes
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  // masses of the particles used in the current
+  _rhomass    = 0.7761*GeV;
+  _a1mass     = 1.2300*GeV;
+  _omegamass  = 0.7820*GeV;
+  _sigmamass  = 0.8000*GeV;
+  // widths of the particles used in the current
+  _rhowidth   = 0.14450*GeV;
+  _a1width    = 0.45000*GeV;
+  _omegawidth = 0.00841*GeV;
+  _sigmawidth = 0.80000*GeV;
+  // parameters for the resonance used in the integration
+  _intmass = 1.4*GeV;
+  _intwidth = 0.5*GeV;
+  // relative coupling of the z and rho in the a_1 decay
+  _zmag   = 1.3998721;
+  _zphase = 0.43585036;
+  _zsigma=0.;
+  // parameter for f_a1
+  _lambda2 = 1.2*GeV2;
+  _onedlam2 = 1./_lambda2;
+  _a1massolam2 = _a1mass*_a1mass*_onedlam2;
+  _psigma=0.;  
+  _hm2=0.; 
+  _rhoD=0.;
+  _prho=0.;
+  _dhdq2m2=0.;
+  // other parameters
+  _mpi  = 139.57*MeV;
+  _mpi2 = _mpi*_mpi; 
+  // use local values of the parameters
+  _localparameters=true;
+  // magic numbers from TAUOLA (N.B. conversion from GeV to MeV)
+  _athreec = 76.565/GeV;
+  _bthreec = 0.71709;
+  _cthreec = 0.27505*GeV;
+  _aomega  = 886.84/GeV;
+  _bomega  = 0.70983;
+  _comega  = 0.26689*GeV;
+  _aonec   = 96.867/GeV;
+  _bonec   = 0.70907;
+  _conec   = 0.26413*GeV;
+  //parameters for the running omega width
+  _omegaparam.resize(10);
+  _omegaparam[0] = 17.560;
+  _omegaparam[1] = 141.110;
+  _omegaparam[2] = 894.884;
+  _omegaparam[3] = 4977.35;
+  _omegaparam[4] = 7610.66;
+  _omegaparam[5] =-42524.4;
+  _omegaparam[6] =-1333.26;
+  _omegaparam[7] = 4860.19;
+  _omegaparam[8] =-6000.81;
+  _omegaparam[9] = 2504.97;
+  // values of the g omega function from hep-ph/0201149
+  double Fomegainit[98]={ 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 2.2867811,
+			  2.9710648, 2.9344304, 2.6913538, 2.5471206, 2.3557470,
+			  2.2448280, 2.1074708, 2.0504866, 1.9270257, 1.8669430,
+			  1.7907301, 1.7184515, 1.6535717, 1.6039416, 1.5535343,
+			  1.5065620, 1.4608675, 1.4215596, 1.3849826, 1.3480113,
+			  1.3147917, 1.2793381, 1.2487282, 1.2184237, 1.1952927,
+			  1.1683835, 1.1458827, 1.1145806, 1.0935820, 1.0608720,
+			  1.0390474, 1.0164336, 0.9908721, 0.9585276, 0.9307971,
+			  0.9017274, 0.8731154, 0.8452763, 0.8145532, 0.7817339,
+			  0.7493086, 0.7199919, 0.6887290, 0.6568120, 0.6255773,
+			  0.5944664, 0.5661956, 0.5391204, 0.5102391, 0.4786543,
+			  0.4546428, 0.4316779, 0.4063754, 0.3769831, 0.3561141,
+			  0.3333555, 0.3139160, 0.2949214, 0.2814728, 0.2602444,
+			  0.2349602, 0.2269845, 0.2192318, 0.2286938, 0.2839763,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000};
+  // values of the three charged pion G function from hep-ph/0201149
+  double Fthreeinit[98]={ 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  13.1664906,10.7234087, 8.8219614,10.7989664, 9.1883001,
+			  7.8526378, 7.7481031, 8.2633696, 5.5042820, 4.9029269,
+			  4.4794345, 3.9654009, 4.5254011, 3.6509495, 3.5005512,
+			  3.2274280, 3.1808922, 2.9925177, 2.6886659, 2.5195024,
+			  2.4678771, 2.3540580, 2.2123868, 2.1103525, 2.0106986,
+			  1.8792295, 1.8250662, 1.7068460, 1.6442842, 1.5503920,
+			  1.4814349, 1.4225838, 1.3627135, 1.3205355, 1.2784383,
+			  1.2387408, 1.1975995, 1.1633024, 1.1318133, 1.1114354,
+			  1.0951439, 1.0691465, 1.0602311, 1.0392803, 1.0220672,
+			  1.0154786, 1.0010130, 0.9908018, 0.9710845, 0.9602382,
+			  0.9488459, 0.9316537, 0.9118049, 0.8920435, 0.8719332,
+			  0.8520256, 0.8280582, 0.8064085, 0.7767881, 0.7570597,
+			  0.7382626, 0.7100251, 0.6846500, 0.6666913, 0.6372250,
+			  0.6162248, 0.6007728, 0.5799103, 0.5674670, 0.5446148,
+			  0.5352115, 0.5128809, 0.4932536, 0.5310397, 0.8566489,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000};
+  double   Foneinit[98]={ 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  1.4819183, 1.7086354, 1.6958492, 1.6172935, 1.6301320,
+			  1.5719706, 1.5459771, 1.5377471, 1.5008864, 1.4924121,
+			  1.4720882, 1.4371741, 1.3990080, 1.3879193, 1.4030601,
+			  1.3768673, 1.3493533, 1.3547127, 1.3275831, 1.3167892,
+			  1.3035913, 1.2968298, 1.2801558, 1.2650299, 1.2557997,
+			  1.2325822, 1.2210644, 1.1935984, 1.1746194, 1.1510350,
+			  1.1358515, 1.1205584, 1.1010553, 1.0903869, 1.0731295,
+			  1.0578678, 1.0438409, 1.0377911, 1.0253277, 1.0103551,
+			  1.0042409, 0.9937978, 0.9858117, 0.9770346, 0.9724492,
+			  0.9656686, 0.9606671, 0.9525813, 0.9488522, 0.9417335,
+			  0.9399430, 0.9323438, 0.9281269, 0.9244171, 0.9237418,
+			  0.9174354, 0.9177181, 0.9120840, 0.9047825, 0.9065579,
+			  0.9034142, 0.8992961, 0.9011586, 0.9036470, 0.8954964,
+			  0.8898208, 0.8911991, 0.8854824, 0.8888282, 0.8868449,
+			  0.9004632, 0.8981572, 0.9096183, 0.9046990, 1.7454215,
+			  0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.0000000,
+			  0.0000000, 0.0000000, 0.0000000};
+  Energy     eninit[98]={ 0.6000000, 0.6131313, 0.6262626, 0.6393939, 0.6525252,
+			  0.6656566, 0.6787879, 0.6919192, 0.7050505, 0.7181818,
+			  0.7313131, 0.7444444, 0.7575758, 0.7707071, 0.7838384,
+			  0.7969697, 0.8101010, 0.8232324, 0.8363636, 0.8494949,
+			  0.8626263, 0.8757576, 0.8888889, 0.9020202, 0.9151515,
+			  0.9282829, 0.9414141, 0.9545454, 0.9676768, 0.9808081,
+			  0.9939394, 1.0070707, 1.0202020, 1.0333333, 1.0464647,
+			  1.0595959, 1.0727273, 1.0858586, 1.0989898, 1.1121212,
+			  1.1252525, 1.1383839, 1.1515151, 1.1646465, 1.1777778,
+			  1.1909091, 1.2040404, 1.2171717, 1.2303030, 1.2434343,
+			  1.2565657, 1.2696970, 1.2828283, 1.2959596, 1.3090909,
+			  1.3222222, 1.3353535, 1.3484849, 1.3616161, 1.3747475,
+			  1.3878788, 1.4010102, 1.4141414, 1.4272727, 1.4404041,
+			  1.4535353, 1.4666667, 1.4797980, 1.4929293, 1.5060606,
+			  1.5191919, 1.5323232, 1.5454545, 1.5585859, 1.5717171,
+			  1.5848485, 1.5979798, 1.6111112, 1.6242424, 1.6373737,
+			  1.6505051, 1.6636363, 1.6767677, 1.6898990, 1.7030303,
+			  1.7161616, 1.7292930, 1.7424242, 1.7555555, 1.7686869,
+			  1.7818182, 1.7949495, 1.8080808, 1.8212122, 1.8343434,
+			  1.8474747, 1.8606061, 1.8737373};          
+  Energy2  ensigma[100]={ 0.2916000, 0.3206586, 0.3497172, 0.3787757, 0.4078344,
+			  0.4368929, 0.4659515, 0.4950101, 0.5240687, 0.5531273,
+			  0.5821859, 0.6112444, 0.6403030, 0.6693616, 0.6984202,
+			  0.7274788, 0.7565374, 0.7855960, 0.8146545, 0.8437131,
+			  0.8727717, 0.9018303, 0.9308889, 0.9599475, 0.9890060,
+			  1.0180646, 1.0471232, 1.0761818, 1.1052403, 1.1342990,
+			  1.1633576, 1.1924162, 1.2214748, 1.2505333, 1.2795919,
+			  1.3086505, 1.3377091, 1.3667676, 1.3958262, 1.4248848,
+			  1.4539435, 1.4830021, 1.5120606, 1.5411192, 1.5701778,
+			  1.5992364, 1.6282949, 1.6573535, 1.6864121, 1.7154707,
+			  1.7445292, 1.7735878, 1.8026465, 1.8317051, 1.8607637,
+			  1.8898222, 1.9188808, 1.9479394, 1.9769980, 2.0060565,
+			  2.0351152, 2.0641737, 2.0932324, 2.1222908, 2.1513495,
+			  2.1804080, 2.2094667, 2.2385252, 2.2675838, 2.2966425,
+			  2.3257010, 2.3547597, 2.3838181, 2.4128768, 2.4419353,
+			  2.4709940, 2.5000525, 2.5291111, 2.5581696, 2.5872283,
+			  2.6162868, 2.6453454, 2.6744041, 2.7034626, 2.7325213,
+			  2.7615798, 2.7906384, 2.8196969, 2.8487556, 2.8778141,
+			  2.9068727, 2.9359312, 2.9649899, 2.9940486, 3.0231071,
+			  3.0521657, 3.0812242, 3.1102829, 3.1393414, 3.1684000};
+  double    Fsigma[100]={ 2.0261996, 2.2349865, 2.4839740, 2.7840748, 3.1488798,
+			  3.5936222, 4.1301847, 4.7517977, 5.3984838, 5.9147439,
+			  6.0864558, 5.8283591, 5.2841811, 4.6615186, 4.0839195,
+			  3.5914702, 3.1841860, 2.8494759, 2.5732665, 2.3434010,
+			  2.1502059, 1.9862038, 1.8456544, 1.7241427, 1.6182493,
+			  1.5253036, 1.4432002, 1.3702650, 1.3051554, 1.2467849,
+			  1.1942677, 1.1468738, 1.1039963, 1.0651271, 1.0298390,
+			  0.9977714, 0.9686196, 0.9421255, 0.9180685, 0.8962603,
+			  0.8765374, 0.8587573, 0.8427927, 0.8285285, 0.8158574,
+			  0.8046767, 0.7948853, 0.7863811, 0.7790571, 0.7728010,
+			  0.7674922, 0.7630011, 0.7591889, 0.7559078, 0.7530031,
+			  0.7503147, 0.7476809, 0.7449428, 0.7419487, 0.7385587,
+			  0.7346500, 0.7301207, 0.7248930, 0.7189151, 0.7121620,
+			  0.7046344, 0.6963565, 0.6873729, 0.6777444, 0.6675445,
+			  0.6568548, 0.6457604, 0.6343476, 0.6227004, 0.6108983,
+			  0.5990148, 0.5871165, 0.5752623, 0.5635037, 0.5518846,
+			  0.5404415, 0.5292045, 0.5181981, 0.5074410, 0.4969472,
+			  0.4867267, 0.4767860, 0.4671288, 0.4577557, 0.4486661,
+			  0.4398569, 0.4313242, 0.4230627, 0.4150662, 0.4073282,
+			  0.3998415, 0.3925985, 0.3855914, 0.3788125, 0.3722538};
+  // scale the energies so they are in GeV2
+  for(unsigned int ix=0;ix<98;++ix){eninit[ix]*=GeV;}
+  for(unsigned int ix=0;ix<100;++ix){ensigma[ix]*=GeV2;}
+  // set up the vectors
+  vector<double> vecFomegainit(Fomegainit,Fomegainit+98),
+    vecFthreeinit(Fthreeinit,Fthreeinit+98),
+    vecFoneinit(Foneinit,Foneinit+98),vecFsigma(Fsigma,Fsigma+100);
+  // and a vector for the energies
+  vector<Energy> veceninit(eninit,eninit+98);
+  vector<Energy2> vecensigma(ensigma,ensigma+100);
+  // set up the interpolators
+  _Fomega  = new Interpolator(vecFomegainit,veceninit ,1);
+  _Fthreec = new Interpolator(vecFthreeinit,veceninit ,1);
+  _Fonec   = new Interpolator(vecFoneinit  ,veceninit ,1);
+  _Fsigma  = new Interpolator(vecFsigma    ,vecensigma,1);
+  // initialise the calculation of the a_1 width
+  _initializea1=false;
+  Energy2 a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
+		       126309,142098,157886,173675,189464,205252,221041,236830,252618,
+		       268407,284196,299984,315773,331562,347350,363139,378927,394716,
+		       410505,426293,442082,457871,473659,489448,505237,521025,536814,
+		       552603,568391,584180,599969,615757,631546,647334,663123,678912,
+		       694700,710489,726278,742066,757855,773644,789432,805221,821010,
+		       836798,852587,868375,884164,899953,915741,931530,947319,963107,
+		       978896,994685,1.01047e+06,1.02626e+06,1.04205e+06,1.05784e+06,
+		       1.07363e+06,1.08942e+06,1.10521e+06,1.12099e+06,1.13678e+06,
+		       1.15257e+06,1.16836e+06,1.18415e+06,1.19994e+06,1.21573e+06,
+		       1.23151e+06,1.2473e+06,1.26309e+06,1.27888e+06,1.29467e+06,
+		       1.31046e+06,1.32625e+06,1.34203e+06,1.35782e+06,1.37361e+06,
+		       1.3894e+06,1.40519e+06,1.42098e+06,1.43677e+06,1.45256e+06,
+		       1.46834e+06,1.48413e+06,1.49992e+06,1.51571e+06,1.5315e+06,
+		       1.54729e+06,1.56308e+06,1.57886e+06,1.59465e+06,1.61044e+06,
+		       1.62623e+06,1.64202e+06,1.65781e+06,1.6736e+06,1.68939e+06,
+		       1.70517e+06,1.72096e+06,1.73675e+06,1.75254e+06,1.76833e+06,
+		       1.78412e+06,1.79991e+06,1.81569e+06,1.83148e+06,1.84727e+06,
+		       1.86306e+06,1.87885e+06,1.89464e+06,1.91043e+06,1.92621e+06,
+		       1.942e+06,1.95779e+06,1.97358e+06,1.98937e+06,2.00516e+06,
+		       2.02095e+06,2.03674e+06,2.05252e+06,2.06831e+06,2.0841e+06,
+		       2.09989e+06,2.11568e+06,2.13147e+06,2.14726e+06,2.16304e+06,
+		       2.17883e+06,2.19462e+06,2.21041e+06,2.2262e+06,2.24199e+06,
+		       2.25778e+06,2.27356e+06,2.28935e+06,2.30514e+06,2.32093e+06,
+		       2.33672e+06,2.35251e+06,2.3683e+06,2.38409e+06,2.39987e+06,
+		       2.41566e+06,2.43145e+06,2.44724e+06,2.46303e+06,2.47882e+06,
+		       2.49461e+06,2.51039e+06,2.52618e+06,2.54197e+06,2.55776e+06,
+		       2.57355e+06,2.58934e+06,2.60513e+06,2.62092e+06,2.6367e+06,
+		       2.65249e+06,2.66828e+06,2.68407e+06,2.69986e+06,2.71565e+06,
+		       2.73144e+06,2.74722e+06,2.76301e+06,2.7788e+06,2.79459e+06,
+		       2.81038e+06,2.82617e+06,2.84196e+06,2.85774e+06,2.87353e+06,
+		       2.88932e+06,2.90511e+06,2.9209e+06,2.93669e+06,2.95248e+06,
+		       2.96827e+06,2.98405e+06,2.99984e+06,3.01563e+06,3.03142e+06,
+		       3.04721e+06,3.063e+06,3.07879e+06,3.09457e+06,3.11036e+06,
+		       3.12615e+06,3.14194e+06};
+  Energy a1widthin[200]={0,0,0,0,0,0,0,0,
+			 0,0,0,0,0.000634625,0.00686721,0.026178,0.066329,
+			 0.134996,0.239698,0.387813,0.586641,0.843471,1.16567,
+			 1.56076,2.03654,2.60115,3.26324,4.03202,4.91749,
+			 5.93053,7.08313,8.38858,9.86176,11.5194,13.3805,
+			 15.4667,17.8029,20.4175,23.3438,26.6202,30.2917,
+			 34.4108,39.0384,44.2457,50.1143,56.7369,64.2147,
+			 72.6566,82.1666,92.8329,104.708,117.786,131.981,
+			 147.124,162.974,179.244,195.64,211.904,227.818,
+			 243.223,257.991,272.06,285.392,297.971,309.8,
+			 320.894,331.278,340.979,350.03,358.463,366.31,
+			 373.608,380.386,386.677,392.511,397.945,402.935,
+			 407.563,411.841,415.79,419.433,422.766,425.853,
+			 428.695,431.302,433.715,435.883,437.887,439.716,
+			 441.426,442.947,444.326,445.575,446.65,447.666,
+			 448.578,449.395,450.123,450.821,451.343,451.847,
+			 452.283,452.859,452.987,453.266,453.496,453.686,
+			 453.839,453.958,454.05,454.113,454.149,454.16,
+			 454.154,454.13,454.091,454.037,453.966,453.9,
+			 453.814,453.724,453.628,453.528,453.417,453.314,
+			 453.206,453.1,452.995,452.891,452.79,452.697,
+			 452.598,452.509,452.423,452.343,452.269,452.201,
+			 452.141,452.086,452.039,452.004,451.966,451.941,
+			 451.926,451.888,451.919,451.928,451.945,451.971,
+			 452.006,452.05,452.102,452.163,452.234,452.421,
+			 452.401,452.498,452.605,452.718,452.84,452.971,
+			 453.111,453.261,453.417,453.583,453.756,453.937,
+			 454.126,454.324,454.529,455.023,454.964,455.719,
+			 455.428,455.671,455.921,456.179,456.444,456.695,
+			 456.996,457.276,457.57,457.867,458.171,458.478,
+			 458.793,459.115,459.442,459.777,460.115,460.458,
+			 460.809,461.161,461.52,461.884,462.253,462.626,
+			 463.004,463.832,463.778,464.166};
+  _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
+  _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
+}
+
 void FourPionNovosibirskCurrent::persistentOutput(PersistentOStream & os) const {
   os << _rhomass << _a1mass << _omegamass << _sigmamass << _rhowidth << _a1width
      << _omegawidth << _sigmawidth << _zsigma << _lambda2
@@ -32,7 +301,7 @@ void FourPionNovosibirskCurrent::persistentOutput(PersistentOStream & os) const 
      << _a1massolam2 << _psigma << _mpi
      << _aomega << _athreec << _aonec << _bomega << _bthreec << _bonec 
      << _comega << _cthreec <<_conec << _omegaparam << _intwidth << _intmass
-     << _mpi2 << _hm2 << _dhdq2m2 << _prho << _rhoD;
+     << _mpi2 << _hm2 << _dhdq2m2 << _prho << _rhoD << _zmag << _zphase;
 }
 
 void FourPionNovosibirskCurrent::persistentInput(PersistentIStream & is, int) {
@@ -42,7 +311,7 @@ void FourPionNovosibirskCurrent::persistentInput(PersistentIStream & is, int) {
      >> _a1massolam2 >>_psigma >> _mpi 
      >> _aomega >> _athreec >> _aonec >> _bomega >> _bthreec >> _bonec 
      >> _comega >> _cthreec >>_conec >> _omegaparam >> _intwidth >> _intmass
-     >> _mpi2 >> _hm2 >> _dhdq2m2 >> _prho >> _rhoD;
+     >> _mpi2 >> _hm2 >> _dhdq2m2 >> _prho >> _rhoD >> _zmag >> _zphase;
 }
 
 ClassDescription<FourPionNovosibirskCurrent> FourPionNovosibirskCurrent::initFourPionNovosibirskCurrent;
@@ -118,7 +387,7 @@ void FourPionNovosibirskCurrent::Init() {
   static Parameter<FourPionNovosibirskCurrent,double> interfaceSigmaMagnitude
     ("SigmaMagnitude",
      "magnitude of the relative sigma coupling",
-     &FourPionNovosibirskCurrent::_zmag, 1.3998721, 0.0, 10.0,
+     &FourPionNovosibirskCurrent::_zmag, 1.3998721, 0.0, 10.0e20,
      false, false, true);
 
   static Parameter<FourPionNovosibirskCurrent,double> interfaceSigmaPhase
@@ -163,17 +432,17 @@ void FourPionNovosibirskCurrent::Init() {
      "Use the default values",
      false);
   
-  static ParVector<FourPionNovosibirskCurrent,double> interfacea1RunningWidth
+  static ParVector<FourPionNovosibirskCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
-     &FourPionNovosibirskCurrent::_a1runwidth,
-     0, 0, 0, 0, 100000, false, false, true);
-  
-  static ParVector<FourPionNovosibirskCurrent,double> interfacea1RunningQ2
+     &FourPionNovosibirskCurrent::_a1runwidth, GeV, -1, 1.0*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, true);
+
+  static ParVector<FourPionNovosibirskCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
-     &FourPionNovosibirskCurrent::_a1runq2,
-     0, 0, 0, 0, 10000000, false, false, true);
+     &FourPionNovosibirskCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
+     false, false, true);
 
 }
 
@@ -197,24 +466,22 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
   if(min>upp){kineallowed=false;}
   if(kineallowed==false){return kineallowed;}
   // intermediates for the channels
-  tPDPtr omega,rhop,rhom,rho0,a1m,a10,sigma,rhot;
-  omega= getParticleData(ParticleID::omega);
-  rho0 = getParticleData(ParticleID::rho0);
-  sigma= getParticleData(9000221); 
-  a10  = getParticleData(ParticleID::a_10);
+  tPDPtr omega(getParticleData(ParticleID::omega)),rhop,rhom,
+    rho0(getParticleData(ParticleID::rho0)),a1m,a10(getParticleData(ParticleID::a_10)),
+    sigma(getParticleData(9000221)),rhot;
   if(icharge==3)
     {
       rhop = getParticleData(ParticleID::rhominus);
       rhom = getParticleData(ParticleID::rhoplus);
       a1m  = getParticleData(ParticleID::a_1plus);
-      rhot = getParticleData(30213);
+      rhot = getParticleData(24);
     }
   else if(icharge==-3)
     {
       rhop = getParticleData(ParticleID::rhoplus);
       rhom = getParticleData(ParticleID::rhominus);
       a1m  = getParticleData(ParticleID::a_1minus);
-      rhot = getParticleData(-30213);
+      rhot = getParticleData(-24);
     }
   else{return false;}
   DecayPhaseSpaceChannelPtr newchannel;
@@ -226,103 +493,87 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(rho0    ,0,0.0, iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(rho0    ,0,0.0, iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // second two channels with rho -
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       // third two channels with rho +
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       //  a_1 channels with rhos
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(rho0    ,0,0.0, iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(rho0    ,0,0.0, iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // neutral a_1 channels with rhos
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       //  a_1 channels with sigmas	
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // neutral a_1 channels with sigma
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   else
@@ -332,75 +583,63 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+3,iloc);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+2,iloc);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+3,iloc);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+2,iloc);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc);
-      newchannel->init();
       mode->addChannel(newchannel);
       // channels with a sigma and a10
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+1);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+2,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+3);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // channels with a1- and sigma
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+2,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   // reset the parameters of the dummy resonance used for integration
@@ -468,17 +707,14 @@ FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int icha
   double fact(1.);
   // construct the spininfo objects if needed
   if(vertex)
-    {
-      for(unsigned int ix=0;ix<decay.size();++ix)
-	{
-	  SpinPtr temp=new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true));
-	  decay[ix]->spinInfo(temp);
-	}
-    }
+    {for(unsigned int ix=0;ix<decay.size();++ix)
+	{decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));}}
   // the momenta of the particles
-  Lorentz5Momentum q1(decay[3]->momentum()),q2(decay[1]->momentum()),
-    q3(decay[0]->momentum()),q4(decay[2]->momentum());
-  Lorentz5Momentum Q=q1+q2+q3+q4;Q.rescaleMass();
+  //Lorentz5Momentum q1(decay[3]->momentum()),q2(decay[1]->momentum()),
+  //  q3(decay[0]->momentum()),q4(decay[2]->momentum());
+  Lorentz5Momentum q1(decay[0]->momentum()),q2(decay[2]->momentum()),
+    q3(decay[1]->momentum()),q4(decay[3]->momentum());
+  Lorentz5Momentum Q(q1+q2+q3+q4);Q.rescaleMass();
   scale = Q.mass();
   // decide which decay mode
   // three charged pions
@@ -570,7 +806,7 @@ FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int icha
 
 bool FourPionNovosibirskCurrent::accept(vector<int> id)
 {
-  bool allowed=false;
+  bool allowed(false);
   // check four products
   if(id.size()!=4){return false;}
   int npiminus=0,npiplus=0,npi0=0;
@@ -619,10 +855,10 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output)
   output << "set " << fullName() << ":Initializea1 " <<  _initializea1 << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix)
     {output << "insert " << fullName() << ":a1RunningWidth " << ix 
-	    << " " << _a1runwidth[ix] << "\n";}
+	    << " " << _a1runwidth[ix]/GeV << "\n";}
   for(unsigned int ix=0;ix<_a1runq2.size();++ix)
     {output << "insert " << fullName() << ":a1RunningQ2 " << ix 
-	    << " " << _a1runq2[ix] << "\n";}
+	    << " " << _a1runq2[ix]/GeV2 << "\n";}
 }
  
 } 
@@ -644,9 +880,7 @@ FourPionDefaultMatrixElement::FourPionDefaultMatrixElement(const FourPionDefault
 unsigned int FourPionDefaultMatrixElement::dimensionality() const {return 7;}
 
 double FourPionDefaultMatrixElement::operator ()(const Argument & a) const 
-{
-  return _decayer->a1MatrixElement(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);
-}
+{return _decayer->a1MatrixElement(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);}
   
 }
 

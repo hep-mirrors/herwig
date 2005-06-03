@@ -21,11 +21,11 @@ using namespace ThePEG;
 WeakDecayCurrent::~WeakDecayCurrent() {}
 
 void WeakDecayCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _quark << _antiquark;
+  os << _quark << _antiquark << _numbermodes;
 }
 
 void WeakDecayCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _quark >> _antiquark;
+  is >> _quark >> _antiquark >> _numbermodes;
 }
 
 AbstractClassDescription<WeakDecayCurrent> WeakDecayCurrent::initWeakDecayCurrent;
@@ -41,13 +41,33 @@ void WeakDecayCurrent::Init() {
     ("Quark",
      "The PDG code for the quark.",
      &WeakDecayCurrent::_quark,
-     0, 0, 0, 0, 20, false, false, true);
+     0, 0, 0, 0, 16, false, false, true);
 
   static ParVector<WeakDecayCurrent,int> interfaceAntiQuark
     ("AntiQuark",
      "The PDG code for the antiquark.",
      &WeakDecayCurrent::_antiquark,
-     0, 0, 0, -20, 0, false, false, true);
+     0, 0, 0, -16, 0, false, false, true);
 }
 
+void WeakDecayCurrent::dataBaseOutput(ofstream & output)
+{
+  for(unsigned int ix=0;ix<_quark.size();++ix)
+    {
+      if(ix<_numbermodes)
+	{
+	  output << "set " << fullName() << ":Quark "     
+		 << ix << "  " << _quark[ix]     << endl;
+	  output << "set " << fullName() << ":AntiQuark " 
+		 << ix << "  " << _antiquark[ix] << endl;
+	}
+      else
+	{
+	  output << "insert "  << fullName() << ":Quark "     
+		 << ix << "  " << _quark[ix]     << endl;
+	  output << "insert "  << fullName() << ":AntiQuark " 
+		 << ix << "  " << _antiquark[ix] << endl;
+	}
+    }
+}
 }

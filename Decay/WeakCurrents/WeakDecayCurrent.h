@@ -174,7 +174,7 @@ public:
   /**
    * Output the information for the database
    */
-  virtual void dataBaseOutput(ofstream &)=0;
+  virtual void dataBaseOutput(ofstream &);
 
  protected:
 
@@ -184,6 +184,12 @@ public:
    * @param ia The PDG code for the antiquark.
    */
   inline void addDecayMode(int iq,int ia);
+
+  /**
+   *  Set initial number of modes
+   * @param nmodes The number of modes.
+   */
+  inline void setInitialModes(unsigned int nmodes);
 
 protected:
 
@@ -254,6 +260,11 @@ private:
    * The PDG codes for the antiquarks contained in the current.
    */
   vector<int> _antiquark;
+
+  /**
+   * The initial number of modes
+   */
+  unsigned int _numbermodes;
 
 };
 

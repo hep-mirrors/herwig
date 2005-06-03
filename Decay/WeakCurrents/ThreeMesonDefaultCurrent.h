@@ -16,8 +16,11 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  This class implements the decays for the three meson decay modes of the tau.
- *  It implements the following decay modes of the tau.
+ * The ThreeMesonDefaultCurrent class implements the currents from Z.Phys.C58:445 (1992),
+ * this paper uses the form from Z.Phys.C48:445 (1990) for the \f$a_1\f$ width and
+ * is the default model in TAUOLA.
+ *
+ *  The following three meson modes are implemented.
  *
  * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
  * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
@@ -29,7 +32,7 @@ using namespace ThePEG;
  * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
  * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
  *
- *  using the currents in TAUOLA
+ *  using the currents from TAUOLA
  *
  *
  * @see ThreeMesonCurrentBase,
@@ -52,7 +55,7 @@ public:
   /**
    * Default constructor
    */
-  inline ThreeMesonDefaultCurrent();
+  ThreeMesonDefaultCurrent();
 
   /**
    * Copy constructor
@@ -130,7 +133,7 @@ public:
 protected:
 
   /**
-   * the matrix element for the a1 decay to calculate the running width
+   * the matrix element for the \f$a_1\f$ decay to calculate the running width
    * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
@@ -200,7 +203,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -409,7 +412,6 @@ private:
    */
   Energy _mK;
 
-  
   /**
    * use local values of the \f$\rho\f$ masses and widths
    */

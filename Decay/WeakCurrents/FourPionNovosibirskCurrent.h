@@ -23,7 +23,6 @@ using namespace ThePEG;
  * It should be noted that there were a large number of mistakes in this paper which 
  * were corrected in hep-ph/0312240.
  *
- *
  * @see WeakDecayCurrent
  * @see FourPionDefaultMatrixElement
  * 
@@ -45,7 +44,7 @@ public:
   /**
    * Default constructor
    */
-  inline FourPionNovosibirskCurrent();
+  FourPionNovosibirskCurrent();
 
   /**
    * Copy constructor
@@ -432,20 +431,19 @@ private:
   Energy _intwidth; 
 
   /**
-   * The z \f$\sigma\f$ coupling.
+   * The \f$z\f$ \f$\sigma\f$ coupling.
    */
   Complex _zsigma;
 
   /**
-   * The magnitude of the z \f$\sigma\f$ coupling.
+   * The magnitude of the \f$z\f$ \f$\sigma\f$ coupling.
    */
   double _zmag;
 
   /**
-   * The phase of the z \f$\sigma\f$ coupling.
+   * The phase of the \f$z\f$ \f$\sigma\f$ coupling.
    */
   double _zphase;
-
 
   /**
    * The mass parameter for the \f$a_1\f$ form-factor.
@@ -545,7 +543,7 @@ private:
   vector<double> _omegaparam;
 
   /**
-   * whether or not to initialize the calculation of te \f$a_1\f$ width
+   * whether or not to initialize the calculation of the \f$a_1\f$ width
    */
   bool _initializea1;
 

@@ -24,8 +24,8 @@ using namespace ThePEG;
  *
  * The form factors for the \f$a_1^+ \to \pi^0 \pi^0 \pi^+\f$ mode are
  *
- * \f[F_1=\sum_k\left\{-\frac{g^P_{\rho_k}}3B_{\rho_k}^P(s_1)
- *          -g^D_{\rho_k}B_{\rho_k}^P(s_2)
+ * \f[F_1=\sum_k\left\{g^P_{\rho_k}B_{\rho_k}^P(s_1)
+ *          -\frac{g^D_{\rho_k}}3B_{\rho_k}^P(s_2)
  *                        \left((s_3-m_{\pi^+}^2)-(s_1-m_{\pi^0}^2)\right)\right\}
  *     +\frac23\left(g_\sigma B^S_\sigma(s_3)+g_{f_0}B^S_{f_0}(s_3)\right)     
  * +\frac{g_{f_2}}{18s_3}(q^2-m_{\pi^+}^2+s_3)(4m_{\pi^0}^2-s_3)B^D_{f_2}(s_3)
@@ -79,12 +79,12 @@ using namespace ThePEG;
  * - \f$s_1=m^2_{23}\f$ is the invariant mass squared of particles 2 and 3.
  *
  * The Breit-Wigner factors are given by
-    \f$B^L_Y(s_i) = \frac{m^2_Y}{m^2_Y-s_i)+im_Y\Gamma^{Y,L}(s_i)}\f$
+    \f$B^L_Y(s_i) = \frac{m^2_Y}{m^2_Y-s_i+im_Y\Gamma^{Y,L}(s_i)}\f$
  * where
  * \f$\Gamma^{Y,L}(s_i) = \Gamma^Y\left(\frac{p(s_i)}{p(M_Y}\right)^{2L+1}\frac{m_Y}{\sqrt{s_i}}\f$
  * \f$m_Y\f$ and \f$\Gamma^Y\f$ are the mass and width of the particle \f$Y\f$ 
  * respectively. \f$p(s_i)\f$ is the momentum of the outgoing pion in the 
- * rest frame of the resonanc \f$Y\f$.
+ * rest frame of the resonance \f$Y\f$.
  *
  * @see ThreeMesonCurrentBase
  * @see a1ThreePionCLEODecayer

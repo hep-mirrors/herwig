@@ -53,38 +53,34 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
   vector<LorentzPolarizationVector> temp;
   // spininfo for the particles
   if(vertex)
-    {for(unsigned int ix=decay.size()-3;ix<decay.size();++ix)
+    {for(unsigned int ix=0;ix<3;++ix)
 	{decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));}}
   // calculate q2,s1,s2,s3
   Lorentz5Momentum q=0;
-  for(unsigned int ix=decay.size()-3;ix<decay.size();++ix){q+=decay[ix]->momentum();}
+  for(unsigned int ix=0;ix<decay.size();++ix){q+=decay[ix]->momentum();}
   q.rescaleMass();
   scale=q.mass();
   Energy2 q2=q.m2();
-  Energy2 s1 = decay[decay.size()-2]->momentum().m2()+
-  decay[decay.size()-1]->momentum().m2()+
-    2.*decay[decay.size()-2]->momentum().dot(decay[decay.size()-1]->momentum());
-  Energy2 s2 = decay[decay.size()-3]->momentum().m2()
-  +decay[decay.size()-1]->momentum().m2()+
-    2.*decay[decay.size()-3]->momentum().dot(decay[decay.size()-1]->momentum());
-  Energy2 s3 = decay[decay.size()-3]->momentum().m2()
-  +decay[decay.size()-2]->momentum().m2()+
-    2.*decay[decay.size()-3]->momentum().dot(decay[decay.size()-2]->momentum());
+  Energy2 s1 = decay[1]->momentum().m2()+decay[2]->momentum().m2()+
+    2.*decay[1]->momentum().dot(decay[2]->momentum());
+  Energy2 s2 = decay[0]->momentum().m2()+decay[2]->momentum().m2()+
+    2.*decay[0]->momentum().dot(decay[2]->momentum());
+  Energy2 s3 = decay[0]->momentum().m2()+decay[1]->momentum().m2()+
+    2.*decay[0]->momentum().dot(decay[1]->momentum());
   complex<double> F1,F2,F3,F4,F5;
   calculateFormFactors(ichan,imode,q2,s1,s2,s3,F1,F2,F3,F4,F5);
   //if(inpart.id()==ParticleID::tauplus){F5=conj(F5);}
   // the first three form-factors
   LorentzPolarizationVector vect;
-  vect = (F2-F1)*decay[decay.size()-1]->momentum()
-        +(F1-F3)*decay[decay.size()-2]->momentum()
-        +(F3-F2)*decay[decay.size()-3]->momentum();
+  vect = (F2-F1)*decay[2]->momentum()
+        +(F1-F3)*decay[1]->momentum()
+        +(F3-F2)*decay[0]->momentum();
   // multiply by the transverse projection operator
   Complex dot=(vect*q)/q2;
   // scalar and parity violating terms
   vect += (F4-dot)*q
-    +F5*Helicity::EpsFunction::product(decay[decay.size()-3]->momentum(),
-				       decay[decay.size()-2]->momentum(),
-				       decay[decay.size()-1]->momentum());
+    +F5*Helicity::EpsFunction::product(decay[0]->momentum(),decay[1]->momentum(),
+				       decay[2]->momentum());
   // factor to get dimensions correct
   temp.push_back(q.mass()*vect);
   return temp;

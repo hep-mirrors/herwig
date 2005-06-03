@@ -16,7 +16,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -30,29 +30,40 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::ScalarSpinInfo;
+using Herwig::Helicity::outgoing;
+using Herwig::Helicity::ScalarWaveFunction;
 
 TwoMesonRhoKStarCurrent::~TwoMesonRhoKStarCurrent() {}
 
 void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();
+  // check consistency of parametrers
+  if(_rhomasses.size()!=_rhowidths.size()||_Kstarmasses.size()!=_Kstarwidths.size())
+    {throw InitException() << "Inconsistent parameters in TwoMesonRhoKStarCurrent"
+			   << "::doinit()" << Exception::abortnow;}
+  cout << "testing the initial parameters " << endl;
+  for(unsigned int ix=0;ix<_rhomasses.size();++ix)
+    {
+      cout << ix << " " << _rhomasses[ix] << " " << _rhowidths[ix] << endl;
+    }
   // the resonances
   tPDPtr res[6]={getParticleData(-213   ),getParticleData(-100213),
 		 getParticleData(-30213 ),getParticleData(-323   ),
 		 getParticleData(-100323),getParticleData(-30323 )};
+  unsigned int ix;
   // reset the masses in the form-factors if needed
   if(_rhoparameters&&_rhomasses.size()<3)
     {
-      for(unsigned int ix=_rhomasses.size();ix<3;++ix)
+      for(ix=_rhomasses.size();ix<3;++ix)
 	{
 	  _rhomasses.push_back(res[ix]->mass() );
 	  _rhowidths.push_back(res[ix]->width());
 	}
     }
-  else
+  else if(!_rhoparameters)
     {
-      _rhomasses.resize(3);
-      for(unsigned int ix=0;ix<3;++ix)
+      _rhomasses.resize(0);_rhowidths.resize(0);
+      for(ix=0;ix<3;++ix)
 	{
 	  _rhomasses.push_back(res[ix]->mass() );
 	  _rhowidths.push_back(res[ix]->width());
@@ -61,25 +72,25 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   // then the Kstar resonances
   if(_Kstarparameters&&_Kstarmasses.size()<3)
     {
-      for(unsigned int ix=_Kstarmasses.size();ix<3;++ix)
+      for(ix=_Kstarmasses.size();ix<3;++ix)
 	{
 	  _Kstarmasses.push_back(res[ix+3]->mass());
 	  _Kstarwidths.push_back(res[ix+3]->width());
 	}
     }
-  else
+  else if(!_Kstarparameters)
     {
-      _Kstarmasses.resize(3);
-      for(unsigned int ix=0;ix<3;++ix)
+      _Kstarmasses.resize(0);_Kstarwidths.resize(0);
+      for(ix=0;ix<3;++ix)
 	{
 	  _Kstarmasses.push_back(res[ix+3]->mass());
 	  _Kstarwidths.push_back(res[ix+3]->width());
 	}
     }
   // set up for the Breit Wigners
-  Energy mpi0    = getParticleData(ParticleID::pi0)->mass();
-  Energy mpiplus = getParticleData(ParticleID::piplus)->mass();
-  Energy mk0     = getParticleData(ParticleID::Kplus)->mass();
+  Energy mpi0(getParticleData(ParticleID::pi0)->mass());
+  Energy mpiplus(getParticleData(ParticleID::piplus)->mass());
+  Energy mk0(getParticleData(ParticleID::Kplus)->mass());
   // rho resonances
   for(unsigned int ix=0;ix<3;++ix)
     {
@@ -129,29 +140,29 @@ ClassDescription<TwoMesonRhoKStarCurrent> TwoMesonRhoKStarCurrent::initTwoMesonR
 
 void TwoMesonRhoKStarCurrent::Init() {
 
-  static ParVector<TwoMesonRhoKStarCurrent,double> interfaceRhoMasses
+  static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceRhoMasses
     ("RhoMasses",
      "The masses of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_rhomasses,
-     0, 0, 0, -10000, 10000, false, false, true);
-  
-  static ParVector<TwoMesonRhoKStarCurrent,double> interfaceRhoWidths
+     &TwoMesonRhoKStarCurrent::_rhomasses, MeV, -1, 775.8*MeV, 0.0*MeV, 10000.*MeV,
+     false, false, true);
+
+  static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceRhoWidths
     ("RhoWidths",
      "The widths of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_rhowidths,
-     0, 0, 0, -10000, 10000, false, false, true);
+     &TwoMesonRhoKStarCurrent::_rhowidths, MeV, -1, 150.3*MeV, 0.0*MeV, 1000.*MeV,
+     false, false, true);
   
-  static ParVector<TwoMesonRhoKStarCurrent,double> interfaceKstarMasses
+  static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarMasses
     ("KstarMasses",
-     "The masses of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_Kstarmasses,
-     0, 0, 0, -10000, 10000, false, false, true);
+     "The masses of the different K* resonances for the pi pi channel",
+     &TwoMesonRhoKStarCurrent::_Kstarmasses, MeV, -1, 891.66*MeV, 0.0*MeV, 10000.*MeV,
+     false, false, true);
 
-  static ParVector<TwoMesonRhoKStarCurrent,double> interfaceKstarWidths
+  static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarWidths
     ("KstarWidths",
-     "The widths of the different rho resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_Kstarwidths,
-     0, 0, 0, -10000, 10000, false, false, true);
+     "The widths of the different K* resonances for the pi pi channel",
+     &TwoMesonRhoKStarCurrent::_Kstarwidths, MeV, -1, 50.8*MeV, 0.0*MeV, 1000.*MeV,
+     false, false, true);
   
   static Switch<TwoMesonRhoKStarCurrent,bool> interfaceRhoParameters
     ("RhoParameters",
@@ -273,9 +284,7 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
     }
   else
     {kineallowed=false;}
-  Energy min=
-    +part[0]->mass()-part[0]->widthLoCut()
-    +part[1]->mass()-part[1]->widthLoCut();
+  Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp){kineallowed=false;}
   if(kineallowed==false){return kineallowed;}
   DecayPhaseSpaceChannelPtr newchannel;
@@ -314,7 +323,8 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 	}
     }
   else
-    {cerr << "Failure of initialisation in TwoMesonRhoKStarCurrent" << endl;}
+    {throw Exception() << "Failure of initialisation in TwoMesonRhoKStarCurrent" 
+		       << Exception::abortnow;}
   // create the channels
   for(unsigned int ix=0;ix<3;++ix)
     {
@@ -322,7 +332,6 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 	{
 	  newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
 	  newchannel->addIntermediate(res[ix],0,0.0,iloc,iloc+1);
-	  newchannel->init();
 	  mode->addChannel(newchannel);
 	}
     }
@@ -333,7 +342,7 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 	{if(ix<_rhomasses.size())
 	    {mode->resetIntermediate(res[ix],_rhomasses[ix],_rhowidths[ix]);}}}
   // for the K*
-  else if(_Kstarparameters)
+  else if(_Kstarparameters&&imode!=0&&imode!=3)
     {for(unsigned int ix=0;ix<3;++ix)
 	{if(ix<_Kstarmasses.size())
 	    {mode->resetIntermediate(res[ix],_Kstarmasses[ix],_Kstarwidths[ix]);}}}
@@ -411,24 +420,24 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
 				 Energy & scale,const ParticleVector & outpart) const
 {;
   // momentum difference and sum of the mesons
-  Lorentz5Momentum pdiff=outpart[0]->momentum()-outpart[1]->momentum();
-  // sum of the momenta
-  Lorentz5Momentum psum =outpart[0]->momentum()+outpart[1]->momentum();
+  Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
+  Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
   psum.rescaleMass();
   scale=psum.mass();
   // mass2 of vector intermediate state
-  Energy2 q2=psum.m2();
-  double dot = psum.dot(pdiff)/q2;
+  Energy2 q2(psum.m2());
+  double dot(psum.dot(pdiff)/q2);
   psum *=dot;
   LorentzPolarizationVector vect;
   // calculate the current
   Complex FPI(0.),denom(0.);
+  unsigned int ix;
   // pion mode
   if(imode==0)
     {
       if(ichan<0)
 	{
-	  for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix)
+	  for(ix=0;ix<_piwgt.size()&&ix<3;++ix)
 	    {
 	      FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,0,ix);
 	      denom+=_piwgt[ix];
@@ -443,7 +452,7 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
     {
       if(ichan<0)
 	{
-	  for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix)
+	  for(ix=0;ix<_kwgt.size()&&ix<3;++ix)
 	    {
 	      FPI+=_kwgt[ix]*BreitWigner(q2,_Kmodel,1,ix);
 	      denom+=_kwgt[ix];
@@ -477,7 +486,7 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
     {
       if(ichan<0)
 	{
-	  for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix)
+	  for(ix=0;ix<_kwgt.size()&&ix<3;++ix)
 	    {
 	      FPI+=_kwgt[ix]*BreitWigner(q2,_Kmodel,1,ix);
 	      denom+=_kwgt[ix];
@@ -488,18 +497,10 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
       FPI *=2.*denom;}
       pdiff-=psum;
     }
-  // storage for the current
-  vector<LorentzPolarizationVector> temp;temp.push_back(FPI*pdiff);
   // set up the spininfo for the decay products
-  if(vertex)
-    {
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  SpinPtr stemp(new_ptr(ScalarSpinInfo(outpart[0]->momentum(),true)));
-	  outpart[ix]->spinInfo(stemp);
-	}
-    }
-  return temp;
+  for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
+  // return the answer
+  return vector<LorentzPolarizationVector>(1,FPI*pdiff);
 }
    
 bool TwoMesonRhoKStarCurrent::accept(vector<int> id)
@@ -558,26 +559,51 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout)
 void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output)
 {
   output << "create /Herwig++/TwoMesonRhoKStarCurrent " << fullName() << " \n";
-  for(unsigned int ix=0;ix<_rhomasses.size();++ix)
-    {output << "insert " << fullName() << ":RhoMasses " << ix 
-	    << " " << _rhomasses[ix] << "\n";}
-  for(unsigned int ix=0;ix<_rhowidths.size();++ix)
-    {output << "insert " << fullName() << ":RhoWidths " << ix 
-	    << " " << _rhowidths[ix] << "\n";}
-  for(unsigned int ix=0;ix<_Kstarmasses.size();++ix)
-    {output << "insert " << fullName() << ":KstarMasses " << ix 
-	    << " " << _Kstarmasses[ix] << "\n";}
-  for(unsigned int ix=0;ix<_Kstarwidths.size();++ix)
-    {output << "insert " << fullName() << ":KstarWidths " << ix 
-	    << " " << _Kstarwidths[ix] << "\n";}
+  unsigned int ix;
+  for(ix=0;ix<_rhomasses.size();++ix)
+    {
+      if(ix<3){output << "insert " << fullName() << ":RhoMasses " << ix 
+		      << " " << _rhomasses[ix]/MeV << "\n";}
+      else{output << "insert " << fullName() << ":RhoMasses " << ix 
+		  << " " << _rhomasses[ix]/MeV << "\n";}
+    }
+  for(ix=0;ix<_rhowidths.size();++ix)
+    {
+      if(ix<3){output << "insert " << fullName() << ":RhoWidths " << ix 
+		      << " " << _rhowidths[ix]/MeV << "\n";}
+      else{output << "insert " << fullName() << ":RhoWidths " << ix 
+		  << " " << _rhowidths[ix]/MeV << "\n";}
+    }
+  for(ix=0;ix<_Kstarmasses.size();++ix)
+    {
+      if(ix<2){output << "insert " << fullName() << ":KstarMasses " << ix 
+		      << " " << _Kstarmasses[ix]/MeV << "\n";}
+      else{output << "insert " << fullName() << ":KstarMasses " << ix 
+		  << " " << _Kstarmasses[ix]/MeV << "\n";}
+    }
+  for(ix=0;ix<_Kstarwidths.size();++ix)
+    {
+      if(ix<2){output << "insert " << fullName() << ":KstarWidths " << ix 
+		      << " " << _Kstarwidths[ix]/MeV << "\n";}
+      else{output << "insert " << fullName() << ":KstarWidths " << ix 
+		  << " " << _Kstarwidths[ix]/MeV << "\n";}
+    }
   output << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
   output << "set " << fullName() << ":KstarParameters " << _Kstarparameters << "\n";
-  for(unsigned int ix=0;ix<_piwgt.size();++ix)
-    {output << "insert " << fullName() << ":PiWeight " << ix 
-	    << " " << _piwgt[ix] << "\n";}
-  for(unsigned int ix=0;ix<_kwgt.size();++ix)
-    {output << "insert " << fullName() << ":KWeight " << ix 
-	    << " " << _kwgt[ix] << "\n";}
+  for(ix=0;ix<_piwgt.size();++ix)
+    {
+      if(ix<3){output << "insert " << fullName() << ":PiWeight " << ix 
+		     << " " << _piwgt[ix] << "\n";}
+      else{output << "insert " << fullName() << ":PiWeight " << ix 
+		  << " " << _piwgt[ix] << "\n";}
+    }
+  for(ix=0;ix<_kwgt.size();++ix)
+    {
+      if(ix<3){output << "insert " << fullName() << ":KWeight " << ix 
+		      << " " << _kwgt[ix] << "\n";}
+      else{output << "insert " << fullName() << ":KWeight " << ix 
+		      << " " << _kwgt[ix] << "\n";}
+    }
   output << "set " << fullName() << ":PiModel " << _pimodel << "\n";
   output << "set " << fullName() << ":KModel  " << _Kmodel << "\n";
 }

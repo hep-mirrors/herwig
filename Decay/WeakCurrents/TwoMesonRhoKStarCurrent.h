@@ -27,17 +27,17 @@ using namespace ThePEG;
  *  - \f$p_{1,2}\f$ are the momenta of the outgoing mesons,
  *  - \f$q=p_1+p_2\f$,
  *  - \f$B_{R_k}(q^2)\f$ is the Breit-Wigner distribution for the intermediate vector
- *    meson \f$r_k\f$.
+ *    meson \f$R_k\f$.
  *  - \f$\alpha_k\f$ is the weight for the resonance.
  *
- *   The Breit-Wigner term is summed over the \f$\rho\f$ or \f$K^*\f$ resonaces that
+ *   The Breit-Wigner term is summed over the \f$\rho\f$ or \f$K^*\f$ resonances that
  *   can contribute to a given decay.
  *
  *  The models of either Kuhn and Santamaria (Z. Phys. C48, 445 (1990))
  *  or Gounaris and Sakurai Phys. Rev. Lett. 21, 244 (1968) are supported for the
  *  shape of the Breit-Wigner distribution. The mixing parameters
  *  are taken from Phys.Rev.D61:112002,2000 (CLEO) for the decay \f$\pi^\pm\pi^0\f$ and
- *  the CLEO version of TAUOLA for the \f$Kpi\f$ decays.
+ *  the CLEO version of TAUOLA for the \f$K\pi\f$ decays.
  *
  * @see WeakDecayCurrent.
  * 
@@ -330,8 +330,6 @@ private:
    *  The masses of the \f$K^*\f$ resonances.
    */
   vector<Energy> _Kstarwidths;
-
-private:
 
   /**
    * Parameters for the Breit-Wigners

@@ -23,14 +23,17 @@ inline TwoPionPhotonCurrent::TwoPionPhotonCurrent()
   // couplings
   _grho   = 0.11238947*GeV2;
   _grhoomegapi = 12.924/GeV;
+  // parameters for the resonance used in the integration
+  _intmass = 1.2*GeV;
+  _intwidth = 0.35*GeV;
 }
 
 inline TwoPionPhotonCurrent::TwoPionPhotonCurrent(const TwoPionPhotonCurrent & x)
   : WeakDecayCurrent(x), _grho(x._grho), _grhoomegapi(x._grhoomegapi),
     _resweights(x._resweights), _rhoparameters(x._rhoparameters),
     _rhomasses(x._rhomasses),_rhowidths(x._rhowidths),
-    _omegaparameters(x._omegaparameters),
-    _omegamass(x. _omegamass),_omegawidth(x._omegawidth) {}
+    _omegaparameters(x._omegaparameters),_omegamass(x. _omegamass),
+    _omegawidth(x._omegawidth), _intmass(x._intmass),_intwidth(x._intwidth) {}
 
 inline IBPtr TwoPionPhotonCurrent::clone() const {
   return new_ptr(*this);
@@ -73,7 +76,7 @@ inline void TwoPionPhotonCurrent::doinit() throw(InitException) {
 	  _rhomasses[ix]=temp->mass();
 	  _rhowidths[ix]=temp->width();
 	}
-      else
+      else if(ix>=_rhomasses.size())
 	{
 	  _rhomasses.push_back(temp->mass());
 	  _rhowidths.push_back(temp->width());
@@ -109,20 +112,12 @@ inline IVector TwoPionPhotonCurrent::getReferences() {
 }
 
 // calculate the F function at a given scale  
-inline complex<double> TwoPionPhotonCurrent::FFunction(Energy2 q2,int iext) const
+inline complex<double> TwoPionPhotonCurrent::FFunction(Energy2 q2) const
 {
-  Complex output=0;
-  if(iext<0)
-    {for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix)
-	{output-=_resweights[ix]*BreitWigner(q2,ix);}}
-  else
-    {
-      unsigned int temp=iext;
-      if(temp<_resweights.size()&&iext <3)
-	  {output=_resweights[iext]*BreitWigner(q2,iext);}
-    }
-  output*=_grho*_grhoomegapi*sqrt(2.);
-  return output;
+  Complex output(0.);
+  for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix)
+    {output-=_resweights[ix]*BreitWigner(q2,ix);}
+  return output*_grho*_grhoomegapi*sqrt(2.);
   }
 
 // fixed width Breit wigner
@@ -135,12 +130,9 @@ inline Complex TwoPionPhotonCurrent::BreitWigner(Energy2 q2,unsigned int ires) c
   else if(ires==10)
     {denom = q2-_omegamass*_omegamass+ii*_omegamass*_omegawidth;}
   else
-    {
-      throw DecayIntegratorError() << "Unknown resonace in " 
-				   << "TwoPionPhotonCurrent::BreitWigner" 
-				   << ires << Exception::abortnow;
-      return 0.;
-    }
+    {throw DecayIntegratorError() << "Unknown resonace in " 
+				  << "TwoPionPhotonCurrent::BreitWigner" 
+				  << ires << Exception::abortnow;}
   return 1./denom;
 }
 }

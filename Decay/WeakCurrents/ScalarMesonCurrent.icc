@@ -7,24 +7,9 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ScalarMesonCurrent::ScalarMesonCurrent() 
-{
-  _id.push_back(211);_decay_constant.push_back(130.7*MeV);
-  addDecayMode(2,-1);
-  _id.push_back(321);_decay_constant.push_back(159.8*MeV);
-  addDecayMode(2,-3);
-  _id.push_back(411);_decay_constant.push_back(200.0*MeV);
-  addDecayMode(4,-1);
-  _id.push_back(431);_decay_constant.push_back(241.0*MeV);
-  addDecayMode(4,-3);
-  _id.push_back(421);_decay_constant.push_back(200.0*MeV);
-  addDecayMode(4,-2);
-  _id.push_back(10431);_decay_constant.push_back(73.7*MeV);
-  addDecayMode(4,-3);
-}
-
 inline ScalarMesonCurrent::ScalarMesonCurrent(const ScalarMesonCurrent & x)
-  : WeakDecayCurrent(x), _id(x._id), _decay_constant(x._decay_constant) {}
+  : WeakDecayCurrent(x), _id(x._id), _decay_constant(x._decay_constant),
+    _thetaeta(x._thetaeta), _initsize(x._initsize) {}
 
 inline IBPtr ScalarMesonCurrent::clone() const {
   return new_ptr(*this);

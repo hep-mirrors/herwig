@@ -252,4 +252,4 @@ struct ClassTraits<Herwig::LeptonNeutrinoCurrent>
 // #include "LeptonNeutrinoCurrent.tcc"
 #endif
 
-#endif /* THEPEG_LeptonNeutrinoCurrent_H */
+#endif /* HERWIG_LeptonNeutrinoCurrent_H */

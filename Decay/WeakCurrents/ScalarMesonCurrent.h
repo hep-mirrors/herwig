@@ -34,7 +34,7 @@ public:
   /**
    * Default constructor
    */
-  inline ScalarMesonCurrent();
+  ScalarMesonCurrent();
 
   /**
    * Copy constructor
@@ -224,6 +224,17 @@ private:
    * the decay constant
    */
   vector<Energy> _decay_constant;
+
+  /**
+   * The \f$\eta-\eta'\f$ mixing angle 
+   */
+  double _thetaeta;
+
+  /**
+   * The inital size of the arrays
+   */
+  unsigned int _initsize;
+
 };
 
 }

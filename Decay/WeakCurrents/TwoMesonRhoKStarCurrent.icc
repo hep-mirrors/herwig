@@ -1,4 +1,4 @@
-// -*- C++ -*-
+#// -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
 // the TwoMesonRhoKStarCurrent class.
@@ -30,8 +30,8 @@ inline TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent()
   _rhowidths.push_back(149*MeV);_rhowidths.push_back(502*MeV);
   _rhowidths.push_back(235*MeV);
   _Kstarparameters=true;
-  _Kstarmasses.push_back(0.89159*GeV);_Kstarmasses.push_back(1.700*GeV);
-  _Kstarwidths.push_back(0.0498 *GeV);_Kstarwidths.push_back(0.235*GeV);
+  _Kstarmasses.push_back(0.8921*GeV);_Kstarmasses.push_back(1.700*GeV);
+  _Kstarwidths.push_back(0.0513*GeV);_Kstarwidths.push_back(0.235*GeV);
 }
 
 inline TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent(const TwoMesonRhoKStarCurrent & x)
@@ -93,7 +93,7 @@ inline IVector TwoMesonRhoKStarCurrent::getReferences() {
 inline double TwoMesonRhoKStarCurrent::GSModelhFunction(const unsigned int ix,
 					       const Energy q)const 
 {
-  Energy pq=pcm(ix,q);
+  Energy pq(pcm(ix,q));
   return _width[ix]*_mass2[ix]/(_mom[ix]*_mom[ix]*_mom[ix])
     *2.*pq/pi/q*log((q+2.*pq)/(_massa[ix]+_massb[ix]));
 }
@@ -101,7 +101,7 @@ inline double TwoMesonRhoKStarCurrent::GSModelhFunction(const unsigned int ix,
 // the dh/dq2 in the GS model for the propagator
 inline double TwoMesonRhoKStarCurrent::GSModeldhdq2Parameter(const unsigned int ix) const 
 {
-  Energy mpi=0.5*(_massa[ix]+_massb[ix]);
+  Energy mpi(0.5*(_massa[ix]+_massb[ix]));
   return _width[ix]/pi/_mom[ix]/_mom[ix]/_mom[ix]*
     (mpi*mpi/_mass[ix]/_mom[ix]*log(0.5*(_mass[ix]+2.*_mom[ix])/mpi)+0.5);
 }
@@ -109,41 +109,38 @@ inline double TwoMesonRhoKStarCurrent::GSModeldhdq2Parameter(const unsigned int 
 // the D parameter of the GS model
 inline double TwoMesonRhoKStarCurrent::GSModelDParameter(const unsigned int ix) const 
 {
-  Energy mpi=0.5*(_massa[ix]+_massb[ix]);
+  Energy mpi(0.5*(_massa[ix]+_massb[ix]));
   return 3.*mpi*mpi/pi/_mom[ix]/_mom[ix]*log(0.5*(_mass[ix]+2.*_mom[ix])/mpi)
     +0.5*_mass[ix]/pi/_mom[ix]-mpi*mpi*_mass[ix]/pi/_mom[ix]/_mom[ix]/_mom[ix];
 }
 
-
 // the decay momentum
 inline Energy TwoMesonRhoKStarCurrent::pcm(const unsigned int ix,const  Energy q) const 
 {
-  Energy2 q2=q*q;
+  Energy2 q2(q*q);
   Energy output;
   if(q>_massa[ix]+_massb[ix])
-    {
-      output =  0.5/q*sqrt((q2-(_massa[ix]+_massb[ix])*(_massa[ix]+_massb[ix]))*
-			   (q2-(_massa[ix]-_massb[ix])*(_massa[ix]-_massb[ix])));
-    }
+    {output =  0.5/q*sqrt((q2-(_massa[ix]+_massb[ix])*(_massa[ix]+_massb[ix]))*
+			  (q2-(_massa[ix]-_massb[ix])*(_massa[ix]-_massb[ix])));}
   else{output=0;}
   return output;
 }
 
 // calculate the p-wave Breit Wigner
-  // imodel is the model 0= normal running width, 1= GS model
-  // itype 0=rho+-, 1=K*+-
+// imodel is the model 0= normal running width, 1= GS model
+// itype 0=rho+-, 1=K*+-
 Complex TwoMesonRhoKStarCurrent::BreitWigner(Energy2 q2, unsigned int imodel,
 					     unsigned int itype,
 					     unsigned int ires) const 
 {
   // workout the index of the resonace
-  unsigned int iy = 3*itype+ires;
+  unsigned int iy(3*itype+ires);
   // off shell mass
-  Energy q=sqrt(q2);
+  Energy q(sqrt(q2));
   // and the running width
-  Energy pq=pcm(iy,q);
-  double ratio=pq/_mom[iy];ratio=ratio*ratio*ratio;
-  Energy gamrun = _width[iy]*_mass[iy]*ratio/q;
+  Energy pq(pcm(iy,q));
+  double ratio(pq/_mom[iy]);ratio=ratio*ratio*ratio;
+  Energy gamrun(_width[iy]*_mass[iy]*ratio/q);
   // work out the denominator
   complex<Energy2> denom;
   Complex numer;
@@ -161,10 +158,8 @@ Complex TwoMesonRhoKStarCurrent::BreitWigner(Energy2 q2, unsigned int imodel,
       numer=-(_mass2[iy]+_dparam[iy]*_mass[iy]*_width[iy]);
     }
   else
-    {
-      cerr << "Unknown model in TwoMesonRhoKStarCurrent::BreitWigner" << endl;
-      return 0.;
-    }
+    {throw Exception() << "Unknown model in TwoMesonRhoKStarCurrent::BreitWigner" 
+		       << Exception::abortnow;}
   // return the answer
   return numer/denom;
 }

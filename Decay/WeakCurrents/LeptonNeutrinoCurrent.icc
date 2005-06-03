@@ -13,6 +13,7 @@ inline LeptonNeutrinoCurrent::LeptonNeutrinoCurrent()
   addDecayMode(11,-12);
   addDecayMode(13,-15);
   addDecayMode(15,-16);
+  setInitialModes(3);
 }
 
 inline LeptonNeutrinoCurrent::LeptonNeutrinoCurrent(const LeptonNeutrinoCurrent & x)

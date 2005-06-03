@@ -33,7 +33,7 @@ using namespace ThePEG;
  * and the normaliztion factor is
  * \f[T = F(q^2)F(0)\frac1{\sqrt{2}B_\omega(s_2)}\f]
  * and
- * \f[F(s) = F_\rho g_{\rho\omega\pi}\sum_k\sigma_k B_{\rho_k}(s)\f]
+ * \f[F(s) = \sqrt{2}F_\rho g_{\rho\omega\pi}\sum_k\sigma_k B_{\rho_k}(s)\f]
  * where
  * - \f$B_\omega(s)=\frac1{m^2_\omega-s-im_\omega\Gamma_\omega}\f$ is the Breit-Wigner for the \f$\omega\f$.
  * - \f$m_\omega\f$ is the mass of the \f$\omega\f$.
@@ -245,10 +245,9 @@ private:
   /**
    * Calculate the \f$F(q^2)\f$ function at a given scale
    * @param q2 The scale \f$q^2\f$.
-   * @param ires The resonance the function is calculated for.
    * @return The value of the function. 
    */
-  inline Complex FFunction(Energy2 q2,int ires) const;
+  inline Complex FFunction(Energy2 q2) const;
 
   /**
    * Fixed width Breit wigner
@@ -292,7 +291,6 @@ private:
    */
   vector<Energy> _rhowidths; 
 
-  
   /**
    * use local parameters for the omega rather than from the particle data objects
    */
@@ -307,6 +305,18 @@ private:
    * The \f$\omega\f$ width.
    */
   Energy _omegawidth;
+
+  /**
+   * Mass for the intermediate in the phase-space, this is a technical parameter to
+   * improve the phase-space integration efficiency.
+   */
+  Energy _intmass;
+
+  /**
+   * Width for the intermediate in the phase-space, this is a technical parameter to
+   * improve the phase-space integration efficiency.
+   */
+  Energy _intwidth; 
 
 };
 

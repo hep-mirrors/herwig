@@ -468,50 +468,42 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
 	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
 	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
 	  newchannel->addIntermediate(rho0[ix],0,0.0,iloc+1,iloc+2);
-	  newchannel->init();
 	  mode->addChannel(newchannel);
 	  // interchanged channel
 	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
 	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
 	  newchannel->addIntermediate(rho0[ix],0,0.0,iloc,iloc+2);
-	  newchannel->init();
 	  mode->addChannel(newchannel);      
 	}
       // the sigma channels
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(sigma,0,0.0,iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // interchanged channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(sigma,0,0.0,iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // the f_2 channels
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(f2,0,0.0,iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // interchanged channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(f2,0,0.0,iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // the f_0 channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(f0,0,0.0,iloc+1,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
       // interchanged channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(f0,0,0.0,iloc,iloc+2);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   else
@@ -522,32 +514,27 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
 	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
 	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
 	  newchannel->addIntermediate(rhom[ix],0,0.0,iloc+2,iloc+1);
-	  newchannel->init();
 	  mode->addChannel(newchannel);
 	  // second rho+ channel
 	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
 	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
 	  newchannel->addIntermediate(rhom[ix],0,0.0,iloc+2,iloc);
-	  newchannel->init();
 	  mode->addChannel(newchannel);
 	}
       // the sigma channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(sigma,0,0.0,iloc,iloc+1);
-      newchannel->init();
       mode->addChannel(newchannel);
       //  the f_2  channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(f2,0,0.0,iloc,iloc+1);
-      newchannel->init();
       mode->addChannel(newchannel);
       // the f_0 channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(f0,0,0.0,iloc,iloc+1);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   return kineallowed;
@@ -565,7 +552,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
     }
 }
 
-  PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int iq,int ia)
+PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int iq,int ia)
 {
   PDVector extpart(3);
   if(imode==0)
@@ -574,18 +561,18 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
       extpart[1]=getParticleData(ParticleID::piminus);
       extpart[2]=getParticleData(ParticleID::piplus);
     }
-  else
+  else if(imode==1)
     {
       extpart[0]=getParticleData(ParticleID::pi0);
       extpart[1]=getParticleData(ParticleID::pi0);
       extpart[2]=getParticleData(ParticleID::piminus);
     }
+  else
+    {extpart.resize(0);}
   // conjugate the particles if needed
-  if(icharge==3)
-    {
-      for(unsigned int ix=0;ix<3;++ix)
-	{if(extpart[0]->CC()){extpart[0]=extpart[0]->CC();}}
-    }
+  if(icharge==3&&extpart.size()>0)
+    {for(unsigned int ix=0;ix<3;++ix)
+	{if(extpart[ix]->CC()){extpart[ix]=extpart[ix]->CC();}}}
   // return the answer
   return extpart;
 }

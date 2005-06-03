@@ -5,32 +5,11 @@
 //
 
 namespace Herwig {
-  using namespace ThePEG;
-
-inline VectorMesonCurrent::VectorMesonCurrent() 
-{
-  _id.push_back(213);_decay_constant.push_back(0.1674*GeV2);
-  addDecayMode(2,-1);
-  _id.push_back(323);_decay_constant.push_back(sqrt(2.)*0.115276*GeV2);
-  addDecayMode(2,-3);
-  _id.push_back(20213);_decay_constant.push_back(0.3531654*GeV2);
-  addDecayMode(2,-1);
-  _id.push_back(443);_decay_constant.push_back(1.223*GeV2);
-  addDecayMode(4,-4);
-  _id.push_back(100443);_decay_constant.push_back(1.08*GeV2);
-  addDecayMode(4,-4);
-  _id.push_back(433);_decay_constant.push_back(0.509*GeV2);
-  addDecayMode(4,-3);
-  _id.push_back(413);_decay_constant.push_back(0.402*GeV2);
-  addDecayMode(4,-1);
-  _id.push_back(423);_decay_constant.push_back(0.402*GeV2);
-  addDecayMode(4,-2);
-  _id.push_back(10433);_decay_constant.push_back(0.397*GeV2);
-  addDecayMode(4,-3);
-}
+using namespace ThePEG;
 
 inline VectorMesonCurrent::VectorMesonCurrent(const VectorMesonCurrent & x)
-  : WeakDecayCurrent(x), _id(x._id), _decay_constant(x._decay_constant) {}
+  : WeakDecayCurrent(x), _id(x._id), _decay_constant(x._decay_constant),
+    _initsize(x._initsize) {}
 
 inline IBPtr VectorMesonCurrent::clone() const {
   return new_ptr(*this);

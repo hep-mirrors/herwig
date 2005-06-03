@@ -31,7 +31,7 @@ public:
   /**
    * Default constructor
    */
-  inline VectorMesonCurrent();
+  VectorMesonCurrent();
 
   /**
    * Copy constructor
@@ -220,8 +220,12 @@ private:
   /**
    * The decay constant
    */
-  vector<Energy> _decay_constant;
+  vector<Energy2> _decay_constant;
 
+  /**
+   * initial size of the vectors
+   */
+  unsigned int _initsize;
 };
 
 }
