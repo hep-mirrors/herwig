@@ -21,17 +21,18 @@ using namespace ThePEG;
  *   - \f$\omega \to \pi^+\pi^-\pi^0\f$
  *   - \f$\phi   \to \pi^+\pi^-\pi^0\f$
  *
- *  The default for the \f$omega\f$ is to only include the
+ *  The default for the \f$\omega\f$ is to only include the
  *  contributions of the \f$\rho(770)\f$
  *  without a constant term, whereas for the \f$\phi\f$ the parameters
  *  from hep-ex/0303016 (KLOE) which includes the \f$\rho(770)\f$ 
  *  and a constant term to represent the effects
- *  of the higher rho resonances. (The KLOE paper also included a omega contribution
- *  but this is assumed to be non-resonant.)
+ *  of the higher rho resonances is used.
+ * (The KLOE paper also included a omega contribution but this is assumed to be a 
+ *  non-resonant contribution to the \f$e^+e^-\f$ cross section.)
  *
  *  The form of the current is taken to be
  *
- *  \f[ J^\mu = g\epsilon^{\mu\alpha\alpha\beta\gamma}
+ *  \f[ J^\mu = \frac{g}{M^2_{\rho}}\epsilon^{\mu\alpha\alpha\beta\gamma}
  *                      p_{+\alpha}p_{-\beta}p_{0\gamma}
  *      \left[a_de^{i\phi_d} +\sum_k a_{\rho_k}e^{i\phi_{\rho_k}}
  *   \left\{
@@ -39,14 +40,14 @@ using namespace ThePEG;
  *           +im_{0+}\Gamma_{\rho_k^+}(m^2_{0+})}
  *  +\frac{M^2_{\rho_k^-}}{m^2_{0-}-M^2_{\rho_k^-}
  *           +im_{0-}\Gamma_{\rho_k^-}(m^2_{0-})}
- *  +\frac{M^2_{\rho_k^-}}{m^2_{+-}-M^2_{\rho_k^+}
+ *  +\frac{M^2_{\rho_k^0}}{m^2_{+-}-M^2_{\rho_k^0}
  *           +im_{+-}\Gamma_{\rho_k^0}(m^2_{+-})}\right\}
  *  \right],\f]
  *
  *  where \f$p_{+,-,0}\f$ are the momenta of the positively charged, negatively charged
  *  and neutral pions respectively, \f$m^2_{ij}=(p_i+p_j)^2\f$, \f$M_{\rho_k}\f$ is
  *  the mass of the \f$k\f$th \f$\rho\f$ resonance, \f$g\f$ is the overall coupling and 
- * \f[\Gamma{\rho_k}(m^2) = \Gamma_{\rho_k}\left(\frac{p_\pi(m^2)}{p_\pi(M_{\rho_k}^2)}\right)^2
+ * \f[\Gamma_{\rho_k}(m^2) = \Gamma_{\rho_k}\left(\frac{p_\pi(m^2)}{p_\pi(M_{\rho_k}^2)}\right)^2
  *    \left(\frac{M_{\rho_k}^2}{m^2}\right) \f]
  *  where \f$p_\pi\f$ is the pion momentum in the \f$\rho\f$ rest frame
  *  and \f$\Gamma_{\rho_k}\f$ is the width. In practice the couplings of the different
@@ -171,6 +172,10 @@ public:
   virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
 					Energy2 s1,Energy m1,Energy m2,Energy m3);
   
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -226,7 +231,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -280,7 +285,7 @@ private:
   /**
    * the overall coupling for the decay, \f$g\f$.
    */
-  vector<double> _coupling;
+  vector<InvEnergy> _coupling;
 
   /**
    * relative coupling for the direct term, \f$a_d\f$.
@@ -335,32 +340,32 @@ private:
   /**
    * mass of the first rho multiplet, \f$M_{\rho_1}\f$.
    */
-  vector<double> _rho1mass;
+  vector<Energy> _rho1mass;
 
   /**
    * mass of the  second rho multiplet, \f$M_{\rho_2}\f$.
    */
-  vector<double> _rho2mass;
+  vector<Energy> _rho2mass;
 
   /**
    * mass of the third rho multiplet, \f$M_{\rho_3}\f$.
    */
-  vector<double> _rho3mass;
+  vector<Energy> _rho3mass;
 
   /**
    * width of the first rho multiplet, \f$\Gamma_{\rho_1}\f$.
    */
-  vector<double> _rho1width;
+  vector<Energy> _rho1width;
 
   /**
    * width of the  second rho multiplet, \f$\Gamma_{\rho_2}\f$.
    */
-  vector<double> _rho2width;
+  vector<Energy> _rho2width;
 
   /**
    * width of the third rho multiplet, \f$\Gamma_{\rho_3}\f$.
    */
-  vector<double> _rho3width;
+  vector<Energy> _rho3width;
 
   /**
    * use the default parameters for the rho masses and widths
@@ -385,12 +390,17 @@ private:
   /**
    * couplings as complex numbers
    */
-  vector<vector <Complex> > _ccoupling;
+  vector<vector <complex<InvEnergy2> > > _ccoupling;
 
   /**
    * the pion masses
    */
   Energy _mpic,_mpi0;
+
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 };
 
 }

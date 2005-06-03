@@ -20,10 +20,8 @@ namespace Herwig {
 
 using namespace ThePEG;
 using ThePEG::Helicity::tcVectorSpinPtr;
-using ThePEG::Helicity::VectorSpinInfo;
 using ThePEG::Helicity::RhoDMatrix;
 using Helicity::VectorWaveFunction;
-using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
@@ -60,47 +58,16 @@ double VectorMesonDecayerBase::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {
-  // first check if the decaying particle has spin information
-  tcVectorSpinPtr inspin;
-  if(inpart.spinInfo())
-    {inspin = dynamic_ptr_cast<tcVectorSpinPtr>(inpart.spinInfo());}
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<LorentzPolarizationVector> invec;
-  RhoDMatrix rhoin(3);rhoin.average();
-  // if the spin info object exists use it
-  if(inspin&&inpart.spinInfo())
-    {
-      for(int ix=-1;ix<2;++ix)
-	{invec.push_back(inspin->getDecayBasisState(ix));}
-      inspin->decay();
-      rhoin = inspin->rhoMatrix();
-    }
-  // if has spin info but not the right type
-  else if(inpart.spinInfo())
-    {
-      cerr << "wrong type of spin info for the incoming particle " 
-	   << "in VectorMesonDecayerBase::me2()" << endl;
-    }
-  // if no spin info create it
-  else
-    {
-      SpinPtr newspin=new_ptr(VectorSpinInfo(inpart.momentum(),true));
-      inspin = dynamic_ptr_cast<tcVectorSpinPtr>(newspin);
-      inspin->decayed(true);
-      VectorWaveFunction temp=VectorWaveFunction(inpart.momentum(),inpart.dataPtr(),
-						 incoming);
-      for(int ix=-1;ix<2;++ix)
-	{
-	  temp.reset(ix);
-	  invec.push_back(temp.Wave());
-	  inspin->setDecayState(ix,invec[ix+1]);
-	}
-      const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
-    }
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
   // calculate the decay current
   vector<LorentzPolarizationVector> current=decayCurrent(vertex,ichan,
 							 inpart,decay);
   // work out the mapping for the current vector
-  vector<int> constants(decay.size()+1), ispin(decay.size()),ihel(decay.size()+1);
+  vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
+  vector<PDT::Spin> ispin(decay.size());
   int itemp=1;
   for(int ix=int(decay.size()-1);ix>=0;--ix)
     {
@@ -109,21 +76,15 @@ double VectorMesonDecayerBase::me2(bool vertex, const int ichan,
     }
   constants[decay.size()]=1;
   // compute the matrix element
-  DecayMatrixElement newME(3,ispin);
+  DecayMatrixElement newME(PDT::Spin1,ispin);
   for(unsigned int hhel=0;hhel<current.size();++hhel)
     {
       // map the index for the hadrons to a helicity state
       for(unsigned int ix=decay.size();ix>0;--ix)
-	{
-	  ihel[ix]=(hhel%constants[ix-1])/constants[ix]-int(ispin[ix-1]/2);
-	  if(ispin[ix-1]%2==0&&ihel[ix]>-0&&ispin[ix-1]!=0){++ihel[ix];}
-	}
+	{ihel[ix]=(hhel%constants[ix-1])/constants[ix];}
       // loop over the helicities of the incoming vector meson
-      for(int thel=-1;thel<2;++thel)
-	{
-	  ihel[0]=thel;
-	  newME(ihel)= invec[thel+1]*current[hhel];
-	}
+      for(ihel[0]=0;ihel[0]<3;++ihel[0])
+	{newME(ihel)=invec[ihel[0]]*current[hhel];}
     }
   ME(newME);
   // return the answer

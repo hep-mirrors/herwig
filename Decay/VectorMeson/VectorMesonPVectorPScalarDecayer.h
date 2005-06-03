@@ -32,7 +32,7 @@ public:
   /**
    * Default constructor.
    */
-  inline VectorMesonPVectorPScalarDecayer();
+  VectorMesonPVectorPScalarDecayer();
 
   /**
    * Copy-constructor.
@@ -79,6 +79,11 @@ public:
   virtual vector<LorentzPolarizationVector> 
   decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
 	       const ParticleVector & outpart) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -214,6 +219,11 @@ private:
    * maximum weight for a decay
    */
   vector<double> _maxweight;
+
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 
 };
 

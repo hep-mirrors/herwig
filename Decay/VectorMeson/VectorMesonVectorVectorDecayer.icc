@@ -7,33 +7,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer() 
-{
-  // decay of the psi(4040) to D* D*
-  _incoming.push_back(9000443);_outgoing1.push_back(423);_outgoing2.push_back(-423);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  _incoming.push_back(9000443);_outgoing1.push_back(413);_outgoing2.push_back(-413);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  // decay of rho'' to rho rho
-  _incoming.push_back(30213);_outgoing1.push_back(213);_outgoing2.push_back(113);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  _incoming.push_back(-30213);_outgoing1.push_back(-213);_outgoing2.push_back(113);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  _incoming.push_back(30113);_outgoing1.push_back(-213);_outgoing2.push_back(213);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  // decay of rho' to rho rho
-  _incoming.push_back( 100213);_outgoing1.push_back(213);_outgoing2.push_back(113);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  _incoming.push_back(-100213);_outgoing1.push_back(-213);_outgoing2.push_back(113);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  _incoming.push_back( 100113);_outgoing1.push_back(-213);_outgoing2.push_back(213);
-  _coupling.push_back(1.);_maxweight.push_back(1.);
-  
-}
-
-inline VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer(const VectorMesonVectorVectorDecayer & x)
+inline VectorMesonVectorVectorDecayer::
+VectorMesonVectorVectorDecayer(const VectorMesonVectorVectorDecayer & x)
   : VectorMesonDecayerBase(x), _coupling(x._coupling), _incoming(x._incoming), 
-    _outgoing1(x._outgoing1), _outgoing2(x._outgoing2), _maxweight(x._maxweight) 
+    _outgoing1(x._outgoing1), _outgoing2(x._outgoing2), _maxweight(x._maxweight),
+    _initsize(x._initsize) 
  {}
 
 inline IBPtr VectorMesonVectorVectorDecayer::clone() const {
@@ -64,7 +42,7 @@ inline void VectorMesonVectorVectorDecayer::doupdate() throw(UpdateException) {
 
 inline void VectorMesonVectorVectorDecayer::doinit() throw(InitException) {
   VectorMesonDecayerBase::doinit();
-  unsigned int isize=_incoming.size();
+  unsigned int isize(_incoming.size());
   if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
      isize!=_maxweight.size()||isize!=_coupling.size())
     {throw InitException() << "Inconsistent parameters in " 
@@ -78,7 +56,7 @@ inline void VectorMesonVectorVectorDecayer::doinit() throw(InitException) {
       extpart[0]=getParticleData(_incoming[ix]);
       extpart[1]=getParticleData(_outgoing1[ix]);
       extpart[2]=getParticleData(_outgoing2[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
       addMode(mode,_maxweight[ix],wgt);
     }
 }
@@ -89,6 +67,9 @@ inline void VectorMesonVectorVectorDecayer::dofinish() {
 
 inline void VectorMesonVectorVectorDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {for(unsigned int ix=0;ix<_incoming.size();++ix)
+	{_maxweight[ix]=2.*mode(ix)->maxWeight();}}
 }
 
 inline void VectorMesonVectorVectorDecayer::rebind(const TranslationMap & trans)

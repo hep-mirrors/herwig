@@ -157,17 +157,14 @@ inline void a1ThreePionCLEODecayer::doinit() throw(InitException) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a10,0,0.0,-1,1);
       newchannel->addIntermediate(temp,0,0.0,2,3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a10,0,0.0,-1,2);
       newchannel->addIntermediate(temp,0,0.0,1,3);
-      newchannel->init();
       mode->addChannel(newchannel);
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a10,0,0.0,-1,3);
       newchannel->addIntermediate(temp,0,0.0,1,2);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   addMode(mode,_zeromax,_zerowgts);
@@ -183,32 +180,27 @@ inline void a1ThreePionCLEODecayer::doinit() throw(InitException) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a1p,0,0.0,-1,2);
       newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
-      newchannel->init();
       mode->addChannel(newchannel);
       // second rho+ channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a1p,0,0.0,-1,3);
       newchannel->addIntermediate(rhop[ix],0,0.0,1,2);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   // the sigma channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,1);
   newchannel->addIntermediate(sigma,0,0.0,2,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   //  the f_2  channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,1);
   newchannel->addIntermediate(f2,0,0.0,2,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   // the f_0 channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,1);
   newchannel->addIntermediate(f0,0,0.0,2,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   addMode(mode,_onemax,_onewgts);
   // decay mode a_10 -> pi+ pi- pi0
@@ -223,32 +215,27 @@ inline void a1ThreePionCLEODecayer::doinit() throw(InitException) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a10,0,0.0,-1,1);
       newchannel->addIntermediate(rhom[ix],0,0.0,2,3);
-      newchannel->init();
       mode->addChannel(newchannel);
       // second channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a10,0,0.0,-1,2);
       newchannel->addIntermediate(rhop[ix],0,0.0,1,3);
-      newchannel->init();
       mode->addChannel(newchannel);
     }
   // sigma channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a10,0,0.0,-1,3);
   newchannel->addIntermediate(sigma,0,0.0,1,2);
-  newchannel->init();
   mode->addChannel(newchannel);
   // f_2 channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a10,0,0.0,-1,3);
   newchannel->addIntermediate(f2,0,0.0,1,2);
-  newchannel->init();
   mode->addChannel(newchannel);
   // f_0 channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a10,0,0.0,-1,3);
   newchannel->addIntermediate(f0,0,0.0,1,2);
-  newchannel->init();
   mode->addChannel(newchannel);
   addMode(mode,_twomax,_twowgts);
   // decay mode a_1+ -> pi+ pi+ pi-
@@ -264,48 +251,40 @@ inline void a1ThreePionCLEODecayer::doinit() throw(InitException) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a1p,0,0.0,-1,1);
       newchannel->addIntermediate(rho0[ix],0,0.0,2,3);
-      newchannel->init();
       mode->addChannel(newchannel);
       // interchanged channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(a1p,0,0.0,-1,2);
       newchannel->addIntermediate(rho0[ix],0,0.0,1,3);
-      newchannel->init();
       mode->addChannel(newchannel);      
     }
   // the sigma channels
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,1);
   newchannel->addIntermediate(sigma,0,0.0,2,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   // interchanged channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,2);
   newchannel->addIntermediate(sigma,0,0.0,1,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   // the f_2 channels
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,1);
   newchannel->addIntermediate(f2,0,0.0,2,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,2);
   newchannel->addIntermediate(f2,0,0.0,1,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   // the f_0 channel
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,1);
   newchannel->addIntermediate(f0,0,0.0,2,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
   newchannel->addIntermediate(a1p,0,0.0,-1,2);
   newchannel->addIntermediate(f0,0,0.0,1,3);
-  newchannel->init();
   mode->addChannel(newchannel);
   addMode(mode,_threemax,_threewgts);
   // if using local parameters set the values in the phase space channels

@@ -21,7 +21,7 @@ using namespace  ThePEG;
  *             ( p_{0\nu} g^{\mu\alpha}-p_{0\alpha} g^{\mu\nu})\left[
  *             ((p_{1\nu} \epsilon_1^\beta- p_1^\beta \epsilon_{1\nu})
  *             (p_{2\alpha} \epsilon_{2\beta}- p_{2\beta} \epsilon_{2\alpha})
- *             -(\nu leftrightarrow\alpha))\right],\f]
+ *             -(\nu \leftrightarrow\alpha))\right],\f]
  * 
  * where \f$p_{0,1,2}\f$ are the momenta of the incoming and two outgoing
  * vector mesons and \f$\epsilon_{0,1}\f$ are the polarization vectors of
@@ -36,7 +36,7 @@ using namespace  ThePEG;
  *  many of the common \f$V\to VV\f$ decays are specified in the default
  *  constructor.                                 
  *
- * @see VectorMesonDEcayerBase.
+ * @see VectorMesonDecayerBase.
  * 
  */
 class VectorMesonVectorVectorDecayer: public VectorMesonDecayerBase {
@@ -104,6 +104,11 @@ public:
   virtual vector<LorentzPolarizationVector> 
   decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
 	       const ParticleVector & outpart) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -229,6 +234,11 @@ private:
    * maximum weight for a decay
    */
   vector<double> _maxweight;
+
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 
 };
 

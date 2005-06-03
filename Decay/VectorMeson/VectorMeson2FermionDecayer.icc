@@ -7,176 +7,11 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
-{
-  // rho -> e+e-, mu+mu
-  _coupling.push_back(1.48185855/137./0.7711/0.7711);
-  _coupling.push_back(1.48185855/137./0.7711/0.7711);
-  _incoming.push_back(113);
-  _incoming.push_back(113);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _maxweight.push_back(0.00672387);
-  _maxweight.push_back(0.00670942);
-  // omega -> e+e-, mu+mu-
-  _coupling.push_back(0.446153816/137./0.78257/0.78257);
-  _coupling.push_back(0.446153816/137./0.78257/0.78257);
-  _incoming.push_back(223);
-  _incoming.push_back(223);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _maxweight.push_back(0.000593333);
-  _maxweight.push_back(0.000592117);
-  // phi -> e+e-, mu+mu-
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(333);
-  _incoming.push_back(333);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  // psi(1d) to leptons
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(30443);
-  _incoming.push_back(30443);
-  _incoming.push_back(30443);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  // J/psi decay
-  _incoming.push_back(443);
-  _incoming.push_back(443);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // psi(1d) to leptons
-  _incoming.push_back(100443);
-  _incoming.push_back(100443);
-  _incoming.push_back(100443);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // upsilon to leptons
-  _incoming.push_back(553);
-  _incoming.push_back(553);
-  _incoming.push_back(553);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // upsilon 2s to leptons
-  _incoming.push_back(100553);
-  _incoming.push_back(100553);
-  _incoming.push_back(100553);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // psi(4040) to leptons
-  _incoming.push_back(9000443);
-  _incoming.push_back(9000443);
-  _incoming.push_back(9000443);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // upsilon 3s to leptons
-  _incoming.push_back(200553);
-  _incoming.push_back(200553);
-  _incoming.push_back(200553);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // upsilon 4s to leptons
-  _incoming.push_back(300553);
-  _incoming.push_back(300553);
-  _incoming.push_back(300553);
-  _outgoing1.push_back(11);_outgoing2.push_back(-11);
-  _outgoing1.push_back(13);_outgoing2.push_back(-13);
-  _outgoing1.push_back(15);_outgoing2.push_back(-15);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125845);
-  _maxweight.push_back(0.00125756);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  _coupling.push_back(0.164/137./0.78257/0.78257);
-  // baryonic jpsi decays
-  _incoming.push_back(443);_outgoing1.push_back(2212);_outgoing2.push_back(-2212);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(2112);_outgoing2.push_back(-2112);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(3112);_outgoing2.push_back(-3112);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(3212);_outgoing2.push_back(-3212);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(3222);_outgoing2.push_back(-3222);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(3322);_outgoing2.push_back(-3322);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(3312);_outgoing2.push_back(-3312);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(443);_outgoing1.push_back(3122);_outgoing2.push_back(-3122);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  // baryonic psi(2s) decays
-  _incoming.push_back(100443);_outgoing1.push_back(2212);_outgoing2.push_back(-2212);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(2112);_outgoing2.push_back(-2112);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(3112);_outgoing2.push_back(-3112);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(3212);_outgoing2.push_back(-3212);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(3222);_outgoing2.push_back(-3222);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(3322);_outgoing2.push_back(-3322);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(3312);_outgoing2.push_back(-3312);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);
-  _incoming.push_back(100443);_outgoing1.push_back(3122);_outgoing2.push_back(-3122);
-  _maxweight.push_back(0.00125845);_coupling.push_back(0.164/137./0.78257/0.78257);  
-}
-
-
 inline VectorMeson2FermionDecayer::VectorMeson2FermionDecayer
 (const VectorMeson2FermionDecayer & x)
-  : VectorMesonDecayerBase(x), _coupling(x._coupling), _incoming(x._incoming)
-    ,_outgoing1(x._outgoing1),_outgoing2(x._outgoing2), _maxweight(x._maxweight) {}
+  : VectorMesonDecayerBase(x), _coupling(x._coupling), _incoming(x._incoming),
+    _outgoingf(x._outgoingf),_outgoinga(x._outgoinga), _maxweight(x._maxweight),
+    _initsize(x._initsize) {}
 
 inline IBPtr VectorMeson2FermionDecayer::clone() const {
   return new_ptr(*this);
@@ -208,9 +43,10 @@ inline void VectorMeson2FermionDecayer::doinit() throw(InitException) {
   VectorMesonDecayerBase::doinit();
   // check the parameters arew consistent
   unsigned int isize=_coupling.size();
-  if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
-     isize!=_outgoing2.size() || isize!=_maxweight.size())
-    {cerr << "Inconsistent parameters in VectorMeson2FermionDecayer" << endl;}
+  if(isize!=_incoming.size()  || isize!=_outgoingf.size()||
+     isize!=_outgoinga.size() || isize!=_maxweight.size())
+    {throw InitException() << "Inconsistent parameters in VectorMeson2"
+			   << "FermionDecayer::doiin() " << Exception::runerror;}
   // set up the integration channels
   vector<double> wgt(1,1.);
   DecayPhaseSpaceModePtr mode;
@@ -218,8 +54,8 @@ inline void VectorMeson2FermionDecayer::doinit() throw(InitException) {
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       extpart[0]=getParticleData(_incoming[ix]);
-      extpart[1]=getParticleData(_outgoing1[ix]);
-      extpart[2]=getParticleData(_outgoing2[ix]);
+      extpart[1]=getParticleData(_outgoingf[ix]);
+      extpart[2]=getParticleData(_outgoinga[ix]);
       mode = new DecayPhaseSpaceMode(extpart,this);
       addMode(mode,_maxweight[ix],wgt);
     }
@@ -231,6 +67,8 @@ inline void VectorMeson2FermionDecayer::dofinish() {
 
 inline void VectorMeson2FermionDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {if(_Initialize){_maxweight[ix] = 2.*mode(ix)->maxWeight();}}
 }
 
 
@@ -245,5 +83,4 @@ inline IVector VectorMeson2FermionDecayer::getReferences() {
   // ret.push_back(dummy);
   return ret;
 }
-
 }

@@ -219,13 +219,8 @@ a1ThreePionDecayer::decayCurrent(const bool vertex, const int ichan,
   LorentzPolarizationVector output=LorentzPolarizationVector();
   // construct the spin info objects if needed
   if(vertex)
-    {
-      for(unsigned int ix=0;ix<outpart.size();++ix)
-	{
-	  SpinPtr stemp= new_ptr(ScalarSpinInfo(outpart[ix]->momentum(),true));
-	  outpart[ix]->spinInfo(stemp);
-	}
-    }
+    {for(unsigned int ix=0;ix<outpart.size();++ix)
+	{outpart[ix]->spinInfo(new_ptr(ScalarSpinInfo(outpart[ix]->momentum(),true)));}}
   // identify the mesons
   int npi0=0,npiplus=0,npiminus=0,ipi0[3],ipim[3],ipip[3],idtemp;
   for(unsigned int ix=0; ix<outpart.size();++ix)

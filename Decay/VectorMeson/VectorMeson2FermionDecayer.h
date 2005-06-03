@@ -17,7 +17,7 @@ using namespace ThePEG;
  *  baryons, \e e.g. \f$p\bar{p}\f$ and \f$n\bar{n}\f$. 
  *
  *  In this case the current is taken to have the form
- *  \f[J^\mu = g \bar{u}(p_{\bar{f}})\gamma^\mu u(p_f).\f]
+ *  \f[J^\mu = g \bar{u}(p_f)\gamma^\mu u(p_{\bar{f}}).\f]
  *
  *  The incoming vector mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
@@ -42,7 +42,7 @@ public:
   /**
    * Default constructor.
    */
-  inline VectorMeson2FermionDecayer();
+  VectorMeson2FermionDecayer();
 
   /**
    * Copy-constructor.
@@ -100,6 +100,11 @@ public:
    * @return True or False if this mode can be handled.
    */
   bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -214,18 +219,22 @@ private:
   /**
    * the PDG codes for the outgoing fermion
    */
-  vector<int> _outgoing1;
+  vector<int> _outgoingf;
 
   /**
    * the PDG codes for the outgoing antifermion.
    */
-  vector<int> _outgoing2;
+  vector<int> _outgoinga;
 
   /**
    * maximum weight for a decay
    */
   vector<double> _maxweight;
 
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 };
 
 }

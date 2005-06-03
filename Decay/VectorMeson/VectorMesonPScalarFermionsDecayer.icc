@@ -9,48 +9,12 @@
 namespace Herwig {
   using namespace ThePEG;
 
-inline VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() 
-{
-  // omega -> pi e+e- /mu+mu-
-  _incoming.push_back( 223);_outgoingP.push_back( 111);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _incoming.push_back( 223);_outgoingP.push_back( 111);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.218728713/GeV);_maxweight.push_back(0.0160905);
-  _coupling.push_back(0.218728713/GeV);_maxweight.push_back(0.00108611);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  // phi -> eta e+e-/mu+mu-
-  _incoming.push_back( 333);;_outgoingP.push_back( 221);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _coupling.push_back(0.0653627/GeV);_maxweight.push_back(0.0112692);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _incoming.push_back( 333);;_outgoingP.push_back( 221);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.0653627/GeV);_maxweight.push_back(0.0112692);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  // phi -> pi e+e-
-  _incoming.push_back( 333);;_outgoingP.push_back( 111);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _coupling.push_back(0.0120094/GeV);_maxweight.push_back(0.000280761);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _incoming.push_back( 333);;_outgoingP.push_back( 111);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.0120094/GeV);_maxweight.push_back(0.000280761);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-}
-
 inline VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer(const VectorMesonPScalarFermionsDecayer & x)
   : VectorMesonDecayerBase(x), _coupling(x._coupling), _incoming(x._incoming),
     _outgoingP(x._outgoingP), _outgoingf(x._outgoingf), _outgoinga(x._outgoinga),
-    _maxweight(x._maxweight), _includeVMD(x._includeVMD), _VMDid(x._VMDid),
-    _VMDmass(x._VMDmass), _VMDwidth(x._VMDwidth)
+    _maxweight(x._maxweight), _weight(x._weight),
+    _includeVMD(x._includeVMD), _VMDid(x._VMDid),
+    _VMDmass(x._VMDmass), _VMDwidth(x._VMDwidth), _initsize(x._initsize)
 {}
 
 inline IBPtr VectorMesonPScalarFermionsDecayer::clone() const {
@@ -79,52 +43,20 @@ inline void VectorMesonPScalarFermionsDecayer::doupdate() throw(UpdateException)
   // Touch if anything has changed.
 }
 
-inline void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
-  VectorMesonDecayerBase::doinit();
-  // check the parameters are consistent
-  unsigned int isize=_coupling.size();
-  if(isize!=_incoming.size()  || isize!=_outgoingP.size()|| isize!=_outgoingf.size()||
-     isize!=_outgoinga.size() || isize!=_maxweight.size()|| isize!=_includeVMD.size()||
-     isize!=_VMDid.size()     || isize!=_VMDmass.size()  || isize!=_VMDwidth.size())
-    {cerr << "Inconsistent parameters in VectorMesonPScalarFermionsDecayer" << endl;}
-  // create the integration channel for each mode 
-  PDVector extpart(4);
-  tPDPtr gamma=getParticleData(ParticleID::gamma);
-  DecayPhaseSpaceChannelPtr newchannel;
-  DecayPhaseSpaceModePtr newmode;
-  vector<double> wgt(1,1.);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0] = getParticleData(_incoming[ix]);
-      extpart[1] = getParticleData(_outgoingP[ix]);
-      extpart[2] = getParticleData(_outgoingf[ix]);
-      extpart[3] = getParticleData(_outgoinga[ix]);
-      newmode = new DecayPhaseSpaceMode(extpart,this);
-      newchannel=new_ptr(DecayPhaseSpaceChannel(newmode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
-      newchannel->addIntermediate(gamma     ,1,-1.1, 2,3);
-      newchannel->init();
-      newmode->addChannel(newchannel);
-      addMode(newmode,_maxweight[ix],wgt);
-    }
-  // set up the values for the VMD factor if needed (copy the default mass and width 
-  //                                                 into the array)
-  for(unsigned ix=0;ix<isize;++ix)
-    {
-      if(_includeVMD[ix]==1)
-	{
-	  _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
-	  _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
-	}
-    }
-}
-
 inline void VectorMesonPScalarFermionsDecayer::dofinish() {
-  VectorMesonDecayerBase::dofinish();
+  VectorMesonDecayerBase::dofinish(); 
 }
 
 inline void VectorMesonPScalarFermionsDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      if(_Initialize)
+	{
+	  _maxweight[ix] = 2.*mode(ix)->maxWeight();
+	  _weight[ix]    = mode(ix)->channelWeight(1);
+	}
+    }
 }
 
 inline void VectorMesonPScalarFermionsDecayer::rebind(const TranslationMap & trans)

@@ -15,7 +15,9 @@ namespace Herwig {
  *  particle, either another vector meson or a photon, and a pseduoscalar meson.
  *  The current for the decay is 
  *
- *  \f[J^\mu = g\epsilon^{\mu\nu\alpha\beta} p_{0\nu}  p_{1\alpha} \epsilon_{1\beta} \f]
+ *  \f[J^\mu = g\epsilon^{\mu\nu\alpha\beta} p_{0\nu}  p_{1\alpha} \epsilon_{1\beta}, \f]
+ *  where \f$p_0\f$ is the momentum of the decaying particle, \f$p_1\f$ is the momentum
+ *  of the outgoing vector particle and \f$\epsilon_1\f$ is its polarization vector.
  *
  *  Examples of such decays are \f$\rho\to\pi\gamma\f$.
  *
@@ -42,7 +44,7 @@ public:
   /**
    * Default constructor.
    */
-  inline VectorMesonVectorPScalarDecayer();
+  VectorMesonVectorPScalarDecayer();
 
   /**
    * Copy-constructor.
@@ -99,6 +101,11 @@ public:
    * @return True or False if this mode can be handled.
    */
   bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
   
@@ -224,6 +231,11 @@ private:
    * maximum weight for a decay
    */
   vector<double> _maxweight;
+
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 
 };
 

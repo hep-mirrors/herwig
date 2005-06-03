@@ -15,7 +15,6 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 
@@ -24,38 +23,152 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using ThePEG::Helicity::FermionSpinPtr;
-using ThePEG::Helicity::FermionSpinInfo;
-using ThePEG::Helicity::DiracRep;
-using ThePEG::Helicity::HaberDRep;
-using ThePEG::Helicity::HELASDRep;
-using ThePEG::Helicity::defaultDRep;
-using Helicity::Direction;
-using Helicity::incoming;
 using Helicity::outgoing;
+
+VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
+{
+  // rho -> e+e-, mu+mu
+  _incoming.push_back(113);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(113);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _coupling.push_back(18.524E-3);_coupling.push_back(18.35E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  // omega -> e+e-, mu+mu-
+  _incoming.push_back(223);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(223);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _coupling.push_back(5.387E-3);_coupling.push_back(5.387E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  // phi -> e+e-, mu+mu-
+  _incoming.push_back(333);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(333);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _coupling.push_back(6.852E-3);_coupling.push_back(6.852E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  // psi(1d) to leptons
+  _incoming.push_back(30443);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(30443);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(30443);_outgoingf.push_back(15);_outgoinga.push_back(-15); 
+  _coupling.push_back(1.611E-3);_coupling.push_back(1.611E-3);
+  _coupling.push_back(1.611E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // J/psi decay
+  _incoming.push_back(443);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(443);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _coupling.push_back(8.088E-3);_coupling.push_back(8.088E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  // psi2s to leptons
+  _incoming.push_back(100443);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(100443);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(100443);_outgoingf.push_back(15);_outgoinga.push_back(-15);
+  _coupling.push_back(4.645E-3);_coupling.push_back(4.645E-3);
+  _coupling.push_back(4.645E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // upsilon to leptons
+  _incoming.push_back(553);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(553);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(553);_outgoingf.push_back(15);_outgoinga.push_back(-15);
+  _coupling.push_back(2.290E-3);_coupling.push_back(2.290E-3);
+  _coupling.push_back(2.290E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // upsilon 2s to leptons
+  _incoming.push_back(100553);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(100553);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(100553);_outgoingf.push_back(15);_outgoinga.push_back(-15);
+  _coupling.push_back(1.466E-3);_coupling.push_back(1.466E-3);
+  _coupling.push_back(1.466E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // psi(4040) to leptons
+  _incoming.push_back(9000443);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(9000443);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(9000443);_outgoingf.push_back(15);_outgoinga.push_back(-15);
+  _coupling.push_back(2.606E-3);_coupling.push_back(2.606E-3);
+  _coupling.push_back(2.606E-3); 
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // upsilon 3s to leptons
+  _incoming.push_back(200553);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(200553);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(200553);_outgoingf.push_back(15);_outgoinga.push_back(-15);
+  _coupling.push_back(1.316E-3);_coupling.push_back(1.316E-3);
+  _coupling.push_back(1.316E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // upsilon 4s to leptons
+  _incoming.push_back(300553);_outgoingf.push_back(11);_outgoinga.push_back(-11);
+  _incoming.push_back(300553);_outgoingf.push_back(13);_outgoinga.push_back(-13);
+  _incoming.push_back(300553);_outgoingf.push_back(15);_outgoinga.push_back(-15);
+  _coupling.push_back(1.411E-3);_coupling.push_back(1.411E-3);
+  _coupling.push_back(1.411E-3);
+  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  // baryonic jpsi decays
+  // to neutrons and proton
+  _incoming.push_back(443);_outgoingf.push_back(2212);_outgoinga.push_back(-2212);
+  _incoming.push_back(443);_outgoingf.push_back(2112);_outgoinga.push_back(-2112);
+  _maxweight.push_back(2.);_coupling.push_back(1.581E-3);
+  _maxweight.push_back(2.);_coupling.push_back(1.581E-3);
+  // to sigma's
+  _incoming.push_back(443);_outgoingf.push_back(3112);_outgoinga.push_back(-3112);
+  _incoming.push_back(443);_outgoingf.push_back(3212);_outgoinga.push_back(-3212);
+  _incoming.push_back(443);_outgoingf.push_back(3222);_outgoinga.push_back(-3222);
+  _maxweight.push_back(2.);_coupling.push_back(1.307E-3);
+  _maxweight.push_back(2.);_coupling.push_back(1.307E-3);
+  _maxweight.push_back(2.);_coupling.push_back(1.307E-3);
+  // to Xi's 
+  _incoming.push_back(443);_outgoingf.push_back(3322);_outgoinga.push_back(-3322);
+  _incoming.push_back(443);_outgoingf.push_back(3312);_outgoinga.push_back(-3312);
+  _maxweight.push_back(2.);_coupling.push_back(1.183E-3);
+  _maxweight.push_back(2.);_coupling.push_back(1.183E-3);
+  // to lambda
+  _incoming.push_back(443);_outgoingf.push_back(3122);_outgoinga.push_back(-3122);
+  _maxweight.push_back(2.);_coupling.push_back(1.284E-3);
+  // baryonic psi(2s) decays
+  // to neutrons and protons
+  _incoming.push_back(100443);_outgoingf.push_back(2212);_outgoinga.push_back(-2212);
+  _incoming.push_back(100443);_outgoingf.push_back(2112);_outgoinga.push_back(-2112);
+  _maxweight.push_back(2.);_coupling.push_back(7.822E-4);
+  _maxweight.push_back(2.);_coupling.push_back(7.822E-4);
+  // to sigma's
+  _incoming.push_back(100443);_outgoingf.push_back(3112);_outgoinga.push_back(-3112);
+  _incoming.push_back(100443);_outgoingf.push_back(3212);_outgoinga.push_back(-3212);
+  _incoming.push_back(100443);_outgoingf.push_back(3222);_outgoinga.push_back(-3222);
+  _maxweight.push_back(2.);_coupling.push_back(6.120E-4);
+  _maxweight.push_back(2.);_coupling.push_back(6.120E-4);
+  _maxweight.push_back(2.);_coupling.push_back(6.120E-4);
+  // to Xi's
+  _incoming.push_back(100443);_outgoingf.push_back(3322);_outgoinga.push_back(-3322);
+  _incoming.push_back(100443);_outgoingf.push_back(3312);_outgoinga.push_back(-3312);
+  _maxweight.push_back(2.);_coupling.push_back(5.544E-4);
+  _maxweight.push_back(2.);_coupling.push_back(5.544E-4);
+  // to lambda
+  _incoming.push_back(100443);_outgoingf.push_back(3122);_outgoinga.push_back(-3122);
+  _maxweight.push_back(2.);_coupling.push_back(7.432E-4);  
+  // set the initial size
+  _initsize=_incoming.size();
+}
 
 VectorMeson2FermionDecayer::~VectorMeson2FermionDecayer() {}
 
 bool VectorMeson2FermionDecayer::accept(const DecayMode & dm) const 
 {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
+  int id0(dm.parent()->id()),id0bar(id0);
+  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
   ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
   // loop over the modes and see if this is one of them
-  unsigned int ix=0;
+  unsigned int ix(0);
   do
     {
-      if(_incoming[ix]==id0&&
-	 ((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
-	  (_outgoing1[ix]==id2&&_outgoing2[ix]==id1))){allowed=true;}
+      if(_incoming[ix]==id0   )
+	{if((_outgoingf[ix]==id1   &&_outgoinga[ix]==id2   )||
+	    (_outgoingf[ix]==id2   &&_outgoinga[ix]==id1   )){allowed=true;}}
+      if(_incoming[ix]==id0bar&&!allowed)
+	{if((_outgoingf[ix]==id1bar&&_outgoinga[ix]==id2bar)||
+	    (_outgoingf[ix]==id2bar&&_outgoinga[ix]==id1bar)){allowed=true;}}
       ++ix;
     }
   while(!allowed&&ix<_incoming.size());
@@ -65,35 +178,39 @@ bool VectorMeson2FermionDecayer::accept(const DecayMode & dm) const
 ParticleVector VectorMeson2FermionDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
   // workout which mode we are doing
-  int imode=-1;
-  int id=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int imode(-1);
+  int id(parent.id()),idbar(id);
+  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0);
+  bool cc(false);
   do
     {
-      if(_incoming[ix]==id)
-	{
-	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
-	}
+      if(_incoming[ix]==id   )
+	{if((id1   ==_outgoingf[ix]&&id2   ==_outgoinga[ix])||
+	    (id2   ==_outgoingf[ix]&&id1   ==_outgoinga[ix])){imode=ix;}}
+      if(_incoming[ix]==idbar)
+	{if((id1bar==_outgoingf[ix]&&id2bar==_outgoinga[ix])||
+	    (id2bar==_outgoingf[ix]&&id1bar==_outgoinga[ix])){imode=ix;cc=true;}}
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
   // perform the decay
-  bool cc=false;
   return generate(false,cc,imode,parent);
 }
 
 
 void VectorMeson2FermionDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << _coupling << _incoming << _outgoingf << _outgoinga << _maxweight;
 }
 
 void VectorMeson2FermionDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> _coupling >> _incoming >> _outgoingf >> _outgoinga >> _maxweight;
 }
 
 ClassDescription<VectorMeson2FermionDecayer> VectorMeson2FermionDecayer::initVectorMeson2FermionDecayer;
@@ -110,150 +227,140 @@ void VectorMeson2FermionDecayer::Init() {
     ("Incoming",
      "The PDG code for the incoming particle",
      &VectorMeson2FermionDecayer::_incoming,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<VectorMeson2FermionDecayer,int> interfaceOutcoming1
-    ("FirstOutgoing",
+    ("OutgoingFermion",
      "The PDG code for the outgoing fermion",
-     &VectorMeson2FermionDecayer::_outgoing1,
-     0, 0, 0, -10000, 10000, false, false, true);
+     &VectorMeson2FermionDecayer::_outgoingf,
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<VectorMeson2FermionDecayer,int> interfaceOutcoming2
-    ("SecondOutgoing",
+    ("OutgoingAntiFermion",
      "The PDG code for the second outgoing anti-fermion",
-     &VectorMeson2FermionDecayer::_outgoing2,
-     0, 0, 0, -10000, 10000, false, false, true);
+     &VectorMeson2FermionDecayer::_outgoinga,
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<VectorMeson2FermionDecayer,double> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &VectorMeson2FermionDecayer::_coupling,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<VectorMeson2FermionDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &VectorMeson2FermionDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
 }
-
 
 // the hadronic currents    
 vector<LorentzPolarizationVector>  
 VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int, 
 					 const Particle & inpart,
 					 const ParticleVector & decay) const
-  {
-    // prefactor
-    double pre=_coupling[imode()]/inpart.mass();
-    // storage for the current
-    vector<LorentzPolarizationVector> temp;
-    // find the fermion and the antifermion
-    unsigned int iferm=0,ianti=0;
-    for(unsigned int ix=0;ix<decay.size();++ix)
-      {
-	if(decay[ix]->id()>0){iferm=ix;}
-	else if(decay[ix]->id()<0){ianti=ix;}
-      }
-    // construct the spin information objects for the  decay products
-    FermionSpinPtr fspin,aspin;
-    if(vertex)
-      {
-	SpinPtr sferm=new_ptr(FermionSpinInfo(decay[iferm]->momentum(),true));
-	decay[iferm]->spinInfo(sferm);
-	fspin = dynamic_ptr_cast<FermionSpinPtr>(sferm);
-	SpinPtr santi=new_ptr(FermionSpinInfo(decay[ianti]->momentum(),true));
-	decay[ianti]->spinInfo(santi);
-	aspin =dynamic_ptr_cast<FermionSpinPtr>(santi);
-      }
-    // vectors containing the spinors
-    vector<LorentzSpinor> wave;
-    vector<LorentzSpinorBar> wavebar;
-    // calculate the spinor and antispinor
-    SpinorWaveFunction fwave = SpinorWaveFunction(decay[iferm]->momentum(),
-						  decay[iferm]->dataPtr(),outgoing);
-    SpinorBarWaveFunction awave=SpinorBarWaveFunction(decay[ianti]->momentum(),
-						      decay[ianti]->dataPtr(),outgoing);
-    for(int ix=-1;ix<2;ix+=2)
-      {
-	// spinor for the fermion
-	fwave.reset(ix);
-	wave.push_back(fwave.Wave());
-	fspin->setBasisState(ix,wave[(ix+1)/2]);
-	// spinorbar for the antifermion
-	awave.reset(ix);
-	wavebar.push_back(awave.Wave());
-	aspin->setBasisState(ix,wavebar[(ix+1)/2].bar());
-      }
-    // now compute the currents
-    Complex ii(0.,1.);
-    temp.resize(4);
-    unsigned int iloc;
-    LorentzPolarizationVector vec;
-    for(unsigned int ix=0;ix<2;++ix)
-      {
-	for(unsigned int iy=0;iy<2;++iy)
-	  {
-	    Complex s1s4 = wavebar[iy].s1()*wave[ix].s4();
-	    Complex s2s3 = wavebar[iy].s2()*wave[ix].s3();
-	    Complex s3s2 = wavebar[iy].s3()*wave[ix].s2();
-	    Complex s4s1 = wavebar[iy].s4()*wave[ix].s1();
-	    Complex s1s3 = wavebar[iy].s1()*wave[ix].s3();
-	    Complex s2s4 = wavebar[iy].s2()*wave[ix].s4();
-	    Complex s3s1 = wavebar[iy].s3()*wave[ix].s1();
-	    Complex s4s2 = wavebar[iy].s4()*wave[ix].s2();
-	    // calculate the current
-	    if(defaultDRep==HaberDRep)
-	      {
-		vec[0] =       s1s4+s2s3-s3s2-s4s1;
-		vec[1] =  -ii*(s1s4-s2s3-s3s2+s4s1);
-		vec[2] =       s1s3-s2s4-s3s1+s4s2;
-		vec[3] = 
-		  +wavebar[iy].s1()*wave[ix].s1()+wavebar[iy].s2()*wave[ix].s2()
-		  -wavebar[iy].s3()*wave[ix].s3()-wavebar[iy].s4()*wave[ix].s4();
-	      }
-	    else
-	      {
-		vec[0] =      s1s4+s2s3-s3s2-s4s1;
-		vec[1] = -ii*(s1s4-s2s3-s3s2+s4s1);
-		vec[2] =      s1s3-s2s4-s3s1+s4s2;
-		vec[3] =      s1s3+s2s4+s3s1+s4s2;
-	      }
-	    // location in the vector
-	    if(iferm<ianti){iloc=2*ix+iy;}
-	    else{iloc=2*iy+ix;}
-	    // add it to the vector
-	    temp[iloc]=pre*vec;
-	  }
-      }
-    // return the answer
-    return temp;
-  }
+{
+  double pre(_coupling[imode()]/inpart.mass());
+  // fermion and antifermion
+  unsigned int iferm(0),ianti(1);
+  if(_outgoingf[imode()]!=decay[iferm]->id()){iferm=1;ianti=0;}
+  // construct the spin information objects for the  decay products
+  vector<LorentzSpinor> wave;
+  vector<LorentzSpinorBar> wavebar;
+  SpinorBarWaveFunction(wavebar,decay[iferm],outgoing,true,vertex);
+  SpinorWaveFunction(   wave   ,decay[ianti],outgoing,true,vertex);
+  // now compute the currents
+  vector<LorentzPolarizationVector> temp(4);
+  unsigned int iloc,ix,iy;
+  for(ix=0;ix<2;++ix)
+    {
+      for(iy=0;iy<2;++iy)
+	{
+	  // location in the vector
+	  if(iferm>ianti){iloc=2*ix+iy;}
+	  else{iloc=2*iy+ix;}
+	  // add it to the vector
+	  temp[iloc]=pre*wave[ix].vectorCurrent(wavebar[iy]);
+	}
+    }
+  // return the answer
+  return temp;
+}
 
 bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 						double & coupling) const
 {
-  int imode=-1;
-  int id=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int imode(-1);
+  int id(dm.parent()->id()),idbar(id);
+  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
-  do
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0); bool order;
+  do 
     {
-      if(_incoming[ix]==id)
+      if(id   ==_incoming[ix])
 	{
-	  if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}
+	  if(id1==_outgoingf[ix]&&id2==_outgoinga[ix]){imode=ix;order=true;}
+	  if(id2==_outgoingf[ix]&&id1==_outgoinga[ix]){imode=ix;order=false;}
+	}
+      if(idbar==_incoming[ix]&&imode<0)
+	{
+	  if(id1bar==_outgoingf[ix]&&id2bar==_outgoinga[ix]){imode=ix;order=true;}
+	  if(id2bar==_outgoingf[ix]&&id1bar==_outgoinga[ix]){imode=ix;order=false;}
 	}
       ++ix;
     }
-  while(imode<0&&ix<_incoming.size());
+  while(ix<_incoming.size()&&imode<0);
   coupling=_coupling[imode];
   mecode=2;
-  return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
- }
+  return order;
+}
+
+
+// output the setup information for the particle database
+void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  // the rest of the parameters
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      if(ix<_initsize)
+	{
+	  output << "set " << fullName() << ":Incoming " << ix << " "
+		 << _incoming[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingFermion " << ix << " "
+		 << _outgoingf[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingAntiFermion "  << ix << " "
+		 << _outgoinga[ix] << "\n";
+	  output << "set " << fullName() << ":Coupling " << ix << " "
+		 << _coupling[ix] << "\n";
+	  output << "set " << fullName() << ":MaxWeight " << ix << " "
+		 << _maxweight[ix] << "\n";
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Incoming " << ix << " "
+		 << _incoming[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingFermion "  << ix << " "
+		 << _outgoingf[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingAntiFermion "  << ix << " "
+		 << _outgoinga[ix] << "\n";
+	  output << "insert " << fullName() << ":Coupling " << ix << " "
+		 << _coupling[ix] << "\n";
+	  output << "insert " << fullName() << ":MaxWeight " << ix << " "
+		 << _maxweight[ix] << "\n";
+	}
+    }
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 }
 

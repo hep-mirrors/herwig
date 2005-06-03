@@ -7,44 +7,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
-{
-  // decay of the phi to the a_0 and f_0 and a photon
-  _incoming.push_back(333);_outgoingV.push_back(22);_outgoingS.push_back(9000111);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(333);_outgoingV.push_back(22);_outgoingS.push_back(9010221);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // Jpsi decayers
-  _incoming.push_back(443);_outgoingV.push_back(22);_outgoingS.push_back(10331);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(443);_outgoingV.push_back(223);_outgoingS.push_back(10331);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(443);_outgoingV.push_back(333);_outgoingS.push_back(10331);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(443);_outgoingV.push_back(333);_outgoingS.push_back(9010221);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(443);_outgoingV.push_back(223);_outgoingS.push_back(9010221);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // upsilon(2s)
-  _incoming.push_back(100553);_outgoingV.push_back(22);_outgoingS.push_back(10551);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // upsilon(3s)
-  _incoming.push_back(200553);_outgoingV.push_back(22);_outgoingS.push_back(110551);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // psi2s decays
-  _incoming.push_back(100443);_outgoingV.push_back(22);_outgoingS.push_back(10441);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(100443);_outgoingV.push_back(22);_outgoingS.push_back(331);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(100443);_outgoingV.push_back(22);_outgoingS.push_back(10331);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(100443);_outgoingV.push_back(333);_outgoingS.push_back(9010221);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-}
-
 inline VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer(const VectorMesonVectorScalarDecayer & x)
   : VectorMesonDecayerBase(x), _coupling(x._coupling),_incoming(x._incoming),
-    _outgoingV(x._outgoingV),_outgoingS(x._outgoingS),_maxweight(x._maxweight) {}
+    _outgoingV(x._outgoingV),_outgoingS(x._outgoingS),_maxweight(x._maxweight),
+    _initsize(x._initsize) {}
 
 inline IBPtr VectorMesonVectorScalarDecayer::clone() const {
   return new_ptr(*this);
@@ -78,7 +44,9 @@ inline void VectorMesonVectorScalarDecayer::doinit() throw(InitException) {
   unsigned int isize=_incoming.size();
   if(isize!=_outgoingV.size()||isize!=_outgoingS.size()||
      isize!=_maxweight.size()||isize!=_coupling.size())
-    {cerr << "Inconsistent parameters in VectorMesonVectorScalarDecayer" << endl;}
+    {throw InitException() << "Inconsistent parameters in "
+			   << "VectorMesonVectorScalarDecayer::doinit()" 
+			   << Exception::abortnow;}
   // set up the integration channels
   vector<double> wgt(1,1.);
   PDVector extpart(3);
@@ -99,6 +67,9 @@ inline void VectorMesonVectorScalarDecayer::dofinish() {
 
 inline void VectorMesonVectorScalarDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
+  if(_Initialize)
+    {for(unsigned int ix=0;ix<_incoming.size();++ix)
+	{_maxweight[ix] = 2.*mode(ix)->maxWeight();}}
 }
 
 inline void VectorMesonVectorScalarDecayer::rebind(const TranslationMap & trans)
