@@ -14,8 +14,8 @@ inline LambdabExcitedLambdacSumRuleFormFactor::LambdabExcitedLambdacSumRuleFormF
   // modes handled by this form-factor
   // lambda_b to lambda_c1
   addFormFactor(5122,14122,2,2,1,2,5,4);
-  // lambda_b to lambda_c1
-  addFormFactor(5122,4124 ,2,2,1,2,5,4);
+  // lambda_b to lambda_c1*
+  addFormFactor(5122,4124 ,2,4,1,2,5,4);
 }
 
 inline LambdabExcitedLambdacSumRuleFormFactor::LambdabExcitedLambdacSumRuleFormFactor(const LambdabExcitedLambdacSumRuleFormFactor & x)

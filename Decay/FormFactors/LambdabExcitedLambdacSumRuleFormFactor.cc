@@ -64,17 +64,17 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy 
   Complex g1v,g1a,g2v,g2a,g3a,g3v;
   g1v = orr*(omega-1.)*xi;
   g1a = orr*(omega+1.)*xi;
-  g2v =-2./sqrt(3.)*xi;
+  g2v =-2.*orr*xi;
   g3v = 0.;
-  g2a =-2./sqrt(3.)*xi;
+  g2a =-2.*orr*xi;
   g3a = 0.;
   // convert to our form
-  f1v = g1v+0.5*(m0+m1)*(g2v/m0+g3v/m1);
-  f1a =-g1a+0.5*(m0-m1)*(g2a/m0+g3a/m1);
-  f2v = 0.5*(m0+m1)*( g2v/m0+g3v/m1);
-  f3v = 0.5*(m0+m1)*(-g2v/m0+g3v/m1);
-  f2a =-0.5*(m0+m1)*( g2a/m0+g3a/m1);
-  f3a =-0.5*(m0+m1)*(-g2a/m0+g3a/m1);
+  f1a = g1v-0.5*(m0-m1)*(g2v/m0+g3v/m1);
+  f1v =-g1a-0.5*(m0+m1)*(g2a/m0+g3a/m1);
+  f2a = 0.5*(m0+m1)*( g2v/m0+g3v/m1);
+  f2v =-0.5*(m0+m1)*( g2a/m0+g3a/m1);
+  f3a = 0.5*(m0+m1)*( g2v/m0-g3v/m1);
+  f3v = 0.5*(m0+m1)*(-g2a/m0+g3a/m1);
 }
 
 void  LambdabExcitedLambdacSumRuleFormFactor::
@@ -83,11 +83,11 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
 				 Complex & f3v,Complex & f4v,
 				 Complex & f1a,Complex & f2a,
 				 Complex & f3a,Complex & f4a )
- {
+{
   // the omega value
-  double omega=.5/m0/m1*(m0*m0+m1*m1-q2);
+  double omega(.5/m0/m1*(m0*m0+m1*m1-q2));
   // the universal form-factor
-  double xi=_xi1*(1.-_rho2*(omega-1.));
+  double xi(_xi1*(1.-_rho2*(omega-1.)));
   // calculate the form factor
   // the couplings in the velocity form
   Complex N1,N2,N3,N4,K1,K2,K3,K4; 
@@ -102,22 +102,24 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
   N4 = 0.;
   K4 = 0.;
   // convert to our form
-  f1v = N4;
-  f1a =-K4;
-  f2v = N1*msum/m0;
-  f2a =-K1*msum/m0;
-  f3v = msum2/m0*(N2/m0+N3/m1);
-  f3a =-msum2/m0*(K2/m0+K3/m1);
-  f4v = msum2/m0/m0*N2;
-  f4a =-msum2/m0/m0*K2;
+  f1v =-N4;
+  f1a = K4;
+  f2v =-N1*msum/m0;
+  f2a = K1*msum/m0;
+  f3v =-msum2/m0*(N2/m0+N3/m1);
+  f3a = msum2/m0*(K2/m0+K3/m1);
+  f4v =-msum2/m0/m0*N2;
+  f4a = msum2/m0/m0*K2;
 }
 
 void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output)
 {
-  output << "create /Herwig++/BaryonThreeQuarkModelFormFactor " << fullName() << " \n";
+  output << "create /Herwig++/LambdabExcitedLambdacSumRuleFormFactor " 
+	 << fullName() << " \n";
   output << "set " << fullName() << ":Xi          " << _xi1          << " \n";
   output << "set " << fullName() << ":Rho2        " << _rho2         << " \n";
 }
 
 
 }
+

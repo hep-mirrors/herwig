@@ -12,7 +12,8 @@ inline BaryonFormFactor::BaryonFormFactor() {}
 inline BaryonFormFactor::BaryonFormFactor(const BaryonFormFactor & x)
   : Interfaced(x),_incomingid(x._incomingid), _outgoingid(x._outgoingid),
     _incomingJ(x._incomingJ), _outgoingJ(x._outgoingJ),_spectator1(x._spectator1),
-    _spectator2(x._spectator2),_inquark(x._inquark),_outquark(x._outquark) {}
+    _spectator2(x._spectator2),_inquark(x._inquark),_outquark(x._outquark),
+    _numbermodes(x._numbermodes) {}
 
 inline IBPtr BaryonFormFactor::clone() const {
   return new_ptr(*this);
@@ -43,7 +44,7 @@ inline void BaryonFormFactor::doupdate() throw(UpdateException) {
 inline void BaryonFormFactor::doinit() throw(InitException) {
   Interfaced::doinit();
   // check the consistency of the parameters
-  unsigned int isize=_incomingid.size();
+  unsigned int isize(_incomingid.size());
   if(isize!=_outgoingid.size() || isize!=_incomingJ.size()||isize!=_outgoingJ.size()||
      isize!=_spectator1.size()|| isize!=_spectator2.size()|| isize!=_inquark.size()||
      isize!=_outquark.size())
@@ -137,4 +138,8 @@ inline void BaryonFormFactor::particleID(int iloc,int & id0,int & id1)
   id1=_outgoingid[iloc];
 }
 
+inline void BaryonFormFactor::initialModes(unsigned int nmodes)
+{_numbermodes=nmodes;}
+
+inline unsigned int BaryonFormFactor::initialModes(){return _numbermodes;}
 }

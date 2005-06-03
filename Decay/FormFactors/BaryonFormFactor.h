@@ -284,6 +284,17 @@ protected:
   inline void addFormFactor(int in,int out,int inspin, int outspin, int spect1,
 			    int spect2, int inquark,int outquark);
 
+  /**
+   *  Set initial number of modes
+   * @param nmodes The number of modes.
+   */
+  inline void initialModes(unsigned int nmodes);
+
+  /**
+   * Get the initial number of modes
+   */
+  inline unsigned int initialModes();
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -383,6 +394,11 @@ private:
    * the id of the outgoing quark
    */
   vector<int> _outquark;
+
+  /**
+   * The initial number of modes
+   */
+  unsigned int _numbermodes;
 };
 
 }

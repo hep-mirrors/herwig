@@ -32,7 +32,8 @@ public:
   /**
    * Copy constructor
    */
-  inline LambdabExcitedLambdacSumRuleFormFactor(const LambdabExcitedLambdacSumRuleFormFactor &);
+  inline 
+  LambdabExcitedLambdacSumRuleFormFactor(const LambdabExcitedLambdacSumRuleFormFactor &);
 
   /**
    * Destructor

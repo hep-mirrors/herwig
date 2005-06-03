@@ -22,12 +22,12 @@ BaryonFormFactor::~BaryonFormFactor() {}
 
 void BaryonFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _incomingid << _outgoingid << _incomingJ << _outgoingJ << _spectator1 
-     << _spectator2 << _inquark << _outquark;
+     << _spectator2 << _inquark << _outquark << _numbermodes;
 }
 
 void BaryonFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _incomingid >> _outgoingid >> _incomingJ >> _outgoingJ >> _spectator1 
-     >> _spectator2 >> _inquark >> _outquark;
+     >> _spectator2 >> _inquark >> _outquark >> _numbermodes;
 }
 
 AbstractClassDescription<BaryonFormFactor> BaryonFormFactor::initBaryonFormFactor;
@@ -43,13 +43,13 @@ void BaryonFormFactor::Init() {
     ("Incoming",
      "The id of the incoming baryons.",
      &BaryonFormFactor::_incomingid,
-     0, 0, 0, -1000000, 1000000, false, false, true);
+     0, 0, 0, 0, 1000000, false, false, true);
 
   static ParVector<BaryonFormFactor,int> interfaceOutgoing
     ("Outgoing",
      "The id of the outgoing baryons.",
      &BaryonFormFactor::_outgoingid,
-     0, 0, 0, -1000000, 1000000, false, false, true);
+     0, 0, 0, 0, 1000000, false, false, true);
 
   static ParVector<BaryonFormFactor,int> interfaceInSpin
     ("InSpin",
@@ -67,25 +67,25 @@ void BaryonFormFactor::Init() {
     ("Spectator1",
      "The first specator quark.",
      &BaryonFormFactor::_spectator1,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, 0, 5, false, false, true);
 
   static ParVector<BaryonFormFactor,int> interfaceSpectator2
     ("Spectator2",
      "The second specator quark.",
      &BaryonFormFactor::_spectator2,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, 0, 5, false, false, true);
 
   static ParVector<BaryonFormFactor,int> interfaceInQuark
     ("InQuark",
      "The PDG code for the decaying quark.",
      &BaryonFormFactor::_inquark,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, 0, 5, false, false, true);
 
   static ParVector<BaryonFormFactor,int> interfaceOutQuark
     ("OutQuark",
      "The PDG code for the quark produced in the decay.",
      &BaryonFormFactor::_outquark,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, 0, 5, false, false, true);
 }
 
 // form factor for spin-1/2 to spin-1/2
@@ -108,6 +108,49 @@ void BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor(Energy2,int,int,int,Energ
 }
 
 // output the information for the database
-void BaryonFormFactor::dataBaseOutput(ofstream&)
-{}
+void BaryonFormFactor::dataBaseOutput(ofstream & output)
+{
+  for(unsigned int ix=0;ix<_incomingid.size();++ix)
+    {
+      if(ix<_numbermodes)
+	{
+	  output << "set " << fullName() << ":Incoming "  << ix << " " 
+		 << _incomingid[ix] << endl;
+	  output << "set " << fullName() << ":Outgoing "  << ix << " " 
+		 << _outgoingid[ix] << endl;
+	  output << "set " << fullName() << ":InSpin "      << ix << " " 
+		 << _incomingJ[ix] << endl;
+	  output << "set " << fullName() << ":OutSpin "      << ix << " " 
+		 << _outgoingJ[ix] << endl;
+	  output << "set " << fullName() << ":Spectator1 " << ix << " " 
+		 << _spectator1[ix] << endl;
+	  output << "set " << fullName() << ":Spectator2 " << ix << " " 
+		 << _spectator2[ix] << endl;
+	  output << "set " << fullName() << ":InQuark "   << ix << " " 
+		 << _inquark[ix] << endl;
+	  output << "set " << fullName() << ":OutQuark "  << ix << " " 
+		 << _outquark[ix]<< endl;
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Incoming "  << ix << " " 
+		 << _incomingid[ix] << endl;
+	  output << "insert " << fullName() << ":Outgoing "  << ix << " " 
+		 << _outgoingid[ix] << endl;
+	  output << "insert " << fullName() << ":InSpin "      << ix << " " 
+		 << _incomingJ[ix] << endl;
+	  output << "insert " << fullName() << ":OutSpin "      << ix << " " 
+		 << _outgoingJ[ix] << endl;
+	  output << "insert " << fullName() << ":Spectator1 " << ix << " " 
+		 << _spectator1[ix] << endl;
+	  output << "insert " << fullName() << ":Spectator2 " << ix << " " 
+		 << _spectator2[ix] << endl;
+	  output << "insert " << fullName() << ":InQuark "   << ix << " " 
+		 << _inquark[ix] << endl;
+	  output << "insert " << fullName() << ":OutQuark "  << ix << " " 
+		 << _outquark[ix]<< endl;
+	}
+    }
+}
+
 }
