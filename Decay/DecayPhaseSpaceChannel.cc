@@ -161,7 +161,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
       else if(_intdau2[ix]<0)
 	{
 	  // compute the limits of integration
-	  upper = massint[ix]-massext[idau[0]]; 
+	  upper = massint[ix]-massext[idau[0]];
 	  lower = 0;
 	  for(iy=0;iy<_intext[idau[1]].size();++iy)
 	    {lower+=massext[_intext[idau[1]][iy]];}

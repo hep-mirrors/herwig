@@ -59,7 +59,11 @@ inline void DecayPhaseSpaceMode::setMaxWeight(double wgt) const {_MaxWeight=wgt;
 
 // add a new channel
 inline void DecayPhaseSpaceMode::
-addChannel(Ptr<Herwig::DecayPhaseSpaceChannel>::pointer in){_channels.push_back(in);}
+addChannel(Ptr<Herwig::DecayPhaseSpaceChannel>::pointer in)
+{
+  in->init();
+  _channels.push_back(in);
+}
 
 // return the number of channels
 inline unsigned int DecayPhaseSpaceMode::numberChannels() const{return _channels.size();}
@@ -93,10 +97,12 @@ inline void DecayPhaseSpaceMode::setWeights(const vector<double> in) const
 {_channelwgts=in;}
 
 // access to the external particles
-inline tcPDPtr DecayPhaseSpaceMode::externalParticles(int ix){return _extpart[ix];}
+inline tcPDPtr DecayPhaseSpaceMode::externalParticles(int ix) const
+{return _extpart[ix];}
 
 // number of external particles
-inline unsigned int DecayPhaseSpaceMode::numberofParticles(){return _extpart.size();}
+inline unsigned int DecayPhaseSpaceMode::numberofParticles() const
+{return _extpart.size();}
 
 // return the matrix element squared
 inline double DecayPhaseSpaceMode::me2(bool bin,const int ichan ,const Particle &inpart,

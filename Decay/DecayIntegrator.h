@@ -184,6 +184,12 @@ public:
   void setPartialWidth(const DecayMode & dm, int imode);
 
   /**
+   * Finds the phase-space mode corresponding to a given decay mode
+   * @param dm The DecayMode
+   */
+  int findMode(const DecayMode & dm);
+
+  /**
    * Output the setup information for the particle database
    */
   virtual void dataBaseOutput(ofstream &);
@@ -258,6 +264,12 @@ protected:
    */
   tDecayPhaseSpaceModePtr mode(unsigned int);
   
+
+  /**
+   * Pointer to a mode
+   */
+  tcDecayPhaseSpaceModePtr mode(unsigned int) const;
+
 protected:
   
   /** @name Standard Interfaced functions. */
@@ -333,18 +345,17 @@ protected:
    */
   int _ntry;
 
+  /**
+   * perform initialisation
+   */
+  bool _Initialize;
+
 private:
   
   /**
    * List of the decay modes
    */
   mutable vector<DecayPhaseSpaceModePtr> _modes;
-
-  /**
-   * perform initialisation
-   */
-  bool _Initialize;
-
 
 private:
 

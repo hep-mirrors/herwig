@@ -28,8 +28,8 @@ using namespace ThePEG;
 
 // copy constructor
 DecayIntegrator::DecayIntegrator(const DecayIntegrator & x)
-  : Decayer(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry), _modes(x._modes),
-    _Initialize(x._Initialize) {}
+  : Decayer(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry),
+    _Initialize(x._Initialize), _modes(x._modes) {}
 
 // destructor
 DecayIntegrator::~DecayIntegrator() {}
@@ -189,61 +189,144 @@ WidthCalculatorBasePtr DecayIntegrator::threeBodyMEIntegrator(const DecayMode & 
 void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode)
 {
   vector<int> extid;
-  tcPDPtr cc;
-  int nfound=0;
-  int ifound;unsigned int ix=0;
-  int nmax=1;
+  tcPDPtr cc,cc2;
+  int nfound(0),ifound,nmax(1),id;
+  unsigned int ix(0),iy,N,iz,tmax,nmatched;
   if(dm.parent()->CC()){nmax=2;}
   if(_modes.size()==0){return;}
   do 
     {
-      ifound=-1;
-      extid.resize(0);
       cc = _modes[ix]->externalParticles(0)->CC();
-      // check the parent
-      if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id())
+      tmax=1;if(!cc){++tmax;}
+      for(iz=0;iz<tmax;++iz)
 	{
-	  extid.push_back(_modes[ix]->externalParticles(0)->id());
-	  for(unsigned int iy=1,N=_modes[ix]->numberofParticles();iy<N;++iy)
-	    {extid.push_back(_modes[ix]->externalParticles(iy)->id());}
-	}
-      else if(cc&&dm.parent()->id()==cc->id())
-	{
-	  extid.push_back(cc->id());
-	  for(unsigned int iy=1,N=_modes[ix]->numberofParticles();iy<N;++iy)
+	  ifound=-1;
+	  extid.resize(0);
+	  // check the parent
+	  if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0)
+	    {for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
+		{extid.push_back(_modes[ix]->externalParticles(iy)->id());}}
+	  else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1)
 	    {
-	      cc = _modes[ix]->externalParticles(iy)->CC();
-	      if(cc){extid.push_back(cc->id());}
-	      else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
-	    }
-	}
-      // if the parents match
-      if(!extid.empty())
-	{
-	  vector<bool> matched(extid.size(),false);bool done;
-	  unsigned int nmatched=0,iy;int id;
-	  ParticleMSet::const_iterator pit = dm.products().begin();
-	  do
-	    {
-	      id=(**pit).id();
-	      done=false;
-	      iy=1;
-	      do 
+	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
 		{
-		  if(id==extid[iy]&&!matched[iy])
-		    {matched[iy]=true;++nmatched;done=true;}
-		  ++iy;
+		  cc2=_modes[ix]->externalParticles(iy)->CC();
+		  if(cc2){extid.push_back(cc2->id());}
+		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
 		}
-	      while(iy<extid.size()&&!done);
-	      ++pit;
 	    }
-	  while(pit!=dm.products().end());
-	  if(nmatched==extid.size()-1){ifound=ix;++nfound;}
+	  else if(cc&&dm.parent()->id()==cc->id())
+	    {
+	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
+		{
+		  cc = _modes[ix]->externalParticles(iy)->CC();
+		  if(cc){extid.push_back(cc->id());}
+		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
+		}
+	    }
+	  // if the parents match
+	  if(!extid.empty())
+	    {
+	      vector<bool> matched(extid.size(),false);bool done;
+	      nmatched=0;
+	      ParticleMSet::const_iterator pit = dm.products().begin();
+	      do
+		{
+		  id=(**pit).id();
+		  done=false;
+		  iy=1;
+		  do 
+		    {
+		      if(id==extid[iy]&&!matched[iy])
+			{matched[iy]=true;++nmatched;done=true;}
+		      ++iy;
+		    }
+		  while(iy<extid.size()&&!done);
+		  ++pit;
+		}
+	      while(pit!=dm.products().end());
+	      if(nmatched==extid.size()-1){ifound=ix;++nfound;}
+	    }
+	  if(ifound>=0){_modes[ifound]->setPartialWidth(imode);}
 	}
       ++ix;
-      if(ifound>=0){_modes[ifound]->setPartialWidth(imode);}
     }
   while(nfound<nmax&&ix<_modes.size());
+}
+
+int DecayIntegrator::findMode(const DecayMode & dm)
+{
+  int imode(-1);
+  vector<int> extid;
+  tcPDPtr cc,cc2;
+  bool found(false);
+  int id;
+  unsigned int ix(0),iy,N,iz,tmax,nmatched;
+  cout << "testing the number of modes " << _modes.size() << endl;
+
+  if(_modes.size()==0){return -1;}
+  do 
+    {
+      cc = _modes[ix]->externalParticles(0)->CC();
+      tmax=1;if(!cc){++tmax;}
+      for(iz=0;iz<tmax;++iz)
+	{
+	  extid.resize(0);
+	  // check the parent
+	  if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0)
+	    {for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
+		{extid.push_back(_modes[ix]->externalParticles(iy)->id());}}
+	  else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1)
+	    {
+	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
+		{
+		  cc2=_modes[ix]->externalParticles(iy)->CC();
+		  if(cc2){extid.push_back(cc2->id());}
+		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
+		}
+	    }
+	  else if(cc&&dm.parent()->id()==cc->id())
+	    {
+	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
+		{
+		  cc = _modes[ix]->externalParticles(iy)->CC();
+		  if(cc){extid.push_back(cc->id());}
+		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
+		}
+	    }
+	  // if the parents match
+	  if(!extid.empty())
+	    {
+	      vector<bool> matched(extid.size(),false);bool done;
+	      nmatched=0;
+	      ParticleMSet::const_iterator pit = dm.products().begin();
+	      do
+		{
+		  id=(**pit).id();
+		  done=false;
+		  iy=1;
+		  do 
+		    {
+		      if(id==extid[iy]&&!matched[iy])
+			{matched[iy]=true;++nmatched;done=true;}
+		      ++iy;
+		    }
+		  while(iy<extid.size()&&!done);
+		  ++pit;
+		}
+	      while(pit!=dm.products().end());
+	      if(nmatched==extid.size()-1){imode=ix;found=true;}
+	    }
+	}
+      ++ix;
+    }
+  while(!found&&ix<_modes.size());
+  cout << "testing found mode " << _modes[imode]->externalParticles(0)->PDGName() 
+	<< " -> ";
+  for(ix=1;ix<_modes[imode]->numberofParticles();++ix)
+    {cout << _modes[imode]->externalParticles(ix)->PDGName() << " ";}
+  cout << endl;
+  return imode;
 }
 
 // output the information for the database
@@ -251,8 +334,7 @@ void DecayIntegrator::dataBaseOutput(ofstream & output)
 {output << " where ThePEGName=\" " << fullName() << "\";";}
 
 // pointer to a mode
-tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix)
-{
-  return _modes[ix];
-}
+tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix){return _modes[ix];}
+tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const
+{return _modes[ix];}
 }

@@ -86,13 +86,13 @@ public:
    * @param ix The external particle required.
    * @return A pointer to the ParticleData object.
    */
-  inline tcPDPtr externalParticles(int ix);
+  inline tcPDPtr externalParticles(int ix) const;
 
   /**
    * Number of external particles.
    * @return The number of external particles.
    */
-  inline unsigned int numberofParticles();
+  inline unsigned int numberofParticles() const;
 
   /**
    * Number of channels
@@ -213,6 +213,7 @@ protected:
 
   /**
    * Return the weight for a given phase-space point.
+   * @param vertex Produce the SpinInfo objects for the spin correlations.
    * @param cc Whether we are generating the mode specified or the charge 
    *           conjugate mode.
    * @param ichan The channel to generate the weight for.
@@ -220,7 +221,7 @@ protected:
    * @param particles The outgoing particles.
    * @return The weight.
    */
-  Energy weight(bool cc,int & ichan, const Particle & in,
+  Energy weight(bool vertex, bool cc,int & ichan, const Particle & in,
 		ParticleVector & particles) const;
     
   /**
