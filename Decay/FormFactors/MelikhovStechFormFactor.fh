@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MelikhovStechFormFactor class.
+//
+#ifndef ThePEG_MelikhovStechFormFactor_FH
+#define ThePEG_MelikhovStechFormFactor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class MelikhovStechFormFactor;
+ThePEG_DECLARE_POINTERS(MelikhovStechFormFactor,MelikhovStechFormFactorPtr);
+
+}
+
+#endif

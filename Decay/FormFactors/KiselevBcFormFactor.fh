@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the KiselevBcFormFactor class.
+//
+#ifndef ThePEG_KiselevBcFormFactor_FH
+#define ThePEG_KiselevBcFormFactor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class KiselevBcFormFactor;
+ThePEG_DECLARE_POINTERS(KiselevBcFormFactor,KiselevBcFormFactorPtr);
+
+}
+
+#endif
