@@ -1,0 +1,77 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the BaryonWidthGenerator class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline BaryonWidthGenerator::BaryonWidthGenerator() {}
+
+inline BaryonWidthGenerator::BaryonWidthGenerator(const BaryonWidthGenerator & x)
+  : GenericWidthGenerator(x), _baryondecayers(x._baryondecayers), _modeloc(x._modeloc),
+    _Afact1(x._Afact1), _Afact2(x._Afact2), _Afact3(x._Afact3),
+    _Afact4(x._Afact4), _Afact5(x._Afact5), _Afact6(x._Afact6), _Bfact1(x._Bfact1),
+    _Bfact2(x._Bfact2), _Bfact3(x._Bfact3), _Bfact4(x._Bfact4), _Bfact5(x._Bfact5),
+    _Bfact6(x._Bfact6) {}
+inline IBPtr BaryonWidthGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr BaryonWidthGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void BaryonWidthGenerator::doupdate() throw(UpdateException) {
+  GenericWidthGenerator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void BaryonWidthGenerator::doinit() throw(InitException) {
+  if(initialize())
+    { 
+      _baryondecayers.resize(0);
+      _modeloc.resize(0);
+      _Afact1.resize(0);_Afact2.resize(0); _Afact3.resize(0);
+      _Afact4.resize(0);_Afact5.resize(0); _Afact6.resize(0);
+      _Bfact1.resize(0);_Bfact2.resize(0); _Bfact3.resize(0); 
+      _Bfact4.resize(0); _Bfact5.resize(0);_Bfact6.resize(0);
+    }
+  GenericWidthGenerator::doinit();
+}
+
+inline void BaryonWidthGenerator::dofinish() {
+  GenericWidthGenerator::dofinish();
+}
+
+inline void BaryonWidthGenerator::doinitrun() {
+  GenericWidthGenerator::doinitrun();
+}
+
+inline void BaryonWidthGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  GenericWidthGenerator::rebind(trans);
+}
+
+inline IVector BaryonWidthGenerator::getReferences() {
+  IVector ret = GenericWidthGenerator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
