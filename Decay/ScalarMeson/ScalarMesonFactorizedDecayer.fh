@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ScalarMesonFactorizedDecayer class.
+//
+#ifndef HERWIG_ScalarMesonFactorizedDecayer_FH
+#define HERWIG_ScalarMesonFactorizedDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ScalarMesonFactorizedDecayer;
+ThePEG_DECLARE_POINTERS(ScalarMesonFactorizedDecayer,ScalarMesonFactorizedDecayerPtr);
+
+}
+
+#endif
