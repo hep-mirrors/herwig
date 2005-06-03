@@ -86,7 +86,7 @@ public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
-   * This method combines the leptonCurrent and the hadronic current to 
+   * This method combines the leptonic current and the hadronic current to 
    * calculate the matrix element.
    * @param vertex Output the information on the vertex for spin correlations
    * @param ichan The channel we are calculating the matrix element for. 
@@ -199,18 +199,6 @@ private:
    * Private and non-existent assignment operator.
    */
   TauDecayer & operator=(const TauDecayer &);
-
- private:
-
-  /**
-   * Lepton currents for the different lepton helicities.
-   * @param vertex Output the information on the vertex for spin correlations
-   * @param inpart The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @return The leptonic current given above.
-   */
-  vector<LorentzPolarizationVector> leptonCurrent(bool vertex, const Particle & inpart,
-						  const ParticleVector & decay) const;
 
 private:
   
