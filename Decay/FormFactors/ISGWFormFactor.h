@@ -5,8 +5,13 @@
 // This is the declaration of the <ISGWFormFactor class.
 //
 #include "ScalarFormFactor.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/PDT/EnumParticles.h"
+>>>>>>> 1.2
 #include "ISGWFormFactor.fh"
+#include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -31,7 +36,7 @@ public:
   /**
    * Default constructor
    */
-  inline ISGWFormFactor();
+  ISGWFormFactor();
 
   /**
    * Copy constructor
@@ -59,7 +64,7 @@ public:
    * @param f0 The form-factor \f$f_0\f$. 
    * @param fp The form-factor \f$f_+\f$.
    */
-  virtual void ScalarScalarFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
 				      Energy m1,Complex & f0,Complex & fp) const;
 
   /**
@@ -75,7 +80,7 @@ public:
    * @param A1 The form-factor \f$A_1\f$
    * @param A2 The form-factor \f$A_2\f$
    */
-  virtual void ScalarVectorFormFactor(Energy2 q2, int iloc, int id0, int id1,
+  virtual void ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 				      Energy m0, Energy m1, Complex & V,
 				      Complex & A0,Complex & A1,Complex & A2) const;
 
@@ -92,10 +97,15 @@ public:
    * @param bp The form-factor \f$b_+\f$.
    * @param bm The form-factor \f$b_-\f$.
    */
-  virtual void ScalarTensorFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
 				      Energy m1, Complex & h,Complex & k,
 				      Complex & bp, Complex & bm) const;
   //@}
+
+  /**
+   * Output the setup information for the particle database
+   */
+  virtual void dataBaseOutput(ofstream &);
 
 public:
 
@@ -134,7 +144,7 @@ protected:
    * @param f3 The third  form-factor.
    * @param f4 The fourth form-factor.
    */
-  void formFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+  void formFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
 		  Energy m1,Complex & f1,Complex & f2,
 		  Complex & f3,Complex & f4) const;
   // general member to calculate all the form-factors
@@ -219,7 +229,7 @@ private:
 private:
 
   /**
-   * The relativistic compension factor
+   * The relativistic compensation factor
    */
   double _kappa;
 
@@ -253,7 +263,7 @@ private:
   /**
    * The masses of the quarks as a vector
    */
-  vector<Energy> _mquark;
+  Energy _mquark[5];
   //@}
 
 
@@ -282,7 +292,7 @@ private:
   /**
    * The s-wave variational parameters as a vector.
    */
-  vector<Energy> _betaS;
+  Energy _betaS[5][5];
 
   /**
    * The wavefunction p-wave \f$\beta\f$ variational parameters for  \f$u\bar{d}\f$ 
@@ -300,8 +310,13 @@ private:
   /**
    * The p-wave variational parameters as a vector
    */
-  vector<Energy> _betaP;
+  Energy _betaP[5][5];
   //@}
+
+  /**
+   * The \f$\eta-\eta'\f$ mixing angle 
+   */
+  double _thetaeta;
 };
 
 }

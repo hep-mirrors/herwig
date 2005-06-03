@@ -5,9 +5,11 @@
 // This is the declaration of the ISGW2FormFactor class.
 //
 #include "ScalarFormFactor.h"
+#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ISGW2FormFactor.fh"
+#include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -34,7 +36,7 @@ public:
   /**
    * Default constructor
    */
-  inline ISGW2FormFactor();
+  ISGW2FormFactor();
 
   /**
    * Copy constructor
@@ -62,8 +64,9 @@ public:
    * @param f0 The form-factor \f$f_0\f$. 
    * @param fp The form-factor \f$f_+\f$.
    */
-  virtual void ScalarScalarFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
-				      Energy m1,Complex & f0,Complex & fp) const;
+  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0,Energy m1,Complex & f0,
+				      Complex & fp) const;
 
   /**
    * The form factor for the weak decay of a scalar to a vector.
@@ -78,7 +81,7 @@ public:
    * @param A1 The form-factor \f$A_1\f$
    * @param A2 The form-factor \f$A_2\f$
    */
-  virtual void ScalarVectorFormFactor(Energy2 q2, int iloc, int id0, int id1,
+  virtual void ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 				      Energy m0, Energy m1, Complex & V,
 				      Complex & A0,Complex & A1,Complex & A2) const;
 
@@ -95,10 +98,15 @@ public:
    * @param bp The form-factor \f$b_+\f$.
    * @param bm The form-factor \f$b_-\f$.
    */
-  virtual void ScalarTensorFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
-				      Energy m1, Complex & h,Complex & k,
+  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0,Energy m1, Complex & h,Complex & k,
 				      Complex & bp, Complex & bm) const;
   //@}
+
+  /**
+   * Output the setup information for the particle database
+   */
+  virtual void dataBaseOutput(ofstream &);
 
 public:
 
@@ -137,7 +145,7 @@ protected:
    * @param f3 The third  form-factor.
    * @param f4 The fourth form-factor.
    */
-  void formFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+  void formFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
 		  Energy m1,Complex & f1,Complex & f2,
 		  Complex & f3,Complex & f4) const;
   // general member to calculate all the form-factors
@@ -173,7 +181,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object. Called in the run phase just before
@@ -224,10 +232,11 @@ protected:
 
   /**
    * The saturated \f$\alpha_S\f$ used to calculate the form-factors.
+   * @param mass Mass scale to work out the number of flavours.
    * @param q2 \f$q^2\f$ the scale.
    * @return the value of \f$\alpha_S\f$.
    */
-  double alphaS(Energy2 q2) const;
+  double alphaS(Energy mass, Energy2 q2) const;
 
 private:
 
@@ -261,7 +270,7 @@ private:
   /**
    * The masses of the quarks as a vector
    */
-  vector<Energy> _mquark;
+  Energy _mquark[5];
   //@}
 
   /** @name Wave function parameters for the \f$1^1S_0\f$ level.*/
@@ -451,7 +460,7 @@ private:
   /**
    * The values of \f$\alpha_S\f$ at the quark masses.
    */
-  vector<double> _alphaQ;
+  double _alphaQ[5];
   //@}
 
   /**@name Relativistic correction factors */
@@ -517,6 +526,10 @@ private:
   double _CfBcBstar;
   //@}
 
+  /**
+   * The \f$\eta-\eta'\f$ mixing angle 
+   */
+  double _thetaeta;
 };
 
 }
