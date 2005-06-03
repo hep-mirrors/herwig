@@ -13,7 +13,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ShowerParticle.h"
 //#include "ThePEG/Handlers/PartialCollisionHandler.h"
-#include "ThePEG/Repository/FullEventGenerator.h"
+//#include "ThePEG/Repository/FullEventGenerator.h"
 #include "ShowerAlpha.h"
 #include "SplittingFunction.h"
 #include "SudakovFormFactor.h"
