@@ -83,9 +83,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
   Timer<47> timer("HwDecayHandler::performDecay");
   long ntry = 0;
   while ( 1 ) {
-    if ( ++ntry >= maxLoop() )
-      throw DecHdlDecayFailed(parent->data(), maxLoop());
-    tDMPtr dm = parent->data().selectMode(*parent);
+    if ( ++ntry >= maxLoop() ){throw DecHdlDecayFailed(parent->data(), maxLoop());}
+    tDMPtr dm(parent->data().selectMode(*parent));
     if ( !dm ) throw DecHdlNoDecayMode(parent->data());
     if ( !dm->decayer() ) throw DecHdlNoDecayer(parent->data(), *dm);
     try {
@@ -146,7 +145,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 		  }
 		// if the particle was scalar then it does matter that it does have a 
 		// decay vertex as there's no correlations
-		else if(hwspin->Spin()==1)
+		else if(hwspin->iSpin()==PDT::Spin0)
 		  {hwspin->setDeveloped(true);}
 		else if(HERWIG_DEBUG_LEVEL >=HwDebug::full)
 		  {generator()->log() << "HwDecayHandler::performDecay " 
@@ -161,7 +160,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
     catch (DecHdlChildFail) {
       throw;
     }
-    catch (Veto) {}
+    catch (Veto) {
+    }
   }
 }
 
