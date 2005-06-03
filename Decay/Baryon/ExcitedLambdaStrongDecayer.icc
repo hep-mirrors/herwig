@@ -1,0 +1,132 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ExcitedLambdaStrongDecayer class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+inline ExcitedLambdaStrongDecayer::ExcitedLambdaStrongDecayer() 
+{
+  // pion decay constant
+  _fpi = 132*MeV;
+  // g_2 coupling.
+  _g2=0.570;
+  // h_2 coupling.
+  _h2=0.572;
+  // h_8 coupling
+  _h8=3.59e-3/MeV;
+  // Lambda_c1
+  _incoming.push_back(14122);_outgoing.push_back(4122);_charged.push_back(2);
+  _incoming.push_back(14122);_outgoing.push_back(4122);_charged.push_back(0);
+  // Lambda_c1*
+  _incoming.push_back(4124);_outgoing.push_back(4122);_charged.push_back(2);
+  _incoming.push_back(4124);_outgoing.push_back(4122);_charged.push_back(0);
+  // Lambda_b1
+  _incoming.push_back(15122);_outgoing.push_back(5122);_charged.push_back(2);
+  _incoming.push_back(15122);_outgoing.push_back(5122);_charged.push_back(0);
+  // Lambda_b1*
+  _incoming.push_back(5124);_outgoing.push_back(5122);_charged.push_back(2);
+  _incoming.push_back(5124);_outgoing.push_back(5122);_charged.push_back(0);
+  // Xi_c1+ to Xi_c+ pi+ pi-
+  _incoming.push_back(14322);_outgoing.push_back(4232);_charged.push_back(2);
+  _incoming.push_back(14324);_outgoing.push_back(4232);_charged.push_back(2);
+  // Xi_c1+ to Xi_c0 pi+ pi0
+  _incoming.push_back(14322);_outgoing.push_back(4132);_charged.push_back(1);
+  _incoming.push_back(14324);_outgoing.push_back(4132);_charged.push_back(1);
+  // Xi_c1+ to Xi_c+ pi0 pi0
+  _incoming.push_back(14322);_outgoing.push_back(4232);_charged.push_back(0);
+  _incoming.push_back(14324);_outgoing.push_back(4232);_charged.push_back(0);
+  // Xi_c10 to Xi_c0 pi+ pi-
+  _incoming.push_back(14312);_outgoing.push_back(4132);_charged.push_back(2);
+  _incoming.push_back(14314);_outgoing.push_back(4132);_charged.push_back(2);
+  // Xi_c10 to Xi_c+ pi- pi0
+  _incoming.push_back(14312);_outgoing.push_back(4232);_charged.push_back(1);
+  _incoming.push_back(14314);_outgoing.push_back(4232);_charged.push_back(1);
+  // Xi_c10 to Xi_c0 pi0 pi0
+  _incoming.push_back(14312);_outgoing.push_back(4132);_charged.push_back(0);
+  _incoming.push_back(14314);_outgoing.push_back(4132);_charged.push_back(0);
+  // Xi_b10 to Xi_b0 pi+ pi-
+  _incoming.push_back(15322);_outgoing.push_back(5232);_charged.push_back(2);
+  _incoming.push_back(15324);_outgoing.push_back(5232);_charged.push_back(2);
+  // Xi_b10 to Xi_b- pi+ pi0
+  _incoming.push_back(15322);_outgoing.push_back(5132);_charged.push_back(1);
+  _incoming.push_back(15324);_outgoing.push_back(5132);_charged.push_back(1);
+  // Xi_b10 to Xi_b0 pi0 pi0
+  _incoming.push_back(15322);_outgoing.push_back(5232);_charged.push_back(0);
+  _incoming.push_back(15324);_outgoing.push_back(5232);_charged.push_back(0);
+  // Xi_b1- to Xi_b- pi+ pi-
+  _incoming.push_back(15312);_outgoing.push_back(5132);_charged.push_back(2);
+  _incoming.push_back(15314);_outgoing.push_back(5132);_charged.push_back(2);
+  // Xi_b1- to Xi_b0 pi- pi0
+  _incoming.push_back(15312);_outgoing.push_back(5232);_charged.push_back(1);
+  _incoming.push_back(15314);_outgoing.push_back(5232);_charged.push_back(1);
+  // Xi_b1- to Xi_b- pi0 pi0
+  _incoming.push_back(15312);_outgoing.push_back(5132);_charged.push_back(0);
+  _incoming.push_back(15314);_outgoing.push_back(5132);_charged.push_back(0);
+}
+
+inline ExcitedLambdaStrongDecayer::
+ExcitedLambdaStrongDecayer(const ExcitedLambdaStrongDecayer & x)
+  : DecayIntegrator(x),_fpi(x._fpi),_g2(x._g2),_h2(x._h2),_h8(x._h8),
+    _incoming(x._incoming),_outgoing(x._outgoing),_charged(x._charged),
+    _wgtloc(x._wgtloc),_wgtmax(x._wgtmax),
+    _weights(x._weights) {}
+
+inline IBPtr ExcitedLambdaStrongDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ExcitedLambdaStrongDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ExcitedLambdaStrongDecayer::doupdate() throw(UpdateException) {
+  DecayIntegrator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ExcitedLambdaStrongDecayer::dofinish() {
+  DecayIntegrator::dofinish();
+}
+
+inline void ExcitedLambdaStrongDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+  unsigned int ix,iy;
+  for(ix=0;ix<numberModes();++ix)
+    {
+      _wgtmax.push_back(mode(ix)->maxWeight());
+      _wgtloc.push_back(_weights.size());
+      for(iy=0;iy<mode(ix)->numberChannels();++iy)
+	{_weights.push_back(mode(ix)->channelWeight(iy));}
+    }
+}
+
+inline void ExcitedLambdaStrongDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  DecayIntegrator::rebind(trans);
+}
+
+inline IVector ExcitedLambdaStrongDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}
