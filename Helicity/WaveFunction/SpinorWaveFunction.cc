@@ -19,16 +19,20 @@ using ThePEG::Helicity::u_spinortype;
 using ThePEG::Helicity::v_spinortype;
 
 // calculate the Wavefunction
-void SpinorWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
+void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 {
-  // check ihelicity is O.K.
+  // check helicity is O.K.
   Direction dir = direction();
-  if(dir==intermediate){cerr << "In SpinorWaveFunction::calcluateWaveFunction "
-			     << "particle must be incoming or outgoing not intermediate" 
-			     << endl;}
-  if(ihel!=1 && ihel!=-1)
+  if(dir==intermediate)
+    {throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "In SpinorWaveFunction::calcluateWaveFunction "
+	<< "particle must be incoming or outgoing not intermediate" 
+	<< Exception::abortnow;}
+  if(ihel>1)
     {
-      cerr << "Invalid Helicity = " << ihel << " requested for Spinor" << endl;
+      throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Invalid Helicity = " << ihel << " requested for Spinor" 
+	<< Exception::abortnow;
       for(int ix=0;ix<4;++ix){_wf[ix]=0.;}
     }
   else
@@ -45,7 +49,7 @@ void SpinorWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
       // we are using
       complex <double> hel_wf[2];
       // compute the + spinor for + helicty particles and - helicity antiparticles
-      if((dir==incoming && ihel== 1) || (dir==outgoing && ihel==-1))
+      if((dir==incoming && ihel== 1) || (dir==outgoing && ihel==0))
 	{
 	  // no transverse momentum 
 	  if(ptran==0.)
@@ -166,8 +170,9 @@ void SpinorWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 	  break;
 	  // invalid choice
 	default:
-	  cerr << "Invalid choice of Dirac representation in "
-	       << "SpinorWaveFunction::calculateWaveFunction() " << endl; 
+	  ThePEG::Helicity::HelicityConsistencyError() 
+	    << "Invalid choice of Dirac representation in "
+	    << "SpinorWaveFunction::calculateWaveFunction() " << Exception::abortnow; 
 	  break;
 	}
       // now finally we can construct the spinors
@@ -179,6 +184,5 @@ void SpinorWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 			   lower*hel_wf[1],v_spinortype,dirac);}
     }
 }
-
 }
 }

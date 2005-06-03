@@ -13,15 +13,18 @@ namespace Herwig {
 namespace Helicity {
 
 // calculate the Wavefunction
-void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
+void VectorWaveFunction::calculateWaveFunction(unsigned int ihel,VectorPhase vphase)
 {
   Direction dir=direction();
-  if(dir==intermediate){cerr << "In VectorWaveFunction::calcluateWaveFunction "
-			     << "particle must be incoming or outgoing not intermediate" 
-			     << endl;}
+  if(dir==intermediate)
+    {throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "In VectorWaveFunction::calcluateWaveFunction "
+	<< "particle must be incoming or outgoing not intermediate" 
+	<< Exception::abortnow;}
   // check a valid helicity combination
-  if(ihel==1 || ihel==-1||(ihel==0&&mass()>0.))
+  if(ihel==0 || ihel==2||(ihel==1&&mass()>0.))
     {
+      int jhel=ihel-1;
       // extract the momentum components
       double fact=-1.; if(dir==incoming){fact=1.;}
       Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
@@ -33,18 +36,20 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
       Complex phase;
       if(vphase==vector_phase)
 	{
-	  if(pt==0. || ihel==0)
+	  if(pt==0. || ihel==1)
 	    {phase=1.;}
+	  else if(ihel==0)
+	    {phase = complex<double>(ppx,fact*ppy)/pt;}
 	  else
-	    {phase = complex<double>(ppx,-fact*ihel*ppy)/pt;}
+	    {phase = complex<double>(ppx,-fact*ppy)/pt;}
 	}
       else
 	{
 	  phase = 1.;
 	}
-      if(ihel!=0) phase = phase/sqrt(2.);
+      if(ihel!=1) phase = phase/sqrt(2.);
       // first the +/-1 helicity states
-      if(ihel==1 || ihel==-1)
+      if(ihel!=1)
 	{
 	  // first the no pt case
 	  if(pt==0.)
@@ -52,7 +57,7 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
 	      double sgnz;
 	      if(ppz<0){sgnz=-1.;}
 	      else{sgnz=1.;}
-	      _wf[0]=-complex<double>(ihel)*phase;
+	      _wf[0]=-complex<double>(jhel)*phase;
 	      _wf[1]= sgnz*phase*complex<double>(0,-fact);
 	      _wf[2]=0.;
 	      _wf[3]=0.;
@@ -61,11 +66,11 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
 	    {
 	      double opabs=1./pabs;
 	      double opt  =1./pt;
-	      _wf[0]=phase*complex<double>(-ihel*ppz*ppx*opabs*opt,
+	      _wf[0]=phase*complex<double>(-jhel*ppz*ppx*opabs*opt,
 					  fact*ppy*opt);
-	      _wf[1]=phase*complex<double>(-ihel*ppz*ppy*opabs*opt,
+	      _wf[1]=phase*complex<double>(-jhel*ppz*ppy*opabs*opt,
 					   -fact*ppx*opt);
-	      _wf[2]=ihel*pt*opabs*phase;
+	      _wf[2]=jhel*pt*opabs*phase;
 	      _wf[3]=0.;
 	    }
 	}
@@ -100,7 +105,9 @@ void VectorWaveFunction::calculateWaveFunction(int ihel,VectorPhase vphase)
   // issue warning and return zero
   else
     {
-      cerr << "Invalid Helicity = " << ihel << " requested for Vector" << endl;
+      ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Invalid Helicity = " << ihel << " requested for Vector " 
+	<< getParticle()->PDGName() << Exception::abortnow;
       for(int ix=0;ix<4;++ix){_wf[ix]=0.;}
     }
 }

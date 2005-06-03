@@ -41,7 +41,8 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(const Lorentz5Momentum &
 
 // use a 5-momentum (specify Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(const Lorentz5Momentum & p,
-							const tcPDPtr & part,int ihel,
+							const tcPDPtr & part,
+							unsigned int ihel,
 							Direction dir, DiracRep dirac) 
 {
   direction(dir);
@@ -54,7 +55,8 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(const Lorentz5Momentum &
 // set all components of momentum (specify Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
 							Energy pz, Energy ee, Energy mm,
-							const tcPDPtr & part, int ihel,
+							const tcPDPtr & part,
+							unsigned int ihel,
 							Direction dir, DiracRep dirac) 
 {
   direction(dir);
@@ -66,7 +68,8 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
 // set 4-momentum components (specify Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
 							Energy pz, Energy ee,
-							const tcPDPtr & part, int ihel,
+							const tcPDPtr & part,
+							unsigned int ihel,
 							Direction dir, DiracRep dirac)
 {
   direction(dir);
@@ -77,7 +80,8 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
 
 // set 4-momentum (specify Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,
-							const tcPDPtr & part,int ihel,
+							const tcPDPtr & part,
+							unsigned int ihel,
 							Direction dir, DiracRep dirac)
 {
   direction(dir);
@@ -88,7 +92,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,
 
 // set mass zero momentum (specify Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy mm, const tcPDPtr & part,
-							int ihel, Direction dir,
+							unsigned int ihel, Direction dir,
 							DiracRep dirac)
 {
   direction(dir);
@@ -99,7 +103,8 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy mm, const tcPDPtr
 
 // set 4 momentum and mass (specify Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy mm,
-							const tcPDPtr & part, int ihel,
+							const tcPDPtr & part,
+							unsigned int ihel,
 							Direction dir, DiracRep dirac)
 {
   direction(dir);
@@ -177,6 +182,32 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy
   zeroWaveFunction(dirac);
 }
 
+// special setup constructor
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave,
+							tPPtr part,Direction dir,
+							bool time,bool vertex,
+							DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction(dirac);
+  constructSpinInfo(wave,part,time,vertex);
+}
+
+// special setup constructor
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave,
+							RhoDMatrix & rho,tPPtr part,
+							Direction dir,bool time,
+							bool vertex,DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction(dirac);
+  constructSpinInfo(wave,rho,part,time,vertex);
+}
+
 // default constructor (specfiy Dirac representation)
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(DiracRep dirac)
 {
@@ -192,8 +223,9 @@ inline RSSpinorBarWaveFunction::~RSSpinorBarWaveFunction(){;}
 inline Complex RSSpinorBarWaveFunction::operator ()(int i,int j) const
 {
   if(i<0 || i>3 || j<0 || j>3)
-    {std::cerr << "RSSpinorBarWaveFunction requested for invalid index" 
-	       << i << " " << j<< std::endl;
+    {ThePEG::Helicity::HelicityConsistencyError() 
+	<< "RSSpinorBarWaveFunction requested for invalid index" 
+	<< i << " " << j<< Exception::abortnow;
     return 0.;}
   return _wf(i,j);
 }
@@ -204,8 +236,9 @@ inline Complex & RSSpinorBarWaveFunction::operator () (int i, int j)
   if(i>=0 &&i<=3|| j<0 || j>3)
     {return _wf(i,j);}
   else
-    {cerr << "Invalid index " << i << " " << j 
-	  << " called for RSSpinorBarWaveFunction" << endl;
+    {ThePEG::Helicity::HelicityConsistencyError()
+	<< "Invalid index " << i << " " << j 
+	<< " called for RSSpinorBarWaveFunction" << Exception::abortnow;
     return dummy;}
 }
 
@@ -283,7 +316,7 @@ inline void RSSpinorBarWaveFunction::reset(const Lorentz5Momentum & pin)
 }
 
 // reset the helicity (calculates the new spinor (specify Dirac representation)
-inline void RSSpinorBarWaveFunction::reset(int ihel,DiracRep dirac)
+inline void RSSpinorBarWaveFunction::reset(unsigned int ihel,DiracRep dirac)
 {calculateWaveFunction(ihel,dirac);}
 
 // reset the particle type and direction
@@ -306,8 +339,147 @@ inline void RSSpinorBarWaveFunction::checkParticle(const tcPDPtr & in)
 {
   setParticle(in);
   if(iSpin()!=4)
-    {cerr << "Calculating RSSpinorBarWaveFunction for non-spin 3/2 Particle" << endl;}
+    {ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Calculating RSSpinorBarWaveFunction for non-spin 3/2 Particle" 
+	<< Exception::abortnow;}
 }
 
+// construct the spininfo object
+inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar>& wave,
+						       tRSFermionSpinPtr spin,
+						       bool vertex)
+{
+  wave.resize(4);
+  for(unsigned int ix=0;ix<4;++ix)
+    {
+      // calculate the wavefunction for the first helicity
+      reset(ix);
+      // add to output array
+      wave[ix] = _wf;
+      // setup the spininfo object
+      if(vertex)
+	{
+	  if(direction()==outgoing){spin->setBasisState(ix,_wf.bar());}
+	  else{spin->setDecayState(ix,_wf.bar());}
+	}
+    }
+}
+
+// construct the spininfo object
+inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar>& wave,
+						       tPPtr part,bool time, bool vertex)
+{
+  tRSFermionSpinPtr inspin;
+  if(direction()==outgoing)
+    {
+      if(part->spinInfo())
+	{inspin=dynamic_ptr_cast<tRSFermionSpinPtr>(part->spinInfo());}
+      if(inspin)
+	{
+	  wave.resize(4);
+	  for(unsigned int ix=0;ix<4;++ix)
+	    {wave[ix]=inspin->getProductionBasisState(ix).bar();}
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp(new_ptr(RSFermionSpinInfo(part->momentum(),time)));
+	      inspin=dynamic_ptr_cast<tRSFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+  else
+    {
+      if(part->spinInfo())
+	{inspin=dynamic_ptr_cast<tRSFermionSpinPtr>(part->spinInfo());}
+      if(inspin)
+	{
+	  inspin->decay();
+	  wave.resize(4);
+	  for(unsigned int ix=0;ix<4;++ix)
+	    {wave[ix]=inspin->getDecayBasisState(ix).bar();}
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "RSSpinorBarWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(RSFermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tRSFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar>& wave,
+						       RhoDMatrix& rho,
+						       tPPtr part,bool time, bool vertex)
+{
+  tRSFermionSpinPtr inspin;
+      if(part->spinInfo())
+	{inspin=dynamic_ptr_cast<tRSFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(4);
+	  for(unsigned int ix=0;ix<4;++ix)
+	    {wave[ix]=inspin->getProductionBasisState(ix).bar();}
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp(new_ptr(RSFermionSpinInfo(part->momentum(),time)));
+	      inspin=dynamic_ptr_cast<tRSFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	      
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+      rho = RhoDMatrix(PDT::Spin3Half);rho.average();
+    }
+  else
+    {
+      if(part->spinInfo())
+	{inspin=dynamic_ptr_cast<tRSFermionSpinPtr>(part->spinInfo());}
+      if(inspin)
+	{
+	  inspin->decay();
+	  rho = inspin->rhoMatrix();
+	  wave.resize(4);
+	  for(unsigned int ix=0;ix<4;++ix)
+	    {wave[ix]=inspin->getDecayBasisState(ix).bar();}
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "RSSpinorBarWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(RSFermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tRSFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  rho = RhoDMatrix(PDT::Spin3Half);rho.average();
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
 }
 }

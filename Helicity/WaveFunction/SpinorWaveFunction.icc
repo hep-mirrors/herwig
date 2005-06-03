@@ -38,7 +38,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
 
 // use a 5-momentum (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
-					      const tcPDPtr & part,int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, DiracRep dirac) 
 {
   direction(dir);
@@ -50,7 +50,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
 // set all components of momentum (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee, Energy mm,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, DiracRep dirac) 
 {
   direction(dir);
@@ -62,7 +62,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
 // set 4-momentum components (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, DiracRep dirac)
 {
   direction(dir);
@@ -73,7 +73,8 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
 
 // set 4-momentum (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin, const tcPDPtr & part,
-					      int ihel, Direction dir, DiracRep dirac)
+					      unsigned int ihel, Direction dir,
+					      DiracRep dirac)
 {
   direction(dir);
   setMomentum(pin);
@@ -83,7 +84,8 @@ inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin, const tcPDPtr &
 
 // set mass zero momentum (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(Energy mm, const tcPDPtr & part,
-					       int ihel, Direction dir, DiracRep dirac)
+					      unsigned int ihel, Direction dir,
+					      DiracRep dirac)
 {
   direction(dir);
   setMomentum(mm);
@@ -93,7 +95,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy mm, const tcPDPtr & part,
 
 // set 4 momentum and mass (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,Energy mm,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part, unsigned int ihel,
 					      Direction dir, DiracRep dirac)
 {
   direction(dir);
@@ -184,8 +186,11 @@ inline SpinorWaveFunction::~SpinorWaveFunction(){;}
 inline Complex SpinorWaveFunction::operator ()(int i) const
 {
   if(i<0 || i>3)
-    {std::cerr << "SpinorWaveFunction requested for invalid index" << std::endl;
-    return 0.;}
+    {
+      throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "SpinorWaveFunction requested for invalid index" << Exception::abortnow;
+      return 0.;
+    }
   return _wf[i];
 }
 // Set components by index.
@@ -195,8 +200,12 @@ inline Complex & SpinorWaveFunction::operator () (int i)
   if(i>=0 &&i<=3)
     {return _wf(i);}
   else
-    {cerr << "Invalid index " << i << " called for SpinorWaveFunction" << endl;
-    return dummy;}
+    {
+      throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Invalid index " << i << " called for SpinorWaveFunction" 
+	<< Exception::abortnow;
+      return dummy;
+    }
 }
 
 // Assignment. 
@@ -249,7 +258,7 @@ inline void SpinorWaveFunction::reset(const Lorentz5Momentum & pin)
 }
 
 // reset the helicity (calculates the new spinor (specify Dirac representation)
-inline void SpinorWaveFunction::reset(int ihel,DiracRep dirac)
+inline void SpinorWaveFunction::reset(unsigned int ihel,DiracRep dirac)
 {calculateWaveFunction(ihel,dirac);}
 
 // reset the particle type and direction
@@ -272,7 +281,173 @@ inline void SpinorWaveFunction::checkParticle(const tcPDPtr & in)
 {
   setParticle(in);
   if(iSpin()!=2)
-    {cerr << "Calculating Spinor WaveFunction for non-spin 1/2 Particle" << endl;}
+    {
+      throw ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Calculating Spinor WaveFunction for non-spin 1/2 Particle" 
+	<< Exception::warning;
+    }
+}
+
+
+// special setup constructor
+inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor>& wave, tPPtr part,
+					      Direction dir,bool time, bool vertex,
+					      DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction(dirac);
+  constructSpinInfo(wave,part,time,vertex);
+}
+
+// special setup constructor
+inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor>& wave,
+					      RhoDMatrix& rho,
+					      tPPtr part,Direction dir,bool time,
+					      bool vertex,DiracRep dirac)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction(dirac);
+  constructSpinInfo(wave,rho,part,time,vertex);
+}
+
+
+
+// construct the spininfo object
+inline void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,
+						  tFermionSpinPtr spin,
+						  bool vertex)
+{
+  wave.resize(2);
+  for(unsigned int ix=0;ix<2;++ix)
+    {
+      // calculate the wavefunction for the first helicity
+      reset(ix);
+      // add to output array
+      wave[ix] = _wf;
+      // setup the spininfo object
+      if(vertex)
+	{
+	  if(direction()==outgoing){spin->setBasisState(ix,_wf);}
+	  else{spin->setDecayState(ix,_wf);}
+	}
+    }
+}
+
+// construct the spininfo object
+inline void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,
+						  tPPtr part,bool time, bool vertex)
+{
+  tFermionSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(2);
+	  wave[0]=inspin->getProductionBasisState(0);
+	  wave[1]=inspin->getProductionBasisState(1);
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  // rho matrix should be here
+	  wave.resize(2);
+	  wave[0]=inspin->getDecayBasisState(0);
+	  wave[1]=inspin->getDecayBasisState(1);
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "SpinorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,
+						  RhoDMatrix& rho,tPPtr part,bool time,
+						  bool vertex)
+{
+  tFermionSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(2);
+	  wave[0]=inspin->getProductionBasisState(0);
+	  wave[1]=inspin->getProductionBasisState(1);
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+      rho = RhoDMatrix(PDT::Spin1Half);rho.average();
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  rho = inspin->rhoMatrix();
+	  wave.resize(2);
+	  wave[0]=inspin->getDecayBasisState(0);
+	  wave[1]=inspin->getDecayBasisState(1);
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "SpinorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
 }
 
 }

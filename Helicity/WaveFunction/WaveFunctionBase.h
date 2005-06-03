@@ -8,6 +8,7 @@
 #include <ThePEG/CLHEPWrap/LorentzVector.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/Config/Complex.h>
+#include <ThePEG/Helicity/HelicityDefinitions.h>
 
 namespace Herwig {
 namespace Helicity {

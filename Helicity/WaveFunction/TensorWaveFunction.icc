@@ -29,7 +29,7 @@ inline TensorWaveFunction::TensorWaveFunction(const Lorentz5Momentum & p,
 			    
 // Use a 5-momentum (specify phase choice)
 inline TensorWaveFunction::TensorWaveFunction(const Lorentz5Momentum & p,
-					      const tcPDPtr & part,int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, TensorPhase phase)
 {
   direction(dir);
@@ -41,7 +41,7 @@ inline TensorWaveFunction::TensorWaveFunction(const Lorentz5Momentum & p,
 // set all components of momentum (specify phase choice)
 inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee, Energy mm,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, TensorPhase phase)
 {
   direction(dir);
@@ -53,7 +53,7 @@ inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
 // set 4-momentum components  (specify phase choice)
 inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
 					      Energy pz, Energy ee,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, TensorPhase phase)
 {
   direction(dir);
@@ -64,7 +64,7 @@ inline TensorWaveFunction::TensorWaveFunction(Energy px, Energy py,
 
 // set 4-momentum  (specify phase choice)
 inline TensorWaveFunction::TensorWaveFunction(LorentzMomentum pin,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, TensorPhase phase)
 {
   direction(dir);
@@ -75,7 +75,8 @@ inline TensorWaveFunction::TensorWaveFunction(LorentzMomentum pin,
 
 // set mass zero momentum (specify phase choice)
 inline TensorWaveFunction::TensorWaveFunction(Energy mm, const tcPDPtr & part,
-					      int ihel, Direction dir, TensorPhase phase)
+					      unsigned int ihel, Direction dir,
+					      TensorPhase phase)
 {
   direction(dir);
   setMomentum(mm); 
@@ -85,7 +86,7 @@ inline TensorWaveFunction::TensorWaveFunction(Energy mm, const tcPDPtr & part,
 
 // set 4 momentum and mass (specify phase choice)
 inline TensorWaveFunction::TensorWaveFunction(LorentzMomentum pin,Energy mm,
-					      const tcPDPtr & part, int ihel,
+					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, TensorPhase phase)
 {
   direction(dir);
@@ -174,8 +175,9 @@ inline Complex TensorWaveFunction::operator ()(int i, int j) const
 {
   if(i<0 || i >3 || j<0 || j>3)
     {
-      std::cerr << "TensorWaveFunction requested for invalid index" 
-		<< i << " " << j << std::endl;
+      ThePEG::Helicity::HelicityConsistencyError() 
+	<< "TensorWaveFunction requested for invalid index" 
+	<< i << " " << j << Exception::abortnow;
       return 0.;
     }
   return _wf(i,j);
@@ -189,8 +191,9 @@ inline Complex & TensorWaveFunction::operator () (int i,int j)
     {return _wf(i,j);}
   else
     {
-      cerr << "Invalid index " << i << "," << j 
-	   << " called for TensorWaveFunction" << endl;
+      ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Invalid index " << i << "," << j 
+	<< " called for TensorWaveFunction" << Exception::abortnow;
       return dummy;
     }
 }
@@ -261,7 +264,7 @@ inline void TensorWaveFunction::reset(const Lorentz5Momentum & pin)
 {setMomentum(pin);}
 
 // reset helicity (recalculate the tensor )
-inline void TensorWaveFunction::reset(int ihel,TensorPhase phase)
+inline void TensorWaveFunction::reset(unsigned int ihel,TensorPhase phase)
 {calculateWaveFunction(ihel,phase);}
 
 // reset particle type and direction
@@ -280,10 +283,168 @@ inline void TensorWaveFunction::zeroWaveFunction()
 inline void TensorWaveFunction::checkParticle(const tcPDPtr & in)
 {
   setParticle(in);
-  if(iSpin()!=5)
-    {cerr << "Calculating Tensor WaveFunction for non-spin 2 Particle" << endl;}
+  if(iSpin()!=PDT::Spin2)
+    {
+      ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Calculating Tensor WaveFunction for non-spin 2 Particle" 
+	<< Exception::abortnow;}
 }
 
+// special setup constructor
+inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor>& wave,tPPtr part,
+					      Direction dir,bool time,bool massless,
+					      bool vertex, TensorPhase phase)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction();
+  constructSpinInfo(wave,part,time,massless,phase,vertex);
+}
 
+// special setup constructor
+inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor>& wave,RhoDMatrix&rho,
+					      tPPtr part,Direction dir,bool time,
+					      bool massless,bool vertex,
+					      TensorPhase phase)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction();
+  constructSpinInfo(wave,rho,part,time,massless,phase,vertex);
+}
+
+// construct the spininfo object
+inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,
+						  tTensorSpinPtr spin,bool massless,
+						  TensorPhase phase,bool vertex)
+{
+  wave.resize(5);
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      // calculate the wavefunction for the first helicity
+      if(massless&&ix==2){_wf=LorentzTensor();}
+      else{reset(ix,phase);}
+      // add to output array
+      wave[ix] = _wf;
+      // setup the spininfo object
+      if(vertex)
+	{
+	  if(direction()==outgoing){spin->setBasisState(ix,_wf);}
+	  else{spin->setBasisState(ix,_wf.conjugate());}
+	}
+    }
+}
+
+// construct the spininfo object
+inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,tPPtr part,
+						  bool time,bool massless,
+						  TensorPhase phase,bool vertex)
+{
+  tTensorSpinPtr tspin;
+  if(part->spinInfo())
+    {tspin=dynamic_ptr_cast<tTensorSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(tspin)
+	{
+	  wave.resize(5);
+	  for(unsigned int ix=0;ix<5;++ix){wave[ix]=tspin->getProductionBasisState(ix);}
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(TensorSpinInfo(part->momentum(),time));
+	      tspin=dynamic_ptr_cast<tTensorSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,tspin,massless,phase,vertex);
+	}
+    }
+  else
+    {
+      if(tspin)
+	{
+	  tspin->decay();
+	  wave.resize(5);
+	  for(unsigned int ix=0;ix<5;++ix){wave[ix]=tspin->getDecayBasisState(ix);}
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "TensorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(TensorSpinInfo(part->momentum(),true));
+	      tspin= dynamic_ptr_cast<tTensorSpinPtr>(newspin);
+	      tspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  constructSpinInfo(wave,tspin,massless,phase,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,
+						  RhoDMatrix& rho,tPPtr part,
+						  bool time,bool massless,
+						  TensorPhase phase,bool vertex)
+{
+  tTensorSpinPtr tspin;
+  if(part->spinInfo())
+    {tspin=dynamic_ptr_cast<tTensorSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(tspin)
+	{
+	  wave.resize(5);
+	  for(unsigned int ix=0;ix<5;++ix){wave[ix]=tspin->getProductionBasisState(ix);}
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(TensorSpinInfo(part->momentum(),time));
+	      tspin=dynamic_ptr_cast<tTensorSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,tspin,massless,phase,vertex);
+	}
+      rho =RhoDMatrix(PDT::Spin2);rho.average();
+    }
+  else
+    {
+      if(tspin)
+	{
+	  tspin->decay();
+	  wave.resize(5);
+	  rho = tspin->rhoMatrix();
+	  for(unsigned int ix=0;ix<5;++ix){wave[ix]=tspin->getDecayBasisState(ix);}
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "TensorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(TensorSpinInfo(part->momentum(),true));
+	      tspin= dynamic_ptr_cast<tTensorSpinPtr>(newspin);
+	      tspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  rho =RhoDMatrix(PDT::Spin2);rho.average();
+	  constructSpinInfo(wave,tspin,massless,phase,vertex);
+	}
+    }
+}
 }
 }

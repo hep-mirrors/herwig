@@ -6,13 +6,18 @@
 //
 #include "WaveFunctionBase.h"
 #include <ThePEG/Helicity/LorentzSpinor.h>
-#include <ThePEG/Helicity/HelicityDefinitions.h>
+#include <ThePEG/Helicity/FermionSpinInfo.h>
+#include <ThePEG/EventRecord/Particle.h>
+#include <ThePEG/Helicity/RhoDMatrix.h>
 
 namespace Herwig {
 
 using ThePEG::Helicity::LorentzSpinor;
 using ThePEG::Helicity::DiracRep;
 using ThePEG::Helicity::defaultDRep;
+using ThePEG::Helicity::tFermionSpinPtr;
+using ThePEG::Helicity::FermionSpinInfo;
+using ThePEG::Helicity::RhoDMatrix;
 
 namespace Helicity {
 
@@ -38,6 +43,9 @@ using namespace ThePEG;
  *  \e i.e. 
  *  - incoming calculates a \f$u\f$ spinor.
  *  - outgoing calculates a \f$v\f$ spinor.
+ *
+ *  N.B. In our convention 0 is the \f$-\frac12\f$ helicity state and 
+ *        1 is the \f$+\frac12\f$ helicity state
  *
  *  @see WaveFunctionBase
  *  @see LorentzSpinor
@@ -76,11 +84,12 @@ public:
    * Constructor, set the momentum, helicity, direction and Dirac representation.
    * @param p The momentum.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,int ihel,
+  inline SpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
+			    unsigned int ihel,
 			    Direction dir,DiracRep drep=defaultDRep);
 
   /**
@@ -92,12 +101,12 @@ public:
    * @param E  The energy.
    * @param m  The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
   inline SpinorWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
-			    const tcPDPtr & part,int ihel,Direction dir,
+			    const tcPDPtr & part,unsigned int ihel,Direction dir,
 			    DiracRep drep=defaultDRep);
 
   /**
@@ -108,23 +117,23 @@ public:
    * @param pz The z component of the momentum.
    * @param E  The energy.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
   inline SpinorWaveFunction(Energy px,Energy py,Energy pz,Energy E,const tcPDPtr & part,
-			    int ihel,Direction dir,DiracRep drep=defaultDRep);
+			    unsigned int ihel,Direction dir,DiracRep drep=defaultDRep);
 
   /**
    * Constructor, set the 4-momentum, helicity, direction and
    * Dirac representation.
    * @param p the 4-momentum
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(LorentzVector p,const tcPDPtr & part,int ihel,
+  inline SpinorWaveFunction(LorentzVector p,const tcPDPtr & part,unsigned int ihel,
 			    Direction dir,DiracRep drep=defaultDRep);
 
   /**
@@ -132,12 +141,12 @@ public:
    * Dirac representation.
    * @param m The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(Energy m,const tcPDPtr & part,int ihel,Direction dir,
-			    DiracRep drep=defaultDRep);
+  inline SpinorWaveFunction(Energy m,const tcPDPtr & part,unsigned int ihel,
+			    Direction dir, DiracRep drep=defaultDRep);
 
   /**
    * Constructor, set the 4-momentum, mass, helicity, direction and
@@ -145,11 +154,12 @@ public:
    * @param p the 4-momentum
    * @param m The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,int ihel,
+  inline SpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+			    unsigned int ihel,
 			    Direction dir, DiracRep drep=defaultDRep);
 
   /**
@@ -225,6 +235,34 @@ public:
    * @param drep The Dirac representation.
    */
   inline SpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir,
+			    DiracRep drep=defaultDRep);
+
+  /**
+   * Special constructor which calculates all the helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The spinors for the different helicities.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   * @param drep The Dirac representation.
+   */
+  inline SpinorWaveFunction(vector<LorentzSpinor>& wave, tPPtr part,Direction dir,
+			    bool time, bool vertex, DiracRep drep=defaultDRep);
+
+  /**
+   * Special constructor which calculates all the helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The spinors for the different helicities.
+   * @param rho The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   * @param drep The Dirac representation.
+   */
+  inline SpinorWaveFunction(vector<LorentzSpinor>& wave, RhoDMatrix& rho,tPPtr part,
+			    Direction dir,bool time, bool vertex,
 			    DiracRep drep=defaultDRep);
 
   /**
@@ -330,10 +368,10 @@ public:
 
   /**
    * Reset the helicity (calculates the new spinor).
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param drep The Dirac matrix representation.
    */
-  inline void reset(int ihel,DiracRep drep=defaultDRep);
+  inline void reset(unsigned int ihel,DiracRep drep=defaultDRep);
 
   /**
    * Reset particle type and direction.
@@ -349,6 +387,27 @@ public:
   inline void reset(const tcPDPtr & part);
   //@}
 
+  /**
+   * Calculate the spinors for all helicities, create and set up the SpinInfo object
+   * @param wave The spinors for the different helicities.
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr part,bool time,
+				bool vertex=true);
+
+  /**
+   * Calculate the spinors for all helicities, create and set up the SpinInfo object
+   * @param wave The spinors for the different helicities.
+   * @param rho The \f$\rho\f$ matrix for the decaying particle.
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatrix& rho,tPPtr part,
+				bool time,bool vertex=true);
+
 private:
 
   /**
@@ -358,16 +417,25 @@ private:
 
   /**
    * Calcuate the wavefunction.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1 as described above.)
    * @param drep The Dirac matrix representation.
    */
-  void calculateWaveFunction(int ihel,DiracRep drep=defaultDRep);
+  void calculateWaveFunction(unsigned int ihel,DiracRep drep=defaultDRep);
 
   /**
    * Check particle spin and set pointer.
    * @param part The ParticleData pointer.
    */
   inline void checkParticle(const tcPDPtr & part);
+
+  /**
+   * Calculate the spinors for all the helicities and set up the SpinInfo object.
+   * @param wave The spinors for the different helicities
+   * @param spin Pointer to the FermionSpinInfo object
+   * @param vertex Whether or not to set up the FermionSpinInfo object 
+   */
+  void constructSpinInfo(vector<LorentzSpinor>& wave,tFermionSpinPtr spin,
+				bool vertex=true);
 
 private:
 

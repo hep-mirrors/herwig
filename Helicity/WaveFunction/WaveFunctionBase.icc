@@ -79,7 +79,9 @@ inline void WaveFunctionBase::setMomentum(LorentzVector p,Energy m)
   else if(_dir==-1||_dir==0){_momentum=Lorentz5Momentum(p,m);}
   else
     {
-      cerr << "WaveFunction must be either incoming(-1) or outgoing(1)" << endl;
+      throw ThePEG::Helicity::HelicityConsistencyError()
+       << "WaveFunction must be either incoming(-1) or outgoing(1)" 
+       << Exception::warning;
       _momentum=Lorentz5Momentum();
     }
 }

@@ -5,9 +5,16 @@
 // This is the declaration of the ScalarWaveFunction class.
 
 #include "WaveFunctionBase.h"
+#include <ThePEG/Helicity/ScalarSpinInfo.h>
+#include <ThePEG/EventRecord/Particle.h>
+#include <ThePEG/Helicity/RhoDMatrix.h>
+
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
+using ThePEG::Helicity::tScalarSpinPtr;
+using ThePEG::Helicity::ScalarSpinInfo;
+using ThePEG::Helicity::RhoDMatrix;
 
 /** \ingroup Helicity
  *  \author Peter Richardson
@@ -165,6 +172,26 @@ public:
    * @param dir The direction of the particle.
    */
   inline ScalarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
+
+  /**
+   * Special constructor which set's up a particle's SpinInfo.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the ScalarSpinInfo object
+   */
+  inline ScalarWaveFunction(tPPtr part,Direction dir,bool time, bool vertex);
+
+  /**
+   * Special constructor which set's up a particle's SpinInfo.
+   * @param part The particle to setup
+   * @param rho \f$\rho\f$ the rho matrix for the particle.
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the ScalarSpinInfo object
+   */
+  inline ScalarWaveFunction(tPPtr part,RhoDMatrix& rho,Direction dir,bool time,
+			    bool vertex);
 
   /**
    * Default constructor.

@@ -6,13 +6,18 @@
 //
 #include "WaveFunctionBase.h"
 #include <ThePEG/Helicity/LorentzRSSpinorBar.h>
-#include <ThePEG/Helicity/HelicityDefinitions.h>
+#include <ThePEG/Helicity/RSFermionSpinInfo.h>
+#include <ThePEG/EventRecord/Particle.h>
+#include <ThePEG/Helicity/RhoDMatrix.h>
 
 namespace Herwig {
 
 using ThePEG::Helicity::LorentzRSSpinorBar;
 using ThePEG::Helicity::DiracRep;
 using ThePEG::Helicity::defaultDRep;
+using ThePEG::Helicity::tRSFermionSpinPtr;
+using ThePEG::Helicity::RSFermionSpinInfo;
+using ThePEG::Helicity::RhoDMatrix;
 
 namespace Helicity {
 
@@ -43,6 +48,11 @@ using namespace ThePEG;
  *  in the rest-frame for a massive particle and boosted to the lab-frame. 
  *  For massless particles the calculation is performed in the lab-frame
  *  (N.B. there are only two helicities \f$\pm\frac32\f$ in this case.)
+ *
+ *  N.B. In our convention 0 is the \f$-\frac32\f$ helicity state,
+ *        1 is the \f$-\frac12\f$ helicity state,
+ *        2 is the \f$+\frac12\f$ helicity state
+ *        3 is the \f$+\frac32\f$ helicity state and 
  *
  * @see WaveFunctionBase
  * @see LorentzRSSpinorBar
@@ -98,12 +108,13 @@ public:
    * Constructor, set the momentum, helicity, direction and Dirac representation.
    * @param p The momentum.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
   inline RSSpinorBarWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
-				 int ihel,Direction dir,DiracRep drep=defaultDRep);
+				 unsigned int ihel,Direction dir,
+				 DiracRep drep=defaultDRep);
   
   /**
    * Constructor, set the momentum components and mass, helicity, direction and
@@ -114,12 +125,12 @@ public:
    * @param E  The energy.
    * @param m  The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
   inline RSSpinorBarWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
-				 const tcPDPtr & part,int ihel,Direction dir,
+				 const tcPDPtr & part,unsigned int ihel,Direction dir,
 				 DiracRep drep=defaultDRep);
   
   /**
@@ -130,12 +141,12 @@ public:
    * @param pz The z component of the momentum.
    * @param E  The energy.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
   inline RSSpinorBarWaveFunction(Energy px,Energy py,Energy pz,Energy E,
-				 const tcPDPtr & part,int ihel,Direction dir,
+				 const tcPDPtr & part,unsigned int ihel,Direction dir,
 				 DiracRep drep=defaultDRep);
   
   /**
@@ -143,11 +154,12 @@ public:
    * Dirac representation.
    * @param p the 4-momentum
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(LorentzVector p,const tcPDPtr & part,int ihel,
+  inline RSSpinorBarWaveFunction(LorentzVector p,const tcPDPtr & part,
+				 unsigned int ihel,
 				 Direction dir,DiracRep drep=defaultDRep);
   
   /**
@@ -155,12 +167,12 @@ public:
    * Dirac representation.
    * @param m The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(Energy m,const tcPDPtr & part,int ihel,Direction dir,
-				 DiracRep drep=defaultDRep);
+  inline RSSpinorBarWaveFunction(Energy m,const tcPDPtr & part,unsigned int ihel,
+				 Direction dir,DiracRep drep=defaultDRep);
   
   /**
    * Constructor, set the 4-momentum, mass, helicity, direction and
@@ -168,11 +180,12 @@ public:
    * @param p the 4-momentum
    * @param m The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,int ihel,
+  inline RSSpinorBarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+				 unsigned int ihel,
 				 Direction dir,DiracRep drep=defaultDRep);
   
   /**
@@ -250,6 +263,35 @@ public:
    */
   inline RSSpinorBarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
 				 Direction dir,DiracRep drep=defaultDRep);
+  
+  /**
+   * Special constructor which calculates all the helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The spinors for the different helicities.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the RSFermionSpinInfo object 
+   * @param drep The Dirac representation.
+   */
+  inline RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave, tPPtr part,
+				 Direction dir,bool time, bool vertex,
+				 DiracRep drep=defaultDRep);
+
+  /**
+   * Special constructor which calculates all the helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The spinors for the different helicities.
+   * @param rho  The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the RSFermionSpinInfo object 
+   * @param drep The Dirac representation.
+   */
+  inline RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave,RhoDMatrix& rho,
+				 tPPtr part,Direction dir,bool time, bool vertex,
+				 DiracRep drep=defaultDRep);
   
   /**
    * Default constructor
@@ -475,10 +517,10 @@ public:
 
   /**
    * Reset the helicity (calculates the new spinor).
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param drep The Dirac matrix representation.
    */
-  inline void reset(int ihel,DiracRep drep=defaultDRep);
+  inline void reset(unsigned int ihel,DiracRep drep=defaultDRep);
 
   /**
    * Reset particle type and direction.
@@ -494,6 +536,27 @@ public:
   inline void reset(const tcPDPtr & part);
   //@}
   
+  /**
+   * Calculate the spinors for all helicities, create and set up the SpinInfo object
+   * @param wave The spinors for the different helicities.
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the RSFermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzRSSpinorBar>& wave,tPPtr part,bool time,
+				bool vertex=true);
+
+  /**
+   * Calculate the spinors for all helicities, create and set up the SpinInfo object
+   * @param wave The spinors for the different helicities.
+   * @rho The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the RSFermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzRSSpinorBar>& wave,RhoDMatrix& rho,
+				tPPtr part,bool time,bool vertex=true);
+
  private:
   
   /**
@@ -503,16 +566,25 @@ public:
 
   /**
    * Calcuate the wavefunction.
-   * @param ihel The helicity
+   * @param ihel The helicity (0,1,2,3 as described above.)
    * @param drep The Dirac matrix representation.
    */
-  void calculateWaveFunction(int ihel,DiracRep drep=defaultDRep);
+  void calculateWaveFunction(unsigned int ihel,DiracRep drep=defaultDRep);
 
   /**
    * Check particle spin and set pointer.
    * @param part The ParticleData pointer.
    */
   inline void checkParticle(const tcPDPtr & part);
+
+  /**
+   * Calculate the spinors for all the helicities and set up the SpinInfo object.
+   * @param wave The spinors for the different helicities
+   * @param spin Pointer to the RSFermionSpinInfo object
+   * @param vertex Whether or not to set up the RSFermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzRSSpinorBar>& wave,tRSFermionSpinPtr spin,
+				bool vertex=true);
   
  private:
   

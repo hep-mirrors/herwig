@@ -6,6 +6,9 @@
 //
 #include "WaveFunctionBase.h"
 #include <ThePEG/Helicity/LorentzPolarizationVector.h>
+#include <ThePEG/Helicity/VectorSpinInfo.h>
+#include <ThePEG/Helicity/RhoDMatrix.h>
+#include <ThePEG/EventRecord/Particle.h>
 
 namespace Herwig {
 namespace Helicity {
@@ -23,6 +26,9 @@ enum VectorPhase
 
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
+using ThePEG::Helicity::tVectorSpinPtr;
+using ThePEG::Helicity::VectorSpinInfo;
+using ThePEG::Helicity::RhoDMatrix;
 
 /** \ingroup Helicity
  *
@@ -43,6 +49,10 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  *  These are set using the VectorPhase enumeration which specifies a default choice.
  *  The first choice, vector_phase, includes a phase factor \f$\exp(\pm i \phi)\f$
  *  for the \f$\pm\f$ helicity states while the second, vector_nophase, does not.
+ *
+ *  N.B. In our convention 0 is the \f$-1\f$ helicity state and 
+ *        1 is the \f$0\f$ helicity state
+ *        2 is the \f$+1\f$ helicity state
  *
  *  @see WaveFunctionBase
  *  @see LorentzPolarizationVector
@@ -82,12 +92,12 @@ public:
    * of the phase.
    * @param p The momentum.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity.
+   * @param ihel The helicity (0,1,2 as described above.)
    * @param dir The direction.
    * @param phase The phase choice.
    */
   inline VectorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
-			    int ihel,Direction dir,
+			    unsigned int ihel,Direction dir,
 			    VectorPhase phase=default_vector_phase);
 
   /**
@@ -99,12 +109,12 @@ public:
    * @param E  The energy.
    * @param m  The mass.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity.
+   * @param ihel The helicity (0,1,2 as described above.)
    * @param dir The direction.
    * @param phase The phase choice.
    */
   inline VectorWaveFunction(Energy px,Energy py,Energy pz,Energy E,Energy m,
-			    const tcPDPtr & part,int ihel,Direction dir,
+			    const tcPDPtr & part,unsigned int ihel,Direction dir,
 			    VectorPhase phase=default_vector_phase);
 
   /**
@@ -115,12 +125,12 @@ public:
    * @param pz The z component of the momentum.
    * @param E  The energy.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity.
+   * @param ihel The helicity (0,1,2 as described above.)
    * @param dir The direction.
    * @param phase The phase choice.
    */
   inline VectorWaveFunction(Energy px,Energy py,Energy pz,Energy E,const tcPDPtr & part,
-			    int ihel,Direction dir,
+			    unsigned int ihel,Direction dir,
 			    VectorPhase phase=default_vector_phase);
 
   /**
@@ -128,11 +138,12 @@ public:
    * optionally the choice of the phase.
    * @param p The 4-momentum.
    * @param part The ParticleData pointer.
-   * @param ihel The helicity.
+   * @param ihel The helicity (0,1,2 as described above.)
    * @param dir The direction.
    * @param phase The phase choice.
    */
-  inline VectorWaveFunction(LorentzVector p,const tcPDPtr & part,int ihel,Direction dir,
+  inline VectorWaveFunction(LorentzVector p,const tcPDPtr & part,
+			    unsigned int ihel,Direction dir,
 			    VectorPhase phase=default_vector_phase);
 
   /**
@@ -140,11 +151,12 @@ public:
    * optionally the choice of the phase.
    * @param m The mass. 
    * @param part The ParticleData pointer.
-   * @param ihel The helicity.
+   * @param ihel The helicity (0,1,2 as described above.)
    * @param dir The direction.
    * @param phase The phase choice.
    */
-  inline VectorWaveFunction(Energy m,const tcPDPtr & part,int ihel,Direction dir,
+  inline VectorWaveFunction(Energy m,const tcPDPtr & part,
+			    unsigned int ihel,Direction dir,
 			    VectorPhase phase=default_vector_phase);
 
   /**
@@ -153,11 +165,12 @@ public:
    * @param p The 4-momentum.
    * @param m The mass. 
    * @param part The ParticleData pointer.
-   * @param ihel The helicity.
+   * @param ihel The helicity (0,1,2 as described above.)
    * @param dir The direction.
    * @param phase The phase choice.
    */
-  inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,int ihel,
+  inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+			    unsigned int ihel,
 			    Direction dir,VectorPhase phase=default_vector_phase);
 
   /**
@@ -222,6 +235,35 @@ public:
    * @param dir The direction.
    */
   inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
+
+  /**
+   * Special constructor which calculates all the helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The polarization vectors for the different helicities.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   * @param phase The phase choice.
+   */
+  inline VectorWaveFunction(vector<LorentzPolarizationVector>& wave, tPPtr part,
+			    Direction dir, bool time, bool massless, bool vertex,
+			    VectorPhase phase=default_vector_phase);
+
+  /**
+   * Special constructor which calculates all the helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The polarization vectors for the different helicities.
+   * @parmm rho The \f$\rho\f$ matrix for the particle.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   * @param phase The phase choice.
+   */
+  inline VectorWaveFunction(vector<LorentzPolarizationVector>& wave, RhoDMatrix& rho,
+			    tPPtr part,Direction dir, bool time, bool massless,
+			    bool vertex,VectorPhase phase=default_vector_phase);
 
   /**
    * Default constructor.
@@ -327,10 +369,10 @@ public:
 
   /**
    * Reset the helicity (recalculation the polarization vector).
-   * @param ihel The new helicity.
+   * @param ihel The new helicity (0,1,2 as described above.)
    * @param phase The phase choice.
    */
-  inline void reset(int ihel,VectorPhase phase=default_vector_phase);
+  inline void reset(unsigned int ihel,VectorPhase phase=default_vector_phase);
 
   /**
    * Reset the particle type and direction.
@@ -346,6 +388,32 @@ public:
   inline void reset(const tcPDPtr & part);
   //@}
 
+  /**
+   * Calculate the polarization vectors for all helicities,
+   * create and set up the SpinInfo object
+   * @param wave The polarization vectors for the different helicities.
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param phase The phase choice.
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzPolarizationVector>& wave,tPPtr part,
+				bool time, bool massless,
+				VectorPhase phase=default_vector_phase,bool vertex=true);
+
+  /**
+   * Calculate the polarization vectors for all helicities,
+   * create and set up the SpinInfo object
+   * @param wave The polarization vectors for the different helicities.
+   * @param rho The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param phase The phase choice.
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzPolarizationVector>& wave,RhoDMatrix& rho,
+				tPPtr part,bool time, bool massless,
+				VectorPhase phase=default_vector_phase,bool vertex=true);
 
 private:
 
@@ -357,16 +425,29 @@ private:
   
   /**
    * Calculate the wavefunction
-   * @param ihel The helicity.
+   * @param ihel The helicity  (0,1,2 as described above.)
    * @param phase The phase choice.
    */
-  void calculateWaveFunction(int ihel,VectorPhase phase=default_vector_phase);
+  void calculateWaveFunction(unsigned int ihel,VectorPhase phase=default_vector_phase);
 
   /**
    * Check the particle type.
    * @param part The ParticleData pointer.
    */
   inline void checkParticle(const tcPDPtr & part);
+
+
+  /**
+   * Calculate the polarization vectors for all the helicities and set up the
+   * SpinInfo object.
+   * @param wave The polarization vectors for the different helicities
+   * @param spin Pointer to the VectorSpinInfo object
+   * @param phase The phase choice.
+   * @param vertex Whether or not to set up the VectorSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<LorentzPolarizationVector>& wave,
+				tVectorSpinPtr spin, bool massless,
+				VectorPhase phase=default_vector_phase,bool vertex=true);
 
 private:
   

@@ -19,17 +19,20 @@ using ThePEG::Helicity::u_spinortype;
 using ThePEG::Helicity::v_spinortype;
 
 // calculate the Wavefunction
-void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
+void SpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 {
   Direction dir=direction();
-  if(dir==intermediate){cerr << "In SpinorBarWaveFunction::calcluateWaveFunction "
-			     << "particle must be incoming or outgoing not intermediate" 
-			     << endl;}
+  if(dir==intermediate)
+    {ThePEG::Helicity::HelicityConsistencyError() 
+	<< "In SpinorBarWaveFunction::calcluateWaveFunction "
+	<< "particle must be incoming or outgoing not intermediate" 
+	<< Exception::abortnow;}
   // check ihelicity is O.K.
-  if(ihel!=1 && ihel!=-1)
+  if(ihel>1)
     {
- 
-      cerr << "Invalid Helicity = " << ihel << " requested for SpinorBar" << endl;
+      ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Invalid Helicity = " << ihel << " requested for SpinorBar" 
+	<< Exception::abortnow;
       for(int ix=0;ix<4;++ix){_wf[ix]=0.;}
     }
   else
@@ -46,7 +49,7 @@ void SpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
       // we are using
       Complex hel_wf[2];
       // compute the + spinor for + helicty particles and - helicity antiparticles
-      if((dir==outgoing && ihel== 1) || (dir==incoming && ihel==-1))
+      if((dir==outgoing && ihel== 1) || (dir==incoming && ihel==0))
 	{
 	  // no transverse momentum 
 	  if(ptran==0.)

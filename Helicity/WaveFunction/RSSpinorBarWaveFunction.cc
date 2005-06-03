@@ -18,7 +18,7 @@ using ThePEG::Helicity::v_spinortype;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 // calculate the Wavefunction
-void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
+void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 {
   // check ihelicity is O.K.
   Direction dir = direction();
@@ -27,10 +27,12 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
   else{news=LorentzRSSpinorBar(v_spinortype,dirac);}
   unsigned int ix,iy;
   static double eps=1E-5;
-  if(dir==intermediate){cerr << "In RSSpinorBarWaveFunction::calcluateWaveFunction "
-			     << "particle must be incoming or outgoing not intermediate" 
-			     << endl;}
-  if(ihel!=1 && ihel!=-1 && ihel!=-2 && ihel!=2)
+  if(dir==intermediate)
+    {ThePEG::Helicity::HelicityConsistencyError() 
+	<< "In RSSpinorBarWaveFunction::calcluateWaveFunction "
+	<< "particle must be incoming or outgoing not intermediate" 
+	<< Exception::abortnow;}
+  if(ihel>3)
     {
       throw HelicityLogicalError() << "Invalid Helicity = " << ihel 
 				   << " requested for RSSpinorBar" 
@@ -154,20 +156,20 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 	    }
 	  // now we can put the bits together to compute the RS spinor
 	  double or3(sqrt(1./3.)),tor3(sqrt(2./3.));
-	  if(ihel==-2)
+	  if(ihel==0)
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
 		  {news(ix,iy)=
 		      vec[ix][0]*spinor[iy][0];}}
 	    }
-	  else if(ihel==-1)
-	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
-		  {news(ix,iy)=
-		      or3*vec[ix][0]*spinor[iy][1]+tor3*vec[ix][1]*spinor[iy][0];}}}
 	  else if(ihel==1)
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
 		  {news(ix,iy)=
-		      or3*vec[ix][2]*spinor[iy][0]+tor3*vec[ix][1]*spinor[iy][1];}}}
+		      or3*vec[ix][0]*spinor[iy][1]+tor3*vec[ix][1]*spinor[iy][0];}}}
 	  else if(ihel==2)
+	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
+		  {news(ix,iy)=
+		      or3*vec[ix][2]*spinor[iy][0]+tor3*vec[ix][1]*spinor[iy][1];}}}
+	  else if(ihel==3)
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
 		  {news(ix,iy)=
 		      vec[ix][2]*spinor[iy][1];}}
@@ -181,7 +183,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
       else
 	{
 	  // only two valid helicities in this case
-	  if(ihel==-1||ihel==1)
+	  if(ihel==1||ihel==2)
 	    {throw HelicityLogicalError() << "Invalid Helicity = " << ihel 
 					  << " requested for massless RSSpinorBar" 
 					  << Exception::abortnow;}
@@ -197,7 +199,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 	      Complex hel_wf[2],vec[4],ii(0.,1.);
 	      double root = 1./sqrt(2.);
 	      // positve 3/2 helicity spinor
-	      if((dir==incoming && ihel==2)||(dir==outgoing &&ihel==-2))
+	      if((dir==incoming && ihel==3)||(dir==outgoing &&ihel==0))
 		{
 		  // the polarization vector
 		  // first the no pt case
@@ -294,7 +296,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 		  if(dir==incoming)
 		    {
 		      upper = eminusm;
-		      if(ihel==2)
+		      if(ihel==3)
 			{lower = eplusm;}
 		      else
 			{lower =-eplusm;}
@@ -302,7 +304,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 		  else
 		    {
 		      upper = eplusm;
-		      if(ihel==2) 
+		      if(ihel==3) 
 			{lower =-eminusm;}
 		      else
 			{lower = eminusm;}
@@ -318,7 +320,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 		  // set up the coefficients for the different cases
 		  if(dir==incoming)
 		    {
-		      if(ihel==2)
+		      if(ihel==3)
 			{
 			  upper = eminusp;
 			  lower =-eplusp;
@@ -331,7 +333,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 		    }
 		  else
 		    {
-		      if(ihel==2)
+		      if(ihel==3)
 			{
 			  upper = eplusp;
 			  lower = eminusp;
@@ -345,8 +347,10 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(int ihel,DiracRep dirac)
 		  break;
 		  // invalid choice
 		default:
-		  cerr << "Invalid choice of Dirac representation in "
-		       << "SpinorBarWaveFunction::calculateWaveFunction() " << endl; 
+		  ThePEG::Helicity::HelicityConsistencyError() 
+		    << "Invalid choice of Dirac representation in "
+		    << "SpinorBarWaveFunction::calculateWaveFunction() " 
+		    << Exception::abortnow; 
 		  break;
 		}
 	      Complex spinor[4]={upper*hel_wf[0],upper*hel_wf[1],

@@ -12,15 +12,18 @@ namespace Herwig {
 namespace Helicity {
 
 // calculate the actual wavefunction
-void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
+void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tphase)
 {
+  int jhel=ihel-2;
   Direction dir=direction();
-  if(dir==intermediate){cerr << "In TensorWaveFunction::calcluateWaveFunction "
-			     << "particle must be incoming or outgoing not intermediate" 
-			     << endl;}
+  if(dir==intermediate)
+    {ThePEG::Helicity::HelicityConsistencyError() 
+	<< "In TensorWaveFunction::calcluateWaveFunction "
+	<< "particle must be incoming or outgoing not intermediate" 
+	<< Exception::abortnow;}
   // check for a valid helicty combination
-  if((ihel<=2 && ihel>=-2   && mass() >0.) || 
-     ((ihel==2 || ihel==-2) && mass()==0.)) 
+  if((jhel<=2 && jhel>=-2   && mass() >0.) || 
+     ((jhel==2 || jhel==-2) && mass()==0.)) 
     {
       // extract the momentum components
       double fact=-1.; if(dir==incoming){fact=1.;}
@@ -32,7 +35,7 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
       // polarization vectors
       complex<double> epsp[4],epsm[4],eps0[4];
       // + helicity vector if needed
-      if(ihel>=0)
+      if(jhel>=0)
 	{
 	  // calculate the overall phase
 	  complex<double>phase;
@@ -67,7 +70,7 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
 	    }
 	}
       // - helicity vector if needed
-      if(ihel<=0)
+      if(jhel<=0)
 	{
 	  // calculate the overall phase
 	  complex<double> phase;
@@ -102,7 +105,7 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
 	    }
 	}
       // 0 helicity vector if needed
-      if(ihel<=1 && ihel>=-1)
+      if(jhel<=1 && jhel>=-1)
 	{
 	  if(pabs==0)
 	    {
@@ -122,7 +125,7 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
 	}
       // put the polarization vectors together to get the wavefunction
       double ort;
-      switch (ihel)
+      switch (jhel)
 	{ 
 	case 2:
 	  for(int ix=0;ix<4;++ix)
@@ -152,16 +155,21 @@ void TensorWaveFunction::calculateWaveFunction(int ihel, TensorPhase tphase)
 	    {for(int iy=0;iy<4;++iy){_wf(ix,iy)=epsm[ix]*epsm[iy];}}
 	  break;
 	default:
-	  cerr << "Invalid Helicity = " << ihel << " requested for Tensor" << endl;
+	  ThePEG::Helicity::HelicityConsistencyError() 
+	    << "Invalid Helicity = " << jhel << " requested for Tensor" 
+	    << Exception::abortnow;
 	  for(int ix=0;ix<4;++ix){for(int iy=0;iy<4;++iy){_wf(ix,iy)=0.;}}
 	  break;
 	}
     }
   else
     {
-      cerr << "Invalid Helicity = " << ihel << " requested for Tensor" << endl;
+      ThePEG::Helicity::HelicityConsistencyError() 
+	<< "Invalid Helicity = " << jhel << " requested for Tensor" 
+	<< Exception::abortnow;
       for(int ix=0;ix<4;++ix){for(int iy=0;iy<4;++iy){_wf(ix,iy)=0.;}}
     }
 }
-  }
+
+}
 }
