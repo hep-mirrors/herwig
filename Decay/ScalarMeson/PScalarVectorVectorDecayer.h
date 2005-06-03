@@ -15,8 +15,8 @@ using namespace ThePEG;
  * The <code>PScalarVectorVectorDecayer</code> class is designed to perform the decay 
  * of a pseudoscalar meson to two spin-1 particles. The majority of these decays
  * are of a light pseudoscalar meson to \f$\gamma\gamma\f$ where
- * including the matrix-element
- * is unnessecary. However there are a small number of decays, 
+ * including the matrix-element is unnessecary. However there are a small number
+ * of decays, 
  * \e e.g. \f$\eta'\to\omega\gamma\f$
  * where the use of this decayer is required to get the correct correlations.
  *
@@ -47,7 +47,7 @@ public:
   /**
    * Default constructor.
    */
-  inline PScalarVectorVectorDecayer();
+  PScalarVectorVectorDecayer();
 
   /**
    * Copy-constructor.
@@ -102,6 +102,11 @@ public:
    * @return True or False if this mode can be handled.
    */
   bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -221,13 +226,17 @@ private:
   /**
    * the coupling for the decay, \f$g\f$.
    */
-  vector<double> _coupling;
+  vector<InvEnergy> _coupling;
 
   /**
    * the maximum weight for the decay
    */
   vector<double> _maxweight;
 
+  /**
+   *  initial number of modes
+   */
+  unsigned int _initsize;
 };
 
 }

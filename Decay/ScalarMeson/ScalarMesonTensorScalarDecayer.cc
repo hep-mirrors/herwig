@@ -15,73 +15,85 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "ThePEG/Helicity/ScalarSpinInfo.h"
-#include "ThePEG/Helicity/TensorSpinInfo.h"
 #include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzTensor;
-using ThePEG::Helicity::ScalarSpinInfo;
-using ThePEG::Helicity::tcScalarSpinPtr;
-using ThePEG::Helicity::tcTensorSpinPtr;
-using ThePEG::Helicity::TensorSpinInfo;
+using Herwig::Helicity::ScalarWaveFunction;
 using Herwig::Helicity::TensorWaveFunction;
 using Herwig::Helicity::Direction;
+using Herwig::Helicity::incoming;
 using Herwig::Helicity::outgoing;
 
+ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer() 
+{
+  _incoming.push_back( 411);_outgoingT.push_back(225);_outgoingS.push_back( 211);
+  _coupling.push_back(7.24E-7/GeV);_maxweight.push_back(0.006);
+  // initial size of the arrays
+  _initsize=_incoming.size();
+}
 
 ScalarMesonTensorScalarDecayer::~ScalarMesonTensorScalarDecayer() {}
 
 bool ScalarMesonTensorScalarDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be two outgoing particles
   if(dm.products().size()!=2){return allowed;}
   // ids of the particles
-  int id0=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int id0(dm.parent()->id()),id0bar(id0);
+  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  // loop over the modes and see if this is one of them
-  unsigned int ix=0;
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0);
   do
     {
-      if(_incoming[ix]==id0&&
-	 ((_outgoingT[ix]==id1&&_outgoingS[ix]==id2)||
-	  (_outgoingT[ix]==id2&&_outgoingS[ix]==id1))){allowed=true;}
+      if(id0   ==_incoming[ix])
+	{if((id1   ==_outgoingT[ix]&&id2   ==_outgoingS[ix])||
+	    (id2   ==_outgoingT[ix]&&id1   ==_outgoingS[ix])){allowed=true;}}
+      if(id0bar==_incoming[ix]&&!allowed)
+	{if((id1bar==_outgoingT[ix]&&id2bar==_outgoingS[ix])||
+	    (id2bar==_outgoingT[ix]&&id1bar==_outgoingS[ix])){allowed=true;}}
       ++ix;
     }
-  while(!allowed&&ix<_incoming.size());
+  while(ix<_incoming.size()&&!allowed);
   return allowed;
 }
 
 ParticleVector ScalarMesonTensorScalarDecayer::decay(const DecayMode & dm,
 				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  // workout which mode we are doing
-  int imode=-1;
-  int id=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int imode(-1);
+  int id(parent.id()),idbar(id);
+  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
-  do
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0);
+  bool cc(false);
+  do 
     {
-      if(_incoming[ix]==id)
-	{
-	  if((id1==_outgoingT[ix]&&id2==_outgoingS[ix])||
-	     (id2==_outgoingT[ix]&&id1==_outgoingS[ix])){imode=ix;}
-	}
+      if(id   ==_incoming[ix])
+	{if((id1   ==_outgoingT[ix]&&id2   ==_outgoingS[ix])||
+	    (id2   ==_outgoingT[ix]&&id1   ==_outgoingS[ix])){imode=ix;}}
+      if(idbar==_incoming[ix])
+	{if((id1bar==_outgoingT[ix]&&id2bar==_outgoingS[ix])||
+	    (id2bar==_outgoingT[ix]&&id1bar==_outgoingS[ix])){imode=ix;cc=true;}}
       ++ix;
     }
-  while(imode<0&&ix<_incoming.size());
-  // perform the decay
-  return generate(false,false,imode,parent);
+  while(ix<_incoming.size()&&imode<0);
+  // generate the decay
+  return generate(false,cc,imode,parent);
 }
 
 
@@ -106,109 +118,128 @@ void ScalarMesonTensorScalarDecayer::Init() {
     ("Incoming",
      "The PDG code for the incoming particle",
      &ScalarMesonTensorScalarDecayer::_incoming,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,int> interfaceOutcomingT
     ("OutgoingTensor",
      "The PDG code for the outgoing tensor",
      &ScalarMesonTensorScalarDecayer::_outgoingT,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,int> interfaceOutcomingS
     ("OutgoingScalar",
      "The PDG code for the outgoing scalar",
      &ScalarMesonTensorScalarDecayer::_outgoingS,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, -10000000, 10000000, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarMesonTensorScalarDecayer::_coupling,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0./GeV, 100./GeV, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &ScalarMesonTensorScalarDecayer::_maxweight,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0, 0, 0, 0., 100., false, false, true);
 }
-
 
 double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int ichan,
 					   const Particle & inpart,
 					   const ParticleVector & decay) const
 {
-  // check if the decaying particle has spin info
-  tcScalarSpinPtr inspin;
-  if(inpart.spinInfo())
-    {inspin = dynamic_ptr_cast<tcScalarSpinPtr>(inpart.spinInfo());}
-  // if the spin info object exists use it
-  if(inspin)
-    {inspin->decayed(true);}
-  else if(inpart.spinInfo())
-    {cerr << "wrong type of spin info for the incoming particle " 
-	   << "in PScalarVectorVectorDecayer::me2()" << endl;}
-  else
-    {
-      SpinPtr newspin=new_ptr(ScalarSpinInfo(inpart.momentum(),true));
-      inspin = dynamic_ptr_cast<tcScalarSpinPtr>(newspin);
-      inspin->decayed(true);
-      const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
-    }
+  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
   // set up the spin info for the outgoing particles
-  tcTensorSpinPtr tenspin;
-  if(vertex)
-    {
-      SpinPtr temp=new_ptr(TensorSpinInfo(decay[0]->momentum(),true));
-      tenspin = dynamic_ptr_cast<tcTensorSpinPtr>(temp);
-      decay[0]->spinInfo(temp);
-      temp = new_ptr(ScalarSpinInfo(decay[1]->momentum(),true));
-      decay[1]->spinInfo(temp);
-    }
-  // wavefunction for the outgoing tensor
-  TensorWaveFunction temp=TensorWaveFunction(decay[0]->momentum(),
-					     decay[0]->dataPtr(),outgoing);
+  vector<LorentzTensor> twave;
+  TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
+  ScalarWaveFunction(decay[1],outgoing,true,vertex);
   // calculate the matrix element
-  DecayMatrixElement newME(1,5,1);
-  Complex fact = _coupling[imode()]/inpart.mass();
+  DecayMatrixElement newME(PDT::Spin0,PDT::Spin2,PDT::Spin0);
+  Complex fact(_coupling[imode()]/inpart.mass());
   LorentzPolarizationVector vtemp;
-  for(int ix=-2;ix<3;++ix)
+  for(unsigned int ix=0;ix<5;++ix)
     {
-      temp.reset(ix);
-      if(vertex){tenspin->setBasisState(ix,temp.Wave());}
-      vtemp = temp.Wave()*(inpart.momentum()); 
+      vtemp = twave[ix]*inpart.momentum(); 
       newME(0,ix,0) = fact*decay[1]->momentum()*vtemp;
     }
   ME(newME);
-  RhoDMatrix rhoin=RhoDMatrix(1);rhoin.average();
-  double me=newME.contract(rhoin).real();
-  return me;
+  RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
+  return newME.contract(rhoin).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
 bool ScalarMesonTensorScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
 						   double & coupling) const
 {
-  int imode=-1;
-  int id=dm.parent()->id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
+  int imode(-1);
+  int id(dm.parent()->id()),idbar(id);
+  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id()),id1bar(id1);
+  if((**pit).CC()){id1bar=(**pit).CC()->id();}
   ++pit;
-  int id2=(**pit).id();
-  unsigned int ix=0;
-  do
+  int id2((**pit).id()),id2bar(id2);
+  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  unsigned int ix(0); bool order;
+  do 
     {
-      if(_incoming[ix]==id)
+      if(id   ==_incoming[ix])
 	{
-	  if((id1==_outgoingT[ix]&&id2==_outgoingS[ix])||
-	     (id2==_outgoingT[ix]&&id1==_outgoingS[ix])){imode=ix;}
+	  if(id1==_outgoingT[ix]&&id2==_outgoingS[ix]){imode=ix;order=true;}
+	  if(id2==_outgoingT[ix]&&id1==_outgoingS[ix]){imode=ix;order=false;}
+	}
+      if(idbar==_incoming[ix]&&imode<0)
+	{
+	  if(id1bar==_outgoingT[ix]&&id2bar==_outgoingS[ix]){imode=ix;order=true;}
+	  if(id2bar==_outgoingT[ix]&&id1bar==_outgoingS[ix]){imode=ix;order=false;}
 	}
       ++ix;
     }
-  while(imode<0&&ix<_incoming.size());
+  while(ix<_incoming.size()&&imode<0);
   coupling=_coupling[imode]*dm.parent()->mass();
   itype = 11;
-  return id1==_outgoingT[imode]&&id2==_outgoingS[imode];
+  return order;
 }
 
+// output the setup information for the particle database
+void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  // the rest of the parameters
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      if(ix<_initsize)
+	{
+	  output << "set " << fullName() << ":Incoming " << ix << " " 
+		 << _incoming[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingTensor " << ix << " " 
+		 << _outgoingT[ix] << "\n";
+	  output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
+		 << _outgoingS[ix] << "\n";
+	  output << "set " << fullName() << ":Coupling " << ix << " " 
+		 << _coupling[ix] << "\n";
+	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
+		 << _maxweight[ix] << "\n";
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Incoming " << ix << " " 
+		 << _incoming[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingTensor " << ix << " " 
+		 << _outgoingT[ix] << "\n";
+	  output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
+		 << _outgoingS[ix] << "\n";
+	  output << "insert " << fullName() << ":Coupling " << ix << " " 
+		 << _coupling[ix] << "\n";
+	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+		 << _maxweight[ix] << "\n";
+	}
+    }
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 }

@@ -7,81 +7,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer() 
-{
-  // decay eta -> omega gamma
-  _incoming.push_back(331);_outgoing1.push_back(223);_outgoing2.push_back(22);
-  _coupling.push_back(0.1375/GeV);_maxweight.push_back(0.00612209);
-  // decya eta- > rho gamma
-  _incoming.push_back(331);_outgoing1.push_back(113);_outgoing2.push_back(22);
-  _coupling.push_back(0.4011/GeV);_maxweight.push_back(0.0595797);
-  // decay pi -> gamma gamma
-  _incoming.push_back(111);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.017790143/GeV);_maxweight.push_back(0.);
-  // decay eta -> gamma gamma
-  _incoming.push_back(221);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.017639430/GeV);_maxweight.push_back(0.);
-  // decay eta' -> gamma gamma
-  _incoming.push_back(331);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(0.022135772/GeV);_maxweight.push_back(0.);
-  // decay eta_c -> rho rho
-  _incoming.push_back(441);_outgoing1.push_back(213);_outgoing2.push_back(-213);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(441);_outgoing1.push_back(113);_outgoing2.push_back( 113);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // decay eta-c -> phi phi
-  _incoming.push_back(441);_outgoing1.push_back(333);_outgoing2.push_back(333);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // decay eta-c -> gamma gamma
-  _incoming.push_back(441);_outgoing1.push_back(22);_outgoing2.push_back(22);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // decay eta_c -> K* K*
-  _incoming.push_back(441);_outgoing1.push_back(323);_outgoing2.push_back(-323);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(441);_outgoing1.push_back(313);_outgoing2.push_back(-313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  // D meson to two vector decays
-  _incoming.push_back(421);_outgoing1.push_back(-323);_outgoing2.push_back(213);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(421);_outgoing1.push_back(-313);_outgoing2.push_back(113);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(421);_outgoing1.push_back(-313);_outgoing2.push_back(223);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(421);_outgoing1.push_back(-313);_outgoing2.push_back(313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(421);_outgoing1.push_back(333);_outgoing2.push_back(-313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(421);_outgoing1.push_back(333);_outgoing2.push_back(22);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(421);_outgoing1.push_back(333);_outgoing2.push_back(113);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(323);_outgoing2.push_back(-213);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(313);_outgoing2.push_back(113);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(313);_outgoing2.push_back(223);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(-313);_outgoing2.push_back(313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(333);_outgoing2.push_back(313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(333);_outgoing2.push_back(22);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-421);_outgoing1.push_back(333);_outgoing2.push_back(113);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(411);_outgoing1.push_back(323);_outgoing2.push_back(-313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(411);_outgoing1.push_back(213);_outgoing2.push_back(-313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-411);_outgoing1.push_back(-323);_outgoing2.push_back(313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-  _incoming.push_back(-411);_outgoing1.push_back(-213);_outgoing2.push_back(313);
-  _coupling.push_back(1./GeV);_maxweight.push_back(0.);
-}
-
 inline PScalarVectorVectorDecayer::PScalarVectorVectorDecayer(const PScalarVectorVectorDecayer & x)
   : DecayIntegrator(x), _incoming(x._incoming), _outgoing1(x._outgoing1),
-    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight) {}
+    _outgoing2(x._outgoing2), _coupling(x._coupling), _maxweight(x._maxweight),
+    _initsize(x._initsize) {}
 
 inline IBPtr PScalarVectorVectorDecayer::clone() const {
   return new_ptr(*this);
@@ -112,7 +41,7 @@ inline void PScalarVectorVectorDecayer::doupdate() throw(UpdateException) {
 inline void PScalarVectorVectorDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check the parameters arew consistent
-  unsigned int isize=_coupling.size();
+  unsigned int isize(_coupling.size());
   if(isize!=_incoming.size()  || isize!=_outgoing1.size()||
      isize!=_outgoing2.size() || isize!=_maxweight.size())
     {throw InitException() << "Inconsistent parameters in PScalarVectorVectorDecayer" 
@@ -126,7 +55,7 @@ inline void PScalarVectorVectorDecayer::doinit() throw(InitException) {
       extpart[0] = getParticleData(_incoming[ix]);
       extpart[1] = getParticleData(_outgoing1[ix]);
       extpart[2] = getParticleData(_outgoing2[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
       addMode(mode,_maxweight[ix],wgt);
     }
 }
@@ -137,6 +66,8 @@ inline void PScalarVectorVectorDecayer::dofinish() {
 
 inline void PScalarVectorVectorDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {_maxweight[ix] = mode(ix)->maxWeight();}
 }
 
 inline void PScalarVectorVectorDecayer::rebind(const TranslationMap & trans)

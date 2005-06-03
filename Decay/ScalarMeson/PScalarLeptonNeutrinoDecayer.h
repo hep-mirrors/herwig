@@ -18,7 +18,7 @@ using namespace ThePEG;
  * decays of bottom and charm mesons.
  *
  *  The matrix element is given by 
- * \f[\mathcal{M} = f_PG_FV_{CKM}m_l\bar{u}(p_{\ell})(1-\gamma_5)v(p_\nu),\f]
+ * \f[\mathcal{M} = \frac1{\sqrt{2}}f_PG_FV_{CKM}m_l\bar{u}(p_{\ell})(1-\gamma_5)v(p_\nu),\f]
  * where
  * - \f$f_P\f$ is the pseudoscalar decay constant.
  * - \f$G_F\f$ is the Fermi constant
@@ -38,7 +38,7 @@ public:
   /**
    * Default constructor.
    */
-  inline PScalarLeptonNeutrinoDecayer();
+  PScalarLeptonNeutrinoDecayer();
 
   /**
    * Copy-constructor.
@@ -83,6 +83,11 @@ public:
    */
   double me2(bool vertex, const int ichan,const Particle & part,
 	     const ParticleVector & decay) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -138,7 +143,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -198,7 +203,7 @@ private:
   /**
    * which outgoing leptons are allowed for a particular decay
    */
-  vector<int> _leptons;
+  vector<unsigned int> _leptons;
 
   /**
    * the maximum weight for the integration of a given decay to \f$e\nu_e\f$.
@@ -219,6 +224,11 @@ private:
    * the fermi constant
    */
   InvEnergy2 _GF;
+
+  /**
+   *  initial number of modes
+   */
+  unsigned int _initsize;
 
 };
 

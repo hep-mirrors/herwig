@@ -7,17 +7,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer() 
-{
-  _incoming.push_back(411);_outgoingT.push_back(225);_outgoingS.push_back(211);
-  _coupling.push_back(1./GeV);_maxweight.push_back(2.);
-  _incoming.push_back(-411);_outgoingT.push_back(225);_outgoingS.push_back(-211);
-  _coupling.push_back(1./GeV);_maxweight.push_back(2.);
-}
-
 inline ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer(const ScalarMesonTensorScalarDecayer & x)
   : DecayIntegrator(x), _incoming(x._incoming), _outgoingT(x._outgoingT),
-    _outgoingS(x._outgoingS), _coupling(x._coupling), _maxweight(x._maxweight) {}
+    _outgoingS(x._outgoingS), _coupling(x._coupling), _maxweight(x._maxweight),
+    _initsize(x._initsize) {}
 
 inline IBPtr ScalarMesonTensorScalarDecayer::clone() const {
   return new_ptr(*this);
@@ -74,6 +67,8 @@ inline void ScalarMesonTensorScalarDecayer::dofinish() {
 
 inline void ScalarMesonTensorScalarDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {_maxweight[ix] = mode(ix)->maxWeight();}
 }
 
 inline void ScalarMesonTensorScalarDecayer::rebind(const TranslationMap & trans)

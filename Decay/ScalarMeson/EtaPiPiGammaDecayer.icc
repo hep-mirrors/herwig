@@ -7,65 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() 
-{
-  // the pion decay constant
-  _fpi=130.7*MeV;
-  // the rho mass
-  _mrho=0.7711*GeV;
-  _rhowidth=0.1492*GeV;
-  // the constants for the omnes function form
-  _aconst=0.5/_mrho/_mrho;
-  _cconst=1.0;
-  // use local values of the parameters
-  _localparameters=true;
-  // the modes
-  // eta decay
-  _incoming.push_back(221);_option.push_back(3);_coupling.push_back(0.005261433);
-  // eta' decay
-  _incoming.push_back(331);_option.push_back(3);_coupling.push_back(0.004494391);
-  _rhoconst=0.;_mpi=0.;
-  // initialization of the experimental function
-  _initialize = true;
-  _npoints=200;
-  _energy.push_back(300*MeV);_phase.push_back(0.1);
-  _energy.push_back(320*MeV);_phase.push_back(0.4);
-  _energy.push_back(340*MeV);_phase.push_back(0.7);
-  _energy.push_back(360*MeV);_phase.push_back(1.0);
-  _energy.push_back(380*MeV);_phase.push_back(1.5);
-  _energy.push_back(400*MeV);_phase.push_back(2.0);
-  _energy.push_back(420*MeV);_phase.push_back(2.5);
-  _energy.push_back(440*MeV);_phase.push_back(3.2);
-  _energy.push_back(460*MeV);_phase.push_back(4.0);
-  _energy.push_back(480*MeV);_phase.push_back(4.9);
-  _energy.push_back(500*MeV);_phase.push_back(5.9);
-  _energy.push_back(520*MeV);_phase.push_back(7.1);
-  _energy.push_back(540*MeV);_phase.push_back(8.5);
-  _energy.push_back(560*MeV);_phase.push_back(10.1);
-  _energy.push_back(580*MeV);_phase.push_back(12.1);
-  _energy.push_back(600*MeV);_phase.push_back(14.4);
-  _energy.push_back(620*MeV);_phase.push_back(17.3);
-  _energy.push_back(640*MeV);_phase.push_back(20.9);
-  _energy.push_back(660*MeV);_phase.push_back(25.4);
-  _energy.push_back(680*MeV);_phase.push_back(31.2);
-  _energy.push_back(700*MeV);_phase.push_back(38.7);
-  _energy.push_back(720*MeV);_phase.push_back(48.4);
-  _energy.push_back(740*MeV);_phase.push_back(60.6);
-  _energy.push_back(760*MeV);_phase.push_back(74.9);
-  _energy.push_back(780*MeV);_phase.push_back(90.0);
-  _energy.push_back(800*MeV);_phase.push_back(103.8);
-  _energy.push_back(820*MeV);_phase.push_back(115.3);
-  _energy.push_back(840*MeV);_phase.push_back(124.3);
-  _energy.push_back(860*MeV);_phase.push_back(131.3);
-  _energy.push_back(880*MeV);_phase.push_back(136.7);
-  _energy.push_back(900*MeV);_phase.push_back(141.0);
-  _energy.push_back(920*MeV);_phase.push_back(144.5);
-  _energy.push_back(940*MeV);_phase.push_back(147.3);
-  _energy.push_back(960*MeV);_phase.push_back(149.7);
-  _energy.push_back(980*MeV);_phase.push_back(151.8);
-  _Oreal=0;_Oimag=0;
-}
-
 inline EtaPiPiGammaDecayer::EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer & x)
   : DecayIntegrator(x), _fpi(x._fpi), _incoming(x._incoming),
     _coupling(x._coupling), _maxweight(x._maxweight),
@@ -74,7 +15,8 @@ inline EtaPiPiGammaDecayer::EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer & x)
     _localparameters(x._localparameters),_energy(x._energy), _phase(x._phase),
     _Omnesenergy(x._Omnesenergy),
     _Omnesfunctionreal(x._Omnesfunctionreal), _Omnesfunctionimag(x._Omnesfunctionimag),
-    _initialize(x._initialize), _npoints(x._npoints) {}
+    _initialize(x._initialize), _npoints(x._npoints), _epscut(x._epscut) 
+{for(unsigned int ix=0;ix<2;++ix){_nsize[ix]=x._nsize[ix];}}
 
 inline IBPtr EtaPiPiGammaDecayer::clone() const {
   return new_ptr(*this);
@@ -102,93 +44,15 @@ inline void EtaPiPiGammaDecayer::doupdate() throw(UpdateException) {
   // Touch if anything has changed.
 }
 
-inline void EtaPiPiGammaDecayer::doinit() throw(InitException) {
-  DecayIntegrator::doinit();
-  // check the consistence of the parameters
-  unsigned int isize=_incoming.size();
-  if(isize!=_coupling.size()||isize!=_option.size())
-    {throw InitException() << "Inconsistent parameters in " 
-			   << "EtaPiPiGammaDecayer::doinit()" << Exception::abortnow;}
-  // set the parameters
-  tPDPtr rho = getParticleData(ParticleID::rho0);
-  if(!_localparameters)
-    {
-      _mrho=rho->mass();
-      _rhowidth=rho->width();
-    }
-  _mpi=getParticleData(ParticleID::piplus)->mass();
-  Energy pcm =Kinematics::pstarTwoBodyDecay(_mrho,_mpi,_mpi);
-  _rhoconst=_mrho*_mrho*_rhowidth/(pcm*pcm*pcm);
-  // set up the experimental omnes function if needed
-  if(_initialize)
-    {
-      // convert the phase shift into radians
-      vector<double> radphase;
-      for(unsigned int ix=0;ix<_phase.size();++ix)
-	{radphase.push_back(_phase[ix]/180.*pi);}
-      // set up an interpolator for this
-      Interpolator *intphase=new Interpolator(radphase,_energy,3);
-      OmnesFunction *D1 = new OmnesFunction(intphase,0.01*MeV*MeV);
-      double D1real,D1imag;
-      Energy moff=2.*_mpi;
-      Energy upp=1.*GeV;
-      Energy meta=getParticleData(ParticleID::etaprime)->mass();
-      // intergrators
-      GaussianIntegral *Dreallow=new GaussianIntegral(moff*moff,upp*upp);
-      GaussianIntegral *Drealupp=new GaussianIntegral(moff*moff,upp*upp);
-      Energy step=(meta-moff)/_npoints;
-      Complex ii(0.,1.),answer;
-      moff+=0.5*step;
-      _Omnesfunctionreal.resize(0);
-      _Omnesfunctionimag.resize(0);
-      _Omnesenergy.resize(0);
-      for( ;moff<upp;moff+=step)
-	{
-	  D1->setScale(moff*moff);
-	  Dreallow->resetLimits(4.*_mpi*_mpi,moff*moff-0.1*MeV*MeV);
-	  Drealupp->resetLimits(moff*moff+0.1*MeV*MeV,upp*upp);
-	  // piece between 0 and 1 GeV
-	  D1real=-moff*moff*((*Dreallow)[*D1]+(*Drealupp)[*D1])/pi;
-	  D1imag=-(*intphase)(moff);
-	  // piece above 1 GeV
-	  D1real+=-(*intphase)(upp)/pi*log(upp*upp/(upp*upp-moff*moff));
-	  // calculate the answer
-	  answer = exp(D1real+ii*D1imag);
-	  // put into the arrays
-	  _Omnesfunctionreal.push_back(answer.real());
-	  _Omnesfunctionimag.push_back(answer.imag());
-	  _Omnesenergy.push_back(moff);
-	  
-	}
-      delete intphase;delete D1;delete Dreallow;delete Drealupp;
-    }
-  // set up the modes
-  PDVector extpart;extpart.resize(4);
-  extpart[1] = getParticleData(ParticleID::piplus);
-  extpart[2] = getParticleData(ParticleID::piminus);
-  extpart[3] = getParticleData(ParticleID::gamma);
-  vector<double> dummyweights(1,1.);
-  DecayPhaseSpaceChannelPtr newchannel;
-  DecayPhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_coupling.size();++ix)
-    {
-      extpart[0] = getParticleData(_incoming[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-      newchannel->addIntermediate(rho,0,0.0, 1,2);
-      newchannel->init();
-      mode->addChannel(newchannel);
-      addMode(mode,_maxweight[ix],dummyweights);
-    }
-}
-
 inline void EtaPiPiGammaDecayer::dofinish() {
   DecayIntegrator::dofinish();
 }
 
 inline void EtaPiPiGammaDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
+  if(_Initialize)
+    {for(unsigned int ix=0;ix<_maxweight.size();++ix)
+	{_maxweight[ix]=mode(ix)->maxWeight();}}
 }
 
 inline void EtaPiPiGammaDecayer::rebind(const TranslationMap & trans)
@@ -207,10 +71,10 @@ inline IVector EtaPiPiGammaDecayer::getReferences() {
 // the analytic omnes function  
 inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const
  {
-   Energy2 mpi2=_mpi*_mpi,mrho2=_mrho*_mrho;
-   double root,pi2=pi*pi;
-   Complex f,ii(0.,1);
-   double pre=mpi2/12./pi2/_fpi/_fpi;
+   Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
+   double root,pi2(pi*pi);
+   Complex f,ii(0.,1.);
+   double pre(mpi2/12./pi2/_fpi/_fpi);
    if(s>4.*mpi2)
      {
        // real piece
@@ -226,8 +90,7 @@ inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const
        f=2.*(1.-0.25*s/mpi2)*root*atan(1./root)-2.;
        f *=pre;
      }
-   Complex output=1.-s/mrho2-s/48/pi2/_fpi/_fpi*log(mrho2/mpi2)-f;
-   return output;
+   return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;
  }
 
 inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const
@@ -237,8 +100,7 @@ inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const
       _Oreal = new Interpolator(_Omnesfunctionreal,_Omnesenergy,3);
       _Oimag = new Interpolator(_Omnesfunctionimag,_Omnesenergy,3);
     }
-  Energy q=sqrt(s); Complex ii(0.,1.);
-  Complex output=(*_Oreal)(q)+ii*(*_Oimag)(q);
-  return output;
+  Energy q(sqrt(s)); Complex ii(0.,1.);
+  return (*_Oreal)(q)+ii*(*_Oimag)(q);
 }
 }

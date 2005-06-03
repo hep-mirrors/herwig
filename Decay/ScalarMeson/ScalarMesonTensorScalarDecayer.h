@@ -19,7 +19,7 @@ using namespace Herwig;
  *
  *  \f[\mathcal{M} = \epsilon^{\alpha\beta} p_{0\alpha} p_{2\beta} \f]
  *
- *  The incoming and outgoing mesons and the coupling can be specified using the
+ * The incoming and outgoing mesons and the coupling can be specified using the
  * interfaces.
  *
  * @see DecayIntegrator.
@@ -34,7 +34,7 @@ public:
   /**
    * Default constructor.
    */
-  inline ScalarMesonTensorScalarDecayer();
+  ScalarMesonTensorScalarDecayer();
 
   /**
    * Copy-constructor.
@@ -89,6 +89,11 @@ public:
    * @return True or False if this mode can be handled.
    */
   bool twoBodyMEcode(const DecayMode & dm, int & mecode, double & coupling) const;
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 public:
 
@@ -214,6 +219,11 @@ private:
    * the maximum weight for the decay
    */
   vector<double> _maxweight;
+
+  /**
+   *  initial number of modes
+   */
+  unsigned int _initsize;
 
 };
 

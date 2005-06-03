@@ -38,7 +38,7 @@ public:
   /**
    * Default constructor.
    */
-  inline PScalarPScalarVectorDecayer();
+  PScalarPScalarVectorDecayer();
 
   /**
    * Copy-constructor.
@@ -115,6 +115,11 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
 
 protected:
 
@@ -217,6 +222,11 @@ private:
    * the maximum weight for the decay
    */
   vector<double> _maxweight;
+
+  /**
+   *  initial number of modes
+   */
+  unsigned int _initsize;
 
 };
 

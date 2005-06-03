@@ -11,6 +11,7 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
+#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Helicity/EpsFunction.h"
@@ -25,28 +26,74 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+using Helicity::ScalarWaveFunction;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::EpsFunction;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
-using ThePEG::Helicity::tcScalarSpinPtr;
-using ThePEG::Helicity::tcFermionSpinPtr;
-using ThePEG::Helicity::ScalarSpinInfo;
-using ThePEG::Helicity::FermionSpinInfo;
-using ThePEG::Helicity::DiracRep;
-using ThePEG::Helicity::HaberDRep;
-using ThePEG::Helicity::HELASDRep;
-using ThePEG::Helicity::defaultDRep;
-using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
+
+void PScalar4FermionsDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check the parameters are consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoing1.size() || isize!=_outgoing2.size()||
+     isize!=_maxweight.size() || isize!=_includeVMD.size()|| isize!=_VMDid.size()    ||
+     isize!=_VMDmass.size()  || isize!=_VMDwidth.size())
+    {throw InitException() << "Inconsistent parameters in PScalar4FermionsDecayer"
+			   << Exception::abortnow;}
+  // create the integration channels for each mode 
+  PDVector extpart(5);
+  tPDPtr gamma=getParticleData(ParticleID::gamma);
+  DecayPhaseSpaceChannelPtr newchannel;
+  DecayPhaseSpaceModePtr mode;
+  vector<double> wgt;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      wgt.resize(1);wgt[0]=1.;
+      extpart[0] = getParticleData(_incoming[ix]);
+      extpart[1] = getParticleData( _outgoing1[ix]);
+      extpart[2] = getParticleData(-_outgoing1[ix]);
+      extpart[3] = getParticleData( _outgoing2[ix]);
+      extpart[4] = getParticleData(-_outgoing2[ix]);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      // first channel always need this
+      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+      newchannel->addIntermediate(extpart[0],0, 0.0,-1,-2);
+      newchannel->addIntermediate(gamma     ,1,-1.1, 1,2);
+      newchannel->addIntermediate(gamma     ,1,-1.1, 3,4);
+      mode->addChannel(newchannel);
+      if(_outgoing1[ix]==_outgoing2[ix])
+	{
+	  newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+	  newchannel->addIntermediate(extpart[0],0, 0.0,-1,-2);
+	  newchannel->addIntermediate(gamma     ,1,-1.1, 3,2);
+	  newchannel->addIntermediate(gamma     ,1,-1.1, 1,4);
+	  mode->addChannel(newchannel);
+	  wgt.resize(2);wgt[0]=0.5;wgt[1]=0.5;
+	}
+      else{wgt.resize(1);wgt[0]=1.;}
+      addMode(mode,_maxweight[ix],wgt);
+    }
+  // set up the values for the VMD factor if needed (copy the default mass and width 
+  //                                                 into the array)
+  for(unsigned ix=0;ix<isize;++ix)
+    {
+      if(_includeVMD[ix]==1)
+	{
+	  _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
+	  _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
+	}
+    }
+}
 
 PScalar4FermionsDecayer::~PScalar4FermionsDecayer() {}
 
 bool PScalar4FermionsDecayer::accept(const DecayMode & dm) const {
   // is this mode allowed
-  bool allowed=false;
+  bool allowed(false);
   // must be four outgoing particles
   if(dm.products().size()!=4){return allowed;}
   // get the id's of the outgoing particles
@@ -59,16 +106,15 @@ bool PScalar4FermionsDecayer::accept(const DecayMode & dm) const {
   // find the two lepton pairs
   // find the first fermion
   ix=0;
-  do 
-    {if(id[ix]>0&!done[ix]){done[ix]=true;idtemp=id[ix];}++ix;}
+  do{if(id[ix]>0&!done[ix]){done[ix]=true;idtemp=id[ix];}++ix;}
   while(ix<4&&idtemp<0);
   if(idtemp<0){return false;}
   // find its antiparticle
   ix=0;
-  do 
-    {if(id[ix]==-idtemp&!done[ix]){done[ix]=true;idl1=idtemp;}++ix;}
+  do{if(id[ix]==-idtemp&!done[ix]){done[ix]=true;idl1=idtemp;}++ix;}
   while(ix<4&&idl1<0);
   if(idl1<0){return false;}
+  // find the second particle antiparticle pair
   idtemp=-1;
   for(ix=0;ix<4;++ix){if(!done[ix]){idt[iy]=id[ix];++iy;}}
   if(idt[0]==-idt[1]){idl2=abs(idt[0]);}
@@ -146,11 +192,11 @@ void PScalar4FermionsDecayer::Init() {
 
   static ParVector<PScalar4FermionsDecayer,int> interfaceOutcoming2
     ("Outgoing2",
-     "The PDG code for the first outgoing fermion",
+     "The PDG code for the second outgoing fermion",
      &PScalar4FermionsDecayer::_outgoing2,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<PScalar4FermionsDecayer,double> interfaceCoupling
+  static ParVector<PScalar4FermionsDecayer,InvEnergy> interfaceCoupling
     ("Coupling",
      "The coupling for the decay mode",
      &PScalar4FermionsDecayer::_coupling,
@@ -195,158 +241,48 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
 				    const Particle & inpart,
 				    const ParticleVector & decay) const
 {
-  bool identical=(_outgoing1[imode()]==_outgoing2[imode()]);
-  // check if the decay particle has spin info 
-  tcScalarSpinPtr inspin;
-  if(inpart.spinInfo())
-    {inspin = dynamic_ptr_cast<tcScalarSpinPtr>(inpart.spinInfo());}
-  // if the spin info object exists use it
-  if(inspin)
-    {inspin->decayed(true);}
-  else if(inpart.spinInfo())
-    {throw DecayIntegratorError() << "Wrong type of spin info for the incoming particle"
-				  << " in PScalar4FermionsDecayer::me2()" 
-				  << Exception::abortnow;}
-  else
-    {
-      SpinPtr newspin=new_ptr(ScalarSpinInfo(inpart.momentum(),true));
-      inspin = dynamic_ptr_cast<tcScalarSpinPtr>(newspin);
-      inspin->decayed(true);
-      const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
-    }
-  // set up the spin info for the outgoing particles
-  tcFermionSpinPtr fspin[2],aspin[2];
-  if(vertex)
-    {
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  // for the fermions
-	  SpinPtr temp;
-	  temp=new_ptr(FermionSpinInfo(decay[2*ix]->momentum(),true));
-	  decay[2*ix]->spinInfo(temp);
-	  fspin[ix] = dynamic_ptr_cast<tcFermionSpinPtr>(temp);
-	  // for the antifermions
-	  temp=new_ptr(FermionSpinInfo(decay[2*ix+1]->momentum(),true));
-	  decay[2*ix+1]->spinInfo(temp);
-	  aspin[ix] =dynamic_ptr_cast<tcFermionSpinPtr>(temp);
-	}
-    }
-  // vectors containing the spinors
+  bool identical((_outgoing1[imode()]==_outgoing2[imode()]));
+  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  // vectors for the spinors
   vector<LorentzSpinor> wave[2];
   vector<LorentzSpinorBar> wavebar[2];
-  // calculate the spinor and antispinor
-  SpinorBarWaveFunction fwave[2] =
-    {SpinorBarWaveFunction(decay[0]->momentum(),decay[0]->dataPtr(),outgoing),
-     SpinorBarWaveFunction(decay[2]->momentum(),decay[2]->dataPtr(),outgoing)};
-  SpinorWaveFunction awave[2] = 
-    {SpinorWaveFunction(decay[1]->momentum(),decay[1]->dataPtr(),outgoing),
-     SpinorWaveFunction(decay[3]->momentum(),decay[3]->dataPtr(),outgoing)};
+  // set up the spin info for the outgoing particles
   for(unsigned int ix=0;ix<2;++ix)
     {
-      for(int iy=-1;iy<2;iy+=2)
-	{
-	  // spinor for the fermions
-	  fwave[ix].reset(iy);
-	  wavebar[ix].push_back(fwave[ix].Wave());
-	  if(vertex){fspin[ix]->setBasisState(iy,wavebar[ix][(iy+1)/2].bar());}
-	  // spinorbar for the antifermion
-	  awave[ix].reset(iy);
-	  wave[ix].push_back(awave[ix].Wave());
-	  if(vertex){aspin[ix]->setBasisState(iy,wave[ix][(iy+1)/2]);}
-	}
+      SpinorBarWaveFunction(wavebar[ix],decay[2*ix  ],outgoing,true,vertex);
+      SpinorWaveFunction   (   wave[ix],decay[2*ix+1],outgoing,true,vertex);
     }
   // momenta of the outgoing photons
   Lorentz5Momentum momentum[4];
-  momentum[0]=decay[0]->momentum()+decay[1]->momentum();
-  momentum[1]=decay[2]->momentum()+decay[3]->momentum();
-  momentum[0].rescaleMass();
-  momentum[1].rescaleMass();
+  momentum[0]=decay[0]->momentum()+decay[1]->momentum();momentum[0].rescaleMass();
+  momentum[1]=decay[2]->momentum()+decay[3]->momentum();momentum[1].rescaleMass();
   if(identical)
     {
-      momentum[2]=decay[2]->momentum()+decay[1]->momentum();
-      momentum[3]=decay[0]->momentum()+decay[3]->momentum();
-      momentum[2].rescaleMass();
-      momentum[3].rescaleMass();
+      momentum[2]=decay[2]->momentum()+decay[1]->momentum();momentum[2].rescaleMass();
+      momentum[3]=decay[0]->momentum()+decay[3]->momentum();momentum[3].rescaleMass();
     }
   // compute the currents for the two leptonic decays
   LorentzPolarizationVector current[4][2][2];
-  Complex ii(0.,1.);
-  Complex s1s4,s2s3,s3s2,s4s1,s1s3,s2s4,s3s1,s4s2;
-  unsigned int it;
-  for(unsigned int iz=0;iz<2;++iz)
+  unsigned int it,ix,iy,iz;
+  for(iz=0;iz<2;++iz)
     {
       if(iz==0){it=1;}
       else{it=0;}
-      for(unsigned int ix=0;ix<2;++ix)
+      for(ix=0;ix<2;++ix)
 	{
-	  for(unsigned int iy=0;iy<2;++iy)
+	  for(iy=0;iy<2;++iy)
 	    {
-	      // first two currents
-	      s1s4 = wavebar[iz][iy].s1()*wave[iz][ix].s4();
-	      s2s3 = wavebar[iz][iy].s2()*wave[iz][ix].s3();
-	      s3s2 = wavebar[iz][iy].s3()*wave[iz][ix].s2();
-	      s4s1 = wavebar[iz][iy].s4()*wave[iz][ix].s1();
-	      s1s3 = wavebar[iz][iy].s1()*wave[iz][ix].s3();
-	      s2s4 = wavebar[iz][iy].s2()*wave[iz][ix].s4();
-	      s3s1 = wavebar[iz][iy].s3()*wave[iz][ix].s1();
-	      s4s2 = wavebar[iz][iy].s4()*wave[iz][ix].s2();
-	      // calculate the current
-	      if(defaultDRep==HaberDRep)
-		{
-		  current[iz][iy][ix][0] =       s1s4+s2s3-s3s2-s4s1;
-		  current[iz][iy][ix][1] =  -ii*(s1s4-s2s3-s3s2+s4s1);
-		  current[iz][iy][ix][2] =       s1s3-s2s4-s3s1+s4s2;
-		  current[iz][iy][ix][3] = 
-		    +wavebar[iz][iy].s1()*wave[iz][ix].s1()
-		    +wavebar[iz][iy].s2()*wave[iz][ix].s2()
-		    -wavebar[iz][iy].s3()*wave[iz][ix].s3()
-		    -wavebar[iz][iy].s4()*wave[iz][ix].s4();
-		}
-	      else
-		{
-		  current[iz][iy][ix][0] =      s1s4+s2s3-s3s2-s4s1;
-		  current[iz][iy][ix][1] = -ii*(s1s4-s2s3-s3s2+s4s1);
-		  current[iz][iy][ix][2] =      s1s3-s2s4-s3s1+s4s2;
-		  current[iz][iy][ix][3] =      s1s3+s2s4+s3s1+s4s2;
-		}
+	      current[iz][iy][ix] = wave[iz][ix].vectorCurrent(wavebar[iz][iy]);
 	      // the second two currents      
 	      if(identical)
-		{
-		  s1s4 = wavebar[iz][iy].s1()*wave[it][ix].s4();
-		  s2s3 = wavebar[iz][iy].s2()*wave[it][ix].s3();
-		  s3s2 = wavebar[iz][iy].s3()*wave[it][ix].s2();
-		  s4s1 = wavebar[iz][iy].s4()*wave[it][ix].s1();
-		  s1s3 = wavebar[iz][iy].s1()*wave[it][ix].s3();
-		  s2s4 = wavebar[iz][iy].s2()*wave[it][ix].s4();
-		  s3s1 = wavebar[iz][iy].s3()*wave[it][ix].s1();
-		  s4s2 = wavebar[iz][iy].s4()*wave[it][ix].s2();
-		  // calculate the current
-		  if(defaultDRep==HaberDRep)
-		    {
-		      current[iz+2][iy][ix][0] =       s1s4+s2s3-s3s2-s4s1;
-		      current[iz+2][iy][ix][1] =  -ii*(s1s4-s2s3-s3s2+s4s1);
-		      current[iz+2][iy][ix][2] =       s1s3-s2s4-s3s1+s4s2;
-		      current[iz+2][iy][ix][3] = 
-			+wavebar[it][iy].s1()*wave[iz][ix].s1()
-			+wavebar[it][iy].s2()*wave[iz][ix].s2()
-			-wavebar[it][iy].s3()*wave[iz][ix].s3()
-			-wavebar[it][iy].s4()*wave[iz][ix].s4();
-		    }
-		  else
-		    {
-		      current[iz+2][iy][ix][0] =      s1s4+s2s3-s3s2-s4s1;
-		      current[iz+2][iy][ix][1] = -ii*(s1s4-s2s3-s3s2+s4s1);
-		      current[iz+2][iy][ix][2] =      s1s3-s2s4-s3s1+s4s2;
-		      current[iz+2][iy][ix][3] =      s1s3+s2s4+s3s1+s4s2;
-		    }
-		}
+		{current[iz+2][iy][ix] = wave[it][ix].vectorCurrent(wavebar[iz][iy]);}
 	    }
 	}
     }
   // invariants
   Energy m12(momentum[0].mass()*momentum[0].mass());
   Energy m34(momentum[1].mass()*momentum[1].mass()),m14(0.),m23(0.);
-  Complex prop1(1./m12/m34),prop2(0.);
+  Complex prop1(1./m12/m34),prop2(0.),ii(0.,1.);
   if(identical)
     {
       m14=momentum[2].mass()*momentum[2].mass();
@@ -356,8 +292,8 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
   // the VMD factor if needed
   if(_includeVMD[imode()]>0)
     {
-      Energy2 mrho2=_VMDmass[imode()]*_VMDmass[imode()];
-      Energy2 mwrho=_VMDmass[imode()]*_VMDwidth[imode()];
+      Energy2 mrho2(_VMDmass[imode()]*_VMDmass[imode()]);
+      Energy2 mwrho(_VMDmass[imode()]*_VMDwidth[imode()]);
       prop1*= 
 	(-mrho2+ii*mwrho)/(m12-mrho2+ii*mwrho)*
 	(-mrho2+ii*mwrho)/(m34-mrho2+ii*mwrho);
@@ -367,34 +303,31 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
 	    (-mrho2+ii*mwrho)/(m23-mrho2+ii*mwrho);}
     }
   // prefactor
-  Complex pre=_coupling[imode()]*4.*pi*SM().alphaEM()*inpart.mass(),diag;
+  Complex pre(_coupling[imode()]*4.*pi*SM().alphaEM()*inpart.mass()),diag;
   // now compute the matrix element
   LorentzPolarizationVector eps;
-  vector<int> ispin(4,2);
-  DecayMatrixElement newME(1,ispin);
-  ispin.resize(5);ispin[0]=0;
-  for(unsigned int if1=0;if1<2;++if1)
+  DecayMatrixElement newME(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
+			   PDT::Spin1Half,PDT::Spin1Half);
+  vector<unsigned int> ispin(5,0);
+  for(ispin[1]=0; ispin[1]<2;++ispin[1])
     {
-      ispin[1]=2*if1-1;
-      for(unsigned int if2=0;if2<2;++if2)
+      for(ispin[2]=0;ispin[2]<2;++ispin[2])
 	{
-	  ispin[2]=2*if2-1;
-	  for(unsigned int ia1=0;ia1<2;++ia1)
+	  for(ispin[3]=0;ispin[3]<2;++ispin[3])
 	    {
-	      ispin[3]=2*ia1-1;
-	      for(unsigned int ia2=0;ia2<2;++ia2)
+	      for(ispin[4]=0;ispin[4]<2;++ispin[4])
 		{
-		  ispin[4]=2*ia2-1;
 		  // the first diagram
-		  eps = EpsFunction::product(current[0][if1][ia1],momentum[1],
-					     current[1][if2][ia2]);
+		  eps = EpsFunction::product(current[0][ispin[1]][ispin[2]],momentum[1],
+					     current[1][ispin[3]][ispin[4]]);
 		  diag = prop1*(eps*momentum[0]);
 		  // exchanged diagram if identical particles
 		  //  (sign due normal ordering) 
 	          if(identical)
 		    {
-		      eps = EpsFunction::product(current[2][if1][ia2],momentum[3],
-						 current[3][if2][ia1]);
+		      eps = EpsFunction::product(current[2][ispin[1]][ispin[4]],
+						 momentum[3],
+						 current[3][ispin[3]][ispin[2]]);
 		      diag-= prop2*(eps*momentum[2]);
 		    }
 		  newME(ispin)=pre*diag;
@@ -403,9 +336,65 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
 	}
     }
   ME(newME);
-  RhoDMatrix rhoin=RhoDMatrix(1);rhoin.average();
+  RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);rhoin.average();
   double me=newME.contract(rhoin).real();
   if(identical){me*=0.25;}
   return me;
+}
+
+// output the setup info for the particle database
+void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output)
+{
+  output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      if(ix<_initsize)
+	{
+	  output << "set " << fullName() << ":Incoming   " << ix << " " 
+		 << _incoming[ix]   << "\n";
+	  output << "set " << fullName() << ":Outgoing1  " << ix << " " 
+		 << _outgoing1[ix]  << "\n";
+	  output << "set " << fullName() << ":Outgoing2  " << ix << " " 
+		 << _outgoing2[ix]  << "\n";
+	  output << "set " << fullName() << ":Coupling   " << ix << " " 
+		 << _coupling[ix]   << "\n";
+	  output << "set " << fullName() << ":MaxWeight  " << ix << " " 
+		 << _maxweight[ix]  << "\n";
+	  output << "set " << fullName() << ":IncludeVMD " << ix << " " 
+		 << _includeVMD[ix] << "\n";
+	  output << "set " << fullName() << ":VMDID      " << ix << " " 
+		 << _VMDid[ix]      << "\n";
+	  output << "set " << fullName() << ":VMDmass    " << ix << " " 
+		 << _VMDmass[ix]    << "\n";
+	  output << "set " << fullName() << ":VMDwidth   " << ix << " " 
+		 << _VMDwidth[ix]   << "\n";
+	}
+      else
+	{
+	  output << "insert " << fullName() << ":Incoming   " << ix << " " 
+		 << _incoming[ix]   << "\n";
+	  output << "insert " << fullName() << ":Outgoing1  " << ix << " " 
+		 << _outgoing1[ix]  << "\n";
+	  output << "insert " << fullName() << ":Outgoing2  " << ix << " " 
+		 << _outgoing2[ix]  << "\n";
+	  output << "insert " << fullName() << ":Coupling   " << ix << " " 
+		 << _coupling[ix]   << "\n";
+	  output << "insert " << fullName() << ":MaxWeight  " << ix << " " 
+		 << _maxweight[ix]  << "\n";
+	  output << "insert " << fullName() << ":IncludeVMD " << ix << " " 
+		 << _includeVMD[ix] << "\n";
+	  output << "insert " << fullName() << ":VMDID      " << ix << " " 
+		 << _VMDid[ix]      << "\n";
+	  output << "insert " << fullName() << ":VMDmass    " << ix << " " 
+		 << _VMDmass[ix]    << "\n";
+	  output << "insert " << fullName() << ":VMDwidth   " << ix << " " 
+		 << _VMDwidth[ix]   << "\n";
+	}
+    }
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 }

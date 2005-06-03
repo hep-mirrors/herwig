@@ -25,8 +25,8 @@ using namespace ThePEG;
  *   -E(s,t,u)\left[-\epsilon_1\cdot\epsilon_2p\cdot q_1p\cdot q_2
  *                  -\epsilon_1\cdot p\epsilon_2\cdot p q_1\cdot q_2
  *                  +\epsilon_1\cdot q_2 \epsilon_2\cdot  p  p\cdot q_1
- *                  +\epsilon_1\cdot  p  \epsilon_2\cdot q_1 p\cdot q_2,
- *\right]
+ *                  +\epsilon_1\cdot  p  \epsilon_2\cdot q_1 p\cdot q_2
+ *\right],
  *  \f]
  *  where \f$q_{1,2}\f$ are the momenta of the photons, \f$\epsilon_{1,2}\f$ are
  *  the polarization vectors of the photons, \f$p\f$ is the momentum of the decaying
@@ -131,6 +131,11 @@ public:
   virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
 					Energy2 s1,Energy m1,Energy m2,Energy m3);
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -185,7 +190,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -232,7 +237,8 @@ private:
 private:
 
   /**
-   * The coupling \f$g_{\omega\rho\pi}\f$ of the \f$\rho\f$ to \f$\omega\f$ and a \f$\pi\f$.
+   * The coupling \f$g_{\omega\rho\pi}\f$ of the \f$\rho\f$ to \f$\omega\f$ and
+   * a \f$\pi\f$.
    */
   InvEnergy _grhoomega;
 

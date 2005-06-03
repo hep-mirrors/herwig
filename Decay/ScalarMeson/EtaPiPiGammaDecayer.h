@@ -21,14 +21,14 @@ using namespace ThePEG;
  * form of the Omnes function taken from hep-ph/0112150.
  *
  * The matrix element is given by
- * \f[\mathcal{M} = B(s_{+-},s_{+\gamma},s_{-\gamma})\epsilon^{\mu\nu\alpha\beta}\epsilon^*_{\mu}p_{+\nu}p_{-\alpha}k_{\gamma\beta}\f]
+ * \f[\mathcal{M} = B(s_{+-},s_{+\gamma},s_{-\gamma})\epsilon^{\mu\nu\alpha\beta}\epsilon^*_{\mu}p_{+\nu}p_{-\alpha}p_{\gamma\beta}\f]
  * where \f$p_{+,-}\f$ are the momenta of the positively and negatively charged pions,
  * \f$p_{\gamma}\f$ is the momentum of the photon and \f$s_{ij} = (p_i+p_j)^2\f$.
  *
  *  The different models take
  *
  *  \f[B(s_{+-},s_{+\gamma},s_{-\gamma}) = 
- *  B_0\left(1+\frac32\frac{s_{+-}}{M^2_\rho-s_{+-}-iM\rho\Gamma_\rho(s_{+-})}\right)\f]
+ *  B_0\left(1+\frac32\frac{s_{+-}}{M^2_\rho-s_{+-}-iM_\rho\Gamma_\rho(s_{+-})}\right)\f]
  *  where \f$M_\rho\f$ and \f$\Gamma_\rho\f$ are the mass and running width 
  *  of the \f$\rho\f$
  *  respectively for the VMD model.
@@ -41,8 +41,7 @@ using namespace ThePEG;
  *  taken from hep-ph/0112150 can be used.
  *
  *  The coefficient \f$B_0\f$ is given in hep-ph/0112150. We use the values from this
- *  paper.
- *
+ *  paper and use their default choice \f$c=1\f$, \f$a=\frac1{2M_\rho}\f$.
  *
  * @see DecayIntegrator
  * 
@@ -56,7 +55,7 @@ public:
   /**
    * Default constructor.
    */
-  inline EtaPiPiGammaDecayer();
+  EtaPiPiGammaDecayer();
 
   /**
    * Copy-constructor.
@@ -125,6 +124,11 @@ public:
   virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
 					Energy2 s1,Energy m1,Energy m2,Energy m3);
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -179,7 +183,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -314,12 +318,12 @@ private:
   /**
    * Real part of the Omnes function for the interpolation table
    */
-  vector<double> _Omnesfunctionreal;
+  vector<InvEnergy2> _Omnesfunctionreal;
 
   /**
    * Imaginary part of the Omnes function for the interpolation table
    */
-  vector<double> _Omnesfunctionimag;
+  vector<InvEnergy2> _Omnesfunctionimag;
 
   /**
    * set up of the interpolation table
@@ -329,13 +333,22 @@ private:
   /**
    * Number of points for the intepolation of the experimental Omnes function
    */
-  int _npoints;
+  unsigned int _npoints;
 
   /**
    * Interpolators for the experimental Omnes function.
    */
   mutable Interpolator *_Oreal,*_Oimag;
 
+  /**
+   *  Cut-off parameter for the integral of the experimental function
+   */ 
+  Energy _epscut;
+
+  /**
+   *  size parameters for the output
+   */
+  unsigned int _nsize[2];
  };
 
 }

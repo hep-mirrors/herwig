@@ -43,57 +43,6 @@ inline void SemiLeptonicScalarDecayer::doupdate() throw(UpdateException) {
   // Touch if anything has changed.
 }
 
-inline void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
-  DecayIntegrator::doinit();
-  // make sure the current got initialised
-  _current->init();
-  // and the form factors
-  _form->init();
-  // the channels
-  PDVector extpart,ptemp;
-  _modemap.resize(0);
-  double maxweight;
-  vector<double> channelwgts(1,1.);
-  int id0(0),id1(0),Wcharge(0);
-  Energy min;
-  DecayPhaseSpaceModePtr mode;
-  DecayPhaseSpaceChannelPtr channel;
-  for(unsigned int ix=0;ix<_form->numberOfFactors();++ix)
-    {
-      // get the external particles for this mode
-      extpart.resize(2);
-      _form->particleID(ix,id0,id1);
-      extpart[0]=getParticleData(id0);
-      extpart[1]=getParticleData(id1);
-      Wcharge =(extpart[0]->iCharge()-extpart[1]->iCharge());
-      min = extpart[0]->mass()+extpart[0]->widthUpCut()
-	-extpart[1]->mass()+extpart[1]->widthLoCut();
-      _modemap.push_back(numberModes());
-      int iq,ia;
-      for(unsigned int iy=0;iy<_current->numberOfModes();++iy)
-	{
-	  extpart.resize(2); 	
-	  _current->decayModeInfo(iy,iq,ia);
-	  ptemp=_current->particles(Wcharge,iy,iq,ia);
-	  for(unsigned int iz=0;iz<ptemp.size();++iz){extpart.push_back(ptemp[iz]);}
-	  // create the mode
-	  mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-	  // create the first piece of the channel
-	  channel = new_ptr(DecayPhaseSpaceChannel(mode));
-	  channel->addIntermediate(extpart[0],0,0.0,-1,1);
-	  bool done=_current->createMode(Wcharge,iy,mode,2,1,channel,min);
-	  if(done)
-	    {
-	      // the maximum weight
-	      if(_maxwgt.size()>numberModes()){maxweight=_maxwgt[numberModes()];}
-	      else{maxweight=2.;}
-	      channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
-	      addMode(mode,maxweight,channelwgts);
-	    }
-	}
-    }
-}
-  
 inline void SemiLeptonicScalarDecayer::dofinish() {
   DecayIntegrator::dofinish();
 }
@@ -105,6 +54,10 @@ inline void SemiLeptonicScalarDecayer::doinitrun() {
   _maxwgt.resize(0);
   for(unsigned int ix=0;ix<numberModes();++ix)
     {_maxwgt.push_back(mode(ix)->maxWeight());}
+  string file_name;
+  file_name  = name()+".output";
+  ofstream output(file_name.c_str());
+  dataBaseOutput(output);
 }
 
 inline void SemiLeptonicScalarDecayer::rebind(const TranslationMap & trans)

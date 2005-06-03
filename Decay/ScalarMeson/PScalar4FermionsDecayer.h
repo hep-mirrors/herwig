@@ -89,6 +89,11 @@ public:
   double me2(bool vertex, const int ichan,const Particle & part,
 	     const ParticleVector & decay) const;
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -143,7 +148,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -192,7 +197,7 @@ private:
   /**
    * coupling for a decay
    */
-  vector<double> _coupling;
+  vector<InvEnergy> _coupling;
 
   /**
    * the PDG codes for the incoming particle
@@ -234,6 +239,10 @@ private:
    */
   vector<Energy> _VMDwidth;
 
+  /**
+   *  initial number of modes
+   */
+  unsigned int _initsize;
 };
 
 }

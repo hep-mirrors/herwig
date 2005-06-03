@@ -13,14 +13,14 @@ using namespace ThePEG;
 /** \ingroup Decay
  *
  * The <code>EtaPiPiPiDecayer</code> class is designed for the simulation of
- * the decay of the \f$\eta\f$ or \f$eta'\f$ to either \f$\pi^+\pi^-\pi^0\f$ 
- * or \f$\pi^0\pi^0\pi^0\f$ and the decay of the \f$eta'\f$ to 
+ * the decay of the \f$\eta\f$ or \f$\eta'\f$ to either \f$\pi^+\pi^-\pi^0\f$ 
+ * or \f$\pi^0\pi^0\pi^0\f$ and the decay of the \f$\eta'\f$ to 
  * \f$\pi^+\pi^-\eta\f$ or \f$\pi^0\pi^0\eta\f$
  *
  *  The matrix element takes the form 
- * \f[ \mathcal{M} = g\left[1+ay+by^2+cx^2\right],\f]
+ * \f[ |\mathcal{M}|^2 = N\left[1+ay+by^2+cx^2\right],\f]
  *  where 
- * \f[x = \frac{\sqrt{3}(t-u)}{2M_0(M_0-m_1-m_2-m_3)},\f]
+ * \f[x = \frac{\sqrt{3}(u-t)}{2M_0(M_0-m_1-m_2-m_3)},\f]
  * \f[y = \frac{(m_1+m_2+m_3)((M_0-m_3)^2-s)}{2M_0(m_1+m_2)(M_0-m_1-m_2-m_3)}-1,\f]
  *  where 
  * - \f$m_{1,2,3}\f$ are the masses of the outgoing mesons
@@ -45,7 +45,7 @@ public:
   /**
    * Default constructor.
    */
-  inline EtaPiPiPiDecayer();
+  EtaPiPiPiDecayer();
 
   /**
    * Copy-constructor.
@@ -111,6 +111,11 @@ public:
   virtual double threeBodydGammads(int imode,Energy q2, Energy2 s,Energy m1,Energy m2,
 				   Energy m3);
 
+  /**
+   * Output the setup information for the particle database
+   */
+  void dataBaseOutput(ofstream &);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -165,7 +170,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -241,6 +246,10 @@ private:
    */
   vector<double> _maxweight;
 
+  /**
+   *  Initial size of the vectors
+   */
+  unsigned int _initsize;
 };
 
 }
