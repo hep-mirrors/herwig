@@ -9,7 +9,6 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/EnumParticles.h"
->>>>>>> 1.2
 #include "ISGWFormFactor.fh"
 #include "ThePEG/Repository/EventGenerator.h"
 
