@@ -1,0 +1,28 @@
+bin_PROGRAMS = Herwig++
+Herwig___SOURCES = Herwig++.cc
+Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS) $(CLHEPLDFLAGS)
+Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) $(CLHEPLIB) -ldl
+
+dist_pkgdata_DATA = \
+Decays.in LHC.in Hadronization.in \
+HerwigDefaults.in   Shower.in \
+HerwigParticles.in  SMWZDecays.in \
+Hw64Decays.in       ThePEGParticles.in \
+LEPbb.in            UnderlyingEvent.in \
+LEP.in Herwig++.cc Herwig.Makefile  \
+SMWZDecays.in Model.in \
+StandardModelVertices.in
+
+CLEANFILES = HerwigDefaults.rpo LEP.run LEP.log LEP.out
+
+myENV= HERWIG_USER_MODULES=$(top_builddir)/lib
+
+check-local:
+	$(myENV) ./Herwig++ init
+	$(myENV) ./Herwig++ read LEP.in 
+	$(myENV) ./Herwig++ run LEP.run -N10
+
+install-data-hook:
+	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.in
+	sed -e s:../PDF/mrst:$(DESTDIR)$(pkgdatadir)/PDF/mrst:g \
+          $(srcdir)/HerwigDefaults.in > $(DESTDIR)$(pkgdatadir)/HerwigDefaults.in

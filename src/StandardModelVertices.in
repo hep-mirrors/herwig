@@ -1,0 +1,71 @@
+# create the Standard Model fermion-antifermion Z vertex
+create /Herwig++/Helicity/SMFFZVertex FFZVertex
+set /Defaults/Model:Vertex/FFZ FFZVertex
+set FFZVertex:StandardModel /Defaults/Model
+# create the Standard Model fermion-antiferion W vertex
+create /Herwig++/Helicity/SMFFWVertex FFWVertex
+set /Defaults/Model:Vertex/FFW FFWVertex
+set FFWVertex:StandardModel /Defaults/Model
+set FFWVertex:CKM /Defaults/CKM
+# create the standard model fermion-fermion higgs vertex
+create /Herwig++/Helicity/SMFFHVertex FFHVertex
+set /Defaults/Model:Vertex/FFH FFHVertex
+set FFHVertex:StandardModel /Defaults/Model
+# create the Standard Model quark-antiquark-gluon vertex
+create /Herwig++/Helicity/SMFFGVertex FFGVertex
+set /Defaults/Model:Vertex/FFG FFGVertex
+set FFGVertex:StandardModel /Defaults/Model
+# create the standard model fermion-antifermion gamma vertex
+create /Herwig++/Helicity/SMFFPVertex FFPVertex
+set /Defaults/Model:Vertex/FFP FFPVertex
+set FFPVertex:StandardModel /Defaults/Model
+# create the Standard Model triple gluon vertex
+create /Herwig++/Helicity/SMGGGVertex GGGVertex
+set /Defaults/Model:Vertex/GGG GGGVertex
+set GGGVertex:StandardModel /Defaults/Model
+# create the standartd model 4-gluon vertex
+create /Herwig++/Helicity/SMGGGGVertex GGGGVertex
+set /Defaults/Model:Vertex/GGGG GGGGVertex
+set GGGGVertex:StandardModel /Defaults/Model
+# create the standard model WWH vertex
+create /Herwig++/Helicity/SMWWHVertex WWHVertex
+set /Defaults/Model:Vertex/WWH WWHVertex
+set WWHVertex:StandardModel /Defaults/Model
+# create the standard model WWW vertex
+create /Herwig++/Helicity/SMWWWVertex WWWVertex
+set /Defaults/Model:Vertex/WWW WWWVertex
+set WWWVertex:StandardModel /Defaults/Model
+# create the standard model WWWW vertex
+create /Herwig++/Helicity/SMWWWWVertex WWWWVertex
+set /Defaults/Model:Vertex/WWWW WWWWVertex
+set WWWWVertex:StandardModel /Defaults/Model
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

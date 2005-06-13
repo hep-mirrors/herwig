@@ -375,7 +375,7 @@ convertToShowerParticles(const tEHPtr ch,
   //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
   //			   ch->currentStep()->particles().end());
   ShowerParticlePtr part;
-  
+  /*  
   if(ch->lastPartons().first ) {
     part = ptr_new<ShowerParticlePtr>(*ch->lastPartons().first);
     if ( part ) {
@@ -396,7 +396,7 @@ convertToShowerParticles(const tEHPtr ch,
       hardProcessParticles.push_back(part); 
     }
   }
-
+  */
   // Outgoing (final state) particles, excluding the beam remnants. 
   // Notice that we don't need to set true the flag ShowerParticle::isFinalState 
   // because it is set true by default. 

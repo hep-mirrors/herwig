@@ -1,0 +1,19 @@
+This subdirectory is based on the Looptools package available at
+http://www.feynarts.de/looptools/ 
+
+From their website, it seems that Looptools is licensed under the LGPL, 
+although the tarball itself does not contain a reference to it.
+
+For reference, we have added the LGPL in the file COPYING.Looptools.
+Note that this licence only applies to the Looptools subdirectory.
+
+Our changes to LoopTools21.tar.gz are listed here:
+
+* include/clooptools.h completely rewritten
+* added Makefile.am; creates libHwLooptools.so
+* not compiling ff/ffcb2.f ; breaks with undefined symbols
+* added tester.cc: a quick test whether c++ linking works
+
+
+-- 
+2005-06-13 David Grellscheid <david.grellscheid@durham.ac.uk>

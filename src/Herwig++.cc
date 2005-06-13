@@ -19,6 +19,7 @@ int main(int argc, char * argv[]) {
 	// Then do analysis
 	std::cout << "Generated event: " << i+1 << " of " << hw.getN() << "\r" << std::flush;
       }
+      hw.eventGenerator()->finalize();
     } else if(hw.isRunMode()) {
       std::cout << "Error: Expecting a run but there is no EventGenerator!\n"
 		<< std::endl;

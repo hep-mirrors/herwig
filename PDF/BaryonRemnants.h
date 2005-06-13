@@ -59,6 +59,17 @@ public:
 				    Energy2 scale,
 				    const LorentzMomentum & p) const;
 
+
+  // temporary fix here! Need to decide whether to inherit from 
+  // ThePEG::BaryonRemnant?
+  virtual Lorentz5Momentum generate(PartonBinInstance & pb, const double * r,
+				    Energy2 scale, Energy2 ,
+				    const LorentzMomentum & parent) const
+  {
+    return generate(pb,r,scale,parent);
+  }
+  
+
   virtual void createRemnants(PartonBinInstance &) const;
 
 public:

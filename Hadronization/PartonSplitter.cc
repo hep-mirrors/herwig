@@ -61,7 +61,7 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     generator()->log() << *pstep;
     generator()->log() << "################################################\n";
   }
-  cout << "Splitting\n";
+  //  cout << "Splitting\n";
   // Loop over all of the particles in the event.
   for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
     if ( (**pit).data().id() == ParticleID::g ) {     // gluon

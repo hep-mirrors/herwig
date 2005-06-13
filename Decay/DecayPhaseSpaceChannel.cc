@@ -287,7 +287,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
 }
 
 // output the information to a stream
-ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceChannel & channel)
+ostream & operator<<(ostream & os, const DecayPhaseSpaceChannel & channel)
 {
   // output of the external particles
   os << "Channel for the decay of " << channel._mode->externalParticles(0)->PDGName() 

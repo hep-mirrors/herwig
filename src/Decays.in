@@ -41,3 +41,5 @@ read Hw64Decays.in
 # new modes overridden.
 #
 # e.g. read MyImprovedDecays.in
+#
+#read SMWZDecays.in

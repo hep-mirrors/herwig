@@ -1,0 +1,3 @@
+pkglib_LTLIBRARIES = libHwTMDecay.la
+libHwTMDecay_la_SOURCES = \
+TensorMeson2PScalarDecayer.cc TensorMeson2PScalarDecayer.h TensorMeson2PScalarDecayer.icc TensorMesonDecayerBase.cc TensorMesonDecayerBase.h TensorMesonDecayerBase.icc TensorMesonVectorPScalarDecayer.cc TensorMesonVectorPScalarDecayer.h TensorMesonVectorPScalarDecayer.icc TensorMesonVectorVectorDecayer.cc TensorMesonVectorVectorDecayer.h TensorMesonVectorVectorDecayer.icc

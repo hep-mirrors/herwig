@@ -1,0 +1,4 @@
+.cvsignore .svn Makefile
+*.lo *.la .libs .deps
+Makefile.in
+Herwig++ done-all-links

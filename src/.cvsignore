@@ -1,0 +1,4 @@
+.cvsignore .svn Makefile Herwig++ HerwigDefaults.rpo LEP.log LEP.out LEP.run
+*.lo *.la .libs .deps
+Makefile.in
+LEP.tex

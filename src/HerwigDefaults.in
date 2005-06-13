@@ -19,13 +19,7 @@ read HerwigParticles.in
 # Make some default things
 create ThePEG::ThePEGStrategy /Defaults/ThePEGStrategy ThePEGStrategy.so
 create ThePEG::StandardRandom /Defaults/Random
-create ThePEG::StandardModelBase /Defaults/StandardModel
-create ThePEG::O1AlphaS /Defaults/AlphaS O1AlphaS.so
-set /Defaults/StandardModel:QCD/RunningAlphaS /Defaults/AlphaS
-create ThePEG::SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
-set /Defaults/StandardModel:EW/RunningAlphaEM /Defaults/AlphaEM
-create ThePEG::StandardCKM /Defaults/CKM StandardCKM.so
-set /Defaults/StandardModel:EW/CKM /Defaults/CKM
+read Model.in
 create ThePEG::ACDCSampler /Defaults/ACDCSampler ACDCSampler.so
 set /Defaults/ACDCSampler:Margin  1.1
 # Create NoPDF and RemnantHandlers
@@ -169,7 +163,7 @@ set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/the
 cd /Defaults/Generators
 create ThePEG::EventGenerator LEPGenerator
 set LEPGenerator:RandomNumberGenerator /Defaults/Random
-set LEPGenerator:StandardModelParameters /Defaults/StandardModel
+set LEPGenerator:StandardModelParameters /Defaults/Model
 set LEPGenerator:EventHandler /Defaults/Handlers/LEPHandler
 create ThePEG::KinematicalCuts EECuts
 set EECuts:LeptonMatcher /Defaults/Matchers/MatchLepton
@@ -179,7 +173,7 @@ set LEPGenerator:EventHandler:Cuts EECuts
 # And the LHCGenerator
 create ThePEG::EventGenerator LHCGenerator
 set LHCGenerator:RandomNumberGenerator /Defaults/Random
-set LHCGenerator:StandardModelParameters /Defaults/StandardModel
+set LHCGenerator:StandardModelParameters /Defaults/Model
 set LHCGenerator:EventHandler /Defaults/Handlers/LHCHandler
 create ThePEG::KinematicalCuts QCDCuts
 set QCDCuts:LeptonMatcher /Defaults/Matchers/MatchLepton

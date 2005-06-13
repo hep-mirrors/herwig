@@ -21,21 +21,15 @@ You should have received a copy of the GNU Library General Public
 License along with this library; if not, write to the Free Software
 Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
-#ifdef __GNUG__
-#pragma implementation
-#endif
-#include <iostream>
-#include "SmplHist.h"
-#include <math.h>
 
-#ifndef HUGE_VAL
-#ifdef HUGE
-#define HUGE_VAL HUGE
-#else
-#include <float.h>
-#define HUGE_VAL DBL_MAX
-#endif
-#endif
+#include <iostream>
+#include <limits>
+#include <cmath>
+#include "SmplHist.h"
+
+namespace {
+  const double myHUGE_VAL = std::numeric_limits<double>::max();
+}
 
 using std::ostream;
 using std::cout;   
@@ -74,7 +68,7 @@ SampleHistogram::SampleHistogram(double low, double high, double width)
 	bucketLimit[i] = lim;
 	lim += width;
     }
-    bucketLimit[howManyBuckets-1] = HUGE_VAL;	/* from math.h */
+    bucketLimit[howManyBuckets-1] = myHUGE_VAL;	/* from math.h */
 }
 
 SampleHistogram::SampleHistogram(double loVals[], int size)
@@ -86,7 +80,7 @@ SampleHistogram::SampleHistogram(double loVals[], int size)
     bucketCount[i] = 0;
     bucketLimit[i] = loVals[i];
   }
-  bucketLimit[howManyBuckets-1] = HUGE_VAL;	/* from math.h */
+  bucketLimit[howManyBuckets-1] = myHUGE_VAL;	/* from math.h */
 }
 
 SampleHistogram::~SampleHistogram()
@@ -122,7 +116,7 @@ void
 SampleHistogram::printBuckets(ostream& s)
 {
     for(int i = 0; i < howManyBuckets; i++) {
-	if (bucketLimit[i] >= HUGE_VAL) {
+	if (bucketLimit[i] >= myHUGE_VAL) {
 	    s << "< max : " << bucketCount[i] << "\n";
 	} else {
 	    s << "< " << bucketLimit[i] << " : " << bucketCount[i] << "\n";

@@ -192,7 +192,7 @@ SpinorWaveFunction FFVVertex::evaluate(Energy2 q2, int iopt,tcPDPtr  out,
 	  Complex a3=_left*fact*( sp.s1()*e0p3+sp.s2()*e1m2);
 	  Complex a4=_left*fact*( sp.s1()*e1p2+sp.s2()*e0m3);
 	  s1 +=p0m3*a3-p1m2*a4;
-	  s2 +=p1p2*a3+p0p3*a4;
+	  s2 +=-p1p2*a3+p0p3*a4;
 	  s3 +=a3*mass;
 	  s4 +=a4*mass;
 	}

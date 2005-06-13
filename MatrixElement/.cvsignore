@@ -1,0 +1,4 @@
+.cvsignore .svn Makefile
+SpinCorrelationMixin.cc SpinCorrelationMixin.h
+*.lo *.la .libs .deps
+Makefile.in

@@ -20,8 +20,8 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 #include <iostream>
 #include "SmplStat.h"
-#include <math.h>
-
+#include <cmath>
+/**
 #ifndef HUGE_VAL
 #ifdef HUGE
 #define HUGE_VAL HUGE
@@ -30,6 +30,11 @@ Foundation, 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 #define HUGE_VAL DBL_MAX
 #endif
 #endif
+**/
+#include <limits>
+namespace {
+  const double myHUGE_VAL = std::numeric_limits<double>::max();
+}
 
 using std::cerr; 
 using std::cout; 
@@ -70,7 +75,7 @@ double tval(double p, int df)
   int positive = p >= 0.5;
   p = (positive)? 1.0 - p : p;
   if (p <= 0.0 || df <= 0)
-    t = HUGE_VAL;
+    t = myHUGE_VAL;
   else if (p == 0.5)
     t = 0.0;
   else if (df == 1)
@@ -95,8 +100,8 @@ void
 SampleStatistic::reset()
 {
     n = 0; x = x2 = 0.0;
-    maxValue = -HUGE_VAL;
-    minValue = HUGE_VAL;
+    maxValue = -myHUGE_VAL;
+    minValue = myHUGE_VAL;
 }
 
 void
@@ -145,9 +150,9 @@ double
 SampleStatistic::confidence(int interval)
 {
   int df = n - 1;
-  if (df <= 0) return HUGE_VAL;
+  if (df <= 0) return myHUGE_VAL;
   double t = tval(double(100 + interval) * 0.005, df);
-  if (t == HUGE_VAL)
+  if (t == myHUGE_VAL)
     return t;
   else
     return (t * stdDev()) / sqrt(double(n));
@@ -157,9 +162,9 @@ double
 SampleStatistic::confidence(double p_value)
 {
   int df = n - 1;
-  if (df <= 0) return HUGE_VAL;
+  if (df <= 0) return myHUGE_VAL;
   double t = tval((1.0 + p_value) * 0.5, df);
-  if (t == HUGE_VAL)
+  if (t == myHUGE_VAL)
     return t;
   else
     return (t * stdDev()) / sqrt(double(n));

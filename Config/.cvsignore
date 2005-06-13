@@ -1,0 +1,9 @@
+.svn Makefile Makefile.common ltmain.sh
+config.guess
+config.sub
+depcomp
+install-sh
+missing
+*.lo *.la .libs .deps
+Makefile.in
+config.h stamp-h1
