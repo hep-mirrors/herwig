@@ -39,6 +39,10 @@ inline void DecayPhaseSpaceMode::dofinish() {
 }
 
 inline void DecayPhaseSpaceMode::doinit() throw(InitException) {
+  // check the size of the weight vector is the same as the number of channels
+  if(_channelwgts.size()!=numberChannels())
+    {throw Exception() << "Inconsistent number of channel weights and channels"
+		       << " in DecayPhaseSpaceMode " << Exception::abortnow;}
   Interfaced::doinit();
 }
 
