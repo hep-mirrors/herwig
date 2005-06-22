@@ -48,7 +48,7 @@ inline void VectorMeson2FermionDecayer::doinit() throw(InitException) {
     {throw InitException() << "Inconsistent parameters in VectorMeson2"
 			   << "FermionDecayer::doiin() " << Exception::runerror;}
   // set up the integration channels
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   DecayPhaseSpaceModePtr mode;
   PDVector extpart(3);
   for(unsigned int ix=0;ix<_incoming.size();++ix)

@@ -49,7 +49,7 @@ inline void PVectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
 			   << "PVectorMesonVectorPScalarDecayer::doinit()" 
 			   << Exception::abortnow;}
   // set up the integration channels
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix)

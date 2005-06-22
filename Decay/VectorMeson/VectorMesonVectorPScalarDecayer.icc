@@ -50,7 +50,7 @@ inline void VectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
     {throw InitException() << "Inconsistent parameters in " 
 			   << "VectorMesonVectorPScalarDecayer" << Exception::runerror;}
   // set up the integration channels
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_incoming.size();++ix)
