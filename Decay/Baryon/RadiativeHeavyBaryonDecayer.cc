@@ -99,7 +99,7 @@ void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
     {throw InitException() << "Inconsistent parameters in "
 			   << "RadiativeHeavyBaryonDecayer::doinit()" 
 			   << Exception::abortnow;}
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   // the decay modes

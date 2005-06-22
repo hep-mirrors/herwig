@@ -28,13 +28,13 @@ using namespace ThePEG::Helicity;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using Helicity::SpinorWaveFunction;
-using Helicity::ScalarWaveFunction;
+  using Herwig::Helicity::ScalarWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::RSSpinorWaveFunction;
 using Helicity::RSSpinorBarWaveFunction;
 using Helicity::VectorWaveFunction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using Herwig::Helicity::incoming;
+using Herwig::Helicity::outgoing;
 
 Baryon1MesonDecayerBase::~Baryon1MesonDecayerBase() {}
 
@@ -158,7 +158,7 @@ halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
 			    vertex);
       SpinorWaveFunction(sp,decay[0],outgoing,true,vertex);
     }
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  Herwig::Helicity::ScalarWaveFunction(decay[1],Herwig::Helicity::outgoing,true,vertex);
   // get the couplings
   Complex A,B;
   halfHalfScalarCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),A,B);

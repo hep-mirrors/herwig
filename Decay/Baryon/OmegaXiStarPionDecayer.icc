@@ -57,7 +57,7 @@ inline void OmegaXiStarPionDecayer::doinit() throw(InitException) {
   // set up the phase space
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   extpart[0]=getParticleData(_idin);
   extpart[1]=getParticleData(_idout);
   extpart[2]=getParticleData(-211);

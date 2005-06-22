@@ -469,7 +469,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 
   // testing only
   pre = _GF*0.974/sqrt(2.);
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   unsigned int iy;

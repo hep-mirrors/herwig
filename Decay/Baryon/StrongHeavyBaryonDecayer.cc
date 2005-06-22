@@ -227,7 +227,7 @@ void StrongHeavyBaryonDecayer::doinit() throw(InitException) {
     {throw InitException() << "Inconsistent parameters in StrongHeavyBaryonDecayer"
 			   << "::doinit()" << Exception::abortnow;}
   // add the various decay modes
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   // the decay modes

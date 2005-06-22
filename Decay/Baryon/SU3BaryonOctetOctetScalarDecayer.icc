@@ -82,7 +82,7 @@ inline void SU3BaryonOctetOctetScalarDecayer::doinit() throw(InitException) {
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
   double wgtmax;
-  vector<double> wgt(1,1.);
+  vector<double> wgt(0);
   for(unsigned int ix=0;ix<_incomingB.size();++ix)
     {
       extpart[0]=getParticleData(_incomingB[ix]);
