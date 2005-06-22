@@ -296,6 +296,32 @@ inline VectorWaveFunction::VectorWaveFunction(vector<LorentzPolarizationVector>&
   constructSpinInfo(wave,rho,part,time,massless,phase,vertex);
 }
 
+// special setup constructor
+VectorWaveFunction::VectorWaveFunction(vector<VectorWaveFunction>& wave,
+					      tPPtr part,Direction dir,bool time,
+					      bool massless,
+					      bool vertex, VectorPhase phase)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction();
+  constructSpinInfo(wave,part,time,massless,phase,vertex);
+}
+
+// special setup constructor
+inline VectorWaveFunction::VectorWaveFunction(vector<VectorWaveFunction>& wave,
+					      RhoDMatrix &rho,tPPtr part,Direction dir,
+					      bool time,bool massless,
+					      bool vertex, VectorPhase phase)
+{
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  zeroWaveFunction();
+  constructSpinInfo(wave,rho,part,time,massless,phase,vertex);
+}
+
 // construct the spininfo object
 inline void VectorWaveFunction::constructSpinInfo(vector<LorentzPolarizationVector>& wave,
 						  tVectorSpinPtr spin,bool massless,
@@ -416,6 +442,159 @@ inline void VectorWaveFunction::constructSpinInfo(vector<LorentzPolarizationVect
 	  wave[0]=inspin->getDecayBasisState(0);
 	  wave[1]=inspin->getDecayBasisState(1);
 	  wave[2]=inspin->getDecayBasisState(2);
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "VectorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tVectorSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  rho = RhoDMatrix(PDT::Spin1);rho.average();
+	  constructSpinInfo(wave,inspin,massless,phase,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+inline void VectorWaveFunction::constructSpinInfo(vector<VectorWaveFunction>& wave,
+						  tVectorSpinPtr spin,bool massless,
+						  VectorPhase phase,bool vertex)
+{
+  wave.resize(3);
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      // calculate the wavefunction for the first helicity
+      if(massless&&ix==1){_wf=LorentzPolarizationVector();}
+      else{reset(ix,phase);}
+      // add to output array
+      wave[ix] = VectorWaveFunction(*this);
+      // setup the spininfo object
+      if(vertex)
+	{
+	  if(direction()==outgoing){spin->setBasisState(ix,_wf);}
+	  else{spin->setDecayState(ix,_wf.conjugate());}
+	}
+    }
+}
+
+// construct the spininfo object
+inline void VectorWaveFunction::constructSpinInfo(vector<VectorWaveFunction>& wave,
+						  tPPtr part,bool time,
+						  bool massless,VectorPhase phase,
+						  bool vertex)
+{
+  tVectorSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tVectorSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(3);
+	  wave[0]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(0),direction());
+	  wave[1]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(1),direction());
+	  wave[2]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(2),direction());
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(VectorSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tVectorSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,massless,phase,vertex);
+	}
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  wave.resize(3);
+	  wave[0]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(0),direction());
+	  wave[1]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(1),direction());
+	  wave[2]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(2),direction());
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "VectorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tVectorSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  constructSpinInfo(wave,inspin,massless,phase,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+inline void VectorWaveFunction::constructSpinInfo(vector<VectorWaveFunction>& wave,
+						  RhoDMatrix& rho,tPPtr part,bool time,
+						  bool massless,VectorPhase phase,
+						  bool vertex)
+{
+  tVectorSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tVectorSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(3);
+	  wave[0]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(0),direction());
+	  wave[1]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(1),direction());
+	  wave[2]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(2),direction());
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(VectorSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tVectorSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,massless,phase,vertex);
+	}
+      rho = RhoDMatrix(PDT::Spin1);rho.average();
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  rho = inspin->rhoMatrix();
+	  wave.resize(3);
+	  wave[0]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(0),direction());
+	  wave[1]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(1),direction());
+	  wave[2]=VectorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(2),direction());
 	}
       else
 	{

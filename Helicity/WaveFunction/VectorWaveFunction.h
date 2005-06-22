@@ -73,7 +73,7 @@ public:
    */
   inline VectorWaveFunction(const Lorentz5Momentum & p,tcPDPtr part,
 			    const LorentzPolarizationVector & wave,
-			    Direction dir=intermediate);
+			    Direction  dir=intermediate);
 
   /**
    * Constructor, set the momentum and components of the wavefunction.
@@ -237,7 +237,8 @@ public:
   inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
 
   /**
-   * Special constructor which calculates all the helicities and sets up a particle's
+   * Special constructor which calculates all the polarization vectors,
+   * as LorentzPolarizationVector objects, for all helicities and sets up a particle's
    * SpinInfo.
    * @param wave The polarization vectors for the different helicities.
    * @param part The particle to setup
@@ -246,12 +247,14 @@ public:
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
+
   inline VectorWaveFunction(vector<LorentzPolarizationVector>& wave, tPPtr part,
 			    Direction dir, bool time, bool massless, bool vertex,
 			    VectorPhase phase=default_vector_phase);
 
   /**
-   * Special constructor which calculates all the helicities and sets up a particle's
+   * Special constructor which calculates all the polarization vectors,
+   * as LorentzPolarizationVector objects, for all helicities and sets up a particle's
    * SpinInfo.
    * @param wave The polarization vectors for the different helicities.
    * @parmm rho The \f$\rho\f$ matrix for the particle.
@@ -261,7 +264,39 @@ public:
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
+
   inline VectorWaveFunction(vector<LorentzPolarizationVector>& wave, RhoDMatrix& rho,
+			    tPPtr part,Direction dir, bool time, bool massless,
+			    bool vertex,VectorPhase phase=default_vector_phase);
+
+  /**
+   * Special constructor which calculates all the polarization vectors,
+   * as VectorWaveFunction objects, for all helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The polarization vectors for the different helicities.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   * @param phase The phase choice.
+   */
+  inline VectorWaveFunction(vector<VectorWaveFunction>& wave, tPPtr part,
+			    Direction dir, bool time, bool massless, bool vertex,
+			    VectorPhase phase=default_vector_phase);
+
+  /**
+   * Special constructor which calculates all the polarization vectors,
+   * as LorentzPolarizationVector objectsm for all helicities and sets up a particle's
+   * SpinInfo.
+   * @param wave The polarization vectors for the different helicities.
+   * @parmm rho The \f$\rho\f$ matrix for the particle.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   * @param phase The phase choice.
+   */
+  inline VectorWaveFunction(vector<VectorWaveFunction>& wave, RhoDMatrix& rho,
 			    tPPtr part,Direction dir, bool time, bool massless,
 			    bool vertex,VectorPhase phase=default_vector_phase);
 
@@ -389,8 +424,8 @@ public:
   //@}
 
   /**
-   * Calculate the polarization vectors for all helicities,
-   * create and set up the SpinInfo object
+   * Calculate the polarization vectors, as LorentzPolarizationVector objects,
+   * for all helicities, create and set up the SpinInfo object
    * @param wave The polarization vectors for the different helicities.
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
@@ -402,8 +437,8 @@ public:
 				VectorPhase phase=default_vector_phase,bool vertex=true);
 
   /**
-   * Calculate the polarization vectors for all helicities,
-   * create and set up the SpinInfo object
+   * Calculate the polarization vectors, as LorentzPolarizationVector objects,
+   * for all helicities, create and set up the SpinInfo object
    * @param wave The polarization vectors for the different helicities.
    * @param rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
@@ -412,6 +447,33 @@ public:
    * @param vertex Whether or not to create the VectorSpinInfo object 
    */
   inline void constructSpinInfo(vector<LorentzPolarizationVector>& wave,RhoDMatrix& rho,
+				tPPtr part,bool time, bool massless,
+				VectorPhase phase=default_vector_phase,bool vertex=true);
+
+  /**
+   * Calculate the polarization vectors, as VectorWaveFunction objects,
+   * for all helicities, create and set up the SpinInfo object
+   * @param wave The polarization vectors for the different helicities.
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param phase The phase choice.
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<VectorWaveFunction>& wave,tPPtr part,
+				bool time, bool massless,
+				VectorPhase phase=default_vector_phase,bool vertex=true);
+
+  /**
+   * Calculate the polarization vectors, as VectorWaveFunction objects,
+   * for all helicities, create and set up the SpinInfo object
+   * @param wave The polarization vectors for the different helicities.
+   * @param rho The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param phase The phase choice.
+   * @param vertex Whether or not to create the VectorSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<VectorWaveFunction>& wave,RhoDMatrix& rho,
 				tPPtr part,bool time, bool massless,
 				VectorPhase phase=default_vector_phase,bool vertex=true);
 
@@ -436,9 +498,9 @@ private:
    */
   inline void checkParticle(const tcPDPtr & part);
 
-
   /**
-   * Calculate the polarization vectors for all the helicities and set up the
+   * Calculate the polarization vectors, as LorentzPolarizationVector objects,
+   * for all the helicities and set up the
    * SpinInfo object.
    * @param wave The polarization vectors for the different helicities
    * @param spin Pointer to the VectorSpinInfo object
@@ -446,6 +508,18 @@ private:
    * @param vertex Whether or not to set up the VectorSpinInfo object 
    */
   inline void constructSpinInfo(vector<LorentzPolarizationVector>& wave,
+				tVectorSpinPtr spin, bool massless,
+				VectorPhase phase=default_vector_phase,bool vertex=true);
+
+  /**
+   * Calculate the polarization vectors, as VectorWaveFunction objects,
+   * for all the helicities and set up the SpinInfo object.
+   * @param wave The polarization vectors for the different helicities
+   * @param spin Pointer to the VectorSpinInfo object
+   * @param phase The phase choice.
+   * @param vertex Whether or not to set up the VectorSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<VectorWaveFunction>& wave,
 				tVectorSpinPtr spin, bool massless,
 				VectorPhase phase=default_vector_phase,bool vertex=true);
 

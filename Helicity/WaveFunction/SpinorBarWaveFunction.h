@@ -80,9 +80,10 @@ public:
    * @param p The momentum.
    * @param part The ParticleData pointer.
    * @param wave The wavefunction.
+   * @param dir The direction of the particle
    */
   inline SpinorBarWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
-			       LorentzSpinorBar & wave);
+			       const LorentzSpinorBar & wave,Direction dir=intermediate);
   
   /**
    * Constructor, set the momentum, helicity, direction and Dirac representation.
@@ -244,8 +245,8 @@ public:
 			       Direction dir,DiracRep drep=defaultDRep);
 
   /**
-   * Special constructor which calculates all the helicities and sets up a particle's
-   * SpinInfo.
+   * Special constructor which calculates all the helicities, as LorentzSpinorBar
+   * objects, and sets up a particle's SpinInfo.
    * @param wave The spinors for the different helicities.
    * @param part The particle to setup
    * @param dir The direction.
@@ -257,8 +258,8 @@ public:
 			       bool time, bool vertex, DiracRep drep=defaultDRep);
 
   /**
-   * Special constructor which calculates all the helicities and sets up a particle's
-   * SpinInfo.
+   * Special constructor which calculates all the helicities, as LorentzSpinorBar
+   * objects, and sets up a particle's SpinInfo.
    * @param wave The spinors for the different helicities.
    * @param rho  The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
@@ -271,6 +272,35 @@ public:
 			       tPPtr part,Direction dir,bool time, bool vertex,
 			       DiracRep drep=defaultDRep);
   
+  /**
+   * Special constructor which calculates all the helicities, as SpinorBarWaveFunction
+   * objects, and sets up a particle's SpinInfo.
+   * @param wave The spinors for the different helicities.
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   * @param drep The Dirac representation.
+   */
+  inline SpinorBarWaveFunction(vector<SpinorBarWaveFunction>& wave, tPPtr part,
+			       Direction dir,bool time, bool vertex,
+			       DiracRep drep=defaultDRep);
+
+  /**
+   * Special constructor which calculates all the helicities, as SpinorBarWaveFunction
+   * objects, and sets up a particle's SpinInfo.
+   * @param wave The spinors for the different helicities.
+   * @param rho  The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param dir The direction.
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   * @param drep The Dirac representation.
+   */
+  inline SpinorBarWaveFunction(vector<SpinorBarWaveFunction>& wave,RhoDMatrix& rho,
+			       tPPtr part,Direction dir,bool time, bool vertex,
+			       DiracRep drep=defaultDRep);
+
   /**
    * Default constructor.
    */
@@ -394,7 +424,8 @@ public:
   //@}
 
   /**
-   * Calculate the spinors for all helicities, create and set up the SpinInfo object
+   * Calculate the spinors, as LorentzSpinorBar objects,
+   * for all helicities, create and set up the SpinInfo object
    * @param wave The spinors for the different helicities.
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
@@ -404,7 +435,8 @@ public:
 				bool vertex=true);
 
   /**
-   * Calculate the spinors for all helicities, create and set up the SpinInfo object
+   * Calculate the spinors, as LorentzSpinorBar objects,
+   * for all helicities, create and set up the SpinInfo object
    * @param wave The spinors for the different helicities.
    * @rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
@@ -414,6 +446,28 @@ public:
   inline void constructSpinInfo(vector<LorentzSpinorBar>& wave,RhoDMatrix& rho,
 				tPPtr part,bool time,bool vertex=true);
 
+  /**
+   * Calculate the spinors, as SpinorBarWaveFunction objects,
+   *  for all helicities, create and set up the SpinInfo object
+   * @param wave The spinors for the different helicities.
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,tPPtr part,bool time,
+				bool vertex=true);
+
+  /**
+   * Calculate the spinors, as SpinorBar objects,
+   *  for all helicities, create and set up the SpinInfo object
+   * @param wave The spinors for the different helicities.
+   * @rho The \f$\rho\f$ matrix for the particle
+   * @param part The particle to setup
+   * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param vertex Whether or not to create the FermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,RhoDMatrix& rho,
+				tPPtr part,bool time,bool vertex=true);
 private:
 
   /**
@@ -435,7 +489,8 @@ private:
   inline void checkParticle(const tcPDPtr & part);
 
   /**
-   * Calculate the spinors for all the helicities and set up the SpinInfo object.
+   * Calculate the spinors, as LorentzSpinorBar objects,
+   * for all the helicities and set up the SpinInfo object.
    * @param wave The spinors for the different helicities
    * @param spin Pointer to the FermionSpinInfo object
    * @param vertex Whether or not to set up the FermionSpinInfo object 
@@ -443,6 +498,15 @@ private:
   inline void constructSpinInfo(vector<LorentzSpinorBar>& wave,tFermionSpinPtr spin,
 				bool vertex=true);
   
+  /**
+   * Calculate the spinors, as SpinorBarWaveFunction objects,
+   *  for all the helicities and set up the SpinInfo object.
+   * @param wave The spinors for the different helicities
+   * @param spin Pointer to the FermionSpinInfo object
+   * @param vertex Whether or not to set up the FermionSpinInfo object 
+   */
+  inline void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,tFermionSpinPtr spin,
+				bool vertex=true);
 private:
   
   /**
