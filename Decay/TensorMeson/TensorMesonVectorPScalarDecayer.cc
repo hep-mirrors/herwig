@@ -223,8 +223,13 @@ TensorMesonVectorPScalarDecayer::decayTensor(const bool vertex,const int,
   // check for photons
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   // work out which is the vector
+
+  // workaround for gcc 3.2.3 bug
   // set up the spin information for ther decay products
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   VectorWaveFunction(vwave,decay[0],outgoing,true,photon,vertex);
   double fact(_coupling[imode()]/inpart.mass());
   for(unsigned int ix=0;ix<3;++ix)

@@ -306,7 +306,12 @@ PVectorMesonVectorPScalarDecayer::decayCurrent(const bool vertex, const int,
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
   // set up the spin information for the decay products
   VectorWaveFunction(temp,decay[0],outgoing,true,photon,vertex);
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // calculate the currents
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
   Complex epsdot(0.),pre(_coupling[imode()]/inpart.mass());

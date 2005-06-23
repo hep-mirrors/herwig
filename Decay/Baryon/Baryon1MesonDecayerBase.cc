@@ -28,13 +28,13 @@ using namespace ThePEG::Helicity;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using Helicity::SpinorWaveFunction;
-  using Herwig::Helicity::ScalarWaveFunction;
+using Helicity::ScalarWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::RSSpinorWaveFunction;
 using Helicity::RSSpinorBarWaveFunction;
 using Helicity::VectorWaveFunction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using Helicity::incoming;
+using Helicity::outgoing;
 
 Baryon1MesonDecayerBase::~Baryon1MesonDecayerBase() {}
 
@@ -158,7 +158,12 @@ halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
 			    vertex);
       SpinorWaveFunction(sp,decay[0],outgoing,true,vertex);
     }
-  Herwig::Helicity::ScalarWaveFunction(decay[1],Herwig::Helicity::outgoing,true,vertex);
+
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // get the couplings
   Complex A,B;
   halfHalfScalarCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),A,B);
@@ -286,8 +291,13 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int ichan
       sp.resize(Rsp.size());
       for(ix=0;ix<Rsp.size();++ix){sp[ix]=Rsp[ix].dot(inpart.momentum());}
     }
+
+  // workaround for gcc 3.2.3 bug
   // construct the spinInfo for the scalar
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // get the couplings
   Complex A,B,left,right;
   Energy msum(inpart.mass()+decay[0]->mass());
@@ -451,8 +461,13 @@ threeHalfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
       for(unsigned int ix=0;ix<Rsbar.size();++ix)
 	{sbar[ix]=Rsbar[ix].dot(decay[0]->momentum());}
     }
+
+  // workaround for gcc 3.2.3 bug
   // construct the spinInfo for the scalar
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // get the couplings
   Complex A,B;
   Energy msum=inpart.mass()+decay[0]->mass();
@@ -511,12 +526,23 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int 
       RSSpinorWaveFunction(Rsp,decay[0],outgoing,true,vertex);
       for(unsigned int ix=0;ix<4;++ix)
 	{
-	  sbar.push_back(Rsbar[ix].dot(decay[0]->momentum()));
-	  sp.push_back(Rsp[ix].dot(inpart.momentum()));
+          // workaround for gcc 3.2.3 bug
+	  //ALB sbar.push_back(Rsbar[ix].dot(decay[0]->momentum()));
+	  //ALB sp.push_back(Rsp[ix].dot(inpart.momentum()));
+          LorentzRSSpinorBar tempRsbar = Rsbar[ix];
+	  sbar.push_back(tempRsbar.dot(decay[0]->momentum()));
+	  LorentzRSSpinor tempRsp = Rsp[ix];
+	  sp.push_back(tempRsp.dot(inpart.momentum()));
+
 	}
     }
+
+  // workaround for gcc 3.2.3 bug
   // construct the spinInfo for the scalar
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // get the couplings
   Complex A1,B1,A2,B2;
   Energy msum(inpart.mass()+decay[0]->mass());

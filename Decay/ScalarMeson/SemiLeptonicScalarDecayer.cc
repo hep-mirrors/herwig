@@ -178,8 +178,12 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
 				      const Particle & inpart,
 				      const ParticleVector & decay) const
 {
+  // workaround for gcc 3.2.3 bug
   // spin info for the decaying particle
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+
   // get the information on the form-factor
   int jspin(0),id0(inpart.id()),id1(decay[0]->id());
   bool dummy;
@@ -195,7 +199,11 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   vector<LorentzPolarizationVector> hadron;
   if(jspin==0)
     {
-      ScalarWaveFunction(decay[0],outgoing,true,vertex);
+      // workaround for gcc 3.2.3 bug
+      //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+      PPtr mytemp = decay[0];
+      ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
       Complex fp,f0;
       _form->ScalarScalarFormFactor(q2,iloc,id0,id1,inpart.mass(),decay[0]->mass(),
 				    f0,fp);

@@ -233,8 +233,13 @@ double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int ichan,
   // work out which decay constant to use
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {if(id==abs(_incoming[ix])){icoup=ix;}}
+
+  // workaround for gcc 3.2.3 bug
   // check if the decay particle has spin info
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+
   // find the particles
   unsigned int iferm(0),ianti(0);
   for(unsigned ix=0;ix<decay.size();++ix)

@@ -213,9 +213,16 @@ TwoPionPhotonCurrent::current(bool vertex, const int imode, const int ichan,
   Energy2 dot13(decay[2]->momentum()*decay[0]->momentum());
   Energy2 dot23(decay[1]->momentum()*decay[0]->momentum());
   Energy2 mpi2 (decay[0]->mass()*decay[0]->mass());
+
+  // workaround for gcc 3.2.3 bug
   // construct the spininfomation objects for the decay products
-  ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[0];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  PPtr mytemp_bis = decay[1];
+  ScalarWaveFunction(mytemp_bis,outgoing,true,vertex);
+
   VectorWaveFunction(temp,decay[2],outgoing,true,true,vertex);
   Complex dote2,dote3,coeffa,coeffb,coeffc;
   for(unsigned int ix=0;ix<3;++ix)

@@ -163,8 +163,14 @@ VectorMesonVectorVectorDecayer::decayCurrent(const bool vertex, const int,
   unsigned int ix,ipol1,ipol2;
   // set up the spin information for the decay products
   for(ix=0;ix<2;++ix)
-    {VectorWaveFunction(eps[ix],decay[ix],outgoing,true,
+
+    // workaround for gcc 3.2.3 bug
+    //ALB {VectorWaveFunction(eps[ix],decay[ix],outgoing,true,
+    //ALB			decay[ix]->id()==ParticleID::gamma,vertex);}
+    {vector<LorentzPolarizationVector> mytemp = eps[ix]; 
+     VectorWaveFunction(mytemp,decay[ix],outgoing,true,
 			decay[ix]->id()==ParticleID::gamma,vertex);}
+
   // work out the dot product we need for the current
   Complex p1p2((decay[0]->momentum())*(decay[1]->momentum()));
   Complex p1eps2[3],p2eps1[3];

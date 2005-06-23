@@ -201,7 +201,11 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
   for(ix=0;ix<2;++ix)
     {
       photon[ix]=decay[ix]->id()==ParticleID::gamma;
-      VectorWaveFunction(pol[ix],decay[ix],outgoing,true,photon[ix],vertex);
+
+      // workaround for gcc 3.2.3 bug
+      //ALB VectorWaveFunction(pol[ix],decay[ix],outgoing,true,photon[ix],vertex);
+      vector<LorentzPolarizationVector> mytempLPV = pol[ix];
+      VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
     }
   // compute some useful dot products etc
   Complex p1eps2[3],p2eps1[3];

@@ -151,8 +151,13 @@ ScalarMesonCurrent::current(bool vertex, const int imode, const int ichan,
 {
   static const Complex ii(0.,1.);
   scale = decay[0]->mass();
+
+  // workaround for gcc 3.2.3 bug*
   // set up the spin information for the particle
-  ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  PPtr mytemp = decay[0];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   Complex pre(-ii*_decay_constant[imode]/scale);
   // quarks in the current
   int iq,ia;

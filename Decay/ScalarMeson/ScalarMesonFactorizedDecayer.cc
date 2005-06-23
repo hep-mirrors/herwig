@@ -480,8 +480,13 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   unsigned int mode(imode()),ix,iy,chel,fhel;
   int id0(part.id()),id1;
   Complex ii(0.,1.);
+
+  // workaround for gcc 3.2.3 bug
   // spin info for the decaying particle
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&part),incoming,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&part),incoming,true,vertex);
+  tPPtr mytempPart = const_ptr_cast<tPPtr>(&part);
+  ScalarWaveFunction(mytempPart,incoming,true,vertex);
+
   vector<unsigned int> ihel(decay.size());
   // get the wavefunctions of the decay products
   vector<vector<LorentzPolarizationVector> > vecwave(decay.size());
@@ -489,11 +494,18 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   for(ix=0;ix<decay.size();++ix)
     {
       iy=decay[ix]->dataPtr()->iSpin();
-      if(iy==1){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+      
+      // workaround for gcc 3.2.3 bug
+      //ALB if(iy==1){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+      if(iy==1){PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
       else if(iy==3)
-	{VectorWaveFunction(vecwave[ix],decay[ix],outgoing,true,false,vertex);}
+	//ALB {VectorWaveFunction(vecwave[ix],decay[ix],outgoing,true,false,vertex);}
+	{vector<LorentzPolarizationVector> mytempLPV = vecwave[ix]; 
+         VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,false,vertex);}
       else if(iy==5)
-	{TensorWaveFunction(tenwave[ix],decay[ix],outgoing,true,false,vertex);}
+	//ALB {TensorWaveFunction(tenwave[ix],decay[ix],outgoing,true,false,vertex);}
+	{vector<LorentzTensor> mytempLT = tenwave[ix];
+         TensorWaveFunction(mytempLT,decay[ix],outgoing,true,false,vertex);}
     }
   // create the matrix element
   vector<PDT::Spin> spin;

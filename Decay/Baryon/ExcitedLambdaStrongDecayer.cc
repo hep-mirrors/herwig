@@ -560,9 +560,16 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
   vector<LorentzSpinorBar> sbar;
   vector<LorentzRSSpinorBar> Rsbar;
   RhoDMatrix temp;
+
+  // workaround for gcc 3.2.3 bug
   // construct or obtain the spin information
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  ScalarWaveFunction(decay[2],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[2],outgoing,true,vertex);
+  PPtr mytemp1 = decay[1];
+  ScalarWaveFunction(mytemp1,outgoing,true,vertex);
+  PPtr mytemp2 = decay[2];
+  ScalarWaveFunction(mytemp2,outgoing,true,vertex);
+
   if(part.id()>0)
     {
       if(part.dataPtr()->iSpin()==2)

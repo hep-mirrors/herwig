@@ -149,11 +149,20 @@ double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int ichan,
 					   const Particle & inpart,
 					   const ParticleVector & decay) const
 {
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+
   // set up the spin info for the outgoing particles
   vector<LorentzTensor> twave;
   TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // calculate the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin2,PDT::Spin0);
   Complex fact(_coupling[imode()]/inpart.mass());

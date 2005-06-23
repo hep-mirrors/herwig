@@ -278,7 +278,12 @@ VectorMesonPScalarFermionsDecayer::decayCurrent(const bool vertex,
   // construct the spin information objects for the  decay products
   vector<LorentzSpinor> wave;
   vector<LorentzSpinorBar> wavebar;
-  ScalarWaveFunction(decay[0],outgoing,true,vertex);
+
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  PPtr mytemp = decay[0];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   SpinorWaveFunction(   wave   ,decay[2],outgoing,true,vertex);
   SpinorBarWaveFunction(wavebar,decay[1],outgoing,true,vertex);
   // now compute the currents

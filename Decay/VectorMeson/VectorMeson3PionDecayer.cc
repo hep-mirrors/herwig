@@ -389,7 +389,11 @@ VectorMeson3PionDecayer::decayCurrent(const bool vertex,const int ichan,
   // create the spin information if needed
   if(vertex)
     {for(ix=0;ix<decay.size();++ix)
-	{ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
+
+      // workaround for gcc 3.2.3 bug
+      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
+      {PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);}}
+
   // work out the prefactor
   Complex pre(0.),resfact,ii(0.,1.);
   if(ichan<0){pre=_ccoupling[imode()][3];}

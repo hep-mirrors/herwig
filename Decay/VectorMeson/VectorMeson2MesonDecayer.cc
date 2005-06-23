@@ -290,7 +290,11 @@ VectorMeson2MesonDecayer::decayCurrent(const bool vertex, const int,
 {
   // setup the spininfomation for the decay products
   for(unsigned int ix=0;ix<decay.size();++ix)
-    {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+
+    // workaround for gcc 3.2.3 bug
+    //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+    {PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+
   // calculate the current
   return vector<LorentzPolarizationVector>(1,_coupling[imode()]/inpart.mass()*
 					   (decay[0]->momentum()-decay[1]->momentum()));

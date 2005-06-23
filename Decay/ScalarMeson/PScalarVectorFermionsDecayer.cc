@@ -256,7 +256,11 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int ichan,
 					 const Particle & inpart,
 					 const ParticleVector & decay) const
 {
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+
   // vectors containing the spinors and polarization vectors
   vector<LorentzSpinor> wave;
   vector<LorentzSpinorBar> wavebar;

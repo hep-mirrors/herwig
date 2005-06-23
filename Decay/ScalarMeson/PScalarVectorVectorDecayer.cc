@@ -164,14 +164,22 @@ double PScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+
   // set up the spin info for the outgoing particles
   bool photon[2]={false,false};
   vector<LorentzPolarizationVector> wave[2];
   for(unsigned int ix=0;ix<2;++ix)
     {
       if(decay[ix]->id()==ParticleID::gamma){photon[ix]=true;}
-      VectorWaveFunction(wave[ix],decay[ix],outgoing,true,photon[ix],vertex);
+
+      // workaround for gcc 3.2.3 bug
+      //ALB VectorWaveFunction(wave[ix],decay[ix],outgoing,true,photon[ix],vertex);
+      vector<LorentzPolarizationVector> mytempLPV = wave[ix]; 
+      VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
     }
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
@@ -187,7 +195,7 @@ double PScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
 	}
     }
   ME(newME);
-  RhoDMatrix rhoin(RhoDMatrix(PDT::Spin0));rhoin.average();
+  RhoDMatrix rhoin(PDT::Spin0); rhoin.average();
   return newME.contract(rhoin).real();
 }
 

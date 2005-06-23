@@ -575,11 +575,19 @@ void EtaPiPiGammaDecayer::Init() {
 double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
 				 const ParticleVector & decay) const
 {
+  // workaround for gcc 3.2.3 bug
   // set up the spin info
   vector<LorentzPolarizationVector> wave;
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-  ScalarWaveFunction(decay[0],outgoing,true,vertex);
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+  PPtr mytemp0 = decay[0];
+  ScalarWaveFunction(mytemp0,outgoing,true,vertex);
+  PPtr mytemp1 = decay[1];
+  ScalarWaveFunction(mytemp1,outgoing,true,vertex);
+
   VectorWaveFunction(wave,decay[2],outgoing,true,true,vertex);
   // prefactor for the matrix element
   Complex pre(_coupling[imode()]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));

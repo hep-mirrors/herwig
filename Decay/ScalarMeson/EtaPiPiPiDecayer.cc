@@ -236,10 +236,15 @@ void EtaPiPiPiDecayer::Init() {
 double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
 			     const ParticleVector & decay) const
 {
+  // workaround for gcc 3.2.3 bug
   // construct spin info objects (this is pretty much a waste of time)
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
   for(unsigned int ix=0;ix<decay.size();++ix)
-    {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+    //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+    {PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+
   // calculate the matrix element
   // compute the variables we need
   Lorentz5Momentum ps(inpart.momentum()-decay[2]->momentum());ps.rescaleMass();

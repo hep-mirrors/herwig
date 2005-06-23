@@ -316,8 +316,13 @@ VectorMesonVectorPScalarDecayer::decayCurrent(const bool vertex, const int,
   vector<LorentzPolarizationVector> temp;
   // check if the outgoing vector is a photon
   bool photon(_outgoingV[imode()]==ParticleID::gamma);
+
+  // workaround for gcc 3.2.3 bug
   // set up the spin information for the decay products
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  PPtr mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   VectorWaveFunction(temp,decay[0],outgoing,true,photon,vertex);
   for(unsigned int ix=0;ix<3;++ix)
     {

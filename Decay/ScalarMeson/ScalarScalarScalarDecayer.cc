@@ -295,9 +295,14 @@ double ScalarScalarScalarDecayer::me2(bool vertex, const int ichan,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  // workaround for gcc 3.2.3 bug
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
   // set up the spin info for the outgoing particles
-  for(unsigned int ix=0;ix<2;++ix){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+  //ALB for(unsigned int ix=0;ix<2;++ix){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+  for(unsigned int ix=0;ix<2;++ix){PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0);
   double fact(_coupling[imode()]/inpart.mass());

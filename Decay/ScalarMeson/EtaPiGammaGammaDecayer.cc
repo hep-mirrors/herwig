@@ -216,13 +216,25 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
 				   const ParticleVector & decay) const
 {
   unsigned int ix,iy;
+
+  // workaround for gcc 3.2.3 bug
   // spin info of the decaying particle
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
+
   // spin info and wavefunctions for outgoing particles
   vector<LorentzPolarizationVector> vwave[2];
+
+  // workaround for gcc 3.2.3 bug
   for(ix=0;ix<2;++ix)
-    {VectorWaveFunction(vwave[ix],decay[ix+1],outgoing,true,true,vertex);}
-  ScalarWaveFunction(decay[0],outgoing,true,vertex);
+    //ALB  {VectorWaveFunction(vwave[ix],decay[ix+1],outgoing,true,true,vertex);}
+  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+    {vector<LorentzPolarizationVector> mytempLPV = vwave[ix]; 
+    VectorWaveFunction(mytempLPV,decay[ix+1],outgoing,true,true,vertex);}
+  PPtr mytemp = decay[0];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   // dot products we need
   Energy2 q1dotq2(decay[1]->momentum()*decay[2]->momentum()),
     pdotq1(inpart.momentum()*decay[1]->momentum()),

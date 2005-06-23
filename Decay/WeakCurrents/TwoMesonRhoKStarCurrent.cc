@@ -497,8 +497,12 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
       FPI *=2.*denom;}
       pdiff-=psum;
     }
+
+  // workaround for gcc 3.2.3 bug
   // set up the spininfo for the decay products
-  for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
+  //ALB for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
+  for(ix=0;ix<2;++ix){PPtr mytemp=outpart[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+
   // return the answer
   return vector<LorentzPolarizationVector>(1,FPI*pdiff);
 }

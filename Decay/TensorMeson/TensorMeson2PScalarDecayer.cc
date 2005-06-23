@@ -243,7 +243,10 @@ TensorMeson2PScalarDecayer::decayTensor(const bool vertex,const int,
   vector<LorentzTensor> temp;
   // set up the spin information for the decay products
   for(unsigned int ix=0;ix<decay.size();++ix)
-    {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+    // workaround for gcc 3.2.3 bug
+    //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
+    {PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+
   // calculatebthe tensor
   temp.push_back(_coupling[imode()]/inpart.mass()*
 		 LorentzTensor(decay[0]->momentum(),decay[1]->momentum()));

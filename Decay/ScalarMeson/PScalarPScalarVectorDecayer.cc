@@ -181,11 +181,17 @@ double PScalarPScalarVectorDecayer::me2(bool vertex, const int ichan,
 					const Particle & inpart,
 					const ParticleVector & decay) const
 {
+  // workaround for gcc 3.2.3 bug
   // set up spins for the incoming particles
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(mytempInpart,incoming,true,vertex);
   // set up the spin info for the outgoing particles
   vector<LorentzPolarizationVector> eps;
-  ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+  PPtr mytemp = decay[0];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
+
   VectorWaveFunction(eps,decay[1],outgoing,true,false,vertex);
   // calculate the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin1);
