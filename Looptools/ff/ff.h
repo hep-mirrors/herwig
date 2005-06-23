@@ -1,4 +1,3 @@
-*	$Id$
 *	-------------------------------------------------------------
 *	INCLUDE FILE FOR THE FF ROUTINES.  
 *					Geert Jan van Oldenborgh.

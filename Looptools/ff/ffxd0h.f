@@ -1,9 +1,7 @@
 *--#[ log:
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 c Revision 1.6  1996/01/22  13:33:49  gj
 c Added the word 'error' to print statements in ffxuvw that u,v,w were wrong
 c

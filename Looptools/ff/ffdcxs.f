@@ -1,9 +1,7 @@
 *--#[ log:
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 c Revision 1.7  1996/03/22  08:13:30  gj
 c Fixed bug in bugfix of ffdcxs.f
 c

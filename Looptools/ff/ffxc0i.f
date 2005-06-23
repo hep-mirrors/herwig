@@ -1,9 +1,7 @@
 *--#[ log:
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 c Revision 1.3  1996/06/03  12:11:43  gj
 c Added an error message for ffxc0j with zero masses, which is ill-defined.
 c

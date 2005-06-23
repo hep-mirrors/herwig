@@ -1,8 +1,6 @@
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 c Revision 1.3  1995/10/06  09:17:26  gj
 c Found stupid typo in ffxc0p which caused the result to be off by pi^2/3 in
 c some equal-mass cases.  Added checks to ffcxs4.f ffcrr.f.

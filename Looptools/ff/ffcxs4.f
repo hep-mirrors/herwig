@@ -1,8 +1,6 @@
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 c Revision 1.3  1995/10/17  06:55:09  gj
 c Fixed ieps error in ffdcrr (ffcxs4.f), added real case in ffcrr, debugging
 c info in ffxd0, and warned against remaining errors for del2=0 in ffrot4

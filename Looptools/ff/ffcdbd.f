@@ -1,9 +1,7 @@
 *--#[ log:
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 *	Revision 1.4  1997/03/27 21:28:07  gj
 *	Added explicit check for mass-divergent boxes
 *

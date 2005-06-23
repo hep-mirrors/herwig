@@ -1,9 +1,7 @@
 *--#[ log:
-*	$Id$
-*	$Log$
 *	Revision 1.1  2005/06/13 11:27:52  dgrell
 *	Switched to libtool build process. Run 'autoreconf -vi' to generate all required files.
-*
+*	
 c Revision 1.4  1996/01/22  13:32:52  gj
 c Added sanity check on ier; if it is larger than 16 some routines will not
 c compute anything.
