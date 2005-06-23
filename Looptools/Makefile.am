@@ -45,9 +45,11 @@ FFLAGS=-g -O0
 AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
+libHwLooptools_la_LIBADD   = $(FLIBS)
 
 libHwLooptoolsCheck_la_SOURCES = $(theFFSOURCES) $(theLTCHECKSOURCES)
+libHwLooptoolsCheck_la_LIBADD   = $(FLIBS)
 
 noinst_PROGRAMS = tester
 tester_SOURCES = tester.cc
-tester_LDADD = libHwLooptools.la -lg2c
+tester_LDADD = libHwLooptools.la
