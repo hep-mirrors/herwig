@@ -56,9 +56,10 @@ public:
    * @param id1 The PDG codes for the first  set of particles.
    * @param id2 The PDG codes for the second set of particles.
    * @param id3 The PDG codes for the third  set of particles.
+   * @param kine Whether the kinematic invariants should be calculated.
    */
   inline VertexBase(int ispin1,int ispin2,int ispin3,
-		    vector<int> id1,vector<int> id2,vector<int> id3);
+		    vector<int> id1,vector<int> id2,vector<int> id3,bool kine=false);
 
   /**
    * Constructor for four point vertices.
@@ -70,9 +71,11 @@ public:
    * @param id2 The PDG codes for the second set of particles.
    * @param id3 The PDG codes for the third  set of particles.
    * @param id4 The PDG codes for the fourth  set of particles.
+   * @param kine Whether the kinematic invariants should be calculated.
    */
   inline VertexBase(int ispin1,int ispin2,int ispin3,int ispin4,
-		    vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4);
+		    vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4,
+		    bool kine=false);
 
   /**
    * Constructor for five point vertices.
@@ -86,16 +89,18 @@ public:
    * @param id3 The PDG codes for the third  set of particles.
    * @param id4 The PDG codes for the fourth set of particles.
    * @param id5 The PDG codes for the fifth  set of particles.
+   * @param kine Whether the kinematic invariants should be calculated.
    */
   inline VertexBase(int ispin1,int ispin2,int ispin3,int ispin4,int ispin5,
 		    vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4,
-		    vector<int> id5);
+		    vector<int> id5,bool kine=false);
 
   /**
    * Constructor for \f$n\f$-point vertices.
    * @param npoint The number of external particles.
+   * @param kine Whether the kinematic invariants should be calculated.
    */
-  inline VertexBase(int npoint);
+  inline VertexBase(int npoint,bool kine=false);
 
   /**
    * Destructor.
@@ -138,7 +143,7 @@ public:
    * @param id2 PDG code of the second particle.
    * @param id3 PDG code of the third particle.
    */
-  inline void add(int id1,int id2,int id3);
+  void add(int id1,int id2,int id3);
 
   /**
    * Add item to four point list.
@@ -147,7 +152,7 @@ public:
    * @param id3 PDG code of the third particle.
    * @param id4 PDG code of the fourth particle.
    */
-  inline void add(int id1,int id2,int id3,int id4);
+  void add(int id1,int id2,int id3,int id4);
 
   /**
    * Add item to five  point list.
@@ -157,7 +162,7 @@ public:
    * @param id4 PDG code of the fourth particle.
    * @param id5 PDG code of the fifth particle.
    */
-  inline void add(int id1,int id2,int id3,int id4,int id5);
+  void add(int id1,int id2,int id3,int id4,int id5);
   //@}
 
   /**
@@ -346,12 +351,12 @@ protected:
   /**
    * Set the list of incoming particles.
    */
-  inline void setIncoming();
+  void setIncoming();
 
   /**
    * Set the list of outgoing particles.
    */
-  inline void setOutgoing();
+  void setOutgoing();
 
   /**
    * Set the number of external particles.
@@ -387,6 +392,45 @@ protected:
   inline Complex normPropagator(int iopt, Energy2 q2,tcPDPtr part);
   //@}    
 
+  /** @name Kinematic invariants for loop diagrams */
+  //@{
+
+  /**
+   * Whether or not to calculate the kinematics invariants
+   */
+  inline bool kinematics();
+
+  /**
+   * Set whether or not to calculate the kinematics invariants
+   */
+  inline void kinematics(bool );
+
+  /**
+   *  Calculate the kinematics for a 3-point vertex
+   */
+  inline void calculateKinematics(const Lorentz5Momentum &,const Lorentz5Momentum &,
+				  const Lorentz5Momentum &);
+  /**
+   *  Calculate the kinematics for a 4-point vertex
+   */
+  inline void calculateKinematics(const Lorentz5Momentum &,const Lorentz5Momentum &,
+				  const Lorentz5Momentum &,const Lorentz5Momentum &);
+  /**
+   *  Calculate the kinematics for a 5-point vertex
+   */
+  inline void calculateKinematics(const Lorentz5Momentum &,const Lorentz5Momentum &,
+				  const Lorentz5Momentum &,const Lorentz5Momentum &,
+				  const Lorentz5Momentum &);
+  /**
+   *  Calculate the kinematics for a n-point vertex
+   */
+  inline void calculateKinematics(const vector<Lorentz5Momentum> &);
+
+  /**
+   * Get one of the kinematic invariants
+   */
+  inline Energy2 invariant(unsigned int,unsigned int);
+  //@}
 private:
   
   /**
@@ -496,6 +540,15 @@ private:
    */
   Complex _norm;
 
+  /**
+   * Whether or not to calculate the kinematic invariants for the vertex
+   */
+  bool _calckinematics;
+
+  /**
+   * Kinematica quantities needed for loop vertices
+   */
+  Energy2 _kine[5][5];
 };
   
 /**
