@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the PartonicHadronizer class.
+//
+#ifndef ThePEG_PartonicHadronizer_FH
+#define ThePEG_PartonicHadronizer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class PartonicHadronizer;
+ThePEG_DECLARE_POINTERS(PartonicHadronizer,PartonicHadronizerPtr);
+
+}
+
+#endif

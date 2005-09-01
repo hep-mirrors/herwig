@@ -1,0 +1,318 @@
+// -*- C++ -*-
+#ifndef HERWIG_PartonicHadronizer_H
+#define HERWIG_PartonicHadronizer_H
+//
+// This is the declaration of the PartonicHadronizer class.
+//
+
+#include "Herwig++/Utilities/GlobalParameters.h"
+#include <ThePEG/Handlers/EventHandler.h>
+#include "PartonSplitter.h"
+#include "ClusterFinder.h"
+#include "ColourReconnector.h"
+#include "ClusterFissioner.h"
+#include "LightClusterDecayer.h"
+#include "ClusterDecayer.h"
+#include "Cluster.h"
+#include "ThePEG/Interface/Interfaced.h"
+#include "PartonicHadronizer.fh"
+#include "Cluster.h"  
+
+namespace Herwig {
+using namespace ThePEG;
+
+ThePEG_DECLARE_MULTISET(tcPDPtr,cParticleMSet);
+
+/** \ingroup Hadronization
+ *  \class PartonicHadronizer
+ *  \brief Performs cluster hadronization in partonic bottom and charm meson decays.
+ *  \author Peter Richardson
+ *
+ *  This class is based on the ClusterHadronization handler and is designed
+ *  to be called by the HwDecayHandler to perform the hadronization of partonic
+ *  bottom and charm meson decays. This is done so that these decays can be vetoed
+ *  if the hadronization produces a decay mode which is all ready included as an
+ *  inclusive mode to avoid double counting.
+ * 
+ *  Notice that the access to the GlobalParameters class 
+ *  instance is provided only to allow non-interfaced and non-persistent classes
+ *  (Cluster) to access the global parameters and/or to draw 
+ *  random numbers. This is done in the run initialization, doinitrun()
+ *  by setting static pointers defined in those non-interfaced and 
+ *  non-persistent classes.
+ *
+ *  @see GlobalParameters
+ *  @see PartonSplitter
+ *  @see ClusterFinder
+ *  @see ColourReconnector
+ *  @see ClusterFissioner
+ *  @see LightClusterDecayer
+ *  @see ClusterDecayer
+ *  @see Cluster
+ *  @see ClusterHadronizationHandler
+ */ 
+class PartonicHadronizer: public Interfaced {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
+  inline PartonicHadronizer();
+
+  /**
+   * The copy constructor.
+   */
+  inline PartonicHadronizer(const PartonicHadronizer &);
+
+  /**
+   * The destructor.
+   */
+  virtual ~PartonicHadronizer();
+  //@}
+
+
+public:
+
+  /**
+   * The main method which manages the all cluster hadronization.
+   *
+   * This routine directs "traffic". It determines which function is called
+   * and on which particles/clusters. This function also handles the 
+   * situation of vetos on the hadronization.
+   * @param parent The parent for the decay.
+   * @param The step in which to place the products.
+   * @param The event handler
+   * @param hadrons The hadrons produced in the decay
+   * @return Whether or not the hadronization was successful.
+   */
+  bool hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,vector<tPPtr> & hadrons);
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
+  //@}
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<PartonicHadronizer> initPartonicHadronizer;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  PartonicHadronizer & operator=(const PartonicHadronizer &);
+
+private:
+
+  /** @name Members to handle the vetoing of decays where the cluster model
+   * reproduces inclusive modes. 
+   */
+  //@{
+
+  /**
+   * Find the clusters produced in partonic hadron decays
+   * @param step The step to search
+   * @param hmap Map of clusters to hadrons which produced them
+   * @param parent The decaying particles.
+   * @param clusters The clusters produced in the decay.
+   */
+  void findPartonicClusters(Step & pstep,tPPtr parent,vector<tcPPtr> & clusters);
+  
+  /**
+   * Does a cluster only decay to hadrons
+   * @param clu The cluster
+   * @return Whether or not the cluster decays to hadrons.
+   */
+  bool hadronicCluster(tPPtr clu);
+
+  /**
+   * Check hadrons produce in a partonic hadron decay do not reproduce an inclusive
+   * mode.
+   * @param partonichadrons A map containing the decaying hadrons and the clusters
+   * produced in their decay.
+   * @param parent The decaying particles.
+   * @param clusters The clusters produced in the decay.
+   * @param hadrons The hadrons produced in the partonic decay.
+   * @return Whether or not there are duplicate modes.
+   */
+  bool duplicateMode(tPPtr parent,vector<tcPPtr> & clusters,vector<tPPtr> & hadrons);
+
+  //@}
+
+private:
+
+  /**
+   * This is a pointer to a Herwig::GlobalParameters object.
+   */
+  GlobParamPtr           _globalParameters;
+
+  /**
+   * This is a pointer to a Herwig::PartonSplitter object.
+   */
+  PartonSplitterPtr      _partonSplitter;
+
+  /**
+   * This is a pointer to a Herwig::ClusterFinder object.
+   */
+  ClusterFinderPtr       _clusterFinder;
+
+  /**
+   * This is a pointer to a Herwig::ColourReconnector object.
+   */
+  ColourReconnectorPtr   _colourReconnector;
+
+  /**
+   * This is a pointer to a Herwig::ClusterFissioner object.
+   */
+  ClusterFissionerPtr    _clusterFissioner;
+
+  /**
+   * This is a pointer to a Herwig::LightClusterDecayer object.
+   */
+  LightClusterDecayerPtr _lightClusterDecayer;
+
+  /**
+   * This is a pointer to a Herwig::ClusterDecayer object.
+   */
+  ClusterDecayerPtr      _clusterDecayer; 
+
+  /**
+   * Switch to control hadrons produced in partonic b and c decays
+   */
+  bool _exclusive;
+
+  /**
+   *  Number of tries for partonic modes
+   */
+  unsigned int _partontries;
+
+};
+
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** This template specialization informs ThePEG about the
+ *  base classes of PartonicHadronizer. */
+template <>
+struct BaseClassTrait<Herwig::PartonicHadronizer,1> {
+  /** Typedef of the first base class of PartonicHadronizer. */
+  typedef Interfaced NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the PartonicHadronizer class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::PartonicHadronizer>
+  : public ClassTraitsBase<Herwig::PartonicHadronizer> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig++::PartonicHadronizer"; }
+  /** Return the name of the shared library be loaded to get
+   *  access to the PartonicHadronizer class and every other class it uses
+   *  (except the base class). */
+  static string library() { return "libHwHadronization.so"; }
+};
+
+}
+
+#include "PartonicHadronizer.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "PartonicHadronizer.tcc"
+#endif
+
+#endif /* HERWIG_PartonicHadronizer_H */

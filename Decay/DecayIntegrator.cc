@@ -154,12 +154,11 @@ void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width)
     {_modes[ix]->resetIntermediate(part,mass,width);}
 } 
 
-bool DecayIntegrator::twoBodyMEcode(const DecayMode & dm, int &, double &) const
+bool DecayIntegrator::twoBodyMEcode(const DecayMode & dm, int & imode, double & g) const
 {
-  throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::twoBodyMEcode"
-			       << " method this must be overwritten in the classes "
-			       << "inheriting from DecayIntegrator where it is needed"
-			       << Exception::runerror;
+  g=1.;
+  imode=-1;
+  return true;
 }
 
 // the matrix element to be integrated for the me
@@ -262,8 +261,6 @@ int DecayIntegrator::findMode(const DecayMode & dm)
   bool found(false);
   int id;
   unsigned int ix(0),iy,N,iz,tmax,nmatched;
-  cout << "testing the number of modes " << _modes.size() << endl;
-
   if(_modes.size()==0){return -1;}
   do 
     {
@@ -321,11 +318,6 @@ int DecayIntegrator::findMode(const DecayMode & dm)
       ++ix;
     }
   while(!found&&ix<_modes.size());
-  cout << "testing found mode " << _modes[imode]->externalParticles(0)->PDGName() 
-	<< " -> ";
-  for(ix=1;ix<_modes[imode]->numberofParticles();++ix)
-    {cout << _modes[imode]->externalParticles(ix)->PDGName() << " ";}
-  cout << endl;
   return imode;
 }
 
