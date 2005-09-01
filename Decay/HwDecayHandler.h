@@ -5,6 +5,7 @@
 // This is the declaration of the HwDecayHandler class.
 //
 #include "ThePEG/Handlers/DecayHandler.h"
+#include "Herwig++/Hadronization/PartonicHadronizer.h"
 
 using namespace ThePEG;
 namespace Herwig {
@@ -36,12 +37,12 @@ public:
   /**
    * Default constructor
    */
-  inline HwDecayHandler() : DecayHandler() {}
+  inline HwDecayHandler();
 
   /**
    * Copy constructor
    */
-  inline HwDecayHandler(const HwDecayHandler &x) : DecayHandler(x) {}
+  inline HwDecayHandler(const HwDecayHandler &x);
 
   /**
    * Destructor
@@ -109,13 +110,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  virtual IBPtr clone() const;
+  inline virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  virtual IBPtr fullclone() const;
+  inline virtual IBPtr fullclone() const;
   //@}
 
   /** @name Standard Interfaced functions. */
@@ -170,6 +171,17 @@ private:
    */
   HwDecayHandler & operator=(const HwDecayHandler &);
 
+private:
+
+  /**
+   * Pointer to the object for the hadronization of partonic decays
+   */
+  PartonicHadronizerPtr _partonhad;
+
+  /**
+   *  Number of tries to regenerate a partonic decay to sucessfully hadronize it
+   */
+  unsigned int _hadtry;
 };
 }
 
@@ -201,5 +213,10 @@ struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDec
 };
 
 }
+
+#include "HwDecayHandler.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "HwDecayHandler.tcc"
+#endif
 
 #endif /* HERWIG_HwDecayHandler_H */
