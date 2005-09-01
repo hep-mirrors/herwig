@@ -1,0 +1,65 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the WeakPartonicDecayer class.
+//
+
+namespace Herwig {
+
+inline WeakPartonicDecayer::WeakPartonicDecayer() 
+{_MECode=0;}
+
+inline WeakPartonicDecayer::WeakPartonicDecayer(const WeakPartonicDecayer & x)
+  : Decayer(x),_MECode(x._MECode),_globalParameters(x._globalParameters) {}
+
+inline IBPtr WeakPartonicDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr WeakPartonicDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void WeakPartonicDecayer::doupdate() throw(UpdateException) {
+  Decayer::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void WeakPartonicDecayer::doinit() throw(InitException) {
+  Decayer::doinit();
+}
+
+inline void WeakPartonicDecayer::dofinish() {
+  Decayer::dofinish();
+}
+
+inline void WeakPartonicDecayer::doinitrun() {
+  Decayer::doinitrun();
+}
+
+inline void WeakPartonicDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Decayer::rebind(trans);
+}
+
+inline IVector WeakPartonicDecayer::getReferences() {
+  IVector ret = Decayer::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

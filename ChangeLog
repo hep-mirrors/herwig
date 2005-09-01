@@ -1,4 +1,8 @@
-2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.fh (Repository): added new partonic decayers for b to s gamma and weak partonic decays
+
+2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
 	* Hadronization/PartonicHadronizer.h (Repository): added new class for hadronization of partonic b and c decays.
 
