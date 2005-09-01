@@ -123,6 +123,21 @@ TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer()
   // f_2 to sigma sigma
   _incoming.push_back(225);_outgoing1.push_back(9000221);_outgoing2.push_back(9000221);
   _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  // pi_2 to sigma pi
+  _incoming.push_back(10115);_outgoing1.push_back(9000221);_outgoing2.push_back(111);
+  _incoming.push_back(10215);_outgoing1.push_back(9000221);_outgoing2.push_back(211);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  // eta_2 to a_0 pi
+  _incoming.push_back(10225);_outgoing1.push_back(9000111);_outgoing2.push_back(111);
+  _incoming.push_back(10225);_outgoing1.push_back(9000211);_outgoing2.push_back(-211);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  // eta'_2 to a_0 pi
+  _incoming.push_back(10335);_outgoing1.push_back(9000111);_outgoing2.push_back(111);
+  _incoming.push_back(10335);_outgoing1.push_back(9000211);_outgoing2.push_back(-211);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
+  _coupling.push_back(99.27/GeV);_maxweight.push_back(30.);
   // initial size of the vectors
   _initsize=_incoming.size();
 }

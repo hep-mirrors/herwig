@@ -100,6 +100,9 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
   _incoming.push_back( 535);_outgoingV.push_back( 513);_outgoingP.push_back(-311);
   _coupling.push_back(8.12/GeV2);_maxweight.push_back(2.4);
   _coupling.push_back(8.12/GeV2);_maxweight.push_back(2.1);
+  // upsilon_2(1d) to chi_b gamma
+  _incoming.push_back(20555);_outgoingV.push_back(  22);_outgoingP.push_back(10551);
+  _coupling.push_back(8.12/GeV2);_maxweight.push_back(2.4);
   // initial size of the arrays
   _initsize=_incoming.size();
 }

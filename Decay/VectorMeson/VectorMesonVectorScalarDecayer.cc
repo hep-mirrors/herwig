@@ -58,6 +58,11 @@ VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer()
   _coupling.push_back(0.000695/GeV);_maxweight.push_back(2.5);
   _incoming.push_back(100443);_outgoingV.push_back(333);_outgoingS.push_back(9010221);
   _coupling.push_back(0.000530/GeV);_maxweight.push_back(10.);
+  // rho' to sigma rho
+  _incoming.push_back(100213);_outgoingV.push_back(213);_outgoingS.push_back(9000221);
+  _incoming.push_back(100113);_outgoingV.push_back(113);_outgoingS.push_back(9000221);
+  _coupling.push_back(0.174/GeV);_maxweight.push_back(2.5);
+  _coupling.push_back(0.174/GeV);_maxweight.push_back(2.5);
   // initial size of the arrays
   _initsize = _coupling.size();
 }

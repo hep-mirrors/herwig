@@ -178,8 +178,9 @@ double PScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
 
       // workaround for gcc 3.2.3 bug
       //ALB VectorWaveFunction(wave[ix],decay[ix],outgoing,true,photon[ix],vertex);
-      vector<LorentzPolarizationVector> mytempLPV = wave[ix]; 
+      vector<LorentzPolarizationVector> mytempLPV; 
       VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
+      wave[ix]=mytempLPV;
     }
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);

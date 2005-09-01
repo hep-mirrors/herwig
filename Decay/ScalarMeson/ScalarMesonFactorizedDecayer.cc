@@ -500,12 +500,18 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       if(iy==1){PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
       else if(iy==3)
 	//ALB {VectorWaveFunction(vecwave[ix],decay[ix],outgoing,true,false,vertex);}
-	{vector<LorentzPolarizationVector> mytempLPV = vecwave[ix]; 
-         VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,false,vertex);}
+	{
+	  vector<LorentzPolarizationVector> mytempLPV ; 
+	  VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,false,vertex);
+	  vecwave[ix]=mytempLPV ;
+	}
       else if(iy==5)
 	//ALB {TensorWaveFunction(tenwave[ix],decay[ix],outgoing,true,false,vertex);}
-	{vector<LorentzTensor> mytempLT = tenwave[ix];
-         TensorWaveFunction(mytempLT,decay[ix],outgoing,true,false,vertex);}
+	{
+	  vector<LorentzTensor> mytempLT;
+	  TensorWaveFunction(mytempLT,decay[ix],outgoing,true,false,vertex);
+	  tenwave[ix]=mytempLT;
+	}
     }
   // create the matrix element
   vector<PDT::Spin> spin;

@@ -64,11 +64,6 @@ VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer()
   _incoming.push_back( 323);_outgoingV.push_back( 22);_outgoingP.push_back( 321);
   _coupling.push_back(0.384/GeV);_maxweight.push_back(2.);
   _coupling.push_back(0.253/GeV);_maxweight.push_back(2.);
-  // excited psi decay
-  _incoming.push_back(9000443);_outgoingV.push_back(423);_outgoingP.push_back(-421);
-  _coupling.push_back(0.526/GeV);_maxweight.push_back(2.5);
-  _incoming.push_back(9000443);_outgoingV.push_back(413);_outgoingP.push_back(-411);
-  _coupling.push_back(0.526/GeV);_maxweight.push_back(2.5);
   // d* decay
   _incoming.push_back( 423);_outgoingV.push_back(22);_outgoingP.push_back( 421);
   _coupling.push_back(0.616/GeV);_maxweight.push_back(2.);

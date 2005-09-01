@@ -149,6 +149,7 @@ ParticleVector RadiativeHeavyBaryonDecayer::decay(const DecayMode & dm,
     {
       if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]){imode=ix;cc=false;}
       else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]){imode=ix;cc=true;}
+      ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
   // generate the decay

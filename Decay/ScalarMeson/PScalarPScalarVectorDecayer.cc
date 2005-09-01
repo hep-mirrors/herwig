@@ -64,6 +64,16 @@ PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer()
   _incoming.push_back( 9020221);_outgoingV.push_back( 313);_outgoingP.push_back(-311);
   _coupling.push_back(0.98);_maxweight.push_back(4.);
   _coupling.push_back(0.98);_maxweight.push_back(4.);
+  // decay f_0(1370) to a_1 pi
+  _incoming.push_back( 10221);_outgoingV.push_back(20213);_outgoingP.push_back(-211);
+  _incoming.push_back( 10221);_outgoingV.push_back(20113);_outgoingP.push_back( 111);
+  _coupling.push_back(3.57);_maxweight.push_back(4.5);
+  _coupling.push_back(3.57);_maxweight.push_back(4.5);
+  // decay f_0(1500) to a_1 pi
+  _incoming.push_back( 9030221);_outgoingV.push_back(20213);_outgoingP.push_back(-211);
+  _incoming.push_back( 9030221);_outgoingV.push_back(20113);_outgoingP.push_back( 111);
+  _coupling.push_back(1.502);_maxweight.push_back(3.2);
+  _coupling.push_back(1.502);_maxweight.push_back(3.2);
   // initial size of the arrays
   _initsize=_incoming.size();
 }
@@ -216,7 +226,7 @@ bool PScalarPScalarVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & meco
   ++pit;
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  unsigned int ix(0); bool order;
+  unsigned int ix(0); bool order(true);
   do 
     {
       if(id   ==_incoming[ix])

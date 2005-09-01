@@ -117,7 +117,7 @@ bool PScalarVectorFermionsDecayer::accept(const DecayMode & dm) const {
   // must be three outgoing particles
   if(dm.products().size()!=3){return allowed;}
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],idv;
+  int id0(dm.parent()->id()),idf[2],idv(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)
@@ -143,7 +143,7 @@ ParticleVector PScalarVectorFermionsDecayer::decay(const DecayMode & dm,
   // workout which mode we are doing
   int imode(-1);
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],idv;
+  int id0(dm.parent()->id()),idf[2],idv(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)
@@ -260,7 +260,6 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int ichan,
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
   tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-
   // vectors containing the spinors and polarization vectors
   vector<LorentzSpinor> wave;
   vector<LorentzSpinorBar> wavebar;
@@ -332,7 +331,7 @@ PScalarVectorFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   // workout which mode we are doing
   int imode(-1);
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],idv;
+  int id0(dm.parent()->id()),idf[2],idv(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)

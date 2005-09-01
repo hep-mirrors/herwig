@@ -1,5 +1,7 @@
 2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
 
+	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository): various minor fixes to the decay classes.
+
 	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository): added new decayer for S -> VV
 
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>

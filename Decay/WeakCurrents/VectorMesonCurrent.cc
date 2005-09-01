@@ -174,7 +174,11 @@ unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
 {
   int idtemp(abs(idout[0])); unsigned int ix(0);
   bool found(false);
-  do{if(idtemp==abs(_id[ix])){found=true;}++ix;}
+  do
+    {
+      if(idtemp==abs(_id[ix])){found=true;}
+      else{++ix;}
+    }
   while(!found);
   return ix;
 }

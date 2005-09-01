@@ -163,7 +163,6 @@ halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
   //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
   PPtr mytemp = decay[1];
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
   // get the couplings
   Complex A,B;
   halfHalfScalarCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),A,B);
@@ -529,10 +528,12 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int 
           // workaround for gcc 3.2.3 bug
 	  //ALB sbar.push_back(Rsbar[ix].dot(decay[0]->momentum()));
 	  //ALB sp.push_back(Rsp[ix].dot(inpart.momentum()));
-          LorentzRSSpinorBar tempRsbar = Rsbar[ix];
+          LorentzRSSpinorBar tempRsbar;
 	  sbar.push_back(tempRsbar.dot(decay[0]->momentum()));
-	  LorentzRSSpinor tempRsp = Rsp[ix];
+	  Rsbar[ix]=tempRsbar;
+	  LorentzRSSpinor tempRsp;
 	  sp.push_back(tempRsp.dot(inpart.momentum()));
+	  Rsp[ix]=tempRsp;
 
 	}
     }

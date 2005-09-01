@@ -458,8 +458,8 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 			   << " KornerKramerCharmDecayer::doinit()" 
 			   << Exception::abortnow;}
   // compute the various coefficients
-  Energy m1,m2,m3,fmes; 
-  Energy2 P1P2,Qplus,Qminus,gmes;
+  Energy m1,m2,m3,fmes(0.); 
+  Energy2 P1P2,Qplus,Qminus,gmes(0.);
   double Fnonfact,H2,H3,A,B,A2,B2,A3,B3,Ffact[2];
   int mspin,bspin;
   double chi,
@@ -661,7 +661,8 @@ bool KornerKramerCharmDecayer::accept(const DecayMode & dm) const {
 	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
 	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
 	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){allowed=true;}
+	      _outgoingM[ix]==113||_outgoingM[ix]==223||_outgoingM[ix]==333))
+	    {allowed=true;}
 	}
       ++ix;
     }
@@ -675,7 +676,7 @@ ParticleVector KornerKramerCharmDecayer::decay(const DecayMode & dm,
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id());++pit;
   int id2((**pit).id());
-  unsigned int ix(0);bool cc;
+  unsigned int ix(0);bool cc(false);
   do 
     {
       if(id==_incoming[ix])

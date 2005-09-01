@@ -204,8 +204,9 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
 
       // workaround for gcc 3.2.3 bug
       //ALB VectorWaveFunction(pol[ix],decay[ix],outgoing,true,photon[ix],vertex);
-      vector<LorentzPolarizationVector> mytempLPV = pol[ix];
+      vector<LorentzPolarizationVector> mytempLPV;
       VectorWaveFunction(mytempLPV,decay[ix],outgoing,true,photon[ix],vertex);
+      pol[ix]=mytempLPV;
     }
   // compute some useful dot products etc
   Complex p1eps2[3],p2eps1[3];

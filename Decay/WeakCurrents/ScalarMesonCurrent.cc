@@ -151,7 +151,6 @@ ScalarMesonCurrent::current(bool vertex, const int imode, const int ichan,
 {
   static const Complex ii(0.,1.);
   scale = decay[0]->mass();
-
   // workaround for gcc 3.2.3 bug*
   // set up the spin information for the particle
   //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
@@ -196,7 +195,10 @@ unsigned int ScalarMesonCurrent::decayMode(vector<int> idout)
   int idtemp(abs(idout[0])); unsigned int ix(0);
   bool found(false);
   do
-    {if(idtemp==abs(_id[ix])){found=true;}++ix;}
+    {
+      if(idtemp==abs(_id[ix])){found=true;}
+      else{++ix;}
+    }
   while(!found);
   return ix;
 }

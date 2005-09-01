@@ -17,13 +17,13 @@ using namespace ThePEG;
  *  from the lightest multiplet.
  *
  *  The coupling is taken to have the form
- *  \f[\frac{C}{f_pi}\left[
+ *  \f[\frac{C}{f_\pi}\left[
  *  \bar{\Delta}^{\mu,abc}p_{\phi,\mu}\phi^i_aB^j_b\epsilon_{cij}
  * -\bar{B}^b_ip_{\phi,\mu}\phi^a_j\Delta^\mu_{abc}\epsilon^{cij}
  *  \right],\f]
  *  where \f$\Delta^\mu_{abc}\f$ is the decuplet field, \f$B^j_b\f$
  *  is the octet field and
- *  \f$\phi^i_a\f$ is the pseudoscalar field, \f$\f_pi\f$ is the pion decay constant
+ *  \f$\phi^i_a\f$ is the pseudoscalar field, \f$f_\pi\f$ is the pion decay constant
  *  and \f$C\f$ is the coupling for the decay.
  *
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are

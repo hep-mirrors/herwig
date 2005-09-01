@@ -25,11 +25,6 @@ using Helicity::outgoing;
 
 VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer() 
 {
-  // decay of the psi(4040) to D* D*
-  _incoming.push_back(9000443);_outgoing1.push_back(423);_outgoing2.push_back(-423);
-  _incoming.push_back(9000443);_outgoing1.push_back(413);_outgoing2.push_back(-413);
-  _coupling.push_back(16.26);_maxweight.push_back(3.);
-  _coupling.push_back(16.26);_maxweight.push_back(3.);
   // decay of rho'' to rho rho
   _incoming.push_back(30213);_outgoing1.push_back( 213);_outgoing2.push_back(113);
   _incoming.push_back(30113);_outgoing1.push_back(-213);_outgoing2.push_back(213);
@@ -167,9 +162,12 @@ VectorMesonVectorVectorDecayer::decayCurrent(const bool vertex, const int,
     // workaround for gcc 3.2.3 bug
     //ALB {VectorWaveFunction(eps[ix],decay[ix],outgoing,true,
     //ALB			decay[ix]->id()==ParticleID::gamma,vertex);}
-    {vector<LorentzPolarizationVector> mytemp = eps[ix]; 
-     VectorWaveFunction(mytemp,decay[ix],outgoing,true,
-			decay[ix]->id()==ParticleID::gamma,vertex);}
+    {
+      vector<LorentzPolarizationVector> mytemp; 
+      VectorWaveFunction(mytemp,decay[ix],outgoing,true,
+			decay[ix]->id()==ParticleID::gamma,vertex);
+      eps[ix]=mytemp;
+    }
 
   // work out the dot product we need for the current
   Complex p1p2((decay[0]->momentum())*(decay[1]->momentum()));

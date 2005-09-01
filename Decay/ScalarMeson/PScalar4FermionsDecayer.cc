@@ -242,12 +242,10 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
 				    const ParticleVector & decay) const
 {
   bool identical((_outgoing1[imode()]==_outgoing2[imode()]));
-
   // workaround for gcc 3.2.3 bug
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
   tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-
   // vectors for the spinors
   vector<LorentzSpinor> wave[2];
   vector<LorentzSpinorBar> wavebar[2];
@@ -258,10 +256,12 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
     {
       //ALB SpinorBarWaveFunction(wavebar[ix],decay[2*ix  ],outgoing,true,vertex);
       //ALB SpinorWaveFunction   (   wave[ix],decay[2*ix+1],outgoing,true,vertex);
-      vector<LorentzSpinorBar> mytempLSbar = wavebar[ix];
+      vector<LorentzSpinorBar> mytempLSbar;
       SpinorBarWaveFunction(mytempLSbar,decay[2*ix],outgoing,true,vertex);
-      vector<LorentzSpinor> mytempLS = wave[ix];
+      wavebar[ix]=mytempLSbar;
+      vector<LorentzSpinor> mytempLS;
       SpinorWaveFunction(mytempLS,decay[2*ix+1],outgoing,true,vertex);
+      wave[ix]=mytempLS;
     }
 
   // momenta of the outgoing photons

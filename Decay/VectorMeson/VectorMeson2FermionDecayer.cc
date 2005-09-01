@@ -75,13 +75,6 @@ VectorMeson2FermionDecayer::VectorMeson2FermionDecayer()
   _coupling.push_back(1.466E-3);_coupling.push_back(1.466E-3);
   _coupling.push_back(1.466E-3);
   _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
-  // psi(4040) to leptons
-  _incoming.push_back(9000443);_outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _incoming.push_back(9000443);_outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _incoming.push_back(9000443);_outgoingf.push_back(15);_outgoinga.push_back(-15);
-  _coupling.push_back(2.606E-3);_coupling.push_back(2.606E-3);
-  _coupling.push_back(2.606E-3); 
-  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
   // upsilon 3s to leptons
   _incoming.push_back(200553);_outgoingf.push_back(11);_outgoinga.push_back(-11);
   _incoming.push_back(200553);_outgoingf.push_back(13);_outgoinga.push_back(-13);

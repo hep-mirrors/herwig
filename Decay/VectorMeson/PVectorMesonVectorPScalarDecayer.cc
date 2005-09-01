@@ -181,6 +181,12 @@ inline PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
   _incoming.push_back(20333);_outgoingP.push_back(311);_outgoingV.push_back(-313);
   _coupling.push_back(1.637/GeV);_maxweight.push_back(7.);
   _coupling.push_back(1.737/GeV);_maxweight.push_back(7.);
+  // decay mode K_1 to gamma K
+  _incoming.push_back( 10313);_outgoingV.push_back( 22);_outgoingP.push_back( 311);
+  _coupling.push_back(5.872/GeV);_maxweight.push_back(7.5);
+  // decay mode K'_1 to gamma K
+  _incoming.push_back( 20313);_outgoingV.push_back( 22);_outgoingP.push_back( 311);
+  _coupling.push_back(0.494/GeV);_maxweight.push_back(8.);
   // initial size of the arrays
   _initsize = _coupling.size();
 }

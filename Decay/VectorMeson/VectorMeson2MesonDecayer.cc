@@ -100,11 +100,6 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer()
   _incoming.push_back(30443);_outgoing1.push_back( 421);_outgoing2.push_back(-421);
   _coupling.push_back(13.375);_maxweight.push_back(2.);
   _coupling.push_back(13.375);_maxweight.push_back(2.);
-  // excited psi decays
-  _incoming.push_back(9000443);_outgoing1.push_back(421);_outgoing2.push_back(-421);
-  _incoming.push_back(9000443);_outgoing1.push_back(411);_outgoing2.push_back(-411);
-  _coupling.push_back(0.350);_maxweight.push_back(2.);
-  _coupling.push_back(0.350);_maxweight.push_back(2.);
   // D* decays
   _incoming.push_back( 423);_outgoing1.push_back( 421);_outgoing2.push_back(111);
   _incoming.push_back( 413);_outgoing1.push_back( 411);_outgoing2.push_back(111);

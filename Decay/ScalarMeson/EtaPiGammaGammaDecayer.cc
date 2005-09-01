@@ -216,7 +216,6 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
 				   const ParticleVector & decay) const
 {
   unsigned int ix,iy;
-
   // workaround for gcc 3.2.3 bug
   // spin info of the decaying particle
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
@@ -230,8 +229,11 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
   for(ix=0;ix<2;++ix)
     //ALB  {VectorWaveFunction(vwave[ix],decay[ix+1],outgoing,true,true,vertex);}
   //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-    {vector<LorentzPolarizationVector> mytempLPV = vwave[ix]; 
-    VectorWaveFunction(mytempLPV,decay[ix+1],outgoing,true,true,vertex);}
+    {
+      vector<LorentzPolarizationVector> mytempLPV;
+      VectorWaveFunction(mytempLPV,decay[ix+1],outgoing,true,true,vertex);
+      vwave[ix]=mytempLPV; 
+    }
   PPtr mytemp = decay[0];
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
 

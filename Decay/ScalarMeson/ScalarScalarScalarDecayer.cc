@@ -176,6 +176,31 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   // chi_0c decays to eta eta
   _incoming.push_back(10441);_outgoing1.push_back(221);_outgoing2.push_back(221);
   _coupling.push_back(0.064*GeV);_maxweight.push_back(1.05);
+  // f_0(1500) to pipi
+  _incoming.push_back(9030221);_outgoing1.push_back(211);_outgoing2.push_back(-211);
+  _incoming.push_back(9030221);_outgoing1.push_back(111);_outgoing2.push_back(111);
+  _coupling.push_back(1.398*GeV);_maxweight.push_back(1.05);
+  _coupling.push_back(0.989*GeV);_maxweight.push_back(1.05);
+  // f_0(1500) to sigma sigma
+  _incoming.push_back(9030221);_outgoing1.push_back(9000221);
+  _outgoing2.push_back(9000221);
+  _coupling.push_back(5.902*GeV);_maxweight.push_back(7.);
+  // f_0(1500) to eta eta
+  _incoming.push_back(9030221);_outgoing1.push_back(221);_outgoing2.push_back(221);
+  _coupling.push_back(0.809*GeV);_maxweight.push_back(1.05);
+  // f_0(1500) to eta eta'
+  _incoming.push_back(9030221);_outgoing1.push_back(221);_outgoing2.push_back(331);
+  _coupling.push_back(2.712*GeV);_maxweight.push_back(4.5);
+  // f_0(1500) to K K
+  _incoming.push_back(9030221);_outgoing1.push_back(321);_outgoing2.push_back(-321);
+  _incoming.push_back(9030221);_outgoing1.push_back(311);_outgoing2.push_back(-311);
+  _coupling.push_back(0.686*GeV);_maxweight.push_back(1.05);
+  _coupling.push_back(0.686*GeV);_maxweight.push_back(1.05);
+  // f_0(1500) to pi' pi
+  _incoming.push_back(9030221);_outgoing1.push_back(100111);_outgoing2.push_back(111);
+  _incoming.push_back(9030221);_outgoing1.push_back(100211);_outgoing2.push_back(-211);
+  _coupling.push_back(5.027*GeV);_maxweight.push_back(2.1);
+  _coupling.push_back(5.027*GeV);_maxweight.push_back(2.1);
   // initial size
   _initsize = _coupling.size();
 }
@@ -324,7 +349,7 @@ bool ScalarScalarScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
   ++pit;
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  unsigned int ix(0); bool order;
+  unsigned int ix(0); bool order(true);
   do 
     {
       if(id   ==_incoming[ix])
