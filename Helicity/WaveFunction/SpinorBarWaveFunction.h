@@ -431,43 +431,44 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzSpinorBar>& wave,tPPtr part,bool time,
-				bool vertex=true);
+  void constructSpinInfo(vector<LorentzSpinorBar>& wave,tPPtr part,bool time,
+			 bool vertex=true);
 
   /**
    * Calculate the spinors, as LorentzSpinorBar objects,
    * for all helicities, create and set up the SpinInfo object
    * @param wave The spinors for the different helicities.
-   * @rho The \f$\rho\f$ matrix for the particle
+   * @param rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzSpinorBar>& wave,RhoDMatrix& rho,
-				tPPtr part,bool time,bool vertex=true);
+  void constructSpinInfo(vector<LorentzSpinorBar>& wave,RhoDMatrix& rho,
+			 tPPtr part,bool time,bool vertex=true);
 
   /**
    * Calculate the spinors, as SpinorBarWaveFunction objects,
-   *  for all helicities, create and set up the SpinInfo object
+   * for all helicities, create and set up the SpinInfo object
    * @param wave The spinors for the different helicities.
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,tPPtr part,bool time,
-				bool vertex=true);
+  void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,tPPtr part,bool time,
+			 bool vertex=true);
 
   /**
-   * Calculate the spinors, as SpinorBar objects,
-   *  for all helicities, create and set up the SpinInfo object
+   * Calculate the spinors, as SpinorBarWaveFunction objects,
+   * for all helicities, create and set up the SpinInfo object
    * @param wave The spinors for the different helicities.
-   * @rho The \f$\rho\f$ matrix for the particle
+   * @param rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,RhoDMatrix& rho,
-				tPPtr part,bool time,bool vertex=true);
+  void constructSpinInfo(vector<SpinorBarWaveFunction>& wave,RhoDMatrix& rho,
+			 tPPtr part,bool time,bool vertex=true);
+
 private:
 
   /**

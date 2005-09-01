@@ -180,7 +180,7 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the ScalarSpinInfo object
    */
-  inline ScalarWaveFunction(tPPtr part,Direction dir,bool time, bool vertex);
+  ScalarWaveFunction(tPPtr part,Direction dir,bool time, bool vertex);
 
   /**
    * Special constructor which set's up a particle's SpinInfo.
@@ -190,8 +190,7 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the ScalarSpinInfo object
    */
-  inline ScalarWaveFunction(tPPtr part,RhoDMatrix& rho,Direction dir,bool time,
-			    bool vertex);
+  ScalarWaveFunction(tPPtr part,RhoDMatrix& rho,Direction dir,bool time,bool vertex);
 
   /**
    * Default constructor.

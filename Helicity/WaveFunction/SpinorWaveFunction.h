@@ -296,9 +296,6 @@ public:
 			    Direction dir,bool time, bool vertex,
 			    DiracRep drep=defaultDRep);
 
-
-
-
   /**
    * Default constructor.
    */
@@ -429,8 +426,8 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr part,bool time,
-				bool vertex=true);
+  void constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr part,bool time,
+			 bool vertex=true);
 
   /**
    * Calculate the spinors, as LorentzSpinor objects,
@@ -441,8 +438,8 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatrix& rho,tPPtr part,
-				bool time,bool vertex=true);
+  void constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatrix& rho,tPPtr part,
+			 bool time,bool vertex=true);
 
   /**
    * Calculate the spinors, as SpinorWaveFunction objects,
@@ -452,8 +449,8 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<SpinorWaveFunction>& wave,tPPtr part,bool time,
-				bool vertex=true);
+  void constructSpinInfo(vector<SpinorWaveFunction>& wave,tPPtr part,bool time,
+			 bool vertex=true);
 
   /**
    * Calculate the spinors, as SpinorWaveFunction objects,
@@ -464,8 +461,8 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<SpinorWaveFunction>& wave,RhoDMatrix& rho,
-				tPPtr part,bool time,bool vertex=true);
+  void constructSpinInfo(vector<SpinorWaveFunction>& wave,RhoDMatrix& rho,
+			 tPPtr part,bool time,bool vertex=true);
 private:
 
   /**
@@ -493,8 +490,8 @@ private:
    * @param spin Pointer to the FermionSpinInfo object
    * @param vertex Whether or not to set up the FermionSpinInfo object 
    */
-  void constructSpinInfo(vector<LorentzSpinor>& wave,tFermionSpinPtr spin,
-			 bool vertex=true);
+  inline void constructSpinInfo(vector<LorentzSpinor>& wave,tFermionSpinPtr spin,
+				bool vertex=true);
 
   /**
    * Calculate the spinors, as SpinorWaveFunction objects,
@@ -503,8 +500,8 @@ private:
    * @param spin Pointer to the FermionSpinInfo object
    * @param vertex Whether or not to set up the FermionSpinInfo object 
    */
-  void constructSpinInfo(vector<SpinorWaveFunction>& wave,tFermionSpinPtr spin,
-			 bool vertex=true);
+  inline void constructSpinInfo(vector<SpinorWaveFunction>& wave,tFermionSpinPtr spin,
+				bool vertex=true);
 private:
 
   /**

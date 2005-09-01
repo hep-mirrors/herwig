@@ -184,5 +184,239 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 			   lower*hel_wf[1],v_spinortype,dirac);}
     }
 }
+
+// construct the spininfo object
+void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr part,
+					   bool time, bool vertex)
+{
+  tFermionSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(2);
+	  wave[0]=inspin->getProductionBasisState(0);
+	  wave[1]=inspin->getProductionBasisState(1);
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  // rho matrix should be here
+	  wave.resize(2);
+	  wave[0]=inspin->getDecayBasisState(0);
+	  wave[1]=inspin->getDecayBasisState(1);
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "SpinorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatrix& rho,
+					   tPPtr part,bool time,bool vertex)
+{
+  tFermionSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(2);
+	  wave[0]=inspin->getProductionBasisState(0);
+	  wave[1]=inspin->getProductionBasisState(1);
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+      rho = RhoDMatrix(PDT::Spin1Half);rho.average();
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  rho = inspin->rhoMatrix();
+	  wave.resize(2);
+	  wave[0]=inspin->getDecayBasisState(0);
+	  wave[1]=inspin->getDecayBasisState(1);
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "SpinorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
+					   tPPtr part,bool time, bool vertex)
+{
+  tFermionSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(2);
+	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(0),direction());
+	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(1),direction());
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  // rho matrix should be here
+	  wave.resize(2);
+	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(0),direction());
+	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(1),direction());
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "SpinorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
+
+// construct the spininfo object
+void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
+					   RhoDMatrix& rho,tPPtr part,bool time,
+					   bool vertex)
+{
+  tFermionSpinPtr inspin;
+  if(part->spinInfo())
+    {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
+  if(direction()==outgoing)
+    {
+      if(inspin)
+	{
+	  wave.resize(2);
+	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(0),direction());
+	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getProductionBasisState(1),direction());
+	}
+      else
+	{
+	  if(vertex)
+	    {
+	      SpinPtr temp = new_ptr(FermionSpinInfo(part->momentum(),time));
+	      inspin=dynamic_ptr_cast<tFermionSpinPtr>(temp);
+	      part->spinInfo(temp);
+	    }
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+      rho = RhoDMatrix(PDT::Spin1Half);rho.average();
+    }
+  else
+    {
+      if(inspin)
+	{
+	  inspin->decay();
+	  rho = inspin->rhoMatrix();
+	  wave.resize(2);
+	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(0),direction());
+	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
+				     inspin->getDecayBasisState(1),direction());
+	}
+      else
+	{
+	  if(part->spinInfo())
+	    {throw ThePEG::Helicity::HelicityConsistencyError() 
+		<< "Wrong type of SpinInfo for the incoming particle in "
+		<< "SpinorWaveFunction::constructSpinInfo() "
+		<< Exception::warning;}
+	  if(vertex)
+	    {
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
+	      inspin->decayed(true);
+	      part->spinInfo(newspin);
+	    }
+	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();
+	  constructSpinInfo(wave,inspin,vertex);
+	}
+    }
+}
+
 }
 }

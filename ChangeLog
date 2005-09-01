@@ -1,4 +1,6 @@
-2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository): changes to helicity classes to move large inlined members to the .cc files
 
 	* Makefile.am (Repository): Interfaces now made automatically
 
