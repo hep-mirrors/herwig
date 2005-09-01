@@ -99,7 +99,6 @@ void ClusterHadronizationHandler::Init() {
 		       "A reference to the ClusterDecayer object", 
 		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
 		       false, false, true, false);
-  
 }
 
 
@@ -119,20 +118,25 @@ handle(EventHandler & ch, const tPVector & tagged,
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }
-  
-  _partonSplitter->split(tagged,pstep);
+
+  // split the gluons
+  tPVector partons=_partonSplitter->split(tagged,pstep);
+
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"After PartonSplitter");
   }
-  
+
+  // form the clusters
   pstep = ch.newStep();
-  _clusterFinder->formClusters(ch.currentCollision(),pstep, clusters); 
+  _clusterFinder->formClusters(ch.currentCollision(),pstep,partons,clusters); 
   _clusterFinder->reduceToTwoComponents(pstep,clusters); 
   
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {
     printStep(pstep,"After ClusterFinder");
   }
 
+  // perform colour reconnection if needed and then
+  // decay the clusters into one hadron
   bool lightOK = false;
   short tried = 0;
   while (!lightOK && tried++ < 10) {
@@ -168,9 +172,8 @@ handle(EventHandler & ch, const tPVector & tagged,
   if (lightOK && tried > 1 && HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) 
     printStep(pstep,"After LightClusterDecayer");
 
-  // cout << "Before decay\n";
+  // decay the remaining clusters
   _clusterDecayer->decay(pstep);
-  // cout << "After decay\n";
 
   // Debugging
   if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization) {    
@@ -521,7 +524,6 @@ void ClusterHadronizationHandler::debuggingInfo(EventHandler & ch,
 	    jt != ptrClu->children().end(); ++jt) {	
 	  if((*jt)->PDGName() == "Cluster") {
 	    numChildClus++;
-	    //cout << "Looking at child " << (*jt)->number() << endl;
 	    invDistParentCluster_ChildCluster += 
 	      (ptrClu->vertex() - (*jt)->vertex()).mag();
 	    spaceDistParentCluster_ChildCluster += 

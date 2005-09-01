@@ -14,8 +14,6 @@
 
 
 namespace Herwig {
-
-
 using namespace ThePEG;
 
 
@@ -38,9 +36,14 @@ using namespace ThePEG;
  *  by setting static pointers defined in those non-interfaced and 
  *  non-persistent classes.
  *
- *  See also: GlobalParameters.h, PartonSplitter.h, ClusterFinder.h,
- *  ColourReconnector.h, ClusterFissioner.h, LightClusterDecayer.h,
- *  ClusterDecayer.h, Cluster.h.
+ *  @see GlobalParameters
+ *  @see PartonSplitter
+ *  @see ClusterFinder
+ *  @see ColourReconnector
+ *  @see ClusterFissioner
+ *  @see LightClusterDecayer
+ *  @see ClusterDecayer
+ *  @see Cluster
  */ 
 class ClusterHadronizationHandler: public HadronizationHandler {
 
@@ -116,7 +119,7 @@ private:
    * Print information about the final, complete collections of clusters.
    */
   void debuggingInfo(EventHandler & ch, ClusterVector &);
- 
+
   /**
    * This is a pointer to a Herwig::GlobalParameters object.
    */
@@ -151,6 +154,7 @@ private:
    * This is a pointer to a Herwig::ClusterDecayer object.
    */
   ClusterDecayerPtr      _clusterDecayer; 
+
 };
 
 

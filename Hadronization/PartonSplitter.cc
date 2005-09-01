@@ -51,7 +51,7 @@ void PartonSplitter::Init() {
 }
 
 
-void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
+tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 
   tParticleVector newPartons;  // only for debugging
 
@@ -62,61 +62,73 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     generator()->log() << "################################################\n";
   }
   //  cout << "Splitting\n";
+  tPVector newtag;
   // Loop over all of the particles in the event.
-  for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) {
-    if ( (**pit).data().id() == ParticleID::g ) {     // gluon
-
-      if ( (**pit).momentum().m2() > 0.0 ){           // time like
-	PPtr ptrQ = PPtr();
-	PPtr ptrQbar = PPtr();
-	splitTimeLikeGluon(*pit,ptrQ,ptrQbar);
-	Energy Q0 = _globalParameters->effectiveGluonMass();
-	ptrQ->scale(Q0*Q0);
-	ptrQbar->scale(Q0*Q0);
-	pstep->addDecayProduct(*pit,ptrQ);
-	pstep->addDecayProduct(*pit,ptrQbar);
-        pstep->fixColourFlow();       	
-	
-// 	cout << (**pit).id() << ", " << (**pit).momentum() << endl
-// 	     << ptrQ->id() << ", " << ptrQ->momentum() << endl
-// 	     << ptrQbar->id() << ", " << ptrQbar->momentum() << endl;
-
-        // Debugging
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  newPartons.push_back(ptrQ);
-	  newPartons.push_back(ptrQbar);
+  for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) 
+    {
+      // split the gluons
+      if ( (**pit).data().id() == ParticleID::g ) 
+	{
+	  // time like gluon
+	  if ( (**pit).momentum().m2() > 0.0 )
+	    {
+	      PPtr ptrQ = PPtr();
+	      PPtr ptrQbar = PPtr();
+	      splitTimeLikeGluon(*pit,ptrQ,ptrQbar);
+	      Energy Q0 = _globalParameters->effectiveGluonMass();
+	      ptrQ->scale(Q0*Q0);
+	      ptrQbar->scale(Q0*Q0);
+	      pstep->addDecayProduct(*pit,ptrQ);
+	      pstep->addDecayProduct(*pit,ptrQbar);
+	      newtag.push_back(ptrQ);
+	      newtag.push_back(ptrQbar);
+	      pstep->fixColourFlow();       	
+	      
+	      // 	cout << (**pit).id() << ", " << (**pit).momentum() << endl
+	      // 	     << ptrQ->id() << ", " << ptrQ->momentum() << endl
+	      // 	     << ptrQbar->id() << ", " << ptrQbar->momentum() << endl;
+	      
+	      // Debugging
+	      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
+		newPartons.push_back(ptrQ);
+		newPartons.push_back(ptrQbar);
+	      }
+	    }
+	  // space-like gluons
+	  else if( (**pit).momentum().m2() < 0.0 ) 
+	    {
+	      // ... write the code
+	      // splitSpaceLikeGluon(*pit,ptrQ,ptrQbar);      
+	      // ... write the code
+	      cout << "Spacelike gluon!\n";
+	    }
+	  // q^2=0 gluon 
+	  else 
+	    {
+	      generator()->logWarning( Exception("PartonSplitter::split "
+						 "***Gluon on the mass shell (m=0)***", 
+						 Exception::warning) );
+	      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
+		generator()->log() << "         ===>" << (**pit).momentum() << endl << endl;
+	      }
+	    }
 	}
-
-      } else {
-	if ( (**pit).momentum().m2() < 0.0 ) {    // space like
-	  // ... write the code
-	  // splitSpaceLikeGluon(*pit,ptrQ,ptrQbar);      
-	  // ... write the code
-	  cout << "Spacelike gluon!\n";
-	} else {
-	  generator()->logWarning( Exception("PartonSplitter::split "
-					     "***Gluon on the mass shell (m=0)***", 
-					     Exception::warning) );
-	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	    generator()->log() << "         ===>" << (**pit).momentum() << endl << endl;
-	  }
- 	}
-      }
-    } else {
-      // write a method in Herwig++/Utilities/CheckId (or use/add 
-      //  ThePEG/PDT/StandardMatchers.h) for checking if it is a 
-      // sea quark or antiquark
-      //if ( ( (**pit).momentum().m2() < 0.0 ) &&               // space like and
-      //     ( SeaQuarkMatcher::Check( (**pit).data() ) ||         // (sea quark or
-      //       SeaAntiQuarkMatcher::Check( (**pit).data() ) ) ) {  //  sea anti-quark)
-      //   ... write the code
-      //   splitSpaceLikeSeaQuark(*pit,ptrGluon,ptrSeaQ1); 
-      //   splitSpaceLikeGluon(ptrGluon,ptrQ,ptrQbar);      
-      //   ... write the code
-      //}
-    }
-
-  } // end for loop over tagged 
+      else 
+	{
+	  newtag.push_back(*pit);
+	  // write a method in Herwig++/Utilities/CheckId (or use/add 
+	  //  ThePEG/PDT/StandardMatchers.h) for checking if it is a 
+	  // sea quark or antiquark
+	  //if ( ( (**pit).momentum().m2() < 0.0 ) &&               // space like and
+	  //     ( SeaQuarkMatcher::Check( (**pit).data() ) ||         // (sea quark or
+	  //       SeaAntiQuarkMatcher::Check( (**pit).data() ) ) ) {  //  sea anti-quark)
+	  //   ... write the code
+	  //   splitSpaceLikeSeaQuark(*pit,ptrGluon,ptrSeaQ1); 
+	  //   splitSpaceLikeGluon(ptrGluon,ptrQ,ptrQbar);      
+	  //   ... write the code
+	  //}
+	}
+    } // end for loop over tagged 
   
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
@@ -125,7 +137,7 @@ void PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     generator()->log() << *pstep;
     generator()->log() << "################################################\n";
   }
-
+  return newtag;
 }
 
 

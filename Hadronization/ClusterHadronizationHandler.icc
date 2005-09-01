@@ -10,15 +10,16 @@ namespace Herwig {
 inline ClusterHadronizationHandler::ClusterHadronizationHandler() {}
 
 
-inline ClusterHadronizationHandler::ClusterHadronizationHandler(const ClusterHadronizationHandler & x) : ThePEG::HadronizationHandler(x) , 
+inline ClusterHadronizationHandler::
+ClusterHadronizationHandler(const ClusterHadronizationHandler & x) : 
+  ThePEG::HadronizationHandler(x) , 
   _globalParameters(x._globalParameters ),
   _partonSplitter(x._partonSplitter ),
   _clusterFinder(x._clusterFinder ),
   _colourReconnector(x._colourReconnector), 
   _clusterFissioner(x._clusterFissioner),
-  _lightClusterDecayer(x._lightClusterDecayer), 
+  _lightClusterDecayer(x._lightClusterDecayer),
   _clusterDecayer(x._clusterDecayer)
-													 //_clusters(x._clusters)
 {}
 
 

@@ -46,9 +46,9 @@ void ClusterFinder::Init() {
 
 
 void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
+				 tPVector partons,
 				 ClusterVector& clusters) 
   throw(Veto, Stop, Exception) {
-
   // Get all the beam remnant partons ((anti-)quark or (anti-)diquark) 
   // of the current collision.
   tParticleSet remnantSet = collisionPtr->getRemnants();
@@ -57,11 +57,10 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
   map<tColinePtr, pair<tPPtr,tPPtr> > quarkQuark; // quark quark 
   map<tColinePtr, pair<tPPtr,tPPtr> > aQuarkQuark; // anti quark anti quark
   ParticleSet inputParticles = pstep->particles();
-  
   // Loop over all current particles.
-  for(ParticleSet::const_iterator pit = inputParticles.begin(); 
-      pit != inputParticles.end(); ++pit) {
- 
+  //for(ParticleSet::const_iterator pit = inputParticles.begin(); 
+  //    pit != inputParticles.end(); ++pit) {
+  for(tPVector::const_iterator pit=partons.begin();pit!=partons.end();++pit){
     // Skip to the next particle if it is not coloured or already examined.
     if(!(**pit).data().coloured() 
        || examinedSet.find(*pit) != examinedSet.end()) {

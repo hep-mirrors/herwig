@@ -51,7 +51,8 @@ public:
    * It also checks if the cluster is a beam cluster, that is if
    * at least one of its components is a beam remnant.
    */
-  void formClusters(tCollPtr collisionPtr, const StepPtr & pstep, 
+  void formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
+		    tPVector partons,
 		    ClusterVector & clusters) throw(Veto, Stop, Exception);
 
   /**

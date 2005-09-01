@@ -43,8 +43,11 @@ public:
    * This method does the nonperturbative splitting of:
    * time-like gluons. At the end of the shower the gluons should be
    * on a "physical" mass shell and should therefore be time-like.
+   * @param tagged The tagged particles to be split
+   * @param pstep Pointer to the step
+   * @return The particles which were not split and the products of splitting.
    */
-  void split(const tPVector & tagged, tStepPtr pstep);
+  tPVector split(const tPVector & tagged, tStepPtr pstep);
  
 public:
 
