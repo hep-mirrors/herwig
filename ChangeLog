@@ -1,3 +1,11 @@
+2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository): added new decayer for S -> VV
+
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic (Repository): added files for b to s gamma hadronic mass spectra
+
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository): changes to helicity classes to move large inlined members to the .cc files

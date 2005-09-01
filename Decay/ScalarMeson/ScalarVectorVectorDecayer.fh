@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ScalarVectorVectorDecayer class.
+//
+#ifndef ThePEG_ScalarVectorVectorDecayer_FH
+#define ThePEG_ScalarVectorVectorDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ScalarVectorVectorDecayer;
+ThePEG_DECLARE_POINTERS(ScalarVectorVectorDecayer,ScalarVectorVectorDecayerPtr);
+
+}
+
+#endif
