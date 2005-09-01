@@ -1,3 +1,11 @@
+2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Makefile.am (Repository): Interfaces now made automatically
+
+	* Decay/Partonic/QuarkoniumDecayer.icc (Repository): changes to move partonic decayers into a sperate directory
+
+	* Decay/HeavyDecayer.icc (Repository): changes to move partonic decayers into a seperate directory
+
 2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
 	* Changes for changes to the LorentzRotation in ThePEG
