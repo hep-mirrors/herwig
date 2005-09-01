@@ -1,0 +1,51 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Decayer class.
+//
+
+namespace Herwig {
+
+using namespace ThePEG;
+
+inline HeavyDecayer::HeavyDecayer() { } 
+
+inline HeavyDecayer::HeavyDecayer(const HeavyDecayer & x) : ThePEG::Decayer(x) 
+{
+  MECode = x.MECode;
+}
+
+inline IBPtr HeavyDecayer::clone() const {
+   Ptr<HeavyDecayer>::pointer rval = new HeavyDecayer();
+   rval->MECode = MECode;
+   return rval;
+}
+
+inline IBPtr HeavyDecayer::fullclone() const {
+   return clone();
+}
+
+inline void HeavyDecayer::doupdate() throw(UpdateException) {
+   ThePEG::HandlerBase::doupdate();
+   return;
+}
+
+inline void HeavyDecayer::doinit() throw(InitException) {
+   ThePEG::HandlerBase::doinit();
+}
+
+inline void HeavyDecayer::dofinish() {
+   ThePEG::HandlerBase::dofinish();
+}
+
+inline IVector HeavyDecayer::getReferences() {
+  IVector ret = ThePEG::Decayer::getReferences();
+  return ret;
+}
+
+inline void HeavyDecayer::rebind(const TranslationMap &trans) 
+                                throw(RebindException) {
+   ThePEG::Interfaced::rebind(trans);
+}
+
+}
