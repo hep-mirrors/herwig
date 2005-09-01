@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BtoSGammaKagan class.
+//
+#ifndef ThePEG_BtoSGammaKagan_FH
+#define ThePEG_BtoSGammaKagan_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class BtoSGammaKagan;
+ThePEG_DECLARE_POINTERS(BtoSGammaKagan,BtoSGammaKaganPtr);
+
+}
+
+#endif

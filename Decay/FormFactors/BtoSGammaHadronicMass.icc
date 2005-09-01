@@ -1,0 +1,68 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the BtoSGammaHadronicMass class.
+//
+
+namespace Herwig {
+
+inline BtoSGammaHadronicMass::BtoSGammaHadronicMass() 
+  : _minMass(825*MeV),_maxMass(5300*MeV) {}
+
+inline BtoSGammaHadronicMass::BtoSGammaHadronicMass(const BtoSGammaHadronicMass & x)
+  : Interfaced(x), _minMass(x._minMass), _maxMass(x._maxMass) {}
+
+inline void BtoSGammaHadronicMass::doupdate() throw(UpdateException) {
+  Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void BtoSGammaHadronicMass::doinit() throw(InitException) {
+  Interfaced::doinit();
+}
+
+inline void BtoSGammaHadronicMass::dofinish() {
+  Interfaced::dofinish();
+}
+
+inline void BtoSGammaHadronicMass::doinitrun() {
+  Interfaced::doinitrun();
+}
+
+inline void BtoSGammaHadronicMass::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Interfaced::rebind(trans);
+}
+
+inline IVector BtoSGammaHadronicMass::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+inline Energy BtoSGammaHadronicMass::minMass() const {return _minMass;}
+
+inline Energy BtoSGammaHadronicMass::maxMass() const {return _maxMass;}
+
+inline double BtoSGammaHadronicMass::exponentialFermiFunction(Energy scale,Energy lambda,
+							      double a,double norm,
+							      Energy2 lambda1)
+{
+  double x(scale/lambda);
+  return norm*pow(1.-x,a)*exp(-3.*lambda*lambda/lambda1*x);
+}
+}

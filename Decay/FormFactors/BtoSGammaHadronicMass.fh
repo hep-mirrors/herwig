@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BtoSGammaHadronicMass class.
+//
+#ifndef ThePEG_BtoSGammaHadronicMass_FH
+#define ThePEG_BtoSGammaHadronicMass_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+class BtoSGammaHadronicMass;
+ThePEG_DECLARE_POINTERS(BtoSGammaHadronicMass,BtoSGammaHadronicMassPtr);
+
+}
+
+#endif
