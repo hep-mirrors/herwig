@@ -42,6 +42,14 @@ void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
   twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2); 
 }
+/* Doesn't work with new LorentzRotation and isn't used anyway PR 1/9/05
+     *
+     * This returns the Matrix that rotates along the direction p by
+     * phi (cp = cos(phi), sp = sin(phi))
+     *
+    static LorentzRotation rotation(const Lorentz5Momentum p,
+				    const double cp, 
+				    const double sp);
 
 // Utility to create a rotation matrix to take p to the z axis, rotate it
 // by psi about the z axis (cp = cos(psi), sp = sin(psi))
@@ -73,7 +81,7 @@ LorentzRotation Kinematics::rotation(const Lorentz5Momentum p,
 		     LorentzVector(-cp*st,          -sp*st,         ct,    0),
 		     LorentzVector(0,               0,              0,     1));
 }
-
+*/
 void Kinematics::generateAngles(double &ct, double &az) {
   ct = CurrentGenerator::current().rnd()*2.0 - 1.0;  // Flat from -1..1
   az = CurrentGenerator::current().rnd()*2.0*M_PI;   // Flat from 0..2 Pi

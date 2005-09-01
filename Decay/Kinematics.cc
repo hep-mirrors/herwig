@@ -35,6 +35,16 @@ void MyKinematics::twoBodyDecay(const Lorentz5Momentum & p,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) 
 { twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2); }
 
+/* Doesn't work with new LorentzRotation and isn't used anyway PR 1/9/05
+    
+     * Create matrix that rotates a 5-momentum  to z-axis, then rotates by \f$\phi\f$ 
+     * (where \f$\phi\f$ is given as two double args, \f$\cos\phi\f$ and \f$\sin\phi\f$.
+     * @param mom The 5-momentum
+     * @param cos Cosine of the angle  \f$\phi\f$, \f$\cos\phi\f$.
+     * @param sin Sine of the angle  \f$\phi\f$, \f$\sin\phi\f$.
+     
+      static LorentzRotation rotation(const Lorentz5Momentum mom, const double cos,
+  				    const double sin);
 // Utility to create a rotation matrix to take p to the z axis, rotate it
 // by psi about the z axis (cp = cos(psi), sp = sin(psi))
 LorentzRotation MyKinematics::rotation(const Lorentz5Momentum p,
@@ -64,6 +74,7 @@ LorentzRotation MyKinematics::rotation(const Lorentz5Momentum p,
                           LorentzVector(-cp*st,          -sp*st,         ct,    0),
                           LorentzVector(0,               0,              0,     1));
 }
+*/
 
 void MyKinematics::generateAngles(tEGPtr gen, double &ct, double &az) {
   ct = gen->rnd()*2.0 - 1.0;

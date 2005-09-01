@@ -82,14 +82,6 @@ namespace Herwig {
 				  const Energy m2);
 
     /**
-     * This returns the Matrix that rotates along the direction p by
-     * phi (cp = cos(phi), sp = sin(phi))
-     */
-    static LorentzRotation rotation(const Lorentz5Momentum p,
-				    const double cp, 
-				    const double sp);
-
-    /**
      * This just generates angles. First flat -1..1, second flat 0..2Pi
      */
     static void generateAngles(double &, double &);

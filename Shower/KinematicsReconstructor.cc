@@ -1039,7 +1039,7 @@ solveBoost( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentu
     Lorentz5Momentum qprime( k*oldp.x(), k*oldp.y(), k*oldp.z(), 
 			     sqrt(kps + Q2), sqrt(Q2) ); 
     Lorentz5Momentum test = newq;     
-    qprime = qprime - (R*test);  
+    qprime = qprime - (R.one()*test);  
     //    generator()->log() << "  boohoo!" << endl;
     generator()->log() << "KinematicsReconstructor::solveBoost full _______________________________________"<< endl; 
     if (k>1. || k<0) 

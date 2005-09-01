@@ -79,16 +79,6 @@ class MyKinematics {
     static inline Vector3 unitDirection(const double cosTheta, const double phi);
     
     /**
-     * Create matrix that rotates a 5-momentum  to z-axis, then rotates by \f$\phi\f$ 
-     * (where \f$\phi\f$ is given as two double args, \f$\cos\phi\f$ and \f$\sin\phi\f$.
-     * @param mom The 5-momentum
-     * @param cos Cosine of the angle  \f$\phi\f$, \f$\cos\phi\f$.
-     * @param sin Sine of the angle  \f$\phi\f$, \f$\sin\phi\f$.
-     */
-    static LorentzRotation rotation(const Lorentz5Momentum mom, const double cos,
-				    const double sin);
-
-    /**
      * A routine to randomly generate two angles.
      * @param eg Pointer to an event generator to allow access to the random
      *                   number generator.
