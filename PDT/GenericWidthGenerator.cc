@@ -82,7 +82,7 @@ void GenericWidthGenerator::Init() {
      "The code of matrix element either 2-body from this class or higher from"
      " class inheriting from this",
      &GenericWidthGenerator::_MEcode,
-     0, 0, 0, 0, 200, false, false, true);
+     0, 0, 0, -1, 200, false, false, true);
 
   static ParVector<GenericWidthGenerator,double> interfaceMEcoupling
     ("MEcoupling",

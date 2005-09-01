@@ -85,8 +85,10 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energ
   Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
   Energy  pcm(sqrt(pcm2)),gam(0.);
+  if(_MEcode[imode]==-1)
+    {gam=q/_mass*_theParticle->width();}
   // V -> P P
-  if(_MEcode[imode]==0){gam=pcm2*pcm/6./pi/q2;}
+  else if(_MEcode[imode]==0){gam=pcm2*pcm/6./pi/q2;}
   // V -> P V
   else if(_MEcode[imode]==1){gam=pcm2*pcm/12./pi/m02;}
   // V -> f fbar
@@ -112,6 +114,9 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energ
   else if(_MEcode[imode]==10){gam = pcm*pcm2/2./pi/m22;}
   // P -> PT
   else if(_MEcode[imode]==11){gam=pcm2*pcm2*pcm/12./pi*q2/m12/m12/m02;}
+  // S -> VV
+  else if(_MEcode[imode]==12){gam=pcm*(2.*pcm2+3.*m12*m22/q2)/8./pi/m02;}
+  // unknowm
   else{throw Exception() << "Unknown type of mode " << _MEcode[imode] 
 			 << " in GenericWidthGenerator::partial2BodyWidth() " 
 			 << Exception::abortnow;}

@@ -1,5 +1,7 @@
 2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
 
+	* PDT/GenericWidthGenerator.icc (Repository): S->VV shape and naive running width option added
+
 	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository): various minor fixes to the decay classes.
 
 	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository): added new decayer for S -> VV
