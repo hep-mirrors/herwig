@@ -450,7 +450,7 @@ double BaryonFactorizedDecayer::halfHalf(bool vertex, const int ichan,
   ParticleVector::const_iterator start,end;
   ParticleVector hadpart;
   vector<LorentzPolarizationVector> hadron;
-  double pre;
+  double pre(0.);
   vector<PDT::Spin> spin;
   unsigned int mhel,ix,iy,lhel;
   for(ix=0;ix<decay.size();++ix){spin.push_back(decay[ix]->dataPtr()->iSpin());}
@@ -573,7 +573,7 @@ double BaryonFactorizedDecayer::halfThreeHalf(bool vertex, const int ichan,
   ParticleVector::const_iterator start,end;
   ParticleVector hadpart;
   vector<LorentzPolarizationVector> hadron;
-  double pre;
+  double pre(0.);
   vector<unsigned int> constants,ihel;
   vector<PDT::Spin> spin(decay.size());
   int itemp; unsigned int ibar;

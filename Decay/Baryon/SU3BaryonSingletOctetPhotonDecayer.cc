@@ -55,7 +55,7 @@ ParticleVector SU3BaryonSingletOctetPhotonDecayer::decay(const DecayMode & dm,
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id());++pit;
   int id2((**pit).id()),iout;
-  unsigned int ix(0);bool cc;
+  unsigned int ix(0);bool cc(false);
   if(id1==ParticleID::gamma){iout=id2;}
   else{iout=id1;}
   do 

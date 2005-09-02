@@ -128,7 +128,7 @@ bool VectorMesonPScalarFermionsDecayer::accept(const DecayMode & dm) const {
   // must be three outgoing particles
   if(dm.products().size()!=3){return allowed;}
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],ids;
+  int id0(dm.parent()->id()),idf[2],ids(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)
@@ -136,6 +136,7 @@ bool VectorMesonPScalarFermionsDecayer::accept(const DecayMode & dm) const {
       if((**pit).iSpin()==PDT::Spin0){ids=(**pit).id();}
       else{idf[nf]=(**pit).id();++nf;}
     }
+  if(ids==0){return false;}
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
   do
@@ -154,7 +155,7 @@ ParticleVector VectorMesonPScalarFermionsDecayer::decay(const DecayMode & dm,
   // workout which mode we are doing
   int imode(-1);
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],ids;
+  int id0(dm.parent()->id()),idf[2],ids(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)
@@ -337,7 +338,7 @@ VectorMesonPScalarFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) c
   // workout which mode we are doing
   int imode(-1);
   // ids of the particles
-  int id0(dm.parent()->id()),idf[2],ids;
+  int id0(dm.parent()->id()),idf[2],ids(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)

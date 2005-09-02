@@ -60,7 +60,7 @@ ParticleVector NonLeptonicHyperonDecayer::decay(const DecayMode & dm,
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id());++pit;
   int id2((**pit).id());
-  unsigned int ix(0);bool cc;
+  unsigned int ix(0);bool cc(false);
   do 
     {
       if(id==_incomingB[ix])

@@ -36,6 +36,7 @@ bool SU3BaryonDecupletOctetPhotonDecayer::accept(const DecayMode & dm) const {
   int id2((**pit).id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else if(id2==ParticleID::gamma){iout=id1;}
+  else{return false;}
   unsigned int ix(0);
   do
     {
@@ -56,7 +57,7 @@ ParticleVector SU3BaryonDecupletOctetPhotonDecayer::decay(const DecayMode & dm,
   int id2((**pit).id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else{iout=id1;}
-  unsigned int ix(0);bool cc;
+  unsigned int ix(0);bool cc(false);
   do 
     {
       if(id==_incomingB[ix]){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}

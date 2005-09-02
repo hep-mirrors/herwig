@@ -143,7 +143,7 @@ ParticleVector RadiativeHeavyBaryonDecayer::decay(const DecayMode & dm,
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id());++pit;
   int id2((**pit).id()),ibaryon(id1);
-  unsigned int ix(0);bool cc;
+  unsigned int ix(0);bool cc(false);
   if(id1==ParticleID::gamma){ibaryon=id2;}
   do
     {

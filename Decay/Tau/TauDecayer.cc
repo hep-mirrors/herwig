@@ -54,7 +54,7 @@ void TauDecayer::doinit() throw(InitException) {
   Energy mtau(extpart[0]->mass());
   double maxweight;
   vector<double> channelwgts;
-  int iq,ia;
+  int iq(0),ia(0);
   _modemap.resize(0);
   unsigned int ix,iy;
   bool done;

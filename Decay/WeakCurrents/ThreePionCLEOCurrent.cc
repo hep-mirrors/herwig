@@ -424,7 +424,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
 {
   bool kineallowed=true;
   if(!acceptMode(imode)){return false;}
-  int iq,ia;
+  int iq(0),ia(0);
   PDVector extpart=particles(1,imode,iq,ia);
   Energy min(0.);
   for(unsigned int ix=0;ix<extpart.size();++ix)

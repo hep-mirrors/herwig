@@ -566,7 +566,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  unsigned int iloc,unsigned int ires,
 					  DecayPhaseSpaceChannelPtr phase,Energy upp)
 {
-  int iq,ia;
+  int iq(0),ia(0);
   unsigned int ix;
   bool kineallowed(true);
   if(!acceptMode(imode)){return false;}

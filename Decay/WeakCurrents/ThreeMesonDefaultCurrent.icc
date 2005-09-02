@@ -237,6 +237,7 @@ inline Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int
   else if(itype==1){mass=_rhoF5masses[ires];width=_rhoF5widths[ires];}
   else if(itype==2){mass=_KstarF123masses[ires];width=_KstarF123widths[ires];}
   else if(itype==3){mass=_KstarF5masses[ires];width=_KstarF5widths[ires];}
+  else{return 0.;}
   // calculate the momenta for the running widths
   if(itype<=1){mout[0]=_mpi;mout[1]=_mpi;}
   else{mout[0]=_mK;mout[1]=_mpi;}

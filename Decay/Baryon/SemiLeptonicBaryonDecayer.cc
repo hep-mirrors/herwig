@@ -56,7 +56,7 @@ void SemiLeptonicBaryonDecayer::doinit() throw(InitException) {
   Energy min;
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr channel;
-  int iq,ia;
+  int iq(0),ia(0);
   for(unsigned int ix=0;ix<_form->numberOfFactors();++ix)
     {
       // get the external particles for this mode

@@ -339,7 +339,7 @@ ParticleVector ScalarMesonFactorizedDecayer::decay(const DecayMode & dm,
   vector<bool> done(ids.size(),false);
   unsigned int nfound,ix,iy,iz;
   int idtemp;
-  bool found,cc;
+  bool found,cc(false);
   ix=0;
   do
     {

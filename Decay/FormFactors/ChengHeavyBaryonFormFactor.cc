@@ -303,7 +303,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1, Energy m0,Energy
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
-  Energy mV,mA;
+  Energy mV(0.*GeV),mA(0.*GeV);
    if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
       (id0==4332&&id1==3334))
      {mA=_mAcs;mV=_mVcs;}
@@ -342,7 +342,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
   id0=abs(id0);
   id1=abs(id1);
   // masses for the energy dependence of the form-factors
-  Energy mV,mA;
+  Energy mV(0.*GeV),mA(0.*GeV);
    if((id0==4122&&id1==3122)||(id0==4232&&id1==3322)||(id0==4132&&id1==3312)||
       (id0==4332&&id1==3334))
      {mA=_mAcs;mV=_mVcs;}

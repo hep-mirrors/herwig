@@ -223,7 +223,7 @@ void ISGWFormFactor::persistentOutput(PersistentOStream & os) const {
      << _betaSus << _betaSuc << _betaSub << _betaPud << _betaPus << _betaPuc
      << _thetaeta;
   unsigned int ix,iy;
-  for(iy=0;ix<5;++ix)
+  for(ix=0;ix<5;++ix)
     {
       os << _mquark[ix];
       for(iy=0;iy<5;++iy){os << _betaS[ix][iy] << _betaP[ix][iy];}
@@ -235,7 +235,7 @@ void ISGWFormFactor::persistentInput(PersistentIStream & is, int) {
      >> _betaSus >> _betaSuc >> _betaSub >> _betaPud >> _betaPus >> _betaPuc
      >> _thetaeta;
   unsigned int ix,iy;
-  for(iy=0;ix<5;++ix)
+  for(ix=0;ix<5;++ix)
     {
       is >> _mquark[ix];
       for(iy=0;iy<5;++iy){is >> _betaS[ix][iy] >> _betaP[ix][iy];}

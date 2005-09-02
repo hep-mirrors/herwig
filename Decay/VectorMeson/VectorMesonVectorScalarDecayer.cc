@@ -219,7 +219,7 @@ bool VectorMesonVectorScalarDecayer::twoBodyMEcode(const DecayMode & dm,
   ++pit;
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  unsigned int ix(0); bool order;
+  unsigned int ix(0); bool order(false);
   do 
     {
       if(id==_incoming[ix])
