@@ -433,7 +433,6 @@ namespace ThePEG {
 
 template <>
 /**
- * output the information on the mode
  * The following template specialization informs ThePEG about the
  * base class of DecayPhaseSpaceMode.
  */

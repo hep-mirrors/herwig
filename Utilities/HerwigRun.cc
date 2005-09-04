@@ -18,6 +18,7 @@ HerwigRun::~HerwigRun() {}
 HerwigRun::HerwigRun(int argc, char **argv) 
 : N(-1),
   ngen(0),
+  seed(0),
   repo("HerwigDefaults.rpo"),
   egCreated(false), 
   Status(UNKNOWN),
@@ -110,9 +111,13 @@ EGPtr HerwigRun::eventGenerator() {
     is >> eg;
     breakThePEG();
     egCreated = true;
-    if ( seed > 0 ) eg->random().setSeed(seed);
+    if ( eg ) eg->initialize();
+    if ( seed > 0 ){eg->setSeed(seed);}
     return eg;
-  } else { return eg; }
+  } else 
+    {
+      return eg; 
+    }
 }
 
 EventPtr HerwigRun::generateEvent() {

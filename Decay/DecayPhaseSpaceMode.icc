@@ -88,7 +88,7 @@ inline int DecayPhaseSpaceMode::selectChannel(const Particle & inpart,
   for(unsigned int ix=0,N=_channels.size();ix<N;++ix)
     {mewgts[ix]=me2(false,ix,inpart,particles);total+=mewgts[ix];}
   // randomly pick a channel
-  total*=CurrentGenerator::current().rnd();
+  total*=UseRandom::rnd();
   int ichan=-1;
   do{++ichan;total-=mewgts[ichan];}
   while(ichan<int(_channels.size())&&total>0.);

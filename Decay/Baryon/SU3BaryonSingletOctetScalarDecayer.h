@@ -318,7 +318,6 @@ private:
    * The couplings for the different modes.
    */
   mutable vector<InvEnergy> _prefactor;
-  //@}
 };
 
 }

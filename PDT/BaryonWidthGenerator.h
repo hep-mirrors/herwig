@@ -191,65 +191,6 @@ private:
    * Location of the decay mode in the decayer
    */
   vector<int> _modeloc;
-  /**
-   *  First coupling for the A terms
-   */
-  vector<double> _Afact1;
-
-  /**
-   *  Second coupling for the A terms
-   */
-  vector<double> _Afact2;
-
-  /**
-   *  Third coupling for the A terms
-   */
-  vector<double> _Afact3;
-
-  /**
-   *  Fourth coupling for the A terms
-   */
-  vector<double> _Afact4;
-
-  /**
-   *  Fifth coupling for the A terms
-   */
-  vector<double> _Afact5;
-
-  /**
-   *  Sixth coupling for the A terms
-   */
-  vector<double> _Afact6;
-
-  /**
-   *  First coupling for the B terms
-   */
-  vector<double> _Bfact1;
-
-  /**
-   *  Second coupling for the B terms
-   */
-  vector<double> _Bfact2;
-
-  /**
-   *  Third coupling for the B terms
-   */
-  vector<double> _Bfact3;
-
-  /**
-   *  Fourth coupling for the B terms
-   */
-  vector<double> _Bfact4;
-
-  /**
-   *  Fifth coupling for the B terms
-   */
-  vector<double> _Bfact5;
-
-  /**
-   *  Sixth coupling for the B terms
-   */
-  vector<double> _Bfact6;
 
 };
 

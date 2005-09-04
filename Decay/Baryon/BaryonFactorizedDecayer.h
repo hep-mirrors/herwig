@@ -23,12 +23,9 @@ using namespace ThePEG;
  * for a weak baryon transition and a weak decay current to produce a decayer.
  * It is mainly based on the results of PRD56, 2799.
  *
- *
  * @see BaryonFactorizedDecayer
  * @see BaryonFormFactor
  * @see WeakDecayCurrent
- * @see \ref BaryonFactorizedDecayerInterfaces "The interfaces"
- * defined for BaryonFactorizedDecayer.
  */
 class BaryonFactorizedDecayer: public DecayIntegrator {
 

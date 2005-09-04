@@ -80,12 +80,10 @@ class MyKinematics {
     
     /**
      * A routine to randomly generate two angles.
-     * @param eg Pointer to an event generator to allow access to the random
-     *                   number generator.
      * @param cosTheta The output value of the cosine of the polar angle between [-1,1]
      * @param phi The azimuthal angle between 0 and \f$2\pi\f$.
      */
-    static void generateAngles(tEGPtr eg, double & cosTheta, double & phi);
+    static void generateAngles(double & cosTheta, double & phi);
 
   private:
 

@@ -76,7 +76,7 @@ LorentzRotation MyKinematics::rotation(const Lorentz5Momentum p,
 }
 */
 
-void MyKinematics::generateAngles(tEGPtr gen, double &ct, double &az) {
-  ct = gen->rnd()*2.0 - 1.0;
-  az = gen->rnd()*2.0*M_PI;
+void MyKinematics::generateAngles(double &ct, double &az) {
+  ct = UseRandom::rnd()*2.0 - 1.0;
+  az = UseRandom::rnd()*2.0*M_PI;
 }

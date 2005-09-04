@@ -9,7 +9,6 @@ namespace Herwig {
   using namespace ThePEG;
 
   /** \ingroup Hadronization
-   *  \file CluHadConfig.h 
    *  \brief This file contains the typedef declarations used in Hadronization
    *  \author Philip Stephens
    *  \author Alberto Ribon

@@ -49,7 +49,6 @@ inline void TauDecayer::dofinish() {
 }
 
 inline void TauDecayer::doinitrun() {
-  cout << (*this) << endl;
   _current->initrun();
   DecayIntegrator::doinitrun();
   if(_Initialize)

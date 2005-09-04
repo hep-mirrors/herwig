@@ -20,6 +20,9 @@ using namespace ThePEG;
 using Herwig::Helicity::DecayMatrixElement;
 
   /** \ingroup Decay
+   * \class DecayIntegrator
+   * \brief Main class for Decayers implementing multi-channel phase space integration.
+   * \author Peter Richardson
    *
    *  This class is designed to be the base class for Herwig++ decays including
    *  the implementation of a multichannel decayer or n-body phase space decays.
@@ -45,11 +48,8 @@ using Herwig::Helicity::DecayMatrixElement;
    *  be called from the decay() member to generate a phase-space configuration for a 
    *  decay.
    *   
-   *
    * @see DecayPhaseSpaceMode
    * @see DecayPhaseSpaceChannel
-   * 
-   * \author Peter Richardson
    */
 
 class DecayIntegrator: public Decayer {

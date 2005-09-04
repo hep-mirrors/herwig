@@ -37,17 +37,41 @@ class HadronSelector: public ThePEG::HandlerBase {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline HadronSelector();
+
+  /**
+   * Copy-constructor.
+   */
   inline HadronSelector(const HadronSelector &);
+
+  /**
+   * Destructor.
+   */
   virtual ~HadronSelector();
+  //@}
 
 public:
 
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * Standard Init function used to initialize the interfaces.
@@ -80,11 +104,15 @@ public:
   pair<long,long> 
   lightestHadronPair(const long id1, const long id2, const long id3=0) const;
 
+  /**
+   *  Returns the mass of the lightest pair of hadrons with the given ids.
+   */
   Energy massLightestHadronPair(const long id1, const long id2, const long id3=0) 
     const;
 
-  //!< Return the sum of the nominal masses of the two hadrons with id 
-  // returned by the previous method.  
+  /**
+   *  Returns the mass of the lightest pair of baryons with the given ids.
+   */
   Energy massLightestBaryonPair(const long id1, const long id2) const;
 
   /** 
@@ -127,25 +155,61 @@ public:
 
 protected:
 
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
   inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
 
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
 
 private:
 
@@ -224,15 +288,43 @@ private: // data members
   double mixingStateWeight(long); 
 
   /**
-   * Parameters
+   * The probability of producting a down quark.
    */
   double _PwtDquark;
+
+  /**
+   * The probability of producting an up quark.
+   */
   double _PwtUquark;
+
+  /**
+   * The probability of producting a strange quark.
+   */
   double _PwtSquark;
+
+  /**
+   * The probability of producting a charm quark.
+   */
   double _PwtCquark;
+
+  /**
+   * The probability of producting a bottom quark.
+   */
   double _PwtBquark;
+
+  /**
+   * The probability of producting a diquark.
+   */
   double _PwtDIquark;
+
+  /**
+   *  The singlet weight
+   */
   double _SngWt; 
+
+  /**
+   *  The decuplet weight
+   */
   double _DecWt; 
 
   /** \ingroup Hadronization
@@ -319,6 +411,9 @@ private: // data members
      */
     Energy mass;
 
+    /**
+     *  Default Constructor
+     */
     HadronInfo() : id(0), ptrData(tPDPtr()), swtef(1.), wt(1.0), overallWeight(0.0) {}
 
     bool operator<(const HadronInfo &x) const { return mass < x.mass; }
@@ -419,6 +514,9 @@ private: // data members
    */
   int _ClusterDKMode;  
 
+  /**
+   *  Which particles to produce for debugging purposes
+   */
   int _trial;
 };
 }

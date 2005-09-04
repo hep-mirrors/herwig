@@ -304,7 +304,7 @@ Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
 {
   // select the channel
   vector<Lorentz5Momentum> momenta;
-  double wgt(CurrentGenerator::current().rnd());
+  double wgt(UseRandom::rnd());
   // select a channel
   ichan=-1;
   do{++ichan;wgt-=_channelwgts[ichan];}
@@ -374,7 +374,7 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
 	    _MaxWeight=wgt;
 	  }
       }
-    while(_MaxWeight*CurrentGenerator::current().rnd()>wgt&&ncount<_ntry);
+    while(_MaxWeight*UseRandom::rnd()>wgt&&ncount<_ntry);
     if(ncount>=_ntry)
       {
 	CurrentGenerator::current().log() << "The decay " << inrest.PDGName() << " -> ";
@@ -527,7 +527,7 @@ vector<Energy> DecayPhaseSpaceMode::externalMasses(Energy inmass,double & wgt) c
   Energy low=0.;
   for( ;!notdone.empty();)
     {
-      iloc=long(CurrentGenerator::current().rnd()*(notdone.size()-1));
+      iloc=long(UseRandom::rnd()*(notdone.size()-1));
       low=_extpart[notdone[iloc]]->mass()-_extpart[notdone[iloc]]->widthLoCut();
       mlow-=low;
       mass[notdone[iloc]]=

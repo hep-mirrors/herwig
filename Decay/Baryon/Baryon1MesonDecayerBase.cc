@@ -13,6 +13,7 @@
 #endif
 
 #include "ThePEG/Persistency/PersistentOStream.h"
+#include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -175,6 +176,7 @@ halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
   DecayMatrixElement newME(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
   vector<unsigned int> ispin(3,0);
   unsigned int ix,iy;
+  //Complex output(0.);
   for(ix=0;ix<2;++ix)
     {
       for(iy=0;iy<2;++iy)
@@ -182,8 +184,19 @@ halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
 	  if(decay[0]->id()>0){ispin[0]=iy;ispin[1]=ix;}
 	  else{ispin[0]=ix;ispin[1]=iy;}
 	  newME(ispin)=sp[iy].generalScalar(sbar[ix],left,right);
+	  //output+=newME(ispin)*conj(newME(ispin));
 	}
     }
+  // test of the matrix element
+  /*
+  Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
+  Energy Qp(sqrt(pow(m1+m2,2)-pow(m3,2))),Qm(sqrt(pow(m1-m2,2)-pow(m3,2)));
+  Complex h1(2.*Qp*A),h2(-2.*Qm*B);
+  cout << "testing 1/2->1/2 0 " 
+       << 0.5*output << "   " 
+       << 0.25*(h1*conj(h1)+h2*conj(h2)) << "   " 
+       << 0.5*(h1*conj(h1)+h2*conj(h2))/output << endl;
+  */
   // store the matrix element
   ME(newME);
   return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
@@ -233,6 +246,7 @@ halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
   vector<unsigned int> ispin(3);
   LorentzPolarizationVector svec;
   Complex s2m4,s1m3,s1p3,s2p4,s3s2,s4s1,s1s4,s2s3,s3s1,s4s2,s1s3,s2s4,prod;
+  //Complex output(0.);
   unsigned int ix,iy;
   for(ix=0;ix<2;++ix)
     {
@@ -250,12 +264,24 @@ halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
 	      prod=eps[ispin[2]]*inpart.momentum();
 	      prod/=msum;
 	      newME(ispin)=svec*eps[ispin[2]]+prod*scalar;
-	      //	      cout << "testing ME " 
-	      //	   << ispin[0] << " " << ispin[1] << " " << ispin[2] << " " 
-	      //	   << newME(ispin) << endl;
+	      //	      output+=newME(ispin)*conj(newME(ispin));
 	    }
 	}
     }
+  /*
+  // test of the matrix element
+  Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
+  Energy2 Qp(sqrt(pow(m1+m2,2)-pow(m3,2))),Qm(sqrt(pow(m1-m2,2)-pow(m3,2)));
+  double r2(sqrt(2.));
+  Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
+  Complex h1(2.*r2*Qp*B1),h2(-2.*r2*Qm*A1),
+    h3(2./m3*(Qp*(m1-m2)*B1-Qm*m1*B2*pcm/(m1+m2))),
+    h4(2./m3*(Qm*(m1+m2)*A1+Qp*m1*A2*pcm/(m1+m2)));
+  cout << "testing 1/2->1/2 1 " 
+       << 0.5*output << "   " 
+       << 0.25*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4)) << "   " 
+       << 0.50*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4))/output << endl;
+  */
   // store the matrix element
   ME(newME);
   // return the answer
@@ -309,6 +335,7 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int ichan
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0);
   vector<unsigned int> ispin(3,0);
+  //Complex output(0.);
   for(ixa=0;ixa<2;++ixa)
     {
       for(iya=0;iya<4;++iya)
@@ -318,10 +345,23 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int ichan
 	  // low energy conventions
 	  ispin[0]=ixa;ispin[1]=iya;
 	  newME(ispin)=sp[iy].generalScalar(sbar[ix],left,right);
+	  //output+=newME(ispin)*conj(newME(ispin));
 	}
     }
   // store the matrix element
   ME(newME);
+  // test of the matrix element
+  /*
+  Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
+  Energy2 Qp(sqrt(pow(m1+m2,2)-pow(m3,2))),Qm(sqrt(pow(m1-m2,2)-pow(m3,2)));
+  double r23(sqrt(2./3.));
+  Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
+  Complex h1(-2.*r23*pcm*m1/m2*Qm*B/(m1+m2)),h2( 2.*r23*pcm*m1/m2*Qp*A/(m1+m2));
+  cout << "testing 1/2->3/2 0 "
+       << 0.5*output << "   " 
+       << 0.25*(h1*conj(h1)+h2*conj(h2)) << "   " 
+       << 0.50*(h1*conj(h1)+h2*conj(h2))/output << endl;
+  */
   // return the answer
   return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
 }
@@ -426,6 +466,36 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
     }
   // store the matrix element
   ME(newME);
+  // test of the matrix element
+  /*
+  Complex output;
+  for(ispin[0]=0;ispin[0]<2;++ispin[0])
+    {
+      for(ispin[1]=0;ispin[1]<4;++ispin[1])
+	{
+	  for(ispin[2]=0;ispin[2]<3;++ispin[2])
+	    {
+	      output+=newME(ispin)*conj(newME(ispin));
+	    }
+	}
+    }
+  Energy m1(inpart.mass()),m2(decay[0]->mass()),m3(decay[1]->mass());
+  Energy2 m12(m1*m1),m22(m2*m2),m32(m3*m3);
+  Energy2 Qp(sqrt(pow(m1+m2,2)-pow(m3,2))),Qm(sqrt(pow(m1-m2,2)-pow(m3,2)));
+  double r2(sqrt(2.)),r3(sqrt(3.));
+  Energy pcm(Kinematics::pstarTwoBodyDecay(m1,m2,m3));
+  Complex h1(-2.*Qp*A1),h2(2.*Qm*B1);
+  Complex h3(-2./r3*Qp*(A1-Qm*Qm/m2*A2/msum));
+  Complex h4( 2./r3*Qm*(B1-Qp*Qp/m2*B2/msum));
+  Complex h5(-2.*r2/r3/m2/m3*Qp*(0.5*(m12-m22-m32)*A1+0.5*Qm*Qm*(m1+m2)*A2/msum
+				 +m12*pcm*pcm*A3/msum/msum));
+  Complex h6( 2.*r2/r3/m2/m3*Qm*(0.5*(m12-m22-m32)*B1-0.5*Qp*Qp*(m1-m2)*B2/msum
+				 +m12*pcm*pcm*B3/msum/msum));
+  cout << "testing 1/2->3/2 1 " 
+       << 0.5*output << "   " 
+       << 0.25*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4)+h5*conj(h5)+h6*conj(h6)) << "   " 
+       << 0.50*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/output << endl;
+  */
   // return the answer
   return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
 }

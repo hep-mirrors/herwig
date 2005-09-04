@@ -24,15 +24,11 @@ using namespace ThePEG;
 BaryonWidthGenerator::~BaryonWidthGenerator() {}
 
 void BaryonWidthGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _baryondecayers << _modeloc
-     << _Afact1 << _Afact2 << _Afact3 << _Afact4 << _Afact5 << _Afact6
-     << _Bfact1 << _Bfact2 << _Bfact3 << _Bfact4 << _Bfact5 << _Bfact6;
+  os << _baryondecayers << _modeloc;
 }
 
 void BaryonWidthGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _baryondecayers >> _modeloc
-     >> _Afact1 >> _Afact2 >> _Afact3 >> _Afact4 >> _Afact5 >> _Afact6
-     >> _Bfact1 >> _Bfact2 >> _Bfact3 >> _Bfact4 >> _Bfact5 >> _Bfact6;
+  is >> _baryondecayers >> _modeloc;
 }
 
 ClassDescription<BaryonWidthGenerator> BaryonWidthGenerator::initBaryonWidthGenerator;
@@ -54,78 +50,6 @@ void BaryonWidthGenerator::Init() {
      "The location of the mode in the decayer",
      &BaryonWidthGenerator::_modeloc, 0, -1, 0, 0,
      false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceA1factor
-    ("A1factor",
-     "The first factor for the partial width for the non-gamma_5 terms.",
-     &BaryonWidthGenerator::_Afact1, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceA2factor
-    ("A2factor",
-     "The second factor for the partial width for the non-gamma_5 terms.",
-     &BaryonWidthGenerator::_Afact2, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceA3factor
-    ("A3factor",
-     "The third factor for the partial width for the non-gamma_5 terms.",
-     &BaryonWidthGenerator::_Afact3, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceA4factor
-    ("A4factor",
-     "The fourth factor for the partial width for the non-gamma_5 terms.",
-     &BaryonWidthGenerator::_Afact4, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceA5factor
-    ("A5factor",
-     "The fifth factor for the partial width for the non-gamma_5 terms.",
-     &BaryonWidthGenerator::_Afact5, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceA6factor
-    ("A6factor",
-     "The sixth factor for the partial width for the non-gamma_5 terms.",
-     &BaryonWidthGenerator::_Afact6, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceB1factor
-    ("B1factor",
-     "The first factor for the partial width for the gamma_5 terms.",
-     &BaryonWidthGenerator::_Bfact1, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceB2factor
-    ("B2factor",
-     "The second factor for the partial width for the gamma_5 terms.",
-     &BaryonWidthGenerator::_Bfact2, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceB3factor
-    ("B3factor",
-     "The third factor for the partial width for the gamma_5 terms.",
-     &BaryonWidthGenerator::_Bfact3, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceB4factor
-    ("B4factor",
-     "The fourth factor for the partial width for the gamma_5 terms.",
-     &BaryonWidthGenerator::_Bfact4, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceB5factor
-    ("B5factor",
-     "The fifth factor for the partial width for the gamma_5 terms.",
-     &BaryonWidthGenerator::_Bfact5, -1, 0.0, 0, 0,
-     false, false, false);
-
-  static ParVector<BaryonWidthGenerator,double> interfaceB6factor
-    ("B6factor",
-     "The sixth factor for the partial width for the gamma_5 terms.",
-     &BaryonWidthGenerator::_Bfact6, -1, 0.0, 0, 0,
-     false, false, false);
 }
  
 void BaryonWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
@@ -136,126 +60,44 @@ void BaryonWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
     baryon(dynamic_ptr_cast<tBaryon1MesonDecayerBasePtr>(decayer));
   if(baryon)
     {
-      ParticleMSet::const_iterator pit = mode->products().begin();
-      tcPDPtr part0(mode->parent());
-      tcPDPtr part1(*pit);++pit;
-      tcPDPtr part2(*pit);
-      Energy m0(part0->mass()),m1(part1->mass()),m2(part2->mass());
       int dmode(baryon->findMode(*mode));
-      Complex A1(0.),A2(0.),A3(0.),B1(0.),B2(0.),B3(0.);
       if(dmode<0)
 	{
-	  _Afact1.push_back(0.);_Afact3.push_back(0.);_Afact5.push_back(0.);
-	  _Afact2.push_back(0.);_Afact4.push_back(0.);_Afact6.push_back(0.);
-	  _Bfact1.push_back(0.);_Bfact3.push_back(0.);_Bfact5.push_back(0.);
-	  _Bfact2.push_back(0.);_Bfact4.push_back(0.);_Bfact6.push_back(0.);
 	  _baryondecayers.push_back(Baryon1MesonDecayerBasePtr());
 	  _modeloc.push_back(-1);
 	  return;
 	}
-      // 1/2 -> 1/2 0
-      if(part0->iSpin()==2&&((part1->iSpin()==2&&part2->iSpin()==1)||
-			     (part1->iSpin()==1&&part2->iSpin()==2)))
-	{baryon->halfHalfScalarCoupling(dmode,m0,m1,m2,A1,B1);}
-      // 1/2 -> 1/2 1
-      else if(part0->iSpin()==2&&((part1->iSpin()==2&&part2->iSpin()==3)||
-				  (part1->iSpin()==3&&part2->iSpin()==2)))
-	{baryon->halfHalfVectorCoupling(dmode,m0,m1,m2,A1,A2,B1,B2);}
-      // 1/2 -> 3/2 0
-      else if(part0->iSpin()==2&&((part1->iSpin()==4&&part2->iSpin()==1)||
-				  (part1->iSpin()==1&&part2->iSpin()==4)))
-	{baryon->halfThreeHalfScalarCoupling(dmode,m0,m1,m2,A1,B1);}
-      // 1/2 -> 3/2 1
-      else if(part0->iSpin()==2&&((part1->iSpin()==4&&part2->iSpin()==3)||
-				  (part1->iSpin()==3&&part2->iSpin()==4)))
-	{baryon->halfThreeHalfVectorCoupling(dmode,m0,m1,m2,A1,A2,A3,B1,B2,B3);}
-      // 3/2 -> 1/2 0
-      else if(part0->iSpin()==4&&((part1->iSpin()==2&&part2->iSpin()==1)||
-				  (part1->iSpin()==1&&part2->iSpin()==2)))
-	{baryon->threeHalfHalfScalarCoupling(dmode,m0,m1,m2,A1,B1);}
-      // 3/2 -> 1/2 1
-      else if(part0->iSpin()==4&&((part1->iSpin()==2&&part2->iSpin()==3)||
-				  (part1->iSpin()==3&&part2->iSpin()==2)))
-	{baryon->threeHalfHalfVectorCoupling(dmode,m0,m1,m2,A1,A2,A3,B1,B2,B3);}
-      // 3/2 -> 3/2 0
-      else if(part0->iSpin()==4&&((part1->iSpin()==4&&part2->iSpin()==1)||
-				  (part1->iSpin()==1&&part2->iSpin()==4)))
-	{baryon->threeHalfThreeHalfScalarCoupling(dmode,m0,m1,m2,A1,A2,B1,B2);}
       else
-	{cout << "unimplemented spin " 
-	      << part0->iSpin() << " " << part1->iSpin() << " " 
-	      << part2->iSpin() << endl;}
-      _baryondecayers.push_back(baryon);
-      _modeloc.push_back(dmode);
-      _Afact1.push_back((A1*conj(A1)).real());
-      _Afact2.push_back((A2*conj(A2)).real());
-      _Afact3.push_back((A3*conj(A3)).real());
-      _Afact4.push_back((A1*conj(A2)+conj(A1)*A2).real());
-      _Afact5.push_back((A1*conj(A3)+conj(A1)*A3).real());
-      _Afact6.push_back((A2*conj(A3)+conj(A2)*A3).real());
-      _Bfact1.push_back((B1*conj(B1)).real());
-      _Bfact2.push_back((B2*conj(B2)).real());
-      _Bfact3.push_back((B3*conj(B3)).real());
-      _Bfact4.push_back((B1*conj(B2)+conj(B1)*B2).real());
-      _Bfact5.push_back((B1*conj(B3)+conj(B1)*B3).real());
-      _Bfact6.push_back((B2*conj(B3)+conj(B2)*B3).real());
+	{
+	  _baryondecayers.push_back(baryon);
+	  _modeloc.push_back(dmode);
+	}
     }
   else
     {
       _baryondecayers.push_back(Baryon1MesonDecayerBasePtr());
       _modeloc.push_back(-1);
-      _Afact1.push_back(0.);_Afact3.push_back(0.);_Afact5.push_back(0.);
-      _Afact2.push_back(0.);_Afact4.push_back(0.);_Afact6.push_back(0.);
-      _Bfact1.push_back(0.);_Bfact3.push_back(0.);_Bfact5.push_back(0.);
-      _Bfact2.push_back(0.);_Bfact4.push_back(0.);_Bfact6.push_back(0.);
     }
 }
 
 void BaryonWidthGenerator::dataBaseOutput(ofstream & output, bool header)
 {
-  cout << "testing " << this << "  " << fullName() << endl;
   if(header){output << "update Width_Generators set parameters=\"";}
   // info from the base class
   GenericWidthGenerator::dataBaseOutput(output,false);
   // info from this class
-  cout << "testing the size " << _Afact1.size() << " " << _baryondecayers.size() << endl;
-  for(unsigned int ix=0;ix<_Afact1.size();++ix)
+  for(unsigned int ix=0;ix<_baryondecayers.size();++ix)
     {
       if(_baryondecayers[ix])
 	{
-	  cout << "testing A " << ix << " " << _baryondecayers[ix] << endl;
 	  output << "insert " << fullName() << ":BaryonDecayers " << ix 
-		<< " " << _baryondecayers[ix]->fullName() << "\n";
+		 << " " << _baryondecayers[ix]->fullName() << "\n";
 	}
       else
 	{output << "insert " << fullName() << ":BaryonDecayers " << ix 
 		<< " NULL \n";}
       output << "insert " << fullName() << ":ModeLocation " << ix 
 	     << " " << _modeloc[ix] << "\n";
-      output << "insert " << fullName() << ":A1factor " << ix 
-	     << " " << _Afact1[ix] << "\n";
-      output << "insert " << fullName() << ":A2factor " << ix 
-	     << " " << _Afact2[ix] << "\n";
-      output << "insert " << fullName() << ":A3factor " << ix 
-	     << " " << _Afact3[ix] << "\n";
-      output << "insert " << fullName() << ":A4factor " << ix 
-	     << " " << _Afact4[ix] << "\n";
-      output << "insert " << fullName() << ":A5factor " << ix 
-	     << " " << _Afact5[ix] << "\n";
-      output << "insert " << fullName() << ":A6factor " << ix 
-	     << " " << _Afact6[ix] << "\n";
-      output << "insert " << fullName() << ":B1factor " << ix 
-	     << " " << _Bfact1[ix] << "\n";
-      output << "insert " << fullName() << ":B2factor " << ix 
-	     << " " << _Bfact2[ix] << "\n";
-      output << "insert " << fullName() << ":B3factor " << ix 
-	     << " " << _Bfact3[ix] << "\n";
-      output << "insert " << fullName() << ":B4factor " << ix 
-	     << " " << _Bfact4[ix] << "\n";
-      output << "insert " << fullName() << ":B5factor " << ix 
-	     << " " << _Bfact5[ix] << "\n";
-      output << "insert " << fullName() << ":B6factor " << ix 
-	     << " " << _Bfact6[ix] << "\n";
     }
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
@@ -280,6 +122,14 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
       _baryondecayers[imode]->halfHalfScalarCoupling(_modeloc[imode],q,m1,m2,A1,B1);
       double Afact1((A1*conj(A1)).real()),Bfact1((B1*conj(B1)).real());
       gam = 0.125/pi/q2*pcm*(Afact1*fact1+Bfact1*fact2);
+      /*
+	Energy Qp(sqrt(pow(q+m1,2)-pow(m2,2))),Qm(sqrt(pow(q-m1,2)-pow(m2,2)));
+	Complex h1(2.*Qp*A1),h2(-2.*Qm*B1);
+	cout << "testing 1/2->1/2 0 " 
+	<< gam << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2))/32./pi*pcm/q2     << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2))/32./pi*pcm/q2/gam << endl;
+      */
     }
   // 1/2 -> 1/2 1
   else if(mecode==102)
@@ -292,7 +142,29 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
 	Afact4((A1*conj(A2)+A2*conj(A1)).real()),
 	Bfact4((B1*conj(B2)+B2*conj(B1)).real());
       double me(2.*(fact1*Bfact1+fact2*Afact1));
+      if(m2>1e-10*GeV)
+	{me+=1./m22*(+fact1*Bfact1*(q-m1)*(q-m1)-2.*q*pcm*Bfact4*q*pcm*(q-m1)/msum
+		     +fact2*q2*Bfact2*pcm2/msum/msum
+		     +fact2*Afact1*msum  *msum  +2.*q*pcm*Afact4*q*pcm             
+		     +fact1*q2*Afact2*pcm2/msum/msum);}
       gam = pcm/8./pi/q2*me;
+      // test of the matrix element
+      /*
+	Energy2 Qp(sqrt(pow(q+m1,2)-pow(m2,2))),Qm(sqrt(pow(q-m1,2)-pow(m2,2)));
+	double r2(sqrt(2.));
+	Complex h1(2.*r2*Qp*B1),h2(-2.*r2*Qm*A1),h3(0.),h4(0.);
+	if(m2>1e-10*GeV)
+	{
+	h3=2./m2*(Qp*(q-m1)*B1-Qm*q*B2*pcm/(q+m1));
+	h4=2./m2*(Qm*(q+m1)*A1+Qp*q*A2*pcm/(q+m1));
+	}
+	cout << "testing 1/2->1/2 0 " 
+	<< gam << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4))/32./pi*pcm/q2     
+	<< "   " 
+	<< real(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4))/32./pi*pcm/q2/gam 
+	<< endl;
+      */
     }
   // 1/2 -> 3/2 0
   else if(mecode==103)
@@ -300,6 +172,32 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
       _baryondecayers[imode]->halfThreeHalfScalarCoupling(_modeloc[imode],q,m1,m2,A1,B1);
       double Afact1((A1*conj(A1)).real()),Bfact1((B1*conj(B1)).real());
       gam = 0.25/pi/3./msum/msum/m12*pcm*pcm2*(Afact1*fact1+Bfact1*fact2);
+      /*
+	Energy2 Qp(sqrt(pow(q+m1,2)-pow(m2,2))),Qm(sqrt(pow(q-m1,2)-pow(m2,2)));
+	double r23(sqrt(2./3.));
+	Complex h1(-2.*r23*pcm*q/m1*Qm*B1/(q+m1)),h2( 2.*r23*pcm*q/m1*Qp*A1/(q+m1));
+	cout << "testing 1/2->3/2 0 "
+	<< gam << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2))/32./pi*pcm/q2     << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2))/32./pi*pcm/q2/gam << endl;
+      */
+    }
+  // 1/2 -> 3/2 1
+  else if(mecode==104)
+    {
+      Energy2 Qp(sqrt(fact1)),Qm(sqrt(fact2));
+      double r2(sqrt(2.)),r3(sqrt(3.));
+      Complex h1(-2.*Qp*A1),h2(2.*Qm*B1),h5(0.),h6(0.);
+      Complex h3(-2./r3*Qp*(A1-fact2/m1*A2/msum)),h4( 2./r3*Qm*(B1-fact1/m1*B2/msum));
+      if(m2>1e-10*GeV)
+	{
+	  h5=-2.*r2/r3/m1/m2*Qp*(0.5*(q2-m12-m22)*A1+0.5*fact2*(q+m1)*A2/msum
+				 +q2*pcm*pcm*A3/msum/msum);
+	  h6= 2.*r2/r3/m1/m2*Qm*(0.5*(q2-m12-m22)*B1-0.5*fact1*(q-m1)*B2/msum
+				 +q2*pcm*pcm*B3/msum/msum);
+	}
+      gam=real(+h1*conj(h1)+h2*conj(h2)+h3*conj(h3)
+	       +h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/32./pi*pcm/q2;
     }
   // 3/2 -> 1/2 0
   else if(mecode==105)
@@ -307,22 +205,35 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
       _baryondecayers[imode]->threeHalfHalfScalarCoupling(_modeloc[imode],q,m1,m2,A1,B1);
       double Afact1((A1*conj(A1)).real()),Bfact1((B1*conj(B1)).real());
       gam = 0.125/3./pi/msum/msum/q2*pcm*pcm2*(Afact1*fact1+Bfact1*fact2);
+      /*
+	Energy2 Qp(sqrt(pow(q+m1,2)-pow(m2,2))),Qm(sqrt(pow(q-m1,2)-pow(m2,2)));
+	double r23(sqrt(2./3.));
+	Complex h1(-2.*r23*pcm*Qm*B1/(q+m1)),
+	h2( 2.*r23*pcm*Qp*A1/(q+m1));
+	cout << "testing 3/2->1/2 0 "
+	<< gam << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2))/64./pi*pcm/q2     << "   " 
+	<< real(h1*conj(h1)+h2*conj(h2))/64./pi*pcm/q2/gam << endl;
+      */
     }
   // 3/2 -> 1/2 1
   else if(mecode==106)
     {
       _baryondecayers[imode]->threeHalfHalfVectorCoupling(_modeloc[imode],q,m1,m2,
 							  A1,A2,A3,B1,B2,B3);
-      A2 /=msum;A3 /=(msum*msum);
-      B2 /=msum;B3 /=(msum*msum);
-      double 
-	Afact1((A1*conj(A1)).real()),Afact2((A2*conj(A2)).real()),
-	Bfact1((B1*conj(B1)).real()),Bfact2((B2*conj(B2)).real()),
-	Afact4((A1*conj(A2)+A2*conj(A1)).real()),
-	Bfact4((B1*conj(B2)+B2*conj(B1)).real());
-      double me((fact1*(4.*Afact1-fact2/q*Afact4+fact2*fact2/q2*Afact2)+
-		 fact2*(4.*Bfact1+fact1/q*Bfact4+fact1*fact1/q2*Bfact2))/6.);
-      gam = pcm/8./pi/q2*me;
+      Energy2 Qp(sqrt(fact1)),Qm(sqrt(fact2));
+      double r2(sqrt(2.)),r3(sqrt(3.));
+      Complex h1(-2.*Qp*A1),h2(2.*Qm*B1),h5(0.),h6(0.);
+      Complex h3(-2./r3*Qp*(A1-fact2/q*A2/msum)),h4( 2./r3*Qm*(B1-fact1/q*B2/msum));
+      if(m2>1e-10*GeV)
+	{
+	  h5=-2.*r2/r3/q/m2*Qp*(0.5*(m12-q2-m22)*A1+0.5*fact2*(m1+q)*A2/msum
+				+q2*pcm*pcm*A3/msum/msum);
+	  h6= 2.*r2/r3/q/m2*Qm*(0.5*(m12-q2-m22)*B1-0.5*fact1*(m1-q)*B2/msum
+				+q2*pcm*pcm*B3/msum/msum);
+	}
+      gam=real(+h1*conj(h1)+h2*conj(h2)+h3*conj(h3)
+	       +h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/64./pi*pcm/q2;
     }
   // 3/2 -> 3/2 0
   else if(mecode==107)
@@ -343,15 +254,6 @@ Energy BaryonWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
 	  fact2*(Bfact2*q2*q2*pcm2*pcm2
 		 +0.25*Bfact1*(fact3*fact2+10.*q2*m12)
 		 +0.5*Bfact4*q2*pcm*pcm*(fact3-q*m1)));
-      /*
-      cout << "testing piecesA " <<  pcm/36./pi/q2/q2/m12 << " " 
-	   << fact1 << " " << Afact2*q2*q2*pcm2*pcm2 << " " 
-	   << +0.25*Afact1 << " " << fact3*fact1 << " " << 10.*q2*m12 << " " 
-	   << +0.5*Afact4*q2*pcm*pcm*(fact3+q*m1) << " " << fact2 << " " 
-	   << Bfact2*q2*q2*pcm2*pcm2 << " " 
-	   << +0.25*Bfact1*(fact3*fact2+10.*q2*m12) << " "
-	   << +0.5*Bfact4*q2*pcm*pcm*(fact3-q*m1) << endl;
-      */
     }
   else
     {throw Exception() << "Unknown type of mode " << mecode 

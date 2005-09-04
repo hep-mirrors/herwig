@@ -244,6 +244,7 @@ public:
    * @param part The particle to setup
    * @param dir The direction.
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
@@ -255,10 +256,11 @@ public:
    * Special constructor which calculates all the helicities and sets up a particle's
    * SpinInfo.
    * @param wave The polarization tensors for the different helicities.
-   * @parmm rho The \f$\rho\f$ matrix for the particle.
+   * @param rho The \f$\rho\f$ matrix for the particle.
    * @param part The particle to setup
    * @param dir The direction.
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
@@ -514,6 +516,7 @@ public:
    * @param wave The polarization tensors for the different helicities.
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to create the TensorSpinInfo object 
    */
@@ -528,6 +531,7 @@ public:
    * @param rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to create the TensorSpinInfo object 
    */
@@ -560,6 +564,7 @@ private:
    * SpinInfo object.
    * @param wave The polarization tensors for the different helicities
    * @param spin Pointer to the TensorSpinInfo object
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to set up the TensorSpinInfo object 
    */

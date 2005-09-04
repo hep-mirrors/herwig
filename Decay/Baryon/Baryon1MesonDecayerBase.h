@@ -48,8 +48,7 @@ using namespace ThePEG;
  *   \f[\bar{u}^\alpha(p_1)\left[(A_1+B_1\gamma_5)g_{\alpha\beta}
  *      +p_{0\alpha}p_{1\beta}(A_2+B_2\gamma_5)\right]u^\beta(p_0)\f]
  *
- * @see DecayIntegrator.
- * 
+ * @see DecayIntegrator
  */
 class Baryon1MesonDecayerBase: public DecayIntegrator {
 

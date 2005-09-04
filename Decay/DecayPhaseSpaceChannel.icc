@@ -84,7 +84,7 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
     {
       double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
       double rhomax = atan((upper*upper-_intmass2[ires])/_intmwidth[ires])-rhomin;
-      double rho = rhomin+rhomax*CurrentGenerator::current().rnd();
+      double rho = rhomin+rhomax*UseRandom::rnd();
       mass = sqrt(_intmass2[ires]+_intmwidth[ires]*tan(rho));
     }
   // use a power-law
@@ -92,7 +92,7 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
     {
       double rhomin = pow(lower*lower,_intpower[ires]+1.);
       double rhomax = pow(upper*upper,_intpower[ires]+1.)-rhomin;
-      double rho = rhomin+rhomax*CurrentGenerator::current().rnd();
+      double rho = rhomin+rhomax*UseRandom::rnd();
       mass = pow(rho,0.5/(_intpower[ires]+1.));
     }
   else if(_jactype[ires]==2)

@@ -365,11 +365,11 @@ Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark)
   double rand;
   do
     {
-      rand=generator()->rnd();
+      rand=UseRandom::rnd();
       mass = minmass*(1.-rand)+rand*maxmass;
       ++ntry;
     }
-  while(ntry<_maxtry&&(*_pyinter)(mass)<generator()->rnd()*_spectmax);
+  while(ntry<_maxtry&&(*_pyinter)(mass)<UseRandom::rnd()*_spectmax);
   if(ntry>=_maxtry)
     {throw Exception() << "Unweighting failed in BtoSGammaKagan::hadronicMass()" 
 		       << Exception::eventerror;}

@@ -83,8 +83,8 @@ LorentzRotation Kinematics::rotation(const Lorentz5Momentum p,
 }
 */
 void Kinematics::generateAngles(double &ct, double &az) {
-  ct = CurrentGenerator::current().rnd()*2.0 - 1.0;  // Flat from -1..1
-  az = CurrentGenerator::current().rnd()*2.0*M_PI;   // Flat from 0..2 Pi
+  ct = UseRandom::rnd()*2.0 - 1.0;  // Flat from -1..1
+  az = UseRandom::rnd()*2.0*M_PI;   // Flat from 0..2 Pi
 }
 
 /*****
@@ -115,7 +115,7 @@ void Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
    // Choose mass of subsystem 23 with prescribed distribution
    do {
       // ff is the mass squared of the 23 subsystem
-      ff = CurrentGenerator::current().rnd()*(cc-bb)+bb;
+      ff = UseRandom::rnd()*(cc-bb)+bb;
 
       // pp is ((m0+m1)^2 - m23^2)((m0-m1)^2-m23)
       pp = (aa-ff)*(bb-ff);
@@ -130,7 +130,7 @@ void Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
       //if(MECode == 100 || MECode == 101) ww = EMMasslessWt(ff,a,b,c);
       //else ww =  PhaseSpaceWt();
       ww = sqr(ww);
-      rr = ee*ff*CurrentGenerator::current().rnd();
+      rr = ee*ff*UseRandom::rnd();
    } while(pp*qq*ww < rr*rr);
 
    // ff is the mass squared of subsystem 23
@@ -173,17 +173,17 @@ void Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
   
   // Select squared masses, S1 and S2 or 234 and 34 subsystems
   do {
-    s1 = bb + CurrentGenerator::current().rnd()*(cc-bb);
+    s1 = bb + UseRandom::rnd()*(cc-bb);
     rs1 = sqrt(s1);
     ff = sqr(rs1-p2.mass());
-    s2 = dd + CurrentGenerator::current().rnd()*(ff-dd);
+    s2 = dd + UseRandom::rnd()*(ff-dd);
     pp = (aa-s1)*(bb-s1);
     qq = (sqr(rs1+p2.mass())-s2)*(ff-s2)/s1;
     rr = (s2 - dd)*(s2-ee)/s2;
 
     // Since sqr is a macro, need to store rnd() in variable before sqr,
     // otherwise it will use two random numbers
-    temp = CurrentGenerator::current().rnd();
+    temp = UseRandom::rnd();
   } while(pp*qq*rr*sqr(ff-dd) < tt*s1*s2*sqr(temp));
 
   // Now we have chosen how energy fractions go, do two body decays on subsystems
@@ -230,20 +230,20 @@ void Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
   
   // Now lets select the masses of all the subsystems
   do {
-    s1 = bb+CurrentGenerator::current().rnd()*(cc-bb);
+    s1 = bb+UseRandom::rnd()*(cc-bb);
     rs1 = sqrt(s1);
     gg = sqr(rs1-p2.mass());
-    s2 = dd + CurrentGenerator::current().rnd()*(gg-dd);
+    s2 = dd + UseRandom::rnd()*(gg-dd);
     rs2 = sqrt(s2);
     hh = sqr(rs2-p3.mass());
-    s3 = ee+CurrentGenerator::current().rnd()*(hh-ee);
+    s3 = ee+UseRandom::rnd()*(hh-ee);
     pp = (aa-s1)*(bb-s1);
     qq = (sqr(rs1+p2.mass())-s2)*(gg-s2)/s1;
     rr = (sqr(rs2+p3.mass())-s3)*(hh-s3)/s2;
     ss = (s3-ee)*(s3-ff)/s3;
     // Again, since sqr is a macro, the random number must be stored or
     // two different random numbers will be used
-    temp = CurrentGenerator::current().rnd();
+    temp = UseRandom::rnd();
   } while(pp*qq*rr*qq*sqr((gg-dd)*(hh-ee)) < tt*s1*s2*s3*sqr(temp));
 
   // Now decay the subsystems

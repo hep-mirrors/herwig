@@ -42,6 +42,6 @@ void BtoSGammaFlatEnergy::Init() {
 Energy BtoSGammaFlatEnergy::hadronicMass(Energy mb,Energy mquark)
 {
   Energy upper(min(mb,maxMass())),lower(max(minMass(),mquark));
-  double rand(generator()->rnd());
+  double rand(UseRandom::rnd());
   return sqrt(upper*upper*rand+(1.-rand)*lower*lower);
 }

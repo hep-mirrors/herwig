@@ -116,7 +116,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
 		{lowerb[iy]+=massext[_intext[idau[iy]][iz]];}
 	    }
 	  // randomize the order
-	  if(CurrentGenerator::current().rnd()<0.5)
+	  if(UseRandom::rnd()<0.5)
 	    {
 	      // mass of the first resonance
 	      upper = massint[ix]-lowerb[1];
@@ -221,7 +221,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
 		{lowerb[iy]+=output[_intext[idau[iy]][iz]][5];}
 	    }
 	  // randomize the order
-	  if(CurrentGenerator::current().rnd()<0.5)
+	  if(UseRandom::rnd()<0.5)
 	    {
 	      // contribution of first resonance
 	      upper = intmass[ix]-lowerb[1];

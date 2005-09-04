@@ -95,13 +95,13 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
        * It appears polarized mesons aren't needed currently 
       if(p->id() == ) {
          if() {
-            CosAng = Math::absmax<double>(generator()->rnd(), 
-		           Math::absmax<double>(generator()->rnd(),  generator()->rnd()))*2.0 - 1.0;
+            CosAng = Math::absmax<double>(UseRandom::rnd(), 
+		           Math::absmax<double>(UseRandom::rnd(),  UseRandom::rnd()))*2.0 - 1.0;
          } else if() {
-            CosAng = 2.0*cos((acos(generator()->rnd()*2.0-1.0)+M_PI)/3.0);
+            CosAng = 2.0*cos((acos(UseRandom::rnd()*2.0-1.0)+M_PI)/3.0);
          } else {
-            CosAng = Math::absmin<double>(generator()->rnd(),
-                           Math::absmin<double>(generator()->rnd(),  generator()->rnd()))*2.0 - 1.0;
+            CosAng = Math::absmin<double>(UseRandom::rnd(),
+                           Math::absmin<double>(UseRandom::rnd(),  UseRandom::rnd()))*2.0 - 1.0;
          }
       }
        *******/
@@ -144,7 +144,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 				       products[0], &VAWt);
             dot1 = p.momentum().dot(products[1]);
             dot2 = p.momentum().dot(products[0]);
-         } while(dot1*(wtmx-dot1-xs*dot2) < generator()->rnd()*wtmx2);
+         } while(dot1*(wtmx-dot1-xs*dot2) < UseRandom::rnd()*wtmx2);
       } 
  
       // Or use free massless ((V-A)*TB1+(V+A)*CT1)*((V-A)*TB2+(V+A)*CT2)) Matrix Element

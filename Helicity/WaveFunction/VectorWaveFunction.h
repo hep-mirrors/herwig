@@ -244,10 +244,10 @@ public:
    * @param part The particle to setup
    * @param dir The direction.
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
-
   inline VectorWaveFunction(vector<LorentzPolarizationVector>& wave, tPPtr part,
 			    Direction dir, bool time, bool massless, bool vertex,
 			    VectorPhase phase=default_vector_phase);
@@ -257,10 +257,11 @@ public:
    * as LorentzPolarizationVector objects, for all helicities and sets up a particle's
    * SpinInfo.
    * @param wave The polarization vectors for the different helicities.
-   * @parmm rho The \f$\rho\f$ matrix for the particle.
+   * @param rho The \f$\rho\f$ matrix for the particle.
    * @param part The particle to setup
    * @param dir The direction.
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
@@ -277,6 +278,7 @@ public:
    * @param part The particle to setup
    * @param dir The direction.
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
@@ -289,10 +291,11 @@ public:
    * as LorentzPolarizationVector objectsm for all helicities and sets up a particle's
    * SpinInfo.
    * @param wave The polarization vectors for the different helicities.
-   * @parmm rho The \f$\rho\f$ matrix for the particle.
+   * @param rho The \f$\rho\f$ matrix for the particle.
    * @param part The particle to setup
    * @param dir The direction.
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
@@ -429,6 +432,7 @@ public:
    * @param wave The polarization vectors for the different helicities.
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to create the VectorSpinInfo object 
    */
@@ -443,6 +447,7 @@ public:
    * @param rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to create the VectorSpinInfo object 
    */
@@ -456,6 +461,7 @@ public:
    * @param wave The polarization vectors for the different helicities.
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to create the VectorSpinInfo object 
    */
@@ -470,6 +476,7 @@ public:
    * @param rho The \f$\rho\f$ matrix for the particle
    * @param part The particle to setup
    * @param time Is this is timelike (true) or spacelike (false ) particle?
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to create the VectorSpinInfo object 
    */
@@ -504,6 +511,7 @@ private:
    * SpinInfo object.
    * @param wave The polarization vectors for the different helicities
    * @param spin Pointer to the VectorSpinInfo object
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to set up the VectorSpinInfo object 
    */
@@ -516,6 +524,7 @@ private:
    * for all the helicities and set up the SpinInfo object.
    * @param wave The polarization vectors for the different helicities
    * @param spin Pointer to the VectorSpinInfo object
+   * @param massless Whether or not the particle is massless
    * @param phase The phase choice.
    * @param vertex Whether or not to set up the VectorSpinInfo object 
    */

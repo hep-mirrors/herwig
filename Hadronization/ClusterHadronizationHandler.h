@@ -49,9 +49,23 @@ class ClusterHadronizationHandler: public HadronizationHandler {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
   inline ClusterHadronizationHandler();
+
+  /**
+   * Copy-constructor.
+   */
   inline ClusterHadronizationHandler(const ClusterHadronizationHandler &);
+
+  /**
+   * Destructor.
+   */
   virtual ~ClusterHadronizationHandler();
+  //@}
 
 public:
 
@@ -67,8 +81,21 @@ public:
 
 public:
 
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * Standard Init function used to initialize the interfaces.
@@ -77,26 +104,66 @@ public:
 
 protected:
 
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
   inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
   inline virtual void doinit() throw(InitException);
-  virtual void doinitrun(); 
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
 
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
 
 private:
 
@@ -154,38 +221,32 @@ private:
    * This is a pointer to a Herwig::ClusterDecayer object.
    */
   ClusterDecayerPtr      _clusterDecayer; 
-
 };
 
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
 
+template <>
 /**
  * The following template specialization informs ThePEG about the
  * base class of ClusterHadronizationHandler.
  */
-template <>
 struct BaseClassTrait<Herwig::ClusterHadronizationHandler,1> {
+  /** Typedef of the base class of ClusterHadronizationHandler. */
   typedef HadronizationHandler NthBase;
 };
 
+template <>
 /**
  * The following template specialization informs ThePEG about the
  * name of this class and the shared object where it is defined.
  */
-template <>
 struct ClassTraits<Herwig::ClusterHadronizationHandler>: 
     public ClassTraitsBase<Herwig::ClusterHadronizationHandler> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "/Herwig++/ClusterHadronizationHandler"; }
-
+  /** Return the class name.*/
+  static string className() { return "Herwig++::ClusterHadronizationHandler"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -195,8 +256,6 @@ struct ClassTraits<Herwig::ClusterHadronizationHandler>:
 };
 
 }
-
-#endif // DOXYGEN
 
 #include "ClusterHadronizationHandler.icc"
 

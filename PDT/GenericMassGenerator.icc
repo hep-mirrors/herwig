@@ -90,7 +90,7 @@ inline Energy GenericMassGenerator::mass(const ParticleData & in,
       output=mass(in,wgt,low,upp);
       if(wgt>_maxwgt){_maxwgt=wgt;}
     }
-  while(_maxwgt*(generator()->rnd())>wgt&&ntry<_ngenerate);
+  while(_maxwgt*(UseRandom::rnd())>wgt&&ntry<_ngenerate);
   if(ntry>=_ngenerate){return _mass;}
   return output;
 }
@@ -107,7 +107,7 @@ inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt,
   Energy  lo=max(low,_lowermass),up=min(upp,_uppermass);
   double  rhomin=atan((lo*lo-_mass2)/_mwidth);
   double  rhomax=atan((up*up-_mass2)/_mwidth)-rhomin;
-  double  rho=rhomin+rhomax*(generator()->rnd());
+  double  rho=rhomin+rhomax*(UseRandom::rnd());
   Energy2 q2 = _mass2+_mwidth*tan(rho);
   Energy  q = sqrt(q2);  
   wgt = rhomax*weight(q);
