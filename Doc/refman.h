@@ -8,7 +8,7 @@ Herwig++ is a C++ Monte Carlo event generator.
 
 */
 
-/** \defgroup Hadronization 
+/** \defgroup Hadronization Hadronization Classes
 These classes are used for the Hadronization.
 */
 

@@ -86,7 +86,7 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
 	 x3 = 2. - x1 - x2;
 	 test = sqr(x1*(1.-x1)) + sqr(x2*(1.-x2)) + sqr(x3*(1.-x3));
 	 test /= sqr(x1*x2*x3);
-       } while(test < 2.*generator()->rnd());
+       } while(test < 2.*UseRandom::rnd());
      } else Kinematics::threeBodyDecay(p.momentum(), products[0], products[1],
 				       products[2]);
      

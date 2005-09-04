@@ -1,5 +1,7 @@
 2005-09-04  Pete's account  <Peter.Richardson@durham.ac.uk>
 
+	* Doc/tagfileThePEG.tag (Repository): changes to documentation so that include is not scanned by doxygen and duplicate base classes do not appear
+
 	* Utilities/Kinematics.cc (Repository): Changes for the changes to random numbers from ThePEG and improvements to documentation
 
 2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
