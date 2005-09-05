@@ -203,7 +203,7 @@ unsigned int ScalarMesonCurrent::decayMode(vector<int> idout)
   return ix;
 }
 
-void ScalarMesonCurrent::dataBaseOutput(ofstream & output)
+void ScalarMesonCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/ScalarMesonCurrent " << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";

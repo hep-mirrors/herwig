@@ -691,7 +691,8 @@ ParticleVector KornerKramerCharmDecayer::decay(const DecayMode & dm,
 	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
 	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
 	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){imode=ix;cc=true;}
+	      _outgoingM[ix]==113||_outgoingM[ix]==223||_outgoingM[ix]==333))
+	    {imode=ix;cc=true;}
 	}
       ++ix;
     }
@@ -915,7 +916,7 @@ halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
   B1=_B1[imode];B2=_B2[imode]*(m0+m1);B3=_B3[imode]*(m0+m1)*(m0+m1);
 }
  
-void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output)
+void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

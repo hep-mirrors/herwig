@@ -292,7 +292,7 @@ double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int ichan,
 }
 
 
-void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output)
+void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

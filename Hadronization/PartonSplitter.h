@@ -30,12 +30,23 @@ class PartonSplitter: public ThePEG::HandlerBase {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * The default constructor.
    */
   inline PartonSplitter();
+
+  /**
+   * The copy constructor.
+   */
   inline PartonSplitter(const PartonSplitter &);
+
+  /**
+   * The destructor.
+   */
   virtual ~PartonSplitter();
+  //@}
 
 public:
 
@@ -51,44 +62,88 @@ public:
  
 public:
 
+  /** @name Functions used by the persistent I/O system. */
+  //@{
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
 
   /**
-   * Standard Init function used to initialize the interfaces.
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
    */
   static void Init();
 
 protected:
 
+  /** @name Clone Methods. */
+  //@{
   /**
-   * Standard clone methods.
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
    */
   inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
   inline virtual IBPtr fullclone() const;
+  //@}
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
 
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
 
 private:
 
@@ -144,8 +199,6 @@ private:
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
 
 
@@ -155,6 +208,7 @@ namespace ThePEG {
  */
 template <>
 struct BaseClassTrait<Herwig::PartonSplitter,1> {
+  /** Typedef of the first base class of PartonSplitter. */
   typedef ThePEG::HandlerBase NthBase;
 };
 
@@ -165,12 +219,8 @@ struct BaseClassTrait<Herwig::PartonSplitter,1> {
 template <>
 struct ClassTraits<Herwig::PartonSplitter>:
     public ClassTraitsBase<Herwig::PartonSplitter> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "/Herwig++/PartonSplitter"; }
-
+  /** Return the class name.*/
+  static string className() { return "Herwig++::PartonSplitter"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -180,8 +230,6 @@ struct ClassTraits<Herwig::PartonSplitter>:
 };
 
 }
-
-#endif // DOXYGEN
 
 #include "PartonSplitter.icc"
 

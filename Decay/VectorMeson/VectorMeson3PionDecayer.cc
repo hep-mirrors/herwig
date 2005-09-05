@@ -539,7 +539,7 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   return output;
 }
 
-void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output)
+void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

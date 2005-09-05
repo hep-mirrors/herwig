@@ -302,7 +302,7 @@ bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & me
   mecode=9;
   return id1==_outgoing1[imode]&&id2==_outgoing2[imode];
 }
-void TensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output)
+void TensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

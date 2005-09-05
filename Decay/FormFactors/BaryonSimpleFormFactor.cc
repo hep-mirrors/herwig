@@ -182,7 +182,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0,int id1,Energy,Energy,
   f3a = 0.;
 }
 
-void BaryonSimpleFormFactor::dataBaseOutput(ofstream& output) 
+void BaryonSimpleFormFactor::dataBaseOutput(ofstream& output) const 
 {
   output << "create /Herwig++/BaryonSimpleFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":g_A " <<  _gA << " \n";

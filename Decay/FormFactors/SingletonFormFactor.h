@@ -100,7 +100,7 @@ public:
    *  Output the information required to reproduce the object for the particle
    *  properties database
    */
-  virtual void dataBaseOutput(ofstream&);
+  virtual void dataBaseOutput(ofstream&) const;
   // output the information for the database
 
 protected:

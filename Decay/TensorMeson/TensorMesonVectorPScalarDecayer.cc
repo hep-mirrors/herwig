@@ -283,7 +283,7 @@ bool TensorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & m
   return order;
 }
 
-void TensorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output)
+void TensorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

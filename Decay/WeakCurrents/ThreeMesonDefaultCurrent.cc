@@ -881,7 +881,7 @@ PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int
   return extpart;
 }
 
-void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output)
+void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/ThreeMesonDefaultCurrent " << fullName() << " \n";
   for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix)

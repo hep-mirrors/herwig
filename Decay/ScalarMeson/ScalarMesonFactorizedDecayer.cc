@@ -674,7 +674,7 @@ void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
     }
 }
 
-void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output)
+void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output) const
 {
   unsigned int ix;
   output << "update decayers set parameters=\"";

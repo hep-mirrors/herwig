@@ -331,7 +331,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   return temp;
 } 
   
-void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output)
+void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

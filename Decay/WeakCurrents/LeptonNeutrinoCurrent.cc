@@ -150,7 +150,7 @@ unsigned int LeptonNeutrinoCurrent::decayMode(vector<int> idout)
 }
 
 // output the information for the database
-void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output)
+void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/LeptonNeutrinoCurrent " << fullName() << " \n";
   WeakDecayCurrent::dataBaseOutput(output);

@@ -83,8 +83,8 @@ public:
    * and on which particles/clusters. This function also handles the 
    * situation of vetos on the hadronization.
    * @param parent The parent for the decay.
-   * @param The step in which to place the products.
-   * @param The event handler
+   * @param pstep The step in which to place the products.
+   * @param ch The event handler
    * @param hadrons The hadrons produced in the decay
    * @return Whether or not the hadronization was successful.
    */
@@ -204,8 +204,7 @@ private:
 
   /**
    * Find the clusters produced in partonic hadron decays
-   * @param step The step to search
-   * @param hmap Map of clusters to hadrons which produced them
+   * @param pstep The step to search
    * @param parent The decaying particles.
    * @param clusters The clusters produced in the decay.
    */
@@ -221,15 +220,12 @@ private:
   /**
    * Check hadrons produce in a partonic hadron decay do not reproduce an inclusive
    * mode.
-   * @param partonichadrons A map containing the decaying hadrons and the clusters
-   * produced in their decay.
    * @param parent The decaying particles.
    * @param clusters The clusters produced in the decay.
    * @param hadrons The hadrons produced in the partonic decay.
    * @return Whether or not there are duplicate modes.
    */
   bool duplicateMode(tPPtr parent,vector<tcPPtr> & clusters,vector<tPPtr> & hadrons);
-
   //@}
 
 private:

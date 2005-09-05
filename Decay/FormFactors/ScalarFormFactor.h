@@ -299,7 +299,7 @@ public:
   /**
    * Output the setup information for the particle database
    */
-  virtual void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream &) const;
 
 protected:  
 
@@ -324,7 +324,7 @@ protected:
   /**
    * Get the initial number of modes
    */
-  inline unsigned int initialModes();
+  inline unsigned int initialModes() const;
 
 protected:
 

@@ -638,7 +638,7 @@ threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
 				  << Exception::abortnow;}
 }
 
-void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output)
+void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

@@ -318,7 +318,7 @@ void NonLeptonicOmegaDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,En
 							  Complex& B) const
  {A=_A[imode]*(m0+m1);B=_B[imode]*(m0+m1);}
 
-void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output)
+void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

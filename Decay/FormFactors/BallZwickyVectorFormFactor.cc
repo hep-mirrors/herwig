@@ -436,7 +436,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
     }
 }
 
-void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output)
+void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::BallZwickyVectorFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":CutOff " << _cutoff/GeV2 << "\n";

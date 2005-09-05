@@ -248,7 +248,7 @@ bool PScalarPScalarVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & meco
 }
 
 // output the setup information for the particle database
-void PScalarPScalarVectorDecayer::dataBaseOutput(ofstream & output)
+void PScalarPScalarVectorDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

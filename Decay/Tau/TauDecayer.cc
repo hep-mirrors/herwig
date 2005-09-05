@@ -267,7 +267,7 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
 }
 
 // output the setup information for the particle database
-void TauDecayer::dataBaseOutput(ofstream & output)
+void TauDecayer::dataBaseOutput(ofstream & output) const
 {
   unsigned int ix;
   output << "update decayers set parameters=\"";

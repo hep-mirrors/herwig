@@ -121,7 +121,7 @@ void MelikhovFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
     }
 }
 
-void MelikhovFormFactor::dataBaseOutput(ofstream & output)
+void MelikhovFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::MelikhovFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":Fit " << _ifit << " \n";

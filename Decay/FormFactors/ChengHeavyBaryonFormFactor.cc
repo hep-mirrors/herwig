@@ -373,7 +373,7 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 }
 
 // output the information for the database
-void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output)
+void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output) const
 {
   output << "create /Herwig++/ChengHeavyBaryonFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":DownMass     " << _md/GeV << " \n";

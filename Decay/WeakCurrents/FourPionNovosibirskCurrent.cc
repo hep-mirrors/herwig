@@ -835,7 +835,7 @@ unsigned int FourPionNovosibirskCurrent::decayMode(vector<int> idout)
 
 
 // output the information for the database
-void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output)
+void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/FourPionNovosibirskCurrent " << fullName() << " \n";
   output << "set " << fullName() << ":rhoMass "    << _rhomass/GeV << "\n";

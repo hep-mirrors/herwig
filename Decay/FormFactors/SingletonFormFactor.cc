@@ -157,7 +157,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0, int id1, Energy m0, Ener
   f3a =-efact*ambar*(m0+m1);
 }
 
-void SingletonFormFactor::dataBaseOutput(ofstream & output)
+void SingletonFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/SingletonFormFactor " << fullName() << " \n ";
   output << "set " << fullName() << ":CharmMass " << _mcharm/GeV << " \n";

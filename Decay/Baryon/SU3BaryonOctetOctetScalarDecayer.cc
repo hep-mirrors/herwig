@@ -438,7 +438,7 @@ void SU3BaryonOctetOctetScalarDecayer::setupModes(unsigned int iopt) const
     }
 }
  
-void SU3BaryonOctetOctetScalarDecayer::dataBaseOutput(ofstream & output)
+void SU3BaryonOctetOctetScalarDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

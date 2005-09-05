@@ -261,7 +261,7 @@ bool TwoPionPhotonCurrent::accept(vector<int> id)
 unsigned int TwoPionPhotonCurrent::decayMode(vector<int> idout){return 0;}
 
 // output the information for the database
-void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output)
+void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/TwoPionPhotonCurrent " << fullName() << " \n";
   output << "set " << fullName() << ":RhoParameters "    << _rhoparameters << "\n";

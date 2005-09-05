@@ -106,7 +106,8 @@ inline void BaryonFormFactor::addFormFactor(int in,int out,int inspin,int outspi
 }
 
 // number of form factors
-inline unsigned int BaryonFormFactor::numberOfFactors(){return _incomingid.size();}
+inline unsigned int BaryonFormFactor::numberOfFactors() const
+{return _incomingid.size();}
 
 // information on the form factors by location in the list
 inline void BaryonFormFactor::formFactorInfo(int iloc,int & ispin,int & ospin,
@@ -141,5 +142,6 @@ inline void BaryonFormFactor::particleID(int iloc,int & id0,int & id1)
 inline void BaryonFormFactor::initialModes(unsigned int nmodes)
 {_numbermodes=nmodes;}
 
-inline unsigned int BaryonFormFactor::initialModes(){return _numbermodes;}
+inline unsigned int BaryonFormFactor::initialModes() const
+{return _numbermodes;}
 }

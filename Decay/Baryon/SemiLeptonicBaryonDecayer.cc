@@ -63,8 +63,8 @@ void SemiLeptonicBaryonDecayer::doinit() throw(InitException) {
       extpart.resize(2);
       _form->particleID(ix,id0,id1);
       _form->formFactorInfo(ix,inspin,outspin,spect1,spect2,inquark,outquark);
-      extpart[0]=getParticleData(id0);
-      extpart[1]=getParticleData(id1);
+      extpart[0]=getParticleData(-id0);
+      extpart[1]=getParticleData(-id1);
       Wcharge =(extpart[0]->iCharge()-extpart[1]->iCharge());
       min = extpart[0]->mass()+extpart[0]->widthUpCut()
 	-extpart[1]->mass()+extpart[1]->widthLoCut();
@@ -232,6 +232,12 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
   Complex f1v,f2v,f3v,f1a,f2a,f3a;
   _form->SpinHalfSpinHalfFormFactor(q2,iloc,id0,id1,m0,m1,
 				    f1v,f2v,f3v,f1a,f2a,f3a);
+  f1v=0.;
+  f1a=0.;
+  //f2v=0.;
+  //f2a=0.;
+  f3v=0.;
+  f3a=0.;
   // now we need to construct the current
   LorentzPolarizationVector vtemp;
   hadron.resize(4);
@@ -442,7 +448,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
 }
 
 // output the setup information for the particle database
-void SemiLeptonicBaryonDecayer::dataBaseOutput(ofstream & output)
+void SemiLeptonicBaryonDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << " \n";

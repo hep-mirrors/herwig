@@ -74,7 +74,7 @@ public:
   /**
    * Output the setup information for the particle database.
    */
-  void dataBaseOutput(ofstream &);
+  void dataBaseOutput(ofstream &) const;
   
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

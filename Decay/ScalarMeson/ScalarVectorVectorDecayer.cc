@@ -191,7 +191,7 @@ double ScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
 }
 
 // output the setup info for the particle database
-void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output)
+void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

@@ -80,7 +80,7 @@ public:
   /**
    * Output the setup information for the particle database
    */
-  virtual void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream &) const;
 
 public:
 

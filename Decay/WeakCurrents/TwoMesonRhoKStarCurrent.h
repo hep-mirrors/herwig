@@ -154,7 +154,7 @@ public:
   /**
    * Output the information for the database
    */
-  virtual void dataBaseOutput(ofstream &);
+  virtual void dataBaseOutput(ofstream &) const;
 
 protected:
 

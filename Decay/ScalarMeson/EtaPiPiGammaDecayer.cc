@@ -683,7 +683,7 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   return output;
 }
 
-void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output)
+void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

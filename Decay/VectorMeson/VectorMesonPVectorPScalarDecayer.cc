@@ -249,7 +249,7 @@ bool VectorMesonPVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,
   mecode = 4;
   return order;
 }
-void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output)
+void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

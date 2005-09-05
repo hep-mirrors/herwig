@@ -212,7 +212,7 @@ bool ScalarMesonTensorScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & i
 }
 
 // output the setup information for the particle database
-void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output)
+void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

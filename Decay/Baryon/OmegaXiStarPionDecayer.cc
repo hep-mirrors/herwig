@@ -130,7 +130,7 @@ threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
   B1=_BP+_BS;
 }
 
-void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output)
+void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

@@ -24,12 +24,23 @@ class BaryonRemnants: public RemnantHandler {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * Default constructor.
    */
   inline BaryonRemnants();
+
+  /**
+   * Copy-constructor.
+   */
   inline BaryonRemnants(const BaryonRemnants &);
+
+  /**
+   * Destructor.
+   */
   virtual ~BaryonRemnants();
+  //@}
 
 public:
 
@@ -65,11 +76,11 @@ public:
   virtual Lorentz5Momentum generate(PartonBinInstance & pb, const double * r,
 				    Energy2 scale, Energy2 ,
 				    const LorentzMomentum & parent) const
-  {
-    return generate(pb,r,scale,parent);
-  }
+  {return generate(pb,r,scale,parent);}
   
-
+  /**
+   *  Create the remnants
+   */
   virtual void createRemnants(PartonBinInstance &) const;
 
 public:
@@ -81,32 +92,67 @@ public:
 
 protected:
 
+  /** @name Clone Methods. */
+  //@{
   /**
-   * Standard clone methods.
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr clone() const;
 
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
   inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
 
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in
+   * this object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
 
 private:
 
+  /**
+   *  describe a class without persistent data
+   */
   static NoPIOClassDescription<BaryonRemnants> initBaryonRemnants;
 
   /**
@@ -129,15 +175,30 @@ struct BaryonRemInfo: public RemInfoBase {
 
 namespace ThePEG {
 
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of BaryonRemnants.
+ */
 template <>
 struct BaseClassTrait<Herwig::BaryonRemnants,1> {
+  /** Typedef of the base class of BaryonRemnants. */
   typedef RemnantHandler NthBase;
 };
 
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
 template <>
 struct ClassTraits<Herwig::BaryonRemnants>
   : public ClassTraitsBase<Herwig::BaryonRemnants> {
-  static string className() { return "/Herwig++/BaryonRemnants"; }
+   /** Return the class name. */
+  static string className() { return "Herwig++::BaryonRemnants"; }
+   /**
+    * Return the name of the shared library to be loaded to get
+    * access to this class and every other class it uses
+    * (except the base class).
+    */
   static string library() { return "MRST.so"; }
 };
 

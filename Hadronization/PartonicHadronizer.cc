@@ -105,8 +105,8 @@ void PartonicHadronizer::Init() {
      false, false, Interface::limited);
 }
 
-  bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
-				     vector<tPPtr> & outhad)
+bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
+				   vector<tPPtr> & outhad)
 {
   unsigned int ptry(0);
   bool partonicveto(false);
@@ -143,29 +143,13 @@ void PartonicHadronizer::Init() {
 	    }
 	}
       if (!lightOK)
-	{throw Exception() << "PartonicHadronizer::hadronize(): " 
-			   << "tried LightClusterDecayer 10 times!"
-			   << Exception::eventerror;}
-      // decay the remaining clusters
-      _clusterDecayer->decay(pstep);
-      // find the clusters
-      findPartonicClusters(*pstep,parent,pclusters);
-      // check if duplicate modes in partonic decays
-      partonicveto=duplicateMode(parent,pclusters,outhad);
-      // increment counter
-      ++ptry;
-      // check if vetoing the hadronization
-      if(partonicveto)
 	{
-	  // special for the motherless quarks
-	  for(unsigned int ix=0;ix<pclusters.size();++ix)
+	  partonicveto=true;
+	  for(unsigned int ix=0;ix<clusters.size();++ix)
 	    {
-	      for(unsigned int iy=0;iy<pclusters[ix]->parents().size();++iy)
-		{
-		  if(pclusters[ix]->parents()[iy]->coloured()&&
-		     pclusters[ix]->parents()[iy]->parents().empty())
-		    {pstep->removeParticle(pclusters[ix]->parents()[iy]);}
-		}
+	      for(unsigned int iy=0;iy<clusters[ix]->children().size();++iy)
+		{if(clusters[ix]->children()[iy]->id()!=81)
+		    {pstep->removeParticle(clusters[ix]->children()[iy]);}}
 	    }
 	  // remove the children of the tagged particles
 	  for(unsigned int ix=0;ix<tagged.size();++ix)
@@ -174,6 +158,37 @@ void PartonicHadronizer::Init() {
 		{pstep->removeParticle(tagged[ix]->children()[iy]);}
 	    }
 	}
+      else
+	{
+	  // decay the remaining clusters
+	  _clusterDecayer->decay(pstep);
+	  // find the clusters
+	  findPartonicClusters(*pstep,parent,pclusters);
+	  // check if duplicate modes in partonic decays
+	  partonicveto=duplicateMode(parent,pclusters,outhad);
+	  // check if vetoing the hadronization
+	  if(partonicveto)
+	    {
+	      // special for the motherless quarks
+	      for(unsigned int ix=0;ix<pclusters.size();++ix)
+		{
+		  for(unsigned int iy=0;iy<pclusters[ix]->parents().size();++iy)
+		    {
+		      if(pclusters[ix]->parents()[iy]->coloured()&&
+			 pclusters[ix]->parents()[iy]->parents().empty())
+			{pstep->removeParticle(pclusters[ix]->parents()[iy]);}
+		    }
+		}
+	      // remove the children of the tagged particles
+	      for(unsigned int ix=0;ix<tagged.size();++ix)
+		{
+		  for(unsigned int iy=0;iy<tagged[ix]->children().size();++iy)
+		    {pstep->removeParticle(tagged[ix]->children()[iy]);}
+		}
+	    }
+	}
+      // increment counter
+      ++ptry;
     }
   while(ptry<_partontries&&partonicveto);
   return ptry!=_partontries;

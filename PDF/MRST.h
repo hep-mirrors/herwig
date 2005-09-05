@@ -31,10 +31,27 @@ typedef Ptr<MRSTData>::pointer MRSTDatPtr;
  *  Some comment should be provided!
  */
 class MRST : public PDFBase {
- public:
+ 
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor.
+   */
   MRST();
+
+  /**
+   * Copy-constructor.
+   */
   MRST(const MRST &);
+
+  /**
+   * Destructor.
+   */
   virtual ~MRST();
+  //@}
+
 
   /**
    * Return true if this PDF can handle the extraction of parton from the
@@ -54,6 +71,10 @@ class MRST : public PDFBase {
    */
   virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double l, Energy2 particleScale = 0.0*GeV2) const;
+
+  /**
+   * 
+   */
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double x, double eps = 0.0,
                      Energy2 particleScale = 0.0*GeV2) const;

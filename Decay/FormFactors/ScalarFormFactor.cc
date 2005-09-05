@@ -123,7 +123,7 @@ void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,
 		    << " not implemented"
 		    << Exception::abortnow;
 }
-void  ScalarFormFactor::dataBaseOutput(ofstream & output)
+void  ScalarFormFactor::dataBaseOutput(ofstream & output) const
 {
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {

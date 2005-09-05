@@ -212,7 +212,7 @@ void RadiativeHeavyBaryonDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output)
+void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

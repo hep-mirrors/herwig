@@ -108,7 +108,7 @@ void BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor(Energy2,int,int,int,Energ
 }
 
 // output the information for the database
-void BaryonFormFactor::dataBaseOutput(ofstream & output)
+void BaryonFormFactor::dataBaseOutput(ofstream & output) const
 {
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {

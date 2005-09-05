@@ -62,17 +62,14 @@ bool WeakPartonicDecayer::accept(const DecayMode & dm) const {
       // first two particles should be leptons or q qbar
       if((prod[0]->id()>=11&&prod[0]->id()<=16&&prod[1]->id()<=-11&&prod[1]->id()>=-16)||
 	 (prod[1]->id()>=11&&prod[1]->id()<=16&&prod[0]->id()<=-11&&prod[0]->id()>=-16)||
-	 (prod[0]->id()>=1 &&prod[0]->id()<= 6&&prod[1]->id()<=-1 &&prod[1]->id()>=- 6)||
-	 (prod[1]->id()>=1 &&prod[1]->id()<= 6&&prod[0]->id()<=-1 &&prod[0]->id()>=- 6))
+	 (prod[0]->iColour()==PDT::Colour3    &&prod[1]->iColour()==PDT::Colour3bar   )||
+	 (prod[1]->iColour()==PDT::Colour3    &&prod[0]->iColour()==PDT::Colour3bar   ))
 	{
 	  // third particle quark and fourth colour anti-triplet or
 	  // thrid particle antiquark and fourth colour triplet
-	  if((prod[2]->id()<=-1&&prod[2]->id()>=-6&&prod[3]->iColour()==PDT::Colour3)||
-	     (prod[2]->id()>= 1&&prod[2]->id()<= 6&&prod[3]->iColour()==PDT::Colour3bar))
-	    {
-	      // finally check 0 and 3 both quarks or both antiquarks
-	      if(prod[0]->id()*prod[2]->id()>0){return true;}
-	    }
+	  if((prod[2]->iColour()==PDT::Colour3bar&&prod[3]->iColour()==PDT::Colour3   )||
+	     (prod[2]->iColour()==PDT::Colour3   &&prod[3]->iColour()==PDT::Colour3bar))
+	    {return true;}
 	}
       else{return false;}
     }
@@ -96,7 +93,21 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
     }
   // 2-body decays
   if(children.size()==2)
-    {exit(1);}
+    {
+      double ctheta,phi;
+      Lorentz5Momentum pout[2];
+      for(unsigned int ix=0;ix<2;++ix){pout[ix].setMass(children[ix]->mass());}
+      Kinematics::generateAngles(ctheta,phi);
+      Kinematics::twoBodyDecay(parent.momentum(),pout[0].mass(),pout[1].mass(),
+			       ctheta,phi,pout[0],pout[1]);
+      for(unsigned int ix=0; ix<2;++ix) children[ix]->setMomentum(pout[ix]);
+      if(children[0]->coloured()) 
+	{
+	  if(children[0]->id() > 0){children[0]->antiColourNeighbour(children[1]);}
+	  else                     {children[0]->    colourNeighbour(children[1]);}
+	}
+    }
+  // 3-body decays
   else if(children.size()==3)
     {
       // set masses of products
@@ -168,15 +179,15 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
       for(unsigned int ix=0; ix<4;++ix) children[ix]->setMomentum(pout[ix]);
       if(children[0]->coloured()) 
 	{
-	  if(children[0]->id() > 0)
+	  if(children[0]->data().iColour()==PDT::Colour3)
 	    {children[0]->antiColourNeighbour(children[1]);}
 	  else
-	    {children[0]->colourNeighbour(children[1]);}
+	    {children[0]->    colourNeighbour(children[1]);}
 	}
-      if(children[2]->id() > 0)
+      if(children[2]->data().iColour()==PDT::Colour3)
 	{children[2]->antiColourNeighbour(children[3]);}
       else
-	{children[2]->colourNeighbour(children[3]);}
+	{children[2]->    colourNeighbour(children[3]);}
     }
   return children;
 }

@@ -177,12 +177,19 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 		      }
 		  }
 	      }
+	    ++hadronizetries;
 	  }
 	while(hadronizetries<_hadtry&&!hadronized);
 	if(hadronizetries>=_hadtry)
-	  {throw Exception() << "Fail to hadronize a partonic decay in"
-			     << " HwDecayHandler::performDecay()" 
-			     << Exception::eventerror;}
+	  {
+	    string mode=dm->parent()->PDGName() + " -> ";
+	    for(unsigned int ix=0;ix<dm->orderedProducts().size();++ix)
+	      {mode+=dm->orderedProducts()[ix]->PDGName() + " ";}
+	    throw Exception() << "Failed to hadronize a partonic decay "
+			      << mode << "in"
+			      << " HwDecayHandler::performDecay()" 
+			      << Exception::eventerror;
+	  }
 	return;
       }
       catch (DecHdlChildFail) 

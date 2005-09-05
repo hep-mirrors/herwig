@@ -271,7 +271,7 @@ void  BaryonThreeQuarkModelFormFactor::
   f4a =-msum2/m0/m0*K2;
 }
 
-void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output)
+void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/BaryonThreeQuarkModelFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":Order       " << _order        << " \n";

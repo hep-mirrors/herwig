@@ -577,7 +577,7 @@ PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int iq,
   return extpart;
 }
 
-void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output)
+void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/ThreePionCLEOCurrent " << fullName() << " \n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix)

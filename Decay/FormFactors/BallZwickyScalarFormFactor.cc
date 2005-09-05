@@ -220,7 +220,7 @@ void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
     {fT *=sqrt(1./3.)*cos(_thetaeta)-sqrt(2./3.)*sin(_thetaeta);}
 }
 
-void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output)
+void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::BallZwickyScalarFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";

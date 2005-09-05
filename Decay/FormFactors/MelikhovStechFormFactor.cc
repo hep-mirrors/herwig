@@ -880,7 +880,7 @@ void MelikhovStechFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned in
     }
 }
 
-void MelikhovStechFormFactor::dataBaseOutput(ofstream & output)
+void MelikhovStechFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::MelikhovStechFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";

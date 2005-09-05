@@ -179,7 +179,7 @@ public:
   /**
    * output the information for the database
    */
-  void dataBaseOutput(ofstream &);
+  void dataBaseOutput(ofstream &) const;
 
 protected:
 

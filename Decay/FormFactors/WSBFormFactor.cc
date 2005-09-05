@@ -428,7 +428,7 @@ void WSBFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
     }
 }
 
-void WSBFormFactor::dataBaseOutput(ofstream & output)
+void WSBFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::WSBFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";

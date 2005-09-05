@@ -111,7 +111,13 @@ EGPtr HerwigRun::eventGenerator() {
     is >> eg;
     breakThePEG();
     egCreated = true;
-    if ( eg ) eg->initialize();
+    if ( eg ) 
+      {
+	if(!isInitialized) {
+	  eg->initialize();
+	  isInitialized = true;
+	}
+      }
     if ( seed > 0 ){eg->setSeed(seed);}
     return eg;
   } else 

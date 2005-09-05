@@ -322,7 +322,7 @@ int DecayIntegrator::findMode(const DecayMode & dm)
 }
 
 // output the information for the database
-void DecayIntegrator::dataBaseOutput(ofstream & output)
+void DecayIntegrator::dataBaseOutput(ofstream & output) const
 {output << " where ThePEGName=\" " << fullName() << "\";";}
 
 // pointer to a mode

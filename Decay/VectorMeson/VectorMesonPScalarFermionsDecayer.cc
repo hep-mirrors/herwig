@@ -403,7 +403,7 @@ double VectorMesonPScalarFermionsDecayer::threeBodydGammads(int imodeb,Energy2 q
 }
 
 // output the setup information for the particle database
-void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output)
+void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

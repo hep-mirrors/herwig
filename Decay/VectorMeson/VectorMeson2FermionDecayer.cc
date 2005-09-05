@@ -316,7 +316,7 @@ bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode
 
 
 // output the setup information for the particle database
-void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output)
+void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

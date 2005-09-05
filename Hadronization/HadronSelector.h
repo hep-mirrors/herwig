@@ -531,6 +531,7 @@ namespace ThePEG {
  */
 template <>
 struct BaseClassTrait<Herwig::HadronSelector,1> {
+  /** Typedef of the first base class of HadronSelector. */
   typedef ThePEG::HandlerBase NthBase;
 };
 
@@ -539,20 +540,16 @@ struct BaseClassTrait<Herwig::HadronSelector,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::HadronSelector>: public ClassTraitsBase<Herwig::HadronSelector> {
-
-  /**
-   * Return the class name.
-   */
-  static string className() { return "/Herwig++/HadronSelector"; }
-
+struct ClassTraits<Herwig::HadronSelector>
+  : public ClassTraitsBase<Herwig::HadronSelector> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::HadronSelector"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
   static string library() { return "libHwHadronization.so"; }
-
 };
 
 }

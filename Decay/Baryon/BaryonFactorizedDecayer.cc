@@ -727,7 +727,7 @@ void BaryonFactorizedDecayer::findModes(unsigned int imode,
 }
 
 // output the setup information for the particle database
-void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output)
+void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output) const
 {
   unsigned int ix;
   output << "update decayers set parameters=\"";

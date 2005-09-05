@@ -37,6 +37,7 @@ DecayPhaseSpaceMode::DecayPhaseSpaceMode()
   _npoint=10000;
   _ntry=500;
   _partial=-1;
+  _widthgen=_widthgen=cGenericWidthGeneratorPtr();
 }
 
 // constructor with decayer and particles
@@ -48,6 +49,7 @@ DecayPhaseSpaceMode::DecayPhaseSpaceMode(PDVector in,DecayIntegratorPtr intin)
   _extpart=in;
   _integrator=intin;
   _partial=-1;
+  _widthgen=_widthgen=cGenericWidthGeneratorPtr();
 }
 
 // copy constructor
@@ -469,10 +471,6 @@ Energy DecayPhaseSpaceMode::weight(bool vertex,bool cc,int & ichan,
   else{phwgt = channelPhaseSpace(cc,ichan,inpart,particles);}
   // generate the matrix element
   mewgt = me2(vertex,-1,inpart,particles);
-  //cout << "testing the partial width  " 
-  //     << mewgt*phwgt << "  "
-  //     << mewgt       << "  " 
-  //     << phwgt       << endl;
   return mewgt*phwgt;
 }
 
@@ -485,6 +483,8 @@ void DecayPhaseSpaceMode::doinitrun() {
 	dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
       const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->initrun();
     }
+  else
+    {_widthgen=cGenericWidthGeneratorPtr();}
   tcGenericWidthGeneratorPtr wtemp;
   for(unsigned int ix=0;ix<_extpart.size();++ix)
     {

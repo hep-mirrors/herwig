@@ -147,7 +147,7 @@ unsigned int ThreeMesonCurrentBase::decayMode(vector<int> id)
   return imode;
 }
 
-void ThreeMesonCurrentBase::dataBaseOutput(ofstream & output)
+void ThreeMesonCurrentBase::dataBaseOutput(ofstream & output) const
 {}
 
 }

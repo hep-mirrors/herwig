@@ -508,7 +508,7 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
     }
 }
 
-void ISGWFormFactor::dataBaseOutput(ofstream & output)
+void ISGWFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig::ISGWFormFactor " << fullName() << "\n";
   output << "set " << fullName() << ":Kappa    "    << _kappa        << "\n";

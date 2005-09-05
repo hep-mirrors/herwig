@@ -127,7 +127,7 @@ public:
   /**
    * Output the setup information for the particle database
    */
-  void dataBaseOutput(ofstream &);
+  void dataBaseOutput(ofstream &) const;
 
 public:
 

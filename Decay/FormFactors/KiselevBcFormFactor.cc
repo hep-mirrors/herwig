@@ -241,7 +241,7 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
   A0 = 0.5/m1*(f0+msum*(m0-m1)*fp+q2*fm);
 }
 
-void KiselevBcFormFactor::dataBaseOutput(ofstream & output)
+void KiselevBcFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::KiselevBcFormFactor " << fullName() << " \n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)

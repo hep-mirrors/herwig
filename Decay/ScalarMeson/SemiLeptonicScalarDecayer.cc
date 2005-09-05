@@ -297,7 +297,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
 }
  
 // output the setup information for the particle database
-void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output)
+void SemiLeptonicScalarDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

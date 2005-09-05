@@ -371,7 +371,7 @@ bool ScalarScalarScalarDecayer::twoBodyMEcode(const DecayMode & dm, int & itype,
 }
 
 // output the setup information for the particle database
-void ScalarScalarScalarDecayer::dataBaseOutput(ofstream & output)
+void ScalarScalarScalarDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class

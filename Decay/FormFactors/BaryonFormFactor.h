@@ -202,7 +202,7 @@ public:
   /**
    * number of form factors
    */
-  inline unsigned int numberOfFactors();
+  inline unsigned int numberOfFactors() const;
   //@}
 
 public:
@@ -265,7 +265,7 @@ public:
    *  Output the information required to reproduce the object for the particle
    *  properties database
    */
-  virtual void dataBaseOutput(ofstream&);
+  virtual void dataBaseOutput(ofstream&) const;
   // output the information for the database
 
 protected:  
@@ -293,7 +293,7 @@ protected:
   /**
    * Get the initial number of modes
    */
-  inline unsigned int initialModes();
+  inline unsigned int initialModes() const;
 
 protected:
 

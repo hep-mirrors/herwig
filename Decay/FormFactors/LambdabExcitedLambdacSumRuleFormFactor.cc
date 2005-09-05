@@ -112,7 +112,7 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
   f4a = msum2/m0/m0*K2;
 }
 
-void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output)
+void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/LambdabExcitedLambdacSumRuleFormFactor " 
 	 << fullName() << " \n";

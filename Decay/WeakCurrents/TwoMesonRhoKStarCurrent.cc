@@ -560,7 +560,7 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout)
 }
 
 // output the information for the database
-void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output)
+void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/TwoMesonRhoKStarCurrent " << fullName() << " \n";
   unsigned int ix;

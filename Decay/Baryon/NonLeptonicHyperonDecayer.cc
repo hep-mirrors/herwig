@@ -145,7 +145,7 @@ void NonLeptonicHyperonDecayer::halfHalfScalarCoupling(int imode,
 						       Complex& A,Complex& B) const
 {A=_A[imode];B=_B[imode];}
 
-void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output)
+void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

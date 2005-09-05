@@ -183,7 +183,7 @@ unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
   return ix;
 }
 
-void VectorMesonCurrent::dataBaseOutput(ofstream & output)
+void VectorMesonCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/VectorMesonCurrent " << fullName() << " \n";
   for(unsigned int ix=0;ix<_id.size();++ix)

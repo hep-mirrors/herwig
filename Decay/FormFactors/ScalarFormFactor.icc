@@ -138,5 +138,6 @@ inline void ScalarFormFactor::particleID(unsigned int iloc,int & id0,int & id1) 
 inline void ScalarFormFactor::initialModes(unsigned int nmodes)
 {_numbermodes=nmodes;}
 
-inline unsigned int ScalarFormFactor::initialModes(){return _numbermodes;}
+inline unsigned int ScalarFormFactor::initialModes() const
+{return _numbermodes;}
 }

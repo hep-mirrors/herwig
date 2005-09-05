@@ -293,7 +293,7 @@ void SU3BaryonDecupletOctetPhotonDecayer::setupModes(unsigned int iopt) const
 	}
     }
 }
-void SU3BaryonDecupletOctetPhotonDecayer::dataBaseOutput(ofstream & output)
+void SU3BaryonDecupletOctetPhotonDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   output << "set " << fullName() << ":Iteration " << _niter << "\n";

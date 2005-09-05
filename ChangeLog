@@ -1,3 +1,7 @@
+2005-09-05  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/HerwigRun.cc: changes to documentation to remove some doxygen errors and more changes due to change in random numbers from ThePEG
+
 2005-09-04  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Doc/tagfileThePEG.tag (Repository): changes to documentation so that include is not scanned by doxygen and duplicate base classes do not appear

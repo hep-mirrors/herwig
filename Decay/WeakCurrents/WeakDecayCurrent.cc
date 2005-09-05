@@ -50,7 +50,7 @@ void WeakDecayCurrent::Init() {
      0, 0, 0, -16, 0, false, false, true);
 }
 
-void WeakDecayCurrent::dataBaseOutput(ofstream & output)
+void WeakDecayCurrent::dataBaseOutput(ofstream & output) const
 {
   for(unsigned int ix=0;ix<_quark.size();++ix)
     {

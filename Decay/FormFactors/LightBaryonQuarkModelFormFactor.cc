@@ -182,7 +182,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int mode,int id0, int id1, Energy m0, Ener
   f2a = (m0+m1)*_g2[mode]; 
 }
 
-void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output) 
+void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output) const 
 {
   output << "create /Herwig++/LightBaryonQuarkModelFormFactor " << fullName() << " \n";
   for(unsigned int ix=0;ix<_f1.size();++ix)

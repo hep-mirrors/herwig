@@ -1080,7 +1080,7 @@ void ISGW2FormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int 
 					     Complex & bp,Complex & bm) const
  {formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);}
 
-void ISGW2FormFactor::dataBaseOutput(ofstream & output)
+void ISGW2FormFactor::dataBaseOutput(ofstream & output) const
 {
   output << "create Herwig++::ISGW2FormFactor " << fullName() << "\n";
   output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";

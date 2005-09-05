@@ -355,7 +355,7 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
 }
 
 // output the setup info for the particle database
-void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output)
+void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output) const
 {
   output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
