@@ -10,6 +10,7 @@ create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME0
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME100
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME101
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME130
+library libHwPartonicDecay.so
 create /Herwig++/HeavyDecayer /Defaults/Decays/HvyDecayME0
 create /Herwig++/HeavyDecayer /Defaults/Decays/HvyDecayME100
 create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME0

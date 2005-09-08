@@ -84,6 +84,7 @@ read Hadronization.in
 # objects from the hadronization (for example like UA5)
 read UnderlyingEvent.in 
 create Herwig++::HwDecayHandler /Defaults/Handlers/PartonicDecayHandler
+set /Defaults/Handlers/PartonicDecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
 
 cd /Defaults/Partons
 

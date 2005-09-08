@@ -1,5 +1,7 @@
 2005-09-08  Pete's account  <Peter.Richardson@durham.ac.uk>
 
+	* src/HerwigDefaults.in (Repository): changes for the new treatment of hadronization in partonic decays
+
 	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc (Repository): various minor bug fixes to the decays
 
 2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
