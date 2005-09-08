@@ -69,7 +69,7 @@ inline void VectorMesonVectorVectorDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
   if(_Initialize)
     {for(unsigned int ix=0;ix<_incoming.size();++ix)
-	{_maxweight[ix]=2.*mode(ix)->maxWeight();}}
+	{_maxweight[ix]=mode(ix)->maxWeight();}}
 }
 
 inline void VectorMesonVectorVectorDecayer::rebind(const TranslationMap & trans)

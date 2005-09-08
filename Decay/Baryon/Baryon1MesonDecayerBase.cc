@@ -237,7 +237,7 @@ halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
   Complex lS,rS,lV,rV,scalar,ii(0.,1.);
   // couplings for an incoming particle
   if(inpart.id()>0){lS=(A2-B2);rS=(A2+B2);lV=(A1-B1);rV=(A1+B1);}
-  else{lS=conj(A2+B2);rS=conj(A2-B2);lV=conj(A1-B1);rV=conj(A1+B1);}
+  else{lS=-conj(A2+B2);rS=-conj(A2-B2);lV=conj(A1-B1);rV=conj(A1+B1);}
   // calculate the matrix element
   // decide which type of mode to do
   Energy msum(inpart.mass()+decay[0]->mass());
@@ -417,7 +417,7 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
   else
     {
       lS=conj(A3+B3);rS=conj(A3-B3);
-      lV=conj(A2-B2);rV=conj(A2+B2);
+      lV=-conj(A2-B2);rV=-conj(A2+B2);
       left=conj(A1+B1);right=conj(A1-B1);
     }
   // compute the matrix element
@@ -563,8 +563,9 @@ threeHalfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
     }
   // store the matrix element
   ME(newME);
+  double output=(newME.contract(temp)).real()/inpart.mass()/inpart.mass();
   // return the answer
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return output;
 }
 
 // matrix element for the decay of a spin-3/2 fermion to a spin-3/2 fermion and
@@ -598,13 +599,10 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int 
           // workaround for gcc 3.2.3 bug
 	  //ALB sbar.push_back(Rsbar[ix].dot(decay[0]->momentum()));
 	  //ALB sp.push_back(Rsp[ix].dot(inpart.momentum()));
-          LorentzRSSpinorBar tempRsbar;
+          LorentzRSSpinorBar tempRsbar=Rsbar[ix];
 	  sbar.push_back(tempRsbar.dot(decay[0]->momentum()));
-	  Rsbar[ix]=tempRsbar;
-	  LorentzRSSpinor tempRsp;
+	  LorentzRSSpinor tempRsp=Rsp[ix];
 	  sp.push_back(tempRsp.dot(inpart.momentum()));
-	  Rsp[ix]=tempRsp;
-
 	}
     }
 
@@ -709,7 +707,7 @@ threeHalfHalfVector(bool vertex, const int ichan,const Particle & inpart,
   else
     {
       lS=conj(A3+B3);rS=conj(A3-B3);
-      lV=conj(A2-B2);rV=conj(A2+B2);
+      lV=-conj(A2-B2);rV=-conj(A2+B2);
       left=conj(A1+B1);right=conj(A1-B1);
     }
   // compute the matrix element

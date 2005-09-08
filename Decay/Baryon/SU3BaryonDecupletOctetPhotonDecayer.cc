@@ -299,7 +299,7 @@ void SU3BaryonDecupletOctetPhotonDecayer::dataBaseOutput(ofstream & output) cons
   output << "set " << fullName() << ":Iteration " << _niter << "\n";
   output << "set " << fullName() << ":Ntry " << _ntry << "\n";
   output << "set " << fullName() << ":Points " << _npoint << "\n";
-  output << "set " << fullName() << ":Coupling " << _C*GeV<< "\n";
+  output << "set " << fullName() << ":Ccoupling " << _C*GeV<< "\n";
   output << "set " << fullName() << ":Parity " << _parity<< "\n";
   output << "set " << fullName() << ":Proton " << _proton << "\n";
   output << "set " << fullName() << ":Neutron " << _neutron << "\n";

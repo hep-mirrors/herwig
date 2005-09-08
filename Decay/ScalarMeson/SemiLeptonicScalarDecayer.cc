@@ -186,8 +186,8 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
 
   // get the information on the form-factor
   int jspin(0),id0(inpart.id()),id1(decay[0]->id());
-  bool dummy;
-  unsigned int iloc(_form->formFactorNumber(id0,id1,dummy));
+  bool cc;
+  unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
   int spect,iq,ia;
   _form->formFactorInfo(iloc,jspin,spect,iq,ia);
   // work out the value of q and calculate the form factors
@@ -218,6 +218,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       Energy MP(inpart.mass()),MV(decay[0]->mass()),msum(MP+MV),mdiff(MP-MV);
       _form->ScalarVectorFormFactor(q2,iloc,id0,id1,MP,MV,A0,A1,A2,V);
       A3 = 0.5/MV*(msum*A1-mdiff*A2);
+      if(cc){V=-V;}
       // compute the hadron currents
       for(unsigned int ix=0;ix<3;++ix)
 	{
@@ -238,6 +239,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       Complex h,k,bp,bm,dot;
       _form->ScalarTensorFormFactor(q2,iloc,id0,id1,inpart.mass(),decay[0]->mass(),
 				    h,k,bp,bm);
+      if(cc){h=-h;}
       LorentzPolarizationVector dotv;
       // compute the hadron currents
       for(unsigned int ix=0;ix<5;++ix)

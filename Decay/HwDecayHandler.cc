@@ -60,6 +60,8 @@ handle(EventHandler & ch, const tPVector & tagged,
   tStepPtr newStep = ch.newStep();
   for(int i = 0, N = parents.size(); i<N; ++i)
     {performDecay(newStep->find(parents[i]), *newStep);}
+  //cout << "testing the decay step " << flush << endl;
+  //cout << *newStep << endl;
 }
 
 

@@ -807,7 +807,7 @@ void KornerKramerCharmDecayer::Init() {
   static Parameter<KornerKramerCharmDecayer,Energy> interfaceH3
     ("H3",
      "The H3 parameter",
-     &KornerKramerCharmDecayer::_H3, GeV,-0.011*GeV, 0.0*GeV, 10.0*GeV,
+     &KornerKramerCharmDecayer::_H3, GeV,-0.011*GeV,-10.0*GeV, 10.0*GeV,
      false, false, true);
 
   static ParVector<KornerKramerCharmDecayer,double> interfaceI1

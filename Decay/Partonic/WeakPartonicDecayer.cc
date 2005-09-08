@@ -222,7 +222,7 @@ void WeakPartonicDecayer::Init() {
   static SwitchOption interfaceMECodeWeak
     (interfaceMECode,
      "Weak",
-     "Weka matrix element",
+     "Weak matrix element",
      100);
 
   static Reference<WeakPartonicDecayer,GlobalParameters> 

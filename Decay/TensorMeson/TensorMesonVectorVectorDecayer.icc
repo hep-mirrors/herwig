@@ -69,7 +69,7 @@ inline void TensorMesonVectorVectorDecayer::doinitrun() {
   TensorMesonDecayerBase::doinitrun();
   if(_Initialize)
     {for(unsigned int ix=0;ix<_incoming.size();++ix)
-	{_maxweight[ix] = 2.*mode(ix)->maxWeight();}}
+	{_maxweight[ix] = mode(ix)->maxWeight();}}
 }
 
 inline void TensorMesonVectorVectorDecayer::rebind(const TranslationMap & trans)

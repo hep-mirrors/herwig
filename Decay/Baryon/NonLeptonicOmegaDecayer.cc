@@ -327,7 +327,7 @@ void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":DStar " << _dstar<< "\n";
   output << "set " << fullName() << ":FStar " << _fstar << "\n";
   output << "set " << fullName() << ":omegad " << _omegad<< "\n";
-  output << "set " << fullName() << ":omegaf" << _omegaf<< "\n";
+  output << "set " << fullName() << ":omegaf " << _omegaf<< "\n";
   output << "set " << fullName() << ":CBstar " << _CBstar<< "\n";
   output << "set " << fullName() << ":sc " << _sc << "\n";
   output << "set " << fullName() << ":C " << _C << "\n";

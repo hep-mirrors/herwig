@@ -61,7 +61,7 @@ void BaryonFormFactor::Init() {
     ("OutSpin",
      "The spin of the outgoing baryons to decide which form factors to use.",
      &BaryonFormFactor::_outgoingJ,
-     0, 0, 0, 0, 2, false, false, true);
+     0, 0, 0, 0, 4, false, false, true);
 
   static ParVector<BaryonFormFactor,int> interfaceSpectator1
     ("Spectator1",

@@ -266,7 +266,7 @@ void VectorMeson3PionDecayer::Init() {
      "The overall coupling for the decay, this is the coupling of the decaying "
      "particle to the lowest lying rho multiplet.",
      &VectorMeson3PionDecayer::_coupling,
-     1./GeV, -1, 1./GeV, 1000./GeV, 1000./GeV, false, false, true);
+     1./GeV, -1, 1./GeV,-1000./GeV, 1000./GeV, false, false, true);
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceDirectCoupling
     ("DirectCoupling",
@@ -326,13 +326,13 @@ void VectorMeson3PionDecayer::Init() {
     ("Rho2Weight",
      "The weight for the second rho multiplet's in the integration",
      &VectorMeson3PionDecayer::_rho2wgt,
-     0, 0, 0, 0., 1., false, false, true);
+     0, 0, 0, -2., 1., false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,double> interfaceRho3Wgt
     ("Rho3Weight",
      "The weight for the third rho multiplet's in the integration",
      &VectorMeson3PionDecayer::_rho3wgt,
-     0, 0, 0, 0., 1., false, false, true);
+     0, 0, 0, -2., 1., false, false, true);
 
   static ParVector<VectorMeson3PionDecayer,double> interfaceRho1Mass
     ("Rho1Mass",

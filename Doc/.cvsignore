@@ -1,3 +1,4 @@
 .cvsignore .svn Makefile
 *.lo *.la .libs .deps
-Makefile.in
+Makefile.in refman-html refman-latex
+Herwig++-refman.tag

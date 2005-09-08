@@ -58,7 +58,7 @@ inline void VectorMeson3PionDecayer::doinitrun() {
       unsigned int iy;
       for(unsigned int ix=0;ix<_incoming.size();++ix)
 	{
-	  _maxwgt[ix]== 2.*mode(ix)->maxWeight();
+	  _maxwgt[ix]=mode(ix)->maxWeight();
 	  for(iy=0;iy<3;++iy)
 	    {
 	      if(mode(ix)->numberChannels()>3*iy+1)

@@ -534,6 +534,8 @@ void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header)
     {output << "insert " << fullName() << ":DecayModes "
 	    << ix << " " << _decaymodes[ix]->fullName() << " \n";}
   // data for the interpolation tables
+  std::streamsize curpre=output.precision();
+  output.precision(curpre+2);
   for(unsigned int ix=0;ix<_intermasses.size();++ix)
     {output << "insert " << fullName() 
 	    << ":InterpolationMasses " 
@@ -542,6 +544,7 @@ void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header)
     {output << "insert " << fullName() 
 	    << ":InterpolationWidths " 
 	    << ix << " " << _interwidths[ix] << "\n";}
+  output.precision(curpre);
   for(unsigned int ix=0;ix<_noofentries.size();++ix)
     {output << "insert " << fullName() 
 	    << ":NumberofEntries " 

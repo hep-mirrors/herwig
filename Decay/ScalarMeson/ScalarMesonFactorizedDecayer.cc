@@ -529,6 +529,9 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
     {
       MV=decay[_formpart[mode][iy]]->mass();
       id1=decay[_formpart[mode][iy]]->id();
+      int id0t,id1t;
+      _form[_formmapA[mode][iy]]->particleID(_formmapB[mode][iy],id0t,id1t);
+      bool cc(id0t!=id0);
       // calculate the form-factor part
       form.resize(0);
       q   = part.momentum()-decay[_formpart[mode][iy]]->momentum();  q.rescaleMass();
@@ -546,6 +549,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	  msum=MP+MV;mdiff=MP-MV;
 	  _form[_formmapA[mode][iy]]->ScalarVectorFormFactor(q2,_formmapB[mode][iy],id0,
 							     id1,MP,MV,A0,A1,A2,V);
+	  if(cc){V=-V;}
 	  A3 = 0.5/MV*(msum*A1-mdiff*A2);
 	  // compute the hadron currents
 	  for(ix=0;ix<3;++ix)
@@ -566,6 +570,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	{
 	  _form[_formmapA[mode][iy]]->ScalarTensorFormFactor(q2,_formmapB[mode][iy],
 							     id0,id1,MP,MV,h,k,bp,bm);
+	  if(cc){h=-h;}
 	  // compute the hadron currents
 	  for(ix=0;ix<5;++ix)
 	    {

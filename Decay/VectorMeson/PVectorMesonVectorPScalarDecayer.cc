@@ -296,7 +296,7 @@ void PVectorMesonVectorPScalarDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &PVectorMesonVectorPScalarDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+     0, 0, 0, 0., 10000., false, false, true);
 
 }
 

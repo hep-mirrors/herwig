@@ -581,11 +581,23 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output) const
 {
   output << "create /Herwig++/ThreePionCLEOCurrent " << fullName() << " \n";
   for(unsigned int ix=0;ix<_rhomass.size();++ix)
-    {output << "insert " << fullName() << ":RhoMasses " << ix 
-	    << " " << _rhomass[ix] << "\n";}
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoMasses " << ix 
+		<< " " << _rhomass[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":RhoMasses " << ix 
+		<< " " << _rhomass[ix] << "\n";}
+    }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix)
-    {output << "insert " << fullName() << ":RhoWidths " << ix 
-	    << " " << _rhowidth[ix] << "\n";}
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoWidths " << ix 
+		<< " " << _rhowidth[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":RhoWidths " << ix 
+		<< " " << _rhowidth[ix] << "\n";}
+    }
   output << "set " << fullName() << ":f_2Mass " << _f2mass/GeV << "\n";
   output << "set " << fullName() << ":f_2Width " << _f2width/GeV << "\n";
   output << "set " << fullName() << ":f_0Mass " << _f0mass/GeV << "\n";
@@ -599,17 +611,41 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":KaonCoupling " << _gammk << "\n";
   output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
   for(unsigned int ix=0;ix<_rhomagP.size();++ix)
-    {output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix 
-	    << " " << _rhomagP[ix] << "\n";}
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix 
+		<< " " << _rhomagP[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix 
+		<< " " << _rhomagP[ix] << "\n";}
+    }
   for(unsigned int ix=0;ix<_rhophaseP.size();++ix)
-    {output << "insert " << fullName() << ":RhoPWavePhase " << ix 
-	    << " " << _rhophaseP[ix] << "\n";}
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoPWavePhase " << ix 
+		<< " " << _rhophaseP[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":RhoPWavePhase " << ix 
+		<< " " << _rhophaseP[ix] << "\n";}
+    }
   for(unsigned int ix=0;ix<_rhomagD.size();++ix)
-    {output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix 
-	    << " " << _rhomagD[ix] << "\n";}
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix 
+		<< " " << _rhomagD[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix 
+		<< " " << _rhomagD[ix] << "\n";}
+    }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix)
-    {output << "insert " << fullName() << ":RhoDWavePhase " << ix 
-	    << " " << _rhophaseD[ix] << "\n";}
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoDWavePhase " << ix 
+		<< " " << _rhophaseD[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":RhoDWavePhase " << ix 
+		<< " " << _rhophaseD[ix] << "\n";}
+    }
   output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
   output << "set " << fullName() << ":f2Phase " <<_f2phase  << "\n";
   output << "set " << fullName() << ":sigmaPhase " <<_sigmaphase  << "\n";
@@ -619,11 +655,23 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
   output << "set " << fullName() << ":Initializea1 " <<_initializea1  << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix)
-    {output << "insert " << fullName() << ":a1RunningWidth " << ix 
-	    << " " << _a1runwidth[ix] << "\n";}
+    {
+      if(ix<200)
+	{output << "set    " << fullName() << ":a1RunningWidth " << ix 
+		<< " " << _a1runwidth[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":a1RunningWidth " << ix 
+		<< " " << _a1runwidth[ix] << "\n";}
+    }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix)
-    {output << "insert " << fullName() << ":a1RunningQ2 " << ix 
-	    << " " << _a1runq2[ix] << "\n";}
+    {
+      if(ix<200)
+	{output << "set    " << fullName() << ":a1RunningQ2 " << ix 
+		<< " " << _a1runq2[ix] << "\n";}
+      else
+	{output << "insert " << fullName() << ":a1RunningQ2 " << ix 
+		<< " " << _a1runq2[ix] << "\n";}
+    }
 }
 
 }

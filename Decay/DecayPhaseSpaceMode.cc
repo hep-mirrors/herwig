@@ -185,6 +185,8 @@ void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
 	  CurrentGenerator::current().log()<< "testing the prefactor B" << fact << endl;
 	}
       if(fact==0.){fact=1.;}
+      // factor for the weight with spin correlations
+      _MaxWeight*=inpart->dataPtr()->iSpin()*1.1;
       // ouptut the information on the initialisation
       CurrentGenerator::current().log() << "Initialized the phase space for the decay " 
 					<< _extpart[0]->PDGName() << " -> ";
@@ -264,6 +266,8 @@ void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
 	      _channelwgts[ix]=temp;
 	    }
 	}
+      // factor for the weight with spin correlations
+      _MaxWeight*=inpart->dataPtr()->iSpin()*1.1;
       // ouptut the information on the initialisation
       Energy fact;
       if(_widthgen&&_partial>=0)
@@ -345,8 +349,7 @@ Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
 // generate the decay
 ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
 					     const Particle & inpart) const
-{
-  // compute the prefactor
+{  // compute the prefactor
   InvEnergy pre(1.);Energy prewid;
   if(_widthgen&&_partial>=0){prewid=_widthgen->partialWidth(_partial,inpart.mass());}
   else                      {prewid=(inpart.dataPtr()->width());}

@@ -53,7 +53,7 @@ inline void VectorMesonPScalarFermionsDecayer::doinitrun() {
     {
       if(_Initialize)
 	{
-	  _maxweight[ix] = 2.*mode(ix)->maxWeight();
+	  _maxweight[ix] = mode(ix)->maxWeight();
 	  _weight[ix]    = mode(ix)->channelWeight(1);
 	}
     }

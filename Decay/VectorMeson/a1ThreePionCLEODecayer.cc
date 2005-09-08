@@ -160,7 +160,7 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoPWavePhase",
      "The phase of the couplings for the p-wave rho currents",
      &a1ThreePionCLEODecayer::_rhophaseP,
-     0, 0, 0, 0, 2.*pi, false, false, true);
+     0, 0, 0, -pi, pi, false, false, true);
 
   static ParVector<a1ThreePionCLEODecayer,InvEnergy2> interfacerhomagD
     ("RhoDWaveMagnitude",
@@ -172,25 +172,26 @@ void a1ThreePionCLEODecayer::Init() {
     ("RhoDWavePhase",
      "The phase of the couplings for the d-wave rho currents",
      &a1ThreePionCLEODecayer::_rhophaseD,
-     0, 0, 0, 0, 2.*pi, false, false, true);
+     0, 0, 0, -pi, pi, false, false, true);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacef0Phase
     ("f0Phase",
      "The phase of the f_0 scalar current",
-     &a1ThreePionCLEODecayer::_f0phase, 0.54*pi, 0.0, 2.*pi,
-     false, false, true);
+     &a1ThreePionCLEODecayer::_f0phase, 0.54*pi, -pi, pi,
+     false, false, Interface::limited);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacef2Phase
     ("f2Phase",
      "The phase of the f_2 tensor current",
-     &a1ThreePionCLEODecayer::_f2phase, 0.56*pi, 0.0, 2.*pi,
-     false, false, true);
+     &a1ThreePionCLEODecayer::_f2phase, 0.56*pi, -pi, pi,
+     false, false, Interface::limited);
+
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacesigmaPhase
     ("sigmaPhase",
      "The phase of the sigma scalar current",
-     &a1ThreePionCLEODecayer::_sigmaphase, 0.23*pi, 0.0, 2.*pi,
-     false, false, true);
+     &a1ThreePionCLEODecayer::_sigmaphase, 0.23*pi, -pi, pi,
+     false, false, Interface::limited);
 
   static Parameter<a1ThreePionCLEODecayer,double> interfacef0Magnitude
     ("f0Magnitude",
@@ -624,4 +625,112 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
     }
   F1*=fact;F2*=fact;F3*=fact;
 } 
+// output the setup information for the particle database
+void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output) const
+{
+  output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  // masses and widths of the intermediate particles
+  output << "set " << fullName() << ":f_2Mass "    << _f2mass/GeV     << "\n";
+  output << "set " << fullName() << ":f_2Width "   << _f2width/GeV    << "\n";
+  output << "set " << fullName() << ":f_0Mass "    << _f0mass/GeV     << "\n";
+  output << "set " << fullName() << ":f_0Width "   << _f0width/GeV    << "\n";
+  output << "set " << fullName() << ":sigmaMass "  << _sigmamass/GeV  << "\n";
+  output << "set " << fullName() << ":sigmaWidth " << _sigmawidth/GeV << "\n";
+  for(unsigned int ix=0;ix<_rhomass.size();++ix)
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoMasses " << ix << " " 
+		<< _rhomass[ix] << endl;}
+      else
+	{output << "insert " << fullName() << ":RhoMasses " << ix << " " 
+		<< _rhomass[ix] << endl;}
+    }
+  for(unsigned int ix=0;ix<_rhowidth.size();++ix)
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoWidths " << ix << " " 
+		<< _rhowidth[ix] << endl;}
+      else
+	{output << "insert " << fullName() << ":RhoWidths " << ix << " " 
+		<< _rhowidth[ix] << endl;}
+    }
+  // couplings and phases for different channels
+  output << "set " << fullName() << ":f0Phase " << _f0phase << "\n";
+  output << "set " << fullName() << ":f2Phase " << _f2phase<< "\n";
+  output << "set " << fullName() << ":sigmaPhase " << _sigmaphase<< "\n";
+  output << "set " << fullName() << ":f0Magnitude " << _f0mag<< "\n";
+  output << "set " << fullName() << ":f2Magnitude " << _f2mag*GeV << "\n";
+  output << "set " << fullName() << ":sigmaMagnitude " << _sigmamag/GeV << "\n";
+  output << "set " << fullName() << ":Coupling " << _coupling*GeV << "\n";
+  for(unsigned int ix=0;ix<_rhomagP.size();++ix)
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
+		<< _rhomagP[ix] << endl;}
+      else
+	{output << "insert " << fullName() << ":RhoPWaveMagnitude " << ix << " " 
+		<< _rhomagP[ix] << endl;}
+    }
+  for(unsigned int ix=0;ix<_rhophaseP.size();++ix)
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoPWavePhase " << ix << " " 
+		<< _rhophaseP[ix] << endl;}
+      else
+	{output << "insert " << fullName() << ":RhoPWavePhase " << ix << " " 
+		<< _rhophaseP[ix] << endl;}
+    }  
+  for(unsigned int ix=0;ix<_rhomagD.size();++ix)
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
+		<< _rhomagD[ix] << endl;}
+      else
+	{output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix << " " 
+		<< _rhomagD[ix] << endl;}
+    }
+  for(unsigned int ix=0;ix<_rhophaseD.size();++ix)
+    {
+      if(ix<2)
+	{output << "set    " << fullName() << ":RhoDWavePhase " << ix << " " 
+		<< _rhophaseD[ix] << endl;}
+      else
+	{output << "insert " << fullName() << ":RhoDWavePhase " << ix << " " 
+		<< _rhophaseD[ix] << endl;}
+    }
+  // use local values of the masses etc.
+  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  // integration weights for the different channels
+  for(unsigned int ix=0;ix<_zerowgts.size();++ix)
+    {
+      output << "set " << fullName() << ":AllNeutralWeights " 
+	     << ix << " " << _zerowgts[ix] << "\n";
+    }
+  for(unsigned int ix=0;ix<_onewgts.size();++ix)
+    {
+      output << "set " << fullName() << ":OneChargedWeights " 
+	     << ix << " " << _onewgts[ix] << "\n";
+    }
+  for(unsigned int ix=0;ix<_twowgts.size();++ix)
+    {
+      output << "set " << fullName() << ":TwoChargedWeights " 
+	     << ix << " " << _twowgts[ix] << "\n";
+    }
+  for(unsigned int ix=0;ix<_threewgts.size();++ix)
+    {
+      output << "set " << fullName() << ":ThreeChargedWeights " 
+	     << ix << " " << _threewgts[ix] << "\n";
+    }
+  // maximum weights for the different  channels
+  output << "set " << fullName() << ":ZeroMax "  << _zeromax  << "\n";
+  output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
+  output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
+  output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
+
+  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+}
 } 

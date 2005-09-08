@@ -150,7 +150,7 @@ void ScalarVectorVectorDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &ScalarVectorVectorDecayer::_maxweight,
-     0, 0, 0, 0., 200., false, false, true);
+     0, 0, 0, 0., 500000., false, false, true);
 
 }
 

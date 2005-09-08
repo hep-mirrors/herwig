@@ -54,9 +54,9 @@ PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer()
   _maxweighte.push_back(1.61603e-09);_maxweightmu.push_back(6.90525e-05);
   _maxweighttau.push_back(0.0166333);
   // B_u decays
-  _incoming.push_back(521);_decayconstant.push_back(16.0*MeV);_leptons.push_back(3);
-  _maxweighte.push_back(1.61603e-09);_maxweightmu.push_back(6.90525e-05);
-  _maxweighttau.push_back(0.0166333);
+  _incoming.push_back(521);_decayconstant.push_back(0.719*MeV);_leptons.push_back(3);
+  _maxweighte.push_back(1.07731e-11);_maxweightmu.push_back(4.60215e-07);
+  _maxweighttau.push_back(9.31156e-05);
   // initial size of the vectors
   _initsize=_incoming.size();
 }

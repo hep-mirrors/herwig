@@ -143,7 +143,7 @@ void VectorMesonVectorVectorDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &VectorMesonVectorVectorDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+     0, 0, 0, 0., 1000., false, false, true);
 
 }
 

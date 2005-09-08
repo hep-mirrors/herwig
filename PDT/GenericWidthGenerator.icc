@@ -134,4 +134,8 @@ inline Energy GenericWidthGenerator::mass() const
 
 inline bool GenericWidthGenerator::initialize() const
 {return _initialize;}
+
+inline tPDPtr GenericWidthGenerator::particle() const
+{return _theParticle;}
+
 }

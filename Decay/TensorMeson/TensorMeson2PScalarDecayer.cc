@@ -245,7 +245,7 @@ void TensorMeson2PScalarDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &TensorMeson2PScalarDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+     0, 0, 0, 0., 100000., false, false, true);
 }
 
 // the hadronic tensor

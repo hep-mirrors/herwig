@@ -93,6 +93,8 @@ LightBaryonQuarkModelFormFactor::LightBaryonQuarkModelFormFactor()
   _g1.push_back(1.33);_g2.push_back(0.031/GeV);
   _Lambdaf1.push_back(0.75*GeV);_Lambdaf2.push_back(1.05*GeV);
   _Lambdag1.push_back(0.81*GeV);_Lambdag2.push_back(1.12*GeV);
+  // set the inital number of form factors
+  initialModes(numberOfFactors());
 }
 
 LightBaryonQuarkModelFormFactor::~LightBaryonQuarkModelFormFactor() {}

@@ -57,7 +57,7 @@ inline void TauDecayer::doinitrun() {
       unsigned int ix,iy;
       for(ix=0;ix<numberModes();++ix)
 	{
-	  _wgtmax.push_back(2.*mode(ix)->maxWeight());
+	  _wgtmax.push_back(mode(ix)->maxWeight());
 	  _wgtloc.push_back(_weights.size());
 	  for(iy=0;iy<mode(ix)->numberChannels();++iy)
 	    {_weights.push_back(mode(ix)->channelWeight(iy));}

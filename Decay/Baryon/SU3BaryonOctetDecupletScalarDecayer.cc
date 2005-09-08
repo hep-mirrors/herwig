@@ -251,7 +251,7 @@ void SU3BaryonOctetDecupletScalarDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &SU3BaryonOctetDecupletScalarDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+     0, 0, 0, 0., 2000., false, false, true);
 
 }
 

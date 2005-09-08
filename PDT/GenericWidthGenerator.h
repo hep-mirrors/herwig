@@ -165,6 +165,11 @@ protected:
    */
   virtual void setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer, unsigned int imode);
 
+  /**
+   *  Access to the particle dat for inheriting classes
+   */
+  inline tPDPtr particle() const;
+
 protected:
 
   /** @name Clone Methods. */

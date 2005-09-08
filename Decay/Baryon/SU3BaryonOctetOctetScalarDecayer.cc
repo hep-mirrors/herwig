@@ -245,7 +245,7 @@ void SU3BaryonOctetOctetScalarDecayer::Init() {
     ("MaxWeight",
      "The maximum weight for the decay mode",
      &SU3BaryonOctetOctetScalarDecayer::_maxweight,
-     0, 0, 0, 0., 100., false, false, true);
+     0, 0, 0, 0., 10000., false, false, true);
 }
 
 // couplings for spin-1/2 to spin-1/2 spin-0
