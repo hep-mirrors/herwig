@@ -7,3 +7,4 @@ missing
 *.lo *.la .libs .deps
 Makefile.in
 config.h stamp-h1
+config.h.in

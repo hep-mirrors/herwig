@@ -4,3 +4,4 @@ autom4te.cache
 *.lo *.la .libs .deps
 Makefile.in
 libtool
+configure
