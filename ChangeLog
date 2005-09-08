@@ -1,3 +1,7 @@
+2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
+
+	* lib/Makefile.am: added libHwPartonicDecay.la to the list of libraries
+
 2005-09-05  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Utilities/HerwigRun.cc: changes to documentation to remove some doxygen errors and more changes due to change in random numbers from ThePEG

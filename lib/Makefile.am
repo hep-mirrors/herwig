@@ -12,6 +12,7 @@ $(top_builddir)/Decay/Perturbative/libHwPerturbativeDecay.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(top_builddir)/Decay/ScalarMeson/libHwSMDecay.la \
 $(top_builddir)/Decay/TensorMeson/libHwTMDecay.la \
+$(top_builddir)/Decay/Partonic/libHwPartonicDecay.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/PDT/libHwPDT.la \
 $(top_builddir)/Shower/libHwShower.la \
