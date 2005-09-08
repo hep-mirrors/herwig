@@ -1,3 +1,7 @@
+2005-09-08  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc (Repository): various minor bug fixes to the decays
+
 2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
 
 	* lib/Makefile.am: added libHwPartonicDecay.la to the list of libraries
