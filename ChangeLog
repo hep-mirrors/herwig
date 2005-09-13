@@ -1,5 +1,11 @@
 2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
+	* PDT/GenericWidthGenerator.h: changes so that the mass generator only includes
+	the numerator factor when generating a mass without the weight to avoid biases
+	towards high masses
+
+2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
 	* Decay/DecayConfig.h (Repository): this was really the .fh file for Hw64Decayer
 	and has been renamed as such
 

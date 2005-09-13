@@ -1,0 +1,60 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HwDecayerBase class.
+//
+
+namespace Herwig {
+
+inline HwDecayerBase::HwDecayerBase() : _initialize(false)
+{}
+
+inline HwDecayerBase::HwDecayerBase(const HwDecayerBase & x)
+  : Decayer(x), _initialize(x._initialize) {}
+
+inline void HwDecayerBase::doupdate() throw(UpdateException) {
+  Decayer::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void HwDecayerBase::doinit() throw(InitException) {
+  Decayer::doinit();
+}
+
+inline void HwDecayerBase::dofinish() {
+  Decayer::dofinish();
+}
+
+inline void HwDecayerBase::doinitrun() {
+  Decayer::doinitrun();
+}
+
+inline void HwDecayerBase::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Decayer::rebind(trans);
+}
+
+inline IVector HwDecayerBase::getReferences() {
+  IVector ret = Decayer::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+inline bool HwDecayerBase::initialize() const 
+{return _initialize;}
+
+}

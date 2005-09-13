@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwDecayerBase class.
+//
+#ifndef ThePEG_HwDecayerBase_FH
+#define ThePEG_HwDecayerBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class HwDecayerBase;
+ThePEG_DECLARE_POINTERS(HwDecayerBase,HwDecayerBasePtr);
+
+}
+
+#endif
