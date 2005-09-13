@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Hw64Decayer class.
+//
+#ifndef HERWIG_Hw64Decayer_FH
+#define HERWIG_Hw64Decayer_FH
+
+namespace Herwig {
+using namespace ThePEG;
+
+class Hw64Decayer;
+ThePEG_DECLARE_CLASS_POINTERS(Hw64Decayer,Hw64DecayerPtr);
+
+}
+
+#endif

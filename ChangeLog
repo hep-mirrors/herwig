@@ -1,3 +1,8 @@
+2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as it served little purpose
+	and should be replaced by information on the Wiki.
+
 2005-09-08  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* src/HerwigDefaults.in (Repository): changes for the new treatment of hadronization in partonic decays
