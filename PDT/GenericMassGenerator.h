@@ -129,7 +129,7 @@ public:
    * @return The mass of the particle instance.
    */
   inline Energy mass(const ParticleData & part,double & wgt, 
-			     const Energy low,const Energy upp) const;
+		     const Energy low,const Energy upp) const;
 
   /**
    * Weight for the factor.
@@ -174,6 +174,37 @@ public:
    * Default Width
    */
   inline Energy nominalWidth() const;
+
+protected:
+
+  /**
+   * Return a mass with the weight using the specified limits.
+   * @param part The particle data pointer of the particle.
+   * @param low The lower limit on the particle's mass.
+   * @param upp The upper limit on the particle's mass.
+   * @param wgt The weight for this mass.
+   * @param shape The type of shape to use
+   * @return The mass of the particle instance.
+   */
+  inline Energy mass(const ParticleData & part,double & wgt, 
+		     const Energy low,const Energy upp, int shape) const;
+
+  /**
+   * Return a mass with the weight using the default limits.
+   * @param part The particle data pointer of the particle.
+   * @param wgt The weight for this mass.
+   * @param shape The type of shape to use
+   * @return The mass of the particle instance.
+   */
+  inline Energy mass(const ParticleData & part,double & wgt,int shape) const;
+
+  /**
+   * Weight for the factor.
+   * @param mass The mass of the instance
+   * @param shape The type of shape to use as for the BreitWignerShape interface
+   * @return The weight.
+   */
+  inline virtual double weight(Energy mass,int shape) const;
 
 protected:
 

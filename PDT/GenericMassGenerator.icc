@@ -82,12 +82,14 @@ inline Energy GenericMassGenerator::mass(const ParticleData & in) const
 inline Energy GenericMassGenerator::mass(const ParticleData & in,
 					 Energy low, Energy upp) const
 {
+  if(upp<low){return low;}
   Energy output;
   int ntry=0; double wgt=0.;
   do 
     {
       ++ntry;
-      output=mass(in,wgt,low,upp);
+      output=mass(in,wgt,low,upp,3);
+      //cout << "testing the output " << output << " " << wgt << endl;
       if(wgt>_maxwgt){_maxwgt=wgt;}
     }
   while(_maxwgt*(UseRandom::rnd())>wgt&&ntry<_ngenerate);
@@ -99,39 +101,59 @@ inline Energy GenericMassGenerator::mass(const ParticleData & in,
 inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt) const   
 {return mass(in,wgt,_lowermass,_uppermass);}
 
-// member that does the work
+inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt,
+					 int shape) const   
+{return mass(in,wgt,_lowermass,_uppermass,shape);}
+
+// return the mass with a weight
 inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt, 
 					 const Energy low,const Energy upp) const
+{return mass(in,wgt,low,upp,_BWshape);}
+
+// member that does the work
+inline Energy GenericMassGenerator::mass(const ParticleData &in,double & wgt, 
+					 const Energy low,const Energy upp,
+					 int shape) const
 {
+  //cout << "testing the limits  " << low << " " << upp << endl;
   // calculate the mass square using fixed width BW
   Energy  lo=max(low,_lowermass),up=min(upp,_uppermass);
+  //cout << "testing the limitsB " << lo  << " " << up  << endl;
   double  rhomin=atan((lo*lo-_mass2)/_mwidth);
   double  rhomax=atan((up*up-_mass2)/_mwidth)-rhomin;
+  //cout << "testing rho limits " << rhomin << " " << rhomax << endl;
   double  rho=rhomin+rhomax*(UseRandom::rnd());
+  //cout << "testing rho " << rho << endl;
   Energy2 q2 = _mass2+_mwidth*tan(rho);
   Energy  q = sqrt(q2);  
-  wgt = rhomax*weight(q);
+  wgt = rhomax*weight(q,shape);
   // return the mass
   return q;
 }
 
 inline Energy GenericMassGenerator::lowerLimit() const {return _lowermass;}
+
 inline Energy GenericMassGenerator::upperLimit() const {return _uppermass;}
+
 inline Energy GenericMassGenerator::nominalMass() const {return _mass;}
+
 inline Energy GenericMassGenerator::nominalWidth() const {return _width;}
 
 inline double GenericMassGenerator::weight(Energy q) const
+{return weight(q,_BWshape);}
+
+inline double GenericMassGenerator::weight(Energy q,int shape) const
 {
   Energy2 q2 = q*q;
   double  sq=(q2-_mass2)*(q2-_mass2);
   Energy gam=width(q);
   // finish the calculation of the width
   Energy2 num;
-  if(_BWshape==2){num=_mass*gam;}
-  else if(_BWshape==3){num=1.;}
+  if(shape==2){num=_mass*gam;}
+  else if(shape==3){num=1.;}
   else{num=q*gam;}
   Energy2 den;
-  if(_BWshape==2){den=sq+_mass2*gam*gam;}
+  if(shape==2){den=sq+_mass2*gam*gam;}
   else{den=sq+q2*gam*gam;}
   return num/den*(sq+_mwidth*_mwidth)/pi/_mwidth;
 }

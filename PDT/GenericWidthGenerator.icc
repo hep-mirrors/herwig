@@ -20,7 +20,7 @@ inline GenericWidthGenerator::GenericWidthGenerator()
 
 inline GenericWidthGenerator::GenericWidthGenerator(const GenericWidthGenerator & x)
   : WidthGenerator(x), _theParticle(x._theParticle), _decaymodes(x._decaymodes),
-    _mass(x._mass), _prefactor(x._prefactor), _MEtype(x._MEtype), 
+    _minmass(x._minmass),_mass(x._mass), _prefactor(x._prefactor), _MEtype(x._MEtype), 
     _MEcode(x._MEcode),_MEmass1(x._MEmass1), _MEmass2(x._MEmass2), 
     _MEcoupling(x._MEcoupling), _modeon(x._modeon), _intermasses(x._intermasses),
     _interwidths(x._interwidths),_noofentries(x._noofentries), 

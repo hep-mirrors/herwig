@@ -145,7 +145,7 @@ void GenericMassGenerator::doinit() throw(InitException) {
       // perform the initialisation
       for(int ix=0;ix<_ninitial;++ix)
 	{
-	  mdummy=mass(*_particle,wgt);
+	  mdummy=mass(*_particle,wgt,3);
 	  swgt+=wgt;
 	  sqwgt+=wgt*wgt;
 	  if(wgt>_maxwgt){_maxwgt=wgt;}

@@ -286,6 +286,11 @@ private:
   vector<DMPtr> _decaymodes;
 
   /**
+   *  The minimum mass of the decaying particle for which this decay mode is possible
+   */
+  vector<Energy> _minmass;
+
+  /**
    * The on-shell mass of the particle
    */
   Energy _mass;

@@ -32,14 +32,14 @@ void GenericWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << _theParticle << _mass << _prefactor << _MEtype << _MEcode
      << _MEmass1 << _MEmass2 << _MEcoupling << _modeon
      << _intermasses << _interwidths << _noofentries << _initialize << _BRnorm
-     << _npoints << _decaymodes << _BRminimum;
+     << _npoints << _decaymodes << _minmass << _BRminimum;
 }
 
 void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
   is >> _theParticle >> _mass >> _prefactor >> _MEtype >> _MEcode 
      >> _MEmass1 >> _MEmass2 >> _MEcoupling >>_modeon
      >> _intermasses >> _interwidths >> _noofentries >> _initialize >> _BRnorm
-     >> _npoints >> _decaymodes >> _BRminimum;
+     >> _npoints >> _decaymodes >> _minmass >> _BRminimum;
 }
 
 ClassDescription<GenericWidthGenerator> GenericWidthGenerator::initGenericWidthGenerator;
@@ -83,6 +83,12 @@ void GenericWidthGenerator::Init() {
      " class inheriting from this",
      &GenericWidthGenerator::_MEcode,
      0, 0, 0, -1, 200, false, false, true);
+
+  static ParVector<GenericWidthGenerator,Energy> interfaceMinimumMasses
+    ("MinimumMasses",
+     "The minimum mass of the decay products",
+     &GenericWidthGenerator::_minmass,
+     0, 0, 0, 0,  1.E12, false, false, true);
 
   static ParVector<GenericWidthGenerator,double> interfaceMEcoupling
     ("MEcoupling",
@@ -200,6 +206,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
       _MEmass1.resize(0);_MEmass2.resize(0);
       _MEcoupling.resize(0); 
       _modeon.resize(0);
+      _minmass.resize(0);
       _intermasses.resize(0);_interwidths.resize(0);
       _noofentries.resize(0);_decaymodes.resize(0);
       // integrators that we may need
@@ -216,7 +223,16 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	  // the decay mode
 	  tcDMPtr mode=(*start).second;      
 	  _decaymodes.push_back(const_ptr_cast<DMPtr>(mode));
-	  ParticleMSet::const_iterator pit = mode->products().begin();
+	  ParticleMSet::const_iterator pit(mode->products().begin());
+	  // minimum mass for the decaymode
+	  Energy minmass(0.);
+	  for(;pit!=mode->products().end();++pit)
+	    {
+	      (**pit).init();
+	      minmass+=(**pit).massMin();
+	    }
+	  _minmass.push_back(minmass);
+	  pit=mode->products().begin();
 	  // its decayer
 	  decayer=dynamic_ptr_cast<tDecayIntegratorPtr>(mode->decayer());
 	  if(decayer){decayer->init();}
@@ -237,8 +253,8 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	    {
 	      // the outgoing particles
 	      ParticleMSet::const_iterator pit = mode->products().begin();
-	      part1=*pit;++pit;part1->init();
-	      part2=*pit;part2->init();
+	      part1=*pit;++pit;
+	      part2=*pit;
 	      // mass generators
 	      if(part1->massGenerator()){massgen1=
 		  dynamic_ptr_cast<tGenericMassGeneratorPtr>(part1->massGenerator());}
@@ -523,6 +539,10 @@ void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header)
     {output << "insert " << fullName() << ":ModeOn " 
 	    << ix << " " << _modeon[ix] << "\n";}
   // first outgoing mass
+  for(unsigned int ix=0;ix<_minmass.size();++ix)
+    {output << "insert " << fullName() << ":MinimumMasses " 
+	    << ix << " " << _minmass[ix] << "\n";}
+  // first outgoing mass
   for(unsigned int ix=0;ix<_MEmass1.size();++ix)
     {output << "insert " << fullName() << ":MEmass1 " 
 	    << ix << " " << _MEmass1[ix] << "\n";}
@@ -580,13 +600,13 @@ void GenericWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
 
 Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const
 {
-   Energy gamma;
-   if(_MEtype[imode]==0){gamma=_MEcoupling[imode]*_theParticle->width();}
-   else if(_MEtype[imode]==1){gamma=partial2BodyWidth(imode,q);}
-   else if(_MEtype[imode]==2){gamma=_MEcoupling[imode]*(*_interpolators[imode])(q);}
-   else{cout << "Unknown type of mode " << _MEtype[imode] << endl;gamma=0.;}
-   return max(gamma,0.);
-   //
+  if(q<_minmass[imode]){return 0.;}
+  Energy gamma;
+  if(_MEtype[imode]==0){gamma=_MEcoupling[imode]*_theParticle->width();}
+  else if(_MEtype[imode]==1){gamma=partial2BodyWidth(imode,q);}
+  else if(_MEtype[imode]==2){gamma=_MEcoupling[imode]*(*_interpolators[imode])(q);}
+  else{cout << "Unknown type of mode " << _MEtype[imode] << endl;gamma=0.;}
+  return max(gamma,0.);
 }
 
 }
