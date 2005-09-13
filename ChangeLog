@@ -1,5 +1,10 @@
 2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
+	* Hadronization changes to tidy up the PartonicHadronizer and allow the
+	hadronization to produce off-shell particles
+
+2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
 	* Decay/HwDecayerBase.h (Repository): added new base class for decayers including
 	the Initialize feature of the DecayIntegrator and dataBaseOutput so this can be
 	used for classes not built on DecayIntegrator
