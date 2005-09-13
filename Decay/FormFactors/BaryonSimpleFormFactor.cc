@@ -182,16 +182,20 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0,int id1,Energy,Energy,
   f3a = 0.;
 }
 
-void BaryonSimpleFormFactor::dataBaseOutput(ofstream& output) const 
+void BaryonSimpleFormFactor::dataBaseOutput(ofstream& output,bool header,
+					    bool create) const 
 {
-  output << "create /Herwig++/BaryonSimpleFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::BaryonSimpleFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":g_A " <<  _gA << " \n";
   output << "set " << fullName() << ":alpha_D " << _alphaD  << " \n";
   output << "set " << fullName() << ":eta_V " << _etaV  << " \n";
   output << "set " << fullName() << ":eta_A " <<  _etaA << " \n";
   output << "set " << fullName() << ":rho_E " << _rhoE  << " \n";
   output << "set " << fullName() << ":rho_M " << _rhoM  << " \n";
-  BaryonFormFactor::dataBaseOutput(output);
+  BaryonFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }
 

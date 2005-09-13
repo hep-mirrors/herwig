@@ -241,9 +241,10 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
   A0 = 0.5/m1*(f0+msum*(m0-m1)*fp+q2*fm);
 }
 
-void KiselevBcFormFactor::dataBaseOutput(ofstream & output) const
+void KiselevBcFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  output << "create Herwig++::KiselevBcFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create){output << "create Herwig++::KiselevBcFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       if(ix<initialModes())
@@ -301,6 +302,7 @@ void KiselevBcFormFactor::dataBaseOutput(ofstream & output) const
 		 << _MFmA[ix]/GeV  << "\n";
 	}
     }
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

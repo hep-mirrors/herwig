@@ -145,12 +145,10 @@ void NonLeptonicHyperonDecayer::halfHalfScalarCoupling(int imode,
 						       Complex& A,Complex& B) const
 {A=_A[imode];B=_B[imode];}
 
-void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output) const
+  void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incomingB.size();++ix)
     {
       if(ix<_initsize)
@@ -184,6 +182,6 @@ void NonLeptonicHyperonDecayer::dataBaseOutput(ofstream & output) const
 		 << _B[ix] << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

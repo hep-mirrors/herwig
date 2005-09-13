@@ -28,8 +28,9 @@ using namespace ThePEG;
 
 // copy constructor
 DecayIntegrator::DecayIntegrator(const DecayIntegrator & x)
-  : Decayer(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry),
-    _Initialize(x._Initialize), _modes(x._modes) {}
+  : HwDecayerBase(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry),
+    _modes(x._modes) 
+{}
 
 // destructor
 DecayIntegrator::~DecayIntegrator() {}
@@ -45,11 +46,11 @@ ParticleVector DecayIntegrator::decay(const DecayMode & dm,
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os <<_Initialize << _modes << _niter << _npoint << _ntry;
+  os << _modes << _niter << _npoint << _ntry;
   }
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >>_Initialize >> _modes >> _niter >> _npoint >> _ntry;
+  is >> _modes >> _niter >> _npoint >> _ntry;
 }
   
 AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
@@ -66,22 +67,6 @@ void DecayIntegrator::Init() {
     ("The \\classname{DecayIntegrator} class is a base decayer class "
      "including a multi-channel integrator.");
   
-  static Switch<DecayIntegrator,bool> interfaceInitialize
-    ("Initialize",
-     "Initialization of the phase space calculation",
-     &DecayIntegrator::_Initialize, false, false, false);
-
-  static SwitchOption interfaceInitializeon
-    (interfaceInitialize,
-     "on",
-     "At initialisation find max weight and optimise the integration",
-     true);
-
-  static SwitchOption interfaceInitializeoff
-    (interfaceInitialize,
-     "off",
-     "Use the maximum weight and channel weights supplied for the integration",
-     false);
 
   static Parameter<DecayIntegrator,int> interfaceIteration
     ("Iteration",
@@ -126,13 +111,13 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int 
 
   // initialization for a run
 void DecayIntegrator::doinitrun() {
-  Decayer::doinitrun();
+  HwDecayerBase::doinitrun();
   CurrentGenerator::current().log() << "testing start of the initialisation for " 
 				    << this->fullName() << endl;
   for(unsigned int ix=0;ix<_modes.size();++ix)
     {
       _modes[ix]->initrun();
-      _imode=ix;_modes[ix]->initializePhaseSpace(_Initialize);
+      _imode=ix;_modes[ix]->initializePhaseSpace(initialize());
     }
 }
 
@@ -322,9 +307,18 @@ int DecayIntegrator::findMode(const DecayMode & dm)
 }
 
 // output the information for the database
-void DecayIntegrator::dataBaseOutput(ofstream & output) const
-{output << " where ThePEGName=\" " << fullName() << "\";";}
-
+void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const
+{
+  // header for MySQL
+  if(header){output << "update decayers set parameters=\"";}
+  HwDecayerBase::dataBaseOutput(output,false);
+  output << "set " << fullName() << ":Iteration " << _niter << "\n";
+  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  // footer for MySQL
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+}
+  
 // pointer to a mode
 tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix){return _modes[ix];}
 tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const

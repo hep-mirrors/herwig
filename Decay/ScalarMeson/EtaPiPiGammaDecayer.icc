@@ -50,7 +50,7 @@ inline void EtaPiPiGammaDecayer::dofinish() {
 
 inline void EtaPiPiGammaDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {for(unsigned int ix=0;ix<_maxweight.size();++ix)
 	{_maxweight[ix]=mode(ix)->maxWeight();}}
 }

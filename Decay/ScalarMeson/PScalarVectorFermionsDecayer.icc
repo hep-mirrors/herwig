@@ -46,8 +46,9 @@ inline void PScalarVectorFermionsDecayer::dofinish() {
 
 inline void PScalarVectorFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {_maxweight[ix]=mode(ix)->maxWeight();}
+  if(initialize())
+    {for(unsigned int ix=0;ix<_incoming.size();++ix)
+	{_maxweight[ix]=mode(ix)->maxWeight();}}
 }
 
 inline void PScalarVectorFermionsDecayer::rebind(const TranslationMap & trans)

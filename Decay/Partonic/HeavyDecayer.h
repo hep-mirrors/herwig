@@ -9,7 +9,6 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
-#include "Herwig++/Decay/DecayConfig.h"
 #include <fstream>
 
 namespace Herwig {

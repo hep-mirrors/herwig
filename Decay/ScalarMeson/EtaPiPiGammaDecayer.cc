@@ -683,13 +683,12 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   return output;
 }
 
-void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output) const
+void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
+					 bool header) const
 {
-  output << "update decayers set parameters=\"";
+  if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  output << "set " << fullName() << ":Iteration       " << _niter           << "\n";
-  output << "set " << fullName() << ":Ntry            " << _ntry            << "\n";
-  output << "set " << fullName() << ":Points          " << _npoint          << "\n";
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":fpi             " << _fpi/MeV         << "\n";
   output << "set " << fullName() << ":RhoMass         " << _mrho/MeV        << "\n";
   output << "set " << fullName() << ":RhoWidth        " << _rhowidth/MeV    << "\n";
@@ -701,10 +700,14 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":OmnesCut        " << _epscut*MeV*MeV  << "\n";
   for(unsigned int ix=0;ix<2;++ix)
     {
-      output << "set " << fullName() << ":Incoming    " << ix << "  " << _incoming[ix]    << "\n";
-      output << "set " << fullName() << ":Coupling    " << ix << "  " << _coupling[ix]    << "\n";
-      output << "set " << fullName() << ":MaxWeight   " << ix << "  " << _maxweight[ix]   << "\n";
-      output << "set " << fullName() << ":Option      " << ix << "  " << _option[ix]      << "\n";
+      output << "set " << fullName() << ":Incoming    " << ix << "  " 
+	     << _incoming[ix]    << "\n";
+      output << "set " << fullName() << ":Coupling    " << ix << "  " 
+	     << _coupling[ix]    << "\n";
+      output << "set " << fullName() << ":MaxWeight   " << ix << "  " 
+	     << _maxweight[ix]   << "\n";
+      output << "set " << fullName() << ":Option      " << ix << "  " 
+	     << _option[ix]      << "\n";
     }
   for(unsigned int ix=0;ix<_energy.size();++ix)
     {
@@ -744,7 +747,7 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output) const
 		 << _Omnesfunctionimag [ix]*MeV*MeV << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }
 

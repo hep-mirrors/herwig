@@ -52,7 +52,7 @@ inline void VectorMeson3PionDecayer::dofinish() {
 
 inline void VectorMeson3PionDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {
       double temp;
       unsigned int iy;

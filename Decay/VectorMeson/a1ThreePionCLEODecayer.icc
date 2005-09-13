@@ -354,20 +354,23 @@ inline void a1ThreePionCLEODecayer::dofinish() {
   
 inline void a1ThreePionCLEODecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
-  // get the weights for the different channels
-  for(unsigned int ix=0;ix<_zerowgts.size();++ix)
-    {_zerowgts[ix]=mode(0)->channelWeight(ix);}
-  for(unsigned int ix=0;ix<_onewgts.size();++ix)
-    {_onewgts[ix]=mode(1)->channelWeight(ix);}
-  for(unsigned int ix=0;ix<_twowgts.size();++ix)
-    {_twowgts[ix]=mode(2)->channelWeight(ix);}
-  for(unsigned int ix=0;ix<_threewgts.size();++ix)
-    {_threewgts[ix]=mode(3)->channelWeight(ix);}
-  // get the maximum weight
-  _zeromax  = mode(0)->maxWeight();
-  _onemax   = mode(1)->maxWeight();
-  _twomax   = mode(2)->maxWeight();
-  _threemax = mode(3)->maxWeight();
+  if(initialize())
+    {
+      // get the weights for the different channels
+      for(unsigned int ix=0;ix<_zerowgts.size();++ix)
+	{_zerowgts[ix]=mode(0)->channelWeight(ix);}
+      for(unsigned int ix=0;ix<_onewgts.size();++ix)
+	{_onewgts[ix]=mode(1)->channelWeight(ix);}
+      for(unsigned int ix=0;ix<_twowgts.size();++ix)
+	{_twowgts[ix]=mode(2)->channelWeight(ix);}
+      for(unsigned int ix=0;ix<_threewgts.size();++ix)
+	{_threewgts[ix]=mode(3)->channelWeight(ix);}
+      // get the maximum weight
+      _zeromax  = mode(0)->maxWeight();
+      _onemax   = mode(1)->maxWeight();
+      _twomax   = mode(2)->maxWeight();
+      _threemax = mode(3)->maxWeight();
+    }
 }
   
 inline void a1ThreePionCLEODecayer::rebind(const TranslationMap & trans)

@@ -112,12 +112,18 @@ void  LambdabExcitedLambdacSumRuleFormFactor::
   f4a = msum2/m0/m0*K2;
 }
 
-void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output) const
+void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output,
+							    bool header,
+							    bool create) const
 {
-  output << "create /Herwig++/LambdabExcitedLambdacSumRuleFormFactor " 
-	 << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create /Herwig++/LambdabExcitedLambdacSumRuleFormFactor " 
+	    << fullName() << " \n";}
   output << "set " << fullName() << ":Xi          " << _xi1          << " \n";
   output << "set " << fullName() << ":Rho2        " << _rho2         << " \n";
+  BaryonFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 

@@ -49,9 +49,9 @@ inline void VectorMesonPScalarFermionsDecayer::dofinish() {
 
 inline void VectorMesonPScalarFermionsDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
+  if(initialize())
     {
-      if(_Initialize)
+      for(unsigned int ix=0;ix<_incoming.size();++ix)
 	{
 	  _maxweight[ix] = mode(ix)->maxWeight();
 	  _weight[ix]    = mode(ix)->channelWeight(1);

@@ -916,12 +916,10 @@ halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
   B1=_B1[imode];B2=_B2[imode]*(m0+m1);B3=_B3[imode]*(m0+m1)*(m0+m1);
 }
  
-void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output) const
+void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":GFermi " << _GF*GeV2 << "\n";
   output << "set " << fullName() << ":OneOverNc " <<  _oneNC<< "\n";
   output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
@@ -989,6 +987,6 @@ void KornerKramerCharmDecayer::dataBaseOutput(ofstream & output) const
 		 << ix << " " << _maxweight[ix] << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

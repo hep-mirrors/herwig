@@ -19,6 +19,7 @@ inline ThreeMesonCurrentBase::ThreeMesonCurrentBase()
   addDecayMode(2,-3);
   addDecayMode(2,-3);
   addDecayMode(2,-1);
+  setInitialModes(9);
 }
 
 inline ThreeMesonCurrentBase::ThreeMesonCurrentBase(const ThreeMesonCurrentBase & x)

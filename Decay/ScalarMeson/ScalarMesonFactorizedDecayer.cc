@@ -679,12 +679,12 @@ void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
     }
 }
 
-void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output) const
+void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output,
+						  bool header) const
 {
   unsigned int ix;
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter   << "\n";
-  output << "set " << fullName() << ":Ntry "      << _ntry    << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":GFermi "    << _GF*GeV2 << "\n";
   output << "set " << fullName() << ":a1Bottom "  << _a1b << "\n";
   output << "set " << fullName() << ":a2Bottom "  << _a2b << "\n";
@@ -693,13 +693,13 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":CKM "       << _theCKM->fullName() << " \n";
   for(ix=0;ix<_current.size();++ix)
     {
-      _current[ix]->dataBaseOutput(output);
+      _current[ix]->dataBaseOutput(output,false,true);
       output << "insert " << fullName() << ":Currents " << ix << " " 
 	     << _current[ix]->fullName() << " \n";
     }
   for(ix=0;ix<_form.size();++ix)
     {
-      _form[ix]->dataBaseOutput(output);
+      _form[ix]->dataBaseOutput(output,false,true);
       output << "insert " << fullName() << ":FormFactors " << ix << " " 
 	     << _form[ix]->fullName() << " \n";
     }
@@ -712,6 +712,6 @@ void ScalarMesonFactorizedDecayer::dataBaseOutput(ofstream & output) const
   for(ix=0;ix<_weights.size();++ix)
     {output << "insert " << fullName() << ":Weights "        << ix << " " 
 	    << _weights[ix] << "\n";}
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

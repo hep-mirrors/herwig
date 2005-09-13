@@ -10,7 +10,6 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
-#include "DecayConfig.h"
 #include <fstream>
 
 namespace Herwig {
@@ -153,11 +152,6 @@ protected:
 private:
 
   /**
-   *  The code for the matrix element being used.
-   */
-  int MECode;
-
-  /**
    * Perform a one body decay, used for \f$K^0,\bar{K}^0\to K_{L,S}\f$.
    * Two body decay is handled in static class Kinematics
    */
@@ -174,7 +168,7 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  void setParticleMomentum(ParticleVector & out, ParticleMSet particles, 
+  void setParticleMomentum(ParticleVector & out, cPDVector particles, 
 			   vector<Lorentz5Momentum> moms) const;
 
   /**
@@ -186,6 +180,18 @@ private:
    *  Private and non-existent assignment operator.
    */
   const Hw64Decayer & operator=(const Hw64Decayer &);
+
+private:
+
+  /**
+   *  The code for the matrix element being used.
+   */
+  int MECode;
+
+  /**
+   *  Maximum number of attempts to generate the off-shell masses
+   */
+  unsigned int _masstry;
 };
 
 }

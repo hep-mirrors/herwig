@@ -203,9 +203,11 @@ unsigned int ScalarMesonCurrent::decayMode(vector<int> idout)
   return ix;
 }
 
-void ScalarMesonCurrent::dataBaseOutput(ofstream & output) const
+void ScalarMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  output << "create /Herwig++/ScalarMesonCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::ScalarMesonCurrent " << fullName() << " \n";}
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   unsigned int ix;
   for(ix=0;ix<_id.size();++ix)
@@ -225,7 +227,8 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output) const
 	    << " " << _decay_constant[ix]/MeV << "\n";
 	}
     }
-  WeakDecayCurrent::dataBaseOutput(output);
+  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

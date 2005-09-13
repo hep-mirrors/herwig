@@ -45,8 +45,8 @@ ClassDescription<BtoSGammaKagan> BtoSGammaKagan::initBtoSGammaKagan;
 void BtoSGammaKagan::Init() {
 
   static ClassDocumentation<BtoSGammaKagan> documentation
-    ("The BtoSGammaKagan class implements the calculation of hep-ph/9805303 for the hadronic"
-     " mass spectrum in b to s gamma decays");
+    ("The BtoSGammaKagan class implements the calculation of hep-ph/9805303 for the"
+     " hadronic mass spectrum in b to s gamma decays");
 
   static Switch<BtoSGammaKagan,bool> interfaceInitialize
     ("Initialize",
@@ -181,6 +181,12 @@ void BtoSGammaKagan::Init() {
     ("ycut",
      "Limit of the value of y to avoid singualarities in integrals",
      &BtoSGammaKagan::_ycut, 0.999999999, 0.999, 1.,
+     false, false, Interface::limited);
+
+  static Parameter<BtoSGammaKagan,unsigned int> interfaceNSpectrum
+    ("NSpectrum",
+     "Number of spectrum points to calculate for interpolation",
+     &BtoSGammaKagan::_nspect, 100, 10, 1000,
      false, false, Interface::limited);
 
 }
@@ -374,6 +380,50 @@ Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark)
     {throw Exception() << "Unweighting failed in BtoSGammaKagan::hadronicMass()" 
 		       << Exception::eventerror;}
   return mass;
+}
+
+void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
+					   bool create) const
+{
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::BtoSGammaKagan " << fullName() << " \n";}
+  output << "set " << fullName() << ":TopMass "    << _mt/GeV << " \n";
+  output << "set " << fullName() << ":BottomMass " << _mb/GeV << " \n";
+  output << "set " << fullName() << ":CharmMass "  << _mc/GeV << " \n";
+  output << "set " << fullName() << ":StrangeMassRatio " << _msovermb << " \n";
+  output << "set " << fullName() << ":WMass " << _mw/GeV << " \n";
+  output << "set " << fullName() << ":ZMass " << _mz/GeV << " \n";
+  output << "set " << fullName() << ":Lambda2" << _lambda2/GeV2 << " \n";
+  output << "set " << fullName() << ":BMesonMass " << _MB/GeV << " \n";
+  output << "set " << fullName() << ":Mu " << _mub/GeV << " \n";
+  output << "set " << fullName() << ":Delta " << _deltacut << " \n";
+  output << "set " << fullName() << ":Lambda1 " << _fermilambda1/GeV2 << " \n";
+  output << "set " << fullName() << ":alpha " << _alpha << " \n";
+  output << "set " << fullName() << ":CKM " << _ckm << " \n";
+  output << "set " << fullName() << ":FermiNormalisation " << _ferminorm*GeV << " \n";
+  output << "set " << fullName() << ":MaximumTries " << _maxtry << " \n";
+  output << "set " << fullName() << ":ycut " << _ycut << " \n";
+  output << "set " << fullName() << ":NSpectrum " <<  _nspect << " \n";
+  for(unsigned int ix=0;ix<_yinter.size();++ix)
+    {
+      if(ix<100)
+	{output << "set " << fullName() << ":yValues " << ix << " " << _yinter[ix] 
+		<< " \n";}
+      else
+	{output << "insert " << fullName() << ":yValues " << ix << " " << _yinter[ix] 
+		<< " \n";}
+    }
+  for(unsigned int ix=0;ix<_yinter.size();++ix)
+    {
+      if(ix<100)
+	{output << "set " << fullName() << ":Spectrum " << ix << " " << _spectrum[ix] 
+		<< " \n";}
+      else
+	{output << "insert " << fullName() << ":Spectrum " << ix << " " << _spectrum[ix] 
+		<< " \n";}
+    }
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 // function for the integral

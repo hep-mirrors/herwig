@@ -44,8 +44,9 @@ inline void EtaPiPiPiDecayer::dofinish() {
 
 inline void EtaPiPiPiDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {_maxweight[ix] = mode(ix)->maxWeight();}
+  if(initialize())
+    {for(unsigned int ix=0;ix<_incoming.size();++ix)
+	{_maxweight[ix] = mode(ix)->maxWeight();}}
 }
 
 inline void EtaPiPiPiDecayer::rebind(const TranslationMap & trans)

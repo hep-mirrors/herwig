@@ -184,9 +184,13 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int mode,int id0, int id1, Energy m0, Ener
   f2a = (m0+m1)*_g2[mode]; 
 }
 
-void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output) const 
+void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output,bool header,
+						     bool create) const 
 {
-  output << "create /Herwig++/LightBaryonQuarkModelFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create /Herwig++/LightBaryonQuarkModelFormFactor " 
+	    << fullName() << " \n";}
   for(unsigned int ix=0;ix<_f1.size();++ix)
     {
       if(ix<initialModes())
@@ -228,7 +232,8 @@ void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output) const
 		 << _Lambdag2[ix]/GeV << endl;
 	}
     }
-  BaryonFormFactor::dataBaseOutput(output);
+  BaryonFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

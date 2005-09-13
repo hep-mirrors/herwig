@@ -220,9 +220,12 @@ void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
     {fT *=sqrt(1./3.)*cos(_thetaeta)-sqrt(2./3.)*sin(_thetaeta);}
 }
 
-void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output) const
+void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
+						bool create) const
 {
-  output << "create Herwig++::BallZwickyScalarFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::BallZwickyScalarFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
@@ -273,7 +276,8 @@ void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output) const
 		 << ix << " " << _mfit2T[ix]/GeV2 << "\n";
 	}
     }
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

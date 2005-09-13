@@ -1,31 +1,25 @@
-2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+2005-09-13  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
+	* Decay: changes to many classes due to the new base class 
+	
 	* Hadronization changes to tidy up the PartonicHadronizer and allow the
-	hadronization to produce off-shell particles
-
-2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
-
+	hadronization to produce off-shell particles.
+	
 	* Decay/HwDecayerBase.h (Repository): added new base class for decayers including
 	the Initialize feature of the DecayIntegrator and dataBaseOutput so this can be
-	used for classes not built on DecayIntegrator
-
-2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+	used for classes not built on DecayIntegrator.
 
 	* PDT/GenericWidthGenerator.h: changes so that the mass generator only includes
 	the numerator factor when generating a mass without the weight to avoid biases
-	towards high masses
-
-2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+	towards high masses.
 
 	* Decay/DecayConfig.h (Repository): this was really the .fh file for Hw64Decayer
-	and has been renamed as such
+	and has been renamed as such.
 
-2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as it served
+	little purpose and should be replaced by information on the Wiki.
 
-	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as it served little purpose
-	and should be replaced by information on the Wiki.
-
-2005-09-08  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-08  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* src/HerwigDefaults.in (Repository): changes for the new treatment of hadronization in partonic decays
 
@@ -35,17 +29,17 @@
 
 	* lib/Makefile.am: added libHwPartonicDecay.la to the list of libraries
 
-2005-09-05  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-05  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Utilities/HerwigRun.cc: changes to documentation to remove some doxygen errors and more changes due to change in random numbers from ThePEG
 
-2005-09-04  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-04  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Doc/tagfileThePEG.tag (Repository): changes to documentation so that include is not scanned by doxygen and duplicate base classes do not appear
 
 	* Utilities/Kinematics.cc (Repository): Changes for the changes to random numbers from ThePEG and improvements to documentation
 
-2005-09-01  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Decay/HwDecayHandler.icc (Repository): changes to partonic decays
 

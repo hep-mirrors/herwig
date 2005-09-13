@@ -30,6 +30,7 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent()
   // set the number of modes
   addDecayMode(2,-1);
   addDecayMode(2,-1);
+  setInitialModes(2);
   // masses of the particles used in the current
   _rhomass    = 0.7761*GeV;
   _a1mass     = 1.2300*GeV;
@@ -835,9 +836,12 @@ unsigned int FourPionNovosibirskCurrent::decayMode(vector<int> idout)
 
 
 // output the information for the database
-void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output) const
+void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
+						bool create) const
 {
-  output << "create /Herwig++/FourPionNovosibirskCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::FourPionNovosibirskCurrent " << fullName() << " \n";}
   output << "set " << fullName() << ":rhoMass "    << _rhomass/GeV << "\n";
   output << "set " << fullName() << ":a1Mass  "    << _a1mass/GeV  << "\n";
   output << "set " << fullName() << ":sigmaMass  " << _sigmamass/GeV  << "\n";
@@ -859,6 +863,8 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output) const
   for(unsigned int ix=0;ix<_a1runq2.size();++ix)
     {output << "insert " << fullName() << ":a1RunningQ2 " << ix 
 	    << " " << _a1runq2[ix]/GeV2 << "\n";}
+  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
  
 } 

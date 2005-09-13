@@ -91,4 +91,7 @@ double TensorMesonDecayerBase::me2(bool vertex, const int ichan,
   // return the answer
   return newME.contract(rhoin).real();
 }
+  
+void TensorMesonDecayerBase::dataBaseOutput(ofstream & os,bool header) const
+{DecayIntegrator::dataBaseOutput(os,header);}
 }

@@ -108,8 +108,11 @@ void BaryonFormFactor::SpinHalfSpinThreeHalfFormFactor(Energy2,int,int,int,Energ
 }
 
 // output the information for the database
-void BaryonFormFactor::dataBaseOutput(ofstream & output) const
+void BaryonFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::BaryonFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {
       if(ix<_numbermodes)
@@ -151,6 +154,7 @@ void BaryonFormFactor::dataBaseOutput(ofstream & output) const
 		 << _outquark[ix]<< endl;
 	}
     }
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

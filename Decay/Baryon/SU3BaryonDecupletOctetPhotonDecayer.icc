@@ -97,7 +97,7 @@ inline void SU3BaryonDecupletOctetPhotonDecayer::dofinish() {
 
 inline void SU3BaryonDecupletOctetPhotonDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {
       _maxweight.resize(0);
       for(unsigned int ix=0;ix<numberModes();++ix)

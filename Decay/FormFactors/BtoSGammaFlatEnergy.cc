@@ -45,3 +45,12 @@ Energy BtoSGammaFlatEnergy::hadronicMass(Energy mb,Energy mquark)
   double rand(UseRandom::rnd());
   return sqrt(upper*upper*rand+(1.-rand)*lower*lower);
 }
+
+void BtoSGammaFlatEnergy::dataBaseOutput(ofstream & output,bool header,
+					   bool create) const
+{
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::BtoSGammaFlatEnergy " << fullName() << " \n";}
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+}

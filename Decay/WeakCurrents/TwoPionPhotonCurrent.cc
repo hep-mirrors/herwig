@@ -261,9 +261,12 @@ bool TwoPionPhotonCurrent::accept(vector<int> id)
 unsigned int TwoPionPhotonCurrent::decayMode(vector<int> idout){return 0;}
 
 // output the information for the database
-void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output) const
+void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
+					  bool create) const
 {
-  output << "create /Herwig++/TwoPionPhotonCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::TwoPionPhotonCurrent " << fullName() << " \n";}
   output << "set " << fullName() << ":RhoParameters "    << _rhoparameters << "\n";
   output << "set " << fullName() << ":omegaParameters "    << _omegaparameters << "\n";
   output << "set " << fullName() << ":omegamass "    << _omegamass/GeV << "\n";
@@ -294,5 +297,7 @@ void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output) const
       else{output << "insert " << fullName() << ":RhoWidths " << ix 
 		  << " " << _rhowidths[ix]/MeV << "\n";}
     }
+  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

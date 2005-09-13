@@ -78,8 +78,11 @@ inline void EtaPiGammaGammaDecayer::dofinish() {
 
 inline void EtaPiGammaGammaDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  _etamax  = mode(0)->maxWeight();
-  _etapmax = mode(1)->maxWeight();
+  if(initialize())
+    {
+      _etamax  = mode(0)->maxWeight();
+      _etapmax = mode(1)->maxWeight();
+    }
 }
 
 inline void EtaPiGammaGammaDecayer::rebind(const TranslationMap & trans)

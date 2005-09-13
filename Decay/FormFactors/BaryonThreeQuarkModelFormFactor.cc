@@ -271,9 +271,13 @@ void  BaryonThreeQuarkModelFormFactor::
   f4a =-msum2/m0/m0*K2;
 }
 
-void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output) const
+void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool header,
+						     bool create) const
 {
-  output << "create /Herwig++/BaryonThreeQuarkModelFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create /Herwig++/BaryonThreeQuarkModelFormFactor " 
+	    << fullName() << " \n";}
   output << "set " << fullName() << ":Order       " << _order        << " \n";
   output << "set " << fullName() << ":LightMass   " << _mlight/GeV   << " \n";
   output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << " \n";
@@ -288,7 +292,8 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output) const
     {output << "insert " << fullName() << ":C1 " << ix << "   " << _C1[ix] << " \n";}
   for(unsigned int ix=0;ix<_C2.size();++ix)
     {output << "insert " << fullName() << ":C2 " << ix << "   " << _C2[ix] << " \n";}
-  BaryonFormFactor::dataBaseOutput(output);
+  BaryonFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

@@ -346,13 +346,11 @@ EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
 					  imode,_mpi,0.,0.));
 }
 
-void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output) const
+void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output, 
+					    bool header) const
 {
-  output << "update decayers set parameters=\"";
-  // parameters for the DecayIntegrator base class
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":grhoomega " << _grhoomega*GeV << "\n";
   output << "set " << fullName() << ":Fpi " << _fpi/MeV  << "\n";
   output << "set " << fullName() << ":grho " << _grho << "\n";
@@ -364,7 +362,6 @@ void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":EtaMax " << _etamax << "\n";
   output << "set " << fullName() << ":EtaPrimeMax " << _etapmax << "\n";
   output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

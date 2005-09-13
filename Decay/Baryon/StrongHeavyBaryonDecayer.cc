@@ -638,11 +638,10 @@ threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
 				  << Exception::abortnow;}
 }
 
-void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output) const
+void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":gSigma_cLambda_cPi " 
 	 << _gsigma_clambda_cpi*GeV << "\n";
   output << "set " << fullName() << ":gXiStar_cXi_cPi " 
@@ -696,6 +695,6 @@ void StrongHeavyBaryonDecayer::dataBaseOutput(ofstream & output) const
 		 << ix << " " << _maxweight[ix] << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

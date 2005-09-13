@@ -1080,9 +1080,10 @@ void ISGW2FormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int 
 					     Complex & bp,Complex & bm) const
  {formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);}
 
-void ISGW2FormFactor::dataBaseOutput(ofstream & output) const
+void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  output << "create Herwig++::ISGW2FormFactor " << fullName() << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create){output << "create Herwig++::ISGW2FormFactor " << fullName() << "\n";}
   output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
   output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
   output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << "\n";
@@ -1129,6 +1130,7 @@ void ISGW2FormFactor::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":CfBcBsstar "  << _CfBcBsstar   << "\n";
   output << "set " << fullName() << ":CfBcBstar "   << _CfBcBstar    << "\n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

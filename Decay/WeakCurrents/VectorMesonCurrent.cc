@@ -183,9 +183,11 @@ unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
   return ix;
 }
 
-void VectorMesonCurrent::dataBaseOutput(ofstream & output) const
+void VectorMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  output << "create /Herwig++/VectorMesonCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::VectorMesonCurrent " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_id.size();++ix)
     {
       if(ix<_initsize)
@@ -203,6 +205,8 @@ void VectorMesonCurrent::dataBaseOutput(ofstream & output) const
 		 << " " << _decay_constant[ix]/GeV2 << "\n";
 	}
     }
+  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

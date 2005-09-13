@@ -51,7 +51,7 @@ inline void TauDecayer::dofinish() {
 inline void TauDecayer::doinitrun() {
   _current->initrun();
   DecayIntegrator::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {
       _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
       unsigned int ix,iy;
@@ -63,10 +63,6 @@ inline void TauDecayer::doinitrun() {
 	    {_weights.push_back(mode(ix)->channelWeight(iy));}
 	}
     }
-  string file_name;
-  file_name  = name()+".output";
-  ofstream output(file_name.c_str());
-  dataBaseOutput(output);
 }
 
 inline void TauDecayer::rebind(const TranslationMap & trans)

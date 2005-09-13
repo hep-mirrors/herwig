@@ -17,6 +17,7 @@ inline TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent()
   addDecayMode(2,-3);
   addDecayMode(2,-1);
   addDecayMode(2,-3);
+  setInitialModes(5);
   // the weights of the different resonances in the matrix elements
   _piwgt.push_back(1.0);_piwgt.push_back(-0.167);_piwgt.push_back(0.05);
   _kwgt.push_back(1.0);_kwgt.push_back(-0.038);_kwgt.push_back(0.00);

@@ -50,8 +50,11 @@ void WeakDecayCurrent::Init() {
      0, 0, 0, -16, 0, false, false, true);
 }
 
-void WeakDecayCurrent::dataBaseOutput(ofstream & output) const
+void WeakDecayCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::WeakDecayCurrent " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_quark.size();++ix)
     {
       if(ix<_numbermodes)
@@ -69,5 +72,6 @@ void WeakDecayCurrent::dataBaseOutput(ofstream & output) const
 		 << ix << "  " << _antiquark[ix] << endl;
 	}
     }
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

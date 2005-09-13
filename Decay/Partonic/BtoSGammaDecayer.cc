@@ -26,18 +26,16 @@ BtoSGammaDecayer::~BtoSGammaDecayer() {}
 bool BtoSGammaDecayer::accept(const DecayMode & dm) const {
   // should be three decay products
   if(dm.products().size()!=3){return false;}
-  // photon should be second
-  if(dm.orderedProducts()[1]->id()!=ParticleID::gamma){return false;}
+  // photon should be last
+  if(dm.orderedProducts()[2]->id()!=ParticleID::gamma){return false;}
   // strange should be first
   if(abs(dm.orderedProducts()[0]->id())!=ParticleID::s){return false;}
-  // first and last should form a colour singlet
+  // first and second should form a colour singlet
   if((dm.orderedProducts()[0]->iColour()==PDT::Colour3&&
-      dm.orderedProducts()[2]->iColour()==PDT::Colour3bar)||
-     (dm.orderedProducts()[2]->iColour()==PDT::Colour3&&
-      dm.orderedProducts()[0]->iColour()==PDT::Colour3bar))
-    {return true;}
-  else
-    {return false;}
+      dm.orderedProducts()[1]->iColour()==PDT::Colour3bar)||
+     (dm.orderedProducts()[1]->iColour()==PDT::Colour3&&
+      dm.orderedProducts()[0]->iColour()==PDT::Colour3bar)){return true;}
+  else{return false;}
 }
 
 ParticleVector BtoSGammaDecayer::decay(const DecayMode & dm,
@@ -46,34 +44,33 @@ ParticleVector BtoSGammaDecayer::decay(const DecayMode & dm,
   // momenta of the decay products
   Lorentz5Momentum pout[3],phad;
   pout[0].setMass(children[0]->dataPtr()->constituentMass());
-  pout[1].setMass(0.);
-  pout[2].setMass(children[1]->dataPtr()->constituentMass());
+  pout[1].setMass(children[1]->dataPtr()->constituentMass());
+  pout[2].setMass(0.);
   // first calculate the hadronic mass spectrum
-  phad.setMass(_hadronicmass->hadronicMass(parent.mass(),pout[0].mass()+pout[2].mass()));
+  phad.setMass(_hadronicmass->hadronicMass(parent.mass(),pout[0].mass()+pout[1].mass()));
   // two body decay to hadronic cluster and photon
   double ctheta,phi;
   Kinematics::generateAngles(ctheta,phi);
-  Kinematics::twoBodyDecay(parent.momentum(),pout[1].mass(),phad.mass(),
-			   ctheta,phi,pout[1],phad);
+  Kinematics::twoBodyDecay(parent.momentum(),pout[2].mass(),phad.mass(),
+			   ctheta,phi,pout[2],phad);
   // two body decay of the cluster
   Kinematics::generateAngles(ctheta,phi);
-  Kinematics::twoBodyDecay(phad,pout[0].mass(),pout[2].mass(),
-			   ctheta,phi,pout[0],pout[2]);
+  Kinematics::twoBodyDecay(phad,pout[0].mass(),pout[1].mass(),
+			   ctheta,phi,pout[0],pout[1]);
   // set momenta of decay products
-  for(unsigned int ix=0;ix<3;++ix)
-    {children[ix]->setMomentum(pout[ix]);}
+  for(unsigned int ix=0;ix<3;++ix){children[ix]->setMomentum(pout[ix]);}
   // make the colour connections
   // quark first
   if(children[0]->data().iColour()==PDT::Colour3)
     {
-      children[0]->antiColourNeighbour(children[2]);
-      children[2]->colourNeighbour(children[0]);
+      children[0]->antiColourNeighbour(children[1]);
+      children[1]->colourNeighbour(children[0]);
     }
   // antiquark first
   else
     {
-      children[0]->colourNeighbour(children[2]);
-      children[2]->antiColourNeighbour(children[0]);
+      children[0]->colourNeighbour(children[1]);
+      children[1]->antiColourNeighbour(children[0]);
     }
   return children;
 }

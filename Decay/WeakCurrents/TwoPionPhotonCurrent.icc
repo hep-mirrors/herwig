@@ -11,6 +11,7 @@ inline TwoPionPhotonCurrent::TwoPionPhotonCurrent()
 {
   // modes handled
   addDecayMode(2,-1);
+  setInitialModes(1);
   // weight of the resonances in the current
   _resweights.push_back(1.0);_resweights.push_back(-0.1);_resweights.push_back(0.0);
   // parameters of the rho resonaces

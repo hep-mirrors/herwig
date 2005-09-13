@@ -880,9 +880,12 @@ void MelikhovStechFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned in
     }
 }
 
-void MelikhovStechFormFactor::dataBaseOutput(ofstream & output) const
+void MelikhovStechFormFactor::dataBaseOutput(ofstream & output,bool header,
+					     bool create) const
 {
-  output << "create Herwig++::MelikhovStechFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::MelikhovStechFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
@@ -1021,6 +1024,7 @@ void MelikhovStechFormFactor::dataBaseOutput(ofstream & output) const
 		 << ix << "  " << _massV[ix]/GeV << "\n";
 	}
     }
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

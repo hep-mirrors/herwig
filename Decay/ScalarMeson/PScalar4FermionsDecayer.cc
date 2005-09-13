@@ -355,13 +355,12 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int ichan,
 }
 
 // output the setup info for the particle database
-void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output) const
+void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output,
+					     bool header) const
 {
-  output << "update decayers set parameters=\"";
+  if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       if(ix<_initsize)
@@ -407,6 +406,6 @@ void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output) const
 		 << _VMDwidth[ix]   << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

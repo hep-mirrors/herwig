@@ -61,18 +61,17 @@ inline void ScalarMesonFactorizedDecayer::doinitrun() {
   for(ix=0;ix<_current.size();++ix){_current[ix]->initrun();}
   for(ix=0;ix<_form.size();++ix){_form[ix]->initrun();}
   DecayIntegrator::doinitrun();
-  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
-  for(ix=0;ix<numberModes();++ix)
+  if(initialize())
     {
-      _wgtmax.push_back(mode(ix)->maxWeight());
-      _wgtloc.push_back(_weights.size());
-      for(iy=0;iy<mode(ix)->numberChannels();++iy)
-	{_weights.push_back(mode(ix)->channelWeight(iy));}
+      _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+      for(ix=0;ix<numberModes();++ix)
+	{
+	  _wgtmax.push_back(mode(ix)->maxWeight());
+	  _wgtloc.push_back(_weights.size());
+	  for(iy=0;iy<mode(ix)->numberChannels();++iy)
+	    {_weights.push_back(mode(ix)->channelWeight(iy));}
+	}
     }
-  string file_name;
-  file_name  = name()+".output";
-  ofstream output(file_name.c_str());
-  dataBaseOutput(output);
 }
 
 inline void ScalarMesonFactorizedDecayer::rebind(const TranslationMap & trans)

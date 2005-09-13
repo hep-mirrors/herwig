@@ -150,10 +150,14 @@ unsigned int LeptonNeutrinoCurrent::decayMode(vector<int> idout)
 }
 
 // output the information for the database
-void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output) const
+void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output,bool header,
+					   bool create) const
 {
-  output << "create /Herwig++/LeptonNeutrinoCurrent " << fullName() << " \n";
-  WeakDecayCurrent::dataBaseOutput(output);
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create /Herwig++/LeptonNeutrinoCurrent " << fullName() << " \n";}
+  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

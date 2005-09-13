@@ -727,12 +727,11 @@ void BaryonFactorizedDecayer::findModes(unsigned int imode,
 }
 
 // output the setup information for the particle database
-void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output) const
+void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output, bool header) const
 {
   unsigned int ix;
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << " \n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":GFermi "   << _GF*GeV2 << " \n";
   output << "set " << fullName() << ":a1Bottom "  << _a1b << "\n";
   output << "set " << fullName() << ":a2Bottom "  << _a2b << "\n";
@@ -748,11 +747,11 @@ void BaryonFactorizedDecayer::dataBaseOutput(ofstream & output) const
   for(ix=0;ix<_weights.size();++ix)
     {output << "insert " << fullName() << ":Weights "        << ix << " " 
 	    << _weights[ix] << "\n";}
-  _current->dataBaseOutput(output);
+  _current->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":Current " << _current->fullName() << " \n";
-  _form->dataBaseOutput(output);
+  _form->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":FormFactor " << _form->fullName() << " \n";
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

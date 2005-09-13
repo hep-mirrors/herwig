@@ -89,7 +89,7 @@ inline void SU3BaryonSingletOctetScalarDecayer::dofinish() {
 
 inline void SU3BaryonSingletOctetScalarDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {
       _maxweight.resize(0);
       for(unsigned int ix=0;ix<numberModes();++ix)

@@ -68,7 +68,7 @@ inline void VectorMeson2FermionDecayer::dofinish() {
 inline void VectorMeson2FermionDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
   for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {if(_Initialize){_maxweight[ix] = mode(ix)->maxWeight();}}
+    {if(initialize()){_maxweight[ix] = mode(ix)->maxWeight();}}
 }
 
 

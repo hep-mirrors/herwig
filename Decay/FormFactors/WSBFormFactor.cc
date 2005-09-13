@@ -428,9 +428,11 @@ void WSBFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
     }
 }
 
-void WSBFormFactor::dataBaseOutput(ofstream & output) const
+void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  output << "create Herwig++::WSBFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::WSBFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
@@ -477,6 +479,7 @@ void WSBFormFactor::dataBaseOutput(ofstream & output) const
 		 << ix << "  " << _mV1[ix]/GeV << endl;
 	}
     }
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

@@ -68,7 +68,7 @@ inline void PVectorMesonVectorPScalarDecayer::dofinish() {
 
 inline void PVectorMesonVectorPScalarDecayer::doinitrun() {
   VectorMesonDecayerBase::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {for(unsigned int ix=0;ix<_incoming.size();++ix)
 	{_maxweight[ix] = mode(ix)->maxWeight();}}
 }

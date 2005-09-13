@@ -436,9 +436,12 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
     }
 }
 
-void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output) const
+void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output,bool header,
+						bool create) const
 {
-  output << "create Herwig++::BallZwickyVectorFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::BallZwickyVectorFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":CutOff " << _cutoff/GeV2 << "\n";
   for(unsigned int ix=0;ix<_Vr1.size();++ix)
     {
@@ -561,7 +564,8 @@ void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output) const
 		 << "  " << _T3mfit2[ix]/GeV2 << "\n";
 	}
     }
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

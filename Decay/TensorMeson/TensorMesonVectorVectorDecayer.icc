@@ -67,7 +67,7 @@ inline void TensorMesonVectorVectorDecayer::dofinish() {
 
 inline void TensorMesonVectorVectorDecayer::doinitrun() {
   TensorMesonDecayerBase::doinitrun();
-  if(_Initialize)
+  if(initialize())
     {for(unsigned int ix=0;ix<_incoming.size();++ix)
 	{_maxweight[ix] = mode(ix)->maxWeight();}}
 }

@@ -508,9 +508,10 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
     }
 }
 
-void ISGWFormFactor::dataBaseOutput(ofstream & output) const
+void ISGWFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  output << "create Herwig::ISGWFormFactor " << fullName() << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create){output << "create Herwig::ISGWFormFactor " << fullName() << "\n";}
   output << "set " << fullName() << ":Kappa    "    << _kappa        << "\n";
   output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
   output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
@@ -525,6 +526,7 @@ void ISGWFormFactor::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":BetaPus "     << _betaPus/GeV  << "\n";
   output << "set " << fullName() << ":BetaPuc "     << _betaPuc/GeV  << "\n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
-  ScalarFormFactor::dataBaseOutput(output);
+  ScalarFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

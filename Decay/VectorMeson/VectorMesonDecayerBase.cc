@@ -91,4 +91,7 @@ double VectorMesonDecayerBase::me2(bool vertex, const int ichan,
   return newME.contract(rhoin).real();
 }
 
+void VectorMesonDecayerBase::dataBaseOutput(ofstream & os,bool header) const
+{DecayIntegrator::dataBaseOutput(os,header);}
+
 }

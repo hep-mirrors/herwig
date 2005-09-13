@@ -8,16 +8,17 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-inline Hw64Decayer::Hw64Decayer() { } 
+  inline Hw64Decayer::Hw64Decayer(): MECode(0),_masstry(50) 
+{} 
 
-inline Hw64Decayer::Hw64Decayer(const Hw64Decayer & x) : ThePEG::Decayer(x) 
-{
-  MECode = x.MECode;
-}
+inline Hw64Decayer::Hw64Decayer(const Hw64Decayer & x) : 
+  ThePEG::Decayer(x), MECode(x.MECode), _masstry(x._masstry)
+{}
 
 inline IBPtr Hw64Decayer::clone() const {
    Ptr<Hw64Decayer>::pointer rval = new Hw64Decayer();
    rval->MECode = MECode;
+   rval->_masstry=_masstry;
    return rval;
 }
 

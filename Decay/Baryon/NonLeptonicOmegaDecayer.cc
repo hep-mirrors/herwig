@@ -318,12 +318,10 @@ void NonLeptonicOmegaDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,En
 							  Complex& B) const
  {A=_A[imode]*(m0+m1);B=_B[imode]*(m0+m1);}
 
-void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output) const
+  void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":DStar " << _dstar<< "\n";
   output << "set " << fullName() << ":FStar " << _fstar << "\n";
   output << "set " << fullName() << ":omegad " << _omegad<< "\n";
@@ -350,7 +348,7 @@ void NonLeptonicOmegaDecayer::dataBaseOutput(ofstream & output) const
   for(unsigned int ix=0;ix<_maxweight.size();++ix)
     {output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 	    << _maxweight[ix] << "\n";}
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

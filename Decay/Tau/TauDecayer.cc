@@ -267,12 +267,11 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
 }
 
 // output the setup information for the particle database
-void TauDecayer::dataBaseOutput(ofstream & output) const
+void TauDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
   unsigned int ix;
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter   << "\n";
-  output << "set " << fullName() << ":Ntry "      << _ntry    << "\n";
+  if(header)output << "update decayers set parameters=\"";
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":GFermi "    << _GF*GeV2 << "\n";
   for(ix=0;ix<_wgtloc.size();++ix)
     {output << "insert " << fullName() << ":WeightLocation " << ix << " " 
@@ -283,7 +282,7 @@ void TauDecayer::dataBaseOutput(ofstream & output) const
   for(ix=0;ix<_weights.size();++ix)
     {output << "insert " << fullName() << ":Weights "        << ix << " " 
 	    << _weights[ix] << "\n";}
-  _current->dataBaseOutput(output);
+  _current->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":WeakCurrent " << _current->fullName() << " \n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 } 

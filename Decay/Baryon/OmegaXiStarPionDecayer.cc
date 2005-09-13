@@ -130,12 +130,10 @@ threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
   B1=_BP+_BS;
 }
 
-void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output) const
+  void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":Acomm " << _Acomm << "\n";
   output << "set " << fullName() << ":AP " << _AP << "\n";
   output << "set " << fullName() << ":AS " << _AS << "\n";
@@ -144,6 +142,6 @@ void OmegaXiStarPionDecayer::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":MaximumWeight " << _wgtmax << "\n";
   output << "set " << fullName() << ":Incoming " << _idin << "\n";
   output << "set " << fullName() << ":Outgoing " << _idout << "\n";
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

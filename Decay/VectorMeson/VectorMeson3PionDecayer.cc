@@ -539,12 +539,12 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   return output;
 }
 
-void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output) const
+void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
+					     bool header) const
 {
-  output << "update decayers set parameters=\"";
+  if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  VectorMesonDecayerBase::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       if(ix<_initsize)
@@ -630,7 +630,7 @@ void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output) const
 		 << ix << " " << _defaultmass[ix] << endl;
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }
 

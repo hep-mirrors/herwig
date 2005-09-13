@@ -41,11 +41,6 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   if(_rhomasses.size()!=_rhowidths.size()||_Kstarmasses.size()!=_Kstarwidths.size())
     {throw InitException() << "Inconsistent parameters in TwoMesonRhoKStarCurrent"
 			   << "::doinit()" << Exception::abortnow;}
-  cout << "testing the initial parameters " << endl;
-  for(unsigned int ix=0;ix<_rhomasses.size();++ix)
-    {
-      cout << ix << " " << _rhomasses[ix] << " " << _rhowidths[ix] << endl;
-    }
   // the resonances
   tPDPtr res[6]={getParticleData(-213   ),getParticleData(-100213),
 		 getParticleData(-30213 ),getParticleData(-323   ),
@@ -560,34 +555,37 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout)
 }
 
 // output the information for the database
-void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output) const
+void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output,bool header,
+					     bool create) const
 {
-  output << "create /Herwig++/TwoMesonRhoKStarCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::TwoMesonRhoKStarCurrent " << fullName() << " \n";}
   unsigned int ix;
   for(ix=0;ix<_rhomasses.size();++ix)
     {
-      if(ix<3){output << "insert " << fullName() << ":RhoMasses " << ix 
+      if(ix<3){output << "set " << fullName() << ":RhoMasses " << ix 
 		      << " " << _rhomasses[ix]/MeV << "\n";}
       else{output << "insert " << fullName() << ":RhoMasses " << ix 
 		  << " " << _rhomasses[ix]/MeV << "\n";}
     }
   for(ix=0;ix<_rhowidths.size();++ix)
     {
-      if(ix<3){output << "insert " << fullName() << ":RhoWidths " << ix 
+      if(ix<3){output << "set " << fullName() << ":RhoWidths " << ix 
 		      << " " << _rhowidths[ix]/MeV << "\n";}
       else{output << "insert " << fullName() << ":RhoWidths " << ix 
 		  << " " << _rhowidths[ix]/MeV << "\n";}
     }
   for(ix=0;ix<_Kstarmasses.size();++ix)
     {
-      if(ix<2){output << "insert " << fullName() << ":KstarMasses " << ix 
+      if(ix<2){output << "set " << fullName() << ":KstarMasses " << ix 
 		      << " " << _Kstarmasses[ix]/MeV << "\n";}
       else{output << "insert " << fullName() << ":KstarMasses " << ix 
 		  << " " << _Kstarmasses[ix]/MeV << "\n";}
     }
   for(ix=0;ix<_Kstarwidths.size();++ix)
     {
-      if(ix<2){output << "insert " << fullName() << ":KstarWidths " << ix 
+      if(ix<2){output << "set " << fullName() << ":KstarWidths " << ix 
 		      << " " << _Kstarwidths[ix]/MeV << "\n";}
       else{output << "insert " << fullName() << ":KstarWidths " << ix 
 		  << " " << _Kstarwidths[ix]/MeV << "\n";}
@@ -596,20 +594,22 @@ void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":KstarParameters " << _Kstarparameters << "\n";
   for(ix=0;ix<_piwgt.size();++ix)
     {
-      if(ix<3){output << "insert " << fullName() << ":PiWeight " << ix 
+      if(ix<3){output << "set " << fullName() << ":PiWeight " << ix 
 		     << " " << _piwgt[ix] << "\n";}
       else{output << "insert " << fullName() << ":PiWeight " << ix 
 		  << " " << _piwgt[ix] << "\n";}
     }
   for(ix=0;ix<_kwgt.size();++ix)
     {
-      if(ix<3){output << "insert " << fullName() << ":KWeight " << ix 
+      if(ix<3){output << "set " << fullName() << ":KWeight " << ix 
 		      << " " << _kwgt[ix] << "\n";}
       else{output << "insert " << fullName() << ":KWeight " << ix 
 		      << " " << _kwgt[ix] << "\n";}
     }
   output << "set " << fullName() << ":PiModel " << _pimodel << "\n";
   output << "set " << fullName() << ":KModel  " << _Kmodel << "\n";
+  WeakDecayCurrent::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

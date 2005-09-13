@@ -60,8 +60,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   tStepPtr newStep = ch.newStep();
   for(int i = 0, N = parents.size(); i<N; ++i)
     {performDecay(newStep->find(parents[i]), *newStep);}
-  //cout << "testing the decay step " << flush << endl;
-  //cout << *newStep << endl;
 }
 
 
@@ -71,133 +69,116 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
   ThePEG_THROW_SPEC((Veto, Exception)) {
   Timer<47> timer("HwDecayHandler::performDecay");
   long ntry = 0;
+  tcSpinfoPtr hwspin;
   while ( 1 ) 
     {
+      // exit if fails
       if ( ++ntry >= maxLoop() ){throw DecHdlDecayFailed(parent->data(), maxLoop());}
       tDMPtr dm(parent->data().selectMode(*parent));
       if ( !dm ) throw DecHdlNoDecayMode(parent->data());
       if ( !dm->decayer() ) throw DecHdlNoDecayer(parent->data(), *dm);
-      try {
-	unsigned int hadronizetries(0);
-	bool hadronized;
-	do
-	  {
-	    ParticleVector children = dm->decayer()->decay(*dm, *parent);
-	    hadronized=true;
-	    if ( !children.empty() ) 
-	      {
-		parent->decayMode(dm);
-		for ( int i = 0, N = children.size(); i < N; ++i )
-		  {
-		    if ( !s.addDecayProduct(parent, children[i]) )
-		      throw DecHdlChildFail(parent->data(), children[i]->data());
-		  }
-		parent->scale(0.0*GeV2);
-		// loop over the children
-		for ( int i = 0, N = children.size(); i < N; ++i )
-		  {
-		    // if the child has already been decayed add products to the record
-		    if(children[i]->decayed()){addDecayedParticle(children[i],s);}
-		    // if not stable decay the child
-		    else if (!children[i]->data().stable())
-		      {performDecay(children[i], s);}
-		    // if stable and has spinInfo
-		    else if(children[i]->spinInfo())
-		      {
-			tcSpinfoPtr 
+      try 
+	{
+	  unsigned int hadronizetries(0);
+	  bool hadronized;
+	  // start of rejection loop to regenerate same decay mode with different kinematics
+	  // this is sometimes needed for the hadronization
+	  do
+	    {
+	      ParticleVector children = dm->decayer()->decay(*dm, *parent);
+	      hadronized=true;
+	      // decay generates decay products
+	      if ( !children.empty() ) 
+		{
+		  // set up parent
+		  parent->decayMode(dm);
+		  // add children
+		  for ( int i = 0, N = children.size(); i < N; ++i )
+		    {
+		      if ( !s.addDecayProduct(parent, children[i]) )
+			throw DecHdlChildFail(parent->data(), children[i]->data());
+		    }
+		  parent->scale(0.0*GeV2);
+		  // loop over the children
+		  for ( int i = 0, N = children.size(); i < N; ++i )
+		    {
+		      // if the child has already been decayed add products to the record
+		      if(children[i]->decayed()){addDecayedParticle(children[i],s);}
+		      // if not stable decay the child
+		      else if (!children[i]->data().stable())
+			{performDecay(children[i], s);}
+		      // if stable and has spinInfo set up decay matrices etc.
+		      else if(children[i]->spinInfo())
+			{
 			  hwspin=dynamic_ptr_cast<tcSpinfoPtr>(children[i]->spinInfo());
-			if(hwspin){hwspin->setDeveloped(true);}
-		      }
-		  }
-		// sort out the spinInfo for the parent after the decays
-		if(parent->spinInfo())
-		  {
-		    tcSpinfoPtr hwspin=dynamic_ptr_cast<tcSpinfoPtr>(parent->spinInfo());
-		    // if the parent has the right kind of spinInfo
-		    if(hwspin)
-		      {
-			// if the parent has been given a decay vertex
-			if(hwspin->getDecayVertex())
-			  {
-			    // calculate the decay matrix for the decay
-			    hwspin->develop();
-			    // if debugging check whether all the products were handled
-			    if(HERWIG_DEBUG_LEVEL >=HwDebug::full)
-			      {
-				tcSpinfoPtr hwtemp;
-				bool alldeveloped=true; 
-				for(unsigned int ix=0,
-				      N=hwspin->getDecayVertex()->outgoing().size();
-				    ix<N;++ix)
-				  {
-				    hwtemp = dynamic_ptr_cast<tcSpinfoPtr>
-				      (hwspin->getDecayVertex()->outgoing()[ix]);
-				    if(hwtemp)
-				      {if(!(hwtemp->developed())){alldeveloped=false;}}
-				  }
-				if(!alldeveloped)
-				  {(generator()->log()) << "HwDecayHandler::performDecay " 
-							<< "all the decay products of " 
-							<< parent->id() 
-							<< " where not developed" << endl;}
-			      }
-			  }
-			// if the particle was scalar then it does matter that it does have a 
-			// decay vertex as there's no correlations
-			else if(hwspin->iSpin()==PDT::Spin0)
-			  {hwspin->setDeveloped(true);}
-			else if(HERWIG_DEBUG_LEVEL >=HwDebug::full)
-			  {generator()->log() << "HwDecayHandler::performDecay " 
-					      << parent->id() 
-					      << "was not decayed by a decay with " 
-					      << "correlations" << endl;}
-		      }
-		  }
-		// special for partonic decays
-		bool partonic(false);
-		for(unsigned int ix=0;ix<children.size();++ix)
-		  {if(children[ix]->coloured()){partonic=true;break;}}
-		if(partonic)
-		  {
-		    vector<tPPtr> hadrons;
-		    hadronized=
-		      _partonhad->hadronize(parent,StepPtr(&s),
-					    *(generator()->currentEventHandler()),
-					    hadrons);
-		    // if hadronization fails delete decay products and try again
-		    if(!hadronized)
-		      {
-			for(unsigned int ix=0;ix<children.size();++ix)
-			  {s.removeParticle(children[ix]);}
-		      }
-		    // decay the produced hadrons
-		    else
-		      {
-			for(unsigned int ix=0;ix<hadrons.size();++ix)
-			  {if(!hadrons[ix]->data().stable())
-			      {performDecay(hadrons[ix],s);}}
-		      }
-		  }
-	      }
-	    ++hadronizetries;
-	  }
-	while(hadronizetries<_hadtry&&!hadronized);
-	if(hadronizetries>=_hadtry)
-	  {
-	    string mode=dm->parent()->PDGName() + " -> ";
-	    for(unsigned int ix=0;ix<dm->orderedProducts().size();++ix)
-	      {mode+=dm->orderedProducts()[ix]->PDGName() + " ";}
-	    throw Exception() << "Failed to hadronize a partonic decay "
-			      << mode << "in"
-			      << " HwDecayHandler::performDecay()" 
-			      << Exception::eventerror;
-	  }
-	return;
-      }
+			  if(hwspin){hwspin->setDeveloped(true);}
+			}
+		    }
+		  // sort out the spinInfo for the parent after the decays
+		  if(parent->spinInfo())
+		    {
+		      hwspin=dynamic_ptr_cast<tcSpinfoPtr>(parent->spinInfo());
+		      // if the parent has the right kind of spinInfo
+		      if(hwspin)
+			{
+			  // if the parent has been given a decay vertex
+			  // calculate the decay matrix for the decay
+			  if(hwspin->getDecayVertex()){hwspin->develop();}
+			  // if the particle was scalar then it doesn't matter that it
+			  // doesn't have a decay vertex as there's no correlations
+			  else if(hwspin->iSpin()==PDT::Spin0){hwspin->setDeveloped(true);}
+			}
+		    }
+		  // special for partonic decays
+		  // see if colour particles produced
+		  bool partonic(false);
+		  for(unsigned int ix=0;ix<children.size();++ix)
+		    {if(children[ix]->coloured()){partonic=true;break;}}
+		  // if coloured particles were produced hadronize them
+		  if(partonic)
+		    {
+		      vector<tPPtr> hadrons;
+		      hadronized=_partonhad->hadronize(parent,StepPtr(&s),
+						       *(generator()->currentEventHandler()),
+						       hadrons);
+		      // if hadronization fails delete decay products and try again
+		      if(!hadronized)
+			{for(unsigned int ix=0;ix<children.size();++ix)
+			    {s.removeParticle(children[ix]);}}
+		      // otherwise decay the produced hadrons
+		      else
+			{
+			  for(unsigned int ix=0;ix<hadrons.size();++ix)
+			    {if(!hadrons[ix]->data().stable())
+				{performDecay(hadrons[ix],s);}}
+			}
+		    }
+		}
+	      ++hadronizetries;
+	    }
+	  while(hadronizetries<_hadtry&&!hadronized);
+	  // veto the decay and generate a new one 
+	  if(hadronizetries>=_hadtry&&!hadronized)
+	    {
+	      string mode=dm->parent()->PDGName() + " -> ";
+	      for(unsigned int ix=0;ix<dm->orderedProducts().size();++ix)
+		{mode+=dm->orderedProducts()[ix]->PDGName() + " ";}
+	      generator()->log() << "Failed to hadronize a partonic decay " << mode << "in"
+				 << " HwDecayHandler::performDecay()" << endl;
+	      throw Veto();
+	    }
+	  return;
+	}
       catch (DecHdlChildFail) 
 	{throw;}
       catch (Veto) 
-	{}
+	{	
+	  string mode=dm->parent()->PDGName() + " -> ";
+	  for(unsigned int ix=0;ix<dm->orderedProducts().size();++ix)
+	    {mode+=dm->orderedProducts()[ix]->PDGName() + " ";}
+	  cout << "catching the veto for decay " << mode << endl;
+	  cout << s << endl;
+	}
     }
 }
 
@@ -222,7 +203,8 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
 	  {
 	    if((parent->children()[i])->spinInfo())
 	      {
-		Helicity::tcSpinfoPtr hwspin=ThePEG::dynamic_ptr_cast<tcSpinfoPtr>(parent->children()[i]->spinInfo());
+		tcSpinfoPtr hwspin=
+		  ThePEG::dynamic_ptr_cast<tcSpinfoPtr>(parent->children()[i]->spinInfo());
 		if(hwspin){hwspin->setDeveloped(true);}
 	      }
 	  }
@@ -257,8 +239,7 @@ void HwDecayHandler::Init()
     ("HadronizationTries",
      "Number of times to regenerate a partonic decay to try and sucessfully"
      " hadronize it.",
-     &HwDecayHandler::_hadtry, 10, 1, 50,
+     &HwDecayHandler::_hadtry, 20, 1, 50,
      false, false, Interface::limited);
 
 }
-

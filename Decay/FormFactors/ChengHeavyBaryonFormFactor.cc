@@ -373,9 +373,12 @@ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc, int id0, int id1,
 }
 
 // output the information for the database
-void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output) const
+void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output,bool header,
+						bool create) const
 {
-  output << "create /Herwig++/ChengHeavyBaryonFormFactor " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create /Herwig++/ChengHeavyBaryonFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":DownMass     " << _md/GeV << " \n";
   output << "set " << fullName() << ":UpMass       " << _mu/GeV << " \n";
   output << "set " << fullName() << ":StrangeMass  " << _ms/GeV << " \n";
@@ -408,6 +411,8 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output) const
 		<< _eta[ix] << endl;
 	}
     }
+  BaryonFormFactor::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

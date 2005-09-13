@@ -45,14 +45,17 @@ inline void PScalarLeptonNeutrinoDecayer::dofinish() {
 inline void PScalarLeptonNeutrinoDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
   unsigned int iz(0),ix,iy;
-  for(ix=0;ix<_incoming.size();++ix)
+  if(initialize())
     {
-      for(iy=0;iy<_leptons[ix];++iy)
+      for(ix=0;ix<_incoming.size();++ix)
 	{
-	  if(iy==0){_maxweighte[ix]=mode(iz)->maxWeight();}
-	  else if(iy==1){_maxweightmu[ix]=mode(iz)->maxWeight();}
-	  else if(iy==2){_maxweighttau[ix]=mode(iz)->maxWeight();}
-	  ++iz;
+	  for(iy=0;iy<_leptons[ix];++iy)
+	    {
+	      if(iy==0){_maxweighte[ix]=mode(iz)->maxWeight();}
+	      else if(iy==1){_maxweightmu[ix]=mode(iz)->maxWeight();}
+	      else if(iy==2){_maxweighttau[ix]=mode(iz)->maxWeight();}
+	      ++iz;
+	    }
 	}
     }
 }

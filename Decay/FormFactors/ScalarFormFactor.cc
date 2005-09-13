@@ -123,8 +123,12 @@ void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,
 		    << " not implemented"
 		    << Exception::abortnow;
 }
-void  ScalarFormFactor::dataBaseOutput(ofstream & output) const
+void  ScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
+				       bool create) const
 {
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::ScalarFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {
       if(ix<_numbermodes)
@@ -158,5 +162,6 @@ void  ScalarFormFactor::dataBaseOutput(ofstream & output) const
 		 << _outquark[ix]<< endl;
 	}
     }
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

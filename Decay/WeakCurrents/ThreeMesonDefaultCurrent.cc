@@ -881,9 +881,12 @@ PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int
   return extpart;
 }
 
-void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output) const
+void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
+					      bool create) const
 {
-  output << "create /Herwig++/ThreeMesonDefaultCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::ThreeMesonDefaultCurrent " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix)
     {
       if(ix<3){output << "set " << fullName() << ":F123RhoWeight " << ix 
@@ -985,6 +988,8 @@ void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output) const
       else{output << "insert " << fullName() << ":KstarF5widths " << ix 
 		      << " " << _KstarF5widths[ix]/GeV << "\n";}
     }
+  ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
   
 }

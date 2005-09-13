@@ -7,7 +7,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  inline HwDecayHandler::HwDecayHandler() : DecayHandler(),_hadtry(10) {}
+inline HwDecayHandler::HwDecayHandler() : DecayHandler(),_hadtry(20) {}
 
 inline HwDecayHandler::HwDecayHandler(const HwDecayHandler &x) 
   : DecayHandler(x),_partonhad(x._partonhad),_hadtry(x._hadtry) 

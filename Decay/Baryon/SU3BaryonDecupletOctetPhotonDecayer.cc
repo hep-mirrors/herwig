@@ -293,12 +293,11 @@ void SU3BaryonDecupletOctetPhotonDecayer::setupModes(unsigned int iopt) const
 	}
     }
 }
-void SU3BaryonDecupletOctetPhotonDecayer::dataBaseOutput(ofstream & output) const
+void SU3BaryonDecupletOctetPhotonDecayer::dataBaseOutput(ofstream & output,
+							 bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":Ccoupling " << _C*GeV<< "\n";
   output << "set " << fullName() << ":Parity " << _parity<< "\n";
   output << "set " << fullName() << ":Proton " << _proton << "\n";
@@ -322,6 +321,6 @@ void SU3BaryonDecupletOctetPhotonDecayer::dataBaseOutput(ofstream & output) cons
   for(unsigned int ix=0;ix<_maxweight.size();++ix)
     {output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 	    << _maxweight[ix] << "\n";}
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

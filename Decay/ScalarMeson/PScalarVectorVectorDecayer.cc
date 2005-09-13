@@ -225,13 +225,12 @@ bool PScalarVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & itype
 
 
 // output the setup info for the particle database
-void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output) const
+void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
+						bool header) const
 {
-  output << "update decayers set parameters=\"";
+  if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       if(ix<_initsize)
@@ -261,6 +260,6 @@ void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output) const
 		 << _maxweight[ix]  << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

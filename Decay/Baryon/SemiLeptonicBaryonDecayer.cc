@@ -442,20 +442,19 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
 }
 
 // output the setup information for the particle database
-void SemiLeptonicBaryonDecayer::dataBaseOutput(ofstream & output) const
+void SemiLeptonicBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << " \n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":GFermi "   << _GF*GeV2 << " \n";
   for(unsigned int ix=0;ix<_maxwgt.size();++ix)
     {output << "insert " << fullName() << ":MaximumWeight " << ix << " " 
 	    << _maxwgt[ix] << " \n";}
-  _current->dataBaseOutput(output);
+  _current->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":Current " << _current->fullName() << " \n";
-  _form->dataBaseOutput(output);
+  _form->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":FormFactor " << _form->fullName() << " \n";
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

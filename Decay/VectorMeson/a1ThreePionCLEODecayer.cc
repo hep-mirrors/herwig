@@ -626,13 +626,12 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
   F1*=fact;F2*=fact;F3*=fact;
 } 
 // output the setup information for the particle database
-void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output) const
+void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
+					    bool header) const
 {
-  output << "update decayers set parameters=\"";
+  if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
-  output << "set " << fullName() << ":Points " << _npoint << "\n";
+  VectorMesonDecayerBase::dataBaseOutput(output,false);
   // masses and widths of the intermediate particles
   output << "set " << fullName() << ":f_2Mass "    << _f2mass/GeV     << "\n";
   output << "set " << fullName() << ":f_2Width "   << _f2width/GeV    << "\n";
@@ -730,7 +729,6 @@ void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output) const
   output << "set " << fullName() << ":OneMax "   << _onemax   << "\n";
   output << "set " << fullName() << ":TwoMax "   << _twomax   << "\n";
   output << "set " << fullName() << ":ThreeMax " << _threemax << "\n";
-
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 } 

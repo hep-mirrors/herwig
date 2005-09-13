@@ -14,6 +14,7 @@
 #include "DecayIntegrator.fh"
 #include "Herwig++/PDT/WidthCalculatorBase.h"
 #include <iostream>
+#include "HwDecayerBase.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -52,7 +53,7 @@ using Herwig::Helicity::DecayMatrixElement;
    * @see DecayPhaseSpaceChannel
    */
 
-class DecayIntegrator: public Decayer {
+class DecayIntegrator: public HwDecayerBase {
 
   /**
    *  The output operator is a friend, this is mainly for debugging
@@ -191,8 +192,10 @@ public:
 
   /**
    * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
    */
-  virtual void dataBaseOutput(ofstream &) const;
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
   
 public:
   
@@ -327,8 +330,8 @@ private:
    * Private and non-existent assignment operator.
    */
   DecayIntegrator & operator=(const DecayIntegrator &);
-  
-protected:
+
+private:
 
   /**
    * Number of iterations for th initialization.
@@ -344,13 +347,6 @@ protected:
    * number of attempts to generate the decay
    */
   int _ntry;
-
-  /**
-   * perform initialisation
-   */
-  bool _Initialize;
-
-private:
   
   /**
    * List of the decay modes
@@ -392,7 +388,7 @@ namespace ThePEG {
   template <>
   struct BaseClassTrait<Herwig::DecayIntegrator,1> {
     /** Typedef of the base class of DecayIntegrator. */
-    typedef Decayer NthBase;
+    typedef Herwig::HwDecayerBase NthBase;
   };
   
   /**

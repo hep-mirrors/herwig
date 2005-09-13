@@ -841,7 +841,11 @@ bool Baryon1MesonDecayerBase::twoBodyMEcode(const DecayMode & dm,int & mecode,
   return order;
 }
 
+void Baryon1MesonDecayerBase::dataBaseOutput(ofstream & os,bool header) const
+{DecayIntegrator::dataBaseOutput(os,header);}
+
 }
+
 
 
 

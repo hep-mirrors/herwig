@@ -212,11 +212,10 @@ void RadiativeHeavyBaryonDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output) const
+void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) const
 {
-  output << "update decayers set parameters=\"";
-  output << "set " << fullName() << ":Iteration " << _niter << "\n";
-  output << "set " << fullName() << ":Ntry " << _ntry << "\n";
+  if(header){output << "update decayers set parameters=\"";}
+  Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       if(ix<_initsize)
@@ -250,7 +249,7 @@ void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output) const
 		 << ix << " " << _maxweight[ix] << "\n";
 	}
     }
-  output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 void RadiativeHeavyBaryonDecayer::halfHalfVectorCoupling(int imode,Energy m0,Energy m1,

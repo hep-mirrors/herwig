@@ -577,9 +577,12 @@ PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int iq,
   return extpart;
 }
 
-void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output) const
+void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
+					  bool create) const
 {
-  output << "create /Herwig++/ThreePionCLEOCurrent " << fullName() << " \n";
+  if(header){output << "update decayers set parameters=\"";}
+  if(create)
+    {output << "create Herwig++::ThreePionCLEOCurrent " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_rhomass.size();++ix)
     {
       if(ix<2)
@@ -672,6 +675,8 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output) const
 	{output << "insert " << fullName() << ":a1RunningQ2 " << ix 
 		<< " " << _a1runq2[ix] << "\n";}
     }
+  ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
+  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
 }

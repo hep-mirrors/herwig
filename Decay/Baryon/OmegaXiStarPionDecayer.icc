@@ -71,7 +71,7 @@ inline void OmegaXiStarPionDecayer::dofinish() {
 
 inline void OmegaXiStarPionDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
-  if(_Initialize){_wgtmax=mode(0)->maxWeight();}
+  if(initialize()){_wgtmax=mode(0)->maxWeight();}
 }
 
 inline void OmegaXiStarPionDecayer::rebind(const TranslationMap & trans)

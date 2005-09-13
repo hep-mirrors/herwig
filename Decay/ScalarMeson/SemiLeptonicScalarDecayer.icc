@@ -51,13 +51,12 @@ inline void SemiLeptonicScalarDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
   DecayIntegrator::doinitrun();
-  _maxwgt.resize(0);
-  for(unsigned int ix=0;ix<numberModes();++ix)
-    {_maxwgt.push_back(mode(ix)->maxWeight());}
-  string file_name;
-  file_name  = name()+".output";
-  ofstream output(file_name.c_str());
-  dataBaseOutput(output);
+  if(initialize())
+    {
+      _maxwgt.resize(0);
+      for(unsigned int ix=0;ix<numberModes();++ix)
+	{_maxwgt.push_back(mode(ix)->maxWeight());}
+    }
 }
 
 inline void SemiLeptonicScalarDecayer::rebind(const TranslationMap & trans)

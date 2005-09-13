@@ -67,8 +67,9 @@ inline void ScalarVectorVectorDecayer::dofinish() {
 
 inline void ScalarVectorVectorDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {_maxweight[ix] = mode(ix)->maxWeight();}
+  if(initialize())
+    {for(unsigned int ix=0;ix<_incoming.size();++ix)
+	{_maxweight[ix] = mode(ix)->maxWeight();}}
 }
 
 inline void ScalarVectorVectorDecayer::rebind(const TranslationMap & trans)
