@@ -205,6 +205,17 @@ private:
    */
   double _ClSmr2;
 
+  /**
+   * Whether or not the hadrons produced should be on-shell
+   * or generated used the MassGenerator
+   */
+  bool _onshell;
+
+  /**
+   * Number of tries to generate the masses of the decay products
+   */
+  unsigned int _masstry;
+
 };
 
 

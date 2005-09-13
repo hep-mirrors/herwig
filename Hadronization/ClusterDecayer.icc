@@ -11,18 +11,22 @@ inline ClusterDecayer::ClusterDecayer() :
   _ClDir1( 1 ),	     
   _ClDir2( 1 ),	     
   _ClSmr1( 0.0 ),	     
-  _ClSmr2( 0.0 )
+  _ClSmr2( 0.0 ),
+  _onshell(false),
+  _masstry(20)
 {}
 
 
 inline ClusterDecayer::ClusterDecayer(const ClusterDecayer & x)
   : ThePEG::HandlerBase(x) ,
-	     _hadronsSelector( x._hadronsSelector ), 	     
-	     _globalParameters( x._globalParameters ), 	     
-	     _ClDir1( x._ClDir1 ),	     
-	     _ClDir2( x._ClDir2 ),	     
-	     _ClSmr1( x._ClSmr1 ),	     
-	     _ClSmr2( x._ClSmr2 )
+    _hadronsSelector( x._hadronsSelector ), 	     
+    _globalParameters( x._globalParameters ), 	     
+    _ClDir1( x._ClDir1 ),	     
+    _ClDir2( x._ClDir2 ),	     
+    _ClSmr1( x._ClSmr1 ),	     
+    _ClSmr2( x._ClSmr2 ),
+    _onshell(x._onshell),
+    _masstry(x._masstry)
 {}
 
 

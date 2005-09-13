@@ -26,14 +26,11 @@ using namespace Herwig;
 LightClusterDecayer::~LightClusterDecayer() {}
 
 
-void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
-   os << _hadronsSelector << _B1Lim;
-}
+void LightClusterDecayer::persistentOutput(PersistentOStream & os) const 
+{os << _hadronsSelector << _B1Lim;}
 
-
-void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _B1Lim; 
-}
+void LightClusterDecayer::persistentInput(PersistentIStream & is, int) 
+{is >> _hadronsSelector >> _B1Lim;}
 
 
 ClassDescription<LightClusterDecayer> LightClusterDecayer::initLightClusterDecayer;
@@ -156,9 +153,7 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     // any broad resonance.
     Energy threshold = _hadronsSelector->massLightestHadronPair(idQ1,idQ2);
     // Special for b-flavour: it allows one-hadron decays also above threshold.
-    if ( CheckId::hasBeauty(idQ1,idQ2) ) {
-      threshold *= (1.0 + rnd()*_B1Lim); 
-    } 
+    if ( CheckId::hasBeauty(idQ1,idQ2) ) {threshold *= (1.0 + rnd()*_B1Lim);} 
     
     //***TRICK***: scale artificially threshold if you want to test
     //             LightClusterDecayer with a huge statistics.

@@ -275,6 +275,11 @@ private:
    */
   unsigned int _partontries;
 
+  /**
+   * Whether or not to include the intermediates
+   */
+  bool _inter;
+
 };
 
 }

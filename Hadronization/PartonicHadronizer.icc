@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline PartonicHadronizer::PartonicHadronizer() 
-  : _exclusive(true),_partontries(10) {}
+  : _exclusive(true),_partontries(10),_inter(false) {}
 
 inline PartonicHadronizer::PartonicHadronizer(const PartonicHadronizer & x)
   : Interfaced(x) , 
@@ -19,7 +19,8 @@ inline PartonicHadronizer::PartonicHadronizer(const PartonicHadronizer & x)
     _lightClusterDecayer(x._lightClusterDecayer),
     _clusterDecayer(x._clusterDecayer),
     _exclusive(x._exclusive),
-    _partontries(x._partontries)
+    _partontries(x._partontries),
+    _inter(x._inter)
 {}
 
 inline IBPtr PartonicHadronizer::clone() const {

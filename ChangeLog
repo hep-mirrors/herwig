@@ -1,5 +1,11 @@
 2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
+	* Decay/HwDecayerBase.h (Repository): added new base class for decayers including
+	the Initialize feature of the DecayIntegrator and dataBaseOutput so this can be
+	used for classes not built on DecayIntegrator
+
+2005-09-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
 	* PDT/GenericWidthGenerator.h: changes so that the mass generator only includes
 	the numerator factor when generating a mass without the weight to avoid biases
 	towards high masses

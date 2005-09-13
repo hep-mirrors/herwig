@@ -28,13 +28,13 @@ PartonicHadronizer::~PartonicHadronizer() {}
 void PartonicHadronizer::persistentOutput(PersistentOStream & os) const {
   os << _globalParameters  << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer << _exclusive
-     << _partontries;
+     << _partontries << _inter;
 }
 
 void PartonicHadronizer::persistentInput(PersistentIStream & is, int) {
   is >> _globalParameters  >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer >> _exclusive
-     >> _partontries;
+     >> _partontries << _inter;
 }
 
 ClassDescription<PartonicHadronizer> PartonicHadronizer::initPartonicHadronizer;
@@ -43,7 +43,8 @@ ClassDescription<PartonicHadronizer> PartonicHadronizer::initPartonicHadronizer;
 void PartonicHadronizer::Init() {
 
   static ClassDocumentation<PartonicHadronizer> documentation
-    ("This is the main handler class for the Cluster Hadronization");
+    ("The PartonicHadronizer is designed to be used by the DecayHandler to"
+     " hadronize partonic decays of hadrons.");
 
   static Reference<PartonicHadronizer,GlobalParameters> 
     interfaceGlobalParameters("GlobalParameters", 
@@ -82,7 +83,7 @@ void PartonicHadronizer::Init() {
 		       false, false, true, false);
 
   static Switch<PartonicHadronizer,bool> interface_exclusive
-    ("_exclusive",
+    ("Exclusive",
      "Ensure that the hadrons produced in the partonic decays of bottom"
      " and charm baryons do not duplicated the inclusive modes.",
      &PartonicHadronizer::_exclusive, true, false, false);
@@ -97,6 +98,24 @@ void PartonicHadronizer::Init() {
      "Duplication allowed",
      false);
   
+
+  static Switch<PartonicHadronizer,bool> interfaceIntermediates
+    ("Intermediates",
+     "Whether or not to include the intermediate particles produced by the"
+     " cluster alogorithm in the event record.",
+     &PartonicHadronizer::_inter, false, false, false);
+  static SwitchOption interfaceIntermediatesIntermediates
+    (interfaceIntermediates,
+     "Intermediates",
+     "Include the intermediates",
+     true);
+  static SwitchOption interfaceIntermediatesNoIntermediates
+    (interfaceIntermediates,
+     "NoIntermediates",
+     "Don't include the intermediates.",
+     false);
+
+
   static Parameter<PartonicHadronizer,unsigned int> interfacePartonic_Tries
     ("Partonic_Tries",
      "Number of attempts to generator the hadronisation if we are vetoing the"
@@ -110,10 +129,11 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 {
   unsigned int ptry(0);
   bool partonicveto(false);
+  vector<tcPPtr> pclusters;
+  tPVector tagged;
   do
     {
       ClusterVector clusters;
-      tPVector tagged;
       for(unsigned int ix=0;ix<parent->children().size();++ix)
 	{if(parent->children()[ix]->coloured())
 	    {tagged.push_back(parent->children()[ix]);}}
@@ -126,7 +146,6 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
       // decay the clusters into one hadron
       bool lightOK = false;
       short tried = 0;
-      vector<tcPPtr> pclusters;
       while (!lightOK && tried++ < 10) 
 	{
 	  _colourReconnector->rearrange(ch,pstep,clusters);
@@ -191,7 +210,27 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
       ++ptry;
     }
   while(ptry<_partontries&&partonicveto);
-  return ptry!=_partontries;
+  // remove the intermediate particles added by the cluster model if needed
+  if(!_inter)
+    {
+      // special for the motherless quarks
+      for(unsigned int ix=0;ix<pclusters.size();++ix)
+	{
+	  for(unsigned int iy=0;iy<pclusters[ix]->parents().size();++iy)
+	    {
+	      if(pclusters[ix]->parents()[iy]->coloured()&&
+		 pclusters[ix]->parents()[iy]->parents().empty())
+		{pstep->removeParticle(pclusters[ix]->parents()[iy]);}
+	    }
+	}
+      // remove the tagged particles
+      for(unsigned int ix=0;ix<tagged.size();++ix)
+	{pstep->removeParticle(tagged[ix]);}
+      // add the outgoing hadrons as the children of the decaying particle
+      for(unsigned int ix=0;ix<outhad.size();++ix)
+	{pstep->addDecayProduct(parent,outhad[ix]);}
+    }
+  return !partonicveto;
 }
 
 

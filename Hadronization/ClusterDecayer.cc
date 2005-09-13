@@ -6,8 +6,9 @@
 
 #include "ClusterDecayer.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
-#include <ThePEG/Interface/Reference.h> 
+#include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/EnumParticles.h>
@@ -25,15 +26,16 @@ using namespace Herwig;
 ClusterDecayer::~ClusterDecayer() {}
 
 
-void ClusterDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _hadronsSelector << _globalParameters 
-     << _ClDir1 << _ClDir2 << _ClSmr1 << _ClSmr2;
+void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
+{
+  os << _hadronsSelector << _globalParameters << _ClDir1 << _ClDir2 
+     << _ClSmr1 << _ClSmr2 << _onshell << _masstry;
 }
 
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _globalParameters  
-     >> _ClDir1 >> _ClDir2 >> _ClSmr1 >> _ClSmr2;
+  is >> _hadronsSelector >> _globalParameters >> _ClDir1 >> _ClDir2
+     >> _ClSmr1 >> _ClSmr2 >> _onshell >> _masstry;
 }
 
 
@@ -70,6 +72,29 @@ void ClusterDecayer::Init() {
     interfaceClSmr2 ("ClSmr2", "cluster direction Gaussian smearing for b quark",
                      &ClusterDecayer::_ClSmr2, 0, 0.0 , 0.0 , 2.0,false,false,false);
   
+  static Switch<ClusterDecayer,bool> interfaceOnShell
+    ("OnShell",
+     "Whether or not the hadrons produced should by on shell or generated using the"
+     " mass generator.",
+     &ClusterDecayer::_onshell, false, false, false);
+  static SwitchOption interfaceOnShellOnShell
+    (interfaceOnShell,
+     "OnShell",
+     "Produce the hadrons on shell",
+     false);
+  static SwitchOption interfaceOnShellOffShell
+    (interfaceOnShell,
+     "OffShell",
+     "Generate the masses using the mass generator.",
+     false);
+
+  static Parameter<ClusterDecayer,unsigned int> interfaceMassTry
+    ("MassTry",
+     "The number attempts to generate the masses of the hadrons produced"
+     " in the cluster decay.",
+     &ClusterDecayer::_masstry, 20, 1, 50,
+     false, false, Interface::limited);
+
 }
 
 
@@ -302,16 +327,39 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   pair<long,long> idPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
 							      id1,id2);
 
-  //cout << "Returned " << idPair.first << ", " << idPair.second << endl;
   // Create the two hadron particle objects with the specified id.
-  // temporary fix to product on-shell particles 
-  //PPtr ptrHad1 = getParticle(idPair.first);
-  //PPtr ptrHad2 = getParticle(idPair.second);
-  tPDPtr pdata= getParticleData(idPair.first);
-  PPtr ptrHad1 = pdata->produceParticle(pdata->mass());
-  pdata= getParticleData(idPair.second);
-  PPtr ptrHad2 = pdata->produceParticle(pdata->mass());
-
+  PPtr ptrHad1,ptrHad2;
+  // produce the hadrons on mass shell
+  if(_onshell)
+    {
+      tPDPtr pdata(getParticleData(idPair.first));
+      ptrHad1 = pdata->produceParticle(pdata->mass());
+      pdata= getParticleData(idPair.second);
+      ptrHad2 = pdata->produceParticle(pdata->mass());
+    }
+  // produce the hadrons with mass given by the mass generator
+  else
+    {
+      unsigned int ntry(0);
+      do
+	{
+	  ptrHad1 = getParticle(idPair.first);
+	  ptrHad2 = getParticle(idPair.second);
+	  ++ntry;
+	}
+      while(ntry<_masstry&&ptrHad1->mass()+ptrHad2->mass()>ptr->mass());
+      // if fails produce on shell and issue warning (should never happen??)
+      if(ptrHad1->mass()+ptrHad2->mass()>ptr->mass())
+	{
+	  generator()->log() << "Failed to produce off-shell hadrons in "
+			     << "ClusterDecayer::decayIntoTwoHadrons producing hadrons "
+			     << "on-shell" << endl;
+	  tPDPtr pdata(getParticleData(idPair.first));
+	  ptrHad1 = pdata->produceParticle(pdata->mass());
+	  pdata= getParticleData(idPair.second);
+	  ptrHad2 = pdata->produceParticle(pdata->mass());
+	}
+    }
 
   if (!ptrHad1  ||  !ptrHad2) {
     ostringstream s;
@@ -340,11 +388,6 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     calculatePositions(pClu, ptr->vertex(), pHad1, pHad2, positionHad1, positionHad2);
     ptrHad1->setLabVertex(positionHad1);
     ptrHad2->setLabVertex(positionHad2);
-
-    //ptr->addChild(ptrHad1);
-    //ptr->addChild(ptrHad2);
-    //pstep->addDecayProduct(ptr , ptrHad1);
-    //pstep->addDecayProduct(ptr , ptrHad2);
     
     // Sanity check (normally skipped) to see if the energy-momentum is conserved.
     /* if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
