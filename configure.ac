@@ -42,6 +42,11 @@ dnl ###########################
 
 AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
 AM_CXXFLAGS="-ansi -pedantic -Wall"
+##" -Wunreachable-code -fno-inline"
+##AM_CXXFLAGS="-ansi -pedantic -Wall -W -Wno-float-equal -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Wold-style-cast -Woverloaded-virtual"
+## -Wunreachable-code lots of stdc++ errors
+## -Wshadow -Wfloat-equal lots of stuff from CLHEP!
+##-fvisibility-inlines-hidden only for gcc 4
 # should really be specified one-by-one for each lib!
 ## AM_LDFLAGS="-version-info 1:0:0 -Wl,--enable-new-dtags"
 AM_LDFLAGS="-version-info 1:0:0"

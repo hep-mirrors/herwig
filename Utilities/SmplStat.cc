@@ -142,7 +142,7 @@ SampleStatistic::stdDev()
     if ( n <= 0 || this -> var() <= 0) {
 	return(0);
     } else {
-	return( (double) sqrt( var() ) );
+	return( double( sqrt( var() ) ) );
     }
 }
 

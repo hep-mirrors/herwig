@@ -263,7 +263,7 @@ void ClusterHadronizationHandler::debuggingInfo(EventHandler & ch,
   static Length spaceDistInitialComponent_BeamVtx        = Length();
   static Length invDistInitialComponent_Cluster          = Length();
   static Length spaceDistInitialComponent_Cluster        = Length();
-  static double numberInitialComponents                  = 0;  
+  static int    numberInitialComponents                  = 0;  
   static Length invDistFinalHadron_BeamVtx               = Length();
   static Length spaceDistFinalHadron_BeamVtx             = Length();
   static double numberChildHadrons                       = 0;
@@ -555,7 +555,8 @@ void ClusterHadronizationHandler::debuggingInfo(EventHandler & ch,
       // of conservation of the charge and energy-momentum.
       Lorentz5Momentum sumMomentumChildrenHadrons = Lorentz5Momentum();
       Charge sumChargeChildrenHadrons = Charge();
-      if(ptrClu->children().size() != (unsigned int)numChildClus) {
+      if(ptrClu->children().size() 
+	 != static_cast<unsigned int>(numChildClus)) {
 	generator()->log() << "\t num childrenHadrons  = " 
 			   << ptrClu->children().size()-numChildClus << endl;
 	int j = 0;

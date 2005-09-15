@@ -17,6 +17,7 @@ UA5Handler::UA5Handler() : _N1(9.11), _N2(0.115), _N3(-9.5),_K1(0.029),_K2(-0.10
 			   _enhanceCM(1.) {}  
 // Copy constructor
 UA5Handler::UA5Handler(const UA5Handler &h) :
+  MultipleInteractionHandler(h),
   _globalParams(h._globalParams),
   _clusterFissioner(h._clusterFissioner),
   _clusterDecayer(h._clusterDecayer),

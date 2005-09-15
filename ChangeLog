@@ -1,3 +1,8 @@
+2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* ** multiple files **: small changes to reduce compile warnings 
+	when extra warning flags are enabled.
+
 2005-09-15  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Doc/refman.conf (Repository): changes due change in name of repository

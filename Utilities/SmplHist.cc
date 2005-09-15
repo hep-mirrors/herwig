@@ -186,7 +186,7 @@ void SampleHistogram::printGnuplot(char* name)
     delta = (bucketLimit[i+1] - bucketLimit[i])/2.;
     out << bucketLimit[i] + delta << "\t" 
 	<< bucketCount[i+1] << "\t"
-	<< (double) bucketCount[i+1]/(2.*delta*this->samples()) << "\t"
+	<< double(bucketCount[i+1]/(2.*delta*this->samples())) << "\t"
 	<< (bucketCount[i+1] == 0 ? 0.0 : 
 	    sqrt(double(bucketCount[i+1]))) 
 	<< "\t"
@@ -195,7 +195,7 @@ void SampleHistogram::printGnuplot(char* name)
 	<< "\t"
 	<< bucketLimit[i] << "\t" 
 	<< bucketLimit[i] + 2.*delta << "\t"
-	<< (double) bucketCount[i+1]/(this->samples()) << "\t"
+	<< double(bucketCount[i+1]/(this->samples())) << "\t"
 	<< "\n";
   }
   out.close();
@@ -226,7 +226,7 @@ void SampleHistogram::printMoments(char* name, double Nmax, double dN,
       if (delta > 0 && this->samples() > 0 
 	  && bucketLimit[i] >= x0 && bucketLimit[i] <= x1
 	  && bucketLimit[i+1] >= x0 && bucketLimit[i+1] <= x1) {
-	hi = (double) bucketCount[i+1]/(delta*(this->samples()));
+	hi = double(bucketCount[i+1]/(delta*(this->samples())));
 	fN += hi*(x1N-x0N)/N;
       }
     }

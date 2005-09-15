@@ -263,7 +263,7 @@ double Hw64Decayer::VAWt(double *temp) {
 
 void Hw64Decayer::oneBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1)
 {
-   p1 = (LorentzVector)p0;
+   p1 = static_cast<LorentzVector>(p0);
 }
 
 

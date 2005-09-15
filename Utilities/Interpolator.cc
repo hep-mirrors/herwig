@@ -87,7 +87,7 @@ double Interpolator::operator ()(double xpoint) const
   do
     {
       icopy=mid+iloc;
-      if(icopy<0||icopy>isize-1){npoints=mp;}
+      if(icopy>isize-1){npoints=mp;}
       else
 	{
 	  copyx.push_back(_xval[icopy]);
