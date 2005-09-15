@@ -858,11 +858,23 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "set " << fullName() << ":LocalParameters " <<  _localparameters << "\n";
   output << "set " << fullName() << ":Initializea1 " <<  _initializea1 << "\n";
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix)
-    {output << "insert " << fullName() << ":a1RunningWidth " << ix 
-	    << " " << _a1runwidth[ix]/GeV << "\n";}
+    {
+      if(ix<200)
+	{output << "set " << fullName() << ":a1RunningWidth " << ix 
+		<< " " << _a1runwidth[ix]/GeV << "\n";}
+      else
+	{output << "insert    " << fullName() << ":a1RunningWidth " << ix 
+		<< " " << _a1runwidth[ix]/GeV << "\n";}
+    }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix)
-    {output << "insert " << fullName() << ":a1RunningQ2 " << ix 
-	    << " " << _a1runq2[ix]/GeV2 << "\n";}
+    {
+      if(ix<200)
+	{output << "set    " << fullName() << ":a1RunningQ2 " << ix 
+		<< " " << _a1runq2[ix]/GeV2 << "\n";}
+      else
+	{output << "insert " << fullName() << ":a1RunningQ2 " << ix 
+		<< " " << _a1runq2[ix]/GeV2 << "\n";}
+    }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }

@@ -78,7 +78,6 @@ inline void FourPionNovosibirskCurrent::doinit() throw(InitException) {
   _rhoD=DParameter();
   // convert the magnitude and phase of z into a phase
   _zsigma = _zmag*(cos(_zphase)+Complex(0.,1.)*sin(_zphase));
-  cout << "testing reset coupling " << _zmag << "   " << _zsigma << endl;
   // initialize the a_1 width
   if(_initializea1){inita1width(-1);}
 }
