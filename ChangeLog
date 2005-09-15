@@ -1,3 +1,11 @@
+2005-09-15  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Doc/refman.conf (Repository): changes due change in name of repository
+
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/WeakCurrents/FourPionNovosibirskCurrent.cc (Repository): minor bug fixes
+
 2005-09-13  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
 	* Decay: changes to many classes due to the new base class 
