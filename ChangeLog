@@ -1,3 +1,12 @@
+2005-09-19  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Utilities/Interpolator.cc (Repository): minor bug fixes
+
+	* Hadronization/PartonicHadronizer.cc (Repository): minor bug fixes
+
+	* Utilities/Math.h (Repository): added math namesapce for mathematical
+	functions and included the dilog from FORTRAN HERWIG.
+
 2005-09-15  David Grellscheid <David.Grellscheid@durham.ac.uk>
 
 	* ** multiple files **: small changes to reduce compile warnings 

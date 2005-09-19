@@ -81,8 +81,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	{
 	  unsigned int hadronizetries(0);
 	  bool hadronized;
-	  // start of rejection loop to regenerate same decay mode with different kinematics
-	  // this is sometimes needed for the hadronization
+	  // start of rejection loop to regenerate same decay mode with
+	  // different kinematics this is sometimes needed for the hadronization
 	  do
 	    {
 	      ParticleVector children = dm->decayer()->decay(*dm, *parent);
@@ -172,13 +172,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
       catch (DecHdlChildFail) 
 	{throw;}
       catch (Veto) 
-	{	
-	  string mode=dm->parent()->PDGName() + " -> ";
-	  for(unsigned int ix=0;ix<dm->orderedProducts().size();++ix)
-	    {mode+=dm->orderedProducts()[ix]->PDGName() + " ";}
-	  cout << "catching the veto for decay " << mode << endl;
-	  cout << s << endl;
-	}
+	{}
     }
 }
 

@@ -120,6 +120,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 	   outmass+=masses[ix];
 	   if(outmass>p.mass()){break;}
 	 }
+       ++ntry;
      }
    while(ntry<_masstry&&outmass>p.mass());
    if(outmass>p.mass())
