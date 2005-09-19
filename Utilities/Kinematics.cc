@@ -226,7 +226,8 @@ void Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
   // Select squared masses S1, S2 and S3 of 2345, 345 and 45 subsystems
   double s1,rs1,s2,rs2,gg,hh,s3,pp,qq,rr,ss,temp;
   // protect against infinite loops
-  unsigned int ix(0);
+  static const unsigned int MAXTRY = 100;
+  unsigned int count(0);
   do
     {
       s1=bb+UseRandom::rnd()*(cc-bb);
@@ -241,13 +242,13 @@ void Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
       rr=(sqr(rs2+p3.mass())-s3)*(hh-s3)/s2;
       ss=(s3-ee)*(s3-ff)/s3;
       temp = UseRandom::rnd();
-      ++ix;
+      ++count;
     }
-  while(pp*qq*rr*ss*sqr((gg-dd)*(hh-ee))<tt*s1*s2*s3*temp*temp&&ix<100);
-  if(ix==50)
+  while(pp*qq*rr*ss*sqr((gg-dd)*(hh-ee)) < tt*s1*s2*s3*sqr(temp) && count<MAXTRY);
+  if(count==MAXTRY)
     {
       CurrentGenerator::log() << "Kinematics::fiveBodyDecay can't generate momenta" 
-			      << " after 100 attempts " << endl;
+			      << " after " << MAXTRY << " attempts\n";
       throw Veto();
     }
   // Now decay the subsystems
