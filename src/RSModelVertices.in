@@ -1,0 +1,21 @@
+library HwRSVertex.so
+
+create /Herwig++/Helicity/RSModelFFGRVertex FFGRVertex
+set /Defaults/Model:Vertex/FFGR FFGRVertex
+set FFGRVertex:Model /Defaults/Model
+
+create /Herwig++/Helicity/RSModelFFVGRVertex FFVGRVertex
+set /Defaults/Model:Vertex/FFVGR FFVGRVertex
+set FFVGRVertex:Model /Defaults/Model
+
+create /Herwig++/Helicity/RSModelSSGRVertex SSGRVertex
+set /Defaults/Model:Vertex/SSGR SSGRVertex
+set SSGRVertex:Model /Defaults/Model
+
+create /Herwig++/Helicity/RSModelVVGRVertex VVGRVertex
+set /Defaults/Model:Vertex/VVGR VVGRVertex
+set VVGRVertex:Model /Defaults/Model
+
+create /Herwig++/Helicity/RSModelVVVGRVertex VVVGRVertex
+set /Defaults/Model:Vertex/VVVGR VVVGRVertex
+set VVVGRVertex:Model /Defaults/Model

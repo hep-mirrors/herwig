@@ -296,7 +296,7 @@ namespace ThePEG {
      * access to this class and every other class it uses
      * (except the base class).
      */
-    static string library() { return "libHwRSModel.so"; }
+    static string library() { return "HwRSModel.so"; }
 
   };
   

@@ -195,7 +195,7 @@ struct ClassTraits<Herwig::Helicity::RSModelVVGRVertex>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwRSVertex.so"; }
+  static string library() { return "HwRSVertex.so"; }
 
 };
 

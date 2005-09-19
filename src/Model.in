@@ -5,7 +5,7 @@
 create /Herwig++/StandardModel /Defaults/Model
 
 # this is for the Randell-Sundrum model
-#create /Herwig++/RSModel /Defaults/Model
+#create /Herwig++/RSModel /Defaults/Model HwRSModel.so
 #set /Defaults/Model:Lambda_pi 10000
 
 # set up the Standard Model couplings (this always needs to be done)

@@ -25,7 +25,7 @@ set /Defaults/ACDCSampler:Margin  1.1
 # Create NoPDF and RemnantHandlers
 cd /Defaults/Partons
 create ThePEG::NoRemnants NoRemnants
-create Herwig++::BaryonRemnants BaryonRemnants MRST.so
+create Herwig++::BaryonRemnants BaryonRemnants HwMRST.so
 create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so
 create ThePEG::NoPDF NoPDF
 set NoPDF:RemnantHandler NoRemnants
@@ -95,7 +95,7 @@ set /Defaults/Particles/e-:PDF LeptonPDF
 set /Defaults/Particles/e+:PDF LeptonPDF
 
 # Handle hadrons
-library MRST.so
+library HwMRST.so
 create Herwig++::PDF::MRST MRST
 #setup MRST cor01.dat
 setup MRST ../PDF/mrst/1998/lo05a.dat

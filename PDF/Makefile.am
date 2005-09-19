@@ -1,6 +1,6 @@
-pkglib_LTLIBRARIES = MRST.la
-MRST_la_SOURCES = BaryonRemnants.cc BaryonRemnants.h BaryonRemnants.icc MRST99_1.cc MRST99_1.h MRST.cc MRSTData.cc MRSTData.h MRST.h
-MRST_la_LDFLAGS = -module
+pkglib_LTLIBRARIES = HwMRST.la
+HwMRST_la_SOURCES = BaryonRemnants.cc BaryonRemnants.h BaryonRemnants.icc MRST.cc MRSTData.cc MRSTData.h MRST.h
+HwMRST_la_LDFLAGS = -module
 
 EXTRA_DIST = mrst
 
