@@ -133,6 +133,7 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
   tPVector tagged;
   do
     {
+      tagged.resize(0);
       ClusterVector clusters;
       for(unsigned int ix=0;ix<parent->children().size();++ix)
 	{if(parent->children()[ix]->coloured())
@@ -200,10 +201,8 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 		}
 	      // remove the children of the tagged particles
 	      for(unsigned int ix=0;ix<tagged.size();++ix)
-		{
-		  for(unsigned int iy=0;iy<tagged[ix]->children().size();++iy)
-		    {pstep->removeParticle(tagged[ix]->children()[iy]);}
-		}
+		{for(int iy=tagged[ix]->children().size()-1;iy>=0;--iy)
+		    {pstep->removeParticle(tagged[ix]->children()[iy]);}}
 	    }
 	}
       // increment counter

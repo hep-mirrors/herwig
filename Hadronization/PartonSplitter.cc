@@ -61,7 +61,6 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     generator()->log() << *pstep;
     generator()->log() << "################################################\n";
   }
-  //  cout << "Splitting\n";
   tPVector newtag;
   // Loop over all of the particles in the event.
   for(tPVector::const_iterator pit = tagged.begin(); pit!=tagged.end(); ++pit) 
@@ -82,12 +81,7 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	      pstep->addDecayProduct(*pit,ptrQbar);
 	      newtag.push_back(ptrQ);
 	      newtag.push_back(ptrQbar);
-	      pstep->fixColourFlow();       	
-	      
-	      // 	cout << (**pit).id() << ", " << (**pit).momentum() << endl
-	      // 	     << ptrQ->id() << ", " << ptrQ->momentum() << endl
-	      // 	     << ptrQbar->id() << ", " << ptrQbar->momentum() << endl;
-	      
+	      pstep->fixColourFlow();   
 	      // Debugging
 	      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
 		newPartons.push_back(ptrQ);
@@ -100,7 +94,7 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	      // ... write the code
 	      // splitSpaceLikeGluon(*pit,ptrQ,ptrQbar);      
 	      // ... write the code
-	      cout << "Spacelike gluon!\n";
+	      cerr << "Spacelike gluon!\n";
 	    }
 	  // q^2=0 gluon 
 	  else 
@@ -366,9 +360,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	generator()->log() << endl;
       }
     }
-    cout << "done\n";
   } // end main for loop over orderingMap;
-  cout << "Done\n";
   */
   for(tPVector::const_iterator it = tagged.begin(); it != tagged.end(); ++it) {
     generator()->log() << *(*it) << flush;
