@@ -250,16 +250,6 @@ private:
   inline double integrands27(double x);
 
   /**
-   * The dilog function taken from fortran Herwig
-   */
-  inline Complex Li2(Complex);
-
-  /**
-   * Series expansion used by the dilog function. 
-   */
-  inline Complex Li2Prod(Complex,Complex);
-
-  /**
    *  Strong coupling \f$\alpha_S\f$ at the scale \f$Q\f$
    * @param Q The scale.
    */

@@ -5,6 +5,7 @@
 //
 
 #include "BtoSGammaKagan.h"
+#include "Herwig++/Utilities/Math.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
@@ -20,6 +21,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
+using Herwig::Math::Li2;
 
 BtoSGammaKagan::~BtoSGammaKagan() {}
 

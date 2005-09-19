@@ -212,40 +212,44 @@ void Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 void Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       Lorentz5Momentum &p4, Lorentz5Momentum &p5) {
-  // once more, using the same variable names as fortran code
-  double b,c,aa,bb,cc,dd,ee,ff,tt,s1,rs1,gg,s2,rs2,hh,s3,pp,qq,rr,ss,temp;
-
-  b = p0.mass()-p1.mass();
-  c = p2.mass()+p3.mass()+p4.mass()+p5.mass();
+  double b(p0.mass()-p1.mass());
+  double c(p2.mass()+p3.mass()+p4.mass()+p5.mass());
   if(b<c) 
-    CurrentGenerator::log() 
-      << "Kinematics::fiveBodyDecay - No phase space available\n";
-  aa = sqr(p0.mass()+p1.mass());
-  bb = sqr(b);
-  cc = sqr(c);
-  dd = sqr(p3.mass()+p4.mass()+p5.mass());
-  ee = sqr(p4.mass()+p5.mass());
-  ff = sqr(p4.mass()-p5.mass());
-  tt = (b-c)*pow(p0.mass(),11)/729.;
-  
-  // Now lets select the masses of all the subsystems
-  do {
-    s1 = bb+UseRandom::rnd()*(cc-bb);
-    rs1 = sqrt(s1);
-    gg = sqr(rs1-p2.mass());
-    s2 = dd + UseRandom::rnd()*(gg-dd);
-    rs2 = sqrt(s2);
-    hh = sqr(rs2-p3.mass());
-    s3 = ee+UseRandom::rnd()*(hh-ee);
-    pp = (aa-s1)*(bb-s1);
-    qq = (sqr(rs1+p2.mass())-s2)*(gg-s2)/s1;
-    rr = (sqr(rs2+p3.mass())-s3)*(hh-s3)/s2;
-    ss = (s3-ee)*(s3-ff)/s3;
-    // Again, since sqr is a macro, the random number must be stored or
-    // two different random numbers will be used
-    temp = UseRandom::rnd();
-  } while(pp*qq*rr*qq*sqr((gg-dd)*(hh-ee)) < tt*s1*s2*s3*sqr(temp));
-
+    {CurrentGenerator::log() 
+	<< "Kinematics::fiveBodyDecay - No phase space available\n";}
+  double aa(sqr(p0.mass()+p1.mass()));
+  double bb(b*b),cc(c*c);
+  double dd(sqr(p3.mass()+p4.mass()+p5.mass()));
+  double ee(sqr(p4.mass()+p5.mass()));
+  double ff(sqr(p4.mass()-p5.mass()));
+  double tt((b-c)*pow(p0.mass(),11)/729.);
+  // Select squared masses S1, S2 and S3 of 2345, 345 and 45 subsystems
+  double s1,rs1,s2,rs2,gg,hh,s3,pp,qq,rr,ss,temp;
+  // protect against infinite loops
+  unsigned int ix(0);
+  do
+    {
+      s1=bb+UseRandom::rnd()*(cc-bb);
+      rs1=sqrt(s1);
+      gg=sqr(rs1-p2.mass());
+      s2=dd+UseRandom::rnd()*(gg-dd);
+      rs2=sqrt(s2);
+      hh=sqr(rs2-p3.mass());
+      s3=ee+UseRandom::rnd()*(hh-ee);
+      pp=(aa-s1)*(bb-s1);
+      qq=(sqr(rs1+p2.mass())-s2)*(gg-s2)/s1;
+      rr=(sqr(rs2+p3.mass())-s3)*(hh-s3)/s2;
+      ss=(s3-ee)*(s3-ff)/s3;
+      temp = UseRandom::rnd();
+      ++ix;
+    }
+  while(pp*qq*rr*ss*sqr((gg-dd)*(hh-ee))<tt*s1*s2*s3*temp*temp&&ix<100);
+  if(ix==50)
+    {
+      CurrentGenerator::log() << "Kinematics::fiveBodyDecay can't generate momenta" 
+			      << " after 100 attempts " << endl;
+      throw Veto();
+    }
   // Now decay the subsystems
   double CosAngle, AzmAngle;
   Lorentz5Momentum p2345, p345, p45;
