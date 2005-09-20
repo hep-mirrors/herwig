@@ -166,7 +166,7 @@ struct BaseClassTrait<Herwig::MRST,1> {
 template <>
 struct ClassTraits<Herwig::MRST>: public ClassTraitsBase<Herwig::MRST> {
   static string className() { return "/Herwig++/PDF/MRST"; }
-  static string library() { return "MRST.so"; }
+  static string library() { return "HwMRST.so"; }
 };
 
 }

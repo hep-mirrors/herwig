@@ -199,7 +199,7 @@ struct ClassTraits<Herwig::BaryonRemnants>
     * access to this class and every other class it uses
     * (except the base class).
     */
-  static string library() { return "MRST.so"; }
+  static string library() { return "HwMRST.so"; }
 };
 
 }

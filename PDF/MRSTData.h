@@ -50,7 +50,7 @@ template<>
 struct ClassTraits<Herwig::MRSTData> 
   : public ClassTraitsBase<Herwig::MRSTData> {
   static string className() { return "/Herwig++/PDF/MRSTData"; }
-  static string library() { return "MRST.so"; }
+  static string library() { return "HwMRST.so"; }
 };
 
 }
