@@ -34,7 +34,7 @@ void PartonicHadronizer::persistentOutput(PersistentOStream & os) const {
 void PartonicHadronizer::persistentInput(PersistentIStream & is, int) {
   is >> _globalParameters  >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer >> _exclusive
-     >> _partontries << _inter;
+     >> _partontries >> _inter;
 }
 
 ClassDescription<PartonicHadronizer> PartonicHadronizer::initPartonicHadronizer;
@@ -210,7 +210,7 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
     }
   while(ptry<_partontries&&partonicveto);
   // remove the intermediate particles added by the cluster model if needed
-  if(!_inter)
+  if(!_inter&&!partonicveto)
     {
       // special for the motherless quarks
       for(unsigned int ix=0;ix<pclusters.size();++ix)
