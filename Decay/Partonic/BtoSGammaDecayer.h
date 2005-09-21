@@ -5,7 +5,7 @@
 // This is the declaration of the BtoSGammaDecayer class.
 //
 
-#include "ThePEG/PDT/Decayer.h"
+#include "Herwig++/Decay/HwDecayerBase.h"
 #include "Herwig++/Decay/FormFactors/BtoSGammaHadronicMass.h"
 #include "BtoSGammaDecayer.fh"
 
@@ -17,7 +17,7 @@ using namespace ThePEG;
  * Here is the documentation of the BtoSGammaDecayer class.
  *
  */
-class BtoSGammaDecayer: public Decayer {
+class BtoSGammaDecayer: public HwDecayerBase {
 
 public:
 
@@ -58,6 +58,13 @@ public:
    * @return a ParticleVector containing the decay products.
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
+
+  /**
+   * Output the setup information for the particle database
+   * @param os The stream to output the information to
+   * @param header Whether or not to output the information for MySQL
+   */
+  virtual void dataBaseOutput(ofstream & os,bool header) const;
   //@}
 
 public:
@@ -184,7 +191,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::BtoSGammaDecayer,1> {
   /** Typedef of the first base class of BtoSGammaDecayer. */
-  typedef Decayer NthBase;
+  typedef Herwig::HwDecayerBase NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

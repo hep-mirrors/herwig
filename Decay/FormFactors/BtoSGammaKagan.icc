@@ -6,56 +6,13 @@
 
 namespace Herwig {
 
-inline BtoSGammaKagan::BtoSGammaKagan()  
-{
-  _initialize=false;
-  // quark masses
-  _mt=175.*GeV;
-  _mb=4.8*GeV;
-  _mc=1.392*GeV;
-  _ms=0.;
-  _msovermb=1./50.;
-  _zratio=0.;
-  _lambda2=0.12*GeV2;
-  _mw=80.425*GeV;
-  _mz=91.1876*GeV;
-  _MB=5279.4*MeV;
-  _c20=0.;
-  _c70=0.;
-  _c80=0.;
-  _beta0=23./3.;
-  _beta1=116./3.;
-  _alpha=1./137.036;
-  _alphaSZ=0.118;
-  _mub=4.8*GeV;
-  _alphaSM=0.;
-  _ckm=0.976;
-  _delta=0.;
-  /* need to set them later
-  vector<double> _yinter;
-  vector<double> _spectrum;
-  */
-  _spectmax=0.;
-  _maxtry=100;
-  _fermilambda=0.;
-  _fermia=0.;
-  _ferminorm=1./GeV;
-  _fermilambda1=-0.3*GeV2;
-  _ycut=0.999999999;
-  _y=0.;
-  _deltacut=0.9;
-  _nsfunct=100;
-  _nspect =100;
-}
-
-
 inline BtoSGammaKagan::BtoSGammaKagan(const BtoSGammaKagan & x)
   : BtoSGammaHadronicMass(x),_initialize(x._initialize),_mt(x._mt),_mb(x._mb),
     _mc(x._mc),_ms(x._ms),_msovermb(x._msovermb),_zratio(x._zratio),_lambda2(x._lambda2),
     _mw(x._mw),_mz(x._mz),_MB(x._MB),_c20(x._c20),_c70(x._c70),_c80(x._c80),
     _beta0(x._beta0),_beta1(x._beta1),_alpha(x._alpha),_alphaSZ(x._alphaSZ),_mub(x._mub),
     _alphaSM(x._alphaSM),_ckm(x._ckm),_delta(x._delta),_s22inter(x._s22inter),
-    _s27inter(x._s27inter),_pyinter(x._pyinter),_yinter(x._yinter),
+    _s27inter(x._s27inter),_pmHinter(x._pmHinter),_mHinter(x._mHinter),
     _spectrum(x._spectrum),_spectmax(x._spectmax),_maxtry(x._maxtry),
     _fermilambda(x._fermilambda),
     _fermia(x._fermia),_ferminorm(x._ferminorm),_fermilambda1(x._fermilambda1),
@@ -93,7 +50,7 @@ inline void BtoSGammaKagan::dofinish() {
 }
 
 inline void BtoSGammaKagan::doinitrun() {
-  _pyinter = new Interpolator(_spectrum,_yinter,3);
+  _pmHinter = new Interpolator(_spectrum,_mHinter,3);
   BtoSGammaHadronicMass::doinitrun();
 }
 

@@ -40,13 +40,13 @@ void BtoSGammaHadronicMass::Init() {
   static Parameter<BtoSGammaHadronicMass,Energy> interfaceMinimumMass
     ("MinimumMass",
      "The minimum value of the hadronic mass",
-     &BtoSGammaHadronicMass::_minMass, MeV, 825*MeV, 825*MeV, 5300*MeV,
+     &BtoSGammaHadronicMass::_minMass, GeV, 0.825*GeV, 0.825*GeV, 5.300*GeV,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaHadronicMass,Energy> interfaceMaximumMass
     ("MaximumMass",
      "The maximum value of the hadronic mass",
-     &BtoSGammaHadronicMass::_maxMass, MeV, 5300*MeV, 825*MeV, 5300*MeV,
+     &BtoSGammaHadronicMass::_maxMass, GeV, 5.300*GeV, 0.825*GeV, 5.300*GeV,
      false, false, Interface::limited);
 
 
@@ -58,8 +58,8 @@ void BtoSGammaHadronicMass::dataBaseOutput(ofstream & output,bool header,
   if(header){output << "update decayers set parameters=\"";}
   if(create)
     {output << "create Herwig++::BtoSGammaHadronicMass " << fullName() << " \n";}
-  output << "set " << fullName() << ":MinimumMass " << _minMass/MeV << " \n";
-  output << "set " << fullName() << ":MaximumMass " << _maxMass/MeV << " \n";
+  output << "set " << fullName() << ":MinimumMass " << _minMass/GeV << " \n";
+  output << "set " << fullName() << ":MaximumMass " << _maxMass/GeV << " \n";
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }

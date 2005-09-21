@@ -414,29 +414,28 @@ private:
   /**
    *  Interpolator for the spectrum
    */
-  Interpolator *_pyinter;
+  Interpolator *_pmHinter;
 
   /**
-   *  Values of \f$y\f$ for the interpolation of the spectrum
+   *  Values of \f$m_H\f$ for the interpolation of the spectrum
    */
-  vector<double> _yinter;
+  vector<Energy> _mHinter;
 
   /**
    *  Values of the differential rate for the interpolation of the spectrum
    */
-  vector<double> _spectrum;
+  vector<InvEnergy> _spectrum;
 
   /**
    *  Maximum value of the spectrum for unweighting
    */
-  double _spectmax;
+  InvEnergy _spectmax;
 
   /**
    *  Maximum number of tries for unweighting
    */
   unsigned int _maxtry;
   //@}
-
 
   /**
    *  Parameters for the Fermi function

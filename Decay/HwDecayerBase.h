@@ -106,6 +106,7 @@ public:
    */
   inline bool initialize() const;
   //@}
+
 protected:
 
   /** @name Standard Interfaced functions. */

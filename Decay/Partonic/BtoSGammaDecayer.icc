@@ -9,7 +9,7 @@ namespace Herwig {
 inline BtoSGammaDecayer::BtoSGammaDecayer() {}
 
 inline BtoSGammaDecayer::BtoSGammaDecayer(const BtoSGammaDecayer & x)
-  : Decayer(x), _hadronicmass(x._hadronicmass) {}
+  : HwDecayerBase(x), _hadronicmass(x._hadronicmass) {}
 
 inline IBPtr BtoSGammaDecayer::clone() const {
   return new_ptr(*this);
@@ -20,7 +20,7 @@ inline IBPtr BtoSGammaDecayer::fullclone() const {
 }
 
 inline void BtoSGammaDecayer::doupdate() throw(UpdateException) {
-  Decayer::doupdate();
+  HwDecayerBase::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -38,25 +38,25 @@ inline void BtoSGammaDecayer::doupdate() throw(UpdateException) {
 }
 
 inline void BtoSGammaDecayer::doinit() throw(InitException) {
-  Decayer::doinit();
+  HwDecayerBase::doinit();
 }
 
 inline void BtoSGammaDecayer::dofinish() {
-  Decayer::dofinish();
+  HwDecayerBase::dofinish();
 }
 
 inline void BtoSGammaDecayer::doinitrun() {
-  Decayer::doinitrun();
+  HwDecayerBase::doinitrun();
 }
 
 inline void BtoSGammaDecayer::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  Decayer::rebind(trans);
+  HwDecayerBase::rebind(trans);
 }
 
 inline IVector BtoSGammaDecayer::getReferences() {
-  IVector ret = Decayer::getReferences();
+  IVector ret = HwDecayerBase::getReferences();
   // ret.push_back(dummy);
   return ret;
 }

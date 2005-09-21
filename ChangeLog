@@ -1,3 +1,9 @@
+2005-09-21  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and cleanup of b to s gamma code
+
+	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to solve problems when vetoing hadronization if intermediates removed
+
 2005-09-19  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* PDF/*: Removed obsolete MRST99_1.*, renamed MRST.so to HwMRST.so
