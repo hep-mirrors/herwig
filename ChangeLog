@@ -1,8 +1,16 @@
+2005-09-21  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/RSModel/RSModel*Vertex.h: modified the library()
+	lines to take care of dependency on HwRSModel.so
+
+
 2005-09-21  Pete's account  <Peter.Richardson@durham.ac.uk>
 
-	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and cleanup of b to s gamma code
+	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and
+	cleanup of b to s gamma code 
 
-	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to solve problems when vetoing hadronization if intermediates removed
+	* Hadronization/PartonicHadronizer.cc (Repository): bug fix to
+	solve problems when vetoing hadronization if intermediates removed 
 
 2005-09-19  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
@@ -27,52 +35,64 @@
 
 2005-09-15  Pete's account  <Peter.Richardson@durham.ac.uk>
 
-	* Doc/refman.conf (Repository): changes due change in name of repository
+	* Doc/refman.conf (Repository): changes due change in name of
+	repository 
 
 2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* Decay/WeakCurrents/FourPionNovosibirskCurrent.cc (Repository): minor bug fixes
+	* Decay/WeakCurrents/FourPionNovosibirskCurrent.cc (Repository):
+	minor bug fixes 
 
 2005-09-13  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
 	* Decay: changes to many classes due to the new base class 
 	
 	* Hadronization changes to tidy up the PartonicHadronizer and allow the
-	hadronization to produce off-shell particles.
+	hadronization to produce off-shell particles. 
 	
-	* Decay/HwDecayerBase.h (Repository): added new base class for decayers including
-	the Initialize feature of the DecayIntegrator and dataBaseOutput so this can be
-	used for classes not built on DecayIntegrator.
+	* Decay/HwDecayerBase.h (Repository): added new base class for
+	decayers including the Initialize feature of the DecayIntegrator
+	and dataBaseOutput so this can be used for classes not built on
+	DecayIntegrator. 
 
-	* PDT/GenericWidthGenerator.h: changes so that the mass generator only includes
-	the numerator factor when generating a mass without the weight to avoid biases
-	towards high masses.
+	* PDT/GenericWidthGenerator.h: changes so that the mass generator
+	only includes	the numerator factor when generating a mass
+	without the weight to avoid biases	towards high masses. 
 
-	* Decay/DecayConfig.h (Repository): this was really the .fh file for Hw64Decayer
-	and has been renamed as such.
+	* Decay/DecayConfig.h (Repository): this was really the .fh file
+	for Hw64Decayer and has been renamed as such.
 
-	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as it served
-	little purpose and should be replaced by information on the Wiki.
+	* Decay/ExampleDecayer (Repository): removed the ExampleDecayer as
+	it served little purpose and should be replaced by information on
+	the Wiki. 
 
 2005-09-08  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* src/HerwigDefaults.in (Repository): changes for the new treatment of hadronization in partonic decays
+	* src/HerwigDefaults.in (Repository): changes for the new
+	treatment of hadronization in partonic decays 
 
-	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc (Repository): various minor bug fixes to the decays
+	* Decay/Baryon/SU3BaryonDecupletOctetPhotonDecayer.cc
+	(Repository): various minor bug fixes to the decays 
 
 2005-09-08  David Grellscheid  <dgrell@d2.phyip3.dur.ac.uk>
 
-	* lib/Makefile.am: added libHwPartonicDecay.la to the list of libraries
+	* lib/Makefile.am: added libHwPartonicDecay.la to the list of
+	libraries 
 
 2005-09-05  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* Utilities/HerwigRun.cc: changes to documentation to remove some doxygen errors and more changes due to change in random numbers from ThePEG
+	* Utilities/HerwigRun.cc: changes to documentation to remove some
+	doxygen errors and more changes due to change in random numbers
+	from ThePEG 
 
 2005-09-04  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* Doc/tagfileThePEG.tag (Repository): changes to documentation so that include is not scanned by doxygen and duplicate base classes do not appear
+	* Doc/tagfileThePEG.tag (Repository): changes to documentation so
+	that include is not scanned by doxygen and duplicate base classes
+	do not appear 
 
-	* Utilities/Kinematics.cc (Repository): Changes for the changes to random numbers from ThePEG and improvements to documentation
+	* Utilities/Kinematics.cc (Repository): Changes for the changes to
+	random numbers from ThePEG and improvements to documentation 
 
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
@@ -80,33 +100,44 @@
 
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* Decay/Partonic/BtoSGammaDecayer.fh (Repository): added new partonic decayers for b to s gamma and weak partonic decays
+	* Decay/Partonic/BtoSGammaDecayer.fh (Repository): added new
+	partonic decayers for b to s gamma and weak partonic decays 
 
 2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
-	* Hadronization/PartonicHadronizer.h (Repository): added new class for hadronization of partonic b and c decays.
+	* Hadronization/PartonicHadronizer.h (Repository): added new class
+	for hadronization of partonic b and c decays. 
 
-	* Hadronization/PartonSplitter.h (Repository): changes to the hadronization to ensure only the taggws particles are hadronized.
+	* Hadronization/PartonSplitter.h (Repository): changes to the
+	hadronization to ensure only the taggws particles are hadronized. 
 
-	* PDT/GenericWidthGenerator.icc (Repository): S->VV shape and naive running width option added
+	* PDT/GenericWidthGenerator.icc (Repository): S->VV shape and
+	naive running width option added 
 
-	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository): various minor fixes to the decay classes.
+	* Decay/ScalarMeson/PScalarVectorFermionsDecayer.cc (Repository):
+	various minor fixes to the decay classes. 
 
-	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository): added new decayer for S -> VV
+	* Decay/ScalarMeson/ScalarVectorVectorDecayer.icc (Repository):
+	added new decayer for S -> VV 
 
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* Decay/Partonic (Repository): added files for b to s gamma hadronic mass spectra
+	* Decay/Partonic (Repository): added files for b to s gamma
+	hadronic mass spectra 
 
 2005-09-01  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository): changes to helicity classes to move large inlined members to the .cc files
+	* Helicity/WaveFunction/SpinorWaveFunction.icc (Repository):
+	changes to helicity classes to move large inlined members to the
+	.cc files 
 
 	* Makefile.am (Repository): Interfaces now made automatically
 
-	* Decay/Partonic/QuarkoniumDecayer.icc (Repository): changes to move partonic decayers into a sperate directory
+	* Decay/Partonic/QuarkoniumDecayer.icc (Repository): changes to
+	move partonic decayers into a sperate directory 
 
-	* Decay/HeavyDecayer.icc (Repository): changes to move partonic decayers into a seperate directory
+	* Decay/HeavyDecayer.icc (Repository): changes to move partonic
+	decayers into a seperate directory 
 
 2005-09-01  Peter Richardson <Peter.Richardson@durham.ac.uk>
 
