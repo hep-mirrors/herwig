@@ -164,7 +164,7 @@ void MRST::persistentOutput(PersistentOStream &out) const {
      out << data[i][j][k];
 }
 
-void MRST::persistentInput(PersistentIStream & in, int i) {
+void MRST::persistentInput(PersistentIStream & in, int version) {
   //in >> dataPtr;
   in >> _file;
   for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
@@ -250,16 +250,16 @@ void MRST::initialize(bool reread) {
        cerr << "Could not open file " << _file << "\n";
        return;
      }
-     for(int n=1; n<nx; n++) {
-       for(int m=1; m<=nq; m++) {
-         datafile >> data[1][n][m];
-         datafile >> data[2][n][m];
-         datafile >> data[3][n][m];
-         datafile >> data[4][n][m];
-         datafile >> data[5][n][m];
-         datafile >> data[7][n][m];
-         datafile >> data[6][n][m];
-         datafile >> data[8][n][m];
+     for(int nn=1; nn<nx; nn++) {
+       for(int mm=1; mm<=nq; mm++) {
+         datafile >> data[1][nn][mm];
+         datafile >> data[2][nn][mm];
+         datafile >> data[3][nn][mm];
+         datafile >> data[4][nn][mm];
+         datafile >> data[5][nn][mm];
+         datafile >> data[7][nn][mm];
+         datafile >> data[6][nn][mm];
+         datafile >> data[8][nn][mm];
          if(datafile.eof()) {
 	   cerr << "Error while reading " << _file << endl;
 	   return;

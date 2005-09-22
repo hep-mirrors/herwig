@@ -45,11 +45,10 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   tPDPtr res[6]={getParticleData(-213   ),getParticleData(-100213),
 		 getParticleData(-30213 ),getParticleData(-323   ),
 		 getParticleData(-100323),getParticleData(-30323 )};
-  unsigned int ix;
   // reset the masses in the form-factors if needed
   if(_rhoparameters&&_rhomasses.size()<3)
     {
-      for(ix=_rhomasses.size();ix<3;++ix)
+      for(unsigned int ix=_rhomasses.size();ix<3;++ix)
 	{
 	  _rhomasses.push_back(res[ix]->mass() );
 	  _rhowidths.push_back(res[ix]->width());
@@ -58,7 +57,7 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   else if(!_rhoparameters)
     {
       _rhomasses.resize(0);_rhowidths.resize(0);
-      for(ix=0;ix<3;++ix)
+      for(unsigned int ix=0;ix<3;++ix)
 	{
 	  _rhomasses.push_back(res[ix]->mass() );
 	  _rhowidths.push_back(res[ix]->width());
@@ -67,7 +66,7 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   // then the Kstar resonances
   if(_Kstarparameters&&_Kstarmasses.size()<3)
     {
-      for(ix=_Kstarmasses.size();ix<3;++ix)
+      for(unsigned int ix=_Kstarmasses.size();ix<3;++ix)
 	{
 	  _Kstarmasses.push_back(res[ix+3]->mass());
 	  _Kstarwidths.push_back(res[ix+3]->width());
@@ -76,7 +75,7 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   else if(!_Kstarparameters)
     {
       _Kstarmasses.resize(0);_Kstarwidths.resize(0);
-      for(ix=0;ix<3;++ix)
+      for(unsigned int ix=0;ix<3;++ix)
 	{
 	  _Kstarmasses.push_back(res[ix+3]->mass());
 	  _Kstarwidths.push_back(res[ix+3]->width());
@@ -426,13 +425,12 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
   LorentzPolarizationVector vect;
   // calculate the current
   Complex FPI(0.),denom(0.);
-  unsigned int ix;
   // pion mode
   if(imode==0)
     {
       if(ichan<0)
 	{
-	  for(ix=0;ix<_piwgt.size()&&ix<3;++ix)
+	  for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix)
 	    {
 	      FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,0,ix);
 	      denom+=_piwgt[ix];
@@ -447,7 +445,7 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
     {
       if(ichan<0)
 	{
-	  for(ix=0;ix<_kwgt.size()&&ix<3;++ix)
+	  for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix)
 	    {
 	      FPI+=_kwgt[ix]*BreitWigner(q2,_Kmodel,1,ix);
 	      denom+=_kwgt[ix];
@@ -481,7 +479,7 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
     {
       if(ichan<0)
 	{
-	  for(ix=0;ix<_kwgt.size()&&ix<3;++ix)
+	  for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix)
 	    {
 	      FPI+=_kwgt[ix]*BreitWigner(q2,_Kmodel,1,ix);
 	      denom+=_kwgt[ix];
@@ -496,7 +494,7 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
   // workaround for gcc 3.2.3 bug
   // set up the spininfo for the decay products
   //ALB for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
-  for(ix=0;ix<2;++ix){PPtr mytemp=outpart[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+  for(unsigned int ix=0;ix<2;++ix){PPtr mytemp=outpart[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
 
   // return the answer
   return vector<LorentzPolarizationVector>(1,FPI*pdiff);

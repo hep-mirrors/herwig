@@ -81,13 +81,13 @@ ChengHeavyBaryonFormFactor::ChengHeavyBaryonFormFactor()
 void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
   BaryonFormFactor::doinit();
   // check the parameters are consistent
-  unsigned int isize(numberOfFactors()),ix;
+  unsigned int isize(numberOfFactors());
   if(isize!=_eta.size()||isize!=_Nfi.size())
     {throw InitException() << "Inconsistent paramters in ChengHeavyBaryon" 
 			   << "FormFactor::doinit() " << Exception::abortnow;}
   Energy mi,mf,mq,mQ,lambda,delta,msum;
   int id0,id1,inspin,outspin,isp1,isp2,inq,outq;
-  for(ix=0;ix<numberOfFactors();++ix)
+  for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       // ids of the external particles
       particleID(ix,id0,id1);
@@ -159,7 +159,7 @@ void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
 	{SpinHalfSpinHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
       else
 	{SpinHalfSpinThreeHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,
-					  f4v,f1a,f2a,f3a,f4a);}
+					 f4v,f1a,f2a,f3a,f4a);}
     }
 }
 

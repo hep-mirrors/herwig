@@ -193,12 +193,12 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
 					const Particle & inpart,
 					const ParticleVector & decay) const
 {
-  unsigned int ix,iy;
+  unsigned int iy;
   // storage for the tensor
   vector<LorentzTensor> temp;
   vector<LorentzPolarizationVector> pol[2];
   bool photon[2];
-  for(ix=0;ix<2;++ix)
+  for(unsigned int ix=0;ix<2;++ix)
     {
       photon[ix]=decay[ix]->id()==ParticleID::gamma;
 
@@ -211,7 +211,7 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
   // compute some useful dot products etc
   Complex p1eps2[3],p2eps1[3];
   Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
-  for(ix=0;ix<3;++ix)
+  for(unsigned int ix=0;ix<3;++ix)
     {
       p1eps2[ix]=pol[1][ix]*decay[0]->momentum();
       p2eps1[ix]=pol[0][ix]*decay[1]->momentum();
@@ -221,7 +221,7 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
                      +LorentzTensor(decay[1]->momentum(),decay[0]->momentum());
   LorentzTensor met(-1.,0. ,0. ,0.,0. ,-1.,0. ,0.,0. ,0. ,-1.,0.,0. ,0. ,0. ,1. );
   LorentzTensor tp1eps2[3],tp2eps1[3];
-  for(int ix=0;ix<3;++ix)
+  for(unsigned int ix=0;ix<3;++ix)
     {
       tp1eps2[ix]=LorentzTensor(decay[0]->momentum(),pol[1][ix])
 	         +LorentzTensor(pol[1][ix],decay[0]->momentum());
@@ -232,7 +232,7 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
   Complex e1e2;
   LorentzTensor output;
   double fact(_coupling[imode()]/inpart.mass());
-  for(ix=0;ix<3;++ix)
+  for(unsigned int ix=0;ix<3;++ix)
     {
       for(iy=0;iy<3;++iy)
 	{

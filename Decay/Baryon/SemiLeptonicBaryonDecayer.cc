@@ -377,13 +377,13 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
       lV    = ms *conj(f2a-f2v);
       rV    = ms *conj(f2a+f2v);
     }
-  unsigned int ix,iy,ixa,iya;
+  unsigned int ix,iy;
   // construct the vectors for the decay
   Complex scalar1,scalar2,lfact,rfact;
   LorentzPolarizationVector svec,tvec;
-  for(iya=0;iya<4;++iya)
+  for(unsigned int iya=0;iya<4;++iya)
     {
-      for(ixa=0;ixa<2;++ixa)
+      for(unsigned int ixa=0;ixa<2;++ixa)
 	{
 	  if(decay[0]->id()>0){ix=iya;iy=ixa;}
 	  else{ix=ixa;iy=iya;}
@@ -412,7 +412,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
   // work out the mapping for the lepton vector
   vector<unsigned int> ihel(decay.size()+1);
   vector<PDT::Spin> ispin(decay.size());
-  for(int ix=int(decay.size()-1);ix>=0;--ix){ispin[ix]=decay[ix]->data().iSpin();}
+  for(int ii=int(decay.size()-1);ii>=0;--ii){ispin[ii]=decay[ii]->data().iSpin();}
   DecayMatrixElement newME(PDT::Spin1Half,ispin);
   for(unsigned int iya=0;iya<4;++iya)
     {

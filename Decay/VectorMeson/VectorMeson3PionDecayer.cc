@@ -98,8 +98,8 @@ void VectorMeson3PionDecayer::doinit() throw(InitException) {
   // create the integration channels for the decay
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr newchannel;
-  unsigned int ix,iy,iz;
-  for(ix=0;ix<_incoming.size();++ix)
+  unsigned int iy,iz;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       extpart[0]=getParticleData(int(_incoming[ix]));
       mode = new_ptr(DecayPhaseSpaceMode(extpart,this));

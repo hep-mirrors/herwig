@@ -425,7 +425,7 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
   vector<unsigned int> ispin(3);
   LorentzPolarizationVector svec;
   Complex prod,meout;
-  unsigned int ix,iy,ixa,iya,iz;
+  unsigned int ix,iy,ixa,iya;
   LorentzSpinor stemp;
   LorentzSpinorBar sbtemp;
   for(iya=0;iya<4;++iya)
@@ -440,7 +440,7 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
 	  scalar = sp[iy].generalScalar(sbar[ix],lS,rS);
 	  svec   = sp[iy].generalCurrent(sbar[ix],lV,rV);
 	  ispin[0]=ixa;
-	  for(iz=0;iz<3;++iz)
+	  for(unsigned int iz=0;iz<3;++iz)
 	    {
 	      ispin[2]=iz;
 	      prod=eps[iz]*inpart.momentum();

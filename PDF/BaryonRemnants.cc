@@ -97,9 +97,9 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
     if(info.valenceFlav[0] != info.valenceFlav[1] && rnd() < 0.25) idqr-=2;
     rem.push_back(getParticleData(info.sign*idqr)->produceParticle());
   } else {
-    pair<int,int> r = info.flavsel.select(UseRandom::rnd());
-    int iqr = r.first * info.sign;
-    int idqr = r.second * info.sign;
+    pair<int,int> rr = info.flavsel.select(UseRandom::rnd());
+    int iqr = rr.first * info.sign;
+    int idqr = rr.second * info.sign;
     /*** 
      * We just want to randomly pick a diquark and put it in as the remnant.
      * This needs to be handled properly at the end of the initial state shower

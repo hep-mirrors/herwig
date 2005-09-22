@@ -567,12 +567,11 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceChannelPtr phase,Energy upp)
 {
   int iq(0),ia(0);
-  unsigned int ix;
   bool kineallowed(true);
   if(!acceptMode(imode)){return false;}
   PDVector extpart(particles(1,imode,iq,ia));
   Energy min(0.);
-  for(ix=0;ix<extpart.size();++ix){min+=extpart[ix]->massMin();}
+  for(unsigned int ix=0;ix<extpart.size();++ix){min+=extpart[ix]->massMin();}
   if(min>upp){kineallowed=false;}
   if(kineallowed==false){return kineallowed;}
   // the particles we will use a lot
@@ -618,7 +617,6 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
       Kstar0[1] = getParticleData(-100313);
       Kstar0[2] = getParticleData(-30313);
       // the charged K* resonances
-      tPDPtr Kstarc[3];
       Kstarc[0] = getParticleData(323);
       Kstarc[1] = getParticleData(100323);
       Kstarc[2] = getParticleData(30323);

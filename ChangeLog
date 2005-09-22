@@ -1,3 +1,8 @@
+2005-09-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Decay/*, PDF/*, PDT/*: bugfixes and warning eliminations from
+	-Wshadow 
+
 2005-09-21  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Helicity/Vertex/RSModel/RSModel*Vertex.h: modified the library()

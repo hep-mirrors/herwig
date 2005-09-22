@@ -398,14 +398,14 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 		  _noofentries.push_back(_intermasses.size());
 		  _interpolators.resize(_MEtype.size());
 		  // get the vectors we will need
-		  vector<Energy>::iterator start= _intermasses.begin();
-		  if(_MEtype.size()>1){start+=_noofentries[_MEtype.size()-2];}
-		  vector<Energy>::iterator end=_intermasses.end();
-		  vector<Energy> masses=vector<Energy>(start,end);
-		  start= _interwidths.begin();
-		  if(_MEtype.size()>1){start+=_noofentries[_MEtype.size()-2];}
-		  end=_interwidths.end();
-		  vector<Energy> widths=vector<Energy>(start,end);
+		  vector<Energy>::iterator istart= _intermasses.begin();
+		  if(_MEtype.size()>1){istart+=_noofentries[_MEtype.size()-2];}
+		  vector<Energy>::iterator iend=_intermasses.end();
+		  vector<Energy> masses=vector<Energy>(istart,iend);
+		  istart= _interwidths.begin();
+		  if(_MEtype.size()>1){istart+=_noofentries[_MEtype.size()-2];}
+		  iend=_interwidths.end();
+		  vector<Energy> widths=vector<Energy>(istart,iend);
 		  _interpolators.back()=new Interpolator(widths,masses,3);
 		}
 	    }
@@ -447,14 +447,14 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	      _noofentries.push_back(_intermasses.size());
 	      _interpolators.resize(_MEtype.size());
 	      // get the vectors we will need
-	      vector<Energy>::iterator start( _intermasses.begin()),
-		end(_intermasses.end());
-	      if(_MEtype.size()>1){start+=_noofentries[_MEtype.size()-2];}
-	      vector<Energy> masses=vector<Energy>(start,end);
-	      start= _interwidths.begin();
-	      if(_MEtype.size()>1){start+=_noofentries[_MEtype.size()-2];}
-	      end=_interwidths.end();
-	      vector<Energy> widths=vector<Energy>(start,end);
+	      vector<Energy>::iterator istart( _intermasses.begin()),
+		iend(_intermasses.end());
+	      if(_MEtype.size()>1){istart+=_noofentries[_MEtype.size()-2];}
+	      vector<Energy> masses=vector<Energy>(istart,iend);
+	      istart= _interwidths.begin();
+	      if(_MEtype.size()>1){istart+=_noofentries[_MEtype.size()-2];}
+	      iend=_interwidths.end();
+	      vector<Energy> widths=vector<Energy>(istart,iend);
 	      _interpolators.back()=new Interpolator(widths,masses,3);
 	    }
 	}
