@@ -68,6 +68,11 @@ ScalarWaveFunction::ScalarWaveFunction(tPPtr part,RhoDMatrix& rho,Direction dir,
 	}
     }
   rho=RhoDMatrix(PDT::Spin0);
+  // set up the wavefunction
+  direction(dir);
+  setMomentum(part->momentum());
+  _wf=1.;
+  checkParticle(part->dataPtr());
 }
 
 }

@@ -385,11 +385,9 @@ inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wav
     }
   else
     {
-      tRSFermionSpinPtr inspin;
       if(inspin)
 	{
 	  inspin->decay();
-	  // rho matrix should be here
 	  wave.resize(4);
 	  for(unsigned int ix=0;ix<4;++ix){wave[ix]=inspin->getDecayBasisState(ix);}
 	}
