@@ -1,5 +1,5 @@
 cd /Defaults/Handlers/Shower
-library libHwShower.so
+library HwShower.so
 create Herwig++::ShowerHandler stdShowerHandler
 create Herwig++::ShowerVariables theShowerVariables
 create Herwig++::Evolver theEvolver

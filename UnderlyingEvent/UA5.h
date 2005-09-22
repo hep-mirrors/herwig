@@ -256,7 +256,7 @@ struct ClassTraits<Herwig::UA5Handler> :
   /** Return the name of the shared library be loaded to get
    *  access to the WeakPartonicDecayer class and every other class it uses
    *  (except the base class). */
-    static string library() { return "libUA5.so"; }
+    static string library() { return "HwUA5.so"; }
 };
 
 }

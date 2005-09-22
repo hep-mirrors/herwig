@@ -112,7 +112,7 @@ struct ClassTraits<Herwig::QtoQGammaSplitFn>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwShower.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 }

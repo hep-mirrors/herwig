@@ -1,7 +1,7 @@
 lib_LTLIBRARIES = libHerwig.la
 libHerwig_la_SOURCES =
 libHerwig_la_LIBADD = \
-$(top_builddir)/UnderlyingEvent/libUA5.la \
+$(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
 $(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
 $(top_builddir)/Decay/Tau/libHwTauDecay.la \
@@ -14,8 +14,6 @@ $(top_builddir)/Decay/TensorMeson/libHwTMDecay.la \
 $(top_builddir)/Decay/Partonic/libHwPartonicDecay.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/PDT/libHwPDT.la \
-$(top_builddir)/Shower/libHwShower.la \
-$(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Helicity/Correlations/libHwCorrelations.la \
 $(top_builddir)/Helicity/WaveFunction/libHwWaveFunction.la \
 $(top_builddir)/Helicity/Vertex/StandardModel/libHwSMVertex.la \

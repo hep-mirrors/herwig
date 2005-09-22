@@ -1,5 +1,9 @@
 2005-09-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
+	* Shower/*, UnderlyingEvent/*, lib/Makefile.am,
+	src/UnderlyingEvent.in, src/Shower.in: Turned Shower and UA5 into
+	modules.
+	
 	* src/LEPbb.in, src/HerwigDefaults.in, lib/Makefile.am, 
 	MatrixElement/*: Turned HwME.so into a module.
 
