@@ -23,8 +23,7 @@ $(top_builddir)/Helicity/Vertex/Vector/libHwVVertex.la \
 $(top_builddir)/Helicity/Vertex/Scalar/libHwSVertex.la \
 $(top_builddir)/Helicity/Vertex/Tensor/libHwTVertex.la \
 $(top_builddir)/Helicity/Vertex/libHwVertex.la \
-$(top_builddir)/Utilities/libHwUtils.la \
-$(top_builddir)/MatrixElement/libHwME.la
+$(top_builddir)/Utilities/libHwUtils.la 
 
 all-local: done-all-links
 

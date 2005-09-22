@@ -200,7 +200,7 @@ struct ClassTraits<Herwig::MEqq2gZ2ll>
   /** Return the name of the shared library be loaded to get
    *  access to the WeakPartonicDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwME.so"; }
+  static string library() { return "HwME.so"; }
 };
 
 }

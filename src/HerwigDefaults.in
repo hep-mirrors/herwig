@@ -42,7 +42,7 @@ cp StandardExtractor QCDExtractor
 # Setup matrix elements
 cd /Defaults/MatrixElements
 create ThePEG::MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
-create ThePEG::MEGG2GG MEGG2GG libThePEGMEQCD.so
+create ThePEG::MEGG2GG MEGG2GG MEQCD.so
 create ThePEG::MEQG2QG MEQG2QG
 create ThePEG::MEQQ2GG MEQQ2GG
 create ThePEG::MEQQ2QQ MEQQ2QQ
@@ -52,7 +52,7 @@ create ThePEG::MEQQ2qq MEQQ2qq
 create ThePEG::MEqq2qq MEqq2qq
 set MEGG2QQ:MaxFlavour 4
 set MEQQ2qq:MaxFlavour 4
-create Herwig++::MEqq2gZ2ll MEqq2gZ2ll libHwME.so
+create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
 
 # Setup the Subprocesses
 cd /Defaults/Handlers
