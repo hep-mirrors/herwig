@@ -220,7 +220,7 @@ template <>
   /** Return the name of the shared library be loaded to get
    *  access to the BaryonWidthGenerator class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwPDT.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 };
 
 }

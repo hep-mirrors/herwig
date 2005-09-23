@@ -247,7 +247,7 @@ struct ClassTraits<Herwig::SemiLeptonicScalarDecayer>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwSMDecay.so"; }
+  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 
 };
 

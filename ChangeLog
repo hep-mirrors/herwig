@@ -1,3 +1,9 @@
+2005-09-23  David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* */*.h, */Makefile.am, src/*.in: Restructuring of libraries to
+	clean up dependencies. Many parts turned into modules.
+	make clean && make recommended.
+
 2005-09-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Shower/*, UnderlyingEvent/*, lib/Makefile.am,

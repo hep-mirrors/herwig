@@ -1,3 +1,4 @@
+library HwSMVertex.so
 # create the Standard Model fermion-antifermion Z vertex
 create /Herwig++/Helicity/SMFFZVertex FFZVertex
 set /Defaults/Model:Vertex/FFZ FFZVertex

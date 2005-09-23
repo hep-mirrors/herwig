@@ -312,7 +312,7 @@ struct ClassTraits<Herwig::VectorMesonPScalarFermionsDecayer>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwVNDecay.so"; }
+  static string library() { return "HwVMDecay.so"; }
 
 };
 

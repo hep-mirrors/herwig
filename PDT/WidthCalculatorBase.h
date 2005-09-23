@@ -128,7 +128,7 @@ struct ClassTraits<Herwig::WidthCalculatorBase>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHWPDT.so"; }
+  static string library() { return ""; }
 
 };
 

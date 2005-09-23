@@ -292,7 +292,7 @@ template <>
   /** Return the name of the shared library be loaded to get
    *  access to the RadiativeHeavyBaryonDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwBaryonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 };
 
 }

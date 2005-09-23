@@ -1,10 +1,13 @@
-SUBDIRS = include UnderlyingEvent Models Interfaces Helicity \
-	Decay PDT PDF Looptools \
-	Shower Hadronization MatrixElement Utilities \
+## include first, then all dirs, then lib, then src! 
+## Helicity and PDT before Decay!
+SUBDIRS = include \
+	Utilities \
+	Helicity PDT Decay \
+	PDF Models \
+	Shower Hadronization MatrixElement \
+	UnderlyingEvent Interfaces Looptools \
 	lib src
 
 noinst_HEADERS = Config/Herwig.h
 
 ## Doc # look at this later
-## include comes first, then all dirs, then lib, then src 
-## Helicity before Decay!

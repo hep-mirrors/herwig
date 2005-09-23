@@ -204,7 +204,7 @@ struct ClassTraits<Herwig::HwDecayerBase>
   /** Return the name of the shared library be loaded to get
    *  access to the HwDecayerBase class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwDecayerBase.so"; }
+  static string library() { return ""; }
 };
 
 /** @endcond */

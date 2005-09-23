@@ -1,5 +1,5 @@
 cd /Defaults/Handlers/Hadronization/Cluster
-library libHwHadronization.so
+# from libHwHadronization.so
 # Create ClusterData info
 create ThePEG::ParticleData /Defaults/Particles/Cluster
 setup /Defaults/Particles/Cluster 81 Cluster 0.00990 0.0 0.0 0.0  0 0  0  0

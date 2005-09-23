@@ -290,7 +290,7 @@ struct ClassTraits<Herwig::MelikhovFormFactor>
   /** Return the name of the shared library be loaded to get
    *  access to the MelikhovFormFactor class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwFormFactor.so"; }
+  static string library() { return "HwFormFactors.so"; }
 };
 
 }

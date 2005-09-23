@@ -441,7 +441,7 @@ struct ClassTraits<Herwig::KornerKramerCharmDecayer>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwHatyonDecay.so"; }
+  static string library() { return "HwBaryonDecay.so"; }
 
 };
 

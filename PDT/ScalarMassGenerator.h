@@ -225,7 +225,7 @@ struct ClassTraits<Herwig::ScalarMassGenerator>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwPDT.so"; }
+  static string library() { return ""; }
 
 };
 

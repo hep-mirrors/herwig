@@ -260,7 +260,7 @@ struct ClassTraits<Herwig::ScalarVectorVectorDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the ScalarVectorVectorDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwSMDecay.so"; }
+  static string library() { return "HwSMDecay.so"; }
 };
 
 }

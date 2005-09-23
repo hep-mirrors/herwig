@@ -270,7 +270,7 @@ template <>
     * access to this class and every other class it uses
     * (except the base class).
     */
-   static string library() { return "libHwTMDecay.so"; }
+   static string library() { return "HwTMDecay.so"; }
    
  };
 

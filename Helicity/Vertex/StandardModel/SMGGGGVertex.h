@@ -209,7 +209,7 @@ struct ClassTraits<Herwig::Helicity::SMGGGGVertex>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwSMVertex.so"; }
+  static string library() { return "HwSMVertex.so"; }
 
 };
 

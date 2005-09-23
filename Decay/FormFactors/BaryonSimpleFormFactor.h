@@ -256,7 +256,7 @@ struct ClassTraits<Herwig::BaryonSimpleFormFactor>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwFormFactor.so"; }
+  static string library() { return "HwFormFactors.so"; }
 };
 
 }

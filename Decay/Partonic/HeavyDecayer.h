@@ -205,7 +205,7 @@ struct ClassTraits<Herwig::HeavyDecayer>: public ClassTraitsBase<Herwig::HeavyDe
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwDecay.so"; }
+  static string library() { return "HwPartonicDecay.so"; }
 };
 
 }
