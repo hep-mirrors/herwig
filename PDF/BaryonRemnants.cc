@@ -97,7 +97,7 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
     if(info.valenceFlav[0] != info.valenceFlav[1] && rnd() < 0.25) idqr-=2;
     rem.push_back(getParticleData(info.sign*idqr)->produceParticle());
   } else {
-    pair<int,int> rr = info.flavsel.select(UseRandom::rnd());
+    pair<int,int> rr = info.flavsel.select(UseRandom::current());
     int iqr = rr.first * info.sign;
     int idqr = rr.second * info.sign;
     /*** 

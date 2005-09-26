@@ -1,3 +1,7 @@
+## ugly hack to get linking done by CXX
+LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
+        $(AM_LDFLAGS) $(LDFLAGS) -o $@
+
 pkglib_LTLIBRARIES = libHerwig.la
 libHerwig_la_SOURCES =
 libHerwig_la_LIBADD = \

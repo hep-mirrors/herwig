@@ -10,7 +10,9 @@ fi
 
 
 AC_MSG_CHECKING([CLHEPLIB is])
-CLHEPLIB=`$CLHEPPATH/bin/clhep-config --libs | cut -d' ' -f2`
+if test -z "$CLHEPLIB"; then
+	CLHEPLIB=`$CLHEPPATH/bin/clhep-config --libs | cut -d' ' -f2`
+fi
 CLHEPLDFLAGS=`$CLHEPPATH/bin/clhep-config --libs | cut -d' ' -f1`
 AC_MSG_RESULT("$CLHEPLIB")
 
