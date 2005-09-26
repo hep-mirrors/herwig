@@ -1,10 +1,10 @@
 SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
 	  WeakCurrents ScalarMeson TensorMeson Partonic
 
-pkglib_LTLIBRARIES = libHwDecay.la Hw64Decayer.la
+pkglib_LTLIBRARIES = libHwDecay.la Hw64Decay.la
 
-Hw64Decayer_la_LDFLAGS = -module
-Hw64Decayer_la_SOURCES = Hw64Decayer.h Hw64Decayer.fh Hw64Decayer.icc Hw64Decayer.cc 
+Hw64Decay_la_LDFLAGS = -module
+Hw64Decay_la_SOURCES = Hw64Decayer.h Hw64Decayer.fh Hw64Decayer.icc Hw64Decayer.cc 
 
 libHwDecay_la_LIBADD = $(top_builddir)/PDT/libHwPDT.la
 libHwDecay_la_SOURCES =  \

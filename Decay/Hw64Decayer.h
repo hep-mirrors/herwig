@@ -220,7 +220,7 @@ struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Deca
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "Hw64Decayer.so"; }
+  static string library() { return "Hw64Decay.so"; }
 };
 
 }

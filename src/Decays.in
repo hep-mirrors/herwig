@@ -4,7 +4,7 @@
 #read HerwigParticles.in
 #
 mkdir /Defaults/Decays/
-library Hw64Decayer.so
+library Hw64Decay.so
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME0
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME100
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME101
