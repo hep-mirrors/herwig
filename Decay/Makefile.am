@@ -1,10 +1,13 @@
 SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
 	  WeakCurrents ScalarMeson TensorMeson Partonic
 
-pkglib_LTLIBRARIES = libHwDecay.la Hw64Decay.la
+pkglib_LTLIBRARIES = libHwDecay.la Hw64Decay.la HwMamboDecay.la
 
 Hw64Decay_la_LDFLAGS = -module
 Hw64Decay_la_SOURCES = Hw64Decayer.h Hw64Decayer.fh Hw64Decayer.icc Hw64Decayer.cc 
+
+HwMamboDecay_la_LDFLAGS = -module
+HwMamboDecay_la_SOURCES = MamboDecayer.h MamboDecayer.fh MamboDecayer.icc MamboDecayer.cc 
 
 libHwDecay_la_LIBADD = $(top_builddir)/PDT/libHwPDT.la
 libHwDecay_la_SOURCES =  \

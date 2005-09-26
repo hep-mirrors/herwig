@@ -1,3 +1,7 @@
+2005-09-26  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added MamboDecayer
+
 2005-09-23  David Grellscheid <David.Grellscheid@durham.ac.uk>
 
 	* */*.h, */Makefile.am, src/*.in: Restructuring of libraries to
