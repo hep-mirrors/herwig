@@ -75,8 +75,7 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
   vector<Lorentz5Momentum> productMomentum(N);
   Energy gluMass = global->effectiveGluonMass();
   for(int i = 0; i < N; ++i) {
-      Energy currentMass = children[i]->constituentMass();
-      if (children[i]->id() == 21) {
+        if (children[i]->id() == 21) {
 	productMomentum[i].setMass(gluMass);
 	}
       else {
@@ -157,7 +156,6 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
 double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
 				       const Energy & comEn) const
 {
-  const double twopi(2*Constants::pi);
   const int N = mom.size();
   double rmtot(0.0);
   double rm2tot(0.0);
