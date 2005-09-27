@@ -1,3 +1,7 @@
+2005-09-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/DecayPhaseSpaceMode.cc (Repository): change to unmask parameters
+
 2005-09-26  Martyn Gigg  <m.a.gigg@dur.ac.uk>
 
 	* Decay/MamboDecayer.cc (Repository): Added MamboDecayer
@@ -25,8 +29,12 @@
 	* Helicity/Vertex/RSModel/RSModel*Vertex.h: modified the library()
 	lines to take care of dependency on HwRSModel.so
 
+2005-09-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-2005-09-21  Pete's account  <Peter.Richardson@durham.ac.uk>
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): minor changes to ensure special constructor returns a wavefunction
+	
+
+2005-09-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Decay/Partonic/BtoSGammaDecayer.h (Repository): minor fixes and
 	cleanup of b to s gamma code 
@@ -41,7 +49,7 @@
 	* Helicity/Vertex/RSModel/*, Models/RSModel/*: Made RS model
 	dynamically loadable.
 	
-2005-09-19  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Utilities/Interpolator.cc (Repository): minor bug fixes
 
@@ -55,7 +63,7 @@
 	* ** multiple files **: small changes to reduce compile warnings 
 	when extra warning flags are enabled.
 
-2005-09-15  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-09-15  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Doc/refman.conf (Repository): changes due change in name of
 	repository 

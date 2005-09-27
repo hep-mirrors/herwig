@@ -141,11 +141,11 @@ void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
   ParticleVector particles;
   // now if using flat phase space
   _MaxWeight=0.;
-  double wsum=0.,wsqsum=0.;
   double totsum(0.),totsq(0.);
   InvEnergy pre=1.;Energy prewid;
   if(_channels.empty())
     {
+      double wsum=0.,wsqsum=0.;
       double wgt;
       Energy m0,mmin(0.);
       for(unsigned int ix=1;ix<_extpart.size();++ix)
@@ -430,11 +430,11 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
   else
     {
       // select the channel
-      int ichan(selectChannel(inpart,particles));
+      int ichannew(selectChannel(inpart,particles));
       for(ix=0;ix<particles.size();++ix)
 	{particles[ix]->boost(boostv);}
       // generate the particle vector
-      _channels[ichan]->generateIntermediates(cc,inpart,particles);
+      _channels[ichannew]->generateIntermediates(cc,inpart,particles);
     }
   return particles;
 }
