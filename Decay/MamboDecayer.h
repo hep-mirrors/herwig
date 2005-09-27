@@ -13,10 +13,10 @@ namespace Herwig {
   using namespace ThePEG;
   
   /**
-   * Here is the documentation of the MamboDecayer class.
-   *
-   * @see \ref MamboDecayerInterfaces "The interfaces"
-   * defined for MamboDecayer.
+   * The MamboDecayer class inherits from the Decayer class in 
+   * ThePEG and implements the algorithm of R.Kleiss and 
+   * W.J.Stirling for massive multi-particle phase-space
+   * decays 
    */
 class MamboDecayer: public Decayer {
 
@@ -177,21 +177,6 @@ private:
   
   double calculateMomentum(vector<Lorentz5Momentum> & mom,
 			   const Energy & comEn) const;
-  
- //  /**
-//    * Check whether a generated momentum distribution should be accepted
-//    * based on weight criteria
-//    * @param q Vector of LorentzMomenta 
-//    * @param mom Vector of LorentzMomenta
-//    * @param comEn Centre of Mass energy
-//    * @param xi Factor that scaled mass back
-//    * @param r Value of ratio c.o.m energy and total mass squared
-//    * @return Boolean value
-//   */ 
-//   bool reject(const vector<Lorentz5Momentum> q,const vector<Lorentz5Momentum> mom,
-// 	      const Energy & comEn, const long double & xi,
-// 	      const long double & r) const;
-    
   /**
    *Bessel function of first kind(n=0)
    *@param x Argument of Bessel Function 
@@ -264,7 +249,7 @@ struct ClassTraits<Herwig::MamboDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the MamboDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwMamboDecay.so"; }
+  static string library() { return "MamboDecayer.so"; }
 };
 
 }

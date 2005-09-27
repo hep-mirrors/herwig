@@ -1,3 +1,7 @@
+2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/MamboDecayer.cc (Repository): Added class description and removed obsolete function
+
 2005-09-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Decay/DecayPhaseSpaceMode.cc (Repository): change to unmask parameters
