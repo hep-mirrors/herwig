@@ -1,6 +1,7 @@
 2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
 
 	* Decay/MamboDecayer.cc (Repository): Added class description and removed obsolete function
+	(Repository): Removed unused variables
 
 2005-09-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
