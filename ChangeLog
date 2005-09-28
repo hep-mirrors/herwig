@@ -1,5 +1,7 @@
 2005-09-28  Pete's account  <Peter.Richardson@durham.ac.uk>
 
+	* Decay/Baryon/BaryonFactorizedDecayer.h (Repository): added all .so files needed by library to all classes to ensure correct dynamic loading
+
 	* Helicity/Vertex/Tensor/FFTVertex.fh (Repository): added .fh to define pointers for the tensor vertices
 
 2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>

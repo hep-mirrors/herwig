@@ -261,7 +261,7 @@ struct ClassTraits<Herwig::ScalarScalarScalarDecayer>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwSMDecay.so"; }
+  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 
 };
 

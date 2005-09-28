@@ -360,7 +360,7 @@ struct ClassTraits<Herwig::StrongHeavyBaryonDecayer>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwBaryonDecay.so"; }
+  static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
 
 };
 
