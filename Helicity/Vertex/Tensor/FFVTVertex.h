@@ -9,6 +9,7 @@
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "FFVTVertex.fh"
 
 namespace Herwig {
 using ThePEG::Helicity::DiracRep;

@@ -1,3 +1,7 @@
+2005-09-28  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Helicity/Vertex/Tensor/FFTVertex.fh (Repository): added .fh to define pointers for the tensor vertices
+
 2005-09-27  Martyn Gigg  <m.a.gigg@dur.ac.uk>
 
 	* Decay/MamboDecayer.cc (Repository): Added class description and removed obsolete function

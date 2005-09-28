@@ -12,61 +12,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
-
-  /**
-   * Some typedefs for the pointers to vertices.
-   */
-  //@{
-  /**
-   * Pointer to the fermion-fermion-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFTVertex>::pointer FFTPtr;
-
-  /**
-   * Transient pointer to the fermion-fermion-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFTVertex>::transient_pointer tFFTPtr;
-
-  /**
-   * Pointer to the vector-vector-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVTVertex>::pointer VVTPtr;
-
-  /**
-   * Transient pointer to the vector-vector-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVTVertex>::transient_pointer tVVTPtr;
-
-  /**
-   * Pointer to the scalar-scalar-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::SSTVertex>::pointer SSTPtr;
-
-  /**
-   * Transient pointer to the scalar-scalar-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::SSTVertex>::transient_pointer tSSTPtr;
-
-  /**
-   * Pointer to the fermion-fermion-vector-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFVTVertex>::pointer FFVTPtr;
-
-  /**
-   * Transient pointer to the fermion-fermion-vector-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFVTVertex>::transient_pointer tFFVTPtr;
-
-  /**
-   * Pointer to the vector-vector-vector-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVVTVertex>::pointer VVVTPtr;
-
-  /**
-   * Transient pointer to the vector-vector-vector-tensor vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVVTVertex>::transient_pointer tVVVTPtr;
-  //@}
+using namespace Herwig::Helicity;
 
 /** \ingroup Models
  *
@@ -114,27 +60,27 @@ public:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  inline tFFTPtr   vertexFFGR() const;
+  inline tFFTVertexPtr   vertexFFGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  inline tVVTPtr   vertexVVGR() const;
+  inline tVVTVertexPtr   vertexVVGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  inline tSSTPtr   vertexSSGR() const;
+  inline tSSTVertexPtr   vertexSSGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  inline tFFVTPtr  vertexFFVGR() const;
+  inline tFFVTVertexPtr  vertexFFVGR() const;
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  inline tVVVTPtr  vertexVVVGR() const;
+  inline tVVVTVertexPtr  vertexVVVGR() const;
   //@}
   
 public:
@@ -243,27 +189,27 @@ private:
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}\f$ vertex.
    */
-  FFTPtr  _theFFGRVertex;
+  FFTVertexPtr  _theFFGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to VV\f$ vertex.
    */
-  VVTPtr  _theVVGRVertex;
+  VVTVertexPtr  _theVVGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to SS\f$ vertex.
    */
-  SSTPtr  _theSSGRVertex;
+  SSTVertexPtr  _theSSGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to f\bar{f}V\f$ vertex.
    */
-  FFVTPtr _theFFVGRVertex;
+  FFVTVertexPtr _theFFVGRVertex;
 
   /**
    * Pointer to the object handling the \f$G\to VVV\f$ vertex.
    */
-  VVVTPtr _theVVVGRVertex;
+  VVVTVertexPtr _theVVVGRVertex;
   
 };
 }

@@ -14,6 +14,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using namespace Herwig::Helicity;
 
 RSModel::~RSModel() {}
 
@@ -52,7 +53,6 @@ static Reference<RSModel,Herwig::Helicity::FFVTVertex> interfaceVertexFFVGR
   ("Vertex/FFVGR",
    "Reference to the fermion-antifermion-vector graviton vertex",
    &RSModel::_theFFVGRVertex, false, false, true, false, false);
-
 static Reference<RSModel,Herwig::Helicity::VVVTVertex> interfaceVertexVVVGR
   ("Vertex/VVVGR",
    "Reference to the three vector graviton vertex",

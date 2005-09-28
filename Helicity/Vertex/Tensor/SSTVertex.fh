@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSTVertex class.
+//
+#ifndef HERWIG_SSTVertex_FH
+#define HERWIG_SSTVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+class SSTVertex;
+ThePEG_DECLARE_POINTERS(SSTVertex,SSTVertexPtr);
+
+}
+}
+
+#endif

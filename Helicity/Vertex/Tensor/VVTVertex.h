@@ -7,6 +7,7 @@
 #include "Herwig++/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "VVTVertex.fh"
 
 namespace Herwig {
 namespace Helicity {
