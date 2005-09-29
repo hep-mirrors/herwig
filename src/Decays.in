@@ -17,6 +17,8 @@ create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME100
 create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME101
 create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME130
 #
+create /Herwig++/MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
+#
 set /Defaults/Decays/DecayME0:MECode 0
 set /Defaults/Decays/DecayME100:MECode 100 
 set /Defaults/Decays/DecayME101:MECode 101
@@ -31,6 +33,7 @@ set /Defaults/Decays/QDecayME0:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME100:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME101:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME130:GlobalParameters /Defaults/theGlobalParameters
+set /Defaults/Decays/Mambo:GlobalParameters /Defaults/theGlobalParameters
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files

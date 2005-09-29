@@ -1,3 +1,10 @@
+2005-09-29  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Hw64Decays.in, src/Decays.in: Activated Mambo decayer for
+	5-body decays in Hw64Decays.in to keep code working
+
+	* Utilities/Math.cc: inlined power series
+
 2005-09-29  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Utilities/Math.h (Repository): changes so private power series for dilog is not publically visible
