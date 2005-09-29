@@ -18,11 +18,6 @@ namespace Math {
    */
   Complex Li2(Complex);
 
-  /**
-   * Series expansion used by the dilog function
-   */
-  inline Complex Li2Prod(Complex,Complex);
-
 }
 
 }
