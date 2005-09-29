@@ -390,9 +390,9 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       _spectrum.resize(0);
       _spectmax=0.;
       // limits on the mass
-      double minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
-      double minhadronmass(sqrt(_MB*_MB-2.*_MB*maxegamma));
-      double maxhadronmass(sqrt(_MB*_MB-2.*_MB*minegamma));
+      Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
+      Energy minhadronmass(max(minMass(),sqrt(_MB*_MB-2.*_MB*maxegamma)));
+      Energy maxhadronmass(min(maxMass(),sqrt(_MB*_MB-2.*_MB*minegamma)));
       double hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
       double mhadron(minhadronmass);
       // function to be integrated      

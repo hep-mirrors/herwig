@@ -5,6 +5,7 @@
 //
 
 #include "Hw64Decayer.h"
+#include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
@@ -45,7 +46,11 @@ void Hw64Decayer::Init() {
 
 ClassDescription<Hw64Decayer> Hw64Decayer::initHw64Decayer;
 
-bool Hw64Decayer::accept(const DecayMode &dm) const { return true; }
+bool Hw64Decayer::accept(const DecayMode &dm) const 
+{
+  if(dm.products().size()<=4){return true;}
+  else{return false;}
+}
 
 /****** 
  * This function actually decays a particle based on the dm given.
@@ -55,13 +60,6 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
   // storage for the decay products and number of decay products
    ParticleVector rval;
    unsigned int numProds(dm.products().size());
-   // can't handle more than 5 products throw a veto
-   if(numProds > 5) { 
-     generator()->log() << "Number of decay products is greater than 5\n"
-                        << "Hw64Decayer cannot handle these decays properly. "
-                        << "Will veto decay and select a new decay mode\n";
-     throw Veto();
-   }
    // check that it is possible to kinematically perform the decay
    Energy minmass(0.);
    vector<Energy> minmasses(numProds);
@@ -75,7 +73,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
        if(mtemp){massgen[ix]=dynamic_ptr_cast<tcGenericMassGeneratorPtr>(mtemp);}
      }
    // throw a veto if not kinematically possible
-   if(minmass>p.mass())
+   if(minmass>p.mass()&&numProds!=1)
      {
        generator()->log() << "Hw64Decayer cannot perform the decay " << dm.tag() 
 			  << " for this particle instance as the minimum mass of "
@@ -96,40 +94,44 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    // to avoid bias
    unsigned int ntry(0);
    Energy outmass;
-   do
+   if(numProds!=1)
      {
-       unsigned int istart=UseRandom::irnd(numProds);
-       outmass=0.;
-       for(unsigned int ix=istart;ix<numProds;++ix)
+       do
 	 {
-	   if(massgen[ix])
-	     {masses[ix]=massgen[ix]->mass(*(dm.orderedProducts()[ix]),minmasses[ix],
-					   p.mass()-minmass+minmasses[ix]);}
-	   else
-	     {masses[ix]=dm.orderedProducts()[ix]->generateMass();}
-	   outmass+=masses[ix];
-	   if(outmass>p.mass()){break;}
+	   unsigned int istart=UseRandom::irnd(numProds);
+	   outmass=0.;
+	   for(unsigned int ix=istart;ix<numProds;++ix)
+	     {
+	       if(massgen[ix])
+		 {masses[ix]=massgen[ix]->mass(*(dm.orderedProducts()[ix]),minmasses[ix],
+					       p.mass()-minmass+minmasses[ix]);}
+	       else
+		 {masses[ix]=dm.orderedProducts()[ix]->generateMass();}
+	       outmass+=masses[ix];
+	       if(outmass>p.mass()){break;}
+	     }
+	   for(unsigned int ix=0;ix<istart;++ix)
+	     {
+	       if(massgen[ix])
+		 {masses[ix]=massgen[ix]->mass(*(dm.orderedProducts()[ix]),minmasses[ix],
+					       p.mass()-minmass+minmasses[ix]);}
+	       else
+		 {masses[ix]=dm.orderedProducts()[ix]->generateMass();}
+	       outmass+=masses[ix];
+	       if(outmass>p.mass()){break;}
+	     }
+	   ++ntry;
 	 }
-       for(unsigned int ix=0;ix<istart;++ix)
+       while(ntry<_masstry&&outmass>p.mass());
+       if(outmass>p.mass())
 	 {
-	   if(massgen[ix])
-	     {masses[ix]=massgen[ix]->mass(*(dm.orderedProducts()[ix]),minmasses[ix],
-					   p.mass()-minmass+minmasses[ix]);}
-	   else
-	     {masses[ix]=dm.orderedProducts()[ix]->generateMass();}
-	   outmass+=masses[ix];
-	   if(outmass>p.mass()){break;}
+	   generator()->log() << "Hw64Decayer failed to generate the masses of the"
+			      << " decay products for the decay " << dm.tag() 
+			      << " after " << _masstry << " attempts" << endl;
+	   throw Veto();
 	 }
-       ++ntry;
      }
-   while(ntry<_masstry&&outmass>p.mass());
-   if(outmass>p.mass())
-     {
-       generator()->log() << "Hw64Decayer failed to generate the masses of the"
-			  << " decay products for the decay " << dm.tag() 
-			  << " after " << _masstry << " attempts";
-       throw Veto();
-     }
+   else{masses[0]=p.mass();}
    for(unsigned int ix=0;ix<numProds;++ix){products[ix].setMass(masses[ix]);}
    // The K -> KL0 and KS0
    if(numProds == 1)
@@ -218,10 +220,6 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    else if(numProds == 4) 
      {Kinematics::fourBodyDecay(p.momentum(), products[0], products[1], 
 				products[2], products[3]);}
-   // Five Body Decay
-   else if(numProds == 5) 
-     {Kinematics::fiveBodyDecay(p.momentum(), products[0], products[1], 
-				products[2], products[3], products[4]);}
    if(products[0] == Lorentz5Momentum()) {
      generator()->log() << "The Decay mode " << dm.tag() << " cannot "
 	                << "proceed, not enough phase space\n";   

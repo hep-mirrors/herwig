@@ -249,7 +249,7 @@ struct ClassTraits<Herwig::MamboDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the MamboDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "MamboDecayer.so"; }
+  static string library() { return "HwMamboDecay.so"; }
 };
 
 }

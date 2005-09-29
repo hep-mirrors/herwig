@@ -1,3 +1,7 @@
+2005-09-29  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/MamboDecayer.h (Repository): removed 5 body decay option from Hw64Decayer
+
 2005-09-28  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Decay/Baryon/BaryonFactorizedDecayer.h (Repository): added all .so files needed by library to all classes to ensure correct dynamic loading
