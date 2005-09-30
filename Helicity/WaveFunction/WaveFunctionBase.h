@@ -210,7 +210,7 @@ public:
   /** 
    * Get the direction of particle.
    */
-  inline Herwig::Helicity::Direction direction();
+  inline Herwig::Helicity::Direction direction() const;
 
   /**
    * Set the direction of the particle

@@ -178,6 +178,7 @@ inline ScalarWaveFunction & ScalarWaveFunction::operator = (const ScalarWaveFunc
   setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
   _wf=w.Wave();
   setParticle(w.getParticle());
+  direction(w.direction());
   return *this;
 }
 

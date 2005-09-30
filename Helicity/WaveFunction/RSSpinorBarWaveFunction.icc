@@ -249,6 +249,7 @@ RSSpinorBarWaveFunction::operator = (const RSSpinorBarWaveFunction & w)
   setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
   _wf=w._wf;
   setParticle(w.getParticle());
+  direction(w.direction());
   return *this;
 }
 

@@ -109,7 +109,7 @@ inline void WaveFunctionBase::checkParticle(const tcPDPtr & in){setParticle(in);
 // destructor
 inline WaveFunctionBase::~WaveFunctionBase(){;}
 // direction of particle
-inline Direction WaveFunctionBase::direction(){return _dir;}
+inline Direction WaveFunctionBase::direction() const {return _dir;}
 inline void WaveFunctionBase::direction(Direction in){_dir=in;}
 inline const Lorentz5Momentum & WaveFunctionBase::getMomentum() const {return _momentum;}
 
