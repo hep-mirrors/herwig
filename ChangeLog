@@ -1,3 +1,7 @@
+2005-09-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* configure.ac, Makefile.am: configure switches for Mac OS X
+
 2005-09-29  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* src/Hw64Decays.in, src/Decays.in: Activated Mambo decayer for

@@ -5,7 +5,7 @@ SUBDIRS = include \
 	Helicity PDT Decay \
 	PDF Models \
 	Shower Hadronization MatrixElement \
-	UnderlyingEvent Interfaces Looptools \
+	UnderlyingEvent Interfaces $(DO_LOOPTOOLS) \
 	lib src
 
 noinst_HEADERS = Config/Herwig.h
