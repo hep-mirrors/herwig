@@ -1,3 +1,7 @@
+2005-10-05  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* acinclude.m4: Fixed bug #8. CLHEPINCLUDE is used correctly now
+
 2005-09-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* configure.ac, Makefile.am: configure switches for Mac OS X

@@ -1,24 +1,32 @@
 AC_DEFUN([AC_CHECK_CLHEP],
 [
-AC_MSG_CHECKING([CLHEPPATH is set])
+AC_MSG_CHECKING([for CLHEPPATH])
 if test -z "$CLHEPPATH"; then
-  AC_MSG_RESULT([no])
-  AC_MSG_ERROR([Set CLHEPPATH to point to the path of CLHEP before running configure.])
-else
-  AC_MSG_RESULT("$CLHEPPATH")
+  AC_MSG_RESULT([none])
+  AC_MSG_ERROR([CLHEPPATH not set])
 fi
+AC_MSG_RESULT([$CLHEPPATH])
 
-
-AC_MSG_CHECKING([CLHEPLIB is])
+AC_MSG_CHECKING([for CLHEPLIB])
 if test -z "$CLHEPLIB"; then
-	CLHEPLIB=`$CLHEPPATH/bin/clhep-config --libs | cut -d' ' -f2`
+  for filename in $CLHEPPATH/lib/libCLHEP-?.?.?.?.{so,dylib} $CLHEPPATH/lib/libCLHEP.{so,dylib}; do
+    if test -e $filename; then
+	CLHEPLIB=`basename $filename | sed -e 's/^lib/-l/' -e 's/\.\(so\|dylib\)$//'`
+    fi
+  done
+  if test -z "$CLHEPLIB"; then
+    AC_MSG_RESULT([none])
+    AC_MSG_ERROR([Cannot find libCLHEP at $CLHEPPATH/lib.])
+  fi
 fi
-CLHEPLDFLAGS=`$CLHEPPATH/bin/clhep-config --libs | cut -d' ' -f1`
-AC_MSG_RESULT("$CLHEPLIB")
+CLHEPLDFLAGS=-L$CLHEPPATH/lib
+AC_MSG_RESULT([$CLHEPLIB])
 
-AC_MSG_CHECKING([CLHEPINCLUDE is]) 
-CLHEPINCLUDE=`$CLHEPPATH/bin/clhep-config --include` 
-AC_MSG_RESULT("$CLHEPINCLUDE")
+AC_MSG_CHECKING([for CLHEPINCLUDE]) 
+if test -z "$CLHEPINCLUDE"; then
+  CLHEPINCLUDE=-I$CLHEPPATH/include
+fi
+AC_MSG_RESULT([$CLHEPINCLUDE])
 
 # Now lets see if the libraries work properly
 oldLIBS="$LIBS"
@@ -30,8 +38,8 @@ CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE"
 
 # check CLHEP first
 AC_MSG_CHECKING([that CLHEP works])
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <CLHEP/Random/Random.h>]], [[using namespace CLHEP; HepRandom r; r.flat();]])],[AC_MSG_RESULT(yes)],[AC_MSG_RESULT(no) 
-AC_MSG_ERROR(CLHEP must be installed to continue.)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <CLHEP/Random/Random.h>]],[[using namespace CLHEP; HepRandom r; r.flat();]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
+AC_MSG_ERROR([CLHEP must be installed to continue.])
 ])
 
 LIBS="$oldLIBS"
@@ -45,25 +53,21 @@ AC_SUBST(CLHEPLDFLAGS)
 
 AC_DEFUN([AC_CHECK_THEPEG],
 [
-AC_MSG_CHECKING([THEPEGPATH is set])
+AC_MSG_CHECKING([for THEPEGPATH])
 if test -z "$THEPEGPATH"; then
-  AC_MSG_RESULT([no])
-  AC_MSG_ERROR([Set THEPEGPATH to point to the path of ThePEG before running configure.])
-else
-  AC_MSG_RESULT("$THEPEGPATH")
+  AC_MSG_RESULT([none])
+  AC_MSG_ERROR([THEPEGPATH not set])
 fi
+AC_MSG_RESULT([$THEPEGPATH])
 
-AC_MSG_CHECKING([THEPEGLIB is])
 THEPEGLIB="-lThePEG"
 THEPEGLDFLAGS="-L$THEPEGPATH/lib/ThePEG"
-AC_MSG_RESULT("$THEPEGLIB")
 
+AC_MSG_CHECKING([for THEPEGINCLUDE])
 if test -z "$THEPEGINCLUDE"; then
-THEPEGINCLUDE=-I$THEPEGPATH/include
+  THEPEGINCLUDE=-I$THEPEGPATH/include
 fi
-
-AC_MSG_CHECKING([THEPEGINCLUDE is])
-AC_MSG_RESULT("$THEPEGINCLUDE")
+AC_MSG_RESULT([$THEPEGINCLUDE])
 
 dnl ###############################
 dnl ###############################
@@ -78,9 +82,9 @@ CPPFLAGS="$oldCPPFLAGS $CLHEPINCLUDE $THEPEGINCLUDE"
 AC_MSG_CHECKING([that ThePEG works])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <ThePEG/Repository/Repository.h>
 ]], [[breakThePEG();
-]])],[AC_MSG_RESULT(yes)
-],[AC_MSG_RESULT(no)
-AC_MSG_ERROR(ThePEG must be installed to continue.)])
+]])],[AC_MSG_RESULT([yes])
+],[AC_MSG_RESULT([no])
+AC_MSG_ERROR([ThePEG must be installed to continue.])])
 
 LIBS="$oldLIBS"
 LDFLAGS="$oldLDFLAGS"
@@ -88,7 +92,6 @@ CPPFLAGS="$oldCPPFLAGS"
 
 AC_SUBST(THEPEGLIB)
 AC_SUBST(THEPEGLDFLAGS)
-
 ])
 
 
