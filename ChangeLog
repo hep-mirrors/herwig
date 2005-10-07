@@ -1,3 +1,7 @@
+2005-10-07  Martyn Gigg  <m.a.gigg@dur.ac.uk>
+
+	* Decay/Perturbative/SMTopDecayer.h (Repository): Added TopDecayer
+
 2005-10-07  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Decay/HwDecayHandler.cc (Repository): changes so the reference to the
