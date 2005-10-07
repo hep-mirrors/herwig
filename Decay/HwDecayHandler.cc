@@ -135,7 +135,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 		  for(unsigned int ix=0;ix<children.size();++ix)
 		    {if(children[ix]->coloured()){partonic=true;break;}}
 		  // if coloured particles were produced hadronize them
-		  if(partonic)
+		  if(partonic&&_partonhad)
 		    {
 		      vector<tPPtr> hadrons;
 		      hadronized=_partonhad->hadronize(parent,StepPtr(&s),
@@ -227,7 +227,8 @@ void HwDecayHandler::Init()
   static Reference<HwDecayHandler,PartonicHadronizer> interfacePartonicHadronizer
     ("PartonicHadronizer",
      "Pointer to the object which hadronizes partonic decays.",
-     &HwDecayHandler::_partonhad, false, false, true, false, false);
+     &HwDecayHandler::_partonhad, false, false, true, true, false);
+
 
   static Parameter<HwDecayHandler,unsigned int> interfaceHadronizationTries
     ("HadronizationTries",

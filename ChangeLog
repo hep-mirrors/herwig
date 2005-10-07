@@ -1,3 +1,8 @@
+2005-10-07  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Decay/HwDecayHandler.cc (Repository): changes so the reference to the
+	PartonicHadronizer can be set to null to switch off hadronization.
+
 2005-10-05  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* acinclude.m4: Fixed bug #8. CLHEPINCLUDE is used correctly now
