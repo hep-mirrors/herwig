@@ -8,6 +8,7 @@
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "FFSVertex.fh"
 
 namespace Herwig {
 using ThePEG::Helicity::DiracRep;
