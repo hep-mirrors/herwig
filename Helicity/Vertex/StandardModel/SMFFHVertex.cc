@@ -9,10 +9,12 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Config/Constants.h"
 
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
+using ThePEG::Constants::pi;
     
 SMFFHVertex::~SMFFHVertex() {}
 
@@ -53,7 +55,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
   if(q2!=_q2last)
     {
       double alpha = _theSM->alphaEM(q2);
-      _couplast = -0.5*sqrt(4.0*3.14159265*alpha)/_sw/_mw;
+      _couplast = -0.5*sqrt(4.0*pi*alpha)/_sw/_mw;
       _q2last=q2;
       _idlast=iferm;
       if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16))
