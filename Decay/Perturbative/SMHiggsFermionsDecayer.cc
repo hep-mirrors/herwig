@@ -23,10 +23,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::tcScalarSpinPtr;
-using ThePEG::Helicity::ScalarSpinInfo;
-using ThePEG::Helicity::tcFermionSpinPtr;
-using ThePEG::Helicity::FermionSpinInfo;
 using ThePEG::Helicity::RhoDMatrix;
 using Helicity::ScalarWaveFunction;
 using Helicity::SpinorWaveFunction;

@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FFVVertex class.
+//
+#ifndef HERWIG_FFVVertex_FH
+#define HERWIG_FFVVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+class FFVVertex;
+ThePEG_DECLARE_POINTERS(FFVVertex,FFVVertexPtr);
+
+}
+}
+
+#endif

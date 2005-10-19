@@ -8,6 +8,7 @@
 #include <Herwig++/Helicity/WaveFunction/VectorWaveFunction.h>
 #include <Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h>
 #include <Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h>
+#include "FFVVertex.fh"
 
 namespace Herwig {
  
