@@ -1,0 +1,186 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the SMHiggsFermionsDecayer class.
+//
+
+#include "SMHiggsFermionsDecayer.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/ParVector.h"
+
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "SMHiggsFermionsDecayer.tcc"
+#endif
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Helicity/Correlations/DecayVertex.h"
+#include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "ThePEG/Helicity/FermionSpinInfo.h"
+#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+
+namespace Herwig {
+using namespace ThePEG;
+using ThePEG::Helicity::tcScalarSpinPtr;
+using ThePEG::Helicity::ScalarSpinInfo;
+using ThePEG::Helicity::tcFermionSpinPtr;
+using ThePEG::Helicity::FermionSpinInfo;
+using ThePEG::Helicity::RhoDMatrix;
+using Helicity::ScalarWaveFunction;
+using Helicity::SpinorWaveFunction;
+using Helicity::SpinorBarWaveFunction;
+using Helicity::Direction;
+using Helicity::incoming;
+using Helicity::outgoing;
+
+SMHiggsFermionsDecayer::~SMHiggsFermionsDecayer() {}
+
+void SMHiggsFermionsDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // get the vertices from the Standard Model object
+  Ptr<Herwig::StandardModel>::transient_const_pointer 
+    hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  if(hwsm)
+    {
+      _hvertex = hwsm->vertexFFH();
+      // make sure they are initialized
+      _hvertex->init();
+    }
+  else
+    {throw InitException() << "SMHiggsFermionsDecayer needs the StandardModel class"
+			   << " to be either the Herwig++ one or a class inheriting"
+			   << " from it";}
+  vector<double> wgt(0);
+  unsigned int imode=0;
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  int iy;
+  extpart[0]=getParticleData(ParticleID::h0);
+  for(unsigned int istep=0;istep<11;istep+=10)
+    {
+      for(unsigned ix=1;ix<7;++ix)
+	{
+	  if(istep<10||ix%2!=0)
+	    {
+	      iy = ix+istep;
+	      extpart[1]=getParticleData( iy);
+	      extpart[2]=getParticleData(-iy);
+	      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+	      addMode(mode,_maxwgt[imode],wgt);
+	      ++imode;
+	    }
+	}
+    }
+  cout << *this << endl;
+}
+
+bool SMHiggsFermionsDecayer::accept(const DecayMode & dm) const {
+  bool allowed(false);
+  int id0=dm.parent()->id();
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  int id1=(**pit).id();
+  ++pit;
+  int id2=(**pit).id();
+  if(id0==ParticleID::h0)
+    {if(id1==-id2&&(abs(id1)<=5||(abs(id1)>=11&&abs(id1)<=16))){allowed=true;}}
+  return allowed;
+}
+
+ParticleVector SMHiggsFermionsDecayer::decay(const DecayMode & dm,
+				  const Particle & parent) const {
+  // id's of the decaying particles
+  ParticleMSet::const_iterator pit(dm.products().begin());
+  int id1((**pit).id());
+  int imode=-1;
+  if(abs(id1)<6){imode=abs(id1)-1;}
+  else if(abs(id1)>=11&&abs(id1)<=16){imode=(abs(id1)-11)/2+5;}
+  ParticleVector output(generate(false,false,imode,parent));
+  // set up the colour flow
+  if(output[0]->id()>=-6&&output[0]->id()<0)
+    {output[0]->colourNeighbour(output[1]);}
+  else if(output[0]->id()<=6&&output[0]->id()>0)
+    {output[0]->antiColourNeighbour(    output[1]);}
+  return output;
+}
+
+
+void SMHiggsFermionsDecayer::persistentOutput(PersistentOStream & os) const {
+  os << _maxwgt << _hvertex;
+}
+
+void SMHiggsFermionsDecayer::persistentInput(PersistentIStream & is, int) {
+  is >> _maxwgt >> _hvertex;
+}
+
+ClassDescription<SMHiggsFermionsDecayer> SMHiggsFermionsDecayer::initSMHiggsFermionsDecayer;
+// Definition of the static class description member.
+
+void SMHiggsFermionsDecayer::Init() {
+
+  static ClassDocumentation<SMHiggsFermionsDecayer> documentation
+    ("The SMHiggsFermionsDecayer class implements the decat of the Standard Model"
+     " Higgs boson to the Standard Model fermions");
+
+  static ParVector<SMHiggsFermionsDecayer,double> interfaceZquarkMax
+    ("MaxWeight",
+     "The maximum weight for the decays",
+     &SMHiggsFermionsDecayer::_maxwgt,
+     0, 0, 0, 0., 10000, false, false, true);
+
+}
+
+// return the matrix element squared
+double SMHiggsFermionsDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
+				   const ParticleVector & decay) const 
+{
+  RhoDMatrix rhoin;
+  // check if the incoming particle has a spin info and if not create it
+  ScalarWaveFunction inwave = ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),
+						 rhoin,incoming,true,vertex);
+  // construct the spinors for the outgoing particles
+  int iferm,ianti;
+  if(decay[0]->id()<0){iferm=1;ianti=0;}
+  else{iferm=0;ianti=1;}
+  vector<SpinorWaveFunction   > awave;
+  vector<SpinorBarWaveFunction> fwave;
+  SpinorWaveFunction   (awave,decay[ianti],outgoing,true,vertex);
+  SpinorBarWaveFunction(fwave,decay[iferm],outgoing,true,vertex);
+  // compute the matrix element
+  DecayMatrixElement newme(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
+  Energy2 scale(inpart.mass()*inpart.mass());
+  unsigned int ifm,ia;
+  for(ifm=0;ifm<2;++ifm)
+    {
+      for(ia=0;ia<2;++ia)
+	{
+	  if(iferm>ianti)
+	    {newme(0,ia,ifm)=_hvertex->evaluate(scale,awave[ia],fwave[ifm],inwave);}
+	  else
+	    {newme(0,ifm,ia)=_hvertex->evaluate(scale,awave[ia],fwave[ifm],inwave);}
+	}
+    }
+  ME(newme);
+  double output=(newme.contract(rhoin)).real()/scale;
+  if(abs(decay[0]->id())<=6){output*=3.;}
+  if(decay[0]->hasColour())     {decay[0]->antiColourNeighbour(decay[1]);}
+  else if(decay[1]->hasColour()){decay[1]->antiColourNeighbour(decay[0]);}
+  // test of the partial width
+  /*
+  Ptr<Herwig::StandardModel>::transient_const_pointer 
+    hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  double g2(hwsm->alphaEM(scale)*4.*pi/hwsm->sin2ThetaW());
+  Energy mass(hwsm->mass(scale,decay[0]->dataPtr())),
+    mw(getParticleData(ParticleID::Wplus)->mass());
+  double beta(sqrt(1.-4.*decay[0]->mass()*decay[0]->mass()/scale));
+  Energy test(g2*mass*mass*beta*beta*beta*inpart.mass()/32./pi/mw/mw);
+  if(abs(decay[0]->id())<=6){test *=3.;}
+  cout << "testing the answer " << output << "     " 
+       << test
+       << endl;
+  */
+  return output;
+}
+
+}
