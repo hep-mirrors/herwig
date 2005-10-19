@@ -19,18 +19,104 @@
 #include "ThePEG/Helicity/VectorSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::tcVectorSpinPtr;
-using ThePEG::Helicity::VectorSpinInfo;
-using ThePEG::Helicity::tcFermionSpinPtr;
-using ThePEG::Helicity::FermionSpinInfo;
 using ThePEG::Helicity::RhoDMatrix;
 using Helicity::VectorWaveFunction;
+using Helicity::SpinorWaveFunction;
+using Helicity::SpinorBarWaveFunction;
 using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
+
+void SMWZDecayer::doinit() throw(InitException) 
+{
+  DecayIntegrator::doinit();
+  // get the vertices from the Standard Model object
+  Ptr<Herwig::StandardModel>::transient_const_pointer 
+    hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  if(hwsm)
+    {
+      _Wvertex = hwsm->vertexFFW();
+      _Zvertex = hwsm->vertexFFZ();
+      // make sure they are initialized
+      _Wvertex->init();
+      _Zvertex->init();
+    }
+  else
+    {throw InitException();}
+  // now set up the decay modes
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  vector<double> wgt(0);
+  // the Z decay modes
+  extpart[0]=getParticleData(ParticleID::Z0);
+  // loop over the  quarks and the leptons
+  unsigned int ix,istep=0,iy;
+  for( ;istep<11;istep+=10)
+    {
+      for(ix=1;ix<7;++ix)
+	{
+	  iy=istep+ix;
+	  if(iy!=6)
+	    {
+	      // check that the combination of particles is allowed
+	      if(_Zvertex->allowed(-iy,iy,ParticleID::Z0))
+		{
+		  extpart[1] = getParticleData(-iy);
+		  extpart[2] = getParticleData( iy);
+		  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+		  if(iy<=6){addMode(mode,_Zquarkwgt[ix-1],wgt);}
+		  else{addMode(mode,_Zleptonwgt[ix-11],wgt);}
+		}
+	      else
+		{throw InitException() << "SMWZDecayer::doinit() the Z vertex" 
+				       << "cannot handle all the modes" 
+				       << Exception::abortnow;}
+	    }
+	}
+    }
+  // and the W modes
+  extpart[0]=getParticleData(ParticleID::Wplus);
+  // loop for the quarks
+  unsigned int iz=0;
+  for(ix=1;ix<6;ix+=2)
+    {
+      for(iy=2;iy<6;iy+=2)
+	{
+	  // check that the combination of particles is allowed
+	  if(_Wvertex->allowed(-ix,iy,ParticleID::Wminus))
+	    {
+	      extpart[1] = getParticleData(-ix);
+	      extpart[2] = getParticleData( iy);
+	      mode = new DecayPhaseSpaceMode(extpart,this);
+	      addMode(mode,_Wquarkwgt[iz],wgt);
+	      ++iz;
+	    }
+	  else
+	    {throw InitException() << "SMWZDecayer::doinit() the W vertex" 
+				   << "cannot handle all the quark modes" 
+				   << Exception::abortnow;}
+	}
+    }
+  for(ix=11;ix<17;ix+=2)
+    {
+      // check that the combination of particles is allowed
+      if(_Wvertex->allowed(-ix,ix+1,ParticleID::Wminus))
+	{
+	  extpart[1] = getParticleData(-ix);
+	  extpart[2] = getParticleData(ix+1);
+	  mode = new DecayPhaseSpaceMode(extpart,this);
+	  addMode(mode,_Wleptonwgt[(ix-11)/2],wgt);
+	}
+	  else
+	    {throw InitException() << "SMWZDecayer::doinit() the W vertex" 
+				   << "cannot handle all the lepton modes" 
+				   << Exception::abortnow;}
+    }
+}
 
 SMWZDecayer::~SMWZDecayer() {}
 
@@ -148,85 +234,42 @@ void SMWZDecayer::Init() {
 double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 			const ParticleVector & decay) const 
 {
-  // check if the incoming particle has a spin info 
-  tcVectorSpinPtr inspin;
-  if(inpart.spinInfo())
-    {inspin = dynamic_ptr_cast<tcVectorSpinPtr>(inpart.spinInfo());}
+  // get/calculate the spin info for the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
-  VectorWaveFunction inwave[3];
-  // if the spin info object exists use it
-  if(inspin&&inpart.spinInfo())
-    {
-      for(unsigned int ix=0;ix<3;++ix)
-	{inwave[ix]=VectorWaveFunction(inpart.momentum(),inpart.dataPtr(),
-				       inspin->getDecayBasisState(ix),incoming);}
-      inspin->decay();
-      rhoin = inspin->rhoMatrix();
-    }
-  else
-    {
-      // if has spin info but not the right type issue warning and throw away
-      if(inpart.spinInfo())
-	{throw DecayIntegratorError() << "Wrong type of spin info for the "
-				      << "incoming particle in SMWZDecayer::me2()" 
-				      << Exception::warning;}
-      SpinPtr newspin=new_ptr(VectorSpinInfo(inpart.momentum(),true));
-      inspin = dynamic_ptr_cast<tcVectorSpinPtr>(newspin);
-      inspin->decayed(true);
-      VectorWaveFunction temp=VectorWaveFunction(inpart.momentum(),inpart.dataPtr(),
-						 incoming);
-      for(int ix=0;ix<3;++ix)
-	{
-	  temp.reset(ix);
-	  inwave[ix]=temp;
-	  inspin->setDecayState(ix,temp.Wave());
-	}
-      const_ptr_cast<tPPtr>(&inpart)->spinInfo(newspin);
-    }
+  vector<VectorWaveFunction> inwave;
+  VectorWaveFunction(inwave,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
+		     true,false,vertex);
   // construct the spinors for the outgoing particles
   int iferm,ianti;
   if(decay[0]->id()<0){iferm=1;ianti=0;}
   else{iferm=0;ianti=1;}
-  SpinorWaveFunction awave = SpinorWaveFunction(decay[ianti]->momentum(),
-						decay[ianti]->dataPtr(),outgoing);
-  SpinorBarWaveFunction fwave = SpinorBarWaveFunction(decay[iferm]->momentum(),
-						      decay[iferm]->dataPtr(),outgoing);
-  // spin info for the outgoing particles
-  FermionSpinPtr ferm,anti;
-  if(vertex)
-    {
-      ferm = new_ptr(FermionSpinInfo(decay[iferm]->momentum(),true));
-      anti = new_ptr(FermionSpinInfo(decay[ianti]->momentum(),true));
-      decay[iferm]->spinInfo(ferm);
-      decay[ianti]->spinInfo(anti);
-    }
+  vector<SpinorWaveFunction   > awave;
+  vector<SpinorBarWaveFunction> fwave;
+  SpinorWaveFunction   (awave,decay[ianti],outgoing,true,vertex);
+  SpinorBarWaveFunction(fwave,decay[iferm],outgoing,true,vertex);
   // compute the matrix element
   DecayMatrixElement newme(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   Energy2 scale(inpart.mass()*inpart.mass());
   unsigned int ifm,ia,vhel;
   for(ifm=0;ifm<2;++ifm)
     {
-      fwave.reset(ifm);
-      if(vertex){ferm->setBasisState(ifm,fwave.Wave().bar());}
       for(ia=0;ia<2;++ia)
 	{
-	  awave.reset(ia);
-	  if(vertex&&ifm==0){anti->setBasisState(ia,awave.Wave());}
 	  for(vhel=0;vhel<3;++vhel)
 	    {
 	      if(inpart.id()==ParticleID::Z0)
 		{
 		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _Zvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
+		      _Zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		  else{newme(vhel,ifm,ia)=
-		      _Zvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
+		      _Zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		}
 	      else
 		{
 		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _Wvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
+		      _Wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		  else{newme(vhel,ifm,ia)=
-		      _Wvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
+		      _Wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		}
 	    }
 	}

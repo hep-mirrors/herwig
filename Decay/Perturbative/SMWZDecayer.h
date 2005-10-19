@@ -8,12 +8,10 @@
 #include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "SMWZDecayer.fh"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace Herwig::Helicity;
-typedef Ptr<Herwig::Helicity::FFVVertex>::pointer FFVPtr;
 
 /** \ingroup Decay
  *
@@ -46,19 +44,10 @@ public:
   virtual ~SMWZDecayer();
   //@}
 
-  /**
-   * Return the matrix element squared for a given mode and phase-space channel.
-   * @param vertex Output the information on the vertex for spin correlations
-   * @param ichan The channel we are calculating the matrix element for. 
-   * @param part The decaying Particle.
-   * @param decay The particles produced in the decay.
-   * @return The matrix element squared for the phase-space configuration.
-   */
-  virtual double me2(bool vertex, const int ichan, const Particle & part,
-		     const ParticleVector & decay) const;
-
 public:
 
+  /** @name Virtual functions required by the Decayer class. */
+  //@{
   /**
    * Accept member which is called at initialization to see if this Decayer can
    * handle a given decay mode. 
@@ -76,6 +65,18 @@ public:
    * @return The vector of particles produced in the decay.
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+
+  /**
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
+   */
+  virtual double me2(bool vertex, const int ichan, const Particle & part,
+		     const ParticleVector & decay) const;
+  //@}
 
 public:
 
@@ -131,7 +132,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
@@ -180,12 +181,12 @@ private:
   /**
    * Pointer to the Z vertex
    */
-  mutable FFVPtr _Zvertex;
+  FFVVertexPtr _Zvertex;
 
   /**
    * Pointer to the W vertex
    */
-  mutable FFVPtr _Wvertex;
+  FFVVertexPtr _Wvertex;
 
   /**
    * maximum weights for the different integrations
