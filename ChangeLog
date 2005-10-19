@@ -1,5 +1,7 @@
 2005-10-19  Pete's account  <Peter.Richardson@durham.ac.uk>
 
+	* Helicity/WaveFunction/ScalarWaveFunction.cc (Repository): changes to correctly return rho matrix
+
 	* Decay/Perturbative/SMWZDecayer.icc (Repository): modifications to SMWZDecayer to clean up code using new constructors to produce spinInfo
 
 	* Helicity/Vertex/Vector/FFVVertex.h (Repository): added .fh file for FFVVertex
