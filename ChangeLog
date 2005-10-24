@@ -1,3 +1,15 @@
+2005-10-24  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Helicity/Vertex/StandardModel/SMHPPVertex.h (Repository): Added SMHPPVertex class
+
+	* Helicity/Vertex/StandardModel/SMHGGVertex.h (Repository): Added SMHGGVertex 
+
+	* Helicity/Vertex/Scalar/SVVLoopVertex.h (Repository): Added SVVLoopVertex class
+
+	* Helicity/Vertex/Scalar/GeneralSVVVertex.h (Repository): Added GeneralSVVVertex class 
+
+	* Decay/Perturbative/SMHDecayer.h (Repository): Added HVV decayer 
+
 2005-10-19  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Helicity/Vertex/StandardModel/SMFFHVertex.cc (Repository): changes to remove hard-wired value of pi

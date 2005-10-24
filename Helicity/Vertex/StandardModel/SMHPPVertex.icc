@@ -1,0 +1,81 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMHPPVertex class.
+//
+
+namespace Herwig {
+  namespace Helicity {
+    using namespace ThePEG;
+
+    inline SMHPPVertex::SMHPPVertex() {
+      //PDG codes for particles at vertices
+      vector<int> first(1,25),second(1,22),third(1,22);
+      setList(first,second,third);
+      _couplast = 0.;
+      _q2last = 0.;
+      _mw = 0.;
+      _sw =0.;
+    }
+
+    inline SMHPPVertex::SMHPPVertex(const SMHPPVertex & x)
+      : SVVLoopVertex(x),_couplast(x._couplast),_q2last(x._q2last),
+	_theSM(x._theSM),_mw(x._mw),_sw(x._sw) {}
+
+    inline IBPtr SMHPPVertex::clone() const {
+      return new_ptr(*this);
+    }
+
+    inline IBPtr SMHPPVertex::fullclone() const {
+      return new_ptr(*this);
+    }
+
+    inline void SMHPPVertex::doupdate() throw(UpdateException) {
+      SVVLoopVertex::doupdate();
+      // First update base class.
+      bool redo = touched();
+      // redo if touched.
+      //  UpdateChecker::check(aDependentMember, redo);
+      // Update referenced objects on which this depends redo is set to true
+      // if the dependent object is touched.
+      //  for_each(ContainerOfDependencies, UpdateChecker(redo));
+      // Update a container of references.
+      //  for_each(MapOfDependencies, UpdateMapChecker(redo));
+      // Update a map of references.
+      if ( !redo ) return;
+      // return if nothing has been touched. Otherwise do the actual update.
+      //  touch()
+      // Touch if anything has changed.
+    }
+
+    inline void SMHPPVertex::doinit() throw(InitException) {
+      _theSM = dynamic_ptr_cast<Ptr<Herwig::StandardModel>
+        ::transient_pointer>(generator()->standardModel());
+      _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+      _sw = _theSM->sin2ThetaW();
+      _sw = sqrt(_sw);
+      SVVLoopVertex::doinit();
+    }
+
+    inline void SMHPPVertex::dofinish() {
+      SVVLoopVertex::dofinish();
+    }
+
+    inline void SMHPPVertex::doinitrun() {
+      SVVLoopVertex::doinitrun();
+    }
+
+    inline void SMHPPVertex::rebind(const TranslationMap & trans)
+      throw(RebindException) {
+      // dummy = trans.translate(dummy);
+      SVVLoopVertex::rebind(trans);
+    }
+
+    inline IVector SMHPPVertex::getReferences() {
+      IVector ret = SVVLoopVertex::getReferences();
+      // ret.push_back(dummy);
+      return ret;
+    }
+  
+  }
+}

@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SMHGGVertex class.
+//
+#ifndef ThePEG_SMHGGVertex_FH
+#define ThePEG_SMHGGVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+  using namespace ThePEG;
+class SMHGGVertex;
+ThePEG_DECLARE_POINTERS(SMHGGVertex,SMHGGVertexPtr);
+
+}
+
+#endif

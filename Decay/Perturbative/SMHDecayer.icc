@@ -1,0 +1,100 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMHDecayer class.
+//
+
+namespace Herwig {
+  using namespace ThePEG;
+  
+inline SMHDecayer::SMHDecayer() {
+  _Hwgt.resize(2,0.);
+  //Higgs to glu,glu
+  _Hwgt[0] = 1.;
+  //Higgs to gamma ,gamma
+  _Hwgt[1] = 1.;
+}
+
+inline SMHDecayer::SMHDecayer(const SMHDecayer & x)
+  : DecayIntegrator(x),_HGGVertex(x._HGGVertex),_HPPVertex(x._HPPVertex),
+    _Hwgt(x._Hwgt) {}
+
+inline IBPtr SMHDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMHDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SMHDecayer::doupdate() throw(UpdateException) {
+  DecayIntegrator::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+inline void SMHDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  if(_HGGVertex) {
+    _HGGVertex->init();
+  }
+  else {
+    throw InitException() << "SMHDecayer::doinit() - " 
+			  << "_HGGVertex is null";
+  }
+  if(_HPPVertex) {
+    _HPPVertex->init();
+  }
+  else {
+    throw InitException() << "SMHDecayer::doinit() - " 
+			  << "_HPPVertex is null";
+  }
+  //set up decay modes
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  vector<double> wgt(0);
+  //glu,glu mode
+  extpart[0] = getParticleData(ParticleID::h0);
+  extpart[1] = getParticleData(ParticleID::g);
+  extpart[2] = getParticleData(ParticleID::g);
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  addMode(mode,_Hwgt[0],wgt);
+  //gamma,gamma mode
+  extpart[1] = getParticleData(ParticleID::gamma);
+  extpart[2] = getParticleData(ParticleID::gamma);
+  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+  addMode(mode,_Hwgt[1],wgt);
+}
+
+inline void SMHDecayer::dofinish() {
+  DecayIntegrator::dofinish();
+}
+
+inline void SMHDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+}
+
+inline void SMHDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  DecayIntegrator::rebind(trans);
+}
+
+inline IVector SMHDecayer::getReferences() {
+  IVector ret = DecayIntegrator::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+ 
+}
