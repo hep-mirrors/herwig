@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ModelGenerator class.
+//
+#ifndef HERWIG_ModelGenerator_FH
+#define HERWIG_ModelGenerator_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+class ModelGenerator;
+ThePEG_DECLARE_POINTERS(ModelGenerator,ModelGeneratorPtr);
+
+}
+
+#endif

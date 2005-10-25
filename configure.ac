@@ -81,6 +81,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Makefile
 		Models/StandardModel/Makefile
 		Models/RSModel/Makefile
+		Models/General/Makefile
 		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
