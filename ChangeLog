@@ -1,7 +1,3 @@
-2005-10-25  Peter Richardson  <Peter.Richardson@durham.ac.uk>
-
-	* Models/General/ModelGenerator.cc (Repository): added files for new branch containing BSM stuff
-
 2005-10-25  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
 
 	* Decay/Perturbative/SMHiggsGGHiggsPPDecayer.h (Repository): Renamed SMHDecayer to SMHiggsGGHiggsPPDecayer 
