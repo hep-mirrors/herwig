@@ -1,1 +1,1 @@
-SUBDIRS = RSModel  StandardModel General
+SUBDIRS = RSModel  StandardModel
