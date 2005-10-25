@@ -1,198 +1,199 @@
-cd // -*- C++ -*-
+// -*- C++ -*-
 #ifndef HERWIG_SMHGGVertex_H
 #define HERWIG_SMHGGVertex_H
 //
 // This is the declaration of the SMHGGVertex class.
 //
 
-#include "SVVLoopVertex.h"
-#include "SMHGGVertex.fh"
-#include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "Herwig++/Helicity/Vertex/Scalar/SVVLoopVertex.h"
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "SMHGGVertex.fh"
 
 namespace Herwig {
-  namespace Helicity {
-    using namespace ThePEG;
+namespace Helicity {
+using namespace ThePEG;
     
-    /**
-     * The <code>SMHGGVertex</code> class implements the
-     * setCoupling member for the Standard Model Higgs to  
-     * gluon, gluon decay mode.
-     */
-    class SMHGGVertex: public SVVLoopVertex {
-      
-    public:
-      
-      /** @name Standard constructors and destructors. */
-      //@{
-      /**
-       * The default constructor.
-       */
-      inline SMHGGVertex();
+  /**
+   * The <code>SMHGGVertex</code> class implements the
+   * setCoupling member for the Standard Model Higgs to  
+   * gluon, gluon decay mode.
+   */
+class SMHGGVertex: public SVVLoopVertex {
+  
+public:
+  
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
+  inline SMHGGVertex();
+  
+  /**
+   * The copy constructor.
+   */
+  inline SMHGGVertex(const SMHGGVertex &);
+  
+  /**
+   * The destructor.
+   */
+  virtual ~SMHGGVertex();
+  //@}
+  
+public:
+  
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+  
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+  
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+  
+  /** 
+   * Calculate couplings
+   *@param q2 Scale at which to evaluate coupling
+   *@param part1 ParticleData pointer to first particle
+   *@param part2 ParticleData pointer to first particle
+   *@param part3 ParticleData pointer to first particle
+   */
+  virtual void setCoupling(Energy q2, tcPDPtr part1, tcPDPtr part2,
+			   tcPDPtr part3);
+  
+protected:
+  
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+  
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+  
+protected:
+  
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
+  
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+  
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
+  
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
+  
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+  
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
+  //@}
+  
+private:
+  
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<SMHGGVertex> initSMHGGVertex;
+  
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  SMHGGVertex & operator=(const SMHGGVertex &);
+  
+  /**
+   *Storage of couplings
+   */
+  //@{
+  /**
+   *Last value of the coupling calculated
+   */
+  Complex _couplast;
+  
+  /**
+   *The scale \f$q^2\f$ at which coupling was last evaluated
+   */
+  Energy2 _q2last;
+  //@}
+  
+  /**
+   *Pointer to Standard Model object
+   */
+  Ptr<Herwig::StandardModel>::pointer _theSM;
+  
+  /**
+   *Mass of W boson for higgs coupling
+   */
+  Energy _mw;
+  
+  /**
+   *Storage of \f$\sin\theta_W\f$
+   */
+  double _sw;
+  
+  /**
+   * Option to turn on b in quark loop
+   */
+  int _qopt;
+};
 
-      /**
-       * The copy constructor.
-       */
-      inline SMHGGVertex(const SMHGGVertex &);
-
-      /**
-       * The destructor.
-       */
-      virtual ~SMHGGVertex();
-      //@}
-
-    public:
-
-      /** @name Functions used by the persistent I/O system. */
-      //@{
-      /**
-       * Function used to write out object persistently.
-       * @param os the persistent output stream written to.
-       */
-      void persistentOutput(PersistentOStream & os) const;
-
-      /**
-       * Function used to read in object persistently.
-       * @param is the persistent input stream read from.
-       * @param version the version number of the object when written.
-       */
-      void persistentInput(PersistentIStream & is, int version);
-      //@}
-
-      /**
-       * The standard Init function used to initialize the interfaces.
-       * Called exactly once for each class by the class description system
-       * before the main function starts or
-       * when this class is dynamically loaded.
-       */
-      static void Init();
-
-      /** 
-       * Calculate couplings
-       *@param q2 Scale at which to evaluate coupling
-       *@param part1 ParticleData pointer to first particle
-       *@param part2 ParticleData pointer to first particle
-       *@param part3 ParticleData pointer to first particle
-       */
-      virtual void setCoupling(Energy q2, tcPDPtr part1, tcPDPtr part2,
-			       tcPDPtr part3);
-            
-    protected:
-      
-      /** @name Clone Methods. */
-      //@{
-      /**
-       * Make a simple clone of this object.
-       * @return a pointer to the new object.
-       */
-      inline virtual IBPtr clone() const;
-
-      /** Make a clone of this object, possibly modifying the cloned object
-       * to make it sane.
-       * @return a pointer to the new object.
-       */
-      inline virtual IBPtr fullclone() const;
-      //@}
-
-    protected:
-
-      /** @name Standard Interfaced functions. */
-      //@{
-      /**
-       * Check sanity of the object during the setup phase.
-       */
-      inline virtual void doupdate() throw(UpdateException);
-
-      /**
-       * Initialize this object after the setup phase before saving and
-       * EventGenerator to disk.
-       * @throws InitException if object could not be initialized properly.
-       */
-      inline virtual void doinit() throw(InitException);
-
-      /**
-       * Initialize this object. Called in the run phase just before
-       * a run begins.
-       */
-      inline virtual void doinitrun();
-
-      /**
-       * Finalize this object. Called in the run phase just after a
-       * run has ended. Used eg. to write out statistics.
-       */
-      inline virtual void dofinish();
-
-      /**
-       * Rebind pointer to other Interfaced objects. Called in the setup phase
-       * after all objects used in an EventGenerator has been cloned so that
-       * the pointers will refer to the cloned objects afterwards.
-       * @param trans a TranslationMap relating the original objects to
-       * their respective clones.
-       * @throws RebindException if no cloned object was found for a given
-       * pointer.
-       */
-      inline virtual void rebind(const TranslationMap & trans)
-	throw(RebindException);
-
-      /**
-       * Return a vector of all pointers to Interfaced objects used in this
-       * object.
-       * @return a vector of pointers.
-       */
-      inline virtual IVector getReferences();
-      //@}
-
-    private:
-
-      /**
-       * The static object used to initialize the description of this class.
-       * Indicates that this is a concrete class with persistent data.
-       */
-      static ClassDescription<SMHGGVertex> initSMHGGVertex;
-
-      /**
-       * The assignment operator is private and must never be called.
-       * In fact, it should not even be implemented.
-       */
-      SMHGGVertex & operator=(const SMHGGVertex &);
-
-      /**
-       *Storage of couplings
-       */
-      //@{
-      /**
-       *Last value of the coupling calculated
-       */
-      Complex _couplast;
-      
-      /**
-       *The scale \f$q^2\f$ at which coupling was last evaluated
-       */
-      Energy2 _q2last;
-      //@}
-
-      /**
-       *Pointer to Standard Model object
-       */
-      Ptr<Herwig::StandardModel>::pointer _theSM;
-      
-      /**
-       *Mass of W boson for higgs coupling
-       */
-      Energy _mw;
-      
-      /**
-       *Storage of \f$\sin\theta_W\f$
-       */
-      double _sw;
-    
-      /**
-       * Option to turn on b in quark loop
-       */
-      int _qopt;
-    };
-  }
+}
 }
 
 // CLASSDOC OFF

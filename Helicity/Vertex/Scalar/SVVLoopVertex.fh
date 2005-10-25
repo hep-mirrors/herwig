@@ -8,10 +8,11 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
+namespace Helicity {
   using namespace ThePEG;
   class SVVLoopVertex;
   ThePEG_DECLARE_POINTERS(SVVLoopVertex,SVVLoopVertexPtr);
-  
+}  
 }
 
 #endif

@@ -8,8 +8,8 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "SMHGGVertex.h"
-#include "SMHPPVertex.h"
+#include "Herwig++/Helicity/Vertex/StandardModel/SMHGGVertex.h"
+#include "Herwig++/Helicity/Vertex/StandardModel/SMHPPVertex.h"
 #include "SMHDecayer.fh"
 
 namespace Herwig {
@@ -229,7 +229,7 @@ struct ClassTraits<Herwig::SMHDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the SMHDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwPerturbativeDecay.so"; }
+  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
 };
 
 }

@@ -44,14 +44,17 @@ namespace Herwig {
     }
     
     inline void SVVLoopVertex::doinit() throw(InitException) {
+      ffini();
       GeneralSVVVertex::doinit();
     }
     
     inline void SVVLoopVertex::dofinish() {
+      ffexi();
       GeneralSVVVertex::dofinish();
     }
     
     inline void SVVLoopVertex::doinitrun() {
+      ffini();
       GeneralSVVVertex::doinitrun();
     }
     

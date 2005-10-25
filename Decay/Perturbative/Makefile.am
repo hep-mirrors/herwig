@@ -6,3 +6,6 @@ HwPerturbativeDecay_la_SOURCES = \
  SMTopDecayer.cc SMTopDecayer.fh SMTopDecayer.h SMTopDecayer.icc \
  SMHDecayer.cc SMHDecayer.fh SMHDecayer.h SMHDecayer.icc
 HwPerturbativeDecay_la_LDFLAGS = -module
+
+#SMHiggsWWDecayer.cc  SMHiggsWWDecayer.fh  \
+# SMHiggsWWDecayer.h  SMHiggsWWDecayer.icc  

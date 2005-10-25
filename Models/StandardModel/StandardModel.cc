@@ -19,13 +19,13 @@ StandardModel::~StandardModel() {}
 void StandardModel::persistentOutput(PersistentOStream & os) const {
   os << _theFFZVertex <<_theFFPVertex << _theFFGVertex << _theFFWVertex 
      << _theFFHVertex << _theWWHVertex << _theGGGGVertex << _theWWWWVertex
-     << _theGGGVertex << _theWWWVertex << _theRunningMass;
+     << _theGGGVertex << _theWWWVertex << _theRunningMass << _vertexlist;
 }
 
 void StandardModel::persistentInput(PersistentIStream & is, int) {
   is >> _theFFZVertex >> _theFFPVertex >> _theFFGVertex >> _theFFWVertex
      >> _theFFHVertex >> _theWWHVertex >> _theGGGGVertex >> _theWWWWVertex
-     >> _theGGGVertex >> _theWWWVertex >> _theRunningMass;
+     >> _theGGGVertex >> _theWWWVertex >> _theRunningMass >> _vertexlist;
 }
 
 ClassDescription<StandardModel> StandardModel::initStandardModel;

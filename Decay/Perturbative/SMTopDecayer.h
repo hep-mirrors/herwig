@@ -227,7 +227,7 @@ struct ClassTraits<Herwig::SMTopDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the SMTopDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwPerturbativeDecay.so"; }
+  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
 };
 
 }

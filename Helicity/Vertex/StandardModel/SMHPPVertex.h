@@ -5,7 +5,7 @@
 // This is the declaration of the SMHPPVertex class.
 //
 
-#include "SVVLoopVertex.h"
+#include "Herwig++/Helicity/Vertex/Scalar/SVVLoopVertex.h"
 #include "SMHPPVertex.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Repository/EventGenerator.h"

@@ -5,23 +5,11 @@
 //
 namespace Herwig {
 using namespace ThePEG;
-// some typedefs for the pointers to vertices
-typedef Ptr<Herwig::Helicity::FFVVertex>::pointer FFVPtr;
-typedef Ptr<Herwig::Helicity::FFVVertex>::transient_pointer tFFVPtr;
-typedef Ptr<Herwig::Helicity::VVVVertex>::pointer VVVPtr;
-typedef Ptr<Herwig::Helicity::VVVVertex>::transient_pointer tVVVPtr;
-typedef Ptr<Herwig::Helicity::FFSVertex>::pointer FFSPtr;
-typedef Ptr<Herwig::Helicity::FFSVertex>::transient_pointer tFFSPtr;
-typedef Ptr<Herwig::Helicity::VVSVertex>::pointer VVSPtr;
-typedef Ptr<Herwig::Helicity::VVSVertex>::transient_pointer tVVSPtr;
-typedef Ptr<Herwig::Helicity::VVVVVertex>::pointer VVVVPtr;
-typedef Ptr<Herwig::Helicity::VVVVVertex>::transient_pointer tVVVVPtr;
+
 typedef Ptr<Herwig::RunningMassBase>::pointer runPtr;
 typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
 
-inline StandardModel::StandardModel() 
-{
-}
+inline StandardModel::StandardModel() {}
 
 inline StandardModel::StandardModel(const StandardModel & x)
   : StandardModelBase(x) 
@@ -31,7 +19,7 @@ inline StandardModel::StandardModel(const StandardModel & x)
   ,_theWWHVertex(x._theWWHVertex) 
   ,_theGGGVertex(x._theGGGVertex) 
   ,_theWWWVertex(x._theWWWVertex) , _theGGGGVertex(x._theGGGGVertex) 
-  ,_theWWWWVertex(x._theWWWWVertex)
+  ,_theWWWWVertex(x._theWWWWVertex),_vertexlist(x._vertexlist)
   ,_theRunningMass(x._theRunningMass) { }
 
 inline IBPtr StandardModel::clone() const {
@@ -105,22 +93,33 @@ inline double StandardModel::rd()  const
 
 // vertices	
 
-inline tFFVPtr  StandardModel::vertexFFZ() const {return _theFFZVertex;}
-inline tFFVPtr  StandardModel::vertexFFP() const {return _theFFPVertex;}
-inline tFFVPtr  StandardModel::vertexFFG() const {return _theFFGVertex;}
-inline tFFVPtr  StandardModel::vertexFFW() const {return _theFFWVertex;}
-inline tVVVPtr  StandardModel::vertexGGG() const {return _theGGGVertex;}
-inline tVVVPtr  StandardModel::vertexWWW() const {return _theWWWVertex;}
-inline tFFSPtr  StandardModel::vertexFFH() const {return _theFFHVertex;}
-inline tVVSPtr  StandardModel::vertexWWH() const {return _theWWHVertex;}
-inline tVVVVPtr StandardModel::vertexWWWW() const {return _theWWWWVertex;}
-inline tVVVVPtr StandardModel::vertexGGGG() const {return _theGGGGVertex;}
+inline tFFVVertexPtr  StandardModel::vertexFFZ() const {return _theFFZVertex;}
+inline tFFVVertexPtr  StandardModel::vertexFFP() const {return _theFFPVertex;}
+inline tFFVVertexPtr  StandardModel::vertexFFG() const {return _theFFGVertex;}
+inline tFFVVertexPtr  StandardModel::vertexFFW() const {return _theFFWVertex;}
+inline tVVVVertexPtr  StandardModel::vertexGGG() const {return _theGGGVertex;}
+inline tVVVVertexPtr  StandardModel::vertexWWW() const {return _theWWWVertex;}
+inline tFFSVertexPtr  StandardModel::vertexFFH() const {return _theFFHVertex;}
+inline tVVSVertexPtr  StandardModel::vertexWWH() const {return _theWWHVertex;}
+inline tVVVVVertexPtr StandardModel::vertexWWWW() const {return _theWWWWVertex;}
+inline tVVVVVertexPtr StandardModel::vertexGGGG() const {return _theGGGGVertex;}
 
 
 inline trunPtr StandardModel::massPtr() const {
   return _theRunningMass;}
 
+// Return the running mass for a given scale and particle type 
 inline double StandardModel::mass(Energy2 scale,tcPDPtr part) const
 {return _theRunningMass->value(scale,part);}
-// Return the running mass for a given scale and particle type
+
+// Total number of vertices
+inline unsigned int StandardModel::numberOfVertices() const 
+{return _vertexlist.size();}
+
+inline tVertexBasePtr StandardModel::vertex(unsigned int ix)
+{return _vertexlist[ix];}
+
+inline void StandardModel::addVertex(VertexBasePtr in)
+{_vertexlist.push_back(in);}
+
 }

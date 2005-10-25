@@ -82,6 +82,8 @@ inline void SMHDecayer::dofinish() {
 }
 
 inline void SMHDecayer::doinitrun() {
+  _HGGVertex->initrun();
+  _HPPVertex->initrun();
   DecayIntegrator::doinitrun();
 }
 

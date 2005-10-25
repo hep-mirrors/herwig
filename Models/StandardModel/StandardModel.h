@@ -13,8 +13,8 @@
 #include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
 
 namespace Herwig {
-
 using namespace ThePEG;
+using namespace Herwig::Helicity;
 
 /** \ingroup Models
  *  
@@ -27,58 +27,9 @@ using namespace ThePEG;
 class StandardModel: public StandardModelBase {
   
   /**
-   * Some typedefs for the pointers to vertices.
+   * Some typedefs for the pointers.
    */
   //@{
-  /**
-   *  Pointer to a fermion-fermion-vector vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFVVertex>::pointer FFVPtr;
-
-  /**
-   *  Transient pointer to a fermion-fermion-vector vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFVVertex>::transient_pointer tFFVPtr;
-
-  /**
-   *  Pointer to a vector-vector-vector vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVVVertex>::pointer VVVPtr;
-
-  /**
-   *  Transient pointer to a vector-vector-vector vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVVVertex>::transient_pointer tVVVPtr;
-
-  /**
-   *  Pointer to a fermion-fermion-scalar vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFSVertex>::pointer FFSPtr;
-
-  /**
-   * Transient oointer to a fermion-fermion-scalar vertex
-   */
-  typedef Ptr<Herwig::Helicity::FFSVertex>::transient_pointer tFFSPtr;
-
-  /**
-   *  Pointer to a vector-vector-scalar vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVSVertex>::pointer VVSPtr;
-
-  /**
-   *  Transient pointer to a vector-vector-scalar vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVSVertex>::transient_pointer tVVSPtr;
-
-  /**
-   *  Pointer to a vector-vector-vector-vector vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVVVVertex>::pointer VVVVPtr;
-
-  /**
-   * Transient pointer to a vector-vector-vector-vector vertex
-   */
-  typedef Ptr<Herwig::Helicity::VVVVVertex>::transient_pointer tVVVVPtr;
 
   /**
    * Pointer to the RunningMassBase object 
@@ -188,52 +139,62 @@ public:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  inline tFFVPtr  vertexFFZ() const;
+  inline tFFVVertexPtr  vertexFFZ() const;
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  inline tFFVPtr  vertexFFP() const;
+  inline tFFVVertexPtr  vertexFFP() const;
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  inline tFFVPtr  vertexFFG() const;
+  inline tFFVVertexPtr  vertexFFG() const;
 
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  inline tFFVPtr  vertexFFW() const;
+  inline tFFVVertexPtr  vertexFFW() const;
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  inline tFFSPtr  vertexFFH() const;
+  inline tFFSVertexPtr  vertexFFH() const;
 
   /**
    * Pointer to the triple gluon vertex
    */
-  inline tVVVPtr  vertexGGG() const;
+  inline tVVVVertexPtr  vertexGGG() const;
 
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  inline tVVVPtr  vertexWWW() const;
+  inline tVVVVertexPtr  vertexWWW() const;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  inline tVVSPtr  vertexWWH() const;
+  inline tVVSVertexPtr  vertexWWH() const;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  inline tVVVVPtr vertexWWWW() const;
+  inline tVVVVVertexPtr vertexWWWW() const;
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  inline tVVVVPtr vertexGGGG() const;
+  inline tVVVVVertexPtr vertexGGGG() const;
+
+  /**
+   *  Total number of vertices
+   */
+  inline unsigned int numberOfVertices() const;
+
+  /**
+   * Access to a vertex from the list
+   */
+  inline tVertexBasePtr vertex(unsigned int); 
   //@}  
 
   /**
@@ -311,6 +272,13 @@ protected:
   inline virtual IVector getReferences();
   //@}
 
+protected:
+
+  /**
+   *  Add a vertex to the list
+   */
+  inline void addVertex(VertexBasePtr);
+
 private:
   
   /**
@@ -333,52 +301,57 @@ private:
   /**
    * Pointer to the fermion-fermion-Z vertex
    */
-  FFVPtr _theFFZVertex;
+  FFVVertexPtr _theFFZVertex;
 
   /**
    * Pointer to the fermion-fermion-photon vertex
    */
-  FFVPtr _theFFPVertex;
+  FFVVertexPtr _theFFPVertex;
 
   /**
    * Pointer to the fermion-fermion-gluon vertex
    */
-  FFVPtr _theFFGVertex;
+  FFVVertexPtr _theFFGVertex;
 
   /**
    * Pointer to the fermion-fermion-W vertex
    */
-  FFVPtr _theFFWVertex;
+  FFVVertexPtr _theFFWVertex;
 
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  FFSPtr _theFFHVertex;
+  FFSVertexPtr _theFFHVertex;
 
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  VVSPtr _theWWHVertex;
+  VVSVertexPtr _theWWHVertex;
 
   /**
    * Pointer to the triple gluon vertex
    */
-  VVVPtr _theGGGVertex;
+  VVVVertexPtr _theGGGVertex;
 
   /**
    * Pointer to the triple electroweak gauge boson vertex.
    */
-  VVVPtr _theWWWVertex;
+  VVVVertexPtr _theWWWVertex;
 
   /**
    * Pointer to the quartic gluon vertex
    */
-  VVVVPtr _theGGGGVertex;
+  VVVVVertexPtr _theGGGGVertex;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
    */
-  VVVVPtr _theWWWWVertex;
+  VVVVVertexPtr _theWWWWVertex;
+
+  /**
+   *  Full list of vertices as a vector to allow searching
+   */
+  vector<VertexBasePtr> _vertexlist;
   //@}
 
   /**

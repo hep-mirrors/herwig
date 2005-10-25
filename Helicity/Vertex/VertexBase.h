@@ -9,6 +9,7 @@
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/PDT/WidthGenerator.h>
 #include <ThePEG/Helicity/HelicityDefinitions.h>
+#include "VertexBase.fh"
 
 namespace Herwig {
 namespace Helicity {

@@ -12,8 +12,9 @@ $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/Helicity/Correlations/libHwCorrelations.la \
 $(top_builddir)/Helicity/WaveFunction/libHwWaveFunction.la \
-$(top_builddir)/Helicity/Vertex/libHwVertex.la \
-$(top_builddir)/Utilities/libHwUtils.la 
+$(top_builddir)/Looptools/libHwLooptools.la \
+$(top_builddir)/Utilities/libHwUtils.la \
+$(top_builddir)/Helicity/Vertex/libHwVertex.la 
 
 all-local: done-all-links
 
