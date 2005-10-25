@@ -1,3 +1,7 @@
+2005-10-25  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
+
+	* Decay/Perturbative/SMHiggsGGHiggsPPDecayer.h (Repository): Renamed SMHDecayer to SMHiggsGGHiggsPPDecayer 
+
 2005-10-25  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* src (Repository): correction to ensure HGG and HPP work and minor structure for vertices
