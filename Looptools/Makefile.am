@@ -30,7 +30,7 @@ theLTCHECKSOURCES = ltcheck/auxB.F ltcheck/auxCD.F ltcheck/check.F \
   ltcheck/DB1check.F ltcheck/DB00check.F ltcheck/DB11check.F \
   ltcheck/C0check.F ltcheck/D0check.F $(LTCOMMON)
 
-## installed already in "include/Makefile.am"
+## installed already from "include/Makefile.am"
 noinst_HEADERS = include/clooptools.h
 
 pkglib_LTLIBRARIES = libHwLooptools.la
@@ -45,11 +45,9 @@ FFLAGS=-g -O0
 AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
-libHwLooptools_la_LIBADD   = $(FLIBS)
 
 libHwLooptoolsCheck_la_SOURCES = $(theFFSOURCES) $(theLTCHECKSOURCES)
-libHwLooptoolsCheck_la_LIBADD   = $(FLIBS)
 
 noinst_PROGRAMS = tester
 tester_SOURCES = tester.cc
-tester_LDADD = libHwLooptools.la
+tester_LDADD = libHwLooptools.la 
