@@ -87,18 +87,26 @@ void ShowerHandler::Init() {
 
 void ShowerHandler::cascade() {
 
+
+//   cerr << "=========================================" 
+//        << "======================================\r"
+//        << "ShowerHandler::cascade() started for event no " 
+//        << generator()->currentEventNumber() << endl;
+
+
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "ShowerHandler::debuggingInfo() Evt #" << generator()->currentEventNumber() 
-		       << "\t _______________________________________" << endl; 
-		      
+    generator()->log() << "ShowerHandler::debuggingInfo() Evt #" 
+		       << generator()->currentEventNumber() 
+		       << "\t _______________________________________" << endl;
   }
 
   tEHPtr ch = eventHandler();
+
   //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
   //		   ch->currentStep()->particles().end());
-  // const Hint & theHint = hint();	    // OK: COMMENTED TO AVOID COMPILATION WARNINGS
-  // const PDF & theFirstPDF = firstPDF();  // OK: COMMENTED TO AVOID COMPILATION WARNINGS
+  // const Hint & theHint = hint();	    // OK: COMMENTED TO AVOID COMPILATIO+N WARNINGS
+  // const PDF & theFirstPDF = firstPDF();  // OK: COMMENTED TO AVOID COMPILATION+ WARNINGS
   // const PDF & theSecondPDF = secondPDF();// OK: COMMENTED TO AVOID COMPILATION WARNINGS
   // const pair<PDF,PDF> & thePdfs = pdfs();// OK: COMMENTED TO AVOID COMPILATION WARNINGS
 
@@ -115,21 +123,54 @@ void ShowerHandler::cascade() {
   
   // tie in hard corrections here
   if(_showerVariables->hardMEC()) hardMEC(ch);
+  bool evolverOK = true;
 
+  // even more cleaning... ***ACHTUNG*** find something much, much
+  // more sophisticated to save old properties. In particular for
+  // the multiscaleshower...
+  ShowerParticleVector hardProcessParticles;
+  hardProcessParticles.clear();
+  convertToShowerParticles( ch, hardProcessParticles );
+  
   while(keepTrying && countFailures < maxNumFailures) {       
     try {
 
+      // printing the current status of _particles
+      //      cerr << "Beginning of Shower loop" << endl;
+//       for(ShowerParticleVector::const_iterator cit = _particles.begin();
+// 	  cit != _particles.end(); ++cit) {
+// 	cerr << (*cit)->id() << "(" << (*cit) << ")" << " p: ";
+// 	if((*cit)->parents().size()) {
+// 	  cerr << (*cit)->parents()[0]->id() 
+// 	       << "(" << (*cit)->parents()[0] << ")" << " c: ";
+// 	}
+// 	for (unsigned int j=0; j < (*cit)->children().size(); j++) {
+// 	  cerr << (*cit)->children()[j]->id() 
+// 	       << "(" << (*cit)->children()[j] << ")" << " ";
+// 	} 
+// 	cerr << endl;
+//       }
+
+
       // Cleaning and initializing
       _particles.clear();
+
+//       cerr << "after _particles.clear() " << endl;
+//       for(ShowerParticleVector::const_iterator cit = _particles.begin();
+// 	  cit != _particles.end(); ++cit) {
+// 	cerr << (*cit)->id() << "(" << (*cit) << ")" << " p: ";
+// 	if((*cit)->parents().size()) {
+// 	  cerr << (*cit)->parents()[0]->id() 
+// 	       << "(" << (*cit)->parents()[0] << ")" << " c: ";
+// 	}
+// 	for (unsigned int j=0; j < (*cit)->children().size(); j++) {
+// 	  cerr << (*cit)->children()[j]->id() 
+// 	       << "(" << (*cit)->children()[j] << ")" << " ";
+// 	} 
+// 	cerr << endl;
+//       }
       _showerVariables->reset();     
       _evolver->clear();
-      
-      // even more cleaning... ***ACHTUNG*** find something much, much
-      // more sophisticated to save old properties. In particular for
-      // the multiscaleshower...
-      ShowerParticleVector hardProcessParticles;
-      hardProcessParticles.clear();
-      convertToShowerParticles( ch, hardProcessParticles );
       
       // Fill _particles with the particles from the hard subprocess
       ShowerParticleVector::const_iterator cit;
@@ -139,6 +180,21 @@ void ShowerHandler::cascade() {
 	  _particles.push_back( *cit );      
 	}
       }
+
+//       cerr << "after _particles refill " << endl;
+//       for(ShowerParticleVector::const_iterator cit = _particles.begin();
+// 	  cit != _particles.end(); ++cit) {
+// 	cerr << (*cit)->id() << "(" << (*cit) << ")" << " p: ";
+// 	if((*cit)->parents().size()) {
+// 	  cerr << (*cit)->parents()[0]->id() 
+// 	       << "(" << (*cit)->parents()[0] << ")" << " c: ";
+// 	}
+// 	for (unsigned int j=0; j < (*cit)->children().size(); j++) {
+// 	  cerr << (*cit)->children()[j]->id() 
+// 	       << "(" << (*cit)->children()[j] << ")" << " ";
+// 	} 
+// 	cerr << endl;
+//       }
 
       // clean up children from previous trial showers:
       //      for ( ShowerParticleVector::iterator it = _particles.begin(); 
@@ -166,7 +222,6 @@ void ShowerHandler::cascade() {
         // satisfies the above condition.
         // ***LOOKHERE*** --- code here --- 
       }
-      
       Energy largestWidth = Energy();
       if(_showerVariables->isMultiScaleShowerON()) {      
         for(ShowerParticleVector::const_iterator cit = _particles.begin();
@@ -197,15 +252,19 @@ void ShowerHandler::cascade() {
       _showerVariables->stopShowerAtMassScale(largestWidth);
       // ***MAYBE NOT NEEDED***
       _showerVariables->vetoBelowPtScale(largestWidth);  
-      
-      //      cout << "calling _evolver->showerNormally..." << endl; 
-      //      skipKinReco = true;
-      _evolver->showerNormally(ch, _showerVariables, _particles, skipKinReco);
-      //      cout << "_evolver->showerNormally done." << endl; 
+      //      cerr << *(ch->currentStep());
 
+      evolverOK = _evolver
+	->showerNormally(ch, _showerVariables, _particles, skipKinReco);
+      if (!evolverOK) {
+	// 	cerr << "ShowerHandler: evolver not ok, jumping out of big while loop." << endl;
+	
+	keepTrying = true; 
+	continue;
+      }
       // The following loop is done only for multi-scale showering.
       while(largestWidth > _globalParameters->hadronizationScale()) {  
-
+	
         // Because is forbidden to add elements to a STL container while
 	// looping over it, we have to create first a new container which
         // holds the particles that need to be considered, that is the 
@@ -327,19 +386,18 @@ void ShowerHandler::cascade() {
       }
 
       // Do the final kinematics reconstruction
-      //      cout << "calling _evolver->reconstructKinematics(ch);" << endl;
       bool recons = _evolver->reconstructKinematics(ch);
-      //      cout << "_evolver->reconstructKinematics(ch) done" << endl;
       
       // set true anyway for test purposes...
       recons = true;
 
 
-      // Fill the positions information for all the ShowerParticle objects
-      // in _particles. It is done at this stage in order to avoid the
-      // complications of boosting such positions during the kinematics
-      // reshuffling.
-      fillPositions();
+      // Fill the positions information for all the ShowerParticle
+      // objects in _particles. It is done at this stage in order to
+      // avoid the complications of boosting such positions during the
+      // kinematics reshuffling.  ***ACHTUNG!*** fillPostitions()
+      // gives segfault when setting labVertex. 
+      // fillPositions();
 
       keepTrying = false;
       if (!recons) {
@@ -354,6 +412,8 @@ void ShowerHandler::cascade() {
   } // end main while loop
 
   // Debugging
+  fillEventRecord(ch);  
+
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {    
     debuggingInfo();
     if ( generator()->currentEventNumber() < 1000 )
@@ -361,9 +421,7 @@ void ShowerHandler::cascade() {
 			 << " ===> END DEBUGGING <=== "
 			 << endl;
   }
-  //  cout << "Calling fillEventRecord()..." << endl << flush;
-  fillEventRecord(ch);  
-  //  cout << "...finished fillEventRecord()." << endl << flush;
+//  cerr << *(ch->currentStep()) << endl;
 }
 
 void ShowerHandler::
@@ -375,7 +433,6 @@ convertToShowerParticles(const tEHPtr ch,
   //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
   //			   ch->currentStep()->particles().end());
   ShowerParticlePtr part;
-  /*  
   if(ch->lastPartons().first ) {
     part = ptr_new<ShowerParticlePtr>(*ch->lastPartons().first);
     if ( part ) {
@@ -396,7 +453,6 @@ convertToShowerParticles(const tEHPtr ch,
       hardProcessParticles.push_back(part); 
     }
   }
-  */
   // Outgoing (final state) particles, excluding the beam remnants. 
   // Notice that we don't need to set true the flag ShowerParticle::isFinalState 
   // because it is set true by default. 
@@ -479,11 +535,13 @@ void ShowerHandler::fillPositions() {
 	    sqr(particle->momentum().mag2() / lambda)) / GeV);
 
     // update the position.
-    particle->setLabVertex(particle->labVertex() + distance); 
+    LorentzDistance temp = particle->labVertex() + distance; 
+    particle->setLabVertex(temp); 
          
     for(ParticleVector::const_iterator cit = particle->children().begin();
 	cit != particle->children().end(); ++cit) {
-      (*cit)->setLabVertex(particle->labVertex()); // initialize the position.
+      LorentzDistance temp = particle->labVertex(); 
+      (*cit)->setLabVertex(temp); // initialize the position.
       particlesToExamine.push_back(*cit);
     }
   }
@@ -529,10 +587,6 @@ void ShowerHandler::debuggingInfo() {
   if ( generator()->currentEventNumber() < 1000 )
     generator()->log() << "  Shower finished - summary:" << endl;
   
-  // stuff that goes to STDOUT comes here:
-//   if ( generator()->currentEventNumber() < 1000 )
-//     cout << "# event no " << generator()->currentEventNumber() << endl; 
-
   tShowerParticleVector fs;
   for (ShowerParticleVector::const_iterator cit = _particles.begin(); 
        cit != _particles.end(); ++cit ) {
@@ -543,81 +597,13 @@ void ShowerHandler::debuggingInfo() {
 			   << ", Q = " << (*cit)->momentum().m()/MeV 
 			   << ", q = " << (*cit)->momentum()/MeV << " (MeV)"
 			   <<endl;
-	//	(*cit)->deepPrintInfo(); // writes some showerinfo to STDOUT, obsolete (?)
       }
-      //cout << (*cit)->sumParentsMomenta() << endl;      
       if ( (*cit)->isFinalState() ) {
 	tShowerParticleVector thisfs = (*cit)->getFSChildren();
 	fs.insert(fs.end(), thisfs.begin(), thisfs.end()); 
       }
     }    
   }
-  //vector<Vector3> n; 
-  //vector<double> lam; 
-  //eventShape(fs, lam, n);
-
-  // to play with events in Mathematica, get lists of final state particles...
-//   cout << "{";
-//   for(tShowerParticleVector::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
-//     cout << "{" 
-// 	 << (*cit)->momentum().vect().x() << ", "
-// 	 << (*cit)->momentum().vect().y() << ", "
-// 	 << (*cit)->momentum().vect().z() << "}";
-//     if (cit != fs.end()) cout << ", " << endl;
-//   }
-//   cout << "}"; 
-
-//   Lorentz5Momentum pcm = Lorentz5Momentum(); 
-//   for(tShowerParticleVector::const_iterator cit=fs.begin(); cit != fs.end(); ++cit) {
-//     pcm += (*cit)->momentum();     
-//   }
-//   Energy root_s = pcm.m();
-//   if ( generator()->currentEventNumber() < 1000 )
-//     cout << "# shapes: root(s)*lam[i]*n[i] | lam[i] | n[i]" << endl;
-//   for (int i=0; i<3; i++) {
-//     if ( generator()->currentEventNumber() < 1000 )
-//       cout << "666 " << root_s*lam[i]*n[i][0] << " " 
-// 	   << root_s*lam[i]*n[i][1] << " " 
-// 	   << root_s*lam[i]*n[i][2] << " " 
-// 	   << lam[i] << " " << n[i] << endl;
-//   }
-//   double C_parameter = 3.*(lam[0]*lam[1] + lam[1]*lam[2] + lam[2]*lam[0]);
-//   double D_parameter = 27.*(lam[0]*lam[1]*lam[2]);
-
-//   double lam1, lam2, lam3; 
-//   double dumd; 
-//   lam1 = lam[0]; lam2 = lam[1]; lam3 = lam[2]; 
-//   if (lam1 < lam2) {dumd = lam1; lam1 = lam2; lam2 = dumd; }
-//   if (lam1 < lam3) {dumd = lam1; lam1 = lam3; lam3 = dumd; }
-//   if (lam2 < lam3) {dumd = lam2; lam2 = lam3; lam3 = dumd; }
-//   if ( generator()->currentEventNumber() < 1000 )
-//     cout << "# shapes C = " << C_parameter
-// 	 << ", D = " << D_parameter << endl
-// 	 << "# (lam1, lam2, lam3) = (" << lam1 << ", " << lam2 << ", " 
-// 	 << lam3 << ")" << endl; 
-//   // this one gives 'blocks':
-//   if ( generator()->currentEventNumber() < 1000 )
-//     cout << endl;
-
-  // book some histograms
-
-/*  HwDebug::lambda1Histo += lam1; 
-  HwDebug::lambda2Histo += lam2;
-  HwDebug::lambda3Histo += lam3; 
-  HwDebug::CparameterHisto += C_parameter; 
-  HwDebug::DparameterHisto += D_parameter; 
-  HwDebug::multiplicityHisto += fs.size();
-  
-  if ( generator()->currentEventNumber() < 1000 || 
-       (generator()->currentEventNumber() % 1000) == 0 ) {
-    HwDebug::lambda1Histo.printGnuplot("plots/lambda1.dat");
-    HwDebug::lambda2Histo.printGnuplot("plots/lambda2.dat");
-    HwDebug::lambda3Histo.printGnuplot("plots/lambda3.dat"); 
-    HwDebug::CparameterHisto.printGnuplot("plots/Cpara.dat"); 
-    HwDebug::DparameterHisto.printGnuplot("plots/Dpara.dat"); 
-    HwDebug::multiplicityHisto.printGnuplot("plots/multiplicity.dat");
-  }
-*/
 }
 
 
@@ -628,27 +614,30 @@ void ShowerHandler::fillEventRecord(const tEHPtr ch) {
   // the transformation from ShowerColourLine objects into ThePEG
   // ColourLine ones; and finally then write them in the Event Record     
   StepPtr pstep;
-  //pstep = ch->newStep();
-  pstep = ch->currentStep(); // if we don't have a step yet, one is created
+  pstep = ch->newStep(); 
+  //  pstep = ch->currentStep(); 
   ShowerParticleVector::iterator it;
   for(it = _particles.begin(); it != _particles.end(); ++it ) {
     PPtr p = dynamic_ptr_cast<PPtr>(*it);
     if((*it)->isFromHardSubprocess() && (*it)->isFinalState()) {
-      //pstep->addDecayNoCheck((*it)->getThePEGBase(), p);
-      //			     dynamic_ptr_cast<tPPtr>(*cit));
-      pstep->setCopy((*it)->getThePEGBase(),p);
-      //(*cit)->addChildrenEvtRec(pstep);   
+      pstep->setCopy(p, (*it)->getThePEGBase());
+      //      pstep->setCopy((*it)->getThePEGBase(), p);
+      // (*it)->setMomentum(p->momentum());
       addFinalStateShower((*it),pstep);
+      // pstep->addDecayProduct(p);
     } else if((*it)->isFromHardSubprocess()) { 
+      pstep->insertIntermediate(p, (*it)->getThePEGBase()->parents()[0],
+				(*it)->getThePEGBase()->children()[0]);
       // Otherwise it is a initial state shower particle
+      //      pstep->setCopy((*it)->getThePEGBase(), p);
+      //      pstep->setCopy(p,(*it)->getThePEGBase());
+      //      (*it)->setMomentum(p->momentum());
+      //      addInitialStateShower(p,pstep,false);
       addInitialStateShower(p,pstep,false);
-      //pstep->setCopy((*it)->getThePEGBase(),p,false);
-      pstep->setCopy((*it)->getThePEGBase(),p);
     } 
   }  
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) 
-    printStep(pstep, "after filling");
 }
+
 
 void ShowerHandler::addFinalStateShower(ShowerParticlePtr &p, StepPtr &s) {
   tPPtr dum; 
@@ -679,7 +668,7 @@ void ShowerHandler::addInitialStateShower(PPtr &p, StepPtr &s, bool doit) {
     addInitialStateShower(parent,s);
   }
   if(doit) {
-    for(int i = 0; i<p->children().size(); i++) {
+    for(unsigned int i = 0; i<p->children().size(); i++) {
       if(p->children()[i]->children().size()) {
 	// Add it only as an intermediate, if it is a shower intermediate
 	// add the child is a final state shower particle,
@@ -719,104 +708,6 @@ void ShowerHandler::printStep(tStepPtr ptrStep, const string & title) {
 }
 
 
-
-// utility method
-void ShowerHandler::eventShape(const tShowerParticleVector & p, 
-				vector<double> & lam, vector<Vector3> & n) {
-
-  // get cm-frame
-  Lorentz5Momentum pcm = Lorentz5Momentum(); 
-  for(tShowerParticleVector::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
-    pcm += (*cit)->momentum();     
-  }
-  Vector3 beta = pcm.findBoostToCM(); 
-  HepSymMatrix Theta = HepSymMatrix(3);
-  for(int i=0; i<3; i++) {
-    for(int j=0; j<3; j++) {
-      Theta[i][j] = 0.0;
-    }
-  }
-  //  cout << "# beta = " << beta << endl; 
-  double sum = 0.; 
-  Vector3 sumvec = Vector3();
-  
-  // get Theta_ij
-  for(tShowerParticleVector::const_iterator cit=p.begin(); cit != p.end(); ++cit) {
-    Lorentz5Momentum dum = (*cit)->momentum();
-    dum.boost( beta );
-    Vector3 pvec = dum.vect();
-    sumvec += pvec;
-    sum += pvec.mag();
-//     cout << "# pvec = " << pvec << endl;
-//     cout << "# pvec[i] = (" << pvec[0] << ", " << pvec[1] << ", " << pvec[2] << ")" << endl; 
-//     cout << "# pvec.mag() = " << pvec.mag() << endl; 
-//     cout << "# sqrt(pvec^2) = " << sqrt(sqr(pvec[0]) + sqr(pvec[1]) + sqr(pvec[2])) << endl; 
-    for(int i=0; i<3; i++) {
-      for(int j=i; j<3; j++) {
-	Theta[i][j] += (pvec[i])*(pvec[j])/(pvec.mag());
-      }
-    }
-    //   cout << "# stepwise tr/sum = " << Theta.trace()/sum << endl; 
-  }
-
-  Theta /= sum;  
-    
-//   cout << "#-- Theta = " << endl; 
-//   for(int i=0; i<3; i++) {
-//     for(int j=0; j<3; j++) {
-//       cout << Theta[i][j] << "\t";
-//     }
-//     cout << endl; 
-//   }    
-
-//  cout << "# pcm = " << pcm << endl
-//       << "# sumvec = " << sumvec << endl;
-  // diagonalize it
-  HepMatrix U = diagonalize(&Theta);
-
-//   cout << "#-- Theta diagonalized = " << endl; 
-//   for(int i=0; i<3; i++) {
-//     for(int j=0; j<3; j++) {
-//       cout << Theta[i][j] << "\t";
-//     }
-//     cout << endl; 
-//   }    
-//   cout << "#-- U = " << endl; 
-//   for(int i=0; i<3; i++) {
-//     for(int j=0; j<3; j++) {
-//       cout << U[i][j] << "\t";
-//     }
-//     cout << endl; 
-//   }  
-
-  for(int i=0; i<3; i++) {
-    lam.push_back( Theta[i][i] );
-    Vector3 ndum;
-    for(int j=0; j<3; j++) {
-      ndum[j] = U[j][i]; 
-    }
-    n.push_back( ndum ); 
-  }
-  // checks
-//   double lamsum = 0.;
-//   for(int i=0; i<3; i++) {
-//     lamsum += lam[i]; 
-//     cout << "#(" << i+1 << ") lam = " 
-// 	 << lam[i] << ", n = " << n[i] << endl; 
-//   }
-//  HepVector n1, n2, n3;
-//   n1 = n[0]; 
-//   n2 = n[1]; 
-//   n3 = n[2];
-//   cout << "# n1 = " << n1 << endl 
-//        << "# n2 = " << n2 << endl 
-//        << "# n3 = " << n3 << endl ;
-//   cout << "# check othonormality of n's:" << endl 
-//        << dot(n1, n1) << "\t" << dot(n1, n2) << "\t" << dot(n1, n3) << endl
-//        << dot(n2, n1) << "\t" << dot(n2, n2) << "\t" << dot(n2, n3) << endl
-//        << dot(n3, n1) << "\t" << dot(n3, n2) << "\t" << dot(n3, n3) << endl;
-//   cout << "#    lamsum = " << lamsum << endl; 
-}
 
 void ShowerHandler::hardMEC(const tEHPtr ch) {
   PVector qq; 

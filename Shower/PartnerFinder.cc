@@ -111,9 +111,6 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     // We now have a coloured particle
     tShowerParticleVector partners;
     for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
-//       cout << "  PF: cjt = " << (*cjt)->id() << ", " << *cjt 
-// 	   << " [" << (*cjt)->colourLine() << ", " 
-// 	   << (*cjt)->antiColourLine() << "]" << endl; 
       if(!(*cjt)->data().coloured()) continue;
       bool isPartner = false;
 #define FS(a) (*a)->isFinalState()
@@ -124,22 +121,48 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 	 isPartner = true;
       else if((CL(cit) && CL(cit)==ACL(cjt)) || (ACL(cit) && ACL(cit)==CL(cjt)))
 	isPartner = true;
+//       if(isPartner) cout << "  PF: cjt = " << (*cjt)->id() << ", " << *cjt 
+// 	   << " [" << (*cjt)->colourLine() << ", " 
+// 	   << (*cjt)->antiColourLine() << "]" << endl; 
+
       if(isPartner) partners.push_back(*cjt);
     }
-//     cout << "Initial conditions: "
-// 	 << (*cit) << " (" << (*cit)->id() 
-// 	 << ") has " << partners.size() << " partners" << endl; 
+
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+      generator()->log() << "PartnerFinder::setQCDInitialEvolutionscales full "
+			 << "_______________________________" << endl
+			 << "  Initial conditions: "
+			 << (*cit) << " (" << (*cit)->id() 
+			 << ") has " << partners.size() 
+			 << " partners" << endl; 
+      if (partners.size() == 0) {
+	generator()->log() << "  No Partners among the showerParticles, " 
+			   << "looking among the remnants... "
+			   << endl << "["
+			   << (*cit)->colourLine() << ", "
+			   << (*cit)->antiColourLine() << "]" 
+			   << endl << flush;
+	if ((*cit)->colourLine()) 
+	generator()->log() << "  colourLine->startParticle, endParticle = " 
+			   << (*cit)->colourLine()->startParticle() << "("
+			   << (*cit)->colourLine()->startParticle()->id() 
+			   << "), "
+			   << (*cit)->colourLine()->endParticle() << "("
+			   << (*cit)->colourLine()->endParticle()->id() 
+			   << "), "
+			   << endl << flush;
+	if ((*cit)->antiColourLine()) 
+	  generator()->log() << "  antiColourLine->startParticle, "
+			     << "endParticle = " 
+			     << (*cit)->antiColourLine()->startParticle() 
+			     << "("
+			     << (*cit)->antiColourLine()->startParticle()->id() << "), "
+			     << (*cit)->antiColourLine()->endParticle() << "("
+			     << (*cit)->antiColourLine()->endParticle()->id() << ")" 
+			     << endl << flush;
+      }
+    }
     if (partners.size() == 0) {
-//       cout << "No Partners among the showerParticles, " 
-// 	   << "looking among the remnants..." << endl
-// 	   << (*cit)->colourLine() << endl
-// 	   << (*cit)->antiColourLine() << endl << flush;
-      if ((*cit)->colourLine()) 
-// 	cout << (*cit)->colourLine()->startParticle() << endl
-// 	     << (*cit)->colourLine()->endParticle() << endl << flush;
-      if ((*cit)->antiColourLine()) 
-// 	cout << (*cit)->antiColourLine()->startParticle() << endl
-// 	     << (*cit)->antiColourLine()->endParticle() << endl << flush;
       // set colourpartners 'by hand' from colourLine information
       // this should also give us access to the remnants
       if (CL(cit)) {
@@ -164,11 +187,13 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 	  }
 	}
       }
-      for(unsigned int i = 0; i < partners.size(); i++) {
-	//	cout << "set partner by hand: " << partners[i] << endl;
-      }
     }
     candidatePartners[*cit] = partners;
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+      for(unsigned int i = 0; i < partners.size(); i++) {
+	generator()->log() << "  found partner by hand: " << partners[i] << endl;
+      }
+    }
   }
 #undef FS
 #undef CL
@@ -195,6 +220,11 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
       //                  does not have to be necessarily "i".
       int position = UseRandom::irnd(it->second.size());
 
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+	generator()->log() << "  calculate initial evolution scales of " 
+			   << it->first->id() 
+			   << " " << it->second[position]->id() << endl;
+      }
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(it->first, 
 						    it->second[position]),
@@ -288,7 +318,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     generator()->log() << "PartnerFinder::debuggingInfo "
 		       << "end ___________________________________" << endl;
   }
-  
+
   return isOK;
 }
 

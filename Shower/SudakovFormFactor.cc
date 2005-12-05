@@ -180,8 +180,14 @@ guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax,
   z0 = x;
   double yy = 1.+sqr(kinCutoff)/t/2.;
   z1 = yy - sqrt(sqr(yy)-1.); 
+  if (z1 < z0) {
+    t = -1.0*GeV;
+  }
   t = guesst(t0, told, z0, z1); 
   z = guessz(z0, z1); 
+  if (z1 < z0) {
+    t = -1.0*GeV;
+  }
 
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
     CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
@@ -278,11 +284,16 @@ bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 &tmin) {
  
 bool SudakovFormFactor::PDFVeto(const double &z, const Energy2 &t, 
 				const double &x,
-				const tcPDFPtr &pdf, const tcPDPtr &parton, 
+				const tcPDFPtr &pdf, 
+				const tcPDPtr &parton0, 
+				const tcPDPtr &parton1, 
 				const tcPDPtr &beam) {
   double factor = 1.0; // needs to be adjusted;
   if(!pdf) return false;
-  double ratio = pdf->xfx(beam,parton,t,x/z)/pdf->xfx(beam,parton,t,x);
+  // remember: pdf's q is cut in pdf class.  shoudl probably be done here! 
+  // this would correspond to QSPAC in F-HERWIG. 
+  double ratio = pdf->xfx(beam,parton1,t,x/z)/pdf->xfx(beam,parton0,t,x);
+  cout << "ratio = " << ratio << endl;
   if(ratio > factor*UseRandom::rnd()) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  PDFVeto failed: ratio = " << ratio << endl;
@@ -345,12 +356,12 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
   _q = Energy();
   _z = 0.0;
   _phi = 0.0;
+  double z0,z1;
   if(revOrd) {
     _q = startingQ / UseRandom::rnd();
     _z = UseRandom::rnd();
   } else {
     // All the variables needed
-    double z0,z1;
     Energy2 t,t0,tmax,tmin;
     Energy kinCutoff;
     bool glueEmits = (ids[0]==ParticleID::g);
@@ -360,7 +371,8 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
     Energy m1 = CurrentGenerator::current().getParticleData(ids[1])->mass();
     tmax = sqr(startingQ);
     t = tmax;
-    tcPDPtr parton = CurrentGenerator::current().getParticleData(ids[1]);
+    tcPDPtr parton0 = CurrentGenerator::current().getParticleData(ids[0]);
+    tcPDPtr parton1 = CurrentGenerator::current().getParticleData(ids[1]);
 
     // Initialize the variables
     if(glueEmits) initialize(t0,tmin,tmax,kinCutoff,m1);
@@ -375,14 +387,18 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
     } while(_z > z1 || 
 	    SplittingFnVeto(_z,t/sqr(_z),ids) || 
 	    alphaSVeto(sqr(1.-_z)*t) || 
-	    PDFVeto(_z,t,x,pdf,parton,beam));
+	    PDFVeto(_z,t,x,pdf,parton0,parton1,beam));
     if(t > 0 && z0 < z1) _q = sqrt(t);
     else _q = -1.;
   }
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-    CurrentGenerator::log() << "Sudakov::generateNextSpaceBranching(): "
+    CurrentGenerator::log() << endl 
+			    << "Sudakov::generateNextSpaceBranching(): "
 			    << "return with (q/GeV, z) = ("
-	                    << _q/GeV << ", " << _z << ")" << endl;
+	                    << _q/GeV << ", " << _z << ")" 
+			    << ", (z0, z1) = ("
+			    << z0 << ", " << z1 << ")"
+			    << endl;
   }
 
   _phi = 2.*pi*UseRandom::rnd();

@@ -5,6 +5,7 @@
 //
 
 #include "IS_QtildaShowerKinematics1to2.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -62,19 +63,22 @@ updateParent( const tShowerParticlePtr theParent,
   Energy kx = mz*theParent->sudPx() - cphi*pt;
   Energy ky = mz*theParent->sudPy() - sphi*pt; 
   double alpha = theParent->sudAlpha();
-  cout << "  updateParent: theParent->sudAlpha() = "
-       << theParent->sudAlpha() << endl
-       << "  theParent->id() = "
-       << theParent->id() << endl;
-
-  cout << "  (z, pt, alpha) = ("
-       << 1.-mz << ", "
-       << pt << ", " 
-       << alpha << ")" << endl
-       << "  (cphi, kx, ky) = (" 
-       << cphi << ", "
-       << kx << ", "
-       << ky << ")" << endl;
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+    CurrentGenerator::log()
+      << "  updateParent: theParent->sudAlpha() = "
+      << theParent->sudAlpha() << endl
+      << "  theParent->id() = "
+      << theParent->id() 
+      << endl
+      << "  (z, pt, alpha) = ("
+      << 1.-mz << ", "
+      << pt << ", " 
+      << alpha << ")" << endl
+      << "  (cphi, kx, ky) = (" 
+      << cphi << ", "
+      << kx << ", "
+      << ky << ")" << endl;
+  }
   // on-shell child
   c2->sudAlpha(mz*alpha);
   c2->sudPx(kx);
@@ -92,13 +96,17 @@ updateParent( const tShowerParticlePtr theParent,
       /c2->sudAlpha()/p_dot_n()/2.;
   }
 
-  cout << "  (m, beta, sudPerp2) = (" 
-       << c2->data().mass() << ", " 
-       << beta << ", " << c2->sudPperp2() << ")" << endl
-       << "  (alpha, p.n) = (" << c2->sudAlpha() << ", " << p_dot_n() << ")" << endl
-       << "  (m2+pt2, 2 alpha p.n) = (" 
-       << sqr(c2->data().mass())+c2->sudPperp2() 
-       << ", " << c2->sudAlpha()*p_dot_n()*2. << ")" << endl;
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+    CurrentGenerator::log() 
+      << "  (m, beta, sudPerp2) = (" 
+      << c2->data().mass() << ", " 
+      << beta << ", " << c2->sudPperp2() << ")" << endl
+      << "  (alpha, p.n) = (" << c2->sudAlpha() << ", " 
+      << p_dot_n() << ")" << endl
+      << "  (m2+pt2, 2 alpha p.n) = (" 
+      << sqr(c2->data().mass())+c2->sudPperp2() 
+      << ", " << c2->sudAlpha()*p_dot_n()*2. << ")" << endl;
+  }
   
   c2->sudBeta(beta);
   c2->set5Momentum(sudakov2Momentum(c2->sudAlpha(), c2->sudBeta(), 
@@ -110,12 +118,15 @@ updateParent( const tShowerParticlePtr theParent,
   c1->sudPx(theParent->sudPy() - c2->sudPy());
   c1->set5Momentum(theParent->momentum() - c2->momentum()); 
 
-  cout << "  After 'reconstruction': "
-       << "  p->momentum() = " << theParent->momentum() << endl
-       << "  c1->momentum() = " << c1->momentum() << endl
-       << "  c2->momentum() = " << c2->momentum() 
-       << ", m2 = " << c2->momentum().m2() 
-       << ", mass = " << c2->momentum().mass() << endl;
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
+    CurrentGenerator::log() 
+      << "  After 'reconstruction': "
+      << "  p->momentum() = " << theParent->momentum() << endl
+      << "  c1->momentum() = " << c1->momentum() << endl
+      << "  c2->momentum() = " << c2->momentum() 
+      << ", m2 = " << c2->momentum().m2() 
+      << ", mass = " << c2->momentum().mass() << endl;
+  }
 }
 
 

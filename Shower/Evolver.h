@@ -74,7 +74,7 @@ public:
    * access the PDF. If skipKinReco is true, then the kinematics 
    * reconstruction is skipped.
    */
-  void showerNormally(tEHPtr ch, 
+  bool showerNormally(tEHPtr ch, 
 		      const tShowerVarsPtr showerVariables, 
 		      //const tMECorrectionPtr meCorrection,
 		      ShowerParticleVector & particles,

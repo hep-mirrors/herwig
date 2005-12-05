@@ -74,7 +74,7 @@ void Evolver::Init() {
 		      false, false, true, false);
 }
 
-//--------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 
 void Evolver::setDoneMapShower(MapShower & mapShower) {
   for(MapShower::iterator it=mapShower.begin(); it!=mapShower.end(); ++it) {
@@ -89,7 +89,7 @@ void Evolver::clear() {
 }
 
 
-void Evolver::showerNormally(tEHPtr ch, 
+bool Evolver::showerNormally(tEHPtr ch, 
 			     const tShowerVarsPtr showerVariables, 
 			     //const tMECorrectionPtr meCorrection,
 			     ShowerParticleVector & particles,
@@ -98,8 +98,8 @@ void Evolver::showerNormally(tEHPtr ch,
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "Evolver::showerNormally(): Evt #" 
-		       << generator()->currentEventNumber() 
-		       << "\t _______________________"
+      		       << generator()->currentEventNumber() 
+		       << " ________________________________________" 
 		       << endl;
   }
 
@@ -115,33 +115,60 @@ void Evolver::showerNormally(tEHPtr ch,
   }
 
   bool reconstructed = false; 
+  bool showerOK = true;
   // catch the possibility of an impossible kinematic reconstruction
   ShowerParticleVector::const_iterator cit;
-//   while(!reconstructed) {
-//     // Initial State Radiation
-//     if(_splittingGenerator->isISRadiationON()) {
-//       ShowerParticleVector particlesToShower;
-//       // This may not be right at all!
-//       for(cit = particles.begin(); cit != particles.end(); ++cit) {
-// 	if(!(*cit)->isFinalState()) {
-// 	  particlesToShower.push_back(*cit);
-// 	}
-//       }
-//       for(ShowerParticleVector::iterator it = particlesToShower.begin();
-// 	    it != particlesToShower.end(); ++it ) {
-// 	cout << "Evolver with " << *it << endl;
-// 	_mapShowerHardJets[*it] = _backwardEvolver->
-// 	  spaceLikeShower(ch, showerVariables, *it, particles);
-// 	cout << "Evolver." << endl;
-//       }
-//     }
-//     reconstructed = reconstructISKinematics(ch);
-//   }
-//   cout << "Successful reconstruction of IS shower!" << endl;
+  while(!reconstructed && showerOK) {
+    // Initial State Radiation
+    if(_splittingGenerator->isISRadiationON()) {
+      ShowerParticleVector particlesToShower;
+      // This may not be right at all!
+      for(cit = particles.begin(); cit != particles.end(); ++cit) {
+	if(!(*cit)->isFinalState()) {
+	  particlesToShower.push_back(*cit);
+	}
+      }
+      for(ShowerParticleVector::iterator it = particlesToShower.begin();
+	    it != particlesToShower.end(); ++it ) {
+	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	  generator()->log()  << "  calling backwardsEvolver with " 
+			      << *it << endl;
+	}
+	int status = 0;
+	status =  _backwardEvolver->
+	  spaceLikeShower(ch, showerVariables, *it, particles);
+	if (status == 1)
+	  _mapShowerHardJets[*it] = true;
+	else if (status == 0)
+	  _mapShowerHardJets[*it] = false;
+	if (status == -1) {
+	  //	  cerr << endl << "showerOK = false" << endl;
+	  showerOK = false;
+	}
+      }
+      reconstructed = reconstructISKinematics(ch);
+    } else reconstructed = true;
+  }
 
-//   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
-//     _partnerFinder->setQCDInitialEvolutionScales(showerVariables, particles);
-//   }
+  if (!showerOK) {
+    //    cerr << "Evolver::showerNormally: !showerOK from spaceLikeShower, will return false." << endl;
+    return false;
+  }
+
+  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+    generator()->log() << "  Successful reconstruction of IS shower!" << endl;
+    for(cit = particles.begin(); cit != particles.end(); ++cit) {
+      if ((*cit)->isFromHardSubprocess()) 
+	generator()->log() << (*cit)->id() << " " 
+			   << (*cit)->momentum() << endl;
+    }
+  }
+
+  //  cerr << "before setQCDInitialEvolutionScales." << endl;
+  //   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
+  //     _partnerFinder->setQCDInitialEvolutionScales(showerVariables, particles);
+  //   }
+  //  cerr << "after setQCDInitialEvolutionScales." << endl;
 
   reconstructed = false;
   while(!reconstructed) {
@@ -156,36 +183,37 @@ void Evolver::showerNormally(tEHPtr ch,
 
       }
 // has to be switched on for e+e-!
-//      cout << "Resetting partners..." << endl;
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	generator()->log()  << "  Resetting partners..." << endl;
+      }
       if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
 	_partnerFinder->setQCDInitialEvolutionScales(showerVariables, 
 						     particlesToShower);
       }
       
-      //      cout << "FS shower loop... " << flush << endl;
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	generator()->log() << "FS shower loop... " << flush << endl;
+      }
       for(cit = particlesToShower.begin(); 
 	  cit != particlesToShower.end(); ++cit) {
-	//	cout << (*cit)->id() << ", " << *cit << flush;
+	cout << (*cit)->id() << ", " << *cit << " " 
+	     << (*cit)->momentum()/GeV << flush << endl;
 	_mapShowerHardJets[*cit] = _forwardEvolver->
 	  timeLikeShower(ch, showerVariables, *cit, particles);
       }
-      //      cout << "." << endl << flush;
-      //      cout << "FS shower complete." << endl << flush;
-
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	generator()->log() << "...FS shower complete." << endl << flush;
+      }
       if(!skipKinReco) {
 	reconstructed = reconstructKinematics( ch );
       } else { 
 	reconstructed = true;     
-      }
-     
-//       cout << "reconstructed = " 
-// 	   << (reconstructed ? "true" : "false")
-// 	   << endl; 
-//       cout << "FS reconstruction complete." << endl;
-      
+      }     
     } else reconstructed = true;
   }
+  return true;
 }
+
 
 
 void Evolver::showerDecay(tEHPtr ch, 
@@ -247,7 +275,7 @@ void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
 
   for(ShowerParticleVector::const_iterator pit = particles.begin(); 
       pit != particles.end(); ++pit) {   
-    if ( (*pit)->data().id() == 21 ) {
+    if ( (*pit)->data().id() == ParticleID::g ) {
       Lorentz5Momentum dum = (*pit)->momentum(); 
       dum.setMass( effectiveGluonMass ); 
       (*pit)->set5Momentum( dum );

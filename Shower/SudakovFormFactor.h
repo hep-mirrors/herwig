@@ -155,8 +155,8 @@ protected:
   bool alphaSVeto(Energy2 pt2);
   bool tVeto(Energy2 &t, const Energy2 &tmin);
   bool PDFVeto(const double &z, const Energy2 &t, const double &x,
-	       const tcPDFPtr &pdf, const tcPDPtr &parton, 
-	       const tcPDPtr &beam);
+	       const tcPDFPtr &pdf, const tcPDPtr &parton0, 
+	       const tcPDPtr &parton1, const tcPDPtr &beam);
 private:
 
   /**

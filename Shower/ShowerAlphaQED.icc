@@ -11,7 +11,7 @@ inline ShowerAlphaQED::ShowerAlphaQED() :
 {}
 
 inline ShowerAlphaQED::ShowerAlphaQED(const ShowerAlphaQED & x)
-  : ShowerAlpha(x), _alpha(x._alpha) {}
+  : _alpha(x._alpha) {}
   //ShowerAlpha(x) {}
 
 inline IBPtr ShowerAlphaQED::clone() const {

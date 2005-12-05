@@ -14,7 +14,9 @@ ClassDescription<GtoGGSplitFn> GtoGGSplitFn::initGtoGGSplitFn;
 GtoGGSplitFn::~GtoGGSplitFn() {}
 
 double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &){
-  double val = 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
+  // ACHTUNG! factor two included by hand! 
+  double val = 2.*3.*sqr(1.-z*(1.-z))/(z*(1.-z));
+  //double val = 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
   // Here we write the LO splitting function P(z) for g -> gg
   // splittings that is well-known from the text books 
 
@@ -25,16 +27,20 @@ double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &){
 }
 
 double GtoGGSplitFn::overestimateP(const double z, const IdList &) {
-  return 3.*(1/z + 1/(1.-z)); 
+  // ACHTUNG! factor two included by hand! 
+  return 2.*3.*(1/z + 1/(1.-z)); 
+  //return 3.*(1/z + 1/(1.-z)); 
 }
 
 double GtoGGSplitFn::integOverP(const double z) {
-  return 3.*log(z/(1.-z)); 
+  return 2.*3.*log(z/(1.-z)); 
+  //return 3.*log(z/(1.-z)); 
 }
 
 
 double GtoGGSplitFn::invIntegOverP(const double r) {
-  return exp(r/3.)/(1.+exp(r/3.)); 
+  return exp(r/3./2.)/(1.+exp(r/3./2.)); 
+  //return exp(r/3.)/(1.+exp(r/3.)); 
 } 
 
 

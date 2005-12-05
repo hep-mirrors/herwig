@@ -49,7 +49,7 @@ public:
    * of ShowerParticle already created so far by the showering, 
    * or being empty: the choice is up to the caller).
    */
-  bool spaceLikeShower( tEHPtr ch, 
+  int spaceLikeShower( tEHPtr ch, 
 		        const tShowerVarsPtr showerVariables, 
 		        //const tMECorrectionPtr meCorrectionPtr,
 		        tShowerParticlePtr particle, 
@@ -133,7 +133,6 @@ private:
 
   Ptr<SplittingGenerator>::pointer _splittingGenerator;
   Ptr<ForwardEvolver>::pointer _forwardEvolver;
-
 };
 
 }
