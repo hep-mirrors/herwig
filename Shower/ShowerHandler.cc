@@ -413,10 +413,8 @@ void ShowerHandler::cascade() {
       countFailures++;
     }    
   } // end main while loop
-  cout << "Here, going to fill event record" << endl;
   // Debugging
   fillEventRecord(ch);  
-  cout << "Done" << endl;
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {    
     debuggingInfo();
     if ( generator()->currentEventNumber() < 1000 )
@@ -463,9 +461,7 @@ convertToShowerParticles(const tEHPtr ch,
   for(ParticleSet::const_iterator cit = ch->currentStep()->particles().begin();
       cit != ch->currentStep()->particles().end(); ++cit ) {
     if ( remnantSet.find( (*cit)->original() ) == remnantSet.end() ) {
-     cout << "Creating shower particle " << **cit << endl;
       part = ptr_new<ShowerParticlePtr>(**cit);
-     cout << "Shower particles ThePEGBase = "<< part->getThePEGBase() << endl;
       part->setFromHardSubprocess(true);
       part->setFinalState(true);
       hardProcessParticles.push_back(part);
@@ -624,14 +620,10 @@ void ShowerHandler::fillEventRecord(const tEHPtr ch) {
   ShowerParticleVector::iterator it;
   bool isFSR = _evolver->splittingGenerator()->isFSRadiationON();
   bool isISR = _evolver->splittingGenerator()->isISRadiationON();
-  cout << "FSR = " << isFSR << ", ISR = " << isISR << endl;
+  //cout << "FSR = " << isFSR << ", ISR = " << isISR << endl;
   for(it = _particles.begin(); it != _particles.end(); ++it ) {
-    cout << "Adding " << *(*it) << endl;
     if((*it)->isFromHardSubprocess()) {
-      cout << "Is from hard subprocess" << endl;
       if((*it)->isFinalState() && isFSR) {
-	cout << "Adding final state shower" << endl;
-	cout << "ThePEGBase = " << (*it)->getThePEGBase() << endl;
 	pstep->setCopy((*it)->getThePEGBase(), *it);
 	//      pstep->setCopy((*it)->getThePEGBase(), p);
 	// (*it)->setMomentum(p->momentum());
@@ -643,7 +635,6 @@ void ShowerHandler::fillEventRecord(const tEHPtr ch) {
 	PPtr hadron = original->parents()[0];
 	PPtr intermediate = original->children()[0];
 
-	cout << "Abandoning children " << endl;
 	(*it)->abandonChild(intermediate);
 	(*it)->addChild(original);
 	hadron->abandonChild(original);

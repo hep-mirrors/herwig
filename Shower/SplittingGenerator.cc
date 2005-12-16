@@ -435,25 +435,11 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 	  }
 	} else {
 
-	  //	  cerr << "A" << endl;
-  
-		
-	  cout << " " << particle.parents().size() << flush << endl;
-	  cout << particle.parents()[0] << flush << endl;
-	  cout << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
-	       << flush << endl;
-	  cout << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
-	    ->showerKinematics() << flush << endl;
-	  cout << particle.parents()[0]->id() << flush << endl;
-          cout << particle << endl;
-          cout << "particle.siblings().size() = " << particle.siblings().size()
-               << endl;
-          
+	  //	  cerr << "A" << endl;	              
 	  //for(tParticleSet::const_iterator cit = particle.siblings().begin(); 
 	  //    cit != particle.siblings().end(); cit++) {
 	  //  cout << (*cit)->id() << ", ";
 	  //}
-	  cout << flush << endl; 
 	  p = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
 	                     ->showerKinematics()->getBasis()[0];
 	  n = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])

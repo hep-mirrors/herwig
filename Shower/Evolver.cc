@@ -188,8 +188,8 @@ bool Evolver::showerNormally(tEHPtr ch,
       }
       for(cit = particlesToShower.begin(); 
 	  cit != particlesToShower.end(); ++cit) {
-	cout << (*cit)->id() << ", " << *cit << " " 
-	     << (*cit)->momentum()/GeV << flush << endl;
+	//cout << (*cit)->id() << ", " << *cit << " " 
+	//     << (*cit)->momentum()/GeV << flush << endl;
 	_mapShowerHardJets[*cit] = _forwardEvolver->
 	  timeLikeShower(ch, showerVariables, *cit, particles);
       }

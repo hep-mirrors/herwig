@@ -152,11 +152,6 @@ guessTimeLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax,
     z0 = sqrt(t0/t)/2.;
     z1 = 1.-kinCutoff/sqrt(t)/2.; // a little overestimate...
   }
-  CurrentGenerator::log() << "z0 = " << z0 << ", z1 = " << z1 
-			  << ", t0 = " << t0 << ", gluEmits = "<< glueEmits
-			  << ", kinCutoff = " << kinCutoff << ", t = " << t
-			  << ", sqrt(t0/t) = " << sqrt(t0/t) << ", tmax = "
-			  << tmax << ", tmin = " << tmin << endl;
 
   // quick hack gives no more branching without PS
   // if (z0>z1) z1=z0;
