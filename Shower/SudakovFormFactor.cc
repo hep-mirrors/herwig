@@ -16,11 +16,12 @@ using namespace Herwig;
 
 ClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
 
-SudakovFormFactor::SudakovFormFactor() : _q(), _z( 0.0 ), _phi(0.0) {}
+SudakovFormFactor::SudakovFormFactor() 
+  : _q(), _z( 0.0 ), _phi(0.0), _pdfmax(30.0) {}
   
 SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
   : _q(x._q), _z(x._z), _phi(x._phi), _splittingFn(x._splittingFn),
-    _alpha(x._alpha) {} 
+    _alpha(x._alpha), _pdfmax(x._pdfmax) {} 
  
 SudakovFormFactor::~SudakovFormFactor() {}
 
@@ -80,14 +81,15 @@ void SudakovFormFactor::get_qz(bool znorm, double p, double R, Energy q0,
 }
 
 // inline it!
-double SudakovFormFactor::guessz (double z0, double z1) {
-  return _splittingFn->invIntegOverP(_splittingFn->integOverP(z0) + 
-     UseRandom::rnd()*(_splittingFn->integOverP(z1) - 
-		       _splittingFn->integOverP(z0)));
+double SudakovFormFactor::guessz (double z0, double z1) const {
+  double lower = _splittingFn->integOverP(z0);
+  return _splittingFn->invIntegOverP
+    (lower + UseRandom::rnd()*(_splittingFn->integOverP(z1) - lower));
 }
 
 
-Energy2 SudakovFormFactor::guesst(Energy2 t0, Energy2 t1, double z0, double z1)
+Energy2 SudakovFormFactor::guesst(Energy2 t0, Energy2 t1, double z0, double z1,
+				  bool isInitialShower) const
 {
 //   cout << endl << sqrt(t0)/GeV << " < " 
 //        << sqrt(t1)/GeV << endl
@@ -99,14 +101,22 @@ Energy2 SudakovFormFactor::guesst(Energy2 t0, Energy2 t1, double z0, double z1)
 //        << _alpha->overestimateValue() << ", "
 //        << _alpha->value(sqr(91.2)*GeV2)
 //        << endl << (2.*pi) << "......." << endl;
-  return t1*pow(UseRandom::rnd(), 
-		 1./((_splittingFn->integOverP(z1) -
-		      _splittingFn->integOverP(z0))* 
-		     _alpha->overestimateValue()/(2.*pi))); 
+  if(!isInitialShower) {
+    return t1*pow(UseRandom::rnd(), 
+		  1./((_splittingFn->integOverP(z1) -
+		       _splittingFn->integOverP(z0))* 
+		      _alpha->overestimateValue()/(2.*pi))); 
+  } else {
+    return t1*pow(UseRandom::rnd(), 
+		  1./((_splittingFn->integOverP(z1) -
+		       _splittingFn->integOverP(z0))* 
+		      _pdfmax *
+		      _alpha->overestimateValue()/(2.*pi)));
+  }    
 }
 
-void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 &tmax,
-		                   Energy &kinCutoff, Energy &m) {
+void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax,
+		                   Energy &kinCutoff, Energy m) {
   kinCutoff = (kinScale() - 0.3*m)/2.3;
   t0 = sqr(max(kinCutoff,m));
   tmin = max(t0,sqr(resScale()));
@@ -142,6 +152,11 @@ guessTimeLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax,
     z0 = sqrt(t0/t)/2.;
     z1 = 1.-kinCutoff/sqrt(t)/2.; // a little overestimate...
   }
+  CurrentGenerator::log() << "z0 = " << z0 << ", z1 = " << z1 
+			  << ", t0 = " << t0 << ", gluEmits = "<< glueEmits
+			  << ", kinCutoff = " << kinCutoff << ", t = " << t
+			  << ", sqrt(t0/t) = " << sqrt(t0/t) << ", tmax = "
+			  << tmax << ", tmin = " << tmin << endl;
 
   // quick hack gives no more branching without PS
   // if (z0>z1) z1=z0;
@@ -171,9 +186,9 @@ guessTimeLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax,
 
 
 void SudakovFormFactor::
-guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t, Energy2 &tmax, 
-	       Energy2 &tmin, Energy2 &t0, Energy &kinCutoff, bool glueEmits, 
-	       const double &x) {
+guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t, 
+	       const Energy2 t0, const Energy kinCutoff, const double x) 
+  const {
   
   Energy2 told = t;
   // the overestimated PS-boundary in z
@@ -240,8 +255,8 @@ bool SudakovFormFactor::PSVeto(const double &z, const double &z0,
   return false;
 }
 
-bool SudakovFormFactor::SplittingFnVeto(const double &z, const Energy2 &t, 
-					const IdList &ids) {
+bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t, 
+					const IdList &ids) const {
   // hit the density? 
   double ratio;
   ratio = _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
@@ -254,7 +269,7 @@ bool SudakovFormFactor::SplittingFnVeto(const double &z, const Energy2 &t,
   return false;
 }
 
-bool SudakovFormFactor::alphaSVeto(Energy2 pt2) {
+bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
   if(UseRandom::rnd() > _alpha->value(pt2)/_alpha->overestimateValue()) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  X veto on as(q2)/as = " 
@@ -269,7 +284,7 @@ bool SudakovFormFactor::alphaSVeto(Energy2 pt2) {
   return false;
 }
 
-bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 &tmin) {
+bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 tmin) const {
   // is t valid at all? 
   if(t < tmin) {
     t = -1.; 
@@ -282,19 +297,22 @@ bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 &tmin) {
   return false;
 }
  
-bool SudakovFormFactor::PDFVeto(const double &z, const Energy2 &t, 
-				const double &x,
-				const tcPDFPtr &pdf, 
-				const tcPDPtr &parton0, 
-				const tcPDPtr &parton1, 
-				const tcPDPtr &beam) {
+bool SudakovFormFactor::PDFVeto(const double z, const Energy2 t, 
+				const double x,
+				const tcPDFPtr pdf, 
+				const tcPDPtr parton0, 
+				const tcPDPtr parton1, 
+				const tcPDPtr beam) const {
   double factor = 1.0; // needs to be adjusted;
   if(!pdf) return false;
   // remember: pdf's q is cut in pdf class.  shoudl probably be done here! 
   // this would correspond to QSPAC in F-HERWIG. 
-  double ratio = pdf->xfx(beam,parton1,t,x/z)/pdf->xfx(beam,parton0,t,x);
-  cout << "ratio = " << ratio << endl;
-  if(ratio > factor*UseRandom::rnd()) {
+  double ratio = pdf->xfx(beam,parton0,t,x/z)/pdf->xfx(beam,parton1,t,x);
+  //cout << "ratio = " << ratio << endl;
+  // ratio / PDFMax is a probability ??
+  // NOTE: PJS - Replaced by durham group
+  // if(ratio > factor*UseRandom::rnd()) {
+  if(ratio < UseRandom::rnd()*_pdfmax) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  PDFVeto failed: ratio = " << ratio << endl;
     }  
@@ -350,7 +368,7 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
 Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
 			                             const IdList &ids,
 						     tcPDPtr beam,
-						     const tcPDFPtr &pdf,
+						     const tcPDFPtr pdf,
 						     double x,
 						     const bool revOrd) {
   _q = Energy();
@@ -358,6 +376,9 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
   _phi = 0.0;
   double z0,z1;
   if(revOrd) {
+    throw Exception() << "Reverse Ordering not implemented in " 
+		      << "SudakovFormFactor::generateNextSpaceBranching"
+		      << Exception::runerror;
     _q = startingQ / UseRandom::rnd();
     _z = UseRandom::rnd();
   } else {
@@ -381,9 +402,8 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
 
     // Now do the veto algorithm
     do { 
-      guessSpaceLike(_z,z0,z1,t,tmax,tmin,t0,kinCutoff,glueEmits, x);
-      if(z0 > z1) break;
-      if(tVeto(t,tmin)) break;
+      guessSpaceLike(_z,z0,z1,t,t0,kinCutoff,x);
+      if(z0 > z1 || tVeto(t,tmin)) break;
     } while(_z > z1 || 
 	    SplittingFnVeto(_z,t/sqr(_z),ids) || 
 	    alphaSVeto(sqr(1.-_z)*t) || 
@@ -430,9 +450,9 @@ void SudakovFormFactor::Init() {
 }
 
 void SudakovFormFactor::persistentOutput(PersistentOStream &out) const {
-  out << _splittingFn << _alpha << _variables;
+  out << _splittingFn << _alpha << _variables << _pdfmax;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream &in, int) {
-  in >> _splittingFn >> _alpha >> _variables;
+  in >> _splittingFn >> _alpha >> _variables >> _pdfmax;
 }

@@ -297,14 +297,16 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
+  // if no branchings return empty branching struct
   if(_fbranchings.find(index) == _fbranchings.end()) 
     return Branching(ShoKinPtr(), SudakovPtr(), IdList());
+  // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
     tSudakovPtr candidateSudakov = cit->second.first;
     Energy candidateNewQ = 0*MeV;
-    ShowerIndex::InteractionType i = candidateSudakov->interactionType();
     if(candidateSudakov) {
+      ShowerIndex::InteractionType i = candidateSudakov->interactionType();
       // check size of scales beforehand...
       if(particle.evolutionScales()[i] > _showerVariables->cutoffQScale(i)) {
         candidateNewQ = candidateSudakov->generateNextTimeBranching(
@@ -323,7 +325,9 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 			       << (candidateNewQ/MeV > 0 ? candidateNewQ/MeV : 0)
 			       << ") MeV"  << endl;
       }	  
-      if((!reverseAngOrd && candidateNewQ > newQ && 
+      // won't work for reverse angluar ordering as newQ=0. at initialization
+      // NOTE: PJS - must check with stefan to find what newQ should be
+     if((!reverseAngOrd && candidateNewQ > newQ && 
 	      candidateNewQ < particle.evolutionScales()[i]) || 
 	     (reverseAngOrd && candidateNewQ < newQ && 
 	      candidateNewQ > particle.evolutionScales()[i])) { 
@@ -358,7 +362,9 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
   // ShowerKinematics object which contains the kinematics information
   // about such branching. Notice that the cases 1->2 and 1->3
   // branching should be treated separately.
-  if(newQ && sudakov) {
+  // NOTE: PJS - modified by durham group, removed newQ from condition
+  //if(newQ && sudakov) {
+  if(sudakov) {
     if(sudakov->splittingFn()) {
 
       // For the time being we are considering only 1->2 branching
@@ -369,7 +375,7 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
       bool fromHard = false, parentHas = false, siblingHas = false, 
 	initiatesTLS = false; 
       
-      if (particle.isFromHardSubprocess()) fromHard = true;
+      fromHard = particle.isFromHardSubprocess();
 //       cerr << particle.parents()[0]
 // 	   << endl; 
 //       cerr << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
@@ -377,16 +383,16 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
       
       ShowerParticlePtr partest = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0]); 
 
-      if (partest && partest->showerKinematics()) parentHas = true;
+      parentHas = (partest && partest->showerKinematics());
       partest = dynamic_ptr_cast<ShowerParticlePtr>(*(particle.siblings().begin()));
-      if (partest && partest->showerKinematics()) siblingHas = true;
-      if (particle.initiatesTLS()) initiatesTLS = true;
+      siblingHas = (partest && partest->showerKinematics());
+      initiatesTLS = (particle.initiatesTLS());
       
-//       cout << "fromHard, parentHas, siblingHas, initiatesTLS = " 
-// 	   << (fromHard ? "y":"n") << ", " 
-// 	   << (parentHas ? "y":"n") << ", "
-// 	   << (siblingHas ? "y":"n") << ", " 
-// 	   << (initiatesTLS ? "y":"n") << flush << endl;
+       cout << "fromHard, parentHas, siblingHas, initiatesTLS = " 
+ 	   << (fromHard ? "y":"n") << ", " 
+ 	   << (parentHas ? "y":"n") << ", "
+ 	   << (siblingHas ? "y":"n") << ", " 
+ 	   << (initiatesTLS ? "y":"n") << flush << endl;
 	
 //       if (!(parentHas || fromHard) && siblingHas) {
 // 	cout << "Partner..." << endl;
@@ -439,10 +445,14 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 	  cout << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
 	    ->showerKinematics() << flush << endl;
 	  cout << particle.parents()[0]->id() << flush << endl;
-	  for(tParticleSet::const_iterator cit = particle.siblings().begin(); 
-	      cit != particle.siblings().end(); cit++) {
-	    cout << (*cit)->id() << ", ";
-	  }
+          cout << particle << endl;
+          cout << "particle.siblings().size() = " << particle.siblings().size()
+               << endl;
+          
+	  //for(tParticleSet::const_iterator cit = particle.siblings().begin(); 
+	  //    cit != particle.siblings().end(); cit++) {
+	  //  cout << (*cit)->id() << ", ";
+	  //}
 	  cout << flush << endl; 
 	  p = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
 	                     ->showerKinematics()->getBasis()[0];
@@ -525,7 +535,8 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
 //      cerr << "A" << endl;
 //      cerr << "particle.parents().size() " << particle.parents().size() << endl;
       Ptr<BeamParticleData>::tcp p = 
-	dynamic_ptr_cast<Ptr<BeamParticleData>::tcp>(particle.parents()[0]);
+	dynamic_ptr_cast<Ptr<BeamParticleData>::tcp>(particle.parents()[0]
+						     ->dataPtr());
 //      cerr << "B" << endl;;
       tcPDFPtr pdf;
       if(p) pdf = p->pdf();

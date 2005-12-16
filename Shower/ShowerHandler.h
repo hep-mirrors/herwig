@@ -134,8 +134,8 @@ private:
    * is recursive in nature, but uses a queue to achieve the same result.
    * The initial state one is recursive explicitly.
    */
-  void addFinalStateShower(ShowerParticlePtr &, StepPtr &);
-  void addInitialStateShower(PPtr &, StepPtr &, bool doit=true);
+  void addFinalStateShower(PPtr, StepPtr);
+  void addInitialStateShower(PPtr, StepPtr, bool doit=true);
 
   /**
    * Print the particles in the step.

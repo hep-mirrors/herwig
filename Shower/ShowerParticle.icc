@@ -34,7 +34,7 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
      _scales(x._scales),
      _partners(x._partners),
      //_rhoD(x._rhoD),
-     _thePEGBase( PPtr() )
+     _thePEGBase( x._thePEGBase )
 {}
 
 inline ShowerParticle::ShowerParticle(const Particle &x)
@@ -51,16 +51,11 @@ inline ShowerParticle::ShowerParticle(const Particle &x)
     _x(1.0),
     _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
-    _scales( ShowerIndex::NumInteractionTypes ),
-    _partners( ShowerIndex::NumInteractionTypes ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
     //_rhoD( 2, vector< std::complex<double> >(2) ),
-     _thePEGBase( PPtr() )
-{
-  for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
-    _scales[i] = Energy();
-    _partners[i] = tShowerParticlePtr();
-  }
-}
+     _thePEGBase( &x )
+{}
 
 inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
   : Particle(x),
@@ -76,17 +71,11 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _x(1.0),
     _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
-    _scales( ShowerIndex::NumInteractionTypes ),
-    _partners( ShowerIndex::NumInteractionTypes ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
     //_rhoD( 2, vector< std::complex<double> >(2) ),
     _thePEGBase( PPtr() )
-{
-  // Initialize the scales to the lowest Energy value, and null partners.
-  for ( int i=0; i < ShowerIndex::NumInteractionTypes; i++ ) {
-    _scales[i] = Energy();
-    _partners[i] = tShowerParticlePtr();
-  }  
-}
+{}
 
 inline bool ShowerParticle::isFinalState() const {
   return _isFinalState;
@@ -225,13 +214,13 @@ inline void ShowerParticle::setReconstructionFixedPoint(const bool inputIsDecayi
   _reconstructionFixedPoint = inputIsDecaying;
 }
 
-inline tPPtr ShowerParticle::getThePEGBase() {
+inline tcPPtr ShowerParticle::getThePEGBase() {
   return _thePEGBase; 
 }
 
-inline void ShowerParticle::setThePEGBase(const tPPtr & x) {
-  _thePEGBase = x; 
-}
+//inline void ShowerParticle::setThePEGBase(const tcPPtr & x) {
+//  _thePEGBase = x; 
+//}
 
 inline PPtr ShowerParticle::clone() const {
   return dynamic_ptr_cast<PPtr>(ptr_new<ShowerParticlePtr>(*this));

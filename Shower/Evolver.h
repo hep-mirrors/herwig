@@ -127,7 +127,8 @@ public:
     throw (Veto, Stop, Exception);
   bool reconstructKinematics(tEHPtr & ch) 
     throw (Veto, Stop, Exception);
-
+  inline Ptr<SplittingGenerator>::transient_const_pointer splittingGenerator()
+  { return _splittingGenerator; }
 public:
 
   /**

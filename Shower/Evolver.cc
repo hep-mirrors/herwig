@@ -124,9 +124,7 @@ bool Evolver::showerNormally(tEHPtr ch,
       ShowerParticleVector particlesToShower;
       // This may not be right at all!
       for(cit = particles.begin(); cit != particles.end(); ++cit) {
-	if(!(*cit)->isFinalState()) {
-	  particlesToShower.push_back(*cit);
-	}
+	if(!(*cit)->isFinalState()) particlesToShower.push_back(*cit);
       }
       for(ShowerParticleVector::iterator it = particlesToShower.begin();
 	    it != particlesToShower.end(); ++it ) {
@@ -135,16 +133,11 @@ bool Evolver::showerNormally(tEHPtr ch,
 			      << *it << endl;
 	}
 	int status = 0;
-	status =  _backwardEvolver->
-	  spaceLikeShower(ch, showerVariables, *it, particles);
-	if (status == 1)
-	  _mapShowerHardJets[*it] = true;
-	else if (status == 0)
-	  _mapShowerHardJets[*it] = false;
-	if (status == -1) {
-	  //	  cerr << endl << "showerOK = false" << endl;
-	  showerOK = false;
-	}
+	status =  _backwardEvolver->spaceLikeShower(ch, showerVariables, 
+						    *it, particles);
+	if (status == 1) _mapShowerHardJets[*it] = true;
+	else if (status == 0) _mapShowerHardJets[*it] = false;
+	else if (status == -1) showerOK = false;
       }
       reconstructed = reconstructISKinematics(ch);
     } else reconstructed = true;
@@ -168,7 +161,6 @@ bool Evolver::showerNormally(tEHPtr ch,
   //   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
   //     _partnerFinder->setQCDInitialEvolutionScales(showerVariables, particles);
   //   }
-  //  cerr << "after setQCDInitialEvolutionScales." << endl;
 
   reconstructed = false;
   while(!reconstructed) {
@@ -204,11 +196,8 @@ bool Evolver::showerNormally(tEHPtr ch,
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	generator()->log() << "...FS shower complete." << endl << flush;
       }
-      if(!skipKinReco) {
-	reconstructed = reconstructKinematics( ch );
-      } else { 
-	reconstructed = true;     
-      }     
+      if(!skipKinReco) reconstructed = reconstructKinematics( ch );
+      else reconstructed = true;     
     } else reconstructed = true;
   }
   return true;

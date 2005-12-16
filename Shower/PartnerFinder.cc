@@ -20,6 +20,21 @@
 
 using namespace Herwig;
 
+// some useful functions to avoid using define
+namespace {
+
+// return bool if final-state particle
+inline bool FS(const ShowerParticleVector::const_iterator & a)
+{return (*a)->isFinalState();}
+
+// return colour line pointer 
+inline tColinePtr  CL(const ShowerParticleVector::const_iterator & a)
+{return (*a)->colourLine();}
+  
+inline tColinePtr ACL(const ShowerParticleVector::const_iterator & a)
+{return (*a)->antiColourLine();}
+
+}
 
 PartnerFinder::~PartnerFinder() {}
 
@@ -47,7 +62,7 @@ void PartnerFinder::Init() {
 //-----------------------------------------------------------------------------
 
 bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-						 const ShowerParticleVector particles,
+						 const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
   bool isOK = true;
 
@@ -72,37 +87,6 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   typedef map<tShowerParticlePtr, tShowerParticleVector> PartnerMap;
   PartnerMap candidatePartners;
   ShowerParticleVector::const_iterator cit, cjt;
-  // Confusing...not correct either... changed by PJS 6/2/04
-  /*for(cit = particles.begin(); cit != particles.end(); ++cit) {
-    if((*cit)->data().coloured() && !(*cit)->partners()[ShowerIndex::QCD] &&
-       ((*cit)->children().size() == 0 || isDecayCase )) {
-      tShowerParticleVector partners;
-      for(cjt = particles.begin(); cjt != particles.end(); cjt++) {
-	if(cit != cjt && (*cjt)->data().coloured() &&
-	   ((*cit)->children().size() == 0 || isDecayCase)) { 
-	  bool isPartner = false;
-	  if(((*cit)->isFinalState() && !(*cjt)->isFinalState()) ||
-	       (!(*cit)->isFinalState() && (*cjt)->isFinalState())) {
-	    if(((*cit)->colourLine() &&  
-		(*cit)->colourLine() == (*cjt)->colourLine()) ||
-	       ((*cit)->antiColourLine()  &&  
-		(*cit)->antiColourLine() == (*cjt)->antiColourLine())) {
-	      isPartner = true;
-	    }
-	  } else { 
-	    if(((*cit)->colourLine()  && 
-		(*cit)->colourLine() == (*cjt)->antiColourLine())  ||
-	       ((*cit)->antiColourLine()  && 
-		(*cit)->antiColourLine() == (*cjt)->colourLine())) {
-	      isPartner = true;
-	    }
-	  } 
-	  if(isPartner) partners.push_back(*cjt); 
-	}
-      }
-      candidatePartners[*cit] = partners;
-    }
-  }*/
   for(cit = particles.begin(); cit != particles.end(); ++cit) {
     if(!(*cit)->data().coloured()) continue;
 //     cout << "PF: cit = " << (*cit)->id() << ", " << *cit 
@@ -113,10 +97,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
       if(!(*cjt)->data().coloured()) continue;
       bool isPartner = false;
-#define FS(a) (*a)->isFinalState()
-#define CL(a) (*a)->colourLine()
-#define ACL(a) (*a)->antiColourLine()
-      if((FS(cit) && !FS(cjt)) || (!FS(cit) && FS(cjt)) &&
+      if(FS(cit) != FS(cjt) &&
          ((CL(cit) && CL(cit)==CL(cjt)) || (ACL(cit) && ACL(cit)==ACL(cjt))))
 	 isPartner = true;
       else if((CL(cit) && CL(cit)==ACL(cjt)) || (ACL(cit) && ACL(cit)==CL(cjt)))
@@ -162,9 +143,11 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 			     << endl << flush;
       }
     }
-    if (partners.size() == 0) {
+    if (partners.empty()) {
       // set colourpartners 'by hand' from colourLine information
       // this should also give us access to the remnants
+      // NOTE: PJS - Should either confirm that partners are shower particles
+      // or make them shower particles for proper showering
       if (CL(cit)) {
 	if (CL(cit)->startParticle() == (*cit)) {
 	  if (CL(cit)->endParticle()) {
@@ -195,10 +178,6 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
       }
     }
   }
-#undef FS
-#undef CL
-#undef ACL
-
 
   // Loop now over the map we have just filled (mapParticleToCandidatePartners)
   // and treat only those particles that have some candidate colour partners,
@@ -324,7 +303,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 
 
 bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-						 const ShowerParticleVector particles,
+						 const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
   bool isOK = true;
 
@@ -350,12 +329,20 @@ bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVari
     (*cit)->setPartner(ShowerIndex::QED, (*cit)->partners()[ShowerIndex::QCD]); 
   }
 
+      
+  throw Exception() << "PartnerFinder::setQEDInitialEvolutionScales "
+		    << "implementation is not correct. Must match charge "
+		    << "partners, not colour partners. "
+		    << "Turn off QED in Shower.in" 
+		    << Exception::abortnow;
+
+
   return isOK;
 }
 
 
 bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-						 const ShowerParticleVector particles,
+						 const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
 
   bool isOK = true;
@@ -371,6 +358,12 @@ bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVari
   //                    particle2->evolutionScales()[ ShowerIndex::EWK ] = scale; 
   //                    particle1->partners()[ ShowerIndex::EWK ] = particle2; 
   //                    particle2->partners()[ ShowerIndex::EWK ] = particle1; 
+      
+
+  throw Exception() << "PartnerFinder::setEWKInitialEvolutionScales not "
+		    << "implemented turn off EWK in Shower.in" 
+		    << Exception::abortnow;
+
 
   return isOK;
 }

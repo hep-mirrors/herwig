@@ -69,9 +69,7 @@ double myrap(const Lorentz5Momentum &p) {
 
 
 void boostChain(tPPtr p, const Vector3 &bv) {
-  if (p && (p->id() == 21 || abs(p->id()) < 7)) {
-    boostChain(p->parents()[0], bv);
-  }
+  if (p && p->coloured()) boostChain(p->parents()[0], bv);
   if (p->children().size() == 2 && p->children()[0] && p->children()[1]) {
     p->children()[0]->boost(bv);
     p->children()[1]->boost(bv);
@@ -110,8 +108,7 @@ reconstructHardISJets(const MapShower &hardJets)
       if (cit->first->showerKinematics()) {
 	pq.push_back(cit->first->showerKinematics()->getBasis()[0]);
       } else {
-	//	pq.push_back(cit->first->momentum());
-	if (cit->first->parents().size() > 0) {
+	if (!cit->first->parents().empty()) {
 	  pq.push_back(cit->first->parents()[0]->momentum());
 	} else {
 	  cerr << "  Shower/KinematicsReconstructor::reconstructHardJets: "
@@ -420,15 +417,19 @@ reconstructHardISJets(const MapShower &hardJets)
 	 << "  y = " << myrap(pDY[0] + pDY[1]) << endl;
     }
     // actually boost DY Vector Boson and DY leptons:
-    toBoost[0]->children()[0]->boost(boostRest);
-    toBoost[0]->children()[0]->boost(boostNewF);
-    toBoost[0]->children()[0]->children()[0]->boost(boostRest);
-    toBoost[0]->children()[0]->children()[0]->boost(boostNewF);
-    toBoost[0]->children()[0]->children()[1]->boost(boostRest);
-    toBoost[0]->children()[0]->children()[1]->boost(boostNewF);    
+    //toBoost[0]->children()[0]->boost(boostRest);
+    //toBoost[0]->children()[0]->boost(boostNewF);
+    //toBoost[0]->children()[0]->children()[0]->boost(boostRest);
+    //toBoost[0]->children()[0]->children()[0]->boost(boostNewF);
+    //toBoost[0]->children()[0]->children()[1]->boost(boostRest);
+    //toBoost[0]->children()[0]->children()[1]->boost(boostNewF);    
+    // Changed by Durham group
+    toBoost[0]->children()[0]->deepBoost(boostRest);
+    toBoost[0]->children()[0]->deepBoost(boostNewF);
 
     // find remnants and repair their kinematics
-    tPPtr r1, r2, q1, q2;
+    // PJS: Ignore the remnant for now, it must be built after the ISR
+    /*tPPtr r1, r2, q1, q2;
     r1 = toBoost[0]->parents()[0];
     r2 = toBoost[1]->parents()[0];
     while(abs(r1->id()) < 99) r1 = r1->parents()[0];
@@ -478,7 +479,7 @@ reconstructHardISJets(const MapShower &hardJets)
       }
       q2 = q2->children()[0];
     }
-
+    */
     pDY.clear();
     pDY.push_back(toBoost[0]->children()[0]->children()[0]->momentum());
     pDY.push_back(toBoost[0]->children()[0]->children()[1]->momentum());
@@ -524,14 +525,22 @@ reconstructHardISJets(const MapShower &hardJets)
       generator()->log() << "X, " << par1 << "(" << par1->id() << "), " 
 			 << par2 << "(" << par2->id() << ")" << endl;
     }
-    while(abs(par1->id()) < 99) par1 = par1->parents()[0];
-    while(abs(par2->id()) < 99) par2 = par2->parents()[0];
+    while(abs(par1->id()) < 99 && !par1->parents().empty()) 
+      par1 = par1->parents()[0];
+    while(abs(par2->id()) < 99 && !par2->parents().empty()) 
+      par2 = par2->parents()[0];
+    //if(!par1 || !par2) return true;
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << par1->id() << ", " << par2->id() << endl
-			 << par1->children()[0]->id() << ", "
-			 << par1->children()[1]->id() << ", "
-			 << par2->children()[0]->id() << ", "
-			 << par2->children()[1]->id() << endl;
+      generator()->log() << par1->id() << ", " << par2->id() << endl;
+      generator()->log() << par1->children()[0]->id() << ", ";
+      if(par1->children().size() >= 2) 
+	generator()->log() << par1->children()[1]->id() << ", ";
+      else return true;
+      generator()->log() << par2->children()[0]->id();
+      if(par2->children().size() >= 2)
+	generator()->log() << ", " << par2->children()[1]->id();
+      else return true;
+      generator()->log() << endl;
     }
 
     /*
@@ -859,7 +868,7 @@ reconstructHardISJets(const MapShower &hardJets)
 }  
     
     
-    bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
+bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 						  const Lorentz5Momentum &pB1,
 						  const Lorentz5Momentum &pB2)
   throw (Veto, Stop, Exception) {
@@ -1030,6 +1039,7 @@ reconstructHardISJets(const MapShower &hardJets)
 // 		       << " ===> END DEBUGGING <=== " << endl;
   }
 
+  return true;
   if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower) {
     generator()->log() << ", p_cm = " << p_cm << endl;
     for ( JetKinVect::const_iterator it = jetKinematics.begin();
@@ -1078,6 +1088,8 @@ void KinematicsReconstructor::reconstructDecayJets(const MapShower &decayJets)
   //                and then deep boost the decay product particles with the 
   //                boost returned by the latter method.
   //                If any of the above methods fails, throw an Exception. 
+    throw Exception() << "Need to implemente KinematicsReconstructor"
+		      << "::reconstructDecayJets()" << Exception::runerror;
 
 }
 
@@ -1133,7 +1145,9 @@ bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr pa
     // unfortunately the particleJetParent doesn't have his own
     // showerkinematics but this works fine and keeps the updateLast
     // in the ShowerKinematics class.
-    if (dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])) {      
+    ShowerParticlePtr jetGrandParent = dynamic_ptr_cast<ShowerParticlePtr>
+      (particleJetParent->parents()[0]);
+    if (jetGrandParent) {      
 //       cout << "b " 
 // 	   << particleJetParent->id() << endl 
 // 	   << particleJetParent->parents().size() << endl 
@@ -1142,10 +1156,8 @@ bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr pa
 // 	   << endl 
 // 	   << dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])->showerKinematics()      
 // 	   << flush << endl; 
-      if (dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
-	  ->showerKinematics()) {
-	dynamic_ptr_cast<ShowerParticlePtr>(particleJetParent->parents()[0])
-	  ->showerKinematics()->updateLast( particleJetParent );          
+      if (jetGrandParent->showerKinematics()) {
+	jetGrandParent->showerKinematics()->updateLast( particleJetParent );
       }
     } else {
       Energy dm; 
@@ -1209,15 +1221,17 @@ bool KinematicsReconstructor::reconstructTimeLikeJet(const tShowerParticlePtr pa
 bool KinematicsReconstructor::
 reconstructSpaceLikeJet( const tShowerParticlePtr p) {
   bool isOK = true;
+  tShowerParticlePtr child;
   if(abs(p->parents()[0]->id()) < 99) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       generator()->log() << "recoSLJet part = " 
-			 << p << ", going back..." << endl; 
+			 << p << ", going back to..." 
+			 << *p->parents()[0] << endl; 
     }
-    if (!reconstructSpaceLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(
-				 p->parents()[0]))) {
-      isOK = false;
-    }
+    // NOTE: PJS - Added this check for final state showering
+    tShowerParticlePtr parent = dynamic_ptr_cast<ShowerParticlePtr>
+      (p->parents()[0]);
+    if(parent) isOK = reconstructSpaceLikeJet(parent);
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       generator()->log() << "back done." << endl;
     }
@@ -1227,9 +1241,9 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) {
 	generator()->log() << "recoSLJet part = " << p 
 			   << ", last..." << endl;
       }
-      if (dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])) {
-	dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
-	  ->showerKinematics()->updateLast(p);    
+      child = dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0]);
+      if (child) {
+	child->showerKinematics()->updateLast(p);    
 // 	cerr << p->children()[0] << endl
 // 	     << dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
 // 	  ->showerKinematics() << endl;
@@ -1245,8 +1259,8 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) {
       }
     }
   }
-  if(!p->isFromHardSubprocess() && 
-     dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])) {
+  child = dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0]);
+  if(!p->isFromHardSubprocess() && child) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       generator()->log()
 	<< "  recoSLJet part = " 
@@ -1262,8 +1276,7 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) {
 	<< " (" << p->children()[1]->id() << ")"
 	<< endl;
     }
-    dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])
-      ->showerKinematics()->updateParent(p, p->children());
+    child->showerKinematics()->updateParent(p, p->children());
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       generator()->log()
 	<< "  p0    = " << p->momentum() << endl
@@ -1293,6 +1306,12 @@ reconstructSpecialTimeLikeDecayingJet( const tShowerParticlePtr particleJetParen
   //               until we end up with a "reconstruction fixed point"
   //               (see the method that bears such name in the ShowerParticle class),
   //               that is either childless or decaying particles.
+
+  throw Exception() << "need to implement "
+		    << "KinematicsReconstructor::reconstructSpecialTimeLike"
+		    << "DecayingJet()"
+		    << Exception::runerror;
+  
 
   return isOK;
 }
@@ -1579,7 +1598,11 @@ solveOverallCMframeBoost( const Lorentz5Momentum & pBeamHadron1,
   //               the Lab. Therefore, we boost "back" these momenta 
   //               from the subprocess frame to the Lab, using 
   //                 (pHard1Final + pHard2Final)
- 
+      
+  throw Exception() << "need to implement "
+		    << "KinematicsReconstructor::solveOverallCMframeBoost()"
+		    << Exception::runerror;
+  
   return isOK;
 }
 
@@ -1595,7 +1618,11 @@ solveSpecialDIS_CMframeBoost( const Lorentz5Momentum & pLepton,
   bool isOK = true;
 
   //***LOOKHERE*** WRITE THE CODE
- 
+  throw Exception() << "need to implement "
+		    << "KinematicsReconstructor::solveSpecialDIS"
+		    << "_CMframeBoost()"
+		    << Exception::runerror;
+  
   return isOK;
 
 }

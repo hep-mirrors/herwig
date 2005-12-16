@@ -10,7 +10,7 @@ inline BackwardEvolver::BackwardEvolver() {}
 
 inline BackwardEvolver::BackwardEvolver(const BackwardEvolver & x)
   : ThePEG::HandlerBase(x), _splittingGenerator(x._splittingGenerator),
-    _forwardEvolver(x._forwardEvolver)
+    _forwardEvolver(x._forwardEvolver), _forcedSplitting(x._forcedSplitting)
 {}
 
 inline IBPtr BackwardEvolver::clone() const {

@@ -90,9 +90,10 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
     }
     vetoed = false; 
     ptMax = 0.0*GeV; 
-    if(abs(particle->id()) < 7) {
-      if(particle->id() > 0) ptMax = showerVariables->largestPtQ();
-      else ptMax = showerVariables->largestPtQbar();
+    if(particle->dataPtr()->iColour()==PDT::Colour3) {
+      ptMax = showerVariables->largestPtQ();
+    } else if(particle->dataPtr()->iColour()==PDT::Colour3bar) {
+      ptMax = showerVariables->largestPtQbar();
     }
     particle->undecay();
     tShowerParticleVector particlesYetToShower;
@@ -209,11 +210,32 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
 
 	  ShowerParticlePtr showerProduct1;
 	  ShowerParticlePtr showerProduct2;
-	  if(part->data().id() > 0) 
+
+	  /* Old code replaced by PR
+	     if(part->data().id() > 0) 
 	    showerProduct1 = new_ptr(ShowerParticle(getParticleData(fb.third[1])));
 	  else 
 	    showerProduct1 = new_ptr(ShowerParticle(getParticleData(-fb.third[1])));
 	  showerProduct2 = new_ptr(ShowerParticle(getParticleData(fb.third[2])));
+	  */
+	  // New code of PR
+	  	  // if same as definition create particles, otherwise create cc
+	  // generalized by PR 
+	  if(part->id()==fb.third[0]) {
+	    showerProduct1 = new_ptr(ShowerParticle
+				     (getParticleData(fb.third[1])));
+	    showerProduct2 = new_ptr(ShowerParticle
+				     (getParticleData(fb.third[2])));
+	  } else { 
+	    tPDPtr cc(getParticleData(fb.third[1])->CC());
+	    if(cc)showerProduct1 = new_ptr(ShowerParticle(cc));
+	    else showerProduct1 = new_ptr(ShowerParticle
+					  (getParticleData(fb.third[1])));
+	    cc=getParticleData(fb.third[2])->CC();
+	    if(cc) showerProduct2 = new_ptr(ShowerParticle(cc));
+	    else showerProduct2 = new_ptr(ShowerParticle
+					  (getParticleData(fb.third[2])));
+	  }
 
 	  const ShowerIndex::InteractionType interaction = splitF->interactionType();
 	  const Energy scale = part->showerKinematics()->qtilde();

@@ -54,7 +54,7 @@ public:
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
 		                            const IdList &ids,
 					    tcPDPtr beam,
-					    const tcPDFPtr &pdf,
+					    const tcPDFPtr pdf,
 					    double x,
 					    const bool revOrd = false);
 
@@ -133,17 +133,18 @@ protected:
    * programs.  They do what their name says and are adopted to the
    * abstract nature of SplitFun as well.
    */
-  double guessz (double z0, double z1);
-  Energy2 guesst (Energy2 t0, Energy2 t1, double z0, double z1);
+  double guessz (double z0, double z1) const;
+  Energy2 guesst (Energy2 t0, Energy2 t1, double z0, double z1, 
+		  bool IS=false) const;
   //void gettz (Energy2 tmax, Energy2 &t, double &z, const IdList &);
-  void initialize(Energy2 &t0, Energy2 &tmin, Energy2 &tmax, 
-		  Energy &kinCutoff, Energy &m);
+  void initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax, 
+		  Energy &kinCutoff, Energy m);
   void guessTimeLike(double &z, double &z0, double &z1,
 	     Energy2 &t, Energy2 &tmax, Energy2 &tmin, Energy2 &t0,
 	     Energy &kinCutoff, bool glueEmits);
   void guessSpaceLike(double &z, double &z0, double &z1,
-	     Energy2 &t, Energy2 &tmax, Energy2 &tmin, Energy2 &t0,
-	     Energy &kinCutoff, bool glueEmits, const double &x);
+	     Energy2 &t, const Energy2 t0,
+	     const Energy kinCutoff, const double x) const;
 
   /**
    * The different veto algorithms.
@@ -151,12 +152,13 @@ protected:
   bool PSVeto(const double &z, const double &z0, const double &z1,
 	      const Energy2 &t, const Energy2 &tmin, const Energy2 &t0,
 	      const Energy &kinCutoff, bool glueEmits);
-  bool SplittingFnVeto(const double &z, const Energy2 &t, const IdList &ids);
-  bool alphaSVeto(Energy2 pt2);
-  bool tVeto(Energy2 &t, const Energy2 &tmin);
-  bool PDFVeto(const double &z, const Energy2 &t, const double &x,
-	       const tcPDFPtr &pdf, const tcPDPtr &parton0, 
-	       const tcPDPtr &parton1, const tcPDPtr &beam);
+  bool SplittingFnVeto(const double z, const Energy2 t, 
+		       const IdList &ids) const;
+  bool alphaSVeto(Energy2 pt2) const;
+  bool tVeto(Energy2 &t, const Energy2 tmin) const;
+  bool PDFVeto(const double z, const Energy2 t, const double x,
+	       const tcPDFPtr pdf, const tcPDPtr parton0, 
+	       const tcPDPtr parton1, const tcPDPtr beam) const;
 private:
 
   /**
@@ -167,6 +169,11 @@ private:
   SplittingFnPtr _splittingFn;
   ShowerAlphaPtr _alpha;
   ShowerVarsPtr _variables;
+
+  /**
+   * Maximum value of the PDF weight
+   */
+  double _pdfmax;
 
 public:
 

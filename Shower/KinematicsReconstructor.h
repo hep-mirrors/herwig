@@ -244,8 +244,8 @@ private:
    * Compute boost parameter along z axis to get (Ep, any perp, qp)
    * from (E, same perp, q).
    */
-  inline double getBeta(const Energy &E, const Energy &q, 
-			const Energy &Ep, const Energy &qp) {
+  inline double getBeta(const Energy E, const Energy q, 
+			const Energy Ep, const Energy qp) {
     return (q*E-qp*Ep)/(sqr(qp)+sqr(E));
   }
 

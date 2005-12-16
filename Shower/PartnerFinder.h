@@ -98,13 +98,13 @@ public:
    * or undefined values) happens.
    */
   bool setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-				    const ShowerParticleVector particles,
+				    const ShowerParticleVector &particles,
                                     const bool isDecayCase = false);
   bool setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-				    const ShowerParticleVector particles,
+				    const ShowerParticleVector &particles,
                                     const bool isDecayCase = false);
   bool setEWKInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-				    const ShowerParticleVector particles,
+				    const ShowerParticleVector &particles,
                                     const bool isDecayCase = false);
 
   /**

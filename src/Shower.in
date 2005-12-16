@@ -10,6 +10,7 @@ create Herwig++::KinematicsReconstructor theKinematicsReconstructor
 create Herwig++::SplittingGenerator theSplittingGenerator
 create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
 create Herwig++::ShowerAlphaQED theShowerAlphaQED
+create Herwig++::ForcedSplitting theForcedSplitting
 #
 # Set the pointers to the relevant objects 
 set stdShowerHandler:GlobalParameters /Defaults/theGlobalParameters
@@ -23,6 +24,8 @@ set theEvolver:SplittingGenerator theSplittingGenerator
 set theForwardEvolver:SplittingGenerator theSplittingGenerator
 set theBackwardEvolver:SplittingGenerator theSplittingGenerator
 set theBackwardEvolver:ForwardEvolver theForwardEvolver
+set theBackwardEvolver:ForcedSplitting theForcedSplitting
+set theForcedSplitting:BackwardEvolver theBackwardEvolver
 set theSplittingGenerator:ShowerAlphaQCD theShowerAlphaQCD
 set theSplittingGenerator:ShowerAlphaQED theShowerAlphaQED
 set theSplittingGenerator:ShowerVariables theShowerVariables
@@ -42,13 +45,13 @@ set theShowerAlphaQED:ScaleFactor 1.0
 set theShowerAlphaQCD:NPAlphaS 2
 set theShowerAlphaQCD:Qmin 0.630882*GeV
 set theSplittingGenerator:OnOffQCDinteractionMode 1
-set theSplittingGenerator:OnOffQEDinteractionMode 1
+set theSplittingGenerator:OnOffQEDinteractionMode 0
 set theSplittingGenerator:OnOffEWKinteractionMode 0
-set theSplittingGenerator:OnOffISRMode 1
+set theSplittingGenerator:OnOffISRMode 0
 set theSplittingGenerator:OnOffISR_QCDMode 1
 set theSplittingGenerator:OnOffISR_QEDMode 1
 set theSplittingGenerator:OnOffISR_EWKMode 1
-set theSplittingGenerator:OnOffFSRMode 1
+set theSplittingGenerator:OnOffFSRMode 0
 set theSplittingGenerator:OnOffFSR_QCDMode 1
 set theSplittingGenerator:OnOffFSR_QEDMode 1
 set theSplittingGenerator:OnOffFSR_EWKMode 1

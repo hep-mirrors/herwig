@@ -15,20 +15,20 @@
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
 #include "IS_QtildaShowerKinematics1to2.h"
+#include "ForcedSplitting.h"
 
 using namespace Herwig;
-
 
 BackwardEvolver::~BackwardEvolver() {}
 
 
 void BackwardEvolver::persistentOutput(PersistentOStream & os) const {
-  os << _splittingGenerator << _forwardEvolver;
+  os << _splittingGenerator << _forwardEvolver << _forcedSplitting;
 }
 
 
 void BackwardEvolver::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingGenerator >> _forwardEvolver;
+  is >> _splittingGenerator >> _forwardEvolver >> _forcedSplitting;
 }
 
 
@@ -49,8 +49,15 @@ void BackwardEvolver::Init() {
     interfaceForwardEvolver("ForwardEvolver", 
 			    "A reference to the ForwardEvolver object", 
 			    &Herwig::BackwardEvolver::_forwardEvolver,
-			    false, false, true, false);
+ 			    false, false, true, false);
 
+  static Reference<BackwardEvolver,ForcedSplitting> 
+    interfaceForcedSplitting("ForcedSplitting", 
+			    "A reference to the ForcedSplitting object", 
+			    &Herwig::BackwardEvolver::_forcedSplitting,
+			    false, false, true, false);
+  
+  
 }
 
 //------------------------------------------------------------------------------
@@ -176,6 +183,7 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
     }
   } while(hasEmitted > 0);
 
+  
 
   /****
    * Now we need to force the final (up to two) splittings so that we are left
@@ -190,259 +198,8 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
    * NOTE: temporarily chosen linearly in z and logarithmically in qtilda, this
    * may be changed later.
    ****/
+  //hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "  Forced splittings:" << endl;
-  }
-
-  long hadronId = part->parents()[0]->id();
-//   cout << part->parents()[0]->id() << ", " 
-//        << part->parents().size() << endl << flush;
-  Energy oldQ;
-  Energy minQ;
-  long quarks[3];
-  int maxIdx = 3;
-  ShowerIndex::InteractionType inter = ShowerIndex::QCD;
-  if(abs(hadronId) > 99) { // We have a hadron
-    quarks[0] = hadronId % 10;
-    quarks[1] = (hadronId/10)%10;
-    quarks[2] = (hadronId/100)%10;
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log()<< "  Constituents are " << quarks[0] << ", " 
-			<< quarks[1] << ", " << quarks[2] << endl;
-    }
-    if(quarks[2] == 0) maxIdx = 2; // we have a meson
-    oldQ = part->evolutionScales()[ShowerIndex::QCD];
-
-    // Look first at sea quarks, these must go to a gluon, we then handle
-    // the gluons in the next step
-    //    cout << "A" << flush;
-    if(part->id() != quarks[0] && part->id() != quarks[1] && 
-       part->id() != quarks[2] && part->id() != ParticleID::g) { 
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  Particle is a sea quark\n" << flush; 
-      }
-      // determine some bounds for qtilde
-      minQ = _splittingGenerator->showerVariables()->kinScale();
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  delta = " << minQ/GeV 
-			   << " and oldQ = " << oldQ/GeV << endl;
-      }
-      // Create Shower Kinematics
-      part->setSplittingFn(_splittingGenerator->
-			   getSplittingFunction(part->id(),
-						ParticleID::g));
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  got SplitFun " << part->splitFun() << endl;
-      }
-      ShoKinPtr kinematics = forcedSplitting(*part,oldQ,minQ);
-      if (kinematics) {
-	part->setShowerKinematics(kinematics);
-	hasEmitted = 1;
-      } else {
-	hasEmitted = -1; 
-	return hasEmitted;
-      }
-
-      // Create new particles, splitting is g->q qbar
-      ShowerParticlePtr newParent = new_ptr(
-		   ShowerParticle(getParticleData(ParticleID::g)));
-      ShowerParticlePtr otherChild = new_ptr(
-		   ShowerParticle(getParticleData(-part->id())));
-      newParent->setFinalState(false);
-      otherChild->setFinalState(true);
-      //newParent->setFromHardSubprocess(true);
-
-      // make sure, otherChild is included in TL shower.
-      allShowerParticles.insert(allShowerParticles.end(), otherChild);
-      allShowerParticles.insert(allShowerParticles.end(), newParent);
-
-      createBranching(part,newParent,otherChild,kinematics->qtilde(),inter);
-
-      // Store the old data so we can do the gluon splitting
-      oldQ = kinematics->qtilde();
-      part = newParent;
-
-      // Put into list so it will be final showered
-      //allShowerParticles.push_back(otherChild);
-      //allShowerParticles.push_back(newParent);
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "Created gluon splitting, gluon has scale " 
-			   << oldQ/GeV << endl;
-      }
-    }
-    // We now handle the gluons, either it is where the shower terminated or
-    // it has been created by splitting a sea quark
-    int idx = 0;
-    if(part->id() == ParticleID::g) { // gluon
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  Particle is a gluon\n";
-      }
-        // determine some bounds for qtilde
-      minQ = _splittingGenerator->showerVariables()->kinScale();
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log()<< "  CutOff = " << minQ/GeV 
-			  << " and oldQ = " << oldQ/GeV << endl;
-      }
-
-      // Create new particles, splitting is q->g q
-      // First choose which q
-      idx = UseRandom::irnd(maxIdx);
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  Chosen to split into " << quarks[idx] << endl;
-      }
-      part->setSplittingFn(_splittingGenerator->
-			   getSplittingFunction(ParticleID::g, quarks[idx]));
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log()  << "  got SplitFun " << part->splitFun() << endl;
-      }
-
-      // Create Shower Kinematics
-      ShoKinPtr kinematics = forcedSplitting(*part,oldQ,minQ);
-      if (kinematics) {
-	part->setShowerKinematics(kinematics);
-	hasEmitted = 1;
-      } else {
-	hasEmitted = -1; 
-	return hasEmitted;
-      }
-
-      ShowerParticlePtr newParent = new_ptr(
-		   ShowerParticle(getParticleData(quarks[idx])));
-      ShowerParticlePtr otherChild = new_ptr(
-		   ShowerParticle(getParticleData(quarks[idx])));
-      newParent->setFinalState(false);
-      otherChild->setFinalState(true);
-      //newParent->setFromHardSubprocess(true);
-
-      // Set the colour and parent/child relationships
-      createBranching(part,newParent,otherChild,kinematics->qtilde(),inter);
-
-      // Add these so that they will be treated properly later
-      allShowerParticles.push_back(otherChild);
-      allShowerParticles.push_back(newParent);
-      //newParent->setFromHardSubprocess(true);
-      part = newParent;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log()  << "  Created final splitting " 
-			    << kinematics->qtilde()/GeV 
-			    << ", " << kinematics->z() << endl;    
-      }
-    } else {
-      // Otherwise figure out which particle we have ended on so we ignore it
-      // in the remnant
-      for(int i = 0; i<3; i++) if(part->id() == quarks[i]) idx = i;
-      allShowerParticles.push_back(part);
-      //part->setFromHardSubprocess(true);
-    }
-    // set remnant. 
-    tPPtr hadron;
-//     cout << part << endl << flush
-// 	 << part->parents().size() << flush << endl;
-    if(part->parents().size() == 1) hadron = part->parents()[0];
-    else if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log()  << "  Created final splitting " 
-			  << "no remnant present!" << endl;
-    }
-
-    // First decide what the remnant is
-    long remId;
-    int sign, spin;
-    if(maxIdx == 2) { // Meson hadronic state
-      remId = quarks[(idx+1)%2];
-    } else { // Baryonic hadron
-      // Get the other 2 elements of the array
-      long id1 = quarks[(idx+1)%2];
-      long id2 = quarks[(idx+2)%2];
-      // hack... ask Phil about that assignment!
-      if (abs(id1) > abs(id2)) swap(id1, id2);
-      sign = (id1 < 0) ? -1 : 1; // Needed for the spin 0/1 part
-      remId = id2*1000+id1*100;
-      // Now decide if we have spin 0 diquark or spin 1 diquark
-      if(id1 == id2 || UseRandom::rndbool()) spin = 3; // spin 1
-      else spin = 1; // otherwise spin 0
-      remId += sign*spin;
-
-      // Create the remnant and set its momentum, also reset all of the decay 
-      // products from the hadron
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  will create remnant with id = " 
-			   << remId << ", " << flush 
-			   << getParticleData(remId) << flush << endl;
-      } 
-      //      PPtr newRemnant = new_ptr(Particle(getParticleData(remId)));
-      ShowerParticlePtr newRemnant = new_ptr(ShowerParticle(getParticleData(remId)));
-      cerr << "X";
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  newRemnant-> = "
-			   << newRemnant << ", hadron-> = " 
-			   << hadron << ", p_hadron = " 
-			   << hadron->momentum() << endl << flush
-			   << "  remId = " << remId << ", " << flush << endl
-			   << "  part = " << part << ", part->x() = " 
-			   << part->x() << flush << endl; 
-      }
-      newRemnant->setMomentum((1-part->x())*hadron->momentum());
-//       cerr << "remId = " << remId << ", 1-x = " 
-// 	   << 1-part->x() << ", h->mom = " << hadron->momentum() << endl; 
-//       cerr << newRemnant << endl;
-//      cout << "New Remnant id = " << newRemnant->id() << flush << endl
-//	   << "New Remnant momentum = " << newRemnant->momentum() 
-//	   << flush << endl;
-      //      cerr << "#children before = " << hadron->children().size() << endl;
-
-      for(int i = hadron->children().size()-1; i!= -1; i--) {
-	PPtr child = hadron->children()[i];
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  generator()->log() << "  Hadron = " << hadron 
-			     << "(id=" << hadron->id() << ") " 
-			     << " has child " << child
-			     << ", i = " << i << ", id = " << child->id() 
-			     << ", " << (part == child ? " =  part":"") 
-			     << endl << flush;
-	}
-	//	hadron->removeChild(child);		
-	hadron->abandonChild(child);
-	if(part != child) ch->currentStep()->removeParticle(child);
-      }
-      
-      // Add the remnant to the step, this will be changed again if the
-      // shower is vetoed. Set the colour connections as well
-//       cerr << newRemnant->momentum() << endl;
-//       cerr << "#children after = " << hadron->children().size() << endl;
-//       cerr << "hadron = " << hadron 
-// 	   << ", newRemnant = " << newRemnant << endl;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  Calling addChild() with parent = " 
-			   << hadron
-			   << " and child = " << newRemnant 
-			   << endl << flush;
-      }
-            hadron->addChild(newRemnant);
-      //ch->currentStep()->addDecayProduct(hadron,newRemnant);
-      hadron->addChild(part);
-      if (part->id() < 0) part->colourNeighbour(newRemnant);      
-      else part->antiColourNeighbour(newRemnant);      
-
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  After fixing colour connections..." 
-			   << endl 
-			   << "  Hadron " << hadron 
-			   << " has children " << endl;
-      }
-      for(int i = hadron->children().size()-1; i!= -1; i--) {
-	PPtr child = hadron->children()[i];
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  generator()->log() << child << ", i = " << i 
-			     << ", id = " << child->id() 
-			     << ", " << (part == child ? " =  part":"") 
-			     << ", " << child->colourLine() 
-			     << ", " << child->antiColourLine()
-			     << endl << flush;
-	}
-      }
-    }
-  }
   // Do we veto the whole shower after the final state showering or do we
   // seperately veto the initial state shower and final state shower?
 
@@ -464,142 +221,6 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
 }
 
 
-ShoKinPtr BackwardEvolver::forcedSplitting(const ShowerParticle &particle,
-					   Energy lastQ, Energy minQ) {
-  // Now generate the new z and qtilde
-  Energy newQ;
-  double newZ,z0,z1;
-  Energy kinCutoff;
-  ShowerVarsPtr vars = _splittingGenerator->showerVariables();;
-  if ( particle.id() == ParticleID::g ) {
-    kinCutoff = (vars->kinScale() - 0.3*(particle.children()[0])->mass())/2.3;
-  } else {
-    kinCutoff = (vars->kinScale() - 0.3*particle.data().mass())/2.3;
-  }
-  // Generate z with the same distributions as for regular splittings
-  tSplittingFnPtr sf = particle.splitFun();
-  // Bounds on z
-  z0 = particle.x();
-  double yy = 1.+sqr(kinCutoff/lastQ)/2.;
-  z1 = yy - sqrt(sqr(yy)-1.); 
-  //  z1 = 1.;
-  bool cant;
-  do {
-    cant = false;
-    double randQ = UseRandom::rnd();
-    double randZ = UseRandom::rnd();
-    if(!sf) {
-      if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower) {
-	generator()->log() << "  The particle has no splitting function!"
-			   << " Will use flat in z distribution." << endl;
-      }
-      newZ = z0 + (z1-z0)*randZ;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  Particle has no SplitFun()!, " 
-			   << z0 << " < " << newZ << " < " << z1 << endl;
-      }
-    } else {
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "  Trying " << z0 << " < z < " << z1 << " " 
-			   << "sf = " << sf << endl;
-      }
-      newZ = sf->invIntegOverP(sf->integOverP(z0) 
-			       + randZ*(sf->integOverP(z1) - 
-					sf->integOverP(z0)));
-    }
-    // For the qtilde lets just start with a simple distribution
-    // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
-    // Q0^(1-R) Qmax^R
-    //    newQ = pow(minQ,1-randQ)*pow(lastQ,randQ);
-    newQ = pow(kinCutoff, 1-randQ)*pow(lastQ,randQ);
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << "  newQ = " << newQ/GeV 
-			 << ", newZ = " << newZ << endl;
-    }
-    // find out whether a next splitting would be possible
-    
-    if (particle.id() != ParticleID::g) { 
-      //      Energy q0g = (vars->kinScale()-0.0015*GeV)/2.3;
-      Energy q0g = (vars->kinScale())/2.3;
-      double zm;
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	yy = 1.+sqr(q0g/lastQ)/2.;
-	zm = yy - sqrt(sqr(yy)-1.); 
-	generator()->log() 
-	  << "  Checking: x = " << particle.x()
-	  << " < zm^2 = " << zm*zm
-	  << (particle.x() < zm*zm ? " y":" NO! Can never split twice!") 
-	  << endl;
-      }
-      yy = 1.+sqr(q0g/newQ)/2.; // maximum z if next Q is max as as well 
-      zm = yy - sqrt(sqr(yy)-1.); 
-      yy = 1.+sqr(q0g/lastQ)/2.; 
-      double zm2 = yy - sqrt(sqr(yy)-1.); 
-      double xp = particle.x()/newZ;
-      //if (xp > zm*zm) {
-      //      if (xp > zm) {
-      if (xp > zm) {
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  yy = 1.+sqr(q0g/lastQ)/2.;
-	  zm = yy - sqrt(sqr(yy)-1.); 
-	  generator()->log() 
-	    << "  Forced: Can't split again! xp = " 
-	    << xp << " > zm = " << zm << endl
-	    << "  Even with lastQ: zm = " << zm << endl;
-	}
-	cant = true;
-      }
-    }
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << (sqr((1.-newZ)*newQ) > newZ*sqr(kinCutoff) ? 
-			     "  pt ok":"  pt not ok") 
-			 << " for a further branching." << endl;
-    }
-    // check kinematics...
-  } while(sqr((1.-newZ)*newQ) < newZ*sqr(kinCutoff));
-  //  } while(sqr((1.-newZ)*newQ) < newZ*sqr(kinCutoff) || cant);
-  
-  if (cant) return ShoKinPtr();
-
-  Lorentz5Momentum p, n, pthis, ppartner, pcm;
-  if(particle.isFromHardSubprocess()) {
-//     pthis = particle.momentum();
-//     cout << "parent is " << particle.parents()[0]->id() << endl;
-//     ppartner = particle.partners()[ShowerIndex::QCD]->momentum();
-//     pcm = pthis; 
-//     pcm.boost((pthis + ppartner).findBoostToCM());	  
-//     p = Lorentz5Momentum(0.0, pcm.vect());
-//     n = Lorentz5Momentum(0.0, -pcm.vect()); 
-//     p.boost( -(pthis + ppartner).findBoostToCM() );
-//     n.boost( -(pthis + ppartner).findBoostToCM() );
-    pcm = particle.parents()[0]->momentum();
-    p = Lorentz5Momentum(0.0, pcm.vect());
-    n = Lorentz5Momentum(0.0, -pcm.vect()); 
-  } else {
-    p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
-      ->showerKinematics()->getBasis()[0];
-    n = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
-      ->showerKinematics()->getBasis()[1];
-  } 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "  create ShowerKinematics with " 
-		       << endl 
-		       << "  p = " << p << endl 
-		       << "  n = " << n << endl;
-  }
-  
-  Ptr<IS_QtildaShowerKinematics1to2>::pointer showerKin = 
-    new_ptr(IS_QtildaShowerKinematics1to2(p, n));
-
-  // Phi is uniform
-  showerKin->qtilde(newQ);
-  showerKin->setResScale(vars->cutoffQScale(ShowerIndex::QCD));
-  showerKin->setKinScale(vars->kinScale()); 
-  showerKin->z(newZ);
-  showerKin->phi(2.*pi*UseRandom::rnd());
-
-  return showerKin;
-}
 
 void BackwardEvolver::createBranching(ShowerParticlePtr part,
 				      ShowerParticlePtr newParent,
@@ -654,10 +275,12 @@ void BackwardEvolver::createBranching(ShowerParticlePtr part,
   if(part->parents().size() == 2) hadron = part->parents()[0];
   else cerr << "Shower/BackwardEvolver::createBranching: not one parent!" 
 	    << endl; 
-  hadron->addChild(newParent);
+  // If their is a ThePEGBase object, we must remove that from the 
+  // hadron, and the extra call to remove the part is solely to remove
+  // the hadron as a parent of part
+  //if(part->getThePEGBase()) hadron->abandonChild(part->getThePEGBase());
   hadron->abandonChild(part);
-  //  hadron->removeChild(part);
-  //  part->removeParent(hadron);
+  hadron->addChild(newParent);
 }
 
 void BackwardEvolver::setColour(ShowerParticlePtr &newParent,
@@ -730,4 +353,8 @@ void BackwardEvolver::setColour(ShowerParticlePtr &newParent,
 		       << "  c2 c = " << child2.first  << endl
 		       << "  c2 a = " << child2.second << endl;
   }
+}
+
+Ptr<SplittingGenerator>::pointer BackwardEvolver::splittingGenerator() {
+  return _splittingGenerator;
 }

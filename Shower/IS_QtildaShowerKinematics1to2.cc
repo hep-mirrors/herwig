@@ -115,7 +115,7 @@ updateParent( const tShowerParticlePtr theParent,
   c1->sudAlpha(theParent->sudAlpha() - c2->sudAlpha());
   c1->sudBeta(theParent->sudBeta() - c2->sudBeta());
   c1->sudPx(theParent->sudPx() - c2->sudPx());
-  c1->sudPx(theParent->sudPy() - c2->sudPy());
+  c1->sudPy(theParent->sudPy() - c2->sudPy());
   c1->set5Momentum(theParent->momentum() - c2->momentum()); 
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    

@@ -173,13 +173,15 @@ void ShowerHandler::cascade() {
       _evolver->clear();
       
       // Fill _particles with the particles from the hard subprocess
-      ShowerParticleVector::const_iterator cit;
+      /*ShowerParticleVector::const_iterator cit;
       for(cit = hardProcessParticles.begin(); 
 	  cit != hardProcessParticles.end(); ++cit ) {
 	if(*cit) { 
 	  _particles.push_back( *cit );      
 	}
-      }
+	}*/
+      _particles.assign(hardProcessParticles.begin(),
+			hardProcessParticles.end());
 
 //       cerr << "after _particles refill " << endl;
 //       for(ShowerParticleVector::const_iterator cit = _particles.begin();
@@ -257,7 +259,7 @@ void ShowerHandler::cascade() {
       evolverOK = _evolver
 	->showerNormally(ch, _showerVariables, _particles, skipKinReco);
       if (!evolverOK) {
-	// 	cerr << "ShowerHandler: evolver not ok, jumping out of big while loop." << endl;
+	cerr << "ShowerHandler: evolver not ok, jumping out of big while loop." << endl;
 	
 	keepTrying = true; 
 	continue;
@@ -271,7 +273,8 @@ void ShowerHandler::cascade() {
         // current initial and final states; then we can loop over the
         // new container, and adding to the initial one the new particles
         // that are produced by the showering.
-	
+
+ 	ShowerParticleVector::const_iterator cit;	
         ShowerParticleVector currentFinalOrInitialParticles;
         for(cit = _particles.begin(); cit != _particles.end(); ++cit) {
 	  if((*cit)->children().size() == 0) {
@@ -387,7 +390,7 @@ void ShowerHandler::cascade() {
 
       // Do the final kinematics reconstruction
       bool recons = _evolver->reconstructKinematics(ch);
-      
+
       // set true anyway for test purposes...
       recons = true;
 
@@ -410,10 +413,10 @@ void ShowerHandler::cascade() {
       countFailures++;
     }    
   } // end main while loop
-
+  cout << "Here, going to fill event record" << endl;
   // Debugging
   fillEventRecord(ch);  
-
+  cout << "Done" << endl;
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower ) {    
     debuggingInfo();
     if ( generator()->currentEventNumber() < 1000 )
@@ -437,7 +440,7 @@ convertToShowerParticles(const tEHPtr ch,
     part = ptr_new<ShowerParticlePtr>(*ch->lastPartons().first);
     if ( part ) {
       part->setFromHardSubprocess(true);
-      part->setThePEGBase(ch->lastPartons().first); 
+      //part->setThePEGBase(ch->lastPartons().first); 
       part->setFinalState(false);
       part->x(ch->lastX1());
       hardProcessParticles.push_back(part);
@@ -447,7 +450,7 @@ convertToShowerParticles(const tEHPtr ch,
     part = ptr_new<ShowerParticlePtr>(*ch->lastPartons().second);
     if ( part ) {
       part->setFromHardSubprocess(true);
-      part->setThePEGBase(ch->lastPartons().second); 
+      //part->setThePEGBase(ch->lastPartons().second); 
       part->setFinalState(false);
       part->x(ch->lastX2());
       hardProcessParticles.push_back(part); 
@@ -457,12 +460,14 @@ convertToShowerParticles(const tEHPtr ch,
   // Notice that we don't need to set true the flag ShowerParticle::isFinalState 
   // because it is set true by default. 
   tParticleSet remnantSet = ch->currentCollision()->getRemnants();
-  for ( ParticleSet::const_iterator cit = ch->currentStep()->particles().begin();
-	cit != ch->currentStep()->particles().end(); ++cit ) {
+  for(ParticleSet::const_iterator cit = ch->currentStep()->particles().begin();
+      cit != ch->currentStep()->particles().end(); ++cit ) {
     if ( remnantSet.find( (*cit)->original() ) == remnantSet.end() ) {
+     cout << "Creating shower particle " << **cit << endl;
       part = ptr_new<ShowerParticlePtr>(**cit);
-      part->setFromHardSubprocess(true);      
-      part->setThePEGBase(*cit); 
+     cout << "Shower particles ThePEGBase = "<< part->getThePEGBase() << endl;
+      part->setFromHardSubprocess(true);
+      part->setFinalState(true);
       hardProcessParticles.push_back(part);
     }
   }    
@@ -615,31 +620,50 @@ void ShowerHandler::fillEventRecord(const tEHPtr ch) {
   // ColourLine ones; and finally then write them in the Event Record     
   StepPtr pstep;
   pstep = ch->newStep(); 
-  //  pstep = ch->currentStep(); 
+  //pstep = ch->currentStep(); 
   ShowerParticleVector::iterator it;
+  bool isFSR = _evolver->splittingGenerator()->isFSRadiationON();
+  bool isISR = _evolver->splittingGenerator()->isISRadiationON();
+  cout << "FSR = " << isFSR << ", ISR = " << isISR << endl;
   for(it = _particles.begin(); it != _particles.end(); ++it ) {
-    PPtr p = dynamic_ptr_cast<PPtr>(*it);
-    if((*it)->isFromHardSubprocess() && (*it)->isFinalState()) {
-      pstep->setCopy(p, (*it)->getThePEGBase());
-      //      pstep->setCopy((*it)->getThePEGBase(), p);
-      // (*it)->setMomentum(p->momentum());
-      addFinalStateShower((*it),pstep);
+    cout << "Adding " << *(*it) << endl;
+    if((*it)->isFromHardSubprocess()) {
+      cout << "Is from hard subprocess" << endl;
+      if((*it)->isFinalState() && isFSR) {
+	cout << "Adding final state shower" << endl;
+	cout << "ThePEGBase = " << (*it)->getThePEGBase() << endl;
+	pstep->setCopy((*it)->getThePEGBase(), *it);
+	//      pstep->setCopy((*it)->getThePEGBase(), p);
+	// (*it)->setMomentum(p->momentum());
+	addFinalStateShower((*it),pstep);
       // pstep->addDecayProduct(p);
-    } else if((*it)->isFromHardSubprocess()) { 
-      pstep->insertIntermediate(p, (*it)->getThePEGBase()->parents()[0],
-				(*it)->getThePEGBase()->children()[0]);
-      // Otherwise it is a initial state shower particle
-      //      pstep->setCopy((*it)->getThePEGBase(), p);
-      //      pstep->setCopy(p,(*it)->getThePEGBase());
-      //      (*it)->setMomentum(p->momentum());
-      //      addInitialStateShower(p,pstep,false);
-      addInitialStateShower(p,pstep,false);
-    } 
-  }  
+      } else if(!(*it)->isFinalState() && isISR) { 
+	if(!(*it)->getThePEGBase()) continue;
+        PPtr original = const_ptr_cast<PPtr>((*it)->getThePEGBase());
+	PPtr hadron = original->parents()[0];
+	PPtr intermediate = original->children()[0];
+
+	cout << "Abandoning children " << endl;
+	(*it)->abandonChild(intermediate);
+	(*it)->addChild(original);
+	hadron->abandonChild(original);
+
+	if(hadron->children().size() > 1) { 
+	  addInitialStateShower(*it,pstep,false);
+	} else {
+	  // no showering for this particle
+	  hadron->abandonChild(*it);
+	  hadron->addChild(*it);
+	  pstep->addIntermediate(*it);
+	}
+      }
+    } // end isFromHardSubprocess
+  } // end for  
 }
 
 
-void ShowerHandler::addFinalStateShower(ShowerParticlePtr &p, StepPtr &s) {
+void ShowerHandler::addFinalStateShower(PPtr p, StepPtr s) {
+  /* Original implementation 
   tPPtr dum; 
   tParticleVector yet; 
   tParticleVector addCh;
@@ -656,30 +680,62 @@ void ShowerHandler::addFinalStateShower(ShowerParticlePtr &p, StepPtr &s) {
       s->addDecayNoCheck(dum, addCh.back());
       addCh.pop_back(); 
     }
-  }  
+    }  */
+  // New Durham implementation
+  if(!p->children().empty()) {
+    ParticleVector::const_iterator child;
+    for(child=p->children().begin(); child != p->children().end(); ++child) {
+      s->addDecayProduct(*child);
+      addFinalStateShower(*child,s);
+    }
+  }
 }
 
 // Recursive function
-void ShowerHandler::addInitialStateShower(PPtr &p, StepPtr &s, bool doit) {
+void ShowerHandler::addInitialStateShower(PPtr p, StepPtr s, bool doit) {
   // Each parton here should only have one parent
-  if(p->parents().size()) { 
+  if(!p->parents().empty()) { 
     // we have parents, call recursively, should only have one parent however
     PPtr parent = const_ptr_cast<PPtr>(p->parents()[0]);
     addInitialStateShower(parent,s);
   }
+
+  ParticleVector::const_iterator child;
   if(doit) {
-    for(unsigned int i = 0; i<p->children().size(); i++) {
+    /*for(unsigned int i = 0; i<p->children().size(); i++) {
       if(p->children()[i]->children().size()) {
 	// Add it only as an intermediate, if it is a shower intermediate
 	// add the child is a final state shower particle,
 	// then we add the final state shower from the children
-	s->addIntermediate(p->children()[i]);
 	ShowerParticlePtr shoChild = 
 	  dynamic_ptr_cast<ShowerParticlePtr>(p->children()[i]);
-	if(shoChild && shoChild->isFinalState())
-	  addFinalStateShower(shoChild,s);
+        if(shoChild) {
+	  //if(!shoChild->isFromHardSubprocess()) 
+	    s->addIntermediate(shoChild);
+	    //else {
+	    //cout << "Not adding " << *shoChild << endl;
+	    //}
+          if(shoChild->isFinalState()) addFinalStateShower(shoChild,s);
+	} else s->addIntermediate(p->children()[i]);
+	//ShowerParticlePtr shoChild = 
+	//  dynamic_ptr_cast<ShowerParticlePtr>(p->children()[i]);
+	//if(shoChild && shoChild->isFinalState())
+	//  addFinalStateShower(shoChild,s);
       } else {
 	s->addDecayProduct(p->children()[i]);
+      }
+      }*/
+    for(child = p->children().begin(); child != p->children().end(); child++) {
+      if(!(*child)->children().empty()) {
+	// Add child as intermediate
+	s->addIntermediate(*child);
+	
+	// If child is shower particle, add children
+	ShowerParticlePtr schild = dynamic_ptr_cast<ShowerParticlePtr>
+	  (*child);
+	if(schild && schild->isFinalState()) addFinalStateShower(schild,s);
+      } else {
+	s->addDecayProduct(*child);
       }
     }
   }
@@ -747,10 +803,10 @@ void ShowerHandler::hardMEC(const tEHPtr ch) {
 	for (int i=0; i<2; i++) 
 	  newfs[i].setMass(qq[i]->data().constituentMass());
 	newfs[2].setMass(_globalParameters->effectiveGluonMass());
-	PPtr newq = getParticleData(
-				    abs(qq[0]->id()))->produceParticle(newfs[0]);
-	PPtr newa = getParticleData(
-				    -abs(qq[0]->id()))->produceParticle(newfs[1]);
+	PPtr newq = getParticleData(abs(qq[0]->id()))
+	  ->produceParticle(newfs[0]);
+	PPtr newa = getParticleData(-abs(qq[0]->id()))
+	  ->produceParticle(newfs[1]);
 	PPtr newg = getParticleData(21)->produceParticle(newfs[2]);
 	newq->antiColourNeighbour(newg);
 	newa->colourNeighbour(newg);

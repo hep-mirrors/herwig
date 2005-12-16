@@ -10,9 +10,12 @@
 #include "ShowerConfig.h"
 #include "SplittingGenerator.h"
 #include "ForwardEvolver.h"
-
+#include "ForcedSplitting.h"
 
 namespace Herwig {
+
+// Forward declaration
+//class  ForcedSplitting;
 
 using namespace ThePEG;
 
@@ -56,14 +59,6 @@ public:
 			ShowerParticleVector &allShowerParticles) 
     throw (Veto, Stop, Exception);
 
-private:
-
-  /**
-   * This routine is used to generate the ShowerKinematics object in the 
-   * forced splitting.
-   */
-  ShoKinPtr forcedSplitting(const ShowerParticle &, Energy, Energy);
-
   /**
    * This routine sets all the properties of the new particles from the 
    * splitting: it fixes the hadron parent/children relations due to the 
@@ -73,6 +68,7 @@ private:
 		       ShowerParticlePtr, Energy, 
 		       ShowerIndex::InteractionType);
 
+private:
   /**
    * This routine sets the colour connections for a backwards branching.
    */
@@ -90,6 +86,7 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+  Ptr<SplittingGenerator>::pointer splittingGenerator();
 
 protected:
 
@@ -133,6 +130,7 @@ private:
 
   Ptr<SplittingGenerator>::pointer _splittingGenerator;
   Ptr<ForwardEvolver>::pointer _forwardEvolver;
+  Ptr<ForcedSplitting>::pointer _forcedSplitting;
 };
 
 }

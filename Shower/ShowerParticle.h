@@ -311,8 +311,8 @@ public:
    */
   tShowerParticleVector getFSChildren();
 
-  inline tPPtr getThePEGBase();
-  inline void setThePEGBase(const tPPtr& );
+  inline tcPPtr getThePEGBase();
+  //inline void setThePEGBase(const tcPPtr& );
   inline void x(double x) { _x = x; }
   inline double x() const { return _x; }
 
@@ -351,7 +351,7 @@ private:
   tShowerParticleVector _partners;
   //ComplexMatrix _rhoD;
 
-  tPPtr _thePEGBase;
+  tcPPtr _thePEGBase;
 
   static ClassDescription<ShowerParticle> initShowerParticle;
  
