@@ -68,7 +68,7 @@ AM_LDFLAGS="-version-info 1:0:0"
 # don't know how else to do this. see bug #14
 if test -n "$GCC"; then
    case "${host}" in
-   *-linux-gnu)	AM_LDFLAGS="$AM_LDFLAGS -Wl,--disable-new-dtags" ;;
+   *-linux*)	AM_LDFLAGS="$AM_LDFLAGS -Wl,--disable-new-dtags" ;;
    *)		;;
    esac
 fi
