@@ -1,13 +1,25 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[0.9.5],[http://www.hep.phy.cam.ac.uk/theory/Herwig++/],[Herwig++])
+AC_INIT([Herwig++],[1.9.5],[http://www.hep.phy.cam.ac.uk/theory/Herwig++/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
-
-AC_LANG(C++)
 
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5.h])
 AC_CONFIG_HEADERS([Config/config.h])
+
+AC_CANONICAL_HOST
+
+case "${host}" in
+  *-darwin[[0156]].*) 
+    AC_MSG_ERROR([Herwig++ requires OS X 10.3 or later])
+    ;;
+  *-darwin*)
+    if test "x$MACOSX_DEPLOYMENT_TARGET" != "x10.3"; then
+      AC_MSG_ERROR([Please export the MACOSX_DEPLOYMENT_TARGET variable, set to 10.3])
+    fi
+esac
+
+AC_LANG(C++)
 
 AM_INIT_AUTOMAKE([1.9])
 dnl Checks for programs.
@@ -37,14 +49,30 @@ AC_CHECK_THEPEG
 AC_CHECK_KTJET
 AC_CHECK_AMEGIC
 
+## temporary workaround as long as looptools isn't actually necessary
+case "{$host}" in
+     *-darwin*) DO_LOOPTOOLS= ;;
+     *)		DO_LOOPTOOLS=Looptools ;;
+esac
+AC_SUBST(DO_LOOPTOOLS)
+
 dnl ###########################
 dnl ###########################
 
 AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
 AM_CXXFLAGS="-ansi -pedantic -Wall"
-# should really be specified one-by-one for each lib!
-## AM_LDFLAGS="-version-info 1:0:0 -Wl,--enable-new-dtags"
+
+# version info should really be specified one-by-one for each lib!
 AM_LDFLAGS="-version-info 1:0:0"
+
+# don't know how else to do this. see bug #14
+if test -n "$GCC"; then
+   case "${host}" in
+   *-linux-gnu)	AM_LDFLAGS="$AM_LDFLAGS -Wl,--disable-new-dtags" ;;
+   *)		;;
+   esac
+fi
+
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CXXFLAGS)
 AC_SUBST(AM_LDFLAGS)
