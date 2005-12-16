@@ -223,22 +223,22 @@ void ForcedSplitting::makeRemnant(tShowerParticlePtr &part, int maxIdx,
   for(int i = hadron->children().size()-1; i!= -1; i--) {
     ShowerParticlePtr child = 
 	dynamic_ptr_cast<ShowerParticlePtr>(hadron->children()[i]);
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << "  Hadron = " << hadron 
-			 << "(id=" << hadron->id() << ") " 
-			 << " has child " << child
-			 << ", i = " << i << ", id = " << child->id() 
-			 << ", " << (part == child ? " =  part":"") 
-			 << endl << flush;
-    }
     if(child) {
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
+	generator()->log() << "  Hadron = " << hadron 
+			   << "(id=" << hadron->id() << ") " 
+			   << " has child " << child
+			   << ", i = " << i << ", id = " << child->id() 
+			   << ", " << (part == child ? " =  part":"") 
+			   << endl << flush;
+      }
       //if(child->getThePEGBase()) 
       //hadron->abandonChild(child->getThePEGBase());
       hadron->abandonChild(child);
       if(part != child) ch->currentStep()->removeParticle(child);
     } else {
       hadron->abandonChild(hadron->children()[i]);
-	ch->currentStep()->removeParticle(hadron->children()[i]);
+      ch->currentStep()->removeParticle(hadron->children()[i]);
     }
   }
   // Add the remnant to the step, this will be changed again if the

@@ -53,7 +53,7 @@ public:
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
 		                            const IdList &ids,
-					    tcPDPtr beam,
+					    const tcPDPtr beam,
 					    const tcPDFPtr pdf,
 					    double x,
 					    const bool revOrd = false);

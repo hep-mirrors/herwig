@@ -362,7 +362,7 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
 
 Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
 			                             const IdList &ids,
-						     tcPDPtr beam,
+						     const tcPDPtr beam,
 						     const tcPDFPtr pdf,
 						     double x,
 						     const bool revOrd) {
@@ -383,12 +383,12 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
     bool glueEmits = (ids[0]==ParticleID::g);
 
     // Different order, incoming parton is id =  1, outgoing are id=0,2
-    Energy m0 = CurrentGenerator::current().getParticleData(ids[0])->mass();
-    Energy m1 = CurrentGenerator::current().getParticleData(ids[1])->mass();
-    tmax = sqr(startingQ);
-    t = tmax;
     tcPDPtr parton0 = CurrentGenerator::current().getParticleData(ids[0]);
     tcPDPtr parton1 = CurrentGenerator::current().getParticleData(ids[1]);
+    Energy m0 = parton0->mass();
+    Energy m1 = parton1->mass();
+    tmax = sqr(startingQ);
+    t = tmax;
 
     // Initialize the variables
     if(glueEmits) initialize(t0,tmin,tmax,kinCutoff,m1);

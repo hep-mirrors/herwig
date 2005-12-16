@@ -198,7 +198,7 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
    * NOTE: temporarily chosen linearly in z and logarithmically in qtilda, this
    * may be changed later.
    ****/
-  //hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
+  hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
 
   // Do we veto the whole shower after the final state showering or do we
   // seperately veto the initial state shower and final state shower?

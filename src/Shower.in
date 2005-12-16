@@ -47,7 +47,7 @@ set theShowerAlphaQCD:Qmin 0.630882*GeV
 set theSplittingGenerator:OnOffQCDinteractionMode 1
 set theSplittingGenerator:OnOffQEDinteractionMode 0
 set theSplittingGenerator:OnOffEWKinteractionMode 0
-set theSplittingGenerator:OnOffISRMode 0
+set theSplittingGenerator:OnOffISRMode 1
 set theSplittingGenerator:OnOffISR_QCDMode 1
 set theSplittingGenerator:OnOffISR_QEDMode 1
 set theSplittingGenerator:OnOffISR_EWKMode 1
