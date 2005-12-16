@@ -1,5 +1,9 @@
 pkglib_LTLIBRARIES = HwMRST.la
-HwMRST_la_SOURCES = BaryonRemnants.cc BaryonRemnants.h BaryonRemnants.icc MRST.cc MRSTData.cc MRSTData.h MRST.h
+HwMRST_la_SOURCES = \
+BaryonRemnants.cc BaryonRemnants.h BaryonRemnants.icc \
+MRST.cc MRSTData.cc MRSTData.h MRST.h \
+PartonExtractor.h PartonExtractor.icc PartonExtractor.cc PartonExtractor.fh
+
 HwMRST_la_LDFLAGS = -module
 
 EXTRA_DIST = mrst
