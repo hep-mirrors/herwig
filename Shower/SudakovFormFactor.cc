@@ -11,13 +11,14 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDF/PDFBase.h"
+#include "ThePEG/Interface/Parameter.h"
 
 using namespace Herwig;
 
 ClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
 
 SudakovFormFactor::SudakovFormFactor() 
-  : _q(), _z( 0.0 ), _phi(0.0), _pdfmax(30.0) {}
+  : _q(), _z( 0.0 ), _phi(0.0), _pdfmax(35.0) {}
   
 SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
   : _q(x._q), _z(x._z), _phi(x._phi), _splittingFn(x._splittingFn),
@@ -192,12 +193,17 @@ guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t,
   z1 = yy - sqrt(sqr(yy)-1.); 
   if (z1 < z0) {
     t = -1.0*GeV;
+    // we can return here, 
+    // if t=-1 the calling function will return q=-1 anyway
+    // no matter what the other variables are
+    // dgrell: look at logic of this calling stack again
+    return;
   }
   t = guesst(t0, told, z0, z1); 
   z = guessz(z0, z1); 
-  if (z1 < z0) {
-    t = -1.0*GeV;
-  }
+//  if (z1 < z0) {
+//     t = -1.0*GeV;
+//   }
 
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
     CurrentGenerator::log() << "  old->new | (z0, z, z1) = "
@@ -212,7 +218,7 @@ guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t,
   // actual values for z-limits
   yy = 1.+sqr(kinCutoff)/t/2.;
   z1 = yy - sqrt(sqr(yy)-1.); 
- }  
+}  
 
 
 bool SudakovFormFactor::PSVeto(const double &z, const double &z0, 
@@ -253,8 +259,8 @@ bool SudakovFormFactor::PSVeto(const double &z, const double &z0,
 bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t, 
 					const IdList &ids) const {
   // hit the density? 
-  double ratio;
-  ratio = _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
+  double ratio = 
+    _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
   if(UseRandom::rnd() > ratio) { 
     if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
       CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
@@ -265,13 +271,14 @@ bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t,
 }
 
 bool SudakovFormFactor::alphaSVeto(Energy2 pt2) const {
-  if(UseRandom::rnd() > _alpha->value(pt2)/_alpha->overestimateValue()) {
+  double ratio =  _alpha->value(pt2)/_alpha->overestimateValue();
+  if(UseRandom::rnd() > ratio) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  X veto on as(q2)/as = " 
 	            	      << _alpha->value(pt2)
 			      << "/" << _alpha->overestimateValue() 
 			      << " = " 
-			      << _alpha->value(pt2)/_alpha->overestimateValue() 
+			      << ratio
 			      << endl;
     }
     return true;
@@ -298,18 +305,23 @@ bool SudakovFormFactor::PDFVeto(const double z, const Energy2 t,
 				const tcPDPtr parton0, 
 				const tcPDPtr parton1, 
 				const tcPDPtr beam) const {
-  double factor = 1.0; // needs to be adjusted;
   if(!pdf) return false;
+
   // remember: pdf's q is cut in pdf class.  shoudl probably be done here! 
   // this would correspond to QSPAC in F-HERWIG. 
+
   double ratio = pdf->xfx(beam,parton0,t,x/z)/pdf->xfx(beam,parton1,t,x);
-  //cout << "ratio = " << ratio << endl;
-  // ratio / PDFMax is a probability ??
+
+  // ratio / PDFMax must be a probability <= 1.0
+  if (ratio > _pdfmax) {
+    cerr << "################# RATIO (" << ratio << ") IS > PDFMAX ("
+	 <<_pdfmax <<") #######################\n";
+  }
   // NOTE: PJS - Replaced by durham group
   // if(ratio > factor*UseRandom::rnd()) {
   if(ratio < UseRandom::rnd()*_pdfmax) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-      CurrentGenerator::log() << "  PDFVeto failed: ratio = " << ratio << endl;
+      CurrentGenerator::log() << "  PDFVeto true: ratio = " << ratio << endl;
     }  
     return true;
   }
@@ -442,6 +454,14 @@ void SudakovFormFactor::Init() {
      "A reference to the ShowerVariables object",
      &Herwig::SudakovFormFactor::_variables,
      false, false, true, false);
+
+
+
+  static Parameter<SudakovFormFactor,double> interfacePDFmax
+    ("PDFmax",
+     "Maximum value of PDF weight. ",
+     &SudakovFormFactor::_pdfmax, 35.0, 1.0, 1000.0,
+     false, false, Interface::limited);
 }
 
 void SudakovFormFactor::persistentOutput(PersistentOStream &out) const {

@@ -176,6 +176,10 @@ private:
    */
   PartnerFinder & operator=(const PartnerFinder &);
 
+
+  /**
+   *  Approach to use for setting the colour partners
+   */
   int _approach;
 
 };

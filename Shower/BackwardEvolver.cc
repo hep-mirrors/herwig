@@ -75,12 +75,14 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
 		       << generator()->currentEventNumber() << endl;
   }
 
-  int hasEmitted = 0;
+  //  int hasEmitted = 0;
   tShowerParticlePtr part = particle;
-  tShowerParticleVector particlesYetToShower;   // only time-like particles
+  //  tShowerParticleVector particlesYetToShower;   // only time-like particles
+  // HARDCODED, NEEDS LOOKING AT!
   Energy q0g = (showerVars->kinScale()-0.003*GeV)/2.3;
 
-  do {
+  // runs until break from no emission
+  while (true) {
     bool cant = false;
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
       generator()->log() << "  BackwardEvolver, part = " 
@@ -109,79 +111,81 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
 	  }
       }
     }
+    // break if no emission
     if(bb.first == ShoKinPtr() || bb.second == tSudakovPtr() || cant) {      
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	generator()->log()<< "  --- no further backward branching."
 			  << endl;
       }
-      hasEmitted = 0;
-    } else {
-      hasEmitted = 1;
+      //      hasEmitted = 0;
+      break;
+    }
+    //      hasEmitted = 1;
       
-      // Assign the splitting function and the shower kinematics
-      // to the emitting particle.      
-      part->setShowerKinematics(bb.first);
-      part->setSplittingFn(bb.second->splittingFn()); 
+    // Assign the splitting function and the shower kinematics
+    // to the emitting particle.      
+    part->setShowerKinematics(bb.first);
+    part->setSplittingFn(bb.second->splittingFn()); 
       
-      // check for additional angular ordering...
-      static long calls=0, violated=0;
-      if(part->children()[0]) {
-	calls++;
-	ShoKinPtr sk;
-	if (dynamic_ptr_cast<ShowerParticlePtr>(part->children()[0])) {
-	  sk = dynamic_ptr_cast<ShowerParticlePtr>(part->children()[0])->showerKinematics();
-	  if ( bb.first->qtilde() > 
-	       (1.-bb.first->z())/(1.-sk->z())*sk->qtilde()) {
-	    //	    cout << "Angular Ordering Violated!" << endl;
-	    violated++;
-	    //	    cerr << double(violated)/double(calls) << " emissions violated ang ordering." << endl;
-	  }
+    // check for additional angular ordering...
+    static long calls=0, violated=0;
+    if(part->children()[0]) {
+      calls++;
+      ShoKinPtr sk;
+      if (dynamic_ptr_cast<ShowerParticlePtr>(part->children()[0])) {
+	sk = dynamic_ptr_cast<ShowerParticlePtr>(part->children()[0])->showerKinematics();
+	if ( bb.first->qtilde() > 
+	     (1.-bb.first->z())/(1.-sk->z())*sk->qtilde()) {
+	  //	    cout << "Angular Ordering Violated!" << endl;
+	  violated++;
+	  //	    cerr << double(violated)/double(calls) << " emissions violated ang ordering." << endl;
 	}
       }
+    }
 
-      // For the time being we are considering only 1->2 branching
-      tSplittingFnPtr splitF = bb.second->splittingFn();
-      if(splitF) {	
-	short id0, id2;
-	id0 = bb.third[0];
-	id2 = bb.third[2];
-	if(id2 == ParticleID::g) id0 = part->id();
-	else if(id0 == ParticleID::g) id2 = -part->id();
+    // For the time being we are considering only 1->2 branching
+    tSplittingFnPtr splitF = bb.second->splittingFn();
+    if(splitF) {	
+      // needs generalizing! analog to forwardevolver, test on id of [1]
+      long id0 = bb.third[0];
+      long id2 = bb.third[2];
+      if(id2 == ParticleID::g) id0 = part->id();
+      else if(id0 == ParticleID::g) id2 = -part->id();
 	
-	// Now create the actual particles, make the otherChild a final state
-	// particle, while the newParent is not	
-	ShowerParticlePtr newParent = new_ptr(
-	  ShowerParticle(getParticleData(id0)));
-	ShowerParticlePtr otherChild = new_ptr(
-          ShowerParticle(getParticleData(id2)));
-	otherChild->setFinalState(true);
-	otherChild->setInitiatesTLS(true);
-	newParent->setFinalState(false);
-	//newParent->setFromHardSubprocess(true);
+      // Now create the actual particles, make the otherChild a final state
+      // particle, while the newParent is not	
+      ShowerParticlePtr newParent = 
+	new_ptr(ShowerParticle(getParticleData(id0)));
+      ShowerParticlePtr otherChild = 
+	new_ptr(ShowerParticle(getParticleData(id2)));
+      otherChild->setFinalState(true);
+      otherChild->setInitiatesTLS(true);
+      newParent->setFinalState(false);
+      //newParent->setFromHardSubprocess(true);
 
-	// make sure, otherChild is included in TL shower.
-	allShowerParticles.insert(allShowerParticles.end(), otherChild);
-	allShowerParticles.insert(allShowerParticles.end(), newParent);
+      // make sure, otherChild is included in TL shower.
+      allShowerParticles.push_back(otherChild);
+      allShowerParticles.push_back(newParent);
 
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  generator()->log() << "  Branching " 
-			     << id0 << " -> "
-			     << part->id() << ", "
-			     << id2 << endl;
-	}
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+	generator()->log() << "  Branching " 
+			   << id0 << " -> "
+			   << part->id() << ", "
+			   << id2 << endl;
+      }
 
-	ShowerIndex::InteractionType inter = splitF->interactionType();
-	Energy scale = part->showerKinematics()->qtilde();
+      ShowerIndex::InteractionType inter = splitF->interactionType();
+      Energy scale = part->showerKinematics()->qtilde();
 
-	// Set up the colour connections and the parent/child relationships
-	createBranching(part,newParent,otherChild,scale,inter);
-	part = newParent;
-      } // if ( splitF )
-    }   // if (shoKin && sudakov) {...} else {
+      // Set up the colour connections and the parent/child relationships
+      createBranching(part,newParent,otherChild,scale,inter);
+      part = newParent;
+    } // if ( splitF )
+
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
       generator()->log() << "  done one branching." << endl;
     }
-  } while(hasEmitted > 0);
+  } // end while (true)
 
   
 
@@ -198,7 +202,7 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
    * NOTE: temporarily chosen linearly in z and logarithmically in qtilda, this
    * may be changed later.
    ****/
-  hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
+  int hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
 
   // Do we veto the whole shower after the final state showering or do we
   // seperately veto the initial state shower and final state shower?
@@ -275,7 +279,7 @@ void BackwardEvolver::createBranching(ShowerParticlePtr part,
   if(part->parents().size() == 2) hadron = part->parents()[0];
   else cerr << "Shower/BackwardEvolver::createBranching: not one parent!" 
 	    << endl; 
-  // If their is a ThePEGBase object, we must remove that from the 
+  // If there is a ThePEGBase object, we must remove that from the 
   // hadron, and the extra call to remove the part is solely to remove
   // the hadron as a parent of part
   //if(part->getThePEGBase()) hadron->abandonChild(part->getThePEGBase());

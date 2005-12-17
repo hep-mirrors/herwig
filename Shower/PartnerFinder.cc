@@ -64,7 +64,7 @@ void PartnerFinder::Init() {
 bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
 						 const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
-  bool isOK = true;
+  //  bool isOK = true;
 
   // Loop over  particles  and consider only coloured particles which don't
   // have already their colour partner fixed and that don't have children
@@ -151,22 +151,38 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
       if (CL(cit)) {
 	if (CL(cit)->startParticle() == (*cit)) {
 	  if (CL(cit)->endParticle()) {
-	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(CL(cit)->endParticle()));
+	    tShowerParticlePtr tmp =
+	      dynamic_ptr_cast<ShowerParticlePtr>(CL(cit)->endParticle());
+	    if (tmp) partners.push_back(tmp);
+	    else cerr << "Would have pushed back "
+		      << "null pointer in PartnerFinder. (1)\n";
 	  }
 	} else if (CL(cit)->endParticle() == (*cit)) {
 	  if (CL(cit)->startParticle()) {
-	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(CL(cit)->startParticle()));
+	    tShowerParticlePtr tmp =
+	      dynamic_ptr_cast<ShowerParticlePtr>(CL(cit)->startParticle());
+	    if (tmp) partners.push_back(tmp);
+	    else cerr << "Would have pushed back "
+		      << "null pointer in PartnerFinder. (2)\n";
 	  }
 	}
       }
       if (ACL(cit)) {
 	if (ACL(cit)->startParticle() == (*cit)) {
 	  if (ACL(cit)->endParticle()) {
-	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(ACL(cit)->endParticle()));
+	    tShowerParticlePtr tmp =
+	      dynamic_ptr_cast<ShowerParticlePtr>(ACL(cit)->endParticle());
+	    if (tmp) partners.push_back(tmp);
+	    else cerr << "Would have pushed back "
+		      << "null pointer in PartnerFinder. (3)\n";
 	  }
 	} else if (ACL(cit)->endParticle() == (*cit)) {
 	  if (ACL(cit)->startParticle()) {
-	    partners.push_back(dynamic_ptr_cast<ShowerParticlePtr>(ACL(cit)->startParticle()));
+	    tShowerParticlePtr tmp =
+	      dynamic_ptr_cast<ShowerParticlePtr>(ACL(cit)->startParticle());
+	    if (tmp) partners.push_back(tmp);
+	    else cerr << "Would have pushed back "
+		      << "null pointer in PartnerFinder. (4)\n";
 	  }
 	}
       }
@@ -174,7 +190,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     candidatePartners[*cit] = partners;
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       for(unsigned int i = 0; i < partners.size(); i++) {
-	generator()->log() << "  found partner by hand: " << partners[i] << endl;
+	generator()->log() << "  found partner by hand: " 
+			   << partners[i] << endl;
       }
     }
   }
@@ -186,9 +203,9 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   tShowerParticleVector specialCases; 
   PartnerMap::const_iterator it;
   for(it = candidatePartners.begin(); it != candidatePartners.end(); ++it) {
-    if(it->second.size()) {
+    if(!it->second.empty()) {
 
-      //***LOOKHERE*** In the case of more than one candidate colour partners,
+      // ***LOOKHERE*** In the case of more than one candidate colour partners,
       //               our treatment is based on two assumptions:
       //               1) the choice of which is the colour partner is done
       //                  *randomly* between the available candidates.
@@ -209,33 +226,36 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 						    it->second[position]),
 			                showerVariables);
       switch(_approach) {
-        case 0: // Totally random
-         it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
-         it->first->setPartner(ShowerIndex::QCD, it->second[position]);
-	 break;
-	case 1: // Partner is also set, if it has already been set, pick 50/50
-	 if(!it->first->partners()[ShowerIndex::QCD] || UseRandom::rndbool()) {
-	   it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
-	   it->first->setPartner(ShowerIndex::QCD, it->second[position]);
-	 }
-	 if(!it->second[position]->partners()[ShowerIndex::QCD] ||
-	    UseRandom::rndbool()) {
-	   it->second[position]->setEvolutionScale(ShowerIndex::QCD, 
-			                           pairScales.second);
-	   it->second[position]->setPartner(ShowerIndex::QCD, it->first);
-	 }
-	 break;
+      case 0: // Totally random
+	it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
+	it->first->setPartner(ShowerIndex::QCD, it->second[position]);
+	break;
+      case 1: // Partner is also set, if it has already been set, pick 50/50
+	if(!it->first->partners()[ShowerIndex::QCD] || UseRandom::rndbool()) {
+	  it->first->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
+	  it->first->setPartner(ShowerIndex::QCD, it->second[position]);
+	}
+	if(!it->second[position]->partners()[ShowerIndex::QCD] ||
+	   UseRandom::rndbool()) {
+	  it->second[position]->setEvolutionScale(ShowerIndex::QCD, 
+						  pairScales.second);
+	  it->second[position]->setPartner(ShowerIndex::QCD, it->first);
+	}
+	break;
+      default:
+	throw Exception() << "Invalid approach for setting colour partner in"
+			  << " PartnerFinder::setQCDInitialEvolutionScale()"
+			  << Exception::abortnow;
+	
       }
     } else specialCases.push_back(it->first);
   } 
 
-  if(specialCases.size()) {
-
-    //***LOOKHERE*** ADD TREATMENT OF SPECIAL CASES (BARYON-VIOLATING PROCESSES)
-    //               AT THE MOMENT ONLY A WARNING IS ISSUED.
-    generator()->logWarning( Exception("PartnerFinder::setQCDInitialEvolutionScales "
-				       "***Special cases not yet treated*** ", 
-				       Exception::warning) );
+  if(!specialCases.empty()) {
+    throw Exception() << "PartnerFinder::setQCDInitialEvolutionScales "
+		      << "***Special cases not yet treated*** "
+		      << Exception::abortnow;
+    // *LOOKHERE* ADD TREATMENT OF SPECIAL CASES (BARYON-VIOLATING PROCESSES)
   }
   
   // Debugging
@@ -297,17 +317,17 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     generator()->log() << "PartnerFinder::debuggingInfo "
 		       << "end ___________________________________" << endl;
   }
-
-  return isOK;
+  // isOK currently is always true
+  //  return isOK;
+  return true;
 }
 
 
 bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
 						 const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
-  bool isOK = true;
 
-  //***LOOKHERE*** To be implemented only if you want to have electromagnetic
+  // ***LOOKHERE*** To be implemented only if you want to have electromagnetic
   //               bremsstrahlung. You should use the data() method of
   //               the ShowerParticle objects to access to their properties
   //               like the electric charge, and then find the partners.
@@ -323,21 +343,22 @@ bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVari
   // in order to test the possibility of multiple interactions that compete in the 
   // shower.  The partners have to be determined according to some physical 
   // idea, i.e. they should be CHARGE partners and not colour partners. 
-  ShowerParticleVector::const_iterator cit;
-  for(cit = particles.begin(); cit != particles.end(); ++cit) {
-    (*cit)->setEvolutionScale(ShowerIndex::QED, (*cit)->evolutionScales()[ShowerIndex::QCD]); 
-    (*cit)->setPartner(ShowerIndex::QED, (*cit)->partners()[ShowerIndex::QCD]); 
-  }
+
+//   ShowerParticleVector::const_iterator cit;
+//   for(cit = particles.begin(); cit != particles.end(); ++cit) {
+//     (*cit)->setEvolutionScale(ShowerIndex::QED, (*cit)->evolutionScales()[ShowerIndex::QCD]); 
+//     (*cit)->setPartner(ShowerIndex::QED, (*cit)->partners()[ShowerIndex::QCD]); 
+//   }
 
       
   throw Exception() << "PartnerFinder::setQEDInitialEvolutionScales "
-		    << "implementation is not correct. Must match charge "
-		    << "partners, not colour partners. "
+		    << "implementation is not correct.\nMust match charge "
+		    << "partners, not colour partners.\n"
 		    << "Turn off QED in Shower.in" 
 		    << Exception::abortnow;
 
 
-  return isOK;
+  return false;
 }
 
 
@@ -345,9 +366,7 @@ bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVari
 						 const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
 
-  bool isOK = true;
-
-  //***LOOKHERE*** To be implemented only if you want to have electroweak
+  // ***LOOKHERE*** To be implemented only if you want to have electroweak
   //               bremsstrahlung. You should use the data() method of
   //               the ShowerParticle objects to access to their properties
   //               like the electroweak charge, and then find the partners.
@@ -361,11 +380,10 @@ bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVari
       
 
   throw Exception() << "PartnerFinder::setEWKInitialEvolutionScales not "
-		    << "implemented turn off EWK in Shower.in" 
+		    << "implemented.\nTurn off EWK in Shower.in" 
 		    << Exception::abortnow;
 
-
-  return isOK;
+  return false;
 }
 
 
@@ -430,9 +448,6 @@ calculateInitialInitialScales(const ShowerPPair &ppair, const tShowerVarsPtr s)
 pair<Energy,Energy> PartnerFinder::
 calculateFinalFinalScales(const ShowerPPair &particlePair,
 		          const tShowerVarsPtr showerVariables) {
-  Energy firstQ = Energy();
-  Energy secondQ = Energy();
-
   /********
    * Using JHEP 12(2003)045 we find that we need ktilda = 1/2(1+b-c+lambda)
    * ktilda = qtilda^2/Q^2 therefore qtilda = sqrt(ktilda*Q^2)
@@ -448,18 +463,16 @@ calculateFinalFinalScales(const ShowerPPair &particlePair,
    * particle, where we flip b and c.
    *************/
 
-  Lorentz5Momentum p1, p2; 
-  Lorentz5Momentum p, n; 
-  p1 = particlePair.first->momentum(); 
-  p2 = particlePair.second->momentum(); 
-  p = p1; 
+  Lorentz5Momentum p1 = particlePair.first->momentum(); 
+  Lorentz5Momentum p2 = particlePair.second->momentum(); 
+  Lorentz5Momentum p = p1; 
   p.boost((p1+p2).findBoostToCM());
-  n = Lorentz5Momentum(0.0, -p.vect()); 
-  firstQ = sqrt(2.*p*(p+n)); 
+  Lorentz5Momentum n(0.0, -p.vect()); 
+  Energy firstQ = sqrt(2.*p*(p+n)); 
   p = p2;
   p.boost((p1+p2).findBoostToCM());
   n = Lorentz5Momentum(0.0, - p.vect()); 
-  secondQ = sqrt(2.*p*(p+n));   
+  Energy secondQ = sqrt(2.*p*(p+n));   
 
   ////////////////////////////////////////////////////////////////////////////
   // only a hack for the moment! comment/uncomment for normal/asymmetric

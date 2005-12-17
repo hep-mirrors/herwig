@@ -304,15 +304,15 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
     tSudakovPtr candidateSudakov = cit->second.first;
-    Energy candidateNewQ = 0*MeV;
     if(candidateSudakov) {
       ShowerIndex::InteractionType i = candidateSudakov->interactionType();
       // check size of scales beforehand...
+      Energy candidateNewQ(0.);
       if(particle.evolutionScales()[i] > _showerVariables->cutoffQScale(i)) {
         candidateNewQ = candidateSudakov->generateNextTimeBranching(
 				       particle.evolutionScales()[i], 
 		    	               cit->second.second, reverseAngOrd);
-      } else candidateNewQ = 0*GeV; 
+      }
       if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
 	    generator()->log() << "  trying "
 			       << particle.data().id() << " -> ("
