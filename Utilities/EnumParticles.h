@@ -11,7 +11,8 @@ namespace ExtraParticleID {
  *
  */  
 enum ParticleCodes {
-  Cluster = 81 
+  Cluster = 81, 
+  Remnant = 82
 };
 
 }
