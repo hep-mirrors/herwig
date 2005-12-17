@@ -130,9 +130,8 @@ private:
   void fillEventRecord( const tEHPtr ch );
 
   /**
-   * Two functions to add the shower to the event record. The first
-   * is recursive in nature, but uses a queue to achieve the same result.
-   * The initial state one is recursive explicitly.
+   * Two functions to add the shower to the event record.
+   * Both are recursive
    */
   void addFinalStateShower(PPtr, StepPtr);
   void addInitialStateShower(PPtr, StepPtr, bool doit=true);
@@ -158,6 +157,9 @@ private:
   Ptr<ShowerVariables>::pointer _showerVariables;
   Ptr<Evolver>::pointer _evolver;
 
+  /**
+   *  Local storage of particles produced in shower
+   */
   ShowerParticleVector _particles;   
  
 };

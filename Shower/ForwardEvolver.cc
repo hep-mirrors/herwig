@@ -60,7 +60,6 @@ void ForwardEvolver::Init() {
 
 bool ForwardEvolver::timeLikeShower(tEHPtr ch, 
 				    const tShowerVarsPtr showerVariables, 
-				    //const tMECorrectionPtr meCorrectionPtr,
 				    tShowerParticlePtr particle, 
 				    ShowerParticleVector & collecShoPar,
 				    const bool specialDecay )  
@@ -95,10 +94,10 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
     } else if(particle->dataPtr()->iColour()==PDT::Colour3bar) {
       ptMax = showerVariables->largestPtQbar();
     }
+    // this isn't used at the moment, needed for top etc???
     particle->undecay();
     tShowerParticleVector particlesYetToShower;
     particlesYetToShower.push_back(particle);
-    Branching fb;
 
     do {
       tShowerParticlePtr part = particlesYetToShower.back();
@@ -118,7 +117,8 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
       }
       //***LOOKHERE***  update rhoD matrix of  part ;
 
-      fb=_splittingGenerator->chooseForwardBranching(ch, *part, specialDecay);
+      Branching fb = 
+	_splittingGenerator->chooseForwardBranching(ch, *part, specialDecay);
 
       if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
 	if(fb.first && fb.second ) {
@@ -136,7 +136,7 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
       }
 
       // accept it according to the  showerVariables  and soft correction;
-      // soft correction: 
+      // soft correction: this is only for e+e- and needs generalising
 
       if(showerVariables->softMEC() && fb.first && fb.second &&
 	 fb.second->splittingFn()->interactionType() == ShowerIndex::QCD &&
@@ -169,6 +169,7 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
       }
       if(vetoed) break;
 
+      // if no branching
       if(fb.first == ShoKinPtr() || fb.second == tSudakovPtr()) {
 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
@@ -211,15 +212,15 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
 	  ShowerParticlePtr showerProduct1;
 	  ShowerParticlePtr showerProduct2;
 
-	  /* Old code replaced by PR
-	     if(part->data().id() > 0) 
-	    showerProduct1 = new_ptr(ShowerParticle(getParticleData(fb.third[1])));
-	  else 
-	    showerProduct1 = new_ptr(ShowerParticle(getParticleData(-fb.third[1])));
-	  showerProduct2 = new_ptr(ShowerParticle(getParticleData(fb.third[2])));
-	  */
+// 	  Old code replaced by PR
+// 	  if(part->data().id() > 0) 
+// 	    showerProduct1 = new_ptr(ShowerParticle(getParticleData(fb.third[1])));
+// 	  else 
+// 	    showerProduct1 = new_ptr(ShowerParticle(getParticleData(-fb.third[1])));
+// 	  showerProduct2 = new_ptr(ShowerParticle(getParticleData(fb.third[2])));
+// 	  
 	  // New code of PR
-	  	  // if same as definition create particles, otherwise create cc
+	  // if same as definition create particles, otherwise create cc
 	  // generalized by PR 
 	  if(part->id()==fb.third[0]) {
 	    showerProduct1 = new_ptr(ShowerParticle
@@ -263,8 +264,8 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
 	  ShoColinePair showerProduct1ShoColinePair = ShoColinePair();
 	  ShoColinePair showerProduct2ShoColinePair = ShoColinePair();
 	  splitF->colourConnection(parentShoColinePair,
-				     showerProduct1ShoColinePair, 
-				     showerProduct2ShoColinePair);
+				   showerProduct1ShoColinePair, 
+				   showerProduct2ShoColinePair);
 	  if ( showerProduct1ShoColinePair.first ) {
 	    showerProduct1ShoColinePair.first->addColoured( showerProduct1 );
 	  }
@@ -282,8 +283,8 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
 	  
 	  part->addChild(showerProduct1);
 	  part->addChild(showerProduct2);
-	  collecShoPar.insert(collecShoPar.end(), showerProduct1);
-	  collecShoPar.insert(collecShoPar.end(), showerProduct2);
+	  collecShoPar.push_back(showerProduct1);
+	  collecShoPar.push_back(showerProduct2);
 	  particlesYetToShower.push_back(showerProduct1);
 	  particlesYetToShower.push_back(showerProduct2);	
 	  

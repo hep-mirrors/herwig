@@ -116,7 +116,12 @@ updateParent( const tShowerParticlePtr theParent,
   c1->sudBeta(theParent->sudBeta() - c2->sudBeta());
   c1->sudPx(theParent->sudPx() - c2->sudPx());
   c1->sudPy(theParent->sudPy() - c2->sudPy());
-  c1->set5Momentum(theParent->momentum() - c2->momentum()); 
+  //c1->set5Momentum(theParent->momentum() - c2->momentum()); 
+  Lorentz5Momentum pc1(theParent->momentum() - c2->momentum());
+  pc1.rescaleMass();
+  c1->set5Momentum(pc1);
+
+
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
     CurrentGenerator::log() 

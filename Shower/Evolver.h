@@ -127,8 +127,18 @@ public:
     throw (Veto, Stop, Exception);
   bool reconstructKinematics(tEHPtr & ch) 
     throw (Veto, Stop, Exception);
+
+  /**
+   * Public access to the splitting generator
+   */
   inline Ptr<SplittingGenerator>::transient_const_pointer splittingGenerator()
   { return _splittingGenerator; }
+
+  /**
+   * (PR remnant related?)
+   */
+  void makeRemnants(ShowerParticleVector &);
+
 public:
 
   /**

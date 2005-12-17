@@ -371,11 +371,8 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
       tSplittingFnPtr splitFun = sudakov->splittingFn();
 
       // find out whether we had a spacelike branching before. 
-
-      bool fromHard = false, parentHas = false, siblingHas = false, 
-	initiatesTLS = false; 
       
-      fromHard = particle.isFromHardSubprocess();
+      bool fromHard = particle.isFromHardSubprocess();
 //       cerr << particle.parents()[0]
 // 	   << endl; 
 //       cerr << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
@@ -383,16 +380,16 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
       
       ShowerParticlePtr partest = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0]); 
 
-      parentHas = (partest && partest->showerKinematics());
+      bool parentHas = (partest && partest->showerKinematics());
       partest = dynamic_ptr_cast<ShowerParticlePtr>(*(particle.siblings().begin()));
-      siblingHas = (partest && partest->showerKinematics());
-      initiatesTLS = (particle.initiatesTLS());
+      bool siblingHas = (partest && partest->showerKinematics());
+      bool initiatesTLS = (particle.initiatesTLS());
       
        cout << "fromHard, parentHas, siblingHas, initiatesTLS = " 
  	   << (fromHard ? "y":"n") << ", " 
  	   << (parentHas ? "y":"n") << ", "
  	   << (siblingHas ? "y":"n") << ", " 
- 	   << (initiatesTLS ? "y":"n") << flush << endl;
+ 	   << (initiatesTLS ? "y":"n") << endl;
 	
 //       if (!(parentHas || fromHard) && siblingHas) {
 // 	cout << "Partner..." << endl;
@@ -488,10 +485,10 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
   Energy newQ = Energy();
   tSudakovPtr sudakov = tSudakovPtr();
   IdList ids;
-  double newZ, newPhi;  
+  double newZ(0.0), newPhi(0.0);  
 
   // First, find the eventual branching, corresponding to the highest scale.
-  long index = abs(particle.data().id());
+  long index = abs(particle.id());
   double x = particle.x();
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "  Called cBB with " << &particle << ", id = " 
@@ -506,9 +503,9 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
     tSudakovPtr candidateSudakov = cit->second.first;
-    ShowerIndex::InteractionType i = candidateSudakov->interactionType();
     Energy candidateNewQ = Energy();
     if(candidateSudakov) {
+      ShowerIndex::InteractionType i = candidateSudakov->interactionType();
       // The parton we are IS radiating should have one parent which is
       // the beam particle. If this isn't the case, we must be
       // backward evolving for a decay shower. In that case give a null
@@ -520,6 +517,10 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
 // 	   << particle.parents()[0] << flush << endl;
 //      cerr << "A" << endl;
 //      cerr << "particle.parents().size() " << particle.parents().size() << endl;
+      
+      // at least should be outside loop perhaps even outside function
+      // and in backward evolver
+      
       Ptr<BeamParticleData>::tcp p = 
 	dynamic_ptr_cast<Ptr<BeamParticleData>::tcp>(particle.parents()[0]
 						     ->dataPtr());
