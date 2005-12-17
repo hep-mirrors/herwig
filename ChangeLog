@@ -1,3 +1,12 @@
+2005-12-17 David Grellscheid <David.Grellscheid@durham.ac.uk>
+	* Shower/*, src/*.in ( and others ): Full merge of Stefan's Shower
+	changes, Phil's refactoring of forced splitting, Peter's Remnant
+	class and Durham bugfixes. NOT tested yet.
+
+	* PDF/BaryonRemnants.cc: Remnant and forced splitting don't work
+	together so far. File contains #defines to choose version. This
+	must be resolved! NOT tested yet. 
+
 2005-10-25  Martyn Gigg  <dph3mag@d31.phyip3.dur.ac.uk>
 
 	* Decay/Perturbative/SMHiggsGGHiggsPPDecayer.h (Repository): Renamed SMHDecayer to SMHiggsGGHiggsPPDecayer 
