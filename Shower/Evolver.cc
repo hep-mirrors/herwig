@@ -5,6 +5,8 @@
 //
 
 #include "Evolver.h"
+#include "Herwig++/Hadronization/Remnant.h"
+#include "Herwig++/Utilities/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -132,9 +134,9 @@ bool Evolver::showerNormally(tEHPtr ch,
 	  generator()->log()  << "  calling backwardsEvolver with " 
 			      << *it << endl;
 	}
-	int status = 0;
-	status =  _backwardEvolver->spaceLikeShower(ch, showerVariables, 
-						    *it, particles);
+	int status =
+	  _backwardEvolver->spaceLikeShower(ch, showerVariables, 
+					    *it, particles);
 	if (status == 1) _mapShowerHardJets[*it] = true;
 	else if (status == 0) _mapShowerHardJets[*it] = false;
 	else if (status == -1) showerOK = false;
@@ -157,6 +159,7 @@ bool Evolver::showerNormally(tEHPtr ch,
     }
   }
 
+  makeRemnants(particles);
   //  cerr << "before setQCDInitialEvolutionScales." << endl;
   //   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
   //     _partnerFinder->setQCDInitialEvolutionScales(showerVariables, particles);
@@ -166,7 +169,7 @@ bool Evolver::showerNormally(tEHPtr ch,
   while(!reconstructed) {
     // Final State Radiation
     if(_splittingGenerator->isFSRadiationON()) {
-      // Remember that is not allowed to add element to a STL container
+      // Remember that is not allowed to add element to a STL Vector
       // while you are iterating over it. Therefore an additional, temporary,
       // container must be used.
       ShowerParticleVector particlesToShower;
@@ -252,7 +255,7 @@ void Evolver::showerGlobally(tEHPtr & ch,
 
 
 void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
-						      const ShowerParticleVector & particles ) 
+				     const ShowerParticleVector & particles ) 
   throw (Veto, Stop, Exception) {
 
 //   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
@@ -264,7 +267,7 @@ void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
 
   for(ShowerParticleVector::const_iterator pit = particles.begin(); 
       pit != particles.end(); ++pit) {   
-    if ( (*pit)->data().id() == ParticleID::g ) {
+    if ( (*pit)->data().id() == ParticleID::g && (*pit)->isFinalState()) {
       Lorentz5Momentum dum = (*pit)->momentum(); 
       dum.setMass( effectiveGluonMass ); 
       (*pit)->set5Momentum( dum );
@@ -327,3 +330,57 @@ bool Evolver::reconstructKinematics( tEHPtr & ch )
   return ok;   
 }
 
+void Evolver::makeRemnants(ShowerParticleVector & particles)
+{
+  //  cerr << "================ makeRemnants() ============\n";
+  //cerr << *generator()->currentEvent() << '\n';
+
+  // loop over the jets
+  ShowerParticleVector::iterator it;
+  for(it = particles.begin(); it != particles.end(); ++it )
+    {
+      // if initial-state, from hard process and
+      if(!(*it)->isFinalState()&&(*it)->isFromHardSubprocess()&&
+	 splittingGenerator()->isISRadiationON())
+	{
+	  tShowerParticlePtr current(*it),next;
+	  Lorentz5Momentum ptotal(current->momentum());
+	  do
+	    {
+	      // find the parent of the particle
+	      if(!current->parents().empty())
+		{
+		  next=dynamic_ptr_cast<tShowerParticlePtr>(current->parents()[0]);
+		  if(next)
+		    {
+		      tParticleSet siblings=current->siblings();
+		      tParticleSet::iterator sib;
+		      for(sib=siblings.begin();sib!=siblings.end();++sib)
+			{ptotal+=(*sib)->momentum();}
+		      current=next;
+		    }
+		}
+	      else
+		next=tShowerParticlePtr();
+	    }
+	  while(next);
+	  // now we have the total momentum of the shower and are at the top
+	  // of the tree so find the remnant and update it
+	  tParticleSet siblings=current->siblings();
+	  tParticleSet::iterator sib;
+	  for(sib=siblings.begin();sib!=siblings.end();++sib)
+	    {
+	      // if the remnant perform cast and update
+	      if((*sib)->id()==ExtraParticleID::Remnant)
+		{
+		  tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(*sib);
+		  if(rem)
+		    {rem->regenerate(current,current->parents()[0]->momentum()-ptotal);}
+		}
+	    }
+	}
+    }
+  tParticleSet remnantSet
+    = generator()->currentEventHandler()->currentCollision()->getRemnants();
+  tParticleSet::iterator rem;
+}

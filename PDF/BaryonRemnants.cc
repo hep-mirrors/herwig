@@ -5,6 +5,7 @@
 //
 
 #include "BaryonRemnants.h"
+#include "Herwig++/Hadronization/Remnant.h"
 #include <ThePEG/CLHEPWrap/LorentzVector.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
@@ -39,11 +40,38 @@ void BaryonRemnants::createRemnants(PartonBinInstance &pb) const {
     rem[i]->scale(pb.particle()->momentum().mass2());
 }
 
+#define PETERSVERSION
+// #define PHILSVERSION
+
 Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb, 
 					  const double * r,
 					  Energy2 scale, 
 					  const LorentzMomentum &parent) 
   const {
+#ifdef PETERSVERSION
+#warning "Peter's version"
+  // set the weight for the remnant
+  pb.remnantWeight(1.0);
+  // set an empty remnant info as this feature of ThePEG is useless
+  if(!pb.remnantInfo()) {
+    RemIPtr Rem=new_ptr(RemInfoBase());
+    pb.remnantInfo(Rem);
+  }
+  // calculate the momentum of the extracted parton
+  double x(pb.xi());
+  LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
+  p = parent*x;
+  // create the remnant
+  PPtr remnant=new_ptr(Remnant(pb,parent-p));
+  // insert the remnant in the parton bin
+  PVector rem;rem.push_back(remnant);
+  pb.remnants(rem);
+  // return the momentum of the particle
+  return p;
+#endif
+
+#ifdef PHILSVERSION
+#warning "Phil's version"
   LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
   double x = pb.xi();
   //double eps = pb.eps();
@@ -123,7 +151,11 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
   pb.remnants(rem);
   p = parent*x;
   return p;
+#endif
 }
+
+#undef PETERSVERSION
+#undef PHILSVERSION
 
 NoPIOClassDescription<BaryonRemnants> BaryonRemnants::initBaryonRemnants;
 
