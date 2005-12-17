@@ -4,6 +4,9 @@ cd /Defaults/Handlers/Hadronization/Cluster
 create ThePEG::ParticleData /Defaults/Particles/Cluster
 setup /Defaults/Particles/Cluster 81 Cluster 0.00990 0.0 0.0 0.0  0 0  0  0
 defaultparticle /Defaults/Particles/Cluster
+create ThePEG::ParticleData /Defaults/Particles/Remnant
+setup /Defaults/Particles/Remnant 82 Remnant 0.00990 0.0 0.0 0.0  0 0  0  0
+defaultparticle /Defaults/Particles/Remnant
 create Herwig++::ClusterHadronizationHandler stdCluHadHandler
 create Herwig++::PartonSplitter thePartonSplitter
 create Herwig++::ClusterFinder theClusterFinder

@@ -17,10 +17,22 @@ CLEANFILES = HerwigDefaults.rpo LEP.run LEP.log LEP.out
 
 myENV= HERWIG_USER_MODULES=$(top_builddir)/lib
 
-check-local:
+## checking targets ##
+
+check-local: check-LHC
+
+
+check-LEP: 
 	$(myENV) ./Herwig++ init
-	$(myENV) ./Herwig++ read LEP.in 
+	$(myENV) ./Herwig++ read LEP.in
 	$(myENV) ./Herwig++ run LEP.run -N10
+
+check-LHC: 
+	$(myENV) ./Herwig++ init
+	$(myENV) ./Herwig++ read LHC.in
+	$(myENV) ./Herwig++ run LHC.run -N10
+
+######################
 
 install-data-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.in

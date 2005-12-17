@@ -32,7 +32,8 @@ set NoPDF:RemnantHandler NoRemnants
 
 # Make particle extractors
 cd /Defaults/Handlers
-create ThePEG::PartonExtractor StandardExtractor
+##create ThePEG::PartonExtractor StandardExtractor
+create Herwig::PartonExtractor StandardExtractor
 set StandardExtractor:NoPDF /Defaults/Partons/NoPDF
 set StandardExtractor:FlatSHatY 1
 create ThePEG::PartonExtractor EEExtractor
@@ -142,8 +143,8 @@ set LEPHandler:BeamA /Defaults/Particles/e-
 set LEPHandler:BeamB /Defaults/Particles/e+
 set LEPHandler:Sampler /Defaults/ACDCSampler
 set LEPHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LEPHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
+#set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
+#set LEPHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
@@ -156,7 +157,7 @@ set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
 # Mike: uncomment this line to tie the UA5 model into the program
-set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theUA5
+#set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theUA5
 #set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
 #set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 
@@ -182,6 +183,7 @@ set QCDCuts:SubProcess/ScaleMin 1.0*GeV
 set QCDCuts:SubProcess/PTHatMin 1.0*GeV
 set QCDCuts:Collision/X1Min 0.00001
 set QCDCuts:Collision/X2Min 0.00001
+set QCDCuts:SubProcess/MHatMin 91.
 set LHCGenerator:EventHandler:Cuts QCDCuts
 
 # This will read in all the standard hadron decay modes and add
