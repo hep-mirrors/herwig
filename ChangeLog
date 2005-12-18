@@ -1,3 +1,7 @@
+2005-12-18 David Grellscheid <David.Grellscheid@durham.ac.uk>
+	* src/Shower.in: typo c->c,cbar fixed to g->c,cbar; cleaned up
+	arrangement 
+
 2005-12-17 David Grellscheid <David.Grellscheid@durham.ac.uk>
 	* Shower/*, src/*.in ( and others ): Full merge of Stefan's Shower
 	changes, Phil's refactoring of forced splitting, Peter's Remnant

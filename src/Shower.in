@@ -47,14 +47,14 @@ set theShowerAlphaQCD:Qmin 0.630882*GeV
 set theSplittingGenerator:OnOffQCDinteractionMode 1
 set theSplittingGenerator:OnOffQEDinteractionMode 0
 set theSplittingGenerator:OnOffEWKinteractionMode 0
-set theSplittingGenerator:OnOffISRMode 1
+set theSplittingGenerator:OnOffISRMode 0
 set theSplittingGenerator:OnOffISR_QCDMode 1
-set theSplittingGenerator:OnOffISR_QEDMode 1
-set theSplittingGenerator:OnOffISR_EWKMode 1
+set theSplittingGenerator:OnOffISR_QEDMode 0
+set theSplittingGenerator:OnOffISR_EWKMode 0
 set theSplittingGenerator:OnOffFSRMode 0
 set theSplittingGenerator:OnOffFSR_QCDMode 1
-set theSplittingGenerator:OnOffFSR_QEDMode 1
-set theSplittingGenerator:OnOffFSR_EWKMode 1
+set theSplittingGenerator:OnOffFSR_QEDMode 0
+set theSplittingGenerator:OnOffFSR_EWKMode 0
 #
 # Lets set up all the splittings
 create Herwig++::QtoQGSplitFn theQtoQGSplitFn
@@ -85,51 +85,60 @@ set QtoGQSudakov:SplittingFunction theQtoGQSplitFn
 set QtoGQSudakov:Alpha theShowerAlphaQCD
 set QtoGQSudakov:Variables theShowerVariables
 #
-# Now add all the splittings
+# Now add the final splittings
 set theSplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting c->c,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting b->b,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting t->t,g; QtoQGSudakov
+#
 set theSplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
+#
 set theSplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->c,cbar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->b,bbar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
+#
 set theSplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddFinalSplitting d->d,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddFinalSplitting s->s,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddFinalSplitting c->c,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddFinalSplitting b->b,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddFinalSplitting t->t,gamma; QtoQGammaSudakov
+#
 # Now lets add the initial splittings. Remember the form a->b,c; means
 # that particle a is the particle given and we backward branch to
 # particle b which is initial state and particle c which is final state
+#
 set theSplittingGenerator:AddInitialSplitting u->u,g; QtoQGSudakov
-set theSplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
-set theSplittingGenerator:AddInitialSplitting u->u,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddInitialSplitting d->d,g; QtoQGSudakov
-set theSplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
-#set theSplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddInitialSplitting s->s,g; QtoQGSudakov
-set theSplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
-#set theSplittingGenerator:AddInitialSplitting s->s,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddInitialSplitting c->c,g; QtoQGSudakov
-set theSplittingGenerator:AddInitialSplitting c->c,cbar; GtoQQbarSudakov
-#set theSplittingGenerator:AddInitialSplitting c->c,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddInitialSplitting b->b,g; QtoQGSudakov
-set theSplittingGenerator:AddInitialSplitting g->b,bbar; GtoQQbarSudakov
-#set theSplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
 set theSplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
+#
+set theSplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
+#
+set theSplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->c,cbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->b,bbar; GtoQQbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
-set theSplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
+#
 set theSplittingGenerator:AddInitialSplitting u->g,u; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting d->g,d; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
+#
+#set theSplittingGenerator:AddInitialSplitting u->u,gamma; QtoQGammaSudakov
+#set theSplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov
+#set theSplittingGenerator:AddInitialSplitting s->s,gamma; QtoQGammaSudakov
+#set theSplittingGenerator:AddInitialSplitting c->c,gamma; QtoQGammaSudakov
+#set theSplittingGenerator:AddInitialSplitting b->b,gamma; QtoQGammaSudakov
+#set theSplittingGenerator:AddInitialSplitting t->t,gamma; QtoQGammaSudakov
