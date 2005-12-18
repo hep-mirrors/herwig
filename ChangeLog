@@ -1,8 +1,22 @@
 2005-12-18 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* Shower/SudakovFormFactor.cc: Veto bugs fixed
+	
+	* Shower/KinematicsReconstructor.cc, Shower/BackwardEvolver.cc:
+	wrapped forced splittings in '#ifdef PHILSCODE', to make Shower
+	testing work (also in PDF/BaryonRemnants.cc)
+
+	* Shower/SplittingGenerator.cc: small change, wrapped some 'cout'
+	in a DEBUG_LEVEL test
+
+	* Hadronization/ClusterHadronizationHandler.cc: added missing
+	Remnant code
+
 	* src/Shower.in: typo c->c,cbar fixed to g->c,cbar; cleaned up
 	arrangement 
 
 2005-12-17 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
 	* Shower/*, src/*.in ( and others ): Full merge of Stefan's Shower
 	changes, Phil's refactoring of forced splitting, Peter's Remnant
 	class and Durham bugfixes. NOT tested yet.

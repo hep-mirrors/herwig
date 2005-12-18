@@ -41,13 +41,19 @@ void BaryonRemnants::createRemnants(PartonBinInstance &pb) const {
 }
 
 #define PETERSVERSION
-// #define PHILSVERSION
+//#define PHILSVERSION
 
 Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb, 
 					  const double * r,
 					  Energy2 scale, 
 					  const LorentzMomentum &parent) 
   const {
+  
+  LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
+  double x = pb.xi();
+  //double eps = pb.eps();
+  PVector rem;
+
 #ifdef PETERSVERSION
 #warning "Peter's version"
   // set the weight for the remnant
@@ -58,25 +64,25 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
     pb.remnantInfo(Rem);
   }
   // calculate the momentum of the extracted parton
-  double x(pb.xi());
-  LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
+  x = pb.xi();
+  p = LorentzMomentum(0.0, 0.0, parent.rho(), parent.e());
   p = parent*x;
   // create the remnant
   PPtr remnant=new_ptr(Remnant(pb,parent-p));
   // insert the remnant in the parton bin
-  PVector rem;rem.push_back(remnant);
+  rem.clear();
+  rem.push_back(remnant);
   pb.remnants(rem);
   // return the momentum of the particle
-  return p;
 #endif
 
 #ifdef PHILSVERSION
 #warning "Phil's version"
-  LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
-  double x = pb.xi();
+  p = LorentzMomentum(0.0, 0.0, parent.rho(), parent.e());
+  x = pb.xi();
   //double eps = pb.eps();
   pb.remnantWeight(1.0);
-  PVector rem;
+  rem.clear();
   
   typedef Ptr<BaryonRemInfo>::pointer BRemIPtr;
   BRemIPtr ip;
@@ -150,8 +156,9 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
 
   pb.remnants(rem);
   p = parent*x;
-  return p;
 #endif
+
+  return p;
 }
 
 #undef PETERSVERSION

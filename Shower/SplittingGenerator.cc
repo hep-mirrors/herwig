@@ -384,13 +384,14 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
       partest = dynamic_ptr_cast<ShowerParticlePtr>(*(particle.siblings().begin()));
       bool siblingHas = (partest && partest->showerKinematics());
       bool initiatesTLS = (particle.initiatesTLS());
-      
+
+      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
        cout << "fromHard, parentHas, siblingHas, initiatesTLS = " 
  	   << (fromHard ? "y":"n") << ", " 
  	   << (parentHas ? "y":"n") << ", "
  	   << (siblingHas ? "y":"n") << ", " 
  	   << (initiatesTLS ? "y":"n") << endl;
-	
+      }
 //       if (!(parentHas || fromHard) && siblingHas) {
 // 	cout << "Partner..." << endl;
 // 	cout << particle.partners()[splitFun->interactionType()] << ", "

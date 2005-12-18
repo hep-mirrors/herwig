@@ -17,6 +17,8 @@
 #include <ThePEG/EventRecord/Step.h>
 #include <ThePEG/PDT/PDT.h>
 #include <ThePEG/PDT/EnumParticles.h>
+#include "Remnant.h"
+#include "Herwig++/Utilities/EnumParticles.h"
 #include <ThePEG/Repository/EventGenerator.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
@@ -118,6 +120,15 @@ handle(EventHandler & ch, const tPVector & tagged,
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }
+
+   // create the remnant particles if needed
+   tParticleSet remnantSet = 
+     generator()->currentEventHandler()->currentCollision()->getRemnants();
+   for(tParticleSet::iterator rem=remnantSet.begin();rem!=remnantSet.end();++rem)
+     {
+       if((*rem)->id()==ExtraParticleID::Remnant)
+	 {dynamic_ptr_cast<tRemnantPtr>(*rem)->createRemnant(pstep);}
+     }
 
   // split the gluons
   tPVector partons=_partonSplitter->split(tagged,pstep);

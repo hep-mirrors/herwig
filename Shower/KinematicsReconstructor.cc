@@ -436,8 +436,8 @@ reconstructHardISJets(const MapShower &hardJets)
     // Changed by Durham group
     toBoost[0]->children()[0]->deepBoost(boostRest);
     toBoost[0]->children()[0]->deepBoost(boostNewF);
-
-
+// #define PHILSCODE
+#ifdef PHILSCODE
     // find remnants and repair their kinematics
     // PJS: Ignore the remnant for now, it must be built after the ISR
 
@@ -616,10 +616,8 @@ reconstructHardISJets(const MapShower &hardJets)
     }
 
     // comment block 3 was here
-
-    
-    
-    return true;
+#endif
+#undef PHILSCODE
   }
   catch(std::exception & e) {
     throw Exception() << "Caught exception\n"
@@ -627,6 +625,8 @@ reconstructHardISJets(const MapShower &hardJets)
 		      <<  "\nin KinematicsReconstructor::reconstructHardISJets"
 		      << Exception::eventerror;
   }
+
+  return true;
 }
 
 

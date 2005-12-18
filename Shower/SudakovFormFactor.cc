@@ -199,7 +199,7 @@ guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t,
     // dgrell: look at logic of this calling stack again
     return;
   }
-  t = guesst(t0, told, z0, z1); 
+  t = guesst(t0, told, z0, z1, true); 
   z = guessz(z0, z1); 
 //  if (z1 < z0) {
 //     t = -1.0*GeV;
@@ -218,6 +218,8 @@ guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t,
   // actual values for z-limits
   yy = 1.+sqr(kinCutoff)/t/2.;
   z1 = yy - sqrt(sqr(yy)-1.); 
+  // if new upper limit less than lower
+  if (z1 < z0) t = -1.0*GeV;
 }  
 
 

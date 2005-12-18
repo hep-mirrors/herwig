@@ -75,7 +75,7 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
 		       << generator()->currentEventNumber() << endl;
   }
 
-  //  int hasEmitted = 0;
+  int hasEmitted = 0;
   tShowerParticlePtr part = particle;
   //  tShowerParticleVector particlesYetToShower;   // only time-like particles
   // HARDCODED, NEEDS LOOKING AT!
@@ -117,10 +117,9 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
 	generator()->log()<< "  --- no further backward branching."
 			  << endl;
       }
-      //      hasEmitted = 0;
+      hasEmitted = 0;
       break;
     }
-    //      hasEmitted = 1;
       
     // Assign the splitting function and the shower kinematics
     // to the emitting particle.      
@@ -202,7 +201,12 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
    * NOTE: temporarily chosen linearly in z and logarithmically in qtilda, this
    * may be changed later.
    ****/
-  int hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
+
+// #define PHILSCODE
+#ifdef PHILSCODE
+  hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
+#endif
+#undef PHILSCODE
 
   // Do we veto the whole shower after the final state showering or do we
   // seperately veto the initial state shower and final state shower?
