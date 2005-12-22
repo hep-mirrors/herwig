@@ -95,6 +95,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
+		Shower/SplittingFunctions/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
