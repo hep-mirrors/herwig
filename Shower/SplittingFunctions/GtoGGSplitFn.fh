@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GtoGGSplitFn class.
+//
+#ifndef HERWIG_GtoGGSplitFn_FH
+#define HERWIG_GtoGGSplitFn_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class GtoGGSplitFn;
+ThePEG_DECLARE_POINTERS(GtoGGSplitFn,GtoGGSplitFnPtr);
+
+}
+
+#endif
