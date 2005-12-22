@@ -30,14 +30,6 @@ namespace Herwig {
   typedef vector<ShowerParticlePtr> ShowerParticleVector;
   typedef vector<tShowerParticlePtr> tShowerParticleVector;
 
-  class SplittingFunction;
-  typedef Ptr<SplittingFunction>::pointer SplittingFnPtr;
-  typedef Ptr<SplittingFunction>::transient_pointer tSplittingFnPtr;
-
-  class SudakovFormFactor;
-  typedef Ptr<SudakovFormFactor>::pointer SudakovPtr;
-  typedef Ptr<SudakovFormFactor>::transient_pointer tSudakovPtr;
-
   class ShowerKinematics;
   typedef Ptr<ShowerKinematics>::pointer ShoKinPtr;
   typedef Ptr<ShowerKinematics>::transient_pointer tShoKinPtr;

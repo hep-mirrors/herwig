@@ -5,6 +5,7 @@
 // This is the declaration of the ShowerParticle class.
 
 #include "ShowerConfig.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.fh"
 #include "ThePEG/Handlers/HandlerBase.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ThePEG/PDT/ParticleData.h"
@@ -19,7 +20,6 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-  //class ThePEG::Particle;   // forward declaration
 
   /** \ingroup Shower
    *  This class represents a particle in the showering process. <BR>

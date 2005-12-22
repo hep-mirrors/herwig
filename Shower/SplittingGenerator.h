@@ -9,7 +9,7 @@
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ShowerIndex.h"
-#include "SudakovFormFactor.h"
+#include "Herwig++/Shower/SplittingFunctions/SudakovFormFactor.h"
 #include "ShowerVariables.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ShowerKinematics.h"

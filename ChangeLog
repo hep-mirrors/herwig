@@ -1,3 +1,7 @@
+2005-12-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Shower/ForwardEvolver.cc (Repository): SplttingFunctions and related classes cleaned up and moved to new directory 
+
 2005-12-18 David Grellscheid <David.Grellscheid@durham.ac.uk>
 
 	* Shower/SudakovFormFactor.cc: Veto bugs fixed

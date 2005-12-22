@@ -12,6 +12,11 @@ namespace Herwig {
 
 using namespace ThePEG;
 
+/**
+ *  Forward declaration of the SplittingGenerator class
+ */
+class SplittingGenerator; 
+
 /** \ingroup Shower
  *
  *  This class is the abstract class from which all types of running alphas 
@@ -33,8 +38,6 @@ using namespace ThePEG;
  *
  * @see ShowerAlphaQCD
  */ 
-class SplittingGenerator; 
-
 class ShowerAlpha: public ThePEG::HandlerBase {
 
 public:
