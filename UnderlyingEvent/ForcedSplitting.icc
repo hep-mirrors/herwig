@@ -1,0 +1,49 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ForcedSplitting class.
+//
+
+namespace Herwig {
+
+inline ForcedSplitting::ForcedSplitting() {}
+
+inline ForcedSplitting::ForcedSplitting(const ForcedSplitting & x)
+  : ThePEG::MultipleInteractionHandler(x)
+{}
+
+inline ForcedSplitting::~ForcedSplitting() {}
+
+inline IBPtr ForcedSplitting::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ForcedSplitting::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ForcedSplitting::doupdate() throw(UpdateException) {
+  ThePEG::MultipleInteractionHandler::doupdate();
+  bool redo = touched();
+  if ( !redo ) return;
+}
+
+inline void ForcedSplitting::doinit() throw(InitException) {
+  ThePEG::MultipleInteractionHandler::doinit();
+}
+
+inline void ForcedSplitting::dofinish() {
+  ThePEG::MultipleInteractionHandler::dofinish();
+}
+
+inline void ForcedSplitting::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  ThePEG::MultipleInteractionHandler::rebind(trans);
+}
+
+inline IVector ForcedSplitting::getReferences() {
+  IVector ret = ThePEG::MultipleInteractionHandler::getReferences();
+  return ret;
+}
+
+}
