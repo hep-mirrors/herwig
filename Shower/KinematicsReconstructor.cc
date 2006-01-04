@@ -133,7 +133,7 @@ reconstructHardISJets(const MapShower &hardJets)
       generator()->log() << "  computing initial DY kinematics..." << endl;
     }
 
-    assert(p_in.size()>=2 && pq.size()>=2);
+    //assert(p_in.size()>=2 && pq.size()>=2);
     double x1 = p_in[0].z()/pq[0].z();
     double x2 = p_in[1].z()/pq[1].z();
 

@@ -15,7 +15,6 @@
 #include "ShowerParticle.h"
 #include "ShowerKinematics.h"
 #include "IS_QtildaShowerKinematics1to2.h"
-#include "ForcedSplitting.h"
 
 using namespace Herwig;
 
@@ -23,12 +22,12 @@ BackwardEvolver::~BackwardEvolver() {}
 
 
 void BackwardEvolver::persistentOutput(PersistentOStream & os) const {
-  os << _splittingGenerator << _forwardEvolver << _forcedSplitting;
+  os << _splittingGenerator << _forwardEvolver;
 }
 
 
 void BackwardEvolver::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingGenerator >> _forwardEvolver >> _forcedSplitting;
+  is >> _splittingGenerator >> _forwardEvolver;
 }
 
 
@@ -51,13 +50,6 @@ void BackwardEvolver::Init() {
 			    &Herwig::BackwardEvolver::_forwardEvolver,
  			    false, false, true, false);
 
-  static Reference<BackwardEvolver,ForcedSplitting> 
-    interfaceForcedSplitting("ForcedSplitting", 
-			    "A reference to the ForcedSplitting object", 
-			    &Herwig::BackwardEvolver::_forcedSplitting,
-			    false, false, true, false);
-  
-  
 }
 
 //------------------------------------------------------------------------------
@@ -201,12 +193,6 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
    * NOTE: temporarily chosen linearly in z and logarithmically in qtilda, this
    * may be changed later.
    ****/
-
-// #define PHILSCODE
-#ifdef PHILSCODE
-  hasEmitted = _forcedSplitting->split(part,allShowerParticles,ch);
-#endif
-#undef PHILSCODE
 
   // Do we veto the whole shower after the final state showering or do we
   // seperately veto the initial state shower and final state shower?

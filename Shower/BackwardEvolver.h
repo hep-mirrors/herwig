@@ -10,12 +10,8 @@
 #include "ShowerConfig.h"
 #include "SplittingGenerator.h"
 #include "ForwardEvolver.h"
-#include "ForcedSplitting.h"
 
 namespace Herwig {
-
-// Forward declaration
-//class  ForcedSplitting;
 
 using namespace ThePEG;
 
@@ -130,7 +126,6 @@ private:
 
   Ptr<SplittingGenerator>::pointer _splittingGenerator;
   Ptr<ForwardEvolver>::pointer _forwardEvolver;
-  Ptr<ForcedSplitting>::pointer _forcedSplitting;
 };
 
 }
