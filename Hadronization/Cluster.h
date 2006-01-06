@@ -289,7 +289,8 @@ private:
   
   bool        _isAvailable;        //!< Whether the cluster is hadronizing
   tClusterPtr _reshufflingPartner; //!< The partner used in reshuffling
-  tParticleVector _component;       //!< The constituent partons
+  ParticleVector _component;       //!< The constituent partons
+  tParticleVector _original;       //!< The original components
   vector<bool> _isBeamRemnant;     //!< Whether a parton is a beam remnant
   vector<bool> _isPerturbative;    //!< Whether a parton is perturbative
   int _numComp;                    //!< The number of constituents
