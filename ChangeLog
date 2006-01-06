@@ -1,3 +1,9 @@
+2006-01-06  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Various changes to get the forced splitting to work
+	
+	* Shower/Makefile.am (Repository): Change to Makefile due to move of SudakovFormFactor to SplittingFunctions directory
+
 2005-12-22  Pete's account  <Peter.Richardson@durham.ac.uk>
 
 	* Shower/ForwardEvolver.cc (Repository): SplttingFunctions and related classes cleaned up and moved to new directory 
