@@ -14,6 +14,7 @@
 #include <ThePEG/EventRecord/Collision.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
+#include "Herwig++/Utilities/EnumParticles.h"
 #include "Cluster.h"
 
 
@@ -51,7 +52,11 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
   throw(Veto, Stop, Exception) {
   // Get all the beam remnant partons ((anti-)quark or (anti-)diquark) 
   // of the current collision.
-  tParticleSet remnantSet = collisionPtr->getRemnants();
+  tParticleSet origremnantSet = collisionPtr->getRemnants(),remnantSet;
+  for(tParticleSet::const_iterator pit=origremnantSet.begin();pit!=origremnantSet.end();
+      ++pit)
+    {if((**pit).id()==ExtraParticleID::Remnant)
+	{remnantSet.insert((**pit).children().back());}}
   //vector<pair<tClusterPtr,tParticleVector> > parent_child;
   set<tPPtr> examinedSet;  // colour particles already included in a cluster
   map<tColinePtr, pair<tPPtr,tPPtr> > quarkQuark; // quark quark 
@@ -66,7 +71,6 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
        || examinedSet.find(*pit) != examinedSet.end()) {
       continue;  
     }
-     
     // We assume that a cluster is  made of, at most, 3 constituents although
     // in most cases the number will be 2; however, for baryon violating decays
     // (for example in Susy model without R parity conservation) we can have 3
@@ -268,7 +272,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
    
 
       // Check if any of the components is a beam remnant, and if this
-      // is the case then inform the cluster.    
+      // is the case then inform the cluster.     
       for (int i=0; i<iElement; ++i) {
 	if(remnantSet.find(connected[i]->original()) != remnantSet.end()) 
 	  cluPtr->isBeamCluster(connected[i]);

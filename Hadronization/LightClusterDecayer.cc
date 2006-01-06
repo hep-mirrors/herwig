@@ -266,6 +266,8 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
 				      const StepPtr &pstep,
 				      tClusterVector & redefinedClusters )
   throw (Veto, Stop, Exception) {
+  // don't reshuffle with beam clusters
+  if(cluPtr2->isBeamCluster()) return false;
 
   // This method does the reshuffling of momenta between the cluster "1", 
   // that must decay into a single hadron (with id equal to idhad1), and 
@@ -320,7 +322,6 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
   else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
   else return false;
-
   // Let's call from now on "Sys" the system of the two clusters, and
   // had1 (of mass mhad1) the lightest hadron in which the first
   // cluster decays, and clu2 (of mass mclu2) either the second

@@ -117,18 +117,10 @@ handle(EventHandler & ch, const tPVector & tagged,
   ClusterVector clusters;
   StepPtr pstep = ch.newStep();
 
+
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }
-
-   // create the remnant particles if needed
-   tParticleSet remnantSet = 
-     generator()->currentEventHandler()->currentCollision()->getRemnants();
-   for(tParticleSet::iterator rem=remnantSet.begin();rem!=remnantSet.end();++rem)
-     {
-       if((*rem)->id()==ExtraParticleID::Remnant)
-	 {dynamic_ptr_cast<tRemnantPtr>(*rem)->createRemnant(pstep);}
-     }
 
   // split the gluons
   tPVector partons=_partonSplitter->split(tagged,pstep);
@@ -141,7 +133,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   pstep = ch.newStep();
   _clusterFinder->formClusters(ch.currentCollision(),pstep,partons,clusters); 
   _clusterFinder->reduceToTwoComponents(pstep,clusters); 
-  
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) {
     printStep(pstep,"After ClusterFinder");
   }
@@ -211,7 +202,6 @@ handle(EventHandler & ch, const tPVector & tagged,
   //                soft underlying event. So, when the latter class
   //                will be implemented, you should write few lines
   //                of code right below here to do it.
-  
 }
 
 
