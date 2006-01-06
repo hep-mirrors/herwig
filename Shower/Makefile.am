@@ -21,5 +21,4 @@ ShowerConfig.h ShowerHandler.cc ShowerHandler.h ShowerHandler.icc \
 ShowerIndex.cc ShowerIndex.h ShowerKinematics.cc ShowerKinematics.h \
 ShowerKinematics.icc ShowerParticle.cc ShowerParticle.h ShowerParticle.icc \
 ShowerVariables.cc ShowerVariables.h ShowerVariables.icc \
-SplittingGenerator.cc SplittingGenerator.h SplittingGenerator.icc \
-SudakovFormFactor.cc SudakovFormFactor.h 
+SplittingGenerator.cc SplittingGenerator.h SplittingGenerator.icc
