@@ -148,7 +148,7 @@ private:
   // Using the remnant given as the first argument and the last parton in
   // the shower, split the remnant into the correct flavours and add them
   // to the step.
-  void split(tPPtr &, tShowerParticlePtr &, tStepPtr &);
+  void split(const tPPtr , tShowerParticlePtr, const tStepPtr );
   
   // This takes the particle and find a splitting for np -> p + child and 
   // creates the correct kinematics and connects for such a split. This
@@ -156,8 +156,8 @@ private:
   // The momentum pf is the momentum of the last reconstructed parton in the
   // backward chain and the momentum p is the momentum which is extracted from
   // the remnant in each step.
-  PPtr forceSplit(tPPtr &rem, long child, Energy &oldQ, double &oldx, 
-		  Lorentz5Momentum &pf, Lorentz5Momentum &p, tStepPtr &);
+  PPtr forceSplit(const tPPtr rem, long child, Energy &oldQ, double &oldx, 
+		  Lorentz5Momentum &pf, Lorentz5Momentum &p,const tStepPtr);
 
 
   // This computes the momentum of the emitted parton. par is the momentum of
@@ -170,8 +170,8 @@ private:
   // This creates a parton from the remaining flavours of the hadron. The
   // last parton used was a valance parton, so only 2 (or 1, if meson) flavours
   // remain to be used.
-  PPtr finalSplit(tPPtr &rem, int maxIdx, long q[3], int, Lorentz5Momentum,
-		  tStepPtr &);
+  PPtr finalSplit(const tPPtr rem, int maxIdx, long q[3], int, Lorentz5Momentum,
+		  const tStepPtr );
 
 
 };
