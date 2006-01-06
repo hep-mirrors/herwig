@@ -10,7 +10,6 @@ create Herwig++::KinematicsReconstructor theKinematicsReconstructor
 create Herwig++::SplittingGenerator theSplittingGenerator
 create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
 create Herwig++::ShowerAlphaQED theShowerAlphaQED
-create Herwig++::ForcedSplitting theForcedSplitting
 #
 # Set the pointers to the relevant objects 
 set stdShowerHandler:GlobalParameters /Defaults/theGlobalParameters
@@ -24,8 +23,6 @@ set theEvolver:SplittingGenerator theSplittingGenerator
 set theForwardEvolver:SplittingGenerator theSplittingGenerator
 set theBackwardEvolver:SplittingGenerator theSplittingGenerator
 set theBackwardEvolver:ForwardEvolver theForwardEvolver
-set theBackwardEvolver:ForcedSplitting theForcedSplitting
-set theForcedSplitting:BackwardEvolver theBackwardEvolver
 set theSplittingGenerator:ShowerAlphaQCD theShowerAlphaQCD
 set theSplittingGenerator:ShowerAlphaQED theShowerAlphaQED
 set theSplittingGenerator:ShowerVariables theShowerVariables

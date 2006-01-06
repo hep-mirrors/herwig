@@ -1,4 +1,4 @@
 .cvsignore .svn Makefile Herwig++ HerwigDefaults.rpo LEP.log LEP.out LEP.run
 *.lo *.la .libs .deps
 Makefile.in
-LEP.tex
+LHC.tex LEP.tex LHC.log LHC.out LHC.dump LEP.dump LHC.run 

@@ -157,9 +157,11 @@ set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
 # Mike: uncomment this line to tie the UA5 model into the program
-#set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theUA5
-#set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-#set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
+set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theForcedSplitting
+#insert LHCHandler:PostHadronizationHandlers 0 /Defaults/Handlers/UnderlyingEvent/theUA5
+
+set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
+set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
 
 # Now the LEPGenerator
 cd /Defaults/Generators
