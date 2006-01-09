@@ -18,6 +18,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 //#include <ofstream>
+#include <cassert>
 
 // for checks:
 #include "Herwig++/Utilities/SmplHist.h"
@@ -67,16 +68,24 @@ namespace {
     }
   }
 
-
+// my new version, uses 'coloured()' but does the same as the old one.
   void boostChain(tPPtr p, const Vector3 &bv) {
-    if (p && p->coloured()) boostChain(p->parents()[0], bv);
-    if (p->children().size() == 2 && p->children()[0] && p->children()[1]) {
-      p->children()[0]->boost(bv);
-      p->children()[1]->boost(bv);
-    }
+    if (p->parents()[0] && p->parents()[0]->coloured()) 
+      boostChain(p->parents()[0], bv);
+    p->boost(bv);
   }
 
 
+// Durham version
+//   void boostChain(tPPtr p, const Vector3 &bv) {
+//     if (p && p->coloured()) boostChain(p->parents()[0], bv);
+//     if (p->children().size() == 2 && p->children()[0] && p->children()[1]) {
+//       p->children()[0]->boost(bv);
+//       p->children()[1]->boost(bv);
+//     }
+//   }
+
+// initial version
 // void boostChainOld(tPPtr p, const Vector3 &bv) {
 //   if (p->parents()[0] && p->parents()[0]->id() == 21 
 //       || abs(p->parents()[0]->id()) < 7) {
@@ -109,7 +118,10 @@ reconstructHardISJets(const MapShower &hardJets)
 	  pq.push_back(cit->first->showerKinematics()->getBasis()[0]);
 	} else {
 	  if (!cit->first->parents().empty()) {
-	    pq.push_back(cit->first->parents()[0]->momentum());
+	    //	    pq.push_back(cit->first->parents()[0]->momentum());
+	    Energy etemp = cit->first->parents()[0]->momentum().pz();
+	    Lorentz5Momentum ptemp = Lorentz5Momentum(0, 0, etemp, abs(etemp));
+	    pq.push_back(ptemp);
 	  } else {
 	    generator()->log() 
 	      << "Shower/KinematicsReconstructor::reconstructHardJets: "
@@ -165,6 +177,13 @@ reconstructHardISJets(const MapShower &hardJets)
     Lorentz5Momentum p1p = p[0] - a1*pq[0] - b1*pq[1];
     Lorentz5Momentum p2p = p[1] - a2*pq[0] - b2*pq[1];
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      generator()->log() << "p[1] = "
+	//			 << setprecision(15)
+			 << pq[1].x() << ", " 
+			 << pq[1].y() << ", " 
+			 << pq[1].z() << ", " 
+			 << pq[1].t() << ", " 
+			 << endl;
       generator()->log() << "KinReco spacelike Jet setup reconstruction..." 
 			 << endl
 			 << "  p1  = " << p[0] << endl
@@ -222,6 +241,10 @@ reconstructHardISJets(const MapShower &hardJets)
     Energy2 A = a1*b2*S;
     Energy2 B = sqr(MDY) - (a1*b1+a2*b2)*S - sqr(p1p+p2p);
     Energy2 C = a2*b1*S; 
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      generator()->log() << "4AC = " << 4.*A*C << ", B^2 = " << B*B 
+			 << ", 4AC - B^2 = " << 4.*A*C - B*B << endl;
+    }
     double rad = 1.-4.*A*C/sqr(B);
     if (rad >= 0) {
       kp = B/(2.*A)*(1.+sqrt(rad));
@@ -268,10 +291,10 @@ reconstructHardISJets(const MapShower &hardJets)
     // check
     Vector3 betaboost(0, 0, beta1);
     Lorentz5Momentum p0 = p[0].boost(betaboost);
-    betaboost = Vector3(0, 0, beta2);;
+    betaboost = Vector3(0, 0, beta2);
     Lorentz5Momentum p1 = p[1].boost(betaboost);
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << "  p0+p1 after boost..." << endl
+      generator()->log() << "  initial check: p0+p1 after boost..." << endl
 			 << "  p0 = " << p0 << endl
 			 << "  p1 = " << p1 << endl
 			 << "  M/MDY = " << (p0+p1).m() 
@@ -412,30 +435,30 @@ reconstructHardISJets(const MapShower &hardJets)
     Vector3 boostRest = psinglet.findBoostToCM();
     Vector3 boostNewF = (toBoost[0]->momentum() + toBoost[1]->momentum())
       .boostVector();
-
-    // this is specific to the current process, see above
-    //(pDY[0].boost(boostRest)).boost(boostNewF);
-    //(pDY[1].boost(boostRest)).boost(boostNewF);
     
-    //     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    //       generator()->log() << "DY pair momenta, after boost: " << endl 
-    // 			 << "  p0 = " << pDY[0] << endl
-    // 			 << "  p1 = " << pDY[1] << endl
-    // 			 << "  p0+p1 = " << pDY[0] + pDY[1]  << endl
-    // 			 << "  M = " << (pDY[0] + pDY[1]).m() << endl
-    // 			 << "  y = " << myrap(pDY[0] + pDY[1]) << endl;
-    //     }
+    // this is specific to the current process, see above
+    (pDY[0].boost(boostRest)).boost(boostNewF);
+    (pDY[1].boost(boostRest)).boost(boostNewF);
+    
+    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
+      generator()->log() << "DY pair momenta, after boost: " << endl 
+    			 << "  p0 = " << pDY[0] << endl
+    			 << "  p1 = " << pDY[1] << endl
+    			 << "  p0+p1 = " << pDY[0] + pDY[1]  << endl
+    			 << "  M = " << (pDY[0] + pDY[1]).m() << endl
+    			 << "  y = " << myrap(pDY[0] + pDY[1]) << endl;
+    }
     
     // actually boost DY Vector Boson and DY leptons:
-    //toBoost[0]->children()[0]->boost(boostRest);
-    //toBoost[0]->children()[0]->boost(boostNewF);
-    //toBoost[0]->children()[0]->children()[0]->boost(boostRest);
-    //toBoost[0]->children()[0]->children()[0]->boost(boostNewF);
-    //toBoost[0]->children()[0]->children()[1]->boost(boostRest);
-    //toBoost[0]->children()[0]->children()[1]->boost(boostNewF);    
+    toBoost[0]->children()[0]->boost(boostRest);
+    toBoost[0]->children()[0]->boost(boostNewF);
+    toBoost[0]->children()[0]->children()[0]->boost(boostRest);
+    toBoost[0]->children()[0]->children()[0]->boost(boostNewF);
+    toBoost[0]->children()[0]->children()[1]->boost(boostRest);
+    toBoost[0]->children()[0]->children()[1]->boost(boostNewF);    
     // Changed by Durham group
-    toBoost[0]->children()[0]->deepBoost(boostRest);
-    toBoost[0]->children()[0]->deepBoost(boostNewF);
+    //    toBoost[0]->children()[0]->deepBoost(boostRest);
+    //    toBoost[0]->children()[0]->deepBoost(boostNewF);
 // #define PHILSCODE
 #ifdef PHILSCODE
     // find remnants and repair their kinematics
@@ -467,6 +490,8 @@ reconstructHardISJets(const MapShower &hardJets)
     // 		    -toBoost[1]->momentum());
 
     ///////////////////////////////////////////////////////////////////////////////
+#endif
+#undef PHILSCODE
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
       generator()->log() 
@@ -541,6 +566,7 @@ reconstructHardISJets(const MapShower &hardJets)
       //     delta = par1->momentum() - par1->children()[0]->momentum() - par1->children()[1]->momentum();
       //     generator()->log() << "delta = " << delta/GeV << endl;
       par1 = par1->children()[1];
+      //      generator()->log() << par1->children().size() <<endl;
       while (par1->children().size() == 2) {
 	q = par1->children()[1]->momentum();
 	xp = q*pq[0]/p12; xm = q*pq[1]/p12; 
@@ -616,8 +642,6 @@ reconstructHardISJets(const MapShower &hardJets)
     }
 
     // comment block 3 was here
-#endif
-#undef PHILSCODE
   }
   catch(std::exception & e) {
     throw Exception() << "Caught exception\n"
