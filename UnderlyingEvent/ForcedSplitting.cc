@@ -12,26 +12,84 @@ using namespace Herwig;
 
 // This is the routine that is called to start the algorithm. 
 void ForcedSplitting::handle(EventHandler &ch, const tPVector &tagged,
-			     const Hint &hint) throw(Veto,Stop,Exception) {
-  // Find beam particles
-  PPair beam = ch.currentCollision()->incoming();
-  PVector::const_iterator it;
-  tPPtr rem1,rem2;
-  tShowerParticlePtr part1,part2;
-  for(it = beam.first->children().begin(); it != beam.first->children().end();
-      it++) {
-    if((*it)->children().size()==0) rem1 = *it;
-    else part1 = dynamic_ptr_cast<ShowerParticlePtr>(*it);
-  }
-  for(it = beam.second->children().begin(); it !=beam.second->children().end();
-      it++) {
-    if((*it)->children().size()==0) rem2 = *it;
-    else part2 = dynamic_ptr_cast<ShowerParticlePtr>(*it);
-  }
-  
-  tStepPtr step = ch.newStep();
-  if(rem1) split(rem1,part1,step);
-  if(rem2) split(rem2,part2,step);
+			     const Hint &hint) throw(Veto,Stop,Exception) 
+{
+  try
+    {
+      // Find beam particles
+      PPair beam = ch.currentCollision()->incoming();
+      PVector::const_iterator it;
+      tPPtr rem[2];
+      tShowerParticlePtr part1,part2;
+      for(it = beam.first->children().begin(); it != beam.first->children().end();
+	  it++) {
+	if((*it)->children().size()==0) rem[0] = *it;
+	else part1 = dynamic_ptr_cast<ShowerParticlePtr>(*it);
+      }
+      for(it = beam.second->children().begin(); it !=beam.second->children().end();
+	  it++) {
+	if((*it)->children().size()==0) rem[1] = *it;
+	else part2 = dynamic_ptr_cast<ShowerParticlePtr>(*it);
+      }
+      
+      tStepPtr step = ch.newStep();
+      if(rem[0]) split(rem[0],part1,step);
+      if(rem[1]) split(rem[1],part2,step);
+      // get the masses of the remnants
+      Energy mrem[2];
+      Lorentz5Momentum ptotal,pnew[2];
+      for(unsigned int ix=0;ix<2;++ix)
+	{
+	  pnew[ix]=Lorentz5Momentum();
+	  for(unsigned int iy=0;iy<rem[ix]->children().size();++iy)
+	    {pnew[ix]+=rem[ix]->children()[iy]->momentum();}
+	  mrem[ix]=sqrt(pnew[ix].m2());
+	}
+      // now find the remnant remnant cmf frame
+      Lorentz5Momentum prem[2]={rem[0]->momentum(),rem[1]->momentum()};
+      ptotal=prem[0]+prem[1];
+      ptotal.rescaleMass();
+      // boost momenta to this frame
+      if(ptotal.m()<0)
+	{throw Exception() << "Space-Like Remnant in " 
+			   << "ForcedSplitting::handle() " << Exception::eventerror;}
+      Hep3Vector boostv(-ptotal.boostVector());
+      ptotal.boost(boostv);
+      prem[0].boost(boostv);
+      prem[1].boost(boostv);
+      // set the masses and energies,
+      prem[0].setMass(mrem[0]);
+      prem[0].setE(0.5/ptotal.m()*(sqr(ptotal.m())+sqr(mrem[0])-sqr(mrem[1])));
+      prem[0].rescaleRho();
+      prem[1].setMass(mrem[1]);
+      prem[1].setE(0.5/ptotal.m()*(sqr(ptotal.m())-sqr(mrem[0])+sqr(mrem[1])));
+      prem[1].rescaleRho();
+      // boost back to the lab
+      prem[0].boost(-boostv);
+      prem[1].boost(-boostv);
+      // set the momenta of the remnants
+      rem[0]->set5Momentum(prem[0]);
+      rem[1]->set5Momentum(prem[1]);
+      // boost the decay products
+      Lorentz5Momentum ptemp;
+      for(unsigned int ix=0;ix<2;++ix)
+	{
+	  Hep3Vector btorest(-pnew[ix].boostVector());
+	  Hep3Vector bfmrest( prem[ix].boostVector());
+	  for(unsigned int iy=0;iy<rem[ix]->children().size();++iy)
+	    {
+	      ptemp=rem[ix]->children()[iy]->momentum();
+	      ptemp.boost(btorest);
+	      ptemp.boost(bfmrest);
+	      rem[ix]->children()[iy]->set5Momentum(ptemp);
+	    }
+	}
+    }
+  catch(std::exception & e) 
+    {throw Exception() << "Caught exception\n"
+		       << e.what() 
+		       <<  "\nin ForcedSplitting::handle() "
+		       << Exception::eventerror;}
 }
 
 void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
@@ -81,7 +139,7 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
   int idx = 0;
   long lg = ParticleID::g;
   long currentPart = part->id();
-  Lorentz5Momentum usedMomentum = 0;
+  Lorentz5Momentum usedMomentum=Lorentz5Momentum();
   Lorentz5Momentum lastp = rem->momentum();
   PPtr lastColour = part;
   PPtr newPart;
@@ -126,7 +184,7 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
       // Create new particles, splitting is q->g q
       // First choose which q
       idx = UseRandom::irnd(maxIdx);
-      Lorentz5Momentum s = lastp-usedMomentum;
+      Lorentz5Momentum s = rem->momentum()-usedMomentum;
       // Generate the next parton, with s momentum remaining in the remnant.
       newPart = forceSplit(rem, quarks[idx], oldQ, oldx, s, usedMomentum,step);
       // Several colour connection cases...
@@ -151,7 +209,6 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
 	  x2 = lastColour->antiColourLine();
 	  if(newPart->hasColour()) x2->addColoured(newPart);
 	  else if(newPart->hasAntiColour()) x1->addAntiColoured(newPart);
-	  //cerr << "testng new part " << *newPart << endl;
 	}
       currentPart = quarks[idx];
     } 
@@ -179,7 +236,8 @@ PPtr ForcedSplitting::forceSplit(const tPPtr rem, long child, Energy &oldQ,
 				 Lorentz5Momentum &p,const tStepPtr step) {
   Lorentz5Momentum beam = rem->parents()[0]->momentum();
   PPtr parton = new_ptr(Particle(getParticleData(child)));
-  double m2 = sqr(getParticleData(child)->mass());
+  //double m2 = sqr(getParticleData(child)->mass());
+  Energy2 m2 = sqr(getParticleData(child)->constituentMass());
   Lorentz5Momentum partonp = emit(beam,oldQ,oldx,m2,pf);
   p += partonp;
   parton->set5Momentum(partonp);
@@ -221,8 +279,10 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
   // Create the remnant and set its momentum, also reset all of the decay 
   // products from the hadron
   PPtr remnant = new_ptr(Particle(getParticleData(remId)));
-  remnant->setMomentum(rem->momentum()-usedMomentum);
-
+  Lorentz5Momentum prem(rem->momentum()-usedMomentum);
+  prem.setMass(getParticleData(remId)->constituentMass());
+  prem.rescaleEnergy();
+  remnant->set5Momentum(prem);
   // Add the remnant to the step, this will be changed again if the
   // shower is vetoed. Set the colour connections as well
   step->addDecayProduct(rem,remnant);
@@ -301,14 +361,13 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   double q2 = z*q02 - z*emittedm2/(1.-z) - pt2/(1.-z);
   double beta = (qt2 + q2)/(2.*alpha*p_dot_n);
 
-  //cout << "alpha = " << alpha << " beta = " << beta << ", q2 = " << q2 << endl;
+  //cout
+  //  << "alpha = " << alpha << " beta = " << beta << ", q2 = " << q2 << endl;
   // Store results for iterative calls
   lastx = z*lastx;
   lastalpha = alpha;
   // Compute momentum
   newp = alpha*p + beta*n + qt2*qthat;
-
-  //cout << "newp = " << newp << endl;
 
   // Now boost newp to the original frame
 
