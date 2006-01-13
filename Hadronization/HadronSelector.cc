@@ -31,7 +31,7 @@ void HadronSelector::persistentOutput(PersistentOStream & os) const {
   os << _PwtDquark << _PwtUquark << _PwtSquark 
      << _PwtCquark << _PwtBquark << _PwtDIquark
      << _SngWt << _DecWt << _Pwt << _ClusterDKMode; 
-  for(int i = D; i<B; i++)
+  for(int i = D; i<=B; i++)
     for(int j = i; j<BB; j++)
       os << _table[i][j];
 }
@@ -41,7 +41,7 @@ void HadronSelector::persistentInput(PersistentIStream & is, int) {
   is >> _PwtDquark >> _PwtUquark >> _PwtSquark 
      >> _PwtCquark >> _PwtBquark >> _PwtDIquark
      >> _SngWt >> _DecWt >> _Pwt >> _ClusterDKMode;
-  for(int i = D; i<B; i++) {
+  for(int i = D; i<=B; i++) {
     for(int j = i; j<BB; j++) {
       is >> _table[i][j];
       if(i != j) _table[j][i] = _table[i][j];
