@@ -195,98 +195,105 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
 ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
   // Get the actual particles making up the cluster
   long idQ1 = 0, idQ2 = 0;
-  tPPtr ptrQ1 = tPPtr(), ptrQ2 = tPPtr();
-  ptrQ1 = cluster->particle(0);
+  tPPtr ptrQ1 = cluster->particle(0), ptrQ2 = cluster->particle(1);
   if(ptrQ1) idQ1 = ptrQ1->id();
-  ptrQ2 = cluster->particle(1);
   if(ptrQ2) idQ2 = ptrQ2->id(); 
   
   // And check if those particles are from a beam remnant
   bool rem1 = cluster->isBeamRemnant(0);
   bool rem2 = cluster->isBeamRemnant(1);
 
-  // Draw new flavour
-  long idNew = drawNewFlavour();      // draw the new flavour (idNew > 0)
-  if(!CheckId::canBeMeson(idQ1,-idNew) && !CheckId::canBeBaryon(idQ1,-idNew))
-    idNew = -idNew;
-
-  // Check that new clusters can produce particles and there is enough
-  // phase space to choose the drawn flavour
-  Energy Mc = cluster->mass(), Mc1 = Energy(), Mc2 = Energy();
-  Energy m1 = ptrQ1->data().constituentMass();
-  Energy m2 = ptrQ2->data().constituentMass();
-  Energy m  = getParticleData(abs(idNew))->constituentMass();
-  
-  // Do not split in the case there is no phase space available
-  // (it happens sometimes for clusters with b-flavour)
-  if(Mc <  m1+m + m2+m) return cutType(PPair(PPtr(),PPtr()),
-				       PPair(PPtr(),PPtr()));
-
-  double exp1=_PSplt1, exp2=_PSplt1;
-  if(CheckId::hasBeauty(idQ1)) exp1 = _PSplt2;
-  if(CheckId::hasBeauty(idQ2)) exp2 = _PSplt2;
-  
-  /*******************
-   * If, during the drawing of candidate masses, too many attempts fail 
-   * (because the phase space available is tiny) _hadronsSelector->lightestHadron(idQ2, idNew)then give up (the cluster 
-   * is not split).
-   *****************/
   // Initialization for the exponential ("soft") mass distribution.
   static const InvEnergy b = 2.0 / _BtClM;
-  int counter = 0;
   static const int max_loop = 1000;
-  do {    
-    drawChildMass(Mc,m1,m2,m,Mc1,exp1,b,rem1);
-    drawChildMass(Mc,m2,m1,m,Mc2,exp2,b,rem2);
-    counter++;
-  } while((Mc1<m1+m || Mc2<m+m2 || Mc1+Mc2>Mc) && counter < max_loop);
-  
-  if(counter > max_loop)
+  int counter = 0;
+  bool succeeded=false;
+  Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy();
+  bool toHadron1,toHadron2;
+  long idNew;
+  do
+    {
+      succeeded=false;
+      ++counter;
+      // Draw new flavour
+      idNew = drawNewFlavour();      // draw the new flavour (idNew > 0)
+      if(!CheckId::canBeMeson(idQ1,-idNew) && !CheckId::canBeBaryon(idQ1,-idNew))
+	idNew = -idNew;
+      // Check that new clusters can produce particles and there is enough
+      // phase space to choose the drawn flavour
+      Energy Mc = cluster->mass(); 
+      m1 = ptrQ1->data().constituentMass();
+      m2 = ptrQ2->data().constituentMass();
+      Energy m  = getParticleData(abs(idNew))->constituentMass();
+      // Do not split in the case there is no phase space available
+      // (it happens sometimes for clusters with b-flavour)
+      if(Mc <  m1+m + m2+m) continue;
+      // power for splitting
+      double exp1=_PSplt1, exp2=_PSplt1;
+      if(CheckId::hasBeauty(idQ1)) exp1 = _PSplt2;
+      if(CheckId::hasBeauty(idQ2)) exp2 = _PSplt2;
+      // If, during the drawing of candidate masses, too many attempts fail 
+      // (because the phase space available is tiny) 
+      //_hadronsSelector->lightestHadron(idQ2, idNew)then give up (the cluster 
+      // is not split).
+      Mc1 = Energy();
+      Mc2 = Energy();
+      drawChildMass(Mc,m1,m2,m,Mc1,exp1,b,rem1);
+      drawChildMass(Mc,m2,m1,m,Mc2,exp2,b,rem2);
+      if(Mc1<m1+m || Mc2<m+m2 || Mc1+Mc2>Mc) continue;
+      /**************************
+       * New (not present in Fortran Herwig):
+       * check whether the fragment masses  Mc1  and  Mc2  are above the 
+       * threshold for the production of the lightest pair of hadrons with the 
+       * right flavours. If not, then set by hand the mass to the lightest 
+       * single hadron with the right flavours, in order to solve correctly
+       * the kinematics, and (later in this method) create directly such hadron
+       * and add it to the children hadrons of the cluster that undergoes the
+       * fission (i.e. the one pointed by iCluPtr). Notice that in this special
+       * case, the heavy cluster that undergoes the fission has one single 
+       * cluster child and one single hadron child. We prefer this approach,
+       * rather than to create a light cluster, with the mass set equal to
+       * the lightest hadron, and let then the class LightClusterDecayer to do 
+       * the job to decay it to that single hadron, for two reasons: 
+       * First, because the sum of the masses of the two constituents can be, 
+       * in this case, greater than the mass of that hadron, hence it would
+       * be impossible to solve the kinematics for such two components, and
+       * therefore we would have a cluster whose components are undefined.
+       * Second, the algorithm is faster, because it avoids the reshuffling
+       * procedure that would be necessary if we used LightClusterDecayer
+       * to decay the light cluster to the lightest hadron.   
+       ****************************/
+      toHadron1 = false;
+      if(Mc1 < _hadronsSelector->massLightestHadronPair(idQ1,-idNew)) { 
+	Mc1 = _hadronsSelector->massLightestHadron(idQ1,-idNew);          
+	toHadron1 = true;
+      }
+      
+      toHadron2 = false;
+      if(Mc2 < _hadronsSelector->massLightestHadronPair(idQ2,idNew)) { 
+	Mc2 = _hadronsSelector->massLightestHadron(idQ2,idNew);           
+	toHadron2 = true;
+      }
+
+      // Check if the decay kinematics is still possible: if not then 
+      // force the one-hadron decay for the other cluster as well.
+      if(Mc1 + Mc2  >  Mc) {
+	if(!toHadron1) {
+	  Mc1 = _hadronsSelector->massLightestHadron(idQ1, -idNew); 
+	  toHadron1 = true;	
+	} else if(!toHadron2) {
+	  Mc2 = _hadronsSelector->massLightestHadron(idQ2, idNew);
+	  toHadron2 = true;
+	}
+      }
+      succeeded = (Mc>=Mc1+Mc2); 
+    }
+  while (!succeeded && counter < max_loop);
+
+  if(counter >= max_loop)
     return cutType(PPair(PPtr(),PPtr()),PPair(PPtr(),PPtr()));
 
-  /**************************
-   * New (not present in Fortran Herwig):
-   * check whether the fragment masses  Mc1  and  Mc2  are above the 
-   * threshold for the production of the lightest pair of hadrons with the 
-   * right flavours. If not, then set by hand the mass to the lightest 
-   * single hadron with the right flavours, in order to solve correctly
-   * the kinematics, and (later in this method) create directly such hadron
-   * and add it to the children hadrons of the cluster that undergoes the
-   * fission (i.e. the one pointed by iCluPtr). Notice that in this special
-   * case, the heavy cluster that undergoes the fission has one single 
-   * cluster child and one single hadron child. We prefer this approach,
-   * rather than to create a light cluster, with the mass set equal to
-   * the lightest hadron, and let then the class LightClusterDecayer to do 
-   * the job to decay it to that single hadron, for two reasons: 
-   * First, because the sum of the masses of the two constituents can be, 
-   * in this case, greater than the mass of that hadron, hence it would
-   * be impossible to solve the kinematics for such two components, and
-   * therefore we would have a cluster whose components are undefined.
-   * Second, the algorithm is faster, because it avoids the reshuffling
-   * procedure that would be necessary if we used LightClusterDecayer
-   * to decay the light cluster to the lightest hadron.   
-   ****************************/
-  bool toHadron1 = false;
-  if(Mc1 < _hadronsSelector->massLightestHadronPair(idQ1,-idNew)) { 
-    Mc1 = _hadronsSelector->massLightestHadron(idQ1,-idNew);          
-    toHadron1 = true;
-  }
-  bool toHadron2 = false;
-  if(Mc2 < _hadronsSelector->massLightestHadronPair(idQ2,idNew)) { 
-    Mc2 = _hadronsSelector->massLightestHadron(idQ2,idNew);           
-    toHadron2 = true;
-  }
-  // Check if the decay kinematics is still possible: if not then 
-  // force the one-hadron decay for the other cluster as well.
-  if(Mc1 + Mc2  >  Mc) {
-    if(!toHadron1) {
-      Mc1 = _hadronsSelector->massLightestHadron(idQ1, -idNew); 
-      toHadron1 = true;	
-    } else if(!toHadron2) {
-      Mc2 = _hadronsSelector->massLightestHadron(idQ2, idNew);
-      toHadron2 = true;
-    }
-  }
+
 
   // Determined the (5-components) momenta (all in the LAB frame)
   Lorentz5Momentum pClu = cluster->momentum(); // known
