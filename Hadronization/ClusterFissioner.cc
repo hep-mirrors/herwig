@@ -208,7 +208,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
   static const int max_loop = 1000;
   int counter = 0;
   bool succeeded=false;
-  Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy();
+  Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy(),m=Energy();
   bool toHadron1,toHadron2;
   long idNew;
   do
@@ -224,7 +224,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
       Energy Mc = cluster->mass(); 
       m1 = ptrQ1->data().constituentMass();
       m2 = ptrQ2->data().constituentMass();
-      Energy m  = getParticleData(abs(idNew))->constituentMass();
+      m  = getParticleData(abs(idNew))->constituentMass();
       // Do not split in the case there is no phase space available
       // (it happens sometimes for clusters with b-flavour)
       if(Mc <  m1+m + m2+m) continue;
