@@ -170,9 +170,17 @@ private:
    * reshuffling necessary for energy-momentum conservation.
    */
   bool reshuffling( const long, tClusterPtr, tClusterPtr,
-		    const StepPtr &, tClusterVector &) 
+		    const StepPtr , tClusterVector &) 
     throw (Veto, Stop, Exception); 
   
+  /**
+   *  This (private) method, called by decay(), performs reshuffling in the 
+   * special case of a semileptonic partonic b/c decay 
+   * @param idhad The hadron to be produced
+   * @param cluster The cluster to be reshuffled
+   */
+  bool partonicReshuffle(const long idhad,const PPtr cluster,const StepPtr );
+
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.
    */

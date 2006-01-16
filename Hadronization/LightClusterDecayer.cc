@@ -225,7 +225,8 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
 // 	throw Exception("LightClusterDecayer::decay "
 // 			"***Skip event: too light clusters (reshuffling problem)***",
 // 			Exception::eventerror);
-	return false; 
+	// special for partonic b/c decays
+	return partonicReshuffle(idhad,*it,pstep);
       } 
       
       // Debugging.
@@ -263,7 +264,7 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
 bool LightClusterDecayer::reshuffling(const long idhad1, 
 				      tClusterPtr cluPtr1, 
 				      tClusterPtr cluPtr2,
-				      const StepPtr &pstep,
+				      const StepPtr pstep,
 				      tClusterVector & redefinedClusters )
   throw (Veto, Stop, Exception) {
   // don't reshuffle with beam clusters
@@ -439,10 +440,76 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
       }
     }
 
+
   } // end of  if (singleHadron) 
 
 
   return true;
 }
 
-
+bool LightClusterDecayer::partonicReshuffle(const long idhad,const PPtr cluster,
+					    const StepPtr pstep)
+{
+  tPPtr meson(cluster);
+  if(!meson->parents().empty()) meson=meson->parents()[0];
+  if(!meson->parents().empty()) meson=meson->parents()[0];
+  // check b/c hadron decay
+  int ptype(abs(meson->id()/1000));
+  if(ptype>5) ptype/=10;
+  if(ptype!=4&&ptype!=5) return false;
+  // get the leptons
+  PPtr leptons[2];
+  unsigned int nlep(0);
+  Lorentz5Momentum pleptons;
+  Energy mLHP2=Energy();
+  for(unsigned int ix=0;ix<meson->children().size();++ix)
+    {
+      if(!(meson->children()[ix]->dataPtr()->coloured()))
+	{
+	  if(nlep<=2) leptons[nlep]=meson->children()[ix];
+	  ++nlep;
+	  pleptons+=meson->children()[ix]->momentum();
+	  mLHP2+=meson->children()[ix]->mass();
+	}
+      pleptons.rescaleMass();
+    }
+  // check leptons
+  if(nlep==1)
+    {
+      mLHP2=Energy();
+      for(unsigned int ix=0;ix<leptons[0]->children().size();++ix)
+	{mLHP2+=leptons[0]->children()[ix]->mass();}
+    }
+  else if (nlep>2) return false;
+  // check we can do the reshuffling
+  PPtr ptrhad = getParticle(idhad);
+  Energy mhad1(ptrhad->mass());
+  Lorentz5Momentum pSystem = pleptons + cluster->momentum();
+  pSystem.rescaleMass();
+  Energy mSystem = pSystem.mass();
+  Energy mclu2 = pleptons.mass();
+  // check if we can reshuffle
+  if(!(mSystem > mhad1+mclu2 && mclu2>mLHP2)) return false;
+  // Calculate the unit three-vector, in the frame "Sys" along which the 
+  // two initial clusters move.
+  Lorentz5Momentum u(cluster->momentum());
+  u.boost( - pSystem.boostVector() );         // boost from LAB to Sys
+  // Calculate the momenta of had1 and clu2 in the Sys frame first, 
+  // and then boost back in the LAB frame.
+  Lorentz5Momentum phad1, pclu2;
+  Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
+  ptrhad->set5Momentum( phad1 );         // set momentum of first hadron.
+  ptrhad->setLabVertex(cluster->vertex()); // set hadron vertex position to the
+  // parent cluster position.
+  pstep->addDecayProduct(cluster, ptrhad);
+  // reshuffle the leptons
+  // boost the leptons to the rest frame of the system
+  Hep3Vector boost1(-pleptons.boostVector());
+  Hep3Vector boost2( pclu2.boostVector());
+  for(unsigned int ix=0;ix<nlep;++ix)
+    {
+      leptons[ix]->deepBoost(boost1);
+      leptons[ix]->deepBoost(boost2);
+    }
+  return true;
+}
