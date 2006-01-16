@@ -48,6 +48,6 @@ libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
 
 libHwLooptoolsCheck_la_SOURCES = $(theFFSOURCES) $(theLTCHECKSOURCES)
 
-noinst_PROGRAMS = tester
+EXTRA_PROGRAMS = tester
 tester_SOURCES = tester.cc
 tester_LDADD = libHwLooptools.la 
