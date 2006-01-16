@@ -199,6 +199,18 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 			{pstep->removeParticle(pclusters[ix]->parents()[iy]);}
 		    }
 		}
+	      for(unsigned int ix=0;ix<outhad.size();++ix)
+		{
+		  for(unsigned int iy=0;iy<outhad[ix]->parents().size();++iy)
+		    {
+		      if(outhad[ix]->parents()[iy]->coloured()&&
+			 outhad[ix]->parents()[iy]->parents().empty())
+			{pstep->removeParticle(outhad[ix]->parents()[iy]);}
+		    }
+		}
+
+
+
 	      // remove the children of the tagged particles
 	      for(unsigned int ix=0;ix<tagged.size();++ix)
 		{for(int iy=tagged[ix]->children().size()-1;iy>=0;--iy)
@@ -220,6 +232,15 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 	      if(pclusters[ix]->parents()[iy]->coloured()&&
 		 pclusters[ix]->parents()[iy]->parents().empty())
 		{pstep->removeParticle(pclusters[ix]->parents()[iy]);}
+	    }
+	}
+      for(unsigned int ix=0;ix<outhad.size();++ix)
+	{
+	  for(unsigned int iy=0;iy<outhad[ix]->parents().size();++iy)
+	    {
+	      if(outhad[ix]->parents()[iy]->coloured()&&
+		 outhad[ix]->parents()[iy]->parents().empty())
+		{pstep->removeParticle(outhad[ix]->parents()[iy]);}
 	    }
 	}
       // remove the tagged particles
@@ -284,11 +305,11 @@ bool PartonicHadronizer::hadronicCluster(tPPtr part)
   if(part->children().size()==0&&part->id()==81){return true;}
   else if(part->id()==81)
     {
+      unsigned int nclu(0);
       for(unsigned int ix=0;ix<part->children().size();++ix)
-	{
-	  if(part->children()[ix]->id()==81){return false;}
-	}
-      return true;
+	{if(part->children()[ix]->id()==81){++nclu;}}
+      if(nclu==part->children().size()) return false;
+      else return true;
     }
   else{return false;}
 }
@@ -300,7 +321,7 @@ bool PartonicHadronizer::duplicateMode(tPPtr parent,vector<tcPPtr> & clusters,
   cParticleMSet hadronsb;
   bool found(false);
   // find the hadrons produced in the decay
-  hadrons.resize(0);
+  hadrons.clear();
   for(unsigned int ix=0;ix<clusters.size();++ix)
     {
       for(unsigned int iy=0;iy<clusters[ix]->children().size();++iy)
