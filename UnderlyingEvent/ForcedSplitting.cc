@@ -137,7 +137,7 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
   double oldx;
   long quarks[3];
   int maxIdx = 3;
-  int idx = 0;
+  int idx = -1;
   long lg(ParticleID::g),currentPart(part->id());
   Lorentz5Momentum usedMomentum=Lorentz5Momentum(),lastp = rem->momentum();
   PPtr lastColour(part),newPart;
@@ -147,6 +147,7 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
     quarks[0] = hadronId % 10;
     quarks[1] = (hadronId/10)%10;
     quarks[2] = (hadronId/100)%10;
+    
     // NOTE TODO: Must make sure that the sign is correct for the meson quarks
     if(quarks[2] == 0) maxIdx = 2; // we have a meson
 
@@ -212,6 +213,17 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
 	}
       currentPart = quarks[idx];
     } 
+    // find the extracted quark if not known
+    if(idx<0)
+      {
+	unsigned int ix=0;
+	do
+	  {
+	    if(quarks[ix]==currentPart){idx=ix;}
+	    ++ix;
+	  }
+	while(idx<0&&ix<3);
+      }
     // Lastly, do the final split into the (di)quark and a parton
     newPart = finalSplit(rem,maxIdx,quarks,idx,usedMomentum, step);
     // Set colour connections, case 1, no other forced splittings
