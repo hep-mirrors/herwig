@@ -148,7 +148,7 @@ private:
   // Using the remnant given as the first argument and the last parton in
   // the shower, split the remnant into the correct flavours and add them
   // to the step.
-  void split(const tPPtr , tShowerParticlePtr, const tStepPtr );
+  void split(const tPPtr ,const tPPtr, const tStepPtr,const double x );
   
   // This takes the particle and find a splitting for np -> p + child and 
   // creates the correct kinematics and connects for such a split. This

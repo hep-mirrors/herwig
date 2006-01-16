@@ -20,21 +20,22 @@ void ForcedSplitting::handle(EventHandler &ch, const tPVector &tagged,
       PPair beam = ch.currentCollision()->incoming();
       PVector::const_iterator it;
       tPPtr rem[2];
-      tShowerParticlePtr part1,part2;
+      tPPtr part1,part2;
       for(it = beam.first->children().begin(); it != beam.first->children().end();
 	  it++) {
 	if((*it)->children().size()==0) rem[0] = *it;
-	else part1 = dynamic_ptr_cast<ShowerParticlePtr>(*it);
+	else part1 = *it;
       }
       for(it = beam.second->children().begin(); it !=beam.second->children().end();
 	  it++) {
 	if((*it)->children().size()==0) rem[1] = *it;
-	else part2 = dynamic_ptr_cast<ShowerParticlePtr>(*it);
+	else part2 = *it;
       }
-      
+      double x1(part1->momentum().rho()/beam.first->momentum().rho());
+      double x2(part2->momentum().rho()/beam.second->momentum().rho());
       tStepPtr step = ch.newStep();
-      if(rem[0]) split(rem[0],part1,step);
-      if(rem[1]) split(rem[1],part2,step);
+      if(rem[0]) split(rem[0],part1,step,x1);
+      if(rem[1]) split(rem[1],part2,step,x2);
       // get the masses of the remnants
       Energy mrem[2];
       Lorentz5Momentum ptotal,pnew[2];
@@ -129,20 +130,17 @@ void ForcedSplitting::Init() {
  * NOTE: temporarily chosen linearly in z and logarithmically in qtilda, this
  * may be changed later.
  ****/
-void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part, 
-			    const tStepPtr step) {
+void ForcedSplitting::split(const tPPtr rem,const tPPtr part, 
+			    const tStepPtr step,const double xin) {
   long hadronId = rem->parents()[0]->id();
   Energy oldQ;
   double oldx;
   long quarks[3];
   int maxIdx = 3;
   int idx = 0;
-  long lg = ParticleID::g;
-  long currentPart = part->id();
-  Lorentz5Momentum usedMomentum=Lorentz5Momentum();
-  Lorentz5Momentum lastp = rem->momentum();
-  PPtr lastColour = part;
-  PPtr newPart;
+  long lg(ParticleID::g),currentPart(part->id());
+  Lorentz5Momentum usedMomentum=Lorentz5Momentum(),lastp = rem->momentum();
+  PPtr lastColour(part),newPart;
   ColinePtr x1, x2;
   x1 = x2 = ColinePtr();
   if(abs(hadronId) > 99) { // We have a hadron
@@ -159,15 +157,15 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
     Q2 = sqr(rem->parents()[0]->momentum());
     mc2 = sqr(part->momentum());
     if(sqr(Q2+mb2-mc2)>4.*mb2*Q2) lambda = sqrt(sqr(Q2+mb2-mc2) - 4.*mb2*Q2);
-    else                         lambda = 0.;
+    else                          lambda = 0.;
     // A qtilde and x value for the remnant
     oldQ = sqrt((Q2+mb2-mc2+lambda)/2.);
-    oldx = 1.-part->x();
+    oldx = 1.-xin;
 
     // Look first at sea quarks, these must go to a gluon, we then handle
     // the gluons in the next step
     if(currentPart != quarks[0] && currentPart != quarks[1] && 
-       currentPart != quarks[2] && currentPart != ParticleID::g) { 
+       currentPart != quarks[2] && currentPart != ParticleID::g) {
       // Create the new parton with its momentum and parent/child relationship
       // set
       newPart = forceSplit(rem, -currentPart, oldQ, oldx, lastp, 
@@ -198,9 +196,11 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
 	  } 
 	else 
 	  {
-	    x2 = lastColour->colourLine();
+	    ColinePtr x3 = lastColour->colourLine();
 	    if(!x1->coloured().empty()) x1->addAntiColoured(newPart);
-	    else if(!x1->antiColoured().empty()) x2->addAntiColoured(newPart);
+	    else if(!x1->antiColoured().empty()) x3->addAntiColoured(newPart);
+	    x2=x1;
+	    x1=x3;
 	  }
       } 
       else 
@@ -213,7 +213,7 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
       currentPart = quarks[idx];
     } 
     // Lastly, do the final split into the (di)quark and a parton
-    newPart = finalSplit(rem,maxIdx,quarks,currentPart,usedMomentum, step);
+    newPart = finalSplit(rem,maxIdx,quarks,idx,usedMomentum, step);
     // Set colour connections, case 1, no other forced splittings
     if(!x1 || !x2) 
       {
@@ -223,7 +223,7 @@ void ForcedSplitting::split(const tPPtr rem, tShowerParticlePtr part,
       } 
     else
       {
-	if(getParticleData(currentPart)->coloured()) x1->addAntiColoured(newPart);
+	if(getParticleData(currentPart)->hasColour()) x1->addAntiColoured(newPart);
 	else x2->addColoured(newPart);
       }
   }
@@ -254,7 +254,7 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
   tPPtr hadron;
   if(rem->parents().size() == 1) hadron = rem->parents()[0];
   // First decide what the remnant is
-  long remId;
+  long remId(0);
   int sign, spin;
   if(maxIdx == 2) { // Meson hadronic state
     remId = quarks[(idx+1)%2];
@@ -265,7 +265,6 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
     // elements of the array constitute the remnant.
     long id1 = quarks[(idx+1)%3];
     long id2 = quarks[(idx+2)%3];
-    
     if (abs(id1) > abs(id2)) swap(id1, id2);
     sign = (id1 < 0) ? -1 : 1; // Needed for the spin 0/1 part
     remId = id2*1000+id1*100;
