@@ -20,7 +20,7 @@ myENV= HERWIG_USER_MODULES=$(top_builddir)/lib
 
 ## checking targets ##
 
-check-local: check-LHC
+check-local: check-LHC check-LEP check-TVT
 
 
 check-LEP: 

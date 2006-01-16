@@ -104,6 +104,15 @@ void ShowerHandler::cascade() {
 		       << "\t _______________________________________" << endl;
   }
 
+  // if no Radiation switch is on, we do nothing.
+  Ptr<SplittingGenerator>::transient_const_pointer spl = _evolver->splittingGenerator();
+  if (   !spl->isISRadiationON(ShowerIndex::QCD) && !spl->isFSRadiationON(ShowerIndex::QCD)
+      && !spl->isISRadiationON(ShowerIndex::QED) && !spl->isFSRadiationON(ShowerIndex::QED)
+      && !spl->isISRadiationON(ShowerIndex::EWK) && !spl->isFSRadiationON(ShowerIndex::EWK))
+    {
+      return;
+    }
+
   tEHPtr ch = eventHandler();
 
   //Particle::PrintParticles(cout, ch->currentStep()->particles().begin(),
@@ -395,7 +404,7 @@ void ShowerHandler::cascade() {
 
       // Do the final kinematics reconstruction
       bool recons = _evolver->reconstructKinematics(ch);
-
+      //      cerr << "Count failures: " << countFailures << " " << recons << endl;
       // set true anyway for test purposes...
       // recons = true;
 
@@ -429,6 +438,7 @@ void ShowerHandler::cascade() {
   
   // if loop exited because of too many tries, throw event away
   if (countFailures >= maxNumFailures) {
+    //    cerr << *generator()->currentEvent();
     throw Exception() << "Too many tries for main while loop "
 		      << "in ShowerHandler::cascade()." 
 		      << Exception::eventerror; 	

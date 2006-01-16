@@ -41,17 +41,31 @@ set theShowerAlphaQCD:ScaleFactor 1.0
 set theShowerAlphaQED:ScaleFactor 1.0
 set theShowerAlphaQCD:NPAlphaS 2
 set theShowerAlphaQCD:Qmin 0.630882*GeV
+#
+#############################################################
+# read this as a 2x3 matrix with FSR/ISR being the rows 
+# and QCD/QED/EWK as columns
+#
+# these switch a whole column on and off
 set theSplittingGenerator:OnOffQCDinteractionMode 1
 set theSplittingGenerator:OnOffQEDinteractionMode 0
 set theSplittingGenerator:OnOffEWKinteractionMode 0
-set theSplittingGenerator:OnOffISRMode 1
+
+# these switch a whole row on and off
+set theSplittingGenerator:OnOffISRMode 0
+set theSplittingGenerator:OnOffFSRMode 1
+
+# these switches are for each entry individually
+# if their column or row is 0, they are not looked at
 set theSplittingGenerator:OnOffISR_QCDMode 1
-set theSplittingGenerator:OnOffISR_QEDMode 0
-set theSplittingGenerator:OnOffISR_EWKMode 0
-set theSplittingGenerator:OnOffFSRMode 0
+set theSplittingGenerator:OnOffISR_QEDMode 1
+set theSplittingGenerator:OnOffISR_EWKMode 1
+
 set theSplittingGenerator:OnOffFSR_QCDMode 1
-set theSplittingGenerator:OnOffFSR_QEDMode 0
-set theSplittingGenerator:OnOffFSR_EWKMode 0
+set theSplittingGenerator:OnOffFSR_QEDMode 1
+set theSplittingGenerator:OnOffFSR_EWKMode 1
+#
+###########################################################
 #
 # Lets set up all the splittings
 create Herwig++::QtoQGSplitFn theQtoQGSplitFn
