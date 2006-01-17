@@ -145,7 +145,6 @@ reconstructHardISJets(const MapShower &hardJets)
       generator()->log() << "  computing initial DY kinematics..." << endl;
     }
 
-    //assert(p_in.size()>=2 && pq.size()>=2);
     double x1 = p_in[0].z()/pq[0].z();
     double x2 = p_in[1].z()/pq[1].z();
 
@@ -709,25 +708,19 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
    * If any of the above methods fails, throw an Exception. 
    *******/ 
 
-  // collection of pointers to initial hard particle and jet momenta
-  // for final boosts
-  // CVecMomentaPtr jetsMomentaPtr; 
-  //  VecMomenta initialMomenta; 
-  Lorentz5Momentum p_cm = Lorentz5Momentum(); 
-  JetKinVect jetKinematics;
-  Lorentz5Momentum dum = Lorentz5Momentum();
-  bool gottaBoost = false; 
   // only for debugging:
   Energy sum_qi = Energy(); 
 
   // find out whether we're in cm or not:
   MapShower::const_iterator cit;
+  Lorentz5Momentum p_cm = Lorentz5Momentum(); 
   for(cit = hardJets.begin(); cit != hardJets.end(); ++cit) {
-    p_cm += cit->first->momentum(); 
+    if (cit->first->isFinalState()) // avoids double counting if ISR and FSR are on
+      p_cm += cit->first->momentum(); 
   }
 
   Vector3 beta_cm = p_cm.findBoostToCM();
-  if(beta_cm.mag() > 1e-12) gottaBoost = true;   
+  bool gottaBoost = (beta_cm.mag() > 1e-12);
 
   if(HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower) {
     generator()->log() << "  p_cm = " << p_cm
@@ -737,15 +730,15 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
   }
 
   bool atLeastOnce = false;
-
+  // collection of pointers to initial hard particle and jet momenta
+  // for final boosts
+  JetKinVect jetKinematics; 
   for(cit = hardJets.begin(); cit != hardJets.end(); cit++) {
     if(cit->first->isFinalState()) {
       JetKinStruct tempJetKin;      
       tempJetKin.parent = cit->first; 
       tempJetKin.p = cit->first->momentum();
-
       if(gottaBoost) tempJetKin.p.boost(beta_cm); 
-      //atLeastOnce = (reconstructTimeLikeJet(cit->first) || atLeastOnce); 
       atLeastOnce |= reconstructTimeLikeJet(cit->first);
       tempJetKin.q = cit->first->momentum();       
       jetKinematics.push_back(tempJetKin);  
@@ -771,7 +764,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
       }
     }
   }
- 
+
   double k = 0.0; 
   if(atLeastOnce) {
     k = solveKfactor(p_cm.mag(), jetKinematics);
@@ -826,7 +819,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 // 		       << " ===> END DEBUGGING <=== " << endl;
   }
 
-  return true;
+  //  return true;
   if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Shower) {
     generator()->log() << ", p_cm = " << p_cm << endl;
     for ( JetKinVect::const_iterator it = jetKinematics.begin();
@@ -853,7 +846,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 			 << endl;
     }
   }
-
+  
   return true; 
 }
 
@@ -1306,6 +1299,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
 
 LorentzRotation KinematicsReconstructor::
 solveBoost( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentum & oldp ) {
+  assert(k > 0.0 && k <= 1.0);
   
   Energy q = newq.vect().mag(); 
   Energy2 qs = sqr(q); 

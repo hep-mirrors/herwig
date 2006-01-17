@@ -404,10 +404,6 @@ void ShowerHandler::cascade() {
 
       // Do the final kinematics reconstruction
       bool recons = _evolver->reconstructKinematics(ch);
-      //      cerr << "Count failures: " << countFailures << " " << recons << endl;
-      // set true anyway for test purposes...
-      // recons = true;
-
 
       // Fill the positions information for all the ShowerParticle
       // objects in _particles. It is done at this stage in order to
@@ -438,7 +434,6 @@ void ShowerHandler::cascade() {
   
   // if loop exited because of too many tries, throw event away
   if (countFailures >= maxNumFailures) {
-    //    cerr << *generator()->currentEvent();
     throw Exception() << "Too many tries for main while loop "
 		      << "in ShowerHandler::cascade()." 
 		      << Exception::eventerror; 	
@@ -457,7 +452,6 @@ void ShowerHandler::cascade() {
 			 << " ===> END DEBUGGING <=== "
 			 << endl;
   }
-//  cerr << *(ch->currentStep()) << endl;
 }
 
 void ShowerHandler::
@@ -651,7 +645,7 @@ void ShowerHandler::fillEventRecord(const tEHPtr ch) {
   // the transformation from ShowerColourLine objects into ThePEG
   // ColourLine ones; and finally then write them in the Event Record     
   StepPtr pstep = ch->newStep(); 
-  //pstep = ch->currentStep(); 
+
   ShowerParticleVector::iterator it;
   bool isFSROn = _evolver->splittingGenerator()->isFSRadiationON();
   bool isISROn = _evolver->splittingGenerator()->isISRadiationON();

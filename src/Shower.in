@@ -52,8 +52,8 @@ set theSplittingGenerator:OnOffQEDinteractionMode 0
 set theSplittingGenerator:OnOffEWKinteractionMode 0
 
 # these switch a whole row on and off
-set theSplittingGenerator:OnOffISRMode 0
-set theSplittingGenerator:OnOffFSRMode 1
+set theSplittingGenerator:OnOffISRMode 1
+set theSplittingGenerator:OnOffFSRMode 0
 
 # these switches are for each entry individually
 # if their column or row is 0, they are not looked at

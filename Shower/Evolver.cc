@@ -307,21 +307,23 @@ bool Evolver::reconstructISKinematics( tEHPtr & ch )
 
 
 bool Evolver::reconstructKinematics( tEHPtr & ch ) 
-  throw (Veto, Stop, Exception) {
-
+  throw (Veto, Stop, Exception) 
+{
   for(MapShowerVector::iterator it = _mapShowerDecayJets.begin();
-	it != _mapShowerDecayJets.end(); ++it ) {    
+      it != _mapShowerDecayJets.end(); ++it ) {    
     bool recoNeeded = false;
     for ( MapShower::const_iterator citer = (*it).begin();
-	    citer != (*it).end(); ++citer ) {
-	if ( citer->second ) recoNeeded = true;
+	  citer != (*it).end(); ++citer ) {
+      if ( citer->second ) recoNeeded = true;
     }
     if ( recoNeeded ) {
-	_kinematicsReconstructor->reconstructDecayJets( *it );
- 	setDoneMapShower( *it );
+      _kinematicsReconstructor->reconstructDecayJets( *it );
+      setDoneMapShower( *it );
     }
   }
   PPair beamHadrons = ch->currentCollision()->incoming();
+  //  cerr << "mapshowerhardjets.size() " << _mapShowerHardJets.size() << '\n';
+
   bool ok = _kinematicsReconstructor->
     reconstructHardJets( _mapShowerHardJets,
 			 beamHadrons.first->momentum(),
