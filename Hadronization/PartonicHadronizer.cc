@@ -308,7 +308,7 @@ bool PartonicHadronizer::hadronicCluster(tPPtr part)
       unsigned int nclu(0);
       for(unsigned int ix=0;ix<part->children().size();++ix)
 	{if(part->children()[ix]->id()==81){++nclu;}}
-      if(nclu==part->children().size()) return false;
+      if(nclu==part->children().size()&&nclu!=1) return false;
       else return true;
     }
   else{return false;}
