@@ -1,13 +1,17 @@
 pkglib_LTLIBRARIES = 
 
 if WANT_LIBAMEGIC
-pkglib_LTLIBRARIES += libHwAmegic.la 
+pkglib_LTLIBRARIES += HwAmegic.la 
 endif
 
 if WANT_LIBKTJET
-pkglib_LTLIBRARIES += libHwKtJet.la
+AM_CPPFLAGS+= -I$(KTJETPATH)
+pkglib_LTLIBRARIES += HwKtJet.la
 endif
 
-libHwAmegic_la_SOURCES = AmegicInterface.cc  AmegicInterface.icc \
+HwAmegic_la_SOURCES = AmegicInterface.cc  AmegicInterface.icc \
 		AmegicInterface.h
-libHwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
+HwAmegic_la_LDFLAGS = -module
+
+HwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
+HwKtJet_la_LDFLAGS = -module
