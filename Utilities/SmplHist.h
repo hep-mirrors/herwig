@@ -45,7 +45,7 @@ protected:
 
 public:
     
-  SampleHistogram(double low, double hi, double bucketWidth = -1.0);
+  SampleHistogram(double low=0., double h=0., double bucketWidth = -1.0);
   SampleHistogram(double loVals[], int size);
   ~SampleHistogram();
   
