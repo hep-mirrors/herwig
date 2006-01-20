@@ -157,8 +157,17 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 	      for(unsigned int ix=0;ix<clusters.size();++ix)
 		{
 		  for(unsigned int iy=0;iy<clusters[ix]->children().size();++iy)
-		    {if(clusters[ix]->children()[iy]->id()!=81)
-			{pstep->removeParticle(clusters[ix]->children()[iy]);}}
+		    {
+		      tPPtr ptemp=clusters[ix]->children()[iy];
+		      // remove parents which are free quarks
+		      for(unsigned int iz=0;iz<ptemp->parents().size();++iz)
+			{if(ptemp->parents()[iz]->coloured()&&
+			     ptemp->parents()[iz]->parents().empty())
+			    {pstep->removeParticle(ptemp->parents()[iz]);}}
+		      // remove children which aren't clusters
+		      if(ptemp->id()!=81){pstep->removeParticle(ptemp);}
+
+		    }
 		}
 	    }
 	}
@@ -168,8 +177,15 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 	  for(unsigned int ix=0;ix<clusters.size();++ix)
 	    {
 	      for(unsigned int iy=0;iy<clusters[ix]->children().size();++iy)
-		{if(clusters[ix]->children()[iy]->id()!=81)
-		    {pstep->removeParticle(clusters[ix]->children()[iy]);}}
+		{
+		  tPPtr ptemp=clusters[ix]->children()[iy];
+		  // remove parents which are free quarks
+		  for(unsigned int iz=0;iz<ptemp->parents().size();++iz)
+		    {if(ptemp->parents()[iz]->coloured()&&
+			ptemp->parents()[iz]->parents().empty())
+			{pstep->removeParticle(ptemp->parents()[iz]);}}
+		  if(ptemp->id()!=81){pstep->removeParticle(ptemp);}
+		}
 	    }
 	  // remove the children of the tagged particles
 	  for(unsigned int ix=0;ix<tagged.size();++ix)
@@ -189,32 +205,17 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
 	  // check if vetoing the hadronization
 	  if(partonicveto)
 	    {
-	      // special for the motherless quarks
-	      for(unsigned int ix=0;ix<pclusters.size();++ix)
-		{
-		  for(unsigned int iy=0;iy<pclusters[ix]->parents().size();++iy)
-		    {
-		      if(pclusters[ix]->parents()[iy]->coloured()&&
-			 pclusters[ix]->parents()[iy]->parents().empty())
-			{pstep->removeParticle(pclusters[ix]->parents()[iy]);}
-		    }
-		}
+	      // find the motherless quarks
+	      ParticleVector quarks;
 	      for(unsigned int ix=0;ix<outhad.size();++ix)
-		{
-		  for(unsigned int iy=0;iy<outhad[ix]->parents().size();++iy)
-		    {
-		      if(outhad[ix]->parents()[iy]->coloured()&&
-			 outhad[ix]->parents()[iy]->parents().empty())
-			{pstep->removeParticle(outhad[ix]->parents()[iy]);}
-		    }
-		}
-
-
-
+		{removeQuarks(outhad[ix],quarks);}
 	      // remove the children of the tagged particles
 	      for(unsigned int ix=0;ix<tagged.size();++ix)
 		{for(int iy=tagged[ix]->children().size()-1;iy>=0;--iy)
 		    {pstep->removeParticle(tagged[ix]->children()[iy]);}}
+	      // remove motherless quarks
+	      for(unsigned int ix=0;ix<quarks.size();++ix)
+		{pstep->removeParticle(quarks[ix]);}
 	    }
 	}
       // increment counter
@@ -224,28 +225,16 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
   // remove the intermediate particles added by the cluster model if needed
   if(!_inter&&!partonicveto)
     {
-      // special for the motherless quarks
-      for(unsigned int ix=0;ix<pclusters.size();++ix)
-	{
-	  for(unsigned int iy=0;iy<pclusters[ix]->parents().size();++iy)
-	    {
-	      if(pclusters[ix]->parents()[iy]->coloured()&&
-		 pclusters[ix]->parents()[iy]->parents().empty())
-		{pstep->removeParticle(pclusters[ix]->parents()[iy]);}
-	    }
-	}
+      // find the motherless quarks
+      ParticleVector quarks;
       for(unsigned int ix=0;ix<outhad.size();++ix)
-	{
-	  for(unsigned int iy=0;iy<outhad[ix]->parents().size();++iy)
-	    {
-	      if(outhad[ix]->parents()[iy]->coloured()&&
-		 outhad[ix]->parents()[iy]->parents().empty())
-		{pstep->removeParticle(outhad[ix]->parents()[iy]);}
-	    }
-	}
+	{removeQuarks(outhad[ix],quarks);}
       // remove the tagged particles
       for(unsigned int ix=0;ix<tagged.size();++ix)
 	{pstep->removeParticle(tagged[ix]);}
+      // remove motherless quarks
+      for(unsigned int ix=0;ix<quarks.size();++ix)
+	{pstep->removeParticle(quarks[ix]);}
       // add the outgoing hadrons as the children of the decaying particle
       for(unsigned int ix=0;ix<outhad.size();++ix)
 	{pstep->addDecayProduct(parent,outhad[ix]);}
@@ -357,4 +346,17 @@ bool PartonicHadronizer::duplicateMode(tPPtr parent,vector<tcPPtr> & clusters,
   return found;
 }
 
+void PartonicHadronizer::removeQuarks(tPPtr outhad,ParticleVector & quarks)
+{
+  tPVector parents=outhad->parents();
+  while(!parents.empty())
+    {
+      PPtr part=parents.back();
+      parents.pop_back();
+      if(part->coloured()&&part->parents().empty())
+	{quarks.push_back(part);}
+      else if(part->id()==81)                      
+	{removeQuarks(part,quarks);}
+    }
+}
 }

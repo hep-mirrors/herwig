@@ -226,6 +226,13 @@ private:
    * @return Whether or not there are duplicate modes.
    */
   bool duplicateMode(tPPtr parent,vector<tcPPtr> & clusters,vector<tPPtr> & hadrons);
+
+  /**
+   *  Remove quarks from cluster splitting from the event record
+   * @param outhad Outgoing hadron
+   * @param quarks The quarks to be removed
+   */
+  void removeQuarks(tPPtr outhad,ParticleVector & quarks);
   //@}
 
 private:
