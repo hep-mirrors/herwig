@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EvtShapes class.
+//
+#ifndef HERWIG_EvtShapes_FH
+#define HERWIG_EvtShapes_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class EvtShapes;
+
+}
+
+#endif

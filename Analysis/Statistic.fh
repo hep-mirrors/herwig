@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Statistic class.
+//
+#ifndef HERWIG_Statistic_FH
+#define HERWIG_Statistic_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class Statistic;
+ThePEG_DECLARE_POINTERS(Statistic,StatisticPtr);
+
+}
+
+#endif

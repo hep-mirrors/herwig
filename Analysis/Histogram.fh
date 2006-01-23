@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Histogram class.
+//
+#ifndef HERWIG_Histogram_FH
+#define HERWIG_Histogram_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class Histogram;
+ThePEG_DECLARE_POINTERS(Histogram,HistogramPtr);
+
+}
+
+#endif

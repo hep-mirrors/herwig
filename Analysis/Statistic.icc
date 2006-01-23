@@ -1,0 +1,103 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Statistic class.
+//
+
+namespace Herwig {
+
+inline Statistic::Statistic() 
+  : _n(0), _xsum(0.),_x2sum(0.),_min(-1e100),_max(1e100)
+{}
+
+inline Statistic::Statistic(const Statistic & x)
+  : Interfaced(x), _n(x._n), _xsum(x._xsum), _x2sum(x._x2sum), 
+    _min(x._min), _max(x._max) 
+{} 
+
+inline IBPtr Statistic::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr Statistic::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void Statistic::doupdate() throw(UpdateException) {
+  Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void Statistic::doinit() throw(InitException) {
+  Interfaced::doinit();
+}
+
+inline void Statistic::dofinish() {
+  Interfaced::dofinish();
+}
+
+inline void Statistic::doinitrun() {
+  Interfaced::doinitrun();
+}
+
+inline void Statistic::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Interfaced::rebind(trans);
+}
+
+inline IVector Statistic::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+inline double Statistic::minimum() { return _min;}
+
+inline double Statistic::maximum() { return _max;}
+
+inline void Statistic::operator+=(double input)
+{
+  _n += 1;
+  _xsum += input;
+  _x2sum += sqr(input);
+  if (_min>input) _min = input;
+  if (_max<input) _max = input;
+}
+
+inline unsigned int Statistic::numberOfPoints() {return _n;}
+
+inline double Statistic::mean()
+{
+  if (_n>0) return _xsum/_n;
+  else return 0.;
+}
+
+inline double Statistic::var()
+{
+  if (_n>1) return (_x2sum-sqr(_xsum)/_n)/(_n-1);
+  else return 0.;
+}
+
+inline double Statistic::stdDev()
+{
+  if (_n==0||var()==0.) return 0.;
+  else return sqrt(var());
+}
+
+inline double Statistic::total()
+{return _xsum;}
+}
