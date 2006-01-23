@@ -149,7 +149,7 @@ inline void BaryonThreeQuarkModelFormFactor::SN(double y, int N, double & SNm2,
 	  SNm2=SN;
 	  ix+=2;
 	  root*=(3.+4.*y)/(1.+y);
-	  SN=1./(float(ix)-1.)*(root+(float(ix)-2.)*(y+3.)*SNm2);
+	  SN=1.0/(ix-1.0)*(root+(ix-2.0)*(y+3.)*SNm2);
 	}
       while(ix<N);
     }
@@ -164,7 +164,7 @@ inline double BaryonThreeQuarkModelFormFactor::integrandC(double x)
   // the integrals
   double I,Im2;
   SN(y,_N,Im2,I);
-  double Nfact=0.5*float(_N)+1.;
+  double Nfact=0.5*_N+1.0;
   output *= (_a+Nfact/24./(1.+y))*I+1./12./(1.+y)*(_b-Nfact)*Im2;
   return output;
 }

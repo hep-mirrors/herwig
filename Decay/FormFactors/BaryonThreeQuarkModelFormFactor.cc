@@ -38,7 +38,7 @@ void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
 	  for(ix=0;ix<=_order;++ix)
 	    {
 	      if(ix>0){gamma1*=ix;}
-	      if(ix%2==1){gamma2*=float((ix+1)/2);gamma3*=float(ix)/2.;}
+	      if(ix%2==1){gamma2*=(ix+1)/2.0;gamma3*=ix/2.0;}
 	      if(ix%2==0){pre=pow(root,ix)/12.*gamma2/gamma1;}
 	      else{pre=pow(root,ix)/12.*gamma3/gamma1;}
 	      // for the xi_0 function
