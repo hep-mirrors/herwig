@@ -1,5 +1,10 @@
 2006-01-23  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
+	* Analysis/*: Added more simple analysis handlers for multiplicity
+	checking and general consistency.
+
+	* src/Hadronization.in: reset s-quark weight to 1.0
+
 	* PDF/MRST.cc: Added GeV2 to fix wrong PDF behaviour
 
 2006-01-06  Pete's account  <Peter.Richardson@durham.ac.uk>

@@ -1,0 +1,6 @@
+mkdir /Defaults/Handlers/Analysis
+create Herwig++::BasicConsistency /Defaults/Handlers/Analysis/Basics HwAnalysis.so
+create Herwig++::MultiplicityCount /Defaults/Handlers/Analysis/Multiplicity HwAnalysis.so
+#
+insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
+insert LEPGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/Multiplicity

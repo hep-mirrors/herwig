@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[2.0-alpha1],[http://www.hep.phy.cam.ac.uk/theory/Herwig++/],[Herwig++])
+AC_INIT([Herwig++],[2.0-alpha2],[http://www.hep.phy.cam.ac.uk/theory/Herwig++/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
 
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5.h])
@@ -112,5 +112,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		include/Makefile
 		src/Makefile
 		Looptools/Makefile
+		Analysis/Makefile
+		Analysis/Makefile-shared
 		Makefile])
 AC_OUTPUT

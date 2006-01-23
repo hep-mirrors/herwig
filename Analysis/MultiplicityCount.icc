@@ -1,0 +1,153 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MultiplicityCount class.
+//
+
+namespace Herwig {
+
+  inline MultiplicityInfo::MultiplicityInfo(double inmult,double inerror,ParticleSpecies intype)
+    : mult(inmult), error(inerror), type(intype), 
+      actualCount(0), sumofsquares(0.0)
+  {}
+  
+  inline double MultiplicityInfo::mean(double N) {
+    return actualCount / N;
+  }
+  
+  inline double MultiplicityInfo::stderror(double N) {
+    return sqrt( (sumofsquares / N  -  sqr(mean(N))) / N );
+  }
+
+  inline bool MultiplicityInfo::serious(double N) {
+    return (abs(mean(N)-mult) > 3.0*error);
+  }
+
+
+inline MultiplicityCount::MultiplicityCount() 
+{
+  _data[0]   = MultiplicityInfo(20.924,0.117,lightMeson);
+  _data[22]  = MultiplicityInfo(21.27, 0.60,lightMeson);
+  _data[111] = MultiplicityInfo(9.59,0.33,lightMeson);
+  _data[113] = MultiplicityInfo(1.295,0.125,lightMeson);
+  _data[211] = MultiplicityInfo(17.04,0.25,lightMeson);
+  _data[213] = MultiplicityInfo(2.40,0.43,lightMeson);
+  _data[221] = MultiplicityInfo(0.956,0.049,lightMeson);
+  _data[223] = MultiplicityInfo(1.083,0.088,lightMeson);
+  _data[225] = MultiplicityInfo(0.168,0.021,other);
+  _data[311] = MultiplicityInfo(2.027,0.025,lightMeson);
+  _data[313] = MultiplicityInfo(0.761,0.032,strangeMeson);
+  _data[315] = MultiplicityInfo(0.106,0.060,strangeMeson);
+  _data[321] = MultiplicityInfo(2.319,0.079,strangeMeson);
+  _data[323] = MultiplicityInfo(0.731,0.058,strangeMeson);
+  _data[331] = MultiplicityInfo(0.152,0.030,lightMeson);
+  _data[333] = MultiplicityInfo(0.097,0.007,strangeMeson);
+  _data[335] = MultiplicityInfo(0.020,0.008,other);
+  _data[411] = MultiplicityInfo(0.184,0.018,other);
+  _data[413] = MultiplicityInfo(0.182,0.009,other);
+  _data[421] = MultiplicityInfo(0.473,0.026,other);
+  _data[431] = MultiplicityInfo(0.129,0.013,other);
+  _data[433] = MultiplicityInfo(0.096,0.046,other);
+  _data[443] = MultiplicityInfo(0.00544,0.00029,other);
+  _data[2212] = MultiplicityInfo(0.991,0.054,lightBaryon);
+  _data[2112] = MultiplicityInfo(0.991,0.054,lightBaryon);
+  _data[2224] = MultiplicityInfo(0.088,0.034,lightBaryon);
+  _data[2214] = MultiplicityInfo(0.000,0.000,lightBaryon);
+  _data[2114] = MultiplicityInfo(0.000,0.000,lightBaryon);
+  _data[3112] = MultiplicityInfo(0.083,0.011,lightBaryon);
+  _data[3122] = MultiplicityInfo(0.373,0.008,lightBaryon);
+  _data[3212] = MultiplicityInfo(0.074,0.009,lightBaryon);
+  _data[3222] = MultiplicityInfo(0.099,0.015,lightBaryon);
+  _data[3224] = MultiplicityInfo(0.0471,0.0046,lightBaryon);
+  _data[3312] = MultiplicityInfo(0.0262,0.0010,lightBaryon);
+  _data[3324] = MultiplicityInfo(0.0058,0.0010,lightBaryon);
+  _data[3334] = MultiplicityInfo(0.00125,0.00024,lightBaryon);
+  _data[4122] = MultiplicityInfo(0.077,0.016,other);
+  _data[100443 ] = MultiplicityInfo(0.00229,0.00041,other);
+  _data[9000211] = MultiplicityInfo(0.27,0.11,other);
+  _data[10221  ] = MultiplicityInfo(0.142,0.011,other);
+}
+
+inline MultiplicityCount::MultiplicityCount(const MultiplicityCount & x)
+  : AnalysisHandler(x) {}
+
+inline IBPtr MultiplicityCount::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MultiplicityCount::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MultiplicityCount::doupdate() throw(UpdateException) {
+  AnalysisHandler::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void MultiplicityCount::doinit() throw(InitException) {
+  AnalysisHandler::doinit();
+}
+
+inline void MultiplicityCount::dofinish() {
+  AnalysisHandler::dofinish();
+  cerr << "\nFinal state particle count:\n";
+  for (map<long,long>::const_iterator it = _finalstatecount.begin();
+       it != _finalstatecount.end(); ++ it) {
+    string name = generator()->getParticleData(it->first)->PDGName();
+    cerr << name << '\t' << it->second << '\n';
+}
+
+  cerr << "\nParticle multiplicities:\n";
+  for (map<long,MultiplicityInfo>::const_iterator it = _data.begin();
+       it != _data.end();
+       ++it) {
+    MultiplicityInfo multiplicity = it->second;
+
+    string name = (it->first==0 ? "All charged" : generator()->getParticleData(it->first)->PDGName() );
+
+    double N = generator()->currentEventNumber();
+    
+    cerr << it->first << " \t" << name << '\t' << ' ' << multiplicity.actualCount << '\t'
+	 << multiplicity.mean(N) << ' ' 
+	 << multiplicity.stderror(N) << " === " 
+	 << multiplicity.mult << ' ' 
+	 << multiplicity.error << " === ";
+    if (multiplicity.serious(N)) 
+      cerr << "!!!";
+    cerr << '\n';
+
+  }
+
+
+}
+
+inline void MultiplicityCount::doinitrun() {
+  AnalysisHandler::doinitrun();
+}
+
+inline void MultiplicityCount::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  AnalysisHandler::rebind(trans);
+}
+
+inline IVector MultiplicityCount::getReferences() {
+  IVector ret = AnalysisHandler::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

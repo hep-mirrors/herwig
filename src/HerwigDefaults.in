@@ -189,8 +189,6 @@ set LHCGenerator:EventHandler:Cuts QCDCuts
 # This will read in all the standard hadron decay modes and add
 # the new particles that are used in HERWIG 6.4, but not in ThePEG
 read Decays.in
-#
 
-#cd /
-
-
+# uncomment to include some default analysis handlers
+#read Analysis.in

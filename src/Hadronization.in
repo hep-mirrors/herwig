@@ -52,7 +52,7 @@ set theClusterDecayer:ClSmr1 0.0
 set theClusterDecayer:ClSmr2 0.0
 set theHadronSelector:PwtDquark  1.0
 set theHadronSelector:PwtUquark  1.0
-set theHadronSelector:PwtSquark  0.85
+set theHadronSelector:PwtSquark  1.0
 set theHadronSelector:PwtCquark  1.0
 set theHadronSelector:PwtBquark  1.0
 set theHadronSelector:PwtDIquark 0.55
