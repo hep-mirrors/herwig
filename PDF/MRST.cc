@@ -64,8 +64,7 @@ double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
   // incoming particle is not used).
   // Must de-constify this. Don't know why this function is const, seems 
   // logical to change internal structure...
-  MRST * unconst = const_cast<MRST*>(this);
-  unconst->update(x, partonScale);
+  update(x, partonScale/GeV2);
   //if ( S() < 0.0 ) return 0.0;
   bool anti = particle->id() < 0;
   bool neutron = abs(particle->id()) == ParticleID::n0;
@@ -108,8 +107,7 @@ double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
   // Return the valaens part of the density of parton at the given a
   // scale and fractional momentum x (the optional virtuality of
   // the incoming particle is not used).
-  MRST* unconst = const_cast<MRST*>(this);
-  unconst->update(x, partonScale);
+  update(x, partonScale/GeV2);
   //if ( S() < 0.0 ) return 0.0;
   bool anti = particle->id() < 0;
   bool neutron = abs(particle->id()) == ParticleID::n0;
@@ -130,7 +128,7 @@ double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
   return 0.0;
 }
 
-int MRST::locate(double xx[],int n,double x) {
+int MRST::locate(double xx[],int n,double x) const {
   // returns an integer j such that x lies inbetween xx[j] and xx[j+1]. unit
   // offset of increasing ordered array xx assumed. n is the length of the
   // array (xx[n] highest element)
@@ -477,7 +475,7 @@ void MRST::initialize(bool reread) {
   } // i
 }
 
-void MRST::update(double x, double q2) {
+void MRST::update(double x, double q2) const {
   // Updates the parton content 
   double qsq;
   double xxx;

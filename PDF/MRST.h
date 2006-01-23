@@ -140,18 +140,18 @@ private:
   static double xx[nx+1];
   static double qq[nq+1];
   double c[np+1][nx][nq][5][5]; //coefficients used for interpolation
-  double table[np+1]; // The values for each parton at a given scale
+  mutable double table[np+1]; // The values for each parton at a given scale
 
   enum { upValence = 1, dnValence, glu, upSea, chm, str, bot, dnSea };
 	 
-  int locate(double xx[],int n,double x);
+  int locate(double xx[],int n,double x) const;
   double polderivative(double x1, double x2, double x3,
 		       double y1, double y2, double y3);
 
   /**
    * This function calculates the values for the given x and q
    */
-  void update(double x, double q);
+  void update(double x, double q) const;
 };
 
 }
