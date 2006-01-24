@@ -1,3 +1,4 @@
+// -*- C++ -*-
 #ifndef HERWIG_MRST_H
 #define HERWIG_MRST_H
 
@@ -6,32 +7,24 @@
 #include <fstream>
 #include <string>
 #include <math.h>
-#include "MRSTData.h"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-static const int np=8;
-static const int nx=49;
-static const int nq=37;
-static const int nqc0=2; // Charm not introduced before 2nd bin in q^2
-static const int nqb0=11; // Bottom not introduced before 11th bin in q^2
-static const double xmin=1E-5;
-static const double xmax=1.0;
-static const double qsqmin=1.25;
-static const double qsqmax=1E7;
-static const double mc2=2.045;
-static const double mb2=18.5;
-
-typedef Ptr<MRSTData>::pointer MRSTDatPtr;
-
 /** \ingroup PDF
  *
- *  Some comment should be provided!
+ *  Implementation of the MRST PDFs
+ *
+ * @see \ref MRSTInterfaces "The interfaces"
+ * defined for MRST.
  */
 class MRST : public PDFBase {
- 
+  /**
+   *  Enumeration to storage the types of partons
+   */
+  enum PDFFlavour { upValence = 1, dnValence, glu, upSea, chm, str, bot, dnSea };
+
 public:
 
   /** @name Standard constructors and destructors. */
@@ -51,107 +44,326 @@ public:
    */
   virtual ~MRST();
   //@}
+ 
+public:
 
-
+  /** @name Virtual functions from PDFBase */
+  //@{
   /**
    * Return true if this PDF can handle the extraction of parton from the
    * given particle ie. if the particle is a proton or neutron.
+   * @param particle The particle
    */
   virtual bool canHandleParticle(tcPDPtr particle) const;
 
   /**
    * Return the parton types which are described by these parton
    * densities.
+   * @param p The particle
    */
   virtual cPDVector partons(tcPDPtr p) const;
 
   /**
-   * Return the true pdf for the given parameters, with the momentum
-   * fraction given as l=log(1/x) and simply x respectively.
+   * Return x times the pdf for the given parameters, with the momentum
+   * fraction given as l=log(1/x).
+   * @param particle The beam particle
+   * @param parton The parton for which to return the PDF.
+   * @param partonScale The scale at which to evaluate the PDF.
+   * @param l \f$\log\left(\frac1x\right)\f$
+   * @param particleScale The scale for the particle
    */
   virtual double xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double l, Energy2 particleScale = 0.0*GeV2) const;
 
   /**
-   * 
+   * Return x times the pdf for the given parameters
+   * @param particle The beam particle
+   * @param parton The parton for which to return the PDF.
+   * @param partonScale The scale at which to evaluate the PDF.
+   * @param x The momentum fraction
+   * @param eps ??? an unknown parameter from ThePEG.
+   * @param particleScale The scale for the particle
    */
   virtual double xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double x, double eps = 0.0,
                      Energy2 particleScale = 0.0*GeV2) const;
 
+  /**
+   * Return x times the valence pdf for the given parameters, with the momentum
+   * fraction given as l=log(1/x).
+   * @param particle The beam particle
+   * @param parton The parton for which to return the PDF.
+   * @param partonScale The scale at which to evaluate the PDF.
+   * @param l \f$\log\left(\frac1x\right)\f$
+   * @param particleScale The scale for the particle
+   */
   virtual double xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                      double l, Energy2 particleScale = 0.0*GeV2) const;
+
+  /**
+   * Return x times the valence pdf for the given parameters
+   * @param particle The beam particle
+   * @param parton The parton for which to return the PDF.
+   * @param partonScale The scale at which to evaluate the PDF.
+   * @param x The momentum fraction
+   * @param eps ??? an unknown parameter from ThePEG.
+   * @param particleScale The scale for the particle
+   */
   virtual double xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                       double x, double eps = 0.0,
                       Energy2 particleScale = 0.0*GeV2) const;
+  //@}
 
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
 
   /**
-   * Standard Init function used to initialize the interface.
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
    */
   static void Init();
-  
-  virtual IBPtr clone() const;
-  virtual IBPtr fullclone() const;
 
- protected:
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
 
   /**
-   * Standard Interfaced virtual functions.
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
    */
-  virtual void doupdate() throw(UpdateException);
-  virtual void doinit() throw(InitException);
-  //virtual void doinitrun();
-  virtual void dofinish();
+  inline virtual void doinit() throw(InitException);
 
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
    */
-  virtual void rebind(const TranslationMap & trans) throw(RebindException);
+  virtual void doinitrun();
 
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
    */
-  virtual IVector getReferences();
+  inline virtual void dofinish();
+
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  inline virtual void rebind(const TranslationMap & trans)
+    throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  inline virtual IVector getReferences();
+  //@}
 
 private:
 
-  string _file;
-  //MRSTDatPtr dataPtr;
-
-  void initialize(bool reread = true);
-  virtual void readSetup(istream &) throw(SetupException);
-
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
   static ClassDescription<MRST> initMRST;
 
   /**
-   * Private and non-existent assignment operator.
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
    */
   MRST & operator=(const MRST &);
 
-  double data[np+1][nx+1][nq+1];
-
- private:
-  static double xx[nx+1];
-  static double qq[nq+1];
-  double c[np+1][nx][nq][5][5]; //coefficients used for interpolation
-  mutable double table[np+1]; // The values for each parton at a given scale
-
-  enum { upValence = 1, dnValence, glu, upSea, chm, str, bot, dnSea };
-	 
-  int locate(double xx[],int n,double x) const;
-  double polderivative(double x1, double x2, double x3,
-		       double y1, double y2, double y3);
+private:
 
   /**
-   * This function calculates the values for the given x and q
+   * This function interpolates the PDF value for the given 
+   * bin numbers and fractional positions inside the bin. It is a helper function for pdfValue() 
+   * 
+   * @param i The PDF flavour
+   * @param n The x bin index
+   * @param m The q^2 bin index
+   * @param u The fractional position along the current x bin
+   * @param t The fractional position along the current q^2 bin
    */
-  void update(double x, double q) const;
+  inline double lookup(PDFFlavour i, int n, int m, double u, double t) const;
+
+
+  /**
+   * This function calculates the PDF value for the given particles and a given x and q
+   * @param x The energy fraction
+   * @param q2 The scale
+   * @param particle The beam particle
+   * @param parton The parton for which to return the PDF.
+   * @param valenceOnly Switch to request valence-only PDFs
+   */
+  double pdfValue(double x, double q2, 
+		  tcPDPtr particle, tcPDPtr parton, bool valenceOnly=false) const;
+
+  /**
+   * Returns an integer j such that x lies inbetween xx[j] and xx[j+1].
+   * @param xx The x values
+   * @param n  The number of values
+   * @param x  The x value
+   */
+  inline int locate(double xx[],int n,double x) const;
+
+  /**
+   *  Return  the estimate of the derivative at \f$x_2\f$ obtained by a polynomial 
+   * interpolatio using the three points \f$(x_i,y_i)\f$
+   * @param x1 The \f$x\f$ value at the first point
+   * @param x2 The \f$x\f$ value at the second point
+   * @param x3 The \f$x\f$ value at the third point
+   * @param y1 The \f$y\f$ value at the first point
+   * @param y2 The \f$y\f$ value at the second point
+   * @param y3 The \f$y\f$ value at the third point
+   */
+  inline double polderivative(double x1, double x2, double x3,
+			      double y1, double y2, double y3) const;
+
+  /**
+   *  Read the data from the file
+   */
+  virtual void readSetup(istream &) throw(SetupException);
+
+  /**
+   *  Initialize the data
+   * @param reread Whether or not to reread the data
+   */
+  void initialize(bool reread = true);
+
+private:
+
+  /**
+   *  Parameters for the MRST data tables
+   */
+  //@{
+  /**
+   *  Number of distributions to interpolate
+   */
+  static const int np=8;
+  /**
+   *  Number of points in \f$x\f$ for the interpolation
+   */
+  static const int nx=49;
+  
+  /**
+   *  Number of points in \f$q^2\f$ for the interpolation
+   */
+  static const int nq=37;
+
+  /**
+   *  \f$q^2\f$ bin where charm introduced
+   */
+  static const int nqc0=2; 
+  
+  /**
+   *  \f$q^2\f$ bin where bottom introduced
+   */
+  static const int nqb0=11;
+  
+  /**
+   *  Minimum value of \f$x\f$
+   */
+  static const double xmin;
+
+  /**
+   *  Maximum value of \f$x\f$
+   */
+  static const double xmax;
+  
+  /**
+   *  Minimum value of \f$q^2\f$.
+   */
+  static const double qsqmin;
+  
+  /**
+   *  Maximum value of \f$q^2\f$.
+   */
+  static const double qsqmax;
+  
+  /**
+   *  Mass squared of the charm quark
+   */
+  static const double mc2;
+  
+  /**
+   *  Mass squared of the bottom quark
+   */
+  static const double mb2;
+  //@}
+
+
+
+  /**
+   *  The name of the file
+   */
+  string _file;
+
+  /**
+   *  Array containing the data to be interpolated
+   */
+  double data[np+1][nx+1][nq+1];
+
+  /**
+   *  The \f$x\f$ values for interpolation
+   */
+  static double xx[nx+1];
+
+  /**
+   *  The \f$q^2\f$ values for interpolation
+   */
+  static double qq[nq+1];
+
+  /**
+   * Coefficients used for interpolation
+   */
+  double c[np+1][nx][nq][5][5];
 };
 
 }
@@ -165,10 +377,15 @@ struct BaseClassTrait<Herwig::MRST,1> {
 
 template <>
 struct ClassTraits<Herwig::MRST>: public ClassTraitsBase<Herwig::MRST> {
-  static string className() { return "/Herwig++/PDF/MRST"; }
+  static string className() { return "Herwig++::PDF::MRST"; }
   static string library() { return "HwMRST.so"; }
 };
 
 }
+
+#include "MRST.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "MRST.tcc"
+#endif
 
 #endif

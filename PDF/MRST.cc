@@ -15,13 +15,37 @@ using namespace std;
 using namespace ThePEG;
 using namespace Herwig;
 
-MRST::MRST() {}
 
-MRST::MRST(const MRST &x) : PDFBase(x) {
-   for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)   
-      data[i][j][k] = x.data[i][j][k];
-   initialize(false);
-}//, dataPtr(x.dataPtr) {}
+/**
+ *  Minimum value of \f$x\f$
+ */
+const double MRST::xmin=1E-5;
+
+/**
+ *  Maximum value of \f$x\f$
+ */
+const double MRST::xmax=1.0;
+
+/**
+ *  Minimum value of \f$q^2\f$.
+ */
+const double MRST::qsqmin=1.25;
+
+/**
+ *  Maximum value of \f$q^2\f$.
+ */
+const double MRST::qsqmax=1E7;
+
+/**
+ *  Mass squared of the charm quark
+ */
+const double MRST::mc2=2.045;
+
+/**
+ *  Mass squared of the bottom quark
+ */
+const double MRST::mb2=18.5;
+
 
 MRST::~MRST() {}
 
@@ -30,8 +54,8 @@ ClassDescription<MRST> MRST::initMRST;
 bool MRST::canHandleParticle(tcPDPtr particle) const {
   // Return true if this PDF can handle the extraction of parton from the
   // given particle ie. if the particle is a proton or neutron.
-  return ( abs(particle->id()) == abs(long(ParticleID::pplus)) ||
-           abs(particle->id()) == abs(long(ParticleID::n0)) );
+  return ( abs(particle->id()) == ParticleID::pplus ||
+           abs(particle->id()) == ParticleID::n0 );
 }
 
 cPDVector MRST::partons(tcPDPtr p) const {
@@ -50,50 +74,13 @@ cPDVector MRST::partons(tcPDPtr p) const {
 
 double MRST::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 		 double l, Energy2 particleScale) const {
-  //cout << "Calling MRST::xfl = ";
-  double x = exp(-l);
-  double a = xfx(particle,parton,partonScale,x,0.0,particleScale);
-  //cout << a << endl;
-  return a;
+  double x(exp(-l));
+  return xfx(particle,parton,partonScale,x,0.0,particleScale);
 }
 
 double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                  double x, double eps, Energy2 particleScale) const {
-  // Return the value of the density of parton at the given a scale
-  // and fractional momentum l (the optional virtuality of the
-  // incoming particle is not used).
-  // Must de-constify this. Don't know why this function is const, seems 
-  // logical to change internal structure...
-  update(x, partonScale/GeV2);
-  //if ( S() < 0.0 ) return 0.0;
-  bool anti = particle->id() < 0;
-  bool neutron = abs(particle->id()) == ParticleID::n0;
-  switch(parton->id()) {
-  case ParticleID::b:
-  case ParticleID::bbar:
-    return table[bot];
-  case ParticleID::c:
-  case ParticleID::cbar:
-    return table[chm];
-  case ParticleID::s:
-  case ParticleID::sbar:
-    return table[str];
-  case ParticleID::u:
-    return (neutron? (table[dnSea] + (anti? 0.0: table[dnValence])) :
-	    (table[upSea] + (anti? 0.0: table[upValence])));
-  case ParticleID::ubar:
-    return (neutron? (table[dnSea] + (anti? table[dnValence]: 0.0)) :
-	       (table[upSea] + (anti? table[upValence]: 0.0)));
-  case ParticleID::d:
-    return (neutron? (table[upSea] + (anti? 0.0: table[upValence])) :
-	       (table[dnSea] + (anti? 0.0: table[dnValence])));
-  case ParticleID::dbar:
-    return (neutron? (table[upSea] + (anti? table[upValence]: 0.0)) :
-	       (table[dnSea] + (anti? table[dnValence]: 0.0)));
-  case ParticleID::g:
-    return table[glu];
-  }
-  return 0.0;
+  return pdfValue(x, partonScale/GeV2, particle, parton);
 }
 
 double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
@@ -104,66 +91,93 @@ double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 
 double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
                   double x, double eps, Energy2 particleScale) const {
-  // Return the valaens part of the density of parton at the given a
-  // scale and fractional momentum x (the optional virtuality of
-  // the incoming particle is not used).
-  update(x, partonScale/GeV2);
-  //if ( S() < 0.0 ) return 0.0;
+  return pdfValue(x, partonScale/GeV2, particle, parton, true);
+}
+
+double MRST::pdfValue(double x, double q2, tcPDPtr particle, tcPDPtr parton, bool valenceOnly) const
+{
+  // !!!! q2 in GeV^2 !!!!
+  if(x<xmin)      x=xmin;
+  else if(x>xmax) x=xmax;
+
+  if(q2<qsqmin)      q2=qsqmin;
+  else if(q2>qsqmax) q2=qsqmax;
+  
+  // interpolation is in logx, log qsq:
+  double xxx=log10(x);
+  double qsq=log10(q2);
+
+  // bin position
+  int n=locate(xx,nx,xxx);
+  int m=locate(qq,nq,qsq);
+
+  // fraction along the bin
+  double t=(xxx-xx[n])/(xx[n+1]-xx[n]);
+  double u=(qsq-qq[m])/(qq[m+1]-qq[m]);
+
   bool anti = particle->id() < 0;
   bool neutron = abs(particle->id()) == ParticleID::n0;
-  switch(parton->id()) {
-  case ParticleID::u:
-    return (neutron? (anti? 0.0: table[dnValence]): 
-	    (anti? 0.0: table[upValence]));
-  case ParticleID::ubar:
-    return (neutron? (anti? table[dnValence]: 0.0): 
-	    (anti? table[upValence]: 0.0));
-  case ParticleID::d:
-    return (neutron? (anti? 0.0: table[upValence]): 
-	    (anti? 0.0: table[dnValence]));
-  case ParticleID::dbar:
-    return (neutron? (anti? table[upValence]: 0.0): 
-	    (anti? table[dnValence]: 0.0));
+
+  if (valenceOnly) {
+    switch(parton->id()) {
+    case ParticleID::u:
+      return (neutron? 
+	      (anti? 0.0: lookup(dnValence,n,m,u,t)): 
+	      (anti? 0.0: lookup(upValence,n,m,u,t)));
+    case ParticleID::ubar:
+      return (neutron? 
+	      (anti? lookup(dnValence,n,m,u,t): 0.0): 
+	      (anti? lookup(upValence,n,m,u,t): 0.0));
+    case ParticleID::d:
+      return (neutron? 
+	      (anti? 0.0: lookup(upValence,n,m,u,t)): 
+	      (anti? 0.0: lookup(dnValence,n,m,u,t)));
+    case ParticleID::dbar:
+      return (neutron? 
+	      (anti? lookup(upValence,n,m,u,t): 0.0): 
+	      (anti? lookup(dnValence,n,m,u,t): 0.0));
+    }
+  } else {
+    switch(parton->id()) {
+    case ParticleID::b:
+    case ParticleID::bbar:
+      return lookup(bot,n,m,u,t);
+    case ParticleID::c:
+    case ParticleID::cbar:
+      return lookup(chm,n,m,u,t);
+    case ParticleID::s:
+    case ParticleID::sbar:
+      return lookup(str,n,m,u,t);
+    case ParticleID::u:
+      return (neutron? 
+	      (lookup(dnSea,n,m,u,t) + (anti? 0.0: lookup(dnValence,n,m,u,t))) :
+	      (lookup(upSea,n,m,u,t) + (anti? 0.0: lookup(upValence,n,m,u,t))));
+    case ParticleID::ubar:
+      return (neutron? 
+	      (lookup(dnSea,n,m,u,t) + (anti? lookup(dnValence,n,m,u,t): 0.0)) :
+	      (lookup(upSea,n,m,u,t) + (anti? lookup(upValence,n,m,u,t): 0.0)));
+    case ParticleID::d:
+      return (neutron? 
+	      (lookup(upSea,n,m,u,t) + (anti? 0.0: lookup(upValence,n,m,u,t))) :
+	      (lookup(dnSea,n,m,u,t) + (anti? 0.0: lookup(dnValence,n,m,u,t))));
+    case ParticleID::dbar:
+      return (neutron? 
+	      (lookup(upSea,n,m,u,t) + (anti? lookup(upValence,n,m,u,t): 0.0)) :
+	      (lookup(dnSea,n,m,u,t) + (anti? lookup(dnValence,n,m,u,t): 0.0)));
+    case ParticleID::g:
+      return lookup(glu,n,m,u,t);
+    }
   }
   return 0.0;
 }
 
-int MRST::locate(double xx[],int n,double x) const {
-  // returns an integer j such that x lies inbetween xx[j] and xx[j+1]. unit
-  // offset of increasing ordered array xx assumed. n is the length of the
-  // array (xx[n] highest element)
-  int ju,jm,jl(0),j;
-  ju=n+1;
-
-  while (ju-jl>1) {
-    jm=(ju+jl)/2; // compute a mid point.
-    if(x >= xx[jm]) jl=jm;
-    else ju=jm;
-  }
-  if(x==xx[1]) j=1;
-  else if(x==xx[n]) j=n-1;
-  else j=jl;
-
-  return j;
-}
-
-double MRST::polderivative(double x1, double x2, double x3,
-                           double y1, double y2, double y3) {
-  // returns the estimate of the derivative at x2 obtained by a polynomial 
-  // interpolation using the three points (x_i,y_i)
-  return (x3*x3*(y1-y2) - 2.0*x2*(x3*(y1-y2) + x1*(y2-y3)) +
-          x2*x2*(y1-y3) + x1*x1*(y2-y3))/((x1-x2)*(x1-x3)*(x2-x3));
-}
-
 void MRST::persistentOutput(PersistentOStream &out) const {
-  //out << dataPtr;
   out << _file;
   for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
      out << data[i][j][k];
 }
 
 void MRST::persistentInput(PersistentIStream & in, int version) {
-  //in >> dataPtr;
   in >> _file;
   for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
      in >> data[i][j][k];
@@ -172,34 +186,97 @@ void MRST::persistentInput(PersistentIStream & in, int version) {
 
 void MRST::Init() {
   static ClassDocumentation<MRST> docMRST("MRST");
-
-  /*static Reference<MRST,MRSTData> interfaceData
-    ("Data",
-     "This is the MRSTData derived class with the desired data loaded.",
-     &MRST::dataPtr, false, false, true, false);
-  */
 }
 
-void MRST::doupdate() throw(UpdateException) { PDFBase::doupdate(); }
-void MRST::doinit() throw(InitException) { 
-  PDFBase::doinit();
-  //  initialize();
-}
-//void MRST::doinitrun() { PDFBase::doinitrun(); initialize(); }
-
-void MRST::dofinish() { PDFBase::dofinish(); }
-
-void MRST::rebind(const TranslationMap & trans) throw(RebindException) {
-  PDFBase::rebind(trans);
-}
-
-IBPtr MRST::clone() const { return new_ptr(*this); }
-IBPtr MRST::fullclone() const { return clone(); }
-
-IVector MRST::getReferences() { 
-  IVector rval = PDFBase::getReferences(); 
-  //rval.push_back(dataPtr);
-  return rval;
+void MRST::doinitrun() 
+{
+  PDFBase::doinitrun();
+#ifdef MRST_TESTING
+  tPDPtr proton=getParticleData(ParticleID::pplus);
+  for(unsigned int itype=0;itype<8;++itype)
+    {
+      tPDPtr parton;
+      string name;
+      if(itype==0)
+	{
+	  name="u.top";
+	  parton=getParticleData(ParticleID::u);
+	}
+      else if(itype==1)
+	{
+	  name="d.top";
+	  parton=getParticleData(ParticleID::d);
+	}
+      else if(itype==2)
+	{
+	  name="ubar.top";
+	  parton=getParticleData(ParticleID::ubar);
+	}
+      else if(itype==3)
+	{
+	  name="dbar.top";
+	  parton=getParticleData(ParticleID::dbar);
+	}
+      else if(itype==4)
+	{
+	  name="s.top";
+	  parton=getParticleData(ParticleID::s);
+	}
+      else if(itype==5)
+	{
+	  name="c.top";
+	  parton=getParticleData(ParticleID::c);
+	}
+      else if(itype==6)
+	{
+	  name="b.top";
+	  parton=getParticleData(ParticleID::b);
+	}
+      else if(itype==7)
+	{
+	  name="g.top";
+	  parton=getParticleData(ParticleID::g);
+	}
+      ofstream output(name.c_str());
+      double qmin=2.0*GeV,qmax=3000.0*GeV;
+      int nq=10;
+      double qstep=(qmax-qmin)/nq;
+      for(double q=qmin+qstep;q<=qmax;q+=qstep)
+	{
+	  double nx=500;
+	  double xmin=1e-5,xmax=1.;
+	  double xstep=(log(xmax)-log(xmin))/nx;
+	  output << "NEW FRAME"  << endl;
+	  output << "SET FONT DUPLEX" << endl;
+	  output << "SET SCALE Y LOG" << endl;
+	  output << "SET LIMITS X " << xmin << " " << xmax << endl;
+	  if(itype==0)
+	    output << "TITLE TOP \" up      distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==1)
+	    output << "TITLE TOP \" down    distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==2)
+	    output << "TITLE TOP \" ubar    distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==3)
+	    output << "TITLE TOP \" dbar    distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==4)
+	    output << "TITLE TOP \" strange distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==5)
+	    output << "TITLE TOP \" charm   distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==6)
+	    output << "TITLE TOP \" bottom  distribution for q=" <<  q << "\"" << endl;
+	  else if(itype==7)
+	    output << "TITLE TOP \" gluon   distribution for q=" <<  q << "\"" << endl;
+	  for(double xl=log(xmin)+xstep;xl<=log(xmax);xl+=xstep)
+	    {
+	      double x=exp(xl);
+	      output << x << " "
+		     << xfl(proton,parton,q*q,-xl)
+		     << endl;
+	    }
+	  output << "JOIN" << endl;
+	}
+    }
+#endif
 }
 
 void MRST::readSetup(istream &is) throw(SetupException) {
@@ -208,7 +285,6 @@ void MRST::readSetup(istream &is) throw(SetupException) {
 }
 
 void MRST::initialize(bool reread) {
-  //  if(reread) cout << "Opening file " << _file << endl;
   int i,n,m,k,l,j; // counters
   double dx,dq,dtemp;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -259,20 +335,26 @@ void MRST::initialize(bool reread) {
          datafile >> data[6][nn][mm];
          datafile >> data[8][nn][mm];
          if(datafile.eof()) {
-	   cerr << "Error while reading " << _file << endl;
+	   cerr << "Error while reading " << _file 
+		<< "\n: too few data points in file" << endl;
 	   return;
          }
+       }
+     }
+     
+     for (int n=1; n<=8; ++n) {
+       for(int mm=1; mm<=nq; ++mm) {
+	 data[n][nx][mm]=0.0;
        }
      }
   
      datafile >> dtemp;
      if(!datafile.eof()) {
-       cerr << "Error reading end of " << _file << endl;
+       cerr << "Error reading end of " << _file 
+	    << "\n: too many data points in file" << endl;
        return;
      }
      datafile.close();
-
-     //     cout << "File read!" << endl;
   }
 
   // Now calculate the derivatives used for bicubic interpolation
@@ -473,54 +555,6 @@ void MRST::initialize(bool reread) {
       } //m
     } //n
   } // i
-}
-
-void MRST::update(double x, double q2) const {
-  // Updates the parton content 
-  double qsq;
-  double xxx;
-  int i,n,m,l;
-  double t,u;
-  
-  //qsq=q*q;
-  if(x<xmin) {
-    x=xmin;
-    //generator()->log() << "x   VALUE IS OUT OF RANGE (TOO LOW)";
-  } else if(x>xmax) {
-    x=xmax;
-    //generator()->log() << "x  VALUE IS OUT OF RANGE (TOO HIGH)";  
-  }
-  
-  if(q2<qsqmin) { 
-    q2=qsqmin;
-    //generator()->log() << "Q^2 VALUE IS OUT OF RANGE (TOO LOW) = " 
-    //	       << q2 << endl;
-  } else if(q2>qsqmax) {
-    q2=qsqmax;
-    //generator()->log() << "Q^2 VALUE IS OUT OF RANGE (TOO HIGH) = "
-    //		       << q2 << endl;
-  }
-  
-  xxx=x;
-  
-  // interpolation in logx, log qsq:
-  xxx=log10(xxx);
-  qsq=log10(q2);
-
-  // NEW BIT STARTS HERE
-  n=locate(xx,nx,xxx);
-  m=locate(qq,nq,qsq);
-
-  for(i=1;i<=np;i++) {
-    t=(xxx-xx[n])/(xx[n+1]-xx[n]);
-    u=(qsq-qq[m])/(qq[m+1]-qq[m]);
-    table[i]=0.0;
-    for(l=4;l>=1;l--) {
-      table[i]=t*table[i]+((c[i][n][m][l][4]*u+c[i][n][m][l][3])*u +
-			   c[i][n][m][l][2])*u+c[i][n][m][l][1];
-    }
-    //cout << "Table " << i << " = " << table[i] << endl;
-  }
 }
 
 double MRST::xx[] =
