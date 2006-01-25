@@ -6,20 +6,22 @@
 
 namespace Herwig {
 
-
-inline ShowerKinematics::ShowerKinematics() 
+inline ShowerKinematics::ShowerKinematics()
   : _isTheJetStartingPoint( false ),
     _qtilde( Energy() ), 
     _q0( Energy() ), 
-    _kinQ0( Energy() )
+    _kinQ0( Energy() ),
+    _z( 0.0 ),
+    _phi( 0.0 )
 {}
 
 inline ShowerKinematics::ShowerKinematics(const ShowerKinematics & x)
-  : _isTheJetStartingPoint( x._isTheJetStartingPoint ),
+  : ReferenceCounted(x),_isTheJetStartingPoint( x._isTheJetStartingPoint ),
     _qtilde( x._qtilde ), 
     _q0( x._q0 ), 
-    _kinQ0( x._kinQ0 )
-
+    _kinQ0( x._kinQ0 ), 
+    _z( x._z ),
+    _phi( x._phi )
 {}
 
 inline Energy ShowerKinematics::qtilde() const {
@@ -61,5 +63,3 @@ inline void ShowerKinematics::phi( const double inputPhi ) {
 }
 
 }
-
-

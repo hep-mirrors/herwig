@@ -8,11 +8,14 @@
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "ShowerIndex.h"
 
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "ShowerKinematics.tcc"
+#endif
+
+
 using namespace Herwig;
 
-
 ShowerKinematics::~ShowerKinematics() {}
-
 
 Lorentz5Momentum ShowerKinematics::
 referenceFrame( const Lorentz5Momentum & particleMomentum,
@@ -26,6 +29,4 @@ referenceFrame( const Lorentz5Momentum & particleMomentum,
   return cmFrame;
 
 }
-
-
 

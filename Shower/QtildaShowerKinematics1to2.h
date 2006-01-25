@@ -3,11 +3,13 @@
 #define HERWIG_QtildaShowerKinematics1to2_H
 //
 // This is the declaration of the QtildaShowerKinematics1to2 class.
+//
 
 #include "ShowerKinematics.h"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {
 
@@ -16,8 +18,8 @@ using namespace ThePEG;
 /** \ingroup Shower
  *
  *  This abstract class describes the common features for initial and final
- *  state radiation kinematics for <I>1 -&GT; 2</I> branchings and for
- *  the choice of Qtilda as evolution variable.
+ *  state radiation kinematics for \f$1\to2\f$ branchings and for
+ *  the choice of \f$\tilde{q}\f$ as evolution variable.
  *
  *  @see ShowerKinematics
  *  @see IS_QtildaShowerKinematics1to2
@@ -28,32 +30,57 @@ class QtildaShowerKinematics1to2: public ShowerKinematics {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
-   * Standard ctors and dtor.
+   * The default constructor.
    */
   inline QtildaShowerKinematics1to2();
-  inline QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 &);
-  virtual ~QtildaShowerKinematics1to2();
 
   /**
-   * Creator with the two defining vectors p and n.
+   * The copy constructor.
+   */
+  inline QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 &);
+
+  /**
+   * Constructor with the two defining vectors \f$p\f$ and \f$n\f$.
+   * @param p The \f$p\f$ reference vector.
+   * @param n The \f$n\f$ reference vector.
    */
   inline QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
 				    const Lorentz5Momentum & n);
+  /**
+   * The destructor.
+   */
+  virtual ~QtildaShowerKinematics1to2();
+  //@}
 
+public:
+
+  /**
+   *  The updateChildren members to update the values of the \f$\alpha\f$ and 
+   *  \f$p_\perp\f$ variables during the shower evolution.
+   */
+  //@{
   /**
    * Along with the showering evolution --- going forward for
    * time-like (forward) evolution, and going backward for space-like
    * (backward) evolution --- the Sudakov variables associated to the
-   * branching products are calcalted and returned, from the knowledge
+   * branching products are calculated and returned, from the knowledge
    * of the parent Sudakov variables.   
-   * Note that only <I>alpha</I> and <I>p_perp</I> can be reconstructed 
-   * at this moment and we will obtain instead beta only later, 
+   * Note that only \f$\alpha\f$ and \f$p_{\perp}\f$ can be reconstructed 
+   * at this moment and we will obtain \f$\beta\f$ later, 
    * using updateParent().
+   * @param parentAlpha  The \f$\alpha\f$ of the parent
+   * @param parentPx     The x-component of the \f$p_\perp\f$ of the parent
+   * @param parentPy     The y-component of the \f$p_\perp\f$ of the parent
+   * @param alphaVect    The \f$\alpha\f$'s of the children
+   * @param pxVect       The x-components of the \f$p_\perp\f$ of the children 
+   * @param pyVect       The y-components of the \f$p_\perp\f$ of the children 
    */
-  virtual void updateChildren(const double parentAlpha, 
-			      const Energy parentPx, const Energy parentPy, 
-                              vector<double> & alphaVect, 
+  virtual void updateChildren(const double parentAlpha, const Energy parentPx, 
+			      const Energy parentPy, 
+			      vector<double> & alphaVect, 
 			      vector<Energy> & pxVect, 
 			      vector<Energy> & pyVect) = 0;
 
@@ -62,31 +89,35 @@ public:
    * time-like (forward) evolution, and going backward for space-like
    * (backward) evolution --- the kinematical variables of the
    * branching products are calculated and updated from the knowledge
-   * of the parent kinematics.  This method is used by the
-   * ForwardShowerEvolver.  ***ACHTUNG*** Might be
-   * extended to update colour connections as well.
+   * of the parent kinematics. 
+   * @param theParent   The parent
+   * @param theChildren The children
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ParticleVector theChildren) = 0;
+			      const ShowerParticleVector theChildren) = 0;
+  //@}
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
    * of the children. This method will be used by the KinematicsReconstructor.
+   * @param theParent   The parent
+   * @param theChildren The children
    */
   virtual void updateParent(const tShowerParticlePtr theParent, 
 			    const ParticleVector theChildren) = 0;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
-   * fixpoint was found.  This will highly depend on the kind of
+   * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
-   * classes. This method will be used by theKinematicsReconstructor.
+   * classes. This method will be used by the KinematicsReconstructor.
+   * @param theLast The particle.
    */
   virtual void updateLast(const tShowerParticlePtr theLast) = 0;
 
   /**
-   * Pure virtual method, to be defined in a derived class.
-   * The method returns the mass of jet. 
+   * Pure virtual method to be defined in derived classes.
+   * It returns the mass of jet. 
    * It should be used only if isTheJetStartingPoint() is true, 
    * and only after the jet kinematics reconstruction.
    * (performed by the KinematicsReconstructor class).
@@ -94,49 +125,68 @@ public:
   virtual Energy jetMass() = 0;
 
   /**
-   * Virtual function to return a set of basis vectors, specific to
-   * the type of evolution.  this function will be used by the
-   * ForwardShowerEvolver in order to access <I>p</I>
-   * and <I>n</I>, which in turn are members of the concrete class
-   * QtildaShowerKinematics1to2.
+   * Implementation of the virtual function returning a set of basis vectors, specific to
+   * the type of evolution.  This function will be used by the
+   * ForwardShowerEvolver in order to access \f$p\f$
+   * and \f$n\f$.
    */
   virtual vector<Lorentz5Momentum> getBasis(); 
 
   /**
-   * Access/set to the generated kinematics variables of the splitting <I>1-&GT;2</I>.
-   */
-
-  /**
-   * Access to the p and n vectors used to describe the kinematics.
+   * Access to the \f$p\f$ vector used to describe the kinematics.
    */
   inline const Lorentz5Momentum & pVector() const;
+
+  /**
+   * Access to the \f$n\f$ vector used to describe the kinematics.
+   */
   inline const Lorentz5Momentum & nVector() const;
+
+  /**
+   *  Dot product of thew basis vectors
+   */
   inline const double p_dot_n() const;
+
+protected:
+
+  /**
+   * Converts a Sudakov parametrization of a momentum w.r.t. the given 
+   * basis \f$p\f$ and \f$n\f$ into a 5 momentum.
+   * @param alpha The \f$\alpha\f$ parameter of the Sudakov parameterisation
+   * @param beta  The \f$\beta\f$ parameter of the Sudakov parameterisation
+   * @param px    The \f$x\f$-component of the transverse momentum in the Sudakov 
+   *              parameterisation
+   * @param py    The \f$x\f$-component of the transverse momentum in the Sudakov 
+   *              parameterisation
+   */
+  Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py);
 
 private:
 
   /**
-   * Private and non-existent assignment operator.
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
    */
   QtildaShowerKinematics1to2 & operator=(const QtildaShowerKinematics1to2 &);
 
-protected: 
-
-  double _z;
-  double _phi;
-  const Lorentz5Momentum _pVector;
-  const Lorentz5Momentum _nVector;
+private:
 
   /**
-   * Converts a Sudakov parametrization of a momentum w.r.t. the given 
-   * basis p and n into a 5 momentum.
+   *  The \f$p\f$ reference vector
    */
-  Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py);
+  const Lorentz5Momentum _pVector;
 
+  /**
+   *  The \f$n\f$ reference vector
+   */
+  const Lorentz5Momentum _nVector;
 };
 
 }
 
 #include "QtildaShowerKinematics1to2.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "QtildaShowerKinematics1to2.tcc"
+#endif
 
 #endif /* HERWIG_QtildaShowerKinematics1to2_H */
