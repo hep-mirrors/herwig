@@ -28,7 +28,7 @@ AbstractClassDescription<RunningMassBase> RunningMassBase::initRunningMassBase;
 void RunningMassBase::Init() {
  
   static ClassDocumentation<RunningMassBase> documentation
-    ("The \\classname{RunningMassBase} class is the base class for running mass"
+    ("The RunningMassBase class is the base class for running mass"
      "calculations");
   
 }

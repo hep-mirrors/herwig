@@ -50,7 +50,7 @@ static Reference<RunningMass,StandardModelBase> interfaceStandardModel
      false, false, true);
   
   static ClassDocumentation<RunningMass> documentation
-    ("The \\classname{RunningMass} class is the implementation of the"
+    ("The RunningMass class is the implementation of the"
      " QCD running mass to one or two loop in alpha_S");
   
 }

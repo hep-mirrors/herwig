@@ -93,7 +93,7 @@ static Reference<StandardModel,RunningMassBase> interfaceRunningMass
    &StandardModel::_theRunningMass, false, false, true, false);
 
 static ClassDocumentation<StandardModel> documentation
-  ("The \\classname{StandardModel} class inherits from StandardModelBase"
+  ("The StandardModel class inherits from StandardModelBase"
    "and supplies additional couplings and access to the StandardModel"
    "vertices for helicity amplitude calculations" );
 }

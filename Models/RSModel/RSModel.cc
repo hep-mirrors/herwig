@@ -65,7 +65,7 @@ static Parameter<RSModel,Energy> interfaceLambda_pi
    false, false, false);
 
   static ClassDocumentation<RSModel> documentation
-    ("The \\classname{RSModel} class replaces the Standard Model class for the"
+    ("The RSModel class replaces the Standard Model class for the"
      " RS model");
   
 }
