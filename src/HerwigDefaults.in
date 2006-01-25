@@ -42,7 +42,7 @@ cp StandardExtractor QCDExtractor
 
 # Setup matrix elements
 cd /Defaults/MatrixElements
-create ThePEG::MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
+#create ThePEG::MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
 create ThePEG::MEGG2GG MEGG2GG MEQCD.so
 create ThePEG::MEQG2QG MEQG2QG
 create ThePEG::MEQQ2GG MEQQ2GG
@@ -54,6 +54,10 @@ create ThePEG::MEqq2qq MEqq2qq
 set MEGG2QQ:MaxFlavour 4
 set MEQQ2qq:MaxFlavour 4
 create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
+create Herwig++::MEee2gZ2qq MEee2gZ2qq HwME.so
+set MEee2gZ2qq:MinimumFlavour 4
+set MEee2gZ2qq:MaximumFlavour 4
+
 
 # Setup the Subprocesses
 cd /Defaults/Handlers
@@ -192,3 +196,7 @@ read Decays.in
 
 # uncomment to include some default analysis handlers
 #read Analysis.in
+
+# output interfaces for documentation
+cd /
+doxygendump Herwig++:: ../Doc/AllInterfaces.h
