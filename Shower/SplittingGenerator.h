@@ -3,8 +3,9 @@
 #define HERWIG_SplittingGenerator_H
 //
 // This is the declaration of the SplittingGenerator class.
+//
 
-#include "ThePEG/Handlers/HandlerBase.h"
+#include "ThePEG/Interface/Interfaced.h"
 #include "ShowerConfig.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ThePEG/Handlers/EventHandler.h"
@@ -12,103 +13,196 @@
 #include "Herwig++/Shower/SplittingFunctions/SudakovFormFactor.h"
 #include "ShowerVariables.h"
 #include "ThePEG/Utilities/StringUtils.h"
+#include "ThePEG/Utilities/Rebinder.h"
 #include "ShowerKinematics.h"
+#include "SplittingGenerator.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-class ShowerParticle;          // forward declaration
+/**
+ *  Forward declaration of the ShowerParticle class
+ */
+class ShowerParticle;
 
-struct Branching { 
+/**
+ *  typedef to pair the SudakovFormFactor and the particles in a branching
+ */
+typedef pair<SudakovPtr,IdList> BranchingElement;
+
+/**
+ *  typedef to pair the PDG code of the particle and the BranchingElement
+ */
+typedef multimap<long,BranchingElement> BranchingList;
+
+/**
+ *  typedef to create a structure which can be inserted into a BranchingList
+ */
+typedef pair<long, BranchingElement> BranchingInsert; 
+
+/**
+ *  The branching struct is used to store information on the branching.
+ *  The first  variable is a pointer to the ShowerKinematics for the branching
+ *  The second variable is a pointer to the SudakovFormFactor for the branching
+ *  The third  variable is the list of particles in the branching
+ */
+struct Branching {
+ 
+  /**
+   *  Pointer to the ShowerKinematics object for the branching
+   */
    ShoKinPtr first;
-   tSudakovPtr second; 
-   IdList third; 
+
+  /**
+   *  Pointer to the SudakovFormFactor for the branching
+   */
+  tSudakovPtr second; 
+
+  /**
+   *  PDG codes of the particles in the branching
+   */
+  IdList third; 
+
+  /**
+   *  Constructor for the struct
+   * @param a pointer to the ShowerKinematics object for the branching
+   * @param b pointer to the SudakovFormFactor object for the branching
+   * @param c PDG codes of the particles in the branching
+   */
    Branching(ShoKinPtr a, tSudakovPtr b, IdList c) {
       first = a; second = b; third = c; 
    }
-   Branching() {}
+
+  /**
+   *  Default constructor
+   */
+  Branching() {}
 };
 
+
 /** \ingroup Shower
- *
- *  This class is responsible for creating, at the beginning of the Run, <BR>
- *  all the splitting function objects and the corresponding Sudakov form <BR>
- *  factors objects, and then of the generation of splittings (radiation <BR>
- *  emissions) during the event. <BR>
+ * 
+ *  This class is responsible for creating, at the beginning of the Run,
+ *  all the SplittingFunction objects and the corresponding
+ *  SudakovFormFactor objects, and then of the generation of splittings 
+ *  (radiation emissions) during the event.
  *  Many switches are defined in this class which allowed the user to turn on/off:
- *  <UL>
- *   <LI> each type of interaction (QCD, QED, EWK,...);
- *   <LI> initial and final state radiation for all type of interactions;
- *   <LI> initial and final state radiation for each type of interaction;
- *   <LI> each type of splitting (U->UG, D->DG, ... , G->GG, G->UUbar,...);
- *  </UL>
- *  These switches are useful mainly for debugging, but eventually can <BR>
- *  also be used for a "quick and dirty" estimation of systematic errors. <BR>
+ *  -  each type of interaction (QCD, QED, EWK,...);
+ *  - initial- and final-state radiation for all type of interactions;
+ *  - initial- and final-state radiation for each type of interaction;
+ *  - each type of splitting (\f$u\to ug\f$, \f$d\to dg\f$, \f$\ldots\f$, 
+ *                            \f$g\to gg\f$, \f$g\to u\bar{u}\f$, \f$\ldots\f$).
  *
- *  ***LOOKHERE*** --- the idea is to keep this class not responsible
- *                     for creating new ShowerParticle objects, and
- *                     independent from ShowerVariables: therefore
- *                     the checking that the chosen candidate branching
- *                     is acceptable according to the vetos in ShowerVariables
- *                     and then, if accepted, the creation of the ShowerParticle
- *                     created from the branching, should all be done in
- *                     in ForwardShowerEvolver and BackwardShowerEvolver.
- *                     The advantages in doing that is that SplittingGenerator
- *                     is kept simpler and easier to manage. <BR>
- *                 --- Using the ShowerParticle object provided in input,
- *                     is should be possible TO IMPLEMENT IN THIS CLASS  
- *                     SplittingGenerator THE (1->2 ONLY) AZIMUTHAL-CORRELATIONS
- *                     FOR SOFT EMISSIONS DUE TO QCD COHERENCE. <BR>
- *                 --- SIMILARLY, HAVING THE RHO-D MATRIX IN THE ShowerParticle
- *                     OBJECT, AND THE SplitFun POINTER IN THE SUDAKOV OBJECT,
- *                     IT SHOULD BE POSSIBLE TO IMPLEMENT THE SPIN-CORRELATION.
- *               
+ *  These switches are useful mainly for debugging, but eventually can
+ *  also be used for a "quick and dirty" estimation of systematic errors.
+ *
+ *  This class is not responsible for creating new ShowerParticle objects,
+ *  and is independent from ShowerVariables. The checking that the chosen
+ *  candidate branching is acceptable according to the vetos in ShowerVariables
+ *  and then, if accepted, the creation of the ShowerParticle
+ *  created from the branching, should all be done in
+ *  in ForwardShowerEvolver and BackwardShowerEvolver.
+ *  The advantages in doing this is that the SplittingGenerator
+ *  is kept simpler and easier to manage.
+ *
+ *  In the future it should be possible to implement in this class
+ *
+ *  -  the \f$1\to2\f$ azimuthal correlations for soft emission due to QCD coherence  
+ *     using the ShowerParticle object provided in the input.
+ *  -  Similarly hacing the \f$\rho-D\f$ matrix and the SplittingFunction pointer
+ *     it should be possible to implement the spin correlations.
+ *     
  *  @see ShowerIndex
  *  @see SudakovFormFactor
  *  @see ShowerVariables
  *  @see SplitFun
+ *
+ * @see \ref SplittingGeneratorInterfaces "The interfaces"
+ * defined for SplittingGenerator.
  */
-class SplittingGenerator: public ThePEG::HandlerBase {
+class SplittingGenerator: public Interfaced {
+
+public:
+
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
+  inline SplittingGenerator();
+
+  /**
+   * The copy constructor.
+   */
+  inline SplittingGenerator(const SplittingGenerator &);
+
+  /**
+   * The destructor.
+   */
+  virtual ~SplittingGenerator();
+  //@}
 
 public:
 
   /**
-   * Standard ctors and dtor.
+   *  Methods to select the next branching and reconstruct the kinematics
    */
-  inline SplittingGenerator();
-  inline SplittingGenerator(const SplittingGenerator &);
-  virtual ~SplittingGenerator();
-
+  //@{
   /**
-   * It chooses a new forward branching for the time-like particle. 
-   * The method returns a pair of pointers: <BR>
-   * --- a pointer to a ShowerKinematics object, which 
+   * Choose a new forward branching for a time-like particle
+   * The method returns:
+   * - a pointer to a ShowerKinematics object, which 
    *     contains the information about the new scale and all other
-   *     kinematics variables that need to be generated simultaneously; <BR>
-   * --- a pointer to the SudakovFormFactor object associated 
-   *     with the chosen emission. <BR>
+   *     kinematics variables that need to be generated simultaneously;
+   * - a pointer to the SudakovFormFactor object associated 
+   *     with the chosen emission.
+   * - The PDG codes of the particles in the branching,
+   * as a Branching struct.
+   *
    * In the case no branching has been generated, both the returned 
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
-   * In the case that reverseAngularOrder is true, 
-   * the new scale is greater than the initial one: this is used for 
-   * the forward evolution of a on-shell decaying particle.
+   *
    * If something goes wrong (but this should never ever happen) 
    * a warning should be sent to the log file: in this case, 
    * exceptions seem unnecessary.
+   *
+   * @param eh Pointer to the event handler
+   * @param particle The particle to be evolved
+   * @param reverseAngOrd If true 
+   *        the new scale is greater than the initial one: this is used for 
+   *        the forward evolution of a on-shell decaying particle.
+   * @return The Branching struct for the branching
    */
-  Branching chooseForwardBranching(tEHPtr, ShowerParticle &,
+  Branching chooseForwardBranching(tEHPtr eh, ShowerParticle & particle,
                                    const bool reverseAngOrd = false) const; 
 
   /**
-   * Similar to the previous method, but for the backward evolution of
-   * a space-like input particle. 
-   * Notice that the PartialCollisionHandler object, ch, 
-   * is necessary to access the PDFs.
+   * Choose a new backward branching for a space-like particle.
+   * The method returns:
+   * - a pointer to a ShowerKinematics object, which 
+   *     contains the information about the new scale and all other
+   *     kinematics variables that need to be generated simultaneously;
+   * - a pointer to the SudakovFormFactor object associated 
+   *     with the chosen emission.
+   * - The PDG codes of the particles in the branching,
+   * as a Branching struct.
+   *
+   * In the case no branching has been generated, both the returned 
+   * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
+   *
+   * If something goes wrong (but this should never ever happen) 
+   * a warning should be sent to the log file: in this case, 
+   * exceptions seem unnecessary.
+   *
+   * @param eh Pointer to the event handler
+   * @param particle The particle to be evolved
+   * @return The Branching struct for the branching
    */
-  Branching chooseBackwardBranching(tEHPtr, ShowerParticle&) const;
+  Branching chooseBackwardBranching(tEHPtr eh, ShowerParticle & particle) const;
 
   /**
+   * Finish the calculation of the kinematics of the branching.
    * Given the particle, a pointer to the ShowerKinematics
    * object which has been created and at least partially filled during
    * the branching selection, and the pointer to the SudakovFormFactor
@@ -121,10 +215,19 @@ public:
    * As for the latter two methods, if something goes wrong (but
    * this should never ever happen) a warning should be sent to
    * the log file: in this case exceptions seem unnecessary.
+   *
+   * @param eh Pointer to the event handler
+   * @param particle The particle to be evolved
+   * @param br The branching struct for the branching
    */
-  void generateBranchingKinematics(tEHPtr, ShowerParticle&, 
-				   Branching&) const;
+  void generateBranchingKinematics(tEHPtr eh, ShowerParticle& particle, 
+				   Branching& br) const;
+  //@}
 
+  /**
+   *   Set and get methods for the running couplings
+   */
+  //@{
   /**
    * Access to the Initial and Final State Radiation QCD running alphas.
    */
@@ -136,180 +239,348 @@ public:
   inline const tShowerAlphaPtr showerAlphaQED() const;
 
   /**
-   * Access to the ShowerVariables (maybe is not needed).
+   * Set the running QCD ShowerAlpha object 
+   */
+  inline void setQCD(ShowerAlphaPtr );
+
+  /**
+   * Set the running QED ShowerAlpha object
+   */
+  inline void setQED(ShowerAlphaPtr );
+  //@}
+
+  /**
+   * Access to the ShowerVariables
    */
   inline const ShowerVarsPtr & showerVariables() const;
 
-  //--- SWITCHES ---
+  /**
+   * Return the splitting function.
+   * This method returns the splitting function associated with the two
+   * ids.
+   * @param id1 PDG code of the particle splitting
+   * @param id2 PDG code of the first 'product' of the splitting
+   *              (see initial vs. final splitting syntax)
+   * @param initial Whether this is a search over the final or initial state branchings.
+   */
+  tSplittingFnPtr getSplittingFunction(long id1, long id2, bool initial=true);
 
-  void setSVtoAlpha(ShowerVarsPtr p);
-  void setQED(ShowerAlphaPtr p);
-  void setQCD(ShowerAlphaPtr p);
-
+  /**
+   *  Access to the switches
+   */
+  //@{
   /**
    * It returns true/false if interaction type specified in input is on/off.
    */
-  bool isInteractionON(const ShowerIndex::InteractionType interaction) const;
+  inline bool isInteractionON(const ShowerIndex::InteractionType interaction) const;
 
   /**
-   * It returns true/false if the initial or final state radiation is on/off.
+   * It returns true/false if the initial -tate radiation is on/off.
    */
   inline bool isISRadiationON() const;  
+
+  /**
+   * It returns true/false if the final-state radiation is on/off.
+   */
   inline bool isFSRadiationON() const;  
 
   /**
-   * It returns true/false if the initial or final state radiation for the
+   * It returns true/false if the initial-state radiation for the
    * specified interaction type is on/off. However, they return false, 
    * regardless of the switch, if either the corresponding interaction switch 
    * (see method isInteractionON) is off, or if the global initial or final 
    * state radiation (see overloaded methods above without argument) is off.
    */
-  bool isISRadiationON(const ShowerIndex::InteractionType interaction) const;  
-  bool isFSRadiationON(const ShowerIndex::InteractionType interaction) const;
+  inline bool isISRadiationON(const ShowerIndex::InteractionType interaction) const;  
 
   /**
-   * This method returns the splitting function associated with the two
-   * ids. The first is the particle splitting, the second is the first
-   * 'product' of that splitting (see initial vs. final splitting syntax)
-   * The final bool value indicates whether this is a search over the final
-   * or initial state branchings.
+   * It returns true/false if the final-state radiation for the
+   * specified interaction type is on/off. However, they return false, 
+   * regardless of the switch, if either the corresponding interaction switch 
+   * (see method isInteractionON) is off, or if the global initial or final 
+   * state radiation (see overloaded methods above without argument) is off.
    */
-  tSplittingFnPtr getSplittingFunction(long id1, long id2, bool initial=true);
+  inline bool isFSRadiationON(const ShowerIndex::InteractionType interaction) const;
+  //@}
+
+  /**
+   *  Methods to parse the information from the input files to create the 
+   *  branchings
+   */
+  //@{
+  /**
+   *  Add a final-state splitting
+   */
+  inline string addFinalSplitting(string);
+
+  /**
+   *  Add an initial-state splitting
+   */
+  inline string addInitialSplitting(string);
+
+  /**
+   * Add a splitting
+   * @param in string to be parsed
+   * @param final Whether this is an initial- or final-state branching 
+   */
+  string addSplitting(string in ,bool final);
+  //@}
 
 public:
 
+  /** @name Functions used by the persistent I/O system. */
+  //@{
   /**
-   * Standard functions for writing and reading from persistent streams.
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
    */
-  void persistentOutput(PersistentOStream &) const;
-  void persistentInput(PersistentIStream &, int);
+  void persistentOutput(PersistentOStream & os) const;
 
   /**
-   * Standard Init function used to initialize the interfaces.
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
    */
   static void Init();
 
 protected:
 
+  /** @name Clone Methods. */
+  //@{
   /**
-   * Standard clone methods.
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
    */
   inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
   inline virtual IBPtr fullclone() const;
+  //@}
 
 protected:
 
+  /** @name Standard Interfaced functions. */
+  //@{
   /**
-   * Standard Interfaced virtual functions.
+   * Check sanity of the object during the setup phase.
    */
-  string addFinalSplitting(string);
-  string addInitialSplitting(string);
-  string addSplitting(string,bool);
   inline virtual void doupdate() throw(UpdateException);
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
   inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
   inline virtual void dofinish();
 
   /**
-   * Change all pointers to Interfaced objects to corresponding clones.
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
    */
   inline virtual void rebind(const TranslationMap & trans)
     throw(RebindException);
 
   /**
-   * Return pointers to all Interfaced objects refered to by this.
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
    */
   inline virtual IVector getReferences();
+  //@}
 
 private:
 
   /**
-   * Describe a concrete class with persistent data.
+   *  Set the coupling for the ShowerVariables
+   * @param p The ShowerVariables
    */
-  static ClassDescription<SplittingGenerator> initSplittingGenerator;
+  inline void setSVtoAlpha(ShowerVarsPtr p);
 
   /**
-   * Private and non-existent assignment operator.
+   *  Add a branching to the map
+   * @param ids PDG coeds of the particles in the branching
+   * @param sudakov The SudakovFormFactor for the branching
+   * @param final Whether this is an initial- or final-state branching 
    */
-  SplittingGenerator & operator=(const SplittingGenerator &);
-
-  //void initializeRun();
-  // It is called once, at the beginning of the run, to create all
-  // of the splitting function and Sudakov form factor objects. 
-  // The splitting function objects are then kept by the corresponding
-  // Sudakov form factor objects. The latter are kept in a multimap
-  // with key given by a ShowerIndex object.
+  void addToMap(IdList & ids, SudakovPtr & sudakov, bool final);
 
   /**
    * Print, in the log file, debugging information.
    */
-  void addToMap(IdList &, SudakovPtr &, bool);
   void debuggingInfo();
 
-  int _QCDinteractionMode;
-  int _QEDinteractionMode;
-  int _EWKinteractionMode;
-  int _ISR_Mode;
-  int _ISR_QCDMode;
-  int _ISR_QEDMode;
-  int _ISR_EWKMode;
-  int _FSR_Mode;
-  int _FSR_QCDMode;
-  int _FSR_QEDMode;
-  int _FSR_EWKMode;
+private:
 
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<SplittingGenerator> initSplittingGenerator;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  SplittingGenerator & operator=(const SplittingGenerator &);
+
+private:
+
+  /**
+   *  Switches to control the radiation
+   */
+  //@{
+  /**
+   *  Is QCD on/off
+   */
+  bool _qcdinteractionMode;
+
+  /**
+   *  Is QED on/off
+   */
+  bool _qedinteractionMode;
+
+  /**
+   *  Is electroweak on/off
+   */
+  bool _ewkinteractionMode;
+
+  /**
+   *  Is inqitial-state radiation on/off
+   */
+  bool _isr_Mode;
+
+  /**
+   *  is initial-state QCD radiation on/off
+   */
+  bool _isr_qcdMode;
+
+  /**
+   *  is initial-state QED radiation on/off
+   */
+  bool _isr_qedMode;
+
+  /**
+   *  is initial-state electroweak radiation on/off
+   */
+  bool _isr_ewkMode;
+
+  /**
+   *  Is final-state radiation on/off
+   */
+  bool _fsr_Mode;
+
+  /**
+   *  Is final-state QCD radiation on/off
+   */
+  bool _fsr_qcdMode;
+
+  /**
+   *  Is final-state QED radiation on/off
+   */
+  bool _fsr_qedMode;
+
+  /**
+   *  Is final-state electroweak radiation on/off
+   */
+  bool _fsr_ewkMode;
+  //@}
+
+  /**
+   *  Pointer to the couplings and ShowerVariables
+   */
+  //@{
+  /**
+   *  Pointer to the strong coupling
+   */
   ShowerAlphaPtr _showerAlphaQCD;
-  ShowerAlphaPtr _showerAlphaQED;
-  ShowerVarsPtr _showerVariables;
-   
-  typedef pair<SudakovPtr,IdList> BranchingElement;
-  typedef multimap<long,BranchingElement> BranchingList;
-  typedef pair<long, BranchingElement> BranchingInsert; 
 
-  /**  
-   * Lists of the branchings and the appropriate Sudakov.
+  /**
+   *  Pointer to the QED coupling
+   */
+  ShowerAlphaPtr _showerAlphaQED;
+
+  /**
+   *  Pointer to the ShowerVariables object
+   */
+  ShowerVarsPtr _showerVariables;
+  //@}
+
+  /**
+   *  List of the branchings and the appropriate Sudakovs for forward branchings
    */
   BranchingList _fbranchings;
-  BranchingList _bbranchings;
 
+  /**  
+   * Lists of the branchings and the appropriate Sudakovs for backward branchings.
+   */
+  BranchingList _bbranchings;
 };
 
 }
 
+#include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
 
-/**
- * The following template specialization informs ThePEG about the
- * base class of SplittingGenerator.
- */
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of SplittingGenerator. */
 template <>
 struct BaseClassTrait<Herwig::SplittingGenerator,1> {
-  typedef ThePEG::HandlerBase NthBase;
+  /** Typedef of the first base class of SplittingGenerator. */
+  typedef Interfaced NthBase;
 };
 
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
+/** This template specialization informs ThePEG about the name of
+ *  the SplittingGenerator class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::SplittingGenerator>: public ClassTraitsBase<Herwig::SplittingGenerator> {
-
-  /**  
-   * Return the class name.
-   */
-  static string className() { return "/Herwig++/SplittingGenerator"; }
-
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
+struct ClassTraits<Herwig::SplittingGenerator>
+  : public ClassTraitsBase<Herwig::SplittingGenerator> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig++::SplittingGenerator"; }
+  /** Return the name(s) of the shared library (or libraries) be loaded to get
+   *  access to the SplittingGenerator class and any other class on which it depends
+   *  (except the base class). */
   static string library() { return "HwShower.so"; }
 };
+
+/** @endcond */
 
 }
 
 #include "SplittingGenerator.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "SplittingGenerator.tcc"
+#endif
 
 #endif /* HERWIG_SplittingGenerator_H */

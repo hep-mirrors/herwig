@@ -9,31 +9,33 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 
-using namespace Herwig;
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "ShowerAlphaQCD.tcc"
+#endif
 
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+using namespace Herwig;
 
 ShowerAlphaQCD::~ShowerAlphaQCD() {}
 
+void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
+  os << _asType << _Qmin;
+}
+
+void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
+  is >> _asType >> _Qmin;
+}
 
 ClassDescription<ShowerAlphaQCD> ShowerAlphaQCD::initShowerAlphaQCD;
 // Definition of the static class description member.
 
-
-void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
-  os << _asType
-     << _Qmin;
-}
-
-
-void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
-  is >> _asType
-     >> _Qmin;
-}
-
-
 void ShowerAlphaQCD::Init() {
+
   static ClassDocumentation<ShowerAlphaQCD> documentation
     ("This (concrete) class describes the QCD alpha running.");
+
   static Switch<ShowerAlphaQCD, int> intAsType
     ("NPAlphaS",
      "Behaviour of AlphaS in the NP region",
@@ -55,9 +57,9 @@ void ShowerAlphaQCD::Init() {
   // min = Lambda3
   static Parameter<ShowerAlphaQCD,Energy> intQmin
     ("Qmin", "Q < Qmin is treated with NP parametrization of as (unit [GeV])",
-     &ShowerAlphaQCD::_Qmin, GeV, 0.630882*GeV, 0.330445*GeV, 100.0*GeV,false,false,false);
+     &ShowerAlphaQCD::_Qmin, GeV, 0.630882*GeV, 0.330445*GeV,
+     100.0*GeV,false,false,false);
 }
-
 
 double ShowerAlphaQCD::value(const Energy2 scale) {
   //  OR CALL THE ONE DEFINED IN PYTHIA7 (see class ThePEG::O1AlphaS)
@@ -68,7 +70,6 @@ double ShowerAlphaQCD::value(const Energy2 scale) {
   return scaleFactor() * val;
 }
 
-
 double ShowerAlphaQCD::overestimateValue() {
   double val = 0.0; 
   //  if ( _asType < 5 ) val = value(sqr(0.33197*GeV)); 
@@ -78,7 +79,6 @@ double ShowerAlphaQCD::overestimateValue() {
   return scaleFactor() * val; 
 
 }
-
 
 //////////////////////////////////////////////////////////////////////////
 // private stuff:
@@ -94,7 +94,6 @@ double ShowerAlphaQCD::alphaTwoLoop(Energy q, Energy lam, short nf) {
 	   4.*sqr(b1)/(sqr(sqr(b0))*sqr(log(x)))*
 	   (sqr(log(log(x)) - 0.5) + b2*b0/(8.*sqr(b1)) - 5./4.)) );  
 }
-
 
 pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) {
 

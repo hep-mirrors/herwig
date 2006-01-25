@@ -6,27 +6,17 @@
 
 namespace Herwig {
 
-
 inline ShowerAlpha::ShowerAlpha() :
   _scaleFactor( 1.0 )
 {}
 
-
 inline ShowerAlpha::ShowerAlpha(const ShowerAlpha & x)
-  : ThePEG::HandlerBase(x),
+  : Interfaced(x),
     _scaleFactor( x._scaleFactor ),
-    _pointerShowerVariables( x._pointerShowerVariables )
-{}
-
-
-inline double ShowerAlpha::scaleFactor() const {
-  return _scaleFactor;
-}
-
-//--------------------------------------------------------
+    _pointerShowerVariables( x._pointerShowerVariables ) {}
 
 inline void ShowerAlpha::doupdate() throw(UpdateException) {
-  ThePEG::HandlerBase::doupdate();
+  Interfaced::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -44,23 +34,38 @@ inline void ShowerAlpha::doupdate() throw(UpdateException) {
 }
 
 inline void ShowerAlpha::doinit() throw(InitException) {
-  ThePEG::HandlerBase::doinit();
+  Interfaced::doinit();
 }
 
 inline void ShowerAlpha::dofinish() {
-  ThePEG::HandlerBase::dofinish();
+  Interfaced::dofinish();
+}
+
+inline void ShowerAlpha::doinitrun() {
+  Interfaced::doinitrun();
 }
 
 inline void ShowerAlpha::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  ThePEG::HandlerBase::rebind(trans);
+  Interfaced::rebind(trans);
 }
 
 inline IVector ShowerAlpha::getReferences() {
-  IVector ret = ThePEG::HandlerBase::getReferences();
+  IVector ret = Interfaced::getReferences();
   // ret.push_back(dummy);
   return ret;
 }
 
+inline double ShowerAlpha::scaleFactor() const {
+  return _scaleFactor;
+}
+
+inline void ShowerAlpha::setSV(ShowerVarsPtr scp) {
+  _pointerShowerVariables = scp; 
+}
+
+inline tcShowerVarsPtr ShowerAlpha::getSV() {
+  return  _pointerShowerVariables;
+}
 }

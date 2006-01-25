@@ -6,34 +6,30 @@
 
 #include "ShowerAlpha.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h" 
 
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "ShowerAlpha.tcc"
+#endif
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
 using namespace Herwig;
 
-
 ShowerAlpha::~ShowerAlpha() {}
-
 
 void ShowerAlpha::persistentOutput(PersistentOStream & os) const {
   os << _scaleFactor;
 }
 
-
 void ShowerAlpha::persistentInput(PersistentIStream & is, int) {
   is >> _scaleFactor;
 }
 
-
 AbstractClassDescription<ShowerAlpha> ShowerAlpha::initShowerAlpha;
 // Definition of the static class description member.
-
-void ShowerAlpha::setSV(ShowerVarsPtr scp) {
-  _pointerShowerVariables = scp; 
-}
-
 
 void ShowerAlpha::Init() {
 
@@ -51,5 +47,6 @@ void ShowerAlpha::Init() {
 // 			       "A reference to the ShowerVariables object", 
 // 			       &Herwig::ShowerAlpha::_pointerShowerVariables,
 // 			       false, false, true, false);
+
 }
 

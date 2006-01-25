@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SplittingGenerator class.
+//
+#ifndef HERWIG_SplittingGenerator_FH
+#define HERWIG_SplittingGenerator_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class SplittingGenerator;
+ThePEG_DECLARE_POINTERS(SplittingGenerator,SplittingGeneratorPtr);
+
+}
+
+#endif

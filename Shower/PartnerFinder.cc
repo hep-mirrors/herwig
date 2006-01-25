@@ -6,10 +6,14 @@
 
 #include "PartnerFinder.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h" 
+
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "PartnerFinder.tcc"
+#endif
+
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-// #include "ThePEG/Interface/Parameter.h" 
-#include "ThePEG/Interface/Reference.h" 
 #include "ThePEG/Repository/EventGenerator.h" 
 #include "ThePEG/Repository/UseRandom.h" 
 #include "Herwig++/Utilities/HwDebug.h"

@@ -6,13 +6,11 @@
 
 namespace Herwig {
 
-inline ShowerAlphaQCD::ShowerAlphaQCD() {}
+inline ShowerAlphaQCD::ShowerAlphaQCD() : _Qmin(0.630882*GeV), _asType(1) {}
 
 inline ShowerAlphaQCD::ShowerAlphaQCD(const ShowerAlphaQCD & x)
-  : ShowerAlpha(x) {
-  _Qmin = x._Qmin,
-  _asType = x._asType;
-}
+  : ShowerAlpha(x), _Qmin(x._Qmin), _asType(x._asType)
+{}
 
 inline IBPtr ShowerAlphaQCD::clone() const {
   return new_ptr(*this);
@@ -20,6 +18,48 @@ inline IBPtr ShowerAlphaQCD::clone() const {
 
 inline IBPtr ShowerAlphaQCD::fullclone() const {
   return new_ptr(*this);
+}
+
+inline void ShowerAlphaQCD::doupdate() throw(UpdateException) {
+  ShowerAlpha::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void ShowerAlphaQCD::doinit() throw(InitException) {
+  ShowerAlpha::doinit();
+}
+
+inline void ShowerAlphaQCD::dofinish() {
+  ShowerAlpha::dofinish();
+}
+
+inline void ShowerAlphaQCD::doinitrun() {
+  ShowerAlpha::doinitrun();
+}
+
+inline void ShowerAlphaQCD::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  ShowerAlpha::rebind(trans);
+}
+
+inline IVector ShowerAlphaQCD::getReferences() {
+  IVector ret = ShowerAlpha::getReferences();
+  // ret.push_back(dummy);
+  return ret;
 }
 
 }
