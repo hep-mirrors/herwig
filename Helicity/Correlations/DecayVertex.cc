@@ -29,7 +29,7 @@ NoPIOClassDescription<DecayVertex> DecayVertex::initDecayVertex;
 void DecayVertex::Init() {
   
   static ClassDocumentation<DecayVertex> documentation
-    ("The \\classname{DecayVertex} class is the implementation of a "
+    ("The DecayVertex class is the implementation of a "
      "vertex for a decay for the Herwig++ spin correlation algorithm");
   
 }
