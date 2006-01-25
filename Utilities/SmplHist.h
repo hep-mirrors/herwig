@@ -11,10 +11,12 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 #include "SmplStat.h"
 
 extern const int SampleHistogramMinimum;
 extern const int SampleHistogramMaximum;
+using std::vector;
 
 
 
@@ -40,8 +42,8 @@ class SampleHistogram : public SampleStatistic {
 protected:
 
     short howManyBuckets;
-    int *bucketCount;
-    double *bucketLimit;
+    vector<int> bucketCount;
+    vector<double> bucketLimit;
 
 public:
     
