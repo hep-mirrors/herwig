@@ -76,32 +76,6 @@ void ShowerParticle::deepPrintInfo() {
   }
 }
 
-void ShowerParticle::addChildrenEvtRec(const tStepPtr sp) {
-  //  tcPPtr dum; 
-  tPPtr dum; 
-  tParticleVector yet; 
-  tParticleVector addCh; 
-  yet.push_back(dynamic_ptr_cast<tPPtr>(this));  
-  while(!yet.empty()) { 
-    dum = yet.back(); 
-    yet.pop_back(); 
-    for(ParticleVector::const_iterator cit = dum->children().begin(); 
-	cit != dum->children().end(); ++cit) { 
-      yet.push_back(dynamic_ptr_cast<tPPtr>(*cit)); 
-      addCh.push_back(*cit); 
-    }
-    while(!addCh.empty()) {       
-      //      sp->addDecayProduct(dum, addCh.back(), false);    
-      //      sp->addDecayNoCol(dum, addCh.back());    
-      sp->addDecayNoCheck(dum, addCh.back());    
-      // dum has to be a tcPPtr for this
-      // sp->addDecayProduct(dum, dynamic_ptr_cast<tPPtr>(addCh.back()), false);    
-      addCh.pop_back(); 
-    }
-  }
-}
-
-
 Lorentz5Momentum ShowerParticle::sumParentsMomenta() {
   Lorentz5Momentum dum; 
   if (parents().size() == 1) {
@@ -140,44 +114,4 @@ tShowerParticleVector ShowerParticle::getFSChildren() {
 void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
   _showerKinematics = inputShowerKinematics;
 }
-
-//bool ShowerParticle::addChildren(const tCollecShoParPtr & inputChildren) {
-//bool isOK = true;
-//if (! children().empty() ) {
-    // When the current particle has already children (this would happen,
-    // under normal conditions without bugs, if that particle has decayed 
-    // before showering) then find between the (new)  inputChildren
-    // which one has the same id as the current (decaying) particle:
-    // this should be present because it represents the emitting
-    // particle after the emission. If you can't find it then some
-    // bugs is lurking somewhere; otherwise, transfer the original
-    // children (decay products) of the current particle to the
-    // one with the same identity in the (new)  inputChildren.
-//  long idParticle = data().id();
-//  tShowerParticlePtr partAfterEmission = tShowerParticlePtr();
-//  for ( tShowerParticleVector::const_iterator cit = inputChildren.begin();
-//  cit != inputChildren.end(); ++cit ) {
-//    if ( (*cit)->data().id() == idParticle ) {
-//partAfterEmission = *cit;
-//    } 
-//  }    
-//  if ( partAfterEmission  &&  partAfterEmission->children().empty() ) {
-//    for ( ShowerParticleVector::const_iterator cit = children().begin();
-//    cit != children().end(); ++cit ) {
-//partAfterEmission->addChild( *cit );
-//    }    
-//    _children.clear();
-// } else {  
-//    isOK = false;  // something wrong.
-//  }
-//}
-//if ( isOK ) {
-//  // Add normally the (new) children one by one, setting their parent pointers.
-//  for ( tShowerParticleVector::const_iterator cit = inputChildren.begin();
-//  cit != inputChildren.end(); ++cit ) {
-//    addChild( *cit );
-//  }
-//}
-//return isOK;
-//}
 

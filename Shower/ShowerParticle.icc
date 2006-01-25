@@ -103,16 +103,6 @@ inline void ShowerParticle::setFromHardSubprocess(const bool val)
   _isFromHardSubprocess = val;
 }
 
-  //inline void ShowerParticle::addChild(const tShoParPtr inputChild) {
-  //if ( inputChild ) {
-  // _children.push_back(inputChild);
-  //inputChild->parent(this);
-  //} 
-  //}
-
-  //inline void ShowerParticle::removeChildren() {
-  //_children.clear(); 
-  //}
   
 inline double ShowerParticle::sudAlpha() const {
   return _sudAlpha;
