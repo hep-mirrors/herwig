@@ -1,3 +1,8 @@
+
+2006-01-24 David Grellscheid <David.Grellscheid@durham.ac.uk>
+
+	* PDF/MRST.cc: Restructured for speed, high-x problem unchanged
+	
 2006-01-23  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Analysis/*: Added more simple analysis handlers for multiplicity
@@ -6,14 +11,18 @@
 	* src/Hadronization.in: reset s-quark weight to 1.0
 
 	* PDF/MRST.cc: Added GeV2 to fix wrong PDF behaviour
+	
+2006-01-23  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
-2006-01-06  Pete's account  <Peter.Richardson@durham.ac.uk>
+	* Added basic analysis handlers
+
+2006-01-06  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Various changes to get the forced splitting to work
 	
 	* Shower/Makefile.am (Repository): Change to Makefile due to move of SudakovFormFactor to SplittingFunctions directory
 
-2005-12-22  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-12-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Shower/ForwardEvolver.cc (Repository): SplttingFunctions and related classes cleaned up and moved to new directory 
 
@@ -64,7 +73,7 @@
 
 	* Decay/Perturbative/SMHDecayer.h (Repository): Added HVV decayer 
 
-2005-10-19  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-10-19  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Helicity/Vertex/StandardModel/SMFFHVertex.cc (Repository): changes to remove hard-wired value of pi
 
@@ -82,7 +91,7 @@
 
 	* Decay/Perturbative/SMTopDecayer.h (Repository): Added TopDecayer
 
-2005-10-07  Pete's account  <Peter.Richardson@durham.ac.uk>
+2005-10-07  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Decay/HwDecayHandler.cc (Repository): changes so the reference to the
 	PartonicHadronizer can be set to null to switch off hadronization.
