@@ -387,7 +387,7 @@ struct ClassTraits<Herwig::Helicity::DecayMatrixElement>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::Helicity::DecayMatrixElement"; }
+  static string className() { return "Herwig++::DecayMatrixElement"; }
 
   /**
    * Return the name of the shared library to be loaded to get

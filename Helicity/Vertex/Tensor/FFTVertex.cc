@@ -25,7 +25,7 @@ AbstractClassDescription<FFTVertex> FFTVertex::initFFTVertex;
 void FFTVertex::Init() {
   
   static ClassDocumentation<FFTVertex> documentation
-    ("The \\classname{FFTVertex} class is the implementation of"
+    ("The FFTVertex class is the implementation of"
      "the fermion-antifermion tensor vertices for helicity "
      "amplitude calculations. All such vertices should inherit"
      "from it.");

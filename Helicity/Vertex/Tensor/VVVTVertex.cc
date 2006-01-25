@@ -25,7 +25,7 @@ AbstractClassDescription<VVVTVertex> VVVTVertex::initVVVTVertex;
 void VVVTVertex::Init() {
   
   static ClassDocumentation<VVVTVertex> documentation
-    ("The\\classname{VVVTVertex} class is the implementation f the"
+    ("The VVVTVertex class is the implementation f the"
      " helicity amplitude calculation of the vector-vector-vector-tensor"
      " vertex. All such vertices should inherit from it.");
 }

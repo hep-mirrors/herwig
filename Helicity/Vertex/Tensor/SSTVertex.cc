@@ -25,7 +25,7 @@ AbstractClassDescription<SSTVertex> SSTVertex::initSSTVertex;
 void SSTVertex::Init() {
   
   static ClassDocumentation<SSTVertex> documentation
-("The \\classname{SSTVertex} class is the implementation of the "
+("The SSTVertex class is the implementation of the "
  "helicity amplitude calculation for the scalar-scalar-tensor vertex"
  ", all such vertices should inherit from it");
   

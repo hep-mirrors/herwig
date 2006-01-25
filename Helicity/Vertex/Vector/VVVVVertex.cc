@@ -25,7 +25,7 @@ AbstractClassDescription<VVVVVertex> VVVVVertex::initVVVVVertex;
 void VVVVVertex::Init() {
       
 static ClassDocumentation<VVVVVertex> documentation
-  ("The \\classname{VVVVVertex} class is the implementation of the 4-vector vertex");
+  ("The VVVVVertex class is the implementation of the 4-vector vertex");
  
 }
 

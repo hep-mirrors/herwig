@@ -235,7 +235,7 @@ struct ClassTraits<Herwig::Helicity::VVVTVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::Helicity::VVVTVertex"; }
+  static string className() { return "Herwig++::VVVTVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get

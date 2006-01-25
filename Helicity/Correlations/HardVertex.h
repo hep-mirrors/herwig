@@ -138,7 +138,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "Herwig++::Helicity::HardVertex"; }
+    static string className() { return "Herwig++::HardVertex"; }
 
     /**
      * Return the name of the shared library to be loaded to get

@@ -25,7 +25,7 @@ NoPIOClassDescription<ProductionMatrixElement> ProductionMatrixElement::initProd
 void ProductionMatrixElement::Init() {
   
   static ClassDocumentation<ProductionMatrixElement> documentation
-    ("The \\classname{ProductionMatrixElement} class is designed to store the "
+    ("The ProductionMatrixElement class is designed to store the "
      "matrix element for a hard interaction.");
   
 }

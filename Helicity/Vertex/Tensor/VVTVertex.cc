@@ -26,7 +26,7 @@ void VVTVertex::Init() {
   
   
   static ClassDocumentation<VVTVertex> documentation
-    ("The \\classname{VVTVertex} class is the implementation of"
+    ("The VVTVertex class is the implementation of"
      "the vecotr-vector tensor vertices for helicity "
      "amplitude calculations. All such vertices should inherit"
      "from it.");

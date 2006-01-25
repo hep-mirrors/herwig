@@ -26,7 +26,7 @@ NoPIOClassDescription<DecayMatrixElement> DecayMatrixElement::initDecayMatrixEle
 void DecayMatrixElement::Init() {
   
   static ClassDocumentation<DecayMatrixElement> documentation
-    ("The\\classname{DecayMatrixElement} class is designed to store the helicity "
+    ("The DecayMatrixElement class is designed to store the helicity "
      "amplitude expression for the matrix element of a decay.");
   
 }

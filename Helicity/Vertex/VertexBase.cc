@@ -98,7 +98,7 @@ void VertexBase::Init() {
      0, 0, 0, -1000000, 1000000, false, false, true);
 
   static ClassDocumentation<VertexBase> documentation
-    ("The \\classname{VertexBase} class is designed to be the base class"
+    ("The VertexBase class is designed to be the base class"
      "of all vertices in Herwig++");
 
 }

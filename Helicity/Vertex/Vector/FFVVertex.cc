@@ -29,7 +29,7 @@ AbstractClassDescription<FFVVertex> FFVVertex::initFFVVertex;
 void FFVVertex::Init() {
       
   static ClassDocumentation<FFVVertex> documentation
-    ("The \\classname{FFVVertex} class implements the helicity amplitude"
+    ("The FFVVertex class implements the helicity amplitude"
      "calculations for a fermion-fantifermion gauge boson vertex. Any   "
      "implementation of such a vertex should inherit from in and implement"
      " the virtual setCoupling member to calculate the coupling");

@@ -445,7 +445,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "Herwig++::Helicity::ProductionMatrixElement"; }
+    static string className() { return "Herwig++::ProductionMatrixElement"; }
 
     /**
      * Return the name of the shared library to be loaded to get

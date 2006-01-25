@@ -25,7 +25,7 @@ AbstractClassDescription<FFVTVertex> FFVTVertex::initFFVTVertex;
 void FFVTVertex::Init() {
   
   static ClassDocumentation<FFVTVertex> documentation
-    ("The \\classname{FFVTVertex} class is the implementation of the"
+    ("The FFVTVertex class is the implementation of the"
      "helicity amplitude calculation of the fermion-antifermion-vector-tensor"
      "vertex. All such vertices should inherit from it.");
 
