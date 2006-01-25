@@ -5,18 +5,20 @@
 //
 
 #include "GlobalParameters.h"
-#include <ThePEG/Interface/ClassDocumentation.h>
+#include "ThePEG/Interface/ClassDocumentation.h"
 #include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/Interface/Switch.h>
-#include <ThePEG/Persistency/PersistentOStream.h>
-#include <ThePEG/Persistency/PersistentIStream.h>
+
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "GlobalParameters.tcc"
+#endif
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-// using namespace ThePEG;
-
 
 GlobalParameters::~GlobalParameters() {}
-
 
 void GlobalParameters::persistentOutput(PersistentOStream & os) const {
   os << _effectiveGluonMass 
@@ -27,7 +29,6 @@ void GlobalParameters::persistentOutput(PersistentOStream & os) const {
      << _maxDisplacement;
 }
 
-
 void GlobalParameters::persistentInput(PersistentIStream & is, int) {
   is >> _effectiveGluonMass 
      >> _hadronizationScale
@@ -37,10 +38,8 @@ void GlobalParameters::persistentInput(PersistentIStream & is, int) {
      >> _maxDisplacement;
 }
 
-
 ClassDescription<GlobalParameters> GlobalParameters::initGlobalParameters;
 // Definition of the static class description member.
-
 
 void GlobalParameters::Init() {
 
@@ -93,6 +92,5 @@ void GlobalParameters::Init() {
      0.0*millimeter, 1.0e-9*millimeter,false,false,false);
 
 }
-
 
 
