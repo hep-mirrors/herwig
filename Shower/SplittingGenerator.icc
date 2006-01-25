@@ -6,57 +6,25 @@
 
 namespace Herwig {
 
-
-inline SplittingGenerator::SplittingGenerator() 
-  : _QCDinteractionMode(1), _QEDinteractionMode(0), _EWKinteractionMode(0),
-    _ISR_Mode(0), _ISR_QCDMode(1), _ISR_QEDMode(1), _ISR_EWKMode(1),
-    _FSR_Mode(1), _FSR_QCDMode(1), _FSR_QEDMode(1), _FSR_EWKMode(1)
+inline SplittingGenerator::SplittingGenerator()
+  : _qcdinteractionMode(1), _qedinteractionMode(0), _ewkinteractionMode(0),
+    _isr_Mode(0), _isr_qcdMode(1), _isr_qedMode(1), _isr_ewkMode(1),
+    _fsr_Mode(1), _fsr_qcdMode(1), _fsr_qedMode(1), _fsr_ewkMode(1)
 {}
 
-
 inline SplittingGenerator::SplittingGenerator(const SplittingGenerator & x)
-  : ThePEG::HandlerBase(x), 
-    _QCDinteractionMode(x._QCDinteractionMode),
-    _QEDinteractionMode(x._QEDinteractionMode),
-    _EWKinteractionMode(x._EWKinteractionMode),
-    _ISR_Mode(x._ISR_Mode), _ISR_QCDMode(x._ISR_QCDMode),
-    _ISR_QEDMode(x._ISR_QEDMode), _ISR_EWKMode(x._ISR_EWKMode),
-    _FSR_Mode(x._FSR_Mode), _FSR_QCDMode(x._FSR_QCDMode),
-    _FSR_QEDMode(x._FSR_QEDMode), _FSR_EWKMode(x._FSR_EWKMode),
+  : Interfaced(x), 
+    _qcdinteractionMode(x._qcdinteractionMode),
+    _qedinteractionMode(x._qedinteractionMode),
+    _ewkinteractionMode(x._ewkinteractionMode),
+    _isr_Mode(x._isr_Mode), _isr_qcdMode(x._isr_qcdMode),
+    _isr_qedMode(x._isr_qedMode), _isr_ewkMode(x._isr_ewkMode),
+    _fsr_Mode(x._fsr_Mode), _fsr_qcdMode(x._fsr_qcdMode),
+    _fsr_qedMode(x._fsr_qedMode), _fsr_ewkMode(x._fsr_ewkMode),
     _showerAlphaQCD(x._showerAlphaQCD), _showerAlphaQED(x._showerAlphaQED),
     _showerVariables(x._showerVariables), _fbranchings(x._fbranchings),
     _bbranchings(x._bbranchings)
 {}
-
-
-inline const tShowerAlphaPtr SplittingGenerator::showerAlphaQCD() const {
-  return _showerAlphaQCD;
-}
-
-inline const tShowerAlphaPtr SplittingGenerator::showerAlphaQED() const {
-  return _showerAlphaQED;
-}
-
-
-inline const ShowerVarsPtr & SplittingGenerator::showerVariables() const {
-  return _showerVariables;
-}
-
-
-inline bool SplittingGenerator::isISRadiationON() const {
-  return _ISR_Mode;
-}  
-
-inline bool SplittingGenerator::isFSRadiationON() const {
-  return _FSR_Mode;
-}
-
-inline void SplittingGenerator::doinitrun() {
-  ThePEG::HandlerBase::doinitrun();
-  //initializeRun();
-}
-
-//--------------------------------------------------------------------------
 
 inline IBPtr SplittingGenerator::clone() const {
   return new_ptr(*this);
@@ -67,7 +35,7 @@ inline IBPtr SplittingGenerator::fullclone() const {
 }
 
 inline void SplittingGenerator::doupdate() throw(UpdateException) {
-  ThePEG::HandlerBase::doupdate();
+  Interfaced::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -85,23 +53,115 @@ inline void SplittingGenerator::doupdate() throw(UpdateException) {
 }
 
 inline void SplittingGenerator::doinit() throw(InitException) {
-  ThePEG::HandlerBase::doinit();
+  Interfaced::doinit();
 }
 
 inline void SplittingGenerator::dofinish() {
-  ThePEG::HandlerBase::dofinish();
+  Interfaced::dofinish();
+}
+
+inline void SplittingGenerator::doinitrun() {
+  Interfaced::doinitrun();
 }
 
 inline void SplittingGenerator::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  ThePEG::HandlerBase::rebind(trans);
+  BranchingList::iterator cit;
+  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
+    {(cit->second).first=trans.translate((cit->second).first);}
+  Interfaced::rebind(trans);
 }
 
 inline IVector SplittingGenerator::getReferences() {
-  IVector ret = ThePEG::HandlerBase::getReferences();
-  // ret.push_back(dummy);
+  IVector ret = Interfaced::getReferences();
+  BranchingList::iterator cit;
+  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
+    {ret.push_back((cit->second).first);}
+  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
+    {ret.push_back((cit->second).first);}
   return ret;
 }
 
+inline const tShowerAlphaPtr SplittingGenerator::showerAlphaQCD() const {
+  return _showerAlphaQCD;
+}
+
+inline const tShowerAlphaPtr SplittingGenerator::showerAlphaQED() const {
+  return _showerAlphaQED;
+}
+
+inline const ShowerVarsPtr & SplittingGenerator::showerVariables() const {
+  return _showerVariables;
+}
+
+inline bool SplittingGenerator::isISRadiationON() const {
+  return _isr_Mode;
+}  
+
+inline bool SplittingGenerator::isFSRadiationON() const {
+  return _fsr_Mode;
+}
+
+inline void SplittingGenerator::setQED(ShowerAlphaPtr p) {
+  _showerAlphaQED = p;
+  if(_showerVariables) p->setSV(_showerVariables);
+}
+
+inline void SplittingGenerator::setQCD(ShowerAlphaPtr p) {
+  _showerAlphaQCD = p;
+  if(_showerVariables) p->setSV(_showerVariables);
+}
+inline bool SplittingGenerator::
+isInteractionON(const ShowerIndex::InteractionType interaction) const {
+  int mode = 0;
+  switch ( interaction ) {
+  case ShowerIndex::QCD : mode = _qcdinteractionMode; break; 
+  case ShowerIndex::QED : mode = _qedinteractionMode; break; 
+  case ShowerIndex::EWK : mode = _ewkinteractionMode; break; 
+  default: break;
+  }
+  return mode;
+}
+
+inline bool SplittingGenerator::
+isISRadiationON(const ShowerIndex::InteractionType interaction) const {
+  int mode = 0;
+  if ( isInteractionON(interaction) && isISRadiationON() ) { 
+    switch ( interaction ) {
+    case ShowerIndex::QCD : mode = _isr_qcdMode; break; 
+    case ShowerIndex::QED : mode = _isr_qedMode; break; 
+    case ShowerIndex::EWK : mode = _isr_ewkMode; break; 
+    default: break;
+    }
+  }
+  return mode;
+}  
+
+inline bool SplittingGenerator::
+isFSRadiationON(const ShowerIndex::InteractionType interaction) const {
+  int mode = 0;
+  if ( isInteractionON(interaction) && isFSRadiationON() ) { 
+    switch ( interaction ) {
+    case ShowerIndex::QCD : mode = _fsr_qcdMode; break; 
+    case ShowerIndex::QED : mode = _fsr_qedMode; break; 
+    case ShowerIndex::EWK : mode = _fsr_ewkMode; break; 
+    default: break;
+    }
+  }
+  return mode;
+}
+
+inline string SplittingGenerator::addFinalSplitting(string arg) {
+  return addSplitting(arg,true);
+}
+inline string SplittingGenerator::addInitialSplitting(string arg) {
+  return addSplitting(arg,false);
+}
+
+inline void SplittingGenerator::setSVtoAlpha(ShowerVarsPtr p) {
+  _showerVariables = p; 
+  if (_showerAlphaQCD) _showerAlphaQCD->setSV(p);
+  if (_showerAlphaQED) _showerAlphaQED->setSV(p);
+}
 }
