@@ -401,9 +401,9 @@ inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wav
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(RSFermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(RSFermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tRSFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,vertex);
@@ -456,9 +456,9 @@ inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wav
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(RSFermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(RSFermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tRSFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin3Half);rho.average();

@@ -19,7 +19,7 @@ ScalarWaveFunction::ScalarWaveFunction(tPPtr part,Direction dir,bool time,bool v
       tScalarSpinPtr inspin;
       if(part->spinInfo()){inspin=dynamic_ptr_cast<tScalarSpinPtr>(part->spinInfo());}
       if(dir==outgoing)
-	{if(!inspin){part->spinInfo(new_ptr(ScalarSpinInfo(part->momentum(),true)));}}
+	{if(!inspin){part->spinInfo(new_ptr(ScalarSpinInfo(part->momentum(),time)));}}
       else
 	{
 	  if(inspin){inspin->decay();}
@@ -30,9 +30,9 @@ ScalarWaveFunction::ScalarWaveFunction(tPPtr part,Direction dir,bool time,bool v
 		    << "Wrong type of SpinInfo for the incoming particle in "
 		    << "ScalarWaveFunction() " << part->PDGName()
 		    << Exception::warning;}
-	      SpinPtr newspin(new_ptr(ScalarSpinInfo(part->momentum(),true)));
+	      SpinPtr newspin(new_ptr(ScalarSpinInfo(part->momentum(),time)));
 	      inspin= dynamic_ptr_cast<tScalarSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	}
@@ -49,7 +49,7 @@ ScalarWaveFunction::ScalarWaveFunction(tPPtr part,RhoDMatrix& rho,Direction dir,
   if(vertex)
     {
       if(dir==outgoing)
-	{if(!inspin){part->spinInfo(new_ptr(ScalarSpinInfo(part->momentum(),true)));}}
+	{if(!inspin){part->spinInfo(new_ptr(ScalarSpinInfo(part->momentum(),time)));}}
       else
 	{
 	  if(inspin){inspin->decay();}
@@ -60,9 +60,9 @@ ScalarWaveFunction::ScalarWaveFunction(tPPtr part,RhoDMatrix& rho,Direction dir,
 		    << "Wrong type of SpinInfo for the incoming particle in "
 		    << "ScalarWaveFunction() "
 		    << Exception::warning;}
-	      SpinPtr newspin=new_ptr(ScalarSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(ScalarSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tScalarSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	}

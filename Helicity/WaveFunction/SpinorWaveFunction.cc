@@ -230,9 +230,10 @@ void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr par
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      cerr << "testing ran this constructor" << endl;
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,vertex);
@@ -286,9 +287,10 @@ void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatri
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      cerr << "testing ran this constructor B " << endl;
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();
@@ -301,6 +303,7 @@ void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatri
 void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 					   tPPtr part,bool time, bool vertex)
 {
+  cerr << "testing running this constructSpinInfo " << endl;
   tFermionSpinPtr inspin;
   if(part->spinInfo())
     {inspin=dynamic_ptr_cast<tFermionSpinPtr>(part->spinInfo());}
@@ -346,9 +349,9 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,vertex);
@@ -407,9 +410,9 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();

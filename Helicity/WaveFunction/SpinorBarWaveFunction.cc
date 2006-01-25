@@ -222,9 +222,9 @@ void SpinorBarWaveFunction::constructSpinInfo(vector<LorentzSpinorBar>& wave,
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,vertex);
@@ -280,9 +280,9 @@ void SpinorBarWaveFunction::constructSpinInfo(vector<LorentzSpinorBar>& wave,
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();
@@ -343,9 +343,9 @@ void SpinorBarWaveFunction::constructSpinInfo(vector<SpinorBarWaveFunction>& wav
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,vertex);
@@ -409,9 +409,9 @@ void SpinorBarWaveFunction::constructSpinInfo(vector<SpinorBarWaveFunction>& wav
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(FermionSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tFermionSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin1Half);rho.average();

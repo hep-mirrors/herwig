@@ -36,12 +36,9 @@ void VectorWaveFunction::calculateWaveFunction(unsigned int ihel,VectorPhase vph
       Complex phase;
       if(vphase==vector_phase)
 	{
-	  if(pt==0. || ihel==1)
-	    {phase=1.;}
-	  else if(ihel==0)
-	    {phase = complex<double>(ppx,fact*ppy)/pt;}
-	  else
-	    {phase = complex<double>(ppx,-fact*ppy)/pt;}
+	  if(pt==0. || ihel==1){phase = 1.;}
+	  else if(ihel==0)     {phase = Complex(ppx,-fact*ppy)/pt;}
+	  else                 {phase = Complex(ppx, fact*ppy)/pt;}
 	}
       else
 	{
@@ -66,10 +63,8 @@ void VectorWaveFunction::calculateWaveFunction(unsigned int ihel,VectorPhase vph
 	    {
 	      double opabs=1./pabs;
 	      double opt  =1./pt;
-	      _wf[0]=phase*complex<double>(-jhel*ppz*ppx*opabs*opt,
-					  fact*ppy*opt);
-	      _wf[1]=phase*complex<double>(-jhel*ppz*ppy*opabs*opt,
-					   -fact*ppx*opt);
+	      _wf[0]=phase*opt*Complex(-jhel*ppz*ppx*opabs, fact*ppy);
+	      _wf[1]=phase*opt*Complex(-jhel*ppz*ppy*opabs,-fact*ppx);
 	      _wf[2]=jhel*pt*opabs*phase;
 	      _wf[3]=0.;
 	    }

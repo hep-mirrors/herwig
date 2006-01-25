@@ -393,9 +393,9 @@ inline void VectorWaveFunction::constructSpinInfo(vector<LorentzPolarizationVect
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tVectorSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,massless,phase,vertex);
@@ -453,9 +453,9 @@ inline void VectorWaveFunction::constructSpinInfo(vector<LorentzPolarizationVect
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tVectorSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin1);rho.average();
@@ -540,9 +540,9 @@ inline void VectorWaveFunction::constructSpinInfo(vector<VectorWaveFunction>& wa
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tVectorSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  constructSpinInfo(wave,inspin,massless,phase,vertex);
@@ -606,9 +606,9 @@ inline void VectorWaveFunction::constructSpinInfo(vector<VectorWaveFunction>& wa
 		<< Exception::warning;}
 	  if(vertex)
 	    {
-	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),true));
+	      SpinPtr newspin=new_ptr(VectorSpinInfo(part->momentum(),time));
 	      inspin= dynamic_ptr_cast<tVectorSpinPtr>(newspin);
-	      inspin->decayed(true);
+	      if(time) inspin->decayed(true);
 	      part->spinInfo(newspin);
 	    }
 	  rho = RhoDMatrix(PDT::Spin1);rho.average();
