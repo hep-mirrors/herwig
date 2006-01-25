@@ -51,7 +51,7 @@ AbstractClassDescription<Baryon1MesonDecayerBase> Baryon1MesonDecayerBase::initB
 void Baryon1MesonDecayerBase::Init() {
 
   static ClassDocumentation<Baryon1MesonDecayerBase> documentation
-    ("The \\classname{Baryon1MesonDecayerBase} class is the base class for"
+    ("The Baryon1MesonDecayerBase class is the base class for"
      " the decays of the baryons to a baryon and a pseudoscalar or vector meson.");
 
 }

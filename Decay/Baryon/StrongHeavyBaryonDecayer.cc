@@ -470,7 +470,7 @@ ClassDescription<StrongHeavyBaryonDecayer> StrongHeavyBaryonDecayer::initStrongH
 void StrongHeavyBaryonDecayer::Init() {
 
   static ClassDocumentation<StrongHeavyBaryonDecayer> documentation
-    ("The \\classname{StrongHeavyBaryonDecayer} class performs the strong decays of"
+    ("The StrongHeavyBaryonDecayer class performs the strong decays of"
      " baryons containing a heavy quark.");
 
   static Parameter<StrongHeavyBaryonDecayer,InvEnergy> interfacegSigma_cLambda_cPi

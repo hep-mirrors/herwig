@@ -99,7 +99,7 @@ ClassDescription<NonLeptonicHyperonDecayer> NonLeptonicHyperonDecayer::initNonLe
 void NonLeptonicHyperonDecayer::Init() {
 
   static ClassDocumentation<NonLeptonicHyperonDecayer> documentation
-    ("The \\classname{NonLeptonicHyperonDecayer} class performs the non-leptonic"
+    ("The NonLeptonicHyperonDecayer class performs the non-leptonic"
      " weak decay of the hyperons.");
 
   static ParVector<NonLeptonicHyperonDecayer,double> interfaceMaxWeight

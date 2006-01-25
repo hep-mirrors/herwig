@@ -108,7 +108,7 @@ ClassDescription<SU3BaryonOctetDecupletScalarDecayer> SU3BaryonOctetDecupletScal
 void SU3BaryonOctetDecupletScalarDecayer::Init() {
 
   static ClassDocumentation<SU3BaryonOctetDecupletScalarDecayer> documentation
-    ("The \\classname{SU3BaryonOctetDecupletScalarDecayer} class is designed for the"
+    ("The SU3BaryonOctetDecupletScalarDecayer class is designed for the"
      " decay of an SU(3) octet baryon to an SU(3) decuplet baryon and a pseudoscalar"
      " meson from the lightest multiplet.");
 

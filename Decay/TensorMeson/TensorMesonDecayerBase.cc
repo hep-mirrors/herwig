@@ -49,7 +49,7 @@ AbstractClassDescription<TensorMesonDecayerBase> TensorMesonDecayerBase::initTen
 void TensorMesonDecayerBase::Init() {
 
   static ClassDocumentation<TensorMesonDecayerBase> documentation
-    ("The \\classname{TensorMesonDecayerBase} class is the base class"
+    ("The TensorMesonDecayerBase class is the base class"
      " for the implementation of the decays of tensor mesons.");
 
 }

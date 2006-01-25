@@ -179,7 +179,7 @@ ClassDescription<TensorMesonVectorPScalarDecayer> TensorMesonVectorPScalarDecaye
 void TensorMesonVectorPScalarDecayer::Init() {
 
   static ClassDocumentation<TensorMesonVectorPScalarDecayer> documentation
-    ("The \\classname{TensorMesonVectorPScalarDecayer} class implements the"
+    ("The TensorMesonVectorPScalarDecayer class implements the"
      " decay of a tensor meson to a spin-1 particle and a pseduoscalar meson");
 
   static ParVector<TensorMesonVectorPScalarDecayer,int> interfaceIncoming

@@ -109,7 +109,7 @@ ClassDescription<SU3BaryonOctetOctetScalarDecayer> SU3BaryonOctetOctetScalarDeca
 void SU3BaryonOctetOctetScalarDecayer::Init() {
 
   static ClassDocumentation<SU3BaryonOctetOctetScalarDecayer> documentation
-    ("The \\classname{SU3BaryonOctetOctetScalarDecayer} class is designed for the"
+    ("The SU3BaryonOctetOctetScalarDecayer class is designed for the"
      " decay of excited baryon resonances assuming SU(3) symmetry");
 
   static Parameter<SU3BaryonOctetOctetScalarDecayer,double> interfaceFcoupling

@@ -144,7 +144,7 @@ ClassDescription<SemiLeptonicBaryonDecayer> SemiLeptonicBaryonDecayer::initSemiL
 void SemiLeptonicBaryonDecayer::Init() {
 
   static ClassDocumentation<SemiLeptonicBaryonDecayer> documentation
-    ("The \\classname{SemiLeptonicBaryonDecayer} class is designed for"
+    ("The SemiLeptonicBaryonDecayer class is designed for"
      " the semi-leptonic decay of the baryons.");
 
   static Parameter<SemiLeptonicBaryonDecayer,InvEnergy2> interfaceGFermi

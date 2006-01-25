@@ -154,7 +154,7 @@ ClassDescription<NonLeptonicOmegaDecayer> NonLeptonicOmegaDecayer::initNonLepton
 void NonLeptonicOmegaDecayer::Init() {
 
   static ClassDocumentation<NonLeptonicOmegaDecayer> documentation
-    ("The \\classname{NonLeptonicOmegaDecayer} class performs the non-leptonic decays"
+    ("The NonLeptonicOmegaDecayer class performs the non-leptonic decays"
      " of the omega.");
 
   static Parameter<NonLeptonicOmegaDecayer,double> interfaceDStar

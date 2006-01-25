@@ -67,7 +67,7 @@ ClassDescription<OmegaXiStarPionDecayer> OmegaXiStarPionDecayer::initOmegaXiStar
 void OmegaXiStarPionDecayer::Init() {
 
   static ClassDocumentation<OmegaXiStarPionDecayer> documentation
-    ("The \\classname{OmegaXiStarPionDecayer} class performs the weak decay"
+    ("The OmegaXiStarPionDecayer class performs the weak decay"
      " of the Omega to Xi*0 and pi-");
 
   static Parameter<OmegaXiStarPionDecayer,double> interfaceAcomm

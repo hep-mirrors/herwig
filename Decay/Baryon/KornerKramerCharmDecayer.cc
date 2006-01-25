@@ -722,7 +722,7 @@ KornerKramerCharmDecayer::initKornerKramerCharmDecayer;
 void KornerKramerCharmDecayer::Init() {
 
   static ClassDocumentation<KornerKramerCharmDecayer> documentation
-    ("The \\classname{KornerKramerCharmDecayer} class implements the"
+    ("The KornerKramerCharmDecayer class implements the"
      " non-leptonic weak decay of charm baryons using the results of Z.Phys.C55,659.");
 
   static Parameter<KornerKramerCharmDecayer,InvEnergy2> interfaceGFermi

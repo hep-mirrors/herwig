@@ -214,7 +214,7 @@ ClassDescription<TensorMeson2PScalarDecayer> TensorMeson2PScalarDecayer::initTen
 void TensorMeson2PScalarDecayer::Init() {
 
   static ClassDocumentation<TensorMeson2PScalarDecayer> documentation
-    ("The \\classname{TensorMeson2PScalarDecayer} class is designed for the decay"
+    ("The TensorMeson2PScalarDecayer class is designed for the decay"
      " of a tensor meson to two (pseudo)-scalar mesons.");
 
   static ParVector<TensorMeson2PScalarDecayer,int> interfaceIncoming

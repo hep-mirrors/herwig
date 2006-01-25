@@ -86,7 +86,7 @@ ClassDescription<SU3BaryonSingletOctetPhotonDecayer> SU3BaryonSingletOctetPhoton
 void SU3BaryonSingletOctetPhotonDecayer::Init() {
 
   static ClassDocumentation<SU3BaryonSingletOctetPhotonDecayer> documentation
-    ("The \\classname{SU3BaryonSingletOctetPhotonDecayer} class performs the decay"
+    ("The SU3BaryonSingletOctetPhotonDecayer class performs the decay"
      " of a singlet baryon to an octet baryon and a photon.");
 
   static Parameter<SU3BaryonSingletOctetPhotonDecayer,InvEnergy> interfaceCoupling

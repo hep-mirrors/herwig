@@ -152,7 +152,7 @@ ClassDescription<TensorMesonVectorVectorDecayer> TensorMesonVectorVectorDecayer:
 void TensorMesonVectorVectorDecayer::Init() {
 
   static ClassDocumentation<TensorMesonVectorVectorDecayer> documentation
-    ("The \\classname{TensorMesonVectorVectorDecayer} class performs the"
+    ("The TensorMesonVectorVectorDecayer class performs the"
      " decay of a tensor meson to two scalar mesons.");
 
   static ParVector<TensorMesonVectorVectorDecayer,int> interfaceIncoming
