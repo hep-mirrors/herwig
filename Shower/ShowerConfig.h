@@ -6,6 +6,8 @@
 
 #include "Herwig++/Config/Herwig.h"
 #include "ThePEG/Config/Complex.h" 
+#include "ShowerVariables.fh"
+#include "ShowerKinematics.fh"
 
 
 namespace Herwig { 
@@ -30,28 +32,8 @@ namespace Herwig {
   typedef vector<ShowerParticlePtr> ShowerParticleVector;
   typedef vector<tShowerParticlePtr> tShowerParticleVector;
 
-  class ShowerKinematics;
-  typedef Ptr<ShowerKinematics>::pointer ShoKinPtr;
-  typedef Ptr<ShowerKinematics>::transient_pointer tShoKinPtr;
   typedef vector<ShoKinPtr> CollecShoKinPtr;
   typedef vector<tShoKinPtr> tCollecShoKinPtr;
-
-  // For rho-D (spin density matrix and decay matrix) matrices  
-  // // // typedef std::complex<double> Complex; // Now in ThePEG/Config/Complex.h 
-  typedef vector<Complex>       ComplexVector;
-  typedef vector<ComplexVector> ComplexMatrix;
-
-  //class MECorrection;
-  //typedef Ptr<MECorrection>::pointer MECorrectionPtr;
-  //typedef Ptr<MECorrection>::transient_pointer tMECorrectionPtr;
-
-  class ShowerVariables;
-  typedef Ptr<ShowerVariables>::pointer ShowerVarsPtr;
-  typedef Ptr<ShowerVariables>::transient_pointer tShowerVarsPtr;
-
-  class ShowerAlpha;
-  typedef Ptr<ShowerAlpha>::pointer ShowerAlphaPtr;
-  typedef Ptr<ShowerAlpha>::transient_pointer tShowerAlphaPtr;
 
   typedef vector<long> IdList;
 
