@@ -14,35 +14,32 @@ namespace Herwig {
 
   /** \ingroup Shower
    *
-   *  Simple struct that is used as key for the multimap of the 
-   *  possible Sudakov form factors. In fact, given: <BR>
-   *  <OL>
-   *    <LI> a certain particle, specified by its id; <BR>  
-   *         (it must be always defined)
-   *    <LI> the interaction type (QCD or QED or EWK,
+   *  ShowerIndex is a simple struct which is used as key for the multimap of the 
+   *  possible Sudakov form factors. In fact, given:
+   *  -   a certain particle, specified by its id;  
+   *  -   the interaction type (QCD or QED or EWK,
    *         or others if you want to add other extra interactions) of the 
-   *         radiation it has emitted; in the case it didn't emit any radiation,
+   *         radiation it has emitted, in the case it didn't emit any radiation,
    *         and as default value, is set to UNDEFINED;
-   *    <LI> the time-order of the particle: IS if initial state (space-like), 
-   *         or FS if final state (time-like); the latter is used as default;
-   *  </OL>
-   *  there can be more than one Sudakov form factor, for example:
-   *  <I>(gluon,QCD,FS)</I> has the following Sudakov form factors: <BR>
-   *  <I> g -&GT; u ubar , g -&GT; d dbar , g -&GT; s sbar , g -&GT; c cbar, 
-   *      g -&GT; b bar </I><BR>
-   *      (we can also include <I> g -&GT; g g g </I>). <BR>
-   *  Notice that in practice we can even distinguish between
-   *  particle (id>0) and antiparticle (id&LT;0), but in practice
+   *  - the time-order of the particle: IS if initial state (space-like), 
+   *    or FS if final state (time-like), the latter is used as default;
+   *  there can be more than one Sudakov form factor, for example
+   *  a final-state gluon has the following Sudakov form factors: 
+   *  \f$g\to d\bar{d}\f$, \f$g\to u\bar{u}\f$, \f$g\to s\bar{s}\f$,\f$g\to c\bar{c}\f$,
+   *  \f$g\to b\bar{b}\f$, \f$g\to gg\f$
+   *
+   *  Notice that in principle we can even distinguish between
+   *  particle (id>0) and antiparticle (id<0), but in practice
    *  we assume CP-conserving interactions, and therefore only
-   *  the particle (id&GT;0) will be considered.
+   *  the particle (id>0) will be considered.
    *  Before a ShowerParticle object emits eventually a radiation
    *  (that means forever in the case it does not emit any radiation)
-   *  its interaction type is set to UNDEFINED. <BR>
+   *  its interaction type is set to UNDEFINED.
    *
    *  We use a simple plain struct, rather than a proper class
    *  with encapsulated private members and accessory get/set methods,
    *  because we feel that this is more appropriate for this very simple and
-   *  straightforward data structure which consists of just a triplet. 
+   *  straightforward data structure which just consists of a triplet. 
    * 
    *  @see ShowerParticle
    *  @see SplittingGenerator
@@ -51,15 +48,39 @@ namespace Herwig {
 
     /**
      * This operator overloading is necessary in order to store persistently
-     * the multimap of &LT; key = showerIndex object, value = pointer to 
-     * Sudakov object &GT; (in class SplittingGenerator).
+     * the multimap of key = showerIndex object, value = pointer to 
+     * Sudakov object (in class SplittingGenerator).
+     */
+    //@{
+    /**
+     * Output operator
+     * @param os The output stream
+     * @param x  The ShowerIndex being outputted.
      */
     friend PersistentOStream & operator<<(PersistentOStream & os, const ShowerIndex & x);
-    friend PersistentIStream & operator>>(PersistentIStream & is, ShowerIndex & x);
 
+    /**
+     * Input operator
+     * @param is The input stream
+     * @param x  The ShowerIndex being inputted.
+     */
+    friend PersistentIStream & operator>>(PersistentIStream & is, ShowerIndex & x);
+    //@}
+
+    /**
+     *  Enumeration storing the number of possible interactions and directions
+     */
     enum { NumInteractionTypes = 3, NumTimeOrderType = 2 };
-    enum InteractionType { UNDEFINED=-1, QCD, QED, EWK };  
-    enum TimeOrderType { UNINITIALIZED=-1, IS, FS }; // InitialState, FinaleState particle
+
+    /**
+     *  Enumeration for the interaction type
+     */
+    enum InteractionType { UNDEFINED=-1, QCD, QED, EWK };
+
+    /**
+     *  Enumeration storing the type of radiation, i.e. initial or final state.
+     */  
+    enum TimeOrderType { UNINITIALIZED=-1, IS, FS }; 
 
     /**
      * Default constructor.
@@ -72,21 +93,19 @@ namespace Herwig {
      */
     bool operator< (const ShowerIndex & rhs) const; 
 
-    /** 
-     * These conversion static methods are necessary for overloading
-     * the input operator&LT;&LT; (see above), because it is a compiling 
-     * error if you try to convert an int to a enum const (whereas
-     * the opposite conversion, which is used in the output operator&GT;&GT;
-     * is done automatically by the compiler). Furthermore, these
-     * methods, together with the the constants NumInteractionTypes
-     * and NumTimeOrderType , are useful to loop over an enum,
-     * which is not possible directly.
+    /**
+     *  The PDG code of the particle
      */
-    //static InteractionType int2Interaction(const int position);
-    //static TimeOrderType   int2TimeOrder(const int position);
-
     long id;
+
+    /**
+     *  The interaction type
+     */
     InteractionType interaction;
+
+    /**
+     *  The type of radiation
+     */
     TimeOrderType timeFlag;
 
   };
