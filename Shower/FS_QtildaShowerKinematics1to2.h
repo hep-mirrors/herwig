@@ -60,9 +60,11 @@ public:
    * of the parent kinematics.  This method is used by the
    * ForwardShowerEvolver.  
    * ***ACHTUNG*** Might be extended to update colour connections as well.
+   * @param theParent The branching particle
+   * @param theChildren The particles produced in the branching
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ParticleVector theChildren );
+			       const ShowerParticleVector theChildren );
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
