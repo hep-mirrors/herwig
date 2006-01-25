@@ -36,7 +36,7 @@ ClassDescription<ScalarMassGenerator> ScalarMassGenerator::initScalarMassGenerat
 void ScalarMassGenerator::Init() {
 
   static ClassDocumentation<ScalarMassGenerator> documentation
-    ("The \\classname{ScalarMassGenerator} class inherits from the "
+    ("The ScalarMassGenerator class inherits from the "
      "GenericMassGenerator class and includes finite width effects "
      "for the scalar f_0 and a_0 mesons.");
 

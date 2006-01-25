@@ -27,7 +27,8 @@ NoPIOClassDescription<TwoOffShellCalculator> TwoOffShellCalculator::initTwoOffSh
 void TwoOffShellCalculator::Init() {
 
   static ClassDocumentation<TwoOffShellCalculator> documentation
-    ("There is no documentation for the \\classname{TwoOffShellCalculator} class");
+    ("The TwoOffShellCalculator class performs the integral of the partial width"
+     " when two decay products are off-shell");
 
 }
 

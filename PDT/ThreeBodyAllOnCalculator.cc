@@ -29,7 +29,7 @@ NoPIOClassDescription<ThreeBodyAllOnCalculator> ThreeBodyAllOnCalculator::initTh
 void ThreeBodyAllOnCalculator::Init() {
 
   static ClassDocumentation<ThreeBodyAllOnCalculator> documentation
-    ("The \\classname{ThreeBodyAllOnCalculator} class integrators a 1-3 matrix"
+    ("The ThreeBodyAllOnCalculator class integrators a 1-3 matrix"
      " element to give the width");
 
 }

@@ -48,7 +48,7 @@ ClassDescription<GenericWidthGenerator> GenericWidthGenerator::initGenericWidthG
 void GenericWidthGenerator::Init() {
 
   static ClassDocumentation<GenericWidthGenerator> documentation
-    ("There is no documentation for the \\classname{GenericWidthGenerator} class");
+    ("The GenericWidthGenerator class is the base class for running widths");
 
   static Reference<GenericWidthGenerator,ParticleData> interfaceParticle
     ("Particle",

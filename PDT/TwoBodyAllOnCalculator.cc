@@ -24,7 +24,8 @@ NoPIOClassDescription<TwoBodyAllOnCalculator> TwoBodyAllOnCalculator::initTwoBod
 void TwoBodyAllOnCalculator::Init() {
 
   static ClassDocumentation<TwoBodyAllOnCalculator> documentation
-    ("There is no documentation for the \\classname{TwoBodyAllOnCalculator} class");
+    ("The TwoBodyAllOnCalculator class calculates the partial width for a"
+     " two body decay where both decay products are on-shell");
 
 }
 

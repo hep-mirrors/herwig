@@ -26,7 +26,8 @@ NoPIOClassDescription<ThreeBodyAllOn1IntegralCalculator> ThreeBodyAllOn1Integral
 void ThreeBodyAllOn1IntegralCalculator::Init() {
 
   static ClassDocumentation<ThreeBodyAllOn1IntegralCalculator> documentation
-    ("The \\classname{ThreeBodyAllOn1IntegralCalculator} class performs the integral of a function giving DGamma/ds");
+    ("The ThreeBodyAllOn1IntegralCalculator class performs the integral of a"
+     "function giving DGamma/ds");
 
 }
 

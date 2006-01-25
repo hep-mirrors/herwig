@@ -22,7 +22,8 @@ AbstractNoPIOClassDescription<WidthCalculatorBase> WidthCalculatorBase::initWidt
 void WidthCalculatorBase::Init() {
 
   static ClassDocumentation<WidthCalculatorBase> documentation
-    ("There is no documentation for the \\classname{WidthCalculatorBase} class");
+    ("The WidthCalculatorBase class is the base class for the calculation of"
+     " running widths in Herwig++");
 
 }
 

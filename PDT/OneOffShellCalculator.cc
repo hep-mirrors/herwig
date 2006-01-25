@@ -23,7 +23,8 @@ NoPIOClassDescription<OneOffShellCalculator> OneOffShellCalculator::initOneOffSh
 void OneOffShellCalculator::Init() {
 
   static ClassDocumentation<OneOffShellCalculator> documentation
-    ("There is no documentation for the \\classname{OneOffShellCalculator} class");
+    ("The OneOffShellCalculator class performs the integration of the partial"
+     " width when one particle outgoing particle is off-shell");
 
 }
 

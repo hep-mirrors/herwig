@@ -40,7 +40,7 @@ ClassDescription<GenericMassGenerator> GenericMassGenerator::initGenericMassGene
 void GenericMassGenerator::Init() {
 
   static ClassDocumentation<GenericMassGenerator> documentation
-    ("The \\classname{GenericMassGenerator} class is the main class for"
+    ("The GenericMassGenerator class is the main class for"
      " mass generation in Herwig++.");
 
   static Reference<GenericMassGenerator,ParticleData> interfaceParticle
