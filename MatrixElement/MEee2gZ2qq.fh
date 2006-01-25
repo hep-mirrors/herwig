@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEee2gZ2qq class.
+//
+#ifndef HERWIG_MEee2gZ2qq_FH
+#define HERWIG_MEee2gZ2qq_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class MEee2gZ2qq;
+ThePEG_DECLARE_POINTERS(MEee2gZ2qq,MEee2gZ2qqPtr);
+
+}
+
+#endif
