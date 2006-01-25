@@ -60,10 +60,10 @@ SampleHistogram::SampleHistogram(double low, double high, double width)
       howManyBuckets = int((high - low) / width) + 2;
     }
     
-    bucketCount = new int[howManyBuckets];
-    bucketLimit = new double[howManyBuckets];
+    bucketCount.resize(howManyBuckets);
+    bucketLimit.resize(howManyBuckets);
     double lim = low;
-    for (int i = 0; i < howManyBuckets; i++) {
+    for (int i = 0; i < howManyBuckets-1; i++) {
 	bucketCount[i] = 0;
 	bucketLimit[i] = lim;
 	lim += width;
@@ -74,26 +74,21 @@ SampleHistogram::SampleHistogram(double low, double high, double width)
 SampleHistogram::SampleHistogram(double loVals[], int size)
 {
   howManyBuckets = size+1;
-  bucketCount = new int[howManyBuckets];
-  bucketLimit = new double[howManyBuckets];
-  for (int i = 0; i < howManyBuckets; i++) {
+  bucketCount.resize(howManyBuckets);
+  bucketLimit.resize(howManyBuckets);
+  for (int i = 0; i < howManyBuckets-1; i++) {
     bucketCount[i] = 0;
     bucketLimit[i] = loVals[i];
   }
   bucketLimit[howManyBuckets-1] = myHUGE_VAL;	/* from math.h */
 }
 
-SampleHistogram::~SampleHistogram()
-{
-    if (howManyBuckets > 0) {
-	delete[] bucketCount;
-	delete[] bucketLimit;
-    }
-}
+SampleHistogram::~SampleHistogram() {}
 
 void
 SampleHistogram::operator+=(double value)
 {
+  if(isnan(value)) return;
     int i;
     for (i = 0; i < howManyBuckets; i++) {
 	if (value < bucketLimit[i]) break;
@@ -180,10 +175,10 @@ void SampleHistogram::printGnuplot(char* name)
       << this->mean() << " +/- " << this->stdDev() << endl
       << "# 1:xmid 2:entr 3:entr n1 4:estd err 5:err n1 6:xlow 7:xhi 8:entr/tot"
       << endl;
-
   double delta;
   for(int i = 0; i < howManyBuckets-1; i++) {
     delta = (bucketLimit[i+1] - bucketLimit[i])/2.;
+    
     out << bucketLimit[i] + delta << "\t" 
 	<< bucketCount[i+1] << "\t"
 	<< double(bucketCount[i+1]/(2.*delta*this->samples())) << "\t"

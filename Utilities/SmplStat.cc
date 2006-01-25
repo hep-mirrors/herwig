@@ -107,6 +107,7 @@ SampleStatistic::reset()
 void
 SampleStatistic::operator+=(double value)
 {
+  if(isnan(value)) return;
     n += 1;
     x += value;
     x2 += (value * value);
