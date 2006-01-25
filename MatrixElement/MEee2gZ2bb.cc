@@ -168,8 +168,8 @@ ClassDescription<MEee2gZ2bb> MEee2gZ2bb::initMEee2gZ2bb;
 void MEee2gZ2bb::Init() {
 
   static ClassDocumentation<MEee2gZ2bb> documentation
-    ("The \\classname{MEee2gZ2bb} class implements the full"
-     "$e^+ + e^- \\rightarrow \\gamma/Z^0 \\rightarroe b + \\bar{b}$ "
+    ("The MEee2gZ2bb class implements the full"
+     "\\f$e^+ + e^- \\rightarrow \\gamma/Z^0 \\rightarrow b + \\bar{b}\\f$ "
      "matrix element including the interference terms.");
 
 }

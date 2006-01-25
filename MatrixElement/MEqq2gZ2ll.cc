@@ -167,8 +167,8 @@ ClassDescription<MEqq2gZ2ll> MEqq2gZ2ll::initMEqq2gZ2ll;
 void MEqq2gZ2ll::Init() {
 
   static ClassDocumentation<MEqq2gZ2ll> documentation
-    ("The \\classname{MEqq2gZ2ll} class implements the full"
-     "$q + \\bar{q} \\rightarrow \\gamma/Z^0 \\rightarrow \\ell^+ + \\ell^-$ "
+    ("The MEqq2gZ2ll class implements the full"
+     "\\f$q + \\bar{q} \\rightarrow \\gamma/Z^0 \\rightarrow \\ell^+ + \\ell^-\\f$ "
      "matrix element including the interference terms.");
 
 }
