@@ -188,7 +188,7 @@ struct ClassTraits<Herwig::Helicity::RSModelVVGRVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::Helicity::RSModelVVGRVertex"; }
+  static string className() { return "Herwig++::RSModelVVGRVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get

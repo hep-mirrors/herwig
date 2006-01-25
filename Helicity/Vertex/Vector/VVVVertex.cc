@@ -29,7 +29,7 @@ AbstractClassDescription<VVVVertex> VVVVertex::initVVVVertex;
 void VVVVertex::Init() {
   
   static ClassDocumentation<VVVVertex> documentation
-    ("The \\classname{VVVVertex} class implements the helicity amplitude"
+    ("The VVVVertex class implements the helicity amplitude"
      "calculations for the triple gauge boson vertex. Any   "
      "implementation of such a vertex should inherit from in and implement"
      " the virtual setCoupling member to calculate the coupling");

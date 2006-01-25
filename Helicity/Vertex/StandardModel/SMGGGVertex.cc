@@ -36,7 +36,7 @@ void SMGGGVertex::Init() {
      &SMGGGVertex::_theSM, false, false, true, false);
 
   static ClassDocumentation<SMGGGVertex> documentation
-    ("The \\classname{SMGGGVertex} class is the implementation"
+    ("The SMGGGVertex class is the implementation"
      " of the Standard Model triple gluon vertex.");
   
 }

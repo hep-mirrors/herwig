@@ -27,7 +27,7 @@ AbstractClassDescription<VVSVertex> VVSVertex::initVVSVertex;
 void VVSVertex::Init() {
   
   static ClassDocumentation<VVSVertex> documentation
-    ("The \\classname{VVSVertex} class is the implementation of the"
+    ("The VVSVertex class is the implementation of the"
      "vector-vector-scalar vertex. All such vertices should inherit"
      "from it.");
   

@@ -38,7 +38,7 @@ void RSModelFFGRVertex::Init() {
   
   
   static ClassDocumentation<RSModelFFGRVertex> documentation
-    ("The \\classname{RSModelFFGRVertex} class is the RSModel calculation"
+    ("The RSModelFFGRVertex class is the RSModel calculation"
      " of the fermion-antifermion-graviton vertex");
   
 }

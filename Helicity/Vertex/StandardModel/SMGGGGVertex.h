@@ -202,7 +202,7 @@ struct ClassTraits<Herwig::Helicity::SMGGGGVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::Helicity::SMGGGGVertex"; }
+  static string className() { return "Herwig++::SMGGGGVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get

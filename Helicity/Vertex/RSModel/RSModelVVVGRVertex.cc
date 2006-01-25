@@ -36,7 +36,7 @@ void RSModelVVVGRVertex::Init() {
      &RSModelVVVGRVertex::_theModel, false, false, true, false, false);
   
   static ClassDocumentation<RSModelVVVGRVertex> documentation
-    ("The \\classname{RSModelVVVGRVertex} class is the four point coupling"
+    ("The RSModelVVVGRVertex class is the four point coupling"
      " of three vector bosons and a graviton in the Randell-Sundrum model.");
   
 }

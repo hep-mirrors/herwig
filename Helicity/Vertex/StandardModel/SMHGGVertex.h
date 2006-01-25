@@ -216,7 +216,7 @@ template <>
 struct ClassTraits<Herwig::Helicity::SMHGGVertex>
   : public ClassTraitsBase<Herwig::Helicity::SMHGGVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Helicity::SMHGGVertex"; }
+  static string className() { return "Herwig++::SMHGGVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMHGGVertex class and every other class it uses
    *  (except the base class). */

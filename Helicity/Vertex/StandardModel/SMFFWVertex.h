@@ -210,7 +210,7 @@ namespace ThePEG {
     /**
      * Return the class name.
      */
-    static string className() { return "Herwig++::Helicity::SMFFWVertex"; }
+    static string className() { return "Herwig++::SMFFWVertex"; }
 
     /**
      * Return the name of the shared library to be loaded to get

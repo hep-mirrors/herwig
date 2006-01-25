@@ -225,7 +225,7 @@ template <>
 struct ClassTraits<Herwig::Helicity::GeneralSVVVertex>
   : public ClassTraitsBase<Herwig::Helicity::GeneralSVVVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Helicity::GeneralSVVVertex"; }
+  static string className() { return "Herwig++::GeneralSVVVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the GeneralSVVVertex class and every other class it uses
    *  (except the base class). */

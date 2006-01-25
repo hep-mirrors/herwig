@@ -25,7 +25,7 @@ AbstractClassDescription<SSSSVertex> SSSSVertex::initSSSSVertex;
 void SSSSVertex::Init() {
   
   static ClassDocumentation<SSSSVertex> documentation
-    ("The \\classname{SSSSVertex} class is the implementation"
+    ("The SSSSVertex class is the implementation"
      "of the helicity amplitude for the four scalar vertex"
      "all vertices of trhis type should inherit from it");
 }

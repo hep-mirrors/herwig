@@ -39,7 +39,7 @@ void RSModelFFVGRVertex::Init() {
      &RSModelFFVGRVertex::_theModel, false, false, true, false);
 
   static ClassDocumentation<RSModelFFVGRVertex> documentation
-    ("The \\classname{RSModelFFVGRVertex} class is the implementation"
+    ("The RSModelFFVGRVertexxs class is the implementation"
      " of the two fermion vector coupling for the RS model.");
   
 }

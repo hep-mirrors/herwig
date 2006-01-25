@@ -26,7 +26,7 @@ AbstractClassDescription<FFSVertex> FFSVertex::initFFSVertex;
 void FFSVertex::Init() {
 
   static ClassDocumentation<FFSVertex> documentation
-    ("The \\classname{FFSVertex} class is the implementation of the FFS"
+    ("The FFSVertex class is the implementation of the FFS"
      "vertex. All such vertices shoud inherit from it");
   
 }

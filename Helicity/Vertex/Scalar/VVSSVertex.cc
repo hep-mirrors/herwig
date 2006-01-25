@@ -25,7 +25,7 @@ AbstractClassDescription<VVSSVertex> VVSSVertex::initVVSSVertex;
 void VVSSVertex::Init() {
       
 static ClassDocumentation<VVSSVertex> documentation
-  ("The \\classname{VVSSVertex} class is the implementation of helicity"
+  ("The VVSSVertex class is the implementation of helicity"
    "amplitude calculation of the vector-vector-scalar-scalar vertex."
    "All classes for this type of vertex should inherit from it.");
 }

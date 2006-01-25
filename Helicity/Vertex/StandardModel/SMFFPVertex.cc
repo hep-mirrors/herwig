@@ -39,7 +39,7 @@ void SMFFPVertex::Init() {
      &SMFFPVertex::_theSM, false, false, true, false);
 
   static ClassDocumentation<SMFFPVertex> documentation
-    ("The \\classname{SMFFPVertex} class is the implementation of"
+    ("The SMFFPVertex class is the implementation of"
      "the coupling of the photon to the Standard Model fermions");
 }
 

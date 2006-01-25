@@ -37,7 +37,7 @@ void SMWWWVertex::Init() {
      &SMWWWVertex::_theSM, false, false, true, false);
 
   static ClassDocumentation<SMWWWVertex> documentation
-    ("The\\classname{SMWWWVertex} class is the implementation of the "
+    ("The SMWWWVertex class is the implementation of the "
      "Standard Model triple electroweak boson coupling.");
   
 }

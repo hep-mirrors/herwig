@@ -39,7 +39,7 @@ void SMFFZVertex::Init() {
      &SMFFZVertex::_theSM, false, false, true, false);
     
   static ClassDocumentation<SMFFZVertex> documentation
-    ("The \\classname{SMFFZVertex} class is the implementation of"
+    ("The SMFFZVertex class is the implementation of"
      "the coupling of the Z boson to the Standard Model fermions");
 }
 

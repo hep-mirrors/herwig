@@ -41,7 +41,7 @@ void SMFFHVertex::Init() {
      &SMFFHVertex::_theSM, false, false, true, false);
 
   static ClassDocumentation<SMFFHVertex> documentation
-    ("The \\classname{SMFFHVertex} class is the implementation"
+    ("The SMFFHVertex class is the implementation"
      " of the helicity amplitude calculation of the Standard Model Higgs"
      " fermion-antiferiom vertex.");
   

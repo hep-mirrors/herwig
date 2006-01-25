@@ -200,7 +200,7 @@ template <>
 struct ClassTraits<Herwig::Helicity::SVVLoopVertex>
   : public ClassTraitsBase<Herwig::Helicity::SVVLoopVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Helicity::SVVLoopVertex"; }
+  static string className() { return "Herwig++::SVVLoopVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SVVLoopVertex class and every other class it uses
    *  (except the base class). */

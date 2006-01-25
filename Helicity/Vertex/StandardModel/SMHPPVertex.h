@@ -212,7 +212,7 @@ template <>
 struct ClassTraits<Herwig::Helicity::SMHPPVertex>
   : public ClassTraitsBase<Herwig::Helicity::SMHPPVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Helicity::SMHPPVertex"; }
+  static string className() { return "Herwig++::SMHPPVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMHPPVertex class and every other class it uses
    *  (except the base class). */

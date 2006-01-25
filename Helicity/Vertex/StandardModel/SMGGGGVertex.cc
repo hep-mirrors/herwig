@@ -37,7 +37,7 @@ void SMGGGGVertex::Init() {
      &SMGGGGVertex::_theSM, false, false, true, false);
   
   static ClassDocumentation<SMGGGGVertex> documentation
-    ("The \\classname{SMGGGGVertex} class is the implementation of the"
+    ("The SMGGGGVertex class is the implementation of the"
      " Standard Model quartic gluon coupling");
   
 }

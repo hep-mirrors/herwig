@@ -276,7 +276,7 @@ struct ClassTraits<Herwig::Helicity::FFSVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::Helicity::FFSVertex"; }
+  static string className() { return "Herwig++::FFSVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get

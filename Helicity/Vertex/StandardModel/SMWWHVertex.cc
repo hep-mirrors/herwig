@@ -36,7 +36,7 @@ void SMWWHVertex::Init() {
   
   
   static ClassDocumentation<SMWWHVertex> documentation
-    ("The \\classname{SMWWHVertex} class is the implementation"
+    ("The SMWWHVertex class is the implementation"
      " of the helicity amplitude calculation for the coupling of the Standard"
      " Model electroweak gauge bosons to the Higgs.");
 }

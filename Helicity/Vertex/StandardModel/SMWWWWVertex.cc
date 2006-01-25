@@ -38,7 +38,7 @@ void SMWWWWVertex::Init() {
      &SMWWWWVertex::_theSM, false, false, true, false);
 
   static ClassDocumentation<SMWWWWVertex> documentation
-    ("The \\classname{SMWWWWVertex} class is the implementation of the"
+    ("The SMWWWWVertex class is the implementation of the"
      " Standard Model quartic electroweka gauge boson coupling.");
   
 }

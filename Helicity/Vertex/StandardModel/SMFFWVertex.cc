@@ -44,7 +44,7 @@ void SMFFWVertex::Init() {
      &SMFFWVertex::_theCKM, false, false, true, false);
   
   static ClassDocumentation<SMFFWVertex> documentation
-    ("The \\classname{SMFFZVertex} class is the implementation of"
+    ("The SMFFZVertex class is the implementation of"
      "the coupling of the W boson to the Standard Model fermions");
   
 }

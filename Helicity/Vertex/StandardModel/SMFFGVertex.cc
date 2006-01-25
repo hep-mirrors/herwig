@@ -37,7 +37,7 @@ void SMFFGVertex::Init() {
      &SMFFGVertex::_theSM, false, false, true, false);
 
   static ClassDocumentation<SMFFGVertex> documentation
-    ("The \\classname{SMFFGVertex} class is the implementation of"
+    ("The SMFFGVertex class is the implementation of"
      "the coupling of the gluon to the Standard Model fermions");
   
 }

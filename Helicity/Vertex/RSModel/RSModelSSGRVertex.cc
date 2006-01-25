@@ -35,7 +35,7 @@ void RSModelSSGRVertex::Init() {
      &RSModelSSGRVertex::_theModel, false, false, true, false, false);
   
   static ClassDocumentation<RSModelSSGRVertex> documentation
-    ("The \\classname{RSModelSSGRVertex} class is the implementation of"
+    ("The RSModelSSGRVertex class is the implementation of"
      " the RSModel scalar-scalar-graviton vertex");
   
 }

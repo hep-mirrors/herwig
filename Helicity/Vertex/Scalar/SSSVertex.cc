@@ -25,7 +25,7 @@ AbstractClassDescription<SSSVertex> SSSVertex::initSSSVertex;
 void SSSVertex::Init() {
   
   static ClassDocumentation<SSSVertex> documentation
-    ("The \\classname{SSSVertex} class is the implementation of the SSS"
+    ("The SSSVertex class is the implementation of the SSS"
      "vertex. All such vertices shoud inherit from it");
 }
 
