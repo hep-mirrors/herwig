@@ -92,7 +92,7 @@ ClassDescription<BallZwickyScalarFormFactor> BallZwickyScalarFormFactor::initBal
 void BallZwickyScalarFormFactor::Init() {
 
   static ClassDocumentation<BallZwickyScalarFormFactor> documentation
-    ("The \\classname{BallZwickyScalarFormFactor} class implements the form-factors"
+    ("The BallZwickyScalarFormFactor class implements the form-factors"
      " of hep-ph/0406232 for the form-factor for the decay of a B-meson to a"
      " light pseudoscalar meson");
 

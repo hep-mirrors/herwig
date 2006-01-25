@@ -184,7 +184,7 @@ ClassDescription<ChengHeavyBaryonFormFactor> ChengHeavyBaryonFormFactor::initChe
 void ChengHeavyBaryonFormFactor::Init() {
 
   static ClassDocumentation<ChengHeavyBaryonFormFactor> documentation
-    ("The \\classname{ChengHeavyBaryonFormFactor} class is the implementation"
+    ("The ChengHeavyBaryonFormFactor class is the implementation"
      " of the form-factors of PRD53, 1457 and PRD56, 2799 for the weak decay of"
      "baryons containing a heavy quark. This model can be used for either"
      "semi-leptonic decays, or with the factorization approximation for"

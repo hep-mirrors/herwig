@@ -164,7 +164,7 @@ ClassDescription<BallZwickyVectorFormFactor> BallZwickyVectorFormFactor::initBal
 void BallZwickyVectorFormFactor::Init() {
 
   static ClassDocumentation<BallZwickyVectorFormFactor> documentation
-    ("The \\classname{BallZwickyVectorFormFactor} class implements the vector form"
+    ("The BallZwickyVectorFormFactor class implements the vector form"
      " factors of hep-ph/0412079 for the form-factor for the decay of a B-meson to a"
      " light pseudoscalar meson");
 

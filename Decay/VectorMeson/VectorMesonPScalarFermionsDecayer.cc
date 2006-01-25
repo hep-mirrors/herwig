@@ -195,7 +195,7 @@ ClassDescription<VectorMesonPScalarFermionsDecayer> VectorMesonPScalarFermionsDe
 void VectorMesonPScalarFermionsDecayer::Init() {
 
   static ClassDocumentation<VectorMesonPScalarFermionsDecayer> documentation
-    ("The \\classname{VectorMesonPScalarFermionsDecayer} class is designed to "
+    ("The VectorMesonPScalarFermionsDecayer class is designed to "
      "perform the decay of a vector meson to a pseudoscalar meson and a "
      "fermion-antifermion pair.");
 

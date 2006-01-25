@@ -41,7 +41,7 @@ ClassDescription<LeptonNeutrinoCurrent> LeptonNeutrinoCurrent::initLeptonNeutrin
 void LeptonNeutrinoCurrent::Init() {
 
   static ClassDocumentation<LeptonNeutrinoCurrent> documentation
-    ("The \\classname{LeptonNeutrinoCurrent} class is designed to handle the "
+    ("The LeptonNeutrinoCurrent class is designed to handle the "
      "leptonic decay of the weak current.");
 }
 

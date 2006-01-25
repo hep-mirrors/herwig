@@ -78,7 +78,7 @@ ClassDescription<DecayPhaseSpaceMode> DecayPhaseSpaceMode::initDecayPhaseSpaceMo
 void DecayPhaseSpaceMode::Init() {
 
   static ClassDocumentation<DecayPhaseSpaceMode> documentation
-    ("The \\classname{DecayPhaseSpaceMode} class contains a number of phase space"
+    ("The DecayPhaseSpaceMode class contains a number of phase space"
      " channels for the integration of a particular decay mode");
 
   static RefVector<DecayPhaseSpaceMode,DecayPhaseSpaceChannel> interfaceChannels

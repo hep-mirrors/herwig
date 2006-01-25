@@ -49,7 +49,7 @@ AbstractClassDescription<VectorMesonDecayerBase> VectorMesonDecayerBase::initVec
 void VectorMesonDecayerBase::Init() {
   
   static ClassDocumentation<VectorMesonDecayerBase> documentation
-    ("The \\classname{VectorMesonDecayerBase} class is the base class for the "
+    ("The VectorMesonDecayerBase class is the base class for the "
      "Herwig++ decays of vector mesons.");
   
 }

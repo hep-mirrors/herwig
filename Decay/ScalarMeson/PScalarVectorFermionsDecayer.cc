@@ -183,7 +183,7 @@ ClassDescription<PScalarVectorFermionsDecayer> PScalarVectorFermionsDecayer::ini
 void PScalarVectorFermionsDecayer::Init() {
 
   static ClassDocumentation<PScalarVectorFermionsDecayer> documentation
-    ("The \\classname{PScalarVectorFermionsDecayer} class is designed"
+    ("The PScalarVectorFermionsDecayer class is designed"
      " for the decay of a pseudoscalar meson to a photon and a"
      "fermion-antifermion pair");
 

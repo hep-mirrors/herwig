@@ -111,7 +111,7 @@ ClassDescription<ScalarMesonTensorScalarDecayer> ScalarMesonTensorScalarDecayer:
 void ScalarMesonTensorScalarDecayer::Init() {
 
   static ClassDocumentation<ScalarMesonTensorScalarDecayer> documentation
-    ("The \\classname{ScalarMesonTensorScalarDecayer} class is designed for"
+    ("The ScalarMesonTensorScalarDecayer class is designed for"
      " the decay of a pseduoscalar meson to two spin-1 particles.");
 
   static ParVector<ScalarMesonTensorScalarDecayer,int> interfaceIncoming

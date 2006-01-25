@@ -111,7 +111,7 @@ ClassDescription<VectorMesonVectorVectorDecayer> VectorMesonVectorVectorDecayer:
 void VectorMesonVectorVectorDecayer::Init() {
 
   static ClassDocumentation<VectorMesonVectorVectorDecayer> documentation
-    ("The\\classname{VectorMesonVectorVectorDecayer} class is designed for the "
+    ("The VectorMesonVectorVectorDecayer class is designed for the "
      "decay of a vector meson to two vector particles, either photons or other "
      "vector mesons.");
 

@@ -52,7 +52,7 @@ ClassDescription<ThreePionCLEOCurrent> ThreePionCLEOCurrent::initThreePionCLEOCu
 void ThreePionCLEOCurrent::Init() {
 
   static ClassDocumentation<ThreePionCLEOCurrent> documentation
-    ("The \\classname{ThreePionCLEOCurrent} class performs the decay of the"
+    ("The ThreePionCLEOCurrent class performs the decay of the"
      " tau to three pions using the currents from CLEO");
   
   static ParVector<ThreePionCLEOCurrent,Energy> interfacerhomass

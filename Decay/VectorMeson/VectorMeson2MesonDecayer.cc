@@ -240,7 +240,7 @@ ClassDescription<VectorMeson2MesonDecayer> VectorMeson2MesonDecayer::initVectorM
 void VectorMeson2MesonDecayer::Init() {
   
   static ClassDocumentation<VectorMeson2MesonDecayer> documentation
-    ("The \\classname{VectorMeson2MesonDecayer} class is designed to implement "
+    ("The VectorMeson2MesonDecayer class is designed to implement "
      "the decay of vector mesons to 2 scalar mesons via a current which is the "
      "difference of the momenta of the two scalars. The order of the scalar meson "
      "momenta does not matter as it only changes the sign of the matrix element.");

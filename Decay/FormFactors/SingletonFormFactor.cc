@@ -82,7 +82,7 @@ ClassDescription<SingletonFormFactor> SingletonFormFactor::initSingletonFormFact
 void SingletonFormFactor::Init() {
 
   static ClassDocumentation<SingletonFormFactor> documentation
-    ("The \\classname{SingletonFormFactor} class implements the"
+    ("The SingletonFormFactor class implements the"
      " form-factors of PRD43, 2939 for the decay of spin-1/2 baryons"
      " containing one heavy quark.");
 

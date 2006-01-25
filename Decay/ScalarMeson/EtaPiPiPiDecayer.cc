@@ -180,7 +180,7 @@ ClassDescription<EtaPiPiPiDecayer> EtaPiPiPiDecayer::initEtaPiPiPiDecayer;
 void EtaPiPiPiDecayer::Init() {
 
   static ClassDocumentation<EtaPiPiPiDecayer> documentation
-    ("The \\classname{EtaPiPiPiDecayer} class performs the decay of a scalar meson to"
+    ("The EtaPiPiPiDecayer class performs the decay of a scalar meson to"
      " two pions and another meson using a simple paramterisation of the dalitz plot.");
 
   static ParVector<EtaPiPiPiDecayer,int> interfaceIncoming

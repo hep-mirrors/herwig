@@ -145,7 +145,7 @@ ClassDescription<SemiLeptonicScalarDecayer> SemiLeptonicScalarDecayer::initSemiL
 void SemiLeptonicScalarDecayer::Init() {
 
   static ClassDocumentation<SemiLeptonicScalarDecayer> documentation
-    ("The \\classname{SemiLeptonicScalarDecayer} class is designed for the"
+    ("The SemiLeptonicScalarDecayer class is designed for the"
     "semi-leptonic decay of a (pseudo)-scalar meson.");
 
   static Parameter<SemiLeptonicScalarDecayer,InvEnergy2> interfaceGFermi

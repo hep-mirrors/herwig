@@ -259,7 +259,7 @@ ClassDescription<ThreeMesonDefaultCurrent> ThreeMesonDefaultCurrent::initThreeMe
 void ThreeMesonDefaultCurrent::Init() {
         
   static ClassDocumentation<ThreeMesonDefaultCurrent> documentation
-    ("The \\classname{ThreeMesonDefaultCurrent} class is designed to implement "
+    ("The ThreeMesonDefaultCurrent class is designed to implement "
      "the three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, " 
      "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "
      "pi- Kbar0 pi0, pi- pi0 eta. It uses the same currents as those in TAUOLA.");

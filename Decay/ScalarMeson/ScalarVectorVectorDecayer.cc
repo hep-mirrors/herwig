@@ -119,7 +119,7 @@ ClassDescription<ScalarVectorVectorDecayer> ScalarVectorVectorDecayer::initScala
 void ScalarVectorVectorDecayer::Init() {
 
   static ClassDocumentation<ScalarVectorVectorDecayer> documentation
-    ("The \\classname{ScalarVectorVectorDecayer} class is designed for"
+    ("The ScalarVectorVectorDecayer class is designed for"
      " the decay of a pseduoscalar meson to two spin-1 particles.");
 
   static ParVector<ScalarVectorVectorDecayer,int> interfaceIncoming

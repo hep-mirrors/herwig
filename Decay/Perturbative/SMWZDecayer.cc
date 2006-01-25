@@ -200,7 +200,7 @@ ClassDescription<SMWZDecayer> SMWZDecayer::initSMWZDecayer;
 void SMWZDecayer::Init() {
 
   static ClassDocumentation<SMWZDecayer> documentation
-    ("The \\classname{SMWZDecayer} class is the implementation of the decay"
+    ("The SMWZDecayer class is the implementation of the decay"
      " of the W and Z bosons to the Standard Model fermions.");
 
   static ParVector<SMWZDecayer,double> interfaceZquarkMax

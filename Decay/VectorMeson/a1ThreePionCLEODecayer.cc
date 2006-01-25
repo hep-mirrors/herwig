@@ -93,7 +93,7 @@ ClassDescription<a1ThreePionCLEODecayer> a1ThreePionCLEODecayer::inita1ThreePion
 void a1ThreePionCLEODecayer::Init() {
   
   static ClassDocumentation<a1ThreePionCLEODecayer> documentation
-    ("The \\classname{a1ThreePionCLEODecayer} class performs the decay of the "
+    ("The a1ThreePionCLEODecayer class performs the decay of the "
      "a_1 to three pions using the model of CLEO");
 
   static ParVector<a1ThreePionCLEODecayer,Energy> interfacerhomass

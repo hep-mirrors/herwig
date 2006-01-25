@@ -248,7 +248,7 @@ ClassDescription<ISGWFormFactor> ISGWFormFactor::initISGWFormFactor;
 void ISGWFormFactor::Init() {
 
   static ClassDocumentation<ISGWFormFactor> documentation
-    ("The \\classname{ISGWFormFactor} class implements the ISGW model of"
+    ("The ISGWFormFactor class implements the ISGW model of"
      "Phys. Rev. D39, 799 (1989) for the scalar meson form-factors.");
 
   static Parameter<ISGWFormFactor,double> interfaceKappa

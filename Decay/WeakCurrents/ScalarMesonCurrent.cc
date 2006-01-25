@@ -80,7 +80,7 @@ ClassDescription<ScalarMesonCurrent> ScalarMesonCurrent::initScalarMesonCurrent;
 void ScalarMesonCurrent::Init() {
 
   static ClassDocumentation<ScalarMesonCurrent> documentation
-    ("The \\classname{ScalarMesonCurrent} class implements the current"
+    ("The ScalarMesonCurrent class implements the current"
      " for the decay of the weak current into a pseudoscalar meson.");
 
   static ParVector<ScalarMesonCurrent,int> interfaceID

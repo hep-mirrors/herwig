@@ -170,11 +170,10 @@ private:
 
    /**
      *Set array of mometum to particles
-     *@param mom Momentum set to be distributed over phase-space
-     *@param totalMom Total initial momentum required to know total mass
-     *@return wgt The weight of the configuration
+     *@param mom   Momentum set to be distributed over phase-space
+     *@param comEn The mass of the decaying particle
+     *@return The weight of the configuration
      **/
-  
   double calculateMomentum(vector<Lorentz5Momentum> & mom,
 			   const Energy & comEn) const;
   /**

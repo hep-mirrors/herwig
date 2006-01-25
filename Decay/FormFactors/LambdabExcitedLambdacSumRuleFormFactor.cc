@@ -35,7 +35,7 @@ ClassDescription<LambdabExcitedLambdacSumRuleFormFactor> LambdabExcitedLambdacSu
 void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 
   static ClassDocumentation<LambdabExcitedLambdacSumRuleFormFactor> documentation
-    ("The \\classname{LambdabExcitedLambdacSumRuleFormFactor} class implements the"
+    ("The LambdabExcitedLambdacSumRuleFormFactor class implements the"
      " form-factors for Lambda_b to Lambda_c1(*) from hep-ph/0012114.");
 
   static Parameter<LambdabExcitedLambdacSumRuleFormFactor,double> interfaceXi

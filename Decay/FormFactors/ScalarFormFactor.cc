@@ -36,7 +36,7 @@ AbstractClassDescription<ScalarFormFactor> ScalarFormFactor::initScalarFormFacto
 void ScalarFormFactor::Init() {
 
   static ClassDocumentation<ScalarFormFactor> documentation
-    ("The \\classname{ScalarFormFactor} class is the base class for"
+    ("The ScalarFormFactor class is the base class for"
      " the implementation of the form factors for weak decays of scalar mesons.");
 
   static ParVector<ScalarFormFactor,int> interfaceIncoming

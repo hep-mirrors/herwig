@@ -181,7 +181,7 @@ ClassDescription<PScalarLeptonNeutrinoDecayer> PScalarLeptonNeutrinoDecayer::ini
 void PScalarLeptonNeutrinoDecayer::Init() {
 
   static ClassDocumentation<PScalarLeptonNeutrinoDecayer> documentation
-    ("The \\classname{PScalarLeptonNeutrinoDecayer} class is the base class for"
+    ("The PScalarLeptonNeutrinoDecayer class is the base class for"
      " the implementation of leptonic decay of a pseudoscalar meson to a lepton"
      "and a neutrino.");
 

@@ -133,7 +133,7 @@ ClassDescription<EtaPiGammaGammaDecayer> EtaPiGammaGammaDecayer::initEtaPiGammaG
 void EtaPiGammaGammaDecayer::Init() {
 
   static ClassDocumentation<EtaPiGammaGammaDecayer> documentation
-    ("The \\classname{EtaPiGammaGammaDecayer} class implements a VMD model for the"
+    ("The EtaPiGammaGammaDecayer class implements a VMD model for the"
      " decay of the eta or etaprime to a pion and two photons.");
 
   static Parameter<EtaPiGammaGammaDecayer,InvEnergy> interfacegrhoomega

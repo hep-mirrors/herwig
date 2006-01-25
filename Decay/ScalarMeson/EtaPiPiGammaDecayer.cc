@@ -432,7 +432,7 @@ ClassDescription<EtaPiPiGammaDecayer> EtaPiPiGammaDecayer::initEtaPiPiGammaDecay
 void EtaPiPiGammaDecayer::Init() {
 
   static ClassDocumentation<EtaPiPiGammaDecayer> documentation
-    ("The \\classname{EtaPiPiGammaDecayer} class is design for the decay of"
+    ("The EtaPiPiGammaDecayer class is design for the decay of"
      " the eta and eta prime to pi+pi-gamma");
 
   static Parameter<EtaPiPiGammaDecayer,Energy> interfacefpi

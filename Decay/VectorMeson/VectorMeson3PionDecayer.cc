@@ -251,7 +251,7 @@ ClassDescription<VectorMeson3PionDecayer> VectorMeson3PionDecayer::initVectorMes
 void VectorMeson3PionDecayer::Init() {
 
   static ClassDocumentation<VectorMeson3PionDecayer> documentation
-    ("The \\classname{VectorMeson3PionDecayer} class is designed for the decay "
+    ("The VectorMeson3PionDecayer class is designed for the decay "
      "of I=0 vector mesons to three pions via a current taking into account the "
      "rho and a possible direct term");
   

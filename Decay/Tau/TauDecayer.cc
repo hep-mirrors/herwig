@@ -149,7 +149,7 @@ ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
 void TauDecayer::Init() {
 
   static ClassDocumentation<TauDecayer> documentation
-    ("The \\classname{TauDecayer} class is designed to use a weak current"
+    ("The TauDecayer class is designed to use a weak current"
      " to perform the decay of the tau.");
 
   static Parameter<TauDecayer,InvEnergy2> interfaceGFermi

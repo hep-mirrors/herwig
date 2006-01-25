@@ -34,7 +34,7 @@ AbstractClassDescription<WeakDecayCurrent> WeakDecayCurrent::initWeakDecayCurren
 void WeakDecayCurrent::Init() {
 
   static ClassDocumentation<WeakDecayCurrent> documentation
-    ("The \\classname{WeakDecayCurrent} class is the basse class for the"
+    ("The WeakDecayCurrent class is the basse class for the"
      " implementation of hadronic currents in weak decays.");
 
   static ParVector<WeakDecayCurrent,int> interfaceQuark

@@ -110,7 +110,7 @@ void TwoPionPhotonCurrent::Init() {
      false, false, false);
   
   static ClassDocumentation<TwoPionPhotonCurrent> documentation
-    ("The \\classname{TwoPionPhotonCurrent} class implements the decay "
+    ("The TwoPionPhotonCurrent class implements the decay "
      "tau+/- -> pi+/- pi0 gamma via an omega.");
   
   static Parameter<TwoPionPhotonCurrent,Energy2> interfacegrho

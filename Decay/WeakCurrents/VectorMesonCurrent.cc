@@ -81,7 +81,7 @@ ClassDescription<VectorMesonCurrent> VectorMesonCurrent::initVectorMesonCurrent;
 void VectorMesonCurrent::Init() {
 
   static ClassDocumentation<VectorMesonCurrent> documentation
-    ("The \\classname{VectorMesonCurrent} class implements the current"
+    ("The VectorMesonCurrent class implements the current"
      " for the decay of the weak current into a (pseudo)vector meson.");
 
   static ParVector<VectorMesonCurrent,int> interfaceID

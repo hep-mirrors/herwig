@@ -74,7 +74,7 @@ ClassDescription<BaryonThreeQuarkModelFormFactor> BaryonThreeQuarkModelFormFacto
 void BaryonThreeQuarkModelFormFactor::Init() {
 
   static ClassDocumentation<BaryonThreeQuarkModelFormFactor> documentation
-    ("The \\classname{BaryonThreeQuarkModelFormFactor} class implements"
+    ("The BaryonThreeQuarkModelFormFactor class implements"
      " the form-factors for semi-leptonic decay of baryon containing a"
      " heavy quark from PRD56, 348.");
 

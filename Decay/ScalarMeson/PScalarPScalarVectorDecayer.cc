@@ -152,7 +152,7 @@ ClassDescription<PScalarPScalarVectorDecayer> PScalarPScalarVectorDecayer::initP
 void PScalarPScalarVectorDecayer::Init() {
 
   static ClassDocumentation<PScalarPScalarVectorDecayer> documentation
-    ("The \\classname{PScalarPScalarVectorDecayer} class is designed for"
+    ("The PScalarPScalarVectorDecayer class is designed for"
      " the decay of a pseduoscalar meson to two spin-1 particles.");
 
   static ParVector<PScalarPScalarVectorDecayer,int> interfaceIncoming

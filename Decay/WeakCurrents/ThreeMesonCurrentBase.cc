@@ -36,7 +36,7 @@ AbstractClassDescription<ThreeMesonCurrentBase> ThreeMesonCurrentBase::initThree
 void ThreeMesonCurrentBase::Init() {
     
   static ClassDocumentation< ThreeMesonCurrentBase> documentation
-    ("The \\classname{ThreeMesonCurrentBase} class is designed to be the "
+    ("The ThreeMesonCurrentBase class is designed to be the "
      "base class for "
      "the three meson decays of the tau, ie pi- pi- pi+, pi0 pi0 pi-, " 
      "K- pi- K+, K0 pi- Kbar0, K- pi0 K0,pi0 pi0 K-, K- pi- pi+, "

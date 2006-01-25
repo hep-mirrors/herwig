@@ -174,7 +174,7 @@ ClassDescription<PScalar4FermionsDecayer> PScalar4FermionsDecayer::initPScalar4F
 void PScalar4FermionsDecayer::Init() {
 
   static ClassDocumentation<PScalar4FermionsDecayer> documentation
-    ("The \\classname{PScalar4FermionsDecayer} class is designed for the decay"
+    ("The PScalar4FermionsDecayer class is designed for the decay"
      " of a pseudosclar meson to four fermions. It is intended for the decay of"
      "the pion to two electron-positron pairs.");
 

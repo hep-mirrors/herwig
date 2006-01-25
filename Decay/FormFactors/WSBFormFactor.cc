@@ -316,7 +316,7 @@ ClassDescription<WSBFormFactor> WSBFormFactor::initWSBFormFactor;
 void WSBFormFactor::Init() {
 
   static ClassDocumentation<WSBFormFactor> documentation
-    ("The\\classname{WSBFormFactor} class is the implementation of the form-factors of "
+    ("The WSBFormFactor class is the implementation of the form-factors of "
      "Z.Phys.C29,637.");
 
   static ParVector<WSBFormFactor,double> interfaceF0

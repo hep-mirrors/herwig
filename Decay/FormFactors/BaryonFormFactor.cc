@@ -36,7 +36,7 @@ AbstractClassDescription<BaryonFormFactor> BaryonFormFactor::initBaryonFormFacto
 void BaryonFormFactor::Init() {
 
   static ClassDocumentation<BaryonFormFactor> documentation
-    ("The \\classname{BaryonFormFactor} class is the base class for"
+    ("The BaryonFormFactor class is the base class for"
      " the implementation of the form factors for weak decays of baryon.");
 
   static ParVector<BaryonFormFactor,int> interfaceIncoming

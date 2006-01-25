@@ -264,7 +264,7 @@ ClassDescription<PVectorMesonVectorPScalarDecayer> PVectorMesonVectorPScalarDeca
 void PVectorMesonVectorPScalarDecayer::Init() {
 
   static ClassDocumentation<PVectorMesonVectorPScalarDecayer> documentation
-    ("The\\classname{PVectorMesonVectorPScalarDecayer} class is designed for the "
+    ("The PVectorMesonVectorPScalarDecayer class is designed for the "
      "decay of a pseudovector meson to a vector meson, or the photon, and a "
      "pseudoscalar meson.");
 

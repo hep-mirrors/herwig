@@ -76,7 +76,7 @@ void DecayPhaseSpaceChannel::Init() {
      0, 0, 0, -10, 10, false, false, true);
   
   static ClassDocumentation<DecayPhaseSpaceChannel> documentation
-    ("The \\classname{DecayPhaseSpaceChannel} class defines a channel"
+    ("The DecayPhaseSpaceChannel class defines a channel"
      " for the multichannel integration of the phase space for a decay.");
   
 }

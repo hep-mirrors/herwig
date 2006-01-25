@@ -212,7 +212,7 @@ ClassDescription<VectorMeson2FermionDecayer> VectorMeson2FermionDecayer::initVec
 void VectorMeson2FermionDecayer::Init() {
 
   static ClassDocumentation<VectorMeson2FermionDecayer> documentation
-    ("The \\classname{VectorMeson2FermionDecayer} class is designed for the decay "
+    ("The VectorMeson2FermionDecayer class is designed for the decay "
      "of vectro mesons to fermions. It is mainly used for the decay of vector mesons "
      "to electrons and muons.");
 

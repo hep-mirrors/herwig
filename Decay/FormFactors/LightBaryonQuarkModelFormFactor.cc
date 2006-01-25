@@ -111,7 +111,7 @@ ClassDescription<LightBaryonQuarkModelFormFactor> LightBaryonQuarkModelFormFacto
 void LightBaryonQuarkModelFormFactor::Init() {
 
   static ClassDocumentation<LightBaryonQuarkModelFormFactor> documentation
-    ("The \\classname{LightBaryonQuarkModelFormFactor} class implements"
+    ("The LightBaryonQuarkModelFormFactor class implements"
      " the quark model calculation of hep-ph/9409272 for the form-factors"
      " for the light quarks");
 

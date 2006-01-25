@@ -64,7 +64,7 @@ void DecayIntegrator::Init() {
      &DecayIntegrator::_modes, 0, false, false, true, true); 
   
   static ClassDocumentation<DecayIntegrator> documentation
-    ("The \\classname{DecayIntegrator} class is a base decayer class "
+    ("The DecayIntegrator class is a base decayer class "
      "including a multi-channel integrator.");
   
 

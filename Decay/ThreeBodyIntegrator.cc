@@ -26,7 +26,8 @@ ThreeBodyIntegrator::~ThreeBodyIntegrator()
 void ThreeBodyIntegrator::Init() {
   
 static ClassDocumentation<ThreeBodyIntegrator> documentation
-  ("There is no documentation for the \\classname{ThreeBodyIntegrator} class");
+  ("The ThreeBodyIntegrator class integrates a three-body decay to calculate"
+   " the partial width");
  
 }
 

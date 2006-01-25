@@ -321,7 +321,7 @@ ClassDescription<FourPionNovosibirskCurrent> FourPionNovosibirskCurrent::initFou
 void FourPionNovosibirskCurrent::Init() {
 
   static ClassDocumentation<FourPionNovosibirskCurrent> documentation
-    ("The \\classname{FourPionNovosibirskCurrent} class performs the decay"
+    ("The FourPionNovosibirskCurrent class performs the decay"
      " of the tau to four pions using currents based on the the"
      " Novosibirsk e+e- data");
 

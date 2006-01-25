@@ -138,7 +138,7 @@ ClassDescription<VectorMesonVectorScalarDecayer> VectorMesonVectorScalarDecayer:
 void VectorMesonVectorScalarDecayer::Init() {
 
   static ClassDocumentation<VectorMesonVectorScalarDecayer> documentation
-    ("The\\classname{VectorMesonVectorScalarDecayer} class is designed for the "
+    ("The VectorMesonVectorScalarDecayer class is designed for the "
      "decay of a vector meson to a vector meson, or the photon, and a "
      "scalar meson.");
 

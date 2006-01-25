@@ -129,7 +129,7 @@ ClassDescription<BaryonSimpleFormFactor> BaryonSimpleFormFactor::initBaryonSimpl
 void BaryonSimpleFormFactor::Init() {
 
   static ClassDocumentation<BaryonSimpleFormFactor> documentation
-    ("The \\classname{BaryonSimpleFormFactor} class implements the"
+    ("The BaryonSimpleFormFactor class implements the"
      " quark model calculation of the form-factors from PRD25, 206");
 
   static Parameter<BaryonSimpleFormFactor,double> interfaceg_A

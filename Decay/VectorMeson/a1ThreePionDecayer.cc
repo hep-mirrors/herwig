@@ -91,7 +91,7 @@ ClassDescription<a1ThreePionDecayer> a1ThreePionDecayer::inita1ThreePionDecayer;
 void a1ThreePionDecayer::Init() {
     
   static ClassDocumentation<a1ThreePionDecayer> documentation
-    ("The \\classname{a1ThreePionDecayer} class is designed to decay the a_1 "
+    ("The a1ThreePionDecayer class is designed to decay the a_1 "
      "resonance to three pions using a model based on that used in the modelling "
      "of tau->4 pions.");
 

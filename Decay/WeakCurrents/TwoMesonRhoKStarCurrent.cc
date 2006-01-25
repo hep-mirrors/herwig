@@ -231,7 +231,7 @@ void TwoMesonRhoKStarCurrent::Init() {
      1);
 
   static ClassDocumentation<TwoMesonRhoKStarCurrent> documentation
-    ("The \\classname{TwoMesonRhoKStarCurrent} class is designed to implement weak"
+    ("The TwoMesonRhoKStarCurrent class is designed to implement weak"
      "decay to two scalar mesons using the models of either Kuhn and "
      "Santamaria (Z. Phys. C48, 445 (1990)) or Gounaris and Sakurai Phys. Rev. "
      "Lett. 21, 244 (1968).  The mixing parameters are taken from "

@@ -281,7 +281,7 @@ ScalarScalarScalarDecayer::initScalarScalarScalarDecayer;
 void ScalarScalarScalarDecayer::Init() {
 
   static ClassDocumentation<ScalarScalarScalarDecayer> documentation
-    ("The \\classname{ScalarScalarScalarDecayer} class is designed for the"
+    ("The ScalarScalarScalarDecayer class is designed for the"
      " decay of a scalar meson to two scalar mesons including off-shell effects");
 
   static ParVector<ScalarScalarScalarDecayer,int> interfaceIncoming
