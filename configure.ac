@@ -43,6 +43,8 @@ AC_PROG_LIBTOOL
 dnl ####################################
 dnl ####################################
 
+AC_PATH_PROG(PERL, perl)
+
 AC_CHECK_CLHEP
 AC_CHECK_THEPEG
 
@@ -111,8 +113,12 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		lib/Makefile
 		include/Makefile
 		src/Makefile
+		Doc/Makefile
 		Looptools/Makefile
 		Analysis/Makefile
 		Analysis/Makefile-shared
 		Makefile])
+
+AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])
+
 AC_OUTPUT
