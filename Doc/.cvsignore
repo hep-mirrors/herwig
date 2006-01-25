@@ -2,3 +2,5 @@
 *.lo *.la .libs .deps
 Makefile.in refman-html refman-latex
 Herwig++-refman.tag
+AllInterfaces.h
+fixinterfaces.pl
