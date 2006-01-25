@@ -233,7 +233,7 @@ void BackwardEvolver::createBranching(ShowerParticlePtr part,
   // for the reconstruction of kinematics, parent/child
   // relationships are according to the branching process:
   // part -> (newParent, otherChild)
-  ParticleVector theChildren; 
+  ShowerParticleVector theChildren; 
   theChildren.push_back(newParent); 
   theChildren.push_back(otherChild); 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
