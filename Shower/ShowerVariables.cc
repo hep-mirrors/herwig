@@ -6,17 +6,19 @@
 
 #include "ShowerVariables.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "ShowerVariables.tcc"
+#endif
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
 
-
 ShowerVariables::~ShowerVariables() {}
-
 
 void ShowerVariables::persistentOutput(PersistentOStream & os) const {
   os << _multiScaleShowerMode 
@@ -25,11 +27,10 @@ void ShowerVariables::persistentOutput(PersistentOStream & os) const {
      << _cutoffQEDMassScale
      << _cutoffEWKMassScale
      << _kinCutoffScale
-     << _MECorrMode
+     << _meCorrMode
      << _qqgPSMode
      << _particlesDecayBeforeShower;
 }
-
 
 void ShowerVariables::persistentInput(PersistentIStream & is, int) {
   is >> _multiScaleShowerMode 
@@ -38,17 +39,15 @@ void ShowerVariables::persistentInput(PersistentIStream & is, int) {
      >> _cutoffQEDMassScale
      >> _cutoffEWKMassScale
      >> _kinCutoffScale
-     >> _MECorrMode
+     >> _meCorrMode
      >> _qqgPSMode
      >> _particlesDecayBeforeShower;
 }
-
 
 Energy ShowerVariables::HUGEMASS = 1.0e+20 * GeV;  // more then the Plank scale!
 
 ClassDescription<ShowerVariables> ShowerVariables::initShowerVariables;
 // Definition of the static class description member.
-
 
 void ShowerVariables::Init() {
 
@@ -67,7 +66,7 @@ void ShowerVariables::Init() {
   static Switch<ShowerVariables, int> ifaceMECorrMode
     ("MECorrMode",
      "Choice of the ME Correction Mode",
-     &ShowerVariables::_MECorrMode, 1, false, false);
+     &ShowerVariables::_meCorrMode, 1, false, false);
   static SwitchOption off
     (ifaceMECorrMode,"MEC-off","MECorrections off", 0);
   static SwitchOption on
@@ -188,6 +187,8 @@ Energy ShowerVariables::cutoffMassScale(const ShowerIndex::InteractionType inter
 Energy ShowerVariables::cutoffQScale(const ShowerIndex::InteractionType interaction) const {
   return convertMassScaleToQScale( cutoffMassScale( interaction ) );
 }
+
+
 
 
 

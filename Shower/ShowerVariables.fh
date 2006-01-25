@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerVariables class.
+//
+#ifndef HERWIG_ShowerVariables_FH
+#define HERWIG_ShowerVariables_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class ShowerVariables;
+ThePEG_DECLARE_POINTERS(ShowerVariables,ShowerVarsPtr);
+
+}
+
+#endif
