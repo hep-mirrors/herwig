@@ -11,7 +11,7 @@ inline SudakovFormFactor::SudakovFormFactor()
 
 inline SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
   : Interfaced(x),_q(x._q), _z(x._z), _phi(x._phi), _splittingFn(x._splittingFn),
-    _alpha(x._alpha), _pdfmax(x._pdfmax) {}
+    _alpha(x._alpha),_variables(x._variables),  _pdfmax(x._pdfmax) {}
 
 inline IBPtr SudakovFormFactor::clone() const {
   return new_ptr(*this);

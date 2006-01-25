@@ -246,7 +246,7 @@ bool ForwardEvolver::timeLikeShower(tEHPtr ch,
 	  showerProduct1->setInitiatesTLS(false);
 	  showerProduct2->setInitiatesTLS(false);
 
-	  ParticleVector theChildren; 
+	  ShowerParticleVector theChildren; 
 	  theChildren.push_back(showerProduct1); 
 	  theChildren.push_back(showerProduct2); 
 	  part->showerKinematics()->updateChildren(part, theChildren); 

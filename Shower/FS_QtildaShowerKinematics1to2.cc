@@ -260,8 +260,8 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast
   // NP hadronization! 
   else theMass = theLast->data().constituentMass(); 
   theLast->sudBeta( (sqr(theMass) + theLast->sudPperp2() 
-  		     - sqr( theLast->sudAlpha() )*_pVector.m2())
-  		    / ( 2.*theLast->sudAlpha()*_pVector*_nVector ) ); 
+  		     - sqr( theLast->sudAlpha() )*pVector().m2())
+  		    / ( 2.*theLast->sudAlpha()*p_dot_n() ) ); 
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateLast(): full ______________________________"	 
@@ -272,7 +272,7 @@ void FS_QtildaShowerKinematics1to2::updateLast( const tShowerParticlePtr theLast
 			    << theMass << ", "
 			    << theLast->sudAlpha() << ", "
 			    << theLast->sudPperp2() << ", "
-			    << _pVector*_nVector << ")"
+			    << p_dot_n() << ")"
 			    << endl; 
   }
       
