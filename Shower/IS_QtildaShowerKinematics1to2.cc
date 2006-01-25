@@ -29,14 +29,14 @@ updateParent( tCollecShoKinPtr & shoKinChildren ) {
 
 void IS_QtildaShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
-		const ParticleVector theChildren ) {
+		const ShowerParticleVector theChildren ) {
   // this is empty...
 }
 
 
 void IS_QtildaShowerKinematics1to2::
-updateParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) {
+updateParent(const tShowerParticlePtr theParent, 
+	     const ParticleVector theChildren ) {
 
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);

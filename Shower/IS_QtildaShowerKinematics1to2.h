@@ -55,7 +55,7 @@ public:
   virtual void updateParent( tCollecShoKinPtr & shoKinChildren );
 
   virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ParticleVector theChildren );
+			       const ShowerParticleVector theChildren );
   virtual void updateParent( const tShowerParticlePtr theParent, 
 			     const ParticleVector theChildren );
   virtual void updateLast( const tShowerParticlePtr theLast );
