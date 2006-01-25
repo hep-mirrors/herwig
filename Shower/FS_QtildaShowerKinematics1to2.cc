@@ -11,7 +11,6 @@
 
 using namespace Herwig;
 
-
 FS_QtildaShowerKinematics1to2::~FS_QtildaShowerKinematics1to2() {}
 
 
@@ -100,8 +99,10 @@ updateChildren( const double parentSudAlpha, const Energy parentSudPx,
 }
 
 
-void FS_QtildaShowerKinematics1to2::updateChildren( const tShowerParticlePtr theParent, 
-						    const ParticleVector theChildren ) {
+void 
+FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent, 
+					      const ShowerParticleVector theChildren ) 
+{
 
   if (theChildren.size() != 2) {
     CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() " 
@@ -292,6 +293,3 @@ Energy FS_QtildaShowerKinematics1to2::jetMass() {
   return mass;
 
 }
-
-
-
