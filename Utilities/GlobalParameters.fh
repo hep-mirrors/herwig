@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GlobalParameters class.
+//
+#ifndef HERWIG_GlobalParameters_FH
+#define HERWIG_GlobalParameters_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class GlobalParameters;
+ThePEG_DECLARE_POINTERS(GlobalParameters,GlobalParametersPtr);
+
+}
+
+#endif
