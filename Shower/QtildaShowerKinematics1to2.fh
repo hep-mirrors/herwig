@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the QtildaShowerKinematics1to2 class.
+//
+#ifndef HERWIG_QtildaShowerKinematics1to2_FH
+#define HERWIG_QtildaShowerKinematics1to2_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class QtildaShowerKinematics1to2;
+ThePEG_DECLARE_POINTERS(QtildaShowerKinematics1to2,QtildaShowerKinematics1to2Ptr);
+
+}
+
+#endif
