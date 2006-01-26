@@ -41,22 +41,69 @@ class SampleHistogram : public SampleStatistic {
 
 protected:
 
-    short howManyBuckets;
-    vector<int> bucketCount;
-    vector<double> bucketLimit;
+  /**
+   *  Number of bins
+   */
+  short howManyBuckets;
+
+  /**
+   *  Number of entries in a bin
+   */
+  vector<int> bucketCount;
+  
+  /**
+   *  Limits for the bins
+   */
+  vector<double> bucketLimit;
 
 public:
     
+  /**
+   * Constructor with uniform bins
+   * @param low The lower limit
+   * @param h The upper limits
+   * @param  bucketWidth The width of the bins
+   */
   SampleHistogram(double low=0., double h=0., double bucketWidth = -1.0);
+
+  /**
+   * Constructor with non-uniform bins
+   * @param low limits of the bins
+   * @param size The number of bins
+   */
   SampleHistogram(double loVals[], int size);
+
+  /**
+   * Destructor 
+   */
   ~SampleHistogram();
   
+  /**
+   *  Reset the entries
+   */
   void reset();
+
+  /**
+   *  Add a point
+   */
   void operator+=(double);
   
-  int similarSamples(double);  
+  int similarSamples(double);
+
+  /**
+   *  Number of bins
+   */  
   int buckets();  
+
+  /**
+   *  Lower limit of bin
+   * @param i The bin
+   */
   double bucketThreshold(int i);
+
+  /**
+   *  Number of entries in a given bin 
+   */
   int inBucket(int i);
   void printBuckets(std::ostream&);
   void printGnuplot(char* name);
