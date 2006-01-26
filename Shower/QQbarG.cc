@@ -304,7 +304,7 @@ vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
     // stick to q direction?
     // p1 is the one that is kept, p2 is the other fermion, p3 the gluon.
     Energy e1, e2, e3; 
-    double ct2, ct3, pp1, pp2, pp3;
+    double pp1, pp2, pp3;
     bool keepq = true; 
     if (drand48() > sqr(x)/(sqr(x)+sqr(xbar))) 
       keepq = false; 
@@ -327,14 +327,22 @@ vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
     u2 /= u2.mag();
     u3 = u1.cross(u2);
     u3 /= u3.mag();
+    double ct2=-123456789., ct3=-123456789.;
     if (pp1 == 0 || pp2 == 0 || pp3 == 0) {
+      bool touched = false;
       if (pp1 == 0) {
 	ct2 = 1; 
 	ct3 = -1; 
+	touched = true;
       } 
       if (pp2 == 0 || pp3 == 0) {
 	ct2 = 1; 
 	ct3 = 1; 
+	touched = true;
+      }
+      if (!touched) {
+	Exception() << "QQbarG::applyHard() did not set ct2/3" 
+		    << Exception::abortnow;
       }
     } else {
       ct3 = (sqr(pp1)+sqr(pp3)-sqr(pp2))/(2.*pp1*pp3);

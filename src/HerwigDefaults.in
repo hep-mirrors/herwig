@@ -201,5 +201,4 @@ read Analysis.in
 
 # output interfaces for documentation
 cd /
-library HwAnalysis.so
 doxygendump Herwig++:: ../Doc/AllInterfaces.h

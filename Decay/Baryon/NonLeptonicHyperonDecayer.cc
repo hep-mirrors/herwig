@@ -90,7 +90,7 @@ void NonLeptonicHyperonDecayer::persistentOutput(PersistentOStream & os) const {
 }
 
 void NonLeptonicHyperonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incomingB >> _outgoingB >> _outgoingM >> _A >> _B >> _maxweight << _initsize;
+  is >> _incomingB >> _outgoingB >> _outgoingM >> _A >> _B >> _maxweight >> _initsize;
 }
 
 ClassDescription<NonLeptonicHyperonDecayer> NonLeptonicHyperonDecayer::initNonLeptonicHyperonDecayer;

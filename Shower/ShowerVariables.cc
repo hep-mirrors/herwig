@@ -179,6 +179,9 @@ Energy ShowerVariables::cutoffMassScale(const ShowerIndex::InteractionType inter
   case ShowerIndex::QCD : cutoff = _cutoffQCDMassScale; break; 
   case ShowerIndex::QED : cutoff = _cutoffQEDMassScale; break; 
   case ShowerIndex::EWK : cutoff = _cutoffEWKMassScale; break; 
+  default: Exception() 
+    << "Invalid ShowerIndex in ShowerVariables::cutoffMassScale()" 
+    << Exception::abortnow;
   }
   return cutoff;
 }

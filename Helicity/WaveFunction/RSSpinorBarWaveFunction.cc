@@ -347,6 +347,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		  break;
 		  // invalid choice
 		default:
+		  upper=-1.; lower=-1.; // no warnings about uninitialized
 		  ThePEG::Helicity::HelicityConsistencyError() 
 		    << "Invalid choice of Dirac representation in "
 		    << "SpinorBarWaveFunction::calculateWaveFunction() " 

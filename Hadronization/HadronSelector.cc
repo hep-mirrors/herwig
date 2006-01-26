@@ -140,7 +140,7 @@ lightestHadron(const long id1, const long id2, const long id3) const {
 
 Energy HadronSelector::
 massLightestHadron(const long id1, const long id2, const long id3) const {
-  Energy mass;
+  Energy mass=-123456789.;
   if (id3 == 0) {    // The method assumes id3 == 0   
     int flav1 = convertIdToFlavour(id1);
     int flav2 = convertIdToFlavour(id2);
@@ -157,6 +157,9 @@ massLightestHadron(const long id1, const long id2, const long id3) const {
 			   << endl << endl;
       }
     }
+  } else {
+    Exception() << "HadronSelector::massLightestHadron() could not set a mass."
+		<< Exception::abortnow;
   }
   return mass;
 }
@@ -361,7 +364,7 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
   //maxFlav = S;
   int mFlav;
   int ntry = 0;
-  int idQ;
+  int idQ = -123456789;
   const int nmax = 5000;
   Energy p;
   /*for(mFlav = S; mFlav<=maxFlav; mFlav++) {
@@ -375,7 +378,8 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
     /*if(cluMass < _table[flav1][flav].begin()->mass + 
                  _table[flav][flav2].begin()->mass) {
       // do nothing
-      } else*/ if(_Pwt[flav] > rnd()) {
+      } else*/
+    if(_Pwt[flav] > rnd()) {
       int num1,num2;
       idQ = convertFlavourToId(flav);
       do { 
@@ -390,7 +394,11 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
       } while(it2 != _table[flav][flav2].end() && it2->overallWeight < rnd());
       if(it2!=_table[flav][flav2].end()) had2 = it2->id;
       else had2 = 0;  
-    } 
+    } else {
+      Exception() << "HadronSelector::hw64() did not initialize idQ"
+		  << Exception::abortnow;
+    }
+    
     if(had1 && had2) {
       p = Kinematics::pstarTwoBodyDecay(cluMass, it1->mass, it2->mass);
       if(p/PCMax < rnd()) { had1 = 0; had2 = 0; ntry++;}
@@ -398,8 +406,7 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
   } while((had1 == 0 || had2 == 0) && ntry < nmax);
   if(ntry >= nmax) return lightestHadronPair(id1,id2);
   else hadPair = pair<long,long>(had1,had2);
-  int signQ, signHad1, signHad2;
-  signQ = 0;
+  int signQ = 0, signHad1 = -12345678, signHad2 = -12345678;
   if((CheckId::canBeMeson(id1,-idQ) || CheckId::canBeBaryon(id1,-idQ)) &&
      (CheckId::canBeMeson(idQ,id2)  || CheckId::canBeBaryon(idQ,id2))) 
 	  signQ = +1;
@@ -409,6 +416,9 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
   if(signQ) {
     signHad1 = signHadron(id1, -signQ*idQ, had1);
     signHad2 = signHadron(id2, signQ*idQ, had2);
+  } else {
+    Exception() << "HadronSelector::hw64() did not initialize signHad1/2"
+		<< Exception::abortnow;
   }
   hadPair = pair<long,long>(signHad1*had1, signHad2*had2);
   return hadPair;
