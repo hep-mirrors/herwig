@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref HistogramInterfaces "The interfaces"
  * defined for Histogram.
  */
-class Histogram: public Statistic {
+class Histogram: public Interfaced {
 
 public:
 
@@ -34,13 +34,13 @@ public:
 
   /**
    * Constructor for variable width bins
-   * @param limits The limits for the bins.
+   * @param limits The lower limits for the bins followed by the upper limit of the last bin
    */
   inline Histogram(vector<double> limits);
 
   /**
    * Constructor with data included
-   * @param limits The limits for the bins.
+   * @param limits The lower limits for the bins followed by the upper limit of the last bin
    * @param data The data
    * @param error The errors on the data
    */
@@ -203,30 +203,31 @@ private:
 
 private:
 
-  /**
-   *  Number of bins
+ /**
+   *  Global statistics of all data that went into the histogram.
    */
-  unsigned int _nbin;
+  Statistic _globalStats;
 
-  /**
-   *  The contents of the bin
+ /**
+   * Set to true if there is experimental data available
    */
-  vector<StatisticPtr> _bincontents;
+  bool _havedata;
 
-  /**
-   *  The limits for the bins
+ /**
+   *  One bin of the histogram. limit is the _lower_ bound of the bin.
    */
-  vector<double> _binlimits;
+  struct Bin {
+    Bin() : contents(), limit(0.0), data(0.0), error(0.0) {}
+    Statistic contents;
+    double limit;
+    double data;
+    double error;
+  };
 
-  /**
-   *  The data for the bins
+ /**
+   *  The histogram bins. _bins[0] is the underflow, _bins.back() the overflow
    */
-  vector<double> _data;
-
-  /**
-   *  THe error on the data
-   */
-  vector<double> _error;
+  vector<Bin> _bins;
 };
 
 }

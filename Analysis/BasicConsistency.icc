@@ -6,10 +6,10 @@
 
 namespace Herwig {
 
-inline BasicConsistency::BasicConsistency() {}
+inline BasicConsistency::BasicConsistency() : _epsmom(0.0) {}
 
 inline BasicConsistency::BasicConsistency(const BasicConsistency & x)
-  : AnalysisHandler(x) {}
+  : AnalysisHandler(x), _epsmom(x._epsmom) {}
 
 inline IBPtr BasicConsistency::clone() const {
   return new_ptr(*this);
@@ -43,6 +43,8 @@ inline void BasicConsistency::doinit() throw(InitException) {
 
 inline void BasicConsistency::dofinish() {
   AnalysisHandler::dofinish();
+  cerr << "\nBasicConsistency: maximum 4-momentum violation: " 
+       << _epsmom/GeV << " GeV\n";
 }
 
 inline void BasicConsistency::doinitrun() {

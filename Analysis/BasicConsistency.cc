@@ -34,8 +34,10 @@ void BasicConsistency::analyze(tEventPtr event, long ieve, int loop, int state) 
   for(set<tcPPtr>::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     if(abs((*it)->id()) < 9) {
-      cerr << "Had quarks in final state in event " << event->number()  << '\n';
-      generator()->log() << "Had quarks in final state in event " << event->number()  << '\n'
+      cerr << "Had quarks in final state in event " 
+	   << event->number()  << '\n';
+      generator()->log() << "Had quarks in final state in event " 
+			 << event->number()  << '\n'
 			 << *event;
     }
     charge += (*it)->dataPtr()->iCharge();
@@ -43,16 +45,26 @@ void BasicConsistency::analyze(tEventPtr event, long ieve, int loop, int state) 
   }
   
   if (charge != 0) {
-    cerr << "\nCharge imbalance by " << charge << "in event " << event->number()  << '\n';// << *event;
+    cerr << "\nCharge imbalance by " << charge 
+	 << "in event " << event->number()  << '\n';// << *event;
     generator()->log() << "Charge imbalance by " << charge 
-		       << "in event " << event->number()  << '\n' << *event;
+		       << "in event " << event->number()  << '\n' 
+		       << *event;
   }
-  if (ptotal.mag() > 0.1) {
+  if (ptotal.mag() > 5. || abs(ptotal.t()) > 5.) {
     cerr << "\nMomentum imbalance by " << ptotal/GeV 
 	 << " GeV in event " << event->number() << '\n';// << *event;
     generator()->log() <<"\nMomentum imbalance by " << ptotal/GeV 
-		       << " GeV in event " << event->number() << '\n' << *event;
+		       << " GeV in event " << event->number() << '\n' 
+		       << *event;
   }
+  
+  if (ptotal.mag() > _epsmom)
+    _epsmom = ptotal.mag();
+
+  if (abs(ptotal.t()) > _epsmom)
+    _epsmom=abs(ptotal.t());
+
 }
 
 LorentzRotation BasicConsistency::transform(tEventPtr event) const {

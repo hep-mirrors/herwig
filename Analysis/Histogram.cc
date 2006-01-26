@@ -56,43 +56,58 @@ void Histogram::topdrawOutput(ofstream & out,
       out << "CASE       \""   << leftcase  << "\"\n";
       out << "TITLE BOTTOM \"" << bottom     << "\"\n";
       out << "CASE        \""  << bottomcase << "\"\n";
-      out << "SET ORDER X Y DX DY \n";
+      if (error) out << "SET ORDER X Y DX DY \n";
+      else out << "SET ORDER X Y DX\n";
     }
   // scales
   if(xlog) out << "SET SCALE X LOG " << endl;
   if(ylog) out << "SET SCALE Y LOG " << endl;
   // set the x limits
-  out << "SET LIMITS X " << _binlimits[0] << " " << _binlimits[_nbin-2] << endl;
+
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+
+  out << "SET LIMITS X " << _bins[1].limit << " " 
+      << _bins[lastDataBinIndx+1].limit << endl;
   // work out the y points
   vector<double> yout;
-  double ymax=-1e100,delta;
-  for(unsigned int ix=0;ix<_nbin-2;++ix)
+  double ymax=-1e100;
+  
+  unsigned int numPoints = _globalStats.numberOfPoints();
+  if (numPoints == 0) ++numPoints;
+
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
     {
-      delta = 0.5*(_binlimits[ix+1]-_binlimits[ix]);
-      yout.push_back(0.5*_bincontents[ix+1]->total()/(delta*numberOfPoints()));
-      ymax=max(ymax,yout.back());
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      double value = 0.5*_bins[ix].contents.total() / (delta*numPoints);
+      yout.push_back(value);
+      ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].error) );
     }
-  for(unsigned int ix=1;ix<_data.size();++ix)
-    {ymax=max(ymax,_data[ix]+_error[ix]);}
-  out << "SET LIMITS Y 0. " << ymax << endl;
+  
+  out << "SET LIMITS Y " << (ylog ? "1.0e-6 ":"0 ") << ymax << endl;
+
   // the histogram from the event generator
-  for(unsigned int ix=0;ix<_nbin-2;++ix)
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
     {
-      delta = 0.5*(_binlimits[ix+1]-_binlimits[ix]);
-      out << _binlimits[ix]+delta << "\t"
-	  << yout[ix] << "\t"
-	  << delta << "\t"
-	  << 0.5*_bincontents[ix+1]->stdDev()/(delta*numberOfPoints()) << "\n";
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      out << _bins[ix].limit+delta << '\t' << yout[ix] << '\t' << delta;
+      if (error) {
+	out << '\t' << 0.5*_bins[ix].contents.stdDev()/(delta*numPoints);
+      }
+      out << '\n';
     }
   out << "HIST " << colour << endl;
-  // the real experimental data
-  for(unsigned int ix=0;ix<_nbin-2;++ix)
-    {
-      delta = 0.5*(_binlimits[ix+1]-_binlimits[ix]);
-      out << _binlimits[ix]+delta << "\t"
-	  << _data[ix]            << "\t"
-	  << delta                << "\t"
-	  << _error[ix]           << "\n";
-    }
-  out << "PLOT " << endl;
+
+  if (_havedata) {
+    // the real experimental data
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
+      {
+	double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+	out << _bins[ix].limit+delta << '\t' << _bins[ix].data << '\t' << delta;
+	if (error) {
+	  out  << '\t' << _bins[ix].error;
+	}
+	out << '\n';
+      }
+    out << "PLOT " << endl;
+  }
 }

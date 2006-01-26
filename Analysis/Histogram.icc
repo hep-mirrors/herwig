@@ -7,50 +7,48 @@
 namespace Herwig {
 
 inline Histogram::Histogram(double lower, double upper, unsigned int nbin) 
+  : _globalStats(), _havedata(false), _bins(nbin+2)
 {
-  // change limits if upper<lower
   if (upper<lower)
+    swap(upper,lower);
+
+  _bins[0].limit=-1.e100;
+  double limit(lower);
+  double width((upper-lower)/nbin);
+  for(unsigned int ix=1; ix <= nbin; ++ix)
     {
-      double temp(upper);
-      upper=lower;
-      lower=temp;
-    }
-  // number of bins
-  _nbin=nbin+1;
-  for(unsigned int ix=0;ix<_nbin;++ix){_bincontents.push_back(new_ptr(Statistic()));}
-  _binlimits.resize(_nbin);
-  double limit(lower),width((upper-lower)/nbin);
-  for(unsigned int ix=0;ix<_nbin-1;++ix)
-    {
-      _binlimits[ix]=limit;
+      _bins[ix].limit=limit;
       limit += width;
     }
-  _binlimits[_nbin-1]=1.e100;
+  _bins.back().limit=limit;
 }
 
 inline Histogram::Histogram(vector<double> limits)
+  : _globalStats(), _havedata(false), _bins(limits.size()+1)
 {
-  _nbin=limits.size()+1;
-  for(unsigned int ix=0;ix<_nbin;++ix){_bincontents.push_back(new_ptr(Statistic()));}
-  _binlimits=limits;
-  _binlimits.push_back(1.e100);
+  _bins[0].limit=-1.e100;
+  for (size_t i=1; i<=limits.size(); ++i)
+    _bins[i].limit=limits[i];
 }
 
 inline Histogram::Histogram(vector<double> limits, vector<double> data,
 			    vector<double> error)
+  : _globalStats(), _havedata(true), _bins(limits.size()+1)
 {
-  _nbin=limits.size()+1;
-  for(unsigned int ix=0;ix<_nbin;++ix){_bincontents.push_back(new_ptr(Statistic()));}
-  _binlimits=limits;
-  _binlimits.push_back(1.e100);
-  _data=data;
-  _error=error;
+  _bins[0].limit=-1.e100;
+  for (size_t i=1; i<=limits.size(); ++i)
+    _bins[i].limit=limits[i];
+
+  // no data goes into _bins[0] or _bins.back()!
+  for (size_t i=1; i<min(limits.size(),data.size()); ++i)
+    _bins[i].data=data[i];
+
+  for (size_t i=1; i<min(limits.size(),error.size()); ++i)
+    _bins[i].error=error[i];
 }
 
 inline Histogram::Histogram(const Histogram & x)
-  : Statistic(x), _nbin(x._nbin), _bincontents(x._bincontents),_binlimits(x._binlimits),
-    _data(x._data),_error(x._error)
-{}
+  : _globalStats(x._globalStats), _havedata(x._havedata), _bins(x._bins) {}
 
 inline IBPtr Histogram::clone() const {
   return new_ptr(*this);
@@ -61,7 +59,7 @@ inline IBPtr Histogram::fullclone() const {
 }
 
 inline void Histogram::doupdate() throw(UpdateException) {
-  Statistic::doupdate();
+  Interfaced::doupdate();
   // First update base class.
   bool redo = touched();
   // redo if touched.
@@ -79,25 +77,25 @@ inline void Histogram::doupdate() throw(UpdateException) {
 }
 
 inline void Histogram::doinit() throw(InitException) {
-  Statistic::doinit();
+  Interfaced::doinit();
 }
 
 inline void Histogram::dofinish() {
-  Statistic::dofinish();
+  Interfaced::dofinish();
 }
 
 inline void Histogram::doinitrun() {
-  Statistic::doinitrun();
+  Interfaced::doinitrun();
 }
 
 inline void Histogram::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
-  Statistic::rebind(trans);
+  Interfaced::rebind(trans);
 }
 
 inline IVector Histogram::getReferences() {
-  IVector ret = Statistic::getReferences();
+  IVector ret = Interfaced::getReferences();
   // ret.push_back(dummy);
   return ret;
 }
@@ -106,12 +104,16 @@ inline void Histogram::operator+=(double input)
 {
   if(isnan(input)) return;
   unsigned int ibin;
-  for(ibin=0;ibin<_nbin;ibin++) 
-    {if(input<_binlimits[ibin]) break;}
-  (*(_bincontents[ibin]))+=1.;
-  Statistic::operator+=(input);
+  for(ibin=1; ibin<_bins.size(); ++ibin) {
+    if(input<_bins[ibin].limit) 
+      break;
+  }
+  _bins[ibin-1].contents += 1.;
+  _globalStats += input;
 }
 
-inline unsigned int Histogram::numberOfBins(){ return _nbin-1;}
+inline unsigned int Histogram::numberOfBins() { 
+  return _bins.size()-2;
+}
 
 }

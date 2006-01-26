@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SimpleLHCAnalysis class.
+//
+#ifndef HERWIG_SimpleLHCAnalysis_FH
+#define HERWIG_SimpleLHCAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class SimpleLHCAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SimpleLHCAnalysis,SimpleLHCAnalysisPtr);
+
+}
+
+#endif

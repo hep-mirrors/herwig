@@ -1,23 +1,25 @@
 // -*- C++ -*-
-#ifndef THEPEG_BasicConsistency_H
-#define THEPEG_BasicConsistency_H
+#ifndef HERWIG_SimpleLHCAnalysis_H
+#define HERWIG_SimpleLHCAnalysis_H
 //
-// This is the declaration of the BasicConsistency class.
+// This is the declaration of the SimpleLHCAnalysis class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "BasicConsistency.fh"
+#include "SimpleLHCAnalysis.fh"
+#include "Histogram.h"
 
 namespace Herwig {
-  using namespace ThePEG;
+
+using namespace ThePEG;
 
 /**
- * Here is the documentation of the BasicConsistency class.
+ * Here is the documentation of the SimpleLHCAnalysis class.
  *
- * @see \ref BasicConsistencyInterfaces "The interfaces"
- * defined for BasicConsistency.
+ * @see \ref SimpleLHCAnalysisInterfaces "The interfaces"
+ * defined for SimpleLHCAnalysis.
  */
-class BasicConsistency: public AnalysisHandler {
+class SimpleLHCAnalysis: public AnalysisHandler {
 
 public:
 
@@ -26,17 +28,17 @@ public:
   /**
    * The default constructor.
    */
-  inline BasicConsistency();
+  inline SimpleLHCAnalysis();
 
   /**
    * The copy constructor.
    */
-  inline BasicConsistency(const BasicConsistency &);
+  inline SimpleLHCAnalysis(const SimpleLHCAnalysis &);
 
   /**
    * The destructor.
    */
-  virtual ~BasicConsistency();
+  virtual ~SimpleLHCAnalysis();
   //@}
 
 public:
@@ -181,20 +183,36 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<BasicConsistency> initBasicConsistency;
+  static ClassDescription<SimpleLHCAnalysis> initSimpleLHCAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  BasicConsistency & operator=(const BasicConsistency &);
+  SimpleLHCAnalysis & operator=(const SimpleLHCAnalysis &);
 
 private:
+  /**
+   *   \f$p_T\f$ of the Z boson
+   */
+  vector<Histogram> _ptZ;
+  vector<Histogram> _ptWp;
+  vector<Histogram> _ptWm;
 
   /**
-   *  Maximum momentum deviation
+   * Mass of the Z boson
    */
-  Energy _epsmom;
+  Histogram _mZ;
+  Histogram _mWp;
+  Histogram _mWm;
+
+  /**
+   *  Rapidity of Z
+   */
+  Histogram _rapZ;
+  Histogram _rapWp;
+  Histogram _rapWm;
+
 };
 
 }
@@ -206,22 +224,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of BasicConsistency. */
+ *  base classes of SimpleLHCAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::BasicConsistency,1> {
-  /** Typedef of the first base class of BasicConsistency. */
+struct BaseClassTrait<Herwig::SimpleLHCAnalysis,1> {
+  /** Typedef of the first base class of SimpleLHCAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the BasicConsistency class and the shared object where it is defined. */
+ *  the SimpleLHCAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::BasicConsistency>
-  : public ClassTraitsBase<Herwig::BasicConsistency> {
+struct ClassTraits<Herwig::SimpleLHCAnalysis>
+  : public ClassTraitsBase<Herwig::SimpleLHCAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BasicConsistency"; }
+  static string className() { return "Herwig++::SimpleLHCAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the BasicConsistency class and any other class on which it depends
+   *  access to the SimpleLHCAnalysis class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwAnalysis.so"; }
 };
@@ -230,9 +248,9 @@ struct ClassTraits<Herwig::BasicConsistency>
 
 }
 
-#include "BasicConsistency.icc"
+#include "SimpleLHCAnalysis.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BasicConsistency.tcc"
+// #include "SimpleLHCAnalysis.tcc"
 #endif
 
-#endif /* THEPEG_BasicConsistency_H */
+#endif /* HERWIG_SimpleLHCAnalysis_H */
