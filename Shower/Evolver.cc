@@ -142,7 +142,7 @@ bool Evolver::showerNormally(tEHPtr ch,
 	else if (status == -1) showerOK = false;
       }
       reconstructed = reconstructISKinematics(ch);
-    } else reconstructed = true;
+    } else reconstructed = true;  
   }
 
   if (!showerOK) {
@@ -193,8 +193,17 @@ bool Evolver::showerNormally(tEHPtr ch,
 	  cit != particlesToShower.end(); ++cit) {
 	//cout << (*cit)->id() << ", " << *cit << " " 
 	//     << (*cit)->momentum()/GeV << flush << endl;
-	_mapShowerHardJets[*cit] = _forwardEvolver->
-	  timeLikeShower(ch, showerVariables, *cit, particles);
+
+	// ### temporary workaround to fix crash bug with ISR/FSR on
+	// ### if statements shd be removed once SLS/TLS handover is okay
+	if ((*cit)->isFromHardSubprocess()) {
+	  if ((*cit)->getThePEGBase()) {
+	    // reset the momentum to include the ISR boost
+	    (*cit)->set5Momentum((*cit)->getThePEGBase()->momentum());
+	  }
+	  _mapShowerHardJets[*cit] = _forwardEvolver->
+	    timeLikeShower(ch, showerVariables, *cit, particles);
+	}
       }
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	generator()->log() << "...FS shower complete." << endl << flush;

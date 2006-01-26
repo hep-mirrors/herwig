@@ -1,3 +1,10 @@
+2006-01-26  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Shower.in, Shower/PartnerFinder.cc,
+	Shower/KinematicsReconstructor.cc, Shower/Evolver.cc,
+	Shower/BackwardEvolver.cc: fixed ISR/FSR crash for LHC. This is
+	NOT a permanent solution, there is no timelike showering of ISR
+	particles at the moment! 
 
 2006-01-24 David Grellscheid <David.Grellscheid@durham.ac.uk>
 

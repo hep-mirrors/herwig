@@ -53,7 +53,7 @@ set theSplittingGenerator:OnOffEWKinteractionMode 0
 
 # these switch a whole row on and off
 set theSplittingGenerator:OnOffISRMode 1
-set theSplittingGenerator:OnOffFSRMode 0
+set theSplittingGenerator:OnOffFSRMode 1
 
 # these switches are for each entry individually
 # if their column or row is 0, they are not looked at
@@ -80,6 +80,11 @@ create Herwig++::SudakovFormFactor GtoGGSudakov
 create Herwig++::SudakovFormFactor GtoQQbarSudakov
 create Herwig++::SudakovFormFactor QtoQGammaSudakov
 create Herwig++::SudakovFormFactor QtoGQSudakov
+set QtoQGSudakov:PDFmax 100
+set GtoGGSudakov:PDFmax 100
+set GtoQQbarSudakov:PDFmax 100
+set QtoQGammaSudakov:PDFmax 100
+set QtoGQSudakov:PDFmax 100
 set QtoQGSudakov:SplittingFunction theQtoQGSplitFn
 set QtoQGSudakov:Alpha theShowerAlphaQCD
 set QtoQGSudakov:Variables theShowerVariables

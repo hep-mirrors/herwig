@@ -150,7 +150,12 @@ int BackwardEvolver::spaceLikeShower(tEHPtr ch,
       ShowerParticlePtr otherChild = 
 	new_ptr(ShowerParticle(getParticleData(id2)));
       otherChild->setFinalState(true);
-      otherChild->setInitiatesTLS(true);
+
+      // ### temporary workaround to fix crash bug 
+      // ### should be reinstated once SLS/TLS handover is okay
+      //      otherChild->setInitiatesTLS(true);
+      otherChild->setInitiatesTLS(false);
+      // #################################
       newParent->setFinalState(false);
       //newParent->setFromHardSubprocess(true);
 

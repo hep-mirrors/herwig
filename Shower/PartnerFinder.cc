@@ -92,6 +92,10 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   PartnerMap candidatePartners;
   ShowerParticleVector::const_iterator cit, cjt;
   for(cit = particles.begin(); cit != particles.end(); ++cit) {
+    // ### temporary workaround to fix crash bug with ISR/FSR on
+    // ### if statement shd be removed once SLS/TLS handover is okay
+    if (!(*cit)->isFromHardSubprocess()) continue;
+    // ####
     if(!(*cit)->data().coloured()) continue;
 //     cout << "PF: cit = " << (*cit)->id() << ", " << *cit 
 // 	 << " [" << (*cit)->colourLine() << ", " 

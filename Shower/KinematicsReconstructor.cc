@@ -662,7 +662,6 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
     generator()->log() << "KinematicsReconstructor::reconstructHardJets: full _____________________________"<< endl; 
   }
-  
 
   /********
    * Second, do the overall CM boost, as follows.
@@ -714,10 +713,17 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
   // find out whether we're in cm or not:
   MapShower::const_iterator cit;
   Lorentz5Momentum p_cm = Lorentz5Momentum(); 
+  bool radiated = false;
   for(cit = hardJets.begin(); cit != hardJets.end(); ++cit) {
-    if (cit->first->isFinalState()) // avoids double counting if ISR and FSR are on
+    if (cit->first->isFinalState()) {// avoids double counting if ISR and FSR are on
+      if (!cit->first->children().empty())
+	radiated = true;
       p_cm += cit->first->momentum(); 
+    }
   }
+
+  if (!radiated) 
+    return true;
 
   Vector3 beta_cm = p_cm.findBoostToCM();
   bool gottaBoost = (beta_cm.mag() > 1e-12);
@@ -784,7 +790,7 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 	generator()->log() << " VETO -> restart shower! " << endl;
       }
     }
-    if(k < 0. || k > 1.) return false; 
+    if(k < 0. || k > 1.) return false;
   }
 
   for(JetKinVect::iterator it = jetKinematics.begin();
@@ -846,7 +852,6 @@ bool KinematicsReconstructor::reconstructHardJets(const MapShower &hardJets,
 			 << endl;
     }
   }
-  
   return true; 
 }
 
@@ -1101,9 +1106,10 @@ reconstructSpecialTimeLikeDecayingJet( const tShowerParticlePtr particleJetParen
 double KinematicsReconstructor::momConsEq(const double & k, 
 					  const Energy & root_s, 
 					  const JetKinVect & jets) {
-  Energy dum = Energy(); 
-  for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) 
+  Energy dum = Energy();
+  for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
     dum += sqrt( (it->q).m2() + sqr(k)*(it->p).vect().mag2() );
+  }
   return( dum - root_s ); 
 }
 
