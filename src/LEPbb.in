@@ -94,7 +94,7 @@ set theHadronSelector:DecWt      1.0
 #insert SimpleLEPHandler:SubProcessHandlers[0] SimpleEE2QQ
 
 cd /Defaults/MatrixElements
-create /Herwig++/MEee2gZ2bb MEee2gZ2bb HwME.so
+create /Herwig++/MEee2gZ2bb MEee2gZ2bb HwMEold.so
 #set MEee2gZ2bb:PhaseSpaceGenerator PS2to2Generic
 create /ThePEG/SubProcessHandler SimpleEE2BB
 insert SimpleEE2BB:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2bb

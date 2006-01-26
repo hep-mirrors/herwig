@@ -189,7 +189,7 @@ struct ClassTraits<MEee2gZ2bb>: public ClassTraitsBase<MEee2gZ2bb> {
   /** Return the name of the shared library be loaded to get
    *  access to the MEee2gZ2bb class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwME.so"; }
+  static string library() { return "HwMEold.so"; }
 };
 
 }

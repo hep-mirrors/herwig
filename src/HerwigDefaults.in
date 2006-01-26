@@ -42,7 +42,6 @@ cp StandardExtractor QCDExtractor
 
 # Setup matrix elements
 cd /Defaults/MatrixElements
-#create ThePEG::MEee2gZ2qq MEee2gZ2qq MEee2gZ2qq.so
 create ThePEG::MEGG2GG MEGG2GG MEQCD.so
 create ThePEG::MEQG2QG MEQG2QG
 create ThePEG::MEQQ2GG MEQQ2GG
@@ -53,11 +52,13 @@ create ThePEG::MEQQ2qq MEQQ2qq
 create ThePEG::MEqq2qq MEqq2qq
 set MEGG2QQ:MaxFlavour 4
 set MEQQ2qq:MaxFlavour 4
-create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
-create Herwig++::MEee2gZ2qq MEee2gZ2qq HwME.so
-set MEee2gZ2qq:MinimumFlavour 4
-set MEee2gZ2qq:MaximumFlavour 4
 
+create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
+set MEqq2gZ2ll:WithNeutrinos 1
+create Herwig++::MEqq2W2ll  MEqq2W2ll  HwME.so
+create Herwig++::MEee2gZ2qq MEee2gZ2qq HwME.so
+set MEee2gZ2qq:MinimumFlavour 1
+set MEee2gZ2qq:MaximumFlavour 5
 
 # Setup the Subprocesses
 cd /Defaults/Handlers
@@ -78,6 +79,7 @@ create ThePEG::SubProcessHandler SimpleQCD
 #insert SimpleQCD:MatrixElements[6] /Defaults/MatrixElements/MEqq2qq
 #insert SimpleQCD:MatrixElements[7] /Defaults/MatrixElements/MEQQ2GG
 insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ll
+insert SimpleQCD:MatrixElements[1] /Defaults/MatrixElements/MEqq2W2ll
 set SimpleQCD:PartonExtractor QCDExtractor
 
 cd /Defaults
@@ -187,15 +189,15 @@ set QCDCuts:SubProcess/ScaleMin 1.0*GeV
 set QCDCuts:SubProcess/PTHatMin 1.0*GeV
 set QCDCuts:Collision/X1Min 0.00001
 set QCDCuts:Collision/X2Min 0.00001
-set QCDCuts:SubProcess/MHatMin 91.
+set QCDCuts:SubProcess/MHatMin 20.
 set LHCGenerator:EventHandler:Cuts QCDCuts
 
 # This will read in all the standard hadron decay modes and add
 # the new particles that are used in HERWIG 6.4, but not in ThePEG
 read Decays.in
 
-# uncomment to include some default analysis handlers
-#read Analysis.in
+# include some default analysis handlers
+read Analysis.in
 
 # output interfaces for documentation
 cd /

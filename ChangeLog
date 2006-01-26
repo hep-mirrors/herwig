@@ -1,5 +1,8 @@
 2006-01-26  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
+	* MatrixElements/*: New qq->W->ll and ee->gZ->qq matrix
+	elements. Replaced default qq->gZ->ll
+	
 	* src/Analysis.in, Analysis/SimpleLHCAnalysis.*,
 	Analysis/Histogram.*, Analysis/BasicConsistency.*: Added
 	SimpleLHCAnalysis, cleaned up Histogram class and BasicConsistency

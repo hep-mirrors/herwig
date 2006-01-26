@@ -26,17 +26,17 @@ check-local: check-LHC check-LEP check-TVT
 check-LEP: 
 	$(myENV) ./Herwig++ init
 	$(myENV) ./Herwig++ read LEP.in
-	$(myENV) ./Herwig++ run LEP.run -N10
+	$(myENV) ./Herwig++ run LEP.run -N100
 
 check-LHC: 
 	$(myENV) ./Herwig++ init
 	$(myENV) ./Herwig++ read LHC.in
-	$(myENV) ./Herwig++ run LHC.run -N10
+	$(myENV) ./Herwig++ run LHC.run -N100
 
 check-TVT: 
 	$(myENV) ./Herwig++ init
 	$(myENV) ./Herwig++ read TVT.in
-	$(myENV) ./Herwig++ run TVT.run -N10
+	$(myENV) ./Herwig++ run TVT.run -N100
 
 ######################
 

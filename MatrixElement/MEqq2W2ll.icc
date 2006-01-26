@@ -1,0 +1,83 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEqq2W2ll class.
+//
+
+namespace Herwig {
+
+inline MEqq2W2ll::MEqq2W2ll() : _maxflavour(5) {}
+
+inline MEqq2W2ll::MEqq2W2ll(const MEqq2W2ll & x)
+  : ME2to2Base(x),
+   _theFFWVertex(x._theFFWVertex),
+    _Wp(x._Wp) ,_Wm(x._Wm),
+    _maxflavour(x._maxflavour) {}
+
+inline IBPtr MEqq2W2ll::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEqq2W2ll::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MEqq2W2ll::doupdate() throw(UpdateException) {
+  ME2to2Base::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void MEqq2W2ll::doinit() throw(InitException) {
+  ME2to2Base::doinit();
+  _Wp=getParticleData(ThePEG::ParticleID::Wplus);
+  _Wm=getParticleData(ThePEG::ParticleID::Wminus);
+  // cast the SM pointer to the Herwig SM pointer
+  ThePEG::Ptr<Herwig::StandardModel>::transient_const_pointer 
+    hwsm=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardModel>
+    ::transient_const_pointer>(standardModel());
+  // do the initialisation
+  if(hwsm)
+    {
+      _theFFWVertex = hwsm->vertexFFW();
+    }
+  else
+    {throw InitException();}
+}
+
+inline void MEqq2W2ll::dofinish() {
+  ME2to2Base::dofinish();
+}
+
+inline void MEqq2W2ll::doinitrun() {
+  ME2to2Base::doinitrun();
+}
+
+inline void MEqq2W2ll::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  _theFFWVertex = trans.translate(_theFFWVertex);
+  _Wp           = trans.translate(_Wp);
+  _Wm        = trans.translate(_Wm);
+  ME2to2Base::rebind(trans);
+}
+
+inline IVector MEqq2W2ll::getReferences() {
+  IVector ret = ME2to2Base::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

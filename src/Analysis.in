@@ -3,9 +3,9 @@ create Herwig++::BasicConsistency /Defaults/Handlers/Analysis/Basics HwAnalysis.
 create Herwig++::MultiplicityCount /Defaults/Handlers/Analysis/Multiplicity HwAnalysis.so
 
 insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
-insert LEPGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/Multiplicity
+#insert LEPGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/Multiplicity
 
 create Herwig++::SimpleLHCAnalysis /Defaults/Handlers/Analysis/SimpleLHC HwAnalysis.so
 
 insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
-insert LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/SimpleLHC
+#insert LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/SimpleLHC
