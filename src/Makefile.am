@@ -11,7 +11,7 @@ Hw64Decays.in       ThePEGParticles.in \
 LEPbb.in            UnderlyingEvent.in \
 LEP.in Herwig++.cc Herwig.Makefile  \
 SMWZDecays.in Model.in \
-StandardModelVertices.in
+StandardModelVertices.in Analysis.in
 
 CLEANFILES = HerwigDefaults.rpo LEP.run LEP.log LEP.out \
   LHC.run LHC.log LHC.out TVT.run TVT.log TVT.out
