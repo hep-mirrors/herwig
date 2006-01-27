@@ -7,6 +7,7 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "EventShapes.h"
 #include "LEPEventShapes.fh"
 #include "Histogram.h"
 
@@ -15,10 +16,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LEPEventShapes class.
+ * The LEPEventShapes class performs the analysis of global event shapes and
+ * compares with LEP data. This handler is solely intended as a slave
+ * handler for the EventShapesMasterAnalysis class.
  *
  * @see \ref LEPEventShapesInterfaces "The interfaces"
- * defined for LEPEventShapes.
+ * defined for LEPEventShapes
  */
 class LEPEventShapes: public AnalysisHandler {
 
@@ -301,6 +304,10 @@ private:
    */
   HistogramPtr _bdiff;
 
+  /**
+   * Pointer to the object which calculates the event shapes
+   */
+  EventShapesPtr _shapes;
 };
 
 }

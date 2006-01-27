@@ -70,26 +70,27 @@ void Histogram::topdrawOutput(ofstream & out,
       << _bins[lastDataBinIndx+1].limit << endl;
   // work out the y points
   vector<double> yout;
-  double ymax=-1e100;
-  
+  double ymax=-1e100,ymin=1e100;
   unsigned int numPoints = _globalStats.numberOfPoints();
   if (numPoints == 0) ++numPoints;
 
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      double value = 0.5*_bins[ix].contents.total() / (delta*numPoints);
+      double value = 0.5*_prefactor*_bins[ix].contents.total() / (delta*numPoints);
       yout.push_back(value);
       ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].error) );
+      if(yout.back()>0.) ymin=min(ymin,value);
+      if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
     }
-  
-  out << "SET LIMITS Y " << (ylog ? "1.0e-6 ":"0 ") << ymax << endl;
+
+  out << "SET LIMITS Y " << (ylog ? ymin:0. ) << " " << ymax << endl;
 
   // the histogram from the event generator
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      out << _bins[ix].limit+delta << '\t' << yout[ix] << '\t' << delta;
+      out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
       if (error) {
 	out << '\t' << 0.5*_bins[ix].contents.stdDev()/(delta*numPoints);
       }

@@ -198,24 +198,23 @@ double EvtShapes::Bdiff() {
 }
 
 void EvtShapes::normalizeEEC(vector<double> & hi, long evts) {
-  for (int bin = 0; bin < hi.size(); bin++) 
-    bin /= (hi.size()*evts);
+  for (unsigned int bin = 0; bin < hi.size(); bin++) bin /= (hi.size()*evts);
 }
 
 void EvtShapes::bookEEC(vector<double> & hi) {
   // hi is the histogram.  It is understood that hi.front() contains
   // the bin [-1 < cos(chi) < -1+delta] and hi.back() the bin [1-delta
   // < cos(chi) < 1].  Here, delta = 2/hi.size().
-  Energy Evis;
+  Energy Evis(0.);
   Lorentz5Momentum p_i, p_j; 
-  for (int bin = 0; bin < hi.size(); bin++) {
+  for (unsigned int bin = 0; bin < hi.size(); bin++) {
     double delta = 2./((double) hi.size());
     double coschi = -1+bin*delta;
     if (_pv.size() > 1) {
-      for (int i = 0; i < _pv.size()-1; i++) {
+      for (unsigned int i = 0; i < _pv.size()-1; i++) {
 	p_i = _pv[i]->momentum();
 	Evis += p_i.e(); 
-	for (int j = i+1; j < _pv.size(); j++) {
+	for (unsigned int j = i+1; j < _pv.size(); j++) {
 	  p_j = _pv[j]->momentum();
 	  double diff = abs(coschi-cos( p_i.vect().angle(p_j.vect()) )); 
 	  if (delta > diff) 
@@ -335,11 +334,11 @@ void EvtShapes::calcT(const vector<Vector3> &p, double &t, Vector3 &taxis) {
   t = 0.0;
   Vector3 tv, ptot;
   vector<Vector3> cpm;
-  for (int k=1; k < p.size(); k++) {
-    for (int j=0; j<k; j++) {
+  for (unsigned int k=1; k < p.size(); k++) {
+    for (unsigned int j=0; j<k; j++) {
       tv = p[j].cross(p[k]);
       ptot = Vector3();
-      for (int l=0; l<p.size(); l++) {
+      for (unsigned int l=0; l<p.size(); l++) {
 	if (l!=j && l!=k) {
 	  if (p[l]*tv > 0.0) { 
 	    ptot += p[l];
@@ -370,10 +369,10 @@ void EvtShapes::calcM(const vector<Vector3> &p, double &m, Vector3 &maxis) {
   m = 0.0;
   Vector3 tv, ptot;
   vector<Vector3> cpm;
-  for (int j=0; j < p.size(); j++) {
+  for (unsigned int j=0; j < p.size(); j++) {
     tv = p[j];
     ptot = Vector3();
-    for (int l=0; l<p.size(); l++) {
+    for (unsigned int l=0; l<p.size(); l++) {
       if (l!=j) {
 	if (p[l]*tv > 0.0) { 
 	  ptot += p[l];
@@ -419,7 +418,7 @@ void EvtShapes::calculateThrust() {
   vector<Vector3> p;
   p.clear();
   double psum = 0.0;
-  for (int l=0; l<_pv.size(); l++) {
+  for (unsigned int l=0; l<_pv.size(); l++) {
     p.push_back(_pv[l]->momentum().vect()/MeV);
     psum += p.back().mag();
   }
@@ -470,7 +469,7 @@ void EvtShapes::calculateThrust() {
   //major 
   p.clear();
   Vector3 par;
-  for (int l=0; l<_pv.size(); l++) {
+  for (unsigned int l=0; l<_pv.size(); l++) {
     par = ((_pv[l]->momentum().vect()/MeV)*axis.unit())*axis.unit();
     p.push_back(_pv[l]->momentum().vect()/MeV - par);
   }
@@ -484,7 +483,7 @@ void EvtShapes::calculateThrust() {
     val = 0.;
     axis = _thrustAxis[0].cross(_thrustAxis[1]);
     _thrustAxis.push_back(axis); 
-    for (int l=0; l<_pv.size(); l++) {
+    for (unsigned int l=0; l<_pv.size(); l++) {
       val += abs(axis*(_pv[l]->momentum().vect()/MeV));
     }
     _thrust.push_back(val/psum);

@@ -70,6 +70,21 @@ public:
   inline unsigned int numberOfBins();
 
   /**
+   *  Get the prefactor
+   */
+  inline double prefactor();
+
+  /**
+   *  Set the prefactor
+   */
+  inline void   prefactor(double );
+
+  /**
+   *  Access to the statistics on the total entry of the histogram
+   */
+  inline Statistic globalStatistics() const; 
+
+  /**
    *  Output as a topdrawe file
    * @param out The output stream
    * @param frame output on a new graph
@@ -224,10 +239,15 @@ private:
     double error;
   };
 
- /**
+  /**
    *  The histogram bins. _bins[0] is the underflow, _bins.back() the overflow
    */
   vector<Bin> _bins;
+
+  /**
+   *  Prefactors to multiply the output by
+   */
+  double _prefactor;
 };
 
 }

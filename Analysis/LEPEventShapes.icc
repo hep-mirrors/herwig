@@ -12,7 +12,7 @@ inline LEPEventShapes::LEPEventShapes(const LEPEventShapes & x)
   : AnalysisHandler(x),_omthr(x._omthr),_maj(x._maj),_min(x._min),
     _obl(x._obl),_sph(x._sph),_apl(x._apl),_pla(x._pla),_c(x._c),_d(x._d),
     _mhi(x._mhi),_mlo(x._mlo),_mdiff(x._mdiff),_bmax(x._bmax),
-    _bmin(x._bmin),_bsum(x._bsum),_bdiff(x._bdiff)
+    _bmin(x._bmin),_bsum(x._bsum),_bdiff(x._bdiff), _shapes(x._shapes)
 {}
 
 inline IBPtr LEPEventShapes::clone() const {

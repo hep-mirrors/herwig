@@ -44,6 +44,8 @@ inline void SingleParticleAnalysis::doinit() throw(InitException) {
 inline void SingleParticleAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   ofstream output("singleparticle.top");
+  _yT->prefactor(_yT->globalStatistics().numberOfPoints()/
+		 generator()->currentEventNumber());
   _yT->topdrawOutput(output,true,true,false,true,
 		     "RED",
 		     "Radidity with respect to the thrust axis compared to DELPHI data",
@@ -52,6 +54,8 @@ inline void SingleParticleAnalysis::dofinish() {
 		     "        X X",
 		     "y0T1",
 		     " X X");
+  _yS->prefactor(_yS->globalStatistics().numberOfPoints()/
+		 generator()->currentEventNumber());
   _yS->topdrawOutput(output,true,true,false,true,
 		     "RED",
 		     "Radidity with respect to the sphericity axis"
@@ -62,6 +66,8 @@ inline void SingleParticleAnalysis::dofinish() {
 		     "        X X",
 		     "y0S1",
 		     " X X");
+  //_ptinT->prefactor(_ptinT->globalStatistics().numberOfPoints()/
+  //		    generator()->currentEventNumber());
   _ptinT->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 in the plane with respect to the thrust axis"
@@ -72,6 +78,8 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X    X",
 			"p0T,in1",
 			" X    X");
+  _ptoutT->prefactor(_ptoutT->globalStatistics().numberOfPoints()/
+		     generator()->currentEventNumber());
   _ptoutT->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 out of the plane with respect to the thrust axis"
@@ -82,6 +90,8 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X     X",
 			"p0T,out1",
 			" X     X");
+  _ptinS->prefactor(_ptinS->globalStatistics().numberOfPoints()/
+		     generator()->currentEventNumber());
   _ptinS->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 in the plane with respect to the sphericity axis"
@@ -92,6 +102,8 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X    X",
 			"p0T,in1",
 			" X    X");
+  _ptoutS->prefactor(_ptoutS->globalStatistics().numberOfPoints()/
+		     generator()->currentEventNumber());
   _ptoutS->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 out of the plane with respect to the sphericity axis"
@@ -101,6 +113,7 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X     X",
 			"p0T,out1",
 			" X     X");
+  _nch->prefactor(2.);
   _nch->topdrawOutput(output,true,true,false,true,
 		      "RED",
 		      "Multiplcity of charged particles compared to OPAL data",
@@ -312,7 +325,6 @@ inline void SingleParticleAnalysis::doinitrun() {
   data  = vector<double>(data25 ,data25 +27);
   error = vector<double>(error25,error25+27);
   _nch=new_ptr(Histogram(bins,data,error));
-  _nch->prefactor(2.);
 }
 
 inline void SingleParticleAnalysis::rebind(const TranslationMap & trans)

@@ -7,6 +7,7 @@
 #include "LEPEventShapes.h"
 #include "EvtShapes.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -25,23 +26,6 @@ void LEPEventShapes::analyze(tEventPtr event, long ieve, int loop, int state) {
   // get the final-state particles
   tPVector hadrons=event->getFinalState();
   // event shapes
-  Herwig::EvtShapes es(hadrons); 
-  *_omthr += 1.-es.thrust();
-  *_maj += es.thrustMajor();
-  *_min += es.thrustMinor();
-  *_obl += es.oblateness(); 
-  *_c += es.CParameter(); 
-  *_d += es.DParameter(); 
-  *_sph += es.sphericity();
-  *_apl += es.aplanarity();
-  *_pla += es.planarity(); 
-  *_mhi += es.Mhigh2();
-  *_mlo += es.Mlow2(); 
-  *_mdiff += es.Mdiff2(); 
-  *_bmax += es.Bmax(); 
-  *_bmin += es.Bmin(); 
-  *_bsum += es.Bsum(); 
-  *_bdiff += es.Bdiff(); 
 }
 
 LorentzRotation LEPEventShapes::transform(tEventPtr event) const {
@@ -50,18 +34,32 @@ LorentzRotation LEPEventShapes::transform(tEventPtr event) const {
 }
 
 void LEPEventShapes::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
+  *_omthr += 1.-_shapes->thrust();
+  *_maj += _shapes->thrustMajor();
+  *_min += _shapes->thrustMinor();
+  *_obl += _shapes->oblateness(); 
+  *_c += _shapes->CParameter(); 
+  *_d += _shapes->DParameter(); 
+  *_sph += _shapes->sphericity();
+  *_apl += _shapes->aplanarity();
+  *_pla += _shapes->planarity(); 
+  *_mhi += _shapes->Mhigh2();
+  *_mlo += _shapes->Mlow2(); 
+  *_mdiff += _shapes->Mdiff2(); 
+  *_bmax += _shapes->Bmax(); 
+  *_bmin += _shapes->Bmin(); 
+  *_bsum += _shapes->Bsum(); 
+  *_bdiff += _shapes->Bdiff(); 
 }
 
 void LEPEventShapes::analyze(tPPtr) {}
 
 void LEPEventShapes::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+  os << _shapes;
 }
 
 void LEPEventShapes::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+  is >> _shapes;
 }
 
 ClassDescription<LEPEventShapes> LEPEventShapes::initLEPEventShapes;
@@ -70,7 +68,13 @@ ClassDescription<LEPEventShapes> LEPEventShapes::initLEPEventShapes;
 void LEPEventShapes::Init() {
 
   static ClassDocumentation<LEPEventShapes> documentation
-    ("There is no documentation for the LEPEventShapes class");
+    ("The LEPEventShapes class compares event shapes at the Z mass"
+     "with experimental results");
+
+  static Reference<LEPEventShapes,EventShapes> interfaceEventShapes
+    ("EventShapes",
+     "Pointer to the object which calculates the event shapes",
+     &LEPEventShapes::_shapes, false, false, true, false, false);
 
 }
 

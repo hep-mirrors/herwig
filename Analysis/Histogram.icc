@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline Histogram::Histogram(double lower, double upper, unsigned int nbin) 
-  : _globalStats(), _havedata(false), _bins(nbin+2)
+  : _globalStats(), _havedata(false), _bins(nbin+2),_prefactor(1.)
 {
   if (upper<lower)
     swap(upper,lower);
@@ -24,31 +24,32 @@ inline Histogram::Histogram(double lower, double upper, unsigned int nbin)
 }
 
 inline Histogram::Histogram(vector<double> limits)
-  : _globalStats(), _havedata(false), _bins(limits.size()+1)
+  : _globalStats(), _havedata(false), _bins(limits.size()+1), _prefactor(1.)
 {
   _bins[0].limit=-1.e100;
   for (size_t i=1; i<=limits.size(); ++i)
-    _bins[i].limit=limits[i];
+    _bins[i].limit=limits[i-1];
 }
 
 inline Histogram::Histogram(vector<double> limits, vector<double> data,
 			    vector<double> error)
-  : _globalStats(), _havedata(true), _bins(limits.size()+1)
+  : _globalStats(), _havedata(true), _bins(limits.size()+1), _prefactor(1.)
 {
   _bins[0].limit=-1.e100;
   for (size_t i=1; i<=limits.size(); ++i)
-    _bins[i].limit=limits[i];
+    _bins[i].limit=limits[i-1];
 
   // no data goes into _bins[0] or _bins.back()!
-  for (size_t i=1; i<min(limits.size(),data.size()); ++i)
-    _bins[i].data=data[i];
+  for (size_t i=1; i<=min(limits.size()-1,data.size()); ++i)
+    _bins[i].data=data[i-1];
 
-  for (size_t i=1; i<min(limits.size(),error.size()); ++i)
-    _bins[i].error=error[i];
+  for (size_t i=1; i<=min(limits.size()-1,error.size()); ++i)
+    _bins[i].error=error[i-1];
 }
 
 inline Histogram::Histogram(const Histogram & x)
-  : _globalStats(x._globalStats), _havedata(x._havedata), _bins(x._bins) {}
+  : _globalStats(x._globalStats), _havedata(x._havedata), _bins(x._bins),
+    _prefactor(x._prefactor) {}
 
 inline IBPtr Histogram::clone() const {
   return new_ptr(*this);
@@ -116,4 +117,9 @@ inline unsigned int Histogram::numberOfBins() {
   return _bins.size()-2;
 }
 
+inline double Histogram::prefactor(){return _prefactor;}
+
+inline void   Histogram::prefactor(double in){_prefactor=in;}
+
+inline Statistic Histogram::globalStatistics() const {return _globalStats;}
 }

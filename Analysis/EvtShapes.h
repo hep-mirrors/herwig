@@ -6,10 +6,11 @@
 #include "ThePEG/EventRecord/Particle.h"
 
 using namespace ThePEG;
+using std::vector;
 
 namespace Herwig {
 
-/** \ingroup Interfaces
+/** \ingroup Analysis
  *
  *  The purpose of this class is to calculate all typical event shapes.
  *  Thrust is just obtained from a wrapper to EventShape (from hep.).
@@ -21,81 +22,230 @@ class EvtShapes {
 public:
 
   /**
-   * Constructor takes vector of transient Pythia7 particle pointers 
+   * Constructor takes vector of transient particle pointers 
    * (= tPVector).  Only copies particles. 
    */
   EvtShapes(const tPVector & part);
+
+  /**
+   *  Destructor
+   */
   ~EvtShapes();
 
   /**
-   * For convenience get just single particle variables here.
+   *  Single particle variables which do not depend on event shapes axes
+   */
+  //@{
+  /**
+   *  Ratio of momentum to beam momentum
    */
   double getX(const Lorentz5Momentum & p, const Energy & Ebeam);
+
+  /**
+   *  The scaled momentum \f$\xi=-\log\left( p/E_{\rm beam}\right)\f$.
+   */
   double getXi(const Lorentz5Momentum & p, const Energy & Ebeam);
+
+  /**
+   *  Transverse momentum with respect to the beam
+   */
   Energy getPt(const Lorentz5Momentum & p);
+
+  /**
+   *  Rapidity with respect to the beam direction
+   */
   Energy getRapidity(const Lorentz5Momentum & p);
+  //@}
 
   /**
    * Single particle variables related to one of the shape axis.
    */
+  //@{
+  /**
+   *  Transverse momentum with respect to the thrust axis in the event plane
+   */
   Energy ptInT(const Lorentz5Momentum & p);
-  Energy ptOutT(const Lorentz5Momentum & p);
-  double yT(const Lorentz5Momentum & p);
-  Energy ptInS(const Lorentz5Momentum & p);
-  Energy ptOutS(const Lorentz5Momentum & p);
-  double yS(const Lorentz5Momentum & p);
 
   /**
-   * Get thrust-axis related shapes. 
+   *  Transverse momentum with respect to the thrust axis out of the event plane
+   */
+  Energy ptOutT(const Lorentz5Momentum & p);
+
+  /**
+   *  Rapidity with respect to the thrust axis
+   */
+  double yT(const Lorentz5Momentum & p);
+
+  /**
+   *  Transverse momentum with respect to the sphericity axis in the event plane
+   */
+  Energy ptInS(const Lorentz5Momentum & p);
+
+  /**
+   *  Transverse momentum with respect to the sphericity axis out of the event plane
+   */
+  Energy ptOutS(const Lorentz5Momentum & p);
+
+  /**
+   *  Rapidity with respect to the sphericity axis
+   */
+  double yS(const Lorentz5Momentum & p);
+  //@}
+
+  /**
+   *  Member functions to return thrust related shapes
+   */
+  //@{
+  /**
+   *  The thrust
    */
   double thrust(); 
-  double thrustMajor(); 
-  double thrustMinor(); 
-  double oblateness(); 
-  Vector3 thrustAxis(); 
-  Vector3 majorAxis(); 
-  Vector3 minorAxis(); 
 
-  /** 
-   * Linear momentum tensor related
-   * get eigenvalues and vectors of the linear momentum tensor.  
-   * They are sorted: linTenEigenValue[0] > ...[1] > ...[2].  
-   * Yes, eigenvector[i] really does correspond to eigenvalue[i]!
+  /**
+   *  The major
+   */ 
+  double thrustMajor(); 
+
+  /**
+   *  The minor
+   */ 
+  double thrustMinor(); 
+
+  /**
+   *  The oblateness
+   */ 
+  double oblateness(); 
+
+  /**
+   *  The thrust axis
+   */
+  Vector3 thrustAxis(); 
+
+  /**
+   *  The major axis
+   */ 
+  Vector3 majorAxis(); 
+
+  /**
+   *  The minor axis
+   */
+  Vector3 minorAxis(); 
+  //@}
+
+
+  /**
+   * Linear momentum tensor related event shapes
+   */
+  //@{
+  /**
+   *  The C parameter
+   */
+  double CParameter();
+
+  /**
+   *  The D parameter
+   */
+  double DParameter();
+
+  /**
+   *  The eigenvalues in descending order
    */
   vector<double> linTenEigenValues();
-  vector<Vector3> linTenEigenVectors();
-  double CParameter();
-  double DParameter();
-  
+
   /**
-   * Quadratic momentum tensor related.
+   *  The eigenvectors in order of descending eigenvalue
+   */
+  vector<Vector3> linTenEigenVectors();
+  //@}
+
+  /**
+   * Quadratic momentum tensor related variables
+   */
+  //@{
+  /**
+   *  The sphericity
    */
   double sphericity();
-  double aplanarity();
-  double planarity();
-  Vector3 sphericityAxis();
-  vector<double> sphericityEigenValues();
-  vector<Vector3> sphericityEigenVectors();
 
   /**
-   * Jet mass related, high, low hemisphere masses squared divided 
-   * by visible energy squared and their difference.
+   *  The aplanarity
+   */
+  double aplanarity();
+
+  /**
+   *  The planarity
+   */
+  double planarity();
+
+  /**
+   *  The sphericity axis
+   */
+  Vector3 sphericityAxis();
+
+  /**
+   *  The sphericity eigenvalues
+   */
+  vector<double> sphericityEigenValues();
+
+  /**
+   *  The sphericity eigenvectors
+   */
+  vector<Vector3> sphericityEigenVectors();
+  //@}
+
+  /**
+   * Jet mass related event shapes
+   */
+  //@{
+  /**
+   *  The high hemishpere mass squared divided by the visible energy squared
    */
   double Mhigh2();
-  double Mlow2();
-  double Mdiff2();
-  
-  /**
-   * Jet broadening. 
-   */
-  double Bmax();
-  double Bmin();
-  double Bsum();
-  double Bdiff();
 
   /**
+   *  The low hemishpere mass squared divided by the visible energy squared
+   */
+  double Mlow2();
+
+  /**
+   *  The difference between the 
+   * hemishpere masses squared divided by the visible energy squared
+   */
+  double Mdiff2();
+  //@}
+
+  /**
+   * Jet broadening related event shapes
+   */
+  //@{
+  /**
+   *  The wide jet broadening
+   */
+  double Bmax();
+
+  /**
+   *  The narrow jet broadening
+   */
+  double Bmin();
+
+  /**
+   *  The sum of the jet broadenings
+   */
+  double Bsum();
+
+  /**
+   *  The difference of the jet broadenings
+   */
+  double Bdiff();
+  //@}
+
+  /**
+   *  Energy-Energy correlation related members
+   */
+  //@{
+  /**
    * Energy-energy correlation (EEC)
-   * hi is the histogram and has to be provided externally since this
+   * @param hi is the histogram and has to be provided externally since this
    * class is supposed to die after one event.  It is understood that
    * the range of the histogam is -1 < cos(chi) < 1. 
    * hi.front() contains the bin [-1 < cos(chi) < -1+delta] and
@@ -105,64 +255,213 @@ public:
   void bookEEC(vector<double> & hi);
 
   /**
-   * Before writing the histogram it has to be normalized acc to the
+   * Before writing the histogram it has to be normalized according to the
    * number of events. 
    */
   void normalizeEEC(vector<double> & hi, long evts);
 
   /**
-   * The asymmetry of EEC is calculated from a given cos(chi) and EEC
-   * histogram , which is a vector<double> as described above.
+   * The asymmetry of EEC is calculated from a given \f$\cos\chi\f$ and EEC
+   * histogram, which is a vector<double> as described above.
    */
   double AEEC(vector<double> & hi, double& coschi);
+  //@}
 
 private: 
 
+  /**
+   *  Default constructor should not be used and is therefore private
+   */
   EvtShapes();
 
   /**
-   * Check whether initialization has been done and if not do so.
+   *  Check whether the initialization of a certain class of event shapes
+   *  has been calculated and if not do so
+   */
+  //@{
+  /**
+   *  Check if thrust related variables have been calculated and if not do so
    */
   inline void checkThrust();
-  inline void checkLinTen();
-  inline void checkSphericity();
-  inline void checkHemispheres();
-  inline void checkBroadening();
 
   /**
-   * Actually do something.
+   *  Check if the linear tensor related variables have been calculated and if not do so
+   */
+  inline void checkLinTen();
+
+  /**
+   *  Check if the quadratic tensor related variables have been calculated
+   *  and if not do so
+   */
+  inline void checkSphericity();
+
+  /**
+   *  Check if the hemisphere mass variables have been calculated and if not do so
+   */
+  inline void checkHemispheres();
+
+  /**
+   *  Check if the jet broadenings have been calculated and if not do so
+   */
+  inline void checkBroadening();
+  //@}
+
+  /**
+   *  Methods that actually calculate the event shapes
+   */
+  //@{
+  /**
+   *  Calculate the hemisphere masses
    */
   void calcHemisphereMasses();
+
+  /**
+   *  Calculate the jet broadenings
+   */
   void calcBroadening();
 
   /**
-   * 'linear' to switch between diagonalization of linear/quadratic
-   * tensor. 'cmboost' tells whether to boost into cm frame of all
+   * Calculate the thrust and related axes
+   */
+  void calculateThrust();
+
+  /**
+   * Diagonalize the tensors
+   * @param linear switch between diagonalization of linear/quadratic tensor.
+   * @param cmboost tells whether to boost into cm frame of all
    * momenta first, or not (default off, and no interface to this).
    */
   void diagonalizeTensors(bool linear, bool cmboost);
 
   /**
-   * Doing the work.
+   *  Member to calculate the thrust
+   * @param p The three vectors
+   * @param t The thrust
+   * @param taxis The thrust axis
    */
   void calcT(const vector<Vector3> &p, double &t, Vector3 &taxis);
-  void calcM(const vector<Vector3> &p, double &m, Vector3 &maxis);
 
   /**
-   * Fills/gets values and calculates minor.
+   *  Member to calculate the major
+   * @param p The three vectors
+   * @param m The major
+   * @param maxis The major axis
    */
-  void calculateThrust();
+  void calcM(const vector<Vector3> &p, double &m, Vector3 &maxis);
+  //@}
+
 
 private:
  
+  /**
+   *  Vector of particles to be analysed
+   */
   tPVector _pv; 
-  std::vector<Vector3> _thrustAxis, _spherAxis, _linTenAxis; 
-  std::vector<double> _thrust, _spher, _linTen; 
-  bool _linTenDone, _spherDone, _thrustDone;
-  double _mPlus, _mMinus, _bPlus, _bMinus; 
-  bool _hemDone, _broadDone; 
+
+  /**
+   *  Various event shape axes
+   */
+  //@{
+  /**
+   *  The thrust related axes
+   */
+  vector<Vector3> _thrustAxis;
+
+  /**
+   *  The sphericity related axes
+   */
+  vector<Vector3> _spherAxis; 
+
+  /**
+   *  The linearised tensor axes
+   */
+  vector<Vector3> _linTenAxis; 
+  //@}
+
+  /**
+   *  Values of axis related event shapes
+   */
+  //@{
+  /**
+   *  Values of thrust related variables
+   */
+  vector<double> _thrust;
+
+  /**
+   *  Values of sphericity related variables
+   */
+  vector<double> _spher;
+
+  /**
+   *  Values of linearized tensor related variables
+   */
+  vector<double> _linTen;
+  //@} 
+
+  /**
+   *  Whether or not certain event axes have been calculated
+   */
+  //@{
+  /**
+   *  Whether or not the thrust is calculated
+   */
+  bool _thrustDone;
+
+  /**
+   *  Whether or not the sphericity is calculated
+   */
+  bool _spherDone;
+
+  /**
+   *  Whether or not the linearizes tensor is calculated 
+   */
+  bool _linTenDone;
+
+  /**
+   *  Whether or not the hemisphere masses have been calculated
+   */
+  bool _hemDone; 
+
+  /**
+   * Whether or not the jet broadenings have been calculated
+   */
+  bool _broadDone; 
+  //@}
+
+  /**
+   *  Whether ot not to boost to the CMS frame for the tensor diagonalizations
+   */
   bool _useCmBoost;
 
+  /**
+   *  Hemisphere masses
+   */
+  //@{
+  /**
+   *  The high hemisphere mass
+   */
+  double _mPlus;
+
+  /**
+   *  The low hemisphere mass
+   */
+  double _mMinus;
+  //@}
+
+  /**
+   *  The jet broadenings
+   */
+  //@{
+  /**
+   *  The wide jet broadening
+   */
+  double _bPlus;
+
+  /**
+   *  The narrow jet broadening
+   */
+  double _bMinus; 
+  //@}
 };
 
 }
