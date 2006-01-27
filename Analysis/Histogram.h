@@ -85,7 +85,19 @@ public:
   inline Statistic globalStatistics() const; 
 
   /**
-   *  Output as a topdrawe file
+   *  Normalise the distributions to the data
+   */
+  void normaliseToData();
+
+  /**
+   *  Return the chi squared
+   * @param chisq The chi squared
+   * @param ndegrees The number of points
+   */
+  void chiSquared(double & chisq, unsigned int & ndegrees);
+
+  /**
+   *  Output as a topdrawer file
    * @param out The output stream
    * @param frame output on a new graph
    * @param error output data points with error bars
@@ -232,8 +244,8 @@ private:
    *  One bin of the histogram. limit is the _lower_ bound of the bin.
    */
   struct Bin {
-    Bin() : contents(), limit(0.0), data(0.0), error(0.0) {}
-    Statistic contents;
+    Bin() : contents(0.0), limit(0.0), data(0.0), error(0.0) {}
+    double contents;
     double limit;
     double data;
     double error;

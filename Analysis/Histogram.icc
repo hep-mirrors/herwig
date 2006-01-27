@@ -123,3 +123,4 @@ inline void   Histogram::prefactor(double in){_prefactor=in;}
 
 inline Statistic Histogram::globalStatistics() const {return _globalStats;}
 }
+

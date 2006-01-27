@@ -44,8 +44,40 @@ inline void SingleParticleAnalysis::doinit() throw(InitException) {
 inline void SingleParticleAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   ofstream output("singleparticle.top");
-  _yT->prefactor(_yT->globalStatistics().numberOfPoints()/
-		 generator()->currentEventNumber());
+  // normalize the data
+  _yT->normaliseToData();
+  _yS->normaliseToData();
+  _ptinT->normaliseToData();
+  _ptoutT->normaliseToData();
+  _ptinS->normaliseToData();
+  _ptoutS->normaliseToData();
+  _nch->prefactor(2.);
+  // chisq
+  double chisq;
+  unsigned int npoint;
+  generator()->log() << "Output from SingleParticleAnalysis \n";
+  _yT->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the rapidity wrt thrust axis distribution or " << chisq/npoint << "per degree of freedom \n";  
+  _yS->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the rapidity wrt sphericity axis distribution " << chisq/npoint << "per degree of freedom \n";  
+  _ptinT->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the pT in the plane wrt thrust axis distribution " << chisq/npoint << "per degree of freedom \n";  
+  _ptoutT->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the pT out of the plane wrt thrust axis distribution " << chisq/npoint << "per degree of freedom \n";  
+  _ptinS->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the pT in the plan wrt sphericity axis e distribution " << chisq/npoint << "per degree of freedom \n";  
+  _ptoutS->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the pT out of the wrt sphericity axis  plane distribution " << chisq/npoint << "per degree of freedom \n";  
+  _nch->chiSquared(chisq,npoint);
+  generator()->log() << "The chi squared was " << chisq << " for " << npoint 
+		     << " degrees of freedom for the number of charged particles distribution " << chisq/npoint << "per degree of freedom \n";  
+  // output the plots
   _yT->topdrawOutput(output,true,true,false,true,
 		     "RED",
 		     "Radidity with respect to the thrust axis compared to DELPHI data",
@@ -54,8 +86,6 @@ inline void SingleParticleAnalysis::dofinish() {
 		     "        X X",
 		     "y0T1",
 		     " X X");
-  _yS->prefactor(_yS->globalStatistics().numberOfPoints()/
-		 generator()->currentEventNumber());
   _yS->topdrawOutput(output,true,true,false,true,
 		     "RED",
 		     "Radidity with respect to the sphericity axis"
@@ -66,8 +96,6 @@ inline void SingleParticleAnalysis::dofinish() {
 		     "        X X",
 		     "y0S1",
 		     " X X");
-  //_ptinT->prefactor(_ptinT->globalStatistics().numberOfPoints()/
-  //		    generator()->currentEventNumber());
   _ptinT->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 in the plane with respect to the thrust axis"
@@ -78,8 +106,6 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X    X",
 			"p0T,in1",
 			" X    X");
-  _ptoutT->prefactor(_ptoutT->globalStatistics().numberOfPoints()/
-		     generator()->currentEventNumber());
   _ptoutT->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 out of the plane with respect to the thrust axis"
@@ -90,8 +116,6 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X     X",
 			"p0T,out1",
 			" X     X");
-  _ptinS->prefactor(_ptinS->globalStatistics().numberOfPoints()/
-		     generator()->currentEventNumber());
   _ptinS->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 in the plane with respect to the sphericity axis"
@@ -102,8 +126,6 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X    X",
 			"p0T,in1",
 			" X    X");
-  _ptoutS->prefactor(_ptoutS->globalStatistics().numberOfPoints()/
-		     generator()->currentEventNumber());
   _ptoutS->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"p0T1 out of the plane with respect to the sphericity axis"
@@ -113,7 +135,6 @@ inline void SingleParticleAnalysis::dofinish() {
 			"        X     X",
 			"p0T,out1",
 			" X     X");
-  _nch->prefactor(2.);
   _nch->topdrawOutput(output,true,true,false,true,
 		      "RED",
 		      "Multiplcity of charged particles compared to OPAL data",

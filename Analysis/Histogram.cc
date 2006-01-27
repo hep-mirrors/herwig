@@ -77,7 +77,7 @@ void Histogram::topdrawOutput(ofstream & out,
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
-      double value = 0.5*_prefactor*_bins[ix].contents.total() / (delta*numPoints);
+      double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
       yout.push_back(value);
       ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].error) );
       if(yout.back()>0.) ymin=min(ymin,value);
@@ -92,7 +92,7 @@ void Histogram::topdrawOutput(ofstream & out,
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
       if (error) {
-	out << '\t' << 0.5*_bins[ix].contents.stdDev()/(delta*numPoints);
+	out << '\t' << 0.5*sqrt(_bins[ix].contents)/(delta*numPoints);
       }
       out << '\n';
     }
@@ -112,3 +112,34 @@ void Histogram::topdrawOutput(ofstream & out,
     out << "PLOT " << endl;
   }
 }
+
+void Histogram::normaliseToData()
+{
+  double numer(0.),denom(0.);
+  unsigned int numPoints = _globalStats.numberOfPoints();
+  for(unsigned int ix=1;ix<_bins.size()-1;++ix)
+    {
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      double value = 0.5*_bins[ix].contents / (delta*numPoints);
+      double var=sqr(_bins[ix].error);
+      numer += _bins[ix].data*value/var;
+      denom += sqr(value)/var;
+    }
+  _prefactor=numer/denom;
+}
+
+void Histogram::chiSquared(double & chisq, unsigned int & ndegrees)
+{
+  chisq =0.;
+  ndegrees=_bins.size()-2;
+  unsigned int numPoints = _globalStats.numberOfPoints();
+  for(unsigned int ix=1;ix<_bins.size()-1;++ix)
+    {
+      double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+      double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
+      double var=sqr(_bins[ix].error)
+	+ _bins[ix].contents*sqr(0.5*_prefactor / (delta*numPoints));
+      chisq += sqr(_bins[ix].data-value)/var;
+    }
+}
+
