@@ -93,8 +93,9 @@ public:
    *  Return the chi squared
    * @param chisq The chi squared
    * @param ndegrees The number of points
+   * @param minfrac The minimum fractional error on the data point
    */
-  void chiSquared(double & chisq, unsigned int & ndegrees);
+  void chiSquared(double & chisq, unsigned int & ndegrees, double minfrac=0.);
 
   /**
    *  Output as a topdrawer file
