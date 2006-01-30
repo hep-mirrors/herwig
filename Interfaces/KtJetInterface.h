@@ -31,7 +31,7 @@ class KtJetInterface {
 
  public:
 
-  vector<KtLorentzVector> convertToKtVectorList(tPVector &); 
+  vector<KtLorentzVector> convertToKtVectorList(const tPVector &); 
   int getThePEGID(KtLorentzVector &);
 
  private:

@@ -1,14 +1,17 @@
 // -*- C++ -*-
-#ifndef HERWIG_LEPEventShapes_H
-#define HERWIG_LEPEventShapes_H
+#ifndef HERWIG_LEPFourJetsAnalysis_H
+#define HERWIG_LEPFourJetsAnalysis_H
 //
-// This is the declaration of the LEPEventShapes class.
+// This is the declaration of the LEPFourJetsAnalysis class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
-#include "EventShapes.h"
-#include "LEPEventShapes.fh"
+#include "Herwig++/Interfaces/KtJetInterface.h"
+#include "KtJet/KtJet.h"
+#include "KtJet/KtLorentzVector.h"
+#include "LEPFourJetsAnalysis.fh"
 #include "Histogram.h"
 
 namespace Herwig {
@@ -16,14 +19,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The LEPEventShapes class performs the analysis of global event shapes and
- * compares with LEP data. This handler is solely intended as a slave
- * handler for the EventShapesMasterAnalysis class.
+ * The LEPFourJetsAnalysis class performs analysis for four jet angles and
+ * compares them to LEP data.
  *
- * @see \ref LEPEventShapesInterfaces "The interfaces"
- * defined for LEPEventShapes
+ * @see \ref LEPFourJetsAnalysisInterfaces "The interfaces"
+ * defined for LEPFourJetsAnalysis.
  */
-class LEPEventShapes: public AnalysisHandler {
+class LEPFourJetsAnalysis: public AnalysisHandler {
 
 public:
 
@@ -32,17 +34,17 @@ public:
   /**
    * The default constructor.
    */
-  inline LEPEventShapes();
+  inline LEPFourJetsAnalysis();
 
   /**
    * The copy constructor.
    */
-  inline LEPEventShapes(const LEPEventShapes &);
+  inline LEPFourJetsAnalysis(const LEPFourJetsAnalysis &);
 
   /**
    * The destructor.
    */
-  virtual ~LEPEventShapes();
+  virtual ~LEPFourJetsAnalysis();
   //@}
 
 public:
@@ -116,6 +118,34 @@ public:
    */
   static void Init();
 
+
+protected:
+
+  /**
+   *  Methods to compute the four jet angles, assumes the jets are energy ordered
+   */
+  //@{
+  /**
+   *  Compute \f$\cos\chi_{BZ}\f$
+   */
+  inline double cosChiBZ(vector<Lorentz5Momentum>);
+
+  /**
+   *  Compute \f$\cos\Phi_{KSW}\f$.
+   */ 
+  inline double cosPhiKSW(vector<Lorentz5Momentum>);
+  
+  /**
+   *  Compute \f$\cos\Theta_{NR}\f$
+   */
+  inline double cosThetaNR(vector<Lorentz5Momentum>); 
+
+  /**
+   *  Compute \f$\cos\alpha_{34}\f$
+   */
+  inline double cosAlpha34(vector<Lorentz5Momentum>); 
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
@@ -187,100 +217,40 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<LEPEventShapes> initLEPEventShapes;
+  static ClassDescription<LEPFourJetsAnalysis> initLEPFourJetsAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LEPEventShapes & operator=(const LEPEventShapes &);
+  LEPFourJetsAnalysis & operator=(const LEPFourJetsAnalysis &);
 
 private:
 
   /**
-   *  Histogram for \f$1-T\f$ distribution.
+   * Histogram for the \f$\cos\alpha_{34}\f$ distribution
    */
-  HistogramPtr _omthr;
+  HistogramPtr _ca34;
 
   /**
-   * Histogram for the major distribution
+   * Histogram for the \f$\cos\chi_{BZ}\f$ distribution
    */
-  HistogramPtr _maj;
+  HistogramPtr _cchiBZ;
 
   /**
-   * Histogram for the minor distribution
+   * Histogram for the \f$\cos\Phi_{KSW}\f$ distribution
    */
-  HistogramPtr _min;
+  HistogramPtr _cphiKSW;
 
   /**
-   * Histogram for the oblateness distribution
+   * Histogram for the \f$\cos\Theta_{NR}\f$ distribution
    */
-  HistogramPtr _obl;
+  HistogramPtr _cthNR;
 
   /**
-   * Histogram for the sphericity distribution
+   *  The interface between Herwig++ and KtJet
    */
-  HistogramPtr _sph;
-
-  /**
-   * Histogram for the aplanarity distribution
-   */
-  HistogramPtr _apl;
-
-  /**
-   * Histogram for the planarity distribution
-   */
-  HistogramPtr _pla;
-
-  /**
-   * Histogram for the C distribution
-   */
-  HistogramPtr _c;
-
-  /**
-   * Histogram for the D distribution
-   */
-  HistogramPtr _d;
-
-  /**
-   * Histogram for the \f$M_{\rm high}\f$ distribution
-   */
-  HistogramPtr _mhi;
-
-  /**
-   * Histogram for the \f$M_{\rm low}\f$ distribution
-   */
-  HistogramPtr _mlo;
-
-  /**
-   * Histogram for the \f$M_{\rm high}-M_{\rm low}\f$ distribution
-   */
-  HistogramPtr _mdiff;
-
-  /**
-   * Histogram for the \f$B_{\rm max}\f$ distribution
-   */
-  HistogramPtr _bmax;
-
-  /**
-   * Histogram for the \f$B_{\rm min}\f$ distribution
-   */
-  HistogramPtr _bmin;
-
-  /**
-   * Histogram for the \f$B_{\rm max}+B_{\rm min}\f$ distribution
-   */
-  HistogramPtr _bsum;
-
-  /**
-   * Histogram for the \f$B_{\rm max}-B_{\rm min}\f$ distribution
-   */
-  HistogramPtr _bdiff;
-
-  /**
-   * Pointer to the object which calculates the event shapes
-   */
-  EventShapesPtr _shapes;
+  Herwig::KtJetInterface _kint;
 };
 
 }
@@ -292,22 +262,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LEPEventShapes. */
+ *  base classes of LEPFourJetsAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::LEPEventShapes,1> {
-  /** Typedef of the first base class of LEPEventShapes. */
+struct BaseClassTrait<Herwig::LEPFourJetsAnalysis,1> {
+  /** Typedef of the first base class of LEPFourJetsAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LEPEventShapes class and the shared object where it is defined. */
+ *  the LEPFourJetsAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LEPEventShapes>
-  : public ClassTraitsBase<Herwig::LEPEventShapes> {
+struct ClassTraits<Herwig::LEPFourJetsAnalysis>
+  : public ClassTraitsBase<Herwig::LEPFourJetsAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LEPEventShapes"; }
+  static string className() { return "Herwig:++:LEPFourJetsAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the LEPEventShapes class and any other class on which it depends
+   *  access to the LEPFourJetsAnalysis class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
 };
@@ -316,9 +286,9 @@ struct ClassTraits<Herwig::LEPEventShapes>
 
 }
 
-#include "LEPEventShapes.icc"
+#include "LEPFourJetsAnalysis.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LEPEventShapes.tcc"
+// #include "LEPFourJetsAnalysis.tcc"
 #endif
 
-#endif /* HERWIG_LEPEventShapes_H */
+#endif /* HERWIG_LEPFourJetsAnalysis_H */

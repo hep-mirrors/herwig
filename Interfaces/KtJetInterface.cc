@@ -4,10 +4,9 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-vector<KtJet::KtLorentzVector> KtJetInterface::convertToKtVectorList(tPVector &pv) {
+vector<KtJet::KtLorentzVector> KtJetInterface::convertToKtVectorList(const tPVector &pv) {
   vector<KtLorentzVector> rval;
-  for(tPVector::iterator it = pv.begin(); it != pv.end(); it++) {
-    //rval.push_back(KtJetInterface::convertToKtVector(*it));
+  for(tPVector::const_iterator it = pv.begin(); it != pv.end(); it++) {
     rval.push_back(KtJet::KtLorentzVector((*it)->momentum()));
     Kt2PythiaMap[rval.back().getID()] = (*it)->number();
   }

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LEPFourJetsAnalysis class.
+//
+#ifndef HERWIG_LEPFourJetsAnalysis_FH
+#define HERWIG_LEPFourJetsAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LEPFourJetsAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LEPFourJetsAnalysis,LEPFourJetsAnalysisPtr);
+
+}
+
+#endif

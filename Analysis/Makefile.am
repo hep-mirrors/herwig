@@ -24,3 +24,12 @@ SingleParticleAnalysis.h SingleParticleAnalysis.icc \
 LEPEventShapes.cc LEPEventShapes.fh LEPEventShapes.h LEPEventShapes.icc \
 IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.fh \
 IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc 
+
+# analysis code which depends on ktjet
+if WANT_LIBKTJET
+AM_CPPFLAGS+= -I$(KTJETPATH)
+HwLEPAnalysis_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
+HwLEPAnalysis_la_SOURCES +=\
+LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh\
+LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc 
+endif

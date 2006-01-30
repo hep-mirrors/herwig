@@ -568,41 +568,4 @@ inline IVector LEPEventShapes::getReferences() {
   return ret;
 }
 
-inline double LEPEventShapes::cosChiBZ(vector<Lorentz5Momentum> p) {
-  if (p.size() == 4) {
-    Hep3Vector v1 = p[0].vect().cross(p[1].vect());
-    Hep3Vector v2 = p[2].vect().cross(p[3].vect());
-    return cos(v1.angle(v2)); 
-  } else return 123;
-}
-
-
-inline double LEPEventShapes::cosPhiKSW(vector<Lorentz5Momentum> p) {
-  if (p.size() == 4) {
-    Hep3Vector v1 = p[0].vect().cross(p[3].vect());
-    Hep3Vector v2 = p[1].vect().cross(p[2].vect());
-    double alpha1 = v1.angle(v2);
-    v1 = p[0].vect().cross(p[2].vect());
-    v2 = p[1].vect().cross(p[3].vect());
-    double alpha2 = v1.angle(v2);
-    return cos((alpha1+alpha2)/2.);
-  } else return 123; 
-}
-
-inline double LEPEventShapes::cosThetaNR(vector<Lorentz5Momentum> p) 
-{
-  if (p.size() == 4) {
-    Hep3Vector v1 = p[0].vect() - p[1].vect();
-    Hep3Vector v2 = p[2].vect() - p[3].vect();
-    return cos(v1.angle(v2));
-  }
-  else return 123; 
-}
-
-inline double LEPEventShapes::cosAlpha34(std::vector<Lorentz5Momentum> p) {
-  if (p.size() == 4)
-    return cos(p[2].vect().angle(p[3].vect()));
-  else 
-    return 123; 
-}
 }

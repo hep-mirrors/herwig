@@ -14,4 +14,5 @@ HwAmegic_la_SOURCES = AmegicInterface.cc  AmegicInterface.icc \
 HwAmegic_la_LDFLAGS = -module
 
 HwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
+HwKtJet_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
 HwKtJet_la_LDFLAGS = -module
