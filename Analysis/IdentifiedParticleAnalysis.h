@@ -1,29 +1,27 @@
 // -*- C++ -*-
-#ifndef HERWIG_LEPEventShapes_H
-#define HERWIG_LEPEventShapes_H
+#ifndef HERWIG_IdentifiedParticleAnalysis_H
+#define HERWIG_IdentifiedParticleAnalysis_H
 //
-// This is the declaration of the LEPEventShapes class.
+// This is the declaration of the IdentifiedParticleAnalysis class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "EventShapes.h"
-#include "LEPEventShapes.fh"
 #include "Histogram.h"
+#include "IdentifiedParticleAnalysis.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The LEPEventShapes class performs the analysis of global event shapes and
- * compares with LEP data. This handler is solely intended as a slave
- * handler for the EventShapesMasterAnalysis class.
+ * Here is the documentation of the IdentifiedParticleAnalysis class.
  *
- * @see \ref LEPEventShapesInterfaces "The interfaces"
- * defined for LEPEventShapes
+ * @see \ref IdentifiedParticleAnalysisInterfaces "The interfaces"
+ * defined for IdentifiedParticleAnalysis.
  */
-class LEPEventShapes: public AnalysisHandler {
+class IdentifiedParticleAnalysis: public AnalysisHandler {
 
 public:
 
@@ -32,17 +30,16 @@ public:
   /**
    * The default constructor.
    */
-  inline LEPEventShapes();
+  inline IdentifiedParticleAnalysis();
 
-  /**
-   * The copy constructor.
+  /**   * The copy constructor.
    */
-  inline LEPEventShapes(const LEPEventShapes &);
+  inline IdentifiedParticleAnalysis(const IdentifiedParticleAnalysis &);
 
   /**
    * The destructor.
    */
-  virtual ~LEPEventShapes();
+  virtual ~IdentifiedParticleAnalysis();
   //@}
 
 public:
@@ -118,6 +115,13 @@ public:
 
 protected:
 
+  /**
+   *  Work out the flavour of the quarks produced
+   */
+  inline int getFlavour(const tPVector &);
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -181,131 +185,139 @@ protected:
   inline virtual IVector getReferences();
   //@}
 
-protected:
-
-  /**
-   *  Methods to compute the four jet angles, assumes the jets are energy ordered
-   */
-  //@{
-  /**
-   *  Compute \f$\cos\chi_{BZ}\f$
-   */
-  inline double cosChiBZ(vector<Lorentz5Momentum>);
-
-  /**
-   *  Compute \f$\cos\Phi_{KSW}\f$.
-   */ 
-  inline double cosPhiKSW(vector<Lorentz5Momentum>);
-  
-  /**
-   *  Compute \f$\cos\Theta_{NR}\f$
-   */
-  inline double cosThetaNR(vector<Lorentz5Momentum>); 
-
-  /**
-   *  Compute \f$\cos\alpha_{34}\f$
-   */
-  inline double cosAlpha34(vector<Lorentz5Momentum>); 
-  //@}
-
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<LEPEventShapes> initLEPEventShapes;
+  static ClassDescription<IdentifiedParticleAnalysis> initIdentifiedParticleAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LEPEventShapes & operator=(const LEPEventShapes &);
+  IdentifiedParticleAnalysis & operator=(const IdentifiedParticleAnalysis &);
 
 private:
 
   /**
-   *  Histogram for \f$1-T\f$ distribution.
+   *  Single particle spectra
    */
-  HistogramPtr _omthr;
+  //@{
+  /**
+   * Histogram for the \f$\xi\f$ distribution for all particles from all quarks
+   */
+  HistogramPtr _xpa;
 
   /**
-   * Histogram for the major distribution
+   * Histogram for the \f$\xi\f$ distribution for all particles from light quarks
    */
-  HistogramPtr _maj;
+  HistogramPtr _xpl;
 
   /**
-   * Histogram for the minor distribution
+   * Histogram for the \f$\xi\f$ distribution for all particles from charm quarks
    */
-  HistogramPtr _min;
+  HistogramPtr _xpc;
 
   /**
-   * Histogram for the oblateness distribution
+   * Histogram for the \f$\xi\f$ distribution for all particles from bottom quarks
    */
-  HistogramPtr _obl;
+  HistogramPtr _xpb;
 
   /**
-   * Histogram for the sphericity distribution
+   * Histogram for the \f$\xi\f$ distribution for charged pions from all quarks
    */
-  HistogramPtr _sph;
+  HistogramPtr _pipma;
 
   /**
-   * Histogram for the aplanarity distribution
+   * Histogram for the \f$\xi\f$ distribution for charged pions from light quarks
    */
-  HistogramPtr _apl;
+  HistogramPtr _pipml;
 
   /**
-   * Histogram for the planarity distribution
+   * Histogram for the \f$\xi\f$ distribution for charged pions from charm quarks
    */
-  HistogramPtr _pla;
+  HistogramPtr _pipmc;
 
   /**
-   * Histogram for the C distribution
+   * Histogram for the \f$\xi\f$ distribution for charged pions from bottom quarks
    */
-  HistogramPtr _c;
+  HistogramPtr _pipmb;
 
   /**
-   * Histogram for the D distribution
+   * Histogram for the \f$\xi\f$ distribution for charged pions from OPAL
    */
-  HistogramPtr _d;
+  HistogramPtr _pipm;
 
   /**
-   * Histogram for the \f$M_{\rm high}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for charged kaons from all quarks
    */
-  HistogramPtr _mhi;
+  HistogramPtr _kpma;
 
   /**
-   * Histogram for the \f$M_{\rm low}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for charged kaons from light quarks
    */
-  HistogramPtr _mlo;
+  HistogramPtr _kpml;
 
   /**
-   * Histogram for the \f$M_{\rm high}-M_{\rm low}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for charged kaons from charm quarks
    */
-  HistogramPtr _mdiff;
+  HistogramPtr _kpmc;
 
   /**
-   * Histogram for the \f$B_{\rm max}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for charged kaons from bottom quarks
    */
-  HistogramPtr _bmax;
+  HistogramPtr _kpmb;
 
   /**
-   * Histogram for the \f$B_{\rm min}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for charged kaons from OPAL
    */
-  HistogramPtr _bmin;
+  HistogramPtr _kpm;
+
 
   /**
-   * Histogram for the \f$B_{\rm max}+B_{\rm min}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for protons from all quarks
    */
-  HistogramPtr _bsum;
+  HistogramPtr _ppma;
 
   /**
-   * Histogram for the \f$B_{\rm max}-B_{\rm min}\f$ distribution
+   * Histogram for the \f$\xi\f$ distribution for protons from light quarks
    */
-  HistogramPtr _bdiff;
+  HistogramPtr _ppml;
 
   /**
-   * Pointer to the object which calculates the event shapes
+   * Histogram for the \f$\xi\f$ distribution for protons from charm quarks
+   */
+  HistogramPtr _ppmc;
+
+  /**
+   * Histogram for the \f$\xi\f$ distribution for protons from bottom quarks
+   */
+  HistogramPtr _ppmb;
+
+  /**
+   * Histogram for the \f$\xi\f$ distribution for protons from OPAL
+   */
+  HistogramPtr _ppm;
+
+  /**
+   * Histogram for the \f$x\f$ distribution for light quark events (lin)
+   */ 
+  HistogramPtr _udsxp;
+
+  /**
+   * Histogram for the \f$\xi\f$ distribution for light quark events (lin)
+   */ 
+  HistogramPtr _udsxip;
+
+  /**
+   *  Histogram for the \f$\xi\f$ distribution for \f$\Lambda\f$ 
+   */
+  HistogramPtr _lpm;
+
+  /**
+   *  Pointer to the event shapes object
    */
   EventShapesPtr _shapes;
 };
@@ -319,22 +331,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LEPEventShapes. */
+ *  base classes of IdentifiedParticleAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::LEPEventShapes,1> {
-  /** Typedef of the first base class of LEPEventShapes. */
+struct BaseClassTrait<Herwig::IdentifiedParticleAnalysis,1> {
+  /** Typedef of the first base class of IdentifiedParticleAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LEPEventShapes class and the shared object where it is defined. */
+ *  the IdentifiedParticleAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LEPEventShapes>
-  : public ClassTraitsBase<Herwig::LEPEventShapes> {
+struct ClassTraits<Herwig::IdentifiedParticleAnalysis>
+  : public ClassTraitsBase<Herwig::IdentifiedParticleAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LEPEventShapes"; }
+  static string className() { return "Herwig++::IdentifiedParticleAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the LEPEventShapes class and any other class on which it depends
+   *  access to the IdentifiedParticleAnalysis class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
 };
@@ -343,9 +355,9 @@ struct ClassTraits<Herwig::LEPEventShapes>
 
 }
 
-#include "LEPEventShapes.icc"
+#include "IdentifiedParticleAnalysis.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LEPEventShapes.tcc"
+// #include "IdentifiedParticleAnalysis.tcc"
 #endif
 
-#endif /* HERWIG_LEPEventShapes_H */
+#endif /* HERWIG_IdentifiedParticleAnalysis_H */

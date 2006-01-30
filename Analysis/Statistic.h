@@ -242,7 +242,7 @@ struct ClassTraits<Herwig::Statistic>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the Statistic class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwKtJet.so HwAnalysis.so"; }
+  static string library() { return "HwAnalysis.so"; }
 };
 
 /** @endcond */

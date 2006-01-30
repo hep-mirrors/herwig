@@ -121,9 +121,12 @@ void Histogram::normaliseToData()
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       double value = 0.5*_bins[ix].contents / (delta*numPoints);
-      double var=sqr(_bins[ix].error);
-      numer += _bins[ix].data*value/var;
-      denom += sqr(value)/var;
+      if(_bins[ix].error>0.)
+	{
+	  double var=sqr(_bins[ix].error);
+	  numer += _bins[ix].data*value/var;
+	  denom += sqr(value)/var;
+	}
     }
   _prefactor=numer/denom;
 }
@@ -138,10 +141,13 @@ void Histogram::chiSquared(double & chisq, unsigned int & ndegrees, double minfr
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
       double error=_bins[ix].error;
-      if(error/_bins[ix].data<minfrac) error=minfrac*_bins[ix].data;
-      double var=sqr(error)
-	+ _bins[ix].contents*sqr(0.5*_prefactor / (delta*numPoints));
-      chisq += sqr(_bins[ix].data-value)/var;
+      if(error>0.)
+	{
+	  if(error/_bins[ix].data<minfrac) error=minfrac*_bins[ix].data;
+	  double var=sqr(error)
+	    + _bins[ix].contents*sqr(0.5*_prefactor / (delta*numPoints));
+	  chisq += sqr(_bins[ix].data-value)/var;
+	}
     }
 }
 
