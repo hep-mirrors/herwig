@@ -1,4 +1,7 @@
-2006-01-31  David Grellscheid <David.Grellscheid@durham.ac.uk>
+2006-01-31  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/Shower.in, Shower/SplittingFunctions: Individual PDFMax
+	limits for efficiency.
 
 	* Decay/HwDecayHandler.cc: Added vertex setting to handle displaced
 	vertices. 

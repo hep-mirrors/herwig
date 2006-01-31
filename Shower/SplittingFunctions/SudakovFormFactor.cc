@@ -357,8 +357,9 @@ bool SudakovFormFactor::PDFVeto(const double z, const Energy2 t,
 
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > _pdfmax) {
-    cerr << "################# RATIO (" << ratio << ") IS > PDFMAX ("
-	 <<_pdfmax <<") #######################\n";
+    CurrentGenerator::log() << "PDFVeto warning: Ratio (" << ratio 
+			    << ") > " << name() << ":PDFmax ("
+			    <<_pdfmax <<")\n";
   }
   // NOTE: PJS - Replaced by durham group
   // if(ratio > factor*UseRandom::rnd()) {
