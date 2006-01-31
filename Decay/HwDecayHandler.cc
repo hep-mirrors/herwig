@@ -95,6 +95,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 		  // add children
 		  for ( int i = 0, N = children.size(); i < N; ++i )
 		    {
+		      children[i]->setLabVertex(parent->labDecayVertex());
 		      if ( !s.addDecayProduct(parent, children[i]) )
 			throw DecHdlChildFail(parent->data(), children[i]->data());
 		    }
@@ -181,8 +182,10 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
   ThePEG_THROW_SPEC((Veto, Exception)) 
 {
   try {
-    for ( int i = 0, N = parent->children().size(); i < N; ++i )
-	{s.addDecayProduct(parent->children()[i]);}
+    for ( int i = 0, N = parent->children().size(); i < N; ++i ) {
+      parent->children()[i]->setLabVertex(parent->labDecayVertex());
+      s.addDecayProduct(parent->children()[i]);
+    }
     parent->scale(0.0*GeV2);
     for ( int i = 0, N = parent->children().size(); i < N; ++i )
       {
