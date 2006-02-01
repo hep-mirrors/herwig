@@ -23,13 +23,15 @@
 #include "Herwig++/Config/Herwig.h"
 #include "Herwig++/Utilities/HwDebug.h"
 #include <ThePEG/Repository/EventGenerator.h>
+#include "DecayIntegrator.h"
+#include "DecayPhaseSpaceMode.h"
 
 
 
+namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig;
-using Helicity::tcSpinfoPtr;
-using Helicity::SpinfoPtr;
+using ThePEG::Helicity::tcSpinfoPtr;
+using ThePEG::Helicity::SpinfoPtr;
 
 HwDecayHandler::~HwDecayHandler() {}
 
@@ -90,6 +92,12 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	      // decay generates decay products
 	      if ( !children.empty() ) 
 		{
+		  // generate radiation in the decay
+		  tDecayIntegratorPtr 
+		    hwdec=dynamic_ptr_cast<tDecayIntegratorPtr>(dm->decayer());
+		  if(hwdec)
+		    {if(hwdec->canGeneratePhotons())
+			{children=hwdec->generatePhotons(*parent,children);}}
 		  // set up parent
 		  parent->decayMode(dm);
 		  // add children
@@ -239,5 +247,7 @@ void HwDecayHandler::Init()
      " hadronize it.",
      &HwDecayHandler::_hadtry, 20, 1, 50,
      false, false, Interface::limited);
+
+}
 
 }

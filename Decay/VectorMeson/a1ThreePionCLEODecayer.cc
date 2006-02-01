@@ -26,45 +26,45 @@ using namespace Helicity;
 using namespace ThePEG::Helicity;
 
 a1ThreePionCLEODecayer::~a1ThreePionCLEODecayer() {}
-  
-bool a1ThreePionCLEODecayer::accept(const DecayMode & dm) const {
-  bool allowed=false;
-  int id=dm.parent()->id();
-  if((id==ParticleID::a_1plus||id==ParticleID::a_1minus||id==ParticleID::a_10)&&
-     dm.products().size()==3)
-    { 
-      ParticleMSet::const_iterator pit  = dm.products().begin();
-      ParticleMSet::const_iterator pend = dm.products().end();
-      int idtemp,npi0=0,npiplus=0,npiminus=0;
-      for( ; pit!=pend;++pit)
-	{
-	  idtemp=(**pit).id();
-	  if(idtemp==ParticleID::piplus){++npiplus;}
-	  else if(idtemp==ParticleID::piminus){++npiminus;}
-	  else if(idtemp==ParticleID::pi0){++npi0;}
-	}
-      // a_1+ decay modes
-      if(id==ParticleID::a_1plus&&
-	 ((npiplus==2&&npiminus==1)||(npiplus==1&&npi0==2)))
-	{allowed=true;}
-      else if(id==ParticleID::a_1minus&&
-	      ((npiminus==2&&npiplus==1)||(npiminus==1&&npi0==2)))
-	{allowed=true;}
-      else if(id==ParticleID::a_10&&
-	      (npiminus==1&&npiplus==1&&npi0==1)||npi0==3)
-	{allowed=true;}   
-    }
-  return allowed;
-}
-  
-ParticleVector a1ThreePionCLEODecayer::decay(const DecayMode & dm,
-					     const Particle & parent) const {
+
+int a1ThreePionCLEODecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
+  int id(dm.parent()->id());
+  if(dm.products().size()!=3){return imode;}
+  // check the pions
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
-  int ncharged=0;
-  for( ; pit!=pend;++pit){if(abs((**pit).id())==ParticleID::piplus){++ncharged;}}
-  bool cc = parent.id()==ParticleID::a_1minus;
-  return generate(true,cc,ncharged,parent);
+  int idtemp,npi0(0),npiplus(0),npiminus(0);
+  for( ; pit!=pend;++pit)
+    {
+      idtemp=(**pit).id();
+      if(idtemp==ParticleID::piplus){++npiplus;}
+      else if(idtemp==ParticleID::piminus){++npiminus;}
+      else if(idtemp==ParticleID::pi0){++npi0;}
+    }
+  // a_1+ decay modes
+  if(id==ParticleID::a_1plus)
+    {
+      cc=false;
+      if(npiplus==1&&npi0==2){imode=1;}
+      else if(npiplus==2&&npiminus==1){imode=3;}
+    }
+  // a_1- modes
+  else if(id==ParticleID::a_1minus)
+    {
+      cc=true;
+      if(npiminus==1&&npi0==2){imode=1;}
+      else if(npiminus==2&&npiplus==1){imode=3;}
+    }
+  // a_0 modes
+  else if(id==ParticleID::a_10)
+    {
+      cc=false;
+      if(npiminus==1&&npiplus==1&&npi0==1){imode=0;}
+      else if(npi0==3){imode=2;}
+    }
+  return imode;
 }
   
 void a1ThreePionCLEODecayer::persistentOutput(PersistentOStream & os) const {

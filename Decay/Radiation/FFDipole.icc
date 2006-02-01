@@ -1,0 +1,138 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the FFDipole class.
+//
+
+namespace Herwig {
+
+inline FFDipole::FFDipole() 
+{
+  // minimum photon energy
+  _emin    = 1.e-6*MeV;
+  // real minimum energies in lab and rest frame
+  _eminlab  = 100*MeV;
+  _eminrest = 100*MeV;
+  // option for the energy cut-off
+  _energyopt=1;
+  // option for beta factors
+  _betaopt = 1;
+  // maximum weight
+  _maxwgt = 5.0;
+  // default mode
+  _mode = 1;
+  // maximum number of tries
+  _maxtry=500;
+  // control over the number of photons
+  _nphotonmax=20;
+  // the form of the primary dipole radiation fns 
+  // with (1)/ without (0) mass terms
+  _dipoleopt=0;
+}
+
+inline FFDipole::FFDipole(const FFDipole & x)
+  : Interfaced(x), _emin(x._emin),_eminrest(x._eminrest),
+    _eminlab(x._eminlab),_emax(x._emax),
+    _nphotonmax(x._nphotonmax),_maxwgt(x._maxwgt),_mode(x._mode),
+    _maxtry(x._maxtry),_energyopt(x._energyopt),_betaopt(x._betaopt),
+    _dipoleopt(x._dipoleopt) {}
+
+inline IBPtr FFDipole::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr FFDipole::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void FFDipole::doupdate() throw(UpdateException) {
+  Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void FFDipole::doinit() throw(InitException) {
+  Interfaced::doinit();
+}
+
+inline void FFDipole::dofinish() {
+  Interfaced::dofinish();
+}
+
+inline void FFDipole::doinitrun() {
+  Interfaced::doinitrun();
+}
+
+inline void FFDipole::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Interfaced::rebind(trans);
+}
+
+inline IVector FFDipole::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+// poisson
+inline int FFDipole::poisson(double average)
+{
+  int n(0),n_factorial(1);
+  double x(UseRandom::rnd()*exp(average)),sum(1.);
+  while (x>=sum)
+    {
+      ++n;
+      n_factorial *= n;   
+      sum += pow(average,n)/n_factorial;
+    };
+  return n;
+}
+
+inline double FFDipole::exactDipoleWeight(double beta1, double ombeta1,
+					  double beta2, double ombeta2,
+					  unsigned int iphot)
+{
+  double opbc,ombc;
+  // if cos is greater than zero use result accurate as cos->1
+  if(_cosphot[iphot]>0)
+    {
+      opbc=1.+beta2*_cosphot[iphot];
+      ombc=ombeta1+beta1*sqr(_sinphot[iphot])/(1.+_cosphot[iphot]);
+    }
+  // if cos is less    than zero use result accurate as cos->-1
+  else
+    {
+      opbc=ombeta2+beta2*sqr(_sinphot[iphot])/(1.-_cosphot[iphot]);
+      ombc=1.-beta1*_cosphot[iphot];
+    }
+  return 0.5/(opbc*ombc)*(1.+beta1*beta2
+			  -0.5*ombeta1*(1.+beta1)*opbc/ombc		 
+			  -0.5*ombeta2*(1.+beta2)*ombc/opbc);
+}
+
+inline double FFDipole::jacobianWeight()
+{
+  double pcm1=Kinematics::pstarTwoBodyDecay(_m[0],_m[1],_m[2]);
+  Energy m12 =sqrt((_qnewdrf[0]+_qnewdrf[1]).m2())            ;
+  double pcm2=Kinematics::pstarTwoBodyDecay(m12,_m[1],_m[2])  ;
+  double betaprobeta = pcm2*_m[0]/pcm1/m12   ;
+  double spros       = sqr(m12/_m[0])        ;
+  double deltafn     = m12/(m12+_bigLdrf.e());
+  return betaprobeta*spros*deltafn           ;
+}
+
+
+}

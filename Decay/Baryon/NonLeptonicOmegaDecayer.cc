@@ -70,11 +70,11 @@ void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
     }
 }
 
-bool NonLeptonicOmegaDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int NonLeptonicOmegaDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -86,53 +86,25 @@ bool NonLeptonicOmegaDecayer::accept(const DecayMode & dm) const {
       if(id0==_incomingB)
 	{
 	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){allowed=true;}
+	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;}
 	}
       else if(id0==-_incomingB)
 	{
 	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){allowed=true;}
+	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;}
 	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
 	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
 	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){allowed=true;}
-	}
-      ++ix;
-    }
-  while(ix<_outgoingB.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector NonLeptonicOmegaDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1),id(parent.id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
-  unsigned int ix(0);bool cc(false);
-  do 
-    {
-      if(id==_incomingB)
-	{
-	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;cc=false;}
-	}
-      else if(id==-_incomingB)
-	{
-	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;cc=true;}
-	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
-	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
-	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){imode=ix;cc=true;}
+	      _outgoingM[ix]==223||_outgoingM[ix]==333)){imode=ix;}
 	}
       ++ix;
     }
   while(ix<_outgoingB.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  // charge conjugation
+  cc=id0<0;
+  // return the answer
+  return imode;
 }
-
 
 void NonLeptonicOmegaDecayer::persistentOutput(PersistentOStream & os) const {
   os << _dstar << _fstar << _omegad << _omegaf << _CBstar << _sc << _C << _fpi << _hc 

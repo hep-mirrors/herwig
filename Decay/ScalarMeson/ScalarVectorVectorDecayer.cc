@@ -53,17 +53,19 @@ inline ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
   _coupling.push_back(1./GeV);_maxweight.push_back(1.);
   _incoming.push_back(10441);_outgoing1.push_back(22);_outgoing2.push_back(22);
   _coupling.push_back(1./GeV);_maxweight.push_back(1.);
+  // intermediates
+  generateIntermediates(false);
 }
 
 ScalarVectorVectorDecayer::~ScalarVectorVectorDecayer() {}
 
-bool ScalarVectorVectorDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int ScalarVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // check that at least some modes exist
-  if(_incoming.size()==0){return false;}
+  if(_incoming.size()==0){return imode;}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -75,35 +77,12 @@ bool ScalarVectorVectorDecayer::accept(const DecayMode & dm) const {
     {
       if(_incoming[ix]==id0)
 	{if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
-	    (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)){allowed=true;}}
-      ++ix;
-    }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector ScalarVectorVectorDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  // workout which mode we are doing
-  int imode(-1);
-  int id(parent.id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
-  unsigned int ix(0);
-  do
-    {
-      if(_incoming[ix]==id)
-	{if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}}
+	    (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)){imode=ix;}}
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
-  // perform the decay
-  return generate(false,false,imode,parent);
+  return imode;
 }
-
 
 void ScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
   os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;

@@ -67,6 +67,8 @@ PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer()
   _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
   // initial size of the arrays
   _initsize = _incoming.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
@@ -111,37 +113,11 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
 
 PScalarVectorFermionsDecayer::~PScalarVectorFermionsDecayer() {}
 
-bool PScalarVectorFermionsDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
-  // must be three outgoing particles
-  if(dm.products().size()!=3){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id()),idf[2],idv(0);
-  unsigned int nf(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit)
-    {
-      if((**pit).iSpin()==PDT::Spin1){idv=(**pit).id();}
-      else{idf[nf]=(**pit).id();++nf;}
-    }
-  // loop over the modes and see if this is one of them
-  unsigned int ix=0;
-  do
-    {
-      if(_incoming[ix]==id0&&_outgoingV[ix]==idv)
-	{if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	    (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])){allowed=true;}}
-      ++ix;
-    }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector PScalarVectorFermionsDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  // workout which mode we are doing
+int PScalarVectorFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   int imode(-1);
+  // must be three outgoing particles
+  if(dm.products().size()!=3){return imode;}
   // ids of the particles
   int id0(dm.parent()->id()),idf[2],idv(0);
   unsigned int nf(0);
@@ -161,11 +137,9 @@ ParticleVector PScalarVectorFermionsDecayer::decay(const DecayMode & dm,
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
-  // perform the decay
-  bool cc(false);
-  return generate(false,cc,imode,parent);
+  cc=false;
+  return imode;
 }
-
 
 void PScalarVectorFermionsDecayer::persistentOutput(PersistentOStream & os) const {
   os << _coupling << _incoming << _outgoingV << _outgoingf << _outgoinga << _maxweight

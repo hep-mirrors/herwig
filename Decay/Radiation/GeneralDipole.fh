@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralDipole class.
+//
+#ifndef HERWIG_GeneralDipole_FH
+#define HERWIG_GeneralDipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class GeneralDipole;
+ThePEG_DECLARE_POINTERS(GeneralDipole,GeneralDipolePtr);
+
+}
+
+#endif

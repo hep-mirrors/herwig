@@ -88,6 +88,8 @@ RadiativeHeavyBaryonDecayer::RadiativeHeavyBaryonDecayer()
   _modetype.push_back(1);_E1coupling.push_back(0.);_M1coupling.push_back(-3.769e-4/MeV);
   // initial size of the arrays
   _initsize=_incoming.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
@@ -113,11 +115,11 @@ void RadiativeHeavyBaryonDecayer::doinit() throw(InitException) {
     }
 }
 
-bool RadiativeHeavyBaryonDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int RadiativeHeavyBaryonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -125,37 +127,17 @@ bool RadiativeHeavyBaryonDecayer::accept(const DecayMode & dm) const {
   int id2((**pit).id()),ibaryon;
   if(id1==ParticleID::gamma){ibaryon=id2;}
   else if(id2==ParticleID::gamma){ibaryon=id1;}
-  else {return allowed;}
+  else {return imode;}
   unsigned int ix(0);
   do
     {
-      if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]){allowed=true;}
-      else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]){allowed=true;}
-      ++ix;
-    }
-  while(ix<_incoming.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector RadiativeHeavyBaryonDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1),id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),ibaryon(id1);
-  unsigned int ix(0);bool cc(false);
-  if(id1==ParticleID::gamma){ibaryon=id2;}
-  do
-    {
-      if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]){imode=ix;cc=false;}
-      else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]){imode=ix;cc=true;}
+      if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]){imode=ix;}
+      else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]){imode=ix;}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
-
 
 void RadiativeHeavyBaryonDecayer::persistentOutput(PersistentOStream & os) const {
   os << _M1coupling << _E1coupling << _incoming << _outgoingB << _modetype << _maxweight;

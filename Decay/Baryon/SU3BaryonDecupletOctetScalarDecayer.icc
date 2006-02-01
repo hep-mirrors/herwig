@@ -35,6 +35,8 @@ inline SU3BaryonDecupletOctetScalarDecayer::SU3BaryonDecupletOctetScalarDecayer(
   _omega    = 3334;
   _xism     = 3314;
   _xis0     = 3324;
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline SU3BaryonDecupletOctetScalarDecayer::SU3BaryonDecupletOctetScalarDecayer(const SU3BaryonDecupletOctetScalarDecayer & x)

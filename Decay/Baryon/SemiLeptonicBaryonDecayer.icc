@@ -11,6 +11,8 @@ inline SemiLeptonicBaryonDecayer::SemiLeptonicBaryonDecayer()
 {
   // default value of the fermi constant taken from PDG 2002
   _GF = 1.16639E-5/GeV2;
+  // intermediates
+  generateIntermediates(true);
 }
 
 inline SemiLeptonicBaryonDecayer::SemiLeptonicBaryonDecayer(const SemiLeptonicBaryonDecayer & x)

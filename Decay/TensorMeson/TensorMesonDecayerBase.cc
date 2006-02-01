@@ -29,16 +29,6 @@ using Herwig::Helicity::incoming;
 
 TensorMesonDecayerBase::~TensorMesonDecayerBase() {}
 
-bool TensorMesonDecayerBase::accept(const DecayMode & dm) const {
-  return false;
-}
-
-ParticleVector TensorMesonDecayerBase::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  return children;
-}
-
 void TensorMesonDecayerBase::persistentOutput(PersistentOStream & os) const {}
 
 void TensorMesonDecayerBase::persistentInput(PersistentIStream & is, int) {}

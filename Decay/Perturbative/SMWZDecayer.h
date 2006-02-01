@@ -48,6 +48,15 @@ public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
+
+  /**
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param dm The decay mode
+   */
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+
+
   /**
    * Accept member which is called at initialization to see if this Decayer can
    * handle a given decay mode. 

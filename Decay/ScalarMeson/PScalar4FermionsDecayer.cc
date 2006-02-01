@@ -91,11 +91,11 @@ void PScalar4FermionsDecayer::doinit() throw(InitException) {
 
 PScalar4FermionsDecayer::~PScalar4FermionsDecayer() {}
 
-bool PScalar4FermionsDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int PScalar4FermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // must be four outgoing particles
-  if(dm.products().size()!=4){return allowed;}
+  if(dm.products().size()!=4){return imode;}
   // get the id's of the outgoing particles
   int id[4]; bool done[4]; unsigned int ix(0),iy(0);
   // ids of the particles
@@ -108,17 +108,17 @@ bool PScalar4FermionsDecayer::accept(const DecayMode & dm) const {
   ix=0;
   do{if(id[ix]>0&!done[ix]){done[ix]=true;idtemp=id[ix];}++ix;}
   while(ix<4&&idtemp<0);
-  if(idtemp<0){return false;}
+  if(idtemp<0){return imode;}
   // find its antiparticle
   ix=0;
   do{if(id[ix]==-idtemp&!done[ix]){done[ix]=true;idl1=idtemp;}++ix;}
   while(ix<4&&idl1<0);
-  if(idl1<0){return false;}
+  if(idl1<0){return imode;}
   // find the second particle antiparticle pair
   idtemp=-1;
   for(ix=0;ix<4;++ix){if(!done[ix]){idt[iy]=id[ix];++iy;}}
   if(idt[0]==-idt[1]){idl2=abs(idt[0]);}
-  if(idl2<0){return false;}
+  if(idl2<0){return imode;}
   // loop over the modes and see if this is one of them
   ix=0;
   do
@@ -126,36 +126,13 @@ bool PScalar4FermionsDecayer::accept(const DecayMode & dm) const {
       if(_incoming[ix]==id0)
 	{
 	  if((idl1==_outgoing1[ix]&&idl2==_outgoing2[ix])||
-	     (idl2==_outgoing1[ix]&&idl1==_outgoing2[ix])){allowed=true;}
+	     (idl2==_outgoing1[ix]&&idl1==_outgoing2[ix])){imode=ix;}
 	}
       ++ix;
     }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector PScalar4FermionsDecayer::decay(const DecayMode & dm,
-					      const Particle & parent) const {
-  // workout which mode we are doing
-  int imode=-1;
-  int id0=parent.id(),idl[2],id; unsigned int iy(0);
-  // find the ids of the outgoing fermions
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit)
-    {id=(**pit).id();if(id>0){idl[iy]=id;++iy;}}
-  iy=0;
-  do
-    {
-      if(_incoming[iy]==id0)
-	{
-	  if((idl[0]==_outgoing1[iy]&&idl[1]==_outgoing2[iy])||
-	     (idl[1]==_outgoing1[iy]&&idl[0]==_outgoing2[iy])){imode=iy;}
-	}
-      ++iy;
-    }
-  while(imode<0&&iy<_incoming.size());
-  // perform the decay
-  return generate(false,false,imode,parent);
+  while(imode<0&&ix<_incoming.size());
+  cc=false;
+  return imode;
 }
 
 void PScalar4FermionsDecayer::persistentOutput(PersistentOStream & os) const {

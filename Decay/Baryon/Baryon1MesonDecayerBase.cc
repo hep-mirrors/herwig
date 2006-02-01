@@ -454,6 +454,7 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
 	  ispin[2]=iz;
 	  if(decay[0]->id()>0){sbtemp=RSsbar[iya].dot(eps[iz]);}
 	  else{stemp=RSsp[iya].dot(eps[iz]);}
+	  //cout << "testing after  A " << iya << endl;
 	  for(ixa=0;ixa<2;++ixa)
 	    {
 	      ispin[0]=ixa;
@@ -530,7 +531,6 @@ threeHalfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
       for(unsigned int ix=0;ix<Rsbar.size();++ix)
 	{sbar[ix]=Rsbar[ix].dot(decay[0]->momentum());}
     }
-
   // workaround for gcc 3.2.3 bug
   // construct the spinInfo for the scalar
   //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);

@@ -16,6 +16,8 @@ inline ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer()
   _a2c =-0.55;
   _a1b = 1.10;
   _a2b =-0.24;
+  // intermediates
+  generateIntermediates(true);
 }
 
 inline ScalarMesonFactorizedDecayer::

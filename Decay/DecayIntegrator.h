@@ -11,10 +11,11 @@
 #include "ThePEG/Utilities/Timer.h"
 #include <ThePEG/Helicity/SpinInfo.h>
 #include "DecayPhaseSpaceMode.fh"
-#include "DecayIntegrator.fh"
 #include "Herwig++/PDT/WidthCalculatorBase.h"
 #include <iostream>
+#include "Radiation/DecayRadiationGenerator.h"
 #include "HwDecayerBase.h"
+#include "DecayIntegrator.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -102,6 +103,13 @@ public:
    */
   virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
   
+  /**
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param dm The decay mode
+   */
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const=0;
+
   /**
    * Add a phase-space mode to the list
    * @param mode The mode being added.
@@ -196,6 +204,48 @@ public:
    * @param header Whether or not to output the information for MySQL
    */
   virtual void dataBaseOutput(ofstream & os,bool header) const;
+
+public:
+
+  /**
+   *  Members for the generation of QED radiation in the decays
+   */
+  //@{
+  /**
+   * Use the DecayRadiationGenerator to generate photons in the decay.
+   * @param p The Particle instance to be decayed.
+   * @return A particle vector containing the decay products after the generation
+   * of photons.
+   */
+  ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+
+  /**
+   *  check if photons can be generated in the decay
+   */
+  inline bool canGeneratePhotons();
+
+  /**
+   *  The one-loop virtual correction.
+   * @param output The answer for the matrix element.
+   * @param imode The mode required.
+   * @param part  The decaying particle.
+   * @param products The decay products including the radiated photon.
+   * @return Whether the correction is implemented
+   */
+  virtual bool oneLoopVirtualME(double & output, unsigned int imode,
+				const Particle & part, const ParticleVector & products);
+  
+  /**
+   *  The real emission matrix element
+   * @param output The answer for the matrix element
+   * @param imode The mode required
+   * @param part  The decaying particle
+   * @param products The decay products including the radiated photon
+   * @return Whether the correction is implemented
+   */
+  virtual bool realEmmisionME(double & output, unsigned int imode,
+  			      const Particle & part, const ParticleVector & products);
+  //@}
   
 public:
   
@@ -267,11 +317,20 @@ protected:
    */
   tDecayPhaseSpaceModePtr mode(unsigned int);
   
-
   /**
    * Pointer to a mode
    */
   tcDecayPhaseSpaceModePtr mode(unsigned int) const;
+
+  /**
+   * Get whether or not the intermediates are included
+   */
+  inline bool generateIntermediates() const;
+
+  /**
+   * Set whether or not the intermediates are included 
+   */ 
+  inline void generateIntermediates(bool);
 
 protected:
   
@@ -353,6 +412,16 @@ private:
    */
   mutable vector<DecayPhaseSpaceModePtr> _modes;
 
+  /**
+   *  Whether to include the intermediates whne outputing the results.
+   */
+  bool _generateinter;
+
+  /**
+   *  Pointer to the object generating the QED radiation in the decay
+   */
+  DecayRadiationGeneratorPtr _photongen;
+
 private:
 
   /**
@@ -364,6 +433,7 @@ private:
    * The helicity matrix element for the current decay
    */
   DecayMatrixElement _matrixelement;
+
   
 };
   /**

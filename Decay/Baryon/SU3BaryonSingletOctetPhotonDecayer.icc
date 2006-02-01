@@ -18,6 +18,8 @@ inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer()
   _lambda   = 3122;
   // PDG codes for the excited baryon
   _elambda  = 3124;
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline SU3BaryonSingletOctetPhotonDecayer::SU3BaryonSingletOctetPhotonDecayer(const SU3BaryonSingletOctetPhotonDecayer & x)

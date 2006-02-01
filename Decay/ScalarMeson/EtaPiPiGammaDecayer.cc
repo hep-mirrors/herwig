@@ -297,6 +297,8 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   _epscut=0.4*MeV;
   // size of the arrays
   _nsize[0]=_energy.size();_nsize[1]=_Omnesenergy.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 void EtaPiPiGammaDecayer::doinit() throw(InitException) {
@@ -378,9 +380,11 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
 
 EtaPiPiGammaDecayer::~EtaPiPiGammaDecayer() {}
 
-bool EtaPiPiGammaDecayer::accept(const DecayMode & dm) const {
+int EtaPiPiGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // check number of external particles
-  if(dm.products().size()!=3){return false;}
+  if(dm.products().size()!=3){return imode;}
   // check the outgoing particles
   unsigned int npip(0),npim(0),ngamma(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
@@ -392,22 +396,13 @@ bool EtaPiPiGammaDecayer::accept(const DecayMode & dm) const {
       else if(id==ParticleID::piminus){++npim;}
       else if(id==ParticleID::gamma){++ngamma;}
     }
-  if(!(npip==1&&npim==1&&ngamma==1)){return false;}
-  // and the incoming particle
+  if(!(npip==1&&npim==1&&ngamma==1)){return imode;}
+  unsigned int ix(0);
   id=dm.parent()->id();
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {if(id==_incoming[ix]){return true;}}
-  return false;
-}
-
-ParticleVector EtaPiPiGammaDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1),id(parent.id());
-  unsigned int ix=0;
   do{if(id==_incoming[ix]){imode=ix;}++ix;}
   while(imode<0&&ix<_incoming.size());
-  bool cc(false);
-  return generate(imode==1,cc,imode,parent);
+  cc=false;
+  return imode;
 }
 
 void EtaPiPiGammaDecayer::persistentOutput(PersistentOStream & os) const {

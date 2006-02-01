@@ -19,13 +19,49 @@
 namespace Herwig {
 using namespace ThePEG;
 
+NonLeptonicHyperonDecayer::NonLeptonicHyperonDecayer() 
+{
+  // lambda -> p pi-
+  _incomingB.push_back(3122);_outgoingB.push_back(2212);_outgoingM.push_back(-211);
+  _A.push_back(3.25e-7);_B.push_back(23.4e-7);
+  _maxweight.push_back(1.4);
+  // lambda -> n p0
+  _incomingB.push_back(3122);_outgoingB.push_back(2112);_outgoingM.push_back(111);
+  _A.push_back(-2.30e-7);_B.push_back(-16.5e-7);
+  _maxweight.push_back(0.7);
+  // xi-    -> lambda pi-
+  _incomingB.push_back(3312);_outgoingB.push_back(3122);_outgoingM.push_back(-211);
+  _A.push_back(-4.51e-7);_B.push_back(14.8e-7);
+  _maxweight.push_back(2.0);
+  // xi0    -> lambda pi0
+  _incomingB.push_back(3322);_outgoingB.push_back(3122);_outgoingM.push_back(111);
+  _A.push_back(3.18e-7);_B.push_back(-10.5e-7);
+  _maxweight.push_back(2.0);
+  // sigma+ -> p pi0
+  _incomingB.push_back(3222);_outgoingB.push_back(2212);_outgoingM.push_back(111);
+  _A.push_back(-2.93e-7);_B.push_back(32.5e-7);
+  _maxweight.push_back(1.2);
+  // sigma- -> n pi-
+  _incomingB.push_back(3112);_outgoingB.push_back(2112);_outgoingM.push_back(-211);
+  _A.push_back(4.27e-7);_B.push_back(-1.52e-7);
+  _maxweight.push_back(2.);
+  // sigma+ -> n pi+
+  _incomingB.push_back(3222);_outgoingB.push_back(2112);_outgoingM.push_back(211);
+  _A.push_back(0.13e-7);_B.push_back(44.4e-7);
+  _maxweight.push_back(1.1);
+  // initial size of the vectors
+  _initsize=_incomingB.size();
+  // intermediates
+  generateIntermediates(false);
+}
+
 NonLeptonicHyperonDecayer::~NonLeptonicHyperonDecayer() {}
 
-bool NonLeptonicHyperonDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int NonLeptonicHyperonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0=dm.parent()->id();
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -37,53 +73,25 @@ bool NonLeptonicHyperonDecayer::accept(const DecayMode & dm) const {
       if(id0==_incomingB[ix])
 	{
 	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){allowed=true;}
+	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;}
 	}
       else if(id0==-_incomingB[ix])
 	{
 	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){allowed=true;}
+	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;}
 	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
 	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
 	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){allowed=true;}
-	}
-      ++ix;
-    }
-  while(ix<_incomingB.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector NonLeptonicHyperonDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1),id(parent.id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
-  unsigned int ix(0);bool cc(false);
-  do 
-    {
-      if(id==_incomingB[ix])
-	{
-	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;cc=false;}
-	}
-      else if(id==-_incomingB[ix])
-	{
-	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;cc=true;}
-	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
-	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
-	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==223||_outgoingM[ix]==333)){imode=ix;cc=true;}
+	      _outgoingM[ix]==223||_outgoingM[ix]==333)){imode=ix;}
 	}
       ++ix;
     }
   while(ix<_incomingB.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  // charge conjugate
+  cc=id0<0;
+  // return the answer
+  return imode;
 }
-
 
 void NonLeptonicHyperonDecayer::persistentOutput(PersistentOStream & os) const {
   os << _incomingB << _outgoingB << _outgoingM << _A << _B << _maxweight << _initsize;

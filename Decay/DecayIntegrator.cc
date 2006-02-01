@@ -22,6 +22,7 @@
 #include "ThePEG/Utilities/Timer.h"
 #include "DecayPhaseSpaceMode.h"
 #include "Herwig++/PDT/WidthCalculatorBase.h"
+#include "ThePEG/Interface/Reference.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -29,28 +30,34 @@ using namespace ThePEG;
 // copy constructor
 DecayIntegrator::DecayIntegrator(const DecayIntegrator & x)
   : HwDecayerBase(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry),
-    _modes(x._modes) 
+    _modes(x._modes), _generateinter(x._generateinter),_photongen(x._photongen) 
 {}
 
 // destructor
 DecayIntegrator::~DecayIntegrator() {}
 
 // dummy accept method
-bool DecayIntegrator::accept(const DecayMode & dm) const {return false;}
+bool DecayIntegrator::accept(const DecayMode & dm) const 
+{
+  bool cc;
+  return modeNumber(cc,dm)>=0;
+}
 
 // dummy decay method
 ParticleVector DecayIntegrator::decay(const DecayMode & dm,
 				      const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  return children;
+  bool cc;
+  int imode=modeNumber(cc,dm);
+  // generate the decay
+  return generate(_generateinter,cc,imode,parent);
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os << _modes << _niter << _npoint << _ntry;
-  }
+  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter;
+}
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >> _modes >> _niter >> _npoint >> _ntry;
+  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter;
 }
   
 AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
@@ -85,7 +92,27 @@ void DecayIntegrator::Init() {
      "Number of attempts to generate the decay",
      &DecayIntegrator::_ntry, 500, 0, 100000,
      false, false, true);
-   
+
+  static Reference<DecayIntegrator,DecayRadiationGenerator> interfacePhotonGenerator
+    ("PhotonGenerator",
+     "Object responsible for generating photons in the decay.",
+     &DecayIntegrator::_photongen, false, false, true, true, false);
+ 
+  static Switch<DecayIntegrator,bool> interfaceGenerateIntermediates
+    ("GenerateIntermediates",
+     "Whether or not to include intermediate particles in the output",
+     &DecayIntegrator::_generateinter, false, false, false);
+  static SwitchOption interfaceGenerateIntermediatesNoIntermediates
+    (interfaceGenerateIntermediates,
+     "NoIntermediates",
+     "Don't include the intermediates",
+     false);
+  static SwitchOption interfaceGenerateIntermediatesIncludeIntermediates
+    (interfaceGenerateIntermediates,
+     "IncludeIntermediates",
+     "include the intermediates",
+     true);
+  
 }
 
 // output info on the integrator
@@ -315,6 +342,8 @@ void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const
   output << "set " << fullName() << ":Iteration " << _niter << "\n";
   output << "set " << fullName() << ":Ntry " << _ntry << "\n";
   output << "set " << fullName() << ":Points " << _npoint << "\n";
+  if(_photongen){;}
+  output << "set " << fullName() << ":GenerateIntermediates " << _generateinter << " \n";
   // footer for MySQL
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
@@ -323,4 +352,14 @@ void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const
 tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix){return _modes[ix];}
 tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const
 {return _modes[ix];}
+ 
+ParticleVector DecayIntegrator::generatePhotons(const Particle & p,
+						ParticleVector children)
+{return _photongen->generatePhotons(p,children);}
+
+bool DecayIntegrator::oneLoopVirtualME(double &,unsigned int,const Particle &,
+				       const ParticleVector &) {return false;}
+
+bool DecayIntegrator::realEmmisionME(double &, unsigned int,const Particle &,
+				     const ParticleVector &) {return false;}
 }

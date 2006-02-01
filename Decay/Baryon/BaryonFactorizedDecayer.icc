@@ -16,6 +16,8 @@ inline BaryonFactorizedDecayer::BaryonFactorizedDecayer()
   _a2c=-0.5;
   _a1b= 1.0;
   _a2b= 0.28;
+  // intermediates
+  generateIntermediates(true);
 }
 
 inline BaryonFactorizedDecayer::

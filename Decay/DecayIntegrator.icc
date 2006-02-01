@@ -14,6 +14,7 @@ inline DecayIntegrator::DecayIntegrator() {
   _niter=10;
   _npoint=10000;
   _ntry=500;
+  _generateinter=false;
 }
   
 inline void DecayIntegrator::doupdate() throw(UpdateException) {
@@ -68,4 +69,10 @@ inline void DecayIntegrator::imode(int in){_imode=in;}
 // number of decay modes
 inline unsigned int  DecayIntegrator::numberModes() const {return _modes.size();}
 
+inline bool DecayIntegrator::canGeneratePhotons(){return _photongen;}
+
+inline bool DecayIntegrator::generateIntermediates() const 
+{return _generateinter;}
+
+inline void DecayIntegrator::generateIntermediates(bool in){_generateinter=in;}
 }

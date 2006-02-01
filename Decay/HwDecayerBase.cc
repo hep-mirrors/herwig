@@ -68,6 +68,7 @@ void HwDecayerBase::dataBaseOutput(ofstream & output,bool header) const
 {
   // header for MySQL
   if(header){output << "update decayers set parameters=\"";}
+  // photon generator if it exists
   // footer for MySQL
   if(header){output << " where ThePEGName=\" " << fullName() << "\";";}
 }

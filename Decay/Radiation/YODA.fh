@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the YODA class.
+//
+#ifndef ThePEG_YODA_FH
+#define ThePEG_YODA_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class YODA;
+ThePEG_DECLARE_POINTERS(YODA,YODAPtr);
+
+}
+
+#endif

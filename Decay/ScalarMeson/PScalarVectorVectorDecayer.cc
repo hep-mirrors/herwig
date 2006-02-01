@@ -62,39 +62,17 @@ PScalarVectorVectorDecayer::PScalarVectorVectorDecayer()
   _coupling.push_back(0.0242/GeV);_maxweight.push_back(5.);
   // initial size of the vectors
   _initsize = _incoming.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 PScalarVectorVectorDecayer::~PScalarVectorVectorDecayer() {}
 
-bool PScalarVectorVectorDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
-  // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
-  // loop over the modes and see if this is one of them
-  unsigned int ix=0;
-  do
-    {
-      if(_incoming[ix]==id0)
-	{if((_outgoing1[ix]==id1&&_outgoing2[ix]==id2)||
-	    (_outgoing1[ix]==id2&&_outgoing2[ix]==id1)){allowed=true;}}
-      ++ix;
-    }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector PScalarVectorVectorDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  // workout which mode we are doing
+int PScalarVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   int imode(-1);
-  int id(parent.id());
+  if(dm.products().size()!=2){return imode;}
+  int id(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id());++pit;
   int id2((**pit).id());
@@ -103,14 +81,12 @@ ParticleVector PScalarVectorVectorDecayer::decay(const DecayMode & dm,
     {
       if(_incoming[ix]==id)
 	{if((id1==_outgoing1[ix]&&id2==_outgoing2[ix])||
-	     (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}}
+	    (id2==_outgoing1[ix]&&id1==_outgoing2[ix])){imode=ix;}}
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
-  // perform the decay
-  return generate(false,false,imode,parent);
+  return imode;
 }
-
 
 void PScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
   os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;

@@ -27,6 +27,8 @@ using Helicity::outgoing;
 
 VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
 {
+  // don't include intermediates
+  generateIntermediates(false);
   // rho -> e+e-, mu+mu
   _incoming.push_back(113);_outgoingf.push_back(11);_outgoinga.push_back(-11);
   _incoming.push_back(113);_outgoingf.push_back(13);_outgoinga.push_back(-13);
@@ -137,42 +139,10 @@ VectorMeson2FermionDecayer::VectorMeson2FermionDecayer()
 
 VectorMeson2FermionDecayer::~VectorMeson2FermionDecayer() {}
 
-bool VectorMeson2FermionDecayer::accept(const DecayMode & dm) const 
+int VectorMeson2FermionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 {
-  // is this mode allowed
-  bool allowed(false);
-  // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id()),id0bar(id0);
-  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
-  ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  // loop over the modes and see if this is one of them
-  unsigned int ix(0);
-  do
-    {
-      if(_incoming[ix]==id0   )
-	{if((_outgoingf[ix]==id1   &&_outgoinga[ix]==id2   )||
-	    (_outgoingf[ix]==id2   &&_outgoinga[ix]==id1   )){allowed=true;}}
-      if(_incoming[ix]==id0bar&&!allowed)
-	{if((_outgoingf[ix]==id1bar&&_outgoinga[ix]==id2bar)||
-	    (_outgoingf[ix]==id2bar&&_outgoinga[ix]==id1bar)){allowed=true;}}
-      ++ix;
-    }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector VectorMeson2FermionDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  // workout which mode we are doing
   int imode(-1);
-  int id(parent.id()),idbar(id);
+  int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id()),id1bar(id1);
@@ -181,7 +151,7 @@ ParticleVector VectorMeson2FermionDecayer::decay(const DecayMode & dm,
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
   unsigned int ix(0);
-  bool cc(false);
+  cc=false;
   do
     {
       if(_incoming[ix]==id   )
@@ -193,10 +163,8 @@ ParticleVector VectorMeson2FermionDecayer::decay(const DecayMode & dm,
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
-  // perform the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
-
 
 void VectorMeson2FermionDecayer::persistentOutput(PersistentOStream & os) const {
   os << _coupling << _incoming << _outgoingf << _outgoinga << _maxweight;

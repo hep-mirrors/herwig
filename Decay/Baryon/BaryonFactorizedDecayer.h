@@ -54,20 +54,19 @@ public:
   /** @name Virtual functions required by the Decayer class. */
   //@{
   /**
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param dm The decay mode
+   */
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+
+  /**
    * Check if this decayer can perfom the decay specified by the
    * given decay mode.
    * @param dm the DecayMode describing the decay.
    * @return true if this decayer can handle the given mode, otherwise false.
    */
   virtual bool accept(const DecayMode & dm) const;
-
-  /**
-   * Perform a decay for a given DecayMode and a given Particle instance.
-   * @param dm the DecayMode describing the decay.
-   * @param p the Particle instance to be decayed.
-   * @return a ParticleVector containing the decay products.
-   */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & p) const;
   //@}
 
   /**

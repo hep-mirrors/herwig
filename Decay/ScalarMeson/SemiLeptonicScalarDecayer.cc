@@ -109,25 +109,22 @@ bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
   // and the current
   return _current->accept(idother);
 }
-
-ParticleVector SemiLeptonicScalarDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   // find the ids of the particles for the decay current
   ParticleMSet::const_iterator pit = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   int idtemp,imes(0),idin(dm.parent()->id());
   vector<int> idother;
-  bool cc(false);
+  cc=false;
   for( ; pit!=pend;++pit)
     {
       idtemp=(**pit).id();
       if(abs(idtemp)>16){imes=idtemp;}
       else{idother.push_back(idtemp);}
     }
-  int imode = _modemap[_form->formFactorNumber(idin,imes,cc)]
-    +_current->decayMode(idother);
-  // perform the decay
-  return generate(true,cc,imode,parent);
+  return _modemap[_form->formFactorNumber(idin,imes,cc)]
+    +_current->decayMode(idother);  
 }
 
 

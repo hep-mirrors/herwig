@@ -24,12 +24,12 @@ using namespace ThePEG;
 SU3BaryonSingletOctetPhotonDecayer::~SU3BaryonSingletOctetPhotonDecayer() 
 {}
 
-bool SU3BaryonSingletOctetPhotonDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   if(_outgoingB.size()==0){setupModes(0);}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -37,38 +37,18 @@ bool SU3BaryonSingletOctetPhotonDecayer::accept(const DecayMode & dm) const {
   int id2((**pit).id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else if(id2==ParticleID::gamma){iout=id1;}
-  else{return false;}
+  else{return imode;}
   unsigned int ix(0);
+  cc =false;
   do
     {
-      if(id0==_elambda){if(iout==_outgoingB[ix]){allowed=true;}}
-      else if(id0==-_elambda){if(iout==-_outgoingB[ix]){allowed=true;}}
-      ++ix;
-    }
-  while(ix<_outgoingB.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector SU3BaryonSingletOctetPhotonDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1),id(parent.id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),iout;
-  unsigned int ix(0);bool cc(false);
-  if(id1==ParticleID::gamma){iout=id2;}
-  else{iout=id1;}
-  do 
-    {
-      if(id==_elambda){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}
-      else if(id==-_elambda){if(iout==-_outgoingB[ix]){imode=ix;cc=true;}}
+      if(id0==_elambda){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}
+      else if(id0==-_elambda){if(iout==-_outgoingB[ix]){imode=ix;cc=true;}}
       ++ix;
     }
   while(ix<_outgoingB.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
-
 
 void SU3BaryonSingletOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
   os << _C << _parity << _sigma0 << _lambda << _elambda << _outgoingB 

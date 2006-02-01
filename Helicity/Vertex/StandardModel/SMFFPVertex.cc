@@ -24,7 +24,7 @@ void SMFFPVertex::persistentOutput(PersistentOStream & os) const {
 void SMFFPVertex::persistentInput(PersistentIStream & is, int) {
   for(int ix=0;ix<17;++ix){is >> _charge[ix];}
   is >> _theSM;
-  _couplast=0.;_q2last=0.;
+  _couplast=0.;_q2last=-1.;
 }
 
 ClassDescription<SMFFPVertex> 

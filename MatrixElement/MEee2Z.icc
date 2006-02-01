@@ -1,0 +1,72 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEee2Upsilon class.
+//
+
+namespace Herwig {
+  using namespace ThePEG;
+
+inline MEee2Z::MEee2Z() {}
+
+inline MEee2Z::MEee2Z(const MEee2Z & x)
+  : MEBase(x), _theFFZVertex(x._theFFZVertex) {}
+
+inline IBPtr MEee2Z::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEee2Z::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MEee2Z::doupdate() throw(UpdateException) {
+  MEBase::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void MEee2Z::doinit() throw(InitException) {
+  MEBase::doinit();
+  ThePEG::Ptr<Herwig::StandardModel>::transient_const_pointer 
+    hwsm=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  // do the initialisation
+  if(hwsm)
+    { _theFFZVertex = hwsm->vertexFFZ();}
+  else
+    {throw InitException();}
+}
+
+inline void MEee2Z::dofinish() {
+  MEBase::dofinish();
+}
+
+inline void MEee2Z::doinitrun() {
+  MEBase::doinitrun();
+}
+
+inline void MEee2Z::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  MEBase::rebind(trans);
+}
+
+inline IVector MEee2Z::getReferences() {
+  IVector ret = MEBase::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

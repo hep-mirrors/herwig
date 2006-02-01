@@ -28,6 +28,8 @@ using Helicity::outgoing;
 
 inline PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer() 
 {
+  // intermediates
+  generateIntermediates(false);
   // decay mode h'_1 to K K*
   _incoming.push_back( 10333);_outgoingV.push_back( 313);_outgoingP.push_back(-311);
   _incoming.push_back( 10333);_outgoingV.push_back( 323);_outgoingP.push_back(-321);
@@ -193,40 +195,11 @@ inline PVectorMesonVectorPScalarDecayer::PVectorMesonVectorPScalarDecayer()
 
 PVectorMesonVectorPScalarDecayer::~PVectorMesonVectorPScalarDecayer() {}
 
-bool PVectorMesonVectorPScalarDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
-  // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id()),id0bar(id0);
-  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
-  ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  unsigned int ix(0);
-  do
-    {
-      if(id0   ==_incoming[ix])
-	{if((id1   ==_outgoingV[ix]&&id2   ==_outgoingP[ix])||
-	    (id2   ==_outgoingV[ix]&&id1   ==_outgoingP[ix])){allowed=true;}}
-      if(id0bar==_incoming[ix]&&!allowed)
-	{if((id1bar==_outgoingV[ix]&&id2bar==_outgoingP[ix])||
-	    (id2bar==_outgoingV[ix]&&id1bar==_outgoingP[ix])){allowed=true;}}
-      ++ix;
-    }
-  while(ix<_incoming.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector PVectorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+int PVectorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   ParticleMSet::const_iterator it;
   int imode(-1);
-  int id(parent.id()),idbar(id);
+  int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=(dm.parent()->CC())->id();}
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id()),id1bar(id1);
@@ -235,7 +208,7 @@ ParticleVector PVectorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
   unsigned int ix(0);
-  bool cc(false);
+  cc=false;
   do 
     {
       if(id   ==_incoming[ix])
@@ -247,8 +220,7 @@ ParticleVector PVectorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
 
 

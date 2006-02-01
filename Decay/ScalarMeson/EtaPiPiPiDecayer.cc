@@ -59,8 +59,10 @@ EtaPiPiPiDecayer::EtaPiPiPiDecayer()
   _maxweight.push_back(1.30);
   // initial size of the arrays
   _initsize=_maxweight.size();
+  // intermediates
+  generateIntermediates(false);
 }
-
+ 
 void EtaPiPiPiDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check consistency of the parameters
@@ -110,10 +112,11 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
 
 EtaPiPiPiDecayer::~EtaPiPiPiDecayer() {}
 
-bool EtaPiPiPiDecayer::accept(const DecayMode & dm) const {
-  bool allowed(false);
-  // check three outgoing particles
-  if(dm.products().size()!=3){return false;}
+
+int EtaPiPiPiDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
+  if(dm.products().size()!=3){return imode;}
   unsigned int npi0(0),npip(0),npim(0); int id,iother(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
   for( ;pit!=dm.products().end();++pit)
@@ -124,44 +127,25 @@ bool EtaPiPiPiDecayer::accept(const DecayMode & dm) const {
       else if(id==ParticleID::pi0&&npi0<2){++npi0;}
       else{iother=id;}
     }
-  if(!(npi0==2||(npip==1&&npim==1))){return allowed;}
-  if(npi0==1){iother=ParticleID::pi0;}
+  bool charged;
+  if(npim==1&&npip==1)
+    {
+      charged=true;
+      if(npi0==1){iother=ParticleID::pi0;}
+    }
+  else if(npi0==2){charged=false;}
+  else {return imode;}
+  // find the mode
   id=dm.parent()->id();
-  bool charged(npi0<2);
   unsigned int ix(0);
   do 
     {
-      allowed=(id==_incoming[ix]&&iother==_outgoing[ix]&&charged==_charged[ix]);
-      ++ix;
-    }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector EtaPiPiPiDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int idout(0),id,imode(-1);
-  unsigned int npi0(0),ix(0);
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  for( ;pit!=dm.products().end();++pit)
-    {
-      id=(**pit).id();
-      if(id==ParticleID::pi0&&npi0<2){++npi0;}
-      else if(id!=ParticleID::piplus&&id!=ParticleID::piminus){idout=id;}
-    }
-  if(npi0==1){idout=ParticleID::pi0;}
-  bool charged(npi0<2);
-  id=parent.id();
-  do 
-    {
-      if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged){imode=ix;}
+      if(id==_incoming[ix]&&iother==_outgoing[ix]&&_charged[ix]==charged){imode=ix;}
       ++ix;
     }
   while(imode<0&&ix<_incoming.size());
-  if(imode<0){throw DecayIntegratorError() << "Unknown mode in EtaPiPiPiDecayer::decay()"
-					   << Exception::runerror;}
-  bool cc(false);
-  return generate(false,cc,imode,parent);
+  cc=false;
+  return imode;
 }
 
 void EtaPiPiPiDecayer::persistentOutput(PersistentOStream & os) const {

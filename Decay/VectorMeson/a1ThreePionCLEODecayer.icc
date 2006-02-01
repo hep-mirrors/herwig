@@ -70,6 +70,8 @@ inline a1ThreePionCLEODecayer::a1ThreePionCLEODecayer()
   _f2coup=Complex(0.,0.);
   _f0coup=Complex(0.,0.);
   _sigmacoup=Complex(0.,0.);
+  // generation of intermediates
+  generateIntermediates(true);
 }
   
 inline a1ThreePionCLEODecayer::a1ThreePionCLEODecayer(const a1ThreePionCLEODecayer & x)

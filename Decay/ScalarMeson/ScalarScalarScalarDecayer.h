@@ -51,24 +51,11 @@ public:
 public:
 
   /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. This version checks the particles against the 
-   * list of allowed incoming  and outgoing mesons.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param dm The decay mode
    */
-  virtual bool accept(const DecayMode & dm) const;
-  
-  /**
-   * For a given decay mode and a given particle instance, perform the
-   * decay and return the decay products. This version uses PDG codes to
-   * work which mode is being simulated and the generate member of the 
-   * DecayIntegrator class for the phase-space  generation.
-   * @param dm The DecayMode
-   * @param part The Particle instant being decayed.
-   * @return The vector of particles produced in the decay.
-   */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

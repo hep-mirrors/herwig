@@ -132,6 +132,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 			      << " after " << _masstry << " attempts" << endl;
 	   throw Veto();
 	 }
+       ++ntry;
      }
    else{masses[0]=p.mass();}
    for(unsigned int ix=0;ix<numProds;++ix){products[ix].setMass(masses[ix]);}

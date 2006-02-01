@@ -264,10 +264,10 @@ bool BaryonFactorizedDecayer::accept(const DecayMode & dm) const {
   return allowed;
 }
 
-ParticleVector BaryonFactorizedDecayer::decay(const DecayMode & dm,
-					      const Particle & parent) const {
+int BaryonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   unsigned int ix,iy;
-  int idin(parent.id()),ibaryon,foundb,id0,id1,icurr(-1),iform(0);
+  int idin(dm.parent()->id()),ibaryon,foundb,id0,id1,icurr(-1),iform(0);
   vector<int> idall,idother;
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
@@ -303,8 +303,8 @@ ParticleVector BaryonFactorizedDecayer::decay(const DecayMode & dm,
 					   << "BaryonFactorizedDecayer::decay()" 
 					   << Exception::abortnow;}
   // generate the mode
-  bool cc(id0!=idin);
-  return generate(true,cc,imode,parent);
+  cc=id0!=idin;
+  return imode;
 }
 
 

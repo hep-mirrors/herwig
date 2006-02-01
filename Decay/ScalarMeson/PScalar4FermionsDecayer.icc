@@ -16,6 +16,8 @@ inline PScalar4FermionsDecayer::PScalar4FermionsDecayer()
   _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
   // initial sizes
   _initsize=_incoming.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline PScalar4FermionsDecayer::PScalar4FermionsDecayer(const PScalar4FermionsDecayer & x)

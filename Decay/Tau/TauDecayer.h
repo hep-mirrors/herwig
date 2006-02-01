@@ -64,25 +64,21 @@ public:
 public:
 
   /**
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param dm The decay mode
+   */
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const;
+
+  /**
    * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. This member uses the particles in the hadronic
-   * current to decide if a decay is possible.
+   * handle a given decay mode. As this is the base class it returns false and
+   * should be overridden in class implementing the decays.
    * @param dm The DecayMode
    * @return Whether the mode can be handled.
    *
    */
   virtual bool accept(const DecayMode & dm) const;
-  
-  /**
-   * For a given decay mode and a given particle instance, perform the
-   * decay and return the decay products. This member uses the generate
-   * method from the DecayIntegrator class and the currents to perform the 
-   * decay.
-   * @param dm The DecayMode
-   * @param part The Particle instant being decayed.
-   * @return The vector of particles produced in the decay.
-   */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.

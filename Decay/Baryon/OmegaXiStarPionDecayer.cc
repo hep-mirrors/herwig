@@ -21,11 +21,11 @@ using namespace ThePEG;
 
 OmegaXiStarPionDecayer::~OmegaXiStarPionDecayer() {}
 
-bool OmegaXiStarPionDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int OmegaXiStarPionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -34,24 +34,18 @@ bool OmegaXiStarPionDecayer::accept(const DecayMode & dm) const {
   if(id0==_idin)
     {
       if((id1==_idout&&id2==-211)||
-	 (id2==_idout&&id1==-211)){allowed=true;}
+	 (id2==_idout&&id1==-211)){imode=0;}
     }
   else if(id0==-_idin)
     {
       if((id1==-_idout&&id2==211)||
-	 (id2==-_idout&&id1==211)){allowed=true;}
+	 (id2==-_idout&&id1==211)){imode=0;}
     }
-  return allowed;
+  // charge conjugation
+  cc=id0<0;
+  // return the answer
+  return imode;
 }
-
-ParticleVector OmegaXiStarPionDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(0);
-  bool cc(parent.id()!=_idin);
-  // generate the decay
-  return generate(false,cc,imode,parent);
-}
-
 
 void OmegaXiStarPionDecayer::persistentOutput(PersistentOStream & os) const {
   os << _Acomm << _AP << _AS << _BP << _BS << _idin << _idout <<  _wgtmax;

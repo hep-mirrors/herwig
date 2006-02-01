@@ -20,6 +20,8 @@ inline OmegaXiStarPionDecayer::OmegaXiStarPionDecayer()
   _BS    =-100.8e-8;
   // maximum weight for the decay
   _wgtmax=0.0032;
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline OmegaXiStarPionDecayer::OmegaXiStarPionDecayer(const OmegaXiStarPionDecayer & x)

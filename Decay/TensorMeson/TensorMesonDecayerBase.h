@@ -61,25 +61,6 @@ public:
 public:
 
   /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. As this is the base class it returns false and
-   * should be overridden in class implementing the decays.
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   */
-  virtual bool accept(const DecayMode & dm) const;
-
-  /**
-   * For a given decay mode and a given particle instance, perform the
-   * decay and return the decay products. As this is the base class this
-   * is not implemented.
-   * @param dm The DecayMode
-   * @param part The Particle instant being decayed.
-   * @return The vector of particles produced in the decay.
-   */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
-
-  /**
    * The hadronic tensor. This must be implemented in all classes inheriting from
    * this one and is therefore purely virtual. The tensors should be specified so 
    * that the spin of the first outgoing particle is interated over first, then 

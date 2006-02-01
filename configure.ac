@@ -94,6 +94,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 Decay/TensorMeson/Makefile
                 Decay/WeakCurrents/Makefile
 		Decay/Partonic/Makefile
+		Decay/Radiation/Makefile
 		PDT/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile

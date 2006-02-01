@@ -33,6 +33,8 @@ using Helicity::outgoing;
 
 VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() 
 {
+  // intermediates
+  generateIntermediates(true);
   // omega -> pi e+e- /mu+mu-
   _incoming.push_back( 223);_outgoingP.push_back( 111);
   _incoming.push_back( 223);_outgoingP.push_back( 111);
@@ -122,38 +124,11 @@ void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
 
 VectorMesonPScalarFermionsDecayer::~VectorMesonPScalarFermionsDecayer() {}
 
-bool VectorMesonPScalarFermionsDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
-  // must be three outgoing particles
-  if(dm.products().size()!=3){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id()),idf[2],ids(0);
-  unsigned int nf(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit)
-    {
-      if((**pit).iSpin()==PDT::Spin0){ids=(**pit).id();}
-      else{idf[nf]=(**pit).id();++nf;}
-    }
-  if(ids==0){return false;}
-  // loop over the modes and see if this is one of them
-  unsigned int ix=0;
-  do
-    {
-      if(_incoming[ix]==id0&&_outgoingP[ix]==ids)
-	{if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	    (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])){allowed=true;}}
-      ++ix;
-    }
-  while(!allowed&&ix<_incoming.size());
-  return allowed;
-}
-
-ParticleVector VectorMesonPScalarFermionsDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  // workout which mode we are doing
+int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   int imode(-1);
+  // must be three outgoing particles
+  if(dm.products().size()!=3){return imode;}
   // ids of the particles
   int id0(dm.parent()->id()),idf[2],ids(0);
   unsigned int nf(0);
@@ -174,8 +149,8 @@ ParticleVector VectorMesonPScalarFermionsDecayer::decay(const DecayMode & dm,
     }
   while(imode<0&&ix<_incoming.size());
   // perform the decay
-  bool cc(false);
-  return generate(false,cc,imode,parent); 
+  cc=false;
+  return imode;
 }
 
 

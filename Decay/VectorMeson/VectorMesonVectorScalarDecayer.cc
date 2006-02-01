@@ -27,6 +27,8 @@ using Helicity::outgoing;
 
 VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
 {
+  // intermediates
+  generateIntermediates(false);
   // decay of the phi to the a_0 and f_0 and a photon
   _incoming.push_back(333);_outgoingV.push_back(22);_outgoingS.push_back(9000111);
   _coupling.push_back(0.154/GeV);_maxweight.push_back(17.);
@@ -69,39 +71,10 @@ VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer()
 
 VectorMesonVectorScalarDecayer::~VectorMesonVectorScalarDecayer() {}
 
-bool VectorMesonVectorScalarDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
-  // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id()),id0bar(id0);
-  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
-  ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  unsigned int ix(0);
-  do
-    {
-      if(id0   ==_incoming[ix])
-	{if((id1   ==_outgoingV[ix]&&id2   ==_outgoingS[ix])||
-	    (id2   ==_outgoingV[ix]&&id1   ==_outgoingS[ix])){allowed=true;}}
-      if(id0bar==_incoming[ix]&&!allowed)
-	{if((id1bar==_outgoingV[ix]&&id2bar==_outgoingS[ix])||
-	    (id2bar==_outgoingV[ix]&&id1bar==_outgoingS[ix])){allowed=true;}}
-      ++ix;
-    }
-  while(ix<_incoming.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector VectorMesonVectorScalarDecayer::decay(const DecayMode & dm,
-						     const Particle & parent) const {
+int VectorMesonVectorScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   int imode(-1);
-  int id(parent.id()),idbar(id);
+  int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id()),id1bar(id1);
@@ -110,7 +83,7 @@ ParticleVector VectorMesonVectorScalarDecayer::decay(const DecayMode & dm,
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
   unsigned int ix(0);
-  bool cc(false);
+  cc=false;
   do 
     {
       if(id   ==_incoming[ix])
@@ -122,8 +95,7 @@ ParticleVector VectorMesonVectorScalarDecayer::decay(const DecayMode & dm,
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
 
 void VectorMesonVectorScalarDecayer::persistentOutput(PersistentOStream & os) const

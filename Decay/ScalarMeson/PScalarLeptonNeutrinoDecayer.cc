@@ -31,6 +31,8 @@ using Herwig::Helicity::outgoing;
 
 PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() 
 {
+  // intermediates
+  generateIntermediates(false);
   // the fermi constant
   _GF=1.16639E-5/GeV2;
   // pion decay
@@ -114,10 +116,10 @@ void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
 
 PScalarLeptonNeutrinoDecayer::~PScalarLeptonNeutrinoDecayer() {}
 
-bool PScalarLeptonNeutrinoDecayer::accept(const DecayMode & dm) const {
-  // must be two outgoing particles
-  bool allowed(false);
-  if(dm.products().size()!=2){return allowed;}
+int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id()),id0bar(id0);
   if(dm.parent()->CC()){id0bar=-id0;}
@@ -129,28 +131,10 @@ bool PScalarLeptonNeutrinoDecayer::accept(const DecayMode & dm) const {
       id=abs((**pit).id());
       if(id>=11&&id<=16){if(id%2==0){ilep=(id-10)/2;}}
     }
-  // is the mode allowed
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {if((id0   ==_incoming[ix]||id0bar==_incoming[ix])&&ilep<=_leptons[ix])
-	{allowed=true;return allowed;}}
-  return allowed;
-}
-
-ParticleVector PScalarLeptonNeutrinoDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  // find the id of the leptons
-  int ilep(4),id0(parent.id()),id0bar(id0),id;
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  for(;pit!=dm.products().end();++pit)
-    {
-      id=abs((**pit).id());
-      if(id>=11&&id<=16){if(id%2==0){ilep=(id-10)/2;}}
-    }
-  // id's for the conjugate mode
-  if(getParticleData(id0)->CC()){id0bar=-id0;}
   // find the channel we need
+  bool found(false);
   int ichan(-1);
-  bool found=false; unsigned int ix=0;
+  unsigned int ix(0);
   do
     {
       if(id0   ==_incoming[ix]||id0bar==_incoming[ix])
@@ -159,9 +143,9 @@ ParticleVector PScalarLeptonNeutrinoDecayer::decay(const DecayMode & dm,
       ++ix;
     }
   while (!found&&ix<_incoming.size());
-  // generate the decay
-  bool cc(id0==-_incoming[ix]);
-  return generate(true,cc,ichan,parent);
+  cc=id0==-_incoming[ix];
+  if(found){imode=ichan;}
+  return imode;
 }
 
 

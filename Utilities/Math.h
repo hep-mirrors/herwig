@@ -8,6 +8,7 @@
 
 namespace Herwig {
 using ThePEG::Complex;
+using std::complex;
 
 /** The Math namespace includes the declaration of some useful
  *  mathematical functions. */
@@ -18,6 +19,10 @@ namespace Math {
    */
   Complex Li2(Complex);
 
+  /**
+   * The real part of the dilog function taken from FORTRAN Herwig
+   */
+  long double ReLi2(long double);
 }
 
 }

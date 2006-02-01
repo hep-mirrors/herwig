@@ -23,12 +23,12 @@ using namespace ThePEG;
 
 SU3BaryonDecupletOctetPhotonDecayer::~SU3BaryonDecupletOctetPhotonDecayer() {}
 
-bool SU3BaryonDecupletOctetPhotonDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int SU3BaryonDecupletOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   if(_incomingB.size()==0){setupModes(0);}
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -36,39 +36,18 @@ bool SU3BaryonDecupletOctetPhotonDecayer::accept(const DecayMode & dm) const {
   int id2((**pit).id()),iout;
   if(id1==ParticleID::gamma){iout=id2;}
   else if(id2==ParticleID::gamma){iout=id1;}
-  else{return false;}
+  else{return imode;}
   unsigned int ix(0);
+  cc=false;
   do
     {
-      if(id0==_incomingB[ix]){if(iout==_outgoingB[ix]){allowed=true;}}
-      else if(id0==-_incomingB[ix]){if(iout==-_outgoingB[ix]){allowed=true;}}
-      ++ix;
-    }
-  while(ix<_incomingB.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector SU3BaryonDecupletOctetPhotonDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1);
-  int id(parent.id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id()),iout;
-  if(id1==ParticleID::gamma){iout=id2;}
-  else{iout=id1;}
-  unsigned int ix(0);bool cc(false);
-  do 
-    {
-      if(id==_incomingB[ix]){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}
-      else if(id==-_incomingB[ix]){if(iout==-_outgoingB[ix]){imode=ix;cc=true;}}
+      if(id0==_incomingB[ix]){if(iout==_outgoingB[ix]){imode=ix;cc=false;}}
+      else if(id0==-_incomingB[ix]){if(iout==-_outgoingB[ix]){imode=ix;cc=true;}}
       ++ix;
     }
   while(ix<_incomingB.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
-
 
 void SU3BaryonDecupletOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
   os << _C << _parity << _proton << _neutron << _sigma0 << _sigmap 

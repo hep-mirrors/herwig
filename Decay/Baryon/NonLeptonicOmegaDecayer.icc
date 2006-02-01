@@ -41,6 +41,8 @@ inline NonLeptonicOmegaDecayer::NonLeptonicOmegaDecayer()
   _outgoingB[0] = 3122;_outgoingM[0] =-321;_maxweight[0]=1.5;
   _outgoingB[1] = 3322;_outgoingM[1] =-211;_maxweight[1]=0.4;
   _outgoingB[2] = 3312;_outgoingM[2] = 111;_maxweight[2]=0.2;
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline NonLeptonicOmegaDecayer::NonLeptonicOmegaDecayer(const NonLeptonicOmegaDecayer & x)

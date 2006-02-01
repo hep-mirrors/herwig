@@ -30,6 +30,8 @@ inline EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   _etapmax = 0.006;
   // the constants for the matrix elements
   for(unsigned int ix=0;ix<2;++ix){_Dconst[ix]=0.;_Econst[ix]=0.;}
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer(const EtaPiGammaGammaDecayer & x)

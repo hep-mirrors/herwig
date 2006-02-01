@@ -26,16 +26,6 @@ using Helicity::incoming;
 using Helicity::outgoing;
 
 VectorMesonDecayerBase::~VectorMesonDecayerBase() {}
-  
-bool VectorMesonDecayerBase::accept(const DecayMode & dm) const {
-  return false;
-}
-
-ParticleVector VectorMesonDecayerBase::decay(const DecayMode & dm,
-					     const Particle & parent) const {
-  ParticleVector children = dm.produceProducts();
-  return children;
-}
 
 void VectorMesonDecayerBase::persistentOutput(PersistentOStream & os) const {
 }

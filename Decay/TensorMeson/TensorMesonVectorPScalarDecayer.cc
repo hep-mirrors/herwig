@@ -28,6 +28,8 @@ using Herwig::Helicity::EpsFunction;
 
 TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer() 
 {
+  // intermediates
+  generateIntermediates(false);
   // a_2 -> rho pi
   _incoming.push_back( 115);_outgoingV.push_back( 213);_outgoingP.push_back(-211);
   _incoming.push_back( 215);_outgoingV.push_back( 113);_outgoingP.push_back( 211);
@@ -109,40 +111,10 @@ TensorMesonVectorPScalarDecayer::TensorMesonVectorPScalarDecayer()
 
 TensorMesonVectorPScalarDecayer::~TensorMesonVectorPScalarDecayer() {}
 
-bool TensorMesonVectorPScalarDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  // is this mode allowed
-  bool allowed(false);
-  // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
-  // ids of the particles
-  int id0(dm.parent()->id()),id0bar(id0);
-  if(dm.parent()->CC()){id0bar=dm.parent()->CC()->id();}
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
-  ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
-  unsigned int ix(0);
-  do
-    {
-      if(id0   ==_incoming[ix])
-	{if((id1   ==_outgoingP[ix]&&id2   ==_outgoingV[ix])||
-	    (id2   ==_outgoingP[ix]&&id1   ==_outgoingV[ix])){allowed=true;}}
-      if(id0bar==_incoming[ix]&&!allowed)
-	{if((id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix])||
-	    (id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix])){allowed=true;}}
-      ++ix;
-    }
-  while(ix<_incoming.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector TensorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+int TensorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
   int imode(-1);
-  int id(parent.id()),idbar(id);
+  int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id()),id1bar(id1);
@@ -151,7 +123,7 @@ ParticleVector TensorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
   int id2((**pit).id()),id2bar(id2);
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
   unsigned int ix(0);
-  bool cc(false);
+  cc=false;
   do 
     {
       if(id   ==_incoming[ix])
@@ -163,8 +135,7 @@ ParticleVector TensorMesonVectorPScalarDecayer::decay(const DecayMode & dm,
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  return imode;
 }
 
 void TensorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const

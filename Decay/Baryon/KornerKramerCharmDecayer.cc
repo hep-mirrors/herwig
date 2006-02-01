@@ -444,6 +444,8 @@ KornerKramerCharmDecayer::KornerKramerCharmDecayer()
   _Ihat3.push_back(0.);_Ihat4.push_back(0.);
   // initial size of the vectors
   _initsize=_incoming.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 void KornerKramerCharmDecayer::doinit() throw(InitException) {
@@ -635,12 +637,11 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
     }
 }
 
-
-bool KornerKramerCharmDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
+int KornerKramerCharmDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   // must be two outgoing particles
-  if(dm.products().size()!=2){return allowed;}
+  if(dm.products().size()!=2){return imode;}
   // ids of the particles
   int id0(dm.parent()->id());
   ParticleMSet::const_iterator pit(dm.products().begin());
@@ -652,53 +653,25 @@ bool KornerKramerCharmDecayer::accept(const DecayMode & dm) const {
       if(id0==_incoming[ix])
 	{
 	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){allowed=true;}
+	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;}
 	}
       else if(id0==-_incoming[ix])
 	{
 	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){allowed=true;}
+	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;}
 	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
 	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
 	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
 	      _outgoingM[ix]==113||_outgoingM[ix]==223||_outgoingM[ix]==333))
-	    {allowed=true;}
-	}
-      ++ix;
-    }
-  while(ix<_incoming.size()&&!allowed);
-  return allowed;
-}
-
-ParticleVector KornerKramerCharmDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int imode(-1),id(parent.id());
-  ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id());++pit;
-  int id2((**pit).id());
-  unsigned int ix(0);bool cc(false);
-  do 
-    {
-      if(id==_incoming[ix])
-	{
-	  if((id1==_outgoingB[ix]&&id2==_outgoingM[ix])||
-	     (id2==_outgoingB[ix]&&id1==_outgoingM[ix])){imode=ix;cc=false;}
-	}
-      else if(id==-_incoming[ix])
-	{
-	  if((id1==-_outgoingB[ix]&&id2==-_outgoingM[ix])||
-	     (id2==-_outgoingB[ix]&&id1==-_outgoingM[ix])){imode=ix;cc=true;}
-	  if(((id1==-_outgoingB[ix]&&id2==_outgoingM[ix])||
-	      (id2==-_outgoingB[ix]&&id1==_outgoingM[ix]))&&
-	     (_outgoingM[ix]==111||_outgoingM[ix]==221||_outgoingM[ix]==331||
-	      _outgoingM[ix]==113||_outgoingM[ix]==223||_outgoingM[ix]==333))
-	    {imode=ix;cc=true;}
+	    {imode=ix;}
 	}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
-  // generate the decay
-  return generate(false,cc,imode,parent);
+  // charge conjugation if needed
+  cc = id0<0;
+  // return mode number
+  return imode;
 }
 
 void KornerKramerCharmDecayer::persistentOutput(PersistentOStream & os) const {

@@ -118,20 +118,21 @@ bool TauDecayer::accept(const DecayMode & dm) const {
   return allowed;
 }
 
-ParticleVector TauDecayer::decay(const DecayMode & dm,
-				 const Particle & parent) const {
-  // find the ids of the particles for the decay current
+
+int TauDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
   ParticleMSet::const_iterator pit = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   int idtemp;vector<int> idother;
   for( ; pit!=pend;++pit)
     {idtemp=(**pit).id();if(abs(idtemp)!=16){idother.push_back(idtemp);}}
-  unsigned int itemp=_current->decayMode(idother),imode(0);
+  unsigned int itemp=_current->decayMode(idother);
   for(unsigned int ix=0;ix<_modemap.size();++ix)
     {if(_modemap[ix]==itemp){imode=ix;}}
   // perform the decay
-  bool cc(parent.id()==ParticleID::tauplus); 
-  return generate(true,cc,imode,parent);
+  cc=dm.parent()->id()==ParticleID::tauplus;
+  return imode;
 }
 
 

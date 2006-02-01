@@ -8,7 +8,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline SMWZDecayer::SMWZDecayer() 
- {
+{
    _Zquarkwgt.resize(5,0.);
    _Wquarkwgt.resize(6,0.);
    _Zleptonwgt.resize(6,0.);
@@ -33,7 +33,9 @@ inline SMWZDecayer::SMWZDecayer()
    _Wleptonwgt[0]=223.684;
    _Wleptonwgt[1]=223.684;
    _Wleptonwgt[2]=223.52;
- }
+   // intermediates
+   generateIntermediates(false);
+}
 
 inline SMWZDecayer::SMWZDecayer(const SMWZDecayer & x)
   : DecayIntegrator(x), _Zquarkwgt(x._Zquarkwgt), _Zleptonwgt(x._Zleptonwgt),

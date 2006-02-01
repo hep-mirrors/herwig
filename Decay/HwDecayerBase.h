@@ -17,6 +17,9 @@ using namespace ThePEG;
  * from the Decayer class of ThePEG and implements additional functionality for the 
  * output of the results to the particle database and initialization of the datbase.
  *
+ * It also provide the option of specifying a class based on the DecayRadiationGenerator
+ * which should be used to generate QED radiation in the decay
+ *
  */
 class HwDecayerBase: public Decayer {
 

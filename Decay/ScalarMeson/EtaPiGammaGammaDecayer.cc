@@ -85,35 +85,26 @@ void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
 
 EtaPiGammaGammaDecayer::~EtaPiGammaGammaDecayer() {}
 
-bool EtaPiGammaGammaDecayer::accept(const DecayMode & dm) const {
-  bool allowed=false;
-  // check three outgoing particles
-  if(dm.products().size()!=3){return false;}
-  // check the incoming particle is an eta or eta prime
-  int id=dm.parent()->id();
-  if(id==ParticleID::eta||id==ParticleID::etaprime)
+int EtaPiGammaGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  cc=false;
+  int id,imode(-1);
+  if(dm.products().size()!=3){return imode;}
+  ParticleMSet::const_iterator pit = dm.products().begin();
+  unsigned int npi0(0),ngamma(0);
+  for( ;pit!=dm.products().end();++pit)
     {
-      ParticleMSet::const_iterator pit = dm.products().begin();
-      unsigned int npi0=0,ngamma=0;
-      for( ;pit!=dm.products().end();++pit)
-	{
-	  id=(**pit).id();
-	  if(id==ParticleID::pi0){++npi0;}
-	  else if(id==ParticleID::gamma){++ngamma;}
-	}
-      if(npi0==1&&ngamma==2){allowed=true;}
+      id=(**pit).id();
+      if(id==ParticleID::pi0){++npi0;}
+      else if(id==ParticleID::gamma){++ngamma;}
     }
-  return allowed;
-}
-
-ParticleVector EtaPiGammaGammaDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  int id(parent.id()),imode(1);
+  if(!(npi0==1&&ngamma==2)){return imode;}
+  // number of the mode
+  id=dm.parent()->id();
   if(id==ParticleID::eta){imode=0;}
-  bool cc(false);
-  return generate(false,cc,imode,parent);
+  else if(id==ParticleID::etaprime){imode=1;}
+  return imode;
 }
-
 
 void EtaPiGammaGammaDecayer::persistentOutput(PersistentOStream & os) const {
   os << _grhoomega << _fpi << _grho << _rhomass << _rhowidth << _localparameters 

@@ -120,71 +120,41 @@ void SMWZDecayer::doinit() throw(InitException)
 
 SMWZDecayer::~SMWZDecayer() {}
 
-bool SMWZDecayer::accept(const DecayMode & dm) const {
-  bool allowed(false);
+int SMWZDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  int imode(-1);
+  if(dm.products().size()!=2){return imode;}
   int id0=dm.parent()->id();
   ParticleMSet::const_iterator pit = dm.products().begin();
   int id1=(**pit).id();
   ++pit;
   int id2=(**pit).id();
   // Z to quarks or leptons
+  cc =false;
   if(id0==ParticleID::Z0)
-    {if(id1==-id2&&(abs(id1)<=5||(abs(id1)>=11&&abs(id1)<=16))){allowed=true;}}
-  // W to quarks
+    {
+      if(abs(id1)<6&&id1==-id2){imode=abs(id1)-1;}
+      else if(abs(id1)>=11&&abs(id1)<=16&&id1==-id2){imode=abs(id1)-6;}
+      cc =false;
+    }
+  // W to quarks and leptons
   else if(abs(id0)==ParticleID::Wplus)
     {
-      int idd,idu;
+      int idd(0),idu(0);
       if(abs(id1)%2==1&&abs(id2)%2==0)
-	{
-	  idd=abs(id1);idu=abs(id2);
-	  if((id1<0&&id2>0&&id0==ParticleID::Wminus)||
-	     (id1>0&&id2<0&&id0==ParticleID::Wplus)){return allowed;}
-	}
+	{idd=abs(id1);idu=abs(id2);}
       else if(abs(id1)%2==0&&abs(id2)%2==1)
-	{
-	  idd=abs(id2);idu=abs(id1);
-	  if((id2<0&&id1>0&&id0==ParticleID::Wminus)||
-	     (id2>0&&id1<0&&id0==ParticleID::Wplus)){return allowed;}
-	}
-      else{return allowed;}
-      if(idd<6&&idu<6){allowed=true;}
-      else if(idd==idu-1&&idd>=11&&idd<=15){allowed=true;}
+	{idd=abs(id2);idu=abs(id1);}
+      if(idd==0&&idu==0)
+	{return imode;}
+      else if(idd<=5)
+	{imode=idd+idu/2+9;}
+      else
+	{imode=(idd-1)/2+12;}
+      cc=(id0==ParticleID::Wminus);
     }
-  return allowed;
+  return imode;
 }
-
-ParticleVector SMWZDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  // id's of the decaying particles
-  int id0=parent.id();
-  ParticleMSet::const_iterator pit = dm.products().begin();
-  int id1=(**pit).id();
-  ++pit;
-  int id2=(**pit).id();
-  int imode=-1;
-  if(id0==ParticleID::Z0)
-    {
-      if(abs(id1)<6){imode=abs(id1)-1;}
-      else if(abs(id1)>=11&&abs(id1)<=16){imode=abs(id1)-6;}
-    }
-  else if(abs(id0)==ParticleID::Wplus)
-    {
-      int idd,idu;
-      if(abs(id1)%2==1){idd=abs(id1);idu=abs(id2);}
-      else{idd=abs(id2);idu=abs(id1);}
-      if(idd<=5){imode=idd+idu/2+9;}
-      else{imode=(idd-1)/2+12;}
-    }
-  bool cc = parent.id()==ParticleID::Wminus;
-  ParticleVector output(generate(false,cc,imode,parent));
-  // set up the colour flow
-  if(output[0]->id()>=-6&&output[0]->id()<0)
-    {output[0]->colourNeighbour(output[1]);}
-  else if(output[0]->id()<=6&&output[0]->id()>0)
-    {output[0]->antiColourNeighbour(    output[1]);}
-  return output;
-}
-
 
 void SMWZDecayer::persistentOutput(PersistentOStream & os) const {
   os << _Wvertex << _Zvertex << _Zquarkwgt << _Wquarkwgt << _Zleptonwgt << _Wleptonwgt;

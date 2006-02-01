@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FFDipole class.
+//
+#ifndef ThePEG_FFDipole_FH
+#define ThePEG_FFDipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class FFDipole;
+ThePEG_DECLARE_POINTERS(FFDipole,FFDipolePtr);
+
+}
+
+#endif

@@ -27,6 +27,8 @@ using Herwig::Helicity::EpsFunction;
 using Herwig::Helicity::ScalarWaveFunction;
 
 VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
+  // generation of intermediates
+  generateIntermediates(true);
   // omega decay
   _incoming.push_back(223);
   _coupling.push_back(178.71/GeV);
@@ -191,19 +193,15 @@ void VectorMeson3PionDecayer::doinit() throw(InitException) {
 
 VectorMeson3PionDecayer::~VectorMeson3PionDecayer() {}
 
-bool VectorMeson3PionDecayer::accept(const DecayMode & dm) const {
-  // is this mode allowed
-  bool allowed(false);
-  // must be two outgoing particles
-  if(dm.products().size()!=3){return allowed;}
-  // check the ids of the inital particles
-  int id0(dm.parent()->id()),id;
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {if(int(_incoming[ix])==id0){allowed=true;}}
-  if(!allowed){return allowed;}
+int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+{
+  cc=false;
+  int imode(-1),id;
+  // must be three outgoing particles
+  if(dm.products().size()!=3){return imode;}
   // check the id's of the outgoing particles
   unsigned int npi0(0),npip(0),npim(0);
-  ParticleMSet::const_iterator pit = dm.products().begin();
+  ParticleMSet::const_iterator pit(dm.products().begin());
   for(;pit!=dm.products().end();++pit)
     {
       id = (*pit)->id();
@@ -211,20 +209,12 @@ bool VectorMeson3PionDecayer::accept(const DecayMode & dm) const {
       else if(id==ParticleID::piplus){++npip;}
       else if(id==ParticleID::piminus){++npim;}
     }
-  if(npi0==1&&npip==1&&npim==1){allowed=true;}
-  return allowed;
-}
-
-ParticleVector VectorMeson3PionDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
-  // workout which mode we are doing
-  int imode(-1),id(parent.id());
+  if(!(npi0==1&&npip==1&&npim==1)){return imode;}
   unsigned int ix(0);
+  id=dm.parent()->id();
   do{if(_incoming[ix]==id){imode=ix;}++ix;}
   while(imode<0&&ix<_incoming.size());
-  // perform the decay
-  bool cc(false),intermediates(id!=ParticleID::omega);
-  return generate(intermediates,cc,imode,parent);
+  return imode;
 }
 
 void VectorMeson3PionDecayer::persistentOutput(PersistentOStream & os) const {

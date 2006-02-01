@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the IFDipole class.
+//
+#ifndef ThePEG_IFDipole_FH
+#define ThePEG_IFDipole_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class IFDipole;
+ThePEG_DECLARE_POINTERS(IFDipole,IFDipolePtr);
+
+}
+
+#endif

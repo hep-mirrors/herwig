@@ -283,6 +283,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 }
 
 bool ScalarMesonFactorizedDecayer::accept(const DecayMode & dm) const {
+  // N.B. this is a necessary but not sufficient test
   bool allowed(false),dummy;
   // find the ids of the particles
   ParticleMSet::const_iterator pit = dm.products().begin();
@@ -316,10 +317,8 @@ bool ScalarMesonFactorizedDecayer::accept(const DecayMode & dm) const {
   return allowed;
 }
 
-ParticleVector ScalarMesonFactorizedDecayer::decay(const DecayMode & dm,
-						   const Particle & parent) const 
+int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 {
-  // N.B. this is a necessary but not sufficient test
   int imode(-1);
   // id's of the particles and CC
   // of the parent
@@ -339,7 +338,8 @@ ParticleVector ScalarMesonFactorizedDecayer::decay(const DecayMode & dm,
   vector<bool> done(ids.size(),false);
   unsigned int nfound,ix,iy,iz;
   int idtemp;
-  bool found,cc(false);
+  bool found;
+  cc=false;
   ix=0;
   do
     {
@@ -381,7 +381,7 @@ ParticleVector ScalarMesonFactorizedDecayer::decay(const DecayMode & dm,
   if(imode<0){throw DecayIntegratorError() << "Unable to find the mode in " 
 					   << "ScalarMesonFactorizedDecayer::decay()" 
 					   << Exception::abortnow;}
-  return generate(true,cc,imode,parent);
+  return imode;
 }
 
 

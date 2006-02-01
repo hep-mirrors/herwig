@@ -1,5 +1,5 @@
 SUBDIRS = FormFactors Tau Baryon VectorMeson Perturbative \
-	  WeakCurrents ScalarMeson TensorMeson Partonic
+	  WeakCurrents ScalarMeson TensorMeson Partonic Radiation
 
 pkglib_LTLIBRARIES = libHwDecay.la Hw64Decay.la HwMamboDecay.la
 

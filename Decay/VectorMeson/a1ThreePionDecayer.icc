@@ -60,6 +60,8 @@ inline a1ThreePionDecayer::a1ThreePionDecayer()
   _twowgts[4] = 0.135416;
   _twowgts[5] = 0.135579;
   _twowgts[6] = 0.132111;
+  // generation of intermediates
+  generateIntermediates(true);
 }
   
 inline a1ThreePionDecayer::a1ThreePionDecayer(const a1ThreePionDecayer & x)

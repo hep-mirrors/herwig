@@ -36,6 +36,8 @@ inline SU3BaryonOctetOctetScalarDecayer::SU3BaryonOctetOctetScalarDecayer()
   _elambda  = 23122;
   _exi0     = 13322;
   _exim     = 13312;
+  // intermediates
+  generateIntermediates(false);
 }
 
 inline SU3BaryonOctetOctetScalarDecayer::SU3BaryonOctetOctetScalarDecayer(const SU3BaryonOctetOctetScalarDecayer & x)
