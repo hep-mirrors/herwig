@@ -3,6 +3,11 @@
 	* all: Branched off herwig-2-0-beta-release branch, then merged
 	Decay Radiation branch. Structural changes to decayers. 
 
+	* Utilities/Math.cc, Decay/Perturbative/SMTopDecayer.h,
+	SMHiggsGGHiggsPPDecayer.h, SMHiggsFermionsDecayer.h: Temporary
+	fixes to allow compilation.
+
+
 2006-01-31  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* src/Shower.in, Shower/SplittingFunctions: Individual PDFMax

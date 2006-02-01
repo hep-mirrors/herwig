@@ -72,6 +72,13 @@ public:
      */
     virtual bool accept(const DecayMode & dm) const;
 
+  /**
+   * Which of the possible decays is required
+   * @param cc Is this mode the charge conjugate
+   * @param dm The decay mode
+   */
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const {return -1;}
+
     /**
      * Perform a decay for a given DecayMode and a given Particle instance.
      * @param dm the DecayMode describing the decay.
