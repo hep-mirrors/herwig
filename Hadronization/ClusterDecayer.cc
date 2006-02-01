@@ -377,6 +377,11 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
 
     Lorentz5Momentum pHad1, pHad2;  // 5-momentum vectors that we have to determine
     if ( secondHad ) uSmear_v3 *= -1.0;
+
+    if (pClu.m() < ptrHad1->mass()+ptrHad2->mass() ) {
+      throw Exception() << "Impossible Kinematics in ClusterDecayer::decayIntoTwoHadrons()" 
+			<< Exception::eventerror;
+    }
     Kinematics::twoBodyDecay(pClu,ptrHad1->mass(),ptrHad2->mass(),uSmear_v3,
 			     pHad1,pHad2);
     ptrHad1->set5Momentum(pHad1);

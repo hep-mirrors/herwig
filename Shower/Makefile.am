@@ -12,8 +12,8 @@ IS_QtildaShowerKinematics1to2.cc IS_QtildaShowerKinematics1to2.h \
 IS_QtildaShowerKinematics1to2.icc \
 KinematicsReconstructor.cc KinematicsReconstructor.h KinematicsReconstructor.icc \
 QQbarG.cc QQbarG.h \
-QtildaShowerKinematics1to2.cc QtildaShowerKinematics1to2.h QtildaShowerKinematics1to2.icc \
-\
+QtildaShowerKinematics1to2.cc QtildaShowerKinematics1to2.h \
+QtildaShowerKinematics1to2.icc QtildaShowerKinematics1to2.fh \
 PartnerFinder.cc PartnerFinder.h PartnerFinder.icc  PartnerFinder.fh\
 ShowerAlpha.cc ShowerAlpha.h ShowerAlpha.icc ShowerAlpha.fh\
 ShowerAlphaQCD.cc ShowerAlphaQCD.h ShowerAlphaQCD.icc ShowerAlphaQCD.fh\

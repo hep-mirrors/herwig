@@ -11,7 +11,6 @@
 #include <ThePEG/Utilities/Timer.h>
 #include <ThePEG/Utilities/DynamicLoader.h>
 #include <ThePEG/Utilities/Exception.h>
-#include "Herwig++/Utilities/SmplHist.h"
 #include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/Repository/Repository.h>
 #include <iostream>

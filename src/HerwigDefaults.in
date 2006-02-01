@@ -198,7 +198,3 @@ read Decays.in
 
 # include some default analysis handlers
 read Analysis.in
-
-# output interfaces for documentation
-cd /
-doxygendump Herwig++:: ../Doc/AllInterfaces.h

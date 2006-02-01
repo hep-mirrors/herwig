@@ -10,6 +10,7 @@
 #include <ThePEG/CLHEPWrap/LorentzRotation.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
+#include <ThePEG/EventRecord/Event.h>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -32,6 +33,10 @@ void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
     p2 = Lorentz5Momentum(m2,-pstarVector);
     p1.boost( p.boostVector() );   // boost from CM to LAB
     p2.boost( p.boostVector() );
+  } else {
+    CurrentGenerator::log() << "Kinematics::twoBodyDecay() phasespace problem\n" 
+			    << *CurrentGenerator::current().currentEvent();
+    cerr << "\nKinematics::twoBodyDecay() phasespace problem\n";
   }
 }
 
@@ -42,49 +47,10 @@ void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
   twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2); 
 }
-/* Doesn't work with new LorentzRotation and isn't used anyway PR 1/9/05
-     *
-     * This returns the Matrix that rotates along the direction p by
-     * phi (cp = cos(phi), sp = sin(phi))
-     *
-    static LorentzRotation rotation(const Lorentz5Momentum p,
-				    const double cp, 
-				    const double sp);
 
-// Utility to create a rotation matrix to take p to the z axis, rotate it
-// by psi about the z axis (cp = cos(psi), sp = sin(psi))
-LorentzRotation Kinematics::rotation(const Lorentz5Momentum p,
-				     const double cp, 
-				     const double sp) 
-{
-   double pt, pp, ct, st, cf, sf;
-
-#define PTCUT 1E-20
-#define sq(a) (a)*(a)
-
-   pt = sq(p.x())+ sq(p.y());
-   pp = sq(p.z()) + pt;
-   if(pt < pp*PTCUT) {
-      ct = p.z() > 0 ? 1.0 : -1.0;
-      st = 0.0; cf = 1.0; sf = 0.0;
-   } else {
-      pp = sqrt(pp); pt = sqrt(pt); 
-      ct = p.z()/pp; st = pt/pp; cf = p.x()/pt; sf = p.y()/pt;
-   }
-
-#undef PTCUT
-#undef sq
-
-   return 
-     LorentzRotation(LorentzVector(cp*cf*ct+sp*sf, -cp*sf+sp*cf*ct, cf*st, 0),
-		     LorentzVector(cp*sf*ct-sp*cf,  cp*cf+sp*sf*ct, sf*st, 0),
-		     LorentzVector(-cp*st,          -sp*st,         ct,    0),
-		     LorentzVector(0,               0,              0,     1));
-}
-*/
 void Kinematics::generateAngles(double &ct, double &az) {
   ct = UseRandom::rnd()*2.0 - 1.0;  // Flat from -1..1
-  az = UseRandom::rnd()*2.0*M_PI;   // Flat from 0..2 Pi
+  az = UseRandom::rnd()*2.0*Constants::pi;   // Flat from 0..2 Pi
 }
 
 /*****

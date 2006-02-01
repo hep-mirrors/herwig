@@ -17,12 +17,8 @@
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/SmplHist.h"
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-//static SampleHistogram hist = SampleHistogram(0.0,0.5,0.001);
 
 HadronSelector::~HadronSelector() {}
 
@@ -158,8 +154,8 @@ massLightestHadron(const long id1, const long id2, const long id3) const {
       }
     }
   } else {
-    Exception() << "HadronSelector::massLightestHadron() could not set a mass."
-		<< Exception::abortnow;
+    throw Exception() << "HadronSelector::massLightestHadron() could not set a mass."
+		      << Exception::abortnow;
   }
   return mass;
 }
@@ -395,8 +391,8 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
       if(it2!=_table[flav][flav2].end()) had2 = it2->id;
       else had2 = 0;  
     } else {
-      Exception() << "HadronSelector::hw64() did not initialize idQ"
-		  << Exception::abortnow;
+      throw Exception() << "HadronSelector::hw64() did not initialize idQ"
+			<< Exception::abortnow;
     }
     
     if(had1 && had2) {
@@ -417,8 +413,8 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
     signHad1 = signHadron(id1, -signQ*idQ, had1);
     signHad2 = signHadron(id2, signQ*idQ, had2);
   } else {
-    Exception() << "HadronSelector::hw64() did not initialize signHad1/2"
-		<< Exception::abortnow;
+    throw Exception() << "HadronSelector::hw64() did not initialize signHad1/2"
+		      << Exception::abortnow;
   }
   hadPair = pair<long,long>(signHad1*had1, signHad2*had2);
   return hadPair;

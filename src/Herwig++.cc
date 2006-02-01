@@ -1,8 +1,6 @@
 #include "Herwig++/Utilities/HerwigRun.h"
 // Any headers needed for analysis go here
 
-
-
 int main(int argc, char * argv[]) {
   try {
     Herwig::HerwigRun hw(argc,argv);
@@ -17,23 +15,19 @@ int main(int argc, char * argv[]) {
 	// use (for step s)
 	// tPVector particles = hw.getFinalState(s);
 	// Then do analysis
-	std::cout << "Generated event: " << i+1 << " of " << hw.getN() << "\r" << std::flush;
+	std::cout << "Generated event: " << i+1 
+		  << " of " << hw.getN() << "\r" << std::flush;
       }
       hw.eventGenerator()->finalize();
     } else if(hw.isRunMode()) {
-      std::cout << "Error: Expecting a run but there is no EventGenerator!\n"
-		<< std::endl;
+      std::cerr << "Error: Expecting a run but there is no EventGenerator!\n";
     }
 
   }
   catch ( std::exception & e ) {
-    std::cerr << e.what() << std::endl;
+    std::cerr << e.what() << '\n';
     return 1;
   }
-  //  catch ( ... ) {
-  // std::cerr << "Unknown Exception\n";
-  //return 2;
-  //}
   std::cout << std::endl;
   return 0;
 }

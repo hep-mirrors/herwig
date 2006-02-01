@@ -79,15 +79,15 @@ void SudakovFormFactor::get_qz(bool znorm, double p, double R, Energy q0,
   z0 = q0/q;
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "SudakovFormFactor::get_qz: ==> start extreme <==" << endl;
+    CurrentGenerator::log() << "SudakovFormFactor::get_qz: ==> start extreme <==\n";
   }
 
   if ( q < q0 || z0 >= 0.5) { 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-      CurrentGenerator::log() << "  no branching! " << endl 
+      CurrentGenerator::log() << "  no branching! \n" 
 			      << "  (qmin < q0 < qmax, q, z0) = ("
 			      << qmin << " < " << q0 << " < " << qmax << ", " << q << ", " << z0
-			      << ")" << endl;
+			      << ")\n";
     }
     q = 0; 
     z = 0;     
@@ -108,15 +108,15 @@ void SudakovFormFactor::get_qz(bool znorm, double p, double R, Energy q0,
 	// generator()->log() << "FS_QtildaShowerKinematics1to2::updateChildren() "
 	CurrentGenerator::log() << "  branching: (z > z0=q0/q) =  (" 
 				<< z << " > " << z0 << ")" 
-				<< endl 
+				<< '\n' 
 				<< "  (qmin < q0 < qmax, q) = ("
 				<< qmin << " < " << q0 << " < " << qmax << ", " << q
-				<< ")" << endl;
+				<< ")\n";
       }
   }
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "SudakovFormFactor::get_qz: ==> end extreme <==" << endl;
+    CurrentGenerator::log() << "SudakovFormFactor::get_qz: ==> end extreme <==\n";
   }
 
   return; 
@@ -133,16 +133,16 @@ double SudakovFormFactor::guessz (double z0, double z1) const {
 Energy2 SudakovFormFactor::guesst(Energy2 t1, double z0, double z1,
 				  bool isInitialShower) const
 {
-//   cout << endl << sqrt(t0)/GeV << " < " 
-//        << sqrt(t1)/GeV << endl
-//        << z0 << ", " << z1 << endl
+//   cout << '\n' << sqrt(t0)/GeV << " < " 
+//        << sqrt(t1)/GeV << '\n'
+//        << z0 << ", " << z1 << '\n'
 //        << _splittingFn->integOverP(z0)
-//        << ", " << flush;
+//        << ", ";
 //   cout << _splittingFn->integOverP(z1)
-//        << endl
+//        << '\n'
 //        << _alpha->overestimateValue() << ", "
 //        << _alpha->value(sqr(91.2)*GeV2)
-//        << endl << (2.*pi) << "......." << endl;
+//        << '\n' << (2.*pi) << ".......\n";
   if(!isInitialShower) {
     return t1*pow(UseRandom::rnd(), 
 		  1./((_splittingFn->integOverP(z1) -
@@ -165,16 +165,16 @@ void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax,
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
     CurrentGenerator::log() << "SudakovFormFactor::initialize(): extreme "
 	                    << "_______________________________________"
-			    << endl
+			    << '\n'
 			    << "  called with q = " << sqrt(tmax)/GeV
 			    << " and q0 = " << sqrt(t0)/GeV << " (GeV)"
-			    << endl;
+			    << '\n';
   }
   if(tmax <= t0) {
     if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
       CurrentGenerator::log() << "  | tmax < t0! return with (sqrt(t)/GeV, z) "
 			      << "= (" << _q/GeV << ", " << _z << "),"
-			      << endl;
+			      << '\n';
     }
     _q = -1.;
   }
@@ -207,7 +207,7 @@ guessTimeLike(double &z, double &z0, double &z1, Energy2 &t, const Energy2 t0,
 			    << z0 << ", "
 			    << z << ", "
 			    << z1 << ")" 
-			    << endl; 
+			    << '\n'; 
   }
 
   // actual values for z-limits
@@ -253,7 +253,7 @@ guessSpaceLike(double &z, double &z0, double &z1, Energy2 &t,
 			    << z0 << ", "
 			    << z << ", "
 			    << z1 << ")" 
-			    << endl; 
+			    << '\n'; 
   }
 
   // actual values for z-limits
@@ -275,7 +275,7 @@ bool SudakovFormFactor::PSVeto(const double z, const double z0,
       CurrentGenerator::log() << "  X veto: not in PS: (z0, z, z1) = ("
 			      << z0 << ", "
 			      << z << ", "
-			      << z1 << ")" << endl;  
+			      << z1 << ")\n";  
     }
     return true;
   } else {
@@ -283,14 +283,14 @@ bool SudakovFormFactor::PSVeto(const double z, const double z0,
     if (glueEmits) {
       if (sqr(z*(1.-z))*t < t0) {
         if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-          CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
+          CurrentGenerator::log() << "  X veto: really not in PS\n"; 
 	}
 	return true;
       }
     } else {
       if (sqr(1.-z)*(t*sqr(z) - t0) < z*sqr(kinCutoff)) {
         if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-	  CurrentGenerator::log() << "  X veto: really not in PS" << endl; 
+	  CurrentGenerator::log() << "  X veto: really not in PS\n"; 
 	}
 	return true;
       }
@@ -306,7 +306,7 @@ bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t,
     _splittingFn->P(z, t, ids)/_splittingFn->overestimateP(z, ids);
   if(UseRandom::rnd() > ratio) { 
     if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-      CurrentGenerator::log() << "  X veto on P(z)/g(z)" << endl;
+      CurrentGenerator::log() << "  X veto on P(z)/g(z)\n";
     }
     return true;
   }
@@ -322,7 +322,7 @@ bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
 			      << "/" << _alpha->overestimateValue() 
 			      << " = " 
 			      << ratio
-			      << endl;
+			      << '\n';
     }
     return true;
   }
@@ -335,7 +335,7 @@ bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 tmin) const {
     t = -1.; 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
       CurrentGenerator::log() << "  | return with no branching, t < t0" 
-			      << endl;
+			      << '\n';
     }
     return true;
   }
@@ -365,7 +365,7 @@ bool SudakovFormFactor::PDFVeto(const double z, const Energy2 t,
   // if(ratio > factor*UseRandom::rnd()) {
   if(ratio < UseRandom::rnd()*_pdfmax) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-      CurrentGenerator::log() << "  PDFVeto true: ratio = " << ratio << endl;
+      CurrentGenerator::log() << "  PDFVeto true: ratio = " << ratio << '\n';
     }  
     return true;
   }
@@ -409,7 +409,7 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
     CurrentGenerator::log() << "Sudakov::generateNextTimeBranching(): "
 			    << "return with (q/GeV, z) = ("
-	                    << _q/GeV << ", " << _z << ")" << endl;
+	                    << _q/GeV << ", " << _z << ")\n";
   }
   _phi = 2.*pi*UseRandom::rnd();
  
@@ -463,13 +463,13 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
     else _q = -1.;
   }
   if(HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower) {
-    CurrentGenerator::log() << endl 
+    CurrentGenerator::log() << '\n' 
 			    << "Sudakov::generateNextSpaceBranching(): "
 			    << "return with (q/GeV, z) = ("
 	                    << _q/GeV << ", " << _z << ")" 
 			    << ", (z0, z1) = ("
 			    << z0 << ", " << z1 << ")"
-			    << endl;
+			    << '\n';
   }
 
   _phi = 2.*pi*UseRandom::rnd();

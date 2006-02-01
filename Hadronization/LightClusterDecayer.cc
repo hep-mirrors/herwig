@@ -342,6 +342,12 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   // Calculate the momenta of had1 and clu2 in the Sys frame first, 
   // and then boost back in the LAB frame.
   Lorentz5Momentum phad1, pclu2;
+
+  if (pSystem.m() < mhad1 + mclu2 ) {
+    throw Exception() << "Impossible Kinematics in LightClusterDecayer::reshuffling()" 
+		      << Exception::eventerror;
+  }
+  
   Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
 
   // Sanity check (normally skipped) to see if the energy-momentum is conserved.
@@ -497,6 +503,11 @@ bool LightClusterDecayer::partonicReshuffle(const long idhad,const PPtr cluster,
   // Calculate the momenta of had1 and clu2 in the Sys frame first, 
   // and then boost back in the LAB frame.
   Lorentz5Momentum phad1, pclu2;
+
+  if (pSystem.m() < mhad1 + mclu2 ) {
+    throw Exception() << "Impossible Kinematics in LightClusterDecayer::partonicReshuffle()" 
+		      << Exception::eventerror;
+  }
   Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
   ptrhad->set5Momentum( phad1 );         // set momentum of first hadron.
   ptrhad->setLabVertex(cluster->vertex()); // set hadron vertex position to the

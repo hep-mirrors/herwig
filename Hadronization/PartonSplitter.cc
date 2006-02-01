@@ -103,7 +103,7 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 						 "***Gluon on the mass shell (m=0)***", 
 						 Exception::warning) );
 	      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-		generator()->log() << "         ===>" << (**pit).momentum() << endl << endl;
+		generator()->log() << "         ===>" << (**pit).momentum() << '\n' << '\n';
 	      }
 	    }
 	}
@@ -151,6 +151,11 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
   double cosThetaStar = rnd( -1.0 , 1.0 );
   double phiStar = rnd( -pi , pi );
   Energy constituentQmass = getParticleData(newId)->constituentMass();
+
+  if (ptrGluon->momentum().m() < 2.0*constituentQmass) {
+    throw Exception() << "Impossible Kinematics in PartonSplitter::splitTimeLikeGluon()" 
+		      << Exception::eventerror;
+  }
   Kinematics::twoBodyDecay(ptrGluon->momentum(), constituentQmass, 
 			   constituentQmass, cosThetaStar, phiStar, momentumQ, 
 			   momentumQbar ); 
@@ -172,12 +177,12 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
 					 "***Violation of energy-momentum conservation***", 
 					 Exception::warning) );    
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===> g -> " << newId << " " << -newId << endl
-			   << "   diff " << diff << endl
+	generator()->log() << "         ===> g -> " << newId << " " << -newId << '\n'
+			   << "   diff " << diff << '\n'
 			   << "   " << ptrGluon->momentum() << " ---> "
-			   << ( ptrQ->momentum() + ptrQbar->momentum() ) << endl 
+			   << ( ptrQ->momentum() + ptrQbar->momentum() ) << '\n' 
 			   << " = " << ptrQ->momentum() << " + " << ptrQbar->momentum() 
-			   << endl << endl;
+			   << '\n' << '\n';
       }      
     }
   }
@@ -227,24 +232,24 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
   }
 
   generator()->log() << "PartonSplitter::debuggingInfo ===> START DEBUGGING <=== " 
-		     << "   EventNumber=" << generator()->currentEventNumber() << endl
-		     << "  INITIAL PARTONS : num = " << save_count << endl
-		     << "  NEW     PARTONS : num = " << count - save_count << endl;
+		     << "   EventNumber=" << generator()->currentEventNumber() << '\n'
+		     << "  INITIAL PARTONS : num = " << save_count << '\n'
+		     << "  NEW     PARTONS : num = " << count - save_count << '\n';
 
   /*  for ( map<tPPtr,int>::const_iterator it = orderingMap.begin(); 
 	it != orderingMap.end(); ++it ) {
     tPPtr pptr = it->first;  
     int i = it->second;  
-    generator()->log() << "  --- Parton --- " << i << endl
-		       << "\t id = " << pptr->id() << "     " << pptr->PDGName() << endl
+    generator()->log() << "  --- Parton --- " << i << '\n'
+		       << "\t id = " << pptr->id() << "     " << pptr->PDGName() << '\n'
                        << "\t masses:  constituent=" << pptr->data().constituentMass()
 		       << "  current=" << pptr->mass() 
-		       << "  invariant=" << pptr->momentum().m() << endl
-		       << "\t momentum= " << pptr->momentum() << endl
+		       << "  invariant=" << pptr->momentum().m() << '\n'
+		       << "\t momentum= " << pptr->momentum() << '\n'
                        << "\t scale=" 
                        << ( pptr->scale() > 0 ? sqrt( fabs( pptr->scale() ) ) : 
 			    - sqrt( fabs( pptr->scale() ) ) ) 
-		       <<  endl;
+		       <<  '\n';
 
     if ( pptr->final()->children() != ParticleVector() ) {
       generator()->log() << "\t Childrens :  "; 
@@ -258,7 +263,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	}
 	generator()->log() << child << "   ";	
       }
-      generator()->log() << endl;
+      generator()->log() << '\n';
     }
 
     if ( i > save_count ){            
@@ -274,7 +279,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	  if ( parentPtr ) parent = orderingMap.find( parentPtr )->second;
 	  generator()->log() << parent << "   ";	
 	}
-	generator()->log() << endl;
+	generator()->log() << '\n';
       }      
     }
 
@@ -293,7 +298,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	  } else {
 	    numLine= -999;  // Error: it shouldn't happen!
 	  }
-	  generator()->log() << numLine << endl;
+	  generator()->log() << numLine << '\n';
 	  condition = ( pptr->colourLine()->sinkNeighbours() != tColinePair() );     
 	  message = "\t *** Sink colour line :  "; 
 	  colinePair = pptr->colourLine()->sinkNeighbours();
@@ -321,7 +326,7 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	  } else {
 	    numLine= -999;  // Error: it shouldn't happen!
 	  }
-	  generator()->log() << numLine << endl;
+	  generator()->log() << numLine << '\n';
 	  condition = ( pptr->antiColourLine()->sinkNeighbours() != tColinePair() );     
 	  message = "\t *** Sink antiColour line :  "; 
 	  colinePair = pptr->antiColourLine()->sinkNeighbours();
@@ -357,23 +362,23 @@ void PartonSplitter::debuggingInfo(const tPVector & tagged, const set<tPPtr> & n
 	    generator()->log() << "  " << colineNum;
 	  }
 	}
-	generator()->log() << endl;
+	generator()->log() << '\n';
       }
     }
   } // end main for loop over orderingMap;
   */
   for(tPVector::const_iterator it = tagged.begin(); it != tagged.end(); ++it) {
-    generator()->log() << *(*it) << flush;
+    generator()->log() << *(*it);
   }
   for (set<tPPtr>::const_iterator it = newPartons.begin(); 
        it != newPartons.end(); ++it) {
-    generator()->log() << *(*it) << flush;
+    generator()->log() << *(*it);
   }
   if ( save_count == count ) {
-    generator()->log() << " \t NO New Partons " << endl;
+    generator()->log() << " \t NO New Partons \n";
   }
   
-  generator()->log() << "PartonSplitter::debuggingInfo ===> END DEBUGGING <=== " << endl;
+  generator()->log() << "PartonSplitter::debuggingInfo ===> END DEBUGGING <===" << endl;
 
 }
 

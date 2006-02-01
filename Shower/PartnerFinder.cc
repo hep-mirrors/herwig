@@ -99,7 +99,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     if(!(*cit)->data().coloured()) continue;
 //     cout << "PF: cit = " << (*cit)->id() << ", " << *cit 
 // 	 << " [" << (*cit)->colourLine() << ", " 
-// 	 << (*cit)->antiColourLine() << "]" << endl; 
+// 	 << (*cit)->antiColourLine() << "]\n"; 
     // We now have a coloured particle
     tShowerParticleVector partners;
     for(cjt = particles.begin(); cjt != particles.end(); ++cjt) {
@@ -112,25 +112,25 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 	isPartner = true;
 //       if(isPartner) cout << "  PF: cjt = " << (*cjt)->id() << ", " << *cjt 
 // 	   << " [" << (*cjt)->colourLine() << ", " 
-// 	   << (*cjt)->antiColourLine() << "]" << endl; 
+// 	   << (*cjt)->antiColourLine() << "]\n"; 
 
       if(isPartner) partners.push_back(*cjt);
     }
 
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       generator()->log() << "PartnerFinder::setQCDInitialEvolutionscales full "
-			 << "_______________________________" << endl
+			 << "_______________________________\n"
 			 << "  Initial conditions: "
 			 << (*cit) << " (" << (*cit)->id() 
 			 << ") has " << partners.size() 
-			 << " partners" << endl; 
+			 << " partners\n"; 
       if (partners.size() == 0) {
 	generator()->log() << "  No Partners among the showerParticles, " 
 			   << "looking among the remnants... "
-			   << endl << "["
+			   << '\n' << "["
 			   << (*cit)->colourLine() << ", "
 			   << (*cit)->antiColourLine() << "]" 
-			   << endl << flush;
+			   << '\n';
 	if ((*cit)->colourLine()) 
 	generator()->log() << "  colourLine->startParticle, endParticle = " 
 			   << (*cit)->colourLine()->startParticle() << "("
@@ -139,7 +139,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 			   << (*cit)->colourLine()->endParticle() << "("
 			   << (*cit)->colourLine()->endParticle()->id() 
 			   << "), "
-			   << endl << flush;
+			   << '\n';
 	if ((*cit)->antiColourLine()) 
 	  generator()->log() << "  antiColourLine->startParticle, "
 			     << "endParticle = " 
@@ -148,7 +148,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 			     << (*cit)->antiColourLine()->startParticle()->id() << "), "
 			     << (*cit)->antiColourLine()->endParticle() << "("
 			     << (*cit)->antiColourLine()->endParticle()->id() << ")" 
-			     << endl << flush;
+			     << '\n';
       }
     }
     if (partners.empty()) {
@@ -199,7 +199,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
       for(unsigned int i = 0; i < partners.size(); i++) {
 	generator()->log() << "  found partner by hand: " 
-			   << partners[i] << endl;
+			   << partners[i] << '\n';
       }
     }
   }
@@ -227,7 +227,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
 	generator()->log() << "  calculate initial evolution scales of " 
 			   << it->first->id() 
-			   << " " << it->second[position]->id() << endl;
+			   << " " << it->second[position]->id() << '\n';
       }
       pair<Energy,Energy> pairScales = 
 	calculateInitialEvolutionScales(ShowerPPair(it->first, 
@@ -268,7 +268,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "PartnerFinder::debuggingInfo full ______________________________________________" << endl;
+    generator()->log() << "PartnerFinder::debuggingInfo full ______________________________________________\n";
     // To have a nice output, it is convenient to define two maps.
     // One numbers the ShowerParticles objects from 1; the other,
     // numbers the ShowerColourLine object from 501 (just to avoid
@@ -316,14 +316,14 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
 	}
 	generator()->log() << "\t" << "Particle number = " << numShoParticle  
 	                   << "   PDGName= " << (*cit)->data().PDGName() 
-			   << ( (*cit)->isFinalState() ? "   OUT" : "   IN" ) << endl
-                           << "\t \t ColourLine number     = " << numShoColine << endl 
-                           << "\t \t antiColourLine number = " << numShoAntiColine << endl 
-                           << "\t \t Partner = " << numShoPartner << endl; 
+			   << ( (*cit)->isFinalState() ? "   OUT" : "   IN" ) << '\n'
+                           << "\t \t ColourLine number     = " << numShoColine << '\n' 
+                           << "\t \t antiColourLine number = " << numShoAntiColine << '\n' 
+                           << "\t \t Partner = " << numShoPartner << '\n'; 
       }
     }
     generator()->log() << "PartnerFinder::debuggingInfo "
-		       << "end ___________________________________" << endl;
+		       << "end ___________________________________\n";
   }
   // isOK currently is always true
   //  return isOK;
@@ -515,14 +515,14 @@ calculateFinalFinalScales(const ShowerPPair &particlePair,
 
   // Debugging
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {    
-    generator()->log() << "PartnerFinder::calculateInitialEvolutionScales full ____________________________" << endl
+    generator()->log() << "PartnerFinder::calculateInitialEvolutionScales full ____________________________\n"
 		       << "\t first:   " << particlePair.first->data().PDGName() 
-                       << "\t p = " << particlePair.first->momentum() << endl
+                       << "\t p = " << particlePair.first->momentum() << '\n'
 		       << "\t second:  " << particlePair.second->data().PDGName() 
-                       << "\t p = " << particlePair.second->momentum() << endl
+                       << "\t p = " << particlePair.second->momentum() << '\n'
       //    << "\t angle = " << angle 
 		       << "\t firstQ = " << firstQ / GeV 
-		       << " GeV, secondQ = " << secondQ / GeV << " GeV " << endl;
+		       << " GeV, secondQ = " << secondQ / GeV << " GeV \n";
   }
   
   return pair<Energy,Energy>(firstQ, secondQ);

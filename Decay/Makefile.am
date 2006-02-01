@@ -18,6 +18,5 @@ DecayPhaseSpaceMode.cc DecayPhaseSpaceMode.fh \
 DecayPhaseSpaceMode.h DecayPhaseSpaceMode.icc \
 HwDecayerBase.cc HwDecayerBase.fh HwDecayerBase.h HwDecayerBase.icc \
 HwDecayHandler.cc HwDecayHandler.h HwDecayHandler.icc \
-Kinematics.cc Kinematics.h Kinematics.icc \
 ThreeBodyIntegrator.cc ThreeBodyIntegrator.fh \
 ThreeBodyIntegrator.h ThreeBodyIntegrator.icc

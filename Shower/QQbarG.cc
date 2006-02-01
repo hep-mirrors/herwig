@@ -1,9 +1,8 @@
 #include "QQbarG.h"
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <ThePEG/Repository/UseRandom.h>
 
-#define sqr(x) ((x)*(x))
-#define EPS 0.00000001
+const double EPS=0.00000001;
 
 using namespace Herwig;
 
@@ -12,7 +11,6 @@ QQbarG::QQbarG(Energy Q, Energy m) {
   d_m = m;
   setRho(sqr(d_m/d_Q));
   setKtildeSymm();
-  std::srand(1); 
 }
 
 QQbarG::QQbarG(Energy Q, Energy m, double k) {
@@ -206,15 +204,15 @@ double QQbarG::qbarWeightX(Energy qtilde, double z) {
 }
 
 double QQbarG::getHard(double &x1, double &x2) {
-  //  x1 = drand48(); 
-  //  x2 = drand48(); 
+  //  x1 = UseRandom::rnd(); 
+  //  x2 = UseRandom::rnd(); 
   double w = 0.0;
   // map soft corner to origin:  
   // double y1 = 1.-x1; 
   // double y2 = 1.-x2; 
   // this is equivalent to previous...
-  double y1 = drand48(); 
-  double y2 = drand48(); 
+  double y1 = UseRandom::rnd(); 
+  double y2 = UseRandom::rnd(); 
   // simply double MC efficiency 
   // -> weight has to be divided by two (Jacobian)
   if (y1 + y2 > 1) {
@@ -270,7 +268,7 @@ double QQbarG::getHard(double &x1, double &x2) {
 vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
   double x, xbar; 
   vector<Lorentz5Momentum> fs; 
-  if (getHard(x, xbar) < drand48() || p.size() != 2) {
+  if (getHard(x, xbar) < UseRandom::rnd() || p.size() != 2) {
     return fs; 
   } else {
     Lorentz5Momentum pcm = p[0]->momentum() + p[1]->momentum(); 
@@ -306,7 +304,7 @@ vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
     Energy e1, e2, e3; 
     double pp1, pp2, pp3;
     bool keepq = true; 
-    if (drand48() > sqr(x)/(sqr(x)+sqr(xbar))) 
+    if (UseRandom::rnd() > sqr(x)/(sqr(x)+sqr(xbar))) 
       keepq = false; 
     if (keepq) {
       pp1 = d_Q*sqrt(sqr(x)-4.*d_rho)/2.;
@@ -341,8 +339,8 @@ vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
 	touched = true;
       }
       if (!touched) {
-	Exception() << "QQbarG::applyHard() did not set ct2/3" 
-		    << Exception::abortnow;
+	throw Exception() << "QQbarG::applyHard() did not set ct2/3" 
+			  << Exception::abortnow;
       }
     } else {
       ct3 = (sqr(pp1)+sqr(pp3)-sqr(pp2))/(2.*pp1*pp3);
@@ -354,7 +352,7 @@ vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
 // 	 << ", e22-p22 = " << sqrt(sqr(e2)-sqr(pp2)) << endl
 // 	 << "  p3 = " << pp3 << ", e3 = " << e3 
 // 	 << ", e32-p32 = " << sqrt(sqr(e3)-sqr(pp3)) << endl; 
-    double phi = 2.*pi*drand48();
+    double phi = 2.*pi*UseRandom::rnd();
     double cphi = cos(phi);
     double sphi = sin(phi); 
     double st2 = sqrt(1.-sqr(ct2));
@@ -404,7 +402,3 @@ vector<Lorentz5Momentum> QQbarG::applyHard(const PVector &p) {
   }
   return fs;   
 }
-
-
-
-#undef EPS

@@ -147,11 +147,11 @@ void Remnant::regenerate(tPPtr extracted,Lorentz5Momentum ptotal)
 
 void Remnant::createRemnant(tStepPtr pstep)
 {
-  cout << "testing in create remnant" << endl;
+  cout << "testing in create remnant\n";
   for(unsigned int ix=0;ix<_valence.size();++ix)
-    {cout << "testing valence " << ix << " " << _valence[ix] << endl;}
+    {cout << "testing valence " << ix << " " << _valence[ix] << '\n';}
   for(unsigned int ix=0;ix<_constituents.size();++ix)
-    {cout << "testing consitituents " << _constituents[ix]->PDGName() << endl;}
+    {cout << "testing consitituents " << _constituents[ix]->PDGName() << '\n';}
   // if only one constituent just add it
   if(_constituents.size()==1)
     {
@@ -168,19 +168,19 @@ void Remnant::createRemnant(tStepPtr pstep)
   // if two constituents
   else if(_constituents.size()==2)
     {
-      cerr << "Remnant::createRemnant() testing two constituents " << _extracted << endl;
+      cerr << "Remnant::createRemnant() testing two constituents " << _extracted << '\n';
       exit(1);
     }
   else if(_constituents.size()==3)
     {
-      cerr << "Remnant::createRemnant() testing three constituents " << _extracted << endl;
+      cerr << "Remnant::createRemnant() testing three constituents " << _extracted << '\n';
       // first we need a forced splitting of the 
 
       exit(1);
     }
   else
     {
-      cerr << "Remnant::createRemnant() testing #constituents != 1,2 or 3 " << _extracted << endl;
+      cerr << "Remnant::createRemnant() testing #constituents != 1,2 or 3 " << _extracted << '\n';
       exit(1);
     }
 }
@@ -317,8 +317,8 @@ void Remnant::createRemnant(tStepPtr pstep)
 //     }
 //     // set remnant. 
 //     tPPtr hadron;
-// //     cout << part << endl << flush
-// // 	 << part->parents().size() << flush << endl;
+// //     cout << part << '\n' 
+// // 	 << part->parents().size()  << '\n';
 //     if(part->parents().size() == 1) hadron = part->parents()[0];
 
 //     // First decide what the remnant is
@@ -438,7 +438,7 @@ void Remnant::createRemnant(tStepPtr pstep)
 //   Lorentz5Momentum p, n, pthis, ppartner, pcm;
 //   if(particle.isFromHardSubprocess()) {
 // //     pthis = particle.momentum();
-// //     cout << "parent is " << particle.parents()[0]->id() << endl;
+// //     cout << "parent is " << particle.parents()[0]->id() << '\n';
 // //     ppartner = particle.partners()[ShowerIndex::QCD]->momentum();
 // //     pcm = pthis; 
 // //     pcm.boost((pthis + ppartner).findBoostToCM());	  

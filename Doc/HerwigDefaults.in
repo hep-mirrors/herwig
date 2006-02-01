@@ -1,0 +1,27 @@
+# output interfaces for documentation
+# the following need to come first
+library HwWeakCurrents.so
+library HwTVertex.so
+library HwSMVertex.so
+#
+library Hw64Decay.so
+library HwAnalysis.so
+library HwBaryonDecay.so
+library HwForcedSplitting.so
+library HwFormFactors.so
+library HwLEPAnalysis.so
+library HwMamboDecay.so
+library HwME.so
+library HwMRST.so
+library HwPartonicDecay.so
+library HwPerturbativeDecay.so
+library HwRSModel.so
+library HwRSVertex.so
+library HwShower.so
+library HwSMDecay.so
+library HwTauDecay.so
+library HwTMDecay.so
+library HwUA5.so
+library HwVMDecay.so
+
+doxygendump Herwig++:: AllInterfaces.h

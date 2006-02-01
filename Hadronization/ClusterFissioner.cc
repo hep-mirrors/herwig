@@ -520,6 +520,11 @@ void ClusterFissioner::calculateKinematics(const Lorentz5Momentum & pClu,
   // Calculate the momenta of C1 and C2 in the (parent) C frame first, 
   // where the direction of C1 is u.vect().unit(), and then boost back in the 
   // LAB frame.
+
+  if (pClu.m() < pClu1.mass() + pClu2.mass() ) {
+    throw Exception() << "Impossible Kinematics in ClusterFissioner::calculateKinematics() (A)" 
+		      << Exception::eventerror;
+  }
   Kinematics::twoBodyDecay(pClu, pClu1.mass(), pClu2.mass(), 
 			   u.vect().unit(), pClu1, pClu2);
 
@@ -528,7 +533,11 @@ void ClusterFissioner::calculateKinematics(const Lorentz5Momentum & pClu,
   // (parent) C1 frame first, where the direction of Q1 is u.vect().unit(), 
   // and then boost back in the LAB frame. 
   if(!toHadron1) {
-    Kinematics::twoBodyDecay(pClu1, pQ1.mass(), pQ.mass(), 
+    if (pClu1.m() < pQ1.mass() + pQbar.mass() ) {
+      throw Exception() << "Impossible Kinematics in ClusterFissioner::calculateKinematics() (B)" 
+			<< Exception::eventerror;
+    }
+    Kinematics::twoBodyDecay(pClu1, pQ1.mass(), pQbar.mass(), 
 			     u.vect().unit(), pQ1, pQbar);
   }
 
@@ -537,6 +546,10 @@ void ClusterFissioner::calculateKinematics(const Lorentz5Momentum & pClu,
   // (parent) C2 frame first, where the direction of Q is u.vect().unit(), 
   // and then boost back in the LAB frame. 
   if(!toHadron2) {
+    if (pClu2.m() < pQ.mass() + pQ2bar.mass() ) {
+      throw Exception() << "Impossible Kinematics in ClusterFissioner::calculateKinematics() (C)" 
+			<< Exception::eventerror;
+    }
     Kinematics::twoBodyDecay(pClu2, pQ.mass(), pQ2bar.mass(), 
 			     u.vect().unit(), pQ, pQ2bar);
   }

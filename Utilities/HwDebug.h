@@ -2,7 +2,6 @@
 
 #ifndef HERWIG_HwDebug_H
 #define HERWIG_HwDebug_H
-#include "Herwig++/Utilities/SmplHist.h"
 
 namespace Herwig {
 
@@ -115,16 +114,17 @@ namespace Herwig {
      */
     static int level;
 
-    static SampleHistogram lambda1Histo;
-    static SampleHistogram lambda2Histo;
-    static SampleHistogram lambda3Histo;
-    static SampleHistogram CparameterHisto;
-    static SampleHistogram DparameterHisto;
-    static SampleHistogram multiplicityHisto;
-    static SampleHistogram multHist1;
-    static SampleHistogram multHist2;
-    static SampleHistogram multHist3;
-
+    
+//     static SampleHistogram lambda1Histo;
+//     static SampleHistogram lambda2Histo;
+//     static SampleHistogram lambda3Histo;
+//     static SampleHistogram CparameterHisto;
+//     static SampleHistogram DparameterHisto;
+//     static SampleHistogram multiplicityHisto;
+//     static SampleHistogram multHist1;
+//     static SampleHistogram multHist2;
+//     static SampleHistogram multHist3;
+    
   };
 
 }

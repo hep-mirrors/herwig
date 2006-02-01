@@ -102,7 +102,7 @@ bool Evolver::showerNormally(tEHPtr ch,
     generator()->log() << "Evolver::showerNormally(): Evt #" 
       		       << generator()->currentEventNumber() 
 		       << " ________________________________________" 
-		       << endl;
+		       << '\n';
   }
 
   // Set the initial evolution scales
@@ -132,7 +132,7 @@ bool Evolver::showerNormally(tEHPtr ch,
 	    it != particlesToShower.end(); ++it ) {
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	  generator()->log()  << "  calling backwardsEvolver with " 
-			      << *it << endl;
+			      << *it << '\n';
 	}
 	int status =
 	  _backwardEvolver->spaceLikeShower(ch, showerVariables, 
@@ -146,21 +146,21 @@ bool Evolver::showerNormally(tEHPtr ch,
   }
 
   if (!showerOK) {
-    //    cerr << "Evolver::showerNormally: !showerOK from spaceLikeShower, will return false." << endl;
+    //    cerr << "Evolver::showerNormally: !showerOK from spaceLikeShower, will return false.\n";
     return false;
   }
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "  Successful reconstruction of IS shower!" << endl;
+    generator()->log() << "  Successful reconstruction of IS shower!\n";
     for(cit = particles.begin(); cit != particles.end(); ++cit) {
       if ((*cit)->isFromHardSubprocess()) 
 	generator()->log() << (*cit)->id() << " " 
-			   << (*cit)->momentum() << endl;
+			   << (*cit)->momentum() << '\n';
     }
   }
 
   makeRemnants(particles);
-  //  cerr << "before setQCDInitialEvolutionScales." << endl;
+  //  cerr << "before setQCDInitialEvolutionScales.\n";
   //   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
   //     _partnerFinder->setQCDInitialEvolutionScales(showerVariables, particles);
   //   }
@@ -179,7 +179,7 @@ bool Evolver::showerNormally(tEHPtr ch,
       }
 // has to be switched on for e+e-!
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log()  << "  Resetting partners..." << endl;
+	generator()->log()  << "  Resetting partners...\n";
       }
       if(_splittingGenerator->isInteractionON(ShowerIndex::QCD)) {
 	_partnerFinder->setQCDInitialEvolutionScales(showerVariables, 
@@ -187,12 +187,12 @@ bool Evolver::showerNormally(tEHPtr ch,
       }
       
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "FS shower loop... " << flush << endl;
+	generator()->log() << "FS shower loop... \n";
       }
       for(cit = particlesToShower.begin(); 
 	  cit != particlesToShower.end(); ++cit) {
 	//cout << (*cit)->id() << ", " << *cit << " " 
-	//     << (*cit)->momentum()/GeV << flush << endl;
+	//     << (*cit)->momentum()/GeV  << '\n';
 
 	// ### temporary workaround to fix crash bug with ISR/FSR on
 	// ### if statements shd be removed once SLS/TLS handover is okay
@@ -206,7 +206,7 @@ bool Evolver::showerNormally(tEHPtr ch,
 	}
       }
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	generator()->log() << "...FS shower complete." << endl << flush;
+	generator()->log() << "...FS shower complete.\n" ;
       }
       if(!skipKinReco) reconstructed = reconstructKinematics( ch );
       else reconstructed = true;     
@@ -227,13 +227,13 @@ void Evolver::showerDecay(tEHPtr ch,
     generator()->log() << "Evolver::showerDecay "
 		       << " ===> START DEBUGGING <=== "
 		       << "   EventNumber=" << generator()->currentEventNumber() 
-		       << endl;
+		       << '\n';
   }
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "Evolver::showerDecay "
 		       << " ===> END DEBUGGING <=== " 
-		       << endl;
+		       << '\n';
   }
 
 }
@@ -251,13 +251,13 @@ void Evolver::showerGlobally(tEHPtr & ch,
 		       << " ===> START DEBUGGING <=== "
 		       << "    EventNumber=" 
 		       << generator()->currentEventNumber() 
-		       << endl;
+		       << '\n';
   }
 
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "Evolver::showerGlobally "
 		       << " ===> END DEBUGGING <=== " 
-		       << endl;
+		       << '\n';
   }
 
 }
@@ -271,7 +271,7 @@ void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
 //     generator()->log() << "Evolver::setEffectiveGluonMass "
 // 		       << " ===> START DEBUGGING <=== "
 // 		       << "   EventNumber=" << generator()->currentEventNumber() 
-// 		       << endl;
+// 		       << '\n';
 //   }
 
   for(ShowerParticleVector::const_iterator pit = particles.begin(); 
@@ -300,7 +300,7 @@ void Evolver::setEffectiveGluonMass( const Energy effectiveGluonMass,
 //   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 //     generator()->log() << "Evolver::setEffectiveGluonMass "
 // 		       << " ===> END DEBUGGING <=== " 
-// 		       << endl;
+// 		       << '\n';
 //   }
 
 }

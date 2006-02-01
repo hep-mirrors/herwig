@@ -72,6 +72,12 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
        mtemp=dm.orderedProducts()[ix]->massGenerator();
        if(mtemp){massgen[ix]=dynamic_ptr_cast<tcGenericMassGeneratorPtr>(mtemp);}
      }
+   // check not decaying a massless particle
+   if(p.mass() < 0.000001) {
+     generator()->log() << "HwDecayer called on a particle with no mass " 
+			<< p.PDGName() << ", " << p.mass() << endl;
+     throw Veto();
+   }
    // throw a veto if not kinematically possible
    if(minmass>p.mass()&&numProds!=1)
      {
@@ -79,14 +85,10 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 			  << " for this particle instance as the minimum mass of "
 			  << "the decay products exceeds the mass of the particle"
 			  << endl;
+       generator()->log() << minmass << ' ' << p.mass() << endl;
        throw Veto();
      }
-   // check not decaying a massless particle
-   if(p.mass() < 0.000001) {
-     generator()->log() << "HwDecayer called on a particle with no mass " 
-			<< p.PDGName() << ", " << p.mass() << endl;
-     throw Veto();
-   }
+
    // Create a vectors for momenta and masses
    vector<Lorentz5Momentum> products(numProds);
    vector<Energy> masses(numProds);
@@ -148,7 +150,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
             CosAng = Math::absmax<double>(UseRandom::rnd(), 
 		           Math::absmax<double>(UseRandom::rnd(),  UseRandom::rnd()))*2.0 - 1.0;
          } else if() {
-            CosAng = 2.0*cos((acos(UseRandom::rnd()*2.0-1.0)+M_PI)/3.0);
+            CosAng = 2.0*cos((acos(UseRandom::rnd()*2.0-1.0)+Constants::pi)/3.0);
          } else {
             CosAng = Math::absmin<double>(UseRandom::rnd(),
                            Math::absmin<double>(UseRandom::rnd(),  UseRandom::rnd()))*2.0 - 1.0;

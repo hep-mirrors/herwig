@@ -208,7 +208,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   } while(partons[0] != ';' && partons.size());
   SudakovPtr s;
   s = dynamic_ptr_cast<SudakovPtr>(Repository::TraceObject(sudakov));
-  if(!s) cerr << "Error: Could not load Sudakov " << sudakov << endl;
+  if(!s) cerr << "Error: Could not load Sudakov " << sudakov << '\n';
   IdList ids;
   ids.push_back(parent->id());
   for(vector<tPDPtr>::iterator it = products.begin(); it!=products.end(); ++it)
@@ -221,7 +221,7 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 		                                     ShowerParticle &particle,
 						     const bool reverseAngOrd) const {
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-    generator()->log() << "SplittingGenerator::chooseForwardBranching(): full _____________________________" << endl; 
+    generator()->log() << "SplittingGenerator::chooseForwardBranching(): full _____________________________\n";
   }
   
   Energy newQ = Energy();
@@ -258,7 +258,7 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 			       << particle.evolutionScales()[i]/MeV
 			       << " -> " 
 			       << (candidateNewQ/MeV > 0 ? candidateNewQ/MeV : 0)
-			       << ") MeV"  << endl;
+			       << ") MeV\n";
       }	  
       // won't work for reverse angluar ordering as newQ=0. at initialization
       // NOTE: PJS - must check with stefan to find what newQ should be
@@ -287,9 +287,9 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 			 << particle.evolutionScales()[sudakov->interactionType()]/MeV 
 			 << " -> " 
 			 << (newQ/MeV > 0 ? newQ/MeV : 0)
-			 << ") MeV"  << endl;    
+			 << ") MeV\n";
     } else 
-      generator()->log() << " won't branch." << endl; 
+      generator()->log() << " won't branch.\n";
   }
 
 
@@ -309,9 +309,9 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
       
       bool fromHard = particle.isFromHardSubprocess();
 //       cerr << particle.parents()[0]
-// 	   << endl; 
+// 	   << '\n'; 
 //       cerr << dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
-// 	   << endl; 
+// 	   << '\n'; 
       
       ShowerParticlePtr partest = dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0]); 
 
@@ -325,19 +325,19 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
  	   << (fromHard ? "y":"n") << ", " 
  	   << (parentHas ? "y":"n") << ", "
  	   << (siblingHas ? "y":"n") << ", " 
- 	   << (initiatesTLS ? "y":"n") << endl;
+ 	   << (initiatesTLS ? "y":"n") << '\n';
       }
 //       if (!(parentHas || fromHard) && siblingHas) {
-// 	cout << "Partner..." << endl;
+// 	cout << "Partner...\n";
 // 	cout << particle.partners()[splitFun->interactionType()] << ", "
 // 	     << particle.partners()[splitFun->interactionType()]->id()
 // 	     << particle.partners()[splitFun->interactionType()]->momentum()
-// 	     << endl; 
+// 	     << '\n'; 
 //    }
 
       if(splitFun) {	  
 	
-	//	cerr << "B" << endl;
+	//	cerr << "B\n";
 	Lorentz5Momentum p, n, ppartner, pcm;
 	double th;
 	Energy nnorm;
@@ -362,13 +362,13 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 	  // n = Lorentz5Momentum( 2000.0, 3000.0, -1000.0, sqrt(14.)*1000.0); 
 	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
 	    generator()->log() << "  chosen normalization = " << nnorm 
-			       << ", theta = " << th << endl 
-			       << "  with p_partner = " << ppartner << endl
-			       << "  and    p in cm = " << pcm << endl;
+			       << ", theta = " << th 
+			       << "\n  with p_partner = " << ppartner
+			       << "\n  and    p in cm = " << pcm << '\n';
 	  }
 	} else {
 
-	  //	  cerr << "A" << endl;	              
+	  //	  cerr << "A\n";
 	  //for(tParticleSet::const_iterator cit = particle.siblings().begin(); 
 	  //    cit != particle.siblings().end(); cit++) {
 	  //  cout << (*cit)->id() << ", ";
@@ -380,14 +380,13 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 	} 
 
 
-	//	cerr << "C" << endl;
+	//	cerr << "C\n";
   
 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  generator()->log() << "  create ShowerKinematics with " 
-			     << endl 
-			     << "  p = " << p << endl 
-			     << "  n = " << n << endl;
+	  generator()->log() << "  create ShowerKinematics with\n" 
+			     << "  p = " << p
+			     << "\n  n = " << n << '\n';
 	}
 
 	Ptr<FS_QtildaShowerKinematics1to2>::pointer showerKin = 
@@ -400,7 +399,7 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
 	showerKin->phi(newPhi);
 
 // 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-// 	  generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________" << endl; 
+// 	  generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________\n";
 // 	}
 
 	return Branching(showerKin, sudakov, ids);
@@ -409,7 +408,7 @@ Branching SplittingGenerator::chooseForwardBranching(tEHPtr ch,
   }
   
 //   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-//     generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________" << endl; 
+//     generator()->log() << "SplittingGenerator::chooseForwardBranching(): end full _________________________\n";
 //   }
   return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
 
@@ -428,11 +427,11 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
   double x = particle.x();
   if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
     generator()->log() << "  Called cBB with " << &particle << ", id = " 
-       << particle.id() << " and x = " << x << endl;
+       << particle.id() << " and x = " << x << '\n';
   }
   if(_bbranchings.find(index) == _bbranchings.end()) {
     if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-      generator()->log() << "  no branchings..." << endl;
+      generator()->log() << "  no branchings...\n";
     }
     return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
   }
@@ -446,13 +445,14 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
       // the beam particle. If this isn't the case, we must be
       // backward evolving for a decay shower. In that case give a null
       // pdf pointer
-//       cout << "A " << flush;
+//       cout << "A ";
 //       cout << "particle.parents().size() = " << particle.parents().size()
-// 	   << flush << endl;
+// 	   << endl;
 //       cout << ", particle.parents()[0] = " 
-// 	   << particle.parents()[0] << flush << endl;
-//      cerr << "A" << endl;
-//      cerr << "particle.parents().size() " << particle.parents().size() << endl;
+// 	   << particle.parents()[0] << endl;
+//      cerr << "A\n";
+//      cerr << "particle.parents().size() " 
+//           << particle.parents().size() << '\n';
    
       // at least should be outside loop perhaps even outside function
       // and in backward evolver
@@ -470,8 +470,7 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
 			   << cit->second.second[1] << ","
 			   << cit->second.second[2] << ";"
 			   << " Q = " << particle.evolutionScales()[i]/GeV 
-			   << flush
-			   << endl;
+			   << '\n';
       }
       candidateNewQ = candidateSudakov->
         generateNextSpaceBranching(particle.evolutionScales()[i],
@@ -479,7 +478,7 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
       if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	generator()->log() << "  found Splitting with q = " 
 			   << candidateNewQ/GeV 
-			   << " [GeV]" << flush << endl;
+			   << " [GeV]\n";
       }
       if(candidateNewQ > newQ) {
 	newQ = candidateNewQ;
@@ -524,13 +523,13 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
 	    ->showerKinematics()->getBasis()[1];
 	} 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-	  generator()->log() << "  create ShowerKinematics with " 
-			     << endl 
-			     << "  p = " << p << endl 
-			     << "  n = " << n << endl;
+	  generator()->log() << "  create ShowerKinematics with\n" 
+			     << "  p = " << p
+			     << "\n  n = " << n << '\n';
 	}
 
-	Ptr<IS_QtildaShowerKinematics1to2>::pointer showerKin = new_ptr(IS_QtildaShowerKinematics1to2(p, n));
+	Ptr<IS_QtildaShowerKinematics1to2>::pointer 
+	  showerKin = new_ptr(IS_QtildaShowerKinematics1to2(p, n));
 
         showerKin->qtilde(newQ);
         showerKin->setResScale(sudakov->resScale());
@@ -540,10 +539,10 @@ Branching SplittingGenerator::chooseBackwardBranching(tEHPtr ch,
 
 	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
 	  generator()->log() << "cBB found branching, shoKin = "
-			     << showerKin << endl
-			     << "  Q = " << newQ/GeV 
+			     << showerKin
+			     << "\n  Q = " << newQ/GeV 
 			     << ", z = " << newZ 
-			     << ", phi = " << newPhi << endl;
+			     << ", phi = " << newPhi << '\n';
 	}
 	return Branching(showerKin, sudakov, ids);
 
@@ -598,16 +597,16 @@ tSplittingFnPtr SplittingGenerator::getSplittingFunction(long id1, long id2,
 void SplittingGenerator::debuggingInfo() {
 
   generator()->log() << "SplittingGenerator::debuggingInfo() begin"
-		     << " ______________________________________" << endl; 
+		     << " ______________________________________\n";
   generator()->log() << "  no of initialized Sudakov FF's = " 
 		     << _fbranchings.size() << endl
-		     << "  id\t" << "int\t" << "timeFlag" << endl;
+		     << "  id\t" << "int\t" << "timeFlag\n";
   for(BranchingList::const_iterator cit = _fbranchings.begin();
       cit != _fbranchings.end(); ++cit) {
     generator()->log() << "  " << cit->first
 		       << "\t" << cit->second.first->splittingFn()->interactionType()
       //	       << "\t" << cit->first.timeFlag 
-		       << endl;
+		       << '\n';
   }
 
   //  generator()->log() << "SplittingGenerator::debuggingInfo() end ________________________________________" << endl; 

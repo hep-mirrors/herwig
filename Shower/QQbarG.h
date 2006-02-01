@@ -1,5 +1,5 @@
-#ifndef _QQBARG_H_
-#define _QQBARG_H_
+#ifndef QQBARG_H
+#define QQBARG_H
 #include "ShowerConfig.h"
 #include "ShowerParticle.h"
 //#include "ThePEG/Repository/UseRandom.h"
