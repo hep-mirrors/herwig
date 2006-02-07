@@ -135,7 +135,8 @@ void ShowerHandler::cascade() {
   bool keepTrying = true;
   
   // tie in hard corrections here
-  if(_showerVariables->hardMEC()) hardMEC(ch);
+  if(_showerVariables->hardMEC() && spl->isFSRadiationON(ShowerIndex::QCD)) 
+    hardMEC(ch);
 
   // even more cleaning... ***ACHTUNG*** find something much, much
   // more sophisticated to save old properties. In particular for

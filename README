@@ -1,29 +1,83 @@
-The new README content will appear here soon. 
+=================
+HERWIG++ 2.0-beta
+=================
 
+This is the beta release of Herwig++-2.0, a multi purpose event
+generator for high energy physics.
 
-Herwig++ contains an adapted version of LoopTools
+The main  new  feature is the extension of the program to include
+simple hadron-hadron processes including the initial-state parton shower. 
+
+The Herwig++ distribution contains an adapted version of LoopTools
 <http://www.feynarts.de/looptools/>. 
 
-Here's the old README: 
+Please contact <David.Grellscheid@durham.ac.uk> to be added to our
+list of users. This will allow you to make full use of the Wiki and
+bug tracker at http://hepforge.cedar.ac.uk/herwig/bugtrack/
+
+BUILD AND INSTALL
+=================
+Generic installation instructions are in the file INSTALL.
+
+Before attempting to build Herwig++, you'll need to get CLHEP and ThePEG
+installed, too.
+
+-----
+CLHEP
+-----
+
+If not installed already on your system, download CLHEP from 
+http://wwwasd.web.cern.ch/wwwasd/lhc++/clhep/INSTALLATION/clhep-1.9.html
+
+Any version after 1.9.1.1 will do. Do not build this package inside
+the Herwig++ source directory!
+
+$ tar xzvf clhep-2.0.?.?.tgz
+$ mkdir clhep-build
+$ cd clhep-build
+$ ../2.0.?.?/CLHEP/configure --prefix=/path/where/CLHEP/should/be/installed
+$ make
+$ make check
+$ make install
+
+------
+ThePEG
+------
+
+Download ThePEG, snapshot 2006-01-31 or later from 
+http://hepforge.cedar.ac.uk/herwig/.
+ 
+Do not build this package inside the Herwig++ source directory!
+
+$ export CLHEPPATH=/path/where/CLHEP/was/installed
+$ tar xzvf ThePEG-*.tar.gz
+$ cd ThePEG*
+$ ./configure --prefix=/path/where/ThePEG/should/be/installed
+$ make
+$ make check
+$ make install
+
+If 'make check' cannot find the libCLHEP library, set LD_LIBRARY_PATH
+to include the path where libCLHEP was installed. On a bash shell, this will do
+it:
+
+$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CLHEPPATH/lib
+
+--------
+Herwig++
+--------
+
+Download Herwig++, then
+
+$ export CLHEPPATH=/path/where/CLHEP/was/installed
+$ export THEPEGPATH=/path/where/ThePEG/was/installed
+$ tar xzvf Herwig++-*.tar.gz
+$ cd Herwig++*
+$ ./configure --prefix=/path/where/Herwig++/should/be/installed
+$ make
+$ make check
+$ make install
 
 
-This is a prerelease of Herwig++ for e+e- collisions.  This version is
-only distributed for tutorial purposes during the workshop
-Monte Carlo Tools for the LHC (CERN, July 2003). 
-
-DO NOT USE IT FOR SERIOUS PHYSICS STUDIES! 
-
-What you need:
-==============
-- Linux operating system;
-- GNU C/C++ compiler  gcc > 3.2, see
-  http://www.gnu.org/directory/gcc.html
-- CLHEP version 1.8.0.0  or higher. See
-  http://wwwasd.web.cern.ch/wwwasd/lhc++/clhep/DISTRIBUTION/clhep.html
-- ThePEG v1.0 (alpha release) 
-  http://www.thep.lu.se/ThePEG/>ThePEG
-
-See INSTALL for installation instructions. 
-
-Philip Stephens, Stefan Gieseke (21 July 2003)
-
+More detailed instructions can be found on the Herwig++ home page at
+http://hepforge.cedar.ac.uk/herwig/bugtrack/wiki/HerwigInstallation

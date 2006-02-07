@@ -11,14 +11,13 @@ set theGlobalParameters:MinVirtuality2 0.1*GeV2
 set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
 #
 cd /Defaults/Generators
-set LEPGenerator:NumberOfEvents 1000000
+set LEPGenerator:NumberOfEvents 100000000
 set LEPGenerator:RandomNumberGenerator:Seed 31122001
 set LEPGenerator:DebugLevel 1
 set LEPGenerator:PrintEvent 1000
-set LEPGenerator:MaxErrors 100
+set LEPGenerator:MaxErrors 10000
 set LEPGenerator:Strategy /Defaults/ThePEGStrategy
 set LEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
-set /Defaults/Particles/Z0:NominalMass 92
 #
 saverun LEP LEPGenerator
 

@@ -1,1 +1,3 @@
-.deps .libs *.lo *.la Makefile Makefile.in
+.cvsignore .svn Makefile
+*.lo *.la .libs .deps
+Makefile.in

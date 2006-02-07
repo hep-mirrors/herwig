@@ -1,3 +1,20 @@
+2006-02-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* configure.ac, README, AUTHORS: Last updates, tagged and
+	published as Herwig++-2.0-beta release. Merged release branch into
+	main up until tag herwig-2-0-beta
+	
+2006-02-03  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* MatrixElement/MEqq2W2ll.cc: Bugfix for unititialized
+	variable. Solves imbalance between W+ and W-.
+
+2006-02-02  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Shower/ShowerHandler.cc, Hadronization/PartonSplitter.cc: Added
+	eventerror for spacelike gluons in PartonSplitter. Added check for
+	QCD-FSR when doing ME corrections.
+
 2006-02-01  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* all: Branched off herwig-2-0-beta-release branch, then merged

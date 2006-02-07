@@ -246,6 +246,7 @@ private:
    */
   map<long,MultiplicityInfo> _data;
   map<long,long> _finalstatecount;
+  map<long,long> _collisioncount;
 };
 
 }

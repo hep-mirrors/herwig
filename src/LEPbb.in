@@ -112,7 +112,6 @@ set SimpleLEPGenerator:MaxErrors 100
 set SimpleLEPGenerator:Strategy /Defaults/ThePEGStrategy
 set SimpleLEPGenerator:EventHandler:LuminosityFunction:Energy 91.2
 set SimpleLEPGenerator:EventHandler:DecayHandler /Defaults/Handlers/StandardDecayHandler
-set /Defaults/Particles/Z0:NominalMass 92
 #
 saverun LEPbb SimpleLEPGenerator
 

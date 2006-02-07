@@ -43,9 +43,23 @@ void MultiplicityCount::analyze(tEventPtr event, long ieve, int loop, int state)
 
   // ========
 
+  StepVector steps = event->primaryCollision()->steps();
+
+  particles.clear();
+  steps[0]->select(inserter(particles), ThePEG::AllSelector());
+  
+  for(set<tcPPtr>::const_iterator it = particles.begin(); 
+      it != particles.end(); ++it) {
+    long ID = (*it)->id();
+    _collisioncount.insert(make_pair(ID,0));
+    ++_collisioncount[ID];
+  }
+
+  // =======
+
+
   particles.clear();
 
-  StepVector steps = event->primaryCollision()->steps();
   for ( StepVector::const_iterator it = steps.begin()+2;
 	it != steps.end(); ++it ) {
     (**it).select(inserter(particles), ThePEG::AllSelector());

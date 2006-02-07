@@ -86,13 +86,10 @@ Energy2 MEqq2W2ll::scale() const {
 }
 
 double MEqq2W2ll::me2() const {
-  // declare the variables we need
-  unsigned int inhel1,inhel2,outhel1,outhel2;
-  VectorWaveFunction inter;
-  double me[3]={0.,0.,0.};
-  complex<double> diag1,diag2;
-  int iq,iqbar,ilp,ilm;
+  double me = 0.;
+  
   // get the order right
+  int iq,iqbar,ilp,ilm;
   if(mePartonData()[0]->id()>0) {iq=0;iqbar=1;}
   else {iq=1;iqbar=0;}
   if(mePartonData()[2]->id()>0) {ilm=2;ilp=3;}
@@ -102,7 +99,7 @@ double MEqq2W2ll::me2() const {
   SpinorBarWaveFunction pin( meMomenta()[iqbar    ],mePartonData()[iqbar    ],incoming);
   SpinorBarWaveFunction fout(meMomenta()[ilm      ],mePartonData()[ilm      ],outgoing);
   SpinorWaveFunction    aout(meMomenta()[ilp      ],mePartonData()[ilp      ],outgoing);
-
+  
   bool positive = mePartonData()[iq]->iCharge() 
     + mePartonData()[iqbar]->iCharge() == 3;
 
@@ -110,50 +107,41 @@ double MEqq2W2ll::me2() const {
     + mePartonData()[iqbar]->iCharge() == -3;
 
   // sum over helicities to get the matrix element
-  for(inhel1=0;inhel1<2;++inhel1)
+  VectorWaveFunction inter;
+  for(unsigned int inhel1=0;inhel1<2;++inhel1)
     {
       ein.reset(inhel1);
-      for(inhel2=0;inhel2<2;++inhel2)
+      for(unsigned int inhel2=0;inhel2<2;++inhel2)
 	{
 	  pin.reset(inhel2);
-	  for(outhel1=0;outhel1<2;++outhel1)
+	  for(unsigned int outhel1=0;outhel1<2;++outhel1)
 	    {
 	      fout.reset(outhel1);
-	      for(outhel2=0;outhel2<2;++outhel2)
+	      for(unsigned int outhel2=0;outhel2<2;++outhel2)
 		{
 		  aout.reset(outhel2);
-
+		  
+		  complex<double> diag = 0.0;
 		  if (positive) {
 		    // the Wp exchange
 		    inter = _theFFWVertex->evaluate(sHat(),1,_Wp,ein,pin);
-		    diag1 = _theFFWVertex->evaluate(sHat(),aout,fout,inter);
-		    // add up squares of individual terms
-		    me[1] += real(diag1*conj(diag1));
+		    diag = _theFFWVertex->evaluate(sHat(),aout,fout,inter);
 		  } else if (negative) {
 		    // the Wm exchange
 		    inter = _theFFWVertex->evaluate(sHat(),1,_Wm,ein,pin);
-		    diag2 = _theFFWVertex->evaluate(sHat(),aout,fout,inter);
-		    // add up squares of individual terms
-		    me[2] += real(diag2*conj(diag2));
+		    diag = _theFFWVertex->evaluate(sHat(),aout,fout,inter);
 		  } else {
 		    cerr << "Error in MEqq2W2ll::me2() charge setup.\n";
 		  }
 		  // the full thing including interference
-		  diag1 +=diag2;
-		  me[0] += real(diag1*conj(diag1));
+		  me += real(diag*conj(diag));
 		}
 	    }
 	}
     }
   // results
   // factor 12 from 4 helicity and 3 colour
-  for(int ix=0;ix<3;++ix){me[ix]/=12.0;}
-  DVector save;
-  save.push_back(me[1]);
-  save.push_back(me[2]);
-  meInfo(save);
-  //  meInfo(save << lastCont << lastBW);
-  return me[0];
+  return me / 12.0;
 }
 
 unsigned int MEqq2W2ll::orderInAlphaS() const {
@@ -167,10 +155,7 @@ unsigned int MEqq2W2ll::orderInAlphaEW() const {
 Selector<MEBase::DiagramIndex>
 MEqq2W2ll::diagrams(const DiagramVector & diags) const {
   Selector<DiagramIndex> sel;
-  for ( DiagramIndex i = 0; i < diags.size(); ++i ) {
-    if ( diags[i]->id() == -1 ) sel.insert(meInfo()[0], i);
-    else if ( diags[i]->id() == -2 ) sel.insert(meInfo()[1], i);
-  }
+  sel.insert(1.0, 0);
   return sel;
 }
 

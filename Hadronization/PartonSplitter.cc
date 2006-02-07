@@ -94,7 +94,9 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	      // ... write the code
 	      // splitSpaceLikeGluon(*pit,ptrQ,ptrQbar);      
 	      // ... write the code
-	      cerr << "Spacelike gluon!\n";
+	      cerr << "\nSpacelike gluon in PartonSplitter::split()\n";
+	      throw Exception() << "Spacelike gluon in PartonSplitter::split()"
+			       << Exception::eventerror;
 	    }
 	  // q^2=0 gluon 
 	  else 

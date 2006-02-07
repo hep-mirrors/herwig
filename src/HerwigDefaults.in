@@ -54,7 +54,7 @@ set MEGG2QQ:MaxFlavour 4
 set MEQQ2qq:MaxFlavour 4
 
 create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
-set MEqq2gZ2ll:WithNeutrinos 1
+set MEqq2gZ2ll:WithNeutrinos 0
 create Herwig++::MEqq2W2ll  MEqq2W2ll  HwME.so
 create Herwig++::MEee2gZ2qq MEee2gZ2qq HwME.so
 set MEee2gZ2qq:MinimumFlavour 1

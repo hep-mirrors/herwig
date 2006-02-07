@@ -103,14 +103,21 @@ inline void MultiplicityCount::doinit() throw(InitException) {
 
 inline void MultiplicityCount::dofinish() {
   AnalysisHandler::dofinish();
+  cerr << "\nCount of particles involved in hard process:\n";
+  for (map<long,long>::const_iterator it = _collisioncount.begin();
+       it != _collisioncount.end(); ++ it) {
+    string name = generator()->getParticleData(it->first)->PDGName();
+    cerr << name << '\t' << it->second << '\n';
+  }
+
   cerr << "\nFinal state particle count:\n";
   for (map<long,long>::const_iterator it = _finalstatecount.begin();
        it != _finalstatecount.end(); ++ it) {
     string name = generator()->getParticleData(it->first)->PDGName();
     cerr << name << '\t' << it->second << '\n';
-}
+  }
 
-  cerr << "\nParticle multiplicities:\n";
+  cerr << "\nParticle multiplicities (compared to LEP data):\n";
   for (map<long,MultiplicityInfo>::const_iterator it = _data.begin();
        it != _data.end();
        ++it) {
