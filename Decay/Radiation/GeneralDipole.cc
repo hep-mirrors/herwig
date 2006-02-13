@@ -532,7 +532,8 @@ double GeneralDipole::makePhotons()
 	  _yfswgt*=YFSFormFactor(_qnewprf,_mdipolenew,_eminrest,true);
 	  //cout << "testing form factors C " << endl;
 	  // find the momenta of the original particles in the new rest frame
-	  HepLorentzRotation boost(HepBoost(_qnewdrf[0].findBoostToCM()));
+	  const Lorentz5Momentum tmp = _qnewdrf[0];
+	  HepLorentzRotation boost(HepBoost(tmp.findBoostToCM()));
 	  vector<Lorentz5Momentum> ptemp;
 	  for(unsigned int ix=0;ix<=_nprod;++ix){ptemp.push_back(boost*_qdrf[ix]);}
 	  //cout << "testing form factors D " << endl;
@@ -548,7 +549,8 @@ double GeneralDipole::makePhotons()
 	  // yfs wgt
 	  _yfswgt*=YFSFormFactor(_qnewlab,_mdipolenew,_eminlab,true);
 	  // find the momenta of the original particles in the lab
-	  HepLorentzRotation boost(HepBoost(_qnewdrf[0].findBoostToCM()));
+	  const Lorentz5Momentum tmp = _qnewdrf[0];
+	  HepLorentzRotation boost(HepBoost(tmp.findBoostToCM()));
 	  boost = HepBoost(_boosttolab)*boost;
 	  vector<Lorentz5Momentum> ptemp;
 	  for(unsigned int ix=0;ix<=_nprod;++ix){ptemp.push_back(boost*_qdrf[ix]);}
@@ -798,7 +800,8 @@ bool GeneralDipole::boostMomenta(bool photons)
 				   _bigLdrf.z(),_bigLdrf.e(),_m[0]);
       _qnewdrf[0].rescaleEnergy();
       // Find the momenta of the particles in the rest frame of the parent.
-      HepLorentzRotation boost(HepBoost(_qnewdrf[0].findBoostToCM()));
+      const Lorentz5Momentum tmp = _qnewdrf[0];
+      HepLorentzRotation boost(HepBoost(tmp.findBoostToCM()));
       // Boost the momenta of the charged particles
       for(unsigned int ix=0;ix<=_nprod;++ix){_qnewprf[ix]=boost*_qnewdrf[ix];}
       // Boost the total photon momentum
