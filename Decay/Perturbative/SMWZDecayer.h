@@ -56,25 +56,6 @@ public:
    */
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
 
-
-  /**
-   * Accept member which is called at initialization to see if this Decayer can
-   * handle a given decay mode. 
-   * @param dm The DecayMode
-   * @return Whether the mode can be handled.
-   *
-   */
-  virtual bool accept(const DecayMode & dm) const;
-  
-  /**
-   * For a given decay mode and a given particle instance, perform the
-   * decay and return the decay products. 
-   * @param dm The DecayMode
-   * @param part The Particle instant being decayed.
-   * @return The vector of particles produced in the decay.
-   */
-  virtual ParticleVector decay(const DecayMode & dm, const Particle & part) const;
-
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
    * @param vertex Output the information on the vertex for spin correlations
