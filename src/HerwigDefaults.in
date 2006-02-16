@@ -173,9 +173,8 @@ create ThePEG::EventGenerator LEPGenerator
 set LEPGenerator:RandomNumberGenerator /Defaults/Random
 set LEPGenerator:StandardModelParameters /Defaults/Model
 set LEPGenerator:EventHandler /Defaults/Handlers/LEPHandler
-create ThePEG::KinematicalCuts EECuts
-set EECuts:LeptonMatcher /Defaults/Matchers/MatchLepton
-set EECuts:SubProcess/MHatMin 22.36
+create ThePEG::Cuts EECuts
+set EECuts:MHatMin 22.36
 set LEPGenerator:EventHandler:Cuts EECuts
 
 # And the LHCGenerator
@@ -183,13 +182,19 @@ create ThePEG::EventGenerator LHCGenerator
 set LHCGenerator:RandomNumberGenerator /Defaults/Random
 set LHCGenerator:StandardModelParameters /Defaults/Model
 set LHCGenerator:EventHandler /Defaults/Handlers/LHCHandler
-create ThePEG::KinematicalCuts QCDCuts
-set QCDCuts:LeptonMatcher /Defaults/Matchers/MatchLepton
-set QCDCuts:SubProcess/ScaleMin 1.0*GeV
-set QCDCuts:SubProcess/PTHatMin 1.0*GeV
-set QCDCuts:Collision/X1Min 0.00001
-set QCDCuts:Collision/X2Min 0.00001
-set QCDCuts:SubProcess/MHatMin 20.
+create ThePEG::Cuts QCDCuts
+set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:X1Min 0.00001
+set QCDCuts:X2Min 0.00001
+set QCDCuts:MHatMin 20.
+### new cuts handling ###
+library SimpleKTCut.so
+create ThePEG::SimpleKTCut KtCut
+set KtCut:MinKT 1.0*GeV
+## if e.g. only leptons should be considered, do ##
+#set KtCut:Matcher /Defaults/Matchers/MatchLepton
+insert QCDCuts:OneCuts[0] KtCut
+##########################
 set LHCGenerator:EventHandler:Cuts QCDCuts
 
 # This will read in all the standard hadron decay modes and add

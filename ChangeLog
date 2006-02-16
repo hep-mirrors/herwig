@@ -1,3 +1,7 @@
+2006-02-16  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* src/HerwigDefaults.in: New handling of cuts in ThePEG
+
 2006-02-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* configure.ac, README, AUTHORS: Last updates, tagged and
