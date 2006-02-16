@@ -7,4 +7,4 @@ YODA.h YODA.icc YODA.fh YODA.cc \
 FFDipole.cc  FFDipole.fh  FFDipole.h  FFDipole.icc \
 GeneralDipole.cc  GeneralDipole.fh  GeneralDipole.h  GeneralDipole.icc \
 IFDipole.cc  IFDipole.fh  IFDipole.h  IFDipole.icc\
-YFSFormFactors.cc  YFSFormFactors.fh  YFSFormFactors.h  YFSFormFactors.icc
+YFSFormFactors.cc  YFSFormFactors.h  YFSFormFactors.icc
