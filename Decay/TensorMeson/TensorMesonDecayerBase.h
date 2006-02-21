@@ -28,8 +28,7 @@ using ThePEG::Helicity::LorentzTensor;
  *
  *  \f[ \mathcal{M} =  \epsilon^{\mu\nu} T_{\mu\nu} \f]
  *
- *  where \f$\epsilon^{\mu\nu}\f$ is the polarization tensor of the decaying tensor
- *  meson and \f$J_{\mu\nu}\f$ is the hadronic tensor supplied by the
+ *  and \f$J_{\mu\nu}\f$ is the hadronic tensor supplied by the
  *  decayTensor member.
  *
  * @see DecayIntegrator

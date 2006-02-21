@@ -1,5 +1,10 @@
 2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
+	* changes to fix change conservation problems from branch merge
+	  and change base class of TensorMeson2MesonDecayer.
+
+2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
 	* changes to include the matrix element for gamma+jet 
 
 2006-02-16  David Grellscheid  <David.Grellscheid@durham.ac.uk>

@@ -229,10 +229,10 @@ int ScalarScalarScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
     {
       if(id0   ==_incoming[ix])
 	{if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
-	    (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){imode=ix;}}
+	    (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){imode=ix;cc=false;}}
       if(id0bar==_incoming[ix]&&imode<0)
 	{if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
-	    (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){imode=ix;}}
+	    (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){imode=ix;cc=true;}}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);

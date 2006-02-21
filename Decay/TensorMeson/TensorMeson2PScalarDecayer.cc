@@ -5,10 +5,10 @@
 //
 
 #include "TensorMeson2PScalarDecayer.h"
-#include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "TensorMeson2PScalarDecayer.tcc"
@@ -20,11 +20,39 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::outgoing;
+using namespace ThePEG::Helicity;
+using namespace Herwig::Helicity;
+
+void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters TensorMeson2PScalarDecayer" 
+			   << Exception::abortnow;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoing1[ix]);
+      extpart[2]=getParticleData(_outgoing2[ix]);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 TensorMeson2PScalarDecayer::TensorMeson2PScalarDecayer() 
 {
+  // reserve size of vectors for speed
+  _incoming.reserve(50);
+  _outgoing1.reserve(50);
+  _outgoing2.reserve(50);
+  _coupling.reserve(50);
+  _maxweight.reserve(50);
   // intermediates
   generateIntermediates(false);
   // a_2 -> eta pi
@@ -220,24 +248,32 @@ void TensorMeson2PScalarDecayer::Init() {
      0, 0, 0, 0., 100000., false, false, true);
 }
 
-// the hadronic tensor
-vector<LorentzTensor> 
-TensorMeson2PScalarDecayer::decayTensor(const bool vertex,const int, 
-					const Particle & inpart,
-					const ParticleVector & decay) const
+
+// matrix elememt for the process
+double TensorMeson2PScalarDecayer::me2(bool vertex, const int ichan,
+				       const Particle & inpart,
+				       const ParticleVector & decay) const
 {
-  // storage for the tensor
-  vector<LorentzTensor> temp;
+  vector<LorentzTensor> inten;
+  // wave functions etc for the incoming particle
+  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
+  TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
+		     true,false,vertex);
   // set up the spin information for the decay products
   for(unsigned int ix=0;ix<decay.size();++ix)
     // workaround for gcc 3.2.3 bug
     //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
     {PPtr mytemp=decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
-
-  // calculatebthe tensor
-  temp.push_back(_coupling[imode()]/inpart.mass()*
-		 LorentzTensor(decay[0]->momentum(),decay[1]->momentum()));
-  return temp;
+  // calculate the matrix element
+  DecayMatrixElement newME(PDT::Spin2,PDT::Spin0,PDT::Spin0);
+  for(unsigned int ix=0;ix<5;++ix)
+    {
+      newME(ix,0,0) = _coupling[imode()]/inpart.mass()*
+	((inten[ix]*decay[1]->momentum())*decay[0]->momentum());
+    }
+  ME(newME);
+  // return the answer
+  return newME.contract(rhoin).real();
 }
 
 bool TensorMeson2PScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -278,7 +314,7 @@ void TensorMeson2PScalarDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  TensorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

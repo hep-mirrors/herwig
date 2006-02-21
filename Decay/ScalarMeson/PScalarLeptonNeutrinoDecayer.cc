@@ -138,12 +138,14 @@ int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,const DecayMode & dm) con
   do
     {
       if(id0   ==_incoming[ix]||id0bar==_incoming[ix])
-	{found=true;ichan+=ilep;}
+	{
+	  found=true;ichan+=ilep;
+	  cc=id0bar==_incoming[ix];
+	}
       else{ichan+=_leptons[ix];}
       ++ix;
     }
   while (!found&&ix<_incoming.size());
-  cc=id0==-_incoming[ix];
   if(found){imode=ichan;}
   return imode;
 }

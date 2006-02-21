@@ -60,10 +60,10 @@ int ScalarMesonTensorScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) c
     {
       if(id0   ==_incoming[ix])
 	{if((id1   ==_outgoingT[ix]&&id2   ==_outgoingS[ix])||
-	    (id2   ==_outgoingT[ix]&&id1   ==_outgoingS[ix])){imode=ix;}}
+	    (id2   ==_outgoingT[ix]&&id1   ==_outgoingS[ix])){imode=ix;cc=false;}}
       if(id0bar==_incoming[ix]&&imode<0)
 	{if((id1bar==_outgoingT[ix]&&id2bar==_outgoingS[ix])||
-	    (id2bar==_outgoingT[ix]&&id1bar==_outgoingS[ix])){imode=ix;}}
+	    (id2bar==_outgoingT[ix]&&id1bar==_outgoingS[ix])){imode=ix;cc=true;}}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);
