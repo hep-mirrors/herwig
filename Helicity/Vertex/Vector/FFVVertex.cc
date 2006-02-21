@@ -141,7 +141,8 @@ SpinorWaveFunction FFVVertex::evaluate(Energy2 q2, int iopt,tcPDPtr  out,
   Complex e1p2=vec.x()+ii*vec.y();
   Complex e1m2=vec.x()-ii*vec.y();
   // momentum components
-  double mass  = out->mass();
+  Energy mass  = out->mass();
+  if(iopt==5) mass=0.;
   Complex p1p2=pout.px()+ii*pout.py();
   Complex p1m2=pout.px()-ii*pout.py();
   // complex nos for for the spinor
@@ -232,7 +233,8 @@ SpinorBarWaveFunction FFVVertex::evaluate(Energy2 q2,int iopt,tcPDPtr  out,
   Complex e1p2=vec.x()+ii*vec.y();
   Complex e1m2=vec.x()-ii*vec.y();
   // momentum components
-  double mass  = out->mass();
+  Energy mass  = out->mass();
+  if(iopt==5) mass=0.;
   Complex p1p2=pout.px()+ii*pout.py();
   Complex p1m2=pout.px()-ii*pout.py();
   // complex numbers for the spinor
@@ -316,8 +318,9 @@ VectorWaveFunction FFVVertex::evaluate(Energy2 q2,int iopt,tcPDPtr  out,
   Lorentz5Momentum pout = Lorentz5Momentum(sbar.px()+sp.px(),sbar.py()+sp.py(),
 					   sbar.pz()+sp.pz(),sbar.e() +sp.e()); 
   // momentum components
-  double mass  = out->mass();
-  double mass2=mass*mass;
+  Energy mass  = out->mass();
+  if(iopt==5) mass=0.;
+  Energy2 mass2=mass*mass;
   // overall factor
   double p2 = pout.m2();
   // the vector for the fermion-antifermion

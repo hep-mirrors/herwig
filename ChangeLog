@@ -1,3 +1,7 @@
+2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* changes to include the matrix element for gamma+jet 
+
 2006-02-16  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* src/HerwigDefaults.in: New handling of cuts in ThePEG

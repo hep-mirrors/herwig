@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEPP2GammaJet class.
+//
+#ifndef HERWIG_MEPP2GammaJet_FH
+#define HERWIG_MEPP2GammaJet_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEPP2GammaJet;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEPP2GammaJet,MEPP2GammaJetPtr);
+
+}
+
+#endif

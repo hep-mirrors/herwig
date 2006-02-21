@@ -299,6 +299,8 @@ inline Complex VertexBase::propagator(int iopt, Energy2 p2,tcPDPtr part)
     {masswidth=0.;}
   else if(iopt==4)
     {return 1.;}
+  else if(iopt==5)
+    {return 1./p2;}
   else
     {throw HelicityConsistencyError() << "Unknown option in VertexBase::Propagator" 
 				      << Exception::abortnow;}
@@ -312,7 +314,9 @@ inline Complex VertexBase::normPropagator(int iopt, Energy2 p2,tcPDPtr part)
   Energy mass=part->mass();
   Energy2 mass2=mass*mass;
   Complex masswidth;
-  if(p2<0.){masswidth=0.;}
+  if(iopt==5)
+    {return _norm/p2;}
+  else if(p2<0.){masswidth=0.;}
   else if(iopt==1)
     {masswidth=Complex(0.,1.)*mass*part->width();}
   else if(iopt==2)
