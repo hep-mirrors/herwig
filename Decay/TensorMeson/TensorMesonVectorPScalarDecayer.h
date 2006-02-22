@@ -4,7 +4,8 @@
 //
 // This is the declaration of the TensorMesonVectorPScalarDecayer class.
 //
-#include "TensorMesonDecayerBase.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 // #include "TensorMesonVectorPScalarDecayer.fh"
 // #include "TensorMesonVectorPScalarDecayer.xh"
 
@@ -15,13 +16,14 @@ using namespace ThePEG;
  *
  *  The <code>TensorMesonVectorPScalarDecayer</code> class handles the decay of
  *  a tensor meson to a vector and a pseudoscalar. Examples of this decay
- *  are \f$a_2\to\rho\pi\f$ or \f$a_2 \to\pi \gamma\f$.
- *
- *  \f[T^{\mu\nu} = p_P^\mu\epsilon^{\nu\alpha\beta\gamma}p_{V\alpha}
- *                                       \epsilon_{V\alpha}p_{P\gamma}\f]
- *
- *  The class inherits from the <code>TensorMesonDecayerBase</code> class and implements
- *  the virtual decayTensor method to calculate the tensor for the decay.
+ *  are \f$a_2\to\rho\pi\f$ or \f$a_2 \to\pi \gamma\f$. The matrix element is
+ *  given by
+ *  \f[\mathcal{M}=\epsilon_T^{\mu\nu}p_{P,\mu} \epsilon_{\nu\alpha\beta\gamma}
+ *     p_V^\alpha \epsilon_V^\beta p_P^\gamma,\f]
+ * where \f$p_P\f$ is the momentum of the pseudoscalar meson, \f$p_V\f$ is
+ * the momentum of the vector, \f$\epsilon_T\f$ is the polarization tensor of the 
+ * decaying meson and \f$\epsilon_V\f$ is the polarization vector of the outgoing
+ * vector meson.
  *
  *  The incoming tensor mesons together with their decay products and the coupling 
  *  \f$g\f$ can be specified using the interfaces for the class. The maximum weights
@@ -32,10 +34,11 @@ using namespace ThePEG;
  *  many of the common \f$T\to PV\f$ decays are specified in the default
  *  constructor.
  *
- * @see TensorMesonDecayerBase
- * 
+ * @see DecayIntegrator
+ * @see \ref TensorMesonVectorPScalarDecayerInterfaces "The interfaces"
+ * defined for TensorMesonVectorPScalarDecayer.
  */
-class TensorMesonVectorPScalarDecayer: public TensorMesonDecayerBase {
+class TensorMesonVectorPScalarDecayer: public DecayIntegrator {
 
 public:
 
@@ -67,16 +70,15 @@ public:
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
 
   /**
-   * The hadronic tensor. This returns the tensor described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzTensor> 
-  decayTensor(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -139,46 +141,18 @@ protected:
   
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -240,7 +214,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::TensorMesonVectorPScalarDecayer,1> {
     /** Typedef of the base class of TensorMesonVectorPScalarDecayer. */
-  typedef Herwig::TensorMesonDecayerBase NthBase;
+  typedef Herwig::DecayIntegrator NthBase;
 };
 
 /**

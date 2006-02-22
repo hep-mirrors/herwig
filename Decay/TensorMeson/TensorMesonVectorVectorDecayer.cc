@@ -16,17 +16,42 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
 
 namespace Herwig{
 using namespace ThePEG;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::outgoing;
+using namespace ThePEG::Helicity;
+using namespace Herwig::Helicity;
+
+void TensorMesonVectorVectorDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters TensorMesonVectorVectorDecayer" 
+			   << Exception::abortnow;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoing1[ix]);
+      extpart[2]=getParticleData(_outgoing2[ix]);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 TensorMesonVectorVectorDecayer::TensorMesonVectorVectorDecayer() 
 {
   // intermediates
   generateIntermediates(false);
+  // size of the vectors to improve speed
+  _incoming.reserve(25);_outgoing1.reserve(25);_outgoing2.reserve(25);
+  _coupling.reserve(25);_maxweight.reserve(25);
   // a_2 -> gamma gamma
   _incoming.push_back(115);_outgoing1.push_back( 22);_outgoing2.push_back(22);
   _coupling.push_back(0.02336/GeV);_maxweight.push_back(2.);
@@ -159,15 +184,17 @@ void TensorMesonVectorVectorDecayer::Init() {
 
 }
 
-// the hadronic tensor
-vector<LorentzTensor> 
-TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int, 
-					const Particle & inpart,
-					const ParticleVector & decay) const
+// matrix elememt for the process
+double TensorMesonVectorVectorDecayer::me2(bool vertex, const int ichan,
+					   const Particle & inpart,
+					   const ParticleVector & decay) const
 {
-  unsigned int iy;
-  // storage for the tensor
-  vector<LorentzTensor> temp;
+  // wave functions etc for the incoming particle
+  vector<LorentzTensor> inten;
+  RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
+  TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
+		     true,false,vertex);
+  // wave functions for the decay products
   vector<LorentzPolarizationVector> pol[2];
   bool photon[2];
   for(unsigned int ix=0;ix<2;++ix)
@@ -188,36 +215,45 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
       p1eps2[ix]=pol[1][ix]*decay[0]->momentum();
       p2eps1[ix]=pol[0][ix]*decay[1]->momentum();
     }
-  // compute some useful tensors to save CPU
-  LorentzTensor tp1p2=LorentzTensor(decay[0]->momentum(),decay[1]->momentum())
-                     +LorentzTensor(decay[1]->momentum(),decay[0]->momentum());
-  LorentzTensor met(-1.,0. ,0. ,0.,0. ,-1.,0. ,0.,0. ,0. ,-1.,0.,0. ,0. ,0. ,1. );
-  LorentzTensor tp1eps2[3],tp2eps1[3];
-  for(unsigned int ix=0;ix<3;++ix)
+  // compute the traces and useful dot products
+  Complex trace[5],pboth[5];
+  LorentzPolarizationVector pleft[2][5],pright[2][5];
+  for(unsigned int ix=0;ix<5;++ix)
     {
-      tp1eps2[ix]=LorentzTensor(decay[0]->momentum(),pol[1][ix])
-	         +LorentzTensor(pol[1][ix],decay[0]->momentum());
-      tp2eps1[ix]=LorentzTensor(decay[1]->momentum(),pol[0][ix])
-	         +LorentzTensor(pol[0][ix],decay[1]->momentum()); 
+      trace[ix]=inten[ix].trace();
+      pleft[0][ix] =(-decay[0]->momentum())*inten[ix];
+      pleft[1][ix] =(-decay[1]->momentum())*inten[ix];
+      pright[0][ix]=inten[ix]*(-decay[0]->momentum());
+      pright[1][ix]=inten[ix]*(-decay[1]->momentum());
+      pboth[ix]=((pleft[0][ix]+pright[0][ix])*decay[1]->momentum());
     }
-  // main loop to compute the tensors
+  // loop to compute the matrix element
+  DecayMatrixElement newME(PDT::Spin2,PDT::Spin1,PDT::Spin1);
   Complex e1e2;
-  LorentzTensor output;
+  LorentzTensor te1e2;
   double fact(_coupling[imode()]/inpart.mass());
+  Complex me;
   for(unsigned int ix=0;ix<3;++ix)
     {
-      for(iy=0;iy<3;++iy)
+      for(unsigned iy=0;iy<3;++iy)
 	{
 	  e1e2=pol[0][ix]*pol[1][iy];
-	  output= +e1e2*tp1p2-p2eps1[ix]*tp1eps2[iy]
-	  -p1eps2[iy]*tp2eps1[ix]
-	    +p1p2*( LorentzTensor(pol[0][ix],pol[1][iy])
-		    +LorentzTensor(pol[1][iy],pol[0][ix]))
-	    +(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*met;
-	  output*=fact;
-	  temp.push_back(output);
+	  te1e2=p1p2*(LorentzTensor(pol[0][ix],pol[1][iy])
+		       +LorentzTensor(pol[1][iy],pol[0][ix]));
+	  for(unsigned int inhel=0;inhel<5;++inhel)
+	    {
+	      me = inten[inhel]*te1e2
+		-p2eps1[ix]*(pol[1][iy]*(pleft[0][inhel]+pright[0][inhel])) 
+		-p1eps2[iy]*(pol[0][ix]*(pleft[1][inhel]+pright[1][inhel]))
+		+pboth[inhel]*e1e2
+		+(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*trace[inhel];
+	      newME(inhel,ix,iy)=fact*me;
+	    }
+
+
 	}
     }
+  ME(newME);
   /*
   // testing the matrix element
   Energy2 m02=inpart.mass()*inpart.mass();
@@ -240,8 +276,9 @@ TensorMesonVectorVectorDecayer::decayTensor(const bool vertex,const int,
   -5.*(m12-m22)*(m12-m22)*pcm2) << endl;
   */
   // return the answer
-  return temp;
+  return newME.contract(rhoin).real();
 }
+
 bool TensorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 						   double & coupling) const
 {
@@ -279,7 +316,7 @@ void TensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  TensorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

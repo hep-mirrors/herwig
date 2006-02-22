@@ -4,7 +4,8 @@
 //
 // This is the declaration of the TensorMesonVectorVectorDecayer class.
 //
-#include "TensorMesonDecayerBase.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 // #include "TensorMesonVectorVectorDecayer.fh"
 // #include "TensorMesonVectorVectorDecayer.xh"
 
@@ -13,16 +14,17 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>TensorMesonVectorVectorDecayer</code> class is designed to simulate
+ *  The TensorMesonVectorVectorDecayer class is designed to simulate
  *  the decay of a tensor meson to two spin-1 particles. In practice, at least
  *  for the light tensor mesons, this is only the decay of a tensor meson to two
  *  photons. In principle for bottom and charm tensors this may be the decay to
- *  two vector mesons. 
+ *  two vector mesons an d it is used to simulate three and four body 
+ *  \f$a_2\f$, \f$f_2\f$ and \f$K_2\f$ decays. 
  *
  *  The form of the matrix element is based on the perturbative matrix element
  *  for the decay of a graviton to two vector bosons with the neglect of a mass term
  *
- *  \f[T^{\mu\nu} = g\left[
+ * \f[ \mathcal{M} =  g\epsilon_{\mu\nu}\left[
  *   \left(\epsilon_{1\alpha} p_1^\mu - \epsilon_1^\mu p_{1\alpha}\right)
  *   \left(\epsilon_2^\alpha  p_2^\nu - \epsilon_2^\nu p_2^\alpha\right)
  *  +\left(\epsilon_{1\alpha} p_1^\nu - \epsilon_1^\nu p_{1\alpha}\right)
@@ -30,7 +32,6 @@ using namespace ThePEG;
  * -\frac12g^{\mu\nu}
  *    \left(\epsilon_{1\alpha} p_{1\beta}- \epsilon_{1\beta} p_{1\alpha}\right)
  *    \left(\epsilon_2^\alpha  p_2^\beta - \epsilon_2^\beta p_2^\alpha\right)\right] \f]
- *
  *  in such a way that it vanishes if the polarizations of the outgoing vectors are
  *  replaced with their momenta.
  *
@@ -43,10 +44,12 @@ using namespace ThePEG;
  *  many of the common \f$T\to VV\f$ decays are specified in the default
  *  constructor.
  *
- * @see TensorMesonDecayerBase
- * 
+ * @see DecayIntegrator
+ * * @see \ref TensorMesonVectorVectorDecayerInterfaces "The interfaces"
+ * defined for TensorMesonVectorVectorDecayer.
+ *
  */
-class TensorMesonVectorVectorDecayer: public TensorMesonDecayerBase {
+class TensorMesonVectorVectorDecayer: public DecayIntegrator {
 
 public:
 
@@ -78,16 +81,15 @@ public:
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
 
   /**
-   * The hadronic tensor. This returns the tensor described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzTensor> 
-  decayTensor(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
 
   /**
    * Specify the \f$1\to2\f$ matrix element to be used in the running width calculation.
@@ -151,45 +153,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -240,7 +213,6 @@ private:
 
 }
 
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
@@ -252,7 +224,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::TensorMesonVectorVectorDecayer,1> {
   /** Typedef of the base class of TensorMesonVectorVectorDecayer. */
-  typedef Herwig::TensorMesonDecayerBase NthBase;
+  typedef Herwig::DecayIntegrator NthBase;
 };
 
 /**
