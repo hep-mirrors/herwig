@@ -23,12 +23,39 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using Helicity::ScalarWaveFunction;
 using Helicity::VectorWaveFunction;
+using Helicity::incoming;
 using Helicity::outgoing;
+
+void VectorMesonVectorScalarDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoingV.size()||isize!=_outgoingS.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters in "
+			   << "VectorMesonVectorScalarDecayer::doinit()" 
+			   << Exception::abortnow;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoingV[ix]);
+      extpart[2]=getParticleData(_outgoingS[ix]);
+      mode=new DecayPhaseSpaceMode(extpart,this);
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 VectorMesonVectorScalarDecayer::VectorMesonVectorScalarDecayer() 
 {
   // intermediates
   generateIntermediates(false);
+  // reserve sizes of the vectors
+  _incoming.reserve(20);_outgoingV.reserve(20);_outgoingS.reserve(20);
+  _coupling.reserve(20);_maxweight.reserve(20);
   // decay of the phi to the a_0 and f_0 and a photon
   _incoming.push_back(333);_outgoingV.push_back(22);_outgoingS.push_back(9000111);
   _coupling.push_back(0.154/GeV);_maxweight.push_back(17.);
@@ -145,38 +172,44 @@ void VectorMesonVectorScalarDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-// the hadronic currents 
-vector<LorentzPolarizationVector>  
-VectorMesonVectorScalarDecayer::decayCurrent(const bool vertex, const int, 
-					      const Particle & inpart,
-					      const ParticleVector & decay) const
+double VectorMesonVectorScalarDecayer::me2(bool vertex, const int ichan,
+				   const Particle & inpart,
+				   const ParticleVector & decay) const
 {
-  // storage for the current
-  vector<LorentzPolarizationVector> temp;
+  // wavefunction for the decaying particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
+  // check for photons
   bool photon=_outgoingV[imode()]==ParticleID::gamma;
   // set up the spin information for the decay products
-  VectorWaveFunction(temp,decay[0],outgoing,true,photon,vertex);
-
+  vector<LorentzPolarizationVector> vout;
+  VectorWaveFunction(vout,decay[0],outgoing,true,photon,vertex);
   // workaround for gcc 3.2.3 bug
   //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
-  // calculate the currents
+  PPtr myvout = decay[1];
+  ScalarWaveFunction(myvout,outgoing,true,vertex);
+  // compute the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
   Complex epsdot(0.),pre(_coupling[imode()]/inpart.mass());
   for(unsigned int ix=0;ix<3;++ix)
     {
       if(ix==1&&photon)
-	{temp[ix]=LorentzPolarizationVector();}
+	{for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=0.;}}
       else
 	{
-	  epsdot=temp[ix]*inpart.momentum();
-	  temp[ix]=pre*(p0dotpv*temp[ix]-epsdot*decay[0]->momentum());
+	  epsdot=vout[ix]*inpart.momentum();
+	  for(unsigned int iy=0;iy<3;++iy)
+	    {newME(iy,ix,0)=pre*invec[iy]*(p0dotpv*vout[ix]-
+					   epsdot*decay[0]->momentum());}
 	}
     }
-  return temp;
- }
+  ME(newME);
+  // return the answer
+  return newME.contract(rhoin).real();
+}
 
 bool VectorMesonVectorScalarDecayer::twoBodyMEcode(const DecayMode & dm,
 						     int & mecode,
@@ -217,7 +250,7 @@ void VectorMesonVectorScalarDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

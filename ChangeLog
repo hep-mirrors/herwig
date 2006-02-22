@@ -1,3 +1,8 @@
+2006-02-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* Base class changed in a number of Vector decayers in preparation for the 
+	removal of the VectorMesonDecayerBase class.
+
 2006-02-21  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* changes to fix change conservation problems from branch merge

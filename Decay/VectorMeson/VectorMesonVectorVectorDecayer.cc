@@ -21,12 +21,37 @@ namespace Herwig{
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using Helicity::VectorWaveFunction;
+using Helicity::incoming;
 using Helicity::outgoing;
+
+void VectorMesonVectorVectorDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  unsigned int isize(_incoming.size());
+  if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters in " 
+			   << "VectorMesonVectorVectorDecayer" << Exception::runerror;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoing1[ix]);
+      extpart[2]=getParticleData(_outgoing2[ix]);
+      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 VectorMesonVectorVectorDecayer::VectorMesonVectorVectorDecayer() 
 {
   // intermediates
   generateIntermediates(false);
+  // reserve sizes of the vectors
+  _incoming.reserve(5);_outgoing1.reserve(5);_outgoing2.reserve(5);
+  _coupling.reserve(5);_maxweight.reserve(5);
   // decay of rho'' to rho rho
   _incoming.push_back(30213);_outgoing1.push_back( 213);_outgoing2.push_back(113);
   _incoming.push_back(30113);_outgoing1.push_back(-213);_outgoing2.push_back(213);
@@ -69,7 +94,6 @@ int VectorMesonVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) c
   while(ix<_incoming.size()&&imode<0);
   return imode;
 }
-
 
 void VectorMesonVectorVectorDecayer::persistentOutput(PersistentOStream & os) const
 {os << _incoming << _outgoing1 << _outgoing2 << _maxweight << _coupling;}
@@ -119,29 +143,29 @@ void VectorMesonVectorVectorDecayer::Init() {
 
 }
 
-// the hadronic currents
-vector<LorentzPolarizationVector>  
-VectorMesonVectorVectorDecayer::decayCurrent(const bool vertex, const int, 
-					     const Particle & inpart,
-					     const ParticleVector & decay) const
+double VectorMesonVectorVectorDecayer::me2(bool vertex, const int ichan,
+				   const Particle & inpart,
+				   const ParticleVector & decay) const
 {
-  // storage of the current
-  vector<LorentzPolarizationVector> temp,eps[2];
-  unsigned int ix,ipol1,ipol2;
+  // wavefunuctions for the decaying particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);  
   // set up the spin information for the decay products
+  unsigned int ix,ipol1,ipol2,inpol;
+  vector<LorentzPolarizationVector> eps[2];
   for(ix=0;ix<2;++ix)
-
     // workaround for gcc 3.2.3 bug
     //ALB {VectorWaveFunction(eps[ix],decay[ix],outgoing,true,
     //ALB			decay[ix]->id()==ParticleID::gamma,vertex);}
     {
       vector<LorentzPolarizationVector> mytemp; 
       VectorWaveFunction(mytemp,decay[ix],outgoing,true,
-			decay[ix]->id()==ParticleID::gamma,vertex);
+			 decay[ix]->id()==ParticleID::gamma,vertex);
       eps[ix]=mytemp;
     }
-
-  // work out the dot product we need for the current
+  // work out the dot products we need for the matrix element
   Complex p1p2((decay[0]->momentum())*(decay[1]->momentum()));
   Complex p1eps2[3],p2eps1[3];
   Complex eps1eps2;
@@ -150,25 +174,29 @@ VectorMesonVectorVectorDecayer::decayCurrent(const bool vertex, const int,
       p1eps2[ix]=eps[1][ix]*(decay[0]->momentum());
       p2eps1[ix]=eps[0][ix]*(decay[1]->momentum());
     }
-  // now compute the current
+  // compute the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin1);
   Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
   Complex m12(decay[0]->mass()*decay[0]->mass()),m22(decay[1]->mass()*decay[1]->mass());
   double fact(2.*_coupling[imode()]/(inpart.mass()*inpart.mass()*inpart.mass()));
+  LorentzPolarizationVector vtemp;
   for(ipol1=0;ipol1<3;++ipol1)
     {
       for(ipol2=0;ipol2<3;++ipol2)
 	{
 	  eps1eps2=eps[0][ipol1]*eps[1][ipol2];
-	  temp.push_back(fact*(p1eps2[ipol2]*p2eps1[ipol1]*pdiff
-			       +p1eps2[ipol2]*m22*eps[0][ipol1]
-			       -p2eps1[ipol1]*m12*eps[1][ipol2]
-			       +eps1eps2*(-p1p2*pdiff
-					  +m12*decay[1]->momentum()
-					  -m22*decay[0]->momentum())));
+	  vtemp=fact*(p1eps2[ipol2]*p2eps1[ipol1]*pdiff
+		      +p1eps2[ipol2]*m22*eps[0][ipol1]
+		      -p2eps1[ipol1]*m12*eps[1][ipol2]
+		      +eps1eps2*(-p1p2*pdiff+m12*decay[1]->momentum()
+				 -m22*decay[0]->momentum()));
+	  for(inpol=0;inpol<3;++inpol){newME(inpol,ipol1,ipol2)=invec[inpol]*vtemp;}
 	}
     }
-  return temp;
-} 
+  ME(newME);
+  // return the answer
+  return newME.contract(rhoin).real();
+}
 
 bool VectorMesonVectorVectorDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 						    double & coupling) const
@@ -209,7 +237,7 @@ void VectorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

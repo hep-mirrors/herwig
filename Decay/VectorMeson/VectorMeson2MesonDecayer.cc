@@ -11,17 +11,46 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using Herwig::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::RhoDMatrix;
+using Helicity::VectorWaveFunction;
+using Helicity::incoming;
 using Herwig::Helicity::outgoing;
+  
+void VectorMeson2MesonDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||isize!=_maxweight.size()||
+     isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters in "
+			   << "VectorMeson2MesonDecayer" << Exception::runerror;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData( _incoming[ix]);
+      extpart[1]=getParticleData(_outgoing1[ix]);
+      extpart[2]=getParticleData(_outgoing2[ix]);
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() 
 {
   // don't generate intermediates
   generateIntermediates(false);
+  // reserve size of vectors for speed
+  _incoming.reserve(65);_outgoing1.reserve(65);_outgoing2.reserve(65);
+  _coupling.reserve(65);_maxweight.reserve(65);
   // particles and couplings for the different modes
   // rho -> pi pi
   _incoming.push_back( 113);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
@@ -248,22 +277,29 @@ void VectorMeson2MesonDecayer::Init() {
   
 }
 
-// the hadronic currents    
-vector<LorentzPolarizationVector>  
-VectorMeson2MesonDecayer::decayCurrent(const bool vertex, const int, 
-				       const Particle & inpart,
-				       const ParticleVector & decay) const
+double VectorMeson2MesonDecayer::me2(bool vertex, const int ichan,
+				     const Particle & inpart,
+				     const ParticleVector & decay) const
 {
+  // polarization vector of the decaying particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
   // setup the spininfomation for the decay products
   for(unsigned int ix=0;ix<decay.size();++ix)
-
     // workaround for gcc 3.2.3 bug
     //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
     {PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
-
-  // calculate the current
-  return vector<LorentzPolarizationVector>(1,_coupling[imode()]/inpart.mass()*
-					   (decay[0]->momentum()-decay[1]->momentum()));
+  // difference of the momenta
+  Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
+  pdiff *=_coupling[imode()]/inpart.mass();
+  // compute the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0);
+  for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0)=invec[ix]*pdiff;}
+  ME(newME);
+  // return the answer
+  return newME.contract(rhoin).real();
 }
  
 bool VectorMeson2MesonDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -305,7 +341,7 @@ void VectorMeson2MesonDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

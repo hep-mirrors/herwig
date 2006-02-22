@@ -17,18 +17,46 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
+using Helicity::VectorWaveFunction;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
+using Helicity::incoming;
 using Helicity::outgoing;
+
+void VectorMeson2FermionDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check the parameters arew consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoingf.size()||
+     isize!=_outgoinga.size() || isize!=_maxweight.size())
+    {throw InitException() << "Inconsistent parameters in VectorMeson2"
+			   << "FermionDecayer::doiin() " << Exception::runerror;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoingf[ix]);
+      extpart[2]=getParticleData(_outgoinga[ix]);
+      mode = new DecayPhaseSpaceMode(extpart,this);
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 VectorMeson2FermionDecayer::VectorMeson2FermionDecayer() 
 {
   // don't include intermediates
   generateIntermediates(false);
+  // reserve size of vectors for speed
+  _incoming.reserve(45);_outgoingf.reserve(45);_outgoinga.reserve(45);
+  _coupling.reserve(45);_maxweight.reserve(45);
   // rho -> e+e-, mu+mu
   _incoming.push_back(113);_outgoingf.push_back(11);_outgoinga.push_back(-11);
   _incoming.push_back(113);_outgoingf.push_back(13);_outgoinga.push_back(-13);
@@ -216,13 +244,15 @@ void VectorMeson2FermionDecayer::Init() {
 
 }
 
-// the hadronic currents    
-vector<LorentzPolarizationVector>  
-VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int, 
-					 const Particle & inpart,
-					 const ParticleVector & decay) const
+double VectorMeson2FermionDecayer::me2(bool vertex, const int ichan,
+				   const Particle & inpart,
+				   const ParticleVector & decay) const
 {
-  double pre(_coupling[imode()]/inpart.mass());
+  // wavefunctions of the decaying particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
   // fermion and antifermion
   unsigned int iferm(0),ianti(1);
   if(_outgoingf[imode()]!=decay[iferm]->id()){iferm=1;ianti=0;}
@@ -231,22 +261,27 @@ VectorMeson2FermionDecayer::decayCurrent(const bool vertex, const int,
   vector<LorentzSpinorBar> wavebar;
   SpinorBarWaveFunction(wavebar,decay[iferm],outgoing,true,vertex);
   SpinorWaveFunction(   wave   ,decay[ianti],outgoing,true,vertex);
+  // prefactor
+  double pre(_coupling[imode()]/inpart.mass());
+  // compute the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   // now compute the currents
-  vector<LorentzPolarizationVector> temp(4);
-  unsigned int iloc,ix,iy;
-  for(ix=0;ix<2;++ix)
+  LorentzPolarizationVector temp;
+  for(unsigned ix=0;ix<2;++ix)
     {
-      for(iy=0;iy<2;++iy)
+      for(unsigned iy=0;iy<2;++iy)
 	{
-	  // location in the vector
-	  if(iferm>ianti){iloc=2*ix+iy;}
-	  else{iloc=2*iy+ix;}
-	  // add it to the vector
-	  temp[iloc]=pre*wave[ix].vectorCurrent(wavebar[iy]);
+	  temp = pre*wave[ix].vectorCurrent(wavebar[iy]);
+	  for(unsigned int iz=0;iz<3;++iz)
+	    {
+	      if(iferm>ianti){newME(iz,ix,iy)=invec[iz]*temp;}
+	      else           {newME(iz,iy,ix)=invec[iz]*temp;}
+	    }
 	}
     }
+  ME(newME);
   // return the answer
-  return temp;
+  return newME.contract(rhoin).real();
 }
 
 bool VectorMeson2FermionDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
@@ -289,7 +324,7 @@ void VectorMeson2FermionDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

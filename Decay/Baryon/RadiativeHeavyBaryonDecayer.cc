@@ -131,8 +131,8 @@ int RadiativeHeavyBaryonDecayer::modeNumber(bool & cc,const DecayMode & dm) cons
   unsigned int ix(0);
   do
     {
-      if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]){imode=ix;}
-      else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]){imode=ix;}
+      if(     id0== _incoming[ix]&&ibaryon== _outgoingB[ix]){imode=ix;cc=false;}
+      else if(id0==-_incoming[ix]&&ibaryon==-_outgoingB[ix]){imode=ix;cc=true;}
       ++ix;
     }
   while(ix<_incoming.size()&&imode<0);

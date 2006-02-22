@@ -9,7 +9,7 @@ using namespace ThePEG;
 
 inline VectorMeson2FermionDecayer::VectorMeson2FermionDecayer
 (const VectorMeson2FermionDecayer & x)
-  : VectorMesonDecayerBase(x), _coupling(x._coupling), _incoming(x._incoming),
+  : DecayIntegrator(x), _coupling(x._coupling), _incoming(x._incoming),
     _outgoingf(x._outgoingf),_outgoinga(x._outgoinga), _maxweight(x._maxweight),
     _initsize(x._initsize) {}
 
@@ -21,66 +21,9 @@ inline IBPtr VectorMeson2FermionDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void VectorMeson2FermionDecayer::doupdate() throw(UpdateException) {
-  VectorMesonDecayerBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void VectorMeson2FermionDecayer::doinit() throw(InitException) {
-  VectorMesonDecayerBase::doinit();
-  // check the parameters arew consistent
-  unsigned int isize=_coupling.size();
-  if(isize!=_incoming.size()  || isize!=_outgoingf.size()||
-     isize!=_outgoinga.size() || isize!=_maxweight.size())
-    {throw InitException() << "Inconsistent parameters in VectorMeson2"
-			   << "FermionDecayer::doiin() " << Exception::runerror;}
-  // set up the integration channels
-  vector<double> wgt(0);
-  DecayPhaseSpaceModePtr mode;
-  PDVector extpart(3);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0]=getParticleData(_incoming[ix]);
-      extpart[1]=getParticleData(_outgoingf[ix]);
-      extpart[2]=getParticleData(_outgoinga[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
-      addMode(mode,_maxweight[ix],wgt);
-    }
-}
-
-inline void VectorMeson2FermionDecayer::dofinish() {
-  VectorMesonDecayerBase::dofinish();
-}
-
 inline void VectorMeson2FermionDecayer::doinitrun() {
-  VectorMesonDecayerBase::doinitrun();
+  DecayIntegrator::doinitrun();
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {if(initialize()){_maxweight[ix] = mode(ix)->maxWeight();}}
-}
-
-
-inline void VectorMeson2FermionDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  VectorMesonDecayerBase::rebind(trans);
-}
-
-inline IVector VectorMeson2FermionDecayer::getReferences() {
-  IVector ret = VectorMesonDecayerBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 }
