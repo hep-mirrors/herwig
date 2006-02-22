@@ -8,8 +8,7 @@ VectorMeson2FermionDecayer.cc VectorMeson2FermionDecayer.h \
 VectorMeson2FermionDecayer.icc VectorMeson2MesonDecayer.cc \
 VectorMeson2MesonDecayer.h VectorMeson2MesonDecayer.icc \
 VectorMeson3PionDecayer.cc VectorMeson3PionDecayer.h \
-VectorMeson3PionDecayer.icc VectorMesonDecayerBase.cc \
-VectorMesonDecayerBase.h VectorMesonDecayerBase.icc \
+VectorMeson3PionDecayer.icc \
 VectorMesonPScalarFermionsDecayer.cc VectorMesonPScalarFermionsDecayer.h \
 VectorMesonPScalarFermionsDecayer.icc VectorMesonPVectorPScalarDecayer.cc \
 VectorMesonPVectorPScalarDecayer.fh VectorMesonPVectorPScalarDecayer.h \

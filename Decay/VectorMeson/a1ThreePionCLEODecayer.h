@@ -4,14 +4,14 @@
 //
 // This is the declaration of the a1ThreePionCLEODecayer class.
 //
-#include "VectorMesonDecayerBase.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
 // #include "a1ThreePionCLEODecayer.fh"
 // #include "a1ThreePionCLEODecayer.xh"
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::LorentzPolarizationVector;
 
 /** \ingroup Decay
  *
@@ -24,7 +24,8 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  *  \f$f(1370)\f$ and \f$\sigma\f$ sigma mesons.
  *
  *  In this case the current is given by
- *  \f[J^\mu = F_1(p_2-p_3)^\mu+F_2(p_3-p_1)^\mu+F_3(p_1-p_2)^\mu.\f]
+ *  \f[\mathcal{M} = \epsilon_\mu
+ *     \left[F_1(p_2-p_3)^\mu+F_2(p_3-p_1)^\mu+F_3(p_1-p_2)^\mu\right].\f]
  *
  *
  * The form factors for the \f$a_1^0 \to \pi^0 \pi^0 \pi^0\f$ mode are
@@ -133,10 +134,10 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  * rest frame of the resonanc \f$Y\f$.
  *
  * @see ThreePionCLEOCurrent
- * @see VectorMesonDecayerBase
+ * @see DecayIntegrator
  *
  */
-class a1ThreePionCLEODecayer: public VectorMesonDecayerBase {
+class a1ThreePionCLEODecayer: public DecayIntegrator {
   
 public:
   
@@ -145,7 +146,7 @@ public:
   /**
    * Default constructor.
    */
-  inline a1ThreePionCLEODecayer();
+  a1ThreePionCLEODecayer();
 
   /**
    * Copy-constructor.
@@ -168,17 +169,15 @@ public:
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
   
   /**
-   * The hadronic current. This returns the current 
-   * described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzPolarizationVector> 
-  decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
 
   /**
    * Method to return an object to calculate the 3 body partial width.
@@ -255,45 +254,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
   
 private:
@@ -604,7 +574,7 @@ namespace ThePEG {
   template <>
   struct BaseClassTrait<Herwig::a1ThreePionCLEODecayer,1> {
     /** Typedef of the base class of a1ThreePionCLEODecayer. */
-    typedef Herwig::VectorMesonDecayerBase NthBase;
+    typedef Herwig::DecayIntegrator NthBase;
   };
   
   template <>

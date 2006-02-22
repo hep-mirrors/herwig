@@ -4,8 +4,8 @@
 //
 // This is the declaration of the a1ThreePionDecayer class.
 //
-#include "VectorMesonDecayerBase.h"
-#include "ThePEG/Helicity/LorentzPolarizationVector.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
 // #include "a1ThreePionDecayer.fh"
 // #include "a1ThreePionDecayer.xh"
@@ -20,21 +20,21 @@ using namespace ThePEG;
  *  of the a_1 to three pions. The model used is one based on the Novosibirsk
  *  four pion current used in TAUOLA. 
  *
- *  - The current for the decay \f$a_1^0\to\pi^0\pi^0\pi^0\f$ is
+ *  - The matrix element for the decay \f$a_1^0\to\pi^0\pi^0\pi^0\f$ is
  * 
- *    \f[J^\mu =\frac{F_{a_1}(q^2)g}{qM^2_{\rho_0}}\left[
+ *    \f[J^\mu =\frac{F_{a_1}(q^2)g}{qM^2_{\rho_0}}\epsilon_\mu\left[
  * q^2z \sum_i p^\mu_i \frac1{D_\sigma(s_i)}\right]\f]
  *  
- *  - The current for the decay \f$a_1^+\to\pi^0\pi^0\pi^+\f$ is
+ *  - The matrix element for the decay \f$a_1^+\to\pi^0\pi^0\pi^+\f$ is
  *
- *    \f[J^\mu =\frac{F_{a_1}(q^2)g}{qM^2_{\rho_0}}\left[
+ *    \f[J^\mu =\frac{F_{a_1}(q^2)g}{qM^2_{\rho_0}}\epsilon_\mu\left[
  *  q^2z\frac1{D_\sigma(s_3)} p_3^\mu 
  *  +\sum_k g_{\rho_k}\left\{
  *      \frac1{D_{\rho_k}(s_1)}\left(p_0\cdot p_3p_2^\mu-p_0\cdot p_2p_3^\mu\right)
  *     +\frac1{D_{\rho_k}(s_2)}\left(p_0\cdot p_3p_1^\mu-p_0\cdot p_1p_3^\mu\right) \right\}
  * \right]\f]
  *
- *  - The current for the decay \f$a_10\to\pi^+\pi^-\pi^0\f$ is
+ *  - The matrix element for the decay \f$a_10\to\pi^+\pi^-\pi^0\f$ is
  *
  *   \f[J^\mu =\frac{F_{a_1}(q^2)g}{qM^2_{\rho_0}}\left[ 
  * q^2z\frac1{D_\sigma(s_3)}p_3^\mu
@@ -90,10 +90,10 @@ using namespace ThePEG;
  * - \f$m_{a_1}\f$ the mass of the \f$a_1\f$ meson.
  * - \f$\Lambda^2\f$ the mass parameter for the \f$a_1\f$ form factor.
  * @see FourPionNovosibirskCurrent
- * @see VectorMesonDecayerBase
+ * @see DecayIntegrator
  * 
  */
-class a1ThreePionDecayer: public VectorMesonDecayerBase {
+class a1ThreePionDecayer: public DecayIntegrator {
   
 public:
   
@@ -125,17 +125,15 @@ public:
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
 
   /**
-   * The hadronic current. This returns the current 
-   * described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzPolarizationVector> 
-  decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
   
 public:
    
@@ -182,11 +180,6 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
@@ -197,30 +190,6 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -422,7 +391,7 @@ namespace ThePEG {
   template <>
   struct BaseClassTrait<Herwig::a1ThreePionDecayer,1> {
     /** Typedef of the base class of a1ThreePionDecayer. */
-    typedef Herwig::VectorMesonDecayerBase NthBase;
+    typedef Herwig::DecayIntegrator NthBase;
   };
   
   /**

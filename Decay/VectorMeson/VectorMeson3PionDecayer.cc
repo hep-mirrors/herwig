@@ -5,6 +5,7 @@
 //
 
 #include "VectorMeson3PionDecayer.h"
+#include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 
@@ -17,14 +18,19 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Helicity/EpsFunction.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using Herwig::Helicity::outgoing;
+using Herwig::Helicity::incoming;
 using Herwig::Helicity::EpsFunction;
 using Herwig::Helicity::ScalarWaveFunction;
+using Herwig::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::RhoDMatrix;
+using ThePEG::Helicity::LorentzPolarizationVector;
 
 VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
   // generation of intermediates
@@ -69,7 +75,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
 }
 
 void VectorMeson3PionDecayer::doinit() throw(InitException) {
-  VectorMesonDecayerBase::doinit();
+  DecayIntegrator::doinit();
   // check the consistence of the decay modes
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()       || 
@@ -368,22 +374,24 @@ void VectorMeson3PionDecayer::Init() {
      0, 0, 1, 0, 1, false, false, true);
 
 }
-
-// the hadronic currents   
-vector<LorentzPolarizationVector> 
-VectorMeson3PionDecayer::decayCurrent(const bool vertex,const int ichan, 
-				      const Particle & inpart,
-				      const ParticleVector & decay) const
+double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
+				    const Particle & inpart,
+				    const ParticleVector & decay) const
 {
+  // wavefunctions for the decaying particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
+  // create the spin information for the decay products if needed
   unsigned int ix;
-  // create the spin information if needed
   if(vertex)
     {for(ix=0;ix<decay.size();++ix)
-
-      // workaround for gcc 3.2.3 bug
-      //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
-      {PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);}}
-
+	// workaround for gcc 3.2.3 bug
+	//ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}}
+	{PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);}}
+  // compute the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
   // work out the prefactor
   Complex pre(0.),resfact,ii(0.,1.);
   if(ichan<0){pre=_ccoupling[imode()][3];}
@@ -455,9 +463,15 @@ VectorMeson3PionDecayer::decayCurrent(const bool vertex,const int ichan,
   // overall coupling
   pre *=_coupling[imode()];
   // polarization vector piece
-  return vector<LorentzPolarizationVector>
-    (1,pre*EpsFunction::product(decay[0]->momentum(),decay[1]->momentum(),
-				decay[2]->momentum()));
+  LorentzPolarizationVector 
+    scalar=pre*EpsFunction::product(decay[0]->momentum(),decay[1]->momentum(),
+				    decay[2]->momentum());
+  // compute the matrix element
+  for(ix=0;ix<3;++ix)
+    {newME(ix,0,0,0)=scalar*invec[ix];}
+  ME(newME);
+  // return the answer
+  return newME.contract(rhoin).real();
 }
 
 double VectorMeson3PionDecayer::threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,
@@ -534,7 +548,7 @@ void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       if(ix<_initsize)

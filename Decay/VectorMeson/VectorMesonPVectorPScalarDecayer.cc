@@ -24,11 +24,38 @@ using namespace ThePEG::Helicity;
 using Helicity::ScalarWaveFunction;
 using Helicity::VectorWaveFunction;
 using Helicity::outgoing;
+using Helicity::incoming;
+
+void VectorMesonPVectorPScalarDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check consistence of the parameters
+  unsigned int isize=_incoming.size();
+  if(isize!=_outgoingA.size()||isize!=_outgoingP.size()||
+     isize!=_maxweight.size()||isize!=_coupling.size())
+    {throw InitException() << "Inconsistent parameters in "
+			   << "VectorMesonPVectorPScalarDecayer::doinit()" 
+			   << Exception::abortnow;}
+  // set up the integration channels
+  vector<double> wgt(0);
+  PDVector extpart(3);
+  DecayPhaseSpaceModePtr mode;
+  for(unsigned int ix=0;ix<_incoming.size();++ix)
+    {
+      extpart[0]=getParticleData(_incoming[ix]);
+      extpart[1]=getParticleData(_outgoingA[ix]);
+      extpart[2]=getParticleData(_outgoingP[ix]);
+      mode=new DecayPhaseSpaceMode(extpart,this);
+      addMode(mode,_maxweight[ix],wgt);
+    }
+}
 
 VectorMesonPVectorPScalarDecayer::VectorMesonPVectorPScalarDecayer() 
 {
   // intermediates
   generateIntermediates(false);
+  // reserve sizes of the vectors
+  _incoming.reserve(25);_outgoingA.reserve(25);_outgoingP.reserve(25);
+  _coupling.reserve(25);_maxweight.reserve(25);
   // Jpsi to K_1 K
   _incoming.push_back(443);_outgoingA.push_back( 20313);_outgoingP.push_back(-311);
   _incoming.push_back(443);_outgoingA.push_back( 20323);_outgoingP.push_back(-321);
@@ -161,32 +188,39 @@ void VectorMesonPVectorPScalarDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-// the hadronic currents 
-vector<LorentzPolarizationVector>  
-VectorMesonPVectorPScalarDecayer::decayCurrent(const bool vertex, const int, 
-					      const Particle & inpart,
-					      const ParticleVector & decay) const
+double VectorMesonPVectorPScalarDecayer::me2(bool vertex, const int ichan,
+					     const Particle & inpart,
+					     const ParticleVector & decay) const
 {
-  // storage for the current
-  vector<LorentzPolarizationVector> temp;
+  // wavefunctions of the incoming particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
   // set up the spin information for the decay products
-  VectorWaveFunction(temp,decay[0],outgoing,true,false,vertex);
-
+  vector<LorentzPolarizationVector> vout;
+  VectorWaveFunction(vout,decay[0],outgoing,true,false,vertex);
   // workaround for gcc 3.2.3 bug
   //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
-  PPtr mytemp = decay[1];
-  ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
-  // calculate the currents
+  PPtr myvout = decay[1];
+  ScalarWaveFunction(myvout,outgoing,true,vertex);
+  // compute the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
-  Complex epsdot(0.),pre(_coupling[imode()]/inpart.mass());
+  Complex epsdot(0.),pre(_coupling[imode()]/inpart.mass());  
   for(unsigned int ix=0;ix<3;++ix)
     {
-      epsdot=temp[ix]*inpart.momentum();
-      temp[ix]=pre*(p0dotpv*temp[ix]-epsdot*decay[0]->momentum());
+      epsdot=vout[ix]*inpart.momentum();
+      for(unsigned int iy=0;iy<3;++iy)
+	{
+	  newME(iy,ix,0)=pre*(p0dotpv*(vout[ix]*invec[iy])-
+			      epsdot*(invec[iy]*decay[0]->momentum()));
+	}
     }
-  return temp;
- }
+  ME(newME);
+  // return the answer
+  return newME.contract(rhoin).real();
+}
 
 bool VectorMesonPVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,
 						     int & mecode,
@@ -226,7 +260,7 @@ void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {

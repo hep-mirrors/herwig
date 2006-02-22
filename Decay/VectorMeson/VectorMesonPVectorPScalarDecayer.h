@@ -3,7 +3,8 @@
 #define HERWIG_VectorMesonPVectorPScalarDecayer_H
 // This is the declaration of the VectorMesonPVectorPScalarDecayer class.
 
-#include "VectorMesonDecayerBase.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "VectorMesonPVectorPScalarDecayer.fh"
 
 namespace Herwig {
@@ -15,15 +16,16 @@ using namespace ThePEG;
  *  meson and a pseudoscalar meson.
  *  The current for the decay is
  *
- *  \f[ J^\mu = g\left[ p_V \cdot p_0 \epsilon_V^\mu  
- *                     -p_V^\mu \epsilon_V \cdot p_0\right]\f]
+ *  \f[\mathcal{M}= g\left[ p_V \cdot p_0 \epsilon_V\cdot \epsilon_0  
+ *                     -p_V\cdot \epsilon_0 \epsilon_V \cdot p_0\right]\f]
  *
- * @see VectorMesonDecayerBase
+ * @see DecayIntegrator
+ * @see \ref VectorMesonPVectorPScalarDecayerInterfaces "The interfaces"
+ * defined for VectorMesonPVectorPScalarDecayer.
  * 
  *  \author Peter Richardson
- * 
  */
-class VectorMesonPVectorPScalarDecayer: public VectorMesonDecayerBase {
+class VectorMesonPVectorPScalarDecayer: public DecayIntegrator {
 
 public:
 
@@ -53,19 +55,17 @@ public:
    * @param dm The decay mode
    */
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
-
+  
   /**
-   * The hadronic current. This returns the current 
-   *  described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzPolarizationVector> 
-  decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
 
   /**
    * Output the setup information for the particle database
@@ -129,45 +129,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -230,7 +201,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::VectorMesonPVectorPScalarDecayer,1> {
     /** Typedef of the base class of VectorMesonPVectorPScalarDecayer. */
-  typedef Herwig::VectorMesonDecayerBase NthBase;
+  typedef Herwig::DecayIntegrator NthBase;
 };
 
 /**

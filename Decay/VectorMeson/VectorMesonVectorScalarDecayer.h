@@ -17,7 +17,7 @@ using namespace Herwig;
  *  particle, either a vector meson or a photon, and a scalar meson.
  *  The current for the decay is
  *
- *  \f[\f[\mathcal{M}=g\epsilon_mu\left[ p_V \cdot p_0 \epsilon_V^\mu  
+ *  \f[\mathcal{M}=g\epsilon_mu\left[ p_V \cdot p_0 \epsilon_V^\mu  
  *                     -p_V^\mu \epsilon_V \cdot p_0\right],\f]
  *  where \f$\epsilon\f$ is the polarization vector of the decaying vector
  *  meson, \f$\epsilon_V\f$ is the polarization vector of the outgoing vector meson,

@@ -3,8 +3,8 @@
 #define HERWIG_VectorMeson3PionDecayer_H
 // This is the declaration of the VectorMeson3PionDecayer class.
 
-#include "VectorMesonDecayerBase.h"
-#include "Herwig++/Utilities/Kinematics.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 // #include "VectorMeson3PionDecayer.fh"
 // #include "VectorMeson3PionDecayer.xh"
 
@@ -13,13 +13,12 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- *  The <code>VectorMeson3PionDecayer</code> class is designed to perform the
+ *  The VectorMeson3PionDecayer class is designed to perform the
  *  decay of an \f$I=0\f$ meson to three pions via rho mesons including the
  *  option of higher rho resonaces and a constant term. It is mainly intended for
- *  the decays
- *
- *   - \f$\omega \to \pi^+\pi^-\pi^0\f$
- *   - \f$\phi   \to \pi^+\pi^-\pi^0\f$
+ *  the decays:
+ *   - \f$\omega \to \pi^+\pi^-\pi^0\f$;
+ *   - \f$\phi   \to \pi^+\pi^-\pi^0\f$.
  *
  *  The default for the \f$\omega\f$ is to only include the
  *  contributions of the \f$\rho(770)\f$
@@ -30,9 +29,10 @@ using namespace ThePEG;
  * (The KLOE paper also included a omega contribution but this is assumed to be a 
  *  non-resonant contribution to the \f$e^+e^-\f$ cross section.)
  *
- *  The form of the current is taken to be
+ *  The form of the matrix element is taken to be
  *
- *  \f[ J^\mu = \frac{g}{M^2_{\rho}}\epsilon^{\mu\alpha\alpha\beta\gamma}
+ *  \f[\mathcal{M} = \frac{g}{M^2_{\rho}}\epsilon^{\mu\alpha\beta\gamma}
+ *                      \epsilon_{0\mu}
  *                      p_{+\alpha}p_{-\beta}p_{0\gamma}
  *      \left[a_de^{i\phi_d} +\sum_k a_{\rho_k}e^{i\phi_{\rho_k}}
  *   \left\{
@@ -43,8 +43,8 @@ using namespace ThePEG;
  *  +\frac{M^2_{\rho_k^0}}{m^2_{+-}-M^2_{\rho_k^0}
  *           +im_{+-}\Gamma_{\rho_k^0}(m^2_{+-})}\right\}
  *  \right],\f]
- *
- *  where \f$p_{+,-,0}\f$ are the momenta of the positively charged, negatively charged
+ *  where \f$\epsilon_0\f$ is the polarization vector of the decaying meson,
+ *  \f$p_{+,-,0}\f$ are the momenta of the positively charged, negatively charged
  *  and neutral pions respectively, \f$m^2_{ij}=(p_i+p_j)^2\f$, \f$M_{\rho_k}\f$ is
  *  the mass of the \f$k\f$th \f$\rho\f$ resonance, \f$g\f$ is the overall coupling and 
  * \f[\Gamma_{\rho_k}(m^2) = \Gamma_{\rho_k}\left(\frac{p_\pi(m^2)}{p_\pi(M_{\rho_k}^2)}\right)^2
@@ -84,12 +84,13 @@ using namespace ThePEG;
  *   - Rho2Width      - width of the second rho multiplet, \f$\Gamma_{\rho_2}\f$.
  *   - Rho3Width      - width of the third  rho multiplet, \f$\Gamma_{\rho_3}\f$.
  *
- *
- * @see VectorMesonDecayerBase
+ * @see DecayIntegrator
+ * @see \ref VectorMeson3PionDecayerInterfaces "The interfaces"
+ * defined for VectorMeson3PionDecayer.
  * 
  *  \author Peter Richardson
  */
-class VectorMeson3PionDecayer: public VectorMesonDecayerBase {
+class VectorMeson3PionDecayer: public DecayIntegrator {
 
 public:
 
@@ -113,22 +114,16 @@ public:
 
 public:
 
-
   /**
-   * The hadronic current. This returns the current 
-   *  described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzPolarizationVector> 
-  decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
-
-public:
-
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
   /**
    * Which of the possible decays is required
    * @param cc Is this mode the charge conjugate
@@ -211,11 +206,6 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
@@ -226,30 +216,6 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -406,7 +372,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::VectorMeson3PionDecayer,1> {
     /** Typedef of the base class of VectorMeson3PionDecayer. */
-  typedef Herwig::VectorMesonDecayerBase NthBase;
+  typedef Herwig::DecayIntegrator NthBase;
 };
 
 /**

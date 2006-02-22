@@ -4,7 +4,8 @@
 //
 // This is the declaration of the VectorMesonPScalarFermionsDecayer class.
 //
-#include "VectorMesonDecayerBase.h"
+#include "Herwig++/Decay/DecayIntegrator.h"
+#include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 // #include "VectorMesonPScalarFermionsDecayer.fh"
 // #include "VectorMesonPScalarFermionsDecayer.xh"
 
@@ -19,9 +20,9 @@ using namespace ThePEG;
  * vector into a fermion-antifermion pair.
  *
  *  The current is
- *  \f[J^\mu = \frac{g}{(p_f+p_{\bar f})^2}\epsilon^{\mu\nu\alpha\beta} p_{0\nu}
- *             (p_f+p_{\bar f})_\alpha
- *             \bar{u}(p_f)\gamma_\beta v(p_{\bar f})
+ *  \f[\mathcal{M}=\frac{g}{(p_f+p_{\bar f})^2}\epsilon^{\mu\nu\alpha\beta} 
+ *                  \epsilon_{0\mu}p_{0\nu}(p_f+p_{\bar f})_\alpha
+ *                  \bar{u}(p_f)\gamma_\beta v(p_{\bar f})
  *  \f]
  *
  *  It includes the option of a vector meson dominance (VMD) type form factor  
@@ -30,13 +31,15 @@ using namespace ThePEG;
  *  The incoming and outgoing meson together with the types of fermions can be
  *  specified using the interfaces.
  *
- * @see VectorMesonDecayerBase
+ * @see DecayIntegrator
  * @see VectorMesonVectorPScalarDecayer
+ * @see \ref VectorMesonPScalarFermionsDecayerInterfaces "The interfaces"
+ * defined for VectorMesonPScalarFermionsDecayer.
  * 
  *  \author Peter Richardson
  *
  */
-class VectorMesonPScalarFermionsDecayer: public VectorMesonDecayerBase {
+class VectorMesonPScalarFermionsDecayer: public DecayIntegrator {
 
 public:
 
@@ -68,18 +71,16 @@ public:
   virtual int modeNumber(bool & cc,const DecayMode & dm) const;
   
   /**
-   * The hadronic current. This returns the current 
-   *  described above.
-   * @param vertex Construct the information for spin correlations.
-   * @param ichan The phase-space channel to calculate the current for.
-   * @param inpart The decaying particle
-   * @param outpart The decay products
-   * @return The hadronic currents for the decay.
+   * Return the matrix element squared for a given mode and phase-space channel.
+   * @param vertex Output the information on the vertex for spin correlations
+   * @param ichan The channel we are calculating the matrix element for. 
+   * @param part The decaying Particle.
+   * @param decay The particles produced in the decay.
+   * @return The matrix element squared for the phase-space configuration.
    */
-  virtual vector<LorentzPolarizationVector> 
-  decayCurrent(const bool vertex, const int ichan,const Particle & inpart, 
-	       const ParticleVector & outpart) const;
-
+  double me2(bool vertex, const int ichan,const Particle & part,
+	     const ParticleVector & decay) const;
+  
   /**
    * Method to return an object to calculate the 3 body partial width.
    * @param dm The DecayMode
@@ -152,11 +153,6 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
@@ -167,30 +163,6 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -282,7 +254,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::VectorMesonPScalarFermionsDecayer,1> {
     /** Typedef of the base class of VectorMesonPScalarFermionsDecayer. */
-  typedef Herwig::VectorMesonDecayerBase NthBase;
+  typedef Herwig::DecayIntegrator NthBase;
 };
 
 /**

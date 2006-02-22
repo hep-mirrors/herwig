@@ -17,6 +17,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
@@ -25,16 +26,26 @@
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::RhoDMatrix;
+using Helicity::LorentzPolarizationVector;
+using Helicity::VectorWaveFunction;
 using Helicity::ScalarWaveFunction;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::EpsFunction;
+using Helicity::incoming;
 using Helicity::outgoing;
 
 VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer() 
 {
   // intermediates
   generateIntermediates(true);
+  // reserve the vectors
+  _incoming.reserve(10);_outgoingP.reserve(10);
+  _outgoingf.reserve(10);_outgoinga.reserve(10);
+  _coupling.reserve(10);_maxweight.reserve(10);_weight.reserve(10);
+  _includeVMD.reserve(10);_VMDid.reserve(10);
+  _VMDmass.reserve(10);_VMDwidth.reserve(10);
   // omega -> pi e+e- /mu+mu-
   _incoming.push_back( 223);_outgoingP.push_back( 111);
   _incoming.push_back( 223);_outgoingP.push_back( 111);
@@ -73,7 +84,7 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
 }
 
 void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
-  VectorMesonDecayerBase::doinit();
+  DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize(_coupling.size());
   if(isize!=_incoming.size()  || isize!=_outgoingP.size()|| isize!=_outgoingf.size()||
@@ -152,7 +163,6 @@ int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm
   cc=false;
   return imode;
 }
-
 
 void VectorMesonPScalarFermionsDecayer::persistentOutput(PersistentOStream & os) const {
   os << _coupling << _incoming << _outgoingP << _outgoingf << _outgoinga << _maxweight
@@ -245,28 +255,27 @@ void VectorMesonPScalarFermionsDecayer::Init() {
 
 }
 
-// the hadronic currents    
-vector<LorentzPolarizationVector>  
-VectorMesonPScalarFermionsDecayer::decayCurrent(const bool vertex,
-						const int, const Particle & inpart,
-						const ParticleVector & decay) const
+double VectorMesonPScalarFermionsDecayer::me2(bool vertex, const int ichan,
+				   const Particle & inpart,
+				   const ParticleVector & decay) const
 {
+  // wavefunctions for the incoming particle
+  RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
+  vector<LorentzPolarizationVector> invec;
+  VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
+		     incoming,true,false,vertex);
   // construct the spin information objects for the  decay products
   vector<LorentzSpinor> wave;
   vector<LorentzSpinorBar> wavebar;
-
   // workaround for gcc 3.2.3 bug
   //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
   PPtr mytemp = decay[0];
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
   SpinorWaveFunction(   wave   ,decay[2],outgoing,true,vertex);
   SpinorBarWaveFunction(wavebar,decay[1],outgoing,true,vertex);
-  // now compute the currents
-  vector<LorentzPolarizationVector> temp(4);
+  // the factor for the off-shell photon
   Lorentz5Momentum pff(decay[1]->momentum()+decay[2]->momentum());
   pff.rescaleMass();
-  // the factor for the off-shell photon
   Energy2 mff2(pff.mass2());
   // prefactor
   Complex pre(_coupling[imode()]/mff2),ii(0.,1.);
@@ -277,11 +286,20 @@ VectorMesonPScalarFermionsDecayer::decayCurrent(const bool vertex,
       Energy2 mwrho(_VMDmass[imode()]*_VMDwidth[imode()]);
       pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
     }
-  unsigned int ix,iy;
+  // calculate the matrix element
+  DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
+  LorentzPolarizationVector temp;
+  unsigned int ix,iy,iz;
   for(ix=0;ix<2;++ix)
-    {for(iy=0;iy<2;++iy)
-	{temp[2*iy+ix]=pre*EpsFunction::product(inpart.momentum(),pff,
-						 wave[ix].vectorCurrent(wavebar[iy]));}}
+    {
+      for(iy=0;iy<2;++iy)
+	{
+	  temp=pre*EpsFunction::product(inpart.momentum(),pff,
+					wave[ix].vectorCurrent(wavebar[iy]));
+	  for(iz=0;iz<3;++iz){newME(iz,0,iy,ix)=temp*invec[iz];}
+	}
+    }
+  ME(newME);
   /* code for the spin averaged me for testing only
   Energy  m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
   Energy m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};
@@ -304,8 +322,8 @@ VectorMesonPScalarFermionsDecayer::decayCurrent(const bool vertex,
        << endl;
    */
   // return the answer
-  return temp;
- }
+  return newME.contract(rhoin).real();
+}
 
 WidthCalculatorBasePtr 
 VectorMesonPScalarFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
@@ -383,7 +401,7 @@ void VectorMesonPScalarFermionsDecayer::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
-  VectorMesonDecayerBase::dataBaseOutput(output,false);
+  DecayIntegrator::dataBaseOutput(output,false);
   for(unsigned int ix=0;ix<_incoming.size();++ix)
     {
       if(ix<_initsize)
