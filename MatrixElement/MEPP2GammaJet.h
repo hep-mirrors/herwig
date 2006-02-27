@@ -204,15 +204,11 @@ private:
    * @param ain   Spinors for incoming antiquark
    * @param gout  Polarization vectors for the outgoing gluon
    * @param pout  Polarization vectors for the outgoing photon
-   * @param me    Spin summed Matrix element
-   * @param diag1 The piece for the first diagram
-   * @param diag2 The piece for the second diagram
+   * @param me    Whether or not to calculate the matrix element for spin correlations
    */
-  ProductionMatrixElement qqbarME(vector<SpinorWaveFunction>    & fin,
-				  vector<SpinorBarWaveFunction> & ain,
-				  vector<VectorWaveFunction>    & gout,
-				  vector<VectorWaveFunction>    & pout,
-				  double & me,double & diag1,double & diag2) const;
+  double qqbarME(vector<SpinorWaveFunction> & fin, vector<SpinorBarWaveFunction> & ain,
+		 vector<VectorWaveFunction> & gout, vector<VectorWaveFunction>    & pout,
+		 bool me) const;
 
   /**
    * Matrix element for \f$qg\to \gamma q\f$.
@@ -220,15 +216,11 @@ private:
    * @param gin   Polarization vectors for the incoming gluon
    * @param pout  Polarization vectors for the outgoing photon
    * @param fout  Spinors for outgoing quark
-   * @param me    Spin summed Matrix element
-   * @param diag1 The piece for the first diagram
-   * @param diag2 The piece for the second diagram
+   * @param me    Whether or not to calculate the matrix element for spin correlations
    */
-  ProductionMatrixElement qgME(vector<SpinorWaveFunction>    & fin,
-			       vector<VectorWaveFunction>    & gin,
-			       vector<VectorWaveFunction>    & pout,
-			       vector<SpinorBarWaveFunction> & fout,
-			       double & me,double & diag1,double & diag2) const;
+  double qgME(vector<SpinorWaveFunction> & fin,vector<VectorWaveFunction>     & gin,
+	      vector<VectorWaveFunction> & pout,vector<SpinorBarWaveFunction> & fout,
+	      bool me) const;
 
   /**
    * Matrix element for \f$\bar{q}g\to \gamma \bar{q}\f$.
@@ -236,17 +228,13 @@ private:
    * @param gin   Polarization vectors for the incoming gluon
    * @param pout  Polarization vectors for the outgoing photon
    * @param aout  Spinors for the outgoing antiquark
-   * @param me    Spin summed Matrix element
-   * @param diag1 The piece for the first diagram
-   * @param diag2 The piece for the second diagram
+   * @param me    Whether or not to calculate the matrix element for spin correlations
    */
-  ProductionMatrixElement qbargME(vector<SpinorBarWaveFunction> & ain,
-				  vector<VectorWaveFunction>    & gin,
-				  vector<VectorWaveFunction>    & pout,
-				  vector<SpinorWaveFunction>    & aout,
-				  double & me,double & diag1,double & diag2) const;
+  double qbargME(vector<SpinorBarWaveFunction> & ain, vector<VectorWaveFunction> & gin,
+		 vector<VectorWaveFunction> & pout, vector<SpinorWaveFunction> & aout,
+		 bool me) const;
   //@}
-
+  
 private:
 
   /**
@@ -283,6 +271,10 @@ private:
    */
   unsigned int _processopt;
   
+  /**
+   * Matrix element for spin correlations
+   */
+  ProductionMatrixElement _me;
 };
 
 }

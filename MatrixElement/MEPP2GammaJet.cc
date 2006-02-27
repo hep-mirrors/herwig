@@ -12,6 +12,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
+#include "Herwig++/Helicity/Correlations/HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -128,7 +129,7 @@ void MEPP2GammaJet::Init() {
      false, false, Interface::limited);
 
   static Switch<MEPP2GammaJet,unsigned int> interfaceProcesses
-    ("Processes",
+    ("Process",
      "Subprocesses to include",
      &MEPP2GammaJet::_processopt, 0, false, false);
   static SwitchOption interfaceProcessesAll
@@ -192,7 +193,7 @@ MEPP2GammaJet::colourGeometries(tcDiagPtr diag) const {
 
 double MEPP2GammaJet::me2() const {
   // total matrix element and the various components
-  double me(0.),diag1(0.),diag2(0.);
+  double me(0.);
   // first case, q qbar to gluon photon
   if(mePartonData()[0]->id()==-mePartonData()[1]->id())
     {
@@ -216,17 +217,16 @@ double MEPP2GammaJet::me2() const {
 	  phout.reset(2*ix);pout.push_back(phout);
 	}
       // calculate the matrix element
-      qqbarME(fin,ain,gout,pout,me,diag1,diag2);
-      // colour/spin factor
-      me *=1./9.;
+      me = qqbarME(fin,ain,gout,pout,false)/9.;
 //       Energy2 mt(scale());
-//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt)*sqr(mePartonData()[0]->charge());
-//       Energy2 s(sHat()),t(tHat()),u(uHat());
+//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt)*
+// 	sqr(mePartonData()[0]->charge());
+//       Energy2 t(tHat()),u(uHat());
 //       double me2=8./9./u/t*(t*t+u*u)*coupling;
 //       cerr << "testing matrix element A" 
-// 	   << me << "  " 
-// 	   << me2 << " " << me/me2
-// 	   << endl;
+//  	   << me << "  " 
+//  	   << me2 << " " << me/me2
+//  	   << endl;
     }
   else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id())
     {
@@ -250,13 +250,12 @@ double MEPP2GammaJet::me2() const {
 	  phout.reset(2*ix);pout.push_back(phout);
 	}
       // calculate the matrix element
-      qgME(fin,gin,pout,fout,me,diag1,diag2);
-      // colour/spin factor
-      me *=1./24.;
+      me = qgME(fin,gin,pout,fout,false)/24.;
 //       Energy2 mt(scale());
 //       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
 //       Energy2 s(sHat()),t(tHat()),u(uHat());
-//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*sqr(mePartonData()[0]->charge());
+//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
+// 	sqr(mePartonData()[0]->charge());
 //       cerr << "testing matrix element B" 
 // 	   << me << "  " 
 // 	   << me2 << " " << me/me2
@@ -284,32 +283,25 @@ double MEPP2GammaJet::me2() const {
 	  phout.reset(2*ix);pout.push_back(phout);
 	}
       // calculate the matrix element
-      qbargME(ain,gin,pout,aout,me,diag1,diag2);
-      // colour/spin factor
-      me *=1./24.;
+      me=qbargME(ain,gin,pout,aout,false)/24.;
 //       Energy2 mt(scale());
 //       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
 //       Energy2 s(sHat()),t(tHat()),u(uHat());
-//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*sqr(mePartonData()[0]->charge());
+//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*
+// 	sqr(mePartonData()[0]->charge());
 //       cerr << "testing matrix element C" 
 // 	   << me << "  " 
 // 	   << me2 << " " << me/me2
 // 	   << endl; 
     }
-  // save the info on the diagrams
-  DVector save;
-  save.push_back(diag1);
-  save.push_back(diag2);
-  meInfo(save);
   return me;
 }
 
-ProductionMatrixElement MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
-					       vector<SpinorBarWaveFunction> & ain,
-					       vector<VectorWaveFunction>    & gout,
-					       vector<VectorWaveFunction>    & pout,
-					       double & me,double & diag1,
-					       double & diag2) const
+double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
+			      vector<SpinorBarWaveFunction> & ain,
+			      vector<VectorWaveFunction>    & gout,
+			      vector<VectorWaveFunction>    & pout,
+			      bool calc) const
 {
   // the particles should be in the order
   // for the incoming 
@@ -319,13 +311,14 @@ ProductionMatrixElement MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & f
   // 0 outgoing gluon
   // 1 outgoing photon
   // me to be returned
-  ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1,PDT::Spin1);
+  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
+					     PDT::Spin1,PDT::Spin1));}
   // wavefunction for the intermediate particles
   SpinorWaveFunction inter;
   unsigned int inhel1,inhel2,outhel1,outhel2;
   Energy2 mt(scale());
   Complex diag[3];
-  me=0.;diag1=0.;diag2=0.;
+  double me(0.),diag1(0.),diag2(0.);
   for(inhel1=0;inhel1<2;++inhel1)
     {
       for(inhel2=0;inhel2<2;++inhel2)
@@ -348,20 +341,28 @@ ProductionMatrixElement MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & f
 		  diag2 +=real(diag[1]*conj(diag[1]));
 		  me    +=real(diag[2]*conj(diag[2]));
 		  // matrix element
-		  output(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
+		  if(calc) _me(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
 		}
 	    }		
 	}
     }
-  return output;
+  // save the info on the diagrams
+  if(!calc)
+    {
+      DVector save;
+      save.push_back(diag1);
+      save.push_back(diag2);
+      meInfo(save);
+    }
+  // return the answer
+  return me;
 }
 
-ProductionMatrixElement MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
-					    vector<VectorWaveFunction>    & gin,
-					    vector<VectorWaveFunction>    & pout,
-					    vector<SpinorBarWaveFunction> & fout,
-					    double & me,double & diag1,
-					    double & diag2) const
+double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
+			   vector<VectorWaveFunction>    & gin,
+			   vector<VectorWaveFunction>    & pout,
+			   vector<SpinorBarWaveFunction> & fout,
+			   bool calc) const
 {
   // the particles should be in the order
   // for the incoming 
@@ -371,13 +372,14 @@ ProductionMatrixElement MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
   // 0 outgoing photon
   // 1 outgoing fermion     (ubar spinor)
   // me to be returned
-  ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1,PDT::Spin1,PDT::Spin1Half);
+  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+					     PDT::Spin1,PDT::Spin1Half));
   // wavefunction for the intermediate particles
   SpinorWaveFunction inter;
   unsigned int inhel1,inhel2,outhel1,outhel2;
   Energy2 mt(scale());
   Complex diag[3];
-  me=0.;diag1=0.;diag2=0.;
+  double me(0.),diag1(0.),diag2(0.);
   for(inhel1=0;inhel1<2;++inhel1)
     {
       for(inhel2=0;inhel2<2;++inhel2)
@@ -400,20 +402,28 @@ ProductionMatrixElement MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
  		  diag2 +=real(diag[1]*conj(diag[1]));
  		  me    +=real(diag[2]*conj(diag[2]));
  		  // matrix element
- 		  output(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
+ 		  if(calc) _me(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
 		}
 	    }		
 	}
     }
-  return output;
+  // save the info on the diagrams
+  if(!calc)
+    {
+      DVector save;
+      save.push_back(diag1);
+      save.push_back(diag2);
+      meInfo(save);
+    }
+  // return the answer
+  return me;
 } 
 
-ProductionMatrixElement MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
-					       vector<VectorWaveFunction>    & gin,
-					       vector<VectorWaveFunction>    & pout,
-					       vector<SpinorWaveFunction>    & aout,
-					       double & me,double & diag1,
-					       double & diag2) const
+double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
+			      vector<VectorWaveFunction>    & gin,
+			      vector<VectorWaveFunction>    & pout,
+			      vector<SpinorWaveFunction>    & aout,
+			      bool calc) const
 {
   // the particles should be in the order
   // for the incoming 
@@ -423,14 +433,15 @@ ProductionMatrixElement MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & a
   // 0 outgoing photon
   // 1 outgoing fermion     (v    spinor)
   //me to be returned
-  ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1,PDT::Spin1,PDT::Spin1Half);
+  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
+					     PDT::Spin1,PDT::Spin1Half));
   // wavefunction for the intermediate particles
   SpinorBarWaveFunction inter;
   SpinorWaveFunction interb;
   unsigned int inhel1,inhel2,outhel1,outhel2;
   Energy2 mt(scale());
   Complex diag[3];
-  me=0.;diag1=0.;diag2=0.;
+  double me(0.),diag1(0.),diag2(0.);
   for(inhel1=0;inhel1<2;++inhel1)
     {
       for(inhel2=0;inhel2<2;++inhel2)
@@ -453,12 +464,21 @@ ProductionMatrixElement MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & a
  		  diag2 +=real(diag[1]*conj(diag[1]));
  		  me    +=real(diag[2]*conj(diag[2]));
  		  // matrix element
- 		  output(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
+ 		  if(calc) _me(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
 		}
 	    }		
 	}
     }
-  return output;
+  // save the info on the diagrams
+  if(!calc)
+    {
+      DVector save;
+      save.push_back(diag1);
+      save.push_back(diag2);
+      meInfo(save);
+    }
+  // return the answer
+  return me;
 }
 
 
@@ -538,4 +558,62 @@ bool MEPP2GammaJet::generateKinematics(const double * r) {
 
 void MEPP2GammaJet::constructVertex(tSubProPtr sub)
 {
+  SpinfoPtr spin[4];
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);hard.push_back(sub->outgoing()[1]);
+  // order of particles
+  unsigned int order[4]={0,1,2,3};
+  // identify the process and calculate matrix element
+  if(hard[0]->id()==ParticleID::g||hard[1]->id()==ParticleID::g)
+    {
+      if(hard[0]->id()==ParticleID::g    ){order[0]=1;order[1]=0;}
+      if(hard[3]->id()==ParticleID::gamma){order[2]=3;order[3]=2;}
+      if(hard[order[0]]->id()>0)
+	{
+	  vector<SpinorWaveFunction> q;
+	  vector<SpinorBarWaveFunction>  qb;
+	  vector<VectorWaveFunction> p,g;
+	  SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
+	  VectorWaveFunction   (g ,hard[order[1]],incoming,false,true,true);
+	  VectorWaveFunction   (p ,hard[order[2]],outgoing,true ,true,true);
+	  SpinorBarWaveFunction(qb,hard[order[3]],outgoing,true,true);
+	  qgME(q,g,p,qb,true);
+	}
+      else
+	{
+	  vector<SpinorWaveFunction> q;
+	  vector<SpinorBarWaveFunction>  qb;
+	  vector<VectorWaveFunction> p,g;
+	  SpinorBarWaveFunction(qb,hard[order[0]],incoming,false,true);
+	  VectorWaveFunction   (g ,hard[order[1]],incoming,false,true,true);
+	  VectorWaveFunction   (p ,hard[order[2]],outgoing,true ,true,true);
+	  SpinorWaveFunction   (q ,hard[order[3]],outgoing,true,true);
+	  qbargME(qb,g,p,q,true);
+	}
+    }
+  else
+    {
+      if(hard[0]->id()<0){order[0]=1;order[1]=0;}
+      if(hard[2]->id()==ParticleID::gamma){order[2]=3;order[3]=2;}
+      vector<SpinorWaveFunction> q;
+      vector<SpinorBarWaveFunction>  qb;
+      vector<VectorWaveFunction> p,g;
+      SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
+      SpinorBarWaveFunction(qb,hard[order[1]],incoming,false,true);
+      VectorWaveFunction   (g ,hard[order[2]],outgoing,true ,true,true);
+      VectorWaveFunction   (p ,hard[order[3]],outgoing,true ,true,true);
+      p[1]=p[2];g[1]=g[2];
+      qqbarME(q,qb,g,p,true);
+    }
+  // get the spin info objects
+  for(unsigned int ix=0;ix<4;++ix)
+    {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
+  // construct the vertex
+  VertexPtr hardvertex=new_ptr(HardVertex());
+  // set the matrix element for the vertex
+  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(_me);
+  // set the pointers and to and from the vertex
+  for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
 }
