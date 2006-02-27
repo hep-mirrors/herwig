@@ -58,7 +58,7 @@ void MEPP2GammaJet::getDiagrams() const {
       if(_processopt==0||_processopt==1)
 	{
 	  add(new_ptr((Tree2toNDiagram(3), q, qb, qb, 1, p, 2, g, -1)));
-	  add(new_ptr((Tree2toNDiagram(3), q, q, qb, 1, g, 2, p, -2)));
+	  add(new_ptr((Tree2toNDiagram(3), q,  q, qb, 2, p, 1, g, -2)));
 	}
       // q gluon to gamma q (two diagrams)
       if(_processopt==0||_processopt==2)
@@ -136,7 +136,7 @@ void MEPP2GammaJet::Init() {
      "All",
      "Include all the subprocesses",
      0);
-  static SwitchOption interfaceProcesses1
+  static SwitchOption interfaceProcessesqqbar
     (interfaceProcesses,
      "qqbar",
      "Only include the incoming q qbar subprocess",
@@ -157,7 +157,7 @@ Selector<const ColourLines *>
 MEPP2GammaJet::colourGeometries(tcDiagPtr diag) const {
   // q qbar to gamma gluon colour lines
   static ColourLines qqbar1("1 5, -5 -2 -3");
-  static ColourLines qqbar2("1 2 4, -4 -3");
+  static ColourLines qqbar2("1 2 5, -5 -3");
   // q gluon to gamma q colour lines
   static ColourLines qg1("1 2 -3, 3 5");
   static ColourLines qg2("1 -2, 2 3 5");
@@ -219,6 +219,14 @@ double MEPP2GammaJet::me2() const {
       qqbarME(fin,ain,gout,pout,me,diag1,diag2);
       // colour/spin factor
       me *=1./9.;
+//       Energy2 mt(scale());
+//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt)*sqr(mePartonData()[0]->charge());
+//       Energy2 s(sHat()),t(tHat()),u(uHat());
+//       double me2=8./9./u/t*(t*t+u*u)*coupling;
+//       cerr << "testing matrix element A" 
+// 	   << me << "  " 
+// 	   << me2 << " " << me/me2
+// 	   << endl;
     }
   else if(mePartonData()[0]->id()>0&&mePartonData()[1]->id())
     {
@@ -245,6 +253,14 @@ double MEPP2GammaJet::me2() const {
       qgME(fin,gin,pout,fout,me,diag1,diag2);
       // colour/spin factor
       me *=1./24.;
+//       Energy2 mt(scale());
+//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
+//       Energy2 s(sHat()),t(tHat()),u(uHat());
+//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*sqr(mePartonData()[0]->charge());
+//       cerr << "testing matrix element B" 
+// 	   << me << "  " 
+// 	   << me2 << " " << me/me2
+// 	   << endl; 
     }
   else
     {
@@ -271,6 +287,14 @@ double MEPP2GammaJet::me2() const {
       qbargME(ain,gin,pout,aout,me,diag1,diag2);
       // colour/spin factor
       me *=1./24.;
+//       Energy2 mt(scale());
+//       double coupling=sqr(4.*pi)*SM().alphaEM(0.)*SM().alphaS(mt);
+//       Energy2 s(sHat()),t(tHat()),u(uHat());
+//       double me2=-1./3./s/t*(s*s+t*t+2.*u*(s+t+u))*coupling*sqr(mePartonData()[0]->charge());
+//       cerr << "testing matrix element C" 
+// 	   << me << "  " 
+// 	   << me2 << " " << me/me2
+// 	   << endl; 
     }
   // save the info on the diagrams
   DVector save;
@@ -510,4 +534,8 @@ bool MEPP2GammaJet::generateKinematics(const double * r) {
   uHat(m22 + m32 - sHat() - tHat());
   jacobian((pq/sHat())*Constants::pi*jacobian());
   return true;
+}
+
+void MEPP2GammaJet::constructVertex(tSubProPtr sub)
+{
 }

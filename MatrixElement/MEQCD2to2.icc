@@ -1,0 +1,52 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEQCD2to2 class.
+//
+
+namespace Herwig {
+
+inline MEQCD2to2::MEQCD2to2():_maxflavour(5),_process(0) {}
+
+inline MEQCD2to2::MEQCD2to2(const MEQCD2to2 & x)
+  : ME2to2Base(x), _ggggvertex(x._ggggvertex),_gggvertex(x._gggvertex),
+    _qqgvertex(x._qqgvertex),_maxflavour(x._maxflavour),_process(x._process),
+    _gluon(x._gluon),_quark(x._quark),_antiquark(x._antiquark)
+{}
+
+inline IBPtr MEQCD2to2::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEQCD2to2::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MEQCD2to2::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _ggggvertex = trans.translate(_ggggvertex);
+  _gggvertex  = trans.translate( _gggvertex);
+  _qqgvertex  = trans.translate( _qqgvertex);
+  _gluon      = trans.translate( _gluon);
+  for(unsigned int ix=0;ix<_quark.size();++ix) 
+    {_quark[ix]=trans.translate(_quark[ix]);}
+  for(unsigned int ix=0;ix<_antiquark.size();++ix)
+    {_antiquark[ix]=trans.translate(_quark[ix]);}
+  ME2to2Base::rebind(trans);
+}
+
+inline IVector MEQCD2to2::getReferences() {
+  IVector ret = ME2to2Base::getReferences();
+  ret.push_back(_ggggvertex);
+  ret.push_back(_gggvertex);
+  ret.push_back(_qqgvertex);
+  ret.push_back(_gluon);
+  for(unsigned int ix=0;ix<_quark.size();++ix)
+    {ret.push_back(_quark[ix]);}
+  for(unsigned int ix=0;ix<_antiquark.size();++ix)
+    {ret.push_back(_antiquark[ix]);}
+  return ret;
+}
+
+
+}

@@ -1,3 +1,7 @@
+2006-02-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEQCD2to2 (Repository): QCD 2-to-2 matrix elements added
+
 2006-02-22  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Finished the removal of the VectorMesonDecayerBase and TensorMesonDecayerBase

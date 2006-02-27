@@ -22,9 +22,9 @@ using namespace ThePEG;
  *
  * The form of the vertex is
  * \f[ic^2\left[
- *   2\epsilon_1\cdot\epsilon_2\epsilon_3\cdot\epsilon_4
- *  - \epsilon_1\cdot\epsilon_3\epsilon_2\cdot\epsilon_4
- *  - \epsilon_1\cdot\epsilon_4\epsilon_2\cdot\epsilon_3
+ *   2\epsilon_1\cdot\epsilon_2\epsilon_3\cdot\epsilon_4-
+ *   \epsilon_1\cdot\epsilon_3\epsilon_2\cdot\epsilon_4-
+ *   \epsilon_1\cdot\epsilon_4\epsilon_2\cdot\epsilon_3
  * \right]\f]
  *  optional the additional diagrams from the three point vertices can be included.
  *

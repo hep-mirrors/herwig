@@ -21,32 +21,6 @@ inline IBPtr MEPP2GammaJet::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MEPP2GammaJet::doupdate() throw(UpdateException) {
-  ME2to2Base::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void MEPP2GammaJet::dofinish() {
-  ME2to2Base::dofinish();
-}
-
-inline void MEPP2GammaJet::doinitrun() {
-  ME2to2Base::doinitrun();
-}
-
 inline void MEPP2GammaJet::rebind(const TranslationMap & trans)
   throw(RebindException) {
   // dummy = trans.translate(dummy);
