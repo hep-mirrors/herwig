@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the O2AlphaS class.
+//
+#ifndef HERWIG_O2AlphaS_FH
+#define HERWIG_O2AlphaS_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class O2AlphaS;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::O2AlphaS,O2AlphaSPtr);
+
+}
+
+#endif

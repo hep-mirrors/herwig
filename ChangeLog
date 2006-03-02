@@ -1,3 +1,8 @@
+2006-03-02  Pete's account  <Peter.Richardson@durham.ac.uk>
+
+	* Models/StandardModel/O2AlphaS: Added a 2-loop alphaS class using the same
+	approach as FORTRAN HERWIG to make comparisions easier.
+
 2006-02-27  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* MatrixElement/MEPP2GammaJet.h (Repository): spin correlation code added to
