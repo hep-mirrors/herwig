@@ -1,0 +1,231 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEPP2HiggsJet class.
+//
+
+namespace Herwig {
+
+inline MEPP2HiggsJet::MEPP2HiggsJet() : _maxflavour(5), _process(0),
+					_minloop(6),_maxloop(6),_massopt(0) 
+{}
+
+inline MEPP2HiggsJet::MEPP2HiggsJet(const MEPP2HiggsJet & x)
+  : ME2to2Base(x), _maxflavour(x._maxflavour), _process(x._process),
+    _minloop(x._minloop),_maxloop(x._maxloop), _massopt(x._massopt)
+{}
+
+inline IBPtr MEPP2HiggsJet::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEPP2HiggsJet::fullclone() const {
+  return new_ptr(*this);
+}
+
+
+// If needed, insert default implementations of virtual function defined
+// in the InterfacedBase class here (using ThePEG-interfaced-impl in Emacs).
+  
+
+inline Complex MEPP2HiggsJet::W1(Energy2 s,Energy2 mf2) const
+{
+  double root = sqrt(abs(1.-4.*mf2/s));
+  if(s<0.)
+    {return 2.*root*asinh(0.5*sqrt(-s/mf2));}
+  else if(s<4.*mf2)
+    {
+      return 2.*root*asin(0.5*sqrt( s/mf2));
+    }
+  else
+    {return root*(2.*acosh(0.5*sqrt(s/mf2))-pi*Complex(0.,1.));}
+}
+
+inline Complex MEPP2HiggsJet::W2(Energy2 s,Energy2 mf2) const
+{
+  double root=0.5*sqrt(abs(s)/mf2);
+  if(s<0.)
+    {return 4.*sqr(asinh(root));}
+  else if(s<4.*mf2)
+    {return -4.*sqr(asin(root));}
+  else
+    {return 4.*sqr(acosh(root))-sqr(pi)-4.*pi*acosh(root)*Complex(0.,1.);}
+}
+
+inline Complex MEPP2HiggsJet::B(Energy2 s,Energy2 mf2) const
+{
+  Complex output,pii(0.,pi);
+  double rat;
+  if(_massopt==2)
+    {
+      rat=abs(s/mf2);
+      output=-log(rat)+2.;
+      if(s>0.) output+=pii;
+    }
+  else
+    {
+      rat=s/(4.*mf2);
+      if(s<0.)
+	output=2.-2.*sqrt(1.-1./rat)*log(sqrt(-rat)+sqrt(1.-rat));
+      else if(s>=0.&&rat<1.)
+	output=2.-2.*sqrt(1./rat-1.)*asin(sqrt(rat));
+      else
+	output=2.-sqrt(1.-1./rat)*(2.*log(sqrt(rat)+sqrt(rat-1.))-pii);
+    }
+  return output;
+}
+
+inline Complex MEPP2HiggsJet::C(Energy2 s,Energy2 mf2) const
+{
+  Complex output,pii(0.,pi);
+  double rat;
+  if(_massopt==2)
+    {
+      rat=abs(s/mf2);
+      output=0.5*sqr(log(rat));
+      if(s>0.) output+=-0.5*sqr(pi)-pii*log(rat);
+      output/=s;
+    }
+  else
+    { 
+      rat=s/(4.*mf2);
+      if(s<0.)
+	output=2.*sqr(log(sqrt(-rat)+sqrt(1.-rat)))/s;
+      else if(s>=0.&&rat<1.)
+	output=-2.*sqr(asin(sqrt(rat)))/s;
+      else
+	{
+	  double cosh=log(sqrt(rat)+sqrt(rat-1.));
+	  output=2.*(sqr(cosh)-sqr(pi)/4.-pii*cosh)/s;
+	}
+    }
+  return output;
+}
+
+inline Complex MEPP2HiggsJet::dIntegral(double a, double b, double y0) const
+{
+  Complex output;
+  if(b==0.)
+    {output=0.;}
+  else
+    {
+      Complex y1=0.5*(1.+sqrt(1.-4.*(a+_epsi)/b));
+      Complex y2=1.-y1;
+      Complex z1=y0/(y0-y1);
+      Complex z2=(y0-1.)/(y0-y1);
+      Complex z3=y0/(y0-y2);
+      Complex z4=(y0-1.)/(y0-y2);
+      output=Math::Li2(z1)-Math::Li2(z2)+Math::Li2(z3)-Math::Li2(z4);
+    }
+  return output;
+}
+
+inline Complex MEPP2HiggsJet::I3(Energy2 s, Energy2 t, Energy2 u, Energy2 v,
+				 Energy2 mf2) const
+{
+  double ratio=(4.*mf2*t/(u*s)),root(sqrt(1+ratio));
+  if(v==0.) return 0.;
+  else
+    {
+      Complex y=0.5*(1.+sqrt(1.-4.*(mf2+_epsi)/v));
+      Complex xp=0.5*(1.+root),xm=0.5*(1.-root);
+      Complex output = 
+	Math::Li2(xm/(xm-y))-Math::Li2(xp/(xp-y))+
+	Math::Li2(xm/(y-xp))-Math::Li2(xp/(y-xm))+
+	log(-xm/xp)*log(1.-_epsi-v/mf2*xp*xm);
+      return output*2./root;
+    }
+}
+
+inline Complex MEPP2HiggsJet::D(Energy2 s,Energy2 t, Energy2 u,Energy2 mf2) const
+{
+  Energy2 mh2(s+t+u);
+  Complex output,pii(0.,pi);
+  if(_massopt==2)
+    {
+      double dls(log(abs(s/mf2))),dlt(log(abs(t/mf2))),dlm(log(abs(mh2/mf2)));
+      if (s>=0.&&t<=0.)
+	{
+	  double dl1(log((mh2-t)/s));
+	  Complex z1(t/(t-mh2)),z2((s-mh2)/s);
+	  output=sqr(dls)+sqr(dlt)-sqr(dlm)+sqr(dl1)
+	    +2.*(log(s/(mh2-t))*log(-t/s)+Math::Li2(z1)-Math::Li2(z2)
+		 +pii*log(mh2/(mh2-t)));
+	}
+      else if(s<0.&&t<0.)
+	{
+	  double dl1(log((t-mh2)/(s-mh2)));
+	  Complex z1((s-mh2)/s),z2((t-mh2)/t);
+	  double rz12(1./real(z1*z2));
+	  double dl2(log(rz12));
+	  output = sqr(dls)+sqr(dlt)-sqr(dlm)+2.*sqr(pi)/3.
+	    +2.*log(s/(t-mh2))*log(1./real(z2))
+	    +2.*log(t/(s-mh2))*log(1./real(z1))
+	    -sqr(dl1)-sqr(dl2)-2.*(Math::Li2(z1)+Math::Li2(z2))
+	    +2.*pii*log(sqr(rz12)*mh2/mf2);
+	}
+      output/=(s*t);
+    }
+  else
+    {
+      Energy2 st=s*t;
+      double root=sqrt(sqr(st)-4.*st*mf2*(s+t-mh2));
+      double xp=0.5*(st+root)/st,xm=1-xp;
+      output = 2./root*(-dIntegral(mf2,s,xp)-dIntegral(mf2,t,xp)
+			+dIntegral(mf2,mh2,xp)+log(-xm/xp)
+			*(log(mf2+_epsi)-log(mf2+_epsi-s*xp*xm)
+			  +log(mf2+_epsi-mh2*xp*xm)-log(mf2+_epsi-t*xp*xm)));
+    }
+  return output;
+}
+
+inline Complex MEPP2HiggsJet::b2(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const
+{
+  Energy2 mh2(s+u+t);
+  Complex output=s*(u-s)/(s+u)+2.*u*t*(u+2.*s)/sqr(s+u)*(W1(t,mf2)-W1(mh2,mf2))
+    +(mf2-0.25*s)*(0.5*(W2(s,mf2)+W2(mh2,mf2))-W2(t,mf2)+W3(s,t,u,mh2,mf2))
+    +sqr(s)*(2.*mf2/sqr(s+u)-0.5/(s+u))*(W2(t,mf2)-W2(mh2,mf2))
+    +0.5*u*t/s*(W2(mh2,mf2)-2.*W2(t,mf2))
+    +0.125*(s-12.*mf2-4.*u*t/s)*W3(t,s,u,mh2,mf2);
+  return output*mf2/sqr(mh2);
+}
+
+inline Complex MEPP2HiggsJet::b4(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const
+{
+  Energy2 mh2(s+t+u);
+  return mf2/mh2*(-2./3.+(mf2/mh2-0.25)*(W2(t,mf2)-W2(mh2,mf2)+W3(s,t,u,mh2,mf2)));
+}
+
+inline Complex MEPP2HiggsJet::W3(Energy2 s, Energy2 t, Energy2 u, 
+				 Energy2 v, Energy2 mf2) const
+{return I3(s,t,u,v,mf2)-I3(s,t,u,s,mf2)-I3(s,t,u,u,mf2);}
+
+inline Complex MEPP2HiggsJet::A2(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const
+{return b2(s,t,u,mf2)+b2(s,u,t,mf2);}
+
+inline Complex MEPP2HiggsJet::A4(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const
+{return b4(s,t,u,mf2)+b4(u,s,t,mf2)+b4(t,u,s,mf2);}
+
+inline Complex MEPP2HiggsJet::me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
+				  unsigned int i ,unsigned int j ,unsigned int k ,
+				  unsigned int i1,unsigned int j1,unsigned int k1) const
+{
+  Energy2 s1(s-mh2),t1(t-mh2),u1(u-mh2);
+  return mf2*4.*sqrt(2.*s*t*u)*(-4.*(1./(u*t)+1./(u*u1)+1./(t*t1))
+				-4.*((2.*s+t)*_bi[k]/sqr(u1)+(2.*s+u)*_bi[j]/sqr(t1))/s
+				-(s-4.*mf2)*(s1*_ci[i1]+(u-s)*_ci[j1]+(t-s)*_ci[k1])/(s*t*u)
+				-8.*mf2*(_ci[j1]/(t*t1)+_ci[k1]/(u*u1))
+				+0.5*(s-4.*mf2)*(s*t*_di[k]+u*s*_di[j]-u*t*_di[i])/(s*t*u)
+				+4.*mf2*_di[i]/s
+				-2.*(u*_ci[k]+t*_ci[j]+u1*_ci[k1]+t1*_ci[j1]-u*t*_di[i])/sqr(s));
+}
+
+inline Complex MEPP2HiggsJet::me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
+				  unsigned int i ,unsigned int j ,unsigned int k ,
+				  unsigned int i1,unsigned int j1,unsigned int k1) const
+{
+  Energy2 s1(s-mh2),t1(t-mh2),u1(u-mh2);
+  return mf2*4.*sqrt(2.*s*t*u)*(4.*mh2+(mh2-4.*mf2)*(s1*_ci[4]+t1*_ci[5]+u1*_ci[6])
+				-0.5*(mh2-4.*mf2)*(s*t*_di[3]+u*s*_di[2]+u*t*_di[1]) )/(s*t*u);
+}
+}

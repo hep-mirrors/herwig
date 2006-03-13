@@ -18,7 +18,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"

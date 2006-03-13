@@ -87,7 +87,6 @@ void O2AlphaS::doinit() throw(InitException) {
     }
   // beta function coefficients
   double ca(generator()->standardModel()->Nc()),cf((sqr(ca)-1.)/2./ca);
-  cerr << "testing ca and cf " << ca << " " << cf << endl;
   for(unsigned int ix=3;ix<7;++ix)
     {
       _bcoeff[ix-1]=(11.*ca-2.*ix)/(12.*pi);
@@ -99,13 +98,6 @@ void O2AlphaS::doinit() throw(InitException) {
       _lambdas[4]=_lambdaQCD*exp(kfac/(4.*pi*_bcoeff[4]))/sqrt(2.);
     }
   else{_lambdas[4]=_lambdaQCD;}
-  cerr << "testing lambda " << _lambdas[4] << endl;
-  cerr << "testing b " 
-       << _bcoeff[2] << " " << _bcoeff[3] << " " 
-       << _bcoeff[4] << " " << _bcoeff[5] << endl;
-  cerr << "testing c " 
-       << _ccoeff[2] << " " << _ccoeff[3] << " " 
-       << _ccoeff[4] << " " << _ccoeff[5] << endl;
   // calculate the threshold matching
   double rho=2.*log(_threshold[5]/_lambdas[4]);
   double rat=log(rho)/rho;
@@ -117,9 +109,6 @@ void O2AlphaS::doinit() throw(InitException) {
   rat=log(rho)/rho;
   _match[3]=(_bcoeff[3]/(1.-_ccoeff[3]*rat)-_bcoeff[2]/(1.-_ccoeff[2]*rat))*rho
     +_match[4];
-  cerr << "testing matching parameter " 
-       << _match[3] << " " << _match[4] << " " 
-       << _match[5] << endl;
   // calculate the 4-flavour lambda
   _lambdas[3]=_lambdas[4]*pow(_threshold[4]/_lambdas[4],2./25.)*
     pow(2.*log(_threshold[4]/_lambdas[4]),963./14375.);
@@ -137,15 +126,6 @@ void O2AlphaS::doinit() throw(InitException) {
     }
   while(ix<100&&abs(drh)>eps*d35);
   _lambdas[2]=_lambdas[4]*exp(0.5*d35);
-
-  Energy2 scale(1.*GeV2);
-  for(;scale<100000*GeV2;scale+=50.*GeV2)
-    {
-      cout << sqrt(scale) << " " << value(scale,*(generator()->standardModel())) 
-  	   << endl;
-    }
-  //cerr << "testing " << 20*GeV << "  " 
-  //     << value(400.*GeV2,*(generator()->standardModel())) << endl;
 }
 
 vector<Energy> O2AlphaS::LambdaQCDs() const

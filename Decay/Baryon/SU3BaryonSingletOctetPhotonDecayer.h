@@ -39,7 +39,7 @@ using namespace ThePEG;
  *            \right],\f]
  *  where \f$S^\mu\f$ is the matrix field for the excited baryon multiplet.
  *  This form is used when the baryon's have the same parity and this form with
- *  an additional \f$gamma_5\f$ when they have opposite parity.
+ *  an additional \f$\gamma_5\f$ when they have opposite parity.
  *
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are
  *  intended for the decay of excited baryons.

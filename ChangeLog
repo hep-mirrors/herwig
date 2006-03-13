@@ -1,4 +1,9 @@
-2006-03-02  Pete's account  <Peter.Richardson@durham.ac.uk>
+2006-03-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
+
+	* MatrixElement/MEPP2HiggsJet.icc (Repository): added matrix element for gamma
+		gamma and Higgs + jet production
+
+2006-03-02  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* Models/StandardModel/O2AlphaS: Added a 2-loop alphaS class using the same
 	approach as FORTRAN HERWIG to make comparisions easier.

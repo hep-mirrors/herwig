@@ -31,7 +31,7 @@ using namespace ThePEG;
  *
  * \f[\frac{2C}{f_\pi} \left[{\rm tr} (\bar{R}^\mu p_{\phi,\mu}\phi B)\right],\f]
  *  where \f$R^\mu\f$ is the field for the excited resonance. This form is used for
- * the spin\f$\frac32^+\f$ resonances and this form with an additional \f$gamma_5\f$
+ * the spin\f$\frac32^+\f$ resonances and this form with an additional \f$\gamma_5\f$
  * for spin\f$\frac32^-\f$.
  * 
  *  This is one of a number of decayers based on \f$SU(3)\f$ symmetry which are

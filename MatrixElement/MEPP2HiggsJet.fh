@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEPP2HiggsJet class.
+//
+#ifndef HERWIG_MEPP2HiggsJet_FH
+#define HERWIG_MEPP2HiggsJet_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEPP2HiggsJet;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEPP2HiggsJet,MEPP2HiggsJetPtr);
+
+}
+
+#endif
