@@ -212,7 +212,7 @@ public:
    * @param ilist Which list to search
    * @param id The PDG code to look for.
    */
-  vector<PDPtr> search(int ilist,int id);
+  vector<PDPtr> search(unsigned int ilist,int id);
 
   /**
    * Is a given combination allowed.
@@ -508,7 +508,7 @@ private:
   /**
    *  Number of particles at the vertex
    */
-  int _npoint;
+  unsigned int _npoint;
 
   /**
    *  Number of particle combinations at the vertex

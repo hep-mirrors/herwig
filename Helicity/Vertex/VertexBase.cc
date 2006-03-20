@@ -39,7 +39,7 @@ AbstractClassDescription<VertexBase> VertexBase::initVertexBase;
   
 void VertexBase::Init() {
  
-  static Parameter<VertexBase,int> interfacenpoint
+  static Parameter<VertexBase,unsigned int> interfacenpoint
     ("NPoint",
      "The number of extermal particles interacting at the Vertex.",
      &VertexBase::_npoint, 3, 3, 5, false, false, true);
@@ -104,10 +104,10 @@ void VertexBase::Init() {
 }
 
 // find particles with a given id    
-vector<PDPtr> VertexBase::search(int iloc,int idd)
+vector<PDPtr> VertexBase::search(unsigned int iloc,int idd)
 {
   vector<PDPtr> out;
-  if(iloc<0||iloc>=_npoint)
+  if(iloc>=_npoint)
     {throw HelicityConsistencyError() << "VertexBase::search Invalid _particle "
 				      << "index for ilist search" 
 				      << Exception::abortnow;}

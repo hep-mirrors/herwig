@@ -243,7 +243,7 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
                              << "_yfswgt      : " << _yfswgt           << endl
                              << "_jacobianwgt : " << _jacobianwgt      << endl
                              << "_mewgt       : " << _mewgt            << endl;
-          for(int ct=0;ct<_multiplicity;ct++) {
+          for(unsigned int ct=0;ct<_multiplicity;ct++) {
             generator()->log() << "_cosphot[" << ct << "]: " << _cosphot[ct] << endl;
             generator()->log() << "_sinphot[" << ct << "]: " << _sinphot[ct] << endl;
 	  }

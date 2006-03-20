@@ -183,7 +183,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
 
   // get the information on the form-factor
   int jspin(0),id0(inpart.id()),id1(decay[0]->id());
-  bool cc;
+  bool cc=false;
   unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
   int spect,iq,ia;
   _form->formFactorInfo(iloc,jspin,spect,iq,ia);
