@@ -174,7 +174,6 @@ private:
    double negativeBinomial(int N, double mean, double ek);
    double meanMultiplicity(Energy E);
    int multiplicity(Energy E);
-   double gaussDistribution(double mean, double stdev);
 
    static ClassDescription<UA5Handler> initUA5Handler;
 
@@ -185,16 +184,16 @@ private:
     */
    UA5Handler& operator=(const UA5Handler &);
 
-   GlobParamPtr        globalParams;
-   ClusterFissionerPtr clusterFissioner;
-   ClusterDecayerPtr   clusterDecayer;
-   PartonSplitterPtr   split;
+   GlobParamPtr        _globalParams;
+   ClusterFissionerPtr _clusterFissioner;
+   ClusterDecayerPtr   _clusterDecayer;
+   PartonSplitterPtr   _split;
 
    /**
     * The parameters to the mean multiplicity distribution at mass 
     * s^(1/2) given by N1 * s^N2 + N3.
     */
-   double  N1, N2, N3;  
+   double  _N1, _N2, _N3;  
 
    /**
     * These are used to specify the k of the inverse binomial 
@@ -203,14 +202,14 @@ private:
     * where n_ is the mean of the distribution and G(x) is the 
     * Gamma function.
     */
-   double  K1, K2; 
+   double  _K1, _K2; 
 
    /**
     * These are parameters used in the mass distribution of the 
     * clusters given as  (M-m1-m2-_M1) exp(-_M2 * M)  where M is 
     * the decaying cluster mass and m1, m2 are the consituent masses.
     */
-   double M1, M2;  
+   double _M1, _M2;  
 
    /**
     * This is used to generate pt of a soft cluster. These parameters 
@@ -220,18 +219,18 @@ private:
     *         P(pt) ~ pt*exp(-b (pt^2+M^2)^(1/2)) 
     * where b is the given by the relevant parameter.
     */
-   double P1, P2, P3;  
+   double _P1, _P2, _P3;  
 
    /**
     * This is the probability of having a soft underlying event.
     */
-   double probSoft;
+   double _probSoft;
 
    /**
     * This is a parameter used to enhance the CM energy used to 
     * generate the multiplicity distribution.
     */
-   double enhanceCM; 
+   double _enhanceCM; 
 
 };
 
