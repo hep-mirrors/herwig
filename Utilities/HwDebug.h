@@ -53,8 +53,8 @@ namespace Herwig {
  *       minimal_Hadronization     = extreme+1,
  *       full_Hadronization        = extreme+1,
  *       extreme_Hadronization     = extreme+1,
- *       minimal_Decay             = extreme+1,
- *       full_Decay                = extreme+1,
+ *       minimal_Decay             = minimal+1,
+ *       full_Decay                = full+1,
  *       extreme_Decay             = extreme+1,
  */
   class HwDebug {
@@ -103,8 +103,8 @@ namespace Herwig {
       /**
        * Specific for the Decay part.
        */
-      minimal_Decay = extreme+1,
-      full_Decay    = extreme+1,
+      minimal_Decay = minimal+1,
+      full_Decay    = full+1,
       extreme_Decay = extreme+1
 
     };
