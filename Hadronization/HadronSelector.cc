@@ -572,6 +572,7 @@ pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
   }
   return hadPair;
 }
+
 pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
 			  	     const long id2, Energy PCMax, 
 				     int maxFlav) { 
@@ -584,6 +585,7 @@ pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
   Energy p, weight;
   int flav1 = convertIdToFlavour(id1);
   int flav2 = convertIdToFlavour(id2);
+
   weights.clear();
   int startFlav = D;
   // Choose the meson sector if between 0 and 1/(1+B), otherwise choose 

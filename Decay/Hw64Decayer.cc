@@ -81,11 +81,13 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    // throw a veto if not kinematically possible
    if(minmass>p.mass()&&numProds!=1)
      {
-       generator()->log() << "Hw64Decayer cannot perform the decay " << dm.tag() 
-			  << " for this particle instance as the minimum mass of "
-			  << "the decay products exceeds the mass of the particle"
-			  << endl;
-       generator()->log() << minmass << ' ' << p.mass() << endl;
+       if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Decay) {
+          generator()->log() << "Hw64Decayer cannot perform the decay " << dm.tag() 
+	   		     << " for this particle instance as the minimum mass of "
+			     << "the decay products exceeds the mass of the particle"
+			     << endl;
+          generator()->log() << minmass << ' ' << p.mass() << endl;
+       }
        throw Veto();
      }
 
@@ -125,13 +127,14 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 	   ++ntry;
 	 }
        while(ntry<_masstry&&outmass>p.mass());
-       if(outmass>p.mass())
-	 {
-	   generator()->log() << "Hw64Decayer failed to generate the masses of the"
-			      << " decay products for the decay " << dm.tag() 
-			      << " after " << _masstry << " attempts" << endl;
+       if(outmass>p.mass()) {
+          if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Decay) {
+	      generator()->log() << "Hw64Decayer failed to generate the masses of the"
+			         << " decay products for the decay " << dm.tag() 
+			         << " after " << _masstry << " attempts" << endl;
+           }
 	   throw Veto();
-	 }
+       }
        ++ntry;
      }
    else{masses[0]=p.mass();}
@@ -224,8 +227,10 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
      {Kinematics::fourBodyDecay(p.momentum(), products[0], products[1], 
 				products[2], products[3]);}
    if(products[0] == Lorentz5Momentum()) {
-     generator()->log() << "The Decay mode " << dm.tag() << " cannot "
-	                << "proceed, not enough phase space\n";   
+     if(HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Decay) {
+       generator()->log() << "The Decay mode " << dm.tag() << " cannot "
+	                  << "proceed, not enough phase space\n";   
+     }
      return ParticleVector();
    }
    cPDVector productParticles(numProds);

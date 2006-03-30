@@ -220,7 +220,7 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int ichan,
   LorentzPolarizationVector pleft[2][5],pright[2][5];
   for(unsigned int ix=0;ix<5;++ix)
     {
-      trace[ix]=inten[ix].trace();
+      trace[ix]=inten[ix].xx() + inten[ix].yy() + inten[ix].zz() + inten[ix].tt();
       pleft[0][ix] =(-decay[0]->momentum())*inten[ix];
       pleft[1][ix] =(-decay[1]->momentum())*inten[ix];
       pright[0][ix]=inten[ix]*(-decay[0]->momentum());

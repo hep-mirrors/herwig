@@ -247,7 +247,7 @@ public:
    */
   cutType cut(tClusterPtr &);
 
-private:
+public:
 
   /**
    * Produces a hadron and returns the flavour drawn from the vacuum.
@@ -257,7 +257,7 @@ private:
    */
   PPair produceHadron(const long id1, const long id2, Lorentz5Momentum &a,
 		      LorentzPoint &b) const;
-
+private:
   /**
    * Produces a cluster from the flavours passed in.
    *

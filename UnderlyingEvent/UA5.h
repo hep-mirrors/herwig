@@ -1,7 +1,7 @@
 #ifndef HERWIG_UA5_H_
 #define HERWIG_UA5_H_
 
-#include <ThePEG/Handlers/MultipleInteractionHandler.h>
+#include <ThePEG/Handlers/HadronizationHandler.h>
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "Herwig++/Hadronization/PartonSplitter.h"
@@ -51,7 +51,7 @@ using namespace ThePEG;
  *  second is the flavour drawn from the vacuum.          
  */
 
-class UA5Handler : public MultipleInteractionHandler {
+class UA5Handler : public HadronizationHandler {
 
 public:
 
@@ -171,9 +171,102 @@ private:
 
    ParticleVector decayHadron(tPPtr &) const throw(Veto,Exception);
 
+   /**
+    * This generates the distribution of the negative binomial given the mean, the N and ek.
+    * @param N
+    * @param mean
+    * @param ek
+    * @return a value distributed according the negative binomial distribution
+    */
    double negativeBinomial(int N, double mean, double ek);
+
+   /**
+    * The value of the mean multiplicity for a given energy E. This is N1*pow(E,N2)+N3 wher N1, N2 and N3 are parameters.
+    * @param E the energy to calculate the mean multiplicity for
+    * @return the mean multiplicity
+    */
    double meanMultiplicity(Energy E);
+
+   /**
+    * Generates a multiplicity for the energy E according to the negitive binomial distribution.
+    * @param E The energy to generate for
+    * @return the randomly generated multiplicity for the energy given
+    */
    int multiplicity(Energy E);
+
+   /**
+    * Gaussian distribution
+    * @param mean the mean of the distribution
+    * @param stdev the standard deviation of the distribution
+    * @return the gaussian distribution
+    */
+   double gaussDistribution(double mean, double stdev);
+
+   /**
+    * This adds the clusters, hadrons and stable particles to the event record
+    */
+   void addToEventRecord(StepPtr &step, PVector &clusters, PVector &hadrons, PVector &stable);
+
+   /**
+    * This counts the number of charges and the total charge for the particles given.
+    */
+   void countCharges(ParticleVector &particles, int &numCharges, int &modCharge);
+   /**
+    * This returns the rotation matrix needed to rotate p into the z axis
+    */
+   LorentzRotation rotate(LorentzMomentum &p);
+
+   /**
+    * This generates the momentum of the produced particles according to the cylindrical phase space algorithm given
+    * in Computer Physics Communications 9 (1975) 297-304 by S. Jadach.
+    * @param clusters The list of clusters produced
+    * @param CME The center of mass energy
+    * @param cm The center of mass momentum (of the underlying event)
+    */
+   void generateMomentum(PVector &clusters, double CME, Lorentz5Momentum cm);
+
+   /**
+    * The implementation of the cylindrical phase space.
+    * TODO: Must implement the different choices of parameters
+    * @param clusters The list of clusters to generate the momentum for
+    * @param CME The center of mass energy
+    */
+   void generateCylindricalPS(PVector &clusters, double CME);
+
+   /**
+    * This returns a random number with a flat distribution [-A,A] plus gaussian tail with stdev B 
+    * TODO: Should move this to Utilities
+    * @param A The width of the flat part
+    * @param B The standard deviation of the gaussian tail
+    * @return the randomly generated value
+    */
+   double randUng(double A, double B);
+
+   /**
+    * Generates a random azimuthal angle and puts x onto px and py 
+    * TODO: Should move this to Utilities
+    * @param x the magnitude of the vector
+    * @param px the x component after random rotation
+    * @param py the y component after random rotation
+    */
+   void randAzm(double x, double &px, double &py);
+
+  /**
+   * This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
+   * TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
+   * TODO: Should move to Utilities
+   * @param av the average of the distributions
+   * @return the value distributed from dN/d(x^2) = exp(-b*x) with mean av
+   */
+  double randExt(double AM0, double B);
+
+   /**
+    * transforms B (given in rest from of A). Returns vector in lab frame
+    * @param A The vector in the whose rest from B is in 
+    * @param B The vector we want to boost into the lab frame
+    * @return the new vector
+    */
+   Lorentz5Momentum transformToLab(Lorentz5Momentum &A, Lorentz5Momentum &B);
 
    static ClassDescription<UA5Handler> initUA5Handler;
 
@@ -243,7 +336,7 @@ namespace ThePEG {
 template<>
 struct BaseClassTrait<Herwig::UA5Handler,1> { 
   /** Typedef of the first base class of UA5Handler. */
-  typedef MultipleInteractionHandler NthBase;
+  typedef HadronizationHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
