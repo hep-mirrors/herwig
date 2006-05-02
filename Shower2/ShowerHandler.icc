@@ -1,0 +1,38 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerHandler class.
+//
+
+namespace Herwig {
+
+inline ShowerHandler::ShowerHandler() : _maxtry(10)
+{}
+
+inline ShowerHandler::ShowerHandler(const ShowerHandler & x)
+  : CascadeHandler(x),
+    _evolver( x._evolver ),
+    _maxtry(x._maxtry)
+{}
+
+inline IBPtr ShowerHandler::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ShowerHandler::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline PPtr ShowerHandler::findParent(PPtr original) const
+{
+  PPtr parent=original;
+  if(!original->parents().empty())
+    {
+      if(original->parents()[0]->momentum().m2()>0&&
+	 !original->parents()[0]->dataPtr()->stable())
+	parent=findParent(original);
+    }
+  return parent;
+}
+
+}

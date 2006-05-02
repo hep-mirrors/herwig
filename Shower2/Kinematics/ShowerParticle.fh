@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerParticle class.
+//
+#ifndef HERWIG_ShowerParticle_FH
+#define HERWIG_ShowerParticle_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ShowerParticle;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerParticle,ShowerParticlePtr);
+
+}
+
+#endif

@@ -223,11 +223,6 @@ private:
   ThePEG::EGPtr eg;
 
   /**
-   *  The timer for the run
-   */
-  ThePEG::MainTimer timer;
-
-  /**
    *  Whether or not the event generator is initialised
    */
   bool isInitialized;

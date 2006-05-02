@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerHandler class.
+//
+#ifndef HERWIG_ShowerHandler_FH
+#define HERWIG_ShowerHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ShowerHandler;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerHandler,ShowerHandlerPtr);
+
+}
+
+#endif

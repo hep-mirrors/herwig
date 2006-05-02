@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LeptonDalitzAnalysis class.
+//
+#ifndef HERWIG_LeptonDalitzAnalysis_FH
+#define HERWIG_LeptonDalitzAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LeptonDalitzAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LeptonDalitzAnalysis,LeptonDalitzAnalysisPtr);
+
+}
+
+#endif

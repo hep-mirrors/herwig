@@ -21,8 +21,7 @@ HerwigRun::HerwigRun(int argc, char **argv)
   seed(0),
   repo("HerwigDefaults.rpo"),
   egCreated(false), 
-  Status(UNKNOWN),
-  timer(".HerwigRun.timer"), 
+  Status(UNKNOWN), 
   isInitialized(false),
   errorFlag(false) 
 {
@@ -77,7 +76,6 @@ HerwigRun::HerwigRun(int argc, char **argv)
     else
       run = arg;
   }
-
   if ( Status == INIT ) {
     breakThePEG();
     {

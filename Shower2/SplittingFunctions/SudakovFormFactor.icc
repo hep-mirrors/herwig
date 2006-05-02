@@ -1,0 +1,94 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SudakovFormFactor class.
+//
+
+namespace Herwig {
+
+inline SudakovFormFactor::SudakovFormFactor()
+  : _q(), _z( 0.0 ), _phi(0.0), _pdfmax(35.0)
+{}
+
+inline SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
+  : Interfaced(x),_q(x._q), _z(x._z), _phi(x._phi), _splittingFn(x._splittingFn),
+    _alpha(x._alpha),_variables(x._variables),  _pdfmax(x._pdfmax)  
+{}
+
+inline IBPtr SudakovFormFactor::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SudakovFormFactor::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline tSplittingFnPtr SudakovFormFactor::splittingFn() const { return _splittingFn; }
+
+inline tShowerAlphaPtr SudakovFormFactor::alpha() const { return _alpha; }
+
+inline ShowerIndex::InteractionType  SudakovFormFactor::interactionType() {
+  return _splittingFn->interactionType();}
+
+inline double SudakovFormFactor::z() const { return _z; }
+
+inline double SudakovFormFactor::phi() const { return _phi; }
+
+inline Energy SudakovFormFactor::qtilde() const { return _q; }
+
+inline Energy SudakovFormFactor::resScale() const 
+{return _variables->cutoffQScale(_splittingFn->interactionType());}
+
+inline Energy SudakovFormFactor::kinScale() const { return _variables->kinScale(); }
+
+inline double SudakovFormFactor::guessz (double z0, double z1) const {
+  double lower = _splittingFn->integOverP(z0);
+  return _splittingFn->invIntegOverP
+    (lower + UseRandom::rnd()*(_splittingFn->integOverP(z1) - lower));
+}
+
+inline Energy2 SudakovFormFactor::guesst(Energy2 t1, double z0, double z1,
+				  bool isInitialShower) const
+{
+  if(!isInitialShower) {
+    return t1*pow(UseRandom::rnd(), 
+		  1./((_splittingFn->integOverP(z1) -
+		       _splittingFn->integOverP(z0))* 
+		      _alpha->overestimateValue()/(2.*pi))); 
+  } else {
+    return t1*pow(UseRandom::rnd(), 
+		  1./((_splittingFn->integOverP(z1) -
+		       _splittingFn->integOverP(z0))* 
+		      _pdfmax *
+		      _alpha->overestimateValue()/(2.*pi)));
+  }    
+}
+
+inline void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax,
+		                   Energy &kinCutoff, Energy m) {
+  kinCutoff = _variables->kinematicCutOff(kinScale(),m);
+  t0 = sqr(max(kinCutoff,m));
+  tmin = max(t0,sqr(resScale()));
+  if(tmax <= t0) _q = -1.;
+}
+
+inline bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t, 
+					const IdList &ids) const {
+  return UseRandom::rnd()>_splittingFn->ratioP(z, t, ids);
+}
+
+inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
+  return UseRandom::rnd() > _alpha->ratio(pt2);
+}
+
+inline bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 tmin) const {
+  if(t < tmin) {
+    t = -1.;
+    return true;
+  }
+  return false;
+}
+
+inline void SudakovFormFactor::setShowerVariables(ShowerVarsPtr in){_variables=in;}
+
+}

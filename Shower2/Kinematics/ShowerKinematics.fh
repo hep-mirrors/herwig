@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerKinematics class.
+//
+#ifndef HERWIG_ShowerKinematics_FH
+#define HERWIG_ShowerKinematics_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ShowerKinematics;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerKinematics,ShoKinPtr);
+
+}
+
+#endif

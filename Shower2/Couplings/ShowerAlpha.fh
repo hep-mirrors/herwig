@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerAlpha class.
+//
+#ifndef HERWIG_ShowerAlpha_FH
+#define HERWIG_ShowerAlpha_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ShowerAlpha;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerAlpha,ShowerAlphaPtr);
+
+}
+
+#endif

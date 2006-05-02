@@ -1,0 +1,191 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerParticle class.
+//
+
+namespace Herwig {
+
+inline void * ShowerParticle::operator new(size_t) {
+  return FixedAllocator<ShowerParticle>::allocate();
+}
+ 
+inline void ShowerParticle::operator delete(void * p, size_t) {
+  FixedAllocator<ShowerParticle>::deallocate(p);
+}
+
+inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
+  :  Particle(x),
+     _isFinalState(x._isFinalState),
+     _reconstructionFixedPoint(x._reconstructionFixedPoint),
+     _isFromHardSubprocess( x._isFromHardSubprocess ),
+     _initiatesTLS( x._initiatesTLS ),
+     _sudAlpha(x._sudAlpha),
+     _sudBeta(x._sudBeta),
+     _sudPx(x._sudPx),
+     _sudPy(x._sudPy),
+     _x(x._x),
+     _splitFun(x._splitFun),
+     _showerKinematics(x._showerKinematics),
+     _scales(x._scales),
+     _partners(x._partners),
+     _thePEGBase( x._thePEGBase )
+{}
+
+inline ShowerParticle::ShowerParticle(const Particle &x)
+  : Particle(x),
+    _isFinalState( true ),
+    _reconstructionFixedPoint( false ),
+    _isFromHardSubprocess( false ),
+    _initiatesTLS( false ),
+    _sudAlpha( 1.0 ),
+    _sudBeta( -1.0 ),
+    _sudPx( Energy() ),
+    _sudPy( Energy() ),
+    _x(1.0),
+    _splitFun( tSplittingFnPtr() ),
+    _showerKinematics( tShoKinPtr() ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
+     _thePEGBase( &x )
+{}
+
+inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
+  : Particle(x),
+    _isFinalState( true ),
+    _reconstructionFixedPoint( false ),
+    // this was still missing 
+    _isFromHardSubprocess( false ),
+    _initiatesTLS( false ),
+    _sudAlpha( 1.0 ),
+    _sudBeta( -1.0 ),
+    _sudPx( Energy() ),
+    _sudPy( Energy() ),
+    _x(1.0),
+    _splitFun( tSplittingFnPtr() ),
+    _showerKinematics( tShoKinPtr() ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
+    //_rhoD( 2, vector< std::complex<double> >(2) ),
+    _thePEGBase( PPtr() )
+{}
+
+
+inline bool ShowerParticle::isFinalState() const {
+  return _isFinalState;
+}
+
+inline void ShowerParticle::setFinalState(const bool inputIsFinalState) {
+  _isFinalState = inputIsFinalState;
+}
+
+inline bool ShowerParticle::initiatesTLS() const {
+  return _initiatesTLS;
+}
+
+inline void ShowerParticle::setInitiatesTLS(const bool input) {
+  _initiatesTLS = input;
+}
+
+
+inline bool ShowerParticle::isFromHardSubprocess() const {
+  return _isFromHardSubprocess;
+}
+
+inline void ShowerParticle::setFromHardSubprocess(const bool val) 
+{
+  _isFromHardSubprocess = val;
+}
+
+  
+inline double ShowerParticle::sudAlpha() const {
+  return _sudAlpha;
+}
+inline void ShowerParticle::sudAlpha(const double inputSudAlpha) {
+  _sudAlpha = inputSudAlpha;
+}
+
+inline double ShowerParticle::sudBeta() const {
+  return _sudBeta;
+}
+inline void ShowerParticle::sudBeta(const double inputSudBeta) {
+  _sudBeta = inputSudBeta;
+}
+
+inline Energy ShowerParticle::sudPx() const {
+  return _sudPx;
+}
+inline void ShowerParticle::sudPx(const Energy inputSudPx) {
+  _sudPx = inputSudPx;
+}
+
+inline Energy ShowerParticle::sudPy() const {
+  return _sudPy;
+}
+inline void ShowerParticle::sudPy(const Energy inputSudPy) {
+  _sudPy = inputSudPy;
+}
+
+inline Energy ShowerParticle::sudPperp() const {
+  return sqrt( sqr(_sudPx) + sqr(_sudPy) );
+}
+
+inline Energy2 ShowerParticle::sudPperp2() const {
+  return ( sqr(_sudPx) + sqr(_sudPy) );
+}
+
+inline tSplittingFnPtr ShowerParticle::splitFun() const {
+  return _splitFun;
+}
+
+inline void ShowerParticle::setSplittingFn(const tSplittingFnPtr sf) {
+  _splitFun = sf;
+}
+
+inline vector<Energy> ShowerParticle::evolutionScales() const {
+  return _scales;
+}
+
+inline ShoKinPtr & ShowerParticle::showerKinematics() {
+  return _showerKinematics;
+}
+
+inline const tShowerParticleVector & ShowerParticle::partners() const {
+  return _partners;
+}
+
+
+inline void ShowerParticle::setEvolutionScale(const ShowerIndex::InteractionType interaction, 
+					      const Energy scale) {
+  _scales[interaction] = scale;
+}
+
+inline void ShowerParticle::setPartner(const ShowerIndex::InteractionType interaction, 
+				       const tShowerParticlePtr partner) {
+  _partners[interaction] = partner;
+}
+
+inline bool ShowerParticle::isReconstructionFixedPoint() const {
+  return _reconstructionFixedPoint || children().empty() ;
+}
+
+inline void ShowerParticle::setReconstructionFixedPoint(const bool inputIsDecaying) {
+  _reconstructionFixedPoint = inputIsDecaying;
+}
+
+inline tcPPtr ShowerParticle::getThePEGBase() {
+  return _thePEGBase; 
+}
+
+inline PPtr ShowerParticle::clone() const {
+  return dynamic_ptr_cast<PPtr>(ptr_new<ShowerParticlePtr>(*this));
+}
+
+inline PPtr ShowerParticle::fullclone() const {
+  return clone();
+}
+
+inline void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
+  _showerKinematics = inputShowerKinematics;
+}
+}

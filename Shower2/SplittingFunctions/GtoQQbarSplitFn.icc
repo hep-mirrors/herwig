@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GtoQQbarSplitFn class.
+//
+
+namespace Herwig {
+
+inline GtoQQbarSplitFn::GtoQQbarSplitFn() : SplittingFunction(ShowerIndex::QCD,1)
+{}
+
+inline GtoQQbarSplitFn::GtoQQbarSplitFn(const GtoQQbarSplitFn & x)
+  : SplittingFunction(x) {}
+
+inline IBPtr GtoQQbarSplitFn::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr GtoQQbarSplitFn::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

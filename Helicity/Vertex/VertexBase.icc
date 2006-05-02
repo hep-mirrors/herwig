@@ -132,7 +132,7 @@ inline VertexBase::VertexBase(int ia, int ib, int ic, int id , int ie,
 }
 
 // default constructor
-inline VertexBase::VertexBase(int nin, bool kine) : _npoint(nin), _calckinematics(kine)
+inline VertexBase::VertexBase(unsigned int nin, bool kine) : _npoint(nin), _calckinematics(kine)
 {;}
 
 
@@ -244,8 +244,8 @@ inline void VertexBase::setList(vector<int> ida,vector<int> idb, vector<int> idc
 inline unsigned int VertexBase::size(){return _nsize;}
 
 // set and get functions for the number of external particles
-inline int VertexBase::getNpoint(){return _npoint;}
-inline void VertexBase::setNpoint(int in){_npoint=in;}
+inline unsigned int VertexBase::getNpoint(){return _npoint;}
+inline void VertexBase::setNpoint(unsigned int in){_npoint=in;}
 
 // is a particle allowed as an incoming particle
 inline bool VertexBase::incoming(int id)
@@ -406,7 +406,7 @@ inline void VertexBase::calculateKinematics(const vector<Lorentz5Momentum> & p)
 
 inline Energy2 VertexBase::invariant(unsigned int ix,unsigned int iy)
 {
-  if(ix>abs(_npoint)||iy>abs(_npoint))
+  if(ix>_npoint||iy>_npoint)
     {throw Exception() << "Invalid invariant requested in VertexBase::invariant() " 
 		       << ix << " " << iy << Exception::abortnow;}
   return _kine[ix][iy];

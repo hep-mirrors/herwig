@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerProgenitor class.
+//
+#ifndef HERWIG_ShowerProgenitor_FH
+#define HERWIG_ShowerProgenitor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ShowerProgenitor;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerProgenitor,ShowerProgenitorPtr);
+
+}
+
+#endif

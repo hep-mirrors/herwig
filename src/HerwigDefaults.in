@@ -161,6 +161,7 @@ insert LHCHandler:SubProcessHandlers[0] /Defaults/Handlers/SimpleQCD
 set LHCHandler:BeamA /Defaults/Particles/p+
 set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
+set LHCHandler:BinStrategy 1
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
 set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theForcedSplitting
 #insert LHCHandler:PostHadronizationHandlers 0 /Defaults/Handlers/UnderlyingEvent/theUA5

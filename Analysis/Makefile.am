@@ -31,5 +31,7 @@ AM_CPPFLAGS+= -I$(KTJETPATH)
 HwLEPAnalysis_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
 HwLEPAnalysis_la_SOURCES +=\
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh\
-LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc 
+LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
+LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh\
+LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc 
 endif

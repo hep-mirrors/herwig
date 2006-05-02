@@ -101,7 +101,7 @@ public:
    * @param npoint The number of external particles.
    * @param kine Whether the kinematic invariants should be calculated.
    */
-  inline VertexBase(int npoint,bool kine=false);
+  inline VertexBase(unsigned int npoint,bool kine=false);
 
   /**
    * Destructor.
@@ -178,7 +178,7 @@ public:
   /**
    * Get the number of external particles.
    */
-  inline int getNpoint();
+  inline unsigned int getNpoint();
 
   /**
    * Is a particle allowed as an incoming particle?
@@ -363,7 +363,7 @@ protected:
    * Set the number of external particles.
    * @param npoint The number of external particles.
    */
-  inline void setNpoint(int npoint);
+  inline void setNpoint(unsigned int npoint);
   //@}
 
   /**

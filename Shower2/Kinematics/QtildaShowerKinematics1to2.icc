@@ -1,0 +1,42 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QtildaShowerKinematics1to2 class.
+//
+
+namespace Herwig {
+
+inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2(ShowerVarsPtr in)
+  :ShowerKinematics(in),
+   _pVector( Lorentz5Momentum() ),
+   _nVector( Lorentz5Momentum() ) 
+{}
+
+inline QtildaShowerKinematics1to2::
+QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 & x)
+  : ShowerKinematics(x),
+    _pVector( x._pVector ),
+    _nVector( x._nVector )
+{}
+
+inline QtildaShowerKinematics1to2::
+QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
+			    const Lorentz5Momentum & n,
+			    ShowerVarsPtr in) :
+  ShowerKinematics(in), 
+  _pVector( p ),
+  _nVector( n )
+{}
+
+inline const Lorentz5Momentum & QtildaShowerKinematics1to2::pVector() const {
+  return _pVector;
+}
+
+inline const Lorentz5Momentum & QtildaShowerKinematics1to2::nVector() const {
+  return _nVector;
+}
+
+inline const double QtildaShowerKinematics1to2::p_dot_n() const {
+  return _pVector*_nVector;
+}
+}

@@ -1,0 +1,134 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SplittingGenerator class.
+//
+
+namespace Herwig {
+
+inline SplittingGenerator::SplittingGenerator()
+  : _qcdinteractionMode(1), _qedinteractionMode(0), _ewkinteractionMode(0),
+    _isr_Mode(0), _isr_qcdMode(1), _isr_qedMode(1), _isr_ewkMode(1),
+    _fsr_Mode(1), _fsr_qcdMode(1), _fsr_qedMode(1), _fsr_ewkMode(1)
+{}
+
+inline SplittingGenerator::SplittingGenerator(const SplittingGenerator & x)
+  : Interfaced(x), 
+    _qcdinteractionMode(x._qcdinteractionMode),
+    _qedinteractionMode(x._qedinteractionMode),
+    _ewkinteractionMode(x._ewkinteractionMode),
+    _isr_Mode(x._isr_Mode), _isr_qcdMode(x._isr_qcdMode),
+    _isr_qedMode(x._isr_qedMode), _isr_ewkMode(x._isr_ewkMode),
+    _fsr_Mode(x._fsr_Mode), _fsr_qcdMode(x._fsr_qcdMode),
+    _fsr_qedMode(x._fsr_qedMode), _fsr_ewkMode(x._fsr_ewkMode),
+    _showerVariables(x._showerVariables), _fbranchings(x._fbranchings),
+    _bbranchings(x._bbranchings)
+{}
+
+inline IBPtr SplittingGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SplittingGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SplittingGenerator::doinitrun() throw(InitException) {
+  Interfaced::doinit();
+  BranchingList::const_iterator cit=_fbranchings.begin();
+  for( ;cit!=_fbranchings.end();++cit)
+    {cit->second.first->setShowerVariables(_showerVariables);} 
+  cit=_bbranchings.begin();
+  for( ;cit!=_bbranchings.end();++cit)
+    {cit->second.first->setShowerVariables(_showerVariables);}
+}
+
+inline void SplittingGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  BranchingList::iterator cit;
+  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
+    {(cit->second).first=trans.translate((cit->second).first);}
+  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
+    {(cit->second).first=trans.translate((cit->second).first);}
+  Interfaced::rebind(trans);
+}
+
+inline IVector SplittingGenerator::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  BranchingList::iterator cit;
+  for(cit=_fbranchings.begin();cit!=_fbranchings.end();++cit)
+    {ret.push_back((cit->second).first);}
+  for(cit=_bbranchings.begin();cit!=_bbranchings.end();++cit)
+    {ret.push_back((cit->second).first);}
+  return ret;
+}
+
+inline const ShowerVarsPtr & SplittingGenerator::showerVariables() const {
+  return _showerVariables;
+}
+
+inline bool SplittingGenerator::isISRadiationON() const {
+  return _isr_Mode&&(_isr_qcdMode||_isr_qedMode||_isr_ewkMode);
+}  
+
+inline bool SplittingGenerator::isFSRadiationON() const {
+  return _fsr_Mode&&(_fsr_qcdMode||_fsr_qedMode||_fsr_ewkMode);
+}
+
+inline bool SplittingGenerator::
+isInteractionON(const ShowerIndex::InteractionType interaction) const {
+  bool mode(false);
+  switch ( interaction ) {
+  case ShowerIndex::QCD : 
+    mode = _qcdinteractionMode&&((_isr_qcdMode&&_isr_Mode)||
+				 (_fsr_qcdMode&&_fsr_Mode)); break; 
+  case ShowerIndex::QED :  
+    mode = _qedinteractionMode&&((_isr_qedMode&&_isr_Mode)||
+				 (_fsr_qedMode&&_fsr_Mode)); break; 
+  case ShowerIndex::EWK : 
+    mode = _ewkinteractionMode&&((_isr_ewkMode&&_isr_Mode)||
+				 (_fsr_ewkMode&&_fsr_Mode)); break; 
+  default: break;
+  }
+  return mode;
+}
+
+inline bool SplittingGenerator::
+isISRadiationON(const ShowerIndex::InteractionType interaction) const {
+  bool mode(false);
+  if ( isInteractionON(interaction) && isISRadiationON() ) { 
+    switch ( interaction ) {
+    case ShowerIndex::QCD : mode = _isr_qcdMode; break; 
+    case ShowerIndex::QED : mode = _isr_qedMode; break; 
+    case ShowerIndex::EWK : mode = _isr_ewkMode; break; 
+    default: break;
+    }
+  }
+  return mode;
+}
+
+inline bool SplittingGenerator::
+isFSRadiationON(const ShowerIndex::InteractionType interaction) const {
+  int mode = 0;
+  if ( isInteractionON(interaction) && isFSRadiationON() ) { 
+    switch ( interaction ) {
+    case ShowerIndex::QCD : mode = _fsr_qcdMode; break; 
+    case ShowerIndex::QED : mode = _fsr_qedMode; break; 
+    case ShowerIndex::EWK : mode = _fsr_ewkMode; break; 
+    default: break;
+    }
+  }
+  return mode;
+}
+
+inline string SplittingGenerator::addFinalSplitting(string arg) {
+  return addSplitting(arg,true);
+}
+inline string SplittingGenerator::addInitialSplitting(string arg) {
+  return addSplitting(arg,false);
+}
+
+inline void SplittingGenerator::setShowerVariables(ShowerVarsPtr in)
+{_showerVariables=in;}
+
+}

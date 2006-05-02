@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MECorrectionBase class.
+//
+
+namespace Herwig {
+
+inline MECorrectionBase::MECorrectionBase() {}
+
+inline MECorrectionBase::MECorrectionBase(const MECorrectionBase & x)
+  : Interfaced(x), _showerVariables(x._showerVariables) {}
+  
+inline void MECorrectionBase::showerVariables(ShowerVarsPtr in)
+{_showerVariables=in;}
+
+inline ShowerVarsPtr MECorrectionBase::showerVariables() const
+{return _showerVariables;}
+
+}

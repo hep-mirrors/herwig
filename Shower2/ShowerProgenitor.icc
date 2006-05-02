@@ -1,0 +1,32 @@
+// -*- C++ -*- 
+namespace Herwig {
+
+using namespace ThePEG;
+
+inline ShowerProgenitor::ShowerProgenitor(PPtr original, PPtr copy,
+					  ShowerParticlePtr particle,
+					  Energy pT,bool emitted)
+  : _original(original), _copy(copy), _particle(particle), 
+    _highestPt(pT), _hasEmitted(emitted)
+{}
+
+inline ShowerParticlePtr ShowerProgenitor::progenitor() const
+{return _particle;}
+
+inline PPtr ShowerProgenitor::original() const
+{return _original;}
+
+inline PPtr ShowerProgenitor::copy() const
+{return _copy;}
+
+inline Energy ShowerProgenitor::pT() const 
+{return _highestPt;}
+
+inline void ShowerProgenitor::pT(Energy in) {_highestPt=in;}
+
+inline bool ShowerProgenitor::hasEmitted() const {return _hasEmitted;}
+
+inline void ShowerProgenitor::hasEmitted(bool in) {_hasEmitted=in;}
+
+inline long ShowerProgenitor::id() const {return _particle->id();}
+}

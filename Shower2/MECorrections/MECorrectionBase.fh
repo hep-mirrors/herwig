@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MECorrectionBase class.
+//
+#ifndef HERWIG_MECorrectionBase_FH
+#define HERWIG_MECorrectionBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MECorrectionBase;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MECorrectionBase,MECorrectionPtr);
+
+}
+
+#endif

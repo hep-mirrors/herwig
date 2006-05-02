@@ -1,7 +1,0 @@
-.svn Makefile config.log config.status
-aclocal.m4
-autom4te.cache
-*.lo *.la .libs .deps
-Makefile.in
-libtool
-configure

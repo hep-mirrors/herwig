@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SplittingFunction class.
+//
+#ifndef HERWIG_SplittingFunction_FH
+#define HERWIG_SplittingFunction_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class SplittingFunction;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SplittingFunction,SplittingFnPtr);
+
+}
+
+#endif

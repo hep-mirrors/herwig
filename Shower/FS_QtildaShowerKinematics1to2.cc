@@ -26,29 +26,6 @@ updateChildren( const double parentSudAlpha, const Energy parentSudPx,
   double dphi = phi();
   double dm2 = pVector().mass2(); 
 
-//    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) {
-//      CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() "
-// 			     << " ===> START DEBUGGING <=== "
-// 			     << endl; 
-//    }
-
-  // check phase space, ie whether we have a negative radical or not. 
-  if ( sqr( dz*dqtilde ) - dm2 < 0 ) {
-    CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren(): "
-			    << "Warning! Cannot reconstruct p_perp, z > sqrt(m2/qtilda2)!" 
-			    << endl; 
-  }
-
-  // dump all input 
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-    CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() extreme ________________________" 
-			    << endl
-			    << "  called with (qtilde, z, phi) = (" 
-			    << dqtilde << ", " << dz << ", " << dphi << ") " << endl
-			    << "  input (alpha, px, py) = (" 
-			    << parentSudAlpha << ", " 
-			    << parentSudPx << ", " << parentSudPy << ")" << endl; 
-  }
 
   // determine alphas of children according to interpretation of z
   sudAlphaVect.clear(); 
@@ -114,25 +91,8 @@ FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent
     double dz = z(); 
     double dphi = phi();
     bool glueEmits = false; 
-    bool gqq = false;
-    if ( theParent->data().id() == 21 ) glueEmits = true; 
-    if ( theParent->data().id() == 21 && c1->data().id() == -c2->data().id() ) 
-      gqq = true; 
+    if ( theParent->data().id() == 21 ) glueEmits = true;
 
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-      CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren() extreme ________________________" << endl
-			      << "  found " << theParent->data().PDGName() 
-			      << "->" << c1->data().PDGName() 
-			      << "+" << c2->data().PDGName()
-			      << ", i.e. gqq = " << (gqq ? "true" : "false")
-			      << endl
-			      << "  called with (qtilde, z, phi) = (" 
-			      << dqtilde << ", " << dz << ", " << dphi << ") " << endl
-			      << "  input (alpha, px, py) = (" 
-			      << theParent->sudAlpha() << ", " 
-			      << theParent->sudPx() << ", " 
-			      << theParent->sudPy() << ")" << endl; 
-    }
 
     // determine alphas of children according to interpretation of z
     c1->sudAlpha( dz*theParent->sudAlpha() ); 
@@ -141,8 +101,6 @@ FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent
     // determine transverse momenta of children
     Energy2 dm2 = Energy2(); 
     Energy pPerp, kinCutoff; 
-    // kinCutoff = .15*GeV;
-    //    kinCutoff = kinScale();
     bool inps = true; 
     if (glueEmits) {
       //      kinCutoff = (kinScale() - 0.15*c1->data().mass())/2.3;
@@ -152,7 +110,6 @@ FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent
 	pPerp = sqrt(sqr(dz*(1.-dz)*dqtilde) - dm2);
       else inps = false;
     } else {
-      //      kinCutoff = (kinScale() - 0.15*theParent->data().mass())/2.3;
       kinCutoff = (kinScale() - 0.3*theParent->data().mass())/2.3;
       dm2 = sqr(max(kinCutoff, theParent->data().mass()));
       if ( sqr(1.-dz)*(sqr( dz*dqtilde ) - dm2) > dz*sqr(kinCutoff) ) 
@@ -161,25 +118,9 @@ FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent
     }
 
     if ( !inps ) {
+      cerr << "testing inps thrown " << endl;
       // *** ACHTUNG! *** enforce 'in-phase-space' for the moment..."
       pPerp = 0;
-      // *** ACHTUNG! *** replace with proper debug stuff... after
-      // proper interfacing.
-      CurrentGenerator::log() << "FS_QtildaShowerKinematics1to2::updateChildren()"
-			      << " Warning! Can't get p_perp, " << endl 
-			      << "  z = "
-			      << dz;
-      if (glueEmits) {
-	CurrentGenerator::log() << ", (m2, qt2) = ("
-				<< dm2 << ", " << sqr(dqtilde) 
-				<< "), (z(1-z) qt)^2 = " 
-				<< sqr(dz*(1.-dz)*dqtilde) << "!" << endl;
-	
-      } else {
-	CurrentGenerator::log() << " < sqrt(m2/qtilda2) = sqrt(" 
-				<< dm2 << "/" << sqr(dqtilde) << ") = " 
-				<< sqrt(dm2)/dqtilde << "!" << endl;
-      }
     }
 
     c1->sudPx( pPerp*cos(dphi) + dz*theParent->sudPx() );
@@ -187,21 +128,6 @@ FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent
     c2->sudPx( - pPerp*cos(dphi) + (1.-dz)*theParent->sudPx() );
     c2->sudPy( - pPerp*sin(dphi) + (1.-dz)*theParent->sudPy() );
 
-    // dump all output
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Shower ) {
-      CurrentGenerator::log()  << "  result (alpha1, alpha2), pPerp = (" 
-			       << c1->sudAlpha() << ", " 
-			       << c2->sudAlpha() << ", " 
-			       << pPerp << endl
-			       << "  result (px1, py1), (px2, py2) = (" 
-			       << c1->sudPx() << ", " 
-			       << c1->sudPy() << "), (" 
-			       << c2->sudPx() << ", " 
-			       << c2->sudPy() << ")" 
-			       << endl 
-			       << "FS_QtildaShowerKinematics1to2::updateChildren() "
-			       << "==> end extreme <== " << endl;
-    }
   }
 }
 

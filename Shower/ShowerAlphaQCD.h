@@ -115,47 +115,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -165,36 +129,37 @@ private:
    */
   //@{
   /**
-   * The two-loop parametrization of \f$\alpha_S\f$.
+   * The 1,2,3-loop parametrization of \f$\alpha_S\f$.
    * @param q The scale
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  double alphaTwoLoop(Energy q, Energy lam, short nf); 
+  inline double alphaS(Energy q, Energy lam, short nf); 
 
   /**
-   * Return the two loop \f$\Lambda\f$ at the scale
-   * Hacked in masses by hand for the moment before proper
-   * interfacing...  obtained lambda solutions numerically in
-   * Mathematica with my alphas.m using two-loop alphas from PDT2002
-   * and as(M_Z=91.2GeV) = 0.118 *** ACHTUNG! *** this HAS to be done
-   * automatically acc to the masses and as(M_Z) given by the PDT
-   * class (which is supposed to be up-to-date).
+   * The derivative of \f$\alpha_S\f$ with respect to \f$\ln(Q^2/\Lambda^2)\f$
+   * @param q The scale
+   * @param lam \f$\Lambda_{\rm QCD}\f$
+   * @param nf The number of flavours 
+   */
+  inline double derivativealphaS(Energy q, Energy lam, short nf); 
+
+  /**
+   * Compute the value of \f$Lambda\f$ needed to get the input value of
+   * the strong coupling at the scale given for the given number of flavours
+   * using the Newton-Raphson method
+   * @param match The scale for the coupling
+   * @param alpha The input coupling
+   * @param nflav The number of flavours
+   */
+  inline Energy computeLambda(Energy match,double alpha,unsigned int nflav);
+
+  /**
+   * Return the value of \f$\Lambda\f$ and the number of flavours at the scale.
    * @param q The scale
    * @return The number of flavours at the scale and \f$\Lambda\f$.
    */
-  pair<short, Energy> getLamNfTwoLoop(Energy q); 
-
-  /**
-   * A toy parametrization of \f$\alpha_S\f$ with different parametrizations
-   * of the IR behaviour, below q2min, set by type.  
-   * Default is type = 1, i.e. alpha_s = 0 below q2min.
-   * @param q2 The scale
-   * @param q2min The minimum value below which the coupling is considered to 
-   * be non-pertburative
-   * @param type The type of behaviour
-   */
-  double alpha_s(double q2, double q2min, int type);
+  inline pair<short, Energy> getLamNfTwoLoop(Energy q);
   //@}
 
 private:
@@ -224,6 +189,51 @@ private:
    */ 
   int _asType;
 
+  /**
+   *  Thresholds for the different number of flavours 
+   */
+  Energy _thresholds[4];
+
+  /**
+   *  \f$\Lambda\f$ for the different number of flavours
+   */
+  Energy _lambda[4];
+
+  /**
+   *  Option for the number of loops
+   */
+  unsigned int _nloop;
+
+  /**
+   *  Option for the translation between \f$\Lambda_{\bar{MS}}\f$ and
+   *  \f$\Lambda_{\rm Herwig}\f$
+   */
+  bool _lambdaopt;
+
+  /**
+   *  Input value of Lambda
+   */
+  Energy _lambdain;
+
+  /**
+   *  Input value of \f$alpha_S(M_Z)\f$
+   */
+  double _alphain;
+
+  /**
+   *  Option for the calculation of Lambda from input parameters
+   */
+  bool _inopt;
+
+  /**
+   *  Tolerance for discontinuities at the thresholds
+   */
+  double _tolerance;
+
+  /**
+   *  Maximum number of iterations for the Newton-Raphson method to converge
+   */
+  unsigned int _maxtry;
 };
 
 }

@@ -1,10 +1,12 @@
 #include "Herwig++/Utilities/HerwigRun.h"
+#include "ThePEG/Utilities/Timer.h"
 // Any headers needed for analysis go here
 
 int main(int argc, char * argv[]) {
   try {
+    // create the main timer object
     Herwig::HerwigRun hw(argc,argv);
-
+    ThePEG::MainTimer timer(".timer");
     if (hw.isRunMode() && hw.preparedToRun()) {
       for(int i = 0; i<hw.getN(); i++) {
 	hw.generateEvent();

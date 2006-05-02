@@ -801,76 +801,58 @@ void ShowerHandler::hardMEC(const tEHPtr ch) {
     Energy Q = (qq[0]->momentum() + qq[1]->momentum()).m();
     QQbarG *qqg = new QQbarG(Q, qq[0]->momentum().m());
     vector<Lorentz5Momentum> newfs = qqg->applyHard(qq); 
-    if(newfs.size() == 3) {
-      bool check = true; 
-      for (int i=0; i<2; i++)
-	if (newfs[i].e() < qq[i]->data().constituentMass()) 
+    if(newfs.size() == 3) 
+      {
+	bool check = true; 
+	for (int i=0; i<2; i++)
+	  if (newfs[i].e() < qq[i]->data().constituentMass()) 
+	    check = false; 
+	if (newfs[2].e() < _globalParameters->effectiveGluonMass())
 	  check = false; 
-      if (newfs[2].e() < _globalParameters->effectiveGluonMass())
-	check = false; 
-      if (!check) {
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) { 
-	  generator()->log() << "ShowerHandler::hardMEC: " 
-			     << "3jet particles too soft to continue!"
-			     << endl;
-	}
- 	newfs.clear();
-      } else {
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) { 
-	  generator()->log() << "ShowerHandler::hardMEC: " 
-			     << "replacing hard FS, Q = " 
-			     << Q/GeV << "" << endl;
-	} 
-	for (int i=0; i<3; i++)
-	  if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower )  
-	    generator()->log() << "  " << newfs[i] 
-			       << ", m = " 
-			       << newfs[i].m() << endl; 
-	// incoming qqbar decay into the final (q qbar g) in current step
-	for (int i=0; i<2; i++) 
-	  newfs[i].setMass(qq[i]->data().constituentMass());
-	newfs[2].setMass(_globalParameters->effectiveGluonMass());
-	PPtr newq = getParticleData(abs(qq[0]->id()))
-	  ->produceParticle(newfs[0]);
-	PPtr newa = getParticleData(-abs(qq[0]->id()))
-	  ->produceParticle(newfs[1]);
-	PPtr newg = getParticleData(21)->produceParticle(newfs[2]);
-	newq->antiColourNeighbour(newg);
-	newa->colourNeighbour(newg);
-	for (PVector::iterator it = qq.begin(); it != qq.end(); it++) {
-	  (*it)->addChild(newq);
-	  (*it)->addChild(newa);
-	  (*it)->addChild(newg);
-	}
-	ch->currentStep()->addDecayProduct(newq);
-	ch->currentStep()->addDecayProduct(newa);
-	ch->currentStep()->addDecayProduct(newg);
-
-	// safe 'largest pt so far'.  
-	Lorentz5Momentum ptot = newfs[0] + newfs[1] + newfs[2];
-	double x = 2*newfs[0]*ptot/sqr(qqg->getQ());
-	double xb = 2*newfs[1]*ptot/sqr(qqg->getQ());
-	//cerr << x << ", " << xb << ", " << newfs[1].m() << ", " 
-	//     << qqg->getM() << endl; 
-	Energy qt, pt;
-	double z;
-	qt = qqg->getQ()*sqrt(qqg->getKfromX(x, xb));
-	z = qqg->getZfromX(x, xb);
-	pt = (1.-z)*sqrt(sqr(z*qt)-sqr(qqg->getM()));
-	_showerVariables->setLargestPtQ(pt);
-	qt = qqg->getQ()*sqrt(qqg->getKfromX(xb, x));
-	z = qqg->getZfromX(xb, x);
-	pt = (1.-z)*sqrt(sqr(z*qt)-sqr(qqg->getM()));
-	_showerVariables->setLargestPtQbar(pt);
+	if (!check) newfs.clear();
+	else 
+	  {
+	    // incoming qqbar decay into the final (q qbar g) in current step
+	    for (int i=0; i<2; i++) 
+	      newfs[i].setMass(qq[i]->data().constituentMass());
+	    newfs[2].setMass(_globalParameters->effectiveGluonMass());
+	    PPtr newq = getParticleData(abs(qq[0]->id()))
+	      ->produceParticle(newfs[0]);
+	    PPtr newa = getParticleData(-abs(qq[0]->id()))
+	      ->produceParticle(newfs[1]);
+	    PPtr newg = getParticleData(21)->produceParticle(newfs[2]);
+	    newq->antiColourNeighbour(newg);
+	    newa->colourNeighbour(newg);
+	    for (PVector::iterator it = qq.begin(); it != qq.end(); it++) {
+	      (*it)->addChild(newq);
+	      (*it)->addChild(newa);
+	      (*it)->addChild(newg);
+	    }
+	    ch->currentStep()->addDecayProduct(newq);
+	    ch->currentStep()->addDecayProduct(newa);
+	    ch->currentStep()->addDecayProduct(newg);
+	    
+	    // safe 'largest pt so far'.  
+	    Lorentz5Momentum ptot = newfs[0] + newfs[1] + newfs[2];
+	    double x = 2*newfs[0]*ptot/sqr(qqg->getQ());
+	    double xb = 2*newfs[1]*ptot/sqr(qqg->getQ());
+	    Energy qt, pt;
+	    double z;
+	    qt = qqg->getQ()*sqrt(qqg->getKfromX(x, xb));
+	    z = qqg->getZfromX(x, xb);
+	    pt = (1.-z)*sqrt(sqr(z*qt)-sqr(qqg->getM()));
+	    _showerVariables->setLargestPtQ(pt);
+	    qt = qqg->getQ()*sqrt(qqg->getKfromX(xb, x));
+	    z = qqg->getZfromX(xb, x);
+	    pt = (1.-z)*sqrt(sqr(z*qt)-sqr(qqg->getM()));
+	    _showerVariables->setLargestPtQbar(pt);
+	  }
+      } 
+    else 
+      {
+	_showerVariables->setLargestPtQ(0.);
+	_showerVariables->setLargestPtQbar(0.);
       }
-    } else {
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Shower ) { 
-	generator()->log() << "ShowerHandler::hardMEC: " 
-			   << "no ME corr" << endl;
-	_showerVariables->setLargestPtQ(Energy());
-	_showerVariables->setLargestPtQbar(Energy());
-      }
-    }
     delete qqg;
-  } 
+  }
 }

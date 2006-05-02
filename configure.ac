@@ -100,6 +100,11 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 MatrixElement/Makefile
 		Shower/SplittingFunctions/Makefile
                 Shower/Makefile
+		Shower2/SplittingFunctions/Makefile
+		Shower2/Kinematics/Makefile
+		Shower2/Couplings/Makefile
+		Shower2/MECorrections/Makefile
+                Shower2/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
 		Helicity/Makefile

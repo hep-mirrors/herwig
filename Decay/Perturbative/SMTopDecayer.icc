@@ -5,21 +5,22 @@
 //
 
 namespace Herwig {
-  using namespace ThePEG;
+using namespace ThePEG;
   
-  inline SMTopDecayer::SMTopDecayer() {
-    _Wquarkwgt.resize(6,0.);
-    _Wleptonwgt.resize(3,0.);
-    _Wleptonwgt[0]=223.684;
-    _Wleptonwgt[1]=223.684;
-    _Wleptonwgt[2]=223.52;
-    _Wquarkwgt[0]=638.417;
-    _Wquarkwgt[1]=32.5727;
-    _Wquarkwgt[2]=32.6351;
-    _Wquarkwgt[3]=637.169;
-    _Wquarkwgt[4]=6.62717e-05;
-    _Wquarkwgt[5]=1.01539;
-  }
+inline SMTopDecayer::SMTopDecayer() {
+  _Wquarkwgt.resize(6,0.);
+  _Wleptonwgt.resize(3,0.);
+  _Wleptonwgt[0]=223.684;
+  _Wleptonwgt[1]=223.684;
+  _Wleptonwgt[2]=223.52;
+  _Wquarkwgt[0]=638.417;
+  _Wquarkwgt[1]=32.5727;
+  _Wquarkwgt[2]=32.6351;
+  _Wquarkwgt[3]=637.169;
+  _Wquarkwgt[4]=6.62717e-05;
+  _Wquarkwgt[5]=1.01539;
+  generateIntermediates(true);
+}
   
   inline SMTopDecayer::SMTopDecayer(const SMTopDecayer & x)
     : DecayIntegrator(x),_Wquarkwgt(x._Wquarkwgt),_Wleptonwgt(x._Wleptonwgt){}

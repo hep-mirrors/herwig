@@ -1,0 +1,34 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Evolver class.
+//
+
+namespace Herwig {
+
+inline IBPtr Evolver::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr Evolver::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline bool Evolver::showeringON()
+{
+  return 
+    _splittingGenerator->isISRadiationON()||
+    _splittingGenerator->isFSRadiationON();
+}
+
+inline bool Evolver::isISRadiationON() const
+{return _splittingGenerator->isISRadiationON();}
+
+inline bool Evolver::isFSRadiationON() const
+{return _splittingGenerator->isFSRadiationON();}
+
+inline ShowerVarsPtr Evolver::showerVariables() const
+{return _showerVariables;}
+
+
+}

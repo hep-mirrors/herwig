@@ -70,14 +70,13 @@ namespace Herwig {
     bool cc = parent.id() == ParticleID::tbar;
     ParticleVector out(generate(true,cc,imode,parent));
     //arrange colour flow
+    PPtr pparent=const_ptr_cast<PPtr>(&parent);
+    out[1]->incomingColour(pparent,out[1]->id()<0);
     ParticleVector products = out[0]->children();
-    for(unsigned int i=0;i<products.size();++i){
-      if(products[i]->hasColour()) 
-	{products[i]->colourNeighbour(products[i+1]);}
-      if(products[i]->hasAntiColour()) 
-	{products[i]->antiColourNeighbour(products[i+1]);}
-      ++i;
-    }  
+    if(products[0]->hasColour())
+      products[0]->colourNeighbour(products[1],true);
+    else if(products[0]->hasAntiColour())
+      products[0]->colourNeighbour(products[1],false);
     return out;
   }    
   void SMTopDecayer::persistentOutput(PersistentOStream & os) const {

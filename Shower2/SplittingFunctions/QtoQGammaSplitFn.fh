@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the QtoQGammaSplitFn class.
+//
+#ifndef HERWIG_QtoQGammaSplitFn_FH
+#define HERWIG_QtoQGammaSplitFn_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class QtoQGammaSplitFn;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::QtoQGammaSplitFn,QtoQGammaSplitFnPtr);
+
+}
+
+#endif

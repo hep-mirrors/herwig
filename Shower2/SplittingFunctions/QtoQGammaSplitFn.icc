@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QtoQGammaSplitFn class.
+//
+
+namespace Herwig {
+
+inline QtoQGammaSplitFn::QtoQGammaSplitFn() : SplittingFunction(ShowerIndex::QED,1)
+{}
+
+inline QtoQGammaSplitFn::QtoQGammaSplitFn(const QtoQGammaSplitFn & x)
+  : SplittingFunction(x) {}
+
+inline IBPtr QtoQGammaSplitFn::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr QtoQGammaSplitFn::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

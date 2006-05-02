@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerAlphaQED class.
+//
+
+namespace Herwig {
+
+inline ShowerAlphaQED::ShowerAlphaQED() : _alpha(1./137.) 
+{}
+
+inline ShowerAlphaQED::ShowerAlphaQED(const ShowerAlphaQED & x)
+  : ShowerAlpha(x), _alpha(x._alpha) {}
+
+inline IBPtr ShowerAlphaQED::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ShowerAlphaQED::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

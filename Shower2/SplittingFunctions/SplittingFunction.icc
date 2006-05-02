@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SplittingFunction class.
+//
+
+namespace Herwig {
+
+inline SplittingFunction::SplittingFunction(ShowerIndex::InteractionType a,
+					    unsigned int b) 
+  : Interfaced(), _interactionType(a), _interactionorder(b) 
+{}
+
+inline SplittingFunction::SplittingFunction(const SplittingFunction & x)
+  : Interfaced(x), _interactionType(x._interactionType), 
+    _interactionorder(x._interactionorder) 
+{}
+
+inline ShowerIndex::InteractionType SplittingFunction::interactionType() 
+{ return _interactionType; }
+
+inline unsigned int SplittingFunction::interactionOrder()
+{return _interactionorder;}
+
+}

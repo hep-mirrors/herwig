@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ShowerTree class.
+//
+#ifndef HERWIG_ShowerTree_FH
+#define HERWIG_ShowerTree_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ShowerTree;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ShowerTree,ShowerTreePtr);
+
+}
+
+#endif
