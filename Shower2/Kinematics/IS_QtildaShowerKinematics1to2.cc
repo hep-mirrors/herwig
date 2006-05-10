@@ -43,7 +43,7 @@ updateParent(const tShowerParticlePtr theParent,
   }
   double mz = 1.-c1->showerKinematics()->z();
   double cphi = cos(c1->showerKinematics()->phi());
-  double sphi = sqrt(1.-sqr(cphi));
+  double sphi = sin(c1->showerKinematics()->phi());
   Energy pt = sqrt(sqr(mz*c1->showerKinematics()->qtilde()) - 
  		   (1.-mz)*sqr(kinCutoff));
   Energy kx = mz*theParent->sudPx() - cphi*pt;
