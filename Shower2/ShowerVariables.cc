@@ -7,6 +7,7 @@
 #include "ShowerVariables.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 
@@ -189,6 +190,13 @@ void ShowerVariables::Init() {
     ("GlobalParameters",
      "Pointer to the GlobalParameters object",
      &ShowerVariables::_globalParameters, false, false, true, false, false);
+
+  static ParVector<ShowerVariables,long> interfaceDecayInShower
+    ("DecayInShower",
+     "PDG codes of the particles to be decayed in the shower",
+     &ShowerVariables::_inputparticlesDecayInShower, -1, 0l, -10000000l, 10000000l,
+     false, false, Interface::limited);
+
 
 }
 
