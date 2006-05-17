@@ -30,7 +30,7 @@ bool BaryonRemnants::canHandle(tcPDPtr particle,
   return true;
 }
 
-void BaryonRemnants::createRemnants(PartonBinInstance &pb) const {
+void BaryonRemnants::boostRemnants(PartonBinInstance &pb) const {
   const LorentzMomentum pr = pb.particle()->momentum() - 
                              pb.parton()->momentum();
   const PVector &rem = pb.remnants();

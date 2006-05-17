@@ -24,44 +24,6 @@ inline IBPtr MRST::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MRST::doupdate() throw(UpdateException) {
-  PDFBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void MRST::doinit() throw(InitException) {
-  PDFBase::doinit();
-}
-
-inline void MRST::dofinish() {
-  PDFBase::dofinish();
-}
-
-inline void MRST::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  PDFBase::rebind(trans);
-}
-
-inline IVector MRST::getReferences() {
-  IVector ret = PDFBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 inline double MRST::polderivative(double x1, double x2, double x3,
 				  double y1, double y2, double y3) const {
   // returns the estimate of the derivative at x2 obtained by a polynomial 
