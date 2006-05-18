@@ -6,6 +6,7 @@ Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) $(CLHEPLIB) -ldl
 dist_pkgdata_DATA = \
 Decays.in LHC.in TVT.in Hadronization.in \
 HerwigDefaults.in   Shower.in \
+Shower2.in \
 HerwigParticles.in  SMWZDecays.in \
 Hw64Decays.in       ThePEGParticles.in \
 LEPbb.in            UnderlyingEvent.in \
