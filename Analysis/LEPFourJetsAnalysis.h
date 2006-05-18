@@ -12,7 +12,7 @@
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
 #include "LEPFourJetsAnalysis.fh"
-#include "Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 

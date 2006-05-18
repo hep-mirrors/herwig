@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "BFragmentationAnalysisHandler.fh"
 
 namespace Herwig {

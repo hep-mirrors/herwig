@@ -11,4 +11,6 @@ Interpolator.cc Interpolator.h Interpolator.icc \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \
 Math.h Math.icc Math.cc \
-StandardSelectors.cc StandardSelectors.h StandardSelectors.icc
+StandardSelectors.cc StandardSelectors.h StandardSelectors.icc \
+Histogram.cc Histogram.fh Histogram.h Histogram.icc \
+Statistic.cc Statistic.fh Statistic.h Statistic.icc 

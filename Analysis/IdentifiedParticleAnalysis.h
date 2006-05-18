@@ -8,7 +8,7 @@
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "EventShapes.h"
-#include "Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "IdentifiedParticleAnalysis.fh"
 
 namespace Herwig {

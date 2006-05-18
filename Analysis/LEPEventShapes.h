@@ -9,7 +9,7 @@
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "EventShapes.h"
 #include "LEPEventShapes.fh"
-#include "Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 

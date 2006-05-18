@@ -22,6 +22,18 @@ using namespace Herwig;
 
 SimpleLHCAnalysis::~SimpleLHCAnalysis() {}
 
+namespace {
+  inline Lorentz5Momentum getMomentum(tcPPtr particle) {
+    //return particle->momentum();
+    Lorentz5Momentum tmp = particle->children()[0]->next()->momentum();
+    tmp += particle->children()[1]->next()->momentum();
+    tmp.rescaleMass();
+    return tmp;
+
+  }
+}
+
+
 void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
@@ -32,15 +44,16 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
   for(;sit!=send;++sit)
     {
       ParticleSet part=(**sit).all();
-      ParticleSet::iterator iter=part.begin();
-      ParticleSet::iterator end =part.end();
+      ParticleSet::const_iterator iter=part.begin();
+      ParticleSet::const_iterator end =part.end();
       for( ;iter!=end;++iter)
 	{
 	  if((**iter).id()==ParticleID::Z0||
 	     ((**iter).id()==ParticleID::gamma&&!(**iter).children().empty()))
 	    {
-	      pz=(**iter).momentum();
-	      Energy pt=sqrt(sqr(pz.x())+sqr(pz.y()))/GeV,mz(pz.mass()/GeV);
+	      pz=getMomentum(*iter);
+	      Energy pt = pz.perp()/GeV;
+	      Energy mz = pz.mass()/GeV;
 	      if(mz>20.&&mz<80.) (_ptZ[1])+=(pt);
 	      else if (mz>80.&&mz<100.) (_ptZ[2])+=(pt);
 	      else if (mz>100.) (_ptZ[3])+=(pt);
@@ -48,9 +61,11 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
 	      (_mZ)+=(mz);
 	      double rap = 0.5*log((pz.e()+pz.z())/(pz.e()-pz.z()));
 	      (_rapZ)+=(rap);
+	      (_phiZ)+=pz.phi();
 	    } else if ((**iter).id()==ParticleID::Wplus) {
-	      pz=(**iter).momentum();
-	      Energy pt=sqrt(sqr(pz.x())+sqr(pz.y()))/GeV,mz(pz.mass()/GeV);
+	      pz=getMomentum(*iter);
+	      Energy pt = pz.perp()/GeV;
+	      Energy mz = pz.mass()/GeV;
 	      if(mz>20.&&mz<80.) (_ptWp[1])+=(pt);
 	      else if (mz>80.&&mz<100.) (_ptWp[2])+=(pt);
 	      else if (mz>100.) (_ptWp[3])+=(pt);
@@ -58,9 +73,11 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
 	      (_mWp)+=(mz);
 	      double rap = 0.5*log((pz.e()+pz.z())/(pz.e()-pz.z()));
 	      (_rapWp)+=(rap);
+	      (_phiWp)+=pz.phi();
 	    } else if ((**iter).id()==ParticleID::Wminus) {
-	      pz=(**iter).momentum();
-	      Energy pt=sqrt(sqr(pz.x())+sqr(pz.y()))/GeV,mz(pz.mass()/GeV);
+	      pz=getMomentum(*iter);
+	      Energy pt = pz.perp()/GeV;
+	      Energy mz = pz.mass()/GeV;
 	      if(mz>20.&&mz<80.) (_ptWm[1])+=(pt);
 	      else if (mz>80.&&mz<100.) (_ptWm[2])+=(pt);
 	      else if (mz>100.) (_ptWm[3])+=(pt);
@@ -68,6 +85,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
 	      (_mWm)+=(mz);
 	      double rap = 0.5*log((pz.e()+pz.z())/(pz.e()-pz.z()));
 	      (_rapWm)+=(rap);
+	      (_phiWm)+=pz.phi();
 	    }
 	}
     }

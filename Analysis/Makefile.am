@@ -6,8 +6,6 @@ EvtShapes.fh EvtShapes.icc EvtShapes.cc EvtShapes.h \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
 EventShapesMasterAnalysis.h EventShapesMasterAnalysis.icc \
-Histogram.cc Histogram.fh Histogram.h Histogram.icc \
-Statistic.cc Statistic.fh Statistic.h Statistic.icc \
 BasicConsistency.cc BasicConsistency.fh \
 BasicConsistency.h BasicConsistency.icc \
 MultiplicityCount.cc MultiplicityCount.fh \

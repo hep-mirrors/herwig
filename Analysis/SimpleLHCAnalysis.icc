@@ -11,12 +11,8 @@ inline SimpleLHCAnalysis::SimpleLHCAnalysis() :
   _ptWp(4,Histogram(0.,250.,250)), 
   _ptWm(4,Histogram(0.,250.,250)), 
   _mZ(0.,250.,250), _mWp(0.,250.,250), _mWm(0.,250.,250), 
-  _rapZ(-10.,10.,100),_rapWp(-10.,10.,100),_rapWm(-10.,10.,100) {}
-
-inline SimpleLHCAnalysis::SimpleLHCAnalysis(const SimpleLHCAnalysis & x)
-  : AnalysisHandler(x), _ptZ(x._ptZ), _ptWp(x._ptWp), _ptWm(x._ptWm),
-    _mZ(x._mZ),_mWp(x._mWp),_mWm(x._mWm),
-    _rapZ(x._rapZ),_rapWp(x._rapWp),_rapWm(x._rapWm) {}
+  _rapZ(-10.,10.,100),_rapWp(-10.,10.,100),_rapWm(-10.,10.,100),
+  _phiZ(-3.2,3.2,100),_phiWp(-3.2,3.2,100),_phiWm(-3.2,3.2,100) {}
 
 inline IBPtr SimpleLHCAnalysis::clone() const {
   return new_ptr(*this);
@@ -24,28 +20,6 @@ inline IBPtr SimpleLHCAnalysis::clone() const {
 
 inline IBPtr SimpleLHCAnalysis::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void SimpleLHCAnalysis::doupdate() throw(UpdateException) {
-  AnalysisHandler::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void SimpleLHCAnalysis::doinit() throw(InitException) {
-  AnalysisHandler::doinit();
 }
 
 inline void SimpleLHCAnalysis::dofinish() {
@@ -84,22 +58,11 @@ inline void SimpleLHCAnalysis::dofinish() {
   _rapWp.topdrawOutput(outfile,true,false,false,false,"BLACK","Rapidity of Wp");
   _rapWp.topdrawOutput(outfile,true,false,false,true,"BLACK","Rapidity of Wp");
   _rapWm.topdrawOutput(outfile,true,false,false,false,"BLACK","Rapidity of Wm");
-  _rapWm.topdrawOutput(outfile,true,false,false,true,"BLACK","Rapidity of Wm");}
+  _rapWm.topdrawOutput(outfile,true,false,false,true,"BLACK","Rapidity of Wm");
 
-inline void SimpleLHCAnalysis::doinitrun() {
-  AnalysisHandler::doinitrun();
-}
-
-inline void SimpleLHCAnalysis::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  AnalysisHandler::rebind(trans);
-}
-
-inline IVector SimpleLHCAnalysis::getReferences() {
-  IVector ret = AnalysisHandler::getReferences();
-  // ret.push_back(dummy);
-  return ret;
+  _phiZ.topdrawOutput(outfile,true,false,false,false,"BLACK","Azimuth of Z");
+  _phiWp.topdrawOutput(outfile,true,false,false,false,"BLACK","Azimuth of Wp");
+  _phiWm.topdrawOutput(outfile,true,false,false,false,"BLACK","Azimuth of Wm");
 }
 
 }

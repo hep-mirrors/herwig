@@ -7,7 +7,7 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "EventShapes.h"
 #include "SingleParticleAnalysis.fh"
 

@@ -289,7 +289,7 @@ struct ClassTraits<Herwig::Histogram>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the Histogram class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwAnalysis.so"; }
+  static string library() { return "libHwUtils.so"; }
 };
 
 /** @endcond */
@@ -301,7 +301,6 @@ struct ClassTraits<Herwig::Histogram>
 // #include "Histogram.tcc"
 #endif
 
-#endif /* HERWIG_Histogram_H */
 
 // void SampleHistogram::printMoments(char* name, double Nmax, double dN, 
 // 				   double x0, double x1) {
@@ -340,3 +339,4 @@ struct ClassTraits<Herwig::Histogram>
 // }
 
 
+#endif /* HERWIG_Histogram_H */
