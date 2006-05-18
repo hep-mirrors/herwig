@@ -1,5 +1,10 @@
 SUBDIRS = SplittingFunctions .
-pkglib_LTLIBRARIES = HwShower.la
+pkglib_LTLIBRARIES=
+
+if WANT_OLDSHOWER
+pkglib_LTLIBRARIES += HwShower.la
+endif
+
 HwShower_la_LDFLAGS = -module
 HwShower_la_LIBADD = ./SplittingFunctions/libHwSplitting.la
 HwShower_la_SOURCES = \

@@ -141,11 +141,22 @@ if test -z "$EVTGENPATH"; then
   AC_MSG_RESULT([*** No EvtGen path set... won't build EvtGen interface ***])
 else
   EVTGENLIBS="-lHwEvtGen -lEvtGenBase -lEvtGenModels"
-  AC_MSG_RESULT("EVTGENPATH")
+  AC_MSG_RESULT("$EVTGENPATH")
 fi
 
 AM_CONDITIONAL(WANT_LIBEVTGEN,[test ! -z "$EVTGENPATH"])
 
 AC_SUBST(EVTGENPATH)
 AC_SUBST(EVTGENLIBS)
+])
+
+AC_DEFUN([AC_CHECK_OLDSHOWER],
+[
+AC_MSG_CHECKING([if we build old shower])
+AC_ARG_WITH(old-shower,
+	AC_HELP_STRING([--with-old-shower],[build the old shower, too.]),
+	[wantoldshower=yes],
+	[wantoldshower=no])
+AC_MSG_RESULT([$wantoldshower])
+AM_CONDITIONAL(WANT_OLDSHOWER,[test "$wantoldshower" = "yes"])
 ])

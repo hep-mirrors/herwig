@@ -1,5 +1,11 @@
 ## libHwSplitting.la will go into HwShower.so
-noinst_LTLIBRARIES = libHwSplitting.la
+
+noinst_LTLIBRARIES =
+
+if WANT_OLDSHOWER
+noinst_LTLIBRARIES += libHwSplitting.la
+endif
+
 libHwSplitting_la_SOURCES = \
 SudakovFormFactor.cc SudakovFormFactor.h SudakovFormFactor.icc SudakovFormFactor.fh \
 SplittingFunction.h SplittingFunction.icc SplittingFunction.fh SplittingFunction.cc \

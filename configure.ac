@@ -50,6 +50,9 @@ AC_CHECK_THEPEG
 
 AC_CHECK_KTJET
 AC_CHECK_AMEGIC
+## AC_CHECK_EVTGEN
+
+AC_CHECK_OLDSHOWER
 
 ## temporary workaround as long as looptools isn't actually necessary
 case "{$host}" in

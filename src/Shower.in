@@ -1,3 +1,7 @@
+## this .in file is for the old shower code.
+## if you get errors about undefined symbols, re-run configure with the flag
+## '--with-old-shower' and remake the package
+
 cd /Defaults/Handlers/Shower
 library HwShower.so
 create Herwig++::ShowerHandler stdShowerHandler
