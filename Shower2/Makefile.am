@@ -10,4 +10,5 @@ ShowerVariables.h ShowerVariables.fh ShowerVariables.icc ShowerVariables.cc \
 ShowerHandler.h ShowerHandler.fh ShowerHandler.icc ShowerHandler.cc \
 Evolver.h Evolver.fh Evolver.icc Evolver.cc \
 PartnerFinder.h PartnerFinder.fh PartnerFinder.cc PartnerFinder.icc \
-ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc
+ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc \
+ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc
