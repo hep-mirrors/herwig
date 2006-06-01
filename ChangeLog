@@ -1,3 +1,10 @@
+2006-06-01  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Analysis/LEPEventShapes.*, Utilities/Histogram.*,
+	Utilities/Statistic.*: Added support for weighted events.
+
+	* src/Herwig++.cc: counter now only updates for every 1% of events.
+
 2006-03-13  Peter Richardson  <Peter.Richardson@durham.ac.uk>
 
 	* MatrixElement/MEPP2HiggsJet.icc (Repository): added matrix element for gamma

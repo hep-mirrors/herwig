@@ -8,6 +8,7 @@ int main(int argc, char * argv[]) {
     Herwig::HerwigRun hw(argc,argv);
     ThePEG::MainTimer timer(".timer");
     if (hw.isRunMode() && hw.preparedToRun()) {
+      int step = hw.getN() / 100;
       for(int i = 0; i<hw.getN(); i++) {
 	hw.generateEvent();
 	// Add analysis code here
@@ -17,8 +18,9 @@ int main(int argc, char * argv[]) {
 	// use (for step s)
 	// tPVector particles = hw.getFinalState(s);
 	// Then do analysis
-	std::cout << "Generated event: " << i+1 
-		  << " of " << hw.getN() << "\r" << std::flush;
+	if ((i+1) % step == 0)
+	  std::cout << "Generated event: " << i+1 
+		    << " of " << hw.getN() << "\r" << std::flush;
       }
       hw.eventGenerator()->finalize();
     } else if(hw.isRunMode()) {
