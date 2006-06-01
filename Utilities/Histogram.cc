@@ -38,12 +38,12 @@ void Histogram::Init() {
 
 void Histogram::topdrawOutput(ofstream & out,
 			      bool frame,
-			      bool error,
+			      bool errorbars,
 			      bool xlog, bool ylog,
 			      string colour,
 			      string title,  string titlecase,
 			      string left,   string leftcase,
-			      string bottom, string bottomcase)
+			      string bottom, string bottomcase) const
 {
   // output the title info if needed
   if(frame)
@@ -56,7 +56,7 @@ void Histogram::topdrawOutput(ofstream & out,
       out << "CASE       \""   << leftcase  << "\"\n";
       out << "TITLE BOTTOM \"" << bottom     << "\"\n";
       out << "CASE        \""  << bottomcase << "\"\n";
-      if (error) out << "SET ORDER X Y DX DY \n";
+      if (errorbars) out << "SET ORDER X Y DX DY \n";
       else out << "SET ORDER X Y DX\n";
     }
   // scales
@@ -79,7 +79,7 @@ void Histogram::topdrawOutput(ofstream & out,
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
       yout.push_back(value);
-      ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].error) );
+      ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
       if(yout.back()>0.) ymin=min(ymin,value);
       if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
     }
@@ -91,8 +91,8 @@ void Histogram::topdrawOutput(ofstream & out,
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
-      if (error) {
-	out << '\t' << 0.5*sqrt(_bins[ix].contents)/(delta*numPoints);
+      if (errorbars) {
+	out << '\t' << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
       }
       out << '\n';
     }
@@ -104,8 +104,8 @@ void Histogram::topdrawOutput(ofstream & out,
       {
 	double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
 	out << _bins[ix].limit+delta << '\t' << _bins[ix].data << '\t' << delta;
-	if (error) {
-	  out  << '\t' << _bins[ix].error;
+	if (errorbars) {
+	  out  << '\t' << _bins[ix].dataerror;
 	}
 	out << '\n';
       }
@@ -121,17 +121,18 @@ void Histogram::normaliseToData()
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       double value = 0.5*_bins[ix].contents / (delta*numPoints);
-      if(_bins[ix].error>0.)
+      if(_bins[ix].dataerror>0.)
 	{
-	  double var=sqr(_bins[ix].error);
-	  numer += _bins[ix].data*value/var;
+	  double var = sqr(_bins[ix].dataerror);
+	  numer += _bins[ix].data * value/var;
 	  denom += sqr(value)/var;
 	}
     }
-  _prefactor=numer/denom;
+  _prefactor = numer/denom;
 }
 
-void Histogram::chiSquared(double & chisq, unsigned int & ndegrees, double minfrac)
+void Histogram::chiSquared(double & chisq, 
+			   unsigned int & ndegrees, double minfrac) const
 {
   chisq =0.;
   ndegrees=_bins.size()-2;
@@ -140,13 +141,14 @@ void Histogram::chiSquared(double & chisq, unsigned int & ndegrees, double minfr
     {
       double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
       double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
-      double error=_bins[ix].error;
+      double error = _bins[ix].dataerror;
       if(error>0.)
 	{
-	  if(error/_bins[ix].data<minfrac) error=minfrac*_bins[ix].data;
+	  if(error/_bins[ix].data < minfrac) 
+	    error = minfrac*_bins[ix].data;
 	  double var=sqr(error)
-	    + _bins[ix].contents*sqr(0.5*_prefactor / (delta*numPoints));
-	  chisq += sqr(_bins[ix].data-value)/var;
+	    + _bins[ix].contentsSq * sqr(0.5*_prefactor / (delta*numPoints));
+	  chisq += sqr(_bins[ix].data - value) / var;
 	}
     }
 }

@@ -22,6 +22,8 @@ using namespace Herwig;
 LEPEventShapes::~LEPEventShapes() {}
 
 void LEPEventShapes::analyze(tEventPtr event, long ieve, int loop, int state) {
+  eventweight_ = event->weight();
+  AnalysisHandler::analyze(event, ieve, loop, state);
   if ( loop > 0 || state != 0 || !event ) return;
   // get the final-state particles
   tPVector hadrons=event->getFinalState();
@@ -34,22 +36,24 @@ LorentzRotation LEPEventShapes::transform(tEventPtr event) const {
 }
 
 void LEPEventShapes::analyze(const tPVector & particles) {
-  *_omthr += 1.-_shapes->thrust();
-  *_maj += _shapes->thrustMajor();
-  *_min += _shapes->thrustMinor();
-  *_obl += _shapes->oblateness(); 
-  *_c += _shapes->CParameter(); 
-  *_d += _shapes->DParameter(); 
-  *_sph += _shapes->sphericity();
-  *_apl += _shapes->aplanarity();
-  *_pla += _shapes->planarity(); 
-  *_mhi += _shapes->Mhigh2();
-  *_mlo += _shapes->Mlow2(); 
-  *_mdiff += _shapes->Mdiff2(); 
-  *_bmax += _shapes->Bmax(); 
-  *_bmin += _shapes->Bmin(); 
-  *_bsum += _shapes->Bsum(); 
-  *_bdiff += _shapes->Bdiff(); 
+  cerr << '\n' << eventweight_ << '\n';
+  _shapes->reset(particles);
+  _omthr ->addWeighted( 1.-_shapes->thrust() ,eventweight_);
+  _maj ->addWeighted( _shapes->thrustMajor() ,eventweight_);
+  _min ->addWeighted( _shapes->thrustMinor() ,eventweight_);
+  _obl ->addWeighted( _shapes->oblateness() ,eventweight_); 
+  _c ->addWeighted( _shapes->CParameter() ,eventweight_); 
+  _d ->addWeighted( _shapes->DParameter() ,eventweight_); 
+  _sph ->addWeighted( _shapes->sphericity() ,eventweight_);
+  _apl ->addWeighted( _shapes->aplanarity() ,eventweight_);
+  _pla ->addWeighted( _shapes->planarity() ,eventweight_); 
+  _mhi ->addWeighted( _shapes->Mhigh2() ,eventweight_);
+  _mlo ->addWeighted( _shapes->Mlow2() ,eventweight_); 
+  _mdiff ->addWeighted( _shapes->Mdiff2() ,eventweight_); 
+  _bmax ->addWeighted( _shapes->Bmax() ,eventweight_); 
+  _bmin ->addWeighted( _shapes->Bmin() ,eventweight_); 
+  _bsum ->addWeighted( _shapes->Bsum() ,eventweight_); 
+  _bdiff ->addWeighted( _shapes->Bdiff() ,eventweight_); 
 }
 
 void LEPEventShapes::analyze(tPPtr) {}

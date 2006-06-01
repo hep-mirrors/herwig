@@ -42,14 +42,9 @@ public:
    * Constructor with data included
    * @param limits The lower limits for the bins followed by the upper limit of the last bin
    * @param data The data
-   * @param error The errors on the data
+   * @param dataerror The errors on the data
    */
-  inline Histogram(vector<double> limits, vector<double> data, vector<double> error);
-
-  /**
-   * The copy constructor.
-   */
-  inline Histogram(const Histogram &);
+  inline Histogram(vector<double> limits, vector<double> data, vector<double> dataerror);
 
   /**
    * The destructor.
@@ -65,14 +60,19 @@ public:
   inline void operator+=(double);
 
   /**
+   *  Function to add a weighted point to the histogram
+   */
+  inline void addWeighted(double data, double weight);
+
+  /**
    *  Number of bins (not counting the overflow)
    */
-  inline unsigned int numberOfBins();
+  inline unsigned int numberOfBins() const;
 
   /**
    *  Get the prefactor
    */
-  inline double prefactor();
+  inline double prefactor() const;
 
   /**
    *  Set the prefactor
@@ -82,7 +82,7 @@ public:
   /**
    *  Access to the statistics on the total entry of the histogram
    */
-  inline Statistic globalStatistics() const; 
+  inline const Statistic & globalStatistics() const; 
 
   /**
    *  Normalise the distributions to the data
@@ -95,13 +95,14 @@ public:
    * @param ndegrees The number of points
    * @param minfrac The minimum fractional error on the data point
    */
-  void chiSquared(double & chisq, unsigned int & ndegrees, double minfrac=0.);
+  void chiSquared(double & chisq, 
+		  unsigned int & ndegrees, double minfrac=0.) const;
 
   /**
    *  Output as a topdrawer file
    * @param out The output stream
    * @param frame output on a new graph
-   * @param error output data points with error bars
+   * @param errorbars output data points with error bars
    * @param xlog  log scale on x axis
    * @param ylog  log scale on y axis
    * @param colour The colour for the line
@@ -114,7 +115,7 @@ public:
    */
   void topdrawOutput(ofstream & out,
 		     bool frame,
-		     bool error,
+		     bool errorbars,
 		     bool xlog, bool ylog,
 		     string colour=string("BLACK"),
 		     string title=string(),
@@ -122,7 +123,7 @@ public:
 		     string left=string(),
 		     string leftcase =string(),
 		     string bottom=string(),
-		     string bottomcase =string());
+		     string bottomcase =string()) const;
 
 public:
 
@@ -167,54 +168,6 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
-
 private:
 
   /**
@@ -245,11 +198,13 @@ private:
    *  One bin of the histogram. limit is the _lower_ bound of the bin.
    */
   struct Bin {
-    Bin() : contents(0.0), limit(0.0), data(0.0), error(0.0) {}
+    Bin() : contents(0.0), contentsSq(0.0), 
+	    limit(0.0), data(0.0), dataerror(0.0) {}
     double contents;
+    double contentsSq;
     double limit;
     double data;
-    double error;
+    double dataerror;
   };
 
   /**

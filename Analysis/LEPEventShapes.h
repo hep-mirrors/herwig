@@ -281,6 +281,9 @@ private:
    * Pointer to the object which calculates the event shapes
    */
   EventShapesPtr _shapes;
+
+
+  double eventweight_;
 };
 
 }

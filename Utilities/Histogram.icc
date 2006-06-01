@@ -32,7 +32,7 @@ inline Histogram::Histogram(vector<double> limits)
 }
 
 inline Histogram::Histogram(vector<double> limits, vector<double> data,
-			    vector<double> error)
+			    vector<double> dataerror)
   : _globalStats(), _havedata(true), _bins(limits.size()+1), _prefactor(1.)
 {
   _bins[0].limit=-1.e100;
@@ -43,13 +43,9 @@ inline Histogram::Histogram(vector<double> limits, vector<double> data,
   for (size_t i=1; i<=min(limits.size()-1,data.size()); ++i)
     _bins[i].data=data[i-1];
 
-  for (size_t i=1; i<=min(limits.size()-1,error.size()); ++i)
-    _bins[i].error=error[i-1];
+  for (size_t i=1; i<=min(limits.size()-1,dataerror.size()); ++i)
+    _bins[i].dataerror=dataerror[i-1];
 }
-
-inline Histogram::Histogram(const Histogram & x)
-  : _globalStats(x._globalStats), _havedata(x._havedata), _bins(x._bins),
-    _prefactor(x._prefactor) {}
 
 inline IBPtr Histogram::clone() const {
   return new_ptr(*this);
@@ -59,68 +55,38 @@ inline IBPtr Histogram::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void Histogram::doupdate() throw(UpdateException) {
-  Interfaced::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void Histogram::doinit() throw(InitException) {
-  Interfaced::doinit();
-}
-
-inline void Histogram::dofinish() {
-  Interfaced::dofinish();
-}
-
-inline void Histogram::doinitrun() {
-  Interfaced::doinitrun();
-}
-
-inline void Histogram::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  Interfaced::rebind(trans);
-}
-
-inline IVector Histogram::getReferences() {
-  IVector ret = Interfaced::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 inline void Histogram::operator+=(double input)
+{
+  addWeighted(input,1.0);
+}
+
+inline void Histogram::addWeighted(double input, double weight)
 {
   if(isnan(input)) return;
   unsigned int ibin;
   for(ibin=1; ibin<_bins.size(); ++ibin) {
-    if(input<_bins[ibin].limit) 
+    if(input<_bins[ibin].limit)
       break;
   }
-  _bins[ibin-1].contents += 1.;
-  _globalStats += input;
+  _bins[ibin-1].contents   += weight;
+  _bins[ibin-1].contentsSq += sqr(weight);
+  _globalStats += weight * input;
 }
 
-inline unsigned int Histogram::numberOfBins() { 
+inline unsigned int Histogram::numberOfBins() const { 
   return _bins.size()-2;
 }
 
-inline double Histogram::prefactor(){return _prefactor;}
+inline double Histogram::prefactor() const {
+  return _prefactor;
+}
 
-inline void   Histogram::prefactor(double in){_prefactor=in;}
+inline void   Histogram::prefactor(double in) {
+  _prefactor=in;
+}
 
-inline Statistic Histogram::globalStatistics() const {return _globalStats;}
+inline const Statistic & Histogram::globalStatistics() const {
+  return _globalStats;
+}
 }
 
