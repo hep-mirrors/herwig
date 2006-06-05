@@ -6,8 +6,8 @@
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "Herwig++/Hadronization/PartonSplitter.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
+#include "Herwig++/Decay/HwDecayHandler.h"
 #include <ThePEG/Handlers/EventHandler.h>
- 
 
 namespace Herwig {
 
@@ -169,8 +169,6 @@ protected:
 
 private:
 
-   ParticleVector decayHadron(tPPtr &) const throw(Veto,Exception);
-
    /**
     * This generates the distribution of the negative binomial given the mean, the N and ek.
     * @param N
@@ -203,14 +201,9 @@ private:
    double gaussDistribution(double mean, double stdev);
 
    /**
-    * This adds the clusters, hadrons and stable particles to the event record
-    */
-   void addToEventRecord(StepPtr &step, PVector &clusters, PVector &hadrons, PVector &stable);
-
-   /**
     * This counts the number of charges and the total charge for the particles given.
     */
-   void countCharges(ParticleVector &particles, int &numCharges, int &modCharge);
+   void countCharges(tPVector &particles, int &numCharges, int &modCharge, StepPtr &newStep);
    /**
     * This returns the rotation matrix needed to rotate p into the z axis
     */
@@ -223,7 +216,7 @@ private:
     * @param CME The center of mass energy
     * @param cm The center of mass momentum (of the underlying event)
     */
-   void generateMomentum(PVector &clusters, double CME, Lorentz5Momentum cm);
+   void generateMomentum(PVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto);
 
    /**
     * The implementation of the cylindrical phase space.
@@ -261,11 +254,14 @@ private:
 
    /**
     * transforms B (given in rest from of A). Returns vector in lab frame
-    * @param A The vector in the whose rest from B is in 
+    * @param A The vector in the whose rest B is in 
     * @param B The vector we want to boost into the lab frame
     * @return the new vector
     */
    Lorentz5Momentum transformToLab(Lorentz5Momentum &A, Lorentz5Momentum &B);
+
+   void addFission(PPair &products, StepPtr &newStep, ClusterPtr &cluster, 
+                   pair<tPPtr,tPPtr> &had, int &newHads, long id1, long id2);
 
    static ClassDescription<UA5Handler> initUA5Handler;
 
@@ -280,6 +276,7 @@ private:
    ClusterFissionerPtr clusterFissioner;
    ClusterDecayerPtr   clusterDecayer;
    PartonSplitterPtr   split;
+   HwDecayHandlerPtr   decayer;
 
    /**
     * The parameters to the mean multiplicity distribution at mass 

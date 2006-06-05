@@ -6,6 +6,7 @@
 //
 #include "ThePEG/Handlers/DecayHandler.h"
 #include "Herwig++/Hadronization/PartonicHadronizer.h"
+#include "HwDecayHandler.fh"
 
 using namespace ThePEG;
 namespace Herwig {
