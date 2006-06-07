@@ -57,7 +57,7 @@ AC_CHECK_NEWDECAYERS
 AC_LOOPTOOLS
 
 AM_CONDITIONAL(NEED_APPLE_FIXES,
-		[test "xx${host/darwin/foundit}xx" = "xxfounditxx"])
+		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
 
 dnl ###########################
 dnl ###########################
