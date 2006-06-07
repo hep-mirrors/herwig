@@ -8,6 +8,10 @@
 #include "Statistic.h"
 #include "Histogram.fh"
 
+// workaround for OS X bug where isnan() and isinf() are hidden
+// when <iostream> is included
+extern "C" int isnan(double) throw();
+
 namespace Herwig {
 
 using namespace ThePEG;
