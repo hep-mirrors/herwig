@@ -37,6 +37,8 @@
 // int HUNIT = 1;
 #endif
 
+extern "C" int isnan(double) throw();
+
 using namespace Herwig;
 
 IFDipole::~IFDipole() {}

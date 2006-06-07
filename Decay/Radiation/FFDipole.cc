@@ -19,6 +19,9 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "YFSFormFactors.h"
 
+// Mac OS X workaround
+extern "C" int isnan(double) throw();
+
 using namespace Herwig;
 
 FFDipole::~FFDipole() {}
