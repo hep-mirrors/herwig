@@ -8,6 +8,7 @@ libHerwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
 $(top_builddir)/Decay/libHwDecay.la \
+$(top_builddir)/Decay/Radiation/libHwDecRad.la \
 $(top_builddir)/Helicity/Correlations/libHwCorrelations.la \
 $(top_builddir)/Helicity/WaveFunction/libHwWaveFunction.la \
 $(top_builddir)/Utilities/libHwUtils.la \
@@ -21,8 +22,7 @@ endif
 if WANT_NEWDECAYERS
 libHerwig_la_LIBADD += \
 $(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
-$(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
-$(top_builddir)/Decay/Radiation/libHwDecRad.la 
+$(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la 
 endif
 
 all-local: done-all-links
