@@ -1,4 +1,9 @@
-pkglib_LTLIBRARIES = HwPerturbativeDecay.la
+pkglib_LTLIBRARIES =
+
+if WANT_NEWDECAYERS
+pkglib_LTLIBRARIES += HwPerturbativeDecay.la
+endif
+
 HwPerturbativeDecay_la_SOURCES = \
  SMWZDecayer.cc  SMWZDecayer.fh  SMWZDecayer.h  SMWZDecayer.icc\
  SMHiggsFermionsDecayer.cc  SMHiggsFermionsDecayer.fh  \

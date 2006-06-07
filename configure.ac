@@ -53,13 +53,11 @@ AC_CHECK_AMEGIC
 ## AC_CHECK_EVTGEN
 
 AC_CHECK_OLDSHOWER
+AC_CHECK_NEWDECAYERS
+AC_LOOPTOOLS
 
-## temporary workaround as long as looptools isn't actually necessary
-case "{$host}" in
-     *-darwin*) DO_LOOPTOOLS= ;;
-     *)		DO_LOOPTOOLS=Looptools ;;
-esac
-AC_SUBST(DO_LOOPTOOLS)
+AM_CONDITIONAL(NEED_APPLE_FIXES,
+		[test "xx${host/darwin/foundit}xx"="xxfounditxx"])
 
 dnl ###########################
 dnl ###########################

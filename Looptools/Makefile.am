@@ -1,3 +1,10 @@
+pkglib_LTLIBRARIES =
+EXTRA_LTLIBRARIES =
+
+if WANT_LOOPTOOLS
+pkglib_LTLIBRARIES += libHwLooptools.la
+EXTRA_LTLIBRARIES += libHwLooptoolsCheck.la
+endif
 
 theFFSOURCES = ff/ffinit.f ff/ffbndc.f ff/ffxli2.f ff/ffcli2.f \
   ff/fftran.f ff/ffabcd.f ff/ff2dl2.f \
@@ -33,9 +40,6 @@ theLTCHECKSOURCES = ltcheck/auxB.F ltcheck/auxCD.F ltcheck/check.F \
 ## installed already from "include/Makefile.am"
 noinst_HEADERS = include/clooptools.h
 
-pkglib_LTLIBRARIES = libHwLooptools.la
-EXTRA_LTLIBRARIES = libHwLooptoolsCheck.la
-
 ## no optimization allowed, see LoopTools homepage
 ## this must be set as FFLAGS to avoid user switching on opt accidentally
 ## ignore the automake warning!
@@ -45,6 +49,11 @@ FFLAGS=-g -O0
 AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
+
+libHwLooptools_la_LDFLAGS =
+if NEED_APPLE_FIXES
+libHwLooptools_la_LDFLAGS += -Wl,-single_module
+endif
 
 libHwLooptoolsCheck_la_SOURCES = $(theFFSOURCES) $(theLTCHECKSOURCES)
 

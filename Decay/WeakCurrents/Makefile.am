@@ -1,5 +1,10 @@
-pkglib_LTLIBRARIES = HwWeakCurrents.la 
-noinst_LTLIBRARIES = libHwWeakCurrent.la 
+pkglib_LTLIBRARIES =
+noinst_LTLIBRARIES =
+
+if WANT_NEWDECAYERS
+pkglib_LTLIBRARIES += HwWeakCurrents.la 
+noinst_LTLIBRARIES += libHwWeakCurrent.la 
+endif
 
 libHwWeakCurrent_la_SOURCES = \
 WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h WeakDecayCurrent.icc

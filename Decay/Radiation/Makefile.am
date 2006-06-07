@@ -1,4 +1,8 @@
-pkglib_LTLIBRARIES = libHwDecRad.la
+pkglib_LTLIBRARIES =
+
+if WANT_NEWDECAYERS
+pkglib_LTLIBRARIES += libHwDecRad.la
+endif
 
 libHwDecRad_la_SOURCES = \
 DecayRadiationGenerator.cc  DecayRadiationGenerator.h  \

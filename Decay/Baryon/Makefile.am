@@ -1,4 +1,9 @@
-pkglib_LTLIBRARIES = HwBaryonDecay.la
+pkglib_LTLIBRARIES =
+
+if WANT_NEWDECAYERS
+pkglib_LTLIBRARIES += HwBaryonDecay.la
+endif
+
 HwBaryonDecay_la_LDFLAGS = -module
 HwBaryonDecay_la_LIBADD = $(top_builddir)/PDT/libHwBaryonWidth.la
 HwBaryonDecay_la_SOURCES = \

@@ -1,3 +1,9 @@
+2006-06-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* */Makefile.am, acinclude.m4, configure.ac: New decayers only get
+	built when requested in configure flag. Apple Looptool problem
+	fixed. Optionally, all Looptool-dependent code can be disabled.
+
 2006-06-01  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Analysis/LEPEventShapes.*, Utilities/Histogram.*,

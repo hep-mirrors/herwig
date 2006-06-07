@@ -152,11 +152,36 @@ AC_SUBST(EVTGENLIBS)
 
 AC_DEFUN([AC_CHECK_OLDSHOWER],
 [
-AC_MSG_CHECKING([if we build old shower])
-AC_ARG_WITH(old-shower,
-	AC_HELP_STRING([--with-old-shower],[build the old shower, too.]),
-	[wantoldshower=yes],
-	[wantoldshower=no])
-AC_MSG_RESULT([$wantoldshower])
-AM_CONDITIONAL(WANT_OLDSHOWER,[test "$wantoldshower" = "yes"])
+AC_MSG_CHECKING([whether to build old shower])
+AC_ARG_ENABLE(old-shower,
+	AC_HELP_STRING([--enable-old-shower],[build the old shower, too.]),
+	[],
+	[enable_old_shower=no]
+	)
+AC_MSG_RESULT([$enable_old_shower])
+AM_CONDITIONAL(WANT_OLDSHOWER,[test "x$enable_old_shower" = "xyes"])
+])
+
+AC_DEFUN([AC_CHECK_NEWDECAYERS],
+[
+AC_MSG_CHECKING([whether to build new decayers])
+AC_ARG_ENABLE(new-decayers,
+        AC_HELP_STRING([--enable-new-decayers],[build the new decayers.]),
+	[],
+	[enable_new_decayers=no]
+	)
+AC_MSG_RESULT([$enable_new_decayers])
+AM_CONDITIONAL(WANT_NEWDECAYERS,[test "x$enable_new_decayers" = "xyes"])
+])
+
+AC_DEFUN([AC_LOOPTOOLS],
+[
+AC_MSG_CHECKING([whether to build Looptools dependent parts])
+AC_ARG_ENABLE(looptools,
+        AC_HELP_STRING([--disable-looptools],[turn off Looptools-dependent parts.]),
+        [],
+        [enable_looptools=yes]
+        )
+AC_MSG_RESULT([$enable_looptools])
+AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 ])

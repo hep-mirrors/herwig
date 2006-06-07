@@ -1,5 +1,10 @@
-pkglib_LTLIBRARIES = HwFormFactors.la
-noinst_LTLIBRARIES = libHwFormFactor.la
+pkglib_LTLIBRARIES =
+noinst_LTLIBRARIES =
+
+if WANT_NEWDECAYERS
+pkglib_LTLIBRARIES += HwFormFactors.la
+noinst_LTLIBRARIES += libHwFormFactor.la
+endif
 
 libHwFormFactor_la_SOURCES = \
 BaryonFormFactor.cc BaryonFormFactor.fh \

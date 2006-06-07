@@ -1,4 +1,9 @@
-pkglib_LTLIBRARIES = HwSMDecay.la
+pkglib_LTLIBRARIES =
+
+if WANT_NEWDECAYERS
+pkglib_LTLIBRARIES += HwSMDecay.la
+endif
+
 HwSMDecay_la_SOURCES = \
 EtaPiGammaGammaDecayer.cc EtaPiGammaGammaDecayer.fh EtaPiGammaGammaDecayer.h \
 EtaPiGammaGammaDecayer.icc EtaPiPiGammaDecayer.cc EtaPiPiGammaDecayer.fh EtaPiPiGammaDecayer.h \
