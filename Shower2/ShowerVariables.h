@@ -271,6 +271,33 @@ public:
    */
   inline void setGluonMass(bool final);
 
+
+  /**
+   *  Enhancement factors for radiation needed to generate the soft matrix element
+   *  correction.
+   */
+  //@{
+  /**
+   *  Access the enhancement factor for initial-state radiation
+   */
+  inline double initialStateRadiationEnhancementFactor() const;
+
+  /**
+   *  Access the enhancement factor for final-state radiation
+   */
+  inline double finalStateRadiationEnhancementFactor() const;
+
+  /**
+   *  Set the enhancement factor for initial-state radiation
+   */
+  inline void initialStateRadiationEnhancementFactor(double);
+
+  /**
+   *  Set the enhancement factor for final-state radiation
+   */
+  inline void finalStateRadiationEnhancementFactor(double);
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -451,6 +478,22 @@ private:
    *  The global variables
    */
   GlobalParametersPtr _globalParameters;
+
+  /**
+   *  Radiation enhancement factors for use with the veto algorithm
+   *  if needed by the soft matrix element correction 
+   */
+  //@{
+  /**
+   *  Enhancement factor for initial-state radiation
+   */
+  double _initialenhance;
+
+  /**
+   *  Enhancement factor for final-state radiation
+   */
+  double _finalenhance;
+  //@}
 
 };
 

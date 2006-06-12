@@ -118,12 +118,12 @@ public:
   /**
    *  Get the incoming shower particles
    */
-  inline const map<ShowerProgenitorPtr,tShowerParticlePtr> & incomingLines() const;
+  inline map<ShowerProgenitorPtr,tShowerParticlePtr> & incomingLines();
 
   /**
    *  Get the outgoing shower particles
    */
-  inline const map<ShowerProgenitorPtr,tShowerParticlePtr> & outgoingLines() const;
+  inline map<ShowerProgenitorPtr,tShowerParticlePtr> & outgoingLines();
 
   /**
    *  Update the shower product for a final-state particle

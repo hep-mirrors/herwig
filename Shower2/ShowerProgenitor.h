@@ -40,6 +40,11 @@ public:
   inline ShowerParticlePtr progenitor() const;
 
   /**
+   *  Set the particle
+   */
+  inline void progenitor(ShowerParticlePtr);
+
+  /**
    *  Access to the original particle
    */
   inline PPtr original() const;
@@ -48,6 +53,23 @@ public:
    *  Access to the colour isolated copy
    */
   inline PPtr copy() const;
+
+  /**
+   * Set the copy
+   */
+  inline void copy(PPtr);
+
+  /**
+   *  Whether the particle came from the hard process or was added by the matrix
+   *  element correction
+   */
+  inline bool perturbative() const;
+
+  /**
+   *  Whether the particle came from the hard process or was added by the matrix
+   *  element correction
+   */
+  inline void perturbative(bool);
 
   /**
    *  Access the \f$p_T\f$ of the hardest emission so far
@@ -84,6 +106,12 @@ private:
    *  Pointer to the colour isolated copy of the original particle
    */
   PPtr _copy;
+
+  /**
+   *  Whether the particle came from the hard process or was added by the matrix
+   *  element correction
+   */
+  bool _perturbative;
 
   /**
    *  Pointer to the ShowerParticle

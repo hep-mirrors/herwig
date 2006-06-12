@@ -19,4 +19,6 @@ inline IBPtr PartnerFinder::clone() const {
 inline IBPtr PartnerFinder::fullclone() const {
   return new_ptr(*this);
 }
+inline void PartnerFinder::setShowerVariables(ShowerVarsPtr in)
+{_showerVariables=in;}
 }

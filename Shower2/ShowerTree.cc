@@ -5,6 +5,7 @@
 #include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include <cassert>
 
 namespace Herwig {
@@ -57,8 +58,7 @@ ShowerTree::ShowerTree(PPtr in1, PPtr in2, double x1, double x2,
   map<PPtr,PPtr>::const_iterator cit;
   for(unsigned int ix=0;ix<original.size();++ix)
     {
-      ShowerParticlePtr temp=ptr_new<ShowerParticlePtr>(*copy[ix]);
-      temp->setFromHardSubprocess(true);
+      ShowerParticlePtr temp=new_ptr(ShowerParticle(*copy[ix],1));
       temp->setFinalState(ix>=2);
       // incoming
       if(ix<2)
@@ -126,6 +126,8 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
   // create the incoming particle
   original[0] = in;
   copy[0]     = new_ptr(Particle(*in));
+  // create the parent
+  ShowerParticlePtr sparent(new_ptr(ShowerParticle(*copy[0],2)));
   // make the new children if needed
   if(copy.size()>1)
     {
@@ -134,9 +136,6 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
     }
   // isolate the colour
   colourIsolate(original,copy);
-  // create the parent
-  ShowerParticlePtr sparent(new_ptr(ShowerParticle(*copy[0])));
-  sparent->setFromHardSubprocess(true);
   sparent->setFinalState(false);
   _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[0],copy[0],sparent))
  				  ,sparent));
@@ -145,8 +144,7 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
   // create the children
   for (unsigned int ix=1;ix<original.size();++ix)
     {
-      ShowerParticlePtr stemp= ptr_new<ShowerParticlePtr>(*copy[ix]);
-      stemp->setFromHardSubprocess(true);
+      ShowerParticlePtr stemp= new_ptr(ShowerParticle(*copy[ix],2));
       stemp->setFinalState(true);
       _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],copy[ix],
  							       stemp)),
@@ -248,6 +246,7 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
   // construct the map of colour lines for hard process
   for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit)
     {
+      if(!cit->first->perturbative()) continue; 
       if((*cit).first->copy()->colourLine()) 
 	_colour.insert(make_pair((*cit).first->copy()->colourLine(),
 				 (*cit).first->original()->colourLine()));
@@ -257,6 +256,7 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
     }
   for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
     {
+      if(!cit->first->perturbative()) continue;
       if((*cit).first->copy()->colourLine()) 
 	_colour.insert(make_pair((*cit).first->copy()->colourLine(),
 				 (*cit).first->original()->colourLine()));
@@ -304,9 +304,26 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
  	    throw Exception() << "Final-state particle must have a ThePEGBase"
  			      << " in ShowerTree::fillEventRecord()" 
  			      << Exception::runerror;
-	  // register the shower particle as a 
-	  // copy of the one from the hard process
-	  pstep->setCopy((*cit).first->original(),init);
+	  // if not from a matrix element correction
+	  if(cit->first->perturbative())
+	    {
+	      // register the shower particle as a 
+	      // copy of the one from the hard process
+	      tParticleVector parents=init->parents();
+	      for(unsigned int ix=0;ix<parents.size();++ix)
+		{parents[ix]->abandonChild(init);}
+	      (*cit).first->original()->addChild(init);
+	      pstep->addDecayProduct(init);
+	    }
+	  // from a matrix element correction
+	  else
+	    {
+	      updateColour((*cit).first->copy());
+	      (*cit).first->original()->addChild((*cit).first->copy());
+	      pstep->addDecayProduct((*cit).first->copy());
+	      (*cit).first->copy()->addChild(init);
+	      pstep->addDecayProduct(init);
+	    }
 	  updateColour(init);
 	  // insert shower products
 	  addFinalStateShower(init,pstep);
@@ -387,8 +404,8 @@ void ShowerTree::addInitialStateShower(PPtr p, StepPtr s, bool addchildren) {
     }
 }
 
-  void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
-			 tEHPtr ch)
+void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
+		       tEHPtr ch)
 {
   // must be one incoming particle
   assert(_incomingLines.size()==1);
@@ -407,8 +424,7 @@ void ShowerTree::addInitialStateShower(PPtr p, StepPtr s, bool addchildren) {
       // reisolate the colour
       colourIsolate(original,copy);
       // make the new progenitor
-      ShowerParticlePtr stemp=new_ptr(ShowerParticle(*copy[0]));
-      stemp->setFromHardSubprocess(true);
+      ShowerParticlePtr stemp=new_ptr(ShowerParticle(*copy[0],2));
       stemp->setFinalState(false);
       ShowerProgenitorPtr newprog=new_ptr(ShowerProgenitor(original[0],copy[0],stemp));
       _incomingLines.clear();
@@ -472,8 +488,7 @@ void ShowerTree::addInitialStateShower(PPtr p, StepPtr s, bool addchildren) {
   	  // now create the shower progenitors
   	  PPtr ncopy=new_ptr(Particle(*orig));
   	  copy[0]->addChild(ncopy);
-  	  ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy));
-  	  nshow->setFromHardSubprocess(true);
+  	  ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy,2));
   	  nshow->setFinalState(true);
   	  ShowerProgenitorPtr prog=new_ptr(ShowerProgenitor(children[ix],
   							    ncopy,nshow));
@@ -533,11 +548,36 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
     _colour.insert(make_pair(copy->colourLine(),final->colourLine()));
   if(copy->antiColourLine())
     _colour.insert(make_pair(copy->antiColourLine(),final->antiColourLine()));
-  // remove original from record
+  // initial-state radiation
+  if(ISR&&!_incomingLines.begin()->first->progenitor()->children().empty())
+    {
+      ShowerParticlePtr init=_incomingLines.begin()->first->progenitor();
+      // initial particle is copy of final from previous shower
+      tParticleVector parents=init->parents();
+      for(unsigned int ix=0;ix<parents.size();++ix)
+	{parents[ix]->abandonChild(init);}
+      updateColour(init);
+      final->addChild(init);
+      pstep->addDecayProduct(init);
+      // insert shower products
+      addFinalStateShower(init,pstep);
+      // sort out colour
+      final=_incomingLines.begin()->second;
+      _colour.clear();
+      if(copy->colourLine()) 
+	_colour.insert(make_pair(copy->colourLine(),final->colourLine()));
+      if(copy->antiColourLine())
+	_colour.insert(make_pair(copy->antiColourLine(),final->antiColourLine()));
+    }
   // get the decaying particles
   // make the copy
   updateColour(copy);
-  pstep->setCopy(final,copy);
+  // copy of the one from the hard process
+  tParticleVector dpar=copy->parents();
+  for(unsigned int ix=0;ix<dpar.size();++ix)
+    {dpar[ix]->abandonChild(copy);}
+  final->addChild(copy);
+  pstep->addDecayProduct(copy);
   // final-state radiation
   if(FSR)
     {
@@ -554,7 +594,12 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
 	  pstep->addDecayProduct(cit->first->copy());
 	  // register the shower particle as a 
 	  // copy of the one from the hard process
-	  pstep->setCopy(cit->first->copy(),init);
+	  tParticleVector parents=init->parents();
+	  for(unsigned int ix=0;ix<parents.size();++ix)
+	    {parents[ix]->abandonChild(init);}
+	  (*cit).first->copy()->addChild(init);
+	  pstep->addDecayProduct(init);
+	  //pstep->setCopy(cit->first->copy(),init);
 	  updateColour(init);
 	  // insert shower products
 	  addFinalStateShower(init,pstep);

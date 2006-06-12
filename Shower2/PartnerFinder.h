@@ -7,6 +7,7 @@
 
 #include "ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
+#include "ShowerVariables.h"
 #include "PartnerFinder.fh"
 
 namespace Herwig {
@@ -119,8 +120,7 @@ public:
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */
-  bool setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-				    const ShowerParticleVector &particles,
+  bool setQCDInitialEvolutionScales(const ShowerParticleVector &particles,
                                     const bool isDecayCase = false);
 
   /**
@@ -129,8 +129,7 @@ public:
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */
-  bool setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-				    const ShowerParticleVector &particles,
+  bool setQEDInitialEvolutionScales(const ShowerParticleVector &particles,
                                     const bool isDecayCase = false);
 
   /**
@@ -139,8 +138,7 @@ public:
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */
-  bool setEWKInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-				    const ShowerParticleVector &particles,
+  bool setEWKInitialEvolutionScales(const ShowerParticleVector &particles,
                                     const bool isDecayCase = false);
   //@}
 
@@ -155,28 +153,31 @@ public:
   /**
    *  General method to calculate the initial evolution scales
    */
-  pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &, 
-		                                      const tShowerVarsPtr);
+  pair<Energy,Energy> calculateInitialEvolutionScales(const ShowerPPair &,
+                                           const bool isDecayCase = false);
 
   /**
    *  Calculate the initial evolution scales for two final-state particles
    */
-  pair<Energy,Energy> calculateFinalFinalScales(const ShowerPPair &,
-		                                const tShowerVarsPtr);
+  pair<Energy,Energy> calculateFinalFinalScales(const ShowerPPair &);
 
   /**
    *  Calculate the initial evolution scales for two initial-state particles
    */
-  pair<Energy,Energy> calculateInitialInitialScales(const ShowerPPair &,
-		                                    const tShowerVarsPtr);
+  pair<Energy,Energy> calculateInitialInitialScales(const ShowerPPair &);
 
   /**
    *  Calculate the initial evolution scales for one initial 
    *  and one final-state particles
    */
   pair<Energy,Energy> calculateInitialFinalScales(const ShowerPPair &,
-		                                  const tShowerVarsPtr);
+                                       const bool isDecayCase = false);
   //@}
+
+  /**
+   *  Set the shower variables, only used by Evolver in doinit
+   */
+  inline void setShowerVariables(ShowerVarsPtr);
 
 public:
 
@@ -241,6 +242,11 @@ private:
    *  Approach to use for setting the colour partners
    */
   int _approach;
+
+  /**
+   *  Pointer to the ShowerVariables object
+   */
+  ShowerVarsPtr _showerVariables;
 
 };
 

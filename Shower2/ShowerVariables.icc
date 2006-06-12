@@ -21,7 +21,9 @@ inline ShowerVariables::ShowerVariables(const ShowerVariables & x)
     _particlesDecayInShower( x._particlesDecayInShower ),
     _inputparticlesDecayInShower(x._inputparticlesDecayInShower),
     _a(x._a),_b(x._b),_c(x._c),_gluonMass(x._gluonMass),
-    _globalParameters(x._globalParameters)
+    _globalParameters(x._globalParameters),
+    _initialenhance(x._initialenhance),
+    _finalenhance(x._finalenhance)
 {}
 
 inline IBPtr ShowerVariables::clone() const {
@@ -178,4 +180,17 @@ inline void ShowerVariables::setGluonMass(bool final)
 	_gluonMass=_globalParameters->effectiveGluonMass();
     }
 }
+
+inline double ShowerVariables::initialStateRadiationEnhancementFactor() const
+{return _initialenhance;}
+
+inline double ShowerVariables::finalStateRadiationEnhancementFactor() const
+{return _finalenhance;}
+
+inline void ShowerVariables::initialStateRadiationEnhancementFactor(double in)
+{_initialenhance=in;}
+
+inline void ShowerVariables::finalStateRadiationEnhancementFactor(double in)
+{_finalenhance=in;}
+
 }

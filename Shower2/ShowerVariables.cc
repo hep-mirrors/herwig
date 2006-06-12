@@ -32,8 +32,9 @@ ShowerVariables::ShowerVariables() :
   _qqgPSMode(0),
   _stopShowerAtMassScale( Energy() ),
   _vetoAbovePtScale( HUGEMASS ), 
-  _vetoBelowPtScale( Energy() )
-  ,_a(0.3), _b(2.3), _c(0.3*GeV)
+  _vetoBelowPtScale( Energy() ),
+  _a(0.3), _b(2.3), _c(0.3*GeV),
+  _initialenhance(1.),_finalenhance(1.)
 {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 

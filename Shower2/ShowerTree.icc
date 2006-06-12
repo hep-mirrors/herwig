@@ -3,12 +3,12 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-inline const map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::incomingLines() const
+inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
+ShowerTree::incomingLines() 
 {return _incomingLines;}
 
-inline const map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::outgoingLines() const
+inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
+ShowerTree::outgoingLines()
 {return _outgoingLines;}
 
 inline void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,

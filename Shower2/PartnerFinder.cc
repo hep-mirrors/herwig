@@ -42,11 +42,11 @@ ACL(const ShowerParticleVector::const_iterator & a)
 PartnerFinder::~PartnerFinder() {}
 
 void PartnerFinder::persistentOutput(PersistentOStream & os) const {
-  os << _approach;
+  os << _approach << _showerVariables;
 }
 
 void PartnerFinder::persistentInput(PersistentIStream & is, int) {
-  is >> _approach;
+  is >> _approach >> _showerVariables;
 }
 
 ClassDescription<PartnerFinder> PartnerFinder::initPartnerFinder;
@@ -68,8 +68,7 @@ void PartnerFinder::Init() {
 }
 
 
-bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-						 const ShowerParticleVector &particles,
+bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
   Timer<1300> timer("PartnerFinder::setQCDInitialEvolutionScales");
   //  bool isOK = true;
@@ -122,9 +121,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
     //                  does not have to be necessarily "i".
     int position = UseRandom::irnd(partners.size());
     pair<Energy,Energy> pairScales = 
-      calculateInitialEvolutionScales(ShowerPPair(*cit, 
-						  partners[position]),
-				      showerVariables);
+      calculateInitialEvolutionScales(ShowerPPair(*cit,partners[position]),
+                                      isDecayCase);
     switch(_approach) {
     case 0: // Totally random
       (*cit)->setEvolutionScale(ShowerIndex::QCD, pairScales.first);
@@ -151,8 +149,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const tShowerVarsPtr showerVari
   return true;
 }
 
-bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-						 const ShowerParticleVector &particles,
+bool PartnerFinder::setQEDInitialEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
 
   // ***LOOKHERE*** To be implemented only if you want to have electromagnetic
@@ -176,8 +173,7 @@ bool PartnerFinder::setQEDInitialEvolutionScales(const tShowerVarsPtr showerVari
   return false;
 }
 
-bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVariables,
-						 const ShowerParticleVector &particles,
+bool PartnerFinder::setEWKInitialEvolutionScales(const ShowerParticleVector &particles,
 						 const bool isDecayCase) {
   // ***LOOKHERE*** To be implemented only if you want to have electroweak
   //               bremsstrahlung. You should use the data() method of
@@ -197,47 +193,93 @@ bool PartnerFinder::setEWKInitialEvolutionScales(const tShowerVarsPtr showerVari
 }
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialEvolutionScales(const ShowerPPair &particlePair, 
-		                const tShowerVarsPtr showerVariables) {
+calculateInitialEvolutionScales(const ShowerPPair &particlePair, const bool isDecayCase) {
   bool FS1=FS(particlePair.first),FS2= FS(particlePair.second);
 
   if(FS1 && FS2)
-    return calculateFinalFinalScales(particlePair, showerVariables);
+    return calculateFinalFinalScales(particlePair);
   else if(FS1 && !FS2) {
     ShowerPPair a(particlePair.second, particlePair.first);
-    pair<Energy,Energy> rval = calculateInitialFinalScales(a,showerVariables);
+    pair<Energy,Energy> rval = calculateInitialFinalScales(a,isDecayCase);
     return pair<Energy,Energy>(rval.second,rval.first);
   }
   else if(!FS1 &&FS2)
-    return calculateInitialFinalScales(particlePair,showerVariables);
+    return calculateInitialFinalScales(particlePair,isDecayCase);
   else
-    return calculateInitialInitialScales(particlePair,showerVariables);
+    return calculateInitialInitialScales(particlePair);
 }
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialFinalScales(const ShowerPPair &ppair, const tShowerVarsPtr s) {
-  /********
-   * In this case from JHEP 12(2003)045 we find the conditiongs
-   * ktilda_b = (1+c) and ktilda_c = (1+2c)
-   * We also find that c = m_c^2/Q^2. The process is a+b->c where
-   * particle a is not colour connected (considered as a colour singlet).
-   * Therefore we simply find that q_b = sqrt(Q^2+m_c^2) and 
-   * q_c = sqrt(Q^2+2 m_c^2)
-   * We also assume that the first particle in the pair is the initial
-   * state particle and the second is the final state one (c)
-   *********/
-  Lorentz5Momentum p1, p2, p;
-  p1 = ppair.first->momentum();
-  p2 = ppair.second->momentum();
-  p = p1+p2;
-  p.boost(p.findBoostToCM());
-  Energy2 mc2 = ppair.second->mass();
-  Energy Q2 = p*p;
-  return pair<Energy,Energy>(sqrt(Q2+mc2), sqrt(Q2+2*mc2));
+calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
+
+  Lorentz5Momentum pa, pb, pc;
+  pb = ppair.first->momentum();
+  pc = ppair.second->momentum();
+
+  if(!isDecayCase) {
+    /********
+     * In this case from JHEP 12(2003)045 we find the conditions
+     * ktilda_b = (1+c) and ktilda_c = (1+2c)
+     * We also find that c = m_c^2/Q^2. The process is a+b->c where
+     * particle a is not colour connected (considered as a colour singlet).
+     * Therefore we simply find that q_b = sqrt(Q^2+m_c^2) and 
+     * q_c = sqrt(Q^2+2 m_c^2)
+     * We also assume that the first particle in the pair is the initial
+     * state particle and the second is the final state one (c)
+     *********/ 
+    pa = pb+pc;
+    pa.boost(pa.findBoostToCM());
+    Energy2  mc2 = sqr(ppair.second->mass());
+    Energy2  Q2  = pa*pa;
+    return pair<Energy,Energy>(sqrt(Q2+mc2), sqrt(Q2+2*mc2));
+  }
+  else {
+    /********
+     * In this case from JHEP 12(2003)045 we find, for the decay
+     * process b->c+a(neutral), the condition
+     * (ktilda_b-1)*(ktilda_c-c)=(1/4)*sqr(1-a+c+lambda). 
+     * We also assume that the first particle in the pair is the initial
+     * state particle (b) and the second is the final state one (c).
+     *  - We find maximal phase space coverage through emissions from 
+     *    c if we set ktilde_c = 4.*(sqr(1.-sqrt(a))-c)
+     *  - We find the most 'symmetric' way to populate the phase space
+     *    occurs for (ktilda_b-1)=(ktilda_c-c)=(1/2)*(1-a+c+lambda) 
+     *  - We find the most 'smooth' way to populate the phase space
+     *    occurs for... 
+     *********/ 
+    pa              = pb-pc               ;
+    Energy ma       = sqrt(pa*pa)         ;      
+    Energy mb       = ppair.first->mass() ;      
+    Energy mc       = ppair.second->mass();
+    double a        = sqr(ma/mb)          ;
+    double c        = sqr(mc/mb)          ;
+    double lambda   = sqrt(1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c);
+    double PROD     = 0.25*sqr(1. - a + c + lambda);
+    double ktilde_b, ktilde_c;
+    // debugging coverage possible for emissions from c.
+    // ktilde_c = 0.5+c;
+    // ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    // maximises coverage possible for emissions from c.
+    // ktilde_c = 4.0*(sqr(1.-sqrt(a))-c);
+    // ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    // the 'symmetric' choice (see above).
+    ktilde_c = 0.5*(1-a+c+lambda) + c ;
+    ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+    // the 'smooth' choice (see above).
+    // double(cosi) = (sqr(1-sqrt(c))-a)/lambda;
+    // double(cosi) = (sqr(1+sqrt(c))-a)/lambda;
+    // double(cosi) = (-lambda+sqrt(2.0*lambda)*sqrt(1+c-a+lambda))
+    //              / lambda;
+    //double(cosi) = (-lambda-sqrt(2.0*lambda)*sqrt(1+c-a+lambda))
+    //             / lambda;
+    // ktilde_b = 2.0/(1.0-cosi);
+    // ktilde_c = (1.0-a+c+lambda)*(1.0+c-a-lambda*cosi)/(2.0*(1.0+cosi));
+    return pair<Energy,Energy>(mb*sqrt(ktilde_b),mb*sqrt(ktilde_c));
+  }
 }
 
 pair<Energy,Energy> PartnerFinder::
-calculateInitialInitialScales(const ShowerPPair &ppair, const tShowerVarsPtr s)
+calculateInitialInitialScales(const ShowerPPair &ppair)
 {
   /*******
    * This case is quite simple. From JHEP 12(2003)045 we find the condition
@@ -245,18 +287,14 @@ calculateInitialInitialScales(const ShowerPPair &ppair, const tShowerVarsPtr s)
    * b+c->a so we need merely boost to the CM frame of the two incoming
    * particles and then qtilda is equal to the energy in that frame
    **********/
-  Lorentz5Momentum p1, p2, p;
-  p1 = ppair.first->momentum();
-  p2 = ppair.second->momentum();
-  p = p1+p2;
-  p.boost((p1+p2).findBoostToCM());
-  Energy Q = sqrt(p*p);
+  Lorentz5Momentum p(ppair.first->momentum()+ppair.second->momentum());
+  p.boost(p.findBoostToCM());
+  Energy Q = sqrt(p.m2());
   return pair<Energy,Energy>(Q,Q);
 }
 
 pair<Energy,Energy> PartnerFinder::
-calculateFinalFinalScales(const ShowerPPair &particlePair,
-		          const tShowerVarsPtr showerVariables) {
+calculateFinalFinalScales(const ShowerPPair &particlePair) {
   /********
    * Using JHEP 12(2003)045 we find that we need ktilda = 1/2(1+b-c+lambda)
    * ktilda = qtilda^2/Q^2 therefore qtilda = sqrt(ktilda*Q^2)
@@ -283,7 +321,7 @@ calculateFinalFinalScales(const ShowerPPair &particlePair,
   n = Lorentz5Momentum(0.0, - p.vect()); 
   Energy secondQ = sqrt(2.*p*(p+n));
   // get asymmetric distribution in x, xbar plane: 
-  if (showerVariables->asyPS()) {
+  if (_showerVariables->asyPS()) {
     Energy Q = sqrt(sqr(p1+p2)); 
     double r = p1.m()/Q; 
     //double v = sqrt(1.-sqr(r)); 
@@ -299,7 +337,7 @@ calculateFinalFinalScales(const ShowerPPair &particlePair,
     }
   }
   // random swap if needed
-  if (showerVariables->rndPS()&&UseRandom::rndbool()) 
+  if (_showerVariables->rndPS()&&UseRandom::rndbool()) 
     swap(firstQ,secondQ);
   return pair<Energy,Energy>(firstQ, secondQ);
 }
