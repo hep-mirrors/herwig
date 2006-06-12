@@ -121,39 +121,45 @@ protected:
   /**
    *  Generate the hard matrix element correction
    */
-  //virtual void 
-  //hardProcessHardMatrixElementCorrection(vector<ShowerProgenitor>&,ShowerParticleVector&);
+  virtual void hardMatrixElementCorrection();
 
+  /**
+   *  Methods to perform the evolution of an individual particle, including
+   *  recursive calling on the products
+   */
+  //@{
   /**
    * It does the forward evolution of the time-like input particle
    * (and recursively for all its radiation products).
    * accepting only emissions which conforms to the showerVariables
    * and soft matrix element correction pointed by meCorrectionPtr.
-   * In the case that specialDecay is true then the forward evolution
-   * is done with reverse angular ordering, as it should be for radiation
-   * emitted by a decaying particle. 
-   * If at least one emission has occurred then the method returns true
-   * and all the new created ShowerParticle objects (but not the input 
-   * particle) are added to the collection collecShoPar (which can
-   * contain, at the beginning of the method, either the full collection
-   * of ShowerParticle already created so far by the showering, 
-   * or being empty: the choice is up to the caller).  
+   * If at least one emission has occurred then the method returns true.
+   * @param particle The particle to be showered
    */
-  virtual bool timeLikeShower(tShowerParticlePtr particle,
-			      const bool specialDecay=false); 
+  virtual bool timeLikeShower(tShowerParticlePtr particle); 
 
   /**
    * It does the backward evolution of the space-like input particle 
    * (and recursively for all its time-like radiation products).
    * accepting only emissions which conforms to the showerVariables.
    * If at least one emission has occurred then the method returns true
-   * and all the new created ShowerParticle objects (but not the input
-   * particle) are added to the collection collecShoPar (which can
-   * contain, at the beginning of the method, either the full collection
-   * of ShowerParticle already created so far by the showering, 
-   * or being empty: the choice is up to the caller).
+   * @param particle The particle to be showered
    */
   virtual bool spaceLikeShower(tShowerParticlePtr particle); 
+
+  /**
+   * If does the forward evolution of the input on-shell particle
+   * involved in a decay 
+   * (and recursively for all its time-like radiation products).
+   * accepting only emissions which conforms to the showerVariables.
+   * @param particle    The particle to be showered
+   * @param maxscale    The maximum scale for the shower.
+   * @param minimumMass The minimum mass of the final-state system
+   */
+  virtual bool spaceLikeDecayShower(tShowerParticlePtr particle,
+				    vector<Energy> maxscale,
+				    Energy minimumMass);
+  //@}
 
   /**
    * This method sets all the properties of the new particles from the 
@@ -163,10 +169,12 @@ protected:
    * @param newparent The new initial-state particle
    * @param otherChild The new final-state particle
    * @param scale The scale of the branching
+   * @param z     The energy fraction
    * @param inter The interaction
    */
   void createBackwardBranching(ShowerParticlePtr part, ShowerParticlePtr newparent, 
-			       ShowerParticlePtr otherChild, Energy scale, 
+			       ShowerParticlePtr otherChild, Energy scale,
+			       double z,
 			       ShowerIndex::InteractionType inter);
 
   /**
