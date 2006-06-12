@@ -81,8 +81,10 @@ public:
 
   /**
    * Copy constructor from a ThePEG Particle
+   * @param part ThePEG particle
+   * @param pert Where the particle came from
    */
-  inline ShowerParticle(const Particle &);
+  inline ShowerParticle(const Particle & part,unsigned int pert);
 
   /**
    * Destructor.
@@ -121,14 +123,11 @@ public:
   inline void setInitiatesTLS( const bool );
 
   /**
-   * Access the flag which tells us if the particle came from the hard sub-process
+   * Access the flag which tells us where the particle came from
+   * This is 0 for a particle produced in the shower, 1 if the particle came
+   * from the hard sub-process and 2 is it came from a decay.
    */
-  inline bool isFromHardSubprocess() const;
-
-  /**
-   * Set the flag which tells us if the particle came from the hard sub-process
-   */
-  inline void setFromHardSubprocess(const bool);
+  inline unsigned int perturbative() const;
   //@}
 
   /**
@@ -335,7 +334,7 @@ private:
   /**
    *  Whether the particle came from 
    */
-  bool _isFromHardSubprocess;
+  unsigned int _perturbative;
 
   /**
    *  Does a particle produced in the backward shower initiate a time-like shower 

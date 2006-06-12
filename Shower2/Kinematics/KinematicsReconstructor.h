@@ -140,7 +140,8 @@ protected:
    * main information we want.
    * This methods returns false if there was no radiation or rescaling required
    */
-  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent);
+  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
+				      unsigned int iopt);
 
   /**
    * Exactly similar to the previous one, but for a space-like jet.
@@ -151,6 +152,12 @@ protected:
    * This methods returns false if there was no radiation or rescaling required
    */
   bool reconstructSpaceLikeJet(const tShowerParticlePtr particleJetParent);
+
+  /**
+   * Exactly similar to the previous one, but for a decay jet
+   * This methods returns false if there was no radiation or rescaling required
+   */
+  bool reconstructDecayJet(const tShowerParticlePtr particleJetParent);
   //@}
 
 public:
@@ -193,6 +200,22 @@ protected:
    * @param jets The jets
    */
   const double solveKfactor( const Energy & root_s, const JetKinVect & jets );
+
+  /**
+   *  Calculate the rescaling factors for th jets in a particle decay where
+   *  there was initial-state radiation
+   * @param n  The reference vector for the initial state radiation
+   * @param pjet The momentum of the initial-state jet
+   * @param pother The momentum of the outgoing colour singlet system before radiation
+   * @param ppartner The momentum of the colour partner of the decaying particle
+   * before and after radiation
+   * @param k1 The rescaling parameter for the partner
+   * @param k2 The rescaling parameter for the outgoing singlet
+   * @param qt The transverse momentum vector
+   */
+  bool solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
+			 Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
+			 double & k1, double & k2,Lorentz5Momentum & qt);
 
   /**
    * Check the rescaling conserves momentum

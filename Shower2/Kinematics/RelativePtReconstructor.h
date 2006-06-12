@@ -43,6 +43,18 @@ public:
 public:
 
   /**
+   * Given in input a vector of the particles which initiated the showers
+   * the method does the reconstruction of such jets,
+   * including the appropriate boosts (kinematics reshufflings)  
+   * needed to conserve the total energy-momentum of the collision
+   * and preserving the invariant mass and the rapidity of the 
+   * hard subprocess system.
+   */
+  virtual bool reconstructHardJets(ShowerTreePtr hard);
+
+protected:
+
+  /**
    * Given the particle (ShowerParticle object) that 
    * originates a forward (time-like) jet, this method reconstructs the kinematics 
    * of the jet. That is, by starting from the final grand-children (which 
@@ -55,7 +67,11 @@ public:
    * main information we want.
    * This methods returns false if there was no radiation or rescaling required
    */
-  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent);
+  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
+				      unsigned int iopt);
+
+  virtual void generateTimeLikeMomenta(const tShowerParticlePtr particleJetParent,
+				       bool first);
 
 public:
 

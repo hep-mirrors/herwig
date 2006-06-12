@@ -93,8 +93,11 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    * @param theLast The particle.
+   * @param iopt The option for the momentum reconstruction 
+   * - 0 is in the rest frame of the pair of reference vectors
+   * - 1 is in the rest frame of the p vector
    */
-  virtual void updateLast(const tShowerParticlePtr theLast) = 0;
+  virtual void updateLast(const tShowerParticlePtr theLast, unsigned int iopt) = 0;
   //@}
 
 public:
@@ -190,18 +193,10 @@ public:
   inline Energy pT() const;
 
   /**
-   * Calculate the relative \f$p_T\f$ for the branching
-   * @param masses The masses of the particles in the branching
-   */
-  virtual void calculatepT(vector<Energy> masses)=0;
-  //@}
-
-protected:
-
-  /**
    *  Set the relative \f$p_T\f$ for the branching
    */
   inline void pT(const Energy);
+  //@}
 
 private:
 

@@ -18,7 +18,7 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
   :  Particle(x),
      _isFinalState(x._isFinalState),
      _reconstructionFixedPoint(x._reconstructionFixedPoint),
-     _isFromHardSubprocess( x._isFromHardSubprocess ),
+     _perturbative( x._perturbative ),
      _initiatesTLS( x._initiatesTLS ),
      _sudAlpha(x._sudAlpha),
      _sudBeta(x._sudBeta),
@@ -32,11 +32,11 @@ inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
      _thePEGBase( x._thePEGBase )
 {}
 
-inline ShowerParticle::ShowerParticle(const Particle &x)
+  inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert)
   : Particle(x),
     _isFinalState( true ),
     _reconstructionFixedPoint( false ),
-    _isFromHardSubprocess( false ),
+    _perturbative(pert),
     _initiatesTLS( false ),
     _sudAlpha( 1.0 ),
     _sudBeta( -1.0 ),
@@ -55,7 +55,7 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _isFinalState( true ),
     _reconstructionFixedPoint( false ),
     // this was still missing 
-    _isFromHardSubprocess( false ),
+    _perturbative(0),
     _initiatesTLS( false ),
     _sudAlpha( 1.0 ),
     _sudBeta( -1.0 ),
@@ -66,10 +66,8 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
     _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
-    //_rhoD( 2, vector< std::complex<double> >(2) ),
     _thePEGBase( PPtr() )
 {}
-
 
 inline bool ShowerParticle::isFinalState() const {
   return _isFinalState;
@@ -87,16 +85,9 @@ inline void ShowerParticle::setInitiatesTLS(const bool input) {
   _initiatesTLS = input;
 }
 
-
-inline bool ShowerParticle::isFromHardSubprocess() const {
-  return _isFromHardSubprocess;
+inline unsigned int ShowerParticle::perturbative() const {
+  return _perturbative;
 }
-
-inline void ShowerParticle::setFromHardSubprocess(const bool val) 
-{
-  _isFromHardSubprocess = val;
-}
-
   
 inline double ShowerParticle::sudAlpha() const {
   return _sudAlpha;

@@ -47,7 +47,6 @@ inline double KinematicsReconstructor::momConsEq(const double & k,
 inline LorentzRotation KinematicsReconstructor::
 solveBoost(const double k, const Lorentz5Momentum & newq, 
 	   const Lorentz5Momentum & oldp ) {
-  assert(k > 0.0 && k <= 1.0);
   Energy q = newq.vect().mag(); 
   Energy2 qs = sqr(q); 
   Energy2 Q2 = newq.m2(); 

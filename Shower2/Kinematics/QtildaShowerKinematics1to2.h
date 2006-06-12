@@ -91,8 +91,12 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    * @param theLast The particle.
+   * @param iopt The option for the momentum reconstruction 
+   * - 0 is in the rest frame of the pair of reference vectors
+   * - 1 is in the rest frame of the p vector
    */
-  virtual void updateLast(const tShowerParticlePtr theLast) = 0;
+  virtual void updateLast(const tShowerParticlePtr theLast,
+			  unsigned int iopt) = 0;
   //@}
 
   /**
@@ -118,8 +122,6 @@ public:
    */
   inline const double p_dot_n() const;
 
-protected:
-
   /**
    * Converts a Sudakov parametrization of a momentum w.r.t. the given 
    * basis \f$p\f$ and \f$n\f$ into a 5 momentum.
@@ -129,8 +131,12 @@ protected:
    *              parameterisation
    * @param py    The \f$x\f$-component of the transverse momentum in the Sudakov 
    *              parameterisation
+   * @param iopt The option for the momentum reconstruction 
+   * - 0 is in the rest frame of the pair of reference vectors
+   * - 1 is in the rest frame of the p vector
    */
-  Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py);
+  Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py,
+				    unsigned int iopt);
 
 private:
 
