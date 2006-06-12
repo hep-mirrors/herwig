@@ -18,7 +18,7 @@ set stdShowerHandler:Evolver theEvolver
 
 create Herwig++::VectorBosonQQBarMECorrection qqbarg
 insert theEvolver:MECorrection 0 qqbarg
-
+set qqbarg:Coupling theShowerAlphaQCD
 
 set theEvolver:PartnerFinder thePartnerFinder
 set theEvolver:KinematicsReconstructor theKinematicsReconstructor
