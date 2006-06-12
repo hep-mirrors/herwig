@@ -58,7 +58,7 @@ set MEqq2gZ2ll:WithNeutrinos 0
 create Herwig++::MEqq2W2ll  MEqq2W2ll  HwME.so
 create Herwig++::MEee2gZ2qq MEee2gZ2qq HwME.so
 set MEee2gZ2qq:MinimumFlavour 1
-set MEee2gZ2qq:MaximumFlavour 6
+set MEee2gZ2qq:MaximumFlavour 5
 
 # Setup the Subprocesses
 cd /Defaults/Handlers
