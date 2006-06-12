@@ -10,8 +10,9 @@ inline FS_QtildaShowerKinematics1to2::FS_QtildaShowerKinematics1to2(ShowerVarsPt
   QtildaShowerKinematics1to2(in)
 {}
 
-inline FS_QtildaShowerKinematics1to2::FS_QtildaShowerKinematics1to2(const FS_QtildaShowerKinematics1to2 & x)
-  : QtildaShowerKinematics1to2(x) {}
+inline FS_QtildaShowerKinematics1to2::
+FS_QtildaShowerKinematics1to2(const FS_QtildaShowerKinematics1to2 & x) :
+  QtildaShowerKinematics1to2(x) {}
 
 inline FS_QtildaShowerKinematics1to2::
 FS_QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 

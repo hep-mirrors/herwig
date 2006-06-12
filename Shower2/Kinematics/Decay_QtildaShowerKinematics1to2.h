@@ -1,27 +1,21 @@
 // -*- C++ -*-
-#ifndef HERWIG_FS_QtildaShowerKinematics1to2_H
-#define HERWIG_FS_QtildaShowerKinematics1to2_H
+#ifndef HERWIG_Decay_QtildaShowerKinematics1to2_H
+#define HERWIG_Decay_QtildaShowerKinematics1to2_H
 //
-// This is the declaration of the FS_QtildaShowerKinematics1to2 class.
+// This is the declaration of the Decay_QtildaShowerKinematics1to2 class.
 //
 
 #include "QtildaShowerKinematics1to2.h"
-#include "FS_QtildaShowerKinematics1to2.fh"
+#include "Decay_QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/** \ingroup Shower
- *
- *  This (concrete) class provides the specific Final State shower
- *  kinematics information.
- *
- *  @see QtildaShowerKinematics1to2
- *  @see IS_QtildaShowerKinematics1to2
- *  @see KinematicsReconstructor
+/**
+ * Here is the documentation of the Decay_QtildaShowerKinematics1to2 class.
  */
-class FS_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
+class Decay_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
 
 public:
 
@@ -30,24 +24,24 @@ public:
   /**
    * The default constructor.
    */
-  inline FS_QtildaShowerKinematics1to2(ShowerVarsPtr);
+  inline Decay_QtildaShowerKinematics1to2(ShowerVarsPtr);
 
   /**
    * The copy constructor.
    */
-  inline FS_QtildaShowerKinematics1to2(const FS_QtildaShowerKinematics1to2 &);
+  inline Decay_QtildaShowerKinematics1to2(const Decay_QtildaShowerKinematics1to2 &);
 
   /**
    * Creator with the two defining vectors  p  and  n . 
    */
-  inline FS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				       const Lorentz5Momentum & n,
-				       ShowerVarsPtr );
+  inline Decay_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
+					  const Lorentz5Momentum & n,
+					  ShowerVarsPtr );
 
   /**
    * The destructor.
    */
-  virtual ~FS_QtildaShowerKinematics1to2();
+  virtual ~Decay_QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -86,28 +80,29 @@ public:
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
-   * @param iopt The option for the momentum reconstruction 
-   * - 0 is in the rest frame of the pair of reference vectors
-   * - 1 is in the rest frame of the p vector
    */
-  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt );
+  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt);
+
+  /**
+   *  Set the relative \f$p_T\f$ for the branching
+   */
+  virtual void calculatepT(vector<Energy>);
   //@}
 
 private:
-
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  FS_QtildaShowerKinematics1to2 & operator=(const FS_QtildaShowerKinematics1to2 &);
+  Decay_QtildaShowerKinematics1to2 & operator=(const Decay_QtildaShowerKinematics1to2 &);
 
 };
 
 }
 
-#include "FS_QtildaShowerKinematics1to2.icc"
+#include "Decay_QtildaShowerKinematics1to2.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FS_QtildaShowerKinematics1to2.tcc"
+// #include "Decay_QtildaShowerKinematics1to2.tcc"
 #endif
 
-#endif /* HERWIG_FS_QtildaShowerKinematics1to2_H */
+#endif /* HERWIG_Decay_QtildaShowerKinematics1to2_H */

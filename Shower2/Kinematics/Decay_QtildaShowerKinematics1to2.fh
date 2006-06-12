@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Decay_QtildaShowerKinematics1to2 class.
+//
+#ifndef HERWIG_Decay_QtildaShowerKinematics1to2_FH
+#define HERWIG_Decay_QtildaShowerKinematics1to2_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Decay_QtildaShowerKinematics1to2;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Decay_QtildaShowerKinematics1to2,Decay_QtildaShowerKinematics1to2Ptr);
+
+}
+
+#endif

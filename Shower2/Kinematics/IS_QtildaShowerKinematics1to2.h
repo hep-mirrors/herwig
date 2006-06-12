@@ -85,12 +85,7 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    */
-  virtual void updateLast( const tShowerParticlePtr theLast );
-
-  /**
-   *  Set the relative \f$p_T\f$ for the branching
-   */
-  virtual void calculatepT(vector<Energy>);
+  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt);
   //@}
 
 private:
