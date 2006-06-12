@@ -19,32 +19,9 @@ inline IBPtr LeptonDalitzAnalysis::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void LeptonDalitzAnalysis::dofinish() {
-  AnalysisHandler::dofinish();
-  _output[0] << "PLOT\n";
-  _output[1].close();
-  _output[0] << "PLOT\n";
-  _output[1].close();
-}
-
 inline void LeptonDalitzAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  _output[0].open("e+e-DalitzA.top");
-  _output[0] << "SET FONT DUPLEX\n";
-  _output[0] << "SET LIMITS X 0 1 Y 0 1\n";
-  _output[0] << "TITLE BOTTOM \"X011\"\n";
-  _output[0] << "CASE         \" X X\"\n";
-  _output[0] << "TITLE LEFT \"X021\"\n";
-  _output[0] << "CASE       \" X X\"\n";
-  _nout[0]=0;
-  _output[1].open("e+e-DalitzB.top");
-  _output[1] << "SET FONT DUPLEX\n";
-  _output[1] << "SET LIMITS X 0 1 Y 0 1\n";
-  _output[1] << "TITLE BOTTOM \"X011\"\n";
-  _output[1] << "CASE         \" X X\"\n";
-  _output[1] << "TITLE LEFT \"X021\"\n";
-  _output[1] << "CASE       \" X X\"\n";
-  _nout[1]=0;
+  _nout=0;
 }
 
 

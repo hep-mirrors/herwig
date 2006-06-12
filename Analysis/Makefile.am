@@ -31,5 +31,9 @@ HwLEPAnalysis_la_SOURCES +=\
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh\
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
 LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh\
-LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc 
+LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc\
+TopDalitzAnalysis.cc TopDalitzAnalysis.fh\
+TopDalitzAnalysis.h TopDalitzAnalysis.icc \
+DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh\
+DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
 endif

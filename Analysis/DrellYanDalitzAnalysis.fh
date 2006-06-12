@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DrellYanDalitzAnalysis class.
+//
+#ifndef HERWIG_DrellYanDalitzAnalysis_FH
+#define HERWIG_DrellYanDalitzAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DrellYanDalitzAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DrellYanDalitzAnalysis,DrellYanDalitzAnalysisPtr);
+
+}
+
+#endif

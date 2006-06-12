@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the TopDalitzAnalysis class.
+//
+#ifndef HERWIG_TopDalitzAnalysis_FH
+#define HERWIG_TopDalitzAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class TopDalitzAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::TopDalitzAnalysis,TopDalitzAnalysisPtr);
+
+}
+
+#endif

@@ -1,12 +1,12 @@
 // -*- C++ -*-
-#ifndef HERWIG_LeptonDalitzAnalysis_H
-#define HERWIG_LeptonDalitzAnalysis_H
+#ifndef HERWIG_TopDalitzAnalysis_H
+#define HERWIG_TopDalitzAnalysis_H
 //
-// This is the declaration of the LeptonDalitzAnalysis class.
+// This is the declaration of the TopDalitzAnalysis class.
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "LeptonDalitzAnalysis.fh"
+#include "TopDalitzAnalysis.fh"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "KtJet/KtJet.h"
@@ -17,12 +17,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the LeptonDalitzAnalysis class.
+ * Here is the documentation of the TopDalitzAnalysis class.
  *
- * @see \ref LeptonDalitzAnalysisInterfaces "The interfaces"
- * defined for LeptonDalitzAnalysis.
+ * @see \ref TopDalitzAnalysisInterfaces "The interfaces"
+ * defined for TopDalitzAnalysis.
  */
-class LeptonDalitzAnalysis: public AnalysisHandler {
+class TopDalitzAnalysis: public AnalysisHandler {
 
 public:
 
@@ -31,17 +31,17 @@ public:
   /**
    * The default constructor.
    */
-  inline LeptonDalitzAnalysis();
+  inline TopDalitzAnalysis();
 
   /**
    * The copy constructor.
    */
-  inline LeptonDalitzAnalysis(const LeptonDalitzAnalysis &);
+  inline TopDalitzAnalysis(const TopDalitzAnalysis &);
 
   /**
    * The destructor.
    */
-  virtual ~LeptonDalitzAnalysis();
+  virtual ~TopDalitzAnalysis();
   //@}
 
 public:
@@ -87,9 +87,27 @@ public:
    * @param particle pointer to the particle to be analyzed.
    */
   virtual void analyze(tPPtr particle);
+
+  void topShower(PPtr,tPVector);
   //@}
 
 public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -131,33 +149,32 @@ protected:
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
-
 
 private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
+   * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<LeptonDalitzAnalysis> initLeptonDalitzAnalysis;
+  static ClassDescription<TopDalitzAnalysis> initTopDalitzAnalysis;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  LeptonDalitzAnalysis & operator=(const LeptonDalitzAnalysis &);
+  TopDalitzAnalysis & operator=(const TopDalitzAnalysis &);
 
 private:
 
   /**
-   *  Vectors to store the output
+   *  Output stream
    */
-  vector<pair<double,double> > _output[2];
+  ofstream _output;
 
   /**
-   *  Total number of points
+   *  Number of outputs
    */
   unsigned int _nout;
 
@@ -177,24 +194,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of LeptonDalitzAnalysis. */
+ *  base classes of TopDalitzAnalysis. */
 template <>
-struct BaseClassTrait<Herwig::LeptonDalitzAnalysis,1> {
-  /** Typedef of the first base class of LeptonDalitzAnalysis. */
+struct BaseClassTrait<Herwig::TopDalitzAnalysis,1> {
+  /** Typedef of the first base class of TopDalitzAnalysis. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the LeptonDalitzAnalysis class and the shared object where it is defined. */
+ *  the TopDalitzAnalysis class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::LeptonDalitzAnalysis>
-  : public ClassTraitsBase<Herwig::LeptonDalitzAnalysis> {
+struct ClassTraits<Herwig::TopDalitzAnalysis>
+  : public ClassTraitsBase<Herwig::TopDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LeptonDalitzAnalysis"; }
+  static string className() { return "Herwig++::TopDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * LeptonDalitzAnalysis is implemented. It may also include several, space-separated,
-   * libraries if the class LeptonDalitzAnalysis depends on other classes (base classes
+   * TopDalitzAnalysis is implemented. It may also include several, space-separated,
+   * libraries if the class TopDalitzAnalysis depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -205,9 +222,9 @@ struct ClassTraits<Herwig::LeptonDalitzAnalysis>
 
 }
 
-#include "LeptonDalitzAnalysis.icc"
+#include "TopDalitzAnalysis.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LeptonDalitzAnalysis.tcc"
+// #include "TopDalitzAnalysis.tcc"
 #endif
 
-#endif /* HERWIG_LeptonDalitzAnalysis_H */
+#endif /* HERWIG_TopDalitzAnalysis_H */

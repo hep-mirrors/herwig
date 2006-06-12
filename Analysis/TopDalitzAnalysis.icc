@@ -1,0 +1,33 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TopDalitzAnalysis class.
+//
+
+namespace Herwig {
+
+inline TopDalitzAnalysis::TopDalitzAnalysis() {}
+
+inline TopDalitzAnalysis::TopDalitzAnalysis(const TopDalitzAnalysis & x)
+  : AnalysisHandler(x) {}
+
+inline IBPtr TopDalitzAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TopDalitzAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void TopDalitzAnalysis::doinitrun() {
+  AnalysisHandler::doinitrun();
+  _output.open("TopDalitz.top");
+  _output << "SET FONT DUPLEX\n";
+  _output << "SET LIMITS X 0 1 Y 0.9 1.3\n";
+  _output << "TITLE BOTTOM \"X011\"\n";
+  _output << "CASE         \" X X\"\n";
+  _output << "TITLE LEFT \"X021\"\n";
+  _output << "CASE       \" X X\"\n";
+  _nout=0;
+}
+}
