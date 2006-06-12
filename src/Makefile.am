@@ -11,23 +11,29 @@ HerwigParticles.in  SMWZDecays.in \
 Hw64Decays.in       ThePEGParticles.in \
 LEPbb.in            UnderlyingEvent.in \
 LEP.in Herwig++.cc Herwig.Makefile  \
-SMWZDecays.in Model.in \
+SMWZDecays.in Model.in ILC.in \
 StandardModelVertices.in Analysis.in
 
 CLEANFILES = HerwigDefaults.rpo LEP.run LEP.log LEP.out \
-  LHC.run LHC.log LHC.out TVT.run TVT.log TVT.out
+  LHC.run LHC.log LHC.out TVT.run TVT.log TVT.out \
+  ILC.run ILC.log ILC.out
 
 myENV= HERWIG_USER_MODULES=$(top_builddir)/lib
 
 ## checking targets ##
 
-check-local: check-LHC check-LEP check-TVT
+check-local: check-LHC check-LEP check-TVT check-ILC
 
 
 check-LEP: 
 	$(myENV) ./Herwig++ init
 	$(myENV) ./Herwig++ read LEP.in
 	$(myENV) ./Herwig++ run LEP.run -N100
+
+check-ILC: 
+	$(myENV) ./Herwig++ init
+	$(myENV) ./Herwig++ read ILC.in
+	$(myENV) ./Herwig++ run ILC.run -N100
 
 check-LHC: 
 	$(myENV) ./Herwig++ init

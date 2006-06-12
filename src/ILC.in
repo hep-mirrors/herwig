@@ -1,0 +1,26 @@
+# This will read in all the standard hadron decay modes and add
+# the new particles that are used in HERWIG 6.4, but not in ThePEG
+#read Decays.in
+#
+cd /Defaults/
+set theGlobalParameters:EffectiveGluonMass 0.750*GeV
+set theGlobalParameters:HadronizationScale 0.5*GeV
+set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
+set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
+set theGlobalParameters:MinVirtuality2 0.1*GeV2
+set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+#
+cd /Defaults/MatrixElements
+set MEee2gZ2qq:MinimumFlavour 6
+set MEee2gZ2qq:MaximumFlavour 6
+#
+cd /Defaults/Generators
+set LEPGenerator:NumberOfEvents 100000000
+set LEPGenerator:RandomNumberGenerator:Seed 31122001
+set LEPGenerator:DebugLevel 1
+set LEPGenerator:PrintEvent 1000
+set LEPGenerator:MaxErrors 10000
+set LEPGenerator:Strategy /Defaults/ThePEGStrategy
+set LEPGenerator:EventHandler:LuminosityFunction:Energy 500.0
+#
+saverun ILC LEPGenerator

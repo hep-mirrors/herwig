@@ -34,6 +34,13 @@ set /Defaults/Decays/QDecayME100:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME101:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME130:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/Mambo:GlobalParameters /Defaults/theGlobalParameters
+library HwSMVertex.so
+create  Herwig++::SMTopDecayer /Defaults/Decays/Top HwPerturbativeDecay.so
+set /Defaults/Decays/Top:Initialize 1
+set /Defaults/Decays/Top:Iteration 1
+set /Defaults/Decays/Top:Points 1000
+
+
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files
@@ -45,4 +52,4 @@ read Hw64Decays.in
 #
 # e.g. read MyImprovedDecays.in
 #
-#read SMWZDecays.in
+read SMWZDecays.in
