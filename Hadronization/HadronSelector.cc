@@ -14,6 +14,7 @@
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
+#include <ThePEG/EventRecord/Event.h>
 #include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
@@ -339,8 +340,13 @@ chooseHadronPair(const Energy cluMass, const long id1, const long id2,
   int maxFlav = BB;
   if(id1 >= DD || id2 >= DD) maxFlav = B;
   pair<long,long> lighthad = lightestHadronPair(id1,id2);
-  if(lighthad.first == 0 || lighthad.second == 0) 
-     cout << "We have 0's! First id = " << id1 << " second = " << id2 << endl;
+  if(lighthad.first == 0 || lighthad.second == 0)
+    throw Exception() << "HadronSelector::chooseHadronPair "
+		      << "We have 0's! First id = " << id1 << " second = " 
+		      << id2 << ". This is probably a problem with either"
+		      << " undecayed heavy particles or colour connections" 
+		      << Exception::eventerror;
+
   Energy PCMax = Kinematics::pstarTwoBodyDecay(cluMass, 
 				  getParticleData(lighthad.first)->mass(),
 				  getParticleData(lighthad.second)->mass());
