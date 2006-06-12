@@ -15,6 +15,7 @@
 #include "Herwig++/Shower2/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower2/ShowerVariables.h"
 #include "SudakovFormFactor.fh"
+#include <cassert>
 
 namespace Herwig {
 
@@ -79,7 +80,6 @@ using namespace ThePEG;
  *  - SplittingFnVeto() member for the veto on the value of the splitting function
  *  - PSVeto()          member to implement the \f$\Theta\f$ function as a veto
  *                      so that the emission is within the allowed phase space.
- *  - tVeto()           member to ensure the scale is above the minimum value.
  *
  *  The Sudakov form factor for the initial-scale shower is different because
  *  it must include the PDF which guides the backward evolution.
@@ -196,6 +196,11 @@ public:
    *  The kinematic scale
    */
   inline Energy kinScale() const;
+
+  /**
+   *  The transverse momentum
+   */
+  inline Energy pT() const;
   //@}
 
 public:
@@ -213,8 +218,20 @@ public:
    *        only for final-state branching of a decaying on-shell particle.
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids,
-				           const bool revOrd = false);
+				           const IdList &ids);
+
+  /**
+   * Return the scale of the next time-like branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param stoppingScale stopping scale for the evolution
+   * @param minmass The minimum mass allowed for the spake-like particle.
+   * @param ids The PDG codes of the particles in the splitting
+   */
+  virtual Energy generateNextDecayBranching(const Energy startingScale,
+					    const Energy stoppingScale,
+					    const Energy minmass,
+					    const IdList &ids);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -230,8 +247,7 @@ public:
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
 		                            const IdList &ids,
-					    double x,
-					    const bool revOrd = false);
+					    double x);
 
 
   //@}
@@ -285,55 +301,46 @@ protected:
   /**
    *  Value of the scale for the veto algorithm
    * @param t1 The starting valoe of the scale
-   * @param z0 Lower limit on \f$z\f$.
-   * @param z1 Upper limit on \f$z\f$.
-   * @param IS Whether this is for the space-like (true) or time-like (false)
-   * shower.
+   * @param iopt The option for calculating t 
+   * - 0 is final-state
+   * - 1 is initial-state for the hard process
+   * - 2 is initial-state for particle decays
    */
-  inline Energy2 guesst (Energy2 t1,double z0,double z1,bool IS=false) const;
+  inline Energy2 guesst (Energy2 t1,unsigned int iopt) const;
 
   /**
    * Value of the energy fraction for the veto algorithm
-   * @param z0 Lower limit on \f$z\f$.
-   * @param z1 Upper limit on \f$z\f$.
    */
-  inline double guessz (double z0, double z1) const;
+  inline double guessz () const;
 
   /**
    *  Value of the energy fraction and scale for time-like branching
-   * @param z The energy fraction
-   * @param z0 Lower limit on \f$z\f$.
-   * @param z1 Upper limit on \f$z\f$.
    * @param t  The scale
-   * @param t0 The cut-off on the scale
-   * @param kinCutoff The kinematic cut-off
-   * @param glueEmits Whether or not the emitting particle is a gluon.
+   * @param tmin The minimum scale
+   * @return False if scale less than minimum, true otherwise
    */
-  void guessTimeLike(double &z, double &z0, double &z1,
-		     Energy2 &t, const Energy2 t0,
-		     const Energy kinCutoff, const bool glueEmits) const;
+  bool guessTimeLike(Energy2 &t, Energy2 tmin);
+
+  /**
+   * Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmax The maximum scale
+   */
+  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass);
 
   /**
    * Value of the energy fraction and scale for space-like branching
-   * @param z The energy fraction
-   * @param z0 Lower limit on \f$z\f$.
-   * @param z1 Upper limit on \f$z\f$.
    * @param t  The scale
-   * @param t0 The cut-off on the scale
-   * @param kinCutoff The kinematic cut-off
+   * @param tmin The minimum scale
    * @param x Fraction of the beam momentum.
    */
-  void guessSpaceLike(double &z, double &z0, double &z1,
-	     Energy2 &t, const Energy2 t0,
-	     const Energy kinCutoff, const double x) const;
+  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x);
   //@}
 
   /**
    *  Initialize the values of the cut-offs
-   * @param t0 The cut-off scale
    * @param tmin The minimum scale
    * @param tmax The maximum scale
-   * @param kinCutoff The kinematic cut-off
    * @param m The mass of the emitting particle
    */
   inline void initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax, 
@@ -342,9 +349,10 @@ protected:
 
   /**
    *  Initialize the values of the cut-offs and scales
+   * @param tmin The minimum scale
    * @param The ids of the partics in the branching
    */
-  void initialize(const IdList & ids);
+  void initialize(const IdList & ids,Energy2 &tmin);
 
   /**
    * The various different vetos which need to be applied using the veto
@@ -373,19 +381,10 @@ protected:
 
   /**
    *  Phase Space veto
-   * @param z The energy fraction
-   * @param z0 Lower limit on \f$z\f$.
-   * @param z1 Upper limit on \f$z\f$.
    * @param t  The scale
-   * @param t0 The cut-off value of the scale
-   * @param tmin The minimum value of the scale
-   * @param kinCutoff The kinematic cut-off
-   * @param glueEmits Whether or not the emitting particle is a gluon.
    * @return true if vetoed
    */
-  bool PSVeto(const double z, const double z0, const double z1,
-	      const Energy2 t, const Energy2 tmin, const Energy2 t0,
-	      const Energy kinCutoff, bool glueEmits);
+  bool PSVeto(const Energy2 t);
 
   /**
    *  The veto on the splitting function.
@@ -396,16 +395,22 @@ protected:
    */
   inline bool SplittingFnVeto(const double z, const Energy2 t, 
 		       const IdList &ids) const;
-
-  /**
-   * Veto on the scale
-   * @param t Scale which is reset to -1 if fails veto
-   * @param tmin The minimum value of the scale 
-   * @return true if vetoed
-   */
-  inline bool tVeto(Energy2 &t, const Energy2 tmin) const;
   //@}
 
+  /**
+   * Compute the limits on \f$z\f$ for time-like branching
+   * @param scale The scale of the particle
+   * @return True if lower limit less than upper, otherwise false
+   */
+  inline bool computeTimeLikeLimits(Energy2 & scale);
+
+  /**
+   * Compute the limits on \f$z\f$ for space-like branching
+   * @param scale The scale of the particle
+   * @param x The energy fraction of the parton
+   * @return True if lower limit less than upper, otherwise false
+   */
+  inline bool computeSpaceLikeLimits(Energy2 & scale, double x);
   /**
    *  Set the ShowerVariables
    */
@@ -463,6 +468,11 @@ protected:
    *  The azimuthal angle
    */
   double _phi;
+
+  /**
+   *  The transverse momentum
+   */
+  Energy _pt;
   //@}
 
 private:
@@ -501,6 +511,11 @@ private:
    *  The mass squared of the particles in the current branching
    */
   vector<Energy> _masssquared;
+
+  /**
+   *  Kinematic cut-off
+   */
+  Energy _kinCutoff;
 
   /**
    *  The limits of \f$z\f$ in the splitting

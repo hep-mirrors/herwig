@@ -154,18 +154,21 @@ public:
    * In the case no branching has been generated, both the returned 
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
    *
-   * If something goes wrong (but this should never ever happen) 
-   * a warning should be sent to the log file: in this case, 
-   * exceptions seem unnecessary.
-   *
    * @param particle The particle to be evolved
-   * @param reverseAngOrd If true 
-   *        the new scale is greater than the initial one: this is used for 
-   *        the forward evolution of a on-shell decaying particle.
    * @return The Branching struct for the branching
    */
-  Branching chooseForwardBranching(ShowerParticle & particle,
-                                   const bool reverseAngOrd = false) const; 
+  Branching chooseForwardBranching(ShowerParticle & particle) const; 
+
+  /**
+   * Select the next branching of a particles for the initial-state shower
+   * in the particle's decay.
+   * @param particle The particle being showerwed
+   * @param maxscale The maximum scale
+   * @return The Branching struct for the branching
+   */
+  Branching chooseDecayBranching(ShowerParticle & particle, 
+				 vector<Energy> maxscale,
+				 Energy minmass) const; 
 
   /**
    * Choose a new backward branching for a space-like particle.
@@ -180,10 +183,6 @@ public:
    *
    * In the case no branching has been generated, both the returned 
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
-   *
-   * If something goes wrong (but this should never ever happen) 
-   * a warning should be sent to the log file: in this case, 
-   * exceptions seem unnecessary.
    *
    * @param particle The particle to be evolved
    * @return The Branching struct for the branching
@@ -348,6 +347,17 @@ private:
    */
   void addToMap(IdList & ids, SudakovPtr & sudakov, bool final);
 
+  /**
+   *  Obtain the reference vectors for a final-state particle
+   * @param particle The particle
+   * @param type The  type of the interaction
+   * @param p The p reference vector
+   * @param n The n reference vector
+   */
+  void finalStateBasisVectors(ShowerParticle particle,
+			      ShowerIndex::InteractionType type, Lorentz5Momentum & p,
+			      Lorentz5Momentum & n) const;
+  
 private:
 
   /**

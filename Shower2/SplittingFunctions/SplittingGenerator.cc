@@ -20,8 +20,10 @@
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower2/Kinematics/FS_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower2/Kinematics/Decay_QtildaShowerKinematics1to2.h"
 #include "Herwig++/Shower2/Kinematics/IS_QtildaShowerKinematics1to2.h"
 #include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -205,12 +207,10 @@ void SplittingGenerator::addToMap(IdList &ids, SudakovPtr &s, bool final) {
     _fbranchings.insert(BranchingInsert(ids[0],BranchingElement(s,ids)));
 }
 
-Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
-						     const bool reverseAngOrd) const {
+Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle) const {
   Timer<1200> timer("SplittingGenerator::chooseForwardBranching");
-  Energy newQ = reverseAngOrd ? ShowerVariables::HUGEMASS : Energy();
-  double newZ = 0.0; 
-  double newPhi = 0.0;
+  Energy newQ = Energy(), newpT=Energy();
+  double newZ(0.0),newPhi(0.0);
   tSudakovPtr sudakov = tSudakovPtr();
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
@@ -223,29 +223,23 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       cit != _fbranchings.upper_bound(index); ++cit) 
     {
       tSudakovPtr candidateSudakov = cit->second.first;
-      if(!candidateSudakov) 
-	throw Exception() << "Branching must have a SudakovFormFactor in "
-			  << "SplittingGenerator::chooseForwardBranching"
-			  << Exception::runerror;
+      assert(candidateSudakov);
       ShowerIndex::InteractionType i = candidateSudakov->interactionType();
       // check size of scales beforehand...
-      Energy candidateNewQ = reverseAngOrd ? ShowerVariables::HUGEMASS : Energy();
+      Energy candidateNewQ = Energy();
       if(particle.evolutionScales()[i] > _showerVariables->cutoffQScale(i)) 
 	candidateNewQ = candidateSudakov->
 	  generateNextTimeBranching(particle.evolutionScales()[i], 
-				    cit->second.second, reverseAngOrd);
-      // select if lowest scale for reverse angular ordering or highest scale for
-      // normal evolution 
-      if((!reverseAngOrd && candidateNewQ > newQ && 
-	  candidateNewQ < particle.evolutionScales()[i]) || 
-	 (reverseAngOrd && candidateNewQ < newQ && 
-	  candidateNewQ > particle.evolutionScales()[i])) 
+				    cit->second.second);
+      // select highest scale 
+      if(candidateNewQ > newQ && candidateNewQ < particle.evolutionScales()[i]) 
 	{
 	  newQ = candidateNewQ;
 	  sudakov = candidateSudakov;
 	  ids = cit->second.second;
 	  newZ = sudakov->z();
 	  newPhi = sudakov->phi();
+	  newpT = sudakov->pT();
 	}
     }
   // return empty branching if nothing happened
@@ -256,45 +250,12 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // branching should be treated separately.
   // For the time being we are considering only 1->2 branching
   tSplittingFnPtr splitFun = sudakov->splittingFn();
-  if(!splitFun) throw Exception() << "Sudakov form factor must have splittingFunction "
-				  << "in SplittingGenerator::chooseForwardBranching()"
-				  << Exception::runerror;
-  Lorentz5Momentum p, n, ppartner, pcm;
-  double th;
-  Energy nnorm;
-  if (particle.isFromHardSubprocess()) 
-    {
-      p = particle.momentum();
-      // ***LOOKHERE*** We choose  n  naively for the time being.  
-      // Lorentz5Momentum n = Lorentz5Momentum( 0.0, - p.vect() ); 
-      // for test purposes: n points into the negative z-direction:
-      ShowerParticlePtr partner=particle.partners()[sudakov->splittingFn()->
-						    interactionType()];
-      Lorentz5Momentum ppartner(partner->momentum());
-      if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
-      pcm = p; 
-      Hep3Vector boost=(p + ppartner).findBoostToCM();
-      pcm.boost(boost);	  
-      th = pi;
-      nnorm = pcm.vect().mag();
-      Vector3 nv=cos(th)*pcm.vect().unit()+sin(th)*pcm.vect().orthogonal().unit();
-      n = Lorentz5Momentum( 0.0, nnorm*nv ); 
-      n.boost( -boost);
-    } 
-  else if(particle.initiatesTLS())
-    {
-      tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>
-	(particle.parents()[0]->children()[0])->showerKinematics();
-      p = kin->getBasis()[0];
-      n = kin->getBasis()[1];
-    }
-  else 
-    {
-      tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
-	->showerKinematics();
-      p = kin->getBasis()[0];
-      n = kin->getBasis()[1];
-    }
+  assert(splitFun);
+  // get the reference vectors
+  Lorentz5Momentum p, n;
+  finalStateBasisVectors(particle,sudakov->splittingFn()->interactionType(),
+			 p,n);
+  // construct the shower kinematics object
   FS_QtildaShowerKinematics1to2Ptr showerKin = 
     new_ptr(FS_QtildaShowerKinematics1to2(p, n,showerVariables()));
   showerKin->qtilde(newQ);
@@ -302,11 +263,93 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   showerKin->setKinScale(sudakov->kinScale()); 
   showerKin->z(newZ);
   showerKin->phi(newPhi);
+  showerKin->pT(newpT);
   return Branching(showerKin, sudakov, ids);
 }
 
+
+Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
+						   vector<Energy> stoppingScale,
+						   Energy minmass) const 
+{
+  Energy newQ = ShowerVariables::HUGEMASS,newpT(0.);
+  double newZ(0.0),newPhi(0.0);
+  tSudakovPtr sudakov = tSudakovPtr();
+  IdList ids;
+  // First, find the eventual branching, corresponding to the lowest scale.
+  long index = abs(particle.data().id());
+  // if no branchings return empty branching struct
+  if(_fbranchings.find(index) == _fbranchings.end()) 
+    return Branching(ShoKinPtr(), SudakovPtr(), IdList());
+  // otherwise select branching
+  for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
+      cit != _fbranchings.upper_bound(index); ++cit) 
+    {
+      tSudakovPtr candidateSudakov = cit->second.first;
+      assert(candidateSudakov);
+      ShowerIndex::InteractionType i = candidateSudakov->interactionType();
+      Energy candidateNewQ = ShowerVariables::HUGEMASS;
+      if(particle.evolutionScales()[i] < stoppingScale[i]) 
+  	candidateNewQ = candidateSudakov->
+ 	  generateNextDecayBranching(particle.evolutionScales()[i],
+				     stoppingScale[i],minmass,
+ 				     cit->second.second);
+      if(candidateNewQ < newQ && candidateNewQ > particle.evolutionScales()[i])
+	{
+	  newQ = candidateNewQ;
+	  sudakov = candidateSudakov;
+	  ids = cit->second.second;
+	  newZ = sudakov->z();
+	  newPhi = sudakov->phi();
+	  newpT = sudakov->pT();
+	}
+    }
+  // return empty branching if nothing happened
+  if(!sudakov)  return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
+  // Then, if a branching has been selected, create the proper 
+  // ShowerKinematics object which contains the kinematics information
+  // about such branching. Notice that the cases 1->2 and 1->3
+  // branching should be treated separately.
+  // For the time being we are considering only 1->2 branching
+  tSplittingFnPtr splitFun = sudakov->splittingFn();
+  assert(splitFun);
+  Lorentz5Momentum p, n, ppartner, pcm;
+  assert(particle.perturbative()!=1);
+  // this is for the initial decaying particle
+  if(particle.perturbative()==2)
+     {
+       p = particle.momentum();
+       ShowerParticlePtr partner=particle.partners()[sudakov->splittingFn()->
+						     interactionType()];
+       Lorentz5Momentum ppartner(partner->momentum());
+       if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+       pcm=ppartner;
+       Hep3Vector boost(p.findBoostToCM());
+       pcm.boost(boost);
+       n = Lorentz5Momentum( 0.0,0.5*p.mass()*pcm.vect().unit()); 
+       n.boost( -boost);
+     }
+   else 
+     {
+       tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+	 ->showerKinematics();
+       p = kin->getBasis()[0];
+       n = kin->getBasis()[1];
+     }
+   Decay_QtildaShowerKinematics1to2Ptr showerKin = 
+     new_ptr(Decay_QtildaShowerKinematics1to2(p, n,showerVariables()));
+   showerKin->qtilde(newQ);
+   showerKin->setResScale(sudakov->resScale());
+   showerKin->setKinScale(sudakov->kinScale()); 
+   showerKin->z(newZ);
+   showerKin->phi(newPhi);
+   showerKin->pT(newpT);
+
+   return Branching(showerKin, sudakov, ids);
+}
+
 Branching SplittingGenerator::chooseBackwardBranching(ShowerParticle &particle) const {
-  Energy newQ = Energy();
+  Energy newQ=Energy(),newpT=Energy();
   tSudakovPtr sudakov = tSudakovPtr();
   IdList ids;
   double newZ(0.0), newPhi(0.0);  
@@ -317,25 +360,25 @@ Branching SplittingGenerator::chooseBackwardBranching(ShowerParticle &particle) 
     return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
-      cit != _bbranchings.upper_bound(index); ++cit ) {
-    tSudakovPtr candidateSudakov = cit->second.first;
-    Energy candidateNewQ = Energy();
-    if(!candidateSudakov) 
-      throw Exception() << "Branching must have a SudakovFormFactor in "
-			<< "SplittingGenerator::chooseBackwardBranching"
-			<< Exception::runerror;
-    ShowerIndex::InteractionType i = candidateSudakov->interactionType(); 
-    candidateNewQ = candidateSudakov->
-      generateNextSpaceBranching(particle.evolutionScales()[i],
-				 cit->second.second, particle.x());
-    if(candidateNewQ > newQ) {
-      newQ = candidateNewQ;
-      sudakov = candidateSudakov;
-      ids = cit->second.second;
-      newZ = sudakov->z();
-      newPhi = sudakov->phi();
+      cit != _bbranchings.upper_bound(index); ++cit ) 
+    {
+      tSudakovPtr candidateSudakov = cit->second.first;
+      assert(candidateSudakov);
+      Energy candidateNewQ = Energy();
+      ShowerIndex::InteractionType i = candidateSudakov->interactionType(); 
+      candidateNewQ = candidateSudakov->
+	generateNextSpaceBranching(particle.evolutionScales()[i],
+				   cit->second.second, particle.x());
+      if(candidateNewQ > newQ) 
+	{
+	  newQ = candidateNewQ;
+	  sudakov = candidateSudakov;
+	  ids = cit->second.second;
+	  newZ = sudakov->z();
+	  newPhi = sudakov->phi();
+	  newpT  = sudakov->pT();
+	}
     } 
-  } 
   // return empty branching if nothing happened
   if(!sudakov) return Branching(ShoKinPtr(), tSudakovPtr(), IdList());
   // Then, if a branching has been selected, create the proper 
@@ -343,12 +386,11 @@ Branching SplittingGenerator::chooseBackwardBranching(ShowerParticle &particle) 
   // about such branching. Notice that the cases 1->2 and 1->3
   // branching should be treated separately.
   tSplittingFnPtr splitFun = sudakov->splittingFn();
-  if(!splitFun) throw Exception() << "Sudakov form factor must have splittingFunction "
-				  << "in SplittingGenerator::chooseForwardBranching()"
-				  << Exception::runerror;
+  assert(splitFun);
   // For the time being we are considering only 1->2 branching
   Lorentz5Momentum p, n, pthis, ppartner, pcm;
-  if(particle.isFromHardSubprocess()) 
+  assert(particle.perturbative()!=2);
+  if(particle.perturbative()==1) 
     {
       pcm = particle.parents()[0]->momentum();
       p = Lorentz5Momentum(0.0, pcm.vect());
@@ -369,6 +411,65 @@ Branching SplittingGenerator::chooseBackwardBranching(ShowerParticle &particle) 
   showerKin->setKinScale(sudakov->kinScale()); 
   showerKin->z(newZ);
   showerKin->phi(newPhi);
+  showerKin->pT(newpT);
   // return the answer
   return Branching(showerKin, sudakov, ids);
+}
+
+void SplittingGenerator::finalStateBasisVectors(ShowerParticle particle,
+						ShowerIndex::InteractionType type,
+						Lorentz5Momentum & p,
+						Lorentz5Momentum & n) const
+{
+  if(particle.perturbative()!=0)
+    {
+      // find the partner and its momentum
+      ShowerParticlePtr partner=particle.partners()[type];
+      Lorentz5Momentum ppartner(partner->momentum());
+      if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+      // momentum of the emitting particle
+      p = particle.momentum();
+      Lorentz5Momentum pcm;
+      // if the partner is a final-state particle then the reference
+      // vector is along the partner in the rest frame of the pair
+      if(partner->isFinalState())
+	{
+	  Hep3Vector boost=(p + ppartner).findBoostToCM();
+	  pcm = ppartner;
+	  pcm.boost(boost);
+	  n = Lorentz5Momentum(0.,pcm.vect());
+	  n.boost( -boost);
+	}
+      else if(!partner->isFinalState())
+	{
+	  // if the partner is an initial-state particle then the reference
+	  // vector is along the partner which should be massless
+	  if(particle.perturbative()==1)
+	    {n = Lorentz5Momentum(0.,ppartner.vect());}
+	  // if the partner is an initial-state decaying particle then the reference
+	  // vector is along the backwards direction in rest frame of decaying particle
+	  else
+	    {
+	      Hep3Vector boost=ppartner.findBoostToCM();
+	      pcm = p;
+	      pcm.boost(boost);
+	      n = Lorentz5Momentum( 0.0, -pcm.vect()); 
+	      n.boost( -boost);
+	    } 
+	} 
+    }
+  else if(particle.initiatesTLS())
+    {
+      tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>
+	(particle.parents()[0]->children()[0])->showerKinematics();
+      p = kin->getBasis()[0];
+      n = kin->getBasis()[1];
+    }
+  else 
+    {
+      tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+	->showerKinematics();
+      p = kin->getBasis()[0];
+      n = kin->getBasis()[1];
+    }
 }

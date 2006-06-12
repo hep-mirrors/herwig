@@ -34,7 +34,7 @@ inline IBPtr SplittingGenerator::fullclone() const {
 }
 
 inline void SplittingGenerator::doinitrun() throw(InitException) {
-  Interfaced::doinit();
+  Interfaced::doinitrun();
   BranchingList::const_iterator cit=_fbranchings.begin();
   for( ;cit!=_fbranchings.end();++cit)
     {cit->second.first->setShowerVariables(_showerVariables);} 

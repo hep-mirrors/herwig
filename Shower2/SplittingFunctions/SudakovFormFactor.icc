@@ -41,31 +41,16 @@ inline Energy SudakovFormFactor::resScale() const
 
 inline Energy SudakovFormFactor::kinScale() const { return _variables->kinScale(); }
 
-inline double SudakovFormFactor::guessz (double z0, double z1) const {
-  double lower = _splittingFn->integOverP(z0);
+inline Energy SudakovFormFactor::pT() const {return _pt;}
+
+inline double SudakovFormFactor::guessz () const {
+  double lower = _splittingFn->integOverP(_zlimits.first);
   return _splittingFn->invIntegOverP
-    (lower + UseRandom::rnd()*(_splittingFn->integOverP(z1) - lower));
+    (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second) - lower));
 }
 
-inline Energy2 SudakovFormFactor::guesst(Energy2 t1, double z0, double z1,
-				  bool isInitialShower) const
-{
-  if(!isInitialShower) {
-    return t1*pow(UseRandom::rnd(), 
-		  1./((_splittingFn->integOverP(z1) -
-		       _splittingFn->integOverP(z0))* 
-		      _alpha->overestimateValue()/(2.*pi))); 
-  } else {
-    return t1*pow(UseRandom::rnd(), 
-		  1./((_splittingFn->integOverP(z1) -
-		       _splittingFn->integOverP(z0))* 
-		      _pdfmax *
-		      _alpha->overestimateValue()/(2.*pi)));
-  }    
-}
-
-inline void SudakovFormFactor::initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax,
-		                   Energy &kinCutoff, Energy m) {
+inline void SudakovFormFactor::initialize(Energy2 &t0,Energy2 &tmin, Energy2 tmax,
+					  Energy & kinCutoff, Energy m) {
   kinCutoff = _variables->kinematicCutOff(kinScale(),m);
   t0 = sqr(max(kinCutoff,m));
   tmin = max(t0,sqr(resScale()));
@@ -81,14 +66,23 @@ inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
   return UseRandom::rnd() > _alpha->ratio(pt2);
 }
 
-inline bool SudakovFormFactor::tVeto(Energy2 &t, const Energy2 tmin) const {
-  if(t < tmin) {
-    t = -1.;
-    return true;
-  }
-  return false;
-}
-
 inline void SudakovFormFactor::setShowerVariables(ShowerVarsPtr in){_variables=in;}
+
+inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const
+{
+  double c = 1./((_splittingFn->integOverP(_zlimits.second) -
+		  _splittingFn->integOverP(_zlimits.first))* 
+		 _alpha->overestimateValue()/(2.*pi));
+  assert(iopt<=2);
+  if(iopt==0)
+    {return t1*pow(UseRandom::rnd(),
+		   c/_variables->finalStateRadiationEnhancementFactor());}
+  else if(iopt==1)
+    {return t1*pow(UseRandom::rnd(),
+		   c/_pdfmax/_variables->initialStateRadiationEnhancementFactor());}
+  else
+    {return t1/pow(UseRandom::rnd(),
+		   c/_variables->initialStateRadiationEnhancementFactor());}
+}
 
 }
