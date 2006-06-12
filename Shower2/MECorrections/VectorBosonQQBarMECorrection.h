@@ -48,24 +48,14 @@ public:
    */
   //@{
   /**
-   *  Can the matrix element correction handle a given hard process
+   *  Can the matrix element correction handle a given hard process or decay
    */
-  virtual bool canHandle(vector<ShowerProgenitor>);
+  virtual bool canHandle(ShowerTreePtr);
 
   /**
-   *  Can the matrix element correction handle a given decay
+   *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual bool canHandle(ShowerProgenitor);
-
-  /**
-   *  Apply the hard matrix element correction to a given hard process
-   */
-  virtual void applyHardMatrixElementCorrection(vector<ShowerProgenitor> & );
-
-  /**
-   *  Apply the hard matrix element correction to a given decay
-   */
-  virtual void applyHardMatrixElementCorrection(ShowerProgenitor &);
+  virtual void applyHardMatrixElementCorrection(ShowerTreePtr);
 
   /**
    *  Apply the soft matrix element correction
@@ -75,7 +65,7 @@ public:
    * @param br The branching struct
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitor initial,
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br);
   //@}
 
@@ -84,7 +74,7 @@ private:
   /**
    *  Apply the hard matrix element
    */
-  vector<Lorentz5Momentum> applyHard(const ShowerParticleVector &p);
+  vector<Lorentz5Momentum> applyHard(const ParticleVector &p);
 
   /**
    *  Get the weight for hard emission

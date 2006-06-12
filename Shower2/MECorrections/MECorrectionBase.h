@@ -9,6 +9,7 @@
 #include "Herwig++/Shower2/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower2/ShowerConfig.h"
 #include "Herwig++/Shower2/ShowerProgenitor.h"
+#include "Herwig++/Shower2/ShowerTree.h"
 #include "MECorrectionBase.fh"
 
 namespace Herwig {
@@ -56,24 +57,14 @@ public:
    */
   //@{
   /**
-   *  Can the matrix element correction handle a given hard process
+   *  Can the matrix element correction handle a given hard process or decay
    */
-  virtual bool canHandle(vector<ShowerProgenitor> )=0;
+  virtual bool canHandle(ShowerTreePtr)=0;
 
   /**
-   *  Can the matrix element correction handle a given decay
+   *  Apply the hard matrix element correction to a given hard process or decay
    */
-  virtual bool canHandle(ShowerProgenitor)=0;
-
-  /**
-   *  Apply the hard matrix element correction to a given hard process
-   */
-  virtual void applyHardMatrixElementCorrection(vector<ShowerProgenitor> &)=0;
-
-  /**
-   *  Apply the hard matrix element correction to a given decay
-   */
-  virtual void applyHardMatrixElementCorrection(ShowerProgenitor &)=0;
+  virtual void applyHardMatrixElementCorrection(ShowerTreePtr)=0;
 
   /**
    * Apply the soft matrix element correction
@@ -83,7 +74,7 @@ public:
    * @param br The branching struct
    * @return If true the emission should be vetoed
    */
-  virtual bool softMatrixElementVeto(ShowerProgenitor initial,
+  virtual bool softMatrixElementVeto(ShowerProgenitorPtr initial,
 				     ShowerParticlePtr parent,Branching br)=0;
   //@}
 
@@ -130,6 +121,11 @@ protected:
   inline ShowerVarsPtr showerVariables() const;
   //@}  
 
+  /**
+   *  Access to the coupling
+   */
+  inline ShowerAlphaPtr coupling() const;
+
 private:
 
   /**
@@ -150,6 +146,11 @@ private:
    *  Pointer to the ShowerVariables object
    */
   ShowerVarsPtr _showerVariables;
+
+  /**
+   *  Pointer to the coupling
+   */
+  ShowerAlphaPtr _alpha;
 };
 
 }

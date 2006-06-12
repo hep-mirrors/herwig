@@ -7,6 +7,7 @@
 #include "MECorrectionBase.h"
 #include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "MECorrectionBase.tcc"
@@ -26,12 +27,17 @@ void MECorrectionBase::Init() {
     ("The MECorrectionBase class is base class for implementation of the classic"
      " matrix element correction in Herwig++");
 
+  static Reference<MECorrectionBase,ShowerAlpha> interfaceCoupling
+    ("Coupling",
+     "Pointer to the object to calculate the coupling for the correction",
+     &MECorrectionBase::_alpha, false, false, true, false, false);
+
 }
 
 void MECorrectionBase::persistentOutput(PersistentOStream & os) const {
-  os << _showerVariables;
+  os << _showerVariables << _alpha;
 }
 
 void MECorrectionBase::persistentInput(PersistentIStream & is, int) {
-  is >> _showerVariables;
+  is >> _showerVariables >> _alpha;
 }

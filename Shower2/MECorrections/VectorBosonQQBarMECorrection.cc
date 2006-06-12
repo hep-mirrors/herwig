@@ -32,82 +32,141 @@ void VectorBosonQQBarMECorrection::Init() {
 
 }
 
-bool VectorBosonQQBarMECorrection::canHandle(vector<ShowerProgenitor> particles)
+bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree)
 {
-  // check 4 external particles
-  if(particles.size()!=4) return false;
-  // check incoming leptons beams
-  int id[2]={particles[0].progenitor()->id(),particles[1].progenitor()->id()};
-  if(id[0]!=-id[1]||abs(id[0])>15||abs(id[0])<11||abs(id[0])%2!=1) return false;
-  // check outgoing quarks
-  id[0]=particles[2].progenitor()->id();id[1]=particles[3].progenitor()->id();
-  if(id[0]!=-id[1]||abs(id[0])>6) return false;
-  // otherwise can do it
-  return true;
+   // check 4 external particles
+   if(tree->incomingLines().size()!=2||tree->outgoingLines().size()!=2) return false;
+   // check incoming leptons beams
+   int id[2];
+   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+   cit=tree->incomingLines().begin();
+   id[0]=cit->first->progenitor()->id();
+   ++cit;
+   id[1]=cit->first->progenitor()->id();
+   if(id[0]!=-id[1]||abs(id[0])>15||abs(id[0])<11||abs(id[0])%2!=1) return false;
+   // check outgoing quarks
+   cit=tree->outgoingLines().begin();
+   id[0]=cit->first->progenitor()->id();
+   ++cit;
+   id[1]=cit->first->progenitor()->id();
+   if(id[0]!=-id[1]||abs(id[0])>6) return false;
+   // otherwise can do it
+   return true;
 }
 
-bool VectorBosonQQBarMECorrection::canHandle(ShowerProgenitor)
-{return false;}
-
 void VectorBosonQQBarMECorrection::
-applyHardMatrixElementCorrection(vector<ShowerProgenitor> & particles)
+applyHardMatrixElementCorrection(ShowerTreePtr tree)
 {
-//   // get the quark and antiquark
-//   ShowerParticleVector qq; 
-//   for (unsigned int ix=0;ix<particles.size();++ix)
-//     if(abs(particles[ix].progenitor()->id()) < 7) qq.push_back(particles[ix].progenitor());  
-//   // must be a quark and an antiquark
-//   if(qq.size()!=2) return;
-//   // centre of mass energy
-//   d_Q = (qq[0]->momentum() + qq[1]->momentum()).m();
-//   // quark mass
-//   d_m = qq[0]->momentum().m();
-//   // set the other parameters
-//   setRho(sqr(d_m/d_Q));
-//   setKtildeSymm();
-//   // get the momenta
-//   vector<Lorentz5Momentum> newfs = applyHard(qq);
-//   // return if no emission
-//   if(newfs.size()!=3) return;
-//   // perform final check
-//   bool check = true; 
-//   for (int i=0; i<2; i++)
-//     if (newfs[i].e() < qq[i]->data().constituentMass()) check = false;
-//   if (newfs[2].e() < showerVariables()->globalParameters()->effectiveGluonMass()&&
-//       !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) check = false; 
-//   // return if fails
-//   if (!check) return;
-//   // incoming qqbar decay into the final (q qbar g) in current step
-//   for (int i=0; i<2; i++) 
-//     newfs[i].setMass(qq[i]->data().constituentMass());
-//   newfs[2].setMass(0.);
-//   PPtr newq = getParticleData(abs(qq[0]->id()))->produceParticle(newfs[0]);
-//   PPtr newa = getParticleData(-abs(qq[0]->id()))->produceParticle(newfs[1]);
-//   PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
-//   newq->antiColourNeighbour(newg);
-//   newa->colourNeighbour(newg);
-//   for (ShowerParticleVector::iterator it = qq.begin(); it != qq.end(); it++) {
-//     const_ptr_cast<PPtr>((*it)->getThePEGBase())->addChild(newq);
-//     const_ptr_cast<PPtr>((*it)->getThePEGBase())->addChild(newa);
-//     const_ptr_cast<PPtr>((*it)->getThePEGBase())->addChild(newg);
-//   }
-//   tEHPtr ch=generator()->currentEventHandler();
-//   ch->currentStep()->addDecayProduct(newq);
-//   ch->currentStep()->addDecayProduct(newa);
-//   ch->currentStep()->addDecayProduct(newg);
-//   // make the new shower particles
-//   ShowerParticlePtr news[3]={ptr_new<ShowerParticlePtr>(*newq),
-// 			     ptr_new<ShowerParticlePtr>(*newa),
-// 			     ptr_new<ShowerParticlePtr>(*newg)};
-//   for(unsigned int ix=0;ix<3;++ix)
-//     {
-//       news[ix]->setFromHardSubprocess(true);
-//       news[ix]->setFinalState(true);
-//       if(2+ix<particles.size())
-// 	particles[2+ix]=ShowerProgenitor(news[ix],0.,false);
-//       else
-// 	particles.push_back(ShowerProgenitor(news[ix],0.,false));
-//     }
+  // get the quark and antiquark
+  ParticleVector qq; 
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
+    qq.push_back(cit->first->copy());
+  PPtr temp;
+  if(qq[0]->id()<0)
+    {
+      temp=qq[0];
+      qq[0]=qq[1];
+      qq[1]=temp;
+    }
+  // centre of mass energy
+  d_Q = (qq[0]->momentum() + qq[1]->momentum()).m();
+  // quark mass
+  d_m = qq[0]->momentum().m();
+  // set the other parameters
+  setRho(sqr(d_m/d_Q));
+  setKtildeSymm();
+  // get the momenta
+  vector<Lorentz5Momentum> newfs = applyHard(qq);
+  // return if no emission
+  if(newfs.size()!=3) return;
+  // perform final check to ensure energy greater than constituent mass
+  bool check = true; 
+  for (int i=0; i<2; i++)
+    if (newfs[i].e() < qq[i]->data().constituentMass()) check = false;
+  if (newfs[2].e() < showerVariables()->globalParameters()->effectiveGluonMass()&&
+      !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
+    check = false;
+  // return if fails
+  if (!check) return;
+  // set masses
+  for (int i=0; i<2; i++) newfs[i].setMass(qq[i]->mass());
+  newfs[2].setMass(0.);
+  // decide which particle emits
+  bool firstEmits=
+    newfs[2].vect().perp2(newfs[0].vect())<
+    newfs[2].vect().perp2(newfs[1].vect());
+  // create the new quark, antiquark and gluon
+  PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
+  PPtr parent=qq[0]->parents()[0];
+  PPtr newq,newa;
+  if(firstEmits)
+    {
+      newq = getParticleData(abs(qq[0]->id()))->produceParticle(newfs[0]);
+      newa = new_ptr(Particle(*qq[1]));
+      qq[1]->antiColourLine()->removeAntiColoured(newa);
+      newa->set5Momentum(newfs[1]);
+    }
+  else
+    {
+      newq = new_ptr(Particle(*qq[0]));
+      qq[0]->colourLine()->removeColoured(newq);
+      newq->set5Momentum(newfs[0]);
+      newa = getParticleData(-abs(qq[0]->id()))->produceParticle(newfs[1]);
+    }
+  // get the original colour line
+  ColinePtr col;
+  if(qq[0]->id()>0) col=qq[0]->colourLine();
+  else              col=qq[0]->antiColourLine();
+  // set the colour lines
+  if(firstEmits)
+    {
+      col->addColoured(newq);
+      col->addAntiColoured(newg);
+      newa->colourNeighbour(newg);
+    }
+  else
+    {
+      col->addAntiColoured(newa);
+      col->addColoured(newg);
+      newq->antiColourNeighbour(newg);
+    }
+  // change the existing quark and antiquark
+  PPtr orig;
+  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
+    {
+      if(cit->first->progenitor()->id()==newq->id())
+	{
+	  // remove old particles from colour line
+	  col->removeColoured(cit->first->copy());
+	  col->removeColoured(cit->first->progenitor());
+	  // insert new particles
+	  cit->first->copy(newq);
+	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1)));
+	  cit->first->progenitor(sp);
+	  tree->outgoingLines()[cit->first]=sp;
+	  cit->first->perturbative(!firstEmits);
+	  if(firstEmits) orig=cit->first->original();
+	}
+      else
+	{
+	  // remove old particles from colour line
+	  col->removeAntiColoured(cit->first->copy());
+	  col->removeColoured(cit->first->progenitor());
+	  // insert new particles
+	  cit->first->copy(newa);
+	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1)));
+	  cit->first->progenitor(sp);
+	  tree->outgoingLines()[cit->first]=sp;
+	  cit->first->perturbative(firstEmits);
+	  if(!firstEmits) orig=cit->first->original();
+	}
+    }
+  // add the gluon
+  ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1));
+  ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
+  gluon->perturbative(false);
+  tree->outgoingLines().insert(make_pair(gluon,sg));
 //   // safe 'largest pt so far'.  
 //   Lorentz5Momentum ptot = newfs[0] + newfs[1] + newfs[2];
 //   double x = 2*newfs[0]*ptot/sqr(d_Q);
@@ -122,17 +181,8 @@ applyHardMatrixElementCorrection(vector<ShowerProgenitor> & particles)
 //   particles[3].pT((1.-z)*sqrt(sqr(z*qt)-sqr(d_m)));
 }
 
-void VectorBosonQQBarMECorrection::
-applyHardMatrixElementCorrection(ShowerProgenitor &)
-{
-  throw Exception() << "VectorBosonQQBarMECorrection::applyHardMatrix"
-		    << "ElementCorrection() not yet implemented for boson decays" 
-		    << Exception::runerror;
-}
-
-
 vector<Lorentz5Momentum> VectorBosonQQBarMECorrection::
-applyHard(const ShowerParticleVector &p) 
+applyHard(const ParticleVector &p) 
 {
   double x, xbar;
   vector<Lorentz5Momentum> fs; 
@@ -284,10 +334,10 @@ double VectorBosonQQBarMECorrection::getHard(double &x1, double &x2) {
 }
 
 bool VectorBosonQQBarMECorrection::
-softMatrixElementVeto(ShowerProgenitor initial,ShowerParticlePtr parent,Branching br)
+softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branching br)
 {
   // check we should be applying the veto
-  if(parent->id()!=initial.progenitor()->id()||
+  if(parent->id()!=initial->progenitor()->id()||
      br.ids[0]!=br.ids[1]||
      br.ids[2]!=ParticleID::g) return false;
   // calculate pt
@@ -296,20 +346,17 @@ softMatrixElementVeto(ShowerProgenitor initial,ShowerParticlePtr parent,Branchin
   Energy2 d_m2 = parent->momentum().m2();
   Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
   // if not hardest so far don't apply veto
-  if(pPerp<initial.pT()) return false;
+  if(pPerp<initial->pT()) return false;
+  // calculate the weight
   double weight = 0.;
-  // centre of mass energy
-  d_Q = 2*parent->momentum().e();
-  // quark mass
-  d_m = parent->momentum().m();
   if(parent->id()>0) weight = qWeightX(d_qt, d_z);
   else weight = qbarWeightX(d_qt, d_z);
   // compute veto from weight
   bool veto = !UseRandom::rndbool(weight);
   // if not vetoed reset max
-  if(!veto) initial.pT(pPerp);
+  if(!veto) initial->pT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->evolutionScales()[ShowerIndex::QCD]=br.kinematics->qtilde();
+  if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->qtilde());
   // return the veto
   return veto;
 }

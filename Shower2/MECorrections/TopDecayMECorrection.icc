@@ -1,0 +1,26 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TopDecayMECorrection class.
+//
+
+namespace Herwig {
+
+inline TopDecayMECorrection::TopDecayMECorrection() : _initialenhance(700.), 
+						      _finalenhance(1.2)
+{}
+
+inline TopDecayMECorrection::TopDecayMECorrection(const TopDecayMECorrection & x)
+  : MECorrectionBase(x), _mw(x._mw), _mb(x._mb), _mt(x._mt), _a(x._a), _c(x._c),
+    _initialenhance(x._initialenhance),_finalenhance(x._finalenhance) 
+{}
+
+inline IBPtr TopDecayMECorrection::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TopDecayMECorrection::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
