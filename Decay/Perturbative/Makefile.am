@@ -14,7 +14,7 @@ HwPerturbativeHiggsDecay_la_SOURCES = \
  SMHiggsFermionsDecayer.h  SMHiggsFermionsDecayer.icc  \
  SMHiggsGGHiggsPPDecayer.cc SMHiggsGGHiggsPPDecayer.fh \
  SMHiggsGGHiggsPPDecayer.h SMHiggsGGHiggsPPDecayer.icc
-HwPerturbativeHiggsDecay_la_SOURCES = -module
+HwPerturbativeHiggsDecay_la_LDFLAGS = -module
 
 #SMHiggsWWDecayer.cc  SMHiggsWWDecayer.fh  \
 # SMHiggsWWDecayer.h  SMHiggsWWDecayer.icc  
