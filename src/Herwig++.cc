@@ -8,7 +8,7 @@ int main(int argc, char * argv[]) {
     Herwig::HerwigRun hw(argc,argv);
     ThePEG::MainTimer timer(".timer");
     if (hw.isRunMode() && hw.preparedToRun()) {
-      int step = hw.getN() / 100;
+      int step = hw.getN() >= 100 ? hw.getN() / 100 : 1 ;
       for(int i = 0; i<hw.getN(); i++) {
 	hw.generateEvent();
 	// Add analysis code here
