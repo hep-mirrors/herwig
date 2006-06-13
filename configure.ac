@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[CVS],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
+AC_INIT([Herwig++],[SVN],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
 
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5.h])
@@ -13,10 +13,14 @@ case "${host}" in
   *-darwin[[0156]].*) 
     AC_MSG_ERROR([Herwig++ requires OS X 10.3 or later])
     ;;
-  *-darwin*)
-    if test "x$MACOSX_DEPLOYMENT_TARGET" != "x10.3"; then
-      AC_MSG_ERROR([Please export the MACOSX_DEPLOYMENT_TARGET variable, set to 10.3])
-    fi
+  *-darwin7.*)
+    MACOSX_DEPLOYMENT_TARGET=10.3
+    AC_SUBST(MACOSX_DEPLOYMENT_TARGET)
+    ;;	
+  *-darwin8.*)
+    MACOSX_DEPLOYMENT_TARGET=10.4
+    AC_SUBST(MACOSX_DEPLOYMENT_TARGET)
+    ;;	
 esac
 
 AC_LANG(C++)
