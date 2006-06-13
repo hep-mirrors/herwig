@@ -1,3 +1,8 @@
+2006-06-13  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Decay/Perturbative/Makefile.am: SMWZDecayer and SMTopDecayer
+	need to be built by default. Split out HwPerturbativeHiggsDecay.so
+
 2006-06-07  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* */Makefile.am, acinclude.m4, configure.ac: New decayers only get
