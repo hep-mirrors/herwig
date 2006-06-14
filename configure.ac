@@ -10,7 +10,7 @@ AC_CONFIG_HEADERS([Config/config.h])
 AC_CANONICAL_HOST
 
 case "${host}" in
-  *-darwin[[0156]].*) 
+  *-darwin[0156].*) 
     AC_MSG_ERROR([Herwig++ requires OS X 10.3 or later])
     ;;
   *-darwin7.*)
