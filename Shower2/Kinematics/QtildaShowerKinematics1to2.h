@@ -31,16 +31,6 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * The default constructor.
-   */
-  inline QtildaShowerKinematics1to2(ShowerVarsPtr);
-
-  /**
-   * The copy constructor.
-   */
-  inline QtildaShowerKinematics1to2(const QtildaShowerKinematics1to2 &);
-
-  /**
    * Constructor with the two defining vectors \f$p\f$ and \f$n\f$.
    * @param p The \f$p\f$ reference vector.
    * @param n The \f$n\f$ reference vector.
@@ -49,11 +39,6 @@ public:
   inline QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
 				    const Lorentz5Momentum & n,
 				    ShowerVarsPtr var);
-
-  /**
-   * The destructor.
-   */
-  virtual ~QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -74,7 +59,7 @@ public:
    * @param theChildren The children
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) = 0;
+			      const ShowerParticleVector theChildren) const = 0;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -83,7 +68,7 @@ public:
    * @param theChildren The children
    */
   virtual void updateParent(const tShowerParticlePtr theParent, 
-			    const ParticleVector theChildren) = 0;
+			    const ParticleVector theChildren) const = 0;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -96,7 +81,7 @@ public:
    * - 1 is in the rest frame of the p vector
    */
   virtual void updateLast(const tShowerParticlePtr theLast,
-			  unsigned int iopt) = 0;
+			  unsigned int iopt) const = 0;
   //@}
 
   /**
@@ -105,7 +90,7 @@ public:
    * ForwardShowerEvolver in order to access \f$p\f$
    * and \f$n\f$.
    */
-  virtual vector<Lorentz5Momentum> getBasis(); 
+  virtual vector<Lorentz5Momentum> getBasis() const; 
 
   /**
    * Access to the \f$p\f$ vector used to describe the kinematics.
@@ -136,7 +121,7 @@ public:
    * - 1 is in the rest frame of the p vector
    */
   Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py,
-				    unsigned int iopt);
+				    unsigned int iopt) const;
 
 private:
 

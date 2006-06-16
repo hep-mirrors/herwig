@@ -22,26 +22,11 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * The default constructor.
-   */
-  inline Decay_QtildaShowerKinematics1to2(ShowerVarsPtr);
-
-  /**
-   * The copy constructor.
-   */
-  inline Decay_QtildaShowerKinematics1to2(const Decay_QtildaShowerKinematics1to2 &);
-
-  /**
    * Creator with the two defining vectors  p  and  n . 
    */
   inline Decay_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
 					  const Lorentz5Momentum & n,
 					  ShowerVarsPtr );
-
-  /**
-   * The destructor.
-   */
-  virtual ~Decay_QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -65,7 +50,7 @@ public:
    * @param theChildren The particles produced in the branching
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ShowerParticleVector theChildren );
+			       const ShowerParticleVector theChildren ) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -73,7 +58,7 @@ public:
    * KinematicsReconstructor.
    */
   virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ParticleVector theChildren );
+			     const ParticleVector theChildren ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -81,12 +66,8 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    */
-  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt);
+  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt) const;
 
-  /**
-   *  Set the relative \f$p_T\f$ for the branching
-   */
-  virtual void calculatepT(vector<Energy>);
   //@}
 
 private:

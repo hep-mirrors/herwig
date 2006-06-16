@@ -28,26 +28,11 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * The default constructor.
-   */
-  inline FS_QtildaShowerKinematics1to2(ShowerVarsPtr);
-
-  /**
-   * The copy constructor.
-   */
-  inline FS_QtildaShowerKinematics1to2(const FS_QtildaShowerKinematics1to2 &);
-
-  /**
    * Creator with the two defining vectors  p  and  n . 
    */
   inline FS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
 				       const Lorentz5Momentum & n,
 				       ShowerVarsPtr );
-
-  /**
-   * The destructor.
-   */
-  virtual ~FS_QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -71,7 +56,7 @@ public:
    * @param theChildren The particles produced in the branching
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ShowerParticleVector theChildren );
+			       const ShowerParticleVector theChildren ) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -79,7 +64,7 @@ public:
    * KinematicsReconstructor.
    */
   virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ParticleVector theChildren );
+			     const ParticleVector theChildren ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -90,7 +75,7 @@ public:
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector
    */
-  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt );
+  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt ) const;
   //@}
 
 private:

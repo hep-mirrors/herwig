@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-ShowerParticle::~ShowerParticle() {}
-
 ClassDescription<ShowerParticle> ShowerParticle::initShowerParticle;
 // Definition of the static class description member.
 

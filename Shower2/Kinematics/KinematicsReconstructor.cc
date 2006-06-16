@@ -19,8 +19,6 @@
 
 using namespace Herwig;
 
-KinematicsReconstructor::~KinematicsReconstructor() {}
-
 ClassDescription<KinematicsReconstructor> KinematicsReconstructor::initKinematicsReconstructor;
 // Definition of the static class description member.
 
@@ -42,7 +40,7 @@ void KinematicsReconstructor::Init() {
 
 bool KinematicsReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-		       unsigned int iopt) {
+		       unsigned int iopt) const {
   if(!particleJetParent)
     {throw Exception() << "must have a particle in Kinematics"
 		       << "Reconstructor::reconstructTimeLikeJet"
@@ -96,7 +94,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 }
 
 bool KinematicsReconstructor::
-reconstructHardJets(ShowerTreePtr hard)
+reconstructHardJets(ShowerTreePtr hard) const
 {
   Timer<1100> timer("KinematicsReconstructor::reconstructHardJets");
   bool radiated[2] = {false,false};
@@ -177,8 +175,10 @@ reconstructHardJets(ShowerTreePtr hard)
   return true;
 }
 
-const double KinematicsReconstructor::solveKfactor(const Energy & root_s, 
-						   const JetKinVect & jets) {
+const double 
+KinematicsReconstructor::solveKfactor(const Energy & root_s, 
+				      const JetKinVect & jets) const
+{
   Energy2 s = sqr(root_s);
   // must be at least two jets
   if ( jets.size() < 2) return -1.0;
@@ -229,7 +229,7 @@ const double KinematicsReconstructor::solveKfactor(const Energy & root_s,
 
 
 bool KinematicsReconstructor::
-reconstructSpaceLikeJet( const tShowerParticlePtr p) {
+reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   bool emitted = true;
   tShowerParticlePtr child;
   tShowerParticlePtr parent = dynamic_ptr_cast<ShowerParticlePtr>
@@ -291,7 +291,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
 bool KinematicsReconstructor::
 reconstructISJets(Lorentz5Momentum pcm,
 		  const vector<ShowerProgenitorPtr> & ShowerHardJets,
-		  Vector3 & boostRest,Vector3 & boostNewF)
+		  Vector3 & boostRest,Vector3 & boostNewF) const
 {
   bool atLeastOnce = false;
   vector<Lorentz5Momentum> p, pq, p_in;
@@ -382,7 +382,7 @@ reconstructISJets(Lorentz5Momentum pcm,
 }
 
 bool KinematicsReconstructor::
-reconstructDecayJets(ShowerTreePtr decay)
+reconstructDecayJets(ShowerTreePtr decay) const
 {
   // extract the particles from the ShowerTree
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
@@ -567,7 +567,7 @@ reconstructDecayJets(ShowerTreePtr decay)
 }
 
 bool KinematicsReconstructor::
-reconstructDecayJet( const tShowerParticlePtr p) {
+reconstructDecayJet( const tShowerParticlePtr p) const {
   if(p->children().empty()) return false;
   tShowerParticlePtr child;
   // if branching reconstruct time-like child
@@ -589,7 +589,7 @@ reconstructDecayJet( const tShowerParticlePtr p) {
 bool KinematicsReconstructor::
 solveDecayKFactor(Energy mb,Lorentz5Momentum n, Lorentz5Momentum pjet, 
 		  Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
-		  double & k1, double & k2,Lorentz5Momentum & qt)
+		  double & k1, double & k2,Lorentz5Momentum & qt) const
 {
   long double d1,d2;
   long double pjn(pjet.vect()*n.vect()),pcn(ppartner[0].vect()*n.vect()),

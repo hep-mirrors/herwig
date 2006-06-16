@@ -1,7 +1,7 @@
 ## libHwShowerKinematics.la will go into HwShower.so
 noinst_LTLIBRARIES = libHwNewShowerKinematics.la
 libHwNewShowerKinematics_la_SOURCES = \
-ShowerKinematics.h ShowerKinematics.icc ShowerKinematics.fh ShowerKinematics.cc \
+ShowerKinematics.h ShowerKinematics.icc ShowerKinematics.fh \
 ShowerParticle.h ShowerParticle.icc ShowerParticle.fh ShowerParticle.cc \
 QtildaShowerKinematics1to2.h QtildaShowerKinematics1to2.icc \
 QtildaShowerKinematics1to2.fh QtildaShowerKinematics1to2.cc  \

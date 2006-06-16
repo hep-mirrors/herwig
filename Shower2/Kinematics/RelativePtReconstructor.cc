@@ -19,8 +19,6 @@
 #include "Herwig++/Shower2/Kinematics/QtildaShowerKinematics1to2.h"
 using namespace Herwig;
 
-RelativePtReconstructor::~RelativePtReconstructor() {}
-
 void RelativePtReconstructor::persistentOutput(PersistentOStream & os) const {
   os << _massopt;
 }
@@ -57,7 +55,7 @@ void RelativePtReconstructor::Init() {
 
 bool RelativePtReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-		       unsigned int iopt) {
+		       unsigned int iopt) const {
   if(!particleJetParent)
     {throw Exception() << "must have a particle in Kinematics"
  		       << "Reconstructor::reconstructTimeLikeJet"
@@ -119,7 +117,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 }
 
 bool RelativePtReconstructor::
-reconstructHardJets(ShowerTreePtr hard)
+reconstructHardJets(ShowerTreePtr hard) const
 {
   //cerr << "testing start of main recon " << endl;
   //cerr << "testing called new B " << endl;
@@ -204,7 +202,7 @@ reconstructHardJets(ShowerTreePtr hard)
   return true;
 }
 void RelativePtReconstructor::
-generateTimeLikeMomenta(const tShowerParticlePtr particleJetParent,bool first)
+generateTimeLikeMomenta(const tShowerParticlePtr particleJetParent,bool first) const
 {
 
   QtildaShowerKinematics1to2Ptr kin=

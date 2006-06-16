@@ -28,16 +28,6 @@ public:
    * The default constructor.
    */
   inline RelativePtReconstructor();
-
-  /**
-   * The copy constructor.
-   */
-  inline RelativePtReconstructor(const RelativePtReconstructor &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~RelativePtReconstructor();
   //@}
 
 public:
@@ -50,7 +40,7 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructHardJets(ShowerTreePtr hard);
+  virtual bool reconstructHardJets(ShowerTreePtr hard) const;
 
 protected:
 
@@ -68,10 +58,10 @@ protected:
    * This methods returns false if there was no radiation or rescaling required
    */
   virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-				      unsigned int iopt);
+				      unsigned int iopt) const;
 
   virtual void generateTimeLikeMomenta(const tShowerParticlePtr particleJetParent,
-				       bool first);
+				       bool first) const;
 
 public:
 
@@ -104,7 +94,7 @@ protected:
   /**
    *  Calculate the off-shell mass of a particle
    */
-  inline void calculateMass(const tShowerParticlePtr particleJetParent);
+  inline void calculateMass(const tShowerParticlePtr particleJetParent) const;
 
 protected:
 

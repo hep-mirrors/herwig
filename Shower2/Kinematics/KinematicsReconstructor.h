@@ -64,29 +64,7 @@ typedef vector<JetKinStruct> JetKinVect;
  * defined for KinematicsReconstructor.
  */
 class KinematicsReconstructor: public Interfaced {
-
-friend class Evolver;
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline KinematicsReconstructor();
-
-  /**
-   * The copy constructor.
-   */
-  inline KinematicsReconstructor(const KinematicsReconstructor &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~KinematicsReconstructor();
-  //@}
-
+  friend class Evolver; // to allow setting of _showerVariables
 public:
 
   /**
@@ -101,7 +79,7 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructHardJets(ShowerTreePtr hard);
+  virtual bool reconstructHardJets(ShowerTreePtr hard) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -111,7 +89,7 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructDecayJets(ShowerTreePtr decay);
+  virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
   //@}
 
 protected:
@@ -121,7 +99,7 @@ protected:
    */
   virtual bool reconstructISJets(Lorentz5Momentum pcm,
 				 const vector<ShowerProgenitorPtr> & ShowerHardJets,
-				 Vector3 & boostRest,Vector3 & boostNewF);
+				 Vector3 & boostRest,Vector3 & boostNewF) const;
 
   /**
    *  Methods to reconstruct the kinematics of individual jets
@@ -141,7 +119,7 @@ protected:
    * This methods returns false if there was no radiation or rescaling required
    */
   virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-				      unsigned int iopt);
+				      unsigned int iopt) const;
 
   /**
    * Exactly similar to the previous one, but for a space-like jet.
@@ -151,13 +129,13 @@ protected:
    * towards the particleJetParent.
    * This methods returns false if there was no radiation or rescaling required
    */
-  bool reconstructSpaceLikeJet(const tShowerParticlePtr particleJetParent);
+  bool reconstructSpaceLikeJet(const tShowerParticlePtr particleJetParent) const;
 
   /**
    * Exactly similar to the previous one, but for a decay jet
    * This methods returns false if there was no radiation or rescaling required
    */
-  bool reconstructDecayJet(const tShowerParticlePtr particleJetParent);
+  bool reconstructDecayJet(const tShowerParticlePtr particleJetParent) const;
   //@}
 
 public:
@@ -199,7 +177,7 @@ protected:
    * @param root_s Centre-of-mass energy
    * @param jets The jets
    */
-  const double solveKfactor( const Energy & root_s, const JetKinVect & jets );
+  const double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
 
   /**
    *  Calculate the rescaling factors for th jets in a particle decay where
@@ -215,7 +193,7 @@ protected:
    */
   bool solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
 			 Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
-			 double & k1, double & k2,Lorentz5Momentum & qt);
+			 double & k1, double & k2,Lorentz5Momentum & qt) const;
 
   /**
    * Check the rescaling conserves momentum
@@ -224,13 +202,13 @@ protected:
    * @param jets The jets
    */
   inline double momConsEq(const double & k, const Energy & root_s,
-			  const JetKinVect & jets);
+			  const JetKinVect & jets) const;
 
   /**
    * Compute the boost to get from the the old momentum to the new 
    */
-  LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
-			     const Lorentz5Momentum & oldp);
+  inline LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
+				    const Lorentz5Momentum & oldp) const;
 
   /**
    *  Set/Get methods for the pointer to ShowerVariables
@@ -253,7 +231,7 @@ protected:
    * @param p The particle
    * @param bv The boost
    */
-  inline void boostChain(tPPtr p, const Vector3 &bv);
+  inline void boostChain(tPPtr p, const Vector3 &bv) const;
 
   /**
    * Given a 5-momentum and a scale factor, the method returns the
@@ -271,7 +249,7 @@ protected:
    * from (E, same perp, q).
    */
   inline double getBeta(const Energy E, const Energy q, 
-			const Energy Ep, const Energy qp) {
+			const Energy Ep, const Energy qp) const {
     return (q*E-qp*Ep)/(sqr(qp)+sqr(E));
   }
 

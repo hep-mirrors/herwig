@@ -14,25 +14,7 @@ inline void ShowerParticle::operator delete(void * p, size_t) {
   FixedAllocator<ShowerParticle>::deallocate(p);
 }
 
-inline ShowerParticle::ShowerParticle(const ShowerParticle & x)
-  :  Particle(x),
-     _isFinalState(x._isFinalState),
-     _reconstructionFixedPoint(x._reconstructionFixedPoint),
-     _perturbative( x._perturbative ),
-     _initiatesTLS( x._initiatesTLS ),
-     _sudAlpha(x._sudAlpha),
-     _sudBeta(x._sudBeta),
-     _sudPx(x._sudPx),
-     _sudPy(x._sudPy),
-     _x(x._x),
-     _splitFun(x._splitFun),
-     _showerKinematics(x._showerKinematics),
-     _scales(x._scales),
-     _partners(x._partners),
-     _thePEGBase( x._thePEGBase )
-{}
-
-  inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert)
+inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert)
   : Particle(x),
     _isFinalState( true ),
     _reconstructionFixedPoint( false ),
@@ -125,6 +107,10 @@ inline Energy2 ShowerParticle::sudPperp2() const {
   return ( sqr(_sudPx) + sqr(_sudPy) );
 }
 
+inline void ShowerParticle::x(double x) { _x = x; }
+
+inline double ShowerParticle::x() const { return _x; }
+
 inline tSplittingFnPtr ShowerParticle::splitFun() const {
   return _splitFun;
 }
@@ -133,11 +119,11 @@ inline void ShowerParticle::setSplittingFn(const tSplittingFnPtr sf) {
   _splitFun = sf;
 }
 
-inline vector<Energy> ShowerParticle::evolutionScales() const {
+inline const vector<Energy> & ShowerParticle::evolutionScales() const {
   return _scales;
 }
 
-inline ShoKinPtr & ShowerParticle::showerKinematics() {
+inline const ShoKinPtr & ShowerParticle::showerKinematics() const {
   return _showerKinematics;
 }
 
@@ -164,7 +150,7 @@ inline void ShowerParticle::setReconstructionFixedPoint(const bool inputIsDecayi
   _reconstructionFixedPoint = inputIsDecaying;
 }
 
-inline tcPPtr ShowerParticle::getThePEGBase() {
+inline const tcPPtr ShowerParticle::getThePEGBase() const {
   return _thePEGBase; 
 }
 

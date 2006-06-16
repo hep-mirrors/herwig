@@ -16,13 +16,9 @@
 
 using namespace Herwig;
 
-Decay_QtildaShowerKinematics1to2::~Decay_QtildaShowerKinematics1to2() {}
-
-
-
 void 
 Decay_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent, 
-					      const ShowerParticleVector theChildren ) 
+					      const ShowerParticleVector theChildren ) const
 {
   if(theChildren.size() != 2)
     throw Exception() <<  "Decay_QtildaShowerKinematics1to2::updateChildren() " 
@@ -41,15 +37,6 @@ Decay_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr thePar
   // determine alphas of children according to interpretation of z
   theChildren[0]->sudAlpha( dz*theParent->sudAlpha() ); 
   theChildren[1]->sudAlpha( (1.-dz)*theParent->sudAlpha() ); 
-  // determine transverse momenta of children
-  Energy kinCutoff;
-  vector<Energy> masses(3);
-  kinCutoff = showerVariables()->kinematicCutOff(kinScale(),theParent->data().mass());
-  // KMH - 15/05/06  - I think this should probably be checked...
-  masses[0]=max(kinCutoff, theParent->data().mass());
-  masses[1]=masses[0];
-  masses[2]=kinCutoff;
-  calculatepT(masses);
   // set the values
   theChildren[0]->sudPx(   pT()*cos(dphi) +     dz *theParent->sudPx() );
   theChildren[0]->sudPy(   pT()*sin(dphi) +     dz *theParent->sudPy() );
@@ -59,13 +46,15 @@ Decay_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr thePar
 
 void Decay_QtildaShowerKinematics1to2::
 updateParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) {
+	      const ParticleVector theChildren ) const
+{
   throw Exception() << "Decay_QtildaShowerKinematics1to2::updateParent not implemented"
 		    << Exception::abortnow;
 }
 
 void Decay_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLast,
-						  unsigned int iopt) {
+						  unsigned int iopt) const
+{
    // set beta component and consequently all missing data from that,
    // using the nominal (i.e. PDT) mass.
   Energy theMass; 
@@ -77,14 +66,4 @@ void Decay_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLa
   // set that new momentum    
   theLast->set5Momentum(  sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
 					    theLast->sudPx(), theLast->sudPy(),iopt));
-}
-
-void Decay_QtildaShowerKinematics1to2::calculatepT(vector<Energy> masses)
-{
-  double dz=z(),domz(1.-dz);
-  Energy2 pPerp2=sqr(qtilde()*domz)-sqr(masses[0]*domz)-sqr(masses[2])*dz;
-  if(pPerp2<0.) throw Exception() << "Decay_QtildaShowerKinematics1to2::calculatepT()"
- 				  << " Warning! Can't get p_perp, \n" 
- 				  << "  z = " << dz << Exception::eventerror;
-  pT(sqrt(pPerp2));
 }

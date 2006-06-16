@@ -6,10 +6,7 @@
 
 namespace Herwig {
 
-  inline RelativePtReconstructor::RelativePtReconstructor() : _massopt(0) {}
-
-inline RelativePtReconstructor::RelativePtReconstructor(const RelativePtReconstructor & x)
-  : KinematicsReconstructor(x), _massopt(x._massopt) {}
+inline RelativePtReconstructor::RelativePtReconstructor() : _massopt(0) {}
 
 inline IBPtr RelativePtReconstructor::clone() const {
   return new_ptr(*this);
@@ -19,7 +16,7 @@ inline IBPtr RelativePtReconstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void RelativePtReconstructor::calculateMass(const tShowerParticlePtr particleJetParent)
+inline void RelativePtReconstructor::calculateMass(const tShowerParticlePtr particleJetParent) const
 {
 }
 }

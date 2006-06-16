@@ -14,9 +14,7 @@
 
 using namespace Herwig;
 
-QtildaShowerKinematics1to2::~QtildaShowerKinematics1to2() {}
-
-vector<Lorentz5Momentum> QtildaShowerKinematics1to2::getBasis() {
+vector<Lorentz5Momentum> QtildaShowerKinematics1to2::getBasis() const {
   vector<Lorentz5Momentum> dum;
   dum.push_back( _pVector );
   dum.push_back( _nVector );
@@ -24,7 +22,7 @@ vector<Lorentz5Momentum> QtildaShowerKinematics1to2::getBasis() {
 }
 
 Lorentz5Momentum QtildaShowerKinematics1to2::
-sudakov2Momentum(double alpha, double beta, Energy px, Energy py,unsigned int iopt) 
+sudakov2Momentum(double alpha, double beta, Energy px, Energy py,unsigned int iopt) const
 {
   Lorentz5Momentum dq;
   if(iopt==0)

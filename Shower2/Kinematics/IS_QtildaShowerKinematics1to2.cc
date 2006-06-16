@@ -16,18 +16,16 @@
 
 using namespace Herwig;
 
-IS_QtildaShowerKinematics1to2::~IS_QtildaShowerKinematics1to2() {}
-
 void IS_QtildaShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
-		const ShowerParticleVector theChildren ) {
+		const ShowerParticleVector theChildren ) const {
   // this is empty...
 }
 
 
 void IS_QtildaShowerKinematics1to2::
 updateParent(const tShowerParticlePtr theParent, 
-	     const ParticleVector theChildren ) {
+	     const ParticleVector theChildren ) const {
 
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
@@ -58,7 +56,7 @@ updateParent(const tShowerParticlePtr theParent,
 }
 
 void IS_QtildaShowerKinematics1to2::
-updateLast( const tShowerParticlePtr theLast,unsigned int iopt ) {
+updateLast( const tShowerParticlePtr theLast,unsigned int iopt ) const {
   if(theLast->isFinalState()) return;
   theLast->sudAlpha(theLast->x());
   theLast->sudBeta(sqr(theLast->data().mass())/

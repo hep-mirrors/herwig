@@ -75,21 +75,12 @@ public:
   inline ShowerParticle(tcEventPDPtr);
 
   /**
-   * Copy constructor.
-   */
-  inline ShowerParticle(const ShowerParticle &);
-
-  /**
    * Copy constructor from a ThePEG Particle
    * @param part ThePEG particle
    * @param pert Where the particle came from
    */
   inline ShowerParticle(const Particle & part,unsigned int pert);
 
-  /**
-   * Destructor.
-   */
-  virtual ~ShowerParticle();
   //@}
 
 public:
@@ -197,12 +188,12 @@ public:
   /**
    *  For an initial state particle get the fraction of the beam momentum
    */
-  inline void x(double x) { _x = x; }
+  inline void x(double x);
 
   /**
    *  For an initial state particle set the fraction of the beam momentum
    */
-  inline double x() const { return _x; }
+  inline double x() const;
   //@}
 
 
@@ -225,7 +216,7 @@ public:
   /**
    * Access/ the ShowerKinematics object.
    */
-  inline ShoKinPtr & showerKinematics();
+  inline const ShoKinPtr & showerKinematics() const;
 
   /**
    * Set the ShowerKinematics object.
@@ -241,7 +232,7 @@ public:
    * Return (a const reference to) the vector of evolution scales
    * (\f$\tilde{q}\f$ scales)
    */
-  inline vector<Energy> evolutionScales() const;
+  inline const vector<Energy> & evolutionScales() const;
 
   /**
    *  Set the evolution \f$\tilde{q}\f$ scale for a given interaction type
@@ -291,7 +282,7 @@ public:
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
-  inline tcPPtr getThePEGBase();
+  inline const tcPPtr getThePEGBase() const;
 
 protected:
 
@@ -327,7 +318,7 @@ private:
   bool _isFinalState;
 
   /**
-   *  Whether the particle
+   *  Whether the particle is a reconstruction fixed point
    */
   bool _reconstructionFixedPoint;
 
@@ -389,7 +380,7 @@ private:
   /**
    *  Pointer to ThePEG Particle this ShowerParticle was created from
    */
-  tcPPtr _thePEGBase;
+  const tcPPtr _thePEGBase;
 };
 
 }

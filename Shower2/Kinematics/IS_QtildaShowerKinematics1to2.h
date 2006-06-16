@@ -28,25 +28,11 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * The default constructor.
-   */
-  inline IS_QtildaShowerKinematics1to2(ShowerVarsPtr);
-
-  /**
    *  Construct in terms of the basis states
    */
   inline IS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
 				       const Lorentz5Momentum & n,
 				       ShowerVarsPtr);
-  /**
-   * The copy constructor.
-   */
-  inline IS_QtildaShowerKinematics1to2(const IS_QtildaShowerKinematics1to2 &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~IS_QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -69,7 +55,7 @@ public:
    * @param theChildren The particles produced in the branching
    */
   virtual void updateChildren( const tShowerParticlePtr theParent, 
-			       const ShowerParticleVector theChildren );
+			       const ShowerParticleVector theChildren ) const;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -77,7 +63,7 @@ public:
    * KinematicsReconstructor.
    */
   virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ParticleVector theChildren );
+			     const ParticleVector theChildren ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -85,7 +71,7 @@ public:
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
    */
-  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt);
+  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt) const;
   //@}
 
 private:

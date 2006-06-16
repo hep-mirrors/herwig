@@ -7,10 +7,7 @@
 
 #include "Herwig++/Shower2/ShowerConfig.h"
 #include "Herwig++/Shower2/ShowerVariables.h"
-#include "ThePEG/Pointer/Ptr.h"
-#include "ThePEG/Pointer/ReferenceCounted.h"
-#include "ThePEG/Pointer/PtrTraits.h"
-#include "ThePEG/Pointer/RCPtr.h"
+#include "ThePEG/Config/ThePEG.h"
 #include "ShowerKinematics.fh"
 
 namespace Herwig {
@@ -36,7 +33,7 @@ using namespace ThePEG;
  *
  * @see KinematicsReconstructor
  */
-class ShowerKinematics: public ReferenceCounted {
+class ShowerKinematics: public Base {
 
 public:
 
@@ -46,16 +43,6 @@ public:
    * The default constructor.
    */
   inline ShowerKinematics(ShowerVarsPtr);
-
-  /**
-   * The copy constructor.
-   */
-  inline ShowerKinematics(const ShowerKinematics &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerKinematics();
   //@}
 
 public:
@@ -76,7 +63,7 @@ public:
    * @param theChildren The children
    */
   virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) = 0;
+			      const ShowerParticleVector theChildren) const = 0;
 
   /**
    * Update the parent Kinematics from the knowledge of the kinematics
@@ -85,7 +72,7 @@ public:
    * @param theChildren The children
    */
   virtual void updateParent(const tShowerParticlePtr theParent, 
-			    const ParticleVector theChildren) = 0;
+			    const ParticleVector theChildren) const = 0;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -97,7 +84,7 @@ public:
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector
    */
-  virtual void updateLast(const tShowerParticlePtr theLast, unsigned int iopt) = 0;
+  virtual void updateLast(const tShowerParticlePtr theLast, unsigned int iopt) const = 0;
   //@}
 
 public:
@@ -130,7 +117,7 @@ public:
    * ForwardShowerEvolver in order to access \f$p\f$ and \f$n\f$, 
    * which in turn are members of the concrete class QtildaShowerKinematics1to2.
    */
-  virtual vector<Lorentz5Momentum> getBasis() = 0;
+  virtual vector<Lorentz5Momentum> getBasis() const = 0;
 
 
   /**

@@ -16,11 +16,10 @@
 
 using namespace Herwig;
 
-FS_QtildaShowerKinematics1to2::~FS_QtildaShowerKinematics1to2() {}
-
 void 
-FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent, 
-					      const ShowerParticleVector theChildren ) 
+FS_QtildaShowerKinematics1to2::
+updateChildren(const tShowerParticlePtr theParent, 
+	       const ShowerParticleVector theChildren ) const
 {
   if(theChildren.size() != 2)
     throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
@@ -49,7 +48,8 @@ FS_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent
 
 void FS_QtildaShowerKinematics1to2::
 updateParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) {
+	      const ParticleVector theChildren ) const
+{
   if(theChildren.size() != 2) 
     throw Exception() << "FS_QtildaShowerKinematics1to2::updateParent() " 
 		      << "Warning! too many children!" 
@@ -61,7 +61,7 @@ updateParent( const tShowerParticlePtr theParent,
 }
 
 void FS_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLast,
-					       unsigned int iopt)
+					       unsigned int iopt) const
 {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
