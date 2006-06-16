@@ -6,26 +6,6 @@
 
 namespace Herwig {
 
-
-inline ShowerVariables::ShowerVariables(const ShowerVariables & x)
-  : Interfaced(x), _multiScaleShowerMode(x._multiScaleShowerMode),
-    _cutoffQCDMassScale( x._cutoffQCDMassScale ),
-    _cutoffQEDMassScale( x._cutoffQEDMassScale ),
-    _cutoffEWKMassScale( x._cutoffEWKMassScale ),
-    _kinCutoffScale( x._kinCutoffScale ),
-    _meCorrMode( x._meCorrMode ),
-    _qqgPSMode(x._qqgPSMode),
-    _stopShowerAtMassScale( x._stopShowerAtMassScale ),
-    _vetoAbovePtScale( x._vetoAbovePtScale ), 
-    _vetoBelowPtScale( x._vetoBelowPtScale ),
-    _particlesDecayInShower( x._particlesDecayInShower ),
-    _inputparticlesDecayInShower(x._inputparticlesDecayInShower),
-    _a(x._a),_b(x._b),_c(x._c),_gluonMass(x._gluonMass),
-    _globalParameters(x._globalParameters),
-    _initialenhance(x._initialenhance),
-    _finalenhance(x._finalenhance)
-{}
-
 inline IBPtr ShowerVariables::clone() const {
   return new_ptr(*this);
 }
@@ -80,22 +60,6 @@ inline Energy ShowerVariables::convertQScaleToMassScale(const Energy inputQScale
   return inputQScale * 1.0;   // To be changed
 }
 
-// inline Energy ShowerVariables::stopShowerAtMassScale() const {
-//   return _stopShowerAtMassScale;
-// }
-
-// inline void ShowerVariables::stopShowerAtMassScale(const Energy inputStopShowerAtMassScale) {
-//   _stopShowerAtMassScale = inputStopShowerAtMassScale;
-// }
-
-// inline Energy ShowerVariables::stopShowerAtQScale() const {
-//   return convertMassScaleToQScale(_stopShowerAtMassScale);
-// }
-
-// inline void ShowerVariables::stopShowerAtQScale(const Energy inputStopShowerAtQScale) {
-//   _stopShowerAtMassScale = convertQScaleToMassScale(inputStopShowerAtQScale);
-// }
-
 inline Energy ShowerVariables::kinScale() const {
   return _kinCutoffScale;
 }
@@ -120,22 +84,6 @@ inline bool ShowerVariables::rndPS() const {
   return (_qqgPSMode == 2); 
 }
 
-
-// inline Energy ShowerVariables::vetoAbovePtScale() const {
-//   return _vetoAbovePtScale;
-// }
-// inline void ShowerVariables::vetoAbovePtScale(const Energy inputVetoAbovePtScale) {
-//   _vetoAbovePtScale = inputVetoAbovePtScale;
-// }
-
-// inline Energy ShowerVariables::vetoBelowPtScale() const {
-//   return _vetoBelowPtScale;
-// }
-
-// inline void ShowerVariables::vetoBelowPtScale(const Energy inputVetoBelowPtScale) {
-//   _vetoBelowPtScale = inputVetoBelowPtScale;
-// }
-
 inline tcPDFPtr ShowerVariables::currentPDF() const {
   return _pdf;
 }
@@ -144,11 +92,15 @@ inline void ShowerVariables::setCurrentPDF(tcPDFPtr in) {
   _pdf=in;
 }
 
-inline Ptr<BeamParticleData>::const_pointer ShowerVariables::beamParticle() const
-{return _beam;}
+inline Ptr<BeamParticleData>::const_pointer 
+ShowerVariables::beamParticle() const {
+  return _beam;
+}
 
-inline void ShowerVariables::setBeamParticle(Ptr<BeamParticleData>::const_pointer in)
-{_beam=in;}
+inline void 
+ShowerVariables::setBeamParticle(Ptr<BeamParticleData>::const_pointer in) {
+  _beam=in;
+}
 
 inline Energy ShowerVariables::kinematicCutOff(Energy scale,Energy mq) const {
   return max((scale -_a*mq)/_b,_c);

@@ -9,9 +9,6 @@ namespace Herwig {
 inline PartnerFinder::PartnerFinder()  : _approach(0) 
 {}
 
-inline PartnerFinder::PartnerFinder(const PartnerFinder & x)
-  : Interfaced(x), _approach(x._approach) {}
-
 inline IBPtr PartnerFinder::clone() const {
   return new_ptr(*this);
 }
@@ -19,6 +16,7 @@ inline IBPtr PartnerFinder::clone() const {
 inline IBPtr PartnerFinder::fullclone() const {
   return new_ptr(*this);
 }
-inline void PartnerFinder::setShowerVariables(ShowerVarsPtr in)
-{_showerVariables=in;}
+inline void PartnerFinder::setShowerVariables(ShowerVarsPtr in) {
+  _showerVariables=in;
+}
 }

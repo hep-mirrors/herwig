@@ -6,10 +6,8 @@
 //
 
 #include "ThePEG/Handlers/CascadeHandler.h"
-#include "ShowerVariables.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
-#include "Evolver.h"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include "Evolver.fh"
+#include "Herwig++/Shower2/Kinematics/ShowerParticle.fh"
 #include "ShowerTree.fh"
 #include "ShowerHandler.fh"
 
@@ -35,16 +33,6 @@ public:
    * The default constructor.
    */
   inline ShowerHandler();
-
-  /**
-   * The copy constructor.
-   */
-  inline ShowerHandler(const ShowerHandler &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerHandler();
   //@}
 
 public:
@@ -113,25 +101,6 @@ protected:
    * which need to be showered
    */
   void findShoweringParticles();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   /**
    * Find the final unstable time-like parent of a particle

@@ -27,9 +27,6 @@ using namespace ThePEG;
   typedef vector<ShowerParticlePtr> ShowerParticleVector;
   typedef vector<tShowerParticlePtr> tShowerParticleVector;
 
-  typedef vector<ShoKinPtr> CollecShoKinPtr;
-  typedef vector<tShoKinPtr> tCollecShoKinPtr;
-
   typedef vector<long> IdList;
 
 } // end Herwig namespace

@@ -10,28 +10,33 @@ inline ShowerProgenitor::ShowerProgenitor(PPtr original, PPtr copy,
     _particle(particle), _highestPt(pT), _hasEmitted(emitted)
 {}
 
-inline ShowerParticlePtr ShowerProgenitor::progenitor() const
-{return _particle;}
+inline ShowerParticlePtr ShowerProgenitor::progenitor() const {
+  return _particle;
+}
 
-inline void ShowerProgenitor::progenitor(ShowerParticlePtr in) 
-{_particle=in;}
+inline void ShowerProgenitor::progenitor(ShowerParticlePtr in) {
+  _particle=in;
+}
 
-inline PPtr ShowerProgenitor::original() const
-{return _original;}
+inline PPtr ShowerProgenitor::original() const {
+  return _original;
+}
 
-inline PPtr ShowerProgenitor::copy() const
-{return _copy;}
+inline PPtr ShowerProgenitor::copy() const {
+  return _copy;
+}
 
-inline void ShowerProgenitor::copy(PPtr in)
-{_copy=in;}
+inline void ShowerProgenitor::copy(PPtr in) {
+  _copy=in;
+}
 
-inline bool ShowerProgenitor::perturbative() const
-{return _perturbative;}
+inline bool ShowerProgenitor::perturbative() const {
+  return _perturbative;
+}
 
 inline void ShowerProgenitor::perturbative(bool in) {_perturbative=in;}
 
-inline Energy ShowerProgenitor::pT() const 
-{return _highestPt;}
+inline Energy ShowerProgenitor::pT() const {return _highestPt;}
 
 inline void ShowerProgenitor::pT(Energy in) {_highestPt=in;}
 

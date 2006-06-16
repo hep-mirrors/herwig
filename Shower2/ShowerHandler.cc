@@ -12,6 +12,8 @@
 #include "ThePEG/Interface/Parameter.h" 
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Timer.h"
+#include "Evolver.h"
+#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
 #include <cassert>
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -24,8 +26,6 @@
 #include "ShowerTree.h"
 
 using namespace Herwig;
-
-ShowerHandler::~ShowerHandler() {}
 
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
   os << _evolver << _maxtry;
@@ -191,7 +191,7 @@ void ShowerHandler::cascade()
 	    multimap<Energy,ShowerTreePtr>::const_iterator dit;
  	    // get the particle and the width
  	    ShowerTreePtr decayingTree=(*_decay.rbegin()).second;
- 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
+	    // 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
  	    // remove it from the multimap
  	    _decay.erase(--_decay.end());
 	    // make sure the particle has been decayed

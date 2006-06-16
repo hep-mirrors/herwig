@@ -9,9 +9,8 @@
 #include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerConfig.h"
 #include "Couplings/ShowerIndex.h"
-#include "ThePEG/PDF/PDFBase.h"
-#include "ThePEG/PDF/BeamParticleData.h"
 #include "ShowerVariables.fh"
+#include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
 
@@ -59,15 +58,6 @@ public:
    */
   inline ShowerVariables();
 
-  /**
-   * The copy constructor.
-   */
-  inline ShowerVariables(const ShowerVariables &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerVariables();
   //@}
 
 public:
@@ -109,8 +99,9 @@ public:
    */
   inline Energy kinScale() const;
   //@}
+
   /**
-   *  Conversion begtween the scales.
+   *  Conversion between the scales.
    */
   //@{
   /**
@@ -123,61 +114,6 @@ public:
    */
   inline Energy convertQScaleToMassScale(const Energy inputQScale) const;
   //@}
-
-//   /**
-//    *   Access/set the <em>mass</em> and \f$\tilde{q}\f$ scales
-//    *   at which to shower the showering.
-//    */
-//   //@{
-//   /**
-//    *  Get the <em>Mass</em> scale at which to stop the showering
-//    */
-//   inline Energy stopShowerAtMassScale() const;
-
-//   /**
-//    *  Set the <em>Mass</em> scale at which to stop the showering
-//    * @param inputStopShowerAtMassScale scale at which to stop
-//    */
-//   inline void stopShowerAtMassScale(const Energy inputStopShowerAtMassScale);
-
-//   /**
-//    *  Get the \f$\tilde{q}\f$ scale at which to stop the showering
-//    */
-//   inline Energy stopShowerAtQScale() const;
-
-//   /**
-//    *  Set the \f$\tilde{q}\f$ scale at which to stop the showering
-//    * @param inputStopShowerAtQScale scale at which to stop
-//    */
-//   inline void stopShowerAtQScale(const Energy inputStopShowerAtQScale);
-//   //@}
-
-//   /**
-//    * Access/set the Veto in \f$p_T\f$ (resolution) scale.
-//    */
-//   //@{
-//   /**
-//    * Get \f$p_T\f$ scale above which to veto emissions.
-//    */
-//   inline Energy vetoAbovePtScale() const;
-
-//   /**
-//    * Set \f$p_T\f$ scale above which to veto emissions.
-//    * @param inputVetoAbovePtScale scale for the veto
-//    */
-//   //inline void vetoAbovePtScale(const Energy inputVetoAbovePtScale);
-
-//   /**
-//    * Get \f$p_T\f$ scale below which to veto emissions.
-//    */
-//   inline Energy vetoBelowPtScale() const;
-
-//   /**
-//    * Set \f$p_T\f$ scale below which to veto emissions.
-//    * @param inputVetoBelowPtScale scale for the veto
-//    */
-//   inline void vetoBelowPtScale(const Energy inputVetoBelowPtScale);
-//   //@}
 
   /**
    * Access/set the PDF and beam particle for the current initial-state shower
@@ -329,7 +265,7 @@ public:
   /**
    * Use to initialize some scales.
    */
-  static Energy HUGEMASS; 
+  static const Energy HUGEMASS; 
 
 protected:
 

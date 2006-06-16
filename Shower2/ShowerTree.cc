@@ -6,13 +6,13 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "ShowerProgenitor.h"
+
 #include <cassert>
 
 namespace Herwig {
   
 using namespace ThePEG;
-
-ShowerTree::~ShowerTree() {}
 
 // constructor from hard process
 ShowerTree::ShowerTree(PPtr in1, PPtr in2, double x1, double x2, 
@@ -163,7 +163,7 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
 
 void ShowerTree::updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
 					       ShowerParticlePtr parent,
-					       ShowerParticleVector children)
+					       const ShowerParticleVector & children)
 {
   assert(children.size()==2);
   bool matches[2];

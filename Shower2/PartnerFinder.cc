@@ -25,21 +25,22 @@ using namespace Herwig;
 namespace {
 
 // return bool if final-state particle
-inline bool FS(const tShowerParticlePtr a)
-{return a->isFinalState();}
+inline bool FS(const tShowerParticlePtr a) {
+  return a->isFinalState();
+}
 
 // return colour line pointer 
 inline Ptr<ThePEG::ColourLine>::transient_pointer  
-CL(const ShowerParticleVector::const_iterator & a)
-{return (*a)->colourLine();}
+CL(const ShowerParticleVector::const_iterator & a) {
+  return (*a)->colourLine();
+}
   
 inline Ptr<ThePEG::ColourLine>::transient_pointer
-ACL(const ShowerParticleVector::const_iterator & a)
-{return (*a)->antiColourLine();}
-
+ACL(const ShowerParticleVector::const_iterator & a) {
+  return (*a)->antiColourLine();
 }
 
-PartnerFinder::~PartnerFinder() {}
+}
 
 void PartnerFinder::persistentOutput(PersistentOStream & os) const {
   os << _approach << _showerVariables;

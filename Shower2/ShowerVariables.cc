@@ -20,7 +20,7 @@
 
 using namespace Herwig;
 
-Energy ShowerVariables::HUGEMASS = 1.0e+20 * GeV;  // more then the Plank scale!
+const Energy ShowerVariables::HUGEMASS = 1.0e+20 * GeV;  // more then the Plank scale!
 
 ShowerVariables::ShowerVariables() :
   _multiScaleShowerMode(1),
@@ -70,8 +70,6 @@ ShowerVariables::ShowerVariables() :
   _inputparticlesDecayInShower.push_back( 2000015 ); //  SUSY_tau_2minus 
   _inputparticlesDecayInShower.push_back( 2000016 ); //  SUSY_nu_tauR 
 }
-
-ShowerVariables::~ShowerVariables() {}
 
 void ShowerVariables::persistentOutput(PersistentOStream & os) const {
   os << _multiScaleShowerMode

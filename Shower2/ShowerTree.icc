@@ -3,20 +3,28 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::incomingLines() 
-{return _incomingLines;}
+inline bool ShowerTree::hardMatrixElementCorrection() const {
+  return _hardMECorrection;
+}
+
+inline void ShowerTree::hardMatrixElementCorrection(bool in) {
+  _hardMECorrection=in;
+}
 
 inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::outgoingLines()
-{return _outgoingLines;}
+ShowerTree::incomingLines() { return _incomingLines; }
+
+inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
+ShowerTree::outgoingLines() { return _outgoingLines; }
 
 inline void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
-					       ShowerParticleVector children)
+					       const ShowerParticleVector & children)
 {
   assert(children.size()==2);
   _forward.erase(parent);
-  for(unsigned int ix=0;ix<children.size();++ix){_forward.insert(children[ix]);}
+  for(unsigned int ix=0; ix<children.size(); ++ix) {
+    _forward.insert(children[ix]);
+  }
 }
 
 inline void ShowerTree::addInitialStateBranching(ShowerParticlePtr oldParent,

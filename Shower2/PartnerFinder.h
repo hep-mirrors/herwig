@@ -86,16 +86,6 @@ public:
    * The default constructor.
    */
   inline PartnerFinder();
-
-  /**
-   * The copy constructor.
-   */
-  inline PartnerFinder(const PartnerFinder &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~PartnerFinder();
   //@}
 
 public:

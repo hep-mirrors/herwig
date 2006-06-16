@@ -9,12 +9,6 @@ namespace Herwig {
 inline ShowerHandler::ShowerHandler() : _maxtry(10)
 {}
 
-inline ShowerHandler::ShowerHandler(const ShowerHandler & x)
-  : CascadeHandler(x),
-    _evolver( x._evolver ),
-    _maxtry(x._maxtry)
-{}
-
 inline IBPtr ShowerHandler::clone() const {
   return new_ptr(*this);
 }

@@ -6,12 +6,12 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower2/MECorrections/MECorrectionBase.fh"
+#include "Herwig++/Shower2/MECorrections/MECorrectionBase.h"
 #include "Herwig++/Shower2/SplittingFunctions/SplittingGenerator.h"
-#include "Herwig++/Shower2/Kinematics/KinematicsReconstructor.fh"
+#include "Herwig++/Shower2/Kinematics/KinematicsReconstructor.h"
 #include "PartnerFinder.h"
-#include "ShowerTree.h"
-#include "ShowerProgenitor.h"
+#include "ShowerTree.fh"
+#include "ShowerProgenitor.fh"
 #include "ShowerHandler.fh"
 #include "Evolver.fh"
 
@@ -34,30 +34,10 @@ friend class ShowerHandler;
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  Evolver();
-
-  /**
-   * The copy constructor.
-   */
-  Evolver(const Evolver &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~Evolver();
-  //@}
-
-public:
-
   /**
    *  Is there any showering switched on
    */
-  inline bool showeringON();
+  inline bool showeringON() const;
 
   /**
    * It returns true/false if the initial-state radiation is on/off.

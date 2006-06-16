@@ -14,7 +14,7 @@ inline IBPtr Evolver::fullclone() const {
   return new_ptr(*this);
 }
 
-inline bool Evolver::showeringON()
+inline bool Evolver::showeringON() const
 {
   return 
     _splittingGenerator->isISRadiationON()||

@@ -5,7 +5,7 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "ShowerConfig.h"
 #include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
-#include "ShowerProgenitor.h"
+#include "ShowerProgenitor.fh"
 #include "ThePEG/EventRecord/Step.h"
 #include <cassert>
 #include "ShowerTree.fh"
@@ -54,11 +54,6 @@ public:
    */
   ShowerTree(PPtr in, ShowerVarsPtr vars,multimap<Energy,ShowerTreePtr> & decay,
 	     tEHPtr ch);
-
-  /**
-   *  Destructor
-   */
-  virtual ~ShowerTree();
   //@}
 
 public:
@@ -107,12 +102,12 @@ public:
   /**
    *  Was the hard matrix element correction applied
    */
-  inline bool hardMatrixElementCorrection() const {return _hardMECorrection;}
+  inline bool hardMatrixElementCorrection() const;
 
   /**
    *  Set whether or not the hard matrix element correction was applied
    */ 
-  inline void hardMatrixElementCorrection(bool in) {_hardMECorrection=in;}
+  inline void hardMatrixElementCorrection(bool in);
   //@}
 
   /**
@@ -130,7 +125,7 @@ public:
    */
   void updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
 				     ShowerParticlePtr parent,
-				     ShowerParticleVector children);
+				     const ShowerParticleVector & children);
 
   /**
    *  Update the shower product for an initial-state particle
@@ -151,7 +146,7 @@ public:
    * @param children The outgoing particles in the branching
    */
   inline void addFinalStateBranching(ShowerParticlePtr parent,
-				     ShowerParticleVector children);
+				     const ShowerParticleVector & children);
 
   /**
    *  Add an initial-state branching. This method removes the oldParent of the

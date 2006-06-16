@@ -26,20 +26,10 @@
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Herwig++/Hadronization/Remnant.h"
 #include "ThePEG/Utilities/Timer.h"
+#include "ShowerTree.h"
+#include "ShowerProgenitor.h"
 
 using namespace Herwig;
-
-Evolver::~Evolver() {}
-
-Evolver::Evolver() 
-{}
-
-Evolver::Evolver(const Evolver & x)
-  : Interfaced(x), _splittingGenerator(x._splittingGenerator) ,
-    _partnerFinder( x._partnerFinder ),_mecorrections(x._mecorrections),
-    _progenitor(x._progenitor),
-    _showerVariables(x._showerVariables),_kinematicsrecon(x._kinematicsrecon)
-{}
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _splittingGenerator << _partnerFinder << _mecorrections 
