@@ -9,9 +9,6 @@ namespace Herwig {
   inline QtoGQSplitFn::QtoGQSplitFn() : SplittingFunction(ShowerIndex::QCD,1) 
 {}
 
-inline QtoGQSplitFn::QtoGQSplitFn(const QtoGQSplitFn & x)
-  : SplittingFunction(x) {}
-
 inline IBPtr QtoGQSplitFn::clone() const {
   return new_ptr(*this);
 }

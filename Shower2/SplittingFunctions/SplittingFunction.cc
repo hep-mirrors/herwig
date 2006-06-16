@@ -14,8 +14,6 @@
 
 using namespace Herwig;
 
-SplittingFunction::~SplittingFunction() {}
-
 AbstractNoPIOClassDescription<SplittingFunction> SplittingFunction::initSplittingFunction;
 // Definition of the static class description member.
 

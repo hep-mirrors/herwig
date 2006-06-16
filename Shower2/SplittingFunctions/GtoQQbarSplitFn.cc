@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-GtoQQbarSplitFn::~GtoQQbarSplitFn() {}
-
 NoPIOClassDescription<GtoQQbarSplitFn> GtoQQbarSplitFn::initGtoQQbarSplitFn;
 // Definition of the static class description member.
 
@@ -29,7 +27,7 @@ void GtoQQbarSplitFn::Init() {
 }
 
 double GtoQQbarSplitFn::P(const double z, const Energy2 qtilde2, 
-			   const IdList &ids) {
+			   const IdList &ids) const {
   Energy m = getParticleData(ids[1])->mass();
   double zz = z*(1.-z);
   double term = 2.*sqr(m)/zz/qtilde2; 
@@ -37,12 +35,12 @@ double GtoQQbarSplitFn::P(const double z, const Energy2 qtilde2,
   return val;
 }
 
-double GtoQQbarSplitFn::overestimateP(const double, const IdList &) {
+double GtoQQbarSplitFn::overestimateP(const double, const IdList &) const {
   return 1./2.; 
 }
 
 double GtoQQbarSplitFn::ratioP(const double z, const Energy2 qtilde2, 
-			   const IdList &ids) {
+			   const IdList &ids) const {
   Energy m = getParticleData(ids[1])->mass();
   double zz = z*(1.-z);
   double term = 2.*sqr(m)/zz/qtilde2; 
@@ -50,18 +48,18 @@ double GtoQQbarSplitFn::ratioP(const double z, const Energy2 qtilde2,
   return val;
 }
 
-double GtoQQbarSplitFn::integOverP(const double z) { 
+double GtoQQbarSplitFn::integOverP(const double z) const { 
   return z/2.; 
 }
 
 
-double GtoQQbarSplitFn::invIntegOverP(const double r) {
+double GtoQQbarSplitFn::invIntegOverP(const double r) const {
   return 2.*r; 
 }
 
 void GtoQQbarSplitFn::colourConnection(const ColinePair &parent,
 				       ColinePair &first,
-				       ColinePair &second) {
+				       ColinePair &second) const {
 
   // Return immediately if the input is inconsistent.
   if ( ! parent.first  ||  ! parent.second ) return;
@@ -76,7 +74,7 @@ void GtoQQbarSplitFn::colourConnection(const ColinePair &parent,
 
 }
 
-bool GtoQQbarSplitFn::accept(const IdList &ids) {
+bool GtoQQbarSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
   if(ids[1]!=-ids[2]||ids[0]!=ParticleID::g) return false;
   tcPDPtr q=getParticleData(ids[1]);

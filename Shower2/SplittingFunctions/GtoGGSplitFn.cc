@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-GtoGGSplitFn::~GtoGGSplitFn() {}
-
 NoPIOClassDescription<GtoGGSplitFn> GtoGGSplitFn::initGtoGGSplitFn;
 // Definition of the static class description member.
 
@@ -28,7 +26,7 @@ void GtoGGSplitFn::Init() {
 
 }
 
-double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &){
+double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &)const {
   double val = 2.*3.*sqr(1.-z*(1.-z))/(z*(1.-z));
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig++ shower! Alberto
@@ -36,25 +34,25 @@ double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &){
   return val;
 }
 
-double GtoGGSplitFn::overestimateP(const double z, const IdList &) {
+double GtoGGSplitFn::overestimateP(const double z, const IdList &) const {
   return 2.*3.*(1/z + 1/(1.-z)); 
 }
 
-double GtoGGSplitFn::ratioP(const double z, const Energy2 qtilde2, const IdList & id) {
+double GtoGGSplitFn::ratioP(const double z, const Energy2 qtilde2, const IdList & id) const {
   return sqr(1.-z*(1.-z));
 }
 
-double GtoGGSplitFn::invIntegOverP(const double r) {
+double GtoGGSplitFn::invIntegOverP(const double r) const {
   return exp(r/3./2.)/(1.+exp(r/3./2.)); 
 } 
 
-double GtoGGSplitFn::integOverP(const double z) {
+double GtoGGSplitFn::integOverP(const double z) const {
   return 2.*3.*log(z/(1.-z)); 
 }
 
 void GtoGGSplitFn::colourConnection(const ColinePair &parent,
 				    ColinePair &first,
-				    ColinePair &second) {
+				    ColinePair &second) const {
 
   // Return immediately if the input is inconsistent.
   if(!parent.first || !parent.second) return;
@@ -76,7 +74,7 @@ void GtoGGSplitFn::colourConnection(const ColinePair &parent,
 }
 
 bool GtoGGSplitFn::accept(const IdList & ids)
-{
+const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix)
     {if(ids[ix]!=ParticleID::g) return false;}

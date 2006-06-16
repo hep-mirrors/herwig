@@ -122,16 +122,6 @@ public:
    * The default constructor.
    */
   inline SplittingGenerator();
-
-  /**
-   * The copy constructor.
-   */
-  inline SplittingGenerator(const SplittingGenerator &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~SplittingGenerator();
   //@}
 
 public:
@@ -251,14 +241,6 @@ public:
   inline string addInitialSplitting(string);
 
   /**
-   * Add a splitting
-   * @param in string to be parsed
-   * @param final Whether this is an initial- or final-state branching 
-   */
-  string addSplitting(string in ,bool final);
-  //@}
-
-  /**
    *  Set the shower variables, only used by Evolver in doinit
    */
   inline void setShowerVariables(ShowerVarsPtr);
@@ -345,7 +327,7 @@ private:
    * @param sudakov The SudakovFormFactor for the branching
    * @param final Whether this is an initial- or final-state branching 
    */
-  void addToMap(IdList & ids, SudakovPtr & sudakov, bool final);
+  void addToMap(const IdList & ids, const SudakovPtr & sudakov, bool final);
 
   /**
    *  Obtain the reference vectors for a final-state particle
@@ -357,7 +339,15 @@ private:
   void finalStateBasisVectors(ShowerParticle particle,
 			      ShowerIndex::InteractionType type, Lorentz5Momentum & p,
 			      Lorentz5Momentum & n) const;
-  
+
+  /**
+   * Add a splitting
+   * @param in string to be parsed
+   * @param final Whether this is an initial- or final-state branching 
+   */
+  string addSplitting(string in ,bool final);
+  //@}
+
 private:
 
   /**

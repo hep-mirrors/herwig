@@ -11,15 +11,12 @@ inline SplittingFunction::SplittingFunction(ShowerIndex::InteractionType a,
   : Interfaced(), _interactionType(a), _interactionorder(b) 
 {}
 
-inline SplittingFunction::SplittingFunction(const SplittingFunction & x)
-  : Interfaced(x), _interactionType(x._interactionType), 
-    _interactionorder(x._interactionorder) 
-{}
+inline ShowerIndex::InteractionType SplittingFunction::interactionType() const {
+  return _interactionType; 
+}
 
-inline ShowerIndex::InteractionType SplittingFunction::interactionType() 
-{ return _interactionType; }
-
-inline unsigned int SplittingFunction::interactionOrder()
-{return _interactionorder;}
+inline unsigned int SplittingFunction::interactionOrder() const {
+  return _interactionorder;
+}
 
 }

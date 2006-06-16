@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-QtoQGSplitFn::~QtoQGSplitFn() {}
-
 NoPIOClassDescription<QtoQGSplitFn> QtoQGSplitFn::initQtoQGSplitFn;
 // Definition of the static class description member.
 
@@ -29,7 +27,7 @@ void QtoQGSplitFn::Init() {
 }
 
 double QtoQGSplitFn::P(const double z, const Energy2 qtilde2,
-			const IdList &ids) {
+			const IdList &ids) const {
   Energy m = getParticleData(ids[0])->mass();
   Energy2 m2 = sqr(m); 
   double val = 4./3.*(1. + sqr(z) - 2.*m2/(qtilde2*z))/(1.-z);
@@ -37,27 +35,31 @@ double QtoQGSplitFn::P(const double z, const Energy2 qtilde2,
 
 }
 
-double QtoQGSplitFn::overestimateP(const double z, const IdList &) { 
+double QtoQGSplitFn::overestimateP(const double z, const IdList &) const
+{ 
   return 8./3./(1.-z); 
 }
 
 double QtoQGSplitFn::ratioP(const double z, const Energy2 qtilde2,
-			    const IdList &ids) {
+			    const IdList &ids) const
+{
   Energy m = getParticleData(ids[0])->mass();
   Energy2 m2 = sqr(m); 
   double val = 0.5*(1. + sqr(z) - 2.*m2/(qtilde2*z));
   return val;
 } 
 
-double QtoQGSplitFn::integOverP(const double z) { return -8./3.*log(1.-z); }
+double QtoQGSplitFn::integOverP(const double z) const {
+  return -8./3.*log(1.-z); 
+}
 
-double QtoQGSplitFn::invIntegOverP(const double r) {
+double QtoQGSplitFn::invIntegOverP(const double r) const {
   return 1. - exp(- 3.*r/8.); 
 }
 
 void QtoQGSplitFn::colourConnection(const ColinePair &parent,
 				    ColinePair &first,
-				    ColinePair &second) {
+				    ColinePair &second) const {
 
   // Return immediately if the input is inconsistent.
   if ((!parent.first && !parent.second) || (parent.first && parent.second)) 
@@ -80,7 +82,7 @@ void QtoQGSplitFn::colourConnection(const ColinePair &parent,
   }
 }
 
-bool QtoQGSplitFn::accept(const IdList &ids)
+bool QtoQGSplitFn::accept(const IdList &ids) const
 {
   if(ids.size()!=3) return false;
   if(ids[0]!=ids[1]||ids[2]!=ParticleID::g) return false;

@@ -8,21 +8,8 @@ namespace Herwig {
 
 inline SplittingGenerator::SplittingGenerator()
   : _qcdinteractionMode(1), _qedinteractionMode(0), _ewkinteractionMode(0),
-    _isr_Mode(0), _isr_qcdMode(1), _isr_qedMode(1), _isr_ewkMode(1),
+    _isr_Mode(1), _isr_qcdMode(1), _isr_qedMode(1), _isr_ewkMode(1),
     _fsr_Mode(1), _fsr_qcdMode(1), _fsr_qedMode(1), _fsr_ewkMode(1)
-{}
-
-inline SplittingGenerator::SplittingGenerator(const SplittingGenerator & x)
-  : Interfaced(x), 
-    _qcdinteractionMode(x._qcdinteractionMode),
-    _qedinteractionMode(x._qedinteractionMode),
-    _ewkinteractionMode(x._ewkinteractionMode),
-    _isr_Mode(x._isr_Mode), _isr_qcdMode(x._isr_qcdMode),
-    _isr_qedMode(x._isr_qedMode), _isr_ewkMode(x._isr_ewkMode),
-    _fsr_Mode(x._fsr_Mode), _fsr_qcdMode(x._fsr_qcdMode),
-    _fsr_qedMode(x._fsr_qedMode), _fsr_ewkMode(x._fsr_ewkMode),
-    _showerVariables(x._showerVariables), _fbranchings(x._fbranchings),
-    _bbranchings(x._bbranchings)
 {}
 
 inline IBPtr SplittingGenerator::clone() const {
@@ -68,11 +55,11 @@ inline const ShowerVarsPtr & SplittingGenerator::showerVariables() const {
 }
 
 inline bool SplittingGenerator::isISRadiationON() const {
-  return _isr_Mode&&(_isr_qcdMode||_isr_qedMode||_isr_ewkMode);
+  return _isr_Mode && (_isr_qcdMode||_isr_qedMode||_isr_ewkMode);
 }  
 
 inline bool SplittingGenerator::isFSRadiationON() const {
-  return _fsr_Mode&&(_fsr_qcdMode||_fsr_qedMode||_fsr_ewkMode);
+  return _fsr_Mode && (_fsr_qcdMode||_fsr_qedMode||_fsr_ewkMode);
 }
 
 inline bool SplittingGenerator::
@@ -80,14 +67,14 @@ isInteractionON(const ShowerIndex::InteractionType interaction) const {
   bool mode(false);
   switch ( interaction ) {
   case ShowerIndex::QCD : 
-    mode = _qcdinteractionMode&&((_isr_qcdMode&&_isr_Mode)||
-				 (_fsr_qcdMode&&_fsr_Mode)); break; 
+    mode = _qcdinteractionMode && ((_isr_qcdMode&&_isr_Mode)||
+				  (_fsr_qcdMode&&_fsr_Mode)); break; 
   case ShowerIndex::QED :  
-    mode = _qedinteractionMode&&((_isr_qedMode&&_isr_Mode)||
-				 (_fsr_qedMode&&_fsr_Mode)); break; 
+    mode = _qedinteractionMode && ((_isr_qedMode&&_isr_Mode)||
+				  (_fsr_qedMode&&_fsr_Mode)); break; 
   case ShowerIndex::EWK : 
-    mode = _ewkinteractionMode&&((_isr_ewkMode&&_isr_Mode)||
-				 (_fsr_ewkMode&&_fsr_Mode)); break; 
+    mode = _ewkinteractionMode && ((_isr_ewkMode&&_isr_Mode)||
+				  (_fsr_ewkMode&&_fsr_Mode)); break; 
   default: break;
   }
   return mode;
@@ -109,7 +96,7 @@ isISRadiationON(const ShowerIndex::InteractionType interaction) const {
 
 inline bool SplittingGenerator::
 isFSRadiationON(const ShowerIndex::InteractionType interaction) const {
-  int mode = 0;
+  bool mode = false;
   if ( isInteractionON(interaction) && isFSRadiationON() ) { 
     switch ( interaction ) {
     case ShowerIndex::QCD : mode = _fsr_qcdMode; break; 
@@ -128,7 +115,8 @@ inline string SplittingGenerator::addInitialSplitting(string arg) {
   return addSplitting(arg,false);
 }
 
-inline void SplittingGenerator::setShowerVariables(ShowerVarsPtr in)
-{_showerVariables=in;}
+inline void SplittingGenerator::setShowerVariables(ShowerVarsPtr in) {
+  _showerVariables=in;
+}
 
 }

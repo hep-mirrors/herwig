@@ -10,11 +10,6 @@ inline SudakovFormFactor::SudakovFormFactor()
   : _q(), _z( 0.0 ), _phi(0.0), _pdfmax(35.0)
 {}
 
-inline SudakovFormFactor::SudakovFormFactor(const SudakovFormFactor & x)
-  : Interfaced(x),_q(x._q), _z(x._z), _phi(x._phi), _splittingFn(x._splittingFn),
-    _alpha(x._alpha),_variables(x._variables),  _pdfmax(x._pdfmax)  
-{}
-
 inline IBPtr SudakovFormFactor::clone() const {
   return new_ptr(*this);
 }
@@ -27,8 +22,9 @@ inline tSplittingFnPtr SudakovFormFactor::splittingFn() const { return _splittin
 
 inline tShowerAlphaPtr SudakovFormFactor::alpha() const { return _alpha; }
 
-inline ShowerIndex::InteractionType  SudakovFormFactor::interactionType() {
-  return _splittingFn->interactionType();}
+inline ShowerIndex::InteractionType  SudakovFormFactor::interactionType() const {
+  return _splittingFn->interactionType();
+}
 
 inline double SudakovFormFactor::z() const { return _z; }
 
@@ -50,7 +46,7 @@ inline double SudakovFormFactor::guessz () const {
 }
 
 inline void SudakovFormFactor::initialize(Energy2 &t0,Energy2 &tmin, Energy2 tmax,
-					  Energy & kinCutoff, Energy m) {
+					  Energy & kinCutoff, Energy m)  {
   kinCutoff = _variables->kinematicCutOff(kinScale(),m);
   t0 = sqr(max(kinCutoff,m));
   tmin = max(t0,sqr(resScale()));
@@ -84,5 +80,7 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const
     {return t1/pow(UseRandom::rnd(),
 		   c/_variables->initialStateRadiationEnhancementFactor());}
 }
+
+
 
 }

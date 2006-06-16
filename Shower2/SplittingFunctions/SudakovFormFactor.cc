@@ -21,8 +21,6 @@
 
 using namespace Herwig;
 
-SudakovFormFactor::~SudakovFormFactor() {}
-
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _splittingFn << _alpha << _variables << _pdfmax;
 }
@@ -60,7 +58,7 @@ void SudakovFormFactor::Init() {
 
 void SudakovFormFactor::setupLookupTables() {}
 
-bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin)
+bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin) const
 {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
@@ -79,7 +77,7 @@ bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin)
     return true; 
 } 
 
-bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x) 
+bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x) const
 {
   Energy2 told = t;
   // calculate limits on z if lower>upper return
@@ -262,7 +260,7 @@ Energy SudakovFormFactor::generateNextDecayBranching(const Energy startingScale,
   return _q;
 }
 
-bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass)
+bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass) const
 {
   // previous scale
   Energy2 told = t;
@@ -286,7 +284,7 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass)
     return true; 
 } 
 
-bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t)
+bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t) const
 {
   // special case for gluon radiating
   if(_ids[0]==ParticleID::g)
@@ -318,7 +316,7 @@ bool SudakovFormFactor::computeTimeLikeLimits(Energy2 & t)
   return true;
 }
 
-bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x)
+bool SudakovFormFactor::computeSpaceLikeLimits(Energy2 & t, double x) const
 {
   // compute the limits
   _zlimits.first = x;

@@ -48,16 +48,6 @@ public:
    * @param b All splitting functions must have an interaction order
    */
   inline SplittingFunction(ShowerIndex::InteractionType a, unsigned int b);
-
-  /**
-   * The copy constructor.
-   */
-  inline SplittingFunction(const SplittingFunction &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~SplittingFunction();
   //@}
 
 public:
@@ -69,12 +59,12 @@ public:
   /**
    *  Return the type of the interaction
    */
-  inline ShowerIndex::InteractionType interactionType();
+  inline ShowerIndex::InteractionType interactionType() const;
 
   /**
    *  Return the order of the splitting function in the interaction
    */
-  inline unsigned int interactionOrder();
+  inline unsigned int interactionOrder() const;
   //@}
 
   /**
@@ -82,7 +72,7 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids) = 0;
+  virtual bool accept(const IdList & ids) const = 0;
 
   /**
    *   Methods to return the splitting function.
@@ -96,7 +86,7 @@ public:
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) = 0;
+  virtual double P(const double z, const Energy2 t, const IdList & ids) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -106,7 +96,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids) = 0; 
+  virtual double overestimateP(const double z, const IdList & ids) const = 0; 
 
   /**
    * Purely virtual method which should return
@@ -116,14 +106,14 @@ public:
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) = 0;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const = 0;
 
   /**
    * Purely virtual method which should return the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    */
-  virtual double integOverP(const double z) = 0; 
+  virtual double integOverP(const double z) const = 0; 
 
   /**
    * Purely virtual method which should return the inverse of the 
@@ -132,7 +122,7 @@ public:
    * generate the value of \f$z\f$.
    * @param r Value of the splitting function to be inverted
    */
-  virtual double invIntegOverP(const double r) = 0; 
+  virtual double invIntegOverP(const double r) const = 0; 
   //@}
 
   /**
@@ -164,7 +154,7 @@ public:
    */ 
   virtual void colourConnection(const ColinePair & parent,
 				ColinePair & first,
-				ColinePair & second) = 0;
+				ColinePair & second) const = 0;
 
 public:
 
@@ -195,13 +185,12 @@ private:
   /**
    *  The interaction type for the splitting function.
    */
-  ShowerIndex::InteractionType _interactionType;
+  const ShowerIndex::InteractionType _interactionType;
 
   /**
    *  The order of the splitting function in the coupling
    */
-  unsigned int _interactionorder;
-
+  const unsigned int _interactionorder;
 };
 
 }

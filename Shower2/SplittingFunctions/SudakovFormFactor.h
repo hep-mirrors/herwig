@@ -123,16 +123,6 @@ public:
    * The default constructor.
    */
   inline SudakovFormFactor();
-
-  /**
-   * The copy constructor.
-   */
-  inline SudakovFormFactor(const SudakovFormFactor &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~SudakovFormFactor();
   //@}
 
 public:
@@ -170,7 +160,7 @@ public:
   /**
    *  The type of interaction
    */
-  inline ShowerIndex::InteractionType interactionType();
+  inline ShowerIndex::InteractionType interactionType() const;
 
   /**
    *  The energy fraction
@@ -218,7 +208,7 @@ public:
    *        only for final-state branching of a decaying on-shell particle.
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids);
+				           const IdList &ids) ;
 
   /**
    * Return the scale of the next time-like branching. If there is no 
@@ -231,7 +221,7 @@ public:
   virtual Energy generateNextDecayBranching(const Energy startingScale,
 					    const Energy stoppingScale,
 					    const Energy minmass,
-					    const IdList &ids);
+					    const IdList &ids) ;
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -247,7 +237,7 @@ public:
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
 		                            const IdList &ids,
-					    double x);
+					    double x) ;
 
 
   //@}
@@ -259,7 +249,7 @@ public:
    * than using the Monte Carlo rejection (veto) method.
    * This method is called once, during initialization, by
    * the SplittingGenerator. 
-   * General methods, usable for any type of Sudakov form factor
+   * General methods, usable  any type of Sudakov form factor
    * that override this method, should be provided in this
    * class in the protected session.
    */
@@ -319,14 +309,14 @@ protected:
    * @param tmin The minimum scale
    * @return False if scale less than minimum, true otherwise
    */
-  bool guessTimeLike(Energy2 &t, Energy2 tmin);
+  bool guessTimeLike(Energy2 &t, Energy2 tmin) const;
 
   /**
    * Value of the energy fraction and scale for time-like branching
    * @param t  The scale
    * @param tmax The maximum scale
    */
-  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass);
+  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass) const;
 
   /**
    * Value of the energy fraction and scale for space-like branching
@@ -334,7 +324,7 @@ protected:
    * @param tmin The minimum scale
    * @param x Fraction of the beam momentum.
    */
-  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x);
+  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x) const;
   //@}
 
   /**
@@ -344,7 +334,7 @@ protected:
    * @param m The mass of the emitting particle
    */
   inline void initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax, 
-			 Energy &kinCutoff, Energy m);
+			 Energy &kinCutoff, Energy m) ;
 
 
   /**
@@ -352,7 +342,7 @@ protected:
    * @param tmin The minimum scale
    * @param The ids of the partics in the branching
    */
-  void initialize(const IdList & ids,Energy2 &tmin);
+  void initialize(const IdList & ids,Energy2 &tmin) ;
 
   /**
    * The various different vetos which need to be applied using the veto
@@ -384,7 +374,7 @@ protected:
    * @param t  The scale
    * @return true if vetoed
    */
-  bool PSVeto(const Energy2 t);
+  bool PSVeto(const Energy2 t) ;
 
   /**
    *  The veto on the splitting function.
@@ -402,7 +392,7 @@ protected:
    * @param scale The scale of the particle
    * @return True if lower limit less than upper, otherwise false
    */
-  inline bool computeTimeLikeLimits(Energy2 & scale);
+  bool computeTimeLikeLimits(Energy2 & scale) const;
 
   /**
    * Compute the limits on \f$z\f$ for space-like branching
@@ -410,7 +400,7 @@ protected:
    * @param x The energy fraction of the parton
    * @return True if lower limit less than upper, otherwise false
    */
-  inline bool computeSpaceLikeLimits(Energy2 & scale, double x);
+  bool computeSpaceLikeLimits(Energy2 & scale, double x) const;
   /**
    *  Set the ShowerVariables
    */
@@ -447,7 +437,7 @@ private:
    */
   SudakovFormFactor & operator=(const SudakovFormFactor &);
 
-protected:
+private:
 
   /**
    * Member variables to keep the shower kinematics information
@@ -462,7 +452,7 @@ protected:
   /**
    *  The energy fraction
    */
-  double _z;
+  mutable double _z;
 
   /**
    *  The azimuthal angle
@@ -520,7 +510,7 @@ private:
   /**
    *  The limits of \f$z\f$ in the splitting
    */
-  pair<double,double> _zlimits;
+ mutable pair<double,double> _zlimits;
 
 };
 

@@ -27,8 +27,6 @@
 
 using namespace Herwig;
 
-SplittingGenerator::~SplittingGenerator() {}
-
 void SplittingGenerator::persistentOutput(PersistentOStream & os) const {
   os << _qcdinteractionMode << _qedinteractionMode << _ewkinteractionMode
      << _isr_Mode << _isr_qcdMode << _isr_qedMode << _isr_ewkMode     
@@ -82,7 +80,7 @@ void SplittingGenerator::Init() {
   static Switch<SplittingGenerator, bool> interfaceISRMode
     ("OnOffISRMode",
      "Choice of the on-off QCD interaction switch mode",
-     &SplittingGenerator::_isr_Mode, 0, false, false);
+     &SplittingGenerator::_isr_Mode, 1, false, false);
   static SwitchOption interfaceISRMode0
     (interfaceISRMode,"ISR-OFF","ISR (Initial State Radiation) is OFF", 0);
   static SwitchOption interfaceISRMode1
@@ -200,7 +198,7 @@ string SplittingGenerator::addSplitting(string arg, bool final) {
   return "";
 }
 
-void SplittingGenerator::addToMap(IdList &ids, SudakovPtr &s, bool final) {
+void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool final) {
   if(isISRadiationON(s->splittingFn()->interactionType()) && !final)
     _bbranchings.insert(BranchingInsert(ids[1],BranchingElement(s,ids)));
   if(isFSRadiationON(s->splittingFn()->interactionType()) && final)

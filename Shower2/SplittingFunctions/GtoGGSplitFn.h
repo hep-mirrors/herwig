@@ -41,16 +41,6 @@ public:
    * The default constructor.
    */
   inline GtoGGSplitFn();
-
-  /**
-   * The copy constructor.
-   */
-  inline GtoGGSplitFn(const GtoGGSplitFn &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~GtoGGSplitFn();
   //@}
 
 public:
@@ -60,7 +50,7 @@ public:
    *  function can be used for a given set of particles.
    *  @param ids The PDG codes for the particles in the splitting.
    */
-  virtual bool accept(const IdList & ids);
+  virtual bool accept(const IdList & ids) const;
 
   /**
    *   Methods to return the splitting function.
@@ -72,7 +62,7 @@ public:
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids);
+  virtual double P(const double z, const Energy2 t, const IdList & ids) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -80,7 +70,7 @@ public:
    * @param z   The energy fraction.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double overestimateP(const double z, const IdList & ids); 
+  virtual double overestimateP(const double z, const IdList & ids) const; 
 
   /**
    * The concrete implementation of the
@@ -90,20 +80,20 @@ public:
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids);
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
    * overestimated splitting function, \f$P_{\rm over}\f$.
    * @param z   The energy fraction.
    */
-  virtual double integOverP(const double z);
+  virtual double integOverP(const double z) const;
 
   /**
    * The concrete implementation of the inverse of the indefinite integral.
    * @param r Value of the splitting function to be inverted
    */ 
-  virtual double invIntegOverP(const double r);
+  virtual double invIntegOverP(const double r) const;
   //@}
 
   /**
@@ -121,7 +111,7 @@ public:
    */
   virtual void colourConnection(const ColinePair & parent,
 				ColinePair & first,
-				ColinePair & second);
+				ColinePair & second) const;
 
 public:
 

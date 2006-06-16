@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-QtoQGammaSplitFn::~QtoQGammaSplitFn() {}
-
 NoPIOClassDescription<QtoQGammaSplitFn> QtoQGammaSplitFn::initQtoQGammaSplitFn;
 // Definition of the static class description member.
 
@@ -29,20 +27,20 @@ void QtoQGammaSplitFn::Init() {
 }
 
 double QtoQGammaSplitFn::P(const double z, const Energy2 qtilde2,
-			   const IdList & ids) {
+			   const IdList & ids) const {
   Energy m = getParticleData(ids[0])->mass();
   double charge=getParticleData(ids[0])->iCharge()*3.;
   Energy2 m2 = sqr(m); 
   return sqr(charge)*(1. + sqr(z)- 2.*m2/(qtilde2*z))/(1.-z); 
 }
 
-double QtoQGammaSplitFn::overestimateP(const double z, const IdList & ids) {
+double QtoQGammaSplitFn::overestimateP(const double z, const IdList & ids) const {
   double charge=getParticleData(ids[0])->iCharge()*3.;
   return 2.*sqr(charge)/(1.-z); 
 }
 
 double QtoQGammaSplitFn::ratioP(const double z, const Energy2 qtilde2,
-				const IdList & ids) {
+				const IdList & ids) const {
   Energy m = getParticleData(ids[0])->mass();
   Energy2 m2 = sqr(m); 
   cerr << "testing QtoQGammaRatio " << P(z,qtilde2,ids)/overestimateP(z,ids) 
@@ -50,17 +48,17 @@ double QtoQGammaSplitFn::ratioP(const double z, const Energy2 qtilde2,
   return 0.5*(1. + sqr(z)- 2.*m2/(qtilde2*z)); 
 }
 
-double QtoQGammaSplitFn::integOverP(const double z) {
+double QtoQGammaSplitFn::integOverP(const double z) const {
   return -2.*log(1.-z); 
 }
 
-double QtoQGammaSplitFn::invIntegOverP(const double r) {
+double QtoQGammaSplitFn::invIntegOverP(const double r) const {
   return 1. - exp(-r/2.); 
 }
 
 void QtoQGammaSplitFn::colourConnection(const ColinePair &parent,
 					ColinePair &first,
-					ColinePair &second) {
+					ColinePair &second) const {
   
   // Return immediately if the input is inconsistent.
   if((!parent.first && !parent.second) || (parent.first && parent.second))
@@ -71,7 +69,7 @@ void QtoQGammaSplitFn::colourConnection(const ColinePair &parent,
   second = ColinePair();
 }
 
-bool QtoQGammaSplitFn::accept(const IdList & ids) {
+bool QtoQGammaSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   if(ids[0]!=ids[1]||ids[2]!=ParticleID::gamma) return false;
   return getParticleData(ids[0])->charged();
