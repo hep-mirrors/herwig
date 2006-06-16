@@ -19,17 +19,15 @@
 
 using namespace Herwig;
 
-ShowerAlphaQCD::~ShowerAlphaQCD() {}
-
 void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
-  os << _asType << _Qmin << _nloop << _lambdaopt << _lambdain << _alphain << _inopt
+  os << _asType << _qmin << _nloop << _lambdaopt << _lambdain << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin;
   for(unsigned int ix=0;ix<4;++ix)
     {os << _thresholds[ix] << _lambda[ix];}
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
-  is >> _asType >> _Qmin >> _nloop >> _lambdaopt >> _lambdain >> _alphain >> _inopt
+  is >> _asType >> _qmin >> _nloop >> _lambdaopt >> _lambdain >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin;
   for(unsigned int ix=0;ix<4;++ix)
     {is >> _thresholds[ix] >> _lambda[ix];}
@@ -50,7 +48,7 @@ void ShowerAlphaQCD::Init() {
   static SwitchOption intAsTypeZero
     (intAsType, "AsTypeZero","zero below Q_min", 1);
   static SwitchOption intAsTypeConst
-    (intAsType, "AsTypeConst","const as(Qmin) below Q_min", 2);
+    (intAsType, "AsTypeConst","const as(qmin) below Q_min", 2);
   static SwitchOption intAsTypeLin
     (intAsType, "AsTypeLin ","growing linearly below Q_min", 3);
   static SwitchOption intAsTypeQuad
@@ -60,11 +58,11 @@ void ShowerAlphaQCD::Init() {
   static SwitchOption intAsTypeExx2
     (intAsType, "AsTypeExx2 ", "const = 100 below Q_min", 6);
 
-  // default such that as(Qmin) = 1 in the current parametrization.
+  // default such that as(qmin) = 1 in the current parametrization.
   // min = Lambda3
   static Parameter<ShowerAlphaQCD,Energy> intQmin
     ("Qmin", "Q < Qmin is treated with NP parametrization as of (unit [GeV])",
-     &ShowerAlphaQCD::_Qmin, GeV, 0.630882*GeV, 0.330445*GeV,
+     &ShowerAlphaQCD::_qmin, GeV, 0.630882*GeV, 0.330445*GeV,
      100.0*GeV,false,false,false);
 
   static Parameter<ShowerAlphaQCD,unsigned int> interfaceNumberOfLoops
@@ -154,24 +152,24 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   // compute 3 flavour lambda by matching at charm mass using Newton Raphson
   _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4),3);
   // final threshold is qmin
-  _thresholds[0]=_Qmin;
+  _thresholds[0]=_qmin;
   // compute the minimum value 
-  if ( _asType < 5 ) _alphamin = value(sqr(_Qmin)); // gives as = 1
+  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)); // gives as = 1
   else _alphamin = 100.; 
   // check consistency lambda_3 < qmin
-  if(_lambda[0]>_Qmin)
+  if(_lambda[0]>_qmin)
     {throw InitException() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;}
 }
 
-double ShowerAlphaQCD::value(const Energy2 scale) {
+double ShowerAlphaQCD::value(const Energy2 scale) const {
   pair<short,Energy> nflam;
   Energy q = sqrt(scale);
   double val(0.);
   // special handling if the scale is less than Qmin
-  if (q < _Qmin) {
-    nflam = getLamNfTwoLoop(_Qmin); 
-    double val0 = alphaS(_Qmin, nflam.second, nflam.first);
+  if (q < _qmin) {
+    nflam = getLamNfTwoLoop(_qmin); 
+    double val0 = alphaS(_qmin, nflam.second, nflam.first);
     switch (_asType) {
     case 1: 
       // flat, zero; the default type with no NP effects.
@@ -183,15 +181,15 @@ double ShowerAlphaQCD::value(const Energy2 scale) {
       break; 
     case 3: 
       // linear in q
-      val = val0*q/_Qmin;
+      val = val0*q/_qmin;
       break; 
     case 4:
       // quadratic in q
-      val = val0*sqr(q/_Qmin);
+      val = val0*sqr(q/_qmin);
       break; 
     case 5:
       // quadratic in q, starting off at 100, ending on as(qmin)
-      val = (val0 - 100.)*sqr(q/_Qmin) + 100.;
+      val = (val0 - 100.)*sqr(q/_qmin) + 100.;
       break; 
     case 6:
       // just big and constant
@@ -206,7 +204,7 @@ double ShowerAlphaQCD::value(const Energy2 scale) {
   return scaleFactor() * val;
 }
 
-double ShowerAlphaQCD::overestimateValue() {
+double ShowerAlphaQCD::overestimateValue() const {
   return scaleFactor() * _alphamin; 
 }
 
@@ -216,14 +214,14 @@ double ShowerAlphaQCD::overestimateValue() {
 
 
 
-double ShowerAlphaQCD::ratio(const Energy2 scale) {
+double ShowerAlphaQCD::ratio(const Energy2 scale) const {
   pair<short,Energy> nflam;
   Energy q = sqrt(scale);
   double val(0.);
   // special handling if the scale is less than Qmin
-  if (q < _Qmin) {
-    nflam = getLamNfTwoLoop(_Qmin); 
-    double val0 = alphaS(_Qmin, nflam.second, nflam.first);
+  if (q < _qmin) {
+    nflam = getLamNfTwoLoop(_qmin); 
+    double val0 = alphaS(_qmin, nflam.second, nflam.first);
     switch (_asType) {
     case 1: 
       // flat, zero; the default type with no NP effects.
@@ -235,15 +233,15 @@ double ShowerAlphaQCD::ratio(const Energy2 scale) {
       break; 
     case 3: 
       // linear in q
-      val = val0*q/_Qmin;
+      val = val0*q/_qmin;
       break; 
     case 4:
       // quadratic in q
-      val = val0*sqr(q/_Qmin);
+      val = val0*sqr(q/_qmin);
       break; 
     case 5:
       // quadratic in q, starting off at 100, ending on as(qmin)
-      val = (val0 - 100.)*sqr(q/_Qmin) + 100.;
+      val = (val0 - 100.)*sqr(q/_qmin) + 100.;
       break; 
     case 6:
       // just big and constant

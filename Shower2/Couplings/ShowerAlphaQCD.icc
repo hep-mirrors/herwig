@@ -9,28 +9,13 @@ using namespace ThePEG;
 using ThePEG::Constants::pi;
 
 inline ShowerAlphaQCD::ShowerAlphaQCD() 
-  : _Qmin(0.630882*GeV), _asType(1), _nloop(3),_lambdaopt(false),
+  : ShowerAlpha(), 
+    _qmin(0.630882*GeV), _asType(1), 
+    _thresholds(4,0.0), _lambda(4,0.0),
+    _nloop(3),_lambdaopt(false),
     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
     _maxtry(100),_alphamin(0.)
-{
-  for(unsigned int ix=0;ix<4;++ix)
-    {
-      _thresholds[ix]=0.;
-      _lambda[ix]    =0.;
-    }
-}
-
-inline ShowerAlphaQCD::ShowerAlphaQCD(const ShowerAlphaQCD & x)
-  : ShowerAlpha(x), _Qmin(x._Qmin), _asType(x._asType), _nloop(x._nloop),
-    _lambdaopt(x._lambdaopt),_lambdain(x._lambdain),_alphain(x._alphain),
-    _inopt(x._inopt),_tolerance(x._tolerance),_maxtry(x._maxtry),_alphamin(x._alphamin)
-{
-  for(unsigned int ix=0;ix<4;++ix)
-    {
-      _thresholds[ix]=x._thresholds[ix];
-      _lambda[ix]=x._lambda[ix];
-    }
-}
+{}
 
 inline IBPtr ShowerAlphaQCD::clone() const {
   return new_ptr(*this);
@@ -40,7 +25,7 @@ inline IBPtr ShowerAlphaQCD::fullclone() const {
   return new_ptr(*this);
 }
 
-inline pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) {
+inline pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) const {
   short nf = 3;
   // get lambda and nf according to the thresholds
   if(q < _thresholds[1]) nf = 3;
@@ -50,7 +35,8 @@ inline pair<short, Energy> ShowerAlphaQCD::getLamNfTwoLoop(Energy q) {
   return pair<short,Energy>(nf, _lambda[nf-3]);
 }
 
-inline Energy ShowerAlphaQCD::computeLambda(Energy match,double alpha,unsigned int nflav)
+inline Energy 
+ShowerAlphaQCD::computeLambda(Energy match,double alpha,unsigned int nflav) const
 {
   Energy lamtest=200.0*MeV;
   double xtest;
@@ -66,7 +52,8 @@ inline Energy ShowerAlphaQCD::computeLambda(Energy match,double alpha,unsigned i
   return lamtest;
 }
 
-inline double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, short nf)
+inline double 
+ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, short nf) const
 {
   double lx(log(sqr(q/lam)));
   double b0 = 11. - 2./3.*nf;
@@ -86,7 +73,7 @@ inline double ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, short nf)
 				  3.*(sqr(log(lx) - 0.5)+b2*b0/(8.*sqr(b1))-1.25)));}
 }
 
-inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, short nf) {
+inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, short nf) const {
   double lx(log(sqr(q/lam)));
   double b0 = 11. - 2./3.*nf;
   double b1 = 51. - 19./3.*nf;

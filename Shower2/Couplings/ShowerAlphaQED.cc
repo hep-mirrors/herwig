@@ -18,8 +18,6 @@
 
 using namespace Herwig;
 
-ShowerAlphaQED::~ShowerAlphaQED() {}
-
 void ShowerAlphaQED::persistentOutput(PersistentOStream & os) const {
   os << _alpha;
 }
@@ -38,15 +36,15 @@ void ShowerAlphaQED::Init() {
 
 }
 
-double ShowerAlphaQED::value(const Energy2 scale) {
+double ShowerAlphaQED::value(const Energy2 scale) const {
   return scaleFactor()*_alpha;
 }
 
-double ShowerAlphaQED::overestimateValue() {
+double ShowerAlphaQED::overestimateValue() const {
   return scaleFactor()*_alpha;
 }
 
-double ShowerAlphaQED::ratio(const Energy2 scale) {
+double ShowerAlphaQED::ratio(const Energy2 scale) const {
   return 1.;
 }
 

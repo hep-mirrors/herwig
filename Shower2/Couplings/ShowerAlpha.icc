@@ -9,10 +9,6 @@ namespace Herwig {
 inline ShowerAlpha::ShowerAlpha() : _scaleFactor( 1.0 ) 
 {}
 
-inline ShowerAlpha::ShowerAlpha(const ShowerAlpha & x)
-  : Interfaced(x), _scaleFactor( x._scaleFactor ) 
-{}
-
 inline double ShowerAlpha::scaleFactor() const {
   return _scaleFactor;
 }

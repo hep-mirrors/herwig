@@ -35,16 +35,6 @@ public:
    * The default constructor.
    */
   inline ShowerAlphaQCD();
-
-  /**
-   * The copy constructor.
-   */
-  inline ShowerAlphaQCD(const ShowerAlphaQCD &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerAlphaQCD();
   //@}
 
 public:
@@ -59,18 +49,18 @@ public:
    * @param scale The scale
    * @return The coupling
    */
-  virtual double value(const Energy2 scale);
+  virtual double value(const Energy2 scale) const;
 
   /**
    * It returns the running coupling value evaluated at the input scale
    * multiplied by the scale factor scaleFactor().
    */
-  virtual double overestimateValue();
+  virtual double overestimateValue() const;
 
   /**
    *  Return the ratio of the coupling at the scale to the overestimated value
    */
-  virtual double ratio(const Energy2 scale);
+  virtual double ratio(const Energy2 scale) const;
   //@}
 
 public:
@@ -141,7 +131,7 @@ private:
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  inline double alphaS(Energy q, Energy lam, short nf); 
+  inline double alphaS(Energy q, Energy lam, short nf) const; 
 
   /**
    * The derivative of \f$\alpha_S\f$ with respect to \f$\ln(Q^2/\Lambda^2)\f$
@@ -149,7 +139,7 @@ private:
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  inline double derivativealphaS(Energy q, Energy lam, short nf); 
+  inline double derivativealphaS(Energy q, Energy lam, short nf) const; 
 
   /**
    * Compute the value of \f$Lambda\f$ needed to get the input value of
@@ -159,14 +149,14 @@ private:
    * @param alpha The input coupling
    * @param nflav The number of flavours
    */
-  inline Energy computeLambda(Energy match,double alpha,unsigned int nflav);
+  inline Energy computeLambda(Energy match,double alpha,unsigned int nflav) const;
 
   /**
    * Return the value of \f$\Lambda\f$ and the number of flavours at the scale.
    * @param q The scale
    * @return The number of flavours at the scale and \f$\Lambda\f$.
    */
-  inline pair<short, Energy> getLamNfTwoLoop(Energy q);
+  inline pair<short, Energy> getLamNfTwoLoop(Energy q) const;
   //@}
 
 private:
@@ -188,7 +178,7 @@ private:
   /**
    *  Minimum value of the scale
    */
-  Energy _Qmin;
+  Energy _qmin;
 
   /**
    *  Parameter controlling the behaviour of \f$\alpha_S\f$ in the non-perturbative
@@ -199,12 +189,12 @@ private:
   /**
    *  Thresholds for the different number of flavours 
    */
-  Energy _thresholds[4];
+  vector<Energy> _thresholds;
 
   /**
    *  \f$\Lambda\f$ for the different number of flavours
    */
-  Energy _lambda[4];
+  vector<Energy> _lambda;
 
   /**
    *  Option for the number of loops

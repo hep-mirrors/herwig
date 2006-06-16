@@ -17,8 +17,6 @@
 
 using namespace Herwig;
 
-ShowerAlpha::~ShowerAlpha() {}
-
 void ShowerAlpha::persistentOutput(PersistentOStream & os) const {
   os << _scaleFactor;
 }

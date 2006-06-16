@@ -49,16 +49,6 @@ public:
    * The default constructor.
    */
   inline ShowerAlpha();
-
-  /**
-   * The copy constructor.
-   */
-  inline ShowerAlpha(const ShowerAlpha &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerAlpha();
   //@}
 
 public:
@@ -73,14 +63,14 @@ public:
    * @param scale The scale
    * @return The coupling
    */
-  virtual double value(const Energy2 scale) = 0;
+  virtual double value(const Energy2 scale) const = 0;
 
   /**
    * Virtual method, which 
    * should be overridden in a derived class to provide an 
    * overestimate approximation of the alpha value. 
    */
-  virtual double overestimateValue() = 0;
+  virtual double overestimateValue() const = 0;
 
   /**
    *  Virtual method which returns the ratrio of the running alpha
@@ -88,7 +78,7 @@ public:
    * @param scale The scale
    * @return The ratio
    */
-  virtual double ratio(const Energy2 scale) = 0;
+  virtual double ratio(const Energy2 scale) const = 0;
 
   /**
    * It returns the factor that multiplies the 

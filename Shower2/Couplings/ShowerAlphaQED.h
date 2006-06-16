@@ -35,16 +35,6 @@ public:
    * The default constructor.
    */
   inline ShowerAlphaQED();
-
-  /**
-   * The copy constructor.
-   */
-  inline ShowerAlphaQED(const ShowerAlphaQED &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerAlphaQED();
   //@}
 
 public:
@@ -62,18 +52,18 @@ public:
    * @param scale The scale
    * @return The coupling
    */
-  virtual double value(const Energy2 scale);
+  virtual double value(const Energy2 scale) const;
 
   /**
    * It returns the overestimiate of the coupling
    * multiplied by the scale factor scaleFactor().
    */
-  virtual double overestimateValue();
+  virtual double overestimateValue() const;
 
   /**
    *  Return the ratio of the coupling at the scale to the overestimated value
    */
-  virtual double ratio(const Energy2 scale);
+  virtual double ratio(const Energy2 scale) const;
   //@}
   
 public:
