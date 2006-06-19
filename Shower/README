@@ -1,2 +1,0 @@
-This shower code will not be built by default. 
-To enable it, run configure with the flag '--with-old-shower'.
