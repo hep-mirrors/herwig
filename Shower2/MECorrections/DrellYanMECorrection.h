@@ -106,10 +106,13 @@ protected:
    * @param itype The type of radiated particle (0 is gluon, 1 is quark 
    *              and 2 is antiquark)
    * @param pnew The momenta of the new particles
+   * @param trans The LorentzRotation from the boson rest frame to the new lab
+   * @param xnew The new values of the momentuym fractions
    * @return Whether or not the matrix element correction needs to be applied
    */
   bool applyHard(ShowerParticleVector quarks, PPtr boson,unsigned int & iemit,
-		 unsigned int & itype,vector<Lorentz5Momentum> & pnew);
+		 unsigned int & itype,vector<Lorentz5Momentum> & pnew,
+		 LorentzRotation & trans, pair<double,double> & xnew);
 
 protected:
 
@@ -157,11 +160,6 @@ private:
 private:
 
   /**
-   *  Option for the generation of the phase-space
-   */
-  unsigned int _phasespaceopt;
-
-  /**
    *  Relative weight for the \f$q\bar{q}\f$ and \f$qg\f$ channels
    */
   double _channelwgt;
@@ -170,7 +168,11 @@ private:
    *  Weights for the channels as a vector
    */
   vector<double> _channelweights;
-  
+
+  /**
+   *  Mass squared of the gauge boson
+   */  
+  Energy2 _mb2;
 };
 
 }

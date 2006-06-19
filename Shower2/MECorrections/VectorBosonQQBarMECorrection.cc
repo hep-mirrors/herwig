@@ -98,7 +98,6 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
     newfs[2].vect().perp2(newfs[1].vect());
   // create the new quark, antiquark and gluon
   PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
-  PPtr parent=qq[0]->parents()[0];
   PPtr newq,newa;
   if(firstEmits)
     {

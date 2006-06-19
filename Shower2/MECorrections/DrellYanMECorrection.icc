@@ -6,13 +6,11 @@
 
 namespace Herwig {
 
-inline DrellYanMECorrection::DrellYanMECorrection() 
-  : _phasespaceopt(0), _channelwgt(0.1) 
+inline DrellYanMECorrection::DrellYanMECorrection() : _channelwgt(0.1)
 {}
 
 inline DrellYanMECorrection::DrellYanMECorrection(const DrellYanMECorrection & x)
-  : MECorrectionBase(x), _phasespaceopt(x._phasespaceopt), _channelwgt(x._channelwgt),
-    _channelweights(x._channelweights)
+  : MECorrectionBase(x), _channelwgt(x._channelwgt),_channelweights(x._channelweights)
 {}
 
 inline IBPtr DrellYanMECorrection::clone() const {
@@ -28,8 +26,6 @@ inline void DrellYanMECorrection::doinit() throw(InitException) {
   _channelweights.push_back(_channelwgt/(1.+_channelwgt));
   _channelweights.push_back(_channelweights[0]+0.5/(1.+_channelwgt));
   _channelweights.push_back(1.);
-  for(unsigned int ix=0;ix<_channelweights.size();++ix)
-    cerr << "testing drell-yan weights " << _channelweights[ix] << endl;
 }
 
 }
