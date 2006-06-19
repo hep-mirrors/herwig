@@ -150,18 +150,6 @@ AC_SUBST(EVTGENPATH)
 AC_SUBST(EVTGENLIBS)
 ])
 
-AC_DEFUN([AC_CHECK_OLDSHOWER],
-[
-AC_MSG_CHECKING([whether to build old shower])
-AC_ARG_ENABLE(old-shower,
-	AC_HELP_STRING([--enable-old-shower],[build the old shower, too.]),
-	[],
-	[enable_old_shower=no]
-	)
-AC_MSG_RESULT([$enable_old_shower])
-AM_CONDITIONAL(WANT_OLDSHOWER,[test "x$enable_old_shower" = "xyes"])
-])
-
 AC_DEFUN([AC_CHECK_NEWDECAYERS],
 [
 AC_MSG_CHECKING([whether to build new decayers])

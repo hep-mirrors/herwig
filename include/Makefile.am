@@ -10,7 +10,6 @@ Herwig++/Models \
 Herwig++/PDF \
 Herwig++/PDT \
 Herwig++/Shower \
-Herwig++/Shower2 \
 Herwig++/UnderlyingEvent \
 Herwig++/Utilities \
 Herwig++/Analysis \
@@ -20,7 +19,7 @@ Herwig++/Looptools/clooptools.h
 ## replace find with explicit list of directories
 
 my_directories=Config Decay Hadronization Helicity Interfaces \
-MatrixElement Models PDF PDT Shower Shower2 UnderlyingEvent Utilities Analysis
+MatrixElement Models PDF PDT Shower UnderlyingEvent Utilities Analysis
 ## Looptools is dealt with separately
 
 done-all-links:

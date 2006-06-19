@@ -6,10 +6,10 @@
 //
 
 #include "ThePEG/EventRecord/Particle.h"
-#include "Herwig++/Shower2/SplittingFunctions/SplittingFunction.fh"
-#include "Herwig++/Shower2/ShowerConfig.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.fh"
+#include "Herwig++/Shower/ShowerConfig.h"
 #include "ShowerKinematics.h"
-#include "Herwig++/Shower2/Couplings/ShowerIndex.h"
+#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "ShowerParticle.fh"
 
 namespace Herwig {

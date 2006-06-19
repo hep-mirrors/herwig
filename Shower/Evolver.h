@@ -6,9 +6,9 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower2/MECorrections/MECorrectionBase.h"
-#include "Herwig++/Shower2/SplittingFunctions/SplittingGenerator.h"
-#include "Herwig++/Shower2/Kinematics/KinematicsReconstructor.h"
+#include "Herwig++/Shower/MECorrections/MECorrectionBase.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig++/Shower/Kinematics/KinematicsReconstructor.h"
 #include "PartnerFinder.h"
 #include "ShowerTree.fh"
 #include "ShowerProgenitor.fh"

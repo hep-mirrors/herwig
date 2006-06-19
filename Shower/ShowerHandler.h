@@ -7,7 +7,7 @@
 
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "Evolver.fh"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.fh"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.fh"
 #include "ShowerTree.fh"
 #include "ShowerHandler.fh"
 

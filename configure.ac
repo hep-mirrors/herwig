@@ -56,7 +56,6 @@ AC_CHECK_KTJET
 AC_CHECK_AMEGIC
 ## AC_CHECK_EVTGEN
 
-AC_CHECK_OLDSHOWER
 AC_CHECK_NEWDECAYERS
 AC_LOOPTOOLS
 
@@ -104,12 +103,10 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
 		Shower/SplittingFunctions/Makefile
+		Shower/Kinematics/Makefile
+		Shower/Couplings/Makefile
+		Shower/MECorrections/Makefile
                 Shower/Makefile
-		Shower2/SplittingFunctions/Makefile
-		Shower2/Kinematics/Makefile
-		Shower2/Couplings/Makefile
-		Shower2/MECorrections/Makefile
-                Shower2/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
 		Helicity/Makefile

@@ -4,7 +4,7 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "ShowerConfig.h"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include "ShowerProgenitor.fh"
 #include "ThePEG/EventRecord/Step.h"
 #include <cassert>

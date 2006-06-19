@@ -2,7 +2,7 @@
 ## Helicity and PDT before Decay!
 SUBDIRS = include \
 	Utilities Helicity PDT Decay PDF Models \
-	Shower Shower2 Hadronization MatrixElement \
+	Shower Hadronization MatrixElement \
 	UnderlyingEvent Interfaces Analysis Looptools \
 	lib src Doc
 
