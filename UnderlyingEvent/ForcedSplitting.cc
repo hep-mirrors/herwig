@@ -4,6 +4,7 @@
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Handlers/DecayHandler.h>
+#include <ThePEG/PDT/EnumParticles.h>
 
 using namespace std;
 using namespace ThePEG;

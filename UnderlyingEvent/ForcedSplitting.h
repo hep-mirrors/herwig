@@ -3,7 +3,8 @@
 
 #include <ThePEG/Handlers/MultipleInteractionHandler.h>
 #include <ThePEG/Handlers/EventHandler.h>
-#include "Herwig++/Shower/BackwardEvolver.h" 
+#include "Herwig++/Shower/Evolver.h" 
+
 
 namespace Herwig {
 
