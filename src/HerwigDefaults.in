@@ -10,9 +10,10 @@ mkdir /Defaults/Handlers/Shower
 mkdir /Defaults/Handlers/Hadronization/Cluster
 mkdir /Defaults/Handlers/UnderlyingEvent
 
-create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton
-create ThePEG::Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
-create ThePEG::Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
+# uncomment if required
+#create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton
+#create ThePEG::Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
+#create ThePEG::Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
 read ThePEGParticles.in
 read HerwigParticles.in
 
