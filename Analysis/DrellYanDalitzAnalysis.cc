@@ -24,7 +24,7 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
   AnalysisHandler::analyze(event, ieve, loop, state);
   if(_nout>50000) return;
   tPVector final=event->primaryCollision()->step(1)->getFinalState();
-  ParticleVector jets[2];
+  ParticleVector jets[3];
   for(unsigned int ix=0;ix<final.size();++ix)
     {
       PPtr part=final[ix];
@@ -36,6 +36,15 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
       while(dynamic_ptr_cast<ShowerParticlePtr>(part));
       if(part==event->incoming().first) jets[0].push_back(final[ix]);
       else if(part==event->incoming().second) jets[1].push_back(final[ix]);
+      else
+	{
+	  part=part->parents()[0]->children()[0];
+	  PPair ptemp=event->primaryCollision()->primarySubProcess()->incoming();
+
+
+	  if(part==ptemp.first||part==ptemp.second)
+	    jets[2].push_back(final[ix]);
+	}
     }
   Lorentz5Momentum pb,pc,pg;
   ParticleVector::const_iterator cit;
@@ -45,40 +54,46 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
   for(cit=event->incoming().second->children().begin();
       cit!=event->incoming().second->children().end();++cit)
     if((*cit)->dataPtr()->coloured()) pc=(*cit)->momentum();
-  Lorentz5Momentum pjets[2];
-  for(unsigned int ix=0;ix<jets[0].size();++ix) pjets[0]+=jets[0][ix]->momentum();
-  for(unsigned int ix=0;ix<jets[1].size();++ix) pjets[1]+=jets[1][ix]->momentum();
+  Lorentz5Momentum pjets[3];
+  for(unsigned int iy=0;iy<3;++iy)
+    for(unsigned int ix=0;ix<jets[iy].size();++ix) pjets[iy]+=jets[iy][ix]->momentum();
   // work out the momenta
-  if(jets[0].empty()&&jets[1].empty())
-    return;
-  else if(jets[0].empty())
+  bool type(false);
+  if(!jets[2].empty())
     {
-      pg=pjets[1];
-      //      pc-=pg;
+      pg=pjets[2];type=true;
+      pb-=pjets[0];
+      pc-=pjets[1];
     }
-  else if(jets[1].empty())
-    {
-      pg=pjets[0];
-      //      pb-=pg;
-    }
+  else if(jets[0].empty()&&jets[1].empty()) return;
+  else if(jets[0].empty()) pg=pjets[1];
+  else if(jets[1].empty()) pg=pjets[0];
   else
     {
       if(pjets[0].vect().perp2()>pjets[1].vect().perp2())
 	{
 	  pg=pjets[0];
-	  //	  pb-=pg;
+	  pc-=pjets[1];
 	}
       else
 	{
 	  pg=pjets[1];
-	  //	  pc-=pg;
+	  pb-=pjets[0];
 	}
     }
   Energy2 Q2=(pb+pc-pg).m2();
   Energy2 sbar=(pb+pc).m2()/Q2;
   Energy2 tbar=(pb-pg).m2()/Q2;
   //Energy2 ubar=(pc-pg).m2()/Q2;
-  _output[0].push_back(make_pair(sbar,tbar));
+  ++_nout;
+  if(type)
+    {
+      _output[1].push_back(make_pair(sbar,tbar));
+    }
+  else
+    {
+      _output[0].push_back(make_pair(sbar,tbar));
+    }
 }
 
 LorentzRotation DrellYanDalitzAnalysis::transform(tEventPtr event) const {
@@ -124,9 +139,9 @@ void DrellYanDalitzAnalysis::dofinish() {
   for(unsigned int ix=0;ix<_output[0].size();++ix)
     {file << _output[0][ix].first << " " <<  _output[0][ix].second << "\n";}
   file << "PLOT\n";
-  //for(unsigned int ix=0;ix<_output[1].size();++ix)
-  //  {file << _output[1][ix].first << " " <<  _output[1][ix].second << "\n";}
-  //file << "PLOT RED\n";
+  for(unsigned int ix=0;ix<_output[1].size();++ix)
+    {file << _output[1][ix].first << " " <<  _output[1][ix].second << "\n";}
+  if(!_output[1].empty()) file << "PLOT RED\n";
   // plot the limits
   double kappa[2]={1.,1.};
   double shat,that;
@@ -157,9 +172,9 @@ void DrellYanDalitzAnalysis::dofinish() {
   for(unsigned int ix=0;ix<_output[0].size();++ix)
     {file << _output[0][ix].first << " " <<  _output[0][ix].second << "\n";}
   file << "PLOT\n";
-  //for(unsigned int ix=0;ix<_output[1].size();++ix)
-  //  {file << _output[1][ix].first << " " <<  _output[1][ix].second << "\n";}
-  //file << "PLOT RED\n";
+  for(unsigned int ix=0;ix<_output[1].size();++ix)
+    {file << _output[1][ix].first << " " <<  _output[1][ix].second << "\n";}
+  if(!_output[1].empty()) file << "PLOT RED\n";
   // plot the limits
   for(shat=1.;shat<50.;shat+=0.01)
     {

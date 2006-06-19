@@ -24,11 +24,11 @@ SimpleLHCAnalysis::~SimpleLHCAnalysis() {}
 
 namespace {
   inline Lorentz5Momentum getMomentum(tcPPtr particle) {
-    //return particle->momentum();
-    Lorentz5Momentum tmp = particle->children()[0]->next()->momentum();
-    tmp += particle->children()[1]->next()->momentum();
-    tmp.rescaleMass();
-    return tmp;
+    return particle->momentum();
+    //Lorentz5Momentum tmp = particle->children()[0]->next()->momentum();
+    //tmp += particle->children()[1]->next()->momentum();
+    //tmp.rescaleMass();
+    //return tmp;
 
   }
 }
@@ -48,8 +48,8 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
       ParticleSet::const_iterator end =part.end();
       for( ;iter!=end;++iter)
 	{
-	  if((**iter).id()==ParticleID::Z0||
-	     ((**iter).id()==ParticleID::gamma&&!(**iter).children().empty()))
+	  if(((**iter).id()==ParticleID::Z0||(**iter).id()==ParticleID::gamma)&&
+	     (**iter).children().size()==2)
 	    {
 	      pz=getMomentum(*iter);
 	      Energy pt = pz.perp()/GeV;

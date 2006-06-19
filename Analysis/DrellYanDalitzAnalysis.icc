@@ -6,7 +6,8 @@
 
 namespace Herwig {
 
-  inline DrellYanDalitzAnalysis::DrellYanDalitzAnalysis() : _nout(0) {}
+inline DrellYanDalitzAnalysis::DrellYanDalitzAnalysis() : _nout(0) 
+{}
 
 inline DrellYanDalitzAnalysis::DrellYanDalitzAnalysis(const DrellYanDalitzAnalysis & x)
   : AnalysisHandler(x) {}
