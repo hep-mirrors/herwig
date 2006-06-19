@@ -541,24 +541,15 @@ void Evolver::showerDecay(ShowerTreePtr decay)
   _currenttree=decay;
   // put all the particles into a data structure which has the particles
    // and the maximum pt for emission from the particle
-   vector<ShowerProgenitorPtr> particlesToShower;
    vector<ShowerParticlePtr> particles;
    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
    // incoming particles
    for(cit=decay->incomingLines().begin();cit!=decay->incomingLines().end();++cit)
-     {
-       particlesToShower.push_back(((*cit).first));
-       particles.push_back(particlesToShower.back()->progenitor());
-     };
+     particles.push_back(cit->first->progenitor());
    assert(particles.size()==1);
    // outgoing particles
    for(cit=decay->outgoingLines().begin();cit!=decay->outgoingLines().end();++cit)
-     {
-       particlesToShower.push_back(((*cit).first));
-       particles.push_back(particlesToShower.back()->progenitor());
-     }
-   // generate the hard matrix element correction if needed
-   hardMatrixElementCorrection();
+     particles.push_back(cit->first->progenitor());
    // Set the initial evolution scales
    if(_splittingGenerator->isInteractionON(ShowerIndex::QCD))
      _partnerFinder->setQCDInitialEvolutionScales(particles,true);
@@ -566,6 +557,35 @@ void Evolver::showerDecay(ShowerTreePtr decay)
      _partnerFinder->setQEDInitialEvolutionScales(particles,true);
    if(_splittingGenerator->isInteractionON(ShowerIndex::EWK))
      _partnerFinder->setEWKInitialEvolutionScales(particles,true);
+   // generate the hard matrix element correction if needed
+   hardMatrixElementCorrection();
+   // get the particles to be showered
+   vector<ShowerProgenitorPtr> particlesToShower;
+   // incoming particles
+   for(cit=decay->incomingLines().begin();cit!=decay->incomingLines().end();++cit)
+     particlesToShower.push_back(((*cit).first));
+   assert(particlesToShower.size()==1);
+   // outgoing particles
+   for(cit=decay->outgoingLines().begin();cit!=decay->outgoingLines().end();++cit)
+     particlesToShower.push_back(((*cit).first));
+   // remake the colour partners if needed
+   if(particlesToShower.size()!=particles.size())
+     {
+       particles.clear();
+       // incoming particles
+       for(cit=decay->incomingLines().begin();cit!=decay->incomingLines().end();++cit)
+	 particles.push_back(cit->first->progenitor());
+       // outgoing particles
+       for(cit=decay->outgoingLines().begin();cit!=decay->outgoingLines().end();++cit)
+	 particles.push_back(cit->first->progenitor());
+       // Set the initial evolution scales
+       if(_splittingGenerator->isInteractionON(ShowerIndex::QCD))
+	 _partnerFinder->setQCDInitialEvolutionScales(particles,true);
+       if(_splittingGenerator->isInteractionON(ShowerIndex::QED))
+	 _partnerFinder->setQEDInitialEvolutionScales(particles,true);
+       if(_splittingGenerator->isInteractionON(ShowerIndex::EWK))
+	 _partnerFinder->setEWKInitialEvolutionScales(particles,true);
+     }
    // initial-state radiation
    if(_splittingGenerator->isISRadiationON())
      {

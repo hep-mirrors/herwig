@@ -343,6 +343,40 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
    showerKin->phi(newPhi);
    showerKin->pT(newpT);
 
+
+//    // make some plots
+//    if(_nout[1]<50000)
+//      {
+//        Energy mt=getParticleData(6)->mass();
+//        _output[1] << newZ << " " << sqr(newQ/mt) << "\n";
+//        ++_nout[1];
+//    // KMH - 18/05/06 - adding plot of kappa vs z
+//    // this should be modified to include gluon mass in defn of kappa
+//    // (should have - newZ*gluonMass() ) at the end...
+//        //       _output[2] << newZ << " " << (sqr(newQ/mt)-1.0)*sqr(1.0-newZ) << "\n";
+//        //   ++_nout[2];
+//    // KMH - 18/05/06 - adding histogram of cos(glu,b-quark)
+//       add_point(1.-sqr(newQ/mt),1.,glucos_bins,glucos_evts);
+//    // KMH - 18/05/06 - end of modification...
+//     }
+//    if(_nout[0]<50000)
+//      {
+//        Energy mt=getParticleData(6)->mass(),mb=getParticleData(5)->mass(),
+// 	 mw=getParticleData(24)->mass();
+//        double kappa=sqr(newQ/mt),a=sqr(mw/mt),c=sqr(mb/mt);
+//        double w=1.-(1.-newZ)*(kappa-1.);
+//        double u=1.+a-c-(1.-newZ)*kappa;
+//        double v=sqr(u)-4.*a*w*newZ;
+//        if(v>0)
+// 	 {
+// 	   v=sqrt(v);
+// 	   double xg=(1.-newZ)*kappa;
+// 	   double xa = 0.5*((u+v)/w+(u-v)/newZ);
+// 	   _output[0] << xg << " " << xa << "\n";
+// 	 }
+//        ++_nout[0];
+//      }
+
    return Branching(showerKin, sudakov, ids);
 }
 
@@ -471,3 +505,120 @@ void SplittingGenerator::finalStateBasisVectors(ShowerParticle particle,
       n = kin->getBasis()[1];
     }
 }
+
+// void SplittingGenerator::dofinish() {
+//   Interfaced::dofinish();
+//   _output[0] << "PLOT\n";
+//   _output[1] << "PLOT\n";
+
+//   // KMH - 18/05/06 - The next 80 lines of the code below are intended
+//   // to plot the various phase space boundaries on the Dalitz plot.
+//   Energy mt=getParticleData(6 )->mass();
+//   Energy mb=getParticleData(5 )->mass();
+//   Energy mw=getParticleData(24)->mass();
+//   Energy2 mb2(mb*mb),mt2(mt*mt),mw2(mw*mw);
+//   Energy2 m122(sqr(mb+mw)),step;
+//   step=(sqr(mt)-m122)/200.;
+//   vector<double> upper,lower,xgg;
+//   // Below we calculate upper and lower bounds on xa for given xg 
+//   // (full phase space), these are sent to the file and joined 
+//   // with a red line.
+//   for(;m122<=sqr(mt);m122+=step)
+//     {
+//       Energy m12=sqrt(m122);
+//       Energy E2s=0.5*(m122-mb2+mw2)/m12;
+//       Energy E3s=0.5*(mt2-m122)/m12;
+//       Energy2 m23max=2.*E2s*E3s+mw2+2.*E3s*sqrt(sqr(E2s)-mw2);
+//       Energy2 m23min=2.*E2s*E3s+mw2-2.*E3s*sqrt(sqr(E2s)-mw2);
+//       xgg.push_back(1.-m122/mt2);
+//       upper.push_back((m122+m23max-mb2)/mt2);
+//       lower.push_back((m122+m23min-mb2)/mt2);
+//     }
+//   for(unsigned int ix=0;ix<upper.size();++ix)
+//     {_output[0] << xgg[ix] << " " << upper[ix] << "\n";}
+//   for(int ix=lower.size()-1;ix>=0;--ix)
+//     {_output[0] << xgg[ix] << " " << lower[ix] << "\n";}
+//   _output[0] << "JOIN RED " << "\n";
+//   // Below we calculate the boundaries for emission from the 
+//   // b-quark (below) these are output to the file and joined 
+//   // with a blue line.
+//   double a=mw2/mt2,c=mb2/mt2,xa,xc,r,xg;
+//   double lam=sqrt(sqr(1.+a-c)-4.*a);
+//   // Set kappa for the b-quark emissions...
+//   // - maximal b choice
+//   // double kappa=4.*(1.-c-2.*sqrt(a)+a);
+//   // - symmetric choice
+//   double kappa=0.5*(1-a+c+lam)+c;
+//   // - smooth choice
+//   // double kappa=sqrt(c)*lam*(1.+c-a+lam)/(1+c-a+lam-2.*sqrt(c));
+//   double xgmax=1.-sqr(sqrt(a)+sqrt(c));
+//   for(double z=0.;z<=1.;z+=0.005)
+//     {
+//       xa=1.+a-c-z*(1.-z)*kappa;
+//       r =0.5*(1.+c/(1.+a-xa));
+//       xc=(2.-xa)*r+(z-r)*sqrt(sqr(xa)-4.*a);
+//       xg=(2.-xa)*(1.-r)-(z-r)*sqrt(sqr(xa)-4.*a);
+//       if(xg<xgmax) _output[0] << xg << " " << xa << "\n";
+//     }
+//   _output[0] << "JOIN BLUE" << endl;
+//   // Below we calculate the boundaries for emission from the 
+//   // b-quark (below) these are output to the file and joined 
+//   // with a green line.
+//   kappa=1+0.25*sqr(1.-a+c+lam)/(kappa-c);
+//   double u,w,v;
+//   double zmin=1.-(1.-a)/(kappa+2.*sqrt(a*(kappa-1.)))+0.00001;
+//   for(double z=0.;z<=1.;z+=0.005)
+//     {
+//       double kmax=2*a + (-1 + a + c)/(-1 + z) - 
+// 	(2*sqrt(a*(1 + c + a*(-1 + z) - z)*pow(-1 + z,2)*z))/pow(-1 + z,2);
+//       if(kmax<kappa)
+// 	{
+// 	  u = 1+a-c-(1.-z)*kmax;
+// 	  w = 1.-(1.-z)*(kmax-1.);
+// 	  v = 0.;
+// 	  xa =0.5*((u+v)/w+(u-v)/z);
+// 	  xc = w+z-xa;
+// 	  xg = (1.-z)*kmax;
+// 	}
+//       else
+// 	{
+// 	  u = 1+a-c-(1.-z)*kappa;
+// 	  w = 1.-(1.-z)*(kappa-1.);
+// 	  v = sqrt(sqr(u)-4.*a*w*z);
+// 	  xa =0.5*((u+v)/w+(u-v)/z);
+// 	  xc = w+z-xa;
+// 	  xg = (1.-z)*kappa;
+// 	}
+//       if(xg<xgmax) _output[0] << xg << " " << xa << "\n";
+//     }
+//   _output[0] << "JOIN GREEN" << endl;
+
+//   // here we make a theory prediction of the angular distn of the gluon
+//   // with respect to the b-quark using the soft limit formula for the 
+//   // splitting function 1+cos/1-cos
+//   for(unsigned int i=1;i<=glucos_evts_th.size();i++) {
+//       add_point(glucos_bins_th[i-1]+(glucos_bins_th[i]-glucos_bins_th[i-1])/2.,
+//                 (2./(glucos_bins_th[i-1]-glucos_bins_th[i]))
+//                *log((1-glucos_bins_th[i])/(1-glucos_bins_th[i-1]))-1.
+// 	       ,glucos_bins_th,glucos_evts_th
+//                );
+//   }
+
+// // close the file units...
+//   _output[0].close();
+//   _output[1].close();
+//   _output[2].close();
+//   // output any histograms...
+//   ofstream output; output.open("TopCos.top");
+//   topdraw_file(string("gluon's cosine"),string(" "),
+//                string("events")        ,string(" "),
+//                string("cosine")        ,string(" "),
+//                glucos_bins,glucos_evts,output,
+//                false,true);
+//   topdraw_file(string("gluon's cosine"),string(" "),
+//                string("events")        ,string(" "),
+//                string("cosine")        ,string(" "),
+//                glucos_bins_th,glucos_evts_th,output,
+//                true,true);
+//   output.close();
+// }

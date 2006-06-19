@@ -623,6 +623,9 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
     {dpar[ix]->abandonChild(copy);}
   final->addChild(copy);
   pstep->addDecayProduct(copy);
+  ParticleVector copyc=copy->children();
+  for(unsigned int ix=0;ix<copyc.size();++ix)
+      copy->abandonChild(copyc[ix]);
   // final-state radiation
   if(FSR)
     {
@@ -634,18 +637,45 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
  	    throw Exception() << "Final-state particle must have a ThePEGBase"
  			      << " in ShowerTree::fillEventRecord()" 
  			      << Exception::runerror;
-	  // add the child
-	  updateColour(cit->first->copy());
-	  pstep->addDecayProduct(cit->first->copy());
-	  // register the shower particle as a 
-	  // copy of the one from the hard process
-	  tParticleVector parents=init->parents();
-	  for(unsigned int ix=0;ix<parents.size();++ix)
-	    {parents[ix]->abandonChild(init);}
-	  (*cit).first->copy()->addChild(init);
-	  pstep->addDecayProduct(init);
-	  //pstep->setCopy(cit->first->copy(),init);
-	  updateColour(init);
+// if not from matrix element correction
+	  if(cit->first->perturbative())
+	    {
+		// add the child
+		updateColour(cit->first->copy());
+		copy->addChild(cit->first->copy());
+		pstep->addDecayProduct(cit->first->copy());
+		// register the shower particle as a 
+		// copy of the one from the hard process
+		tParticleVector parents=init->parents();
+		for(unsigned int ix=0;ix<parents.size();++ix)
+		{parents[ix]->abandonChild(init);}
+		(*cit).first->copy()->addChild(init);
+		pstep->addDecayProduct(init);
+		updateColour(init);
+	    }
+// from a matrix element correction
+	  else
+	  {
+	      if(copy->children().end()==
+		 find(copy->children().begin(),copy->children().end(),
+		      cit->first->original()))
+	      {
+		  updateColour(cit->first->original());
+		  copy->addChild(cit->first->original());
+		  pstep->addDecayProduct(cit->first->original());
+	      }
+	      updateColour(cit->first->copy());
+	      cit->first->original()->addChild(cit->first->copy());
+	      pstep->addDecayProduct(cit->first->copy());
+	      // register the shower particle as a 
+	      // copy of the one from the hard process
+	      tParticleVector parents=init->parents();
+	      for(unsigned int ix=0;ix<parents.size();++ix)
+	      {parents[ix]->abandonChild(init);}
+	      (*cit).first->copy()->addChild(init);
+	      pstep->addDecayProduct(init);
+	      updateColour(init);
+	  }
 	  // insert shower products
 	  addFinalStateShower(init,pstep);
 	}

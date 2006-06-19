@@ -21,11 +21,11 @@ using namespace Herwig;
 TopDecayMECorrection::~TopDecayMECorrection() {}
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
-  os << _initialenhance << _finalenhance;
+    os << _initialenhance << _finalenhance << _use_me_for_t2;
 }
 
 void TopDecayMECorrection::persistentInput(PersistentIStream & is, int) {
-  is >> _initialenhance >> _finalenhance;
+    is >> _initialenhance >> _finalenhance >> _use_me_for_t2;
 }
 
 ClassDescription<TopDecayMECorrection> TopDecayMECorrection::initTopDecayMECorrection;
@@ -51,6 +51,13 @@ void TopDecayMECorrection::Init() {
      &TopDecayMECorrection::_finalenhance, 1.2, 1.0, 1000.0,
      false, false, Interface::limited);
 
+  static Parameter<TopDecayMECorrection,bool> interfaceUseMEForT2
+    ("UseMEForT2",
+     "The option to determine whether the T2 region is populated by "
+     "the shower from the decaying object or the ME Correction",
+     &TopDecayMECorrection::_use_me_for_t2, false, true, false,
+     false, false, Interface::limited);
+
 }
 
 bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
@@ -71,37 +78,304 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
   // check the final-state particles and get the masses
   if(abs(part[0]->id())==ParticleID::Wplus&&abs(part[1]->id())==ParticleID::b)
     {
-      _mw=part[0]->mass();
-      _mb=part[1]->mass();
+      _ma=part[0]->mass();
+      _mc=part[1]->mass();
     }
   else if(abs(part[1]->id())==ParticleID::Wplus&&abs(part[0]->id())==ParticleID::b)
     {
-      _mw=part[1]->mass();
-      _mb=part[0]->mass();
+      _ma=part[1]->mass();
+      _mc=part[0]->mass();
     }
   else 
     return false;
   // set the top mass
   _mt=tree->incomingLines().begin()->first->progenitor()->mass();
+  // set the gluon mass
+  _mg=showerVariables()->globalParameters()->effectiveGluonMass();
   // set the radiation enhancement factors
   showerVariables()->initialStateRadiationEnhancementFactor(_initialenhance);
   showerVariables()->finalStateRadiationEnhancementFactor(_finalenhance);
+  // set the option for the partitioning of the phase space here
+  _use_me_for_t2=showerVariables()->use_me_for_t2();
   // parameters
-  _a=sqr(_mw/_mt);
-  _c=sqr(_mb/_mt);
-  //_c=0.;
+  _a=sqr(_ma/_mt);
+  _g=sqr(_mg/_mt);
+  _c=sqr(_mc/_mt);
   return true;
 }
 
-void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr)
+void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
 {
+
+//   cerr << "Initial outgoing lines: " << tree->outgoingLines().size() << endl;
+   // Get b and a and put them in particle vector ba in that order...
+   ParticleVector ba; 
+   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)     ba.push_back(cit->first->copy());
+   PPtr temp;
+   if(abs(ba[0]->id())!=5)
+     { temp=ba[0];
+       ba[0]=ba[1];
+       ba[1]=temp; }
+   // Get the starting scales for the showers $\tilde{\kappa}_{b}$
+   // $\tilde{\kappa}_{c}$. These are needed in order to know the boundary
+   // of the dead zone.
+   double ktb(0.),ktc(0.);
+   for(cit = tree->incomingLines().begin();
+       cit!= tree->incomingLines().end();++cit)
+   { if(abs(cit->first->progenitor()->id())==6)
+     ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
+   for(cit = tree->outgoingLines().begin();
+       cit!= tree->outgoingLines().end();++cit)
+   { if(abs(cit->first->progenitor()->id())==5)
+     ktc=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
+   if (ktb<=0.||ktc<=0.) {
+     throw Exception() 
+     << "TopDecayMECorrection::applyHardMatrixElementCorrection()"
+     << " did not set ktb,ktc" 
+     << Exception::abortnow; }
+   _ktb = ktb;
+   _ktc = ktc;
+   // Now decide if we get an emission into the dead region.
+   // If there is an emission newfs stores momenta for a,c,g 
+   // according to NLO decay matrix element. 
+   vector<Lorentz5Momentum> newfs = applyHard(ba,ktb,ktc);
+   // If there was no gluon emitted return.
+   if(newfs.size()!=3) return;
+   // Sanity checks to ensure energy greater than mass etc :)
+   bool check = true; 
+   if (newfs[0].e()<ba[0]->data().constituentMass()) 
+     check = false;
+   if (newfs[1].e()<ba[1]->mass()) 
+     check = false;
+   if (newfs[2].e()<
+     showerVariables()->globalParameters()->effectiveGluonMass()&&
+    !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
+     check = false;
+   // Return if insane:
+   if (!check) return;
+   // Set masses in 5-vectors:
+   newfs[0].setMass(ba[0]->mass());
+   newfs[1].setMass(ba[1]->mass());
+   newfs[2].setMass(0.);
+   // The next part of this routine sets the colour structure.
+   // To do this for decays we assume that the gluon comes from c!
+   // First create new particle objects for c, a and gluon:
+   PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
+   PPtr parent=ba[0]->parents()[0];
+   PPtr newc,newa;
+   newc = getParticleData(ba[0]->id())->produceParticle(newfs[0]);
+   newa = ba[1];
+   newa->set5Momentum(newfs[1]);
+   // Don't need this next line as a is colourless? Keep commented out?
+   //   ba[1]->antiColourLine()->removeAntiColoured(newa);
+   // set the colour lines
+   ColinePtr col;
+   if(ba[0]->id()>0)
+   {
+       col=ba[0]->colourLine();
+       col->addColoured(newg);
+       newg->colourNeighbour(newc);
+   }
+   else
+   {     
+       col=ba[0]->antiColourLine();
+       col->addAntiColoured(newg);
+       newg->antiColourNeighbour(newc);
+   }
+   // change the existing quark and antiquark
+   PPtr orig;
+   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)     {
+       if(cit->first->progenitor()->id()==newc->id())
+       {
+	   // remove old particles from colour line
+	   if(newc->id()>0)
+	   {
+	       col->removeColoured(cit->first->copy());
+	       col->removeColoured(cit->first->progenitor());
+	   }
+	   else
+	   {
+	       col->removeAntiColoured(cit->first->copy());
+	       col->removeAntiColoured(cit->first->progenitor());
+	   }
+	  // insert new particles
+ 	  cit->first->copy(newc);
+	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2)));
+ 	  cit->first->progenitor(sp);
+ 	  tree->outgoingLines()[cit->first]=sp;
+ 	  cit->first->perturbative(false);
+ 	  orig=cit->first->original();
+ 	}
+       else
+ 	{
+ 	  // Insert particles
+ 	  cit->first->copy(newa);
+ 	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2)));
+ 	  cit->first->progenitor(sp);
+ 	  tree->outgoingLines()[cit->first]=sp;
+ 	  cit->first->perturbative(true);
+ 	}
+     }
+  // Add the gluon to the shower:
+  ShowerParticlePtr   sg   =new_ptr(ShowerParticle(*newg,2));
+  ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
+  gluon->perturbative(false);
+  tree->outgoingLines().insert(make_pair(gluon,sg));
+
+  if(!INTHEDEADREGION(_a,_c,_g,_xg,_xa,_ktb,_ktc)) {
+      cout << "TopDecayMECorrection::applyHardMatrixElementCorrection()\n"
+	   << "Just found a point that escaped from the dead region!\n"
+           << "   _xg: " << _xg << "   _xa: " << _xa 
+           << "   newfs.size(): " << newfs.size() << endl;
+  }
+  _output[0] << _xg << " " << _xa << "\n";
+  _output[1] << 2./sqr(_mt)*(newg->momentum())
+      *(newa->momentum()+newc->momentum()+newg->momentum())
+	     << " " 
+	     << 2./sqr(_mt)*newa->momentum()
+      *(newa->momentum()+newc->momentum()+newg->momentum())
+	     << "\n";
+
+}
+
+vector<Lorentz5Momentum> TopDecayMECorrection::
+applyHard(const ParticleVector &p,double ktb, double ktc) 
+{ 
+  // ********************************* //
+  // First we see if we get a dead     //
+  // region event: _xa,_xg             //
+  // ********************************* //
+  vector<Lorentz5Momentum> fs; 
+  // Return if there is no (NLO) gluon emission:
+  
+  double weight = getHard(ktb,ktc);
+  if(weight>1.)
+    {
+      cerr << "Weight greater than 1 " << weight 
+	   << " " << _xg << " " << _xa << endl;
+      weight=1.;
+    }
+  // Accept/Reject
+  if (weight<UseRandom::rnd()||p.size()!= 2) return fs; 
+  // Drop events if getHard returned a negative weight 
+  // as in events that, somehow have escaped from the dead region
+  // or, worse, the allowed region.
+  if(weight<0.) return fs;
+ 
+  // Calculate xc by momentum conservation:
+  _xc = 2.-_xa-_xg;
+
+  // ************************************ //
+  // Now we get the boosts & rotations to //
+  // go from lab to top rest frame with   //
+  // a in the +z direction.               //
+  // ************************************ //
+  Lorentz5Momentum pa_lab,pb_lab,pc_lab,pg_lab;
+  // Calculate momentum of b:
+  pb_lab = p[0]->momentum() + p[1]->momentum(); 
+   // Define/assign momenta of c,a and the gluon:
+  if(abs(p[0]->id())==5) {
+    pc_lab = p[0]->momentum(); 
+    pa_lab = p[1]->momentum(); 
+  } else {
+    pc_lab = p[1]->momentum(); 
+    pa_lab = p[0]->momentum(); 
+  }
+  // Calculate the boost to the b rest frame:
+  HepLorentzRotation ROT0(pb_lab.findBoostToCM());
+  // Calculate the rotation matrix to position a along the +z direction
+  // in the rest frame of b:
+  HepLorentzRotation ROT1 = HWUROT(ROT0*pa_lab);
+  // Calculate a random rotation about the z-axis:
+  HepLorentzRotation ROT2 = RANDOMZROTATION();
+  // Calculate the boost from the b rest frame back to the lab:
+  HepLorentzRotation INVROT0 = ROT0.inverse();
+  // Calculate the inverse of the rotation matrix which positions a along
+  // the +z direction in the rest frame of b:
+  HepLorentzRotation INVROT1 = ROT1.inverse();
+  // Calculate the inverse of the random rotation about the z-axis:
+  HepLorentzRotation INVROT2 = ROT2.inverse();
+
+  // ************************************ //
+  // Now we construct the momenta in the  //
+  // b rest frame using _xa,_xg.          //
+  // First we construct b, then c and g,  //
+  // finally we generate a by momentum    //
+  // conservation.                        //
+  // ************************************ //
+  Lorentz5Momentum pa_brf, pb_brf, pc_brf, pg_brf;
+  // First we set the top quark to being on-shell and at rest.
+  pb_brf.setPx(0.);
+  pb_brf.setPy(0.);
+  pb_brf.setPz(0.);
+  pb_brf.setE(_mt);
+  pb_brf.setMass(_mt);
+  // Second we set the energies of c and g,
+  pc_brf.setE(0.5*_mt*(2.-_xa-_xg));
+  pg_brf.setE(0.5*_mt*_xg);
+  // then their masses,
+  pc_brf.setMass(_mc);  
+  pg_brf.setMass(_mg);  
+  // Now set the z-component of c and g. For pg we simply start from
+  // _xa and _xg, while for pc we assume it is equal to minus the sum
+  // of the z-components of a (assumed to point in the +z direction) and g. 
+  pg_brf.setPz(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a+_g)/HWUSQR(_xa*_xa-4.*_a));
+  pc_brf.setPz(-1.*( pg_brf.z()+_mt*HWUSQR(0.25*_xa*_xa-_a)));
+  // Now set the y-component of c and g's momenta
+  pc_brf.setPy(0.);
+  pg_brf.setPy(0.);
+  // Now set the x-component of c and g's momenta
+  pg_brf.setPx(HWUSQR(sqr(pg_brf.t())-_mg*_mg-sqr(pg_brf.z())));
+  pc_brf.setPx(-pg_brf.x());
+  // Momenta b,c,g are now set. Now we obtain a from momentum conservation,
+  pa_brf.setPx(-1.*(pc_brf.x()+pg_brf.x()))    ; 
+  pa_brf.setPy(-1.*(pc_brf.y()+pg_brf.y()))    ; 
+  pa_brf.setPz(-1.*(pc_brf.z()+pg_brf.z()))    ; 
+  pa_brf.setE(pb_brf.t()-pc_brf.t()-pg_brf.t());
+  pa_brf.setMass(pa_brf.m());
+ 
+  // ************************************ //
+  // Now we orient the momenta and boost  //
+  // them back to the original lab frame. //
+  // ************************************ //
+  // As in herwig6507 we assume that, in the rest frame
+  // of b, we have aligned the W boson momentum in the 
+  // +Z direction by ROT2*ROT1*ROT0*pa_lab, therefore
+  // we obtain the new pa_lab by applying:
+  // INVROT0*INVROT1*INVROT2*pa_brf.
+  pa_lab = INVROT0*INVROT1*INVROT2*pa_brf;    
+  pb_lab = INVROT0*INVROT1*INVROT2*pb_brf;    
+  pc_lab = INVROT0*INVROT1*INVROT2*pc_brf;    
+  pg_lab = INVROT0*INVROT1*INVROT2*pg_brf;    
+  fs.push_back(pc_lab); 
+  fs.push_back(pa_lab); 
+  fs.push_back(pg_lab); 
+  return fs;
+
+}
+
+double TopDecayMECorrection::getHard(double ktb, double ktc) 
+{
+  // zero the variables
+  _xg = 0.;    
+  _xa = 0.;   
+  _xc = 0.;
+  // Get a phase space point in the dead region: 
+  double volume_factor = DEADREGIONXGXA(ktb,ktc);
+  // if outside region return -1
+  if(volume_factor<0) return volume_factor;
+  // Compute the weight for this phase space point:
+  double weight = volume_factor*me(_xa,_xg)*(1.+_a-_c-_xa); 
+  // Alpha_S and colour factors - this hard wired Alpha_S needs removing.
+  weight *= (4./3.)/pi*(coupling()->value(_mt*_mt*_xg*(1.-_xa+_a-_c-_g)
+			                 /(2.-_xg-_xa-_c-_g)));
+  return weight; 
 }
 
 bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 						 ShowerParticlePtr parent,Branching br)
 {
-  //cerr << "testing in top decay soft correction " 
-  //     << *initial->progenitor() << "\n" << *parent << "\n";
   // check if we need to apply the full correction
   unsigned int id[2]={abs(initial->progenitor()->id()),abs(parent->id())};
   // the initial-state correction

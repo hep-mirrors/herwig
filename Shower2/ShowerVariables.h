@@ -234,6 +234,41 @@ public:
   inline void finalStateRadiationEnhancementFactor(double);
   //@}
 
+  /**
+   *  Access functions for the type of shower phase space partition.
+   *  These set/return the whether the so-called 'symmetric'/'maximal'
+   *  /'smooth' choice was used (see _decay_shower_partition below).
+   *  Also we have a similar function which returns whether the T2
+   *  region is to be populated by the ME correction or the shower from
+   *  the decaying particle.
+   */
+  //@{
+  /**
+   *  Access the option which determines the type of phase space partitioning 
+   *  for the decay_shower.
+   */
+  inline unsigned int decay_shower_partition() const;
+
+  /**
+   *  Access the option which determines the type of phase space partitioning 
+   *  for the decay_shower.
+   */
+  inline void decay_shower_partition(unsigned int);
+
+  /**
+   *  Access the option denoting whether the T2 region of the decay phase
+   *  space is populated by the shower (default, false) or the ME correction. 
+   */
+  inline bool use_me_for_t2();
+
+  /**
+   *  Set the option denoting whether the T2 region of the decay phase
+   *  space is populated by the shower (default, false) or the ME correction. 
+   */
+  inline void use_me_for_t2(bool);
+
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -430,6 +465,36 @@ private:
    */
   double _finalenhance;
   //@}
+
+  /**
+   *  The following variables relate to the decay shower and
+   *  its associated ME corrections.
+   */
+
+  /**
+   *  Here we hold the option which determines the type of phase space 
+   *  partitioning to do for the decay shower. Depending on the value
+   *  of the option PartnerFinder will set different bounds on the starting
+   *  $\tilde{q}$ values for the showers of the decaying particle and its
+   *  charged child. This is done according to the top decay colour 
+   *  connection calculation in JHEP12(2003)_045. The options act as follows:
+   *  0: This is the default 'symmetric' choice which more or less divides
+   *     the phase space evenly between the parent and its charged child.
+   *  1: This 'maximal' choice maximises the phase space available for 
+   *     gluons emitted from the charged child.
+   *  2: This (experimental) 'smooth' choice does not suffer from
+   *     a discontinuity at the boundary between the region populated by
+   *     emissions from the charged child and the region populated by emissions
+   *     from the parent. This does, however, mean that the phase space 
+   *     available for emissions from the charged child is fairly minimal.
+   */
+  unsigned int _decay_shower_partition;
+  /**
+   *  This flag determines whether the T2 region in the decay shower
+   *  (JHEP12(2003)_045) is populated by the ME correction (true) or
+   *  the shower from the decaying particle.
+   */
+  bool _use_me_for_t2;
 
 };
 

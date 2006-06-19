@@ -250,6 +250,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
      *  - We find the most 'smooth' way to populate the phase space
      *    occurs for... 
      *********/ 
+    unsigned int phase_space = _showerVariables->decay_shower_partition();
     pa              = pb-pc               ;
     Energy ma       = sqrt(pa*pa)         ;      
     Energy mb       = ppair.first->mass() ;      
@@ -258,25 +259,26 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
     double c        = sqr(mc/mb)          ;
     double lambda   = sqrt(1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c);
     double PROD     = 0.25*sqr(1. - a + c + lambda);
-    double ktilde_b, ktilde_c;
-    // debugging coverage possible for emissions from c.
-    // ktilde_c = 0.5+c;
-    // ktilde_b = 1.+PROD/(ktilde_c-c)   ;
-    // maximises coverage possible for emissions from c.
-    // ktilde_c = 4.0*(sqr(1.-sqrt(a))-c);
-    // ktilde_b = 1.+PROD/(ktilde_c-c)   ;
-    // the 'symmetric' choice (see above).
-    ktilde_c = 0.5*(1-a+c+lambda) + c ;
-    ktilde_b = 1.+PROD/(ktilde_c-c)   ;
-    // the 'smooth' choice (see above).
-    // double(cosi) = (sqr(1-sqrt(c))-a)/lambda;
-    // double(cosi) = (sqr(1+sqrt(c))-a)/lambda;
-    // double(cosi) = (-lambda+sqrt(2.0*lambda)*sqrt(1+c-a+lambda))
-    //              / lambda;
-    //double(cosi) = (-lambda-sqrt(2.0*lambda)*sqrt(1+c-a+lambda))
-    //             / lambda;
-    // ktilde_b = 2.0/(1.0-cosi);
-    // ktilde_c = (1.0-a+c+lambda)*(1.0+c-a-lambda*cosi)/(2.0*(1.0+cosi));
+    double ktilde_b, ktilde_c,cosi(0.);
+    switch(phase_space) {
+    case 0: // the 'symmetric' choice
+	ktilde_c = 0.5*(1-a+c+lambda) + c ;
+	ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+      break;
+    case 1:  // the 'maximal' choice
+	ktilde_c = 4.0*(sqr(1.-sqrt(a))-c);
+	ktilde_b = 1.+PROD/(ktilde_c-c)   ;
+      break;
+    case 2:  // the 'smooth' choice
+	cosi = (sqr(1-sqrt(c))-a)/lambda;
+	ktilde_b = 2.0/(1.0-cosi);
+	ktilde_c = (1.0-a+c+lambda)*(1.0+c-a-lambda*cosi)/(2.0*(1.0+cosi));
+      break;
+    default:
+      throw Exception() << "Invalid option for decay shower's phase space"
+			<< " PartnerFinder::calculateInitialFinalScales"
+			<< Exception::abortnow;
+    }
     return pair<Energy,Energy>(mb*sqrt(ktilde_b),mb*sqrt(ktilde_c));
   }
 }

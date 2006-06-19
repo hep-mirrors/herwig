@@ -145,4 +145,16 @@ inline void ShowerVariables::initialStateRadiationEnhancementFactor(double in)
 inline void ShowerVariables::finalStateRadiationEnhancementFactor(double in)
 {_finalenhance=in;}
 
+inline unsigned int ShowerVariables::decay_shower_partition() const
+{return _decay_shower_partition;}
+
+inline void ShowerVariables::decay_shower_partition(unsigned int in)
+{_decay_shower_partition=in;}
+
+inline bool ShowerVariables::use_me_for_t2()
+{return _use_me_for_t2;}
+
+inline void ShowerVariables::use_me_for_t2(bool in)
+{_use_me_for_t2=in;}
+
 }

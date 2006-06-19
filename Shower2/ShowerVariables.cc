@@ -34,7 +34,9 @@ ShowerVariables::ShowerVariables() :
   _vetoAbovePtScale( HUGEMASS ), 
   _vetoBelowPtScale( Energy() ),
   _a(0.3), _b(2.3), _c(0.3*GeV),
-  _initialenhance(1.),_finalenhance(1.)
+  _initialenhance(1.),_finalenhance(1.),
+  _decay_shower_partition(0),
+  _use_me_for_t2(false)
 {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 

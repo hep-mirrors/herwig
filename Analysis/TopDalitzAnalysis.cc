@@ -189,7 +189,6 @@ void TopDalitzAnalysis::topShower(PPtr top,tPVector final)
       pb.boost(boost);
       Energy mt(top->mass());
       double xg(2.*pg.e()/mt),xb(2.*pb.e()/mt);
-      //cerr << "testing from analysis " << xg << " " << 2.-xb-xg << endl;
       _output << xg << " " << 2.-xb-xg << "\n";
       ++_nout;
     }

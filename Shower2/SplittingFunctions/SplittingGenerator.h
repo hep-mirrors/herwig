@@ -10,6 +10,7 @@
 #include "SplittingGenerator.fh"
 #include "Herwig++/Shower2/Kinematics/ShowerKinematics.h"
 #include "ThePEG/Utilities/Rebinder.h"
+#include<vector>     
 
 namespace Herwig {
 
@@ -299,6 +300,14 @@ protected:
    */
   inline virtual void doinitrun() throw(InitException);
 
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  //inline virtual void dofinish();
+
+
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
    * after all objects used in an EventGenerator has been cloned so that
@@ -438,6 +447,38 @@ private:
    * Lists of the branchings and the appropriate Sudakovs for backward branchings.
    */
   BranchingList _bbranchings;
+
+  /**
+   *  output stream
+   */
+  //mutable vector<ofstream> _output;
+  
+  /**
+   *  Number of outputs
+   */
+  //mutable vector<unsigned int> _nout;
+
+// KMH - 18/05/06 - adding plot of kappa vs z
+   // KMH basic histogram package...
+   inline void book_histo(double xmin,double xmax,int bins,
+                          vector<double> & bin_edges,
+		          vector<double> & bin_conts);
+   inline void add_point(double datapt,double wgt,
+                         const vector<double> & bin_edges,
+                               vector<double> & bin_conts) const;
+   inline void topdraw_file(string titletop   , string topcase   ,
+                            string titleleft  , string leftcase  ,
+                            string titlebottom, string bottomcase,
+                            const vector<double> & bins, 
+                            vector<double> & conts,
+                            ofstream & out, bool append, bool norm) const;
+  // data for the histograms...
+  mutable vector<double> glucos_evts;
+  mutable vector<double> glucos_bins;
+  mutable vector<double> glucos_evts_th;
+  mutable vector<double> glucos_bins_th;
+// KMH - 18/05/06 - end of modification...
+
 };
 
 }
