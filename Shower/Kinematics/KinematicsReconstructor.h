@@ -7,8 +7,8 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ShowerParticle.h"
-#include "Herwig++/Shower2/ShowerProgenitor.h"
-#include "Herwig++/Shower2/ShowerTree.h"
+#include "Herwig++/Shower/ShowerProgenitor.h"
+#include "Herwig++/Shower/ShowerTree.h"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
 

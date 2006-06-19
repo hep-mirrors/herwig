@@ -13,7 +13,7 @@
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "Evolver.h"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include <cassert>
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE

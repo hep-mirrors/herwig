@@ -6,9 +6,9 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower2/ShowerConfig.h"
+#include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/EventRecord/ColourLine.h"
-#include "Herwig++/Shower2/Couplings/ShowerIndex.h"
+#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "SplittingFunction.fh"
 
 namespace Herwig {

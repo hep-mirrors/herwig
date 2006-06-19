@@ -8,7 +8,7 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "LeptonDalitzAnalysis.tcc"

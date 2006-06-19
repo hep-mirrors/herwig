@@ -6,7 +6,7 @@
 
 #include "Decay_QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Shower2/SplittingFunctions/SplittingFunction.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "Decay_QtildaShowerKinematics1to2.tcc"

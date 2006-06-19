@@ -16,7 +16,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/Repository/UseRandom.h" 
 

@@ -16,7 +16,7 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower2/Kinematics/QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Kinematics/QtildaShowerKinematics1to2.h"
 using namespace Herwig;
 
 void RelativePtReconstructor::persistentOutput(PersistentOStream & os) const {

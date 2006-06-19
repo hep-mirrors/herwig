@@ -10,7 +10,7 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/Timer.h"
-#include "Herwig++/Shower2/SplittingFunctions/SplittingFunction.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "KinematicsReconstructor.tcc"

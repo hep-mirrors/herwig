@@ -8,12 +8,12 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/Shower2/ShowerConfig.h"
+#include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Utilities/GlobalParameters.h"
-#include "Herwig++/Shower2/Couplings/ShowerAlpha.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "SplittingFunction.h"
-#include "Herwig++/Shower2/Couplings/ShowerIndex.h"
-#include "Herwig++/Shower2/ShowerVariables.h"
+#include "Herwig++/Shower/Couplings/ShowerIndex.h"
+#include "Herwig++/Shower/ShowerVariables.h"
 #include "SudakovFormFactor.fh"
 #include <cassert>
 

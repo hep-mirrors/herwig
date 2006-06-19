@@ -16,7 +16,7 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;

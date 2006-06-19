@@ -5,8 +5,8 @@
 // This is the declaration of the ShowerKinematics class.
 //
 
-#include "Herwig++/Shower2/ShowerConfig.h"
-#include "Herwig++/Shower2/ShowerVariables.h"
+#include "Herwig++/Shower/ShowerConfig.h"
+#include "Herwig++/Shower/ShowerVariables.h"
 #include "ThePEG/Config/ThePEG.h"
 #include "ShowerKinematics.fh"
 

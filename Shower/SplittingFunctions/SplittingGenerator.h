@@ -8,7 +8,7 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
-#include "Herwig++/Shower2/Kinematics/ShowerKinematics.h"
+#include "Herwig++/Shower/Kinematics/ShowerKinematics.h"
 #include "ThePEG/Utilities/Rebinder.h"
 #include<vector>     
 
