@@ -98,6 +98,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard)
   Timer<1020> timera("Evolver::showerHardProcess");
   // set the current tree
   _currenttree=hard;
+  _currenttree->hasShowered(true);
   // generate the hard matrix element correction if needed
   hardMatrixElementCorrection();
   // put all the particles into a data structure which has the particles
@@ -539,6 +540,7 @@ void Evolver::showerDecay(ShowerTreePtr decay)
 {
   Timer<1004> timer("Evolver::showerDecay");
   _currenttree=decay;
+  _currenttree->hasShowered(true);
   // put all the particles into a data structure which has the particles
    // and the maximum pt for emission from the particle
    vector<ShowerParticlePtr> particles;

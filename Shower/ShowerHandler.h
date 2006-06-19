@@ -6,6 +6,7 @@
 //
 
 #include "ThePEG/Handlers/CascadeHandler.h"
+#include "ThePEG/Handlers/EventHandler.h"
 #include "Evolver.fh"
 #include "Herwig++/Shower/Kinematics/ShowerParticle.fh"
 #include "ShowerTree.fh"

@@ -31,19 +31,15 @@ public:
   //@{
   /**
    * Constructor for a scattering process
-   * @param in1 The first incoming particle
-   * @param in2 The second incoming particle
-   * @param x1 The momentum fraction for the first incoming particle
-   * @param x2 The momentum fraction for the secobd incoming particle
+   * @param eh The event handler
    * @param out The outgoing particles
    * @param vars Pointer to the ShowerVariables object to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
    * @param ch Access to the event handler
    */
-  ShowerTree(PPtr in1, PPtr in2, double x1, double x2, const ParticleVector & out,
+  ShowerTree(tEHPtr eh, const ParticleVector & out,
 	     ShowerVarsPtr vars,
-	     multimap<Energy,ShowerTreePtr> & decay,
-	     tEHPtr ch);
+	     multimap<Energy,ShowerTreePtr> & decay);
   
   /**
    *  Constructor for a decay
@@ -160,6 +156,26 @@ public:
 				       ShowerParticlePtr newParent,
 				       ShowerParticlePtr otherChild);
 
+  /**
+   *  Access and set the flag for whether this tree has been showered
+   */
+  //@{
+  /**
+   *  Access the flag
+   */
+  inline bool hasShowered() const;
+
+  /**
+   *  Set the flag
+   */
+  inline void hasShowered(bool);
+  //@}
+
+  /**
+   *  Access the parent tree
+   */
+  inline ShowerTreePtr parent() const;
+
 protected:
 
   /**
@@ -269,6 +285,11 @@ private:
    *  Pointer to the shower variables
    */
   ShowerVarsPtr _showerVariables;
+
+  /**
+   *  Has this tree showered
+   */
+  bool _hasShowered;
 };
 }
 

@@ -22,8 +22,13 @@ inline PPtr ShowerHandler::findParent(PPtr original) const
   PPtr parent=original;
   if(!original->parents().empty())
     {
-      if(original->parents()[0]->momentum().m2()>0&&
-	 !original->parents()[0]->dataPtr()->stable())
+      // must be the same as in findShoweringParticles
+      PPtr orig=original->parents()[0];
+      if(orig->momentum().m2() > 0. 
+	 && !orig->dataPtr()->coloured()
+	 && orig != eventHandler()->lastPartons().first 
+	 && orig != eventHandler()->lastPartons().second
+	 )
 	parent=findParent(original);
     }
   return parent;
