@@ -7,7 +7,7 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMWWWVertex::SMWWWVertex() 
+inline SMWWWVertex::SMWWWVertex() : _zfact(0.)
 {
   // particles
   vector<int> first,second,third;
@@ -19,10 +19,6 @@ inline SMWWWVertex::SMWWWVertex()
   _couplast=0.;_q2last=0.;
 }
 
-inline SMWWWVertex::SMWWWVertex(const SMWWWVertex & x)
-  : VVVVertex(x), _theSM(x._theSM), _zfact(x._zfact),
-    _couplast(x._couplast), _q2last(x._q2last) {}
-
 inline IBPtr SMWWWVertex::clone() const {
   return new_ptr(*this);
 }
@@ -31,48 +27,10 @@ inline IBPtr SMWWWVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void SMWWWVertex::doupdate() throw(UpdateException) {
-  VVVVertex::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void SMWWWVertex::doinit() throw(InitException) {
   VVVVertex::doinit();
   // factor for the Z vertex
   _zfact = sqrt((1.-_theSM->sin2ThetaW())/_theSM->sin2ThetaW());
-}
-
-inline void SMWWWVertex::dofinish() {
-  VVVVertex::dofinish();
-}
-
-inline void SMWWWVertex::doinitrun() {
-  VVVVertex::doinitrun();
-}
-
-inline void SMWWWVertex::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  VVVVertex::rebind(trans);
-}
-
-inline IVector SMWWWVertex::getReferences() {
-  IVector ret = VVVVertex::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }

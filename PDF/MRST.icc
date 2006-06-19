@@ -6,15 +6,9 @@
 
 namespace Herwig {
 
-inline MRST::MRST() {}
-
-inline MRST::MRST(const MRST & x)
-  : PDFBase(x) 
-{
-  for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)   
-    data[i][j][k] = x.data[i][j][k];
-  initialize(false);
-}
+inline MRST::MRST() : data(np+1,vector<vector<double> >
+			   (nx+1,vector<double>
+			    (nq+1,0.0))) {}
 
 inline IBPtr MRST::clone() const {
   return new_ptr(*this);

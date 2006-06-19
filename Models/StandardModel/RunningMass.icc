@@ -7,12 +7,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline RunningMass::RunningMass() {}
-
-inline RunningMass::RunningMass(const RunningMass & x)
-  : RunningMassBase(x), _theQCDOrder(x._theQCDOrder),
-    _theMaxFlav(x._theMaxFlav), _thePower(x._thePower),
-    _theCoefficient(x._theCoefficient), _theStandardModel(x._theStandardModel) {}
+inline RunningMass::RunningMass() : _theQCDOrder(1), _theMaxFlav(6) {}
 
 inline IBPtr RunningMass::clone() const {
   return new_ptr(*this);
@@ -20,24 +15,6 @@ inline IBPtr RunningMass::clone() const {
 
 inline IBPtr RunningMass::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void RunningMass::doupdate() throw(UpdateException) {
-  RunningMassBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-  //  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-  //  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-  //  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-  //  touch()
-  // Touch if anything has changed.
 }
 
 inline void RunningMass::doinit() throw(InitException) {
@@ -56,26 +33,6 @@ inline void RunningMass::doinit() throw(InitException) {
       _theCoefficient.push_back(coeff);
     }
   RunningMassBase::doinit();
-}
-
-inline void RunningMass::dofinish() {
-  RunningMassBase::dofinish();
-}
-
-inline void RunningMass::doinitrun() {
-  RunningMassBase::doinitrun();
-}
-
-inline void RunningMass::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  RunningMassBase::rebind(trans);
-}
-
-inline IVector RunningMass::getReferences() {
-  IVector ret = RunningMassBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }

@@ -13,17 +13,15 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-    
-SMWWWWVertex::~SMWWWWVertex() {}
 
 void SMWWWWVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << _gamma << _Z0 << _wplus << _wminus
-     << _vfact[0] << _vfact[1] << _vfact[2] << _vfact[3] << _sw2 << _cw2;
+     << _vfact  << _sw2 << _cw2;
 }
 
 void SMWWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> _gamma >> _Z0 >> _wplus >> _wminus
-     >> _vfact[0] >> _vfact[1] >> _vfact[2] >> _vfact[3] >> _sw2 >> _cw2;
+     >> _vfact >> _sw2 >> _cw2;
   _couplast=0.;_q2last=0.;
 }
 

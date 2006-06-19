@@ -7,7 +7,7 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMWWHVertex::SMWWHVertex() 
+  inline SMWWHVertex::SMWWHVertex() : _mw(), _zfact(), _sw()
 {
   // particles
   vector<int> first,second,third;
@@ -19,10 +19,6 @@ inline SMWWHVertex::SMWWHVertex()
   _couplast=0.; _q2last=0.;
 }
 
-inline SMWWHVertex::SMWWHVertex(const SMWWHVertex & x)
-  : VVSVertex(x), _theSM(x._theSM), _couplast(x._couplast),
-  _q2last(x._q2last), _mw(x._mw), _zfact(x._zfact), _sw(x._sw) {;}
-
 inline IBPtr SMWWHVertex::clone() const {
   return new_ptr(*this);
 }
@@ -31,50 +27,12 @@ inline IBPtr SMWWHVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void SMWWHVertex::doupdate() throw(UpdateException) {
-  VVSVertex::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void SMWWHVertex::doinit() throw(InitException) {
   _mw=getParticleData(ThePEG::ParticleID::Wplus)->mass();
   _sw = _theSM->sin2ThetaW();
   _zfact = 1./(1.-_sw);
   _sw=sqrt(_sw);
   VVSVertex::doinit();
-}
-
-inline void SMWWHVertex::dofinish() {
-  VVSVertex::dofinish();
-}
-
-inline void SMWWHVertex::doinitrun() {
-  VVSVertex::doinitrun();
-}
-
-inline void SMWWHVertex::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  VVSVertex::rebind(trans);
-}
-
-inline IVector SMWWHVertex::getReferences() {
-  IVector ret = VVSVertex::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }

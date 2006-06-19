@@ -33,16 +33,6 @@ public:
    * Default constructor.
    */
   MRST();
-
-  /**
-   * Copy-constructor.
-   */
-  MRST(const MRST &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~MRST();
   //@}
  
 public:
@@ -311,7 +301,8 @@ private:
   /**
    *  Array containing the data to be interpolated
    */
-  double data[np+1][nx+1][nq+1];
+  //  double data[np+1][nx+1][nq+1];
+  vector<vector<vector<double> > > data;
 
   /**
    *  The \f$x\f$ values for interpolation

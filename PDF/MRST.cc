@@ -46,9 +46,6 @@ const double MRST::mc2=2.045;
  */
 const double MRST::mb2=18.5;
 
-
-MRST::~MRST() {}
-
 ClassDescription<MRST> MRST::initMRST;
 
 bool MRST::canHandleParticle(tcPDPtr particle) const {
@@ -172,15 +169,11 @@ double MRST::pdfValue(double x, double q2, tcPDPtr particle, tcPDPtr parton, boo
 }
 
 void MRST::persistentOutput(PersistentOStream &out) const {
-  out << _file;
-  for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
-     out << data[i][j][k];
+  out << _file << data;
 }
 
 void MRST::persistentInput(PersistentIStream & in, int version) {
-  in >> _file;
-  for(int i=0; i<=np; i++) for(int j=0; j<=nx; j++) for(int k=0; k<=nq; k++)
-     in >> data[i][j][k];
+  in >> _file >> data;
   initialize(false);
 }
 

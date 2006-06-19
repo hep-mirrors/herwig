@@ -14,8 +14,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-RunningMass::~RunningMass() {}
-
 void RunningMass::persistentOutput(PersistentOStream & os) const {
   os << _theQCDOrder << _thePower << _theCoefficient << _theMaxFlav
      << _theStandardModel;
