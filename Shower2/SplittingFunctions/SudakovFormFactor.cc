@@ -182,7 +182,7 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(0.);
   do
-    { 
+    {
       if(!guessSpaceLike(t,tmin,x)) break;
       pt2=sqr(1.-_z)*t-_z*sqr(_kinCutoff);
     }

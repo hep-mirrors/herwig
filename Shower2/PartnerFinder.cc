@@ -13,6 +13,7 @@
 // #include "PartnerFinder.tcc"
 #endif
 
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower2/Kinematics/ShowerParticle.h"
@@ -110,6 +111,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
     if (partners.empty())
       throw Exception() << "Failed to make colour connections in " 
 			<< "PartnerFinder::setQCDInitialEvolutionScales"
+			<< (**cit)
 			<< Exception::eventerror;
     // In the case of more than one candidate colour partners,
     //               our treatment is based on two assumptions:

@@ -75,9 +75,11 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 	  else
 	    dm = particleJetParent->data().constituentMass();
 	  if (abs(dm-particleJetParent->momentum().mass())>0.1*MeV
-	      &&particleJetParent->dataPtr()->stable()) 
+	      &&particleJetParent->dataPtr()->stable()
+	      &&particleJetParent->id()!=ParticleID::gamma) 
 	    {
 	      Lorentz5Momentum dum =  particleJetParent->momentum();
+	      if(dm>dum.e()) throw Veto();
 	      dum.setMass(dm); 
 	      dum.rescaleRho(); 
 	      particleJetParent->set5Momentum(dum);  
@@ -151,7 +153,7 @@ reconstructHardJets(ShowerTreePtr hard) const
       tempJetKin.p = (*cit)->progenitor()->momentum();
       atLeastOnce |= reconstructTimeLikeJet((*cit)->progenitor(),0);
       tempJetKin.q = (*cit)->progenitor()->momentum();
-      jetKinematics.push_back(tempJetKin);  
+      jetKinematics.push_back(tempJetKin);
     }
   // find the rescaling factor
   double k = 0.0; 
@@ -356,10 +358,16 @@ reconstructISJets(Lorentz5Momentum pcm,
       k1 = sqrt(rad);
       k2 = kp/k1;
     } 
-  else  throw Exception() << "KinematicsReconstructor::reconstructISJets " 
+  else
+    {
+      cerr << "KinematicsReconstructor::reconstructISJets " 
+	   << "  Plus:  k1 = " << k1 
+	   << "WARNING! Can't get k1p, k2p!\n";
+      throw Exception() << "KinematicsReconstructor::reconstructISJets " 
 			  << "  Plus:  k1 = " << k1 
 			  << "WARNING! Can't get k1p, k2p!\n"
 			  << Exception::eventerror;
+    }
   double beta1 = getBeta((a1+b1), (a1-b1), 
 			 (k1*a1+b1/k1), (k1*a1-b1/k1));
   double beta2 = getBeta((a2+b2), (a2-b2), 

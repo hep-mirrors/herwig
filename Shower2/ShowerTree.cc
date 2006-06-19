@@ -274,27 +274,59 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
  	    throw Exception() << "Initial-state particle must have a ThePEGBase"
  			      << " in ShowerTree::fillEventRecord()" 
  			      << Exception::runerror;
-	  PPtr original = (*cit).first->original();
- 	  PPtr hadron = original->parents()[0];
- 	  PPtr intermediate = original->children()[0];
-	  // break mother/daugther relations
- 	  init->abandonChild(intermediate);
- 	  init->addChild(original);
- 	  hadron->abandonChild(original);
- 	  // if particle showers add shower
- 	  if(hadron->children().size() > 1) 
- 	    addInitialStateShower(init,pstep,false);
- 	  // no showering for this particle
- 	  else 
- 	    {
- 	      updateColour(init);
- 	      hadron->abandonChild(init);
- 	      hadron->addChild(init);
- 	      pstep->addIntermediate(init);
- 	    }
+	  // if not from a matrix element correction
+	  if(cit->first->perturbative())
+	    {
+	      PPtr original = (*cit).first->original();
+	      PPtr hadron = original->parents()[0];
+	      PPtr intermediate = original->children()[0];
+	      // break mother/daugther relations
+	      init->abandonChild(intermediate);
+	      init->addChild(original);
+	      hadron->abandonChild(original);
+	      // if particle showers add shower
+	      if(hadron->children().size() > 1) 
+		addInitialStateShower(init,pstep,false);
+	      // no showering for this particle
+	      else 
+		{
+		  updateColour(init);
+		  hadron->abandonChild(init);
+		  hadron->addChild(init);
+		  pstep->addIntermediate(init);
+		}
+	    }
+	  else
+	    {
+ 	      PPtr original = (*cit).first->original();
+ 	      PPtr hadron = original->parents()[0];
+ 	      PPtr intermediate = original->children()[0];
+	      PPtr copy=cit->first->copy();
+ 	      // break mother/daugther relations
+ 	      init->abandonChild(intermediate);
+	      copy->abandonChild(intermediate);
+	      copy->addChild(original);
+	      updateColour(copy);
+ 	      hadron->abandonChild(original);
+	      hadron->abandonChild(copy);
+ 	      init->addChild(copy);
+	      pstep->addIntermediate(copy);
+ 	      // if particle showers add shower
+ 	      if(hadron->children().size() > 1) 
+ 		addInitialStateShower(init,pstep,false);
+	      // no showering for this particle
+	      else 
+		{
+		  updateColour(init);
+		  hadron->abandonChild(init);
+		  hadron->addChild(init);
+		  pstep->addIntermediate(init);
+		}
+	    }
 	}
      }
    // final-state radiation
+  PPair incoming=pstep->collision()->primarySubProcess()->incoming();
    if(FSR)
      {
        for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit)
@@ -318,11 +350,24 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
 	  // from a matrix element correction
 	  else
 	    {
-	      updateColour((*cit).first->copy());
-	      (*cit).first->original()->addChild((*cit).first->copy());
-	      pstep->addDecayProduct((*cit).first->copy());
-	      (*cit).first->copy()->addChild(init);
-	      pstep->addDecayProduct(init);
+	      if(cit->first->original()==incoming.first||
+		 cit->first->original()==incoming.second)
+		{
+		  updateColour((*cit).first->copy());
+ 		  (*cit).first->original()->parents()[0]->
+		    addChild((*cit).first->copy());
+ 		  pstep->addDecayProduct((*cit).first->copy());
+ 		  (*cit).first->copy()->addChild(init);
+ 		  pstep->addDecayProduct(init);
+		}
+	      else
+		{
+		  updateColour((*cit).first->copy());
+		  (*cit).first->original()->addChild((*cit).first->copy());
+		  pstep->addDecayProduct((*cit).first->copy());
+		  (*cit).first->copy()->addChild(init);
+		  pstep->addDecayProduct(init);
+		}
 	    }
 	  updateColour(init);
 	  // insert shower products

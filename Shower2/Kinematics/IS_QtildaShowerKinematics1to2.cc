@@ -34,11 +34,6 @@ updateParent(const tShowerParticlePtr theParent,
   // from c1.  The name updateParent is still referring to the
   // timelike branching though.
   // on-shell child
-  CurrentGenerator::current().log() << "testing " 
-				      << z()                   << " " 
-				      << theParent->sudAlpha() << " " 
-				      << c1->sudAlpha()        << " " 
-				      << c2->sudAlpha()        << endl;
   double beta = 0.0;
   if (c2->data().id() == ParticleID::g) 
     {beta = (sqr(showerVariables()->gluonMass())+c2->sudPperp2())

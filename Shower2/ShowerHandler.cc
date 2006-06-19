@@ -94,14 +94,14 @@ void ShowerHandler::findShoweringParticles()
     // if a remnant don't consider
     if(eventHandler()->currentCollision()->isRemnant((*taggedP)->original()))
       continue;
-    // find the parent and if unstable s-channel resonance
+    // find the parent and if colourless s-channel resonance
     bool isDecayProd=false;
     tPPtr parent;
     if(!(*taggedP)->parents().empty()) 
       {
 	parent = (*taggedP)->parents()[0];
 	// if from a decaying particle add decaying particle to list
-	isDecayProd = !parent->dataPtr()->stable() && parent->momentum().m2()>0.;
+	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.;
       }
     // add to list of outgoing hard particles if needed
     if(outgoingset.find(*taggedP) != outgoingset.end())
@@ -205,12 +205,12 @@ void ShowerHandler::cascade()
       }
     catch (Veto)
       {
+ 	//cerr << "Caught Veto from main while loop in "
+ 	//     << "ShowerHandler::cascade()\n"; 
+ 	//generator()->log() << "Caught Veto from main while loop in "
+ 	//		   << "ShowerHandler::cascade()\n"; 
 	throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
 			  << Exception::eventerror;
- 	cerr << "Caught Veto from main while loop in "
- 	     << "ShowerHandler::cascade()\n"; 
- 	generator()->log() << "Caught Veto from main while loop in "
- 			   << "ShowerHandler::cascade()\n"; 
 	++countFailures;
       }
   }

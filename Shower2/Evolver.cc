@@ -135,7 +135,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard)
   	  // get the PDF
 	   Ptr<BeamParticleData>::const_pointer 
 	     beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
-	     (particlesToShower[ix]->progenitor()->parents()[0]->dataPtr());
+	     (particlesToShower[ix]->original()->parents()[0]->dataPtr());
 	   if(!beam) throw Exception() << "The Beam particle does not have"
 				       << " BeamParticleData in Evolver::" 
 				       << "showerhardProcess()" 
@@ -145,6 +145,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard)
 	   // perform the shower
 	   _progenitor=particlesToShower[ix];
 	   _progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor()));
+	   //_progenitor->hasEmitted(false);
 	 }
      }
    // final-state radiation
@@ -157,6 +158,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard)
 	   // perform shower
 	   _progenitor=particlesToShower[ix];
 	   _progenitor->hasEmitted(timeLikeShower(particlesToShower[ix]->progenitor()));
+	   //_progenitor->hasEmitted(false);
 	 }
      }
    // if needed do the kinematic reconstruction
@@ -212,7 +214,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle)
       fb=_splittingGenerator->chooseForwardBranching(*particle);
       // apply vetos if needed
       if(fb.kinematics && fb.sudakov && _currentme && _showerVariables->softMEC())
-	{vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);}
+	vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
     }
   // if no branching set decay matrix and return
   if(!fb.kinematics||!fb.sudakov)
@@ -387,7 +389,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle)
        bb=_splittingGenerator->chooseBackwardBranching(*particle);
        // apply the soft correction
        if(bb.kinematics && bb.sudakov && _currentme && _showerVariables->softMEC())
-	 {vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);}
+	 vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
      }
    if(!bb.kinematics||!bb.sudakov) return false;
    // assign the splitting function and shower kinematics
@@ -421,6 +423,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle)
    _currenttree->addInitialStateBranching(particle,newParent,otherChild);
    // now continue the shower
    bool emitted=spaceLikeShower(newParent);
+   //bool emitted=false;
    // now reconstruct the momentum
    if(!emitted)
      bb.kinematics->updateLast(newParent,0);
@@ -600,6 +603,7 @@ void Evolver::showerDecay(ShowerTreePtr decay)
 	   // perform shower
 	   _progenitor=particlesToShower[ix];
 	   _progenitor->hasEmitted(timeLikeShower(particlesToShower[ix]->progenitor()));
+	   //_progenitor->hasEmitted(false);
 	 }
      }
    // if needed do the kinematic reconstruction
@@ -617,7 +621,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
       fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass);
       // apply the soft correction
       if(fb.kinematics && fb.sudakov && _currentme && _showerVariables->softMEC())
-	{vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);}
+	vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
     }
   // if no branching set decay matrix and return
   if(!fb.kinematics||!fb.sudakov)
