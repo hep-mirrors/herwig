@@ -49,6 +49,8 @@ dnl ####################################
 
 AC_PATH_PROG(PERL, perl)
 
+AC_PDF_PATH
+
 AC_CHECK_CLHEP
 AC_CHECK_THEPEG
 
@@ -121,6 +123,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		lib/Makefile
 		include/Makefile
 		src/Makefile
+		src/PDF.in
 		Doc/Makefile
 		Looptools/Makefile
 		Analysis/Makefile

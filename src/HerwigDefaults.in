@@ -94,31 +94,7 @@ read UnderlyingEvent.in
 create Herwig++::HwDecayHandler /Defaults/Handlers/PartonicDecayHandler
 set /Defaults/Handlers/PartonicDecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
 
-cd /Defaults/Partons
-
-# Handle leptons
-create ThePEG::LeptonLeptonPDF LeptonPDF LeptonLeptonPDF.so
-set LeptonPDF:RemnantHandler LeptonRemnants
-set /Defaults/Particles/e-:PDF LeptonPDF
-set /Defaults/Particles/e+:PDF LeptonPDF
-
-# Handle hadrons
-library HwMRST.so
-create Herwig++::PDF::MRST MRST
-#setup MRST cor01.dat
-setup MRST ../PDF/mrst/1998/lo05a.dat
-#create Herwig++::PDF::MRST99_1 MRSTData
-#set MRST:Data MRSTData
-set MRST:RemnantHandler BaryonRemnants
-library GRVBase.so
-create ThePEG::GRV94L GRV94L GRV94L.so
-create ThePEG::GRV94M GRV94M GRV94M.so
-set GRV94L:RemnantHandler BaryonRemnants
-set GRV94M:RemnantHandler BaryonRemnants
-set /Defaults/Particles/p+:PDF MRST
-set /Defaults/Particles/pbar-:PDF MRST
-#set /Defaults/Particles/p+:PDF GRV94L
-#set /Defaults/Particles/pbar-:PDF GRV94L
+read PDF.in
 
 # Set some particle properties
 set /Defaults/Particles/g:DefaultSpin 3

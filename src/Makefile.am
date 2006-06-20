@@ -13,6 +13,8 @@ LEP.in Herwig++.cc Herwig.Makefile  \
 SMWZDecays.in Model.in ILC.in \
 StandardModelVertices.in Analysis.in
 
+pkgdata_DATA = PDF.in
+
 CLEANFILES = HerwigDefaults.rpo LEP.run LEP.log LEP.out \
   LHC.run LHC.log LHC.out TVT.run TVT.log TVT.out \
   ILC.run ILC.log ILC.out
@@ -43,10 +45,3 @@ check-TVT:
 	$(myENV) ./Herwig++ init
 	$(myENV) ./Herwig++ read TVT.in
 	$(myENV) ./Herwig++ run TVT.run -N100
-
-######################
-
-install-data-hook:
-	rm -f $(DESTDIR)$(pkgdatadir)/HerwigDefaults.in
-	sed -e s:../PDF/mrst:$(DESTDIR)$(pkgdatadir)/PDF/mrst:g \
-          $(srcdir)/HerwigDefaults.in > $(DESTDIR)$(pkgdatadir)/HerwigDefaults.in
