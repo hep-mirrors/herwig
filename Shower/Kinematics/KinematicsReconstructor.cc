@@ -7,6 +7,7 @@
 #include "KinematicsReconstructor.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Utilities/Timer.h"
@@ -79,7 +80,11 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 	      &&particleJetParent->id()!=ParticleID::gamma) 
 	    {
 	      Lorentz5Momentum dum =  particleJetParent->momentum();
-	      if(dm>dum.e()) throw Veto();
+	      if(dm>dum.e()) {
+		cerr << '\n' << dum << " " << dum.vect().mag() << '\n';
+		cerr << *CurrentGenerator::current().currentEvent() << '\n';
+		throw Veto();
+	      }
 	      dum.setMass(dm); 
 	      dum.rescaleRho(); 
 	      particleJetParent->set5Momentum(dum);  
@@ -159,7 +164,18 @@ reconstructHardJets(ShowerTreePtr hard) const
   double k = 0.0; 
   if(atLeastOnce) {
     k = solveKfactor(p_cm[1].mag(), jetKinematics);
-    if(k < 0. || k > 1.) return false;
+    CurrentGenerator::current().log() << "testing in boost " << k << endl;
+    if(k < 0. || k > 1.)
+      {
+	CurrentGenerator::current().log() << "total " << p_cm[1] << " " << p_cm[1].m() << endl;
+	for(unsigned int ix=0;ix<jetKinematics.size();++ix)
+	  {
+	    CurrentGenerator::current().log() << ix << " " 
+					      << jetKinematics[ix].q << " " 
+					      << jetKinematics[ix].q.m() << endl;
+	  }
+	return false;
+      }
   }
   // perform the rescaling and boosts
   for(JetKinVect::iterator it = jetKinematics.begin();

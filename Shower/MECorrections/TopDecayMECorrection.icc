@@ -13,7 +13,8 @@ inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),
 {}
 
 inline TopDecayMECorrection::TopDecayMECorrection(const TopDecayMECorrection & x)
-    : MECorrectionBase(x), _ma(x._ma), _mc(x._mc), _mt(x._mt), _mg(x._mg), _a(x._a), _c(x._c), _g(x._g),
+    : MECorrectionBase(x), _ma(x._ma), _mc(x._mc), _mt(x._mt), _mg(x._mg), _a(x._a),
+      _c(x._c), _g(x._g),
       _initialenhance(x._initialenhance),_finalenhance(x._finalenhance),
       _use_me_for_t2(x._use_me_for_t2)
 {}
@@ -24,98 +25,6 @@ inline IBPtr TopDecayMECorrection::clone() const {
 
 inline IBPtr TopDecayMECorrection::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void TopDecayMECorrection::doinitrun() throw(InitException) {
-  Interfaced::doinit();
-  _output[0].open("TopDecayMECorrectionRaw.top");
-  _output[0] << "SET FONT DUPLEX\n";
-  _output[0] << "SET LIMITS X 0 1 Y 0.9 1.3\n";
-  _output[0] << "TITLE BOTTOM \"X011\"\n";
-  _output[0] << "CASE         \" X X\"\n";
-  _output[0] << "TITLE LEFT \"X021\"\n";
-  _output[0] << "CASE       \" X X\"\n";
-  _output[1].open("TopDecayMECorrectionReconstructed.top");
-  _output[1] << "SET FONT DUPLEX\n";
-  _output[1] << "SET LIMITS X 0 1 Y 0.9 1.3\n";
-  _output[1] << "TITLE BOTTOM \"X011\"\n";
-  _output[1] << "CASE         \" X X\"\n";
-  _output[1] << "TITLE LEFT \"X021\"\n";
-  _output[1] << "CASE       \" X X\"\n";
-}
-
-inline void TopDecayMECorrection::dofinish() {
-  Interfaced::dofinish();
-  _output[0] << "PLOT\n";
-  _output[1] << "PLOT\n";
-  // Here we calculate the full phase space boundary to be sent 
-  // to the file and joined with a red line.
-  for(double xg=2*sqrt(_g);xg<=1.+_g-sqr(sqrt(_a)+sqrt(_c));xg+=0.0005)
-    { double xa = XAB(_a,_c,_g,xg,(2.*xg-2.*_g)/(xg+sqrt(xg*xg-4.*_g)),0);
-      KPRINTER(xg,xa); }
-  _output[0] << "JOIN BLACK" << endl;
-  _output[1] << "JOIN BLACK" << endl;
-  for(double xg=1.+_g-sqr(sqrt(_a)+sqrt(_c));xg>=2*sqrt(_g);xg-=0.0005)
-    { double xa = XAB(_a,_c,_g,xg,(2.*xg-2.*_g)/(xg-sqrt(xg*xg-4.*_g)),0);
-      KPRINTER(xg,xa); }
-  _output[0] << "JOIN BLACK" << endl;
-  _output[1] << "JOIN BLACK" << endl;
-  for(double xa=2*sqrt(_a);xa<=1.+_a-sqr(sqrt(_c)+sqrt(_g));xa+=0.0005)
-    { double xg = XGC(_a,_c,_g,xa,1.2,-1,1);
-      KPRINTER(xg,xa); }
-  _output[0] << "JOIN BLACK" << endl;
-  _output[1] << "JOIN BLACK" << endl;
-  for(double xa=1.+_a-sqr(sqrt(_c)+sqrt(_g));xa>=2*sqrt(_a);xa-=0.0005)
-  { double xg = XGC(_a,_c,_g,xa,1.2, 1,1); 
-    KPRINTER(xg,xa); }
-  _output[0] << "JOIN BLACK" << endl;
-  _output[1] << "JOIN BLACK" << endl;
-  // Here we calculate the approximate dead region boundary, 
-  // to be joined in green:
-  for(double xg=2*sqrt(_g);xg<=(1.+_g-sqr(sqrt(_a)+sqrt(_c)));xg+=0.0001)
-  { double xamin = APPROXDEADMINXA(xg,_ktb,_ktc);
-    if(xamin!=9999999.) { 
-       _output[0] << xg << " " << xamin << "\n"; 
-       _output[1] << xg << " " << xamin << "\n"; } }
-  _output[0] << "JOIN GREEN" << endl;
-  _output[1] << "JOIN GREEN" << endl;
-  for(double xg=2*sqrt(_g);xg<=(1.+_g-sqr(sqrt(_a)+sqrt(_c)));xg+=0.0001)
-  { double xamax = APPROXDEADMAXXA(xg,_ktb,_ktc);
-    if(xamax!=-9999999.) {
-       _output[0] << xg << " " << xamax << "\n"; 
-       _output[1] << xg << " " << xamax << "\n"; } }
-  _output[0] << "JOIN GREEN" << endl;
-  _output[1] << "JOIN GREEN" << endl;
-  // Here we calculate the exact dead region boundary, 
-  // to be joined in green:
-  for(double xa=XACCUT(_a,_c,_ktc);
-             xa<1.+_a-sqr(sqrt(_c)+sqrt(_g));xa+=0.0005)
-    { double xg = XGC(_a,_c,0.,xa,_ktc, 1,0);
-      KPRINTER(xg,xa); }
-  _output[0] << "JOIN RED" << endl;
-  _output[1] << "JOIN RED" << endl;
-  for(double xa=XACCUT(_a,_c,_ktc);
-             xa<1.+_a-sqr(sqrt(_c)+sqrt(_g));xa+=0.0005)
-    { double xg = XGC(_a,_c,0.,xa,_ktc,-1,0); 
-      KPRINTER(xg,xa); }
-  _output[0] << "JOIN RED" << endl;
-  _output[1] << "JOIN RED" << endl;
-  
-// close the file units...
-  _output[0].close();
-  _output[1].close();
-}
-
-inline int TopDecayMECorrection::KPRINTER(double XG,double XA) {
-    if(!isnan(XG)&&!isnan(XA)
-       &&XG>=2.*sqrt(_g)-1.0E-7
-       &&XG<=1.+_g-sqr(sqrt(_a)+sqrt(_c))+1.0E-7
-      ) 
-    {
-      _output[0] << XG << " " << XA << "\n"; 
-      _output[1] << XG << " " << XA << "\n"; 
-    }
-    return 0;
 }
 
 inline double TopDecayMECorrection::XGBR1(double A, double C, double G,

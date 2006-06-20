@@ -243,21 +243,6 @@ protected:
    */
   double me(double xw, double xg);
 
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinitrun() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
   /**
    * Full matrix element with a factor of 
    * \f$\frac{\alpha_{S}C_{F}}{\left(1.+A-x_{W}\right)x_{g}^{2}\pi}\f$ removed.

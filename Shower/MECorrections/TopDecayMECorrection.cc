@@ -21,11 +21,11 @@ using namespace Herwig;
 TopDecayMECorrection::~TopDecayMECorrection() {}
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
-    os << _initialenhance << _finalenhance << _use_me_for_t2;
+    os << _initialenhance << _finalenhance;
 }
 
 void TopDecayMECorrection::persistentInput(PersistentIStream & is, int) {
-    is >> _initialenhance >> _finalenhance >> _use_me_for_t2;
+    is >> _initialenhance >> _finalenhance;
 }
 
 ClassDescription<TopDecayMECorrection> TopDecayMECorrection::initTopDecayMECorrection;
@@ -49,13 +49,6 @@ void TopDecayMECorrection::Init() {
      "The enhancement factor for final-state radiation in the shower to ensure"
      " the weight for the matrix element correction is less than one",
      &TopDecayMECorrection::_finalenhance, 1.2, 1.0, 1000.0,
-     false, false, Interface::limited);
-
-  static Parameter<TopDecayMECorrection,bool> interfaceUseMEForT2
-    ("UseMEForT2",
-     "The option to determine whether the T2 region is populated by "
-     "the shower from the decaying object or the ME Correction",
-     &TopDecayMECorrection::_use_me_for_t2, false, true, false,
      false, false, Interface::limited);
 
 }

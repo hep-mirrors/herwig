@@ -116,8 +116,6 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
 	  // if decayed or should be decayed in shower make the tree
 	  PPtr orig=children[ix];
  	  in->abandonChild(orig);
-	  // does not work if child is in hard process
-	  ch->currentEvent()->removeParticle(orig);
 	  if(!orig->children().empty()||
 	     _showerVariables->decayInShower(orig->id()))
 	    {
@@ -199,26 +197,37 @@ void ShowerTree::updateInitialStateShowerProduct(ShowerProgenitorPtr progenitor,
     _incomingLines[progenitor]=ShowerParticlePtr();
 }
 
-void ShowerTree::colourIsolate(vector<PPtr> original,vector<PPtr> copy)
+void ShowerTree::colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy)
 {
   // vectors must have same size
   assert(original.size()==copy.size());
   // create a temporary map with all the particles to make looping easier
-  map<PPtr,PPtr> particles;
+  vector<pair<PPtr,PPtr> > particles;
+  particles.reserve(original.size());
   for(unsigned int ix=0;ix<original.size();++ix)
-    {particles.insert(make_pair(copy[ix],original[ix]));}
+    {particles.push_back(make_pair(copy[ix],original[ix]));}
   // reset the colour of the copies
-  map<PPtr,PPtr>::const_iterator cit,cjt;
+  vector<pair<PPtr,PPtr> >::const_iterator cit,cjt;
   for(cit=particles.begin();cit!=particles.end();++cit)
     if((*cit).first->colourInfo()) (*cit).first->colourInfo(new_ptr(ColourBase()));
   // make the colour connections of the copies
   for(cit=particles.begin();cit!=particles.end();++cit)
     {
+      ColinePtr c1=ColinePtr(),newline=ColinePtr();
       // if particle has a colour line
       if((*cit).second->colourLine()&&!(*cit).first->colourLine())
 	{
-	  ColinePtr c1=(*cit).second->colourLine();
-	  ColinePtr newline=ColourLine::create((*cit).first);
+	  c1=(*cit).second->colourLine();
+	  newline=ColourLine::create((*cit).first);
+	}
+      // if anticolour line
+      if((*cit).second->antiColourLine()&&!(*cit).first->antiColourLine())
+	{
+	  c1=(*cit).second->antiColourLine();
+	  newline=ColourLine::create((*cit).first,true);
+	}
+      if(c1)
+	{
  	  for(cjt=particles.begin();cjt!=particles.end();++cjt)
  	    {
 	      if(cjt==cit) continue;
@@ -227,20 +236,6 @@ void ShowerTree::colourIsolate(vector<PPtr> original,vector<PPtr> copy)
  	      else if((*cjt).second->antiColourLine()==c1)
 		newline->addColoured((*cjt).first,true);
 	    }
-	}
-      // if anticolour line
-      if((*cit).second->antiColourLine()&&!(*cit).first->antiColourLine())
-	{
-	  ColinePtr c1=(*cit).second->antiColourLine();
-	  ColinePtr newline=ColourLine::create((*cit).first,true);
- 	  for(cjt=particles.begin();cjt!=particles.end();++cjt)
- 	    {
-	      if(cjt==cit) continue;
- 	      if((*cjt).second->colourLine()==c1)
-		newline->addColoured((*cjt).first);
- 	      else if((*cjt).second->antiColourLine()==c1)
-		newline->addColoured((*cjt).first,true);
- 	    }
 	}
     }
 }
@@ -281,12 +276,14 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
  	    throw Exception() << "Initial-state particle must have a ThePEGBase"
  			      << " in ShowerTree::fillEventRecord()" 
  			      << Exception::runerror;
+	  PPtr original = (*cit).first->original();
+	  assert(!original->parents().empty());
+	  PPtr hadron = original->parents()[0];
+	  assert(!original->children().empty());
+	  PPtr intermediate = original->children()[0];
 	  // if not from a matrix element correction
 	  if(cit->first->perturbative())
 	    {
-	      PPtr original = (*cit).first->original();
-	      PPtr hadron = original->parents()[0];
-	      PPtr intermediate = original->children()[0];
 	      // break mother/daugther relations
 	      init->abandonChild(intermediate);
 	      init->addChild(original);
@@ -303,11 +300,9 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
 		  pstep->addIntermediate(init);
 		}
 	    }
+	  // from matrix element correction
 	  else
 	    {
- 	      PPtr original = (*cit).first->original();
- 	      PPtr hadron = original->parents()[0];
- 	      PPtr intermediate = original->children()[0];
 	      PPtr copy=cit->first->copy();
  	      // break mother/daugther relations
  	      init->abandonChild(intermediate);
@@ -331,10 +326,10 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
 		}
 	    }
 	}
-     }
-   // final-state radiation
+    }
+  // final-state radiation
   PPair incoming=pstep->collision()->primarySubProcess()->incoming();
-   if(FSR)
+  if(FSR)
      {
        for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit)
  	{
@@ -484,7 +479,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
       // now we need to decay the copy
       PPtr parent=copy[0];
       unsigned int ntry = 0;
-       while (true)
+      while (true)
  	{
  	  // exit if fails
  	  if (++ntry>=200)
@@ -604,10 +599,6 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
   if(ISR&&!_incomingLines.begin()->first->progenitor()->children().empty())
     {
       ShowerParticlePtr init=_incomingLines.begin()->first->progenitor();
-      // initial particle is copy of final from previous shower
-      tParticleVector parents=init->parents();
-      for(unsigned int ix=0;ix<parents.size();++ix)
-	{parents[ix]->abandonChild(init);}
       updateColour(init);
       final->addChild(init);
       pstep->addDecayProduct(init);
@@ -630,9 +621,6 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
     {dpar[ix]->abandonChild(copy);}
   final->addChild(copy);
   pstep->addDecayProduct(copy);
-  ParticleVector copyc=copy->children();
-  for(unsigned int ix=0;ix<copyc.size();++ix)
-      copy->abandonChild(copyc[ix]);
   // final-state radiation
   if(FSR)
     {

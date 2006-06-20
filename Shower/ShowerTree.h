@@ -227,7 +227,7 @@ protected:
    * @param The original particles
    * @param The colour isolated copies
    */
-  void colourIsolate(vector<PPtr> original,vector<PPtr> copy);
+  void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
 
 private:
   
