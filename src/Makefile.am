@@ -50,6 +50,6 @@ if WANT_LOCAL_PDF
 install-data-hook:
 	rm -f $(DESTDIR)$(pkgdatadir)/PDF.in
 	sed -e s:../PDF/mrst:$(DESTDIR)$(pkgdatadir)/PDF/mrst:g \
-    $(srcdir)/PDF.in > $(DESTDIR)$(pkgdatadir)/PDF.in
+             PDF.in > $(DESTDIR)$(pkgdatadir)/PDF.in
 
 endif
