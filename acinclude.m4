@@ -176,19 +176,22 @@ AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 
 AC_DEFUN([AC_PDF_PATH],
 [
-AC_MSG_CHECKING([if Herwig++PDF path is set])
+AC_MSG_CHECKING([which Herwig++ PDF data to use])
 AC_ARG_WITH(PDF,
-        AC_HELP_STRING([--with-PDF=path],[prefix path where Herwig++PDF data was installed]),
+        AC_HELP_STRING([--with-PDF=path],[installation path of Herwig++PDF data tarball]),
         [],
         [with_PDF=${prefix}]
         )
-AC_MSG_RESULT([$with_PDF])
+HERWIG_PDF_DEFAULT=${with_PDF}/share/Herwig++PDF/mrst/1998/lo05a.dat
 
-HERWIG_PDF_PATH=${with_PDF}/share/Herwig++PDF
-
-if ! test -f "${HERWIG_PDF_PATH}/mrst/1998/lo05a.dat"; then
-	AC_MSG_ERROR([cannot find ${with_PDF}/share/Herwig++PDF/mrst/1998/lo05a.dat. Is --with-PDF set correctly?])
+if test -f "${HERWIG_PDF_DEFAULT}"; then
+	AC_MSG_RESULT([$with_PDF])
+	localPDFneeded=false
+else
+	AC_MSG_RESULT([Using built-in PDF data set. For other data sets, set --with-PDF.])
+	HERWIG_PDF_DEFAULT=../PDF/mrst/1998/lo05a.dat
+	localPDFneeded=true
 fi
-
-AC_SUBST(HERWIG_PDF_PATH)
+AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
+AC_SUBST(HERWIG_PDF_DEFAULT)
 ])

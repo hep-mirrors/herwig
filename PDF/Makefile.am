@@ -5,3 +5,19 @@ MRST.cc MRST.h MRST.icc \
 PartonExtractor.h PartonExtractor.icc PartonExtractor.cc PartonExtractor.fh
 
 HwMRST_la_LDFLAGS = -module
+
+EXTRA_DIST = mrst
+
+if WANT_LOCAL_PDF
+install-data-local:
+	for i in `find $(srcdir)/mrst -name '*.dat'`; \
+	do \
+	$(install_sh_DATA) $$i $(DESTDIR)$(pkgdatadir)/PDF/$${i#$(srcdir)/}; \
+	done
+
+uninstall-local:
+	rm -rf $(DESTDIR)$(pkgdatadir)/PDF
+endif
+
+dist-hook:
+	rm -rf `find $(distdir)/mrst -name '.svn' -or -name '.cvsignore' -or -name 'CVS'`

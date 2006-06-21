@@ -45,3 +45,11 @@ check-TVT:
 	$(myENV) ./Herwig++ init
 	$(myENV) ./Herwig++ read TVT.in
 	$(myENV) ./Herwig++ run TVT.run -N100
+
+if WANT_LOCAL_PDF
+install-data-hook:
+	rm -f $(DESTDIR)$(pkgdatadir)/PDF.in
+	sed -e s:../PDF/mrst:$(DESTDIR)$(pkgdatadir)/PDF/mrst:g \
+    $(srcdir)/PDF.in > $(DESTDIR)$(pkgdatadir)/PDF.in
+
+endif
