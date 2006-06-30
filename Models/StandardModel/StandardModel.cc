@@ -14,8 +14,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-StandardModel::~StandardModel() {}
-
 void StandardModel::persistentOutput(PersistentOStream & os) const {
   os << _theFFZVertex <<_theFFPVertex << _theFFGVertex << _theFFWVertex 
      << _theFFHVertex << _theWWHVertex << _theGGGGVertex << _theWWWWVertex

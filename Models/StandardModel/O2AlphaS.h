@@ -34,16 +34,6 @@ public:
    * The default constructor.
    */
   inline O2AlphaS();
-
-  /**
-   * The copy constructor.
-   */
-  inline O2AlphaS(const O2AlphaS &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~O2AlphaS();
   //@}
 
 public:
@@ -152,27 +142,27 @@ private:
   /**
    *  The values of the leading-order \f$\beta\f$-function coefficients
    */
-  double _bcoeff[6];
+  vector<double> _bcoeff;
 
   /**
    *  The values of the next-to-leading-order \f$\beta\f$-function coefficients
    */
-  double _ccoeff[6];
+  vector<double> _ccoeff;
 
   /**
    *  The values of \f$\Lambda_{\rm QCD}\f$ for the diffferent number of flavours
    */
-  Energy _lambdas[6];
+  vector<Energy> _lambdas;
 
   /**
    *  The flavour thresholds
    */
-  Energy _threshold[6];
+  vector<Energy> _threshold;
   
   /**
    *  The constants for matching
    */
-  double _match[6];
+  vector<double> _match;
   /**
    *  Option for the coupling
    */

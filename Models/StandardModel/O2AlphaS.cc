@@ -21,20 +21,14 @@
 
 using namespace Herwig;
 
-O2AlphaS::~O2AlphaS() {}
-
 void O2AlphaS::persistentOutput(PersistentOStream & os) const {
-  os << _lambdaQCD << _copt;
-  for(unsigned int ix=0;ix<6;++ix)
-    {os << _bcoeff[ix] << _ccoeff[ix] << _lambdas[ix] 
-	<< _threshold[ix] << _match[ix];}
+  os << _lambdaQCD << _bcoeff << _ccoeff << _lambdas 
+     << _threshold << _match << _copt;
 }
 
 void O2AlphaS::persistentInput(PersistentIStream & is, int) {
-  is >> _lambdaQCD >> _copt;
-  for(unsigned int ix=0;ix<6;++ix)
-    {is >> _bcoeff[ix] >> _ccoeff[ix] >> _lambdas[ix] 
-	>> _threshold[ix] >> _match[ix];}
+  is >> _lambdaQCD >> _bcoeff >> _ccoeff >> _lambdas 
+     >> _threshold >> _match >> _copt;
 }
 
 ClassDescription<O2AlphaS> O2AlphaS::initO2AlphaS;
@@ -71,9 +65,10 @@ void O2AlphaS::Init() {
 
 
 vector<Energy2> O2AlphaS::flavourThresholds() const {
-  vector<Energy2> thresholds;
-  for(unsigned int ix=0;ix<6;++ix)
-    {thresholds.push_back(sqr(_threshold[ix]));}
+  vector<Energy2> thresholds(_threshold.size());
+  transform(_threshold.begin(), _threshold.end(),
+	    thresholds.begin(),
+	    sqr<Energy>);
   return thresholds;
 }
 
@@ -82,11 +77,15 @@ void O2AlphaS::doinit() throw(InitException) {
   // thresholds
   for(unsigned int ix=1;ix<7;++ix)
     {
-      PDPtr p = getParticleData(ix);
-      _threshold[ix-1]=p->mass();
+      tPDPtr p = getParticleData(ix);
+      _threshold[ix-1] = p->mass();
     }
+  // d is heavier than u, need to swap
+  swap(_threshold[0],_threshold[1]);
+
   // beta function coefficients
-  double ca(generator()->standardModel()->Nc()),cf((sqr(ca)-1.)/2./ca);
+  const double ca = generator()->standardModel()->Nc();
+  const double cf = (sqr(ca)-1.)/2./ca;
   for(unsigned int ix=3;ix<7;++ix)
     {
       _bcoeff[ix-1]=(11.*ca-2.*ix)/(12.*pi);
@@ -95,23 +94,23 @@ void O2AlphaS::doinit() throw(InitException) {
   if(_copt==0)
     {
       double kfac(ca*(67./18.-sqr(pi)/6.)-25./9.);
-      _lambdas[4]=_lambdaQCD*exp(kfac/(4.*pi*_bcoeff[4]))/sqrt(2.);
+      _lambdas[5]=_lambdaQCD*exp(kfac/(4.*pi*_bcoeff[4]))/sqrt(2.);
     }
-  else{_lambdas[4]=_lambdaQCD;}
+  else{_lambdas[5]=_lambdaQCD;}
   // calculate the threshold matching
-  double rho=2.*log(_threshold[5]/_lambdas[4]);
+  double rho=2.*log(_threshold[5]/_lambdas[5]);
   double rat=log(rho)/rho;
   _match[5]=(_bcoeff[4]/(1.-_ccoeff[4]*rat)-_bcoeff[5]/(1.-_ccoeff[5]*rat))*rho;
-  rho=2.*log(_threshold[4]/_lambdas[4]);
+  rho=2.*log(_threshold[4]/_lambdas[5]);
   rat=log(rho)/rho;
   _match[4]=(_bcoeff[4]/(1.-_ccoeff[4]*rat)-_bcoeff[3]/(1.-_ccoeff[3]*rat))*rho;
-  rho=2.*log(_threshold[3]/_lambdas[4]);
+  rho=2.*log(_threshold[3]/_lambdas[5]);
   rat=log(rho)/rho;
   _match[3]=(_bcoeff[3]/(1.-_ccoeff[3]*rat)-_bcoeff[2]/(1.-_ccoeff[2]*rat))*rho
     +_match[4];
   // calculate the 4-flavour lambda
-  _lambdas[3]=_lambdas[4]*pow(_threshold[4]/_lambdas[4],2./25.)*
-    pow(2.*log(_threshold[4]/_lambdas[4]),963./14375.);
+  _lambdas[4]=_lambdas[5]*pow(_threshold[4]/_lambdas[5],2./25.)*
+    pow(2.*log(_threshold[4]/_lambdas[5]),963./14375.);
   // calculate the 3-flavour lambda
   double eps(1.e-6),d35(-1./(_bcoeff[2]*_match[3])),rlf,drh;
   unsigned int ix=0;
@@ -125,15 +124,15 @@ void O2AlphaS::doinit() throw(InitException) {
       ++ix;
     }
   while(ix<100&&abs(drh)>eps*d35);
-  _lambdas[2]=_lambdas[4]*exp(0.5*d35);
+  _lambdas[3]=_lambdas[5]*exp(0.5*d35);
 }
 
 vector<Energy> O2AlphaS::LambdaQCDs() const
 {
-  vector<Energy> output(3,_lambdas[2]);
-  output.push_back(_lambdas[3]);
+  vector<Energy> output(4,_lambdas[3]);
   output.push_back(_lambdas[4]);
-  output.push_back(_lambdas[4]);
+  output.push_back(_lambdas[5]);
+  output.push_back(_lambdas[5]);
   return output;
 }
 
@@ -142,17 +141,17 @@ vector<Energy> O2AlphaS::LambdaQCDs() const
 double O2AlphaS::value(Energy2 scale, const StandardModelBase & sm) const
 {
   Energy rs=sqrt(scale);
-  if(scale<_lambdas[4])
+  if(scale<_lambdas[5])
     {
       cerr << "O2AlphaS called with scale less than Lambda QCD "
 			 << "scale = " << rs << " MeV and "
-			 << "Lambda = " << _lambdas[4] << " MeV\n";
+			 << "Lambda = " << _lambdas[5] << " MeV\n";
       generator()->log() << "O2AlphaS called with scale less than Lambda QCD "
 			 << "scale = " << rs << " MeV and "
-			 << "Lambda = " << _lambdas[4] << " MeV\n";
+			 << "Lambda = " << _lambdas[5] << " MeV\n";
       return 0.;
     }
-  double rho=2.*log(rs/_lambdas[4]),rat(log(rho)/rho);
+  double rho=2.*log(rs/_lambdas[5]),rat(log(rho)/rho);
   double rlf;
   if(rs>_threshold[5])
     {

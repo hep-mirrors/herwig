@@ -1,3 +1,9 @@
+2006-06-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Models/StandardModel/O2AlphaS.*: changed LambdaQCD() output to
+	return vector starting with Lambda_0 instead of Lambda_1. In line
+	with ThePEG
+
 2006-06-13  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Decay/Perturbative/Makefile.am: SMWZDecayer and SMTopDecayer

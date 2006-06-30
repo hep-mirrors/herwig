@@ -9,68 +9,12 @@ using namespace ThePEG;
 typedef Ptr<Herwig::RunningMassBase>::pointer runPtr;
 typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
 
-inline StandardModel::StandardModel() {}
-
-inline StandardModel::StandardModel(const StandardModel & x)
-  : StandardModelBase(x) 
-  ,_theFFZVertex(x._theFFZVertex)
-  ,_theFFPVertex(x._theFFPVertex) ,_theFFGVertex(x._theFFGVertex)
-  ,_theFFWVertex(x._theFFWVertex) ,_theFFHVertex(x._theFFHVertex)
-  ,_theWWHVertex(x._theWWHVertex) 
-  ,_theGGGVertex(x._theGGGVertex) 
-  ,_theWWWVertex(x._theWWWVertex) , _theGGGGVertex(x._theGGGGVertex) 
-  ,_theWWWWVertex(x._theWWWWVertex),_vertexlist(x._vertexlist)
-  ,_theRunningMass(x._theRunningMass) { }
-
 inline IBPtr StandardModel::clone() const {
   return new_ptr(*this);
 }
 
 inline IBPtr StandardModel::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void StandardModel::doupdate() throw(UpdateException) {
-  StandardModelBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void StandardModel::doinit() throw(InitException) {
-  //_theRunningMass->init();
-  StandardModelBase::doinit();
-}
-
-inline void StandardModel::dofinish() {
-  StandardModelBase::dofinish();
-}
-
-inline void StandardModel::doinitrun() {
-  StandardModelBase::doinitrun();
-}
-
-inline void StandardModel::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  StandardModelBase::rebind(trans);
-}
-
-inline IVector StandardModel::getReferences() {
-  IVector ret = StandardModelBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 // Standard Model couplings

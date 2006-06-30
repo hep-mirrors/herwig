@@ -6,30 +6,14 @@
 
 namespace Herwig {
 
-  inline O2AlphaS::O2AlphaS() : _lambdaQCD(180.*MeV),_copt(0)
-{
-  for(unsigned int ix=0;ix<6;++ix)
-    {
-      _bcoeff[ix]=0.;
-      _ccoeff[ix]=0.;
-      _lambdas[ix]=0.;  
-      _threshold[ix]=0.;
-      _match[ix]=0.;
-    }
-}
-
-inline O2AlphaS::O2AlphaS(const O2AlphaS & x)
-  : AlphaSBase(x),_lambdaQCD(x._lambdaQCD),_copt(x._copt) 
-{
-  for(unsigned int ix=0;ix<6;++ix)
-    {
-      _bcoeff[ix]    = x._bcoeff[ix];
-      _ccoeff[ix]    = x._ccoeff[ix];
-      _lambdas[ix]   = x._lambdas[ix]  ;  
-      _threshold[ix] = x._threshold[ix];
-      _match[ix]     = x._match[ix];
-    }
-}
+  inline O2AlphaS::O2AlphaS() 
+    : _lambdaQCD(180.*MeV),
+      _bcoeff(6,0.0),
+      _ccoeff(6,0.0),
+      _lambdas(7,0.0),
+      _threshold(6,0.0),
+      _match(6,0.0),
+      _copt(0) {}
 
 inline IBPtr O2AlphaS::clone() const {
   return new_ptr(*this);
