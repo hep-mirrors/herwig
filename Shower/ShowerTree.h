@@ -127,7 +127,6 @@ public:
    *  Update the shower product for an initial-state particle
    */
   void updateInitialStateShowerProduct(ShowerProgenitorPtr progenitor,
-				       ShowerParticlePtr oldParent,
 				       ShowerParticlePtr newParent);
 
   /**
@@ -175,6 +174,18 @@ public:
    *  Access the parent tree
    */
   inline ShowerTreePtr parent() const;
+
+  /**
+   *  Clear all the shower products so that the event can be reshowered
+   * if the first attempt fail
+   */
+  void clear();
+
+  /**
+   *  Reset the particles resulting from the shower to those which started
+   *  the shower
+   */
+  void resetShowerProducts();
 
 protected:
 

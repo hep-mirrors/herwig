@@ -74,6 +74,7 @@ ShowerTree::ShowerTree(tEHPtr eh,
 	  _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],
 								   copy[ix],temp)),
 					  temp));
+	  _backward.insert(temp);
 	}
       // outgoing
       else
@@ -81,6 +82,7 @@ ShowerTree::ShowerTree(tEHPtr eh,
 	  _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],
 								   copy[ix],temp)),
 					  temp));
+	  _forward.insert(temp);
 	}
     }
   // set up the map of daughter trees
@@ -132,12 +134,6 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
   copy[0]     = new_ptr(Particle(*in));
   // create the parent
   ShowerParticlePtr sparent(new_ptr(ShowerParticle(*copy[0],2)));
-  // make the new children if needed
-//   if(copy.size()>1)
-//     {
-//       for(unsigned int ix=1;ix<copy.size();++ix)
-// 	{copy[0]->addChild(copy[ix]);}
-//     }
   // isolate the colour
   colourIsolate(original,copy);
   sparent->setFinalState(false);
@@ -154,6 +150,7 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
       _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],copy[ix],
  							       stemp)),
  				      stemp));
+      _forward.insert(stemp);
     } 
   // set up the map of daughter trees
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
@@ -188,13 +185,9 @@ void ShowerTree::updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
 }
 
 void ShowerTree::updateInitialStateShowerProduct(ShowerProgenitorPtr progenitor,
-						 ShowerParticlePtr oldParent,
 						 ShowerParticlePtr newParent)
 {
-  if(oldParent->id()==newParent->id())
-    _incomingLines[progenitor]=newParent;
-  else
-    _incomingLines[progenitor]=ShowerParticlePtr();
+  _incomingLines[progenitor]=newParent;
 }
 
 void ShowerTree::colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy)
@@ -534,7 +527,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
 	    }
   	  // now create the shower progenitors
   	  PPtr ncopy=new_ptr(Particle(*orig));
-  	  copy[0]->addChild(ncopy);
+  	  //copy[0]->addChild(ncopy);
   	  ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy,2));
   	  nshow->setFinalState(true);
   	  ShowerProgenitorPtr prog=new_ptr(ShowerProgenitor(children[ix],
@@ -681,6 +674,71 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
   _colour.clear();
 }
 
+void ShowerTree::clear()
+{
+  // reset the has showered flag
+  _hasShowered=false;
+  // clear the colour map
+  _colour.clear();
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  // abandon the children of the outgoing particles
+  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
+    {
+      ShowerParticlePtr orig=cit->first->progenitor();
+      orig->set5Momentum(cit->first->copy()->momentum());
+      ParticleVector children=orig->children();
+      for(unsigned int ix=0;ix<children.size();++ix) orig->abandonChild(children[ix]);
+      _outgoingLines[cit->first]=orig;
+      cit->first->hasEmitted(false);
+    }
+  // forward products
+  _forward.clear();
+  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
+    {_forward.insert(cit->first->progenitor());}
+  // if a decay
+  if(!_wasHard)
+    {
+      ShowerParticlePtr orig=_incomingLines.begin()->first->progenitor();
+      orig->set5Momentum(_incomingLines.begin()->first->copy()->momentum());
+      ParticleVector children=orig->children();
+      for(unsigned int ix=0;ix<children.size();++ix) orig->abandonChild(children[ix]);
+    }
+  // if a hard process
+  else
+    {
+      for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit)
+	{
+	  PPtr parent=cit->first->original()->parents()[0];
+	  ShowerParticlePtr temp=new_ptr(ShowerParticle(*cit->first->copy(),
+							cit->first->progenitor()->perturbative()));
+	  temp->setFinalState(cit->first->progenitor()->isFinalState());
+	  temp->x(cit->first->progenitor()->x());
+	  assert(parent);
+	  cit->first->hasEmitted(false);
+	  if(!(cit->first->progenitor()==cit->second)&&cit->second)
+	    parent->abandonChild(cit->second);
+	  cit->first->progenitor(temp);
+	  _incomingLines[cit->first]=temp;
+	}
+    }
+  // reset the particles at the end of the shower
+  _backward.clear();
+  // if hard process backward products
+  if(_wasHard)
+    for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit)
+      {_backward.insert(cit->first->progenitor());}
+}
+
+void ShowerTree::resetShowerProducts()
+{
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  _backward.clear();
+  _forward.clear();
+  for(cit=_incomingLines.begin();cit!=_incomingLines.end();++cit)
+    {_backward.insert(cit->second);}
+  for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
+    {_forward.insert(cit->second);}
+}
 }
 
 
