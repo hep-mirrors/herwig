@@ -74,14 +74,21 @@ void TopDalitzAnalysis::Init() {
 
 void TopDalitzAnalysis::topShower(PPtr top,tPVector final)
 {
-  PPtr orig=top->parents()[0];
+  PPtr orig=top;
+  ShowerParticlePtr sorig;
   // find the original version of this top
   do
     {
       orig=orig->parents()[0];
+      sorig=dynamic_ptr_cast<ShowerParticlePtr>(orig);
+      if(sorig)
+	{
+	  if(sorig->perturbative()==2) break;
+	}
     }
-  while(dynamic_ptr_cast<ShowerParticlePtr>(orig)&&orig->children().size()==2);
+  while(dynamic_ptr_cast<ShowerParticlePtr>(orig));
   if(abs(orig->parents()[0]->id())!=ParticleID::t) orig=PPtr();
+  //cerr << "testing top and orig " << *top << "\n" << *orig << endl;
   // find the W
   PPtr Wboson,borig;
   for(unsigned int ix=0;ix<top->children().size();++ix)
@@ -89,7 +96,8 @@ void TopDalitzAnalysis::topShower(PPtr top,tPVector final)
       if(abs(top->children()[ix]->id())==ParticleID::Wplus)
 	{
 	  Wboson=top->children()[ix];
-	  if(abs(Wboson->children()[0]->id())==ParticleID::Wplus)
+	  while(abs(Wboson->children()[0]->id())==ParticleID::Wplus&&
+		!dynamic_ptr_cast<ShowerParticlePtr>(Wboson))
 	    Wboson=Wboson->children()[0];
 	}
       else
@@ -124,15 +132,24 @@ void TopDalitzAnalysis::topShower(PPtr top,tPVector final)
       while(!part->parents().empty()&&shower);
       if(last)
 	{
-	  if(abs(last->id())==ParticleID::b&&last->parents()[0]==top)
-	    bottom.push_back(final[ix]);
+	  if(abs(last->id())==ParticleID::b)
+	    {
+	      if(abs(last->id())==ParticleID::b&&
+		 abs(last->parents()[0]->id())==ParticleID::b)
+		last=last->parents()[0];
+	      if(last->parents()[0]==top)
+		bottom.push_back(final[ix]);
+	    }
 	  else if(last==orig)
 	    tprod.push_back(final[ix]);
 	}
     }
+  //cerr << "testing size " << tprod.size() << " " << bottom.size() << endl;
   if(bottom.empty()) bottom.push_back(borig);
   for(unsigned int ix=0;ix<tprod.size();++ix)
-    {bottom.push_back(tprod[ix]);}
+    {
+      bottom.push_back(tprod[ix]);
+    }
   // check the top
   Lorentz5Momentum ptotal;
   for(unsigned int ix=0;ix<bottom.size();++ix)
@@ -150,8 +167,8 @@ void TopDalitzAnalysis::topShower(PPtr top,tPVector final)
 	{
 	  // find jet
 	  iq=ktjets[1].contains(*ev.getConstituents()[ix]);
-	  if(bottom[ix]->id()<0) --nquark[iq];
-	  else if(bottom[ix]->id()<=6) ++nquark[iq];
+	  if(bottom[ix]->id()==-5) --nquark[iq];
+	  else if(bottom[ix]->id()==5) ++nquark[iq];
 	}
       Lorentz5Momentum pb,pg;
       // identify the jets
