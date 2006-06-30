@@ -39,11 +39,11 @@ void SMWZDecayer::doinit() throw(InitException)
     hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
   if(hwsm)
     {
-      _Wvertex = hwsm->vertexFFW();
-      _Zvertex = hwsm->vertexFFZ();
+      _wvertex = hwsm->vertexFFW();
+      _zvertex = hwsm->vertexFFZ();
       // make sure they are initialized
-      _Wvertex->init();
-      _Zvertex->init();
+      _wvertex->init();
+      _zvertex->init();
     }
   else
     {throw InitException();}
@@ -63,13 +63,13 @@ void SMWZDecayer::doinit() throw(InitException)
 	  if(iy!=6)
 	    {
 	      // check that the combination of particles is allowed
-	      if(_Zvertex->allowed(-iy,iy,ParticleID::Z0))
+	      if(_zvertex->allowed(-iy,iy,ParticleID::Z0))
 		{
 		  extpart[1] = getParticleData(-iy);
 		  extpart[2] = getParticleData( iy);
 		  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-		  if(iy<=6){addMode(mode,_Zquarkwgt[ix-1],wgt);}
-		  else{addMode(mode,_Zleptonwgt[ix-11],wgt);}
+		  if(iy<=6){addMode(mode,_zquarkwgt.at(ix-1),wgt);}
+		  else{addMode(mode,_zleptonwgt.at(iy-11),wgt);}
 		}
 	      else
 		{throw InitException() << "SMWZDecayer::doinit() the Z vertex" 
@@ -87,12 +87,12 @@ void SMWZDecayer::doinit() throw(InitException)
       for(iy=2;iy<6;iy+=2)
 	{
 	  // check that the combination of particles is allowed
-	  if(_Wvertex->allowed(-ix,iy,ParticleID::Wminus))
+	  if(_wvertex->allowed(-ix,iy,ParticleID::Wminus))
 	    {
 	      extpart[1] = getParticleData(-ix);
 	      extpart[2] = getParticleData( iy);
 	      mode = new DecayPhaseSpaceMode(extpart,this);
-	      addMode(mode,_Wquarkwgt[iz],wgt);
+	      addMode(mode,_wquarkwgt[iz],wgt);
 	      ++iz;
 	    }
 	  else
@@ -104,12 +104,12 @@ void SMWZDecayer::doinit() throw(InitException)
   for(ix=11;ix<17;ix+=2)
     {
       // check that the combination of particles is allowed
-      if(_Wvertex->allowed(-ix,ix+1,ParticleID::Wminus))
+      if(_wvertex->allowed(-ix,ix+1,ParticleID::Wminus))
 	{
 	  extpart[1] = getParticleData(-ix);
 	  extpart[2] = getParticleData(ix+1);
 	  mode = new DecayPhaseSpaceMode(extpart,this);
-	  addMode(mode,_Wleptonwgt[(ix-11)/2],wgt);
+	  addMode(mode,_wleptonwgt[(ix-11)/2],wgt);
 	}
 	  else
 	    {throw InitException() << "SMWZDecayer::doinit() the W vertex" 
@@ -117,8 +117,6 @@ void SMWZDecayer::doinit() throw(InitException)
 				   << Exception::abortnow;}
     }
 }
-
-SMWZDecayer::~SMWZDecayer() {}
 
 int SMWZDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 {
@@ -157,11 +155,11 @@ int SMWZDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 }
 
 void SMWZDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _Wvertex << _Zvertex << _Zquarkwgt << _Wquarkwgt << _Zleptonwgt << _Wleptonwgt;
+  os << _wvertex << _zvertex << _zquarkwgt << _wquarkwgt << _zleptonwgt << _wleptonwgt;
 }
 
 void SMWZDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _Wvertex >> _Zvertex >> _Zquarkwgt >> _Wquarkwgt >> _Zleptonwgt >> _Wleptonwgt;
+  is >> _wvertex >> _zvertex >> _zquarkwgt >> _wquarkwgt >> _zleptonwgt >> _wleptonwgt;
 }
 
 ClassDescription<SMWZDecayer> SMWZDecayer::initSMWZDecayer;
@@ -176,25 +174,25 @@ void SMWZDecayer::Init() {
   static ParVector<SMWZDecayer,double> interfaceZquarkMax
     ("ZquarkMax",
      "The maximum weight for the decay of the Z to quarks",
-     &SMWZDecayer::_Zquarkwgt,
+     &SMWZDecayer::_zquarkwgt,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<SMWZDecayer,double> interfaceWquarkMax
     ("WquarkMax",
      "The maximum weight for the decay of the W to quarks",
-     &SMWZDecayer::_Wquarkwgt,
+     &SMWZDecayer::_wquarkwgt,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<SMWZDecayer,double> interfaceZleptonMax
     ("ZleptonMax",
      "The maximum weight for the decay of the Z to leptons",
-     &SMWZDecayer::_Zleptonwgt,
+     &SMWZDecayer::_zleptonwgt,
      0, 0, 0, -10000, 10000, false, false, true);
 
   static ParVector<SMWZDecayer,double> interfaceWleptonMax
     ("WleptonMax",
      "The maximum weight for the decay of the W to leptons",
-     &SMWZDecayer::_Wleptonwgt,
+     &SMWZDecayer::_wleptonwgt,
      0, 0, 0, -10000, 10000, false, false, true);
 
 }
@@ -230,16 +228,16 @@ double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
 	      if(inpart.id()==ParticleID::Z0)
 		{
 		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _Zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
+		      _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		  else{newme(vhel,ifm,ia)=
-		      _Zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
+		      _zvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		}
 	      else
 		{
 		  if(iferm>ianti){newme(vhel,ia,ifm)=
-		      _Wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
+		      _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		  else{newme(vhel,ifm,ia)=
-		      _Wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
+		      _wvertex->evaluate(scale,awave[ia],fwave[ifm],inwave[vhel]);}
 		}
 	    }
 	}

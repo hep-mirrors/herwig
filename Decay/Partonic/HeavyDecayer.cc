@@ -27,8 +27,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-HeavyDecayer::~HeavyDecayer() {}
-
 void HeavyDecayer::Init() {
    static ClassDocumentation<HeavyDecayer> documentation
      ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4");

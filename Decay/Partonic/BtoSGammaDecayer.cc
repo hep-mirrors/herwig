@@ -21,8 +21,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-BtoSGammaDecayer::~BtoSGammaDecayer() {}
-
 bool BtoSGammaDecayer::accept(const DecayMode & dm) const {
   // should be three decay products
   if(dm.products().size()!=3){return false;}

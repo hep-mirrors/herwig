@@ -23,8 +23,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-WeakPartonicDecayer::~WeakPartonicDecayer() {}
-
 bool WeakPartonicDecayer::accept(const DecayMode & dm) const {
   // check we can find the flavours of the quarks in the decaying meson
   long id = dm.parent()->id();
@@ -167,7 +165,7 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
       // momentum of the decaying quark
       PPtr inter = getParticleData(idQ)->produceParticle(parent.momentum()*xb);
       // include matrix element
-      if(_MECode==100)
+      if(MECode==100)
 	{
 	  // only the phase space factor don't bother with the W propagator
 	  Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2],&VAWt);
@@ -194,11 +192,11 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
 
 
 void WeakPartonicDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _MECode << _globalParameters;
+  os << MECode << _globalParameters;
 }
 
 void WeakPartonicDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _MECode >> _globalParameters;
+  is >> MECode >> _globalParameters;
 }
 
 ClassDescription<WeakPartonicDecayer> WeakPartonicDecayer::initWeakPartonicDecayer;
@@ -213,7 +211,7 @@ void WeakPartonicDecayer::Init() {
   static Switch<WeakPartonicDecayer,int> interfaceMECode
     ("MECode",
      "The code for the type of matrix element to be used.",
-     &WeakPartonicDecayer::_MECode, 0, false, false);
+     &WeakPartonicDecayer::MECode, 0, false, false);
   static SwitchOption interfaceMECodePhaseSpace
     (interfaceMECode,
      "PhaseSpace",

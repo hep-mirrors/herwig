@@ -25,8 +25,6 @@ namespace Herwig {
   using Helicity::incoming;
   using Helicity::outgoing;
 
-  SMTopDecayer::~SMTopDecayer() {}
-  
   bool SMTopDecayer::accept(const DecayMode & dm) const {
     if(abs(dm.parent()->id()) == ParticleID::t)
       return true;
@@ -80,11 +78,11 @@ namespace Herwig {
     return out;
   }    
   void SMTopDecayer::persistentOutput(PersistentOStream & os) const {
-    os << _Wvertex << _Wquarkwgt << _Wleptonwgt; 
+    os << _wvertex << _wquarkwgt << _wleptonwgt; 
   }
   
   void SMTopDecayer::persistentInput(PersistentIStream & is, int) {
-    is >> _Wvertex >> _Wquarkwgt >> _Wleptonwgt;
+    is >> _wvertex >> _wquarkwgt >> _wleptonwgt;
   }
   
   ClassDescription<SMTopDecayer> SMTopDecayer::initSMTopDecayer;
@@ -124,11 +122,11 @@ namespace Herwig {
       unsigned int thel,bhel,fhel,afhel;
       for(thel = 0;thel<2;++thel){
 	for(bhel = 0;bhel<2;++bhel){	  
-	  inter = _Wvertex->evaluate(scale,1,Wplus,twave[thel],bwave[bhel]);
+	  inter = _wvertex->evaluate(scale,1,Wplus,twave[thel],bwave[bhel]);
 	  for(afhel=0;afhel<2;++afhel){
 	    for(fhel=0;fhel<2;++fhel){
 	      topMe(thel,bhel,afhel,fhel) = 
-		_Wvertex->evaluate(scale,awave[afhel],
+		_wvertex->evaluate(scale,awave[afhel],
 				   fwave[fhel],inter);
 	    }
 	  }
@@ -151,12 +149,12 @@ namespace Herwig {
 	unsigned int tbhel,bbhel,afhel,fhel;
 	for(tbhel = 0;tbhel<2;++tbhel){
 	  for(bbhel = 0;bbhel<2;++bbhel){
-	    inter = _Wvertex->
+	    inter = _wvertex->
 	      evaluate(scale,1,Wminus,bbarWave[bbhel],tbarWave[tbhel]);
 	    for(afhel=0;afhel<2;++afhel){
 	      for(fhel=0;fhel<2;++fhel){
 		topMe(tbhel,bbhel,afhel,fhel) = 
-		  _Wvertex->evaluate(scale,awave[afhel],
+		  _wvertex->evaluate(scale,awave[afhel],
 				   fwave[fhel],inter);
 	      }
 	    }

@@ -8,38 +8,34 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline SMWZDecayer::SMWZDecayer() 
+  : _zquarkwgt(5,0.),
+    _zleptonwgt(6,0.),
+    _wquarkwgt(6,0.),
+    _wleptonwgt(3,0.)
 {
-   _Zquarkwgt.resize(5,0.);
-   _Wquarkwgt.resize(6,0.);
-   _Zleptonwgt.resize(6,0.);
-   _Wleptonwgt.resize(3,0.);
-   _Zquarkwgt[0]=370.081;
-   _Zquarkwgt[1]=286.995;
-   _Zquarkwgt[2]=370.074;
-   _Zquarkwgt[3]=286.671;
-   _Zquarkwgt[4]=366.489;
-   _Zleptonwgt[0]=83.9528;
-   _Zleptonwgt[1]=167.04;
-   _Zleptonwgt[2]=83.9521;
-   _Zleptonwgt[3]=167.04;
-   _Zleptonwgt[4]=83.7659;
-   _Zleptonwgt[5]=167.04;
-   _Wquarkwgt[0]=638.417;
-   _Wquarkwgt[1]=32.5727;
-   _Wquarkwgt[2]=32.6351;
-   _Wquarkwgt[3]=637.169;
-   _Wquarkwgt[4]=6.62717e-05;
-   _Wquarkwgt[5]=1.01539;
-   _Wleptonwgt[0]=223.684;
-   _Wleptonwgt[1]=223.684;
-   _Wleptonwgt[2]=223.52;
+   _zquarkwgt[0]=370.081;
+   _zquarkwgt[1]=286.995;
+   _zquarkwgt[2]=370.074;
+   _zquarkwgt[3]=286.671;
+   _zquarkwgt[4]=366.489;
+   _zleptonwgt[0]=83.9528;
+   _zleptonwgt[1]=167.04;
+   _zleptonwgt[2]=83.9521;
+   _zleptonwgt[3]=167.04;
+   _zleptonwgt[4]=83.7659;
+   _zleptonwgt[5]=167.04;
+   _wquarkwgt[0]=638.417;
+   _wquarkwgt[1]=32.5727;
+   _wquarkwgt[2]=32.6351;
+   _wquarkwgt[3]=637.169;
+   _wquarkwgt[4]=6.62717e-05;
+   _wquarkwgt[5]=1.01539;
+   _wleptonwgt[0]=223.684;
+   _wleptonwgt[1]=223.684;
+   _wleptonwgt[2]=223.52;
    // intermediates
    generateIntermediates(false);
 }
-
-inline SMWZDecayer::SMWZDecayer(const SMWZDecayer & x)
-  : DecayIntegrator(x), _Zquarkwgt(x._Zquarkwgt), _Zleptonwgt(x._Zleptonwgt),
-    _Wquarkwgt(x._Wquarkwgt), _Wleptonwgt(x._Wleptonwgt) {}
 
 inline IBPtr SMWZDecayer::clone() const {
   return new_ptr(*this);
@@ -47,44 +43,6 @@ inline IBPtr SMWZDecayer::clone() const {
 
 inline IBPtr SMWZDecayer::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void SMWZDecayer::doupdate() throw(UpdateException) {
-  DecayIntegrator::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void SMWZDecayer::dofinish() {
-  DecayIntegrator::dofinish();
-}
-
-inline void SMWZDecayer::doinitrun() {
-  DecayIntegrator::doinitrun();
-}
-
-inline void SMWZDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  DecayIntegrator::rebind(trans);
-}
-
-inline IVector SMWZDecayer::getReferences() {
-  IVector ret = DecayIntegrator::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }

@@ -18,8 +18,6 @@
 
 using namespace Herwig;
 
-HwDecayerBase::~HwDecayerBase() {}
-
 bool HwDecayerBase::accept(const DecayMode & dm) const {
   return false;
 }

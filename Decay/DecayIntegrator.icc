@@ -10,50 +10,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 // default constructor  
-inline DecayIntegrator::DecayIntegrator() {
-  _niter=10;
-  _npoint=10000;
-  _ntry=500;
-  _generateinter=false;
-}
-  
-inline void DecayIntegrator::doupdate() throw(UpdateException) {
-  HwDecayerBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-  //  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-  //  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-  //  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-  //  touch()
-  // Touch if anything has changed.
-}
-  
-inline void DecayIntegrator::doinit() throw(InitException) {
-  HwDecayerBase::doinit();
-}
-  
-inline void DecayIntegrator::dofinish() {
-  HwDecayerBase::dofinish();
-}
-  
-inline void DecayIntegrator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  HwDecayerBase::rebind(trans);
-}
-  
-inline IVector DecayIntegrator::getReferences() {
-  IVector ret = HwDecayerBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
+inline DecayIntegrator::DecayIntegrator() 
+  : _niter(10), _npoint(10000), _ntry(500),
+    _generateinter(false) {}
 
 // set and get the matrix element
 inline const DecayMatrixElement & DecayIntegrator::ME() const

@@ -27,8 +27,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-QuarkoniumDecayer::~QuarkoniumDecayer() {}
-
 void QuarkoniumDecayer::Init() {
    static ClassDocumentation<QuarkoniumDecayer> documentation
      ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4");

@@ -25,8 +25,6 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-Hw64Decayer::~Hw64Decayer() {}
-
 void Hw64Decayer::Init() {
    static ClassDocumentation<Hw64Decayer> documentation
      ("Class to decay all particles in HERWIG by the algorithms used in HERWIG 6.4");

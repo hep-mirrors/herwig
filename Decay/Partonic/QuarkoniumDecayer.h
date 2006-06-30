@@ -61,14 +61,6 @@ public:
    * Standard ctors and dtor
    */
   inline QuarkoniumDecayer();
-  /**
-   * Standard ctors and dtor
-   */
-  inline QuarkoniumDecayer(const QuarkoniumDecayer &);
-  /**
-   * Standard ctors and dtor
-   */
-  virtual ~QuarkoniumDecayer();
 
 public:
 
@@ -88,20 +80,6 @@ public:
    * Standard Init function used to initialize the interface.
    */
   static void Init();
-
-  /**
-   * Standard Interfaced virtual functions
-   */
-  inline virtual void doupdate() throw(UpdateException);
-  /**
-   * Standard Interfaced virtual functions
-   */
-  inline virtual void doinit() throw(InitException);
-  /**
-   * Standard Interfaced virtual functions
-   */
-  inline virtual void dofinish();
-
   /**
    * Standard Persisten stream methods
    */
@@ -120,17 +98,6 @@ protected:
     * Standard clone methods
     */
    inline virtual IBPtr fullclone() const;
-
-   /**
-    * Change all pointers of Interfaced objects to corresponding clones
-    */
-   inline virtual void rebind(const TranslationMap &trans) 
-                              throw(RebindException);
-
-   /**
-    * Return pointers to all interfaced objects referred to by this class.
-    */
-   inline virtual IVector getReferences();
 
 private:
 

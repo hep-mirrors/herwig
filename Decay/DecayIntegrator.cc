@@ -27,15 +27,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-// copy constructor
-DecayIntegrator::DecayIntegrator(const DecayIntegrator & x)
-  : HwDecayerBase(x),_niter(x._niter),_npoint(x._npoint), _ntry(x._ntry),
-    _modes(x._modes), _generateinter(x._generateinter),_photongen(x._photongen) 
-{}
-
-// destructor
-DecayIntegrator::~DecayIntegrator() {}
-
 // dummy accept method
 bool DecayIntegrator::accept(const DecayMode & dm) const 
 {

@@ -7,23 +7,21 @@
 namespace Herwig {
 using namespace ThePEG;
   
-inline SMTopDecayer::SMTopDecayer() {
-  _Wquarkwgt.resize(6,0.);
-  _Wleptonwgt.resize(3,0.);
-  _Wleptonwgt[0]=223.684;
-  _Wleptonwgt[1]=223.684;
-  _Wleptonwgt[2]=223.52;
-  _Wquarkwgt[0]=638.417;
-  _Wquarkwgt[1]=32.5727;
-  _Wquarkwgt[2]=32.6351;
-  _Wquarkwgt[3]=637.169;
-  _Wquarkwgt[4]=6.62717e-05;
-  _Wquarkwgt[5]=1.01539;
+inline SMTopDecayer::SMTopDecayer() 
+  :_wquarkwgt(6,0.),
+   _wleptonwgt(3,0.) 
+{
+  _wleptonwgt[0]=223.684;
+  _wleptonwgt[1]=223.684;
+  _wleptonwgt[2]=223.52;
+  _wquarkwgt[0]=638.417;
+  _wquarkwgt[1]=32.5727;
+  _wquarkwgt[2]=32.6351;
+  _wquarkwgt[3]=637.169;
+  _wquarkwgt[4]=6.62717e-05;
+  _wquarkwgt[5]=1.01539;
   generateIntermediates(true);
 }
-  
-  inline SMTopDecayer::SMTopDecayer(const SMTopDecayer & x)
-    : DecayIntegrator(x),_Wquarkwgt(x._Wquarkwgt),_Wleptonwgt(x._Wleptonwgt){}
   
   inline IBPtr SMTopDecayer::clone() const {
     return new_ptr(*this);
@@ -31,24 +29,6 @@ inline SMTopDecayer::SMTopDecayer() {
   
   inline IBPtr SMTopDecayer::fullclone() const {
     return new_ptr(*this);
-  }
-  
-  inline void SMTopDecayer::doupdate() throw(UpdateException) {
-    DecayIntegrator::doupdate();
-    // First update base class.
-    bool redo = touched();
-    // redo if touched.
-    //  UpdateChecker::check(aDependentMember, redo);
-    // Update referenced objects on which this depends redo is set to true
-    // if the dependent object is touched.
-    //  for_each(ContainerOfDependencies, UpdateChecker(redo));
-    // Update a container of references.
-    //  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-    if ( !redo ) return;
-    // return if nothing has been touched. Otherwise do the actual update.
-    //  touch()
-    // Touch if anything has changed.
   }
   
   inline void SMTopDecayer::doinit() throw(InitException) {
@@ -59,9 +39,9 @@ inline SMTopDecayer::SMTopDecayer() {
       hwsm = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
     if(hwsm)
       {
-	_Wvertex = hwsm->vertexFFW();
+	_wvertex = hwsm->vertexFFW();
 	//initialise
-	_Wvertex->init();
+	_wvertex->init();
       }
     else{throw InitException();}
     //set up decay modes
@@ -83,7 +63,7 @@ inline SMTopDecayer::SMTopDecayer() {
       Wchannel->addIntermediate(Wplus,0,0.0,2,3);
       Wchannel->init();
       mode->addChannel(Wchannel);
-      addMode(mode,_Wleptonwgt[(i-11)/2],wgt);
+      addMode(mode,_wleptonwgt[(i-11)/2],wgt);
        }
     //quark modes
     unsigned int iz=0;
@@ -92,7 +72,7 @@ inline SMTopDecayer::SMTopDecayer() {
        for(int iy=2;iy<6;iy+=2)
  	{
  	  // check that the combination of particles is allowed
- 	  if(_Wvertex->allowed(-ix,iy,ParticleID::Wminus))
+ 	  if(_wvertex->allowed(-ix,iy,ParticleID::Wminus))
  	    {
  	      extpart[2] = getParticleData(-ix);
  	      extpart[3] = getParticleData( iy);
@@ -102,7 +82,7 @@ inline SMTopDecayer::SMTopDecayer() {
 	      Wchannel->addIntermediate(Wplus,0,0.0,2,3);
 	      Wchannel->init();
 	      mode->addChannel(Wchannel);
- 	      addMode(mode,_Wquarkwgt[iz],wgt);
+ 	      addMode(mode,_wquarkwgt[iz],wgt);
  	      ++iz;
  	    }
  	  else
@@ -112,25 +92,5 @@ inline SMTopDecayer::SMTopDecayer() {
 	}
      }
   }
-  
-  inline void SMTopDecayer::dofinish() {
-    DecayIntegrator::dofinish();
-  }
-  
-  inline void SMTopDecayer::doinitrun() {
-    DecayIntegrator::doinitrun();
-  }
-  
-  inline void SMTopDecayer::rebind(const TranslationMap & trans)
-    throw(RebindException) {
-    // dummy = trans.translate(dummy);
-    DecayIntegrator::rebind(trans);
-  }
-  
-  inline IVector SMTopDecayer::getReferences() {
-    IVector ret = DecayIntegrator::getReferences();
-    // ret.push_back(dummy);
-    return ret;
-  }
-  
+
 }
