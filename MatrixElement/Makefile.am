@@ -12,6 +12,8 @@ MEee2Z.h MEee2Z.icc MEee2Z.cc \
 MEPP2GammaJet.h MEPP2GammaJet.icc MEPP2GammaJet.fh MEPP2GammaJet.cc\
 MEQCD2to2.h MEQCD2to2.icc MEQCD2to2.fh MEQCD2to2.cc\
 MEPP2HiggsJet.h MEPP2HiggsJet.icc MEPP2HiggsJet.fh MEPP2HiggsJet.cc\
-MEPP2GammaGamma.h MEPP2GammaGamma.icc MEPP2GammaGamma.fh MEPP2GammaGamma.cc
+MEPP2GammaGamma.h MEPP2GammaGamma.icc MEPP2GammaGamma.fh MEPP2GammaGamma.cc \
+MEPP2QQ.h MEPP2QQ.icc MEPP2QQ.fh MEPP2QQ.cc
 HwME_la_LDFLAGS = -module
+
 
