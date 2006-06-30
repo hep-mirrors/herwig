@@ -69,12 +69,10 @@ void ShowerHandler::fillEventRecord()
   // insert the steps
   for(unsigned int ix=0;ix<_done.size();++ix)
     {
-      //      cerr << *eventHandler()->currentEvent() << endl;
       _done[ix]->fillEventRecord(pstep,
 				 _evolver->isISRadiationON(),
 				 _evolver->isFSRadiationON());
     }
-  //  cerr << *eventHandler()->currentEvent() << endl;
 } 
 
 void ShowerHandler::findShoweringParticles()

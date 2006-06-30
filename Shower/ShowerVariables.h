@@ -250,22 +250,10 @@ public:
   inline unsigned int decay_shower_partition() const;
 
   /**
-   *  Access the option which determines the type of phase space partitioning 
-   *  for the decay_shower.
-   */
-  inline void decay_shower_partition(unsigned int);
-
-  /**
    *  Access the option denoting whether the T2 region of the decay phase
    *  space is populated by the shower (default, false) or the ME correction. 
    */
   inline bool use_me_for_t2();
-
-  /**
-   *  Set the option denoting whether the T2 region of the decay phase
-   *  space is populated by the shower (default, false) or the ME correction. 
-   */
-  inline void use_me_for_t2(bool);
 
   //@}
 
@@ -489,6 +477,7 @@ private:
    *     available for emissions from the charged child is fairly minimal.
    */
   unsigned int _decay_shower_partition;
+
   /**
    *  This flag determines whether the T2 region in the decay shower
    *  (JHEP12(2003)_045) is populated by the ME correction (true) or

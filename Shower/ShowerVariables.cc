@@ -83,7 +83,8 @@ void ShowerVariables::persistentOutput(PersistentOStream & os) const {
      << _qqgPSMode
      << _inputparticlesDecayInShower
      << _particlesDecayInShower << _a << _b << _c
-     << _globalParameters;
+     << _globalParameters
+     << _decay_shower_partition << _use_me_for_t2;
 }
 
 void ShowerVariables::persistentInput(PersistentIStream & is, int) {
@@ -96,7 +97,8 @@ void ShowerVariables::persistentInput(PersistentIStream & is, int) {
      >> _qqgPSMode
      >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> _a >> _b >> _c
-     >> _globalParameters;
+     >> _globalParameters
+     >> _decay_shower_partition >> _use_me_for_t2;
 }
 
 ClassDescription<ShowerVariables> ShowerVariables::initShowerVariables;
@@ -198,6 +200,40 @@ void ShowerVariables::Init() {
      &ShowerVariables::_inputparticlesDecayInShower, -1, 0l, -10000000l, 10000000l,
      false, false, Interface::limited);
 
+  static Switch<ShowerVariables,unsigned int> interfaceDecayShowerPartition
+    ("DecayShowerPartition",
+     "The choice of the limits on the evolution scale for the decay shower.",
+     &ShowerVariables::_decay_shower_partition, 0, false, false);
+  static SwitchOption interfaceDecayShowerPartitionSymmetric
+    (interfaceDecayShowerPartition,
+     "Symmetric",
+     "The symmetric choice",
+     0);
+  static SwitchOption interfaceDecayShowerPartitionMaximal
+    (interfaceDecayShowerPartition,
+     "Maximal",
+     "Maximum radiation from the outgoing particle",
+     1);
+  static SwitchOption interfaceDecayShowerPartitionSmooth
+    (interfaceDecayShowerPartition,
+     "Smooth",
+     "Smooth matching in the soft limit",
+     2);
+
+  static Switch<ShowerVariables,bool> interfaceUseMEForT2
+    ("UseMEForT2",
+     "Use the matrix element correction, if available to fill the T2 region for the decay shower and don't fill using the shower",
+     &ShowerVariables::_use_me_for_t2, false, false, false);
+  static SwitchOption interfaceUseMEForT2Shower
+    (interfaceUseMEForT2,
+     "Shower",
+     "Use the shower to fill the region",
+     false);
+  static SwitchOption interfaceUseMEForT2ME
+    (interfaceUseMEForT2,
+     "ME",
+     "Use the Matrix element to fill the region",
+     true);
 
 }
 
