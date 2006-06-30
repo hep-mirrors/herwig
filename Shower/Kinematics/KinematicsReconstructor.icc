@@ -63,6 +63,13 @@ inline void KinematicsReconstructor::boostChain(tPPtr p, const Vector3 &bv) cons
   if (p->parents()[0] && p->parents()[0]->coloured()) 
     boostChain(p->parents()[0], bv);
   p->boost(bv);
+  // veto the shower if the final parent of the shower has more momentum along beam
+  // or energy than the beam
+  if(!(p->parents()[0] && p->parents()[0]->coloured()))
+    {
+      if(p->parents()[0]->momentum().e()<p->momentum().e()) throw Veto();
+      if(abs(p->parents()[0]->momentum().z())<abs(p->momentum().z())) throw Veto();
+    }
   if(p->children().size()==2)
     {
       if(dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]))
