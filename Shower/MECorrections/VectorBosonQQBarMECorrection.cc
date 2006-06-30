@@ -166,6 +166,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
   gluon->perturbative(false);
   tree->outgoingLines().insert(make_pair(gluon,sg));
+  tree->hardMatrixElementCorrection(true);
 //   // safe 'largest pt so far'.  
 //   Lorentz5Momentum ptot = newfs[0] + newfs[1] + newfs[2];
 //   double x = 2*newfs[0]*ptot/sqr(d_Q);

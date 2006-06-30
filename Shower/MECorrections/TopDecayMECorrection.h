@@ -271,11 +271,6 @@ private:
 private:
 
   /**
-   *  output stream
-   */
-  mutable ofstream _output[2];
-
-  /**
    *  The mass of the W boson
    */
   Energy _ma;
@@ -341,6 +336,9 @@ private:
    */
   double _xg_sampling;
 
+  /**
+   *  The enhancement factor for initial-state radiation
+   */
   double _initialenhance;
 
   /**

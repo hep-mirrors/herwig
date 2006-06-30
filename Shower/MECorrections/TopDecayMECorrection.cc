@@ -99,117 +99,124 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
 
 void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
 {
-
-//   cerr << "Initial outgoing lines: " << tree->outgoingLines().size() << endl;
-   // Get b and a and put them in particle vector ba in that order...
-   ParticleVector ba; 
-   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
-   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)     ba.push_back(cit->first->copy());
-   PPtr temp;
-   if(abs(ba[0]->id())!=5)
-     { temp=ba[0];
-       ba[0]=ba[1];
-       ba[1]=temp; }
-   // Get the starting scales for the showers $\tilde{\kappa}_{b}$
-   // $\tilde{\kappa}_{c}$. These are needed in order to know the boundary
-   // of the dead zone.
-   double ktb(0.),ktc(0.);
-   for(cit = tree->incomingLines().begin();
-       cit!= tree->incomingLines().end();++cit)
-   { if(abs(cit->first->progenitor()->id())==6)
-     ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
-   for(cit = tree->outgoingLines().begin();
-       cit!= tree->outgoingLines().end();++cit)
-   { if(abs(cit->first->progenitor()->id())==5)
-     ktc=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
-   if (ktb<=0.||ktc<=0.) {
-     throw Exception() 
-     << "TopDecayMECorrection::applyHardMatrixElementCorrection()"
-     << " did not set ktb,ktc" 
-     << Exception::abortnow; }
-   _ktb = ktb;
-   _ktc = ktc;
-   // Now decide if we get an emission into the dead region.
-   // If there is an emission newfs stores momenta for a,c,g 
-   // according to NLO decay matrix element. 
-   vector<Lorentz5Momentum> newfs = applyHard(ba,ktb,ktc);
-   // If there was no gluon emitted return.
-   if(newfs.size()!=3) return;
-   // Sanity checks to ensure energy greater than mass etc :)
-   bool check = true; 
-   if (newfs[0].e()<ba[0]->data().constituentMass()) 
-     check = false;
-   if (newfs[1].e()<ba[1]->mass()) 
-     check = false;
-   if (newfs[2].e()<
-     showerVariables()->globalParameters()->effectiveGluonMass()&&
-    !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
-     check = false;
-   // Return if insane:
-   if (!check) return;
-   // Set masses in 5-vectors:
-   newfs[0].setMass(ba[0]->mass());
-   newfs[1].setMass(ba[1]->mass());
-   newfs[2].setMass(0.);
-   // The next part of this routine sets the colour structure.
-   // To do this for decays we assume that the gluon comes from c!
-   // First create new particle objects for c, a and gluon:
-   PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
-   PPtr parent=ba[0]->parents()[0];
-   PPtr newc,newa;
-   newc = getParticleData(ba[0]->id())->produceParticle(newfs[0]);
-   newa = ba[1];
-   newa->set5Momentum(newfs[1]);
-   // Don't need this next line as a is colourless? Keep commented out?
-   //   ba[1]->antiColourLine()->removeAntiColoured(newa);
-   // set the colour lines
-   ColinePtr col;
-   if(ba[0]->id()>0)
-   {
+  // Get b and a and put them in particle vector ba in that order...
+  ParticleVector ba; 
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
+    ba.push_back(cit->first->copy());
+  PPtr temp;
+  if(abs(ba[0]->id())!=5) swap(ba[0],ba[1]);
+  // Get the starting scales for the showers $\tilde{\kappa}_{b}$
+  // $\tilde{\kappa}_{c}$. These are needed in order to know the boundary
+  // of the dead zone.
+  double ktb(0.),ktc(0.);
+  for(cit = tree->incomingLines().begin();
+      cit!= tree->incomingLines().end();++cit)
+    { if(abs(cit->first->progenitor()->id())==6)
+	ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
+  for(cit = tree->outgoingLines().begin();
+      cit!= tree->outgoingLines().end();++cit)
+    { if(abs(cit->first->progenitor()->id())==5)
+	ktc=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
+  if (ktb<=0.||ktc<=0.) {
+    throw Exception() 
+      << "TopDecayMECorrection::applyHardMatrixElementCorrection()"
+      << " did not set ktb,ktc" 
+      << Exception::abortnow; }
+  _ktb = ktb;
+  _ktc = ktc;
+  // Now decide if we get an emission into the dead region.
+  // If there is an emission newfs stores momenta for a,c,g 
+  // according to NLO decay matrix element. 
+  vector<Lorentz5Momentum> newfs = applyHard(ba,ktb,ktc);
+  // If there was no gluon emitted return.
+  if(newfs.size()!=3) return;
+  //cerr << "testing applying hard mec" << endl;
+  // Sanity checks to ensure energy greater than mass etc :)
+  bool check = true; 
+  if (newfs[0].e()<ba[0]->data().constituentMass()) 
+    check = false;
+  if (newfs[1].e()<ba[1]->mass()) 
+    check = false;
+  if (newfs[2].e()<
+      showerVariables()->globalParameters()->effectiveGluonMass()&&
+      !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
+    check = false;
+  // Return if insane:
+  //cerr << "testing after the checks " << endl;
+  if (!check) return;
+  // Set masses in 5-vectors:
+  newfs[0].setMass(ba[0]->mass());
+  newfs[1].setMass(ba[1]->mass());
+  newfs[2].setMass(0.);
+  // The next part of this routine sets the colour structure.
+  // To do this for decays we assume that the gluon comes from c!
+  // First create new particle objects for c, a and gluon:
+  PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
+  PPtr newc,newa;
+  newc = getParticleData(ba[0]->id())->produceParticle(newfs[0]);
+  newa = ba[1];
+  newa->set5Momentum(newfs[1]);
+  // set the colour lines
+  ColinePtr col;
+  //cerr << "testing A " << endl;
+  if(ba[0]->id()>0)
+    {
        col=ba[0]->colourLine();
        col->addColoured(newg);
        newg->colourNeighbour(newc);
-   }
-   else
-   {     
-       col=ba[0]->antiColourLine();
-       col->addAntiColoured(newg);
-       newg->antiColourNeighbour(newc);
-   }
-   // change the existing quark and antiquark
-   PPtr orig;
-   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)     {
-       if(cit->first->progenitor()->id()==newc->id())
-       {
-	   // remove old particles from colour line
-	   if(newc->id()>0)
-	   {
-	       col->removeColoured(cit->first->copy());
-	       col->removeColoured(cit->first->progenitor());
-	   }
-	   else
-	   {
-	       col->removeAntiColoured(cit->first->copy());
-	       col->removeAntiColoured(cit->first->progenitor());
-	   }
-	  // insert new particles
- 	  cit->first->copy(newc);
-	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2)));
- 	  cit->first->progenitor(sp);
- 	  tree->outgoingLines()[cit->first]=sp;
- 	  cit->first->perturbative(false);
- 	  orig=cit->first->original();
- 	}
-       else
- 	{
- 	  // Insert particles
- 	  cit->first->copy(newa);
- 	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2)));
- 	  cit->first->progenitor(sp);
- 	  tree->outgoingLines()[cit->first]=sp;
- 	  cit->first->perturbative(true);
- 	}
-     }
+    }
+  else
+    {     
+      col=ba[0]->antiColourLine();
+      col->addAntiColoured(newg);
+      newg->antiColourNeighbour(newc);
+    }
+  // change the existing quark and antiquark
+  PPtr orig;
+  //cerr << "testing B " << endl;
+  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)     {
+    if(cit->first->progenitor()->id()==newc->id())
+      {
+	//cerr << "testing quark " << endl;
+	// remove old particles from colour line
+	if(newc->id()>0)
+	  {
+	    col->removeColoured(cit->first->copy());
+	    col->removeColoured(cit->first->progenitor());
+	  }
+	else
+	  {
+	    col->removeAntiColoured(cit->first->copy());
+	    col->removeAntiColoured(cit->first->progenitor());
+	  }
+	// insert new particles
+	cit->first->copy(newc);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2)));
+	cit->first->progenitor(sp);
+	tree->outgoingLines()[cit->first]=sp;
+	cit->first->perturbative(false);
+	orig=cit->first->original();
+	//cerr << "testing got to the end " << endl;
+      }
+    else
+      {
+	//cerr << "testing W " << endl;
+	// Insert particles
+	//cerr << "testing W A" << endl;
+	cit->first->copy(newa);
+	//cerr << "testing W B" << *newa << endl;
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2)));
+	//cerr << "testing W C" << endl;
+	cit->first->progenitor(sp);
+	//cerr << "testing W D" << endl;
+	tree->outgoingLines()[cit->first]=sp;
+	//cerr << "testing W E" << endl;
+	cit->first->perturbative(true);
+	//cerr << "testing end " << endl;
+      }
+  }
+  //cerr << "testing D " << endl;
   // Add the gluon to the shower:
   ShowerParticlePtr   sg   =new_ptr(ShowerParticle(*newg,2));
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
@@ -222,14 +229,8 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
            << "   _xg: " << _xg << "   _xa: " << _xa 
            << "   newfs.size(): " << newfs.size() << endl;
   }
-  _output[0] << _xg << " " << _xa << "\n";
-  _output[1] << 2./sqr(_mt)*(newg->momentum())
-      *(newa->momentum()+newc->momentum()+newg->momentum())
-	     << " " 
-	     << 2./sqr(_mt)*newa->momentum()
-      *(newa->momentum()+newc->momentum()+newg->momentum())
-	     << "\n";
-
+  //cerr << "testing at the end " << endl;
+  tree->hardMatrixElementCorrection(true);
 }
 
 vector<Lorentz5Momentum> TopDecayMECorrection::
@@ -429,9 +430,9 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // values of kappa and z
       double z(br.kinematics->z()),kappa(sqr(br.kinematics->qtilde()/_mt));
       // momentum fractions
-      double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),
-	xg((2.-xa)*(1.-r)-(z-r)*(sqr(xa)-4.*_a));
-      double root(sqr(xa)-4.*_a),xfact(z*kappa/2./(z*(1.-z)*kappa+_c)*(2.-xa-root)+root);
+      double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a),
+	xg((2.-xa)*(1.-r)-(z-r)*root);
+      double xfact(z*kappa/2./(z*(1.-z)*kappa+_c)*(2.-xa-root)+root);
       // calculate the full result
       double f(me(xa,xg));
       // jacobian

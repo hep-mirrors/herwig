@@ -119,13 +119,6 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   pair<double,double> xnew;
   // if not accepted return
   if(!applyHard(incoming,boson,iemit,itype,pnew,trans,xnew)) return;
-  Lorentz5Momentum pboson(pnew[3]);
-  // fix the momentum of the gauge boson
-  cit=tree->outgoingLines().begin();
-  Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
-  trans *=LorentzRotation(boostv);
-  cit->first->progenitor()->transform(trans);
-  cit->first->copy()->transform(trans);
   // if applying ME correction create the new particles
   if(itype==0)
     {
@@ -210,6 +203,13 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	      if(iemit==2) orig=cit->first->original();
 	    }
 	}
+      // fix the momentum of the gauge boson
+      cit=tree->outgoingLines().begin();
+      Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+      trans *=LorentzRotation(boostv);
+      cit->first->progenitor()->transform(trans);
+      cit->first->copy()->transform(trans);
+      tree->hardMatrixElementCorrection(true);
       // add the gluon
       ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1));
       ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
@@ -272,6 +272,13 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	      orig=cit->first->original();
 	    }
 	}
+      // fix the momentum of the gauge boson
+      cit=tree->outgoingLines().begin();
+      Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+      trans *=LorentzRotation(boostv);
+      cit->first->progenitor()->transform(trans);
+      cit->first->copy()->transform(trans);
+      tree->hardMatrixElementCorrection(true);
       // add the outgoing quark
       ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1));
       ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(orig,newout,sout));
@@ -334,6 +341,13 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
  	      orig=cit->first->original();
 	    }
 	 }
+       // fix the momentum of the gauge boson
+       cit=tree->outgoingLines().begin();
+       Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+       trans *=LorentzRotation(boostv);
+       cit->first->progenitor()->transform(trans);
+       cit->first->copy()->transform(trans);
+       tree->hardMatrixElementCorrection(true);
        // add the outgoing antiquark
        ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1));
        ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(orig,newout,sout));
@@ -463,7 +477,7 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
       xnew[1]=shat/(s*xnew[0]);
       for(unsigned int ix=0;ix<2;++ix)
 	{fxnew[ix]=pdf[ix]->xfx(quarks[ix]->parents()[0]->dataPtr(),
-				quarks[ix]->dataPtr(),_mb2,xnew[ix]);}
+				quarks[ix]->dataPtr(),scale,xnew[ix]);}
       // jacobian and me parts of the weight
       weight=jacobian*(sqr(_mb2-that)+sqr(_mb2-uhat))/(sqr(shat)*that*uhat);
       // pdf part of the weight
@@ -498,9 +512,9 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
 	  xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-uhat)/(_mb2-that));
 	  xnew[1]=shat/(s*xnew[0]);
 	  fxnew[0]=pdf[0]->xfx(quarks[0]->parents()[0]->dataPtr(),
-			       getParticleData(ParticleID::g),_mb2,xnew[0]);
+			       getParticleData(ParticleID::g),scale,xnew[0]);
 	  fxnew[1]=pdf[1]->xfx(quarks[1]->parents()[0]->dataPtr(),
-			       quarks[1]->dataPtr(),_mb2,xnew[1]);
+			       quarks[1]->dataPtr(),scale,xnew[1]);
 	  jacobian/=(_channelweights[1]-_channelweights[0]);
 	}
       // q g -> q V 
@@ -510,9 +524,9 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
 	  xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-that)/(_mb2-uhat));
 	  xnew[1]=shat/(s*xnew[0]);
 	  fxnew[0]=pdf[0]->xfx(quarks[0]->parents()[0]->dataPtr(),
-			       quarks[0]->dataPtr(),_mb2,xnew[0]);
+			       quarks[0]->dataPtr(),scale,xnew[0]);
 	  fxnew[1]=pdf[1]->xfx(quarks[1]->parents()[0]->dataPtr(),
-			       getParticleData(ParticleID::g),_mb2,xnew[1]);
+			       getParticleData(ParticleID::g),scale,xnew[1]);
 	  jacobian/=(_channelweights[2]-_channelweights[1]);
 	}
       // jacobian and me parts of the weight
