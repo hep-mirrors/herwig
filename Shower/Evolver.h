@@ -35,6 +35,10 @@ friend class ShowerHandler;
 public:
 
   /**
+   *  Default Constructor
+   */
+  inline Evolver();
+  /**
    *  Is there any showering switched on
    */
   inline bool showeringON() const;
@@ -102,6 +106,19 @@ protected:
    *  Generate the hard matrix element correction
    */
   virtual void hardMatrixElementCorrection();
+
+  /**
+   *  Extract the particles to be showered, set the evolution scales
+   *  and apply the hard matrix element correction
+   * @param Whether this is a hard process or decay
+   * @return The particles to be showered
+   */
+  vector<ShowerProgenitorPtr> setupShower(bool hard);
+
+  /**
+   *  set the colour partners
+   */
+  void setColourPartners(bool hard);
 
   /**
    *  Methods to perform the evolution of an individual particle, including
@@ -257,6 +274,11 @@ private:
    * The ShowerTree currently being showered
    */
   ShowerTreePtr _currenttree;
+
+  /**
+   *  Maximum number of tries to generate the shower of a particular tree
+   */
+  unsigned int _maxtry;
 };
 
 }
