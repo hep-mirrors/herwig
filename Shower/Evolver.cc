@@ -198,7 +198,6 @@ void Evolver::hardMatrixElementCorrection()
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle)
 {
-  if(particle->id()<0) return false;
   Timer<1005> timer("Evolver::timeLikeShower");
   bool vetoed = true;
   Branching fb;
@@ -558,7 +557,7 @@ void Evolver::showerDecay(ShowerTreePtr decay)
 	      _progenitor->progenitor()->setEvolutionScale(ShowerIndex::EWK,startScale);
 	      // perform the shower
 	      _progenitor->hasEmitted(spaceLikeDecayShower(_progenitor->progenitor(),
-							   maxscale,minmass));
+	      						   maxscale,minmass)); 
 	    }
 	}
       // final-state radiation
