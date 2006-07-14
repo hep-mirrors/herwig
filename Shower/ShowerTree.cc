@@ -1,5 +1,6 @@
 // -*- C++ -*-
 
+#include "ShowerProgenitor.h"
 #include "ShowerTree.h"
 #include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include "ThePEG/Utilities/Timer.h"
@@ -7,7 +8,6 @@
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/XComb.h"
-#include "ShowerProgenitor.h"
 
 #include <cassert>
 
