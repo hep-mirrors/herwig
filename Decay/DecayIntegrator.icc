@@ -12,7 +12,7 @@ using namespace ThePEG;
 // default constructor  
 inline DecayIntegrator::DecayIntegrator() 
   : _niter(10), _npoint(10000), _ntry(500),
-    _generateinter(false) {}
+    _generateinter(false),_outputmodes(false) {}
 
 // set and get the matrix element
 inline const DecayMatrixElement & DecayIntegrator::ME() const

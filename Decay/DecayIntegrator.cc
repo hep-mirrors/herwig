@@ -44,11 +44,13 @@ ParticleVector DecayIntegrator::decay(const DecayMode & dm,
 }
   
 void DecayIntegrator::persistentOutput(PersistentOStream & os) const {
-  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter;
+  os << _modes << _niter << _npoint << _ntry << _photongen << _generateinter 
+     << _outputmodes;
 }
   
 void DecayIntegrator::persistentInput(PersistentIStream & is, int) {
-  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter;
+  is >> _modes >> _niter >> _npoint >> _ntry >> _photongen >> _generateinter
+     >> _outputmodes;
 }
   
 AbstractClassDescription<DecayIntegrator> DecayIntegrator::initDecayIntegrator;
@@ -103,6 +105,22 @@ void DecayIntegrator::Init() {
      "IncludeIntermediates",
      "include the intermediates",
      true);
+
+
+  static Switch<DecayIntegrator,bool> interfaceOutputModes
+    ("OutputModes",
+     "Output the phase space modes for debugging",
+     &DecayIntegrator::_outputmodes, false, false, false);
+  static SwitchOption interfaceOutputModesOutput
+    (interfaceOutputModes,
+     "Output",
+     "Output the modes",
+     true);
+  static SwitchOption interfaceOutputModesNoOutput
+    (interfaceOutputModes,
+     "NoOutput",
+     "Don't output the modes",
+     false);
   
 }
 
@@ -120,18 +138,18 @@ ostream & operator<<(ostream & os, const DecayIntegrator & decay)
 
 // generate the momenta for the decay
 ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int & imode,
-					 const Particle & inpart) const
- {
-   _imode=imode;
-   return _modes[imode]->generate(inter,cc,inpart);
- }  
+					 const Particle & inpart) const {
+  _imode=imode;
+  return _modes[imode]->generate(inter,cc,inpart);
+}  
 
 
-  // initialization for a run
+// initialization for a run
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
   CurrentGenerator::current().log() << "testing start of the initialisation for " 
-				    << this->fullName() << endl;
+				    << this->fullName() << "\n";
+  if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix)
     {
       _modes[ix]->initrun();

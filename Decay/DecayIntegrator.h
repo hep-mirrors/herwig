@@ -388,6 +388,10 @@ private:
    */
   DecayMatrixElement _matrixelement;
 
+  /**
+   *  Output the phase space channels for testing
+   */
+  bool _outputmodes;
   
 };
   /**
