@@ -207,8 +207,6 @@ ScalarScalarScalarDecayer::ScalarScalarScalarDecayer()
   generateIntermediates(false);
 }
 
-ScalarScalarScalarDecayer::~ScalarScalarScalarDecayer() {}
-
 int ScalarScalarScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 {
   int imode(-1);

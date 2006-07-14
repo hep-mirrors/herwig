@@ -33,24 +33,6 @@ inline IBPtr FourPionNovosibirskCurrent::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void FourPionNovosibirskCurrent::doupdate() throw(UpdateException) {
-  WeakDecayCurrent::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void FourPionNovosibirskCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();
   if(!_localparameters)
@@ -82,26 +64,10 @@ inline void FourPionNovosibirskCurrent::doinit() throw(InitException) {
   if(_initializea1){inita1width(-1);}
 }
 
-inline void FourPionNovosibirskCurrent::dofinish() {
-  WeakDecayCurrent::dofinish();
-}
-
 inline void FourPionNovosibirskCurrent::doinitrun() {
   // set up the running a_1 width
   inita1width(0);
   WeakDecayCurrent::doinitrun();
-}
-
-inline void FourPionNovosibirskCurrent::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  WeakDecayCurrent::rebind(trans);
-}
-
-inline IVector FourPionNovosibirskCurrent::getReferences() {
-  IVector ret = WeakDecayCurrent::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 // matrix element for the running a_1 width

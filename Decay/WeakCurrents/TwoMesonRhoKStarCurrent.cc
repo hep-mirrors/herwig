@@ -33,7 +33,31 @@ using namespace ThePEG::Helicity;
 using Herwig::Helicity::outgoing;
 using Herwig::Helicity::ScalarWaveFunction;
 
-TwoMesonRhoKStarCurrent::~TwoMesonRhoKStarCurrent() {}
+TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() 
+{
+  // set up for the modes in the base class
+  addDecayMode(2,-1);
+  addDecayMode(2,-3);
+  addDecayMode(2,-3);
+  addDecayMode(2,-1);
+  addDecayMode(2,-3);
+  setInitialModes(5);
+  // the weights of the different resonances in the matrix elements
+  _piwgt.push_back(1.0);_piwgt.push_back(-0.167);_piwgt.push_back(0.05);
+  _kwgt.push_back(1.0);_kwgt.push_back(-0.038);_kwgt.push_back(0.00);
+  // models to use
+  _pimodel = 0;_Kmodel=0;
+  // parameter for the masses (use the parameters freom the CLEO fit 
+  // rather than the PDG masses etc)
+  _rhoparameters=true;
+  _rhomasses.push_back(774.6*MeV);_rhomasses.push_back(1408*MeV);
+  _rhomasses.push_back(1700*MeV);
+  _rhowidths.push_back(149*MeV);_rhowidths.push_back(502*MeV);
+  _rhowidths.push_back(235*MeV);
+  _Kstarparameters=true;
+  _Kstarmasses.push_back(0.8921*GeV);_Kstarmasses.push_back(1.700*GeV);
+  _Kstarwidths.push_back(0.0513*GeV);_Kstarwidths.push_back(0.235*GeV);
+}
 
 void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();

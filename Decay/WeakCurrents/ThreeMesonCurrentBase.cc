@@ -22,8 +22,6 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using ThePEG::Helicity::ScalarSpinInfo;
 
-ThreeMesonCurrentBase::~ThreeMesonCurrentBase() {}
-
 void ThreeMesonCurrentBase::persistentOutput(PersistentOStream & os) const {
 }
 

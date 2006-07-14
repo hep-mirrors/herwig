@@ -9,32 +9,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() 
-{
-  // set up for the modes in the base class
-  addDecayMode(2,-1);
-  addDecayMode(2,-3);
-  addDecayMode(2,-3);
-  addDecayMode(2,-1);
-  addDecayMode(2,-3);
-  setInitialModes(5);
-  // the weights of the different resonances in the matrix elements
-  _piwgt.push_back(1.0);_piwgt.push_back(-0.167);_piwgt.push_back(0.05);
-  _kwgt.push_back(1.0);_kwgt.push_back(-0.038);_kwgt.push_back(0.00);
-  // models to use
-  _pimodel = 0;_Kmodel=0;
-  // parameter for the masses (use the parameters freom the CLEO fit 
-  // rather than the PDG masses etc)
-  _rhoparameters=true;
-  _rhomasses.push_back(774.6*MeV);_rhomasses.push_back(1408*MeV);
-  _rhomasses.push_back(1700*MeV);
-  _rhowidths.push_back(149*MeV);_rhowidths.push_back(502*MeV);
-  _rhowidths.push_back(235*MeV);
-  _Kstarparameters=true;
-  _Kstarmasses.push_back(0.8921*GeV);_Kstarmasses.push_back(1.700*GeV);
-  _Kstarwidths.push_back(0.0513*GeV);_Kstarwidths.push_back(0.235*GeV);
-}
-
 inline TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent(const TwoMesonRhoKStarCurrent & x)
   : WeakDecayCurrent(x), _piwgt(x._piwgt),_kwgt(x._kwgt),_pimodel(x._pimodel), 
     _Kmodel(x._Kmodel),_rhoparameters(x._rhoparameters), _rhomasses(x._rhomasses),
@@ -50,45 +24,6 @@ inline IBPtr TwoMesonRhoKStarCurrent::clone() const {
 inline IBPtr TwoMesonRhoKStarCurrent::fullclone() const {
   return new_ptr(*this);
 }
-
-inline void TwoMesonRhoKStarCurrent::doupdate() throw(UpdateException) {
-  WeakDecayCurrent::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void TwoMesonRhoKStarCurrent::dofinish() {
-  WeakDecayCurrent::dofinish();
-}
-
-inline void TwoMesonRhoKStarCurrent::doinitrun() {
-  WeakDecayCurrent::doinitrun();  
-}
-
-inline void TwoMesonRhoKStarCurrent::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  WeakDecayCurrent::rebind(trans);
-}
-
-inline IVector TwoMesonRhoKStarCurrent::getReferences() {
-  IVector ret = WeakDecayCurrent::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 
 // the h function in the GS model
 inline double TwoMesonRhoKStarCurrent::GSModelhFunction(const unsigned int ix,

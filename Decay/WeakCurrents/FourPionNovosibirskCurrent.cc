@@ -21,9 +21,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using ThePEG::Helicity::ScalarSpinInfo;  
-
-FourPionNovosibirskCurrent::~FourPionNovosibirskCurrent() {}
+using ThePEG::Helicity::ScalarSpinInfo;
 
 FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() 
 {
@@ -477,14 +475,13 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       a1m  = getParticleData(ParticleID::a_1plus);
       rhot = getParticleData(24);
     }
-  else if(icharge==-3)
+  else
     {
       rhop = getParticleData(ParticleID::rhoplus);
       rhom = getParticleData(ParticleID::rhominus);
       a1m  = getParticleData(ParticleID::a_1minus);
       rhot = getParticleData(-24);
     }
-  else{return false;}
   DecayPhaseSpaceChannelPtr newchannel;
   // the omega channels for the three charged pion mode
   // first  channel two channels with rho0
@@ -653,15 +650,14 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       mode->resetIntermediate(rho0,_rhomass,_rhowidth);
       mode->resetIntermediate(omega,_omegamass,_omegawidth);
       mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
-      mode->resetIntermediate(rhot,_intmass,_intwidth);
     }
   // return if successful
   return kineallowed;
 }
 
 // the particles produced by the current
-  PDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,int iq,
-						 int ia)
+PDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,int iq,
+					       int ia)
 {
   PDVector output(4);
   if(icharge==3)
@@ -889,8 +885,6 @@ FUNCTION_OBJECT_IMP(FourPionDefaultMatrixElement)
 
 FourPionDefaultMatrixElement::FourPionDefaultMatrixElement(Ptr<Herwig::FourPionNovosibirskCurrent>::pointer in)
   {_decayer=in;}
-
-FourPionDefaultMatrixElement::~FourPionDefaultMatrixElement() {}
   
 FourPionDefaultMatrixElement::FourPionDefaultMatrixElement(const FourPionDefaultMatrixElement & right) 
   {}

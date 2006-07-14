@@ -20,7 +20,79 @@
 namespace Herwig {
 using namespace ThePEG;
 
-ThreePionCLEOCurrent::~ThreePionCLEOCurrent() {}
+void ThreePionCLEOCurrent::doinit() throw(InitException) {
+  ThreeMesonCurrentBase::doinit();
+  // pointers to the particles we need
+  tPDPtr a1m = getParticleData(ParticleID::a_1minus);
+  // the different rho resonances
+  tPDPtr rhom[3];
+  rhom[0] = getParticleData(-213);
+  rhom[1] = getParticleData(-100213);
+  rhom[2] = getParticleData(-30213);
+  // the sigma
+  tPDPtr sigma = getParticleData(9000221);
+  // the f_2
+  tPDPtr f2=getParticleData(225);
+  // the f_0
+  tPDPtr f0=getParticleData(10221);
+  if(_localparameters)
+    {
+      // make sure the rho array has enough masses
+      if(_rhomass.size()<3)
+	{
+	  for(unsigned int ix=_rhomass.size();ix<3;++ix)
+	    {
+	      _rhomass.push_back(rhom[ix]->mass());
+	      _rhowidth.push_back(rhom[ix]->width());
+	    }
+	}
+    }
+  // set the local variables if needed
+  else
+    {
+      // masses and widths for the particles
+      _rhomass.resize(3);_rhowidth.resize(3);
+      for(unsigned int ix=0;ix<3;++ix)
+	{_rhomass[ix]=rhom[ix]->mass();_rhowidth[ix]=rhom[ix]->width();}
+      _f2mass=f2->mass();_f2width=f2->width();
+      _f0mass=f0->mass();_f0width=f0->width();
+      _sigmamass=sigma->mass();_sigmawidth=sigma->width();
+      _a1mass=a1m->mass();_a1width=a1m->width();
+      _mKstar=getParticleData(ParticleID::Kstarplus)->mass();
+      _mK =getParticleData(ParticleID::Kplus)->mass();
+    }
+  // parameters for the breit-wigners
+  _mpic=getParticleData(ParticleID::piplus)->mass();
+  _mpi0=getParticleData(ParticleID::pi0)->mass();
+  // momenta of the decay products for on-shell particles
+  _psigmacc=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpic,_mpic);
+  _psigma00=Kinematics::pstarTwoBodyDecay(_sigmamass,_mpi0,_mpi0);
+  _pf2cc=Kinematics::pstarTwoBodyDecay(_f2mass,_mpic,_mpic);
+  _pf200=Kinematics::pstarTwoBodyDecay(_f2mass,_mpi0,_mpi0); 
+  _pf0cc=Kinematics::pstarTwoBodyDecay(_f0mass,_mpic,_mpic);
+  _pf000=Kinematics::pstarTwoBodyDecay(_f0mass,_mpi0,_mpi0); 
+  _prhocc.resize(3);_prhoc0.resize(3);
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      _prhocc[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpic);
+      _prhoc0[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpi0);
+    }
+  // couplings for the different modes
+  Complex ii(0.,1.);
+  _rhocoupP.resize(_rhomagP.size());
+  for(unsigned int ix=0;ix<_rhomagP.size();++ix)
+    {_rhocoupP[ix]=_rhomagP[ix]*(cos(_rhophaseP[ix])+ii*sin(_rhophaseP[ix]));}
+  _rhocoupD.resize(_rhomagD.size());
+  for(unsigned int ix=0;ix<_rhomagD.size();++ix)
+    {_rhocoupD[ix]=_rhomagD[ix]*(cos(_rhophaseD[ix])+ii*sin(_rhophaseD[ix]));}
+  _f0coup=_f0mag*(cos(_f0phase)+ii*sin(_f0phase));
+  _f2coup=_f2mag*(cos(_f2phase)+ii*sin(_f2phase));
+  _sigmacoup=_sigmamag*(cos(_sigmaphase)+ii*sin(_sigmaphase));
+  // overall coupling
+  _fact = 2.*sqrt(2.)/_fpi/3.;
+  // initialise the a_1 running width calculation
+  if(_initializea1){inita1width(-1);}
+}
 
 void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
   os << _rhomass << _rhowidth << _prhocc << _prhoc0 << _f2mass << _f2width << _pf2cc 

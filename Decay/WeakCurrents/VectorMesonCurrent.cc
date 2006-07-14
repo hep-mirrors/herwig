@@ -65,8 +65,6 @@ VectorMesonCurrent::VectorMesonCurrent()
   setInitialModes(_initsize);
 }
 
-VectorMesonCurrent::~VectorMesonCurrent() {}
-
 void VectorMesonCurrent::persistentOutput(PersistentOStream & os) const {
   os << _id << _decay_constant;
 }

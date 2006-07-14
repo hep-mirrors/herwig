@@ -18,8 +18,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-WeakDecayCurrent::~WeakDecayCurrent() {}
-
 void WeakDecayCurrent::persistentOutput(PersistentOStream & os) const {
   os << _quark << _antiquark << _numbermodes;
 }

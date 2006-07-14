@@ -7,53 +7,12 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  inline WeakDecayCurrent::WeakDecayCurrent() :_numbermodes(0) {}
+inline WeakDecayCurrent::WeakDecayCurrent() :_numbermodes(0) {}
 
 inline WeakDecayCurrent::WeakDecayCurrent(const WeakDecayCurrent & x)
   : Interfaced(x), _quark(x._quark), _antiquark(x._antiquark), 
-    _numbermodes(x._numbermodes) {}
-
-inline void WeakDecayCurrent::doupdate() throw(UpdateException) {
-  Interfaced::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void WeakDecayCurrent::doinit() throw(InitException) {
-  Interfaced::doinit();
-}
-
-inline void WeakDecayCurrent::dofinish() {
-  Interfaced::dofinish();
-}
-
-inline void WeakDecayCurrent::doinitrun() {
-  Interfaced::doinitrun();
-}
-
-inline void WeakDecayCurrent::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  Interfaced::rebind(trans);
-}
-
-inline IVector WeakDecayCurrent::getReferences() {
-  IVector ret = Interfaced::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
+    _numbermodes(x._numbermodes) 
+{}
 
 inline unsigned int WeakDecayCurrent::numberOfModes() const 
 {return _quark.size();}

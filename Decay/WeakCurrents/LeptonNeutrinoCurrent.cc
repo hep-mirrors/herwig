@@ -25,17 +25,7 @@ using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
-LeptonNeutrinoCurrent::~LeptonNeutrinoCurrent() {}
-
-void LeptonNeutrinoCurrent::persistentOutput(PersistentOStream & os) const {
-  // no data
-}
-
-void LeptonNeutrinoCurrent::persistentInput(PersistentIStream & is, int) {
-  // no data
-}
-
-ClassDescription<LeptonNeutrinoCurrent> LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
+NoPIOClassDescription<LeptonNeutrinoCurrent> LeptonNeutrinoCurrent::initLeptonNeutrinoCurrent;
 // Definition of the static class description member.
 
 void LeptonNeutrinoCurrent::Init() {

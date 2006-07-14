@@ -27,23 +27,10 @@ class LeptonNeutrinoCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline LeptonNeutrinoCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline LeptonNeutrinoCurrent(const LeptonNeutrinoCurrent &);
-
-  /**
-   * Destructor
-   */
-  virtual ~LeptonNeutrinoCurrent();
-  //@}
 
 public:
 
@@ -92,7 +79,7 @@ public:
 						     const ParticleVector & decay) const;
 
   /**
-   * Accept the decay. Checks thhis is one of the allowed modes.
+   * Accept the decay. Checks that this is one of the allowed modes.
    * @param id The id's of the particles in the current.
    * @return Can this current have the external particles specified.
    */
@@ -114,22 +101,6 @@ public:
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
 
 public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
 
   /**
    * Standard Init function used to initialize the interfaces.
@@ -153,58 +124,12 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
-
 private:
 
   /**
-   * Describe a concrete class with persistent data.
+   * Describe a concrete class with no persistent data.
    */
-  static ClassDescription<LeptonNeutrinoCurrent> initLeptonNeutrinoCurrent;
+  static NoPIOClassDescription<LeptonNeutrinoCurrent> initLeptonNeutrinoCurrent;
 
   /**
    * Private and non-existent assignment operator.

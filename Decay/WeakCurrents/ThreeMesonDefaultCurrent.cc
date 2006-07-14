@@ -20,8 +20,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-ThreeMesonDefaultCurrent::~ThreeMesonDefaultCurrent() {}
-
 ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() 
 {
   // the pion decay constant
@@ -1001,8 +999,6 @@ FUNCTION_OBJECT_IMP(Defaulta1MatrixElement)
 Defaulta1MatrixElement::Defaulta1MatrixElement(Ptr<Herwig::ThreeMesonDefaultCurrent>::pointer in)
   {_decayer=in;}
 
-  
-Defaulta1MatrixElement::~Defaulta1MatrixElement() { }
   
 Defaulta1MatrixElement::Defaulta1MatrixElement(const Defaulta1MatrixElement & right)  {  }
   

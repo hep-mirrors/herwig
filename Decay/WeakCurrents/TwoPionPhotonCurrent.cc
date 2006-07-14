@@ -29,7 +29,35 @@ using Helicity::ScalarWaveFunction;
 using Helicity::VectorWaveFunction;
 using Helicity::outgoing;
 
-TwoPionPhotonCurrent::~TwoPionPhotonCurrent() {}
+void TwoPionPhotonCurrent::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+  // set up the rho masses and widths
+  tPDPtr temp;
+  for(unsigned int ix=0;ix<3;++ix)
+    {
+      if(ix==0){temp = getParticleData(-213);}
+      else if(ix==1){temp = getParticleData(-100213);}
+      else if(ix==2){temp = getParticleData(-30213);}
+      // if using local values
+      if(!_rhoparameters&&ix<_rhomasses.size())
+	{
+	  _rhomasses[ix]=temp->mass();
+	  _rhowidths[ix]=temp->width();
+	}
+      else if(ix>=_rhomasses.size())
+	{
+	  _rhomasses.push_back(temp->mass());
+	  _rhowidths.push_back(temp->width());
+	}
+    }
+  // set up the omega masses and widths
+  if(!_omegaparameters)
+    {
+      temp = getParticleData(ParticleID::omega);
+      _omegamass  = temp->mass();
+      _omegawidth = temp->width();
+    }
+}
 
 void TwoPionPhotonCurrent::persistentOutput(PersistentOStream & os) const {
   os << _grho << _grhoomegapi << _resweights << _rhoparameters << _rhomasses 

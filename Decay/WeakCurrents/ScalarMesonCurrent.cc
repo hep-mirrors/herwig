@@ -64,8 +64,6 @@ ScalarMesonCurrent::ScalarMesonCurrent()
   setInitialModes(_initsize);
 }
 
-ScalarMesonCurrent::~ScalarMesonCurrent() {}
-
 void ScalarMesonCurrent::persistentOutput(PersistentOStream & os) const {
   os << _id << _decay_constant << _thetaeta;
 }
