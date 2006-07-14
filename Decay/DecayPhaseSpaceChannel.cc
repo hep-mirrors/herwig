@@ -220,27 +220,25 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
 	      for(iz=0;iz<_intext[idau[iy]].size();++iz)
 		{lowerb[iy]+=output[_intext[idau[iy]][iz]][5];}
 	    }
-	  // randomize the order
-	  if(UseRandom::rnd()<0.5)
-	    {
-	      // contribution of first resonance
-	      upper = intmass[ix]-lowerb[1];
-	      lower = lowerb[0];
-	      wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
-	      // contribution of second resonance
-	      upper = intmass[ix]-intmass[idau[0]];
-	      lower = lowerb[1];
-	      wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
-	    }
-	  else
-	    {
-	      upper = intmass[ix]-lowerb[0];
-	      lower = lowerb[1];
-	      wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
-	      upper = intmass[ix]-intmass[idau[1]];
-	      lower = lowerb[0];
-	      wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
-	    }
+	  // undo effect of randomising
+	  // weight for the first order
+	  // contribution of first resonance
+	  upper = intmass[ix]-lowerb[1];
+	  lower = lowerb[0];
+	  double wgta=massWeight(idau[0],intmass[idau[0]],lower,upper);
+	  // contribution of second resonance
+	  upper = intmass[ix]-intmass[idau[0]];
+	  lower = lowerb[1];
+	  wgta*=massWeight(idau[1],intmass[idau[1]],lower,upper);
+	  // weight for the second order
+	  upper = intmass[ix]-lowerb[0];
+	  lower = lowerb[1];
+	  double wgtb=massWeight(idau[1],intmass[idau[1]],lower,upper);
+	  upper = intmass[ix]-intmass[idau[1]];
+	  lower = lowerb[0];
+	  wgtb*=massWeight(idau[0],intmass[idau[0]],lower,upper);
+	  // weight factor
+	  wgt *=0.5*sqr(scale)*(wgta+wgtb);
 	  // factor for the kinematics
 	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
 				       intmass[idau[1]]);
