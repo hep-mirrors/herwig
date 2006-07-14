@@ -51,24 +51,6 @@ inline IBPtr SMFFWVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void SMFFWVertex::doupdate() throw(UpdateException) {
-  Herwig::Helicity::FFVVertex::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void SMFFWVertex::doinit() throw(InitException) {
   Herwig::Helicity::FFVVertex::doinit();
   // cast the CKM object to the HERWIG one
@@ -83,26 +65,6 @@ inline void SMFFWVertex::doinit() throw(InitException) {
     }
   else
     {throw InitException();}
-}
-
-inline void SMFFWVertex::dofinish() {
-  Herwig::Helicity::FFVVertex::dofinish();
-}
-
-inline void SMFFWVertex::doinitrun() {
-  Herwig::Helicity::FFVVertex::doinitrun();
-}
-
-inline void SMFFWVertex::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  Herwig::Helicity::FFVVertex::rebind(trans);
-}
-
-inline IVector SMFFWVertex::getReferences() {
-  IVector ret = Herwig::Helicity::FFVVertex::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }

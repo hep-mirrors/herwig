@@ -13,8 +13,6 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-    
-RSModelVVVGRVertex::~RSModelVVVGRVertex() {}
 
 void RSModelVVVGRVertex::persistentOutput(PersistentOStream & os) const {
   os << _theModel << _theKappa << _zfact;

@@ -15,8 +15,6 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 using ThePEG::Constants::pi;
-    
-SMFFHVertex::~SMFFHVertex() {}
 
 void SMFFHVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << _mw << _sw;
@@ -32,8 +30,7 @@ SMFFHVertex::initSMFFHVertex;
 // Definition of the static class description member.
 
 void SMFFHVertex::Init() {
-  
-  
+   
   static Reference<SMFFHVertex,Herwig::StandardModel>
     interfaceSM
     ("StandardModel",

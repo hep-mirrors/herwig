@@ -13,14 +13,8 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
     
-FFTVertex::~FFTVertex() {}
-    
-void FFTVertex::persistentOutput(PersistentOStream & os) const { }
-    
-void FFTVertex::persistentInput(PersistentIStream & is, int) { }
-    
 // Definition of the static class description member
-AbstractClassDescription<FFTVertex> FFTVertex::initFFTVertex;
+AbstractNoPIOClassDescription<FFTVertex> FFTVertex::initFFTVertex;
     
 void FFTVertex::Init() {
   

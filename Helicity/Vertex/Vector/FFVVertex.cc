@@ -16,15 +16,9 @@ using namespace ThePEG;
 using ThePEG::Helicity::DiracRep;
 using ThePEG::Helicity::HELASDRep;
 using ThePEG::Helicity::HaberDRep;
-
-FFVVertex::~FFVVertex() {}
-    
-void FFVVertex::persistentOutput(PersistentOStream & os) const {;}
-    
-void FFVVertex::persistentInput(PersistentIStream & is, int i) {;}
    
 // Definition of the static class description member
-AbstractClassDescription<FFVVertex> FFVVertex::initFFVVertex;
+AbstractNoPIOClassDescription<FFVVertex> FFVVertex::initFFVVertex;
     
 void FFVVertex::Init() {
       

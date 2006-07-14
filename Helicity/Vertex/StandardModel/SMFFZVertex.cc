@@ -14,8 +14,6 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-SMFFZVertex::~SMFFZVertex() {}
-
 void SMFFZVertex::persistentOutput(PersistentOStream & os) const {
   for(int ix=0;ix<17;++ix){os << _gl[ix] << _gr[ix];}
   os <<  _theSM;

@@ -15,8 +15,6 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-RSModelFFGRVertex::~RSModelFFGRVertex() {}
-
 void RSModelFFGRVertex::persistentOutput(PersistentOStream & os) const {
   os << _theModel << _theKappa;
 }

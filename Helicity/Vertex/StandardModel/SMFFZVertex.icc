@@ -35,24 +35,6 @@ inline IBPtr SMFFZVertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void SMFFZVertex::doupdate() throw(UpdateException) {
-  FFVVertex::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void SMFFZVertex::doinit() throw(InitException) {
   double sw2=_theSM->sin2ThetaW();
   double fact = 0.25/sqrt(sw2*(1.-sw2));
@@ -70,26 +52,6 @@ inline void SMFFZVertex::doinit() throw(InitException) {
   _couplast=0.;
   _q2last=0.; 
   FFVVertex::doinit();
-}
-
-inline void SMFFZVertex::dofinish() {
-  FFVVertex::dofinish();
-}
-
-inline void SMFFZVertex::doinitrun() {
-  FFVVertex::doinitrun();
-}
-
-inline void SMFFZVertex::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  FFVVertex::rebind(trans);
-}
-
-inline IVector SMFFZVertex::getReferences() {
-  IVector ret = FFVVertex::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }

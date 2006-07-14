@@ -13,8 +13,6 @@
 namespace Herwig {
 namespace Helicity{
 using namespace ThePEG;
-    
-SMGGGVertex::~SMGGGVertex() {}
 
 void SMGGGVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM;

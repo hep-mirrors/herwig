@@ -14,8 +14,6 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-    
-RSModelFFVGRVertex::~RSModelFFVGRVertex() {}
 
 void RSModelFFVGRVertex::persistentOutput(PersistentOStream & os) const {
   for(int ix=0;ix<17;++ix){os << _charge[ix];}

@@ -17,8 +17,63 @@ namespace Herwig{
 namespace Helicity{
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-    
-VertexBase::~VertexBase() {}
+        
+void VertexBase::doinit() throw(InitException) {
+  Interfaced::doinit();
+  // get the particle data points for the external particles
+  tPDPtr pin;
+  if(_npoint>=3)
+    {
+      for(unsigned int ix=0;ix<size();++ix)
+	{
+	  pin=getParticleData(_iparticlea[ix]);
+	  if(!pin) throw InitException() 
+	    << "Unknown particle ID=" << _iparticlea[ix] 
+	    << "requested in VertexBase::doinit() for " << this->fullName() 
+	    << Exception::runerror;
+	  _particlea.push_back(pin);
+	  pin=getParticleData(_iparticleb[ix]);
+	  if(!pin) throw InitException() 
+	    << "Unknown particle ID=" << _iparticleb[ix] 
+	    << "requested in VertexBase::doinit() for " << this->fullName() 
+	    << Exception::runerror;
+	  _particleb.push_back(pin);
+	  pin=getParticleData(_iparticlec[ix]);
+	  if(!pin) throw InitException() 
+	    << "Unknown particle ID=" << _iparticlec[ix] 
+	    << "requested in VertexBase::doinit() for " << this->fullName() 
+	    << Exception::runerror;
+	  _particlec.push_back(pin);
+	}
+    }
+  if(_npoint>=4)
+    {
+      for(unsigned int ix=0;ix<size();++ix)
+	{
+	  pin=getParticleData(_iparticled[ix]);
+	  if(!pin) throw InitException() 
+	    << "Unknown particle ID=" << _iparticled[ix] 
+	    << "requested in VertexBase::doinit() for " << this->fullName() 
+	    << Exception::runerror;
+	  _particled.push_back(pin);
+	}
+    }
+  if(_npoint==5)
+    {
+      for(unsigned int ix=0;ix<size();++ix)
+	{
+	  pin=getParticleData(_iparticlee[ix]);
+	  if(!pin) throw InitException() 
+	    << "Unknown particle ID=" << _iparticlee[ix] 
+	    << "requested in VertexBase::doinit() for " << this->fullName() 
+	    << Exception::runerror;
+	  _particlee.push_back(pin);
+	}
+    }
+  // set up the incoming and outgoing particles
+  setIncoming();
+  setOutgoing();
+}
     
 void VertexBase::persistentOutput(PersistentOStream & os) const {
   os << _npoint << _nsize << _ispin << _inpart << _iinpart << _outpart << _ioutpart 
@@ -44,7 +99,6 @@ void VertexBase::Init() {
      "The number of extermal particles interacting at the Vertex.",
      &VertexBase::_npoint, 3, 3, 5, false, false, true);
   
-
   static Switch<VertexBase,bool> interfaceCalculateKinematics
     ("CalculateKinematics",
      "Calculate kinematic invariants at the vertices. This is"
@@ -275,9 +329,25 @@ void VertexBase::add(int ia ,int ib ,int ic)
       // add to the PDG code lists
       _iparticlea.push_back(ia);_iparticleb.push_back(ib);_iparticlec.push_back(ic);
       // add to the Particle data pointer lists
-      _particlea.push_back(getParticleData(ia));
-      _particleb.push_back(getParticleData(ib));
-      _particlec.push_back(getParticleData(ic));
+      tPDPtr pin;
+      pin=getParticleData(ia);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ia 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlea.push_back(pin);
+      pin=getParticleData(ib);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ib 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particleb.push_back(pin);
+      pin=getParticleData(ic);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ic 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlec.push_back(pin);
     }
   else
     {throw HelicityConsistencyError() << "This is a " << _npoint 
@@ -349,10 +419,31 @@ void VertexBase::add(int ia,int ib,int ic,int id)
       _iparticlea.push_back(ia);_iparticleb.push_back(ib);
       _iparticlec.push_back(ic);_iparticled.push_back(id);
       // add to the Particle data pointer lists
-      _particlea.push_back(getParticleData(ia));
-      _particleb.push_back(getParticleData(ib));
-      _particlec.push_back(getParticleData(ic));
-      _particled.push_back(getParticleData(id));
+      tPDPtr pin;
+      pin=getParticleData(ia);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ia 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlea.push_back(pin);
+      pin=getParticleData(ib);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ib 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particleb.push_back(pin);
+      pin=getParticleData(ic);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ic 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlec.push_back(pin);
+      pin=getParticleData(id);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << id 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particled.push_back(pin);
     }
   {throw HelicityConsistencyError() << "This is a " << _npoint 
 				    << " vertex cannot add four particles" 
@@ -434,17 +525,43 @@ void VertexBase::add(int ia,int ib,int ic,int id)
 // add particle to the list for a five point vertex
 void VertexBase::add(int ia,int ib,int ic,int id, int ie)
 {
-  if(_npoint==4)
+  if(_npoint==5)
     {
       // add to the PDG code lists
       _iparticlea.push_back(ia);_iparticleb.push_back(ib);
       _iparticlec.push_back(ic);_iparticled.push_back(id);_iparticlee.push_back(ie);
       // add to the Particle data pointer lists
-      _particlea.push_back(getParticleData(ia));
-      _particleb.push_back(getParticleData(ib));
-      _particlec.push_back(getParticleData(ic));
-      _particled.push_back(getParticleData(id));
-      _particlee.push_back(getParticleData(ie));
+      tPDPtr pin;
+      pin=getParticleData(ia);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ia 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlea.push_back(pin);
+      pin=getParticleData(ib);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ib 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particleb.push_back(pin);
+      pin=getParticleData(ic);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ic 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlec.push_back(pin);
+      pin=getParticleData(id);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << id 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particled.push_back(pin);
+      pin=getParticleData(ie);
+      if(!pin) throw InitException() 
+	<< "Unknown particle ID=" << ie 
+	<< "requested in VertexBase::add() for " << this->fullName() 
+	<< Exception::runerror;
+      _particlee.push_back(pin);
     }
   {throw HelicityConsistencyError() << "This is a " << _npoint 
 				    << " vertex cannot add five particles" 

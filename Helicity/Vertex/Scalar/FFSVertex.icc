@@ -14,50 +14,6 @@ inline FFSVertex::FFSVertex()
   setSpin(2,2,1);
 }
 
-inline FFSVertex::FFSVertex(const FFSVertex & x)
-  : VertexBase(x) {}
-
-inline void FFSVertex::doupdate() throw(UpdateException) {
-  VertexBase::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void FFSVertex::doinit() throw(InitException) {
-  VertexBase::doinit();
-}
-
-inline void FFSVertex::dofinish() {
-  VertexBase::dofinish();
-}
-
-inline void FFSVertex::doinitrun() {
-  VertexBase::doinitrun();
-}
-
-inline void FFSVertex::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  VertexBase::rebind(trans);
-}
-
-inline IVector FFSVertex::getReferences() {
-  IVector ret = VertexBase::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
 // set the left and right couplings
 inline void FFSVertex::setLeft(Complex in){_left=in;}
 inline void FFSVertex::setRight(Complex in){_right=in;}

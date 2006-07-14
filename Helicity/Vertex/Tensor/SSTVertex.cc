@@ -12,14 +12,8 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-    
-SSTVertex::~SSTVertex() {}
 
-void SSTVertex::persistentOutput(PersistentOStream & os) const { }
-
-void SSTVertex::persistentInput(PersistentIStream & is, int) { }
-
-AbstractClassDescription<SSTVertex> SSTVertex::initSSTVertex;
+AbstractNoPIOClassDescription<SSTVertex> SSTVertex::initSSTVertex;
 // Definition of the static class description member.
 
 void SSTVertex::Init() {
