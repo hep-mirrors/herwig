@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FivePionCurrent class.
+//
+#ifndef HERWIG_FivePionCurrent_FH
+#define HERWIG_FivePionCurrent_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class FivePionCurrent;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::FivePionCurrent,FivePionCurrentPtr);
+
+}
+
+#endif
