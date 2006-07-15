@@ -130,8 +130,6 @@ void ShowerHandler::findShoweringParticles()
 void ShowerHandler::cascade()
 {
   Timer<1002> timer("ShowerHandler::cascade");
-  // should we be doing anything
-  if(!_evolver->showeringON()) return;
   //  start of the try block for the whole showering process
   unsigned int countFailures=0;
   ShowerTreePtr hard;
