@@ -1,5 +1,5 @@
 cd /Defaults/Handlers/Shower
-library HwNewShower.so
+library HwShower.so
 
 
 create Herwig++::ShowerVariables theShowerVariables
