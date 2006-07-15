@@ -88,27 +88,16 @@ cd /Defaults
 create Herwig++::GlobalParameters theGlobalParameters GlobalParameters.so
 read Shower.in
 read Hadronization.in
+# create the DecayHandler
+create Herwig++::HwDecayHandler /Defaults/Handlers/DecayHandler
+set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
 # This must be after the Hadronization if the underlying event uses any
 # objects from the hadronization (for example like UA5)
 read UnderlyingEvent.in 
-create Herwig++::HwDecayHandler /Defaults/Handlers/PartonicDecayHandler
-set /Defaults/Handlers/PartonicDecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
 
 read PDF.in
 
 # Set some particle properties
-set /Defaults/Particles/g:DefaultSpin 3
-set /Defaults/Particles/g:Spin 3
-set /Defaults/Particles/gamma:DefaultSpin 3
-set /Defaults/Particles/gamma:Spin 3
-set /Defaults/Particles/Z0:DefaultSpin 3
-set /Defaults/Particles/Z0:Spin 3
-set /Defaults/Particles/W+:DefaultSpin 3
-set /Defaults/Particles/W+:Spin 3
-set /Defaults/Particles/W-:DefaultSpin 3
-set /Defaults/Particles/W-:Spin 3
-set /Defaults/Particles/h0:DefaultSpin 1
-set /Defaults/Particles/h0:Spin 1
 
 insert /Defaults/ThePEGStrategy:LocalParticles[0] /Defaults/Particles/p+
 insert /Defaults/ThePEGStrategy:LocalParticles[0] /Defaults/Particles/pbar-
@@ -127,7 +116,7 @@ set LEPHandler:BeamB /Defaults/Particles/e+
 set LEPHandler:Sampler /Defaults/ACDCSampler
 set LEPHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
 set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LEPHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
+set LEPHandler:DecayHandler /Defaults/Handlers/DecayHandler
 
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
@@ -141,9 +130,9 @@ set LHCHandler:Sampler /Defaults/ACDCSampler
 set LHCHandler:BinStrategy 1
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
 set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theForcedSplitting
-#insert LHCHandler:PostHadronizationHandlers 0 /Defaults/Handlers/UnderlyingEvent/theUA5
+insert LHCHandler:PostHadronizationHandlers 0 /Defaults/Handlers/UnderlyingEvent/theUA5
 set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
-set LHCHandler:DecayHandler /Defaults/Handlers/PartonicDecayHandler
+set LHCHandler:DecayHandler /Defaults/Handlers/DecayHandler
 
 # Now the LEPGenerator
 cd /Defaults/Generators
