@@ -1,6 +1,6 @@
 ## libHwSplitting.la will go into HwShower.so
-noinst_LTLIBRARIES = libHwNewSplitting.la
-libHwNewSplitting_la_SOURCES = \
+noinst_LTLIBRARIES = libHwSplitting.la
+libHwSplitting_la_SOURCES = \
 SplittingFunction.h SplittingFunction.icc SplittingFunction.fh SplittingFunction.cc \
 GtoGGSplitFn.cc GtoGGSplitFn.h GtoGGSplitFn.icc GtoGGSplitFn.fh\
 QtoQGSplitFn.cc QtoQGSplitFn.h QtoQGSplitFn.icc QtoQGSplitFn.fh\

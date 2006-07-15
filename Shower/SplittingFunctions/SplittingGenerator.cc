@@ -230,7 +230,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle) c
 	  generateNextTimeBranching(particle.evolutionScales()[i], 
 				    cit->second.second);
       // select highest scale 
-      if(candidateNewQ > newQ && candidateNewQ < particle.evolutionScales()[i]) 
+      if(candidateNewQ > newQ && candidateNewQ <= particle.evolutionScales()[i]) 
 	{
 	  newQ = candidateNewQ;
 	  sudakov = candidateSudakov;
