@@ -145,7 +145,7 @@ protected:
   inline Complex rhoBreitWigner(Energy2 scale) const;
 
   /**
-   * Breit-Wigner for the \f$\a_1\f$.
+   * Breit-Wigner for the \f$a_1\f$.
    * @param scale The virtual mass
    */
   inline Complex a1BreitWigner(Energy2 scale) const;
