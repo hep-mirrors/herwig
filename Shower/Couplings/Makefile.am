@@ -1,6 +1,6 @@
 ## libHwCouplings.la will go into HwShower.so
-noinst_LTLIBRARIES = libHwNewCouplings.la
-libHwNewCouplings_la_SOURCES = \
+noinst_LTLIBRARIES = libHwCouplings.la
+libHwCouplings_la_SOURCES = \
 ShowerIndex.h ShowerIndex.cc \
 ShowerAlpha.h ShowerAlpha.fh ShowerAlpha.icc ShowerAlpha.cc \
 ShowerAlphaQED.h ShowerAlphaQED.fh ShowerAlphaQED.icc ShowerAlphaQED.cc \
