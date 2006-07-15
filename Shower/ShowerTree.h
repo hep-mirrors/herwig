@@ -156,6 +156,15 @@ public:
 				       ShowerParticlePtr otherChild);
 
   /**
+   *  Member called at the end of the shower of a tree to perform a number of
+   *  updates.
+   *  @param decay The map of widths and ShowerTrees for the decays so that
+   *  any unstable decay products can be added.
+   *  @param eh The EventHandler
+   */
+  void updateAfterShower(multimap<Energy,ShowerTreePtr> & decay,tEHPtr eh);
+
+  /**
    *  Access and set the flag for whether this tree has been showered
    */
   //@{
@@ -285,7 +294,7 @@ private:
    *  Map of particles in this Tree which are the initial particles in other
    *  trees
    */
-  map<tShowerTreePtr,tShowerProgenitorPtr> _treelinks;
+  map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> > _treelinks;
 
   /**
    *  The parent tree

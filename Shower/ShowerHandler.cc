@@ -159,6 +159,7 @@ void ShowerHandler::cascade()
 	  {
 	    _evolver->showerHardProcess(_hard);
 	    _done.push_back(_hard);
+	    _hard->updateAfterShower(_decay,eventHandler());
 	  }
  	// if no decaying particles to shower break out of the loop
  	if(_decay.empty()) break;
@@ -182,6 +183,7 @@ void ShowerHandler::cascade()
  	    // now shower the decay
  	    _evolver->showerDecay(decayingTree);
 	    _done.push_back(decayingTree);
+	    decayingTree->updateAfterShower(_decay,eventHandler());
  	  }
 	// suceeded break out of the loop
 	break;

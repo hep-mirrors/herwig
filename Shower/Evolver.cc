@@ -502,7 +502,6 @@ void Evolver::makeRemnants(ShowerTreePtr hard)
 	}
       pnew=in[ix]->momentum()-pnew;
       pnew.rescaleMass();
-      if(!dynamic_ptr_cast<ShowerParticlePtr>(pother[0])) continue;
       // throw exception if gone wrong
       if(prem.size()!=1||pother.size()!=1) 
 	throw Exception() 

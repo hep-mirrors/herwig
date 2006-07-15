@@ -50,7 +50,7 @@ inline bool ShowerTree::isDecay() const  {return !_wasHard;}
 inline void ShowerTree::setParents()
 {
   // set the parent tree of the children
-  map<tShowerTreePtr,tShowerProgenitorPtr>::const_iterator tit;
+  map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit=_treelinks.begin();tit!=_treelinks.end();++tit)
     tit->first->_parent=this;
 }

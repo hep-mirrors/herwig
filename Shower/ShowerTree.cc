@@ -91,7 +91,8 @@ ShowerTree::ShowerTree(tEHPtr eh,
     {
       map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
       if(tit!=trees.end())
-	_treelinks.insert(make_pair(tit->second,mit->first));
+	_treelinks.insert(make_pair(tit->second,
+				    make_pair(mit->first,mit->first->progenitor())));
     }
 }
 
@@ -158,7 +159,8 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
     {
       map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
       if(tit!=trees.end())
-	_treelinks.insert(make_pair(tit->second,mit->first));
+	_treelinks.insert(make_pair(tit->second,
+				    make_pair(mit->first,mit->first->progenitor())));
     }
 }
 
@@ -322,53 +324,50 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
     }
   // final-state radiation
   PPair incoming=pstep->collision()->primarySubProcess()->incoming();
-  if(FSR)
-     {
-       for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit)
- 	{
- 	  ShowerParticlePtr init=(*cit).first->progenitor();
- 	  if(!init->getThePEGBase()) 
- 	    throw Exception() << "Final-state particle must have a ThePEGBase"
- 			      << " in ShowerTree::fillEventRecord()" 
- 			      << Exception::runerror;
-	  // if not from a matrix element correction
-	  if(cit->first->perturbative())
+  for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit)
+    {
+      ShowerParticlePtr init=(*cit).first->progenitor();
+      if(!init->getThePEGBase()) 
+	throw Exception() << "Final-state particle must have a ThePEGBase"
+			  << " in ShowerTree::fillEventRecord()" 
+			  << Exception::runerror;
+      // if not from a matrix element correction
+      if(cit->first->perturbative())
+	{
+	  // register the shower particle as a 
+	  // copy of the one from the hard process
+	  tParticleVector parents=init->parents();
+	  for(unsigned int ix=0;ix<parents.size();++ix)
+	    {parents[ix]->abandonChild(init);}
+	  (*cit).first->original()->addChild(init);
+	  pstep->addDecayProduct(init);
+	}
+      // from a matrix element correction
+      else
+	{
+	  if(cit->first->original()==incoming.first||
+	     cit->first->original()==incoming.second)
 	    {
-	      // register the shower particle as a 
-	      // copy of the one from the hard process
-	      tParticleVector parents=init->parents();
-	      for(unsigned int ix=0;ix<parents.size();++ix)
-		{parents[ix]->abandonChild(init);}
-	      (*cit).first->original()->addChild(init);
+	      updateColour((*cit).first->copy());
+	      (*cit).first->original()->parents()[0]->
+		addChild((*cit).first->copy());
+	      pstep->addDecayProduct((*cit).first->copy());
+	      (*cit).first->copy()->addChild(init);
 	      pstep->addDecayProduct(init);
 	    }
-	  // from a matrix element correction
 	  else
 	    {
-	      if(cit->first->original()==incoming.first||
-		 cit->first->original()==incoming.second)
-		{
-		  updateColour((*cit).first->copy());
- 		  (*cit).first->original()->parents()[0]->
-		    addChild((*cit).first->copy());
- 		  pstep->addDecayProduct((*cit).first->copy());
- 		  (*cit).first->copy()->addChild(init);
- 		  pstep->addDecayProduct(init);
-		}
-	      else
-		{
-		  updateColour((*cit).first->copy());
-		  (*cit).first->original()->addChild((*cit).first->copy());
-		  pstep->addDecayProduct((*cit).first->copy());
-		  (*cit).first->copy()->addChild(init);
-		  pstep->addDecayProduct(init);
-		}
+	      updateColour((*cit).first->copy());
+	      (*cit).first->original()->addChild((*cit).first->copy());
+	      pstep->addDecayProduct((*cit).first->copy());
+	      (*cit).first->copy()->addChild(init);
+	      pstep->addDecayProduct(init);
 	    }
-	  updateColour(init);
-	  // insert shower products
-	  addFinalStateShower(init,pstep);
 	}
-     }
+      updateColour(init);
+      // insert shower products
+      addFinalStateShower(init,pstep);
+    }
   _colour.clear();
 }
 
@@ -454,9 +453,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
     {
       // now we need to replace the particle with a new copy after the shower
       // find particle after the shower
-      ShowerProgenitorPtr pthis=_parent->_treelinks[this];
-      assert(pthis);
-      ShowerParticlePtr newparent=_parent->_outgoingLines[pthis];
+      ShowerParticlePtr newparent=_parent->_treelinks[this].second;
       // now make the new progenitor
       vector<PPtr> original,copy;
       original.push_back(newparent);
@@ -541,7 +538,9 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
 	   map<PPtr,ShowerTreePtr>::const_iterator tit=trees.find(mit->first->original());
 	   if(tit!=trees.end())
 	     {
-	       _treelinks.insert(make_pair(tit->second,mit->first));
+	       _treelinks.insert(make_pair(tit->second,
+					   make_pair(mit->first,
+						     mit->first->progenitor())));
 	       tit->second->_parent=this;
 	     }
 	 }
@@ -552,8 +551,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
        // need to boost the system to conserve momentum
        // find parent tree and particle
        ShowerTreePtr ptree=ShowerTreePtr(this);
-       ShowerProgenitorPtr pthis=_parent->_treelinks[ptree];
-       ShowerParticlePtr newparent=_parent->_outgoingLines[pthis];
+       ShowerParticlePtr newparent=_parent->_treelinks[ptree].second;
        // workout the lorentz boost
        LorentzRotation boost(_incomingLines.begin()->first->original()->momentum().
 			     findBoostToCM());
@@ -580,8 +578,7 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
   assert(_incomingLines.size()==1);
   _colour.clear();
   // find final particle from previous tree
-  ShowerParticlePtr final=
-    _parent->getFinalStateShowerProduct(_parent->_treelinks[this]);
+  ShowerParticlePtr final=_parent->_treelinks[this].second;
   // construct the map of colour lines
   PPtr copy=_incomingLines.begin()->first->copy();
   if(copy->colourLine()) 
@@ -615,61 +612,58 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
   final->addChild(copy);
   pstep->addDecayProduct(copy);
   // final-state radiation
-  if(FSR)
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit)
     {
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
-      for(cit=outgoingLines().begin();cit!=outgoingLines().end();++cit)
- 	{
- 	  ShowerParticlePtr init=cit->first->progenitor();
- 	  if(!init->getThePEGBase()) 
- 	    throw Exception() << "Final-state particle must have a ThePEGBase"
- 			      << " in ShowerTree::fillEventRecord()" 
- 			      << Exception::runerror;
-// if not from matrix element correction
-	  if(cit->first->perturbative())
-	    {
-	      // add the child
-	      updateColour(cit->first->copy());
-	      PPtr orig=cit->first->original();
-	      copy->addChild(orig);
-	      pstep->addDecayProduct(orig);
-	      orig->addChild(cit->first->copy());
-	      pstep->addDecayProduct(cit->first->copy());
-	      // register the shower particle as a 
-	      // copy of the one from the hard process
-	      tParticleVector parents=init->parents();
-	      for(unsigned int ix=0;ix<parents.size();++ix)
-		{parents[ix]->abandonChild(init);}
-	      (*cit).first->copy()->addChild(init);
-	      pstep->addDecayProduct(init);
-	      updateColour(init);
-	    }
-// from a matrix element correction
-	  else
-	  {
-	      if(copy->children().end()==
-		 find(copy->children().begin(),copy->children().end(),
-		      cit->first->original()))
-	      {
-		  updateColour(cit->first->original());
-		  copy->addChild(cit->first->original());
-		  pstep->addDecayProduct(cit->first->original());
-	      }
-	      updateColour(cit->first->copy());
-	      cit->first->original()->addChild(cit->first->copy());
-	      pstep->addDecayProduct(cit->first->copy());
-	      // register the shower particle as a 
-	      // copy of the one from the hard process
-	      tParticleVector parents=init->parents();
-	      for(unsigned int ix=0;ix<parents.size();++ix)
-	      {parents[ix]->abandonChild(init);}
-	      (*cit).first->copy()->addChild(init);
-	      pstep->addDecayProduct(init);
-	      updateColour(init);
-	  }
-	  // insert shower products
-	  addFinalStateShower(init,pstep);
+      ShowerParticlePtr init=cit->first->progenitor();
+      if(!init->getThePEGBase()) 
+	throw Exception() << "Final-state particle must have a ThePEGBase"
+			  << " in ShowerTree::fillEventRecord()" 
+			  << Exception::runerror;
+      // if not from matrix element correction
+      if(cit->first->perturbative())
+	{
+	  // add the child
+	  updateColour(cit->first->copy());
+	  PPtr orig=cit->first->original();
+	  copy->addChild(orig);
+	  pstep->addDecayProduct(orig);
+	  orig->addChild(cit->first->copy());
+	  pstep->addDecayProduct(cit->first->copy());
+	  // register the shower particle as a 
+	  // copy of the one from the hard process
+	  tParticleVector parents=init->parents();
+	  for(unsigned int ix=0;ix<parents.size();++ix)
+	    {parents[ix]->abandonChild(init);}
+	  (*cit).first->copy()->addChild(init);
+	  pstep->addDecayProduct(init);
+	  updateColour(init);
 	}
+      // from a matrix element correction
+      else
+	{
+	  if(copy->children().end()==
+	     find(copy->children().begin(),copy->children().end(),
+		  cit->first->original()))
+	    {
+	      updateColour(cit->first->original());
+	      copy->addChild(cit->first->original());
+	      pstep->addDecayProduct(cit->first->original());
+	    }
+	  updateColour(cit->first->copy());
+	  cit->first->original()->addChild(cit->first->copy());
+	  pstep->addDecayProduct(cit->first->copy());
+	  // register the shower particle as a 
+	  // copy of the one from the hard process
+	  tParticleVector parents=init->parents();
+	  for(unsigned int ix=0;ix<parents.size();++ix)
+	    {parents[ix]->abandonChild(init);}
+	  (*cit).first->copy()->addChild(init);
+	  pstep->addDecayProduct(init);
+	  updateColour(init);
+	}
+      // insert shower products
+      addFinalStateShower(init,pstep);
     }
   _colour.clear();
 }
@@ -738,6 +732,42 @@ void ShowerTree::resetShowerProducts()
     {_backward.insert(cit->second);}
   for(cit=_outgoingLines.begin();cit!=_outgoingLines.end();++cit)
     {_forward.insert(cit->second);}
+}
+
+void ShowerTree::updateAfterShower(multimap<Energy,ShowerTreePtr> & decay,tEHPtr eh)
+{
+  // update the links
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+  map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::iterator tit;
+  for(tit=_treelinks.begin();tit!=_treelinks.end();++tit)
+    {
+      if(tit->second.first)
+	{
+	  mit=_outgoingLines.find(tit->second.first);
+	  if(mit!=_outgoingLines.end()) tit->second.second=mit->second;
+	}
+    }
+  // get the particles coming from those in the hard process
+  set<tShowerParticlePtr> hard;
+  for(mit=_outgoingLines.begin();mit!=_outgoingLines.end();++mit)
+    hard.insert(mit->second);
+  // find the shower particles which should be decayed in the 
+  // shower but didn't come from the hard process
+  set<tShowerParticlePtr>::const_iterator cit;
+  for(cit=_forward.begin();cit!=_forward.end();++cit)
+    {
+      if(_showerVariables->decayInShower((**cit).id())&&
+	 hard.find(*cit)==hard.end())
+	{
+	  ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,_showerVariables,decay,eh));
+	  newtree->setParents();
+	  newtree->_parent=this;
+ 	  Energy width=(**cit).dataPtr()->generateWidth((**cit).mass());
+ 	  decay.insert(make_pair(width,newtree));
+	  _treelinks.insert(make_pair(newtree,
+				      make_pair(tShowerProgenitorPtr(),*cit)));
+	}
+    }
 }
 }
 
