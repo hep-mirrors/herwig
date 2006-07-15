@@ -91,7 +91,7 @@ void SMWZDecayer::doinit() throw(InitException)
 	    {
 	      extpart[1] = getParticleData(-ix);
 	      extpart[2] = getParticleData( iy);
-	      mode = new DecayPhaseSpaceMode(extpart,this);
+	      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
 	      addMode(mode,_wquarkwgt[iz],wgt);
 	      ++iz;
 	    }
@@ -108,7 +108,7 @@ void SMWZDecayer::doinit() throw(InitException)
 	{
 	  extpart[1] = getParticleData(-ix);
 	  extpart[2] = getParticleData(ix+1);
-	  mode = new DecayPhaseSpaceMode(extpart,this);
+	  mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
 	  addMode(mode,_wleptonwgt[(ix-11)/2],wgt);
 	}
 	  else

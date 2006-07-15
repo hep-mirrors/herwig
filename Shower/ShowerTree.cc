@@ -19,7 +19,8 @@ using namespace ThePEG;
 ShowerTree::ShowerTree(tEHPtr eh, 
 		       const ParticleVector & out,ShowerVarsPtr vars,
 		       multimap<Energy,ShowerTreePtr>& decay) 
-  : _wasHard(true),_parent(ShowerTreePtr()), _showerVariables(vars), _hasShowered(false)
+  : _hardMECorrection(false), _wasHard(true),
+    _parent(ShowerTreePtr()), _showerVariables(vars), _hasShowered(false)
 {
   Timer<1400> timer("ShowerTree::ShowerTree::hard");
   assert(eh);
@@ -99,7 +100,8 @@ ShowerTree::ShowerTree(tEHPtr eh,
 ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
 		       multimap<Energy,ShowerTreePtr>& decay,
 		       tEHPtr ch)
-    : _wasHard(false), _showerVariables(vars), _hasShowered(false)
+  : _hardMECorrection(false), _wasHard(false), 
+    _showerVariables(vars), _hasShowered(false)
 {
   Timer<1401> timer("ShowerTree::ShowerTree::decay");
   // there must be an incoming particle
