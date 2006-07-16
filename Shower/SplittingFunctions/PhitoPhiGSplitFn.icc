@@ -1,0 +1,23 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PhitoPhiGSplitFn class.
+//
+
+namespace Herwig {
+
+inline PhitoPhiGSplitFn::PhitoPhiGSplitFn() : SplittingFunction(ShowerIndex::QCD,1) {}
+
+inline PhitoPhiGSplitFn::PhitoPhiGSplitFn(const PhitoPhiGSplitFn & x)
+  : SplittingFunction(x)
+{}
+
+inline IBPtr PhitoPhiGSplitFn::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr PhitoPhiGSplitFn::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

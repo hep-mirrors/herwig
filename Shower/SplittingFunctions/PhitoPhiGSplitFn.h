@@ -1,24 +1,23 @@
 // -*- C++ -*-
-#ifndef HERWIG_QtoQGSplitFn_H
-#define HERWIG_QtoQGSplitFn_H
+#ifndef HERWIG_PhitoPhiGSplitFn_H
+#define HERWIG_PhitoPhiGSplitFn_H
 //
-// This is the declaration of the QtoQGSplitFn class.
+// This is the declaration of the PhitoPhiGSplitFn class.
 //
 
 #include "SplittingFunction.h"
-#include "QtoQGSplitFn.fh"
+#include "PhitoPhiGSplitFn.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/**\ingroup Shower
- *
+/**
  * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f$q\to qg\f$. 
+ * splitting function for \f\phi\to \phi g\f$.
  *
- *  In this case the splitting function is given by
- * \f[P(z,\tilde{q}^2) =\frac{C_F}{1-z}\left(1+z^2-2\frac{m^2_q}{\tilde{q}^2z}
+ * In this case the splitting function is given by
+ * \f[P(z,\tilde{q}^2) =\frac{2C_Fz}{1-z}\left(1-\frac{m^2_q}{\tilde{q}^2z^2}
  *                                    \right),\f]
  * where \f$C_F=\frac43\f$.
  * Our choice for the overestimate is 
@@ -28,10 +27,10 @@ using namespace ThePEG;
  * and its inverse is
  * \f[1-\exp\left(\frac{r}{2C_F}\right).\f]
  *
- * @see \ref QtoQGSplitFnInterfaces "The interfaces"
- * defined for QtoQGSplitFn.
+ * @see \ref PhitoPhiGSplitFnInterfaces "The interfaces"
+ * defined for PhitoPhiGSplitFn.
  */
-class QtoQGSplitFn: public SplittingFunction {
+class PhitoPhiGSplitFn: public SplittingFunction {
 
 public:
 
@@ -40,7 +39,17 @@ public:
   /**
    * The default constructor.
    */
-  inline QtoQGSplitFn();
+  inline PhitoPhiGSplitFn();
+
+  /**
+   * The copy constructor.
+   */
+  inline PhitoPhiGSplitFn(const PhitoPhiGSplitFn &);
+
+  /**
+   * The destructor.
+   */
+  virtual ~PhitoPhiGSplitFn();
   //@}
 
 public:
@@ -144,15 +153,15 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
+   * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<QtoQGSplitFn> initQtoQGSplitFn;
+  static NoPIOClassDescription<PhitoPhiGSplitFn> initPhitoPhiGSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQGSplitFn & operator=(const QtoQGSplitFn &);
+  PhitoPhiGSplitFn & operator=(const PhitoPhiGSplitFn &);
 
 };
 
@@ -165,37 +174,37 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of QtoQGSplitFn. */
+ *  base classes of PhitoPhiGSplitFn. */
 template <>
-struct BaseClassTrait<Herwig::QtoQGSplitFn,1> {
-  /** Typedef of the first base class of QtoQGSplitFn. */
+struct BaseClassTrait<Herwig::PhitoPhiGSplitFn,1> {
+  /** Typedef of the first base class of PhitoPhiGSplitFn. */
   typedef Herwig::SplittingFunction NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the QtoQGSplitFn class and the shared object where it is defined. */
+ *  the PhitoPhiGSplitFn class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::QtoQGSplitFn>
-  : public ClassTraitsBase<Herwig::QtoQGSplitFn> {
+struct ClassTraits<Herwig::PhitoPhiGSplitFn>
+  : public ClassTraitsBase<Herwig::PhitoPhiGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QtoQGSplitFn"; }
+  static string className() { return "Herwig++::PhitoPhiGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * QtoQGSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class QtoQGSplitFn depends on other classes (base classes
+   * PhitoPhiGSplitFn is implemented. It may also include several, space-separated,
+   * libraries if the class PhitoPhiGSplitFn depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwNewShower.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "QtoQGSplitFn.icc"
+#include "PhitoPhiGSplitFn.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGSplitFn.tcc"
+// #include "PhitoPhiGSplitFn.tcc"
 #endif
 
-#endif /* HERWIG_QtoQGSplitFn_H */
+#endif /* HERWIG_PhitoPhiGSplitFn_H */

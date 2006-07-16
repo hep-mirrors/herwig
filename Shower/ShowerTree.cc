@@ -46,7 +46,7 @@ ShowerTree::ShowerTree(tEHPtr eh,
       // if decayed or should be decayed in shower make the tree
       PPtr orig=*it;
       if(!orig->children().empty()||
-	 _showerVariables->decayInShower(orig->id()))
+	 (_showerVariables->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
 	{
 	  ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerVariables,
 						   decay,eh));
@@ -122,7 +122,7 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
 	  PPtr orig=children[ix];
  	  in->abandonChild(orig);
 	  if(!orig->children().empty()||
-	     _showerVariables->decayInShower(orig->id()))
+	     (_showerVariables->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
 	    {
 	      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerVariables,decay,ch));
 	      trees.insert(make_pair(orig,newtree));
@@ -483,6 +483,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
  	  tDMPtr dm(parent->data().selectMode(*parent));
  	  if(!dm) 
  	    throw Exception() << "Failed to select decay  mode in ShowerTree::decay()"
+			      << "for " << newparent->PDGName()
  			      << Exception::eventerror;
  	  if(!dm->decayer()) 
  	    throw Exception() << "No Decayer for selected decay mode "
@@ -508,16 +509,16 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
  	    }
  	  catch(Veto) {}
 	}
-       // insert the trees from the children
-       ParticleVector children=parent->children();
-       map<PPtr,ShowerTreePtr> trees;
-       for(unsigned int ix=0;ix<children.size();++ix)
+      // insert the trees from the children
+      ParticleVector children=parent->children();
+      map<PPtr,ShowerTreePtr> trees;
+      for(unsigned int ix=0;ix<children.size();++ix)
   	{
 	  PPtr orig=children[ix];
   	  parent->abandonChild(orig);
 	  // if particle has children or decays in shower
 	  if(!orig->children().empty()||
-	     _showerVariables->decayInShower(orig->id()))
+	     (_showerVariables->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
 	    {
 	      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerVariables,decay,ch));
 	      trees.insert(make_pair(orig,newtree));
