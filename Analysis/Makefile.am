@@ -11,7 +11,8 @@ BasicConsistency.h BasicConsistency.icc \
 MultiplicityCount.cc MultiplicityCount.fh \
 MultiplicityCount.h MultiplicityCount.icc \
 SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
-SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc
+SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc \
+GraphvizPlot.h GraphvizPlot.fh GraphvizPlot.icc GraphvizPlot.cc
 
 HwLEPAnalysis_la_LDFLAGS = -module
 HwLEPAnalysis_la_SOURCES = \
