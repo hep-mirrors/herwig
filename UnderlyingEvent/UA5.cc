@@ -7,12 +7,15 @@
 #include <ThePEG/Handlers/DecayHandler.h>
 #include "Herwig++/Hadronization/Cluster.h"
 #include "Herwig++/Utilities/HwDebug.h"
+#include "ThePEG/Repository/EventGenerator.h"
+#include "ThePEG/Utilities/Timer.h"
 
 using namespace std;
 using namespace ThePEG;
 using namespace Herwig;
 
-const int max_tries = 300;
+// these MUST be interfaced parameters !!!! NO HARDWIRING
+const unsigned int max_tries = 300;
 const unsigned int max_had = 50;
 
 // Default constructor
@@ -58,7 +61,7 @@ ClassDescription<UA5Handler> UA5Handler::initUA5Handler;
 void UA5Handler::Init() {
   static ClassDocumentation<UA5Handler> documentation
     ("This is the simple UA5 model for the underlying event.");
-  
+ 
   static Reference<UA5Handler,GlobalParameters>
     interfaceGlobalParameters("GlobalParameters",
 			      "A reference to the GlobalParameters object",
@@ -141,102 +144,43 @@ void UA5Handler::Init() {
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 			const Hint &hint) throw(Veto,Stop,Exception) {
-  /*****
-   * A few notes:
-   * to create a cluster: new_ptr(Cluster(PPtr,PPtr)) where the two
-   * PPtr are the consituent partons. It can also be created with three
-   * consituents new_ptr(Cluster(PPtr,PPtr,PPtr)); This produces a ClusterPtr
-   * To decay a hadron into its products based on the branching ratio's use
-   * the decayHadron routine provided in this class. 
-   *
-   * There is three ways to decay a cluster, they all return a PPair:
-   * 1) _clusterFissioner->produceHadron(id1,id2,LorentzMomentum &a,
-   *                                     LorentzPoint &b)
-   *       This function takes the two ids given and finds the lightest hadron
-   *       of those flavours. It creates the hadron and sets its momentum to
-   *       a and its labVertex to b. This returns a PPair (pair of particles)
-   *       where the first element is the hadron and the second is the quark
-   *       drawn from the vacuum to create the hadron.
-   * 2) _clusterFissioner->produceCluster(q,id,LorentzMomentum &a, 
-   *                                      LorentzPoint &b, LorentzMomentum &c,
-   *                                      LorentzMomentum &d)
-   *       This function takes a consituent quark q and an id and produces
-   *       a cluster from these. q is a PPtr and should be already in existence
-   *       while id is a long indicating the flavour to draw from the vacuum.
-   *       The cluster has momentum a and labVertex b. The consituent given
-   *       by q is given momentum c (note that this doesn't change the original
-   *       q's momentum, just sets it momentum of the copy inside the cluster)
-   *       and the quark drawn from the vacuum is given momentum d. This 
-   *       returns a PPair where the first element is the cluster and the 
-   *       second is the quark drawn from the vacuum.
-   * 3) _clusterDecayer->decayIntoTwoHadrons(ClusterPtr cluster)
-   *       This function does what it says. It takes a cluster and returns
-   *       two hadrons that this cluster decays into as given by the method
-   *       of cluster decays (currently the new method created by Phil 
-   *       Stephens). If the constituents are non-perturbative (not directly
-   *       from the shower) then the clusters are decayed isotropically. If 
-   *       Otherwise whichever cluster corresponds to the perturbative 
-   *       constituent may have its momentum smeared in the direction of the
-   *       constituents momenta.
-   *
-   * A few other ThePEG pointers:
-   *  To find the colour partner to a particle use particle.colourNeighbour()
-   *   or particle.antiColourNeighbour(). 
-   *  To get the current step use ch->currentStep(), this allows access to the
-   *   current set of particles. 
-   *  To create a new step use ch->newStep();
-   *  Steps are where changes to the EventRecord show up. If you don't use
-   *   routines like addParticle, addIntermediate, addDecayProduct then the
-   *   particles created won't appear in the EventRecord.
-   *****/
-   // Constants that should not need changing. This corresponds to ~1fm
-   static const double vclx = 4e-12; 
-   static const double vcly = 4e-12; 
-   static const double vclz = 4e-12; 
-   static const double vclt = 4e-12; 
-
-  // Now form the first two clusters, first split gluons
-  ClusterVector clusters;
-  StepPtr step = ch.newStep();
-
-  tPPtr clu[2];
+  Timer<10000> timer("UA5Handler::handle()");
+  // Constants that should not need changing. This corresponds to ~1fm
+  static const Length vclx = 4e-12; 
+  static const Length vcly = 4e-12; 
+  static const Length vclz = 4e-12; 
+  static const Length vclt = 4e-12;
+  // create a new step for the products
+  StepPtr step = ch.newStep(); 
+  // Find the first two clusters
+  // Lets find the clusters, set the partons inside to be on shell and no momentum
+  tClusterPtr clu[2];
   Lorentz5Momentum cluP[2];
   tPVector::const_iterator it;
-
-  int i = 0;
-  int ntry = 0;
+  unsigned int i = 0;
+  for(it = tagged.begin(); it!=tagged.end(); ++it) {
+    if((*it)->id() != ExtraParticleID::Cluster) continue;
+    // change so copy not in event record ?
+    clu[i] = dynamic_ptr_cast<ClusterPtr>(*it);
+    cluP[i] = clu[i]->momentum();
+    ++i;
+    if(i>2) throw Exception() << "Must have at most two beam clusters in "
+			      << "UA5Handler::handle " 
+			      << Exception::eventerror;
+  }
+  if(i == 0) return;
+  if(i!=2) throw Exception() << "Must have two and only two beam clusters in "
+			    << "UA5Handler::handle " 
+			    << Exception::eventerror;
+  // and their cm
+  Lorentz5Momentum cm = clu[0]->momentum() + clu[1]->momentum();
+  Energy theCM = cm.mass();
+  theCM *= enhanceCM;
   int netc = 0;
-  bool multiplicityNeeded = true;
-  bool newCluster = true;
   long id1,id2,id3;
   id1 = id2 = id3 = 0;
 
-  // Lets find the clusters, set the partons inside to be on shell and no momentum
-  for(it = tagged.begin(); it!=tagged.end(); it++) {
-     if((*it)->id() == ExtraParticleID::Cluster) {
-        clu[i] = step->copyParticle(*it);
-        cluP[i] = clu[i]->momentum();
-        ClusterPtr c = dynamic_ptr_cast<ClusterPtr>(clu[i]);
-        c->particle(0)->setMomentum(LorentzMomentum(0.,0.,0.,c->particle(0)->nominalMass()));
-        c->particle(1)->setMomentum(LorentzMomentum(0.,0.,0.,c->particle(1)->nominalMass()));
-        i++;
-     }
-  }
-  if(i == 0) return;
-
-  // and their cm
-  Lorentz5Momentum cm = clu[0]->momentum() + clu[1]->momentum();
-  double theCM = cm.mass();
-  theCM *= enhanceCM;
-  PPtr incomingHadron[2];
- 
   // Now initialize charge information
-  int theMult = 0;
-  PVector tag;
-  PPair incom = step->collision()->incoming();
-  incomingHadron[0] = incom.first;
-  incomingHadron[1] = incom.second;
-  netc = 0;
   // Get total charge of collision
   //netc = (int)(incomingHadron[0]->data().charge() + incomingHadron[1]->data().charge());
   // Now subtract the charges that go to hard process
@@ -248,233 +192,124 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   else if(netc == 1) id3 = ParticleID::d; 
   else id3 = rndbool() ? ParticleID::u : ParticleID::d;
 
-  //netc = 0;
-  //id3 = rndbool() ? ParticleID::u : ParticleID::d;
-  int numberCluster = 0;
-  double sumMasses = 0.;
-  int modCharge = 0;
-  int numCharge = 0; 
-  int newHads;
   pair<tPPtr,tPPtr> hads;
   int nppbar = 0;
 
   StepPtr newStep = ch.newStep();
 
   // Loop until we find a match to the charge multiplicity
-  while(multiplicityNeeded && ntry < max_tries) {
+  unsigned int ntry = 0;
+  vector<ClusterPtr> clusters;
+  bool multiplicityReached = false;
+  while(!multiplicityReached && ntry < max_tries) {
      PPtr part1, part2;
-     if(ntry % 50 == 0) { nppbar = multiplicity(theCM); }
-     ntry++;
-     numberCluster = 0;
-     theMult = nppbar;
-     sumMasses = 0.;
-     modCharge = 0;
+     // reset multiplicity every 50 tries
+     if(ntry % 50 == 0) nppbar = multiplicity(theCM);
+     ++ntry;
+     unsigned int numberCluster = 0;
+     int theMult = nppbar;
+     Energy sumMasses = 0.;
+     int modCharge = 0;
+     // delete the particles from the previous attempt if needed
+     if(ntry > 1) clusters.clear();
 
-     // If we have restarted after failed attempt, clear step of old particles
-     if(ntry > 1) { 
-       ParticleSet parts = newStep->all();
-       ParticleSet::iterator it;
-       for(it = parts.begin(); it!=parts.end(); it++) { 
-         if((*it)->birthStep()==newStep) newStep->removeParticle(*it);
-       } 
-     }
-     tag.clear();
-
-     numCharge = netc;
-     newCluster = true;
-
-     tag.push_back(clu[0]);
-     tag.push_back(clu[1]);
-
+     int numCharge = netc;
+     bool newCluster = true;
      while(newCluster) {
-        ClusterPtr cluster;
-        // Choose new constituents
-        if(numberCluster < 2) {
-           cluster = dynamic_ptr_cast<ClusterPtr>(tag[numberCluster]);
-           part1 = cluster->particle(0);
-           part2 = cluster->particle(1);
-           id1 = part1->id();
-           id2 = part2->id();
-        } else {
-           id1 = -id2;
-           if(numberCluster == 2) id1 = id3;
-           id2 = rndbool() ? ParticleID::ubar : ParticleID::dbar;
-           part1 = getParticle(id1);
-           part2 = getParticle(id2); 
-           cluster = new_ptr(Cluster(part1,part2));
-           newStep->addIntermediate(cluster);
-        }
-        // Mass = Random number from dN/d(x**2)=exp(-b*x) with mean 1/M2
-        double newMass = getParticleData(id1)->constituentMass() + getParticleData(id2)->constituentMass() 
-                                 + M1 - log(rnd()*rnd())/M2;
-        Lorentz5Momentum cp(0.,0.,0.,newMass,newMass);
+       ClusterPtr cluster;
+       // Choose new constituents
+       if(numberCluster < 2) {
+	 part1 = clu[numberCluster]->particle(0);
+	 part2 = clu[numberCluster]->particle(1);
+	 id1 = part1->id();
+	 id2 = part2->id();
+	 cluster = new_ptr(Cluster(part1,part2));
+       } else {
+	 id1 = -id2;
+	 if(numberCluster == 2) id1 = id3;
+	 id2 = rndbool() ? ParticleID::ubar : ParticleID::dbar;
+	 part1 = getParticle(id1);
+	 part2 = getParticle(id2); 
+	 cluster = new_ptr(Cluster(part1,part2));
+       }
+       // Mass = Random number from dN/d(x**2)=exp(-b*x) with mean 1/M2
+       Energy newMass = 
+	 getParticleData(id1)->constituentMass() + 
+	 getParticleData(id2)->constituentMass() 
+	 + M1 - log(rnd()*rnd())/M2;
+       // set momentum of the cluster
+       Lorentz5Momentum cp(0.,0.,0.,newMass,newMass);
+       cluster->set5Momentum(cp);
+       // Now the gaussian distribution of the x,y,z components,
+       // and a time component given by
+       // sqrt(vx^2+vy^2+vz^2) - vclt*log(r)
+       Length vx = gaussDistribution(0.,vclx);
+       Length vy = gaussDistribution(0.,vcly);
+       Length vz = gaussDistribution(0.,vclz);
+       LorentzPoint vert(vx,vy,vz, sqrt(sqr(vx)+sqr(vy)+sqr(vz)) - vclt*log(rnd()));
+       cluster->setVertex(vert);
+       // Now need to measure displacement relative to soft cm (TODO:)
+       // Fortran code sets the vertex of the primary incoming particle to 0
+       // then during boosting it adds the value of the vertex of particle 3 (???)
+       // to all the particles
+       // for now I will not implement this. Perhaps Mike can decide if this is 
+       // needed, as he added this code to the fortran code on 07/03/05.
 
-        cluster->set5Momentum(cp);
-       
-        // Now the gaussian distribution of the x,y,z components, and a time component given by
-        // sqrt(vx^2+vy^2+vz^2) - vclt*log(r)
-        double vx = gaussDistribution(0.,vclx);
-        double vy = gaussDistribution(0.,vcly);
-        double vz = gaussDistribution(0.,vclz);
-        LorentzPoint vert(vx,vy,vz, sqrt(sqr(vx)+sqr(vy)+sqr(vz)) - vclt*log(rnd()));
-        cluster->setVertex(vert);
-        
-        // Now need to measure displacement relative to soft cm (TODO:)
-	// Fortran code sets the vertex of the primary incoming particle to 0
-        // then during boosting it adds the value of the vertex of particle 3 (???) to all the particles
-        // for now I will not implement this. Perhaps Mike can decide if this is needed, as he added this
-        // code to the fortran code on 07/03/05.
-
-        // Now we decay the clusters into hadrons
-        PPair products = clusterDecayer->decayIntoTwoHadrons(cluster);
-        if(numberCluster >= 2) tag.push_back(cluster);
-        addFission(products, newStep, cluster, hads, newHads, id1, id2);
-        sumMasses += cluster->mass();
-      
-        // Now we decays hadrons into stable particles. Count charged multiplicity
-        for(i = 0; i<newHads; i++) {
-           tPPtr particle;
-           if(i==0) particle = hads.first;
-           else particle = hads.second;
-           try { 
-              if(!particle->data().stable()) decayer->performDecay(particle,*newStep);
-           } catch(exception &e) {}
-        }
-        numCharge = 0;
-        tPVector finalParts = newStep->getFinalState();
-        countCharges(finalParts, numCharge, modCharge, newStep);
-
-        // Count charges counts all charges, so only add modCharge for cluster 2
-        if(numberCluster == 0) theMult = nppbar+netc;
-        else if(numberCluster == 1) theMult += abs(modCharge);
-        if(numberCluster == 1 && theMult < 0) theMult += 2;
-
-        numberCluster++;
-
-        // Now check which loop to do next
-        if(numCharge < theMult) continue;
-        else if(numCharge > theMult) { newCluster = false; }
-        else { newCluster = false; multiplicityNeeded = false; }
+       // Add the cluster to the list
+       clusters.push_back(cluster);
+       // Now we decay the clusters into hadrons
+       decayCluster(cluster);
+       // sum of the cluster masses
+       sumMasses += cluster->mass();
+       // Now decay the hadrons into stable particles
+       int totalcharge(0),numbercharge(0);
+       for(unsigned int ix=0;ix<cluster->children().size();++ix)
+	 {performDecay(cluster->children()[ix],totalcharge,numbercharge);}
+       numCharge+=numbercharge;
+       modCharge+=totalcharge;
+       // Count charges counts all charges, so only add modCharge for cluster 2
+       if(numberCluster == 0) theMult = nppbar+netc;
+       else if(numberCluster == 1) theMult += abs(modCharge);
+       if(numberCluster == 1 && theMult < 0) theMult += 2;
+       numberCluster++;
+       // Now check which loop to do next
+       if(numCharge < theMult) continue;
+       else if(numCharge > theMult) { newCluster = false; }
+       else { newCluster = false; multiplicityReached = true; }
      }
      // Now check the physical mass/energy boundary
-     if(!multiplicityNeeded && sumMasses > theCM) { multiplicityNeeded = true; }
+     if(multiplicityReached && sumMasses > theCM) { multiplicityReached = false; }
   }
 
   // Catch case of too many attempts
   if(ntry == max_tries) {
-     if(ntry > 1) { 
-       ParticleSet parts = newStep->all();
-       ParticleSet::iterator it;
-       for(it = parts.begin(); it!=parts.end(); it++) { 
-         if((*it)->birthStep()==newStep) newStep->removeParticle(*it);
-       } 
-     }
+    if(ntry > 1) clusters.clear();
      // Just hadronize and decay the two clusters
      for(int i =0; i<2; i++) {
-        ClusterPtr cluster = dynamic_ptr_cast<ClusterPtr>(clu[i]);
-        PPair products = clusterDecayer->decayIntoTwoHadrons(cluster); 
-        addFission(products, newStep, cluster, hads, newHads, id1, id2);
-        for(int i = 0; i<newHads; i++) {
-           tPPtr particle;
-           if(i==0) particle = hads.first;
-           else particle = hads.second;
-           try {
-              if(!particle->data().stable()) decayer->performDecay(particle, *newStep);
-           } catch(exception &e) {}
-        }
+       ClusterPtr cluster = clu[i];
+       decayCluster(cluster);
+       int totalcharge(0),numbercharge(0);
+       for(unsigned int ix=0;ix<cluster->children().size();++ix)
+	 {performDecay(cluster->children()[ix],totalcharge,numbercharge);}
      }
   }
 
-  try {
-     // Now generate momentum 
-     generateMomentum(tag, theCM, cm);
-  } catch (Veto &v) { throw(v); }
-}
-
-void UA5Handler::addFission(PPair &products, StepPtr &newStep, ClusterPtr &cluster, 
-                            pair<tPPtr,tPPtr> &hads, int &newHads, long id1, long id2) {
-  if(products.first == PPtr() || products.second == PPtr()) {
-    Lorentz5Momentum mom = cluster->momentum();
-    LorentzPoint vert = cluster->vertex();
-    products = clusterFissioner->produceHadron(id1,id2, mom, vert);
-    cluster->addChild(products.first);
-    newStep->addDecayProduct(products.first);
-    hads.first = products.first;
-    newHads = 1;
-  } else {
-    cluster->addChild(products.first);
-    cluster->addChild(products.second);
-    newStep->addDecayProduct(products.first);
-    newStep->addDecayProduct(products.second);
-    hads.first = products.first;
-    hads.second = products.second;
-    newHads = 2;
-  }
-}
-
-void UA5Handler::countCharges(tPVector &particles, int &numCharges, int &modCharge, StepPtr &newStep) {
-   tPVector::iterator it;
-   modCharge = 0;
-   // Only count charges of particles produced in this step
-   for(it = particles.begin(); it!=particles.end(); it++) {
-      if((*it)->data().charged() && (*it)->birthStep() == newStep) {
-         numCharges += abs((int)((*it)->data().charge()));
-         modCharge += (int)((*it)->data().charge());
-      }
-   }
-}
-
-double UA5Handler::gaussDistribution(double mean, double stdev) {
-   double x = rnd();
-   x = sqrt(-2.*log(x));
-   double y;
-   randAzm(x,x,y);
-   return mean + stdev*x;
-}
-
-// Generates a random azimuthal angle and creates a 2 vector of length x with angle phi
-void UA5Handler::randAzm(double x, double &px, double &py) {
-   double c,s,cs;
-   while(true) {
-      c = 2.*rnd()-1.;
-      s = 2.*rnd()-1.;
-      cs = c*c+s*s;
-      if(cs <= 1.) break;
-   }
-   double qt = x/cs;
-   px = (c*c-s*s)*qt;
-   py = 2.*c*s*qt;
-}
-
-// This returns a random number with a flat distribution [-A,A] plus gaussian tail with stdev B
-double UA5Handler::randUng(double A, double B) {
-  double prun;
-  if(A == 0.) prun = 0.;
-  else prun = 1./(1.+B*1.2533/A);
-  if(rnd() < prun) return 2.*(rnd()-0.5)*A;
-  else {
-    double temp = gaussDistribution(0.,B);
-    if(temp < 0) return temp - abs(A);
-    else return temp + abs(A);
-  }
-}
-
-// This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
-// TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
-double UA5Handler::randExt(double AM0, double B) {
-  double r = rnd();
-  // Starting value
-  double am = AM0-log(r)/B;
-  for(int i = 1; i<20; i++) {
-    double a = exp(-B*(am-AM0))/(1.+B*AM0);
-    double f = (1.+B*am)*a-r;
-    double df = -B*B*am*a;
-    double dam = -f/df;
-    am += dam;
-    if(am<AM0) am=AM0+.001;
-    if(abs(dam) < .001) break;
-  }
-  return am;
+  try 
+    {
+      // Now generate momentum 
+      generateMomentum(clusters, theCM, cm);
+    } 
+  catch (Veto &v)
+    {throw(v);}
+  // insert the particles into the event record
+  for(unsigned int ix=0;ix<clusters.size();++ix)
+    {
+      clu[0]->addChild(clusters[ix]);
+      clu[1]->addChild(clusters[ix]);
+      newStep->addDecayProduct(clusters[ix]);
+    }
+  for(unsigned int ix=0;ix<clusters.size();++ix)
+    {insertParticle(clusters[ix],newStep,false);}
 }
 
 // transforms B (given in rest from of A). Returns vector in lab frame
@@ -490,23 +325,9 @@ Lorentz5Momentum UA5Handler::transformToLab(Lorentz5Momentum &A, Lorentz5Momentu
    C.setE(pf4);
    return C;
 }
-// This returns the mean multiplicity for the energy E amd the given parameters N1,N2,N3
-double UA5Handler::meanMultiplicity(Energy E) {
-  return N1*pow(E,N2)+N3;
-}
-
-// This returns the randomly generated value for the negative binomial
-double UA5Handler::negativeBinomial(int N, double mean, double ek) {
-  if(N < 0) return 0.0;
-  double r = mean/ek;
-  double rval = pow(1.+r, -ek);
-  r /= (1.+r);
-  for(int i = 1; i<=N; i++) rval *=  r*(ek+double(i)-1.)/double(i);
-  return rval;
-}
 
 // Generates the multiplicity of the charged particles for the energy E
-int UA5Handler::multiplicity(Energy E) {
+unsigned int UA5Handler::multiplicity(Energy E) {
   double alogs = 2.*log(E);
   double rk = K1*alogs+K2;
   if(rk > 1000.) rk = 1000.;
@@ -515,8 +336,8 @@ int UA5Handler::multiplicity(Energy E) {
   if(mean < 1.) mean = 1.;
   vector<double> dist;
   double sum = 0.0;
-  int imax = 0;
-  int i;
+  unsigned int imax = 0;
+  unsigned int i;
   for(i = 0; i<500; i++) {
     int N = (i+1)*2;
     dist.push_back(negativeBinomial(N,mean,ek));
@@ -560,7 +381,8 @@ LorentzRotation UA5Handler::rotate(LorentzMomentum &p) {
 }
 
 // Generate the momentum. This is based on the procedure of Jadach from Computer Physics Communications 9 (1975) 297-304
-void UA5Handler::generateMomentum(PVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto) {
+void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto) {
+  Timer<10001> timer("UA5Handler::generateMomentum()");
   // begin with the cylindrical phase space generation described in the paper of Jadach
   generateCylindricalPS(clusters, CME);
   LorentzVector bmp = clusters[0]->momentum();
@@ -594,112 +416,107 @@ void UA5Handler::generateMomentum(PVector &clusters, double CME, Lorentz5Momentu
   }
 }
 
-void UA5Handler::generateCylindricalPS(PVector &clusters, double CME) {
+void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
   double alog = log(CME*CME);
-  int ncl = clusters.size();
+  unsigned int ncl = clusters.size();
   double eps = 1e-10/double(ncl);
-  double pt, pt2, px, py, sumx, sumy, sum1, sum2, sum3, sum4, sumpt, sumtm;
+  Energy pt, pt2, px, py, sumpt, sumtm;
+  double sumx, sumy, sum1=0., sum2, sum3, sum4;
   double ximin, ximax;
-  int its = 0;
+  unsigned int its = 0;
   vector<double> xi(ncl);
-  while(its < max_tries) {
-    its++;
-    sumx = sumy = 0.;
-    for(int i = 0; i<ncl; i++) {
+  // calculate the slope parameters for the different clusters
+  // outside loop to save time
+  vector<double> slope(ncl);
+  vector<Lorentz5Momentum> mom(ncl);
+  for(unsigned int ix=0;ix<ncl;++ix)
+    {
       // Decide between three options
       // If the q-qbar pair used to create the hadrons from the cluster is u or d, option1
       // If the q-qbar pair is a c or s, option 2
       // if the q-qbar pair is a diquark, option 3
       // if their was no q-qbar pair (for cluster->hadron) then option 1
-      double slop;
-      tPPtr hadron = clusters[i]->children()[0];
-      long id1 = dynamic_ptr_cast<ClusterPtr>(clusters[i])->particle(0)->id();
-      
-      long ids[3];
-      long hadId = hadron->id();
-      ids[2] = (abs(hadId)/1000)%10;;
-      ids[1] = (abs(hadId)/100)%10;
-      ids[0] = (abs(hadId)/10)%10;
+      long id1=clusters[ix]->particle(0)->id();
+      long hadId = clusters[ix]->children()[0]->id();
+      long ids[3]={(abs(hadId)/10)%10,(abs(hadId)/100)%10,(abs(hadId)/1000)%10};
       if(ids[2] != 0 && hadId < 0) { ids[2] = -ids[2]; ids[1] = -ids[1]; ids[0] = -ids[0]; }
       else if(ids[2] == 0 && hadId < 0) ids[1] = -ids[1]; 
       else if(ids[2]) ids[0] = -ids[0];
-      
-      bool isAMeson = (ids[2] == 0);
-      bool isSingle = (clusters[i]->children().size() == 1);
-      if(isAMeson) {
+      if(ids[2] == 0) {
          long newId = 0;
          if(ids[1] == id1) newId = abs(ids[0]);
          else if(ids[0] == id1) newId = abs(ids[1]);
-         if(newId == ParticleID::s || id1 == ParticleID::c) slop = P2;
-         else slop = P1; 
-      } else if(isSingle) slop = P1;
-      else slop = P3;
-
-      // Now generate the pt given the parameter slop
-      pt = randExt(clusters[i]->mass(), slop);
-      Lorentz5Momentum mom = clusters[i]->momentum();
-      double ptp = pt*pt - sqr(mom.mass());
+         if(newId == ParticleID::s || id1 == ParticleID::c) slope[ix] = P2;
+         else slope[ix] = P1; 
+      } else if(clusters[ix]->children().size() == 1) slope[ix] = P1;
+      else slope[ix] = P3;
+      mom[ix]=clusters[ix]->momentum();
+    }
+  // loop to generate momenta
+  double yy(0.);
+  while(its < max_tries) {
+    ++its;
+    sumx = sumy = 0.;
+    for(unsigned int i = 0; i<ncl; ++i) {
+      // Now generate the pt given the parameter slope
+      pt = randExt(clusters[i]->mass(), slope[i]);
+      Energy2 ptp = pt*pt - sqr(mom[i].mass());
       if(ptp <= 0) pt = - sqrt(-ptp);
       else pt = sqrt(ptp);
       randAzm(pt,px,py);
-      mom.setPx(px);
-      mom.setPy(py);
+      mom[i].setPx(px);
+      mom[i].setPy(py);
       sumx += px;
       sumy += py;
-      clusters[i]->set5Momentum(mom);
     }
     sumx /= ncl;
     sumy /= ncl;
     sumpt = sumtm = 0.;
-    for(int i = 0; i<ncl; i++) {
-      Lorentz5Momentum mom = clusters[i]->momentum();
-      mom.setPz(0.);
-      mom.setX(mom.px()-sumx);
-      mom.setY(mom.py()-sumy);
-      pt2 = sqr(mom.px()) + sqr(mom.py());
+    for(unsigned int ix = 0; ix<ncl; ++ix) {
+      mom[ix].setPz(0.);
+      mom[ix].setX(mom[ix].px()-sumx);
+      mom[ix].setY(mom[ix].py()-sumy);
+      pt2 = mom[ix].perp2();
       // Use the z component of the clusters momentum for temporary storage
-      mom.setPz(sqrt(pt2+sqr(mom.mass())));
-      sumtm += mom.pz();
-      clusters[i]->set5Momentum(mom);
+      mom[ix].setPz(sqrt(pt2+mom[ix].mass2()));
+      sumtm += mom[ix].pz();
     }
-    if(sumtm > CME) continue; 
-    for(int i = 0; i<ncl; i++) xi[i] = randUng(0.6,1.0);
+    if(sumtm > CME) continue;
+    for(unsigned int i = 0; i<ncl; i++) xi[i] = randUng(0.6,1.0);
     sort(xi.begin(), xi.end());
     ximin = xi[0];
     ximax = xi[xi.size()-1]-ximin;
     xi[0] = 0.;
     for(int i = ncl-2; i>1; i--) xi[i+1] = (xi[i]-ximin)/ximax;
     xi[1] = 1.;
-    double yy = log(CME*CME/(clusters[0]->momentum().pz()*clusters[1]->momentum().pz()));
-    int j;
-    for(j = 0; j<10; j++) {
+    yy = log(CME*CME/(mom[0].pz()*mom[1].pz()));
+    bool suceeded=false;
+    for(unsigned int j = 0; j<10; j++) {
       sum1 = sum2 = sum3 = sum4 = 0.;
-      for(int i = 0; i<ncl; i++) {
-        double tm = clusters[i]->momentum().pz();
+      for(unsigned int i = 0; i<ncl; i++) {
+        double tm = mom[i].pz();
         double ex = exp(yy*xi[i]);
-        sum1 += tm*ex; sum2 += tm/ex;
-        sum3 += (tm*ex)*xi[i]; sum4 += (tm/ex)*xi[i];
-      }
+        sum1 += tm*ex;
+	sum2 += tm/ex;
+        sum3 += (tm*ex)*xi[i];
+	sum4 += (tm/ex)*xi[i];      }
       double fy = alog-log(sum1*sum2);
       double dd = (sum3*sum2 - sum1*sum4)/(sum1*sum2);
       double dyy = fy/dd;
-      if(abs(dyy/yy) < eps) { yy += dyy; break; }
+      if(abs(dyy/yy) < eps) { yy += dyy; suceeded=true; break;}
       yy += dyy;
     }
-    if(j == 10) {
-      if(its > 100) eps *= 10.; 
-      continue;
-    }
-    double zz = log(CME/sum1);
-    for(int i = 0; i<ncl; i++) {
-      Lorentz5Momentum mom = clusters[i]->momentum();
-      double tm = mom.pz();
-      double E1 = exp(zz + yy*xi[i]);
-      mom.setPz(tm/2.*(1./E1-E1));
-      mom.setE(tm/2.*(1./E1+E1));
-      clusters[i]->set5Momentum(mom);
-    }
-  } 
+    if(suceeded) break;
+    if(its > 100) eps *= 10.;
+  }
+  double zz = log(CME/sum1);
+  for(unsigned int i = 0; i<ncl; i++) {
+    double tm = mom[i].pz();
+    double E1 = exp(zz + yy*xi[i]);
+    mom[i].setPz(tm/2.*(1./E1-E1));
+    mom[i].setE(tm/2.*(1./E1+E1));
+    clusters[i]->set5Momentum(mom[i]);
+  }
 }
 
 // This is all just administrative functions for ThePEG structure
@@ -707,26 +524,103 @@ IBPtr UA5Handler::clone() const { return new_ptr(*this); }
   
 IBPtr UA5Handler::fullclone() const { return clone(); }
 
-void UA5Handler::doupdate() throw(UpdateException) {
-  HadronizationHandler::doupdate();
+void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge)
+{
+  // for an already decayed particle apply to children
+  if(!parent->children().empty())
+    {
+      for(unsigned int ix=0;ix<parent->children().size();++ix)
+	performDecay(parent->children()[ix],totalcharge,numbercharge);
+    }
+  // for a stable particle just add the charge
+  else if(parent->data().stable())
+    {
+      int charge=int(parent->data().charge());
+      totalcharge  +=    charge ;
+      numbercharge +=abs(charge);
+    }
+  // otherwise decay the particle
+  else
+    {
+      unsigned int ntry = 0,maxtry=100;
+      while (1)
+	{
+	  // veto if too many tries
+	  if(++ntry>=maxtry) throw Veto();
+	  // select the decay mode
+	  tDMPtr dm(parent->data().selectMode(*parent));
+	  // veto if no decay mode
+	  if ( !dm ) throw Veto(); 
+	  // veto if no decayer
+	  if( !dm->decayer() ) throw Veto();
+	  try 
+	    {
+	      unsigned int hadronizetries(0);
+	      bool hadronized;
+	      // start of rejection loop to regenerate same decay mode with
+	      // different kinematics this is sometimes needed for the hadronization
+	      do
+		{
+		  ParticleVector children = dm->decayer()->decay(*dm, *parent);
+		  hadronized=true;
+		  // decay generates decay products
+		  if ( !children.empty() ) 
+		    {
+		      // set up parent
+		      parent->decayMode(dm);
+		      // add children
+		      for ( int i = 0, N = children.size(); i < N; ++i )
+			{
+			  children[i]->setLabVertex(parent->labDecayVertex());
+			  parent->addChild(children[i]);
+			}
+		      parent->scale(0.0*GeV2);
+		      // loop over the children
+		      for ( int i = 0, N = children.size(); i < N; ++i )
+			{performDecay(children[i],totalcharge,numbercharge);}
+		      // special for partonic decays
+		      // see if colour particles produced
+		      bool partonic(false);
+		      for(unsigned int ix=0;ix<children.size();++ix)
+			{if(children[ix]->coloured()){partonic=true;break;}}
+		      if(partonic) throw Veto();
+		    }
+		}
+	      while(hadronizetries<maxtry&&!hadronized);
+	      return;
+	    }
+	  catch (Veto) {}
+	}
+    }
 }
 
-void UA5Handler::doinit() throw(InitException) {
-  HadronizationHandler::doinit();
+void UA5Handler::decayCluster(ClusterPtr cluster)
+{
+  PPair products = clusterDecayer->decayIntoTwoHadrons(cluster);
+  if(products.first == PPtr() || products.second == PPtr()) 
+    {
+      // decay the cluster to one hadron
+      Lorentz5Momentum mom = cluster->momentum();
+      LorentzPoint vert = cluster->vertex();
+      int id1=cluster->particle(0)->id();
+      int id2=cluster->particle(1)->id();
+      products=clusterFissioner->produceHadron(id1,id2, mom, vert);
+      // put the cluster and the hadron on mass-shell
+      Energy mass=products.first->nominalMass();
+      Lorentz5Momentum newp(0.,0.,0.,mass,mass);
+      cluster->set5Momentum(newp);
+      products.first->set5Momentum(newp);
+    }
+  else
+    {
+      cluster->addChild(products.first);
+      cluster->addChild(products.second);
+    }
 }
 
-void UA5Handler::dofinish() {
-  HadronizationHandler::dofinish();
+void UA5Handler::insertParticle(PPtr particle,StepPtr step,bool all)
+{ 
+  if(all) step->addDecayProduct(particle);
+  for(unsigned int ix=0;ix<particle->children().size();++ix)
+    {insertParticle(particle->children()[ix],step,true);}
 }
-
-void UA5Handler::rebind(const TranslationMap &trans) throw(RebindException) {
-  HadronizationHandler::rebind(trans);
-}
-
-IVector UA5Handler::getReferences() {
-  IVector ref = HadronizationHandler::getReferences();
-  return ref;
-}
-
-
- 

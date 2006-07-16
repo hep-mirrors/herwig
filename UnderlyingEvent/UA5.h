@@ -125,49 +125,29 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
-  //@}
-
 private:
+
+  /**
+   * Perform the decay of an unstable hadron.
+   * @param parent the decaying particle
+   * @param totalcharge The totalcharge of the decay proiducts
+   * @param numbercharge The number of stabel charged decay products
+   */
+  void performDecay(PPtr parent,int & totalcharge,int & numbercharge);
+
+  /**
+   *  Decay a cluster
+   * @param cluster The cluster to decay
+   */
+  void decayCluster(ClusterPtr cluster);
+
+  /**
+   *  Recursively add particle and decay products to the step
+   * @param particle The particle
+   * @param step The step
+   * @param all Insert this particle as well as children
+   */
+  void insertParticle(PPtr particle,StepPtr step,bool all);
 
    /**
     * This generates the distribution of the negative binomial given the mean, the N and ek.
@@ -176,21 +156,23 @@ private:
     * @param ek
     * @return a value distributed according the negative binomial distribution
     */
-   double negativeBinomial(int N, double mean, double ek);
+   inline double negativeBinomial(int N, double mean, double ek);
 
    /**
-    * The value of the mean multiplicity for a given energy E. This is N1*pow(E,N2)+N3 wher N1, N2 and N3 are parameters.
+    * The value of the mean multiplicity for a given energy E.
+    * This is N1*pow(E,N2)+N3 wher N1, N2 and N3 are parameters.
     * @param E the energy to calculate the mean multiplicity for
     * @return the mean multiplicity
     */
-   double meanMultiplicity(Energy E);
+   inline double meanMultiplicity(Energy E);
 
    /**
-    * Generates a multiplicity for the energy E according to the negitive binomial distribution.
+    * Generates a multiplicity for the energy E according to the negitive
+    * binomial distribution.
     * @param E The energy to generate for
     * @return the randomly generated multiplicity for the energy given
     */
-   int multiplicity(Energy E);
+   unsigned int multiplicity(Energy E);
 
    /**
     * Gaussian distribution
@@ -198,7 +180,7 @@ private:
     * @param stdev the standard deviation of the distribution
     * @return the gaussian distribution
     */
-   double gaussDistribution(double mean, double stdev);
+   inline double gaussDistribution(double mean, double stdev);
 
    /**
     * This counts the number of charges and the total charge for the particles given.
@@ -216,23 +198,24 @@ private:
     * @param CME The center of mass energy
     * @param cm The center of mass momentum (of the underlying event)
     */
-   void generateMomentum(PVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto);
+   void generateMomentum(ClusterVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto);
 
    /**
     * The implementation of the cylindrical phase space.
     * @param clusters The list of clusters to generate the momentum for
     * @param CME The center of mass energy
     */
-   void generateCylindricalPS(PVector &clusters, double CME);
+   void generateCylindricalPS(ClusterVector &clusters, double CME);
 
    /**
-    * This returns a random number with a flat distribution [-A,A] plus gaussian tail with stdev B 
+    * This returns a random number with a flat distribution
+    * [-A,A] plus gaussian tail with stdev B 
     * TODO: Should move this to Utilities
     * @param A The width of the flat part
     * @param B The standard deviation of the gaussian tail
     * @return the randomly generated value
     */
-   double randUng(double A, double B);
+   inline double randUng(double A, double B);
 
    /**
     * Generates a random azimuthal angle and puts x onto px and py 
@@ -241,17 +224,17 @@ private:
     * @param px the x component after random rotation
     * @param py the y component after random rotation
     */
-   void randAzm(double x, double &px, double &py);
+   inline void randAzm(double x, double &px, double &py);
 
-  /**
-   * This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
-   * TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
-   * TODO: Should move to Utilities
-   * @param av the average of the distributions
-   * @return the value distributed from dN/d(x^2) = exp(-b*x) with mean av
-   */
-  double randExt(double AM0, double B);
-
+   /**
+    * This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
+    * TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
+    * TODO: Should move to Utilities
+    * @param av the average of the distributions
+    * @return the value distributed from dN/d(x^2) = exp(-b*x) with mean av
+    */
+   inline double randExt(double AM0, double B);
+   
    /**
     * transforms B (given in rest from of A). Returns vector in lab frame
     * @param A The vector in the whose rest B is in 
@@ -349,5 +332,7 @@ struct ClassTraits<Herwig::UA5Handler> :
 };
 
 }
+
+#include "UA5.icc"
 
 #endif
