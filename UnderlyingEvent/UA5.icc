@@ -8,7 +8,7 @@ namespace Herwig {
 
 // This returns the mean multiplicity for the energy E amd the given parameters N1,N2,N3
 inline double UA5Handler::meanMultiplicity(Energy E) {
-  return N1*pow(E/GeV,2.0*N2)+N3;
+  return _n1*pow(E/GeV,2.0*_n2)+_n3;
 }
 
 // This returns the randomly generated value for the negative binomial
@@ -23,11 +23,11 @@ inline double UA5Handler::negativeBinomial(int N, double mean, double ek) {
 
 // This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
 // TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
-inline double UA5Handler::randExt(double AM0, double B) {
+inline double UA5Handler::randExt(Energy AM0, InvEnergy B) {
   double r = rnd();
   // Starting value
-  double am = AM0-log(r)/B;
-  for(int i = 1; i<20; i++) {
+  Energy am = AM0-log(r)/B;
+  for(int i = 1; i<20; ++i) {
     double a = exp(-B*(am-AM0))/(1.+B*AM0);
     double f = (1.+B*am)*a-r;
     double df = -B*B*am*a;
@@ -39,7 +39,16 @@ inline double UA5Handler::randExt(double AM0, double B) {
   return am;
 }
 
-// This returns a random number with a flat distribution [-A,A] plus gaussian tail with stdev B
+inline double UA5Handler::gaussDistribution(double mean, double stdev) {
+   double x = rnd();
+   x = sqrt(-2.*log(x));
+   double y;
+   randAzm(x,x,y);
+   return mean + stdev*x;
+}
+
+// This returns a random number with a flat distribution [-A,A] plus gaussian
+// tail with stdev B
 inline double UA5Handler::randUng(double A, double B) {
   double prun;
   if(A == 0.) prun = 0.;
@@ -52,14 +61,6 @@ inline double UA5Handler::randUng(double A, double B) {
   }
 }
 
-inline double UA5Handler::gaussDistribution(double mean, double stdev) {
-   double x = rnd();
-   x = sqrt(-2.*log(x));
-   double y;
-   randAzm(x,x,y);
-   return mean + stdev*x;
-}
-
 // Generates a random azimuthal angle and creates a 2 vector of length x with angle phi
 inline void UA5Handler::randAzm(double x, double &px, double &py) {
    double c,s,cs;
@@ -67,7 +68,7 @@ inline void UA5Handler::randAzm(double x, double &px, double &py) {
       c = 2.*rnd()-1.;
       s = 2.*rnd()-1.;
       cs = c*c+s*s;
-      if(cs <= 1.) break;
+      if(cs <= 1.&&cs!=0.) break;
    }
    double qt = x/cs;
    px = (c*c-s*s)*qt;

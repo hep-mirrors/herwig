@@ -21,10 +21,86 @@ using namespace ThePEG;
  *  underlying event model which will be superceded by a  
  *  new model in Herwig++.                                
  *                                                        
- *  This class interfaces with the Hadron decays and with 
+ *  This class interfaces with with 
  *  the cluster hadronization. To that end there is an    
  *  interface set up with the ClusterFissioner class and  
- *  with the ClusterDecayer class.           
+ *  with the ClusterDecayer class.
+ * 
+ *  The Hadronization is responsible, if the 
+ *  GlobalParameters::isSoftUnderlyingEventON() switch is set to true,
+ *  for the formation of the beam clusters. In this step the colour connection
+ *  between the spectators and the initial-state parton showers is cut by the
+ *  forced emission of a soft quark-antiquark pair. The underlying soft event in a
+ *  hard hadron-hadron collision is then assumed to be a soft collision
+ *  between these two beam clusters.
+ *
+ *  The model used for the underlying event is based on the minimum-bias
+ *  \f$p\bar{p}$ event generator of the UA5 Collaboration,
+ *  UA5 Collaboration, G.J. Alner et al., Nucl. Phys. B291 (1987) 445,
+ *  modified to make use of our cluster fragmentation algorithm.
+ *
+ *  The parameter ProbSoft enables one to produce an underlying event in
+ *  only a fraction ProbSoft of events (default=1.0).
+ *
+ *  The UA5 model starts from a parametrization of the \f$p\bar{p}\f$
+ *  inelastic charged multiplicity distribution as a negative binomial distribution,
+ * \f[P(n) = \frac{\Gamma(n+k)}{n!\,\Gamma(k)}
+ *           \frac{(\bar n/k)^n}{(1+\bar n/k)^{n+k}}\;.\f]
+ *  The parameter \f$k\f$ is given by
+ * \f[1/k =k_1\ln s+k_2,\f]
+ * and \f$\bar n\f$ is given by
+ * \f[\bar n =n_1s^{n_2}+n_3\f]
+ * As an option, for underlying events the value of $\sqrt{s}$ used to choose
+ * the multiplicity $n$ may be increased by a factor EnhanceCM to allow
+ * for an enhanced underlying activity in hard events.
+ *
+ * Once a charged multiplicity has been selected from the above distribution,
+ * `softclusters' are generated with flavours \$(f_1,f_2) = (q_{n-1},\bar q_n)\$
+ * by drawing $q_n\bar q_n = u\bar u$ or $d\bar d$ randomly from the 
+ * vacuum. Soft cluster masses are assigned as
+ * \f[M = m_{q1}+m_{q2}+m_1-\log(r_1 r_2)/m_2 \f]
+ * where \$r_{1,2}\$ are random numbers, which gives a (shifted) exponential
+ * distribution of \$M^2\z$.  The parameters \f$m_1\f$ and \f$m_2\f$ control
+ * the distribution and \f$m_{q1,2}\f$ are the masses of the quarks in the cluster.
+ *
+ * As each soft cluster is generated, it is decayed to stable hadrons using
+ * the cluster hadronization model (without cluster fission) and the accumulated
+ * charged multiplicity is computed.
+ * Once the preselected charged multiplicity is exactly reached,
+ * cluster generation is stopped. If it is exceeded, all clusters are rejected
+ * and new ones are generated until the exact value is reached. In this way the
+ * multiplicity distribution of stable charged hadrons
+ * is generated exactly as prescribed.
+ *
+ * At this stage (to save time) the kinematic distribution of the soft clusters
+ * has not yet been generated.  The decay products of each cluster are stored
+ * in its rest frame.  Now the transverse momenta of the clusters are
+ * generated with the distribution
+ * \f[\P(p_t)\propto p_t\exp\left(-p_{1,2,3}\sqrt{p_t^2+M^2}\right)\f]
+ * where the slope parameter $p_{1,2,3}$ depends as indicated on the
+ * flavour of the quark or diquark pair created in the
+ * primary cluster decay, \f$p_1\f$ for light quarks, \f$p_2\f$ for the strange and
+ * charm quarks and \f$p_3\f$ for diquarks.
+ * Next the clusters are given a flat
+ * rapidity distribution with Gaussian shoulders. The `reduced
+ * rapidities' \f$\xi_i\f$ are generated first by drawing
+ * from a distribution
+ * \f[P(\xi) = N\;\;\;\mbox{for}\;|\xi|<0.6\f]
+ * \f[P(\xi) = N\,e^{-(\xi-0.6)^2/2} \;\;\;\mbox{for}\;\xi>0.6\f]
+ * \f[P(\xi) = N\,e^{-(\xi+0.6)^2/2} \;\;\;\mbox{for}\;\xi<-0.6\f]
+ * where \f$N=1/(1.2+\sqrt{2\pi})\f$ is the normalization.  Next
+ * a scaling factor \f$Y\f$ is computed such that the scaled cluster
+ * rapidities \f$y_i=Y\xi_i\f$, their masses and transverse momenta
+ * satisfy momentum conservation when compared to the total
+ * energy of the underlying event. Thus the soft cluster rapidity
+ * distribution retains its overall shape but becomes higher and
+ * wider as the energy of the underlying event increases.
+ *
+ * Finally the decay products of each cluster are boosted from
+ * its rest frame into the lab frame and added to the event record.
+ *
+ * @see \ref UA5HandlerInterfaces "The interfaces"
+ * defined for UA5Handler..
  */
 
 class UA5Handler : public HadronizationHandler {
@@ -103,6 +179,11 @@ protected:
 private:
 
   /**
+   *  Members to decay the clusters and hadrons produced in their decay,
+   *  and insert the output in the event record.
+   */
+  //@{
+  /**
    * Perform the decay of an unstable hadron.
    * @param parent the decaying particle
    * @param totalcharge The totalcharge of the decay proiducts
@@ -111,76 +192,98 @@ private:
   void performDecay(PPtr parent,int & totalcharge,int & numbercharge);
 
   /**
-   *  Decay a cluster
+   * Decay a cluster to two hadrons is sufficiently massive and to one if
+   * not.
    * @param cluster The cluster to decay
    */
   void decayCluster(ClusterPtr cluster);
 
   /**
-   *  Recursively add particle and decay products to the step
+   * Recursively add particle and decay products to the step
    * @param particle The particle
    * @param step The step
    * @param all Insert this particle as well as children
    */
   void insertParticle(PPtr particle,StepPtr step,bool all);
+  //@}
 
+  /**
+b   *  Members to generate the multiplicity according to a negative binomial
+   *  distribution.
+   */
+  //@{
    /**
-    * This generates the distribution of the negative binomial given the mean, the N and ek.
-    * @param N
-    * @param mean
-    * @param ek
+    * Calculate the negative binomial probability given the
+    * mean \f$\bar n\f$, the multiplicity and \f$1/k\f$.
+    * @param N  The multplicity for which to calculate the probability
+    * @param mean The mean multiplicity \f$\bar n\f$
+    * @param ek \f$1/k\f$
     * @return a value distributed according the negative binomial distribution
     */
    inline double negativeBinomial(int N, double mean, double ek);
 
    /**
     * The value of the mean multiplicity for a given energy E.
-    * This is N1*pow(E,N2)+N3 wher N1, N2 and N3 are parameters.
+    * This is \f$n_1E^{2n_2}+n_3\f$ wher \f$n_1\f$, \f$n_2\f$ and \f$n_3\f$
+    * are parameters.
     * @param E the energy to calculate the mean multiplicity for
     * @return the mean multiplicity
     */
    inline double meanMultiplicity(Energy E);
 
    /**
-    * Generates a multiplicity for the energy E according to the negitive
+    * Generates a multiplicity for the energy E according to the negative
     * binomial distribution.
     * @param E The energy to generate for
     * @return the randomly generated multiplicity for the energy given
     */
    unsigned int multiplicity(Energy E);
+  //@}
 
    /**
-    * Gaussian distribution
-    * @param mean the mean of the distribution
-    * @param stdev the standard deviation of the distribution
-    * @return the gaussian distribution
+    * Members to generate the momenta of the clusters
     */
-   inline double gaussDistribution(double mean, double stdev);
-
+   //@{
    /**
-    * This counts the number of charges and the total charge for the particles given.
-    */
-   void countCharges(tPVector &particles, int &numCharges, int &modCharge, StepPtr &newStep);
-   /**
-    * This returns the rotation matrix needed to rotate p into the z axis
-    */
-   LorentzRotation rotate(LorentzMomentum &p);
-
-   /**
-    * This generates the momentum of the produced particles according to the cylindrical phase space algorithm given
+    * This generates the momentum of the produced particles according to
+    * the cylindrical phase space algorithm given
     * in Computer Physics Communications 9 (1975) 297-304 by S. Jadach.
     * @param clusters The list of clusters produced
     * @param CME The center of mass energy
     * @param cm The center of mass momentum (of the underlying event)
     */
-   void generateMomentum(ClusterVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto);
+   void generateMomentum(ClusterVector &clusters, Energy CME,
+			 Lorentz5Momentum cm) throw(Veto);
 
    /**
     * The implementation of the cylindrical phase space.
     * @param clusters The list of clusters to generate the momentum for
     * @param CME The center of mass energy
     */
-   void generateCylindricalPS(ClusterVector &clusters, double CME);
+   void generateCylindricalPS(ClusterVector &clusters, Energy CME);
+   //@}
+
+
+
+
+   /**
+    * This returns the rotation matrix needed to rotate p into the z axis
+    */
+   LorentzRotation rotate(LorentzMomentum &p);
+
+
+
+   /**
+    *  Various methods to generate random distributions
+    */
+   //@{
+   /**
+    * Gaussian distribution
+    * @param mean the mean of the distribution
+    * @param stdev the standard deviation of the distribution
+    * @return Arandom value from the gaussian distribution
+    */
+   inline double gaussDistribution(double mean, double stdev);
 
    /**
     * This returns a random number with a flat distribution
@@ -195,22 +298,24 @@ private:
    /**
     * Generates a random azimuthal angle and puts x onto px and py 
     * TODO: Should move this to Utilities
-    * @param x the magnitude of the vector
-    * @param px the x component after random rotation
-    * @param py the y component after random rotation
+    * @param pt The magnitude of the transverse momentum
+    * @param px The x component after random rotation
+    * @param py The y component after random rotation
     */
-   inline void randAzm(double x, double &px, double &py);
+   inline void randAzm(Energy pt, Energy &px, Energy &py);
 
    /**
-    * This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
-    * TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
-    * TODO: Should move to Utilities
+    * This returns random number from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ distribution,
+    * where \f$m_T=\sqrt{p_T^2+M^2}\f$. It uses Newton's method to solve \f$F-R=0
+    * @param AM0 The mass \f$M\f$.
     * @param av the average of the distributions
-    * @return the value distributed from dN/d(x^2) = exp(-b*x) with mean av
+    * @return the value distributed from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ with mean av
     */
-   inline double randExt(double AM0, double B);
+   inline double randExt(Energy AM0,InvEnergy B);
+   //@}
    
    /**
+    * TODO remove this and use ThePEG methods instead
     * transforms B (given in rest from of A). Returns vector in lab frame
     * @param A The vector in the whose rest B is in 
     * @param B The vector we want to boost into the lab frame
@@ -218,65 +323,121 @@ private:
     */
    Lorentz5Momentum transformToLab(Lorentz5Momentum &A, Lorentz5Momentum &B);
 
-   void addFission(PPair &products, StepPtr &newStep, ClusterPtr &cluster, 
-                   pair<tPPtr,tPPtr> &had, int &newHads, long id1, long id2);
+private:
 
+   /**
+    * The static object used to initialize the description of this class.
+    * Indicates that this is a concrete class with persistent data.
+    */
    static ClassDescription<UA5Handler> initUA5Handler;
-
+   
    /**
     * This is never defined and since it can never be called it isn't 
     * needed. The prototype is defined so the compiler doesn't use the 
     * default = operator.
     */
    UA5Handler& operator=(const UA5Handler &);
-
+   
 private:
 
+   /**
+    *  Reference to the ClusterFissioner object
+    */
    ClusterFissionerPtr clusterFissioner;
+
+   /**
+    *  Reference to the cluster decayer object.
+    */
    ClusterDecayerPtr   clusterDecayer;
 
    /**
-    * The parameters to the mean multiplicity distribution at mass 
-    * s^(1/2) given by N1 * s^N2 + N3.
+    *  Parameters for the mean multiplicity \f$\bar n =n_1s^{n_2}+n_3\f$
     */
-   double  N1, N2, N3;  
+   //@{
+   /**
+    *  The parameter \f$n_1\f$ 
+    */
+   double _n1;
 
    /**
-    * These are used to specify the k of the inverse binomial 
-    * distribution given by
-    *   P(n) = G(n+k)/(n! G(k)) (n_/k)^n/(1+n_/k)^(n+k)
-    * where n_ is the mean of the distribution and G(x) is the 
-    * Gamma function.
+    *  The parameter \f$n_2\f$ 
     */
-   double  K1, K2; 
+   double _n2;
 
    /**
-    * These are parameters used in the mass distribution of the 
-    * clusters given as  (M-m1-m2-_M1) exp(-_M2 * M)  where M is 
-    * the decaying cluster mass and m1, m2 are the consituent masses.
+    *  The parameter \f$n_3\f$ 
     */
-   double M1, M2;  
+   double _n3;
+   //@}
 
    /**
-    * This is used to generate pt of a soft cluster. These parameters 
-    * control the slope of the distribution of (d,u) clusters, 
-    * (s,c) clusters and diquark clusters respectively. 
-    * The distribution is given as
-    *         P(pt) ~ pt*exp(-b (pt^2+M^2)^(1/2)) 
-    * where b is the given by the relevant parameter.
+    *  Parameters for \f$k\f$ in the negative binomial 
+    * distribution given by \f$1/k =k_1\ln s+k_2\f$
     */
-   double P1, P2, P3;  
+   //@{
+   /**
+    *  The parameter \f$k_1\f$ 
+    */
+   double _k1;
+
+   /**
+    *  The parameter \f$k_2\f$ 
+    */
+   double _k2;
+   //@}
+
+   /**
+    *  Parameters for the cluster mass distribution, 
+    * \f$M = m_{q1}+m_{q2}+m_1-\log(r_1 r_2)/m_2\f$.
+    */
+   //@{
+   /**
+    *  The parameter \f$m_1\f$ 
+    */
+   Energy _m1;
+
+   /**
+    *  The parameter \f$m_2\f$ 
+    */
+   InvEnergy _m2;
+   //@}
+
+   /**
+    *  Parameters for the transverpse momentum of the soft distribution,
+    *  \f$P(p_T) \propto p_T*exp(-p_i\sqrt{p_T^2+M^2}\f$ 
+    */
+   //@{
+   /**
+    *  The parameter \f$p_1\f$ for light quarks
+    */
+   InvEnergy _p1;
+
+   /**
+    *  The parameter \f$p_2\f$ for strange and charm quarks
+    */
+   InvEnergy _p2;
+
+   /**
+    *  The parameter \f$p_3\f$ for diquarks
+    */
+   InvEnergy _p3;
+   //@}
 
    /**
     * This is the probability of having a soft underlying event.
     */
-   double probSoft;
+   double _probSoft;
 
    /**
     * This is a parameter used to enhance the CM energy used to 
     * generate the multiplicity distribution.
     */
-   double enhanceCM; 
+   double _enhanceCM; 
+
+   /**
+    *  The maximum number of attempts to generate the distribution
+    */
+   unsigned int _maxtries;
 
 };
 
