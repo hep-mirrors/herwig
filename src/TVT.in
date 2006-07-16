@@ -4,7 +4,7 @@ cd /Defaults/
 set theGlobalParameters:EffectiveGluonMass 0.750*GeV
 set theGlobalParameters:HadronizationScale 0.5*GeV
 set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
-set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
+set theGlobalParameters:OnOffSoftUnderlyingEventMode 1
 set theGlobalParameters:MinVirtuality2 0.1*GeV2
 set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
 #
