@@ -150,8 +150,6 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   static const Length vcly = 4e-12; 
   static const Length vclz = 4e-12; 
   static const Length vclt = 4e-12;
-  // create a new step for the products
-  StepPtr step = ch.newStep(); 
   // Find the first two clusters
   // Lets find the clusters, set the partons inside to be on shell and no momentum
   tClusterPtr clu[2];
@@ -177,26 +175,11 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   Energy theCM = cm.mass();
   theCM *= enhanceCM;
   int netc = 0;
-  long id1,id2,id3;
-  id1 = id2 = id3 = 0;
-
-  // Now initialize charge information
-  // Get total charge of collision
-  //netc = (int)(incomingHadron[0]->data().charge() + incomingHadron[1]->data().charge());
-  // Now subtract the charges that go to hard process
-  //PPair incomPart = step->collision()->primarySubProcess()->incoming();
-  //netc -= (int)(incomPart.first->data().charge() + incomPart.second->data().charge());
-
-  if(netc == 0) id3 = rndbool() ? ParticleID::u : ParticleID::d;
-  else if(netc == -1) id3 = ParticleID::u;
-  else if(netc == 1) id3 = ParticleID::d; 
-  else id3 = rndbool() ? ParticleID::u : ParticleID::d;
-
-  pair<tPPtr,tPPtr> hads;
+  long id1(0),id2(0),id3= rndbool() ? ParticleID::u : ParticleID::d;
+  // storage for the multiplicity
   int nppbar = 0;
-
+  // create a new step for the products
   StepPtr newStep = ch.newStep();
-
   // Loop until we find a match to the charge multiplicity
   unsigned int ntry = 0;
   vector<ClusterPtr> clusters;
@@ -380,7 +363,8 @@ LorentzRotation UA5Handler::rotate(LorentzMomentum &p) {
   return R;
 }
 
-// Generate the momentum. This is based on the procedure of Jadach from Computer Physics Communications 9 (1975) 297-304
+// Generate the momentum. This is based on the procedure of
+// Jadach from Computer Physics Communications 9 (1975) 297-304
 void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto) {
   Timer<10001> timer("UA5Handler::generateMomentum()");
   // begin with the cylindrical phase space generation described in the paper of Jadach
@@ -513,8 +497,8 @@ void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
   for(unsigned int i = 0; i<ncl; i++) {
     double tm = mom[i].pz();
     double E1 = exp(zz + yy*xi[i]);
-    mom[i].setPz(tm/2.*(1./E1-E1));
-    mom[i].setE(tm/2.*(1./E1+E1));
+    mom[i].setPz(0.5*tm*(1./E1-E1));
+    mom[i].setE( 0.5*tm*(1./E1+E1));
     clusters[i]->set5Momentum(mom[i]);
   }
 }
@@ -610,6 +594,7 @@ void UA5Handler::decayCluster(ClusterPtr cluster)
       Lorentz5Momentum newp(0.,0.,0.,mass,mass);
       cluster->set5Momentum(newp);
       products.first->set5Momentum(newp);
+      cluster->addChild(products.first);
     }
   else
     {
