@@ -2,8 +2,6 @@ mkdir /Defaults/Handlers/Analysis
 create Herwig++::BasicConsistency /Defaults/Handlers/Analysis/Basics HwAnalysis.so
 create Herwig++::MultiplicityCount /Defaults/Handlers/Analysis/Multiplicity HwAnalysis.so
 
-create Herwig++::GraphvizPlot /Defaults/Handlers/Analysis/Plot HwAnalysis.so
-
 insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LEPGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/Multiplicity
 
@@ -11,4 +9,3 @@ create Herwig++::SimpleLHCAnalysis /Defaults/Handlers/Analysis/SimpleLHC HwAnaly
 
 insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/SimpleLHC
-insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Plot
