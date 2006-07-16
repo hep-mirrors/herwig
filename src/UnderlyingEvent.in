@@ -3,8 +3,5 @@ cd /Defaults/Handlers/UnderlyingEvent
 create Herwig++::UA5Handler theUA5 HwUA5.so
 create Herwig++::ForcedSplitting theForcedSplitting HwForcedSplitting.so
 #
-set theUA5:GlobalParameters /Defaults/theGlobalParameters
 set theUA5:ClusterFissioner /Defaults/Handlers/Hadronization/Cluster/theClusterFissioner
 set theUA5:ClusterDecayer /Defaults/Handlers/Hadronization/Cluster/theClusterDecayer
-set theUA5:Splitter /Defaults/Handlers/Hadronization/Cluster/thePartonSplitter
-set theUA5:Decayer  /Defaults/Handlers/DecayHandler
