@@ -14,6 +14,7 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Utilities/EnumParticles.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -40,6 +41,14 @@ void BasicConsistency::analyze(tEventPtr event, long ieve, int loop, int state) 
 			 << event->number()  << '\n'
 			 << *event;
     }
+    else if((**it).id()==ExtraParticleID::Cluster)
+      {
+	cerr << "Had clusters in final state in event " 
+	     << event->number()  << '\n';
+	generator()->log() << "Had clusters in final state in event " 
+			   << event->number()  << '\n'
+			   << *event;
+      }
     charge += (*it)->dataPtr()->iCharge();
     ptotal += (*it)->momentum();
   }
