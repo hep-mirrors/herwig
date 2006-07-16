@@ -9,6 +9,7 @@
 #include "Herwig++/Utilities/HwDebug.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/Timer.h"
+#include <cassert>
 
 using namespace std;
 using namespace ThePEG;
@@ -25,31 +26,23 @@ UA5Handler::UA5Handler() : N1(9.11), N2(0.115), N3(-9.5), K1(0.029), K2(-0.104),
 // Copy constructor
 UA5Handler::UA5Handler(const UA5Handler &h) :
   HadronizationHandler(h),
-  globalParams(h.globalParams),
   clusterFissioner(h.clusterFissioner),
   clusterDecayer(h.clusterDecayer),
-  split(h.split),
-  decayer(h.decayer),
   N1(h.N1), N2(h.N2), N3(h.N3), K1(h.K1), K2(h.K2),
   M1(h.M1), M2(h.M2), P1(h.P1), P2(h.P2), P3(h.P3),
   probSoft(h.probSoft), enhanceCM(h.enhanceCM)
 {}
 
-// Destructor, do nothing
-UA5Handler::~UA5Handler() {}
-
 // Saving things into run file
 void UA5Handler::persistentOutput(PersistentOStream &os) const {
-  os << globalParams << clusterFissioner << clusterDecayer
-     << split << decayer 
+  os << clusterFissioner << clusterDecayer
      << N1 << N2 << N3 << K1 << K2 << M1 << M2 << P1
      << P2 << P3 << probSoft << enhanceCM;
 }
 
 // Reading them back in, in the same order
 void UA5Handler::persistentInput(PersistentIStream &is, int) {
-  is >> globalParams >> clusterFissioner >> clusterDecayer
-     >> split >> decayer
+  is >> clusterFissioner >> clusterDecayer
      >> N1 >> N2 >> N3 >> K1 >> K2 >> M1 >> M2 >> P1 
      >> P2 >> P3 >> probSoft >> enhanceCM;
 }
@@ -61,12 +54,6 @@ ClassDescription<UA5Handler> UA5Handler::initUA5Handler;
 void UA5Handler::Init() {
   static ClassDocumentation<UA5Handler> documentation
     ("This is the simple UA5 model for the underlying event.");
- 
-  static Reference<UA5Handler,GlobalParameters>
-    interfaceGlobalParameters("GlobalParameters",
-			      "A reference to the GlobalParameters object",
-			      &Herwig::UA5Handler::globalParams,
-			      false,false,true,false);
 
   static Reference<UA5Handler,ClusterFissioner>
     interfaceClusterFissioner("ClusterFissioner",
@@ -79,14 +66,6 @@ void UA5Handler::Init() {
 			    "A reference to the ClusterDecayer object",
 			    &Herwig::UA5Handler::clusterDecayer,
 			    false,false,true,false);
-
-  static Reference<UA5Handler,PartonSplitter>
-    interfaceSplitter("Splitter", "A reference to the PartonSplitter object",
-		      &Herwig::UA5Handler::split, false, false, true, false);
-
-  static Reference<UA5Handler,HwDecayHandler> 
-    interfacePartonicHadronizer("Decayer", "Pointer to the object which decays particles.",
-                                &UA5Handler::decayer, false, false, true, false);
 
   static Parameter<UA5Handler,double>
     interfaceN1("N1", "Parameter N1 in the mean charge multiplicity",
@@ -110,25 +89,25 @@ void UA5Handler::Init() {
 		"Parameter K2 used to generate the multiplicity distribution",
                 &Herwig::UA5Handler::K2,-0.104,-100.,100.,false,false,false);
 
-  static Parameter<UA5Handler,double>
+  static Parameter<UA5Handler,Energy>
     interfaceM1("M1", "Parameter M1 used to generate soft cluster mass",
                 &Herwig::UA5Handler::M1,0.4*GeV,0.,100.,false,false,false);
 
-  static Parameter<UA5Handler,double>
+  static Parameter<UA5Handler,InvEnergy>
     interfaceM2("M2", "Parameter M2 used to generate soft cluster mass",
-                &Herwig::UA5Handler::M2,2.0*GeV,0.,100.,false,false,false);  
+                &Herwig::UA5Handler::M2,2.0/GeV,0.,100.,false,false,false);  
 
-   static Parameter<UA5Handler,double>
+   static Parameter<UA5Handler,InvEnergy>
     interfaceP1("P1", "Slope used to generate the pt of the u,d soft clusters",
-                &Herwig::UA5Handler::P1,5.2,0.,100.,false,false,false); 
+                &Herwig::UA5Handler::P1,5.2/GeV,0.,100.,false,false,false); 
    
-   static Parameter<UA5Handler,double>
+   static Parameter<UA5Handler,InvEnergy>
     interfaceP2("P2", "Slope used to generate the pt of the s,c soft clusters",
-                &Herwig::UA5Handler::P2,3.0,0.,100.,false,false,false);    
+                &Herwig::UA5Handler::P2,3.0/GeV,0.,100.,false,false,false);    
 
-   static Parameter<UA5Handler,double>
+   static Parameter<UA5Handler,InvEnergy>
     interfaceP3("P3", "Slope used to generate the pt of the qq soft clusters",
-                &Herwig::UA5Handler::P3,5.2,0.,100.,false,false,false); 
+                &Herwig::UA5Handler::P3,5.2/GeV,0.,100.,false,false,false); 
 
    static Parameter<UA5Handler,double>
     interfaceProbSoft("Prob", "Probability of underlying event",
@@ -168,8 +147,8 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   }
   if(i == 0) return;
   if(i!=2) throw Exception() << "Must have two and only two beam clusters in "
-			    << "UA5Handler::handle " 
-			    << Exception::eventerror;
+			     << "UA5Handler::handle " 
+			     << Exception::eventerror;
   // and their cm
   Lorentz5Momentum cm = clu[0]->momentum() + clu[1]->momentum();
   Energy theCM = cm.mass();
@@ -261,20 +240,32 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
        else { newCluster = false; multiplicityReached = true; }
      }
      // Now check the physical mass/energy boundary
-     if(multiplicityReached && sumMasses > theCM) { multiplicityReached = false; }
+     if(multiplicityReached && (sumMasses > theCM || clusters.size()<2)) 
+       { multiplicityReached = false; }
   }
+
+
+  if(clusters.size()<2)
+    {
+      for(unsigned int ix=0;ix<clusters.size();++ix)
+	cerr << *clusters[ix] << endl;
+      cerr << "testing multiplicity " << nppbar << " " << theCM << endl;
+    }
 
   // Catch case of too many attempts
   if(ntry == max_tries) {
-    if(ntry > 1) clusters.clear();
-     // Just hadronize and decay the two clusters
-     for(int i =0; i<2; i++) {
-       ClusterPtr cluster = clu[i];
-       decayCluster(cluster);
-       int totalcharge(0),numbercharge(0);
-       for(unsigned int ix=0;ix<cluster->children().size();++ix)
-	 {performDecay(cluster->children()[ix],totalcharge,numbercharge);}
-     }
+    clusters.clear();
+    // Just hadronize and decay the two clusters
+    for(int i =0; i<2; i++) {
+      ClusterPtr cluster = clu[i];
+      decayCluster(cluster);
+      int totalcharge(0),numbercharge(0);
+      for(unsigned int ix=0;ix<cluster->children().size();++ix)
+	{performDecay(cluster->children()[ix],totalcharge,numbercharge);}
+      insertParticle(cluster,newStep,false);
+    }
+    // don't to the rest
+    return;
   }
 
   try 
@@ -311,7 +302,7 @@ Lorentz5Momentum UA5Handler::transformToLab(Lorentz5Momentum &A, Lorentz5Momentu
 
 // Generates the multiplicity of the charged particles for the energy E
 unsigned int UA5Handler::multiplicity(Energy E) {
-  double alogs = 2.*log(E);
+  double alogs = 2.*log(E/GeV);
   double rk = K1*alogs+K2;
   if(rk > 1000.) rk = 1000.;
   double ek = 1./rk;
@@ -329,8 +320,16 @@ unsigned int UA5Handler::multiplicity(Energy E) {
     sum += dist[i];
     dist[i] = sum;
   }
-  for(i = 0; i<=imax; i++) dist[i] /= sum;
-  double rn = rand();
+  if (imax==0) {
+    dist[0]=1.;
+  } else if (imax==499) {
+    throw Exception() << "Multiplicity too large in UA5Handler::multiplicity()" 
+		      << Exception::eventerror;
+  } else {
+    for(i = 0; i<=imax; i++) dist[i] /= sum;
+  }
+
+  double rn = rnd();
   for(i = 0; i<=imax; i++) if(rn < dist[i]) break;
   return 2*(i+1);
 }
@@ -401,6 +400,7 @@ void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5M
 }
 
 void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
+  assert(clusters.size()>=2);
   double alog = log(CME*CME);
   unsigned int ncl = clusters.size();
   double eps = 1e-10/double(ncl);

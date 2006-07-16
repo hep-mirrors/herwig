@@ -8,7 +8,7 @@ namespace Herwig {
 
 // This returns the mean multiplicity for the energy E amd the given parameters N1,N2,N3
 inline double UA5Handler::meanMultiplicity(Energy E) {
-  return N1*pow(E,N2)+N3;
+  return N1*pow(E/GeV,2.0*N2)+N3;
 }
 
 // This returns the randomly generated value for the negative binomial
@@ -24,7 +24,6 @@ inline double UA5Handler::negativeBinomial(int N, double mean, double ek) {
 // This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
 // TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
 inline double UA5Handler::randExt(double AM0, double B) {
-  //  Timer<10004> timer("UA5Handler::randExt");
   double r = rnd();
   // Starting value
   double am = AM0-log(r)/B;
