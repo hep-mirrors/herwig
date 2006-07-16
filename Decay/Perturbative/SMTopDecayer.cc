@@ -168,55 +168,53 @@ namespace Herwig {
   return output;
   }
 
- void SMTopDecayer::doinit() throw(InitException) {
-    DecayIntegrator::doinit();
-    
-    //get vertices from SM object
-    Ptr<Herwig::StandardModel>::transient_const_pointer
-      hwsm = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
-    if(hwsm)
-      {
-	_wvertex = hwsm->vertexFFW();
-	//initialise
-	_wvertex->init();
-      }
-    else{throw InitException();}
-    //set up decay modes
-    tPDPtr Wplus(getParticleData(ParticleID::Wplus));
-    PDVector extpart(4);
-    vector<double> wgt(1,1.0);
-    extpart[0] = getParticleData(ParticleID::t);
-    extpart[1] = getParticleData(ParticleID::b);
-    
-    //lepton modes
-    for(int i=11; i<17;i+=2) {
-      extpart[2] = getParticleData(-i);
-      extpart[3] = getParticleData(i+1);
-      DecayPhaseSpaceModePtr mode 
-	= new_ptr(DecayPhaseSpaceMode(extpart,this));
-      DecayPhaseSpaceChannelPtr Wchannel 
-	= new_ptr(DecayPhaseSpaceChannel(mode));
-      Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-      Wchannel->addIntermediate(Wplus,0,0.0,2,3);
-      Wchannel->init();
-      mode->addChannel(Wchannel);
-      addMode(mode,_wleptonwgt[(i-11)/2],wgt);
+void SMTopDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  
+  //get vertices from SM object
+  Ptr<Herwig::StandardModel>::transient_const_pointer
+    hwsm = dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  if(hwsm)
+    {
+      _wvertex = hwsm->vertexFFW();
+      //initialise
+      _wvertex->init();
     }
-    //quark modes
-    unsigned int iz=0;
-   for(int ix=1;ix<6;ix+=2)
-     {
-       for(int iy=2;iy<6;iy+=2)
+  else{throw InitException();}
+  //set up decay modes
+  tPDPtr Wplus(getParticleData(ParticleID::Wplus));
+  DecayPhaseSpaceModePtr mode;
+  DecayPhaseSpaceChannelPtr Wchannel;
+  PDVector extpart(4);
+  vector<double> wgt(1,1.0);
+  extpart[0] = getParticleData(ParticleID::t);
+  extpart[1] = getParticleData(ParticleID::b);
+  
+  //lepton modes
+  for(int i=11; i<17;i+=2) {
+    extpart[2] = getParticleData(-i);
+    extpart[3] = getParticleData(i+1);
+    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+    Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+    Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
+    Wchannel->addIntermediate(Wplus,0,0.0,2,3);
+    Wchannel->init();
+    mode->addChannel(Wchannel);
+    addMode(mode,_wleptonwgt[(i-11)/2],wgt);
+  }
+  //quark modes
+  unsigned int iz=0;
+  for(int ix=1;ix<6;ix+=2)
+    {
+      for(int iy=2;iy<6;iy+=2)
  	{
  	  // check that the combination of particles is allowed
  	  if(_wvertex->allowed(-ix,iy,ParticleID::Wminus))
  	    {
  	      extpart[2] = getParticleData(-ix);
  	      extpart[3] = getParticleData( iy);
-	      DecayPhaseSpaceModePtr mode 
-		= new_ptr(DecayPhaseSpaceMode(extpart,this));
-	      DecayPhaseSpaceChannelPtr Wchannel 
-		= new_ptr(DecayPhaseSpaceChannel(mode));
+	      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+	      Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
 	      Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
 	      Wchannel->addIntermediate(Wplus,0,0.0,2,3);
 	      Wchannel->init();
@@ -229,8 +227,8 @@ namespace Herwig {
  				   << "cannot handle all the quark modes" 
  				   << Exception::abortnow;}
 	}
-     }
- }
+    }
 }
 
+}
 

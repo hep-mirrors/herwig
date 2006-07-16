@@ -23,12 +23,11 @@ inline SMTopDecayer::SMTopDecayer()
   generateIntermediates(true);
 }
   
-  inline IBPtr SMTopDecayer::clone() const {
-    return new_ptr(*this);
-  }
-  
-  inline IBPtr SMTopDecayer::fullclone() const {
-    return new_ptr(*this);
-  }
+inline IBPtr SMTopDecayer::clone() const {
+  return new_ptr(*this);
+}
 
+inline IBPtr SMTopDecayer::fullclone() const {
+  return new_ptr(*this);
+}
 }
