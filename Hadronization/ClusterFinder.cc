@@ -9,6 +9,7 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 // #include <ThePEG/Handlers/PartialCollisionHandler.h>
+#include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/EventRecord/Collision.h>
@@ -272,9 +273,11 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
    
 
       // Check if any of the components is a beam remnant, and if this
-      // is the case then inform the cluster.     
+      // is the case then inform the cluster.   
+      // this will only work for baryon collisions  
       for (int i=0; i<iElement; ++i) {
-	if(remnantSet.find(connected[i]->original()) != remnantSet.end()) 
+	if(connected[i]->parents()[0]->id()==ExtraParticleID::Remnant&&
+	   DiquarkMatcher::Check(connected[i]->id()))
 	  cluPtr->isBeamCluster(connected[i]);
       }
     }

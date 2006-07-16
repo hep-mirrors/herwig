@@ -106,11 +106,8 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
     if((*it)->isBeamCluster()) {
       numBeamClusters++;
       // Tag as not available beam clusters if soft underlying event if on.
-      if ( _globalParameters->isSoftUnderlyingEventON() ) {
-	(*it)->isAvailable(false);
-      } else {
-	splitClusters.push_back(*it);
-      }
+      if ( _globalParameters->isSoftUnderlyingEventON() ) (*it)->isAvailable(false);
+      else splitClusters.push_back(*it);
     } else {      
       // If the cluster is heavy add it to the vector of clusters to be split.
       if(pow((*it)->mass() , _ClPow) > 
