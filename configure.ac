@@ -4,7 +4,7 @@ AC_PREREQ(2.59)
 AC_INIT([Herwig++],[SVN],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
 
-AC_CONFIG_SRCDIR([UnderlyingEvent/UA5.h])
+AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
 AC_CONFIG_HEADERS([Config/config.h])
 
 AC_CANONICAL_HOST
