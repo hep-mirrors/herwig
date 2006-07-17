@@ -14,7 +14,7 @@ using namespace ThePEG;
 
 /**
  * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f\phi\to \phi g\f$.
+ * splitting function for \f$\phi\to \phi g\f$.
  *
  * In this case the splitting function is given by
  * \f[P(z,\tilde{q}^2) =\frac{2C_Fz}{1-z}\left(1-\frac{m^2_q}{\tilde{q}^2z^2}
