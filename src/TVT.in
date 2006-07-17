@@ -12,7 +12,7 @@ cd /Defaults/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
-set LHCGenerator:PrintEvent 1000
+set LHCGenerator:PrintEvent 100
 set LHCGenerator:MaxErrors 100000
 set LHCGenerator:Strategy /Defaults/ThePEGStrategy
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
