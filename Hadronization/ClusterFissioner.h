@@ -78,11 +78,6 @@ public:
    * Copy-constructor.
    */
   inline ClusterFissioner(const ClusterFissioner &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~ClusterFissioner();
   //@}
 
   /** Splits the clusters which are too heavy.
@@ -142,47 +137,6 @@ protected:
    * @return a pointer to the new object.
    */
   virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving and
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -282,7 +236,7 @@ private:
   /**
    * Produces the mass of a child cluster.
    *
-   * Draw the masses M' of the the cluster child produced 
+   * Draw the masses \f$M'\f$ of the the cluster child produced 
    * by the fission of an heavy cluster (of mass M). m1, m2 are the masses
    * of the constituents of the cluster; m is the mass of the quark extract 
    * from the vacuum (together with its antiparticle). The algorithm produces
@@ -303,17 +257,11 @@ private:
    *             {\rm rnd}(r_{\rm min}, 1-r_{\rm min})\right)}{b} \f].
    *
    * The choice of which mass distribution should be used for each of the two
-   * cluster children is dictated by the bool rem. If _IOpRem is 0, the
-   * soft distribution is always used.
-   *
-   * Finally, sometimes, when the phase space available is tiny, many attempts 
-   * fail to produce a pair of masses kinematically acceptable; in these cases 
-   * it gives up returning false, otherwise it returns true when the splitting 
-   * succeeds.
+   * cluster children is dictated by the parameter soft.
    */
   void drawChildMass(const Energy M, const Energy m1, const Energy m2, 
 		     const Energy m, Energy & Mc, const double exp,
-                           const double b, const bool rem) const; 
+		     const InvEnergy b, const bool soft) const;
 
   /**
    * Determines the kinematics of a heavy cluster decay C->C1 + C2
@@ -339,6 +287,8 @@ private:
 			  LorentzPoint & positionClu1, 
 			  LorentzPoint & positionClu2 ) const;
 
+private:
+
   /**
    * A pointer to a Herwig::HadronSelector object for generating hadrons.
    */
@@ -352,33 +302,33 @@ private:
   /**
    * The Cluster max mass used to determine when fission will occur.
    */
-  Energy _ClMax;
+  Energy _clMax;
 
   /**
    * The power used to determine when cluster fission will occur.
    */
-  double _ClPow;
+  double _clPow;
 
   /**
    * The power used in the cluster mass generation. This is the non-b param.
    */
-  double _PSplt1;
+  double _pSplit1;
 
   /**
    * The power used in the cluster mass generation. This is the b param.
    */
-  double _PSplt2;
+  double _pSplit2;
 
   /**
    * Parameter used (2/b) for the beam cluster mass generation.
    * Currently hard coded value.
    */
-  Energy _BtClM; 
+  Energy _btClM; 
 
   /**
    * Flag used to determine what distributions to use for the cluster masses.
    */
-  int _IOpRem;
+  int _iopRem;
 
 };
 

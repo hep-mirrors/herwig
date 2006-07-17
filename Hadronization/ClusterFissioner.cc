@@ -8,6 +8,7 @@
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
+#include <ThePEG/Interface/Switch.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/EnumParticles.h>
@@ -20,23 +21,16 @@
 #include <iomanip>
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-ClusterFissioner::~ClusterFissioner() {}
-
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
   os << _hadronsSelector << _globalParameters
-     << _ClMax << _ClPow << _PSplt1 << _PSplt2;
+     << _clMax << _clPow << _pSplit1 << _pSplit2 << _btClM << _iopRem;
 }
-
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
   is >> _hadronsSelector >> _globalParameters
-     >> _ClMax >> _ClPow >> _PSplt1 >> _PSplt2;
+     >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 >> _btClM >> _iopRem;
 }
-
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
 // Definition of the static class description member.
@@ -61,19 +55,44 @@ void ClusterFissioner::Init() {
   
   static Parameter<ClusterFissioner,Energy>
     interfaceClMax ("ClMax","cluster max mass  (unit [GeV])",
-                    &ClusterFissioner::_ClMax, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
+                    &ClusterFissioner::_clMax, GeV, 3.35*GeV, 0.0*GeV, 10.0*GeV,
+		    false,false,false);
+
   static Parameter<ClusterFissioner,double>
     interfaceClPow ("ClPow","cluster mass exponent",
-                    &ClusterFissioner::_ClPow, 0, 2.0, 0.0, 10.0,false,false,false);
+                    &ClusterFissioner::_clPow, 0, 2.0, 0.0, 10.0,false,false,false);
+
   static Parameter<ClusterFissioner,double>
     interfacePSplt1 ("PSplt1","cluster mass splitting param for u,d,s,c",
-                    &ClusterFissioner::_PSplt1, 0, 1.0, 0.0, 10.0,false,false,false);
+                    &ClusterFissioner::_pSplit1, 0, 1.0, 0.0, 10.0,false,false,false);
+
   static Parameter<ClusterFissioner,double>
     interfacePSplt2 ("PSplt2","cluster mass splitting param for b",
-                    &ClusterFissioner::_PSplt2, 0, 1.0, 0.0, 10.0,false,false,false);
+                    &ClusterFissioner::_pSplit2, 0, 1.0, 0.0, 10.0,false,false,false);
+
+  static Switch<ClusterFissioner,int> interfaceRemnantOption
+    ("RemnantOption",
+     "Option for the treatment of remnant clusters",
+     &ClusterFissioner::_iopRem, 1, false, false);
+  static SwitchOption interfaceRemnantOptionSoft
+    (interfaceRemnantOption,
+     "Soft",
+     "Both clusters produced in the fission of the beam cluster"
+     " are treated as soft clusters.",
+     0);
+  static SwitchOption interfaceRemnantOptionHard
+    (interfaceRemnantOption,
+     "Hard",
+     "Only the cluster containing the remnant is treated as a soft cluster.",
+     1);
+
+  static Parameter<ClusterFissioner,Energy> interfaceBTCLM
+    ("BTCLM",
+     "Parameter for the mass spectrum of remnant clusters",
+     &ClusterFissioner::_btClM, GeV, 1.*GeV, 0.1*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
 }
-
 
 void ClusterFissioner::fission(const StepPtr &pstep) {
   /*****************
@@ -83,18 +102,17 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
    *  heavy non-beam clusters).
    ********************/
   vector<tClusterPtr> splitClusters; 
-  int numBeamClusters = 0;
-
+  
   ClusterVector clusters; 
   for (ParticleSet::iterator it = pstep->particles().begin();
        it!= pstep->particles().end(); it++) { 
     if((*it)->id() == ExtraParticleID::Cluster) 
       clusters.push_back(dynamic_ptr_cast<ClusterPtr>(*it));
   }
-
+  
   for(ClusterVector::iterator it = clusters.begin() ; 
       it != clusters.end() ; ++it) {
- 
+    
     /**************
      * Skip 3-component clusters that have been redefined (as 2-component 
      * clusters) or not available clusters. The latter check is indeed 
@@ -103,23 +121,18 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
      * straight away as not available.
      **************/
     if((*it)->isRedefined() || !(*it)->isAvailable()) continue;
-    if((*it)->isBeamCluster()) {
-      numBeamClusters++;
-      // Tag as not available beam clusters if soft underlying event if on.
-      if ( _globalParameters->isSoftUnderlyingEventON() ) (*it)->isAvailable(false);
-      else splitClusters.push_back(*it);
-    } else {      
-      // If the cluster is heavy add it to the vector of clusters to be split.
-      if(pow((*it)->mass() , _ClPow) > 
-	 pow(_ClMax, _ClPow) + pow((*it)->sumConstituentMasses(), _ClPow)) {
-	splitClusters.push_back(*it);
-      }
-    }
-  }   
-  vector<tClusterPtr>::const_iterator iter;
-  for(iter = splitClusters.begin(); iter != splitClusters.end() ; ++iter) {
-    cut(*iter, pstep, clusters);
+    // if the cluster is a beam cluster add it to the vector of clusters
+    // to be split
+    if((*it)->isBeamCluster()) splitClusters.push_back(*it);
+    // If the cluster is heavy add it to the vector of clusters to be split.
+    else if(pow((*it)->mass() , _clPow) > 
+	    pow(_clMax, _clPow) + pow((*it)->sumConstituentMasses(), _clPow))
+      splitClusters.push_back(*it);
   }
+  // split the clusters
+  vector<tClusterPtr>::const_iterator iter;
+  for(iter = splitClusters.begin(); iter != splitClusters.end() ; ++iter)
+    {cut(*iter, pstep, clusters);}
 }
 
 void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep, 
@@ -149,12 +162,30 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
   clusterStack.push_back(cluster);
   // Here we recursively loop over clusters in the stack and cut them
   while (!clusterStack.empty()) {
-    tClusterPtr iCluster = clusterStack.back(); // consider element on the back
-    clusterStack.pop_back();                    // delete element on the back 
+    // take the last element of the vector
+    tClusterPtr iCluster = clusterStack.back(); 
+    clusterStack.pop_back();   
+    // split it                 
     cutType ct = cut(iCluster);
-
     // There are cases when we don't want to split, even if it fails mass test
-    if(!ct.first.first || !ct.second.first) continue;
+    if(!ct.first.first || !ct.second.first)
+      {
+	// if an unsplit beam cluster leave if for the underlying event
+	if(iCluster->isBeamCluster()&&_globalParameters->isSoftUnderlyingEventON())
+	  iCluster->isAvailable(false);
+	// continue
+	continue;
+      }
+    // check if clusters
+    ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
+    ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
+    // is a beam cluster must be split into two hadrons
+    if(iCluster->isBeamCluster()&&(!one||!two)
+       &&_globalParameters->isSoftUnderlyingEventON())
+      {
+	iCluster->isAvailable(false);
+	continue;
+      }
 
     // There should always be a intermediate quark(s) from the splitting, but
     // in case there isn't
@@ -170,19 +201,23 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     pstep->addDecayProduct(iCluster, ct.second.first);
 
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
-    ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
-    ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
+    if((!one||!two)&&iCluster->isBeamCluster()) 
+      cerr << "testing problem beam cluster split into hadrons" << endl;
     if(one) {
       clusters.push_back(one);
-      if(pow(one->mass(), _ClPow) > 
-	 pow(_ClMax, _ClPow) + pow(one->sumConstituentMasses(), _ClPow)) {
+      if(one->isBeamCluster()) one->isAvailable(false);
+      if(pow(one->mass(), _clPow) > 
+	 pow(_clMax, _clPow) + pow(one->sumConstituentMasses(), _clPow)
+	 &&one->isAvailable()) {
 	clusterStack.push_back(one);
       } 
     }
     if(two) {
       clusters.push_back(two);
-      if(pow(two->mass(), _ClPow) > 
-	 pow(_ClMax, _ClPow) + pow(two->sumConstituentMasses(), _ClPow)) {
+      if(two->isBeamCluster()) two->isAvailable(false);
+      if(pow(two->mass(), _clPow) > 
+	 pow(_clMax, _clPow) + pow(two->sumConstituentMasses(), _clPow)
+	 && two->isAvailable()) {
 	clusterStack.push_back(two);
       } 
     }
@@ -199,9 +234,11 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
   // And check if those particles are from a beam remnant
   bool rem1 = cluster->isBeamRemnant(0);
   bool rem2 = cluster->isBeamRemnant(1);
-
+  // workout which distribution to use
+  bool soft1=rem1||(_iopRem==0&&rem2);
+  bool soft2=rem2||(_iopRem==0&&rem1);
   // Initialization for the exponential ("soft") mass distribution.
-  static const InvEnergy b = 2.0 / _BtClM;
+  static const InvEnergy b = 2.0 / _btClM;
   static const int max_loop = 1000;
   int counter = 0;
   bool succeeded=false;
@@ -226,17 +263,17 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
       // (it happens sometimes for clusters with b-flavour)
       if(Mc <  m1+m + m2+m) continue;
       // power for splitting
-      double exp1=_PSplt1, exp2=_PSplt1;
-      if(CheckId::hasBeauty(idQ1)) exp1 = _PSplt2;
-      if(CheckId::hasBeauty(idQ2)) exp2 = _PSplt2;
+      double exp1=_pSplit1, exp2=_pSplit1;
+      if(CheckId::hasBeauty(idQ1)) exp1 = _pSplit2;
+      if(CheckId::hasBeauty(idQ2)) exp2 = _pSplit2;
       // If, during the drawing of candidate masses, too many attempts fail 
       // (because the phase space available is tiny) 
       //_hadronsSelector->lightestHadron(idQ2, idNew)then give up (the cluster 
       // is not split).
       Mc1 = Energy();
       Mc2 = Energy();
-      drawChildMass(Mc,m1,m2,m,Mc1,exp1,b,rem1);
-      drawChildMass(Mc,m2,m1,m,Mc2,exp2,b,rem2);
+      drawChildMass(Mc,m1,m2,m,Mc1,exp1,b,soft1);
+      drawChildMass(Mc,m2,m1,m,Mc2,exp2,b,soft2);
       if(Mc1<m1+m || Mc2<m+m2 || Mc1+Mc2>Mc) continue;
       /**************************
        * New (not present in Fortran Herwig):
@@ -402,7 +439,7 @@ long ClusterFissioner::drawNewFlavour() const {
 void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
 				     const Energy m2, const Energy m,
                                      Energy & Mclu, const double expt, 
-                                     const double b, const bool rem) const {
+                                     const InvEnergy b, const bool soft) const {
 
   /***************************
    * This method, given in input the cluster mass Mclu of an heavy cluster C,
@@ -437,18 +474,16 @@ void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
   double rmin = exp(-b*max);
   if(rmin > 50.0) rmin = 0.0;
 
-  // If first isn't a beam rem and IOpRem isn't set to 0
-  if(!rem && _IOpRem) { 
-    Mclu = pow(rnd(pow(M-m1-m2-m, expt), pow(m, expt)), 1./expt) + m1;
-    // Otherwise it uses a soft mass distribution
-  } else { 
-    double r1 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
-    if(r1 > rmin) {
-      Mclu = m1 + m - log(r1)/b;
-    } else {
-      Mclu = Energy();
+  // hard cluster
+  if(!soft)
+    {Mclu = pow(rnd(pow(M-m1-m2-m, expt), pow(m, expt)), 1./expt) + m1;}
+  // Otherwise it uses a soft mass distribution
+  else 
+    { 
+      double r1 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
+      if(r1 > rmin) Mclu = m1 + m - log(r1)/b;
+      else Mclu = Energy();
     }
-  }
 }
 
 
