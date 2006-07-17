@@ -95,12 +95,12 @@ void ForcedSplitting::handle(EventHandler &ch, const tPVector &tagged,
 }
 
 void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
-  os << kinCutoff;
+  os << _kinCutoff;
 }
 
 
 void ForcedSplitting::persistentInput(PersistentIStream & is, int) {
-  is >> kinCutoff;
+  is >> _kinCutoff;
 }
 
 
@@ -112,10 +112,11 @@ void ForcedSplitting::Init() {
     ("This class is responsible for correctly tying the parton shower to "
      "the remaining flavours in the hadron and producing the correct remnant");
 
-  static Parameter<ForcedSplitting,double>
-    interfacekinCut("KinCutoff", "Parameter kinCutoff used to constrain qtilde"                    " distribution",
-		    &Herwig::ForcedSplitting::kinCutoff,1.,0.,5.,false,false,
-		    false);
+  static Parameter<ForcedSplitting,Energy> interfaceKinCutoff
+    ("KinCutoff",
+     "Parameter kinCutoff used to constrain qtilde",
+     &ForcedSplitting::_kinCutoff, GeV, 0.75*GeV, 0.5*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 }
 
 /****
@@ -310,15 +311,10 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   // Now generate the new z and qtilde
   Energy q;
   double z,z0,z1;
-  kinCutoff = 0.75*GeV;
 
-  //cout << "Emit, kincutoff = " << kinCutoff << ", lastQ = " << lastQ 
-    //     << ", emittedm2 = " << emittedm2 << endl;
-  //cout << "beam momentum = " << par << endl;
-  //cout << "pf = " << pf << endl;
   // Bounds on z
-  z0 = 0.;//lastx;
-  double yy = 1.+sqr(kinCutoff/lastQ)/2.;
+  z0 = 0.;
+  double yy = 1.+sqr(_kinCutoff/lastQ)/2.;
   z1 = yy - sqrt(sqr(yy)-1.); 
   //cout << "Bounds on z " << z0 << ":" << z1 << endl;
   do {
@@ -329,10 +325,10 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
     // For the qtilde lets just start with a simple distribution
     // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
     // Q0^(1-R) Qmax^R
-    q = pow(kinCutoff, 1-randQ)*pow(lastQ,randQ);
-    q = kinCutoff/sqrt(z)/(1.-z);
+    q = pow(_kinCutoff, 1-randQ)*pow(lastQ,randQ);
+    q = _kinCutoff/sqrt(z)/(1.-z);
     // check kinematics...
-  } while(sqr(z*(1.-z)*q) <= z*sqr(kinCutoff));
+  } while(sqr(z*(1.-z)*q) <= z*sqr(_kinCutoff));
 
   //cout << "qtilde = " << q << " and z = " << z << endl;
   double phi = 2.*pi*UseRandom::rnd();
@@ -362,7 +358,7 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   // Ignore the mass of the quark, if it is here as it must be a valance quark,
   // and assume it is u or d
   // Compute first transverse components using q,z
-  double pt2 = sqr(z*(1.-z)*q) - z*sqr(kinCutoff);
+  double pt2 = sqr(z*(1.-z)*q) - z*sqr(_kinCutoff);
   double qt02 = lastqt2;
   double qt2 = z*z*qt02+pt2;
   double q02 = pfboost.dot(pfboost);

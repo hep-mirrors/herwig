@@ -40,6 +40,19 @@ public:
 
 public:
 
+  /**
+   * This is the routine that starts the algorithm.
+   * @param eh the EventHandler in charge of the generation.
+   * @param tagged the vector of particles to consider. If empty, all
+   * final state particles in the current Step is considered.
+   * @param hint a possible Hint which is ignored in this implementation
+   */
+  virtual void handle(EventHandler &ch, const tPVector &tagged,
+		      const Hint &hint) 
+    throw(Veto,Stop,Exception);
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -55,15 +68,6 @@ public:
    */
   void persistentInput(PersistentIStream & is, int version);
   //@}
-
-public:
-
-  /**
-   * This is the routine that starts the algorithm.
-   */
-  virtual void handle(EventHandler &ch, const tPVector &tagged,
-		      const Hint &hint) 
-    throw(Veto,Stop,Exception);
 
 protected:
 
@@ -83,16 +87,6 @@ protected:
   //@}
 
 private:
-   double kinCutoff;
-
-   static ClassDescription<ForcedSplitting> initForcedSplitting;
-
-   /**
-    * This is never defined and since it can never be called it isn't 
-    * needed. The prototype is defined so the compiler doesn't use the 
-    * default = operator.
-    */
-  ForcedSplitting& operator=(const ForcedSplitting &);
 
   // Using the remnant given as the first argument and the last parton in
   // the shower, split the remnant into the correct flavours and add them
@@ -122,6 +116,27 @@ private:
   PPtr finalSplit(const tPPtr rem, int maxIdx, long q[3], int, Lorentz5Momentum,
 		  const tStepPtr );
 
+private:
+
+   /**
+    * The static object used to initialize the description of this class.
+    * Indicates that this is a concrete class with persistent data.
+    */
+  static ClassDescription<ForcedSplitting> initForcedSplitting;
+  
+  /**
+   * This is never defined and since it can never be called it isn't 
+   * needed. The prototype is defined so the compiler doesn't use the 
+   * default = operator.
+   */
+  ForcedSplitting& operator=(const ForcedSplitting &);
+  
+private:
+
+  /**
+   *  The kinematic cut-off
+   */
+   Energy _kinCutoff;
 
 };
 

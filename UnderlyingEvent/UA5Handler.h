@@ -21,7 +21,7 @@ using namespace ThePEG;
  *  underlying event model which will be superceded by a  
  *  new model in Herwig++.                                
  *                                                        
- *  This class interfaces with with 
+ *  This class interfaces with 
  *  the cluster hadronization. To that end there is an    
  *  interface set up with the ClusterFissioner class and  
  *  with the ClusterDecayer class.
@@ -35,7 +35,7 @@ using namespace ThePEG;
  *  between these two beam clusters.
  *
  *  The model used for the underlying event is based on the minimum-bias
- *  \f$p\bar{p}$ event generator of the UA5 Collaboration,
+ *  \f$p\bar{p}\f$ event generator of the UA5 Collaboration,
  *  UA5 Collaboration, G.J. Alner et al., Nucl. Phys. B291 (1987) 445,
  *  modified to make use of our cluster fragmentation algorithm.
  *
@@ -50,17 +50,17 @@ using namespace ThePEG;
  * \f[1/k =k_1\ln s+k_2,\f]
  * and \f$\bar n\f$ is given by
  * \f[\bar n =n_1s^{n_2}+n_3\f]
- * As an option, for underlying events the value of $\sqrt{s}$ used to choose
- * the multiplicity $n$ may be increased by a factor EnhanceCM to allow
+ * As an option, for underlying events the value of \f$\sqrt{s}\f$ used to choose
+ * the multiplicity \f$n\f$ may be increased by a factor EnhanceCM to allow
  * for an enhanced underlying activity in hard events.
  *
  * Once a charged multiplicity has been selected from the above distribution,
- * `softclusters' are generated with flavours \$(f_1,f_2) = (q_{n-1},\bar q_n)\$
- * by drawing $q_n\bar q_n = u\bar u$ or $d\bar d$ randomly from the 
+ * `softclusters' are generated with flavours \f$(f_1,f_2) = (q_{n-1},\bar q_n)\f$
+ * by drawing \f$q_n\bar q_n = u\bar u$ or $d\bar d\f$ randomly from the 
  * vacuum. Soft cluster masses are assigned as
  * \f[M = m_{q1}+m_{q2}+m_1-\log(r_1 r_2)/m_2 \f]
- * where \$r_{1,2}\$ are random numbers, which gives a (shifted) exponential
- * distribution of \$M^2\z$.  The parameters \f$m_1\f$ and \f$m_2\f$ control
+ * where \f$r_{1,2}\f$ are random numbers, which gives a (shifted) exponential
+ * distribution of \f$M^2\f$.  The parameters \f$m_1\f$ and \f$m_2\f$ control
  * the distribution and \f$m_{q1,2}\f$ are the masses of the quarks in the cluster.
  *
  * As each soft cluster is generated, it is decayed to stable hadrons using
@@ -76,8 +76,8 @@ using namespace ThePEG;
  * has not yet been generated.  The decay products of each cluster are stored
  * in its rest frame.  Now the transverse momenta of the clusters are
  * generated with the distribution
- * \f[\P(p_t)\propto p_t\exp\left(-p_{1,2,3}\sqrt{p_t^2+M^2}\right)\f]
- * where the slope parameter $p_{1,2,3}$ depends as indicated on the
+ * \f[P(p_t)\propto p_t\exp\left(-p_{1,2,3}\sqrt{p_t^2+M^2}\right)\f]
+ * where the slope parameter \f$p_{1,2,3}\f$ depends as indicated on the
  * flavour of the quark or diquark pair created in the
  * primary cluster decay, \f$p_1\f$ for light quarks, \f$p_2\f$ for the strange and
  * charm quarks and \f$p_3\f$ for diquarks.
@@ -155,7 +155,7 @@ public:
    * final state particles in the current Step is considered.
    * @param hint a possible Hint which is ignored in this implementation
    */
-  virtual void handle(EventHandler &ch, const tPVector &tagged,
+  virtual void handle(EventHandler &eh, const tPVector &tagged,
 		      const Hint &hint) 
     throw(Veto,Stop,Exception);
 
@@ -195,7 +195,7 @@ private:
    * Decay a cluster to two hadrons is sufficiently massive and to one if
    * not.
    * @param cluster The cluster to decay
-   * @param Whether or not ot allow decays to 
+   * @param single Whether or not ot allow decays to 
    */
   void decayCluster(ClusterPtr cluster, bool single);
 
@@ -302,9 +302,9 @@ b   *  Members to generate the multiplicity according to a negative binomial
 
    /**
     * This returns random number from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ distribution,
-    * where \f$m_T=\sqrt{p_T^2+M^2}\f$. It uses Newton's method to solve \f$F-R=0
+    * where \f$m_T=\sqrt{p_T^2+M^2}\f$. It uses Newton's method to solve \f$F-R=0\f$
     * @param AM0 The mass \f$M\f$.
-    * @param av the average of the distributions
+    * @param B The slope
     * @return the value distributed from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ with mean av
     */
    inline double randExt(Energy AM0,InvEnergy B);
