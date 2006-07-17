@@ -195,8 +195,9 @@ private:
    * Decay a cluster to two hadrons is sufficiently massive and to one if
    * not.
    * @param cluster The cluster to decay
+   * @param Whether or not ot allow decays to 
    */
-  void decayCluster(ClusterPtr cluster);
+  void decayCluster(ClusterPtr cluster, bool single);
 
   /**
    * Recursively add particle and decay products to the step
@@ -263,15 +264,10 @@ b   *  Members to generate the multiplicity according to a negative binomial
    void generateCylindricalPS(ClusterVector &clusters, Energy CME);
    //@}
 
-
-
-
    /**
     * This returns the rotation matrix needed to rotate p into the z axis
     */
    LorentzRotation rotate(LorentzMomentum &p);
-
-
 
    /**
     *  Various methods to generate random distributions
@@ -313,15 +309,6 @@ b   *  Members to generate the multiplicity according to a negative binomial
     */
    inline double randExt(Energy AM0,InvEnergy B);
    //@}
-   
-   /**
-    * TODO remove this and use ThePEG methods instead
-    * transforms B (given in rest from of A). Returns vector in lab frame
-    * @param A The vector in the whose rest B is in 
-    * @param B The vector we want to boost into the lab frame
-    * @return the new vector
-    */
-   Lorentz5Momentum transformToLab(Lorentz5Momentum &A, Lorentz5Momentum &B);
 
 private:
 
@@ -468,6 +455,6 @@ struct ClassTraits<Herwig::UA5Handler> :
 
 }
 
-#include "UA5.icc"
+#include "UA5Handler.icc"
 
 #endif

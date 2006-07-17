@@ -1,4 +1,4 @@
-#include "UA5.h"
+#include "UA5Handler.h"
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/PDT/DecayMode.h>
@@ -14,9 +14,6 @@
 using namespace std;
 using namespace ThePEG;
 using namespace Herwig;
-
-// these MUST be interfaced parameters !!!! NO HARDWIRING
-const unsigned int max_tries = 300;
 
 // Default constructor
 UA5Handler::UA5Handler() 
@@ -289,11 +286,14 @@ void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge)
     }
 }
 
-void UA5Handler::decayCluster(ClusterPtr cluster)
+void UA5Handler::decayCluster(ClusterPtr cluster,bool single)
 {
   PPair products = clusterDecayer->decayIntoTwoHadrons(cluster);
   if(products.first == PPtr() || products.second == PPtr()) 
     {
+      if(!single) 
+	throw Exception() << "Can't decay cluster in UA5Handler::decayCluster()"
+			  << Exception::eventerror;
       // decay the cluster to one hadron
       Lorentz5Momentum mom = cluster->momentum();
       LorentzPoint vert = cluster->vertex();
@@ -351,7 +351,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
     {
       for(int i =0; i<2; i++) {
 	ClusterPtr cluster = clu[i];
-	decayCluster(cluster);
+	decayCluster(cluster,false);
 	int totalcharge(0),numbercharge(0);
 	for(unsigned int ix=0;ix<cluster->children().size();++ix)
 	  {performDecay(cluster->children()[ix],totalcharge,numbercharge);}
@@ -373,7 +373,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   unsigned int ntry = 0;
   vector<ClusterPtr> clusters;
   bool multiplicityReached = false;
-  while(!multiplicityReached && ntry < max_tries) {
+  while(!multiplicityReached && ntry < _maxtries) {
      PPtr part1, part2;
      // reset multiplicity every 50 tries
      if(ntry % 50 == 0) nppbar = multiplicity(softCM);
@@ -429,7 +429,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
        // Add the cluster to the list
        clusters.push_back(cluster);
        // Now we decay the clusters into hadrons
-       decayCluster(cluster);
+       decayCluster(cluster,true);
        // sum of the cluster masses
        sumMasses += cluster->mass();
        // Now decay the hadrons into stable particles
@@ -453,11 +453,11 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
        { multiplicityReached = false; }
   }
   // Catch case of too many attempts
-  if(ntry == max_tries) {
+  if(ntry == _maxtries) {
     // Just hadronize and decay the two clusters
     for(int i =0; i<2; i++) {
       ClusterPtr cluster = clu[i];
-      decayCluster(cluster);
+      decayCluster(cluster,false);
       int totalcharge(0),numbercharge(0);
       for(unsigned int ix=0;ix<cluster->children().size();++ix)
 	{performDecay(cluster->children()[ix],totalcharge,numbercharge);}
@@ -480,21 +480,6 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
     {insertParticle(clusters[ix],newStep,false);}
 }
 
-// transforms B (given in rest from of A). Returns vector in lab frame
-Lorentz5Momentum UA5Handler::transformToLab(Lorentz5Momentum &A, Lorentz5Momentum &B) {
-   if(B.e() == B.mass()) return B;
-   double pf4 = (B.px()*A.px() + B.py()*A.py() + B.pz()*A.pz() + B.e()*A.e())/A.mass();
-   double fn = (pf4 + B.e())/(A.e() + A.mass());
-   Lorentz5Momentum C;
-   C.setMass(B.mass());
-   C.setPx(B.px() + fn*A.px());
-   C.setPy(B.py() + fn*A.py());
-   C.setPz(B.pz() + fn*A.pz());
-   C.setE(pf4);
-   return C;
-}
-
-
 // Generate the momentum. This is based on the procedure of
 // Jadach from Computer Physics Communications 9 (1975) 297-304
 void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto) {
@@ -507,6 +492,7 @@ void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5M
   LorentzRotation R = rotate(bmp);
   // We need to use the inverse
   R = R.inverse();
+  Hep3Vector boostv=cm.boostVector();
   for(unsigned int i = 0; i<clusters.size(); i++) {
     // So we now take each cluster and transform it according to the
     // rotation defined above
@@ -514,9 +500,9 @@ void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5M
     clusters[i]->transform(R);
     // Then we transform back to the lab frame (away from cm frame)
     Lorentz5Momentum oldP = clusters[i]->momentum();
-    Lorentz5Momentum newP;
+    Lorentz5Momentum newP=oldP;
     try {
-      newP = transformToLab(cm, oldP);
+      newP.boost(boostv);
       clusters[i]->deepBoost(newP.boostVector());
       clusters[i]->set5Momentum(newP);
     } catch(exception &e) {
@@ -572,7 +558,7 @@ void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
     }
   // loop to generate momenta
   double yy(0.);
-  while(its < max_tries) {
+  while(its < _maxtries) {
     ++its;
     sumx = sumy = 0.;
     for(unsigned int i = 0; i<ncl; ++i) {
