@@ -202,12 +202,34 @@ private:
    *  One bin of the histogram. limit is the _lower_ bound of the bin.
    */
   struct Bin {
+    /**
+     *  Default constructor
+     */
     Bin() : contents(0.0), contentsSq(0.0), 
 	    limit(0.0), data(0.0), dataerror(0.0) {}
+    /**
+     *  Contents of the bin
+     */
     double contents;
+
+    /**
+     *  Contents squared for the error
+     */
     double contentsSq;
+
+    /**
+     * The limit for the bin
+     */
     double limit;
+
+    /**
+     *  The experimental value for the bin
+     */
     double data;
+
+    /**
+     *  The error on the experimental value for the bin
+     */
     double dataerror;
   };
 

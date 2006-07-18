@@ -25,14 +25,36 @@ namespace Herwig {
 
   public:
 
+    /**
+     *  Calculate the momenta for a two body decay
+     * @param p The momentum of the decaying particle
+     * @param m1 The mass of the first decay product
+     * @param m2 The mass of the seocnd decay product
+     * @param unitDir1 Direction for the products in the rest frame of
+     * the decaying particle
+     * @param p1 The momentum of the first decay product
+     * @param p2 The momentum of the second decay product
+     */
     static void twoBodyDecay(const Lorentz5Momentum & p, 
-			     const double m1, const double m2,
+			     const Energy m1, const Energy m2,
 			     const Vector3 & unitDir1,
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2);
-    static void twoBodyDecay(const Lorentz5Momentum &, 
-			     const double, const double,
-			     const double, const double,
-			     Lorentz5Momentum &, Lorentz5Momentum &);
+
+    /**
+     *  Calculate the momenta for a two body decay
+     * @param p The momentum of the decaying particle
+     * @param m1 The mass of the first decay product
+     * @param m2 The mass of the second decay product
+     * @param cosThetaStar1 Polar angle in rest frame 
+     * @param phiStar1 Azimuthal angle in rest frame
+     * @param p1 The momentum of the first decay product
+     * @param p2 The momentum of the second decay product
+     */
+    static void twoBodyDecay(const Lorentz5Momentum & p, 
+			     const Energy m1, const Energy m2,
+			     const double cosThetaStar1, 
+			     const double phiStar1,
+			     Lorentz5Momentum & p1, Lorentz5Momentum & p2);
     /**
      * Given in input: the 5-momentum (p) of the decay particle in the LAB 
      * frame; the masses of the two decay products (m1,m2); either the 

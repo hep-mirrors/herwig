@@ -18,25 +18,53 @@ using namespace KtJet;
 
 /** \ingroup Interfaces
  * 
- *  Some comment should be provided!
+ *  Interface to allow the KtJET jet clustering library to be used.
  */
 class KtJetInterface {
 
- public:
+public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
   KtJetInterface() {}
+
+  /**
+   * The copy constructor.
+   */
   ~KtJetInterface() {}
 
+public:
+
+  /**
+   * Clear map between ThePEG particles and KtJet vectors
+   */
   inline void clearMap() { Kt2PythiaMap.clear(); }
 
- public:
+public:
 
-  vector<KtLorentzVector> convertToKtVectorList(const tPVector &); 
+  /**
+   *  Convert ThePEG particles to KtJet vectors
+   */
+  vector<KtLorentzVector> convertToKtVectorList(const tPVector &);
+
+  /**
+   *  Get the PDG code for a KtJet vector
+   */ 
   int getThePEGID(KtLorentzVector &);
 
  private:
 
+  /**
+   *  Convert one particle to KtJet
+   */
   KtLorentzVector convertToKtVector(const PPtr &);
+
+  /**
+   *  Map between Herwig++ and KtJet
+   */
   std::map<int, int> Kt2PythiaMap;
 
 };

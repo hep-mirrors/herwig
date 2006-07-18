@@ -243,17 +243,6 @@ protected:
    */
   double me(double xw, double xg);
 
-  /**
-   * Full matrix element with a factor of 
-   * \f$\frac{\alpha_{S}C_{F}}{\left(1.+A-x_{W}\right)x_{g}^{2}\pi}\f$ removed.
-   * This is the expression inside the braces in equation (6.31) of
-   * Gieseke,Stephens & Webber, JHEP12(2003) 045.
-   * @param A  The squared ratio of the b-quark mass to the top quark mass.
-   * @param XA The momentum fraction of the W boson.
-   * @param XG The momentum fraction of the gluon.
-   */
-  inline double BRACES(double XG, double XA);
-
 private:
 
   /**

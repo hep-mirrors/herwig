@@ -282,7 +282,9 @@ private:
    */
   EventShapesPtr _shapes;
 
-
+  /**
+   *  The weight for the event
+   */
   double eventweight_;
 };
 

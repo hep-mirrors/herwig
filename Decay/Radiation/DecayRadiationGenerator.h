@@ -17,6 +17,9 @@ using namespace ThePEG;
  * QED radiation in particle decays in Herwig++. Classes implementing specific
  * algorithms must inherit from this class and implement the virtual generatePhotons
  * member.
+ * 
+ * @see \ref DecayRadiationGeneratorInterfaces "The interfaces"
+ * defined for DecayRadiationGenerator.
  */
 class DecayRadiationGenerator: public Interfaced {
 
@@ -45,7 +48,7 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an abstract class with persistent data.
+   * Indicates that this is an abstract class with no persistent data.
    */
   static AbstractNoPIOClassDescription<DecayRadiationGenerator> initDecayRadiationGenerator;
 

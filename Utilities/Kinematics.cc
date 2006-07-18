@@ -23,7 +23,7 @@ Energy Kinematics::CMMomentum(const Energy M,
 }
 
 void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
-			      const double m1, const double m2,
+			      const Energy m1, const Energy m2,
 			      const Vector3 & unitDir1,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
   if ( p.m() >= m1 + m2  &&  m1 >= 0.0  &&  m2 >= 0.0  ) {
@@ -41,7 +41,7 @@ void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
 }
 
 void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,                    
-			      const double m1, const double m2,  
+			      const Energy m1, const Energy m2,  
 			      const double cosThetaStar1, 
 			      const double phiStar1, 
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {

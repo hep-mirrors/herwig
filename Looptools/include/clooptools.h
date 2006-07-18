@@ -17,7 +17,16 @@ typedef std::complex<double> double_complex;
 // #define cachelookup cachelookup_
 
 // =========== declarations of Fortran functions ====================
-struct dcomplex { double r, i; };
+/**
+ *  Definition of a struct to represent complex numbers
+ */
+struct dcomplex 
+{
+  /**
+   *  The real and complex part
+   */
+  double r, i; 
+};
 
 extern "C" {
 

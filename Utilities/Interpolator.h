@@ -47,6 +47,10 @@ public:
    * Retreive function value.
    */
   virtual double operator ()(double argument) const;
+  
+  /**
+   * Retreive function value.
+   */
   virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
   
 private:

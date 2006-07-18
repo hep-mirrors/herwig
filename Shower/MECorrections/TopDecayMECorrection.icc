@@ -230,9 +230,6 @@ inline bool TopDecayMECorrection::INTHEDEADREGION(double A  , double C,
     return output;
 }
 
-inline double TopDecayMECorrection::BRACES(double XG,double XA)
-{return (1.+_a-_c-XA)*me(XA,XG);}
-
 inline double TopDecayMECorrection::DEADREGIONXGXA(double KTB,double KTC)
 {
   _xg=0.;

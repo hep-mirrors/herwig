@@ -178,8 +178,9 @@ private:
    * special case of a semileptonic partonic b/c decay 
    * @param idhad The hadron to be produced
    * @param cluster The cluster to be reshuffled
+   * @param step The step into which the particles are inserted
    */
-  bool partonicReshuffle(const long idhad,const PPtr cluster,const StepPtr );
+  bool partonicReshuffle(const long idhad,const PPtr cluster,const StepPtr step);
 
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.

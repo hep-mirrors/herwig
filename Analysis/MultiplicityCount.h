@@ -27,17 +27,56 @@ enum ParticleSpecies
  */
 struct MultiplicityInfo
 {
+  /**
+   *  Default constructor
+   * @param mult  The observed multiplcity.
+   * @param error The error on the observed multiplicity
+   * @param type  The type of particle
+   */
   inline MultiplicityInfo(double mult=0.,double error=0.,
 			  ParticleSpecies type=other);
-  //long pdg;
+
+  /**
+   *  The observed multiplicity
+   */
   double mult;
+
+  /**
+   *  The error on the observed multiplicity
+   */
   double error;
+
+  /**
+   *  The type of particle
+   */
   ParticleSpecies type;
+
+  /**
+   *  Number of particles of this type
+   */
   long actualCount;
+
+  /**
+   *  Sum of squares of number per event for error
+   */
   double sumofsquares;
-  //string name;
+
+  /**
+   *  The average number per event
+   * @param N The number of events
+   */
   double mean(double N);
+
+  /**
+   *  The error on the average number per event
+   * @param N The number of events 
+   */
   double stderror(double N);
+
+  /**
+   *  Is the result more than \f$3\sigma\f$ from the experimental result
+   * @param N The number of events
+   */
   bool serious(double N);
 };
 
@@ -51,23 +90,10 @@ class MultiplicityCount: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline MultiplicityCount();
-
-  /**
-   * The copy constructor.
-   */
-  inline MultiplicityCount(const MultiplicityCount &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MultiplicityCount();
-  //@}
+  MultiplicityCount();
 
 public:
 
@@ -116,22 +142,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -162,47 +172,10 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
   inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -211,7 +184,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MultiplicityCount> initMultiplicityCount;
+  static NoPIOClassDescription<MultiplicityCount> initMultiplicityCount;
 
   /**
    * The assignment operator is private and must never be called.
@@ -245,7 +218,15 @@ private:
    *  Map of PDG codes to multiplicity info
    */
   map<long,MultiplicityInfo> _data;
+
+  /**
+   *  Map of number of final-state particles to PDG code
+   */
   map<long,long> _finalstatecount;
+
+  /**
+   *  Particles in hard process
+   */
   map<long,long> _collisioncount;
 };
 

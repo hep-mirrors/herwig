@@ -106,7 +106,6 @@ public:
   //@{
   /**
    * Set the initial QCD scales
-   * @param showerVariables  Pointer to the ShowerVariables
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */
@@ -115,7 +114,6 @@ public:
 
   /**
    * Set the initial QED scales
-   * @param showerVariables  Pointer to the ShowerVariables
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */
@@ -124,7 +122,6 @@ public:
 
   /**
    * Set the initial electroweak scales
-   * @param showerVariables  Pointer to the ShowerVariables
    * @param particles        The particles to be considered
    * @param isDecayCase      Whether or not this is a decay
    */

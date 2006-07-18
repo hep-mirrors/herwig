@@ -35,7 +35,6 @@ public:
    * @param out The outgoing particles
    * @param vars Pointer to the ShowerVariables object to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
-   * @param ch Access to the event handler
    */
   ShowerTree(tEHPtr eh, const ParticleVector & out,
 	     ShowerVarsPtr vars,
