@@ -36,10 +36,19 @@ namespace Herwig {
   private:
 
     /**
-     * Pure static class.
+     * Pure static class so no default constructor
      */
     Smearing();
+
+    /**
+     * Pure static class so no copy constructor
+     */
     Smearing(const Smearing & x);
+
+    /**
+     * The assignment operator is private and must never be called.
+     * In fact, it should not even be implemented.
+     */
     Smearing & operator=(const Smearing & x);
 
   };

@@ -89,10 +89,19 @@ namespace Herwig {
   private:
 
     /**
-     * Pure static class.
+     * Pure static class so default constructor private
      */
     Kinematics();
+
+    /**
+     * Pure static class so copy constructor private
+     */
     Kinematics(const Kinematics & x);
+
+    /**
+     * The assignment operator is private and must never be called.
+     * In fact, it should not even be implemented.
+     */
     Kinematics & operator=(const Kinematics & x);
 
   };
