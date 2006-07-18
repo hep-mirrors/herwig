@@ -58,16 +58,10 @@ public:
    */
   virtual void showerHardProcess(ShowerTreePtr);
 
-
   /**
    * Perform the shower of a decay
    */
   virtual void showerDecay(ShowerTreePtr);
-
-  /**
-   *
-   */
-  void makeRemnants(ShowerTreePtr);
 
   /**
    *  Get the ShowerVariables
@@ -108,9 +102,9 @@ protected:
   virtual void hardMatrixElementCorrection();
 
   /**
-   *  Extract the particles to be showered, set the evolution scales
-   *  and apply the hard matrix element correction
-   * @param Whether this is a hard process or decay
+   * Extract the particles to be showered, set the evolution scales
+   * and apply the hard matrix element correction
+   * @param hard Whether this is a hard process or decay
    * @return The particles to be showered
    */
   vector<ShowerProgenitorPtr> setupShower(bool hard);
@@ -162,7 +156,7 @@ protected:
    * This method sets all the properties of the new particles from the 
    * splitting: it fixes the hadron parent/children relations due to the 
    * splitting and the colour information for a backward branching
-   * @param The particle being evolved
+   * @param part The particle being evolved
    * @param newparent The new initial-state particle
    * @param otherChild The new final-state particle
    * @param scale The scale of the branching

@@ -109,7 +109,10 @@ protected:
    */
   inline PPtr findParent(PPtr parent) const;
 
-  //@}
+  /**
+   *  Make the remnant after the shower
+   */
+  void makeRemnants();
 
 private:
 

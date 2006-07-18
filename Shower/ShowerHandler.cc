@@ -13,6 +13,8 @@
 #include "ThePEG/Utilities/Timer.h"
 #include "Evolver.h"
 #include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Utilities/EnumParticles.h"
+#include "Herwig++/Hadronization/Remnant.h"
 #include <cassert>
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -203,5 +205,46 @@ void ShowerHandler::cascade()
   fillEventRecord();
   // remake the remnants (needs to be after the colours are sorted
   //                       out in the insertion into the event record)
-  _evolver->makeRemnants(_hard);
+  makeRemnants();
+}
+
+void ShowerHandler::makeRemnants()
+{
+  // get the incoming particles
+  PPair incoming=generator()->currentEvent()->incoming();
+  ParticleVector in;
+  in.push_back(incoming.first);
+  in.push_back(incoming.second);
+  // get the remnants
+  tParticleSet remn=generator()->currentEvent()->primaryCollision()->getRemnants();
+  // fix the momenta
+  for(unsigned int ix=0;ix<in.size();++ix)
+    {
+      Lorentz5Momentum pnew;
+      ParticleVector prem,pother;
+      if(in[ix]->children().size()==1) continue;
+      for(unsigned int iy=0;iy<in[ix]->children().size();++iy)
+	{
+	  if(remn.find(in[ix]->children()[iy])==remn.end())
+	    {
+	      pnew+=in[ix]->children()[iy]->momentum();
+	      pother.push_back(in[ix]->children()[iy]);
+	    }
+	  else
+	    prem.push_back(in[ix]->children()[iy]);
+	}
+      pnew=in[ix]->momentum()-pnew;
+      pnew.rescaleMass();
+      // throw exception if gone wrong
+      if(prem.size()!=1||pother.size()!=1) 
+	throw Exception() 
+	  << "Must be one and only 1 remnant for beam in ShowerHandler::makeRemnants()"
+	  << Exception::eventerror;
+	  // remake the remnant
+      if(prem[0]->id()==ExtraParticleID::Remnant)
+	{
+	  tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(prem[0]);
+	  if(rem) rem->regenerate(pother[0],pnew);
+	}
+    }
 }
