@@ -201,8 +201,9 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     pstep->addDecayProduct(iCluster, ct.second.first);
 
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
-    if((!one||!two)&&iCluster->isBeamCluster()) 
-      cerr << "testing problem beam cluster split into hadrons" << endl;
+    if((!one||!two)&&iCluster->isBeamCluster()
+       &&_globalParameters->isSoftUnderlyingEventON()) 
+      cerr << "\ntesting problem beam cluster split into hadrons" << endl;
     if(one) {
       clusters.push_back(one);
       if(one->isBeamCluster()) one->isAvailable(false);
