@@ -45,48 +45,6 @@ inline IBPtr FFDipole::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void FFDipole::doupdate() throw(UpdateException) {
-  Interfaced::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void FFDipole::doinit() throw(InitException) {
-  Interfaced::doinit();
-}
-
-inline void FFDipole::dofinish() {
-  Interfaced::dofinish();
-}
-
-inline void FFDipole::doinitrun() {
-  Interfaced::doinitrun();
-}
-
-inline void FFDipole::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  Interfaced::rebind(trans);
-}
-
-inline IVector FFDipole::getReferences() {
-  IVector ret = Interfaced::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 // poisson
 inline int FFDipole::poisson(double average)
 {

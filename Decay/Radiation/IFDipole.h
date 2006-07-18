@@ -103,57 +103,19 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 protected:
 
   /**
    *  Average crude photon multiplicity
-   * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$
-   * @param beta2 Velocity of the second charged particle, \f$\beta_2\f$.
-   * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$
-   * @param ombeta2 One minus the velocity of the second particle,  \f$1-\beta_2\f$
+   * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$.
+   * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$.
    * @return The average photon multiplicity
    */
   inline double nbar(double beta1,double ombeta1);
@@ -171,9 +133,6 @@ protected:
    * @param beta1 The velocity, \f$\beta_1\f$, of the first charged particle
    * @param ombeta1 One minus the velocity, \f$1-\beta_1\f$, of the first 
    * charged particle which is supplied for numerical stability
-   * @param beta2 The velocity, \f$\beta_2\f$, of the second charged particle
-   * @param ombeta2 One minus the velocity, \f$1-\beta_2\f$, of the 
-   * second charged particle which is supplied for numerical stability
    * @return The contribution to the dipole weight
    */
   double photon(double beta1,double ombeta1);
@@ -181,9 +140,7 @@ protected:
   /**
    *  Calculate the exact weight for the dipole.
    * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$
-   * @param beta2 Velocity of the second charged particle, \f$\beta_2\f$.
    * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$
-   * @param ombeta2 One minus the velocity of the second particle,  \f$1-\beta_2\f$
    * @param iphot The number of the photon for which the weight is required
    * @return The weight
    */
@@ -193,9 +150,7 @@ protected:
   /**
    *  The crude YFS form factor for calculating the weight
    * @param beta1 Velocity of the first charged particle, \f$\beta_1\f$
-   * @param beta2 Velocity of the second charged particle, \f$\beta_2\f$.
    * @param ombeta1 One minus the velocity of the first particle,  \f$1-\beta_1\f$
-   * @param ombeta2 One minus the velocity of the second particle,  \f$1-\beta_2\f$
    * @return The YFS form factor
    */
     inline double crudeYFSFormFactor(double beta1,double ombeta1);
@@ -220,10 +175,12 @@ protected:
    * Matrix element weight
    */
   double meWeight(ParticleVector children);
+
   /**
-   *  Member which generates the photons
+   * Member which generates the photons
    * @param boost Boost vector to take the particles produced back from
    * the decaying particle's rest frame to the lab
+   * @param children The decay products
    */
   double makePhotons(Hep3Vector boost,ParticleVector children);
 

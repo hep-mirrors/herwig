@@ -38,48 +38,10 @@ inline IBPtr IFDipole::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void IFDipole::doupdate() throw(UpdateException) {
-  Interfaced::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void IFDipole::doinit() throw(InitException) {
   Interfaced::doinit();
   // get the value fo alpha from the Standard Model object
   _alpha=generator()->standardModel()->alphaEM();
-}
-
-inline void IFDipole::dofinish() {
-  Interfaced::dofinish();
-}
-
-inline void IFDipole::doinitrun() {
-  Interfaced::doinitrun();
-}
-
-inline void IFDipole::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  Interfaced::rebind(trans);
-}
-
-inline IVector IFDipole::getReferences() {
-  IVector ret = Interfaced::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 // crude average multiplicity

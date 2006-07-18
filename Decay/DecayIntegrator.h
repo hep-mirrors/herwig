@@ -203,7 +203,8 @@ public:
   //@{
   /**
    * Use the DecayRadiationGenerator to generate photons in the decay.
-   * @param p The Particle instance to be decayed.
+   * @param p The Particle instance being decayed
+   * @param children The decay products
    * @return A particle vector containing the decay products after the generation
    * of photons.
    */

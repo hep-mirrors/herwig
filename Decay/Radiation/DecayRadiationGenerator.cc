@@ -16,23 +16,14 @@
 
 using namespace Herwig;
 
-DecayRadiationGenerator::~DecayRadiationGenerator() {}
-
-void DecayRadiationGenerator::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void DecayRadiationGenerator::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-AbstractClassDescription<DecayRadiationGenerator> DecayRadiationGenerator::initDecayRadiationGenerator;
+AbstractNoPIOClassDescription<DecayRadiationGenerator> DecayRadiationGenerator::initDecayRadiationGenerator;
 // Definition of the static class description member.
 
 void DecayRadiationGenerator::Init() {
 
   static ClassDocumentation<DecayRadiationGenerator> documentation
-    ("There is no documentation for the DecayRadiationGenerator class");
+    ("The DecayRadiationGenerator class is the base class for the implementation of"
+     "QED radiation in particle decays.");
 
 }
 

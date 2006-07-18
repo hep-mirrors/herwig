@@ -326,7 +326,6 @@ private:
    * @param en1 The energy of the outgoing particle
    * @param m0 The mass of the incoming particle
    * @param m1 The mass of the outgoing particle
-   * @param t  The invariant mass of the charged particles
    */
   inline static InvEnergy2 A4IFZero(const double  & beta0, const double & beta1,
 			     const Energy  & en0  , const Energy & en1  ,
