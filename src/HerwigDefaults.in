@@ -43,16 +43,6 @@ cp StandardExtractor QCDExtractor
 
 # Setup matrix elements
 cd /Defaults/MatrixElements
-create ThePEG::MEGG2GG MEGG2GG MEQCD.so
-create ThePEG::MEQG2QG MEQG2QG
-create ThePEG::MEQQ2GG MEQQ2GG
-create ThePEG::MEQQ2QQ MEQQ2QQ
-create ThePEG::MEQq2Qq MEQq2Qq
-create ThePEG::MEGG2QQ MEGG2QQ
-create ThePEG::MEQQ2qq MEQQ2qq
-create ThePEG::MEqq2qq MEqq2qq
-set MEGG2QQ:MaxFlavour 4
-set MEQQ2qq:MaxFlavour 4
 
 create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
 set MEqq2gZ2ll:WithNeutrinos 0
@@ -71,14 +61,6 @@ set EE2QQ:PartonExtractor EEExtractor
 
 # For p+p+
 create ThePEG::SubProcessHandler SimpleQCD
-#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGG2GG
-#insert SimpleQCD:MatrixElements[1] /Defaults/MatrixElements/MEQG2QG
-#insert SimpleQCD:MatrixElements[2] /Defaults/MatrixElements/MEQQ2QQ
-#insert SimpleQCD:MatrixElements[3] /Defaults/MatrixElements/MEQq2Qq
-#insert SimpleQCD:MatrixElements[4] /Defaults/MatrixElements/MEGG2QQ
-#insert SimpleQCD:MatrixElements[5] /Defaults/MatrixElements/MEQQ2qq
-#insert SimpleQCD:MatrixElements[6] /Defaults/MatrixElements/MEqq2qq
-#insert SimpleQCD:MatrixElements[7] /Defaults/MatrixElements/MEQQ2GG
 insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ll
 insert SimpleQCD:MatrixElements[1] /Defaults/MatrixElements/MEqq2W2ll
 set SimpleQCD:PartonExtractor QCDExtractor
