@@ -5,7 +5,7 @@ pkglib_LTLIBRARIES += HwAmegic.la
 endif
 
 if WANT_LIBKTJET
-AM_CPPFLAGS+= -I$(KTJETPATH)
+AM_CPPFLAGS+= $(KTJETINCLUDE)
 pkglib_LTLIBRARIES += HwKtJet.la
 endif
 
