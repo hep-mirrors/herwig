@@ -244,8 +244,8 @@ protected:
   /**
    * Isolate the colour of the process from the rest of the event.
    * Called in the constructor
-   * @param The original particles
-   * @param The colour isolated copies
+   * @param original The original particles
+   * @param copy The colour isolated copies
    */
   void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
 

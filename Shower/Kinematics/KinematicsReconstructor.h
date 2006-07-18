@@ -64,7 +64,12 @@ typedef vector<JetKinStruct> JetKinVect;
  * defined for KinematicsReconstructor.
  */
 class KinematicsReconstructor: public Interfaced {
-  friend class Evolver; // to allow setting of _showerVariables
+
+/**
+ *  The Evolver is a friend to allow the  setting of _showerVariables
+ */
+friend class Evolver;
+
 public:
 
   /**
@@ -182,6 +187,7 @@ protected:
   /**
    *  Calculate the rescaling factors for th jets in a particle decay where
    *  there was initial-state radiation
+   * @param mb The mass of the decaying particle
    * @param n  The reference vector for the initial state radiation
    * @param pjet The momentum of the initial-state jet
    * @param pother The momentum of the outgoing colour singlet system before radiation

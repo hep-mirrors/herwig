@@ -40,7 +40,7 @@ using namespace ThePEG;
  *      \right\}.
  *  \f]
  *  We can solve this to obtain the next value of the scale \f$\tilde{q}_{i+1}\f$
- *  given the previous value $\tilde{q}_i$
+ *  given the previous value \f$\tilde{q}_i\f$
  *  in the following way. First we obtain a simplified form of the integrand
  *  which is greater than or equal to the true integrand for all values of
  *  \f$\tilde{q}\f$.
@@ -204,11 +204,9 @@ public:
    * branching then it returns Energy().
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
-   * @param revOrd is used (when it is not equal to the default, false, value)
-   *        only for final-state branching of a decaying on-shell particle.
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids) ;
+				           const IdList &ids);
 
   /**
    * Return the scale of the next time-like branching. If there is no 
@@ -221,23 +219,17 @@ public:
   virtual Energy generateNextDecayBranching(const Energy startingScale,
 					    const Energy stoppingScale,
 					    const Energy minmass,
-					    const IdList &ids) ;
+					    const IdList &ids);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
    * branching then it returns Energy().
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
-   * @param beam    Pointer to the particleData for the 
-   *                beam
-   * @param pdf Pointer to the PDF object
    * @param x The fraction of the beam momentum
-   * @param revOrd is used (when it is not equal to the default, false, value)
-   *        only for final-state branching of a decaying on-shell particle.
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
-		                            const IdList &ids,
-					    double x) ;
+		                            const IdList &ids,double x);
 
 
   //@}
@@ -315,6 +307,7 @@ protected:
    * Value of the energy fraction and scale for time-like branching
    * @param t  The scale
    * @param tmax The maximum scale
+   * @param minmass The minimum mass of the particle after the branching
    */
   bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass) const;
 
@@ -334,15 +327,15 @@ protected:
    * @param m The mass of the emitting particle
    */
   inline void initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax, 
-			 Energy &kinCutoff, Energy m) ;
+			 Energy &kinCutoff, Energy m);
 
 
   /**
    *  Initialize the values of the cut-offs and scales
    * @param tmin The minimum scale
-   * @param The ids of the partics in the branching
+   * @param ids  The ids of the partics in the branching
    */
-  void initialize(const IdList & ids,Energy2 &tmin) ;
+  void initialize(const IdList & ids,Energy2 &tmin);
 
   /**
    * The various different vetos which need to be applied using the veto
@@ -374,7 +367,7 @@ protected:
    * @param t  The scale
    * @return true if vetoed
    */
-  bool PSVeto(const Energy2 t) ;
+  bool PSVeto(const Energy2 t);
 
   /**
    *  The veto on the splitting function.

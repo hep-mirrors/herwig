@@ -61,7 +61,7 @@ public:
    * Apply the soft matrix element correction
    * @param initial The particle from the hard process which started the 
    * shower
-   * @param The initial particle in the current branching
+   * @param parent The initial particle in the current branching
    * @param br The branching struct
    * @return If true the emission should be vetoed
    */

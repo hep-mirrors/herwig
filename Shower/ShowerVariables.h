@@ -463,7 +463,7 @@ private:
    *  Here we hold the option which determines the type of phase space 
    *  partitioning to do for the decay shower. Depending on the value
    *  of the option PartnerFinder will set different bounds on the starting
-   *  $\tilde{q}$ values for the showers of the decaying particle and its
+   *  \f$\tilde{q}\f$ values for the showers of the decaying particle and its
    *  charged child. This is done according to the top decay colour 
    *  connection calculation in JHEP12(2003)_045. The options act as follows:
    *  0: This is the default 'symmetric' choice which more or less divides

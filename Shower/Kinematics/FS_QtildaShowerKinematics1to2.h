@@ -71,6 +71,7 @@ public:
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
+   * @param theLast The particle to update
    * @param iopt The option for the momentum reconstruction 
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector

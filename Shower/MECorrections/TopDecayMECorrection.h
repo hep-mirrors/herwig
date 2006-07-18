@@ -62,7 +62,7 @@ public:
    * Apply the soft matrix element correction
    * @param initial The particle from the hard process which started the 
    * shower
-   * @param The initial particle in the current branching
+   * @param parent The initial particle in the current branching
    * @param br The branching struct
    * @return If true the emission should be vetoed
    */
@@ -83,64 +83,64 @@ private:
   double getHard(double, double);
 
   /**
-   *  This function is auxiliary to the function $x_{a}$ (hXAB).
+   *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
   inline double XGBR1(double,double,double,int);
   /**
-   *  This function is auxiliary to the function $x_{a}$ (hXAB).
+   *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
   inline double XGBR2(double,double,double,int);
   /**
-   *  This function is auxiliary to the function $x_{a}$ (hXAB).
+   *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
   inline double KTR(double,double,double,double,int);
   /**
-   *  This function determines $x_{a}$ as a function of $x_{g}$ 
-   *  and $\kappa$ where $\kappa$ pertains to emissions from the 
+   *  This function determines \f$x_{a}\f$ as a function of \f$x_{g}\f$ 
+   *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
   inline double XAB(double,double,double,double,double,int);
   /**
-   *  This function determines the point ($x_{g}$) where the condition that 
-   *  $x_{a}$ be real supersedes that due to the external input 
-   *  $\tilde{\kappa}$ where, again, $\kappa$ pertains to emissions from the 
+   *  This function determines the point (\f$x_{g}\f$) where the condition that 
+   *  \f$x_{a}\f$ be real supersedes that due to the external input 
+   *  \f$\tilde{\kappa}\f$ where, again, \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
   inline double XGBCUT(double,double,double);
   /**
-   *  This function determines the minimum value of $x_{a}$ 
-   *  for a given $\tilde{\kappa}$ where $\kappa$ pertains to
+   *  This function determines the minimum value of \f$x_{a}\f$ 
+   *  for a given \f$\tilde{\kappa}\f$ where \f$\kappa\f$ pertains to
    *  emissions from the c.
    */
   inline double XACCUT(double,double,double);
   /**
-   *  This function is auxiliary to the function $x_{g}$ (hXGC).
+   *  This function is auxiliary to the function \f$x_{g}\f$ (hXGC).
    */
   inline double Z(double,double,double,double,double,int,int); 
   /**
-   *  This function determines $x_{g}$ as a function of $x_{a}$ 
-   *  and $\kappa$ where $\kappa$ pertains to emissions from the 
+   *  This function determines \f$x_{g}\f$ as a function of \f$x_{a}\f$ 
+   *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
    *  c. It is multivalued, one selects a branch according to the
    *  second to last integer flag (+/-1). The last integer flag
    *  is used to select whether (1) or not (0) you wish to have the 
    *  function for the special case of the full phase space, in which
-   *  case the fifth argument $\kappa$ is irrelevant.
+   *  case the fifth argument \f$\kappa\f$ is irrelevant.
    */
   inline double XGC(double,double,double,double,double,int,int); 
   /**
-   *  This function, $x_{g,c=0}^{-1}$, returns $x_{a}$ as a function 
-   *  of $x_{g}$ for the special case of c=0, for emissions from c 
-   *  (the b-quark). The third input is $\tilde{\kappa}$ which pertains 
+   *  This function, \f$x_{g,c=0}^{-1}\f$, returns \f$x_{a}\f$ as a function 
+   *  of \f$x_{g}\f$ for the special case of c=0, for emissions from c 
+   *  (the b-quark). The third input is \f$\tilde{\kappa}\f$ which pertains 
    *  to emissions from c.
    */
   inline double XGINVC0(double,double,double,double); 
   /**
-   *  For a given value of $x_{g}$ this returns the maximum value of $x_{a}$  
+   *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
   inline double APPROXDEADMAXXA(double,double,double); 
   /**
-   *  For a given value of $x_{g}$ this returns the maximum value of $x_{a}$  
+   *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
   inline double APPROXDEADMINXA(double,double,double); 
@@ -164,8 +164,8 @@ private:
                               double,double,double); 
 
   /**
-   *  This function returns values of ($x_{g}$,$x_{a}$) distributed 
-   *  according to $\left(1+a-x_{a}\right)^{-1}x_{g}^{-2}$ in the 
+   *  This function returns values of (\f$x_{g}\f$,\f$x_{a}\f$) distributed 
+   *  according to \f$\left(1+a-x_{a}\right)^{-1}x_{g}^{-2}\f$ in the 
    *  approximate dead region.  
    */
   inline double DEADREGIONXGXA(double,double); 
