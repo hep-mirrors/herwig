@@ -166,5 +166,8 @@ void MultiplicityCount::Init() {
      &MultiplicityCount::_species,
      0, 0, other, 0, other, false, false, true);
 
+  static ClassDocumentation<MultiplicityCount> documentation
+    ("The MultiplicityCount class count the multiplcities of final-state particles"
+     " and compares them with LEP data.");
 }
 

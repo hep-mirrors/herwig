@@ -81,7 +81,8 @@ struct MultiplicityInfo
 };
 
 /**
- * Here is the documentation of the MultiplicityCount class.
+ * The MultiplicityCount class is designed to count particle multiplicities and
+ * compare them to LEP data.
  *
  * @see \ref MultiplicityCountInterfaces "The interfaces"
  * defined for MultiplicityCount.

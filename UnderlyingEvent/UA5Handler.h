@@ -4,9 +4,6 @@
 #include <ThePEG/Handlers/HadronizationHandler.h>
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
-#include "Herwig++/Hadronization/PartonSplitter.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
-#include "Herwig++/Decay/HwDecayHandler.h"
 #include <ThePEG/Handlers/EventHandler.h>
 
 namespace Herwig {

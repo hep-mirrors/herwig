@@ -82,7 +82,7 @@ template <>
 struct ClassTraits<Herwig::DecayRadiationGenerator>
   : public ClassTraitsBase<Herwig::DecayRadiationGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::DecayRadiationGenerator"; }
+  static string className() { return "Herwig++::DecayRadiationGenerator"; }
   /** Return the name of the shared library be loaded to get
    *  access to the DecayRadiationGenerator class and every other class it uses
    *  (except the base class). */

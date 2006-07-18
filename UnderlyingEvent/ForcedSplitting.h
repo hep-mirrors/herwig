@@ -165,7 +165,7 @@ template<>
 struct ClassTraits<Herwig::ForcedSplitting> :
   public ClassTraitsBase<Herwig::ForcedSplitting> {
   /** Return a platform-independent class name */
-    static string className() { return "/Herwig++/ForcedSplitting"; }
+    static string className() { return "Herwig++::ForcedSplitting"; }
   /** Return the name of the shared library be loaded to get
    *  access to the ForcedSplitting class and every other class it uses
    *  (except the base class). */

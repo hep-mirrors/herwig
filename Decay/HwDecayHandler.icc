@@ -13,31 +13,7 @@ inline HwDecayHandler::HwDecayHandler(const HwDecayHandler &x)
   : DecayHandler(x),_partonhad(x._partonhad),_hadtry(x._hadtry) 
 {}
 
-
 inline IBPtr HwDecayHandler::clone() const { return new_ptr(*this); }
 
 inline IBPtr HwDecayHandler::fullclone() const { return new_ptr(*this); }
-
-inline void HwDecayHandler::doupdate() throw(UpdateException) {
-  DecayHandler::doupdate();
-}
-
-inline void HwDecayHandler::doinit() throw(InitException) { 
-  DecayHandler::doinit(); 
-}
-
-inline void HwDecayHandler::dofinish() { 
-  DecayHandler::dofinish(); 
-}
-
-inline void HwDecayHandler::rebind(const TranslationMap & trans)
-   throw(RebindException) {
-  DecayHandler::rebind(trans);
-}
-
-inline IVector HwDecayHandler::getReferences() {
-  IVector ret = DecayHandler::getReferences();
-  return ret;
-}
-
 }
