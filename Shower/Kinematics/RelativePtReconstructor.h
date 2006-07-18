@@ -60,6 +60,9 @@ protected:
   virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 				      unsigned int iopt) const;
 
+  /**
+   *  Reconstruct the timelike momenta for a particle
+   */
   virtual void generateTimeLikeMomenta(const tShowerParticlePtr particleJetParent,
 				       bool first) const;
 

@@ -321,16 +321,6 @@ protected:
   //@}
 
   /**
-   *  Initialize the values of the cut-offs
-   * @param tmin The minimum scale
-   * @param tmax The maximum scale
-   * @param m The mass of the emitting particle
-   */
-  inline void initialize(Energy2 &t0, Energy2 &tmin, Energy2 tmax, 
-			 Energy &kinCutoff, Energy m);
-
-
-  /**
    *  Initialize the values of the cut-offs and scales
    * @param tmin The minimum scale
    * @param ids  The ids of the partics in the branching

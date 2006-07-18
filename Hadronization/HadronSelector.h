@@ -416,8 +416,14 @@ private: // data members
      */
     HadronInfo() : id(0), ptrData(tPDPtr()), swtef(1.), wt(1.0), overallWeight(0.0) {}
 
+    /**
+     *  Comparision operator on mass
+     */
     bool operator<(const HadronInfo &x) const { return mass < x.mass; }
 
+    /**
+     *  Rescale the weight for a given hadron
+     */
     void rescale(double x) const { 
       const_cast<HadronInfo*>(this)->overallWeight *= x; 
     }

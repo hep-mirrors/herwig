@@ -45,14 +45,6 @@ inline double SudakovFormFactor::guessz () const {
     (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second) - lower));
 }
 
-inline void SudakovFormFactor::initialize(Energy2 &t0,Energy2 &tmin, Energy2 tmax,
-					  Energy & kinCutoff, Energy m)  {
-  kinCutoff = _variables->kinematicCutOff(kinScale(),m);
-  t0 = sqr(max(kinCutoff,m));
-  tmin = max(t0,sqr(resScale()));
-  if(tmax <= t0) _q = -1.;
-}
-
 inline bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t, 
 					const IdList &ids) const {
   return UseRandom::rnd()>_splittingFn->ratioP(z, t, ids);

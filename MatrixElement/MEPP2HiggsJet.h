@@ -330,8 +330,8 @@ private:
    * @param mf2 The fermion mass squared.
    */
   inline Complex me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
-		     unsigned int i ,unsigned int j ,unsigned int k ,
-		     unsigned int i1,unsigned int j1,unsigned int k1) const;
+		     unsigned int ,unsigned int, unsigned int,
+		     unsigned int ,unsigned int, unsigned int) const;
 
   /**
    *  The \f$M_{++-}\f$ matrix element of NBP339 (1990) 38-66.

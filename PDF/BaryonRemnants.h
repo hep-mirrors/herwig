@@ -66,8 +66,10 @@ public:
 				    const LorentzMomentum & p) const;
 
 
-  // temporary fix here! Need to decide whether to inherit from 
-  // ThePEG::BaryonRemnant?
+  /**
+   * temporary fix here! Need to decide whether to inherit from 
+   * ThePEG::BaryonRemnant?
+   */
   virtual Lorentz5Momentum generate(PartonBinInstance & pb, const double * r,
 				    Energy2 scale, Energy2 ,
 				    const LorentzMomentum & parent) const
@@ -113,18 +115,7 @@ private:
    * Private and non-existent assignment operator.
    */
   BaryonRemnants & operator=(const BaryonRemnants &);
-
 };
-
-struct BaryonRemInfo: public RemInfoBase {
-  int iq;
-  int sign;
-  vector<int> flav;
-  vector<int> valenceFlav;
-  VSelector< pair<int,int> > flavsel;
-  bool maybeValence;
-};
-
 }
 
 namespace ThePEG {
