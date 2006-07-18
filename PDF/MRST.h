@@ -324,14 +324,27 @@ private:
 
 namespace ThePEG {
 
+/** This template specialization informs ThePEG about the
+ *  base classes of MRST. */
 template <>
 struct BaseClassTrait<Herwig::MRST,1> {
+  /** Typedef of the first base class of MRST. */
   typedef PDFBase NthBase;
 };
 
+/** This template specialization informs ThePEG about the name of
+ *  the MRST class and the shared object where it is defined. */
 template <>
 struct ClassTraits<Herwig::MRST>: public ClassTraitsBase<Herwig::MRST> {
+  /** Return a platform-independent class name */
   static string className() { return "Herwig++::PDF::MRST"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * MRST is implemented. It may also include several, space-separated,
+   * libraries if the class MRST depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
   static string library() { return "HwMRST.so"; }
 };
 

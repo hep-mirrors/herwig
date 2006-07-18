@@ -107,9 +107,6 @@ PDVector AmegicInterface::createParticles(string list) {
    return rval;
 }
 
-void AmegicInterface::doupdate() throw(UpdateException) {}
-void AmegicInterface::doinit()  throw (InitException) {}
-void AmegicInterface::dofinish() {}
 
 void AmegicInterface::initializeAmegic() {
    Flavour *fin, *fout;

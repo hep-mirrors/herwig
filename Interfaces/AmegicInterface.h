@@ -44,10 +44,6 @@ public:
 
   static void Init();
 
-  virtual void doupdate() throw(UpdateException);
-  virtual void doinit() throw(InitException);
-  virtual void dofinish();
-
   static Flavour convertParticle(PDPtr);
 
 protected:

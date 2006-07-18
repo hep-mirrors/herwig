@@ -3,7 +3,6 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <istream>
@@ -178,7 +177,9 @@ void MRST::persistentInput(PersistentIStream & in, int version) {
 }
 
 void MRST::Init() {
-  static ClassDocumentation<MRST> docMRST("MRST");
+
+  static ClassDocumentation<MRST> documentation("Implementation of the MRST PDFs");
+
 }
 
 void MRST::doinitrun() 
