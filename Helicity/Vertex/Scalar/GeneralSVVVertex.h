@@ -50,11 +50,8 @@ public:
    */
   static void Init();
   
-  /**
-   * Member functions to calculate helicity amplitudes for vertices
-   */
+  /** @name Member functions to calculate helicity amplitudes for vertices */
   //@{
-  
   /**
    * Evaluate the vertex
    * @param q2 Scale at which to evaluate the coupling
@@ -75,7 +72,8 @@ public:
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3)=0;
-  
+  //@}
+
 protected:
   
   
@@ -126,11 +124,13 @@ private:
    */
   GeneralSVVVertex & operator=(const GeneralSVVVertex &);
   
+  /**@name Store tensor coefficients. */
+  //@{
   /**
-   *@name Store tensor coefficients. 
-   */  
+   *  The tensor coefficients
+   */
   Complex _a00,_a11,_a12,_a21,_a22,_aEp;
-  
+  //@}
 };
 }
 }

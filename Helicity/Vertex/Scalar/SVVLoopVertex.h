@@ -77,16 +77,24 @@ protected:
   
 protected:
   
-  //Vector of loop masses
+  /**
+   * Vector of loop masses
+   */
   vector<Energy> masses;
   
-  //Vector of loop types
+  /**
+   * Vector of loop types
+   */
   vector<PDT::Spin> type;
   
-  //Vector of left couplings
+  /**
+   * Vector of left couplings
+   */
   vector<double> left;
   
-  //Vector of right couplings
+  /**
+   * Vector of right couplings
+   */
   vector<double> right;
   
 private:
@@ -101,7 +109,6 @@ private:
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  
   SVVLoopVertex & operator=(const SVVLoopVertex &);
   
 };

@@ -47,7 +47,7 @@ public:
    * final state particles in the current Step is considered.
    * @param hint a possible Hint which is ignored in this implementation
    */
-  virtual void handle(EventHandler &ch, const tPVector &tagged,
+  virtual void handle(EventHandler &eh, const tPVector &tagged,
 		      const Hint &hint) 
     throw(Veto,Stop,Exception);
 
