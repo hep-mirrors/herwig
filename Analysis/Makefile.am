@@ -26,7 +26,7 @@ IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
-AM_CPPFLAGS+= -I$(KTJETPATH)
+AM_CPPFLAGS+= $(KTJETINCLUDE)
 HwLEPAnalysis_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
 HwLEPAnalysis_la_SOURCES +=\
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh\
