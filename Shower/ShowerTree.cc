@@ -277,12 +277,17 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
 	  assert(!original->parents().empty());
 	  PPtr hadron = original->parents()[0];
 	  assert(!original->children().empty());
-	  PPtr intermediate = original->children()[0];
+	  PPtr copy=cit->first->copy();
+	  ParticleVector intermediates=original->children();
+	  for(unsigned int ix=0;ix<intermediates.size();++ix)
+	    {
+	      init->abandonChild(intermediates[ix]);
+	      copy->abandonChild(intermediates[ix]);
+	    }
 	  // if not from a matrix element correction
 	  if(cit->first->perturbative())
 	    {
 	      // break mother/daugther relations
-	      init->abandonChild(intermediate);
 	      init->addChild(original);
 	      hadron->abandonChild(original);
 	      // if particle showers add shower
@@ -300,10 +305,7 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
 	  // from matrix element correction
 	  else
 	    {
-	      PPtr copy=cit->first->copy();
  	      // break mother/daugther relations
- 	      init->abandonChild(intermediate);
-	      copy->abandonChild(intermediate);
 	      copy->addChild(original);
 	      updateColour(copy);
  	      hadron->abandonChild(original);
