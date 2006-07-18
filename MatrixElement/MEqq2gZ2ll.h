@@ -11,7 +11,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Utilities/Rebinder.h"
-#include "MEqq2gZ2ll-new.fh"
+#include "MEqq2gZ2ll.fh"
 
 namespace Herwig {
 
@@ -256,7 +256,7 @@ struct ClassTraits<Herwig::MEqq2gZ2ll>
 
 }
 
-#include "MEqq2gZ2ll-new.icc"
+#include "MEqq2gZ2ll.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "MEqq2gZ2ll.tcc"
 #endif

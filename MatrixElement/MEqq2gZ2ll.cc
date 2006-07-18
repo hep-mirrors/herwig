@@ -4,7 +4,7 @@
 // functions of the MEqq2gZ2ll class.
 //
 
-#include "MEqq2gZ2ll-new.h"
+#include "MEqq2gZ2ll.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
