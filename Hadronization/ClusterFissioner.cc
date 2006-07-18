@@ -201,12 +201,10 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     pstep->addDecayProduct(iCluster, ct.second.first);
 
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
-    if((!one||!two)&&iCluster->isBeamCluster()
-       &&_globalParameters->isSoftUnderlyingEventON()) 
-      cerr << "\ntesting problem beam cluster split into hadrons" << endl;
     if(one) {
       clusters.push_back(one);
-      if(one->isBeamCluster()) one->isAvailable(false);
+      if(one->isBeamCluster()&&
+	 _globalParameters->isSoftUnderlyingEventON()) one->isAvailable(false);
       if(pow(one->mass(), _clPow) > 
 	 pow(_clMax, _clPow) + pow(one->sumConstituentMasses(), _clPow)
 	 &&one->isAvailable()) {
@@ -215,7 +213,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     }
     if(two) {
       clusters.push_back(two);
-      if(two->isBeamCluster()) two->isAvailable(false);
+      if(two->isBeamCluster()&&
+	 _globalParameters->isSoftUnderlyingEventON()) two->isAvailable(false);
       if(pow(two->mass(), _clPow) > 
 	 pow(_clMax, _clPow) + pow(two->sumConstituentMasses(), _clPow)
 	 && two->isAvailable()) {
