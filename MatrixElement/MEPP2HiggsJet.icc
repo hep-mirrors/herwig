@@ -220,12 +220,12 @@ inline Complex MEPP2HiggsJet::me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, En
 				-2.*(u*_ci[k]+t*_ci[j]+u1*_ci[k1]+t1*_ci[j1]-u*t*_di[i])/sqr(s));
 }
 
-inline Complex MEPP2HiggsJet::me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
-				  unsigned int i ,unsigned int j ,unsigned int k ,
-				  unsigned int i1,unsigned int j1,unsigned int k1) const
+inline Complex MEPP2HiggsJet::me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2,
+				  Energy2 mf2) const
 {
   Energy2 s1(s-mh2),t1(t-mh2),u1(u-mh2);
   return mf2*4.*sqrt(2.*s*t*u)*(4.*mh2+(mh2-4.*mf2)*(s1*_ci[4]+t1*_ci[5]+u1*_ci[6])
-				-0.5*(mh2-4.*mf2)*(s*t*_di[3]+u*s*_di[2]+u*t*_di[1]) )/(s*t*u);
+				-0.5*(mh2-4.*mf2)*(s*t*_di[3]+u*s*_di[2]+u*t*_di[1]) )/
+    (s*t*u);
 }
 }

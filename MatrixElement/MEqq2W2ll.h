@@ -150,47 +150,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -208,15 +172,27 @@ private:
   MEqq2W2ll & operator=(const MEqq2W2ll &);
 
 private:
-  // pointers to the SM vertices
-  Ptr<Herwig::Helicity::FFVVertex>::transient_pointer _theFFWVertex;
-  // pointers to the intermediate particles particle data objects
-  tcPDPtr _Wp,_Wm;
+
+  /**
+   *  Pointer to the W vertex
+   */
+  FFVVertexPtr  _theFFWVertex;
+
+  /**
+   *  Pointer to the \f$W^+\f$
+   */
+  tcPDPtr _Wp;
+
+  /**
+   *  Pointer to the \f$W^-\f$
+   */
+  tcPDPtr _Wm;
+
+  /**
+   *  The allowed flavours of the inc
+   */
   // allowed incoming particles
   int _maxflavour;
-
-  mutable double lastCont;
-  mutable double lastBW;
 };
 
 }

@@ -184,8 +184,8 @@ private:
 
   /**
    * Matrix element for \f$gg \to \gamma\gamma\f$.
-   * @param fin Polarization vectors for the first  incoming gluon
-   * @param ain Polarization vectors for the second incoming gluon
+   * @param g1  Polarization vectors for the first  incoming gluon
+   * @param g2  Polarization vectors for the second incoming gluon
    * @param p1  Polarization vectors for the first  outgoing photon
    * @param p2  Polarization vectors for the second outgoing photon
    * @param me  Whether or not to calculate the matrix element for spin correlations

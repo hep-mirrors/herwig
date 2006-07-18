@@ -341,9 +341,7 @@ private:
    * @param mh2 The Higgs mass squared
    * @param mf2 The fermion mass squared.
    */
-  inline Complex me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
-		     unsigned int i ,unsigned int j ,unsigned int k ,
-		     unsigned int i1,unsigned int j1,unsigned int k1) const;
+  inline Complex me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2) const;
   //@}
 
 private:

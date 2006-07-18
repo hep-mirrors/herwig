@@ -170,7 +170,7 @@ void MEqq2gZ2ll::Init() {
      true);
 
   static ClassDocumentation<MEqq2gZ2ll> documentation
-    ("The \\classname{MEqq2gZ2ll} class implements the matrix element for"
+    ("The MEqq2gZ2ll class implements the matrix element for"
      "q qbar to leptons via Z and photon exchange using helicity amplitude"
      "techniques");
 

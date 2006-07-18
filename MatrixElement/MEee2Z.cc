@@ -147,7 +147,8 @@ ClassDescription<MEee2Z> MEee2Z::initMEee2Z;
 void MEee2Z::Init() {
 
   static ClassDocumentation<MEee2Z> documentation
-    ("There is no documentation for the \\classname{MEee2Z} class");
+    ("The MEee2Z class implements the e+e- -> Z as a 1->2 process for testing"
+     " of spin correlations etc..");
 
 }
 

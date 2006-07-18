@@ -22,24 +22,6 @@ inline IBPtr MEqq2gZ2ll::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MEqq2gZ2ll::doupdate() throw(UpdateException) {
-  ME2to2Base::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void MEqq2gZ2ll::doinit() throw(InitException) {
   ME2to2Base::doinit();
   _Z0=getParticleData(ThePEG::ParticleID::Z0);
@@ -56,14 +38,6 @@ inline void MEqq2gZ2ll::doinit() throw(InitException) {
     }
   else
     {throw InitException();}
-}
-
-inline void MEqq2gZ2ll::dofinish() {
-  ME2to2Base::dofinish();
-}
-
-inline void MEqq2gZ2ll::doinitrun() {
-  ME2to2Base::doinitrun();
 }
 
 inline void MEqq2gZ2ll::rebind(const TranslationMap & trans)

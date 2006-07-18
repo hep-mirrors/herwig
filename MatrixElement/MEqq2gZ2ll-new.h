@@ -150,28 +150,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
@@ -208,13 +191,35 @@ private:
   MEqq2gZ2ll & operator=(const MEqq2gZ2ll &);
 
 private:
-  // pointers to the SM vertices
-  Ptr<Herwig::Helicity::FFVVertex>::transient_pointer _theFFZVertex;
-  Ptr<Herwig::Helicity::FFVVertex>::transient_pointer _theFFPVertex;
-  // pointers to the intermediate particles particle data objects
-  tcPDPtr _Z0,_gamma;
-  // allowed incoming particles
+
+  /**
+   *  Pointer to the Z vertex
+   */
+  FFVVertexPtr _theFFZVertex;
+
+  /**
+   *  Pointer to the photon vertex
+   */
+  FFVVertexPtr _theFFPVertex;
+
+  /**
+   *  Pointer to the Z ParticleData object
+   */
+  tcPDPtr _Z0;
+
+  /**
+   *  Pointer to the photon ParticleData object
+   */
+  tcPDPtr _gamma;
+
+  /**
+   *  Allowed flavours for the incoming quarks
+   */
   int _maxflavour;
+
+  /**
+   *  Whether or not to include neutrino decays to the Z
+   */
   bool _withNeutrinos;
 };
 

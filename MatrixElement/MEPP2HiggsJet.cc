@@ -702,7 +702,7 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
 //        _di[2]=D(s,t,u,mf2);
 //        _di[3]=D(s,u,t,mf2);
 //        metemp[1][1][1]+=me1(s,u,t,mh2,mf2,1,2,3,4,5,6);
-//        metemp[1][1][0]+=me2(s,u,t,mh2,mf2,1,2,3,0,0,0);
+//        metemp[1][1][0]+=me2(s,u,t,mh2,mf2);
 //        metemp[0][1][0]+=me1(u,s,t,mh2,mf2,2,1,3,5,4,6);
 //        metemp[0][1][1]+=me1(t,u,s,mh2,mf2,3,2,1,6,5,4);
      }

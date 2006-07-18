@@ -21,24 +21,6 @@ inline IBPtr MEee2gZ2qq::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void MEee2gZ2qq::doupdate() throw(UpdateException) {
-  ME2to2Base::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
 inline void MEee2gZ2qq::doinit() throw(InitException) {
   ME2to2Base::doinit();
   if(_minflav>_maxflav)
@@ -62,14 +44,6 @@ inline void MEee2gZ2qq::doinit() throw(InitException) {
     {throw InitException() << "Wrong type of StandardModel object in "
 			   << "MEee2gZ2qq::doinit() the Herwig++ version must be used" 
 			   << Exception::runerror;}
-}
-
-inline void MEee2gZ2qq::dofinish() {
-  ME2to2Base::dofinish();
-}
-
-inline void MEee2gZ2qq::doinitrun() {
-  ME2to2Base::doinitrun();
 }
 
 inline void MEee2gZ2qq::rebind(const TranslationMap & trans)

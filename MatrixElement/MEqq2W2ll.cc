@@ -192,7 +192,7 @@ void MEqq2W2ll::Init() {
       &MEqq2W2ll::_maxflavour, 5, 0, 5, false, false, true);
   
   static ClassDocumentation<MEqq2W2ll> documentation
-    ("The \\classname{MEqq2W2ll} class implements the matrix element for"
+    ("The MEqq2W2ll class implements the matrix element for"
      "q qbar to leptons via W exchange using helicity amplitude"
      "techniques");
 

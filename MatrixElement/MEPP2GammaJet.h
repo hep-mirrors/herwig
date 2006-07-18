@@ -18,7 +18,7 @@ namespace Herwig {
 using namespace ThePEG;
 using namespace Herwig::Helicity;
 
-/** \ingrouup MatrixElements
+/** \ingroup MatrixElements
  * The MEPP2GammaJet class implements the matrix element for photon+jet 
  * production in hadron-hadron collisions.
  *
