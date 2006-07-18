@@ -8,7 +8,7 @@ set /Defaults/Particles/e+:PDF LeptonPDF
 
 # Handle hadrons
 library HwMRST.so
-create Herwig++::PDF::MRST MRST
+create Herwig++::MRST MRST
 #setup MRST cor01.dat
 setup MRST @HERWIG_PDF_DEFAULT@
 #create Herwig++::PDF::MRST99_1 MRSTData
