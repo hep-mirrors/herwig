@@ -24,8 +24,9 @@ inline IBPtr GraphvizPlot::fullclone() const {
 inline void GraphvizPlot::dofinish() {
 //   _dotfile.close(_dotfilename);
   AnalysisHandler::dofinish();
-  cout << "\nGraphvizPlot: use 'dot -Tpng " 
-       << _fileBaseName << "-NNN.dot > plot.png' to generate the plots.";
+  cout << "\nGraphvizPlot: plots can be generated like this:\n"
+       << "GraphvizPlot: 'dot -Tpng " 
+       << _fileBaseName << "-NNN.dot > plot.png'";
 }
 
 }

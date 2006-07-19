@@ -43,7 +43,7 @@ inline void BasicConsistency::doinit() throw(InitException) {
 
 inline void BasicConsistency::dofinish() {
   AnalysisHandler::dofinish();
-  cerr << "\nBasicConsistency: maximum 4-momentum violation: " 
+  cout << "\nBasicConsistency: maximum 4-momentum violation: " 
        << _epsmom/GeV << " GeV\n";
 }
 
