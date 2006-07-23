@@ -6,7 +6,7 @@ using namespace Herwig;
 using namespace ThePEG;
 
 const string usage = " init|read|run "
-                   " [-N num-events] [-seed random-generator-seed] "
+                   " [-N num-events] [--seed random-generator-seed] "
                    "[-d debug-level] [-dHw herwig-debug-level] [-l load-path] "
                    "[-L first-load-path] [-r repo-file] "
                    "[-i initialization file] [run-file]\n";
@@ -66,8 +66,9 @@ HerwigRun::HerwigRun(int argc, char **argv)
 	Herwig::HwDebug::level = atoi(arg.substr(4).c_str());
     else if ( arg == "-N" ) N = atoi(argv[++iarg]);
     else if ( arg.substr(0,2) == "-N" ) N = atoi(arg.substr(2).c_str());
-    else if ( arg == "-seed" ) seed = atoi(argv[++iarg]);
-    else if ( arg == "-h" ) {
+    else if ( arg == "-seed" || arg == "--seed" ) seed = atoi(argv[++iarg]);
+    else if ( arg == "--exitonerror" ) Repository::exitOnError() = 1;
+    else if ( arg == "-h" || arg == "--help" ) {
       std::cerr << "Usage: " << argv[0] << usage;
       HerwigRun::printHelp(std::cerr);
       errorFlag = true;

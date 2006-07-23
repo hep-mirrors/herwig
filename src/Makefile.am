@@ -27,24 +27,24 @@ check-local: check-LHC check-LEP check-TVT check-ILC
 
 
 check-LEP: 
-	$(myENV) ./Herwig++ init
-	$(myENV) ./Herwig++ read LEP.in
-	$(myENV) ./Herwig++ run LEP.run -N100
+	$(myENV) ./Herwig++ init --exitonerror
+	$(myENV) ./Herwig++ read LEP.in --exitonerror
+	$(myENV) ./Herwig++ run LEP.run -N100 --exitonerror
 
 check-ILC: 
-	$(myENV) ./Herwig++ init
-	$(myENV) ./Herwig++ read ILC.in
-	$(myENV) ./Herwig++ run ILC.run -N100
+	$(myENV) ./Herwig++ init --exitonerror
+	$(myENV) ./Herwig++ read ILC.in --exitonerror
+	$(myENV) ./Herwig++ run ILC.run -N100 --exitonerror
 
 check-LHC: 
-	$(myENV) ./Herwig++ init
-	$(myENV) ./Herwig++ read LHC.in
-	$(myENV) ./Herwig++ run LHC.run -N100
+	$(myENV) ./Herwig++ init --exitonerror
+	$(myENV) ./Herwig++ read LHC.in --exitonerror
+	$(myENV) ./Herwig++ run LHC.run -N100 --exitonerror
 
 check-TVT: 
-	$(myENV) ./Herwig++ init
-	$(myENV) ./Herwig++ read TVT.in
-	$(myENV) ./Herwig++ run TVT.run -N100
+	$(myENV) ./Herwig++ init --exitonerror
+	$(myENV) ./Herwig++ read TVT.in --exitonerror
+	$(myENV) ./Herwig++ run TVT.run -N100 --exitonerror
 
 if WANT_LOCAL_PDF
 install-data-hook:
