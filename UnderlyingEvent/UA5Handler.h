@@ -5,6 +5,7 @@
 #include "Herwig++/Hadronization/ClusterFissioner.h"
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include <ThePEG/Handlers/EventHandler.h>
+#include <ThePEG/Repository/UseRandom.h>
 
 namespace Herwig {
 
