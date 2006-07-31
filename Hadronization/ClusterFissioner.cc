@@ -121,29 +121,18 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
      * straight away as not available.
      **************/
     if((*it)->isRedefined() || !(*it)->isAvailable()) continue;
-    // if the cluster is a beam cluster and Underlying event is off
-    // add it to the vector of clusters to be split
-    if((*it)->isBeamCluster()) {
-      if (_globalParameters->isSoftUnderlyingEventON()) {
-	(*it)->isAvailable(false);
-      } else {
-	splitClusters.push_back(*it);
-      }
-      continue;
-    }
-
+    // if the cluster is a beam cluster add it to the vector of clusters
+    // to be split
+    if((*it)->isBeamCluster()) splitClusters.push_back(*it);
     // If the cluster is heavy add it to the vector of clusters to be split.
-    if(pow((*it)->mass() , _clPow) > 
-       pow(_clMax, _clPow) + pow((*it)->sumConstituentMasses(), _clPow))
+    else if(pow((*it)->mass() , _clPow) > 
+	    pow(_clMax, _clPow) + pow((*it)->sumConstituentMasses(), _clPow))
       splitClusters.push_back(*it);
   }
   // split the clusters
   vector<tClusterPtr>::const_iterator iter;
-  for(iter = splitClusters.begin(); 
-      iter != splitClusters.end() ; 
-      ++iter) {
-    cut(*iter, pstep, clusters);
-  }
+  for(iter = splitClusters.begin(); iter != splitClusters.end() ; ++iter)
+    {cut(*iter, pstep, clusters);}
 }
 
 void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep, 
@@ -182,22 +171,21 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     if(!ct.first.first || !ct.second.first)
       {
 	// if an unsplit beam cluster leave if for the underlying event
-// 	if(iCluster->isBeamCluster()
-// 	   &&_globalParameters->isSoftUnderlyingEventON()) {
-// 	  iCluster->isAvailable(false);
-// 	}	
+	if(iCluster->isBeamCluster()&&_globalParameters->isSoftUnderlyingEventON())
+	  iCluster->isAvailable(false);
+	// continue
 	continue;
       }
     // check if clusters
     ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
     ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
     // is a beam cluster must be split into two hadrons
-//     if(iCluster->isBeamCluster()&&(!one||!two)
-//        &&_globalParameters->isSoftUnderlyingEventON())
-//       {
-// 	iCluster->isAvailable(false);
-// 	continue;
-//       }
+    if(iCluster->isBeamCluster()&&(!one||!two)
+       &&_globalParameters->isSoftUnderlyingEventON())
+      {
+	iCluster->isAvailable(false);
+	continue;
+      }
 
     // There should always be a intermediate quark(s) from the splitting, but
     // in case there isn't
@@ -215,8 +203,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
     if(one) {
       clusters.push_back(one);
-//       if(one->isBeamCluster()&&
-// 	 _globalParameters->isSoftUnderlyingEventON()) one->isAvailable(false);
+      if(one->isBeamCluster()&&
+	 _globalParameters->isSoftUnderlyingEventON()) one->isAvailable(false);
       if(pow(one->mass(), _clPow) > 
 	 pow(_clMax, _clPow) + pow(one->sumConstituentMasses(), _clPow)
 	 &&one->isAvailable()) {
@@ -225,8 +213,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     }
     if(two) {
       clusters.push_back(two);
-//       if(two->isBeamCluster()&&
-// 	 _globalParameters->isSoftUnderlyingEventON()) two->isAvailable(false);
+      if(two->isBeamCluster()&&
+	 _globalParameters->isSoftUnderlyingEventON()) two->isAvailable(false);
       if(pow(two->mass(), _clPow) > 
 	 pow(_clMax, _clPow) + pow(two->sumConstituentMasses(), _clPow)
 	 && two->isAvailable()) {
