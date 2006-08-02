@@ -209,8 +209,8 @@ public:
 
 
   /**
-   *  Enhancement factors for radiation needed to generate the soft matrix element
-   *  correction.
+   *  Enhancement factors for radiation needed to generate the soft matrix
+   *  element correction.
    */
   //@{
   /**

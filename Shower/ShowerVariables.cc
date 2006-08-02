@@ -227,12 +227,12 @@ void ShowerVariables::Init() {
   static SwitchOption interfaceUseMEForT2Shower
     (interfaceUseMEForT2,
      "Shower",
-     "Use the shower to fill the region",
+     "Use the shower to fill the T2 region",
      false);
   static SwitchOption interfaceUseMEForT2ME
     (interfaceUseMEForT2,
      "ME",
-     "Use the Matrix element to fill the region",
+     "Use the Matrix element to fill the T2 region",
      true);
 
 }

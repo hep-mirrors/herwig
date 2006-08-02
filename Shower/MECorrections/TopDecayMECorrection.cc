@@ -21,11 +21,11 @@ using namespace Herwig;
 TopDecayMECorrection::~TopDecayMECorrection() {}
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
-    os << _initialenhance << _finalenhance;
+    os << _initialenhance << _finalenhance << _xg_sampling << _use_me_for_t2;
 }
 
 void TopDecayMECorrection::persistentInput(PersistentIStream & is, int) {
-    is >> _initialenhance >> _finalenhance;
+    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _use_me_for_t2;
 }
 
 ClassDescription<TopDecayMECorrection> TopDecayMECorrection::initTopDecayMECorrection;
@@ -49,6 +49,13 @@ void TopDecayMECorrection::Init() {
      "The enhancement factor for final-state radiation in the shower to ensure"
      " the weight for the matrix element correction is less than one",
      &TopDecayMECorrection::_finalenhance, 1.2, 1.0, 1000.0,
+     false, false, Interface::limited);
+
+  static Parameter<TopDecayMECorrection,double> interfaceSamplingTopHardMEC
+    ("SamplingTopHardMEC",
+     "The importance sampling power for choosing an initial xg, "
+     "to sample xg according to xg^-_xg_sampling",
+     &TopDecayMECorrection::_xg_sampling, 1.5, 1.2, 2.0,
      false, false, Interface::limited);
 
 }
@@ -90,7 +97,7 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
   showerVariables()->finalStateRadiationEnhancementFactor(_finalenhance);
   // set the option for the partitioning of the phase space here
   _use_me_for_t2=showerVariables()->use_me_for_t2();
-  // parameters
+  // reduced mass parameters
   _a=sqr(_ma/_mt);
   _g=sqr(_mg/_mt);
   _c=sqr(_mc/_mt);
@@ -131,7 +138,6 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   vector<Lorentz5Momentum> newfs = applyHard(ba,ktb,ktc);
   // If there was no gluon emitted return.
   if(newfs.size()!=3) return;
-  //cerr << "testing applying hard mec" << endl;
   // Sanity checks to ensure energy greater than mass etc :)
   bool check = true; 
   if (newfs[0].e()<ba[0]->data().constituentMass()) 
@@ -197,39 +203,28 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	tree->outgoingLines()[cit->first]=sp;
 	cit->first->perturbative(false);
 	orig=cit->first->original();
-	//cerr << "testing got to the end " << endl;
       }
     else
       {
-	//cerr << "testing W " << endl;
-	// Insert particles
-	//cerr << "testing W A" << endl;
 	cit->first->copy(newa);
-	//cerr << "testing W B" << *newa << endl;
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2)));
-	//cerr << "testing W C" << endl;
 	cit->first->progenitor(sp);
-	//cerr << "testing W D" << endl;
 	tree->outgoingLines()[cit->first]=sp;
-	//cerr << "testing W E" << endl;
 	cit->first->perturbative(true);
-	//cerr << "testing end " << endl;
       }
   }
-  //cerr << "testing D " << endl;
   // Add the gluon to the shower:
   ShowerParticlePtr   sg   =new_ptr(ShowerParticle(*newg,2));
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
   gluon->perturbative(false);
   tree->outgoingLines().insert(make_pair(gluon,sg));
 
-  if(!INTHEDEADREGION(_a,_c,_g,_xg,_xa,_ktb,_ktc)) {
+  if(!inTheDeadRegion(_xg,_xa,_ktb,_ktc)) {
       cout << "TopDecayMECorrection::applyHardMatrixElementCorrection()\n"
 	   << "Just found a point that escaped from the dead region!\n"
            << "   _xg: " << _xg << "   _xa: " << _xa 
            << "   newfs.size(): " << newfs.size() << endl;
   }
-  //cerr << "testing at the end " << endl;
   tree->hardMatrixElementCorrection(true);
 }
 
@@ -252,7 +247,7 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
     }
   // Accept/Reject
   if (weight<UseRandom::rnd()||p.size()!= 2) return fs; 
-  // Drop events if getHard returned a negative weight 
+   // Drop events if getHard returned a negative weight 
   // as in events that, somehow have escaped from the dead region
   // or, worse, the allowed region.
   if(weight<0.) return fs;
@@ -277,19 +272,15 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
     pa_lab = p[0]->momentum(); 
   }
   // Calculate the boost to the b rest frame:
-  HepLorentzRotation ROT0(pb_lab.findBoostToCM());
+  HepLorentzRotation rot0(pb_lab.findBoostToCM());
   // Calculate the rotation matrix to position a along the +z direction
-  // in the rest frame of b:
-  HepLorentzRotation ROT1 = HWUROT(ROT0*pa_lab);
-  // Calculate a random rotation about the z-axis:
-  HepLorentzRotation ROT2 = RANDOMZROTATION();
+  // in the rest frame of b and does a random rotation about z:
+  LorentzRotation    rot1 = rotateToZ(rot0*pa_lab);
   // Calculate the boost from the b rest frame back to the lab:
-  HepLorentzRotation INVROT0 = ROT0.inverse();
-  // Calculate the inverse of the rotation matrix which positions a along
-  // the +z direction in the rest frame of b:
-  HepLorentzRotation INVROT1 = ROT1.inverse();
-  // Calculate the inverse of the random rotation about the z-axis:
-  HepLorentzRotation INVROT2 = ROT2.inverse();
+  HepLorentzRotation invrot0 = rot0.inverse();
+  // Calculate the inverse of the random rotation about the z-axis and the 
+  // rotation required to align a with +z:
+  LorentzRotation    invrot1 = rot1.inverse();
 
   // ************************************ //
   // Now we construct the momenta in the  //
@@ -298,13 +289,9 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   // finally we generate a by momentum    //
   // conservation.                        //
   // ************************************ //
-  Lorentz5Momentum pa_brf, pb_brf, pc_brf, pg_brf;
+  Lorentz5Momentum pa_brf, pb_brf(_mt), pc_brf, pg_brf;
   // First we set the top quark to being on-shell and at rest.
-  pb_brf.setPx(0.);
-  pb_brf.setPy(0.);
-  pb_brf.setPz(0.);
   pb_brf.setE(_mt);
-  pb_brf.setMass(_mt);
   // Second we set the energies of c and g,
   pc_brf.setE(0.5*_mt*(2.-_xa-_xg));
   pg_brf.setE(0.5*_mt*_xg);
@@ -313,21 +300,19 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   pg_brf.setMass(_mg);  
   // Now set the z-component of c and g. For pg we simply start from
   // _xa and _xg, while for pc we assume it is equal to minus the sum
-  // of the z-components of a (assumed to point in the +z direction) and g. 
-  pg_brf.setPz(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a+_g)/HWUSQR(_xa*_xa-4.*_a));
-  pc_brf.setPz(-1.*( pg_brf.z()+_mt*HWUSQR(0.25*_xa*_xa-_a)));
+  // of the z-components of a (assumed to point in the +z direction) and g.
+  pg_brf.setPz(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a)/sqrt(_xa*_xa-4.*_a));
+  pc_brf.setPz(-1.*( pg_brf.z()+_mt*sqrt(0.25*_xa*_xa-_a)));
   // Now set the y-component of c and g's momenta
   pc_brf.setPy(0.);
   pg_brf.setPy(0.);
   // Now set the x-component of c and g's momenta
-  pg_brf.setPx(HWUSQR(sqr(pg_brf.t())-_mg*_mg-sqr(pg_brf.z())));
+  pg_brf.setPx(sqrt(sqr(pg_brf.t())-_mg*_mg-sqr(pg_brf.z())));
   pc_brf.setPx(-pg_brf.x());
   // Momenta b,c,g are now set. Now we obtain a from momentum conservation,
-  pa_brf.setPx(-1.*(pc_brf.x()+pg_brf.x()))    ; 
-  pa_brf.setPy(-1.*(pc_brf.y()+pg_brf.y()))    ; 
-  pa_brf.setPz(-1.*(pc_brf.z()+pg_brf.z()))    ; 
-  pa_brf.setE(pb_brf.t()-pc_brf.t()-pg_brf.t());
+  pa_brf = pb_brf-pc_brf-pg_brf;
   pa_brf.setMass(pa_brf.m());
+  pa_brf.rescaleEnergy();
  
   // ************************************ //
   // Now we orient the momenta and boost  //
@@ -335,13 +320,13 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   // ************************************ //
   // As in herwig6507 we assume that, in the rest frame
   // of b, we have aligned the W boson momentum in the 
-  // +Z direction by ROT2*ROT1*ROT0*pa_lab, therefore
+  // +Z direction by rot2*rot1*rot0*pa_lab, therefore
   // we obtain the new pa_lab by applying:
-  // INVROT0*INVROT1*INVROT2*pa_brf.
-  pa_lab = INVROT0*INVROT1*INVROT2*pa_brf;    
-  pb_lab = INVROT0*INVROT1*INVROT2*pb_brf;    
-  pc_lab = INVROT0*INVROT1*INVROT2*pc_brf;    
-  pg_lab = INVROT0*INVROT1*INVROT2*pg_brf;    
+  // invrot0*invrot1*invrot2*pa_brf.
+  pa_lab = invrot0*invrot1*pa_brf;    
+  pb_lab = invrot0*invrot1*pb_brf;    
+  pc_lab = invrot0*invrot1*pc_brf;    
+  pg_lab = invrot0*invrot1*pg_brf;    
   fs.push_back(pc_lab); 
   fs.push_back(pa_lab); 
   fs.push_back(pg_lab); 
@@ -356,14 +341,14 @@ double TopDecayMECorrection::getHard(double ktb, double ktc)
   _xa = 0.;   
   _xc = 0.;
   // Get a phase space point in the dead region: 
-  double volume_factor = DEADREGIONXGXA(ktb,ktc);
+  double volume_factor = deadRegionxgxa(ktb,ktc);
   // if outside region return -1
   if(volume_factor<0) return volume_factor;
   // Compute the weight for this phase space point:
   double weight = volume_factor*me(_xa,_xg)*(1.+_a-_c-_xa); 
   // Alpha_S and colour factors - this hard wired Alpha_S needs removing.
-  weight *= (4./3.)/pi*(coupling()->value(_mt*_mt*_xg*(1.-_xa+_a-_c-_g)
-			                 /(2.-_xg-_xa-_c-_g)));
+  weight *= (4./3.)/pi*(coupling()->value(_mt*_mt*_xg*(1.-_xa+_a-_c)
+			                 /(2.-_xg-_xa-_c)));
   return weight; 
 }
 
