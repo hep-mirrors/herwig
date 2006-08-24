@@ -16,13 +16,25 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "ThePEG/CLHEPWrap/GenEventConverter.h"
+#include "ThePEG/CLHEPWrap/HepMCConverter.h"
+#include "CLHEP/HepMC/GenEvent.h"
+
 
 using namespace Herwig;
 using namespace ThePEG;
 
 namespace {
   const string header = "digraph test {\nrankdir=LR;\nranksep=1.5;\n";
+}
+
+namespace ThePEG {
+template<> 
+struct HepMCTraits<HepMC::GenEvent> 
+  : public HepMCTraitsBase<HepMC::GenEvent,
+			   HepMC::GenParticle,
+			   HepMC::GenVertex,
+			   HepMC::Polarization> 
+{};
 }
 
 void GraphvizPlot::analyze(tEventPtr event, long ieve, int loop, int state) {
@@ -35,19 +47,19 @@ void GraphvizPlot::analyze(tEventPtr event, long ieve, int loop, int state) {
   hepmcdotfile << header 
 	       << "node [width=0.1,height=0.1,shape=point,label=\"\"];\n";
 
-  CLHEPMC::GenEvent * hepmc = 
-    GenEventConverter::convert(*event);
+  HepMC::GenEvent * hepmc = 
+    HepMCConverter<HepMC::GenEvent>::convert(*event);
   
   //  hepmc->print(hepmcfile);
 
   // loop over all vertices
-  for (CLHEPMC::GenEvent::vertex_const_iterator 
+  for (HepMC::GenEvent::vertex_const_iterator 
 	 it = hepmc->vertices_begin();
        it !=  hepmc->vertices_end();
        ++it) {
 
     // loop over incoming lines
-    for (CLHEPMC::GenVertex::particles_in_const_iterator 
+    for (HepMC::GenVertex::particles_in_const_iterator 
 	   jt = (*it)->particles_in_const_begin() ;
 	 jt != (*it)->particles_in_const_end() ;
 	 ++jt) {
@@ -63,7 +75,7 @@ void GraphvizPlot::analyze(tEventPtr event, long ieve, int loop, int state) {
     }
     
     // loop over outgoing lines
-    for (CLHEPMC::GenVertex::particles_out_const_iterator 
+    for (HepMC::GenVertex::particles_out_const_iterator 
 	   jt = (*it)->particles_out_const_begin() ;
 	 jt != (*it)->particles_out_const_end() ;
 	 ++jt) {
