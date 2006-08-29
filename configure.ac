@@ -108,6 +108,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Shower/Kinematics/Makefile
 		Shower/Couplings/Makefile
 		Shower/MECorrections/Makefile
+		Shower/Nason/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile

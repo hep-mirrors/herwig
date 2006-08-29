@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NasonEvolver class.
+//
+#ifndef HERWIG_NasonEvolver_FH
+#define HERWIG_NasonEvolver_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class NasonEvolver;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::NasonEvolver,NasonEvolverPtr);
+
+}
+
+#endif
