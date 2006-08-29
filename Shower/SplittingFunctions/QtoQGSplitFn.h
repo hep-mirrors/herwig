@@ -18,8 +18,7 @@ using namespace ThePEG;
  * splitting function for \f$q\to qg\f$. 
  *
  *  In this case the splitting function is given by
- * \f[P(z,\tilde{q}^2) =\frac{C_F}{1-z}\left(1+z^2-2\frac{m^2_q}{\tilde{q}^2z}
- *                                    \right),\f]
+ * \f[P(z,t) =\frac{C_F}\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
  * where \f$C_F=\frac43\f$.
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
@@ -57,12 +56,14 @@ public:
    */
   //@{
   /**
-   * The concrete implementation of the splitting function, \f$P\f$.
+   * The concrete implementation of the splitting function, \f$P(z,t)\f$.
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double P(const double z, const Energy2 t, const IdList & ids,
+		   const bool mass) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -75,12 +76,14 @@ public:
   /**
    * The concrete implementation of the
    * the ratio of the splitting function to the overestimate, i.e.
-   * \f$P(z,\tilde{q}^2)/P_{\rm over}(z)\f$.
+   * \f$P(z,t)/P_{\rm over}(z)\f$.
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			const bool mass) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 

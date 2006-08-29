@@ -26,7 +26,8 @@ void GtoGGSplitFn::Init() {
 
 }
 
-double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &)const {
+double GtoGGSplitFn::P(const double z, const Energy2, const IdList &,
+		       const bool )const {
   double val = 2.*3.*sqr(1.-z*(1.-z))/(z*(1.-z));
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig++ shower! Alberto
@@ -38,7 +39,8 @@ double GtoGGSplitFn::overestimateP(const double z, const IdList &) const {
   return 2.*3.*(1/z + 1/(1.-z)); 
 }
 
-double GtoGGSplitFn::ratioP(const double z, const Energy2 qtilde2, const IdList & id) const {
+double GtoGGSplitFn::ratioP(const double z, const Energy2,
+			    const IdList &, const bool ) const {
   return sqr(1.-z*(1.-z));
 }
 

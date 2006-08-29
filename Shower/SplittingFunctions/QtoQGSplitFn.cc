@@ -26,12 +26,14 @@ void QtoQGSplitFn::Init() {
 
 }
 
-double QtoQGSplitFn::P(const double z, const Energy2 qtilde2,
-			const IdList &ids) const {
-  Energy m = getParticleData(ids[0])->mass();
-  Energy2 m2 = sqr(m); 
-  double val = 4./3.*(1. + sqr(z) - 2.*m2/(qtilde2*z))/(1.-z);
-  return val;
+double QtoQGSplitFn::P(const double z, const Energy2 t,
+		       const IdList &ids, const bool mass) const {
+  double val = (1. + sqr(z))/(1.-z);
+  if(mass) {
+    Energy m = getParticleData(ids[0])->mass();  
+    val -= 2.*sqr(m)/t;
+  }
+  return 4./3.*val;
 
 }
 
@@ -40,13 +42,15 @@ double QtoQGSplitFn::overestimateP(const double z, const IdList &) const
   return 8./3./(1.-z); 
 }
 
-double QtoQGSplitFn::ratioP(const double z, const Energy2 qtilde2,
-			    const IdList &ids) const
+double QtoQGSplitFn::ratioP(const double z, const Energy2 t,
+			    const IdList &ids, const bool mass) const
 {
-  Energy m = getParticleData(ids[0])->mass();
-  Energy2 m2 = sqr(m); 
-  double val = 0.5*(1. + sqr(z) - 2.*m2/(qtilde2*z));
-  return val;
+  double val = 1. + sqr(z);
+  if(mass) {
+    Energy m = getParticleData(ids[0])->mass();
+    val -= 2.*sqr(m)*(1.-z)/t;
+  } 
+  return 0.5*val;
 } 
 
 double QtoQGSplitFn::integOverP(const double z) const {

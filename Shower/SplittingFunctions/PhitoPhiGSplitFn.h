@@ -17,8 +17,7 @@ using namespace ThePEG;
  * splitting function for \f$\phi\to \phi g\f$.
  *
  * In this case the splitting function is given by
- * \f[P(z,\tilde{q}^2) =\frac{2C_Fz}{1-z}\left(1-\frac{m^2_q}{\tilde{q}^2z^2}
- *                                    \right),\f]
+ * \f[P(z,t) = 2C_F\left(\frac{z}{1-z}-\frac{m^2_\phi}{t}\right),\f]
  * where \f$C_F=\frac43\f$.
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
@@ -70,8 +69,10 @@ public:
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double P(const double z, const Energy2 t, const IdList & ids,
+		   bool mass) const;
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -88,8 +89,10 @@ public:
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			bool mass) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 

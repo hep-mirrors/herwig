@@ -26,25 +26,29 @@ void GtoQQbarSplitFn::Init() {
 
 }
 
-double GtoQQbarSplitFn::P(const double z, const Energy2 qtilde2, 
-			   const IdList &ids) const {
-  Energy m = getParticleData(ids[1])->mass();
+double GtoQQbarSplitFn::P(const double z, const Energy2 t, 
+			  const IdList &ids, const bool mass) const {
   double zz = z*(1.-z);
-  double term = 2.*sqr(m)/zz/qtilde2; 
-  double val = 1./2.*(1.-2.*zz+term);
-  return val;
+  double val=1.-2.*zz;
+  if(mass) {
+    Energy m = getParticleData(ids[1])->mass();
+    val +=2.*sqr(m)/t;
+  }
+  return 0.5*val;
 }
 
 double GtoQQbarSplitFn::overestimateP(const double, const IdList &) const {
-  return 1./2.; 
+  return 0.5; 
 }
 
-double GtoQQbarSplitFn::ratioP(const double z, const Energy2 qtilde2, 
-			   const IdList &ids) const {
-  Energy m = getParticleData(ids[1])->mass();
+double GtoQQbarSplitFn::ratioP(const double z, const Energy2 t, 
+			       const IdList &ids, const bool mass) const {
   double zz = z*(1.-z);
-  double term = 2.*sqr(m)/zz/qtilde2; 
-  double val = (1.-2.*zz+term);
+  double val = 1.-2.*zz;
+  if(mass) {
+    Energy m = getParticleData(ids[1])->mass();
+    val+= 2.*sqr(m)/t;
+  }
   return val;
 }
 

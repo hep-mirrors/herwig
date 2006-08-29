@@ -31,13 +31,14 @@ void PhitoPhiGSplitFn::Init() {
 
 }
 
-double PhitoPhiGSplitFn::P(const double z, const Energy2 qtilde2,
-			const IdList &ids) const {
-  Energy m = getParticleData(ids[0])->mass();
-  Energy2 m2 = sqr(m); 
-  double val = 8./3.*z*(1.-m2/(qtilde2*sqr(z)))/(1.-z);
-  return val;
-
+double PhitoPhiGSplitFn::P(const double z, const Energy2 t,
+			   const IdList &ids, const bool mass) const {
+  double val = z/(1.-z);
+  if(mass) {
+    Energy m = getParticleData(ids[0])->mass();
+    val-=  sqr(m)/t;
+  }
+  return 8./3.*val;
 }
 
 double PhitoPhiGSplitFn::overestimateP(const double z, const IdList &) const
@@ -45,12 +46,14 @@ double PhitoPhiGSplitFn::overestimateP(const double z, const IdList &) const
   return 8./3./(1.-z); 
 }
 
-double PhitoPhiGSplitFn::ratioP(const double z, const Energy2 qtilde2,
-			    const IdList &ids) const
-{
-  Energy m = getParticleData(ids[0])->mass();
-  Energy2 m2 = sqr(m); 
-  double val = z*(1.-m2/(qtilde2*sqr(z)));
+double PhitoPhiGSplitFn::ratioP(const double z, const Energy2 t,
+				const IdList &ids,const bool mass) const
+{ 
+  double val = z;
+  if(mass) {
+    Energy m = getParticleData(ids[0])->mass();
+    val-=sqr(m)*(1.-z)/t;
+  }
   return val;
 } 
 
