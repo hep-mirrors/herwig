@@ -1,0 +1,251 @@
+// -*- C++ -*-
+#ifndef HERWIG_QTildeSudakov_H
+#define HERWIG_QTildeSudakov_H
+//
+// This is the declaration of the QTildeSudakov class.
+//
+
+#include "SudakovFormFactor.h"
+#include "QTildeSudakov.fh"
+
+namespace Herwig {
+
+using namespace ThePEG;
+
+/** \ingroup Shower
+ *
+ * The QTildeSudakov class implements the Sudakov form factor for evolution in
+ * \f$\tilde{q}^2\f$ using the veto algorithm.
+ *
+ * @see \ref QTildeSudakovInterfaces "The interfaces"
+ * defined for QTildeSudakov.
+ */
+class QTildeSudakov: public SudakovFormFactor {
+
+public:
+
+  /**
+   * The default constructor.
+   */
+  inline QTildeSudakov();
+
+  /**
+   *  Members to generate the scale of the next branching
+   */
+  //@{
+  /**
+   * Return the scale of the next time-like branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param ids The PDG codes of the particles in the splitting
+   * @param cc Whether this is the charge conjugate of the branching
+   * defined.
+   */
+  virtual Energy generateNextTimeBranching(const Energy startingScale,
+				           const IdList &ids,const bool cc);
+
+  /**
+   * Return the scale of the next space-like decay branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param stoppingScale stopping scale for the evolution
+   * @param minmass The minimum mass allowed for the spake-like particle.
+   * @param ids The PDG codes of the particles in the splitting
+   * @param cc Whether this is the charge conjugate of the branching
+   * defined.
+   */
+  virtual Energy generateNextDecayBranching(const Energy startingScale,
+					    const Energy stoppingScale,
+					    const Energy minmass,
+					    const IdList &ids,
+					    const bool cc);
+
+  /**
+   * Return the scale of the next space-like branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param ids The PDG codes of the particles in the splitting
+   * @param x The fraction of the beam momentum
+   * @param cc Whether this is the charge conjugate of the branching
+   * defined.
+   */
+  virtual Energy generateNextSpaceBranching(const Energy startingScale,
+		                            const IdList &ids,double x,
+					    const bool cc);
+  //@}
+
+public:
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+  /**
+   *  Methods to provide the next value of the scale before the vetos
+   *  are applied.
+   */
+  //@{
+  /**
+   *  Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @return False if scale less than minimum, true otherwise
+   */
+  bool guessTimeLike(Energy2 &t, Energy2 tmin);
+
+  /**
+   * Value of the energy fraction and scale for time-like branching
+   * @param t  The scale
+   * @param tmax The maximum scale
+   * @param minmass The minimum mass of the particle after the branching
+   */
+  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass);
+
+  /**
+   * Value of the energy fraction and scale for space-like branching
+   * @param t  The scale
+   * @param tmin The minimum scale
+   * @param x Fraction of the beam momentum.
+   */
+  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x);
+  //@}
+
+  /**
+   *  Initialize the values of the cut-offs and scales
+   * @param tmin The minimum scale
+   * @param ids  The ids of the partics in the branching
+   * @param cc Whether this is the charge conjugate of the branching
+   */
+  void initialize(const IdList & ids,Energy2 &tmin, const bool cc);
+
+  /**
+   *  Phase Space veto member to implement the \f$\Theta\f$ function as a veto
+   *  so that the emission is within the allowed phase space.
+   * @param t  The scale
+   * @return true if vetoed
+   */
+  bool PSVeto(const Energy2 t);
+
+  /**
+   * Compute the limits on \f$z\f$ for time-like branching
+   * @param scale The scale of the particle
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeTimeLikeLimits(Energy2 & scale);
+
+  /**
+   * Compute the limits on \f$z\f$ for space-like branching
+   * @param scale The scale of the particle
+   * @param x The energy fraction of the parton
+   * @return True if lower limit less than upper, otherwise false
+   */
+  bool computeSpaceLikeLimits(Energy2 & scale, double x);
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is an concrete class without persistent data.
+   */
+  static NoPIOClassDescription<QTildeSudakov> initQTildeSudakov;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  QTildeSudakov & operator=(const QTildeSudakov &);
+
+private:
+
+  /**
+   *  The evolution scale, \f$\tilde{q}\f$.
+   */
+  Energy _q;
+
+  /**
+   *  The Ids of the particles in the current branching
+   */
+  IdList _ids;
+
+  /**
+   *  The masses of the particles in the current branching
+   */
+  vector<Energy> _masses;
+
+  /**
+   *  The mass squared of the particles in the current branching
+   */
+  vector<Energy> _masssquared;
+
+  /**
+   *  Kinematic cut-off
+   */
+  Energy _kinCutoff;
+
+};
+
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of QTildeSudakov. */
+template <>
+struct BaseClassTrait<Herwig::QTildeSudakov,1> {
+  /** Typedef of the first base class of QTildeSudakov. */
+  typedef Herwig::SudakovFormFactor NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the QTildeSudakov class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::QTildeSudakov>
+  : public ClassTraitsBase<Herwig::QTildeSudakov> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig++::QTildeSudakov"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * QTildeSudakov is implemented. It may also include several, space-separated,
+   * libraries if the class QTildeSudakov depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "HwShower.so"; }
+};
+
+/** @endcond */
+
+}
+
+#include "QTildeSudakov.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "QTildeSudakov.tcc"
+#endif
+
+#endif /* HERWIG_QTildeSudakov_H */

@@ -81,11 +81,11 @@ create Herwig++::QtoQGammaSplitFn theQtoQGammaSplitFn
 create Herwig++::QtoGQSplitFn theQtoGQSplitFn
 #
 # Now the Sudakovs
-create Herwig++::SudakovFormFactor QtoQGSudakov
-create Herwig++::SudakovFormFactor GtoGGSudakov
-create Herwig++::SudakovFormFactor GtoQQbarSudakov
-create Herwig++::SudakovFormFactor QtoQGammaSudakov
-create Herwig++::SudakovFormFactor QtoGQSudakov
+create Herwig++::QTildeSudakov QtoQGSudakov
+create Herwig++::QTildeSudakov GtoGGSudakov
+create Herwig++::QTildeSudakov GtoQQbarSudakov
+create Herwig++::QTildeSudakov QtoQGammaSudakov
+create Herwig++::QTildeSudakov QtoGQSudakov
 set QtoQGSudakov:PDFmax 1.9
 set GtoGGSudakov:PDFmax 1.0
 set GtoQQbarSudakov:PDFmax 1000.0

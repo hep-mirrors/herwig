@@ -6,29 +6,30 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include "SplittingFunction.h"
+#include "SudakovFormFactor.fh"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/Shower/ShowerConfig.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
-#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
-#include "SplittingFunction.h"
-#include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower/ShowerVariables.h"
-#include "SudakovFormFactor.fh"
 #include <cassert>
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/** \ingroup Shower
+/**  \ingroup Shower
  *
- *  This is the definition of the Sudakov form factor class.
- *  The implementation of the form factors in this class uses the veto algorithm
- *  rather than look-up tables. This differs from FORTRAN HERWIG and the class is
- *  designed so that classes which inherit from this one can use look-up tables 
- *  if needed.
+ *  This is the definition of the Sudakov form factor class. In general this
+ *  is the base class for the implementation of Sudakov form factors in Herwig++.
+ *  The methods generateNextTimeBranching(), generateNextDecayBranching() and
+ *  generateNextSpaceBranching need to be implemented in classes inheriting from this
+ *  one.
  *
+ *  In addition a number of methods are implemented to assist with the calculation
+ *  of the form factor using the veto algorithm in classes inheriting from this one.
+ *  
  *  In general the Sudakov form-factor, for final-state radiation, is given
  *  by
  *  \f[\Delta_{ba}(\tilde{q}_{i+1},\tilde{q}_i)=
@@ -77,9 +78,10 @@ using namespace ThePEG;
  *  true value to the overestimated one to obtain the original distribution.
  *  This is accomplished using the 
  *  - alphaSVeto()      member for the \f$\alpha_S\f$ veto
- *  - SplittingFnVeto() member for the veto on the value of the splitting function
- *  - PSVeto()          member to implement the \f$\Theta\f$ function as a veto
- *                      so that the emission is within the allowed phase space.
+ *  - SplittingFnVeto() member for the veto on the value of the splitting function.
+ *  in general there must also be a chech that the emission is in the allowed
+ *  phase space but this is left to the inheriting classes as it will depend
+ *  on the ordering variable.
  *
  *  The Sudakov form factor for the initial-scale shower is different because
  *  it must include the PDF which guides the backward evolution.
@@ -102,9 +104,9 @@ using namespace ThePEG;
  *  which can be set using an interface.
  *  In addition the PDFVeto() member then is needed to implement the relevant veto.
  *
+ *  @see SplittingGenerator
  *  @see SplittingFunction
  *  @see ShowerAlpha
- *  @see SplittingGenerator
  *  @see \ref SudakovFormFactorInterfaces "The interfaces"
  *  defined for SudakovFormFactor.
  */
@@ -117,22 +119,62 @@ friend class SplittingGenerator;
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline SudakovFormFactor();
-  //@}
 
-public:
+  /**
+   *  Members to generate the scale of the next branching
+   */
+  //@{
+  /**
+   * Return the scale of the next time-like branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param ids The PDG codes of the particles in the splitting
+   * @param cc Whether this is the charge conjugate of the branching
+   * defined.
+   */
+  virtual Energy generateNextTimeBranching(const Energy startingScale,
+				           const IdList &ids,const bool cc)=0;
+
+  /**
+   * Return the scale of the next space-like decay branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param stoppingScale stopping scale for the evolution
+   * @param minmass The minimum mass allowed for the spake-like particle.
+   * @param ids The PDG codes of the particles in the splitting
+   * @param cc Whether this is the charge conjugate of the branching
+   * defined.
+   */
+  virtual Energy generateNextDecayBranching(const Energy startingScale,
+					    const Energy stoppingScale,
+					    const Energy minmass,
+					    const IdList &ids,
+					    const bool cc)=0;
+
+  /**
+   * Return the scale of the next space-like branching. If there is no 
+   * branching then it returns Energy().
+   * @param startingScale starting scale for the evolution
+   * @param ids The PDG codes of the particles in the splitting
+   * @param x The fraction of the beam momentum
+   * @param cc Whether this is the charge conjugate of the branching
+   * defined.
+   */
+  virtual Energy generateNextSpaceBranching(const Energy startingScale,
+		                            const IdList &ids,double x,
+					    const bool cc)=0;
+  //@}
 
   /**
    *  Methods to provide public access to the private member variables
    */
   //@{
   /** 
-   * Return the pointer to the SplitFun object.
+   * Return the pointer to the SplittingFunction object.
    */
   inline tSplittingFnPtr splittingFn() const;
 
@@ -140,28 +182,34 @@ public:
    * Return the pointer to the ShowerAlpha object.
    */
   inline tShowerAlphaPtr alpha() const;
-  //@}
 
   /**
-   * Methods to provide public access to the variables for the shower kinematics
-   * which are kept internally in this class and are generated by a call to 
-   * generateNextTimeBranching or generateNextSpaceBranching. These variables
-   * cannot be set externally directly but only via a call to the 
-   * generateNextTimeBranching or generateNextSpaceBranching methods. The first
-   * action of these methods is to clear the values they got in the previous
-   * call to the same method. The lifetime 
-   * of the values of these kinematics variables is therefore between
-   * to successive call to generateNextBranching.
-   * Finally, at the moment these variables are meaninful
-   * only for a 1->2 splitting, but in future other variables
-   * could be added as well for describing also a 1->3 splitting.
+   *  Access to the ShowerVariables
    */
-  //@{
+  inline tShowerVarsPtr showerVariables() const;
+
   /**
    *  The type of interaction
    */
   inline ShowerIndex::InteractionType interactionType() const;
 
+  /**
+   *  The kinematic scale
+   */
+  inline Energy kinScale() const;
+
+  /**
+   *  The resolution scale
+   */
+  inline Energy resScale() const;
+  //@}
+
+public:
+
+  /**
+   *  Methods to access the kinematic variables for the branching
+   */
+  //@{
   /**
    *  The energy fraction
    */
@@ -173,79 +221,10 @@ public:
   inline double phi() const;
 
   /**
-   *  The evolution scale
-   */
-  inline Energy qtilde() const;
-
-  /**
-   *  The resolution scale
-   */
-  inline Energy resScale() const;
-
-  /**
-   *  The kinematic scale
-   */
-  inline Energy kinScale() const;
-
-  /**
    *  The transverse momentum
    */
   inline Energy pT() const;
   //@}
-
-public:
-
-  /**
-   *  Methods to get the scale of the next branching
-   */
-  //@{
-  /**
-   * Return the scale of the next time-like branching. If there is no 
-   * branching then it returns Energy().
-   * @param startingScale starting scale for the evolution
-   * @param ids The PDG codes of the particles in the splitting
-   */
-  virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids);
-
-  /**
-   * Return the scale of the next time-like branching. If there is no 
-   * branching then it returns Energy().
-   * @param startingScale starting scale for the evolution
-   * @param stoppingScale stopping scale for the evolution
-   * @param minmass The minimum mass allowed for the spake-like particle.
-   * @param ids The PDG codes of the particles in the splitting
-   */
-  virtual Energy generateNextDecayBranching(const Energy startingScale,
-					    const Energy stoppingScale,
-					    const Energy minmass,
-					    const IdList &ids);
-
-  /**
-   * Return the scale of the next space-like branching. If there is no 
-   * branching then it returns Energy().
-   * @param startingScale starting scale for the evolution
-   * @param ids The PDG codes of the particles in the splitting
-   * @param x The fraction of the beam momentum
-   */
-  virtual Energy generateNextSpaceBranching(const Energy startingScale,
-		                            const IdList &ids,double x);
-
-
-  //@}
-
-  /**
-   * This virtual method is defined as empty, and it should be
-   * overriden only for those derived Sudakov form factor classes
-   * that use lookup tables for numerical evaluations, rather
-   * than using the Monte Carlo rejection (veto) method.
-   * This method is called once, during initialization, by
-   * the SplittingGenerator. 
-   * General methods, usable  any type of Sudakov form factor
-   * that override this method, should be provided in this
-   * class in the protected session.
-   */
-  virtual void setupLookupTables();
 
 public:
 
@@ -276,10 +255,15 @@ public:
 protected:
 
   /**
-   *  Methods to provide the next value of the scale before the vetos
-   *  are applied.
+   *  Methods to implement the veto algorithm to generate the scale of 
+   *  the next branching
    */
   //@{
+  /**
+   * Value of the energy fraction for the veto algorithm
+   */
+  inline double guessz () const;
+
   /**
    *  Value of the scale for the veto algorithm
    * @param t1 The starting valoe of the scale
@@ -291,57 +275,7 @@ protected:
   inline Energy2 guesst (Energy2 t1,unsigned int iopt) const;
 
   /**
-   * Value of the energy fraction for the veto algorithm
-   */
-  inline double guessz () const;
-
-  /**
-   *  Value of the energy fraction and scale for time-like branching
-   * @param t  The scale
-   * @param tmin The minimum scale
-   * @return False if scale less than minimum, true otherwise
-   */
-  bool guessTimeLike(Energy2 &t, Energy2 tmin) const;
-
-  /**
-   * Value of the energy fraction and scale for time-like branching
-   * @param t  The scale
-   * @param tmax The maximum scale
-   * @param minmass The minimum mass of the particle after the branching
-   */
-  bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass) const;
-
-  /**
-   * Value of the energy fraction and scale for space-like branching
-   * @param t  The scale
-   * @param tmin The minimum scale
-   * @param x Fraction of the beam momentum.
-   */
-  bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x) const;
-  //@}
-
-  /**
-   *  Initialize the values of the cut-offs and scales
-   * @param tmin The minimum scale
-   * @param ids  The ids of the partics in the branching
-   */
-  void initialize(const IdList & ids,Energy2 &tmin);
-
-  /**
-   * The various different vetos which need to be applied using the veto
-   * algorithm 
-   */
-  //@{
-  /**
-   *  The veto on the coupling constant
-   * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
-   * @return true if vetoed
-   */
-  inline bool alphaSVeto(const Energy2 pt2) const;
-
-  /**
-   *  Veto on the PDF for the initial-state shower
-   * @param z The energy fraction
+   * Veto on the PDF for the initial-state shower
    * @param t The scale
    * @param x The fraction of the beam momentum
    * @param parton0 Pointer to the particleData for the 
@@ -349,104 +283,81 @@ protected:
    * @param parton1 Pointer to the particleData for the 
    *                original particle
    */
-  bool PDFVeto(const double z, const Energy2 t, const double x,
+  bool PDFVeto(const Energy2 t, const double x,
 	       const tcPDPtr parton0, const tcPDPtr parton1) const;
 
   /**
-   *  Phase Space veto
-   * @param t  The scale
+   *  The veto on the splitting function.
+   * @param t The scale
+   * @param ids The PDG codes of the particles in the splitting
+   * @param mass Whether or not to use the massive splitting functions 
    * @return true if vetoed
    */
-  bool PSVeto(const Energy2 t);
+  inline bool SplittingFnVeto(const Energy2 t, 
+			      const IdList &ids, 
+			      const bool mass) const;
 
   /**
-   *  The veto on the splitting function.
-   * @param z The energy fraction
-   * @param t The scale
-   * @param ids The PDG codes of the particles in the splitting 
+   *  The veto on the coupling constant
+   * @param pt2 The value of ther transverse momentum squared, \f$p_T^2\f$.
    * @return true if vetoed
    */
-  inline bool SplittingFnVeto(const double z, const Energy2 t, 
-		       const IdList &ids) const;
+  inline bool alphaSVeto(const Energy2 pt2) const;
   //@}
 
   /**
-   * Compute the limits on \f$z\f$ for time-like branching
-   * @param scale The scale of the particle
-   * @return True if lower limit less than upper, otherwise false
+   *  Methods to set the kinematic variables for the branching
    */
-  bool computeTimeLikeLimits(Energy2 & scale) const;
+  //@{
+  /**
+   *  The energy fraction
+   */
+  inline void z(double);
 
   /**
-   * Compute the limits on \f$z\f$ for space-like branching
-   * @param scale The scale of the particle
-   * @param x The energy fraction of the parton
-   * @return True if lower limit less than upper, otherwise false
+   *  The azimuthal angle
    */
-  bool computeSpaceLikeLimits(Energy2 & scale, double x) const;
+  inline void phi(double);
+
+  /**
+   *  The transverse momentum
+   */
+  inline void pT(Energy);
+  //@}
+
+  /**
+   *  Set/Get the limits on the energy fraction for the splitting
+   */
+  //@{
+  /**
+   * Get the limits
+   */
+  inline pair<double,double> zLimits() const;
+
+  /**
+   * Set the limits
+   */
+  inline void zLimits(pair<double,double> );
+  //@}
+
   /**
    *  Set the ShowerVariables
    */
   inline void setShowerVariables(ShowerVarsPtr);
-  
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr fullclone() const;
-  //@}
 
 private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class with persistent data.
+   * Indicates that this is an abstract class with persistent data.
    */
-  static ClassDescription<SudakovFormFactor> initSudakovFormFactor;
+  static AbstractClassDescription<SudakovFormFactor> initSudakovFormFactor;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SudakovFormFactor & operator=(const SudakovFormFactor &);
-
-private:
-
-  /**
-   * Member variables to keep the shower kinematics information
-   * generated by a call to generateNextTimeBranching or generateNextSpaceBranching
-   */
-  //@{
-  /**
-   *  The evolution scale, \f$\tilde{q}\f$.
-   */
-  Energy _q;
-
-  /**
-   *  The energy fraction
-   */
-  mutable double _z;
-
-  /**
-   *  The azimuthal angle
-   */
-  double _phi;
-
-  /**
-   *  The transverse momentum
-   */
-  Energy _pt;
-  //@}
 
 private:
 
@@ -470,31 +381,35 @@ private:
    */
   double _pdfmax;
 
-  /**
-   *  The Ids of the particles in the current branching
-   */
-  IdList _ids;
+private:
 
   /**
-   *  The masses of the particles in the current branching
+   * Member variables to keep the shower kinematics information
+   * generated by a call to generateNextTimeBranching or generateNextSpaceBranching
    */
-  vector<Energy> _masses;
+  //@{
+  /**
+   *  The energy fraction
+   */
+  double _z;
 
   /**
-   *  The mass squared of the particles in the current branching
+   *  The azimuthal angle
    */
-  vector<Energy> _masssquared;
+  double _phi;
 
   /**
-   *  Kinematic cut-off
+   *  The transverse momentum
    */
-  Energy _kinCutoff;
+  Energy _pT;
+  //@}
+
+private:
 
   /**
    *  The limits of \f$z\f$ in the splitting
    */
- mutable pair<double,double> _zlimits;
-
+  pair<double,double> _zlimits;
 };
 
 }

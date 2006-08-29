@@ -26,8 +26,16 @@ using namespace ThePEG;
  *  the interaction type of the spltting function.
  *
  *  The inheriting classes need to specific the splitting function 
- *  \f$P(z,\tilde{q}^2)\f$, in terms of the energy fraction \f$z\f$ and evolution scale
- *  \f$\tilde{q}^2\f$ for a given splitting. In addition an overestimate of the 
+ *  \f$P(z,2p_j\cdot p_k)\f$, in terms of the energy fraction \f$z\f$ and
+ *  the evolution scale. In order to allow the splitting functions to be used
+ *  with different choices of evolution functions the scale is given by
+ * \f[2p_j\cdot p_k=(p_j+p_k)^2-m_{jk}^2=Q^2-(p_j+p_k)^2=z(1-z)\tilde{q}^2=
+ *   \frac{p_T^2}{z(1-z)}-m_{jk}^2+\frac{m_j^2}{z}+\frac{m_k^2}{1-z},\f]
+ *  where \f$Q^2\f$ is the virtuality of the branching particle,
+ *  $p_T$ is the relative transverse momentum of the branching products and
+ *  \f$\tilde{q}^2\f$ is the angular variable described in hep-ph/0310083.
+ *
+ *  In addition an overestimate of the 
  *  splitting function, \f$P_{\rm over}(z)\f$ which only depends upon \f$z\f$, 
  *  the integral, inverse of the integral for this overestimate and
  *  ratio of the true splitting function to the overestimate must be provided
@@ -83,10 +91,12 @@ public:
    * \f$P\f$ evaluated in terms of the energy fraction, \f$z\f$, and the evolution scale 
    \f$\tilde{q}^2\f$.
    * @param z   The energy fraction.
-   * @param t   The scale.
+   * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) const = 0;
+  virtual double P(const double z, const Energy2 t, const IdList & ids,
+		   const bool mass) const = 0;
 
   /**
    * Purely virtual method which should return
@@ -103,10 +113,12 @@ public:
    * the ratio of the splitting function to the overestimate, i.e.
    * \f$P(z,\tilde{q}^2)/P_{\rm over}(z)\f$.
    * @param z   The energy fraction.
-   * @param t   The scale.
+   * @param t   The scale \f$t=2p_j\cdot p_k\f$.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const = 0;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			const bool mass) const = 0;
 
   /**
    * Purely virtual method which should return the indefinite integral of the 

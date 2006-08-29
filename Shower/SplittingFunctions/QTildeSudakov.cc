@@ -1,0 +1,284 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the QTildeSudakov class.
+//
+
+#include "QTildeSudakov.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/PDT/EnumParticles.h"
+
+using namespace Herwig;
+
+NoPIOClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
+// Definition of the static class description member.
+
+void QTildeSudakov::Init() {
+
+  static ClassDocumentation<QTildeSudakov> documentation
+    ("The QTildeSudakov class implements the Sudakov form factor for ordering it"
+     " qtilde");
+
+}
+
+bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin)
+{
+  Energy2 told = t;
+  // calculate limits on z and if lower>upper return
+  if(!computeTimeLikeLimits(t)) return false;
+  // guess values of t and z
+  t = guesst(told,0); 
+  z(guessz()); 
+  // actual values for z-limits
+  if(!computeTimeLikeLimits(t)) return false;
+  if(t<tmin)
+    {
+      t=-1.0*GeV;
+      return false;
+    }
+  else
+    return true; 
+} 
+
+bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x)
+{
+  Energy2 told = t;
+  // calculate limits on z if lower>upper return
+  if(!computeSpaceLikeLimits(t,x)) return false;
+  // guess values of t and z
+  t = guesst(told,1); 
+  z(guessz()); 
+  // actual values for z-limits
+  if(!computeSpaceLikeLimits(t,x)) return false;
+  if(t<tmin)
+    {
+      t=-1.0*GeV;
+      return false;
+    }
+  else
+    return true; 
+} 
+
+bool QTildeSudakov::PSVeto(const Energy2 t) {
+  // still inside PS, return true if outside
+  // check vs overestimated limits
+  if(z() < zLimits().first || z() > zLimits().second) return true;
+  // compute the pt
+  Energy2 pt2=sqr(z()*(1.-z()))*t-_masssquared[1]*(1.-z())-_masssquared[2]*z();
+  if(_ids[0]!=ParticleID::g) pt2+=z()*(1.-z())*_masssquared[0];
+  // if pt2<0 veto
+  if(pt2<0.) return true;
+  // otherwise calculate pt and return
+  pT(sqrt(pt2));
+  return false;
+}
+
+ 
+Energy QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
+						const IdList &ids,const bool cc)
+{
+  // First reset the internal kinematics variables that can
+  // have been eventually set in the previous call to the method.
+  _q = Energy();
+  z(0.);
+  phi(0.); 
+  // perform initialization
+  Energy2 tmax(sqr(startingScale)),tmin;
+  initialize(ids,tmin,cc);
+  // check max > min
+  if(tmax<=tmin)
+    {
+      _q=-1.;
+      return _q;
+    }
+  // calculate next value of t using veto algorithm
+  Energy2 t(tmax);
+  do  
+    if(!guessTimeLike(t,tmin)) break;
+  while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
+	alphaSVeto(sqr(z()*(1.-z()))*t));
+  if(t > 0) _q = sqrt(t);
+  else _q = -1.;
+  phi(2.*pi*UseRandom::rnd());
+  return _q;
+}
+
+Energy QTildeSudakov::generateNextSpaceBranching(const Energy startingQ,
+			                             const IdList &ids,
+						 double x,bool cc) {
+  // First reset the internal kinematics variables that can
+  // have been eventually set in the previous call to the method.
+  _q = Energy();
+  z(0.);
+  phi(0.);
+  // perform the initialization
+  Energy2 tmax(sqr(startingQ)),tmin;
+  initialize(ids,tmin,cc);
+  // check max > min
+  if(tmax<=tmin)
+    {
+      _q=-1.;
+      return _q;
+    }
+  // extract the partons which are needed for the PDF veto
+  // Different order, incoming parton is id =  1, outgoing are id=0,2
+  tcPDPtr parton0 = getParticleData(ids[0]);
+  tcPDPtr parton1 = getParticleData(ids[1]);
+  // calculate next value of t using veto algorithm
+  Energy2 t(tmax),pt2(0.);
+  do
+    {
+      if(!guessSpaceLike(t,tmin,x)) break;
+      pt2=sqr(1.-z())*t-z()*sqr(_kinCutoff);
+    }
+  while(z() > zLimits().second || 
+	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
+	alphaSVeto(sqr(1.-z())*t) || 
+	PDFVeto(t,x,parton0,parton1)||pt2<0);
+  if(t > 0 && zLimits().first < zLimits().second) 
+    _q = sqrt(t);
+  else
+    {
+      _q = -1.;
+      return _q;
+    }
+  phi(2.*pi*UseRandom::rnd());
+  pT(sqrt(pt2));
+  return _q;
+}
+
+void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
+{
+  _ids=ids;
+  if(cc) {
+    for(unsigned int ix=0;ix<ids.size();++ix) {
+      if(getParticleData(ids[ix])->CC()) _ids[ix]*=-1;
+    }
+  }
+  _masses.clear();
+  _masssquared.clear();
+  tmin=0.;
+  unsigned int ix;
+  for(ix=0;ix<_ids.size();++ix)
+    _masses.push_back(getParticleData(_ids[ix])->mass());
+  _kinCutoff=
+    showerVariables()->kinematicCutOff(kinScale(),
+				       *std::max_element(_masses.begin(),_masses.end()));
+  for(ix=0;ix<_masses.size();++ix)
+    {
+      _masses[ix]=max(_kinCutoff,_masses[ix]);
+      _masssquared.push_back(sqr(_masses[ix]));
+      if(ix>0) tmin=max(_masssquared[ix],tmin);
+    }
+}
+
+Energy QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
+						 const Energy stoppingScale,
+						 const Energy minmass,
+						 const IdList &ids,
+						 const bool cc)
+{
+  // First reset the internal kinematics variables that can
+  // have been eventually set in the previous call to this method.
+  _q = ShowerVariables::HUGEMASS;
+  z(0.);
+  phi(0.); 
+  // perform initialisation
+  Energy2 tmax(sqr(stoppingScale)),tmin;
+  initialize(ids,tmin,cc);
+  tmin=sqr(startingScale);
+  // check some branching possible
+  if(tmax<=tmin)
+    {
+      _q=-1.;
+      return _q;
+    }
+  // perform the evolution
+  Energy2 t(tmin);
+  do 
+    if(!guessDecay(t,tmax,minmass)) break;
+  while(SplittingFnVeto((1.-z())*t/z(),ids,true)|| 
+	alphaSVeto(sqr(1.-z())*t)||
+	sqr(1.-z())*(t-_masssquared[0])<z()*sqr(_kinCutoff)||
+	t*(1.-z())>_masssquared[0]-sqr(minmass));
+  if(t > 0) {
+    _q = sqrt(t);
+    pT(sqrt(sqr(1.-z())*(t-_masssquared[0])-z()*sqr(_kinCutoff)));
+  }
+  else _q = -1.;
+  phi(2.*pi*UseRandom::rnd());
+  return _q;
+}
+
+bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass)
+{
+  // previous scale
+  Energy2 told = t;
+  // overestimated limits on z
+  pair<double,double> limits=make_pair(sqr(minmass/_masses[0]),
+				       1.-_kinCutoff/sqrt(tmax-_masssquared[0])
+				       +0.5*sqr(_kinCutoff)/(tmax-_masssquared[0]));
+  zLimits(limits);
+  // guess values of t and z
+  t = guesst(told,2); 
+  z(guessz()); 
+  // actual values for z-limits
+  limits=make_pair(0.,
+		   1.-_kinCutoff/sqrt(t-_masssquared[0])
+		   +0.5*sqr(_kinCutoff)/(t-_masssquared[0]));
+  zLimits(limits);
+  if(t>tmax) {
+    t=-1.0*GeV;
+    return false;
+  }
+  else
+    return true; 
+} 
+
+bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t)
+{
+  // special case for gluon radiating
+  pair<double,double> limits;
+  if(_ids[0]==ParticleID::g) {
+    // no emission possible
+    if(t<16.*_masssquared[1]) {
+      t=-1.;
+      return false;
+    }
+    // overestimate of the limits
+    limits.first  = 0.5*(1.-sqrt(1.-4.*sqrt(_masssquared[1]/t)));
+    limits.second = 1.-limits.first;
+  }
+  // special case for radiated particle is gluon 
+  else if(_ids[2]==ParticleID::g) {
+    limits.first  = 0.5*sqrt(_masssquared[1]/t);
+    limits.second = 1.-0.5*sqrt(_masssquared[2]/t);
+  }
+  else if(_ids[1]==ParticleID::g) {
+    limits.second  = 0.5*sqrt(_masssquared[2]/t);
+    limits.first   = 1.-0.5*sqrt(_masssquared[1]/t);
+  }
+  else
+    {throw Exception() << "QTildeSudakov::computeTimeLikeLimits() " 
+			<< "general case not implemented " << Exception::runerror;}
+  zLimits(limits);
+  return true;
+}
+
+bool QTildeSudakov::computeSpaceLikeLimits(Energy2 & t, double x)
+{
+  pair<double,double> limits;
+  // compute the limits
+  limits.first = x;
+  double yy = 1.+0.5*sqr(_kinCutoff)/t;
+  limits.second = yy - sqrt(sqr(yy)-1.); 
+  // return false if lower>upper
+  zLimits(limits);
+  if(limits.second<limits.first) {
+    t=-1.*GeV;
+    return false;
+  }
+  else
+    return true;
+}

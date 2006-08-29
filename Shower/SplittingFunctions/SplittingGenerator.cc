@@ -228,7 +228,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle) c
       if(particle.evolutionScales()[i] > _showerVariables->cutoffQScale(i)) 
 	candidateNewQ = candidateSudakov->
 	  generateNextTimeBranching(particle.evolutionScales()[i], 
-				    cit->second.second);
+				    cit->second.second,particle.id()!=cit->first);
       // select highest scale 
       if(candidateNewQ > newQ && candidateNewQ <= particle.evolutionScales()[i]) 
 	{
@@ -291,7 +291,8 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
   	candidateNewQ = candidateSudakov->
  	  generateNextDecayBranching(particle.evolutionScales()[i],
 				     stoppingScale[i],minmass,
- 				     cit->second.second);
+ 				     cit->second.second,
+				     particle.id()!=cit->first);
       if(candidateNewQ < newQ && candidateNewQ > particle.evolutionScales()[i])
 	{
 	  newQ = candidateNewQ;
@@ -400,7 +401,8 @@ Branching SplittingGenerator::chooseBackwardBranching(ShowerParticle &particle) 
       ShowerIndex::InteractionType i = candidateSudakov->interactionType(); 
       candidateNewQ = candidateSudakov->
 	generateNextSpaceBranching(particle.evolutionScales()[i],
-				   cit->second.second, particle.x());
+				   cit->second.second, particle.x(),
+				   particle.id()!=cit->first);
       if(candidateNewQ > newQ) 
 	{
 	  newQ = candidateNewQ;
