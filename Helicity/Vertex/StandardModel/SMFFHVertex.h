@@ -7,8 +7,6 @@
 #include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Utilities/Rebinder.h"
-
 
 namespace Herwig {
 namespace Helicity {
@@ -33,10 +31,6 @@ public:
    */
   inline SMFFHVertex();
 
-  /**
-   * Copy-constructor.
-   */
-  inline SMFFHVertex(const SMFFHVertex &);
   //@}  
 
 public:
@@ -112,7 +106,7 @@ private:
   /**
    * Pointer to the SM object.
    */
-  Ptr<Herwig::StandardModel>::pointer _theSM;
+  tcHwSMPtr _theSM;
 
   /**
    * Storage of the couplings.

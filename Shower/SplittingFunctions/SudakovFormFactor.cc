@@ -130,7 +130,7 @@ bool SudakovFormFactor::PDFVeto(const double z, const Energy2 t,
 }
  
 Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
-						    const IdList &ids)
+						    const IdList &ids,bool cc)
 {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
@@ -139,7 +139,7 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
   _phi = 0.0; 
   // perform initialization
   Energy2 tmax(sqr(startingScale)),tmin;
-  initialize(ids,tmin);
+  initialize(ids,tmin,cc);
   // check max > min
   if(tmax<=tmin)
     {
@@ -150,7 +150,7 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
   Energy2 t(tmax);
   do  
     if(!guessTimeLike(t,tmin)) break;
-  while(PSVeto(t) || SplittingFnVeto(_z,t,ids) || 
+  while(PSVeto(t) || SplittingFnVeto(_z,t) || 
 	alphaSVeto(sqr(_z*(1.-_z))*t));
   if(t > 0) _q = sqrt(t);
   else _q = -1.;
@@ -160,7 +160,7 @@ Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
 
 Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
 			                             const IdList &ids,
-						     double x) {
+						     double x,bool cc) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   _q = Energy();
@@ -168,7 +168,7 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
   _phi = 0.0;
   // perform the initialization
   Energy2 tmax(sqr(startingQ)),tmin;
-  initialize(ids,tmin);
+  initialize(ids,tmin,cc);
   // check max > min
   if(tmax<=tmin)
     {
@@ -177,8 +177,8 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
     }
   // extract the partons which are needed for the PDF veto
   // Different order, incoming parton is id =  1, outgoing are id=0,2
-  tcPDPtr parton0 = getParticleData(ids[0]);
-  tcPDPtr parton1 = getParticleData(ids[1]);
+  tcPDPtr parton0 = getParticleData(_ids[0]);
+  tcPDPtr parton1 = getParticleData(_ids[1]);
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(0.);
   do
@@ -187,7 +187,7 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
       pt2=sqr(1.-_z)*t-_z*sqr(_kinCutoff);
     }
   while(_z > _zlimits.second || 
-	SplittingFnVeto(_z,t/sqr(_z),ids) || 
+	SplittingFnVeto(_z,t/sqr(_z)) || 
 	alphaSVeto(sqr(1.-_z)*t) || 
 	PDFVeto(_z,t,x,parton0,parton1)||pt2<0);
   if(t > 0 && _zlimits.first < _zlimits.second) 
@@ -202,9 +202,14 @@ Energy SudakovFormFactor::generateNextSpaceBranching(const Energy startingQ,
   return _q;
 }
 
-void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin)
+void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin, bool cc)
 {
   _ids=ids;
+  if(cc) {
+    for(unsigned int ix=0;ix<ids.size();++ix) {
+      if(getParticleData(ids[ix])->CC()) _ids[ix]*=-1;
+    }
+  }
   _masses.clear();
   _masssquared.clear();
   tmin=0.;
@@ -225,7 +230,8 @@ void SudakovFormFactor::initialize(const IdList & ids, Energy2 & tmin)
 Energy SudakovFormFactor::generateNextDecayBranching(const Energy startingScale,
 						     const Energy stoppingScale,
 						     const Energy minmass,
-						     const IdList &ids)
+						     const IdList &ids,
+						     bool cc)
 {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
@@ -234,7 +240,7 @@ Energy SudakovFormFactor::generateNextDecayBranching(const Energy startingScale,
   _phi = 0.0; 
   // perform initialisation
   Energy2 tmax(sqr(stoppingScale)),tmin;
-  initialize(ids,tmin);
+  initialize(ids,tmin,cc);
   tmin=sqr(startingScale);
   // check some branching possible
   if(tmax<=tmin)
@@ -246,7 +252,7 @@ Energy SudakovFormFactor::generateNextDecayBranching(const Energy startingScale,
   Energy2 t(tmin);
   do 
     if(!guessDecay(t,tmax,minmass)) break;
-  while(SplittingFnVeto(_z,t/sqr(_z),ids)|| 
+  while(SplittingFnVeto(_z,t/sqr(_z))|| 
 	alphaSVeto(sqr(1.-_z)*t)||
 	sqr(1.-_z)*(t-_masssquared[0])<_z*sqr(_kinCutoff)||
 	t*(1.-_z)>_masssquared[0]-sqr(minmass));

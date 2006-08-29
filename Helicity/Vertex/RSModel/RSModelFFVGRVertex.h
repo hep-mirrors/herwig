@@ -29,11 +29,6 @@ public:
    * Default constructor.
    */
   inline RSModelFFVGRVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline RSModelFFVGRVertex(const RSModelFFVGRVertex &);
   //@}
   
 public:
@@ -113,7 +108,7 @@ private:
   /**
    * Pointer to the Standard Model object.
    */
-  SMPtr _theModel;
+  tcSMPtr _theModel;
 
   /**
    * Storage of the couplings.
@@ -122,17 +117,17 @@ private:
   /**
    *  The charges of the Standard Model fermions.
    */
-  double _charge[17];
+  vector<double> _charge;
 
   /**
    *  The last value of the coupling/
    */
-  Complex _couplast[2];
+  vector<Complex> _couplast;
 
   /**
    *  The last value of the scale, \f$q^2\f$.
    */
-  Energy2 _q2last[2];
+  vector<Energy2> _q2last;
 
   /**
    * The graviton coupling.

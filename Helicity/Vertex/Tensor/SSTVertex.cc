@@ -37,7 +37,6 @@ Complex SSTVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
   setCoupling(q2,Psca1,Psca2,Pten);
   Complex norm=getNorm();
   Complex ii(0.,1.);
-  Complex vertex(0.);
   // evaluate the trace of the tensor
   Complex trace = ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // dot product of the two momenta
@@ -68,7 +67,6 @@ TensorWaveFunction SSTVertex::evaluate(Energy q2, int iopt, tcPDPtr out,
   tcPDPtr Psca2 = sca2.getParticle();
   // obtain the coupling
   setCoupling(q2,Psca1,Psca2,out);
-  Complex ii(0.,1.);
   // array for the tensor
   Complex ten[4][4];
   // calculate the outgoing momentum
@@ -147,7 +145,6 @@ ScalarWaveFunction SSTVertex::evaluate(Energy q2,int iopt, tcPDPtr out,
   tcPDPtr Pten = ten.getParticle();
   // obtain the coupling
   setCoupling(q2,Psca,out,Pten);
-  Complex ii(0.,1.);
   // calculate the outgoing momentum
   Lorentz5Momentum pout = Lorentz5Momentum(sca.px()+ten.px(),sca.py()+ten.py(),
     				       sca.pz()+ten.pz(),sca.e() +ten.e() );

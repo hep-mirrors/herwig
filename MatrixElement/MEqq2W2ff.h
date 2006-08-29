@@ -1,49 +1,37 @@
 // -*- C++ -*-
-#ifndef HERWIG_MEqq2gZ2ll_H
-#define HERWIG_MEqq2gZ2ll_H
+#ifndef HERWIG_MEqq2W2ff_H
+#define HERWIG_MEqq2W2ff_H
 //
-// This is the declaration of the MEqq2gZ2ll class.
+// This is the declaration of the MEqq2W2ff class.
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Utilities/Rebinder.h"
-#include "MEqq2gZ2ll.fh"
+#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
+#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "MEqq2W2ff.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+using namespace Herwig::Helicity;
 
 /**
- * Here is the documentation of the MEqq2gZ2ll class.
+ * The MEqq2W2ff class implements the matrix element for \f$q\bar{q'}\toW^\pm\f$
+ * including the decay of the \f$W^\pm\f$ to Standard Model fermions.
  *
- * @see \ref MEqq2gZ2llInterfaces "The interfaces"
- * defined for MEqq2gZ2ll.
+ * @see \ref MEqq2W2ffInterfaces "The interfaces"
+ * defined for MEqq2W2ff.
  */
-class MEqq2gZ2ll: public ME2to2Base {
+class MEqq2W2ff: public ME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline MEqq2gZ2ll();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEqq2gZ2ll(const MEqq2gZ2ll &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEqq2gZ2ll();
-  //@}
+  inline MEqq2W2ff();
 
 public:
 
@@ -99,6 +87,11 @@ public:
    */
   virtual Selector<const ColourLines *>
   colourGeometries(tcDiagPtr diag) const;
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 
@@ -130,6 +123,22 @@ public:
 
 protected:
 
+  /**
+   * Matrix element for \f$q\bar{q}\to \gamma/Z \to f\bar{f}\f$.
+   * @param fin  Spinors for incoming quark
+   * @param ain  Spinors for incoming antiquark
+   * @param fout Spinors for incoming quark
+   * @param aout Spinors for incoming antiquark
+   * @param me  Whether or not to calculate the matrix element for spin correlations
+   */
+  double qqbarME(vector<SpinorWaveFunction>    & fin ,
+		 vector<SpinorBarWaveFunction> & ain ,
+		 vector<SpinorBarWaveFunction> & fout,
+		 vector<SpinorWaveFunction>    & aout,
+		 bool me) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -155,25 +164,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -182,45 +172,59 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<MEqq2gZ2ll> initMEqq2gZ2ll;
+  static ClassDescription<MEqq2W2ff> initMEqq2W2ff;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  MEqq2gZ2ll & operator=(const MEqq2gZ2ll &);
+  MEqq2W2ff & operator=(const MEqq2W2ff &);
 
 private:
 
   /**
-   *  Pointer to the Z vertex
+   *  Pointer to the W vertex
    */
-  FFVVertexPtr _theFFZVertex;
+  FFVVertexPtr  _theFFWVertex;
 
   /**
-   *  Pointer to the photon vertex
+   *  Pointers to the intermediates resonances
    */
-  FFVVertexPtr _theFFPVertex;
+  //@{
+  /**
+   *  Pointer to the \f$W^+\f$
+   */
+  tcPDPtr _wp;
 
   /**
-   *  Pointer to the Z ParticleData object
+   *  Pointer to the \f$W^-\f$
    */
-  tcPDPtr _Z0;
+  tcPDPtr _wm;
+  //@}
 
   /**
-   *  Pointer to the photon ParticleData object
+   *  Switches to control the particles in the hard process
    */
-  tcPDPtr _gamma;
+  //@{
+  /**
+   *  The allowed flavours of the incoming quarks
+   */
+  unsigned int _maxflavour;
 
   /**
-   *  Allowed flavours for the incoming quarks
+   *  Which intermediate \f$W^\pm\f$ bosons to include
    */
-  int _maxflavour;
+  unsigned int _plusminus;
 
   /**
-   *  Whether or not to include neutrino decays to the Z
+   *  Which decay products of the \f$W^\pm\f$ to include
    */
-  bool _withNeutrinos;
+  unsigned int _process;
+
+  /**
+   * Matrix element for spin correlations
+   */
+  ProductionMatrixElement _me;
 };
 
 }
@@ -232,22 +236,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of MEqq2gZ2ll. */
+ *  base classes of MEqq2W2ff. */
 template <>
-struct BaseClassTrait<Herwig::MEqq2gZ2ll,1> {
-  /** Typedef of the first base class of MEqq2gZ2ll. */
+struct BaseClassTrait<Herwig::MEqq2W2ff,1> {
+  /** Typedef of the first base class of MEqq2W2ff. */
   typedef ME2to2Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the MEqq2gZ2ll class and the shared object where it is defined. */
+ *  the MEqq2W2ff class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::MEqq2gZ2ll>
-  : public ClassTraitsBase<Herwig::MEqq2gZ2ll> {
+struct ClassTraits<Herwig::MEqq2W2ff>
+  : public ClassTraitsBase<Herwig::MEqq2W2ff> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEqq2gZ2ll"; }
+  static string className() { return "Herwig++::MEqq2W2ff"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the MEqq2gZ2ll class and any other class on which it depends
+   *  access to the MEqq2W2ff class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwME.so"; }
 };
@@ -256,9 +260,9 @@ struct ClassTraits<Herwig::MEqq2gZ2ll>
 
 }
 
-#include "MEqq2gZ2ll.icc"
+#include "MEqq2W2ff.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEqq2gZ2ll.tcc"
+// #include "MEqq2W2ff.tcc"
 #endif
 
-#endif /* HERWIG_MEqq2gZ2ll_H */
+#endif /* HERWIG_MEqq2W2ff_H */

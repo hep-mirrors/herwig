@@ -214,7 +214,6 @@ calculateInitialEvolutionScales(const ShowerPPair &particlePair, const bool isDe
 
 pair<Energy,Energy> PartnerFinder::
 calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
-
   Lorentz5Momentum pa, pb, pc;
   pb = ppair.first->momentum();
   pc = ppair.second->momentum();
@@ -248,7 +247,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
      *  - We find the most 'smooth' way to populate the phase space
      *    occurs for... 
      *********/ 
-    unsigned int phase_space = _showerVariables->decay_shower_partition();
+    unsigned int phase_space = _showerVariables->initialFinalDecayConditions();
     pa              = pb-pc               ;
     Energy mb2(sqr(ppair.first->mass()));
     double a=(pb-pc).m2()/mb2;
@@ -301,46 +300,47 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   /********
    * Using JHEP 12(2003)045 we find that we need ktilda = 1/2(1+b-c+lambda)
    * ktilda = qtilda^2/Q^2 therefore qtilda = sqrt(ktilda*Q^2)
-   * This is found from
-   *   x -> a abar
-   *   Px = 1/2 Q(1,0,0), 
-   *   Pa = 1/2 Q(1+b-c,0,lambda), 
-   *   Pabar = 1/2 Q(1-b+c,0,-lambda)
-   *   so nabar = 1/2 Q(lambda,0,-lambda)
-   * and we find (Pa+Pabar)(Pa+nabar) = 1/2 Q^2(1+b-c+lambda) which
-   * is exactly the condition we want for qtilda^2.
-   * We also find that this also applies for the ktilda for the abar
-   * particle, where we flip b and c.
    *************/
-
-  Lorentz5Momentum p1 = particlePair.first->momentum(); 
+  // find momenta in rest frame of system
+  Lorentz5Momentum p1= particlePair.first->momentum(); 
   Lorentz5Momentum p2 = particlePair.second->momentum(); 
-  Lorentz5Momentum p = p1; 
-  p.boost((p1+p2).findBoostToCM());
-  Lorentz5Momentum n(0.0, -p.vect()); 
-  Energy firstQ = sqrt(2.*p*(p+n)); 
-  p = p2;
-  p.boost((p1+p2).findBoostToCM());
-  n = Lorentz5Momentum(0.0, - p.vect()); 
-  Energy secondQ = sqrt(2.*p*(p+n));
-  // get asymmetric distribution in x, xbar plane: 
-  if (_showerVariables->asyPS()) {
-    Energy Q = sqrt(sqr(p1+p2)); 
-    double r = p1.m()/Q; 
-    //double v = sqrt(1.-sqr(r)); 
-    if (particlePair.first->id() < 6 && particlePair.first->id() > 0) { 
-      firstQ = 2.0*Q*sqrt(1.-2.*r); 
-      secondQ = sqr(Q)/firstQ; 
-      //secondQ = Q*(1.+v)*(firstQ/Q*(1.-v) +
-      //v*(1.+v))/(4.*firstQ/Q+sqr(v)-1.);
-    } else if (particlePair.first->id() > -6 
-	       && particlePair.first->id() < 0) { 
-      secondQ = 2.0*Q*sqrt(1.-2.*r); 
-      firstQ = sqr(Q)/secondQ;
-    }
+  Lorentz5Momentum p12(p1+p2);
+  Hep3Vector boostv=p12.findBoostToCM();
+  p1.boost(boostv);
+  p2.boost(boostv);
+  // calculate quantities for the scales
+  Energy2 Q2 = p12.m2();
+  Energy Q   = sqrt(Q2);
+  double b = p1.mass2()/Q2;
+  double c = p2.mass2()/Q2;
+  double lam=2.*p1.vect().mag()/Q;
+  // symmetric case
+  unsigned int iopt=_showerVariables->finalFinalConditions();
+  Energy firstQ,secondQ;
+  if(iopt==0) {
+    firstQ  = sqrt(0.5*Q2*(1.+b-c+lam));
+    secondQ = sqrt(0.5*Q2*(1.-b+c+lam));
   }
-  // random swap if needed
-  if (_showerVariables->rndPS()&&UseRandom::rndbool()) 
-    swap(firstQ,secondQ);
+  // assymetric choice
+  else {
+    double kappab,kappac;
+    // find if first particle is coloured
+    bool colouredFirst=particlePair.first->colourLine()&&
+      particlePair.first->colourLine()==particlePair.second->antiColourLine();
+    // calculate kappa with coloured line getting maximum
+    if((iopt==1&&colouredFirst)|| // first particle coloured+maximal for coloured
+       (iopt==2&&!colouredFirst)|| // first particle anticoloured+maximal for acoloured
+       (iopt==3&&UseRandom::rndbool(0.5))) { // random choice
+      kappab=4.*(1.-2.*sqrt(c)-b+c);
+      kappac=c+0.25*sqr(1.-b-c+lam)/(kappab-b);
+    }
+    else {
+      kappac=4.*(1.-2.*sqrt(b)-c+b);
+      kappab=b+0.25*sqr(1.-b-c+lam)/(kappac-c);
+    }
+    // calculate the scales
+    firstQ  = sqrt(Q2*kappab);
+    secondQ = sqrt(Q2*kappac);
+  }
   return pair<Energy,Energy>(firstQ, secondQ);
 }

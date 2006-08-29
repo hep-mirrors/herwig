@@ -7,20 +7,15 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMGGGVertex::SMGGGVertex() 
+  inline SMGGGVertex::SMGGGVertex() 
+    : _couplast(0.), _q2last(0.)
 {
   // the particles
   vector<int> first,second,third;
   first.push_back(21);second.push_back(21);third.push_back(21);
   setList(first,second,third);
   // the coupling
-  _couplast=0.;_q2last=0.;
 }
-
-inline SMGGGVertex::SMGGGVertex(const SMGGGVertex & x)
-  : VVVVertex(x) , _theSM(x._theSM ), _couplast(x._couplast),
-    _q2last(x._q2last)
-  {}
 
 inline IBPtr SMGGGVertex::clone() const {
   return new_ptr(*this);
@@ -29,6 +24,10 @@ inline IBPtr SMGGGVertex::clone() const {
 inline IBPtr SMGGGVertex::fullclone() const {
   return new_ptr(*this);
 }
+inline void SMGGGVertex::doinit() throw(InitException) {
+  _theSM = generator()->standardModel();
+}
+
 
 }
 }

@@ -295,9 +295,13 @@ ParticleVector IFDipole::generatePhotons(const Particle & p,ParticleVector child
       return children;
     }
   // otherwise just return the orginial particles
-  else{return children;}
-
-
+  // boosted back to lab
+  else
+    {
+      for(unsigned int ix=0;ix<children.size();++ix)
+	children[ix]->deepBoost(boostv);
+      return children;
+    }
 }
 
 // member which generates the photons

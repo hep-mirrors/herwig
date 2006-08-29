@@ -16,6 +16,7 @@ create Herwig++::LightClusterDecayer theLightClusterDecayer
 create Herwig++::ClusterDecayer theClusterDecayer
 create Herwig++::HadronSelector theHadronSelector
 create Herwig++::PartonicHadronizer PartonicHadronizer
+create Herwig++::ForcedSplitting theForcedSplitting
 # Set default values
 set stdCluHadHandler:GlobalParameters /Defaults/theGlobalParameters
 set stdCluHadHandler:PartonSplitter thePartonSplitter
@@ -24,6 +25,7 @@ set stdCluHadHandler:ColourReconnector theColourReconnector
 set stdCluHadHandler:ClusterFissioner theClusterFissioner
 set stdCluHadHandler:LightClusterDecayer theLightClusterDecayer
 set stdCluHadHandler:ClusterDecayer theClusterDecayer
+set stdCluHadHandler:ForcedSplitting theForcedSplitting
 set theClusterFissioner:HadronSelector theHadronSelector 
 set theClusterFissioner:GlobalParameters /Defaults/theGlobalParameters 
 set theLightClusterDecayer:HadronSelector theHadronSelector

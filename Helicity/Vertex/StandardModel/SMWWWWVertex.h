@@ -7,8 +7,6 @@
 #include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Utilities/Rebinder.h"
-
 
 namespace Herwig {
 namespace Helicity {
@@ -113,7 +111,7 @@ private:
   /**
    * Pointer to the SM object.
    */
-  SMPtr _theSM;
+  tcSMPtr _theSM;
 
   /**
    *  Intermediate particles

@@ -7,7 +7,6 @@
 #include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Utilities/Rebinder.h"
 
 namespace Herwig {
 namespace Helicity {
@@ -32,12 +31,6 @@ public:
    * Default constructor.
    */
   inline SMGGGGVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline SMGGGGVertex(const SMGGGGVertex &);
-  //@}  
 
 public:
 
@@ -89,6 +82,18 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+  //@}
   
 private:
   
@@ -105,7 +110,7 @@ private:
   /**
    * Pointer to the Standard Model.
    */
-  SMPtr _theSM;
+  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.

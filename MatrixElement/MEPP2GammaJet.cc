@@ -26,12 +26,9 @@
 
 using namespace Herwig;
 
-MEPP2GammaJet::~MEPP2GammaJet() {}
-
 void MEPP2GammaJet::doinit() throw(InitException) {
   // get the vedrtex pointers from the SM object
-  Ptr<Herwig::StandardModel>::transient_const_pointer hwsm=
-    dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm)
     {
@@ -157,14 +154,14 @@ void MEPP2GammaJet::Init() {
 Selector<const ColourLines *>
 MEPP2GammaJet::colourGeometries(tcDiagPtr diag) const {
   // q qbar to gamma gluon colour lines
-  static ColourLines qqbar1("1 5, -5 -2 -3");
-  static ColourLines qqbar2("1 2 5, -5 -3");
+  static const ColourLines qqbar1("1 5, -5 -2 -3");
+  static const ColourLines qqbar2("1 2 5, -5 -3");
   // q gluon to gamma q colour lines
-  static ColourLines qg1("1 2 -3, 3 5");
-  static ColourLines qg2("1 -2, 2 3 5");
+  static const ColourLines qg1("1 2 -3, 3 5");
+  static const ColourLines qg2("1 -2, 2 3 5");
   // qbar gluon to gamma qbar lines
-  static ColourLines qbarg1("-1 -2 3, -3 -5");
-  static ColourLines qbarg2("-1 2, -2 -3 -5");
+  static const ColourLines qbarg1("-1 -2 3, -3 -5");
+  static const ColourLines qbarg2("-1 2, -2 -3 -5");
   // only one flow per diagram so insert the right one
   Selector<const ColourLines *> sel;  
   switch (diag->id())
@@ -611,9 +608,9 @@ void MEPP2GammaJet::constructVertex(tSubProPtr sub)
   for(unsigned int ix=0;ix<4;++ix)
     {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
   // construct the vertex
-  VertexPtr hardvertex=new_ptr(HardVertex());
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
-  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(_me);
+  hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
 }

@@ -8,20 +8,17 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
 void SMFFZVertex::persistentOutput(PersistentOStream & os) const {
-  for(int ix=0;ix<17;++ix){os << _gl[ix] << _gr[ix];}
-  os <<  _theSM;
+  os << _gl << _gr <<  _theSM;
 }
 
 void SMFFZVertex::persistentInput(PersistentIStream & is, int) {
-  for(int ix=0;ix<17;++ix){is >> _gl[ix] >> _gr[ix];}
-  is >> _theSM;
+  is >> _gl >> _gr >> _theSM;
   _couplast=0.;_q2last=0.;
 }
 
@@ -30,12 +27,6 @@ SMFFZVertex::initSMFFZVertex;
 // Definition of the static class description member.
 
 void SMFFZVertex::Init() {
-  
-  static Reference<SMFFZVertex,StandardModelBase> interfaceSM
-    ("StandardModel",
-     "Reference to the SM object",
-     &SMFFZVertex::_theSM, false, false, true, false);
-    
   static ClassDocumentation<SMFFZVertex> documentation
     ("The SMFFZVertex class is the implementation of"
      "the coupling of the Z boson to the Standard Model fermions");

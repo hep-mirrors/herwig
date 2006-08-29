@@ -1,0 +1,15 @@
+# create the objects needed
+mkdir /Defaults/Handlers/QED
+cd /Defaults/Handlers/QED
+# create the dipoles
+create Herwig++::FFDipole FFDipole
+create Herwig++::IFDipole IFDipole
+# create the DecayRadiationHandler
+create Herwig++::SOPHTY   SOPHTY
+# assigned the dipoles to the decay radiation handler
+set SOPHTY:FFDipole FFDipole
+set SOPHTY:IFDipole IFDipole
+# create the QEDRadiation handler
+create Herwig++::QEDRadiationHandler QEDRadiationHandler
+# assign the decay radiation handler to the QEDRadiationHandler
+set QEDRadiationHandler:RadiationGenerator SOPHTY

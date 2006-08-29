@@ -22,19 +22,21 @@ SingleParticleAnalysis.cc SingleParticleAnalysis.fh\
 SingleParticleAnalysis.h SingleParticleAnalysis.icc \
 LEPEventShapes.cc LEPEventShapes.fh LEPEventShapes.h LEPEventShapes.icc \
 IdentifiedParticleAnalysis.cc IdentifiedParticleAnalysis.fh \
-IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc 
+IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc \
+DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh \
+DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
-AM_CPPFLAGS+= $(KTJETINCLUDE)
-HwLEPAnalysis_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
-HwLEPAnalysis_la_SOURCES +=\
-LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh\
+pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
+HwLEPJetAnalysis_la_LDFLAGS = -module
+HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE)
+HwLEPJetAnalysis_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
+HwLEPJetAnalysis_la_SOURCES = \
+LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh \
 LEPFourJetsAnalysis.h LEPFourJetsAnalysis.icc \
-LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh\
-LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc\
-TopDalitzAnalysis.cc TopDalitzAnalysis.fh\
-TopDalitzAnalysis.h TopDalitzAnalysis.icc \
-DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh\
-DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
+LeptonDalitzAnalysis.cc LeptonDalitzAnalysis.fh \
+LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
+TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
+TopDalitzAnalysis.h TopDalitzAnalysis.icc 
 endif

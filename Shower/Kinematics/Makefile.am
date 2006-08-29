@@ -12,6 +12,4 @@ FS_QtildaShowerKinematics1to2.fh FS_QtildaShowerKinematics1to2.cc \
 Decay_QtildaShowerKinematics1to2.h Decay_QtildaShowerKinematics1to2.icc \
 Decay_QtildaShowerKinematics1to2.fh Decay_QtildaShowerKinematics1to2.cc \
 KinematicsReconstructor.h KinematicsReconstructor.icc \
-KinematicsReconstructor.fh KinematicsReconstructor.cc \
-RelativePtReconstructor.h RelativePtReconstructor.icc \
-RelativePtReconstructor.fh RelativePtReconstructor.cc 
+KinematicsReconstructor.fh KinematicsReconstructor.cc

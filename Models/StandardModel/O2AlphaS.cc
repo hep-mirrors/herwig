@@ -63,7 +63,6 @@ void O2AlphaS::Init() {
      1);
 }
 
-
 vector<Energy2> O2AlphaS::flavourThresholds() const {
   vector<Energy2> thresholds(_threshold.size());
   transform(_threshold.begin(), _threshold.end(),
@@ -73,13 +72,11 @@ vector<Energy2> O2AlphaS::flavourThresholds() const {
 }
 
 void O2AlphaS::doinit() throw(InitException) {
-  AlphaSBase::doinit();
   // thresholds
-  for(unsigned int ix=1;ix<7;++ix)
-    {
-      tPDPtr p = getParticleData(ix);
-      _threshold[ix-1] = p->mass();
-    }
+  for(unsigned int ix=1;ix<7;++ix) {
+    tPDPtr p = getParticleData(ix);
+    _threshold[ix-1] = p->mass();
+  }
   // d is heavier than u, need to swap
   swap(_threshold[0],_threshold[1]);
 
@@ -125,6 +122,7 @@ void O2AlphaS::doinit() throw(InitException) {
     }
   while(ix<100&&abs(drh)>eps*d35);
   _lambdas[3]=_lambdas[5]*exp(0.5*d35);
+  AlphaSBase::doinit();
 }
 
 vector<Energy> O2AlphaS::LambdaQCDs() const
@@ -141,47 +139,26 @@ vector<Energy> O2AlphaS::LambdaQCDs() const
 double O2AlphaS::value(Energy2 scale, const StandardModelBase & sm) const
 {
   Energy rs=sqrt(scale);
-  if(scale<_lambdas[5])
-    {
-      cerr << "O2AlphaS called with scale less than Lambda QCD "
-			 << "scale = " << rs << " MeV and "
-			 << "Lambda = " << _lambdas[5] << " MeV\n";
-      generator()->log() << "O2AlphaS called with scale less than Lambda QCD "
-			 << "scale = " << rs << " MeV and "
-			 << "Lambda = " << _lambdas[5] << " MeV\n";
-      return 0.;
-    }
+  if(scale<_lambdas[5]) {
+    cerr << "O2AlphaS called with scale less than Lambda QCD "
+	 << "scale = " << rs << " MeV and "
+	 << "Lambda = " << _lambdas[5] << " MeV\n";
+    generator()->log() << "O2AlphaS called with scale less than Lambda QCD "
+		       << "scale = " << rs << " MeV and "
+		       << "Lambda = " << _lambdas[5] << " MeV\n";
+    return 0.;
+  }
   double rho=2.*log(rs/_lambdas[5]),rat(log(rho)/rho);
   double rlf;
-  if(rs>_threshold[5])
-    {
-      //      cerr << "testing did A " 
-      //	   << _bcoeff[5] << " " << rho << " " 
-      //	   << (1.-_ccoeff[5]*rat) << " " << _match[5] << endl;
-      rlf=_bcoeff[5]*rho/(1.-_ccoeff[5]*rat)+_match[5];
-    }
-  else if(rs>_threshold[4])
-    {
-      //      cerr << "testing did B " << _bcoeff[4] << " " <<rho << " " 
-      //	   <<(1.-_ccoeff[4]*rat) << endl;
-      rlf=_bcoeff[4]*rho/(1.-_ccoeff[4]*rat);
-    }
-  else if(rs>_threshold[3])
-    {
-      //      cerr << "testing did C " << _bcoeff[3] << " " <<rho << " " <<(1.-_ccoeff[3]*rat) << " " <<_match[4] << endl;
-      rlf=_bcoeff[3]*rho/(1.-_ccoeff[3]*rat)+_match[4];
-    }
-  else
-    {
-      //      cerr << "testing did D " << _bcoeff[2] << " " <<rho << " " <<(1.-_ccoeff[2]*rat) << " " << _match[3] << endl;
-      rlf=_bcoeff[2]*rho/(1.-_ccoeff[2]*rat)+_match[3];
-    }
+  if(rs>_threshold[5])      rlf=_bcoeff[5]*rho/(1.-_ccoeff[5]*rat)+_match[5];
+  else if(rs>_threshold[4]) rlf=_bcoeff[4]*rho/(1.-_ccoeff[4]*rat);
+  else if(rs>_threshold[3]) rlf=_bcoeff[3]*rho/(1.-_ccoeff[3]*rat)+_match[4];
+  else                      rlf=_bcoeff[2]*rho/(1.-_ccoeff[2]*rat)+_match[3];
   // must be possible
-  if(rlf<=0.)
-    {
-      generator()->log() << "O2AlphaS coupling less than zero \n";
-      return 0.;
-    }
+  if(rlf<=0.) {
+    generator()->log() << "O2AlphaS coupling less than zero \n";
+    return 0.;
+  }
   return 1./rlf;
 }
 

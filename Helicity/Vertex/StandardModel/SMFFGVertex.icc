@@ -15,16 +15,16 @@ inline SMFFGVertex::SMFFGVertex() {
   setList(first,second,third);
 }
 
-inline SMFFGVertex::SMFFGVertex(const SMFFGVertex & x)
-  : FFVVertex(x), _theSM(x._theSM), _couplast(x._couplast),
-    _q2last(x._q2last) {}
-
 inline IBPtr SMFFGVertex::clone() const {
   return new_ptr(*this);
 }
 
 inline IBPtr SMFFGVertex::fullclone() const {
   return new_ptr(*this);
+}
+
+inline void SMFFGVertex::doinit() throw(InitException) {
+  _theSM = generator()->standardModel();
 }
 
 }

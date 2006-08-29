@@ -35,16 +35,6 @@ public:
    * The default constructor.
    */
   inline MEPP2GammaJet();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEPP2GammaJet(const MEPP2GammaJet &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEPP2GammaJet();
   //@}
 
 public:

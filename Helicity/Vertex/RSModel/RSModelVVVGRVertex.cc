@@ -6,7 +6,6 @@
 
 #include "RSModelVVVGRVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -26,14 +25,7 @@ ClassDescription<RSModelVVVGRVertex> RSModelVVVGRVertex::initRSModelVVVGRVertex;
 // Definition of the static class description member.
 
 void RSModelVVVGRVertex::Init() {
-  
-  
-  static Reference<RSModelVVVGRVertex,StandardModelBase> interfaceModel
-    ("Model",
-     "Reference to the model object",
-     &RSModelVVVGRVertex::_theModel, false, false, true, false, false);
-  
-  static ClassDocumentation<RSModelVVVGRVertex> documentation
+ static ClassDocumentation<RSModelVVVGRVertex> documentation
     ("The RSModelVVVGRVertex class is the four point coupling"
      " of three vector bosons and a graviton in the Randell-Sundrum model.");
   

@@ -1,15 +1,14 @@
 // -*- C++ -*-
-#ifndef HERWIG_YODA_H
-#define HERWIG_YODA_H
+#ifndef HERWIG_SOPHTY_H
+#define HERWIG_SOPHTY_H
 //
-// This is the declaration of the YODA class.
+// This is the declaration of the SOPHTY class.
 //
 
 #include "DecayRadiationGenerator.h"
-#include "GeneralDipole.fh"
 #include "FFDipole.fh"
 #include "IFDipole.fh"
-#include "YODA.fh"
+#include "SOPHTY.fh"
 
 namespace Herwig {
 
@@ -17,32 +16,12 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- * Here is the documentation of the YODA class.
+ * Here is the documentation of the SOPHTY class.
  *
- * @see \ref YODAInterfaces "The interfaces"
- * defined for YODA.
+ * @see \ref SOPHTYInterfaces "The interfaces"
+ * defined for SOPHTY.
  */
-class YODA: public DecayRadiationGenerator {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline YODA();
-
-  /**
-   * The copy constructor.
-   */
-  inline YODA(const YODA &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~YODA();
-  //@}
+class SOPHTY: public DecayRadiationGenerator {
 
 public:
 
@@ -104,13 +83,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<YODA> initYODA;
+  static ClassDescription<SOPHTY> initSOPHTY;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  YODA & operator=(const YODA &);
+  SOPHTY & operator=(const SOPHTY &);
 
 private:
 
@@ -123,11 +102,6 @@ private:
    *  The initial-final dipole
    */
   IFDipolePtr _ifdipole;
-
-  /**
-   *  The general dipole
-   */
-  GeneralDipolePtr _generaldipole;
 };
 
 }
@@ -139,22 +113,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of YODA. */
+ *  base classes of SOPHTY. */
 template <>
-struct BaseClassTrait<Herwig::YODA,1> {
-  /** Typedef of the first base class of YODA. */
+struct BaseClassTrait<Herwig::SOPHTY,1> {
+  /** Typedef of the first base class of SOPHTY. */
   typedef Herwig::DecayRadiationGenerator NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the YODA class and the shared object where it is defined. */
+ *  the SOPHTY class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::YODA>
-  : public ClassTraitsBase<Herwig::YODA> {
+struct ClassTraits<Herwig::SOPHTY>
+  : public ClassTraitsBase<Herwig::SOPHTY> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::YODA"; }
+  static string className() { return "Herwig++::SOPHTY"; }
   /** Return the name of the shared library be loaded to get
-   *  access to the YODA class and every other class it uses
+   *  access to the SOPHTY class and every other class it uses
    *  (except the base class). */
   static string library() { return "libHwDecRad.so"; }
 };
@@ -163,9 +137,9 @@ struct ClassTraits<Herwig::YODA>
 
 }
 
-#include "YODA.icc"
+#include "SOPHTY.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "YODA.tcc"
+// #include "SOPHTY.tcc"
 #endif
 
-#endif /* HERWIG_YODA_H */
+#endif /* HERWIG_SOPHTY_H */

@@ -8,7 +8,6 @@
 #include "Herwig++/Helicity/Vertex/Scalar/SVVLoopVertex.h"
 #include "SMHPPVertex.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {
@@ -30,11 +29,6 @@ public:
    * The default constructor.
    */
   inline SMHPPVertex();
-
-  /**
-   * The copy constructor.
-   */
-  inline SMHPPVertex(const SMHPPVertex &);
   //@}
 
 public:
@@ -131,7 +125,7 @@ private:
   /**
    * Pointer to Standard Model object
    */
-  Ptr<Herwig::StandardModel>::pointer _theSM;
+  tcHwSMPtr _theSM;
   
   /**
    * Mass of W boson for higgs coupling

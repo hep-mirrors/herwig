@@ -12,13 +12,6 @@ inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),
 						      _use_me_for_t2(false)
 {}
 
-inline TopDecayMECorrection::TopDecayMECorrection(const TopDecayMECorrection & x)
-    : MECorrectionBase(x), _ma(x._ma), _mc(x._mc), _mt(x._mt), _mg(x._mg), _a(x._a),
-      _c(x._c), _g(x._g),_xg_sampling(x._xg_sampling),
-      _initialenhance(x._initialenhance),_finalenhance(x._finalenhance),
-      _use_me_for_t2(x._use_me_for_t2)
-{}
-
 inline IBPtr TopDecayMECorrection::clone() const {
   return new_ptr(*this);
 }
@@ -43,79 +36,81 @@ inline double TopDecayMECorrection::ktr(double xgb, int toggle)
 inline double TopDecayMECorrection::xab(double xgb,
                                         double kt, int toggle) 
 { 
-    double lambda;
-    double xab;
-    double ktmktrpktmktrm(-9.e-99);
-    if(toggle==2) {
-        // This applies for g==0.&&kt==ktr(a,c,0.,xgb,1).
-	xab = -2.*_a*(xgb-2.)/(1.+_a-_c-xgb);
-    } else if(toggle==1) {
-        // This applies for kt==1&&g==0.
-	lambda = sqrt(sqr(xgb-1.+_a+_c)-4.*_a*_c);
-	xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
-	    + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
-    } else {
-        // This is the general form of xab.
-	ktmktrpktmktrm = ( sqr(xgb*kt-2.*xgb)
-		    	   -kt*kt*(1.-1./_a)*(xgb-xgbr( 1))
-			                    *(xgb-xgbr(-1))
-	                 )/
-	                 (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1))
-	                                    *(xgb-xgbr(-1))
-		         );
-	lambda = sqrt((sqr(1.-_a-_c-xgb)-4.*_a*_c)*
-                      ktmktrpktmktrm);
-	xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
-	    + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
-    }
+  double xab;
+  if(toggle==2) {
+    // This applies for g==0.&&kt==ktr(a,c,0.,xgb,1).
+    xab = -2.*_a*(xgb-2.)/(1.+_a-_c-xgb);
+  } else if(toggle==1) {
+    // This applies for kt==1&&g==0.
+    double lambda = sqrt(sqr(xgb-1.+_a+_c)-4.*_a*_c);
+    xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
+      + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
+  } else {
+    // This is the general form of xab.
+    double ktmktrpktmktrm = ( sqr(xgb*kt-2.*xgb)
+			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1))
+			      *(xgb-xgbr(-1))
+			      )/
+      (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1))
+       *(xgb-xgbr(-1))
+       );
+    double lambda = sqrt((sqr(1.-_a-_c-xgb)-4.*_a*_c)*
+			 ktmktrpktmktrm);
+    xab = (0.5/(kt-xgb))*(kt*(1.+_a-_c-xgb)-lambda)
+      + (0.5/(kt+xgb*(1.-kt)))*(kt*(1.+_a-_c-xgb)+lambda);
+  }
+  if(isnan(xab)) {
+    double ktmktrpktmktrm = ( sqr(xgb*kt-2.*(xgb-_g))
+			      -kt*kt*(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
+			      *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
+			      )/
+      (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
+       *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
+       );
+    double lambda = sqrt((xgb-1.+sqr(sqrt(_a)+sqrt(_c-_g)))
+			 *(xgb-1.+sqr(sqrt(_a)-sqrt(_c-_g)))*
+			 ktmktrpktmktrm);
+    xab = (0.5/(kt-xgb+_g))*(kt*(1.+_a-_c+_g-xgb)-lambda)
+      + (0.5/(kt+xgb*(1.-kt)-_g))*(kt*(1.+_a-_c+_g-xgb)+lambda);
     if(isnan(xab)) {
-	ktmktrpktmktrm = ( sqr(xgb*kt-2.*(xgb-_g))
-	      	          -kt*kt*(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
-	                                   *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
-		         )/
-                         (xgb*xgb-(1.-1./_a)*(xgb-xgbr( 1)-_g/(1.+sqrt(_a)))
-                                            *(xgb-xgbr(-1)-_g/(1.-sqrt(_a)))
-                         );
-	lambda = sqrt((xgb-1.+sqr(sqrt(_a)+sqrt(_c-_g)))
-                     *(xgb-1.+sqr(sqrt(_a)-sqrt(_c-_g)))*
-                      ktmktrpktmktrm);
-	xab = (0.5/(kt-xgb+_g))*(kt*(1.+_a-_c+_g-xgb)-lambda)
-	    + (0.5/(kt+xgb*(1.-kt)-_g))*(kt*(1.+_a-_c+_g-xgb)+lambda);
+      cout << "TopMECorrection::xab: Warning complex x_a value tan(phi)="
+	   << "  xgb    = " << xgb 
+	   << "  xab    = " << xab    <<endl
+	   << "  toggle = " << toggle <<endl
+	   << "  ktmktrpktmktrm = "   << ktmktrpktmktrm <<endl;
     }
-    if(isnan(xab)) {
-	cout << "TopMECorrection::xab: Warning complex x_a value tan(phi)="
-	     << "  xgb    = " << xgb 
-	     << "  xab    = " << xab    <<endl
-	     << "  toggle = " << toggle <<endl
-	     << "  ktmktrpktmktrm = "   << ktmktrpktmktrm <<endl;
-    }
-    return xab;
+  }
+  return xab;
 }
+
 inline double TopDecayMECorrection::xgbcut(double kt) 
 { 
-    double lambda2 = 1.+_a*_a+_c*_c-2.*_a-2.*_c-2.*_a*_c; 
-    double num1    = kt*kt*(1.-_a-_c);
-    double num2    = 2.*kt*sqrt(_a*(kt*kt*_c+lambda2*(kt-1.)));
-    return (num1-num2)/(kt*kt-4.*_a*(kt-1.));
+  double lambda2 = 1.+_a*_a+_c*_c-2.*_a-2.*_c-2.*_a*_c; 
+  double num1    = kt*kt*(1.-_a-_c);
+  double num2    = 2.*kt*sqrt(_a*(kt*kt*_c+lambda2*(kt-1.)));
+  return (num1-num2)/(kt*kt-4.*_a*(kt-1.));
 }
+
 inline double TopDecayMECorrection::xaccut(double kt) 
 { 
     return 1.+_a-_c-0.25*kt;
 }
+
 inline double TopDecayMECorrection::z(double xac, double kt, 
                                       int toggle1, int toggle2) 
 { 
-    double z;
-    if(toggle2==0) { 
-	z = (kt+toggle1*sqrt(kt*(kt-4.*(1.+_a-_c-xac))))/(2.*kt); 
-    } else if(toggle2==1) {
-	z = ((1.+_a+_c-xac)+toggle1*(1.+_a-_c-xac))
-	    /(2.*(1.+_a-xac));
-    } else if(toggle2==2) {
-	z = 0.5;
-    }
-    return z;
+  double z;
+  if(toggle2==0) { 
+    z = (kt+toggle1*sqrt(kt*(kt-4.*(1.+_a-_c-xac))))/(2.*kt); 
+  } else if(toggle2==1) {
+    z = ((1.+_a+_c-xac)+toggle1*(1.+_a-_c-xac))
+      /(2.*(1.+_a-xac));
+  } else if(toggle2==2) {
+    z = 0.5;
+  }
+  return z;
 }
+
 inline double TopDecayMECorrection::xgc(double xac, double kt, 
                                         int toggle1, int toggle2) 
 { 
@@ -123,6 +118,7 @@ inline double TopDecayMECorrection::xgc(double xac, double kt,
           -(z(xac,kt,toggle1,toggle2)-0.5*(1.+_c/(1.+_a-xac)))
           *sqrt(xac*xac-4.*_a);
 }
+
 inline double TopDecayMECorrection::xginvc0(double xg , double kt) 
 { 
   double u,v,output;
@@ -131,23 +127,11 @@ inline double TopDecayMECorrection::xginvc0(double xg , double kt)
      -66.*_a+27.*xg*xg*kt
      -45.*xg*kt+18.*kt+2.;
   v = -_a*_a-14.*_a-3.*xg*kt+3.*kt-1.;
-  if(u>0.&&(-4.*v*v*v-u*u)>0.) {
-      output = (1./3.)*( 1.+_a
-		        +2.*sqrt(-v)
-                           *cos((1./3.)*(atan(sqrt(-4.*v*v*v-u*u)/u)))
-                       );
-  } else if(u>0.&&(-4.*v*v*v-u*u)<0.) {
-      output = (1./3.)*( 1.+_a
-		        +2.*sqrt(-v)
-                           *cosh((1./3.)*(atanh(sqrt(4.*v*v*v+u*u)/u)))
-                       );
-  } else {
-      output = (1./3.)*( 1.+_a
-		        +2.*sqrt(-v)
-                           *cos((1./3.)*(atan(sqrt(-4.*v*v*v-u*u)/u)+pi))
-                       );
-  }
-  return output;
+  double u2=u*u,v3=v*v*v;
+  if(u>0.&&(-4.*v3-u2)>0.)      output = cos(  atan(sqrt(-4.*v3-u2)/u)/3.);
+  else if(u>0.&&(-4.*v3-u2)<0.) output = cosh(atanh(sqrt( 4.*v3+u2)/u)/3.);
+  else                          output = cos(( atan(sqrt(-4.*v3-u2)/u)+pi)/3.);
+  return ( 1.+_a +2.*sqrt(-v)*output)/3.;
 }
 
 inline double TopDecayMECorrection::approxDeadMaxxa(double xg,double ktb,double ktc) 

@@ -22,7 +22,6 @@ set /Defaults/Model:EW/CKM /Defaults/CKM
 create /Herwig++/RunningMass /Defaults/RunningMass
 set /Defaults/RunningMass:MaxFlav 6
 set /Defaults/RunningMass:QCDOrder 2
-set /Defaults/RunningMass:StandardModel /Defaults/Model
 set /Defaults/Model:RunningMass /Defaults/RunningMass
 # read in the Standard Model vertices
 cd /Defaults

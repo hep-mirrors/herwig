@@ -8,7 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Config/Constants.h"
 
 namespace Herwig {
@@ -30,13 +29,6 @@ SMFFHVertex::initSMFFHVertex;
 // Definition of the static class description member.
 
 void SMFFHVertex::Init() {
-   
-  static Reference<SMFFHVertex,Herwig::StandardModel>
-    interfaceSM
-    ("StandardModel",
-     "Reference to the SM object",
-     &SMFFHVertex::_theSM, false, false, true, false);
-
   static ClassDocumentation<SMFFHVertex> documentation
     ("The SMFFHVertex class is the implementation"
      " of the helicity amplitude calculation of the Standard Model Higgs"

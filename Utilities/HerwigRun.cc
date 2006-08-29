@@ -7,7 +7,8 @@ using namespace ThePEG;
 
 const string usage = " init|read|run "
                    " [-N num-events] [--seed random-generator-seed] "
-                   "[-d debug-level] [-dHw herwig-debug-level] [-l load-path] "
+                   "[-d debug-level] [-dHw herwig-debug-level] "
+                   "[--exitonerror] [-l load-path] "
                    "[-L first-load-path] [-r repo-file] "
                    "[-i initialization file] [run-file]\n";
 

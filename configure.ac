@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[SVN],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
+AC_INIT([Herwig++],[2.0.0],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
 
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
@@ -13,14 +13,12 @@ case "${host}" in
   *-darwin[[0156]].*) 
     AC_MSG_ERROR([Herwig++ requires OS X 10.3 or later])
     ;;
-  *-darwin7.*)
-    MACOSX_DEPLOYMENT_TARGET=10.3
-    AC_SUBST(MACOSX_DEPLOYMENT_TARGET)
-    ;;	
-  *-darwin8.*)
-    MACOSX_DEPLOYMENT_TARGET=10.4
-    AC_SUBST(MACOSX_DEPLOYMENT_TARGET)
-    ;;	
+  *-darwin*) 
+    if test "x$MACOSX_DEPLOYMENT_TARGET" != "x10.3"; then 
+      AC_MSG_ERROR(
+      [Please export the MACOSX_DEPLOYMENT_TARGET variable, set to 10.3]) 
+    fi 
+    ;;
 esac
 
 AC_LANG(C++)
@@ -55,8 +53,6 @@ AC_CHECK_CLHEP
 AC_CHECK_THEPEG
 
 AC_CHECK_KTJET
-AC_CHECK_AMEGIC
-## AC_CHECK_EVTGEN
 
 AC_CHECK_NEWDECAYERS
 AC_LOOPTOOLS
@@ -71,7 +67,7 @@ AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
 AM_CXXFLAGS="-ansi -pedantic -Wall"
 
 # version info should really be specified one-by-one for each lib!
-AM_LDFLAGS="-version-info 1:0:0"
+AM_LDFLAGS="-version-info 2:0:0"
 
 # don't know how else to do this. see bug #14
 if test -n "$GCC"; then
@@ -127,7 +123,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Doc/Makefile
 		Looptools/Makefile
 		Analysis/Makefile
-		Analysis/Makefile-shared
+		src/Makefile-UserModules
 		Makefile])
 
 AC_CONFIG_FILES([Doc/fixinterfaces.pl],[chmod +x Doc/fixinterfaces.pl])

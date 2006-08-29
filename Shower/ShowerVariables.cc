@@ -23,20 +23,19 @@ using namespace Herwig;
 const Energy ShowerVariables::HUGEMASS = 1.0e+20 * GeV;  // more then the Plank scale!
 
 ShowerVariables::ShowerVariables() :
-  _multiScaleShowerMode(1),
   _cutoffQCDMassScale( 1.0*GeV ),
   _cutoffQEDMassScale( 0.51*MeV ),
   _cutoffEWKMassScale( 91.0*GeV ),
   _kinCutoffScale( .75*GeV ),
   _meCorrMode(1),
-  _qqgPSMode(0),
   _stopShowerAtMassScale( Energy() ),
   _vetoAbovePtScale( HUGEMASS ), 
   _vetoBelowPtScale( Energy() ),
   _a(0.3), _b(2.3), _c(0.3*GeV),
   _initialenhance(1.),_finalenhance(1.),
-  _decay_shower_partition(0),
-  _use_me_for_t2(false)
+  _finalFinalConditions(0),
+  _initialFinalDecayConditions(0),
+  _useMEForT2(false)
 {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
@@ -71,34 +70,36 @@ ShowerVariables::ShowerVariables() :
   _inputparticlesDecayInShower.push_back( 2000014 ); //  SUSY_nu_muR 
   _inputparticlesDecayInShower.push_back( 2000015 ); //  SUSY_tau_2minus 
   _inputparticlesDecayInShower.push_back( 2000016 ); //  SUSY_nu_tauR 
+  _inputparticlesDecayInShower.push_back( 25      ); //  h0
+  _inputparticlesDecayInShower.push_back( 35      ); //  H0
+  _inputparticlesDecayInShower.push_back( 36      ); //  A0
+  _inputparticlesDecayInShower.push_back( 37      ); //  H+
 }
 
 void ShowerVariables::persistentOutput(PersistentOStream & os) const {
-  os << _multiScaleShowerMode
-     << _cutoffQCDMassScale
+  os << _cutoffQCDMassScale
      << _cutoffQEDMassScale
      << _cutoffEWKMassScale
      << _kinCutoffScale
      << _meCorrMode
-     << _qqgPSMode
      << _inputparticlesDecayInShower
      << _particlesDecayInShower << _a << _b << _c
      << _globalParameters
-     << _decay_shower_partition << _use_me_for_t2;
+     << _finalFinalConditions
+     << _initialFinalDecayConditions << _useMEForT2;
 }
 
 void ShowerVariables::persistentInput(PersistentIStream & is, int) {
-  is >> _multiScaleShowerMode
-     >> _cutoffQCDMassScale
+  is >> _cutoffQCDMassScale
      >> _cutoffQEDMassScale
      >> _cutoffEWKMassScale
      >> _kinCutoffScale
      >> _meCorrMode
-     >> _qqgPSMode
      >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> _a >> _b >> _c
      >> _globalParameters
-     >> _decay_shower_partition >> _use_me_for_t2;
+     >> _finalFinalConditions
+     >> _initialFinalDecayConditions >> _useMEForT2;
 }
 
 ClassDescription<ShowerVariables> ShowerVariables::initShowerVariables;
@@ -108,17 +109,6 @@ void ShowerVariables::Init() {
 
   static ClassDocumentation<ShowerVariables> documentation
     ("This class is responsible for keeping all of the constraints on the showering.");
-
-  static Switch<ShowerVariables, int> interfaceMultiScaleShowerMode
-    ("OnOffMultiScaleShowerMode",
-     "Choice of the multi-scale shower mode",
-     &ShowerVariables::_multiScaleShowerMode, 1, false, false);
-  static SwitchOption interfaceMultiScaleShowerMode0
-    (interfaceMultiScaleShowerMode,"MultiScaleShower-OFF",
-     "multi-scale shower is OFF", 0);
-  static SwitchOption interfaceMultiScaleShowerMode1
-    (interfaceMultiScaleShowerMode,"MultiScaleShower-ON",
-     "multi-scale shower is ON", 1);
 
   static Switch<ShowerVariables, int> ifaceMECorrMode
     ("MECorrMode",
@@ -132,20 +122,6 @@ void ShowerVariables::Init() {
     (ifaceMECorrMode,"MEC-hard","only hard on", 2);
   static SwitchOption soft
     (ifaceMECorrMode,"MEC-soft","only soft on", 3);
-
-  static Switch<ShowerVariables, int> ifaceqqgPSMode
-    ("qqgPSMode",
-     "Choice of initial conditions, tested for qqg only",
-     &ShowerVariables::_qqgPSMode, 0, false, false);
-  static SwitchOption symm
-    (ifaceqqgPSMode,"PS-symm",
-     "most symmetric choice of initial conditions (default)", 0);
-  static SwitchOption asy
-    (ifaceqqgPSMode,"PS-asy",
-     "most asymmetric choice of initial conditions, quark larger Q0", 1);
-  static SwitchOption rnd
-    (ifaceqqgPSMode,"PS-rnd",
-     "asymmetric, large Q0 assigned randomly", 2);
 
   static Parameter<ShowerVariables,Energy>
     interfaceCutoffQCD ("CutoffQCDMassScale",
@@ -200,30 +176,57 @@ void ShowerVariables::Init() {
      &ShowerVariables::_inputparticlesDecayInShower, -1, 0l, -10000000l, 10000000l,
      false, false, Interface::limited);
 
-  static Switch<ShowerVariables,unsigned int> interfaceDecayShowerPartition
-    ("DecayShowerPartition",
-     "The choice of the limits on the evolution scale for the decay shower.",
-     &ShowerVariables::_decay_shower_partition, 0, false, false);
-  static SwitchOption interfaceDecayShowerPartitionSymmetric
-    (interfaceDecayShowerPartition,
+  static Switch<ShowerVariables,unsigned int> interfaceFinalFinalConditions
+    ("FinalFinalConditions",
+     "The initial conditions for the shower of a final-final colour connection",
+     &ShowerVariables::_finalFinalConditions, 0, false, false);
+  static SwitchOption interfaceFinalFinalConditionsSymmetric
+    (interfaceFinalFinalConditions,
      "Symmetric",
      "The symmetric choice",
      0);
-  static SwitchOption interfaceDecayShowerPartitionMaximal
-    (interfaceDecayShowerPartition,
-     "Maximal",
-     "Maximum radiation from the outgoing particle",
+  static SwitchOption interfaceFinalFinalConditionsColoured
+    (interfaceFinalFinalConditions,
+     "Coloured",
+     "Maximal radiation from the coloured particle",
      1);
-  static SwitchOption interfaceDecayShowerPartitionSmooth
-    (interfaceDecayShowerPartition,
+  static SwitchOption interfaceFinalFinalConditionsAntiColoured
+    (interfaceFinalFinalConditions,
+     "AntiColoured",
+     "Maximal emission from the anticoloured particle",
+     2);
+  static SwitchOption interfaceFinalFinalConditionsRandom
+    (interfaceFinalFinalConditions,
+     "Random",
+     "Randomly selected maximal emission from one of the particles",
+     3);
+
+  static Switch<ShowerVariables,unsigned int> interfaceInitialFinalDecayConditions
+    ("InitialFinalDecayConditions",
+     "The initial conditions for the shower of an initial-final"
+     " decay colour connection.",
+     &ShowerVariables::_initialFinalDecayConditions, 0, false, false);
+  static SwitchOption interfaceInitialFinalDecayConditionsSymmetric
+    (interfaceInitialFinalDecayConditions,
+     "Symmetric",
+     "The symmetric choice",
+     0);
+  static SwitchOption interfaceInitialFinalDecayConditionsMaximal
+    (interfaceInitialFinalDecayConditions,
+     "Maximal",
+     "Maximal radiation from the decay product",
+     1);
+  static SwitchOption interfaceInitialFinalDecayConditionsSmooth
+    (interfaceInitialFinalDecayConditions,
      "Smooth",
      "Smooth matching in the soft limit",
      2);
 
   static Switch<ShowerVariables,bool> interfaceUseMEForT2
     ("UseMEForT2",
-     "Use the matrix element correction, if available to fill the T2 region for the decay shower and don't fill using the shower",
-     &ShowerVariables::_use_me_for_t2, false, false, false);
+     "Use the matrix element correction, if available to fill the T2"
+     " region for the decay shower and don't fill using the shower",
+     &ShowerVariables::_useMEForT2, false, false, false);
   static SwitchOption interfaceUseMEForT2Shower
     (interfaceUseMEForT2,
      "Shower",

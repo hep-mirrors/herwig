@@ -9,6 +9,7 @@
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/PDT/WidthGenerator.h>
 #include <ThePEG/Helicity/HelicityDefinitions.h>
+#include <ThePEG/Repository/EventGenerator.h>
 #include "VertexBase.fh"
 
 namespace Herwig {
@@ -39,11 +40,6 @@ public:
   
   /** @name Standard constructors and destructors. */
   //@{
-  /**
-   * Default constructor.
-   */
-  inline VertexBase();
-
   /**
    * Copy-constructor.
    */
@@ -101,7 +97,7 @@ public:
    * @param npoint The number of external particles.
    * @param kine Whether the kinematic invariants should be calculated.
    */
-  inline VertexBase(unsigned int npoint,bool kine=false);
+  inline VertexBase(unsigned int npoint=0,bool kine=false);
   //@}
 
 public:

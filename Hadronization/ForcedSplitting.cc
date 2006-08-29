@@ -1,24 +1,69 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the ForcedSplitting class.
+//
+
 #include "ForcedSplitting.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
-#include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Interface/ClassDocumentation.h>
-#include <ThePEG/Handlers/DecayHandler.h>
 #include <ThePEG/PDT/EnumParticles.h>
 
-using namespace std;
-using namespace ThePEG;
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "ForcedSplitting.tcc"
+#endif
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "Remnant.h"
+#include "ThePEG/Handlers/EventHandler.h"
+
 using namespace Herwig;
 
+void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
+  os << _kinCutoff;
+}
 
-// This is the routine that is called to start the algorithm. 
-void ForcedSplitting::handle(EventHandler &ch, const tPVector &tagged,
-			     const Hint &hint) throw(Veto,Stop,Exception) 
+void ForcedSplitting::persistentInput(PersistentIStream & is, int) {
+  is >> _kinCutoff;
+}
+
+ClassDescription<ForcedSplitting> ForcedSplitting::initForcedSplitting;
+// Definition of the static class description member.
+
+void ForcedSplitting::Init() {
+  static ClassDocumentation<ForcedSplitting> documentation
+    ("This class is responsible for correctly tying the parton shower to "
+     "the remaining flavours in the hadron and producing the correct remnant");
+
+  static Parameter<ForcedSplitting,Energy> interfaceKinCutoff
+    ("KinCutoff",
+     "Parameter kinCutoff used to constrain qtilde",
+     &ForcedSplitting::_kinCutoff, GeV, 0.75*GeV, 0.5*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+}
+
+tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep)
 {
+  // extract the remnants
+  tPVector rems;
+  tPVector output;
+  for(unsigned int ix=0;ix<tagged.size();++ix)
+    {
+      if(tagged[ix]->id()!=ExtraParticleID::Remnant) output.push_back(tagged[ix]);
+      else rems.push_back(tagged[ix]);
+    }
+  // if none return
+  if(rems.size()==0) return output;
+  // must be two
+  if(rems.size()!=2) throw Exception() << "Must be either no Remnants or two in "
+				       << "ForcedSplitting::split()"
+				       << Exception::eventerror;
   try
     {
       // Find beam particles
-      PPair beam = ch.currentCollision()->incoming();
+      PPair beam = generator()->currentEventHandler ()->currentCollision()->incoming();
       PVector::const_iterator it;
       tPPtr rem[2];
       tPPtr part1,part2;
@@ -34,9 +79,8 @@ void ForcedSplitting::handle(EventHandler &ch, const tPVector &tagged,
       }
       double x1(part1->momentum().rho()/beam.first->momentum().rho());
       double x2(part2->momentum().rho()/beam.second->momentum().rho());
-      tStepPtr step = ch.newStep();
-      if(rem[0]) split(rem[0],part1,step,x1);
-      if(rem[1]) split(rem[1],part2,step,x2);
+      if(rem[0]) split(rem[0],part1,pstep,x1);
+      if(rem[1]) split(rem[1],part2,pstep,x2);
       // get the masses of the remnants
       Energy mrem[2];
       Lorentz5Momentum ptotal,pnew[2];
@@ -73,51 +117,51 @@ void ForcedSplitting::handle(EventHandler &ch, const tPVector &tagged,
       rem[0]->set5Momentum(prem[0]);
       rem[1]->set5Momentum(prem[1]);
       // boost the decay products
-      Lorentz5Momentum ptemp;
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  Hep3Vector btorest(-pnew[ix].boostVector());
-	  Hep3Vector bfmrest( prem[ix].boostVector());
-	  for(unsigned int iy=0;iy<rem[ix]->children().size();++iy)
-	    {
-	      ptemp=rem[ix]->children()[iy]->momentum();
-	      ptemp.boost(btorest);
-	      ptemp.boost(bfmrest);
-	      rem[ix]->children()[iy]->set5Momentum(ptemp);
-	    }
+      for(unsigned int ix=0;ix<2;++ix) {
+	// factors for Lorentz transform
+	Energy ea(pnew[ix].e()),eb(prem[ix].e()),mr(prem[ix].mass());
+	Energy2 mr2(sqr(mr));
+	long double beta1 = -pnew[ix].pz()/pnew[ix].e();
+	long double beta2 =  prem[ix].pz()/prem[ix].e();
+	long double gamma = (ea*eb)/mr2;
+	long double sum   = beta1+beta2;
+	long double prod  = 1.+beta1*beta2;
+	// small approx for accuracy
+	if(abs(beta1)<1e-5||abs(beta2)<1e-5) {
+	  prod = 0.5*mr2*(sqr(1./ea)+sqr(1./eb))
+	    +0.125*sqr(mr2)*sqr(1./ea+1./eb)*sqr(1./ea-1./eb);
+	  sum = 0.5*mr2*(1./ea+1./eb)*(1./ea-1./eb)*
+	    (1.+0.25*mr2*(sqr(1./ea)+sqr(1./eb)));
+	  if(beta1>0) sum*=-1.;
 	}
+	// boost the children
+	for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) {
+	  Energy pz(rem[ix]->children()[iy]->momentum().pz());
+	  Energy ee(rem[ix]->children()[iy]->momentum().e());
+	  Energy mm(rem[ix]->children()[iy]->momentum().mass());
+	  Lorentz5Momentum ptemp(0.,0.,gamma*(ee*sum+pz*prod),
+				 gamma*(pz*sum+ee*prod),mm);
+	  rem[ix]->children()[iy]->set5Momentum(ptemp);
+	}
+      }
     }
   catch(std::exception & e) 
     {throw Exception() << "Caught exception\n"
 		       << e.what() 
 		       <<  "\nin ForcedSplitting::handle() "
 		       << Exception::eventerror;}
+  // insert the products of the splitting in the vector
+  for(unsigned int ix=0;ix<rems.size();++ix)
+    {
+      for(unsigned int iy=0;iy<rems[ix]->children().size();++iy)
+	output.push_back(rems[ix]->children()[iy]);
+    }
+  return output;
 }
 
-void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
-  os << _kinCutoff;
-}
 
 
-void ForcedSplitting::persistentInput(PersistentIStream & is, int) {
-  is >> _kinCutoff;
-}
 
-
-ClassDescription<ForcedSplitting> ForcedSplitting::initForcedSplitting;
-// Definition of the static class description member.
-
-void ForcedSplitting::Init() {
-  static ClassDocumentation<ForcedSplitting> documentation
-    ("This class is responsible for correctly tying the parton shower to "
-     "the remaining flavours in the hadron and producing the correct remnant");
-
-  static Parameter<ForcedSplitting,Energy> interfaceKinCutoff
-    ("KinCutoff",
-     "Parameter kinCutoff used to constrain qtilde",
-     &ForcedSplitting::_kinCutoff, GeV, 0.75*GeV, 0.5*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-}
 
 /****
  * Now we need to force the final (up to two) splittings so that we are left

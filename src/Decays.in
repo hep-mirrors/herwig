@@ -1,9 +1,11 @@
-#
-# first lets check that extra particles are read in correctly
-#
-#read HerwigParticles.in
-#
+# create the DecayHandler
+create Herwig++::HwDecayHandler /Defaults/Handlers/DecayHandler
+set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
+# make directory
 mkdir /Defaults/Decays/
+#
+#  create the standard fortran decayers
+#
 library Hw64Decay.so
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME0
 create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME100
@@ -16,7 +18,6 @@ create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME0
 create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME100
 create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME101
 create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME130
-#
 create /Herwig++/MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
 #
 set /Defaults/Decays/DecayME0:MECode 0
@@ -34,13 +35,16 @@ set /Defaults/Decays/QDecayME100:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME101:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/QDecayME130:GlobalParameters /Defaults/theGlobalParameters
 set /Defaults/Decays/Mambo:GlobalParameters /Defaults/theGlobalParameters
+#
+# create the decays for perturbative particles, i.e. top, W and Z
+#
 library HwSMVertex.so
-create  Herwig++::SMTopDecayer /Defaults/Decays/Top HwPerturbativeDecay.so
-set /Defaults/Decays/Top:Initialize 1
-set /Defaults/Decays/Top:Iteration 1
-set /Defaults/Decays/Top:Points 1000
-
-
+create Herwig++::SMTopDecayer            /Defaults/Decays/Top HwPerturbativeDecay.so
+create Herwig++::SMWZDecayer             /Defaults/Decays/WZ  HwPerturbativeDecay.so
+create Herwig++::SMHiggsFermionsDecayer  /Defaults/Decays/Hff HwPerturbativeHiggsDecay.so
+create Herwig++::SMHiggsWWDecayer        /Defaults/Decays/HWW HwPerturbativeHiggsDecay.so
+set /Defaults/Decays/HWW:BreitWigner 0
+set /Defaults/Decays/HWW:Power 0.0
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files
@@ -52,4 +56,3 @@ read Hw64Decays.in
 #
 # e.g. read MyImprovedDecays.in
 #
-read SMWZDecays.in

@@ -18,8 +18,6 @@
 
 using namespace Herwig;
 
-TopDecayMECorrection::~TopDecayMECorrection() {}
-
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
     os << _initialenhance << _finalenhance << _xg_sampling << _use_me_for_t2;
 }
@@ -96,7 +94,7 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
   showerVariables()->initialStateRadiationEnhancementFactor(_initialenhance);
   showerVariables()->finalStateRadiationEnhancementFactor(_finalenhance);
   // set the option for the partitioning of the phase space here
-  _use_me_for_t2=showerVariables()->use_me_for_t2();
+  _use_me_for_t2=showerVariables()->useMEForT2();
   // reduced mass parameters
   _a=sqr(_ma/_mt);
   _g=sqr(_mg/_mt);
@@ -277,10 +275,9 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   // in the rest frame of b and does a random rotation about z:
   LorentzRotation    rot1 = rotateToZ(rot0*pa_lab);
   // Calculate the boost from the b rest frame back to the lab:
-  HepLorentzRotation invrot0 = rot0.inverse();
-  // Calculate the inverse of the random rotation about the z-axis and the 
+  // and the inverse of the random rotation about the z-axis and the 
   // rotation required to align a with +z:
-  LorentzRotation    invrot1 = rot1.inverse();
+  HepLorentzRotation invrot = rot0.inverse()*rot1.inverse();
 
   // ************************************ //
   // Now we construct the momenta in the  //
@@ -291,7 +288,6 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   // ************************************ //
   Lorentz5Momentum pa_brf, pb_brf(_mt), pc_brf, pg_brf;
   // First we set the top quark to being on-shell and at rest.
-  pb_brf.setE(_mt);
   // Second we set the energies of c and g,
   pc_brf.setE(0.5*_mt*(2.-_xa-_xg));
   pg_brf.setE(0.5*_mt*_xg);
@@ -320,13 +316,13 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   // ************************************ //
   // As in herwig6507 we assume that, in the rest frame
   // of b, we have aligned the W boson momentum in the 
-  // +Z direction by rot2*rot1*rot0*pa_lab, therefore
+  // +Z direction by rot1*rot0*pa_lab, therefore
   // we obtain the new pa_lab by applying:
-  // invrot0*invrot1*invrot2*pa_brf.
-  pa_lab = invrot0*invrot1*pa_brf;    
-  pb_lab = invrot0*invrot1*pb_brf;    
-  pc_lab = invrot0*invrot1*pc_brf;    
-  pg_lab = invrot0*invrot1*pg_brf;    
+  // invrot*pa_brf.
+  pa_lab = invrot*pa_brf;    
+  pb_lab = invrot*pb_brf;    
+  pc_lab = invrot*pc_brf;    
+  pg_lab = invrot*pg_brf;    
   fs.push_back(pc_lab); 
   fs.push_back(pa_lab); 
   fs.push_back(pg_lab); 
@@ -391,6 +387,10 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 		       << " " << xa << " " << wgt << " " << _initialenhance << endl;
 		  wgt=1.;
 		}
+              // This next `if' prevents the hardest emission from the 
+              // top shower ever entering the so-called T2 region of the
+              // phase space if that region is to be populated by the hard MEC.
+              if(_use_me_for_t2&&xg>xgbcut(_ktb)) { wgt = 0.; }
 	      // compute veto from weight
 	      veto = !UseRandom::rndbool(wgt);
 	    }

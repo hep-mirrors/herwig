@@ -59,7 +59,6 @@ VectorWaveFunction VVSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
 					   vec.pz()+sca.pz(),vec.e() +sca.e()); 
   // calculate the coupling
   setCoupling(q2,out,Pvec,Psca);
-  Complex ii(0.,1.);
   // prefactor
   Energy2 p2=pout.m2();
   Energy mass = out->mass();

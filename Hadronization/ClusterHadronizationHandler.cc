@@ -25,14 +25,10 @@
 #include "Herwig++/Utilities/Smearing.h"
 #include "CluHadConfig.h"
 #include "Cluster.h"  
+#include "Remnant.h"
 #include <iostream>
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-ClusterHadronizationHandler::~ClusterHadronizationHandler() {}
-
 
 void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os) 
   const {
@@ -42,7 +38,8 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _colourReconnector
      << _clusterFissioner
      << _lightClusterDecayer
-     << _clusterDecayer;
+     << _clusterDecayer
+     << _forcedSplitter;
 }
 
 
@@ -53,9 +50,9 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _colourReconnector
      >> _clusterFissioner
      >> _lightClusterDecayer
-     >> _clusterDecayer;
+     >> _clusterDecayer
+     >> _forcedSplitter;
 }
-
 
 ClassDescription<ClusterHadronizationHandler> ClusterHadronizationHandler::initClusterHadronizationHandler;
 // Definition of the static class description member.
@@ -71,36 +68,48 @@ void ClusterHadronizationHandler::Init() {
 		      "A reference to the GlobalParameters object", 
 		      &Herwig::ClusterHadronizationHandler::_globalParameters,
 		      false, false, true, false);
+
   static Reference<ClusterHadronizationHandler,PartonSplitter> 
     interfacePartonSplitter("PartonSplitter", 
 		      "A reference to the PartonSplitter object", 
 		      &Herwig::ClusterHadronizationHandler::_partonSplitter,
 		      false, false, true, false);
+
   static Reference<ClusterHadronizationHandler,ClusterFinder> 
     interfaceClusterFinder("ClusterFinder", 
 		      "A reference to the ClusterFinder object", 
 		      &Herwig::ClusterHadronizationHandler::_clusterFinder,
 		      false, false, true, false);
+
   static Reference<ClusterHadronizationHandler,ColourReconnector> 
     interfaceColourReconnector("ColourReconnector", 
 		      "A reference to the ColourReconnector object", 
 		      &Herwig::ClusterHadronizationHandler::_colourReconnector,
 		      false, false, true, false);
+
   static Reference<ClusterHadronizationHandler,ClusterFissioner> 
     interfaceClusterFissioner("ClusterFissioner", 
 		      "A reference to the ClusterFissioner object", 
 		      &Herwig::ClusterHadronizationHandler::_clusterFissioner,
 		      false, false, true, false);
+
   static Reference<ClusterHadronizationHandler,LightClusterDecayer> 
     interfaceLightClusterDecayer("LightClusterDecayer", 
 		    "A reference to the LightClusterDecayer object", 
 		    &Herwig::ClusterHadronizationHandler::_lightClusterDecayer,
 		    false, false, true, false);
+
   static Reference<ClusterHadronizationHandler,ClusterDecayer> 
     interfaceClusterDecayer("ClusterDecayer", 
 		       "A reference to the ClusterDecayer object", 
 		       &Herwig::ClusterHadronizationHandler::_clusterDecayer,
 		       false, false, true, false);
+
+  static Reference<ClusterHadronizationHandler,ForcedSplitting> interfaceForcedSplitting
+    ("ForcedSplitting",
+     "Object responsible for the forced splitting of the Remnant",
+     &ClusterHadronizationHandler::_forcedSplitter, false, false, true, false, false);
+
 }
 
 
@@ -121,9 +130,11 @@ handle(EventHandler & ch, const tPVector & tagged,
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"At the beginning of ClusterHadronizationHandler");
   }
+  // split the remnants if needed
+  tPVector partonsA=_forcedSplitter->split(tagged,pstep);
 
   // split the gluons
-  tPVector partons=_partonSplitter->split(tagged,pstep);
+  tPVector partons=_partonSplitter->split(partonsA,pstep);
 
   if(HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization) { 
     printStep(pstep,"After PartonSplitter");

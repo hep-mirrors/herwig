@@ -27,8 +27,6 @@ using namespace Herwig;
 
 const Complex MEPP2HiggsJet::_epsi = Complex(0.,-1.e-20);
 
-MEPP2HiggsJet::~MEPP2HiggsJet() {}
-
 unsigned int MEPP2HiggsJet::orderInAlphaS() const {
   return 3;
 }
@@ -611,13 +609,13 @@ MEPP2HiggsJet::diagrams(const DiagramVector & diags) const {
 Selector<const ColourLines *>
 MEPP2HiggsJet::colourGeometries(tcDiagPtr diag) const {
   // colour lines for q qbar -> h0 g
-  static ColourLines cqqbar("1 3 5,-2 -3 -5");
+  static const ColourLines cqqbar("1 3 5,-2 -3 -5");
   // colour lines for q g -> h0 q
-  static ColourLines cqg("1 2 -3, 3 -2 5");
+  static const ColourLines cqg("1 2 -3, 3 -2 5");
   // colour lines for qbar q -> h0 qbar
-  static ColourLines cqbarg("-1 -2 3, -3 2 -5");
+  static const ColourLines cqbarg("-1 -2 3, -3 2 -5");
   // colour lines for g g -> h0 g
-  static ColourLines cgg[6]={ColourLines("1 2 5, -3 -5, 3 -2 -1"),
+  static const ColourLines cgg[6]={ColourLines("1 2 5, -3 -5, 3 -2 -1"),
 			     ColourLines("-1 -2 -5, 3 5, -3 2 1"),
 			     ColourLines("1 5, -1 -2 3, -3 2 -5"),
 			     ColourLines("-1 -5, 1 2 -3, 3 -2 5"),

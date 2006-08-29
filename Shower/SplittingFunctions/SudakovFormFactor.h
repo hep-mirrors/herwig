@@ -204,9 +204,11 @@ public:
    * branching then it returns Energy().
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
+   * @param Whether this is thge charge conjugate of the branching defined in the
+   * splitting function.
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids);
+				           const IdList &ids,bool cc);
 
   /**
    * Return the scale of the next time-like branching. If there is no 
@@ -215,11 +217,13 @@ public:
    * @param stoppingScale stopping scale for the evolution
    * @param minmass The minimum mass allowed for the spake-like particle.
    * @param ids The PDG codes of the particles in the splitting
+   * @param Whether this is thge charge conjugate of the branching defined in the
+   * splitting function.
    */
   virtual Energy generateNextDecayBranching(const Energy startingScale,
 					    const Energy stoppingScale,
 					    const Energy minmass,
-					    const IdList &ids);
+					    const IdList &ids, bool cc);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -227,9 +231,12 @@ public:
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum
+   * @param Whether this is thge charge conjugate of the branching defined in the
+   * splitting function.
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
-		                            const IdList &ids,double x);
+		                            const IdList &ids,double x,
+					    bool cc);
 
 
   //@}
@@ -324,8 +331,10 @@ protected:
    *  Initialize the values of the cut-offs and scales
    * @param tmin The minimum scale
    * @param ids  The ids of the partics in the branching
+   * @param Whether this is thge charge conjugate of the branching defined in the
+   * splitting function.
    */
-  void initialize(const IdList & ids,Energy2 &tmin);
+  void initialize(const IdList & ids,Energy2 &tmin,bool cc);
 
   /**
    * The various different vetos which need to be applied using the veto
@@ -363,11 +372,9 @@ protected:
    *  The veto on the splitting function.
    * @param z The energy fraction
    * @param t The scale
-   * @param ids The PDG codes of the particles in the splitting 
    * @return true if vetoed
    */
-  inline bool SplittingFnVeto(const double z, const Energy2 t, 
-		       const IdList &ids) const;
+  inline bool SplittingFnVeto(const double z, const Energy2 t) const;
   //@}
 
   /**

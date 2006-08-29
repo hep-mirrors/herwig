@@ -6,7 +6,6 @@
 
 namespace Herwig {
 
-
 inline ClusterFissioner::ClusterFissioner() :
   _clMax( 3.35*GeV ),
   _clPow( 2.0 ),
@@ -14,19 +13,6 @@ inline ClusterFissioner::ClusterFissioner() :
   _pSplit2( 1.0 ),
   _btClM( 1.0*GeV ),
   _iopRem( 1 )
-{}
-
-
-inline ClusterFissioner::ClusterFissioner(const ClusterFissioner & x)
-  : ThePEG::HandlerBase(x),
-	     _hadronsSelector( x._hadronsSelector ),
-	     _globalParameters( x._globalParameters ),
-	     _clMax( x._clMax ),
-             _clPow( x._clPow ),
-             _pSplit1( x._pSplit1 ),
-             _pSplit2( x._pSplit2 ),
-             _btClM( x._btClM ),
-             _iopRem( x._iopRem )
 {}
 
 inline IBPtr ClusterFissioner::clone() const {

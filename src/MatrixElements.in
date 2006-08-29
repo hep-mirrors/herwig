@@ -1,0 +1,58 @@
+# change to the directory
+cd /Defaults/MatrixElements
+
+#
+#  create the matrix elements
+#
+library HwME.so
+#
+#  e+e- matrix elements
+#
+# e+e- > q qbar
+create Herwig++::MEee2gZ2qq MEee2gZ2qq
+set MEee2gZ2qq:MinimumFlavour 1
+set MEee2gZ2qq:MaximumFlavour 5
+
+#
+#  hadron-hadron matrix elements
+#
+# q qbar -> gamma/Z -> l+l-
+create Herwig++::MEqq2gZ2ff MEqq2gZ2ff
+set MEqq2gZ2ff:Process 3
+# q qbar to W -> l nu
+create Herwig++::MEqq2W2ff  MEqq2W2ff
+# qqbar/gg -> gamma gamma
+create Herwig++::MEPP2GammaGamma MEGammaGamma
+# hadron-hadron to gamma+jet
+create Herwig++::MEPP2GammaJet   MEGammaJet
+# hadron-hadron to higgs+jet
+create Herwig++::MEPP2HiggsJet   MEHiggsJet
+# QCD 2-to-2
+create Herwig++::MEQCD2to2       MEQCD2to2
+# qqbar/gg -> t tbar
+create Herwig++::MEPP2QQ         MEHeavyQuark        
+
+#
+# Setup the Subprocesses
+#
+cd /Defaults/Handlers
+
+#
+# For e+e-
+#
+create ThePEG::SubProcessHandler EE2QQ
+insert EE2QQ:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2qq
+set EE2QQ:PartonExtractor EEExtractor
+
+#
+# For hadron-hadron (by default only gamma/Z switched on)
+#
+create ThePEG::SubProcessHandler SimpleQCD
+insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ff
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2W2ff
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaGamma
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaJet
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggsJet
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEQCD2to2
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHeavyQuark
+set SimpleQCD:PartonExtractor QCDExtractor

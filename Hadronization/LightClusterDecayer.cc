@@ -18,13 +18,7 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/CheckId.h"
 
-
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-LightClusterDecayer::~LightClusterDecayer() {}
-
 
 void LightClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {os << _hadronsSelector << _B1Lim;}

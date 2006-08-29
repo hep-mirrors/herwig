@@ -26,14 +26,11 @@
 
 using namespace Herwig;
 
-MEQCD2to2::~MEQCD2to2() {}
-
 void MEQCD2to2::doinit() throw(InitException) {
   // call the base class
   ME2to2Base::doinit();
   // get the vedrtex pointers from the SM object
-  Ptr<Herwig::StandardModel>::transient_const_pointer hwsm=
-    dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm)
     {
@@ -744,8 +741,6 @@ double MEQCD2to2::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
  	    }
  	}
     }
-   // identical particle symmetry factor if needed
-    if(diagon[0]&&diagon[1]){output*=0.5;}
     // test code vs me from ESW
 //     Energy2 u(uHat()),t(tHat()),s(sHat());
 //     double alphas(4.*pi*SM().alphaS(mt));
@@ -892,7 +887,7 @@ void MEQCD2to2::getDiagrams() const {
 Selector<const ColourLines *>
 MEQCD2to2::colourGeometries(tcDiagPtr diag) const {
   // colour lines for gg to gg
-  static ColourLines cgggg[12]={ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5"),
+  static const ColourLines cgggg[12]={ColourLines("1 -2, -1 -3 -4, 4 -5, 2 3 5"),
 				ColourLines("-1 2, 1 3 4, -4 5, -2 -3 -5"),
 				ColourLines("1 -2, -1 -3 -5, 5 -4, 2 3 4"),
 				ColourLines("-1 2, 1 3 5, -5 4, -2 -3 -4"),
@@ -905,33 +900,33 @@ MEQCD2to2::colourGeometries(tcDiagPtr diag) const {
 				ColourLines("1 5, -1 -2 -4, 3 4, -3 2 -5"),
 				ColourLines("-1 -5, 1 2 4, -3 -4, 3 -2 5")};
   // colour lines for gg to q qbar
-  static ColourLines cggqq[4]={ColourLines("1  4, -1 -2 3, -3 -5"),
+  static const ColourLines cggqq[4]={ColourLines("1  4, -1 -2 3, -3 -5"),
 			       ColourLines("3  4, -3 -2 1, -1 -5"),
 			       ColourLines("2 -1,  1  3 4, -2 -3 -5"),
 			       ColourLines("1 -2, -1 -3 -5, 2 3 4")};
   // colour lines for q qbar to gg
-  static ColourLines cqqgg[4]={ColourLines("1 4, -4 -2 5, -3 -5"),
+  static const ColourLines cqqgg[4]={ColourLines("1 4, -4 -2 5, -3 -5"),
 			       ColourLines("1 5, -3 -4, 4 -2 -5"),
 			       ColourLines("1 3 4, -4 5, -2 -3 -5"),
 			       ColourLines("1 3 5, -5 4, -2 -3 -4")};
   // colour lines for q g to q g
-  static ColourLines cqgqg[4]={ColourLines("1 -2, 2 3 5, 4 -5"),
+  static const ColourLines cqgqg[4]={ColourLines("1 -2, 2 3 5, 4 -5"),
 			       ColourLines("1 5, 3 4,-3 2 -5 "),
 			       ColourLines("1 2 -3, 3 5, -5 -2 4"),
 			       ColourLines("1 -2 5,3 2 4,-3 -5")};
   // colour lines for qbar g -> qbar g
-  static ColourLines cqbgqbg[4]={ColourLines("-1 2, -2 -3 -5, -4 5"),
+  static const ColourLines cqbgqbg[4]={ColourLines("-1 2, -2 -3 -5, -4 5"),
 				 ColourLines("-1 -5, -3 -4, 3 -2 5"),
 				 ColourLines("-1 -2 3, -3 -5, 5 2 -4"),
 				 ColourLines("-1 2 -5,-3 -2 -4, 3 5")};
   // colour lines for q q -> q q 
-  static ColourLines cqqqq[2]={ColourLines("1 2 5,3 -2 4"),
+  static const ColourLines cqqqq[2]={ColourLines("1 2 5,3 -2 4"),
 			       ColourLines("1 2 4,3 -2 5")};
   // colour lines for qbar qbar -> qbar qbar
-  static ColourLines cqbqbqbqb[2]={ColourLines("-1 -2 -5,-3 2 -4"),
+  static const ColourLines cqbqbqbqb[2]={ColourLines("-1 -2 -5,-3 2 -4"),
 				   ColourLines("-1 -2 -4,-3 2 -5")};
   // colour lines for q qbar -> q qbar
-  static ColourLines cqqbqqb[2]={ColourLines("1 3 4,-2 -3 -5"),
+  static const ColourLines cqqbqqb[2]={ColourLines("1 3 4,-2 -3 -5"),
 				 ColourLines("1 2 -3,4 -2 -5")};
   // select the colour flow (as all ready picked just insert answer)
   Selector<const ColourLines *> sel;
@@ -1294,9 +1289,9 @@ void MEQCD2to2::constructVertex(tSubProPtr sub)
   for(unsigned int ix=0;ix<4;++ix)
     {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
   // construct the vertex
-  VertexPtr hardvertex=new_ptr(HardVertex());
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
-  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(_me);
+  hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
 }

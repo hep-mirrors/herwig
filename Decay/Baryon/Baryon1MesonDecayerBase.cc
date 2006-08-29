@@ -234,7 +234,7 @@ halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
   Complex A1,A2,B1,B2;
   halfHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			 A1,A2,B1,B2);
-  Complex lS,rS,lV,rV,scalar,ii(0.,1.);
+  Complex lS,rS,lV,rV,scalar;
   // couplings for an incoming particle
   if(inpart.id()>0){lS=(A2-B2);rS=(A2+B2);lV=(A1-B1);rV=(A1+B1);}
   else{lS=-conj(A2+B2);rS=-conj(A2-B2);lV=conj(A1-B1);rV=conj(A1+B1);}
@@ -245,7 +245,7 @@ halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
 			   decay[1]->dataPtr()->iSpin());
   vector<unsigned int> ispin(3);
   LorentzPolarizationVector svec;
-  Complex s2m4,s1m3,s1p3,s2p4,s3s2,s4s1,s1s4,s2s3,s3s1,s4s2,s1s3,s2s4,prod;
+  Complex prod;
   //Complex output(0.);
   unsigned int ix,iy;
   for(ix=0;ix<2;++ix)
@@ -405,7 +405,7 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
   halfThreeHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			      A1,A2,A3,B1,B2,B3);
   Energy msum(inpart.mass()+decay[0]->mass());
-  Complex lS,rS,lV,rV,scalar,ii(0.,1.),left,right;
+  Complex lS,rS,lV,rV,scalar,left,right;
   // incoming particle
   if(inpart.id()>0)
     {
@@ -695,7 +695,7 @@ threeHalfHalfVector(bool vertex, const int ichan,const Particle & inpart,
   threeHalfHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			      A1,A2,A3,B1,B2,B3);
   Energy msum(inpart.mass()+decay[0]->mass());
-  Complex lS,rS,lV,rV,scalar,ii(0.,1.),left,right;
+  Complex lS,rS,lV,rV,scalar,left,right;
   // incoming particle
   if(inpart.id()>0)
     {

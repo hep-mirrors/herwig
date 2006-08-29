@@ -29,11 +29,6 @@ public:
    * Default constructor.
    */
   inline RSModelFFGRVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline RSModelFFGRVertex(const RSModelFFGRVertex &);
   //@}
   
 public:
@@ -109,7 +104,7 @@ private:
   /**
    * Pointer to the model object.
    */
-  SMPtr _theModel;
+  tcSMPtr _theModel;
 
   /**
    * The coupling.

@@ -7,7 +7,7 @@ namespace Herwig{
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMFFPVertex::SMFFPVertex() 
+  inline SMFFPVertex::SMFFPVertex() : _charge(17,0.0)
 {
   // zero the couplings (will be set in doinit)
   for(int ix=0;ix<17;++ix){_charge[ix]=0.;};
@@ -23,11 +23,6 @@ inline SMFFPVertex::SMFFPVertex()
   setList(first,second,third);
 }
 
-inline SMFFPVertex::SMFFPVertex(const SMFFPVertex & x)
-  : FFVVertex(x), _theSM(x._theSM), _couplast(x._couplast),
-    _q2last(x._q2last)
-{for(int ix=0;ix<17;++ix){_charge[ix]=x._charge[ix];}}
-
 inline IBPtr SMFFPVertex::clone() const {
   return new_ptr(*this);
 }
@@ -37,6 +32,7 @@ inline IBPtr SMFFPVertex::fullclone() const {
 }
 
 inline void SMFFPVertex::doinit() throw(InitException) {
+  _theSM = generator()->standardModel();
   for(int ix=1;ix<4;++ix)
     {
       _charge[2*ix-1]  = (_theSM->ed());

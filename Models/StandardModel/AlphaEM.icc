@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the AlphaEM class.
+//
+
+namespace Herwig {
+
+inline AlphaEM::AlphaEM() : _me(0.),_mmu(0.),_mtau(0.), _mtop(0.) 
+{}
+
+inline IBPtr AlphaEM::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr AlphaEM::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

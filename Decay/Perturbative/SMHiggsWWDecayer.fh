@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SMHiggsWWDecayer class.
+//
+#ifndef HERWIG_SMHiggsWWDecayer_FH
+#define HERWIG_SMHiggsWWDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class SMHiggsWWDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SMHiggsWWDecayer,SMHiggsWWDecayerPtr);
+
+}
+
+#endif

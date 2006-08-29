@@ -20,13 +20,10 @@ class RunningMass: public RunningMassBase {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline RunningMass();
-  //@}  
 
 public:
   
@@ -91,7 +88,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
     
 private:
@@ -131,7 +128,7 @@ private:
   /**
    * Pointer to the StandardModel object.
    */
-  SMPtr _theStandardModel;
+  tcSMPtr _theStandardModel;
 
 };
 

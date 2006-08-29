@@ -34,16 +34,6 @@ public:
    * The default constructor.
    */
   inline MEPP2HiggsJet();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEPP2HiggsJet(const MEPP2HiggsJet &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEPP2HiggsJet();
   //@}
 
 public:
@@ -328,10 +318,16 @@ private:
    * @param u   The \f$u\f$ invariant
    * @param mh2 The Higgs mass squared
    * @param mf2 The fermion mass squared.
+   * @param i Which of the stored values to use for \f$D(u,t)\f$.
+   * @param j Which of the stored values to use for \f$D(u,s)\f$.
+   * @param k Which of the stored values to use for \f$D(s,t)\f$.
+   * @param i1 Which of the stored values to use for \f$C_1(s)\f$.
+   * @param j1 Which of the stored values to use for \f$C_1(t)\f$.
+   * @param k1 Which of the stored values to use for \f$C_1(u)\f$.
    */
   inline Complex me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
-		     unsigned int ,unsigned int, unsigned int,
-		     unsigned int ,unsigned int, unsigned int) const;
+		     unsigned int i,unsigned int j, unsigned int k,
+		     unsigned int i1,unsigned int j1, unsigned int k1) const;
 
   /**
    *  The \f$M_{++-}\f$ matrix element of NBP339 (1990) 38-66.

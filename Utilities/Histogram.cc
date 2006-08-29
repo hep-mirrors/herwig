@@ -13,17 +13,17 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
+#include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
 
 Histogram::~Histogram() {}
 
 void Histogram::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
 void Histogram::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 
 ClassDescription<Histogram> Histogram::initHistogram;
@@ -32,7 +32,8 @@ ClassDescription<Histogram> Histogram::initHistogram;
 void Histogram::Init() {
 
   static ClassDocumentation<Histogram> documentation
-    ("There is no documentation for the Histogram class");
+    ("The Histogram class implements a simple histogram include data"
+     " points for comparision with experimental results.");
 
 }
 
@@ -153,3 +154,10 @@ void Histogram::chiSquared(double & chisq,
     }
 }
 
+void Histogram::normaliseToCrossSection()
+{
+  unsigned int numPoints = _globalStats.numberOfPoints();
+  if (numPoints == 0) ++numPoints;
+  _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*
+    numPoints/nanobarn;
+}

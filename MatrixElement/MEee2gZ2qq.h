@@ -38,16 +38,6 @@ public:
    * The default constructor.
    */
   inline MEee2gZ2qq();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEee2gZ2qq(const MEee2gZ2qq &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEee2gZ2qq();
   //@}
 
 public:

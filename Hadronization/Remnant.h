@@ -186,7 +186,7 @@ struct ClassTraits<Herwig::Remnant>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the Remnant class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwMRST.so"; }
+  static string library() { return "libHwHadronization.so"; }
   /** Create a Event object. */
   static TPtr create() { return TPtr::Create(Herwig::Remnant(tcEventPDPtr())); }
 };

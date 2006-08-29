@@ -8,7 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 
 namespace Herwig {
 namespace Helicity {
@@ -22,19 +21,14 @@ void SMWWWWVertex::persistentOutput(PersistentOStream & os) const {
 void SMWWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> _gamma >> _Z0 >> _wplus >> _wminus
      >> _vfact >> _sw2 >> _cw2;
-  _couplast=0.;_q2last=0.;
+  _couplast = 0.;
+  _q2last = 0.;
 }
 
 ClassDescription<SMWWWWVertex>SMWWWWVertex::initSMWWWWVertex;
 // Definition of the static class description member.
 
 void SMWWWWVertex::Init() {
-  
-  static Reference<SMWWWWVertex,StandardModelBase> interfaceSM
-    ("StandardModel",
-     "Reference to the Standard Model object",
-     &SMWWWWVertex::_theSM, false, false, true, false);
-
   static ClassDocumentation<SMWWWWVertex> documentation
     ("The SMWWWWVertex class is the implementation of the"
      " Standard Model quartic electroweka gauge boson coupling.");
@@ -53,32 +47,51 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
   int iorder[4];
   for(int ix=0;ix<4;++ix)
     {
-      if(id[ix]==22){ngamma=ngamma+1;}
-      else if(id[ix]==23){nz=nz+1;}
+      if (id[ix]==22)
+	ngamma+=1;
+      else if (id[ix]==23)
+	nz+=1;
     }
   // if photons or Z's
-  if(ngamma!=0||nz!=0)
+  if(ngamma!=0 || nz!=0)
     {
       int iy=0;
       // put the photons first
-      for(int ix=0;iy<ngamma&&ix<4;++ix)
-        {if(id[ix]==22){iorder[iy]=ix;++iy;}}
+      for(int ix=0;iy<ngamma&&ix<4;++ix) {
+	if(id[ix]==22) {
+	  iorder[iy]=ix;
+	  ++iy;
+	}
+      }
       // then the Z bosons
-      for(int ix=0;iy<ngamma+nz&&ix<4;++ix)
-        {if(id[ix]==23){iorder[iy]=ix;++iy;}}
+      for(int ix=0;iy<ngamma+nz&&ix<4;++ix) {
+	if(id[ix]==23) {
+	  iorder[iy]=ix;
+	  ++iy;
+	}
+      }
       // then the W+
-      for(int ix=0;iy<3&&ix<4;++ix)
-        {if(id[ix]==24){iorder[iy]=ix;++iy;}}
-      if(iy!=3)
+      for(int ix=0;iy<3&&ix<4;++ix) {
+	if(id[ix]==24) {
+	  iorder[iy]=ix;
+	  ++iy;
+	}
+      }
+      if (iy!=3)
         {
 	  throw HelicityConsistencyError() << "SMWWWWVertex::setCoupling"
 					   << " Error setting order" 
 					   << Exception::warning;
-	  setNorm(0.);return;
+	  setNorm(0.);
+	  return;
 	}
       // finally the W-
-      for(int ix=0;iy<4&&ix<4;++ix)
-        {if(id[ix]==-24){iorder[iy]=ix;++iy;}}
+      for(int ix=0;iy<4&&ix<4;++ix) {
+	if(id[ix]==-24) {
+	  iorder[iy]=ix;
+	  ++iy;
+	}
+      }
       if(iy!=4)
         {
 	  throw HelicityConsistencyError() << "SMWWWWVertex::setCoupling"
@@ -91,8 +104,11 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
     {
       int iy=0;
       // first the W+
-      for(int ix=0;iy<3&&ix<4;++ix)
-        {if(id[ix]==24){iorder[iy]=ix;++iy;}}
+      for(int ix=0;iy<3&&ix<4;++ix) {
+	if(id[ix]==24) {
+	  iorder[iy]=ix;++iy;
+	}
+      }
       if(iy!=2)
         {
 	  throw HelicityConsistencyError() << "SMWWWWVertex::setCoupling"
@@ -101,8 +117,12 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
 	  setNorm(0.);return;
 	}
       // finally the W-
-      for(int ix=0;iy<4&&ix<4;++ix)
-        {if(id[ix]==-24){iorder[iy]=ix;++iy;}}
+      for(int ix=0;iy<4&&ix<4;++ix) {
+	if(id[ix]==-24) {
+	  iorder[iy]=ix;
+	  ++iy;
+	}
+      }
       if(iy!=4)
         {
 	  throw HelicityConsistencyError() << "SMWWWWVertex::setCoupling"

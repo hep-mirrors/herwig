@@ -669,9 +669,9 @@ void Evolver::setColourPartners(bool hard)
     particles.push_back(cit->first->progenitor());
   // Set the initial evolution scales
   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD))
-    _partnerFinder->setQCDInitialEvolutionScales(particles,true);
+    _partnerFinder->setQCDInitialEvolutionScales(particles,!hard);
   if(_splittingGenerator->isInteractionON(ShowerIndex::QED))
-    _partnerFinder->setQEDInitialEvolutionScales(particles,true);
+    _partnerFinder->setQEDInitialEvolutionScales(particles,!hard);
   if(_splittingGenerator->isInteractionON(ShowerIndex::EWK))
-    _partnerFinder->setEWKInitialEvolutionScales(particles,true);
+    _partnerFinder->setEWKInitialEvolutionScales(particles,!hard);
 }

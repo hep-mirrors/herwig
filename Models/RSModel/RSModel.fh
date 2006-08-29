@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HwRSModel class.
+//
+#ifndef HERWIG_HwRSModel_FH
+#define HERWIG_HwRSModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class RSModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::RSModel,HwRSPtr);
+
+}
+
+#endif

@@ -415,7 +415,6 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	      // perform setup in the inheriting class
 	      setupMode(mode,decayer,_MEcode.size());
 	      // see how many off-shell particles there are
-	      ParticleMSet::const_iterator pit = mode->products().begin();
 	      widthptr=decayer->threeBodyMEIntegrator(*mode);
 	      Energy step((_theParticle->widthUpCut()+_theParticle->widthLoCut())/
 			  (_npoints-1));
@@ -475,7 +474,6 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	    {
 	      mode=(*start).second;      
 	      _decaymodes.push_back(const_ptr_cast<DMPtr>(mode));
-	      ParticleMSet::const_iterator pit = mode->products().begin();
 	    }
 	}
     }

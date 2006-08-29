@@ -22,9 +22,6 @@ inline RSModelFFGRVertex::RSModelFFGRVertex()
   _theKappa=0.;
 }
 
-inline RSModelFFGRVertex::RSModelFFGRVertex(const RSModelFFGRVertex & x)
-  : FFTVertex(x), _theModel(x._theModel), _theKappa(x._theKappa) {}
-
 inline IBPtr RSModelFFGRVertex::clone() const {
   return new_ptr(*this);
 }
@@ -35,8 +32,8 @@ inline IBPtr RSModelFFGRVertex::fullclone() const {
 
 inline void RSModelFFGRVertex::doinit() throw(InitException) {
   FFTVertex::doinit();
-  Ptr<Herwig::RSModel>::transient_const_pointer 
-    hwRS=dynamic_ptr_cast<Ptr<Herwig::RSModel>::transient_const_pointer>(_theModel);
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
   if(hwRS){_theKappa=2./hwRS->lambda_pi();}
   else{throw InitException();}
 }

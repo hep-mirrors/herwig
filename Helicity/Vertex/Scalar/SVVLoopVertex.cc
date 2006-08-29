@@ -40,7 +40,7 @@ void SVVLoopVertex::setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2,
 		      mls,mls,mls);
       Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
       Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
-      Complex C12 = Cval(cc12,theC);Complex C21 = C12;
+      Complex C12 = Cval(cc12,theC);
       Complex C22 = Cval(cc22,theC);
       a += 2.*(left[i]+right[i])*masses[i]*(-2.*B0(ps2,mls,mls)+ 
 					    C0*(pv1s + pv2s - ps2)
@@ -58,7 +58,7 @@ void SVVLoopVertex::setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2,
       int theC = Cget(ps2,pv2s,pv1s,mls,mls,mls);
       Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
       Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
-      Complex C12 = Cval(cc12,theC);Complex C21 = C12;
+      Complex C12 = Cval(cc12,theC);
       Complex C22 = Cval(cc22,theC);
       
       /**
@@ -131,7 +131,7 @@ void SVVLoopVertex::setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2,
 		      mls,mls,mls);
       Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);
       Complex C00 = Cval(cc00,theC);Complex C11 = Cval(cc11,theC);
-      Complex C12 = Cval(cc12,theC);Complex C21 = C12;
+      Complex C12 = Cval(cc12,theC);
       Complex C22 = Cval(cc22,theC);
       
       /**

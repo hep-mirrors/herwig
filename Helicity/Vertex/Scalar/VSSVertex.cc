@@ -57,7 +57,6 @@ VectorWaveFunction VSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
 					   sca1.pz()+sca2.pz(),sca1.e() +sca2.e()); 
   // calculate the coupling
   setCoupling(q2,out,Psca1,Psca2);
-  Complex norm=getNorm();
   // mass and width
   Energy mass  = out->mass();
   Energy2 mass2=mass*mass;

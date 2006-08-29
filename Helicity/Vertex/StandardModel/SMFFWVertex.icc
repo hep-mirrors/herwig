@@ -7,7 +7,7 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMFFWVertex::SMFFWVertex() 
+  inline SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0))
 {
   // particles for the vertex
   vector<int> first,second,third;
@@ -32,16 +32,8 @@ inline SMFFWVertex::SMFFWVertex()
   for(unsigned int ix=11;ix<17;ix+=2)
      {first.push_back(-ix-1);second.push_back(ix);third.push_back(24);}
   setList(first,second,third);
-  // set up for the couplings
-  for(int ix=0;ix<2;++ix){for(int iy=0;iy<2;++iy){_ckm[ix][iy]=0.;}};
   _q2last=0.;_couplast=0.;
 }
-  
-inline SMFFWVertex::SMFFWVertex(const SMFFWVertex & x)
-  : Herwig::Helicity::FFVVertex(x), _theSM(x._theSM),
-    _theCKM(x._theCKM),
-    _couplast(x._couplast),_q2last(x._q2last) 
-{for(int ix=0;ix<2;++ix){for(int iy=0;iy<2;++iy){_ckm[ix][iy]=x._ckm[ix][iy];}}}
 
 inline IBPtr SMFFWVertex::clone() const {
   return new_ptr(*this);
@@ -53,6 +45,8 @@ inline IBPtr SMFFWVertex::fullclone() const {
 
 inline void SMFFWVertex::doinit() throw(InitException) {
   Herwig::Helicity::FFVVertex::doinit();
+  _theSM  = generator()->standardModel();
+  _theCKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one
   ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
     hwCKM=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer>(_theCKM);

@@ -48,7 +48,6 @@ void EventShapes::diagonalizeTensors(bool linear, bool cmboost) {
   vector<Vector3> n; 
   // get cm-frame
   Lorentz5Momentum pcm = Lorentz5Momentum(); 
-  tPVector::const_iterator cit;
   Vector3 beta; 
   if (cmboost) {
     for(unsigned int ix=0;ix<_pv.size();++ix) pcm += _pv[ix];    

@@ -124,7 +124,6 @@ VectorWaveFunction VVTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Energy2 mass  = out->mass();
   Energy2 mass2 = mass*mass;
   Energy2 p2=  pout.m2();
-  Complex ii(0.,1.);
   Complex fact=-0.5*getNorm()*propagator(iopt,p2,out);
   // dot product of wavefunctions and momenta
   Complex dotk1k2 =+vec.e()*pout.e()  -vec.px()*pout.px()
@@ -207,7 +206,6 @@ TensorWaveFunction VVTVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   tcPDPtr Pvec2=vec2.getParticle();
   // coupling
   setCoupling(q2,Pvec1,Pvec2,out);
-  Complex ii(0.,1.);
   // momenta of the outgoing tensor
   // outgoing momentum
   Lorentz5Momentum pout= Lorentz5Momentum(vec1.px()+vec2.px(),vec1.py()+vec2.py(),

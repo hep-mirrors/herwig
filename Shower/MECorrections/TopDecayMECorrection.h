@@ -29,16 +29,6 @@ public:
    * The default constructor.
    */
   inline TopDecayMECorrection();
-
-  /**
-   * The copy constructor.
-   */
-  inline TopDecayMECorrection(const TopDecayMECorrection &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~TopDecayMECorrection();
   //@}
 
 public:
@@ -85,16 +75,19 @@ private:
    *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
   inline double xgbr(int);
+
   /**
    *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
   inline double ktr(double,int);
+
   /**
    *  This function determines \f$x_{a}\f$ as a function of \f$x_{g}\f$ 
    *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
   inline double xab(double,double,int);
+
   /**
    *  This function determines the point (\f$x_{g}\f$) where the condition that 
    *  \f$x_{a}\f$ be real supersedes that due to the external input 
@@ -102,16 +95,19 @@ private:
    *  b.
    */
   inline double xgbcut(double);
+
   /**
    *  This function determines the minimum value of \f$x_{a}\f$ 
    *  for a given \f$\tilde{\kappa}\f$ where \f$\kappa\f$ pertains to
    *  emissions from the c.
    */
   inline double xaccut(double);
+
   /**
    *  This function is auxiliary to the function \f$x_{g}\f$ (hXGC).
    */
   inline double z(double,double,int,int); 
+
   /**
    *  This function determines \f$x_{g}\f$ as a function of \f$x_{a}\f$ 
    *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
@@ -122,6 +118,7 @@ private:
    *  case the fifth argument \f$\kappa\f$ is irrelevant.
    */
   inline double xgc(double,double,int,int); 
+
   /**
    *  This function, \f$x_{g,c=0}^{-1}\f$, returns \f$x_{a}\f$ as a function 
    *  of \f$x_{g}\f$ for the special case of c=0, for emissions from c 
@@ -129,28 +126,33 @@ private:
    *  to emissions from c.
    */
   inline double xginvc0(double,double); 
+
   /**
    *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
   inline double approxDeadMaxxa(double,double,double); 
+
   /**
    *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
   inline double approxDeadMinxa(double,double,double); 
+
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are in the allowed region, the kinematically accessible phase 
    *  space.
    */
   inline bool inTheAllowedRegion(double,double); 
+
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are exactly in the approximate dead region.
    */
   inline bool inTheApproxDeadRegion(double,double,
                                     double,double); 
+
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are exactly in the dead region.
@@ -164,18 +166,15 @@ private:
    *  approximate dead region.  
    */
   inline double deadRegionxgxa(double,double); 
+
   /**
    *  This rotation takes a 5-momentum and returns a rotation matrix 
    *  such that it acts on the input 5-momentum so as to
    *  make it point in the +Z direction. Finally it performs a randomn
    *  rotation about the z-axis.
    */
-  inline LorentzRotation rotateToZ(Lorentz5Momentum); 
-  /**
-   *  This routine can be removed, it is being used in dofinish
-   *  as part of debugging, to print topdrawer files.
-   */ 
-  inline int KPRINTER(double,double);  
+  inline LorentzRotation rotateToZ(Lorentz5Momentum);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

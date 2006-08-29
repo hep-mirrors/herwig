@@ -94,6 +94,11 @@ public:
   void normaliseToData();
 
   /**
+   *  Normalise the distributions to the total cross section
+   */
+  void normaliseToCrossSection();
+
+  /**
    *  Return the chi squared
    * @param chisq The chi squared
    * @param ndegrees The number of points

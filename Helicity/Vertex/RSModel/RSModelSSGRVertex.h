@@ -30,11 +30,6 @@ public:
    * Default constructor.
    */
   inline RSModelSSGRVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline RSModelSSGRVertex(const RSModelSSGRVertex &);
   //@}  
 
 public:
@@ -110,7 +105,7 @@ private:
   /**
    * Pointer to the model.
    */
-  SMPtr _theModel;
+  tcSMPtr _theModel;
 
   /**
    * Coupling.

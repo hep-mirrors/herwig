@@ -74,7 +74,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 	    dm=_showerVariables->gluonMass();
 	  else
 	    dm = particleJetParent->data().constituentMass();
-	  if (abs(dm-particleJetParent->momentum().mass())>0.1*MeV
+	  if (abs(dm-particleJetParent->momentum().mass())>0.001*MeV
+	      //if (abs(dm-particleJetParent->momentum().mass())>0.05*MeV
 	      &&particleJetParent->dataPtr()->stable()
 	      &&particleJetParent->id()!=ParticleID::gamma) 
 	    {
@@ -146,22 +147,21 @@ reconstructHardJets(ShowerTreePtr hard) const
       // for final boosts
       JetKinVect jetKinematics;
       vector<ShowerProgenitorPtr>::const_iterator cit;
-      for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) 
-	{
-	  if(!(*cit)->progenitor()->isFinalState()) continue;
-	  JetKinStruct tempJetKin;      
-	  tempJetKin.parent = (*cit)->progenitor(); 
-	  if(gottaBoost) tempJetKin.parent->boost(beta_cm); 
-	  tempJetKin.p = (*cit)->progenitor()->momentum();
-	  atLeastOnce |= reconstructTimeLikeJet((*cit)->progenitor(),0);
-	  tempJetKin.q = (*cit)->progenitor()->momentum();
-	  jetKinematics.push_back(tempJetKin);
-	}
+      for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) {
+	if(!(*cit)->progenitor()->isFinalState()) continue;
+	JetKinStruct tempJetKin;      
+	tempJetKin.parent = (*cit)->progenitor(); 
+	if(gottaBoost) tempJetKin.parent->boost(beta_cm); 
+	tempJetKin.p = (*cit)->progenitor()->momentum();
+	atLeastOnce |= reconstructTimeLikeJet((*cit)->progenitor(),0);
+	tempJetKin.q = (*cit)->progenitor()->momentum();
+	jetKinematics.push_back(tempJetKin);
+      }
       // find the rescaling factor
-      double k = 0.0; 
+      double k = 0.0;
       if(atLeastOnce) {
 	k = solveKfactor(p_cm[1].mag(), jetKinematics);
-	if(k < 0. || k > 1.) return false;
+	if(k< 0.) return false;
       }
       // perform the rescaling and boosts
       for(JetKinVect::iterator it = jetKinematics.begin();
@@ -170,14 +170,15 @@ reconstructHardJets(ShowerTreePtr hard) const
 	if(atLeastOnce) Trafo = solveBoost(k, it->q, it->p);
 	if(gottaBoost) Trafo.boost(-beta_cm);
 	if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
-	if(applyBoost)
-	  {
-	    it->parent->deepBoost(boostRest);
-	    it->parent->deepBoost(boostNewF);
-	  }
+	if(applyBoost) {
+	  it->parent->deepBoost(boostRest);
+	  it->parent->deepBoost(boostNewF);
+	}
       }
     }
-  catch(Veto){ return false;}
+  catch(Veto) {
+    return false;
+  }
   return true;
 }
 
@@ -191,25 +192,21 @@ KinematicsReconstructor::solveKfactor(const Energy & root_s,
   // sum of jet masses must be less than roots
   if(momConsEq( 0.0, root_s, jets )>0.0) return -1.0;
   // if two jets simple solution
-  if ( jets.size() == 2 ) 
-    {
-      if (    sqr((jets[0].p.x()+jets[1].p.x())/MeV) < 1.e-4
-	   && sqr((jets[0].p.y()+jets[1].p.y())/MeV) < 1.e-4
-	   && sqr((jets[0].p.z()+jets[1].p.z())/MeV) < 1.e-4 ) 
-	{
-	  return sqrt( ( sqr(s - jets[0].q.m2() - jets[1].q.m2()) 
-			 - 4.*jets[0].q.m2()*jets[1].q.m2() )
-		       /(4.*s*jets[0].p.vect().mag2()) );      
-	} 
-      else
-	return 0.0;
-    }  
-  else { // i.e. jets.size() > 2, numerically
-    // check convergence, if it's a problem maybe use Newton iteration?
-    double k1 = 0.; 
-    double k2 = 1.; 
-    double k = 0.; 
-
+  if ( jets.size() == 2 ) {
+    if ( sqr((jets[0].p.x()+jets[1].p.x())/MeV) < 1.e-4 &&
+	 sqr((jets[0].p.y()+jets[1].p.y())/MeV) < 1.e-4 &&
+	 sqr((jets[0].p.z()+jets[1].p.z())/MeV) < 1.e-4 ) {
+      return sqrt( ( sqr(s - jets[0].q.m2() - jets[1].q.m2()) 
+		     - 4.*jets[0].q.m2()*jets[1].q.m2() )
+		   /(4.*s*jets[0].p.vect().mag2()) );
+    } 
+    else return -1;
+  }
+  // i.e. jets.size() > 2, numerically
+  // check convergence, if it's a problem maybe use Newton iteration?
+  else {
+    double k1 = 0.,k2 = 1.,k = 0.; 
+    
     if ( momConsEq( k1, root_s, jets ) < 0.0 ) {
       while ( momConsEq( k2, root_s, jets ) < 0.0 ) {
 	k1 = k2; 
@@ -232,7 +229,6 @@ KinematicsReconstructor::solveKfactor(const Energy & root_s,
   }
   return -1.; 
 }
-
 
 bool KinematicsReconstructor::
 reconstructSpaceLikeJet( const tShowerParticlePtr p) const {

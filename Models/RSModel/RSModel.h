@@ -9,6 +9,7 @@
 #include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
 #include "Herwig++/Helicity/Vertex/Tensor/FFVTVertex.h"
 #include "Herwig++/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "RSModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;

@@ -37,12 +37,7 @@ using ThePEG::Helicity::HaberDRep;
 using ThePEG::Helicity::HELASDRep;
 using ThePEG::Helicity::defaultDRep;
 
-MEee2Z::~MEee2Z() {}
-
-
-
 void MEee2Z::getDiagrams() const {
-  // Here is an example on how to specify diagrams.
   tcPDPtr Z0 = getParticleData(ParticleID::Z0);
   tcPDPtr em = getParticleData(ParticleID::eminus);
   tcPDPtr ep = getParticleData(ParticleID::eplus);
@@ -55,10 +50,6 @@ Energy2 MEee2Z::scale() const {
 
 int MEee2Z::nDim() const {
   return 1;
-}
-
-void MEee2Z::setKinematics() {
-  MEBase::setKinematics(); // Always call the base class method first.
 }
 
 bool MEee2Z::generateKinematics(const double * r) {
@@ -109,26 +100,21 @@ unsigned int MEee2Z::orderInAlphaS() const {
 }
 
 unsigned int MEee2Z::orderInAlphaEW() const {
-  return 0;
+  return 1;
 }
 
 Selector<MEBase::DiagramIndex>
 MEee2Z::diagrams(const DiagramVector & diags) const {
-  // This example corresponds to the diagrams specified in the example
-  // in the getDiagrams() function.
-
-  Selector<DiagramIndex> sel;sel.insert(1.0, 0);
+  Selector<DiagramIndex> sel;
+  sel.insert(1.0, 0);
   return sel;
-
-  // If there is only one possible diagram you can override the
-  // MEBase::diagram function instead.
-
 }
 
 Selector<const ColourLines *>
 MEee2Z::colourGeometries(tcDiagPtr diag) const {
-  static ColourLines neutral ( " " );
-  Selector<const ColourLines *> sel;sel.insert(1.,&neutral);
+  static const ColourLines neutral ( " " );
+  Selector<const ColourLines *> sel;
+  sel.insert(1.,&neutral);
   return sel;
 }
 
@@ -209,9 +195,9 @@ void MEee2Z::constructVertex(tSubProPtr sub)
   double dummy;
   ProductionMatrixElement prodme=HelicityME(pin,pout,fin,ain,vout,dummy);
   // construct the vertex
-  VertexPtr hardvertex=new_ptr(HardVertex());
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
-  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(prodme);
+  hardvertex->ME(prodme);
   // set the pointers to and from the vertex
   spin1->setProductionVertex(hardvertex);
   spin2->setProductionVertex(hardvertex);

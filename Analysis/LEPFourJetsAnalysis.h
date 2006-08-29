@@ -279,7 +279,7 @@ struct ClassTraits<Herwig::LEPFourJetsAnalysis>
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the LEPFourJetsAnalysis class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwKtJet.so HwAnalysis.so HwLEPAnalysis.so"; }
+  static string library() { return "HwKtJet.so HwLEPJetAnalysis.so"; }
 };
 
 /** @endcond */

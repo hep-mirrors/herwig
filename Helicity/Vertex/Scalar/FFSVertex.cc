@@ -85,7 +85,6 @@ ScalarWaveFunction FFSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   setCoupling(q2,Psp,out,Psbar);
   Energy2 p2 = pout.m2();
   Complex fact=getNorm()*propagator(iopt,p2,out);
-  Complex ii(0.,1.); 
   Complex output;
   // low energy conventions
   if(sp.Wave().Rep()==HaberDRep&&sbar.Wave().Rep()==HaberDRep)

@@ -45,9 +45,8 @@ inline double SudakovFormFactor::guessz () const {
     (lower + UseRandom::rnd()*(_splittingFn->integOverP(_zlimits.second) - lower));
 }
 
-inline bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t, 
-					const IdList &ids) const {
-  return UseRandom::rnd()>_splittingFn->ratioP(z, t, ids);
+inline bool SudakovFormFactor::SplittingFnVeto(const double z, const Energy2 t) const {
+  return UseRandom::rnd()>_splittingFn->ratioP(z, t,_ids);
 }
 
 inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {

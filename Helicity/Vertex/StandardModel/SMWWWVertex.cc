@@ -8,7 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 
 namespace Herwig {
 namespace Helicity {
@@ -28,12 +27,6 @@ SMWWWVertex::initSMWWWVertex;
 // Definition of the static class description member.
 
 void SMWWWVertex::Init() {
-
-  static Reference<SMWWWVertex,StandardModelBase> interfaceSM
-    ("StandardModel",
-     "Reference to the Standard Model",
-     &SMWWWVertex::_theSM, false, false, true, false);
-
   static ClassDocumentation<SMWWWVertex> documentation
     ("The SMWWWVertex class is the implementation of the "
      "Standard Model triple electroweak boson coupling.");

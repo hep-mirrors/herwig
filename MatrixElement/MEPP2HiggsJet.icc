@@ -10,11 +10,6 @@ inline MEPP2HiggsJet::MEPP2HiggsJet() : _maxflavour(5), _process(0),
 					_minloop(6),_maxloop(6),_massopt(0) 
 {}
 
-inline MEPP2HiggsJet::MEPP2HiggsJet(const MEPP2HiggsJet & x)
-  : ME2to2Base(x), _maxflavour(x._maxflavour), _process(x._process),
-    _minloop(x._minloop),_maxloop(x._maxloop), _massopt(x._massopt)
-{}
-
 inline IBPtr MEPP2HiggsJet::clone() const {
   return new_ptr(*this);
 }

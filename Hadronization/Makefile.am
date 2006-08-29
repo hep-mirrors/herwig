@@ -11,4 +11,5 @@ HadronSelector.cc HadronSelector.h HadronSelector.icc \
 LightClusterDecayer.cc LightClusterDecayer.h LightClusterDecayer.icc \
 PartonSplitter.cc PartonSplitter.h PartonSplitter.icc \
 PartonicHadronizer.h PartonicHadronizer.fh PartonicHadronizer.icc PartonicHadronizer.cc \
-Remnant.h Remnant.icc Remnant.cc Remnant.fh 
+Remnant.h Remnant.icc Remnant.cc Remnant.fh \
+ForcedSplitting.h ForcedSplitting.icc ForcedSplitting.cc ForcedSplitting.fh

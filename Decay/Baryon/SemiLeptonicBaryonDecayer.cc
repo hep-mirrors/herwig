@@ -233,9 +233,8 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
   // now we need to construct the current
   LorentzPolarizationVector vtemp;
   hadron.resize(4);
-  Complex ii(0.,1.),left,right;
-  left =  f1v-f1a-f2v-(m0-m1)/(m0+m1)*f2a;
-  right = f1v+f1a-f2v+(m0-m1)/(m0+m1)*f2a;
+  Complex left  =f1v-f1a-f2v-(m0-m1)/(m0+m1)*f2a;
+  Complex right =f1v+f1a-f2v+(m0-m1)/(m0+m1)*f2a;
   for(unsigned int ix=0;ix<2;++ix)
     {
       for(unsigned int iy=0;iy<2;++iy)
@@ -351,7 +350,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
 					 f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a);
   // now we need to construct the current
   LorentzPolarizationVector vtemp;
-  Complex ii(0.,1.),lS1,lS2,rS1,rS2,left,right,lV,rV;
+  Complex lS1,lS2,rS1,rS2,left,right,lV,rV;
   InvEnergy ms(1./(m0+m1)),ms2(ms*ms);
   if(inpart.id()>0)
     {

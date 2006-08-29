@@ -8,7 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 
 namespace Herwig {
 namespace Helicity{
@@ -26,14 +25,7 @@ ClassDescription<SMGGGVertex> SMGGGVertex::initSMGGGVertex;
 // Definition of the static class description member.
 
 void SMGGGVertex::Init() {
-  
-  
-  static Reference<SMGGGVertex,StandardModelBase> interfaceSM
-    ("StandardModel",
-     "Reference to the StandardModel class",
-     &SMGGGVertex::_theSM, false, false, true, false);
-
-  static ClassDocumentation<SMGGGVertex> documentation
+ static ClassDocumentation<SMGGGVertex> documentation
     ("The SMGGGVertex class is the implementation"
      " of the Standard Model triple gluon vertex.");
   

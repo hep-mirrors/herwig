@@ -1,3 +1,12 @@
+2006-07-22  David Grellscheid  <David.Grellscheid@durham.ac.uk>
+
+	* Helicity/Vertex/*Model/*Vertex.*, Models/*Model/*: Fixed memory 
+	leak problem with theback-references to StandardModel by the Vertex 
+	classes. Cleanup of Vertex classes.
+
+	* MatrixElement/*.*cc, Decay/Perturbative/*.cc: Used new Model 
+	typedefs HwSMPtr and HwRSPtr
+
 2006-06-30  David Grellscheid  <David.Grellscheid@durham.ac.uk>
 
 	* Models/StandardModel/O2AlphaS.*: changed LambdaQCD() output to
