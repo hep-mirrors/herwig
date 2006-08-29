@@ -38,6 +38,26 @@ public:
    *  Default Constructor
    */
   inline Evolver();
+
+  /**
+   *  Member to perform the shower
+   */
+  //@{
+  /**
+   * Perform the shower of the hard process
+   */
+  virtual void showerHardProcess(ShowerTreePtr);
+
+  /**
+   * Perform the shower of a decay
+   */
+  virtual void showerDecay(ShowerTreePtr);
+  //@}
+
+  /**
+   *  Access to the flags and shower variables
+   */
+  //@{
   /**
    *  Is there any showering switched on
    */
@@ -54,19 +74,10 @@ public:
   inline bool isFSRadiationON() const;  
 
   /**
-   * Perform the shower of the hard process
-   */
-  virtual void showerHardProcess(ShowerTreePtr);
-
-  /**
-   * Perform the shower of a decay
-   */
-  virtual void showerDecay(ShowerTreePtr);
-
-  /**
    *  Get the ShowerVariables
    */
   inline ShowerVarsPtr showerVariables() const;
+  //@}
 
 public:
 
@@ -210,7 +221,7 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
