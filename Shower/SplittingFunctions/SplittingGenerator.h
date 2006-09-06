@@ -47,13 +47,13 @@ struct Branching {
   /**
    *  Pointer to the ShowerKinematics object for the branching
    */
-   ShoKinPtr kinematics;
-
+  ShoKinPtr kinematics;
+  
   /**
    *  Pointer to the SudakovFormFactor for the branching
    */
   tSudakovPtr sudakov; 
-
+  
   /**
    *  PDG codes of the particles in the branching
    */
@@ -300,14 +300,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinitrun() throw(InitException);
-
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  //inline virtual void dofinish();
-
 
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
