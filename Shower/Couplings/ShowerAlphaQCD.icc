@@ -90,5 +90,11 @@ inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, short nf) const {
 			   4.*sqr(b1)/(sqr(sqr(b0))*sqr(lx))*
 			   (sqr(log(lx) - 0.5) + b2*b0/(8.*sqr(b1)) - 5./4.));}
 }
+  
+inline Energy ShowerAlphaQCD::lambdaQCD(unsigned int nf) {
+  if(nf<=3) return _lambda[0];
+  else if(nf>3&&nf<=6) return _lambda[nf-3];
+  else return _lambda[6];
+}
 }
 

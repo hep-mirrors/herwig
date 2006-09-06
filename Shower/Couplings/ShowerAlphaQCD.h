@@ -63,6 +63,12 @@ public:
   virtual double ratio(const Energy2 scale) const;
   //@}
 
+  /**
+   *  Get the value of \f$\Lambda_{\rm QCd}\f$
+   *  @param nf number of flavours
+   */
+  inline Energy lambdaQCD(unsigned int nf);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
