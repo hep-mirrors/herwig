@@ -1,4 +1,4 @@
-SUBDIRS = SplittingFunctions Couplings Kinematics MECorrections Nason .
+SUBDIRS = SplittingFunctions Couplings Kinematics MECorrections Nason Fortran .
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = -module
 HwShower_la_LIBADD = ./SplittingFunctions/libHwSplitting.la \
