@@ -6,7 +6,6 @@
 
 #include "RSModelSSGRVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -26,12 +25,6 @@ ClassDescription<RSModelSSGRVertex> RSModelSSGRVertex::initRSModelSSGRVertex;
 // Definition of the static class description member.
 
 void RSModelSSGRVertex::Init() {
-  
-  static Reference<RSModelSSGRVertex,StandardModelBase> interfaceModel
-    ("Model",
-     "Reference to the Model object",
-     &RSModelSSGRVertex::_theModel, false, false, true, false, false);
-  
   static ClassDocumentation<RSModelSSGRVertex> documentation
     ("The RSModelSSGRVertex class is the implementation of"
      " the RSModel scalar-scalar-graviton vertex");

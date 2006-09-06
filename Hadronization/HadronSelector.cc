@@ -21,9 +21,6 @@
 
 using namespace Herwig;
 
-HadronSelector::~HadronSelector() {}
-
-
 void HadronSelector::persistentOutput(PersistentOStream & os) const {
   os << _PwtDquark << _PwtUquark << _PwtSquark 
      << _PwtCquark << _PwtBquark << _PwtDIquark

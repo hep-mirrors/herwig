@@ -8,12 +8,6 @@ namespace Herwig {
 namespace Helicity{
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-
-inline VertexBase::VertexBase()
-{
-  _npoint=0;
-  _calckinematics=false;
-}
     
 inline VertexBase::VertexBase(const VertexBase & x)
   : Interfaced(x), _iparticlea(x._iparticlea),_iparticleb(x._iparticleb),
@@ -67,7 +61,8 @@ inline VertexBase::VertexBase(int ia, int ib, int ic, int id , int ie,
 }
 
 // default constructor
-inline VertexBase::VertexBase(unsigned int nin, bool kine) : _npoint(nin), _calckinematics(kine)
+inline VertexBase::VertexBase(unsigned int nin, bool kine) : _npoint(nin), 
+							     _calckinematics(kine)
 {;}
 
 
@@ -217,57 +212,34 @@ inline const Complex & VertexBase::getNorm(){return _norm;}
 // calculate the propagator for a diagram
 inline Complex VertexBase::propagator(int iopt, Energy2 p2,tcPDPtr part)
 {
-  Complex prop;
   Energy mass=part->mass();
   Energy2 mass2=mass*mass;
   Complex masswidth;
-  if(p2<0.){masswidth=0.;}
+  if(p2<0.)
+    masswidth=0.;
   else if(iopt==1)
-    {masswidth=Complex(0.,1.)*mass*part->width();}
-  else if(iopt==2)
-    {
-      Energy p=sqrt(p2);
-      masswidth=Complex(0.,1.)*mass*
-	((part->widthGenerator())->width(*part,p));
-    }
+    masswidth=Complex(0.,1.)*mass*part->width();
+  else if(iopt==2) {
+    Energy p=sqrt(p2);
+    masswidth=Complex(0.,1.)*mass*
+      ((part->widthGenerator())->width(*part,p));
+  }
   else if(iopt==3)
-    {masswidth=0.;}
+    masswidth=0.;
   else if(iopt==4)
-    {return 1.;}
+    return 1.;
   else if(iopt==5)
-    {return 1./p2;}
+    return 1./p2;
   else
-    {throw HelicityConsistencyError() << "Unknown option in VertexBase::Propagator" 
-				      << Exception::abortnow;}
+    throw HelicityConsistencyError() << "Unknown option in VertexBase::Propagator" 
+				     << Exception::abortnow;
   return 1./(p2-mass2+masswidth);
 }
 
 // propagator times coupling for a diagram
 inline Complex VertexBase::normPropagator(int iopt, Energy2 p2,tcPDPtr part)
 {
-  Complex prop;
-  Energy mass=part->mass();
-  Energy2 mass2=mass*mass;
-  Complex masswidth;
-  if(iopt==5)
-    {return _norm/p2;}
-  else if(p2<0.){masswidth=0.;}
-  else if(iopt==1)
-    {masswidth=Complex(0.,1.)*mass*part->width();}
-  else if(iopt==2)
-    {
-      Energy p=sqrt(p2);
-      masswidth=Complex(0.,1.)*mass*
-	((part->widthGenerator())->width(*part,p));
-    }
-  else if(iopt==3)
-    {masswidth=0.;}
-  else if(iopt==4)
-    {return _norm;}
-  else
-    {throw HelicityConsistencyError() << "Unknown option in VertexBase::normPropagator" 
-				      << Exception::abortnow;}
-  return _norm/(p2-mass2+masswidth);
+  return _norm*propagator(iopt,p2,part);
 }
 
 inline bool VertexBase::kinematics(){ return _calckinematics;}
@@ -275,7 +247,7 @@ inline bool VertexBase::kinematics(){ return _calckinematics;}
 inline void VertexBase::kinematics(bool kine){_calckinematics=kine;}
 
 inline void VertexBase::calculateKinematics(const Lorentz5Momentum & p0,
-					    const Lorentz5Momentum &p2,
+					    const Lorentz5Momentum & p2,
 					    const Lorentz5Momentum & p1)
 {
   _kine[0][0]=p0*p0;
@@ -329,21 +301,19 @@ inline void VertexBase::calculateKinematics(const Lorentz5Momentum & p0,
 inline void VertexBase::calculateKinematics(const vector<Lorentz5Momentum> & p)
 {
   unsigned int ix,iy;
-  for(ix=0;ix<p.size();++ix)
-    {
-    for(iy=0;iy<=ix;++ix)
-      {
-	_kine[ix][iy]=p[ix]*p[iy];
-	_kine[iy][ix]=_kine[ix][iy];
-      }
+  for(ix=0;ix<p.size();++ix) {
+    for(iy=0;iy<=ix;++ix) {
+      _kine[ix][iy]=p[ix]*p[iy];
+      _kine[iy][ix]=_kine[ix][iy];
     }
+  }
 }
 
 inline Energy2 VertexBase::invariant(unsigned int ix,unsigned int iy)
 {
   if(ix>_npoint||iy>_npoint)
-    {throw Exception() << "Invalid invariant requested in VertexBase::invariant() " 
-		       << ix << " " << iy << Exception::abortnow;}
+    throw Exception() << "Invalid invariant requested in VertexBase::invariant() " 
+		      << ix << " " << iy << Exception::abortnow;
   return _kine[ix][iy];
 }
 

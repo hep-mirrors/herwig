@@ -8,6 +8,7 @@ namespace Helicity {
 using namespace ThePEG;
 
 inline RSModelFFVGRVertex::RSModelFFVGRVertex() 
+    : _charge(17,0.), _couplast(2,0.), _q2last(2,0.)
 {
   vector<int> first,second,third,fourth;
   for(unsigned int ix=1;ix<7;++ix)
@@ -26,19 +27,7 @@ inline RSModelFFVGRVertex::RSModelFFVGRVertex()
       third.push_back(21);fourth.push_back(39);
     }
   setList(first,second,third,fourth);
-  for(unsigned int ix=0;ix<17;++ix){_charge[17]=0.;}
-  _couplast[0]=0.;
-  _couplast[1]=0.;
-  _q2last[0]=0.;
-  _q2last[1]=0.;
   _theKappa=0.;
-}
-
-inline RSModelFFVGRVertex::RSModelFFVGRVertex(const RSModelFFVGRVertex & x)
-  : FFVTVertex(x) , _theModel(x._theModel), _theKappa(x._theKappa)
-{
-  for(int ix=0;ix<17;++ix){_charge[ix]=x._charge[ix];}
-  for(int ix=0;ix<2 ;++ix){_couplast[ix]=x._couplast[ix];_q2last[ix]=x._q2last[ix];}
 }
 
 inline IBPtr RSModelFFVGRVertex::clone() const {
@@ -63,8 +52,8 @@ inline void RSModelFFVGRVertex::doinit() throw(InitException) {
       _couplast[ix] = 0.;
       _q2last[ix]=0.;
     }
-  Ptr<Herwig::RSModel>::transient_const_pointer 
-    hwRS=dynamic_ptr_cast<Ptr<Herwig::RSModel>::transient_const_pointer>(_theModel);
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
   if(hwRS){_theKappa=2./hwRS->lambda_pi();}
 }
 

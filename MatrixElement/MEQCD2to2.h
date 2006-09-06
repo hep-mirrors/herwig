@@ -35,16 +35,6 @@ public:
    * The default constructor.
    */
   inline MEQCD2to2();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEQCD2to2(const MEQCD2to2 &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEQCD2to2();
   //@}
 
 public:

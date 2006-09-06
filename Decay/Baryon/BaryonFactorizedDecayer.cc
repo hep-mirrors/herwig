@@ -445,7 +445,7 @@ double BaryonFactorizedDecayer::halfHalf(bool vertex, const int ichan,
   Complex f1v,f2v,f3v,f1a,f2a,f3a;
   baryon.resize(4);
   LorentzPolarizationVector vtemp;
-  Complex ii(0.,1.),left,right,vspin,aspin;
+  Complex left,right,vspin,aspin;
   Energy scale;
   ParticleVector::const_iterator start,end;
   ParticleVector hadpart;
@@ -563,11 +563,10 @@ double BaryonFactorizedDecayer::halfThreeHalf(bool vertex, const int ichan,
   LorentzPolarizationVector baryon[4][2];
   Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
   LorentzPolarizationVector vtemp;
-  Complex ii(0.,1.),lS1,lS2,rS1,rS2,left,right,lV,rV;
+  Complex lS1,lS2,rS1,rS2,left,right,lV,rV;
   InvEnergy ms(1./(m0+m1)),ms2(ms*ms);
   unsigned int ix,iy,ixa,iya;
-  Complex scalar1,scalar2,lfact,rfact,s2m4,s1m3,s1p3,s2p4,s3s2,s1s4,s3s1,s1s3,
-    s4s1,s2s3,s4s2,s2s4;
+  Complex scalar1,scalar2,lfact,rfact;
   LorentzPolarizationVector svec,tvec;
   Energy scale;
   ParticleVector::const_iterator start,end;

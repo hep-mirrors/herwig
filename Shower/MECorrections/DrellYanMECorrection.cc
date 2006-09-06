@@ -86,6 +86,9 @@ bool DrellYanMECorrection::canHandle(ShowerTreePtr tree)
 	   part[0]->parents()[0]->id()==ParticleID::Z0||
 	   abs(part[0]->parents()[0]->id())==ParticleID::Wplus)) return false;
     }
+  // extract the boson mass and store
+  if(tree->outgoingLines().size()==1) _mb2=sqr(part[0]->mass());
+  else                                _mb2=sqr(part[0]->parents()[0]->mass());
   // can handle it
   return true;
 }
@@ -404,7 +407,7 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
   bool quarkplus=quarks[0]->momentum().z()>quarks[1]->momentum().z();
   // calculate the limits on s
   Energy mb(boson->mass());
-  _mb2=mb*mb;
+  _mb2=sqr(mb);
   Energy2 smin=_mb2;
   Energy2 s=
     (CurrentGenerator::current().currentEvent()->incoming().first->momentum()+

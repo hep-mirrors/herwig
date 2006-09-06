@@ -9,10 +9,6 @@ namespace Herwig {
 inline MEee2gZ2qq::MEee2gZ2qq() : _minflav(1),_maxflav(5) 
 {}
 
-inline MEee2gZ2qq::MEee2gZ2qq(const MEee2gZ2qq & x)
-  : ME2to2Base(x), _theFFZVertex(x._theFFZVertex) ,_theFFPVertex(x._theFFPVertex),
-    _Z0(x._Z0) ,_gamma(x._gamma),_minflav(x._minflav), _maxflav(x._maxflav) {}
-
 inline IBPtr MEee2gZ2qq::clone() const {
   return new_ptr(*this);
 }
@@ -32,8 +28,7 @@ inline void MEee2gZ2qq::doinit() throw(InitException) {
   _Z0=getParticleData(ThePEG::ParticleID::Z0);
   _gamma=getParticleData(ThePEG::ParticleID::gamma);
   // cast the SM pointer to the Herwig SM pointer
-  Ptr<Herwig::StandardModel>::transient_const_pointer hwsm=
-    dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm)
     {

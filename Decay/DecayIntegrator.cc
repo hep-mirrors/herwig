@@ -147,8 +147,9 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int 
 // initialization for a run
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
-  CurrentGenerator::current().log() << "testing start of the initialisation for " 
-				    << this->fullName() << "\n";
+  if(initialize()) CurrentGenerator::current().log() 
+    << "testing start of the initialisation for " 
+    << this->fullName() << "\n";
   if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix)
     {

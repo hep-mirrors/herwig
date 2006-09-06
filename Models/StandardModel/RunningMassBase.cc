@@ -12,8 +12,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-RunningMassBase::~RunningMassBase() {}
-
 void RunningMassBase::persistentOutput(PersistentOStream & os) const {
   os << ounit(_theMass, GeV);
 }

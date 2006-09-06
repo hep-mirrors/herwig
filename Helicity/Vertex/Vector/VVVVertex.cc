@@ -38,7 +38,7 @@ Complex VVVVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1,
   setCoupling(q2,Pvec1,Pvec2,Pvec3);
   Complex norm=getNorm();
   Complex ii(0.,1.);
-  Complex alpha1(0.),alpha2(0.),alpha3(0.);
+  Complex alpha1(0.);
   // decide if we need to use special treatment to avoid gauge cancelations
   // first vector
   if(abs(vec1.t())!=0.)
@@ -107,7 +107,6 @@ VectorWaveFunction VVVVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
 					   vec1.pz()+vec2.pz(),vec1.e() +vec2.e() ); 
   // calculate the coupling
   setCoupling(q2,out,Pvec1,Pvec2);
-  Complex ii(0.,1.);
   // prefactor
   Energy2 p2=pout.m2();
   Complex fact=getNorm()*propagator(iopt,p2,out);

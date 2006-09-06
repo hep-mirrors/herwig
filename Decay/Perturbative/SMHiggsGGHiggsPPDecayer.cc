@@ -26,8 +26,6 @@ namespace Herwig {
   using Helicity::Direction;
   using Helicity::incoming;
   using Helicity::outgoing;
-  
-  SMHiggsGGHiggsPPDecayer::~SMHiggsGGHiggsPPDecayer() {}
 
   bool SMHiggsGGHiggsPPDecayer::accept(const DecayMode & dm) const {
     bool acc(false);

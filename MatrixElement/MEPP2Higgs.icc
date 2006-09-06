@@ -1,0 +1,36 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEPP2Higgs class.
+//
+
+namespace Herwig {
+
+inline MEPP2Higgs::MEPP2Higgs() : _process(0), _minloop(6), _maxloop(6),
+				  _minFlavour(3),_maxFlavour(5),_runLoop(false),
+				  _lineshape(false)
+{}
+
+inline IBPtr MEPP2Higgs::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEPP2Higgs::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline Complex MEPP2Higgs::A1(Energy2 s,Energy2 mf2) const {
+  return mf2/s*(4.-W2(s,mf2)*(1.-4.*mf2/s));
+}
+
+inline Complex MEPP2Higgs::W2(Energy2 s,Energy2 mf2) const {
+  double root=0.5*sqrt(abs(s)/mf2);
+  if(s<0.)
+    return 4.*sqr(asinh(root));
+  else if(s<4.*mf2)
+    return -4.*sqr(asin(root));
+  else
+    return 4.*sqr(acosh(root))-sqr(pi)-4.*pi*acosh(root)*Complex(0.,1.);
+}
+
+}

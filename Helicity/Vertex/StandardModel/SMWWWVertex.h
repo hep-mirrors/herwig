@@ -6,7 +6,6 @@
 //
 #include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/Utilities/Rebinder.h"
 
 namespace Herwig {
 namespace Helicity{
@@ -108,7 +107,7 @@ private:
   /**
    * Pointer to the Standard Model object.
    */
-  SMPtr _theSM;
+  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.

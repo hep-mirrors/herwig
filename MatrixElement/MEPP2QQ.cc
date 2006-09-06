@@ -23,13 +23,10 @@
 
 using namespace Herwig;
 
-MEPP2QQ::~MEPP2QQ() {}
-
 void MEPP2QQ::doinit() throw(InitException) {
   ME2to2Base::doinit();
   // get the vedrtex pointers from the SM object
-  Ptr<Herwig::StandardModel>::transient_const_pointer hwsm=
-    dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm)
     {
@@ -50,8 +47,9 @@ void MEPP2QQ::doinit() throw(InitException) {
 }
 
 Energy2 MEPP2QQ::scale() const {
-  Energy2 s(sHat()),u(uHat()),t(tHat());
-  return 2.*s*t*u/(s*s+t*t+u*u);
+  Energy2 mq2(meMomenta()[2].mass2()),s(0.5*sHat()),
+    u(0.5*(uHat()-mq2)),t(0.5*(tHat()-mq2));
+  return 4.*s*t*u/(s*s+t*t+u*u);
 }
 
 void MEPP2QQ::persistentOutput(PersistentOStream & os) const {
@@ -151,11 +149,11 @@ double MEPP2QQ::gg2qqbarME(vector<VectorWaveFunction> &g1,
 	      for(unsigned int ohel2=0;ohel2<2;++ohel2)
 		{
 		  //first t-channel diagram
-		  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+		  inters =_qqgvertex->evaluate(mt,1,qbar[ohel2].getParticle(),
 					       qbar[ohel2],g2[ihel2]);
 		  diag[0]=_qqgvertex->evaluate(mt,inters,q[ohel1],g1[ihel1]);
 		  //second t-channel diagram
-		  inters =_qqgvertex->evaluate(mt,5,qbar[ohel2].getParticle(),
+		  inters =_qqgvertex->evaluate(mt,1,qbar[ohel2].getParticle(),
 					       qbar[ohel2],g1[ihel1]);
 		  diag[1]=_qqgvertex->evaluate(mt,inters,q[ohel1],g2[ihel2]);
 		  // s-channel diagram
@@ -183,7 +181,13 @@ double MEPP2QQ::gg2qqbarME(vector<VectorWaveFunction> &g1,
   sumdiag[_flow%2]=0.;
   _diagram=1+UseRandom::rnd3(sumdiag[0],sumdiag[1],sumdiag[2]);
   // final part of colour and spin factors
-  return output/48.;
+//    Energy2 mq2=sqr(getParticleData(6)->mass());
+//    double tau1=(tHat()-mq2)/sHat(),tau2=(uHat()-mq2)/sHat(),rho=4*mq2/sHat();
+//    double test=(1./6./tau1/tau2-3./8.)*sqr(4.*pi*SM().alphaS(mt))*
+//      (sqr(tau1)+sqr(tau2)+rho-0.25*sqr(rho)/tau1/tau2);
+//    cerr << "testing matrix element " 
+//         << output/48./test << "\n";
+   return output/48.;
 }
 
 double MEPP2QQ::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
@@ -238,14 +242,17 @@ double MEPP2QQ::qqbar2qqbarME(vector<SpinorWaveFunction>    & q1,
  	    }
  	}
     }
-  // identical particle symmetry factor if needed
-  if(diagon[0]&&diagon[1]){output*=0.5;}
   //select a colour flow
   _flow=1+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
   // select a diagram ensuring it is one of those in the selected colour flow
   sumdiag[_flow%2]=0.;
   _diagram=3+UseRandom::rnd2(sumdiag[0],sumdiag[1]);
   // final part of colour and spin factors
+//   Energy2 mq2=sqr(getParticleData(6)->mass());
+//   double tau1=(tHat()-mq2)/sHat(),tau2=(uHat()-mq2)/sHat(),rho=4*mq2/sHat();
+//   cerr << "testing matrix element " 
+//        << output/18./(4./9.*sqr(4.*pi*SM().alphaS(mt))*(sqr(tau1)+sqr(tau2)+0.5*rho))
+//        << "\n";
   return output/18.;
 }
 
@@ -264,7 +271,7 @@ void MEPP2QQ::getDiagrams() const {
 		   3,_quark[_quarkflavour-1], 3, _antiquark[_quarkflavour-1], -3)));
     }
   // q qbar -> q qbar
-  if(_process==0||_process==8)
+  if(_process==0||_process==2)
     {
       for(unsigned int ix=1;ix<6;++ix)
 	{
@@ -282,12 +289,12 @@ void MEPP2QQ::getDiagrams() const {
 Selector<const ColourLines *>
 MEPP2QQ::colourGeometries(tcDiagPtr diag) const {
   // colour lines for gg to q qbar
-  static ColourLines cggqq[4]={ColourLines("1  4, -1 -2 3, -3 -5"),
+  static const ColourLines cggqq[4]={ColourLines("1  4, -1 -2 3, -3 -5"),
 			       ColourLines("3  4, -3 -2 1, -1 -5"),
 			       ColourLines("2 -1,  1  3 4, -2 -3 -5"),
 			       ColourLines("1 -2, -1 -3 -5, 2 3 4")};
   // colour lines for q qbar -> q qbar
-  static ColourLines cqqbqqb[2]={ColourLines("1 3 4,-2 -3 -5"),
+  static const ColourLines cqqbqqb[2]={ColourLines("1 3 4,-2 -3 -5"),
 				 ColourLines("1 2 -3,4 -2 -5")};
   // select the colour flow (as all ready picked just insert answer)
   Selector<const ColourLines *> sel;
@@ -322,8 +329,8 @@ double MEPP2QQ::me2() const {
       vector<SpinorWaveFunction> qbar;
       for(unsigned int ix=0;ix<2;++ix)
 	{
-	  g1w.reset(2*ix);g1.push_back(g1w);
-	  g2w.reset(2*ix);g2.push_back(g2w);
+ 	  g1w.reset(2*ix);g1.push_back(g1w);
+ 	  g2w.reset(2*ix);g2.push_back(g2w);
 	  qw.reset(ix);q.push_back(qw);
 	  qbarw.reset(ix);qbar.push_back(qbarw);
 	}
@@ -393,9 +400,9 @@ void MEPP2QQ::constructVertex(tSubProPtr sub)
   for(unsigned int ix=0;ix<4;++ix)
     {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
   // construct the vertex
-  VertexPtr hardvertex=new_ptr(HardVertex());
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
-  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(_me);
+  hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
 }

@@ -11,9 +11,6 @@ mkdir /Defaults/Handlers/Hadronization/Cluster
 mkdir /Defaults/Handlers/UnderlyingEvent
 
 # uncomment if required
-#create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton
-#create ThePEG::Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
-#create ThePEG::Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
 read ThePEGParticles.in
 read HerwigParticles.in
 
@@ -41,43 +38,25 @@ create ThePEG::PartonExtractor EEExtractor
 set EEExtractor:NoPDF /Defaults/Partons/NoPDF
 cp StandardExtractor QCDExtractor
 
-# Setup matrix elements
-cd /Defaults/MatrixElements
+# create the matrix elements
+read MatrixElements.in
 
-create Herwig++::MEqq2gZ2ll MEqq2gZ2ll HwME.so
-set MEqq2gZ2ll:WithNeutrinos 0
-create Herwig++::MEqq2W2ll  MEqq2W2ll  HwME.so
-create Herwig++::MEee2gZ2qq MEee2gZ2qq HwME.so
-set MEee2gZ2qq:MinimumFlavour 1
-set MEee2gZ2qq:MaximumFlavour 5
-
-# Setup the Subprocesses
-cd /Defaults/Handlers
-
-# For e+e-
-create ThePEG::SubProcessHandler EE2QQ
-insert EE2QQ:MatrixElements[0] /Defaults/MatrixElements/MEee2gZ2qq
-set EE2QQ:PartonExtractor EEExtractor
-
-# For p+p+
-create ThePEG::SubProcessHandler SimpleQCD
-insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ll
-insert SimpleQCD:MatrixElements[1] /Defaults/MatrixElements/MEqq2W2ll
-set SimpleQCD:PartonExtractor QCDExtractor
-
-cd /Defaults
 # Create here the Herwig++ specific stuff
+cd /Defaults
+# create the global parameters
 create Herwig++::GlobalParameters theGlobalParameters GlobalParameters.so
+# create the shower stuff
 read Shower.in
+# create the hadronization stuff
 read Hadronization.in
-# create the DecayHandler
-create Herwig++::HwDecayHandler /Defaults/Handlers/DecayHandler
-set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
-# This must be after the Hadronization if the underlying event uses any
-# objects from the hadronization (for example like UA5)
+# create the underlying event stuff
 read UnderlyingEvent.in 
-
+# create the decays and decay handler
+read Decays.in
+# create the PDFs
 read PDF.in
+# create the QED stuff
+read QED.in
 
 # Set some particle properties
 
@@ -99,6 +78,9 @@ set LEPHandler:Sampler /Defaults/ACDCSampler
 set LEPHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
 set LEPHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
 set LEPHandler:DecayHandler /Defaults/Handlers/DecayHandler
+# uncomment to get QED radiation off Z decay products in hard process
+#insert LEPHandler:PostSubProcessHandlers[0] /Defaults/Handlers/QED/QEDRadiationHandler
+
 
 # Create LHCHandler
 create ThePEG::StandardEventHandler LHCHandler 
@@ -109,21 +91,23 @@ insert LHCHandler:SubProcessHandlers[0] /Defaults/Handlers/SimpleQCD
 set LHCHandler:BeamA /Defaults/Particles/p+
 set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
-set LHCHandler:BinStrategy 1
+set LHCHandler:BinStrategy 2
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-set LHCHandler:MultipleInteractionHandler /Defaults/Handlers/UnderlyingEvent/theForcedSplitting
 insert LHCHandler:PostHadronizationHandlers 0 /Defaults/Handlers/UnderlyingEvent/theUA5
 set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
 set LHCHandler:DecayHandler /Defaults/Handlers/DecayHandler
+# uncomment to get QED radiation off W/Z decay products in hard process
+#insert LHCHandler:PostSubProcessHandlers[0] /Defaults/Handlers/QED/QEDRadiationHandler
+
+#Set the cuts on the hard process
+cd /Defaults/Generators
+read Cuts.in
 
 # Now the LEPGenerator
-cd /Defaults/Generators
 create ThePEG::EventGenerator LEPGenerator
 set LEPGenerator:RandomNumberGenerator /Defaults/Random
 set LEPGenerator:StandardModelParameters /Defaults/Model
 set LEPGenerator:EventHandler /Defaults/Handlers/LEPHandler
-create ThePEG::Cuts EECuts
-set EECuts:MHatMin 22.36
 set LEPGenerator:EventHandler:Cuts EECuts
 
 # And the LHCGenerator
@@ -131,24 +115,8 @@ create ThePEG::EventGenerator LHCGenerator
 set LHCGenerator:RandomNumberGenerator /Defaults/Random
 set LHCGenerator:StandardModelParameters /Defaults/Model
 set LHCGenerator:EventHandler /Defaults/Handlers/LHCHandler
-create ThePEG::Cuts QCDCuts
-set QCDCuts:ScaleMin 1.0*GeV
-set QCDCuts:X1Min 0.00001
-set QCDCuts:X2Min 0.00001
-set QCDCuts:MHatMin 20.
-### new cuts handling ###
-library SimpleKTCut.so
-create ThePEG::SimpleKTCut KtCut
-set KtCut:MinKT 1.0*GeV
-## if e.g. only leptons should be considered, do ##
-#set KtCut:Matcher /Defaults/Matchers/MatchLepton
-insert QCDCuts:OneCuts[0] KtCut
-##########################
 set LHCGenerator:EventHandler:Cuts QCDCuts
 
-# This will read in all the standard hadron decay modes and add
-# the new particles that are used in HERWIG 6.4, but not in ThePEG
-read Decays.in
 
 # include some default analysis handlers
 read Analysis.in

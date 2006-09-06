@@ -55,30 +55,34 @@ public:
 
   /**
    * Look through all \a tagged particled and decay all unstable ones.
-   * @param ch the PartialCollisionHandler (now EventHandler) in charge of the generation.
+   * @param eh the EventHandler in charge of the generation.
    * @param tagged the vector of particles to consider. If empty, all
    * final state particles in the current Step is considered.
    * @param hint a possible Hint which is ignored in this implementation.
    */
-  virtual void handle(EventHandler & ch, const tPVector & tagged,
+  virtual void handle(EventHandler & eh, const tPVector & tagged,
 		      const Hint & hint)
-    ThePEG_THROW_SPEC((Veto, Stop, Exception));
+    throw(Veto, Stop, Exception);
 
   /**
    * Perform the decay of one unstable particle.
    * @param parent the particle to be decayed.
    * @param s the Step where decay products are inserted.
+   * @throws Veto if the Handler requires the current step to be discarded.
+   * @throws Exception if something goes wrong.
    */
   virtual void performDecay(tPPtr parent, Step & s) const
-    ThePEG_THROW_SPEC((Veto, Exception));
+    throw(Veto, Exception);
   
   /**
    * add the decay products of in intermediate particle produced in a decay
    * @param parent the particle which has been decayed.
    * @param s the Step where decay products are inserted.
+   * @throws Veto if the Handler requires the current step to be discarded.
+   * @throws Exception if something goes wrong.
    */
   void addDecayedParticle(tPPtr parent, Step & s) const
-    ThePEG_THROW_SPEC((Veto, Exception));
+    throw(Veto, Exception);
 
   /**
    * Standard Init function

@@ -224,7 +224,6 @@ inline void EventShapes::checkHemispheres() {
 
 inline void EventShapes::calcHemisphereMasses() {
   Lorentz5Momentum pos, neg;
-  vector<Lorentz5Momentum>::const_iterator cit;
   Energy pden(0.),epos(0.),eneg(0.);
   for(unsigned int ix=0;ix<_pv.size();++ix)
     {

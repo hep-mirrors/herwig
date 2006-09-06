@@ -1,14 +1,16 @@
 mkdir /Defaults/Handlers/Analysis
-create Herwig++::BasicConsistency /Defaults/Handlers/Analysis/Basics HwAnalysis.so
-create Herwig++::MultiplicityCount /Defaults/Handlers/Analysis/Multiplicity HwAnalysis.so
-
-create Herwig++::GraphvizPlot /Defaults/Handlers/Analysis/Plot HwAnalysis.so
+library HwAnalysis.so
+create Herwig++::BasicConsistency /Defaults/Handlers/Analysis/Basics
+create Herwig++::MultiplicityCount /Defaults/Handlers/Analysis/Multiplicity
+create Herwig++::GraphvizPlot /Defaults/Handlers/Analysis/Plot
 
 insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LEPGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/Multiplicity
+#insert LHCGenerator:AnalysisHandlers 2 /Defaults/Handlers/Analysis/Plot
 
-create Herwig++::SimpleLHCAnalysis /Defaults/Handlers/Analysis/SimpleLHC HwAnalysis.so
+
+create Herwig++::SimpleLHCAnalysis /Defaults/Handlers/Analysis/SimpleLHC
 
 insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LHCGenerator:AnalysisHandlers 1 /Defaults/Handlers/Analysis/SimpleLHC
-#insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Plot
+#insert LHCGenerator:AnalysisHandlers 2 /Defaults/Handlers/Analysis/Plot

@@ -7,7 +7,7 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-  inline SMWWHVertex::SMWWHVertex() : _mw(), _zfact(), _sw()
+inline SMWWHVertex::SMWWHVertex() :   _couplast(0.), _q2last(0.), _mw(), _zfact(), _sw()
 {
   // particles
   vector<int> first,second,third;
@@ -15,8 +15,6 @@ using namespace ThePEG;
   second.push_back(-24);second.push_back(23);
   third.push_back(25);third.push_back(25);
   setList(first,second,third);
-  // coupling
-  _couplast=0.; _q2last=0.;
 }
 
 inline IBPtr SMWWHVertex::clone() const {
@@ -28,6 +26,7 @@ inline IBPtr SMWWHVertex::fullclone() const {
 }
 
 inline void SMWWHVertex::doinit() throw(InitException) {
+  _theSM = generator()->standardModel();
   _mw=getParticleData(ThePEG::ParticleID::Wplus)->mass();
   _sw = _theSM->sin2ThetaW();
   _zfact = 1./(1.-_sw);

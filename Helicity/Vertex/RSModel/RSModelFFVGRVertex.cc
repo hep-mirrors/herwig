@@ -6,7 +6,6 @@
 
 #include "RSModelFFVGRVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -16,13 +15,11 @@ namespace Helicity {
 using namespace ThePEG;
 
 void RSModelFFVGRVertex::persistentOutput(PersistentOStream & os) const {
-  for(int ix=0;ix<17;++ix){os << _charge[ix];}
-  os <<  _theModel << _theKappa;
+  os << _charge <<  _theModel << _theKappa;
 }
 
 void RSModelFFVGRVertex::persistentInput(PersistentIStream & is, int) {
-  for(int ix=0;ix<17;++ix){is >> _charge[ix];}
-  is >> _theModel >> _theKappa;
+  is >> _charge >> _theModel >> _theKappa;
   for(int ix=0;ix<2;++ix){_couplast[ix]=0.;_q2last[ix]=0.;}
 }
 
@@ -30,12 +27,6 @@ ClassDescription<RSModelFFVGRVertex> RSModelFFVGRVertex::initRSModelFFVGRVertex;
 // Definition of the static class description member.
 
 void RSModelFFVGRVertex::Init() {
-  
-  static Reference<RSModelFFVGRVertex,StandardModelBase> interfaceModel
-    ("Model",
-     "Reference to the Model object",
-     &RSModelFFVGRVertex::_theModel, false, false, true, false);
-
   static ClassDocumentation<RSModelFFVGRVertex> documentation
     ("The RSModelFFVGRVertexxs class is the implementation"
      " of the two fermion vector coupling for the RS model.");

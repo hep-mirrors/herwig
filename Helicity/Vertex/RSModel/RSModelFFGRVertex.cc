@@ -8,8 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
-
 
 namespace Herwig {
 namespace Helicity {
@@ -27,14 +25,6 @@ ClassDescription<RSModelFFGRVertex> RSModelFFGRVertex::initRSModelFFGRVertex;
 // Definition of the static class description member.
 
 void RSModelFFGRVertex::Init() {
-  
-  
-  static Reference<RSModelFFGRVertex,StandardModelBase> interfaceModel
-    ("Model",
-     "Reference to the Model object",
-     &RSModelFFGRVertex::_theModel, false, false, true, false, false);
-  
-  
   static ClassDocumentation<RSModelFFGRVertex> documentation
     ("The RSModelFFGRVertex class is the RSModel calculation"
      " of the fermion-antifermion-graviton vertex");

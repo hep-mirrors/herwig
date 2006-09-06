@@ -23,8 +23,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-PartonicHadronizer::~PartonicHadronizer() {}
-
 void PartonicHadronizer::persistentOutput(PersistentOStream & os) const {
   os << _globalParameters  << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer << _exclusive

@@ -28,8 +28,6 @@ set theEvolver:SplittingGenerator theSplittingGenerator
 
 # a few default values
 cd /Defaults/Handlers/Shower
-set theShowerVariables:OnOffMultiScaleShowerMode 0
-set theShowerVariables:qqgPSMode 0
 set theShowerVariables:MECorrMode 0
 set theShowerVariables:CutoffQCDMassScale 0.75*GeV
 set theShowerVariables:CutoffQEDMassScale 0.75*GeV
@@ -152,6 +150,12 @@ set theSplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting ubar->g,ubar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting dbar->g,dbar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting tbar->g,tbar; QtoGQSudakov
 #
 #set theSplittingGenerator:AddInitialSplitting u->u,gamma; QtoQGammaSudakov
 #set theSplittingGenerator:AddInitialSplitting d->d,gamma; QtoQGammaSudakov

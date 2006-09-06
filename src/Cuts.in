@@ -1,0 +1,61 @@
+# create some matchers for different types of objects to cut on
+# for any lepton
+create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton
+# for light quarks
+create ThePEG::Matcher<LightQuark> /Defaults/Matchers/MatchLightQuark
+# for light quarks
+create ThePEG::Matcher<LightAntiQuark> /Defaults/Matchers/MatchLightAntiQuark
+# all quarks/antiquark(other than top) and gluons
+create ThePEG::Matcher<StandardQCDParton> /Defaults/Matchers/MatchStandardQCDParton
+# photon
+create ThePEG::Matcher<Photon> /Defaults/Matchers/MatchPhoton
+# top quark
+create ThePEG::Matcher<Top>    /Defaults/Matchers/MatchTop
+
+# create the cuts object for e+e-
+create ThePEG::Cuts EECuts
+# cut on the CMS energy for photon radiation
+set EECuts:MHatMin 22.36
+
+# create the cuts object for hadron collisions
+create ThePEG::Cuts QCDCuts
+# cuts on all process
+set QCDCuts:ScaleMin 1.0*GeV
+set QCDCuts:X1Min 0.00001
+set QCDCuts:X2Min 0.00001
+set QCDCuts:MHatMin 20.
+
+# cut on jet pt 
+create ThePEG::SimpleKTCut JetKtCut SimpleKTCut.so
+set JetKtCut:Matcher /Defaults/Matchers/MatchStandardQCDParton
+set JetKtCut:MinKT 20.0*GeV
+
+# cut on photon
+create ThePEG::SimpleKTCut PhotonKtCut SimpleKTCut.so
+set PhotonKtCut:Matcher /Defaults/Matchers/MatchPhoton
+set PhotonKtCut:MinKT 20.0*GeV
+
+# cut on leptons
+create ThePEG::SimpleKTCut LeptonKtCut SimpleKTCut.so
+set LeptonKtCut:Matcher /Defaults/Matchers/MatchLepton
+set LeptonKtCut:MinKT 0.0*GeV
+
+#cut on top quarks
+create ThePEG::SimpleKTCut TopKtCut SimpleKTCut.so
+set TopKtCut:Matcher /Defaults/Matchers/MatchTop
+set TopKtCut:MinKT 0.0*GeV
+
+# create a cut on the invariant mass of lepton pairs
+create ThePEG::V2LeptonsCut MassCut V2LeptonsCut.so
+set MassCut:MaxM 14000*GeV
+set MassCut:Families All
+set MassCut:CComb All
+set MassCut:MinM 20.*GeV
+set MassCut:MaxM 14000.*GeV
+
+# insert into hadron cuts
+insert QCDCuts:OneCuts[0] JetKtCut
+insert QCDCuts:OneCuts[1] PhotonKtCut
+insert QCDCuts:OneCuts[2] LeptonKtCut
+insert QCDCuts:OneCuts[3] TopKtCut
+insert QCDCuts:MultiCuts[0] MassCut

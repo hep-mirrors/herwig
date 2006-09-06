@@ -7,8 +7,8 @@
 #include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/StandardModel/CKMBase.h"
-#include "ThePEG/Utilities/Rebinder.h"
 #include "Herwig++/Models/StandardModel/StandardCKM.h"
+
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
@@ -31,11 +31,6 @@ public:
    * Default constructor.
    */
   inline SMFFWVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline SMFFWVertex(const SMFFWVertex &);
   //@}
   
 public:
@@ -113,12 +108,12 @@ private:
   /**
    * Pointer to the Standard Model object.
    */
-  SMPtr _theSM;
+  tcSMPtr _theSM;
 
   /**
    * Pointer to the CKM object.
    */
-  Ptr<CKMBase>::pointer _theCKM;
+  Ptr<CKMBase>::transient_pointer _theCKM;
 
   /**
    * Storage of the couplings.
@@ -127,7 +122,7 @@ private:
   /**
    *  The elements of the CKM matrix.
    */
-  Complex _ckm[3][3];
+  vector<vector<Complex> > _ckm;
 
   /**
    *  The last value of the electroweak coupling calculated.

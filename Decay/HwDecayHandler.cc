@@ -37,7 +37,7 @@ HwDecayHandler::~HwDecayHandler() {}
 
 void HwDecayHandler::
 handle(EventHandler & ch, const tPVector & tagged,
-       const Hint & hint) ThePEG_THROW_SPEC((Veto, Stop, Exception)) {
+       const Hint & hint) throw(Veto, Stop, Exception) {
   // First go through the tagged particles for unstable ones
   Timer<46> timer("HwDecayHandler::handle");
   tPVector parents;
@@ -68,7 +68,7 @@ handle(EventHandler & ch, const tPVector & tagged,
 // perform decay method including modifications for spin correlations
 // and for the decayer to specify intermediate decay products
 void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
-  ThePEG_THROW_SPEC((Veto, Exception)) {
+  throw(Veto, Exception) {
   Timer<47> timer("HwDecayHandler::performDecay");
   long ntry = 0;
   tcSpinfoPtr hwspin;
@@ -187,7 +187,7 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 
 // method to add an intermediate which has already been decayed to the event record
 void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
-  ThePEG_THROW_SPEC((Veto, Exception)) 
+  throw(Veto, Exception) 
 {
   try {
     for ( int i = 0, N = parent->children().size(); i < N; ++i ) {

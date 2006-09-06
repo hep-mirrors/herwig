@@ -6,23 +6,7 @@
 
 namespace Herwig {
 using namespace ThePEG;
-  
-inline SMTopDecayer::SMTopDecayer() 
-  :_wquarkwgt(6,0.),
-   _wleptonwgt(3,0.) 
-{
-  _wleptonwgt[0]=223.684;
-  _wleptonwgt[1]=223.684;
-  _wleptonwgt[2]=223.52;
-  _wquarkwgt[0]=638.417;
-  _wquarkwgt[1]=32.5727;
-  _wquarkwgt[2]=32.6351;
-  _wquarkwgt[3]=637.169;
-  _wquarkwgt[4]=6.62717e-05;
-  _wquarkwgt[5]=1.01539;
-  generateIntermediates(true);
-}
-  
+
 inline IBPtr SMTopDecayer::clone() const {
   return new_ptr(*this);
 }

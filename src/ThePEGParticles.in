@@ -127,7 +127,7 @@ setup /Defaults/Particles/W- -24 W- 80.330 2.070020 20.700150 0.0 -3 0 3 0
 defaultparticle /Defaults/Particles/W- 
 makeanti /Defaults/Particles/W+ /Defaults/Particles/W- 
 create /ThePEG/ParticleData /Defaults/Particles/h0 
-setup /Defaults/Particles/h0 25 h0 80.0 0.002370 0.023690 0.0 0 0 1 0
+setup /Defaults/Particles/h0 25 h0 115.0 0.003196 0.3196 0.0 0 0 1 0
 defaultparticle /Defaults/Particles/h0 
 create /ThePEG/ParticleData /Defaults/Particles/reggeon 
 setup /Defaults/Particles/reggeon 28 reggeon 0.0 0.0 0.0 0.0 0 0 0 1

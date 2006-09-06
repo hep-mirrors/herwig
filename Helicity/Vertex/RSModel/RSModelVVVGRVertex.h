@@ -30,11 +30,6 @@ public:
    * Default constructor.
    */
   inline RSModelVVVGRVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline RSModelVVVGRVertex(const RSModelVVVGRVertex &);
   //@}
   
 public:
@@ -114,7 +109,7 @@ private:
   /**
    * Pointer to the model object.
    */
-  SMPtr _theModel;
+  tcSMPtr _theModel;
 
   /**
    * Storage of the couplings.
@@ -128,12 +123,12 @@ private:
   /**
    *  The last value of the coupling/
    */
-  Complex _couplast[2];
+  vector<Complex> _couplast;
 
   /**
    *  The last value of the scale, \f$q^2\f$.
    */
-  Energy2 _q2last[2];
+  vector<Energy2> _q2last;
 
   /**
    *  The prefactor for the \f$Z\f$ vertex.

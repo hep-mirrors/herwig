@@ -31,26 +31,6 @@ class MEee2Z: public MEBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline MEee2Z();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEee2Z(const MEee2Z &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEee2Z();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the MEBase class. */
   //@{
   /**
@@ -129,13 +109,6 @@ public:
    * me().
    */
   virtual CrossSection dSigHatDR() const;
-
-  /**
-   * Set the typed and momenta of the incoming and outgoing partons to
-   * be used in subsequent calls to me() and colourGeometries()
-   * according to the associated XComb object.
-   */
-  virtual void setKinematics();
   //@}
 
 public:

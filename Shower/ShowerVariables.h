@@ -30,9 +30,7 @@ using namespace ThePEG;
  *  where \f$p_T\f$ is the "resolution" variable. 
  *
  *  The ShowerHandler by default will decay all the unstable particles
- *  specified in the relevant interfacing during the shower however the 
- *  treatment of the shower from these particles can be either using
- *  a multi-scale approach of not depending on the switch setting
+ *  specified in the relevant interfacing during the shower.
  * 
  *  Finally, this class has also three parameters to set the low energy 
  *  cutoff mass scales for respectively QCD, QED, EWK radiation. 
@@ -66,15 +64,6 @@ public:
    *  Access to the various switches
    */
   //@{
-  /**
-   * Access the multi-scale showering mode switch: <em>0 (OFF), 1 (ON).</em>
-   * By choosing <em>0 (OFF)</em>, one gets a similar behaviour to  
-   * Fortran Herwig, in which the showering is done in one go, 
-   * from the starting scale to the cutoff.
-   * The default for Herwig++ is <em>1 (ON)</em>: multi-scale showering.
-   */
-  inline int isMultiScaleShowerON() const;
-
   /**
    * It returns true if the particle with the specified id
    * is in the list of those that should be decayed during the showering
@@ -158,18 +147,6 @@ public:
    * Any soft ME correction? 
    */
   inline bool softMEC() const;
-
-  /**
-   * Assign asymmetric initial condition to parton shower, random or
-   * not? If not random, then quark gets larger initial scale.
-   */
-  inline bool asyPS() const;
-
-  /**
-   * Asymmetric parton shower phase space, random choice for jet with
-   * large initial scale?
-   */
-  inline bool rndPS() const;
   //@}
 
   /**
@@ -203,14 +180,13 @@ public:
    * Set the gluon mass 
    * @param final If final is true gluon mass will be set to 
    * 0 or the effective mass depending on the choice of hadronisation model.
-   * otherwise if the multi-scale shower is on the mass will be set to zero
    */
   inline void setGluonMass(bool final);
 
 
   /**
-   *  Enhancement factors for radiation needed to generate the soft matrix element
-   *  correction.
+   *  Enhancement factors for radiation needed to generate the soft matrix
+   *  element correction.
    */
   //@{
   /**
@@ -235,25 +211,32 @@ public:
   //@}
 
   /**
-   *  Access functions for the type of shower phase space partition.
-   *  These set/return the whether the so-called 'symmetric'/'maximal'
-   *  /'smooth' choice was used (see _decay_shower_partition below).
-   *  Also we have a similar function which returns whether the T2
-   *  region is to be populated by the ME correction or the shower from
-   *  the decaying particle.
+   * Access function for the initial conditions for the shower
    */
   //@{
   /**
-   *  Access the option which determines the type of phase space partitioning 
-   *  for the decay_shower.
+   * Initial conditions for the shower of a final-final colour connection
+   * - 0 is the symmetric choice
+   * - 1 is maximal emmision from the coloured particle
+   * - 2 is maximal emmision from the anticoloured particle
+   * - 3 is randomly selected maximal emmision
    */
-  inline unsigned int decay_shower_partition() const;
+  inline unsigned int finalFinalConditions() const;
+
+  /**
+   * Initial conditions for the shower of an initial-final decay colour connection
+   * - 0 is the symmetric choice
+   * - 1 is maximal emission from the decay product
+   * - 2 is the smooth choice
+   */
+  inline unsigned int initialFinalDecayConditions() const;
 
   /**
    *  Access the option denoting whether the T2 region of the decay phase
    *  space is populated by the shower (default, false) or the ME correction. 
    */
-  inline bool use_me_for_t2();
+  inline bool useMEForT2() const;
+  //@}
 
   //@}
 
@@ -334,11 +317,6 @@ private:
 
 private:
 
-  /**
-   * The switch for on/off multi-scale shower
-   */
-  int _multiScaleShowerMode;
-
   /** 
    * Low-energy cutoff mass scale for QCD radiation
    */
@@ -363,11 +341,6 @@ private:
    * Matrix element correction switch
    */
   int _meCorrMode; 
-
-  /**
-   *  Initial conditions for the shower
-   */
-  int _qqgPSMode; 
 
   /**
    *  Mass cut-off for the shower
@@ -454,17 +427,20 @@ private:
   double _finalenhance;
   //@}
 
-  /**
-   *  The following variables relate to the decay shower and
-   *  its associated ME corrections.
-   */
 
   /**
-   *  Here we hold the option which determines the type of phase space 
-   *  partitioning to do for the decay shower. Depending on the value
-   *  of the option PartnerFinder will set different bounds on the starting
-   *  \f$\tilde{q}\f$ values for the showers of the decaying particle and its
-   *  charged child. This is done according to the top decay colour 
+   *  Flags controlling the initial conditions for the shower
+   */
+  //@{
+  /**
+   * Initial conditions for the shower with a final-final colour
+   * connection
+   */
+  unsigned int _finalFinalConditions; 
+
+  /**
+   * Initial conditions for the shower with an initial-final decay colour
+   * connection. This is done according to the top decay colour 
    *  connection calculation in JHEP12(2003)_045. The options act as follows:
    *  0: This is the default 'symmetric' choice which more or less divides
    *     the phase space evenly between the parent and its charged child.
@@ -476,14 +452,14 @@ private:
    *     from the parent. This does, however, mean that the phase space 
    *     available for emissions from the charged child is fairly minimal.
    */
-  unsigned int _decay_shower_partition;
+  unsigned int _initialFinalDecayConditions;
 
   /**
    *  This flag determines whether the T2 region in the decay shower
    *  (JHEP12(2003)_045) is populated by the ME correction (true) or
    *  the shower from the decaying particle.
    */
-  bool _use_me_for_t2;
+  bool _useMEForT2;
 
 };
 

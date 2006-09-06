@@ -14,10 +14,6 @@ inline IBPtr ShowerVariables::fullclone() const {
   return new_ptr(*this);
 }
 
-inline int ShowerVariables::isMultiScaleShowerON() const {
-  return _multiScaleShowerMode;
-}
-
 inline Energy ShowerVariables::
 cutoffMassScale(const ShowerIndex::InteractionType interaction) const {
   Energy cutoff = Energy();
@@ -76,14 +72,6 @@ inline bool ShowerVariables::softMEC() const {
   return (_meCorrMode == 1 || _meCorrMode > 2); 
 }
 
-inline bool ShowerVariables::asyPS() const {
-  return (_qqgPSMode > 0); 
-}
-
-inline bool ShowerVariables::rndPS() const {
-  return (_qqgPSMode == 2); 
-}
-
 inline tcPDFPtr ShowerVariables::currentPDF() const {
   return _pdf;
 }
@@ -115,40 +103,38 @@ inline GlobalParametersPtr ShowerVariables::globalParameters() const
 
 inline void ShowerVariables::setGluonMass(bool final)
 {
-  if(final)
-    {	
-      if(_globalParameters->isThePEGStringFragmentationON())
-	_gluonMass=0.;
-      else
-	_gluonMass=_globalParameters->effectiveGluonMass();
-    }
+  if(_globalParameters->isThePEGStringFragmentationON())
+    _gluonMass=0.;
   else
-    {
-      // set the gluon mass to be used in the reconstruction
-      if(_globalParameters->isThePEGStringFragmentationON()||
-	 isMultiScaleShowerON())
-	_gluonMass=0.;
-      else
-	_gluonMass=_globalParameters->effectiveGluonMass();
-    }
+    _gluonMass=_globalParameters->effectiveGluonMass();
 }
 
-inline double ShowerVariables::initialStateRadiationEnhancementFactor() const
-{return _initialenhance;}
+inline double ShowerVariables::initialStateRadiationEnhancementFactor() const {
+  return _initialenhance;
+}
 
-inline double ShowerVariables::finalStateRadiationEnhancementFactor() const
-{return _finalenhance;}
+inline double ShowerVariables::finalStateRadiationEnhancementFactor() const {
+  return _finalenhance;
+}
 
-inline void ShowerVariables::initialStateRadiationEnhancementFactor(double in)
-{_initialenhance=in;}
+inline void ShowerVariables::initialStateRadiationEnhancementFactor(double in) {
+  _initialenhance=in;
+}
 
-inline void ShowerVariables::finalStateRadiationEnhancementFactor(double in)
-{_finalenhance=in;}
+inline void ShowerVariables::finalStateRadiationEnhancementFactor(double in) {
+  _finalenhance=in;
+}
 
-inline unsigned int ShowerVariables::decay_shower_partition() const
-{return _decay_shower_partition;}
+inline unsigned int ShowerVariables::finalFinalConditions() const {
+  return _finalFinalConditions;
+}
 
-inline bool ShowerVariables::use_me_for_t2()
-{return _use_me_for_t2;}
+inline unsigned int ShowerVariables::initialFinalDecayConditions() const {
+  return _initialFinalDecayConditions;
+}
+
+inline bool ShowerVariables::useMEForT2() const {
+  return _useMEForT2;
+}
 
 }

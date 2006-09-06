@@ -29,20 +29,9 @@ public:
    * The default constructor.
    */
   inline TopDecayMECorrection();
-
-  /**
-   * The copy constructor.
-   */
-  inline TopDecayMECorrection(const TopDecayMECorrection &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~TopDecayMECorrection();
   //@}
 
 public:
-
   /**
    *  Members to override those in the base class and implemented 
    *  the matrix element correction
@@ -85,38 +74,40 @@ private:
   /**
    *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
-  inline double XGBR1(double,double,double,int);
+  inline double xgbr(int);
+
   /**
    *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
    */
-  inline double XGBR2(double,double,double,int);
-  /**
-   *  This function is auxiliary to the function \f$x_{a}\f$ (hXAB).
-   */
-  inline double KTR(double,double,double,double,int);
+  inline double ktr(double,int);
+
   /**
    *  This function determines \f$x_{a}\f$ as a function of \f$x_{g}\f$ 
    *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
-  inline double XAB(double,double,double,double,double,int);
+  inline double xab(double,double,int);
+
   /**
    *  This function determines the point (\f$x_{g}\f$) where the condition that 
    *  \f$x_{a}\f$ be real supersedes that due to the external input 
    *  \f$\tilde{\kappa}\f$ where, again, \f$\kappa\f$ pertains to emissions from the 
    *  b.
    */
-  inline double XGBCUT(double,double,double);
+  inline double xgbcut(double);
+
   /**
    *  This function determines the minimum value of \f$x_{a}\f$ 
    *  for a given \f$\tilde{\kappa}\f$ where \f$\kappa\f$ pertains to
    *  emissions from the c.
    */
-  inline double XACCUT(double,double,double);
+  inline double xaccut(double);
+
   /**
    *  This function is auxiliary to the function \f$x_{g}\f$ (hXGC).
    */
-  inline double Z(double,double,double,double,double,int,int); 
+  inline double z(double,double,int,int); 
+
   /**
    *  This function determines \f$x_{g}\f$ as a function of \f$x_{a}\f$ 
    *  and \f$\kappa\f$ where \f$\kappa\f$ pertains to emissions from the 
@@ -126,71 +117,64 @@ private:
    *  function for the special case of the full phase space, in which
    *  case the fifth argument \f$\kappa\f$ is irrelevant.
    */
-  inline double XGC(double,double,double,double,double,int,int); 
+  inline double xgc(double,double,int,int); 
+
   /**
    *  This function, \f$x_{g,c=0}^{-1}\f$, returns \f$x_{a}\f$ as a function 
    *  of \f$x_{g}\f$ for the special case of c=0, for emissions from c 
    *  (the b-quark). The third input is \f$\tilde{\kappa}\f$ which pertains 
    *  to emissions from c.
    */
-  inline double XGINVC0(double,double,double,double); 
+  inline double xginvc0(double,double); 
+
   /**
    *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
-  inline double APPROXDEADMAXXA(double,double,double); 
+  inline double approxDeadMaxxa(double,double,double); 
+
   /**
    *  For a given value of \f$x_{g}\f$ this returns the maximum value of \f$x_{a}\f$  
    *  in the dead region.
    */
-  inline double APPROXDEADMINXA(double,double,double); 
+  inline double approxDeadMinxa(double,double,double); 
+
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are in the allowed region, the kinematically accessible phase 
    *  space.
    */
-  inline bool INTHEALLOWEDREGION(double,double,double,double,double); 
+  inline bool inTheAllowedRegion(double,double); 
+
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are exactly in the approximate dead region.
    */
-  inline bool INTHEAPPROXDEADREGION(double,double,double,double,
-                                    double,double,double); 
+  inline bool inTheApproxDeadRegion(double,double,
+                                    double,double); 
+
   /**
    *  This function returns true or false according to whether the values
    *  xg,xa are exactly in the dead region.
    */
-  inline bool INTHEDEADREGION(double,double,double,double,
-                              double,double,double); 
+  inline bool inTheDeadRegion(double,double,
+                              double,double); 
 
   /**
    *  This function returns values of (\f$x_{g}\f$,\f$x_{a}\f$) distributed 
    *  according to \f$\left(1+a-x_{a}\right)^{-1}x_{g}^{-2}\f$ in the 
    *  approximate dead region.  
    */
-  inline double DEADREGIONXGXA(double,double); 
+  inline double deadRegionxgxa(double,double); 
+
   /**
-   *  This is similar to the subroutine of the same name (stolen) in
-   *  herwig6507. It takes a 5-momentum and returns a rotation matrix 
-   *  such that which acts on the input 5-momentum so as to rotate
-   *  it to point in the +Z direction.  
+   *  This rotation takes a 5-momentum and returns a rotation matrix 
+   *  such that it acts on the input 5-momentum so as to
+   *  make it point in the +Z direction. Finally it performs a randomn
+   *  rotation about the z-axis.
    */
-  inline HepLorentzRotation HWUROT(Lorentz5Momentum); 
-  /**
-   *  This returns a random rotation about the +Z direction.  
-   */
-  inline HepLorentzRotation RANDOMZROTATION(); 
-  /**
-   *  This is the same as HWUSQR in herwig6507. It returns the square 
-   *  root of the absolute value of the input, multiplied by the sign
-   *  of the input.  
-   */
-  inline double HWUSQR(double); 
-  /**
-   *  This routine can be removed, it is being used in dofinish
-   *  as part of debugging, to print topdrawer files.
-   */ 
-  inline int KPRINTER(double,double);  
+  inline LorentzRotation rotateToZ(Lorentz5Momentum);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

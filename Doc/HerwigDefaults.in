@@ -6,7 +6,6 @@ library HwSMVertex.so
 #
 library Hw64Decay.so
 library HwBaryonDecay.so
-library HwForcedSplitting.so
 library HwFormFactors.so
 library HwMamboDecay.so
 library HwME.so

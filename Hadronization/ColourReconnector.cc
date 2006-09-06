@@ -12,21 +12,14 @@
 #include <ThePEG/Repository/EventGenerator.h>
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-ColourReconnector::~ColourReconnector() {}
-
 
 void ColourReconnector::persistentOutput(PersistentOStream & os) const {
   os << _ClReco << _PReco;
 }
 
-
 void ColourReconnector::persistentInput(PersistentIStream & is, int) {
   is >> _ClReco >> _PReco;
 }
-
 
 ClassDescription<ColourReconnector> ColourReconnector::initColourReconnector;
 // Definition of the static class description member.

@@ -7,23 +7,17 @@
 #include "MEee2gZ2qq.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
-
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "MEee2gZ2qq.tcc"
 #endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
-using namespace Herwig;
-
-MEee2gZ2qq::~MEee2gZ2qq() {}
-
-
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/Helicity/Correlations/HardVertex.h"
+
+using namespace Herwig;
 
 void MEee2gZ2qq::getDiagrams() const {
   // specific the diagrams
@@ -70,7 +64,7 @@ MEee2gZ2qq::diagrams(const DiagramVector & diags) const {
 
 Selector<const ColourLines *>
 MEee2gZ2qq::colourGeometries(tcDiagPtr diag) const {
-  static ColourLines c("-5 4");
+  static const ColourLines c("-5 4");
   Selector<const ColourLines *> sel;
   sel.insert(1.0, &c);
   return sel;
@@ -244,9 +238,9 @@ void MEee2gZ2qq::constructVertex(tSubProPtr sub)
   double me,cont,BW;
   ProductionMatrixElement prodme=HelicityME(fin,ain,fout,aout,me,cont,BW);
   // construct the vertex
-  VertexPtr hardvertex=new_ptr(HardVertex());
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
-  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(prodme);
+  hardvertex->ME(prodme);
   // set the pointers to and from the vertex
   spin1->setProductionVertex(hardvertex);
   spin2->setProductionVertex(hardvertex);

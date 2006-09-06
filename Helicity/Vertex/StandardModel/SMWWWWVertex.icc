@@ -7,7 +7,9 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMWWWWVertex::SMWWWWVertex() : _vfact(4,0.0), _sw2(0.), _cw2(0.)
+  inline SMWWWWVertex::SMWWWWVertex() 
+    : _couplast(0.0), _q2last(0.0), 
+      _vfact(4,0.0), _sw2(0.), _cw2(0.)
 {
   // particles
   vector<int> first,second,third,fourth;
@@ -28,8 +30,6 @@ inline SMWWWWVertex::SMWWWWVertex() : _vfact(4,0.0), _sw2(0.), _cw2(0.)
   fourth.push_back(-24);
   fourth.push_back(-24);
   setList(first,second,third,fourth);
-  // coupling
-  _q2last=0.;_couplast=0.;
 }
 
 inline IBPtr SMWWWWVertex::clone() const {
@@ -42,6 +42,7 @@ inline IBPtr SMWWWWVertex::fullclone() const {
 
 inline void SMWWWWVertex::doinit() throw(InitException) {
   VVVVVertex::doinit();
+  _theSM = generator()->standardModel();
   // couplings
   _sw2 = _theSM->sin2ThetaW();
   _cw2 = 1.-_sw2;

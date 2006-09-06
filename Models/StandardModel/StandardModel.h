@@ -11,6 +11,7 @@
 #include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "StandardModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;

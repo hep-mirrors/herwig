@@ -1,24 +1,28 @@
-#ifndef HERWIG_FORCED_SPLITTING_H_
-#define HERWIG_FORCED_SPLITTING_H_
+// -*- C++ -*-
+#ifndef HERWIG_ForcedSplitting_H
+#define HERWIG_ForcedSplitting_H
+//
+// This is the declaration of the ForcedSplitting class.
+//
 
-#include <ThePEG/Handlers/MultipleInteractionHandler.h>
-#include <ThePEG/Handlers/EventHandler.h>
-#include "Herwig++/Shower/Evolver.h" 
-
+#include "ThePEG/Interface/Interfaced.h"
+#include "ForcedSplitting.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
-/** \ingroup UnderlyingEvent
+/** \ingroup Hadronization
  *
  *  This is the definition of a simple forced splitting algorithm.
  *  This takes the Remnant object produced from the PDF and backward
  *  evolution (hadron - parton) and produce partons with the remaining 
  *  flavours and with the correct colour connections.
+ *
+ * @see \ref ForcedSplittingInterfaces "The interfaces"
+ * defined for ForcedSplitting.
  */
-
-class ForcedSplitting : public MultipleInteractionHandler {
+class ForcedSplitting: public Interfaced {
 
 public:
 
@@ -27,31 +31,8 @@ public:
   /**
    * The default constructor.
    */
-   ForcedSplitting();
- //@}
-
-  /**
-   * The standard Init function used to initialize the interfaces.
-   * Called exactly once for each class by the class description system
-   * before the main function starts or
-   * when this class is dynamically loaded.
-   */
-  static void Init();
-
-public:
-
-  /**
-   * This is the routine that starts the algorithm.
-   * @param eh the EventHandler in charge of the generation.
-   * @param tagged the vector of particles to consider. If empty, all
-   * final state particles in the current Step is considered.
-   * @param hint a possible Hint which is ignored in this implementation
-   */
-  virtual void handle(EventHandler &eh, const tPVector &tagged,
-		      const Hint &hint) 
-    throw(Veto,Stop,Exception);
-
-public:
+  inline ForcedSplitting();
+  //@}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -68,6 +49,25 @@ public:
    */
   void persistentInput(PersistentIStream & is, int version);
   //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+public:
+
+  /**
+   *  Split the Remnants into their consituent partons and 
+   *  reshuffle the momentum
+   * @param tagged The particles to be handled by the splitting
+   * @param pstep  The step into which to insert the particles
+   * @return The particles including the splittings
+   */
+  tPVector split(const tPVector & tagged, tStepPtr pstep);
 
 protected:
 
@@ -125,18 +125,17 @@ private:
 
 private:
 
-   /**
-    * The static object used to initialize the description of this class.
-    * Indicates that this is a concrete class with persistent data.
-    */
-  static ClassDescription<ForcedSplitting> initForcedSplitting;
-  
   /**
-   * This is never defined and since it can never be called it isn't 
-   * needed. The prototype is defined so the compiler doesn't use the 
-   * default = operator.
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
    */
-  ForcedSplitting& operator=(const ForcedSplitting &);
+  static ClassDescription<ForcedSplitting> initForcedSplitting;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  ForcedSplitting & operator=(const ForcedSplitting &);
   
 private:
 
@@ -144,36 +143,48 @@ private:
    *  The kinematic cut-off
    */
    Energy _kinCutoff;
-
 };
 
 }
 
+#include "ThePEG/Utilities/ClassTraits.h"
+
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of ForcedSplitting. */
-template<>
-struct BaseClassTrait<Herwig::ForcedSplitting,1> { 
+template <>
+struct BaseClassTrait<Herwig::ForcedSplitting,1> {
   /** Typedef of the first base class of ForcedSplitting. */
-  typedef MultipleInteractionHandler NthBase;
+  typedef Interfaced NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the ForcedSplitting class and the shared object where it is defined. */
-template<>
-struct ClassTraits<Herwig::ForcedSplitting> :
-  public ClassTraitsBase<Herwig::ForcedSplitting> {
+template <>
+struct ClassTraits<Herwig::ForcedSplitting>
+  : public ClassTraitsBase<Herwig::ForcedSplitting> {
   /** Return a platform-independent class name */
-    static string className() { return "Herwig++::ForcedSplitting"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the ForcedSplitting class and every other class it uses
-   *  (except the base class). */
-    static string library() { return "HwForcedSplitting.so"; }
+  static string className() { return "Herwig++::ForcedSplitting"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * ForcedSplitting is implemented. It may also include several, space-separated,
+   * libraries if the class ForcedSplitting depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "HwHadronization.so"; }
 };
+
+/** @endcond */
 
 }
 
 #include "ForcedSplitting.icc"
-
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "ForcedSplitting.tcc"
 #endif
+
+#endif /* HERWIG_ForcedSplitting_H */

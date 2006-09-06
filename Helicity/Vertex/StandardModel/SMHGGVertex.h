@@ -5,7 +5,6 @@
 // This is the declaration of the SMHGGVertex class.
 //
 
-#include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Helicity/Vertex/Scalar/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -30,11 +29,6 @@ public:
    * The default constructor.
    */
   inline SMHGGVertex();
-  
-  /**
-   * The copy constructor.
-   */
-  inline SMHGGVertex(const SMHGGVertex &);
   //@}
   
 public:
@@ -131,7 +125,7 @@ private:
   /**
    *Pointer to Standard Model object
    */
-  Ptr<Herwig::StandardModel>::pointer _theSM;
+  tcHwSMPtr _theSM;
   
   /**
    *Mass of W boson for higgs coupling

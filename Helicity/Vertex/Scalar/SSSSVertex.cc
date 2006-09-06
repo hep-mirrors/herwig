@@ -58,7 +58,6 @@ ScalarWaveFunction SSSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
 					   sca1.e() +sca2.e() +sca3.e()); 
   // calculate the coupling
   setCoupling(q2,Psca1,Psca2,Psca3,out);
-  Complex ii(0.,1.);
   // wavefunction
   Energy2 p2=pout.m2();
   Complex fact=-getNorm()*sca1.Wave()*sca2.Wave()*sca3.Wave()*

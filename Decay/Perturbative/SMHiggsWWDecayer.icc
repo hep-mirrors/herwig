@@ -1,16 +1,16 @@
 // -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
-// the YODA class.
+// the SMHiggsWWDecayer class.
 //
 
 namespace Herwig {
 
-inline IBPtr YODA::clone() const {
+inline IBPtr SMHiggsWWDecayer::clone() const {
   return new_ptr(*this);
 }
 
-inline IBPtr YODA::fullclone() const {
+inline IBPtr SMHiggsWWDecayer::fullclone() const {
   return new_ptr(*this);
 }
 

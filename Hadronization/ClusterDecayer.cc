@@ -20,11 +20,6 @@
 #include "Cluster.h"
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-ClusterDecayer::~ClusterDecayer() {}
-
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {
@@ -32,12 +27,10 @@ void ClusterDecayer::persistentOutput(PersistentOStream & os) const
      << _ClSmr1 << _ClSmr2 << _onshell << _masstry;
 }
 
-
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _hadronsSelector >> _globalParameters >> _ClDir1 >> _ClDir2
      >> _ClSmr1 >> _ClSmr2 >> _onshell >> _masstry;
 }
-
 
 ClassDescription<ClusterDecayer> ClusterDecayer::initClusterDecayer;
 // Definition of the static class description member.

@@ -16,11 +16,6 @@
 #include "Herwig++/Utilities/HwDebug.h"
 
 using namespace Herwig;
-// using namespace ThePEG;
-
-
-PartonSplitter::~PartonSplitter() {}
-
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
   os << _globalParameters; 

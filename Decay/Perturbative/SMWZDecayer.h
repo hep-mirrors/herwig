@@ -31,7 +31,7 @@ public:
   /**
    * Default constructor.
    */
-  inline SMWZDecayer();
+  SMWZDecayer();
   //@}
 
 public:

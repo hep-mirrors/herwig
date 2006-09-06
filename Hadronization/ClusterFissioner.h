@@ -73,11 +73,6 @@ public:
    * Default constructor.
    */
   inline ClusterFissioner();
-
-  /**
-   * Copy-constructor.
-   */
-  inline ClusterFissioner(const ClusterFissioner &);
   //@}
 
   /** Splits the clusters which are too heavy.
@@ -199,7 +194,7 @@ public:
    * mass spectrum used to generate the cluster child masses (see method
    * drawChildMass).
    */
-  cutType cut(tClusterPtr &);
+  virtual cutType cut(tClusterPtr &);
 
 public:
 
@@ -211,7 +206,7 @@ public:
    */
   PPair produceHadron(const long id1, const long id2, Lorentz5Momentum &a,
 		      LorentzPoint &b) const;
-private:
+protected:
   /**
    * Produces a cluster from the flavours passed in.
    *
@@ -267,7 +262,7 @@ private:
    * Determines the kinematics of a heavy cluster decay C->C1 + C2
    */
   void calculateKinematics(const Lorentz5Momentum &pClu, 
-		           const Lorentz5Momentum &p0Q1, 
+			   const Lorentz5Momentum &p0Q1, 
 			   const bool toHadron1, const bool toHadron2,
 			   Lorentz5Momentum &pClu1, Lorentz5Momentum &pClu2, 
 			   Lorentz5Momentum &pQ1, Lorentz5Momentum &pQb, 
@@ -287,6 +282,15 @@ private:
 			  LorentzPoint & positionClu1, 
 			  LorentzPoint & positionClu2 ) const;
 
+protected:
+  /** @name Access members for child classes. */
+  //@{
+  HadronSelectorPtr hadronsSelector() const { return _hadronsSelector; }
+  Energy btClM() const { return _btClM; }
+  double pSplit1() const { return _pSplit1; }  
+  double pSplit2() const { return _pSplit2; }
+  //@}
+  
 private:
 
   /**

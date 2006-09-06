@@ -6,7 +6,7 @@
 
 #include "ThePEG/Helicity/HelicityVertex.h"
 #include "ProductionMatrixElement.h"
-// #include "HardVertex.fh"
+#include "HardVertex.fh"
 // #include "HardVertex.xh"
 
 namespace Herwig {

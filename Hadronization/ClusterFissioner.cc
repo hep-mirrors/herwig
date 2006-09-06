@@ -179,13 +179,12 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     // check if clusters
     ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
     ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
-    // is a beam cluster must be split into two hadrons
+    // is a beam cluster must be split into two clusters
     if(iCluster->isBeamCluster()&&(!one||!two)
-       &&_globalParameters->isSoftUnderlyingEventON())
-      {
-	iCluster->isAvailable(false);
-	continue;
-      }
+       &&_globalParameters->isSoftUnderlyingEventON()) {
+      iCluster->isAvailable(false);
+      continue;
+    }
 
     // There should always be a intermediate quark(s) from the splitting, but
     // in case there isn't
@@ -243,7 +242,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
   int counter = 0;
   bool succeeded=false;
   Energy Mc1 = Energy(), Mc2 = Energy(),m1=Energy(),m2=Energy(),m=Energy();
-  bool toHadron1,toHadron2;
+  bool toHadron1(false),toHadron2(false);
   long idNew;
   do
     {
@@ -308,6 +307,10 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
 	Mc2 = _hadronsSelector->massLightestHadron(idQ2,idNew);           
 	toHadron2 = true;
       }
+
+      // if a beam cluster not allowed to decay to hadrons
+      if(cluster->isBeamCluster()&&(toHadron1||toHadron2)&&
+	 _globalParameters->isSoftUnderlyingEventON()) continue;
 
       // Check if the decay kinematics is still possible: if not then 
       // force the one-hadron decay for the other cluster as well.

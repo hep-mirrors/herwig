@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEPP2WJet class.
+//
+#ifndef HERWIG_MEPP2WJet_FH
+#define HERWIG_MEPP2WJet_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEPP2WJet;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEPP2WJet,MEPP2WJetPtr);
+
+}
+
+#endif

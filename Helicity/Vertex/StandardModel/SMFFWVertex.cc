@@ -8,20 +8,17 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/Interface/Reference.h"
 
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
     
 void SMFFWVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theCKM << _theSM;
-  for(int ix=0;ix<3;++ix){for(int iy=0;iy<3;++iy){os<< _ckm[ix][iy];}}
+  os << _theCKM << _theSM << _ckm;
 }
   
 void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theCKM >> _theSM;
-  for(int ix=0;ix<3;++ix){for(int iy=0;iy<3;++iy){is >> _ckm[ix][iy];}}
+  is >> _theCKM >> _theSM >> _ckm;
   _couplast=0.;_q2last=0.;
 }
   
@@ -30,17 +27,6 @@ ClassDescription<SMFFWVertex>SMFFWVertex::initSMFFWVertex;
 // Definition of the static class description member.
   
 void SMFFWVertex::Init() {
-        
-  static Reference<SMFFWVertex,StandardModelBase> interfaceSM
-    ("StandardModel",
-     "Reference to the Standard Model object",
-     &SMFFWVertex::_theSM, false, false, true, false);
-  
-  static Reference<SMFFWVertex,CKMBase> interfaceCKM
-    ("CKM",
-     "Reference to the Standard Model object",
-     &SMFFWVertex::_theCKM, false, false, true, false);
-  
   static ClassDocumentation<SMFFWVertex> documentation
     ("The SMFFZVertex class is the implementation of"
      "the coupling of the W boson to the Standard Model fermions");

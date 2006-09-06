@@ -92,6 +92,7 @@ void ShowerHandler::findShoweringParticles()
   set<PPtr> outgoingset(outgoing.begin(),outgoing.end());
   // loop over the tagged particles
   tParticleVector::const_iterator taggedP = tagged().begin();
+  bool isHard=false;
   for (;taggedP != tagged().end(); ++taggedP) {
     // if a remnant don't consider
     if(eventHandler()->currentCollision()->isRemnant(*taggedP))
@@ -107,21 +108,19 @@ void ShowerHandler::findShoweringParticles()
 	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.;
       }
     // add to list of outgoing hard particles if needed
-    if(outgoingset.find(*taggedP) != outgoingset.end())
-      {
-	if(isDecayProd) hardParticles.insert(findParent(parent));
-	else            hardParticles.insert(*taggedP);
-      }
-    else
-      {throw Exception() << "Starting on decay not yet implemented in "
-			  << "ShowerHandler::findShoweringParticles()" 
-			  << Exception::runerror;}
+    isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
+    if(isDecayProd) hardParticles.insert(findParent(parent));
+    else            hardParticles.insert(*taggedP);
   }
   // there must be something to shower
   if(hardParticles.empty()) 
     throw Exception() << "No particles to shower in "
 		      << "ShowerHandler::fillShoweringParticles" 
 		      << Exception::eventerror;
+  if(!isHard)
+    throw Exception() << "Starting on decay not yet implemented in "
+		      << "ShowerHandler::findShoweringParticles()" 
+		      << Exception::runerror;
   // create the hard process ShowerTree
   ParticleVector out(hardParticles.begin(),hardParticles.end());
   _hard=new_ptr(ShowerTree(eventHandler(),out,_evolver->showerVariables(),
@@ -146,14 +145,14 @@ void ShowerHandler::cascade()
 	// check if a hard process or decay
  	bool isHard = _hard;
  	// find the stopping scale for the shower if multi-scale shower is on
- 	Energy largestWidth = Energy();
- 	if(_evolver->showerVariables()->isMultiScaleShowerON()&&!_decay.empty())
- 	  {
- 	    largestWidth=(*_decay.rbegin()).first;
- 	    if(largestWidth<
- 	       _evolver->showerVariables()->globalParameters()->hadronizationScale())
- 	      largestWidth = Energy();
- 	  }
+//  	Energy largestWidth = Energy();
+//  	if(_evolver->showerVariables()->isMultiScaleShowerON()&&!_decay.empty())
+//  	  {
+//  	    largestWidth=(*_decay.rbegin()).first;
+//  	    if(largestWidth<
+//  	       _evolver->showerVariables()->globalParameters()->hadronizationScale())
+//  	      largestWidth = Energy();
+//  	  }
  	// if a hard process perform the shower for the hard process
  	if(isHard) 
 	  {

@@ -18,25 +18,9 @@
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Cluster.h"
 
-
 using namespace Herwig;
-// using namespace ThePEG;
 
-
-ClusterFinder::~ClusterFinder() {}
-
-
-void ClusterFinder::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-
-void ClusterFinder::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-
-ClassDescription<ClusterFinder> ClusterFinder::initClusterFinder;
+NoPIOClassDescription<ClusterFinder> ClusterFinder::initClusterFinder;
 // Definition of the static class description member.
 
 void ClusterFinder::Init() {

@@ -24,8 +24,6 @@
 
 using namespace Herwig;
 
-MEPP2GammaGamma::~MEPP2GammaGamma() {}
-
 unsigned int MEPP2GammaGamma::orderInAlphaS() const {
   return 0;
 }
@@ -36,8 +34,7 @@ unsigned int MEPP2GammaGamma::orderInAlphaEW() const {
 
 void MEPP2GammaGamma::doinit() throw(InitException) {
   // get the vedrtex pointers from the SM object
-  Ptr<Herwig::StandardModel>::transient_const_pointer hwsm=
-    dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
   if(hwsm)
     {_photonvertex = hwsm->vertexFFP();}
@@ -87,9 +84,9 @@ MEPP2GammaGamma::diagrams(const DiagramVector & diags) const {
 Selector<const ColourLines *>
 MEPP2GammaGamma::colourGeometries(tcDiagPtr diag) const {
   // q qbar colour lines
-  static ColourLines cqqbar("1 -2 -3");
+  static const ColourLines cqqbar("1 -2 -3");
   // g g colour lines
-  static ColourLines cgluon("1 -2,-1 2");
+  static const ColourLines cgluon("1 -2,-1 2");
   // selector
   Selector<const ColourLines *> sel;
   if ( diag->id() == -1 || diag->id() == -2 ) sel.insert(1.0, &cqqbar);
@@ -282,9 +279,9 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    & g1,
   // -+++
   me[0][1][1][1] =-charge;
   // -++-
-  me[0][1][1][0] =-charge*me[1][0][0][1];
+  me[0][1][1][0] =-me[1][0][0][1];
   // -+-+
-  me[0][1][0][1] =-charge*me[1][0][1][0];
+  me[0][1][0][1] =-me[1][0][1][0];
   // -+--
   me[0][1][0][0] = charge;
   // --++
@@ -294,7 +291,7 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    & g1,
   // ---+
   me[0][0][0][1] = charge;
   // ----
-  me[0][0][0][0] =-charge*me[1][1][1][1];
+  me[0][0][0][0] =-me[1][1][1][1];
   if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
  					     PDT::Spin1,PDT::Spin1));}
    unsigned int inhel1,inhel2,outhel1,outhel2;
@@ -316,6 +313,17 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    & g1,
  	    }		
  	}
      }
+//    double pi2(sqr(pi));
+//    Energy2 s2(sqr(s)),t2(sqr(t)),u2(sqr(u));
+//    double alntu=log(t/u);
+//    double alnst=log(-s/t);
+//    double alnsu=alnst+alntu;
+//    double test=5.*4.
+//      +sqr((2.*s2+2.*(u2-t2)*alntu+(t2+u2)*(sqr(alntu)+pi2))/s2)
+//      +sqr((2.*u2+2.*(t2-s2)*alnst+(t2+s2)* sqr(alnst)     )/u2)
+//      +sqr((2.*t2+2.*(u2-s2)*alnsu+(u2+s2)* sqr(alnsu)     )/t2)
+//      +4.*pi2*(sqr((t2-s2+(t2+s2)*alnst)/u2)+sqr((u2-s2+(u2+s2)*alnsu)/t2));
+//    cerr << "testing ratio " << sum/test/sqr(charge)*2. << endl;
    // final factors
    return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(0.));
 }
@@ -357,9 +365,9 @@ void MEPP2GammaGamma::constructVertex(tSubProPtr sub)
   for(unsigned int ix=0;ix<4;++ix)
     {spin[ix]=dynamic_ptr_cast<SpinfoPtr>(hard[order[ix]]->spinInfo());}
   // construct the vertex
-  VertexPtr hardvertex=new_ptr(HardVertex());
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
-  dynamic_ptr_cast<Ptr<HardVertex>::transient_pointer>(hardvertex)->ME(_me);
+  hardvertex->ME(_me);
   // set the pointers and to and from the vertex
   for(unsigned int ix=0;ix<4;++ix){spin[ix]->setProductionVertex(hardvertex);}
 }

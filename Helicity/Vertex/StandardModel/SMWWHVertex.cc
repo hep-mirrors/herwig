@@ -5,7 +5,6 @@
 //
 #include "SMWWHVertex.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -26,13 +25,6 @@ ClassDescription<SMWWHVertex>SMWWHVertex::initSMWWHVertex;
 // Definition of the static class description member.
 
 void SMWWHVertex::Init() {
-            
-  static Reference<SMWWHVertex,StandardModelBase> interfaceSM
-    ("StandardModel",
-     "Reference to the SM object",
-     &SMWWHVertex::_theSM, false, false, true, false);
-  
-  
   static ClassDocumentation<SMWWHVertex> documentation
     ("The SMWWHVertex class is the implementation"
      " of the helicity amplitude calculation for the coupling of the Standard"

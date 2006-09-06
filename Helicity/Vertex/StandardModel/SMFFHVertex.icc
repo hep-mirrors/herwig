@@ -23,12 +23,6 @@ inline SMFFHVertex::SMFFHVertex()
   _mw=0.;_sw=0.;
 }
 
-inline SMFFHVertex::SMFFHVertex(const SMFFHVertex & x)
-  : FFSVertex(x), _theSM(x._theSM), _couplast(x._couplast),
-    _sw(x._sw), 
-    _idlast(x._idlast), _q2last(x._q2last), _masslast(x._masslast), 
-    _mw(x._mw) {;}
-
 inline IBPtr SMFFHVertex::clone() const {
   return new_ptr(*this);
 }
@@ -39,6 +33,9 @@ inline IBPtr SMFFHVertex::fullclone() const {
 
 
 inline void SMFFHVertex::doinit() throw(InitException) {
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if (!_theSM) 
+    throw InitException();
   double sw2=_theSM->sin2ThetaW();
   _sw = sqrt(sw2);
   _mw= getParticleData(ThePEG::ParticleID::Wplus)->mass();

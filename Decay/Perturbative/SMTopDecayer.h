@@ -18,9 +18,9 @@ namespace Herwig {
 /**
  * \ingroup Decay
  *
- * The <code>SMTopDecayer</code> performs decays of the top quark into
+ * The SMTopDecayer performs decays of the top quark into
  * the bottom quark and qqbar pairs or to the bottom quark and lepton 
- * anti-lepton pairs via W boson exchange.
+ * neutrino pairs via W boson exchange.
  */
 class SMTopDecayer: public DecayIntegrator {
 
@@ -31,7 +31,7 @@ public:
   /**
    * The default constructor.
    */
-  inline SMTopDecayer();
+  SMTopDecayer();
   //@}
 
   /**
@@ -146,22 +146,23 @@ private:
   /**
    *Pointer to the W vertex
    */
-   Ptr<Herwig::Helicity::FFVVertex>::pointer _wvertex;
-   
+  FFVVertexPtr _wvertex;
+  
   /**
    * Max weight for integration
    */
-  //@{
-   
+  //@{   
   /**
-   * Weight W->q,qbar
+   * Weight \f$W\to q\bar{q}'\f$
    */
   vector<double> _wquarkwgt;
   
   /**
-   * Weight t->l,lnu
+   * Weight \f$W\to \ell \nu\f$
    */
   vector<double> _wleptonwgt;
+  //@}
+
 };
 
 }

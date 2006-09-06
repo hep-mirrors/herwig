@@ -260,7 +260,7 @@ inline Complex   ProductionMatrixElement::operator ()
 inline Complex   ProductionMatrixElement::operator () 
   (vector<unsigned int> in) const
 {
-  if(_outspin.size()!=in.size())
+  if(_outspin.size()!=in.size()-2)
     {
       throw ThePEG::Helicity::HelicityConsistencyError() 
 	<< "Requested component of 2-" << in.size() 
@@ -369,7 +369,7 @@ inline Complex & ProductionMatrixElement::operator ()
   (vector<unsigned int> in)
 {
   static Complex dummy=0;
-  if(_outspin.size()!=in.size())
+  if(_outspin.size()!=in.size()-2)
     {
       throw ThePEG::Helicity::HelicityConsistencyError() 
 	<< "Requested component of 2-" << in.size() 

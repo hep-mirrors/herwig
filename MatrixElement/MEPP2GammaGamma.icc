@@ -9,11 +9,6 @@ namespace Herwig {
 inline MEPP2GammaGamma::MEPP2GammaGamma() : _maxflavour(5),_process(0) 
 {}
 
-inline MEPP2GammaGamma::MEPP2GammaGamma(const MEPP2GammaGamma & x)
-  : ME2to2Base(x), _photonvertex(x._photonvertex), _maxflavour(x._maxflavour),
-    _process(x._process)
-{}
-
 inline IBPtr MEPP2GammaGamma::clone() const {
   return new_ptr(*this);
 }

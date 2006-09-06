@@ -8,12 +8,6 @@ namespace Herwig {
 
 inline MEPP2QQ::MEPP2QQ() : _quarkflavour(6), _process(0) {}
 
-inline MEPP2QQ::MEPP2QQ(const MEPP2QQ & x)
-  : ME2to2Base(x), _gggvertex(x._gggvertex),_qqgvertex(x._qqgvertex),
-    _quarkflavour(x._quarkflavour),_process(x._process),
-    _gluon(x._gluon),_quark(x._quark),_antiquark(x._antiquark)
-{}
-
 inline IBPtr MEPP2QQ::clone() const {
   return new_ptr(*this);
 }

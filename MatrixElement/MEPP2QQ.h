@@ -35,16 +35,6 @@ public:
    * The default constructor.
    */
   inline MEPP2QQ();
-
-  /**
-   * The copy constructor.
-   */
-  inline MEPP2QQ(const MEPP2QQ &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MEPP2QQ();
   //@}
 
 public:

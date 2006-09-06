@@ -31,12 +31,41 @@ using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
+SMWZDecayer::SMWZDecayer() 
+  : _zquarkwgt(5,0.),
+    _zleptonwgt(6,0.),
+    _wquarkwgt(6,0.),
+    _wleptonwgt(3,0.)
+{
+   _zquarkwgt[0]  = 0.488029;
+   _zquarkwgt[1]  = 0.378461;
+   _zquarkwgt[2]  = 0.488019;
+   _zquarkwgt[3]  = 0.378027;
+   _zquarkwgt[4]  = 0.483207;
+   _zleptonwgt[0] = 0.110709;
+   _zleptonwgt[1] = 0.220276;
+   _zleptonwgt[2] = 0.110708;
+   _zleptonwgt[3] = 0.220276;
+   _zleptonwgt[4] = 0.110458;
+   _zleptonwgt[5] = 0.220276;
+   _wquarkwgt[0]  = 1.01596;
+   _wquarkwgt[1]  = 0.0537308;
+   _wquarkwgt[2]  = 0.0538085;
+   _wquarkwgt[3]  = 1.01377;
+   _wquarkwgt[4]  = 1.45763e-05;
+   _wquarkwgt[5]  = 0.0018143;
+   _wleptonwgt[0] = 0.356594;
+   _wleptonwgt[1] = 0.356593;
+   _wleptonwgt[2] = 0.356333;
+   // intermediates
+   generateIntermediates(false);
+}
+
 void SMWZDecayer::doinit() throw(InitException) 
 {
   DecayIntegrator::doinit();
   // get the vertices from the Standard Model object
-  Ptr<Herwig::StandardModel>::transient_const_pointer 
-    hwsm=dynamic_ptr_cast<Ptr<Herwig::StandardModel>::transient_const_pointer>(standardModel());
+  tcHwSMPtr hwsm=dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   if(hwsm)
     {
       _wvertex = hwsm->vertexFFW();

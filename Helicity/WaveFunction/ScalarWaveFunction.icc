@@ -95,7 +95,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Lorentz5Momentum p,
 {
   direction(dir);
   setMomentum(p);
-  _wf=0.;
+  _wf=1.;
   checkParticle(part);
 }
 
@@ -106,7 +106,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 {
   direction(dir);
   setMomentum(px,py,pz,ee,mm);
-  _wf=0.; 
+  _wf=1.; 
   checkParticle(part);
 }
 
@@ -117,7 +117,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 {
   direction(dir);
   setMomentum(px,py,pz,ee);
-  _wf=0.;
+  _wf=1.;
   checkParticle(part);
 }
 
@@ -127,7 +127,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
 {
   direction(dir);
   setMomentum(pin);
-  _wf=0.; 
+  _wf=1.; 
   checkParticle(part);
 }
 
@@ -137,7 +137,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
 {
   direction(dir);
   setMomentum(mm);
-  _wf=0.;
+  _wf=1.;
   checkParticle(part);
 }
 
@@ -147,7 +147,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
 {
   direction(dir);
   setMomentum(pin,mm);
-  _wf=0.;
+  _wf=1.;
   checkParticle(part);
 }
 
@@ -156,7 +156,7 @@ inline ScalarWaveFunction::ScalarWaveFunction()
 {
   direction(intermediate);
   setMomentum();
-  _wf=0.;
+  _wf=1.;
 }
 
 // return the wavefunction

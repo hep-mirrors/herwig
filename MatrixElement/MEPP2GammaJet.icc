@@ -8,11 +8,6 @@ namespace Herwig {
 
   inline MEPP2GammaJet::MEPP2GammaJet() : _maxflavour(5), _processopt(0) {}
 
-inline MEPP2GammaJet::MEPP2GammaJet(const MEPP2GammaJet & x)
-  : ME2to2Base(x), _gluonvertex(x._gluonvertex), _photonvertex(x._photonvertex),
-    _maxflavour(x._maxflavour), _processopt(x._processopt) 
-{}
-
 inline IBPtr MEPP2GammaJet::clone() const {
   return new_ptr(*this);
 }

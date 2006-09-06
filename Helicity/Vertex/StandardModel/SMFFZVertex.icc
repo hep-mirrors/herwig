@@ -7,10 +7,9 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMFFZVertex::SMFFZVertex() 
+inline SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
+				    _couplast(0.0), _q2last(0.0)
 {
-  // set the couplings to zero (will be initialised from the SM object in doinit)
-  for(int ix=0;ix<17;++ix){_gl[ix]=0.;_gr[ix]=0.;};_q2last=0.;_couplast=0.;
   // PDG codes for the particles
   vector<int> first,second,third;
   // the quarks
@@ -22,11 +21,6 @@ inline SMFFZVertex::SMFFZVertex()
   setList(first,second,third);
 }
 
-inline SMFFZVertex::SMFFZVertex(const SMFFZVertex & x)
-  : FFVVertex(x), _theSM(x._theSM), _couplast(x._couplast),
-    _q2last(x._q2last)
-{for(int ix=0;ix<17;++ix){_gl[ix]=x._gl[ix];_gr[ix]=x._gr[ix];}}
-
 inline IBPtr SMFFZVertex::clone() const {
   return new_ptr(*this);
 }
@@ -36,6 +30,7 @@ inline IBPtr SMFFZVertex::fullclone() const {
 }
 
 inline void SMFFZVertex::doinit() throw(InitException) {
+  _theSM = generator()->standardModel();
   double sw2=_theSM->sin2ThetaW();
   double fact = 0.25/sqrt(sw2*(1.-sw2));
   for(int ix=1;ix<4;++ix)

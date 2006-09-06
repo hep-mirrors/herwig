@@ -6,7 +6,6 @@
 
 #include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/Utilities/Rebinder.h"
 
 namespace Herwig {
 namespace Helicity {
@@ -31,10 +30,6 @@ public:
    */
   inline SMFFPVertex();
 
-  /**
-   * Copy-constructor.
-   */
-  inline SMFFPVertex(const SMFFPVertex &);
   //@}
 public:
   
@@ -111,7 +106,7 @@ private:
   /**
    * Pointer to the Standard Model object.
    */
-  SMPtr _theSM;
+  tcSMPtr _theSM;
 
   /**
    * Storage of the couplings.
@@ -120,7 +115,7 @@ private:
   /**
    *  The charge of the Standard Model fermions.
    */
-  double _charge[17];
+  vector<double> _charge;
 
   /**
    *  The last value of the coupling calculated.

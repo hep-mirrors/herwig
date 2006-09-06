@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SOPHTY class.
+//
+#ifndef ThePEG_SOPHTY_FH
+#define ThePEG_SOPHTY_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class SOPHTY;
+ThePEG_DECLARE_POINTERS(SOPHTY,SOPHTYPtr);
+
+}
+
+#endif
