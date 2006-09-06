@@ -102,4 +102,7 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const {
 		   c/_variables->initialStateRadiationEnhancementFactor());}
 }
 
+inline vector<IdList> SudakovFormFactor::particles() const {
+  return _particles;
+}
 }

@@ -15,11 +15,11 @@
 using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _splittingFn << _alpha << _variables << _pdfmax;
+  os << _splittingFn << _alpha << _variables << _pdfmax << _particles;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingFn >> _alpha >> _variables >> _pdfmax;
+  is >> _splittingFn >> _alpha >> _variables >> _pdfmax >> _particles;
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
@@ -68,4 +68,34 @@ bool SudakovFormFactor::PDFVeto(const Energy2 t,
 			    <<_pdfmax <<")\n";
   }
   return ratio < UseRandom::rnd()*_pdfmax;
+}
+
+void SudakovFormFactor::doinit() throw(InitException) {
+  cerr << "testing branchings for " << fullName() << "\n";
+  for(unsigned int ix=0;ix<_particles.size();++ix) {
+    cerr << _particles[ix][0] << " " 
+	 << _particles[ix][1] << " " 
+	 << _particles[ix][2] << "\n"; 
+  }
+  Interfaced::doinit();
+}
+
+void SudakovFormFactor::addSplitting(const IdList & in) {
+  bool add=true;
+  for(unsigned int ix=0;ix<_particles.size();++ix) {
+    if(_particles[ix].size()==in.size()) {
+      bool match=true;
+      for(unsigned int iy=0;iy<in.size();++iy) {
+	if(_particles[ix][iy]!=in[iy]) {
+	  match=false;
+	  break;
+	}
+      }
+      if(match) {
+	add=false;
+	break;
+      }
+    }
+  }
+  if(add) _particles.push_back(in);
 }

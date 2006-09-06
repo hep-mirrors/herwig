@@ -345,6 +345,28 @@ protected:
    */
   inline void setShowerVariables(ShowerVarsPtr);
 
+  /**
+   *  Set the particles in the splittings
+   */
+  void addSplitting(const IdList &);
+
+  /**
+   *  Access the potential branchings
+   */
+  inline vector<IdList> particles() const;
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 private:
 
   /**
@@ -380,6 +402,12 @@ private:
    * Maximum value of the PDF weight
    */
   double _pdfmax;
+
+  /**
+   * List of the particles this Sudakov is used for to aid in setting up
+   * interpolation tables if needed
+   */
+  vector<IdList> _particles;
 
 private:
 
