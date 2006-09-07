@@ -19,10 +19,10 @@
 #include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
-#include "Herwig++/Shower/Kinematics/FS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Kinematics/Decay_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Kinematics/IS_QtildaShowerKinematics1to2.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/Decay_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/IS_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include <cassert>
 
 using namespace Herwig;

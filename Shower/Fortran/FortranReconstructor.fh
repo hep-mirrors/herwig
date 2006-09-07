@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the KinematicsReconstructor class.
+//
+#ifndef HERWIG_KinematicsReconstructor_FH
+#define HERWIG_KinematicsReconstructor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class KinematicsReconstructor;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::KinematicsReconstructor,KinematicsReconstructorPtr);
+
+}
+
+#endif

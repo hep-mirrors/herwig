@@ -101,9 +101,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		PDF/Makefile
                 MatrixElement/Makefile
 		Shower/SplittingFunctions/Makefile
-		Shower/Kinematics/Makefile
 		Shower/Couplings/Makefile
-		Shower/MECorrections/Makefile
+		Shower/Default/MECorrections/Makefile
 		Shower/Nason/Makefile
 		Shower/Fortran/Makefile
 		Shower/Default/Makefile

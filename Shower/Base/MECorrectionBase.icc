@@ -7,9 +7,6 @@
 namespace Herwig {
 
 inline MECorrectionBase::MECorrectionBase() {}
-
-inline MECorrectionBase::MECorrectionBase(const MECorrectionBase & x)
-  : Interfaced(x), _showerVariables(x._showerVariables), _alpha(x._alpha) {}
   
 inline void MECorrectionBase::showerVariables(ShowerVarsPtr in)
 {_showerVariables=in;}

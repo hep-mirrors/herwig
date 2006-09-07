@@ -5,9 +5,9 @@
 // This is the declaration of the ShowerConfig class.
 
 #include "Herwig++/Config/Herwig.h"
-#include "Kinematics/ShowerParticle.fh"
+#include "Base/ShowerParticle.fh"
 #include "ShowerVariables.fh"
-#include "Kinematics/ShowerKinematics.fh" 
+#include "Base/ShowerKinematics.fh" 
 
 namespace Herwig { 
 using namespace ThePEG;

@@ -31,23 +31,10 @@ friend class Evolver;
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MECorrectionBase();
-
-  /**
-   * The copy constructor.
-   */
-  inline MECorrectionBase(const MECorrectionBase &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MECorrectionBase();
-  //@}
 
 public:
 

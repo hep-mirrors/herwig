@@ -1,11 +1,9 @@
-SUBDIRS = SplittingFunctions Couplings Kinematics MECorrections Nason Fortran \
+SUBDIRS = SplittingFunctions Couplings Nason Fortran \
           Default Base .
 pkglib_LTLIBRARIES = HwShower.la
 HwShower_la_LDFLAGS = -module
 HwShower_la_LIBADD = ./SplittingFunctions/libHwSplitting.la \
                         ./Couplings/libHwCouplings.la \
-                        ./Kinematics/libHwShowerKinematics.la \
-                        ./MECorrections/libHwMECorrections.la \
                         ./Default/libHwDefaultShower.la \
                         ./Base/libHwShowerBase.la
 HwShower_la_SOURCES = ShowerConfig.h \

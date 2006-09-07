@@ -7,11 +7,7 @@
 #include "FS_QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FS_QtildaShowerKinematics1to2.tcc"
-#endif
-#include "ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 
 using namespace Herwig;

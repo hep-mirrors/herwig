@@ -8,11 +8,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IS_QtildaShowerKinematics1to2.tcc"
-#endif
-#include "ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 

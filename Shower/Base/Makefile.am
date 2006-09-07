@@ -6,4 +6,6 @@ KinematicsReconstructor.cc  KinematicsReconstructor.h \
 KinematicsReconstructor.icc KinematicsReconstructor.fh \
 ShowerModel.cc ShowerModel.h ShowerModel.icc ShowerModel.fh \
 MECorrectionBase.cc MECorrectionBase.h MECorrectionBase.icc MECorrectionBase.fh \
-PartnerFinder.h PartnerFinder.fh PartnerFinder.cc PartnerFinder.icc  
+PartnerFinder.h PartnerFinder.fh PartnerFinder.cc PartnerFinder.icc \
+ShowerParticle.cc  ShowerParticle.fh  ShowerParticle.h  ShowerParticle.icc \
+ShowerKinematics.fh  ShowerKinematics.h  ShowerKinematics.icc

@@ -2,7 +2,7 @@
 
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Handlers/EventHandler.h"

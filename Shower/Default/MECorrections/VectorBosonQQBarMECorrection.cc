@@ -5,7 +5,7 @@
 //
 
 #include "VectorBosonQQBarMECorrection.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"

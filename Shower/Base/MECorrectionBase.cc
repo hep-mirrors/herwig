@@ -5,18 +5,11 @@
 //
 
 #include "MECorrectionBase.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
 
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MECorrectionBase.tcc"
-#endif
-
-
 using namespace Herwig;
-
-MECorrectionBase::~MECorrectionBase() {}
 
 AbstractClassDescription<MECorrectionBase> MECorrectionBase::initMECorrectionBase;
 // Definition of the static class description member.

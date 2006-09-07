@@ -5,7 +5,7 @@
 // This is the declaration of the QtildaShowerKinematics1to2 class.
 //
 
-#include "ShowerKinematics.h"
+#include "Herwig++/Shower/Base/ShowerKinematics.h"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "QtildaShowerKinematics1to2.fh"
 

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PartnerFinder class.
+//
+
+namespace Herwig {
+
+inline PartnerFinder::PartnerFinder()  : _approach(0) 
+{}
+
+inline IBPtr PartnerFinder::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr PartnerFinder::fullclone() const {
+  return new_ptr(*this);
+}
+inline void PartnerFinder::setShowerVariables(ShowerVarsPtr in) {
+  _showerVariables=in;
+}
+}
