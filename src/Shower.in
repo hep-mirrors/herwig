@@ -9,7 +9,7 @@ create Herwig++::ShowerAlphaQED theShowerAlphaQED
 create Herwig++::ShowerHandler stdShowerHandler
 
 create Herwig++::Evolver theEvolver
-create Herwig++::PartnerFinder thePartnerFinder
+create Herwig++::QTildeFinder thePartnerFinder
 create Herwig++::KinematicsReconstructor theKinematicsReconstructor
 
 # Set the pointers to the relevant objects 
