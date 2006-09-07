@@ -5,7 +5,7 @@
 // This is the declaration of the DrellYanMECorrection class.
 //
 
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "QTildeMECorrection.h"
 #include "DrellYanMECorrection.fh"
 
 namespace Herwig {
@@ -18,7 +18,7 @@ using namespace ThePEG;
  * @see \ref DrellYanMECorrectionInterfaces "The interfaces"
  * defined for DrellYanMECorrection.
  */
-class DrellYanMECorrection: public MECorrectionBase {
+class DrellYanMECorrection: public QTildeMECorrection {
 
 public:
 
@@ -188,7 +188,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::DrellYanMECorrection,1> {
   /** Typedef of the first base class of DrellYanMECorrection. */
-  typedef Herwig::MECorrectionBase NthBase;
+  typedef Herwig::QTildeMECorrection NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

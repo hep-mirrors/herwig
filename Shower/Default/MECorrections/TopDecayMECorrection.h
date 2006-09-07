@@ -5,7 +5,7 @@
 // This is the declaration of the TopDecayMECorrection class.
 //
 
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "QTildeMECorrection.h"
 #include "TopDecayMECorrection.fh"
 
 namespace Herwig {
@@ -19,7 +19,7 @@ using namespace ThePEG;
  * @see \ref TopDecayMECorrectionInterfaces "The interfaces"
  * defined for TopDecayMECorrection.
  */
-class TopDecayMECorrection: public MECorrectionBase {
+class TopDecayMECorrection: public QTildeMECorrection {
 
 public:
 
@@ -342,7 +342,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::TopDecayMECorrection,1> {
   /** Typedef of the first base class of TopDecayMECorrection. */
-  typedef Herwig::MECorrectionBase NthBase;
+  typedef Herwig::QTildeMECorrection NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

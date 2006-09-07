@@ -10,7 +10,7 @@ inline DrellYanMECorrection::DrellYanMECorrection() : _channelwgt(0.1)
 {}
 
 inline DrellYanMECorrection::DrellYanMECorrection(const DrellYanMECorrection & x)
-  : MECorrectionBase(x), _channelwgt(x._channelwgt),_channelweights(x._channelweights)
+  : QTildeMECorrection(x), _channelwgt(x._channelwgt),_channelweights(x._channelweights)
 {}
 
 inline IBPtr DrellYanMECorrection::clone() const {
@@ -22,7 +22,7 @@ inline IBPtr DrellYanMECorrection::fullclone() const {
 }
 
 inline void DrellYanMECorrection::doinit() throw(InitException) {
-  MECorrectionBase::doinit();
+  QTildeMECorrection::doinit();
   _channelweights.push_back(_channelwgt/(1.+_channelwgt));
   _channelweights.push_back(_channelweights[0]+0.5/(1.+_channelwgt));
   _channelweights.push_back(1.);

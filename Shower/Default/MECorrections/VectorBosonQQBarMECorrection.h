@@ -5,7 +5,7 @@
 // This is the declaration of the VectorBosonQQBarMECorrection class.
 //
 
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "QTildeMECorrection.h"
 #include "VectorBosonQQBarMECorrection.fh"
 
 namespace Herwig {
@@ -18,27 +18,14 @@ using namespace ThePEG;
  * @see \ref VectorBosonQQBarMECorrectionInterfaces "The interfaces"
  * defined for VectorBosonQQBarMECorrection.
  */
-class VectorBosonQQBarMECorrection: public MECorrectionBase {
+class VectorBosonQQBarMECorrection: public QTildeMECorrection {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline VectorBosonQQBarMECorrection();
-
-  /**
-   * The copy constructor.
-   */
-  inline VectorBosonQQBarMECorrection(const VectorBosonQQBarMECorrection &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~VectorBosonQQBarMECorrection();
-  //@}
 
 public:
 
@@ -271,7 +258,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::VectorBosonQQBarMECorrection,1> {
   /** Typedef of the first base class of VectorBosonQQBarMECorrection. */
-  typedef Herwig::MECorrectionBase NthBase;
+  typedef Herwig::QTildeMECorrection NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

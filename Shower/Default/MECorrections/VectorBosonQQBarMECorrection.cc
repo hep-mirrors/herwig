@@ -11,15 +11,9 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorBosonQQBarMECorrection.tcc"
-#endif
-
 using namespace Herwig;
 
 const double VectorBosonQQBarMECorrection::EPS=0.00000001;
-
-VectorBosonQQBarMECorrection::~VectorBosonQQBarMECorrection() {}
 
 NoPIOClassDescription<VectorBosonQQBarMECorrection> VectorBosonQQBarMECorrection::initVectorBosonQQBarMECorrection;
 // Definition of the static class description member.
