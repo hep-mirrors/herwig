@@ -1,21 +1,21 @@
 // -*- C++ -*-
 //
-// This is the forward declaration of the KinematicsReconstructor class.
+// This is the forward declaration of the FortranReconstructor class.
 //
-#ifndef HERWIG_KinematicsReconstructor_FH
-#define HERWIG_KinematicsReconstructor_FH
+#ifndef HERWIG_FortranReconstructor_FH
+#define HERWIG_FortranReconstructor_FH
 
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
 
-class KinematicsReconstructor;
+class FortranReconstructor;
 
 }
 
 namespace ThePEG {
 
-ThePEG_DECLARE_POINTERS(Herwig::KinematicsReconstructor,KinematicsReconstructorPtr);
+ThePEG_DECLARE_POINTERS(Herwig::FortranReconstructor,FortranReconstructorPtr);
 
 }
 

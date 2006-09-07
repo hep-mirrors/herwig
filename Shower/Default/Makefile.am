@@ -13,4 +13,5 @@ FS_QtildaShowerKinematics1to2.cc FS_QtildaShowerKinematics1to2.fh\
 FS_QtildaShowerKinematics1to2.h  FS_QtildaShowerKinematics1to2.icc\
 QtildaShowerKinematics1to2.cc QtildaShowerKinematics1to2.fh\
 QtildaShowerKinematics1to2.h  QtildaShowerKinematics1to2.icc \
-QTildeFinder.cc QTildeFinder.h QTildeFinder.icc QTildeFinder.fh 
+QTildeFinder.cc QTildeFinder.h QTildeFinder.icc QTildeFinder.fh \
+QTildeReconstructor.cc QTildeReconstructor.h QTildeReconstructor.icc QTildeReconstructor.fh 

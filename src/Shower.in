@@ -10,7 +10,7 @@ create Herwig++::ShowerHandler stdShowerHandler
 
 create Herwig++::Evolver theEvolver
 create Herwig++::QTildeFinder thePartnerFinder
-create Herwig++::KinematicsReconstructor theKinematicsReconstructor
+create Herwig++::QTildeReconstructor theKinematicsReconstructor
 
 # Set the pointers to the relevant objects 
 set theShowerVariables:GlobalParameters /Defaults/theGlobalParameters

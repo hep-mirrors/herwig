@@ -1,15 +1,15 @@
 // -*- C++ -*-
-#ifndef HERWIG_KinematicsReconstructor_H
-#define HERWIG_KinematicsReconstructor_H
+#ifndef HERWIG_QTildeReconstructor_H
+#define HERWIG_QTildeReconstructor_H
 //
-// This is the declaration of the KinematicsReconstructor class.
+// This is the declaration of the QTildeReconstructor class.
 //
 
-#include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Shower/ShowerProgenitor.h"
 #include "Herwig++/Shower/ShowerTree.h"
-#include "KinematicsReconstructor.fh"
+#include "QTildeReconstructor.fh"
 #include <cassert>
 
 namespace Herwig {
@@ -60,15 +60,10 @@ typedef vector<JetKinStruct> JetKinVect;
  * 
  * @see ShowerParticle
  * @see ShowerKinematics
- * @see \ref KinematicsReconstructorInterfaces "The interfaces"
- * defined for KinematicsReconstructor.
+ * @see \ref QTildeReconstructorInterfaces "The interfaces"
+ * defined for QTildeReconstructor.
  */
-class KinematicsReconstructor: public Interfaced {
-
-/**
- *  The Evolver is a friend to allow the  setting of _showerVariables
- */
-friend class Evolver;
+class QTildeReconstructor: public KinematicsReconstructor {
 
 public:
 
@@ -145,22 +140,6 @@ protected:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -217,22 +196,6 @@ protected:
 				    const Lorentz5Momentum & oldp) const;
 
   /**
-   *  Set/Get methods for the pointer to ShowerVariables
-   */
-  //@{
-  
-  /**
-   *  Set the ShowerVariables
-   */
-  inline void showerVariables(ShowerVarsPtr);
-  
-  /**
-   *  Get the ShowerVariables
-   */
-  inline ShowerVarsPtr showerVariables() const;
-  //@}
-
-  /**
    *  Recursively boost the initial-state shower
    * @param p The particle
    * @param bv The boost
@@ -282,20 +245,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static ClassDescription<KinematicsReconstructor> initKinematicsReconstructor;
+  static NoPIOClassDescription<QTildeReconstructor> initQTildeReconstructor;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  KinematicsReconstructor & operator=(const KinematicsReconstructor &);
-
-private:
-
-  /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
+  QTildeReconstructor & operator=(const QTildeReconstructor &);
 };
 
 }
@@ -307,24 +263,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of KinematicsReconstructor. */
+ *  base classes of QTildeReconstructor. */
 template <>
-struct BaseClassTrait<Herwig::KinematicsReconstructor,1> {
-  /** Typedef of the first base class of KinematicsReconstructor. */
-  typedef Interfaced NthBase;
+struct BaseClassTrait<Herwig::QTildeReconstructor,1> {
+  /** Typedef of the first base class of QTildeReconstructor. */
+  typedef Herwig::KinematicsReconstructor NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the KinematicsReconstructor class and the shared object where it is defined. */
+ *  the QTildeReconstructor class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::KinematicsReconstructor>
-  : public ClassTraitsBase<Herwig::KinematicsReconstructor> {
+struct ClassTraits<Herwig::QTildeReconstructor>
+  : public ClassTraitsBase<Herwig::QTildeReconstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::KinematicsReconstructor"; }
+  static string className() { return "Herwig++::QTildeReconstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * KinematicsReconstructor is implemented. It may also include several, space-separated,
-   * libraries if the class KinematicsReconstructor depends on other classes (base classes
+   * QTildeReconstructor is implemented. It may also include several, space-separated,
+   * libraries if the class QTildeReconstructor depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -335,9 +291,9 @@ struct ClassTraits<Herwig::KinematicsReconstructor>
 
 }
 
-#include "KinematicsReconstructor.icc"
+#include "QTildeReconstructor.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KinematicsReconstructor.tcc"
+// #include "QTildeReconstructor.tcc"
 #endif
 
-#endif /* HERWIG_KinematicsReconstructor_H */
+#endif /* HERWIG_QTildeReconstructor_H */

@@ -17,32 +17,6 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup Shower
- *  A simple struct to store the information we need on the 
- *  showering
- */
-struct JetKinStruct {
-  /**
-   *  Parent particle of the jet
-   */
-  tShowerParticlePtr parent;
-
-  /**
-   *  Momentum of the particle before reconstruction
-   */
-  Lorentz5Momentum p;
-
-  /**
-   *  Momentum of the particle after reconstruction
-   */  
-  Lorentz5Momentum q;
-};
-
-/**
- * typedef for a vector of JetKinStruct
- */  
-typedef vector<JetKinStruct> JetKinVect;
-
-/** \ingroup Shower
  *
  * This class is responsible for the kinematical reconstruction 
  * after each showering step, and also for the necessary Lorentz boosts 
@@ -58,8 +32,6 @@ typedef vector<JetKinStruct> JetKinVect;
  *   is involved, as the name of this class remainds. Therefore it can be used
  *   for any kind of showers (QCD-,QED-,EWK-,... bremsstrahlung).
  * 
- * @see ShowerParticle
- * @see ShowerKinematics
  * @see \ref KinematicsReconstructorInterfaces "The interfaces"
  * defined for KinematicsReconstructor.
  */
@@ -84,7 +56,7 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructHardJets(ShowerTreePtr hard) const;
+  virtual bool reconstructHardJets(ShowerTreePtr hard) const=0;
 
   /**
    * Given in input a vector of the particles which initiated the showers
@@ -94,53 +66,7 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
-  //@}
-
-protected:
-
-  /**
-   *  Reconstruct the initial state jets
-   */
-  virtual bool reconstructISJets(Lorentz5Momentum pcm,
-				 const vector<ShowerProgenitorPtr> & ShowerHardJets,
-				 Vector3 & boostRest,Vector3 & boostNewF) const;
-
-  /**
-   *  Methods to reconstruct the kinematics of individual jets
-   */
-  //@{
-  /**
-   * Given the particle (ShowerParticle object) that 
-   * originates a forward (time-like) jet, this method reconstructs the kinematics 
-   * of the jet. That is, by starting from the final grand-children (which 
-   * originates directly or indirectly from particleJetParent, 
-   * and which don't have children), and moving "backwards" (in a physical
-   * time picture), towards the particleJetParent, the 
-   * ShowerKinematics objects associated with the various particles, 
-   * which have been created during the showering, are now completed. 
-   * In particular, at the end, we get the mass of the jet, which is the 
-   * main information we want.
-   * This methods returns false if there was no radiation or rescaling required
-   */
-  virtual bool reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
-				      unsigned int iopt) const;
-
-  /**
-   * Exactly similar to the previous one, but for a space-like jet.
-   * Also in this case we start from the final grand-children (which
-   * are childless) of the particle which originates the jet, but in
-   * this case we proceed "forward" (in the physical time picture)
-   * towards the particleJetParent.
-   * This methods returns false if there was no radiation or rescaling required
-   */
-  bool reconstructSpaceLikeJet(const tShowerParticlePtr particleJetParent) const;
-
-  /**
-   * Exactly similar to the previous one, but for a decay jet
-   * This methods returns false if there was no radiation or rescaling required
-   */
-  bool reconstructDecayJet(const tShowerParticlePtr particleJetParent) const;
+  virtual bool reconstructDecayJets(ShowerTreePtr decay) const=0;
   //@}
 
 public:
@@ -172,51 +98,6 @@ public:
 protected:
 
   /**
-   * Given a vector of 5-momenta of jets, where the 3-momenta are the initial
-   * ones before showering and the masses are reconstructed after the showering,
-   * this method returns the overall scaling factor for the 3-momenta of the
-   * vector of particles, vec{P}_i -> k * vec{P}_i, such to preserve energy-
-   * momentum conservation, i.e. after the rescaling the center of mass 5-momentum 
-   * is equal to the one specified in input, cmMomentum. 
-   * The method returns 0 if such factor cannot be found.
-   * @param root_s Centre-of-mass energy
-   * @param jets The jets
-   */
-  const double solveKfactor( const Energy & root_s, const JetKinVect & jets ) const;
-
-  /**
-   *  Calculate the rescaling factors for th jets in a particle decay where
-   *  there was initial-state radiation
-   * @param mb The mass of the decaying particle
-   * @param n  The reference vector for the initial state radiation
-   * @param pjet The momentum of the initial-state jet
-   * @param pother The momentum of the outgoing colour singlet system before radiation
-   * @param ppartner The momentum of the colour partner of the decaying particle
-   * before and after radiation
-   * @param k1 The rescaling parameter for the partner
-   * @param k2 The rescaling parameter for the outgoing singlet
-   * @param qt The transverse momentum vector
-   */
-  bool solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
-			 Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
-			 double & k1, double & k2,Lorentz5Momentum & qt) const;
-
-  /**
-   * Check the rescaling conserves momentum
-   * @param k The rescaling
-   * @param root_s The centre-of-mass energy
-   * @param jets The jets
-   */
-  inline double momConsEq(const double & k, const Energy & root_s,
-			  const JetKinVect & jets) const;
-
-  /**
-   * Compute the boost to get from the the old momentum to the new 
-   */
-  inline LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
-				    const Lorentz5Momentum & oldp) const;
-
-  /**
    *  Set/Get methods for the pointer to ShowerVariables
    */
   //@{
@@ -232,57 +113,13 @@ protected:
   inline ShowerVarsPtr showerVariables() const;
   //@}
 
-  /**
-   *  Recursively boost the initial-state shower
-   * @param p The particle
-   * @param bv The boost
-   */
-  inline void boostChain(tPPtr p, const Vector3 &bv) const;
-
-  /**
-   * Given a 5-momentum and a scale factor, the method returns the
-   * Lorentz boost that transforms the 3-vector vec{momentum} --->
-   * k*vec{momentum}. The method returns the null boost in the case no
-   * solution exists. This will only work in the case where the
-   * outgoing jet-momenta are parallel to the momenta of the particles
-   * leaving the hard subprocess. 
-   */
-  Vector3 solveBoostBeta( const double k, const Lorentz5Momentum & newq, 
-			  const Lorentz5Momentum & oldp);
-
-  /**
-   * Compute boost parameter along z axis to get (Ep, any perp, qp)
-   * from (E, same perp, q).
-   */
-  inline double getBeta(const Energy E, const Energy q, 
-			const Energy Ep, const Energy qp) const {
-    return (q*E-qp*Ep)/(sqr(qp)+sqr(E));
-  }
-
-protected:
-
-  /** @name Clone Methods. */
-  //@{
-  /**
-   * Make a simple clone of this object.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr clone() const;
-
-  /** Make a clone of this object, possibly modifying the cloned object
-   * to make it sane.
-   * @return a pointer to the new object.
-   */
-  inline virtual IBPtr fullclone() const;
-  //@}
-
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static ClassDescription<KinematicsReconstructor> initKinematicsReconstructor;
+  static AbstractClassDescription<KinematicsReconstructor> initKinematicsReconstructor;
 
   /**
    * The assignment operator is private and must never be called.

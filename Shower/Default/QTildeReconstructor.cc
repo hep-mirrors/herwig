@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the KinematicsReconstructor class.
+// functions of the QTildeReconstructor class.
 //
 
-#include "KinematicsReconstructor.h"
+#include "QTildeReconstructor.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
@@ -13,32 +13,25 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KinematicsReconstructor.tcc"
+// #include "QTildeReconstructor.tcc"
 #endif
 
 
 using namespace Herwig;
 
-ClassDescription<KinematicsReconstructor> KinematicsReconstructor::initKinematicsReconstructor;
+NoPIOClassDescription<QTildeReconstructor> QTildeReconstructor::initQTildeReconstructor;
 // Definition of the static class description member.
 
-void KinematicsReconstructor::persistentOutput(PersistentOStream & os) const {
-  os << _showerVariables;
-}
+void QTildeReconstructor::Init() {
 
-void KinematicsReconstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _showerVariables;
-}
-void KinematicsReconstructor::Init() {
-
-  static ClassDocumentation<KinematicsReconstructor> documentation
+  static ClassDocumentation<QTildeReconstructor> documentation
     ( "This class is responsible for the kinematics reconstruction of the showering,",
       " including the kinematics reshuffling necessary to compensate for the recoil"
       "of the emissions." );
 
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 		       unsigned int iopt) const {
   if(!particleJetParent)
@@ -71,7 +64,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 	{
 	  Energy dm; 
 	  if (particleJetParent->id()==ParticleID::g)
-	    dm=_showerVariables->gluonMass();
+	    dm=showerVariables()->gluonMass();
 	  else
 	    dm = particleJetParent->data().constituentMass();
 	  if (abs(dm-particleJetParent->momentum().mass())>0.001*MeV
@@ -96,10 +89,10 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
   return emitted;
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 reconstructHardJets(ShowerTreePtr hard) const
 {
-  Timer<1100> timer("KinematicsReconstructor::reconstructHardJets");
+  Timer<1100> timer("QTildeReconstructor::reconstructHardJets");
   try
     {
       bool radiated[2] = {false,false};
@@ -183,7 +176,7 @@ reconstructHardJets(ShowerTreePtr hard) const
 }
 
 const double 
-KinematicsReconstructor::solveKfactor(const Energy & root_s, 
+QTildeReconstructor::solveKfactor(const Energy & root_s, 
 				      const JetKinVect & jets) const
 {
   Energy2 s = sqr(root_s);
@@ -230,7 +223,7 @@ KinematicsReconstructor::solveKfactor(const Energy & root_s,
   return -1.; 
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   bool emitted = true;
   tShowerParticlePtr child;
@@ -260,7 +253,7 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   return emitted;
 }
 
-Vector3 KinematicsReconstructor::
+Vector3 QTildeReconstructor::
 solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentum & oldp ) {
 
   // try something different, purely numerical first: 
@@ -290,7 +283,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
   else              return Vector3(0., 0., 0.); 
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 reconstructISJets(Lorentz5Momentum pcm,
 		  const vector<ShowerProgenitorPtr> & ShowerHardJets,
 		  Vector3 & boostRest,Vector3 & boostNewF) const
@@ -319,7 +312,7 @@ reconstructISJets(Lorentz5Momentum pcm,
 	      pq.push_back(ptemp);
 	    } 
 	  else 
-	    {throw Exception() << "KinematicsReconstructor::reconstructISJets: "
+	    {throw Exception() << "QTildeReconstructor::reconstructISJets: "
 			       << "Warning, bad pq!!!\n"
 			       << Exception::eventerror;}
 	}
@@ -347,7 +340,7 @@ reconstructISJets(Lorentz5Momentum pcm,
   Energy2 C = a2*b1*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if (rad >= 0) {kp = B/(2.*A)*(1.+sqrt(rad));}
-  else throw Exception() << "KinematicsReconstructor::reconstructISJets " 
+  else throw Exception() << "QTildeReconstructor::reconstructISJets " 
 			 << "WARNING! Can't get kappa_pm!\n"
 			 << Exception::eventerror;
   // now compute k1, k2
@@ -359,7 +352,7 @@ reconstructISJets(Lorentz5Momentum pcm,
       k2 = kp/k1;
     } 
   else
-    {throw Exception() << "KinematicsReconstructor::reconstructISJets " 
+    {throw Exception() << "QTildeReconstructor::reconstructISJets " 
 			  << "  Plus:  k1 = " << k1 
 			  << "WARNING! Can't get k1p, k2p!\n"
 			  << Exception::eventerror;}
@@ -384,7 +377,7 @@ reconstructISJets(Lorentz5Momentum pcm,
   return true;
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 reconstructDecayJets(ShowerTreePtr decay) const
 {
   try
@@ -577,7 +570,7 @@ reconstructDecayJets(ShowerTreePtr decay) const
   return true;
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 reconstructDecayJet( const tShowerParticlePtr p) const {
   if(p->children().empty()) return false;
   tShowerParticlePtr child;
@@ -597,7 +590,7 @@ reconstructDecayJet( const tShowerParticlePtr p) const {
   return false;
 }
 
-bool KinematicsReconstructor::
+bool QTildeReconstructor::
 solveDecayKFactor(Energy mb,Lorentz5Momentum n, Lorentz5Momentum pjet, 
 		  Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
 		  double & k1, double & k2,Lorentz5Momentum & qt) const
