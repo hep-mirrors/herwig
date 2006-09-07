@@ -5,7 +5,7 @@
 // This is the declaration of the TopDecayMECorrection class.
 //
 
-#include "MECorrectionBase.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "TopDecayMECorrection.fh"
 
 namespace Herwig {

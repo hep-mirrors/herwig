@@ -9,20 +9,15 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Evolver.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Kinematics/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include "Herwig++/Shower/Kinematics/QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Shower/MECorrections/MECorrectionBase.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "ShowerTree.h"

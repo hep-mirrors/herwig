@@ -1,0 +1,32 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerModel class.
+//
+
+namespace Herwig {
+
+inline ShowerModel::ShowerModel() {}
+
+inline void ShowerModel::doinit() throw(InitException) {
+  Interfaced::doinit();
+  checkConsistency();
+}
+ 
+inline tKinematicsReconstructorPtr ShowerModel::kinematicsReconstructor() const {
+  return _reconstructor;
+}
+
+inline tPartnerFinderPtr ShowerModel::partnerFinder() const {
+  useMe();
+  return _partnerfinder;
+}
+
+inline vector<SudakovPtr> ShowerModel::sudakovFormFactors() const {
+  return _sudakovs;
+}
+
+inline vector<MECorrectionPtr> ShowerModel::meCorrections() const {
+  return _mecorrections;
+}
+}

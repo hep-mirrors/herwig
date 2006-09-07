@@ -5,7 +5,7 @@
 // This is the declaration of the VectorBosonQQBarMECorrection class.
 //
 
-#include "MECorrectionBase.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "VectorBosonQQBarMECorrection.fh"
 
 namespace Herwig {

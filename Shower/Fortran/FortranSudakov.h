@@ -5,7 +5,7 @@
 // This is the declaration of the FortranSudakov class.
 //
 
-#include "Herwig++/Shower/SplittingFunctions/SudakovFormFactor.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "Herwig++/Utilities/NewInterpolator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "FortranSudakov.fh"

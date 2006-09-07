@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "ShowerParticle.h"
+#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
 #include "Herwig++/Shower/ShowerProgenitor.h"
 #include "Herwig++/Shower/ShowerTree.h"
 #include "KinematicsReconstructor.fh"

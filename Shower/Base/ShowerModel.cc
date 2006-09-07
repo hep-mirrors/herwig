@@ -1,0 +1,58 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the ShowerModel class.
+//
+
+#include "ShowerModel.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "KinematicsReconstructor.h"
+#include "PartnerFinder.h"
+#include "SudakovFormFactor.h"
+#include "MECorrectionBase.h"
+
+using namespace Herwig;
+
+void ShowerModel::persistentOutput(PersistentOStream & os) const {
+  os << _reconstructor << _partnerfinder << _sudakovs << _mecorrections;
+}
+
+void ShowerModel::persistentInput(PersistentIStream & is, int) {
+  is >> _reconstructor >> _partnerfinder >> _sudakovs >> _mecorrections;
+}
+
+AbstractClassDescription<ShowerModel> ShowerModel::initShowerModel;
+// Definition of the static class description member.
+
+void ShowerModel::Init() {
+
+  static ClassDocumentation<ShowerModel> documentation
+    ("The ShowerModel class contains the references for the classes which"
+     " are specific to the shower evolution scheme.");
+
+  static Reference<ShowerModel,KinematicsReconstructor> interfaceKinematicsRecontructor
+    ("KinematicsRecontructor",
+     "Reference to the KinematicsReconstructor object",
+     &ShowerModel::_reconstructor, false, false, true, false, false);
+
+  static Reference<ShowerModel,PartnerFinder> interfacePartnerFinder
+    ("PartnerFinder",
+     "Reference to the PartnerFinder object",
+     &ShowerModel::_partnerfinder, false, false, true, false, false);
+
+  static RefVector<ShowerModel,SudakovFormFactor> interfaceSudakovFormFactors
+    ("SudakovFormFactors",
+     "Vector of references to the SudakovFormFactor objects",
+     &ShowerModel::_sudakovs, -1, false, false, true, false, false);
+
+  static RefVector<ShowerModel,MECorrectionBase> interfaceMECorrections
+    ("MECorrections",
+     "Vector of references to the MECorrectionBase objects",
+     &ShowerModel::_mecorrections, -1, false, false, true, false, false);
+
+}
+

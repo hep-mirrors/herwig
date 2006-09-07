@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "SudakovFormFactor.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "SplittingGenerator.fh"
 #include "Herwig++/Shower/Kinematics/ShowerKinematics.h"
 #include "ThePEG/Utilities/Rebinder.h"

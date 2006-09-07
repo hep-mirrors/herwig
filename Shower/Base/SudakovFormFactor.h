@@ -6,11 +6,11 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "SplittingFunction.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "SudakovFormFactor.fh"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Couplings/ShowerIndex.h"
-#include "SplittingGenerator.fh"
+#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Shower/ShowerVariables.h"
 #include <cassert>

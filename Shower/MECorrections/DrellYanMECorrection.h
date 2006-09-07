@@ -5,7 +5,7 @@
 // This is the declaration of the DrellYanMECorrection class.
 //
 
-#include "MECorrectionBase.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "DrellYanMECorrection.fh"
 
 namespace Herwig {

@@ -5,7 +5,7 @@
 // This is the declaration of the QTildeSudakov class.
 //
 
-#include "SudakovFormFactor.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "QTildeSudakov.fh"
 
 namespace Herwig {

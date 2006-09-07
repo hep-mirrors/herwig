@@ -5,7 +5,7 @@
 // This is the declaration of the RelativePtReconstructor class.
 //
 
-#include "KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "RelativePtReconstructor.fh"
 
 namespace Herwig {
