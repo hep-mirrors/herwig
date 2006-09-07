@@ -7,9 +7,7 @@
 #include "Cluster.h"
 #include <ThePEG/Repository/UseRandom.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
-#include <iostream>
-#include <iomanip>
-#include <cctype>
+#include <cassert>
 #include <ThePEG/EventRecord/Step.h>
 #include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/EventRecord/ColourLine.h>
@@ -19,11 +17,13 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/DecayMode.h>
+#include <ThePEG/PDT/ParticleData.h>
+#include "ClusterHadronizationHandler.h"
 
 using namespace Herwig;
 // using namespace ThePEG;
 
-GlobParamPtr Cluster::_globalParameters = GlobParamPtr();
+tcCluHadHdlPtr Cluster::_clusterHadHandler = tcCluHadHdlPtr();
 
 ClassDescription<Cluster> Cluster::initCluster;
 
@@ -137,32 +137,23 @@ void Cluster::calculateX() {
     // position in terms of the two components.
     setVertex(LorentzPoint());
   } else {
-    // Get the needed global parameters. 
-    double theConversionFactorGeVtoMillimeter = 0.0;
-    Energy2 vmin2 = Energy2();
-    Length dmax = Length();
-    if ( _globalParameters ) {
-      theConversionFactorGeVtoMillimeter = 
-    	_globalParameters->conversionFactorGeVtoMillimeter();
-      vmin2 = _globalParameters->minVirtuality2();
-      dmax = _globalParameters->maxDisplacement();
-    }
+    // Get the needed parameters. 
+    assert(_clusterHadHandler); 
+    Energy2 vmin2 = _clusterHadHandler->minVirtuality2();
+    Length dmax = _clusterHadHandler->maxDisplacement();
+    
     // Get the positions and displacements of the two components (Lab frame).
     LorentzPoint pos1 = _component[0]->vertex();
     Lorentz5Momentum p1 = _component[0]->momentum();
-    LorentzDistance displace1 = 
-      -log( UseRandom::rnd() ) * theConversionFactorGeVtoMillimeter 
-      * (p1/GeV) * (1.0/sqrt(sqr(p1.m2()/GeV2 - p1.mass2()/GeV2) + 
-			     sqr(vmin2/GeV2)));
+    LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
+      hbarc * p1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2));
     if ( fabs( displace1.mag() ) > dmax ) {
       displace1 *= dmax / fabs( displace1.mag() );
     }
     LorentzPoint pos2 = _component[1]->vertex();
     Lorentz5Momentum p2 = _component[1]->momentum();
-    LorentzDistance displace2 = 
-      -log( UseRandom::rnd() ) * theConversionFactorGeVtoMillimeter 
-      * (p2/GeV) * (1.0/sqrt(sqr(p2.m2()/GeV2 - p2.mass2()/GeV2) + 
-			     sqr(vmin2 /GeV2)));
+    LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
+      hbarc * p2 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2));
     if ( fabs( displace2.mag() ) > dmax ) {
       displace2 *= dmax / fabs( displace2.mag() );
     }
@@ -256,8 +247,8 @@ PPtr Cluster::fullclone() const {
 }
 
 bool Cluster::initPerturbative(tPPtr p) {
-  Energy Q0 = Energy();
-  if(_globalParameters) Q0 = _globalParameters->effectiveGluonMass();
-  if(p->scale() > Q0*Q0) return true;
-  return false;
+  assert(_clusterHadHandler);
+  Energy Q0 = _clusterHadHandler->
+    getParticleData(ParticleID::g)->constituentMass();
+  return (p->scale() > Q0*Q0);
 }

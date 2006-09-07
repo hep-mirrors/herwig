@@ -6,12 +6,11 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include "ShowerConfig.h"
 #include "Couplings/ShowerIndex.h"
 #include "ShowerVariables.fh"
 #include "ThePEG/PDF/BeamParticleData.h"
-
+#include "ThePEG/PDT/EnumParticles.h"
 namespace Herwig {
 
 using namespace ThePEG;
@@ -172,16 +171,9 @@ public:
   //@}
 
   /**
-   *  Get the GlobalParameters
+   * Set the gluon mass to the effective mass
    */
-  inline GlobalParametersPtr globalParameters() const;
-
-  /**
-   * Set the gluon mass 
-   * @param final If final is true gluon mass will be set to 
-   * 0 or the effective mass depending on the choice of hadronisation model.
-   */
-  inline void setGluonMass(bool final);
+  inline void setGluonMass();
 
 
   /**
@@ -405,11 +397,6 @@ private:
    *  The gluon mass
    */
   Energy _gluonMass;
-
-  /**
-   *  The global variables
-   */
-  GlobalParametersPtr _globalParameters;
 
   /**
    *  Radiation enhancement factors for use with the veto algorithm

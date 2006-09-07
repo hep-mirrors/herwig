@@ -30,11 +30,6 @@ set /Defaults/Decays/QDecayME0:MECode 0
 set /Defaults/Decays/QDecayME100:MECode 100
 set /Defaults/Decays/QDecayME101:MECode 101
 set /Defaults/Decays/QDecayME130:MECode 130
-set /Defaults/Decays/QDecayME0:GlobalParameters /Defaults/theGlobalParameters
-set /Defaults/Decays/QDecayME100:GlobalParameters /Defaults/theGlobalParameters
-set /Defaults/Decays/QDecayME101:GlobalParameters /Defaults/theGlobalParameters
-set /Defaults/Decays/QDecayME130:GlobalParameters /Defaults/theGlobalParameters
-set /Defaults/Decays/Mambo:GlobalParameters /Defaults/theGlobalParameters
 #
 # create the decays for perturbative particles, i.e. top, W and Z
 #
@@ -45,6 +40,7 @@ create Herwig++::SMHiggsFermionsDecayer  /Defaults/Decays/Hff HwPerturbativeHigg
 create Herwig++::SMHiggsWWDecayer        /Defaults/Decays/HWW HwPerturbativeHiggsDecay.so
 set /Defaults/Decays/HWW:BreitWigner 0
 set /Defaults/Decays/HWW:Power 0.0
+set /Defaults/Decays/HWW:Ntry 1000
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files

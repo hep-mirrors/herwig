@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = libHwHadronization.la
+noinst_LTLIBRARIES = libHwHadronization.la
 libHwHadronization_la_SOURCES = \
 CluHadConfig.h \
 Cluster.h Cluster.cc Cluster.icc \

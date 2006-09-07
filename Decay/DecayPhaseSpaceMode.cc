@@ -30,38 +30,6 @@ using Herwig::Helicity::DVertexPtr;
 using ThePEG::Helicity::tcSpinfoPtr;
 using ThePEG::Helicity::SpinfoPtr;
 
-// default constructor
-DecayPhaseSpaceMode::DecayPhaseSpaceMode() 
-{
-  _niter=10;
-  _npoint=10000;
-  _ntry=500;
-  _partial=-1;
-  _widthgen=_widthgen=cGenericWidthGeneratorPtr();
-}
-
-// constructor with decayer and particles
-DecayPhaseSpaceMode::DecayPhaseSpaceMode(PDVector in,DecayIntegratorPtr intin) 
-{
-  _niter=10;
-  _npoint=10000;
-  _ntry=500;
-  _extpart=in;
-  _integrator=intin;
-  _partial=-1;
-  _widthgen=_widthgen=cGenericWidthGeneratorPtr();
-}
-
-// copy constructor
-DecayPhaseSpaceMode::DecayPhaseSpaceMode(const DecayPhaseSpaceMode & x)
-  : Interfaced(x),_integrator(x._integrator), _channels(x._channels),
-    _channelwgts(x._channelwgts), _MaxWeight(x._MaxWeight),_niter(x._niter),
-    _npoint(x._npoint), _ntry(x._ntry),_extpart(x._extpart), _partial(x._partial),
-    _widthgen(x._widthgen), _massgen(x._massgen) {}
-
-// destructor
-DecayPhaseSpaceMode::~DecayPhaseSpaceMode() {}
-
 void DecayPhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << _integrator << _channels << _channelwgts << _MaxWeight << _niter 
      << _npoint << _ntry << _extpart << _partial << _widthgen;

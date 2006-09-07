@@ -1,3 +1,4 @@
+mkdir /Defaults/Handlers/UnderlyingEvent
 cd /Defaults/Handlers/UnderlyingEvent
 #
 create Herwig++::UA5Handler theUA5 HwUA5.so

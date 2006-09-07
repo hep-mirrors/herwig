@@ -34,16 +34,6 @@ public:
    * The default constructor.
    */
   inline FFDipole();
-
-  /**
-   * The copy constructor.
-   */
-  inline FFDipole(const FFDipole &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~FFDipole();
   //@}
 
 public:
@@ -54,7 +44,8 @@ public:
    * @param children The decay products
    * @return The decay products with additional radiation
    */
-  virtual ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  virtual ParticleVector generatePhotons(const Particle & p,
+					 ParticleVector children);
 
 public:
 
@@ -214,7 +205,7 @@ private:
   /**
    *  Masses of the particles involved
    */
-  Energy _m[3];
+  vector<Energy> _m;
 
   /**
    *  Produce of the particles charges
@@ -228,11 +219,11 @@ private:
   /**
    *  Momenta of the charged particles in the dipole rest frame before radiation
    */
-  Lorentz5Momentum _qdrf[2];
+  vector<Lorentz5Momentum> _qdrf;
 
   /**   *  Momenta of the charged particles in the dipole rest frame after radiation
    */
-  Lorentz5Momentum _qnewdrf[2];
+  vector<Lorentz5Momentum> _qnewdrf;
 
   /**
    *  Momenta of the photons in the dipole rest frame
@@ -252,12 +243,12 @@ private:
   /**
    *  Momenta of the charged particles in the parent's rest frame before radiation
    */
-  Lorentz5Momentum _qprf[2];
+  vector<Lorentz5Momentum> _qprf;
 
   /**
    *  Momenta of the charged particles in the parent's rest frame after radiation
    */
-  Lorentz5Momentum _qnewprf[2];
+  vector<Lorentz5Momentum> _qnewprf;
 
   /**
    *  Momenta of the photons in the parent rest frame
@@ -277,12 +268,12 @@ private:
   /**
    *  Momenta of the charged particles in the lab frame before radiation
    */
-  Lorentz5Momentum _qlab[2];
+  vector<Lorentz5Momentum> _qlab;
   
   /**
    *  Momenta of the charged particles in the lab frame after  radiation
    */
-  Lorentz5Momentum _qnewlab[2];
+  vector<Lorentz5Momentum> _qnewlab;
 
   /**
    *  Momenta of the photons in the lab frame

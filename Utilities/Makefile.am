@@ -3,8 +3,6 @@ libHwUtils_la_SOURCES = \
 CheckId.cc CheckId.h CheckId.icc \
 EnumParticles.h \
 GaussianIntegral.cc GaussianIntegral.h GaussianIntegral.icc \
-GlobalParameters.cc GlobalParameters.h \
-GlobalParameters.icc GlobalParameters.fh\
 HerwigRun.cc HerwigRun.h \
 HwDebug.cc HwDebug.h \
 Interpolator.cc Interpolator.h Interpolator.icc \

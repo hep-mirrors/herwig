@@ -33,16 +33,6 @@ public:
    * The default constructor.
    */
   inline IFDipole();
-
-  /**
-   * The copy constructor.
-   */
-  inline IFDipole(const IFDipole &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~IFDipole();
   //@}
 
 public:
@@ -235,12 +225,12 @@ private:
    *  _q???[_map[0]] is the charged child and
    *  _q???[_map[1]] is the neutral child.
    */
-  int _map[2];
+  vector<int> _map;
 
   /**
    *  Masses of the particles involved
    */
-  Energy _m[3];
+  vector<Energy> _m;
 
   /**
    *  charge of the parent particle 
@@ -259,12 +249,12 @@ private:
   /**
    *  Momenta of the charged particles in the parent's rest frame before radiation
    */
-  Lorentz5Momentum _qprf[2];
+  vector<Lorentz5Momentum> _qprf;
 
   /**
    *  Momenta of the charged particles in the parent's rest frame after radiation
    */
-  Lorentz5Momentum _qnewprf[2];
+  vector<Lorentz5Momentum> _qnewprf;
 
   /**
    *  Momenta of the photons in the parent rest frame
@@ -284,12 +274,12 @@ private:
   /**
    *  Momenta of the charged particles in the lab frame before radiation
    */
-  Lorentz5Momentum _qlab[2];
+  vector<Lorentz5Momentum> _qlab;
   
   /**
    *  Momenta of the charged particles in the lab frame after  radiation
    */
-  Lorentz5Momentum _qnewlab[2];
+  vector<Lorentz5Momentum> _qnewlab;
 
   /**
    *  Momenta of the photons in the lab frame

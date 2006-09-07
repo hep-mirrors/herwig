@@ -18,12 +18,10 @@
 using namespace Herwig;
 
 void PartonSplitter::persistentOutput(PersistentOStream & os) const {
-  os << _globalParameters; 
 }
 
 
 void PartonSplitter::persistentInput(PersistentIStream & is, int) {
-  is >> _globalParameters; 
 }
 
 
@@ -36,12 +34,6 @@ void PartonSplitter::Init() {
   static ClassDocumentation<PartonSplitter> documentation
     ("This class is reponsible of the nonperturbative splitting of partons"
      "\n (mainly time-like gluons, but also space-like sea partons");
-
-  static Reference<PartonSplitter,GlobalParameters> 
-    interfaceGlobalParameters("GlobalParameters", 
-			      "A reference to the GlobalParameters object", 
-			      &Herwig::PartonSplitter::_globalParameters,
-			      false, false, true, false);
  
 }
 
@@ -69,7 +61,7 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	      PPtr ptrQ = PPtr();
 	      PPtr ptrQbar = PPtr();
 	      splitTimeLikeGluon(*pit,ptrQ,ptrQbar);
-	      Energy Q0 = _globalParameters->effectiveGluonMass();
+	      Energy Q0 = getParticleData(ParticleID::g)->constituentMass();
 	      ptrQ->scale(Q0*Q0);
 	      ptrQbar->scale(Q0*Q0);
 	      pstep->addDecayProduct(*pit,ptrQ);

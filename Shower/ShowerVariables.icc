@@ -98,15 +98,9 @@ inline Energy ShowerVariables::gluonMass() const {return _gluonMass;}
 
 inline void ShowerVariables::gluonMass(Energy in){_gluonMass=in;}
 
-inline GlobalParametersPtr ShowerVariables::globalParameters() const
-{return _globalParameters;}
-
-inline void ShowerVariables::setGluonMass(bool final)
+inline void ShowerVariables::setGluonMass()
 {
-  if(_globalParameters->isThePEGStringFragmentationON())
-    _gluonMass=0.;
-  else
-    _gluonMass=_globalParameters->effectiveGluonMass();
+  _gluonMass=getParticleData(ParticleID::g)->constituentMass();
 }
 
 inline double ShowerVariables::initialStateRadiationEnhancementFactor() const {

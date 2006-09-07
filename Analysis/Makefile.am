@@ -11,7 +11,17 @@ BasicConsistency.h BasicConsistency.icc \
 MultiplicityCount.cc MultiplicityCount.fh \
 MultiplicityCount.h MultiplicityCount.icc \
 SimpleLHCAnalysis.h SimpleLHCAnalysis.fh \
-SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc \
+SimpleLHCAnalysis.icc SimpleLHCAnalysis.cc\
+TTbarAnalysis.h TTbarAnalysis.fh \
+TTbarAnalysis.icc TTbarAnalysis.cc\
+LPairAnalysis.h LPairAnalysis.fh \
+LPairAnalysis.icc LPairAnalysis.cc\
+GammaGammaAnalysis.h GammaGammaAnalysis.fh \
+GammaGammaAnalysis.icc GammaGammaAnalysis.cc\
+GammaJetAnalysis.h GammaJetAnalysis.fh \
+GammaJetAnalysis.icc GammaJetAnalysis.cc\
+HiggsJetAnalysis.h HiggsJetAnalysis.fh \
+HiggsJetAnalysis.icc HiggsJetAnalysis.cc\
 GraphvizPlot.h GraphvizPlot.fh GraphvizPlot.icc GraphvizPlot.cc
 
 HwLEPAnalysis_la_LDFLAGS = -module

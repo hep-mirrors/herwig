@@ -1,0 +1,59 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the LPairAnalysis class.
+//
+
+namespace Herwig {
+
+inline LPairAnalysis::LPairAnalysis() :
+  _ptp(0.,250.,100), _ptm(0.,250.,100), _ptpair(0.,250.,100), 
+  _etp(0.,250.,100), _etm(0.,250.,100), _etpair(0.,250.,100), 
+  _ep(0.,1000.,100), _em(1.,3000.,100), _epair(0.,1500.,100), 
+  _rapp(-5.,5.,100), _rapm(-5.,5.,100), _rappair(-5.,5.,100), 
+  _phip(-3.1459,3.1459,50), _phim(-3.1459,3.1459,50), 
+  _deltaphi(-3.1459,3.1459,100), _mpair(0,750,100), 
+  _etsum(0.,400.,100), _ptsum(0.,400.,100) {}
+
+inline IBPtr LPairAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr LPairAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+// void Histogram::topdrawOutput(ofstream & out,
+// 			      bool frame,
+// 			      bool errorbars,
+// 			      bool xlog, bool ylog,
+// 			      string colour,
+// 			      string title,  string titlecase,
+// 			      string left,   string leftcase,
+// 			      string bottom, string bottomcase) const
+
+
+inline void LPairAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  ofstream outfile("LPairAnalysis.top");
+  _ptp.topdrawOutput(outfile,true,false,false,true,"RED","pt lp, lm");
+  _ptm.topdrawOutput(outfile,false,false,false,true,"BLUE","");
+  _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");
+  _etp.topdrawOutput(outfile,true,false,false,true,"RED","Et lp, lm");
+  _etm.topdrawOutput(outfile,false,false,false,true,"BLUE","");
+  _etpair.topdrawOutput(outfile,true,false,false,true,"BLACK","Et pair");
+  _ep.topdrawOutput(outfile,true,false,false,true,"RED","E lp, lm");
+  _em.topdrawOutput(outfile,false,false,false,true,"BLUE","");
+  _epair.topdrawOutput(outfile,true,false,false,true,"BLACK","E pair");
+  _rapp.topdrawOutput(outfile,true,false,false,false,"RED","y lp, lm");
+  _rapm.topdrawOutput(outfile,false,false,false,false,"BLUE","");
+  _rappair.topdrawOutput(outfile,true,false,false,false,"BLACK","y pair");
+  _phip.topdrawOutput(outfile,true,false,false,false,"RED","phi lp, lm");
+  _phim.topdrawOutput(outfile,false,false,false,false,"BLUE","");
+  _deltaphi.topdrawOutput(outfile,true,false,false,false,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,true,false,false,true,"BLACK","M pair");
+  _etsum.topdrawOutput(outfile,true,false,false,true,"BLACK","pt sum");
+  _ptsum.topdrawOutput(outfile,true,false,false,true,"BLACK","Et sum");
+}
+
+}

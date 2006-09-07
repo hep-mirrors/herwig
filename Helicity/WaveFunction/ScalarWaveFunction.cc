@@ -37,6 +37,10 @@ ScalarWaveFunction::ScalarWaveFunction(tPPtr part,Direction dir,bool time,bool v
 	    }
 	}
     }
+  direction(dir);
+  setMomentum(part->momentum());
+  checkParticle(part->dataPtr());
+  _wf=1.;
 }
 
 // special set-up constructor

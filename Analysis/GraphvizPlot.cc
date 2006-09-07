@@ -38,7 +38,7 @@ struct HepMCTraits<HepMC::GenEvent>
 }
 
 void GraphvizPlot::analyze(tEventPtr event, long ieve, int loop, int state) {
-  if (event->number() != 1) return;
+  if (event->number() != _eventNumber) return;
 
   ostringstream filename;
   filename << _fileBaseName << '-' << event->number() << ".dot";
@@ -112,12 +112,13 @@ LorentzRotation GraphvizPlot::transform(tEventPtr event) const {
 void GraphvizPlot::analyze(tPPtr) {}
 
 void GraphvizPlot::persistentOutput(PersistentOStream & os) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
+  os << _fileBaseName << _eventNumber;
 }
 
 void GraphvizPlot::persistentInput(PersistentIStream & is, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
+  is >> _fileBaseName >> _eventNumber;
 }
+
 
 ClassDescription<GraphvizPlot> GraphvizPlot::initGraphvizPlot;
 // Definition of the static class description member.
@@ -133,5 +134,10 @@ void GraphvizPlot::Init() {
      &GraphvizPlot::_fileBaseName, "graphviz",
      true, false);
 
+  static Parameter<GraphvizPlot,long> interfaceEventNumber
+    ("EventNumber",
+     "The number of the event that should be drawn.",
+     &GraphvizPlot::_eventNumber, 1, 1, 1,
+     false, false, Interface::lowerlim);
 }
 

@@ -37,7 +37,7 @@ void Histogram::Init() {
 
 }
 
-void Histogram::topdrawOutput(ofstream & out,
+void Histogram::topdrawOutput(ostream & out,
 			      bool frame,
 			      bool errorbars,
 			      bool xlog, bool ylog,
@@ -61,17 +61,18 @@ void Histogram::topdrawOutput(ofstream & out,
       else out << "SET ORDER X Y DX\n";
     }
   // scales
-  if(xlog) out << "SET SCALE X LOG " << endl;
-  if(ylog) out << "SET SCALE Y LOG " << endl;
+  if(xlog && frame) out << "SET SCALE X LOG " << endl;
+  if(ylog && frame) out << "SET SCALE Y LOG " << endl;
   // set the x limits
 
   const unsigned int lastDataBinIndx = _bins.size()-2;
-
-  out << "SET LIMITS X " << _bins[1].limit << " " 
-      << _bins[lastDataBinIndx+1].limit << endl;
+  if (xlog && frame) {
+    out << "SET LIMITS X " << _bins[1].limit << " " 
+	<< _bins[lastDataBinIndx+1].limit << endl;
+  }
   // work out the y points
   vector<double> yout;
-  double ymax=-1e100,ymin=1e100;
+  double ymax=-9.8765e34,ymin=9.8765e34;
   unsigned int numPoints = _globalStats.numberOfPoints();
   if (numPoints == 0) ++numPoints;
 
@@ -84,9 +85,13 @@ void Histogram::topdrawOutput(ofstream & out,
       if(yout.back()>0.) ymin=min(ymin,value);
       if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
     }
+  if (ymin > 1e34)  ymin = 1e-34;
+  if (ymax < 1e-33) ymax = 1e-33;
+  if (ymax < 10*ymin) ymin = 0.1*ymax;
 
-  out << "SET LIMITS Y " << (ylog ? ymin:0. ) << " " << ymax << endl;
-
+  if (ylog && frame) {
+    out << "SET LIMITS Y " << ymin << " " << ymax << endl;
+  }
   // the histogram from the event generator
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
     {

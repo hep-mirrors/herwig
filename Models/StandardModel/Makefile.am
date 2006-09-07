@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = libHwStandardModel.la
+noinst_LTLIBRARIES = libHwStandardModel.la
 libHwStandardModel_la_SOURCES = \
 	StandardModel.fh StandardModel.h StandardModel.cc  StandardModel.icc \
 	RunningMassBase.h RunningMassBase.cc RunningMassBase.icc  \

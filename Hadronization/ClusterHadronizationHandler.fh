@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ClusterHadronizationHandler class.
+//
+#ifndef HERWIG_ClusterHadronizationHandler_FH
+#define HERWIG_ClusterHadronizationHandler_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ClusterHadronizationHandler;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ClusterHadronizationHandler,CluHadHdlPtr);
+
+}
+
+#endif

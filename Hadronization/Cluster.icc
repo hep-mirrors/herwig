@@ -13,8 +13,8 @@ namespace Herwig {
   inline void Cluster::operator delete(void * p, size_t) {
     FixedAllocator<Cluster>::deallocate(p);
   }
-  inline void Cluster::setPointerGlobalParameters(GlobParamPtr gp) {
-    _globalParameters = gp;
+  inline void Cluster::setPointerClusterHadHandler(tcCluHadHdlPtr gp) {
+    _clusterHadHandler = gp;
   }
 
   inline int Cluster::numComponents() const {

@@ -12,16 +12,12 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/PDT/EnumParticles.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2HiggsJet.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
+#include "Herwig++/Helicity/Correlations/HardVertex.h"
 
 using namespace Herwig;
 
@@ -250,15 +246,11 @@ double MEPP2HiggsJet::me2() const {
       ScalarWaveFunction  hout(meMomenta()[ih],mePartonData()[ih],outgoing);
       VectorWaveFunction glout(meMomenta()[ig],mePartonData()[ig],outgoing);
       vector<VectorWaveFunction> g1,g2,g4;
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  glin1.reset(2*ix);g1.push_back(glin1);
-	  glin2.reset(2*ix);g2.push_back(glin2);
-	  glout.reset(2*ix);g4.push_back(glout);
-	  //glin1.reset(10);g1.push_back(glin1);
-	  //glin2.reset(10);g2.push_back(glin2);
-	  //glout.reset(10);g4.push_back(glout);
-	}
+      for(unsigned int ix=0;ix<2;++ix) {
+	glin1.reset(2*ix);g1.push_back(glin1);
+	glin2.reset(2*ix);g2.push_back(glin2);
+	glout.reset(2*ix);g4.push_back(glout);
+      }
       // calculate the matrix element
       output = ggME(g1,g2,hout,g4,false); 
     }
@@ -277,12 +269,11 @@ double MEPP2HiggsJet::me2() const {
       VectorWaveFunction    glin(meMomenta()[ig ],mePartonData()[ig ],incoming);
       ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
       SpinorBarWaveFunction qout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)   ; fin.push_back( qin);
-	  qout.reset(ix)  ;fout.push_back(qout);
-	  glin.reset(2*ix); gin.push_back(glin);
-	}
+      for(unsigned int ix=0;ix<2;++ix) {
+	qin.reset(ix)   ; fin.push_back( qin);
+	qout.reset(ix)  ;fout.push_back(qout);
+	glin.reset(2*ix); gin.push_back(glin);
+      }
       // calculate the matrix element
       output = qgME(fin,gin,hout,fout,false); 
     }
@@ -301,12 +292,11 @@ double MEPP2HiggsJet::me2() const {
        VectorWaveFunction    glin(meMomenta()[ig ],mePartonData()[ig ],incoming);
        ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
        SpinorWaveFunction    qout(meMomenta()[iqb],mePartonData()[iqb],outgoing);
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)   ; fin.push_back( qin);
-	  qout.reset(ix)  ;fout.push_back(qout);
-	  glin.reset(2*ix); gin.push_back(glin);
-	}
+      for(unsigned int ix=0;ix<2;++ix) {
+	qin.reset(ix)   ; fin.push_back( qin);
+	qout.reset(ix)  ;fout.push_back(qout);
+	glin.reset(2*ix); gin.push_back(glin);
+      }
       // calculate the matrix element
       output = qbargME(fin,gin,hout,fout,false); 
     }
@@ -325,12 +315,11 @@ double MEPP2HiggsJet::me2() const {
       SpinorBarWaveFunction qbin(meMomenta()[iqb],mePartonData()[iqb],incoming);
       ScalarWaveFunction    hout(meMomenta()[ih ],mePartonData()[ih ],outgoing);
       VectorWaveFunction   glout(meMomenta()[ig ],mePartonData()[ig ],outgoing);
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  qin.reset(ix)    ; fin.push_back(  qin);
-	  qbin.reset(ix)   ; ain.push_back( qbin);
-	  glout.reset(2*ix);gout.push_back(glout);
-	}
+      for(unsigned int ix=0;ix<2;++ix) {
+	qin.reset(ix)    ; fin.push_back(  qin);
+	qbin.reset(ix)   ; ain.push_back( qbin);
+	glout.reset(2*ix);gout.push_back(glout);
+      }
       // calculate the matrix element
       output = qqbarME(fin,ain,hout,gout,false); 
     }
@@ -345,8 +334,7 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
 			      vector<SpinorBarWaveFunction> & ain,
 			      ScalarWaveFunction & hout,
 			      vector<VectorWaveFunction>    & gout,
-			      bool calc) const
-{
+			      bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming fermion     (u    spinor)
@@ -355,25 +343,24 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   // 0 outgoing higgs       
   // 1 outgoing gluon
   // me to be returned
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin0,PDT::Spin1));}
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,
+				PDT::Spin0,PDT::Spin1);
   // get the kinematic invariants
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   Complex A5(0.);
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-    {
-      // full mass dependance
-      if(_massopt==0)
-	{
-	  Energy2 mf2=sqr(getParticleData(ix)->mass());
-	  A5+= mf2*(4.+4.*s/(u+t)*(W1(s,mf2)-W1(mh2,mf2))
-		    +(1.-4.*mf2/(u+t))*(W2(s,mf2)-W2(mh2,mf2)));
-	}
-      // infinite mass limit
-      else
-	{A5+=2.*(s-mh2)/3.;}
+  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+    // full mass dependance
+    if(_massopt==0) {
+      Energy2 mf2=sqr(getParticleData(ix)->mass());
+      A5+= mf2*(4.+4.*s/(u+t)*(W1(s,mf2)-W1(mh2,mf2))
+		+(1.-4.*mf2/(u+t))*(W2(s,mf2)-W2(mh2,mf2)));
     }
+    // infinite mass limit
+    else {
+      A5+=2.*(s-mh2)/3.;
+    }
+  }
   // multiply by the rest of the form factors
   double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
@@ -388,51 +375,31 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   Energy2 denom(-ps*gout[0].getMomentum());
   LorentzSpinorBar atemp;
   double output(0.);
-  for(unsigned int ihel1=0;ihel1<2;++ihel1)
-    {
-      for(unsigned int ihel2=0;ihel2<2;++ihel2)
-	{
-	  // compute the fermion current
-	  atemp=ain[ihel2].Wave();
-	  fcurrent=fin[ihel1].Wave().vectorCurrent(atemp);
-	  fdotp=-(fcurrent*(gout[0].getMomentum()));
-	  for(unsigned int ghel=0;ghel<2;++ghel)
-	    {
-	      // calculate the matrix element
-	      diag=A5*(fcurrent*gout[ghel].Wave()-fdotp*epsdot[ghel]/denom);
-	      // calculate the matrix element
-	      output+=real(diag*conj(diag));
-	      if(calc) _me(ihel1,ihel2,0,2*ghel)=diag;
-	    }
-	}
+  for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+    for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+      // compute the fermion current
+      atemp=ain[ihel2].Wave();
+      fcurrent=fin[ihel1].Wave().vectorCurrent(atemp);
+      fdotp=-(fcurrent*(gout[0].getMomentum()));
+      for(unsigned int ghel=0;ghel<2;++ghel) {
+	// calculate the matrix element
+	diag=A5*(fcurrent*gout[ghel].Wave()-fdotp*epsdot[ghel]/denom);
+	// calculate the matrix element
+	output+=real(diag*conj(diag));
+	if(calc) newme(ihel1,ihel2,0,2*ghel)=diag;
+      }
     }
+  }
   // test with glover form 
-//    Complex A(0.);
-//    Energy2 si(s-mh2);
-//    double test(0.);
-//    if(_massopt==0)
-//      {
-//        for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-// 	 {
-// 	   Energy2 mf2=sqr(getParticleData(ix)->mass());
-// 	   A+=mf2*(2.+2.*s/si*(B(s,mf2)-B(mh2,mf2))
-// 		   +(4.*mf2-u-t)/si*(s*C(s,mf2)-mh2*C(mh2,mf2)));
-// 	 }
-//        test = 4.*pow(SM().alphaS(et),3)*SM().alphaEM(mh2)/SM().sin2ThetaW()*
-// 	 (sqr(u)+sqr(t))/sqr(si)/s/sqr(mw)*real(A*conj(A));
-//      }
-//    else{test = 4.*pow(SM().alphaS(et),3)*SM().alphaEM(mh2)/SM().sin2ThetaW()*
-//        (sqr(u)+sqr(t))/s/sqr(mw)/9.;}
-//    cerr << "testing me " << output/test << endl;
   // final colour/spin factors
+  if(calc) _me.reset(newme);
   return output/9.;
 }
 
 double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
 			   vector<VectorWaveFunction> & gin,
 			   ScalarWaveFunction & hout, 
-			   vector<SpinorBarWaveFunction> & fout,bool calc) const
-{
+			   vector<SpinorBarWaveFunction> & fout,bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming fermion     (u    spinor)
@@ -441,23 +408,22 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   // 0 outgoing higgs       
   // 1 outgoing fermion     (ubar spinor)
   // me to be returned
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin0,PDT::Spin1Half));}
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1,
+				PDT::Spin0,PDT::Spin1Half);
   // get the kinematic invariants
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   Complex A5(0.);
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-    {
-      if(_massopt==0)
-	{
-	  Energy2 mf2=sqr(getParticleData(ix)->mass());
-	  A5+= mf2*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
-		    +(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
-	}
-      else
-	{A5+=2.*(u-mh2)/3.;}
-    }
+  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+      if(_massopt==0) {
+	Energy2 mf2=sqr(getParticleData(ix)->mass());
+	A5+= mf2*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
+		  +(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
+      }
+      else {
+	A5+=2.*(u-mh2)/3.;
+      }
+  }
   // multiply by the rest of the form factors
   double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
@@ -472,51 +438,30 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   Energy2 denom(pu*gin[0].getMomentum());
   LorentzSpinorBar atemp;
   double output(0.);
-  for(unsigned int ihel=0;ihel<2;++ihel)
-    {
-      for(unsigned int ohel=0;ohel<2;++ohel)
-	{
-	  // compute the fermion current
- 	  atemp=fout[ohel].Wave();
- 	  fcurrent=fin[ihel].Wave().vectorCurrent(atemp);
- 	  fdotp=fcurrent*gin[0].getMomentum();
- 	  for(unsigned int ghel=0;ghel<2;++ghel)
- 	    {
- 	      // calculate the matrix element
- 	      diag=A5*(fcurrent*gin[ghel].Wave()-fdotp*epsdot[ghel]/denom);
- 	      // calculate the matrix element
- 	      output+=real(diag*conj(diag));
- 	      if(calc) _me(ihel,2*ghel,0,ohel)=diag;
- 	    }
-	}
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    for(unsigned int ohel=0;ohel<2;++ohel) {
+      // compute the fermion current
+      atemp=fout[ohel].Wave();
+      fcurrent=fin[ihel].Wave().vectorCurrent(atemp);
+      fdotp=fcurrent*gin[0].getMomentum();
+      for(unsigned int ghel=0;ghel<2;++ghel) {
+	// calculate the matrix element
+	diag=A5*(fcurrent*gin[ghel].Wave()-fdotp*epsdot[ghel]/denom);
+	// calculate the matrix element
+	output+=real(diag*conj(diag));
+	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
+      }
     }
-  // test with glover form 
-//   double test(0.);
-//   if(_massopt==0)
-//     {
-//       Complex A(0.);
-//       Energy2 si(u-mh2);
-//       for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-// 	{
-// 	  Energy2 mf2=sqr(getParticleData(ix)->mass());
-// 	  A+=mf2*(2.+2.*u/si*(B(u,mf2)-B(mh2,mf2))
-// 		  +(4.*mf2-s-t)/si*(u*C(u,mf2)-mh2*C(mh2,mf2)));
-// 	}
-//       test =-4.*pow(SM().alphaS(et),3)*SM().alphaEM(mh2)/SM().sin2ThetaW()*
-// 	(sqr(s)+sqr(t))/sqr(si)/u/sqr(mw)*real(A*conj(A));
-//     }
-//   else{test =-4.*pow(SM().alphaS(et),3)*SM().alphaEM(mh2)/SM().sin2ThetaW()*
-//       (sqr(s)+sqr(t))/u/sqr(mw)/9.;}
-//   cerr << "testing me " << output/test << endl;
+  }
   // final colour/spin factors
+  if(calc) _me.reset(newme);
   return output/24.;
 }
 
 double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
 			      vector<VectorWaveFunction> & gin,
 			      ScalarWaveFunction & hout,
-			      vector<SpinorWaveFunction> & fout,bool calc) const
-{
+			      vector<SpinorWaveFunction> & fout,bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming antifermion (vbar spinor)       
@@ -525,22 +470,22 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   // 0 outgoing higgs
   // 1 outgoing antifermion (v    spinor)
   // me to be returned
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin0,PDT::Spin1Half));}
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1,
+				PDT::Spin0,PDT::Spin1Half);
   // get the kinematic invariants
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
   Complex A5(0.);
-  for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-    {
-      if(_massopt==0)
-	{
-	  Energy2 mf2=sqr(getParticleData(ix)->mass());
-	  A5+= mf2*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
-		    +(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
-	}
-      else{A5+=2.*(u-mh2)/3.;}
+  for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+    if(_massopt==0) {
+      Energy2 mf2=sqr(getParticleData(ix)->mass());
+      A5+= mf2*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
+		+(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
     }
+    else { 
+      A5+=2.*(u-mh2)/3.;
+    }
+  }
   // multiply by the rest of the form factors
   double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
@@ -555,43 +500,23 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   Energy2 denom(pu*gin[0].getMomentum());
   LorentzSpinorBar atemp;
   double output(0.);
-  for(unsigned int ihel=0;ihel<2;++ihel)
-    {
-      for(unsigned int ohel=0;ohel<2;++ohel)
-	{
-	  // compute the fermion current
- 	  atemp=fin[ihel].Wave();
-	  fcurrent=fout[ohel].Wave().vectorCurrent(atemp);
- 	  fdotp=fcurrent*(gin[0].getMomentum());
-	  for(unsigned int ghel=0;ghel<2;++ghel)
-	    {
-	      // calculate the matrix element
-	      diag=A5*(fcurrent*gin[ghel].Wave()-fdotp*epsdot[ghel]/denom);
- 	      // calculate the matrix element
- 	      output+=real(diag*conj(diag));
- 	      if(calc) _me(ihel,2*ghel,0,ohel)=diag;
- 	    }
-	}
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    for(unsigned int ohel=0;ohel<2;++ohel) {
+      // compute the fermion current
+      atemp=fin[ihel].Wave();
+      fcurrent=fout[ohel].Wave().vectorCurrent(atemp);
+      fdotp=fcurrent*(gin[0].getMomentum());
+      for(unsigned int ghel=0;ghel<2;++ghel) {
+	// calculate the matrix element
+	diag=A5*(fcurrent*gin[ghel].Wave()-fdotp*epsdot[ghel]/denom);
+	// calculate the matrix element
+	output+=real(diag*conj(diag));
+	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
+      }
     }
-  // test with glover form 
-//   double test(0.);
-//   if(_massopt==0)
-//     {
-//       Complex A(0.);
-//       Energy2 si(u-mh2);
-//       for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-// 	{
-// 	  Energy2 mf2=sqr(getParticleData(ix)->mass());
-// 	  A+=mf2*(2.+2.*u/si*(B(u,mf2)-B(mh2,mf2))
-// 		  +(4.*mf2-s-t)/si*(u*C(u,mf2)-mh2*C(mh2,mf2)));
-// 	}
-//       test =-4.*pow(SM().alphaS(et),3)*SM().alphaEM(mh2)/SM().sin2ThetaW()*
-// 	(sqr(s)+sqr(t))/sqr(si)/u/sqr(mw)*real(A*conj(A));
-//     }
-//   else{test =-4.*pow(SM().alphaS(et),3)*SM().alphaEM(mh2)/SM().sin2ThetaW()*
-//       (sqr(s)+sqr(t))/u/sqr(mw)/9.;}
-//   cerr << "testing me " << output/test << endl;
+  }
   // final colour/spin factors
+  if(calc) _me.reset(newme);
   return output/24.;
 }
 
@@ -637,8 +562,7 @@ MEPP2HiggsJet::colourGeometries(tcDiagPtr diag) const {
 
 double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunction> g2,
 			   ScalarWaveFunction & hout,     vector<VectorWaveFunction> g4,
-			   bool calc) const
-{
+			   bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 first  incoming gluon
@@ -647,67 +571,38 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
   // 0 outgoing higgs
   // 1 outgoing gluon
   // me to be returned
-   if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
-					      PDT::Spin0,PDT::Spin1));}
+  ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,
+				PDT::Spin0,PDT::Spin1);
    // get the kinematic invariants
    Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
    // calculate the loop functions
    Complex A4stu(0.),A2stu(0.),A2tsu(0.),A2ust(0.);
    Complex A5s(0.),A5t(0.),A5u(0.);
-   //Complex metemp[2][2][2]={0.,0.,0.,0.,0.,0.,0.,0.};
-   for(unsigned int ix=_minloop;ix<=_maxloop;++ix)
-     {
-       Energy2 mf2=sqr(getParticleData(ix)->mass());
-       // loop functions
-       if(_massopt==0)
-	 {
-	   A4stu+=A4(s,t,u,mf2);
-	   A2stu+=A2(s,t,u,mf2);
-	   A2tsu+=A2(u,s,t,mf2);
-	   A2ust+=A2(t,s,u,mf2);
-	   A5s+= mf2/s*(4.+4.*s/(u+t)*(W1(s,mf2)-W1(mh2,mf2))
-			+(1.-4.*mf2/(u+t))*(W2(s,mf2)-W2(mh2,mf2)));
-	   A5t+= mf2/t*(4.+4.*t/(s+u)*(W1(t,mf2)-W1(mh2,mf2))
-			+(1.-4.*mf2/(s+u))*(W2(t,mf2)-W2(mh2,mf2)));
-	   A5u+= mf2/u*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
-			+(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
-	 }
-       else
-	 {
-	   A4stu=-1./3.;
-	   A2stu=-sqr(s/mh2)/3.;
-	   A2tsu=-sqr(t/mh2)/3.;
-	   A2ust=-sqr(u/mh2)/3.;
-	   A5s+=2.*(s-mh2)/3./s;
-	   A5t+=2.*(t-mh2)/3./t;
-	   A5u+=2.*(u-mh2)/3./u;
-	 }
-//        _bi[1]=B(s,mf2);
-//        _bi[2]=B(u,mf2);
-//        _bi[3]=B(t,mf2);
-//        _bi[4]=B(mh2,mf2);
-//        _bi[1]=_bi[1]-_bi[4];
-//        _bi[2]=_bi[2]-_bi[4];
-//        _bi[3]=_bi[3]-_bi[4];
-//        _ci[1]=C(s,mf2);
-//        _ci[2]=C(u,mf2);
-//        _ci[3]=C(t,mf2);
-//        _ci[7]=C(mh2,mf2);
-//        _ci[4]=(s*_ci[1]-mh2*_ci[7])/(s-mh2);
-//        _ci[5]=(u*_ci[2]-mh2*_ci[7])/(u-mh2);
-//        _ci[6]=(t*_ci[3]-mh2*_ci[7])/(t-mh2);
-//        _di[1]=D(t,u,s,mf2);
-//        _di[2]=D(s,t,u,mf2);
-//        _di[3]=D(s,u,t,mf2);
-//        metemp[1][1][1]+=me1(s,u,t,mh2,mf2,1,2,3,4,5,6);
-//        metemp[1][1][0]+=me2(s,u,t,mh2,mf2);
-//        metemp[0][1][0]+=me1(u,s,t,mh2,mf2,2,1,3,5,4,6);
-//        metemp[0][1][1]+=me1(t,u,s,mh2,mf2,3,2,1,6,5,4);
+   for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
+     Energy2 mf2=sqr(getParticleData(ix)->mass());
+     // loop functions
+     if(_massopt==0) {
+       A4stu+=A4(s,t,u,mf2);
+       A2stu+=A2(s,t,u,mf2);
+       A2tsu+=A2(u,s,t,mf2);
+       A2ust+=A2(t,s,u,mf2);
+       A5s+= mf2/s*(4.+4.*s/(u+t)*(W1(s,mf2)-W1(mh2,mf2))
+		    +(1.-4.*mf2/(u+t))*(W2(s,mf2)-W2(mh2,mf2)));
+       A5t+= mf2/t*(4.+4.*t/(s+u)*(W1(t,mf2)-W1(mh2,mf2))
+		    +(1.-4.*mf2/(s+u))*(W2(t,mf2)-W2(mh2,mf2)));
+       A5u+= mf2/u*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
+		    +(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
      }
-//    metemp[0][0][0]=-metemp[1][1][1];
-//    metemp[0][0][1]=-metemp[1][1][0];
-//    metemp[1][0][1]=-metemp[0][1][0];
-//    metemp[1][0][0]=-metemp[0][1][1];
+     else {
+       A4stu=-1./3.;
+       A2stu=-sqr(s/mh2)/3.;
+       A2tsu=-sqr(t/mh2)/3.;
+       A2ust=-sqr(u/mh2)/3.;
+       A5s+=2.*(s-mh2)/3./s;
+       A5t+=2.*(t-mh2)/3./t;
+       A5u+=2.*(u-mh2)/3./u;
+     }
+   }
    Complex A3stu=0.5*(A2stu+A2ust+A2tsu-A4stu);
    // compute the dot products for the matrix element
    Complex eps[3][4][2];
@@ -754,88 +649,136 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    _diagwgt[0]=0.;
    _diagwgt[1]=0.;
    _diagwgt[2]=0.;
-   for(unsigned int ihel1=0;ihel1<2;++ihel1)
-     {
-       for(unsigned int ihel2=0;ihel2<2;++ihel2)
- 	{
- 	  for(unsigned int ohel=0;ohel<2;++ohel)
- 	    {
-	      wdot[0][1]=g1[ihel1].Wave()*g2[ihel2].Wave();
-	      wdot[0][2]=g1[ihel1].Wave()*g4[ohel ].Wave();
-	      wdot[1][0]=wdot[0][1];
-	      wdot[1][2]=g2[ihel2].Wave()*g4[ohel ].Wave();
-	      wdot[2][0]=wdot[0][2];
-	      wdot[2][1]=wdot[1][2];
-	      // last piece
-	      diag[3]=A3stu*(eps[0][2][ihel1]*eps[1][0][ihel2]*eps[2][1][ohel]-
-			     eps[0][1][ihel1]*eps[1][2][ihel2]*eps[2][0][ohel]+
-			     (eps[2][0][ohel ]-eps[2][1][ohel ])*wdot[0][1]/pdot[0][1]+
-			     (eps[1][2][ihel2]-eps[1][0][ihel2])*wdot[0][2]/pdot[0][2]+
-			     (eps[0][1][ihel1]-eps[0][2][ihel1])*wdot[1][2]/pdot[1][2]);
-	      // first piece
-	      diag[3]+=
-		+A2stu*(eps[0][1][ihel1]*eps[1][0][ihel2]-wdot[0][1]/pdot[0][1])*
-		(eps[2][0][ohel ]-eps[2][1][ohel ])
-		+A2ust*(eps[0][2][ihel1]*eps[2][0][ohel ]-wdot[0][2]/pdot[0][2])*
-		(eps[1][2][ihel2]-eps[1][0][ihel2])
-		+A2tsu*(eps[1][2][ihel2]*eps[2][1][ohel ]-wdot[1][2]/pdot[1][2])*
-		(eps[0][1][ihel1]-eps[0][2][ihel1]);
-	      // prefactors
-	      diag[3] *=pre;
-	      output+=real(diag[3]*conj(diag[3]));
-	      // matrix element if needed
-	      if(calc) _me(2*ihel1,2*ihel2,0,2*ohel)=diag[3];
-	      // different diagrams 
-	      diag[0] = A5t*(-eps[0][3][ihel1]*
-			     (-2.*eps[2][1][ohel ]*eps[1][0][ihel2]*pdot[2][1]*pdot[1][0]
-			      -2.*eps[1][2][ihel2]*eps[2][0][ohel ]*pdot[1][2]*pdot[2][0]
-			      +wdot[1][2]*(pdot[0][1]+pdot[0][2]))
-			     -2.*eps[2][1][ohel ]*pdot[2][1]*wdot[0][1]
-			     -2.*eps[1][2][ihel2]*pdot[1][2]*wdot[0][2]
-			     +wdot[1][2]*(eps[0][1][ihel1]*pdot[0][1]+
-					  eps[0][2][ihel1]*pdot[0][2]));
-	      diag[1] = A5u*(-eps[1][3][ihel2]*
-			     (+2.*eps[0][1][ihel1]*eps[2][0][ohel ]*pdot[0][1]*pdot[2][0]
-			      +2.*eps[0][2][ihel1]*eps[2][1][ohel ]*pdot[0][2]*pdot[2][1]
-			      -wdot[0][2]*(pdot[1][0]+pdot[1][2]))
-			     +2.*eps[2][0][ohel ]*pdot[2][0]*wdot[0][1]
-			     +2.*eps[0][2][ihel1]*pdot[0][2]*wdot[2][1]
-			     -wdot[0][2]*(eps[1][0][ihel2]*pdot[1][0]+
-					  eps[1][2][ihel2]*pdot[1][2]));
-	      diag[2] = A5s*(-eps[2][3][ohel ]*
-			     (+2.*eps[0][1][ihel1]*eps[1][2][ihel2]*pdot[0][1]*pdot[1][2]
-			      -2.*eps[1][0][ihel2]*eps[0][2][ihel1]*pdot[1][0]*pdot[1][3]
-			      +wdot[0][1]*(pdot[2][0]-pdot[2][1]))
-			     +2.*eps[0][1][ihel1]*pdot[0][1]*wdot[1][2]
-			     -2.*eps[1][0][ihel2]*pdot[1][0]*wdot[0][2]
-			     +wdot[0][1]*(eps[2][0][ohel]*pdot[2][0]-
-					  eps[2][1][ohel]*pdot[2][1]));
-	      _diagwgt[0]+=real(diag[0]*conj(diag[0]));
-	      _diagwgt[1]+=real(diag[1]*conj(diag[1]));
-	      _diagwgt[2]+=real(diag[2]*conj(diag[2]));
-	    }
-	}
+   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
+     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
+       for(unsigned int ohel=0;ohel<2;++ohel) {
+	 wdot[0][1]=g1[ihel1].Wave()*g2[ihel2].Wave();
+	 wdot[0][2]=g1[ihel1].Wave()*g4[ohel ].Wave();
+	 wdot[1][0]=wdot[0][1];
+	 wdot[1][2]=g2[ihel2].Wave()*g4[ohel ].Wave();
+	 wdot[2][0]=wdot[0][2];
+	 wdot[2][1]=wdot[1][2];
+	 // last piece
+	 diag[3]=A3stu*(eps[0][2][ihel1]*eps[1][0][ihel2]*eps[2][1][ohel]-
+			eps[0][1][ihel1]*eps[1][2][ihel2]*eps[2][0][ohel]+
+			(eps[2][0][ohel ]-eps[2][1][ohel ])*wdot[0][1]/pdot[0][1]+
+			(eps[1][2][ihel2]-eps[1][0][ihel2])*wdot[0][2]/pdot[0][2]+
+			(eps[0][1][ihel1]-eps[0][2][ihel1])*wdot[1][2]/pdot[1][2]);
+	 // first piece
+	 diag[3]+=
+	   +A2stu*(eps[0][1][ihel1]*eps[1][0][ihel2]-wdot[0][1]/pdot[0][1])*
+	   (eps[2][0][ohel ]-eps[2][1][ohel ])
+	   +A2ust*(eps[0][2][ihel1]*eps[2][0][ohel ]-wdot[0][2]/pdot[0][2])*
+	   (eps[1][2][ihel2]-eps[1][0][ihel2])
+	   +A2tsu*(eps[1][2][ihel2]*eps[2][1][ohel ]-wdot[1][2]/pdot[1][2])*
+	   (eps[0][1][ihel1]-eps[0][2][ihel1]);
+	 // prefactors
+	 diag[3] *=pre;
+	 output+=real(diag[3]*conj(diag[3]));
+	 // matrix element if needed
+	 if(calc) newme(2*ihel1,2*ihel2,0,2*ohel)=diag[3];
+	 // different diagrams 
+	 diag[0] = A5t*(-eps[0][3][ihel1]*
+			(-2.*eps[2][1][ohel ]*eps[1][0][ihel2]*pdot[2][1]*pdot[1][0]
+			 -2.*eps[1][2][ihel2]*eps[2][0][ohel ]*pdot[1][2]*pdot[2][0]
+			 +wdot[1][2]*(pdot[0][1]+pdot[0][2]))
+			-2.*eps[2][1][ohel ]*pdot[2][1]*wdot[0][1]
+			-2.*eps[1][2][ihel2]*pdot[1][2]*wdot[0][2]
+			+wdot[1][2]*(eps[0][1][ihel1]*pdot[0][1]+
+				     eps[0][2][ihel1]*pdot[0][2]));
+	 diag[1] = A5u*(-eps[1][3][ihel2]*
+			(+2.*eps[0][1][ihel1]*eps[2][0][ohel ]*pdot[0][1]*pdot[2][0]
+			 +2.*eps[0][2][ihel1]*eps[2][1][ohel ]*pdot[0][2]*pdot[2][1]
+			 -wdot[0][2]*(pdot[1][0]+pdot[1][2]))
+			+2.*eps[2][0][ohel ]*pdot[2][0]*wdot[0][1]
+			+2.*eps[0][2][ihel1]*pdot[0][2]*wdot[2][1]
+			-wdot[0][2]*(eps[1][0][ihel2]*pdot[1][0]+
+				     eps[1][2][ihel2]*pdot[1][2]));
+	 diag[2] = A5s*(-eps[2][3][ohel ]*
+			(+2.*eps[0][1][ihel1]*eps[1][2][ihel2]*pdot[0][1]*pdot[1][2]
+			 -2.*eps[1][0][ihel2]*eps[0][2][ihel1]*pdot[1][0]*pdot[1][3]
+			 +wdot[0][1]*(pdot[2][0]-pdot[2][1]))
+			+2.*eps[0][1][ihel1]*pdot[0][1]*wdot[1][2]
+			-2.*eps[1][0][ihel2]*pdot[1][0]*wdot[0][2]
+			+wdot[0][1]*(eps[2][0][ohel]*pdot[2][0]-
+				     eps[2][1][ohel]*pdot[2][1]));
+	 _diagwgt[0]+=real(diag[0]*conj(diag[0]));
+	 _diagwgt[1]+=real(diag[1]*conj(diag[1]));
+	 _diagwgt[2]+=real(diag[2]*conj(diag[2]));
+       }
      }
-   // test with glover form 
-//    double test;
-//    if(_massopt==0)
-//      {
-//        test = real(metemp[0][0][0]*conj(metemp[0][0][0])+
-// 		   metemp[0][0][1]*conj(metemp[0][0][1])+
-// 		   metemp[0][1][0]*conj(metemp[0][1][0])+
-// 		   metemp[0][1][1]*conj(metemp[0][1][1])+
-// 		   metemp[1][0][0]*conj(metemp[1][0][0])+
-// 		   metemp[1][0][1]*conj(metemp[1][0][1])+
-// 		   metemp[1][1][0]*conj(metemp[1][1][0])+
-// 		   metemp[1][1][1]*conj(metemp[1][1][1]));
-//        test *=SM().alphaEM(mh2)/SM().sin2ThetaW()*pow(SM().alphaS(et),3)*1.5/4./sqr(mw);
-//      }
-//    else
-//      {
-//        test=32.*SM().alphaEM(mh2)/SM().sin2ThetaW()*pow(SM().alphaS(et),3)/3.*
-// 	 (pow(s,4)+pow(t,4)+pow(u,4)+pow(mh2,4))/s/t/u/sqr(mw);
-//      }
-//    cerr << "testing matrix element " << test/output/24. << endl;
+   }
    // final colour and spin factors
+   if(calc){_me.reset(newme);}
    return 3.*output/32.;
+}
+
+void MEPP2HiggsJet::constructVertex(tSubProPtr sub)
+{
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);hard.push_back(sub->outgoing()[1]);
+  // ensure correct order or particles
+  if((hard[0]->id()==ParticleID::g&&hard[1]->id()!=ParticleID::g)|| 
+     (hard[0]->id()<0&&hard[1]->id()<6)) swap(hard[0],hard[1]);
+  if(hard[2]->id()!=ParticleID::h0) swap(hard[2],hard[3]);
+  // different processes
+  // g g to H g
+  if(hard[0]->id()==ParticleID::g) {
+    vector<VectorWaveFunction> g1,g2,g4;
+    VectorWaveFunction(g1,hard[0],incoming,false,true,true);
+    VectorWaveFunction(g2,hard[1],incoming,false,true,true);
+    VectorWaveFunction(g4,hard[3],outgoing,true ,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    g1[1]=g1[2];g2[1]=g2[2];g4[1]=g4[2];
+    ggME(g1,g2,hout,g4,true);
+  }
+  // qg -> H q
+  else if(hard[0]->id()>0&&hard[1]->id()==ParticleID::g) {
+    vector<VectorWaveFunction> g2;
+    vector<SpinorWaveFunction> qin;
+    vector<SpinorBarWaveFunction> qout;
+    SpinorWaveFunction(    qin,hard[0],incoming,false,true);
+    VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
+    SpinorBarWaveFunction(qout,hard[3],outgoing,true ,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    g2[1]=g2[2];
+    qgME(qin,g2,hout,qout,true); 
+  }
+  // qbar g -> H q
+  else if(hard[0]->id()<0&&hard[1]->id()==ParticleID::g) {
+    vector<VectorWaveFunction> g2;
+    vector<SpinorBarWaveFunction> qin;
+    vector<SpinorWaveFunction> qout;
+    SpinorBarWaveFunction( qin,hard[0],incoming,false,true);
+    VectorWaveFunction(     g2,hard[1],incoming,false,true,true);
+    SpinorWaveFunction(   qout,hard[3],outgoing,true ,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    g2[1]=g2[2];
+    qbargME(qin,g2,hout,qout,true); 
+  }
+  // q qbar to H g
+  else if(hard[0]->id()==-hard[1]->id()) {
+    vector<SpinorBarWaveFunction> qbar;
+    vector<SpinorWaveFunction> q;
+    vector<VectorWaveFunction> g4;
+    SpinorWaveFunction(    q  ,hard[0],incoming,false,true);
+    SpinorBarWaveFunction(qbar,hard[1],incoming,false,true);
+    VectorWaveFunction(     g4,hard[3],outgoing,true ,true,true);
+    ScalarWaveFunction hout(hard[2],outgoing,true,true);
+    g4[1]=g4[2];
+    qqbarME(q,qbar,hout,g4,true); 
+  }
+  else throw Exception() << "Unknown subprocess in MEPP2HiggsJet::constructVertex()" 
+			 << Exception::runerror;
+  // construct the vertex
+  HardVertexPtr hardvertex=new_ptr(HardVertex());
+  // set the matrix element for the vertex
+  hardvertex->ME(_me);
+  // set the pointers and to and from the vertex
+  for(unsigned int ix=0;ix<4;++ix) {
+    dynamic_ptr_cast<ThePEG::Helicity::SpinfoPtr>(hard[ix]->spinInfo())->
+      setProductionVertex(hardvertex);
+  }
 }

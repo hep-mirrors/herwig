@@ -10,24 +10,33 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanMECorrection.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Shower/Evolver.h"
 
 using namespace Herwig;
 
-DrellYanMECorrection::~DrellYanMECorrection() {}
+void DrellYanMECorrection::doinit() throw(InitException) {
+  MECorrectionBase::doinit();
+  _channelweights.push_back(_channelwgtA/(1.+_channelwgtA));
+  _channelweights.push_back(_channelweights[0]+1./(1.+_channelwgtA)/(1+_channelwgtB));
+  _channelweights.push_back(1.0);
+}
+
+void DrellYanMECorrection::dofinish() {
+  MECorrectionBase::dofinish();
+  if(_nover==0) return;
+  generator()->log() << "DrellYanMECorrection when applying the hard correction " 
+		     << _nover << " weights larger than one were generated of which"
+		     << " the largest was " << _maxwgt << "\n";
+}
 
 void DrellYanMECorrection::persistentOutput(PersistentOStream & os) const {
-  os << _channelwgt << _channelweights;
+  os << _channelwgtA << _channelwgtB << _channelweights;
 }
 
 void DrellYanMECorrection::persistentInput(PersistentIStream & is, int) {
-  is >> _channelwgt >> _channelweights;
+  is >> _channelwgtA >> _channelwgtB >> _channelweights;
 }
 
 ClassDescription<DrellYanMECorrection> DrellYanMECorrection::initDrellYanMECorrection;
@@ -42,20 +51,30 @@ void DrellYanMECorrection::Init() {
      "should not affect the results only the efficiency and fraction"
      " of events with weight > 1.");
 
-  static Parameter<DrellYanMECorrection,double> interfaceChannelWeight
-    ("ChannelWeight",
+  static Parameter<DrellYanMECorrection,double> interfaceQQbarChannelWeight
+    ("QQbarChannelWeight",
      "The relative weights of the q qbar abd q g channels for selection."
      " This is a technical parameter for the phase-space generation and "
      "should not affect the results only the efficiency and fraction"
      " of events with weight > 1.",
-     &DrellYanMECorrection::_channelwgt, 0.1, 0.01, 100.,
+     &DrellYanMECorrection::_channelwgtA, 0.12, 0.01, 100.,
+     false, false, Interface::limited);
+
+  static Parameter<DrellYanMECorrection,double> interfaceQGChannelWeight
+    ("QGChannelWeight",
+     "The relative weights of the qg abd qbar g channels for selection."
+     " This is a technical parameter for the phase-space generation and "
+     "should not affect the results only the efficiency and fraction",
+     &DrellYanMECorrection::_channelwgtB, 2., 0.01, 100.,
      false, false, Interface::limited);
 
 }
 
-bool DrellYanMECorrection::canHandle(ShowerTreePtr tree)
+bool DrellYanMECorrection::canHandle(ShowerTreePtr tree,EvolverPtr evolver)
 {
-   // two incoming particles
+  // check on type of radiation
+  if(!evolver->isISRadiationON()) return false;
+  // two incoming particles
   if(tree->incomingLines().size()!=2) return false;
   // should be a quark and an antiquark
   unsigned int ix(0);
@@ -129,8 +148,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
       Lorentz5Momentum pquark(pnew[0]),panti(pnew[1]),pgluon(pnew[2]);
       if(iemit==2) swap(pquark,panti);
       // ensure gluon can be put on shell
-      if (pgluon.e() < showerVariables()->globalParameters()->effectiveGluonMass()&&
-	  !showerVariables()->globalParameters()->isThePEGStringFragmentationON())
+      if (pgluon.e() < getParticleData(ParticleID::g)->constituentMass())
 	return;
       // create the new gluon
       PPtr newg= getParticleData(ParticleID::g)->produceParticle(pgluon);
@@ -385,13 +403,17 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   else if(id[0]<0&&br.ids[0]==-id[0])
     wgt=_mb2/(shat+uhat)*(sqr(_mb2-uhat)+sqr(_mb2-that))/(sqr(shat)+sqr(shat+uhat));
   else return false;
-  if(wgt<.0||wgt>1.) cerr << "soft weight " << wgt << endl;
+  if(wgt<.0||wgt>1.) generator()->log() << "Soft ME correction weight too large or "
+					<< "negative in DrellYanMECorrection::"
+					<< "softMatrixElementVeto()soft weight " 
+					<< " sbar = " << shat/_mb2 
+					<< " tbar = " << that/_mb2 
+					<< "weight = " << wgt << "\n";
   // if not vetoed
-  if(UseRandom::rndbool(wgt))
-    {
-      initial->pT(pT);
-      return false;
-    }
+  if(UseRandom::rndbool(wgt)) {
+    initial->pT(pT);
+    return false;
+  }
   // otherwise
   parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->qtilde());
   return true;
@@ -545,8 +567,10 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
   // if me correction should be applied
   if(weight>1.)
     {
+      ++_nover;
+      _maxwgt=max(_maxwgt,weight);
       cerr << "testing weight greater than 1 " 
-	   << shat/_mb2 << " " << that/_mb2 << " " << weight << "\n";
+	   << shat/_mb2 << " " << that/_mb2 << " " << weight << " " << itype << "\n";
       weight=1.;
     }
   if(UseRandom::rnd()>weight) return false;

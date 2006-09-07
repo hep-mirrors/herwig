@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/PDT/Decayer.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include "WeakPartonicDecayer.fh"
 
 namespace Herwig {
@@ -144,11 +143,6 @@ private:
    *  The code for the matrix element being used.
    */
   int MECode;
-
-  /**
-   * This is a pointer to a Herwig::GlobalParameters object for gluon mass
-   */
-  Ptr<GlobalParameters>::pointer _globalParameters;
 };
 
 }

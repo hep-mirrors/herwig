@@ -168,7 +168,7 @@ void Evolver::hardMatrixElementCorrection()
   // see if there is an appropraite matrix element correction
   for(unsigned int ix=0;ix<_mecorrections.size();++ix)
     {
-      if(!_mecorrections[ix]->canHandle(_currenttree)) continue;
+      if(!_mecorrections[ix]->canHandle(_currenttree,this)) continue;
       if(_currentme)
 	{
 	  ostringstream output;

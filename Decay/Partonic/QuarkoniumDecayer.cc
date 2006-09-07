@@ -23,6 +23,7 @@
 #include <ThePEG/Handlers/Hint.h>
 #include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/Handlers/EventHandler.h>
+#include <cassert>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -34,12 +35,7 @@ void QuarkoniumDecayer::Init() {
    static Parameter<QuarkoniumDecayer, int>
       interfaceME("MECode", "The code for the ME type to use in the decay",
                   &Herwig::QuarkoniumDecayer::MECode, 0, 0, 0, true, false, false);
-   
-   static Reference<QuarkoniumDecayer, GlobalParameters>
-     interfaceGlobal("GlobalParameters", 
-		     "The class that has the info of the effectiveGluonMass",
-		     &Herwig::QuarkoniumDecayer::global, 0, 0, 0, true, false,
-		     false);
+
 }
 
 ClassDescription<QuarkoniumDecayer> QuarkoniumDecayer::initQuarkoniumDecayer;
@@ -61,10 +57,10 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
    }
 
    ParticleVector partons = dm.produceProducts();
+   assert(partons.size()<=4);
    Lorentz5Momentum products[4]; // Shouldn't be any bigger!
-   Energy gluMass = 0.750*GeV;
-   if(!global) {}//cout << "Global is null!\n";
-   else gluMass = global->effectiveGluonMass();
+
+   Energy gluMass = getParticleData(ParticleID::g)->constituentMass();
    for(unsigned int i = 0; i<partons.size(); i++) {
      if(partons[i]->id() == ParticleID::g)
        products[i].setMass(gluMass);
@@ -145,11 +141,11 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
 }
    
 void QuarkoniumDecayer::persistentOutput(PersistentOStream &os) const { 
-  os << MECode << global; 
+  os << MECode;
 }
 
 void QuarkoniumDecayer::persistentInput(PersistentIStream &is, int i) { 
-  is >> MECode >> global; 
+  is >> MECode;
 }
 
 

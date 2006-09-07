@@ -114,57 +114,71 @@ double MRST::pdfValue(double x, double q2, tcPDPtr particle, tcPDPtr parton, boo
   bool anti = particle->id() < 0;
   bool neutron = abs(particle->id()) == ParticleID::n0;
 
+  double output(0.);
   if (valenceOnly) {
     switch(parton->id()) {
     case ParticleID::u:
-      return (neutron? 
+      output= (neutron? 
 	      (anti? 0.0: lookup(dnValence,n,m,u,t)): 
 	      (anti? 0.0: lookup(upValence,n,m,u,t)));
+      break;
     case ParticleID::ubar:
-      return (neutron? 
+      output= (neutron? 
 	      (anti? lookup(dnValence,n,m,u,t): 0.0): 
 	      (anti? lookup(upValence,n,m,u,t): 0.0));
+      break;
     case ParticleID::d:
-      return (neutron? 
+      output= (neutron? 
 	      (anti? 0.0: lookup(upValence,n,m,u,t)): 
 	      (anti? 0.0: lookup(dnValence,n,m,u,t)));
+      break;
     case ParticleID::dbar:
-      return (neutron? 
+      output= (neutron? 
 	      (anti? lookup(upValence,n,m,u,t): 0.0): 
 	      (anti? lookup(dnValence,n,m,u,t): 0.0));
+      break;
     }
   } else {
     switch(parton->id()) {
     case ParticleID::b:
     case ParticleID::bbar:
-      return lookup(bot,n,m,u,t);
+      output= lookup(bot,n,m,u,t);
+      break;
     case ParticleID::c:
     case ParticleID::cbar:
-      return lookup(chm,n,m,u,t);
+      output= lookup(chm,n,m,u,t);
+      break;
     case ParticleID::s:
     case ParticleID::sbar:
-      return lookup(str,n,m,u,t);
+      output= lookup(str,n,m,u,t);
+      break;
     case ParticleID::u:
-      return (neutron? 
+      output= (neutron? 
 	      (lookup(dnSea,n,m,u,t) + (anti? 0.0: lookup(dnValence,n,m,u,t))) :
 	      (lookup(upSea,n,m,u,t) + (anti? 0.0: lookup(upValence,n,m,u,t))));
+      break;
     case ParticleID::ubar:
-      return (neutron? 
+      output= (neutron? 
 	      (lookup(dnSea,n,m,u,t) + (anti? lookup(dnValence,n,m,u,t): 0.0)) :
 	      (lookup(upSea,n,m,u,t) + (anti? lookup(upValence,n,m,u,t): 0.0)));
+      break;
     case ParticleID::d:
-      return (neutron? 
+      output= (neutron? 
 	      (lookup(upSea,n,m,u,t) + (anti? 0.0: lookup(upValence,n,m,u,t))) :
 	      (lookup(dnSea,n,m,u,t) + (anti? 0.0: lookup(dnValence,n,m,u,t))));
+      break;
     case ParticleID::dbar:
-      return (neutron? 
+      output= (neutron? 
 	      (lookup(upSea,n,m,u,t) + (anti? lookup(upValence,n,m,u,t): 0.0)) :
 	      (lookup(dnSea,n,m,u,t) + (anti? lookup(dnValence,n,m,u,t): 0.0)));
+      break;
     case ParticleID::g:
-      return lookup(glu,n,m,u,t);
+      output= lookup(glu,n,m,u,t);
+      break;
     }
   }
-  return 0.0;
+  output = max(output,0.);
+  return output;
 }
 
 void MRST::persistentOutput(PersistentOStream &out) const {
@@ -279,7 +293,7 @@ void MRST::readSetup(istream &is) throw(SetupException) {
 }
 
 void MRST::initialize(bool reread) {
-  int i,n,m,k,l,j; // counters
+  //  int i,n,m,k,l,j; // counters
   double dx,dq,dtemp;
   int wt[][16] = {{ 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		  { 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
@@ -306,8 +320,8 @@ void MRST::initialize(bool reread) {
 
   // Set xx and qq to the logs of their values. Makes entering below easier
   if(xx[1] == 1E-5) {
-    for(n=1; n<=nx; n++) xx[n] = log10(xx[n]);
-    for(n=1; n<=nq; n++) qq[n] = log10(qq[n]);
+    for(int n=1; n<=nx; n++) xx[n] = log10(xx[n]);
+    for(int n=1; n<=nq; n++) qq[n] = log10(qq[n]);
   }
 
   if(reread) {
@@ -352,15 +366,15 @@ void MRST::initialize(bool reread) {
   }
 
   // Now calculate the derivatives used for bicubic interpolation
-  for (i=1;i<=np;i++) {
+  for (int i=1;i<=np;i++) {
     // Start by calculating the first x derivatives
     // along the first x value
     dx=xx[2]-xx[1];
-    for (m=1;m<=nq;m++)
+    for (int m=1;m<=nq;m++)
       f1[i][1][m]=(data[i][2][m]-data[i][1][m])/dx;
     // The along the rest (up to the last)
-    for (k=2;k<nx;k++) {
-      for (m=1;m<=nq;m++) {
+    for (int k=2;k<nx;k++) {
+      for (int m=1;m<=nq;m++) {
 	f1[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
 				  data[i][k-1][m],
 				  data[i][k][m],
@@ -369,7 +383,7 @@ void MRST::initialize(bool reread) {
     }
     // Then for the last column
     dx=xx[nx]-xx[nx-1];
-    for (m=1;m<=nq;m++)
+    for (int m=1;m<=nq;m++)
       f1[i][nx][m]=(data[i][nx][m]-data[i][nx-1][m])/dx;
     
 
@@ -377,11 +391,11 @@ void MRST::initialize(bool reread) {
       // then calculate the qq derivatives
       // Along the first qq value
       dq=qq[2]-qq[1];
-      for (k=1;k<=nx;k++)
+      for (int k=1;k<=nx;k++)
 	f2[i][k][1]=(data[i][k][2]-data[i][k][1])/dq;
       // The rest up to the last qq value
-      for (m=2;m<nq;m++) {
-	for (k=1;k<=nx;k++)
+      for (int m=2;m<nq;m++) {
+	for (int k=1;k<=nx;k++)
 	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
 				    data[i][k][m-1],
 				    data[i][k][m],
@@ -389,7 +403,7 @@ void MRST::initialize(bool reread) {
       }
       // then for the last row
       dq=qq[nq]-qq[nq-1];
-      for (k=1;k<=nx;k++)
+      for (int k=1;k<=nx;k++)
 	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
       // Now, calculate the cross derivatives.
@@ -399,35 +413,35 @@ void MRST::initialize(bool reread) {
       // Start by calculating the first x derivatives
       // along the first x value
       dx=xx[2]-xx[1];
-      for (m=1;m<=nq;m++)
+      for (int m=1;m<=nq;m++)
 	f12[i][1][m]=(f2[i][2][m]-f2[i][1][m])/dx;
       // The along the rest (up to the last)
-      for (k=2;k<nx;k++) {
-	for (m=1;m<=nq;m++)
+      for (int k=2;k<nx;k++) {
+	for (int m=1;m<=nq;m++)
 	  f12[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
 				     f2[i][k-1][m],f2[i][k][m],f2[i][k+1][m]);
       }
       // Then for the last column
       dx=xx[nx]-xx[nx-1];
-      for (m=1;m<=nq;m++)
+      for (int m=1;m<=nq;m++)
 	f12[i][nx][m]=(f2[i][nx][m]-f2[i][nx-1][m])/dx;
     }
     
     if (i==5) {
       // zero all elements below the charm threshold
-      for (m=1;m<=nqc0;m++) 
-	for (k=1;k<=nx;k++)
+      for (int m=1;m<nqc0;m++) 
+	for (int k=1;k<=nx;k++)
 	  f2[i][k][m]=0.0; 
 
-      // then calculate the qq derivatives
-      // Along the first qq value above the threshold
+      // then calculate the qq derivatives 
+      // Along the first qq value above the threshold (m=ncq0)
       dq=qq[nqc0+1]-qq[nqc0];
-      for (k=1;k<=nx;k++)
-	f2[i][k][m]=(data[i][k][m+1]-data[i][k][m])/dq;
+      for (int k=1;k<=nx;k++)
+	f2[i][k][nqc0]=(data[i][k][nqc0+1]-data[i][k][nqc0])/dq;
 
       // The rest up to the last qq value
-      for (m=nqc0+1;m<nq;m++) {
-	for (k=1;k<=nx;k++)
+      for (int m=nqc0+1;m<nq;m++) {
+	for (int k=1;k<=nx;k++)
 	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
 				    data[i][k][m-1],
 				    data[i][k][m],
@@ -435,7 +449,7 @@ void MRST::initialize(bool reread) {
       }
       // then for the last row
       dq=qq[nq]-qq[nq-1];
-      for (k=1;k<=nx;k++)
+      for (int k=1;k<=nx;k++)
 	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
       // Now, calculate the cross derivatives.
@@ -443,35 +457,35 @@ void MRST::initialize(bool reread) {
       // ?? Could be improved by taking the average between dxdy and dydx ??
 
       dx=xx[2]-xx[1];
-      for (m=1;m<=nq;m++)
+      for (int m=1;m<=nq;m++)
 	f12[i][1][m]=(f2[i][2][m]-f2[i][1][m])/dx;
       // The along the rest (up to the last)
-      for (k=2;k<nx;k++) {
-	for (m=1;m<=nq;m++)
+      for (int k=2;k<nx;k++) {
+	for (int m=1;m<=nq;m++)
 	  f12[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
 				     f2[i][k-1][m],f2[i][k][m],f2[i][k+1][m]);
       }
       // Then for the last column
       dx=xx[nx]-xx[nx-1];
-      for (m=1;m<=nq;m++)
+      for (int m=1;m<=nq;m++)
 	f12[i][nx][m]=(f2[i][nx][m]-f2[i][nx-1][m])/dx;
     }
 
     if (i==7) {
       // zero all elements below the bottom threshold
-      for (m=1;m<=nqb0;m++) 
-	for (k=1;k<=nx;k++)
+      for (int m=1;m<nqb0;m++) 
+	for (int k=1;k<=nx;k++)
 	  f2[i][k][m]=0.0; 
 
       // then calculate the qq derivatives
-      // Along the first qq value above the threshold
+      // Along the first qq value above the threshold (m=nqb0)
       dq=qq[nqb0+1]-qq[nqb0];
-      for (k=1;k<=nx;k++)
-	f2[i][k][m]=(data[i][k][m+1]-data[i][k][m])/dq;
+      for (int k=1;k<=nx;k++)
+	f2[i][k][nqb0]=(data[i][k][nqb0+1]-data[i][k][nqb0])/dq;
 
       // The rest up to the last qq value
-      for (m=nqb0+1;m<nq;m++) {
-	for (k=1;k<=nx;k++)
+      for (int m=nqb0+1;m<nq;m++) {
+	for (int k=1;k<=nx;k++)
 	  f2[i][k][m]=polderivative(qq[m-1],qq[m],qq[m+1],
 				    data[i][k][m-1],
 				    data[i][k][m],
@@ -479,7 +493,7 @@ void MRST::initialize(bool reread) {
       }
       // then for the last row
       dq=qq[nq]-qq[nq-1];
-      for (k=1;k<=nx;k++)
+      for (int k=1;k<=nx;k++)
 	f2[i][k][nq]=(data[i][k][nq]-data[i][k][nq-1])/dq;
       
       // Now, calculate the cross derivatives.
@@ -487,24 +501,24 @@ void MRST::initialize(bool reread) {
       // ?? Could be improved by taking the average between dxdy and dydx ??
 
       dx=xx[2]-xx[1];
-      for (m=1;m<=nq;m++)
+      for (int m=1;m<=nq;m++)
 	f12[i][1][m]=(f2[i][2][m]-f2[i][1][m])/dx;
       // The along the rest (up to the last)
-      for (k=2;k<nx;k++) {
-	for (m=1;m<=nq;m++)
+      for (int k=2;k<nx;k++) {
+	for (int m=1;m<=nq;m++)
 	  f12[i][k][m]=polderivative(xx[k-1],xx[k],xx[k+1],
 				     f2[i][k-1][m],f2[i][k][m],f2[i][k+1][m]);
       }
       // Then for the last column
       dx=xx[nx]-xx[nx-1];
-      for (m=1;m<=nq;m++)
+      for (int m=1;m<=nq;m++)
 	f12[i][nx][m]=(f2[i][nx][m]-f2[i][nx-1][m])/dx;
     }
 	
 	
     // Now calculate the coefficients c_ij
-    for(n=1;n<=nx-1;n++) {
-      for(m=1;m<=nq-1;m++) {
+    for(int n=1;n<=nx-1;n++) {
+      for(int m=1;m<=nq-1;m++) {
 	d1=xx[n+1]-xx[n];
 	d2=qq[m+1]-qq[m];
 	d1d2=d1*d2;
@@ -530,22 +544,22 @@ void MRST::initialize(bool reread) {
 	y12[3]=f12[i][n+1][m+1];
 	y12[4]=f12[i][n][m+1];
 	
-	for (k=1;k<=4;k++) {
+	for (int k=1;k<=4;k++) {
 	  x[k-1]=y[k];
 	  x[k+3]=y1[k]*d1;
 	  x[k+7]=y2[k]*d2;
 	  x[k+11]=y12[k]*d1d2;
 	}
 	
-	for (l=0;l<=15;l++) {
+	for (int l=0;l<=15;l++) {
 	  xxd=0.0;
-	  for (k=0;k<=15;k++) xxd+= wt[l][k]*x[k];
+	  for (int k=0;k<=15;k++) xxd+= wt[l][k]*x[k];
 	  cl[l]=xxd;
 	}
 	
-	l=0;
-	for (k=1;k<=4;k++) 
-	  for (j=1;j<=4;j++) c[i][n][m][k][j]=cl[l++];
+	int l=0;
+	for (int k=1;k<=4;k++) 
+	  for (int j=1;j<=4;j++) c[i][n][m][k][j]=cl[l++];
       } //m
     } //n
   } // i

@@ -24,8 +24,6 @@ extern "C" int isnan(double) throw();
 
 using namespace Herwig;
 
-FFDipole::~FFDipole() {}
-
 void FFDipole::persistentOutput(PersistentOStream & os) const {
   os << _emin << _eminrest << _eminlab << _nphotonmax << _maxwgt
      << _mode << _maxtry << _energyopt << _betaopt << _dipoleopt;
@@ -179,7 +177,8 @@ void FFDipole::Init() {
 
 }
 
-ParticleVector FFDipole::generatePhotons(const Particle & p,ParticleVector children)
+ParticleVector FFDipole::generatePhotons(const Particle & p,
+					 ParticleVector children)
 {
   // set parameters which won't change in the event loop
   // masses of the particles

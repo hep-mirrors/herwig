@@ -2,13 +2,9 @@
 mkdir /Defaults
 mkdir /Defaults/Matchers
 mkdir /Defaults/Particles
-mkdir /Defaults/MatrixElements
 mkdir /Defaults/Partons
 mkdir /Defaults/Handlers
 mkdir /Defaults/Generators
-mkdir /Defaults/Handlers/Shower
-mkdir /Defaults/Handlers/Hadronization/Cluster
-mkdir /Defaults/Handlers/UnderlyingEvent
 
 # uncomment if required
 read ThePEGParticles.in
@@ -43,14 +39,10 @@ read MatrixElements.in
 
 # Create here the Herwig++ specific stuff
 cd /Defaults
-# create the global parameters
-create Herwig++::GlobalParameters theGlobalParameters GlobalParameters.so
 # create the shower stuff
 read Shower.in
 # create the hadronization stuff
 read Hadronization.in
-# create the underlying event stuff
-read UnderlyingEvent.in 
 # create the decays and decay handler
 read Decays.in
 # create the PDFs
@@ -93,7 +85,6 @@ set LHCHandler:BeamB /Defaults/Particles/p+
 set LHCHandler:Sampler /Defaults/ACDCSampler
 set LHCHandler:BinStrategy 2
 set LHCHandler:CascadeHandler /Defaults/Handlers/Shower/stdShowerHandler
-insert LHCHandler:PostHadronizationHandlers 0 /Defaults/Handlers/UnderlyingEvent/theUA5
 set LHCHandler:HadronizationHandler /Defaults/Handlers/Hadronization/Cluster/stdCluHadHandler
 set LHCHandler:DecayHandler /Defaults/Handlers/DecayHandler
 # uncomment to get QED radiation off W/Z decay products in hard process

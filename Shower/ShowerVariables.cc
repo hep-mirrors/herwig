@@ -35,7 +35,7 @@ ShowerVariables::ShowerVariables() :
   _initialenhance(1.),_finalenhance(1.),
   _finalFinalConditions(0),
   _initialFinalDecayConditions(0),
-  _useMEForT2(false)
+  _useMEForT2(true)
 {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
@@ -74,6 +74,8 @@ ShowerVariables::ShowerVariables() :
   _inputparticlesDecayInShower.push_back( 35      ); //  H0
   _inputparticlesDecayInShower.push_back( 36      ); //  A0
   _inputparticlesDecayInShower.push_back( 37      ); //  H+
+  _inputparticlesDecayInShower.push_back( 23      ); // Z0
+  _inputparticlesDecayInShower.push_back( 24      ); // W+/-
 }
 
 void ShowerVariables::persistentOutput(PersistentOStream & os) const {
@@ -84,7 +86,6 @@ void ShowerVariables::persistentOutput(PersistentOStream & os) const {
      << _meCorrMode
      << _inputparticlesDecayInShower
      << _particlesDecayInShower << _a << _b << _c
-     << _globalParameters
      << _finalFinalConditions
      << _initialFinalDecayConditions << _useMEForT2;
 }
@@ -97,7 +98,6 @@ void ShowerVariables::persistentInput(PersistentIStream & is, int) {
      >> _meCorrMode
      >> _inputparticlesDecayInShower
      >> _particlesDecayInShower >> _a >> _b >> _c
-     >> _globalParameters
      >> _finalFinalConditions
      >> _initialFinalDecayConditions >> _useMEForT2;
 }
@@ -164,12 +164,6 @@ void ShowerVariables::Init() {
      &ShowerVariables::_c, GeV, 0.3*GeV, 0.1*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-
-  static Reference<ShowerVariables,GlobalParameters> interfaceGlobalParameters
-    ("GlobalParameters",
-     "Pointer to the GlobalParameters object",
-     &ShowerVariables::_globalParameters, false, false, true, false, false);
-
   static ParVector<ShowerVariables,long> interfaceDecayInShower
     ("DecayInShower",
      "PDG codes of the particles to be decayed in the shower",
@@ -226,7 +220,7 @@ void ShowerVariables::Init() {
     ("UseMEForT2",
      "Use the matrix element correction, if available to fill the T2"
      " region for the decay shower and don't fill using the shower",
-     &ShowerVariables::_useMEForT2, false, false, false);
+     &ShowerVariables::_useMEForT2, true, false, false);
   static SwitchOption interfaceUseMEForT2Shower
     (interfaceUseMEForT2,
      "Shower",

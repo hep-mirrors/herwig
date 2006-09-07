@@ -9,7 +9,6 @@
 #include "SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "SplittingFunction.h"
 #include "Herwig++/Shower/Couplings/ShowerIndex.h"

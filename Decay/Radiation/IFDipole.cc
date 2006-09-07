@@ -41,8 +41,6 @@ extern "C" int isnan(double) throw();
 
 using namespace Herwig;
 
-IFDipole::~IFDipole() {}
-
 void IFDipole::persistentOutput(PersistentOStream & os) const {
   os << _alpha << _emin   << _nphotonmax << _maxwgt
      << _mode  << _maxtry << _energyopt  << _betaopt;

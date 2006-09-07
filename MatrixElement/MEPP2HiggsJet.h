@@ -12,6 +12,7 @@
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
 #include "MEPP2HiggsJet.fh"
 
 namespace Herwig {
@@ -28,15 +29,10 @@ class MEPP2HiggsJet: public ME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEPP2HiggsJet();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -100,6 +96,11 @@ public:
    * @return true if the generation succeeded, otherwise false.
    */
   virtual bool generateKinematics(const double * r);
+
+  /**
+   *  Construct the vertex of spin correlations.
+   */
+  virtual void constructVertex(tSubProPtr);
   //@}
 
 public:
@@ -235,37 +236,6 @@ private:
   inline Complex W3(Energy2 s, Energy2 t, Energy2 u, Energy2 v, Energy2 mf2) const;
 
   /**
-   *  The \f$B(s)\f$ function of NBP339 (1990) 38-66
-   * @param s The scale
-   * @param mf2 The fermion mass squared.
-   */
-  inline Complex B(Energy2 s,Energy2 mf2) const;
-
-  /**
-   *  The \f$C(s)\f$ function of NBP339 (1990) 38-66
-   * @param s The scale
-   * @param mf2 The fermion mass squared.
-   */
-  inline Complex C(Energy2 s,Energy2 mf2) const;
-  /**
-   *  The \f$C(s)\f$ function of NBP339 (1990) 38-66
-   * @param s The \f$s\f$ invariant
-   * @param t The \f$t\f$ invariant
-   * @param u The \f$u\f$ invariant
-   * @param mf2 The fermion mass squared
-   */
-  inline Complex D(Energy2 s,Energy2 t, Energy2 u,Energy2 mf2) const;
-
-  /**
-   * The integral \f$\int\frac{dy}{y-y_0}\log(a-i\epsilon-b y(1-y))\f$
-   * from NBP339 (1990) 38-66.
-   * @param a  The parameter \f$a\f$.
-   * @param b  The parameter \f$b\f$.
-   * @param y0 The parameter \f$y_0\f$.
-   */
-  inline Complex dIntegral(double a, double b, double y0) const;
-
-  /**
    * The \f$I_3(s,t,u,v)\f$ function of NPB297 (1988) 221-243.
    * @param s The \f$s\f$ invariant
    * @param t The \f$t\f$ invariant
@@ -310,34 +280,6 @@ private:
    * @param mf2 The fermion mass squared.
    */
   inline Complex A4(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const;
-
-  /**
-   *  The \f$M_{+++}\f$ matrix element of NBP339 (1990) 38-66.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param mh2 The Higgs mass squared
-   * @param mf2 The fermion mass squared.
-   * @param i Which of the stored values to use for \f$D(u,t)\f$.
-   * @param j Which of the stored values to use for \f$D(u,s)\f$.
-   * @param k Which of the stored values to use for \f$D(s,t)\f$.
-   * @param i1 Which of the stored values to use for \f$C_1(s)\f$.
-   * @param j1 Which of the stored values to use for \f$C_1(t)\f$.
-   * @param k1 Which of the stored values to use for \f$C_1(u)\f$.
-   */
-  inline Complex me1(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2,
-		     unsigned int i,unsigned int j, unsigned int k,
-		     unsigned int i1,unsigned int j1, unsigned int k1) const;
-
-  /**
-   *  The \f$M_{++-}\f$ matrix element of NBP339 (1990) 38-66.
-   * @param s   The \f$s\f$ invariant
-   * @param t   The \f$t\f$ invariant
-   * @param u   The \f$u\f$ invariant
-   * @param mh2 The Higgs mass squared
-   * @param mf2 The fermion mass squared.
-   */
-  inline Complex me2(Energy2 s,Energy2 t,Energy2 u, Energy2 mh2, Energy2 mf2) const;
   //@}
 
 private:

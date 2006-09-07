@@ -51,12 +51,16 @@ check-TVT:
 
 ## valgrind targets ##
 
-VALGRIND=valgrind --leak-check=full --num-callers=25 --track-fds=yes --freelist-vol=100000000 --leak-resolution=med --trace-children=yes
+VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --leak-resolution=med --trace-children=yes
 
-valgrind:
+valgrind: valgrind-init valgrind-read valgrind-run
+
+valgrind-init:
 	$(VALGRIND) ./Herwig++ init -L../lib &> valgrind-init.log
+valgrind-read:
 	$(VALGRIND) ./Herwig++ read -L../lib LHC.in &> valgrind-read.log
-	$(VALGRIND) ./Herwig++ run -N10 -L../lib LHC.run &> valgrind-run.log
+valgrind-run:
+	$(VALGRIND) ./Herwig++ run -N1 -L../lib LHC.run &> valgrind-run.log
 
 ## ## ## ## ## ## 
 

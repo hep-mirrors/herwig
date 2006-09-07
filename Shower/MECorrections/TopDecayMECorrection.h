@@ -40,7 +40,7 @@ public:
   /**
    *  Can the matrix element correction handle a given hard process or decay
    */
-  virtual bool canHandle(ShowerTreePtr);
+  virtual bool canHandle(ShowerTreePtr,EvolverPtr);
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay

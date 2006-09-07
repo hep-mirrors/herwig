@@ -2,13 +2,8 @@
 # the new particles that are used in HERWIG 6.4, but not in Pythia7
 #read Decays.in
 #
-cd /Defaults/
-set theGlobalParameters:EffectiveGluonMass 0.750*GeV
-set theGlobalParameters:HadronizationScale 0.5*GeV
-#set theGlobalParameters:OnOffPythia7StringFragmentationMode 0
-set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
-set theGlobalParameters:MinVirtuality2 0.1*GeV2
-set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+cd /Defaults/Handlers/Hadronization/Cluster
+set stdCluHadHandler:OnOffSoftUnderlyingEventMode 0
 #
 cd /Defaults/Handlers/Shower
 set theRhoDMatrixPropagator:OnOffRhoDPropagationMode 0

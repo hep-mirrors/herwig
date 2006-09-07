@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GammaGammaAnalysis class.
+//
+#ifndef HERWIG_GammaGammaAnalysis_FH
+#define HERWIG_GammaGammaAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class GammaGammaAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::GammaGammaAnalysis,GammaGammaAnalysisPtr);
+
+}
+
+#endif

@@ -11,7 +11,6 @@
 #include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/DecayMode.h>
 #include <ThePEG/Repository/Strategy.fh>
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include <fstream>
 
 namespace Herwig {
@@ -105,11 +104,6 @@ private:
    *  The code for the type of matrix element being used.
    */
   int MECode;
-
-  /**
-   * A pointer to the global parameters object/
-   */
-  Ptr<GlobalParameters>::pointer global;
 
   /**
    * Describe a concrete class with persistant decay

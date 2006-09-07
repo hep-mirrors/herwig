@@ -9,6 +9,7 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/ShowerProgenitor.h"
+#include "Herwig++/Shower/Evolver.fh"
 #include "Herwig++/Shower/ShowerTree.h"
 #include "MECorrectionBase.fh"
 
@@ -59,7 +60,7 @@ public:
   /**
    *  Can the matrix element correction handle a given hard process or decay
    */
-  virtual bool canHandle(ShowerTreePtr)=0;
+  virtual bool canHandle(ShowerTreePtr,EvolverPtr)=0;
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay

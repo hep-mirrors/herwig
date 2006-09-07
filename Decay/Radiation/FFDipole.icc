@@ -6,36 +6,13 @@
 
 namespace Herwig {
 
-inline FFDipole::FFDipole() 
-{
-  // minimum photon energy
-  _emin    = 1.e-6*MeV;
-  // real minimum energies in lab and rest frame
-  _eminlab  = 100*MeV;
-  _eminrest = 100*MeV;
-  // option for the energy cut-off
-  _energyopt=1;
-  // option for beta factors
-  _betaopt = 1;
-  // maximum weight
-  _maxwgt = 5.0;
-  // default mode
-  _mode = 1;
-  // maximum number of tries
-  _maxtry=500;
-  // control over the number of photons
-  _nphotonmax=20;
-  // the form of the primary dipole radiation fns 
-  // with (1)/ without (0) mass terms
-  _dipoleopt=0;
-}
-
-inline FFDipole::FFDipole(const FFDipole & x)
-  : Interfaced(x), _emin(x._emin),_eminrest(x._eminrest),
-    _eminlab(x._eminlab),_emax(x._emax),
-    _nphotonmax(x._nphotonmax),_maxwgt(x._maxwgt),_mode(x._mode),
-    _maxtry(x._maxtry),_energyopt(x._energyopt),_betaopt(x._betaopt),
-    _dipoleopt(x._dipoleopt) {}
+inline FFDipole::FFDipole() :
+  _emin(1.e-6*MeV), _eminrest(100*MeV), _eminlab(100*MeV), _emax(),
+  _multiplicity(), _nphotonmax(20), _m(3), _charge(), _qdrf(2),
+  _qnewdrf(2), _qprf(2), _qnewprf(2), _qlab(2), _qnewlab(2), _dipolewgt(),
+  _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(5.0), _mode(1), _maxtry(500),
+  _energyopt(1), _betaopt(1), _dipoleopt()
+{}
 
 inline IBPtr FFDipole::clone() const {
   return new_ptr(*this);

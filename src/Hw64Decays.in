@@ -40,15 +40,14 @@ decaymode W-->s,ubar; 0.01644 1 /Defaults/Decays/WZ
 decaymode W-->d,cbar; 0.016407 1 /Defaults/Decays/WZ
 decaymode W-->b,cbar; 0.000512 1 /Defaults/Decays/WZ
 #
-decaymode h0->b,bbar;      0.7311 1 /Defaults/Decays/Hff
-decaymode h0->tau-,tau+;   0.0741 1 /Defaults/Decays/Hff
+decaymode h0->b,bbar;      0.7315 1 /Defaults/Decays/Hff
+decaymode h0->tau-,tau+;   0.0742 1 /Defaults/Decays/Hff
 decaymode h0->mu-,mu+;     0.0003 1 /Defaults/Decays/Hff
-decaymode h0->s,sbar;      0.0006 1 /Defaults/Decays/Hff
 decaymode h0->c,cbar;      0.0322 1 /Defaults/Decays/Hff
 decaymode h0->g,g;         0.0702 1 /Defaults/Decays/Mambo
 decaymode h0->gamma,gamma; 0.0021 1 /Defaults/Decays/Mambo
 decaymode h0->Z0,gamma;    0.0007 1 /Defaults/Decays/DecayME0
-decaymode h0->W+,W-;       0.0805 1 /Defaults/Decays/HWW
+decaymode h0->W+,W-;       0.0806 1 /Defaults/Decays/HWW
 decaymode h0->Z0,Z0;       0.0082 1 /Defaults/Decays/HWW
 #
 decaymode pi0->gamma,gamma; 0.988 1 /Defaults/Decays/DecayME0

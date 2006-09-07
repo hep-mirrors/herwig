@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = libHwWaveFunction.la
+noinst_LTLIBRARIES = libHwWaveFunction.la
 libHwWaveFunction_la_SOURCES = \
 RSSpinorBarWaveFunction.cc RSSpinorBarWaveFunction.h RSSpinorBarWaveFunction.icc \
 RSSpinorWaveFunction.cc RSSpinorWaveFunction.h RSSpinorWaveFunction.icc \

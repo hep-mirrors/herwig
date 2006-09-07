@@ -6,11 +6,9 @@
 
 namespace Herwig {
 
-inline DrellYanMECorrection::DrellYanMECorrection() : _channelwgt(0.1)
-{}
-
-inline DrellYanMECorrection::DrellYanMECorrection(const DrellYanMECorrection & x)
-  : MECorrectionBase(x), _channelwgt(x._channelwgt),_channelweights(x._channelweights)
+inline DrellYanMECorrection::DrellYanMECorrection() : _channelwgtA(0.12),
+						      _channelwgtB(2.00),
+						      _nover(0),_maxwgt(0.)
 {}
 
 inline IBPtr DrellYanMECorrection::clone() const {
@@ -19,13 +17,6 @@ inline IBPtr DrellYanMECorrection::clone() const {
 
 inline IBPtr DrellYanMECorrection::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void DrellYanMECorrection::doinit() throw(InitException) {
-  MECorrectionBase::doinit();
-  _channelweights.push_back(_channelwgt/(1.+_channelwgt));
-  _channelweights.push_back(_channelweights[0]+0.5/(1.+_channelwgt));
-  _channelweights.push_back(1.);
 }
 
 }

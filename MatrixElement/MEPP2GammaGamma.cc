@@ -12,11 +12,6 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/Helicity/Correlations/HardVertex.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEPP2GammaGamma.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -189,8 +184,7 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
 				vector<SpinorBarWaveFunction> & ain,
 				vector<VectorWaveFunction>    & p1,
 				vector<VectorWaveFunction>    & p2,
-				bool calc) const
-{
+				bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming fermion     (u    spinor)
@@ -199,46 +193,41 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
   // 0 first  outgoing photon
   // 1 second outgoing photon
   // me to be returned
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin1,PDT::Spin1));}
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,
+				PDT::Spin1,PDT::Spin1);
   // wavefunction for the intermediate particles
   SpinorWaveFunction inter;
   unsigned int inhel1,inhel2,outhel1,outhel2;
   Complex diag[3];
   double me(0.),diag1(0.),diag2(0.);
-  for(inhel1=0;inhel1<2;++inhel1)
-    {
-      for(inhel2=0;inhel2<2;++inhel2)
- 	{
- 	  for(outhel1=0;outhel1<2;++outhel1)
- 	    {
- 	      for(outhel2=0;outhel2<2;++outhel2)
- 		{
-		  // first diagram
- 		  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
-						  fin[inhel1],p1[outhel1]);
- 		  diag[0] = _photonvertex->evaluate(0.,inter,ain[inhel2],p2[outhel2]);
-		  // second diagram
-		  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
- 						  fin[inhel1],p2[outhel2]);
- 		  diag[1] = _photonvertex->evaluate(0.,inter,ain[inhel2],p1[outhel1]);
- 		  // compute the running totals
- 		  diag[2]=diag[0]+diag[1];
- 		  diag1 +=real(diag[0]*conj(diag[0]));
- 		  diag2 +=real(diag[1]*conj(diag[1]));
- 		  me    +=real(diag[2]*conj(diag[2]));
- 		  // matrix element
- 		  if(calc) _me(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
-		}
-	    }		
+  for(inhel1=0;inhel1<2;++inhel1) {
+    for(inhel2=0;inhel2<2;++inhel2) {
+      for(outhel1=0;outhel1<2;++outhel1) {
+	for(outhel2=0;outhel2<2;++outhel2) {
+	  // first diagram
+	  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
+					  fin[inhel1],p1[outhel1]);
+	  diag[0] = _photonvertex->evaluate(0.,inter,ain[inhel2],p2[outhel2]);
+	  // second diagram
+	  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
+					  fin[inhel1],p2[outhel2]);
+	  diag[1] = _photonvertex->evaluate(0.,inter,ain[inhel2],p1[outhel1]);
+	  // compute the running totals
+	  diag[2]=diag[0]+diag[1];
+	  diag1 +=real(diag[0]*conj(diag[0]));
+	  diag2 +=real(diag[1]*conj(diag[1]));
+	  me    +=real(diag[2]*conj(diag[2]));
+	  // matrix element
+	  if(calc) newme(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
 	}
+      }		
     }
+  }
   // save the info on the diagrams
-  if(!calc)
-    {
-      _diagwgt[0]=diag1;
-      _diagwgt[1]=diag2;
-    }
+  if(!calc) {
+    _diagwgt[0]=diag1;
+    _diagwgt[1]=diag2;
+  }
   // check versus analytic result
 //   Energy2 s(sHat()),u(uHat()),t(tHat());
 //   double test = 2./3.*sqr(4.*pi*SM().alphaEM(0.))*(t/u+u/t)*
@@ -246,6 +235,7 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
 //     sqr(mePartonData()[0]->charge());
 //   cerr << "testing me " << 12./me*test << endl;
   // return the answer (including colour and spin factor)
+  if(calc) _me.reset(newme);
   return me/12;
 }
 
@@ -292,40 +282,37 @@ double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    & g1,
   me[0][0][0][1] = charge;
   // ----
   me[0][0][0][0] =-me[1][1][1][1];
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
- 					     PDT::Spin1,PDT::Spin1));}
-   unsigned int inhel1,inhel2,outhel1,outhel2;
-   double sum(0.);
-   for(inhel1=0;inhel1<2;++inhel1)
-     {
-       for(inhel2=0;inhel2<2;++inhel2)
-  	{
-  	  for(outhel1=0;outhel1<2;++outhel1)
-  	    {
-  	      for(outhel2=0;outhel2<2;++outhel2)
-  		{
-		  sum+=real(     me[inhel1][inhel2][outhel1][outhel2]*
-			    conj(me[inhel1][inhel2][outhel1][outhel2]));
-		  // matrix element
- 		  if(calc) _me(2*inhel1,2*inhel2,
-			       2*outhel1,2*outhel2)=me[inhel1][inhel2][outhel1][outhel2];
- 		}
- 	    }		
- 	}
-     }
-//    double pi2(sqr(pi));
-//    Energy2 s2(sqr(s)),t2(sqr(t)),u2(sqr(u));
-//    double alntu=log(t/u);
-//    double alnst=log(-s/t);
-//    double alnsu=alnst+alntu;
-//    double test=5.*4.
-//      +sqr((2.*s2+2.*(u2-t2)*alntu+(t2+u2)*(sqr(alntu)+pi2))/s2)
-//      +sqr((2.*u2+2.*(t2-s2)*alnst+(t2+s2)* sqr(alnst)     )/u2)
-//      +sqr((2.*t2+2.*(u2-s2)*alnsu+(u2+s2)* sqr(alnsu)     )/t2)
-//      +4.*pi2*(sqr((t2-s2+(t2+s2)*alnst)/u2)+sqr((u2-s2+(u2+s2)*alnsu)/t2));
-//    cerr << "testing ratio " << sum/test/sqr(charge)*2. << endl;
-   // final factors
-   return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(0.));
+  ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,
+				PDT::Spin1,PDT::Spin1);
+  unsigned int inhel1,inhel2,outhel1,outhel2;
+  double sum(0.);
+  for(inhel1=0;inhel1<2;++inhel1) {
+    for(inhel2=0;inhel2<2;++inhel2) {
+      for(outhel1=0;outhel1<2;++outhel1) {
+	for(outhel2=0;outhel2<2;++outhel2) {
+	  sum+=real(     me[inhel1][inhel2][outhel1][outhel2]*
+			 conj(me[inhel1][inhel2][outhel1][outhel2]));
+	  // matrix element
+	  if(calc) newme(2*inhel1,2*inhel2,
+			 2*outhel1,2*outhel2)=me[inhel1][inhel2][outhel1][outhel2];
+	}
+      }		
+    }
+  }
+  //    double pi2(sqr(pi));
+  //    Energy2 s2(sqr(s)),t2(sqr(t)),u2(sqr(u));
+  //    double alntu=log(t/u);
+  //    double alnst=log(-s/t);
+  //    double alnsu=alnst+alntu;
+  //    double test=5.*4.
+  //      +sqr((2.*s2+2.*(u2-t2)*alntu+(t2+u2)*(sqr(alntu)+pi2))/s2)
+  //      +sqr((2.*u2+2.*(t2-s2)*alnst+(t2+s2)* sqr(alnst)     )/u2)
+  //      +sqr((2.*t2+2.*(u2-s2)*alnsu+(u2+s2)* sqr(alnsu)     )/t2)
+  //      +4.*pi2*(sqr((t2-s2+(t2+s2)*alnst)/u2)+sqr((u2-s2+(u2+s2)*alnsu)/t2));
+  //    cerr << "testing ratio " << sum/test/sqr(charge)*2. << endl;
+  // final factors
+  if(calc) _me.reset(newme);
+  return 0.5*sum*sqr(SM().alphaS(scale())*SM().alphaEM(0.));
 }
 
 void MEPP2GammaGamma::constructVertex(tSubProPtr sub)
@@ -353,7 +340,6 @@ void MEPP2GammaGamma::constructVertex(tSubProPtr sub)
       if(hard[order[0]]->id()<0){order[0]=1;order[1]=0;}
       vector<SpinorWaveFunction> q;
       vector<SpinorBarWaveFunction>  qb;
-      vector<VectorWaveFunction> p1,p2;
        SpinorWaveFunction   (q ,hard[order[0]],incoming,false,true);
        SpinorBarWaveFunction(qb,hard[order[1]],incoming,false,true);
        VectorWaveFunction   (p1,hard[order[2]],outgoing,true ,true,true);

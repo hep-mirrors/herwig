@@ -105,7 +105,9 @@ void ShowerHandler::findShoweringParticles()
 	parent = (*taggedP)->parents()[0];
 	// check if from s channel decaying colourless particle
 	// (must be same as in findParent)
-	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.;
+	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.&&
+	  parent != eventHandler()->lastPartons().first &&
+	  parent != eventHandler()->lastPartons().second;
       }
     // add to list of outgoing hard particles if needed
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
@@ -139,20 +141,12 @@ void ShowerHandler::cascade()
     try
       {
 	// set the gluon mass to be used in the reconstruction
-	_evolver->showerVariables()->setGluonMass(false);
+	_evolver->showerVariables()->setGluonMass();
 	// find the particles in the hard process and the decayed particles to shower
 	findShoweringParticles();
 	// check if a hard process or decay
  	bool isHard = _hard;
- 	// find the stopping scale for the shower if multi-scale shower is on
-//  	Energy largestWidth = Energy();
-//  	if(_evolver->showerVariables()->isMultiScaleShowerON()&&!_decay.empty())
-//  	  {
-//  	    largestWidth=(*_decay.rbegin()).first;
-//  	    if(largestWidth<
-//  	       _evolver->showerVariables()->globalParameters()->hadronizationScale())
-//  	      largestWidth = Energy();
-//  	  }
+
  	// if a hard process perform the shower for the hard process
  	if(isHard) 
 	  {

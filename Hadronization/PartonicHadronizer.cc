@@ -24,13 +24,13 @@ namespace Herwig {
 using namespace ThePEG;
 
 void PartonicHadronizer::persistentOutput(PersistentOStream & os) const {
-  os << _globalParameters  << _partonSplitter << _clusterFinder << _colourReconnector
+  os << _partonSplitter << _clusterFinder << _colourReconnector
      << _clusterFissioner << _lightClusterDecayer << _clusterDecayer << _exclusive
      << _partontries << _inter;
 }
 
 void PartonicHadronizer::persistentInput(PersistentIStream & is, int) {
-  is >> _globalParameters  >> _partonSplitter >> _clusterFinder >> _colourReconnector
+  is >> _partonSplitter >> _clusterFinder >> _colourReconnector
      >> _clusterFissioner >> _lightClusterDecayer >> _clusterDecayer >> _exclusive
      >> _partontries >> _inter;
 }
@@ -43,12 +43,6 @@ void PartonicHadronizer::Init() {
   static ClassDocumentation<PartonicHadronizer> documentation
     ("The PartonicHadronizer is designed to be used by the DecayHandler to"
      " hadronize partonic decays of hadrons.");
-
-  static Reference<PartonicHadronizer,GlobalParameters> 
-    interfaceGlobalParameters("GlobalParameters", 
-		      "A reference to the GlobalParameters object", 
-		      &Herwig::PartonicHadronizer::_globalParameters,
-		      false, false, true, false);
   static Reference<PartonicHadronizer,PartonSplitter> 
     interfacePartonSplitter("PartonSplitter", 
 		      "A reference to the PartonSplitter object", 
@@ -148,7 +142,7 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
       while (!lightOK && tried++ < 10) 
 	{
 	  _colourReconnector->rearrange(ch,pstep,clusters);
-	  _clusterFissioner->fission(pstep);
+	  _clusterFissioner->fission(pstep,false);
 	  lightOK = _lightClusterDecayer->decay(pstep);
 	  if (!lightOK) 
 	    {

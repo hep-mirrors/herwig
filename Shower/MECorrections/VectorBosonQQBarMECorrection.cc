@@ -10,6 +10,7 @@
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Shower/Evolver.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "VectorBosonQQBarMECorrection.tcc"
@@ -32,47 +33,51 @@ void VectorBosonQQBarMECorrection::Init() {
 
 }
 
-bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree)
-{
-   // check 4 external particles
-   if(tree->incomingLines().size()!=2||tree->outgoingLines().size()!=2) return false;
-   // check incoming leptons beams
-   int id[2];
-   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
-   cit=tree->incomingLines().begin();
-   id[0]=cit->first->progenitor()->id();
-   ++cit;
-   id[1]=cit->first->progenitor()->id();
-   if(id[0]!=-id[1]||abs(id[0])>15||abs(id[0])<11||abs(id[0])%2!=1) return false;
-   // check outgoing quarks
-   cit=tree->outgoingLines().begin();
-   id[0]=cit->first->progenitor()->id();
-   ++cit;
-   id[1]=cit->first->progenitor()->id();
-   if(id[0]!=-id[1]||abs(id[0])>6) return false;
-   // otherwise can do it
-   return true;
+bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree,EvolverPtr evolver) {
+  // check radiation on
+  if(!evolver->isFSRadiationON()) return false;
+  // check 2 outgoing particles
+  if(tree->outgoingLines().size()!=2) return false;
+  // check 1 or 2 incoming particles
+  if(tree->incomingLines().size()!=1&&tree->incomingLines().size()!=2) return false;
+  // if one incoming particle must be W/Z or gamma
+  int id[2];
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  cit=tree->incomingLines().begin();
+  id[0]=cit->first->progenitor()->id();
+  if(tree->incomingLines().size()==1) {
+    if(abs(id[0])!=ParticleID::Wplus&&id[0]!=ParticleID::Z0&&
+       abs(id[0])!=ParticleID::gamma) return false;
+  }
+  // check incoming leptons beams
+  else {
+    ++cit;
+    id[1]=cit->first->progenitor()->id();
+    if(id[0]!=-id[1]||abs(id[0])>15||abs(id[0])<11||abs(id[0])%2!=1) return false;
+  }
+  // check outgoing quarks
+  cit=tree->outgoingLines().begin();
+  id[0]=cit->first->progenitor()->id();
+  ++cit;
+  id[1]=cit->first->progenitor()->id();
+  if(id[0]!=-id[1]||abs(id[0])>6) return false;
+  // otherwise can do it
+  return true;
 }
 
 void VectorBosonQQBarMECorrection::
-applyHardMatrixElementCorrection(ShowerTreePtr tree)
-{
+applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // get the quark and antiquark
   ParticleVector qq; 
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
     qq.push_back(cit->first->copy());
-  PPtr temp;
-  if(qq[0]->id()<0)
-    {
-      temp=qq[0];
-      qq[0]=qq[1];
-      qq[1]=temp;
-    }
+  // ensure quark first
+  if(qq[0]->id()<0) swap(qq[0],qq[1]);
   // centre of mass energy
   d_Q = (qq[0]->momentum() + qq[1]->momentum()).m();
   // quark mass
-  d_m = qq[0]->momentum().m();
+  d_m = 0.5*(qq[0]->momentum().m()+qq[1]->momentum().m());
   // set the other parameters
   setRho(sqr(d_m/d_Q));
   setKtildeSymm();
@@ -81,14 +86,11 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
   // return if no emission
   if(newfs.size()!=3) return;
   // perform final check to ensure energy greater than constituent mass
-  bool check = true; 
-  for (int i=0; i<2; i++)
-    if (newfs[i].e() < qq[i]->data().constituentMass()) check = false;
-  if (newfs[2].e() < showerVariables()->globalParameters()->effectiveGluonMass()&&
-      !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
-    check = false;
-  // return if fails
-  if (!check) return;
+  for (int i=0; i<2; i++) {
+    if (newfs[i].e() < qq[i]->data().constituentMass()) return;
+  }
+  if (newfs[2].e() < getParticleData(ParticleID::g)->constituentMass())
+    return;
   // set masses
   for (int i=0; i<2; i++) newfs[i].setMass(qq[i]->mass());
   newfs[2].setMass(0.);
@@ -99,91 +101,71 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
   // create the new quark, antiquark and gluon
   PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
   PPtr newq,newa;
-  if(firstEmits)
-    {
-      newq = getParticleData(abs(qq[0]->id()))->produceParticle(newfs[0]);
-      newa = new_ptr(Particle(*qq[1]));
-      qq[1]->antiColourLine()->removeAntiColoured(newa);
-      newa->set5Momentum(newfs[1]);
-    }
-  else
-    {
-      newq = new_ptr(Particle(*qq[0]));
-      qq[0]->colourLine()->removeColoured(newq);
-      newq->set5Momentum(newfs[0]);
-      newa = getParticleData(-abs(qq[0]->id()))->produceParticle(newfs[1]);
-    }
+  if(firstEmits) {
+    newq = getParticleData(abs(qq[0]->id()))->produceParticle(newfs[0]);
+    newa = new_ptr(Particle(*qq[1]));
+    qq[1]->antiColourLine()->removeAntiColoured(newa);
+    newa->set5Momentum(newfs[1]);
+  }
+  else {
+    newq = new_ptr(Particle(*qq[0]));
+    qq[0]->colourLine()->removeColoured(newq);
+    newq->set5Momentum(newfs[0]);
+    newa = getParticleData(-abs(qq[0]->id()))->produceParticle(newfs[1]);
+  }
   // get the original colour line
   ColinePtr col;
   if(qq[0]->id()>0) col=qq[0]->colourLine();
   else              col=qq[0]->antiColourLine();
   // set the colour lines
-  if(firstEmits)
-    {
-      col->addColoured(newq);
-      col->addAntiColoured(newg);
-      newa->colourNeighbour(newg);
-    }
-  else
-    {
-      col->addAntiColoured(newa);
-      col->addColoured(newg);
-      newq->antiColourNeighbour(newg);
-    }
+  if(firstEmits) {
+    col->addColoured(newq);
+    col->addAntiColoured(newg);
+    newa->colourNeighbour(newg);
+  }
+  else {
+    col->addAntiColoured(newa);
+    col->addColoured(newg);
+    newq->antiColourNeighbour(newg);
+  }
   // change the existing quark and antiquark
   PPtr orig;
-  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
-    {
-      if(cit->first->progenitor()->id()==newq->id())
-	{
-	  // remove old particles from colour line
-	  col->removeColoured(cit->first->copy());
-	  col->removeColoured(cit->first->progenitor());
-	  // insert new particles
-	  cit->first->copy(newq);
-	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1)));
-	  cit->first->progenitor(sp);
-	  tree->outgoingLines()[cit->first]=sp;
-	  cit->first->perturbative(!firstEmits);
-	  if(firstEmits) orig=cit->first->original();
-	}
-      else
-	{
-	  // remove old particles from colour line
-	  col->removeAntiColoured(cit->first->copy());
-	  col->removeColoured(cit->first->progenitor());
-	  // insert new particles
-	  cit->first->copy(newa);
-	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1)));
-	  cit->first->progenitor(sp);
-	  tree->outgoingLines()[cit->first]=sp;
-	  cit->first->perturbative(firstEmits);
-	  if(!firstEmits) orig=cit->first->original();
-	}
+  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    if(cit->first->progenitor()->id()==newq->id()) {
+      // remove old particles from colour line
+      col->removeColoured(cit->first->copy());
+      col->removeColoured(cit->first->progenitor());
+      // insert new particles
+      cit->first->copy(newq);
+      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1)));
+      cit->first->progenitor(sp);
+      tree->outgoingLines()[cit->first]=sp;
+      cit->first->perturbative(!firstEmits);
+      if(firstEmits) orig=cit->first->original();
     }
+    else {
+      // remove old particles from colour line
+      col->removeAntiColoured(cit->first->copy());
+      col->removeColoured(cit->first->progenitor());
+      // insert new particles
+      cit->first->copy(newa);
+      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1)));
+      cit->first->progenitor(sp);
+      tree->outgoingLines()[cit->first]=sp;
+      cit->first->perturbative(firstEmits);
+      if(!firstEmits) orig=cit->first->original();
+    }
+  }
   // add the gluon
   ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1));
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
   gluon->perturbative(false);
   tree->outgoingLines().insert(make_pair(gluon,sg));
   tree->hardMatrixElementCorrection(true);
-//   // safe 'largest pt so far'.  
-//   Lorentz5Momentum ptot = newfs[0] + newfs[1] + newfs[2];
-//   double x = 2*newfs[0]*ptot/sqr(d_Q);
-//   double xb = 2*newfs[1]*ptot/sqr(d_Q);
-//   Energy qt;
-//   double z;
-//   qt = d_Q*sqrt(getKfromX(x, xb));
-//   z = getZfromX(x, xb);
-//   particles[2].pT((1.-z)*sqrt(sqr(z*qt)-sqr(d_m)));
-//   qt = d_Q*sqrt(getKfromX(xb, x));
-//   z = getZfromX(xb, x);
-//   particles[3].pT((1.-z)*sqrt(sqr(z*qt)-sqr(d_m)));
 }
 
 vector<Lorentz5Momentum> VectorBosonQQBarMECorrection::
-applyHard(const ParticleVector &p) 
-{
+applyHard(const ParticleVector &p) {
   double x, xbar;
   vector<Lorentz5Momentum> fs; 
   // return if no emission

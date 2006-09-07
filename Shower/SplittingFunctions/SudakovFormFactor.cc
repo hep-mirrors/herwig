@@ -52,7 +52,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::_pdfmax, 35.0, 1.0, 1000.0,
+     &SudakovFormFactor::_pdfmax, 35.0, 1.0, 4000.0,
      false, false, Interface::limited);
 }
 
@@ -117,16 +117,18 @@ bool SudakovFormFactor::PDFVeto(const double z, const Energy2 t,
   assert(_variables->currentPDF());
   // remember: pdf's q is cut in pdf class.  should probably be done here! 
   // this would correspond to QSPAC in F-HERWIG. 
-  double ratio = 
-    _variables->currentPDF()->xfx(_variables->beamParticle(),parton0,t,x/z)/
-    _variables->currentPDF()->xfx(_variables->beamParticle(),parton1,t,x);
+  double newpdf=_variables->currentPDF()->xfx(_variables->beamParticle(),parton0,t,x/z);
+  double oldpdf=_variables->currentPDF()->xfx(_variables->beamParticle(),parton1,t,x);
+  if(newpdf<=0.) return true;
+  if(oldpdf<=0.) return false;
+  double ratio = newpdf/oldpdf;
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > _pdfmax) {
     generator()->log() << "PDFVeto warning: Ratio (" << ratio 
 			    << ") > " << name() << ":PDFmax ("
 			    <<_pdfmax <<")\n";
   }
-  return ratio < UseRandom::rnd()*_pdfmax;
+  return ratio/_pdfmax < UseRandom::rnd();
 }
  
 Energy SudakovFormFactor::generateNextTimeBranching(const Energy startingScale,
@@ -274,18 +276,21 @@ bool SudakovFormFactor::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass) cons
   _zlimits.first  = sqr(minmass/_masses[0]);
   _zlimits.second = 1.-_kinCutoff/sqrt(tmax-_masssquared[0])
     +0.5*sqr(_kinCutoff)/(tmax-_masssquared[0]);
+  if(_zlimits.second<_zlimits.first) {
+    t=-1.0*GeV;
+    return false;
+  }
   // guess values of t and z
   t = guesst(told,2); 
   _z = guessz(); 
   // actual values for z-limits
-  _zlimits.first  = 0.;
+  _zlimits.first  = sqr(minmass/_masses[0]);
   _zlimits.second = 1.-_kinCutoff/sqrt(t-_masssquared[0])
     +0.5*sqr(_kinCutoff)/(t-_masssquared[0]);
-  if(t>tmax)
-    {
-      t=-1.0*GeV;
-      return false;
-    }
+  if(t>tmax||_zlimits.second<_zlimits.first) {
+    t=-1.0*GeV;
+    return false;
+  }
   else
     return true; 
 } 
