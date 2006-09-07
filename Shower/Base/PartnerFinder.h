@@ -5,9 +5,9 @@
 // This is the declaration of the PartnerFinder class.
 //
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "Herwig++/Shower/Evolver.fh"
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/ShowerVariables.h"
+#include "Evolver.fh"
 #include "PartnerFinder.fh"
 
 namespace Herwig {

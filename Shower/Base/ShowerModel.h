@@ -63,12 +63,12 @@ public:
   /**
    *  Access to the SudakovFormFactor objects
    */
-  inline vector<SudakovPtr> sudakovFormFactors() const;
+  inline const vector<SudakovPtr> & sudakovFormFactors() const;
 
   /**
    *  Access to the MECorrection objects
    */
-  inline vector<MECorrectionPtr> meCorrections() const;
+  inline const vector<MECorrectionPtr> & meCorrections() const;
   //@}
 
 public:

@@ -7,9 +7,9 @@
 
 #include "ThePEG/Handlers/CascadeHandler.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Evolver.fh"
+#include "Herwig++/Shower/Base/Evolver.fh"
 #include "Herwig++/Shower/Base/ShowerParticle.fh"
-#include "ShowerTree.fh"
+#include "Herwig++/Shower/Base/ShowerTree.fh"
 #include "ShowerHandler.fh"
 
 namespace Herwig {

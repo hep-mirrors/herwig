@@ -3,7 +3,7 @@
 #define HERWIG_ShowerTree_H
 
 #include "ThePEG/Config/ThePEG.h"
-#include "ShowerConfig.h"
+#include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ShowerProgenitor.fh"
 #include "ThePEG/EventRecord/Step.h"

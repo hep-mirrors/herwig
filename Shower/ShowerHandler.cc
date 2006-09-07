@@ -11,14 +11,17 @@
 #include "ThePEG/Interface/Parameter.h" 
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Timer.h"
-#include "Evolver.h"
+#include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Herwig++/Hadronization/Remnant.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ShowerTree.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include <cassert>
 
 using namespace Herwig;

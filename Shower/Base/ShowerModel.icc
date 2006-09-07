@@ -22,11 +22,11 @@ inline tPartnerFinderPtr ShowerModel::partnerFinder() const {
   return _partnerfinder;
 }
 
-inline vector<SudakovPtr> ShowerModel::sudakovFormFactors() const {
+inline const vector<SudakovPtr> & ShowerModel::sudakovFormFactors() const {
   return _sudakovs;
 }
 
-inline vector<MECorrectionPtr> ShowerModel::meCorrections() const {
+inline const vector<MECorrectionPtr> & ShowerModel::meCorrections() const {
   return _mecorrections;
 }
 }

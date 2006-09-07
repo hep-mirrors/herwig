@@ -7,8 +7,8 @@ create Herwig++::SplittingGenerator theSplittingGenerator
 create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
 create Herwig++::ShowerAlphaQED theShowerAlphaQED
 create Herwig++::ShowerHandler stdShowerHandler
-
 create Herwig++::Evolver theEvolver
+create Herwig++::QTildeModel theShowerModel
 create Herwig++::QTildeFinder thePartnerFinder
 create Herwig++::QTildeReconstructor theKinematicsReconstructor
 
@@ -17,13 +17,13 @@ set theShowerVariables:GlobalParameters /Defaults/theGlobalParameters
 set stdShowerHandler:Evolver theEvolver
 
 create Herwig++::VectorBosonQQBarMECorrection qqbarg
-insert theEvolver:MECorrection 0 qqbarg
+insert theShowerModel:MECorrections 0 qqbarg
 set qqbarg:Coupling theShowerAlphaQCD
 
-set theEvolver:PartnerFinder thePartnerFinder
-set theEvolver:KinematicsReconstructor theKinematicsReconstructor
+set theShowerModel:PartnerFinder thePartnerFinder
+set theShowerModel:KinematicsReconstructor theKinematicsReconstructor
 set theEvolver:ShowerVariables theShowerVariables
-
+set theEvolver:ShowerModel theShowerModel
 set theEvolver:SplittingGenerator theSplittingGenerator
 
 # a few default values

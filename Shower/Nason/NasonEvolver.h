@@ -5,7 +5,7 @@
 // This is the declaration of the NasonEvolver class.
 //
 
-#include "Herwig++/Shower/Evolver.h"
+#include "Herwig++/Shower/Base/Evolver.h"
 #include "NasonEvolver.fh"
 
 namespace Herwig {
@@ -22,23 +22,10 @@ class NasonEvolver: public Evolver {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline NasonEvolver();
-
-  /**
-   * The copy constructor.
-   */
-  inline NasonEvolver(const NasonEvolver &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~NasonEvolver();
-  //@}
 
 public:
 

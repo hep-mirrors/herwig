@@ -6,17 +6,13 @@
 
 #include "NasonEvolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "NasonEvolver.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
 
 using namespace Herwig;
-
-NasonEvolver::~NasonEvolver() {}
 
 void NasonEvolver::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.

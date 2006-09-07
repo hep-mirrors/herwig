@@ -8,8 +8,8 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "Herwig++/Shower/ShowerProgenitor.h"
-#include "Herwig++/Shower/ShowerTree.h"
+#include "ShowerProgenitor.h"
+#include "ShowerTree.h"
 #include "MECorrectionBase.fh"
 
 namespace Herwig {

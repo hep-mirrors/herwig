@@ -8,7 +8,4 @@ HwShower_la_LIBADD = ./SplittingFunctions/libHwSplitting.la \
                         ./Base/libHwShowerBase.la
 HwShower_la_SOURCES = ShowerConfig.h \
 ShowerVariables.h ShowerVariables.fh ShowerVariables.icc ShowerVariables.cc \
-ShowerHandler.h ShowerHandler.fh ShowerHandler.icc ShowerHandler.cc \
-Evolver.h Evolver.fh Evolver.icc Evolver.cc \
-ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc \
-ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc
+ShowerHandler.h ShowerHandler.fh ShowerHandler.icc ShowerHandler.cc

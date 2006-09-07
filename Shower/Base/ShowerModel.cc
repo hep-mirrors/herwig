@@ -34,8 +34,8 @@ void ShowerModel::Init() {
     ("The ShowerModel class contains the references for the classes which"
      " are specific to the shower evolution scheme.");
 
-  static Reference<ShowerModel,KinematicsReconstructor> interfaceKinematicsRecontructor
-    ("KinematicsRecontructor",
+  static Reference<ShowerModel,KinematicsReconstructor> interfaceKinematicsReconstructor
+    ("KinematicsReconstructor",
      "Reference to the KinematicsReconstructor object",
      &ShowerModel::_reconstructor, false, false, true, false, false);
 

@@ -6,13 +6,11 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
-#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "ShowerModel.h"
 #include "ShowerTree.fh"
 #include "ShowerProgenitor.fh"
-#include "ShowerHandler.fh"
+#include "Herwig++/Shower/ShowerHandler.fh"
 #include "Evolver.fh"
 
 namespace Herwig {
@@ -77,6 +75,11 @@ public:
    *  Get the ShowerVariables
    */
   inline ShowerVarsPtr showerVariables() const;
+
+  /**
+   *  Get the ShowerModel
+   */ 
+  inline ShowerModelPtr showerModel() const;
   //@}
 
 public:
@@ -241,19 +244,14 @@ private:
 private:
 
   /**
+   *  Pointer to the model for the shower evolution model
+   */
+  ShowerModelPtr _model;
+
+  /**
    * Pointer to the splitting generator
    */
   SplittingGeneratorPtr _splittingGenerator;
-
-  /**
-   * Pointer to the PartnerFinfer
-   */
-  PartnerFinderPtr _partnerFinder;
-
-  /**
-   * Vector of reference to the possible matrix element corrections
-   */
-  vector<MECorrectionPtr> _mecorrections;
 
   /**
    *  The progenitor of the current shower
@@ -269,11 +267,6 @@ private:
    *  Pointer to the ShowerVariables object
    */
   ShowerVarsPtr _showerVariables;
-
-  /**
-   *  Pointer to the object responsible for the kinematical reconstruction
-   */
-  KinematicsReconstructorPtr _kinematicsrecon;
 
   /**
    * The ShowerTree currently being showered

@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/ShowerTree.fh"
+#include "Herwig++/Shower/Base/ShowerTree.fh"
 #include "HardestEmissionGenerator.fh"
 
 namespace Herwig {

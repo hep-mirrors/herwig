@@ -3,7 +3,6 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the Evolver class.
 //
-
 #include "Evolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
@@ -11,42 +10,42 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Shower/Default/QtildaShowerKinematics1to2.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.h"
+#include "KinematicsReconstructor.h"
+#include "PartnerFinder.h"
+#include "MECorrectionBase.h"
 
 using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
-  os << _splittingGenerator << _partnerFinder << _mecorrections 
-     << _showerVariables << _kinematicsrecon << _maxtry;
+  os << _model << _splittingGenerator << _showerVariables << _maxtry;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingGenerator >> _partnerFinder >> _mecorrections 
-     >> _showerVariables >> _kinematicsrecon >> _maxtry;
+  is >> _model >> _splittingGenerator >> _showerVariables >> _maxtry;
 }
 
 void Evolver::doinit() throw(InitException) {
   Interfaced::doinit();
   _splittingGenerator->setShowerVariables(_showerVariables);
-  _partnerFinder->setShowerVariables(_showerVariables);
+  _model->partnerFinder()->setShowerVariables(_showerVariables);
 }
 
 void Evolver::doinitrun() {
   Interfaced::doinitrun();
-  for(unsigned int ix=0;ix<_mecorrections.size();++ix)
-    {_mecorrections[ix]->showerVariables(_showerVariables);}
-  _kinematicsrecon->showerVariables(_showerVariables);
+  for(unsigned int ix=0;ix<_model->meCorrections().size();++ix)
+    {_model->meCorrections()[ix]->showerVariables(_showerVariables);}
+  _model->kinematicsReconstructor()->showerVariables(_showerVariables);
 }
+
 ClassDescription<Evolver> Evolver::initEvolver;
 // Definition of the static class description member.
 
@@ -62,22 +61,10 @@ void Evolver::Init() {
 		      &Herwig::Evolver::_splittingGenerator,
 		      false, false, true, false);
 
-  static Reference<Evolver,PartnerFinder> 
-    interfacePartnerFinder("PartnerFinder", 
-                           "A reference to the PartnerFinder object", 
-                           &Herwig::Evolver::_partnerFinder,
-			   false, false, true, false);
-
-  static RefVector<Evolver,MECorrectionBase> interfaceMECorrection
-    ("MECorrection",
-     "A vector of references to the classes that handle the matrix element"
-     " correction for specific processes",
-     &Evolver::_mecorrections, -1, false, false, true, false, false);
-
-  static Reference<Evolver,KinematicsReconstructor> interfaceKinematicsReconstructor
-    ("KinematicsReconstructor",
-     "Reference to the object which performs the kinematic reconstruction",
-     &Evolver::_kinematicsrecon, false, false, true, false, false);
+  static Reference<Evolver,ShowerModel> interfaceShowerModel
+    ("ShowerModel",
+     "The pointer to the object which defines the shower evolution model.",
+     &Evolver::_model, false, false, true, false, false);
 
   static Reference<Evolver,ShowerVariables> 
     interfaceShowerVariables("ShowerVariables", 
@@ -143,7 +130,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard)
 	    }
 	}
     }
-  while(!_kinematicsrecon->reconstructHardJets(hard)&&_maxtry>++ntry);
+  while(!_model->kinematicsReconstructor()->reconstructHardJets(hard)&&_maxtry>++ntry);
   if(_maxtry==ntry) throw Exception() << "Failed to generate the shower after "
 				      << ntry 
 				      << " attempts in Evolver::showerHardProcess()"
@@ -161,9 +148,9 @@ void Evolver::hardMatrixElementCorrection()
   // if hard matrix element switched off return
   if(!_showerVariables->MECOn()) return;
   // see if there is an appropraite matrix element correction
-  for(unsigned int ix=0;ix<_mecorrections.size();++ix)
+  for(unsigned int ix=0;ix<_model->meCorrections().size();++ix)
     {
-      if(!_mecorrections[ix]->canHandle(_currenttree)) continue;
+      if(!_model->meCorrections()[ix]->canHandle(_currenttree)) continue;
       if(_currentme)
 	{
 	  ostringstream output;
@@ -180,7 +167,7 @@ void Evolver::hardMatrixElementCorrection()
 	  output << "in Evolver::hardMatrixElementCorrection()\n";
 	  throw Exception() << output << Exception::runerror;
 	}
-      else _currentme=_mecorrections[ix];
+      else _currentme=_model->meCorrections()[ix];
     }
   // if no suitable me correction
   if(!_currentme) return; 
@@ -524,7 +511,7 @@ void Evolver::showerDecay(ShowerTreePtr decay)
 	    }
 	}
     }
-  while(!_kinematicsrecon->reconstructDecayJets(decay)&&_maxtry>++ntry);
+  while(!_model->kinematicsReconstructor()->reconstructDecayJets(decay)&&_maxtry>++ntry);
   if(_maxtry==ntry) throw Exception() << "Failed to generate the shower after "
 				      << ntry << " attempts in Evolver::showerDecay()"
 				      << Exception::eventerror;
@@ -664,9 +651,9 @@ void Evolver::setColourPartners(bool hard)
     particles.push_back(cit->first->progenitor());
   // Set the initial evolution scales
   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD))
-    _partnerFinder->setQCDInitialEvolutionScales(particles,!hard);
+    _model->partnerFinder()->setQCDInitialEvolutionScales(particles,!hard);
   if(_splittingGenerator->isInteractionON(ShowerIndex::QED))
-    _partnerFinder->setQEDInitialEvolutionScales(particles,!hard);
+    _model->partnerFinder()->setQEDInitialEvolutionScales(particles,!hard);
   if(_splittingGenerator->isInteractionON(ShowerIndex::EWK))
-    _partnerFinder->setEWKInitialEvolutionScales(particles,!hard);
+    _model->partnerFinder()->setEWKInitialEvolutionScales(particles,!hard);
 }

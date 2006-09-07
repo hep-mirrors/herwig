@@ -7,8 +7,8 @@
 
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/ShowerProgenitor.h"
-#include "Herwig++/Shower/ShowerTree.h"
+#include "Herwig++/Shower/Base/ShowerProgenitor.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
 #include "FortranReconstructor.fh"
 #include <cassert>
 
