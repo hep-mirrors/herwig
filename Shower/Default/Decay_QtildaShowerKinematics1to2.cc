@@ -13,13 +13,13 @@
 using namespace Herwig;
 
 void 
-Decay_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr theParent, 
-					      const ShowerParticleVector theChildren ) const
-{
+Decay_QtildaShowerKinematics1to2::
+updateChildren(const tShowerParticlePtr theParent, 
+	       const ShowerParticleVector theChildren ) const {
   if(theChildren.size() != 2)
     throw Exception() <<  "Decay_QtildaShowerKinematics1to2::updateChildren() " 
  		      << "Warning! too many children!" << Exception::eventerror;
-   // get the interaction type
+  // get the interaction type
   const ShowerIndex::InteractionType interaction =splittingFn()->interactionType();
   // copy scales etc
   Energy dqtilde = qtilde();
@@ -37,21 +37,24 @@ Decay_QtildaShowerKinematics1to2::updateChildren(const tShowerParticlePtr thePar
   theChildren[0]->sudPy(   pT()*sin(dphi) +     dz *theParent->sudPy() );
   theChildren[1]->sudPx( - pT()*cos(dphi) + (1.-dz)*theParent->sudPx() );
   theChildren[1]->sudPy( - pT()*sin(dphi) + (1.-dz)*theParent->sudPy() );
+  // set up the colour connections
+  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  // make the products children of the parent
+  theParent->addChild(theChildren[0]);
+  theParent->addChild(theChildren[1]);
 }
 
 void Decay_QtildaShowerKinematics1to2::
 updateParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) const
-{
+	      const ParticleVector theChildren ) const {
   throw Exception() << "Decay_QtildaShowerKinematics1to2::updateParent not implemented"
 		    << Exception::abortnow;
 }
 
 void Decay_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLast,
-						  unsigned int iopt) const
-{
-   // set beta component and consequently all missing data from that,
-   // using the nominal (i.e. PDT) mass.
+						  unsigned int iopt) const {
+  // set beta component and consequently all missing data from that,
+  // using the nominal (i.e. PDT) mass.
   Energy theMass = theLast->data().constituentMass(); 
   theLast->sudBeta( (sqr(theMass) + theLast->sudPperp2() 
    		     - sqr( theLast->sudAlpha() )*pVector().m2())

@@ -15,7 +15,40 @@ using namespace Herwig;
 void IS_QtildaShowerKinematics1to2::
 updateChildren( const tShowerParticlePtr theParent, 
 		const ShowerParticleVector theChildren ) const {
-  // this is empty...
+  // set up initial properties
+  if(theParent->children().empty()) {
+    // no z for angular ordering in backward branchings
+    const ShowerIndex::InteractionType inter=splittingFn()->interactionType();
+    theParent->setEvolutionScale(inter, qtilde());
+    theChildren[1]->setEvolutionScale(inter, (1.-z())*qtilde());
+    // set proper colour connections
+    splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],true);
+    // set proper parent/child relationships
+    theParent->addChild(theChildren[0]);
+    theParent->addChild(theChildren[1]);
+    theParent->x(theChildren[0]->x()/z());
+    // Now fix the hadrons connections
+    tPPtr hadron;
+    if(theChildren[0]->parents().size() == 2) hadron = theChildren[0]->parents()[0];
+    else throw Exception() << "IS_QtildaShowerKinematics1to2::"
+			   << "updateChildren not one parent!" 
+			   << Exception::runerror;
+    hadron->abandonChild(theChildren[0]);
+    hadron->addChild(theParent);
+  }
+  // update properties of children needed for branching
+  // time-like child
+  else {
+    theChildren[1]->sudAlpha((1.-z())*theParent->sudAlpha());
+    double cphi = cos(phi()),sphi = sin(phi());
+    theChildren[1]->sudPx((1.-z())*theParent->sudPx() - cphi*pT());
+    theChildren[1]->sudPy((1.-z())*theParent->sudPy() - sphi*pT());
+    // space-like child
+    theChildren[0]->sudAlpha(theParent->sudAlpha() - theChildren[1]->sudAlpha());
+    theChildren[0]->sudBeta( theParent->sudBeta()  - theChildren[1]->sudBeta() );
+    theChildren[0]->sudPx(   theParent->sudPx()    - theChildren[1]->sudPx()   );
+    theChildren[0]->sudPy(   theParent->sudPy()    - theChildren[1]->sudPy()   );
+  }
 }
 
 

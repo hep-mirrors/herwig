@@ -175,22 +175,6 @@ protected:
   //@}
 
   /**
-   * This method sets all the properties of the new particles from the 
-   * splitting: it fixes the hadron parent/children relations due to the 
-   * splitting and the colour information for a backward branching
-   * @param part The particle being evolved
-   * @param newparent The new initial-state particle
-   * @param otherChild The new final-state particle
-   * @param scale The scale of the branching
-   * @param z     The energy fraction
-   * @param inter The interaction
-   */
-  void createBackwardBranching(ShowerParticlePtr part, ShowerParticlePtr newparent, 
-			       ShowerParticlePtr otherChild, Energy scale,
-			       double z,
-			       ShowerIndex::InteractionType inter);
-
-  /**
    *  Switches for matrix element corrections
    */
   //@{

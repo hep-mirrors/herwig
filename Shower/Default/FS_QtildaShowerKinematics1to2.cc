@@ -39,6 +39,11 @@ updateChildren(const tShowerParticlePtr theParent,
   theChildren[0]->sudPy(   pT()*sin(dphi) +     dz *theParent->sudPy() );
   theChildren[1]->sudPx( - pT()*cos(dphi) + (1.-dz)*theParent->sudPx() );
   theChildren[1]->sudPy( - pT()*sin(dphi) + (1.-dz)*theParent->sudPy() );
+  // set up the colour connections
+  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  // make the products children of the parent
+  theParent->addChild(theChildren[0]);
+  theParent->addChild(theChildren[1]);
 }
 
 void FS_QtildaShowerKinematics1to2::
