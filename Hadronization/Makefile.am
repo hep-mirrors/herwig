@@ -5,7 +5,8 @@ Cluster.h Cluster.cc Cluster.icc \
 ClusterDecayer.cc ClusterDecayer.h ClusterDecayer.icc \
 ClusterFinder.cc ClusterFinder.h ClusterFinder.icc \
 ClusterFissioner.cc ClusterFissioner.h ClusterFissioner.icc \
-ClusterHadronizationHandler.cc ClusterHadronizationHandler.h ClusterHadronizationHandler.icc \
+ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
+ClusterHadronizationHandler.icc ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.icc \
 HadronSelector.cc HadronSelector.h HadronSelector.icc \
 LightClusterDecayer.cc LightClusterDecayer.h LightClusterDecayer.icc \
