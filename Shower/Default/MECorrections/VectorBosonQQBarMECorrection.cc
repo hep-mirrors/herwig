@@ -10,6 +10,9 @@
 #include "ThePEG/Handlers/EventHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
 
 using namespace Herwig;
 
@@ -26,8 +29,8 @@ void VectorBosonQQBarMECorrection::Init() {
 
 }
 
-bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree)
-{
+bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree,
+					     double & initial, double & final) {
    // check 4 external particles
    if(tree->incomingLines().size()!=2||tree->outgoingLines().size()!=2) return false;
    // check incoming leptons beams
@@ -45,6 +48,8 @@ bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree)
    id[1]=cit->first->progenitor()->id();
    if(id[0]!=-id[1]||abs(id[0])>6) return false;
    // otherwise can do it
+   initial=1.;
+   final  =1.;
    return true;
 }
 
@@ -76,11 +81,8 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
   if(newfs.size()!=3) return;
   // perform final check to ensure energy greater than constituent mass
   bool check = true; 
-  for (int i=0; i<2; i++)
+  for (int i=0; i<3; i++)
     if (newfs[i].e() < qq[i]->data().constituentMass()) check = false;
-  if (newfs[2].e() < showerVariables()->globalParameters()->effectiveGluonMass()&&
-      !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
-    check = false;
   // return if fails
   if (!check) return;
   // set masses

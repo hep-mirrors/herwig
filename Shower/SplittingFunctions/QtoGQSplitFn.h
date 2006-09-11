@@ -33,15 +33,10 @@ class QtoGQSplitFn: public SplittingFunction {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline QtoGQSplitFn();
-  //@}
-
-public:
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -100,21 +95,17 @@ public:
   //@}
 
   /**
-   *  Concrete implementation of the method to make the colour connections.
-   * @param parent Pair of pointers to ColourLine objects, 
-   * which are associated with, 
-   * respectively, the colour (first element of the pair) and 
-   * anticolour (second element of the pair) of the emitting particle.
-   * @param first Pair of pointers
-   * to ColourLine objects, for respectively the first 
-   * branching product. Again the first element
-   * is associated with the colour line and the second element
-   * is associated with the anticolur line.
-   * @param second As first but for the second particle.
+   * Purely virtual method which should make the proper colour connection 
+   * between the emitting parent and the branching products.
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param back Whether this is foward or backward evolution.
    */
-  virtual void colourConnection(const ColinePair & parent,
-				ColinePair & first,
-				ColinePair & second) const;
+  virtual void colourConnection(tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second,
+				const bool back) const;
 
 public:
 

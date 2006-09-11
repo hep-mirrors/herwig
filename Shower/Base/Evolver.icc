@@ -6,7 +6,8 @@
 
 namespace Herwig {
 
-inline Evolver::Evolver() : _maxtry(100) {
+inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1),
+			    _initialenhance(1.),_finalenhance(1.) {
 }
 
 inline IBPtr Evolver::clone() const {
@@ -32,12 +33,44 @@ inline bool Evolver::isFSRadiationON() const {
   return _splittingGenerator->isFSRadiationON();
 }
 
-inline ShowerVarsPtr Evolver::showerVariables() const {
-  return _showerVariables;
-}
-
 inline ShowerModelPtr Evolver::showerModel() const {
   return _model;
 }
 
+inline bool Evolver::MECOn() const {
+  return _meCorrMode > 0; 
+}
+
+inline bool Evolver::hardMEC() const {
+  return (_meCorrMode == 1 || _meCorrMode == 2); 
+}
+
+inline bool Evolver::softMEC() const {
+  return (_meCorrMode == 1 || _meCorrMode > 2); 
+}
+
+inline double Evolver::initialStateRadiationEnhancementFactor() const {
+  return _initialenhance;
+}
+
+inline double Evolver::finalStateRadiationEnhancementFactor() const {
+  return _finalenhance;
+}
+
+inline void Evolver::initialStateRadiationEnhancementFactor(double in) {
+  _initialenhance=in;
+}
+
+inline void Evolver::finalStateRadiationEnhancementFactor(double in) {
+  _finalenhance=in;
+}
+
+inline Ptr<BeamParticleData>::const_pointer 
+Evolver::beamParticle() const {
+  return _beam;
+}
+
+inline void Evolver::setBeamParticle(Ptr<BeamParticleData>::const_pointer in) {
+  _beam=in;
+}
 }

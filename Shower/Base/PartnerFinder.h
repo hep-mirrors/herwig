@@ -6,7 +6,6 @@
 //
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/ShowerVariables.h"
 #include "Evolver.fh"
 #include "PartnerFinder.fh"
 
@@ -39,11 +38,6 @@ typedef pair<tShowerParticlePtr,tShowerParticlePtr> ShowerPPair;
  * defined for PartnerFinder.
  */
 class PartnerFinder: public Interfaced {
-
-  /**
-   *  Evolver is a friend to set the showerVariables
-   */
-  friend class Evolver;
 
 public:
 
@@ -155,16 +149,6 @@ protected:
 							  const bool isDecayCase)=0;
   //@}
 
-  /**
-   *  Set the shower variables, only used by Evolver in doinit
-   */
-  inline void setShowerVariables(ShowerVarsPtr);
-
-  /**
-   *  Access to the ShowerVariables in inheriting classes
-   */
-  inline tShowerVarsPtr showerVariables() const;
-
 private:
 
   /**
@@ -185,11 +169,6 @@ private:
    *  Approach to use for setting the colour partners
    */
   int _approach;
-
-  /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
 
 };
 

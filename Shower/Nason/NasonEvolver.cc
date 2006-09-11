@@ -11,6 +11,7 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 
 using namespace Herwig;
 

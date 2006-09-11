@@ -6,13 +6,5 @@
 
 namespace Herwig {
 using namespace ThePEG;
-  
-inline void KinematicsReconstructor::showerVariables(ShowerVarsPtr in) {
-  _showerVariables=in;
-}
-
-inline ShowerVarsPtr KinematicsReconstructor::showerVariables() const {
-  return _showerVariables;
-}
 
 }

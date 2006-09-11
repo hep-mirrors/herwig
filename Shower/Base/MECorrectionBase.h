@@ -9,7 +9,8 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ShowerProgenitor.h"
-#include "ShowerTree.h"
+#include "ShowerTree.fh"
+#include "Evolver.fh"
 #include "MECorrectionBase.fh"
 
 namespace Herwig {
@@ -36,6 +37,11 @@ public:
    */
   inline MECorrectionBase();
 
+  /**
+   *  Destructor
+   */
+  virtual ~MECorrectionBase();
+
 public:
 
   /**
@@ -45,8 +51,12 @@ public:
   //@{
   /**
    *  Can the matrix element correction handle a given hard process or decay
+   * @param tree The shower tree currently being showered
+   * @param initial The initial-state radiation enhancement factor
+   * @param final   The final-state radiation enhancement factor
    */
-  virtual bool canHandle(ShowerTreePtr)=0;
+  virtual bool canHandle(ShowerTreePtr tree,double & initial,
+			 double & final)=0;
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
@@ -94,19 +104,19 @@ public:
 protected:
 
   /**
-   *  Set/Get methods for the pointer to ShowerVariables
+   *  Set/Get methods for the pointer to the evolver
    */
   //@{
   /**
-   *  Get the ShowerVariables
+   *  Set the evolver
    */
-  inline void showerVariables(ShowerVarsPtr);
-  
+  void evolver(tEvolverPtr);
+
   /**
-   *  Set the ShowerVariables
+   *  Get the evolver
    */
-  inline ShowerVarsPtr showerVariables() const;
-  //@}  
+  tEvolverPtr evolver() const;
+  //@}
 
   /**
    *  Access to the coupling
@@ -130,14 +140,14 @@ private:
 private:
 
   /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
-
-  /**
    *  Pointer to the coupling
    */
   ShowerAlphaPtr _alpha;
+
+  /**
+   *  Pointer to the Evolver object
+   */
+  EvolverPtr _evolver;
 };
 
 }

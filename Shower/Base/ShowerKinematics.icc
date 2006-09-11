@@ -6,21 +6,14 @@
 
 namespace Herwig {
 
-inline ShowerKinematics::ShowerKinematics(ShowerVarsPtr in)
+inline ShowerKinematics::ShowerKinematics()
   : Base(), 
     _isTheJetStartingPoint( false ),
-    _qtilde( Energy() ), 
-    _q0( Energy() ), 
-    _kinQ0( Energy() ),
+    _qtilde( Energy() ),
     _z( 0.0 ),
     _phi( 0.0 ),
-    _pt(0.),
-    _variables(in)
+    _pt(0.)
 {}
-
-inline ShowerVarsPtr ShowerKinematics::showerVariables() const {
-  return _variables;
-}
 
 inline Energy ShowerKinematics::qtilde() const {
   return _qtilde;
@@ -28,22 +21,6 @@ inline Energy ShowerKinematics::qtilde() const {
 
 inline void ShowerKinematics::qtilde( const Energy inputQtilde ) {
   _qtilde = inputQtilde;
-}
-
-inline Energy ShowerKinematics::resScale() const {
-  return _q0;
-}
-
-inline void ShowerKinematics::setResScale( const Energy inputQ ) {
-  _q0 = inputQ;
-}
-
-inline Energy ShowerKinematics::kinScale() const {
-  return _kinQ0;
-}
-
-inline void ShowerKinematics::setKinScale( const Energy inputQ ) {
-  _kinQ0 = inputQ;
 }
 
 inline double ShowerKinematics::z() const {

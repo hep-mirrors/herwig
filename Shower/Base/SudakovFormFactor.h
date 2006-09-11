@@ -12,7 +12,7 @@
 #include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
-#include "Herwig++/Shower/ShowerVariables.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
 
 namespace Herwig {
@@ -112,10 +112,11 @@ using namespace ThePEG;
  */
 class SudakovFormFactor: public Interfaced {
 
-/**
- *  Splitting Generator is a friend so that it can set the ShowerVariables
- */
-friend class SplittingGenerator;
+  /**
+   *  The SplittingGenerator is a friend to insert the particles in the 
+   *  branchings at initialisation
+   */
+  friend class SplittingGenerator;
 
 public:
 
@@ -134,10 +135,12 @@ public:
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
+   * @param enhance The radiation enhancement factor
    * defined.
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids,const bool cc)=0;
+				           const IdList &ids,const bool cc,
+					   double enhance)=0;
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -148,12 +151,14 @@ public:
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
+   * @param enhance The radiation enhancement factor
    */
   virtual Energy generateNextDecayBranching(const Energy startingScale,
 					    const Energy stoppingScale,
 					    const Energy minmass,
 					    const IdList &ids,
-					    const bool cc)=0;
+					    const bool cc,
+					    double enhance)=0;
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -163,10 +168,13 @@ public:
    * @param x The fraction of the beam momentum
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
+   * @param beam The beam particle
+   * @param enhance THe radiation enhancement factor
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
 		                            const IdList &ids,double x,
-					    const bool cc)=0;
+					    const bool cc,double enhance,
+					    Ptr<BeamParticleData>::transient_const_pointer beam)=0;
   //@}
 
   /**
@@ -184,24 +192,9 @@ public:
   inline tShowerAlphaPtr alpha() const;
 
   /**
-   *  Access to the ShowerVariables
-   */
-  inline tShowerVarsPtr showerVariables() const;
-
-  /**
    *  The type of interaction
    */
   inline ShowerIndex::InteractionType interactionType() const;
-
-  /**
-   *  The kinematic scale
-   */
-  inline Energy kinScale() const;
-
-  /**
-   *  The resolution scale
-   */
-  inline Energy resScale() const;
   //@}
 
 public:
@@ -273,8 +266,10 @@ protected:
    * - 0 is final-state
    * - 1 is initial-state for the hard process
    * - 2 is initial-state for particle decays
+   * @param enhance The radiation enhancement factor
    */
-  inline Energy2 guesst (Energy2 t1,unsigned int iopt) const;
+  inline Energy2 guesst (Energy2 t1,unsigned int iopt,
+			 double enhance) const;
 
   /**
    * Veto on the PDF for the initial-state shower
@@ -284,9 +279,11 @@ protected:
    *                new parent (this is the particle we evolved back to)
    * @param parton1 Pointer to the particleData for the 
    *                original particle
+   * @param beam The BeamParticleData object
    */
   bool PDFVeto(const Energy2 t, const double x,
-	       const tcPDPtr parton0, const tcPDPtr parton1) const;
+	       const tcPDPtr parton0, const tcPDPtr parton1,
+	       Ptr<BeamParticleData>::transient_const_pointer beam) const;
 
   /**
    *  The veto on the splitting function.
@@ -343,11 +340,6 @@ protected:
   //@}
 
   /**
-   *  Set the ShowerVariables
-   */
-  inline void setShowerVariables(ShowerVarsPtr);
-
-  /**
    *  Set the particles in the splittings
    */
   void addSplitting(const IdList &);
@@ -356,18 +348,6 @@ protected:
    *  Access the potential branchings
    */
   inline vector<IdList> particles() const;
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-  //@}
 
 private:
 
@@ -394,11 +374,6 @@ private:
    *  Pointer to the coupling for this Sudakov form factor
    */
   ShowerAlphaPtr _alpha;
-
-  /**
-   *  Pointer to the shower variables
-   */
-  ShowerVarsPtr _variables;
 
   /**
    * Maximum value of the PDF weight

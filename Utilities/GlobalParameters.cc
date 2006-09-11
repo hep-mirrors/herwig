@@ -21,8 +21,7 @@ using namespace Herwig;
 GlobalParameters::~GlobalParameters() {}
 
 void GlobalParameters::persistentOutput(PersistentOStream & os) const {
-  os << _effectiveGluonMass 
-     << _hadronizationScale
+  os << _hadronizationScale
      << _stringFragmentationMode 
      << _softUnderlyingEventMode
      << _minVirtuality2
@@ -30,8 +29,7 @@ void GlobalParameters::persistentOutput(PersistentOStream & os) const {
 }
 
 void GlobalParameters::persistentInput(PersistentIStream & is, int) {
-  is >> _effectiveGluonMass 
-     >> _hadronizationScale
+  is >> _hadronizationScale
      >> _stringFragmentationMode 
      >> _softUnderlyingEventMode
      >> _minVirtuality2
@@ -45,12 +43,6 @@ void GlobalParameters::Init() {
 
   static ClassDocumentation<GlobalParameters> documentation
     ("Class that stores Herwig global paramters");
-
-  static Parameter<GlobalParameters,Energy> interfaceEffectiveGluonMass 
-    ("EffectiveGluonMass",
-     "Nonperturbative effective gluon mass  (unit [GeV])",
-     &GlobalParameters::_effectiveGluonMass, 
-     GeV, 0.750*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
 
   static Parameter<GlobalParameters,Energy> interfaceHadronizationScale 
     ("HadronizationScale",

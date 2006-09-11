@@ -3,6 +3,7 @@
 #define HERWIG_ShowerTree_H
 
 #include "ThePEG/Config/ThePEG.h"
+#include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ShowerProgenitor.fh"
@@ -33,21 +34,21 @@ public:
    * Constructor for a scattering process
    * @param eh The event handler
    * @param out The outgoing particles
-   * @param vars Pointer to the ShowerVariables object to provide access to some members
+   * @param hand Pointer to the ShowerHandler to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
    */
   ShowerTree(tEHPtr eh, const ParticleVector & out,
-	     ShowerVarsPtr vars,
+	     tShowerHandlerPtr hand,
 	     multimap<Energy,ShowerTreePtr> & decay);
   
   /**
    *  Constructor for a decay
    * @param in The decaying particle
-   * @param vars Pointer to the ShowerVariables object to provide access to some members
+   * @param hand Pointer to the ShowerHandler to provide access to some members
    * @param decay Map into which the trees for any unstable particles are inserted
    * @param ch Access to the event handler
    */
-  ShowerTree(PPtr in, ShowerVarsPtr vars,multimap<Energy,ShowerTreePtr> & decay,
+  ShowerTree(PPtr in, tShowerHandlerPtr hand ,multimap<Energy,ShowerTreePtr> & decay,
 	     tEHPtr ch);
   //@}
 
@@ -303,7 +304,7 @@ private:
   /**
    *  Pointer to the shower variables
    */
-  ShowerVarsPtr _showerVariables;
+  ShowerHandlerPtr _showerHandler;
 
   /**
    *  Has this tree showered

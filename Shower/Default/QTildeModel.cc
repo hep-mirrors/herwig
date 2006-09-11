@@ -11,6 +11,7 @@
 #include "QTildeSudakov.h"
 #include "Herwig++/Shower/Default/MECorrections/QTildeMECorrection.h"
 #include "ThePEG/Utilities/Throw.h"
+#include "Herwig++/Shower/Base/Evolver.h"
 
 using namespace Herwig;
 

@@ -18,18 +18,6 @@ inline tShowerAlphaPtr SudakovFormFactor::alpha() const {
   return _alpha; 
 }
 
-inline tShowerVarsPtr SudakovFormFactor::showerVariables() const {
-  return _variables;
-}
-
-inline Energy SudakovFormFactor::kinScale() const {
-  return _variables->kinScale(); 
-}
-
-inline Energy SudakovFormFactor::resScale() const {
-  return _variables->cutoffQScale(_splittingFn->interactionType());
-}
-
 inline ShowerIndex::InteractionType  SudakovFormFactor::interactionType() const {
   return _splittingFn->interactionType();
 }
@@ -58,10 +46,6 @@ inline void SudakovFormFactor::pT(Energy in) {
   _pT=in;
 }
 
-inline void SudakovFormFactor::setShowerVariables(ShowerVarsPtr in) {
-  _variables=in;
-}
-
 inline pair<double,double> SudakovFormFactor::zLimits() const {
   return _zlimits;
 }
@@ -82,24 +66,19 @@ inline bool SudakovFormFactor::SplittingFnVeto(const Energy2 t,
   return UseRandom::rnd()>_splittingFn->ratioP(_z, t, ids,mass);
 }
 
-inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
+  inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
   return UseRandom::rnd() > _alpha->ratio(pt2);
 }
 
-inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const {
+  inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
+					   double enhance) const {
   double c = 1./((_splittingFn->integOverP(_zlimits.second) -
 		  _splittingFn->integOverP(_zlimits.first))* 
-		 _alpha->overestimateValue()/(2.*pi));
+		 _alpha->overestimateValue()/(2.*pi)*enhance);
   assert(iopt<=2);
-  if(iopt==0)
-    {return t1*pow(UseRandom::rnd(),
-		   c/_variables->finalStateRadiationEnhancementFactor());}
-  else if(iopt==1)
-    {return t1*pow(UseRandom::rnd(),
-		   c/_pdfmax/_variables->initialStateRadiationEnhancementFactor());}
-  else
-    {return t1/pow(UseRandom::rnd(),
-		   c/_variables->initialStateRadiationEnhancementFactor());}
+  if(iopt==0)      return t1*pow(UseRandom::rnd(),c);
+  else if(iopt==1) return t1*pow(UseRandom::rnd(),c/_pdfmax);
+  else             return t1/pow(UseRandom::rnd(),c);
 }
 
 inline vector<IdList> SudakovFormFactor::particles() const {

@@ -140,33 +140,15 @@ public:
   /**
    * Purely virtual method which should make the proper colour connection 
    * between the emitting parent and the branching products.
-   *
-   * @param parent Pair of pointers to ColourLine objects, 
-   * which are associated with, 
-   * respectively, the colour (first element of the pair) and 
-   * anticolour (second element of the pair) of the emitting particle.
-   * @param first Pair of pointers
-   * to ColourLine objects, for respectively the first 
-   * branching product. Again the first element
-   * is associated with the colour line and the second element
-   * is associated with the anticolur line.
-   * @param second As first but for the second particle.
-   *
-   * The ColourLine objects pointed by any of the 
-   * two elements of both pairs can be either one of object pointerd 
-   * by the radiating parent, or can be a new one (and because of that, 
-   * the pointers must be reference counted, not transient).
-   * We prefer to use ColourLine in this method
-   * rather than ShowerParticles for two reasons: first,
-   * there is no coupling between SplittingFunction class
-   * (and its derived classes) and the ShowerParticle class; 
-   * and second, we avoid repeating for each type of splitting
-   * function the same operation of setting the color lines to
-   * proper particles.
-   */ 
-  virtual void colourConnection(const ColinePair & parent,
-				ColinePair & first,
-				ColinePair & second) const = 0;
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param back Whether this is foward or backward evolution.
+   */
+  virtual void colourConnection(tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second,
+				const bool back) const=0;
 
 public:
 

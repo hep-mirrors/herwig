@@ -51,17 +51,6 @@ public:
    *  Access to the various parameters
    */
   //@{
-  /**
-   * It returns the effective gluon mass, which is necessary for
-   * the cluster hadronization handler; however, it is used also
-   * at the end of the showering, because setting the physical
-   * massless shell gluons on this effective mass shell requires
-   * kinematical reshuffling in order to conserve energy-momentum,
-   * and this procedure is the same as done in the showering to
-   * compensate the recoil of the emission.
-   */
-  inline Energy effectiveGluonMass() const;
-
   /** 
    * It returns roughly the hadronization scale, that is the energy
    * scale such that if a particle has a width above this value,

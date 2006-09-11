@@ -6,7 +6,9 @@
 
 namespace Herwig {
 
-inline QTildeFinder::QTildeFinder() {}
+inline QTildeFinder::QTildeFinder() :  _finalFinalConditions(0),
+				       _initialFinalDecayConditions(0)
+{}
 
 inline IBPtr QTildeFinder::clone() const {
   return new_ptr(*this);
@@ -16,4 +18,11 @@ inline IBPtr QTildeFinder::fullclone() const {
   return new_ptr(*this);
 }
 
+inline unsigned int QTildeFinder::finalFinalConditions() const {
+  return _finalFinalConditions;
+}
+
+inline unsigned int QTildeFinder::initialFinalDecayConditions() const {
+  return _initialFinalDecayConditions;
+}
 }

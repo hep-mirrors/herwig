@@ -8,7 +8,9 @@
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "ShowerModel.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include "ShowerTree.fh"
+#include "MECorrectionBase.fh"
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
 #include "Evolver.fh"
@@ -30,12 +32,23 @@ class Evolver: public Interfaced {
  */
 friend class ShowerHandler;
 
+/**
+ *  The MECorrectionBase class is a friend to access some protected
+ *  member functions to set the radiation enhancement factors
+ */
+friend class MECorrectionBase;
+
 public:
 
   /**
    *  Default Constructor
    */
   inline Evolver();
+
+  /**
+   *  Destructor
+   */
+  virtual ~Evolver();
 
   /**
    *  Member to perform the shower
@@ -70,11 +83,6 @@ public:
    * It returns true/false if the final-state radiation is on/off.
    */
   inline bool isFSRadiationON() const;  
-
-  /**
-   *  Get the ShowerVariables
-   */
-  inline ShowerVarsPtr showerVariables() const;
 
   /**
    *  Get the ShowerModel
@@ -183,14 +191,65 @@ protected:
 			       ShowerIndex::InteractionType inter);
 
   /**
-   * Set up the colour for the backward evolution
-   * @param newParent The new initial-state particle
-   * @param oldParent The old initial-state particle
-   * @param otherChild The outgoing final-state particle
+   *  Switches for matrix element corrections
    */
-  void setBackwardColour(ShowerParticlePtr &newParent,
-			 ShowerParticlePtr &oldParent,
-			 ShowerParticlePtr &otherChild);
+  //@{
+  /**
+   * Any ME correction?   
+   */
+  inline bool MECOn() const;
+
+  /**
+   * Any hard ME correction? 
+   */
+  inline bool hardMEC() const;
+
+  /**
+   * Any soft ME correction? 
+   */
+  inline bool softMEC() const;
+  //@}
+
+  /**
+   *  Enhancement factors for radiation needed to generate the soft matrix
+   *  element correction.
+   */
+  //@{
+  /**
+   *  Access the enhancement factor for initial-state radiation
+   */
+  inline double initialStateRadiationEnhancementFactor() const;
+
+  /**
+   *  Access the enhancement factor for final-state radiation
+   */
+  inline double finalStateRadiationEnhancementFactor() const;
+
+  /**
+   *  Set the enhancement factor for initial-state radiation
+   */
+  inline void initialStateRadiationEnhancementFactor(double);
+
+  /**
+   *  Set the enhancement factor for final-state radiation
+   */
+  inline void finalStateRadiationEnhancementFactor(double);
+  //@}
+
+  /**
+   * Access/set the beam particle for the current initial-state shower
+   */
+  //@{
+  /**
+   *  Get the beam particle data
+   */
+  inline Ptr<BeamParticleData>::const_pointer beamParticle() const;
+
+  /**
+   *  Set the beam particle data
+   */
+  inline void setBeamParticle(Ptr<BeamParticleData>::const_pointer);
+  //@}
 
 protected:
 
@@ -213,13 +272,6 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  virtual void doinit() throw(InitException);
-
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
@@ -254,6 +306,16 @@ private:
   SplittingGeneratorPtr _splittingGenerator;
 
   /**
+   *  Maximum number of tries to generate the shower of a particular tree
+   */
+  unsigned int _maxtry;
+
+  /**
+   * Matrix element correction switch
+   */
+  unsigned int _meCorrMode; 
+
+  /**
    *  The progenitor of the current shower
    */
   ShowerProgenitorPtr _progenitor;
@@ -262,11 +324,6 @@ private:
    *  Matrix element correction used for the current shower
    */
   MECorrectionPtr _currentme;
-  
-  /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
 
   /**
    * The ShowerTree currently being showered
@@ -274,9 +331,25 @@ private:
   ShowerTreePtr _currenttree;
 
   /**
-   *  Maximum number of tries to generate the shower of a particular tree
+   *  Radiation enhancement factors for use with the veto algorithm
+   *  if needed by the soft matrix element correction 
    */
-  unsigned int _maxtry;
+  //@{
+  /**
+   *  Enhancement factor for initial-state radiation
+   */
+  double _initialenhance;
+
+  /**
+   *  Enhancement factor for final-state radiation
+   */
+  double _finalenhance;
+  //@}
+
+  /**
+   *  The beam particle data for the current initial-state shower
+   */
+  Ptr<BeamParticleData>::const_pointer _beam;
 };
 
 }

@@ -38,11 +38,11 @@ ACL(const ShowerParticleVector::const_iterator & a) {
 }
 
 void PartnerFinder::persistentOutput(PersistentOStream & os) const {
-  os << _approach << _showerVariables;
+  os << _approach;
 }
 
 void PartnerFinder::persistentInput(PersistentIStream & is, int) {
-  is >> _approach >> _showerVariables;
+  is >> _approach;
 }
 
 AbstractClassDescription<PartnerFinder> PartnerFinder::initPartnerFinder;

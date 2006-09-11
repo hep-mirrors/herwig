@@ -8,8 +8,7 @@ namespace Herwig {
 
 inline IS_QtildaShowerKinematics1to2::
 IS_QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
-			       const Lorentz5Momentum & n,
-			       ShowerVarsPtr in) :
-  QtildaShowerKinematics1to2(p,n,in)
+			       const Lorentz5Momentum & n) :
+  QtildaShowerKinematics1to2(p,n)
 {}
 }

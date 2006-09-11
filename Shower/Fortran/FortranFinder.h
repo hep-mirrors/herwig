@@ -7,7 +7,6 @@
 
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
-#include "Herwig++/Shower/ShowerVariables.h"
 #include "FortranFinder.fh"
 
 namespace Herwig {

@@ -47,6 +47,11 @@ public:
   inline ShowerModel();
 
   /**
+   * The destructor
+   */
+  virtual ~ShowerModel();
+
+  /**
    *  Access methods to access the objects
    */
   //@{

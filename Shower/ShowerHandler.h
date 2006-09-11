@@ -28,13 +28,15 @@ class ShowerHandler: public CascadeHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline ShowerHandler();
-  //@}
+  ShowerHandler();
+
+  /**
+   *  Destructor
+   */
+  virtual ~ShowerHandler();
 
 public:
 
@@ -42,6 +44,13 @@ public:
    * The main method which manages the all showering.
    */
   virtual void cascade();
+
+  /**
+   * It returns true if the particle with the specified id
+   * is in the list of those that should be decayed during the showering
+   * showering.
+   */
+  inline bool decayInShower(const long id) const;
 
 public:
 
@@ -77,13 +86,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -107,12 +116,24 @@ protected:
    * Find the final unstable time-like parent of a particle
    * @param parent The ultimate parent for the decaying particle
    */
-  inline PPtr findParent(PPtr parent) const;
+  PPtr findParent(PPtr parent) const;
 
   /**
    *  Make the remnant after the shower
    */
   void makeRemnants();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+  //@}
 
 private:
 
@@ -140,6 +161,18 @@ private:
    *   main showering loop
    */
   unsigned int _maxtry;
+
+  /**
+   *  PDG codes of the particles which decay during showering
+   *  this is fast storage for use during running
+   */
+  set<long> _particlesDecayInShower;
+
+  /**
+   *  PDG codes of the particles which decay during showering
+   *  this is a vector that is interfaced so they can be changed
+   */
+  vector<long> _inputparticlesDecayInShower;
 
   /**
    *  The ShowerTree for the hard process

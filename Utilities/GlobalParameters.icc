@@ -7,7 +7,6 @@
 namespace Herwig {
 
 inline GlobalParameters::GlobalParameters() :
-  _effectiveGluonMass( 0.750*GeV ), 
   _hadronizationScale( 0.5*GeV ), 
   _stringFragmentationMode( 0 ),
   _softUnderlyingEventMode( 0 ),
@@ -16,8 +15,7 @@ inline GlobalParameters::GlobalParameters() :
 {}
 
 inline GlobalParameters::GlobalParameters(const GlobalParameters & x)
-  : Interfaced(x),
-    _effectiveGluonMass( x._effectiveGluonMass ),
+  : Interfaced(x),    
     _hadronizationScale( x._hadronizationScale ), 
     _stringFragmentationMode( x._stringFragmentationMode ),
     _softUnderlyingEventMode( x._softUnderlyingEventMode ),
@@ -32,11 +30,6 @@ inline IBPtr GlobalParameters::clone() const {
 inline IBPtr GlobalParameters::fullclone() const {
   return new_ptr(*this);
 }
-
-inline Energy GlobalParameters::effectiveGluonMass() const {
-  return _effectiveGluonMass;
-}
-
 
 inline Energy GlobalParameters::hadronizationScale() const {
   return _hadronizationScale;

@@ -71,22 +71,6 @@ public:
 
 public:
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -95,44 +79,19 @@ public:
    */
   static void Init();
 
-protected:
-
-  /**
-   *  Set/Get methods for the pointer to ShowerVariables
-   */
-  //@{
-  
-  /**
-   *  Set the ShowerVariables
-   */
-  inline void showerVariables(ShowerVarsPtr);
-  
-  /**
-   *  Get the ShowerVariables
-   */
-  inline ShowerVarsPtr showerVariables() const;
-  //@}
-
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static AbstractClassDescription<KinematicsReconstructor> initKinematicsReconstructor;
+  static AbstractNoPIOClassDescription<KinematicsReconstructor> initKinematicsReconstructor;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   KinematicsReconstructor & operator=(const KinematicsReconstructor &);
-
-private:
-
-  /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
 };
 
 }

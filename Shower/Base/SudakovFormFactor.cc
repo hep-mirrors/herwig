@@ -15,11 +15,11 @@
 using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _splittingFn << _alpha << _variables << _pdfmax << _particles;
+  os << _splittingFn << _alpha << _pdfmax << _particles;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingFn >> _alpha >> _variables >> _pdfmax >> _particles;
+  is >> _splittingFn >> _alpha >> _pdfmax >> _particles;
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
@@ -51,16 +51,16 @@ void SudakovFormFactor::Init() {
 
 }
 
-bool SudakovFormFactor::PDFVeto(const Energy2 t, 
-				const double x,
-				const tcPDPtr parton0, 
-				const tcPDPtr parton1) const {
-  assert(_variables->currentPDF());
+bool SudakovFormFactor::
+PDFVeto(const Energy2 t, const double x,
+	const tcPDPtr parton0, const tcPDPtr parton1,
+	Ptr<BeamParticleData>::transient_const_pointer beam) const {
+  tcPDFPtr pdf=beam->pdf();
+  assert(pdf);
   // remember: pdf's q is cut in pdf class.  should probably be done here! 
   // this would correspond to QSPAC in F-HERWIG. 
-  double ratio = 
-    _variables->currentPDF()->xfx(_variables->beamParticle(),parton0,t,x/z())/
-    _variables->currentPDF()->xfx(_variables->beamParticle(),parton1,t,x);
+  double ratio = pdf->xfx(beam,parton0,t,x/z())/
+                 pdf->xfx(beam,parton1,t,x);
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > _pdfmax) {
     generator()->log() << "PDFVeto warning: Ratio (" << ratio 
@@ -68,16 +68,6 @@ bool SudakovFormFactor::PDFVeto(const Energy2 t,
 			    <<_pdfmax <<")\n";
   }
   return ratio < UseRandom::rnd()*_pdfmax;
-}
-
-void SudakovFormFactor::doinit() throw(InitException) {
-  cerr << "testing branchings for " << fullName() << "\n";
-  for(unsigned int ix=0;ix<_particles.size();++ix) {
-    cerr << _particles[ix][0] << " " 
-	 << _particles[ix][1] << " " 
-	 << _particles[ix][2] << "\n"; 
-  }
-  Interfaced::doinit();
 }
 
 void SudakovFormFactor::addSplitting(const IdList & in) {

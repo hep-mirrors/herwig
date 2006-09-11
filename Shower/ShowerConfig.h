@@ -6,7 +6,6 @@
 
 #include "Herwig++/Config/Herwig.h"
 #include "Base/ShowerParticle.fh"
-#include "ShowerVariables.fh"
 #include "Base/ShowerKinematics.fh" 
 
 namespace Herwig { 

@@ -256,8 +256,7 @@ PPtr Cluster::fullclone() const {
 }
 
 bool Cluster::initPerturbative(tPPtr p) {
-  Energy Q0 = Energy();
-  if(_globalParameters) Q0 = _globalParameters->effectiveGluonMass();
+  Energy Q0 = CurrentGenerator::current().getParticleData(ParticleID::g)->constituentMass();
   if(p->scale() > Q0*Q0) return true;
   return false;
 }

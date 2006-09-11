@@ -9,16 +9,9 @@
 
 using namespace Herwig;
 
-AbstractClassDescription<KinematicsReconstructor> KinematicsReconstructor::initKinematicsReconstructor;
+AbstractNoPIOClassDescription<KinematicsReconstructor> KinematicsReconstructor::initKinematicsReconstructor;
 // Definition of the static class description member.
 
-void KinematicsReconstructor::persistentOutput(PersistentOStream & os) const {
-  os << _showerVariables;
-}
-
-void KinematicsReconstructor::persistentInput(PersistentIStream & is, int) {
-  is >> _showerVariables;
-}
 
 void KinematicsReconstructor::Init() {
 

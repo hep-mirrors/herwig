@@ -12,14 +12,17 @@ inline void ShowerTree::hardMatrixElementCorrection(bool in) {
 }
 
 inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::incomingLines() { return _incomingLines; }
+ShowerTree::incomingLines() { 
+  return _incomingLines; 
+}
 
 inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::outgoingLines() { return _outgoingLines; }
+ShowerTree::outgoingLines() { 
+  return _outgoingLines; 
+}
 
 inline void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
-					       const ShowerParticleVector & children)
-{
+					       const ShowerParticleVector & children) {
   assert(children.size()==2);
   _forward.erase(parent);
   for(unsigned int ix=0; ix<children.size(); ++ix) {
@@ -29,34 +32,34 @@ inline void ShowerTree::addFinalStateBranching(ShowerParticlePtr parent,
 
 inline void ShowerTree::addInitialStateBranching(ShowerParticlePtr oldParent,
 						 ShowerParticlePtr newParent,
-						 ShowerParticlePtr otherChild)
-{
+						 ShowerParticlePtr otherChild) {
   _backward.erase(oldParent);
   _backward.insert(newParent);
   _forward.insert(otherChild);
 }
 
 inline tShowerParticlePtr 
-ShowerTree::getFinalStateShowerProduct(ShowerProgenitorPtr progenitor)
-{
+ShowerTree::getFinalStateShowerProduct(ShowerProgenitorPtr progenitor) {
   return _outgoingLines.find(progenitor)==_outgoingLines.end()
     ? tShowerParticlePtr() : _outgoingLines[progenitor];
 }
 
-inline bool ShowerTree::isHard() const   {return  _wasHard;} 
+inline bool ShowerTree::isHard() const   {
+  return  _wasHard;
+} 
 
-inline bool ShowerTree::isDecay() const  {return !_wasHard;}
+inline bool ShowerTree::isDecay() const  {
+  return !_wasHard;
+}
 
-inline void ShowerTree::setParents()
-{
+inline void ShowerTree::setParents() {
   // set the parent tree of the children
   map<tShowerTreePtr,pair<tShowerProgenitorPtr,tShowerParticlePtr> >::const_iterator tit;
   for(tit=_treelinks.begin();tit!=_treelinks.end();++tit)
     tit->first->_parent=this;
 }
 
-inline void ShowerTree::fillEventRecord(StepPtr pstep, bool ISR, bool FSR)
-{
+inline void ShowerTree::fillEventRecord(StepPtr pstep, bool ISR, bool FSR) {
   if(_wasHard) insertHard(pstep,ISR,FSR);
   else         insertDecay(pstep,ISR,FSR);
 }

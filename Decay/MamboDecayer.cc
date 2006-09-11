@@ -32,11 +32,11 @@ bool MamboDecayer::accept(const DecayMode & dm) const {
 }
 
 void MamboDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _maxweight << global;
+  os << _maxweight;
 }
 
 void MamboDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _maxweight >> global;
+  is >> _maxweight;
 }
 
 ClassDescription<MamboDecayer> MamboDecayer::initMamboDecayer;
@@ -53,12 +53,6 @@ void MamboDecayer::Init() {
      "Maximum phase-space weight",
      &MamboDecayer::_maxweight, 10.0, 1.0, 50.,
      false, false, true);
-
-  
-  static Reference<MamboDecayer,GlobalParameters> interfaceGlobalParameters
-    ("GlobalParameters",
-     "The class that has effectiveGluonMass",
-     &MamboDecayer::global, false, false, true, false);
  
 }
 
@@ -73,25 +67,25 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
     }
   double totalMass(0.0);
   vector<Lorentz5Momentum> productMomentum(N);
-  Energy gluMass = global->effectiveGluonMass();
+  Energy gluMass = getParticleData(ParticleID::g)->constituentMass();
   for(int i = 0; i < N; ++i) {
-        if (children[i]->id() == 21) {
-	productMomentum[i].setMass(gluMass);
-	}
-      else {
-	productMomentum[i].setMass(children[i]->constituentMass());
-      }
-	totalMass += children[i]->constituentMass();
-  }
-
-  if(totalMass > parent.mass()) {
-      generator()->log() << "MamboDecayer: The Decay mode " 
-			 << dm.tag() << " cannot "
-			 << "proceed, not enough phase space\n";
-      out.clear();
-      return out;
+    if (children[i]->id() == 21) {
+      productMomentum[i].setMass(gluMass);
     }
-
+    else {
+      productMomentum[i].setMass(children[i]->constituentMass());
+    }
+    totalMass += children[i]->constituentMass();
+  }
+  
+  if(totalMass > parent.mass()) {
+    generator()->log() << "MamboDecayer: The Decay mode " 
+		       << dm.tag() << " cannot "
+		       << "proceed, not enough phase space\n";
+    out.clear();
+    return out;
+  }
+  
   double wgt(0.);
   do {
     wgt = calculateMomentum(productMomentum,parent.mass());

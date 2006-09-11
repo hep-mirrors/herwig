@@ -6,7 +6,7 @@
 #include "Evolver.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
-#include "ThePEG/Interface/RefVector.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -25,25 +25,21 @@
 
 using namespace Herwig;
 
+Evolver::~Evolver() {}
+
 void Evolver::persistentOutput(PersistentOStream & os) const {
-  os << _model << _splittingGenerator << _showerVariables << _maxtry;
+  os << _model << _splittingGenerator << _maxtry << _meCorrMode;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> _splittingGenerator >> _showerVariables >> _maxtry;
-}
-
-void Evolver::doinit() throw(InitException) {
-  Interfaced::doinit();
-  _splittingGenerator->setShowerVariables(_showerVariables);
-  _model->partnerFinder()->setShowerVariables(_showerVariables);
+  is >> _model >> _splittingGenerator >> _maxtry >> _meCorrMode;
 }
 
 void Evolver::doinitrun() {
   Interfaced::doinitrun();
-  for(unsigned int ix=0;ix<_model->meCorrections().size();++ix)
-    {_model->meCorrections()[ix]->showerVariables(_showerVariables);}
-  _model->kinematicsReconstructor()->showerVariables(_showerVariables);
+  for(unsigned int ix=0;ix<_model->meCorrections().size();++ix) {
+    _model->meCorrections()[ix]->evolver(this);
+  }
 }
 
 ClassDescription<Evolver> Evolver::initEvolver;
@@ -66,18 +62,25 @@ void Evolver::Init() {
      "The pointer to the object which defines the shower evolution model.",
      &Evolver::_model, false, false, true, false, false);
 
-  static Reference<Evolver,ShowerVariables> 
-    interfaceShowerVariables("ShowerVariables", 
-			       "A reference to the ShowerVariables object", 
-			       &Herwig::Evolver::_showerVariables,
-			       false, false, true, false);
-
   static Parameter<Evolver,unsigned int> interfaceMaxTry
     ("MaxTry",
      "The maximum number of attempts to generate the shower from a"
      " particular ShowerTree",
      &Evolver::_maxtry, 100, 1, 1000,
      false, false, Interface::limited);
+
+  static Switch<Evolver, unsigned int> ifaceMECorrMode
+    ("MECorrMode",
+     "Choice of the ME Correction Mode",
+     &Evolver::_meCorrMode, 1, false, false);
+  static SwitchOption off
+    (ifaceMECorrMode,"MEC-off","MECorrections off", 0);
+  static SwitchOption on
+    (ifaceMECorrMode,"MEC-on","hard+soft on", 1);
+  static SwitchOption hard
+    (ifaceMECorrMode,"MEC-hard","only hard on", 2);
+  static SwitchOption soft
+    (ifaceMECorrMode,"MEC-soft","only soft on", 3);
 
 }
 
@@ -103,15 +106,12 @@ void Evolver::showerHardProcess(ShowerTreePtr hard)
 	      // only consider initial-state particles
 	      if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	      // get the PDF
-	      Ptr<BeamParticleData>::const_pointer 
-		beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
+	      _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
 		(particlesToShower[ix]->original()->parents()[0]->dataPtr());
-	      if(!beam) throw Exception() << "The Beam particle does not have"
-					  << " BeamParticleData in Evolver::" 
-					  << "showerhardProcess()" 
-					  << Exception::runerror;
-	      _showerVariables->setBeamParticle(beam);
-	      _showerVariables->setCurrentPDF(beam->pdf());
+	      if(!_beam) throw Exception() << "The Beam particle does not have"
+					   << " BeamParticleData in Evolver::" 
+					   << "showerhardProcess()" 
+					   << Exception::runerror;
 	      // perform the shower
 	      _progenitor=particlesToShower[ix];
 	      _progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor()));
@@ -143,14 +143,16 @@ void Evolver::hardMatrixElementCorrection()
   // set me correction to null pointer
   _currentme=MECorrectionPtr();
   // set the initial enhancement factors for the soft correction
-  _showerVariables->initialStateRadiationEnhancementFactor(1.);
-  _showerVariables->finalStateRadiationEnhancementFactor(1.);
+  _initialenhance=1.;
+  _finalenhance  =1.;
   // if hard matrix element switched off return
-  if(!_showerVariables->MECOn()) return;
+  if(!MECOn()) return;
   // see if there is an appropraite matrix element correction
   for(unsigned int ix=0;ix<_model->meCorrections().size();++ix)
     {
-      if(!_model->meCorrections()[ix]->canHandle(_currenttree)) continue;
+      double initial,final;
+      if(!_model->meCorrections()[ix]->canHandle(_currenttree,
+						 initial,final)) continue;
       if(_currentme)
 	{
 	  ostringstream output;
@@ -167,13 +169,16 @@ void Evolver::hardMatrixElementCorrection()
 	  output << "in Evolver::hardMatrixElementCorrection()\n";
 	  throw Exception() << output << Exception::runerror;
 	}
-      else _currentme=_model->meCorrections()[ix];
+      else {
+	_currentme=_model->meCorrections()[ix];
+	_initialenhance = initial;
+	_finalenhance   = final;
+      }
     }
   // if no suitable me correction
   if(!_currentme) return; 
   // now apply the hard correction
-  if(_showerVariables->hardMEC())
-    _currentme->applyHardMatrixElementCorrection(_currenttree);
+  if(hardMEC()) _currentme->applyHardMatrixElementCorrection(_currenttree);
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle)
@@ -184,9 +189,9 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle)
   while (vetoed) 
     {
       vetoed = false; 
-      fb=_splittingGenerator->chooseForwardBranching(*particle);
+      fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance);
       // apply vetos if needed
-      if(fb.kinematics && fb.sudakov && _currentme && _showerVariables->softMEC())
+      if(fb.kinematics && fb.sudakov && _currentme && softMEC())
 	vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
     }
   // if no branching set decay matrix and return
@@ -228,25 +233,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle)
   particle->showerKinematics()->updateChildren(particle, theChildren);
   // In the case of splittings which involves coloured particles,
   // set properly the colour flow of the branching.
-  // Notice that the methods:  ColourLine::addColoured  and
-  // ColourLine::addAntiColoured  automatically set also,
-  // respectively, the colourLine and antiColourLine of the 
-  // Particle  object they received as argument.
-  ColinePair parentColinePair = ColinePair(particle->colourLine(), 
-					   particle->antiColourLine());
-  ColinePair showerProduct1ColinePair = ColinePair();
-  ColinePair showerProduct2ColinePair = ColinePair();
-  splitF->colourConnection(parentColinePair,
-			   showerProduct1ColinePair, 
-			   showerProduct2ColinePair);
-  if ( showerProduct1ColinePair.first )
-    showerProduct1ColinePair.first->addColoured( showerProduct1 );
-  if ( showerProduct1ColinePair.second ) 
-    showerProduct1ColinePair.second->addAntiColoured( showerProduct1 );
-  if ( showerProduct2ColinePair.first ) 
-    showerProduct2ColinePair.first->addColoured( showerProduct2 );
-  if ( showerProduct2ColinePair.second ) 
-    showerProduct2ColinePair.second->addAntiColoured( showerProduct2 );
+  splitF->colourConnection(particle,showerProduct1,showerProduct2,false);
   particle->addChild(showerProduct1);
   particle->addChild(showerProduct2);
   // update the history if needed
@@ -268,161 +255,75 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle)
   return true;
 }
 
-void Evolver::setBackwardColour(ShowerParticlePtr &newParent,
-				ShowerParticlePtr &oldParent,
-				ShowerParticlePtr &otherChild) {
-  ColinePair parent = ColinePair();
-  ColinePair child1 = ColinePair(oldParent->colourLine(),oldParent->antiColourLine());
-  ColinePair child2 = ColinePair();
-  // We had a colour octet
-  if(child1.first && child1.second) 
-    {
-      if(newParent->id() == ParticleID::g) 
-	{
-	  if (UseRandom::rndbool()) 
-	    {
-	      parent.first = child1.first;
-	      child2.first = child1.second;
-	      parent.second = new_ptr(ColourLine());
-	      child2.second = parent.second;
-	    } 
-	  else 
-	    {
-	      parent.second = child1.second;
-	      child2.second = child1.first;
-	      parent.first = new_ptr(ColourLine());
-	      child2.first = parent.first;
-	    }
-	} 
-      // a 3 bar state
-      else 
-	{
-	  if(newParent->id() < 0) 
-	    {
-	      parent.second = child1.second;
-	      child2.second = child1.first;
-	    } 
-	  // colour triplet
-	  else 
-	    {
-	      parent.first = child1.first;
-	      child2.first = child1.second;
-	    }
-	}
-    } 
-  // The child is a colour triplet
-  else if(child1.first) 
-    { 
-      // colour octet
-      if(newParent->hasColour() && newParent->hasAntiColour()) 
-	{ 
-	  parent.first = child1.first;
-	  parent.second = child2.second = new_ptr(ColourLine());
-	} 
-      // it must be a colour triplet, so child2 is a colour octet
-      else 
-	{ 
-	  child2.second = child1.first;
-	  child2.first = parent.first = new_ptr(ColourLine());
-	}
-    } 
-  // The child is a 3 bar state
-  else if(child1.second) 
-    { 
-      // colour octet
-      if(newParent->hasColour() && newParent->hasAntiColour()) 
-	{
-	  parent.second = child1.second;
-	  parent.first = child2.first = new_ptr(ColourLine());
-	} 
-      // it must be a colour triplet, so child2 is a colour octet
-      else { 
-	child2.first = child1.second;
-	child2.second = parent.second = new_ptr(ColourLine());
-      }
-    } 
-  else throw Exception() << "Evolver::setBackwardColour() "
-			 << "No colour info for parton!\n"
-			 << Exception::eventerror;
-  if(parent.first) parent.first->addColoured(newParent);
-  if(parent.second) parent.second->addAntiColoured(newParent);
-  if(child2.first) child2.first->addColoured(otherChild);
-  if(child2.second) child2.second->addAntiColoured(otherChild);
-}
-
-bool Evolver::spaceLikeShower(tShowerParticlePtr particle)
-{
+bool Evolver::spaceLikeShower(tShowerParticlePtr particle) {
   Timer<1006> timer("Evolver::spaceLikeShower");
-   bool vetoed(true);
-   Branching bb;
-   // generate branching
-   while (vetoed)
-     {
-       vetoed=false;
-       bb=_splittingGenerator->chooseBackwardBranching(*particle);
-       // apply the soft correction
-       if(bb.kinematics && bb.sudakov && _currentme && _showerVariables->softMEC())
-	 vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
-     }
-   if(!bb.kinematics||!bb.sudakov) return false;
-   // assign the splitting function and shower kinematics
-   tSplittingFnPtr splitF = bb.sudakov->splittingFn();
-   assert(splitF);
-   particle->setShowerKinematics(bb.kinematics);
-   particle->setSplittingFn(splitF); 
-   // For the time being we are considering only 1->2 branching
-   // particles as in Sudakov form factor
-   tcPDPtr part[2]={getParticleData(bb.ids[0]),
-		    getParticleData(bb.ids[2])};
-   if(particle->id()!=bb.ids[1])
-     {
-       if(part[0]->CC()) part[0]=part[0]->CC();
-       if(part[1]->CC()) part[1]=part[1]->CC();
-     }
-   // Now create the actual particles, make the otherChild a final state
-   // particle, while the newParent is not
-   ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0]));
-   newParent->setFinalState(false);
-   ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1]));
-   otherChild->setFinalState(true);
-   otherChild->setInitiatesTLS(true);
-   // Set up the colour connections and the parent/child relationships
-   createBackwardBranching(particle,newParent,otherChild,
-			   particle->showerKinematics()->qtilde(),
-			   particle->showerKinematics()->z(),
-			   splitF->interactionType());
-   // update the history if needed
-   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
-   _currenttree->addInitialStateBranching(particle,newParent,otherChild);
-   // now continue the shower
-   bool emitted=spaceLikeShower(newParent);
-   //bool emitted=false;
-   // now reconstruct the momentum
-   if(!emitted)
-     bb.kinematics->updateLast(newParent,0);
-   // update properties of children needed for branching
-   // time-like child
-   // the alpha decomposition variable
-   double z(bb.kinematics->z());
-   double alpha(newParent->sudAlpha());
-   otherChild->sudAlpha((1.-z)*alpha);
-   // the transverse momentum
-   double cphi = cos(bb.kinematics->phi());
-   double sphi = sin(bb.kinematics->phi());
-   Energy pt = bb.kinematics->pT();
-   Energy kx = (1.-z)*newParent->sudPx() - cphi*pt;
-   Energy ky = (1.-z)*newParent->sudPy() - sphi*pt; 
-   otherChild->sudPx(kx);
-   otherChild->sudPy(ky);
-   // space-like child
-   particle->sudAlpha(newParent->sudAlpha() - otherChild->sudAlpha());
-   particle->sudBeta( newParent->sudBeta()  - otherChild->sudBeta() );
-   particle->sudPx(   newParent->sudPx()    - otherChild->sudPx()   );
-   particle->sudPy(   newParent->sudPy()    - otherChild->sudPy()   );
-   // perform the shower of the final-state particle
-   timeLikeShower(otherChild);
-   // return the emitted
-   return true;
+  bool vetoed(true);
+  Branching bb;
+  // generate branching
+  while (vetoed) {
+    vetoed=false;
+    bb=_splittingGenerator->chooseBackwardBranching(*particle,_initialenhance,_beam);
+    // apply the soft correction
+    if(bb.kinematics && bb.sudakov && _currentme && softMEC())
+      vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
+  }
+  if(!bb.kinematics||!bb.sudakov) return false;
+  // assign the splitting function and shower kinematics
+  tSplittingFnPtr splitF = bb.sudakov->splittingFn();
+  assert(splitF);
+  particle->setShowerKinematics(bb.kinematics);
+  particle->setSplittingFn(splitF); 
+  // For the time being we are considering only 1->2 branching
+  // particles as in Sudakov form factor
+  tcPDPtr part[2]={getParticleData(bb.ids[0]),
+		   getParticleData(bb.ids[2])};
+  if(particle->id()!=bb.ids[1]) {
+    if(part[0]->CC()) part[0]=part[0]->CC();
+    if(part[1]->CC()) part[1]=part[1]->CC();
+  }
+  // Now create the actual particles, make the otherChild a final state
+  // particle, while the newParent is not
+  ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0]));
+  newParent->setFinalState(false);
+  ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1]));
+  otherChild->setFinalState(true);
+  otherChild->setInitiatesTLS(true);
+  // Set up the colour connections and the parent/child relationships
+  createBackwardBranching(particle,newParent,otherChild,
+			  particle->showerKinematics()->qtilde(),
+			  particle->showerKinematics()->z(),
+			  splitF->interactionType());
+  // update the history if needed
+  _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
+  _currenttree->addInitialStateBranching(particle,newParent,otherChild);
+  // now continue the shower
+  bool emitted=spaceLikeShower(newParent);
+  //bool emitted=false;
+  // now reconstruct the momentum
+  if(!emitted) bb.kinematics->updateLast(newParent,0);
+  // update properties of children needed for branching
+  // time-like child
+  // the alpha decomposition variable
+  double z(bb.kinematics->z());
+  double alpha(newParent->sudAlpha());
+  otherChild->sudAlpha((1.-z)*alpha);
+  // the transverse momentum
+  double cphi = cos(bb.kinematics->phi());
+  double sphi = sin(bb.kinematics->phi());
+  Energy pt = bb.kinematics->pT();
+  Energy kx = (1.-z)*newParent->sudPx() - cphi*pt;
+  Energy ky = (1.-z)*newParent->sudPy() - sphi*pt; 
+  otherChild->sudPx(kx);
+  otherChild->sudPy(ky);
+  // space-like child
+  particle->sudAlpha(newParent->sudAlpha() - otherChild->sudAlpha());
+  particle->sudBeta( newParent->sudBeta()  - otherChild->sudBeta() );
+  particle->sudPx(   newParent->sudPx()    - otherChild->sudPx()   );
+  particle->sudPy(   newParent->sudPy()    - otherChild->sudPy()   );
+  // perform the shower of the final-state particle
+  timeLikeShower(otherChild);
+  // return the emitted
+  return true;
 }
 
 void Evolver::createBackwardBranching(ShowerParticlePtr part,
@@ -441,7 +342,7 @@ void Evolver::createBackwardBranching(ShowerParticlePtr part,
   theChildren.push_back(otherChild); 
   part->showerKinematics()->updateChildren(part, theChildren);
   // *** set proper colour connections
-  setBackwardColour(newParent,part,otherChild);
+  part->splitFun()->colourConnection(newParent,part,otherChild,true);
   // *** set proper parent/child relationships
   newParent->addChild(part);
   newParent->addChild(otherChild);
@@ -526,9 +427,10 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
   while (vetoed) 
     {
       vetoed = false;
-      fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass);
+      fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
+						   _initialenhance);
       // apply the soft correction
-      if(fb.kinematics && fb.sudakov && _currentme && _showerVariables->softMEC())
+      if(fb.kinematics && fb.sudakov && _currentme && softMEC())
 	vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
     }
   // if no branching set decay matrix and return
@@ -570,25 +472,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
   particle->showerKinematics()->updateChildren(particle, theChildren);
   // In the case of splittings which involves coloured particles,
   // set properly the colour flow of the branching.
-  // Notice that the methods:  ColourLine::addColoured  and
-  // ColourLine::addAntiColoured  automatically set also,
-  // respectively, the colourLine and antiColourLine of the 
-  // Particle  object they received as argument.
-  ColinePair parentColinePair = ColinePair(particle->colourLine(), 
-					   particle->antiColourLine());
-  ColinePair showerProduct1ColinePair = ColinePair();
-  ColinePair showerProduct2ColinePair = ColinePair();
-  splitF->colourConnection(parentColinePair,
-			   showerProduct1ColinePair, 
-			   showerProduct2ColinePair);
-  if ( showerProduct1ColinePair.first )
-    showerProduct1ColinePair.first->addColoured( showerProduct1 );
-  if ( showerProduct1ColinePair.second ) 
-    showerProduct1ColinePair.second->addAntiColoured( showerProduct1 );
-  if ( showerProduct2ColinePair.first ) 
-    showerProduct2ColinePair.first->addColoured( showerProduct2 );
-  if ( showerProduct2ColinePair.second ) 
-    showerProduct2ColinePair.second->addAntiColoured( showerProduct2 );
+  splitF->colourConnection(particle,showerProduct1,showerProduct2,false);
   particle->addChild(showerProduct1);
   particle->addChild(showerProduct2);
   // update the history if needed

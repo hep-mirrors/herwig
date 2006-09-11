@@ -8,11 +8,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGammaSplitFn.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -60,17 +57,32 @@ double QtoQGammaSplitFn::invIntegOverP(const double r) const {
   return 1. - exp(-r/2.); 
 }
 
-void QtoQGammaSplitFn::colourConnection(const ColinePair &parent,
-					ColinePair &first,
-					ColinePair &second) const {
-  
-  // Return immediately if the input is inconsistent.
-  if((!parent.first && !parent.second) || (parent.first && parent.second))
-    return;
-  
-  // second should be Gamma, doesn't get colour, of course. 
-  first = parent;
-  second = ColinePair();
+void QtoQGammaSplitFn::colourConnection(tShowerParticlePtr parent,
+					tShowerParticlePtr first,
+					tShowerParticlePtr second,
+					const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert(( cparent.first && !cparent.second) || 
+	   (!cparent.first &&  cparent.second));
+    // q -> q gamma
+    if(cparent.first) cparent.first->addColoured(first);
+    // qbar -> qbar gamma
+    else              cparent.second->addAntiColoured(first);
+  }
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(( cfirst.first && !cfirst.second) ||
+	   (!cfirst.first &&  cfirst.second));
+    // q -> q gamma
+    if(cfirst.first) cfirst.first->addColoured(parent);
+    // qbar -> qbar gamma
+    else             cfirst.second->addAntiColoured(parent);
+  }
 }
 
 bool QtoQGammaSplitFn::accept(const IdList & ids) const {

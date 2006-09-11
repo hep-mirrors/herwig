@@ -36,8 +36,12 @@ public:
   //@{
   /**
    *  Can the matrix element correction handle a given hard process or decay
+   * @param tree The shower tree currently being showered
+   * @param initial The initial-state radiation enhancement factor
+   * @param final   The final-state radiation enhancement factor
    */
-  virtual bool canHandle(ShowerTreePtr);
+  virtual bool canHandle(ShowerTreePtr tree,double & initial,
+			 double & final);
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay

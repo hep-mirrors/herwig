@@ -31,8 +31,7 @@ public:
    *  Construct in terms of the basis states
    */
   inline IS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				       const Lorentz5Momentum & n,
-				       ShowerVarsPtr);
+				       const Lorentz5Momentum & n);
   //@}
 
 public:

@@ -8,11 +8,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GtoQQbarSplitFn.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -56,26 +53,43 @@ double GtoQQbarSplitFn::integOverP(const double z) const {
   return z/2.; 
 }
 
-
 double GtoQQbarSplitFn::invIntegOverP(const double r) const {
   return 2.*r; 
 }
 
-void GtoQQbarSplitFn::colourConnection(const ColinePair &parent,
-				       ColinePair &first,
-				       ColinePair &second) const {
-
-  // Return immediately if the input is inconsistent.
-  if ( ! parent.first  ||  ! parent.second ) return;
-  
-  // Initialize
-  first = second = ColinePair();
-
-  // The first branching product is considered to be the quark 
-  // and the second the anti-quark. 
-  first.first = parent.first;
-  second.second = parent.second;
-
+void GtoQQbarSplitFn::colourConnection(tShowerParticlePtr parent,
+				       tShowerParticlePtr first,
+				       tShowerParticlePtr second,
+				       const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert(cparent.first&&cparent.second);
+    cparent.first ->addColoured    ( first);
+    cparent.second->addAntiColoured(second);
+  }
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(( cfirst.first && !cfirst.second) ||
+	   (!cfirst.first &&  cfirst.second));
+    // g -> q qbar
+    if(cfirst.first) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.first->addColoured(parent);
+      newline->addAntiColoured(second);
+      newline->addAntiColoured(parent);
+    }
+    // g -> qbar q
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.second->addAntiColoured(parent);
+      newline->addColoured(second);
+      newline->addColoured(parent);
+    }
+  }
 }
 
 bool GtoQQbarSplitFn::accept(const IdList &ids) const {

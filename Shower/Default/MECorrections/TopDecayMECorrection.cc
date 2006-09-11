@@ -6,19 +6,23 @@
 
 #include "TopDecayMECorrection.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
 
 using namespace Herwig;
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
-    os << _initialenhance << _finalenhance << _xg_sampling << _use_me_for_t2;
+    os << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2;
 }
 
 void TopDecayMECorrection::persistentInput(PersistentIStream & is, int) {
-    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _use_me_for_t2;
+    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2;
 }
 
 ClassDescription<TopDecayMECorrection> TopDecayMECorrection::initTopDecayMECorrection;
@@ -51,9 +55,26 @@ void TopDecayMECorrection::Init() {
      &TopDecayMECorrection::_xg_sampling, 1.5, 1.2, 2.0,
      false, false, Interface::limited);
 
+  static Switch<TopDecayMECorrection,bool> interfaceUseMEForT2
+    ("UseMEForT2",
+     "Use the matrix element correction, if available to fill the T2"
+     " region for the decay shower and don't fill using the shower",
+     &TopDecayMECorrection::_useMEforT2, false, false, false);
+  static SwitchOption interfaceUseMEForT2Shower
+    (interfaceUseMEForT2,
+     "Shower",
+     "Use the shower to fill the T2 region",
+     false);
+  static SwitchOption interfaceUseMEForT2ME
+    (interfaceUseMEForT2,
+     "ME",
+     "Use the Matrix element to fill the T2 region",
+     true);
+
 }
 
-bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
+bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial, 
+				     double & final)
 {
   // one incoming particle
   if(tree->incomingLines().size()!=1) return false;
@@ -84,12 +105,10 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree)
   // set the top mass
   _mt=tree->incomingLines().begin()->first->progenitor()->mass();
   // set the gluon mass
-  _mg=showerVariables()->globalParameters()->effectiveGluonMass();
+  _mg=getParticleData(ParticleID::g)->constituentMass();
   // set the radiation enhancement factors
-  showerVariables()->initialStateRadiationEnhancementFactor(_initialenhance);
-  showerVariables()->finalStateRadiationEnhancementFactor(_finalenhance);
-  // set the option for the partitioning of the phase space here
-  _use_me_for_t2=showerVariables()->useMEForT2();
+  initial = _initialenhance;
+  final   = _finalenhance;
   // reduced mass parameters
   _a=sqr(_ma/_mt);
   _g=sqr(_mg/_mt);
@@ -133,14 +152,9 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   if(newfs.size()!=3) return;
   // Sanity checks to ensure energy greater than mass etc :)
   bool check = true; 
-  if (newfs[0].e()<ba[0]->data().constituentMass()) 
-    check = false;
-  if (newfs[1].e()<ba[1]->mass()) 
-    check = false;
-  if (newfs[2].e()<
-      showerVariables()->globalParameters()->effectiveGluonMass()&&
-      !showerVariables()->globalParameters()->isThePEGStringFragmentationON()) 
-    check = false;
+  if (newfs[0].e()<ba[0]->data().constituentMass()) check = false;
+  if (newfs[1].e()<ba[1]->mass())                   check = false;
+  if (newfs[2].e()<ba[2]->data().constituentMass()) check = false;
   // Return if insane:
   //cerr << "testing after the checks " << endl;
   if (!check) return;
@@ -385,7 +399,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
               // This next `if' prevents the hardest emission from the 
               // top shower ever entering the so-called T2 region of the
               // phase space if that region is to be populated by the hard MEC.
-              if(_use_me_for_t2&&xg>xgbcut(_ktb)) { wgt = 0.; }
+              if(_useMEforT2&&xg>xgbcut(_ktb)) { wgt = 0.; }
 	      // compute veto from weight
 	      veto = !UseRandom::rndbool(wgt);
 	    }

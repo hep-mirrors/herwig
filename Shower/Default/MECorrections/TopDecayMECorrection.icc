@@ -9,7 +9,7 @@ namespace Herwig {
 inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),
 						      _initialenhance(700.), 
 						      _finalenhance(1.2),
-						      _use_me_for_t2(false)
+						      _useMEforT2(false)
 {}
 
 inline IBPtr TopDecayMECorrection::clone() const {
@@ -163,11 +163,8 @@ inline double TopDecayMECorrection::approxDeadMinxa(double xg,double ktb,double 
   if(xg>2.*sqrt(_g)&&xg<=xgbcut(ktb)) {
       y = max(xab(xg,ktb,0),xab(xg,1.,1));
   } else if(xg>=xgbcut(ktb)&&xg<=1.-sqr(sqrt(_a)+sqrt(_c))) {
-      if(_use_me_for_t2) {
-	  y = xab(xg,1.,1);
-      } else {
-	  y = max(xab(xg,ktr(xg,1),2),xab(xg,1.,1));
-      }
+      if(_useMEforT2) y = xab(xg,1.,1);
+      else            y = max(xab(xg,ktr(xg,1),2),xab(xg,1.,1));
   }
   if(xg>2.*sqrt(_g)&&xg<=1.-sqr(sqrt(_a)+sqrt(_c))) {
       if(x>=y) { minxa =  y  ; }

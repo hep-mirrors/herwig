@@ -8,7 +8,6 @@
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Interface/Interfaced.h"
-#include "Herwig++/Shower/ShowerVariables.h"
 #include "QTildeFinder.fh"
 
 namespace Herwig {
@@ -31,6 +30,23 @@ public:
    * The default constructor.
    */
   inline QTildeFinder();
+
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -68,6 +84,28 @@ protected:
 							  const bool isDecayCase);
   //@}
 
+  /**
+   * Access function for the initial conditions for the shower
+   */
+  //@{
+  /**
+   * Initial conditions for the shower of a final-final colour connection
+   * - 0 is the symmetric choice
+   * - 1 is maximal emmision from the coloured particle
+   * - 2 is maximal emmision from the anticoloured particle
+   * - 3 is randomly selected maximal emmision
+   */
+  inline unsigned int finalFinalConditions() const;
+
+  /**
+   * Initial conditions for the shower of an initial-final decay colour connection
+   * - 0 is the symmetric choice
+   * - 1 is maximal emission from the decay product
+   * - 2 is the smooth choice
+   */
+  inline unsigned int initialFinalDecayConditions() const;
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
@@ -91,7 +129,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<QTildeFinder> initQTildeFinder;
+  static ClassDescription<QTildeFinder> initQTildeFinder;
 
   /**
    * The assignment operator is private and must never be called.
@@ -99,6 +137,34 @@ private:
    */
   QTildeFinder & operator=(const QTildeFinder &);
 
+private:
+
+  /**
+   *  Flags controlling the initial conditions for the shower
+   */
+  //@{
+  /**
+   * Initial conditions for the shower with a final-final colour
+   * connection
+   */
+  unsigned int _finalFinalConditions; 
+
+  /**
+   * Initial conditions for the shower with an initial-final decay colour
+   * connection. This is done according to the top decay colour 
+   *  connection calculation in JHEP12(2003)_045. The options act as follows:
+   *  0: This is the default 'symmetric' choice which more or less divides
+   *     the phase space evenly between the parent and its charged child.
+   *  1: This 'maximal' choice maximises the phase space available for 
+   *     gluons emitted from the charged child.
+   *  2: This (experimental) 'smooth' choice does not suffer from
+   *     a discontinuity at the boundary between the region populated by
+   *     emissions from the charged child and the region populated by emissions
+   *     from the parent. This does, however, mean that the phase space 
+   *     available for emissions from the charged child is fairly minimal.
+   */
+  unsigned int _initialFinalDecayConditions;
+  //@}
 };
 
 }

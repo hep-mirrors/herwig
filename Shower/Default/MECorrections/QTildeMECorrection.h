@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
 #include "QTildeMECorrection.fh"
 
 namespace Herwig {

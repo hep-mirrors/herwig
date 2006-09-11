@@ -7,12 +7,6 @@
 namespace Herwig {
 
 inline MECorrectionBase::MECorrectionBase() {}
-  
-inline void MECorrectionBase::showerVariables(ShowerVarsPtr in)
-{_showerVariables=in;}
-
-inline ShowerVarsPtr MECorrectionBase::showerVariables() const
-{return _showerVariables;}
 
 inline ShowerAlphaPtr MECorrectionBase::coupling() const
 {return _alpha;}

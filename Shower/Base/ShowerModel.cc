@@ -12,10 +12,13 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "KinematicsReconstructor.h"
 #include "PartnerFinder.h"
+#include "Evolver.h"
 #include "SudakovFormFactor.h"
 #include "MECorrectionBase.h"
 
 using namespace Herwig;
+
+ShowerModel::~ShowerModel() {}
 
 void ShowerModel::persistentOutput(PersistentOStream & os) const {
   os << _reconstructor << _partnerfinder << _sudakovs << _mecorrections;

@@ -1,8 +1,6 @@
 cd /Defaults/Handlers/Shower
 library HwShower.so
 
-
-create Herwig++::ShowerVariables theShowerVariables
 create Herwig++::SplittingGenerator theSplittingGenerator
 create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
 create Herwig++::ShowerAlphaQED theShowerAlphaQED
@@ -12,8 +10,7 @@ create Herwig++::QTildeModel theShowerModel
 create Herwig++::QTildeFinder thePartnerFinder
 create Herwig++::QTildeReconstructor theKinematicsReconstructor
 
-# Set the pointers to the relevant objects 
-set theShowerVariables:GlobalParameters /Defaults/theGlobalParameters
+# Set the pointers to the relevant objects
 set stdShowerHandler:Evolver theEvolver
 
 create Herwig++::VectorBosonQQBarMECorrection qqbarg
@@ -22,17 +19,14 @@ set qqbarg:Coupling theShowerAlphaQCD
 
 set theShowerModel:PartnerFinder thePartnerFinder
 set theShowerModel:KinematicsReconstructor theKinematicsReconstructor
-set theEvolver:ShowerVariables theShowerVariables
 set theEvolver:ShowerModel theShowerModel
 set theEvolver:SplittingGenerator theSplittingGenerator
 
 # a few default values
 cd /Defaults/Handlers/Shower
-set theShowerVariables:MECorrMode 0
-set theShowerVariables:CutoffQCDMassScale 0.75*GeV
-set theShowerVariables:CutoffQEDMassScale 0.75*GeV
-set theShowerVariables:CutoffEWKMassScale 91.0*GeV
-set theShowerVariables:cutoffKinScale 2.3*GeV
+set theEvolver:MECorrMode 0
+
+
 set theShowerAlphaQCD:ScaleFactor 1.0
 set theShowerAlphaQED:ScaleFactor 1.0
 set theShowerAlphaQCD:NPAlphaS 2
@@ -80,10 +74,30 @@ create Herwig++::QtoGQSplitFn theQtoGQSplitFn
 #
 # Now the Sudakovs
 create Herwig++::QTildeSudakov QtoQGSudakov
+set QtoQGSudakov:cutoffKinScale 2.3*GeV
+set QtoQGSudakov:CutoffQCDMassScale 0.75*GeV
+set QtoQGSudakov:CutoffQEDMassScale 0.75*GeV
+set QtoQGSudakov:CutoffEWKMassScale 91.0*GeV
 create Herwig++::QTildeSudakov GtoGGSudakov
+set GtoGGSudakov:cutoffKinScale 2.3*GeV
+set GtoGGSudakov:CutoffQCDMassScale 0.75*GeV
+set GtoGGSudakov:CutoffQEDMassScale 0.75*GeV
+set GtoGGSudakov:CutoffEWKMassScale 91.0*GeV
 create Herwig++::QTildeSudakov GtoQQbarSudakov
+set GtoQQbarSudakov:cutoffKinScale 2.3*GeV
+set GtoQQbarSudakov:CutoffQCDMassScale 0.75*GeV
+set GtoQQbarSudakov:CutoffQEDMassScale 0.75*GeV
+set GtoQQbarSudakov:CutoffEWKMassScale 91.0*GeV
 create Herwig++::QTildeSudakov QtoQGammaSudakov
+set QtoQGammaSudakov:cutoffKinScale 2.3*GeV
+set QtoQGammaSudakov:CutoffQCDMassScale 0.75*GeV
+set QtoQGammaSudakov:CutoffQEDMassScale 0.75*GeV
+set QtoQGammaSudakov:CutoffEWKMassScale 91.0*GeV
 create Herwig++::QTildeSudakov QtoGQSudakov
+set QtoGQSudakov:cutoffKinScale 2.3*GeV
+set QtoGQSudakov:CutoffQCDMassScale 0.75*GeV
+set QtoGQSudakov:CutoffQEDMassScale 0.75*GeV
+set QtoGQSudakov:CutoffEWKMassScale 91.0*GeV
 set QtoQGSudakov:PDFmax 1.9
 set GtoGGSudakov:PDFmax 1.0
 set GtoQQbarSudakov:PDFmax 1000.0

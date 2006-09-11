@@ -30,13 +30,8 @@ updateParent(const tShowerParticlePtr theParent,
   // from c1.  The name updateParent is still referring to the
   // timelike branching though.
   // on-shell child
-  double beta = 0.0;
-  if (c2->data().id() == ParticleID::g) 
-    {beta = (sqr(showerVariables()->gluonMass())+c2->sudPperp2())
-	/c2->sudAlpha()/p_dot_n()/2.;}
-  else 
-    {beta = (sqr(c2->data().constituentMass())+c2->sudPperp2())
-      /c2->sudAlpha()/p_dot_n()/2.;}
+  double beta = 0.5*(sqr(c2->data().constituentMass())+c2->sudPperp2())
+    /(c2->sudAlpha()*p_dot_n());
   c2->sudBeta(beta);
   c2->set5Momentum(sudakov2Momentum(c2->sudAlpha(), c2->sudBeta(), 
 				    c2->sudPx()   , c2->sudPy(),0));

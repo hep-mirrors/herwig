@@ -22,18 +22,11 @@ inline IBPtr FortranSudakov::fullclone() const {
 }
  
 inline Energy FortranSudakov::cutOff(long id) const {
-  if(id==ParticleID::g) {
-    return showerVariables()->globalParameters()->effectiveGluonMass()+_vgcut;
-  }
-  else if(abs(id)<=6) {
-    return getParticleData(id)->constituentMass()+_vqcut;
-  }
-  else if(id==ParticleID::gamma) {
-    return getParticleData(id)->constituentMass()+_vpcut;
-  }
-  else {
-    return getParticleData(id)->constituentMass();
-  }
+  Energy mc=getParticleData(id)->constituentMass();
+  if(id==ParticleID::g)          mc += _vgcut;
+  else if(abs(id)<=6)            mc += _vqcut;
+  else if(id==ParticleID::gamma) mc += _vpcut;
+  return mc;
 }
 
 inline unsigned int FortranSudakov::findSudakov(const IdList & ids,const bool cc) const{

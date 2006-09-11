@@ -8,17 +8,12 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PhitoPhiGSplitFn.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
-
-PhitoPhiGSplitFn::~PhitoPhiGSplitFn() {}
 
 NoPIOClassDescription<PhitoPhiGSplitFn> PhitoPhiGSplitFn::initPhitoPhiGSplitFn;
 // Definition of the static class description member.
@@ -41,14 +36,12 @@ double PhitoPhiGSplitFn::P(const double z, const Energy2 t,
   return 8./3.*val;
 }
 
-double PhitoPhiGSplitFn::overestimateP(const double z, const IdList &) const
-{ 
+double PhitoPhiGSplitFn::overestimateP(const double z, const IdList &) const { 
   return 8./3./(1.-z); 
 }
 
 double PhitoPhiGSplitFn::ratioP(const double z, const Energy2 t,
-				const IdList &ids,const bool mass) const
-{ 
+				const IdList &ids,const bool mass) const { 
   double val = z;
   if(mass) {
     Energy m = getParticleData(ids[0])->mass();
@@ -65,28 +58,51 @@ double PhitoPhiGSplitFn::invIntegOverP(const double r) const {
   return 1. - exp(- 3.*r/8.); 
 }
 
-void PhitoPhiGSplitFn::colourConnection(const ColinePair &parent,
-					ColinePair &first,
-					ColinePair &second) const {
-
-  // Return immediately if the input is inconsistent.
-  if ((!parent.first && !parent.second) || (parent.first && parent.second)) 
-    return;
-  
-  // Initialize
-  first = second = ColinePair();
-
-  // The first branching product is considered to be the squark 
-  // and the second the gluon. The colour line of the parent
-  // is one of the two colour lines of the gluon, whereas the
-  // other one of the latter is a new colour line which is
-  // also share by the first product (the squark).
-  if(parent.first) { // the parent is a squark
-    second.first = parent.first;
-    first.first = second.second = new_ptr(ColourLine());
-  } else if(parent.second) { // the parent is an antisquark
-    second.second = parent.second;
-    first.second = second.first = new_ptr(ColourLine());
+void PhitoPhiGSplitFn::colourConnection(tShowerParticlePtr parent,
+					tShowerParticlePtr first,
+					tShowerParticlePtr second,
+					const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert(( cparent.first && !cparent.second) || 
+	   (!cparent.first &&  cparent.second));
+    // q~ -> q~ g
+    if(cparent.first) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cparent.first->addColoured(second);
+      newline->addColoured     ( first);
+      newline->addAntiColoured (second);
+    }
+    // q~bar -> q~bar g
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cparent.second->addAntiColoured(second);
+      newline->addColoured(second);
+      newline->addAntiColoured(first);
+    }
+  }
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(( cfirst.first && !cfirst.second) ||
+	   (!cfirst.first &&  cfirst.second)); 
+    // q~ -> q~ g
+    if(cfirst.first) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.first->addAntiColoured(second);
+      newline->addColoured(second);
+      newline->addColoured(parent);
+    }
+    // q~bar -> q~bar g
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.second->addColoured(second);
+      newline->addAntiColoured(second);
+      newline->addAntiColoured(parent);
+    }
   }
 }
 

@@ -69,7 +69,7 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
 	      PPtr ptrQ = PPtr();
 	      PPtr ptrQbar = PPtr();
 	      splitTimeLikeGluon(*pit,ptrQ,ptrQbar);
-	      Energy Q0 = _globalParameters->effectiveGluonMass();
+	      Energy Q0 = getParticleData(ParticleID::g)->constituentMass();
 	      ptrQ->scale(Q0*Q0);
 	      ptrQbar->scale(Q0*Q0);
 	      pstep->addDecayProduct(*pit,ptrQ);

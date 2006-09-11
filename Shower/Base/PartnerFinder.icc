@@ -9,11 +9,4 @@ namespace Herwig {
 inline PartnerFinder::PartnerFinder()  : _approach(0) 
 {}
 
-inline void PartnerFinder::setShowerVariables(ShowerVarsPtr in) {
-  _showerVariables=in;
-}
-
-inline tShowerVarsPtr PartnerFinder::showerVariables() const {
-  return _showerVariables;
-}
 }

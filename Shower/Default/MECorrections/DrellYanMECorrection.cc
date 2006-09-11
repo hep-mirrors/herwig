@@ -12,6 +12,9 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
 
 using namespace Herwig;
 
@@ -48,7 +51,8 @@ void DrellYanMECorrection::Init() {
 
 }
 
-bool DrellYanMECorrection::canHandle(ShowerTreePtr tree)
+bool DrellYanMECorrection::canHandle(ShowerTreePtr tree, double & initial,
+				     double & final)
 {
    // two incoming particles
   if(tree->incomingLines().size()!=2) return false;
@@ -85,6 +89,8 @@ bool DrellYanMECorrection::canHandle(ShowerTreePtr tree)
   if(tree->outgoingLines().size()==1) _mb2=sqr(part[0]->mass());
   else                                _mb2=sqr(part[0]->parents()[0]->mass());
   // can handle it
+  initial = 1.;
+  final   = 1.;
   return true;
 }
 
@@ -124,8 +130,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
       Lorentz5Momentum pquark(pnew[0]),panti(pnew[1]),pgluon(pnew[2]);
       if(iemit==2) swap(pquark,panti);
       // ensure gluon can be put on shell
-      if (pgluon.e() < showerVariables()->globalParameters()->effectiveGluonMass()&&
-	  !showerVariables()->globalParameters()->isThePEGStringFragmentationON())
+      if (pgluon.e() < getParticleData(ParticleID::g)->constituentMass())
 	return;
       // create the new gluon
       PPtr newg= getParticleData(ParticleID::g)->produceParticle(pgluon);

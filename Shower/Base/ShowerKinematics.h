@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/Shower/ShowerConfig.h"
-#include "Herwig++/Shower/ShowerVariables.h"
 #include "ThePEG/Config/ThePEG.h"
 #include "ShowerKinematics.fh"
 
@@ -36,16 +35,10 @@ using namespace ThePEG;
 class ShowerKinematics: public Base {
 
 public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
-  inline ShowerKinematics(ShowerVarsPtr);
-  //@}
-
-public:
+  inline ShowerKinematics();
 
   /**
    *  The updateChildren, updateLast and updateParent
@@ -107,11 +100,6 @@ public:
   //@}
 
   /**
-   *  Access to the ShowerVariables
-   */
-  inline ShowerVarsPtr showerVariables() const;
-
-  /**
    * Virtual function to return a set of basis vectors, specific to
    * the type of evolution. This function will be used by the
    * ForwardShowerEvolver in order to access \f$p\f$ and \f$n\f$, 
@@ -133,26 +121,6 @@ public:
    * Set the scale of the splitting.
    */
   inline void qtilde(const Energy);
-
-  /**
-   * Access the resolution scale of the splitting.
-   */
-  inline Energy resScale() const;
-
-  /**
-   * Set the resolution scale of the splitting.
-   */
-  inline void setResScale( const Energy inputQ );
-
-  /**
-   * Access the cutoff scale of the splitting.
-   */
-  inline Energy kinScale() const;
-
-  /**
-   * Set the cutoff scale of the splitting.
-   */
-  inline void setKinScale( const Energy inputQ );
 
   /**
    *  Access the energy fraction, \f$z\f$.
@@ -206,16 +174,6 @@ private:
   Energy _qtilde;
 
   /**
-   *  The resolution scale
-   */
-  Energy _q0;
-
-  /**
-   *  The kinematic cut-off
-   */
-  Energy _kinQ0;
-
-  /**
    *  The energy fraction, \f$z\f$
    */
   double _z;
@@ -229,11 +187,6 @@ private:
    *  The relative \f$p_T\f$
    */
   Energy _pt;
-
-  /**
-   *  Pointer to the ShowerVariables to allow access
-   */
-  ShowerVarsPtr _variables;
 };
 
 }

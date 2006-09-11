@@ -89,25 +89,15 @@ struct Branching {
  *  These switches are useful mainly for debugging, but eventually can
  *  also be used for a "quick and dirty" estimation of systematic errors.
  *
- *  This class is not responsible for creating new ShowerParticle objects,
- *  and is independent from ShowerVariables. The checking that the chosen
- *  candidate branching is acceptable according to the vetos in ShowerVariables
- *  and then, if accepted, the creation of the ShowerParticle
- *  created from the branching, should all be done in
- *  in ForwardShowerEvolver and BackwardShowerEvolver.
- *  The advantages in doing this is that the SplittingGenerator
- *  is kept simpler and easier to manage.
- *
  *  In the future it should be possible to implement in this class
  *
  *  -  the \f$1\to2\f$ azimuthal correlations for soft emission due to QCD coherence  
  *     using the ShowerParticle object provided in the input.
- *  -  Similarly hacing the \f$\rho-D\f$ matrix and the SplittingFunction pointer
+ *  -  Similarly having the \f$\rho-D\f$ matrix and the SplittingFunction pointer
  *     it should be possible to implement the spin correlations.
  *     
  *  @see ShowerIndex
  *  @see SudakovFormFactor
- *  @see ShowerVariables
  *  @see SplitFun
  *
  * @see \ref SplittingGeneratorInterfaces "The interfaces"
@@ -146,9 +136,11 @@ public:
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
    *
    * @param particle The particle to be evolved
+   * @param enhance The factor by which to ehnace the emission of radiation
    * @return The Branching struct for the branching
    */
-  Branching chooseForwardBranching(ShowerParticle & particle) const; 
+  Branching chooseForwardBranching(ShowerParticle & particle,
+				   double enhance) const; 
 
   /**
    * Select the next branching of a particles for the initial-state shower
@@ -156,11 +148,12 @@ public:
    * @param particle The particle being showerwed
    * @param maxscale The maximum scale
    * @param minmass Minimum mass of the particle after the branching
+   * @param enhance The factor by which to ehnace the emission of radiation
    * @return The Branching struct for the branching
    */
   Branching chooseDecayBranching(ShowerParticle & particle, 
 				 vector<Energy> maxscale,
-				 Energy minmass) const; 
+				 Energy minmass,double enhance) const; 
 
   /**
    * Choose a new backward branching for a space-like particle.
@@ -177,17 +170,16 @@ public:
    * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
    *
    * @param particle The particle to be evolved
+   * @param enhance The factor by which to ehnace the emission of radiation
+   * @param beam The beam particle
    * @return The Branching struct for the branching
    */
-  Branching chooseBackwardBranching(ShowerParticle & particle) const;
+  Branching chooseBackwardBranching(ShowerParticle & particle,
+				    double enhance,
+				    Ptr<BeamParticleData>::transient_const_pointer beam) const;
   //@}
 
-public:  
-
-  /**
-   * Access to the ShowerVariables
-   */
-  inline const ShowerVarsPtr & showerVariables() const;
+public:
 
   /**
    *  Access to the switches
@@ -241,11 +233,7 @@ public:
    *  Add an initial-state splitting
    */
   inline string addInitialSplitting(string);
-
-  /**
-   *  Set the shower variables, only used by Evolver in doinit
-   */
-  inline void setShowerVariables(ShowerVarsPtr);
+  //@}
 
 public:
 
@@ -294,13 +282,6 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinitrun() throw(InitException);
-
   /**
    * Rebind pointer to other Interfaced objects. Called in the setup phase
    * after all objects used in an EventGenerator has been cloned so that
@@ -424,11 +405,6 @@ private:
    */
   bool _fsr_ewkMode;
   //@}
-
-  /**
-   *  Pointer to the ShowerVariables object
-   */
-  ShowerVarsPtr _showerVariables;
 
   /**
    *  List of the branchings and the appropriate Sudakovs for forward branchings

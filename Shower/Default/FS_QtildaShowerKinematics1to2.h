@@ -31,8 +31,7 @@ public:
    * Creator with the two defining vectors  p  and  n . 
    */
   inline FS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				       const Lorentz5Momentum & n,
-				       ShowerVarsPtr );
+				       const Lorentz5Momentum & n);
   //@}
 
 public:

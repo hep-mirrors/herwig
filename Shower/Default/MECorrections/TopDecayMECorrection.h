@@ -39,8 +39,12 @@ public:
   //@{
   /**
    *  Can the matrix element correction handle a given hard process or decay
+   * @param tree The shower tree currently being showered
+   * @param initial The initial-state radiation enhancement factor
+   * @param final   The final-state radiation enhancement factor
    */
-  virtual bool canHandle(ShowerTreePtr);
+  virtual bool canHandle(ShowerTreePtr tree,double & initial,
+			 double & final);
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
@@ -324,7 +328,7 @@ private:
    *  (JHEP12(2003)_045) is populated by the ME correction (true) or
    *  the shower from the decaying particle.
    */
-  bool _use_me_for_t2;
+  bool _useMEforT2;
 
 
 };

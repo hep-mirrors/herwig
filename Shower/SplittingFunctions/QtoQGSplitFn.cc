@@ -8,11 +8,8 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGSplitFn.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -61,33 +58,55 @@ double QtoQGSplitFn::invIntegOverP(const double r) const {
   return 1. - exp(- 3.*r/8.); 
 }
 
-void QtoQGSplitFn::colourConnection(const ColinePair &parent,
-				    ColinePair &first,
-				    ColinePair &second) const {
-
-  // Return immediately if the input is inconsistent.
-  if ((!parent.first && !parent.second) || (parent.first && parent.second)) 
-    return;
-  
-  // Initialize
-  first = second = ColinePair();
-
-  // The first branching product is considered to be the quark 
-  // and the second the gluon. The colour line of the parent
-  // is one of the two colour lines of the gluon, whereas the
-  // other one of the latter is a new colour line which is
-  // also share by the first product (the quark).
-  if(parent.first) { // the parent is a quark
-    second.first = parent.first;
-    first.first = second.second = new_ptr(ColourLine());
-  } else if(parent.second) { // the parent is an antiquark
-    second.second = parent.second;
-    first.second = second.first = new_ptr(ColourLine());
+void QtoQGSplitFn::colourConnection(tShowerParticlePtr parent,
+				    tShowerParticlePtr first,
+				    tShowerParticlePtr second,
+				    const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert((!cparent.first &&  cparent.second) || 
+	   ( cparent.first && !cparent.second));
+    // q -> q g
+    if(cparent.first) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cparent.first->addColoured(second);
+      newline->addColoured     ( first);
+      newline->addAntiColoured (second);
+    }
+    // qbar -> qbar g
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cparent.second->addAntiColoured(second);
+      newline->addColoured(second);
+      newline->addAntiColoured(first);
+    }
+  }
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(( cfirst.first && !cfirst.second) ||
+	   (!cfirst.first &&  cfirst.second)); 
+    // q -> q g
+    if(cfirst.first) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.first->addAntiColoured(second);
+      newline->addColoured(second);
+      newline->addColoured(parent);
+    }
+    // qbar -> qbar g
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.second->addColoured(second);
+      newline->addAntiColoured(second);
+      newline->addAntiColoured(parent);
+    }
   }
 }
 
-bool QtoQGSplitFn::accept(const IdList &ids) const
-{
+bool QtoQGSplitFn::accept(const IdList &ids) const {
   if(ids.size()!=3) return false;
   if(ids[0]!=ids[1]||ids[2]!=ParticleID::g) return false;
   tcPDPtr q=getParticleData(ids[0]);

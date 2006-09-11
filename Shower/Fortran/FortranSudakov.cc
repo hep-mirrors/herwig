@@ -166,10 +166,11 @@ void FortranSudakov::doinit() throw(InitException) {
 }
 
 Energy FortranSudakov::generateNextTimeBranching(const Energy startingScale,
-						 const IdList &ids,const bool cc) {
+						 const IdList &ids,const bool cc,
+						 double enhance) {
   // can only enhance by integer factor here
-  unsigned int nrej=int(showerVariables()->finalStateRadiationEnhancementFactor());
-  if(showerVariables()->finalStateRadiationEnhancementFactor()-double(nrej)>0.) ++nrej;
+  unsigned int nrej=int(enhance);
+  if(enhance-double(nrej)>0.) ++nrej;
   // get the minimum scale
   Energy qmin=cutOff(ids[1])+cutOff(ids[2]);
   // return if no allowed branching
@@ -209,29 +210,27 @@ Energy FortranSudakov::generateNextTimeBranching(const Energy startingScale,
     z=splittingFn()->invIntegOverP(fmin+UseRandom::rnd()*(fmax-fmin));
   }
   while(splittingFn()->ratioP(z,qnow,ids,false)<=UseRandom::rnd());
-
-
-
-
-
-
-
-
-
-
 }
 
 Energy FortranSudakov::generateNextDecayBranching(const Energy startingScale,
 						  const Energy stoppingScale,
 						  const Energy minmass,
 						  const IdList &ids,
-						  const bool cc) {
+						  const bool cc,
+						  double enhance) {
+  throw Exception() << "FortranSudakov::generateNextDecayBranching() not yet "
+		    << "implemented" << Exception::runerror;
   return -1;
 }
 
-Energy FortranSudakov::generateNextSpaceBranching(const Energy startingScale,
-						  const IdList &ids,double x,
-						  const bool cc) {
+Energy FortranSudakov::
+generateNextSpaceBranching(const Energy startingScale,
+			   const IdList &ids,double x,
+			   const bool cc,
+			   double enhance,
+			   Ptr<BeamParticleData>::transient_const_pointer beam) {
+  throw Exception() << "FortranSudakov::generateNextSpaceBranching() not yet "
+		    << "implemented" << Exception::runerror;
   return -1;
 }
 

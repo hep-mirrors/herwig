@@ -5,11 +5,16 @@
 //
 
 #include "MECorrectionBase.h"
+#include "Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Reference.h"
+#include "KinematicsReconstructor.h"
+#include "PartnerFinder.h"
 
 using namespace Herwig;
+
+MECorrectionBase::~MECorrectionBase() {}
 
 AbstractClassDescription<MECorrectionBase> MECorrectionBase::initMECorrectionBase;
 // Definition of the static class description member.
@@ -28,9 +33,17 @@ void MECorrectionBase::Init() {
 }
 
 void MECorrectionBase::persistentOutput(PersistentOStream & os) const {
-  os << _showerVariables << _alpha;
+  os << _alpha;
 }
 
 void MECorrectionBase::persistentInput(PersistentIStream & is, int) {
-  is >> _showerVariables >> _alpha;
+  is >> _alpha;
+}
+
+tEvolverPtr MECorrectionBase::evolver() const {
+  return _evolver;
+}
+
+void MECorrectionBase::evolver(tEvolverPtr in) {
+  _evolver=in;
 }

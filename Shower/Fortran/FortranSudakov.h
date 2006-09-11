@@ -41,9 +41,11 @@ public:
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
+   * @param enhance The radiation enhancement factor
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids,const bool cc);
+				           const IdList &ids,const bool cc,
+					   double enhance);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -54,12 +56,14 @@ public:
    * @param ids The PDG codes of the particles in the splitting
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
+   * @param enhance The radiation enhancement factor
    */
   virtual Energy generateNextDecayBranching(const Energy startingScale,
 					    const Energy stoppingScale,
 					    const Energy minmass,
 					    const IdList &ids,
-					    const bool cc);
+					    const bool cc,
+					    double enhance);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -69,10 +73,13 @@ public:
    * @param x The fraction of the beam momentum
    * @param cc Whether this is the charge conjugate of the branching
    * defined.
+   * @param enhance The radiation enhancement factor
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
 		                            const IdList &ids,double x,
-					    const bool cc);
+					    const bool cc,
+					    double enhance,
+					    Ptr<BeamParticleData>::transient_const_pointer beam);
   //@}
 
 public:

@@ -34,11 +34,9 @@ public:
    * Constructor with the two defining vectors \f$p\f$ and \f$n\f$.
    * @param p The \f$p\f$ reference vector.
    * @param n The \f$n\f$ reference vector.
-   * @param var Pointer to the ShowerVariables
    */
   inline QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				    const Lorentz5Momentum & n,
-				    ShowerVarsPtr var);
+				    const Lorentz5Momentum & n);
   //@}
 
 public:

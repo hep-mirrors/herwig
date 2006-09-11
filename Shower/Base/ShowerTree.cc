@@ -17,10 +17,10 @@ using namespace ThePEG;
 
 // constructor from hard process
 ShowerTree::ShowerTree(tEHPtr eh, 
-		       const ParticleVector & out,ShowerVarsPtr vars,
+		       const ParticleVector & out,tShowerHandlerPtr hand,
 		       multimap<Energy,ShowerTreePtr>& decay) 
   : _hardMECorrection(false), _wasHard(true),
-    _parent(ShowerTreePtr()), _showerVariables(vars), _hasShowered(false)
+    _parent(ShowerTreePtr()), _showerHandler(hand), _hasShowered(false)
 {
   Timer<1400> timer("ShowerTree::ShowerTree::hard");
   assert(eh);
@@ -46,9 +46,9 @@ ShowerTree::ShowerTree(tEHPtr eh,
       // if decayed or should be decayed in shower make the tree
       PPtr orig=*it;
       if(!orig->children().empty()||
-	 (_showerVariables->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
+	 (_showerHandler->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
 	{
-	  ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerVariables,
+	  ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerHandler,
 						   decay,eh));
 	  newtree->setParents();
 	  trees.insert(make_pair(orig,newtree));
@@ -97,11 +97,11 @@ ShowerTree::ShowerTree(tEHPtr eh,
     }
 }
 
-ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
+ShowerTree::ShowerTree(PPtr in,tShowerHandlerPtr hand,
 		       multimap<Energy,ShowerTreePtr>& decay,
 		       tEHPtr ch)
   : _hardMECorrection(false), _wasHard(false), 
-    _showerVariables(vars), _hasShowered(false)
+    _showerHandler(hand), _hasShowered(false)
 {
   Timer<1401> timer("ShowerTree::ShowerTree::decay");
   // there must be an incoming particle
@@ -122,9 +122,9 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
 	  PPtr orig=children[ix];
  	  in->abandonChild(orig);
 	  if(!orig->children().empty()||
-	     (_showerVariables->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
+	     (_showerHandler->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
 	    {
-	      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerVariables,decay,ch));
+	      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerHandler,decay,ch));
 	      trees.insert(make_pair(orig,newtree));
 	      Energy width=orig->dataPtr()->generateWidth(orig->mass());
 	      decay.insert(make_pair(width,newtree));
@@ -520,9 +520,9 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
   	  parent->abandonChild(orig);
 	  // if particle has children or decays in shower
 	  if(!orig->children().empty()||
-	     (_showerVariables->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
+	     (_showerHandler->decayInShower(orig->id())&&!orig->dataPtr()->stable()))
 	    {
-	      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerVariables,decay,ch));
+	      ShowerTreePtr newtree=new_ptr(ShowerTree(orig,_showerHandler,decay,ch));
 	      trees.insert(make_pair(orig,newtree));
 	      Energy width=orig->dataPtr()->generateWidth(orig->mass());
 	      decay.insert(make_pair(width,newtree));
@@ -761,10 +761,10 @@ void ShowerTree::updateAfterShower(multimap<Energy,ShowerTreePtr> & decay,tEHPtr
   set<tShowerParticlePtr>::const_iterator cit;
   for(cit=_forward.begin();cit!=_forward.end();++cit)
     {
-      if(_showerVariables->decayInShower((**cit).id())&&
+      if(_showerHandler->decayInShower((**cit).id())&&
 	 hard.find(*cit)==hard.end())
 	{
-	  ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,_showerVariables,decay,eh));
+	  ShowerTreePtr newtree=new_ptr(ShowerTree(*cit,_showerHandler,decay,eh));
 	  newtree->setParents();
 	  newtree->_parent=this;
  	  Energy width=(**cit).dataPtr()->generateWidth((**cit).mass());

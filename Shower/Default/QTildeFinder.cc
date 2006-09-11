@@ -6,14 +6,23 @@
 
 #include "QTildeFinder.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/UseRandom.h" 
 
 using namespace Herwig;
 
-NoPIOClassDescription<QTildeFinder> QTildeFinder::initQTildeFinder;
+ClassDescription<QTildeFinder> QTildeFinder::initQTildeFinder;
 // Definition of the static class description member.
+
+void QTildeFinder::persistentOutput(PersistentOStream & os) const {
+  os << _finalFinalConditions << _initialFinalDecayConditions;
+}
+
+void QTildeFinder::persistentInput(PersistentIStream & is, int) {
+  is >> _finalFinalConditions >> _initialFinalDecayConditions;
+}
 
 void QTildeFinder::Init() {
 
@@ -22,6 +31,51 @@ void QTildeFinder::Init() {
      "and within the evolution scale range specified by the ShowerVariables ",
      "then to determine the initial evolution scales for each pair of partners.");
 
+  static Switch<QTildeFinder,unsigned int> interfaceFinalFinalConditions
+    ("FinalFinalConditions",
+     "The initial conditions for the shower of a final-final colour connection",
+     &QTildeFinder::_finalFinalConditions, 0, false, false);
+  static SwitchOption interfaceFinalFinalConditionsSymmetric
+    (interfaceFinalFinalConditions,
+     "Symmetric",
+     "The symmetric choice",
+     0);
+  static SwitchOption interfaceFinalFinalConditionsColoured
+    (interfaceFinalFinalConditions,
+     "Coloured",
+     "Maximal radiation from the coloured particle",
+     1);
+  static SwitchOption interfaceFinalFinalConditionsAntiColoured
+    (interfaceFinalFinalConditions,
+     "AntiColoured",
+     "Maximal emission from the anticoloured particle",
+     2);
+  static SwitchOption interfaceFinalFinalConditionsRandom
+    (interfaceFinalFinalConditions,
+     "Random",
+     "Randomly selected maximal emission from one of the particles",
+     3);
+
+  static Switch<QTildeFinder,unsigned int> interfaceInitialFinalDecayConditions
+    ("InitialFinalDecayConditions",
+     "The initial conditions for the shower of an initial-final"
+     " decay colour connection.",
+     &QTildeFinder::_initialFinalDecayConditions, 0, false, false);
+  static SwitchOption interfaceInitialFinalDecayConditionsSymmetric
+    (interfaceInitialFinalDecayConditions,
+     "Symmetric",
+     "The symmetric choice",
+     0);
+  static SwitchOption interfaceInitialFinalDecayConditionsMaximal
+    (interfaceInitialFinalDecayConditions,
+     "Maximal",
+     "Maximal radiation from the decay product",
+     1);
+  static SwitchOption interfaceInitialFinalDecayConditionsSmooth
+    (interfaceInitialFinalDecayConditions,
+     "Smooth",
+     "Smooth matching in the soft limit",
+     2);
 }
 
 pair<Energy,Energy> QTildeFinder::
@@ -59,7 +113,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
      *  - We find the most 'smooth' way to populate the phase space
      *    occurs for... 
      *********/ 
-    unsigned int phase_space = showerVariables()->initialFinalDecayConditions();
+    unsigned int phase_space = initialFinalDecayConditions();
     pa              = pb-pc               ;
     Energy mb2(sqr(ppair.first->mass()));
     double a=(pb-pc).m2()/mb2;
@@ -127,7 +181,7 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   double c = p2.mass2()/Q2;
   double lam=2.*p1.vect().mag()/Q;
   // symmetric case
-  unsigned int iopt=showerVariables()->finalFinalConditions();
+  unsigned int iopt=finalFinalConditions();
   Energy firstQ,secondQ;
   if(iopt==0) {
     firstQ  = sqrt(0.5*Q2*(1.+b-c+lam));
