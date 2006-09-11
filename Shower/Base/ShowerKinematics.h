@@ -7,6 +7,7 @@
 
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "ThePEG/Config/ThePEG.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "ShowerKinematics.fh"
 
 namespace Herwig {
@@ -153,6 +154,22 @@ public:
   inline void pT(const Energy);
   //@}
 
+  /**
+   *  Set and get methods for the SplittingFunction object
+   */
+  /**
+   * Access the SplittingFunction object responsible of the 
+   * eventual branching of this particle.
+   */
+  inline tSplittingFnPtr splittingFn() const;
+
+  /**
+   * Set the SplittingFunction object responsible of the 
+   * eventual branching of this particle.
+   */
+  inline void splittingFn(const tSplittingFnPtr);
+  //@}
+
 private:
 
   /**
@@ -187,6 +204,11 @@ private:
    *  The relative \f$p_T\f$
    */
   Energy _pt;
+
+  /**
+   *  The splitting function for the branching of the particle
+   */
+  tSplittingFnPtr _splitFun;
 };
 
 }

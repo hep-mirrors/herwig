@@ -198,21 +198,9 @@ public:
 
 
   /**
-   * Set/Get methods for SplittingFunction and ShowerKinematics objects
+   * Set/Get methods for the ShowerKinematics objects
    */
   //@{
-  /**
-   * Access the SplittingFunction object responsible of the 
-   * eventual branching of this particle.
-   */
-  inline tSplittingFnPtr splitFun() const;
-
-  /**
-   * Set the SplittingFunction object responsible of the 
-   * eventual branching of this particle.
-   */
-  inline void setSplittingFn(const tSplittingFnPtr);
-
   /**
    * Access/ the ShowerKinematics object.
    */
@@ -356,11 +344,6 @@ private:
    *  The beam energy fraction for particle's in the initial state
    */
   double _x;
-
-  /**
-   *  The splitting function for the branching of the particle
-   */
-  tSplittingFnPtr _splitFun;        
 
   /**
    *  The shower kinematics for the particle

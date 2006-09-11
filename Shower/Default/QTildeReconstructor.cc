@@ -417,7 +417,8 @@ reconstructDecayJets(ShowerTreePtr decay) const
 	  nvect= initial->progenitor()->showerKinematics()->getBasis()[1];
 	  // find the partner
 	  partner=initial->progenitor()->
-	    partners()[initial->progenitor()->splitFun()->interactionType()];
+	    partners()[initial->progenitor()->showerKinematics()->
+		       splittingFn()->interactionType()];
 	}
       // check it is a final state particle and find momentum of the
       // rest of the particles
@@ -433,7 +434,8 @@ reconstructDecayJets(ShowerTreePtr decay) const
 	    {
 	      radiated[1] = true;
 	      ShowerParticlePtr ptemp=ShowerHardJets[ix]->progenitor()->partners()
-		[ShowerHardJets[ix]->progenitor()->splitFun()->interactionType()];
+		[ShowerHardJets[ix]->progenitor()->showerKinematics()->
+		 splittingFn()->interactionType()];
 	      if(ptemp&&!partner)
 		{ 
 		  if(!ptemp->isFinalState())

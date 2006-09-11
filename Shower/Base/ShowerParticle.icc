@@ -25,7 +25,6 @@ inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert)
     _sudPx( Energy() ),
     _sudPy( Energy() ),
     _x(1.0),
-    _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
     _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
@@ -44,7 +43,6 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
     _sudPx( Energy() ),
     _sudPy( Energy() ),
     _x(1.0),
-    _splitFun( tSplittingFnPtr() ),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
     _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
@@ -111,14 +109,6 @@ inline void ShowerParticle::x(double x) { _x = x; }
 
 inline double ShowerParticle::x() const { return _x; }
 
-inline tSplittingFnPtr ShowerParticle::splitFun() const {
-  return _splitFun;
-}
-
-inline void ShowerParticle::setSplittingFn(const tSplittingFnPtr sf) {
-  _splitFun = sf;
-}
-
 inline const vector<Energy> & ShowerParticle::evolutionScales() const {
   return _scales;
 }
@@ -130,7 +120,6 @@ inline const ShoKinPtr & ShowerParticle::showerKinematics() const {
 inline const tShowerParticleVector & ShowerParticle::partners() const {
   return _partners;
 }
-
 
 inline void ShowerParticle::setEvolutionScale(const ShowerIndex::InteractionType interaction, 
 					      const Energy scale) {

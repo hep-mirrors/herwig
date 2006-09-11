@@ -21,8 +21,7 @@ updateChildren(const tShowerParticlePtr theParent,
     throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
   // get the interaction type
-  const ShowerIndex::InteractionType interaction = 
-    theParent->splitFun()->interactionType();
+  const ShowerIndex::InteractionType interaction = splittingFn()->interactionType();
   // copy scales etc
   Energy dqtilde = qtilde();
   double dz = z(); 

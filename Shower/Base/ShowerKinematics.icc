@@ -12,7 +12,8 @@ inline ShowerKinematics::ShowerKinematics()
     _qtilde( Energy() ),
     _z( 0.0 ),
     _phi( 0.0 ),
-    _pt(0.)
+    _pt(0.),
+    _splitFun( tSplittingFnPtr() )
 {}
 
 inline Energy ShowerKinematics::qtilde() const {
@@ -43,6 +44,14 @@ inline void ShowerKinematics::pT(const Energy ptin) {
 
 inline Energy ShowerKinematics::pT() const {
   return _pt;
+}
+
+inline tSplittingFnPtr ShowerKinematics::splittingFn() const {
+  return _splitFun;
+}
+
+inline void ShowerKinematics::splittingFn(const tSplittingFnPtr sf) {
+  _splitFun = sf;
 }
 
 }

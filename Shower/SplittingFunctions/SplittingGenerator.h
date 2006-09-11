@@ -50,11 +50,6 @@ struct Branching {
   ShoKinPtr kinematics;
   
   /**
-   *  Pointer to the SudakovFormFactor for the branching
-   */
-  tSudakovPtr sudakov; 
-  
-  /**
    *  PDG codes of the particles in the branching
    */
   IdList ids; 
@@ -65,7 +60,7 @@ struct Branching {
    * @param b pointer to the SudakovFormFactor object for the branching
    * @param c PDG codes of the particles in the branching
    */
-  Branching(ShoKinPtr a, tSudakovPtr b, IdList c) : kinematics(a), sudakov(b), ids(c) {}
+  Branching(ShoKinPtr a, IdList c) : kinematics(a), ids(c) {}
 
   /**
    *  Default constructor
