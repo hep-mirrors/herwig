@@ -128,7 +128,7 @@ template <>
 struct ClassTraits<Herwig::DefaultEmissionGenerator>
   : public ClassTraitsBase<Herwig::DefaultEmissionGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::DefaultEmissionGenerator"; }
+  static string className() { return "Herwig++::DefaultEmissionGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DefaultEmissionGenerator is implemented. It may also include several, space-separated,
@@ -136,7 +136,7 @@ struct ClassTraits<Herwig::DefaultEmissionGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "DefaultEmissionGenerator.so"; }
+  static string library() { return "HwNasonShower.so"; }
 };
 
 /** @endcond */
@@ -144,8 +144,5 @@ struct ClassTraits<Herwig::DefaultEmissionGenerator>
 }
 
 #include "DefaultEmissionGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DefaultEmissionGenerator.tcc"
-#endif
 
 #endif /* HERWIG_DefaultEmissionGenerator_H */

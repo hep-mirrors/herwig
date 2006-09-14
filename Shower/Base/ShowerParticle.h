@@ -48,7 +48,6 @@ using namespace ThePEG;
    *  @see Particle
    *  @see ShowerConfig
    *  @see ShowerIndex
-   *  @see ShowerColourLine
    *  @see ShowerKinematics
    */
 class ShowerParticle: public Particle {
@@ -80,7 +79,6 @@ public:
    * @param pert Where the particle came from
    */
   inline ShowerParticle(const Particle & part,unsigned int pert);
-
   //@}
 
 public:

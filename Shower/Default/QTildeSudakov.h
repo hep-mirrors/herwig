@@ -42,9 +42,9 @@ public:
    * defined.
    * @param enhance The radiation enhancement factor
    */
-  virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids,const bool cc,
-					   double enhance);
+  virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
+					      const IdList &ids,const bool cc,
+					      double enhance);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -57,7 +57,7 @@ public:
    * defined.
    * @param enhance The radiation enhancement factor
    */
-  virtual Energy generateNextDecayBranching(const Energy startingScale,
+  virtual ShoKinPtr generateNextDecayBranching(const Energy startingScale,
 					    const Energy stoppingScale,
 					    const Energy minmass,
 					    const IdList &ids,
@@ -75,10 +75,10 @@ public:
    * @param enhance The radiation enhancement factor
    * @param beam The beam particle
    */
-  virtual Energy generateNextSpaceBranching(const Energy startingScale,
-		                            const IdList &ids,double x,
-					    const bool cc, double enhance,
-					    Ptr<BeamParticleData>::transient_const_pointer beam);
+  virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
+					       const IdList &ids,double x,
+					       const bool cc, double enhance,
+					       Ptr<BeamParticleData>::transient_const_pointer beam);
   //@}
 
 public:

@@ -25,16 +25,10 @@ class FS_QtildaShowerKinematics1to2: public QtildaShowerKinematics1to2 {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
-   * Creator with the two defining vectors  p  and  n . 
+   * Default constructor
    */
-  inline FS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				       const Lorentz5Momentum & n);
-  //@}
-
-public:
+  inline FS_QtildaShowerKinematics1to2();
 
   /**
    *  The updateChildren, updateParent and updateLast
@@ -76,6 +70,11 @@ public:
    * - 1 is in the rest frame of the p vector
    */
   virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt ) const;
+
+  /**
+   *  Perform any initial calculations needed after the branching has been selected
+   */
+  virtual void initialize(ShowerParticle & particle);
   //@}
 
 private:

@@ -6,10 +6,7 @@
 
 namespace Herwig {
 
-inline QtildaShowerKinematics1to2::
-QtildaShowerKinematics1to2( const Lorentz5Momentum & p, 
-			    const Lorentz5Momentum & n) 
-  : _pVector( p ), _nVector( n ) 
+inline QtildaShowerKinematics1to2::QtildaShowerKinematics1to2() 
 {}
 
 inline const Lorentz5Momentum & QtildaShowerKinematics1to2::pVector() const {

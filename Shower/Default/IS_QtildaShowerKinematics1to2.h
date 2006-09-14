@@ -30,8 +30,7 @@ public:
   /**
    *  Construct in terms of the basis states
    */
-  inline IS_QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				       const Lorentz5Momentum & n);
+  inline IS_QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -71,6 +70,11 @@ public:
    * classes. This method will be used by the KinematicsReconstructor.
    */
   virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt) const;
+
+  /**
+   *  Perform any initial calculations needed after the branching has been selected
+   */
+  virtual void initialize(ShowerParticle & particle);
   //@}
 
 private:

@@ -9,14 +9,11 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 
-
 using namespace Herwig;
 
-void 
-FS_QtildaShowerKinematics1to2::
+void FS_QtildaShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
-	       const ShowerParticleVector theChildren ) const
-{
+	       const ShowerParticleVector theChildren ) const {
   if(theChildren.size() != 2)
     throw Exception() <<  "FS_QtildaShowerKinematics1to2::updateChildren() " 
 		      << "Warning! too many children!" << Exception::eventerror;
@@ -48,8 +45,7 @@ updateChildren(const tShowerParticlePtr theParent,
 
 void FS_QtildaShowerKinematics1to2::
 updateParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) const
-{
+	      const ParticleVector theChildren ) const {
   if(theChildren.size() != 2) 
     throw Exception() << "FS_QtildaShowerKinematics1to2::updateParent() " 
 		      << "Warning! too many children!" 
@@ -61,8 +57,7 @@ updateParent( const tShowerParticlePtr theParent,
 }
 
 void FS_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLast,
-					       unsigned int iopt) const
-{
+					       unsigned int iopt) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
   Energy theMass = theLast->data().constituentMass(); 
@@ -72,4 +67,57 @@ void FS_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLast,
   // set that new momentum    
   theLast->set5Momentum(sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
 					  theLast->sudPx(), theLast->sudPy(),iopt));
+}
+
+void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {
+  // set the basis vectors
+  ShowerIndex::InteractionType type=splittingFn()->interactionType();
+  Lorentz5Momentum p,n;
+  if(particle.perturbative()!=0) {
+    // find the partner and its momentum
+    ShowerParticlePtr partner=particle.partners()[type];
+    Lorentz5Momentum ppartner(partner->momentum());
+    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    // momentum of the emitting particle
+    p = particle.momentum();
+    Lorentz5Momentum pcm;
+    // if the partner is a final-state particle then the reference
+    // vector is along the partner in the rest frame of the pair
+    if(partner->isFinalState()) {
+      Hep3Vector boost=(p + ppartner).findBoostToCM();
+      pcm = ppartner;
+      pcm.boost(boost);
+      n = Lorentz5Momentum(0.,pcm.vect());
+      n.boost( -boost);
+    }
+    else if(!partner->isFinalState()) {
+      // if the partner is an initial-state particle then the reference
+      // vector is along the partner which should be massless
+      if(particle.perturbative()==1)
+	{n = Lorentz5Momentum(0.,ppartner.vect());}
+      // if the partner is an initial-state decaying particle then the reference
+      // vector is along the backwards direction in rest frame of decaying particle
+      else {
+	Hep3Vector boost=ppartner.findBoostToCM();
+	pcm = p;
+	pcm.boost(boost);
+	  n = Lorentz5Momentum( 0.0, -pcm.vect()); 
+	  n.boost( -boost);
+      } 
+    } 
+  }
+  else if(particle.initiatesTLS()) {
+    tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>
+      (particle.parents()[0]->children()[0])->showerKinematics();
+    p = kin->getBasis()[0];
+    n = kin->getBasis()[1];
+  }
+  else  {
+    tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+      ->showerKinematics();
+    p = kin->getBasis()[0];
+    n = kin->getBasis()[1];
+  }
+  // set the basis vectors
+  setBasis(p,n);
 }

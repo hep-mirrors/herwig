@@ -9,6 +9,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -84,4 +85,22 @@ updateLast( const tShowerParticlePtr theLast,unsigned int iopt ) const {
   theLast->sudPy(0.0*GeV);
   theLast->set5Momentum(sudakov2Momentum(theLast->sudAlpha(), theLast->sudBeta(), 
 					 theLast->sudPx(), theLast->sudPy(),iopt));
+}
+ 
+void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {
+  // For the time being we are considering only 1->2 branching
+  Lorentz5Momentum p, n, pthis, ppartner, pcm;
+  assert(particle.perturbative()!=2);
+  if(particle.perturbative()==1) {
+    pcm = particle.parents()[0]->momentum();
+    p = Lorentz5Momentum(0.0, pcm.vect());
+    n = Lorentz5Momentum(0.0, -pcm.vect());
+  } 
+  else {
+    p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
+      ->showerKinematics()->getBasis()[0];
+    n = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])
+      ->showerKinematics()->getBasis()[1];
+  }
+  setBasis(p,n);
 }

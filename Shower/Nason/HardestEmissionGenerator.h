@@ -93,7 +93,7 @@ template <>
 struct ClassTraits<Herwig::HardestEmissionGenerator>
   : public ClassTraitsBase<Herwig::HardestEmissionGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::HardestEmissionGenerator"; }
+  static string className() { return "Herwig++::HardestEmissionGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * HardestEmissionGenerator is implemented. It may also include several, space-separated,
@@ -101,7 +101,7 @@ struct ClassTraits<Herwig::HardestEmissionGenerator>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HardestEmissionGenerator.so"; }
+  static string library() { return "HwNasonShower.so"; }
 };
 
 /** @endcond */
@@ -109,8 +109,5 @@ struct ClassTraits<Herwig::HardestEmissionGenerator>
 }
 
 #include "HardestEmissionGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HardestEmissionGenerator.tcc"
-#endif
 
 #endif /* HERWIG_HardestEmissionGenerator_H */

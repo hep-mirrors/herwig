@@ -8,12 +8,11 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-
+#include <cassert>
 
 using namespace Herwig;
 
-void 
-Decay_QtildaShowerKinematics1to2::
+void Decay_QtildaShowerKinematics1to2::
 updateChildren(const tShowerParticlePtr theParent, 
 	       const ShowerParticleVector theChildren ) const {
   if(theChildren.size() != 2)
@@ -62,4 +61,28 @@ void Decay_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLa
   // set that new momentum    
   theLast->set5Momentum(  sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
 					    theLast->sudPx(), theLast->sudPy(),iopt));
+}
+
+void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {
+  Lorentz5Momentum p, n, ppartner, pcm;
+  assert(particle.perturbative()!=1);
+  // this is for the initial decaying particle
+  if(particle.perturbative()==2) {
+    p = particle.momentum();
+    ShowerParticlePtr partner=particle.partners()[splittingFn()->interactionType()];
+    Lorentz5Momentum ppartner(partner->momentum());
+    if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
+    pcm=ppartner;
+    Hep3Vector boost(p.findBoostToCM());
+    pcm.boost(boost);
+    n = Lorentz5Momentum( 0.0,0.5*p.mass()*pcm.vect().unit()); 
+    n.boost( -boost);
+  }
+  else {
+    tShoKinPtr kin=dynamic_ptr_cast<ShowerParticlePtr>(particle.parents()[0])
+      ->showerKinematics();
+    p = kin->getBasis()[0];
+    n = kin->getBasis()[1];
+  }
+  setBasis(p,n);
 }

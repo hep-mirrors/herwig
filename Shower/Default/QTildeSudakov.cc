@@ -9,6 +9,9 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "Herwig++/Shower/Default/FS_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/IS_QtildaShowerKinematics1to2.h"
+#include "Herwig++/Shower/Default/Decay_QtildaShowerKinematics1to2.h"
 
 using namespace Herwig;
 
@@ -74,8 +77,7 @@ void QTildeSudakov::Init() {
 
 }
 
-bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance)
-{
+bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
@@ -84,18 +86,16 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance)
   z(guessz()); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
-  if(t<tmin)
-    {
-      t=-1.0*GeV;
-      return false;
-    }
+  if(t<tmin) {
+    t=-1.0*GeV;
+    return false;
+  }
   else
     return true; 
 } 
 
 bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
-				   double enhance)
-{
+				   double enhance) {
   Energy2 told = t;
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
@@ -104,11 +104,10 @@ bool QTildeSudakov::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
   z(guessz()); 
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
-  if(t<tmin)
-    {
-      t=-1.0*GeV;
-      return false;
-    }
+  if(t<tmin) {
+    t=-1.0*GeV;
+    return false;
+  }
   else
     return true; 
 } 
@@ -128,14 +127,10 @@ bool QTildeSudakov::PSVeto(const Energy2 t) {
 }
 
  
-Energy QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
-						const IdList &ids,const bool cc,
-						double enhance)
-{
-  if(startingScale<=cutoffQScale(interactionType())) {
-    _q=-1.;
-    return _q;
-  }
+ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
+						   const IdList &ids,const bool cc,
+						   double enhance) {
+  if(startingScale<=cutoffQScale(interactionType())) ShoKinPtr();
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to the method.
   _q = Energy();
@@ -145,11 +140,7 @@ Energy QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   Energy2 tmax(sqr(startingScale)),tmin;
   initialize(ids,tmin,cc);
   // check max > min
-  if(tmax<=tmin)
-    {
-      _q=-1.;
-      return _q;
-    }
+  if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
   do  
@@ -159,10 +150,19 @@ Energy QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   if(t > 0) _q = sqrt(t);
   else _q = -1.;
   phi(2.*pi*UseRandom::rnd());
-  return _q;
+  if(_q<0) return ShoKinPtr();
+  // construct the ShowerKinematics object
+  FS_QtildaShowerKinematics1to2Ptr showerKin = 
+    new_ptr(FS_QtildaShowerKinematics1to2());
+  showerKin->qtilde(_q);
+  showerKin->z(z());
+  showerKin->phi(phi());
+  showerKin->pT(pT());
+  showerKin->splittingFn(splittingFn());
+  return showerKin;
 }
 
-Energy QTildeSudakov::
+ShoKinPtr QTildeSudakov::
 generateNextSpaceBranching(const Energy startingQ,
 			   const IdList &ids,
 			   double x,bool cc,
@@ -177,36 +177,34 @@ generateNextSpaceBranching(const Energy startingQ,
   Energy2 tmax(sqr(startingQ)),tmin;
   initialize(ids,tmin,cc);
   // check max > min
-  if(tmax<=tmin)
-    {
-      _q=-1.;
-      return _q;
-    }
+  if(tmax<=tmin) return ShoKinPtr();
   // extract the partons which are needed for the PDF veto
   // Different order, incoming parton is id =  1, outgoing are id=0,2
   tcPDPtr parton0 = getParticleData(ids[0]);
   tcPDPtr parton1 = getParticleData(ids[1]);
   // calculate next value of t using veto algorithm
   Energy2 t(tmax),pt2(0.);
-  do
-    {
-      if(!guessSpaceLike(t,tmin,x,enhance)) break;
-      pt2=sqr(1.-z())*t-z()*sqr(_kinCutoff);
-    }
+  do {
+    if(!guessSpaceLike(t,tmin,x,enhance)) break;
+    pt2=sqr(1.-z())*t-z()*sqr(_kinCutoff);
+  }
   while(z() > zLimits().second || 
 	SplittingFnVeto((1.-z())*t/z(),ids,true) || 
 	alphaSVeto(sqr(1.-z())*t) || 
 	PDFVeto(t,x,parton0,parton1,beam)||pt2<0);
-  if(t > 0 && zLimits().first < zLimits().second) 
-    _q = sqrt(t);
-  else
-    {
-      _q = -1.;
-      return _q;
-    }
+  if(t > 0 && zLimits().first < zLimits().second)  _q = sqrt(t);
+  else return ShoKinPtr();
   phi(2.*pi*UseRandom::rnd());
   pT(sqrt(pt2));
-  return _q;
+  // create the ShowerKinematics and return it
+  IS_QtildaShowerKinematics1to2Ptr 
+    showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
+  showerKin->qtilde(_q);
+  showerKin->z(z());
+  showerKin->phi(phi());
+  showerKin->pT(pT());
+  showerKin->splittingFn(splittingFn());
+  return showerKin;
 }
 
 void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
@@ -233,13 +231,12 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
     }
 }
 
-Energy QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
+ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
 						 const Energy stoppingScale,
 						 const Energy minmass,
 						 const IdList &ids,
 						 const bool cc, 
-						 double enhance)
-{
+						 double enhance) {
   // First reset the internal kinematics variables that can
   // have been eventually set in the previous call to this method.
   _q = Constants::MaxEnergy;
@@ -250,11 +247,7 @@ Energy QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   initialize(ids,tmin,cc);
   tmin=sqr(startingScale);
   // check some branching possible
-  if(tmax<=tmin)
-    {
-      _q=-1.;
-      return _q;
-    }
+  if(tmax<=tmin) return ShoKinPtr();
   // perform the evolution
   Energy2 t(tmin);
   do 
@@ -267,9 +260,17 @@ Energy QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
     _q = sqrt(t);
     pT(sqrt(sqr(1.-z())*(t-_masssquared[0])-z()*sqr(_kinCutoff)));
   }
-  else _q = -1.;
+  else return ShoKinPtr();
   phi(2.*pi*UseRandom::rnd());
-  return _q;
+  // create the ShowerKinematics object
+  Decay_QtildaShowerKinematics1to2Ptr showerKin = 
+    new_ptr(Decay_QtildaShowerKinematics1to2());
+  showerKin->qtilde(_q);
+  showerKin->z(z());
+  showerKin->phi(phi());
+  showerKin->pT(pT());
+  showerKin->splittingFn(splittingFn());
+  return showerKin;
 }
 
 bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,

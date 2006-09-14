@@ -11,7 +11,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "Herwig++/Shower/Default/QtildaShowerKinematics1to2.h"
+#include "ShowerKinematics.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
@@ -340,15 +340,14 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
 				   Energy minmass) {
   bool vetoed = true;
   Branching fb;
-  while (vetoed) 
-    {
-      vetoed = false;
-      fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
-						   _initialenhance);
-      // apply the soft correction
-      if(fb.kinematics && _currentme && softMEC())
-	vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
-    }
+  while (vetoed) {
+    vetoed = false;
+    fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
+						 _initialenhance);
+    // apply the soft correction
+    if(fb.kinematics && _currentme && softMEC())
+      vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
+  }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
     //

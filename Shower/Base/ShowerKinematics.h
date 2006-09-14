@@ -31,6 +31,8 @@ using namespace ThePEG;
  * space-like (backward evolved), whereas the class ShowerKinematics
  * describes only the common features which are independent by them.   
  *
+ *  In general there are a number of methods specific to a shower approach
+ *
  * @see KinematicsReconstructor
  */
 class ShowerKinematics: public Base {
@@ -79,6 +81,11 @@ public:
    * - 1 is in the rest frame of the p vector
    */
   virtual void updateLast(const tShowerParticlePtr theLast, unsigned int iopt) const = 0;
+
+  /**
+   *  Perform any initial calculations needed after the branching has been selected
+   */
+  inline virtual void initialize(ShowerParticle & particle);
   //@}
 
 public:
@@ -233,7 +240,7 @@ template <>
 struct ClassTraits<Herwig::ShowerKinematics>
   : public ClassTraitsBase<Herwig::ShowerKinematics> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::ShowerKinematics"; }
+  static string className() { return "Herwig++::ShowerKinematics"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ShowerKinematics is implemented. It may also include several, space-separated,
@@ -241,7 +248,7 @@ struct ClassTraits<Herwig::ShowerKinematics>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "ShowerKinematics.so"; }
+  static string library() { return "HwShower.so"; }
 };
 
 /** @endcond */
@@ -249,8 +256,5 @@ struct ClassTraits<Herwig::ShowerKinematics>
 }
 
 #include "ShowerKinematics.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerKinematics.tcc"
-#endif
 
 #endif /* HERWIG_ShowerKinematics_H */

@@ -31,12 +31,9 @@ public:
   /** @name Standard constructors and destructors. */
   //@{
   /**
-   * Constructor with the two defining vectors \f$p\f$ and \f$n\f$.
-   * @param p The \f$p\f$ reference vector.
-   * @param n The \f$n\f$ reference vector.
+   * Default Constructor
    */
-  inline QtildaShowerKinematics1to2(const Lorentz5Momentum & p, 
-				    const Lorentz5Momentum & n);
+  inline QtildaShowerKinematics1to2();
   //@}
 
 public:
@@ -121,6 +118,13 @@ public:
   Lorentz5Momentum sudakov2Momentum(double alpha, double beta, Energy px, Energy py,
 				    unsigned int iopt) const;
 
+protected:
+
+  /**
+   *  Set the basis vectors
+   */
+  void setBasis(const Lorentz5Momentum &p, const Lorentz5Momentum & n);
+
 private:
 
   /**
@@ -134,20 +138,17 @@ private:
   /**
    *  The \f$p\f$ reference vector
    */
-  const Lorentz5Momentum _pVector;
+  Lorentz5Momentum _pVector;
 
   /**
    *  The \f$n\f$ reference vector
    */
-  const Lorentz5Momentum _nVector;
+  Lorentz5Momentum _nVector;
 
 };
 
 }
 
 #include "QtildaShowerKinematics1to2.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtildaShowerKinematics1to2.tcc"
-#endif
 
 #endif /* HERWIG_QtildaShowerKinematics1to2_H */

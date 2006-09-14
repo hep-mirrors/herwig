@@ -7,13 +7,14 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
-#include "SudakovFormFactor.fh"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Couplings/ShowerIndex.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/PDF/BeamParticleData.h"
 #include <cassert>
+#include "ShowerKinematics.h"
+#include "SudakovFormFactor.fh"
 
 namespace Herwig {
 
@@ -138,9 +139,9 @@ public:
    * @param enhance The radiation enhancement factor
    * defined.
    */
-  virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids,const bool cc,
-					   double enhance)=0;
+  virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
+					      const IdList &ids,const bool cc,
+					      double enhance)=0;
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -153,12 +154,12 @@ public:
    * defined.
    * @param enhance The radiation enhancement factor
    */
-  virtual Energy generateNextDecayBranching(const Energy startingScale,
-					    const Energy stoppingScale,
-					    const Energy minmass,
-					    const IdList &ids,
-					    const bool cc,
-					    double enhance)=0;
+  virtual ShoKinPtr generateNextDecayBranching(const Energy startingScale,
+					       const Energy stoppingScale,
+					       const Energy minmass,
+					       const IdList &ids,
+					       const bool cc,
+					       double enhance)=0;
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -171,10 +172,10 @@ public:
    * @param beam The beam particle
    * @param enhance THe radiation enhancement factor
    */
-  virtual Energy generateNextSpaceBranching(const Energy startingScale,
-		                            const IdList &ids,double x,
-					    const bool cc,double enhance,
-					    Ptr<BeamParticleData>::transient_const_pointer beam)=0;
+  virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
+					       const IdList &ids,double x,
+					       const bool cc,double enhance,
+					       Ptr<BeamParticleData>::transient_const_pointer beam)=0;
   //@}
 
   /**
