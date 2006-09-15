@@ -8,7 +8,7 @@ GlobalParameters.icc GlobalParameters.fh\
 HerwigRun.cc HerwigRun.h \
 HwDebug.cc HwDebug.h \
 Interpolator.cc Interpolator.h Interpolator.icc \
-NewInterpolator.cc NewInterpolator.h NewInterpolator.h NewInterpolator.icc \
+NewInterpolator.cc NewInterpolator.fh NewInterpolator.h NewInterpolator.icc \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \
 Math.h Math.icc Math.cc \
