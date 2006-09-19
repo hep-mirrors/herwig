@@ -46,11 +46,6 @@ public:
   inline Evolver();
 
   /**
-   *  Destructor
-   */
-  virtual ~Evolver();
-
-  /**
    *  Member to perform the shower
    */
   //@{

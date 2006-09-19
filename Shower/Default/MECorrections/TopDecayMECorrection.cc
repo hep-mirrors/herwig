@@ -205,7 +205,7 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	  }
 	// insert new particles
 	cit->first->copy(newc);
-	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2)));
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2,true)));
 	cit->first->progenitor(sp);
 	tree->outgoingLines()[cit->first]=sp;
 	cit->first->perturbative(false);
@@ -214,14 +214,14 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
     else
       {
 	cit->first->copy(newa);
-	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2)));
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2,true)));
 	cit->first->progenitor(sp);
 	tree->outgoingLines()[cit->first]=sp;
 	cit->first->perturbative(true);
       }
   }
   // Add the gluon to the shower:
-  ShowerParticlePtr   sg   =new_ptr(ShowerParticle(*newg,2));
+  ShowerParticlePtr   sg   =new_ptr(ShowerParticle(*newg,2,true));
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
   gluon->perturbative(false);
   tree->outgoingLines().insert(make_pair(gluon,sg));
@@ -376,7 +376,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       else
 	{
 	  // values of kappa and z
-	  double z(br.kinematics->z()),kappa(sqr(br.kinematics->qtilde()/_mt));
+	  double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
 	  // parameters for the translation
 	  double w(1.-(1.-z)*(kappa-1.)),u(1.+_a-_c-(1.-z)*kappa),v(sqr(u)-4.*_a*w*z);
 	  // veto if outside phase space
@@ -407,7 +407,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	  if(!veto) initial->pT(pt);
 	}
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->qtilde());
+      if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
       // return the veto
       return veto;
     }
@@ -422,7 +422,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       if(pt<initial->pT()) return !UseRandom::rndbool(1./_finalenhance);
       // if hardest so far do calculation
       // values of kappa and z
-      double z(br.kinematics->z()),kappa(sqr(br.kinematics->qtilde()/_mt));
+      double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
       // momentum fractions
       double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a),
 	xg((2.-xa)*(1.-r)-(z-r)*root);
@@ -443,7 +443,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // if not vetoed reset max
       if(!veto) initial->pT(pt);
       // if vetoing reset the scale
-      if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->qtilde());
+      if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
       // return the veto
       return veto;
     }

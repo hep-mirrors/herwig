@@ -40,131 +40,122 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 		       << Exception::eventerror;}
   bool emitted=true;
   // if this is not a fixed point in the reconstruction
-  if( !(particleJetParent->isReconstructionFixedPoint()) ) 
-    {
-      // if not a reconstruction fixpoint, dig deeper for all children:
-      for ( ParticleVector::const_iterator cit = particleJetParent->children().begin();
-	    cit != particleJetParent->children().end(); ++cit )
-	{reconstructTimeLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(*cit),iopt);}
-    }
+  if( !particleJetParent->isReconstructionFixedPoint() ) {
+    // if not a reconstruction fixpoint, dig deeper for all children:
+    for ( ParticleVector::const_iterator cit = particleJetParent->children().begin();
+	  cit != particleJetParent->children().end(); ++cit )
+      {reconstructTimeLikeJet(dynamic_ptr_cast<ShowerParticlePtr>(*cit),iopt);}
+  }
   // it is a reconstruction fixpoint, ie kinematical data has to be available 
-  else 
-    {
-      // check if the parent was part of the shower
-      ShowerParticlePtr jetGrandParent;
-      if(!particleJetParent->parents().empty())
-	jetGrandParent= dynamic_ptr_cast<ShowerParticlePtr>
-	  (particleJetParent->parents()[0]);
-      // update if so
-      if (jetGrandParent) 
-	{if (jetGrandParent->showerKinematics())
-	    jetGrandParent->showerKinematics()->updateLast(particleJetParent,iopt);}
-      // otherwise
-      else 
-	{
-	  Energy dm = particleJetParent->data().constituentMass();
-	  if (abs(dm-particleJetParent->momentum().mass())>0.001*MeV
-	      //if (abs(dm-particleJetParent->momentum().mass())>0.05*MeV
-	      &&particleJetParent->dataPtr()->stable()
-	      &&particleJetParent->id()!=ParticleID::gamma) 
-	    {
-	      Lorentz5Momentum dum =  particleJetParent->momentum();
-	      if(dm>dum.e()) throw Veto();
-	      dum.setMass(dm); 
-	      dum.rescaleRho(); 
-	      particleJetParent->set5Momentum(dum);  
-	    } 
-	  else {emitted=false;}
-	}
+  else {
+    // check if the parent was part of the shower
+    ShowerParticlePtr jetGrandParent;
+    if(!particleJetParent->parents().empty())
+      jetGrandParent= dynamic_ptr_cast<ShowerParticlePtr>
+	(particleJetParent->parents()[0]);
+    // update if so
+    if (jetGrandParent) 
+      {if (jetGrandParent->showerKinematics())
+	  jetGrandParent->showerKinematics()->reconstructLast(particleJetParent,iopt);}
+    // otherwise
+    else {
+      Energy dm = particleJetParent->data().constituentMass();
+      if (abs(dm-particleJetParent->momentum().mass())>0.001*MeV
+	  //if (abs(dm-particleJetParent->momentum().mass())>0.05*MeV
+	  &&particleJetParent->dataPtr()->stable()
+	  &&particleJetParent->id()!=ParticleID::gamma) {
+	Lorentz5Momentum dum =  particleJetParent->momentum();
+	if(dm>dum.e()) throw Veto();
+	dum.setMass(dm); 
+	dum.rescaleRho(); 
+	particleJetParent->set5Momentum(dum);  
+      } 
+      else {emitted=false;}
     }
+  }
   // recursion has reached an endpoint once, ie we can reconstruct the
   // kinematics from the children.
   if( !(particleJetParent->isReconstructionFixedPoint()) ) 
-    {particleJetParent->showerKinematics()
-	->updateParent( particleJetParent, particleJetParent->children() );}
+    particleJetParent->showerKinematics()
+      ->reconstructParent( particleJetParent, particleJetParent->children() );
   return emitted;
 }
 
 bool QTildeReconstructor::
-reconstructHardJets(ShowerTreePtr hard) const
-{
+reconstructHardJets(ShowerTreePtr hard) const {
   Timer<1100> timer("QTildeReconstructor::reconstructHardJets");
-  try
-    {
-      bool radiated[2] = {false,false};
-      // find the hard process centre-of-mass energy
-      Lorentz5Momentum p_cm[2] = {Lorentz5Momentum(),Lorentz5Momentum()};
-      // create a vector of the hard particles
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
-      vector<ShowerProgenitorPtr> ShowerHardJets;
-      for(mit=hard->incomingLines().begin();mit!=hard->incomingLines().end();++mit)
-	ShowerHardJets.push_back((*mit).first);
-      for(mit=hard->outgoingLines().begin();mit!=hard->outgoingLines().end();++mit)
-	ShowerHardJets.push_back((*mit).first);
-      for(unsigned int ix=0;ix<ShowerHardJets.size();++ix)
-	{
-	  // final-state jet
-	  if(ShowerHardJets[ix]->progenitor()->isFinalState())
-	    {
-	      // did it radiate
-	      radiated[1] |=ShowerHardJets[ix]->hasEmitted();
-	      // add momentum
-	      p_cm[1]+=ShowerHardJets[ix]->progenitor()->momentum();
-	    }
-	  // initial-state jet
-	  else
-	    {
-	      // did it radiate
-	      radiated[0]|=ShowerHardJets[ix]->hasEmitted();
-	      // add momentum
-	      p_cm[0]+=ShowerHardJets[ix]->progenitor()->getThePEGBase()->momentum();
-	    }
-	}
-      // initial state shuffling
-      // the boosts for the initial state
-      Vector3 boostRest,boostNewF;
-      bool applyBoost(false);
-      if(radiated[0])
-	applyBoost=reconstructISJets(p_cm[0],ShowerHardJets,boostRest,boostNewF);
-      // final-state reconstruction
-      // check if in CMF frame
-      Vector3 beta_cm = p_cm[1].findBoostToCM();
-      bool gottaBoost = (beta_cm.mag() > 1e-12);
-      // check if any radiation
-      bool atLeastOnce = radiated[1];
-      // collection of pointers to initial hard particle and jet momenta
-      // for final boosts
-      JetKinVect jetKinematics;
-      vector<ShowerProgenitorPtr>::const_iterator cit;
-      for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) {
-	if(!(*cit)->progenitor()->isFinalState()) continue;
-	JetKinStruct tempJetKin;      
-	tempJetKin.parent = (*cit)->progenitor(); 
-	if(gottaBoost) tempJetKin.parent->boost(beta_cm); 
-	tempJetKin.p = (*cit)->progenitor()->momentum();
-	atLeastOnce |= reconstructTimeLikeJet((*cit)->progenitor(),0);
-	tempJetKin.q = (*cit)->progenitor()->momentum();
-	jetKinematics.push_back(tempJetKin);
+  try {
+    bool radiated[2] = {false,false};
+    // find the hard process centre-of-mass energy
+    Lorentz5Momentum p_cm[2] = {Lorentz5Momentum(),Lorentz5Momentum()};
+    // create a vector of the hard particles
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+    vector<ShowerProgenitorPtr> ShowerHardJets;
+    for(mit=hard->incomingLines().begin();mit!=hard->incomingLines().end();++mit)
+      ShowerHardJets.push_back((*mit).first);
+    for(mit=hard->outgoingLines().begin();mit!=hard->outgoingLines().end();++mit)
+      ShowerHardJets.push_back((*mit).first);
+    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+      // final-state jet
+      if(ShowerHardJets[ix]->progenitor()->isFinalState()) {
+	// did it radiate
+	radiated[1] |=ShowerHardJets[ix]->hasEmitted();
+	// add momentum
+	p_cm[1]+=ShowerHardJets[ix]->progenitor()->momentum();
       }
-      // find the rescaling factor
-      double k = 0.0;
-      if(atLeastOnce) {
-	k = solveKfactor(p_cm[1].mag(), jetKinematics);
-	if(k< 0.) return false;
-      }
-      // perform the rescaling and boosts
-      for(JetKinVect::iterator it = jetKinematics.begin();
-	  it != jetKinematics.end(); ++it) {
-	LorentzRotation Trafo = LorentzRotation(); 
-	if(atLeastOnce) Trafo = solveBoost(k, it->q, it->p);
-	if(gottaBoost) Trafo.boost(-beta_cm);
-	if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
-	if(applyBoost) {
-	  it->parent->deepBoost(boostRest);
-	  it->parent->deepBoost(boostNewF);
-	}
+      // initial-state jet
+      else {
+	// did it radiate
+	radiated[0]|=ShowerHardJets[ix]->hasEmitted();
+	// add momentum
+	p_cm[0]+=ShowerHardJets[ix]->progenitor()->getThePEGBase()->momentum();
       }
     }
+    // initial state shuffling
+    // the boosts for the initial state
+    Vector3 boostRest,boostNewF;
+    bool applyBoost(false);
+    if(radiated[0])
+      applyBoost=reconstructISJets(p_cm[0],ShowerHardJets,boostRest,boostNewF);
+    // final-state reconstruction
+    // check if in CMF frame
+    Vector3 beta_cm = p_cm[1].findBoostToCM();
+    bool gottaBoost = (beta_cm.mag() > 1e-12);
+    // check if any radiation
+    bool atLeastOnce = radiated[1];
+    // collection of pointers to initial hard particle and jet momenta
+    // for final boosts
+    JetKinVect jetKinematics;
+    vector<ShowerProgenitorPtr>::const_iterator cit;
+    for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) {
+      if(!(*cit)->progenitor()->isFinalState()) continue;
+      JetKinStruct tempJetKin;      
+      tempJetKin.parent = (*cit)->progenitor(); 
+      if(gottaBoost) tempJetKin.parent->boost(beta_cm); 
+      tempJetKin.p = (*cit)->progenitor()->momentum();
+      atLeastOnce |= reconstructTimeLikeJet((*cit)->progenitor(),0);
+      tempJetKin.q = (*cit)->progenitor()->momentum();
+      jetKinematics.push_back(tempJetKin);
+    }
+    // find the rescaling factor
+    double k = 0.0;
+    if(atLeastOnce) {
+      k = solveKfactor(p_cm[1].mag(), jetKinematics);
+      if(k< 0.) return false;
+    }
+    // perform the rescaling and boosts
+    for(JetKinVect::iterator it = jetKinematics.begin();
+	it != jetKinematics.end(); ++it) {
+      LorentzRotation Trafo = LorentzRotation(); 
+      if(atLeastOnce) Trafo = solveBoost(k, it->q, it->p);
+      if(gottaBoost) Trafo.boost(-beta_cm);
+      if(atLeastOnce || gottaBoost) it->parent->deepTransform(Trafo);
+      if(applyBoost) {
+	it->parent->deepBoost(boostRest);
+	it->parent->deepBoost(boostNewF);
+      }
+    }
+  }
   catch(Veto) {
     return false;
   }
@@ -225,27 +216,24 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   tShowerParticlePtr child;
   tShowerParticlePtr parent = dynamic_ptr_cast<ShowerParticlePtr>
     (p->parents()[0]);
-  if(parent)
-    {
-      emitted=true;
-      reconstructSpaceLikeJet(parent);
-    }
+  if(parent) {
+    emitted=true;
+    reconstructSpaceLikeJet(parent);
+  }
   // if branching reconstruct time-like child
   if(p->children().size()==2)
     child = dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]);
-  if(p->perturbative()==0 && child)
-    {
-      dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])->
-	showerKinematics()->updateParent(p,p->children());
-      if(!child->children().empty())
-	{
-	  reconstructTimeLikeJet(child,0);
-	  // calculate the momentum of the particle
-	  Lorentz5Momentum pnew=p->momentum()-child->momentum();
-	  pnew.rescaleMass();
-	  p->children()[0]->set5Momentum(pnew);
-	}
+  if(p->perturbative()==0 && child) {
+    dynamic_ptr_cast<ShowerParticlePtr>(p->children()[0])->
+      showerKinematics()->reconstructParent(p,p->children());
+    if(!child->children().empty()) {
+      reconstructTimeLikeJet(child,0);
+      // calculate the momentum of the particle
+      Lorentz5Momentum pnew=p->momentum()-child->momentum();
+      pnew.rescaleMass();
+      p->children()[0]->set5Momentum(pnew);
     }
+  }
   return emitted;
 }
 
@@ -282,37 +270,34 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
 bool QTildeReconstructor::
 reconstructISJets(Lorentz5Momentum pcm,
 		  const vector<ShowerProgenitorPtr> & ShowerHardJets,
-		  Vector3 & boostRest,Vector3 & boostNewF) const
-{
+		  Vector3 & boostRest,Vector3 & boostNewF) const {
   bool atLeastOnce = false;
   vector<Lorentz5Momentum> p, pq, p_in;
-  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix)
-    {
-      // only look at initial state particles
-      if(ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
-      // at momentum to vector
-      p_in.push_back(ShowerHardJets[ix]->progenitor()->getThePEGBase()->momentum());
-      // reconstruct the jet
-      atLeastOnce |= reconstructSpaceLikeJet(ShowerHardJets[ix]->progenitor());
-      p.push_back(ShowerHardJets[ix]->progenitor()->momentum());
-      if(ShowerHardJets[ix]->progenitor()->showerKinematics())
-	{pq.push_back(ShowerHardJets[ix]->progenitor()->
-		      showerKinematics()->getBasis()[0]);}
-      else 
-	{
-	  if (!ShowerHardJets[ix]->progenitor()->parents().empty()) 
-	    {
-	      Energy etemp = ShowerHardJets[ix]->progenitor()->
-		parents()[0]->momentum().pz();
-	      Lorentz5Momentum ptemp = Lorentz5Momentum(0, 0, etemp, abs(etemp));
-	      pq.push_back(ptemp);
-	    } 
-	  else 
-	    {throw Exception() << "QTildeReconstructor::reconstructISJets: "
-			       << "Warning, bad pq!!!\n"
-			       << Exception::eventerror;}
-	}
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    // only look at initial state particles
+    if(ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
+    // at momentum to vector
+    p_in.push_back(ShowerHardJets[ix]->progenitor()->getThePEGBase()->momentum());
+    // reconstruct the jet
+    atLeastOnce |= reconstructSpaceLikeJet(ShowerHardJets[ix]->progenitor());
+    p.push_back(ShowerHardJets[ix]->progenitor()->momentum());
+    if(ShowerHardJets[ix]->progenitor()->showerKinematics()) {
+      pq.push_back(ShowerHardJets[ix]->progenitor()->
+		   showerKinematics()->getBasis()[0]);
     }
+    else {
+      if (!ShowerHardJets[ix]->progenitor()->parents().empty()) {
+	Energy etemp = ShowerHardJets[ix]->progenitor()->
+	  parents()[0]->momentum().pz();
+	Lorentz5Momentum ptemp = Lorentz5Momentum(0, 0, etemp, abs(etemp));
+	pq.push_back(ptemp);
+      } 
+      else 
+	throw Exception() << "QTildeReconstructor::reconstructISJets: "
+			   << "Warning, bad pq!!!\n"
+			   << Exception::eventerror;
+    }
+  }
   double x1 = p_in[0].z()/pq[0].z();
   double x2 = p_in[1].z()/pq[1].z();
   Energy MDY = (p_in[0] + p_in[1]).m();
@@ -342,27 +327,25 @@ reconstructISJets(Lorentz5Momentum pcm,
   // now compute k1, k2
   double k1 = 1.0, k2 = 1.0;
   rad = kp*(b1+kp*b2)/(kp*a1+a2)*(x1/x2);   
-  if (rad > 0) 
-    {
-      k1 = sqrt(rad);
-      k2 = kp/k1;
-    } 
+  if (rad > 0) {
+    k1 = sqrt(rad);
+    k2 = kp/k1;
+  } 
   else
-    {throw Exception() << "QTildeReconstructor::reconstructISJets " 
-			  << "  Plus:  k1 = " << k1 
-			  << "WARNING! Can't get k1p, k2p!\n"
-			  << Exception::eventerror;}
+    throw Exception() << "QTildeReconstructor::reconstructISJets " 
+		      << "  Plus:  k1 = " << k1 
+		      << "WARNING! Can't get k1p, k2p!\n"
+		      << Exception::eventerror;
   double beta1 = getBeta((a1+b1), (a1-b1), 
 			 (k1*a1+b1/k1), (k1*a1-b1/k1));
   double beta2 = getBeta((a2+b2), (a2-b2), 
 			 (a2/k2+k2*b2), (a2/k2-k2*b2));
   if (pq[0].z() > 0) {beta1 = -beta1; beta2 = -beta2;}
   tPVector toBoost;
-  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix)
-    {
-      if(!ShowerHardJets[ix]->progenitor()->isFinalState())
-	toBoost.push_back(ShowerHardJets[ix]->progenitor());
-    }
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    if(!ShowerHardJets[ix]->progenitor()->isFinalState())
+      toBoost.push_back(ShowerHardJets[ix]->progenitor());
+  }
   // before boost
   Hep3Vector betaboost = Vector3(0, 0, beta1);
   boostChain(toBoost[0], betaboost);

@@ -134,7 +134,7 @@ struct ClassTraits<Herwig::FortranFinder>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwShower.so HwFortranShower.so"; }
 };
 
 /** @endcond */

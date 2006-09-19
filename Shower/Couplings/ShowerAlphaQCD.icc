@@ -12,7 +12,7 @@ inline ShowerAlphaQCD::ShowerAlphaQCD()
   : ShowerAlpha(), 
     _qmin(0.630882*GeV), _asType(1), 
     _thresholds(4,0.0), _lambda(4,0.0),
-    _nloop(3),_lambdaopt(false),
+    _nloop(3),_lambdaopt(false),_thresopt(false),
     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
     _maxtry(100),_alphamin(0.)
 {}
@@ -82,8 +82,9 @@ inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, short nf) const {
   if(_nloop==1)
     {return 4.*pi/(b0*lx);}
   // two loop
-  else if(_nloop==2)
-    {return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx);}
+  else if(_nloop==2) {
+    return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx);
+  }
   // three loop
   else
     {return 4.*pi/(b0*lx)*(1.-2.*b1/sqr(b0)*log(lx)/lx + 
@@ -92,8 +93,8 @@ inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, short nf) const {
 }
   
 inline Energy ShowerAlphaQCD::lambdaQCD(unsigned int nf) {
-  if(nf<=3) return _lambda[0];
-  else if(nf>3&&nf<=6) return _lambda[nf-3];
+  if(nf<3) return _lambda[0];
+  else if(nf>=3&&nf<=6) return _lambda[nf-3];
   else return _lambda[6];
 }
 }

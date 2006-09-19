@@ -9,6 +9,6 @@ MECorrectionBase.cc MECorrectionBase.h MECorrectionBase.icc MECorrectionBase.fh 
 PartnerFinder.h PartnerFinder.fh PartnerFinder.cc PartnerFinder.icc \
 ShowerParticle.cc  ShowerParticle.fh  ShowerParticle.h  ShowerParticle.icc \
 Evolver.h Evolver.fh Evolver.icc Evolver.cc \
-ShowerKinematics.fh  ShowerKinematics.h  ShowerKinematics.icc \
+ShowerKinematics.fh  ShowerKinematics.h  ShowerKinematics.icc ShowerKinematics.cc \
 ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc \
 ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc

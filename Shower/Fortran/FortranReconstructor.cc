@@ -12,16 +12,10 @@
 #include "ThePEG/Utilities/Timer.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingFunction.h"
 
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FortranReconstructor.tcc"
-#endif
-
-
 using namespace Herwig;
 
 NoPIOClassDescription<FortranReconstructor> FortranReconstructor::initFortranReconstructor;
 // Definition of the static class description member.
-
 
 void FortranReconstructor::Init() {
 
@@ -30,4 +24,14 @@ void FortranReconstructor::Init() {
       " including the kinematics reshuffling necessary to compensate for the recoil"
       "of the emissions." );
 
+}
+
+bool FortranReconstructor::reconstructHardJets(ShowerTreePtr hard) const {
+  throw Exception() << "FortranReconstructor::reconstructHardJets()"
+		    << " not implemented yet" << Exception::runerror;
+}
+
+bool FortranReconstructor::reconstructDecayJets(ShowerTreePtr decay) const {
+  throw Exception() << "FortranReconstructor::reconstructDecayJets()"
+		    << " not implemented yet" << Exception::runerror;
 }

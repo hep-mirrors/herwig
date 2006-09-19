@@ -154,7 +154,7 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   // construct the ShowerKinematics object
   FS_QtildaShowerKinematics1to2Ptr showerKin = 
     new_ptr(FS_QtildaShowerKinematics1to2());
-  showerKin->qtilde(_q);
+  showerKin->scale(_q);
   showerKin->z(z());
   showerKin->phi(phi());
   showerKin->pT(pT());
@@ -199,7 +199,7 @@ generateNextSpaceBranching(const Energy startingQ,
   // create the ShowerKinematics and return it
   IS_QtildaShowerKinematics1to2Ptr 
     showerKin = new_ptr(IS_QtildaShowerKinematics1to2());
-  showerKin->qtilde(_q);
+  showerKin->scale(_q);
   showerKin->z(z());
   showerKin->phi(phi());
   showerKin->pT(pT());
@@ -265,7 +265,7 @@ ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,
   // create the ShowerKinematics object
   Decay_QtildaShowerKinematics1to2Ptr showerKin = 
     new_ptr(Decay_QtildaShowerKinematics1to2());
-  showerKin->qtilde(_q);
+  showerKin->scale(_q);
   showerKin->z(z());
   showerKin->phi(phi());
   showerKin->pT(pT());

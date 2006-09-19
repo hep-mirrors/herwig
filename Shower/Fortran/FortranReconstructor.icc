@@ -7,6 +7,9 @@
 namespace Herwig {
 using namespace ThePEG;
 
+inline FortranReconstructor::FortranReconstructor() {
+}
+
 inline IBPtr FortranReconstructor::clone() const {
   return new_ptr(*this);
 }

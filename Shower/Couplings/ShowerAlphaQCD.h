@@ -214,6 +214,11 @@ private:
   bool _lambdaopt;
 
   /**
+   *  Option for the threshold masses
+   */
+  bool _thresopt;
+
+  /**
    *  Input value of Lambda
    */
   Energy _lambdain;

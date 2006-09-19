@@ -28,56 +28,10 @@ class QtildaShowerKinematics1to2: public ShowerKinematics {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default Constructor
    */
   inline QtildaShowerKinematics1to2();
-  //@}
-
-public:
-
-  /**
-   *  The updateChildren, updateParent and updateLast
-   *  members to update the values of the \f$\alpha\f$ and 
-   *  \f$p_\perp\f$ variables during the shower evolution.
-   */
-  //@{
-  /**
-   * Along with the showering evolution --- going forward for
-   * time-like (forward) evolution, and going backward for space-like
-   * (backward) evolution --- the kinematical variables of the
-   * branching products are calculated and updated from the knowledge
-   * of the parent kinematics. 
-   * @param theParent   The parent
-   * @param theChildren The children
-   */
-  virtual void updateChildren(const tShowerParticlePtr theParent, 
-			      const ShowerParticleVector theChildren) const = 0;
-
-  /**
-   * Update the parent Kinematics from the knowledge of the kinematics
-   * of the children. This method will be used by the KinematicsReconstructor.
-   * @param theParent   The parent
-   * @param theChildren The children
-   */
-  virtual void updateParent(const tShowerParticlePtr theParent, 
-			    const ParticleVector theChildren) const = 0;
-
-  /**
-   * Update the kinematical data of a particle when a reconstruction
-   * fixpoint was found. This will highly depend on the kind of
-   * kinematics chosen and will be defined in the inherited concrete
-   * classes. This method will be used by the KinematicsReconstructor.
-   * @param theLast The particle.
-   * @param iopt The option for the momentum reconstruction 
-   * - 0 is in the rest frame of the pair of reference vectors
-   * - 1 is in the rest frame of the p vector
-   */
-  virtual void updateLast(const tShowerParticlePtr theLast,
-			  unsigned int iopt) const = 0;
-  //@}
 
   /**
    * Implementation of the virtual function returning a set of basis vectors, specific to

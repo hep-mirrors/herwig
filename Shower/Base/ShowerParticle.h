@@ -70,15 +70,20 @@ public:
    * Standard Constructor. Note that the default constructor is
    * private - there is no particle without a pointer to a
    * ParticleData object.
+   * @param fs  Whether or not the particle is an inital or final-state particle
+   * @param tls Whether or not the particle initiates a time-like shower
    */
-  inline ShowerParticle(tcEventPDPtr);
+  inline ShowerParticle(tcEventPDPtr,bool fs, bool tls=false);
 
   /**
    * Copy constructor from a ThePEG Particle
    * @param part ThePEG particle
    * @param pert Where the particle came from
+   * @param fs Whether or not the particle is an inital or final-state particle
+   * @param tls Whether or not the particle initiates a time-like shower
    */
-  inline ShowerParticle(const Particle & part,unsigned int pert);
+  inline ShowerParticle(const Particle & part,unsigned int pert,
+			bool fs, bool tls=false);
   //@}
 
 public:
@@ -94,22 +99,10 @@ public:
   inline bool isFinalState() const;
 
   /**
-   * Set the flag that tells if the particle is final state
-   * or initial state.
-   */
-  inline void setFinalState( const bool );
-
-  /**
    * Access the flag that tells if the particle is initiating a
    * time like shower when it has been emitted in an initial state shower.
    */
   inline bool initiatesTLS() const;
-
-  /**
-   * Set the flag that tells if the particle is initiating a
-   * time like shower when it has been emitted in an initial state shower.
-   */
-  inline void setInitiatesTLS( const bool );
 
   /**
    * Access the flag which tells us where the particle came from
@@ -120,69 +113,9 @@ public:
   //@}
 
   /**
-   * Access/Set Sudakov variables.
-   * Notice that the ShowerKinematics object is logically
-   * associated more with the branching vertex than with the radiating 
-   * particle itself, although it is stored in the ShowerParticle 
-   * object associated with the branching (radiating) particle. 
-   * Furthermore, the branching products do not have a ShowerKinematics
-   * object (they eventually will have one only later if they branch).
-   * Therefore these Sudakov variables can be considered as a useful
-   * representation of the temporarily, preliminary, momentum of the 
-   * ShowerParticle object during the showering evolution, 
-   * whereas the momentum member describes the "final", "real" one.
+   * Set/Get the momentum fraction for initial-state particles
    */
   //@{
-  /**
-   *  Get the \f$\alpha\f$ parameter of the Sudakov decomposition
-   */
-  inline double sudAlpha() const;
-
-  /**
-   *  Set the \f$\alpha\f$ parameter of the Sudakov decomposition
-   */
-  inline void sudAlpha(const double);
-
-  /**
-   *  Get the \f$\beta\f$ parameter of the Sudakov decompostion
-   */
-  inline double sudBeta() const;
-
-  /**
-   *  Set the \f$\beta\f$ parameter of the Sudakov decompostion
-   */
-  inline void sudBeta(const double);
-
-  /**
-   *  Get the x-component of the transverse momentum in the Sudakov decompostion
-   */
-  inline Energy sudPx() const;
-
-  /**
-   *  Set the x-component of the transverse momentum in the Sudakov decompostion
-   */
-  inline void sudPx(const Energy);
-
-  /**
-   *  Get the y-component of the transverse momentum in the Sudakov decompostion
-   */
-  inline Energy sudPy() const;
-
-  /**
-   *  Get the y-component of the transverse momentum in the Sudakov decompostion
-   */
-  inline void sudPy(const Energy);
-
-  /**
-   *  Get the transverse momentum
-   */
-  inline Energy sudPperp() const;
-
-  /**
-   *  get the square of the transverse momentum
-   */
-  inline Energy2 sudPperp2() const;
-
   /**
    *  For an initial state particle get the fraction of the beam momentum
    */
@@ -193,7 +126,6 @@ public:
    */
   inline double x() const;
   //@}
-
 
   /**
    * Set/Get methods for the ShowerKinematics objects
@@ -265,6 +197,32 @@ public:
   //@}
 
   /**
+   *  Members to store and provide access to variables for a specific
+   *  shower evolution scheme
+   */
+  //@{
+  /**
+   *  Access the vector containing dimensionless variables
+   */
+  //inline vector<double> & showerParameters() const;
+
+  /**
+   *  Set the vector containing dimensionless variables
+   */
+  inline vector<double> & showerParameters();
+
+  /**
+   *  Access the vector containing the dimensionful variables
+   */
+  //inline vector<Energy> & showerVariables() const;
+
+  /**
+   *  Set the vector containing dimensionful variables
+   */
+  inline vector<Energy> & showerVariables();
+  //@}
+
+  /**
    *  If this particle came from the hard process get a pointer to ThePEG particle
    *  it came from
    */
@@ -319,24 +277,14 @@ private:
   bool _initiatesTLS;
 
   /**
-   *  The \f$\alpha\f$ parameter of the Sudakov decomposition
+   * Dimensionless parameters
    */
-  double _sudAlpha;
+  vector<double> _parameters;
 
   /**
-   *  The \f$\beta\f$ parameter of the Sudakov decompostion
+   *  Dimensionful parameters
    */
-  double _sudBeta;
-
-  /**
-   *  The x-component of the transverse momentum in the Sudakov decompostion
-   */
-  Energy _sudPx;
-
-  /**
-   *  The y-component of the transverse momentum in the Sudakov decompostion
-   */
-  Energy _sudPy;
+  vector<Energy> _variables;
 
   /**
    *  The beam energy fraction for particle's in the initial state
@@ -388,7 +336,7 @@ struct ClassTraits<Herwig::ShowerParticle>
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::ShowerParticle"; }
   /** Create a Event object. */
-  static TPtr create() { return TPtr::Create(Herwig::ShowerParticle(tcEventPDPtr())); }
+  static TPtr create() { return TPtr::Create(Herwig::ShowerParticle(tcEventPDPtr(),true)); }
 };
 
 /** @endcond */

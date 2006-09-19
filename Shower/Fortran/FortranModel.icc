@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the FortranModel class.
+//
+
+namespace Herwig {
+
+inline FortranModel::FortranModel() {}
+
+inline IBPtr FortranModel::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr FortranModel::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

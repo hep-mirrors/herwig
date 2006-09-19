@@ -56,8 +56,8 @@ public:
    * of the children. This method will be used by the 
    * KinematicsReconstructor.
    */
-  virtual void updateParent( const tShowerParticlePtr theParent, 
-			     const ParticleVector theChildren ) const;
+  virtual void reconstructParent( const tShowerParticlePtr theParent, 
+				  const ParticleVector theChildren ) const;
 
   /**
    * Update the kinematical data of a particle when a reconstruction
@@ -69,7 +69,7 @@ public:
    * - 0 is in the rest frame of the pair of reference vectors
    * - 1 is in the rest frame of the p vector
    */
-  virtual void updateLast( const tShowerParticlePtr theLast,unsigned int iopt ) const;
+  virtual void reconstructLast( const tShowerParticlePtr theLast,unsigned int iopt ) const;
 
   /**
    *  Perform any initial calculations needed after the branching has been selected

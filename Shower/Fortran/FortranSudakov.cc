@@ -5,6 +5,7 @@
 //
 
 #include "FortranSudakov.h"
+#include "FortranShowerKinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -88,27 +89,37 @@ void FortranSudakov::Init() {
 void FortranSudakov::doinit() throw(InitException) {
   SudakovFormFactor::doinit();
   // get the maximum energy from the event handler
-  Energy qlim=generator()->currentEventHandler()->lumiFnPtr()->maximumCMEnergy();
+  Energy qlim=generator()->eventHandler()->lumiFnPtr()->maximumCMEnergy();
+  cerr << "testing qlim " << qlim/GeV << endl;
   // power for interpolation
   double power=1./(_nqev-1);
+  cerr << "testing power " << power << "\n";
   // get the constituent masses of the quarks
   vector<Energy> qmass;
   for(unsigned int ix=1;ix<=6;++ix) {
     qmass.push_back(getParticleData(ix)->constituentMass());
+    cerr << "testing masses " << qmass.back()/GeV << "\n";
   }
   ShowerAlphaQCDPtr alphas=dynamic_ptr_cast<ShowerAlphaQCDPtr>(alpha());
   if(!alphas) throw InitException() << "Must be using ShowerAlphaQCD in "
 				    << "FortranSudakov::doinit()";
-  Energy lam3=alphas->lambdaQCD(3);
+  // ensure strong coupling is initialised
+  alphas->init();
+  // get lambda
+  Energy lam3=alphas->lambdaQCD(2);
+  cerr << "testing lam3 " << lam3/GeV << "\n";
   // integrator
   GaussianIntegrator integrator;
   // compute the sudakovs and construct the interpolation tables
+  cerr << "testing fortran sudakov F \n";
   for(unsigned int ix=0;ix<particles().size();++ix) {
+    cerr << "testing loop A\n";
     vector<double> sud,qev;
     Energy q1=cutOff(particles()[ix][1]);
     Energy q2=cutOff(particles()[ix][2]);
     Energy qmin=q1+q2;
     double qfac=pow(1.1*qlim/qmin,power);
+    cerr << "testing qfac " << qfac << " " << qlim/qmin << " " << power << "\n";
     sud.push_back(1.);
     qev.push_back(qmin/GeV);
     Energy qnow;
@@ -119,9 +130,12 @@ void FortranSudakov::doinit() throw(InitException) {
 				   qmass,alphas);
     FortranSudakovIntegrand iupper(lam3,splittingFn(),particles()[ix],_sudord,true,
 				   qmass,alphas);
+    cerr << "testing before compute table \n";
     // compute the table
     do {
-      qnow = qfac*qev.back();
+      cerr << "testing pieces " << qfac << " " << qev.back() << "\n";
+      qnow = qfac*qev.back()*GeV;
+      cerr << "testing scale " << qnow << endl;
       qlam=qnow/lam3;
       // upper part of the integral
       zmin = q2/qnow;
@@ -130,12 +144,25 @@ void FortranSudakov::doinit() throw(InitException) {
       ilower.setScales(qrat,qlam);
       iupper.setScales(qrat,qlam);
       double g1=0.;
+      cerr << "testing limits " << q2 << " " << qnow << " " << qmin << "\n";
       for(unsigned int ix=3;ix<7;++ix) {
+	cerr << "testing ix " << ix << " " << qmass[ix] << endl;
 	double zlo = zmin;
 	double zhi = zmax;
-	if(ix!=6) zlo = max(zlo,q2/qmass[ix]);
-	if(ix!=3) zhi = min(zhi,q2/qmass[ix-1]);
-	if(zhi>zlo) g1+=integrator.value(iupper,log(zlo),log(zhi));
+	if(ix!=6) {
+	  cerr << "testing low out " << zlo << " " << q2/qmass[ix] << "\n";
+	  zlo = max(zlo,q2/qmass[ix]);
+	}
+	if(ix!=3) {
+	  cerr << "testing upp out " << zhi << " " << q2/qmass[ix-1] << "\n";
+	  zhi = min(zhi,q2/qmass[ix-1]);
+	}
+	cerr << "testing calling integrator" << ix << " " << zlo << " " << zhi 
+	     << " " << log(zlo) << " " << log(zhi) << endl;
+	if(zhi>zlo) {
+	  cerr << "testing integral called \n";
+	  g1+=integrator.value(iupper,log(zlo),log(zhi));
+	}
       }
       // lower part of the the integral      
       zmin = q1/qnow;
@@ -153,6 +180,10 @@ void FortranSudakov::doinit() throw(InitException) {
       qev.push_back(qnow/GeV);
     }
     while (qnow<qlim);
+    cerr << "testing table \n";
+    for(unsigned int ix=0;ix<sud.size();++ix) {
+      cerr << qev[ix] << " " << sud[ix] << "\n";
+    }
     // now construct the interpolators
     NewInterpolatorPtr newint=new_ptr(NewInterpolator(sud,qev,_inter));
     _sudakovQ.push_back(newint);
@@ -165,16 +196,16 @@ void FortranSudakov::doinit() throw(InitException) {
   }
 }
 
-Energy FortranSudakov::generateNextTimeBranching(const Energy startingScale,
-						 const IdList &ids,const bool cc,
-						 double enhance) {
+ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
+						    const IdList &ids,const bool cc,
+						    double enhance) {
   // can only enhance by integer factor here
   unsigned int nrej=int(enhance);
   if(enhance-double(nrej)>0.) ++nrej;
   // get the minimum scale
   Energy qmin=cutOff(ids[1])+cutOff(ids[2]);
   // return if no allowed branching
-  if(qmin>startingScale) return -1.*GeV;
+  if(qmin>startingScale) return ShoKinPtr();
   // find which sudakov table to use
   unsigned int iloc=findSudakov(ids,cc);
   Energy qnow=-1.*GeV;
@@ -200,7 +231,7 @@ Energy FortranSudakov::generateNextTimeBranching(const Energy startingScale,
     if(qsud>qmin&&qsud>qnow) qnow=qsud;
   }
   // if no branching selected return
-  if(qnow<0.) return qnow;
+  if(qnow<0.) return ShoKinPtr();
   // limits on z
   double zmin=cutOff(ids[1])/qnow;
   double zmax=1.-cutOff(ids[2])/qnow;
@@ -210,20 +241,29 @@ Energy FortranSudakov::generateNextTimeBranching(const Energy startingScale,
     z=splittingFn()->invIntegOverP(fmin+UseRandom::rnd()*(fmax-fmin));
   }
   while(splittingFn()->ratioP(z,qnow,ids,false)<=UseRandom::rnd());
+  // create the ShowerKinematics object
+  FortranShowerKinematicsPtr showerKin = new_ptr(FortranShowerKinematics());
+  showerKin->scale(qnow);
+  showerKin->z(z);
+  showerKin->phi(2.*pi*UseRandom::rnd());
+  //showerKin->pT(pT());
+  showerKin->splittingFn(splittingFn());
+  // return it
+  return showerKin;
 }
 
-Energy FortranSudakov::generateNextDecayBranching(const Energy startingScale,
-						  const Energy stoppingScale,
-						  const Energy minmass,
-						  const IdList &ids,
-						  const bool cc,
-						  double enhance) {
+ShoKinPtr FortranSudakov::generateNextDecayBranching(const Energy startingScale,
+						     const Energy stoppingScale,
+						     const Energy minmass,
+						     const IdList &ids,
+						     const bool cc,
+						     double enhance) {
   throw Exception() << "FortranSudakov::generateNextDecayBranching() not yet "
 		    << "implemented" << Exception::runerror;
-  return -1;
+  return ShoKinPtr();
 }
 
-Energy FortranSudakov::
+ShoKinPtr FortranSudakov::
 generateNextSpaceBranching(const Energy startingScale,
 			   const IdList &ids,double x,
 			   const bool cc,
@@ -231,7 +271,7 @@ generateNextSpaceBranching(const Energy startingScale,
 			   Ptr<BeamParticleData>::transient_const_pointer beam) {
   throw Exception() << "FortranSudakov::generateNextSpaceBranching() not yet "
 		    << "implemented" << Exception::runerror;
-  return -1;
+  return ShoKinPtr();
 }
 
 FortranSudakovIntegrand::FortranSudakovIntegrand(Energy qcdlam, 

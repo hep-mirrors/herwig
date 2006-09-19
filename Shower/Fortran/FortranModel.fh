@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the FortranModel class.
+//
+#ifndef HERWIG_FortranModel_FH
+#define HERWIG_FortranModel_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class FortranModel;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::FortranModel,FortranModelPtr);
+
+}
+
+#endif

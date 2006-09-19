@@ -9,19 +9,19 @@ namespace Herwig {
 inline ShowerKinematics::ShowerKinematics()
   : Base(), 
     _isTheJetStartingPoint( false ),
-    _qtilde( Energy() ),
+    _scale( Energy() ),
     _z( 0.0 ),
     _phi( 0.0 ),
     _pt(0.),
     _splitFun( tSplittingFnPtr() )
 {}
 
-inline Energy ShowerKinematics::qtilde() const {
-  return _qtilde;
+inline Energy ShowerKinematics::scale() const {
+  return _scale;
 }
 
-inline void ShowerKinematics::qtilde( const Energy inputQtilde ) {
-  _qtilde = inputQtilde;
+inline void ShowerKinematics::scale( const Energy inputScale ) {
+  _scale = inputScale;
 }
 
 inline double ShowerKinematics::z() const {

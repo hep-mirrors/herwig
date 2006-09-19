@@ -25,8 +25,6 @@
 
 using namespace Herwig;
 
-Evolver::~Evolver() {}
-
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry << _meCorrMode;
 }
@@ -206,8 +204,8 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     }
   }
   ShowerParticleVector theChildren; 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[0]))); 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[1]))); 
+  theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
+  theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
   // some code moved to updateChildren
   particle->showerKinematics()->updateChildren(particle, theChildren);
   // update the history if needed
@@ -254,15 +252,12 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle) {
   }
   // Now create the actual particles, make the otherChild a final state
   // particle, while the newParent is not
-  ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0]));
-  newParent->setFinalState(false);
-  ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1]));
-  otherChild->setFinalState(true);
-  otherChild->setInitiatesTLS(true);
+  ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0],false));
+  ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1],true,true));
   ShowerParticleVector theChildren; 
   theChildren.push_back(particle); 
   theChildren.push_back(otherChild); 
-  particle->showerKinematics()->updateChildren(newParent, theChildren);
+  particle->showerKinematics()->updateParent(newParent, theChildren);
   // update the history if needed
   _currenttree->updateInitialStateShowerProduct(_progenitor,newParent);
   _currenttree->addInitialStateBranching(particle,newParent,otherChild);
@@ -272,7 +267,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle) {
   bool emitted=spaceLikeShower(newParent);
   //bool emitted=false;
   // now reconstruct the momentum
-  if(!emitted) bb.kinematics->updateLast(newParent,0);
+  if(!emitted) bb.kinematics->updateLast(newParent);
   particle->showerKinematics()->updateChildren(newParent, theChildren);
   // perform the shower of the final-state particle
   timeLikeShower(otherChild);
@@ -371,8 +366,8 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
       }
   }
   ShowerParticleVector theChildren; 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[0]))); 
-  theChildren.push_back(new_ptr(ShowerParticle(pdata[1]))); 
+  theChildren.push_back(new_ptr(ShowerParticle(pdata[0],true))); 
+  theChildren.push_back(new_ptr(ShowerParticle(pdata[1],true))); 
   // some code moved to updateChildren
   particle->showerKinematics()->updateChildren(particle, theChildren);
   // In the case of splittings which involves coloured particles,

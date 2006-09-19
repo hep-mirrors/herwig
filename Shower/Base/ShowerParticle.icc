@@ -14,16 +14,13 @@ inline void ShowerParticle::operator delete(void * p, size_t) {
   FixedAllocator<ShowerParticle>::deallocate(p);
 }
 
-inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert)
+inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert,
+				      bool fs, bool tls)
   : Particle(x),
-    _isFinalState( true ),
+    _isFinalState(fs),
     _reconstructionFixedPoint( false ),
     _perturbative(pert),
-    _initiatesTLS( false ),
-    _sudAlpha( 1.0 ),
-    _sudBeta( -1.0 ),
-    _sudPx( Energy() ),
-    _sudPy( Energy() ),
+    _initiatesTLS( tls ),
     _x(1.0),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
@@ -31,17 +28,12 @@ inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert)
      _thePEGBase( &x )
 {}
 
-inline ShowerParticle::ShowerParticle(tcEventPDPtr x)
+inline ShowerParticle::ShowerParticle(tcEventPDPtr x,bool fs,bool tls)
   : Particle(x),
-    _isFinalState( true ),
+    _isFinalState(fs),
     _reconstructionFixedPoint( false ),
-    // this was still missing 
     _perturbative(0),
-    _initiatesTLS( false ),
-    _sudAlpha( 1.0 ),
-    _sudBeta( -1.0 ),
-    _sudPx( Energy() ),
-    _sudPy( Energy() ),
+    _initiatesTLS( tls ),
     _x(1.0),
     _showerKinematics( tShoKinPtr() ),
     _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
@@ -53,61 +45,21 @@ inline bool ShowerParticle::isFinalState() const {
   return _isFinalState;
 }
 
-inline void ShowerParticle::setFinalState(const bool inputIsFinalState) {
-  _isFinalState = inputIsFinalState;
-}
-
 inline bool ShowerParticle::initiatesTLS() const {
   return _initiatesTLS;
-}
-
-inline void ShowerParticle::setInitiatesTLS(const bool input) {
-  _initiatesTLS = input;
 }
 
 inline unsigned int ShowerParticle::perturbative() const {
   return _perturbative;
 }
-  
-inline double ShowerParticle::sudAlpha() const {
-  return _sudAlpha;
-}
-inline void ShowerParticle::sudAlpha(const double inputSudAlpha) {
-  _sudAlpha = inputSudAlpha;
+
+inline void ShowerParticle::x(double x) { 
+  _x = x; 
 }
 
-inline double ShowerParticle::sudBeta() const {
-  return _sudBeta;
+inline double ShowerParticle::x() const {
+  return _x; 
 }
-inline void ShowerParticle::sudBeta(const double inputSudBeta) {
-  _sudBeta = inputSudBeta;
-}
-
-inline Energy ShowerParticle::sudPx() const {
-  return _sudPx;
-}
-inline void ShowerParticle::sudPx(const Energy inputSudPx) {
-  _sudPx = inputSudPx;
-}
-
-inline Energy ShowerParticle::sudPy() const {
-  return _sudPy;
-}
-inline void ShowerParticle::sudPy(const Energy inputSudPy) {
-  _sudPy = inputSudPy;
-}
-
-inline Energy ShowerParticle::sudPperp() const {
-  return sqrt( sqr(_sudPx) + sqr(_sudPy) );
-}
-
-inline Energy2 ShowerParticle::sudPperp2() const {
-  return ( sqr(_sudPx) + sqr(_sudPy) );
-}
-
-inline void ShowerParticle::x(double x) { _x = x; }
-
-inline double ShowerParticle::x() const { return _x; }
 
 inline const vector<Energy> & ShowerParticle::evolutionScales() const {
   return _scales;
@@ -154,4 +106,21 @@ inline PPtr ShowerParticle::fullclone() const {
 inline void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
   _showerKinematics = inputShowerKinematics;
 }
+
+//inline vector<double> & ShowerParticle::showerParameters() const {
+//  return _parameters;
+//}
+
+inline vector<double> & ShowerParticle::showerParameters() {
+  return _parameters;
+}
+
+//inline vector<Energy> & ShowerParticle::showerVariables() const {
+//  return _variables;
+//}
+
+inline vector<Energy> & ShowerParticle::showerVariables() {
+  return _variables;
+}
+
 }

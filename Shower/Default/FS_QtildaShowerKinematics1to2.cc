@@ -20,22 +20,38 @@ updateChildren(const tShowerParticlePtr theParent,
   // get the interaction type
   const ShowerIndex::InteractionType interaction = splittingFn()->interactionType();
   // copy scales etc
-  Energy dqtilde = qtilde();
+  Energy dqtilde = scale();
   double dz = z(); 
   double dphi = phi();
+  // resize the parameter vectors
+  if(theParent->showerVariables().empty()) {
+    theParent->showerVariables().resize(3,0.);
+    theParent->showerParameters().resize(2,0.);
+    theParent->showerParameters()[0]=1.;
+  }
+  theChildren[0]->showerVariables() .resize(3);
+  theChildren[0]->showerParameters().resize(2);
+  theChildren[1]->showerVariables() .resize(3);
+  theChildren[1]->showerParameters().resize(2);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
   theChildren[0]->setEvolutionScale(interaction, dz*dqtilde);
   theChildren[1]->setEvolutionScale(interaction, (1.-dz)*dqtilde);
-  theChildren[0]->setInitiatesTLS(false);
-  theChildren[1]->setInitiatesTLS(false);
   // determine alphas of children according to interpretation of z
-  theChildren[0]->sudAlpha( dz*theParent->sudAlpha() ); 
-  theChildren[1]->sudAlpha( (1.-dz)*theParent->sudAlpha() );
+  theChildren[0]->showerParameters()[0]=     dz *theParent->showerParameters()[0];
+  theChildren[1]->showerParameters()[0]= (1.-dz)*theParent->showerParameters()[0];
   // set the values
-  theChildren[0]->sudPx(   pT()*cos(dphi) +     dz *theParent->sudPx() );
-  theChildren[0]->sudPy(   pT()*sin(dphi) +     dz *theParent->sudPy() );
-  theChildren[1]->sudPx( - pT()*cos(dphi) + (1.-dz)*theParent->sudPx() );
-  theChildren[1]->sudPy( - pT()*sin(dphi) + (1.-dz)*theParent->sudPy() );
+  theChildren[0]->showerVariables()[0]=   
+    pT()*cos(dphi) +     dz *theParent->showerVariables()[0];
+  theChildren[0]->showerVariables()[1]=   
+    pT()*sin(dphi) +     dz *theParent->showerVariables()[1];
+  theChildren[1]->showerVariables()[0]= 
+    - pT()*cos(dphi) + (1.-dz)*theParent->showerVariables()[0];
+  theChildren[1]->showerVariables()[1]= 
+    - pT()*sin(dphi) + (1.-dz)*theParent->showerVariables()[1];
+  for(unsigned int ix=0;ix<2;++ix)
+    theChildren[ix]->showerVariables()[2]=
+      sqrt(sqr(theChildren[ix]->showerVariables()[0])+
+	   sqr(theChildren[ix]->showerVariables()[1]));
   // set up the colour connections
   splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
   // make the products children of the parent
@@ -44,29 +60,33 @@ updateChildren(const tShowerParticlePtr theParent,
 }
 
 void FS_QtildaShowerKinematics1to2::
-updateParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) const {
+reconstructParent(const tShowerParticlePtr theParent, 
+	     const ParticleVector theChildren ) const {
   if(theChildren.size() != 2) 
     throw Exception() << "FS_QtildaShowerKinematics1to2::updateParent() " 
 		      << "Warning! too many children!" 
 		      << Exception::eventerror;
   ShowerParticlePtr c1 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[0]);
   ShowerParticlePtr c2 = dynamic_ptr_cast<ShowerParticlePtr>(theChildren[1]);
-  theParent->sudBeta( c1->sudBeta() + c2->sudBeta() ); 
+  theParent->showerParameters()[1]= 
+    c1->showerParameters()[1] + c2->showerParameters()[1]; 
   theParent->set5Momentum( c1->momentum() + c2->momentum() );
 }
 
-void FS_QtildaShowerKinematics1to2::updateLast(const tShowerParticlePtr theLast,
+void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr theLast,
 					       unsigned int iopt) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
   Energy theMass = theLast->data().constituentMass(); 
-  theLast->sudBeta( (sqr(theMass) + theLast->sudPperp2() 
-  		     - sqr( theLast->sudAlpha() )*pVector().m2())
-  		    / ( 2.*theLast->sudAlpha()*p_dot_n() ) );   
-  // set that new momentum    
-  theLast->set5Momentum(sudakov2Momentum( theLast->sudAlpha(), theLast->sudBeta(), 
-					  theLast->sudPx(), theLast->sudPy(),iopt));
+  theLast->showerParameters()[1]=
+    (sqr(theMass) + sqr(theLast->showerVariables()[2]) 
+     - sqr( theLast->showerParameters()[0] )*pVector().m2())
+    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );   
+  // set that new momentum
+  theLast->set5Momentum(sudakov2Momentum( theLast->showerParameters()[0],
+					  theLast->showerParameters()[1], 
+					  theLast->showerVariables()[0],
+					  theLast->showerVariables()[1],iopt));
 }
 
 void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {

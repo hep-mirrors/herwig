@@ -137,7 +137,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	  col->removeColoured(cit->first->progenitor());
 	  // insert new particles
 	  cit->first->copy(newq);
-	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1)));
+	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1,true)));
 	  cit->first->progenitor(sp);
 	  tree->outgoingLines()[cit->first]=sp;
 	  cit->first->perturbative(!firstEmits);
@@ -150,7 +150,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	  col->removeColoured(cit->first->progenitor());
 	  // insert new particles
 	  cit->first->copy(newa);
-	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1)));
+	  ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1,true)));
 	  cit->first->progenitor(sp);
 	  tree->outgoingLines()[cit->first]=sp;
 	  cit->first->perturbative(firstEmits);
@@ -158,7 +158,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree)
 	}
     }
   // add the gluon
-  ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1));
+  ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1,true));
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
   gluon->perturbative(false);
   tree->outgoingLines().insert(make_pair(gluon,sg));
@@ -338,7 +338,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
      br.ids[2]!=ParticleID::g) return false;
   // calculate pt
   double d_z = br.kinematics->z();
-  Energy d_qt = br.kinematics->qtilde();
+  Energy d_qt = br.kinematics->scale();
   Energy2 d_m2 = parent->momentum().m2();
   Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
   // if not hardest so far don't apply veto
@@ -352,7 +352,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   // if not vetoed reset max
   if(!veto) initial->pT(pPerp);
   // if vetoing reset the scale
-  if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->qtilde());
+  if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
   // return the veto
   return veto;
 }

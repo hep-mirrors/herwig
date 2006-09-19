@@ -1,21 +1,21 @@
 // -*- C++ -*-
 //
-// This is the forward declaration of the PartnerFinder class.
+// This is the forward declaration of the FortranFinder class.
 //
-#ifndef HERWIG_PartnerFinder_FH
-#define HERWIG_PartnerFinder_FH
+#ifndef HERWIG_FortranFinder_FH
+#define HERWIG_FortranFinder_FH
 
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
 
-class PartnerFinder;
+class FortranFinder;
 
 }
 
 namespace ThePEG {
 
-ThePEG_DECLARE_POINTERS(Herwig::PartnerFinder,PartnerFinderPtr);
+ThePEG_DECLARE_POINTERS(Herwig::FortranFinder,FortranFinderPtr);
 
 }
 

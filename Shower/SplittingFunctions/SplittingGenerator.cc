@@ -223,10 +223,10 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 				enhance);
     if(!newKin) continue;
     // select highest scale 
-    if(newKin->qtilde() > newQ && 
-       newKin->qtilde() <= particle.evolutionScales()[i]) {
+    if(newKin->scale() > newQ && 
+       newKin->scale() <= particle.evolutionScales()[i]) {
       kinematics=newKin;
-      newQ = newKin->qtilde();
+      newQ = newKin->scale();
       ids = cit->second.second;
     }
   }
@@ -262,8 +262,8 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
 				   cit->second.second,
 				   particle.id()!=cit->first,enhance);
     if(!newKin) continue;
-    if(newKin->qtilde() < newQ && newKin->qtilde() > particle.evolutionScales()[i]) {
-      newQ = newKin->qtilde();
+    if(newKin->scale() < newQ && newKin->scale() > particle.evolutionScales()[i]) {
+      newQ = newKin->scale();
       ids = cit->second.second;
       kinematics=newKin;
     }
@@ -297,8 +297,8 @@ chooseBackwardBranching(ShowerParticle &particle,
 				 cit->second.second, particle.x(),
 				 particle.id()!=cit->first,enhance,beam);
     if(!newKin) continue;
-    if(newKin->qtilde() > newQ) {
-      newQ = newKin->qtilde();
+    if(newKin->scale() > newQ) {
+      newQ = newKin->scale();
       kinematics=newKin;
       ids = cit->second.second;
     }

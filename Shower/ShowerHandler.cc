@@ -117,8 +117,7 @@ void ShowerHandler::Init() {
 
 }
 
-void ShowerHandler::fillEventRecord() 
-{
+void ShowerHandler::fillEventRecord() {
   // create a new step 
   StepPtr pstep = eventHandler()->newStep();
   if(_done.empty()) throw Exception() << "Must have some showers to insert in "
@@ -128,16 +127,14 @@ void ShowerHandler::fillEventRecord()
 					    << " in ShowerHandler::fillEventRecord()" 
 					    << Exception::runerror;
   // insert the steps
-  for(unsigned int ix=0;ix<_done.size();++ix)
-    {
-      _done[ix]->fillEventRecord(pstep,
-				 _evolver->isISRadiationON(),
-				 _evolver->isFSRadiationON());
-    }
+  for(unsigned int ix=0;ix<_done.size();++ix) {
+    _done[ix]->fillEventRecord(pstep,
+			       _evolver->isISRadiationON(),
+			       _evolver->isFSRadiationON());
+  }
 } 
 
-void ShowerHandler::findShoweringParticles()
-{
+void ShowerHandler::findShoweringParticles() {
   Timer<1001> timer("ShowerHandler::findShoweringParticles");
   // clear the storage
   _hard=ShowerTreePtr();
@@ -159,8 +156,7 @@ void ShowerHandler::findShoweringParticles()
     // find the parent and if colourless s-channel resonance
     bool isDecayProd=false;
     tPPtr parent;
-    if(!(*taggedP)->parents().empty()) 
-      {
+    if(!(*taggedP)->parents().empty()) {
 	parent = (*taggedP)->parents()[0];
 	// check if from s channel decaying colourless particle
 	// (must be same as in findParent)
@@ -194,61 +190,57 @@ void ShowerHandler::cascade()
   ShowerTreePtr hard;
   vector<ShowerTreePtr> decay;
   while (countFailures<_maxtry) {
-    try
-      {
-	// find the particles in the hard process and the decayed particles to shower
-	findShoweringParticles();
-	// check if a hard process or decay
- 	bool isHard = _hard;
- 	// find the stopping scale for the shower if multi-scale shower is on
-//  	Energy largestWidth = Energy();
-//  	if(_evolver->showerVariables()->isMultiScaleShowerON()&&!_decay.empty())
-//  	  {
-//  	    largestWidth=(*_decay.rbegin()).first;
-//  	    if(largestWidth<
-//  	       _evolver->showerVariables()->globalParameters()->hadronizationScale())
-//  	      largestWidth = Energy();
-//  	  }
- 	// if a hard process perform the shower for the hard process
- 	if(isHard) 
-	  {
-	    _evolver->showerHardProcess(_hard);
-	    _done.push_back(_hard);
-	    _hard->updateAfterShower(_decay,eventHandler());
-	  }
- 	// if no decaying particles to shower break out of the loop
- 	if(_decay.empty()) break;
- 	// if no hard process
- 	if(!isHard) 
- 	  throw Exception() << "Shower starting with a decay is not yet implemented" 
- 			    << Exception::runerror;
- 	// shower the decay products
- 	while(!_decay.empty())
- 	  {
-	    multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
-	    while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
-	      --dit;
- 	    // get the particle and the width
- 	    ShowerTreePtr decayingTree = dit->second;
-	    // 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
- 	    // remove it from the multimap
- 	    _decay.erase(dit);
-	    // make sure the particle has been decayed
-	    decayingTree->decay(_decay,eventHandler());
- 	    // now shower the decay
- 	    _evolver->showerDecay(decayingTree);
-	    _done.push_back(decayingTree);
-	    decayingTree->updateAfterShower(_decay,eventHandler());
- 	  }
-	// suceeded break out of the loop
-	break;
+    try {
+      // find the particles in the hard process and the decayed particles to shower
+      findShoweringParticles();
+      // check if a hard process or decay
+      bool isHard = _hard;
+      // find the stopping scale for the shower if multi-scale shower is on
+      //  	Energy largestWidth = Energy();
+      //  	if(_evolver->showerVariables()->isMultiScaleShowerON()&&!_decay.empty())
+      //  	  {
+      //  	    largestWidth=(*_decay.rbegin()).first;
+      //  	    if(largestWidth<
+      //  	       _evolver->showerVariables()->globalParameters()->hadronizationScale())
+      //  	      largestWidth = Energy();
+      //  	  }
+      // if a hard process perform the shower for the hard process
+      if(isHard) {
+	_evolver->showerHardProcess(_hard);
+	_done.push_back(_hard);
+	_hard->updateAfterShower(_decay,eventHandler());
       }
-    catch (Veto)
-      {
-	throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
-			  << Exception::eventerror;
-	++countFailures;
+      // if no decaying particles to shower break out of the loop
+      if(_decay.empty()) break;
+      // if no hard process
+      if(!isHard) 
+	throw Exception() << "Shower starting with a decay is not yet implemented" 
+			  << Exception::runerror;
+      // shower the decay products
+      while(!_decay.empty()) {
+	multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
+	while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
+	  --dit;
+	// get the particle and the width
+	ShowerTreePtr decayingTree = dit->second;
+	// 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
+	// remove it from the multimap
+	_decay.erase(dit);
+	// make sure the particle has been decayed
+	decayingTree->decay(_decay,eventHandler());
+	// now shower the decay
+	_evolver->showerDecay(decayingTree);
+	_done.push_back(decayingTree);
+	decayingTree->updateAfterShower(_decay,eventHandler());
       }
+      // suceeded break out of the loop
+      break;
+    }
+    catch (Veto) {
+      throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
+			<< Exception::eventerror;
+      ++countFailures;
+    }
   }
   // if loop exited because of too many tries, throw event away
   if (countFailures >= _maxtry) {
@@ -263,8 +255,7 @@ void ShowerHandler::cascade()
   makeRemnants();
 }
 
-void ShowerHandler::makeRemnants()
-{
+void ShowerHandler::makeRemnants() {
   // get the incoming particles
   PPair incoming=generator()->currentEvent()->incoming();
   ParticleVector in;

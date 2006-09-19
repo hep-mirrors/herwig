@@ -31,6 +31,11 @@ class FortranReconstructor: public KinematicsReconstructor {
 public:
 
   /**
+   *  The default constructor
+   */
+  inline FortranReconstructor();
+
+  /**
    *  Methods to reconstruct the kinematics of a scattering or decay process
    */
   //@{
@@ -128,7 +133,7 @@ struct ClassTraits<Herwig::FortranReconstructor>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwShower.so HwFortranShower.so"; }
 };
 
 /** @endcond */
@@ -136,8 +141,5 @@ struct ClassTraits<Herwig::FortranReconstructor>
 }
 
 #include "FortranReconstructor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FortranReconstructor.tcc"
-#endif
 
 #endif /* HERWIG_FortranReconstructor_H */

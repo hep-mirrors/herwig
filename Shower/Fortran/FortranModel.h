@@ -1,32 +1,32 @@
 // -*- C++ -*-
-#ifndef HERWIG_QTildeModel_H
-#define HERWIG_QTildeModel_H
+#ifndef HERWIG_FortranModel_H
+#define HERWIG_FortranModel_H
 //
-// This is the declaration of the QTildeModel class.
+// This is the declaration of the FortranModel class.
 //
 
 #include "Herwig++/Shower/Base/ShowerModel.h"
-#include "QTildeModel.fh"
+#include "FortranModel.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
 
 /**
- * The QTildeModel class inherits from the ShowerModel class and implements the
- * checkConsistency member for the default Herwig++ Shower.
+ * The FortranModel class inherits from the ShowerModel class and implements the
+ * checkConsistency member for the FORTRAN Herwig shower alogorithm.
  *
- * @see \ref QTildeModelInterfaces "The interfaces"
- * defined for QTildeModel.
+ * @see \ref FortranModelInterfaces "The interfaces"
+ * defined for FortranModel.
  */
-class QTildeModel: public ShowerModel {
+class FortranModel: public ShowerModel {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline QTildeModel();
+  inline FortranModel();
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -65,15 +65,15 @@ private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is an concrete class without persistent data.
+   * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<QTildeModel> initQTildeModel;
+  static NoPIOClassDescription<FortranModel> initFortranModel;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QTildeModel & operator=(const QTildeModel &);
+  FortranModel & operator=(const FortranModel &);
 
 };
 
@@ -86,37 +86,37 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of QTildeModel. */
+ *  base classes of FortranModel. */
 template <>
-struct BaseClassTrait<Herwig::QTildeModel,1> {
-  /** Typedef of the first base class of QTildeModel. */
+struct BaseClassTrait<Herwig::FortranModel,1> {
+  /** Typedef of the first base class of FortranModel. */
   typedef Herwig::ShowerModel NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the QTildeModel class and the shared object where it is defined. */
+ *  the FortranModel class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::QTildeModel>
-  : public ClassTraitsBase<Herwig::QTildeModel> {
+struct ClassTraits<Herwig::FortranModel>
+  : public ClassTraitsBase<Herwig::FortranModel> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QTildeModel"; }
+  static string className() { return "Herwig++::FortranModel"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * QTildeModel is implemented. It may also include several, space-separated,
-   * libraries if the class QTildeModel depends on other classes (base classes
+   * FortranModel is implemented. It may also include several, space-separated,
+   * libraries if the class FortranModel depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwShower.so HwFortranShower.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "QTildeModel.icc"
+#include "FortranModel.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QTildeModel.tcc"
+// #include "FortranModel.tcc"
 #endif
 
-#endif /* HERWIG_QTildeModel_H */
+#endif /* HERWIG_FortranModel_H */

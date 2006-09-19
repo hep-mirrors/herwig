@@ -124,239 +124,217 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   // if not accepted return
   if(!applyHard(incoming,boson,iemit,itype,pnew,trans,xnew)) return;
   // if applying ME correction create the new particles
-  if(itype==0)
-    {
-      // get the momenta of the new particles
-      Lorentz5Momentum pquark(pnew[0]),panti(pnew[1]),pgluon(pnew[2]);
-      if(iemit==2) swap(pquark,panti);
-      // ensure gluon can be put on shell
-      if (pgluon.e() < getParticleData(ParticleID::g)->constituentMass())
-	return;
-      // create the new gluon
-      PPtr newg= getParticleData(ParticleID::g)->produceParticle(pgluon);
-      PPtr newq,newa;
-      ColinePtr col;
-      // make the new particles
-      if(iemit==1)
-	{
-	  col=incoming[0]->colourLine();
-	  newq = getParticleData(incoming[0]->id())->produceParticle(pquark);
-	  newa = new_ptr(Particle(*incoming[1]));
-	  col->removeAntiColoured(newa);
-	  newa->set5Momentum(panti);
-	}
-      else
-	{
-	  col=incoming[1]->antiColourLine();
-	  newa = getParticleData(incoming[1]->id())->produceParticle(panti);
-	  newq = new_ptr(Particle(*incoming[0]));
-	  col->removeColoured(newq);
-	  newq->set5Momentum(pquark);
-	}
-      // set the colour lines
-      ColinePtr newline=new_ptr(ColourLine());
-      if(iemit==1)
-	{
-	  newline->addColoured(newq);
-	  newline->addColoured(newg);
-	  col->addAntiColoured(newg);
-	  col->addAntiColoured(newa);
-	}
-      else
-	{
-	  newline->addAntiColoured(newa);
-	  newline->addAntiColoured(newg);
-	  col->addColoured(newg);
-	  col->addColoured(newq);
-	}
-      // change the existing quark and antiquark
-      PPtr orig;
-      for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit)
-	{
-	  if(cit->first->progenitor()->id()==newq->id())
-	    {
-	      // remove old particles from colour line
-	      col->removeColoured(cit->first->copy());
-	      col->removeColoured(cit->first->progenitor());
-	      // insert new particles
-	      cit->first->copy(newq);
-	      if(iemit==1) cit->first->original()->parents()[0]->addChild(newq);
-	      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1)));
-	      sp->setFinalState(false);
-	      sp->x(xnew.first);
-	      cit->first->progenitor(sp);
-	      tree->incomingLines()[cit->first]=sp;
-	      cit->first->perturbative(iemit!=1);
-	      if(iemit==1) orig=cit->first->original();
-	    }
-	  else
-	    {
-	      // remove old particles from colour line
-	      col->removeAntiColoured(cit->first->copy());
-	      col->removeColoured(cit->first->progenitor());
-	      // insert new particles
-	      cit->first->copy(newa);
-	      if(iemit==2) cit->first->original()->parents()[0]->addChild(newa);
-	      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1)));
-	      sp->setFinalState(false);
-	      sp->x(xnew.second);
-	      cit->first->progenitor(sp);
-	      tree->incomingLines()[cit->first]=sp;
-	      cit->first->perturbative(iemit==1);
-	      if(iemit==2) orig=cit->first->original();
-	    }
-	}
-      // fix the momentum of the gauge boson
-      cit=tree->outgoingLines().begin();
-      Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
-      trans *=LorentzRotation(boostv);
-      cit->first->progenitor()->transform(trans);
-      cit->first->copy()->transform(trans);
-      tree->hardMatrixElementCorrection(true);
-      // add the gluon
-      ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1));
-      ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
-      gluon->perturbative(false);
-      tree->outgoingLines().insert(make_pair(gluon,sg));
+  if(itype==0) {
+    // get the momenta of the new particles
+    Lorentz5Momentum pquark(pnew[0]),panti(pnew[1]),pgluon(pnew[2]);
+    if(iemit==2) swap(pquark,panti);
+    // ensure gluon can be put on shell
+    if (pgluon.e() < getParticleData(ParticleID::g)->constituentMass())
+      return;
+    // create the new gluon
+    PPtr newg= getParticleData(ParticleID::g)->produceParticle(pgluon);
+    PPtr newq,newa;
+    ColinePtr col;
+    // make the new particles
+    if(iemit==1) {
+      col=incoming[0]->colourLine();
+      newq = getParticleData(incoming[0]->id())->produceParticle(pquark);
+      newa = new_ptr(Particle(*incoming[1]));
+      col->removeAntiColoured(newa);
+      newa->set5Momentum(panti);
     }
-  else if(itype==1)
-    {
-      Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
-      if(iemit==2) swap(pin,pout);
-      // ensure outgoing quark can be put on-shell
-      if(pout.e()<incoming[1]->dataPtr()->constituentMass()) return;
-      // create the new gluon
-      PPtr newg  = getParticleData(ParticleID::g)->produceParticle(pgluon);
-      // create the new outgoing quark
-      PPtr newout= getParticleData(-incoming[1]->id())->produceParticle(pout);
-      // create the new incoming quark
-      PPtr newin = new_ptr(Particle(*incoming[0]));
-      newin->set5Momentum(pin);
-      // colour info
-      ColinePtr col=incoming[0]->colourLine();
-      col->removeColoured(newin);
-      ColinePtr newline=new_ptr(ColourLine());
-      newline->addColoured(newout);
+    else {
+      col=incoming[1]->antiColourLine();
+      newa = getParticleData(incoming[1]->id())->produceParticle(panti);
+      newq = new_ptr(Particle(*incoming[0]));
+      col->removeColoured(newq);
+      newq->set5Momentum(pquark);
+    }
+    // set the colour lines
+    ColinePtr newline=new_ptr(ColourLine());
+    if(iemit==1) {
+      newline->addColoured(newq);
       newline->addColoured(newg);
       col->addAntiColoured(newg);
-      col->addColoured(newin);
-      // change the existing incoming partons
-      PPtr orig;
-      for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit)
- 	{
- 	  if(cit->first->progenitor()->id()==newin->id())
- 	    {
- 	      // remove old particles from colour line
- 	      col->removeColoured(cit->first->copy());
- 	      col->removeColoured(cit->first->progenitor());
- 	      // insert new particles
- 	      cit->first->copy(newin);
- 	      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1)));
- 	      sp->setFinalState(false);
- 	      sp->x(xnew.first);
- 	      cit->first->progenitor(sp);
- 	      tree->incomingLines()[cit->first]=sp;
- 	      cit->first->perturbative(true);
- 	    }
-	  else
-	    {
-	      // remove old particles from colour line
-	      col->removeAntiColoured(cit->first->copy());
-	      col->removeColoured(cit->first->progenitor());
-	      // insert new particles
-	      cit->first->copy(newg);
-	      cit->first->original()->parents()[0]->addChild(newg);
-	      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newg,1)));
-	      sp->setFinalState(false);
-	      sp->x(xnew.second);
-	      cit->first->progenitor(sp);
-	      tree->incomingLines()[cit->first]=sp;
-	      cit->first->perturbative(false);
-	      orig=cit->first->original();
-	    }
-	}
-      // fix the momentum of the gauge boson
-      cit=tree->outgoingLines().begin();
-      Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
-      trans *=LorentzRotation(boostv);
-      cit->first->progenitor()->transform(trans);
-      cit->first->copy()->transform(trans);
-      tree->hardMatrixElementCorrection(true);
-      // add the outgoing quark
-      ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1));
-      ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(orig,newout,sout));
-      out->perturbative(false);
-      tree->outgoingLines().insert(make_pair(out,sout));
+	  col->addAntiColoured(newa);
     }
-  else if(itype==2)
-    {
-      Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
-      if(iemit==2) swap(pin,pout);
-      // ensure outgoing antiquark can be put on-shell
-      if(pout.e()<incoming[0]->dataPtr()->constituentMass()) return;
-       // create the new gluon
-       PPtr newg  = getParticleData(ParticleID::g)->produceParticle(pgluon);
-       // create the new outgoing antiquark
-       PPtr newout= getParticleData(-incoming[0]->id())->produceParticle(pout);
-       // create the new incoming antiquark
-       PPtr newin = new_ptr(Particle(*incoming[1]));
-       newin->set5Momentum(pin);
-       // colour info
-       ColinePtr col=incoming[0]->colourLine();
-       col->removeAntiColoured(newin);
-       ColinePtr newline=new_ptr(ColourLine());
-       newline->addAntiColoured(newout);
-       newline->addAntiColoured(newg);
-       col->addColoured(newg);
-       col->addAntiColoured(newin);
-       // change the existing incoming partons
-       PPtr orig;
-       for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit)
-	 {
-  	  if(cit->first->progenitor()->id()==newin->id())
-  	    {
- 	      // remove old particles from colour line
- 	      col->removeAntiColoured(cit->first->copy());
- 	      col->removeColoured(cit->first->progenitor());
-  	      // insert new particles
-  	      cit->first->copy(newin);
-  	      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1)));
-  	      sp->setFinalState(false);
-  	      sp->x(xnew.second);
-  	      cit->first->progenitor(sp);
-  	      tree->incomingLines()[cit->first]=sp;
-  	      cit->first->perturbative(true);
-	    }
-	  else
-	    {
- 	      // remove old particles from colour line
- 	      col->removeColoured(cit->first->copy());
- 	      col->removeColoured(cit->first->progenitor());
- 	      // insert new particles
- 	      cit->first->copy(newg);
- 	      cit->first->original()->parents()[0]->addChild(newg);
- 	      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newg,1)));
- 	      sp->setFinalState(false);
-	      sp->x(xnew.first);
- 	      cit->first->progenitor(sp);
- 	      tree->incomingLines()[cit->first]=sp;
- 	      cit->first->perturbative(false);
- 	      orig=cit->first->original();
-	    }
-	 }
-       // fix the momentum of the gauge boson
-       cit=tree->outgoingLines().begin();
-       Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
-       trans *=LorentzRotation(boostv);
-       cit->first->progenitor()->transform(trans);
-       cit->first->copy()->transform(trans);
-       tree->hardMatrixElementCorrection(true);
-       // add the outgoing antiquark
-       ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1));
-       ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(orig,newout,sout));
-       out->perturbative(false);
-       tree->outgoingLines().insert(make_pair(out,sout));
+    else {
+      newline->addAntiColoured(newa);
+      newline->addAntiColoured(newg);
+      col->addColoured(newg);
+      col->addColoured(newq);
     }
+    // change the existing quark and antiquark
+    PPtr orig;
+    for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+      if(cit->first->progenitor()->id()==newq->id()) {
+	// remove old particles from colour line
+	col->removeColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
+	// insert new particles
+	cit->first->copy(newq);
+	if(iemit==1) cit->first->original()->parents()[0]->addChild(newq);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1,false)));
+	sp->x(xnew.first);
+	cit->first->progenitor(sp);
+	tree->incomingLines()[cit->first]=sp;
+	cit->first->perturbative(iemit!=1);
+	if(iemit==1) orig=cit->first->original();
+      }
+      else {
+	// remove old particles from colour line
+	col->removeAntiColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
+	// insert new particles
+	cit->first->copy(newa);
+	if(iemit==2) cit->first->original()->parents()[0]->addChild(newa);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1,false)));
+	sp->x(xnew.second);
+	cit->first->progenitor(sp);
+	tree->incomingLines()[cit->first]=sp;
+	cit->first->perturbative(iemit==1);
+	if(iemit==2) orig=cit->first->original();
+      }
+    }
+    // fix the momentum of the gauge boson
+    cit=tree->outgoingLines().begin();
+    Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+    trans *=LorentzRotation(boostv);
+    cit->first->progenitor()->transform(trans);
+    cit->first->copy()->transform(trans);
+    tree->hardMatrixElementCorrection(true);
+    // add the gluon
+    ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1,true));
+    ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
+    gluon->perturbative(false);
+    tree->outgoingLines().insert(make_pair(gluon,sg));
+  }
+  else if(itype==1) {
+    Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
+    if(iemit==2) swap(pin,pout);
+    // ensure outgoing quark can be put on-shell
+    if(pout.e()<incoming[1]->dataPtr()->constituentMass()) return;
+    // create the new gluon
+    PPtr newg  = getParticleData(ParticleID::g)->produceParticle(pgluon);
+    // create the new outgoing quark
+    PPtr newout= getParticleData(-incoming[1]->id())->produceParticle(pout);
+    // create the new incoming quark
+    PPtr newin = new_ptr(Particle(*incoming[0]));
+    newin->set5Momentum(pin);
+    // colour info
+    ColinePtr col=incoming[0]->colourLine();
+    col->removeColoured(newin);
+    ColinePtr newline=new_ptr(ColourLine());
+    newline->addColoured(newout);
+    newline->addColoured(newg);
+    col->addAntiColoured(newg);
+    col->addColoured(newin);
+    // change the existing incoming partons
+    PPtr orig;
+    for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+      if(cit->first->progenitor()->id()==newin->id()) {
+	// remove old particles from colour line
+	col->removeColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
+	// insert new particles
+	cit->first->copy(newin);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1,false)));
+	sp->x(xnew.first);
+	cit->first->progenitor(sp);
+	tree->incomingLines()[cit->first]=sp;
+	cit->first->perturbative(true);
+      }
+      else {
+	// remove old particles from colour line
+	col->removeAntiColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
+	// insert new particles
+	cit->first->copy(newg);
+	cit->first->original()->parents()[0]->addChild(newg);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newg,1,false)));
+	sp->x(xnew.second);
+	cit->first->progenitor(sp);
+	tree->incomingLines()[cit->first]=sp;
+	cit->first->perturbative(false);
+	orig=cit->first->original();
+      }
+    }
+    // fix the momentum of the gauge boson
+    cit=tree->outgoingLines().begin();
+    Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+    trans *=LorentzRotation(boostv);
+    cit->first->progenitor()->transform(trans);
+    cit->first->copy()->transform(trans);
+    tree->hardMatrixElementCorrection(true);
+    // add the outgoing quark
+    ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1,true));
+    ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(orig,newout,sout));
+    out->perturbative(false);
+    tree->outgoingLines().insert(make_pair(out,sout));
+  }
+  else if(itype==2) {
+    Lorentz5Momentum pin(pnew[0]),pout(pnew[1]),pgluon(pnew[2]);
+    if(iemit==2) swap(pin,pout);
+    // ensure outgoing antiquark can be put on-shell
+    if(pout.e()<incoming[0]->dataPtr()->constituentMass()) return;
+    // create the new gluon
+    PPtr newg  = getParticleData(ParticleID::g)->produceParticle(pgluon);
+    // create the new outgoing antiquark
+    PPtr newout= getParticleData(-incoming[0]->id())->produceParticle(pout);
+    // create the new incoming antiquark
+    PPtr newin = new_ptr(Particle(*incoming[1]));
+    newin->set5Momentum(pin);
+    // colour info
+    ColinePtr col=incoming[0]->colourLine();
+    col->removeAntiColoured(newin);
+    ColinePtr newline=new_ptr(ColourLine());
+    newline->addAntiColoured(newout);
+    newline->addAntiColoured(newg);
+    col->addColoured(newg);
+    col->addAntiColoured(newin);
+    // change the existing incoming partons
+    PPtr orig;
+    for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
+      if(cit->first->progenitor()->id()==newin->id()) {
+	// remove old particles from colour line
+	col->removeAntiColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
+	// insert new particles
+	cit->first->copy(newin);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newin,1,false)));
+	sp->x(xnew.second);
+	cit->first->progenitor(sp);
+	tree->incomingLines()[cit->first]=sp;
+	cit->first->perturbative(true);
+      }
+      else {
+	// remove old particles from colour line
+	col->removeColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
+	// insert new particles
+	cit->first->copy(newg);
+	cit->first->original()->parents()[0]->addChild(newg);
+	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newg,1,false)));
+	sp->x(xnew.first);
+	cit->first->progenitor(sp);
+	tree->incomingLines()[cit->first]=sp;
+	cit->first->perturbative(false);
+	orig=cit->first->original();
+      }
+    }
+    // fix the momentum of the gauge boson
+    cit=tree->outgoingLines().begin();
+    Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+    trans *=LorentzRotation(boostv);
+    cit->first->progenitor()->transform(trans);
+    cit->first->copy()->transform(trans);
+    tree->hardMatrixElementCorrection(true);
+    // add the outgoing antiquark
+    ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1,true));
+    ShowerProgenitorPtr out=new_ptr(ShowerProgenitor(orig,newout,sout));
+    out->perturbative(false);
+    tree->outgoingLines().insert(make_pair(out,sout));
+  }
 }
 
 bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
@@ -371,7 +349,7 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   // check if hardest so far
   if(pT<initial->pT()) return false;
   // compute the invariants
-  double kappa(sqr(br.kinematics->qtilde())/_mb2),z(br.kinematics->z());
+  double kappa(sqr(br.kinematics->scale())/_mb2),z(br.kinematics->z());
   Energy2 shat(_mb2/z*(1.+(1.-z)*kappa)),that(-(1.-z)*kappa*_mb2),uhat(-(1.-z)*shat);
   // check which type of process
   // g qbar 
@@ -393,7 +371,7 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       return false;
     }
   // otherwise
-  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->qtilde());
+  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
   return true;
 }
 

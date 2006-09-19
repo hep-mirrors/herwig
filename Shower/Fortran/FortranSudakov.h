@@ -43,9 +43,9 @@ public:
    * defined.
    * @param enhance The radiation enhancement factor
    */
-  virtual Energy generateNextTimeBranching(const Energy startingScale,
-				           const IdList &ids,const bool cc,
-					   double enhance);
+  virtual ShoKinPtr generateNextTimeBranching(const Energy startingScale,
+					      const IdList &ids,const bool cc,
+					      double enhance);
 
   /**
    * Return the scale of the next space-like decay branching. If there is no 
@@ -58,12 +58,12 @@ public:
    * defined.
    * @param enhance The radiation enhancement factor
    */
-  virtual Energy generateNextDecayBranching(const Energy startingScale,
-					    const Energy stoppingScale,
-					    const Energy minmass,
-					    const IdList &ids,
-					    const bool cc,
-					    double enhance);
+  virtual ShoKinPtr generateNextDecayBranching(const Energy startingScale,
+					       const Energy stoppingScale,
+					       const Energy minmass,
+					       const IdList &ids,
+					       const bool cc,
+					       double enhance);
 
   /**
    * Return the scale of the next space-like branching. If there is no 
@@ -75,11 +75,11 @@ public:
    * defined.
    * @param enhance The radiation enhancement factor
    */
-  virtual Energy generateNextSpaceBranching(const Energy startingScale,
-		                            const IdList &ids,double x,
-					    const bool cc,
-					    double enhance,
-					    Ptr<BeamParticleData>::transient_const_pointer beam);
+  virtual ShoKinPtr generateNextSpaceBranching(const Energy startingScale,
+					       const IdList &ids,double x,
+					       const bool cc,
+					       double enhance,
+					       Ptr<BeamParticleData>::transient_const_pointer beam);
   //@}
 
 public:
@@ -379,7 +379,7 @@ struct ClassTraits<Herwig::FortranSudakov>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "HwShower.so HwFortranShower.so"; }
 };
 
 /** @endcond */
