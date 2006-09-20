@@ -268,9 +268,10 @@ protected:
    * - 1 is initial-state for the hard process
    * - 2 is initial-state for particle decays
    * @param enhance The radiation enhancement factor
+   * @param identical Whether or not the outgoing particles are identical
    */
   inline Energy2 guesst (Energy2 t1,unsigned int iopt,
-			 double enhance) const;
+			 double enhance, bool identical) const;
 
   /**
    * Veto on the PDF for the initial-state shower

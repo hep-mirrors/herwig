@@ -71,13 +71,16 @@ inline bool SudakovFormFactor::SplittingFnVeto(const Energy2 t,
 }
 
   inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
-					   double enhance) const {
+					   double enhance,bool ident) const {
   double c = 1./((_splittingFn->integOverP(_zlimits.second) -
 		  _splittingFn->integOverP(_zlimits.first))* 
 		 _alpha->overestimateValue()/(2.*pi)*enhance);
   assert(iopt<=2);
   if(iopt==0)      return t1*pow(UseRandom::rnd(),c);
-  else if(iopt==1) return t1*pow(UseRandom::rnd(),c/_pdfmax);
+  else if(iopt==1) {
+    if(ident) c*=2;
+    return t1*pow(UseRandom::rnd(),c/_pdfmax);
+  }
   else             return t1/pow(UseRandom::rnd(),c);
 }
 

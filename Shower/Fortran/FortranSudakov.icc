@@ -5,21 +5,6 @@
 //
 
 namespace Herwig {
-
-  inline FortranSudakov::FortranSudakov() : _sudord(2), _inter(3), 
-					  _vqcut(0.48*GeV),
-					  _vgcut(0.10*GeV),
-					  _vpcut(0.40*GeV),
-					  _nqev(1024)
-{}
-
-inline IBPtr FortranSudakov::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr FortranSudakov::fullclone() const {
-  return new_ptr(*this);
-}
  
 inline Energy FortranSudakov::cutOff(long id) const {
   Energy mc=getParticleData(id)->constituentMass();
@@ -63,8 +48,8 @@ inline unsigned int FortranSudakov::findSudakov(const IdList & ids,const bool cc
 }
 
 inline double FortranSudakovIntegrand::alphaIntegral(double al, double bl, 
-						    unsigned int nf) const {
-  return 1./_bet[nf-3]*log(bl/(al*(1.+_bep[nf]*bl))*(1.+_bep[nf]*al));
+						     unsigned int nf) const {
+  return 1./_bet[nf-3]*log(bl/(al*(1.+_bep[nf-3]*bl))*(1.+_bep[nf-3]*al));
 }
   
 inline void  FortranSudakovIntegrand::setScales(double qrat,double qlam) {

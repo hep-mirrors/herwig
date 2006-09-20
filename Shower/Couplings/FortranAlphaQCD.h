@@ -1,13 +1,13 @@
 // -*- C++ -*-
-#ifndef HERWIG_ShowerAlphaQCD_H
-#define HERWIG_ShowerAlphaQCD_H
+#ifndef HERWIG_FortranAlphaQCD_H
+#define HERWIG_FortranAlphaQCD_H
 //
-// This is the declaration of the ShowerAlphaQCD class.
+// This is the declaration of the FortranAlphaQCD class.
 //
 
 #include "ShowerAlpha.h"
 #include "ThePEG/Config/Constants.h"
-#include "ShowerAlphaQCD.fh"
+#include "FortranAlphaQCD.fh"
 
 namespace Herwig {
 
@@ -22,17 +22,20 @@ using namespace ThePEG;
  *  A  number of different options for the running of the coupling
  *  and its initial definition are supported.
  *
- * @see \ref ShowerAlphaQCDInterfaces "The interfaces"
- * defined for ShowerAlphaQCD.
+ * @see \ref FortranAlphaQCDInterfaces "The interfaces"
+ * defined for FortranAlphaQCD.
  */
-class ShowerAlphaQCD: public ShowerAlpha {
+class FortranAlphaQCD: public ShowerAlpha {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
   /**
    * The default constructor.
    */
-  inline ShowerAlphaQCD();
+  inline FortranAlphaQCD();
+  //@}
 
 public:
 
@@ -61,10 +64,25 @@ public:
   //@}
 
   /**
-   *  Get the value of \f$\Lambda_{\rm QCd}\f$
-   *  @param nf number of flavours
+   *  Get the value of \f$\Lambda_{\rm QCD}\f$ for three flavours
    */
-  inline Energy lambdaQCD(unsigned int nf);
+  inline Energy lambdaQCDThree() const;
+
+  /**
+   *  Get the value of \f$\Lambda_{\rm QCD}\f$ for five flavours
+   */
+  inline Energy lambdaQCDFive() const;
+
+  /**
+   *  The one-loop coupling with five flavour \f$\beta\f$ and three flavour
+   *  \f$\Lambda_{\rm QCD}\f$
+   */
+  double oneLoopValue(const Energy2 scale) const;
+
+  /**
+   *  The ratio of the two-loop to one-loop results
+   */
+  double twoLoopRatio(const Energy2 scale) const;
 
 public:
 
@@ -109,7 +127,6 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -125,69 +142,18 @@ protected:
 private:
 
   /**
-   *  Member functions which calculate the coupling
-   */
-  //@{
-  /**
-   * The 1,2,3-loop parametrization of \f$\alpha_S\f$.
-   * @param q The scale
-   * @param lam \f$\Lambda_{\rm QCD}\f$
-   * @param nf The number of flavours 
-   */
-  inline double alphaS(Energy q, Energy lam, short nf) const; 
-
-  /**
-   * The derivative of \f$\alpha_S\f$ with respect to \f$\ln(Q^2/\Lambda^2)\f$
-   * @param q The scale
-   * @param lam \f$\Lambda_{\rm QCD}\f$
-   * @param nf The number of flavours 
-   */
-  inline double derivativealphaS(Energy q, Energy lam, short nf) const; 
-
-  /**
-   * Compute the value of \f$Lambda\f$ needed to get the input value of
-   * the strong coupling at the scale given for the given number of flavours
-   * using the Newton-Raphson method
-   * @param match The scale for the coupling
-   * @param alpha The input coupling
-   * @param nflav The number of flavours
-   */
-  inline Energy computeLambda(Energy match,double alpha,unsigned int nflav) const;
-
-  /**
-   * Return the value of \f$\Lambda\f$ and the number of flavours at the scale.
-   * @param q The scale
-   * @return The number of flavours at the scale and \f$\Lambda\f$.
-   */
-  inline pair<short, Energy> getLamNfTwoLoop(Energy q) const;
-  //@}
-
-private:
-
-  /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<ShowerAlphaQCD> initShowerAlphaQCD;
+  static ClassDescription<FortranAlphaQCD> initFortranAlphaQCD;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  ShowerAlphaQCD & operator=(const ShowerAlphaQCD &);
+  FortranAlphaQCD & operator=(const FortranAlphaQCD &);
 
 private:
-
-  /**
-   *  Minimum value of the scale
-   */
-  Energy _qmin;
-
-  /**
-   *  Parameter controlling the behaviour of \f$\alpha_S\f$ in the non-perturbative
-   *  region.
-   */ 
-  int _asType;
 
   /**
    *  Thresholds for the different number of flavours 
@@ -195,45 +161,24 @@ private:
   vector<Energy> _thresholds;
 
   /**
-   *  \f$\Lambda\f$ for the different number of flavours
-   */
-  vector<Energy> _lambda;
-
-  /**
-   *  Option for the number of loops
-   */
-  unsigned int _nloop;
-
-  /**
-   *  Option for the translation between \f$\Lambda_{\bar{MS}}\f$ and
-   *  \f$\Lambda_{\rm Herwig}\f$
-   */
-  bool _lambdaopt;
-
-  /**
-   *  Option for the threshold masses
-   */
-  bool _thresopt;
-
-  /**
-   *  Input value of Lambda
+   *  Input value of \f$\Lambda\f$
    */
   Energy _lambdain;
 
   /**
-   *  Input value of \f$alpha_S(M_Z)\f$
+   *  5-flavour \f$\Lambda\f$
    */
-  double _alphain;
+  Energy _lambda5;
 
   /**
-   *  Option for the calculation of Lambda from input parameters
+   *  3-flavour \f$\Lambda\f$
    */
-  bool _inopt;
+  Energy _lambda3;
 
   /**
-   *  Tolerance for discontinuities at the thresholds
+   *  Maximum value
    */
-  double _tolerance;
+  double _alphamax;
 
   /**
    *  Maximum number of iterations for the Newton-Raphson method to converge
@@ -241,9 +186,19 @@ private:
   unsigned int _maxtry;
 
   /**
-   *  The minimum value of the coupling
+   *  Matching coefficients
    */
-  double _alphamin;
+  vector<double> _match;
+
+  /**
+   *  First \f$\beta\f$ function coefficient
+   */
+  vector<double> _bcoeff;
+
+  /**
+   *  Second \f$\beta\f$ function coefficient
+   */
+  vector<double> _ccoeff;
 };
 
 }
@@ -255,24 +210,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of ShowerAlphaQCD. */
+ *  base classes of FortranAlphaQCD. */
 template <>
-struct BaseClassTrait<Herwig::ShowerAlphaQCD,1> {
-  /** Typedef of the first base class of ShowerAlphaQCD. */
+struct BaseClassTrait<Herwig::FortranAlphaQCD,1> {
+  /** Typedef of the first base class of FortranAlphaQCD. */
   typedef Herwig::ShowerAlpha NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the ShowerAlphaQCD class and the shared object where it is defined. */
+ *  the FortranAlphaQCD class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::ShowerAlphaQCD>
-  : public ClassTraitsBase<Herwig::ShowerAlphaQCD> {
+struct ClassTraits<Herwig::FortranAlphaQCD>
+  : public ClassTraitsBase<Herwig::FortranAlphaQCD> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerAlphaQCD"; }
+  static string className() { return "Herwig++::FortranAlphaQCD"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * ShowerAlphaQCD is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerAlphaQCD depends on other classes (base classes
+   * FortranAlphaQCD is implemented. It may also include several, space-separated,
+   * libraries if the class FortranAlphaQCD depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -283,6 +238,6 @@ struct ClassTraits<Herwig::ShowerAlphaQCD>
 
 }
 
-#include "ShowerAlphaQCD.icc"
+#include "FortranAlphaQCD.icc"
 
-#endif /* HERWIG_ShowerAlphaQCD_H */
+#endif /* HERWIG_FortranAlphaQCD_H */

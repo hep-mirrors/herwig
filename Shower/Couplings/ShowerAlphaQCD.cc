@@ -158,7 +158,6 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
       _thresholds[ix]=getParticleData(ix+3)->mass();
     else
       _thresholds[ix]=getParticleData(ix+3)->constituentMass();
-    cerr << "testing threshold " << _thresholds[ix] << "\n";
   }
   // compute 6 flavour lambda by matching at top mass using Newton Raphson
   _lambda[3]=computeLambda(_thresholds[3],alphaS(_thresholds[3],_lambda[2],5),6);
@@ -168,8 +167,6 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   // charm threshold
   // compute 3 flavour lambda by matching at charm mass using Newton Raphson
   _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4),3);
-  for(unsigned int ix=0;ix<4;++ix)
-    cerr << "testing lambda" << _lambda[ix] << "\n";
   // final threshold is qmin
   _thresholds[0]=_qmin;
   // compute the minimum value 
@@ -179,8 +176,6 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
 			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
-  for(Energy scale=1.*GeV;scale<101.*GeV;scale+=1.*GeV)
-    cerr << scale << " " << value(sqr(scale)) << "\n";
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {

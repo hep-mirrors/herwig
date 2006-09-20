@@ -13,20 +13,33 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "Herwig++/Shower/Couplings/ShowerAlphaQCD.h"
+#include "Herwig++/Shower/Couplings/FortranAlphaQCD.h"
 #include "ThePEG/Handlers/LuminosityFunction.h"
 #include "Herwig++/Utilities/GaussianIntegrator.h"
 
 using namespace Herwig;
 
+IBPtr FortranSudakov::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr FortranSudakov::fullclone() const {
+  return new_ptr(*this);
+}
+
+FortranSudakov::FortranSudakov() : _sudord(1), _inter(3), 
+				   _vqcut(0.48*GeV),_vgcut(0.10*GeV),
+				   _vpcut(0.40*GeV),_nqev(1024)
+{}
+
 void FortranSudakov::persistentOutput(PersistentOStream & os) const {
   os << _sudord << _inter << _vqcut << _vgcut << _vpcut << _nqev 
-     << _sudakovQ << _sudakovP << _linearQ << _linearP;
+     << _sudakovQ << _sudakovP << _linearQ << _linearP << _fortranQCD;
 }
 
 void FortranSudakov::persistentInput(PersistentIStream & is, int) {
   is >> _sudord >> _inter >> _vqcut >> _vgcut >> _vpcut >> _nqev 
-     >> _sudakovQ >> _sudakovP >> _linearQ >> _linearP;
+     >> _sudakovQ >> _sudakovP >> _linearQ >> _linearP >> _fortranQCD;
 }
 
 ClassDescription<FortranSudakov> FortranSudakov::initFortranSudakov;
@@ -90,84 +103,60 @@ void FortranSudakov::doinit() throw(InitException) {
   SudakovFormFactor::doinit();
   // get the maximum energy from the event handler
   Energy qlim=generator()->eventHandler()->lumiFnPtr()->maximumCMEnergy();
-  cerr << "testing qlim " << qlim/GeV << endl;
   // power for interpolation
   double power=1./(_nqev-1);
-  cerr << "testing power " << power << "\n";
   // get the constituent masses of the quarks
   vector<Energy> qmass;
   for(unsigned int ix=1;ix<=6;++ix) {
     qmass.push_back(getParticleData(ix)->constituentMass());
-    cerr << "testing masses " << qmass.back()/GeV << "\n";
   }
-  ShowerAlphaQCDPtr alphas=dynamic_ptr_cast<ShowerAlphaQCDPtr>(alpha());
-  if(!alphas) throw InitException() << "Must be using ShowerAlphaQCD in "
-				    << "FortranSudakov::doinit()";
+  _fortranQCD=dynamic_ptr_cast<FortranAlphaQCDPtr>(alpha());
+  if(!_fortranQCD) throw InitException() << "Must be using FortranAlphaQCD in "
+					 << "FortranSudakov::doinit()";
   // ensure strong coupling is initialised
-  alphas->init();
+  _fortranQCD->init();
   // get lambda
-  Energy lam3=alphas->lambdaQCD(2);
-  cerr << "testing lam3 " << lam3/GeV << "\n";
+  Energy lam3=_fortranQCD->lambdaQCDThree();
   // integrator
   GaussianIntegrator integrator;
   // compute the sudakovs and construct the interpolation tables
-  cerr << "testing fortran sudakov F \n";
   for(unsigned int ix=0;ix<particles().size();++ix) {
-    cerr << "testing loop A\n";
     vector<double> sud,qev;
     Energy q1=cutOff(particles()[ix][1]);
     Energy q2=cutOff(particles()[ix][2]);
     Energy qmin=q1+q2;
     double qfac=pow(1.1*qlim/qmin,power);
-    cerr << "testing qfac " << qfac << " " << qlim/qmin << " " << power << "\n";
     sud.push_back(1.);
     qev.push_back(qmin/GeV);
     Energy qnow;
-    double qlam,qrat;
-    double zmin,zmax;
+    double qlam,qrat,zmin,zmax;
     // create the integrands for the two regions
-    FortranSudakovIntegrand ilower(lam3,splittingFn(),particles()[ix],_sudord,false,
-				   qmass,alphas);
-    FortranSudakovIntegrand iupper(lam3,splittingFn(),particles()[ix],_sudord,true,
-				   qmass,alphas);
-    cerr << "testing before compute table \n";
+    FortranSudakovIntegrand ilower(lam3,splittingFn(),particles()[ix],_sudord,true,
+				   qmass,_fortranQCD);
+    FortranSudakovIntegrand iupper(lam3,splittingFn(),particles()[ix],_sudord,false,
+				   qmass,_fortranQCD);
     // compute the table
     do {
-      cerr << "testing pieces " << qfac << " " << qev.back() << "\n";
       qnow = qfac*qev.back()*GeV;
-      cerr << "testing scale " << qnow << endl;
       qlam=qnow/lam3;
       // upper part of the integral
       zmin = q2/qnow;
       qrat = 1./zmin;
       zmax = q2/qmin;
-      ilower.setScales(qrat,qlam);
       iupper.setScales(qrat,qlam);
       double g1=0.;
-      cerr << "testing limits " << q2 << " " << qnow << " " << qmin << "\n";
       for(unsigned int ix=3;ix<7;++ix) {
-	cerr << "testing ix " << ix << " " << qmass[ix] << endl;
 	double zlo = zmin;
 	double zhi = zmax;
-	if(ix!=6) {
-	  cerr << "testing low out " << zlo << " " << q2/qmass[ix] << "\n";
-	  zlo = max(zlo,q2/qmass[ix]);
-	}
-	if(ix!=3) {
-	  cerr << "testing upp out " << zhi << " " << q2/qmass[ix-1] << "\n";
-	  zhi = min(zhi,q2/qmass[ix-1]);
-	}
-	cerr << "testing calling integrator" << ix << " " << zlo << " " << zhi 
-	     << " " << log(zlo) << " " << log(zhi) << endl;
-	if(zhi>zlo) {
-	  cerr << "testing integral called \n";
-	  g1+=integrator.value(iupper,log(zlo),log(zhi));
-	}
+	if(ix!=6) zlo = max(zlo,q2/qmass[ix]);
+	if(ix!=3) zhi = min(zhi,q2/qmass[ix-1]);
+	if(zhi>zlo) g1+=integrator.value(iupper,log(zlo),log(zhi));
       }
       // lower part of the the integral      
       zmin = q1/qnow;
       qrat = 1./zmin;
       zmax = q1/qmin;
+      ilower.setScales(qrat,qlam);
       double g2=0.;
       for(unsigned int ix=3;ix<7;++ix) {
 	double zlo = zmin;
@@ -176,14 +165,12 @@ void FortranSudakov::doinit() throw(InitException) {
 	if(ix!=3) zhi = min(zhi,q1/qmass[ix-1]);
 	if(zhi>zlo) g2+=integrator.value(ilower,log(zlo),log(zhi));
       }
-      sud.push_back(exp(g1+g2));
+      sud.push_back(exp(_fortranQCD->scaleFactor()*(g1+g2)));
       qev.push_back(qnow/GeV);
+      //cerr << qev.back() << " " << sud.back() << "\n";
     }
-    while (qnow<qlim);
-    cerr << "testing table \n";
-    for(unsigned int ix=0;ix<sud.size();++ix) {
-      cerr << qev[ix] << " " << sud[ix] << "\n";
-    }
+    while (qnow<1.1*qlim);
+    //cerr << "join red\n";
     // now construct the interpolators
     NewInterpolatorPtr newint=new_ptr(NewInterpolator(sud,qev,_inter));
     _sudakovQ.push_back(newint);
@@ -279,7 +266,7 @@ FortranSudakovIntegrand::FortranSudakovIntegrand(Energy qcdlam,
 						 IdList ids,
 						 unsigned int sudord, bool zord,
 						 vector<Energy> qmass,
-						 ShowerAlphaQCDPtr alpha)
+						 FortranAlphaQCDPtr alpha)
   : _qcdlam(qcdlam), _split(split), _ids(ids), _sudord(sudord), _zord(zord), 
     _alpha(alpha)
 {
@@ -300,10 +287,12 @@ FortranSudakovIntegrand::FortranSudakovIntegrand(Energy qcdlam,
       _alma.push_back(0.);
     }
     else {
-      _muma.push_back(qmass[nf+1]);
+      _muma.push_back(qmass[nf  ]);
       _alma.push_back(_alpha->value(sqr(_muma.back())));
     }
-    if(nf!=3&&nf!=6) _fint.push_back(alphaIntegral(_almi[nf-3],_alma[nf-3],nf));
+    if(nf!=3&&nf!=6) {
+      _fint.push_back(alphaIntegral(_almi[nf-3],_alma[nf-3],nf));
+    }
     else             _fint.push_back(0.);
   }
 }

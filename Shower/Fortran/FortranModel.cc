@@ -12,6 +12,7 @@
 #include "ThePEG/Utilities/Throw.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include "Herwig++/Shower/Couplings/FortranAlphaQCD.h"
 
 
 using namespace Herwig;

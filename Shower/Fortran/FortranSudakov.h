@@ -9,7 +9,7 @@
 #include "Herwig++/Utilities/NewInterpolator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "FortranSudakov.fh"
-#include "Herwig++/Shower/Couplings/ShowerAlphaQCD.fh"
+#include "Herwig++/Shower/Couplings/FortranAlphaQCD.fh"
 
 namespace Herwig {
 
@@ -28,7 +28,7 @@ public:
   /**
    * The default constructor.
    */
-  inline FortranSudakov();
+  FortranSudakov();
 
   /**
    *  Members to generate the scale of the next branching
@@ -130,13 +130,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 protected:
@@ -227,6 +227,11 @@ private:
    */
   vector<NewInterpolatorPtr> _linearP;
 
+  /**
+   *  Reference to the object for \f$\alpha_S\f$ after dynamic casting
+   */
+  FortranAlphaQCDPtr _fortranQCD;
+
 };
 
 }
@@ -255,7 +260,7 @@ public:
    */
   FortranSudakovIntegrand(Energy qcdlam, SplittingFnPtr split, IdList ids,
 			  unsigned int sudord, bool zord, vector<Energy> qmass,
-			  ShowerAlphaQCDPtr alpha);
+			  FortranAlphaQCDPtr alpha);
 
   /**
    *  Return the value of the integrand
@@ -311,7 +316,7 @@ private:
   /**
    *  Pointer to object calculating the strong coupling
    */
-  ShowerAlphaQCDPtr _alpha;
+  FortranAlphaQCDPtr _alpha;
 
   /**
    *  \f$b\f$ coefficients for the \f$\beta\f$ function.
