@@ -108,12 +108,12 @@ double NewInterpolator::operator ()(double xpoint) const {
   bool extra(npoints!=mp);
   for(ix=0;ix<m;++ix) {
     if(extra) {
-      icopy=m-ix;
-      copyfun[m+1]=(copyfun[m+1]-copyfun[m-1])/(copyx[m+1]-copyx[m-1]);
+      icopy=m-ix-1;
+      copyfun[m+1]=(copyfun[m+1]-copyfun[m-1])/(copyx[m+1]-copyx[icopy]);
     }
     i=m;
     for(iy=ix;iy<m;++iy) {
-      icopy=i-1;
+      icopy=i-ix-1;
       copyfun[i]=(copyfun[i]-copyfun[i-1])/(copyx[i]-copyx[icopy]);
       --i;
     }
@@ -121,6 +121,9 @@ double NewInterpolator::operator ()(double xpoint) const {
   double sum(copyfun[m]);
   if(extra) sum=0.5*(sum+copyfun[m+1]);
   i=m-1;
-  for(ix=0;ix<m;++ix) sum=copyfun[i]+(xpoint-copyx[i])*sum;--i;
+  for(ix=0;ix<m;++ix) {
+    sum=copyfun[i]+(xpoint-copyx[i])*sum;
+    --i;
+  }
   return sum;
 }
