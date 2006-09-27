@@ -5,13 +5,43 @@
 //
 
 #include "FortranShowerKinematics.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 
 using namespace Herwig;
 
 void FortranShowerKinematics::updateChildren(const tShowerParticlePtr theParent, 
 		    const ShowerParticleVector theChildren) const {
-  throw Exception() << "FortranShowerKinematics::updateChildren "
-		    << " not implemented" << Exception::runerror;
+  if(theChildren.size() != 2)
+    throw Exception() << "FortranShowerKinematics1to2::updateChildren() " 
+		      << "Warning! too many children!" << Exception::eventerror;
+  // get the interaction type
+  const ShowerIndex::InteractionType interaction = splittingFn()->interactionType();
+  // if parent not from the shower set up
+  if(theParent->showerParameters().empty()) {
+    theParent->showerParameters().resize(1,1.);
+    theParent->showerVariables().resize(5,0.);
+    theParent->showerVariables()[0]=theParent->evolutionScales()[interaction];
+  }
+  Energy dqtilde = scale();
+  double dz = z(); 
+  double dphi = phi();
+  theChildren[0]->showerVariables().resize(5,0.);
+  theChildren[1]->showerVariables().resize(5,0.);
+  // note that 1st child gets z, 2nd gets (1-z) by our convention.
+  theChildren[0]->setEvolutionScale(interaction, dz*dqtilde);
+  theChildren[1]->setEvolutionScale(interaction, (1.-dz)*dqtilde);
+  // calculate and set xi
+  double xi = sqr(dqtilde/theParent->showerVariables()[0]);
+  theChildren[0]->showerParameters().resize(1,xi);
+  theChildren[1]->showerParameters().resize(1,xi);
+  // set energy
+  theChildren[0]->showerVariables()[0]=    dz *theParent->showerVariables()[0];
+  theChildren[1]->showerVariables()[0]=(1.-dz)*theParent->showerVariables()[0];
+  // set up the colour connections
+  splittingFn()->colourConnection(theParent,theChildren[0],theChildren[1],false);
+  // make the products children of the parent
+  theParent->addChild(theChildren[0]);
+  theParent->addChild(theChildren[1]);
 }
 
 void FortranShowerKinematics::updateParent(const tShowerParticlePtr theParent, 
@@ -33,19 +63,42 @@ void FortranShowerKinematics::reconstructChildren(const tShowerParticlePtr thePa
 
 void FortranShowerKinematics::reconstructParent(const tShowerParticlePtr theParent, 
 		       const ParticleVector theChildren) const {
-  throw Exception() << "FortranShowerKinematics::reconstructParent "
-		    << " not implemented" << Exception::runerror;
+  // calculate the mass of the parent
+  ShowerIndex::InteractionType
+    inter=theParent->showerKinematics()->splittingFn()->interactionType();
+  tShowerParticlePtr c1=dynamic_ptr_cast<tShowerParticlePtr>(theChildren[0]);
+  tShowerParticlePtr c2=dynamic_ptr_cast<tShowerParticlePtr>(theChildren[1]);
+  Energy2 exi=c1->evolutionScales()[inter]*c2->evolutionScales()[inter];
+  Energy2 m2=exi+sqr(theChildren[0]->mass())+sqr(theChildren[1]->mass());
+  // calculate three-momentum of the parent
+  Energy2 pisq=sqr(theParent->showerVariables()[0])-m2;
+  theParent->showerVariables()[4]=sqrt(pisq);
+  // Compute daughter' transverse and longitudinal momenta
+  Energy2 pjpk=c1->showerVariables()[4]*c2->showerVariables()[4];
+  Energy2 ejek=c1->showerVariables()[0]*c2->showerVariables()[0]-exi;
+  Energy2 ptsq=(pjpk+ejek)*(pjpk-ejek)/pisq;
+  c1->showerVariables()[3]= sqrt(ptsq);
+  c2->showerVariables()[3]=-sqrt(ptsq);
+  c1->showerVariables()[4]=sqrt(sqr(c1->showerVariables()[4])-ptsq);
+  c2->showerVariables()[4]=theParent->showerVariables()[4]-c1->showerVariables()[4];
+  theParent->set5Momentum(sqrt(m2));
+  cerr << "testing A " << theParent->PDGName() << " -> " 
+       << c1->PDGName() << " " 
+       << c2->PDGName() << "\n";
+  cerr << "testing branching" << theParent->mass() << " " << c1->showerVariables()[3]
+       << "\n";
 }
 
 void FortranShowerKinematics::reconstructLast(const tShowerParticlePtr theLast,
 		     unsigned int iopt) const {
-  throw Exception() << "FortranShowerKinematics::reconstructLast "
-		    << " not implemented" << Exception::runerror;
+  Energy mass=theLast->dataPtr()->constituentMass();
+  theLast->set5Momentum(mass);
+  Energy2 p2=sqr(theLast->showerVariables()[0])-sqr(mass);
+  theLast->showerVariables()[4]=sqrt(p2);
+  cerr << "testing last " << theLast->mass() << "\n";
 }
 
 void FortranShowerKinematics::initialize(ShowerParticle & particle) {
-  throw Exception() << "FortranShowerKinematics::initialize "
-		    << " not implemented" << Exception::runerror;
 }
 
 vector<Lorentz5Momentum> FortranShowerKinematics::getBasis() const {

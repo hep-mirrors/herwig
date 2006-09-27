@@ -191,15 +191,22 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   if(enhance-double(nrej)>0.) ++nrej;
   // get the minimum scale
   Energy qmin=cutOff(ids[1])+cutOff(ids[2]);
+  cerr << "testing ids " << ids[1] << " " << ids[2] << "\n";
+  cerr << "testing ids " << cutOff(ids[1]) << " " << cutOff(ids[2]) << "\n";
+  cerr << "testing scales " << startingScale << " " << qmin << "\n";
   // return if no allowed branching
   if(qmin>startingScale) return ShoKinPtr();
   // find which sudakov table to use
   unsigned int iloc=findSudakov(ids,cc);
+  cerr << "testing sudakov" << iloc << "\n";
+  cerr << "testing starting scale " << startingScale << " " << qmin << "\n"; 
   Energy qnow=-1.*GeV;
   for(unsigned int irej=0;irej<nrej;++irej) {
     double rn=UseRandom::rnd();
     double slst=(*_sudakovQ[iloc])(startingScale/GeV);
-    double snow = rn==0. ? 2. : slst;
+    cerr << "testing slst " << slst <<"\n";
+    double snow = rn==0. ? 2. : slst/rn;
+    cerr << "testing snow " << snow << " " << rn << "\n";
     Energy qsud=-1.*GeV;
     if(snow<1.) {
       qsud=(*_sudakovP[iloc])(snow)*GeV;
@@ -217,17 +224,20 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
     }
     if(qsud>qmin&&qsud>qnow) qnow=qsud;
   }
+  cerr << "testing selected" << qnow/GeV << "\n";
   // if no branching selected return
   if(qnow<0.) return ShoKinPtr();
   // limits on z
   double zmin=cutOff(ids[1])/qnow;
   double zmax=1.-cutOff(ids[2])/qnow;
+  cerr << "testing limits " << zmin << " " << zmax << "\n";
   double fmax(splittingFn()->integOverP(zmax)),fmin(splittingFn()->integOverP(zmin));
   double z;
   do {
     z=splittingFn()->invIntegOverP(fmin+UseRandom::rnd()*(fmax-fmin));
   }
   while(splittingFn()->ratioP(z,qnow,ids,false)<=UseRandom::rnd());
+  cerr << "testing selected " << z << endl;
   // create the ShowerKinematics object
   FortranShowerKinematicsPtr showerKin = new_ptr(FortranShowerKinematics());
   showerKin->scale(qnow);

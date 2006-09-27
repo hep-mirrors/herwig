@@ -72,6 +72,14 @@ public:
 
 protected:
 
+  /**
+   * Reconstruct the mass of the time-like jet which start from the input parton
+   * @parton The parent of the jet to be reconstructed
+   */
+  void reconstructTimeLikeMass(tShowerParticlePtr parton) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
