@@ -408,76 +408,70 @@ reconstructDecayJets(ShowerTreePtr decay) const
       Lorentz5Momentum pjetA=pjet;
       int ipartner(-1);
       Lorentz5Momentum p_cm,p_cmnew;
-      for(unsigned int ix=0;ix<ShowerHardJets.size();++ix)
-	{
-	  // only consider final-state jets
-	  if(!ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
-	  // did it radiate
-	  if(!ShowerHardJets[ix]->progenitor()->children().empty())
-	    {
-	      radiated[1] = true;
-	      ShowerParticlePtr ptemp=ShowerHardJets[ix]->progenitor()->partners()
-		[ShowerHardJets[ix]->progenitor()->showerKinematics()->
-		 splittingFn()->interactionType()];
-	      if(ptemp&&!partner)
-		{ 
-		  if(!ptemp->isFinalState())
-		    {
-		      partner=ShowerHardJets[ix]->progenitor();
-		      nvect=partner->momentum();
-		      nvect.boost(boosttorest);
-		      nvect = Lorentz5Momentum(0.,0.5*initial->progenitor()->mass()*
-					       nvect.vect().unit());
-		      nvect.boost(-boosttorest);
-		    }
-		}
+      for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+	// only consider final-state jets
+	if(!ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
+	// did it radiate
+	if(!ShowerHardJets[ix]->progenitor()->children().empty()) {
+	  radiated[1] = true;
+	  ShowerParticlePtr ptemp=ShowerHardJets[ix]->progenitor()->partners()
+	    [ShowerHardJets[ix]->progenitor()->showerKinematics()->
+	     splittingFn()->interactionType()];
+	  if(ptemp&&!partner) { 
+	    if(!ptemp->isFinalState()) {
+	      partner=ShowerHardJets[ix]->progenitor();
+	      nvect=partner->momentum();
+	      nvect.boost(boosttorest);
+	      nvect = Lorentz5Momentum(0.,0.5*initial->progenitor()->mass()*
+				       nvect.vect().unit());
+	      nvect.boost(-boosttorest);
 	    }
-	  // add momentum
-	  if(ShowerHardJets[ix]->progenitor()!=partner)
-	    p_cm+=ShowerHardJets[ix]->progenitor()->momentum();
-	  else
-	    ipartner=ix;
+	  }
 	}
+	// add momentum
+	if(ShowerHardJets[ix]->progenitor()!=partner)
+	  p_cm+=ShowerHardJets[ix]->progenitor()->momentum();
+	else
+	  ipartner=ix;
+      }
       p_cm.rescaleMass();
       p_cmnew=p_cm;
       if(partner) initialrad=true;
       // perform the initial-state stuff
-      if(initialrad)
-	{
-	  // now boost the relevant vectors to the rest frame
-	  if(gottaBoost)
-	    {
-	      pjet.boost(boosttorest);
-	      p_cm.boost(boosttorest);
-	      p_cmnew.boost(boosttorest);
-	      nvect.boost(boosttorest);
-	    }
-	  // reconstruct the partner jet
-	  Lorentz5Momentum ppartner[2];
-	  ppartner[0]=partner->momentum();
-	  if(gottaBoost) ppartner[0].boost(boosttorest);
-	  reconstructTimeLikeJet(partner,0);
-	  if(gottaBoost) partner->deepBoost(boosttorest);
-	  ppartner[1]=partner->momentum();
-	  // calculate the rescaling parameters
-	  double k1,k2;
-	  Lorentz5Momentum qt;
-	  if(!solveDecayKFactor(initial->progenitor()->mass(),
-				nvect,pjet,p_cm,ppartner,k1,k2,qt)) return false;
-	  // apply the boosts
-	  // to the colour partner
-	  Lorentz5Momentum pnew=ppartner[0];
-	  pnew *=k1;
-	  pnew-=qt;
-	  pnew.setMass(ppartner[1].mass());
-	  pnew.rescaleEnergy();
-	  LorentzRotation Trafo=solveBoost(1.,ppartner[1],pnew);
-	  if(gottaBoost) Trafo.boost(-boosttorest);
-	  partner->deepTransform(Trafo);
-	  // and the singlet system
-	  Trafo = solveBoost(k2, p_cm, p_cmnew);
-	  p_cmnew.transform(Trafo);
+      if(initialrad) {
+	// now boost the relevant vectors to the rest frame
+	if(gottaBoost) {
+	  pjet.boost(boosttorest);
+	  p_cm.boost(boosttorest);
+	  p_cmnew.boost(boosttorest);
+	  nvect.boost(boosttorest);
 	}
+	// reconstruct the partner jet
+	Lorentz5Momentum ppartner[2];
+	ppartner[0]=partner->momentum();
+	if(gottaBoost) ppartner[0].boost(boosttorest);
+	reconstructTimeLikeJet(partner,0);
+	if(gottaBoost) partner->deepBoost(boosttorest);
+	ppartner[1]=partner->momentum();
+	// calculate the rescaling parameters
+	double k1,k2;
+	Lorentz5Momentum qt;
+	if(!solveDecayKFactor(initial->progenitor()->mass(),
+			      nvect,pjet,p_cm,ppartner,k1,k2,qt)) return false;
+	// apply the boosts
+	// to the colour partner
+	Lorentz5Momentum pnew=ppartner[0];
+	pnew *=k1;
+	pnew-=qt;
+	pnew.setMass(ppartner[1].mass());
+	pnew.rescaleEnergy();
+	LorentzRotation Trafo=solveBoost(1.,ppartner[1],pnew);
+	if(gottaBoost) Trafo.boost(-boosttorest);
+	partner->deepTransform(Trafo);
+	// and the singlet system
+	Trafo = solveBoost(k2, p_cm, p_cmnew);
+	p_cmnew.transform(Trafo);
+      }
       // check if any final-state radiation
       bool atLeastOnce = radiated[1];
       // collection of pointers to initial hard particle and jet momenta
@@ -498,8 +492,7 @@ reconstructDecayJets(ShowerTreePtr decay) const
 	}
       int ix=-1;
       // reconstruct the final-state jets and perform boosts
-      for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) 
-	{
+      for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) {
 	  ++ix;
 	  if(!(*cit)->progenitor()->isFinalState()) continue;
 	  if(ipartner==ix) continue;
