@@ -85,19 +85,6 @@ Cluster::Cluster(tcEventPDPtr x)
     _isPerturbative(),
     _numComp(0),
     _id(0) {}
-    
-Cluster::~Cluster() { /*cout << "Destroying Cluster\n"; _component.clear(); */}    
-
-Cluster::Cluster(const Cluster &x) 
-  : Particle(x),
-    _isAvailable(x._isAvailable),  
-    _reshufflingPartner(x._reshufflingPartner),
-    _component(x._component),
-    _original(x._original),
-    _isBeamRemnant(x._isBeamRemnant),
-    _isPerturbative(x._isPerturbative),
-    _numComp(x._numComp),
-    _id(x._id) {}
 
 Cluster::Cluster(const Particle &x) 
   : Particle(x),

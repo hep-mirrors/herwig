@@ -55,8 +55,7 @@ inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
 
 inline void SudakovFormFactor::setShowerVariables(ShowerVarsPtr in){_variables=in;}
 
-inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const
-{
+inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const {
   double c = 1./((_splittingFn->integOverP(_zlimits.second) -
 		  _splittingFn->integOverP(_zlimits.first))* 
 		 _alpha->overestimateValue()/(2.*pi));
@@ -64,14 +63,14 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt) const
   if(iopt==0)
     {return t1*pow(UseRandom::rnd(),
 		   c/_variables->finalStateRadiationEnhancementFactor());}
-  else if(iopt==1)
-    {return t1*pow(UseRandom::rnd(),
-		   c/_pdfmax/_variables->initialStateRadiationEnhancementFactor());}
+  else if(iopt==1) {
+    if(_ids[1]==_ids[2]) c*=2.;
+    return t1*pow(UseRandom::rnd(),
+		  c/_pdfmax/_variables->initialStateRadiationEnhancementFactor());
+  }
   else
     {return t1/pow(UseRandom::rnd(),
 		   c/_variables->initialStateRadiationEnhancementFactor());}
 }
-
-
 
 }

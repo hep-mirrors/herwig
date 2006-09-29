@@ -1,0 +1,6 @@
+library HwBaryonDecay.so
+library HwFormFactors.so
+library HwSMDecay.so
+library HwTauDecay.so
+library HwTMDecay.so
+library HwVMDecay.so

@@ -495,11 +495,6 @@ FUNCTION_OBJECT_IMP(KaganIntegrand)
   KaganIntegrand::KaganIntegrand(BtoSGammaKaganPtr in,unsigned int ioptin)
 {_kagan=in,_iopt=ioptin;}
 
-KaganIntegrand::~KaganIntegrand() {}
-
-KaganIntegrand::KaganIntegrand(const KaganIntegrand & right)
-  : _kagan(right._kagan),_iopt(right._iopt) {}
-
 // calculate the integrand  
 double KaganIntegrand::operator() (double x) const 
 {

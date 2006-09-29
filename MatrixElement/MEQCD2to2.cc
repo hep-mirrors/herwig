@@ -27,23 +27,21 @@ void MEQCD2to2::doinit() throw(InitException) {
   // get the vedrtex pointers from the SM object
   tcHwSMPtr hwsm= dynamic_ptr_cast<tcHwSMPtr>(standardModel());
   // do the initialisation
-  if(hwsm)
-    {
-      _qqgvertex  = hwsm->vertexFFG();
-      _gggvertex = hwsm->vertexGGG();
-      _ggggvertex = hwsm->vertexGGGG();
-    }
+  if(hwsm) {
+    _qqgvertex  = hwsm->vertexFFG();
+    _gggvertex = hwsm->vertexGGG();
+    _ggggvertex = hwsm->vertexGGGG();
+  }
   else
     {throw InitException() << "Wrong type of StandardModel object in "
 			   << "MEQCD2to2::doinit() the Herwig++ version must be used" 
 			   << Exception::runerror;}
   // get the particle data objects
   _gluon=getParticleData(ParticleID::g);
-  for(unsigned int ix=1;ix<=_maxflavour;++ix)
-    {
-      _quark.push_back(getParticleData(ix));
-      _antiquark.push_back(getParticleData(-ix));
-    }
+  for(int ix=1;ix<=int(_maxflavour);++ix) {
+    _quark.push_back(    getParticleData( ix));
+    _antiquark.push_back(getParticleData(-ix));
+  }
 }
 
 Energy2 MEQCD2to2::scale() const {

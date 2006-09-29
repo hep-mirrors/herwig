@@ -8,15 +8,6 @@ namespace Herwig {
 namespace Helicity{
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-    
-inline VertexBase::VertexBase(const VertexBase & x)
-  : Interfaced(x), _iparticlea(x._iparticlea),_iparticleb(x._iparticleb),
-    _iparticlec(x._iparticlec),_iparticled(x._iparticled),_iparticlee(x._iparticlee),
-    _particlea(x._particlea),_particleb(x._particleb),_particlec(x._particlec),
-    _particled(x._particled),_particlee(x._particlee),_ispin(x._ispin),
-    _npoint(x._npoint), _nsize(x._nsize), _inpart(x._inpart), _iinpart(x._iinpart),
-    _outpart(x._outpart), _ioutpart(x._ioutpart), _calckinematics(x._calckinematics)
-{}
 
 // constructors for three point vertices
 inline VertexBase::VertexBase(int isa, int isb, int isc,

@@ -18,10 +18,6 @@ inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr 
 
 inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator() {}
 
-inline TwoBodyAllOnCalculator::TwoBodyAllOnCalculator(const TwoBodyAllOnCalculator & x)
-  :  WidthCalculatorBase(x),_mode(x._mode), _mass1(x._mass1),
-     _mass2(x._mass2), _widthgen(x._widthgen) {}
-
 inline void TwoBodyAllOnCalculator::resetMass(int ipart,Energy mass)
 {
   if(ipart==1){_mass1=mass;}

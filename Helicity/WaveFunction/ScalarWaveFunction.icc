@@ -182,12 +182,8 @@ inline ScalarWaveFunction & ScalarWaveFunction::operator = (const ScalarWaveFunc
   return *this;
 }
 
-// destructor
-ScalarWaveFunction::~ScalarWaveFunction(){;}
-
 // subscript operator
-Complex inline ScalarWaveFunction::operator ()(int i) const
-{
+inline Complex ScalarWaveFunction::operator ()(int i) const {
   if(i!=0)
     {ThePEG::Helicity::HelicityConsistencyError() 
 	<< "ScalarWaveFunction requested for non-zero index" << Exception::abortnow;
@@ -196,8 +192,7 @@ Complex inline ScalarWaveFunction::operator ()(int i) const
 }
 
 // Set components by index.
-inline Complex & ScalarWaveFunction::operator () (int)
-{
+inline Complex & ScalarWaveFunction::operator () (int) {
   return _wf;
 }
 
@@ -205,23 +200,20 @@ inline Complex & ScalarWaveFunction::operator () (int)
 
 // reset the momentum, particle type and direction
 inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin, const tcPDPtr & part,
-				 Direction dir)
-{
+				 Direction dir) {
   direction(dir);
   checkParticle(part);
   setMomentum(pin);
 }
 
 // reset the momentum and direction
-inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin, Direction dir)
-{
+inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin, Direction dir) {
   direction(dir);
   setMomentum(pin);
 }
 
 // reset the momentum
-inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin)
-{
+inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin) {
   setMomentum(pin);
 }
 
@@ -229,15 +221,13 @@ inline void ScalarWaveFunction::reset(const Lorentz5Momentum & pin)
 inline void ScalarWaveFunction::reset(Complex wf){_wf=wf;}
 
 // reset the particle type and direction
-inline void ScalarWaveFunction::reset(const tcPDPtr & part,Direction dir)
-{
+inline void ScalarWaveFunction::reset(const tcPDPtr & part,Direction dir) {
   direction(dir);
   checkParticle(part);
 }
 
 // reset the partcle type
-inline void ScalarWaveFunction::reset(const tcPDPtr & part)
-{
+inline void ScalarWaveFunction::reset(const tcPDPtr & part) {
   checkParticle(part);
 }	
 

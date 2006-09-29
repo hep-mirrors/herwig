@@ -624,7 +624,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
     }
 }
 
-PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int iq,int ia)
+PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int,int)
 {
   PDVector extpart(3);
   if(imode==0)
@@ -761,14 +761,7 @@ FUNCTION_OBJECT_IMP(ThreePionCLEOa1MatrixElement)
 ThreePionCLEOa1MatrixElement::
 ThreePionCLEOa1MatrixElement(int mode,Ptr<Herwig::ThreePionCLEOCurrent>::pointer in)
 {_mode=mode,_decayer=in;}
-  
-  
-ThreePionCLEOa1MatrixElement::~ThreePionCLEOa1MatrixElement() {
-}
-  
-ThreePionCLEOa1MatrixElement::
-ThreePionCLEOa1MatrixElement(const ThreePionCLEOa1MatrixElement & right) {  }
-  
+
 unsigned int ThreePionCLEOa1MatrixElement::dimensionality() const {return 7;}
 
 double ThreePionCLEOa1MatrixElement::operator ()(const Argument & a) const 

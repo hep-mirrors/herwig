@@ -73,7 +73,7 @@ inline void FourPionNovosibirskCurrent::doinitrun() {
 // matrix element for the running a_1 width
 inline double FourPionNovosibirskCurrent::a1MatrixElement(Energy2 q2, Energy2 s3,
 							  Energy2 s2, Energy2 s1,
-							  Energy m1,Energy m2,Energy m3)
+							  Energy,Energy,Energy)
 {
   unsigned int ix;
   // construct the momenta of the decay products

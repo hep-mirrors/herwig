@@ -20,9 +20,7 @@ using ThePEG::Helicity::tcSpinfoPtr;
 
 namespace Helicity {
 using namespace ThePEG;
-
-HardVertex::~HardVertex() {}
-    
+  
 NoPIOClassDescription<HardVertex> HardVertex::initHardVertex;
   // Definition of the static class description member.
     

@@ -347,8 +347,8 @@ void BallZwickyVectorFormFactor::Init() {
 
 // form-factor for scalar to vector
 void BallZwickyVectorFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
-							int id0,int id1,Energy m0, 
-							Energy m1,
+							int,int,Energy, 
+							Energy,
 							Complex & A0,Complex & A1,
 							Complex & A2,Complex & V) const
 {
@@ -376,8 +376,8 @@ void BallZwickyVectorFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int 
 }
 
 void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
-							     unsigned int mode,int id0,
-							     int id1,Energy m0,Energy m1,
+							     unsigned int mode,int,
+							     int,Energy m0,Energy m1,
 							     Complex & T1,Complex & T2,
 							     Complex & T3) const
 {

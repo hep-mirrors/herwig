@@ -21,10 +21,10 @@ using namespace Herwig;
 
 BtoSGammaFlatEnergy::~BtoSGammaFlatEnergy() {}
 
-void BtoSGammaFlatEnergy::persistentOutput(PersistentOStream & os) const {
+void BtoSGammaFlatEnergy::persistentOutput(PersistentOStream &) const {
  }
 
-void BtoSGammaFlatEnergy::persistentInput(PersistentIStream & is, int) {
+void BtoSGammaFlatEnergy::persistentInput(PersistentIStream &, int) {
  }
 
 ClassDescription<BtoSGammaFlatEnergy> BtoSGammaFlatEnergy::initBtoSGammaFlatEnergy;

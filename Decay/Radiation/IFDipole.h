@@ -389,10 +389,6 @@ struct ClassTraits<Herwig::IFDipole>
   : public ClassTraitsBase<Herwig::IFDipole> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::IFDipole"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the IFDipole class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwDecRad.so"; }
 };
 
 /** @endcond */

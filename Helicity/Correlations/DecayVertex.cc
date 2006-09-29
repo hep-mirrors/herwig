@@ -21,8 +21,6 @@ using ThePEG::Helicity::tcSpinfoPtr;
 namespace Helicity {
 using namespace ThePEG;
 
-DecayVertex::~DecayVertex() {}
-    
 NoPIOClassDescription<DecayVertex> DecayVertex::initDecayVertex;
   // Definition of the static class description member.
     
@@ -51,7 +49,7 @@ RhoDMatrix DecayVertex::getRhoMatrix(int i)
 }
 
 // method to get the D matrix for an incoming particle
-RhoDMatrix DecayVertex::getDMatrix(int i)
+RhoDMatrix DecayVertex::getDMatrix(int)
 {
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout;

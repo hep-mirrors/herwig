@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-MECorrectionBase::~MECorrectionBase() {}
-
 AbstractClassDescription<MECorrectionBase> MECorrectionBase::initMECorrectionBase;
 // Definition of the static class description member.
 

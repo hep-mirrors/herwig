@@ -1,10 +1,12 @@
 noinst_LTLIBRARIES = libHwHadronization.la
 libHwHadronization_la_SOURCES = \
 CluHadConfig.h \
-Cluster.h Cluster.cc Cluster.icc \
-ClusterDecayer.cc ClusterDecayer.h ClusterDecayer.icc \
+Cluster.h Cluster.cc Cluster.icc Cluster.fh \
+ClusterDecayer.cc ClusterDecayer.h \
+ClusterDecayer.icc ClusterDecayer.fh \
 ClusterFinder.cc ClusterFinder.h ClusterFinder.icc \
-ClusterFissioner.cc ClusterFissioner.h ClusterFissioner.icc \
+ClusterFissioner.cc ClusterFissioner.h \
+ClusterFissioner.icc ClusterFissioner.fh \
 ClusterHadronizationHandler.cc ClusterHadronizationHandler.h \
 ClusterHadronizationHandler.icc ClusterHadronizationHandler.fh \
 ColourReconnector.cc ColourReconnector.h ColourReconnector.icc \

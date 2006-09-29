@@ -59,11 +59,6 @@ TwoOffShellIntegrand::TwoOffShellIntegrand(TwoOffShellCalculatorPtr in, Energy2 
 					   Energy2 mw)
  {_integrand=in;_mass2=m2;_mwidth=mw;}
 
-TwoOffShellIntegrand::~TwoOffShellIntegrand() {}
-  
-TwoOffShellIntegrand::TwoOffShellIntegrand(const TwoOffShellIntegrand & right) 
-{  }
-  
 double TwoOffShellIntegrand::operator() (double x) const 
 {return _integrand->dGamma(sqrt(_mass2+_mwidth*tan(x)));}
 }

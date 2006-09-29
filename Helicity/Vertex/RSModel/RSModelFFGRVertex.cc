@@ -31,7 +31,7 @@ void RSModelFFGRVertex::Init() {
   
 }
 // couplings
-void RSModelFFGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
+void RSModelFFGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
 {setNorm(_theKappa);}
 
 }

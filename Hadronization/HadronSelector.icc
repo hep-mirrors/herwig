@@ -16,29 +16,12 @@ inline HadronSelector::HadronSelector() :
   _PwtDIquark( 1.0 ),
   _SngWt( 1.0 ),
   _DecWt( 1.0 ),
+  _table(NumFlavs,vector<KupcoData>(NumFlavs)),
   _Pwt( NumFlavs+1 ),
+  _Repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
   _ClusterDKMode(0),
   _trial(0)
 {}
-
-inline HadronSelector::HadronSelector(const HadronSelector & x)
-  : ThePEG::HandlerBase(x),
-    _PwtDquark( x._PwtDquark ),
-    _PwtUquark( x._PwtUquark ),
-    _PwtSquark( x._PwtSquark ),
-    _PwtCquark( x._PwtCquark ),
-    _PwtBquark( x._PwtBquark ),
-    _PwtDIquark( x._PwtDIquark ),
-    _SngWt( x._SngWt ),
-    _DecWt( x._DecWt ),
-    _Pwt( x._Pwt ),
-    _ClusterDKMode(x._ClusterDKMode),
-    _trial(x._trial)
-{
-  for(int i = D; i<BB; i++)
-    for(int j = D; j<BB; j++)
-      _table[i][j] = x._table[i][j];
-}
 
 inline IBPtr HadronSelector::clone() const {
   return new_ptr(*this);
@@ -49,7 +32,7 @@ inline IBPtr HadronSelector::fullclone() const {
 }
 
 inline void HadronSelector::doinit() throw(InitException) {
-  ThePEG::HandlerBase::doinit();
+  ThePEG::Interfaced::doinit();
   initialize();
 }
 

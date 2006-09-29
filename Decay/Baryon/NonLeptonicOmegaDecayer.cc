@@ -286,7 +286,7 @@ void NonLeptonicOmegaDecayer::Init() {
 
 // couplings for spin-1/2 to spin-3/2 spin-0
 void NonLeptonicOmegaDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,
-							  Energy m2,Complex& A,
+							  Energy,Complex& A,
 							  Complex& B) const
  {A=_A[imode]*(m0+m1);B=_B[imode]*(m0+m1);}
 

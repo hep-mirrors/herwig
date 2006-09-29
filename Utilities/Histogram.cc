@@ -20,10 +20,10 @@ using namespace Herwig;
 
 Histogram::~Histogram() {}
 
-void Histogram::persistentOutput(PersistentOStream & os) const {
+void Histogram::persistentOutput(PersistentOStream &) const {
 }
 
-void Histogram::persistentInput(PersistentIStream & is, int) {
+void Histogram::persistentInput(PersistentIStream &, int) {
 }
 
 ClassDescription<Histogram> Histogram::initHistogram;

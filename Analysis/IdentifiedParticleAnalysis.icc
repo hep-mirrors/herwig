@@ -6,46 +6,12 @@
 
 namespace Herwig {
 
-inline IdentifiedParticleAnalysis::IdentifiedParticleAnalysis() {}
-
-inline IdentifiedParticleAnalysis::
-IdentifiedParticleAnalysis(const IdentifiedParticleAnalysis & x)
-  : AnalysisHandler(x) ,_xpa(x._xpa),_xpl(x._xpl),_xpc(x._xpc),_xpb(x._xpb),
-    _pipma(x._pipma),_pipml(x._pipml),_pipmc(x._pipmc),_pipmb(x._pipmb),
-    _pipm(x._pipm),_kpma(x._kpma),_kpml(x._kpml),_kpmc(x._kpmc),
-    _kpmb(x._kpmb),_kpm(x._kpm),_ppma(x._ppma),_ppml(x._ppml),
-    _ppmc(x._ppmc),_ppmb(x._ppmb),_ppm(x._ppm),_udsxp(x._udsxp),_lpm(x._lpm),
-    _shapes(x._shapes)
-{}
-
 inline IBPtr IdentifiedParticleAnalysis::clone() const {
   return new_ptr(*this);
 }
 
 inline IBPtr IdentifiedParticleAnalysis::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void IdentifiedParticleAnalysis::doupdate() throw(UpdateException) {
-  AnalysisHandler::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void IdentifiedParticleAnalysis::doinit() throw(InitException) {
-  AnalysisHandler::doinit();
 }
 
 inline void IdentifiedParticleAnalysis::dofinish() {
@@ -932,19 +898,6 @@ inline void IdentifiedParticleAnalysis::doinitrun() {
   error=vector<double>(Lerroro,Lerroro+25);
   _lpm=new_ptr(Histogram(bins,data,error));
 }
-
-inline void IdentifiedParticleAnalysis::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  AnalysisHandler::rebind(trans);
-}
-
-inline IVector IdentifiedParticleAnalysis::getReferences() {
-  IVector ret = AnalysisHandler::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 
 inline int IdentifiedParticleAnalysis::getFlavour(const tPVector &pv) {
   tPVector::const_iterator it;

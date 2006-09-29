@@ -64,7 +64,7 @@ MultiplicityCount::MultiplicityCount()
   _data[10221  ] = MultiplicityInfo(0.142,0.011,other);
 }
 
-void MultiplicityCount::analyze(tEventPtr event, long ieve, int loop, int state) {
+void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
 
   set<tcPPtr> particles;
   event->selectFinalState(inserter(particles));
@@ -124,7 +124,7 @@ void MultiplicityCount::analyze(tEventPtr event, long ieve, int loop, int state)
   }
 }
 
-LorentzRotation MultiplicityCount::transform(tEventPtr event) const {
+LorentzRotation MultiplicityCount::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }

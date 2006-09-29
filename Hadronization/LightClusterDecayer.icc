@@ -9,12 +9,6 @@ namespace Herwig {
 inline LightClusterDecayer::LightClusterDecayer() : _B1Lim( 0.0 )     
 {} 
 
-inline LightClusterDecayer::LightClusterDecayer(const LightClusterDecayer & x)
-  : ThePEG::HandlerBase(x),
-	     _hadronsSelector( x._hadronsSelector ),
-             _B1Lim( x._B1Lim )     
-{}
-
 inline IBPtr LightClusterDecayer::clone() const {
   return new_ptr(*this);
 }

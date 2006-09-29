@@ -20,19 +20,17 @@
 
 using namespace Herwig;
 
-IdentifiedParticleAnalysis::~IdentifiedParticleAnalysis() {}
-
 void IdentifiedParticleAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
 }
 
-LorentzRotation IdentifiedParticleAnalysis::transform(tEventPtr event) const {
+LorentzRotation IdentifiedParticleAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
 
-void IdentifiedParticleAnalysis::analyze(const tPVector & particles) {
+void IdentifiedParticleAnalysis::analyze(const tPVector &) {
   // get the final-state
   tcEventPtr event=generator()->currentEvent();
   tPVector hadrons=event->getFinalState();

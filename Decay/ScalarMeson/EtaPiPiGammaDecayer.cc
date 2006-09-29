@@ -627,9 +627,9 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
   return newME.contract(rhoin).real();
 }
  
-double EtaPiPiGammaDecayer::threeBodyMatrixElement(int imodeb,Energy2 q2, Energy2 s3,
+double EtaPiPiGammaDecayer::threeBodyMatrixElement(int imodeb,Energy2, Energy2 s3,
 						   Energy2 s2,Energy2 s1,
-						   Energy m1,Energy m2,Energy m3)
+						   Energy,Energy,Energy)
 {
   Complex pre(_coupling[imodeb]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
   Energy q(sqrt(s3));
@@ -751,18 +751,12 @@ namespace Herwig{
 using namespace Genfun;
 
 FUNCTION_OBJECT_IMP(OmnesFunction)
-  
-OmnesFunction::OmnesFunction(const OmnesFunction & right) 
-{  }
 
 OmnesFunction::OmnesFunction(Interpolator * in,Energy2 eps)
  {
    _interpolator=in;
    _precision=eps;
  }
-
-// destructor
-OmnesFunction::~OmnesFunction() {}
 
   void OmnesFunction::setScale(Energy2 in){_s=in;}
    

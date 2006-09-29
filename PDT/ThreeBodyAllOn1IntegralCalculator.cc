@@ -104,11 +104,6 @@ FUNCTION_OBJECT_IMP(ThreeBodyAllOn1IntegralOuter)
 ThreeBodyAllOn1IntegralOuter::ThreeBodyAllOn1IntegralOuter(ThreeBodyAllOn1IntegralCalculatorPtr in)
 {_theIntegrator=in;}
 
-ThreeBodyAllOn1IntegralOuter::~ThreeBodyAllOn1IntegralOuter() {}
-  
-ThreeBodyAllOn1IntegralOuter::ThreeBodyAllOn1IntegralOuter(const ThreeBodyAllOn1IntegralOuter & right) 
-{  }
-  
 double ThreeBodyAllOn1IntegralOuter::operator() (double x) const 
 {
   // calculate the integrand

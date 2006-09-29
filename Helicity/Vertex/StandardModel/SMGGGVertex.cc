@@ -32,7 +32,7 @@ void SMGGGVertex::Init() {
 }
 
 // couplings for the GGG vertex
-void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
+void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr)
 {
   // first the overall normalisation
   if(q2!=_q2last)

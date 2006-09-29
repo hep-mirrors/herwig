@@ -10,7 +10,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/** \file StandardMatchers.h
+/** \file Herwig++/PDT/StandardMatchers.h
  *
  * This file declare a set of standard matcher classes in addition to those
  * defined in ThePEG. The classes can be used by themselves (with
@@ -36,7 +36,10 @@ struct PhotonMatcher: public MatcherType {
   /** A simplified but unique class name. */
   static string className() { return "Photon"; }
 };
-/** Gives a MatcherBase class based on PhotonMatcher. */
+
+/**
+ * Gives a MatcherBase class based on PhotonMatcher. 
+ */
 typedef Matcher<PhotonMatcher> MatchPhoton;
 
 /**
@@ -53,7 +56,10 @@ struct TopMatcher: public MatcherType {
   /** A simplified but unique class name. */
   static string className() { return "Top"; }
 };
-/** Gives a MatcherBase class based on TopMatcher. */
+
+/**
+ * Gives a MatcherBase class based on TopMatcher. 
+ */
 typedef Matcher<TopMatcher> MatchTop;
 }
 #endif /* Herwig_StandardMatchers_H */

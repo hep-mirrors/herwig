@@ -18,8 +18,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-ScalarMassGenerator::~ScalarMassGenerator() {}
-
 void ScalarMassGenerator::persistentOutput(PersistentOStream & os) const {
   os << _coupling << _mass1 << _mass2 << _mplus << _mminus << _m2plus << _m2minus
      << _term;

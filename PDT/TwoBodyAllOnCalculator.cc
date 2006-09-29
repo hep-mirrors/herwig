@@ -15,9 +15,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-
-TwoBodyAllOnCalculator::~TwoBodyAllOnCalculator() {}
-
 NoPIOClassDescription<TwoBodyAllOnCalculator> TwoBodyAllOnCalculator::initTwoBodyAllOnCalculator;
 // Definition of the static class description member.
 

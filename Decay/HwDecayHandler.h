@@ -39,16 +39,6 @@ public:
    * Default constructor
    */
   inline HwDecayHandler();
-
-  /**
-   * Copy constructor
-   */
-  inline HwDecayHandler(const HwDecayHandler &x);
-
-  /**
-   * Destructor
-   */
-  virtual ~HwDecayHandler();
   //@}
 
 public:
@@ -170,11 +160,6 @@ template <>
 struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDecayHandler> {
   /** Return the class name. */
   static string className() { return "Herwig++::HwDecayHandler"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
 };
 
 }

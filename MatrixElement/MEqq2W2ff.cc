@@ -145,14 +145,14 @@ unsigned int MEqq2W2ff::orderInAlphaEW() const {
 }
 
 Selector<MEBase::DiagramIndex>
-MEqq2W2ff::diagrams(const DiagramVector & diags) const {
+MEqq2W2ff::diagrams(const DiagramVector &) const {
   Selector<DiagramIndex> sel;
   sel.insert(1.0, 0);
   return sel;
 }
 
 Selector<const ColourLines *>
-MEqq2W2ff::colourGeometries(tcDiagPtr diag) const {
+MEqq2W2ff::colourGeometries(tcDiagPtr) const {
   static const ColourLines c1("1 -2");
   static const ColourLines c2("1 -2,4 -5");
   Selector<const ColourLines *> sel;

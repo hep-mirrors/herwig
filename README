@@ -1,12 +1,9 @@
-=================
-HERWIG++ 2.0-beta
-=================
+============
+HERWIG++ 2.0
+============
 
-This is the beta release of Herwig++-2.0, a multi purpose event
+This is the release of Herwig++ 2.0, a multi purpose event
 generator for high energy physics.
-
-The main  new  feature is the extension of the program to include
-simple hadron-hadron processes including the initial-state parton shower. 
 
 The Herwig++ distribution contains an adapted version of LoopTools
 <http://www.feynarts.de/looptools/>. 
@@ -44,8 +41,7 @@ $ make install
 ThePEG
 ------
 
-Download ThePEG, snapshot 2006-01-31 or later from 
-http://hepforge.cedar.ac.uk/herwig/.
+Download ThePEG 1.0 or later from http://hepforge.cedar.ac.uk/herwig/.
  
 Do not build this package inside the Herwig++ source directory!
 
@@ -56,12 +52,6 @@ $ ./configure --prefix=/path/where/ThePEG/should/be/installed
 $ make
 $ make check
 $ make install
-
-If 'make check' cannot find the libCLHEP library, set LD_LIBRARY_PATH
-to include the path where libCLHEP was installed. On a bash shell, this will do
-it:
-
-$ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CLHEPPATH/lib
 
 --------
 Herwig++

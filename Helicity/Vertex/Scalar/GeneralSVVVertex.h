@@ -15,7 +15,7 @@ namespace Helicity {
 using namespace ThePEG;
     
 /**
- * The <code>GeneralSVVVertex<\code> class implements a
+ * The GeneralSVVVertex class implements a
  * general Scalar-Vector-Vector vertex allowing for decay modes 
  * that only enter at the one-loop level
  * 
@@ -27,20 +27,11 @@ using namespace ThePEG;
 class GeneralSVVVertex: public VertexBase {
   
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * The default constructor.
    */
   inline GeneralSVVVertex();
-  
-  /**
-   * The copy constructor.
-   */
-  inline GeneralSVVVertex(const GeneralSVVVertex &);
-  //@}
-  
   
   /**
    * The standard Init function used to initialize the interfaces.
@@ -75,7 +66,6 @@ public:
   //@}
 
 protected:
-  
   
   /**@name Tensor Coefficients access and setting functions. */
   //@{
@@ -158,10 +148,6 @@ struct ClassTraits<Herwig::Helicity::GeneralSVVVertex>
   : public ClassTraitsBase<Herwig::Helicity::GeneralSVVVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::GeneralSVVVertex"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the GeneralSVVVertex class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwSVertex.so"; }
 };
 
 }

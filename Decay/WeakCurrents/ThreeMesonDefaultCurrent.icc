@@ -107,7 +107,7 @@ inline Complex ThreeMesonDefaultCurrent::BKstarF5(Energy2 q2,int ires) const
 // matrix element for the running a_1 width
 inline double ThreeMesonDefaultCurrent::a1MatrixElement(Energy2 q2, Energy2 s3,
 							Energy2 s2,Energy2 s1,
-							Energy m1,Energy m2,Energy m3)
+							Energy,Energy,Energy)
 {
   Energy2 mpi2(getParticleData(ParticleID::piplus)->mass());mpi2*=mpi2; 
   Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 

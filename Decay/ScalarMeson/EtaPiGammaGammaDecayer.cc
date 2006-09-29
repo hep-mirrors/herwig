@@ -298,7 +298,7 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
  
 double EtaPiGammaGammaDecayer::threeBodyMatrixElement(int imodeb,Energy2 q2, Energy2 s3,
 						      Energy2 s2,Energy2 s1,
-						      Energy m1,Energy m2,Energy m3)
+						      Energy,Energy,Energy)
 {
   // compute the prefactors
   Energy2 mrho2(_rhomass*_rhomass);

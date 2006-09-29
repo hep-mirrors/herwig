@@ -250,7 +250,7 @@ void TensorMeson2PScalarDecayer::Init() {
 
 
 // matrix elememt for the process
-double TensorMeson2PScalarDecayer::me2(bool vertex, const int ichan,
+double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
 				       const Particle & inpart,
 				       const ParticleVector & decay) const
 {

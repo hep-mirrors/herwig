@@ -198,12 +198,6 @@ public:
   inline ScalarWaveFunction();
 
   /**
-   * Destructor.
-   */
-  inline ~ScalarWaveFunction();
-  //@}
-
-  /**
    * Subscript operator for the wavefunction.
    * This is provided for consistency with the other wavefunctions and returns
    * the wavefunction regardless of the index.

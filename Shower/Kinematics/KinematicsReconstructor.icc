@@ -54,7 +54,10 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   Hep3Vector ax = newq.vect().cross( oldp.vect() ); 
   double delta = newq.vect().angle( oldp.vect() );
   LorentzRotation R; 
-  R.rotate( delta, ax ).boost( beta ); 
+  if ( ax.mag2()/GeV2 > 1e-16 )
+    R.rotate( delta, ax ).boost( beta ); 
+  else
+    R.boost( beta ); 
   return R;
 }
 

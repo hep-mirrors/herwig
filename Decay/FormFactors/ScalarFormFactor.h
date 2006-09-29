@@ -451,11 +451,6 @@ struct ClassTraits<Herwig::ScalarFormFactor>
   : public ClassTraitsBase<Herwig::ScalarFormFactor> {
   /** Return the class name. */
   static string className() { return "Herwig++::ScalarFormFactor"; }
-  /** Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
 };
 
 }

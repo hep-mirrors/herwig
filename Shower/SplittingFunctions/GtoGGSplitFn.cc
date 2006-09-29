@@ -26,8 +26,8 @@ void GtoGGSplitFn::Init() {
 
 }
 
-double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &)const {
-  double val = 2.*3.*sqr(1.-z*(1.-z))/(z*(1.-z));
+double GtoGGSplitFn::P(const double z, const Energy2, const IdList &)const {
+  double val = 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig++ shower! Alberto
   // & Stefan, 25/04/2002).
@@ -35,19 +35,19 @@ double GtoGGSplitFn::P(const double z, const Energy2 qtilde2, const IdList &)con
 }
 
 double GtoGGSplitFn::overestimateP(const double z, const IdList &) const {
-  return 2.*3.*(1/z + 1/(1.-z)); 
+  return 3.*(1/z + 1/(1.-z)); 
 }
 
-double GtoGGSplitFn::ratioP(const double z, const Energy2 qtilde2, const IdList & id) const {
+double GtoGGSplitFn::ratioP(const double z, const Energy2, const IdList &) const {
   return sqr(1.-z*(1.-z));
 }
 
 double GtoGGSplitFn::invIntegOverP(const double r) const {
-  return exp(r/3./2.)/(1.+exp(r/3./2.)); 
+  return 1./(1.+exp(-r/3.)); 
 } 
 
 double GtoGGSplitFn::integOverP(const double z) const {
-  return 2.*3.*log(z/(1.-z)); 
+  return 3.*log(z/(1.-z)); 
 }
 
 void GtoGGSplitFn::colourConnection(const ColinePair &parent,

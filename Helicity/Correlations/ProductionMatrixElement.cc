@@ -16,9 +16,7 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-    
-ProductionMatrixElement::~ProductionMatrixElement() {}
-    
+
 NoPIOClassDescription<ProductionMatrixElement> ProductionMatrixElement::initProductionMatrixElement;
 // Definition of the static class description member.
     

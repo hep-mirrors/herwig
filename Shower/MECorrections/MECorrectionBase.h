@@ -32,26 +32,6 @@ friend class Evolver;
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline MECorrectionBase();
-
-  /**
-   * The copy constructor.
-   */
-  inline MECorrectionBase(const MECorrectionBase &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MECorrectionBase();
-  //@}
-
-public:
-
   /**
    *  Virtual members which should be implemented in classes inheriting
    * from this one in order to apply the matrix element correction

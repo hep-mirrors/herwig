@@ -40,20 +40,16 @@ void ColourReconnector::Init() {
 }
 
 
-void ColourReconnector::rearrange(EventHandler & ch, 
-				  const StepPtr & pstep, 
-				  ClusterVector & clusters) 
+void ColourReconnector::rearrange(EventHandler &, 
+				  const StepPtr &, 
+				  ClusterVector &) 
    throw(Veto, Stop, Exception){
   // Scan the particles in the Event record, and the "usual" clusters
   // stored in collecCluPtr.
   // If a new colour rearrangement is accepted, then  
   //       collecCluPtr.clear(); 
   // to get rid of the old clusters, and then add the new ones:
-  //       collecCluPtr.insert( collecCluPtr.end(), clusterPointer );    
+  //       collecCluPtr.insert( collecCluPtr.end(), clusterPointer ); 
+
+  // left empty on purpose
 }
-
-
-
-
-
-

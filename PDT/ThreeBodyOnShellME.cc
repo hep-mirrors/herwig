@@ -17,13 +17,6 @@ FUNCTION_OBJECT_IMP(ThreeBodyOnShellME)
 ThreeBodyOnShellME::
  ThreeBodyOnShellME(DecayIntegratorPtr in,int inmode){_decayer=in;_mode=inmode;}
   
-  
-ThreeBodyOnShellME::~ThreeBodyOnShellME() {
-}
-  
-ThreeBodyOnShellME::
-ThreeBodyOnShellME(const ThreeBodyOnShellME & right) {  }
-  
 unsigned int ThreeBodyOnShellME::dimensionality() const {return 7;}
 
 double ThreeBodyOnShellME::operator ()(const Argument & a) const 

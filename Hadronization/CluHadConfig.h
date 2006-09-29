@@ -3,6 +3,9 @@
 #define HERWIG_CluHadConfig_H
 
 #include "Herwig++/Config/Herwig.h"
+#include "Cluster.fh"
+#include "ClusterDecayer.fh"
+#include "ClusterFissioner.fh"
 
 namespace Herwig { 
 
@@ -22,9 +25,6 @@ namespace Herwig {
    *  Herwig.h
    */ 
 
-  class Cluster;
-  typedef Ptr<Cluster>::pointer ClusterPtr;
-  typedef Ptr<Cluster>::transient_pointer tClusterPtr;
   typedef vector<ClusterPtr> ClusterVector;
   typedef vector<tClusterPtr> tClusterVector;
 
@@ -39,18 +39,10 @@ namespace Herwig {
   class ColourReconnector;
   typedef Ptr<ColourReconnector>::pointer ColourReconnectorPtr;
   typedef Ptr<ColourReconnector>::transient_pointer tColourReconnectorPtr; 
- 
-  class ClusterFissioner;
-  typedef Ptr<ClusterFissioner>::pointer ClusterFissionerPtr;
-  typedef Ptr<ClusterFissioner>::transient_pointer tClusterFissionerPtr;
 
   class LightClusterDecayer;
   typedef Ptr<LightClusterDecayer>::pointer LightClusterDecayerPtr;
   typedef Ptr<LightClusterDecayer>::transient_pointer tLightClusterDecayerPtr;
-
-  class ClusterDecayer;
-  typedef Ptr<ClusterDecayer>::pointer ClusterDecayerPtr;
-  typedef Ptr<ClusterDecayer>::transient_pointer tClusterDecayerPtr;
 
   class HadronSelector;
   typedef Ptr<HadronSelector>::pointer HadronSelectorPtr;

@@ -301,7 +301,7 @@ void VectorMesonVectorPScalarDecayer::Init() {
 
 }
 
-double VectorMesonVectorPScalarDecayer::me2(bool vertex, const int ichan,
+double VectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 					    const Particle & inpart,
 					    const ParticleVector & decay) const
 {

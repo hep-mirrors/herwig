@@ -569,8 +569,6 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
     {
       ++_nover;
       _maxwgt=max(_maxwgt,weight);
-      cerr << "testing weight greater than 1 " 
-	   << shat/_mb2 << " " << that/_mb2 << " " << weight << " " << itype << "\n";
       weight=1.;
     }
   if(UseRandom::rnd()>weight) return false;

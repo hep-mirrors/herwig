@@ -189,12 +189,6 @@ FUNCTION_OBJECT_IMP(ThreeBodyOuterIntegrand)
   
 ThreeBodyOuterIntegrand::ThreeBodyOuterIntegrand(ThreeBodyIntegrator * in)
 {_theIntegrator=in;}
-  
-ThreeBodyOuterIntegrand::~ThreeBodyOuterIntegrand() {}
-  
-ThreeBodyOuterIntegrand::ThreeBodyOuterIntegrand(const ThreeBodyOuterIntegrand & right) 
-  {  }
-  
 
 double ThreeBodyOuterIntegrand::operator() (double x) const 
 {
@@ -214,11 +208,6 @@ FUNCTION_OBJECT_IMP(ThreeBodyInnerIntegrand)
 ThreeBodyInnerIntegrand::ThreeBodyInnerIntegrand(ThreeBodyIntegrator * in)
 {_theIntegrator=in;}
 
-ThreeBodyInnerIntegrand::~ThreeBodyInnerIntegrand() {}
-  
-ThreeBodyInnerIntegrand::ThreeBodyInnerIntegrand(const ThreeBodyInnerIntegrand & right) 
-{  }
-  
 double ThreeBodyInnerIntegrand::operator() (double x) const 
 {
   // calculate the integrand

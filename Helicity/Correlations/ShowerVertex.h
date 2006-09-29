@@ -37,24 +37,6 @@ class ShowerVertex: public HelicityVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline ShowerVertex();
-
-  /**
-   * The copy constructor.
-   */
-  inline ShowerVertex(const ShowerVertex &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~ShowerVertex();
-  //@}
-
   /**
    *  Access to the matrix element
    */
@@ -141,10 +123,6 @@ struct ClassTraits<Herwig::Helicity::ShowerVertex>
   : public ClassTraitsBase<Herwig::Helicity::ShowerVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::ShowerVertex"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the ShowerVertex class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwCorrelations.so"; }
 };
 
 /** @endcond */

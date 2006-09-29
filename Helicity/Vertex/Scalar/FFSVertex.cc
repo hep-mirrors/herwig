@@ -26,7 +26,7 @@ void FFSVertex::Init() {
 }
   
 // set coupling member
-void FFSVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c){;}
+void FFSVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr) {}
 
 // evaluate the full vertex
 Complex FFSVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,

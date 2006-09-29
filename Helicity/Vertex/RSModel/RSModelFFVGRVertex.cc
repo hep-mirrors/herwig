@@ -33,8 +33,8 @@ void RSModelFFVGRVertex::Init() {
   
 }
 // FFVGR coupling
-void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-    				 tcPDPtr c, tcPDPtr d)
+void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
+    				 tcPDPtr c, tcPDPtr)
 {
   // work out the particles
   int iferm=abs(a->id());

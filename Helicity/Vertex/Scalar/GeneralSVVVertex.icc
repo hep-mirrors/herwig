@@ -15,11 +15,7 @@ inline GeneralSVVVertex::GeneralSVVVertex() {
   _a12 = 0.;_a21 = 0.;
   _a22 = 0.;_aEp = 0.;
 }
-    
-inline GeneralSVVVertex::GeneralSVVVertex(const GeneralSVVVertex & x)
-  : VertexBase(x),_a00(x._a00),_a11(x._a11),_a12(x._a12),_a21(x._a21),
-    _a22(x._a22),_aEp(x._aEp) {}
-    
+
 //Access tensor Coefficients
 inline Complex GeneralSVVVertex::a00() const {return _a00;}
 inline Complex GeneralSVVVertex::a11() const {return _a11;}

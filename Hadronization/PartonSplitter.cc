@@ -17,11 +17,11 @@
 
 using namespace Herwig;
 
-void PartonSplitter::persistentOutput(PersistentOStream & os) const {
+void PartonSplitter::persistentOutput(PersistentOStream &) const {
 }
 
 
-void PartonSplitter::persistentInput(PersistentIStream & is, int) {
+void PartonSplitter::persistentInput(PersistentIStream &, int) {
 }
 
 
@@ -128,7 +128,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
 
   // Choose the flavour of the quark (u or d with equal 50% probability)
   long newId = 0;
-  if ( rndbool() ){
+  if ( UseRandom::rndbool() ){
     newId = ParticleID::u;
   } else {
     newId = ParticleID::d;
@@ -137,8 +137,8 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
   // Solve the kinematics of the two body decay  G --> Q + Qbar
   Lorentz5Momentum momentumQ = Lorentz5Momentum();
   Lorentz5Momentum momentumQbar = Lorentz5Momentum();
-  double cosThetaStar = rnd( -1.0 , 1.0 );
-  double phiStar = rnd( -pi , pi );
+  double cosThetaStar = UseRandom::rnd( -1.0 , 1.0 );
+  double phiStar = UseRandom::rnd( -pi , pi );
   Energy constituentQmass = getParticleData(newId)->constituentMass();
 
   if (ptrGluon->momentum().m() < 2.0*constituentQmass) {

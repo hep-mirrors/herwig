@@ -372,25 +372,25 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
   } */
   mFlav = maxFlav;  
   do {
-    int flav = int(rnd()*double(mFlav));
+    int flav = int(UseRandom::rnd()*double(mFlav));
     KupcoData::iterator it1,it2;
     /*if(cluMass < _table[flav1][flav].begin()->mass + 
                  _table[flav][flav2].begin()->mass) {
       // do nothing
       } else*/
-    if(_Pwt[flav] > rnd()) {
+    if(_Pwt[flav] > UseRandom::rnd()) {
       int num1,num2;
       idQ = convertFlavourToId(flav);
       do { 
-	num1 = int(double(_table[flav1][flav].size())*rnd()); 
+	num1 = int(double(_table[flav1][flav].size())*UseRandom::rnd()); 
 	for(it1 = _table[flav1][flav].begin(); num1; ) { num1--; it1++; }
-      } while(it1 != _table[flav1][flav].end() && it1->overallWeight < rnd());
+      } while(it1 != _table[flav1][flav].end() && it1->overallWeight < UseRandom::rnd());
       if(it1!=_table[flav1][flav].end()) had1 = it1->id;
       else had1 = 0;
       do {
-	num2 = int(double(_table[flav][flav2].size())*rnd());
+	num2 = int(double(_table[flav][flav2].size())*UseRandom::rnd());
 	for(it2 = _table[flav][flav2].begin(); num2; ) { num2--; it2++; }
-      } while(it2 != _table[flav][flav2].end() && it2->overallWeight < rnd());
+      } while(it2 != _table[flav][flav2].end() && it2->overallWeight < UseRandom::rnd());
       if(it2!=_table[flav][flav2].end()) had2 = it2->id;
       else had2 = 0;  
     } else {
@@ -400,7 +400,7 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
     
     if(had1 && had2) {
       p = Kinematics::pstarTwoBodyDecay(cluMass, it1->mass, it2->mass);
-      if(p/PCMax < rnd()) { had1 = 0; had2 = 0; ntry++;}
+      if(p/PCMax < UseRandom::rnd()) { had1 = 0; had2 = 0; ntry++;}
     } 
   } while((had1 == 0 || had2 == 0) && ntry < nmax);
   if(ntry >= nmax) return lightestHadronPair(id1,id2);
@@ -424,7 +424,7 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
 }
 
 pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
-				      const long id2, Energy PCMax, 
+				      const long id2, Energy, 
 				      int maxFlav) { 
   multiset<Kupco> weights;
   pair<long,long> hadPair = pair<long,long>(0,0);
@@ -557,7 +557,7 @@ pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
     double r;
     //sumWeight = 0.0;
     //for(it = weights.begin(); it != weights.end(); it++) sumWeight+=it->weight;
-    r = rnd(sumWeight);
+    r = UseRandom::rnd(sumWeight);
     for(it = weights.begin(); it != weights.end(); it++) {
       sumWt += it->weight;
       if(r<=sumWt) break;
@@ -577,7 +577,7 @@ pair<long,long> HadronSelector::kupco(const Energy cluMass, const long id1,
 }
 
 pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
-			  	     const long id2, Energy PCMax, 
+			  	     const long id2, Energy, 
 				     int maxFlav) { 
   multiset<Kupco> weights;
   pair<long,long> hadPair = pair<long,long>(0,0);
@@ -595,7 +595,7 @@ pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
   // baryon sector
   //Energy a = massLightestBaryonPair(id1,id2);
   if(cluMass > massLightestBaryonPair(id1,id2)) {
-    double r = rnd();
+    double r = UseRandom::rnd();
     if(r < 1./(1.+pwtDIquark())) { startFlav = D; maxFlav = B; }
     else { startFlav = DD; maxFlav = BB; }
   } else { startFlav = D; maxFlav = B; }
@@ -604,7 +604,8 @@ pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
 
   //cout << "startflav = " << startFlav << " and maxFlav = " << maxFlav << " cluMass = " << cluMass << " a is " << a << endl;
   for(int i=startFlav; i <= maxFlav; ++i) {
-    if(cluMass > (_table[flav1][i].begin()->mass + 
+    if(!_table[flav1][i].empty() && !_table[i][flav2].empty() &&
+       cluMass > (_table[flav1][i].begin()->mass + 
 		  _table[i][flav2].begin()->mass)) { 
       // Loop over all hadron pairs with given flavour.
       for(KupcoData::iterator H1 = _table[flav1][i].begin(); 
@@ -661,7 +662,7 @@ pair<long,long> HadronSelector::hwpp(const Energy cluMass, const long id1,
     multiset<Kupco>::iterator it;
     double sumWt = 0.0;
     double r;
-    r = rnd(sumWeight);
+    r = UseRandom::rnd(sumWeight);
     for(it = weights.begin(); it != weights.end(); it++) {
       //cout << "Looking at " << it->idHad1 << "x" << it->idHad2 << " = " 
       //   << it->weight << endl;

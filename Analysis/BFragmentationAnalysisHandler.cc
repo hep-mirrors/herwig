@@ -21,7 +21,7 @@ using namespace Herwig;
 
 BFragmentationAnalysisHandler::~BFragmentationAnalysisHandler() {}
 
-void BFragmentationAnalysisHandler::analyze(tEventPtr event, long ieve,
+void BFragmentationAnalysisHandler::analyze(tEventPtr event, long,
 					    int loop, int state) 
 {
   if ( loop > 0 || state != 0 || !event ) return;
@@ -36,7 +36,7 @@ void BFragmentationAnalysisHandler::analyze(tEventPtr event, long ieve,
   analyze(particles); 
 }
 
-LorentzRotation BFragmentationAnalysisHandler::transform(tEventPtr event) const {
+LorentzRotation BFragmentationAnalysisHandler::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -52,11 +52,11 @@ void BFragmentationAnalysisHandler::analyze(tPPtr part)
   *_fragBxEa += part->momentum().e()/_emax;
 }
 
-void BFragmentationAnalysisHandler::persistentOutput(PersistentOStream & os) const {
+void BFragmentationAnalysisHandler::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void BFragmentationAnalysisHandler::persistentInput(PersistentIStream & is, int) {
+void BFragmentationAnalysisHandler::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

@@ -34,7 +34,7 @@ namespace {
 }
 
 
-void HiggsJetAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void HiggsJetAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
   // find the Z
@@ -62,7 +62,7 @@ void HiggsJetAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) 
     }
 }
 
-LorentzRotation HiggsJetAnalysis::transform(tEventPtr event) const {
+LorentzRotation HiggsJetAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -73,11 +73,11 @@ void HiggsJetAnalysis::analyze(const tPVector & particles) {
 
 void HiggsJetAnalysis::analyze(tPPtr) {}
 
-void HiggsJetAnalysis::persistentOutput(PersistentOStream & os) const {
+void HiggsJetAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void HiggsJetAnalysis::persistentInput(PersistentIStream & is, int) {
+void HiggsJetAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

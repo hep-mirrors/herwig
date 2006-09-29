@@ -11,12 +11,6 @@ inline ColourReconnector::ColourReconnector() :
   _PReco( 1.0/9.0 )
 {}
 
-inline ColourReconnector::ColourReconnector(const ColourReconnector & x)
-  : ThePEG::HandlerBase(x),
-	     _ClReco( x._ClReco ),
-             _PReco( x._PReco )
-{}
-
 inline IBPtr ColourReconnector::clone() const {
   return new_ptr(*this);
 }

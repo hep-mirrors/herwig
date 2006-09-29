@@ -225,9 +225,9 @@ void SU3BaryonDecupletOctetScalarDecayer::Init() {
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-0
-void SU3BaryonDecupletOctetScalarDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
-								      Complex& A,
-								      Complex& B) const
+void SU3BaryonDecupletOctetScalarDecayer::
+threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
+			    Complex& A, Complex& B) const
 {
   if(_parity){A=_prefactor[imode]*(m0+m1);B=0.;}
   else{A=0.;B=_prefactor[imode]*(m0+m1);}

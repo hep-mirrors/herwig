@@ -64,11 +64,6 @@ public:
 			     Energy m1,Energy m2,Energy m3);
 
   /**
-   * copy constructor
-   */
-  inline ThreeBodyIntegrator(const ThreeBodyIntegrator &);
-
-  /**
    * Destructor
    */
   virtual ~ThreeBodyIntegrator();
@@ -228,15 +223,14 @@ public:
   ThreeBodyOuterIntegrand(ThreeBodyIntegrator *);
   
   /**
-   * Destructor
-   */
-  virtual ~ThreeBodyOuterIntegrand();
-  
-  /**
    * Copy constructor
    */
-  ThreeBodyOuterIntegrand(const ThreeBodyOuterIntegrand &right);
-  
+  ThreeBodyOuterIntegrand(const ThreeBodyOuterIntegrand & x) 
+    : Genfun::AbsFunction(), _theIntegrator(x._theIntegrator) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
+  // Yes, -Wextra will warn about this.
+
   /**
    * Retreive function value
    */
@@ -304,17 +298,17 @@ public:
    * Constructor with a pointer to the ThreeBodyIntegrator
    */
   ThreeBodyInnerIntegrand(ThreeBodyIntegrator *);
-  
-  /**
-   * Destructor
-   */
-  virtual ~ThreeBodyInnerIntegrand();
-  
+   
   /**
    * Copy constructor
    */
-  ThreeBodyInnerIntegrand(const ThreeBodyInnerIntegrand &right);
-  
+  ThreeBodyInnerIntegrand(const ThreeBodyInnerIntegrand & x) 
+    : Genfun::AbsFunction(), _theIntegrator(x._theIntegrator) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
+  // Yes, -Wextra will warn about this.
+
+ 
   /**
    * Retreive function value
    */

@@ -273,13 +273,6 @@ struct ClassTraits<Herwig::ThreeBodyAllOnCalculator>
   : public ClassTraitsBase<Herwig::ThreeBodyAllOnCalculator> {
   /** Return the class name.*/
   static string className() { return "/Herwig++/ThreeBodyAllOnCalculator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-
 };
 
 }
@@ -339,14 +332,12 @@ public:
  ThreeBodyAllOnOuter(ThreeBodyAllOnCalculatorPtr); 
 
   /**
-   * Destructor
-   */
-  virtual ~ThreeBodyAllOnOuter();
-
-  /**
    * Copy constructor
    */
-  ThreeBodyAllOnOuter(const ThreeBodyAllOnOuter &right);
+  ThreeBodyAllOnOuter(const ThreeBodyAllOnOuter & x) 
+    : Genfun::AbsFunction(), _integrand(x._integrand), _Integrator(x._Integrator) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
 
   /**
    * Retreive function value
@@ -436,15 +427,13 @@ public:
   ThreeBodyAllOnInner(ThreeBodyAllOnCalculatorPtr);
 
   /**
-   * Destructor
-   */
-  virtual ~ThreeBodyAllOnInner();
-
-  /**
    * Copy constructor
    */
-  ThreeBodyAllOnInner(const ThreeBodyAllOnInner &right);
-
+  ThreeBodyAllOnInner(const ThreeBodyAllOnInner & x) 
+    : Genfun::AbsFunction(), _integrand(x._integrand) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
+ 
   /**
    * Retreive function value
    */

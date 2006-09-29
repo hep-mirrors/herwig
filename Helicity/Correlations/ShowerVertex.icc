@@ -8,11 +8,6 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline ShowerVertex::ShowerVertex() {}
-
-inline ShowerVertex::ShowerVertex(const ShowerVertex & x)
-  : HelicityVertex(x), _matrixelement(x._matrixelement) {}
-
 // get the ME
 inline const DecayMatrixElement & ShowerVertex::ME() const
 {return _matrixelement;}

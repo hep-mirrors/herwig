@@ -179,7 +179,7 @@ void BallZwickyScalarFormFactor::Init() {
 // form-factor for scalar to scalar
 void BallZwickyScalarFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned  int mode,
 							int id0,
-							int id1,Energy m0, Energy m1,
+							int,Energy, Energy,
 						 	Complex & f0, Complex & fp) const
 {
   // the F_0 form-factor
@@ -205,8 +205,8 @@ void BallZwickyScalarFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned  int
 
 void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
 							     unsigned int mode,int id0,
-							     int id1,Energy m0,
-							     Energy m1,
+							     int,Energy,
+							     Energy,
 							     Complex & fT) const
 {
   // the F_T form-factor

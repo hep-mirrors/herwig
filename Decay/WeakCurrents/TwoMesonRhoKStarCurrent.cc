@@ -268,7 +268,7 @@ void TwoMesonRhoKStarCurrent::Init() {
 // complete the construction of the decay mode for integration
 bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 					 DecayPhaseSpaceModePtr mode,
-					 unsigned int iloc,unsigned int ires,
+					 unsigned int iloc,unsigned int,
 					 DecayPhaseSpaceChannelPtr phase,Energy upp)
 {
   if(abs(icharge)!=3){return false;}
@@ -370,7 +370,7 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 
 // the particles produced by the current
   PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
-					      int iq,int ia)
+					      int,int)
 {
   PDVector output(2);
   if(icharge==3)

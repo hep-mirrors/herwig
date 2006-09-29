@@ -64,7 +64,7 @@ dnl ###########################
 dnl ###########################
 
 AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
-AM_CXXFLAGS="-ansi -pedantic -Wall"
+AM_CXXFLAGS="-ansi -pedantic -Wall -W"
 
 # version info should really be specified one-by-one for each lib!
 AM_LDFLAGS="-version-info 2:0:0"
@@ -121,6 +121,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		src/Makefile
 		src/PDF.in
 		Doc/Makefile
+		Doc/HerwigDefaults.in
 		Looptools/Makefile
 		Analysis/Makefile
 		src/Makefile-UserModules

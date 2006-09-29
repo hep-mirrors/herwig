@@ -17,13 +17,11 @@
 
 using namespace Herwig;
 
-EventShapesMasterAnalysis::~EventShapesMasterAnalysis() {}
-
 void EventShapesMasterAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
 }
 
-LorentzRotation EventShapesMasterAnalysis::transform(tEventPtr event) const {
+LorentzRotation EventShapesMasterAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }

@@ -17,9 +17,9 @@
 using namespace Herwig;
 
 void IS_QtildaShowerKinematics1to2::
-updateChildren( const tShowerParticlePtr theParent, 
-		const ShowerParticleVector theChildren ) const {
-  // this is empty...
+updateChildren( const tShowerParticlePtr, 
+		const ShowerParticleVector) const {
+  // not needed
 }
 
 

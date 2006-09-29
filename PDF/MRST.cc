@@ -75,7 +75,7 @@ double MRST::xfl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 }
 
 double MRST::xfx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-                 double x, double eps, Energy2 particleScale) const {
+                 double x, double, Energy2) const {
   return pdfValue(x, partonScale/GeV2, particle, parton);
 }
 
@@ -86,7 +86,7 @@ double MRST::xfvl(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
 }
 
 double MRST::xfvx(tcPDPtr particle, tcPDPtr parton, Energy2 partonScale,
-                  double x, double eps, Energy2 particleScale) const {
+                  double x, double, Energy2) const {
   return pdfValue(x, partonScale/GeV2, particle, parton, true);
 }
 
@@ -185,7 +185,7 @@ void MRST::persistentOutput(PersistentOStream &out) const {
   out << _file << data;
 }
 
-void MRST::persistentInput(PersistentIStream & in, int version) {
+void MRST::persistentInput(PersistentIStream & in, int) {
   in >> _file >> data;
   initialize(false);
 }

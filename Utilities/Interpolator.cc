@@ -16,12 +16,8 @@ using namespace Genfun;
 using std::endl;
 
 FUNCTION_OBJECT_IMP(Interpolator)
-  
-Interpolator::Interpolator(const Interpolator & right) 
-{  }
 
-Interpolator::Interpolator(vector<double> f, vector<double> x, int order)
-{
+Interpolator::Interpolator(vector<double> f, vector<double> x, int order) {
   //
   _xval=x;
   _fun=f;
@@ -44,12 +40,8 @@ Interpolator::Interpolator(vector<double> f, vector<double> x, int order)
       _order=1;
     }
 }
-
-// destructor
-Interpolator::~Interpolator() {}
   
-double Interpolator::operator ()(double xpoint) const
-{
+double Interpolator::operator ()(double xpoint) const {
   // size of the vectors
   unsigned int isize(_xval.size());
   // workout the numer of points we need
@@ -103,13 +95,13 @@ double Interpolator::operator ()(double xpoint) const
     {
       if(extra)
 	{
-	  icopy=m-ix;
-	  copyfun[m+1]=(copyfun[m+1]-copyfun[m-1])/(copyx[m+1]-copyx[m-1]);
+	  icopy=m-ix-1;
+	  copyfun[m+1]=(copyfun[m+1]-copyfun[m-1])/(copyx[m+1]-copyx[icopy]);
 	}
       i=m;
       for(iy=ix;iy<m;++iy)
 	{
-	  icopy=i-1;
+	  icopy=i-ix-1;
 	  copyfun[i]=(copyfun[i]-copyfun[i-1])/(copyx[i]-copyx[icopy]);
 	  --i;
 	}
@@ -117,7 +109,10 @@ double Interpolator::operator ()(double xpoint) const
   double sum(copyfun[m]);
   if(extra) sum=0.5*(sum+copyfun[m+1]);
   i=m-1;
-  for(ix=0;ix<m;++ix){sum=copyfun[i]+(xpoint-copyx[i])*sum;--i;}
+  for(ix=0;ix<m;++ix) {
+    sum=copyfun[i]+(xpoint-copyx[i])*sum;
+    --i;
+  }
   return sum;
 }
 

@@ -656,8 +656,7 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,int iq,
-					       int ia)
+PDVector FourPionNovosibirskCurrent::particles(int icharge, unsigned int imode,int,int)
 {
   PDVector output(4);
   if(icharge==3)
@@ -885,9 +884,6 @@ FUNCTION_OBJECT_IMP(FourPionDefaultMatrixElement)
 
 FourPionDefaultMatrixElement::FourPionDefaultMatrixElement(Ptr<Herwig::FourPionNovosibirskCurrent>::pointer in)
   {_decayer=in;}
-  
-FourPionDefaultMatrixElement::FourPionDefaultMatrixElement(const FourPionDefaultMatrixElement & right) 
-  {}
   
 unsigned int FourPionDefaultMatrixElement::dimensionality() const {return 7;}
 

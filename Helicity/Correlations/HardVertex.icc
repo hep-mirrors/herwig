@@ -9,15 +9,7 @@
 namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
-
-// default constructor
-inline HardVertex::HardVertex() 
-{}
-    
-// copy constructor
-inline HardVertex::HardVertex(const HardVertex & x)
-  : HelicityVertex(x), _matrixelement(x._matrixelement) {}
-    
+  
 // get ME
 inline const ProductionMatrixElement & HardVertex::ME() const
 {return _matrixelement;}

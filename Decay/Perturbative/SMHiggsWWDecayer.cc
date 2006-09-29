@@ -189,7 +189,7 @@ ParticleVector SMHiggsWWDecayer::decay(const DecayMode & dm,
   return generate(true,false,imode,parent);
 }
 
-double SMHiggsWWDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
+double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
 			     const ParticleVector & decay) const {
   RhoDMatrix rhoin;
   // check if the incoming particle has a spin info and if not create it

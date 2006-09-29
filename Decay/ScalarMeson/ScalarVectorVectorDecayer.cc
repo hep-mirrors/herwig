@@ -59,7 +59,7 @@ inline ScalarVectorVectorDecayer::ScalarVectorVectorDecayer()
 
 ScalarVectorVectorDecayer::~ScalarVectorVectorDecayer() {}
 
-int ScalarVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+int ScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const
 {
   int imode(-1);
   // check that at least some modes exist
@@ -133,7 +133,7 @@ void ScalarVectorVectorDecayer::Init() {
 
 }
 
-double ScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
+double ScalarVectorVectorDecayer::me2(bool vertex, const int,
 				      const Particle & inpart,
 				      const ParticleVector & decay) const
 {

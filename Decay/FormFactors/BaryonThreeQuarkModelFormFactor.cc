@@ -156,7 +156,7 @@ void BaryonThreeQuarkModelFormFactor::Init() {
 }
 
 void BaryonThreeQuarkModelFormFactor::
-SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy m1,
+SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a)
 {
@@ -219,7 +219,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy 
 }
 
 void  BaryonThreeQuarkModelFormFactor::
- SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int id1,Energy m0,
 				 Energy m1, Complex & f1v,Complex & f2v,
 				 Complex & f3v,Complex & f4v,Complex & f1a,
 				 Complex & f2a,Complex & f3a,Complex & f4a )
@@ -308,11 +308,6 @@ FUNCTION_OBJECT_IMP(BaryonCFunction)
 
 BaryonCFunction::BaryonCFunction(BaryonThreeQuarkModelFormFactorPtr in)
 {_formFactor=in;}
-
-BaryonCFunction::~BaryonCFunction() {}
-
-BaryonCFunction::BaryonCFunction(const BaryonCFunction & right)
-  : _formFactor(right._formFactor) {}
 
 // calculate the integrand  
 double BaryonCFunction::operator() (double x) const 

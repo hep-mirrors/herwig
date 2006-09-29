@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Cluster class.
+//
+#ifndef HERWIG_Cluster_FH
+#define HERWIG_Cluster_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Cluster;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Cluster,ClusterPtr);
+
+}
+
+#endif

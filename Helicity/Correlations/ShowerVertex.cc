@@ -19,8 +19,6 @@ using ThePEG::Helicity::tcSpinfoPtr;
 using namespace Herwig::Helicity;
 using namespace ThePEG;
 
-ShowerVertex::~ShowerVertex() {}
-
 NoPIOClassDescription<ShowerVertex> ShowerVertex::initShowerVertex;
 // Definition of the static class description member.
 
@@ -49,7 +47,7 @@ RhoDMatrix ShowerVertex::getRhoMatrix(int i)
 }
 
 // method to get the D matrix for an incoming particle
-RhoDMatrix ShowerVertex::getDMatrix(int i)
+RhoDMatrix ShowerVertex::getDMatrix(int)
 {
   // get the decay matrices for the outgoing particles
   vector<RhoDMatrix> Dout;

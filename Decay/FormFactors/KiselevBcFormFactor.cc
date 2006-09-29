@@ -212,15 +212,15 @@ void KiselevBcFormFactor::Init() {
 }
 
 void KiselevBcFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,
-						 int id0,int id1,Energy m0,Energy m1,
+						 int,int,Energy m0,Energy m1,
 						 Complex & f0,Complex & fp) const
 {
   fp = _fp[iloc]/(1.-q2/_Mfp[iloc]/_Mfp[iloc]);
   f0 = q2/(m0+m1)/(m0-m1)*_fm[iloc]/(1.-q2/_Mfm[iloc]/_Mfm[iloc])+fp;
 }
 
-void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0,
-						 int id1,Energy m0, Energy m1,
+void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int,
+						 int,Energy m0, Energy m1,
 						 Complex & A0,Complex & A1,Complex & A2,
 						 Complex & V) const
 {

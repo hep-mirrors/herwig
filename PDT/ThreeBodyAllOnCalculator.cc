@@ -195,13 +195,6 @@ ThreeBodyAllOnOuter::ThreeBodyAllOnOuter(ThreeBodyAllOnCalculatorPtr in)
   _Integrator= new GaussianIntegral(0.,1.);
 }
   
-ThreeBodyAllOnOuter::~ThreeBodyAllOnOuter() 
-{delete _Integrator;}
-  
-ThreeBodyAllOnOuter::ThreeBodyAllOnOuter(const ThreeBodyAllOnOuter & right) 
-  {  }
-  
-
 double ThreeBodyAllOnOuter::operator() (double x) const 
 {
   double low,upp;
@@ -216,11 +209,6 @@ FUNCTION_OBJECT_IMP(ThreeBodyAllOnInner)
 ThreeBodyAllOnInner::ThreeBodyAllOnInner(ThreeBodyAllOnCalculatorPtr in)
 {_integrand=in;}
 
-ThreeBodyAllOnInner::~ThreeBodyAllOnInner() {}
-  
-ThreeBodyAllOnInner::ThreeBodyAllOnInner(const ThreeBodyAllOnInner & right) 
-{  }
-  
 double ThreeBodyAllOnInner::operator() (double x) const 
 {
   // calculate the integrand

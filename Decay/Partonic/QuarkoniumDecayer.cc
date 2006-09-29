@@ -144,7 +144,7 @@ void QuarkoniumDecayer::persistentOutput(PersistentOStream &os) const {
   os << MECode;
 }
 
-void QuarkoniumDecayer::persistentInput(PersistentIStream &is, int i) { 
+void QuarkoniumDecayer::persistentInput(PersistentIStream &is, int) { 
   is >> MECode;
 }
 

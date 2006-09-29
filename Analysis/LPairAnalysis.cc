@@ -58,7 +58,7 @@ namespace {
 }
 
 
-void LPairAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void LPairAnalysis::analyze(tEventPtr event, long, int, int) {
   Lorentz5Momentum ppair, plp, plm;  
   bool foundlp = false;
   bool foundlm = false;
@@ -116,7 +116,7 @@ void LPairAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   }  
 }
 
-LorentzRotation LPairAnalysis::transform(tEventPtr event) const {
+LorentzRotation LPairAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -127,11 +127,11 @@ void LPairAnalysis::analyze(const tPVector & particles) {
 
 void LPairAnalysis::analyze(tPPtr) {}
 
-void LPairAnalysis::persistentOutput(PersistentOStream & os) const {
+void LPairAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void LPairAnalysis::persistentInput(PersistentIStream & is, int) {
+void LPairAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

@@ -25,8 +25,8 @@ void SVVLoopVertex::Init() {
      " coefficients using Looptools.");
 }
   
-void SVVLoopVertex::setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2,
-				tcPDPtr part3) {
+void SVVLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
+				tcPDPtr) {
   //Kinematic invariants
   Energy2 ps2 = invariant(0,0);
   Energy2 pv1s = invariant(1,1);

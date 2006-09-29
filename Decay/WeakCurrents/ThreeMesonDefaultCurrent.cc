@@ -811,8 +811,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 }
 
 
-PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int iq,
-					       int ia)
+PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int,int)
 {
   PDVector extpart(3);
   if(imode==0)
@@ -999,9 +998,6 @@ FUNCTION_OBJECT_IMP(Defaulta1MatrixElement)
 Defaulta1MatrixElement::Defaulta1MatrixElement(Ptr<Herwig::ThreeMesonDefaultCurrent>::pointer in)
   {_decayer=in;}
 
-  
-Defaulta1MatrixElement::Defaulta1MatrixElement(const Defaulta1MatrixElement & right)  {  }
-  
 unsigned int Defaulta1MatrixElement::dimensionality() const {return 7;}
 
 double Defaulta1MatrixElement::operator ()(const Argument & a) const 

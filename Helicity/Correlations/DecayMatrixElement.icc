@@ -13,12 +13,7 @@ using namespace ThePEG;
 
 // default constructor    
 inline DecayMatrixElement::DecayMatrixElement() {}
-    
-// copy constructor
-inline DecayMatrixElement::DecayMatrixElement(const DecayMatrixElement & x)
-  : Base(x), _nout(x._nout) ,_inspin(x._inspin), _outspin(x._outspin),
-    _matrixelement(x._matrixelement), _constants(x._constants) {}
-  
+
 // constructor for two body decay
 inline DecayMatrixElement::DecayMatrixElement(PDT::Spin in,PDT::Spin out1,PDT::Spin out2)
 {

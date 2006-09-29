@@ -296,7 +296,7 @@ inline Complex  ThreePionCLEOCurrent::a1BreitWigner(Energy2 q2) const
 
 // matrix element for the running a_1 width
 inline double ThreePionCLEOCurrent::a1MatrixElement(int iopt,Energy2 q2, Energy2 s3,
-						   Energy2 s2,Energy2 s1,Energy m1,Energy m2,Energy m3)
+						   Energy2 s2,Energy2 s1,Energy,Energy,Energy)
 {
   Energy p1[6],p2[6],p3[6];
   Energy q=sqrt(q2);

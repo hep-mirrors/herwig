@@ -53,7 +53,7 @@ void LambdabExcitedLambdacSumRuleFormFactor::Init() {
 }
 
 void LambdabExcitedLambdacSumRuleFormFactor::
-SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy m1,
+SpinHalfSpinHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a)
 {
@@ -78,7 +78,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy 
 }
 
 void  LambdabExcitedLambdacSumRuleFormFactor::
- SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy m1,
+ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int,Energy m0,Energy m1,
 				 Complex & f1v,Complex & f2v,
 				 Complex & f3v,Complex & f4v,
 				 Complex & f1a,Complex & f2a,

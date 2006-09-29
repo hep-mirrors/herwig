@@ -19,7 +19,7 @@ if test -z "$CLHEPLIB"; then
     AC_MSG_ERROR([Cannot find libCLHEP at $CLHEPPATH/lib.])
   fi
 fi
-CLHEPLDFLAGS=-L$CLHEPPATH/lib
+CLHEPLDFLAGS="-L$CLHEPPATH/lib -R$CLHEPPATH/lib"
 AC_MSG_RESULT([$CLHEPLIB])
 
 AC_MSG_CHECKING([for CLHEPINCLUDE]) 
@@ -98,6 +98,7 @@ AC_SUBST(THEPEGINCLUDE)
 
 
 AC_DEFUN([AC_CHECK_KTJET],[AC_MSG_CHECKING([KTJETPATH is])
+LOAD_KTJET=""
 if test -z "$KTJETPATH"; then
   AC_MSG_RESULT([*** No KtJet path set... won't build KtJet interface ***])
 else
@@ -114,8 +115,10 @@ else
     KTJETINCLUDE=-I$KTJETPATH/include
   fi
   AC_MSG_RESULT("$KTJETINCLUDE")
+  LOAD_KTJET="read KtJetAnalysis.in"
 fi
 
+AC_SUBST(LOAD_KTJET)
 AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
 
 AC_SUBST(KTJETPATH)
@@ -140,22 +143,6 @@ AC_SUBST(AMEGICLIBS)
 
 ])
 
-AC_DEFUN([AC_CHECK_EVTGEN],
-[
-AC_MSG_CHECKING([EVTGENPATH is])
-if test -z "$EVTGENPATH"; then
-  AC_MSG_RESULT([*** No EvtGen path set... won't build EvtGen interface ***])
-else
-  EVTGENLIBS="-lHwEvtGen -lEvtGenBase -lEvtGenModels"
-  AC_MSG_RESULT("$EVTGENPATH")
-fi
-
-AM_CONDITIONAL(WANT_LIBEVTGEN,[test ! -z "$EVTGENPATH"])
-
-AC_SUBST(EVTGENPATH)
-AC_SUBST(EVTGENLIBS)
-])
-
 AC_DEFUN([AC_CHECK_NEWDECAYERS],
 [
 AC_MSG_CHECKING([whether to build new decayers])
@@ -166,7 +153,14 @@ AC_ARG_ENABLE(new-decayers,
 	)
 AC_MSG_RESULT([$enable_new_decayers])
 AM_CONDITIONAL(WANT_NEWDECAYERS,[test "x$enable_new_decayers" = "xyes"])
+
+LOAD_NEW_DECAYERS=""
+if test "x$enable_new_decayers" = "xyes" ; then
+  LOAD_NEW_DECAYERS="read NewDecayers.in"
+fi
+AC_SUBST(LOAD_NEW_DECAYERS)
 ])
+
 
 AC_DEFUN([AC_LOOPTOOLS],
 [

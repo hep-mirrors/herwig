@@ -136,7 +136,7 @@ vector<Energy> O2AlphaS::LambdaQCDs() const
 
 
 
-double O2AlphaS::value(Energy2 scale, const StandardModelBase & sm) const
+double O2AlphaS::value(Energy2 scale, const StandardModelBase &) const
 {
   Energy rs=sqrt(scale);
   if(scale<_lambdas[5]) {

@@ -94,7 +94,15 @@ set GtoGGSudakov:PDFmax 1.0
 create Herwig++::SudakovFormFactor GtoQQbarSudakov
 set GtoQQbarSudakov:SplittingFunction theGtoQQbarSplitFn
 set GtoQQbarSudakov:Alpha theShowerAlphaQCD
-set GtoQQbarSudakov:PDFmax 3000.0
+set GtoQQbarSudakov:PDFmax 120.0
+create Herwig++::SudakovFormFactor GtobbbarSudakov
+set GtobbbarSudakov:SplittingFunction theGtoQQbarSplitFn
+set GtobbbarSudakov:Alpha theShowerAlphaQCD
+set GtobbbarSudakov:PDFmax 4000.0
+create Herwig++::SudakovFormFactor GtoccbarSudakov
+set GtoccbarSudakov:SplittingFunction theGtoQQbarSplitFn
+set GtoccbarSudakov:Alpha theShowerAlphaQCD
+set GtoccbarSudakov:PDFmax 600.0
 create Herwig++::SudakovFormFactor QtoQGammaSudakov
 set QtoQGammaSudakov:SplittingFunction theQtoQGammaSplitFn
 set QtoQGammaSudakov:Alpha theShowerAlphaQED
@@ -102,7 +110,15 @@ set QtoQGammaSudakov:PDFmax 1.0
 create Herwig++::SudakovFormFactor QtoGQSudakov
 set QtoGQSudakov:SplittingFunction theQtoGQSplitFn
 set QtoGQSudakov:Alpha theShowerAlphaQCD
-set QtoGQSudakov:PDFmax 300.0
+set QtoGQSudakov:PDFmax 1.0
+create Herwig++::SudakovFormFactor utoGuSudakov
+set utoGuSudakov:SplittingFunction theQtoGQSplitFn
+set utoGuSudakov:Alpha theShowerAlphaQCD
+set utoGuSudakov:PDFmax 150.0
+create Herwig++::SudakovFormFactor dtoGdSudakov
+set dtoGdSudakov:SplittingFunction theQtoGQSplitFn
+set dtoGdSudakov:Alpha theShowerAlphaQCD
+set dtoGdSudakov:PDFmax 40.0
 
 #
 # Now add the final splittings
@@ -119,8 +135,8 @@ set theSplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
 set theSplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
-set theSplittingGenerator:AddFinalSplitting g->c,cbar; GtoQQbarSudakov
-set theSplittingGenerator:AddFinalSplitting g->b,bbar; GtoQQbarSudakov
+set theSplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
+set theSplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
 #
 set theSplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
@@ -143,21 +159,21 @@ set theSplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
 #
 set theSplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #
-set theSplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
-set theSplittingGenerator:AddInitialSplitting g->c,cbar; GtoQQbarSudakov
-set theSplittingGenerator:AddInitialSplitting g->b,bbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
 #
-set theSplittingGenerator:AddInitialSplitting u->g,u; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting d->g,d; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
+set theSplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
 set theSplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting ubar->g,ubar; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting dbar->g,dbar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting dbar->g,dbar; dtoGdSudakov
+set theSplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
 set theSplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov

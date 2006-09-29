@@ -33,7 +33,7 @@ namespace {
 }
 
 
-void GammaGammaAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void GammaGammaAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
   // find the Z
@@ -85,7 +85,7 @@ void GammaGammaAnalysis::analyze(tEventPtr event, long ieve, int loop, int state
   }  
 }
 
-LorentzRotation GammaGammaAnalysis::transform(tEventPtr event) const {
+LorentzRotation GammaGammaAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -96,11 +96,11 @@ void GammaGammaAnalysis::analyze(const tPVector & particles) {
 
 void GammaGammaAnalysis::analyze(tPPtr) {}
 
-void GammaGammaAnalysis::persistentOutput(PersistentOStream & os) const {
+void GammaGammaAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void GammaGammaAnalysis::persistentInput(PersistentIStream & is, int) {
+void GammaGammaAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

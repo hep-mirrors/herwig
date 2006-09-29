@@ -34,7 +34,7 @@ namespace {
 }
 
 
-void GammaJetAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void GammaJetAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
   // find the Z
@@ -72,7 +72,7 @@ void GammaJetAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) 
   }  
 }
 
-LorentzRotation GammaJetAnalysis::transform(tEventPtr event) const {
+LorentzRotation GammaJetAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -83,11 +83,11 @@ void GammaJetAnalysis::analyze(const tPVector & particles) {
 
 void GammaJetAnalysis::analyze(tPPtr) {}
 
-void GammaJetAnalysis::persistentOutput(PersistentOStream & os) const {
+void GammaJetAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void GammaJetAnalysis::persistentInput(PersistentIStream & is, int) {
+void GammaJetAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

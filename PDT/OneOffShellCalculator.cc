@@ -55,13 +55,8 @@ FUNCTION_OBJECT_IMP(OneOffShellIntegrand)
     
   OneOffShellIntegrand::OneOffShellIntegrand(tOneOffShellCalculatorPtr in, Energy2 m2,
 					     Energy2 mw)
- {_integrand=in;_mass2=m2;_mwidth=mw;}
+{_integrand=in;_mass2=m2;_mwidth=mw;}
 
-OneOffShellIntegrand::~OneOffShellIntegrand() {}
-  
-OneOffShellIntegrand::OneOffShellIntegrand(const OneOffShellIntegrand & right) 
-{  }
-  
 double OneOffShellIntegrand::operator() (double x) const 
 {return _integrand->dGamma(sqrt(_mass2+_mwidth*tan(x)));}
 

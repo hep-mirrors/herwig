@@ -50,19 +50,17 @@ public:
   ThreeBodyOnShellME(DecayIntegratorPtr decayer, int mode);
   
   /**
-   * Destructor
+   * Copy constructor
    */
-  virtual ~ThreeBodyOnShellME();
+  ThreeBodyOnShellME(const ThreeBodyOnShellME & x) 
+    : Genfun::AbsFunction(), _decayer(x._decayer), _mode(x._mode) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
 
   /**
    * The number of variables this is a function of (i.e. 7)
    */
   virtual unsigned int dimensionality() const ;     
-  
-  /**
-   * Copy constructor
-   */
-  ThreeBodyOnShellME(const ThreeBodyOnShellME &right);
   
   /**
    * Retreive function value

@@ -29,7 +29,7 @@ namespace {
 }
 
 
-void TTbarAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
 
   Lorentz5Momentum ptop, ptbar, ppair;  
   bool foundt = false;
@@ -78,7 +78,7 @@ void TTbarAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   }  
 }
 
-LorentzRotation TTbarAnalysis::transform(tEventPtr event) const {
+LorentzRotation TTbarAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -89,11 +89,11 @@ void TTbarAnalysis::analyze(const tPVector & particles) {
 
 void TTbarAnalysis::analyze(tPPtr) {}
 
-void TTbarAnalysis::persistentOutput(PersistentOStream & os) const {
+void TTbarAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void TTbarAnalysis::persistentInput(PersistentIStream & is, int) {
+void TTbarAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

@@ -13,13 +13,6 @@ using namespace ThePEG;
 
 // default constructor  
 inline ProductionMatrixElement::ProductionMatrixElement() {}
-    
-// copy constructor
-inline ProductionMatrixElement::ProductionMatrixElement(const 
-							ProductionMatrixElement & x)
-  : Base(x) ,_nout(x._nout),_inspin(x._inspin),_outspin(x._outspin),
-    _matrixelement(x._matrixelement), _constants(x._constants) 
-{}
 
 // constructor for 2-1 scattering
 inline ProductionMatrixElement::ProductionMatrixElement(PDT::Spin in1,PDT::Spin in2,

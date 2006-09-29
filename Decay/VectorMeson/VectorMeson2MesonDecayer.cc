@@ -277,7 +277,7 @@ void VectorMeson2MesonDecayer::Init() {
   
 }
 
-double VectorMeson2MesonDecayer::me2(bool vertex, const int ichan,
+double VectorMeson2MesonDecayer::me2(bool vertex, const int,
 				     const Particle & inpart,
 				     const ParticleVector & decay) const
 {

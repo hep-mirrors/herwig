@@ -48,16 +48,10 @@ class ShowerVariables: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline ShowerVariables();
-
-  //@}
-
-public:
 
   /**
    *  Access to the various switches
@@ -165,16 +159,10 @@ public:
   inline Energy gluonMass() const;
 
   /**
-   *  Set the mass
-   */
-  inline void gluonMass(Energy);
-  //@}
-
-  /**
    * Set the gluon mass to the effective mass
    */
   inline void setGluonMass();
-
+  //@}
 
   /**
    *  Enhancement factors for radiation needed to generate the soft matrix
@@ -228,8 +216,6 @@ public:
    *  space is populated by the shower (default, false) or the ME correction. 
    */
   inline bool useMEForT2() const;
-  //@}
-
   //@}
 
 public:

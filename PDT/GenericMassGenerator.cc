@@ -20,8 +20,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-GenericMassGenerator::~GenericMassGenerator() {}
-
 void GenericMassGenerator::persistentOutput(PersistentOStream & os) const {
   os << _particle << _antiparticle << _lowermass << _uppermass << _maxwgt 
      << _BWshape << _ngenerate << _mass << _width << _mass2 << _mwidth 

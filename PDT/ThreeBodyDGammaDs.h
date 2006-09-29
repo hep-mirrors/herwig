@@ -44,21 +44,19 @@ public:
    * @param mode The mode in the decayer being integrated.
    */
   ThreeBodyDGammaDs(DecayIntegratorPtr decayer,int mode);
-  
+
   /**
-   * Destructor
+   * Copy constructor
    */
-  virtual ~ThreeBodyDGammaDs();
+  ThreeBodyDGammaDs(const ThreeBodyDGammaDs & x) 
+    : Genfun::AbsFunction(), _decayer(x._decayer), _mode(x._mode) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
 
   /**
    *  The number of variables for the function (in this case 5)
    */  
   virtual unsigned int dimensionality() const ;     
-  
-  /**
-   * Copy constructor
-   */
-  ThreeBodyDGammaDs(const ThreeBodyDGammaDs &right);
   
   /**
    * Retreive function value

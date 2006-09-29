@@ -287,7 +287,7 @@ void ScalarScalarScalarDecayer::Init() {
 
 }
 
-double ScalarScalarScalarDecayer::me2(bool vertex, const int ichan,
+double ScalarScalarScalarDecayer::me2(bool vertex, const int,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {

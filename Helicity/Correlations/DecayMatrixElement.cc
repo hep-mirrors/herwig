@@ -17,9 +17,7 @@ namespace Herwig {
 namespace Helicity {
 
 using namespace ThePEG;
-    
-DecayMatrixElement::~DecayMatrixElement() {}
-    
+
 NoPIOClassDescription<DecayMatrixElement> DecayMatrixElement::initDecayMatrixElement; 
 // Definition of the static class description member.
     

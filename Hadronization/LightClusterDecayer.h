@@ -2,7 +2,7 @@
 #ifndef HERWIG_LightClusterDecayer_H
 #define HERWIG_LightClusterDecayer_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
@@ -41,7 +41,7 @@ using namespace ThePEG;
  *
  *  @see HadronSelector
  */ 
-class LightClusterDecayer: public ThePEG::HandlerBase {
+class LightClusterDecayer: public Interfaced {
 
 public:
 
@@ -51,11 +51,6 @@ public:
    * Default constructor.
    */
   inline LightClusterDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline LightClusterDecayer(const LightClusterDecayer &);
   //@}
 
   /**
@@ -165,7 +160,7 @@ template <>
  */
 struct BaseClassTrait<Herwig::LightClusterDecayer,1> {
   /** Typedef of the base class of LightClusterDecayer. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 template <>
@@ -177,12 +172,6 @@ struct ClassTraits<Herwig::LightClusterDecayer>:
     public ClassTraitsBase<Herwig::LightClusterDecayer> {
   /** Return the class name.*/
   static string className() { return "Herwig++::LightClusterDecayer"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
 };
 
 }

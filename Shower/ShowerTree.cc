@@ -168,7 +168,7 @@ ShowerTree::ShowerTree(PPtr in,ShowerVarsPtr vars,
 
 
 void ShowerTree::updateFinalStateShowerProduct(ShowerProgenitorPtr progenitor,
-					       ShowerParticlePtr parent,
+					       ShowerParticlePtr,
 					       const ShowerParticleVector & children)
 {
   assert(children.size()==2);
@@ -237,7 +237,7 @@ void ShowerTree::colourIsolate(const vector<PPtr> & original, const vector<PPtr>
     }
 }
 
-void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR)
+void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool)
 {
   assert(_incomingLines.size()==2);
   _colour.clear();
@@ -578,7 +578,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
      }
 }
 
-void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR)
+void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool)
 {
   assert(_incomingLines.size()==1);
   _colour.clear();

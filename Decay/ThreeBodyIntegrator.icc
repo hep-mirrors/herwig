@@ -27,8 +27,6 @@ inline ThreeBodyIntegrator::ThreeBodyIntegrator(vector<double> inweights,
   _theInnerIntegrand= new ThreeBodyInnerIntegrand(this);
   _theOuterIntegrand= new ThreeBodyOuterIntegrand(this);
 }
-  
-inline ThreeBodyIntegrator::ThreeBodyIntegrator(const ThreeBodyIntegrator & x) {}
 
 inline Genfun::AbsFunction * ThreeBodyIntegrator::ME(){return _theME;}
   // pointer to the function for the inner integrand

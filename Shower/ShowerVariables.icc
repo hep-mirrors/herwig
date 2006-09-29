@@ -96,10 +96,7 @@ inline Energy ShowerVariables::kinematicCutOff(Energy scale,Energy mq) const {
 
 inline Energy ShowerVariables::gluonMass() const {return _gluonMass;}
 
-inline void ShowerVariables::gluonMass(Energy in){_gluonMass=in;}
-
-inline void ShowerVariables::setGluonMass()
-{
+inline void ShowerVariables::setGluonMass() {
   _gluonMass=getParticleData(ParticleID::g)->constituentMass();
 }
 

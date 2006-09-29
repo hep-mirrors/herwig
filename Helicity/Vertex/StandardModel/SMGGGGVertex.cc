@@ -34,8 +34,8 @@ void SMGGGGVertex::Init() {
 
 
 // couplings for the GGGG vertex
-void SMGGGGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
-    				      tcPDPtr c,tcPDPtr d)
+void SMGGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr,
+    				      tcPDPtr,tcPDPtr)
 {
   // set the order and type
   setType(1);setOrder(0,1,2,3);

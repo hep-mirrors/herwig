@@ -203,7 +203,7 @@ public:
    * branching then it returns Energy().
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
-   * @param Whether this is thge charge conjugate of the branching defined in the
+   * @param cc Whether this is thge charge conjugate of the branching defined in the
    * splitting function.
    */
   virtual Energy generateNextTimeBranching(const Energy startingScale,
@@ -216,7 +216,7 @@ public:
    * @param stoppingScale stopping scale for the evolution
    * @param minmass The minimum mass allowed for the spake-like particle.
    * @param ids The PDG codes of the particles in the splitting
-   * @param Whether this is thge charge conjugate of the branching defined in the
+   * @param cc Whether this is thge charge conjugate of the branching defined in the
    * splitting function.
    */
   virtual Energy generateNextDecayBranching(const Energy startingScale,
@@ -230,7 +230,7 @@ public:
    * @param startingScale starting scale for the evolution
    * @param ids The PDG codes of the particles in the splitting
    * @param x The fraction of the beam momentum
-   * @param Whether this is thge charge conjugate of the branching defined in the
+   * @param cc Whether this is thge charge conjugate of the branching defined in the
    * splitting function.
    */
   virtual Energy generateNextSpaceBranching(const Energy startingScale,
@@ -330,7 +330,7 @@ protected:
    *  Initialize the values of the cut-offs and scales
    * @param tmin The minimum scale
    * @param ids  The ids of the partics in the branching
-   * @param Whether this is thge charge conjugate of the branching defined in the
+   * @param cc Whether this is thge charge conjugate of the branching defined in the
    * splitting function.
    */
   void initialize(const IdList & ids,Energy2 &tmin,bool cc);

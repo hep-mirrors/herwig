@@ -25,7 +25,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-bool MamboDecayer::accept(const DecayMode & dm) const {
+bool MamboDecayer::accept(const DecayMode &) const {
   return true;
 }
 

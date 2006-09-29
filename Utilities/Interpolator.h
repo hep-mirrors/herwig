@@ -32,17 +32,17 @@ public:
    * Constructor with data as vectors.
    */
   Interpolator(vector<double> f, vector<double> x, int order);
+   
+  /**
+   * Copy constructor
+   */
+  Interpolator(const Interpolator & x) 
+    : Genfun::AbsFunction(), _xval(x._xval), _fun(x._fun), _order(x._order) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
+  // Yes, -Wextra will warn about this.
 
-  /**
-   * Copy constructor.
-   */
-  Interpolator(const Interpolator &right);
-  
-  /**
-   * Standard ctors and dtor.
-   */
-  virtual ~Interpolator();
-  
+ 
   /**
    * Retreive function value.
    */

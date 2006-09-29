@@ -164,8 +164,13 @@ ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const
    return partons;
 }
    
-void HeavyDecayer::persistentOutput(PersistentOStream &os) const { os << MECode; }
-void HeavyDecayer::persistentInput(PersistentIStream &is, int i) { is >> MECode; }
+void HeavyDecayer::persistentOutput(PersistentOStream &os) const {
+  os << MECode; 
+}
+
+void HeavyDecayer::persistentInput(PersistentIStream &is, int) {
+  is >> MECode; 
+}
 
 double HeavyDecayer::VAWt(double *temp) 
 { return (temp[1]-temp[0])*(temp[0]-temp[2])*temp[3]; }

@@ -118,7 +118,7 @@ void ScalarMesonTensorScalarDecayer::Init() {
      0, 0, 0, 0., 100., false, false, true);
 }
 
-double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int ichan,
+double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
 					   const Particle & inpart,
 					   const ParticleVector & decay) const
 {

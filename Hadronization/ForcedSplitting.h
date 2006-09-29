@@ -6,6 +6,8 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
+#include "Herwig++/Shower/Couplings/ShowerAlpha.h"
+#include "ThePEG/PDF/BeamParticleData.h"
 #include "ForcedSplitting.fh"
 
 namespace Herwig {
@@ -19,6 +21,18 @@ using namespace ThePEG;
  *  evolution (hadron - parton) and produce partons with the remaining 
  *  flavours and with the correct colour connections.
  *
+ *  The algorithim operates by starting with the parton which enters the hard process.
+ *  If this is from the sea there is a forced branching to produce the antiparticle
+ *  from a gluon branching. If the parton entering the hard process was a gluon, or
+ *  a gluon was produced from the first step of the algorithm, there is then a further
+ *  branching back to a valence parton. After these partons have been produced a quark or
+ *  diquark is produced to give the remaining valence content of the incoming hadron.
+ *
+ *  The forced branching are generated using a scale between QSpac and EmissionRange times
+ *  the minimum scale. The energy fractions are then distributed using
+ *  \f[\frac{\alpha_S}{2\pi}\frac{P(z)}{z}f(x/z,\tilde{q})\f]
+ *  with the massless splitting functions.
+ *
  * @see \ref ForcedSplittingInterfaces "The interfaces"
  * defined for ForcedSplitting.
  */
@@ -26,13 +40,10 @@ class ForcedSplitting: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline ForcedSplitting();
-  //@}
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -86,34 +97,57 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
+
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
 private:
 
   /**
-   * Using the remnant given as the first argument and the last parton in
+   * Using the remnant and the last parton in
    * the shower, split the remnant into the correct flavours and add them
    * to the step.
+   * @param rem   The remnant
+   * @param part  The last parton from the parton shower
+   * @param x     The fraction of the hadron's momentum carried by the last parton
+   * @param step  The step into which the particles are inserted
    */
-  void split(const tPPtr ,const tPPtr, const tStepPtr,const double x );
+  void split(const tPPtr rem,const tPPtr part, const tStepPtr step,const double x );
   
   /**
    * This takes the particle and find a splitting for np -> p + child and 
    * creates the correct kinematics and connects for such a split. This
    * Splitting has an upper bound on qtilde given by the energy argument
-   * The momentum pf is the momentum of the last reconstructed parton in the
-   * backward chain and the momentum p is the momentum which is extracted from
-   * the remnant in each step.
+   * @param rem The Remnant
+   * @param child The PDG code for the outgoing particle
+   * @param oldQ  The maximum scale for the evolution
+   * @param oldx  The fraction of the hadron's momentum carried by the last parton
+   * @param pf    The momentum of the last parton at input and after branching at output
+   * @param p     The total emitted momentum
+   * @param iopt  Whether to use the \f$q\to gq\f$ or \f$g\to q\bar{q}\f$ splitting function.
+   * @param step The step into which the new particles are inserted
    */
   PPtr forceSplit(const tPPtr rem, long child, Energy &oldQ, double &oldx, 
-		  Lorentz5Momentum &pf, Lorentz5Momentum &p,const tStepPtr);
+		  Lorentz5Momentum &pf, Lorentz5Momentum &p,const unsigned int iopt,
+		  const tStepPtr step);
 
   /**
-   * This computes the momentum of the emitted parton. par is the momentum of
-   * the beam particle, lastQ and lastx are the values of qtilde and x after
-   * the last emission, emittedm2 is the mass of the parton being emitted
-   * and pf is the momentum of the previously reconstructed momentum.
+   * This computes the momentum of the emitted parton. 
+   * @param par Momentum of the beam particle 
+   * @param lastQ The maximum scale for the branching
+   * @param lastx \f$x\f$ after the last emission
+   * @param parton The parton in the last emission
+   * @param pf at input is the momentum of the last parton and the emitted momentum on output
+   * @param iopt  Whether to use the \f$q\to gq\f$ or \f$g\to q\bar{q}\f$ splitting function.
    */
   Lorentz5Momentum emit(const Lorentz5Momentum &par, Energy &lastQ, 
-			double &lastx, double emittedm2, Lorentz5Momentum &pf);
+			double &lastx, PPtr parton, Lorentz5Momentum &pf,
+			const unsigned int iopt);
 
   /**
    * This creates a parton from the remaining flavours of the hadron. The
@@ -143,6 +177,42 @@ private:
    *  The kinematic cut-off
    */
    Energy _kinCutoff;
+
+  /**
+   *  Range for emission
+   */
+  double _range;
+
+  /**
+   *  Start of the evolution
+   */
+  Energy _qspac;
+
+  /**
+   *  Size of the bins in z for the interpolation
+   */
+  double _zbin;
+
+  /**
+   *  Size of the bins in y for the interpolation
+   */
+  double _ybin;
+
+  /**
+   *  Maximum number of bins for the z interpolation
+   */
+  int _nbinmax;
+
+  /**
+   *  Pointer to the object calculating the QCD coupling
+   */
+  ShowerAlphaPtr _alpha;
+
+  /**
+   *  The beam particle data for the current initial-state shower
+   */
+  Ptr<BeamParticleData>::const_pointer _beam;
+
 };
 
 }

@@ -68,7 +68,7 @@ PScalarVectorVectorDecayer::PScalarVectorVectorDecayer()
 
 PScalarVectorVectorDecayer::~PScalarVectorVectorDecayer() {}
 
-int PScalarVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const
+int PScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const
 {
   int imode(-1);
   if(dm.products().size()!=2){return imode;}
@@ -136,7 +136,7 @@ void PScalarVectorVectorDecayer::Init() {
      0, 0, 0, 0., 200., false, false, true);
 }
 
-double PScalarVectorVectorDecayer::me2(bool vertex, const int ichan,
+double PScalarVectorVectorDecayer::me2(bool vertex, const int,
 				   const Particle & inpart,
 				   const ParticleVector & decay) const
 {

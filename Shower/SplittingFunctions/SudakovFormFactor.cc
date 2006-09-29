@@ -58,8 +58,7 @@ void SudakovFormFactor::Init() {
 
 void SudakovFormFactor::setupLookupTables() {}
 
-bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin) const
-{
+bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin) const {
   Energy2 told = t;
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
@@ -68,17 +67,15 @@ bool SudakovFormFactor::guessTimeLike(Energy2 &t,Energy2 tmin) const
   _z = guessz(); 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
-  if(t<tmin)
-    {
-      t=-1.0*GeV;
-      return false;
-    }
+  if(t<tmin) {
+    t=-1.0*GeV;
+    return false;
+  }
   else
     return true; 
 } 
 
-bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x) const
-{
+bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x) const {
   Energy2 told = t;
   // calculate limits on z if lower>upper return
   if(!computeSpaceLikeLimits(t,x)) return false;
@@ -87,11 +84,10 @@ bool SudakovFormFactor::guessSpaceLike(Energy2 &t, Energy2 tmin, const double x)
   _z = guessz(); 
   // actual values for z-limits
   if(!computeSpaceLikeLimits(t,x)) return false;
-  if(t<tmin)
-    {
-      t=-1.0*GeV;
-      return false;
-    }
+  if(t<tmin) {
+    t=-1.0*GeV;
+    return false;
+  }
   else
     return true; 
 } 

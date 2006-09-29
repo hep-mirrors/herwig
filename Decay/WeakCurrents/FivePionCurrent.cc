@@ -534,8 +534,7 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int iq,
-				    int ia)
+PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int)
 {
   // particle data objects for the pions
   PDPtr piplus (getParticleData(ParticleID::piplus ));

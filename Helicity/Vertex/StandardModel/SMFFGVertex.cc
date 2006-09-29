@@ -34,7 +34,7 @@ void SMFFGVertex::Init() {
 }
 
 // coupling for FFG vertex
-void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,tcPDPtr c)
+void SMFFGVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,tcPDPtr)
 {
   // first the overall normalisation
   if(q2!=_q2last)

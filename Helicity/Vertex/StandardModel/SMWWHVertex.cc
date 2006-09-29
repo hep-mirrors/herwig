@@ -32,7 +32,7 @@ void SMWWHVertex::Init() {
 }
 
 
-void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
+void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr)
 {
   int ibos=abs(a->id());
   // first the overall normalisation

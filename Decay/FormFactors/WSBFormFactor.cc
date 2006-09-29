@@ -382,8 +382,8 @@ void WSBFormFactor::Init() {
 
 // form-factor for scalar to scalar
 void WSBFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
-					   int id0,int id1,
-					   Energy m0, Energy m1,Complex & f0,
+					   int,int id1,
+					   Energy, Energy,Complex & f0,
 					   Complex & fp) const
 {
   f0 = _F0[mode]/(1.-q2/_mS1[mode]/_mS1[mode]);
@@ -410,8 +410,8 @@ void WSBFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
 }
 
 void WSBFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
-					   int id0, int id1, 
-					   Energy mY, Energy mX,Complex & A0,
+					   int, int id1, 
+					   Energy, Energy,Complex & A0,
 					   Complex & A1,Complex & A2,Complex & V) const
 {
   A0 = -_A0[mode]/(1.-q2/_mS0[mode]/_mS0[mode]);

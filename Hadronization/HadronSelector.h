@@ -2,7 +2,7 @@
 #ifndef HERWIG_HadronSelector_H
 #define HERWIG_HadronSelector_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include "CluHadConfig.h"
@@ -33,7 +33,7 @@ using namespace ThePEG;
  *  _ClusterDKMode = 2 and this is the new hadronization method developed
  *  for Herwig++.
  */
-class HadronSelector: public ThePEG::HandlerBase {
+class HadronSelector: public Interfaced {
 
 public:
 
@@ -43,11 +43,6 @@ public:
    * Default constructor.
    */
   inline HadronSelector();
-
-  /**
-   * Copy-constructor.
-   */
-  inline HadronSelector(const HadronSelector &);
   //@}
 
 public:
@@ -469,7 +464,7 @@ private: // data members
    * This object defines the table of hadron data used by the Kupco 
    * and Herwig++ methods.
    */
-  KupcoData _table[NumFlavs][NumFlavs];
+  vector<vector<KupcoData> > _table;//[NumFlavs][NumFlavs];
   
   /**
    * Weights for quarks and diquarks; element [0] empty.
@@ -479,7 +474,7 @@ private: // data members
   /**
    * Weights for excited mesons;
    */
-  double _Repwt[Lmax][Jmax][Nmax];  
+  vector<vector<vector<double> > > _Repwt;//[Lmax][Jmax][Nmax];  
 
   /**
    * whether to use hw64, kupco or hwpp
@@ -504,7 +499,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::HadronSelector,1> {
   /** Typedef of the first base class of HadronSelector. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 /**
@@ -516,12 +511,6 @@ struct ClassTraits<Herwig::HadronSelector>
   : public ClassTraitsBase<Herwig::HadronSelector> {
   /** Return the class name. */
   static string className() { return "Herwig++::HadronSelector"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
 };
 
 }

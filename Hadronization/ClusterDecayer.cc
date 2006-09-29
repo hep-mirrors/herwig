@@ -226,7 +226,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     priorityHad2 = 1;
     if (isHad2FlavB) priorityHad2 = 2;
   }
-  if ( priorityHad2  &&  priorityHad1 == priorityHad2  &&  rndbool() ) {
+  if ( priorityHad2  &&  priorityHad1 == priorityHad2  &&  UseRandom::rndbool() ) {
     priorityHad2 = 0;
   }
 
@@ -267,21 +267,21 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
       double sinThetaQ = sqrt( 1.0 - cosThetaQ*cosThetaQ );
       double cosSmear;
       do {
-	cosSmear = 1.0 + cluSmear*log( rnd() );            
+	cosSmear = 1.0 + cluSmear*log( UseRandom::rnd() );            
       } while ( cosSmear < -1.0 );
       double sinSmear = sqrt( 1.0 - cosSmear*cosSmear );
       // Determine now the theta angle of the smeared direction 
       // w.r.t. to the usual x-y-z axes (rather than w.r.t. u_v3)
       double cosTheta = cosThetaQ*cosSmear - sinThetaQ*sinSmear;
       uSmear_v3.setTheta( acos( cosTheta ) );
-      uSmear_v3.rotate( rnd( -pi , pi ) , u_v3 );  // smear in phi around u_v3
+      uSmear_v3.rotate( UseRandom::rnd( -pi , pi ) , u_v3 );  // smear in phi around u_v3
     }
   } else {
 
     // Isotropic decay: flat in cosTheta and phi. 
     uSmear_v3 = Vector3(1.0, 0.0, 0.0);  // just to set the rho to 1
-    uSmear_v3.setTheta( acos( rnd( -1.0 , 1.0 ) ) );
-    uSmear_v3.setPhi( rnd( -pi , pi ) );   
+    uSmear_v3.setTheta( acos( UseRandom::rnd( -1.0 , 1.0 ) ) );
+    uSmear_v3.setPhi( UseRandom::rnd( -pi , pi ) );   
 
   }
 
@@ -411,8 +411,8 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
 void ClusterDecayer::
 calculatePositions(const Lorentz5Momentum &pClu, 
 		   const LorentzPoint &positionClu, 
-		   const Lorentz5Momentum &pHad1, 
-		   const Lorentz5Momentum &pHad2, 
+		   const Lorentz5Momentum &, 
+		   const Lorentz5Momentum &, 
 		   LorentzPoint &positionHad1, 
 		   LorentzPoint &positionHad2 ) const {
 

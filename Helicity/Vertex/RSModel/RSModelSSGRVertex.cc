@@ -30,7 +30,7 @@ void RSModelSSGRVertex::Init() {
      " the RSModel scalar-scalar-graviton vertex");
   
 }
-void RSModelSSGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
+void RSModelSSGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
 {setNorm(_theKappa);}
 
 }

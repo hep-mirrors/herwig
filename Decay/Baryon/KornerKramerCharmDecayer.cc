@@ -853,13 +853,13 @@ void KornerKramerCharmDecayer::Init() {
 
 // couplings for spin-1/2 to spin-1/2 spin-0
 void KornerKramerCharmDecayer::
- halfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+ halfHalfScalarCoupling(int imode,Energy,Energy,Energy,
 			Complex& A,Complex&B) const
 {A =_A1[imode];B=_B1[imode];}
 
 // couplings for spin-1/2 to spin-1/2 spin-1
 void KornerKramerCharmDecayer::halfHalfVectorCoupling(int imode,
-						      Energy m0,Energy m1,Energy m2,
+						      Energy m0,Energy m1,Energy,
 						      Complex& A1,Complex& A2,
 						      Complex& B1,Complex& B2) const
 {
@@ -871,7 +871,7 @@ void KornerKramerCharmDecayer::halfHalfVectorCoupling(int imode,
 
 // couplings for spin-1/2 to spin-3/2 spin-0
 void KornerKramerCharmDecayer::halfThreeHalfScalarCoupling(int imode,
-							   Energy m0,Energy m1,Energy m2,
+							   Energy m0,Energy m1,Energy,
 							   Complex&  A, Complex& B) const
 {
   // conventions changed so that A is the coefficient of the 
@@ -881,7 +881,7 @@ void KornerKramerCharmDecayer::halfThreeHalfScalarCoupling(int imode,
 
 // couplings for spin-1/2 to spin-3/2 spin-1
 void KornerKramerCharmDecayer::
-halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy m2,
+halfThreeHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 			    Complex& A1, Complex& A2, Complex& A3,
 			    Complex& B1, Complex& B2, Complex& B3) const
 {

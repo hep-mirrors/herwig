@@ -22,10 +22,10 @@ using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using ThePEG::Helicity::ScalarSpinInfo;
 
-void ThreeMesonCurrentBase::persistentOutput(PersistentOStream & os) const {
+void ThreeMesonCurrentBase::persistentOutput(PersistentOStream &) const {
 }
 
-void ThreeMesonCurrentBase::persistentInput(PersistentIStream & is, int) {
+void ThreeMesonCurrentBase::persistentInput(PersistentIStream &, int) {
 }
 
 AbstractClassDescription<ThreeMesonCurrentBase> ThreeMesonCurrentBase::initThreeMesonCurrentBase;

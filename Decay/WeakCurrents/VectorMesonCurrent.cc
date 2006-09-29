@@ -137,7 +137,7 @@ PDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, 
 }
 
 vector<LorentzPolarizationVector> 
-VectorMesonCurrent::current(bool vertex, const int imode, const int ichan, 
+VectorMesonCurrent::current(bool vertex, const int imode, const int, 
 			    Energy & scale,const ParticleVector & decay) const
 {
   scale=decay[0]->mass();

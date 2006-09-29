@@ -195,13 +195,6 @@ struct ClassTraits<Herwig::TwoOffShellCalculator>
   : public ClassTraitsBase<Herwig::TwoOffShellCalculator> {
   /** Return the class name.*/
   static string className() { return "Herwig++::TwoOffShellCalculator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-
 };
 
 }
@@ -259,15 +252,12 @@ public:
   TwoOffShellIntegrand(TwoOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
 
   /**
-   * Destructor
-   */
-  virtual ~TwoOffShellIntegrand();
-
-  /**
    * Copy constructor
-   * Retreive function value
    */
-  TwoOffShellIntegrand(const TwoOffShellIntegrand &right);
+  TwoOffShellIntegrand(const TwoOffShellIntegrand & x) 
+    : Genfun::AbsFunction(), _integrand(x._integrand), _mass2(x._mass2), _mwidth(x._mwidth) {}
+  // this one's required because CLHEP::Genfun::AbsFunction 
+  // doesn't implement its copy constructor. Aaaargh!
 
   /**
    * Retreive function value
