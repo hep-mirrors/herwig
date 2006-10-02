@@ -1,13 +1,5 @@
-# This will read in all the standard hadron decay modes and add
-# the new particles that are used in HERWIG 6.4, but not in ThePEG
-#read Decays.in
-#
-cd /Defaults/
-set theGlobalParameters:HadronizationScale 0.5*GeV
-set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
-set theGlobalParameters:OnOffSoftUnderlyingEventMode 0
-set theGlobalParameters:MinVirtuality2 0.1*GeV2
-set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+cd /Defaults/Handlers/Hadronization/Cluster
+set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
 #
 cd /Defaults/MatrixElements
 set MEee2gZ2qq:MinimumFlavour 6

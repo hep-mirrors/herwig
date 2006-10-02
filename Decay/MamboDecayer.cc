@@ -6,11 +6,6 @@
 
 #include "MamboDecayer.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MamboDecayer.tcc"
-#endif
-
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/StandardRandom.h>
@@ -25,9 +20,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-MamboDecayer::~MamboDecayer() {}
-
-bool MamboDecayer::accept(const DecayMode & dm) const {
+bool MamboDecayer::accept(const DecayMode &) const {
   return true;
 }
 
@@ -46,14 +39,13 @@ void MamboDecayer::Init() {
   static ClassDocumentation<MamboDecayer> documentation
     ("Decayer class that implements MAMBO algorithm of Kleiss-"
      "Stirling.");
-
   
   static Parameter<MamboDecayer,double> interfaceMaximumWeight
     ("MaxWeight",
      "Maximum phase-space weight",
      &MamboDecayer::_maxweight, 10.0, 1.0, 50.,
      false, false, true);
- 
+
 }
 
 ParticleVector MamboDecayer::decay(const DecayMode & dm,
@@ -67,14 +59,8 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
     }
   double totalMass(0.0);
   vector<Lorentz5Momentum> productMomentum(N);
-  Energy gluMass = getParticleData(ParticleID::g)->constituentMass();
   for(int i = 0; i < N; ++i) {
-    if (children[i]->id() == 21) {
-      productMomentum[i].setMass(gluMass);
-    }
-    else {
-      productMomentum[i].setMass(children[i]->constituentMass());
-    }
+    productMomentum[i].setMass(children[i]->constituentMass());
     totalMass += children[i]->constituentMass();
   }
   

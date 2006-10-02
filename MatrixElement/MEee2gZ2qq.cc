@@ -63,7 +63,7 @@ MEee2gZ2qq::diagrams(const DiagramVector & diags) const {
 }
 
 Selector<const ColourLines *>
-MEee2gZ2qq::colourGeometries(tcDiagPtr diag) const {
+MEee2gZ2qq::colourGeometries(tcDiagPtr ) const {
   static const ColourLines c("-5 4");
   Selector<const ColourLines *> sel;
   sel.insert(1.0, &c);
@@ -131,9 +131,8 @@ double MEee2gZ2qq::me2() const {
   save.push_back(lastBW);
   meInfo(save);
   // add the QCD K-factor
-  double alphaS = SM().alphaS(scale());
   int Nf = SM().Nf(scale());
-  me *= (1.0 + alphaS/pi + (1.986-0.115*Nf)*sqr(alphaS/pi));
+  me *= (1.0 + alphaS()/pi + (1.986-0.115*Nf)*sqr(alphaS()/pi));
   // return the answer
   return me;
 }
@@ -203,47 +202,27 @@ ProductionMatrixElement MEee2gZ2qq::HelicityME(vector<SpinorWaveFunction>    & f
 
 void MEee2gZ2qq::constructVertex(tSubProPtr sub)
 {
-  FermionSpinPtr spin1,spin2,spin3,spin4;
-  // momenta of the particles and data pointers
-  vector<SpinorWaveFunction> fin,aout;
-  vector<SpinorBarWaveFunction>  ain,fout;
-  if(sub->incoming().first->id()>0)
-    {
-      SpinorWaveFunction(   fin,sub->incoming().first ,incoming,false,true);
-      SpinorBarWaveFunction(ain,sub->incoming().second,incoming,false,true);
-      spin1=dynamic_ptr_cast<FermionSpinPtr>(sub->incoming().first->spinInfo());
-      spin2=dynamic_ptr_cast<FermionSpinPtr>(sub->incoming().second->spinInfo());
-    }
-  else
-    {
-      SpinorWaveFunction(   fin,sub->incoming().second,incoming,false,true);
-      SpinorBarWaveFunction(ain,sub->incoming().first ,incoming,false,true);
-      spin1=dynamic_ptr_cast<FermionSpinPtr>(sub->incoming().second->spinInfo());
-      spin2=dynamic_ptr_cast<FermionSpinPtr>(sub->incoming().first->spinInfo());
-    }
-  if(sub->outgoing()[0]->id()>0)
-    {
-      SpinorBarWaveFunction(fout,sub->outgoing()[0],outgoing,true,true);
-      SpinorWaveFunction(   aout,sub->outgoing()[1],outgoing,true,true);
-      spin3=dynamic_ptr_cast<FermionSpinPtr>(sub->outgoing()[0]->spinInfo());
-      spin4=dynamic_ptr_cast<FermionSpinPtr>(sub->outgoing()[1]->spinInfo());
-    }
-  else
-    {
-      SpinorBarWaveFunction(fout,sub->outgoing()[1],outgoing,true,true);
-      SpinorWaveFunction(   aout,sub->outgoing()[0],outgoing,true,true);
-      spin3=dynamic_ptr_cast<FermionSpinPtr>(sub->outgoing()[1]->spinInfo());
-      spin4=dynamic_ptr_cast<FermionSpinPtr>(sub->outgoing()[0]->spinInfo());
-    }
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);hard.push_back(sub->outgoing()[1]);
+  if(hard[0]->id()<hard[1]->id()) swap(hard[0],hard[1]);
+  if(hard[2]->id()<hard[3]->id()) swap(hard[2],hard[3]);
+  vector<SpinorWaveFunction>    fin,aout;
+  vector<SpinorBarWaveFunction> ain,fout;
+  SpinorWaveFunction(   fin ,hard[0],incoming,false,true);
+  SpinorBarWaveFunction(ain ,hard[1],incoming,false,true);
+  SpinorBarWaveFunction(fout,hard[2],outgoing,true ,true);
+  SpinorWaveFunction(   aout,hard[3],outgoing,true ,true);
+  // calculate the matrix element
   double me,cont,BW;
   ProductionMatrixElement prodme=HelicityME(fin,ain,fout,aout,me,cont,BW);
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(prodme);
-  // set the pointers to and from the vertex
-  spin1->setProductionVertex(hardvertex);
-  spin2->setProductionVertex(hardvertex);
-  spin3->setProductionVertex(hardvertex);
-  spin4->setProductionVertex(hardvertex);
+  // set the pointers and to and from the vertex
+  for(unsigned int ix=0;ix<4;++ix) {
+    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->setProductionVertex(hardvertex);
+  }
 }

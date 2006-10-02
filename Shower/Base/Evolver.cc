@@ -141,7 +141,7 @@ void Evolver::hardMatrixElementCorrection() {
   for(unsigned int ix=0;ix<_model->meCorrections().size();++ix) {
     double initial,final;
     if(!_model->meCorrections()[ix]->canHandle(_currenttree,
-					       initial,final)) continue;
+					       initial,final,this)) continue;
     if(_currentme) {
       ostringstream output;
       output << "There is more than one possible matrix"

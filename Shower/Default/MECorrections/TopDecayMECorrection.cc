@@ -14,6 +14,7 @@
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 using namespace Herwig;
 
@@ -38,14 +39,14 @@ void TopDecayMECorrection::Init() {
     ("InitialEnhancementFactor",
      "The enhancement factor for initial-state radiation in the shower to ensure"
      " the weight for the matrix element correction is less than one.",
-     &TopDecayMECorrection::_initialenhance, 700.0, 1.0, 10000.0,
+     &TopDecayMECorrection::_initialenhance, 1.0, 1.0, 10000.0,
      false, false, Interface::limited);
 
   static Parameter<TopDecayMECorrection,double> interfaceFinalEnhancementFactor
     ("FinalEnhancementFactor",
      "The enhancement factor for final-state radiation in the shower to ensure"
      " the weight for the matrix element correction is less than one",
-     &TopDecayMECorrection::_finalenhance, 1.2, 1.0, 1000.0,
+     &TopDecayMECorrection::_finalenhance, 1.6, 1.0, 1000.0,
      false, false, Interface::limited);
 
   static Parameter<TopDecayMECorrection,double> interfaceSamplingTopHardMEC
@@ -74,8 +75,9 @@ void TopDecayMECorrection::Init() {
 }
 
 bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial, 
-				     double & final)
-{
+				     double & final,EvolverPtr evolver) {
+  // check radiation on
+  if(!evolver->isFSRadiationON()) return false;
   // one incoming particle
   if(tree->incomingLines().size()!=1) return false;
   // it should be top
@@ -90,16 +92,14 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
     {part[ix]=cit->first->progenitor();++ix;}
   // check the final-state particles and get the masses
-  if(abs(part[0]->id())==ParticleID::Wplus&&abs(part[1]->id())==ParticleID::b)
-    {
-      _ma=part[0]->mass();
-      _mc=part[1]->mass();
-    }
-  else if(abs(part[1]->id())==ParticleID::Wplus&&abs(part[0]->id())==ParticleID::b)
-    {
-      _ma=part[1]->mass();
-      _mc=part[0]->mass();
-    }
+  if(abs(part[0]->id())==ParticleID::Wplus&&abs(part[1]->id())==ParticleID::b) {
+    _ma=part[0]->mass();
+    _mc=part[1]->mass();
+  }
+  else if(abs(part[1]->id())==ParticleID::Wplus&&abs(part[0]->id())==ParticleID::b) {
+    _ma=part[1]->mass();
+    _mc=part[0]->mass();
+  }
   else 
     return false;
   // set the top mass
@@ -116,8 +116,7 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   return true;
 }
 
-void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
-{
+void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   // Get b and a and put them in particle vector ba in that order...
   ParticleVector ba; 
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
@@ -130,18 +129,21 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   // of the dead zone.
   double ktb(0.),ktc(0.);
   for(cit = tree->incomingLines().begin();
-      cit!= tree->incomingLines().end();++cit)
-    { if(abs(cit->first->progenitor()->id())==6)
-	ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
+      cit!= tree->incomingLines().end();++cit) {
+    if(abs(cit->first->progenitor()->id())==6)
+      ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
+  }
   for(cit = tree->outgoingLines().begin();
-      cit!= tree->outgoingLines().end();++cit)
-    { if(abs(cit->first->progenitor()->id())==5)
-	ktc=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); }
+      cit!= tree->outgoingLines().end();++cit) {
+    if(abs(cit->first->progenitor()->id())==5)
+      ktc=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
+  }
   if (ktb<=0.||ktc<=0.) {
     throw Exception() 
       << "TopDecayMECorrection::applyHardMatrixElementCorrection()"
       << " did not set ktb,ktc" 
-      << Exception::abortnow; }
+      << Exception::abortnow; 
+  }
   _ktb = ktb;
   _ktc = ktc;
   // Now decide if we get an emission into the dead region.
@@ -156,7 +158,6 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   if (newfs[1].e()<ba[1]->mass())                   check = false;
   if (newfs[2].e()<ba[2]->data().constituentMass()) check = false;
   // Return if insane:
-  //cerr << "testing after the checks " << endl;
   if (!check) return;
   // Set masses in 5-vectors:
   newfs[0].setMass(ba[0]->mass());
@@ -172,53 +173,44 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   newa->set5Momentum(newfs[1]);
   // set the colour lines
   ColinePtr col;
-  //cerr << "testing A " << endl;
-  if(ba[0]->id()>0)
-    {
-       col=ba[0]->colourLine();
-       col->addColoured(newg);
-       newg->colourNeighbour(newc);
-    }
-  else
-    {     
-      col=ba[0]->antiColourLine();
-      col->addAntiColoured(newg);
-      newg->antiColourNeighbour(newc);
-    }
+  if(ba[0]->id()>0) {
+    col=ba[0]->colourLine();
+    col->addColoured(newg);
+    newg->colourNeighbour(newc);
+  }
+  else {     
+    col=ba[0]->antiColourLine();
+    col->addAntiColoured(newg);
+    newg->antiColourNeighbour(newc);
+  }
   // change the existing quark and antiquark
   PPtr orig;
-  //cerr << "testing B " << endl;
-  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)     {
-    if(cit->first->progenitor()->id()==newc->id())
-      {
-	//cerr << "testing quark " << endl;
-	// remove old particles from colour line
-	if(newc->id()>0)
-	  {
-	    col->removeColoured(cit->first->copy());
-	    col->removeColoured(cit->first->progenitor());
-	  }
-	else
-	  {
-	    col->removeAntiColoured(cit->first->copy());
-	    col->removeAntiColoured(cit->first->progenitor());
-	  }
-	// insert new particles
-	cit->first->copy(newc);
-	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2,true)));
-	cit->first->progenitor(sp);
-	tree->outgoingLines()[cit->first]=sp;
-	cit->first->perturbative(false);
-	orig=cit->first->original();
+  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit) {
+    if(cit->first->progenitor()->id()==newc->id()) {
+      // remove old particles from colour line
+      if(newc->id()>0) {
+	col->removeColoured(cit->first->copy());
+	col->removeColoured(cit->first->progenitor());
       }
-    else
-      {
-	cit->first->copy(newa);
-	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2,true)));
-	cit->first->progenitor(sp);
-	tree->outgoingLines()[cit->first]=sp;
-	cit->first->perturbative(true);
+      else {
+	col->removeAntiColoured(cit->first->copy());
+	col->removeAntiColoured(cit->first->progenitor());
       }
+      // insert new particles
+      cit->first->copy(newc);
+      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newc,2,true)));
+      cit->first->progenitor(sp);
+      tree->outgoingLines()[cit->first]=sp;
+      cit->first->perturbative(false);
+      orig=cit->first->original();
+    }
+    else {
+      cit->first->copy(newa);
+      ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,2,true)));
+      cit->first->progenitor(sp);
+      tree->outgoingLines()[cit->first]=sp;
+      cit->first->perturbative(true);
+    }
   }
   // Add the gluon to the shower:
   ShowerParticlePtr   sg   =new_ptr(ShowerParticle(*newg,2,true));
@@ -227,10 +219,11 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   tree->outgoingLines().insert(make_pair(gluon,sg));
 
   if(!inTheDeadRegion(_xg,_xa,_ktb,_ktc)) {
-      cout << "TopDecayMECorrection::applyHardMatrixElementCorrection()\n"
-	   << "Just found a point that escaped from the dead region!\n"
-           << "   _xg: " << _xg << "   _xa: " << _xa 
-           << "   newfs.size(): " << newfs.size() << endl;
+    generator()->log()
+      << "TopDecayMECorrection::applyHardMatrixElementCorrection()\n"
+      << "Just found a point that escaped from the dead region!\n"
+      << "   _xg: " << _xg << "   _xa: " << _xa 
+      << "   newfs.size(): " << newfs.size() << endl;
   }
   tree->hardMatrixElementCorrection(true);
 }
@@ -246,12 +239,12 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   // Return if there is no (NLO) gluon emission:
   
   double weight = getHard(ktb,ktc);
-  if(weight>1.)
-    {
-      cerr << "Weight greater than 1 " << weight 
-	   << " " << _xg << " " << _xa << endl;
+  if(weight>1.) {
+    generator()->log() << "Weight greater than 1 for hard emission in "
+		       << "TopDecayMECorrection::applyHard xg = " << _xg 
+		       << " xa = " << _xa << "\n";
       weight=1.;
-    }
+  }
   // Accept/Reject
   if (weight<UseRandom::rnd()||p.size()!= 2) return fs; 
    // Drop events if getHard returned a negative weight 
@@ -390,16 +383,18 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	      double f(me(xa,xg)),
 		J(0.5*(u+v)/sqr(w)-0.5*(u-v)/sqr(z)+_a*sqr(w-z)/(v*w*z));
 	      double wgt(f*J*2./kappa/(1.+sqr(z)-2.*z/kappa)/_initialenhance);
-	      if(wgt>1.)
-		{
-		  cerr << "testing violates max initial " << xg 
-		       << " " << xa << " " << wgt << " " << _initialenhance << endl;
-		  wgt=1.;
-		}
               // This next `if' prevents the hardest emission from the 
               // top shower ever entering the so-called T2 region of the
               // phase space if that region is to be populated by the hard MEC.
-              if(_useMEforT2&&xg>xgbcut(_ktb)) { wgt = 0.; }
+              if(_useMEforT2&&xg>xgbcut(_ktb)) wgt = 0.;
+	      if(wgt>1.) {
+		generator()->log() << "Violation of maximum for initial-state "
+				   << " soft veto in "
+				   << "TopDecayMECorrection::softMatrixElementVeto"
+				   << "xg = " << xg << " xa = " << xa 
+				   << "weight =  " << wgt << "\n";
+		wgt=1.;
+	      }
 	      // compute veto from weight
 	      veto = !UseRandom::rndbool(wgt);
 	    }
@@ -432,12 +427,13 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // jacobian
       double J(z*root);
       double wgt(f*J*2.*kappa/(1.+sqr(z)-2.*_c/kappa/z)/sqr(xfact)/_finalenhance);
-      if(wgt>1.)
-	{
-	  cerr << "testing violates max final " << xg 
-	       << " " << xa << " " << wgt << endl;
-	  wgt=1.;
-	}
+      if(wgt>1.) {
+	generator()->log() << "Violation of maximum for final-state  soft veto in "
+			   << "TopDecayMECorrection::softMatrixElementVeto"
+			   << "xg = " << xg << " xa = " << xa 
+			   << "weight =  " << wgt << "\n";
+	wgt=1.;
+      }
       // compute veto from weight
       veto = !UseRandom::rndbool(wgt);
       // if not vetoed reset max

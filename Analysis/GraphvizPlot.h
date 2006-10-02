@@ -147,6 +147,12 @@ private:
    */
 
   string _fileBaseName;
+
+  /**
+   * Event number that should be drawn 
+   */
+  long _eventNumber;
+
 };
 
 }

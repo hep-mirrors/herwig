@@ -54,9 +54,10 @@ public:
    * @param tree The shower tree currently being showered
    * @param initial The initial-state radiation enhancement factor
    * @param final   The final-state radiation enhancement factor
+   * @param evolver Pointer to the Evolver.
    */
   virtual bool canHandle(ShowerTreePtr tree,double & initial,
-			 double & final)=0;
+			 double & final,EvolverPtr evolver)=0;
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay

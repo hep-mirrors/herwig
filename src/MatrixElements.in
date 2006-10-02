@@ -1,4 +1,4 @@
-# change to the directory
+mkdir /Defaults/MatrixElements
 cd /Defaults/MatrixElements
 
 #
@@ -25,6 +25,8 @@ create Herwig++::MEqq2W2ff  MEqq2W2ff
 create Herwig++::MEPP2GammaGamma MEGammaGamma
 # hadron-hadron to gamma+jet
 create Herwig++::MEPP2GammaJet   MEGammaJet
+# hadron-hadron to higgs
+create Herwig++::MEPP2Higgs   MEHiggs
 # hadron-hadron to higgs+jet
 create Herwig++::MEPP2HiggsJet   MEHiggsJet
 # QCD 2-to-2
@@ -52,6 +54,7 @@ insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2gZ2ff
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEqq2W2ff
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaGamma
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEGammaJet
+#insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggs
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHiggsJet
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEQCD2to2
 #insert SimpleQCD:MatrixElements[0] /Defaults/MatrixElements/MEHeavyQuark

@@ -80,14 +80,9 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
   // these products have the mass but should have constituent mass
   for(unsigned int ix=0;ix<children.size();++ix)
     {
-      Energy cmass=(children[ix]->dataPtr())->constituentMass();
+      Energy cmass=children[ix]->dataPtr()->constituentMass();
       children[ix]->set5Momentum(Lorentz5Momentum(0.,0.,0.,cmass,cmass));
     }
-  // special for the gluon
-  if(children[1]->id()==ParticleID::g) {
-    Energy cmass=getParticleData(ParticleID::g)->constituentMass();
-    children[1]->set5Momentum(Lorentz5Momentum(0.,0.,0.,cmass,cmass));
-  }
   // 2-body decays
   if(children.size()==2) {
     double ctheta,phi;

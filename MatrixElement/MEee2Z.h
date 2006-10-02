@@ -177,10 +177,10 @@ private:
    * @param vout The polarization vectors for the outgoing Z
    * @param me The spin averaged matrix element
    */
-  ProductionMatrixElement HelicityME(Lorentz5Momentum pin[2], Lorentz5Momentum pres,
-				     SpinorWaveFunction fin[2],
-				     SpinorBarWaveFunction ain[2],
-				     VectorWaveFunction vout[3],double& me) const;
+  ProductionMatrixElement HelicityME(vector<SpinorWaveFunction> fin,
+				     vector<SpinorBarWaveFunction> ain,
+				     vector<VectorWaveFunction> vout,double& me) const;
+
 private:
 
   /**

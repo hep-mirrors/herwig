@@ -6,29 +6,13 @@
 
 namespace Herwig {
 
-inline IFDipole::IFDipole() 
-{
-  // minimum photon energy
-  _emin = 1.*MeV;
-  // option for the energy cut-off
-  _energyopt=1;
-  // option for beta factors
-  _betaopt = 1;
-  // maximum weight
-  _maxwgt = 3.0;
-  // default mode
-  _mode = 1;
-  // maximum number of tries
-  _maxtry=500;
-  // control over the number of photons
-  _nphotonmax=20;
-}
-
-inline IFDipole::IFDipole(const IFDipole & x)
-  : Interfaced(x), _alpha(x._alpha), _emin(x._emin),
-    _emax(x._emax),
-    _nphotonmax(x._nphotonmax),_maxwgt(x._maxwgt),_mode(x._mode),
-    _maxtry(x._maxtry),_energyopt(x._energyopt),_betaopt(x._betaopt) {}
+inline IFDipole::IFDipole() :
+  _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(), _nphotonmax(20),
+  _map(2,0), _m(3,0.0), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
+  _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
+  _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
+  _mode(1), _maxtry(500), _energyopt(1), _betaopt(1), _dipoleopt()
+{}
 
 inline IBPtr IFDipole::clone() const {
   return new_ptr(*this);

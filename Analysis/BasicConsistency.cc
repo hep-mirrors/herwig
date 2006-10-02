@@ -19,9 +19,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-BasicConsistency::~BasicConsistency() {}
-
-void BasicConsistency::analyze(tEventPtr event, long ieve, int loop, int state) {
+void BasicConsistency::analyze(tEventPtr event, long, int, int) {
   set<tcPPtr> particles;
   event->selectFinalState(inserter(particles));
     
@@ -76,18 +74,6 @@ void BasicConsistency::analyze(tEventPtr event, long ieve, int loop, int state) 
 
 }
 
-LorentzRotation BasicConsistency::transform(tEventPtr event) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
-}
-
-void BasicConsistency::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
-}
-
-void BasicConsistency::analyze(tPPtr) {}
-
 void BasicConsistency::persistentOutput(PersistentOStream & os) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
@@ -102,7 +88,7 @@ ClassDescription<BasicConsistency> BasicConsistency::initBasicConsistency;
 void BasicConsistency::Init() {
 
   static ClassDocumentation<BasicConsistency> documentation
-    ("There is no documentation for the BasicConsistency class");
+    ("The BasicConsistency analysis handler checks for momentum and charge conservation.");
 
 }
 

@@ -16,18 +16,6 @@ inline ClusterDecayer::ClusterDecayer() :
   _masstry(20)
 {}
 
-inline ClusterDecayer::ClusterDecayer(const ClusterDecayer & x)
-  : ThePEG::HandlerBase(x) ,
-    _hadronsSelector( x._hadronsSelector ), 	     
-    _globalParameters( x._globalParameters ), 	     
-    _ClDir1( x._ClDir1 ),	     
-    _ClDir2( x._ClDir2 ),	     
-    _ClSmr1( x._ClSmr1 ),	     
-    _ClSmr2( x._ClSmr2 ),
-    _onshell(x._onshell),
-    _masstry(x._masstry)
-{}
-
 inline IBPtr ClusterDecayer::clone() const {
   return new_ptr(*this);
 }

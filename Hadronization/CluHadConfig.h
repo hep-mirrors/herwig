@@ -28,10 +28,6 @@ namespace Herwig {
   typedef vector<ClusterPtr> ClusterVector;
   typedef vector<tClusterPtr> tClusterVector;
 
-  class GlobalParameters;
-  typedef Ptr<GlobalParameters>::pointer GlobParamPtr;
-  typedef Ptr<GlobalParameters>::transient_pointer tGlobParamPtr;
-
   class PartonSplitter;
   typedef Ptr<PartonSplitter>::pointer PartonSplitterPtr;
   typedef Ptr<PartonSplitter>::transient_pointer tPartonSplitterPtr;

@@ -7,8 +7,8 @@
 namespace Herwig {
 
 inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),
-						      _initialenhance(700.), 
-						      _finalenhance(1.2),
+						      _initialenhance(1.), 
+						      _finalenhance(1.8),
 						      _useMEforT2(false)
 {}
 
@@ -99,7 +99,7 @@ inline double TopDecayMECorrection::xaccut(double kt)
 inline double TopDecayMECorrection::z(double xac, double kt, 
                                       int toggle1, int toggle2) 
 { 
-  double z;
+  double z = -1.0;
   if(toggle2==0) { 
     z = (kt+toggle1*sqrt(kt*(kt-4.*(1.+_a-_c-xac))))/(2.*kt); 
   } else if(toggle2==1) {
@@ -107,6 +107,9 @@ inline double TopDecayMECorrection::z(double xac, double kt,
       /(2.*(1.+_a-xac));
   } else if(toggle2==2) {
     z = 0.5;
+  } else {
+    throw Exception() << "Cannot determine z in TopDecayMECorrection::z()"
+		      << Exception::eventerror;
   }
   return z;
 }

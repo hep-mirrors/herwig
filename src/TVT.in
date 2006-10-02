@@ -1,11 +1,5 @@
-cd /Defaults/Handlers
-#
-cd /Defaults/
-set theGlobalParameters:HadronizationScale 0.5*GeV
-set theGlobalParameters:OnOffThePEGStringFragmentationMode 0
-set theGlobalParameters:OnOffSoftUnderlyingEventMode 1
-set theGlobalParameters:MinVirtuality2 0.1*GeV2
-set theGlobalParameters:MaxDisplacement 1.0e-10*millimeter
+cd /Defaults/Handlers/Hadronization/Cluster
+set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
 #
 cd /Defaults/Generators
 set LHCGenerator:NumberOfEvents 10000000

@@ -1,0 +1,59 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TTbarAnalysis class.
+//
+
+namespace Herwig {
+
+inline TTbarAnalysis::TTbarAnalysis() :
+  _pttop(0.,350.,100), _pttbar(0.,350.,100), _ptpair(0.,350.,100), 
+  _ettop(0.,350.,100), _ettbar(0.,350.,100), _etpair(0.,350.,100), 
+  _etop(0.,3000.,100), _etbar(0.,3000.,100), _epair(0.,6000.,100), 
+  _raptop(-5.,5.,100), _raptbar(-5.,5.,100), _rappair(-5.,5.,100), 
+  _phitop(-3.1459,3.1459,50), _phitbar(-3.1459,3.1459,50), 
+  _deltaphi(-3.1459,3.1459,100), _mpair(300,1500,100), 
+  _etsum(0.,700.,100), _ptsum(0.,700.,100) {}
+
+inline IBPtr TTbarAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TTbarAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+// void Histogram::topdrawOutput(ofstream & out,
+// 			      bool frame,
+// 			      bool errorbars,
+// 			      bool xlog, bool ylog,
+// 			      string colour,
+// 			      string title,  string titlecase,
+// 			      string left,   string leftcase,
+// 			      string bottom, string bottomcase) const
+
+
+inline void TTbarAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  ofstream outfile("TTbarAnalysis.top");
+  _pttop.topdrawOutput(outfile,true,false,false,true,"RED","pt t, tbar");
+  _pttbar.topdrawOutput(outfile,false,false,false,true,"BLUE","pt tbar");
+  _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");
+  _ettop.topdrawOutput(outfile,true,false,false,true,"RED","Et t, tbar");
+  _ettbar.topdrawOutput(outfile,false,false,false,true,"BLUE","Et tbar");
+  _etpair.topdrawOutput(outfile,true,false,false,true,"BLACK","Et pair");
+  _etop.topdrawOutput(outfile,true,false,false,true,"RED","E t, tbar");
+  _etbar.topdrawOutput(outfile,false,false,false,true,"BLUE","E tbar");
+  _epair.topdrawOutput(outfile,true,false,false,true,"BLACK","E pair");
+  _raptop.topdrawOutput(outfile,true,false,false,false,"RED","y t, tbar");
+  _raptbar.topdrawOutput(outfile,false,false,false,false,"BLUE","y tbar");
+  _rappair.topdrawOutput(outfile,true,false,false,false,"BLACK","y pair");
+  _phitop.topdrawOutput(outfile,true,false,false,false,"RED","phi t, tbar");
+  _phitbar.topdrawOutput(outfile,false,false,false,false,"BLUE","phi tbar");
+  _deltaphi.topdrawOutput(outfile,true,false,false,false,"BLACK","Delta phi");
+  _mpair.topdrawOutput(outfile,true,false,false,true,"BLACK","M pair");
+  _etsum.topdrawOutput(outfile,true,false,false,true,"BLACK","pt sum");
+  _ptsum.topdrawOutput(outfile,true,false,false,true,"BLACK","Et sum");
+}
+
+}

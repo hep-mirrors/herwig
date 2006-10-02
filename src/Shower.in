@@ -1,6 +1,9 @@
+mkdir /Defaults/Handlers/Shower
 cd /Defaults/Handlers/Shower
 library HwShower.so
-
+#
+# create the main objects
+#
 create Herwig++::SplittingGenerator theSplittingGenerator
 create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
 create Herwig++::ShowerAlphaQED theShowerAlphaQED
@@ -9,36 +12,38 @@ create Herwig++::Evolver theEvolver
 create Herwig++::QTildeModel theShowerModel
 create Herwig++::QTildeFinder thePartnerFinder
 create Herwig++::QTildeReconstructor theKinematicsReconstructor
-
-# Set the pointers to the relevant objects
+#
+# Set the pointers to the relevant objects 
+#
 set stdShowerHandler:Evolver theEvolver
-
-create Herwig++::VectorBosonQQBarMECorrection qqbarg
-insert theShowerModel:MECorrections 0 qqbarg
-set qqbarg:Coupling theShowerAlphaQCD
-
 set theShowerModel:PartnerFinder thePartnerFinder
 set theShowerModel:KinematicsReconstructor theKinematicsReconstructor
 set theEvolver:ShowerModel theShowerModel
 set theEvolver:SplittingGenerator theSplittingGenerator
-
+#
+#  create the matrix element corrections
+# 
+# vector boson decay
+create Herwig++::VectorBosonQQBarMECorrection qqbarg
+insert theShowerModel:MECorrections 0 qqbarg
+set qqbarg:Coupling theShowerAlphaQCD
+# top decay
+create Herwig++::TopDecayMECorrection TopME
+insert theShowerModel:MECorrections 1  TopME
+set TopME:Coupling theShowerAlphaQCD
+# drell-yan
+create Herwig++::DrellYanMECorrection DrellYan
+insert theShowerModel:MECorrections 2  DrellYan
+set DrellYan:Coupling theShowerAlphaQCD
+#
 # a few default values
-cd /Defaults/Handlers/Shower
 set theEvolver:MECorrMode 0
-
-
 set theShowerAlphaQCD:ScaleFactor 1.0
 set theShowerAlphaQED:ScaleFactor 1.0
 set theShowerAlphaQCD:NPAlphaS 2
 set theShowerAlphaQCD:Qmin 0.630882*GeV
 set theShowerAlphaQCD:NumberOfLoops 3
 set theShowerAlphaQCD:InputOption 1
-
-
-
-
-
-
 #
 #############################################################
 # read this as a 2x3 matrix with FSR/ISR being the rows 
@@ -74,47 +79,90 @@ create Herwig++::QtoGQSplitFn theQtoGQSplitFn
 #
 # Now the Sudakovs
 create Herwig++::QTildeSudakov QtoQGSudakov
+set QtoQGSudakov:SplittingFunction theQtoQGSplitFn
+set QtoQGSudakov:Alpha theShowerAlphaQCD
+set QtoQGSudakov:PDFmax 1.9
 set QtoQGSudakov:cutoffKinScale 2.3*GeV
 set QtoQGSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoQGSudakov:CutoffQEDMassScale 0.75*GeV
 set QtoQGSudakov:CutoffEWKMassScale 91.0*GeV
+
 create Herwig++::QTildeSudakov GtoGGSudakov
+set GtoGGSudakov:SplittingFunction theGtoGGSplitFn
+set GtoGGSudakov:Alpha theShowerAlphaQCD
+set GtoGGSudakov:PDFmax 1.0
 set GtoGGSudakov:cutoffKinScale 2.3*GeV
 set GtoGGSudakov:CutoffQCDMassScale 0.75*GeV
 set GtoGGSudakov:CutoffQEDMassScale 0.75*GeV
 set GtoGGSudakov:CutoffEWKMassScale 91.0*GeV
+
 create Herwig++::QTildeSudakov GtoQQbarSudakov
+set GtoQQbarSudakov:SplittingFunction theGtoQQbarSplitFn
+set GtoQQbarSudakov:Alpha theShowerAlphaQCD
+set GtoQQbarSudakov:PDFmax 120.0
 set GtoQQbarSudakov:cutoffKinScale 2.3*GeV
 set GtoQQbarSudakov:CutoffQCDMassScale 0.75*GeV
 set GtoQQbarSudakov:CutoffQEDMassScale 0.75*GeV
 set GtoQQbarSudakov:CutoffEWKMassScale 91.0*GeV
+
+create Herwig++::QTildeSudakov GtobbbarSudakov
+set GtobbbarSudakov:SplittingFunction theGtoQQbarSplitFn
+set GtobbbarSudakov:Alpha theShowerAlphaQCD
+set GtobbbarSudakov:PDFmax 4000.0
+set GtobbbarSudakov:cutoffKinScale 2.3*GeV
+set GtobbbarSudakov:CutoffQCDMassScale 0.75*GeV
+set GtobbbarSudakov:CutoffQEDMassScale 0.75*GeV
+set GtobbbarSudakov:CutoffEWKMassScale 91.0*GeV
+
+create Herwig++::QTildeSudakov GtoccbarSudakov
+set GtoccbarSudakov:SplittingFunction theGtoQQbarSplitFn
+set GtoccbarSudakov:Alpha theShowerAlphaQCD
+set GtoccbarSudakov:PDFmax 600.0
+set GtoccbarSudakov:cutoffKinScale 2.3*GeV
+set GtoccbarSudakov:CutoffQCDMassScale 0.75*GeV
+set GtoccbarSudakov:CutoffQEDMassScale 0.75*GeV
+set GtoccbarSudakov:CutoffEWKMassScale 91.0*GeV
+
 create Herwig++::QTildeSudakov QtoQGammaSudakov
+set QtoQGammaSudakov:SplittingFunction theQtoQGammaSplitFn
+set QtoQGammaSudakov:Alpha theShowerAlphaQED
+set QtoQGammaSudakov:PDFmax 1.0
 set QtoQGammaSudakov:cutoffKinScale 2.3*GeV
 set QtoQGammaSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoQGammaSudakov:CutoffQEDMassScale 0.75*GeV
 set QtoQGammaSudakov:CutoffEWKMassScale 91.0*GeV
+
 create Herwig++::QTildeSudakov QtoGQSudakov
+set QtoGQSudakov:SplittingFunction theQtoGQSplitFn
+set QtoGQSudakov:Alpha theShowerAlphaQCD
+set QtoGQSudakov:PDFmax 300.0
 set QtoGQSudakov:cutoffKinScale 2.3*GeV
 set QtoGQSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoGQSudakov:CutoffQEDMassScale 0.75*GeV
 set QtoGQSudakov:CutoffEWKMassScale 91.0*GeV
-set QtoQGSudakov:PDFmax 1.9
-set GtoGGSudakov:PDFmax 1.0
-set GtoQQbarSudakov:PDFmax 1000.0
-set QtoQGammaSudakov:PDFmax 1.0
-set QtoGQSudakov:PDFmax 6.5
-set QtoQGSudakov:SplittingFunction theQtoQGSplitFn
-set QtoQGSudakov:Alpha theShowerAlphaQCD
-set GtoGGSudakov:SplittingFunction theGtoGGSplitFn
-set GtoGGSudakov:Alpha theShowerAlphaQCD
-set GtoQQbarSudakov:SplittingFunction theGtoQQbarSplitFn
-set GtoQQbarSudakov:Alpha theShowerAlphaQCD
-set QtoQGammaSudakov:SplittingFunction theQtoQGammaSplitFn
-set QtoQGammaSudakov:Alpha theShowerAlphaQED
-set QtoGQSudakov:SplittingFunction theQtoGQSplitFn
-set QtoGQSudakov:Alpha theShowerAlphaQCD
+
+create Herwig++::QTildeSudakov utoGuSudakov
+set utoGuSudakov:SplittingFunction theQtoGQSplitFn
+set utoGuSudakov:Alpha theShowerAlphaQCD
+set utoGuSudakov:PDFmax 150.0
+set utoGuSudakov:cutoffKinScale 2.3*GeV
+set utoGuSudakov:CutoffQCDMassScale 0.75*GeV
+set utoGuSudakov:CutoffQEDMassScale 0.75*GeV
+set utoGuSudakov:CutoffEWKMassScale 91.0*GeV
+
+create Herwig++::QTildeSudakov dtoGdSudakov
+set dtoGdSudakov:SplittingFunction theQtoGQSplitFn
+set dtoGdSudakov:Alpha theShowerAlphaQCD
+set dtoGdSudakov:PDFmax 40.0
+set dtoGdSudakov:cutoffKinScale 2.3*GeV
+set dtoGdSudakov:CutoffQCDMassScale 0.75*GeV
+set dtoGdSudakov:CutoffQEDMassScale 0.75*GeV
+set dtoGdSudakov:CutoffEWKMassScale 91.0*GeV
+
+
 #
 # Now add the final splittings
+#
 set theSplittingGenerator:AddFinalSplitting u->u,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting d->d,g; QtoQGSudakov
 set theSplittingGenerator:AddFinalSplitting s->s,g; QtoQGSudakov
@@ -127,8 +175,8 @@ set theSplittingGenerator:AddFinalSplitting g->g,g; GtoGGSudakov
 set theSplittingGenerator:AddFinalSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->d,dbar; GtoQQbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->s,sbar; GtoQQbarSudakov
-set theSplittingGenerator:AddFinalSplitting g->c,cbar; GtoQQbarSudakov
-set theSplittingGenerator:AddFinalSplitting g->b,bbar; GtoQQbarSudakov
+set theSplittingGenerator:AddFinalSplitting g->c,cbar; GtoccbarSudakov
+set theSplittingGenerator:AddFinalSplitting g->b,bbar; GtobbbarSudakov
 set theSplittingGenerator:AddFinalSplitting g->t,tbar; GtoQQbarSudakov
 #
 set theSplittingGenerator:AddFinalSplitting u->u,gamma; QtoQGammaSudakov
@@ -151,21 +199,21 @@ set theSplittingGenerator:AddInitialSplitting t->t,g; QtoQGSudakov
 #
 set theSplittingGenerator:AddInitialSplitting g->g,g; GtoGGSudakov
 #
-set theSplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->d,dbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->u,ubar; GtoQQbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->s,sbar; GtoQQbarSudakov
-set theSplittingGenerator:AddInitialSplitting g->c,cbar; GtoQQbarSudakov
-set theSplittingGenerator:AddInitialSplitting g->b,bbar; GtoQQbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->c,cbar; GtoccbarSudakov
+set theSplittingGenerator:AddInitialSplitting g->b,bbar; GtobbbarSudakov
 set theSplittingGenerator:AddInitialSplitting g->t,tbar; GtoQQbarSudakov
 #
-set theSplittingGenerator:AddInitialSplitting u->g,u; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting d->g,d; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting d->g,d; dtoGdSudakov
+set theSplittingGenerator:AddInitialSplitting u->g,u; utoGuSudakov
 set theSplittingGenerator:AddInitialSplitting s->g,s; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting c->g,c; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting b->g,b; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting t->g,t; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting ubar->g,ubar; QtoGQSudakov
-set theSplittingGenerator:AddInitialSplitting dbar->g,dbar; QtoGQSudakov
+set theSplittingGenerator:AddInitialSplitting dbar->g,dbar; dtoGdSudakov
+set theSplittingGenerator:AddInitialSplitting ubar->g,ubar; utoGuSudakov
 set theSplittingGenerator:AddInitialSplitting sbar->g,sbar; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting cbar->g,cbar; QtoGQSudakov
 set theSplittingGenerator:AddInitialSplitting bbar->g,bbar; QtoGQSudakov

@@ -46,7 +46,7 @@ void SudakovFormFactor::Init() {
   static Parameter<SudakovFormFactor,double> interfacePDFmax
     ("PDFmax",
      "Maximum value of PDF weight. ",
-     &SudakovFormFactor::_pdfmax, 35.0, 1.0, 1000.0,
+     &SudakovFormFactor::_pdfmax, 35.0, 1.0, 4000.0,
      false, false, Interface::limited);
 
 }
@@ -59,13 +59,19 @@ PDFVeto(const Energy2 t, const double x,
   assert(pdf);
   // remember: pdf's q is cut in pdf class.  should probably be done here! 
   // this would correspond to QSPAC in F-HERWIG. 
-  double ratio = pdf->xfx(beam,parton0,t,x/z())/
-                 pdf->xfx(beam,parton1,t,x);
+  double newpdf=pdf->xfx(beam,parton0,t,x/z());
+  double oldpdf=pdf->xfx(beam,parton1,t,x);
+  if(newpdf<=0.) return true;
+  if(oldpdf<=0.) return false;
+  double ratio = newpdf/oldpdf;
+
   // ratio / PDFMax must be a probability <= 1.0
   if (ratio > _pdfmax) {
     generator()->log() << "PDFVeto warning: Ratio (" << ratio 
 			    << ") > " << name() << ":PDFmax ("
-			    <<_pdfmax <<")\n";
+		       <<_pdfmax <<") for " 
+		       << parton0->PDGName() << " to " 
+		       << parton1->PDGName() << "\n";
   }
   return ratio < UseRandom::rnd()*_pdfmax;
 }

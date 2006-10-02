@@ -5,12 +5,8 @@
 #include <ThePEG/Handlers/HandlerBase.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
-
 
 namespace Herwig {
-
-
 using namespace ThePEG;
 
   //class Cluster;          // forward declaration
@@ -60,7 +56,6 @@ using namespace ThePEG;
  *  (expecially in future developments), without any information loss, 
  *  and furthermore it allows a better debugging. 
  *
- *  @see GlobalParameters
  *  @see HadronSelector
  */ 
 class ClusterFissioner: public ThePEG::HandlerBase {
@@ -92,7 +87,7 @@ public:
    * of the mass spectrum from which to draw the masses of the two 
    * cluster children (see method drawChildrenMasses for details).
    */
-  void fission(const StepPtr &);
+  void fission(const StepPtr &, bool softUEisOn);
 
 public:
 
@@ -168,7 +163,7 @@ private:
    * could produce an unphysical large transverse energy from a supposed 
    * soft beam remnant process.
    */
-  void cut(tClusterPtr, const StepPtr&, ClusterVector&);
+  void cut(tClusterPtr, const StepPtr&, ClusterVector&, bool softUEisOn);
 
 public:
 
@@ -194,7 +189,7 @@ public:
    * mass spectrum used to generate the cluster child masses (see method
    * drawChildMass).
    */
-  virtual cutType cut(tClusterPtr &);
+  virtual cutType cut(tClusterPtr &, bool softUEisOn);
 
 public:
 
@@ -299,11 +294,6 @@ private:
   HadronSelectorPtr _hadronsSelector;
 
   /**
-   * A pointer to a Herwig::GlobalParameters object for global variables.
-   */
-  GlobParamPtr      _globalParameters;  
-
-  /**
    * The Cluster max mass used to determine when fission will occur.
    */
   Energy _clMax;
@@ -364,7 +354,7 @@ struct ClassTraits<Herwig::ClusterFissioner>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwHadronization.so"; }
+  static string library() { return ""; }
 };
 
 }

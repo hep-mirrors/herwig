@@ -111,7 +111,7 @@ setup /Defaults/Particles/nu'_taubar -18 nu'_taubar 0.0 0.0 0.0 0.0 0 0 2 1
 defaultparticle /Defaults/Particles/nu'_taubar 
 makeanti /Defaults/Particles/nu'_tau /Defaults/Particles/nu'_taubar 
 create /ThePEG/ConstituentParticleData /Defaults/Particles/g 
-setup /Defaults/Particles/g 21 g 0.0 0.0 0.0 0.0 0 8 3 1 0.75 
+setup /Defaults/Particles/g 21 g 0.0 0.0 0.0 0.0 0 8 3 1 0.750 
 defaultparticle /Defaults/Particles/g 
 create /ThePEG/ParticleData /Defaults/Particles/gamma 
 setup /Defaults/Particles/gamma 22 gamma 0.0 0.0 0.0 0.0 0 0 3 1

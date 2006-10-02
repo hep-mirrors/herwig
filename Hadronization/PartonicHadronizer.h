@@ -5,7 +5,6 @@
 // This is the declaration of the PartonicHadronizer class.
 //
 
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include <ThePEG/Handlers/EventHandler.h>
 #include "PartonSplitter.h"
 #include "ClusterFinder.h"
@@ -34,14 +33,6 @@ ThePEG_DECLARE_MULTISET(tcPDPtr,cParticleMSet);
  *  if the hadronization produces a decay mode which is all ready included as an
  *  inclusive mode to avoid double counting.
  * 
- *  Notice that the access to the GlobalParameters class 
- *  instance is provided only to allow non-interfaced and non-persistent classes
- *  (Cluster) to access the global parameters and/or to draw 
- *  random numbers. This is done in the run initialization, doinitrun()
- *  by setting static pointers defined in those non-interfaced and 
- *  non-persistent classes.
- *
- *  @see GlobalParameters
  *  @see PartonSplitter
  *  @see ClusterFinder
  *  @see ColourReconnector
@@ -61,11 +52,6 @@ public:
    * The default constructor.
    */
   inline PartonicHadronizer();
-
-  /**
-   * The copy constructor.
-   */
-  inline PartonicHadronizer(const PartonicHadronizer &);
   //@}
 
 
@@ -128,17 +114,6 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-  //@}
-
 private:
 
   /**
@@ -194,11 +169,6 @@ private:
   //@}
 
 private:
-
-  /**
-   * This is a pointer to a Herwig::GlobalParameters object.
-   */
-  GlobParamPtr           _globalParameters;
 
   /**
    * This is a pointer to a Herwig::PartonSplitter object.

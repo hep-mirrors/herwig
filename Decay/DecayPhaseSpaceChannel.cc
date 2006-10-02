@@ -21,11 +21,10 @@
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::SpinInfo;
-
-DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(DecayPhaseSpaceModePtr in){_mode=in;}
-
-DecayPhaseSpaceChannel::~DecayPhaseSpaceChannel() {}
   
+DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr in) 
+  : _mode(in) {}
+
 void DecayPhaseSpaceChannel::persistentOutput(PersistentOStream & os) const 
 {
   os << _intpart << _jactype << _intmass << _intwidth 
@@ -84,7 +83,7 @@ void DecayPhaseSpaceChannel::Init() {
 // generate the momenta of the external particles
 vector<Lorentz5Momentum> 
 DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
-					vector<Energy> massext)
+					const vector<Energy> & massext)
 {
   // integers for loops
   unsigned int ix,iy,idau[2],iz;

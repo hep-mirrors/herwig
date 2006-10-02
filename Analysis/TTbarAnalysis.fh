@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the TTbarAnalysis class.
+//
+#ifndef HERWIG_TTbarAnalysis_FH
+#define HERWIG_TTbarAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class TTbarAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::TTbarAnalysis,TTbarAnalysisPtr);
+
+}
+
+#endif

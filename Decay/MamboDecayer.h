@@ -8,7 +8,6 @@
 #include "ThePEG/PDT/Decayer.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "MamboDecayer.fh"
-#include "Herwig++/Utilities/GlobalParameters.h"
 namespace Herwig {
   using namespace ThePEG;
   
@@ -28,16 +27,6 @@ public:
    * The default constructor.
    */
   inline MamboDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline MamboDecayer(const MamboDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~MamboDecayer();
   //@}
 
 public:
@@ -215,11 +204,6 @@ private:
    * Maximum weight
    */
   double _maxweight;
-
-  /**
-   * Pointer to global paramters object
-   */
-  Ptr<GlobalParameters>::pointer global;
 };
 
 }

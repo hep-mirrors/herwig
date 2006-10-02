@@ -13,7 +13,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * Here is the documentation of the DrellYanMECorrection class.
+ * The DrellYanMECorrection class implements the matrix element correction
+ * for vector boson production via the Drell-Yan process.
  *
  * @see \ref DrellYanMECorrectionInterfaces "The interfaces"
  * defined for DrellYanMECorrection.
@@ -22,23 +23,10 @@ class DrellYanMECorrection: public QTildeMECorrection {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline DrellYanMECorrection();
-
-  /**
-   * The copy constructor.
-   */
-  inline DrellYanMECorrection(const DrellYanMECorrection &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~DrellYanMECorrection();
-  //@}
 
 public:
 
@@ -52,9 +40,10 @@ public:
    * @param tree The shower tree currently being showered
    * @param initial The initial-state radiation enhancement factor
    * @param final   The final-state radiation enhancement factor
+   * @param evolver Pointer to the Evolver.
    */
   virtual bool canHandle(ShowerTreePtr tree,double & initial,
-			 double & final);
+			 double & final,EvolverPtr evolver);
 
   /**
    *  Apply the hard matrix element correction to a given hard process or decay
@@ -145,6 +134,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   inline virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -164,9 +159,14 @@ private:
 private:
 
   /**
-   *  Relative weight for the \f$q\bar{q}\f$ and \f$qg\f$ channels
+   *  Relative weight for the \f$q\bar{q}\f$ and \f$q/\bar{q}g\f$ channels
    */
-  double _channelwgt;
+  double _channelwgtA;
+
+  /**
+   *  Relative weight for the \f$qg\f$ and \f$\bar{q}g\f$ channels 
+   */
+  double _channelwgtB;
 
   /**
    *  Weights for the channels as a vector
@@ -177,6 +177,16 @@ private:
    *  Mass squared of the gauge boson
    */  
   Energy2 _mb2;
+  
+  /**
+   *  Number of weights greater than 1
+   */
+  unsigned int _nover;
+
+  /**
+   *  Maximum weight
+   */
+  double _maxwgt;
 };
 
 }

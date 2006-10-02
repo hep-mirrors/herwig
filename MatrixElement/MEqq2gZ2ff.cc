@@ -266,8 +266,8 @@ double MEqq2gZ2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
   // scale
   Energy2 mb2(scale());
   // matrix element to be stored
-  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin1Half,PDT::Spin1Half));
+  ProductionMatrixElement menew(PDT::Spin1Half,PDT::Spin1Half,
+				PDT::Spin1Half,PDT::Spin1Half);
   // which intermediates to include
   bool gamma=_gammaZ==0||_gammaZ==1;
   bool Z0   =_gammaZ==0||_gammaZ==2;
@@ -297,7 +297,7 @@ double MEqq2gZ2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
 	  // the full thing including interference
 	  diag1 +=diag2;
 	  me[0] += real(diag1*conj(diag1));
-	  if(calc) _me(ihel1,ihel2,ohel1,ohel2) = diag1;
+	  if(calc) menew(ihel1,ihel2,ohel1,ohel2) = diag1;
 	}
       }
     }
@@ -312,6 +312,7 @@ double MEqq2gZ2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
   save.push_back(me[1]);
   save.push_back(me[2]);
   meInfo(save);
+  if(calc) _me.reset(menew);
   return me[0];
 }
 

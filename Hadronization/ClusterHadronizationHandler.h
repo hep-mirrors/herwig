@@ -3,7 +3,6 @@
 #define HERWIG_ClusterHadronizationHandler_H
 
 #include <ThePEG/Handlers/HadronizationHandler.h>
-#include "Herwig++/Utilities/GlobalParameters.h"
 #include "PartonSplitter.h"
 #include "ClusterFinder.h"
 #include "ColourReconnector.h"
@@ -12,7 +11,7 @@
 #include "ClusterDecayer.h"
 #include "ForcedSplitting.h"
 #include "Cluster.h"
-
+#include "ClusterHadronizationHandler.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -29,15 +28,7 @@ using namespace ThePEG;
  *  classes PartonSplitter, ClusterFinder, ColourReconnector, ClusterFissioner, 
  *  LightClusterDecayer, ClusterDecayer; 
  *  and for the storing of the produced particles in the Event record.
- * 
- *  Notice that the access to the GlobalParameters class 
- *  instance is provided only to allow non-interfaced and non-persistent classes
- *  (Cluster) to access the global parameters and/or to draw 
- *  random numbers. This is done in the run initialization, doinitrun()
- *  by setting static pointers defined in those non-interfaced and 
- *  non-persistent classes.
  *
- *  @see GlobalParameters
  *  @see PartonSplitter
  *  @see ClusterFinder
  *  @see ColourReconnector
@@ -50,6 +41,16 @@ class ClusterHadronizationHandler: public HadronizationHandler {
 
 public:
 
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * The default constructor.
+   */
+  inline ClusterHadronizationHandler();
+  //@}
+
+public:
+
   /**
    * The main method which manages the all cluster hadronization.
    *
@@ -59,6 +60,24 @@ public:
    */
   virtual void handle(EventHandler & ch, const tPVector & tagged,
 		      const Hint & hint) throw(Veto, Stop, Exception);
+
+  /**
+   * It returns minimum virtuality^2 of partons to use in calculating 
+   * distances. It is used both in the Showering and Hadronization.
+   */
+  inline Energy2 minVirtuality2() const;
+
+  /**
+   * It returns the maximum displacement that is allowed for a particle
+   * (used to determine the position of a cluster with two components).
+   */
+  inline Length maxDisplacement() const;
+
+  /**
+   * It returns true/false according if the soft underlying model
+   * is switched on/off. 
+   */
+  inline bool isSoftUnderlyingEventON() const;
 
 public:
 
@@ -105,9 +124,16 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Initialize this object to the begining of the run phase.
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinitrun();
+  virtual void doinit() throw(InitException);
+
+   /**
+    * Initialize this object at the begining of the run phase.
+    */
+  virtual void doinitrun();
   //@}
 
 private:
@@ -131,11 +157,6 @@ private:
    * Print information about the final, complete collections of clusters.
    */
   void debuggingInfo(EventHandler & ch, ClusterVector &);
-
-  /**
-   * This is a pointer to a Herwig::GlobalParameters object.
-   */
-  GlobParamPtr           _globalParameters;
 
   /**
    * This is a pointer to a Herwig::PartonSplitter object.
@@ -171,6 +192,29 @@ private:
    * This is a poniter to the Herwig::ForcedSplitting object
    */
   ForcedSplittingPtr _forcedSplitter;
+
+  /**
+   * The minimum virtuality^2 of partons to use in calculating 
+   * distances.
+   */
+  Energy2 _minVirtuality2;
+
+  /**
+   * The maximum displacement that is allowed for a particle
+   * (used to determine the position of a cluster with two components).
+   */
+  Length _maxDisplacement;
+
+  /**
+   *  Is the soft underlying event on/off
+   */
+  bool _softUnderlyingEventMode;
+
+  /**
+   * The pointer to the Underlying Event handler. If _softUnderlyingEventMode is true, 
+   * this pointer must be set. This is checked in doinit().
+   */
+  StepHdlPtr _underlyingEventHandler;
 };
 
 
@@ -202,7 +246,7 @@ struct ClassTraits<Herwig::ClusterHadronizationHandler>:
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwHadronization.so"; }
+  static string library() { return ""; }
 };
 
 }

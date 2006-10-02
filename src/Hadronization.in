@@ -1,3 +1,4 @@
+mkdir /Defaults/Handlers/Hadronization/Cluster
 cd /Defaults/Handlers/Hadronization/Cluster
 # from libHwHadronization.so
 # Create ClusterData info
@@ -17,8 +18,12 @@ create Herwig++::ClusterDecayer theClusterDecayer
 create Herwig++::HadronSelector theHadronSelector
 create Herwig++::PartonicHadronizer PartonicHadronizer
 create Herwig++::ForcedSplitting theForcedSplitting
+
+# create the underlying event stuff
+read UnderlyingEvent.in 
+
+cd /Defaults/Handlers/Hadronization/Cluster
 # Set default values
-set stdCluHadHandler:GlobalParameters /Defaults/theGlobalParameters
 set stdCluHadHandler:PartonSplitter thePartonSplitter
 set stdCluHadHandler:ClusterFinder theClusterFinder
 set stdCluHadHandler:ColourReconnector theColourReconnector
@@ -26,13 +31,14 @@ set stdCluHadHandler:ClusterFissioner theClusterFissioner
 set stdCluHadHandler:LightClusterDecayer theLightClusterDecayer
 set stdCluHadHandler:ClusterDecayer theClusterDecayer
 set stdCluHadHandler:ForcedSplitting theForcedSplitting
+set stdCluHadHandler:MinVirtuality2 0.1*GeV2
+set stdCluHadHandler:MaxDisplacement 1.0e-10*millimeter
+set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
+set stdCluHadHandler:UnderlyingEventHandler /Defaults/Handlers/UnderlyingEvent/theUA5
+#
 set theClusterFissioner:HadronSelector theHadronSelector 
-set theClusterFissioner:GlobalParameters /Defaults/theGlobalParameters 
 set theLightClusterDecayer:HadronSelector theHadronSelector
 set theClusterDecayer:HadronSelector theHadronSelector
-set theClusterDecayer:GlobalParameters /Defaults/theGlobalParameters
-set thePartonSplitter:GlobalParameters /Defaults/theGlobalParameters
-set PartonicHadronizer:GlobalParameters /Defaults/theGlobalParameters
 set PartonicHadronizer:PartonSplitter thePartonSplitter
 set PartonicHadronizer:ClusterFinder theClusterFinder
 set PartonicHadronizer:ColourReconnector theColourReconnector

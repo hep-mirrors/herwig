@@ -278,8 +278,8 @@ double MEqq2W2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
 			  vector<SpinorWaveFunction>    & aout,
 			  bool calc) const {
   // matrix element to be stored
-  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin1Half,PDT::Spin1Half));
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,
+				PDT::Spin1Half,PDT::Spin1Half);
   // positive or negative W boson
   bool positive = mePartonData()[0]->iCharge() 
     + mePartonData()[1]->iCharge() > 0;
@@ -304,7 +304,7 @@ double MEqq2W2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
 	  }
 	  // sum over helicities
 	  me += real(diag*conj(diag));
-	  if(calc) _me(ihel1,ihel2,ohel1,ohel2) = diag;
+	  if(calc) newme(ihel1,ihel2,ohel1,ohel2) = diag;
 	}
       }
     }
@@ -313,6 +313,7 @@ double MEqq2W2ff::qqbarME(vector<SpinorWaveFunction>    & fin ,
   // spin and colour factor
   double colspin=1./12.;
   if(abs(fout[0].id())<=6) colspin*=3.;
+  if(calc) _me.reset(newme);
   return me*colspin;
 }
 

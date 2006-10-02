@@ -23,12 +23,12 @@ using namespace Herwig;
 
 void ClusterDecayer::persistentOutput(PersistentOStream & os) const 
 {
-  os << _hadronsSelector << _globalParameters << _ClDir1 << _ClDir2 
+  os << _hadronsSelector << _ClDir1 << _ClDir2 
      << _ClSmr1 << _ClSmr2 << _onshell << _masstry;
 }
 
 void ClusterDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _globalParameters >> _ClDir1 >> _ClDir2
+  is >> _hadronsSelector >> _ClDir1 >> _ClDir2
      >> _ClSmr1 >> _ClSmr2 >> _onshell >> _masstry;
 }
 
@@ -46,12 +46,6 @@ void ClusterDecayer::Init() {
                              "A reference to the HadronSelector object", 
                              &Herwig::ClusterDecayer::_hadronsSelector,
 			     false, false, true, false);
-  static Reference<ClusterDecayer,GlobalParameters> 
-    interfaceGlobalParameters("GlobalParameters", 
-			      "A reference to the GlobalParameters object", 
-			      &Herwig::ClusterDecayer::_globalParameters,
-			      false, false, true, false);
-  
   static Parameter<ClusterDecayer,int> 
     interfaceClDir1 ("ClDir1", "cluster direction for non-b quarks",
                      &ClusterDecayer::_ClDir1, 0, 1 , 0 , 1,false,false,false);
@@ -426,8 +420,7 @@ calculatePositions(const Lorentz5Momentum &pClu,
   // with respect to their parent cluster, in the cluster reference frame,
   // assuming gaussian smearing with width inversely proportional to the 
   // parent cluster mass.
-  Length smearingWidth = _globalParameters->conversionFactorGeVtoMillimeter() /
-    ( pClu.m() / GeV );
+  Length smearingWidth = hbarc / pClu.m();
   LorentzDistance distanceHad1, distanceHad2;
   for ( int i = 0; i < 2; i++ ) {   // i==0 is the first hadron; i==1 is the second one
     for ( int j = 0; j < 4; j++ ) {  // the four components of the LorentzDistance

@@ -122,7 +122,7 @@ public:
    * @param bottom  Bottom axis lable
    * @param bottomcase Bottom axis lable ofr topdraw
    */
-  void topdrawOutput(ofstream & out,
+  void topdrawOutput(ostream & out,
 		     bool frame,
 		     bool errorbars,
 		     bool xlog, bool ylog,

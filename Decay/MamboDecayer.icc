@@ -6,12 +6,7 @@
 
 namespace Herwig {
 
-  inline MamboDecayer::MamboDecayer() {
-    _maxweight = 10.;
-  }
-  
-  inline MamboDecayer::MamboDecayer(const MamboDecayer & x)
-    : Decayer(x),_maxweight(x._maxweight), global(x.global) {}
+  inline MamboDecayer::MamboDecayer() : _maxweight(10.) {}
   
   inline IBPtr MamboDecayer::clone() const {
     return new_ptr(*this);

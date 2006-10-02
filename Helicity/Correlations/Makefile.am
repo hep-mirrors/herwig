@@ -1,4 +1,4 @@
-pkglib_LTLIBRARIES = libHwCorrelations.la
+noinst_LTLIBRARIES = libHwCorrelations.la
 libHwCorrelations_la_SOURCES = \
 DecayMatrixElement.cc DecayMatrixElement.h DecayMatrixElement.icc \
 DecayVertex.cc DecayVertex.h DecayVertex.icc \

@@ -6,8 +6,6 @@
 #include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
-#include "Herwig++/Utilities/GlobalParameters.h"
-
 
 namespace Herwig {
 using namespace ThePEG;
@@ -38,11 +36,6 @@ public:
    * Default constructor.
    */
   inline ClusterDecayer();  
-  
-  /**
-   * Copy constructor.
-   */
-  inline ClusterDecayer(const ClusterDecayer &);
   //@}
 
   /** Decays all remaining clusters into hadrons. 
@@ -133,11 +126,6 @@ private:
    * Pointer to a Herwig::HadronSelector for choosing decay types
    */
   Ptr<HadronSelector>::pointer _hadronsSelector;
-
-  /**
-   * Pointer to a Herwig::GlobalParameters for various global data
-   */
-  Ptr<GlobalParameters>::pointer _globalParameters;
   
   /**
    * Whether non-b clusters decay along the perturbative parton direction.

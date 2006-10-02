@@ -281,16 +281,20 @@ bool QTildeSudakov::guessDecay(Energy2 &t,Energy2 tmax, Energy minmass,
   pair<double,double> limits=make_pair(sqr(minmass/_masses[0]),
 				       1.-_kinCutoff/sqrt(tmax-_masssquared[0])
 				       +0.5*sqr(_kinCutoff)/(tmax-_masssquared[0]));
+  if(zLimits().second<zLimits().first) {
+    t=-1.0*GeV;
+    return false;
+  }
   zLimits(limits);
   // guess values of t and z
   t = guesst(told,2,enhance,_ids[1]==_ids[2]); 
   z(guessz()); 
   // actual values for z-limits
-  limits=make_pair(0.,
+  limits=make_pair(sqr(minmass/_masses[0]),
 		   1.-_kinCutoff/sqrt(t-_masssquared[0])
 		   +0.5*sqr(_kinCutoff)/(t-_masssquared[0]));
   zLimits(limits);
-  if(t>tmax) {
+  if(t>tmax||zLimits().second<zLimits().first) {
     t=-1.0*GeV;
     return false;
   }

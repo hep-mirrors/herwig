@@ -23,6 +23,7 @@
 #include "Herwig++/Helicity/Correlations/HardVertex.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Cuts/Cuts.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -57,42 +58,41 @@ bool MEee2Z::generateKinematics(const double * r) {
   // to generate the internal kinematics. Note that sHat() has
   // already been given from the outside.
   meMomenta()[2]=meMomenta()[0]+meMomenta()[1];
+  meMomenta()[2].rescaleMass();
   jacobian(1.0);
-  return true; 
+  // check passes all the cuts
+  vector<LorentzMomentum> out(1,meMomenta()[2]);
+  tcPDVector tout(1,mePartonData()[2]);
+  // return true if passes the cuts
+  return lastCuts().passCuts(tout, out, mePartonData()[0], mePartonData()[1]);
 }
 
 double MEee2Z::me2() const {
   double aver=0.;
-  // get the order right
-  int ielectron,ipositron;
-  if(mePartonData()[0]->id()==11){ielectron=0;ipositron=1;}
-  else{ielectron=1;ipositron=0;}
   // the arrays for the wavefunction to be passed to the matrix element
-  SpinorWaveFunction fin[2];
-  SpinorBarWaveFunction ain[2];
-  VectorWaveFunction vin[3];
-  for(unsigned int ihel=0;ihel<2;++ihel)
-    {
-      fin[ihel]=SpinorWaveFunction(meMomenta()[ielectron],
-				   mePartonData()[ielectron],ihel,incoming);
-      ain[ihel]=SpinorBarWaveFunction(meMomenta()[ipositron],
-				      mePartonData()[ipositron],ihel,incoming);
-    }
-  for(unsigned int ihel=0;ihel<3;++ihel)
-    {vin[ihel]=VectorWaveFunction(meMomenta()[2],mePartonData()[2],ihel,outgoing);}
-  Lorentz5Momentum inmom[2] ={meMomenta()[ielectron],meMomenta()[ipositron]};
-  Lorentz5Momentum outmom=meMomenta()[2];
-  ProductionMatrixElement temp=HelicityME(inmom,outmom,fin,ain,vin,aver);
+  vector<SpinorWaveFunction> fin;
+  vector<SpinorBarWaveFunction> ain;
+  vector<VectorWaveFunction> vin;
+  SpinorWaveFunction    fwave(meMomenta()[0],mePartonData()[0],incoming);
+  SpinorBarWaveFunction awave(meMomenta()[1],mePartonData()[1],incoming);
+  for(unsigned int ihel=0;ihel<2;++ihel) {
+    fwave.reset(ihel);fin.push_back(fwave);
+    awave.reset(ihel);ain.push_back(awave);
+  }
+  VectorWaveFunction vwave(meMomenta()[2],mePartonData()[2],outgoing);
+  for(unsigned int ihel=0;ihel<3;++ihel) {
+    vwave.reset(ihel); vin.push_back(vwave);
+  }
+  ProductionMatrixElement temp=HelicityME(fin,ain,vin,aver);
   // add the Breit-Wigner factors
   Energy width=mePartonData()[2]->width();
   Energy mass =mePartonData()[2]->mass();
-  double fact = width*mass/((sHat()-mass*mass)*(sHat()-mass*mass)+mass*mass*width*width);
+  double fact = width*mass/(sqr(sHat()-mass*mass)+sqr(mass*width));
   return aver*fact;
 }
 
 CrossSection MEee2Z::dSigHatDR() const {
-  return me2()*jacobian()/sHat(); // Here we can add other prefactors coming
-                                  // from the phase space integration.
+  return me2()*jacobian()/sHat();
 }
 
 unsigned int MEee2Z::orderInAlphaS() const {
@@ -138,78 +138,35 @@ void MEee2Z::Init() {
 
 }
 
-void MEee2Z::constructVertex(tSubProPtr sub)
-{
-  // spin info objects for the external particles
-  FermionSpinPtr spin1,spin2;
-  VectorSpinPtr spin3;
-  // momenta of the particles and data pointers
-  Lorentz5Momentum pin[2],pout;
-  tcPDPtr din[2],dout; 
-  // incoming particles
-  if(sub->incoming().first->id()>0)
-    {
-      pin[0] = sub->incoming().first->momentum();
-      din[0] = sub->incoming().first->dataPtr();
-      pin[1] = sub->incoming().second->momentum();
-      din[1] = sub->incoming().second->dataPtr();
-      spin1=new_ptr(FermionSpinInfo(sub->incoming().first->momentum(),false));
-      spin2=new_ptr(FermionSpinInfo(sub->incoming().second->momentum(),false));
-      sub->incoming().first->spinInfo(spin1);
-      sub->incoming().second->spinInfo(spin2);
-    }
-  else
-    {
-      pin[0] = sub->incoming().second->momentum();
-      din[0] = sub->incoming().second->dataPtr();
-      pin[1] = sub->incoming().first->momentum();
-      din[1] = sub->incoming().first->dataPtr();
-      spin1=new_ptr(FermionSpinInfo(sub->incoming().second->momentum(),false));
-      spin2=new_ptr(FermionSpinInfo(sub->incoming().first->momentum(),false));
-      sub->incoming().first->spinInfo(spin2);
-      sub->incoming().second->spinInfo(spin1);
-    }
-  // outgoing particles
-  pout = sub->outgoing()[0]->momentum();
-  dout = sub->outgoing()[0]->dataPtr();
-  spin3=new_ptr(VectorSpinInfo(sub->outgoing()[0]->momentum(),true));
-  sub->outgoing()[0]->spinInfo(spin3);
-  // calculate the wavefunctions we need
-  SpinorWaveFunction fin[2];
-  SpinorBarWaveFunction ain[2];
-  VectorWaveFunction vout[3];
-  for(unsigned int ihel=0;ihel<2;++ihel)
-    {
-      // calculate the wavefunctions
-      fin[ihel]=SpinorWaveFunction(pin[0],din[0],ihel,incoming);
-      ain[ihel]=SpinorBarWaveFunction(pin[1],din[1],ihel,incoming);
-      // set the basis states
-      spin1->setBasisState(ihel,fin[ihel].Wave());
-      spin2->setBasisState(ihel,(ain[ihel].Wave()).bar());
-    }
-  for(int ihel=0;ihel<3;++ihel)
-    {
-      vout[ihel]=VectorWaveFunction(pout,dout,ihel,outgoing);
-      spin3->setBasisState(ihel,vout[ihel].Wave());
-    }
+void MEee2Z::constructVertex(tSubProPtr sub) {
+  // extract the particles in the hard process
+  ParticleVector hard;
+  hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);
+  hard.push_back(sub->outgoing()[0]);
+  if(hard[0]->id()<hard[1]->id()) swap(hard[0],hard[1]);
+  vector<SpinorWaveFunction>    fin;
+  vector<SpinorBarWaveFunction> ain;
+  vector<VectorWaveFunction>    vin;
+  SpinorWaveFunction(   fin,hard[0],incoming,false,true);
+  SpinorBarWaveFunction(ain,hard[1],incoming,false,true);
+  VectorWaveFunction   (vin,hard[2],outgoing,true,false,true);
   double dummy;
-  ProductionMatrixElement prodme=HelicityME(pin,pout,fin,ain,vout,dummy);
+  ProductionMatrixElement prodme=HelicityME(fin,ain,vin,dummy);
   // construct the vertex
   HardVertexPtr hardvertex=new_ptr(HardVertex());
   // set the matrix element for the vertex
   hardvertex->ME(prodme);
   // set the pointers to and from the vertex
-  spin1->setProductionVertex(hardvertex);
-  spin2->setProductionVertex(hardvertex);
-  spin3->setProductionVertex(hardvertex);
+  for(unsigned int ix=0;ix<3;++ix) {
+    dynamic_ptr_cast<SpinfoPtr>(hard[ix]->spinInfo())->
+      setProductionVertex(hardvertex);
+  }
 }
 
 // the helicity amplitude matrix element
-ProductionMatrixElement MEee2Z::HelicityME(Lorentz5Momentum pin[2],
-					   Lorentz5Momentum pout,
-					   SpinorWaveFunction fin[2],
-					   SpinorBarWaveFunction ain[2],
-					   VectorWaveFunction vout[3],
+ProductionMatrixElement MEee2Z::HelicityME(vector<SpinorWaveFunction> fin,
+					   vector<SpinorBarWaveFunction> ain,
+					   vector<VectorWaveFunction> vout,
 					   double & aver) const
 {
   ProductionMatrixElement output(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin1);
@@ -219,20 +176,17 @@ ProductionMatrixElement MEee2Z::HelicityME(Lorentz5Momentum pin[2],
   double me(0.);
   LorentzPolarizationVector vec;
   Complex ii(0.,1.);
-  for(inhel1=0;inhel1<2;++inhel1)
-    {	  
-      for(inhel2=0;inhel2<2;++inhel2)
-	{
-	  for(outhel1=0;outhel1<3;++outhel1)
-	    {
-	      product=_theFFZVertex->evaluate(sHat(),fin[inhel1],ain[inhel2],
-					      vout[outhel1]);
-	      output(inhel1,inhel2,outhel1)=product;
-	      me+=real(product*conj(product));
-	    }
-	}
+  for(inhel1=0;inhel1<2;++inhel1) {	  
+    for(inhel2=0;inhel2<2;++inhel2) {
+      for(outhel1=0;outhel1<3;++outhel1) {
+	product=_theFFZVertex->evaluate(sHat(),fin[inhel1],ain[inhel2],
+					vout[outhel1]);
+	output(inhel1,inhel2,outhel1)=product;
+	me+=real(product*conj(product));
+      }
     }
-  aver=me;
+  }
+  aver=me/4.;
   return output;
 }
 }

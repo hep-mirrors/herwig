@@ -22,17 +22,6 @@ UA5Handler::UA5Handler()
     _probSoft(1.0), _enhanceCM(1.), _maxtries(300)
 {}  
 
-// Copy constructor
-UA5Handler::UA5Handler(const UA5Handler &h) :
-  HadronizationHandler(h),
-  clusterFissioner(h.clusterFissioner),
-  clusterDecayer(h.clusterDecayer),
-  _n1(h._n1), _n2(h._n2), _n3(h._n3), _k1(h._k1), _k2(h._k2),
-  _m1(h._m1), _m2(h._m2), _p1(h._p1), _p2(h._p2), _p3(h._p3),
-  _probSoft(h._probSoft), _enhanceCM(h._enhanceCM),
-  _maxtries(h._maxtries)
-{}
-
 // Saving things into run file
 void UA5Handler::persistentOutput(PersistentOStream &os) const {
   os << clusterFissioner << clusterDecayer
@@ -151,74 +140,81 @@ void UA5Handler::Init() {
 
 }
 
-void UA5Handler::insertParticle(PPtr particle,StepPtr step,bool all)
+void UA5Handler::insertParticle(PPtr particle,StepPtr step,bool all) const
 { 
   if(all) step->addDecayProduct(particle);
-  for(unsigned int ix=0;ix<particle->children().size();++ix)
-    {insertParticle(particle->children()[ix],step,true);}
+  for(unsigned int ix=0; ix < particle->children().size(); ++ix) {
+    insertParticle(particle->children()[ix],step,true);
+  }
 }
 
 // This is all just administrative functions for ThePEG structure
 IBPtr UA5Handler::clone() const { return new_ptr(*this); }
   
-IBPtr UA5Handler::fullclone() const { return clone(); }
+IBPtr UA5Handler::fullclone() const { return new_ptr(*this); }
 
 // Generates the multiplicity of the charged particles for the energy E
-unsigned int UA5Handler::multiplicity(Energy E) {
+unsigned int UA5Handler::multiplicity(Energy E) const {
   double alogs = 2.*log(E/GeV);
   double rk = _k1*alogs+_k2;
   if(rk > 1000.) rk = 1000.;
   double ek = 1./rk;
   double mean = meanMultiplicity(E);
   if(mean < 1.) mean = 1.;
+
   vector<double> dist;
+  dist.reserve(500);
   double sum = 0.0;
-  unsigned int imax = 0;
-  unsigned int i;
-  for(i = 0; i<500; i++) {
+  for(int i = 0; i<500; ++i) {
     int N = (i+1)*2;
-    dist.push_back(negativeBinomial(N,mean,ek));
-    if(dist[i] < 1e-7*sum) break;
-    imax = i;
-    sum += dist[i];
-    dist[i] = sum;
+    double negBin = negativeBinomial(N,mean,ek);
+    if(negBin < 1e-7*sum) break;
+    sum += negBin;
+    dist.push_back(sum);
   }
-  if (imax==0) dist[0]=1.;
-  else if (imax==499) 
+  unsigned int imax = dist.size();
+  if (imax==1) 
+    dist[0]=1.;
+  else if (imax==500) 
     throw Exception() << "Multiplicity too large in UA5Handler::multiplicity()" 
 		      << Exception::eventerror;
-  else {for(i = 0; i<=imax; i++) dist[i] /= sum;}
+  else {
+    for(unsigned int i = 0; i<imax; ++i) 
+      dist[i] /= sum;
+  }
   double rn = rnd();
-  for(i = 0; i<=imax; i++) if(rn < dist[i]) break;
+  unsigned int i=0;
+  for(; i<imax; ++i) 
+    if(rn < dist[i]) break;
   return 2*(i+1);
 }
 
-LorentzRotation UA5Handler::rotate(LorentzMomentum &p) {
+LorentzRotation UA5Handler::rotate(const LorentzMomentum &p) const {
   LorentzRotation R;
-  static double ptcut = 1e-20;
-  Energy pt = sqr(p.px())+sqr(p.py());
-  Energy pp = sqr(p.pz())+pt;
+  static const double ptcut = 1e-20;
+  Energy2 pt2 = sqr(p.px())+sqr(p.py());
+  Energy2 pp2 = sqr(p.pz())+pt2;
   double phi, theta;
-  if(pt <= pp*ptcut) {
+  if(pt2 <= pp2*ptcut) {
      if(p.pz() > 0) theta = 0.;
      else theta = pi;
      phi = 0.;
   } else {
-     pp = sqrt(pp);
-     pt = sqrt(pt);
+     Energy pp = sqrt(pp2);
+     Energy pt = sqrt(pt2);
      double ct = p.pz()/pp;
      double cf = p.px()/pt;
      phi = -acos(cf);
      theta = acos(ct);
   }
-  // Rotate first aronu the z axis to put p in the x-z plane
+  // Rotate first around the z axis to put p in the x-z plane
   R = R.rotateZ(phi);
   // Then rotate around the Y axis to put p on the z axis
   R = R.rotateY(theta);
   return R;
 }
 
-void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge)
+void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge) const
 {
   // for an already decayed particle apply to children
   if(!parent->children().empty())
@@ -286,7 +282,7 @@ void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge)
     }
 }
 
-void UA5Handler::decayCluster(ClusterPtr cluster,bool single)
+void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 {
   PPair products = clusterDecayer->decayIntoTwoHadrons(cluster);
   if(products.first == PPtr() || products.second == PPtr()) 
@@ -363,8 +359,9 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   // and their cm
   Lorentz5Momentum cm = clu[0]->momentum() + clu[1]->momentum();
   Energy theCM = cm.mass();
-  // soft mass with optional enhancement for multiplicity only
-  Energy softCM = _enhanceCM*theCM;
+  // softCM = sqrt(S) with optional enhancement for multiplicity only 
+  // (name of variable not very reasonable any more...)
+  Energy softCM = _enhanceCM*generator()->maximumCMEnergy();
   int netc = 0;
   long id1(0),id2(0),id3= rndbool() ? ParticleID::u : ParticleID::d;
   // storage for the multiplicity
@@ -467,26 +464,29 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
     return;
   }
   // Now generate momentum of the clusters
-  try {generateMomentum(clusters, theCM, cm);} 
-  catch (Veto &v) {throw(v);}
+  generateMomentum(clu[0],clu[1],clusters, theCM, cm);
   // insert the particles into the event record
-  for(unsigned int ix=0;ix<clusters.size();++ix)
-    {
-      clu[0]->addChild(clusters[ix]);
-      clu[1]->addChild(clusters[ix]);
-      newStep->addDecayProduct(clusters[ix]);
-    }
-  for(unsigned int ix=0;ix<clusters.size();++ix)
-    {insertParticle(clusters[ix],newStep,false);}
+  for(unsigned int ix=0;ix<clusters.size();++ix) {
+    clu[0]->addChild(clusters[ix]);
+    clu[1]->addChild(clusters[ix]);
+    newStep->addDecayProduct(clusters[ix]);
+  }
+  for(unsigned int ix=0;ix<clusters.size();++ix) {
+    insertParticle(clusters[ix],newStep,false);
+  }
 }
 
 // Generate the momentum. This is based on the procedure of
 // Jadach from Computer Physics Communications 9 (1975) 297-304
-void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5Momentum cm) throw(Veto) {
+void UA5Handler::generateMomentum(tClusterPtr clu1, tClusterPtr clu2,
+				  const ClusterVector &clusters, 
+				  double CME, Lorentz5Momentum cm) const throw(Veto,Exception) {
   Timer<10001> timer("UA5Handler::generateMomentum()");
   // begin with the cylindrical phase space generation described in the paper of Jadach
   generateCylindricalPS(clusters, CME);
-  LorentzVector bmp = clusters[0]->momentum();
+  // boost momentum of incoming cluster along z axis to cluster cmf frame
+  if(clu2->momentum().pz()>0) swap(clu1,clu2);
+  LorentzVector bmp = clu1->momentum();
   bmp = bmp.boost(cm.findBoostToCM());
   // Rotation to put bmp on the z axis
   LorentzRotation R = rotate(bmp);
@@ -519,16 +519,10 @@ void UA5Handler::generateMomentum(ClusterVector &clusters, double CME, Lorentz5M
   }
 }
 
-void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
+void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME) const {
   assert(clusters.size()>=2);
-  double alog = log(CME*CME);
+  double alog = log(CME*CME/GeV2);
   unsigned int ncl = clusters.size();
-  double eps = 1e-10/double(ncl);
-  Energy pt, pt2, px, py, sumpt, sumtm;
-  double sumx, sumy, sum1=0., sum2, sum3, sum4;
-  double ximin, ximax;
-  unsigned int its = 0;
-  vector<double> xi(ncl);
   // calculate the slope parameters for the different clusters
   // outside loop to save time
   vector<InvEnergy> slope(ncl);
@@ -556,18 +550,26 @@ void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
       else slope[ix] = _p3;
       mom[ix]=clusters[ix]->momentum();
     }
-  // loop to generate momenta
+  // generate the momenta
+  double eps = 1e-10/double(ncl);
+  vector<double> xi(ncl);
+  unsigned int its(0);
+  Energy sum1(0.);
   double yy(0.);
   while(its < _maxtries) {
     ++its;
-    sumx = sumy = 0.;
+    Energy sumx = 0.;
+    Energy sumy = 0.;
     for(unsigned int i = 0; i<ncl; ++i) {
-      // Now generate the pt given the parameter slope
-      pt = randExt(clusters[i]->mass(), slope[i]);
+      // Generate the pt given the parameter slope
+      Energy   pt = randExt(clusters[i]->mass(), slope[i]);
       Energy2 ptp = pt*pt - sqr(mom[i].mass());
       if(ptp <= 0) pt = - sqrt(-ptp);
       else pt = sqrt(ptp);
+      // randomize azimuth
+      Energy px,py;
       randAzm(pt,px,py);
+      // set transverse momentum
       mom[i].setPx(px);
       mom[i].setPy(py);
       sumx += px;
@@ -575,47 +577,59 @@ void UA5Handler::generateCylindricalPS(ClusterVector &clusters, double CME) {
     }
     sumx /= ncl;
     sumy /= ncl;
-    sumpt = sumtm = 0.;
+    // find the sum of the transverse mass
+    Energy sumtm=0.;
     for(unsigned int ix = 0; ix<ncl; ++ix) {
-      mom[ix].setPz(0.);
       mom[ix].setX(mom[ix].px()-sumx);
       mom[ix].setY(mom[ix].py()-sumy);
-      pt2 = mom[ix].perp2();
+      Energy pt2 = mom[ix].perp2();
       // Use the z component of the clusters momentum for temporary storage
       mom[ix].setPz(sqrt(pt2+mom[ix].mass2()));
       sumtm += mom[ix].pz();
     }
+    // if transverse mass greater the CMS try again
     if(sumtm > CME) continue;
     for(unsigned int i = 0; i<ncl; i++) xi[i] = randUng(0.6,1.0);
+    // sort into ascending order
     sort(xi.begin(), xi.end());
-    ximin = xi[0];
-    ximax = xi[xi.size()-1]-ximin;
+    double ximin = xi[0];
+    double ximax = xi.back()-ximin;
     xi[0] = 0.;
-    for(int i = ncl-2; i>1; i--) xi[i+1] = (xi[i]-ximin)/ximax;
+    for(unsigned int i = ncl-2; i>=1; i--) xi[i+1] = (xi[i]-ximin)/ximax;
     xi[1] = 1.;
-    yy = log(CME*CME/(mom[0].pz()*mom[1].pz()));
+    yy= log(CME*CME/(mom[0].pz()*mom[1].pz()));
     bool suceeded=false;
+    Energy sum2,sum3,sum4;
     for(unsigned int j = 0; j<10; j++) {
       sum1 = sum2 = sum3 = sum4 = 0.;
       for(unsigned int i = 0; i<ncl; i++) {
-        double tm = mom[i].pz();
+        Energy tm = mom[i].pz();
         double ex = exp(yy*xi[i]);
         sum1 += tm*ex;
 	sum2 += tm/ex;
         sum3 += (tm*ex)*xi[i];
-	sum4 += (tm/ex)*xi[i];      }
-      double fy = alog-log(sum1*sum2);
+	sum4 += (tm/ex)*xi[i];  
+      }
+      double fy = alog-log(sum1*sum2/GeV2);
       double dd = (sum3*sum2 - sum1*sum4)/(sum1*sum2);
       double dyy = fy/dd;
-      if(abs(dyy/yy) < eps) { yy += dyy; suceeded=true; break;}
+      if(abs(dyy/yy) < eps) { 
+	yy += dyy; 
+	suceeded=true; 
+	break;
+      }
       yy += dyy;
     }
     if(suceeded) break;
     if(its > 100) eps *= 10.;
   }
+  if(its==_maxtries) 
+    throw Exception() << "Can't generate soft underlying event in "
+		      << "UA5Handler::generateCylindricalPS"
+		      << Exception::eventerror;
   double zz = log(CME/sum1);
   for(unsigned int i = 0; i<ncl; i++) {
-    double tm = mom[i].pz();
+    Energy tm = mom[i].pz();
     double E1 = exp(zz + yy*xi[i]);
     mom[i].setPz(0.5*tm*(1./E1-E1));
     mom[i].setE( 0.5*tm*(1./E1+E1));

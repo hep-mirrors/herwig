@@ -1,0 +1,34 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HiggsJetAnalysis class.
+//
+
+namespace Herwig {
+
+inline HiggsJetAnalysis::HiggsJetAnalysis() :
+  _pth(0.,250.,100), _pthZoom(35.,65.,100), 
+  _raph(-10.,10.,100), _phih(-3.1459,3.1459,100) {}
+
+inline IBPtr HiggsJetAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr HiggsJetAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void HiggsJetAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  ofstream outfile("HiggsJetAnalysis.top");
+  _pth.topdrawOutput(outfile,true,false,false,false,"BLACK","pt of Higgs");
+  _pth.topdrawOutput(outfile,true,false,false,true,"BLACK","pt of Higgs");
+  _pthZoom.topdrawOutput(outfile,true,false,false,false,"BLACK","35<pt/GeV<65 of Higgs");
+  _pthZoom.topdrawOutput(outfile,true,false,false,true,"BLACK","35<pt/GeV<65 of Higgs");
+  _raph.topdrawOutput(outfile,true,false,false,false,"BLACK","Rapidity of h");
+  _raph.topdrawOutput(outfile,true,false,false,true,"BLACK","Rapidity of h");
+  _phih.topdrawOutput(outfile,true,false,false,false,"BLACK","Azimuth of h");
+  _phih.topdrawOutput(outfile,true,false,false,true,"BLACK","Azimuth of h");
+}
+
+}

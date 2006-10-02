@@ -257,8 +257,7 @@ double MEPP2Higgs::me2() const {
 
 double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunction> g2,
 			ScalarWaveFunction & hout,bool calc) const {
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1,PDT::Spin1,
-					     PDT::Spin0));}
+  ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   // get the kinematic invariants
   Energy2 s(sHat()),et(scale());
   // calculate the loop functions
@@ -289,7 +288,7 @@ double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunction
       Complex me=-ii*A1s*pre*(wdot-2.*w1p2[ihel1]*w2p1[ihel2]/s);
       output+=real(me*conj(me));
       // matrix element if needed
-      if(calc) _me(2*ihel1,2*ihel2,0)=me;
+      if(calc) newme(2*ihel1,2*ihel2,0)=me;
     }
   }
   // analytic form for testing
@@ -302,14 +301,14 @@ double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunction
 // 	<< test/(8.*output/4./64.)
 // 	<< endl;
   // final colour and spin factors (8/64) colour 1/4 spin
+  if(calc) _me.reset(newme);
   return output/32.;
 }
 
 double MEPP2Higgs::qqbarME(vector<SpinorWaveFunction>    & fin,
 			   vector<SpinorBarWaveFunction> & ain,
 			   ScalarWaveFunction & hout,bool calc) const {
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin0));}
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,PDT::Spin0);
   // get the kinematic invariants
   Energy2 et(scale());
   // calculate the loop function
@@ -318,15 +317,15 @@ double MEPP2Higgs::qqbarME(vector<SpinorWaveFunction>    & fin,
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       Complex me=_theFFHVertex->evaluate(et,fin[ihel1],ain[ihel2],hout);
       output+=real(me*conj(me));
-      if(calc) _me(ihel1,ihel2,0)=me;
+      if(calc) newme(ihel1,ihel2,0)=me;
     }
   }
   // final colour/spin factors
+  if(calc) _me.reset(newme);
   return 3.*output/9./4.;
 }
 
-void MEPP2Higgs::constructVertex(tSubProPtr sub)
-{
+void MEPP2Higgs::constructVertex(tSubProPtr sub) {
   // extract the particles in the hard process
   ParticleVector hard;
   hard.push_back(sub->incoming().first);hard.push_back(sub->incoming().second);

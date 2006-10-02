@@ -4,8 +4,6 @@
 
 #include "CluHadConfig.h"
 #include <ThePEG/Handlers/HandlerBase.h>
-#include "Herwig++/Utilities/GlobalParameters.h"
-
 
 namespace Herwig {
 
@@ -23,8 +21,6 @@ using namespace ThePEG;
  *  immediately after the end of the showering (both initial and final),
  *  as very first step of the cluster hadronization.
  *
- *  See also:
- *  GlobalParameters.h.
  */
 class PartonSplitter: public ThePEG::HandlerBase {
 
@@ -127,11 +123,6 @@ private:
    */
   void debuggingInfo(const tPVector & tagged, const set<tPPtr> & newPartons);
 
-  /**
-   * Pointer to a Herwig::GlobalParameters object for using global variables.
-   */
-  GlobParamPtr _globalParameters;  
-
 };
 
 
@@ -164,7 +155,7 @@ struct ClassTraits<Herwig::PartonSplitter>:
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "libHwHadronization.so"; }
+  static string library() { return ""; }
 };
 
 }

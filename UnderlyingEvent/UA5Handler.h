@@ -1,3 +1,4 @@
+// -*- C++ -*-
 #ifndef HERWIG_UA5_H_
 #define HERWIG_UA5_H_
 
@@ -6,6 +7,7 @@
 #include "Herwig++/Hadronization/ClusterDecayer.h"
 #include <ThePEG/Handlers/EventHandler.h>
 #include <ThePEG/Repository/UseRandom.h>
+#include "Herwig++/Utilities/Histogram.h"
 
 namespace Herwig {
 
@@ -24,8 +26,7 @@ using namespace ThePEG;
  *  interface set up with the ClusterFissioner class and  
  *  with the ClusterDecayer class.
  * 
- *  The Hadronization is responsible, if the 
- *  GlobalParameters::isSoftUnderlyingEventON() switch is set to true,
+ *  The Hadronization is responsible
  *  for the formation of the beam clusters. In this step the colour connection
  *  between the spectators and the initial-state parton showers is cut by the
  *  forced emission of a soft quark-antiquark pair. The underlying soft event in a
@@ -111,11 +112,6 @@ public:
    * The default constructor.
    */
    UA5Handler();
-
-  /**
-   * The copy constructor.
-   */
-   UA5Handler(const UA5Handler &);
    //@}
 
   /**
@@ -165,13 +161,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const;
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const;
   //@}
 
 private:
@@ -187,7 +183,7 @@ private:
    * @param totalcharge The totalcharge of the decay proiducts
    * @param numbercharge The number of stabel charged decay products
    */
-  void performDecay(PPtr parent,int & totalcharge,int & numbercharge);
+  void performDecay(PPtr parent,int & totalcharge,int & numbercharge) const;
 
   /**
    * Decay a cluster to two hadrons is sufficiently massive and to one if
@@ -195,7 +191,7 @@ private:
    * @param cluster The cluster to decay
    * @param single Whether or not ot allow decays to 
    */
-  void decayCluster(ClusterPtr cluster, bool single);
+  void decayCluster(ClusterPtr cluster, bool single) const;
 
   /**
    * Recursively add particle and decay products to the step
@@ -203,227 +199,230 @@ private:
    * @param step The step
    * @param all Insert this particle as well as children
    */
-  void insertParticle(PPtr particle,StepPtr step,bool all);
+  void insertParticle(PPtr particle,StepPtr step,bool all) const;
   //@}
 
   /**
-b   *  Members to generate the multiplicity according to a negative binomial
+   *  Members to generate the multiplicity according to a negative binomial
    *  distribution.
    */
   //@{
-   /**
-    * Calculate the negative binomial probability given the
-    * mean \f$\bar n\f$, the multiplicity and \f$1/k\f$.
-    * @param N  The multplicity for which to calculate the probability
-    * @param mean The mean multiplicity \f$\bar n\f$
-    * @param ek \f$1/k\f$
-    * @return a value distributed according the negative binomial distribution
-    */
-   inline double negativeBinomial(int N, double mean, double ek);
-
-   /**
-    * The value of the mean multiplicity for a given energy E.
-    * This is \f$n_1E^{2n_2}+n_3\f$ wher \f$n_1\f$, \f$n_2\f$ and \f$n_3\f$
-    * are parameters.
-    * @param E the energy to calculate the mean multiplicity for
-    * @return the mean multiplicity
-    */
-   inline double meanMultiplicity(Energy E);
-
-   /**
-    * Generates a multiplicity for the energy E according to the negative
-    * binomial distribution.
+  /**
+   * Calculate the negative binomial probability given the
+   * mean \f$\bar n\f$, the multiplicity and \f$1/k\f$.
+   * @param N  The multplicity for which to calculate the probability
+   * @param mean The mean multiplicity \f$\bar n\f$
+   * @param ek \f$1/k\f$
+   * @return a value distributed according the negative binomial distribution
+   */
+  inline double negativeBinomial(int N, double mean, double ek) const;
+  
+  /**
+   * The value of the mean multiplicity for a given energy E.
+   * This is \f$n_1E^{2n_2}+n_3\f$ wher \f$n_1\f$, \f$n_2\f$ and \f$n_3\f$
+   * are parameters.
+   * @param E the energy to calculate the mean multiplicity for
+   * @return the mean multiplicity
+   */
+  inline double meanMultiplicity(Energy E) const;
+  
+  /**
+   * Generates a multiplicity for the energy E according to the negative
+   * binomial distribution.
     * @param E The energy to generate for
     * @return the randomly generated multiplicity for the energy given
     */
-   unsigned int multiplicity(Energy E);
+  unsigned int multiplicity(Energy E) const;
   //@}
-
-   /**
-    * Members to generate the momenta of the clusters
-    */
-   //@{
-   /**
-    * This generates the momentum of the produced particles according to
-    * the cylindrical phase space algorithm given
-    * in Computer Physics Communications 9 (1975) 297-304 by S. Jadach.
-    * @param clusters The list of clusters produced
-    * @param CME The center of mass energy
-    * @param cm The center of mass momentum (of the underlying event)
-    */
-   void generateMomentum(ClusterVector &clusters, Energy CME,
-			 Lorentz5Momentum cm) throw(Veto);
-
-   /**
-    * The implementation of the cylindrical phase space.
-    * @param clusters The list of clusters to generate the momentum for
-    * @param CME The center of mass energy
-    */
-   void generateCylindricalPS(ClusterVector &clusters, Energy CME);
-   //@}
-
-   /**
-    * This returns the rotation matrix needed to rotate p into the z axis
-    */
-   LorentzRotation rotate(LorentzMomentum &p);
-
-   /**
-    *  Various methods to generate random distributions
-    */
-   //@{
-   /**
-    * Gaussian distribution
-    * @param mean the mean of the distribution
-    * @param stdev the standard deviation of the distribution
-    * @return Arandom value from the gaussian distribution
-    */
-   inline double gaussDistribution(double mean, double stdev);
-
-   /**
-    * This returns a random number with a flat distribution
-    * [-A,A] plus gaussian tail with stdev B 
-    * TODO: Should move this to Utilities
-    * @param A The width of the flat part
-    * @param B The standard deviation of the gaussian tail
-    * @return the randomly generated value
-    */
-   inline double randUng(double A, double B);
-
-   /**
-    * Generates a random azimuthal angle and puts x onto px and py 
-    * TODO: Should move this to Utilities
-    * @param pt The magnitude of the transverse momentum
-    * @param px The x component after random rotation
-    * @param py The y component after random rotation
-    */
-   inline void randAzm(Energy pt, Energy &px, Energy &py);
-
-   /**
-    * This returns random number from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ distribution,
-    * where \f$m_T=\sqrt{p_T^2+M^2}\f$. It uses Newton's method to solve \f$F-R=0\f$
-    * @param AM0 The mass \f$M\f$.
-    * @param B The slope
-    * @return the value distributed from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ with mean av
-    */
-   inline double randExt(Energy AM0,InvEnergy B);
-   //@}
-
+  
+  /**
+   * Members to generate the momenta of the clusters
+   */
+  //@{
+  /**
+   * This generates the momentum of the produced particles according to
+   * the cylindrical phase space algorithm given
+   * in Computer Physics Communications 9 (1975) 297-304 by S. Jadach.
+   * @param The first incoming cluster
+   * @param The second incoming cluster
+   * @param clusters The list of clusters produced
+   * @param CME The center of mass energy
+   * @param cm The center of mass momentum (of the underlying event)
+   */
+  void generateMomentum(tClusterPtr clu1,tClusterPtr clu2,
+			const ClusterVector &clusters, Energy CME,
+			Lorentz5Momentum cm) const throw(Veto,Exception);
+  
+  /**
+   * The implementation of the cylindrical phase space.
+   * @param clusters The list of clusters to generate the momentum for
+   * @param CME The center of mass energy
+   */
+  void generateCylindricalPS(const ClusterVector &clusters, Energy CME) const;
+  //@}
+  
+  /**
+   * This returns the rotation matrix needed to rotate p into the z axis
+   */
+  LorentzRotation rotate(const LorentzMomentum &p) const;
+  
+  /**
+   *  Various methods to generate random distributions
+   */
+  //@{
+  /**
+   * Gaussian distribution
+   * @param mean the mean of the distribution
+   * @param stdev the standard deviation of the distribution
+   * @return Arandom value from the gaussian distribution
+   */
+  inline double gaussDistribution(double mean, double stdev) const;
+  
+  /**
+   * This returns a random number with a flat distribution
+   * [-A,A] plus gaussian tail with stdev B 
+   * TODO: Should move this to Utilities
+   * @param A The width of the flat part
+   * @param B The standard deviation of the gaussian tail
+   * @return the randomly generated value
+   */
+  inline double randUng(double A, double B) const;
+  
+  /**
+   * Generates a random azimuthal angle and puts x onto px and py 
+   * TODO: Should move this to Utilities
+   * @param pt The magnitude of the transverse momentum
+   * @param px The x component after random rotation
+   * @param py The y component after random rotation
+   */
+  inline void randAzm(Energy pt, Energy &px, Energy &py) const;
+  
+  /**
+   * This returns random number from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ distribution,
+   * where \f$m_T=\sqrt{p_T^2+M^2}\f$. It uses Newton's method to solve \f$F-R=0\f$
+   * @param AM0 The mass \f$M\f$.
+   * @param B The slope
+   * @return the value distributed from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ with mean av
+   */
+  inline double randExt(Energy AM0,InvEnergy B) const;
+  //@}
+  
+private:
+  
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<UA5Handler> initUA5Handler;
+  
+  /**
+   * This is never defined and since it can never be called it isn't 
+   * needed. The prototype is defined so the compiler doesn't use the 
+   * default = operator.
+   */
+  UA5Handler& operator=(const UA5Handler &);
+  
 private:
 
-   /**
-    * The static object used to initialize the description of this class.
-    * Indicates that this is a concrete class with persistent data.
-    */
-   static ClassDescription<UA5Handler> initUA5Handler;
-   
-   /**
-    * This is never defined and since it can never be called it isn't 
-    * needed. The prototype is defined so the compiler doesn't use the 
-    * default = operator.
-    */
-   UA5Handler& operator=(const UA5Handler &);
-   
-private:
-
-   /**
-    *  Reference to the ClusterFissioner object
-    */
-   ClusterFissionerPtr clusterFissioner;
-
-   /**
-    *  Reference to the cluster decayer object.
-    */
-   ClusterDecayerPtr   clusterDecayer;
-
-   /**
-    *  Parameters for the mean multiplicity \f$\bar n =n_1s^{n_2}+n_3\f$
-    */
-   //@{
-   /**
-    *  The parameter \f$n_1\f$ 
-    */
-   double _n1;
-
-   /**
-    *  The parameter \f$n_2\f$ 
-    */
-   double _n2;
-
-   /**
-    *  The parameter \f$n_3\f$ 
-    */
-   double _n3;
-   //@}
-
-   /**
-    *  Parameters for \f$k\f$ in the negative binomial 
-    * distribution given by \f$1/k =k_1\ln s+k_2\f$
-    */
-   //@{
-   /**
-    *  The parameter \f$k_1\f$ 
-    */
-   double _k1;
-
-   /**
-    *  The parameter \f$k_2\f$ 
-    */
-   double _k2;
-   //@}
-
-   /**
-    *  Parameters for the cluster mass distribution, 
-    * \f$M = m_{q1}+m_{q2}+m_1-\log(r_1 r_2)/m_2\f$.
-    */
-   //@{
-   /**
-    *  The parameter \f$m_1\f$ 
-    */
-   Energy _m1;
-
-   /**
-    *  The parameter \f$m_2\f$ 
-    */
-   InvEnergy _m2;
-   //@}
-
-   /**
-    *  Parameters for the transverpse momentum of the soft distribution,
-    *  \f$P(p_T) \propto p_T*exp(-p_i\sqrt{p_T^2+M^2}\f$ 
-    */
-   //@{
-   /**
-    *  The parameter \f$p_1\f$ for light quarks
-    */
-   InvEnergy _p1;
-
-   /**
-    *  The parameter \f$p_2\f$ for strange and charm quarks
-    */
-   InvEnergy _p2;
-
-   /**
-    *  The parameter \f$p_3\f$ for diquarks
-    */
-   InvEnergy _p3;
-   //@}
-
-   /**
-    * This is the probability of having a soft underlying event.
-    */
-   double _probSoft;
-
-   /**
-    * This is a parameter used to enhance the CM energy used to 
-    * generate the multiplicity distribution.
-    */
-   double _enhanceCM; 
-
-   /**
-    *  The maximum number of attempts to generate the distribution
-    */
-   unsigned int _maxtries;
-
+  /**
+   *  Reference to the ClusterFissioner object
+   */
+  ClusterFissionerPtr clusterFissioner;
+  
+  /**
+   *  Reference to the cluster decayer object.
+   */
+  ClusterDecayerPtr   clusterDecayer;
+  
+  /**
+   *  Parameters for the mean multiplicity \f$\bar n =n_1s^{n_2}+n_3\f$
+   */
+  //@{
+  /**
+   *  The parameter \f$n_1\f$ 
+   */
+  double _n1;
+  
+  /**
+   *  The parameter \f$n_2\f$ 
+   */
+  double _n2;
+  
+  /**
+   *  The parameter \f$n_3\f$ 
+   */
+  double _n3;
+  //@}
+  
+  /**
+   *  Parameters for \f$k\f$ in the negative binomial 
+   * distribution given by \f$1/k =k_1\ln s+k_2\f$
+   */
+  //@{
+  /**
+   *  The parameter \f$k_1\f$ 
+   */
+  double _k1;
+  
+  /**
+   *  The parameter \f$k_2\f$ 
+   */
+  double _k2;
+  //@}
+  
+  /**
+   *  Parameters for the cluster mass distribution, 
+   * \f$M = m_{q1}+m_{q2}+m_1-\log(r_1 r_2)/m_2\f$.
+   */
+  //@{
+  /**
+   *  The parameter \f$m_1\f$ 
+   */
+  Energy _m1;
+  
+  /**
+   *  The parameter \f$m_2\f$ 
+   */
+  InvEnergy _m2;
+  //@}
+  
+  /**
+   *  Parameters for the transverpse momentum of the soft distribution,
+   *  \f$P(p_T) \propto p_T*exp(-p_i\sqrt{p_T^2+M^2}\f$ 
+   */
+  //@{
+  /**
+   *  The parameter \f$p_1\f$ for light quarks
+   */
+  InvEnergy _p1;
+  
+  /**
+   *  The parameter \f$p_2\f$ for strange and charm quarks
+   */
+  InvEnergy _p2;
+  
+  /**
+   *  The parameter \f$p_3\f$ for diquarks
+   */
+  InvEnergy _p3;
+  //@}
+  
+  /**
+   * This is the probability of having a soft underlying event.
+   */
+  double _probSoft;
+  
+  /**
+   * This is a parameter used to enhance the CM energy used to 
+   * generate the multiplicity distribution.
+   */
+  double _enhanceCM; 
+  
+  /**
+   *  The maximum number of attempts to generate the distribution
+   */
+  unsigned int _maxtries;
+  
 };
 
 }

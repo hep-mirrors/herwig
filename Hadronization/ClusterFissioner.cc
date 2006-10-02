@@ -23,13 +23,11 @@
 using namespace Herwig;
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _hadronsSelector << _globalParameters
-     << _clMax << _clPow << _pSplit1 << _pSplit2 << _btClM << _iopRem;
+  os << _hadronsSelector << _clMax << _clPow << _pSplit1 << _pSplit2 << _btClM << _iopRem;
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _globalParameters
-     >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 >> _btClM >> _iopRem;
+  is >> _hadronsSelector >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 >> _btClM >> _iopRem;
 }
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
@@ -46,12 +44,6 @@ void ClusterFissioner::Init() {
                              "A reference to the HadronSelector object", 
                              &Herwig::ClusterFissioner::_hadronsSelector,
 			     false, false, true, false);
-
-  static Reference<ClusterFissioner,GlobalParameters> 
-    interfaceGlobalParameters("GlobalParameters", 
-			      "A reference to the GlobalParameters object", 
-			      &Herwig::ClusterFissioner::_globalParameters,
-			      false, false, true, false);
   
   static Parameter<ClusterFissioner,Energy>
     interfaceClMax ("ClMax","cluster max mass  (unit [GeV])",
@@ -94,7 +86,7 @@ void ClusterFissioner::Init() {
 
 }
 
-void ClusterFissioner::fission(const StepPtr &pstep) {
+void ClusterFissioner::fission(const StepPtr &pstep, bool softUEisOn) {
   /*****************
    * Loop over the (input) collection of cluster pointers, and store in 
    * the vector  splitClusters  all the clusters that need to be split
@@ -131,12 +123,13 @@ void ClusterFissioner::fission(const StepPtr &pstep) {
   }
   // split the clusters
   vector<tClusterPtr>::const_iterator iter;
-  for(iter = splitClusters.begin(); iter != splitClusters.end() ; ++iter)
-    {cut(*iter, pstep, clusters);}
+  for(iter = splitClusters.begin(); iter != splitClusters.end() ; ++iter) {
+    cut(*iter, pstep, clusters, softUEisOn);
+  }
 }
 
 void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep, 
-   			   ClusterVector &clusters) {
+   			   ClusterVector &clusters, bool softUEisOn) {
   /**************************************************
    * This method does the splitting of the cluster pointed by  cluPtr
    * and "recursively" by all of its cluster children, if heavy. All of these
@@ -166,12 +159,12 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     tClusterPtr iCluster = clusterStack.back(); 
     clusterStack.pop_back();   
     // split it                 
-    cutType ct = cut(iCluster);
+    cutType ct = cut(iCluster, softUEisOn);
     // There are cases when we don't want to split, even if it fails mass test
     if(!ct.first.first || !ct.second.first)
       {
 	// if an unsplit beam cluster leave if for the underlying event
-	if(iCluster->isBeamCluster()&&_globalParameters->isSoftUnderlyingEventON())
+	if(iCluster->isBeamCluster() && softUEisOn)
 	  iCluster->isAvailable(false);
 	// continue
 	continue;
@@ -180,8 +173,7 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
     ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
     // is a beam cluster must be split into two clusters
-    if(iCluster->isBeamCluster()&&(!one||!two)
-       &&_globalParameters->isSoftUnderlyingEventON()) {
+    if(iCluster->isBeamCluster() && (!one||!two) && softUEisOn) {
       iCluster->isAvailable(false);
       continue;
     }
@@ -202,8 +194,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     // Sometimes the clusters decay C -> H + C' rather then C -> C' + C''
     if(one) {
       clusters.push_back(one);
-      if(one->isBeamCluster()&&
-	 _globalParameters->isSoftUnderlyingEventON()) one->isAvailable(false);
+      if(one->isBeamCluster() && softUEisOn)
+	one->isAvailable(false);
       if(pow(one->mass(), _clPow) > 
 	 pow(_clMax, _clPow) + pow(one->sumConstituentMasses(), _clPow)
 	 &&one->isAvailable()) {
@@ -212,8 +204,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     }
     if(two) {
       clusters.push_back(two);
-      if(two->isBeamCluster()&&
-	 _globalParameters->isSoftUnderlyingEventON()) two->isAvailable(false);
+      if(two->isBeamCluster() && softUEisOn)
+	two->isAvailable(false);
       if(pow(two->mass(), _clPow) > 
 	 pow(_clMax, _clPow) + pow(two->sumConstituentMasses(), _clPow)
 	 && two->isAvailable()) {
@@ -223,7 +215,7 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
   }
 }
 
-ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
+ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster, bool softUEisOn) {
   // Get the actual particles making up the cluster
   long idQ1 = 0, idQ2 = 0;
   tPPtr ptrQ1 = cluster->particle(0), ptrQ2 = cluster->particle(1);
@@ -309,8 +301,8 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster) {
       }
 
       // if a beam cluster not allowed to decay to hadrons
-      if(cluster->isBeamCluster()&&(toHadron1||toHadron2)&&
-	 _globalParameters->isSoftUnderlyingEventON()) continue;
+      if(cluster->isBeamCluster() && (toHadron1||toHadron2) && softUEisOn)
+	continue;
 
       // Check if the decay kinematics is still possible: if not then 
       // force the one-hadron decay for the other cluster as well.
@@ -614,7 +606,10 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
-  double GeV2mm = _globalParameters->conversionFactorGeVtoMillimeter();
+
+  //   Need to fix hbarc conversion here. Need original paper.
+
+  double GeV2mm = hbarc / (GeV * millimeter);
   Length x1 = GeV2mm * (Mclu*0.25 + 0.5
                      *(pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/GeV;
   Length t1 = ((Mclu/GeV) * GeV2mm - x1); 

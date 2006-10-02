@@ -298,8 +298,7 @@ double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
 			      vector<SpinorBarWaveFunction> & ain,
 			      vector<VectorWaveFunction>    & gout,
 			      vector<VectorWaveFunction>    & pout,
-			      bool calc) const
-{
+			      bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming fermion     (u    spinor)
@@ -308,50 +307,46 @@ double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   // 0 outgoing gluon
   // 1 outgoing photon
   // me to be returned
-  if(calc){_me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1Half,
-					     PDT::Spin1,PDT::Spin1));}
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1Half,
+				PDT::Spin1,PDT::Spin1);
   // wavefunction for the intermediate particles
   SpinorWaveFunction inter;
   unsigned int inhel1,inhel2,outhel1,outhel2;
   Energy2 mt(scale());
   Complex diag[3];
   double me(0.),diag1(0.),diag2(0.);
-  for(inhel1=0;inhel1<2;++inhel1)
-    {
-      for(inhel2=0;inhel2<2;++inhel2)
- 	{
- 	  for(outhel1=0;outhel1<2;++outhel1)
- 	    {
- 	      for(outhel2=0;outhel2<2;++outhel2)
- 		{
-		  // first diagram
-		  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
-						 fin[inhel1],gout[outhel1]);
-		  diag[0] = _photonvertex->evaluate(0.,inter,ain[inhel2],pout[outhel2]);
-		  // second diagram
-		  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
-						  fin[inhel1],pout[outhel2]);
-		  diag[1] = _gluonvertex->evaluate(mt,inter,ain[inhel2],gout[outhel1]);
-		  // compute the running totals
-		  diag[2]=diag[0]+diag[1];
-		  diag1 +=real(diag[0]*conj(diag[0]));
-		  diag2 +=real(diag[1]*conj(diag[1]));
-		  me    +=real(diag[2]*conj(diag[2]));
-		  // matrix element
-		  if(calc) _me(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
-		}
-	    }		
+  for(inhel1=0;inhel1<2;++inhel1) {
+    for(inhel2=0;inhel2<2;++inhel2) {
+      for(outhel1=0;outhel1<2;++outhel1) {
+	for(outhel2=0;outhel2<2;++outhel2) {
+	  // first diagram
+	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
+					 fin[inhel1],gout[outhel1]);
+	  diag[0] = _photonvertex->evaluate(0.,inter,ain[inhel2],pout[outhel2]);
+	  // second diagram
+	  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
+					  fin[inhel1],pout[outhel2]);
+	  diag[1] = _gluonvertex->evaluate(mt,inter,ain[inhel2],gout[outhel1]);
+	  // compute the running totals
+	  diag[2]=diag[0]+diag[1];
+	  diag1 +=real(diag[0]*conj(diag[0]));
+	  diag2 +=real(diag[1]*conj(diag[1]));
+	  me    +=real(diag[2]*conj(diag[2]));
+	  // matrix element
+	  if(calc) newme(inhel1,inhel2,2*outhel1,2*outhel2)=diag[2];
 	}
+      }		
     }
+  }
   // save the info on the diagrams
-  if(!calc)
-    {
-      DVector save;
-      save.push_back(diag1);
-      save.push_back(diag2);
-      meInfo(save);
-    }
+  if(!calc) {
+    DVector save;
+    save.push_back(diag1);
+    save.push_back(diag2);
+    meInfo(save);
+  }
   // return the answer
+  if(calc) _me.reset(newme);
   return me;
 }
 
@@ -359,8 +354,7 @@ double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
 			   vector<VectorWaveFunction>    & gin,
 			   vector<VectorWaveFunction>    & pout,
 			   vector<SpinorBarWaveFunction> & fout,
-			   bool calc) const
-{
+			   bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming fermion     (u    spinor)       
@@ -369,50 +363,46 @@ double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
   // 0 outgoing photon
   // 1 outgoing fermion     (ubar spinor)
   // me to be returned
-  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin1,PDT::Spin1Half));
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1,
+				PDT::Spin1,PDT::Spin1Half);
   // wavefunction for the intermediate particles
   SpinorWaveFunction inter;
   unsigned int inhel1,inhel2,outhel1,outhel2;
   Energy2 mt(scale());
   Complex diag[3];
   double me(0.),diag1(0.),diag2(0.);
-  for(inhel1=0;inhel1<2;++inhel1)
-    {
-      for(inhel2=0;inhel2<2;++inhel2)
-  	{
-  	  for(outhel1=0;outhel1<2;++outhel1)
-  	    {
-  	      for(outhel2=0;outhel2<2;++outhel2)
-  		{
-		  // first diagram
-		  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
-						  fin[inhel1],pout[outhel1]);
-		  diag[0]=_gluonvertex->evaluate(mt,inter,fout[outhel2],gin[inhel2]);
-		  // second diagram
-		  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
-						 fin[inhel1],gin[inhel2]);
-		  diag[1]=_photonvertex->evaluate(0.,inter,fout[outhel2],pout[outhel1]);
- 		  // compute the running totals
- 		  diag[2]=diag[0]+diag[1];
- 		  diag1 +=real(diag[0]*conj(diag[0]));
- 		  diag2 +=real(diag[1]*conj(diag[1]));
- 		  me    +=real(diag[2]*conj(diag[2]));
- 		  // matrix element
- 		  if(calc) _me(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
-		}
-	    }		
+  for(inhel1=0;inhel1<2;++inhel1) {
+    for(inhel2=0;inhel2<2;++inhel2) {
+      for(outhel1=0;outhel1<2;++outhel1) {
+	for(outhel2=0;outhel2<2;++outhel2) {
+	  // first diagram
+	  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
+					  fin[inhel1],pout[outhel1]);
+	  diag[0]=_gluonvertex->evaluate(mt,inter,fout[outhel2],gin[inhel2]);
+	  // second diagram
+	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
+					 fin[inhel1],gin[inhel2]);
+	  diag[1]=_photonvertex->evaluate(0.,inter,fout[outhel2],pout[outhel1]);
+	  // compute the running totals
+	  diag[2]=diag[0]+diag[1];
+	  diag1 +=real(diag[0]*conj(diag[0]));
+	  diag2 +=real(diag[1]*conj(diag[1]));
+	  me    +=real(diag[2]*conj(diag[2]));
+	  // matrix element
+	  if(calc) newme(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
 	}
+      }		
     }
+  }
   // save the info on the diagrams
-  if(!calc)
-    {
-      DVector save;
-      save.push_back(diag1);
-      save.push_back(diag2);
-      meInfo(save);
-    }
+  if(!calc) {
+    DVector save;
+    save.push_back(diag1);
+    save.push_back(diag2);
+    meInfo(save);
+  }
   // return the answer
+  if(calc) _me.reset(newme);
   return me;
 } 
 
@@ -420,8 +410,7 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
 			      vector<VectorWaveFunction>    & gin,
 			      vector<VectorWaveFunction>    & pout,
 			      vector<SpinorWaveFunction>    & aout,
-			      bool calc) const
-{
+			      bool calc) const {
   // the particles should be in the order
   // for the incoming 
   // 0 incoming fermion     (vbar spinor)       
@@ -430,8 +419,8 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
   // 0 outgoing photon
   // 1 outgoing fermion     (v    spinor)
   //me to be returned
-  if(calc) _me.reset(ProductionMatrixElement(PDT::Spin1Half,PDT::Spin1,
-					     PDT::Spin1,PDT::Spin1Half));
+  ProductionMatrixElement newme(PDT::Spin1Half,PDT::Spin1,
+				PDT::Spin1,PDT::Spin1Half);
   // wavefunction for the intermediate particles
   SpinorBarWaveFunction inter;
   SpinorWaveFunction interb;
@@ -439,42 +428,38 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
   Energy2 mt(scale());
   Complex diag[3];
   double me(0.),diag1(0.),diag2(0.);
-  for(inhel1=0;inhel1<2;++inhel1)
-    {
-      for(inhel2=0;inhel2<2;++inhel2)
-  	{
-  	  for(outhel1=0;outhel1<2;++outhel1)
-  	    {
-  	      for(outhel2=0;outhel2<2;++outhel2)
-  		{
-		  // first diagram
-		  inter = _photonvertex->evaluate(0.,5,ain[inhel1].getParticle(),
-						  ain[inhel1],pout[outhel1]);
-		  diag[0]=_gluonvertex->evaluate(mt,aout[outhel2],inter,gin[inhel2]);
- 		  // second diagram
-		  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].getParticle(),
-						 ain[inhel1],gin[inhel2]);
-		  diag[1]=_photonvertex->evaluate(0.,aout[outhel2],inter,pout[outhel1]);
- 		  // compute the running totals
- 		  diag[2]=diag[0]+diag[1];
- 		  diag1 +=real(diag[0]*conj(diag[0]));
- 		  diag2 +=real(diag[1]*conj(diag[1]));
- 		  me    +=real(diag[2]*conj(diag[2]));
- 		  // matrix element
- 		  if(calc) _me(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
-		}
-	    }		
+  for(inhel1=0;inhel1<2;++inhel1) {
+    for(inhel2=0;inhel2<2;++inhel2) {
+      for(outhel1=0;outhel1<2;++outhel1) {
+	for(outhel2=0;outhel2<2;++outhel2) {
+	  // first diagram
+	  inter = _photonvertex->evaluate(0.,5,ain[inhel1].getParticle(),
+					  ain[inhel1],pout[outhel1]);
+	  diag[0]=_gluonvertex->evaluate(mt,aout[outhel2],inter,gin[inhel2]);
+	  // second diagram
+	  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].getParticle(),
+					 ain[inhel1],gin[inhel2]);
+	  diag[1]=_photonvertex->evaluate(0.,aout[outhel2],inter,pout[outhel1]);
+	  // compute the running totals
+	  diag[2]=diag[0]+diag[1];
+	  diag1 +=real(diag[0]*conj(diag[0]));
+	  diag2 +=real(diag[1]*conj(diag[1]));
+	  me    +=real(diag[2]*conj(diag[2]));
+	  // matrix element
+	  if(calc) newme(inhel1,2*inhel2,2*outhel1,outhel2)=diag[2];
 	}
+      }		
     }
+  }
   // save the info on the diagrams
-  if(!calc)
-    {
-      DVector save;
-      save.push_back(diag1);
-      save.push_back(diag2);
-      meInfo(save);
-    }
+  if(!calc) {
+    DVector save;
+    save.push_back(diag1);
+    save.push_back(diag2);
+    meInfo(save);
+  }
   // return the answer
+  if(calc) _me.reset(newme);
   return me;
 }
 

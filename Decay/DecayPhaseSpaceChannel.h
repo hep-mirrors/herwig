@@ -62,23 +62,13 @@ public:
   /**
    * Default constructor.
    */
-  inline DecayPhaseSpaceChannel();
+  DecayPhaseSpaceChannel() {}
 
   /**
    * Constructor with a pointer to a <code>DecayPhaseSpaceMode</code>. This 
    * is the constructor which should normally be used in decayers.
    */
-  DecayPhaseSpaceChannel(DecayPhaseSpaceModePtr);
-
-  /**
-   * Copy-constructor.
-   */
-  inline DecayPhaseSpaceChannel(const DecayPhaseSpaceChannel &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~DecayPhaseSpaceChannel();
+  DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr);
   //@}
   
 public:
@@ -135,7 +125,7 @@ protected:
    * off-shell effects for the external particles.
    */
   vector<Lorentz5Momentum> generateMomenta(const Lorentz5Momentum & pin,
-					   vector<Energy> massext);
+					   const vector<Energy> & massext);
   
   /**
    * Generate the weight for this channel given a phase space configuration.
@@ -199,53 +189,18 @@ protected:
    */
   virtual IBPtr fullclone() const;
   //@}
-  
-protected:
-  
+
+protected:  
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
   /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  virtual void doinit() throw(InitException);
   //@}
-  
+
 private:
   
   /**
@@ -285,7 +240,7 @@ private:
   /**
    * pointer to the mode
    */
-  DecayPhaseSpaceModePtr _mode;
+  tcDecayPhaseSpaceModePtr _mode;
 
   /**
    * Pointers to the particle data objects of the intermediate particles

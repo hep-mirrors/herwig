@@ -24,9 +24,5 @@ all : $(ALLCCFILES:.cc=.so)
 %.so : %.cc %.h 
 	$(CXX) -fPIC $(CPPFLAGS) $(INCLUDE) $(CXXFLAGS) -shared $< -o $@  
 
-#	@$(CXX) -c -fPIC $(CPPFLAGS) $(INCLUDE) $< -o $@
-#
-#  make clean
-#
-#clean:
-#	rm *.o *.so
+clean:
+	rm -f $(ALLCCFILES:.cc=.so)
