@@ -69,37 +69,32 @@ inline IVector EtaPiPiGammaDecayer::getReferences() {
 
 
 // the analytic omnes function  
-inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const
- {
-   Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
-   double root,pi2(pi*pi);
-   Complex f,ii(0.,1.);
-   double pre(mpi2/12./pi2/_fpi/_fpi);
-   if(s>4.*mpi2)
-     {
-       // real piece
-       root=sqrt(1.-4.*mpi2/s);
-       f=(1.-0.25*s/mpi2)*root*log((root+1.)/(-root+1.))-2.;
-       f *=pre;
-       // imaginary piece
-       f += ii*s/mrho2*_rhoconst/8.*root*root*root;
-     }
-   else
-     {
-       root=sqrt((4.*mpi2-s)/s);
-       f=2.*(1.-0.25*s/mpi2)*root*atan(1./root)-2.;
-       f *=pre;
-     }
-   return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;
- }
-
-inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const
-{
-  if(!_Oreal)
-    {
-      _Oreal = new Interpolator(_Omnesfunctionreal,_Omnesenergy,3);
-      _Oimag = new Interpolator(_Omnesfunctionimag,_Omnesenergy,3);
-    }
+inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
+  Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
+  double root,pi2(pi*pi);
+  Complex f,ii(0.,1.);
+  double pre(mpi2/12./pi2/_fpi/_fpi);
+  if(s>4.*mpi2) {
+    // real piece
+    root=sqrt(1.-4.*mpi2/s);
+    f=(1.-0.25*s/mpi2)*root*log((root+1.)/(-root+1.))-2.;
+    f *=pre;
+    // imaginary piece
+    f += ii*s/mrho2*_rhoconst/8.*root*root*root;
+  }
+  else {
+    root=sqrt((4.*mpi2-s)/s);
+    f=2.*(1.-0.25*s/mpi2)*root*atan(1./root)-2.;
+    f *=pre;
+  }
+  return 1.-s/mrho2-s/48./pi2/_fpi/_fpi*log(mrho2/mpi2)-f;
+}
+  
+inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const {
+  if(!_Oreal) {
+    _Oreal = new_ptr(NewInterpolator(_Omnesfunctionreal,_Omnesenergy,3));
+    _Oimag = new_ptr(NewInterpolator(_Omnesfunctionimag,_Omnesenergy,3));
+  }
   Energy q(sqrt(s)); Complex ii(0.,1.);
   return (*_Oreal)(q)+ii*(*_Oimag)(q);
 }

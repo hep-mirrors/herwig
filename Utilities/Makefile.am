@@ -5,7 +5,6 @@ EnumParticles.h \
 GaussianIntegral.cc GaussianIntegral.h GaussianIntegral.icc \
 HerwigRun.cc HerwigRun.h \
 HwDebug.cc HwDebug.h \
-Interpolator.cc Interpolator.h Interpolator.icc \
 NewInterpolator.cc NewInterpolator.fh NewInterpolator.h NewInterpolator.icc \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \

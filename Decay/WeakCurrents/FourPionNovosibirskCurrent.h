@@ -6,7 +6,7 @@
 //
 #include "WeakDecayCurrent.h"
 #include "FourPionNovosibirskCurrent.fh"
-#include "Herwig++/Utilities/Interpolator.h"
+#include "Herwig++/Utilities/NewInterpolator.h"
 #include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
@@ -324,22 +324,22 @@ private:
   /**
    * The interpolator for the \f$\omega\f$ current.
    */
-  Interpolator *_Fomega;
+  NewInterpolatorPtr _Fomega;
 
   /**
    * The interpolator for the three charged pion \f$a_1\f$ current. 
    */
-  Interpolator *_Fthreec;
+  NewInterpolatorPtr _Fthreec;
 
   /**
    * The interpolator for the one   charged pion \f$a_1\f$ current.
    */
-  Interpolator *_Fonec;
+  NewInterpolatorPtr _Fonec;
 
   /**
    * The interpolator for the \f$\sigma\f$ current.
    */
-  Interpolator *_Fsigma;
+  NewInterpolatorPtr _Fsigma;
   //@}
 
   /**
@@ -534,7 +534,7 @@ private:
   /**
    * The interpolator for the running \f$a_1\f$ width.
    */
-  Interpolator *_a1runinter;
+  NewInterpolatorPtr _a1runinter;
 };
 
 }

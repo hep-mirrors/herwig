@@ -12,11 +12,6 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Repository/EventGenerator.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaKagan.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -83,15 +78,12 @@ BtoSGammaKagan::BtoSGammaKagan() : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV)
   _spectrum=vector<InvEnergy>(spin,spin+100);
 }
 
-
-BtoSGammaKagan::~BtoSGammaKagan() {}
-
 void BtoSGammaKagan::persistentOutput(PersistentOStream & os) const {
   os << _mt << _mb << _mc << _ms << _msovermb << _zratio << _lambda2 << _mw << _mz 
      << _MB << _c20 << _c70 << _c80 << _beta0 << _beta1 << _alpha << _alphaSZ << _mub 
      << _alphaSM << _ckm << _delta << _mHinter << _spectrum << _spectmax << _fermilambda 
      << _fermia << _ferminorm << _fermilambda1 <<_ycut << _deltacut << _nsfunct 
-     << _nspect << _maxtry << _initialize;
+     << _nspect << _maxtry << _initialize << _pmHinter;
 }
 
 void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
@@ -99,7 +91,7 @@ void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
      >> _MB >> _c20 >> _c70 >> _c80 >> _beta0 >> _beta1 >> _alpha >> _alphaSZ >> _mub 
      >> _alphaSM >> _ckm >> _delta >> _mHinter >> _spectrum >> _spectmax >> _fermilambda 
      >> _fermia >> _ferminorm >> _fermilambda1 >>_ycut >> _deltacut >> _nsfunct 
-     >> _nspect >> _maxtry >> _initialize;
+     >> _nspect >> _maxtry >> _initialize >> _pmHinter;
 }
 
 ClassDescription<BtoSGammaKagan> BtoSGammaKagan::initBtoSGammaKagan;
@@ -343,105 +335,96 @@ void BtoSGammaKagan::doinit() throw(InitException) {
   // parameters for the fermi motion function
   _fermilambda=_MB-_mb;
   _fermia=-3.*pow(_fermilambda,2.)/_fermilambda1-1.;
-  if(_initialize)
-    {
-      // calculate the wilson coefficients etc.
-      calculateWilsonCoefficients();
-      // calculate the interpolation tables for the s functions
-      vector<double> sfunct,yvalues;
-      // s_22 function
-      sfunct.push_back(0.),yvalues.push_back(0.);
-      double step(1./_nsfunct);
-      _y=-0.5*step;
-      // perform the integrals
-      Genfun::AbsFunction * integrand= new KaganIntegrand(this,0);
-      GaussianIntegral *integral= new GaussianIntegral(0.,1.); 
-      for(unsigned int ix=0;ix<_nsfunct;++ix)
-	{
-	  _y+=step;
-	  integral->resetLimits(0.,_y);
-	  yvalues.push_back(_y);
-	  sfunct.push_back((*integral)[*integrand]);
-	}
-      _s22inter = new Interpolator(sfunct,yvalues,3);
-      // s_27 function
-      delete integrand;
-      integrand=new KaganIntegrand(this,1);
-      sfunct.resize(0);yvalues.resize(0);
-      sfunct.push_back(0.),yvalues.push_back(0.);
-      _y=-0.5*step;
-      // perform integrals
-      for(unsigned int ix=0;ix<_nsfunct;++ix)
-	{
-	  _y+=step;
-	  integral->resetLimits(0.,_y);
-	  yvalues.push_back(_y);
-	  sfunct.push_back((*integral)[*integrand]);
-	}
-      _s27inter = new Interpolator(sfunct,yvalues,3);
-      delete integrand;
-      // compute the normalisation constant
-      integrand=new KaganIntegrand(this,3);
-      integral->resetLimits(_MB*(1.-_deltacut)-_mb,_MB-_mb);
-      _ferminorm*=1./(*integral)[*integrand];
-      delete integrand;
-      // now for the spectrum
-      _mHinter.resize(0);
-      _spectrum.resize(0);
-      _spectmax=0.;
-      // limits on the mass
-      Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
-      Energy minhadronmass(max(minMass(),sqrt(_MB*_MB-2.*_MB*maxegamma)));
-      Energy maxhadronmass(min(maxMass(),sqrt(_MB*_MB-2.*_MB*minegamma)));
-      double hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
-      double mhadron(minhadronmass);
-      // function to be integrated      
-      integrand=new KaganIntegrand(this,2);
-      // prefactor
-      double pre(6.*0.105*2./_MB/_MB*_alpha/pi/semiLeptonicf()*_ckm*_ckm);
-      // compute the table
-      for(unsigned int ix=0;ix<_nspect;++ix)
-	{
-	  // calculate y
-	  _y=1.-mhadron*mhadron/_MB/_MB;
-	  // perform the integral
-	  integral->resetLimits(_MB*_y-_mb,_MB-_mb);
-	  _spectrum.push_back(pre*mhadron*(*integral)[*integrand]);
-	  _spectmax=max(_spectmax,_spectrum.back());
-	  _mHinter.push_back(mhadron);
-	  // increment the loop
-	  mhadron+=hstep;
-	}
-      // delete the interpolators for the s functions
-      delete _s22inter;
-      delete _s27inter;    
+  if(_initialize) {
+    // calculate the wilson coefficients etc.
+    calculateWilsonCoefficients();
+    // calculate the interpolation tables for the s functions
+    vector<double> sfunct,yvalues;
+    // s_22 function
+    sfunct.push_back(0.),yvalues.push_back(0.);
+    double step(1./_nsfunct);
+    _y=-0.5*step;
+    // perform the integrals
+    Genfun::AbsFunction * integrand= new KaganIntegrand(this,0);
+    GaussianIntegral *integral= new GaussianIntegral(0.,1.); 
+    for(unsigned int ix=0;ix<_nsfunct;++ix) {
+      _y+=step;
+      integral->resetLimits(0.,_y);
+      yvalues.push_back(_y);
+      sfunct.push_back((*integral)[*integrand]);
     }
+    _s22inter = new_ptr(NewInterpolator(sfunct,yvalues,3));
+    // s_27 function
+    delete integrand;
+    integrand=new KaganIntegrand(this,1);
+    sfunct.resize(0);yvalues.resize(0);
+    sfunct.push_back(0.),yvalues.push_back(0.);
+    _y=-0.5*step;
+    // perform integrals
+    for(unsigned int ix=0;ix<_nsfunct;++ix) {
+      _y+=step;
+      integral->resetLimits(0.,_y);
+      yvalues.push_back(_y);
+      sfunct.push_back((*integral)[*integrand]);
+    }
+    _s27inter = new_ptr(NewInterpolator(sfunct,yvalues,3));
+    delete integrand;
+    // compute the normalisation constant
+    integrand=new KaganIntegrand(this,3);
+    integral->resetLimits(_MB*(1.-_deltacut)-_mb,_MB-_mb);
+    _ferminorm*=1./(*integral)[*integrand];
+    delete integrand;
+    // now for the spectrum
+    _mHinter.resize(0);
+    _spectrum.resize(0);
+    _spectmax=0.;
+    // limits on the mass
+    Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
+    Energy minhadronmass(max(minMass(),sqrt(_MB*_MB-2.*_MB*maxegamma)));
+    Energy maxhadronmass(min(maxMass(),sqrt(_MB*_MB-2.*_MB*minegamma)));
+    double hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
+    double mhadron(minhadronmass);
+    // function to be integrated      
+    integrand=new KaganIntegrand(this,2);
+    // prefactor
+    double pre(6.*0.105*2./_MB/_MB*_alpha/pi/semiLeptonicf()*_ckm*_ckm);
+    // compute the table
+    for(unsigned int ix=0;ix<_nspect;++ix) {
+      // calculate y
+      _y=1.-mhadron*mhadron/_MB/_MB;
+      // perform the integral
+      integral->resetLimits(_MB*_y-_mb,_MB-_mb);
+      _spectrum.push_back(pre*mhadron*(*integral)[*integrand]);
+      _spectmax=max(_spectmax,_spectrum.back());
+      _mHinter.push_back(mhadron);
+      // increment the loop
+      mhadron+=hstep;
+    }
+  }
+  _pmHinter = new_ptr(NewInterpolator(_spectrum,_mHinter,3));
 }
 
-Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark)
-{
+Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
   Energy minmass(max(minMass(),mquark)),maxmass(min(maxMass(),mb)),mass;
   double minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
   minmass=max(minmass,sqrt(_MB*_MB-2.*_MB*maxegamma));
   maxmass=min(maxmass,sqrt(_MB*_MB-2.*_MB*minegamma));
   unsigned int ntry(0);
   double rand;
-  do
-    {
-      rand=UseRandom::rnd();
-      mass = minmass*(1.-rand)+rand*maxmass;
-      ++ntry;
-    }
+  do {
+    rand=UseRandom::rnd();
+    mass = minmass*(1.-rand)+rand*maxmass;
+    ++ntry;
+  }
   while(ntry<_maxtry&&(*_pmHinter)(mass)<UseRandom::rnd()*_spectmax);
-  if(ntry>=_maxtry)
-    {throw Exception() << "Unweighting failed in BtoSGammaKagan::hadronicMass()" 
-		       << Exception::eventerror;}
+  if(ntry>=_maxtry) throw Exception() 
+    << "Unweighting failed in BtoSGammaKagan::hadronicMass()" 
+    << Exception::eventerror;
   return mass;
 }
 
 void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
-					   bool create) const
-{
+					   bool create) const {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
     {output << "create Herwig++::BtoSGammaKagan " << fullName() << " \n";}

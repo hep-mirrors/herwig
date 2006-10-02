@@ -8,24 +8,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline GenericWidthGenerator::GenericWidthGenerator() 
-{
-  // default paramter settings
-  _initialize=false;
-  _BRnorm=true;
-  _BRminimum=0.01;
-  _npoints=50;
-  _mass=0.;
-  _prefactor=0.;
-}
-
-inline GenericWidthGenerator::GenericWidthGenerator(const GenericWidthGenerator & x)
-  : WidthGenerator(x), _theParticle(x._theParticle), _decaymodes(x._decaymodes),
-    _minmass(x._minmass),_mass(x._mass), _prefactor(x._prefactor), _MEtype(x._MEtype), 
-    _MEcode(x._MEcode),_MEmass1(x._MEmass1), _MEmass2(x._MEmass2), 
-    _MEcoupling(x._MEcoupling), _modeon(x._modeon), _intermasses(x._intermasses),
-    _interwidths(x._interwidths),_noofentries(x._noofentries), 
-    _initialize(x._initialize), _BRnorm(x._BRnorm), _npoints(x._npoints),
-    _interpolators(x._interpolators), _BRminimum(x._BRminimum) {}
+  : _mass(0.),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
+    _BRminimum(0.01)
+{}
 
 inline IBPtr GenericWidthGenerator::clone() const {
   return new_ptr(*this);
@@ -34,52 +19,13 @@ inline IBPtr GenericWidthGenerator::clone() const {
 inline IBPtr GenericWidthGenerator::fullclone() const {
   return new_ptr(*this);
 }
-
-inline void GenericWidthGenerator::doupdate() throw(UpdateException) {
-  WidthGenerator::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void GenericWidthGenerator::dofinish() {
-  WidthGenerator::dofinish();
-}
-
-inline void GenericWidthGenerator::doinitrun() {
-  WidthGenerator::doinitrun();
-  setInterpolators();
-}
-
-inline void GenericWidthGenerator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  WidthGenerator::rebind(trans);
-}
-
-inline IVector GenericWidthGenerator::getReferences() {
-  IVector ret = WidthGenerator::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
   
-inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const
- {return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);}
+inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const {
+  return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);
+}
 
 inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
-						       Energy m2) const
-{
+						       Energy m2) const {
   if(q<m1+m2){return 0.;}
   // calcluate the decay momentum
   Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
@@ -123,19 +69,24 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energ
   return gam*_MEcoupling[imode]*_MEcoupling[imode];
 }
 
-inline int GenericWidthGenerator::MEcode(int imode) const
-{return _MEcode[imode];}
+inline int GenericWidthGenerator::MEcode(int imode) const {
+  return _MEcode[imode];
+}
 
-inline double GenericWidthGenerator::MEcoupling(int imode) const
-{return _MEcoupling[imode];}
+inline double GenericWidthGenerator::MEcoupling(int imode) const {
+  return _MEcoupling[imode];
+}
 
-inline Energy GenericWidthGenerator::mass() const
-{return _mass;}
+inline Energy GenericWidthGenerator::mass() const {
+  return _mass;
+}
 
-inline bool GenericWidthGenerator::initialize() const
-{return _initialize;}
+inline bool GenericWidthGenerator::initialize() const {
+  return _initialize;
+}
 
-inline tPDPtr GenericWidthGenerator::particle() const
-{return _theParticle;}
+inline tPDPtr GenericWidthGenerator::particle() const {
+  return _theParticle;
+}
 
 }

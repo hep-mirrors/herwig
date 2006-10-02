@@ -6,20 +6,6 @@
 
 namespace Herwig {
 
-inline BtoSGammaKagan::BtoSGammaKagan(const BtoSGammaKagan & x)
-  : BtoSGammaHadronicMass(x),_initialize(x._initialize),_mt(x._mt),_mb(x._mb),
-    _mc(x._mc),_ms(x._ms),_msovermb(x._msovermb),_zratio(x._zratio),_lambda2(x._lambda2),
-    _mw(x._mw),_mz(x._mz),_MB(x._MB),_c20(x._c20),_c70(x._c70),_c80(x._c80),
-    _beta0(x._beta0),_beta1(x._beta1),_alpha(x._alpha),_alphaSZ(x._alphaSZ),_mub(x._mub),
-    _alphaSM(x._alphaSM),_ckm(x._ckm),_delta(x._delta),_s22inter(x._s22inter),
-    _s27inter(x._s27inter),_pmHinter(x._pmHinter),_mHinter(x._mHinter),
-    _spectrum(x._spectrum),_spectmax(x._spectmax),_maxtry(x._maxtry),
-    _fermilambda(x._fermilambda),
-    _fermia(x._fermia),_ferminorm(x._ferminorm),_fermilambda1(x._fermilambda1),
-    _ycut(x._ycut),_y(x._y),_deltacut(x._deltacut),_nsfunct(x._nsfunct),
-    _nspect(x._nspect)
-{}
-
 inline IBPtr BtoSGammaKagan::clone() const {
   return new_ptr(*this);
 }
@@ -28,134 +14,88 @@ inline IBPtr BtoSGammaKagan::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void BtoSGammaKagan::doupdate() throw(UpdateException) {
-  BtoSGammaHadronicMass::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.//  touch()
-  // Touch if anything has changed.
-}
-
-inline void BtoSGammaKagan::dofinish() {
-  BtoSGammaHadronicMass::dofinish();
-}
-
-inline void BtoSGammaKagan::doinitrun() {
-  _pmHinter = new Interpolator(_spectrum,_mHinter,3);
-  BtoSGammaHadronicMass::doinitrun();
-}
-
-inline void BtoSGammaKagan::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  BtoSGammaHadronicMass::rebind(trans);
-}
-
-inline IVector BtoSGammaKagan::getReferences() {
-  IVector ret = BtoSGammaHadronicMass::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
-inline double BtoSGammaKagan::Delta(double y, double alphaS)
-{
+inline double BtoSGammaKagan::Delta(double y, double alphaS) {
   double output(0.);
   // goes to zero for large y
-  if(y<=_ycut)
-    {
-      double ln(log(1.-y));
-      output = -4./3./pi/(1.-y)*alphaS*(ln+1.75)*exp(-2.*alphaS/3./pi*ln*(ln+3.5));
-    }
+  if(y<=_ycut) {
+    double ln(log(1.-y));
+    output = -4./3./pi/(1.-y)*alphaS*(ln+1.75)*exp(-2.*alphaS/3./pi*ln*(ln+3.5));
+  }
   return output;
 }
 
-inline double BtoSGammaKagan::semiLeptonicf()
-{
+inline double BtoSGammaKagan::semiLeptonicf() {
   double z2=_zratio*_zratio;
   return 1.-8.*_zratio*(1.-z2)-z2*z2-12.*z2*log(_zratio);
 }
 
 
-inline double BtoSGammaKagan::s22(double y){return (*_s22inter)(y);}
+inline double BtoSGammaKagan::s22(double y) {
+  return (*_s22inter)(y);
+}
 
-inline double BtoSGammaKagan::s27(double y){return (*_s27inter)(y);}
+inline double BtoSGammaKagan::s27(double y) {
+  return (*_s27inter)(y);
+}
 
-inline double BtoSGammaKagan::s77(double y)
-{
+inline double BtoSGammaKagan::s77(double y) {
   if(y>_ycut){y=_ycut;}
   return 1./3.*(7.+y*(1.-2.*y)-2.*(1.+y)*log(1.-y));
 }
 
-inline double BtoSGammaKagan::s78(double y)
-{
+inline double BtoSGammaKagan::s78(double y) {
   if(y>_ycut){y=_ycut;}
   return 8./9.*((1.-y)/y*log(1.-y)+1.+0.25*y*y);
 }
 
-inline double BtoSGammaKagan::s88(double y)
-{
+inline double BtoSGammaKagan::s88(double y) {
   double ratio(_mb/_ms);
   if(y>_ycut){y=_ycut;}
   return 1./27.*(2.*(2.-2.*y+y*y)/y*(log(1.-y)+2.*log(ratio))-2.*y*y-y-8.*(1.-y)/y);
 }
-
-inline double BtoSGammaKagan::realG(double t)
-{
-  if(t<4.)
-    {
-      double at(atan(sqrt(t/(4.-t))));
-      return -2.*at*at;
-	}
-  else
-    {
-      double ln(log(0.5*(sqrt(t)+sqrt(t-4.))));
-      return 2.*(ln*ln-0.25*pi*pi);
-    }
-}
-inline double BtoSGammaKagan::imagG(double t)
-{
-  if(t<4.)
-    {return 0.;}
-  else
-    {return -2.*pi*log(0.5*(sqrt(t)+sqrt(t-4.)));}
+  
+inline double BtoSGammaKagan::realG(double t) {
+  if(t<4.) {
+    double at(atan(sqrt(t/(4.-t))));
+    return -2.*at*at;
+  }
+  else {
+    double ln(log(0.5*(sqrt(t)+sqrt(t-4.))));
+    return 2.*(ln*ln-0.25*pi*pi);
+  }
 }
 
-inline double BtoSGammaKagan::integrands22(double x)
-{
+inline double BtoSGammaKagan::imagG(double t) {
+  if(t<4.) return 0.;
+  else     return -2.*pi*log(0.5*(sqrt(t)+sqrt(t-4.)));
+}
+
+inline double BtoSGammaKagan::integrands22(double x) {
   double reg(realG(x/_zratio)),img(imagG(x/_zratio));
   return 16./27.*(1.-x)*(_zratio*_zratio/x/x*(reg*reg+img*img)+_zratio/x*reg+0.25);
 }
 
-inline double BtoSGammaKagan::integrands27(double x)
-{
+inline double BtoSGammaKagan::integrands27(double x) {
   return -8./9.*_zratio*(realG(x/_zratio)+0.5*x/_zratio);
 }
 
-inline double BtoSGammaKagan::alphaS(Energy Q)
-{
+inline double BtoSGammaKagan::alphaS(Energy Q) {
   double lo(1.-0.5*_beta0*_alphaSZ/pi*log(_mz/Q));
   return _alphaSZ/lo*(1.-0.25*_beta1/_beta0*_alphaSZ/pi*log(lo)/lo);
 }
 
-inline double BtoSGammaKagan::KNLO(double y)
-{
+inline double BtoSGammaKagan::KNLO(double y) {
   return _delta*Delta(y,_alphaSM)+_alphaSM/pi*(s22(y)*_c20*_c20+s77(y)*_c70*_c70+
 					       s88(y)*_c80*_c80+s78(y)*_c70*_c80+
 					       s27(y)*_c20*(_c70-_c80/3.));
 }
   
-inline double BtoSGammaKagan::integrandPy(Energy kp)
-{return KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp)*fermiFunction(kp);}
+inline double BtoSGammaKagan::integrandPy(Energy kp) {
+  return KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp)*fermiFunction(kp);
+}
 
-inline double BtoSGammaKagan::fermiFunction(Energy kp)
-{return exponentialFermiFunction(kp,_fermilambda,_fermia,_ferminorm,_fermilambda1);}
+inline double BtoSGammaKagan::fermiFunction(Energy kp) {
+  return exponentialFermiFunction(kp,_fermilambda,_fermia,_ferminorm,_fermilambda1);
+}
+
 }

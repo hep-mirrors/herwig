@@ -7,16 +7,14 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() 
-{
+inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   // local particle properties
   _localparameters=true;
   // rho masses and widths
-  if(_rhomass.size()==0)
-    {
-      _rhomass.push_back(0.7743*GeV);_rhowidth.push_back(0.1491*GeV);
-      _rhomass.push_back(1.370*GeV);_rhowidth.push_back(0.386*GeV);
-    }
+  if(_rhomass.size()==0) {
+    _rhomass.push_back(0.7743*GeV);_rhowidth.push_back(0.1491*GeV);
+    _rhomass.push_back(1.370*GeV);_rhowidth.push_back(0.386*GeV);
+  }
   // f_2 mass and width
   _f2mass=1.275*GeV;_f2width=0.185*GeV;
   // f_0(1370) mass and width
@@ -33,17 +31,15 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent()
   _fpi = 130.7*MeV/sqrt(2.);
   // couplings and phases for the different channels
   // p-wave rho and rho prime
-  if(_rhomagP.size()==0)
-    {
-      _rhomagP.push_back(1.)  ;_rhophaseP.push_back(0.);
-      _rhomagP.push_back(0.12);_rhophaseP.push_back(0.99*pi);
-    }
+  if(_rhomagP.size()==0) {
+    _rhomagP.push_back(1.)  ;_rhophaseP.push_back(0.);
+    _rhomagP.push_back(0.12);_rhophaseP.push_back(0.99*pi);
+  }
   // d-wave rho and rho prime
-  if(_rhomagD.size()==0)
-    {
-      _rhomagD.push_back(0.37/GeV2);_rhophaseD.push_back(-0.15*pi);
-      _rhomagD.push_back(0.87/GeV2);_rhophaseD.push_back( 0.53*pi);
-    }
+  if(_rhomagD.size()==0) {
+    _rhomagD.push_back(0.37/GeV2);_rhophaseD.push_back(-0.15*pi);
+    _rhomagD.push_back(0.87/GeV2);_rhophaseD.push_back( 0.53*pi);
+  }
   // f_2
   _f2mag=0.71/GeV2;_f2phase=0.56*pi;_f2coup=0.;
   // sigma
@@ -122,11 +118,10 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent()
 			 1623.63,1642.08,1653.51,1668.69,1684.03,1699.53,1715.21,1731.04,
 			 1747.05,1763.23,1779.59,1796.12,1812.83,1829.72,1846.79,1864.04,
 			 1881.49,1899.11,1916.93,1934.93,1953.13,1971.52,1990.12,2008.89};
-  if(_a1runwidth.size()==0)
-    {
-      _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
-      _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
-    }
+  if(_a1runwidth.size()==0) {
+    _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
+    _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
+  }
   // zero parameters which will be calculated later to avoid problems
   _pf2cc=0.; 
   _pf200=0.;
@@ -276,18 +271,19 @@ inline void ThreePionCLEOCurrent::inita1width(int iopt)
       delete inmeN;delete inmeC; delete widthgenN;delete widthgenC;
     }
   // set up the interpolator
-  else if(iopt==0)
-    {_a1runinter = new Interpolator(_a1runwidth,_a1runq2,3);}
+  else if(iopt==0) {
+    _a1runinter = new_ptr(NewInterpolator(_a1runwidth,_a1runq2,3));
+  }
 }
 
 
 // running width of the a_1
-inline Energy ThreePionCLEOCurrent::a1width(Energy2 q2) const
-{return (*_a1runinter)(q2);}
+inline Energy ThreePionCLEOCurrent::a1width(Energy2 q2) const {
+  return (*_a1runinter)(q2);
+}
 
 // a_1 Breit Wigner
-inline Complex  ThreePionCLEOCurrent::a1BreitWigner(Energy2 q2) const
-{
+inline Complex  ThreePionCLEOCurrent::a1BreitWigner(Energy2 q2) const {
   Complex ii(0.,1.);
   Energy2 m2=_a1mass*_a1mass; Energy q=sqrt(q2);
   Complex output=m2/(m2-q2-ii*q*a1width(q2));
@@ -295,54 +291,53 @@ inline Complex  ThreePionCLEOCurrent::a1BreitWigner(Energy2 q2) const
 }
 
 // matrix element for the running a_1 width
-inline double ThreePionCLEOCurrent::a1MatrixElement(int iopt,Energy2 q2, Energy2 s3,
-						   Energy2 s2,Energy2 s1,Energy m1,Energy m2,Energy m3)
-{
+inline double 
+ThreePionCLEOCurrent::a1MatrixElement(int iopt,Energy2 q2, Energy2 s3,
+				      Energy2 s2,Energy2 s1,Energy m1,
+				      Energy m2,Energy m3) {
   Energy p1[6],p2[6],p3[6];
   Energy q=sqrt(q2);
   Energy2 mpi2c=_mpic*_mpic;
   Energy2 mpi20=_mpi0*_mpi0;
   // construct the momenta for the 2 neutral 1 charged mode
   Complex F1,F2,F3;
-  if(iopt==0)
-    {
-      // construct the momenta of the decay products
-      p1[0] = 0.5*(q2+mpi20-s1)/q; p1[5]=p1[0]*p1[0]; p1[4]=sqrt(p1[5]-mpi20);
-      p2[0] = 0.5*(q2+mpi20-s2)/q; p2[5]=p2[0]*p2[0]; p2[4]=sqrt(p2[5]-mpi20);
-      p3[0] = 0.5*(q2+mpi2c-s3)/q; p3[5]=p3[0]*p3[0]; p3[4]=sqrt(p3[5]-mpi2c);
-      // take momentum of 1 parallel to z axis
-      p1[1]=0.;p1[2]=0.;p1[3]=p1[4];
-      // construct 2 
-      double cos2 = 0.5*(p1[5]+p2[5]-p3[5]-2.*mpi20+mpi2c)/p1[4]/p2[4];
-      p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.; p2[3]=-p2[4]*cos2;
-      // construct 3
-      double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
-      p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
-      // calculate the form factors
-      CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
-    }
+  if(iopt==0) {
+    // construct the momenta of the decay products
+    p1[0] = 0.5*(q2+mpi20-s1)/q; p1[5]=p1[0]*p1[0]; p1[4]=sqrt(p1[5]-mpi20);
+    p2[0] = 0.5*(q2+mpi20-s2)/q; p2[5]=p2[0]*p2[0]; p2[4]=sqrt(p2[5]-mpi20);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3[5]=p3[0]*p3[0]; p3[4]=sqrt(p3[5]-mpi2c);
+    // take momentum of 1 parallel to z axis
+    p1[1]=0.;p1[2]=0.;p1[3]=p1[4];
+    // construct 2 
+    double cos2 = 0.5*(p1[5]+p2[5]-p3[5]-2.*mpi20+mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.; p2[3]=-p2[4]*cos2;
+    // construct 3
+    double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
+    // calculate the form factors
+    CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
+  }
   // construct the momenta for the 3 charged mode 
-  else
-    {
-      // construct the momenta of the decay products
-      p1[0] = 0.5*(q2+mpi2c-s1)/q; p1[5]=p1[0]*p1[0]; p1[4]=sqrt(p1[5]-mpi2c);
-      p2[0] = 0.5*(q2+mpi2c-s2)/q; p2[5]=p2[0]*p2[0]; p2[4]=sqrt(p2[5]-mpi2c);
-      p3[0] = 0.5*(q2+mpi2c-s3)/q; p3[5]=p3[0]*p3[0]; p3[4]=sqrt(p3[5]-mpi2c);
-      // take momentum of 1 parallel to z axis
-      p1[1]=0.;p1[2]=0.;p1[3]=p1[4];
-      // construct 2 
-      double cos2 = 0.5*(p1[5]+p2[5]-p3[5]-mpi2c)/p1[4]/p2[4];
-      p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.; p2[3]=-p2[4]*cos2;
-      // construct 3
-      double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
-      p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
-      // calculate the form factors
-      CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
-    }
+  else {
+    // construct the momenta of the decay products
+    p1[0] = 0.5*(q2+mpi2c-s1)/q; p1[5]=p1[0]*p1[0]; p1[4]=sqrt(p1[5]-mpi2c);
+    p2[0] = 0.5*(q2+mpi2c-s2)/q; p2[5]=p2[0]*p2[0]; p2[4]=sqrt(p2[5]-mpi2c);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3[5]=p3[0]*p3[0]; p3[4]=sqrt(p3[5]-mpi2c);
+    // take momentum of 1 parallel to z axis
+    p1[1]=0.;p1[2]=0.;p1[3]=p1[4];
+    // construct 2 
+    double cos2 = 0.5*(p1[5]+p2[5]-p3[5]-mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.; p2[3]=-p2[4]*cos2;
+    // construct 3
+    double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
+    // calculate the form factors
+    CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
+  }
   // construct a vector with the current
   Complex current[4];
   for(unsigned int ix=0;ix<4;++ix)
-    {current[ix] = F1*(p2[ix]-p3[ix])-F2*(p3[ix]-p1[ix])+F3*(p1[ix]-p2[ix]);}
+    current[ix] = F1*(p2[ix]-p3[ix])-F2*(p3[ix]-p1[ix])+F3*(p1[ix]-p2[ix]);
   Complex dot1=current[0]*conj(current[0]);
   for(unsigned int ix=1;ix<4;++ix){dot1-=current[ix]*conj(current[ix]);}
   Complex dot2=current[0]*q;

@@ -215,10 +215,10 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent()
   vector<Energy> veceninit(eninit,eninit+98);
   vector<Energy2> vecensigma(ensigma,ensigma+100);
   // set up the interpolators
-  _Fomega  = new Interpolator(vecFomegainit,veceninit ,1);
-  _Fthreec = new Interpolator(vecFthreeinit,veceninit ,1);
-  _Fonec   = new Interpolator(vecFoneinit  ,veceninit ,1);
-  _Fsigma  = new Interpolator(vecFsigma    ,vecensigma,1);
+  _Fomega  = new_ptr(NewInterpolator(vecFomegainit,veceninit ,1));
+  _Fthreec = new_ptr(NewInterpolator(vecFthreeinit,veceninit ,1));
+  _Fonec   = new_ptr(NewInterpolator(vecFoneinit  ,veceninit ,1));
+  _Fsigma  = new_ptr(NewInterpolator(vecFsigma    ,vecensigma,1));
   // initialise the calculation of the a_1 width
   _initializea1=false;
   Energy2 a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,

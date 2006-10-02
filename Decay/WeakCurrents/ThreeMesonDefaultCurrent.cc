@@ -9,11 +9,6 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreeMesonDefaultCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
