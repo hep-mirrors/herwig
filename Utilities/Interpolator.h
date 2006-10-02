@@ -1,12 +1,12 @@
 // -*- C++ -*-
-#ifndef HERWIG_NewInterpolator_H
-#define HERWIG_NewInterpolator_H
+#ifndef HERWIG_Interpolator_H
+#define HERWIG_Interpolator_H
 //
-// This is the declaration of the NewInterpolator class.
+// This is the declaration of the Interpolator class.
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "NewInterpolator.fh"
+#include "Interpolator.fh"
 
 namespace Herwig {
 
@@ -18,10 +18,10 @@ using namespace ThePEG;
  *  This class implments a polynominal interpolation of a table of values, it is
  *  based on the interpolation code in FORTRAN HERWIG. 
  *
- * @see \ref NewInterpolatorInterfaces "The interfaces"
- * defined for NewInterpolator.
+ * @see \ref InterpolatorInterfaces "The interfaces"
+ * defined for Interpolator.
  */
-class NewInterpolator: public Interfaced {
+class Interpolator: public Interfaced {
 
 public:
 
@@ -30,12 +30,12 @@ public:
   /**
    * The default constructor.
    */
-  inline NewInterpolator();
+  inline Interpolator();
 
   /**
    * Constructor with data as vectors.
    */
-  NewInterpolator(vector<double> f, vector<double> x, int order);
+  Interpolator(vector<double> f, vector<double> x, int order);
   //@}
 
   /**
@@ -92,13 +92,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<NewInterpolator> initNewInterpolator;
+  static ClassDescription<Interpolator> initInterpolator;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  NewInterpolator & operator=(const NewInterpolator &);
+  Interpolator & operator=(const Interpolator &);
   
 private:
   
@@ -128,24 +128,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of NewInterpolator. */
+ *  base classes of Interpolator. */
 template <>
-struct BaseClassTrait<Herwig::NewInterpolator,1> {
-  /** Typedef of the first base class of NewInterpolator. */
+struct BaseClassTrait<Herwig::Interpolator,1> {
+  /** Typedef of the first base class of Interpolator. */
   typedef Interfaced NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the NewInterpolator class and the shared object where it is defined. */
+ *  the Interpolator class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::NewInterpolator>
-  : public ClassTraitsBase<Herwig::NewInterpolator> {
+struct ClassTraits<Herwig::Interpolator>
+  : public ClassTraitsBase<Herwig::Interpolator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::NewInterpolator"; }
+  static string className() { return "Herwig++::Interpolator"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * NewInterpolator is implemented. It may also include several, space-separated,
-   * libraries if the class NewInterpolator depends on other classes (base classes
+   * Interpolator is implemented. It may also include several, space-separated,
+   * libraries if the class Interpolator depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -156,9 +156,9 @@ struct ClassTraits<Herwig::NewInterpolator>
 
 }
 
-#include "NewInterpolator.icc"
+#include "Interpolator.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "NewInterpolator.tcc"
+// #include "Interpolator.tcc"
 #endif
 
-#endif /* HERWIG_NewInterpolator_H */
+#endif /* HERWIG_Interpolator_H */

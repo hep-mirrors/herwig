@@ -7,7 +7,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Utilities/GaussianIntegral.h"
-#include "Herwig++/Utilities/NewInterpolator.h"
+#include "Herwig++/Utilities/Interpolator.h"
 #include "EtaPiPiGammaDecayer.fh"
 
 namespace Herwig {
@@ -327,7 +327,7 @@ private:
   /**
    * Interpolators for the experimental Omnes function.
    */
-  mutable NewInterpolatorPtr _Oreal,_Oimag;
+  mutable InterpolatorPtr _Oreal,_Oimag;
 
   /**
    *  Cut-off parameter for the integral of the experimental function
@@ -416,7 +416,7 @@ public:
   /**
    * constructor with data as vectors
    */
-  OmnesFunction(NewInterpolatorPtr, Energy2);
+  OmnesFunction(InterpolatorPtr, Energy2);
 
   /**
    * Copy constructor
@@ -455,7 +455,7 @@ private:
   /**
    *  The interpolator
    */
-  NewInterpolatorPtr _interpolator;
+  InterpolatorPtr _interpolator;
 
   /**
    *  The scale and precision.

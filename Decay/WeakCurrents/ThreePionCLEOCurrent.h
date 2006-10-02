@@ -6,7 +6,7 @@
 //
 #include "ThreeMesonCurrentBase.h"
 #include "ThreePionCLEOCurrent.fh"
-#include "Herwig++/Utilities/NewInterpolator.h"
+#include "Herwig++/Utilities/Interpolator.h"
 #include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -578,7 +578,7 @@ private:
   /**
    * The interpolator for the running \f$a_1\f$ width calculation.
    */
-  NewInterpolatorPtr _a1runinter;
+  InterpolatorPtr _a1runinter;
 
   /**
    * Initialize the running \f$a_1\f$ width.

@@ -1,10 +1,10 @@
 // -*- C++ -*-
 //
 // This is the implementation of the non-inlined, non-templated member
-// functions of the NewInterpolator class.
+// functions of the Interpolator class.
 //
 
-#include "NewInterpolator.h"
+#include "Interpolator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -13,56 +13,56 @@
 
 using namespace Herwig;
 
-NewInterpolator::NewInterpolator(vector<double> f, vector<double> x, int order) 
+Interpolator::Interpolator(vector<double> f, vector<double> x, int order) 
   : _xval(x),_fun(f),_order(order)
 {
   // check the size of the vectors is the same
   if(_fun.size()!=_xval.size())
-    throw Exception() << "NewInterpolator: The size of the vectors containing " 
+    throw Exception() << "Interpolator: The size of the vectors containing " 
 		      << "the x and function values are different" 
 		      << Exception::runerror;
   if(_order<1)
-    throw Exception() << "NewInterpolator: The order of interpolation is too low" 
+    throw Exception() << "Interpolator: The order of interpolation is too low" 
 		      << " using linear interpolation" 
 		      << Exception::runerror;
 }
 
-void NewInterpolator::persistentOutput(PersistentOStream & os) const {
+void Interpolator::persistentOutput(PersistentOStream & os) const {
   os << _xval << _fun << _order;
 }
 
-void NewInterpolator::persistentInput(PersistentIStream & is, int) {
+void Interpolator::persistentInput(PersistentIStream & is, int) {
   is >> _xval >> _fun >> _order;
 }
 
-ClassDescription<NewInterpolator> NewInterpolator::initNewInterpolator;
+ClassDescription<Interpolator> Interpolator::initInterpolator;
 // Definition of the static class description member.
 
-void NewInterpolator::Init() {
+void Interpolator::Init() {
 
-  static ClassDocumentation<NewInterpolator> documentation
-    ("The NewInterpolator class is design to interpolate a table of values");
+  static ClassDocumentation<Interpolator> documentation
+    ("The Interpolator class is design to interpolate a table of values");
 
-  static Parameter<NewInterpolator,unsigned int> interfaceOrder
+  static Parameter<Interpolator,unsigned int> interfaceOrder
     ("Order",
      "Order of the interpolation",
-     &NewInterpolator::_order, 3, 1, 10,
+     &Interpolator::_order, 3, 1, 10,
      false, false, Interface::limited);
 
-  static ParVector<NewInterpolator,double> interfaceXValues
+  static ParVector<Interpolator,double> interfaceXValues
     ("XValues",
      "The x values for the interpolation",
-     &NewInterpolator::_xval, -1, 0., 0, 0,
+     &Interpolator::_xval, -1, 0., 0, 0,
      false, false, Interface::nolimits);
 
-  static ParVector<NewInterpolator,double> interfaceFunctionValues
+  static ParVector<Interpolator,double> interfaceFunctionValues
     ("FunctionValues",
      "The function values for the interpolation",
-     &NewInterpolator::_fun, -1, 0., 0, 0,
+     &Interpolator::_fun, -1, 0., 0, 0,
      false, false, Interface::nolimits);
 }
 
-double NewInterpolator::operator ()(double xpoint) const {
+double Interpolator::operator ()(double xpoint) const {
   // size of the vectors
   unsigned int isize(_xval.size());
   // workout the numer of points we need

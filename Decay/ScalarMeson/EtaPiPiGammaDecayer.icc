@@ -92,8 +92,8 @@ inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
   
 inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const {
   if(!_Oreal) {
-    _Oreal = new_ptr(NewInterpolator(_Omnesfunctionreal,_Omnesenergy,3));
-    _Oimag = new_ptr(NewInterpolator(_Omnesfunctionimag,_Omnesenergy,3));
+    _Oreal = new_ptr(Interpolator(_Omnesfunctionreal,_Omnesenergy,3));
+    _Oimag = new_ptr(Interpolator(_Omnesfunctionimag,_Omnesenergy,3));
   }
   Energy q(sqrt(s)); Complex ii(0.,1.);
   return (*_Oreal)(q)+ii*(*_Oimag)(q);

@@ -353,7 +353,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       yvalues.push_back(_y);
       sfunct.push_back((*integral)[*integrand]);
     }
-    _s22inter = new_ptr(NewInterpolator(sfunct,yvalues,3));
+    _s22inter = new_ptr(Interpolator(sfunct,yvalues,3));
     // s_27 function
     delete integrand;
     integrand=new KaganIntegrand(this,1);
@@ -367,7 +367,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       yvalues.push_back(_y);
       sfunct.push_back((*integral)[*integrand]);
     }
-    _s27inter = new_ptr(NewInterpolator(sfunct,yvalues,3));
+    _s27inter = new_ptr(Interpolator(sfunct,yvalues,3));
     delete integrand;
     // compute the normalisation constant
     integrand=new KaganIntegrand(this,3);
@@ -401,7 +401,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       mhadron+=hstep;
     }
   }
-  _pmHinter = new_ptr(NewInterpolator(_spectrum,_mHinter,3));
+  _pmHinter = new_ptr(Interpolator(_spectrum,_mHinter,3));
 }
 
 Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {

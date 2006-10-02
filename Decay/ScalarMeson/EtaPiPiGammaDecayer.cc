@@ -86,8 +86,8 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer()
   _energy.push_back(940*MeV);_phase.push_back(147.3);
   _energy.push_back(960*MeV);_phase.push_back(149.7);
   _energy.push_back(980*MeV);_phase.push_back(151.8);
-  _Oreal=NewInterpolatorPtr();
-  _Oimag=NewInterpolatorPtr();
+  _Oreal=InterpolatorPtr();
+  _Oimag=InterpolatorPtr();
   // experimental omnes function 
   _Omnesenergy.push_back(282.534);_Omnesfunctionreal.push_back(0.860676);
   _Omnesfunctionimag.push_back(0.00243346);
@@ -321,7 +321,7 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
       for(unsigned int ix=0;ix<_phase.size();++ix)
 	{radphase.push_back(_phase[ix]/180.*pi);}
       // set up an interpolator for this
-      NewInterpolatorPtr intphase=new_ptr(NewInterpolator(radphase,_energy,3));
+      InterpolatorPtr intphase=new_ptr(Interpolator(radphase,_energy,3));
       OmnesFunction *D1 = new OmnesFunction(intphase,_epscut*_epscut);
       double D1real,D1imag;
       Energy moff(2.*_mpi),meta(getParticleData(ParticleID::etaprime)->mass()),
@@ -751,7 +751,7 @@ FUNCTION_OBJECT_IMP(OmnesFunction)
 OmnesFunction::OmnesFunction(const OmnesFunction & right) 
 {  }
 
-OmnesFunction::OmnesFunction(NewInterpolatorPtr in,Energy2 eps)
+OmnesFunction::OmnesFunction(InterpolatorPtr in,Energy2 eps)
  {
    _interpolator=in;
    _precision=eps;

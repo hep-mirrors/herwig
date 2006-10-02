@@ -385,7 +385,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	  if(_MEtype.size()>1){istart+=_noofentries[_MEtype.size()-2];}
 	  iend=_interwidths.end();
 	  vector<Energy> widths=vector<Energy>(istart,iend);
-	  _interpolators.back()=new_ptr(NewInterpolator(widths,masses,3));
+	  _interpolators.back()=new_ptr(Interpolator(widths,masses,3));
 	}
       }
       // higher multiplicities
@@ -430,7 +430,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	if(_MEtype.size()>1){istart+=_noofentries[_MEtype.size()-2];}
 	iend=_interwidths.end();
 	vector<Energy> widths=vector<Energy>(istart,iend);
-	_interpolators.back()=new_ptr(NewInterpolator(widths,masses,3));
+	_interpolators.back()=new_ptr(Interpolator(widths,masses,3));
       }
     }
     // now check the overall normalisation of the running width
@@ -473,7 +473,7 @@ void GenericWidthGenerator::setInterpolators() {
     if(_MEtype[ix]==2) {
       masses=vector<Energy>(estart,eend);
       widths=vector<Energy>(wstart,wend);
-      _interpolators[ix]= new_ptr(NewInterpolator(widths,masses,3));
+      _interpolators[ix]= new_ptr(Interpolator(widths,masses,3));
     }
     estart=eend;
     wstart=wend;

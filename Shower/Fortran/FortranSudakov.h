@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/SudakovFormFactor.h"
-#include "Herwig++/Utilities/NewInterpolator.h"
+#include "Herwig++/Utilities/Interpolator.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "FortranSudakov.fh"
 #include "Herwig++/Shower/Couplings/FortranAlphaQCD.fh"
@@ -207,25 +207,25 @@ private:
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the Sudakov given the scale
    */
-  vector<NewInterpolatorPtr> _sudakovQ;
+  vector<InterpolatorPtr> _sudakovQ;
 
   /**
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the scale given the Sudakov
    */
-  vector<NewInterpolatorPtr> _sudakovP;
+  vector<InterpolatorPtr> _sudakovP;
 
   /**
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the Sudakov given the scale using linear extrapolation as a backup
    */
-  vector<NewInterpolatorPtr> _linearQ;
+  vector<InterpolatorPtr> _linearQ;
 
   /**
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the scale given the Sudakov using linear extrapolation as a backup
    */
-  vector<NewInterpolatorPtr> _linearP;
+  vector<InterpolatorPtr> _linearP;
 
   /**
    *  Reference to the object for \f$\alpha_S\f$ after dynamic casting

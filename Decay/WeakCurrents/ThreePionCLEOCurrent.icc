@@ -272,7 +272,7 @@ inline void ThreePionCLEOCurrent::inita1width(int iopt)
     }
   // set up the interpolator
   else if(iopt==0) {
-    _a1runinter = new_ptr(NewInterpolator(_a1runwidth,_a1runq2,3));
+    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
   }
 }
 

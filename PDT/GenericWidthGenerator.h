@@ -10,7 +10,7 @@
 #include "GenericWidthGenerator.fh"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Utilities/NewInterpolator.h"
+#include "Herwig++/Utilities/Interpolator.h"
 #include "GenericMassGenerator.h"
 #include <iostream>
 
@@ -315,7 +315,7 @@ private:
   /**
    * intepolators for the running width
    */
-  vector<NewInterpolatorPtr> _interpolators;
+  vector<InterpolatorPtr> _interpolators;
 
   /**
    * minimum branching ratio for the inclusion in the total running width

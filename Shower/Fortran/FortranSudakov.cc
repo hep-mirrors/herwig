@@ -172,13 +172,13 @@ void FortranSudakov::doinit() throw(InitException) {
     while (qnow<1.1*qlim);
     //cerr << "join red\n";
     // now construct the interpolators
-    NewInterpolatorPtr newint=new_ptr(NewInterpolator(sud,qev,_inter));
+    InterpolatorPtr newint=new_ptr(Interpolator(sud,qev,_inter));
     _sudakovQ.push_back(newint);
-    newint=new_ptr(NewInterpolator(qev,sud,_inter));
+    newint=new_ptr(Interpolator(qev,sud,_inter));
     _sudakovP.push_back(newint);
-    newint=new_ptr(NewInterpolator(sud,qev,1));
+    newint=new_ptr(Interpolator(sud,qev,1));
     _linearQ.push_back(newint);
-    newint=new_ptr(NewInterpolator(qev,sud,1));
+    newint=new_ptr(Interpolator(qev,sud,1));
     _linearP.push_back(newint);
   }
 }

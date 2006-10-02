@@ -7,7 +7,7 @@
 
 #include "CLHEP/GenericFunctions/AbsFunction.hh"
 #include "Herwig++/Utilities/GaussianIntegral.h"
-#include "Herwig++/Utilities/NewInterpolator.h"
+#include "Herwig++/Utilities/Interpolator.h"
 #include "BtoSGammaHadronicMass.h"
 #include "ThePEG/Config/Complex.h"
 #include "ThePEG/Config/Constants.h"
@@ -355,17 +355,17 @@ private:
   /**
    *  Interpolator for the \f$s_{22}\f$ function
    */
-  NewInterpolatorPtr _s22inter;
+  InterpolatorPtr _s22inter;
 
   /**
    *  Interpolator for the \f$s_{27}\f$ function
    */
-  NewInterpolatorPtr _s27inter;
+  InterpolatorPtr _s27inter;
 
   /**
    *  Interpolator for the spectrum
    */
-  NewInterpolatorPtr _pmHinter;
+  InterpolatorPtr _pmHinter;
 
   /**
    *  Values of \f$m_H\f$ for the interpolation of the spectrum
