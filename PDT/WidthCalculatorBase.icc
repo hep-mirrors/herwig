@@ -7,9 +7,4 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline WidthCalculatorBase::WidthCalculatorBase() {}
-
-inline WidthCalculatorBase::WidthCalculatorBase(const WidthCalculatorBase & x)
-  : Base(x) {}
-
 }

@@ -567,9 +567,3 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
-double OmnesIntegrand::operator ()(double xpoint) const {
-  double output(0.); Energy q(sqrt(xpoint));
-  if(abs(xpoint-_s)>_precision) 
-    output= (*_interpolator)(q)/xpoint/(xpoint-_s);
-  return output;
-}

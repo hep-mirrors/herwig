@@ -14,6 +14,7 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/Utilities/GaussianIntegrator.h"
 
 using namespace Herwig;
 using Herwig::Math::Li2;
@@ -243,11 +244,9 @@ void BtoSGammaKagan::Init() {
      "Number of spectrum points to calculate for interpolation",
      &BtoSGammaKagan::_nspect, 100, 10, 1000,
      false, false, Interface::limited);
-
 }
 
-void BtoSGammaKagan::calculateWilsonCoefficients()
-{
+void BtoSGammaKagan::calculateWilsonCoefficients() {
   // strong coupling at various scales
   double alphaSMW(alphaS(_mw)),alphaSMT(alphaS(_mt));
   _alphaSM=alphaS(_mub);
@@ -294,8 +293,9 @@ void BtoSGammaKagan::calculateWilsonCoefficients()
   double c71c=(297664./14283.*pow(eta,16./23.)-7164416./357075.*pow(eta,14./23.)
 	       +256868./14283.*pow(eta,37./23.)-6698884./357075.*pow(eta,39./23.))*c8w
     +37208./4761.*(pow(eta,39./23.)-pow(eta,16./23.))*c7w;
-  for(unsigned int ix=0;ix<8;++ix)
-    {c71c+=(ei[ix]*eta*Ex+fi[ix]+gi[ix]*eta)*pow(eta,ai[ix]);}
+  for(unsigned int ix=0;ix<8;++ix) {
+    c71c+=(ei[ix]*eta*Ex+fi[ix]+gi[ix]*eta)*pow(eta,ai[ix]);
+  }
   // total correction
   double c71(pow(eta,39./23.)*c71w+8./3.*(pow(eta,37./23.)-pow(eta,39./23.))*c81w+c71c);
   // electromagnetic corrections
@@ -345,35 +345,29 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     double step(1./_nsfunct);
     _y=-0.5*step;
     // perform the integrals
-    Genfun::AbsFunction * integrand= new KaganIntegrand(this,0);
-    GaussianIntegral *integral= new GaussianIntegral(0.,1.); 
+    KaganIntegrand integrand(this,0);
+    GaussianIntegrator integrator;
     for(unsigned int ix=0;ix<_nsfunct;++ix) {
       _y+=step;
-      integral->resetLimits(0.,_y);
       yvalues.push_back(_y);
-      sfunct.push_back((*integral)[*integrand]);
+      sfunct.push_back(integrator.value(integrand,0.,_y));
     }
     _s22inter = new_ptr(Interpolator(sfunct,yvalues,3));
-    // s_27 function
-    delete integrand;
-    integrand=new KaganIntegrand(this,1);
+    // s_27 function;
+    integrand=KaganIntegrand(this,1);
     sfunct.resize(0);yvalues.resize(0);
     sfunct.push_back(0.),yvalues.push_back(0.);
     _y=-0.5*step;
     // perform integrals
     for(unsigned int ix=0;ix<_nsfunct;++ix) {
       _y+=step;
-      integral->resetLimits(0.,_y);
       yvalues.push_back(_y);
-      sfunct.push_back((*integral)[*integrand]);
+      sfunct.push_back(integrator.value(integrand,0.,_y));
     }
     _s27inter = new_ptr(Interpolator(sfunct,yvalues,3));
-    delete integrand;
     // compute the normalisation constant
-    integrand=new KaganIntegrand(this,3);
-    integral->resetLimits(_MB*(1.-_deltacut)-_mb,_MB-_mb);
-    _ferminorm*=1./(*integral)[*integrand];
-    delete integrand;
+    integrand=KaganIntegrand(this,3);
+    _ferminorm*=1./integrator.value(integrand,_MB*(1.-_deltacut)-_mb,_MB-_mb);
     // now for the spectrum
     _mHinter.resize(0);
     _spectrum.resize(0);
@@ -385,7 +379,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     double hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
     double mhadron(minhadronmass);
     // function to be integrated      
-    integrand=new KaganIntegrand(this,2);
+    integrand=KaganIntegrand(this,2);
     // prefactor
     double pre(6.*0.105*2./_MB/_MB*_alpha/pi/semiLeptonicf()*_ckm*_ckm);
     // compute the table
@@ -393,8 +387,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       // calculate y
       _y=1.-mhadron*mhadron/_MB/_MB;
       // perform the integral
-      integral->resetLimits(_MB*_y-_mb,_MB-_mb);
-      _spectrum.push_back(pre*mhadron*(*integral)[*integrand]);
+      _spectrum.push_back(pre*mhadron*integrator.value(integrand,_MB*_y-_mb,_MB-_mb));
       _spectmax=max(_spectmax,_spectrum.back());
       _mHinter.push_back(mhadron);
       // increment the loop
@@ -468,33 +461,5 @@ void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";}
 }
 
-// function for the integral
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
 
-FUNCTION_OBJECT_IMP(KaganIntegrand)
-
-  KaganIntegrand::KaganIntegrand(BtoSGammaKaganPtr in,unsigned int ioptin)
-{_kagan=in,_iopt=ioptin;}
-
-KaganIntegrand::~KaganIntegrand() {}
-
-KaganIntegrand::KaganIntegrand(const KaganIntegrand & right)
-  : _kagan(right._kagan),_iopt(right._iopt) {}
-
-// calculate the integrand  
-double KaganIntegrand::operator() (double x) const 
-{
-  if(_iopt==0)
-    {return _kagan->integrands22(x);}
-  else if(_iopt==1)
-    {return _kagan->integrands27(x);}
-  else if(_iopt==2)
-    {return _kagan->integrandPy(x);}
-  else
-    {return _kagan->fermiFunction(x);}
-}
-
-}
  

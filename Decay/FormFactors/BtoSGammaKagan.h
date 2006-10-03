@@ -5,8 +5,6 @@
 // This is the declaration of the BtoSGammaKagan class.
 //
 
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "BtoSGammaHadronicMass.h"
 #include "ThePEG/Config/Complex.h"
@@ -474,76 +472,26 @@ struct ClassTraits<Herwig::BtoSGammaKagan>
 
 }
 
-// class for the integration of the s functions
 namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
 
-  /** \ingroup Decay
-   *  This is a function using the CLHEP Genfun class whiches can access the integrands22
-   * and integrands27 members or the spectrum 
+/**
+ *  A struct for the integrand which can access the integrands22
+   * and integrands27 members of the spectrum 
    * of the BtoSGammaKagan class. This function can then
    * be integrated to give the coefficients.
-   */
-class KaganIntegrand : public Genfun::AbsFunction {
-
-public:		   
-
-  /**
-   *  Function composition
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const; 
-
-  /**
-   * clone
-   */
-  KaganIntegrand *clone() const; 
-
-private:                               
-
-  /**
-   * clone
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
- 
-/** @name Standard constructors and destructors. */
-/**
- *  The constructor
  */
-  KaganIntegrand(BtoSGammaKaganPtr,unsigned int);
-  
-  /**
-   *  The destructor
-   */
-  virtual ~KaganIntegrand();
-  
-  /**
-   * The copy constructor
-   */
-  KaganIntegrand(const KaganIntegrand &right);
-  //@}
+struct KaganIntegrand {
 
   /**
-   *  Retreive the function value
+   *  The constructor
    */
-  virtual double operator ()(double argument) const;
+  inline KaganIntegrand(BtoSGammaKaganPtr,unsigned int);
 
   /**
-   *  Retreive the function value
+   * Get the function value
    */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-  
-private:
-  
-  /**
-   * Non-existant assignment operator. It is illegal to assign a function
-   */
-  const KaganIntegrand & operator=(const KaganIntegrand &right);
-  
-private:
-  
+  inline double operator ()(double argument) const;
+
   /**
    *  A pointer to the form factor to supply the integrand.
    */
@@ -553,13 +501,9 @@ private:
    *  Option for which function to be integrated
    */
   unsigned int _iopt;
-
 };
 }
 
 #include "BtoSGammaKagan.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaKagan.tcc"
-#endif
 
 #endif /* HERWIG_BtoSGammaKagan_H */

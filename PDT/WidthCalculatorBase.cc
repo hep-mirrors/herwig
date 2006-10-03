@@ -14,8 +14,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-WidthCalculatorBase::~WidthCalculatorBase() {}
-
 AbstractNoPIOClassDescription<WidthCalculatorBase> WidthCalculatorBase::initWidthCalculatorBase;
 // Definition of the static class description member.
 

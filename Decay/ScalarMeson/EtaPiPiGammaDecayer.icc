@@ -75,4 +75,10 @@ inline void OmnesIntegrand::setScale(Energy2 in) {
   _s=in;
 }
 
+inline double OmnesIntegrand::operator ()(double xpoint) const {
+  double output(0.); Energy q(sqrt(xpoint));
+  if(abs(xpoint-_s)>_precision) 
+    output= (*_interpolator)(q)/xpoint/(xpoint-_s);
+  return output;
+}
 }

@@ -98,4 +98,15 @@ inline double BtoSGammaKagan::fermiFunction(Energy kp) {
   return exponentialFermiFunction(kp,_fermilambda,_fermia,_ferminorm,_fermilambda1);
 }
 
+inline KaganIntegrand::KaganIntegrand(BtoSGammaKaganPtr in,unsigned int ioptin) 
+  : _kagan(in),_iopt(ioptin)
+{}
+
+// calculate the integrand  
+inline double KaganIntegrand::operator() (double x) const {
+  if(_iopt==0)      return _kagan->integrands22(x);
+  else if(_iopt==1) return _kagan->integrands27(x);
+  else if(_iopt==2) return _kagan->integrandPy(x);
+  else              return _kagan->fermiFunction(x);
+}
 }

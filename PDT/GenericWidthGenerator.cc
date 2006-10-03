@@ -564,8 +564,7 @@ void GenericWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
 				      unsigned int imode)
 {}
 
-Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const
-{
+Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {
   if(q<_minmass[imode]){return 0.;}
   Energy gamma;
   if(_MEtype[imode]==0){gamma=_MEcoupling[imode]*_theParticle->width();}

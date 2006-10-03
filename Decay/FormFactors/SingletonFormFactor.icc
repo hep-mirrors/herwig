@@ -42,12 +42,6 @@ inline SingletonFormFactor::SingletonFormFactor()
   initialModes(numberOfFactors());
 }
 
-inline SingletonFormFactor::SingletonFormFactor(const SingletonFormFactor & x)
-  : BaryonFormFactor(x), _mcharm(x._mcharm), _mstrange(x._mstrange),
-    _thetalambda(x._thetalambda),_thetasigma(x._thetasigma),_thetaxi(x._thetaxi),
-    _thetaxip(x._thetaxip),_polemass(x._polemass),_xi(x._xi), _NmM(x._NmM),
-    _mquark(x._mquark) {}
-
 inline IBPtr SingletonFormFactor::clone() const {
   return new_ptr(*this);
 }

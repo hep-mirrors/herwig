@@ -7,46 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline BaryonThreeQuarkModelFormFactor::BaryonThreeQuarkModelFormFactor() 
-{
-  // default parameters
-  _initialize=false;
-  _order=50;
-  _mlight   = 420*MeV;
-  _mstrange = 570*MeV;
-  _LambdaQ  = 2.5*GeV;
-  _Lambdaqq = 0.71*GeV;
-  _Lambdasq = 850*MeV;
-  _Lambdass = 1.0*GeV;
-  // modes handled by this form factor
-  // lambda_b
-  addFormFactor(5122,4122,2,2,1,2,5,4);
-  // xi_b
-  addFormFactor(5232,4232,2,2,2,3,5,4);
-  addFormFactor(5132,4132,2,2,1,3,5,4);
-  // sigma_b
-  addFormFactor(5112,4112,2,2,1,1,5,4);
-  addFormFactor(5212,4212,2,2,2,1,5,4);
-  addFormFactor(5222,4222,2,2,2,2,5,4);
-  // omega_b
-  addFormFactor(5332,4332,2,2,3,3,5,4);
-  // sigma_b-> sigma_c*
-  addFormFactor(5112,4114,2,4,1,1,5,4);
-  addFormFactor(5212,4214,2,4,2,1,5,4);
-  addFormFactor(5222,4224,2,4,2,2,5,4);
-  // omega_b -> omega_c*
-  addFormFactor(5332,4334,2,4,3,3,5,4);
-  // set the inital number of form factors
-  initialModes(numberOfFactors());
-}
-
-inline BaryonThreeQuarkModelFormFactor::BaryonThreeQuarkModelFormFactor(const BaryonThreeQuarkModelFormFactor & x)
-  : BaryonFormFactor(x),_initialize(x._initialize), _order(x._order),
-    _mlight(x._mlight),_mstrange(x._mstrange),_LambdaQ(x._LambdaQ),
-    _Lambdaqq(x._Lambdaqq),_Lambdasq(x._Lambdasq),_Lambdass(x._Lambdass),
-    _C0(x._C0),_C1(x._C1),_C2(x._C2)
- {}
-
 inline IBPtr BaryonThreeQuarkModelFormFactor::clone() const {
   return new_ptr(*this);
 }
@@ -55,55 +15,17 @@ inline IBPtr BaryonThreeQuarkModelFormFactor::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void BaryonThreeQuarkModelFormFactor::doupdate() throw(UpdateException) {
-  BaryonFormFactor::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void BaryonThreeQuarkModelFormFactor::dofinish() {
-  BaryonFormFactor::dofinish();
-}
-
-inline void BaryonThreeQuarkModelFormFactor::doinitrun() {
-  BaryonFormFactor::doinitrun();
-}
-
-inline void BaryonThreeQuarkModelFormFactor::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  BaryonFormFactor::rebind(trans);
-}
-
-inline IVector BaryonThreeQuarkModelFormFactor::getReferences() {
-  IVector ret = BaryonFormFactor::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
 // return the phi_N functions calculated using recursion
-inline vector<double> BaryonThreeQuarkModelFormFactor::phiFunction(double omega)
-{
+inline vector<double> BaryonThreeQuarkModelFormFactor::phiFunction(double omega) {
   vector<double> output;
   double root(sqrt(omega*omega-1.));
   output.push_back(1./root*log(omega+root));
   if(omega<1.00001){output.back()=1.;}
   if(_order>0){output.push_back(2./(omega+1.));}
   if(_order<2){return output;}
-  for(unsigned int ix=2;ix<=_order+2;++ix)
-    {output.push_back(2./ix/(omega+1.)*(1.+(ix-1)*output[ix-2]));}
+  for(unsigned int ix=2;ix<=_order+2;++ix) {
+    output.push_back(2./ix/(omega+1.)*(1.+(ix-1)*output[ix-2]));
+  }
   return output;
 }
 
@@ -169,4 +91,12 @@ inline double BaryonThreeQuarkModelFormFactor::integrandC(double x)
   return output;
 }
 
+inline BaryonCFunction::BaryonCFunction(BaryonThreeQuarkModelFormFactorPtr in)
+  : _formFactor(in)
+{}
+
+// calculate the integrand  
+inline double BaryonCFunction::operator() (double x) const {
+  return _formFactor->integrandC(x);
+}
 }

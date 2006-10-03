@@ -367,7 +367,7 @@ struct OmnesIntegrand {
   /**
    *  get the value
    */
-  double operator ()(double) const;
+  inline double operator ()(double) const;
   
   /**
    *  The interpolator

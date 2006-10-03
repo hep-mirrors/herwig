@@ -16,7 +16,7 @@ using namespace ThePEG;
 
 /** \ingroup PDT
  *
- *  The <code>ThreeBodyAllOnCalculator</code> class is designed to integrate 
+ *  The ThreeBodyAllOnCalculator class is designed to integrate 
  *  a three-body matrix element in which all the outgoing particles are
  *  on-shell to give the partial width. A multi-channel type approach is
  *  used together with gaussian quadrature.

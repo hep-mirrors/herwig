@@ -12,9 +12,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /** \ingroup PDT
- * *
-
- *  The <code>WidthCalculatorBase</code> class is a base class to be used
+ *  The WidthCalculatorBase class is a base class to be used
  *  by classes which calculate partial widths for the running width.
  *
  * @see DecayIntegrator
@@ -22,25 +20,6 @@ using namespace ThePEG;
  * 
  */
 class WidthCalculatorBase: public Base {
-
-public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor
-   */
-  inline WidthCalculatorBase();
-  /**
-   * Copy constructor
-   */
-  inline WidthCalculatorBase(const WidthCalculatorBase &);
-
-  /**
-   * Destructor
-   */
-  virtual ~WidthCalculatorBase();
-  //@}
 
 public:
 

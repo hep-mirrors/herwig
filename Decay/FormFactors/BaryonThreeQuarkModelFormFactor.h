@@ -4,60 +4,41 @@
 //
 // This is the declaration of the BaryonThreeQuarkModelFormFactor class.
 //
-
 #include "BaryonFormFactor.h"
 #include "BaryonThreeQuarkModelFormFactor.fh"
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
 #include "ThePEG/PDT/ParticleData.h"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup Decay
-   *
-   *  The BaryonThreeQuarkModelFormFactor class implements the 
-   *  form factors for the semi-leptonic decay of baryons containing a heavy quark
-   *  from the relativistic three-quark model calculation of PRD56, 348.
-   *
-   *  As the only formulae in the paper are for the heavy-to-heavy i.e. bottom
-   *  to charm decay this there are the only modes included, although the paper
-   *  also includes charm decays and bottom decays to light quarks.
-   *
-   *  The form factors are calculated by numerical computing the integrals from
-   *  PRD56, 348 to obtain the coefficients for the expansion of the form factors.
-   *
-   * @see BaryonFormFactor
-   */
-
+/** \ingroup Decay
+ *
+ *  The BaryonThreeQuarkModelFormFactor class implements the 
+ *  form factors for the semi-leptonic decay of baryons containing a heavy quark
+ *  from the relativistic three-quark model calculation of PRD56, 348.
+ *
+ *  As the only formulae in the paper are for the heavy-to-heavy i.e. bottom
+ *  to charm decay this there are the only modes included, although the paper
+ *  also includes charm decays and bottom decays to light quarks.
+ *
+ *  The form factors are calculated by numerical computing the integrals from
+ *  PRD56, 348 to obtain the coefficients for the expansion of the form factors.
+ *
+ * @see BaryonFormFactor
+ */
 class BaryonThreeQuarkModelFormFactor: public BaryonFormFactor {
 
   /**
    *  friend class for the integration of the expansion coefficents
    */
   friend class BaryonCFunction;
-
+  
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline BaryonThreeQuarkModelFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline BaryonThreeQuarkModelFormFactor(const BaryonThreeQuarkModelFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~BaryonThreeQuarkModelFormFactor();
-  //@}
-
-public:
+  BaryonThreeQuarkModelFormFactor();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -192,10 +173,6 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
@@ -203,35 +180,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -363,74 +311,25 @@ template <>
 
 }
 
-// class for the integration of the coefficients
+
 namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
 
-  /** \ingroup Decay
-   *  This is a function using the CLHEP Genfun class whiches can access the integrandC
-   * member of the BaryonThreeQuarkModelFormFactor class. This function can then
-   * be integrated to give the coefficients.
-   */
-class BaryonCFunction : public Genfun::AbsFunction {
-
-public:		   
-
-  /**
-   *  Function composition
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const; 
-
-  /**
-   * clone
-   */
-  BaryonCFunction *clone() const; 
-
-private:                               
-
-  /**
-   * clone
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
- 
-/** @name Standard constructors and destructors. */
-/**
- *  The constructor
+/**\ingroup Decay
+ *  This is a function which can access the integrandC
+ * member of the BaryonThreeQuarkModelFormFactor class. This function can then
+ * be integrated to give the coefficients.
  */
- BaryonCFunction(BaryonThreeQuarkModelFormFactorPtr);
-  
-  /**
-   *  The destructor
-   */
-  virtual ~BaryonCFunction();
-  
-  /**
-   * The copy constructor
-   */
-  BaryonCFunction(const BaryonCFunction &right);
-  //@}
+struct BaryonCFunction {
 
   /**
-   *  Retreive the function value
+   *  The constructor
    */
-  virtual double operator ()(double argument) const;
-
-  /**
-   *  Retreive the function value
-   */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-  
-private:
+  inline BaryonCFunction(BaryonThreeQuarkModelFormFactorPtr);
   
   /**
-   * Non-existant assignment operator. It is illegal to assign a function
+   *  Return the value
    */
-  const BaryonCFunction & operator=(const BaryonCFunction &right);
-  
-private:
+  inline double operator ()(double argument) const;
   
   /**
    *  A pointer to the form factor to supply the integrand.
@@ -441,8 +340,5 @@ private:
 }
 
 #include "BaryonThreeQuarkModelFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonThreeQuarkModelFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_BaryonThreeQuarkModelFormFactor_H */
