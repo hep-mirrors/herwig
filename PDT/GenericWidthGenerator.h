@@ -17,19 +17,19 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup PDT
-   *
-   * The <code>GenericWidthGenerator</code> class is designed to automatically
-   * calculate the running width for a given particle using information from
-   * the decayModes and the Decayers to construct the running width.
-   *
-   *  It also gives us the option of selecting the decay modes for a particle
-   *  based on the mass.
-   *
-   * @see WidthGenerator
-   * @see DecayIntegrator
-   * @see GenericMassGenerator
-   */
+/** \ingroup PDT
+ *
+ * The <code>GenericWidthGenerator</code> class is designed to automatically
+ * calculate the running width for a given particle using information from
+ * the decayModes and the Decayers to construct the running width.
+ *
+ *  It also gives us the option of selecting the decay modes for a particle
+ *  based on the mass.
+ *
+ * @see WidthGenerator
+ * @see DecayIntegrator
+ * @see GenericMassGenerator
+ */
 class GenericWidthGenerator: public WidthGenerator {
 
 public:
@@ -360,8 +360,5 @@ template <>
 }
 
 #include "GenericWidthGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GenericWidthGenerator.tcc"
-#endif
 
 #endif /* HERWIG_GenericWidthGenerator_H */

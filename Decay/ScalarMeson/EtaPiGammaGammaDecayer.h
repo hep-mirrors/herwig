@@ -115,8 +115,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
-					Energy2 s1,Energy m1,Energy m2,Energy m3);
+  virtual double threeBodyMatrixElement(const int imode, const Energy2 q2,
+					const  Energy2 s3, const Energy2 s2,
+					const Energy2 s1, const Energy m1,
+					const Energy m2,const Energy m3) const;
 
   /**
    * Output the setup information for the particle database

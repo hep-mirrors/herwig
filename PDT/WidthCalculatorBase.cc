@@ -7,22 +7,10 @@
 #include "WidthCalculatorBase.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WidthCalculatorBase.tcc"
-#endif
-
 namespace Herwig {
 using namespace ThePEG;
 
-AbstractNoPIOClassDescription<WidthCalculatorBase> WidthCalculatorBase::initWidthCalculatorBase;
-// Definition of the static class description member.
-
-void WidthCalculatorBase::Init() {
-
-  static ClassDocumentation<WidthCalculatorBase> documentation
-    ("The WidthCalculatorBase class is the base class for the calculation of"
-     " running widths in Herwig++");
-
+WidthCalculatorBase::~WidthCalculatorBase() {
 }
 
 }

@@ -459,9 +459,10 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
   return newME.contract(rhoin).real();
 }
  
-double EtaPiPiGammaDecayer::threeBodyMatrixElement(int imodeb,Energy2 q2, Energy2 s3,
-						   Energy2 s2,Energy2 s1,
-						   Energy m1,Energy m2,Energy m3) {
+double EtaPiPiGammaDecayer::
+threeBodyMatrixElement(const int imodeb,const Energy2 q2,const  Energy2 s3,const 
+		       Energy2 s2,const Energy2 s1,const Energy m1,
+		       const Energy m2,const Energy m3) const {
   Complex pre(_coupling[imodeb]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
   Energy q(sqrt(s3));
   Complex ii(0.,1.);
@@ -500,11 +501,9 @@ EtaPiPiGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<double> inmass(1,getParticleData(ParticleID::rho0)->mass());
   vector<double> inwidth(1,getParticleData(ParticleID::rho0)->width());
   vector<int> intype(1,1);
-  tcDecayIntegratorPtr decayer(this);
   WidthCalculatorBasePtr 
-    output(new_ptr(ThreeBodyAllOnCalculator(inweights,intype,inmass,inwidth,
-					    const_ptr_cast<tDecayIntegratorPtr>(decayer),
-					    imode,_mpi,_mpi,0.)));
+    output(new_ptr(ThreeBodyAllOnCalculator<EtaPiPiGammaDecayer>
+		   (inweights,intype,inmass,inwidth,*this,imode,_mpi,_mpi,0.)));
   return output;
 }
 

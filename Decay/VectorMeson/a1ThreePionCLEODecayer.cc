@@ -626,10 +626,10 @@ double a1ThreePionCLEODecayer::me2(bool vertex, const int ichan,
 }
 
 // matrix element for the running a_1 width
-double a1ThreePionCLEODecayer::threeBodyMatrixElement(int iopt,Energy2 q2, Energy2 s3,
-						      Energy2 s2,Energy2 s1,
-						      Energy m1,Energy m2,Energy m3)
-{
+double a1ThreePionCLEODecayer::
+threeBodyMatrixElement(const int iopt,const Energy2 q2, const Energy2 s3,
+		       const Energy2 s2,const Energy2 s1, const Energy m1, 
+		       const Energy m2 ,const Energy m3) const {
   Energy m12=m1*m1,m22=m2*m2,m32=m3*m3;
   // calculate the form factors
   Complex F1=0.,F2=0.,F3=0.;
@@ -661,9 +661,10 @@ a1ThreePionCLEODecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   else if(ncharged==1){m[0]=_mpi0;m[1]=_mpi0;m[2]=_mpic;}
   else if(ncharged==2){m[0]=_mpic;m[1]=_mpic;m[2]=_mpi0;}
   else                {m[0]=_mpic;m[1]=_mpic;m[2]=_mpic;}
-  return new_ptr(ThreeBodyAllOnCalculator(inweights,intype,inmass,inwidth,
-					  const_ptr_cast<tDecayIntegratorPtr>(this),
-					  ncharged,m[0],m[1],m[2]));
+  return new_ptr(
+		 ThreeBodyAllOnCalculator<a1ThreePionCLEODecayer>(inweights,intype,inmass,inwidth,*this,
+					  ncharged,m[0],m[1],m[2])
+		 );
 }
 
 // calculate the form factos

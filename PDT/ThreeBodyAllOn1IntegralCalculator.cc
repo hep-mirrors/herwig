@@ -20,19 +20,7 @@ ThreeBodyAllOn1IntegralCalculator::~ThreeBodyAllOn1IntegralCalculator()
   delete _Integrator;
 }
 
-NoPIOClassDescription<ThreeBodyAllOn1IntegralCalculator> ThreeBodyAllOn1IntegralCalculator::initThreeBodyAllOn1IntegralCalculator;
-// Definition of the static class description member.
-
-void ThreeBodyAllOn1IntegralCalculator::Init() {
-
-  static ClassDocumentation<ThreeBodyAllOn1IntegralCalculator> documentation
-    ("The ThreeBodyAllOn1IntegralCalculator class performs the integral of a"
-     "function giving DGamma/ds");
-
-}
-
-Energy ThreeBodyAllOn1IntegralCalculator::integrand(double x)
-{
+Energy ThreeBodyAllOn1IntegralCalculator::integrand(double x) {
   Energy2 scale;
   if(_intmass>0)
     {scale = _intmass*(_intmass+_intwidth*tan(x));}

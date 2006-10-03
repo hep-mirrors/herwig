@@ -12,10 +12,9 @@ ScalarMassGenerator.cc ScalarMassGenerator.fh \
 ScalarMassGenerator.h ScalarMassGenerator.icc \
 ThreeBodyAllOn1IntegralCalculator.cc ThreeBodyAllOn1IntegralCalculator.fh \
 ThreeBodyAllOn1IntegralCalculator.h ThreeBodyAllOn1IntegralCalculator.icc \
-ThreeBodyAllOnCalculator.cc ThreeBodyAllOnCalculator.fh \
+ThreeBodyAllOnCalculator.cc ThreeBodyAllOnCalculator.tcc \
 ThreeBodyAllOnCalculator.h ThreeBodyAllOnCalculator.icc \
 ThreeBodyDGammaDs.cc ThreeBodyDGammaDs.fh ThreeBodyDGammaDs.h ThreeBodyDGammaDs.icc \
-ThreeBodyOnShellME.cc ThreeBodyOnShellME.h ThreeBodyOnShellME.icc \
 TwoBodyAllOnCalculator.cc TwoBodyAllOnCalculator.fh \
 TwoBodyAllOnCalculator.h TwoBodyAllOnCalculator.icc \
 TwoOffShellCalculator.cc TwoOffShellCalculator.fh \

@@ -116,13 +116,6 @@ public:
    */
   inline Energy otherMass(const int imass) const;
 
-public:
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
-
 protected:
 
   /**
@@ -131,11 +124,6 @@ protected:
   Energy integrand(double);
 
 private:
-
-  /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<ThreeBodyAllOn1IntegralCalculator> initThreeBodyAllOn1IntegralCalculator;
 
   /**
    * Private and non-existent assignment operator.
@@ -185,41 +173,6 @@ private:
   GaussianIntegral *_Integrator;
 
 };
-
-}
-
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of ThreeBodyAllOn1IntegralCalculator.
- */
-template <>
-struct BaseClassTrait<Herwig::ThreeBodyAllOn1IntegralCalculator,1> {
-  /** Typedef of the base class of ThreeBodyAllOn1IntegralCalculator. */
-  typedef Herwig::WidthCalculatorBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::ThreeBodyAllOn1IntegralCalculator>
-  : public ClassTraitsBase<Herwig::ThreeBodyAllOn1IntegralCalculator> {
-  /** Return the class name. */
-  static string className() { return "Herwig++::ThreeBodyAllOn1IntegralCalculator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-};
-
 }
 
 namespace Herwig {

@@ -7,7 +7,52 @@
 #include "GenericMassGenerator.h"
 #include "WidthCalculatorBase.h"
 #include "OneOffShellCalculator.fh"
-#include "Herwig++/Utilities/GaussianIntegral.h"
+#include "Herwig++/Utilities/GaussianIntegrator.h"
+
+
+namespace Herwig {
+
+/** \ingroup PDT
+ * Class for the integrand of a matrix element where one of the outgoing
+ * particles is off-shell.This class is used by the OneOffShellCalculator class
+ * to perform the integral.
+ *
+ * @see OneOffShellCalculator
+ */
+struct OneOffShellIntegrand  {
+
+  /**
+   * Constructor.
+   * @param in Pointer to the OneOffShellCalculator class this is doing the 
+   * integration for.
+   * @param m2 The mass squared of the off-shell particle for the Jacobian 
+   * transform.
+   * @param mw The mass times width of the off-shell particle for the Jacobian 
+   * transform.
+   */
+  OneOffShellIntegrand(tOneOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
+
+  /**
+   * return the value
+   */
+  inline  double operator ()(double argument) const;
+  
+  /**
+   * pointer to the decay integrator
+   */
+  tOneOffShellCalculatorPtr _integrand;
+
+  /**
+   * The mass squared for the off-shell particle for the Jacobian transform.
+   */
+  Energy2 _mass2;
+
+  /**
+   * The mass times width for the off-shell particle for the Jacobian transform.
+   */
+  Energy2 _mwidth;
+};
+}
 
 namespace Herwig {
 using namespace ThePEG;
@@ -34,23 +79,6 @@ public:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor
-   */
-  inline OneOffShellCalculator();
-
-  /**
-   * Copy constructor
-   */
-  inline OneOffShellCalculator(const OneOffShellCalculator &);
-
-  /**
-   * Destructor
-   */
-  virtual ~OneOffShellCalculator();
-
   /**
    * Constructor which should be used setting all the required members.
    * @param inloc The mass which is off-shell and to be integrated over.
@@ -62,9 +90,6 @@ public:
   inline OneOffShellCalculator(int inloc,WidthCalculatorBasePtr inwidth, 
 			       GenericMassGeneratorPtr inmass,
 			       Energy inmin);
-  //@}
-
-public:
 
   /**
    * member to calculate the partial width.
@@ -98,13 +123,6 @@ public:
    */
   inline Energy otherMass(const int imass) const;
 
-public:
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
-
 protected:
 
   /**
@@ -115,11 +133,6 @@ protected:
   inline  Energy dGamma(Energy mass);
 
 private:
-
-  /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<OneOffShellCalculator> initOneOffShellCalculator;
 
   /**
    * Private and non-existent assignment operator.
@@ -151,12 +164,12 @@ private:
   /**
    * integrator
    */
-  GaussianIntegral * _Integrator;
+  GaussianIntegrator _integrator;
 
   /**
    * the integrand
    */
-  Genfun::AbsFunction *_integrand;
+  OneOffShellIntegrand _integrand;
 
   /**
    * the mass squared of the decaying particle
@@ -168,142 +181,6 @@ private:
 }
 
 
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of OneOffShellCalculator.
- */
-template <>
-struct BaseClassTrait<Herwig::OneOffShellCalculator,1> {
-  /** Typedef of the base class of OneOffShellCalculator. */
-  typedef Herwig::WidthCalculatorBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::OneOffShellCalculator>
-  : public ClassTraitsBase<Herwig::OneOffShellCalculator> {
-  /** Return the class name. */
-  static string className() { return "Herwig++::OneOffShellCalculator"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
-
-};
-
-}
-
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG; 
-
-/** \ingroup PDT
- * Class for the integrand of a matrix element where one of the outgoing
- * particles is off-shell.This class is used by the OneOffShellCalculator class
- * to perform the integral.
- *
- * @see OneOffShellCalculator
- */
-class OneOffShellIntegrand : public Genfun::AbsFunction {
-  
-public:
-
-/**
- * The OneOffShellCaculator is a friend to allow access to the private members
- * for the integration.
- */
- friend class OneOffShellCaculator;
-
-public:
-
-  /**
-   * FunctionComposition operator
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const;
-
-  /**
-   * Clone method
-   */
-  OneOffShellIntegrand *clone() const;
-
-private:
-
-  /**
-   * Clone method
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
-
-  /**
-   * Constructor.
-   * @param in Pointer to the OneOffShellCalculator class this is doing the 
-   * integration for.
-   * @param m2 The mass squared of the off-shell particle for the Jacobian 
-   * transform.
-   * @param mw The mass times width of the off-shell particle for the Jacobian 
-   * transform.
-   */
-  OneOffShellIntegrand(tOneOffShellCalculatorPtr in,Energy2 m2,Energy2 mw);
-
-  /**
-   * Destructor
-   */
-  virtual ~OneOffShellIntegrand();
-
-  /**
-   * Copy constructor
-   */
-  OneOffShellIntegrand(const OneOffShellIntegrand &right);
-
-  /**
-   * Retreive the function value
-   */
-  virtual double operator ()(double argument) const;
-
-  /**
-   * Retreive the function value
-   */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-
-
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const OneOffShellIntegrand & operator=(const OneOffShellIntegrand &right);
-  
-private:
-
-  /**
-   * pointer to the decay integrator
-   */
-  tOneOffShellCalculatorPtr _integrand;
-
-  /**
-   * The mass squared for the off-shell particle for the Jacobian transform.
-   */
-  Energy2 _mass2;
-  /**
-   * The mass times width for the off-shell particle for the Jacobian transform.
-   */
-  Energy2 _mwidth;
-};
-}
-
 #include "OneOffShellCalculator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "OneOffShellCalculator.tcc"
-#endif
 
 #endif /* HERWIG_OneOffShellCalculator_H */
