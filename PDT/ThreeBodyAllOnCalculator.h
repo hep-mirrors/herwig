@@ -11,6 +11,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
+template <class T>
+class ThreeBodyAllOnCalculator;
+
+
 /** \ingroup PDT
  *
  *  The ThreeBodyAllOnCalculator class is designed to integrate 
@@ -23,10 +27,6 @@ using namespace ThePEG;
  * @see ThreeBodyAllOnIner
  *
  */
-
-template <class T>
-class ThreeBodyAllOnCalculator;
-
 template <class T>
 class ThreeBodyAllOnCalculator: public WidthCalculatorBase {
 
@@ -125,7 +125,7 @@ public:
 
   /**
    * The integrand for the inner integrand.
-   * @param y The mass squared for the inner integral
+   * @param argument The mass squared for the inner integral
    * @return The value of the inner integrand.
    */
   double operator ()(double argument) const;

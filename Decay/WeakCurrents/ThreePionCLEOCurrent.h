@@ -7,7 +7,6 @@
 #include "ThreeMesonCurrentBase.h"
 #include "ThreePionCLEOCurrent.fh"
 #include "Herwig++/Utilities/Interpolator.h"
-#include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
@@ -179,8 +178,6 @@ public:
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
 
-protected:
-
   /**
    * the matrix element for the a1 decay to calculate the running width
    * @param iopt The mode
@@ -193,8 +190,12 @@ protected:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double a1MatrixElement(int iopt,Energy2 q2, Energy2 s3,Energy2 s2,Energy2 s1,
-				Energy m1,Energy m2,Energy m3);
+  inline double threeBodyMatrixElement(const int iopt, const Energy2 q2,
+				       const Energy2 s3, const Energy2 s2, 
+				       const Energy2 s1, const Energy  m1,
+				       const Energy  m2, const Energy  m3) const;
+
+protected:
 
   /**
    * Can the current handle a particular set of mesons. 
@@ -297,7 +298,7 @@ private:
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
-  inline void inita1width(int iopt);
+  void inita1width(int iopt);
   
   /**
    * \f$a_1\f$ Breit-Wigner
@@ -621,107 +622,9 @@ struct ClassTraits<Herwig::ThreePionCLEOCurrent>
   static string library() { return "HwWeakCurrents.so"; }
 
 };
-
 }
-  
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG; 
 
-/** \ingroup Decay
- *
- * Definitions of the functions to be integrated to give the running width
- * functions to return the matrix element for the a1 decay to be
- * integrated to give the a1 running width
- *
- * @see ThreeMesonDefaultCurrent
- */
-class ThreePionCLEOa1MatrixElement: public Genfun::AbsFunction {
-
-public:
-  
-  /**
-   * FunctionComposition operator
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const;
-  
-  /**
-   * Clone method
-   */
-   ThreePionCLEOa1MatrixElement *clone() const;
-
-private:
-
-  /**
-   * Clone method
-   */
-  virtual AbsFunction *_clone() const;
-    
-public:
-  
-  /**
-   * Constructor
-   */
-  ThreePionCLEOa1MatrixElement(int,ThreePionCLEOCurrentPtr);
-  
-  /**
-   * Destructor
-   */
-  virtual ~ThreePionCLEOa1MatrixElement();
-
-  /**
-   * The  number of variables, in thsi case 7
-   */  
-  virtual unsigned int dimensionality() const ;     
-  
-  /**
-   * Copy constructor
-   */
-  ThreePionCLEOa1MatrixElement(const ThreePionCLEOa1MatrixElement &right);
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(double) const {return 0.;}
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(const Argument & a) const ;
-  
-  /**
-   * set the scale
-   */
-  inline void setQ2(Energy2);
-  
-  
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const ThreePionCLEOa1MatrixElement & 
-  operator=(const ThreePionCLEOa1MatrixElement &right);
-  
-  /**
-   * the decayer
-   * the integer for the mode
-   */
-private:
-  Ptr<Herwig::ThreePionCLEOCurrent>::pointer _decayer;
-  /**
-   * the decayer
-   * the integer for the mode
-   */
-  int _mode;
-};
-
-}
 
 #include "ThreePionCLEOCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreePionCLEOCurrent.tcc"
-#endif
 
 #endif /* THEPEG_ThreePionCLEOCurrent_H */

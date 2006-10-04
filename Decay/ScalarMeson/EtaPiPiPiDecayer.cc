@@ -25,8 +25,7 @@ using Herwig::Helicity::incoming;
 using Herwig::Helicity::outgoing;
 using Herwig::Helicity::ScalarWaveFunction;
 
-EtaPiPiPiDecayer::EtaPiPiPiDecayer() 
-{
+EtaPiPiPiDecayer::EtaPiPiPiDecayer() {
   // eta to pi+pi-pi0
   _incoming.push_back(221);_outgoing.push_back(111);_charged.push_back(true);
   _prefactor.push_back(0.0404509);
@@ -82,39 +81,32 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr newchannel;
   vector<double> dummyweights(1,1.);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extneut[0]    = getParticleData(_incoming[ix]);
-      extcharged[0] = getParticleData(_incoming[ix]);
-      extneut[3]    = getParticleData(_outgoing[ix]);
-      extcharged[3] = getParticleData(_outgoing[ix]);
-      if(_charged[ix])
-	{
-	  // the pi+pi- mode
-	  mode = new_ptr(DecayPhaseSpaceMode(extcharged,this));
-	  newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	  newchannel->addIntermediate(extcharged[0],0, 0.0,-1,3);
-	  newchannel->addIntermediate(sigma,1,0.0, 1,2);
-	  mode->addChannel(newchannel);
-	}
-      else
-	{
-	  // the pi0pi0 mode
-	  mode = new_ptr(DecayPhaseSpaceMode(extneut,this));
-	  newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-	  newchannel->addIntermediate(extneut[0],0, 0.0,-1,3);
-	  newchannel->addIntermediate(sigma,1,0.0, 1,2);
-	  mode->addChannel(newchannel);
-	}
-      addMode(mode,_maxweight[ix],dummyweights);
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extneut[0]    = getParticleData(_incoming[ix]);
+    extcharged[0] = getParticleData(_incoming[ix]);
+    extneut[3]    = getParticleData(_outgoing[ix]);
+    extcharged[3] = getParticleData(_outgoing[ix]);
+    if(_charged[ix]) {
+      // the pi+pi- mode
+      mode = new_ptr(DecayPhaseSpaceMode(extcharged,this));
+      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+      newchannel->addIntermediate(extcharged[0],0, 0.0,-1,3);
+      newchannel->addIntermediate(sigma,1,0.0, 1,2);
+      mode->addChannel(newchannel);
     }
+    else {
+      // the pi0pi0 mode
+      mode = new_ptr(DecayPhaseSpaceMode(extneut,this));
+      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+      newchannel->addIntermediate(extneut[0],0, 0.0,-1,3);
+      newchannel->addIntermediate(sigma,1,0.0, 1,2);
+      mode->addChannel(newchannel);
+    }
+    addMode(mode,_maxweight[ix],dummyweights);
+  }
 }
 
-EtaPiPiPiDecayer::~EtaPiPiPiDecayer() {}
-
-
-int EtaPiPiPiDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int EtaPiPiPiDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int imode(-1);
   if(dm.products().size()!=3){return imode;}
   unsigned int npi0(0),npip(0),npim(0); int id,iother(0);
@@ -249,9 +241,9 @@ double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
   return me;
 }
 
-double EtaPiPiPiDecayer::threeBodydGammads(int imodeb,Energy q2, Energy2 s,
-					   Energy m1,Energy m2,Energy m3)
-{
+double EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy q2,
+					   const  Energy2 s, const Energy m1,
+					   const Energy m2, const Energy m3) const {
   Energy q(sqrt(q2)),m34(m1+m2),msum(m34+m3),Q(q-msum);
   Energy2 Mmm2((q-m3)*(q-m3)),m12(m1*m1),m22(m2*m2),m32(m3*m3);
   double y(0.5*msum/q*(Mmm2-s)/m34/Q-1),y2(y*y);
@@ -268,50 +260,43 @@ double EtaPiPiPiDecayer::threeBodydGammads(int imodeb,Energy q2, Energy2 s,
 
 
 WidthCalculatorBasePtr 
-EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
-{
+EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   int idout(0),id,imode(-1);
   unsigned int npi0(0),ix(0);
   ParticleMSet::const_iterator pit(dm.products().begin());
-  for( ;pit!=dm.products().end();++pit)
-    {
-      id=(**pit).id();
-      if(id==ParticleID::pi0&&npi0<2){++npi0;}
-      else if(id!=ParticleID::piplus&&id!=ParticleID::piminus){idout=id;}
-    }
+  for( ;pit!=dm.products().end();++pit) {
+    id=(**pit).id();
+    if(id==ParticleID::pi0&&npi0<2){++npi0;}
+    else if(id!=ParticleID::piplus&&id!=ParticleID::piminus){idout=id;}
+  }
   if(npi0==1){idout=ParticleID::pi0;}
   bool charged(npi0<2);
   id=dm.parent()->id();
-  do 
-    {
-      if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged){imode=ix;}
-      ++ix;
-    }
+  do {
+    if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged){imode=ix;}
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   Energy mpi;
   if(charged){mpi=getParticleData(ParticleID::piplus)->mass();}
   else{mpi=getParticleData(ParticleID::pi0)->mass();}
   Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
-  tDecayIntegratorPtr decayer=const_ptr_cast<tDecayIntegratorPtr>(this);
   WidthCalculatorBasePtr 
-    temp(new_ptr(ThreeBodyAllOn1IntegralCalculator(1,-1000.,0.0,decayer,imode,
-						   m[0],m[1],m[2])));
-  if(_outgoing[imode]==ParticleID::eta)
-    {
-      tcGenericMassGeneratorPtr test;
-      tGenericMassGeneratorPtr massptr;
-      if(getParticleData(_outgoing[imode])->massGenerator())
-	{
-	  test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
-	    (getParticleData(_outgoing[imode])->massGenerator());
-	  massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
-	}
-      if(massptr)
-	{
-	  massptr->init();
-	  return new_ptr(OneOffShellCalculator(3,temp,massptr,0.));
-	}
+    temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
+		 (1,-1000.,0.0,*this,imode,m[0],m[1],m[2])));
+  if(_outgoing[imode]==ParticleID::eta) {
+    tcGenericMassGeneratorPtr test;
+    tGenericMassGeneratorPtr massptr;
+    if(getParticleData(_outgoing[imode])->massGenerator()) {
+      test=dynamic_ptr_cast<tcGenericMassGeneratorPtr>
+	(getParticleData(_outgoing[imode])->massGenerator());
+      massptr=const_ptr_cast<tGenericMassGeneratorPtr>(test);
     }
+    if(massptr) {
+      massptr->init();
+      return new_ptr(OneOffShellCalculator(3,temp,massptr,0.));
+    }
+  }
   return temp;
 } 
   

@@ -7,7 +7,6 @@
 #include "WeakDecayCurrent.h"
 #include "FourPionNovosibirskCurrent.fh"
 #include "Herwig++/Utilities/Interpolator.h"
-#include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 namespace Herwig {
@@ -146,6 +145,23 @@ public:
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
 
+  /**
+   * The matrix element to evaluate the \f$a_1\f$ running width.
+   * @param iopt The mode
+   * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
+   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
+   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
+   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
+   * @param m1 The mass of the first  outgoing particle.
+   * @param m2 The mass of the second outgoing particle.
+   * @param m3 The mass of the third  outgoing particle.
+   * @return The matrix element squared summed over spins.
+   */
+  inline double threeBodyMatrixElement(const int iopt, const Energy2 q2,
+				       const Energy2 s3, const Energy2 s2, 
+				       const Energy2 s1, const Energy  m1,
+				       const Energy  m2, const Energy  m3) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -194,19 +210,6 @@ private:
       
 protected:
   
-  /**
-   * The matrix element to evaluate the \f$a_1\f$ running width.
-   * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
-   * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
-   * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
-   * @param m1 The mass of the first  outgoing particle.
-   * @param m2 The mass of the second outgoing particle.
-   * @param m3 The mass of the third  outgoing particle.
-   * @return The matrix element squared summed over spins.
-   */
-  inline double a1MatrixElement(Energy2 q2, Energy2 s3,Energy2 s2, Energy2 s1,
-				Energy m1,Energy m2,Energy m3);
 
   /**
    * Initialize the \f$a_1\f$ width.
@@ -571,104 +574,10 @@ struct ClassTraits<Herwig::FourPionNovosibirskCurrent>
   static string library() { return "HwWeakCurrents.so"; }
   
 };
-
-}
-
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-namespace Herwig {
-
-using namespace Genfun;
-using namespace ThePEG; 
-
-/** \ingroup Decay
- *
- * Definitions of the functions to be integrated to give the running \f$a_1\f$ width
- * function to return the matrix element for the \f$a_1\f$ decay to be
- * integrated to give the \f$a_1\f$ running width in the FourPionNovosibirskCurrent.
- *
- * @see FourPionNovosibirskCurrent
- *
- */
-class FourPionDefaultMatrixElement : public Genfun::AbsFunction {
-      
-public:
-  
-  /**
-   * FunctionComposition operator
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const;
-  
-  /**
-   * Clone method
-   */
-  FourPionDefaultMatrixElement *clone() const;
-
-private:
-
-  /**
-   * Clone method
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
-
-  /**
-   * Constructor
-   */
-  FourPionDefaultMatrixElement(FourPionNovosibirskCurrentPtr);
-  
-  /**
-   *  The number of variables in this case 7.
-   */
-  virtual unsigned int dimensionality() const ;     
-  
-  /**
-   * Copy constructor
-   */
-  FourPionDefaultMatrixElement(const FourPionDefaultMatrixElement &right);
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(double) const {return 0.;}
-
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(const Argument & a) const ;
-
-  /**
-   * set the mass of the decay \f$a_1\f$.
-   */  
-  inline void setQ2(Energy2);
-  
-  
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const FourPionDefaultMatrixElement & 
-  operator=(const FourPionDefaultMatrixElement &right);
-  
-  /**
-   * the decayer
-   */
-private:
-
-  /**
-   *  pointer to the current
-   */
-  Ptr<Herwig::FourPionNovosibirskCurrent>::pointer _decayer;
-};
-
 }
 
 
 #include "FourPionNovosibirskCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FourPionNovosibirskCurrent.tcc"
-#endif
 
 #endif /* HERWIG_FourPionNovosibirskCurrent_H */
 

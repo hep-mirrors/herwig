@@ -7,7 +7,6 @@
 #include "ThreeMesonCurrentBase.h"
 #include "ThreeMesonDefaultCurrent.fh"
 #include "Herwig++/Utilities/Interpolator.h"
-#include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
@@ -50,20 +49,10 @@ class ThreeMesonDefaultCurrent: public ThreeMesonCurrentBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   ThreeMesonDefaultCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline ThreeMesonDefaultCurrent(const ThreeMesonDefaultCurrent &);
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -128,10 +117,9 @@ public:
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
   
-protected:
-
   /**
    * the matrix element for the \f$a_1\f$ decay to calculate the running width
+   * @param imode The mode to be integrated
    * @param q2 The mass of the decaying off-shell \f$a_1\f$, \f$q^2\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
@@ -141,8 +129,11 @@ protected:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element squared summed over spins.
    */
-  inline double a1MatrixElement(Energy2 q2, Energy2 s3,Energy2 s2,Energy2 s1,
-				Energy m1,Energy m2,Energy m3);
+  inline double threeBodyMatrixElement(const int imode,  const Energy2 q2,
+				       const Energy2 s3, const Energy2 s2, 
+				       const Energy2 s1, const Energy  m1, 
+				       const Energy  m2, const Energy  m3) const;
+protected:
 
   /**
    * Can the current handle a particular set of mesons. 
@@ -284,7 +275,7 @@ private:
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
-  inline void inita1width(int iopt);
+  void inita1width(int iopt);
 
   /**
    * Breit-Wigners for the \f$\rho\f$ and \f$K^*\f$.
@@ -477,97 +468,8 @@ struct ClassTraits<Herwig::ThreeMesonDefaultCurrent>
   static string library() { return "HwWeakCurrents.so"; }
 
 };
-
-}
-
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG; 
-
-/** \ingroup Decay
- *
- * Definitions of the functions to be integrated to give the running
- * function to return the matrix element for the \f$a_1\f$ decay to be
- * integrated to give the \f$a_1\f$ running width
- *
- * @see ThreeMesonDefaultCurrent
- *
- */
-class Defaulta1MatrixElement : public Genfun::AbsFunction {
-        
-public:
-  
-  /**
-   * FunctionComposition operator
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const;
-  
-  /**
-   * Clone method
-   */
-   Defaulta1MatrixElement *clone() const;
-
-private:
-
-  /**
-   * Clone method
-   */
-  virtual AbsFunction *_clone() const;
-    
-public:
-
-  /**
-   * Constructor
-   */
-  Defaulta1MatrixElement(ThreeMesonDefaultCurrentPtr);
-
-  /**
-   *  The number of variables, in thsi case 7
-   */  
-  virtual unsigned int dimensionality() const ;     
-  
-  /**
-   * Copy constructor
-   */
-  Defaulta1MatrixElement(const Defaulta1MatrixElement &right);
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(double) const {return 0.;}
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(const Argument & a) const ;
-  
-  /**
-   *   set the scale 
-   */
-  inline void setQ2(Energy2);
-  
-  
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const Defaulta1MatrixElement & 
-  operator=(const Defaulta1MatrixElement &right);
-  
-private:
-
-  /**
-   * The current
-   */
-  ThreeMesonDefaultCurrentPtr _decayer;
-};
 }
 
 #include "ThreeMesonDefaultCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreeMesonDefaultCurrent.tcc"
-#endif
 
 #endif /* THEPEG_ThreeMesonDefaultCurrent_H */

@@ -71,10 +71,11 @@ inline void FourPionNovosibirskCurrent::doinitrun() {
 }
 
 // matrix element for the running a_1 width
-inline double FourPionNovosibirskCurrent::a1MatrixElement(Energy2 q2, Energy2 s3,
-							  Energy2 s2, Energy2 s1,
-							  Energy m1,Energy m2,Energy m3)
-{
+inline double FourPionNovosibirskCurrent::
+threeBodyMatrixElement(const int iopt, const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy  m1,
+		       const Energy  m2, const Energy  m3) const {
   unsigned int ix;
   // construct the momenta of the decay products
   Energy p1[6],p2[6],p3[6];
@@ -98,78 +99,18 @@ inline double FourPionNovosibirskCurrent::a1MatrixElement(Energy2 q2, Energy2 s3
     sig3(sigmaBreitWigner(s3)/pow(_sigmamass,2));
   // compute the vector
   Complex vect1[4],vect2[4];
-  for(ix=1;ix<4;++ix)
-    {
-      // pi+pi-pi0 term
-      vect1[ix] = (p1[0]*p2[ix]-p2[0]*p1[ix])*rho2+(p1[0]*p3[ix]-p3[0]*p1[ix])*rho1
-	+_zsigma*q*p1[ix]*sig1;
-      // pi0pi0pi0 term
-      vect2[ix] = _zsigma*q*(p1[ix]*sig1+p2[ix]*sig2+p3[ix]*sig3);
-    }
+  for(ix=1;ix<4;++ix) {
+    // pi+pi-pi0 term
+    vect1[ix] = (p1[0]*p2[ix]-p2[0]*p1[ix])*rho2+(p1[0]*p3[ix]-p3[0]*p1[ix])*rho1
+      +_zsigma*q*p1[ix]*sig1;
+    // pi0pi0pi0 term
+    vect2[ix] = _zsigma*q*(p1[ix]*sig1+p2[ix]*sig2+p3[ix]*sig3);
+  }
   double pre(1./6.);
   Complex output(0.);
   for(ix=1;ix<4;++ix){output+=vect1[ix]*conj(vect1[ix])+pre*vect2[ix]*conj(vect2[ix]);}
   output*=a1FormFactor(q2);
   return output.real();
-}
-
-// initialisation of the a_1 running width 
-inline void FourPionNovosibirskCurrent::inita1width(int iopt)
-{
-  if(iopt==-1)
-    {
-      double total;
-      // parameters for the table of values
-      Energy mtau(getParticleData(ParticleID::tauplus)->mass());
-      Energy mtau2(mtau*mtau);
-      Energy2 step(mtau*mtau/200.);
-      // function to be integrated to give the matrix element
-      Genfun::AbsFunction *inme = new FourPionDefaultMatrixElement(this);
-      // integrator to perform the integral
-      // weights for the integration channels
-      vector<double> inweights;
-      inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
-      // types of integration channels
-      vector<int> intype;
-      intype.push_back(2);intype.push_back(3);intype.push_back(1);
-      // masses for the integration channels
-      vector<double> inmass(2,_rhomass);inmass.push_back(_sigmamass);
-      // widths for the integration channels
-      vector<double> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
-      ThreeBodyIntegrator *widthgen = new ThreeBodyIntegrator(inweights,intype,
-							      inmass,inwidth,
-							      inme,_mpi,_mpi,_mpi); 
-      // nornmalisation constant to give physical width if on shell
-      double a1const(_a1width/(widthgen->width(_a1mass*_a1mass)));
-      // loop to give the values
-      Energy moff2(0.);
-      _a1runwidth.resize(0);_a1runq2.resize(0);
-      for(;moff2<=mtau2;moff2+=step)
-	{
-	  total=widthgen->width(moff2);
-	  cout << "testing the g function " 
-	       << moff2/GeV2 << " " 
-	       << sqrt(moff2)*total/GeV2 << "  " 
-	       << a1const*sqrt(moff2)*total/GeV2 << "    "
-	       << total*sqrt(moff2)/_a1mass*a1const << endl;
-	  total*=a1const;
-	  _a1runwidth.push_back(total);
-	  _a1runq2.push_back(moff2);
-	}
-      delete inme; delete widthgen;
-      cout << "Energy2 a1q2in[200]={";
-      for(unsigned int ix=0;ix<200;++ix)
-	{cout << _a1runq2[ix] << ",";}
-      cout << endl;
-      cout << "Energy a1widthin[200]={";
-      for(unsigned int ix=0;ix<200;++ix)
-	{cout << _a1runwidth[ix] << ",";}
-      cout << endl;
-    }
-  // set up the interpolator
-  else if(iopt==0) {
-    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
-  }
 }
 
 // form-factor for the a_1 vertex

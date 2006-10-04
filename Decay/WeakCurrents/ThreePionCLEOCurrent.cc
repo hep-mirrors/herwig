@@ -9,13 +9,9 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Switch.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreePionCLEOCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -313,7 +309,57 @@ void ThreePionCLEOCurrent::Init() {
      "NoInitialization",
      "Use the default values",
      false);
+}
 
+// initialisation of the a_1 width
+// (iopt=-1 initialises, iopt=0 starts the interpolation)
+void ThreePionCLEOCurrent::inita1width(int iopt) {
+  if(iopt==-1) {
+    double total;
+    // parameters for the table of values
+    Energy mtau=getParticleData(ParticleID::tauplus)->mass();
+    Energy mtau2=mtau*mtau;
+    Energy2 step=mtau*mtau/200.;
+    // function to be integrated to give the matrix element
+    // integrator to perform the integral
+    vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
+    vector<int> intype;intype.push_back(2);intype.push_back(3);
+    Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
+    Energy wrho=getParticleData(ParticleID::rhoplus)->width();
+    vector<double> inmass;inmass.push_back(mrho);inmass.push_back(mrho);
+    vector<double> inwidth;inwidth.push_back(wrho);inwidth.push_back(wrho);
+    ThreeBodyAllOnCalculator<ThreePionCLEOCurrent>
+      widthgenN(inweights,intype,inmass,inwidth,*this,0,_mpi0,_mpi0,_mpic);
+    ThreeBodyAllOnCalculator<ThreePionCLEOCurrent>
+      widthgenC(inweights,intype,inmass,inwidth,*this,1,_mpic,_mpic,_mpic);
+    // normalisation constant to give physical width if on shell
+    double a1const = _a1width/(widthgenN.partialWidth(sqr(_a1mass))+
+			       widthgenC.partialWidth(sqr(_a1mass)));
+    // loop to give the values
+    Energy2 moff2=0.; Energy moff;
+    cout << "Calculating running a_1 width " << endl;
+    Energy charged,neutral,kaon;
+    _a1runq2.resize(0);_a1runwidth.resize(0);
+    for(;moff2<=mtau2;moff2+=step) {
+      moff=sqrt(moff2);
+      _a1runq2.push_back(moff2);
+      charged=a1const*widthgenC.partialWidth(moff2);
+      neutral=a1const*widthgenN.partialWidth(moff2);
+      kaon = moff<=_mK+_mKstar ? 0. : 2.870*_gammk*_gammk/8./pi*
+	Kinematics::pstarTwoBodyDecay(moff,_mK,_mKstar)/moff2*GeV2;
+      total=charged+neutral+kaon;
+      _a1runwidth.push_back(total);
+      cout << moff2/GeV2 << "              " 
+	   << total*moff/GeV2    << "              " 
+	   << charged*moff/GeV2  << "              " 
+	   << neutral*moff/GeV2  << "              " 
+	   << kaon   *moff/GeV2  << endl;
+    }
+  }
+  // set up the interpolator
+  else if(iopt==0) {
+    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
+  }
 }
 
 // modes handled by this class
@@ -750,28 +796,5 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
-
-}
-
-// the functions for the integrands of the a_1 width
-namespace Herwig {
-using namespace Genfun;
-FUNCTION_OBJECT_IMP(ThreePionCLEOa1MatrixElement)
-
-ThreePionCLEOa1MatrixElement::
-ThreePionCLEOa1MatrixElement(int mode,Ptr<Herwig::ThreePionCLEOCurrent>::pointer in)
-{_mode=mode,_decayer=in;}
-  
-  
-ThreePionCLEOa1MatrixElement::~ThreePionCLEOa1MatrixElement() {
-}
-  
-ThreePionCLEOa1MatrixElement::
-ThreePionCLEOa1MatrixElement(const ThreePionCLEOa1MatrixElement & right) {  }
-  
-unsigned int ThreePionCLEOa1MatrixElement::dimensionality() const {return 7;}
-
-double ThreePionCLEOa1MatrixElement::operator ()(const Argument & a) const 
- {return _decayer->a1MatrixElement(_mode,a[0],a[1],a[2],a[3],a[4],a[5],a[6]);}
 
 }

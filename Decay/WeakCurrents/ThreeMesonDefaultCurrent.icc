@@ -7,21 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ThreeMesonDefaultCurrent::
-ThreeMesonDefaultCurrent(const ThreeMesonDefaultCurrent & x)
-  : ThreeMesonCurrentBase(x),_rhoF123wgts(x._rhoF123wgts),
-    _KstarF123wgts(x._KstarF123wgts),_rhoF5wgts(x._rhoF5wgts),
-    _KstarF5wgts(x._KstarF5wgts), _rhoKstarwgt(x._rhoKstarwgt),
-    _a1runwidth(x._a1runwidth),_a1runq2(x._a1runq2),_a1runinter(x._a1runinter),
-    _initializea1(x._initializea1), _a1mass(x._a1mass),_a1width(x._a1width),
-     _K1mass(x._K1mass),_K1width(x._K1width), _fpi(x._fpi),_mpi(x._mpi),_mK(x._mK),
-    _rhoparameters(x._rhoparameters), _rhoF123masses(x._rhoF123masses), 
-    _rhoF5masses(x._rhoF5masses), _rhoF123widths(x._rhoF123widths),
-    _rhoF5widths(x._rhoF5widths), _Kstarparameters(x._Kstarparameters),
-    _KstarF123masses(x._KstarF123masses),_KstarF5masses(x._KstarF5masses),
-    _KstarF123widths(x._KstarF123widths),_KstarF5widths(x._KstarF5widths),
-    _a1parameters(x._a1parameters),  _K1parameters(x._K1parameters) {}
-
 inline IBPtr ThreeMesonDefaultCurrent::clone() const {
   return new_ptr(*this);
 }
@@ -37,26 +22,25 @@ inline void ThreeMesonDefaultCurrent::doinitrun() {
 }
 
 // functions to return the Breit-Wigners
-inline Complex ThreeMesonDefaultCurrent::BrhoF123(Energy2 q2,int ires) const
-{
+inline Complex ThreeMesonDefaultCurrent::BrhoF123(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
   for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix)
     {norm+=_rhoF123wgts[ix];}
-  if(ires<0)
-    {for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix)
-	{output+=_rhoF123wgts[ix]*rhoKBreitWigner(q2,0,ix);}}
-  else
-    {
-      unsigned int temp(ires);
-      if(temp<_rhoF123wgts.size()&&temp<3)
-	{output=_rhoF123wgts[temp]*rhoKBreitWigner(q2,0,temp);}
-      else{output=0.;}
-    }
+  if(ires<0) {
+    for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix)
+      output+=_rhoF123wgts[ix]*rhoKBreitWigner(q2,0,ix);
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_rhoF123wgts.size()&&temp<3)
+      output=_rhoF123wgts[temp]*rhoKBreitWigner(q2,0,temp);
+    else
+      output=0.;
+  }
   return output/norm;
 }
 
-inline Complex ThreeMesonDefaultCurrent::BrhoF5(Energy2 q2,int ires) const
-{
+inline Complex ThreeMesonDefaultCurrent::BrhoF5(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
   for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix)
     {norm+=_rhoF5wgts[ix];}
@@ -105,15 +89,16 @@ inline Complex ThreeMesonDefaultCurrent::BKstarF5(Energy2 q2,int ires) const
   return output/norm;
 }
 // matrix element for the running a_1 width
-inline double ThreeMesonDefaultCurrent::a1MatrixElement(Energy2 q2, Energy2 s3,
-							Energy2 s2,Energy2 s1,
-							Energy m1,Energy m2,Energy m3)
-{
+inline double ThreeMesonDefaultCurrent::
+threeBodyMatrixElement(const int,  const Energy2 q2,
+		       const Energy2 s3, const Energy2 s2, 
+		       const Energy2 s1, const Energy  m1, 
+		       const Energy  m2, const Energy  m3) const {
   Energy2 mpi2(getParticleData(ParticleID::piplus)->mass());mpi2*=mpi2; 
   Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
   // the matrix element
   double output(0.); 
-    // first resonance
+  // first resonance
   output+= ((s1-4.*mpi2)+0.25*(s3-s2)*(s3-s2)/q2)*real(propb*conj(propb)); 
   // second resonance
   output+= ((s2-4.*mpi2)+0.25*(s3-s1)*(s3-s1)/q2)*real(propa*conj(propa)); 
@@ -123,52 +108,13 @@ inline double ThreeMesonDefaultCurrent::a1MatrixElement(Energy2 q2, Energy2 s3,
   return output;
 }
 
-// initialisation of the a_1 width
-// (iopt=-1 initialises, iopt=0 starts the interpolation)
-inline void ThreeMesonDefaultCurrent::inita1width(int iopt)
-{
-  if(iopt==-1)
-    {
-      // parameters for the table of values
-      Energy mtau(getParticleData(ParticleID::tauplus)->mass());
-      Energy2 mtau2(mtau*mtau),step(mtau*mtau/199.);
-      // function to be integrated to give the matrix element
-      Genfun::AbsFunction *inme = new Defaulta1MatrixElement(this);
-      // integrator to perform the integral
-      vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
-      vector<int> intype;intype.push_back(2);intype.push_back(3);
-      Energy mrho(getParticleData(ParticleID::rhoplus)->mass()),
-	wrho(getParticleData(ParticleID::rhoplus)->width());
-      vector<Energy> inmass(2,mrho),inwidth(2,wrho);
-      Energy m1(getParticleData(ParticleID::piplus)->mass());
-      ThreeBodyIntegrator *widthgen = new ThreeBodyIntegrator(inweights,intype,
-							      inmass,inwidth,
-							      inme,m1,m1,m1); 
-      // nornmalisation constant to give physical width if on shell
-      double a1const(_a1width/(widthgen->width(_a1mass*_a1mass)));
-      // loop to give the values
-      Energy moff2(0.);
-      _a1runq2.resize(0);_a1runwidth.resize(0);
-      for(;moff2<=mtau2;moff2+=step)
-	{
-	  _a1runwidth.push_back(widthgen->width(moff2)*a1const);
-	  _a1runq2.push_back(moff2);
-	}
-      delete inme; delete widthgen;
-    }
-  // set up the interpolator
-  else if(iopt==0) {
-    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
-  }
+// running width of the a_1
+inline Energy ThreeMesonDefaultCurrent::a1width(Energy2 q2) const {
+  return (*_a1runinter)(q2);
 }
 
-// running width of the a_1
-inline Energy ThreeMesonDefaultCurrent::a1width(Energy2 q2) const
-{return (*_a1runinter)(q2);}
-
 // a_1 Breit Wigner
-inline Complex  ThreeMesonDefaultCurrent::a1BreitWigner(Energy2 q2) const
-{
+inline Complex  ThreeMesonDefaultCurrent::a1BreitWigner(Energy2 q2) const {
   Complex ii(0.,1.);
   Energy2 m2(_a1mass*_a1mass);
   Energy  q(sqrt(q2));
@@ -176,8 +122,7 @@ inline Complex  ThreeMesonDefaultCurrent::a1BreitWigner(Energy2 q2) const
 }
 
 // K_1 Breit Wigner
-inline Complex  ThreeMesonDefaultCurrent::K1BreitWigner(Energy2 q2) const
-{
+inline Complex  ThreeMesonDefaultCurrent::K1BreitWigner(Energy2 q2) const {
   Energy m2(_K1mass*_K1mass);
   Complex ii(0.,1.);
   complex<Energy2> fact(m2-ii*_K1mass*_K1width);
@@ -185,8 +130,7 @@ inline Complex  ThreeMesonDefaultCurrent::K1BreitWigner(Energy2 q2) const
 }
 
 // mixed Breit Wigner
-inline Complex ThreeMesonDefaultCurrent::FKrho(Energy2 si, Energy2 sj,int ires) const
-{
+inline Complex ThreeMesonDefaultCurrent::FKrho(Energy2 si, Energy2 sj,int ires) const {
   Complex output;
   if(ires<0){output = _rhoKstarwgt*BKstarF123(si,-1)+BrhoF123(sj,-1);}
   else if(ires%2==0){output= _rhoKstarwgt*BKstarF123(si,ires/2);}
@@ -196,8 +140,7 @@ inline Complex ThreeMesonDefaultCurrent::FKrho(Energy2 si, Energy2 sj,int ires) 
 }
 
 inline Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
-							 unsigned int ires) const
-{
+							 unsigned int ires) const {
   Energy q(sqrt(q2)),mass,width,mout[2];
   // get the mass and width of the requested resonance
   if(itype==0){mass=_rhoF123masses[ires];width=_rhoF123widths[ires];}

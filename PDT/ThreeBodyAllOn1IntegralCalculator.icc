@@ -6,69 +6,49 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Genfun;
 
-inline ThreeBodyAllOn1IntegralCalculator::ThreeBodyAllOn1IntegralCalculator() {}
-
-inline ThreeBodyAllOn1IntegralCalculator::ThreeBodyAllOn1IntegralCalculator(const ThreeBodyAllOn1IntegralCalculator & x)
-  : WidthCalculatorBase(x), _variabletype(x._variabletype), _intmass(x._intmass),
-    _intwidth(x._intwidth),_theDgamma(x._theDgamma)
+template <class T>
+inline ThreeBodyAllOn1IntegralCalculator<T>::
+ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
+				  T indGamma,int mode,
+				  Energy m1,Energy m2,Energy m3)
+  : _variabletype(intype),_intmass(inmass),_intwidth(inwidth),_mode(mode),
+    _theDgamma(indGamma) 
 {
-  for(unsigned int ix=0;ix<4;++ix){_m[ix]=x._m[ix];_m2[ix]=x._m2[ix];}
-  _theIntegrand= new ThreeBodyAllOn1IntegralOuter(this);
-  _Integrator = new GaussianIntegral(0.,1.);
+  _m .resize(4);
+  _m2.resize(4);
+  _m[1]=m1;_m[2]=m2;_m[3]=m3;
+  for(int ix=1;ix<4;++ix)_m2[ix]=sqr(_m[ix]);
 }
 
-// constructor with the dgamma/ds as a function
-inline ThreeBodyAllOn1IntegralCalculator::
-ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
-				  Genfun::AbsFunction * indGamma,
-				  Energy m1,Energy m2,Energy m3)
-{
-  _variabletype=intype;
-  _intmass=inmass;
-  _intwidth=inwidth;
-  _m[1]=m1;_m[2]=m2;_m[3]=m3;
-  for(int ix=1;ix<4;++ix){_m2[ix]=_m[ix]*_m[ix];}
-  _theDgamma=indGamma;
-  _theIntegrand= new ThreeBodyAllOn1IntegralOuter(this);
-  _Integrator = new GaussianIntegral(0.,1.);
+template <class T>
+inline void ThreeBodyAllOn1IntegralCalculator<T>::resetMass(int id,Energy inmass) {
+  if(id<4) {
+    _m[id]=inmass;
+    _m2[id]=inmass*inmass;
+  }
+  else {
+    cerr << "Tried to set invalid mass" << endl;
+  }
 }
 
-// constructor which constructs the dgamma/ds function from a decayer
-inline ThreeBodyAllOn1IntegralCalculator::
-ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
-				  DecayIntegratorPtr indec,int inmode,
-				  Energy m1,Energy m2,Energy m3)
-{
+template <class T>
+inline Energy ThreeBodyAllOn1IntegralCalculator<T>::getMass(const int id) const {
+  if(id<4) return _m[id]; 
+  else {
+    cerr << "Tried to set invalid mass" << endl; 
+    return 0.;
+  }
+}
 
-  _variabletype=intype;
-  _intmass=inmass;
-  _intwidth=inwidth;
-  _m[1]=m1;_m[2]=m2;_m[3]=m3;
-  for(int ix=1;ix<4;++ix){_m2[ix]=_m[ix]*_m[ix];}
-  _theDgamma=new ThreeBodyDGammaDs(indec,inmode);
-  _theIntegrand= new ThreeBodyAllOn1IntegralOuter(this);
-  _Integrator = new GaussianIntegral(0.,1.);
-} 
-inline void ThreeBodyAllOn1IntegralCalculator::resetMass(int id,Energy inmass)
- {
-   if(id<4){_m[id]=inmass;_m2[id]=inmass*inmass;}
-   else{cerr << "Tried to set invalid mass" << endl;}
- }
-inline Energy ThreeBodyAllOn1IntegralCalculator::getMass(const int id) const
- {
-   if(id<4){return _m[id];}
-   else{cerr << "Tried to set invalid mass" << endl; return 0.;}
- }
-inline Energy ThreeBodyAllOn1IntegralCalculator::otherMass(const int id) const
- {
-   if(id==1)
-     {return _m[2]+_m[3];}
-   else if(id==2)
-     {return _m[1]+_m[3];}
-   else if(id==3)
-     {return _m[1]+_m[2];}
-   else{cerr << "Tried to set invalid mass" << endl; return 0.;}
- }
+template <class T>
+inline Energy ThreeBodyAllOn1IntegralCalculator<T>::otherMass(const int id) const {
+  if(id==1)      return _m[2]+_m[3];
+  else if(id==2) return _m[1]+_m[3];
+  else if(id==3) return _m[1]+_m[2];
+  else {
+    cerr << "Tried to set invalid mass" << endl;
+    return 0.;
+  }
+}
 }

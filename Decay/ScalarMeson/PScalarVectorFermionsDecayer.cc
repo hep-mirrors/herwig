@@ -300,44 +300,42 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int ichan,
 
 // method to return an object to calculate the 3 or higher body partial width
 WidthCalculatorBasePtr 
-PScalarVectorFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
-{
+PScalarVectorFermionsDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   // workout which mode we are doing
   int imode(-1);
   // ids of the particles
   int id0(dm.parent()->id()),idf[2],idv(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit)
-    {
-      if((**pit).iSpin()==PDT::Spin1){idv=(**pit).id();}
-      else{idf[nf]=(**pit).id();++nf;}
-    }
+  for( ;pit!=dm.products().end();++pit) {
+    if((**pit).iSpin()==PDT::Spin1){idv=(**pit).id();}
+    else{idf[nf]=(**pit).id();++nf;}
+  }
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
-  do
-    {
-      if(_incoming[ix]==id0&&_outgoingV[ix]==idv)
-	{if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	    (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])){imode=ix;}}
-      ++ix;
+  do {
+    if(_incoming[ix]==id0&&_outgoingV[ix]==idv) {
+      if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
+	 (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])) imode=ix;
     }
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   // get the masses we need
   Energy m[3]={getParticleData(_outgoingV[imode])->mass(),
 	       getParticleData(_outgoingf[imode])->mass(),
 	       getParticleData(_outgoinga[imode])->mass()};
   return 
-    new_ptr(ThreeBodyAllOn1IntegralCalculator(3,-1000.,-0.9,
-					      const_ptr_cast<tDecayIntegratorPtr>(this),
-					      imode,m[0],m[1],m[2]));
+    new_ptr(ThreeBodyAllOn1IntegralCalculator<PScalarVectorFermionsDecayer>
+	    (3,-1000.,-0.9,*this,imode,m[0],m[1],m[2]));
 }
 
 
-double PScalarVectorFermionsDecayer::threeBodydGammads(int imodeb,Energy2 q2,
-						       Energy2 mff2, Energy m1, 
-						       Energy m2, Energy m3)
-{
+double PScalarVectorFermionsDecayer::threeBodydGammads(const int imodeb,
+						       const Energy2 q2, const 
+						       Energy2 mff2, const  Energy m1,
+						       const Energy m2,
+						       const  Energy m3) const {
   // the masses of the external particles
   Energy q=sqrt(q2);
   Energy2 m12=m1*m1;
@@ -347,12 +345,11 @@ double PScalarVectorFermionsDecayer::threeBodydGammads(int imodeb,Energy2 q2,
   Complex pre=_coupling[imodeb],ii(0.,1.);
   pre /= mff2;
   // the VMD factor
-  if(_includeVMD[imodeb]>0)
-    {
-      Energy2 mrho2=_VMDmass[imodeb]*_VMDmass[imodeb];
-      Energy2 mwrho=_VMDmass[imodeb]*_VMDwidth[imodeb];
-      pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
-    }
+  if(_includeVMD[imodeb]>0) {
+    Energy2 mrho2=_VMDmass[imodeb]*_VMDmass[imodeb];
+    Energy2 mwrho=_VMDmass[imodeb]*_VMDwidth[imodeb];
+    pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
+  }
   double factor=real(pre*conj(pre));
   // compute the pieces from the integration limits
   Energy mff=sqrt(mff2);
@@ -376,7 +373,6 @@ double PScalarVectorFermionsDecayer::threeBodydGammads(int imodeb,Energy2 q2,
   // phase space factors
   return me/256./pi/pi/pi/q2/q;
 }
-
 
 // output the setup information for the particle database
 void PScalarVectorFermionsDecayer::dataBaseOutput(ofstream & output,
