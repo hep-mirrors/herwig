@@ -104,8 +104,9 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
     {          
       for(int i=0;i < N;++i){ 
 	  if(abs(out[i]->id())==ParticleID::b) {
-	      parent.colourNeighbour(out[i]);	      
-	    }
+	    out[i]->colourNeighbour(const_ptr_cast<PPtr>(&parent),
+				    out[i]->id()<0);
+	  }
 	  else {
 	      if(out[i]->hasColour())
 		out[i]->antiColourNeighbour(out[i + 1]);

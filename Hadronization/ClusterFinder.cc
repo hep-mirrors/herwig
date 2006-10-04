@@ -182,9 +182,9 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
 	    (ci->hasColour() && ci->antiColourLine()) ||
 	    (ci->hasAntiColour() && ! ci->antiColourLine()) ||
 	    (ci->hasAntiColour() && ci->colourLine()) ||
-	    (ci->colourNeighbour() && ci->antiColourNeighbour()) ||
-	    (ci->hasColour() && ci->colourNeighbour()) ||
-	    (ci->hasAntiColour() && ci->antiColourNeighbour())) {
+	    (pstep->colourNeighbour(ci) && pstep->antiColourNeighbour(ci)) ||
+	    (ci->hasColour() && pstep->colourNeighbour(ci)) ||
+	    (ci->hasAntiColour() && pstep->antiColourNeighbour(ci))) {
 	  generator()->logWarning(Exception("ClusterFinder::formClusters "
 			      "***Inconsistent (anti)Colour Connection***",
 					    Exception::warning) );	  
