@@ -23,15 +23,11 @@ class TopDecayMECorrection: public QTildeMECorrection {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline TopDecayMECorrection();
-  //@}
 
-public:
   /**
    *  Members to override those in the base class and implemented 
    *  the matrix element correction

@@ -37,8 +37,7 @@ IBPtr ShowerHandler::fullclone() const {
   return new_ptr(*this);
 }
 
-ShowerHandler::ShowerHandler() : _maxtry(10)
-{
+ShowerHandler::ShowerHandler() : _maxtry(10) {
   _inputparticlesDecayInShower.push_back( 6 ); //  top
   _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
   _inputparticlesDecayInShower.push_back( 1000002 ); //  SUSY_u_L 
@@ -76,6 +75,8 @@ ShowerHandler::ShowerHandler() : _maxtry(10)
   _inputparticlesDecayInShower.push_back( 35      ); //  H0
   _inputparticlesDecayInShower.push_back( 36      ); //  A0
   _inputparticlesDecayInShower.push_back( 37      ); //  H+
+  _inputparticlesDecayInShower.push_back( 23      ); // Z0
+  _inputparticlesDecayInShower.push_back( 24      ); // W+/-
 }
 
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {

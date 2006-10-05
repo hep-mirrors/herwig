@@ -28,8 +28,6 @@ public:
    */
   inline DrellYanMECorrection();
 
-public:
-
   /**
    *  Members to override those in the base class and implemented 
    *  the matrix element correction
@@ -133,7 +131,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Finalize this object. Called in the run phase just after a

@@ -38,13 +38,6 @@ public:
   inline MECorrectionBase();
 
   /**
-   *  Destructor
-   */
-  virtual ~MECorrectionBase();
-
-public:
-
-  /**
    *  Virtual members which should be implemented in classes inheriting
    * from this one in order to apply the matrix element correction
    */

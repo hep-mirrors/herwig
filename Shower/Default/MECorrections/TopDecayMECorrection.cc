@@ -60,7 +60,7 @@ void TopDecayMECorrection::Init() {
     ("UseMEForT2",
      "Use the matrix element correction, if available to fill the T2"
      " region for the decay shower and don't fill using the shower",
-     &TopDecayMECorrection::_useMEforT2, false, false, false);
+     &TopDecayMECorrection::_useMEforT2, true, false, false);
   static SwitchOption interfaceUseMEForT2Shower
     (interfaceUseMEForT2,
      "Shower",
