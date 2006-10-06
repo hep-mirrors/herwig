@@ -364,7 +364,10 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   Energy theCM = cm.mass();
   // softCM = sqrt(S) with optional enhancement for multiplicity only 
   // (name of variable not very reasonable any more...)
-  Energy softCM = _enhanceCM*generator()->maximumCMEnergy();
+  Lorentz5Momentum pcm=
+    ch.currentEvent()->incoming().first ->momentum()+
+    ch.currentEvent()->incoming().second->momentum();
+  Energy softCM = _enhanceCM*pcm.m();
   long id1(0),id2(0),id3= rndbool() ? ParticleID::u : ParticleID::d;
   // storage for the multiplicity
   int nppbar = 0;

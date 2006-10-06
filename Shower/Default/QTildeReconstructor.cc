@@ -60,7 +60,7 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
     // otherwise
     else {
       Energy dm = particleJetParent->data().constituentMass();
-      if (abs(dm-particleJetParent->momentum().mass())>0.001*MeV
+      if (abs(dm-particleJetParent->momentum().m())>0.001*MeV
 	  //if (abs(dm-particleJetParent->momentum().mass())>0.05*MeV
 	  &&particleJetParent->dataPtr()->stable()
 	  &&particleJetParent->id()!=ParticleID::gamma) {
