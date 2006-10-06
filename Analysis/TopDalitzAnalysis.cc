@@ -9,19 +9,12 @@
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TopDalitzAnalysis.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
-
-TopDalitzAnalysis::~TopDalitzAnalysis() {}
 
 void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   if(_nout>50000) return;

@@ -1,0 +1,12 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the PartnerFinder class.
+//
+
+namespace Herwig {
+
+inline PartnerFinder::PartnerFinder()  : _approach(0) 
+{}
+
+}

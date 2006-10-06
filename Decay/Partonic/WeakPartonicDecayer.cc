@@ -84,107 +84,99 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
       children[ix]->set5Momentum(Lorentz5Momentum(0.,0.,0.,cmass,cmass));
     }
   // 2-body decays
-  if(children.size()==2)
-    {
-      double ctheta,phi;
-      Lorentz5Momentum pout[2];
-      for(unsigned int ix=0;ix<2;++ix){pout[ix].setMass(children[ix]->mass());}
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(parent.momentum(),pout[0].mass(),pout[1].mass(),
-			       ctheta,phi,pout[0],pout[1]);
-      for(unsigned int ix=0; ix<2;++ix) children[ix]->setMomentum(pout[ix]);
-      if(children[0]->coloured()) 
-	{
-	  if(children[0]->id() > 0){children[0]->antiColourNeighbour(children[1]);}
-	  else                     {children[0]->    colourNeighbour(children[1]);}
-	}
+  if(children.size()==2) {
+    double ctheta,phi;
+    Lorentz5Momentum pout[2];
+    for(unsigned int ix=0;ix<2;++ix){pout[ix].setMass(children[ix]->mass());}
+    Kinematics::generateAngles(ctheta,phi);
+    Kinematics::twoBodyDecay(parent.momentum(),pout[0].mass(),pout[1].mass(),
+			     ctheta,phi,pout[0],pout[1]);
+    for(unsigned int ix=0; ix<2;++ix) children[ix]->setMomentum(pout[ix]);
+    if(children[0]->coloured()) {
+      if(children[0]->id() > 0){children[0]->antiColourNeighbour(children[1]);}
+      else                     {children[0]->    colourNeighbour(children[1]);}
     }
+  }
   // 3-body decays
-  else if(children.size()==3)
-    {
-      // set masses of products
-      Lorentz5Momentum pout[3],pin(parent.momentum());
-      for(unsigned int ix=0;ix<3;++ix){pout[ix].setMass(children[ix]->mass());}
-      double xs(children[2]->mass()/pin.e()),xb(1.-xs);
-      pout[2]=xs*pin;
-      // Get the particle quark that is decaying
-      long idQ, idSpec;
-      idSpec = children[2]->id();
-      idQ = (parent.id()/1000)%10;
-      if(!idQ) idQ = (parent.id()/100)%10;
-      // Now the odd case of a B_c where the c decays, not the b
-      if(idSpec == idQ) idQ = (parent.id()/10)%10;
-      // momentum of the decaying quark
-      PPtr inter = getParticleData(idQ)->produceParticle(parent.momentum()*xb);
-      // two body decay of heavy quark
-      double ctheta,phi;
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(inter->momentum(),pout[0].mass(),pout[1].mass(),
-			       ctheta,phi,pout[0],pout[1]);
-      // set the momenta of the decay products
-      for(unsigned int ix=0; ix<3;++ix) children[ix]->setMomentum(pout[ix]);
-      // make the colour connections
-      // quark first
-      if(children[0]->data().iColour()==PDT::Colour3)
-	{
-	  children[0]->antiColourNeighbour(children[1]);
-	  children[1]->colourNeighbour(children[0]);
-	  children[1]->antiColourNeighbour(children[2]);
-	  children[2]->colourNeighbour(children[1]);
-	}
-      // antiquark first
-      else
-	{
-	  children[0]->colourNeighbour(children[1]);
-	  children[1]->antiColourNeighbour(children[0]);
-	  children[1]->colourNeighbour(children[2]);
-	  children[2]->antiColourNeighbour(children[1]);
-	}
+  else if(children.size()==3) {
+    // set masses of products
+    Lorentz5Momentum pout[3],pin(parent.momentum());
+    for(unsigned int ix=0;ix<3;++ix){pout[ix].setMass(children[ix]->mass());}
+    double xs(children[2]->mass()/pin.e()),xb(1.-xs);
+    pout[2]=xs*pin;
+    // Get the particle quark that is decaying
+    long idQ, idSpec;
+    idSpec = children[2]->id();
+    idQ = (parent.id()/1000)%10;
+    if(!idQ) idQ = (parent.id()/100)%10;
+    // Now the odd case of a B_c where the c decays, not the b
+    if(idSpec == idQ) idQ = (parent.id()/10)%10;
+    // momentum of the decaying quark
+    PPtr inter = getParticleData(idQ)->produceParticle(parent.momentum()*xb);
+    // two body decay of heavy quark
+    double ctheta,phi;
+    Kinematics::generateAngles(ctheta,phi);
+    Kinematics::twoBodyDecay(inter->momentum(),pout[0].mass(),pout[1].mass(),
+			     ctheta,phi,pout[0],pout[1]);
+    // set the momenta of the decay products
+    for(unsigned int ix=0; ix<3;++ix) children[ix]->setMomentum(pout[ix]);
+    // make the colour connections
+    // quark first
+    if(children[0]->data().iColour()==PDT::Colour3) {
+      children[0]->antiColourNeighbour(children[1]);
+      children[1]->colourNeighbour(children[0]);
+      children[1]->antiColourNeighbour(children[2]);
+      children[2]->colourNeighbour(children[1]);
     }
+    // antiquark first
+    else {
+      children[0]->colourNeighbour(children[1]);
+      children[1]->antiColourNeighbour(children[0]);
+      children[1]->colourNeighbour(children[2]);
+      children[2]->antiColourNeighbour(children[1]);
+    }
+  }
   // 4-body decays
-  else if(children.size()==4)
-    {
-      // set masses of products
-      Lorentz5Momentum pout[4],pin(parent.momentum());
-      for(unsigned int ix=0;ix<4;++ix){pout[ix].setMass(children[ix]->mass());}
-      double xs(children[3]->mass()/pin.e()),xb(1.-xs);
-      pout[3]=xs*pin;
-      // Get the particle quark that is decaying
-      long idQ, idSpec;
-      idSpec = children[3]->id();
-      idQ = (parent.id()/1000)%10;
-      if(!idQ) idQ = (parent.id()/100)%10;
-      // Now the odd case of a B_c where the c decays, not the b
-      if(idSpec == idQ) idQ = (parent.id()/10)%10;
-      // momentum of the decaying quark
-      PPtr inter = getParticleData(idQ)->produceParticle(parent.momentum()*xb);
-      // include matrix element
-      if(MECode==100)
-	{
-	  // only the phase space factor don't bother with the W propagator
-	  Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2],&VAWt);
-	}
-      // flat phase space
+  else if(children.size()==4) {
+    // set masses of products
+    Lorentz5Momentum pout[4],pin(parent.momentum());
+    for(unsigned int ix=0;ix<4;++ix){pout[ix].setMass(children[ix]->mass());}
+    double xs(children[3]->mass()/pin.e()),xb(1.-xs);
+    pout[3]=xs*pin;
+    // Get the particle quark that is decaying
+    long idQ, idSpec;
+    idSpec = children[3]->id();
+    idQ = (parent.id()/1000)%10;
+    if(!idQ) idQ = (parent.id()/100)%10;
+    // Now the odd case of a B_c where the c decays, not the b
+    if(idSpec == idQ) idQ = (parent.id()/10)%10;
+    // momentum of the decaying quark
+    PPtr inter = getParticleData(idQ)->produceParticle(parent.momentum()*xb);
+    // include matrix element
+    // only the phase space factor don't bother with the W propagator
+    if(MECode==100)
+      Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2],&VAWt);
+    // flat phase space
+    else
+      Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2]);
+    // set the momenta of the decay products
+    for(unsigned int ix=0; ix<4;++ix) children[ix]->setMomentum(pout[ix]);
+    if(children[0]->coloured()) {
+      if(children[0]->data().iColour()==PDT::Colour3)
+	children[0]->antiColourNeighbour(children[1]);
       else
-	{Kinematics::threeBodyDecay(inter->momentum(),pout[1],pout[0],pout[2]);}
-      // set the momenta of the decay products
-      for(unsigned int ix=0; ix<4;++ix) children[ix]->setMomentum(pout[ix]);
-      if(children[0]->coloured()) 
-	{
-	  if(children[0]->data().iColour()==PDT::Colour3)
-	    {children[0]->antiColourNeighbour(children[1]);}
-	  else
-	    {children[0]->    colourNeighbour(children[1]);}
-	}
-      if(children[2]->data().iColour()==PDT::Colour3)
-	{children[2]->antiColourNeighbour(children[3]);}
-      else
-	{children[2]->    colourNeighbour(children[3]);}
+	children[0]->    colourNeighbour(children[1]);
     }
+    if(children[2]->data().iColour()==PDT::Colour3) {
+      children[2]->antiColourNeighbour(children[3]);
+    }
+    else {
+      children[2]->    colourNeighbour(children[3]);
+    }
+  }
   return children;
 }
-
-
+  
 void WeakPartonicDecayer::persistentOutput(PersistentOStream & os) const {
   os << MECode;
 }

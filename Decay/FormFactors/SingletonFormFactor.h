@@ -8,44 +8,28 @@
 #include "BaryonFormFactor.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SingletonFormFactor.fh"
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
 #include "ThePEG/PDT/ParticleData.h"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup Decay
-   *
-   *  The SingletonFormFactor class implements the form-factors from
-   *  PRD43, 2939 for the decay of spin-1/2 baryons containing bottom and charm
-   *  quarks.
-   *
-   * @see BaryonFormFactor
-   * 
-   */
-
+/** \ingroup Decay
+ *
+ *  The SingletonFormFactor class implements the form-factors from
+ *  PRD43, 2939 for the decay of spin-1/2 baryons containing bottom and charm
+ *  quarks.
+ *
+ * @see BaryonFormFactor
+ * 
+ */
 class SingletonFormFactor: public BaryonFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline SingletonFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline SingletonFormFactor(const SingletonFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~SingletonFormFactor();
-  //@}
 
 public:
 
@@ -268,8 +252,5 @@ template <>
 }
 
 #include "SingletonFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SingletonFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_SingletonFormFactor_H */

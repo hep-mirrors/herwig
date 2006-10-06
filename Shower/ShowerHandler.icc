@@ -6,30 +6,16 @@
 
 namespace Herwig {
 
-inline ShowerHandler::ShowerHandler() : _maxtry(10)
-{}
-
-inline IBPtr ShowerHandler::clone() const {
-  return new_ptr(*this);
+inline void ShowerHandler::doinit() throw(InitException) {
+  CascadeHandler::doinit();
+  // copy particles to decay before showering from input vector to the 
+  // set used in the simulation
+  _particlesDecayInShower.insert(_inputparticlesDecayInShower.begin(),
+				 _inputparticlesDecayInShower.end());
 }
-
-inline IBPtr ShowerHandler::fullclone() const {
-  return new_ptr(*this);
+ 
+inline bool ShowerHandler::decayInShower(const long id) const {
+  return ( _particlesDecayInShower.find( abs(id) ) != 
+	   _particlesDecayInShower.end() ); 
 }
-
-inline PPtr ShowerHandler::findParent(PPtr original) const {
-  PPtr parent=original;
-  if(!original->parents().empty()) {
-    // must be the same as in findShoweringParticles
-    PPtr orig=original->parents()[0];
-    if(orig->momentum().m2() > 0. 
-       && !orig->dataPtr()->coloured()
-       && orig != eventHandler()->lastPartons().first 
-       && orig != eventHandler()->lastPartons().second
-       )
-      parent=findParent(original);
-  }
-  return parent;
-}
-
 }

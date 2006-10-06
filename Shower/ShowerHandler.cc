@@ -7,33 +7,87 @@
 #include "ShowerHandler.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/Reference.h" 
-#include "ThePEG/Interface/Parameter.h" 
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Handlers/XComb.h"
 #include "ThePEG/Utilities/Timer.h"
-#include "Evolver.h"
-#include "Herwig++/Shower/Kinematics/ShowerParticle.h"
+#include "Herwig++/Shower/Base/Evolver.h"
+#include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
 #include "Herwig++/Hadronization/Remnant.h"
-#include <cassert>
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerHandler.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ShowerTree.h"
+#include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
+#include <cassert>
 
 using namespace Herwig;
 
+ShowerHandler::~ShowerHandler() {}
+
+IBPtr ShowerHandler::clone() const {
+  return new_ptr(*this);
+}
+
+IBPtr ShowerHandler::fullclone() const {
+  return new_ptr(*this);
+}
+
+ShowerHandler::ShowerHandler() : _maxtry(10) {
+  _inputparticlesDecayInShower.push_back( 6 ); //  top
+  _inputparticlesDecayInShower.push_back( 1000001 ); //  SUSY_d_L 
+  _inputparticlesDecayInShower.push_back( 1000002 ); //  SUSY_u_L 
+  _inputparticlesDecayInShower.push_back( 1000003 ); //  SUSY_s_L 
+  _inputparticlesDecayInShower.push_back( 1000004 ); //  SUSY_c_L 
+  _inputparticlesDecayInShower.push_back( 1000005 ); //  SUSY_b_1 
+  _inputparticlesDecayInShower.push_back( 1000006 ); //  SUSY_t_1 
+  _inputparticlesDecayInShower.push_back( 1000011 ); //  SUSY_e_Lminus 
+  _inputparticlesDecayInShower.push_back( 1000012 ); //  SUSY_nu_eL 
+  _inputparticlesDecayInShower.push_back( 1000013 ); //  SUSY_mu_Lminus 
+  _inputparticlesDecayInShower.push_back( 1000014 ); //  SUSY_nu_muL 
+  _inputparticlesDecayInShower.push_back( 1000015 ); //  SUSY_tau_1minus 
+  _inputparticlesDecayInShower.push_back( 1000016 ); //  SUSY_nu_tauL 
+  _inputparticlesDecayInShower.push_back( 1000021 ); //  SUSY_g 
+  _inputparticlesDecayInShower.push_back( 1000022 ); //  SUSY_chi_10 
+  _inputparticlesDecayInShower.push_back( 1000023 ); //  SUSY_chi_20 
+  _inputparticlesDecayInShower.push_back( 1000024 ); //  SUSY_chi_1plus 
+  _inputparticlesDecayInShower.push_back( 1000025 ); //  SUSY_chi_30 
+  _inputparticlesDecayInShower.push_back( 1000035 ); //  SUSY_chi_40 
+  _inputparticlesDecayInShower.push_back( 1000037 ); //  SUSY_chi_2plus 
+  _inputparticlesDecayInShower.push_back( 1000039 ); //  SUSY_gravitino 
+  _inputparticlesDecayInShower.push_back( 2000001 ); //  SUSY_d_R 
+  _inputparticlesDecayInShower.push_back( 2000002 ); //  SUSY_u_R 
+  _inputparticlesDecayInShower.push_back( 2000003 ); //  SUSY_s_R 
+  _inputparticlesDecayInShower.push_back( 2000004 ); //  SUSY_c_R 
+  _inputparticlesDecayInShower.push_back( 2000005 ); //  SUSY_b_2 
+  _inputparticlesDecayInShower.push_back( 2000006 ); //  SUSY_t_2 
+  _inputparticlesDecayInShower.push_back( 2000011 ); //  SUSY_e_Rminus 
+  _inputparticlesDecayInShower.push_back( 2000012 ); //  SUSY_nu_eR 
+  _inputparticlesDecayInShower.push_back( 2000013 ); //  SUSY_mu_Rminus 
+  _inputparticlesDecayInShower.push_back( 2000014 ); //  SUSY_nu_muR 
+  _inputparticlesDecayInShower.push_back( 2000015 ); //  SUSY_tau_2minus 
+  _inputparticlesDecayInShower.push_back( 2000016 ); //  SUSY_nu_tauR 
+  _inputparticlesDecayInShower.push_back( 25      ); //  h0
+  _inputparticlesDecayInShower.push_back( 35      ); //  H0
+  _inputparticlesDecayInShower.push_back( 36      ); //  A0
+  _inputparticlesDecayInShower.push_back( 37      ); //  H+
+  _inputparticlesDecayInShower.push_back( 23      ); // Z0
+  _inputparticlesDecayInShower.push_back( 24      ); // W+/-
+}
+
 void ShowerHandler::persistentOutput(PersistentOStream & os) const {
-  os << _evolver << _maxtry;
+  os << _evolver << _maxtry << _inputparticlesDecayInShower
+     << _particlesDecayInShower;
 }
 
 void ShowerHandler::persistentInput(PersistentIStream & is, int) {
-  is >> _evolver >> _maxtry;  
+  is >> _evolver >> _maxtry
+     >> _inputparticlesDecayInShower
+     >> _particlesDecayInShower;  
 }
 
 ClassDescription<ShowerHandler> ShowerHandler::initShowerHandler;
@@ -56,10 +110,15 @@ void ShowerHandler::Init() {
      &ShowerHandler::_maxtry, 10, 1, 100,
      false, false, Interface::limited);
 
+  static ParVector<ShowerHandler,long> interfaceDecayInShower
+    ("DecayInShower",
+     "PDG codes of the particles to be decayed in the shower",
+     &ShowerHandler::_inputparticlesDecayInShower, -1, 0l, -10000000l, 10000000l,
+     false, false, Interface::limited);
+
 }
 
-void ShowerHandler::fillEventRecord() 
-{
+void ShowerHandler::fillEventRecord() {
   // create a new step 
   StepPtr pstep = eventHandler()->newStep();
   if(_done.empty()) throw Exception() << "Must have some showers to insert in "
@@ -69,16 +128,14 @@ void ShowerHandler::fillEventRecord()
 					    << " in ShowerHandler::fillEventRecord()" 
 					    << Exception::runerror;
   // insert the steps
-  for(unsigned int ix=0;ix<_done.size();++ix)
-    {
-      _done[ix]->fillEventRecord(pstep,
-				 _evolver->isISRadiationON(),
-				 _evolver->isFSRadiationON());
-    }
+  for(unsigned int ix=0;ix<_done.size();++ix) {
+    _done[ix]->fillEventRecord(pstep,
+			       _evolver->isISRadiationON(),
+			       _evolver->isFSRadiationON());
+  }
 } 
 
-void ShowerHandler::findShoweringParticles()
-{
+void ShowerHandler::findShoweringParticles() {
   Timer<1001> timer("ShowerHandler::findShoweringParticles");
   // clear the storage
   _hard=ShowerTreePtr();
@@ -100,8 +157,7 @@ void ShowerHandler::findShoweringParticles()
     // find the parent and if colourless s-channel resonance
     bool isDecayProd=false;
     tPPtr parent;
-    if(!(*taggedP)->parents().empty()) 
-      {
+    if(!(*taggedP)->parents().empty()) {
 	parent = (*taggedP)->parents()[0];
 	// check if from s channel decaying colourless particle
 	// (must be same as in findParent)
@@ -125,8 +181,7 @@ void ShowerHandler::findShoweringParticles()
 		      << Exception::runerror;
   // create the hard process ShowerTree
   ParticleVector out(hardParticles.begin(),hardParticles.end());
-  _hard=new_ptr(ShowerTree(eventHandler(),out,_evolver->showerVariables(),
-			   _decay));
+  _hard=new_ptr(ShowerTree(eventHandler(),out,this,_decay));
   _hard->setParents();
 }
 
@@ -138,55 +193,48 @@ void ShowerHandler::cascade()
   ShowerTreePtr hard;
   vector<ShowerTreePtr> decay;
   while (countFailures<_maxtry) {
-    try
-      {
-	// set the gluon mass to be used in the reconstruction
-	_evolver->showerVariables()->setGluonMass();
-	// find the particles in the hard process and the decayed particles to shower
-	findShoweringParticles();
-	// check if a hard process or decay
- 	bool isHard = _hard;
-
- 	// if a hard process perform the shower for the hard process
- 	if(isHard) 
-	  {
-	    _evolver->showerHardProcess(_hard);
-	    _done.push_back(_hard);
-	    _hard->updateAfterShower(_decay,eventHandler());
-	  }
- 	// if no decaying particles to shower break out of the loop
- 	if(_decay.empty()) break;
- 	// if no hard process
- 	if(!isHard) 
- 	  throw Exception() << "Shower starting with a decay is not yet implemented" 
- 			    << Exception::runerror;
- 	// shower the decay products
- 	while(!_decay.empty())
- 	  {
-	    multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
-	    while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
-	      --dit;
- 	    // get the particle and the width
- 	    ShowerTreePtr decayingTree = dit->second;
-	    // 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
- 	    // remove it from the multimap
- 	    _decay.erase(dit);
-	    // make sure the particle has been decayed
-	    decayingTree->decay(_decay,eventHandler());
- 	    // now shower the decay
- 	    _evolver->showerDecay(decayingTree);
-	    _done.push_back(decayingTree);
-	    decayingTree->updateAfterShower(_decay,eventHandler());
- 	  }
-	// suceeded break out of the loop
-	break;
+    try {
+      // find the particles in the hard process and the decayed particles to shower
+      findShoweringParticles();
+      // check if a hard process or decay
+      bool isHard = _hard;
+      // if a hard process perform the shower for the hard process
+      if(isHard) {
+	_evolver->showerHardProcess(_hard);
+	_done.push_back(_hard);
+	_hard->updateAfterShower(_decay,eventHandler());
       }
-    catch (Veto)
-      {
-	throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
-			  << Exception::eventerror;
-	++countFailures;
+      // if no decaying particles to shower break out of the loop
+      if(_decay.empty()) break;
+      // if no hard process
+      if(!isHard) 
+	throw Exception() << "Shower starting with a decay is not yet implemented" 
+			  << Exception::runerror;
+      // shower the decay products
+      while(!_decay.empty()) {
+	multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
+	while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
+	  --dit;
+	// get the particle and the width
+	ShowerTreePtr decayingTree = dit->second;
+	// 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
+	// remove it from the multimap
+	_decay.erase(dit);
+	// make sure the particle has been decayed
+	decayingTree->decay(_decay,eventHandler());
+	// now shower the decay
+	_evolver->showerDecay(decayingTree);
+	_done.push_back(decayingTree);
+	decayingTree->updateAfterShower(_decay,eventHandler());
       }
+      // suceeded break out of the loop
+      break;
+    }
+    catch (Veto) {
+      throw Exception() << "Problem with throwing Veto in ShowerHandler at the moment"
+			<< Exception::eventerror;
+      ++countFailures;
+    }
   }
   // if loop exited because of too many tries, throw event away
   if (countFailures >= _maxtry) {
@@ -201,8 +249,7 @@ void ShowerHandler::cascade()
   makeRemnants();
 }
 
-void ShowerHandler::makeRemnants()
-{
+void ShowerHandler::makeRemnants() {
   // get the incoming particles
   PPair incoming=generator()->currentEvent()->incoming();
   ParticleVector in;
@@ -240,4 +287,19 @@ void ShowerHandler::makeRemnants()
 	  if(rem) rem->regenerate(pother[0],pnew);
 	}
     }
+}
+
+PPtr ShowerHandler::findParent(PPtr original) const {
+  PPtr parent=original;
+  if(!original->parents().empty()) {
+    // must be the same as in findShoweringParticles
+    PPtr orig=original->parents()[0];
+    if(orig->momentum().m2() > 0. 
+       && !orig->dataPtr()->coloured()
+       && orig != eventHandler()->lastPartons().first 
+       && orig != eventHandler()->lastPartons().second
+       )
+      parent=findParent(original);
+  }
+  return parent;
 }

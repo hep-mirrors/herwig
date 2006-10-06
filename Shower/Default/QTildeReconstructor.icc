@@ -1,0 +1,75 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QTildeReconstructor class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+inline IBPtr QTildeReconstructor::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr QTildeReconstructor::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline double QTildeReconstructor::momConsEq(const double & k, 
+					  const Energy & root_s, 
+					  const JetKinVect & jets) const {
+  static Energy2 eps=1e-9*GeV2;
+  Energy dum = Energy();
+  Energy dum2;
+  for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
+    dum2=(it->q).m2() + sqr(k)*(it->p).vect().mag2();
+    if(dum2<0.)
+      {
+	if(dum2<-eps) throw Veto();
+	else dum2=0.;
+      }
+    dum += sqrt(dum2);
+  }
+  return( dum - root_s ); 
+}
+
+inline LorentzRotation QTildeReconstructor::
+solveBoost(const double k, const Lorentz5Momentum & newq, 
+	   const Lorentz5Momentum & oldp ) const {
+  Energy q = newq.vect().mag(); 
+  Energy2 qs = sqr(q); 
+  Energy2 Q2 = newq.m2(); 
+  Energy kp = k*(oldp.vect().mag()); 
+  Energy2 kps = sqr(kp); 
+  double betam = (q*sqrt(qs + Q2) - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
+  Vector3 beta = -betam*(k/kp)*oldp.vect();
+  // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
+  Hep3Vector ax = newq.vect().cross( oldp.vect() ); 
+  double delta = newq.vect().angle( oldp.vect() );
+  LorentzRotation R;
+  if ( ax.mag2()/GeV2 > 1e-16 )
+    R.rotate( delta, ax ).boost( beta ); 
+  else
+    R.boost( beta ); 
+  return R;
+}
+
+inline void QTildeReconstructor::boostChain(tPPtr p, const Vector3 &bv) const
+{
+  if (p->parents()[0] && p->parents()[0]->coloured()) 
+    boostChain(p->parents()[0], bv);
+  p->boost(bv);
+  // veto the shower if the final parent of the shower has more momentum along beam
+  // or energy than the beam
+  if(!(p->parents()[0] && p->parents()[0]->coloured()))
+    {
+      if(p->parents()[0]->momentum().e()<p->momentum().e()) throw Veto();
+      if(abs(p->parents()[0]->momentum().z())<abs(p->momentum().z())) throw Veto();
+    }
+  if(p->children().size()==2)
+    {
+      if(dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]))
+	p->children()[1]->deepBoost(bv);
+    }
+}
+
+}

@@ -1,0 +1,12 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the IS_QtildaShowerKinematics1to2 class.
+//
+
+namespace Herwig {
+
+inline IS_QtildaShowerKinematics1to2::IS_QtildaShowerKinematics1to2() 
+{}
+
+}

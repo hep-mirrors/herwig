@@ -1,0 +1,12 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MECorrectionBase class.
+//
+
+namespace Herwig {
+
+inline ShowerAlphaPtr MECorrectionBase::coupling() const
+{return _alpha;}
+
+}

@@ -1,0 +1,10 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the KinematicsReconstructor class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+}

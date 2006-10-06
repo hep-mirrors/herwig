@@ -6,7 +6,6 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "EtaPiPiGammaDecayer.fh"
 
@@ -21,7 +20,8 @@ using namespace ThePEG;
  * form of the Omnes function taken from hep-ph/0112150.
  *
  * The matrix element is given by
- * \f[\mathcal{M} = B(s_{+-},s_{+\gamma},s_{-\gamma})\epsilon^{\mu\nu\alpha\beta}\epsilon^*_{\mu}p_{+\nu}p_{-\alpha}p_{\gamma\beta}\f]
+ * \f[\mathcal{M} = B(s_{+-},s_{+\gamma},s_{-\gamma})\epsilon^{\mu\nu\alpha\beta}
+ *      \epsilon^*_{\mu}p_{+\nu}p_{-\alpha}p_{\gamma\beta}\f]
  * where \f$p_{+,-}\f$ are the momenta of the positively and negatively charged pions,
  * \f$p_{\gamma}\f$ is the momentum of the photon and \f$s_{ij} = (p_i+p_j)^2\f$.
  *
@@ -61,11 +61,6 @@ public:
    * Copy-constructor.
    */
   inline EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~EtaPiPiGammaDecayer();
   //@}
 
 public:
@@ -108,8 +103,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
-					Energy2 s1,Energy m1,Energy m2,Energy m3);
+  virtual double threeBodyMatrixElement(const int imode,const Energy2 q2,
+					const  Energy2 s3,const Energy2 s2,
+					const Energy2 s1,const Energy m1,
+					const Energy m2,const Energy m3) const;
 
   /**
    * Output the setup information for the particle database
@@ -162,10 +159,6 @@ protected:
   
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
@@ -178,30 +171,6 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -327,7 +296,7 @@ private:
   /**
    * Interpolators for the experimental Omnes function.
    */
-  mutable Interpolator *_Oreal,*_Oimag;
+  mutable InterpolatorPtr _Oreal,_Oimag;
 
   /**
    *  Cut-off parameter for the integral of the experimental function
@@ -377,98 +346,43 @@ struct ClassTraits<Herwig::EtaPiPiGammaDecayer>
 
 }
 
-
-
 namespace Herwig {
-using namespace Genfun;
 
-  /** \ingroup Decay
-   *
-   *  A simple class used by the EtaPiPiGammaDecayer for the integration of the 
-   * experimental Omnes function.
-   *
-   * @see EtaPiPiGammaDecayer
-   *
-   */
-class OmnesFunction: public Genfun:: AbsFunction {
-
-public:		   
+/**
+ * A simple struct to provide the integrand for the integral
+ * \f[\int^\infty_{4m^2_\pi}\frac{ds'\delta_1(s')}{s'(s'-s-i\epsilon)}\f]
+ */
+struct OmnesIntegrand {
 
   /**
-   *  Function composition
+   * constructor with the interpolator and precision
+   * @param inter The interpolator for the phase shift
+   * @param cut   The cut-off
    */
-  virtual FunctionComposition operator()(const AbsFunction &function) const; 
+  inline OmnesIntegrand(InterpolatorPtr inter, Energy2 cut);
 
   /**
-   * clone
+   *  Set the scale
    */
-  OmnesFunction *clone() const; 
-
-private:                               
+  inline void setScale(Energy2);
 
   /**
-   * clone
+   *  get the value
    */
-  virtual AbsFunction *_clone() const;
-    
-public:
-  
-  /**
-   * constructor with data as vectors
-   */
-  OmnesFunction(Interpolator *,Energy2);
-
-  /**
-   * Copy constructor
-   */
-  OmnesFunction(const OmnesFunction &right);
-  
-  /**
-   * Standard ctors and dtor.
-   */
-  virtual ~OmnesFunction();
-  
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(double argument) const;
-
-  /**
-   * Retreive function value
-   */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-
-  /**
-   *  set the scale
-   */
-  void setScale(Energy2);
-
-private:
-  
-  /**
-   * It is illegal to assign a function
-   */
-  const OmnesFunction & operator=(const OmnesFunction &right);
-  
-private:
+  inline double operator ()(double) const;
   
   /**
    *  The interpolator
    */
-  Interpolator *_interpolator;
+  InterpolatorPtr _interpolator;
 
   /**
    *  The scale and precision.
    */
   Energy2 _s,_precision; 
 };
-  
-
 }
 
 #include "EtaPiPiGammaDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EtaPiPiGammaDecayer.tcc"
-#endif
 
 #endif /* HERWIG_EtaPiPiGammaDecayer_H */

@@ -17,19 +17,19 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup PDT
-   *
-   * The <code>GenericWidthGenerator</code> class is designed to automatically
-   * calculate the running width for a given particle using information from
-   * the decayModes and the Decayers to construct the running width.
-   *
-   *  It also gives us the option of selecting the decay modes for a particle
-   *  based on the mass.
-   *
-   * @see WidthGenerator
-   * @see DecayIntegrator
-   * @see GenericMassGenerator
-   */
+/** \ingroup PDT
+ *
+ * The <code>GenericWidthGenerator</code> class is designed to automatically
+ * calculate the running width for a given particle using information from
+ * the decayModes and the Decayers to construct the running width.
+ *
+ *  It also gives us the option of selecting the decay modes for a particle
+ *  based on the mass.
+ *
+ * @see WidthGenerator
+ * @see DecayIntegrator
+ * @see GenericMassGenerator
+ */
 class GenericWidthGenerator: public WidthGenerator {
 
 public:
@@ -46,15 +46,10 @@ public:
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline GenericWidthGenerator();
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -187,11 +182,6 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object to the begining of the run phase.
-   */
-  inline virtual void doinitrun();
   //@}
 
   /**
@@ -323,16 +313,12 @@ private:
   /**
    * intepolators for the running width
    */
-  vector<Interpolator*> _interpolators;
+  vector<InterpolatorPtr> _interpolators;
 
   /**
    * minimum branching ratio for the inclusion in the total running width
    */
   double _BRminimum;
-
-  /**
-   *
-   */
 };
 
 }
@@ -366,8 +352,5 @@ template <>
 }
 
 #include "GenericWidthGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GenericWidthGenerator.tcc"
-#endif
 
 #endif /* HERWIG_GenericWidthGenerator_H */

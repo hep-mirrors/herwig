@@ -1,6 +1,6 @@
 // -*- C++ -*-
-#ifndef THEPEG_ShowerAlphaQCD_H
-#define THEPEG_ShowerAlphaQCD_H
+#ifndef HERWIG_ShowerAlphaQCD_H
+#define HERWIG_ShowerAlphaQCD_H
 //
 // This is the declaration of the ShowerAlphaQCD class.
 //
@@ -29,13 +29,10 @@ class ShowerAlphaQCD: public ShowerAlpha {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline ShowerAlphaQCD();
-  //@}
 
 public:
 
@@ -62,6 +59,12 @@ public:
    */
   virtual double ratio(const Energy2 scale) const;
   //@}
+
+  /**
+   *  Get the value of \f$\Lambda_{\rm QCd}\f$
+   *  @param nf number of flavours
+   */
+  inline Energy lambdaQCD(unsigned int nf);
 
 public:
 
@@ -208,6 +211,11 @@ private:
   bool _lambdaopt;
 
   /**
+   *  Option for the threshold masses
+   */
+  bool _thresopt;
+
+  /**
    *  Input value of Lambda
    */
   Energy _lambdain;
@@ -276,8 +284,5 @@ struct ClassTraits<Herwig::ShowerAlphaQCD>
 }
 
 #include "ShowerAlphaQCD.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerAlphaQCD.tcc"
-#endif
 
-#endif /* THEPEG_ShowerAlphaQCD_H */
+#endif /* HERWIG_ShowerAlphaQCD_H */

@@ -1,0 +1,126 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerParticle class.
+//
+
+namespace Herwig {
+
+inline void * ShowerParticle::operator new(size_t) {
+  return FixedAllocator<ShowerParticle>::allocate();
+}
+ 
+inline void ShowerParticle::operator delete(void * p, size_t) {
+  FixedAllocator<ShowerParticle>::deallocate(p);
+}
+
+inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert,
+				      bool fs, bool tls)
+  : Particle(x),
+    _isFinalState(fs),
+    _reconstructionFixedPoint( false ),
+    _perturbative(pert),
+    _initiatesTLS( tls ),
+    _x(1.0),
+    _showerKinematics( tShoKinPtr() ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
+     _thePEGBase( &x )
+{}
+
+inline ShowerParticle::ShowerParticle(tcEventPDPtr x,bool fs,bool tls)
+  : Particle(x),
+    _isFinalState(fs),
+    _reconstructionFixedPoint( false ),
+    _perturbative(0),
+    _initiatesTLS( tls ),
+    _x(1.0),
+    _showerKinematics( tShoKinPtr() ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
+    _thePEGBase( PPtr() )
+{}
+
+inline bool ShowerParticle::isFinalState() const {
+  return _isFinalState;
+}
+
+inline bool ShowerParticle::initiatesTLS() const {
+  return _initiatesTLS;
+}
+
+inline unsigned int ShowerParticle::perturbative() const {
+  return _perturbative;
+}
+
+inline void ShowerParticle::x(double x) { 
+  _x = x; 
+}
+
+inline double ShowerParticle::x() const {
+  return _x; 
+}
+
+inline const vector<Energy> & ShowerParticle::evolutionScales() const {
+  return _scales;
+}
+
+inline const ShoKinPtr & ShowerParticle::showerKinematics() const {
+  return _showerKinematics;
+}
+
+inline const tShowerParticleVector & ShowerParticle::partners() const {
+  return _partners;
+}
+
+inline void ShowerParticle::setEvolutionScale(const ShowerIndex::InteractionType interaction, 
+					      const Energy scale) {
+  _scales[interaction] = scale;
+}
+
+inline void ShowerParticle::setPartner(const ShowerIndex::InteractionType interaction, 
+				       const tShowerParticlePtr partner) {
+  _partners[interaction] = partner;
+}
+
+inline bool ShowerParticle::isReconstructionFixedPoint() const {
+  return _reconstructionFixedPoint || children().empty() ;
+}
+
+inline void ShowerParticle::setReconstructionFixedPoint(const bool inputIsDecaying) {
+  _reconstructionFixedPoint = inputIsDecaying;
+}
+
+inline const tcPPtr ShowerParticle::getThePEGBase() const {
+  return _thePEGBase; 
+}
+
+inline PPtr ShowerParticle::clone() const {
+  return dynamic_ptr_cast<PPtr>(ptr_new<ShowerParticlePtr>(*this));
+}
+
+inline PPtr ShowerParticle::fullclone() const {
+  return clone();
+}
+
+inline void ShowerParticle::setShowerKinematics(const ShoKinPtr inputShowerKinematics) {
+  _showerKinematics = inputShowerKinematics;
+}
+
+//inline vector<double> & ShowerParticle::showerParameters() const {
+//  return _parameters;
+//}
+
+inline vector<double> & ShowerParticle::showerParameters() {
+  return _parameters;
+}
+
+//inline vector<Energy> & ShowerParticle::showerVariables() const {
+//  return _variables;
+//}
+
+inline vector<Energy> & ShowerParticle::showerVariables() {
+  return _variables;
+}
+
+}

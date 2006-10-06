@@ -8,11 +8,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GtoGGSplitFn.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -26,7 +23,8 @@ void GtoGGSplitFn::Init() {
 
 }
 
-double GtoGGSplitFn::P(const double z, const Energy2, const IdList &)const {
+double GtoGGSplitFn::P(const double z, const Energy2, const IdList &,
+		       const bool)const {
   double val = 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig++ shower! Alberto
@@ -38,7 +36,8 @@ double GtoGGSplitFn::overestimateP(const double z, const IdList &) const {
   return 3.*(1/z + 1/(1.-z)); 
 }
 
-double GtoGGSplitFn::ratioP(const double z, const Energy2, const IdList &) const {
+double GtoGGSplitFn::ratioP(const double z, const Energy2, const IdList &, 
+			    const bool) const {
   return sqr(1.-z*(1.-z));
 }
 
@@ -50,27 +49,58 @@ double GtoGGSplitFn::integOverP(const double z) const {
   return 3.*log(z/(1.-z)); 
 }
 
-void GtoGGSplitFn::colourConnection(const ColinePair &parent,
-				    ColinePair &first,
-				    ColinePair &second) const {
-
-  // Return immediately if the input is inconsistent.
-  if(!parent.first || !parent.second) return;
-  
-  // Randomly decide which of the two gluon products take the
-  // colour line passing for the colour of the parent gluon
-  // (the other will take the one passing for the anticolour of
-  //  the parent gluon).
-  if(UseRandom::rndbool()) {
-    first.first = parent.first;
-    second.second = parent.second;
-    first.second = second.first = new_ptr(ColourLine());    
-  } else {
-    second.first = parent.first;
-    first.second = parent.second;
-    first.first = second.second = new_ptr(ColourLine());    
+void GtoGGSplitFn::colourConnection(tShowerParticlePtr parent,
+				    tShowerParticlePtr first,
+				    tShowerParticlePtr second,
+				    const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert(cparent.first&&cparent.second);
+    // Randomly decide which of the two gluon products take the
+    // colour line passing for the colour of the parent gluon
+    // (the other will take the one passing for the anticolour of
+    //  the parent gluon).
+    if(UseRandom::rndbool()) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cparent.first->addColoured(first);
+      cparent.second->addAntiColoured(second);
+      newline->addColoured(second);
+      newline->addAntiColoured(first);
+    }
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cparent.first->addColoured(second);
+      cparent.second->addAntiColoured(first);
+      newline->addColoured(first);
+      newline->addAntiColoured(second);
+    }
   }
-
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(cfirst.first&&cfirst.second);
+    // Randomly decide which of the two gluon products take the
+    // colour line passing for the colour of the parent gluon
+    // (the other will take the one passing for the anticolour of
+    //  the parent gluon).
+    if (UseRandom::rndbool()) {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.first->addColoured(parent);
+      cfirst.second->addColoured(second);
+      newline->addAntiColoured(second);
+      newline->addAntiColoured(parent);
+    }
+    else {
+      ColinePtr newline=new_ptr(ColourLine());
+      cfirst.first->addAntiColoured(second);
+      cfirst.second->addAntiColoured(parent);
+      newline->addColoured(parent);
+      newline->addColoured(second);
+    }
+  }
 }
 
 bool GtoGGSplitFn::accept(const IdList & ids)

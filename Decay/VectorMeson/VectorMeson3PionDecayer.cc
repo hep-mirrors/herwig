@@ -8,18 +8,12 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMeson3PionDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Helicity/EpsFunction.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Decay/ThreeBodyIntegrator.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig {
@@ -474,10 +468,10 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
   return newME.contract(rhoin).real();
 }
 
-double VectorMeson3PionDecayer::threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,
-						       Energy2 s2,Energy2 s1,
-						       Energy,Energy,Energy)
-{
+double VectorMeson3PionDecayer::
+threeBodyMatrixElement(const int imode, const Energy2 q2,
+		       const  Energy2 s3, const Energy2 s2, const Energy2 s1, const 
+		       Energy m1, const Energy m2, const Energy m3) const {
   Lorentz5Momentum p1,p2,p3; Energy2 ee1,ee2,ee3;Energy pp1,pp2,pp3;
   Energy q(sqrt(q2));
   Energy2 mpi2c(_mpic*_mpic),mpi20(_mpi0*_mpi0);
@@ -537,9 +531,9 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   vector<double> inwidth(3,wrho);
   //tcDecayIntegratorPtr decayer(this);
   WidthCalculatorBasePtr output(
-    new_ptr(ThreeBodyAllOnCalculator(inweights,intype,inmass,inwidth,
-				     const_ptr_cast<tDecayIntegratorPtr>(this),
-				     imode,_mpi0,_mpic,_mpic)));
+    new_ptr(ThreeBodyAllOnCalculator<VectorMeson3PionDecayer>
+	    (inweights,intype,inmass,inwidth,
+	     *this,imode,_mpi0,_mpic,_mpic)));
   return output;
 }
 

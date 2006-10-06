@@ -185,9 +185,10 @@ bool DecayIntegrator::twoBodyMEcode(const DecayMode &,
 }
 
 // the matrix element to be integrated for the me
-double DecayIntegrator::threeBodyMatrixElement(int,Energy2,Energy2,Energy2,Energy2,
-					       Energy,Energy,Energy)
-{
+double DecayIntegrator::threeBodyMatrixElement(const int,const Energy2, const Energy2,
+					       const Energy2,const Energy2,
+					       const Energy, const Energy, 
+					       const Energy) const {
   throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
 			       << "method. This must be overwritten in the classes "
 			       << "inheriting from DecayIntegrator where it is needed"
@@ -195,7 +196,8 @@ double DecayIntegrator::threeBodyMatrixElement(int,Energy2,Energy2,Energy2,Energ
 }
 
   // the differential three body decay rate with one integral performed
-double DecayIntegrator::threeBodydGammads(int,Energy2,Energy2,Energy,Energy,Energy)
+double DecayIntegrator::threeBodydGammads(const int, const Energy2, const Energy2,
+					  const Energy, const Energy, const Energy) const
 {
   throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
 			       <<"method. This must be overwritten in the classes "

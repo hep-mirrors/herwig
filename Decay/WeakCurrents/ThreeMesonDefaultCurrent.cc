@@ -9,19 +9,14 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ThreeMesonDefaultCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
-ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() 
-{
+ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
   _mpi=0.;_mK=0.;
@@ -810,64 +805,85 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
   return kineallowed;
 }
 
+// initialisation of the a_1 width
+// (iopt=-1 initialises, iopt=0 starts the interpolation)
+void ThreeMesonDefaultCurrent::inita1width(int iopt) {
+  if(iopt==-1) {
+    // parameters for the table of values
+    Energy mtau(getParticleData(ParticleID::tauplus)->mass());
+    Energy2 mtau2(mtau*mtau),step(mtau*mtau/199.);
+    // integrator to perform the integral
+    vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
+    vector<int> intype;intype.push_back(2);intype.push_back(3);
+    Energy mrho(getParticleData(ParticleID::rhoplus)->mass()),
+      wrho(getParticleData(ParticleID::rhoplus)->width());
+    vector<Energy> inmass(2,mrho),inwidth(2,wrho);
+    Energy m1(getParticleData(ParticleID::piplus)->mass());
+    ThreeBodyAllOnCalculator<ThreeMesonDefaultCurrent> 
+      widthgen(inweights,intype,inmass,inwidth,*this,0,m1,m1,m1);
+    // normalisation constant to give physical width if on shell
+    double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
+    // loop to give the values
+    Energy moff2(0.);
+    _a1runq2.resize(0);_a1runwidth.resize(0);
+    for(;moff2<=mtau2;moff2+=step) {
+      _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
+      _a1runq2.push_back(moff2);
+    }
+  }
+  // set up the interpolator
+  else if(iopt==0) {
+    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
+  }
+}
 
-PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int,int)
-{
+PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int,int) {
   PDVector extpart(3);
-  if(imode==0)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::piplus);
-    }
-  else if(imode==1)
-    {
-      extpart[0]=getParticleData(ParticleID::pi0);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::piminus);
-    }
-  else if(imode==2)
-    {
-      extpart[0]=getParticleData(ParticleID::Kminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::Kplus);
-    }
-  else if(imode==3)
-    {
-      extpart[0]=getParticleData(ParticleID::K0);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::Kbar0);
-    }
-  else if(imode==4)
-    {
-      extpart[0]=getParticleData(ParticleID::Kminus);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::K0);
-    }
-  else if(imode==5)
-    {
-      extpart[0]=getParticleData(ParticleID::pi0);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::Kminus);
-    }
-  else if(imode==6)
-    {
-      extpart[0]=getParticleData(ParticleID::Kminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::piplus);
-    }
-  else if(imode==7)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::Kbar0);
-      extpart[2]=getParticleData(ParticleID::pi0);
-    }
-  else if(imode==8)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::eta);
-    }
+  if(imode==0) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==1) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::piminus);
+  }
+  else if(imode==2) {
+    extpart[0]=getParticleData(ParticleID::Kminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::Kplus);
+  }
+  else if(imode==3) {
+    extpart[0]=getParticleData(ParticleID::K0);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::Kbar0);
+  }
+  else if(imode==4) {
+    extpart[0]=getParticleData(ParticleID::Kminus);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::K0);
+  }
+  else if(imode==5) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::Kminus);
+  }
+  else if(imode==6) {
+    extpart[0]=getParticleData(ParticleID::Kminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==7) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::Kbar0);
+    extpart[2]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==8) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::eta);
+  }
   // conjugate the particles if needed
   if(icharge==3)
     {for(unsigned int ix=0;ix<3;++ix)
@@ -877,39 +893,34 @@ PDVector ThreeMesonDefaultCurrent::particles(int icharge, unsigned int imode,int
 }
 
 void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
-					      bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::ThreeMesonDefaultCurrent " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F123RhoWeight " << ix 
-		      << " " << _rhoF123wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F123RhoWeight " << ix 
-		  << " " << _rhoF123wgts[ix] << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF123wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F123KstarWeight " << ix 
-		      << " " << _KstarF123wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F123KstarWeight " << ix 
-		  << " " << _KstarF123wgts[ix] << "\n";}
-    }
-  for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F5RhoWeight " << ix 
-		      << " " << _rhoF5wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F5RhoWeight " << ix 
-		      << " " << _rhoF5wgts[ix] << "\n";}
-    }
-  for(unsigned int ix=0;ix<_KstarF5wgts.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":F5KstarWeight " << ix 
-		      << " " << _KstarF5wgts[ix] << "\n";}
-      else{output << "insert " << fullName() << ":F5KstarWeight " << ix 
-		      << " " << _KstarF5wgts[ix] << "\n";}
-    }
+					      bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::ThreeMesonDefaultCurrent " 
+		    << fullName() << " \n";
+  for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix) {
+    if(ix<3){output << "set " << fullName() << ":F123RhoWeight " << ix 
+		    << " " << _rhoF123wgts[ix] << "\n";}
+    else{output << "insert " << fullName() << ":F123RhoWeight " << ix 
+		<< " " << _rhoF123wgts[ix] << "\n";}
+  }
+  for(unsigned int ix=0;ix<_KstarF123wgts.size();++ix) {
+    if(ix<3){output << "set " << fullName() << ":F123KstarWeight " << ix 
+		    << " " << _KstarF123wgts[ix] << "\n";}
+    else{output << "insert " << fullName() << ":F123KstarWeight " << ix 
+		<< " " << _KstarF123wgts[ix] << "\n";}
+  }
+  for(unsigned int ix=0;ix<_rhoF5wgts.size();++ix) {
+    if(ix<3){output << "set " << fullName() << ":F5RhoWeight " << ix 
+		    << " " << _rhoF5wgts[ix] << "\n";}
+    else{output << "insert " << fullName() << ":F5RhoWeight " << ix 
+		<< " " << _rhoF5wgts[ix] << "\n";}
+  }
+  for(unsigned int ix=0;ix<_KstarF5wgts.size();++ix) {
+    if(ix<3){output << "set " << fullName() << ":F5KstarWeight " << ix 
+		    << " " << _KstarF5wgts[ix] << "\n";}
+    else{output << "insert " << fullName() << ":F5KstarWeight " << ix 
+		<< " " << _KstarF5wgts[ix] << "\n";}
+  }
   output << "set " << fullName() << ":RhoKstarWgt " << _rhoKstarwgt << "\n";
   output << "set " << fullName() << ":Initializea1 " << _initializea1 << "\n";
   output << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
@@ -985,22 +996,4 @@ void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
     }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-  
-}
-
-// the functions for the integrands of the a_1 width
-namespace Herwig {
-using namespace Genfun;
-
-FUNCTION_OBJECT_IMP(Defaulta1MatrixElement)
-
-Defaulta1MatrixElement::Defaulta1MatrixElement(Ptr<Herwig::ThreeMesonDefaultCurrent>::pointer in)
-  {_decayer=in;}
-
-unsigned int Defaulta1MatrixElement::dimensionality() const {return 7;}
-
-double Defaulta1MatrixElement::operator ()(const Argument & a) const 
-{return _decayer->a1MatrixElement(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);}
-
 }

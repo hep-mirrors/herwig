@@ -1,0 +1,11 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the QTildeModel class.
+//
+
+namespace Herwig {
+
+inline QTildeModel::QTildeModel() {}
+
+}

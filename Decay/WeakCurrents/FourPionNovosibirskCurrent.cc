@@ -9,22 +9,16 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
-
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FourPionNovosibirskCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::ScalarSpinInfo;
 
-FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() 
-{
+FourPionNovosibirskCurrent::FourPionNovosibirskCurrent() {
   // set the number of modes
   addDecayMode(2,-1);
   addDecayMode(2,-1);
@@ -215,10 +209,10 @@ FourPionNovosibirskCurrent::FourPionNovosibirskCurrent()
   vector<Energy> veceninit(eninit,eninit+98);
   vector<Energy2> vecensigma(ensigma,ensigma+100);
   // set up the interpolators
-  _Fomega  = new Interpolator(vecFomegainit,veceninit ,1);
-  _Fthreec = new Interpolator(vecFthreeinit,veceninit ,1);
-  _Fonec   = new Interpolator(vecFoneinit  ,veceninit ,1);
-  _Fsigma  = new Interpolator(vecFsigma    ,vecensigma,1);
+  _Fomega  = new_ptr(Interpolator(vecFomegainit,veceninit ,1));
+  _Fthreec = new_ptr(Interpolator(vecFthreeinit,veceninit ,1));
+  _Fonec   = new_ptr(Interpolator(vecFoneinit  ,veceninit ,1));
+  _Fsigma  = new_ptr(Interpolator(vecFsigma    ,vecensigma,1));
   // initialise the calculation of the a_1 width
   _initializea1=false;
   Energy2 a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
@@ -443,6 +437,57 @@ void FourPionNovosibirskCurrent::Init() {
      &FourPionNovosibirskCurrent::_a1runq2, GeV2, -1, 1.0*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, true);
 
+}
+
+// initialisation of the a_1 running width 
+void FourPionNovosibirskCurrent::inita1width(int iopt) {
+  if(iopt==-1) {
+    double total;
+    // parameters for the table of values
+    Energy mtau(getParticleData(ParticleID::tauplus)->mass());
+    Energy mtau2(mtau*mtau);
+    Energy2 step(mtau*mtau/200.);
+    // function to be integrated to give the matrix element
+    // integrator to perform the integral
+    // weights for the integration channels
+    vector<double> inweights;
+    inweights.push_back(0.3);inweights.push_back(0.3);inweights.push_back(0.3);
+    // types of integration channels
+    vector<int> intype;
+    intype.push_back(2);intype.push_back(3);intype.push_back(1);
+    // masses for the integration channels
+    vector<double> inmass(2,_rhomass);inmass.push_back(_sigmamass);
+    // widths for the integration channels
+    vector<double> inwidth(2,_rhowidth);inwidth.push_back(_sigmawidth);
+    ThreeBodyAllOnCalculator<FourPionNovosibirskCurrent>
+      widthgen(inweights,intype,inmass,inwidth,*this,0,_mpi,_mpi,_mpi); 
+    // normalisation constant to give physical width if on shell
+    double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
+    // loop to give the values
+    Energy moff2(0.);
+    _a1runwidth.resize(0);_a1runq2.resize(0);
+    for(;moff2<=mtau2;moff2+=step) {
+      total=widthgen.partialWidth(moff2);
+      cout << "testing the g function " 
+	   << moff2/GeV2 << " " 
+	   << sqrt(moff2)*total/GeV2 << "  " 
+	   << a1const*sqrt(moff2)*total/GeV2 << "    "
+	   << total*sqrt(moff2)/_a1mass*a1const << endl;
+      total*=a1const;
+      _a1runwidth.push_back(total);
+      _a1runq2.push_back(moff2);
+    }
+    cout << "Energy2 a1q2in[200]={";
+    for(unsigned int ix=0;ix<200;++ix) cout << _a1runq2[ix] << ",";
+    cout << endl;
+    cout << "Energy a1widthin[200]={";
+    for(unsigned int ix=0;ix<200;++ix) cout << _a1runwidth[ix] << ",";
+    cout << endl;
+  }
+  // set up the interpolator
+  else if(iopt==0) {
+    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
+  }
 }
 
 // complete the construction of the decay mode for integration
@@ -875,20 +920,3 @@ void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
 }
  
 } 
-
-// the functions for the integrands of the a_1 width
-namespace Herwig {
-using namespace Genfun;
-
-FUNCTION_OBJECT_IMP(FourPionDefaultMatrixElement)
-
-FourPionDefaultMatrixElement::FourPionDefaultMatrixElement(Ptr<Herwig::FourPionNovosibirskCurrent>::pointer in)
-  {_decayer=in;}
-  
-unsigned int FourPionDefaultMatrixElement::dimensionality() const {return 7;}
-
-double FourPionDefaultMatrixElement::operator ()(const Argument & a) const 
-{return _decayer->a1MatrixElement(a[0],a[1],a[2],a[3],a[4],a[5],a[6]);}
-  
-}
-

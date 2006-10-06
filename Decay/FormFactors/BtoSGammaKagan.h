@@ -5,8 +5,6 @@
 // This is the declaration of the BtoSGammaKagan class.
 //
 
-#include "CLHEP/GenericFunctions/AbsFunction.hh"
-#include "Herwig++/Utilities/GaussianIntegral.h"
 #include "Herwig++/Utilities/Interpolator.h"
 #include "BtoSGammaHadronicMass.h"
 #include "ThePEG/Config/Complex.h"
@@ -33,25 +31,10 @@ class BtoSGammaKagan: public BtoSGammaHadronicMass {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline BtoSGammaKagan();
-
-  /**
-   * The copy constructor.
-   */
-  inline BtoSGammaKagan(const BtoSGammaKagan &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BtoSGammaKagan();
-  //@}
-
-public:
 
   /**
    * Returns the hadronic mass.
@@ -118,47 +101,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving an
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -177,10 +124,6 @@ private:
 
 private:
 
-  /**
-   *  Initialisation of mass spectrum
-   */
-  bool _initialize;
   /** @name Functions to calculate the mass spectrum */
   //@{
   /**
@@ -279,6 +222,12 @@ private:
   //@}
 
 private:
+
+
+  /**
+   *  Initialisation of mass spectrum
+   */
+  bool _initialize;
 
   /**
    *  Quark masses and related parameters
@@ -404,17 +353,17 @@ private:
   /**
    *  Interpolator for the \f$s_{22}\f$ function
    */
-  Interpolator *_s22inter;
+  InterpolatorPtr _s22inter;
 
   /**
    *  Interpolator for the \f$s_{27}\f$ function
    */
-  Interpolator *_s27inter;
+  InterpolatorPtr _s27inter;
 
   /**
    *  Interpolator for the spectrum
    */
-  Interpolator *_pmHinter;
+  InterpolatorPtr _pmHinter;
 
   /**
    *  Values of \f$m_H\f$ for the interpolation of the spectrum
@@ -523,76 +472,26 @@ struct ClassTraits<Herwig::BtoSGammaKagan>
 
 }
 
-// class for the integration of the s functions
 namespace Herwig {
-using namespace Genfun;
-using namespace ThePEG;
 
-  /** \ingroup Decay
-   *  This is a function using the CLHEP Genfun class whiches can access the integrands22
-   * and integrands27 members or the spectrum 
+/**
+ *  A struct for the integrand which can access the integrands22
+   * and integrands27 members of the spectrum 
    * of the BtoSGammaKagan class. This function can then
    * be integrated to give the coefficients.
-   */
-class KaganIntegrand : public Genfun::AbsFunction {
-
-public:		   
-
-  /**
-   *  Function composition
-   */
-  virtual FunctionComposition operator()(const AbsFunction &function) const; 
-
-  /**
-   * clone
-   */
-  KaganIntegrand *clone() const; 
-
-private:                               
-
-  /**
-   * clone
-   */
-  virtual AbsFunction *_clone() const;
-
-public:
- 
-/** @name Standard constructors and destructors. */
-/**
- *  The constructor
  */
-  KaganIntegrand(BtoSGammaKaganPtr,unsigned int);
-  
-  /**
-   *  The destructor
-   */
-  virtual ~KaganIntegrand();
-  
-  /**
-   * The copy constructor
-   */
-  KaganIntegrand(const KaganIntegrand &right);
-  //@}
+struct KaganIntegrand {
 
   /**
-   *  Retreive the function value
+   *  The constructor
    */
-  virtual double operator ()(double argument) const;
+  inline KaganIntegrand(BtoSGammaKaganPtr,unsigned int);
 
   /**
-   *  Retreive the function value
+   * Get the function value
    */
-  virtual double operator ()(const Argument & a) const {return operator() (a[0]);}
-  
-private:
-  
-  /**
-   * Non-existant assignment operator. It is illegal to assign a function
-   */
-  const KaganIntegrand & operator=(const KaganIntegrand &right);
-  
-private:
-  
+  inline double operator ()(double argument) const;
+
   /**
    *  A pointer to the form factor to supply the integrand.
    */
@@ -602,13 +501,9 @@ private:
    *  Option for which function to be integrated
    */
   unsigned int _iopt;
-
 };
 }
 
 #include "BtoSGammaKagan.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaKagan.tcc"
-#endif
 
 #endif /* HERWIG_BtoSGammaKagan_H */

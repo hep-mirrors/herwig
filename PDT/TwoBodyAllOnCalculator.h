@@ -32,9 +32,6 @@ public:
 
 public:
 
-
-  /** @name Standard constructors and destructors. */
-  //@{
   /*
    * Constructor.
    * @param inwidth Pointer to the  GenericWidthGenerator class.
@@ -44,15 +41,6 @@ public:
    */
   inline TwoBodyAllOnCalculator(tGenericWidthGeneratorPtr inwidth,int imode,
 				Energy m1,Energy m2);
-
-  /**
-   * Default constructor
-   */
-  inline TwoBodyAllOnCalculator();
-  //@}
-
-
-public:
 
   /**
    * member to calculate the partial width.
@@ -86,19 +74,7 @@ public:
    */
   inline Energy otherMass(const int imass) const;
 
-public:
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
-
 private:
-
-  /**
-   * Describe a concrete class without persistent data.
-   */
-  static NoPIOClassDescription<TwoBodyAllOnCalculator> initTwoBodyAllOnCalculator;
 
   /**
    * Private and non-existent assignment operator.
@@ -131,37 +107,6 @@ private:
 
 }
 
-
-#include "ThePEG/Utilities/ClassTraits.h"
-
-namespace ThePEG {
-
-/**
- * The following template specialization informs ThePEG about the
- * base class of TwoBodyAllOnCalculator.
- */
-template <>
- struct BaseClassTrait<Herwig::TwoBodyAllOnCalculator,1> {
-  /** Typedef of the base class of TwoBodyAllShellCalculator. */
-  typedef Herwig::WidthCalculatorBase NthBase;
-};
-
-/**
- * The following template specialization informs ThePEG about the
- * name of this class and the shared object where it is defined.
- */
-template <>
-struct ClassTraits<Herwig::TwoBodyAllOnCalculator>
-  : public ClassTraitsBase<Herwig::TwoBodyAllOnCalculator> {
-  /** Return the class name.*/
-  static string className() { return "/Herwig++/TwoBodyAllOnCalculator"; }
-};
-
-}
-
 #include "TwoBodyAllOnCalculator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoBodyAllOnCalculator.tcc"
-#endif
 
 #endif /* HERWIG_TwoBodyAllOnCalculator_H */

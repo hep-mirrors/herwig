@@ -9,28 +9,26 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerAlphaQCD.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Utilities/Throw.h"
 
 using namespace Herwig;
 
 void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
-  os << _asType << _qmin << _nloop << _lambdaopt << _lambdain << _alphain << _inopt
+  os << _asType << _qmin << _nloop << _lambdaopt << _thresopt 
+     << _lambdain << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin;
   for(unsigned int ix=0;ix<4;++ix)
-    {os << _thresholds[ix] << _lambda[ix];}
+    os << _thresholds[ix] << _lambda[ix];
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
-  is >> _asType >> _qmin >> _nloop >> _lambdaopt >> _lambdain >> _alphain >> _inopt
+  is >> _asType >> _qmin >> _nloop >> _lambdaopt >> _thresopt
+     >> _lambdain >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin;
   for(unsigned int ix=0;ix<4;++ix)
-    {is >> _thresholds[ix] >> _lambda[ix];}
+    is >> _thresholds[ix] >> _lambda[ix];
 }
 
 ClassDescription<ShowerAlphaQCD> ShowerAlphaQCD::initShowerAlphaQCD;
@@ -126,6 +124,21 @@ void ShowerAlphaQCD::Init() {
      &ShowerAlphaQCD::_maxtry, 100, 10, 1000,
      false, false, Interface::limited);
 
+  static Switch<ShowerAlphaQCD,bool> interfaceThresholdOption
+    ("ThresholdOption",
+     "Whether to use the consistuent or normal masses for the thresholds",
+     &ShowerAlphaQCD::_thresopt, true, false, false);
+  static SwitchOption interfaceThresholdOptionCurrent
+    (interfaceThresholdOption,
+     "Current",
+     "Use the current masses",
+     true);
+  static SwitchOption interfaceThresholdOptionConstituent
+    (interfaceThresholdOption,
+     "Constituent",
+     "Use the constitent masses.",
+     false);
+
 }
 
 void ShowerAlphaQCD::doinit() throw(InitException) {
@@ -137,18 +150,21 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   // otherwise it was an input parameter
   else{_lambda[2]=_lambdain;}
   // convert lambda to the Monte Carlo scheme if needed
-  if(_lambdaopt){_lambda[2] *=exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.);}
+  if(_lambdaopt){_lambda[2] *=exp(0.5*(67.-3.*sqr(pi)-50./3.)/23.)/sqrt(2.);}
   // compute the threshold matching
   // top threshold
-  _thresholds[3]=getParticleData(ParticleID::t)->mass();
+  for(int ix=1;ix<4;++ix) {
+    if(_thresopt)
+      _thresholds[ix]=getParticleData(ix+3)->mass();
+    else
+      _thresholds[ix]=getParticleData(ix+3)->constituentMass();
+  }
   // compute 6 flavour lambda by matching at top mass using Newton Raphson
   _lambda[3]=computeLambda(_thresholds[3],alphaS(_thresholds[3],_lambda[2],5),6);
   // bottom threshold
-  _thresholds[2]=getParticleData(ParticleID::b)->mass();
   // compute 4 flavour lambda by matching at bottom mass using Newton Raphson
   _lambda[1]=computeLambda(_thresholds[2],alphaS(_thresholds[2],_lambda[2],5),4);
   // charm threshold
-  _thresholds[1]=getParticleData(ParticleID::c)->mass();
   // compute 3 flavour lambda by matching at charm mass using Newton Raphson
   _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4),3);
   // final threshold is qmin
@@ -158,8 +174,8 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   else _alphamin = 100.; 
   // check consistency lambda_3 < qmin
   if(_lambda[0]>_qmin)
-    {throw InitException() << "The value of Qmin is less than Lambda_3 in"
-			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;}
+    Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
+			   << " ShowerAlphaQCD::doinit " << Exception::abortnow;
 }
 
 double ShowerAlphaQCD::value(const Energy2 scale) const {

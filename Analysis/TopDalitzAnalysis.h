@@ -37,11 +37,6 @@ public:
    * The copy constructor.
    */
   inline TopDalitzAnalysis(const TopDalitzAnalysis &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~TopDalitzAnalysis();
   //@}
 
 public:

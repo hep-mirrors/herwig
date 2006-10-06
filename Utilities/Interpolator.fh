@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Interpolator class.
+//
+#ifndef HERWIG_Interpolator_FH
+#define HERWIG_Interpolator_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Interpolator;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Interpolator,InterpolatorPtr);
+
+}
+
+#endif

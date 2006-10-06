@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the QTildeSudakov class.
+//
+#ifndef HERWIG_QTildeSudakov_FH
+#define HERWIG_QTildeSudakov_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class QTildeSudakov;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::QTildeSudakov,QTildeSudakovPtr);
+
+}
+
+#endif

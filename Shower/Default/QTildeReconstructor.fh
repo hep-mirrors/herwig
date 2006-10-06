@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the QTildeReconstructor class.
+//
+#ifndef HERWIG_QTildeReconstructor_FH
+#define HERWIG_QTildeReconstructor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class QTildeReconstructor;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::QTildeReconstructor,QTildeReconstructorPtr);
+
+}
+
+#endif

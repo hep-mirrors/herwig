@@ -8,15 +8,9 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline GenericWidthGenerator::GenericWidthGenerator() 
-{
-  // default paramter settings
-  _initialize=false;
-  _BRnorm=true;
-  _BRminimum=0.01;
-  _npoints=50;
-  _mass=0.;
-  _prefactor=0.;
-}
+  : _mass(0.),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
+    _BRminimum(0.01)
+{}
 
 inline IBPtr GenericWidthGenerator::clone() const {
   return new_ptr(*this);
@@ -26,17 +20,12 @@ inline IBPtr GenericWidthGenerator::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void GenericWidthGenerator::doinitrun() {
-  WidthGenerator::doinitrun();
-  setInterpolators();
+inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const {
+  return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);
 }
 
-inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const
- {return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);}
-
 inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
-						       Energy m2) const
-{
+						       Energy m2) const {
   if(q<m1+m2){return 0.;}
   // calcluate the decay momentum
   Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
@@ -80,19 +69,24 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energ
   return gam*_MEcoupling[imode]*_MEcoupling[imode];
 }
 
-inline int GenericWidthGenerator::MEcode(int imode) const
-{return _MEcode[imode];}
+inline int GenericWidthGenerator::MEcode(int imode) const {
+  return _MEcode[imode];
+}
 
-inline double GenericWidthGenerator::MEcoupling(int imode) const
-{return _MEcoupling[imode];}
+inline double GenericWidthGenerator::MEcoupling(int imode) const {
+  return _MEcoupling[imode];
+}
 
-inline Energy GenericWidthGenerator::mass() const
-{return _mass;}
+inline Energy GenericWidthGenerator::mass() const {
+  return _mass;
+}
 
-inline bool GenericWidthGenerator::initialize() const
-{return _initialize;}
+inline bool GenericWidthGenerator::initialize() const {
+  return _initialize;
+}
 
-inline tPDPtr GenericWidthGenerator::particle() const
-{return _theParticle;}
+inline tPDPtr GenericWidthGenerator::particle() const {
+  return _theParticle;
+}
 
 }

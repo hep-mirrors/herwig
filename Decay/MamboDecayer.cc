@@ -6,11 +6,6 @@
 
 #include "MamboDecayer.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MamboDecayer.tcc"
-#endif
-
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/Repository/StandardRandom.h>
@@ -44,13 +39,13 @@ void MamboDecayer::Init() {
   static ClassDocumentation<MamboDecayer> documentation
     ("Decayer class that implements MAMBO algorithm of Kleiss-"
      "Stirling.");
-
   
   static Parameter<MamboDecayer,double> interfaceMaximumWeight
     ("MaxWeight",
      "Maximum phase-space weight",
      &MamboDecayer::_maxweight, 10.0, 1.0, 50.,
      false, false, true);
+
 }
 
 ParticleVector MamboDecayer::decay(const DecayMode & dm,
@@ -68,15 +63,15 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
     productMomentum[i].setMass(children[i]->constituentMass());
     totalMass += children[i]->constituentMass();
   }
-
+  
   if(totalMass > parent.mass()) {
-      generator()->log() << "MamboDecayer: The Decay mode " 
-			 << dm.tag() << " cannot "
-			 << "proceed, not enough phase space\n";
-      out.clear();
-      return out;
-    }
-
+    generator()->log() << "MamboDecayer: The Decay mode " 
+		       << dm.tag() << " cannot "
+		       << "proceed, not enough phase space\n";
+    out.clear();
+    return out;
+  }
+  
   double wgt(0.);
   do {
     wgt = calculateMomentum(productMomentum,parent.mass());

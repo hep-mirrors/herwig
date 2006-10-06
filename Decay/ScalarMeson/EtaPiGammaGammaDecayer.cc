@@ -296,10 +296,10 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
   return newME.contract(rhoin).real();
 }
  
-double EtaPiGammaGammaDecayer::threeBodyMatrixElement(int imodeb,Energy2 q2, Energy2 s3,
-						      Energy2 s2,Energy2 s1,
-						      Energy,Energy,Energy)
-{
+double EtaPiGammaGammaDecayer::
+threeBodyMatrixElement(const int imodeb, const Energy2 q2,const  Energy2 s3,
+		       const Energy2 s2,const Energy2 s1,const Energy m1,
+		       const Energy m2,const Energy m3) const {
   // compute the prefactors
   Energy2 mrho2(_rhomass*_rhomass);
   Energy q(sqrt(s3));
@@ -331,10 +331,9 @@ EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
   vector<double> inmass;inmass.push_back(mrho);inmass.push_back(mrho);
   vector<double> inwidth;inwidth.push_back(wrho);inwidth.push_back(wrho);
   vector<int> intype;intype.push_back(1);intype.push_back(2);
-  tcDecayIntegratorPtr decayer=this;
-  return new_ptr(ThreeBodyAllOnCalculator(inweights,intype,inmass,inwidth,
-					  const_ptr_cast<tDecayIntegratorPtr>(decayer),
-					  imode,_mpi,0.,0.));
+  return new_ptr(ThreeBodyAllOnCalculator<EtaPiGammaGammaDecayer>
+		 (inweights,intype,inmass,inwidth,*this,
+		  imode,_mpi,0.,0.));
 }
 
 void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output, 

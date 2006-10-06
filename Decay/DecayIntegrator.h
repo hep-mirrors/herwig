@@ -158,8 +158,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  virtual double threeBodyMatrixElement(int imode,Energy2 q2, Energy2 s3,Energy2 s2,
-					Energy2 s1,Energy m1,Energy m2,Energy m3);
+  virtual double threeBodyMatrixElement(const int imode,  const Energy2 q2,
+					const Energy2 s3, const Energy2 s2, 
+					const Energy2 s1, const Energy  m1, 
+					const Energy  m2, const Energy  m3) const;
   
   /**
    * The differential three body decay rate with one integral performed.
@@ -171,8 +173,9 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual double threeBodydGammads(int imode,Energy q2, Energy2 s,Energy m1,Energy m2,
-				   Energy m3);
+  virtual double threeBodydGammads(const int imode, const Energy q2, const Energy2 s,
+				   const Energy m1, const Energy m2, 
+				   const Energy m3) const;
   
   /**
    * Set the code for the partial width. Finds the partial width in the

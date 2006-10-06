@@ -8,11 +8,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGammaSplitFn.tcc"
-#endif
-
+#include "Herwig++/Shower/Base/ShowerParticle.h"
+#include <cassert>
 
 using namespace Herwig;
 
@@ -26,12 +23,15 @@ void QtoQGammaSplitFn::Init() {
 
 }
 
-double QtoQGammaSplitFn::P(const double z, const Energy2 qtilde2,
-			   const IdList & ids) const {
-  Energy m = getParticleData(ids[0])->mass();
+double QtoQGammaSplitFn::P(const double z, const Energy2 t,
+			   const IdList & ids, const bool mass) const {
+  double val=(1. + sqr(z))/(1.-z);
+  if(mass) {
+    Energy m = getParticleData(ids[0])->mass();
+    val-=2.*sqr(m)/t;
+  }
   double charge=getParticleData(ids[0])->iCharge()*3.;
-  Energy2 m2 = sqr(m); 
-  return sqr(charge)*(1. + sqr(z)- 2.*m2/(qtilde2*z))/(1.-z); 
+  return sqr(charge)*val;; 
 }
 
 double QtoQGammaSplitFn::overestimateP(const double z, const IdList & ids) const {
@@ -39,13 +39,14 @@ double QtoQGammaSplitFn::overestimateP(const double z, const IdList & ids) const
   return 2.*sqr(charge)/(1.-z); 
 }
 
-double QtoQGammaSplitFn::ratioP(const double z, const Energy2 qtilde2,
-				const IdList & ids) const {
-  Energy m = getParticleData(ids[0])->mass();
-  Energy2 m2 = sqr(m); 
-  cerr << "testing QtoQGammaRatio " << P(z,qtilde2,ids)/overestimateP(z,ids) 
-       << " " << 0.5*(1. + sqr(z)- 2.*m2/(qtilde2*z)) << endl;
-  return 0.5*(1. + sqr(z)- 2.*m2/(qtilde2*z)); 
+double QtoQGammaSplitFn::ratioP(const double z, const Energy2 t,
+				const IdList & ids, const bool mass) const {
+  double val=1. + sqr(z); 
+  if(mass) {
+    Energy m = getParticleData(ids[0])->mass();
+    val -=2.*sqr(m)*(1.-z)/t;
+  }
+  return 0.5*val; 
 }
 
 double QtoQGammaSplitFn::integOverP(const double z) const {
@@ -56,17 +57,32 @@ double QtoQGammaSplitFn::invIntegOverP(const double r) const {
   return 1. - exp(-r/2.); 
 }
 
-void QtoQGammaSplitFn::colourConnection(const ColinePair &parent,
-					ColinePair &first,
-					ColinePair &second) const {
-  
-  // Return immediately if the input is inconsistent.
-  if((!parent.first && !parent.second) || (parent.first && parent.second))
-    return;
-  
-  // second should be Gamma, doesn't get colour, of course. 
-  first = parent;
-  second = ColinePair();
+void QtoQGammaSplitFn::colourConnection(tShowerParticlePtr parent,
+					tShowerParticlePtr first,
+					tShowerParticlePtr second,
+					const bool back) const {
+  if(!back) {
+    ColinePair cparent = ColinePair(parent->colourLine(), 
+				    parent->antiColourLine());
+    // ensure input consistency
+    assert(( cparent.first && !cparent.second) || 
+	   (!cparent.first &&  cparent.second));
+    // q -> q gamma
+    if(cparent.first) cparent.first->addColoured(first);
+    // qbar -> qbar gamma
+    else              cparent.second->addAntiColoured(first);
+  }
+  else {
+    ColinePair cfirst = ColinePair(first->colourLine(), 
+				   first->antiColourLine());
+    // ensure input consistency
+    assert(( cfirst.first && !cfirst.second) ||
+	   (!cfirst.first &&  cfirst.second));
+    // q -> q gamma
+    if(cfirst.first) cfirst.first->addColoured(parent);
+    // qbar -> qbar gamma
+    else             cfirst.second->addAntiColoured(parent);
+  }
 }
 
 bool QtoQGammaSplitFn::accept(const IdList & ids) const {

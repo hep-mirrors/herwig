@@ -17,8 +17,8 @@ using namespace ThePEG;
  * This class provides the concrete implementation of the exact leading-order
  * splitting function for \f$g\to q\bar{q}\f$. 
  *
- *  In this case the splitting function is given by
- * \f[P(z,\tilde{q}^2) =T_R\left(1-2z(1-z)+2\frac{m_q^2}{z*(1-z)\tilde{q}^2}\right),\f]
+ * In this case the splitting function is given by
+ * \f[P(z,t) =T_R\left(1-2z(1-z)+2\frac{m_q^2}{t}\right),\f]
  * where \f$T_R=\frac12\f$
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = T_R,\f]
@@ -60,9 +60,11 @@ public:
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double P(const double z, const Energy2 t, const IdList & ids) const;
-
+  virtual double P(const double z, const Energy2 t, const IdList & ids,
+		   const bool mass) const;
+  
 
   /**
    * The concrete implementation of the overestimate of the splitting function,
@@ -79,8 +81,10 @@ public:
    * @param z   The energy fraction.
    * @param t   The scale.
    * @param ids The PDG codes for the particles in the splitting.
+   * @param mass Whether or not to include the mass dependent terms
    */
-  virtual double ratioP(const double z, const Energy2 t, const IdList & ids) const;
+  virtual double ratioP(const double z, const Energy2 t, const IdList & ids,
+			const bool mass) const;
 
   /**
    * The concrete implementation of the indefinite integral of the 
@@ -97,21 +101,17 @@ public:
   //@}
 
   /**
-   *  Concrete implementation of the method to make the colour connections.
-   * @param parent Pair of pointers to ColourLine objects, 
-   * which are associated with, 
-   * respectively, the colour (first element of the pair) and 
-   * anticolour (second element of the pair) of the emitting particle.
-   * @param first Pair of pointers
-   * to ColourLine objects, for respectively the first 
-   * branching product. Again the first element
-   * is associated with the colour line and the second element
-   * is associated with the anticolur line.
-   * @param second As first but for the second particle.
+   * Purely virtual method which should make the proper colour connection 
+   * between the emitting parent and the branching products.
+   * @param parent The parent for the branching
+   * @param first  The first  branching product
+   * @param second The second branching product
+   * @param back Whether this is foward or backward evolution.
    */
-  virtual void colourConnection(const ColinePair & parent,
-				ColinePair & first,
-				ColinePair & second) const;
+  virtual void colourConnection(tShowerParticlePtr parent,
+				tShowerParticlePtr first,
+				tShowerParticlePtr second,
+				const bool back) const;
 
 public:
 

@@ -59,12 +59,10 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
    ParticleVector partons = dm.produceProducts();
    assert(partons.size()<=4);
    Lorentz5Momentum products[4]; // Shouldn't be any bigger!
-
    Energy gluMass = getParticleData(ParticleID::g)->constituentMass();
    for(unsigned int i = 0; i<partons.size(); i++) {
-     if(partons[i]->id() == ParticleID::g)
-       products[i].setMass(gluMass);
-     else products[i].setMass(partons[i]->mass());
+     if(partons[i]->id() == ParticleID::g) products[i].setMass(gluMass);
+     else                                  products[i].setMass(partons[i]->mass());
    }
 
    //cout << "generating a quarkonium decay " << dm.tag() << endl;
