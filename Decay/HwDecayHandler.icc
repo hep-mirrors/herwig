@@ -9,10 +9,6 @@ using namespace ThePEG;
 
 inline HwDecayHandler::HwDecayHandler() : DecayHandler(),_hadtry(20) {}
 
-inline HwDecayHandler::HwDecayHandler(const HwDecayHandler &x) 
-  : DecayHandler(x),_partonhad(x._partonhad),_hadtry(x._hadtry) 
-{}
-
 inline IBPtr HwDecayHandler::clone() const { return new_ptr(*this); }
 
 inline IBPtr HwDecayHandler::fullclone() const { return new_ptr(*this); }

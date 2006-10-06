@@ -96,7 +96,7 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
     }
 }
 
-LorentzRotation DrellYanDalitzAnalysis::transform(tEventPtr event) const {
+LorentzRotation DrellYanDalitzAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -108,11 +108,11 @@ void DrellYanDalitzAnalysis::analyze(const tPVector & particles) {
 
 void DrellYanDalitzAnalysis::analyze(tPPtr) {}
 
-void DrellYanDalitzAnalysis::persistentOutput(PersistentOStream & os) const {
+void DrellYanDalitzAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void DrellYanDalitzAnalysis::persistentInput(PersistentIStream & is, int) {
+void DrellYanDalitzAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

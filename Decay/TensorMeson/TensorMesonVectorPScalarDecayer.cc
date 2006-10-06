@@ -210,7 +210,7 @@ void TensorMesonVectorPScalarDecayer::Init() {
 
 
 // matrix elememt for the process
-double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int ichan,
+double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 					    const Particle & inpart,
 					    const ParticleVector & decay) const
 {

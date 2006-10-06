@@ -106,18 +106,18 @@ void ScalarFormFactor::ScalarTensorFormFactor(Energy2,unsigned int,int,int,Energ
 }
 
 // form-factor for scalar to scalar (sigma)
-void ScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,
-						   int id1,Energy m0, Energy m1,
-						   Complex & fT) const
+void ScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2,unsigned int,int,
+						   int,Energy, Energy,
+						   Complex &) const
 {
   throw Exception() << "Error in ScalarFormFactor::ScalarScalarSigmaFormFactor"
 		    << " not implemented"
 		    << Exception::abortnow;
 }
 // form-factor for scalar to vector (sigma)
-void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
-						   Energy m0, Energy m1, Complex & T1,
-						   Complex & T2, Complex & T3) const
+void ScalarFormFactor::ScalarVectorSigmaFormFactor(Energy2,unsigned int,int,int,
+						   Energy, Energy, Complex &,
+						   Complex &, Complex &) const
 {
   throw Exception() << "Error in ScalarFormFactor::ScalarVectorSigmaFormFactor"
 		    << " not implemented"

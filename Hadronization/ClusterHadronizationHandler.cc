@@ -161,7 +161,7 @@ void ClusterHadronizationHandler::doinitrun() {
 
 void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
-       const Hint & hint) throw(Veto, Stop, Exception) {
+       const Hint &) throw(Veto, Stop, Exception) {
   ClusterVector clusters;
   StepPtr pstep = ch.newStep();
 

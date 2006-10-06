@@ -268,7 +268,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::ShowerKinematics,1> {
   /** Typedef of the first base class of ShowerKinematics. */
-  typedef ReferenceCounted NthBase;
+  typedef Base NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

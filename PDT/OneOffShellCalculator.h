@@ -180,7 +180,6 @@ private:
 
 }
 
-
 #include "OneOffShellCalculator.icc"
 
 #endif /* HERWIG_OneOffShellCalculator_H */

@@ -238,10 +238,6 @@ struct ClassTraits<Herwig::PartonicHadronizer>
   : public ClassTraitsBase<Herwig::PartonicHadronizer> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::PartonicHadronizer"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the PartonicHadronizer class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "libHwHadronization.so"; }
 };
 
 }

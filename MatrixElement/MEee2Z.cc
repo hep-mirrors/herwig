@@ -53,7 +53,7 @@ int MEee2Z::nDim() const {
   return 1;
 }
 
-bool MEee2Z::generateKinematics(const double * r) {
+bool MEee2Z::generateKinematics(const double *) {
   // Here you can use nDim() random numbers in the vector provided
   // to generate the internal kinematics. Note that sHat() has
   // already been given from the outside.
@@ -104,14 +104,14 @@ unsigned int MEee2Z::orderInAlphaEW() const {
 }
 
 Selector<MEBase::DiagramIndex>
-MEee2Z::diagrams(const DiagramVector & diags) const {
+MEee2Z::diagrams(const DiagramVector &) const {
   Selector<DiagramIndex> sel;
   sel.insert(1.0, 0);
   return sel;
 }
 
 Selector<const ColourLines *>
-MEee2Z::colourGeometries(tcDiagPtr diag) const {
+MEee2Z::colourGeometries(tcDiagPtr) const {
   static const ColourLines neutral ( " " );
   Selector<const ColourLines *> sel;
   sel.insert(1.,&neutral);

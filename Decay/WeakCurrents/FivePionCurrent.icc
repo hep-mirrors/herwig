@@ -63,7 +63,7 @@ inline Complex FivePionCurrent::sigmaBreitWigner(Energy2 scale) const
 }
 
 inline LorentzPolarizationVector 
-FivePionCurrent::rhoOmegaCurrent(unsigned int iopt,const Lorentz5Momentum & Q,
+FivePionCurrent::rhoOmegaCurrent(unsigned int,const Lorentz5Momentum & Q,
 				 const Lorentz5Momentum & q1,const Lorentz5Momentum & q2,
 				 const Lorentz5Momentum & q3,const Lorentz5Momentum & q4,
 				 const Lorentz5Momentum & q5) const

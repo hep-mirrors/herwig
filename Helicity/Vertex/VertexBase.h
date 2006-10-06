@@ -5,7 +5,7 @@
 // This is the declaration of the VertexBase class.
 
 #include <ThePEG/Config/Complex.h>
-#include "ThePEG/Interface/Interfaced.h"
+#include <ThePEG/Interface/Interfaced.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/PDT/WidthGenerator.h>
 #include <ThePEG/Helicity/HelicityDefinitions.h>
@@ -40,11 +40,6 @@ public:
   
   /** @name Standard constructors and destructors. */
   //@{
-  /**
-   * Copy-constructor.
-   */
-  inline VertexBase(const VertexBase &);
-
   /**
    * Constructor for three point vertices.
    * @param ispin1 \f$2S+1\f$ for the first  particle.
@@ -541,13 +536,6 @@ struct ClassTraits<Herwig::Helicity::VertexBase>
    * Return the class name.
    */
   static string className() { return "Herwig++::VertexBase"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwVertex.so"; }
-
 };
 
 }

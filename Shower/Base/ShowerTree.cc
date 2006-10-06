@@ -218,7 +218,7 @@ void ShowerTree::colourIsolate(const vector<PPtr> & original,
   }
 }
   
-void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool FSR) {
+void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool) {
   assert(_incomingLines.size()==2);
   _colour.clear();
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
@@ -531,7 +531,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
      }
 }
 
-void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool FSR) {
+void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   assert(_incomingLines.size()==1);
   _colour.clear();
   // find final particle from previous tree

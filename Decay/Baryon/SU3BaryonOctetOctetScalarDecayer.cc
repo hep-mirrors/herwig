@@ -220,7 +220,7 @@ void SU3BaryonOctetOctetScalarDecayer::Init() {
 
 // couplings for spin-1/2 to spin-1/2 spin-0
 void SU3BaryonOctetOctetScalarDecayer::halfHalfScalarCoupling(int imode,Energy m0,
-							      Energy m1,Energy m2,
+							      Energy m1,Energy,
 							      Complex& A,
 							      Complex& B) const
 {
@@ -238,7 +238,7 @@ void SU3BaryonOctetOctetScalarDecayer::halfHalfScalarCoupling(int imode,Energy m
 
 // couplings for spin-1/2 to spin-3/2 spin-0
 void SU3BaryonOctetOctetScalarDecayer::threeHalfHalfScalarCoupling(int imode,Energy m0,
-								   Energy m1,Energy m2,
+								   Energy m1,Energy,
 								   Complex& A,
 								   Complex& B) const
 {

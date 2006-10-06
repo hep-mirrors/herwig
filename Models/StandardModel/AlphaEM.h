@@ -168,14 +168,6 @@ struct ClassTraits<Herwig::AlphaEM>
   : public ClassTraitsBase<Herwig::AlphaEM> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::AlphaEM"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * AlphaEM is implemented. It may also include several, space-separated,
-   * libraries if the class AlphaEM depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwStandardModel.so"; }
 };
 
 /** @endcond */

@@ -146,8 +146,8 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
   return true;
 }
 
-bool PartnerFinder::setQEDInitialEvolutionScales(const ShowerParticleVector &particles,
-						 const bool isDecayCase) {
+bool PartnerFinder::setQEDInitialEvolutionScales(const ShowerParticleVector &,
+						 const bool) {
 
   // ***LOOKHERE*** To be implemented only if you want to have electromagnetic
   //               bremsstrahlung. You should use the data() method of
@@ -170,8 +170,8 @@ bool PartnerFinder::setQEDInitialEvolutionScales(const ShowerParticleVector &par
   return false;
 }
 
-bool PartnerFinder::setEWKInitialEvolutionScales(const ShowerParticleVector &particles,
-						 const bool isDecayCase) {
+bool PartnerFinder::setEWKInitialEvolutionScales(const ShowerParticleVector &,
+						 const bool ) {
   // ***LOOKHERE*** To be implemented only if you want to have electroweak
   //               bremsstrahlung. You should use the data() method of
   //               the ShowerParticle objects to access to their properties

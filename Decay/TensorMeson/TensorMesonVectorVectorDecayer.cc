@@ -185,7 +185,7 @@ void TensorMesonVectorVectorDecayer::Init() {
 }
 
 // matrix elememt for the process
-double TensorMesonVectorVectorDecayer::me2(bool vertex, const int ichan,
+double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
 					   const Particle & inpart,
 					   const ParticleVector & decay) const
 {

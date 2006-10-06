@@ -2,7 +2,7 @@
 #ifndef HERWIG_ColourReconnector_H
 #define HERWIG_ColourReconnector_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
 
 
@@ -28,7 +28,7 @@ using namespace ThePEG;
 //class ThePEG::PartialCollisionHandler; // forward declaration
 
 
-class ColourReconnector: public ThePEG::HandlerBase {
+class ColourReconnector: public Interfaced {
 
 public:
 
@@ -38,11 +38,6 @@ public:
    * Default constructor.
    */
   inline ColourReconnector();
-
-  /**
-   * Copy-constructor.
-   */
-  inline ColourReconnector(const ColourReconnector &);
   //@}
 
   /**
@@ -134,7 +129,7 @@ template <>
  */
 struct BaseClassTrait<Herwig::ColourReconnector,1> {
   /** Typedef of the base class of ColourReconnector. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 template <>
@@ -146,13 +141,6 @@ struct ClassTraits<Herwig::ColourReconnector>
   : public ClassTraitsBase<Herwig::ColourReconnector> {
   /** Return the class name.*/
   static string className() { return "Herwig++::ColourReconnector"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwHadronization.so"; }
-
 };
 
 }

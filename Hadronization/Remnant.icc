@@ -11,13 +11,6 @@ inline Remnant::Remnant()
   : Particle(CurrentGenerator::current().getParticleData(ExtraParticleID::Remnant))
 {}
 
-inline Remnant::Remnant(const Remnant & x)
-  : Particle(x),_parent(x._parent),_extracted(x._extracted),_sign(x._sign),
-    _constituents(x._constituents),_valence(x._valence) 
-{}
-
-
-
 inline void * Remnant::operator new(size_t) {
   return FixedAllocator<Remnant>::allocate();
 }

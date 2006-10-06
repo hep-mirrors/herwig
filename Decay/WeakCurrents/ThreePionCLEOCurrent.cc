@@ -670,7 +670,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
     }
 }
 
-PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int iq,int ia)
+PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int,int)
 {
   PDVector extpart(3);
   if(imode==0)

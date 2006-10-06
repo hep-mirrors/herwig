@@ -19,7 +19,7 @@ inline IBPtr GenericWidthGenerator::clone() const {
 inline IBPtr GenericWidthGenerator::fullclone() const {
   return new_ptr(*this);
 }
-  
+
 inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const {
   return partial2BodyWidth(imode,q,_MEmass1[imode],_MEmass2[imode]);
 }

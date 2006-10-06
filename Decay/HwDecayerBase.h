@@ -146,10 +146,6 @@ struct ClassTraits<Herwig::HwDecayerBase>
   : public ClassTraitsBase<Herwig::HwDecayerBase> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::HwDecayerBase"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the HwDecayerBase class and every other class it uses
-   *  (except the base class). */
-  static string library() { return ""; }
 };
 
 /** @endcond */

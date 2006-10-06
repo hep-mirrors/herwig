@@ -83,7 +83,7 @@ void SMWZDecayer::doinit() throw(InitException)
   // the Z decay modes
   extpart[0]=getParticleData(ParticleID::Z0);
   // loop over the  quarks and the leptons
-  unsigned int ix,istep=0,iy;
+  int ix,istep=0,iy;
   for( ;istep<11;istep+=10)
     {
       for(ix=1;ix<7;++ix)
@@ -228,7 +228,7 @@ void SMWZDecayer::Init() {
 
 
 // return the matrix element squared
-double SMWZDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
+double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
 			const ParticleVector & decay) const 
 {
   // get/calculate the spin info for the decaying particle

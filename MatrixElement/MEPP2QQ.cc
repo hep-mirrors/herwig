@@ -39,9 +39,9 @@ void MEPP2QQ::doinit() throw(InitException) {
 			   << Exception::runerror;}
   // get the particle data objects
   _gluon=getParticleData(ParticleID::g);
-  for(unsigned int ix=1;ix<=6;++ix)
+  for(int ix=1;ix<=6;++ix)
     {
-      _quark.push_back(getParticleData(ix));
+      _quark.push_back(    getParticleData( ix));
       _antiquark.push_back(getParticleData(-ix));
     }
 }

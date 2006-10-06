@@ -192,14 +192,6 @@ struct ClassTraits<Herwig::O2AlphaS>
   : public ClassTraitsBase<Herwig::O2AlphaS> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::O2AlphaS"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * O2AlphaS is implemented. It may also include several, space-separated,
-   * libraries if the class O2AlphaS depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwStandardModel.so"; }
 };
 
 /** @endcond */

@@ -80,8 +80,8 @@ void MelikhovFormFactor::Init() {
 
 // form-factor for scalar to scalar
 void MelikhovFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
-						int id0,int id1,
-						Energy m0, Energy m1,Complex & f0,
+						int,int id1,
+						Energy, Energy,Complex & f0,
 						Complex & fp) const
 {
   fp = _Rplus0/pow((1.-q2/_Mplus/_Mplus),_nplus);
@@ -97,7 +97,7 @@ void MelikhovFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
 }
 
 void MelikhovFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
-						int id0, int id1, Energy mY, Energy mX,
+						int, int id1, Energy mY, Energy mX,
 						Complex & A0,Complex & A1,Complex & A2,
 						Complex & V) const
 {

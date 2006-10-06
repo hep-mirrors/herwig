@@ -998,4 +998,3 @@ void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
-

@@ -1,12 +1,15 @@
+#include <ThePEG/Repository/UseRandom.h>
 #include "UA5Handler.h"
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/PDT/DecayMode.h>
-#include <ThePEG/Repository/UseRandom.h>
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Handlers/DecayHandler.h>
+#include <ThePEG/Handlers/EventHandler.h>
 #include "Herwig++/Hadronization/Cluster.h"
 #include "Herwig++/Utilities/HwDebug.h"
+#include "Herwig++/Hadronization/ClusterFissioner.h"
+#include "Herwig++/Hadronization/ClusterDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/Timer.h"
 #include <cassert>
@@ -312,7 +315,7 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
-			const Hint &hint) throw(Veto,Stop,Exception) {
+			const Hint &) throw(Veto,Stop,Exception) {
   useMe();
   Timer<10000> timer("UA5Handler::handle()");
   // create a new step for the products
@@ -362,7 +365,6 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   // softCM = sqrt(S) with optional enhancement for multiplicity only 
   // (name of variable not very reasonable any more...)
   Energy softCM = _enhanceCM*generator()->maximumCMEnergy();
-  int netc = 0;
   long id1(0),id2(0),id3= rndbool() ? ParticleID::u : ParticleID::d;
   // storage for the multiplicity
   int nppbar = 0;
@@ -378,10 +380,9 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
      unsigned int numberCluster = 0;
      int theMult = nppbar;
      Energy sumMasses = 0.;
-     int modCharge = 0;
      // delete the particles from the previous attempt if needed
      if(ntry > 1) clusters.clear();
-     int numCharge = netc;
+     int numCharge = 0;
      bool newCluster = true;
      while(newCluster) {
        ClusterPtr cluster;
@@ -434,10 +435,8 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
        for(unsigned int ix=0;ix<cluster->children().size();++ix)
 	 {performDecay(cluster->children()[ix],totalcharge,numbercharge);}
        numCharge+=numbercharge;
-       modCharge+=totalcharge;
-       // Count charges counts all charges, so only add modCharge for cluster 2
-       if(numberCluster == 0) theMult = nppbar+netc;
-       else if(numberCluster == 1) theMult += abs(modCharge);
+       if(numberCluster == 0) theMult = nppbar+abs(totalcharge);
+       if(numberCluster == 1) theMult += abs(totalcharge);
        if(numberCluster == 1 && theMult < 0) theMult += 2;
        numberCluster++;
        // Now check which loop to do next

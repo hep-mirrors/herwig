@@ -272,10 +272,6 @@ struct ClassTraits<Herwig::Histogram>
   : public ClassTraitsBase<Herwig::Histogram> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::Histogram"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the Histogram class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwUtils.so"; }
 };
 
 /** @endcond */

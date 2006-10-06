@@ -34,26 +34,6 @@ class HardVertex: public HelicityVertex {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor.
-   */
-  inline HardVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline HardVertex(const HardVertex &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~HardVertex();
-  //@}
-  
-public:
-  
   /**
    *  Access to the matrix element
    */
@@ -139,14 +119,6 @@ namespace ThePEG {
      * Return the class name.
      */
     static string className() { return "Herwig++::HardVertex"; }
-
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "libHwCorrelations.so"; }
-
   };
   
 }

@@ -363,7 +363,7 @@ void ISGWFormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int i
 {formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);}
 
 // member which does the work
-void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
+void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 				Energy mY,Energy mX, Complex & f1,Complex & f2,
 				Complex & f3, Complex & f4) const
 {

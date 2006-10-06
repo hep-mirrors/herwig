@@ -8,7 +8,6 @@
 #include <ThePEG/Interface/ClassDocumentation.h>
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
-// #include <ThePEG/Handlers/PartialCollisionHandler.h>
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
@@ -326,7 +325,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
     if(aQuarkQuark.find( coline ) != aQuarkQuark.end()) {
       pair<tPPtr,tPPtr> antiQuarkPair = aQuarkQuark.find(coline)->second;
       ClusterPtr cluPtr1, cluPtr2;
-      if ( rndbool() ) {      
+      if ( UseRandom::rndbool() ) {      
 	cluPtr1 = new_ptr(Cluster(quarkPair.first , antiQuarkPair.first));
 	cluPtr2 = new_ptr(Cluster(quarkPair.second , antiQuarkPair.second));
 	pstep->addDecayProduct(quarkPair.first, cluPtr1);
@@ -425,19 +424,16 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
     // Randomly selects two components to be considered as a (anti)diquark
     // and place them as the second and third element of  vec.
     double prob0=1.0/3.0, prob1=1.0/3.0, prob2=1.0/3.0;
-    int choice = rnd3(prob0, prob1, prob2);
+    int choice = UseRandom::rnd3(prob0, prob1, prob2);
     switch (choice) {
-    case 0: break; 
+    case 0: 
+      break; 
     case 1: { 
-      PPtr save = vec[0]; 
-      vec[0] = vec[1];
-      vec[1] = save;
+      swap(vec[0],vec[1]);
       break;
     } 
     case 2: {
-      PPtr save = vec[0]; 
-      vec[0] = vec[2];
-      vec[2] = save;
+      swap(vec[0],vec[2]);
       break;
     } 
     }

@@ -31,7 +31,3 @@ Energy OneOffShellCalculator::partialWidth(Energy2 q2) const {
 }
 
 }
-
-
- 
-

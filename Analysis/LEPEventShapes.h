@@ -27,26 +27,6 @@ class LEPEventShapes: public AnalysisHandler {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * The default constructor.
-   */
-  inline LEPEventShapes();
-
-  /**
-   * The copy constructor.
-   */
-  inline LEPEventShapes(const LEPEventShapes &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~LEPEventShapes();
-  //@}
-
-public:
-
   /** @name Virtual functions required by the AnalysisHandler class. */
   //@{
   /**
@@ -138,18 +118,6 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
@@ -160,25 +128,6 @@ protected:
    * run has ended. Used eg. to write out statistics.
    */
   inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:

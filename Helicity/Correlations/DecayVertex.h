@@ -30,26 +30,6 @@ using ThePEG::Helicity::HelicityVertex;
  */ 
 
 class DecayVertex: public HelicityVertex {
-      
-public:
-    
-  /** @name Standard constructors and destructors. */
-  //@{
-  /**
-   * Default constructor.
-   */
-  inline DecayVertex();
-
-  /**
-   * Copy-constructor.
-   */
-  inline DecayVertex(const DecayVertex &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~DecayVertex();
-  //@}
   
 public:
   
@@ -137,14 +117,6 @@ namespace ThePEG {
      * Return the class name.
      */
     static string className() { return "Herwig++::DecayVertex"; }
-
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "libHwCorrelations.so"; }
-
   };
   
 }

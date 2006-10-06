@@ -3,11 +3,8 @@
 #define HERWIG_UA5_H_
 
 #include <ThePEG/Handlers/HadronizationHandler.h>
-#include "Herwig++/Hadronization/ClusterFissioner.h"
-#include "Herwig++/Hadronization/ClusterDecayer.h"
-#include <ThePEG/Handlers/EventHandler.h>
-#include <ThePEG/Repository/UseRandom.h>
-#include "Herwig++/Utilities/Histogram.h"
+#include "Herwig++/Hadronization/CluHadConfig.h"
+#include <ThePEG/CLHEPWrap/LorentzRotation.h>
 
 namespace Herwig {
 
@@ -243,8 +240,8 @@ private:
    * This generates the momentum of the produced particles according to
    * the cylindrical phase space algorithm given
    * in Computer Physics Communications 9 (1975) 297-304 by S. Jadach.
-   * @param The first incoming cluster
-   * @param The second incoming cluster
+   * @param clu1 The first incoming cluster
+   * @param clu2 The second incoming cluster
    * @param clusters The list of clusters produced
    * @param CME The center of mass energy
    * @param cm The center of mass momentum (of the underlying event)

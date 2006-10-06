@@ -33,11 +33,6 @@ friend class Evolver;
 public:
 
   /**
-   * The default constructor.
-   */
-  inline MECorrectionBase();
-
-  /**
    *  Virtual members which should be implemented in classes inheriting
    * from this one in order to apply the matrix element correction
    */

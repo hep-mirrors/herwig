@@ -584,7 +584,7 @@ halfThreeHalfScalarCoupling(int imode, Energy m0, Energy m1, Energy m2,
 
 // couplings for spin-3/2 to spin-3/2 spin-0
 void StrongHeavyBaryonDecayer::
-threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
+threeHalfThreeHalfScalarCoupling(int imode,Energy,Energy,Energy,
 				 Complex& A1,Complex& A2,Complex& B1,Complex& B2) const
 {
   if(_modetype[imode]==0)

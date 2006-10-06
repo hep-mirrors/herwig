@@ -41,8 +41,8 @@ void BaryonRemnants::boostRemnants(PartonBinInstance &pb) const {
 }
 
 Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb, 
-					  const double * r,
-					  Energy2 scale, 
+					  const double *,
+					  Energy2, 
 					  const LorentzMomentum &parent) 
   const {
   

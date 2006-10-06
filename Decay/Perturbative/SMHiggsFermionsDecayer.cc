@@ -128,7 +128,7 @@ void SMHiggsFermionsDecayer::Init() {
 }
 
 // return the matrix element squared
-double SMHiggsFermionsDecayer::me2(bool vertex, const int ichan, const Particle & inpart,
+double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpart,
 				   const ParticleVector & decay) const 
 {
   RhoDMatrix rhoin;

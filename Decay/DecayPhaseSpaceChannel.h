@@ -326,13 +326,6 @@ struct ClassTraits<Herwig::DecayPhaseSpaceChannel>
   : public ClassTraitsBase<Herwig::DecayPhaseSpaceChannel> {
     /**  Return the class name.*/
   static string className() { return "Herwig++::DecayPhaseSpaceChannel"; }
-   /**
-    * Return the name of the shared library to be loaded to get
-    * access to this class and every other class it uses
-    * (except the base class).
-    */
-  static string library() { return ""; }
-
 };
 
 }

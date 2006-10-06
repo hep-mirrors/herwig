@@ -39,7 +39,7 @@ void LeptonNeutrinoCurrent::Init() {
 // complete the construction of the decay mode for integration
 bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 				       DecayPhaseSpaceModePtr mode,
-				       unsigned int iloc,unsigned int ires,
+				       unsigned int iloc,unsigned int,
 				       DecayPhaseSpaceChannelPtr phase,Energy upp)
 {
   // make sure the the decays are kinematically allowed
@@ -62,7 +62,7 @@ bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 
 // the particles produced by the current
 PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
-					  int iq,int ia)
+					  int,int)
 {
   PDVector output(2);
   if(icharge==3)
@@ -80,7 +80,7 @@ PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
 
 // hadronic current   
 vector<LorentzPolarizationVector> 
-LeptonNeutrinoCurrent::current(bool vertex, const int imode, const int ichan,
+LeptonNeutrinoCurrent::current(bool vertex, const int, const int,
 			       Energy & scale,const ParticleVector & outpart) const
 {
   Lorentz5Momentum q(outpart[0]->momentum()+outpart[1]->momentum());q.rescaleMass();

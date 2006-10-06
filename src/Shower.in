@@ -135,7 +135,7 @@ set QtoQGammaSudakov:CutoffEWKMassScale 91.0*GeV
 create Herwig++::QTildeSudakov QtoGQSudakov
 set QtoGQSudakov:SplittingFunction theQtoGQSplitFn
 set QtoGQSudakov:Alpha theShowerAlphaQCD
-set QtoGQSudakov:PDFmax 300.0
+set QtoGQSudakov:PDFmax 1.0
 set QtoGQSudakov:cutoffKinScale 2.3*GeV
 set QtoGQSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoGQSudakov:CutoffQEDMassScale 0.75*GeV

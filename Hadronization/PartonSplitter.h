@@ -3,7 +3,7 @@
 #define HERWIG_PartonSplitter_H
 
 #include "CluHadConfig.h"
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 
 namespace Herwig {
 
@@ -22,7 +22,7 @@ using namespace ThePEG;
  *  as very first step of the cluster hadronization.
  *
  */
-class PartonSplitter: public ThePEG::HandlerBase {
+class PartonSplitter: public Interfaced {
 
 public:
 
@@ -138,7 +138,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::PartonSplitter,1> {
   /** Typedef of the first base class of PartonSplitter. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 /**
@@ -150,12 +150,6 @@ struct ClassTraits<Herwig::PartonSplitter>:
     public ClassTraitsBase<Herwig::PartonSplitter> {
   /** Return the class name.*/
   static string className() { return "Herwig++::PartonSplitter"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
 };
 
 }

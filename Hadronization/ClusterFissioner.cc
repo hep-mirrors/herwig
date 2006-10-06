@@ -420,7 +420,7 @@ long ClusterFissioner::drawNewFlavour() const {
   prob_d = prob_d / sum;
   prob_u = prob_u / sum;
   prob_s = prob_s / sum;
-  int choice = rnd3(prob_u, prob_d, prob_s);
+  int choice = UseRandom::rnd3(prob_u, prob_d, prob_s);
   long idNew = 0;
   switch (choice) {
   case 0: idNew = ThePEG::ParticleID::u; break;  
@@ -471,11 +471,11 @@ void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
 
   // hard cluster
   if(!soft)
-    {Mclu = pow(rnd(pow(M-m1-m2-m, expt), pow(m, expt)), 1./expt) + m1;}
+    {Mclu = pow(UseRandom::rnd(pow(M-m1-m2-m, expt), pow(m, expt)), 1./expt) + m1;}
   // Otherwise it uses a soft mass distribution
   else 
     { 
-      double r1 = rnd(rmin, 1.0-rmin) * rnd(rmin, 1.0-rmin);
+      double r1 = UseRandom::rnd(rmin, 1.0-rmin) * UseRandom::rnd(rmin, 1.0-rmin);
       if(r1 > rmin) Mclu = m1 + m - log(r1)/b;
       else Mclu = Energy();
     }

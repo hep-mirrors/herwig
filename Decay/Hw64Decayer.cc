@@ -241,7 +241,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    
 void Hw64Decayer::persistentOutput(PersistentOStream &os) const 
 {os << MECode << _masstry;}
-void Hw64Decayer::persistentInput(PersistentIStream &is, int i)
+void Hw64Decayer::persistentInput(PersistentIStream &is, int)
 {is >> MECode >> _masstry;}
 
 /******

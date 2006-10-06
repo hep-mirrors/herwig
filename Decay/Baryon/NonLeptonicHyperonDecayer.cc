@@ -149,7 +149,7 @@ void NonLeptonicHyperonDecayer::Init() {
 
 // couplings for spin-1/2 to spin-1/2 spin-0
 void NonLeptonicHyperonDecayer::halfHalfScalarCoupling(int imode,
-						       Energy m0,Energy m1,Energy m2,
+						       Energy,Energy,Energy,
 						       Complex& A,Complex& B) const
 {A=_A[imode];B=_B[imode];}
 

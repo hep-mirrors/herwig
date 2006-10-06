@@ -39,10 +39,10 @@ using Helicity::outgoing;
 
 Baryon1MesonDecayerBase::~Baryon1MesonDecayerBase() {}
 
-void Baryon1MesonDecayerBase::persistentOutput(PersistentOStream & os) const {
+void Baryon1MesonDecayerBase::persistentOutput(PersistentOStream &) const {
 }
 
-void Baryon1MesonDecayerBase::persistentInput(PersistentIStream & is, int) {
+void Baryon1MesonDecayerBase::persistentInput(PersistentIStream &, int) {
 }
 
 AbstractClassDescription<Baryon1MesonDecayerBase> Baryon1MesonDecayerBase::initBaryon1MesonDecayerBase;
@@ -141,7 +141,7 @@ double Baryon1MesonDecayerBase::me2(bool vertex, const int ichan,
 // matrix element for the decay of a spin-1/2 fermion to a spin-1/2 fermion and
 // a pseudoscalar meson
 double Baryon1MesonDecayerBase::
-halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
+halfHalfScalar(bool vertex, const int,const Particle & inpart,
 	       const ParticleVector & decay) const
 {
   // set up the spins and calculate the spinors
@@ -205,7 +205,7 @@ halfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
 // matrix element for the decay of a spin-1/2 fermion to a spin-1/2 fermion and
 // a vector meson
 double Baryon1MesonDecayerBase::
-halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
+halfHalfVector(bool vertex, const int,const Particle & inpart,
 	       const ParticleVector & decay) const
 {
   // check if the outgoing meson is really a photon
@@ -290,7 +290,7 @@ halfHalfVector(bool vertex, const int ichan,const Particle & inpart,
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-3/2 fermion and
 // a scalar meson
-double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int ichan,
+double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int,
 						    const Particle & inpart,
 						    const ParticleVector & decay) const
 {
@@ -369,7 +369,7 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int ichan
 // matrix element for the decay of a spin-1/2 fermion to a spin-3/2 fermion and
 // a vector meson
 double Baryon1MesonDecayerBase::
-halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
+halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
 	       const ParticleVector & decay) const
 {
   // check if the outgoing meson is really a photon
@@ -505,7 +505,7 @@ halfThreeHalfVector(bool vertex, const int ichan,const Particle & inpart,
 // matrix element for the decay of a spin-3/2 fermion to a spin-1/2 fermion and
 // a scalar meson
 double Baryon1MesonDecayerBase::
-threeHalfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
+threeHalfHalfScalar(bool vertex, const int,const Particle & inpart,
 		    const ParticleVector & decay) const
 {
   // set up the spins and calculate the spinors
@@ -570,7 +570,7 @@ threeHalfHalfScalar(bool vertex, const int ichan,const Particle & inpart,
 
 // matrix element for the decay of a spin-3/2 fermion to a spin-3/2 fermion and
 // a scalar meson
-double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int ichan,
+double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
 							 const Particle & inpart,
 							 const ParticleVector & decay) const
 {
@@ -656,7 +656,7 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int 
 // a vector meson
 
 double Baryon1MesonDecayerBase::
-threeHalfHalfVector(bool vertex, const int ichan,const Particle & inpart,
+threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
  const ParticleVector & decay) const
 {
   // check if the outgoing meson is really a photon

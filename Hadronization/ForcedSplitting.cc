@@ -9,30 +9,28 @@
 #include <ThePEG/Interface/Reference.h>
 #include <ThePEG/Interface/Parameter.h>
 #include <ThePEG/PDT/EnumParticles.h>
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ForcedSplitting.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Remnant.h"
 #include "ThePEG/Handlers/EventHandler.h"
+#include "ThePEG/Utilities/Timer.h"
+#include <cassert>
 
 using namespace Herwig;
 
 void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
-  os << _kinCutoff;
+  os << _kinCutoff << _range << _qspac << _zbin << _ybin << _nbinmax << _alpha;
 }
 
 void ForcedSplitting::persistentInput(PersistentIStream & is, int) {
-  is >> _kinCutoff;
+  is >> _kinCutoff >> _range >> _qspac >> _zbin >> _ybin >> _nbinmax >> _alpha;
 }
 
 ClassDescription<ForcedSplitting> ForcedSplitting::initForcedSplitting;
 // Definition of the static class description member.
 
 void ForcedSplitting::Init() {
+
   static ClassDocumentation<ForcedSplitting> documentation
     ("This class is responsible for correctly tying the parton shower to "
      "the remaining flavours in the hadron and producing the correct remnant");
@@ -42,126 +40,159 @@ void ForcedSplitting::Init() {
      "Parameter kinCutoff used to constrain qtilde",
      &ForcedSplitting::_kinCutoff, GeV, 0.75*GeV, 0.5*GeV, 10.0*GeV,
      false, false, Interface::limited);
+
+  static Parameter<ForcedSplitting,double> interfaceEmissionRange
+    ("EmissionRange",
+     "Factor above the minimum possible value in which the forced splitting is allowed.",
+     &ForcedSplitting::_range, 1.1, 1.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<ForcedSplitting,double> interfaceZBinSize
+    ("ZBinSize",
+     "The size of the vbins in z for the interpolation of the splitting function.",
+     &ForcedSplitting::_zbin, 0.05, 0.001, 0.1,
+     false, false, Interface::limited);
+
+  static Parameter<ForcedSplitting,int> interfaceMaxBin
+    ("MaxBin",
+     "Maximum number of z bins",
+     &ForcedSplitting::_nbinmax, 100, 10, 1000,
+     false, false, Interface::limited);
+
+  static Reference<ForcedSplitting,ShowerAlpha> interfaceAlphaS
+    ("AlphaS",
+     "Pointer to object to calculate the strong coupling",
+     &ForcedSplitting::_alpha, false, false, true, false, false);
+
+
+  static Parameter<ForcedSplitting,Energy> interfaceQSpac
+    ("QSpac",
+     "The starting scale for the evolution in the forced splitting",
+     &ForcedSplitting::_qspac, GeV, 2.5*GeV, 0.5*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
 }
 
-tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep)
-{
+tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
+  Timer<5000> timer("ForcedSplitting::split");
   // extract the remnants
   tPVector rems;
   tPVector output;
-  for(unsigned int ix=0;ix<tagged.size();++ix)
-    {
-      if(tagged[ix]->id()!=ExtraParticleID::Remnant) output.push_back(tagged[ix]);
-      else rems.push_back(tagged[ix]);
-    }
+  for(unsigned int ix=0;ix<tagged.size();++ix) {
+    if(tagged[ix]->id()!=ExtraParticleID::Remnant) output.push_back(tagged[ix]);
+    else rems.push_back(tagged[ix]);
+  }
   // if none return
   if(rems.size()==0) return output;
   // must be two
   if(rems.size()!=2) throw Exception() << "Must be either no Remnants or two in "
 				       << "ForcedSplitting::split()"
 				       << Exception::eventerror;
-  try
-    {
-      // Find beam particles
-      PPair beam = generator()->currentEventHandler ()->currentCollision()->incoming();
-      PVector::const_iterator it;
-      tPPtr rem[2];
-      tPPtr part1,part2;
-      for(it = beam.first->children().begin(); it != beam.first->children().end();
-	  it++) {
-	if((*it)->children().size()==0) rem[0] = *it;
-	else part1 = *it;
+  try {
+    // Find beam particles
+    PPair beam = generator()->currentEventHandler ()->currentCollision()->incoming();
+    tPPtr rem[2];
+    tPPtr part1,part2;
+    PVector::const_iterator it= beam.first->children().begin();
+    // remnant from first beam
+    for(; it != beam.first->children().end();it++) {
+      if((*it)->children().size()==0) rem[0] = *it;
+      else part1 = *it;
+    }
+    // remnant from second beam
+    for(it = beam.second->children().begin(); it !=beam.second->children().end();
+	it++) {
+      if((*it)->children().size()==0) rem[1] = *it;
+      else part2 = *it;
+    }
+    // momentum fractions of parton going into the shower
+    double x1(part1->momentum().rho()/beam.first->momentum().rho());
+    double x2(part2->momentum().rho()/beam.second->momentum().rho());
+    // split the remnants
+    if(rem[0]) {
+      _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
+	(beam.first->dataPtr());
+      split(rem[0],part1,pstep,x1);
+    }
+    if(rem[1]) {
+      _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
+	(beam.second->dataPtr());
+      split(rem[1],part2,pstep,x2);
+    }
+    // get the masses of the remnants
+    Energy mrem[2];
+    Lorentz5Momentum ptotal,pnew[2];
+    for(unsigned int ix=0;ix<2;++ix) {
+      pnew[ix]=Lorentz5Momentum();
+      for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) {
+	pnew[ix]+=rem[ix]->children()[iy]->momentum();
       }
-      for(it = beam.second->children().begin(); it !=beam.second->children().end();
-	  it++) {
-	if((*it)->children().size()==0) rem[1] = *it;
-	else part2 = *it;
-      }
-      double x1(part1->momentum().rho()/beam.first->momentum().rho());
-      double x2(part2->momentum().rho()/beam.second->momentum().rho());
-      if(rem[0]) split(rem[0],part1,pstep,x1);
-      if(rem[1]) split(rem[1],part2,pstep,x2);
-      // get the masses of the remnants
-      Energy mrem[2];
-      Lorentz5Momentum ptotal,pnew[2];
-      for(unsigned int ix=0;ix<2;++ix)
-	{
-	  pnew[ix]=Lorentz5Momentum();
-	  for(unsigned int iy=0;iy<rem[ix]->children().size();++iy)
-	    {pnew[ix]+=rem[ix]->children()[iy]->momentum();}
-	  mrem[ix]=sqrt(pnew[ix].m2());
-	}
-      // now find the remnant remnant cmf frame
-      Lorentz5Momentum prem[2]={rem[0]->momentum(),rem[1]->momentum()};
-      ptotal=prem[0]+prem[1];
-      ptotal.rescaleMass();
-      // boost momenta to this frame
-      if(ptotal.m()<0)
-	{throw Exception() << "Space-Like Remnant in " 
-			   << "ForcedSplitting::handle() " << Exception::eventerror;}
-      Hep3Vector boostv(-ptotal.boostVector());
-      ptotal.boost(boostv);
-      prem[0].boost(boostv);
-      prem[1].boost(boostv);
+      mrem[ix]=sqrt(pnew[ix].m2());
+    }
+    // now find the remnant remnant cmf frame
+    Lorentz5Momentum prem[2]={rem[0]->momentum(),rem[1]->momentum()};
+    ptotal=prem[0]+prem[1];
+    ptotal.rescaleMass();
+    // boost momenta to this frame
+    if(ptotal.m()<0) throw Exception() << "Space-Like Remnant in " 
+				       << "ForcedSplitting::handle() " 
+				       << Exception::eventerror;
+    Hep3Vector boostv(-ptotal.boostVector());
+    ptotal.boost(boostv);
+    for(unsigned int ix=0;ix<2;++ix) {
+      prem[ix].boost(boostv);
       // set the masses and energies,
-      prem[0].setMass(mrem[0]);
-      prem[0].setE(0.5/ptotal.m()*(sqr(ptotal.m())+sqr(mrem[0])-sqr(mrem[1])));
-      prem[0].rescaleRho();
-      prem[1].setMass(mrem[1]);
-      prem[1].setE(0.5/ptotal.m()*(sqr(ptotal.m())-sqr(mrem[0])+sqr(mrem[1])));
-      prem[1].rescaleRho();
+      prem[ix].setMass(mrem[ix]);
+      prem[ix].setE(0.5/ptotal.m()*(sqr(ptotal.m())+sqr(mrem[ix])-sqr(mrem[1-ix])));
+      prem[ix].rescaleRho();
       // boost back to the lab
-      prem[0].boost(-boostv);
-      prem[1].boost(-boostv);
+      prem[ix].boost(-boostv);
       // set the momenta of the remnants
-      rem[0]->set5Momentum(prem[0]);
-      rem[1]->set5Momentum(prem[1]);
-      // boost the decay products
-      for(unsigned int ix=0;ix<2;++ix) {
-	// factors for Lorentz transform
-	Energy ea(pnew[ix].e()),eb(prem[ix].e()),mr(prem[ix].mass());
-	Energy2 mr2(sqr(mr));
-	long double beta1 = -pnew[ix].pz()/pnew[ix].e();
-	long double beta2 =  prem[ix].pz()/prem[ix].e();
-	long double gamma = (ea*eb)/mr2;
-	long double sum   = beta1+beta2;
-	long double prod  = 1.+beta1*beta2;
-	// small approx for accuracy
-	if(abs(beta1)<1e-5||abs(beta2)<1e-5) {
-	  prod = 0.5*mr2*(sqr(1./ea)+sqr(1./eb))
-	    +0.125*sqr(mr2)*sqr(1./ea+1./eb)*sqr(1./ea-1./eb);
-	  sum = 0.5*mr2*(1./ea+1./eb)*(1./ea-1./eb)*
-	    (1.+0.25*mr2*(sqr(1./ea)+sqr(1./eb)));
-	  if(beta1>0) sum*=-1.;
-	}
-	// boost the children
-	for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) {
-	  Energy pz(rem[ix]->children()[iy]->momentum().pz());
-	  Energy ee(rem[ix]->children()[iy]->momentum().e());
-	  Energy mm(rem[ix]->children()[iy]->momentum().mass());
-	  Lorentz5Momentum ptemp(0.,0.,gamma*(ee*sum+pz*prod),
-				 gamma*(pz*sum+ee*prod),mm);
-	  rem[ix]->children()[iy]->set5Momentum(ptemp);
-	}
+      rem[ix]->set5Momentum(prem[ix]);
+    }
+    // boost the decay products
+    for(unsigned int ix=0;ix<2;++ix) {
+      // factors for Lorentz transform
+      Energy ea(pnew[ix].e()),eb(prem[ix].e()),mr(prem[ix].mass());
+      Energy2 mr2(sqr(mr));
+      long double beta1 = -pnew[ix].pz()/pnew[ix].e();
+      long double beta2 =  prem[ix].pz()/prem[ix].e();
+      long double gamma = (ea*eb)/mr2;
+      long double sum   = beta1+beta2;
+      long double prod  = 1.+beta1*beta2;
+      // small approx for accuracy
+      if(abs(beta1)<1e-5||abs(beta2)<1e-5) {
+	prod = 0.5*mr2*(sqr(1./ea)+sqr(1./eb))
+	  +0.125*sqr(mr2)*sqr(1./ea+1./eb)*sqr(1./ea-1./eb);
+	sum = 0.5*mr2*(1./ea+1./eb)*(1./ea-1./eb)*
+	  (1.+0.25*mr2*(sqr(1./ea)+sqr(1./eb)));
+	if(beta1>0) sum*=-1.;
+      }
+      // boost the children
+      for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) {
+	Energy pz(rem[ix]->children()[iy]->momentum().pz());
+	Energy ee(rem[ix]->children()[iy]->momentum().e());
+	Energy mm(rem[ix]->children()[iy]->momentum().mass());
+	Lorentz5Momentum pold=rem[ix]->children()[iy]->momentum();
+	Lorentz5Momentum ptemp(pold.px(),pold.py(),gamma*(ee*sum+pz*prod),
+			       gamma*(pz*sum+ee*prod),mm);
+	rem[ix]->children()[iy]->set5Momentum(ptemp);
       }
     }
+  }
   catch(std::exception & e) 
     {throw Exception() << "Caught exception\n"
 		       << e.what() 
 		       <<  "\nin ForcedSplitting::handle() "
 		       << Exception::eventerror;}
   // insert the products of the splitting in the vector
-  for(unsigned int ix=0;ix<rems.size();++ix)
-    {
-      for(unsigned int iy=0;iy<rems[ix]->children().size();++iy)
-	output.push_back(rems[ix]->children()[iy]);
+  for(unsigned int ix=0;ix<rems.size();++ix) {
+    for(unsigned int iy=0;iy<rems[ix]->children().size();++iy) {
+      output.push_back(rems[ix]->children()[iy]);
     }
+  }
   return output;
 }
-
-
-
-
 
 /****
  * Now we need to force the final (up to two) splittings so that we are left
@@ -179,111 +210,94 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep)
 void ForcedSplitting::split(const tPPtr rem,const tPPtr part, 
 			    const tStepPtr step,const double xin) {
   long hadronId = rem->parents()[0]->id();
-  Energy oldQ;
-  double oldx;
-  long quarks[3];
+  // return if not from a hadron
+  if(abs(hadronId)<99) return;
   int maxIdx = 3;
   int idx = -1;
   long lg(ParticleID::g),currentPart(part->id());
-  Lorentz5Momentum usedMomentum=Lorentz5Momentum(),lastp = rem->momentum();
+  Lorentz5Momentum usedMomentum=Lorentz5Momentum(),lastp = part->momentum();
   PPtr lastColour(part),newPart;
   ColinePtr x1, x2;
-  x1 = x2 = ColinePtr();
-  if(abs(hadronId) > 99) { // We have a hadron
-    quarks[0] = hadronId % 10;
-    quarks[1] = (hadronId/10)%10;
-    quarks[2] = (hadronId/100)%10;
-    
-    // NOTE TODO: Must make sure that the sign is correct for the meson quarks
-    if(quarks[2] == 0) maxIdx = 2; // we have a meson
+  long quarks[3];
+  quarks[0] = hadronId % 10;
+  quarks[1] = (hadronId/10)%10;
+  quarks[2] = (hadronId/100)%10;
+  
+  // NOTE TODO: Must make sure that the sign is correct for the meson quarks
+  if(quarks[2] == 0) maxIdx = 2; // we have a meson
+  
+  // initial x and scale
+  Energy oldx = xin; 
+  Energy oldQ=_qspac;
 
-    //    oldQ = part->evolutionScales()[ShowerIndex::QCD];
-    Energy Q2, mb2, mc2;
-    double lambda;
-    mb2 = sqr(rem->momentum());
-    Q2 = sqr(rem->parents()[0]->momentum());
-    mc2 = sqr(part->momentum());
-    if(sqr(Q2+mb2-mc2)>4.*mb2*Q2) lambda = sqrt(sqr(Q2+mb2-mc2) - 4.*mb2*Q2);
-    else                          lambda = 0.;
-    // A qtilde and x value for the remnant
-    oldQ = sqrt((Q2+mb2-mc2+lambda)/2.);
-    oldx = 1.-xin;
-
-    // Look first at sea quarks, these must go to a gluon, we then handle
-    // the gluons in the next step
-    if(currentPart != quarks[0] && currentPart != quarks[1] && 
-       currentPart != quarks[2] && currentPart != ParticleID::g) {
-      // Create the new parton with its momentum and parent/child relationship
-      // set
-      newPart = forceSplit(rem, -currentPart, oldQ, oldx, lastp, 
-			   usedMomentum, step);
-      // Set the proper colour connections
-      x1 = new_ptr(ColourLine());
-      if(lastColour->colourLine()) x1->addAntiColoured(newPart);
-      else if(lastColour->antiColourLine()) x1->addColoured(newPart);
-      currentPart = lg;
-    }
-    // We now handle the gluons, either it is where the shower terminated or
-    // it has been created by splitting a sea quark
-    if(currentPart == ParticleID::g) { // gluon
-      // Create new particles, splitting is q->g q
-      // First choose which q
-      idx = UseRandom::irnd(maxIdx);
-      Lorentz5Momentum s = rem->momentum()-usedMomentum;
-      // Generate the next parton, with s momentum remaining in the remnant.
-      newPart = forceSplit(rem, quarks[idx], oldQ, oldx, s, usedMomentum,step);
-      // Several colour connection cases...
-      if(x1) {
-	bool npC = newPart->hasColour();
-	if(npC) 
-	  {
-	    x2 = lastColour->antiColourLine();
-	    if(!x1->antiColoured().empty())   x1->addColoured(newPart);
-	    else if(!x1->coloured().empty())  x2->addColoured(newPart);
-	  } 
-	else 
-	  {
-	    ColinePtr x3 = lastColour->colourLine();
-	    if(!x1->coloured().empty()) x1->addAntiColoured(newPart);
-	    else if(!x1->antiColoured().empty()) x3->addAntiColoured(newPart);
-	    x2=x1;
-	    x1=x3;
-	  }
+  // Look first at sea quarks, these must go to a gluon, we then handle
+  // the gluons in the next step
+  if(currentPart != quarks[0] && currentPart != quarks[1] && 
+     currentPart != quarks[2] && currentPart != ParticleID::g) {
+    // Create the new parton with its momentum and parent/child relationship set
+    newPart = forceSplit(rem, -currentPart, oldQ, oldx, lastp, 
+			 usedMomentum,1, step);
+    // Set the proper colour connections
+    x1 = new_ptr(ColourLine());
+    if(lastColour->colourLine()) x1->addAntiColoured(newPart);
+    else if(lastColour->antiColourLine()) x1->addColoured(newPart);
+    currentPart = lg;
+  }
+  // We now handle the gluons, either it is where the shower terminated or
+  // it has been created by splitting a sea quark
+  // gluon
+  if(currentPart == ParticleID::g) { 
+    // Create new particles, splitting is q->g q
+    // First choose which q
+    idx = UseRandom::irnd(maxIdx);
+    Lorentz5Momentum s = rem->momentum()-usedMomentum;
+    // Generate the next parton, with s momentum remaining in the remnant.
+    oldQ=_qspac;
+    newPart = forceSplit(rem, quarks[idx], oldQ, oldx, lastp, usedMomentum,2,step);
+    // Several colour connection cases...
+    if(x1) {
+      bool npC = newPart->hasColour();
+      if(npC) {
+	x2 = lastColour->antiColourLine();
+	if(!x1->antiColoured().empty())   x1->addColoured(newPart);
+	else if(!x1->coloured().empty())  x2->addColoured(newPart);
       } 
-      else 
-	{
-	  x1 = lastColour->colourLine();
-	  x2 = lastColour->antiColourLine();
-	  if(newPart->hasColour()) x2->addColoured(newPart);
-	  else if(newPart->hasAntiColour()) x1->addAntiColoured(newPart);
-	}
-      currentPart = quarks[idx];
+      else {
+	ColinePtr x3 = lastColour->colourLine();
+	if(!x1->coloured().empty()) x1->addAntiColoured(newPart);
+	else if(!x1->antiColoured().empty()) x3->addAntiColoured(newPart);
+	x2=x1;
+	x1=x3;
+      }
     } 
-    // find the extracted quark if not known
-    if(idx<0)
-      {
-	unsigned int ix=0;
-	do
-	  {
-	    if(quarks[ix]==currentPart){idx=ix;}
-	    ++ix;
-	  }
-	while(idx<0&&ix<3);
-      }
-    // Lastly, do the final split into the (di)quark and a parton
-    newPart = finalSplit(rem,maxIdx,quarks,idx,usedMomentum, step);
-    // Set colour connections, case 1, no other forced splittings
-    if(!x1 || !x2) 
-      {
-	if(rem->colourLine()) rem->colourLine()->addColoured(newPart);
-	else if(rem->antiColourLine()) 
-	  rem->antiColourLine()->addAntiColoured(newPart);
-      } 
-    else
-      {
-	if(getParticleData(currentPart)->hasColour()) x1->addAntiColoured(newPart);
-	else x2->addColoured(newPart);
-      }
+    else {
+      x1 = lastColour->colourLine();
+      x2 = lastColour->antiColourLine();
+      if(newPart->hasColour()) x2->addColoured(newPart);
+      else if(newPart->hasAntiColour()) x1->addAntiColoured(newPart);
+    }
+    currentPart = quarks[idx];
+  } 
+  // find the extracted quark if not known
+  if(idx<0) {
+    unsigned int ix=0;
+    do {
+      if(quarks[ix]==currentPart){idx=ix;}
+      ++ix;
+    }
+    while(idx<0&&ix<3);
+  }
+  // Lastly, do the final split into the (di)quark and a parton
+  newPart = finalSplit(rem,maxIdx,quarks,idx,usedMomentum, step);
+  // Set colour connections, case 1, no other forced splittings
+  if(!x1 || !x2) {
+    if(rem->colourLine()) rem->colourLine()->addColoured(newPart);
+    else if(rem->antiColourLine()) 
+      rem->antiColourLine()->addAntiColoured(newPart);
+  } 
+  else {
+    if(getParticleData(currentPart)->hasColour()) x1->addAntiColoured(newPart);
+    else x2->addColoured(newPart);
   }
 }
 
@@ -291,12 +305,12 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
 // relationships
 PPtr ForcedSplitting::forceSplit(const tPPtr rem, long child, Energy &oldQ, 
 				 double &oldx, Lorentz5Momentum &pf, 
-				 Lorentz5Momentum &p,const tStepPtr step) {
+				 Lorentz5Momentum &p,
+				 const unsigned int iopt,
+				 const tStepPtr step) {
   Lorentz5Momentum beam = rem->parents()[0]->momentum();
   PPtr parton = new_ptr(Particle(getParticleData(child)));
-  //double m2 = sqr(getParticleData(child)->mass());
-  Energy2 m2 = sqr(getParticleData(child)->constituentMass());
-  Lorentz5Momentum partonp = emit(beam,oldQ,oldx,m2,pf);
+  Lorentz5Momentum partonp = emit(beam,oldQ,oldx,parton,pf,iopt);
   p += partonp;
   parton->set5Momentum(partonp);
   step->addDecayProduct(rem,parton);
@@ -313,10 +327,12 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
   if(rem->parents().size() == 1) hadron = rem->parents()[0];
   // First decide what the remnant is
   long remId(0);
-  int sign, spin;
-  if(maxIdx == 2) { // Meson hadronic state
+  int sign, spin;// Meson hadronic state
+  if(maxIdx == 2) { 
     remId = quarks[(idx+1)%2];
-  } else { // Baryonic hadron
+  }
+  // Baryonic hadron 
+  else { 
     // Get the other 2 elements of the array
     // use modulus to simplify things. idx is the array entry for the
     // parton which eventually leads to the hard process, the other two
@@ -350,84 +366,89 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
 // given to the produced partons, z is generated uniformly.
 Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
 				       Energy &lastQ, double &lastx, 
-				       double emittedm2,
-				       Lorentz5Momentum &pf) {
-  // Now generate the new z and qtilde
+				       PPtr parton,
+				       Lorentz5Momentum &pf,
+				       const unsigned int iopt) {
+  assert(iopt==1||iopt==2);
+  // the last scale is minimum of last value and upper limit
+  Energy minQ=_range*_kinCutoff*sqrt(lastx)/(1-lastx);
+  if(minQ>lastQ) lastQ=minQ;
+  // generate the new value of qtilde
+  // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
+  // Q0 (Qmax/Q0)^R
   Energy q;
-  double z,z0,z1;
-
-  // Bounds on z
-  z0 = 0.;
-  double yy = 1.+sqr(_kinCutoff/lastQ)/2.;
-  z1 = yy - sqrt(sqr(yy)-1.); 
-  //cout << "Bounds on z " << z0 << ":" << z1 << endl;
+  double zmin,zmax,yy;
   do {
-    double randQ = UseRandom::rnd();
-    double randZ = UseRandom::rnd();
-    z = z0 + (z1-z0)*randZ;
-    
-    // For the qtilde lets just start with a simple distribution
-    // weighted towards the lower value: dP/dQ = 1/Q -> Q(R) =
-    // Q0^(1-R) Qmax^R
-    q = pow(_kinCutoff, 1-randQ)*pow(lastQ,randQ);
-    q = _kinCutoff/sqrt(z)/(1.-z);
-    // check kinematics...
-  } while(sqr(z*(1.-z)*q) <= z*sqr(_kinCutoff));
-
-  //cout << "qtilde = " << q << " and z = " << z << endl;
-  double phi = 2.*pi*UseRandom::rnd();
-  //cout << "qtilde = " << q << " and z = " << z << endl;
-  Lorentz5Momentum p, n, pcm, pfboost;
-  //cout << "qtilde = " << q << " and z = " << z << endl;
-  LorentzMomentum newp, qthat;
-  pcm = par;
-
+    q = minQ*pow(lastQ/minQ,UseRandom::rnd());
+    zmin = lastx;
+    yy   = 1.+0.5*sqr(_kinCutoff/q);
+    zmax = yy - sqrt(sqr(yy)-1.);
+  }
+  while(zmax<zmin);
+  // now generate z as in FORTRAN HERWIG
+  // use y = ln(z/(1-z)) as integration variable
+  double ymin=log(zmin/(1.-zmin));
+  double ymax=log(zmax/(1.-zmax));
+  double dely=ymax-ymin;
+  unsigned int nz=std::min(int(_ybin*dely+1),_nbinmax);
+  dely/=nz;
+  yy=ymin+0.5*dely;
+  double psum(0.);
+  tcPDPtr gluon=getParticleData(ParticleID::g);
+  vector<double> prob;
+  for(unsigned int iz=0;iz<nz;++iz) {
+    double ez=exp(yy);
+    double wr=1.+ez;
+    double zr=wr/ez;
+    double wz=1./wr;
+    double zz=wz*ez;
+    double az=wz*zz*_alpha->value(max(wz*q,_kinCutoff));
+    // g -> q qbar
+    if(iopt==1) {
+      // calculate splitting function
+      double pdf=_beam->pdf()->xfx(_beam,gluon,sqr(q),lastx*zr);
+      psum+=pdf*az*0.5*(sqr(zz)+sqr(wz));
+      prob.push_back(psum);
+    }
+    // q -> q g
+    else {
+      // calculate splitting function
+      double pdf=_beam->pdf()->xfx(_beam,parton->dataPtr(),sqr(q),lastx*zr);
+      psum+=pdf*az*4./3.*(1.+sqr(wz))*zr;
+      prob.push_back(psum);
+    }
+    yy+=dely;
+  }
+  // choose z
+  double pval=psum*UseRandom::rnd();
+  unsigned int iz=0;
+  for(;iz<prob.size();++iz) {
+    if(prob[iz]>pval) break;
+  }
+  if(iz==prob.size()) --iz;
+  double ey=exp(ymin+dely*(float(iz+1)-UseRandom::rnd()));
+  double z=ey/(1.+ey);
+  Energy pt2=sqr((1.-z)*q)- z*sqr(_kinCutoff);
+  Energy2 emittedm2 = sqr(parton->dataPtr()->constituentMass());
   // Now boost pcm and pf to z only frame
-  pfboost = pf;
-
-  p = Lorentz5Momentum(0.0, pcm.vect());
-  n = Lorentz5Momentum(0.0, -pcm.vect());
-  qthat = LorentzMomentum(cos(phi), sin(phi), 0.0, 0.0);
-
-  double p_dot_n = p.dot(n);
-  //cout << "p_dot_n = " << p_dot_n << endl;
-  //cout << "p_dot_qt = " << p.dot(qthat) << endl
-  //    << "n_dot_qt = " << n.dot(qthat) << endl;
-
-  double lastalpha = pfboost.dot(n)/p_dot_n;
-  double lastqt2 = pfboost.dot(qthat);
-  lastqt2 = sqr(lastqt2);
-  //cout << "lasta = " << lastalpha << ", lastqt2 = " << lastqt2 << endl;
-
-  // Ignore the mass of the quark, if it is here as it must be a valance quark,
-  // and assume it is u or d
-  // Compute first transverse components using q,z
-  double pt2 = sqr(z*(1.-z)*q) - z*sqr(_kinCutoff);
-  double qt02 = lastqt2;
-  double qt2 = z*z*qt02+pt2;
-  double q02 = pfboost.dot(pfboost);
-  //cout << "q02 = " << q02 << ", pt2 = " << pt2 << ",qt2 = " << qt2 << endl;
-
-  // Now compute alpha and beta
-  double alpha = z*lastalpha;
-  double q2 = z*q02 - z*emittedm2/(1.-z) - pt2/(1.-z);
-  double beta = (qt2 + q2)/(2.*alpha*p_dot_n);
-
-  //cout
-  //  << "alpha = " << alpha << " beta = " << beta << ", q2 = " << q2 << endl;
-  // Store results for iterative calls
-  lastx = z*lastx;
-  lastalpha = alpha;
-  // Compute momentum
-  newp = alpha*p + beta*n + qt2*qthat;
-
-  // Now boost newp to the original frame
-
-  // Return the momentum of the emitted parton
-  LorentzMomentum k = pf-newp;
-  pf = newp;
-
-  //cout << "k = " << k << ", " << k.dot(k) << endl;
+  Lorentz5Momentum p       = Lorentz5Momentum(0.0,  par.vect());
+  Lorentz5Momentum n       = Lorentz5Momentum(0.0, -par.vect());
+  // generate phi and compute pt of branching
+  double phi = 2.*pi*UseRandom::rnd();
+  Energy pt=sqrt(pt2);
+  Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), 0.0, 0.0);
+  // compute alpha for previous particle
+  Energy2 p_dot_n  = p*n;
+  double lastalpha = pf*n/p_dot_n;
+  Lorentz5Momentum qtout=qt;
+  Energy2 qtout2=-qt*qt;
+  double alphaout=(1.-z)/z*lastalpha;
+  double betaout=0.5*(emittedm2+qtout2)/alphaout/p_dot_n;
+  Lorentz5Momentum k=alphaout*p+betaout*n+qtout;
+  k.rescaleMass();
+  pf+=k;
+  lastQ=q;
+  lastx/=z;
   return k;
 }
 

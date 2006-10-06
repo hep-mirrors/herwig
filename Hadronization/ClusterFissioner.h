@@ -2,9 +2,10 @@
 #ifndef HERWIG_ClusterFissioner_H
 #define HERWIG_ClusterFissioner_H
 
-#include <ThePEG/Handlers/HandlerBase.h>
+#include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
+#include "ClusterFissioner.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -58,7 +59,7 @@ using namespace ThePEG;
  *
  *  @see HadronSelector
  */ 
-class ClusterFissioner: public ThePEG::HandlerBase {
+class ClusterFissioner: public Interfaced {
 
 public:
 
@@ -337,7 +338,7 @@ template <>
  */
 struct BaseClassTrait<Herwig::ClusterFissioner,1> {
   /** Typedef of the base class of ClusterFissioner. */
-  typedef ThePEG::HandlerBase NthBase;
+  typedef Interfaced NthBase;
 };
 
 template <>
@@ -349,12 +350,6 @@ struct ClassTraits<Herwig::ClusterFissioner>
   : public ClassTraitsBase<Herwig::ClusterFissioner> {
   /** Return the class name. */
   static string className() { return "Herwig++::ClusterFissioner"; }
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return ""; }
 };
 
 }

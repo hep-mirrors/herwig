@@ -170,8 +170,6 @@ private:
   
   /**
    *  The matrix element
-   * @param pin The momenta of the incoming particles
-   * @param pres The momentum of the resonance
    * @param fin The spinors for the incoming fermion
    * @param ain The spinors for the incoming antifermion
    * @param vout The polarization vectors for the outgoing Z

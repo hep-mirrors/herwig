@@ -171,7 +171,7 @@ void BaryonThreeQuarkModelFormFactor::Init() {
 }
 
 void BaryonThreeQuarkModelFormFactor::
-SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy m1,
+SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a) {
   // this model is based on heavy quark theory
@@ -235,7 +235,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,Energy 
 }
 
 void  BaryonThreeQuarkModelFormFactor::
- SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int iloc,int id0,int id1,Energy m0,
+ SpinHalfSpinThreeHalfFormFactor(Energy2 q2,int,int,int id1,Energy m0,
 				 Energy m1, Complex & f1v,Complex & f2v,
 				 Complex & f3v,Complex & f4v,Complex & f1a,
 				 Complex & f2a,Complex & f3a,Complex & f4a ) {
@@ -314,8 +314,3 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool head
   BaryonFormFactor::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
-
-
-
-
-

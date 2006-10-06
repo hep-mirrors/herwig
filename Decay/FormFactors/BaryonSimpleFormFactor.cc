@@ -170,7 +170,7 @@ void BaryonSimpleFormFactor::Init() {
 }
 
 void BaryonSimpleFormFactor::
-SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc, int id0,int id1,Energy,Energy,
+SpinHalfSpinHalfFormFactor(Energy2,int iloc, int,int,Energy,Energy,
 			   Complex & f1v,Complex & f2v,Complex & f3v,
 			   Complex & f1a,Complex & f2a,Complex & f3a)
 {

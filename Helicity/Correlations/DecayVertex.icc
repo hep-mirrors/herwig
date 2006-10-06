@@ -11,13 +11,6 @@ namespace Helicity {
 
 using namespace ThePEG;
 
-// standard constructor
-inline DecayVertex::DecayVertex() {}
-
-// copy constructor
-inline DecayVertex::DecayVertex(const DecayVertex & x)
-  : HelicityVertex(x), _matrixelement(x._matrixelement) {}
-    
 // get the ME
 inline const DecayMatrixElement & DecayVertex::ME() const
 {return _matrixelement;}

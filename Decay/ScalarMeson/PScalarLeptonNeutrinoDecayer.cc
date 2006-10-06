@@ -215,7 +215,7 @@ void PScalarLeptonNeutrinoDecayer::Init() {
      0, 0, 0, 0*GeV, 10*GeV, false, false, true);
 }
 
-double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int ichan,
+double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
 					 const Particle & inpart,
 					 const ParticleVector & decay) const
 {

@@ -105,16 +105,6 @@ public:
    * @param extspin  \f$2S+1\f$ external particles.
    */
   inline DecayMatrixElement(vector<PDT::Spin> extspin);
-
-  /**
-   * Copy-constructor.
-   */
-  inline DecayMatrixElement(const DecayMatrixElement &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~DecayMatrixElement();
   //@}  
 
 public: 
@@ -388,14 +378,6 @@ struct ClassTraits<Herwig::Helicity::DecayMatrixElement>
    * Return the class name.
    */
   static string className() { return "Herwig++::DecayMatrixElement"; }
-
-  /**
-   * Return the name of the shared library to be loaded to get
-   * access to this class and every other class it uses
-   * (except the base class).
-   */
-  static string library() { return "libHwCorrelations.so"; }
-
 };
 
 }

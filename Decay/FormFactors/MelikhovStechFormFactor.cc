@@ -783,8 +783,8 @@ void MelikhovStechFormFactor::Init() {
 
 // form-factor for scalar to scalar
 void MelikhovStechFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
-						     int id0,int id1,
-						     Energy m0, Energy m1,Complex & f0,
+						     int,int id1,
+						     Energy, Energy,Complex & f0,
 						     Complex & fp) const
 {
   double ratio(q2/_massV[mode]/_massV[mode]);
@@ -812,8 +812,8 @@ void MelikhovStechFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mod
 }
   
 void MelikhovStechFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,unsigned int mode,
-							  int id0,int id1,
-							  Energy m0, Energy m1,
+							  int,int id1,
+							  Energy, Energy,
 							  Complex & fT) const
 {
   double ratio(q2/_massV[mode]/_massV[mode]);
@@ -840,8 +840,8 @@ void MelikhovStechFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,unsigned in
 }
 
 void MelikhovStechFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int mode,
-						     int id0, int id1,
-						     Energy m0, Energy m1,Complex & A0,
+						     int, int id1,
+						     Energy, Energy,Complex & A0,
 						     Complex & A1,Complex & A2,
 						     Complex & V) const
 {
@@ -861,8 +861,8 @@ void MelikhovStechFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int mo
 }
 
 void MelikhovStechFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,unsigned int mode,
-							  int id0,int id1,
-							  Energy m0, Energy m1,
+							  int,int id1,
+							  Energy, Energy,
 							  Complex & T1,Complex & T2,
 							  Complex & T3) const
 {

@@ -235,7 +235,7 @@ void RadiativeHeavyBaryonDecayer::dataBaseOutput(ofstream & output,bool header) 
 }
 
 void RadiativeHeavyBaryonDecayer::halfHalfVectorCoupling(int imode,Energy m0,Energy m1,
-							 Energy m2,Complex& A1,
+							 Energy,Complex& A1,
 							 Complex& A2,Complex& B1,
 							 Complex& B2) const
 {
@@ -258,7 +258,7 @@ void RadiativeHeavyBaryonDecayer::halfHalfVectorCoupling(int imode,Energy m0,Ene
 }
 
 void RadiativeHeavyBaryonDecayer::threeHalfHalfVectorCoupling(int imode,Energy m0,
-							      Energy m1,Energy m2,
+							      Energy m1,Energy,
 							      Complex& A1,Complex& A2,
 							      Complex& A3,Complex& B1,
 							      Complex& B2,

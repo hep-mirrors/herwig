@@ -226,9 +226,9 @@ void SU3BaryonOctetDecupletScalarDecayer::Init() {
 }
 
 // couplings for spin-1/2 to spin-3/2 spin-0
-void SU3BaryonOctetDecupletScalarDecayer::halfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,
-								      Complex& A,
-								      Complex& B) const
+void SU3BaryonOctetDecupletScalarDecayer
+::halfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
+			      Complex& A, Complex& B) const
 {
   if(_parity)
     {
@@ -244,7 +244,7 @@ void SU3BaryonOctetDecupletScalarDecayer::halfThreeHalfScalarCoupling(int imode,
 
 // couplings for spin-3/2 to spin-3/2 spin-0
 void SU3BaryonOctetDecupletScalarDecayer::
-threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy m2,Complex& A1,Complex& A2,
+threeHalfThreeHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,Complex& A1,Complex& A2,
 				 Complex& B1,Complex& B2) const
 {
   A2=0.;B2=0.;

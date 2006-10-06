@@ -196,11 +196,10 @@ void MEPP2HiggsJet::getDiagrams() const {
   tcPDPtr h0=getParticleData(ParticleID::h0);
   tcPDPtr g =getParticleData(ParticleID::g);
   tcPDPtr q[6],qb[6];
-  for(unsigned int ix=0;ix<_maxflavour;++ix)
-    {
-      q [ix]=getParticleData( ix+1);
-      qb[ix]=getParticleData(-ix-1);
-    }
+  for(int ix=0;ix<int(_maxflavour);++ix) {
+    q [ix]=getParticleData( ix+1);
+    qb[ix]=getParticleData(-ix-1);
+  }
   // q qbar -> H g
   if(_process==0||_process==1)
     {for(unsigned int ix=0;ix<_maxflavour;++ix)

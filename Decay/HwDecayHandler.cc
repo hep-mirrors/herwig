@@ -33,11 +33,9 @@ using namespace ThePEG;
 using ThePEG::Helicity::tcSpinfoPtr;
 using ThePEG::Helicity::SpinfoPtr;
 
-HwDecayHandler::~HwDecayHandler() {}
-
 void HwDecayHandler::
 handle(EventHandler & ch, const tPVector & tagged,
-       const Hint & hint) throw(Veto, Stop, Exception) {
+       const Hint &) throw(Veto, Stop, Exception) {
   // First go through the tagged particles for unstable ones
   Timer<46> timer("HwDecayHandler::handle");
   tPVector parents;

@@ -172,7 +172,7 @@ bool GenericWidthGenerator::accept(const ParticleData & in) const
   return &in==_theParticle||(in.CC()&&in.CC()==_theParticle);
  }
 
-Energy GenericWidthGenerator::width(const ParticleData & in, Energy m) const
+Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const
 {
   Energy gamma(0.);
   for(unsigned int ix =0;ix<_MEcoupling.size();++ix)
@@ -560,8 +560,8 @@ DecayMap GenericWidthGenerator::rate(const Particle & p) {
   return dm;
 } 
   
-void GenericWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
-				      unsigned int imode)
+void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr,
+				      unsigned int)
 {}
 
 Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {

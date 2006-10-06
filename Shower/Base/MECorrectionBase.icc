@@ -6,8 +6,6 @@
 
 namespace Herwig {
 
-inline MECorrectionBase::MECorrectionBase() {}
-
 inline ShowerAlphaPtr MECorrectionBase::coupling() const
 {return _alpha;}
 

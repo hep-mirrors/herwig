@@ -70,7 +70,6 @@ private:
 };
 }
 
-
 #include "WidthCalculatorBase.icc"
 
 #endif /* HERWIG_WidthCalculatorBase_H */

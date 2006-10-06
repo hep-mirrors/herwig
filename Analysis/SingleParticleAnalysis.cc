@@ -17,14 +17,12 @@
 
 using namespace Herwig;
 
-SingleParticleAnalysis::~SingleParticleAnalysis() {}
-
 void SingleParticleAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
 }
 
-LorentzRotation SingleParticleAnalysis::transform(tEventPtr event) const {
+LorentzRotation SingleParticleAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }

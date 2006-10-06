@@ -204,7 +204,7 @@ void SU3BaryonOctetOctetPhotonDecayer::Init() {
 
 // couplings for spin-1/2 to spin-1/2 spin-1
 void SU3BaryonOctetOctetPhotonDecayer::halfHalfVectorCoupling(int imode,Energy m0,
-							      Energy m1, Energy m2,
+							      Energy m1, Energy,
 							      Complex&A1,
 							      Complex&A2,Complex&B1,
 							      Complex&B2) const
@@ -224,7 +224,7 @@ void SU3BaryonOctetOctetPhotonDecayer::halfHalfVectorCoupling(int imode,Energy m
 
 // couplings for spin-1/2 to spin-3/2 spin-1
 void SU3BaryonOctetOctetPhotonDecayer::
-threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1, Energy m2,
+threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1, Energy,
 			    Complex&A1,Complex&A2,Complex&A3,
 			    Complex&B1,Complex&B2,Complex&B3) const
 {

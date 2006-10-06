@@ -74,11 +74,11 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 
 }
 
-void BasicConsistency::persistentOutput(PersistentOStream & os) const {
+void BasicConsistency::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void BasicConsistency::persistentInput(PersistentIStream & is, int) {
+void BasicConsistency::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

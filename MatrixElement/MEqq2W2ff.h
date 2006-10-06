@@ -18,7 +18,7 @@ using namespace ThePEG;
 using namespace Herwig::Helicity;
 
 /**
- * The MEqq2W2ff class implements the matrix element for \f$q\bar{q'}\toW^\pm\f$
+ * The MEqq2W2ff class implements the matrix element for \f$q\bar{q'}\to W^\pm\f$
  * including the decay of the \f$W^\pm\f$ to Standard Model fermions.
  *
  * @see \ref MEqq2W2ffInterfaces "The interfaces"

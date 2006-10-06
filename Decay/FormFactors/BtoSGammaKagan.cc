@@ -460,6 +460,3 @@ void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
     }
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";}
 }
-
-
- 

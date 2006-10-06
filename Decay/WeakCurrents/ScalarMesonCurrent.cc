@@ -144,7 +144,7 @@ PDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, 
 }
 
 vector<LorentzPolarizationVector> 
-ScalarMesonCurrent::current(bool vertex, const int imode, const int ichan, 
+ScalarMesonCurrent::current(bool vertex, const int imode, const int, 
 			    Energy & scale,const ParticleVector & decay) const
 {
   static const Complex ii(0.,1.);

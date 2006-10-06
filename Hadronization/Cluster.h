@@ -3,7 +3,6 @@
 #define HERWIG_Cluster_H
 
 #include <ThePEG/Pointer/Ptr.h>
-#include <ThePEG/Pointer/ReferenceCounted.h>
 #include <ThePEG/Pointer/PtrTraits.h>
 #include <ThePEG/Pointer/RCPtr.h>
 #include <ThePEG/EventRecord/Particle.h>
@@ -11,6 +10,7 @@
 #include <iostream>
 #include "CluHadConfig.h"
 #include "ClusterHadronizationHandler.fh"
+#include "Cluster.fh"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -75,10 +75,10 @@ public:
   Cluster(tPPtr part1, tPPtr part2, tPPtr part3 = tPPtr());
   
   /**
-   * Also a copy constructor where a particle is given not a cluster.
+   * Also a constructor where a particle is given not a cluster.
    */
   Cluster(const Particle &);
-  
+
   /**
    * Particle uses the FixedSizeAllocator for (de)allocation.
    */
@@ -308,12 +308,6 @@ namespace ThePEG {
     public ClassTraitsBase<Herwig::Cluster> {
     /** Return the class name. */
     static string className() { return "Herwig++::Cluster"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "libHwHadronization.so"; }
   };
 
 }

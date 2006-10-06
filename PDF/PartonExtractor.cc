@@ -20,11 +20,11 @@ using namespace Herwig;
 
 Herwig::PartonExtractor::~PartonExtractor() {}
 
-void Herwig::PartonExtractor::persistentOutput(PersistentOStream & os) const {
+void Herwig::PartonExtractor::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void Herwig::PartonExtractor::persistentInput(PersistentIStream & is, int) {
+void Herwig::PartonExtractor::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

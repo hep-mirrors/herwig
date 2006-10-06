@@ -160,14 +160,6 @@ struct ClassTraits<Herwig::QEDRadiationHandler>
   : public ClassTraitsBase<Herwig::QEDRadiationHandler> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::QEDRadiationHandler"; }
-  /**
-   * The name of a file containing the dynamic library where the class
-   * QEDRadiationHandler is implemented. It may also include several, space-separated,
-   * libraries if the class QEDRadiationHandler depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
-   */
-  static string library() { return "libHwDecRad.so"; }
 };
 
 /** @endcond */

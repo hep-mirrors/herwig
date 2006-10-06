@@ -44,16 +44,6 @@ public:
   Remnant(tcEventPDPtr);
 
   /**
-   * The copy constructor.
-   */
-  inline Remnant(const Remnant &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~Remnant();
-
-  /**
    * Particle uses the FixedSizeAllocator for (de)allocation.
    */
   inline void * operator new(size_t);
@@ -173,7 +163,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::Remnant,1> {
   /** Typedef of the first base class of Remnant. */
-  typedef EventRecordBase  NthBase;
+  typedef Particle NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
@@ -183,11 +173,7 @@ struct ClassTraits<Herwig::Remnant>
   : public ClassTraitsBase<Herwig::Remnant> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::Remnant"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the Remnant class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwHadronization.so"; }
-  /** Create a Event object. */
+  /** Create a Particle object. */
   static TPtr create() { return TPtr::Create(Herwig::Remnant(tcEventPDPtr())); }
 };
 

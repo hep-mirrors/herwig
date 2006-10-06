@@ -110,7 +110,7 @@ void SMTopDecayer::Init() {
   
 }
 
-double SMTopDecayer::me2(bool vertex, const int ichan, 
+double SMTopDecayer::me2(bool vertex, const int, 
 			 const Particle & inpart,
 			 const ParticleVector & decay) const
 {

@@ -18,12 +18,12 @@
 
 using namespace Herwig;
 
-bool HwDecayerBase::accept(const DecayMode & dm) const {
+bool HwDecayerBase::accept(const DecayMode &) const {
   return false;
 }
 
 ParticleVector HwDecayerBase::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+				  const Particle &) const {
   ParticleVector children = dm.produceProducts();
   return children;
 }

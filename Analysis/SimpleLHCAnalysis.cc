@@ -34,7 +34,7 @@ namespace {
 }
 
 
-void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
   //  AnalysisHandler::analyze(event, ieve, loop, state);
   // Rotate to CMS, extract final state particles and call analyze(particles).
   // find the Z
@@ -91,7 +91,7 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
     }
 }
 
-LorentzRotation SimpleLHCAnalysis::transform(tEventPtr event) const {
+LorentzRotation SimpleLHCAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -102,11 +102,11 @@ void SimpleLHCAnalysis::analyze(const tPVector & particles) {
 
 void SimpleLHCAnalysis::analyze(tPPtr) {}
 
-void SimpleLHCAnalysis::persistentOutput(PersistentOStream & os) const {
+void SimpleLHCAnalysis::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void SimpleLHCAnalysis::persistentInput(PersistentIStream & is, int) {
+void SimpleLHCAnalysis::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

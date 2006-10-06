@@ -31,7 +31,7 @@ void RSModelVVGRVertex::Init() {
   
 }
   
-void RSModelVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
+void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
 {setNorm(_theKappa);}
 
 }

@@ -206,8 +206,6 @@ public:
   //@{
   /**
    *  The energy fraction
-   * @param Whether this is thge charge conjugate of the branching defined in the
-   * splitting function.
    */
   inline double z() const;
 

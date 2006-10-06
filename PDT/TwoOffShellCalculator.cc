@@ -25,4 +25,3 @@ Energy TwoOffShellCalculator::partialWidth(Energy2 q2) const {
   return _integrator.value(_integrand,rhomin,rhomax);
 }
 }
-

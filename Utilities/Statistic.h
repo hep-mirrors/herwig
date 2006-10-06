@@ -186,10 +186,6 @@ struct ClassTraits<Herwig::Statistic>
   : public ClassTraitsBase<Herwig::Statistic> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::Statistic"; }
-  /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the Statistic class and any other class on which it depends
-   *  (except the base class). */
-  static string library() { return "libHwUtils.so"; }
 };
 
 /** @endcond */

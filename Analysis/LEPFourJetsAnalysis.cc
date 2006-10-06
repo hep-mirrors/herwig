@@ -16,8 +16,6 @@
 
 using namespace Herwig;
 
-LEPFourJetsAnalysis::~LEPFourJetsAnalysis() {}
-
 void LEPFourJetsAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
   AnalysisHandler::analyze(event, ieve, loop, state);
 }

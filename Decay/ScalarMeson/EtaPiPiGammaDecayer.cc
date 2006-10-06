@@ -458,7 +458,7 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
   return newME.contract(rhoin).real();
 }
- 
+
 double EtaPiPiGammaDecayer::
 threeBodyMatrixElement(const int imodeb,const Energy2 q2,const  Energy2 s3,const 
 		       Energy2 s2,const Energy2 s1,const Energy m1,
@@ -565,4 +565,3 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
-

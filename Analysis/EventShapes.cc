@@ -18,11 +18,11 @@ using namespace Herwig;
 
 EventShapes::~EventShapes() {}
 
-void EventShapes::persistentOutput(PersistentOStream & os) const {
+void EventShapes::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void EventShapes::persistentInput(PersistentIStream & is, int) {
+void EventShapes::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

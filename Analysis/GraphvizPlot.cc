@@ -37,7 +37,7 @@ struct HepMCTraits<HepMC::GenEvent>
 {};
 }
 
-void GraphvizPlot::analyze(tEventPtr event, long ieve, int loop, int state) {
+void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
   if (event->number() != _eventNumber) return;
 
   ostringstream filename;
@@ -103,7 +103,7 @@ void GraphvizPlot::analyze(tEventPtr event, long ieve, int loop, int state) {
   hepmcdotfile.close();
 }
 
-LorentzRotation GraphvizPlot::transform(tEventPtr event) const {
+LorentzRotation GraphvizPlot::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }

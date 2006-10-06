@@ -239,10 +239,10 @@ double MEPP2GammaGamma::qqbarME(vector<SpinorWaveFunction>    & fin,
   return me/12;
 }
 
-double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    & g1,
-			     vector<VectorWaveFunction>    & g2,
-			     vector<VectorWaveFunction>    & p1,
-			     vector<VectorWaveFunction>    & p2,
+double MEPP2GammaGamma::ggME(vector<VectorWaveFunction>    &,
+			     vector<VectorWaveFunction>    &,
+			     vector<VectorWaveFunction>    &,
+			     vector<VectorWaveFunction>    &,
 			     bool calc) const
 {
   // we probably need some basis rotation here ?????

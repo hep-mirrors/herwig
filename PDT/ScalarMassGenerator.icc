@@ -7,37 +7,12 @@
 namespace Herwig {
   using namespace ThePEG;
 
-inline ScalarMassGenerator::ScalarMassGenerator() {}
-
-inline ScalarMassGenerator::ScalarMassGenerator(const ScalarMassGenerator & x)
-  : GenericMassGenerator(x), _coupling(x._coupling), _mass1(x._mass1),
-    _mass2(x._mass2),_mplus(x._mplus), _mminus(x._mminus), _m2plus(x._m2plus),
-    _m2minus(x._m2minus), _term(x._term) {}
-
 inline IBPtr ScalarMassGenerator::clone() const {
   return new_ptr(*this);
 }
 
 inline IBPtr ScalarMassGenerator::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void ScalarMassGenerator::doupdate() throw(UpdateException) {
-  GenericMassGenerator::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
 }
 
 inline void ScalarMassGenerator::doinit() throw(InitException) {
@@ -52,26 +27,6 @@ inline void ScalarMassGenerator::doinit() throw(InitException) {
     }
   // rest of the initialisation is handled in the base class
   GenericMassGenerator::doinit();
-}
-
-inline void ScalarMassGenerator::dofinish() {
-  GenericMassGenerator::dofinish();
-}
-
-inline void ScalarMassGenerator::doinitrun() {
-  GenericMassGenerator::doinitrun();
-}
-
-inline void ScalarMassGenerator::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  GenericMassGenerator::rebind(trans);
-}
-
-inline IVector ScalarMassGenerator::getReferences() {
-  IVector ret = GenericMassGenerator::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 // weight for the factor

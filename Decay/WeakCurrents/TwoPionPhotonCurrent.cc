@@ -168,7 +168,7 @@ void TwoPionPhotonCurrent::Init() {
 }
 
 // complete the construction of the decay mode for integration
-bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int imode,
+bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int,
 				      DecayPhaseSpaceModePtr mode,
 				      unsigned int iloc,unsigned int ires,
 				      DecayPhaseSpaceChannelPtr phase,Energy upp)
@@ -197,7 +197,7 @@ bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int imode,
 }
 
 // the particles produced by the current
-PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int imode,int iq,int ia)
+PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int)
 {
   PDVector extpart;
   if(icharge==3)
@@ -218,7 +218,7 @@ PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int imode,int iq,
 
 // the hadronic currents    
 vector<LorentzPolarizationVector> 
-TwoPionPhotonCurrent::current(bool vertex, const int imode, const int ichan, 
+TwoPionPhotonCurrent::current(bool vertex, const int, const int, 
 			      Energy & scale,const ParticleVector & decay) const
 {
   vector<LorentzPolarizationVector> temp;
@@ -286,7 +286,9 @@ bool TwoPionPhotonCurrent::accept(vector<int> id)
   return npiplus==1&&ngamma==1&&npi0==1;
 }
 
-unsigned int TwoPionPhotonCurrent::decayMode(vector<int> idout){return 0;}
+unsigned int TwoPionPhotonCurrent::decayMode(vector<int>) {
+  return 0;
+}
 
 // output the information for the database
 void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,

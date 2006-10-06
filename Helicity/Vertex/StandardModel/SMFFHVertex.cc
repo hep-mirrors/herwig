@@ -35,7 +35,7 @@ void SMFFHVertex::Init() {
      " fermion-antiferiom vertex.");
   
 }
-void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
+void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr)
 {
   int iferm=abs(a->id());
   // left and right couplings set to one

@@ -88,7 +88,7 @@ namespace Herwig {
 
   }
 
-  double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int ichan, 
+  double SMHiggsGGHiggsPPDecayer::me2(bool vertex, const int, 
 			 const Particle & part,
 			 const ParticleVector & decay) const {
     RhoDMatrix rhoH(PDT::Spin0);

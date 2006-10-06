@@ -20,9 +20,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-
-BaryonWidthGenerator::~BaryonWidthGenerator() {}
-
 void BaryonWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << _baryondecayers << _modeloc;
 }
@@ -53,7 +50,7 @@ void BaryonWidthGenerator::Init() {
 }
  
 void BaryonWidthGenerator::setupMode(tcDMPtr mode, tDecayIntegratorPtr decayer,
-				     unsigned int imode)
+				     unsigned int)
 {
   // cast the decayer
   tBaryon1MesonDecayerBasePtr 

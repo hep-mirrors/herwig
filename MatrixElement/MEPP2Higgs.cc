@@ -186,7 +186,7 @@ void MEPP2Higgs::doinit() throw(InitException) {
   }
 }
 
-bool MEPP2Higgs::generateKinematics(const double * r) {
+bool MEPP2Higgs::generateKinematics(const double *) {
   Lorentz5Momentum pout=meMomenta()[0]+meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2].setMass(pout.mass());
@@ -227,8 +227,6 @@ double MEPP2Higgs::me2() const {
     for(unsigned int ix=0;ix<2;++ix) {
       glin1.reset(2*ix);g1.push_back(glin1);
       glin2.reset(2*ix);g2.push_back(glin2);
-      //glin1.reset(10);g1.push_back(glin1);
-      //glin2.reset(10);g2.push_back(glin2);
     }
     // calculate the matrix element
     output = ggME(g1,g2,hout,false); 
@@ -255,8 +253,9 @@ double MEPP2Higgs::me2() const {
   return output/sHat();
 }
 
-double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunction> g2,
-			ScalarWaveFunction & hout,bool calc) const {
+double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, 
+			vector<VectorWaveFunction> g2,
+			ScalarWaveFunction &, bool calc) const {
   ProductionMatrixElement newme(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   // get the kinematic invariants
   Energy2 s(sHat()),et(scale());

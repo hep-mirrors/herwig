@@ -38,9 +38,6 @@ using Helicity::Direction;
 using Helicity::incoming;
 using Helicity::outgoing;
 
-TauDecayer::~TauDecayer() {}
-
-
 void TauDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // make sure the current got initialised

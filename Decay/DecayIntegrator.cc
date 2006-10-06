@@ -176,7 +176,8 @@ void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width)
     {_modes[ix]->resetIntermediate(part,mass,width);}
 } 
 
-bool DecayIntegrator::twoBodyMEcode(const DecayMode & dm, int & imode, double & g) const
+bool DecayIntegrator::twoBodyMEcode(const DecayMode &, 
+				    int & imode, double & g) const
 {
   g=1.;
   imode=-1;
@@ -204,8 +205,10 @@ double DecayIntegrator::threeBodydGammads(const int, const Energy2, const Energy
 			       << Exception::runerror;
 }
 
-WidthCalculatorBasePtr DecayIntegrator::threeBodyMEIntegrator(const DecayMode & dm) const
-{return WidthCalculatorBasePtr();}
+WidthCalculatorBasePtr 
+DecayIntegrator::threeBodyMEIntegrator(const DecayMode &) const {
+  return WidthCalculatorBasePtr();
+}
 
 
 // set the code for the partial width

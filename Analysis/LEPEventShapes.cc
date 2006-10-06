@@ -19,8 +19,6 @@
 
 using namespace Herwig;
 
-LEPEventShapes::~LEPEventShapes() {}
-
 void LEPEventShapes::analyze(tEventPtr event, long ieve, int loop, int state) {
   eventweight_ = event->weight();
   AnalysisHandler::analyze(event, ieve, loop, state);
@@ -30,7 +28,7 @@ void LEPEventShapes::analyze(tEventPtr event, long ieve, int loop, int state) {
   // event shapes
 }
 
-LorentzRotation LEPEventShapes::transform(tEventPtr event) const {
+LorentzRotation LEPEventShapes::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }

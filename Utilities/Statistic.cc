@@ -18,11 +18,11 @@ using namespace Herwig;
 
 Statistic::~Statistic() {}
 
-void Statistic::persistentOutput(PersistentOStream & os) const {
+void Statistic::persistentOutput(PersistentOStream &) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void Statistic::persistentInput(PersistentIStream & is, int) {
+void Statistic::persistentInput(PersistentIStream &, int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 
