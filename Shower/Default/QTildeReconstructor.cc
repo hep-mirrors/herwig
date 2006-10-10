@@ -357,29 +357,26 @@ reconstructISJets(Lorentz5Momentum pcm,
 }
 
 bool QTildeReconstructor::
-reconstructDecayJets(ShowerTreePtr decay) const
-{
-  try
-    {
-      // extract the particles from the ShowerTree
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
-      vector<ShowerProgenitorPtr> ShowerHardJets;
-      for(mit=decay->incomingLines().begin();mit!=decay->incomingLines().end();++mit)
-	ShowerHardJets.push_back((*mit).first);
-      for(mit=decay->outgoingLines().begin();mit!=decay->outgoingLines().end();++mit)
-	ShowerHardJets.push_back((*mit).first);
-      // initial-state radiation
-      bool radiated[2] = {false,false};
-      ShowerProgenitorPtr initial;
-      for(unsigned int ix=0;ix<ShowerHardJets.size();++ix)
-	{
-	  // only consider initial-state jets
-	  if(ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
-	  initial=ShowerHardJets[ix];
-	}
-      // if initial state radiation do the reconstruction
-      if (!initial->progenitor()->children().empty()) radiated[0] = true;
-      Lorentz5Momentum pjet;
+reconstructDecayJets(ShowerTreePtr decay) const {
+  try {
+    // extract the particles from the ShowerTree
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+    vector<ShowerProgenitorPtr> ShowerHardJets;
+    for(mit=decay->incomingLines().begin();mit!=decay->incomingLines().end();++mit)
+      ShowerHardJets.push_back((*mit).first);
+    for(mit=decay->outgoingLines().begin();mit!=decay->outgoingLines().end();++mit)
+      ShowerHardJets.push_back((*mit).first);
+    // initial-state radiation
+    bool radiated[2] = {false,false};
+    ShowerProgenitorPtr initial;
+    for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+      // only consider initial-state jets
+      if(ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
+      initial=ShowerHardJets[ix];
+    }
+    // if initial state radiation do the reconstruction
+    if (!initial->progenitor()->children().empty()) radiated[0] = true;
+    Lorentz5Momentum pjet;
       Hep3Vector       boosttorest=-initial->progenitor()->momentum().boostVector();
       Lorentz5Momentum nvect;
       ShowerParticlePtr partner;
@@ -387,22 +384,21 @@ reconstructDecayJets(ShowerTreePtr decay) const
       bool initialrad=radiated[0];
       // check if need to boost to rest frame
       bool gottaBoost = (boosttorest.mag() > 1e-12);
-      if(radiated[0])
-	{
-	  reconstructDecayJet(initial->progenitor());
-	  // momentum of decaying particle after ISR
-	  pjet=initial->progenitor()->momentum()
-	    -decay->incomingLines().begin()->second->momentum();
-	  pjet.rescaleMass();
-	  Lorentz5Momentum ptest(pjet);
-	  ptest.boost(-initial->progenitor()->momentum().boostVector());
-	  // get the n reference vector
-	  nvect= initial->progenitor()->showerKinematics()->getBasis()[1];
-	  // find the partner
-	  partner=initial->progenitor()->
-	    partners()[initial->progenitor()->showerKinematics()->
-		       splittingFn()->interactionType()];
-	}
+      if(radiated[0]) {
+	reconstructDecayJet(initial->progenitor());
+	// momentum of decaying particle after ISR
+	pjet=initial->progenitor()->momentum()
+	  -decay->incomingLines().begin()->second->momentum();
+	pjet.rescaleMass();
+	Lorentz5Momentum ptest(pjet);
+	ptest.boost(-initial->progenitor()->momentum().boostVector());
+	// get the n reference vector
+	nvect= initial->progenitor()->showerKinematics()->getBasis()[1];
+	// find the partner
+	partner=initial->progenitor()->
+	  partners()[initial->progenitor()->showerKinematics()->
+		     splittingFn()->interactionType()];
+      }
       // check it is a final state particle and find momentum of the
       // rest of the particles
       Lorentz5Momentum pjetA=pjet;
@@ -483,13 +479,12 @@ reconstructDecayJets(ShowerTreePtr decay) const
       if(gottaBoost) tboost=LorentzRotation(boosttorest);
       bool finalboost(false);
       Hep3Vector singletboost;
-      if(initialrad)
-	{
-	  singletboost = -p_cm.boostVector();
-	  finalboost   = singletboost.mag()>1e-12;
-	  if(finalboost) tboost.boost(singletboost);
-	  singletboost=-p_cmnew.boostVector();
-	}
+      if(initialrad) {
+	singletboost = -p_cm.boostVector();
+	finalboost   = singletboost.mag()>1e-12;
+	if(finalboost) tboost.boost(singletboost);
+	singletboost=-p_cmnew.boostVector();
+      }
       int ix=-1;
       // reconstruct the final-state jets and perform boosts
       for(cit = ShowerHardJets.begin(); cit != ShowerHardJets.end(); cit++) {
@@ -510,10 +505,9 @@ reconstructDecayJets(ShowerTreePtr decay) const
       Energy roots=p_cm.m();
       double k = 0.0; 
       if(atLeastOnce) {
-	if(jetKinematics.size()>1)
-	  {
+	if(jetKinematics.size()>1) {
 	    k = solveKfactor(roots, jetKinematics);
-	    if(k < 0. || k > 1.) return false;
+	    if(k < 0.) return false;
 	  }
 	else k=1.;
       }
