@@ -374,10 +374,6 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
   do {
     int flav = int(UseRandom::rnd()*double(mFlav));
     KupcoData::iterator it1,it2;
-    /*if(cluMass < _table[flav1][flav].begin()->mass + 
-                 _table[flav][flav2].begin()->mass) {
-      // do nothing
-      } else*/
     if(_Pwt[flav] > UseRandom::rnd()) {
       int num1,num2;
       idQ = convertFlavourToId(flav);
@@ -393,10 +389,8 @@ pair<long,long> HadronSelector::hw64(const Energy cluMass, const long id1,
       } while(it2 != _table[flav][flav2].end() && it2->overallWeight < UseRandom::rnd());
       if(it2!=_table[flav][flav2].end()) had2 = it2->id;
       else had2 = 0;  
-    } else {
-      throw Exception() << "HadronSelector::hw64() did not initialize idQ"
-			<< Exception::abortnow;
-    }
+    } 
+    else had1=had2=0;
     
     if(had1 && had2) {
       p = Kinematics::pstarTwoBodyDecay(cluMass, it1->mass, it2->mass);
@@ -1074,7 +1068,8 @@ void HadronSelector::fillHadronData() {
 	if(_ClusterDKMode == 0 && a.overallWeight > maxss) 
 	  maxss = a.overallWeight;
       }
-    } else if(flav1 == 1 && flav2 == 1) {
+    } 
+    else if(flav1 == 1 && flav2 == 1) {
       // load up ddbar> uubar> admixtures
       if(_ClusterDKMode != 0) a.overallWeight = 1./sqrt(2.) * a.wt * nj;
       else a.overallWeight = a.wt * nj;
@@ -1082,16 +1077,18 @@ void HadronSelector::fillHadronData() {
       _table[U][U].insert(a);
       if(_ClusterDKMode == 0 && a.overallWeight > maxdd) 
 	maxdd = a.overallWeight;
-    } else if((flav1 == 1 && flav2 == 11) || (flav1 == 11 && flav2 == 1) ||
-	      (flav1 == 2 && flav2 == 22) || (flav1 == 22 && flav2 == 2) ||
-	      (flav1 == 3 && flav2 == 33) || (flav1 == 33 && flav2 == 3)) {
+    } 
+    else if((flav1 == 1 && flav2 == 11) || (flav1 == 11 && flav2 == 1) ||
+	    (flav1 == 2 && flav2 == 22) || (flav1 == 22 && flav2 == 2) ||
+	    (flav1 == 3 && flav2 == 33) || (flav1 == 33 && flav2 == 3)) {
       if(_ClusterDKMode != 0) a.overallWeight = 1.5*a.wt*a.swtef*nj;
       else a.overallWeight = a.wt * nj;
       _table[flavToIndex[flav1]][flavToIndex[flav2]].insert(a);
       _table[flavToIndex[flav2]][flavToIndex[flav1]].insert(a);
       if(_ClusterDKMode == 0 && a.overallWeight > maxrest)
 	maxrest = a.overallWeight;
-    } else {
+    } 
+    else {
       if(_ClusterDKMode != 0) a.overallWeight = a.wt * a.swtef * nj;
       else a.overallWeight = a.wt * nj;
       _table[flavToIndex[flav1]][flavToIndex[flav2]].insert(a);
