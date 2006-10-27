@@ -82,10 +82,13 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
   // calculate limits on z and if lower>upper return
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
-  t = guesst(told,0,enhance,_ids[1]==_ids[2]); 
+  t = guesst(told,0,enhance,_ids[1]==_ids[2]);
+  cerr << "testing guess A " << fullName() << " " << t << "\n";
   z(guessz()); 
+  cerr << "testing guess B " << z() << "\n"; 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
+  cerr << "testing worked?\n";
   if(t<tmin) {
     t=-1.0*GeV;
     return false;
@@ -143,8 +146,9 @@ ShoKinPtr QTildeSudakov::generateNextTimeBranching(const Energy startingScale,
   if(tmax<=tmin) return ShoKinPtr();
   // calculate next value of t using veto algorithm
   Energy2 t(tmax);
-  do  
+  do {
     if(!guessTimeLike(t,tmin,enhance)) break;
+  }
   while(PSVeto(t) || SplittingFnVeto(z()*(1.-z())*t,ids,true) || 
 	alphaSVeto(sqr(z()*(1.-z()))*t));
   if(t > 0) _q = sqrt(t);
@@ -325,9 +329,10 @@ bool QTildeSudakov::computeTimeLikeLimits(Energy2 & t)
     limits.second  = 0.5*sqrt(_masssquared[2]/t);
     limits.first   = 1.-0.5*sqrt(_masssquared[1]/t);
   }
-  else
-    {throw Exception() << "QTildeSudakov::computeTimeLikeLimits() " 
-			<< "general case not implemented " << Exception::runerror;}
+  else {
+    limits.first  = _masssquared[1]/t;
+    limits.second = 1.-_masssquared[2]/t; 
+  }
   zLimits(limits);
   return true;
 }
