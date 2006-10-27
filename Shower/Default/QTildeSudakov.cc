@@ -83,12 +83,9 @@ bool QTildeSudakov::guessTimeLike(Energy2 &t,Energy2 tmin,double enhance) {
   if(!computeTimeLikeLimits(t)) return false;
   // guess values of t and z
   t = guesst(told,0,enhance,_ids[1]==_ids[2]);
-  cerr << "testing guess A " << fullName() << " " << t << "\n";
   z(guessz()); 
-  cerr << "testing guess B " << z() << "\n"; 
   // actual values for z-limits
   if(!computeTimeLikeLimits(t)) return false;
-  cerr << "testing worked?\n";
   if(t<tmin) {
     t=-1.0*GeV;
     return false;
