@@ -12,8 +12,7 @@ inline OneOffShellCalculator::OneOffShellCalculator(int inloc,
 						    GenericMassGeneratorPtr inmass,
 						    Energy inmin)
   : _themass(inloc), _minmass(inmin),_onshellwidth(inwidth),_massptr(inmass),
-    _integrand(this,inmass->nominalMass()*inmass->nominalMass(),
-	       inmass->nominalWidth()*inmass->nominalWidth()) 
+    _integrand(this,sqr(inmass->nominalMass()), inmass->nominalWidth()*inmass->nominalMass()) 
 {}
 
 inline void OneOffShellCalculator::resetMass(int id,Energy inmass)  {
