@@ -234,7 +234,7 @@ inline SpinorBarWaveFunction & SpinorBarWaveFunction::operator =
 }
 
 // return wavefunction as a spinor
-inline LorentzSpinorBar SpinorBarWaveFunction::Wave() const{return _wf;}
+inline LorentzSpinorBar & SpinorBarWaveFunction::Wave() const {return _wf;}
 
 // Get components
 inline Complex SpinorBarWaveFunction::s1() const {return _wf.s1();}

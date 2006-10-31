@@ -329,7 +329,7 @@ public:
   /**
    * Return wavefunction as LorentzSpinor.
    */
-  inline LorentzSpinor Wave() const;
+  inline LorentzSpinor & Wave() const;
 
   /**
    * Get the first spin component component.
@@ -507,7 +507,7 @@ private:
   /**
    * Storage of the Lorentz Spinor.
    */
-  LorentzSpinor _wf;
+  mutable LorentzSpinor _wf;
 
 };
 
