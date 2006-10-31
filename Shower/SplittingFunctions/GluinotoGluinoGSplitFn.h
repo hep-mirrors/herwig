@@ -1,12 +1,12 @@
 // -*- C++ -*-
-#ifndef HERWIG_QtoQGSplitFn_H
-#define HERWIG_QtoQGSplitFn_H
+#ifndef HERWIG_GluinotoGluinoGSplitFn_H
+#define HERWIG_GluinotoGluinoGSplitFn_H
 //
-// This is the declaration of the QtoQGSplitFn class.
+// This is the declaration of the GluinotoGluinoGSplitFn class.
 //
 
 #include "SplittingFunction.h"
-#include "QtoQGSplitFn.fh"
+#include "GluinotoGluinoGSplitFn.fh"
 
 namespace Herwig {
 
@@ -15,29 +15,29 @@ using namespace ThePEG;
 /**\ingroup Shower
  *
  * This class provides the concrete implementation of the exact leading-order
- * splitting function for \f$q\to qg\f$. 
+ * splitting function for \f$\tilde{g}\to \tilde{g}g\f$. 
  *
  *  In this case the splitting function is given by
- * \f[P(z,t) =\frac{C_F}\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
- * where \f$C_F=\frac43\f$.
+ * \f[P(z,t) =\frac{C_A}\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
+ * where \f$C_A=N_C\f$.
  * Our choice for the overestimate is 
- * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
+ * \f[P_{\rm over}(z) = \frac{2C_A}{1-z},\f]
  * therefore the integral is
- * \f[\int P_{\rm over}(z) {\rm d}z = -2C_F\ln(1-z),\f]
+ * \f[\int P_{\rm over}(z) {\rm d}z = -2C_A\ln(1-z),\f]
  * and its inverse is
- * \f[1-\exp\left(\frac{r}{2C_F}\right).\f]
+ * \f[1-\exp\left(\frac{r}{2C_A}\right).\f]
  *
- * @see \ref QtoQGSplitFnInterfaces "The interfaces"
- * defined for QtoQGSplitFn.
+ * @see \ref GluinotoGluinoGSplitFnInterfaces "The interfaces"
+ * defined for GluinotoGluinoGSplitFn.
  */
-class QtoQGSplitFn: public SplittingFunction {
+class GluinotoGluinoGSplitFn: public SplittingFunction {
 
 public:
 
   /**
    * The default constructor.
    */
-  inline QtoQGSplitFn();
+  inline GluinotoGluinoGSplitFn();
 
   /**
    *  Concrete implementation of the method to determine whether this splitting
@@ -140,13 +140,13 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is an concrete class without persistent data.
    */
-  static NoPIOClassDescription<QtoQGSplitFn> initQtoQGSplitFn;
+  static NoPIOClassDescription<GluinotoGluinoGSplitFn> initGluinotoGluinoGSplitFn;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  QtoQGSplitFn & operator=(const QtoQGSplitFn &);
+  GluinotoGluinoGSplitFn & operator=(const GluinotoGluinoGSplitFn &);
 
 };
 
@@ -159,37 +159,37 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of QtoQGSplitFn. */
+ *  base classes of GluinotoGluinoGSplitFn. */
 template <>
-struct BaseClassTrait<Herwig::QtoQGSplitFn,1> {
-  /** Typedef of the first base class of QtoQGSplitFn. */
+struct BaseClassTrait<Herwig::GluinotoGluinoGSplitFn,1> {
+  /** Typedef of the first base class of GluinotoGluinoGSplitFn. */
   typedef Herwig::SplittingFunction NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the QtoQGSplitFn class and the shared object where it is defined. */
+ *  the GluinotoGluinoGSplitFn class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::QtoQGSplitFn>
-  : public ClassTraitsBase<Herwig::QtoQGSplitFn> {
+struct ClassTraits<Herwig::GluinotoGluinoGSplitFn>
+  : public ClassTraitsBase<Herwig::GluinotoGluinoGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QtoQGSplitFn"; }
+  static string className() { return "Herwig++::GluinotoGluinoGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * QtoQGSplitFn is implemented. It may also include several, space-separated,
-   * libraries if the class QtoQGSplitFn depends on other classes (base classes
+   * GluinotoGluinoGSplitFn is implemented. It may also include several, space-separated,
+   * libraries if the class GluinotoGluinoGSplitFn depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwShower.so"; }
+  static string library() { return "GluinotoGluinoGSplitFn.so"; }
 };
 
 /** @endcond */
 
 }
 
-#include "QtoQGSplitFn.icc"
+#include "GluinotoGluinoGSplitFn.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGSplitFn.tcc"
+// #include "GluinotoGluinoGSplitFn.tcc"
 #endif
 
-#endif /* HERWIG_QtoQGSplitFn_H */
+#endif /* HERWIG_GluinotoGluinoGSplitFn_H */
