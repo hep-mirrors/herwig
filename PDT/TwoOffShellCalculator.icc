@@ -11,9 +11,8 @@ inline TwoOffShellCalculator::TwoOffShellCalculator(int inloc,
 						    WidthCalculatorBasePtr inwidth, 
 						    GenericMassGeneratorPtr inmass,
 						    Energy inmin, Energy inother)
-  : _themass(inloc),_minmass(inmin),_mother(inother),_oneoffwidth(inwidth),
-  _integrand(this,_massptr->nominalMass()*_massptr->nominalMass(),
-	     _massptr->nominalWidth()*_massptr->nominalMass())   
+  : _themass(inloc),_minmass(inmin),_mother(inother),_oneoffwidth(inwidth),_massptr(inmass),
+  _integrand(this,sqr(_massptr->nominalMass()), _massptr->nominalWidth()*_massptr->nominalMass())   
 {}
 
 inline void TwoOffShellCalculator::resetMass(int id,Energy inmass)  {
