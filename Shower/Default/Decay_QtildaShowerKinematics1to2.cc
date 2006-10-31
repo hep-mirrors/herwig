@@ -59,8 +59,7 @@ updateChildren(const tShowerParticlePtr theParent,
 }
 
 void Decay_QtildaShowerKinematics1to2::
-reconstructParent( const tShowerParticlePtr theParent, 
-	      const ParticleVector theChildren ) const {
+reconstructParent( const tShowerParticlePtr, const ParticleVector) const {
   throw Exception() << "Decay_QtildaShowerKinematics1to2::updateParent not implemented"
 		    << Exception::abortnow;
 }

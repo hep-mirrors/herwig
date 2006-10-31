@@ -59,7 +59,7 @@ double QtoQGammaSplitFn::invIntegOverP(const double r) const {
 
 void QtoQGammaSplitFn::colourConnection(tShowerParticlePtr parent,
 					tShowerParticlePtr first,
-					tShowerParticlePtr second,
+					tShowerParticlePtr ,
 					const bool back) const {
   if(!back) {
     ColinePair cparent = ColinePair(parent->colourLine(), 
