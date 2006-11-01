@@ -37,7 +37,7 @@ Complex SSSVertex::evaluate(Energy2 q2,
   Complex norm=getNorm();
   Complex ii(0.,1.);
   // return the answer
-  return ii*norm*sca1.Wave()*sca2.Wave()*sca3.Wave();
+  return ii*norm*sca1.wave()*sca2.wave()*sca3.wave();
 }
 
 // off-shell scalar
@@ -56,7 +56,7 @@ ScalarWaveFunction SSSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   setCoupling(q2,Psca1,Psca2,out);
   // wavefunction
   Energy2 p2=pout.m2();
-  Complex fact=-getNorm()*sca1.Wave()*sca2.Wave()*propagator(iopt,p2,out);
+  Complex fact=-getNorm()*sca1.wave()*sca2.wave()*propagator(iopt,p2,out);
   return ScalarWaveFunction(pout,out,fact);
 }
 

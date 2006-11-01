@@ -254,7 +254,9 @@ RSSpinorBarWaveFunction::operator = (const RSSpinorBarWaveFunction & w)
 }
 
 // return the wavefunction as a LorentzRSSpinorBar
-inline LorentzRSSpinorBar RSSpinorBarWaveFunction::Wave() const{return _wf;}
+inline const LorentzRSSpinorBar & RSSpinorBarWaveFunction::wave() const {
+  return _wf;
+}
 
 // Get components
 inline Complex RSSpinorBarWaveFunction::xs1() const {return _wf.xs1();}

@@ -200,17 +200,18 @@ inline Complex & TensorWaveFunction::operator () (int i,int j)
 
 // Assignment
 inline TensorWaveFunction  & TensorWaveFunction::operator = 
-(const TensorWaveFunction & w)
-{
+(const TensorWaveFunction & w) {
   setPx(w.px());setPy(w.py());setPz(w.pz());setE(w.e());setMass(w.mass());
-  _wf=w.Wave();
+  _wf=w.wave();
   setParticle(w.getParticle());
   direction(w.direction());
   return *this;
 }
 
 // return wavefunction as polarization vector
-inline LorentzTensor TensorWaveFunction::Wave() const{return _wf;}
+inline const LorentzTensor & TensorWaveFunction::wave() const {
+  return _wf;
+}
 
 // Get components
 inline Complex TensorWaveFunction::xx() const{return _wf.xx();}

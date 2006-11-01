@@ -370,19 +370,19 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   Complex fdotp,epsdot[2],diag;
   Lorentz5Momentum ps(fin[0].getMomentum()+ain[0].getMomentum());
   ps.rescaleMass();
-  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gout[ix].Wave()*ps;}
+  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gout[ix].wave()*ps;}
   Energy2 denom(-ps*gout[0].getMomentum());
   LorentzSpinorBar atemp;
   double output(0.);
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       // compute the fermion current
-      atemp=ain[ihel2].Wave();
-      fcurrent=fin[ihel1].Wave().vectorCurrent(atemp);
+      atemp=ain[ihel2].wave();
+      fcurrent=fin[ihel1].wave().vectorCurrent(atemp);
       fdotp=-(fcurrent*(gout[0].getMomentum()));
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5*(fcurrent*gout[ghel].Wave()-fdotp*epsdot[ghel]/denom);
+	diag=A5*(fcurrent*gout[ghel].wave()-fdotp*epsdot[ghel]/denom);
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel1,ihel2,0,2*ghel)=diag;
@@ -433,19 +433,19 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   Complex fdotp,epsdot[2],diag;
   Lorentz5Momentum pu(fin[0].getMomentum()+fout[0].getMomentum());
   pu.rescaleMass();
-  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].Wave()*pu;}
+  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave()*pu;}
   Energy2 denom(pu*gin[0].getMomentum());
   LorentzSpinorBar atemp;
   double output(0.);
   for(unsigned int ihel=0;ihel<2;++ihel) {
     for(unsigned int ohel=0;ohel<2;++ohel) {
       // compute the fermion current
-      atemp=fout[ohel].Wave();
-      fcurrent=fin[ihel].Wave().vectorCurrent(atemp);
+      atemp=fout[ohel].wave();
+      fcurrent=fin[ihel].wave().vectorCurrent(atemp);
       fdotp=fcurrent*gin[0].getMomentum();
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5*(fcurrent*gin[ghel].Wave()-fdotp*epsdot[ghel]/denom);
+	diag=A5*(fcurrent*gin[ghel].wave()-fdotp*epsdot[ghel]/denom);
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
@@ -495,19 +495,19 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   Complex fdotp,epsdot[2],diag;
   Lorentz5Momentum pu(fin[0].getMomentum()+fout[0].getMomentum());
   pu.rescaleMass();
-  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].Wave()*pu;}
+  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave()*pu;}
   Energy2 denom(pu*gin[0].getMomentum());
   LorentzSpinorBar atemp;
   double output(0.);
   for(unsigned int ihel=0;ihel<2;++ihel) {
     for(unsigned int ohel=0;ohel<2;++ohel) {
       // compute the fermion current
-      atemp=fin[ihel].Wave();
-      fcurrent=fout[ohel].Wave().vectorCurrent(atemp);
+      atemp=fin[ihel].wave();
+      fcurrent=fout[ohel].wave().vectorCurrent(atemp);
       fdotp=fcurrent*(gin[0].getMomentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5*(fcurrent*gin[ghel].Wave()-fdotp*epsdot[ghel]/denom);
+	diag=A5*(fcurrent*gin[ghel].wave()-fdotp*epsdot[ghel]/denom);
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
@@ -625,17 +625,17 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    for(unsigned int ix=0;ix<2;++ix)
      {
        eps[0][0][ix]=0.;
-       eps[0][1][ix]=g1[ix].Wave()*g2[0].getMomentum()/    pdot[0][1];
-       eps[0][2][ix]=-1.*g1[ix].Wave()*g4[0].getMomentum()/pdot[0][2];
-       eps[0][3][ix]=-1.*g1[ix].Wave()*hout.getMomentum()/ pdot[0][3];
-       eps[1][0][ix]=g2[ix].Wave()*g1[0].getMomentum()/    pdot[1][0];
+       eps[0][1][ix]=g1[ix].wave()*g2[0].getMomentum()/    pdot[0][1];
+       eps[0][2][ix]=-1.*g1[ix].wave()*g4[0].getMomentum()/pdot[0][2];
+       eps[0][3][ix]=-1.*g1[ix].wave()*hout.getMomentum()/ pdot[0][3];
+       eps[1][0][ix]=g2[ix].wave()*g1[0].getMomentum()/    pdot[1][0];
        eps[1][1][ix]=0.;
-       eps[1][2][ix]=-1.*g2[ix].Wave()*g4[0].getMomentum()/pdot[1][2];
-       eps[1][3][ix]=-1.*g2[ix].Wave()*hout.getMomentum()/ pdot[1][3];
-       eps[2][0][ix]=g4[ix].Wave()*g1[0].getMomentum()/    pdot[2][0];
-       eps[2][1][ix]=g4[ix].Wave()*g2[0].getMomentum()/    pdot[2][1];
+       eps[1][2][ix]=-1.*g2[ix].wave()*g4[0].getMomentum()/pdot[1][2];
+       eps[1][3][ix]=-1.*g2[ix].wave()*hout.getMomentum()/ pdot[1][3];
+       eps[2][0][ix]=g4[ix].wave()*g1[0].getMomentum()/    pdot[2][0];
+       eps[2][1][ix]=g4[ix].wave()*g2[0].getMomentum()/    pdot[2][1];
        eps[2][2][ix]=0.;
-       eps[2][3][ix]=-1.*g4[ix].Wave()*hout.getMomentum()/     pdot[2][3];
+       eps[2][3][ix]=-1.*g4[ix].wave()*hout.getMomentum()/     pdot[2][3];
      }
    // prefactors
    double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
@@ -651,10 +651,10 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
        for(unsigned int ohel=0;ohel<2;++ohel) {
-	 wdot[0][1]=g1[ihel1].Wave()*g2[ihel2].Wave();
-	 wdot[0][2]=g1[ihel1].Wave()*g4[ohel ].Wave();
+	 wdot[0][1]=g1[ihel1].wave()*g2[ihel2].wave();
+	 wdot[0][2]=g1[ihel1].wave()*g4[ohel ].wave();
 	 wdot[1][0]=wdot[0][1];
-	 wdot[1][2]=g2[ihel2].Wave()*g4[ohel ].Wave();
+	 wdot[1][2]=g2[ihel2].wave()*g4[ohel ].wave();
 	 wdot[2][0]=wdot[0][2];
 	 wdot[2][1]=wdot[1][2];
 	 // last piece

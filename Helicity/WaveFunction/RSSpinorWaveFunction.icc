@@ -247,7 +247,7 @@ RSSpinorWaveFunction::operator = (const RSSpinorWaveFunction & w)
 }
 
 // return the wavefunction as a LorentzRSSpinor
-inline LorentzRSSpinor RSSpinorWaveFunction::Wave() const{return _wf;}
+inline const LorentzRSSpinor & RSSpinorWaveFunction::wave() const{return _wf;}
 
 // Get components
 inline Complex RSSpinorWaveFunction::xs1() const {return _wf.xs1();}

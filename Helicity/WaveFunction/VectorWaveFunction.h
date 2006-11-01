@@ -337,7 +337,7 @@ public:
   /**
    * Return wavefunction as polarization vector. 
    */
-  inline LorentzPolarizationVector Wave() const;
+  inline const LorentzPolarizationVector & wave() const;
   
   /**
    * Get x component.

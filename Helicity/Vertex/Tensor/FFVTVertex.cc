@@ -43,31 +43,30 @@ Complex FFVTVertex::evaluate(Energy q2, const SpinorWaveFunction & sp,
   // spinor vector
   // low energy convention
   Complex aspin[4];
-  if(sp.Wave().Rep()==HaberDRep&&sbar.Wave().Rep()==HaberDRep)
-    {
-      aspin[3] = sbar.s1()*sp.s1()+sbar.s2()*sp.s2()
-	-sbar.s3()*sp.s3()-sbar.s4()*sp.s4();
-    }
+  LorentzSpinorBar sbart=sbar.wave();
+  LorentzSpinor    spt  =sp.wave();
+  if(sp.wave().Rep()==HaberDRep&&sbar.wave().Rep()==HaberDRep) {
+    aspin[3] = sbart.s1()*spt.s1()+sbart.s2()*spt.s2()
+      -sbart.s3()*spt.s3()-sbart.s4()*spt.s4();
+  }
   // high energy convention
-  else if(sp.Wave().Rep()==HELASDRep&&sbar.Wave().Rep()==HELASDRep)
-    {
-      aspin[3] = sbar.s1()*sp.s3()+sbar.s2()*sp.s4()
-	+sbar.s3()*sp.s1()+sbar.s4()*sp.s2();
-    }
-  else
-    {
-      sp.Wave().changeRep(HELASDRep);
-      sbar.Wave().changeRep(HELASDRep);
-      aspin[3] = sbar.s1()*sp.s3()+sbar.s2()*sp.s4()
-	+sbar.s3()*sp.s1()+sbar.s4()*sp.s2();
-    }
+  else if(sp.wave().Rep()==HELASDRep&&sbar.wave().Rep()==HELASDRep) {
+    aspin[3] = sbart.s1()*spt.s3()+sbart.s2()*spt.s4()
+      +sbart.s3()*spt.s1()+sbart.s4()*spt.s2();
+  }
+  else {
+    spt.changeRep(HELASDRep);
+    sbart.changeRep(HELASDRep);
+    aspin[3] = sbart.s1()*spt.s3()+sbart.s2()*spt.s4()
+      +sbart.s3()*spt.s1()+sbart.s4()*spt.s2();
+  }
   // spatial components are the same in both conventions
-  aspin[0] =     +sbar.s1()*sp.s4()+sbar.s2()*sp.s3()
-    -sbar.s3()*sp.s2()-sbar.s4()*sp.s1();
-  aspin[1] = ii*(-sbar.s1()*sp.s4()+sbar.s2()*sp.s3()
-		 +sbar.s3()*sp.s2()-sbar.s4()*sp.s1());
-  aspin[2] =     +sbar.s1()*sp.s3()-sbar.s2()*sp.s4()
-    -sbar.s3()*sp.s1()+sbar.s4()*sp.s2();
+  aspin[0] =     +sbart.s1()*spt.s4()+sbart.s2()*spt.s3()
+                 -sbart.s3()*spt.s2()-sbart.s4()*spt.s1();
+  aspin[1] = ii*(-sbart.s1()*spt.s4()+sbart.s2()*spt.s3()
+		 +sbart.s3()*spt.s2()-sbart.s4()*spt.s1());
+  aspin[2] =     +sbart.s1()*spt.s3()-sbart.s2()*spt.s4()
+                 -sbart.s3()*spt.s1()+sbart.s4()*spt.s2();
   // trace of the tensor
   Complex trace=ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // dot product

@@ -62,7 +62,7 @@ VectorWaveFunction VSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Energy2 mass2=mass*mass;
   // calculate the prefactor
   Energy2 p2=pout.m2();
-  Complex fact=getNorm()*sca1.Wave()*sca2.Wave()*propagator(iopt,p2,out);
+  Complex fact=getNorm()*sca1.wave()*sca2.wave()*propagator(iopt,p2,out);
   // compute the vector
   Complex vec[4];
   // massive outgoing vector
@@ -102,7 +102,7 @@ ScalarWaveFunction VSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   setCoupling(q2,out,Psca,out);
   // calculate the prefactor
   Energy2 p2 = pout.m2();
-  Complex fact=getNorm()*sca.Wave()*propagator(iopt,p2,out);
+  Complex fact=getNorm()*sca.wave()*propagator(iopt,p2,out);
   // compute the wavefunction
   fact = fact*(+vec.t()*(sca.e() +pout.e() )-vec.x()*(sca.px()+pout.px())
 	       -vec.y()*(sca.py()+pout.py())-vec.z()*(sca.pz()+pout.pz()));

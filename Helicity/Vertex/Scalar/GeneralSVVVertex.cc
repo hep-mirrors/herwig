@@ -34,22 +34,21 @@ Complex GeneralSVVVertex::evaluate(Energy2 q2,
   Lorentz5Momentum pSca = sca.getMomentum();
   Lorentz5Momentum pVec1 = vec1.getMomentum();
   Lorentz5Momentum pVec2 = vec2.getMomentum();
-  if(kinematics()) 	{
+  if(kinematics()) {
     calculateKinematics(pSca,pVec1,pVec2);
   }
   setCoupling(q2,sca.getParticle(),vec1.getParticle(),
 	      vec2.getParticle());
-  complex<Energy> e1p1(vec1.Wave()*pVec1),e1p2(vec1.Wave()*pVec2);
-  complex<Energy> e2p1(vec2.Wave()*pVec1),e2p2(vec2.Wave()*pVec2);
+  complex<Energy> e1p1(vec1.wave()*pVec1),e1p2(vec1.wave()*pVec2);
+  complex<Energy> e2p1(vec2.wave()*pVec1),e2p2(vec2.wave()*pVec2);
   LorentzPolarizationVector eps;
-  eps = EpsFunction::product(vec1.Wave(),vec2.Wave(),
-			     pVec2);
+  eps = EpsFunction::product(vec1.wave(),vec2.wave(),pVec2);
   complex<Energy> p1Ep2 =eps*pVec1;
-  Complex output=_a00*(vec1.Wave()*vec2.Wave())
+  Complex output=_a00*(vec1.wave()*vec2.wave())
     + _a11*e1p1*e2p1 + _a12*e1p1*e2p2
     + _a21*e1p2*e2p1 + _a22*e1p2*e2p2
     + _aEp*p1Ep2;
-  return Complex(0.,1.)*getNorm()*sca.Wave()*output;
+  return Complex(0.,1.)*getNorm()*sca.wave()*output;
 }
 
 }
