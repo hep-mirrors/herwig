@@ -298,8 +298,8 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
 
 double EtaPiGammaGammaDecayer::
 threeBodyMatrixElement(const int imodeb, const Energy2 q2,const  Energy2 s3,
-		       const Energy2 s2,const Energy2 s1,const Energy m1,
-		       const Energy m2,const Energy m3) const {
+		       const Energy2 s2,const Energy2 s1,const Energy ,
+		       const Energy ,const Energy ) const {
   // compute the prefactors
   Energy2 mrho2(_rhomass*_rhomass);
   Energy q(sqrt(s3));
