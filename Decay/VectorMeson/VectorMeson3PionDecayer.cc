@@ -471,7 +471,7 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
 double VectorMeson3PionDecayer::
 threeBodyMatrixElement(const int imode, const Energy2 q2,
 		       const  Energy2 s3, const Energy2 s2, const Energy2 s1, const 
-		       Energy m1, const Energy m2, const Energy m3) const {
+		       Energy , const Energy , const Energy ) const {
   Lorentz5Momentum p1,p2,p3; Energy2 ee1,ee2,ee3;Energy pp1,pp2,pp3;
   Energy q(sqrt(q2));
   Energy2 mpi2c(_mpic*_mpic),mpi20(_mpi0*_mpi0);
