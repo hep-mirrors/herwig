@@ -72,10 +72,10 @@ inline void FourPionNovosibirskCurrent::doinitrun() {
 
 // matrix element for the running a_1 width
 inline double FourPionNovosibirskCurrent::
-threeBodyMatrixElement(const int iopt, const Energy2 q2,
+threeBodyMatrixElement(const int, const Energy2 q2,
 		       const Energy2 s3, const Energy2 s2, 
-		       const Energy2 s1, const Energy  m1,
-		       const Energy  m2, const Energy  m3) const {
+		       const Energy2 s1, const Energy,
+		       const Energy, const Energy) const {
   unsigned int ix;
   // construct the momenta of the decay products
   Energy p1[6],p2[6],p3[6];

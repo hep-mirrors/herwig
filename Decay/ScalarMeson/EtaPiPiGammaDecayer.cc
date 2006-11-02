@@ -460,9 +460,9 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
 }
 
 double EtaPiPiGammaDecayer::
-threeBodyMatrixElement(const int imodeb,const Energy2 q2,const  Energy2 s3,const 
-		       Energy2 s2,const Energy2 s1,const Energy m1,
-		       const Energy m2,const Energy m3) const {
+threeBodyMatrixElement(const int imodeb,const Energy2 ,const  Energy2 s3,const 
+		       Energy2 s2,const Energy2 s1,const Energy ,
+		       const Energy ,const Energy ) const {
   Complex pre(_coupling[imodeb]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
   Energy q(sqrt(s3));
   Complex ii(0.,1.);

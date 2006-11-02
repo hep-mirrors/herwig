@@ -228,8 +228,8 @@ inline Complex  ThreePionCLEOCurrent::a1BreitWigner(Energy2 q2) const {
 inline double 
 ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
 				       const Energy2 s3, const Energy2 s2, 
-				       const Energy2 s1, const Energy  m1,
-				       const Energy  m2, const Energy  m3) const {
+				       const Energy2 s1, const Energy,
+				       const Energy, const Energy) const {
   Energy p1[6],p2[6],p3[6];
   Energy q=sqrt(q2);
   Energy2 mpi2c=_mpic*_mpic;
