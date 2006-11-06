@@ -9,6 +9,7 @@
 #include "TopDalitzAnalysis.fh"
 #include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
+#include "../Utilities/Histogram.h"
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
 
@@ -37,6 +38,11 @@ public:
    * The copy constructor.
    */
   inline TopDalitzAnalysis(const TopDalitzAnalysis &);
+
+  /**
+   * The destructor.
+   */
+  virtual ~TopDalitzAnalysis();
   //@}
 
 public:
@@ -83,7 +89,32 @@ public:
    */
   virtual void analyze(tPPtr particle);
 
-  void topShower(PPtr,tPVector);
+  /**
+   *  Identifies which step(2) final state particles originate
+   *  from the top/antitop, which originate from the b/bbar...
+   */
+  tPVector particleID(PPtr,tPVector);
+
+  /**
+   *  Function to cluster each decay to 2 jets and calculate the 
+   *  corresponding point on the Dalitz plot.
+   */
+  void     dalitz(tPVector);
+
+  /**
+   *  Function to cluster to 3 jets and calculate delta(R).
+   */
+  void     threeJetAnalysis(Energy2,tPVector,tPVector);
+
+  /**
+   *  Histogram for delta R.
+   */
+  Histogram _deltaR;
+
+  /**
+   *  Histogram for log(y3).
+   */
+  Histogram _logy3;
   //@}
 
 public:
@@ -166,7 +197,7 @@ private:
   /**
    *  Output stream
    */
-  ofstream _output;
+  ofstream _output[3];
 
   /**
    *  Number of outputs
