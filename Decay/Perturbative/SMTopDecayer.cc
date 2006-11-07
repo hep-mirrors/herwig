@@ -42,41 +42,61 @@ SMTopDecayer::SMTopDecayer()
 }
   
 bool SMTopDecayer::accept(const DecayMode & dm) const {
-  return abs(dm.parent()->id()) == ParticleID::t;
+  if(abs(dm.parent()->id()) != ParticleID::t) return false;
+  int id0(0),id1(0),id2(0);
+  for(ParticleMSet::const_iterator it = dm.products().begin();
+      it != dm.products().end();++it) {
+    int id=(**it).id(),absid(abs(id));
+    if(absid==ParticleID::b&&double(id)/double(dm.parent()->id())>0) {
+      id0=id;
+    }
+    else {
+      switch (absid) {
+      case ParticleID::nu_e: 
+      case ParticleID::nu_mu:
+      case ParticleID::nu_tau:
+	id1 = id;
+	break;
+      case ParticleID::eminus:
+      case ParticleID::muminus:
+      case ParticleID::tauminus:
+	id2 = id;
+	break;
+      case ParticleID::d:
+      case ParticleID::s:
+	id1 = id;
+	break;
+      case ParticleID::u:
+      case ParticleID::c:
+	id2=id;
+	break;
+      default :
+	break;
+      }
+    }
+  }
+  if(id0==0||id1==0||id2==0) return false;
+  if(double(id1)/double(id2)>0) return false;
+  return true;
 }
   
 ParticleVector SMTopDecayer::decay(const DecayMode & dm,
 				   const Particle & parent) const {
-  int id0(0),id1(0),id2(0);
+  int id1(0),id2(0);
   for(ParticleMSet::const_iterator it = dm.products().begin();
       it != dm.products().end();++it) {
-    if(abs((*it)->id()) == ParticleID::b){id0 = (*it)->id();}
-    else {
-      //leptons
-      if(abs((*it)->id()) == ParticleID::nu_e ||
-	 abs((*it)->id()) == ParticleID::nu_mu ||
-	 abs((*it)->id()) == ParticleID::nu_tau)
-	{id1 = (*it)->id();}
-      
-      if(abs((*it)->id()) == ParticleID::eminus ||
-	 abs((*it)->id()) == ParticleID::muminus ||
-	 abs((*it)->id()) == ParticleID::tauminus)
-	{id2 = (*it)->id();}
-      //quarks
-      if(abs((*it)->id()) == ParticleID::d||
-	 abs((*it)->id()) == ParticleID::s)
-	{id1=(*it)->id();}
-      if(abs((*it)->id()) == ParticleID::u||
-	 abs((*it)->id()) == ParticleID::c)
-	{id2=(*it)->id();}
-    }
+    int id=(**it).id(),absid=abs(id);
+    if(absid == ParticleID::b && double(id)/double(parent.id())>0) continue;
+    //leptons
+    if(absid > 10 && absid%2==0) id1=absid;
+    if(absid > 10 && absid%2==1) id2=absid;
+    //quarks
+    if(absid < 10 && absid%2==0) id2=absid;
+    if(absid < 10 && absid%2==1) id1=absid;
   }
   unsigned int imode(0);
-  if(abs(id2) >=11 && abs(id2)<=16) imode = (abs(id1)%3)/2;
-  if(abs(id1) == ParticleID::d && abs(id2) == ParticleID::u) imode = 3;
-  if(abs(id1) == ParticleID::d && (id2) == ParticleID::c) imode = 4;
-  if(abs(id1) == ParticleID::s) imode = 4 + abs(id2)/2;
-  if(abs(id1) == ParticleID::b) imode = 6 + abs(id2)/2;
+  if(abs(id2) >=11 && abs(id2)<=16) imode = (abs(id1)-12)/2;
+  else imode = id1+1+id2/2;
   bool cc = parent.id() == ParticleID::tbar;
   ParticleVector out(generate(true,cc,imode,parent));
   //arrange colour flow
