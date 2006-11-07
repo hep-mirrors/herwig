@@ -95,7 +95,7 @@ ParticleVector SMTopDecayer::decay(const DecayMode & dm,
     if(absid < 10 && absid%2==1) id1=absid;
   }
   unsigned int imode(0);
-  if(abs(id2) >=11 && abs(id2)<=16) imode = (abs(id1)-12)/2;
+  if(id2 >=11 && id2<=16) imode = (id1-12)/2;
   else imode = id1+1+id2/2;
   bool cc = parent.id() == ParticleID::tbar;
   ParticleVector out(generate(true,cc,imode,parent));
