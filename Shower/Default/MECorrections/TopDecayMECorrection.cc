@@ -19,11 +19,13 @@
 using namespace Herwig;
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
-    os << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2;
+    os << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2
+       << _cutoffQCDMassScale;
 }
 
 void TopDecayMECorrection::persistentInput(PersistentIStream & is, int) {
-    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2;
+    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2
+       >> _cutoffQCDMassScale;
 }
 
 ClassDescription<TopDecayMECorrection> TopDecayMECorrection::initTopDecayMECorrection;
@@ -72,6 +74,12 @@ void TopDecayMECorrection::Init() {
      "Use the Matrix element to fill the T2 region",
      true);
 
+  static Parameter<TopDecayMECorrection,Energy>
+    interfaceCutoffQCD ("CutoffQCDMassScale",
+			"low energy cutoff mass scale for QCD radiation  (unit [GeV])",
+			&TopDecayMECorrection::_cutoffQCDMassScale, GeV, 
+			0.0*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
+
 }
 
 bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial, 
@@ -105,7 +113,7 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   // set the top mass
   _mt=tree->incomingLines().begin()->first->progenitor()->mass();
   // set the gluon mass
-  _mg=getParticleData(ParticleID::g)->constituentMass();
+  _mg=_cutoffQCDMassScale;
   // set the radiation enhancement factors
   initial = _initialenhance;
   final   = _finalenhance;
@@ -130,8 +138,8 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   double ktb(0.),ktc(0.);
   for(cit = tree->incomingLines().begin();
       cit!= tree->incomingLines().end();++cit) {
-    if(abs(cit->first->progenitor()->id())==6)
-      ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
+      if(abs(cit->first->progenitor()->id())==6) 
+	  ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
   }
   for(cit = tree->outgoingLines().begin();
       cit!= tree->outgoingLines().end();++cit) {
@@ -156,7 +164,7 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   bool check = true; 
   if (newfs[0].e()<ba[0]->data().constituentMass()) check = false;
   if (newfs[1].e()<ba[1]->mass())                   check = false;
-  if (newfs[2].e()<ba[2]->data().constituentMass()) check = false;
+  if (newfs[2].e()<_cutoffQCDMassScale)             check = false;
   // Return if insane:
   if (!check) return;
   // Set masses in 5-vectors:
@@ -456,3 +464,4 @@ double TopDecayMECorrection::me(double xw,double xg)
     +(0.5*(1.+2.*_a+_c)*sqr(prop-xg)*xg+2.*_a*prop*xg2)/denom;
   return wgt/(lambda*prop);
 }
+

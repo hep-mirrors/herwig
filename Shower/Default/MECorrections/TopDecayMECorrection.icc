@@ -9,7 +9,8 @@ namespace Herwig {
 inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),
 						      _initialenhance(1.), 
 						      _finalenhance(1.8),
-						      _useMEforT2(true)
+						      _useMEforT2(true),
+				       _cutoffQCDMassScale( 0.75*GeV )
 {}
 
 inline IBPtr TopDecayMECorrection::clone() const {
@@ -273,3 +274,4 @@ inline LorentzRotation TopDecayMECorrection::rotateToZ(Lorentz5Momentum v) {
 }
 
 }
+
