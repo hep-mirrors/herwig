@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[2.0.0],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
+AC_INIT([Herwig++],[SVN],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
 
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
