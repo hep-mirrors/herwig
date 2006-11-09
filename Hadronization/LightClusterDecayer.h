@@ -118,7 +118,7 @@ private:
    * This (private) method, called by decay(), takes care of the kinematical
    * reshuffling necessary for energy-momentum conservation.
    */
-  bool reshuffling( const long, tClusterPtr, tClusterPtr,
+  bool reshuffling( const tcPDPtr, tClusterPtr, tClusterPtr,
 		    const StepPtr , tClusterVector &) 
     throw (Veto, Stop, Exception); 
   
@@ -129,12 +129,12 @@ private:
    * @param cluster The cluster to be reshuffled
    * @param step The step into which the particles are inserted
    */
-  bool partonicReshuffle(const long idhad,const PPtr cluster,const StepPtr step);
+  bool partonicReshuffle(const tcPDPtr hadron,const PPtr cluster,const StepPtr step);
 
   /**
    * A pointer to a Herwig::HadronSelector object used for producing hadrons.
    */
-  Ptr<HadronSelector>::pointer _hadronsSelector;
+  Ptr<HadronSelector>::pointer _hadronSelector;
 
   /**
    * A parameter used for determining when b clusters are too light.

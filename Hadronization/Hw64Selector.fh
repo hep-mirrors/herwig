@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Hw64Selector class.
+//
+#ifndef HERWIG_Hw64Selector_FH
+#define HERWIG_Hw64Selector_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Hw64Selector;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Hw64Selector,Hw64SelectorPtr);
+
+}
+
+#endif

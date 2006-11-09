@@ -13,9 +13,8 @@
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
-#include "Herwig++/Utilities/HwDebug.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/CheckId.h"
+#include "CheckId.h"
 #include "Herwig++/Utilities/Smearing.h"
 #include "Cluster.h"
 
@@ -106,20 +105,6 @@ void ClusterDecayer::decay(const StepPtr &pstep)
       pstep->addDecayProduct(*it,prod.second);
     }
   }
-  
-  if (HERWIG_DEBUG_LEVEL == 66) {
-    cout << "Generating Kupco tables for Mclu = 500*GeV " 
-	 << "(see Hadronization/HadronSelector.cc for Details)" << endl; 
-    short ii, jj; 
-    for (ii=1; ii<6; ii++) for (jj=1; jj<6; jj++) {
-      cout << "#=======================================" 
-	   << "=======================================" << endl
-	   << "#--- (" << ii << ", " << jj << ") ---" 
-	   << endl;
-      _hadronsSelector->chooseHadronPair(500*GeV,ii,-jj);
-      cout << endl; 
-    }  
-  }
 }
 
 
@@ -149,10 +134,6 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons "
 				       "***Still cluster with not exactly 2 components*** ", 
 				       Exception::warning) );
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-      generator()->log() << "         ===>" << " num components = " << ptr->numComponents()
-			 << endl << endl;
-    }
     return pair<PPtr,PPtr>();
   }
      
@@ -163,21 +144,6 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   id1 = ptr1->id();
   ptr2 = ptr->particle(1);
   id2 = ptr2->id();
-
-
-  // Sanity check (normally skipped) to control that the two components of a
-  // cluster are consistent, that is they can form a meson or a baryon.
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-    if (!CheckId::canBeMeson(id1,id2) && !CheckId::canBeBaryon(id1,id2)) {
-      generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons "
-					 "***The two components of the cluster are inconsistent***", 
-					 Exception::warning) );
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" 
-			   << " id1=" << id1 << " id2=" << id2 << endl << endl;
-      }
-    }
-  }
 
   // Be careful that in these method we use "1" and "2" for the two hadrons
   // produced by the decay of the cluster, whereas "1" and "2" in the 
@@ -276,91 +242,54 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
       uSmear_v3.setTheta( acos( cosTheta ) );
       uSmear_v3.rotate( UseRandom::rnd( -pi , pi ) , u_v3 );  // smear in phi around u_v3
     }
-  } else {
-
+  } 
+  else {
+    
     // Isotropic decay: flat in cosTheta and phi. 
     uSmear_v3 = Vector3(1.0, 0.0, 0.0);  // just to set the rho to 1
     uSmear_v3.setTheta( acos( UseRandom::rnd( -1.0 , 1.0 ) ) );
     uSmear_v3.setPhi( UseRandom::rnd( -pi , pi ) );   
-
+    
   }
 
-  // Sanity check (normally skipped) to see if the smearing makes sense.
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
-    if ( fabs( uSmear_v3.mag() - 1.0 ) > 1.0e-3 ) {
-      generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons " 
-					 "***Wrong direction of decay***", 
-					 Exception::warning) );    
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===> " << endl
-			   << " \t uSmear_v3 = " << uSmear_v3 
-			   << "  rho = " << uSmear_v3.mag() << endl;
-      }
-    } else {
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Hadronization ) {    
-        Lorentz5Momentum pQ = ptr1->momentum();
-        if ( secondHad ) {
-          pQ = ptr2->momentum();
-        }                                 
-        pQ.boost( -pClu.boostVector() ); 
-        generator()->log() << "ClusterDecayer::decayIntoTwoHadrons : *** extreme debugging ***" << endl
-	                   << "\t isotropic=" 
-			   << ! (priorityHad1 || priorityHad2) << "\t CM angle = "
-			   << uSmear_v3.angle( pQ.vect().unit() ) << endl;
-      }
-    }
-  }
-
-  pair<long,long> idPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
-							      id1,id2);
-  if(idPair.first == 0 || idPair.second == 0) return pair<PPtr,PPtr>();
+  pair<tcPDPtr,tcPDPtr> dataPair = _hadronsSelector->chooseHadronPair(ptr->mass(),
+								      id1,id2);
+  if(dataPair.first  == tcPDPtr() || 
+     dataPair.second == tcPDPtr()) return pair<PPtr,PPtr>();
 
   // Create the two hadron particle objects with the specified id.
   PPtr ptrHad1,ptrHad2;
   // produce the hadrons on mass shell
-  if(_onshell)
-    {
-      tPDPtr pdata(getParticleData(idPair.first));
-      ptrHad1 = pdata->produceParticle(pdata->mass());
-      pdata= getParticleData(idPair.second);
-      ptrHad2 = pdata->produceParticle(pdata->mass());
-    }
+  if(_onshell) {
+    ptrHad1 = dataPair.first ->produceParticle(dataPair.first ->mass());
+    ptrHad2 = dataPair.second->produceParticle(dataPair.second->mass());
+  }
   // produce the hadrons with mass given by the mass generator
-  else
-    {
-      unsigned int ntry(0);
-      do
-	{
-	  ptrHad1 = getParticle(idPair.first);
-	  ptrHad2 = getParticle(idPair.second);
-	  ++ntry;
-	}
-      while(ntry<_masstry&&ptrHad1->mass()+ptrHad2->mass()>ptr->mass());
-      // if fails produce on shell and issue warning (should never happen??)
-      if(ptrHad1->mass()+ptrHad2->mass()>ptr->mass())
-	{
-	  generator()->log() << "Failed to produce off-shell hadrons in "
-			     << "ClusterDecayer::decayIntoTwoHadrons producing hadrons "
-			     << "on-shell" << endl;
-	  tPDPtr pdata(getParticleData(idPair.first));
-	  ptrHad1 = pdata->produceParticle(pdata->mass());
-	  pdata= getParticleData(idPair.second);
-	  ptrHad2 = pdata->produceParticle(pdata->mass());
-	}
+  else {
+    unsigned int ntry(0);
+    do {
+      ptrHad1 = dataPair.first ->produceParticle();
+      ptrHad2 = dataPair.second->produceParticle();
+      ++ntry;
     }
-
+    while(ntry<_masstry&&ptrHad1->mass()+ptrHad2->mass()>ptr->mass());
+    // if fails produce on shell and issue warning (should never happen??)
+    if(ptrHad1->mass()+ptrHad2->mass()>ptr->mass()) {
+      generator()->log() << "Failed to produce off-shell hadrons in "
+			 << "ClusterDecayer::decayIntoTwoHadrons producing hadrons "
+			 << "on-shell" << endl;
+      ptrHad1 = dataPair.first ->produceParticle(dataPair.first ->mass());
+      ptrHad2 = dataPair.second->produceParticle(dataPair.second->mass());
+    }
+  }
+  
   if (!ptrHad1  ||  !ptrHad2) {
     ostringstream s;
     s << "ClusterDecayer::decayIntoTwoHadrons ***Cannot create the two hadrons***"
-      << idPair.first << " and " << idPair.second;
+      << dataPair.first ->PDGName() << " and " 
+      << dataPair.second->PDGName();
     cerr << s.str() << endl;
     generator()->logWarning( Exception(s.str(), Exception::warning) );
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-      generator()->log() << "         ===>" 
-			 << " id1=" << id1 << " id2=" << id2 
-			 << " had1=" << idPair.first << " had2=" << idPair.second 
-			 << endl << endl;
-    }
   } else {
 
     Lorentz5Momentum pHad1, pHad2;  // 5-momentum vectors that we have to determine
@@ -381,28 +310,6 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     calculatePositions(pClu, ptr->vertex(), pHad1, pHad2, positionHad1, positionHad2);
     ptrHad1->setLabVertex(positionHad1);
     ptrHad2->setLabVertex(positionHad2);
-    
-    // Sanity check (normally skipped) to see if the energy-momentum is conserved.
-    /* if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
-      Lorentz5Momentum diff = pClu - ( pHad1 + pHad2 );
-      Energy ediff = fabs( diff.m() );
-      if ( ediff > 1e-3*GeV ) {
-	generator()->logWarning( Exception("ClusterDecayer::decayIntoTwoHadrons " 
-					   "***Energy-momentum NOT conserved***", 
-					   Exception::warning) );    
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  generator()->log() << "         ===> " << endl
-			     << " \t Cluster : components ids = " << id1 << " " << id2
-			     << " ---> hadrons ids =" << idPair.first << " " 
-			     << idPair.second << endl
-			     << "   diff " << diff << endl
-			     << "   " << pClu << " ---> " << (pHad1+pHad2) << endl  
-			     << " = "<< pHad1 << " + " << pHad2 << endl << endl;
-	}      
-      }
-    }
-    */
-
   }
   return pair<PPtr,PPtr>(ptrHad1,ptrHad2);
 }
@@ -432,19 +339,7 @@ calculatePositions(const Lorentz5Momentum &pClu,
 	distanceHad2[j] = delta;	
       }
     }
-  } 
-
-  // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Hadronization ) {
-    generator()->log() << "ClusterDecayer::calculatePositions : *** extreme debugging ***" << endl
-                       << "\t cluster mass  = " << pClu.m() / GeV << "  [GeV] " << endl
-                       << "\t smearingWidth = " << smearingWidth  << "  [mm] "  << endl
-                       << "\t distanceHad1  = " << distanceHad1 
-                       << "\t invariant length: = " << distanceHad1.mag() << "  [mm] " << endl
-                       << "\t distanceHad2  = " << distanceHad2 
-                       << "\t invariant length: = " << distanceHad2.mag() << "  [mm] " << endl;
-  } 
-
+  }
   // Then, boost such relative positions of the children hadrons,
   // with respect to their parent cluster,
   // from the cluster reference frame to the Lab frame.

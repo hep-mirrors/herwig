@@ -21,6 +21,8 @@ using namespace ThePEG;
  *  immediately after the end of the showering (both initial and final),
  *  as very first step of the cluster hadronization.
  *
+ *  \todo change so quark weights can be varied and quarks other
+ *        than u and d can be produced
  */
 class PartonSplitter: public Interfaced {
 
@@ -92,39 +94,15 @@ private:
   PartonSplitter & operator=(const PartonSplitter &);
 
   /**
-   * Given in input a pointer to a time-like gluon, it forces
-   * a nonperturbative quark - anti-quark splitting, returning
-   * the pointers to these produced two new particles. 
-   * If something wrong happens, it will returns null pointers.
+   * Non-perturbatively split a time-like gluon,
+   * if something goes wrong null pointers are returned.
+   * @param ptrGluon The gluon to be split
+   * @param quark The quark produced in the splitting
+   * @param anti  The antiquark produced in the splitting
    */
-  void splitTimeLikeGluon(tcPPtr ptrGluon,                   // input        
-			  PPtr & ptrQ, PPtr & ptrQbar);      // output
-  
-  /**
-   * Given in input a pointer to a space-like gluon, it forces
-   * a nonperturbative quark - anti-quark splitting, returning
-   * the pointers to these produced two new particles. 
-   * If something wrong happens, it will returns null pointers.
-   */
-  //void splitSpaceLikeGluon(tcPPtr ptrGluon,                  // input       
-  //         		     PPtr & ptrQ, PPtr & ptrQbar);     // output
-  
-  /**
-   * Given in input a pointer to a space-like sea quark, it forces 
-   * a nonperturbative soft gluon emission, returning the pointers 
-   * to the emitted gluon and the sea quark after the emission. 
-   * If something wrong happens, it will return null pointers.
-   */
-  //void splitSpaceLikeSeaQuark(tcPPtr ptrSeaQ0,                   // input
-  //			        PPtr & ptrGluon, PPtr & ptrSeaQ1); // output
-
-  /**
-   * Print full information for debugging.
-   */
-  void debuggingInfo(const tPVector & tagged, const set<tPPtr> & newPartons);
+  void splitTimeLikeGluon(tcPPtr gluon, PPtr & quark, PPtr & anti);
 
 };
-
 
 }
 
