@@ -37,7 +37,7 @@ insert theShowerModel:MECorrections 2  DrellYan
 set DrellYan:Coupling theShowerAlphaQCD
 #
 # a few default values
-set theEvolver:MECorrMode 0
+set theEvolver:MECorrMode 1
 set theShowerAlphaQCD:ScaleFactor 1.0
 set theShowerAlphaQED:ScaleFactor 1.0
 set theShowerAlphaQCD:NPAlphaS 2
