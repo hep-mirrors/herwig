@@ -22,12 +22,12 @@ using namespace Herwig;
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
   os << _hadronsSelector << _clMax << _clPow << _pSplit1 << _pSplit2 
-     << _btClM << _iopRem;
+     << _btClM << _iopRem << ounit(_kappa, GeV/m);
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
   is >> _hadronsSelector >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 
-     >> _btClM >> _iopRem;
+     >> _btClM >> _iopRem >> iunit(_kappa, GeV/m);
 }
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
@@ -83,6 +83,13 @@ void ClusterFissioner::Init() {
      "Parameter for the mass spectrum of remnant clusters",
      &ClusterFissioner::_btClM, GeV, 1.*GeV, 0.1*GeV, 10.0*GeV,
      false, false, Interface::limited);
+
+  
+  static Parameter<ClusterFissioner,Tension> interfaceStringTension
+    ("StringTension",
+     "String tension used in vertex displacement calculation",
+     &ClusterFissioner::_kappa, GeV/m, 1.0e15*GeV/m, 0.0*GeV/m, 0*GeV/m,
+     false, false, Interface::lowerlim);
 
 }
 
@@ -603,18 +610,13 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
-
-  //   Need to fix hbarc conversion here. Need original paper.
-
-  double GeV2mm = hbarc / (GeV * millimeter);
-  Length x1 = GeV2mm * (Mclu*0.25 + 0.5
-                     *(pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/GeV;
-  Length t1 = ((Mclu/GeV) * GeV2mm - x1); 
+  Length x1 = ( 0.25*Mclu + 0.5*( pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
+  Length t1 = Mclu/_kappa - x1; 
   LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
-  Length x2 = GeV2mm * (-Mclu*0.25 + 0.5
-                     *(-pstarChild + (sqr(Mclu2) - sqr(Mclu))/(2.0*Mclu)))/GeV;
-  Length t2 = ((Mclu/GeV) * GeV2mm + x2);
-  LorentzDistance distanceClu2(x2 * u.vect().unit(), t2);
+
+  Length x2 = (-0.25*Mclu + 0.5*(-pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
+  Length t2 = Mclu/_kappa + x2;
+  LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );
 
   // Then, transform such relative positions from the parent cluster
   // reference frame to the Lab frame.

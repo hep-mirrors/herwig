@@ -12,7 +12,8 @@ inline ClusterFissioner::ClusterFissioner() :
   _pSplit1( 1.0 ),
   _pSplit2( 1.0 ),
   _btClM( 1.0*GeV ),
-  _iopRem( 1 )
+  _iopRem( 1 ),
+  _kappa(1.0e15*GeV/meter)
 {}
 
 inline IBPtr ClusterFissioner::clone() const {
