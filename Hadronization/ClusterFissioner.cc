@@ -22,12 +22,12 @@ using namespace Herwig;
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
   os << _hadronsSelector << _clMax << _clPow << _pSplit1 << _pSplit2 
-     << _btClM << _iopRem << ounit(_kappa, GeV/m);
+     << _btClM << _iopRem << ounit(_kappa, GeV/meter);
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
   is >> _hadronsSelector >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 
-     >> _btClM >> _iopRem >> iunit(_kappa, GeV/m);
+     >> _btClM >> _iopRem >> iunit(_kappa, GeV/meter);
 }
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
@@ -88,7 +88,8 @@ void ClusterFissioner::Init() {
   static Parameter<ClusterFissioner,Tension> interfaceStringTension
     ("StringTension",
      "String tension used in vertex displacement calculation",
-     &ClusterFissioner::_kappa, GeV/m, 1.0e15*GeV/m, 0.0*GeV/m, 0*GeV/m,
+     &ClusterFissioner::_kappa, GeV/meter, 
+     1.0e15*GeV/meter, 0.0*GeV/meter, 0*GeV/meter,
      false, false, Interface::lowerlim);
 
 }
