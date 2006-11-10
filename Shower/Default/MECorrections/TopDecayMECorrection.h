@@ -327,11 +327,6 @@ private:
    */
   bool _useMEforT2;
 
-  /**
-   *  The cutoff on the QCD shower
-   */
-  Energy _cutoffQCDMassScale;
-
 };
 
 }

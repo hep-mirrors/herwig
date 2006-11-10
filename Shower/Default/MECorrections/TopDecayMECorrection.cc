@@ -19,13 +19,11 @@
 using namespace Herwig;
 
 void TopDecayMECorrection::persistentOutput(PersistentOStream & os) const {
-    os << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2
-       << _cutoffQCDMassScale;
+    os << _initialenhance << _finalenhance << _xg_sampling << _useMEforT2;
 }
 
 void TopDecayMECorrection::persistentInput(PersistentIStream & is, int) {
-    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2
-       >> _cutoffQCDMassScale;
+    is >> _initialenhance >> _finalenhance >> _xg_sampling >> _useMEforT2;
 }
 
 ClassDescription<TopDecayMECorrection> TopDecayMECorrection::initTopDecayMECorrection;
@@ -74,12 +72,6 @@ void TopDecayMECorrection::Init() {
      "Use the Matrix element to fill the T2 region",
      true);
 
-  static Parameter<TopDecayMECorrection,Energy>
-    interfaceCutoffQCD ("CutoffQCDMassScale",
-			"low energy cutoff mass scale for QCD radiation  (unit [GeV])",
-			&TopDecayMECorrection::_cutoffQCDMassScale, GeV, 
-			0.0*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
-
 }
 
 bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial, 
@@ -113,7 +105,7 @@ bool TopDecayMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   // set the top mass
   _mt=tree->incomingLines().begin()->first->progenitor()->mass();
   // set the gluon mass
-  _mg=_cutoffQCDMassScale;
+  _mg=getParticleData(ParticleID::g)->constituentMass();
   // set the radiation enhancement factors
   initial = _initialenhance;
   final   = _finalenhance;
@@ -138,8 +130,8 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   double ktb(0.),ktc(0.);
   for(cit = tree->incomingLines().begin();
       cit!= tree->incomingLines().end();++cit) {
-      if(abs(cit->first->progenitor()->id())==6) 
-	  ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
+    if(abs(cit->first->progenitor()->id())==6)
+      ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
   }
   for(cit = tree->outgoingLines().begin();
       cit!= tree->outgoingLines().end();++cit) {
@@ -162,9 +154,10 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   if(newfs.size()!=3) return;
   // Sanity checks to ensure energy greater than mass etc :)
   bool check = true; 
+  tcPDPtr gluondata=getParticleData(ParticleID::g);
   if (newfs[0].e()<ba[0]->data().constituentMass()) check = false;
   if (newfs[1].e()<ba[1]->mass())                   check = false;
-  if (newfs[2].e()<_cutoffQCDMassScale)             check = false;
+  if (newfs[2].e()<gluondata->constituentMass())    check = false;
   // Return if insane:
   if (!check) return;
   // Set masses in 5-vectors:
@@ -174,9 +167,9 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   // The next part of this routine sets the colour structure.
   // To do this for decays we assume that the gluon comes from c!
   // First create new particle objects for c, a and gluon:
-  PPtr newg = getParticleData(ParticleID::g)->produceParticle(newfs[2]);
+  PPtr newg = gluondata->produceParticle(newfs[2]);
   PPtr newc,newa;
-  newc = getParticleData(ba[0]->id())->produceParticle(newfs[0]);
+  newc = ba[0]->data().produceParticle(newfs[0]);
   newa = ba[1];
   newa->set5Momentum(newfs[1]);
   // set the colour lines
@@ -225,7 +218,6 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   ShowerProgenitorPtr gluon=new_ptr(ShowerProgenitor(orig,newg,sg));
   gluon->perturbative(false);
   tree->outgoingLines().insert(make_pair(gluon,sg));
-
   if(!inTheDeadRegion(_xg,_xa,_ktb,_ktc)) {
     generator()->log()
       << "TopDecayMECorrection::applyHardMatrixElementCorrection()\n"
@@ -302,18 +294,19 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   pc_brf.setE(0.5*_mt*(2.-_xa-_xg));
   pg_brf.setE(0.5*_mt*_xg);
   // then their masses,
-  pc_brf.setMass(_mc);  
-  pg_brf.setMass(_mg);  
+  pc_brf.setMass(_mc);
+  pg_brf.setMass(0.);
   // Now set the z-component of c and g. For pg we simply start from
   // _xa and _xg, while for pc we assume it is equal to minus the sum
   // of the z-components of a (assumed to point in the +z direction) and g.
-  pg_brf.setPz(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a)/sqrt(_xa*_xa-4.*_a));
-  pc_brf.setPz(-1.*( pg_brf.z()+_mt*sqrt(0.25*_xa*_xa-_a)));
+  double root=sqrt(_xa*_xa-4.*_a);
+  pg_brf.setPz(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a)/root);
+  pc_brf.setPz(-1.*( pg_brf.z()+_mt*0.5*root));
   // Now set the y-component of c and g's momenta
   pc_brf.setPy(0.);
   pg_brf.setPy(0.);
   // Now set the x-component of c and g's momenta
-  pg_brf.setPx(sqrt(sqr(pg_brf.t())-_mg*_mg-sqr(pg_brf.z())));
+  pg_brf.setPx(sqrt(sqr(pg_brf.t())-sqr(pg_brf.z())));
   pc_brf.setPx(-pg_brf.x());
   // Momenta b,c,g are now set. Now we obtain a from momentum conservation,
   pa_brf = pb_brf-pc_brf-pg_brf;
@@ -337,7 +330,6 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   fs.push_back(pa_lab); 
   fs.push_back(pg_lab); 
   return fs;
-
 }
 
 double TopDecayMECorrection::getHard(double ktb, double ktc) 
@@ -464,4 +456,3 @@ double TopDecayMECorrection::me(double xw,double xg)
     +(0.5*(1.+2.*_a+_c)*sqr(prop-xg)*xg+2.*_a*prop*xg2)/denom;
   return wgt/(lambda*prop);
 }
-
