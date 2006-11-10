@@ -76,58 +76,76 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
     bool specialCase = false;
 
     if((*pit)->hasColour()) {
-      if(pstep->antiColourNeighbour(*pit)) {
-	connected[iElement++]= pstep->antiColourNeighbour( *pit );
-      } else {       // colour source : baryon-violating process
-        if((*pit)->colourLine()->sourceNeighbours() != tColinePair()) {
-	  tColinePair sourcePair = (*pit)->colourLine()->sourceNeighbours();
-	  tColinePtr intCL = tColinePtr();
-	  for(int i = 0; i < 2; ++i) {
-	    tColinePtr pLine = sourcePair.first; 
-	    if(i == 1) pLine = sourcePair.second;
-            int saveNumElements = iElement;
-	    for(tPVector::const_iterator cit = pLine->coloured().begin(); 
-		cit != pLine->coloured().end(); ++cit )
-	      for(ParticleSet::const_iterator cjt = inputParticles.begin();
-		   cjt != inputParticles.end(); ++cjt)
-		if((*cit) == (*cjt)) connected[iElement++]= (*cit);      
-	    if(iElement == saveNumElements) intCL = pLine;
-	  }
-	  if(intCL && iElement == 2) {
-	    specialCase = true;
-	    pair<tPPtr,tPPtr> qp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
-	    quarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,qp)); 
-	  }
-	} 
+      tPPtr partner=pstep->antiColourNeighbour(*pit);
+      if(partner) {
+	connected[iElement++]= partner;
+      } 
+      else {       // colour source : baryon-violating process
+
+	// this is not supported yet exit
+	throw Exception() << "Baryon number violating colour flows not yet implemented"
+			  << " if you are not trying to simulation a BNV process some"
+			  << "thing is probably wrong with the colour connections"
+			  << Exception::runerror;
+
+
+//         if((*pit)->colourLine()->sourceNeighbours() != tColinePair()) {
+// 	  tColinePair sourcePair = (*pit)->colourLine()->sourceNeighbours();
+// 	  tColinePtr intCL = tColinePtr();
+// 	  for(int i = 0; i < 2; ++i) {
+// 	    tColinePtr pLine = sourcePair.first; 
+// 	    if(i == 1) pLine = sourcePair.second;
+//             int saveNumElements = iElement;
+// 	    for(tPVector::const_iterator cit = pLine->coloured().begin(); 
+// 		cit != pLine->coloured().end(); ++cit )
+// 	      for(ParticleSet::const_iterator cjt = inputParticles.begin();
+// 		   cjt != inputParticles.end(); ++cjt)
+// 		if((*cit) == (*cjt)) connected[iElement++]= (*cit);      
+// 	    if(iElement == saveNumElements) intCL = pLine;
+// 	  }
+// 	  if(intCL && iElement == 2) {
+// 	    specialCase = true;
+// 	    pair<tPPtr,tPPtr> qp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
+// 	    quarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,qp)); 
+// 	  }
+//      }	
       }
     }
 
     if((*pit)->hasAntiColour()) {
-      if(pstep->colourNeighbour(*pit)) {
-	connected[iElement++]= pstep->colourNeighbour(*pit);
-      } else {       // colour sink : baryon-violating process
-        if((*pit)->antiColourLine()->sinkNeighbours() != tColinePair()) {
-	  tColinePair sinkPair = (*pit)->antiColourLine()->sinkNeighbours();
-	  tColinePtr intCL = tColinePtr();
-	  for(int i = 0; i < 2; ++i) {
-	    tColinePtr pLine = sinkPair.first; 
-	    if(i == 1) pLine = sinkPair.second;
-            int saveNumElements = iElement;
-	    for(tPVector::const_iterator cit = pLine->antiColoured().begin();
-		cit != pLine->antiColoured().end(); ++cit) {
-	      for(ParticleSet::const_iterator cjt = inputParticles.begin();
-		  cjt != inputParticles.end(); ++cjt) {
-		if((*cit) == (*cjt)) connected[iElement++]= (*cit);      
-	      }
-	    }
-	    if(iElement == saveNumElements) intCL = pLine;
-	  }
-	  if(intCL && iElement == 2) {
-	    specialCase = true;
-	    pair<tPPtr,tPPtr> aqp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
-	    aQuarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,aqp));
-	  }
-	} 
+      tPPtr partner=pstep->colourNeighbour(*pit);
+      if(partner) {
+	connected[iElement++]=partner; 
+      } 
+      else {       // colour sink : baryon-violating process
+
+	// this is not supported yet exit
+	throw Exception() << "Baryon number violating colour flows not yet implemented"
+			  << " if you are not trying to simulation a BNV process some"
+			  << "thing is probably wrong with the colour connections"
+			  << Exception::runerror;
+//         if((*pit)->antiColourLine()->sinkNeighbours() != tColinePair()) {
+// 	  tColinePair sinkPair = (*pit)->antiColourLine()->sinkNeighbours();
+// 	  tColinePtr intCL = tColinePtr();
+// 	  for(int i = 0; i < 2; ++i) {
+// 	    tColinePtr pLine = sinkPair.first; 
+// 	    if(i == 1) pLine = sinkPair.second;
+//             int saveNumElements = iElement;
+// 	    for(tPVector::const_iterator cit = pLine->antiColoured().begin();
+// 		cit != pLine->antiColoured().end(); ++cit) {
+// 	      for(ParticleSet::const_iterator cjt = inputParticles.begin();
+// 		  cjt != inputParticles.end(); ++cjt) {
+// 		if((*cit) == (*cjt)) connected[iElement++]= (*cit);      
+// 	      }
+// 	    }
+// 	    if(iElement == saveNumElements) intCL = pLine;
+// 	  }
+// 	  if(intCL && iElement == 2) {
+// 	    specialCase = true;
+// 	    pair<tPPtr,tPPtr> aqp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
+// 	    aQuarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,aqp));
+// 	  }
+// 	} 
       }
     }
 
