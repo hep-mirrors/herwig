@@ -250,8 +250,11 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool) {
 			  << " in ShowerTree::fillEventRecord()" 
 			  << Exception::runerror;
       PPtr original = (*cit).first->original();
-      assert(!original->parents().empty());
-      PPtr hadron = original->parents()[0];
+      if(original->parents().empty()) 
+	continue;
+
+      PPtr hadron= original->parents()[0];
+
       assert(!original->children().empty());
       PPtr copy=cit->first->copy();
       ParticleVector intermediates=original->children();

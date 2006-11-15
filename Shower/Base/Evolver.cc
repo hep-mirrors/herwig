@@ -99,8 +99,13 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 	// only consider initial-state particles
 	if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// get the PDF
-	_beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
-	  (particlesToShower[ix]->original()->parents()[0]->dataPtr());
+	if ( particlesToShower[ix]->original()->parents().empty() ) {
+	  _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
+	    (particlesToShower[ix]->original()->dataPtr());
+	} else {
+	  _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
+	    (particlesToShower[ix]->original()->parents()[0]->dataPtr());
+	}
 	if(!_beam) throw Exception() << "The Beam particle does not have"
 				     << " BeamParticleData in Evolver::" 
 				     << "showerhardProcess()" 
