@@ -494,7 +494,7 @@ void HadronSelector::constructHadronTable() {
 	_table[make_pair(1,1)].insert(a);
 	_table[make_pair(2,2)].insert(a);
 	if(_topt == 0 && a.overallWeight > maxdd) maxdd = a.overallWeight;
-	a.wt *= _topt != 0 ? 1.-sqrt(2.)*a.wt : a.wt = 1-a.wt;
+	a.wt = _topt != 0 ? 1.-sqrt(2.)*a.wt : a.wt = 1-a.wt;
 	if(a.wt > 0) {
 	  a.overallWeight = a.wt * a.swtef * nj;
 	  _table[make_pair(3,3)].insert(a);

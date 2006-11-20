@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-  inline HwppSelector::HwppSelector() : HadronSelector(1), _mode(1)
+inline HwppSelector::HwppSelector() : HadronSelector(1), _mode(1)
 {}
 
 inline IBPtr HwppSelector::clone() const {
