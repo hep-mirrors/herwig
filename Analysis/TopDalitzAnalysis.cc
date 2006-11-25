@@ -24,7 +24,6 @@ using namespace Herwig;
 TopDalitzAnalysis::~TopDalitzAnalysis() {}
 
 void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
-  if(_nout>200000) return;
   // Gets all the particles in the primaryCollision step(1)
   ParticleSet pert=event->primaryCollision()->step(1)->all();
   // Gets just the final state particles of the primaryCollision step(1)
@@ -32,8 +31,6 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
   ParticleSet::const_iterator pit;
   // Find the two tops from the primary collision step(1) and 
   // call topShower on each of them...
-//  cout << "*****************\n";
-//  cout << "start of analysis\n";
   tPVector tShower,tbarShower;
   for(pit=pert.begin();pit!=pert.end();++pit)
     {
@@ -68,8 +65,6 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
                  );
   if(s!=1.296e+11) cout << "\n\ns : " << s << "\n\n";
   threeJetAnalysis(s,tShower,tbarShower);
-//  cout << "end of analysis\n";
-//  cout << "*****************\n";
 }
 
 LorentzRotation TopDalitzAnalysis::transform(tEventPtr event) const {
@@ -291,8 +286,8 @@ void TopDalitzAnalysis::dalitz(tPVector finalPartons)
   PPtr top,orig;
   top  = finalPartons[finalPartons.size()-2];
   orig = finalPartons[finalPartons.size()-1];
-  finalPartons.pop_back(); 
-  finalPartons.pop_back();
+  finalPartons.pop_back(); // pop out the on-shell top
+  finalPartons.pop_back(); // pop out the top before it decays to bW
   ////////////////////
   // Jet Clustering //
   ////////////////////
@@ -370,7 +365,9 @@ void TopDalitzAnalysis::dalitz(tPVector finalPartons)
       pb.boost(boost);
       Energy mt(top->mass());
       double xg(2.*pg.e()/mt),xb(2.*pb.e()/mt);
-      _output[0] << xg << " " << 2.-xb-xg << "\n";
+      if(_nout<50000) {
+	_output[0] << xg << " " << 2.-xb-xg << "\n";
+      }
       ++_nout;
     }
   return;
@@ -382,8 +379,8 @@ void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antito
   // Jet Clustering //
   ////////////////////
   // Chuck out the two top quarks *top and *orig first.
-  top.pop_back();
-  top.pop_back();
+  top.pop_back();     // pop out the on-shell top 
+  top.pop_back();     // pop out the top before it decays to bW
   antitop.pop_back(); 
   antitop.pop_back();
   tPVector finalPartons(top);
@@ -538,20 +535,13 @@ void TopDalitzAnalysis::dofinish() {
   ////////////
   // DeltaR //
   ////////////
-  // Send out the deltaR histogram to file.
-  // This may require some normalization.
-  _deltaR.normaliseToCrossSection();
   _deltaR.topdrawOutput(_output[1],true,false,false,false,"RED","delta(R)");
   _output[1].close();
 
   /////////////
   // log(y3) //
   /////////////
-  // Send out the deltaR histogram to file.
-  // This may require some normalization.
-  _logy3.normaliseToCrossSection();
   _logy3.topdrawOutput(_output[2],true,false,false,false,"RED","log(y3)");
   _output[2].close();
 
 }
-

@@ -6,7 +6,7 @@
 
 namespace Herwig {
 inline TopDalitzAnalysis::TopDalitzAnalysis()
-  : _deltaR(0.7,2.7,40),_logy3(-5.,-0.,60) {}
+  : _deltaR(0.7,2.7,100),_logy3(-4.,-1.,120) {}
 
 inline TopDalitzAnalysis::TopDalitzAnalysis(const TopDalitzAnalysis & x)
   : AnalysisHandler(x) {}
