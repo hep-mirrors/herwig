@@ -67,7 +67,8 @@ inline bool SudakovFormFactor::SplittingFnVeto(const Energy2 t,
 }
 
 inline bool SudakovFormFactor::alphaSVeto(const Energy2 pt2) const {
-  return UseRandom::rnd() > Math::powi(_alpha->ratio(pt2),_splittingFn->interactionOrder());
+  return UseRandom::rnd() > Math::powi(_alpha->ratio(pt2),
+				       _splittingFn->interactionOrder());
 }
 
 inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
@@ -86,8 +87,8 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
   }
   else {
     int nm(splittingFn()->interactionOrder()-1);
-    c*=Math::powi(_alpha->overestimateValue()/(2.*pi),nm);
-    return t1/Math::powi(1.-nm*c*log(UseRandom::rnd())*Math::powi(t1,nm),nm);
+    c/=Math::powi(_alpha->overestimateValue()/(2.*pi),nm);
+    return t1/pow(1.-nm*c*log(UseRandom::rnd())*Math::powi(t1,nm),1./float(nm));
   }
 }
 
