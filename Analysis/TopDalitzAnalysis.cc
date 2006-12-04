@@ -426,7 +426,7 @@ void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antito
       deltaR = min(deltaR,sqrt(sqr(p1.eta()-p2.eta())+sqr(p1.phi()-p2.phi())));
       // If jets pass Et and deltaR separation cuts then add a 
       // point to the histogram.
-      if(deltaR>0.7&&p0.et()>10000.&&p1.et()>10000.&&p2>10000.) _deltaR += deltaR;
+      if(deltaR>0.7&&p0.et()>10000.&&p1.et()>10000.&&p2.et()>10000.) _deltaR += deltaR;
 
       //////////////////
       // Calculate y3 //
