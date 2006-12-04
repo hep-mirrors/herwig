@@ -73,10 +73,16 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
   while ( 1 ) 
     {
       // exit if fails
-      if ( ++ntry >= maxLoop() ){throw DecHdlDecayFailed(parent->data(), maxLoop());}
+      if ( ++ntry >= maxLoop() ) 
+	throw Exception() << "Too many tries " << maxLoop() << "to generate decay in "
+			  << "HwDecayHandler::performDecay" << Exception::eventerror;
       tDMPtr dm(parent->data().selectMode(*parent));
-      if ( !dm ) throw DecHdlNoDecayMode(parent->data());
-      if ( !dm->decayer() ) throw DecHdlNoDecayer(parent->data(), *dm);
+      if ( !dm ) 
+	throw Exception() << "No DecayModes for " << parent->PDGName()
+			  << " in HwDecayHandler::performDecay" << Exception::eventerror;
+      if ( !dm->decayer() ) 
+	throw Exception() << "No decayer for DecayMode of " << parent->PDGName()
+			  << " in HwDecayHandler::performDecay" << Exception::eventerror;
       try 
 	{
 	  unsigned int hadronizetries(0);
@@ -103,7 +109,10 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 		    {
 		      children[i]->setLabVertex(parent->labDecayVertex());
 		      if ( !s.addDecayProduct(parent, children[i]) )
-			throw DecHdlChildFail(parent->data(), children[i]->data());
+			throw Exception() << "Failed to add child " 
+					  << children[i]->PDGName() 
+					  << " in decay of " << parent->PDGName() 
+					  << Exception::eventerror;
 		    }
 		  parent->scale(0.0*GeV2);
 		  // loop over the children
@@ -176,8 +185,6 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 	    }
 	  return;
 	}
-      catch (DecHdlChildFail) 
-	{throw;}
       catch (Veto) 
 	{}
     }
@@ -187,36 +194,31 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
 void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
   throw(Veto, Exception) 
 {
-  try {
-    for ( int i = 0, N = parent->children().size(); i < N; ++i ) {
-      parent->children()[i]->setLabVertex(parent->labDecayVertex());
-      s.addDecayProduct(parent->children()[i]);
+  for ( int i = 0, N = parent->children().size(); i < N; ++i ) {
+    parent->children()[i]->setLabVertex(parent->labDecayVertex());
+    s.addDecayProduct(parent->children()[i]);
+  }
+  parent->scale(0.0*GeV2);
+  for ( int i = 0, N = parent->children().size(); i < N; ++i )
+    {
+      if((parent->children()[i])->decayed())
+	{
+	  for(unsigned int ix=0;ix<(parent->children()[i])->children().size();++ix)
+	    {addDecayedParticle(parent->children()[i],s);}
+	}
+      else if ( !(parent->children()[i])->data().stable() )
+	{performDecay((parent->children()[i]), s);}
+      else if(parent->children()[i]->data().stable())
+	{
+	  if((parent->children()[i])->spinInfo())
+	    {
+	      tcSpinfoPtr hwspin=
+		ThePEG::dynamic_ptr_cast<tcSpinfoPtr>(parent->children()[i]->spinInfo());
+	      if(hwspin){hwspin->setDeveloped(true);}
+	    }
+	}
     }
-    parent->scale(0.0*GeV2);
-    for ( int i = 0, N = parent->children().size(); i < N; ++i )
-      {
-	if((parent->children()[i])->decayed())
-	  {
-	    for(unsigned int ix=0;ix<(parent->children()[i])->children().size();++ix)
-	      {addDecayedParticle(parent->children()[i],s);}
-	  }
-	else if ( !(parent->children()[i])->data().stable() )
-	  {performDecay((parent->children()[i]), s);}
-	else if(parent->children()[i]->data().stable())
-	  {
-	    if((parent->children()[i])->spinInfo())
-	      {
-		tcSpinfoPtr hwspin=
-		  ThePEG::dynamic_ptr_cast<tcSpinfoPtr>(parent->children()[i]->spinInfo());
-		if(hwspin){hwspin->setDeveloped(true);}
-	      }
-	  }
-      }
-    return;
-  }
-  catch (DecHdlChildFail) {
-    throw;
-  }
+  return;
 }
 
 void HwDecayHandler::persistentOutput(PersistentOStream & os) const 
