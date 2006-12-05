@@ -186,7 +186,7 @@ double SMTopDecayer::me2(bool vertex, const int,
 	    evaluate(scale,1,Wminus,bbarWave[bbhel],tbarWave[tbhel]);
 	  for(afhel=0;afhel<2;++afhel){
 	    for(fhel=0;fhel<2;++fhel){
-	      topMe(tbhel,bbhel,afhel,fhel) = 
+	      topMe(tbhel,bbhel,fhel,afhel) = 
 		_wvertex->evaluate(scale,awave[afhel],
 				   fwave[fhel],inter);
 	    }
