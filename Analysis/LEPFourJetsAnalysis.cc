@@ -20,7 +20,7 @@ void LEPFourJetsAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
   AnalysisHandler::analyze(event, ieve, loop, state);
 }
 
-LorentzRotation LEPFourJetsAnalysis::transform(tEventPtr event) const {
+LorentzRotation LEPFourJetsAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -44,11 +44,11 @@ void LEPFourJetsAnalysis::analyze(const tPVector & particles) {
 
 void LEPFourJetsAnalysis::analyze(tPPtr) {}
 
-void LEPFourJetsAnalysis::persistentOutput(PersistentOStream & os) const {
+void LEPFourJetsAnalysis::persistentOutput(PersistentOStream & ) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void LEPFourJetsAnalysis::persistentInput(PersistentIStream & is, int) {
+void LEPFourJetsAnalysis::persistentInput(PersistentIStream & , int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 

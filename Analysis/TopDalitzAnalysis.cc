@@ -23,7 +23,7 @@ using namespace Herwig;
 
 TopDalitzAnalysis::~TopDalitzAnalysis() {}
 
-void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
   // Gets all the particles in the primaryCollision step(1)
   ParticleSet pert=event->primaryCollision()->step(1)->all();
   // Gets just the final state particles of the primaryCollision step(1)
@@ -67,7 +67,7 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int state)
   threeJetAnalysis(s,tShower,tbarShower);
 }
 
-LorentzRotation TopDalitzAnalysis::transform(tEventPtr event) const {
+LorentzRotation TopDalitzAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -79,11 +79,11 @@ void TopDalitzAnalysis::analyze(const tPVector & particles) {
 
 void TopDalitzAnalysis::analyze(tPPtr) {}
 
-void TopDalitzAnalysis::persistentOutput(PersistentOStream & os) const {
+void TopDalitzAnalysis::persistentOutput(PersistentOStream & ) const {
   // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
 }
 
-void TopDalitzAnalysis::persistentInput(PersistentIStream & is, int) {
+void TopDalitzAnalysis::persistentInput(PersistentIStream & , int) {
   // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
 }
 
@@ -504,7 +504,7 @@ void TopDalitzAnalysis::dofinish() {
   kappa=1+0.25*sqr(1.-a+c+lam)/(kappa-c);
   cerr << "top    kappa " << kappa << endl;
   double u,w,v;
-  double zmin=1.-(1.-a)/(kappa+2.*sqrt(a*(kappa-1.)))+0.00001;
+  //double zmin=1.-(1.-a)/(kappa+2.*sqrt(a*(kappa-1.)))+0.00001;
   for(double z=0.;z<=1.;z+=0.0001)
     {
       double kmax=2*a + (-1 + a + c)/(-1 + z) - 
