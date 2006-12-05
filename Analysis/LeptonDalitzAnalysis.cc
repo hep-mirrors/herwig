@@ -162,12 +162,12 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
 
 }
 
-LorentzRotation LeptonDalitzAnalysis::transform(tEventPtr event) const {
+LorentzRotation LeptonDalitzAnalysis::transform(tEventPtr ) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
 
-void LeptonDalitzAnalysis::analyze(const tPVector & particles) {
+void LeptonDalitzAnalysis::analyze(const tPVector & ) {
 }
 
 void LeptonDalitzAnalysis::analyze(tPPtr) {}
@@ -200,7 +200,7 @@ void LeptonDalitzAnalysis::dofinish() {
     {file << _output[1][ix].first << " " <<  _output[1][ix].second << "\n";}
   file << "PLOT RED\n";
   // plot the limits
-  double kb=1.,kc=1.;
+  double kb=1.;
   double xc,xb;
   for(double z=0.0;z<=1.0;z+=0.001)
     {
