@@ -136,7 +136,7 @@ private:
   /**
    *  Pointer to the Evolver object
    */
-  EvolverPtr _evolver;
+  tEvolverPtr _evolver;
 };
 
 }

@@ -304,7 +304,7 @@ private:
   /**
    *  Pointer to the shower variables
    */
-  ShowerHandlerPtr _showerHandler;
+  tShowerHandlerPtr _showerHandler;
 
   /**
    *  Has this tree showered
