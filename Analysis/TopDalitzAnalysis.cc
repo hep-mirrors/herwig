@@ -402,50 +402,45 @@ void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antito
       ev.findJetsN(3);
       // Get the two jets ordered by their Pt (largest Pt first?).
       vector<KtJet::KtLorentzVector> ktjets = ev.getJetsPt();
-//       // Identify the jets.
-//       int nbs[3] = {0,0,0};
-//       for(int ix = 0;ix<ev.getNConstituents();++ix)
-//       {
-// 	  for(unsigned int jx=0;jx<3;++jx) {
-// 	      if(ktjets[jx].contains(*ev.getConstituents()[ix]))
-// 	      { 
-// 		  if(finalPartons[ix]->id() == -5) --nbs[jx];
-// 		  if(finalPartons[ix]->id() ==  5) ++nbs[jx];
-// 	      }
-// 	  }
-//       }
       // Therefore nbs[ix] is the number of b's-bbar's in jet ix.  
-      Lorentz5Momentum p0(ktjets[0]),p1(ktjets[1]),p2(ktjets[2]);
 
       ///////////////////////
       // Calculate delta R //
       ///////////////////////
       double deltaR(0.);
-      deltaR =            sqrt(sqr(p0.eta()-p1.eta())+sqr(p0.phi()-p1.phi())) ;
-      deltaR = min(deltaR,sqrt(sqr(p0.eta()-p2.eta())+sqr(p0.phi()-p2.phi())));
-      deltaR = min(deltaR,sqrt(sqr(p1.eta()-p2.eta())+sqr(p1.phi()-p2.phi())));
+      deltaR =            sqrt(sqr(ktjets[0].rapidity()-ktjets[1].rapidity())
+         		      +sqr(KtJet::phiAngle(ktjets[0].phi()
+						   -ktjets[1].phi()))) ;
+      deltaR = min(deltaR,sqrt(sqr(ktjets[0].rapidity()-ktjets[2].rapidity())
+			      +sqr(KtJet::phiAngle(ktjets[0].phi()
+						   -ktjets[2].phi()))));
+      deltaR = min(deltaR,sqrt(sqr(ktjets[1].rapidity()-ktjets[2].rapidity())
+			      +sqr(KtJet::phiAngle(ktjets[1].phi()
+						   -ktjets[2].phi()))));
       // If jets pass Et and deltaR separation cuts then add a 
       // point to the histogram.
-      if(deltaR>0.7&&p0.et()>10000.&&p1.et()>10000.&&p2.et()>10000.) _deltaR += deltaR;
+      if(deltaR>0.7&&ktjets[0].et()>10000.&&ktjets[1].et()>10000.&&
+	 ktjets[2].et()>10000.&&ktjets.size()==3) _deltaR += deltaR;
 
       //////////////////
       // Calculate y3 //
       //////////////////
       double y3(0.);
       Hep3Vector np0,np1,np2;
-      np0    = p0.vect()/p0.vect().mag(); 
-      np1    = p1.vect()/p1.vect().mag(); 
-      np2    = p2.vect()/p2.vect().mag(); 
-      y3 =        (2./s)*min(sqr(p0.e()),sqr(p1.e()))*(1.-np0*np1) ;
-      y3 = min(y3,(2./s)*min(sqr(p0.e()),sqr(p2.e()))*(1.-np0*np2));
-      y3 = min(y3,(2./s)*min(sqr(p1.e()),sqr(p2.e()))*(1.-np1*np2));
+      np0 = ktjets[0].vect()/ktjets[0].vect().mag(); 
+      np1 = ktjets[1].vect()/ktjets[1].vect().mag(); 
+      np2 = ktjets[2].vect()/ktjets[2].vect().mag(); 
+      y3  =        (2./s)*min(sqr(ktjets[0].e()),
+	 		      sqr(ktjets[1].e()))*(1.-np0*np1) ;
+      y3  = min(y3,(2./s)*min(sqr(ktjets[0].e()),
+			      sqr(ktjets[2].e()))*(1.-np0*np2));
+      y3  = min(y3,(2./s)*min(sqr(ktjets[1].e()),
+			      sqr(ktjets[2].e()))*(1.-np1*np2));
       // If jets pass Et and deltaR separation cuts then add a 
       // point to the histogram.
-/// Do log to base 10 ?
-// Yes:
-      if(deltaR>0.7&&p0.et()>10000.&&p1.et()>10000.&&p2.et()>10000.) _logy3 += log(y3)/log(10.);
-// No:
-//      if(deltaR>0.7&&p0.et()>10000.&&p1.et()>10000.&&p2>10000.) _logy3 += log(y3);
+      // *Do log to base 10* 
+      if(deltaR>0.7&&ktjets[0].et()>10000.&&ktjets[1].et()>10000.&&
+	 ktjets[2].et()>10000.&&ktjets.size()==3) _logy3 += log(y3)/log(10.);
     }
   return;
 }
