@@ -1,0 +1,64 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EvtGenDecayer class.
+//
+
+namespace Herwig {
+
+inline EvtGenDecayer::EvtGenDecayer() : _evtopt(0) {}
+
+inline EvtGenDecayer::EvtGenDecayer(const EvtGenDecayer & x)
+  : Decayer(x), _evtgen(x._evtgen), _evtopt(x._evtopt) {}
+
+inline IBPtr EvtGenDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr EvtGenDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void EvtGenDecayer::doupdate() throw(UpdateException) {
+  Decayer::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void EvtGenDecayer::doinit() throw(InitException) {
+  Decayer::doinit();
+}
+
+inline void EvtGenDecayer::dofinish() {
+  Decayer::dofinish();
+}
+
+inline void EvtGenDecayer::doinitrun() {
+  Decayer::doinitrun();
+}
+
+inline void EvtGenDecayer::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Decayer::rebind(trans);
+}
+
+inline IVector EvtGenDecayer::getReferences() {
+  IVector ret = Decayer::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+}

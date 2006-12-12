@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EvtGenDecayer class.
+//
+#ifndef ThePEG_EvtGenDecayer_FH
+#define ThePEG_EvtGenDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class EvtGenDecayer;
+ThePEG_DECLARE_POINTERS(EvtGenDecayer,EvtGenDecayerPtr);
+
+}
+
+#endif

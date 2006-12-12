@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EvtGen class.
+//
+#ifndef ThePEG_EvtGen_FH
+#define ThePEG_EvtGen_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+class EvtGen;
+ThePEG_DECLARE_POINTERS(EvtGen,EvtGenPtr);
+
+}
+
+#endif
