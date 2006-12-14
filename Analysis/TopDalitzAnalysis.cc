@@ -63,7 +63,6 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
   Energy2 s = sqr(event->incoming().first->momentum().e()
             +     event->incoming().second->momentum().e()
                  );
-  if(s!=1.296e+11) cout << "\n\ns : " << s << "\n\n";
   threeJetAnalysis(s,tShower,tbarShower);
 }
 
