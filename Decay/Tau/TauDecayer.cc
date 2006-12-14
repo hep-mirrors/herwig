@@ -11,11 +11,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TauDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -116,14 +111,15 @@ bool TauDecayer::accept(const DecayMode & dm) const {
 }
 
 
-int TauDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int TauDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int imode(-1);
   ParticleMSet::const_iterator pit = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   int idtemp;vector<int> idother;
-  for( ; pit!=pend;++pit)
-    {idtemp=(**pit).id();if(abs(idtemp)!=16){idother.push_back(idtemp);}}
+  for( ; pit!=pend;++pit) {
+    idtemp=(**pit).id();
+    if(abs(idtemp)!=16) idother.push_back(idtemp);
+  }
   unsigned int itemp=_current->decayMode(idother);
   for(unsigned int ix=0;ix<_modemap.size();++ix)
     {if(_modemap[ix]==itemp){imode=ix;}}

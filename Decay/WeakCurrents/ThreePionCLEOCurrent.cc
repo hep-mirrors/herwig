@@ -31,32 +31,28 @@ void ThreePionCLEOCurrent::doinit() throw(InitException) {
   tPDPtr f2=getParticleData(225);
   // the f_0
   tPDPtr f0=getParticleData(10221);
-  if(_localparameters)
-    {
-      // make sure the rho array has enough masses
-      if(_rhomass.size()<3)
-	{
-	  for(unsigned int ix=_rhomass.size();ix<3;++ix)
-	    {
-	      _rhomass.push_back(rhom[ix]->mass());
-	      _rhowidth.push_back(rhom[ix]->width());
-	    }
-	}
+  if(_localparameters) {
+    // make sure the rho array has enough masses
+    if(_rhomass.size()<3) {
+      for(unsigned int ix=_rhomass.size();ix<3;++ix) {
+	_rhomass.push_back(rhom[ix]->mass());
+	_rhowidth.push_back(rhom[ix]->width());
+      }
     }
+  }
   // set the local variables if needed
-  else
-    {
-      // masses and widths for the particles
-      _rhomass.resize(3);_rhowidth.resize(3);
-      for(unsigned int ix=0;ix<3;++ix)
-	{_rhomass[ix]=rhom[ix]->mass();_rhowidth[ix]=rhom[ix]->width();}
-      _f2mass=f2->mass();_f2width=f2->width();
-      _f0mass=f0->mass();_f0width=f0->width();
-      _sigmamass=sigma->mass();_sigmawidth=sigma->width();
-      _a1mass=a1m->mass();_a1width=a1m->width();
-      _mKstar=getParticleData(ParticleID::Kstarplus)->mass();
-      _mK =getParticleData(ParticleID::Kplus)->mass();
-    }
+  else {
+    // masses and widths for the particles
+    _rhomass.resize(3);_rhowidth.resize(3);
+    for(unsigned int ix=0;ix<3;++ix)
+      {_rhomass[ix]=rhom[ix]->mass();_rhowidth[ix]=rhom[ix]->width();}
+    _f2mass=f2->mass();_f2width=f2->width();
+    _f0mass=f0->mass();_f0width=f0->width();
+    _sigmamass=sigma->mass();_sigmawidth=sigma->width();
+    _a1mass=a1m->mass();_a1width=a1m->width();
+    _mKstar=getParticleData(ParticleID::Kstarplus)->mass();
+    _mK =getParticleData(ParticleID::Kplus)->mass();
+  }
   // parameters for the breit-wigners
   _mpic=getParticleData(ParticleID::piplus)->mass();
   _mpi0=getParticleData(ParticleID::pi0)->mass();
@@ -68,11 +64,10 @@ void ThreePionCLEOCurrent::doinit() throw(InitException) {
   _pf0cc=Kinematics::pstarTwoBodyDecay(_f0mass,_mpic,_mpic);
   _pf000=Kinematics::pstarTwoBodyDecay(_f0mass,_mpi0,_mpi0); 
   _prhocc.resize(3);_prhoc0.resize(3);
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      _prhocc[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpic);
-      _prhoc0[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpi0);
-    }
+  for(unsigned int ix=0;ix<3;++ix) {
+    _prhocc[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpic);
+    _prhoc0[ix]=Kinematics::pstarTwoBodyDecay(_rhomass[ix],_mpic,_mpi0);
+  }
   // couplings for the different modes
   Complex ii(0.,1.);
   _rhocoupP.resize(_rhomagP.size());
@@ -538,8 +533,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
 				      DecayPhaseSpaceModePtr mode,
 				      unsigned int iloc,unsigned int ires,
-				      DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+				      DecayPhaseSpaceChannelPtr phase,Energy upp) {
   bool kineallowed=true;
   if(!acceptMode(imode)){return false;}
   int iq(0),ia(0);
@@ -553,20 +547,19 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
   tPDPtr a1m = getParticleData(ParticleID::a_1minus);
   // the different rho resonances
   tPDPtr rhom[3];
-  if(icharge==-3)
-    {
-      rhom[0] = getParticleData(-213);
-      rhom[1] = getParticleData(-100213);
-      rhom[2] = getParticleData(-30213);
-    }
-  else if(icharge==3)
-    {
-      rhom[0] = getParticleData(213);
-      rhom[1] = getParticleData(100213);
-      rhom[2] = getParticleData(30213);
-    }
-  else
-    {return false;}
+  if(icharge==-3) {
+    rhom[0] = getParticleData(-213);
+    rhom[1] = getParticleData(-100213);
+    rhom[2] = getParticleData(-30213);
+  }
+  else if(icharge==3) {
+    rhom[0] = getParticleData(213);
+    rhom[1] = getParticleData(100213);
+    rhom[2] = getParticleData(30213);
+  }
+  else {
+    return false;
+  }
   tPDPtr rho0[3] = {getParticleData(113),getParticleData(100113),
 		    getParticleData(30113)};
   // the sigma
@@ -577,23 +570,23 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
   tPDPtr f0=getParticleData(10221);
   // set up the integration channels
   DecayPhaseSpaceChannelPtr newchannel;
-  if(imode==0)
-    {
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  // the neutral rho channels
-	  // first channel
-	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(rho0[ix],0,0.0,iloc+1,iloc+2);
-	  mode->addChannel(newchannel);
-	  // interchanged channel
-	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rho0[ix],0,0.0,iloc,iloc+2);
-	  mode->addChannel(newchannel);      
-	}
-      // the sigma channels
+  if(imode==0) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!rho0[ix]) continue;
+      // the neutral rho channels
+      // first channel
+      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
+      newchannel->addIntermediate(rho0[ix],0,0.0,iloc+1,iloc+2);
+      mode->addChannel(newchannel);
+      // interchanged channel
+      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
+      newchannel->addIntermediate(rho0[ix],0,0.0,iloc,iloc+2);
+      mode->addChannel(newchannel);      
+    }
+    // the sigma channels
+    if(sigma) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(sigma,0,0.0,iloc+1,iloc+2);
@@ -603,7 +596,9 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(sigma,0,0.0,iloc,iloc+2);
       mode->addChannel(newchannel);
-      // the f_2 channels
+    }
+    // the f_2 channels
+    if(f2) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(f2,0,0.0,iloc+1,iloc+2);
@@ -613,6 +608,8 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
       newchannel->addIntermediate(f2,0,0.0,iloc,iloc+2);
       mode->addChannel(newchannel);
+    }
+    if(f0) {
       // the f_0 channel
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
@@ -624,73 +621,78 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(f0,0,0.0,iloc,iloc+2);
       mode->addChannel(newchannel);
     }
-  else
-    {
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  // first rho+ channel
-	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
-	  newchannel->addIntermediate(rhom[ix],0,0.0,iloc+2,iloc+1);
-	  mode->addChannel(newchannel);
-	  // second rho+ channel
-	  newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
-	  newchannel->addIntermediate(rhom[ix],0,0.0,iloc+2,iloc);
-	  mode->addChannel(newchannel);
-	}
-      // the sigma channel
+  }
+  else {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(!rhom[ix]) continue;
+      // first rho+ channel
+      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc);
+      newchannel->addIntermediate(rhom[ix],0,0.0,iloc+2,iloc+1);
+      mode->addChannel(newchannel);
+      // second rho+ channel
+      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+1);
+      newchannel->addIntermediate(rhom[ix],0,0.0,iloc+2,iloc);
+      mode->addChannel(newchannel);
+    }
+    // the sigma channel
+    if(sigma) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(sigma,0,0.0,iloc,iloc+1);
       mode->addChannel(newchannel);
-      //  the f_2  channel
+    }
+    //  the f_2  channel
+    if(f2) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(f2,0,0.0,iloc,iloc+1);
       mode->addChannel(newchannel);
-      // the f_0 channel
+    }
+    // the f_0 channel
+    if(f0) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(a1m,0,0.0,-ires-1,iloc+2);
       newchannel->addIntermediate(f0,0,0.0,iloc,iloc+1);
       mode->addChannel(newchannel);
     }
+  }
   return kineallowed;
-  if(_localparameters)
-    {
-      for(unsigned int iy=0;iy<_rhomass.size();++iy)
-	{
-	  mode->resetIntermediate(rho0[iy],_rhomass[iy],_rhowidth[iy]);
-	  mode->resetIntermediate(rhom[iy],_rhomass[iy],_rhowidth[iy]);
-	}
-      mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
-      mode->resetIntermediate(f2,_f2mass,_f2width);
-      mode->resetIntermediate(f0,_f0mass,_f0width);
-      mode->resetIntermediate(a1m,_a1mass,_a1width);
+  if(_localparameters) {
+    for(unsigned int iy=0;iy<_rhomass.size();++iy) {
+      if(rho0[iy]) mode->resetIntermediate(rho0[iy],_rhomass[iy],_rhowidth[iy]);
+      if(rhom[iy]) mode->resetIntermediate(rhom[iy],_rhomass[iy],_rhowidth[iy]);
     }
+    if(sigma) mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
+    if(f2)    mode->resetIntermediate(f2,_f2mass,_f2width);
+    if(f0)    mode->resetIntermediate(f0,_f0mass,_f0width);
+    mode->resetIntermediate(a1m,_a1mass,_a1width);
+  }
 }
 
-PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int,int)
-{
+PDVector ThreePionCLEOCurrent::particles(int icharge, unsigned int imode,int,int) {
   PDVector extpart(3);
-  if(imode==0)
-    {
-      extpart[0]=getParticleData(ParticleID::piminus);
-      extpart[1]=getParticleData(ParticleID::piminus);
-      extpart[2]=getParticleData(ParticleID::piplus);
-    }
-  else if(imode==1)
-    {
-      extpart[0]=getParticleData(ParticleID::pi0);
-      extpart[1]=getParticleData(ParticleID::pi0);
-      extpart[2]=getParticleData(ParticleID::piminus);
-    }
-  else
-    {extpart.resize(0);}
+  if(imode==0) {
+    extpart[0]=getParticleData(ParticleID::piminus);
+    extpart[1]=getParticleData(ParticleID::piminus);
+    extpart[2]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==1) {
+    extpart[0]=getParticleData(ParticleID::pi0);
+    extpart[1]=getParticleData(ParticleID::pi0);
+    extpart[2]=getParticleData(ParticleID::piminus);
+  }
+  else {
+    extpart.resize(0);
+  }
   // conjugate the particles if needed
-  if(icharge==3&&extpart.size()>0)
-    {for(unsigned int ix=0;ix<3;++ix)
-	{if(extpart[ix]->CC()){extpart[ix]=extpart[ix]->CC();}}}
+  if(icharge==3&&extpart.size()>0) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(extpart[ix]->CC()){extpart[ix]=extpart[ix]->CC();
+      }
+    }
+  }
   // return the answer
   return extpart;
 }

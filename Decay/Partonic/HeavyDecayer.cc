@@ -72,22 +72,11 @@ bool HeavyDecayer::accept(const DecayMode &dm) const {
  *    d     ----> spectator --> d
  * The resulting partons are then hadronized and decayed again.
  *****/
-ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const
-{
-   if( HERWIG_DEBUG_LEVEL >= HwDebug::full) {
-     generator()->log() << "HeavyDecayer::decay called on " << p.PDGName() 
-			<< "\n";
-   }
-   ParticleVector partons = dm.produceProducts();
-
-   if( HERWIG_DEBUG_LEVEL >= HwDebug::full) {
-     generator()->log() << "HeavyDecayer::Decaying " << p.PDGName() << " via " 
-	                << dm.tag() << "...\n";
-   }
-
-   Lorentz5Momentum products[4];
-   for(int i = 0; i<4; i++) 
-      products[i].setMass(partons[i]->mass());
+ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const {
+  ParticleVector partons = dm.produceProducts();
+  Lorentz5Momentum products[4];
+  for(int i = 0; i<4; i++) 
+    products[i].setMass(partons[i]->mass());
 
    // Fraction of momentum to spectator
    double xs = partons[3]->mass()/p.momentum().e();
@@ -96,9 +85,8 @@ ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const
    partons[3]->setMomentum(p.momentum()*xs);
 
    // Get the particle that is decaying
-   long idQ, idSpec;
-   idSpec = partons[3]->id();
-   idQ = (p.id()/1000)%10;
+   long idSpec = partons[3]->id();
+   long idQ = (p.id()/1000)%10;
    if(!idQ) idQ = (p.id()/100)%10;
 
    // Now the odd case of a B_c where the c decays, not the b
@@ -128,7 +116,7 @@ ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const
 
    for(int i = 0; i<3; i++) partons[i]->setMomentum(products[i]);
 
-   //cout << "Doing colour connections for " << dm.tag() << endl;
+
    // Set up colour connections based on the diagram above and input order
    if(partons[0]->coloured()) {
       if(partons[0]->id() > 0)
@@ -140,27 +128,6 @@ ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const
       partons[2]->antiColourNeighbour(partons[3]);
    else
       partons[2]->colourNeighbour(partons[3]);
-
-   if( HERWIG_DEBUG_LEVEL >= HwDebug::full) {
-     generator()->log() << "HeavyDecayer::Decaying " << "...Done\n";
-   }
-
-
-   // Insure we only add new handler once per event
-   /*long evtNum = generator()->currentEventNumber();
-   if(evtNum != lastAddedNumber) {
-     lastAddedNumber = evtNum; 
-     tcCollHdlPtr ch = dynamic_ptr_cast<tcCollHdlPtr>(
-		                   generator()->currentEvent()->handler());
-     tCollHdlPtr cp = const_ptr_cast<tCollHdlPtr>(ch);
-     cp->addStep(ThePEG::Group::main, ThePEG::Group::hadron, 
-  	         StepHdlPtr(), Hint::Default());
-   }
-*/
-   //for(ParticleVector::iterator it=partons.begin(); it!=partons.end(); it++) 
-   //  cout << *(*it) << endl;
-
-   //cout << "Returning partons" << endl;
    return partons;
 }
    
