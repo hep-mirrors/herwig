@@ -83,8 +83,7 @@ void DecayPhaseSpaceChannel::Init() {
 // generate the momenta of the external particles
 vector<Lorentz5Momentum> 
 DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
-					const vector<Energy> & massext)
-{
+					const vector<Energy> & massext) {
   // integers for loops
   unsigned int ix,iy,idau[2],iz;
   double ctheta,phi;
@@ -100,85 +99,80 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
   vector<Energy> massint; massint.resize(_intpart.size());massint[0]=pin[5];
   // generate all the decays in the chain
   Energy lower,upper,lowerb[2];
-  for(ix=0;ix<_intpart.size();++ix)
-    {
-      idau[0] = abs(_intdau1[ix]);
-      idau[1] = abs(_intdau2[ix]);
-      // if both decay products off-shell
-      if(_intdau1[ix]<0&&_intdau2[ix]<0)
-	{
-	  // lower limits on the masses of the two resonances
-	  for(iy=0;iy<2;++iy)
-	    {
-	      lowerb[iy]=0.;
-	      for(iz=0;iz<_intext[idau[iy]].size();++iz)
-		{lowerb[iy]+=massext[_intext[idau[iy]][iz]];}
-	    }
-	  // randomize the order
-	  if(UseRandom::rnd()<0.5)
-	    {
-	      // mass of the first resonance
-	      upper = massint[ix]-lowerb[1];
-	      lower = lowerb[0];
-	      massint[idau[0]]=generateMass(idau[0],lower,upper);
-	      // mass of the second resonance
-	      upper = massint[ix]-massint[idau[0]];
-	      lower = lowerb[1];
-	      massint[idau[1]]=generateMass(idau[1],lower,upper);
-	    }
-	  else
-	    {
-	      // mass of the second resonance
-	      upper = massint[ix]-lowerb[0];
-	      lower = lowerb[1];
-	      massint[idau[1]]=generateMass(idau[1],lower,upper);
-	      // mass of the first resonance
-	      upper = massint[ix]-massint[idau[1]];
-	      lower = lowerb[0];
-	      massint[idau[0]]=generateMass(idau[0],lower,upper);
-	    }
-	  // generate the momenta of the decay products
-	  Kinematics::generateAngles(ctheta,phi);
-	  Kinematics::twoBodyDecay(pinter[ix],massint[idau[0]],massint[idau[1]], 
-				   ctheta,phi,pinter[idau[0]],pinter[idau[1]]); 
+  for(ix=0;ix<_intpart.size();++ix) {
+    idau[0] = abs(_intdau1[ix]);
+    idau[1] = abs(_intdau2[ix]);
+    // if both decay products off-shell
+    if(_intdau1[ix]<0&&_intdau2[ix]<0) {
+      // lower limits on the masses of the two resonances
+      for(iy=0;iy<2;++iy) {
+	lowerb[iy]=0.;
+	for(iz=0;iz<_intext[idau[iy]].size();++iz) {
+	  lowerb[iy]+=massext[_intext[idau[iy]][iz]];
 	}
-      // only first off-shell
-      else if(_intdau1[ix]<0)
-	{
-	  // compute the limits of integration
-	  upper = massint[ix]-massext[idau[1]];
-	  lower = 0.;
-	  for(iy=0;iy<_intext[idau[0]].size();++iy)
-	    {lower+=massext[_intext[idau[0]][iy]];}
-	  massint[idau[0]]=generateMass(idau[0],lower,upper);
-	  // generate the momenta of the decay products
-	  Kinematics::generateAngles(ctheta,phi);
-	  Kinematics::twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]], 
-				   ctheta,phi,pinter[idau[0]],pexternal[idau[1]]);
-	}
-      // only second off-shell
-      else if(_intdau2[ix]<0)
-	{
-	  // compute the limits of integration
-	  upper = massint[ix]-massext[idau[0]];
-	  lower = 0;
-	  for(iy=0;iy<_intext[idau[1]].size();++iy)
-	    {lower+=massext[_intext[idau[1]][iy]];}
-	  massint[idau[1]]=generateMass(idau[1],lower,upper);
-	  // generate the momenta of the decay products
-	  Kinematics::generateAngles(ctheta,phi);
-	  Kinematics::twoBodyDecay(pinter[ix],massext[idau[0]],massint[idau[1]], 
-				   ctheta,phi,pexternal[idau[0]],pinter[idau[1]]); 
-	}
-      // both on-shell
-      else
-	{
-	  // generate the momenta of the decay products
-	  Kinematics::generateAngles(ctheta,phi);
-	  Kinematics::twoBodyDecay(pinter[ix],massext[idau[0]],massext[idau[1]], 
-				   ctheta,phi,pexternal[idau[0]],pexternal[idau[1]]);
-	}
+      }
+      // randomize the order
+      if(UseRandom::rnd()<0.5) {
+	// mass of the first resonance
+	upper = massint[ix]-lowerb[1];
+	lower = lowerb[0];
+	massint[idau[0]]=generateMass(idau[0],lower,upper);
+	// mass of the second resonance
+	upper = massint[ix]-massint[idau[0]];
+	lower = lowerb[1];
+	massint[idau[1]]=generateMass(idau[1],lower,upper);
+      }
+      else {
+	// mass of the second resonance
+	upper = massint[ix]-lowerb[0];
+	lower = lowerb[1];
+	massint[idau[1]]=generateMass(idau[1],lower,upper);
+	// mass of the first resonance
+	upper = massint[ix]-massint[idau[1]];
+	lower = lowerb[0];
+	massint[idau[0]]=generateMass(idau[0],lower,upper);
+      }
+      // generate the momenta of the decay products
+      Kinematics::generateAngles(ctheta,phi);
+      Kinematics::twoBodyDecay(pinter[ix],massint[idau[0]],massint[idau[1]], 
+			       ctheta,phi,pinter[idau[0]],pinter[idau[1]]);
     }
+    // only first off-shell
+    else if(_intdau1[ix]<0) {
+      // compute the limits of integration
+      upper = massint[ix]-massext[idau[1]];
+      lower = 0.;
+      for(iy=0;iy<_intext[idau[0]].size();++iy) {
+	lower+=massext[_intext[idau[0]][iy]];
+      }
+      massint[idau[0]]=generateMass(idau[0],lower,upper);
+      // generate the momenta of the decay products
+      Kinematics::generateAngles(ctheta,phi);
+      Kinematics::twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]], 
+				   ctheta,phi,pinter[idau[0]],pexternal[idau[1]]);
+    }
+    // only second off-shell
+    else if(_intdau2[ix]<0) {
+      // compute the limits of integration
+      upper = massint[ix]-massext[idau[0]];
+      lower = 0;
+      for(iy=0;iy<_intext[idau[1]].size();++iy) {
+	lower+=massext[_intext[idau[1]][iy]];
+      }
+      massint[idau[1]]=generateMass(idau[1],lower,upper);
+      // generate the momenta of the decay products
+      Kinematics::generateAngles(ctheta,phi);
+      Kinematics::twoBodyDecay(pinter[ix],massext[idau[0]],massint[idau[1]], 
+			       ctheta,phi,pexternal[idau[0]],pinter[idau[1]]);
+    }
+    // both on-shell
+    else {
+      // generate the momenta of the decay products
+      Kinematics::generateAngles(ctheta,phi);
+      Kinematics::twoBodyDecay(pinter[ix],massext[idau[0]],massext[idau[1]], 
+			       ctheta,phi,pexternal[idau[0]],pexternal[idau[1]]);
+    }
+  }
   // return the external momenta
   return pexternal;
 }

@@ -76,20 +76,20 @@ double DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
   // momenta of the particles
   vector<Lorentz5Momentum> part(outpart.size());
   // two body decay
-  if(outpart.size()==2)
-    {
-      double ctheta,phi;
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
-			       ctheta, phi,part[0],part[1]);
-      wgt *= Kinematics::CMMomentum(inmass,mass[1],mass[2])/8./pi/inmass;
+  if(outpart.size()==2) {
+    double ctheta,phi;
+    Kinematics::generateAngles(ctheta,phi);
+    Kinematics::twoBodyDecay(inpart.momentum(), mass[1], mass[2],
+			     ctheta, phi,part[0],part[1]);
+    wgt *= Kinematics::CMMomentum(inmass,mass[1],mass[2])/8./pi/inmass;
       outpart[0]->set5Momentum(part[0]);
       outpart[1]->set5Momentum(part[1]);
-    }
-  else
-    {throw DecayIntegratorError() << "DecayPhaseSpaceMode::flatPhaseSpace "
-				   << "only two body modes currently implemented" 
-				   << Exception::abortnow;}
+  }
+  else {
+    throw DecayIntegratorError() << "DecayPhaseSpaceMode::flatPhaseSpace "
+				 << "only two body modes currently implemented" 
+				 << Exception::abortnow;
+  }
   return wgt*inmass;
 }
 

@@ -23,9 +23,14 @@ inline IBPtr DecayPhaseSpaceChannel::fullclone() const {
 inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper)
 {
   Energy mass=0;
-  if(lower>upper) {
-    throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass not allowed";
+  if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
+					       << " not allowed";
+  if((lower-upper)/(lower+upper)>1e-10) {
+    lower +=1e-10*(lower+upper);
+    upper -=1e-10*(lower+upper);
   }
+  else 
+    return 0.5*(lower+upper);
   // use a Breit-Wigner
   if(_jactype[ires]==0) {
     double rhomin = atan((lower*lower-_intmass2[ires])/_intmwidth[ires]);
@@ -47,11 +52,8 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
     throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
 				  << "DecayPhaseSpaceChannel::generateMass";
   }
-
-  if(mass<lower) 
-    mass=lower;
-  else if(mass>upper) 
-    mass=upper;
+  if(mass<lower)      mass=lower+1e-10*(lower+upper);
+  else if(mass>upper) mass=upper-1e-10*(lower+upper);
   return mass;
 }
  
