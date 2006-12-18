@@ -21,6 +21,8 @@ using namespace ThePEG;
  */
 class DrellYanMECorrection: public QTildeMECorrection {
 
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
+
 public:
 
   /**
@@ -91,6 +93,7 @@ protected:
   /**
    *  Return the momenta and type of hard matrix element correction
    * @param quarks The original incoming particles.
+   * @param beams The BeamParticleData objects
    * @param boson The original outgoing gauge boson
    * @param iemit Whether the first (0) or second (1) particle emitted
    * the radiation
@@ -101,7 +104,9 @@ protected:
    * @param xnew The new values of the momentuym fractions
    * @return Whether or not the matrix element correction needs to be applied
    */
-  bool applyHard(ShowerParticleVector quarks, PPtr boson,unsigned int & iemit,
+  bool applyHard(ShowerParticleVector quarks,
+		 vector<tcBeamPtr> beams,
+		 PPtr boson,unsigned int & iemit,
 		 unsigned int & itype,vector<Lorentz5Momentum> & pnew,
 		 LorentzRotation & trans, pair<double,double> & xnew);
 

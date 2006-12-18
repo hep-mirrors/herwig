@@ -109,7 +109,7 @@ public:
   /**
    *  Get the incoming shower particles
    */
-  inline map<ShowerProgenitorPtr,tShowerParticlePtr> & incomingLines();
+  inline map<ShowerProgenitorPtr,ShowerParticlePtr> & incomingLines();
 
   /**
    *  Get the outgoing shower particles
@@ -231,7 +231,8 @@ protected:
    * @param step The step
    * @param addchildren Add the children of the particle
    */
-  void addInitialStateShower(PPtr particle, StepPtr step, bool addchildren=true);
+  void addInitialStateShower(PPtr particle, PPtr hadron,
+			     StepPtr step, bool addchildren=true);
 
   /**
    * Update the colour information of a particle prior to insertion into the
@@ -256,7 +257,7 @@ private:
    *  as the index of a map with the particle the shower backward evolves
    *  them to as the value
    */
-  map<ShowerProgenitorPtr,tShowerParticlePtr> _incomingLines;
+  map<ShowerProgenitorPtr,ShowerParticlePtr> _incomingLines;
 
   /**
    *  The outgoing ShowerParticles connected to the interaction

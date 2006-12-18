@@ -80,7 +80,7 @@ void Decay_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr 
 					    theLast->showerVariables()[1],iopt));
 }
 
-void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {
+void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   Lorentz5Momentum p, n, ppartner, pcm;
   assert(particle.perturbative()!=1);
   // this is for the initial decaying particle

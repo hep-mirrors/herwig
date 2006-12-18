@@ -89,7 +89,7 @@ void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
 					  theLast->showerVariables()[1],iopt));
 }
 
-void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {
+void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
   // set the basis vectors
   ShowerIndex::InteractionType type=splittingFn()->interactionType();
   Lorentz5Momentum p,n;

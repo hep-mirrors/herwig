@@ -233,7 +233,7 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList());
   // If a branching has been selected initialize it
-  kinematics->initialize(particle);
+  kinematics->initialize(particle,PPtr());
   // and return it
   return Branching(kinematics, ids);
 }
@@ -271,13 +271,13 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
   // return empty branching if nothing happened
   if(!kinematics)  return Branching(ShoKinPtr(), IdList());
   // initialize the branching
-  kinematics->initialize(particle);
+  kinematics->initialize(particle,PPtr());
   // and return it
   return Branching(kinematics, ids);
 }
 
 Branching SplittingGenerator::
-chooseBackwardBranching(ShowerParticle &particle,
+chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			double enhance,
 			Ptr<BeamParticleData>::transient_const_pointer beam) const {
   Energy newQ=Energy();
@@ -307,7 +307,7 @@ chooseBackwardBranching(ShowerParticle &particle,
   if(!kinematics) return Branching(ShoKinPtr(), IdList());
   // initialize the ShowerKinematics 
   // and return it
-  kinematics->initialize(particle);
+  kinematics->initialize(particle,beamparticle);
   // return the answer
   return Branching(kinematics, ids);
 }

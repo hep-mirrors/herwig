@@ -54,7 +54,7 @@ inline void ShowerKinematics::splittingFn(const tSplittingFnPtr sf) {
   _splitFun = sf;
 }
 
-inline void ShowerKinematics::initialize(ShowerParticle &) {
+inline void ShowerKinematics::initialize(ShowerParticle &,PPtr) {
   throw Exception() << "Base class ShowerKinematics::initialize called " 
 		    << Exception::runerror;
 }

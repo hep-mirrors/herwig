@@ -15,7 +15,6 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "ThePEG/PDF/BeamParticleData.h"
 #include "ThePEG/Utilities/Timer.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.h"
@@ -99,20 +98,15 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 	// only consider initial-state particles
 	if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// get the PDF
-	if ( particlesToShower[ix]->original()->parents().empty() ) {
-	  _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
-	    (particlesToShower[ix]->original()->dataPtr());
-	} else {
-	  _beam=dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
-	    (particlesToShower[ix]->original()->parents()[0]->dataPtr());
-	}
+	_beam=particlesToShower[ix]->beam();
 	if(!_beam) throw Exception() << "The Beam particle does not have"
 				     << " BeamParticleData in Evolver::" 
 				     << "showerhardProcess()" 
 				     << Exception::runerror;
 	// perform the shower
 	_progenitor=particlesToShower[ix];
-	_progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor()));
+	_progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor(),
+						particlesToShower[ix]->original()->parents()[0]));
       }
     }
     // final-state radiation
@@ -151,14 +145,15 @@ void Evolver::hardMatrixElementCorrection() {
       ostringstream output;
       output << "There is more than one possible matrix"
 	     << "element which could be applied for ";
-      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+      map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
       for(cit=_currenttree->incomingLines().begin();
 	  cit!=_currenttree->incomingLines().end();++cit)
 	{output << cit->first->progenitor()->PDGName() << " ";}
       output << " -> ";
-      for(cit=_currenttree->outgoingLines().begin();
-	  cit!=_currenttree->outgoingLines().end();++cit)
-	{output << cit->first->progenitor()->PDGName() << " ";}
+      map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+      for(cjt=_currenttree->outgoingLines().begin();
+	  cjt!=_currenttree->outgoingLines().end();++cjt)
+	{output << cjt->first->progenitor()->PDGName() << " ";}
       output << "in Evolver::hardMatrixElementCorrection()\n";
       throw Exception() << output << Exception::runerror;
     }
@@ -232,14 +227,15 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
   return true;
 }
 
-bool Evolver::spaceLikeShower(tShowerParticlePtr particle) {
+bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   Timer<1006> timer("Evolver::spaceLikeShower");
   bool vetoed(true);
   Branching bb;
   // generate branching
   while (vetoed) {
     vetoed=false;
-    bb=_splittingGenerator->chooseBackwardBranching(*particle,_initialenhance,_beam);
+    bb=_splittingGenerator->chooseBackwardBranching(*particle,beam,
+						    _initialenhance,_beam);
     // apply the soft correction
     if(bb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
@@ -269,10 +265,11 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle) {
   // for the reconstruction of kinematics, parent/child
   // relationships are according to the branching process:
   // now continue the shower
-  bool emitted=spaceLikeShower(newParent);
-  //bool emitted=false;
+  bool emitted=spaceLikeShower(newParent,beam);
   // now reconstruct the momentum
-  if(!emitted) bb.kinematics->updateLast(newParent);
+  if(!emitted) {
+    bb.kinematics->updateLast(newParent);
+  }
   particle->showerKinematics()->updateChildren(newParent, theChildren);
   // perform the shower of the final-state particle
   timeLikeShower(otherChild);
@@ -402,7 +399,8 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // generate the hard matrix element correction if needed
   hardMatrixElementCorrection();
   // get the particles to be showered
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=_currenttree->incomingLines().begin();
@@ -410,9 +408,9 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
     particlesToShower.push_back(((*cit).first));
   assert((particlesToShower.size()==1&&!hard)||(particlesToShower.size()==2&&hard));
   // outgoing particles
-  for(cit=_currenttree->outgoingLines().begin();
-      cit!=_currenttree->outgoingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
+  for(cjt=_currenttree->outgoingLines().begin();
+      cjt!=_currenttree->outgoingLines().end();++cjt)
+    particlesToShower.push_back(((*cjt).first));
   // remake the colour partners if needed
   if(_currenttree->hardMatrixElementCorrection()) {
     setColourPartners(hard);
@@ -423,15 +421,16 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
 
 void Evolver::setColourPartners(bool hard) {
   vector<ShowerParticlePtr> particles;
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   for(cit=_currenttree->incomingLines().begin();
       cit!=_currenttree->incomingLines().end();++cit)
     particles.push_back(cit->first->progenitor());
   assert((particles.size()==1&&!hard)||(particles.size()==2&&hard));
   // outgoing particles
-  for(cit=_currenttree->outgoingLines().begin();
-      cit!=_currenttree->outgoingLines().end();++cit)
-    particles.push_back(cit->first->progenitor());
+  for(cjt=_currenttree->outgoingLines().begin();
+      cjt!=_currenttree->outgoingLines().end();++cjt)
+    particles.push_back(cjt->first->progenitor());
   // Set the initial evolution scales
   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD))
     _model->partnerFinder()->setQCDInitialEvolutionScales(particles,!hard);

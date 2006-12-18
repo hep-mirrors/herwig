@@ -11,13 +11,11 @@ inline void ShowerTree::hardMatrixElementCorrection(bool in) {
   _hardMECorrection=in;
 }
 
-inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::incomingLines() { 
+inline map<ShowerProgenitorPtr,ShowerParticlePtr> & ShowerTree::incomingLines() { 
   return _incomingLines; 
 }
 
-inline map<ShowerProgenitorPtr,tShowerParticlePtr> & 
-ShowerTree::outgoingLines() { 
+inline map<ShowerProgenitorPtr,tShowerParticlePtr> & ShowerTree::outgoingLines() { 
   return _outgoingLines; 
 }
 

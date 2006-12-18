@@ -40,7 +40,7 @@ bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree,
   if(tree->incomingLines().size()!=1&&tree->incomingLines().size()!=2) return false;
   // if one incoming particle must be W/Z or gamma
   int id[2];
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   cit=tree->incomingLines().begin();
   id[0]=cit->first->progenitor()->id();
   if(tree->incomingLines().size()==1) {
@@ -53,11 +53,12 @@ bool VectorBosonQQBarMECorrection::canHandle(ShowerTreePtr tree,
     id[1]=cit->first->progenitor()->id();
     if(id[0]!=-id[1]||abs(id[0])>15||abs(id[0])<11||abs(id[0])%2!=1) return false;
   }
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   // check outgoing quarks
-  cit=tree->outgoingLines().begin();
-  id[0]=cit->first->progenitor()->id();
-  ++cit;
-  id[1]=cit->first->progenitor()->id();
+  cjt=tree->outgoingLines().begin();
+  id[0]=cjt->first->progenitor()->id();
+  ++cjt;
+  id[1]=cjt->first->progenitor()->id();
   if(id[0]!=-id[1]||abs(id[0])>6) return false;
   // otherwise can do it
   initial=1.;

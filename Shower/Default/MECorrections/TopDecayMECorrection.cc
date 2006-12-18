@@ -128,10 +128,11 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   // $\tilde{\kappa}_{c}$. These are needed in order to know the boundary
   // of the dead zone.
   double ktb(0.),ktc(0.);
-  for(cit = tree->incomingLines().begin();
-      cit!= tree->incomingLines().end();++cit) {
-    if(abs(cit->first->progenitor()->id())==6)
-      ktb=sqr(cit->first->progenitor()->evolutionScales()[0]/_mt); 
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cjt;
+  for(cjt = tree->incomingLines().begin();
+      cjt!= tree->incomingLines().end();++cjt) {
+    if(abs(cjt->first->progenitor()->id())==6)
+      ktb=sqr(cjt->first->progenitor()->evolutionScales()[0]/_mt); 
   }
   for(cit = tree->outgoingLines().begin();
       cit!= tree->outgoingLines().end();++cit) {

@@ -81,7 +81,7 @@ bool DrellYanMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   // should be a quark and an antiquark
   unsigned int ix(0);
   ShowerParticlePtr part[2];
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit)
     {part[ix]=cit->first->progenitor();++ix;}
   // check quark and antiquark
@@ -92,8 +92,9 @@ bool DrellYanMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   if(tree->outgoingLines().size()>2) return false;
   // find the outgoing particles
   ix=0;  
-  for(cit=tree->outgoingLines().begin();cit!=tree->outgoingLines().end();++cit)
-    {part[ix]=cit->first->progenitor();++ix;}
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+  for(cjt=tree->outgoingLines().begin();cjt!=tree->outgoingLines().end();++cjt)
+    {part[ix]=cjt->first->progenitor();++ix;}
   // outgoing particles (1 which is W/Z)
   if(tree->outgoingLines().size()==1&&
      !(part[0]->id()!=ParticleID::gamma||part[0]->id()!=ParticleID::Z0||
@@ -116,15 +117,17 @@ bool DrellYanMECorrection::canHandle(ShowerTreePtr tree, double & initial,
   return true;
 }
 
-void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
-{
+void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) {
   assert(tree->outgoingLines().size());
   // get the quark,antiquark and the gauge boson
   // get the quarks
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
   ShowerParticleVector incoming;
-  for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit)
+  vector<tcBeamPtr> beams;
+  for(cit=tree->incomingLines().begin();cit!=tree->incomingLines().end();++cit) {
     incoming.push_back(cit->first->progenitor());
+    beams.push_back(cit->first->beam());
+  }
   // get the gauge bosons
   PPtr boson;
   if(tree->outgoingLines().size()==1)
@@ -137,6 +140,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
     {
       quarkfirst=false;
       swap(incoming[0],incoming[1]);
+      swap(beams[0],beams[1]);
     }
   // calculate the momenta
   unsigned int iemit,itype;
@@ -144,7 +148,7 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
   LorentzRotation trans;
   pair<double,double> xnew;
   // if not accepted return
-  if(!applyHard(incoming,boson,iemit,itype,pnew,trans,xnew)) return;
+  if(!applyHard(incoming,beams,boson,iemit,itype,pnew,trans,xnew)) return;
   // if applying ME correction create the new particles
   if(itype==0) {
     // get the momenta of the new particles
@@ -219,11 +223,12 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
       }
     }
     // fix the momentum of the gauge boson
-    cit=tree->outgoingLines().begin();
-    Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+      cjt=tree->outgoingLines().begin();
+    Hep3Vector boostv=cjt->first->progenitor()->momentum().findBoostToCM();
     trans *=LorentzRotation(boostv);
-    cit->first->progenitor()->transform(trans);
-    cit->first->copy()->transform(trans);
+    cjt->first->progenitor()->transform(trans);
+    cjt->first->copy()->transform(trans);
     tree->hardMatrixElementCorrection(true);
     // add the gluon
     ShowerParticlePtr sg=new_ptr(ShowerParticle(*newg,1,true));
@@ -282,11 +287,12 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
       }
     }
     // fix the momentum of the gauge boson
-    cit=tree->outgoingLines().begin();
-    Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+      cjt=tree->outgoingLines().begin();
+    Hep3Vector boostv=cjt->first->progenitor()->momentum().findBoostToCM();
     trans *=LorentzRotation(boostv);
-    cit->first->progenitor()->transform(trans);
-    cit->first->copy()->transform(trans);
+    cjt->first->progenitor()->transform(trans);
+    cjt->first->copy()->transform(trans);
     tree->hardMatrixElementCorrection(true);
     // add the outgoing quark
     ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1,true));
@@ -345,11 +351,12 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree)
       }
     }
     // fix the momentum of the gauge boson
-    cit=tree->outgoingLines().begin();
-    Hep3Vector boostv=cit->first->progenitor()->momentum().findBoostToCM();
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator 
+      cjt=tree->outgoingLines().begin();
+    Hep3Vector boostv=cjt->first->progenitor()->momentum().findBoostToCM();
     trans *=LorentzRotation(boostv);
-    cit->first->progenitor()->transform(trans);
-    cit->first->copy()->transform(trans);
+    cjt->first->progenitor()->transform(trans);
+    cjt->first->copy()->transform(trans);
     tree->hardMatrixElementCorrection(true);
     // add the outgoing antiquark
     ShowerParticlePtr sout=new_ptr(ShowerParticle(*newout,1,true));
@@ -401,12 +408,12 @@ bool DrellYanMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
   return true;
 }
 
-bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
+bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, 
+				     vector<tcBeamPtr> beams,PPtr boson,
 				     unsigned int & iemit,unsigned int & itype,
 				     vector<Lorentz5Momentum> & pnew,
 				     LorentzRotation & trans, 
-				     pair<double,double> & xout)
-{
+				     pair<double,double> & xout) {
   // check that quark along +z and qbar along -z
   bool quarkplus=quarks[0]->momentum().z()>quarks[1]->momentum().z();
   // calculate the limits on s
@@ -429,18 +436,13 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
   // and the values of the PDF's
   double x[2],fx[2];
   tcPDFPtr pdf[2];
-  for(unsigned int ix=0;ix<quarks.size();++ix)
-    {
-      x[ix]=quarks[ix]->x();
-      Ptr<BeamParticleData>::const_pointer beam=
-	dynamic_ptr_cast<Ptr<BeamParticleData>::const_pointer>
-	(quarks[ix]->parents()[0]->dataPtr());
-      assert(beam);
-      pdf[ix]=beam->pdf();
-      assert(pdf[ix]);
-      fx[ix]=pdf[ix]->xfx(quarks[ix]->parents()[0]->dataPtr(),quarks[ix]->dataPtr(),
-			  _mb2,x[ix]);
-    }
+  for(unsigned int ix=0;ix<quarks.size();++ix) {
+    x[ix]=quarks[ix]->x();
+    assert(beams[ix]);
+    pdf[ix]=beams[ix]->pdf();
+    assert(pdf[ix]);
+    fx[ix]=pdf[ix]->xfx(beams[ix],quarks[ix]->dataPtr(),_mb2,x[ix]);
+  }
   // select the type of process and generate the kinematics
   double rn(UseRandom::rnd());
   Energy shat(0.),uhat(0.),that(0.);
@@ -458,94 +460,82 @@ bool DrellYanMECorrection::applyHard(ShowerParticleVector quarks, PPtr boson,
   // check inside phase space
   if(tmax<tmin||umax<umin) return false;
   // q qbar -> g V
-  if(rn<_channelweights[0])
-    {
-      // generate t and u according to 1/t+1/u
-      // generate in 1/t
-      if(UseRandom::rndbool(0.5))
-	{
-	  that=tmax*pow(tmin/tmax,UseRandom::rnd());
-	  uhat=_mb2-shat-that;
-	  jacobian *=log(tmin/tmax);
-	}
-      // generate in 1/u
-      else
-	{
-	  uhat=umax*pow(umin/umax,UseRandom::rnd());
-	  that=_mb2-shat-uhat;
-	  jacobian *=log(umin/umax);
-	}
-      jacobian *=2.*uhat*that/(shat-_mb2);
-      // new scale (this is mt^2=pt^2+mb^2)
-      Energy2 scale(uhat*that/shat+_mb2);
-      // the PDF's with the emitted gluon
-      double fxnew[2];
-      xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-uhat)/(_mb2-that));
-      xnew[1]=shat/(s*xnew[0]);
-      for(unsigned int ix=0;ix<2;++ix)
-	{fxnew[ix]=pdf[ix]->xfx(quarks[ix]->parents()[0]->dataPtr(),
-				quarks[ix]->dataPtr(),scale,xnew[ix]);}
-      // jacobian and me parts of the weight
-      weight=jacobian*(sqr(_mb2-that)+sqr(_mb2-uhat))/(sqr(shat)*that*uhat);
-      // pdf part of the weight
-      weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
-      // finally coupling, colour factor and different channel pieces
-      weight *= 2./3./pi/_channelweights[0]*coupling()->value(scale);
-      // select the emiting particle
-      iemit=1;
-      if(UseRandom::rnd()<sqr(_mb2-uhat)/(sqr(_mb2-uhat)+sqr(_mb2-that))) iemit=2;
-      itype=0;
-    }
-  // incoming gluon
-  else
-    {
-      // generate t 
-      if(rn>_channelweights[1])
-	{
-	  swap(tmax,tmin);
-	  tmax=_mb2-shat-tmax;
-	  tmin=_mb2-shat-tmin;
-	}
+  if(rn<_channelweights[0]) {
+    // generate t and u according to 1/t+1/u
+    // generate in 1/t
+    if(UseRandom::rndbool(0.5)) {
       that=tmax*pow(tmin/tmax,UseRandom::rnd());
       uhat=_mb2-shat-that;
-      jacobian *=that*log(tmax/tmin);
-      // new scale (this is mt^2=pt^2+mb^2)
-      Energy2 scale(uhat*that/shat+_mb2);
-      // g qbar -> qbar V 
-      double fxnew[2];
-      if(rn<_channelweights[1])
-	{
-	  itype=2;
-	  xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-uhat)/(_mb2-that));
-	  xnew[1]=shat/(s*xnew[0]);
-	  fxnew[0]=pdf[0]->xfx(quarks[0]->parents()[0]->dataPtr(),
-			       getParticleData(ParticleID::g),scale,xnew[0]);
-	  fxnew[1]=pdf[1]->xfx(quarks[1]->parents()[0]->dataPtr(),
-			       quarks[1]->dataPtr(),scale,xnew[1]);
-	  jacobian/=(_channelweights[1]-_channelweights[0]);
-	}
-      // q g -> q V 
-      else
-	{
-	  itype=1;
-	  xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-that)/(_mb2-uhat));
-	  xnew[1]=shat/(s*xnew[0]);
-	  fxnew[0]=pdf[0]->xfx(quarks[0]->parents()[0]->dataPtr(),
-			       quarks[0]->dataPtr(),scale,xnew[0]);
-	  fxnew[1]=pdf[1]->xfx(quarks[1]->parents()[0]->dataPtr(),
-			       getParticleData(ParticleID::g),scale,xnew[1]);
-	  jacobian/=(_channelweights[2]-_channelweights[1]);
-	}
-      // jacobian and me parts of the weight
-      weight=-jacobian*(sqr(_mb2-that)+sqr(_mb2-shat))/(sqr(shat)*shat*that);
-      // pdf part of the weight
-      weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
-      // finally coupling, colour factor and different channel pieces
-      weight *= 0.25/pi*coupling()->value(scale);
-      // select the emiting particle
-      iemit=1;
-      if(UseRandom::rnd()<sqr(_mb2-that)/(sqr(_mb2-that)+sqr(_mb2-shat))) iemit=2;
+      jacobian *=log(tmin/tmax);
     }
+    // generate in 1/u
+    else {
+      uhat=umax*pow(umin/umax,UseRandom::rnd());
+      that=_mb2-shat-uhat;
+      jacobian *=log(umin/umax);
+    }
+    jacobian *=2.*uhat*that/(shat-_mb2);
+    // new scale (this is mt^2=pt^2+mb^2)
+    Energy2 scale(uhat*that/shat+_mb2);
+    // the PDF's with the emitted gluon
+    double fxnew[2];
+    xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-uhat)/(_mb2-that));
+    xnew[1]=shat/(s*xnew[0]);
+    for(unsigned int ix=0;ix<2;++ix)
+      {fxnew[ix]=pdf[ix]->xfx(beams[ix],quarks[ix]->dataPtr(),scale,xnew[ix]);}
+    // jacobian and me parts of the weight
+    weight=jacobian*(sqr(_mb2-that)+sqr(_mb2-uhat))/(sqr(shat)*that*uhat);
+    // pdf part of the weight
+    weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
+    // finally coupling, colour factor and different channel pieces
+    weight *= 2./3./pi/_channelweights[0]*coupling()->value(scale);
+    // select the emiting particle
+    iemit=1;
+    if(UseRandom::rnd()<sqr(_mb2-uhat)/(sqr(_mb2-uhat)+sqr(_mb2-that))) iemit=2;
+    itype=0;
+  }
+  // incoming gluon
+  else {
+    // generate t 
+    if(rn>_channelweights[1]) {
+      swap(tmax,tmin);
+      tmax=_mb2-shat-tmax;
+      tmin=_mb2-shat-tmin;
+    }
+    that=tmax*pow(tmin/tmax,UseRandom::rnd());
+    uhat=_mb2-shat-that;
+    jacobian *=that*log(tmax/tmin);
+    // new scale (this is mt^2=pt^2+mb^2)
+    Energy2 scale(uhat*that/shat+_mb2);
+    // g qbar -> qbar V 
+    double fxnew[2];
+    if(rn<_channelweights[1]) {
+      itype=2;
+      xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-uhat)/(_mb2-that));
+      xnew[1]=shat/(s*xnew[0]);
+      fxnew[0]=pdf[0]->xfx(beams[0],getParticleData(ParticleID::g),scale,xnew[0]);
+      fxnew[1]=pdf[1]->xfx(beams[1],quarks[1]->dataPtr(),scale,xnew[1]);
+      jacobian/=(_channelweights[1]-_channelweights[0]);
+    }
+    // q g -> q V 
+    else {
+      itype=1;
+      xnew[0]=exp(yB)/sqrt(s)*sqrt(shat*(_mb2-that)/(_mb2-uhat));
+      xnew[1]=shat/(s*xnew[0]);
+      fxnew[0]=pdf[0]->xfx(beams[0],quarks[0]->dataPtr(),scale,xnew[0]);
+      fxnew[1]=pdf[1]->xfx(beams[1],getParticleData(ParticleID::g),scale,xnew[1]);
+      jacobian/=(_channelweights[2]-_channelweights[1]);
+    }
+    // jacobian and me parts of the weight
+    weight=-jacobian*(sqr(_mb2-that)+sqr(_mb2-shat))/(sqr(shat)*shat*that);
+    // pdf part of the weight
+    weight *=fxnew[0]*fxnew[1]*x[0]*x[1]/(fx[0]*fx[1]*xnew[0]*xnew[1]);
+    // finally coupling, colour factor and different channel pieces
+    weight *= 0.25/pi*coupling()->value(scale);
+    // select the emiting particle
+    iemit=1;
+    if(UseRandom::rnd()<sqr(_mb2-that)/(sqr(_mb2-that)+sqr(_mb2-shat))) iemit=2;
+  }
   // if me correction should be applied
   if(weight>1.) {
     ++_nover;

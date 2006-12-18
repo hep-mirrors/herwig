@@ -89,12 +89,13 @@ reconstructHardJets(ShowerTreePtr hard) const {
     // find the hard process centre-of-mass energy
     Lorentz5Momentum p_cm[2] = {Lorentz5Momentum(),Lorentz5Momentum()};
     // create a vector of the hard particles
-    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+    map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator mit;
     vector<ShowerProgenitorPtr> ShowerHardJets;
     for(mit=hard->incomingLines().begin();mit!=hard->incomingLines().end();++mit)
       ShowerHardJets.push_back((*mit).first);
-    for(mit=hard->outgoingLines().begin();mit!=hard->outgoingLines().end();++mit)
-      ShowerHardJets.push_back((*mit).first);
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mjt;
+    for(mjt=hard->outgoingLines().begin();mjt!=hard->outgoingLines().end();++mjt)
+      ShowerHardJets.push_back((*mjt).first);
     for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
       // final-state jet
       if(ShowerHardJets[ix]->progenitor()->isFinalState()) {
@@ -214,8 +215,9 @@ bool QTildeReconstructor::
 reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   bool emitted = true;
   tShowerParticlePtr child;
-  tShowerParticlePtr parent = dynamic_ptr_cast<ShowerParticlePtr>
-    (p->parents()[0]);
+  tShowerParticlePtr parent;
+  if(!p->parents().empty())
+    parent = dynamic_ptr_cast<ShowerParticlePtr>(p->parents()[0]);
   if(parent) {
     emitted=true;
     reconstructSpaceLikeJet(parent);
@@ -286,8 +288,8 @@ reconstructISJets(Lorentz5Momentum pcm,
 		   showerKinematics()->getBasis()[0]);
     }
     else {
-      if (!ShowerHardJets[ix]->progenitor()->parents().empty()) {
-	Energy etemp = ShowerHardJets[ix]->progenitor()->
+      if (!ShowerHardJets[ix]->original()->parents().empty()) {
+	Energy etemp = ShowerHardJets[ix]->original()->
 	  parents()[0]->momentum().pz();
 	Lorentz5Momentum ptemp = Lorentz5Momentum(0, 0, etemp, abs(etemp));
 	pq.push_back(ptemp);
@@ -321,9 +323,11 @@ reconstructISJets(Lorentz5Momentum pcm,
   Energy2 C = a2*b1*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if (rad >= 0) {kp = B/(2.*A)*(1.+sqrt(rad));}
-  else throw Exception() << "QTildeReconstructor::reconstructISJets " 
-			 << "WARNING! Can't get kappa_pm!\n"
-			 << Exception::eventerror;
+  else {
+    throw Exception() << "QTildeReconstructor::reconstructISJets " 
+		      << "WARNING! Can't get kappa_pm!\n"
+		      << Exception::eventerror;
+  }
   // now compute k1, k2
   double k1 = 1.0, k2 = 1.0;
   rad = kp*(b1+kp*b2)/(kp*a1+a2)*(x1/x2);   
@@ -360,12 +364,13 @@ bool QTildeReconstructor::
 reconstructDecayJets(ShowerTreePtr decay) const {
   try {
     // extract the particles from the ShowerTree
-    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+    map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator mit;
     vector<ShowerProgenitorPtr> ShowerHardJets;
     for(mit=decay->incomingLines().begin();mit!=decay->incomingLines().end();++mit)
       ShowerHardJets.push_back((*mit).first);
-    for(mit=decay->outgoingLines().begin();mit!=decay->outgoingLines().end();++mit)
-      ShowerHardJets.push_back((*mit).first);
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mjt;
+    for(mjt=decay->outgoingLines().begin();mjt!=decay->outgoingLines().end();++mjt)
+      ShowerHardJets.push_back((*mjt).first);
     // initial-state radiation
     bool radiated[2] = {false,false};
     ShowerProgenitorPtr initial;

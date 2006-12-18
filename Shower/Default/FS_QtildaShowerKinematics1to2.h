@@ -73,8 +73,10 @@ public:
 
   /**
    *  Perform any initial calculations needed after the branching has been selected
+   * @param particle The branching particle
+   * @param parent The bema particle for the jet if needed
    */
-  virtual void initialize(ShowerParticle & particle);
+  virtual void initialize(ShowerParticle & particle,PPtr parent);
   //@}
 
 private:
