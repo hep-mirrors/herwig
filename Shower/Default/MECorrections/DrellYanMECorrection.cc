@@ -199,7 +199,6 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
 	col->removeColoured(cit->first->progenitor());
 	// insert new particles
 	cit->first->copy(newq);
-	if(iemit==1) cit->first->original()->parents()[0]->addChild(newq);
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newq,1,false)));
 	sp->x(xnew.first);
 	cit->first->progenitor(sp);
@@ -213,7 +212,6 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
 	col->removeColoured(cit->first->progenitor());
 	// insert new particles
 	cit->first->copy(newa);
-	if(iemit==2) cit->first->original()->parents()[0]->addChild(newa);
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newa,1,false)));
 	sp->x(xnew.second);
 	cit->first->progenitor(sp);
@@ -277,7 +275,6 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
 	col->removeColoured(cit->first->progenitor());
 	// insert new particles
 	cit->first->copy(newg);
-	cit->first->original()->parents()[0]->addChild(newg);
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newg,1,false)));
 	sp->x(xnew.second);
 	cit->first->progenitor(sp);
@@ -341,7 +338,6 @@ void DrellYanMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
 	col->removeColoured(cit->first->progenitor());
 	// insert new particles
 	cit->first->copy(newg);
-	cit->first->original()->parents()[0]->addChild(newg);
 	ShowerParticlePtr sp(new_ptr(ShowerParticle(*newg,1,false)));
 	sp->x(xnew.first);
 	cit->first->progenitor(sp);

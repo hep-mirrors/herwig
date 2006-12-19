@@ -15,7 +15,6 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "ShowerTree.h"
 #include "ShowerProgenitor.h"
 #include "KinematicsReconstructor.h"
@@ -170,7 +169,6 @@ void Evolver::hardMatrixElementCorrection() {
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
-  Timer<1005> timer("Evolver::timeLikeShower");
   bool vetoed = true;
   Branching fb;
   while (vetoed) {
@@ -228,7 +226,6 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 }
 
 bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
-  Timer<1006> timer("Evolver::spaceLikeShower");
   bool vetoed(true);
   Branching bb;
   // generate branching

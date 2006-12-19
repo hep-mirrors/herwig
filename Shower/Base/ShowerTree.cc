@@ -276,7 +276,6 @@ void ShowerTree::insertHard(StepPtr pstep,bool ISR, bool) {
       else {
 	// break mother/daugther relations
 	hadron->abandonChild(original);
-	hadron->abandonChild(copy);
 	copy->addChild(original);
 	updateColour(copy);
 	init->addChild(copy);
