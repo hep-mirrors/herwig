@@ -20,12 +20,11 @@ inline IBPtr DecayPhaseSpaceChannel::fullclone() const {
 }
 
 // generate the mass of an intermediate
-inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper)
-{
+inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
   Energy mass=0;
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
 					       << " not allowed";
-  if((lower-upper)/(lower+upper)>1e-10) {
+  if(abs(lower-upper)/(lower+upper)>1e-10) {
     lower +=1e-10*(lower+upper);
     upper -=1e-10*(lower+upper);
   }
@@ -50,7 +49,7 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
   } 
   else {
     throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
-				  << "DecayPhaseSpaceChannel::generateMass";
+				 << "DecayPhaseSpaceChannel::generateMass";
   }
   if(mass<lower)      mass=lower+1e-10*(lower+upper);
   else if(mass>upper) mass=upper-1e-10*(lower+upper);
@@ -59,8 +58,7 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
  
 // return the weight for a given resonance
 inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
-						     Energy lower,Energy upper)
-{
+						     Energy lower,Energy upper) {
   double wgt=0.;
   if(lower>upper) {
     throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
@@ -92,8 +90,7 @@ inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
 
 // add a new intermediate particle
 inline void DecayPhaseSpaceChannel::addIntermediate(PDPtr part,int jac,double power,
-						    int dau1,int dau2)
-{
+						    int dau1,int dau2) {
   _intpart.push_back(part);
   _jactype.push_back(jac);
   _intpower.push_back(power);
@@ -103,8 +100,7 @@ inline void DecayPhaseSpaceChannel::addIntermediate(PDPtr part,int jac,double po
 
 // reset the mass and width of an intermediate particle
 inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,
-						      Energy width)
-{
+						      Energy width) {
   int idin=part->id();
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
     if(_intpart[ix] && _intpart[ix]->id()==idin) {
@@ -114,8 +110,7 @@ inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,
   }
 }
 
-inline void DecayPhaseSpaceChannel::resetDaughter(int oldp,int newp)
-{
+inline void DecayPhaseSpaceChannel::resetDaughter(int oldp,int newp) {
   for(unsigned int ix=0;ix<_intdau1.size();++ix) {
     if(_intdau1[ix]==oldp) {
       _intdau1[ix]=newp;
@@ -127,4 +122,5 @@ inline void DecayPhaseSpaceChannel::resetDaughter(int oldp,int newp)
     }
   }
 }
+
 }
