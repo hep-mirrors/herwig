@@ -83,6 +83,11 @@ public:
    *  Get the ShowerModel
    */ 
   inline ShowerModelPtr showerModel() const;
+
+  /**
+   *  Get the SplittingGenerator
+   */
+  inline tSplittingGeneratorPtr splittingGenerator() const;
   //@}
 
 public:
@@ -228,6 +233,21 @@ protected:
    *  Set the beam particle data
    */
   inline void setBeamParticle(Ptr<BeamParticleData>::const_pointer);
+  //@}
+
+  /**
+   * Set/Get the current tree being evolverd for inheriting classes
+   */
+  //@{
+  /**
+   * Get the tree
+   */
+  inline tShowerTreePtr currentTree();
+
+  /**
+   * Set the tree
+   */
+  inline void currentTree(tShowerTreePtr);
   //@}
 
 protected:

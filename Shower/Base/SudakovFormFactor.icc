@@ -7,7 +7,9 @@
 namespace Herwig {
 
 inline SudakovFormFactor::SudakovFormFactor() : _pdfmax(35.0), _z( 0.0 ), 
-						_phi(0.0), _pT(0.)
+						_phi(0.0), _pT(0.),
+						_a(0.3), _b(2.3), _c(0.3*GeV),
+						_kinCutoffScale( .75*GeV )
 {}
 
 inline tSplittingFnPtr SudakovFormFactor::splittingFn() const { 
@@ -86,5 +88,29 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
 
 inline vector<IdList> SudakovFormFactor::particles() const {
   return _particles;
+}
+
+inline void SudakovFormFactor::splittingFn(tSplittingFnPtr in) {
+  _splittingFn=in;
+}
+
+inline void SudakovFormFactor::alpha(tShowerAlphaPtr in) {
+  _alpha=in;
+}
+
+inline void SudakovFormFactor::pdfMax(double in) {
+  _pdfmax=in;
+}
+
+inline double SudakovFormFactor::pdfMax() const {
+  return _pdfmax;
+}
+
+inline Energy SudakovFormFactor::kinematicCutOff(Energy scale,Energy mq) const {
+  return max((scale -_a*mq)/_b,_c);
+}
+
+inline Energy SudakovFormFactor::kinScale() const {
+  return _kinCutoffScale;
 }
 }

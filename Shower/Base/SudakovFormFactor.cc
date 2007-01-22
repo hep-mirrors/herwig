@@ -15,11 +15,13 @@
 using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _splittingFn << _alpha << _pdfmax << _particles;
+  os << _splittingFn << _alpha << _pdfmax << _particles
+     << _a << _b << _c << _kinCutoffScale;
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _splittingFn >> _alpha >> _pdfmax >> _particles;
+  is >> _splittingFn >> _alpha >> _pdfmax >> _particles 
+     >> _a >> _b >> _c >> _kinCutoffScale;
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;
@@ -49,6 +51,30 @@ void SudakovFormFactor::Init() {
      &SudakovFormFactor::_pdfmax, 35.0, 1.0, 4000.0,
      false, false, Interface::limited);
 
+  static Parameter<SudakovFormFactor,double> interfaceaParameter
+    ("aParameter",
+     "The a parameter for the kinematic cut-off",
+     &SudakovFormFactor::_a, 0.3, -10.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<SudakovFormFactor,double> interfacebParameter
+    ("bParameter",
+     "The b parameter for the kinematic cut-off",
+     &SudakovFormFactor::_b, 2.3, -10.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<SudakovFormFactor,Energy> interfacecParameter
+    ("cParameter",
+     "The c parameter for the kinematic cut-off",
+     &SudakovFormFactor::_c, GeV, 0.3*GeV, 0.1*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<SudakovFormFactor,Energy>
+    interfaceKinScale ("cutoffKinScale",
+		       "kinematic cutoff scale for the parton shower phase"
+		       " space (unit [GeV])",
+		       &SudakovFormFactor::_kinCutoffScale, GeV, 
+		       0.75*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
 }
 
 bool SudakovFormFactor::

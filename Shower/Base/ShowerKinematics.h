@@ -1,3 +1,4 @@
+<<<<<<< .working
 // -*- C++ -*-
 #ifndef HERWIG_ShowerKinematics_H
 #define HERWIG_ShowerKinematics_H

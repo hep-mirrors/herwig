@@ -402,12 +402,12 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   // incoming particles
   for(cit=_currenttree->incomingLines().begin();
       cit!=_currenttree->incomingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
+    particlesToShower.push_back((*cit).first);
   assert((particlesToShower.size()==1&&!hard)||(particlesToShower.size()==2&&hard));
   // outgoing particles
   for(cit=_currenttree->outgoingLines().begin();
       cit!=_currenttree->outgoingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
+    particlesToShower.push_back((*cit).first);
   // remake the colour partners if needed
   if(_currenttree->hardMatrixElementCorrection()) {
     setColourPartners(hard);

@@ -22,8 +22,8 @@ using namespace ThePEG;
  *  needs to be showered.
  *
  */
-class ShowerTree : public Base
-{
+class ShowerTree : public Base {
+
 public:
 
   /**

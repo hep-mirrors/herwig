@@ -73,4 +73,16 @@ Evolver::beamParticle() const {
 inline void Evolver::setBeamParticle(Ptr<BeamParticleData>::const_pointer in) {
   _beam=in;
 }
+  
+inline tShowerTreePtr Evolver::currentTree() {
+  return _currenttree;
+}
+
+inline void Evolver::currentTree(tShowerTreePtr tree) {
+  _currenttree=tree;
+}
+
+inline tSplittingGeneratorPtr Evolver::splittingGenerator() const {
+  return _splittingGenerator;
+}
 }
