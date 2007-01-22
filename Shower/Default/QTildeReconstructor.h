@@ -196,8 +196,9 @@ protected:
    *  Recursively boost the initial-state shower
    * @param p The particle
    * @param bv The boost
+   * @param parent The parent of the chain
    */
-  inline void boostChain(tPPtr p, const Vector3 &bv) const;
+  inline void boostChain(tPPtr p, const Vector3 &bv,tPPtr & parent) const;
 
   /**
    * Given a 5-momentum and a scale factor, the method returns the

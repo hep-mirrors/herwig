@@ -53,15 +53,11 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   return R;
 }
 
-inline void QTildeReconstructor::boostChain(tPPtr p, const Vector3 &bv) const {
-  if(!p->parents().empty()) boostChain(p->parents()[0], bv);
+inline void QTildeReconstructor::boostChain(tPPtr p, const Vector3 &bv,
+					    tPPtr & parent) const {
+  if(!p->parents().empty()) boostChain(p->parents()[0], bv,parent);
+  else parent=p;
   p->boost(bv);
-  // veto the shower if the final parent of the shower has more momentum along beam
-  // or energy than the beam
-  if(!p->parents().empty()) {
-    if(p->parents()[0]->momentum().e()<p->momentum().e()) throw Veto();
-    if(abs(p->parents()[0]->momentum().z())<abs(p->momentum().z())) throw Veto();
-  }
   if(p->children().size()==2) {
     if(dynamic_ptr_cast<ShowerParticlePtr>(p->children()[1]))
       p->children()[1]->deepBoost(bv);

@@ -352,9 +352,12 @@ reconstructISJets(Lorentz5Momentum pcm,
   }
   // before boost
   Hep3Vector betaboost = Vector3(0, 0, beta1);
-  boostChain(toBoost[0], betaboost);
+  tPPtr parent;
+  boostChain(toBoost[0], betaboost,parent);
+  if(parent->momentum().e()/pq[0].e()>1.||parent->momentum().z()/pq[0].z()>1.) throw Veto();
   betaboost = Vector3(0, 0, beta2);
-  boostChain(toBoost[1], betaboost);
+  boostChain(toBoost[1], betaboost,parent);
+  if(parent->momentum().e()/pq[1].e()>1.||parent->momentum().z()/pq[1].z()>1.) throw Veto();
   boostRest = pcm.findBoostToCM();
   boostNewF = (toBoost[0]->momentum() + toBoost[1]->momentum()).boostVector();
   return true;
