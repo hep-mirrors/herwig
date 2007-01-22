@@ -48,20 +48,10 @@ class TwoMesonRhoKStarCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   TwoMesonRhoKStarCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline TwoMesonRhoKStarCurrent(const TwoMesonRhoKStarCurrent &);
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{

@@ -454,100 +454,94 @@ void ThreeMesonDefaultCurrent::Init() {
 }
   
 // modes handled by this class
-bool ThreeMesonDefaultCurrent::acceptMode(int imode) const{return imode>=0&&imode<=8;}
+bool ThreeMesonDefaultCurrent::acceptMode(int imode) const { 
+  return imode>=0&&imode<=8;
+}
 
 // calculate the form-factors
 void ThreeMesonDefaultCurrent::
 calculateFormFactors(const int ichan, const int imode,
 		     Energy2 q2, Energy2 s1, Energy2 s2, Energy2 s3,
 		     Complex & F1, Complex & F2, Complex & F3, Complex & F4,
-		     Complex & F5) const
-{
-  F1=0.;F2=0.;F3=0.;F4=0.;F5=0.;
+		     Complex & F5) const {
   // calculate the pi- pi- pi+ factor
-  if(imode==0)
-    {
-      Complex a1fact(a1BreitWigner(q2)*2./3.);
-      if(ichan<0){F1= a1fact*BrhoF123(s1,-1);F2 =-a1fact*BrhoF123(s2,-1);}
-      else if(ichan%2==0){F1 = a1fact*BrhoF123(s1,ichan/2);}
-      else if(ichan%2==1){F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);}
+  if(imode==0) {
+    Complex a1fact(a1BreitWigner(q2)*2./3.);
+    if(ichan<0) {
+      F1= a1fact*BrhoF123(s1,-1);
+      F2 =-a1fact*BrhoF123(s2,-1);
     }
+    else if(ichan%2==0) F1 = a1fact*BrhoF123(s1,    ichan/2);
+    else if(ichan%2==1) F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);
+  }
   // calculate the pi0 pi0 pi- factor
-  else if(imode==1)
-    {
-      Complex a1fact(a1BreitWigner(q2)*2./3.);
-      if(ichan<0){F1 = a1fact*BrhoF123(s1,-1);F2 =-a1fact*BrhoF123(s2,-1);}
-      else if(ichan%2==0){F1 = a1fact*BrhoF123(s1,ichan/2);}
-      else if(ichan%2==1){F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);}
+  else if(imode==1) {
+    Complex a1fact(a1BreitWigner(q2)*2./3.);
+    if(ichan<0) {
+      F1 = a1fact*BrhoF123(s1,-1);
+      F2 =-a1fact*BrhoF123(s2,-1);
     }
+    else if(ichan%2==0) F1 = a1fact*BrhoF123(s1,    ichan/2);
+    else if(ichan%2==1) F2 =-a1fact*BrhoF123(s2,(ichan-1)/2);
+  }
   // calculate the K- pi - K+ factor
-  else if(imode==2)
-    {
-      Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
-      if(ichan<0)
-	{
-	  F1 =-a1fact*BKstarF123(s1,-1); F2 = a1fact*BrhoF123(s2,-1);
-	  F5 = BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
-	}
-      else if(ichan%8==0){F1 =-a1fact*BKstarF123(s1,ichan/8);}
-      else if(ichan%8==1){F2 = a1fact*BrhoF123(s2,(ichan-1)/8);}
-      else if(ichan%8>=2){F5 = BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);}
+  else if(imode==2) {
+    Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
+    if(ichan<0) {
+      F1 =-a1fact*BKstarF123(s1,-1); F2 = a1fact*BrhoF123(s2,-1);
+      F5 = BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
     }
+    else if(ichan%8==0){F1 =-a1fact*BKstarF123(s1,ichan/8);}
+    else if(ichan%8==1){F2 = a1fact*BrhoF123(s2,(ichan-1)/8);}
+    else if(ichan%8>=2){F5 = BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);}
+  }
   // calculate the K0 pi- K0bar
-  else if(imode==3)
-    {
-      Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
-      if(ichan<0)
-	{
-	  F1 =-a1fact*BKstarF123(s1,-1);F2 = a1fact*BrhoF123(s2,-1);
-	  F5 =-BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
-	}
-      else if(ichan%8==0){F1 = -a1fact*BKstarF123(s1,ichan/8);}
-      else if(ichan%8==1){F2 = a1fact*BrhoF123(s2,(ichan-1)/8);}
-      else if(ichan%8>=2){F5 = -BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);}
+  else if(imode==3) {
+    Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
+    if(ichan<0) {
+      F1 =-a1fact*BKstarF123(s1,-1);F2 = a1fact*BrhoF123(s2,-1);
+      F5 =-BrhoF5(q2,-1)*FKrho(s1,s2,-1)*sqrt(2.);
     }
+    else if(ichan%8==0){F1 = -a1fact*BKstarF123(s1,ichan/8);}
+    else if(ichan%8==1){F2 = a1fact*BrhoF123(s2,(ichan-1)/8);}
+    else if(ichan%8>=2){F5 = -BrhoF5(q2,ichan/8)*FKrho(s1,s2,(ichan-2)%8)*sqrt(2.);}
+  }
   // calculate the K- pi0 k0
-  else if(imode==4)
-    {
-      Complex a1fact(a1BreitWigner(q2));
-      if(ichan<0){F2 =-a1fact*BrhoF123(s2,-1);}
-      else{F2 =-a1fact*BrhoF123(s2,ichan);}
-    }
+  else if(imode==4) {
+    Complex a1fact(a1BreitWigner(q2));
+    if(ichan<0){F2 =-a1fact*BrhoF123(s2,-1);}
+    else{F2 =-a1fact*BrhoF123(s2,ichan);}
+  }
   // calculate the pi0 pi0 K-
-  else if(imode==5)
-    {
-      Complex K1fact(K1BreitWigner(q2)/6.);
-      if(ichan<0){F1 = K1fact*BKstarF123(s1,-1);F2 =-K1fact*BKstarF123(s2,-1);}
-      else if(ichan%2==0){F1 = K1fact*BKstarF123(s1,ichan/2);}
-      else{F2 =-K1fact*BKstarF123(s2,(ichan-1)/2);}
-    }
+  else if(imode==5) {
+    Complex K1fact(K1BreitWigner(q2)/6.);
+    if(ichan<0){F1 = K1fact*BKstarF123(s1,-1);F2 =-K1fact*BKstarF123(s2,-1);}
+    else if(ichan%2==0){F1 = K1fact*BKstarF123(s1,ichan/2);}
+    else{F2 =-K1fact*BKstarF123(s2,(ichan-1)/2);}
+  }
   // calculate the K- pi- pi+
-  else if(imode==6)
-    {
-      Complex K1fact(K1BreitWigner(q2)*sqrt(2.)/3.);
-      if(ichan<0)
-	{
-	  F1 =-K1fact*BrhoF123(s1,-1);F2 = K1fact*BKstarF123(s2,-1);
-	  F5 =-BKstarF123(q2,-1)*FKrho(s2,s1,-1)*sqrt(2.);
-	}
-      else if(ichan%8==0){F1 =-K1fact*BrhoF123(s1,ichan/8);}
-      else if(ichan%8==1){F2 = K1fact*BKstarF123(s2,(ichan-1)/8);}
-      else{F5 = -BKstarF123(q2,ichan/8)*FKrho(s2,s1,(ichan-2)%8)*sqrt(2.);}
+  else if(imode==6) {
+    Complex K1fact(K1BreitWigner(q2)*sqrt(2.)/3.);
+    if(ichan<0) {
+      F1 =-K1fact*BrhoF123(s1,-1);F2 = K1fact*BKstarF123(s2,-1);
+      F5 =-BKstarF123(q2,-1)*FKrho(s2,s1,-1)*sqrt(2.);
     }
+    else if(ichan%8==0){F1 =-K1fact*BrhoF123(s1,ichan/8);}
+    else if(ichan%8==1){F2 = K1fact*BKstarF123(s2,(ichan-1)/8);}
+    else{F5 = -BKstarF123(q2,ichan/8)*FKrho(s2,s1,(ichan-2)%8)*sqrt(2.);}
+  }
   // calculate the pi- K0bar pi0
-  else if(imode==7)
-    {
-      Complex K1fact(K1BreitWigner(q2));
-      if(ichan<0){F2 =-K1fact*BrhoF123(s2,-1);F5 =-2.*BKstarF123(q2,-1)*FKrho(s1,s2,-1);}
-      else if(ichan%7==0){F2 =-K1fact*BrhoF123(s2,ichan/7);}
-      else {F5 =-2.*BKstarF123(q2,ichan/7)*FKrho(s1,s2,(ichan-1)%7);}
-    }
+  else if(imode==7) {
+    Complex K1fact(K1BreitWigner(q2));
+    if(ichan<0){F2 =-K1fact*BrhoF123(s2,-1);F5 =-2.*BKstarF123(q2,-1)*FKrho(s1,s2,-1);}
+    else if(ichan%7==0){F2 =-K1fact*BrhoF123(s2,ichan/7);}
+    else {F5 =-2.*BKstarF123(q2,ichan/7)*FKrho(s1,s2,(ichan-1)%7);}
+  }
   // calculate the pi- pi0 eta
-  else if(imode==8)
-    {
-      if(ichan<0){F5 = BrhoF5(q2,-1)*BrhoF123(s3,-1)*sqrt(2./3.);}
-      else{F5 = BrhoF5(q2,ichan/3)*BrhoF123(s3,ichan%3)*sqrt(2./3.);}
-    }
+  else if(imode==8) {
+    if(ichan<0){F5 = BrhoF5(q2,-1)*BrhoF123(s3,-1)*sqrt(2./3.);}
+    else{F5 = BrhoF5(q2,ichan/3)*BrhoF123(s3,ichan%3)*sqrt(2./3.);}
+  }
   // multiply by the prefactors
   F1/=_fpi;F2/=_fpi;F3/=_fpi;F4/=_fpi;F5/=_fpi;
   F5 =-F5*Complex(0.,1.)/4./pi/pi/_fpi/_fpi;
@@ -557,8 +551,7 @@ calculateFormFactors(const int ichan, const int imode,
 bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 					  DecayPhaseSpaceModePtr mode,
 					  unsigned int iloc,unsigned int ires,
-					  DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+					  DecayPhaseSpaceChannelPtr phase,Energy upp) {
   int iq(0),ia(0);
   bool kineallowed(true);
   if(!acceptMode(imode)){return false;}
