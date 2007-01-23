@@ -327,7 +327,6 @@ private:
    */
   bool _useMEforT2;
 
-
 };
 
 }

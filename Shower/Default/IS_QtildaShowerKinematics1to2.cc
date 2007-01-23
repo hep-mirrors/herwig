@@ -53,14 +53,6 @@ updateParent(const tShowerParticlePtr theParent,
   theParent->addChild(theChildren[0]);
   theParent->addChild(theChildren[1]);
   theParent->x(theChildren[0]->x()/z());
-  // Now fix the hadrons connections
-  tPPtr hadron;
-  if(theChildren[0]->parents().size() == 2) hadron = theChildren[0]->parents()[0];
-  else throw Exception() << "IS_QtildaShowerKinematics1to2::"
-			 << "updateParent not one parent!" 
-			 << Exception::runerror;
-  hadron->abandonChild(theChildren[0]);
-  hadron->addChild(theParent);
   // create the storage for the shower variables
   theParent->showerVariables().resize(3,0.);
   theParent->showerParameters().resize(2,0.);
@@ -108,12 +100,12 @@ updateLast( const tShowerParticlePtr theLast) const {
 					 0.,0.,0));
 }
  
-void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle) {
+void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
   // For the time being we are considering only 1->2 branching
   Lorentz5Momentum p, n, pthis, ppartner, pcm;
   assert(particle.perturbative()!=2);
   if(particle.perturbative()==1) {
-    pcm = particle.parents()[0]->momentum();
+    pcm = parent->momentum();
     p = Lorentz5Momentum(0.0, pcm.vect());
     n = Lorentz5Momentum(0.0, -pcm.vect());
   } 

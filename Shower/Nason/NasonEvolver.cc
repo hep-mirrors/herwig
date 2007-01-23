@@ -58,7 +58,8 @@ vector<ShowerProgenitorPtr> NasonEvolver::setupShower(bool hard) {
   // generate the hardest emission
   hardestEmission();
   // get the particles to be showered
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=currentTree()->incomingLines().begin();
@@ -66,9 +67,9 @@ vector<ShowerProgenitorPtr> NasonEvolver::setupShower(bool hard) {
     particlesToShower.push_back(((*cit).first));
   assert((particlesToShower.size()==1&&!hard)||(particlesToShower.size()==2&&hard));
   // outgoing particles
-  for(cit=currentTree()->outgoingLines().begin();
-      cit!=currentTree()->outgoingLines().end();++cit)
-    particlesToShower.push_back(((*cit).first));
+  for(cjt=currentTree()->outgoingLines().begin();
+      cjt!=currentTree()->outgoingLines().end();++cjt)
+    particlesToShower.push_back(((*cjt).first));
   // remake the colour partners if needed
   if(currentTree()->hardMatrixElementCorrection()) {
     setColourPartners(hard);
@@ -91,14 +92,15 @@ void NasonEvolver::hardestEmission() {
 	ostringstream output;
 	output << "There is more than one possible hard emission generator"
 	       << " which could be used for ";
-	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+	map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+	map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
 	for(cit=currentTree()->incomingLines().begin();
 	    cit!=currentTree()->incomingLines().end();++cit)
 	  {output << cit->first->progenitor()->PDGName() << " ";}
 	output << " -> ";
-	for(cit=currentTree()->outgoingLines().begin();
-	    cit!=currentTree()->outgoingLines().end();++cit)
-	  {output << cit->first->progenitor()->PDGName() << " ";}
+	for(cjt=currentTree()->outgoingLines().begin();
+	    cjt!=currentTree()->outgoingLines().end();++cjt)
+	  {output << cjt->first->progenitor()->PDGName() << " ";}
 	output << "in NasonEvolver::hardestEmission()\n";
 	throw Exception() << output << Exception::runerror;
       }

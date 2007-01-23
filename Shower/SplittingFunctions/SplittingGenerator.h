@@ -170,6 +170,7 @@ public:
    * @return The Branching struct for the branching
    */
   Branching chooseBackwardBranching(ShowerParticle & particle,
+				    PPtr beam,
 				    double enhance,
 				    Ptr<BeamParticleData>::transient_const_pointer beam) const;
   //@}

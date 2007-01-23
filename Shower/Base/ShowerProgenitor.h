@@ -9,6 +9,7 @@
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ShowerProgenitor.fh"
+#include "ThePEG/PDF/BeamParticleData.h"
 
 namespace Herwig {
 
@@ -19,6 +20,8 @@ using namespace ThePEG;
  *  initiates a shower
  */
 class ShowerProgenitor : public Base {
+
+typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 public:
 
@@ -84,6 +87,7 @@ public:
    *  Has this particle radiated
    */
   inline bool hasEmitted() const;
+
   /**
    *  Set whether or not this particle has radiated
    */
@@ -93,6 +97,11 @@ public:
    *  The id of the particle
    */
   inline long id() const;
+
+  /**
+   *  The BeamParticleData object
+   */
+  inline tcBeamPtr beam();
 
 private:
 
@@ -126,6 +135,11 @@ private:
    *  Has there been radiation
    */
   bool _hasEmitted;
+
+  /**
+   *  The BeamParticleData object
+   */
+  tcBeamPtr _beam;
 
 };
 }

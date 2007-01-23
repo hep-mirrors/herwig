@@ -158,7 +158,7 @@ protected:
    * If at least one emission has occurred then the method returns true
    * @param particle The particle to be showered
    */
-  virtual bool spaceLikeShower(tShowerParticlePtr particle); 
+  virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam); 
 
   /**
    * If does the forward evolution of the input on-shell particle

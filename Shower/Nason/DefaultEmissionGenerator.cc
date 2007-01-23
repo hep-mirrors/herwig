@@ -77,7 +77,8 @@ void DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree) {
 
 void DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
   // get the particles to be showered
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=tree->incomingLines().begin();
@@ -85,9 +86,9 @@ void DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
     particlesToShower.push_back((*cit).first);
   assert(particlesToShower.size()==2);
   // outgoing particles
-  for(cit=tree->outgoingLines().begin();
-      cit!=tree->outgoingLines().end();++cit)
-    particlesToShower.push_back((*cit).first);
+  for(cjt=tree->outgoingLines().begin();
+      cjt!=tree->outgoingLines().end();++cjt)
+    particlesToShower.push_back((*cjt).first);
 
 
 
@@ -98,7 +99,8 @@ void DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
 
 void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   // get the particles to be showered
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   vector<ShowerProgenitorPtr> particlesToShower;
   // incoming particles
   for(cit=tree->incomingLines().begin();
@@ -106,9 +108,9 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
     particlesToShower.push_back((*cit).first);
   assert(particlesToShower.size()==1);
   // outgoing particles
-  for(cit=tree->outgoingLines().begin();
-      cit!=tree->outgoingLines().end();++cit)
-    particlesToShower.push_back((*cit).first);
+  for(cjt=tree->outgoingLines().begin();
+      cjt!=tree->outgoingLines().end();++cjt)
+    particlesToShower.push_back((*cjt).first);
   // only generate FSR at the moment
   int imax=-1;
   Energy ptmax=-1.*GeV;

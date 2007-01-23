@@ -33,15 +33,16 @@ bool FortranReconstructor::reconstructHardJets(ShowerTreePtr hard) const {
 }
 
 bool FortranReconstructor::reconstructDecayJets(ShowerTreePtr decay) const {
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mit;
+  map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator mit;
+  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator mjt;
   vector<ShowerProgenitorPtr> ShowerHardJets;
   ShowerProgenitorPtr incoming;
   // extract the decaying particle
   for(mit=decay->incomingLines().begin();mit!=decay->incomingLines().end();++mit)
     incoming=(*mit).first;
   // extract the decay products
-  for(mit=decay->outgoingLines().begin();mit!=decay->outgoingLines().end();++mit)
-    ShowerHardJets.push_back((*mit).first);
+  for(mjt=decay->outgoingLines().begin();mjt!=decay->outgoingLines().end();++mjt)
+    ShowerHardJets.push_back((*mjt).first);
   // loop over them
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     // did it radiate

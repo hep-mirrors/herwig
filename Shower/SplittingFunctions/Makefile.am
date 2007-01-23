@@ -8,4 +8,7 @@ QtoQGammaSplitFn.cc QtoQGammaSplitFn.h QtoQGammaSplitFn.icc QtoQGammaSplitFn.fh\
 GtoQQbarSplitFn.cc GtoQQbarSplitFn.h GtoQQbarSplitFn.icc GtoQQbarSplitFn.fh \
 QtoGQSplitFn.cc QtoGQSplitFn.h QtoGQSplitFn.icc QtoGQSplitFn.fh \
 PhitoPhiGSplitFn.cc PhitoPhiGSplitFn.h PhitoPhiGSplitFn.icc PhitoPhiGSplitFn.fh \
-SplittingGenerator.cc SplittingGenerator.h SplittingGenerator.icc SplittingGenerator.fh
+SplittingGenerator.cc SplittingGenerator.h SplittingGenerator.icc SplittingGenerator.fh \
+GluinotoGluinoGSplitFn.cc  GluinotoGluinoGSplitFn.h \
+GluinotoGluinoGSplitFn.icc GluinotoGluinoGSplitFn.fh
+
