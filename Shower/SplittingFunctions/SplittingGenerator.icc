@@ -102,4 +102,11 @@ inline string SplittingGenerator::addInitialSplitting(string arg) {
   return addSplitting(arg,false);
 }
 
+inline BranchingList const & SplittingGenerator::finalStateBranchings() const {
+  return _fbranchings;
+}
+  
+inline BranchingList const & SplittingGenerator::initialStateBranchings() const {
+  return _bbranchings;
+}
 }

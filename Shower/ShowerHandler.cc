@@ -185,8 +185,7 @@ void ShowerHandler::findShoweringParticles() {
   _hard->setParents();
 }
 
-void ShowerHandler::cascade()
-{
+void ShowerHandler::cascade() {
   Timer<1002> timer("ShowerHandler::cascade");
   //  start of the try block for the whole showering process
   unsigned int countFailures=0;

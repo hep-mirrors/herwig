@@ -19,13 +19,11 @@ ClassDescription<QTildeSudakov> QTildeSudakov::initQTildeSudakov;
 // Definition of the static class description member.
 
 void QTildeSudakov::persistentOutput(PersistentOStream & os) const {
-  os << _a << _b << _c << _kinCutoffScale << _cutoffQCDMassScale
-     << _cutoffQEDMassScale << _cutoffEWKMassScale;
+  os << _cutoffQCDMassScale << _cutoffQEDMassScale << _cutoffEWKMassScale;
 }
 
 void QTildeSudakov::persistentInput(PersistentIStream & is, int) {
-  is >> _a >> _b >> _c >> _kinCutoffScale >> _cutoffQCDMassScale
-     >> _cutoffQEDMassScale >> _cutoffEWKMassScale;
+  is >> _cutoffQCDMassScale >> _cutoffQEDMassScale >> _cutoffEWKMassScale;
 }
 
 void QTildeSudakov::Init() {
@@ -34,41 +32,18 @@ void QTildeSudakov::Init() {
     ("The QTildeSudakov class implements the Sudakov form factor for ordering it"
      " qtilde");
 
-  static Parameter<QTildeSudakov,double> interfaceaParameter
-    ("aParameter",
-     "The a parameter for the kinematic cut-off",
-     &QTildeSudakov::_a, 0.3, -10.0, 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeSudakov,double> interfacebParameter
-    ("bParameter",
-     "The b parameter for the kinematic cut-off",
-     &QTildeSudakov::_b, 2.3, -10.0, 10.0,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeSudakov,Energy> interfacecParameter
-    ("cParameter",
-     "The c parameter for the kinematic cut-off",
-     &QTildeSudakov::_c, GeV, 0.3*GeV, 0.1*GeV, 10.0*GeV,
-     false, false, Interface::limited);
-
-  static Parameter<QTildeSudakov,Energy>
-    interfaceKinScale ("cutoffKinScale",
-		       "kinematic cutoff scale for the parton shower phase"
-		       " space (unit [GeV])",
-		       &QTildeSudakov::_kinCutoffScale, GeV, 
-		       0.75*GeV, 0.001*GeV, 10.0*GeV,false,false,false);
-
   static Parameter<QTildeSudakov,Energy>
     interfaceCutoffQCD ("CutoffQCDMassScale",
 			"low energy cutoff mass scale for QCD radiation  (unit [GeV])",
 			&QTildeSudakov::_cutoffQCDMassScale, GeV, 
 			0.0*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
+
   static Parameter<QTildeSudakov,Energy>
     interfaceCutoffQED ("CutoffQEDMassScale",
 			"low energy cutoff mass scale for QED radiation  (unit [GeV])",
 			&QTildeSudakov::_cutoffQEDMassScale, GeV, 
 			0.0005*GeV, 0.0*GeV, 10.0*GeV,false,false,false);
+
   static Parameter<QTildeSudakov,Energy>
     interfaceCutoffEWK ("CutoffEWKMassScale",
 			"low energy cutoff mass scale for EWK radiation  (unit [GeV])",
@@ -207,8 +182,7 @@ generateNextSpaceBranching(const Energy startingQ,
   return showerKin;
 }
 
-void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
-{
+void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc) {
   _ids=ids;
   if(cc) {
     for(unsigned int ix=0;ix<ids.size();++ix) {
@@ -223,12 +197,11 @@ void QTildeSudakov::initialize(const IdList & ids, Energy2 & tmin,const bool cc)
     _masses.push_back(getParticleData(_ids[ix])->mass());
   _kinCutoff=
     kinematicCutOff(kinScale(),*std::max_element(_masses.begin(),_masses.end()));
-  for(ix=0;ix<_masses.size();++ix)
-    {
-      _masses[ix]=max(_kinCutoff,_masses[ix]);
-      _masssquared.push_back(sqr(_masses[ix]));
-      if(ix>0) tmin=max(_masssquared[ix],tmin);
-    }
+  for(ix=0;ix<_masses.size();++ix) {
+    _masses[ix]=max(_kinCutoff,_masses[ix]);
+    _masssquared.push_back(sqr(_masses[ix]));
+    if(ix>0) tmin=max(_masssquared[ix],tmin);
+  }
 }
 
 ShoKinPtr QTildeSudakov::generateNextDecayBranching(const Energy startingScale,

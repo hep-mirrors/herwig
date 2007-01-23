@@ -1,0 +1,12 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the NasonTree class.
+//
+
+namespace Herwig {
+
+inline NasonTree::NasonTree(ShowerTreePtr in) : _tree(in)
+{}
+
+}

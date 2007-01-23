@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/Evolver.h"
+#include "HardestEmissionGenerator.h"
 #include "NasonEvolver.fh"
 
 namespace Herwig {
@@ -26,6 +27,17 @@ public:
    * The default constructor.
    */
   inline NasonEvolver();
+
+  /**
+   *  Member to perform the shower
+   */
+  //@{
+
+  /**
+   * Perform the shower of a decay
+   */
+  virtual void showerDecay(ShowerTreePtr);
+  //@}
 
 public:
 
@@ -55,6 +67,21 @@ public:
 
 protected:
 
+  /**
+   * Extract the particles to be showered, set the evolution scales
+   * and apply the hard matrix element correction
+   * @param hard Whether this is a hard process or decay
+   * @return The particles to be showered
+   */
+  vector<ShowerProgenitorPtr> setupShower(bool hard);
+
+  /**
+   *  Generate the hardest emission
+   */
+  virtual void hardestEmission();
+  
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -70,9 +97,17 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+  //@}
 
 
 private:
@@ -88,6 +123,13 @@ private:
    * In fact, it should not even be implemented.
    */
   NasonEvolver & operator=(const NasonEvolver &);
+
+private:
+
+  /**
+   *  Vector of objects responisble for generating the hardest emission
+   */
+  vector<HardestEmissionGeneratorPtr> _hardgenerator;
 
 };
 
@@ -129,8 +171,5 @@ struct ClassTraits<Herwig::NasonEvolver>
 }
 
 #include "NasonEvolver.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "NasonEvolver.tcc"
-#endif
 
 #endif /* HERWIG_NasonEvolver_H */

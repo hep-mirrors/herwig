@@ -34,15 +34,10 @@ class QtoQGSplitFn: public SplittingFunction {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline QtoQGSplitFn();
-  //@}
-
-public:
 
   /**
    *  Concrete implementation of the method to determine whether this splitting

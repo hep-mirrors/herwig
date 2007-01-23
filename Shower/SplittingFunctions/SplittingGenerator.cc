@@ -11,7 +11,6 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Command.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "ThePEG/Utilities/StringUtils.h"
 #include "ThePEG/Repository/Repository.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
@@ -203,7 +202,6 @@ void SplittingGenerator::addToMap(const IdList &ids, const SudakovPtr &s, bool f
 
 Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance) const {
-  Timer<1200> timer("SplittingGenerator::chooseForwardBranching");
   Energy newQ = Energy();
   ShoKinPtr kinematics = ShoKinPtr();
   IdList ids;

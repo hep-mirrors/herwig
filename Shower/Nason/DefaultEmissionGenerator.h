@@ -6,11 +6,28 @@
 //
 
 #include "HardestEmissionGenerator.h"
+#include "pTSudakov.h"
+#include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "DefaultEmissionGenerator.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
+
+/**
+ *  typedef to pair the SudakovFormFactor and the particles in a branching
+ */
+typedef pair<pTSudakovPtr,IdList> pTBranchingElement;
+
+/**
+ *  typedef to pair the PDG code of the particle and the BranchingElement
+ */
+typedef multimap<long,pTBranchingElement> pTBranchingList;
+
+/**
+ *  typedef to create a structure which can be inserted into a BranchingList
+ */
+typedef pair<long, pTBranchingElement> pTBranchingInsert; 
 
 /**
  * Here is the documentation of the DefaultEmissionGenerator class.
@@ -19,6 +36,11 @@ using namespace ThePEG;
  * defined for DefaultEmissionGenerator.
  */
 class DefaultEmissionGenerator: public HardestEmissionGenerator {
+
+/**
+ *  The NasonEvolver is a friend to set the evolver pointer at initialisation
+ */
+friend class NasonEvolver;
 
 public:
 
@@ -70,6 +92,48 @@ public:
 
 protected:
 
+  /**
+   *  Member to generate the hardest emission for hard processes and decays
+   *  respectively.
+   */
+  //@{
+  /**
+   *  Member to generate the hardest emission for a hard process
+   */
+  void generateHard(ShowerTreePtr);
+
+  /**
+   *  Member to generate the hardest emission for a decay process
+   */
+  void generateDecay(ShowerTreePtr);
+  //@}
+
+  /**
+   *  Members to generate the emission
+   */
+  //@{
+  /**
+   * Choose a new forward branching for a time-like particle
+   * The method returns:
+   * - a pointer to a ShowerKinematics object, which 
+   *     contains the information about the new scale and all other
+   *     kinematics variables that need to be generated simultaneously;
+   * - a pointer to the SudakovFormFactor object associated 
+   *     with the chosen emission.
+   * - The PDG codes of the particles in the branching,
+   * as a Branching struct.
+   *
+   * In the case no branching has been generated, both the returned 
+   * pointers are null ( ShoKinPtr() , tSudakovFFPtr() ).
+   *
+   * @param particle The particle to be evolved
+   * @return The Branching struct for the branching
+   */
+  Branching chooseForwardBranching(ShowerParticle & particle) const; 
+  //@}
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -85,10 +149,23 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+protected:
 
-// If needed, insert declarations of virtual function defined in the
-// InterfacedBase class here (using ThePEG-interfaced-decl in Emacs).
+  /**
+   *  Construct a new \f$p_T\f$ ordered Sudakov
+   */
+  pTSudakovPtr constructSudakov(tSudakovPtr);
 
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
+  //@}
 
 private:
 
@@ -104,6 +181,17 @@ private:
    */
   DefaultEmissionGenerator & operator=(const DefaultEmissionGenerator &);
 
+private:
+
+  /**
+   *  List of the branchings and the appropriate Sudakovs for forward branchings
+   */
+  pTBranchingList _fbranchings;
+
+  /**  
+   * Lists of the branchings and the appropriate Sudakovs for backward branchings.
+   */
+  pTBranchingList _bbranchings;
 };
 
 }

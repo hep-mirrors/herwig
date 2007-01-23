@@ -15,4 +15,12 @@ inline IBPtr NasonEvolver::clone() const {
 inline IBPtr NasonEvolver::fullclone() const {
   return new_ptr(*this);
 }
+
+inline void NasonEvolver::doinit() throw(InitException) {
+  Evolver::doinit();
+  for(unsigned int ix=0;ix<_hardgenerator.size();++ix) {
+    _hardgenerator[ix]->setEvolver(this);
+  }
+}
+
 }

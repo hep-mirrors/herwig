@@ -6,10 +6,16 @@
 
 #include "HardestEmissionGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "NasonEvolver.h"
+#include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "Herwig++/Shower/Base/MECorrectionBase.h"
 
 using namespace Herwig;
 
-AbstractNoPIOClassDescription<HardestEmissionGenerator> HardestEmissionGenerator::initHardestEmissionGenerator;
+AbstractClassDescription<HardestEmissionGenerator> HardestEmissionGenerator::initHardestEmissionGenerator;
 // Definition of the static class description member.
 
 void HardestEmissionGenerator::Init() {
@@ -20,3 +26,26 @@ void HardestEmissionGenerator::Init() {
 
 }
 
+void HardestEmissionGenerator::setEvolver(tEvolverPtr in) {
+  _evolver=in;
+}
+
+void HardestEmissionGenerator::persistentOutput(PersistentOStream & os) const {
+  os << _evolver;
+}
+
+void HardestEmissionGenerator::persistentInput(PersistentIStream & is, int) {
+  is >> _evolver;
+}
+
+void HardestEmissionGenerator::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  _evolver = trans.translate(_evolver);
+  Interfaced::rebind(trans);
+}
+
+IVector HardestEmissionGenerator::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  ret.push_back(_evolver);
+  return ret;
+}

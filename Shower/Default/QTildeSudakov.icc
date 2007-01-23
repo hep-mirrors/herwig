@@ -6,9 +6,7 @@
 
 namespace Herwig {
 
-inline QTildeSudakov::QTildeSudakov() :_a(0.3), _b(2.3), _c(0.3*GeV),
-				       _kinCutoffScale( .75*GeV ),
-				       _cutoffQCDMassScale( 1.0*GeV ),
+inline QTildeSudakov::QTildeSudakov() :_cutoffQCDMassScale( 1.0*GeV ),
 				       _cutoffQEDMassScale( 0.51*MeV ),
 				       _cutoffEWKMassScale( 91.0*GeV )
 {}
@@ -19,14 +17,6 @@ inline IBPtr QTildeSudakov::clone() const {
 
 inline IBPtr QTildeSudakov::fullclone() const {
   return new_ptr(*this);
-}
-
-inline Energy QTildeSudakov::kinematicCutOff(Energy scale,Energy mq) const {
-  return max((scale -_a*mq)/_b,_c);
-}
-
-inline Energy QTildeSudakov::kinScale() const {
-  return _kinCutoffScale;
 }
 
 inline Energy QTildeSudakov::

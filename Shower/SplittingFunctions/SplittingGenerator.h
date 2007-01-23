@@ -230,6 +230,21 @@ public:
   inline string addInitialSplitting(string);
   //@}
 
+  /**
+   *  Access to the splittings
+   */
+  //@{
+  /**
+   *  Access the final-state branchings
+   */
+  inline BranchingList const & finalStateBranchings() const;
+
+  /**
+   *  Access the initial-state branchings
+   */
+  inline BranchingList const & initialStateBranchings() const;
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

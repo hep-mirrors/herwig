@@ -7,6 +7,9 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "Herwig++/Shower/Base/ShowerTree.fh"
+#include "NasonEvolver.fh"
+#include "ThePEG/Utilities/Rebinder.h"
+#include "Herwig++/Shower/Base/Evolver.fh"
 #include "HardestEmissionGenerator.fh"
 
 namespace Herwig {
@@ -20,6 +23,11 @@ using namespace ThePEG;
  * defined for HardestEmissionGenerator.
  */
 class HardestEmissionGenerator: public Interfaced {
+
+/**
+ * The NasonEvolver is a friend to set the pointer to the Evolver
+ */
+friend class NasonEvolver;
 
 public:
 
@@ -47,6 +55,22 @@ public:
 
 public:
 
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
   /**
    * The standard Init function used to initialize the interfaces.
    * Called exactly once for each class by the class description system
@@ -55,19 +79,63 @@ public:
    */
   static void Init();
 
+protected:
+
+  /**
+   *  Access to the Evolver
+   */
+  inline tEvolverPtr evolver();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Rebind pointer to other Interfaced objects. Called in the setup phase
+   * after all objects used in an EventGenerator has been cloned so that
+   * the pointers will refer to the cloned objects afterwards.
+   * @param trans a TranslationMap relating the original objects to
+   * their respective clones.
+   * @throws RebindException if no cloned object was found for a given
+   * pointer.
+   */
+  virtual void rebind(const TranslationMap & trans) throw(RebindException);
+
+  /**
+   * Return a vector of all pointers to Interfaced objects used in this
+   * object.
+   * @return a vector of pointers.
+   */
+  virtual IVector getReferences();
+  //@}
+
+protected:
+
+  /**
+   *  Method to set the Evolver
+   */
+  void setEvolver(tEvolverPtr);
+
 private:
 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class with persistent data.
    */
-  static AbstractNoPIOClassDescription<HardestEmissionGenerator> initHardestEmissionGenerator;
+  static AbstractClassDescription<HardestEmissionGenerator> initHardestEmissionGenerator;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   HardestEmissionGenerator & operator=(const HardestEmissionGenerator &);
+
+private:
+
+  /**
+   *  Pointer to the Evolver
+   */
+  tEvolverPtr _evolver;
 
 };
 

@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NasonTree class.
+//
+#ifndef HERWIG_NasonTree_FH
+#define HERWIG_NasonTree_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class NasonTree;
+class NasonBranching;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::NasonTree     ,NasonTreePtr     );
+ThePEG_DECLARE_POINTERS(Herwig::NasonBranching,NasonBranchingPtr);
+
+}
+
+#endif

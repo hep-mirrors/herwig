@@ -25,11 +25,10 @@ void GtoGGSplitFn::Init() {
 
 double GtoGGSplitFn::P(const double z, const Energy2, const IdList &,
 		       const bool)const {
-  double val = 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
   // (this is historically important! the first physics - two years
   // after the birth of the project - in the Herwig++ shower! Alberto
   // & Stefan, 25/04/2002).
-  return val;
+  return 3.*sqr(1.-z*(1.-z))/(z*(1.-z));
 }
 
 double GtoGGSplitFn::overestimateP(const double z, const IdList &) const {
@@ -104,8 +103,7 @@ void GtoGGSplitFn::colourConnection(tShowerParticlePtr parent,
   }
 }
 
-bool GtoGGSplitFn::accept(const IdList & ids)
-const {
+bool GtoGGSplitFn::accept(const IdList & ids) const {
   if(ids.size()!=3) return false;
   for(unsigned int ix=0;ix<ids.size();++ix)
     {if(ids[ix]!=ParticleID::g) return false;}
