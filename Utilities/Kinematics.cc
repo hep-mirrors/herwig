@@ -22,7 +22,7 @@ Energy Kinematics::CMMomentum(const Energy M,
 	   sqrt(( M*M - (m1+m2)*(m1+m2) )*( M*M - (m1-m2)*(m1-m2) ))/(2.0*M)); 
 }
 
-void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
+bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
 			      const Energy m1, const Energy m2,
 			      const Vector3 & unitDir1,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
@@ -33,19 +33,24 @@ void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
     p2 = Lorentz5Momentum(m2,-pstarVector);
     p1.boost( p.boostVector() );   // boost from CM to LAB
     p2.boost( p.boostVector() );
+    return true;
   } else {
-    CurrentGenerator::log() << "Kinematics::twoBodyDecay() phasespace problem\n" 
-			    << *CurrentGenerator::current().currentEvent();
-    cerr << "\nKinematics::twoBodyDecay() phasespace problem\n";
+    CurrentGenerator::log() 
+      << "Kinematics::twoBodyDecay() phase space problem\n" 
+      << "p = " << p / GeV 
+      << " p.m() = " << p.m() / GeV
+      << " -> " << m1/GeV 
+      << ' ' << m2/GeV << '\n';
+    return false;
   }
 }
 
-void Kinematics::twoBodyDecay(const Lorentz5Momentum & p,                    
+bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p,                    
 			      const Energy m1, const Energy m2,  
 			      const double cosThetaStar1, 
 			      const double phiStar1, 
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
-  twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2); 
+  return twoBodyDecay(p,m1,m2,unitDirection(cosThetaStar1,phiStar1),p1,p2); 
 }
 
 void Kinematics::generateAngles(double &ct, double &az) {
@@ -57,7 +62,7 @@ void Kinematics::generateAngles(double &ct, double &az) {
  * This function, as the name implies, performs a three body decay. The decay
  * products are distributed uniformly in all three directions.
  ****/
-void Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
+bool Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
 				Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 				double (*fcn)(double*)) {
     // Variables needed in calculation...named same as fortran version
@@ -68,8 +73,13 @@ void Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
    c = p2.mass() + p3.mass();
 
    if(b < c) {
-     CurrentGenerator::log() << "***Kinematics::threeBodyDecay***"
-			     << " not enough phase space!\n";
+     CurrentGenerator::log() 
+       << "Kinematics::threeBodyDecay() phase space problem\n"
+       << p0.mass()/GeV << " -> "
+       << p1.mass()/GeV << ' '
+       << p2.mass()/GeV << ' '
+       << p3.mass()/GeV << '\n';
+     return false;
    }
 
    d = fabs(p2.mass()-p3.mass());
@@ -107,10 +117,11 @@ void Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
    p23.setMass(sqrt(ff));
 
    generateAngles(CosAngle,AzmAngle);
-   twoBodyDecay(p0,p1.mass(),p23.mass(),CosAngle,AzmAngle,p1,p23);
+   bool status = twoBodyDecay(p0,p1.mass(),p23.mass(),CosAngle,AzmAngle,p1,p23);
 
    generateAngles(CosAngle,AzmAngle);
-   twoBodyDecay(p23,p2.mass(),p3.mass(),CosAngle,AzmAngle,p2,p3);
+   status &= twoBodyDecay(p23,p2.mass(),p3.mass(),CosAngle,AzmAngle,p2,p3);
+   return status;
 }
 
 
@@ -119,7 +130,7 @@ void Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
  * and decays it into four particles, given by p1..p4, which are distributed
  * uniformly
  ******/
-void Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
+bool Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       Lorentz5Momentum &p4) {
   // Again, for comparison, we use the same variables as used in fortran code
@@ -127,9 +138,11 @@ void Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 
   b = p0.mass() - p1.mass();
   c = p2.mass() + p3.mass() + p4.mass();
-  if(b < c) 
+  if(b < c) {
     CurrentGenerator::log() 
-      << "Kinematics::fourBodyDecay: no phase space available\n";
+      << "Kinematics::fourBodyDecay() phase space problem\n";
+    return false;
+  }
   aa = sqr(p0.mass() + p1.mass());
   bb = sqr(b);
   cc = sqr(c);
@@ -161,13 +174,14 @@ void Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
   p34.setMass(sqrt(s2));
 
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p0,p1.mass(),p234.mass(),CosAngle, AzmAngle, p1, p234);
+  bool status = twoBodyDecay(p0,p1.mass(),p234.mass(),CosAngle, AzmAngle, p1, p234);
 
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p234,p2.mass(),p34.mass(),CosAngle, AzmAngle, p2, p34);
+  status &= twoBodyDecay(p234,p2.mass(),p34.mass(),CosAngle, AzmAngle, p2, p34);
 
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p34,p3.mass(),p4.mass(),CosAngle, AzmAngle, p3, p4);
+  status &= twoBodyDecay(p34,p3.mass(),p4.mass(),CosAngle, AzmAngle, p3, p4);
+  return status;
 }
 
 /******
@@ -175,14 +189,16 @@ void Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
  * and decays it into five particles, given by p1..p5, which are distributed
  * uniformly
  ******/
-void Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
+bool Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       Lorentz5Momentum &p4, Lorentz5Momentum &p5) {
   double b(p0.mass()-p1.mass());
   double c(p2.mass()+p3.mass()+p4.mass()+p5.mass());
-  if(b<c) 
-    {CurrentGenerator::log() 
-	<< "Kinematics::fiveBodyDecay - No phase space available\n";}
+  if(b<c) {
+    CurrentGenerator::log() 
+      << "Kinematics::fiveBodyDecay() phase space problem\n";
+    return false;
+  }
   double aa(sqr(p0.mass()+p1.mass()));
   double bb(b*b),cc(c*c);
   double dd(sqr(p3.mass()+p4.mass()+p5.mass()));
@@ -226,16 +242,17 @@ void Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
   p45.setMass(sqrt(s3));
 
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p0,p1.mass(),p2345.mass(),CosAngle, AzmAngle, p1, p2345);
+  bool status = twoBodyDecay(p0,p1.mass(),p2345.mass(),CosAngle, AzmAngle, p1, p2345);
   
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p2345,p2.mass(),p345.mass(),CosAngle, AzmAngle, p2, p345);
+  status &= twoBodyDecay(p2345,p2.mass(),p345.mass(),CosAngle, AzmAngle, p2, p345);
   
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p345,p3.mass(),p45.mass(),CosAngle, AzmAngle, p3, p45);
+  status &= twoBodyDecay(p345,p3.mass(),p45.mass(),CosAngle, AzmAngle, p3, p45);
   
   generateAngles(CosAngle,AzmAngle); 
-  twoBodyDecay(p45,p4.mass(),p5.mass(),CosAngle, AzmAngle, p4, p5);
+  status &= twoBodyDecay(p45,p4.mass(),p5.mass(),CosAngle, AzmAngle, p4, p5);
+  return status;
 }
 
 

@@ -295,7 +295,7 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
   */
   return newME.contract(rhoin).real();
 }
-
+ 
 double EtaPiGammaGammaDecayer::
 threeBodyMatrixElement(const int imodeb, const Energy2 q2,const  Energy2 s3,
 		       const Energy2 s2,const Energy2 s1,const Energy ,

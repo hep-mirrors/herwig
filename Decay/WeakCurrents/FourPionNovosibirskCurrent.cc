@@ -501,102 +501,102 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
   bool kineallowed=true;
   // check that the modes are kinematical allowed
   Energy min(0.);
-  if(imode==0)
-    {min=   getParticleData(ParticleID::piplus)->mass()
-	+3.*getParticleData(ParticleID::pi0)->mass();}
-  else
-    {min=3.*getParticleData(ParticleID::piplus)->mass()
-	+getParticleData(ParticleID::pi0)->mass();}
+  if(imode==0) {
+    min=   getParticleData(ParticleID::piplus)->mass()
+        +3.*getParticleData(ParticleID::pi0)->mass();
+  }
+  else {
+    min=3.*getParticleData(ParticleID::piplus)->mass()
+      +getParticleData(ParticleID::pi0)->mass();
+  }
   if(min>upp){kineallowed=false;}
   if(kineallowed==false){return kineallowed;}
   // intermediates for the channels
   tPDPtr omega(getParticleData(ParticleID::omega)),rhop,rhom,
     rho0(getParticleData(ParticleID::rho0)),a1m,a10(getParticleData(ParticleID::a_10)),
     sigma(getParticleData(9000221)),rhot;
-  if(icharge==3)
-    {
-      rhop = getParticleData(ParticleID::rhominus);
-      rhom = getParticleData(ParticleID::rhoplus);
-      a1m  = getParticleData(ParticleID::a_1plus);
-      rhot = getParticleData(24);
-    }
-  else
-    {
-      rhop = getParticleData(ParticleID::rhoplus);
-      rhom = getParticleData(ParticleID::rhominus);
-      a1m  = getParticleData(ParticleID::a_1minus);
-      rhot = getParticleData(-24);
-    }
+  if(icharge==3) {
+    rhop = getParticleData(ParticleID::rhominus);
+    rhom = getParticleData(ParticleID::rhoplus);
+    a1m  = getParticleData(ParticleID::a_1plus);
+    rhot = getParticleData(24);
+  }
+  else {
+    rhop = getParticleData(ParticleID::rhoplus);
+    rhom = getParticleData(ParticleID::rhominus);
+    a1m  = getParticleData(ParticleID::a_1minus);
+    rhot = getParticleData(-24);
+  }
   DecayPhaseSpaceChannelPtr newchannel;
   // the omega channels for the three charged pion mode
   // first  channel two channels with rho0
-  if(imode==1)
-    {
-      newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+3);
-      newchannel->addIntermediate(rho0    ,0,0.0, iloc+1,iloc+2);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+3);
-      newchannel->addIntermediate(rho0    ,0,0.0, iloc,iloc+2);
-      mode->addChannel(newchannel);
-      // second two channels with rho -
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+2);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc+3);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+2);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc,iloc+3);
-      mode->addChannel(newchannel);
-      // third two channels with rho +
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+1);
-      newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc);
-      newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      mode->addChannel(newchannel);
-      //  a_1 channels with rhos
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
-      newchannel->addIntermediate(rho0    ,0,0.0, iloc+1,iloc+2);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
-      newchannel->addIntermediate(rho0    ,0,0.0, iloc,iloc+2);
-      mode->addChannel(newchannel);
-      // neutral a_1 channels with rhos
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc+3);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc,iloc+3);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
-      newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+1);
-      newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc);
-      newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
-      mode->addChannel(newchannel);
-      //  a_1 channels with sigmas	
+  if(imode==1) {
+    newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
+    newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+3);
+    newchannel->addIntermediate(rho0    ,0,0.0, iloc+1,iloc+2);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+3);
+    newchannel->addIntermediate(rho0    ,0,0.0, iloc,iloc+2);
+    mode->addChannel(newchannel);
+    // second two channels with rho -
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
+    newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+2);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc+3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+2);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc,iloc+3);
+    mode->addChannel(newchannel);
+    // third two channels with rho +
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
+    newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc+1);
+    newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(omega   ,0,0.0,-ires-2,iloc);
+    newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
+    mode->addChannel(newchannel);
+    //  a_1 channels with rhos
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
+    newchannel->addIntermediate(rho0    ,0,0.0, iloc+1,iloc+2);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
+    newchannel->addIntermediate(rho0    ,0,0.0, iloc,iloc+2);
+    mode->addChannel(newchannel);
+    // neutral a_1 channels with rhos
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
+    newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc+3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+2);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc,iloc+3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
+    newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+1);
+    newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc);
+    newchannel->addIntermediate(rhop    ,0,0.0, iloc+2,iloc+3);
+    mode->addChannel(newchannel);
+    //  a_1 channels with sigmas
+    if(sigma) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
       newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc);
@@ -619,40 +619,41 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(sigma   ,0,0.0, iloc,iloc+2);
       mode->addChannel(newchannel);
     }
-  else
-    {
-      // channels with an a1- and a rho -
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+2);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+3,iloc);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+3);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+2,iloc);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+3,iloc);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+3);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+2,iloc);
-      mode->addChannel(newchannel);
-      newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
-      newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
-      newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+2);
-      newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc);
-      mode->addChannel(newchannel);
-      // channels with a sigma and a10
+  }
+  else {
+    // channels with an a1- and a rho -
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+2);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+3,iloc);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+1);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+3);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+2,iloc);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+3,iloc);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+2);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+3);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+1);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+2,iloc);
+    mode->addChannel(newchannel);
+    newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
+    newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc+3);
+    newchannel->addIntermediate(a1m     ,0,0.0,-ires-2,iloc+2);
+    newchannel->addIntermediate(rhom    ,0,0.0, iloc+1,iloc);
+    mode->addChannel(newchannel);
+    // channels with a sigma and a10
+    if(sigma ) {
       newchannel = new_ptr(DecayPhaseSpaceChannel(*phase));
       newchannel->addIntermediate(rhot    ,0,0.0,-ires-1,iloc);
       newchannel->addIntermediate(a10     ,0,0.0,-ires-2,iloc+1);
@@ -685,6 +686,7 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       newchannel->addIntermediate(sigma   ,0,0.0, iloc+1,iloc+2);
       mode->addChannel(newchannel);
     }
+  }
   // reset the parameters of the dummy resonance used for integration
   mode->resetIntermediate(rhot,_intmass,_intwidth);
   // reset the parameters of the resonances if using local values
@@ -694,7 +696,7 @@ bool FourPionNovosibirskCurrent::createMode(int icharge, unsigned int imode,
       mode->resetIntermediate(rhop,_rhomass,_rhowidth);
       mode->resetIntermediate(rho0,_rhomass,_rhowidth);
       mode->resetIntermediate(omega,_omegamass,_omegawidth);
-      mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
+      if(sigma) mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
     }
   // return if successful
   return kineallowed;

@@ -1,0 +1,193 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the EvtGen class.
+//
+
+namespace Herwig {
+
+inline EvtGen::EvtGen() : _decayname("./DECAY.DEC"), _pdtname("./evt.pdl"), 
+			  _maxtry(1000), _maxunwgt(10000) {}
+
+inline EvtGen::EvtGen(const EvtGen & x)
+  : Interfaced(x), _decayname(x._decayname), _pdtname(x._pdtname), _maxtry(x._maxtry),
+    _maxunwgt(x._maxunwgt)
+{}
+
+inline IBPtr EvtGen::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr EvtGen::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void EvtGen::doupdate() throw(UpdateException) {
+  Interfaced::doupdate();
+  // First update base class.
+  bool redo = touched();
+  // redo if touched.
+//  UpdateChecker::check(aDependentMember, redo);
+  // Update referenced objects on which this depends redo is set to true
+  // if the dependent object is touched.
+//  for_each(ContainerOfDependencies, UpdateChecker(redo));
+  // Update a container of references.
+//  for_each(MapOfDependencies, UpdateMapChecker(redo));
+  // Update a map of references.
+  if ( !redo ) return;
+  // return if nothing has been touched. Otherwise do the actual update.
+//  touch()
+  // Touch if anything has changed.
+}
+
+inline void EvtGen::doinit() throw(InitException) {
+  Interfaced::doinit();
+}
+
+inline void EvtGen::dofinish() {
+  Interfaced::dofinish();
+}
+
+inline void EvtGen::rebind(const TranslationMap & trans)
+  throw(RebindException) {
+  // dummy = trans.translate(dummy);
+  Interfaced::rebind(trans);
+}
+
+inline IVector EvtGen::getReferences() {
+  IVector ret = Interfaced::getReferences();
+  // ret.push_back(dummy);
+  return ret;
+}
+
+inline EvtVector4R  EvtGen::EvtGenMomentum(const Lorentz5Momentum & mom)
+{return EvtVector4R(mom.e()/GeV,mom.px()/GeV,mom.py()/GeV,mom.pz()/GeV);}
+
+inline Lorentz5Momentum EvtGen::ThePEGMomentum(EvtVector4R mom,double mass)
+{return Lorentz5Momentum(mom.get(1)*GeV,mom.get(2)*GeV,
+			 mom.get(3)*GeV,mom.get(0)*GeV,mass*GeV);}
+
+inline EvtSpinDensity EvtGen::EvtGenSpinDensity(const RhoDMatrix & rho)
+{
+  EvtSpinDensity rhoout;
+  unsigned int ix,iy,ispin(rho.iSpin());
+  rhoout.SetDim(ispin);
+  for(ix=0;ix<ispin;++ix)
+    {for(iy=0;iy<ispin;++iy){rhoout.Set(ix,iy,EvtGenComplex(rho(ix,iy)));}}
+  return rhoout;
+}
+
+inline EvtComplex EvtGen::EvtGenComplex(Complex c){return EvtComplex(c.real(),c.imag());}
+
+inline Complex EvtGen::ThePEGComplex(EvtComplex c){return Complex(real(c),imag(c));}
+
+inline EvtDiracSpinor EvtGen::EvtGenSpinor(LorentzSpinor sp)
+{
+  LorentzSpinor temp(sp.transformRep(Helicity::HaberDRep));
+  double norm(1./sqrt(GeV));
+  return  EvtDiracSpinor(norm*EvtGenComplex(temp.s1()),norm*EvtGenComplex(temp.s2()),
+			 norm*EvtGenComplex(temp.s3()),norm*EvtGenComplex(temp.s4()));
+}
+
+inline LorentzSpinor EvtGen::ThePEGSpinor(EvtDiracSpinor sp)
+{
+  double norm(sqrt(GeV));
+  LorentzSpinor output(norm*ThePEGComplex(sp.get_spinor(0)),
+		       norm*ThePEGComplex(sp.get_spinor(1)),
+		       norm*ThePEGComplex(sp.get_spinor(2)),
+		       norm*ThePEGComplex(sp.get_spinor(3)),Helicity::HaberDRep);
+  output.changeRep(Helicity::defaultDRep);
+  return output;
+}
+
+inline EvtVector4C EvtGen::EvtGenPolarization(const LorentzPolarizationVector eps)
+{return EvtVector4C(EvtGenComplex(eps.t()),EvtGenComplex(eps.x()),
+		    EvtGenComplex(eps.y()),EvtGenComplex(eps.z()));}
+
+inline LorentzPolarizationVector EvtGen::ThePEGPolarization(const EvtVector4C eps)
+{return LorentzPolarizationVector(conj(ThePEGComplex(eps.get(1))),
+				  conj(ThePEGComplex(eps.get(2))),
+				  conj(ThePEGComplex(eps.get(3))),
+				  conj(ThePEGComplex(eps.get(0))));}
+
+inline EvtRaritaSchwinger EvtGen::EvtGenRSSpinor(const LorentzRSSpinor sp)
+{
+  LorentzRSSpinor temp(sp.transformRep(Helicity::HaberDRep));
+  EvtRaritaSchwinger output;
+  unsigned int ix,iy;
+  double norm(1./sqrt(GeV));
+  // remember we have vec,spin and evtgen spin,vec
+  for(ix=0;ix<4;++ix)
+    {for(iy=0;iy<4;++iy){output.set(ix,iy,EvtGenComplex(norm*temp(iy,ix)));}}
+  return output;
+}
+
+inline LorentzRSSpinor EvtGen::ThePEGRSSpinor(const EvtRaritaSchwinger sp)
+{
+  LorentzRSSpinor output(Helicity::HaberDRep);
+  unsigned int ix,iy;
+  double norm(sqrt(GeV));
+  // remember we have vec,spin and evtgen spin,vec
+  for(ix=0;ix<4;++ix)
+    {for(iy=0;iy<4;++iy){output(ix,iy)=norm*ThePEGComplex(sp.get(iy,ix));}}
+  output.changeRep(Helicity::defaultDRep);
+  return output;
+}
+
+inline EvtTensor4C EvtGen::EvtGenTensor(const LorentzTensor ten)
+{
+  EvtTensor4C output;
+  unsigned int ix,iy;
+  for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
+      {output.set(ix,iy,EvtGenComplex(ten(ix,iy)));}}
+  return output;
+}
+
+inline LorentzTensor EvtGen::ThePEGTensor(const EvtTensor4C ten)
+{
+  LorentzTensor output;
+  unsigned int ix,iy;
+  for(ix=0;ix<4;++ix)
+    {for(iy=0;iy<4;++iy){output(ix,iy)=conj(ThePEGComplex(ten.get(ix,iy)));}}
+  return output;
+}
+
+// convert particle from EvtGen to ThePEG
+inline PPtr EvtGen::ThePEGParticle(EvtParticle *part,tcPDPtr pd, bool spin)
+{
+  PPtr output(new_ptr(Particle(pd)));
+  output->set5Momentum(ThePEGMomentum(part->getP4(),part->mass()));
+  if(spin){ThePEGSpin(output,part);}
+  // make the daughters 
+  ParticleVector daug(decayProducts(part,spin));
+  for(unsigned int ix=0;ix<daug.size();++ix){output->addChild(daug[ix]);}
+  return output;
+}
+
+inline tSpinfoPtr EvtGen::getSpinInfo(const Particle & part)
+{
+  // return spin info if exists
+  if(part.spinInfo())
+    {return dynamic_ptr_cast<tSpinfoPtr>(const_ptr_cast<tPPtr>(&part)->spinInfo());}
+  // otherwise make it
+  tPPtr ptemp(const_ptr_cast<tPPtr>(&part));
+  PDT::Spin spin(part.dataPtr()->iSpin());
+  SpinfoPtr pspin;
+  if(spin==PDT::Spin0)
+    {pspin=new_ptr(ScalarSpinInfo(part.momentum(),true));}
+  else if(spin==PDT::Spin1Half)
+    {pspin=new_ptr(FermionSpinInfo(part.momentum(),true));}
+  else if(spin==PDT::Spin1)
+    {pspin=new_ptr(VectorSpinInfo(part.momentum(),true));}
+  else if(spin==PDT::Spin3Half)
+    {pspin=new_ptr(RSFermionSpinInfo(part.momentum(),true));}
+  else if(spin==PDT::Spin2)
+    {pspin=new_ptr(TensorSpinInfo(part.momentum(),true));}
+  else
+    {throw Exception() << "Can't create spinInfo for decaying particle in "
+		       << "EvtGen::checkSpinInfo for spin " << spin << "particle " 
+		       << Exception::eventerror;}
+  ptemp->spinInfo(pspin);
+  return pspin;
+}
+}

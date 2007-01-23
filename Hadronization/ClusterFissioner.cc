@@ -12,22 +12,22 @@
 #include <ThePEG/Persistency/PersistentOStream.h>
 #include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/EnumParticles.h>
-#include <ThePEG/Repository/EventGenerator.h>
-#include <ThePEG/EventRecord/Collision.h>
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/HwDebug.h"
-#include "Herwig++/Utilities/CheckId.h"
+#include "CheckId.h"
 #include "Cluster.h"
-#include <iomanip>
+#include "ThePEG/Repository/UseRandom.h"
+#include "ThePEG/EventRecord/Step.h"
 
 using namespace Herwig;
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _hadronsSelector << _clMax << _clPow << _pSplit1 << _pSplit2 << _btClM << _iopRem;
+  os << _hadronsSelector << _clMax << _clPow << _pSplit1 << _pSplit2 
+     << _btClM << _iopRem << ounit(_kappa, GeV/meter);
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 >> _btClM >> _iopRem;
+  is >> _hadronsSelector >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 
+     >> _btClM >> _iopRem >> iunit(_kappa, GeV/meter);
 }
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
@@ -83,6 +83,14 @@ void ClusterFissioner::Init() {
      "Parameter for the mass spectrum of remnant clusters",
      &ClusterFissioner::_btClM, GeV, 1.*GeV, 0.1*GeV, 10.0*GeV,
      false, false, Interface::limited);
+
+  
+  static Parameter<ClusterFissioner,Tension> interfaceStringTension
+    ("StringTension",
+     "String tension used in vertex displacement calculation",
+     &ClusterFissioner::_kappa, GeV/meter, 
+     1.0e15*GeV/meter, 0.0*GeV/meter, 0*GeV/meter,
+     false, false, Interface::lowerlim);
 
 }
 
@@ -161,14 +169,13 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
     // split it                 
     cutType ct = cut(iCluster, softUEisOn);
     // There are cases when we don't want to split, even if it fails mass test
-    if(!ct.first.first || !ct.second.first)
-      {
-	// if an unsplit beam cluster leave if for the underlying event
-	if(iCluster->isBeamCluster() && softUEisOn)
-	  iCluster->isAvailable(false);
-	// continue
-	continue;
-      }
+    if(!ct.first.first || !ct.second.first) {
+      // if an unsplit beam cluster leave if for the underlying event
+      if(iCluster->isBeamCluster() && softUEisOn)
+	iCluster->isAvailable(false);
+      // continue
+      continue;
+    }
     // check if clusters
     ClusterPtr one = dynamic_ptr_cast<ClusterPtr>(ct.first.first);
     ClusterPtr two = dynamic_ptr_cast<ClusterPtr>(ct.second.first);
@@ -258,9 +265,7 @@ ClusterFissioner::cutType ClusterFissioner::cut(tClusterPtr &cluster, bool softU
       if(CheckId::hasBeauty(idQ1)) exp1 = _pSplit2;
       if(CheckId::hasBeauty(idQ2)) exp2 = _pSplit2;
       // If, during the drawing of candidate masses, too many attempts fail 
-      // (because the phase space available is tiny) 
-      //_hadronsSelector->lightestHadron(idQ2, idNew)then give up (the cluster 
-      // is not split).
+      // (because the phase space available is tiny)
       Mc1 = Energy();
       Mc2 = Energy();
       drawChildMass(Mc,m1,m2,m,Mc1,exp1,b,soft1);
@@ -376,7 +381,7 @@ ClusterFissioner::PPair ClusterFissioner::produceHadron(long id1, long id2,
 		                                        Lorentz5Momentum &a,
 				                        LorentzPoint &b) const {
   PPair rval;
-  rval.first = getParticle(_hadronsSelector->lightestHadron(id1, id2));
+  rval.first = _hadronsSelector->lightestHadron(id1, id2)->produceParticle();
   rval.second = getParticle(id2);
   rval.first->set5Momentum(a);
   rval.first->setLabVertex(b);
@@ -606,27 +611,13 @@ void ClusterFissioner::calculatePositions(const Lorentz5Momentum & pClu,
 
   // First, determine the relative positions of the children clusters
   // in the parent cluster reference frame.
-
-  //   Need to fix hbarc conversion here. Need original paper.
-
-  double GeV2mm = hbarc / (GeV * millimeter);
-  Length x1 = GeV2mm * (Mclu*0.25 + 0.5
-                     *(pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/GeV;
-  Length t1 = ((Mclu/GeV) * GeV2mm - x1); 
+  Length x1 = ( 0.25*Mclu + 0.5*( pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
+  Length t1 = Mclu/_kappa - x1; 
   LorentzDistance distanceClu1( x1 * u.vect().unit(), t1 );
-  Length x2 = GeV2mm * (-Mclu*0.25 + 0.5
-                     *(-pstarChild + (sqr(Mclu2) - sqr(Mclu))/(2.0*Mclu)))/GeV;
-  Length t2 = ((Mclu/GeV) * GeV2mm + x2);
-  LorentzDistance distanceClu2(x2 * u.vect().unit(), t2);
 
-  // Debugging
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::extreme_Hadronization ) {
-    generator()->log() << "ClusterFissioner::calculatePositions : *** extreme debugging ***" << endl
-                       << "\t distanceClu1 = " << distanceClu1 
-                       << "\t invariant length = " << distanceClu1.mag() << "  [mm] " << endl
-                       << "\t distanceClu2 = " << distanceClu2 
-                       << "\t invariant length = " << distanceClu2.mag() << "  [mm] " << endl;
-  }
+  Length x2 = (-0.25*Mclu + 0.5*(-pstarChild + (sqr(Mclu2) - sqr(Mclu1))/(2.0*Mclu)))/_kappa;
+  Length t2 = Mclu/_kappa + x2;
+  LorentzDistance distanceClu2( x2 * u.vect().unit(), t2 );
 
   // Then, transform such relative positions from the parent cluster
   // reference frame to the Lab frame.

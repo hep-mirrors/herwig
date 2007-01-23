@@ -55,7 +55,7 @@ Complex SSTVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
     +(ten.xz()+ten.zx())*(sca1.pz()*sca2.px()+sca1.px()*sca2.pz())
     +(ten.yz()+ten.zy())*(sca1.pz()*sca2.py()+sca1.py()*sca2.pz());
   // return the answer
-  return -0.5*ii*norm*(trace*(mass*mass-dot)+second)*sca1.Wave()*sca2.Wave();
+  return -0.5*ii*norm*(trace*(mass*mass-dot)+second)*sca1.wave()*sca2.wave();
 }
 // off-shell tensor
 TensorWaveFunction SSTVertex::evaluate(Energy q2, int iopt, tcPDPtr out,
@@ -76,7 +76,7 @@ TensorWaveFunction SSTVertex::evaluate(Energy q2, int iopt, tcPDPtr out,
   Energy mass = out->mass();
   Energy2 mass2=mass*mass;
   Energy2 p2 = pout.m2();
-  Complex fact=0.5*getNorm()*sca1.Wave()*sca2.Wave()*propagator(iopt,p2,out);
+  Complex fact=0.5*getNorm()*sca1.wave()*sca2.wave()*propagator(iopt,p2,out);
   // dot products we need
   Energy2 dot12 = 
     +sca1.e()*sca2.e()  -sca1.px()*sca2.px()
@@ -152,7 +152,7 @@ ScalarWaveFunction SSTVertex::evaluate(Energy q2,int iopt, tcPDPtr out,
   Energy mass = out->mass();
   Energy2 mass2=mass*mass;
   Energy2 p2 = pout.m2();
-  Complex fact=0.5*getNorm()*sca.Wave()*propagator(iopt,p2,out);
+  Complex fact=0.5*getNorm()*sca.wave()*propagator(iopt,p2,out);
   // trace of the tensor
   Complex trace =ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // dot product of the two momenta

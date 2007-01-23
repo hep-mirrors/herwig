@@ -57,8 +57,8 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
    }
 
    ParticleVector partons = dm.produceProducts();
-   assert(partons.size()<=4);
-   Lorentz5Momentum products[4]; // Shouldn't be any bigger!
+   assert(partons.size()==2 || partons.size()==3);
+   Lorentz5Momentum products[3];
    Energy gluMass = getParticleData(ParticleID::g)->constituentMass();
    for(unsigned int i = 0; i<partons.size(); i++) {
      if(partons[i]->id() == ParticleID::g) products[i].setMass(gluMass);
@@ -71,16 +71,22 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
      if(MECode == 130) { // Ore & Powell orthopositronium matrix element
        double x1, x2, x3, test;
        do {
-	 Kinematics::threeBodyDecay(p.momentum(), products[0], products[1],
-				    products[2]);
+	 // if decay fails return empty vector.
+	 if (! Kinematics::threeBodyDecay(p.momentum(), products[0],
+					  products[1],  products[2]))
+	   return ParticleVector();
 	 x1 = 2.*(p.momentum()*products[0])/sqr(p.mass());
 	 x2 = 2.*(products[1]*products[2])/sqr(p.mass());
 	 x3 = 2. - x1 - x2;
 	 test = sqr(x1*(1.-x1)) + sqr(x2*(1.-x2)) + sqr(x3*(1.-x3));
 	 test /= sqr(x1*x2*x3);
        } while(test < 2.*UseRandom::rnd());
-     } else Kinematics::threeBodyDecay(p.momentum(), products[0], products[1],
-				       products[2]);
+     } 
+     else {
+       if (! Kinematics::threeBodyDecay(p.momentum(), products[0], 
+					products[1],products[2]))
+	 return ParticleVector();
+     }
      
      for(unsigned int i = 0; i<partons.size(); i++)
        partons[i]->set5Momentum(products[i]);
@@ -99,7 +105,7 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
  //      cout << "Colour connecting : "<< partons[0]->PDGName() << "<==>"
 //	    << partons[1]->PDGName() << endl;
      }
-   } else {
+   } else { // two decay children
      // 2 gluon or q-qbar decay
      double Theta, Phi;
      Kinematics::generateAngles(Theta, Phi);
@@ -108,8 +114,9 @@ ParticleVector QuarkoniumDecayer::decay(const DecayMode &dm, const Particle &p) 
      p2 = partons[1]->mass();
      if(p1 == 0.0) p1 = gluMass;
      if(p2 == 0.0) p2 = gluMass;
-     Kinematics::twoBodyDecay(p.momentum(), p1, p2, Theta, Phi,
-			      products[0], products[1]);
+    if (! Kinematics::twoBodyDecay(p.momentum(), p1, p2, Theta, Phi,
+				    products[0], products[1]))
+       return ParticleVector();
      for(unsigned int i = 0; i<partons.size(); i++) {
        partons[i]->set5Momentum(products[i]);
        //cout << *partons[i] << endl;

@@ -225,7 +225,6 @@ inline Complex  ThreePionCLEOCurrent::a1BreitWigner(Energy2 q2) const {
   return output;
 }
 
-// matrix element for the running a_1 width
 inline double 
 ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
 				       const Energy2 s3, const Energy2 s2, 

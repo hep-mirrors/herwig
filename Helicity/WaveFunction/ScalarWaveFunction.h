@@ -219,7 +219,7 @@ public:
   /**
    * Return the wavefunction.
    */
-  inline Complex Wave() const;
+  inline const Complex & wave() const;
 
   /**
    * Functions to reset the wavefunction and momentum (to speed the code up).

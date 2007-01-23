@@ -13,18 +13,18 @@
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include "Cluster.h"
-#include "HadronSelector.h"
-#include "Herwig++/Utilities/HwDebug.h"
+#include "CheckId.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Utilities/CheckId.h"
 
 using namespace Herwig;
 
-void LightClusterDecayer::persistentOutput(PersistentOStream & os) const 
-{os << _hadronsSelector << _B1Lim;}
+void LightClusterDecayer::persistentOutput(PersistentOStream & os) const {
+  os << _hadronSelector << _B1Lim;
+}
 
-void LightClusterDecayer::persistentInput(PersistentIStream & is, int) 
-{is >> _hadronsSelector >> _B1Lim;}
+void LightClusterDecayer::persistentInput(PersistentIStream & is, int) {
+  is >> _hadronSelector >> _B1Lim;
+}
 
 
 ClassDescription<LightClusterDecayer> LightClusterDecayer::initLightClusterDecayer;
@@ -39,7 +39,7 @@ void LightClusterDecayer::Init() {
   static Reference<LightClusterDecayer,HadronSelector> 
     interfaceHadronSelector("HadronSelector", 
 			     "A reference to the HadronSelector object", 
-			     &Herwig::LightClusterDecayer::_hadronsSelector,
+			     &Herwig::LightClusterDecayer::_hadronSelector,
 			     false, false, true, false);
   
   static Parameter<LightClusterDecayer,Energy>
@@ -50,7 +50,6 @@ void LightClusterDecayer::Init() {
 
 
 bool LightClusterDecayer::decay(const StepPtr &pstep) {
-  //  throw (Veto, Stop, Exception) {
 
   // Loop over all clusters, and for those that were not heavy enough
   // to undergo to fission, check if they are below the threshold
@@ -107,12 +106,9 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     // to happen, and then do nothing with (ignore) such cluster.
     if ( (*it)->numComponents() != 2 ) {
       generator()->logWarning( Exception("LightClusterDecayer::decay "
-					 "***Still cluster with not exactly 2 components*** ", 
+					 "***Still cluster with not exactly"
+					 " 2 components*** ", 
 					 Exception::warning) );
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" << " num components = " << (*it)->numComponents()
-			   << endl << endl;
-      }
       continue;
     }
     
@@ -123,126 +119,65 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     idQ1 = ptrQ1->id();
     ptrQ2 = (*it)->particle(1);
     idQ2 = ptrQ2->id();
-
-    // Sanity check (normally skipped) to control that the two components of a
-    // cluster are consistent, that is they can form a meson or a baryon.
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-      if ( ! CheckId::canBeMeson(idQ1,idQ2)  &&  ! CheckId::canBeBaryon(idQ1,idQ2) ) {
-	generator()->logWarning( Exception("LightClusterDecayer::decay "
-	      "***The two components of the cluster are inconsistent***", 
-					   Exception::warning) );
-	std::cout << "LightClusterDecayer::decay ****the two components are "
-		  << idQ1 << " and " << idQ2 << " ***\n";
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  generator()->log() << "         ===>" 
-			     << " idQ1=" << idQ1 << " idQ2=" << idQ2 << endl << endl;
-	}
-      }
-    }
       
     // Determine the sum of the nominal masses of the two lightest hadrons
     // with the right flavour numbers as the cluster under consideration.
     // Notice that we don't need real masses (drawn by a Breit-Wigner 
     // distribution) because the lightest pair of hadrons does not involve
     // any broad resonance.
-    Energy threshold = _hadronsSelector->massLightestHadronPair(idQ1,idQ2);
+    Energy threshold = _hadronSelector->massLightestHadronPair(idQ1,idQ2);
     // Special for b-flavour: it allows one-hadron decays also above threshold.
-    if ( CheckId::hasBeauty(idQ1,idQ2) ) {threshold *= (1.0 + UseRandom::rnd()*_B1Lim);} 
+    if ( CheckId::hasBeauty(idQ1,idQ2) ) {
+      threshold *= (1.0 + UseRandom::rnd()*_B1Lim);
+    } 
     
-    //***TRICK***: scale artificially threshold if you want to test
-    //             LightClusterDecayer with a huge statistics.
-    // // // threshold *= (1.0 + rnd()*2.0);
+    // only do one hadron decay is mass less than the threshold
+    if((*it)->mass()>=threshold) continue;
     
-    if ( (*it)->mass() < threshold ) {
-      
-      long idhad = _hadronsSelector->lightestHadron(idQ1,idQ2);
-      
-      // We assume that the candidate reshuffling cluster partner, 
-      // with whom the light cluster can exchange momenta,
-      // is chosen as the closest in space-time between the available
-      // clusters. Notice that an alternative, sensible approach
-      // could be to consider instead the "closeness" in the colour
-      // structure... 
-      // Notice that nor a light cluster (which decays into a single hadron) 
-      // neither its cluster reshuffling partner (which either has a 
-      // redefined cluster or also decays into a single hadron) can be
-      // a reshuffling partner of another light cluster.
-      // This because we are requiring that the considered candidate cluster
-      // reshuffling partner has the status  "isAvailable && isReadyToDecay"  true; 
-      // furthermore, the new redefined clusters are not added to the collection 
-      // of cluster before the end of the entire reshuffling procedure, avoiding
-      // in this way that the redefined cluster of a cluster reshuffling partner 
-      // is used again later. Needless to say, this is just an assumption,
-      // although reasonable, but nothing more than that!
-      
-      // Build a multimap of available reshuffling cluster partners,
-      // with key given by the module of the invariant space-time distance 
-      // w.r.t. the light cluster, so that this new collection is automatically 
-      // ordered in increasing distance values. 
-      // We use a multimap, rather than a map, just for precaution against not properly 
-      // defined cluster positions which could produce all identical (null) distances.
-      multimap<Length,tClusterPtr> candidates;
-      for ( ClusterVector::iterator jt = clusters.begin();
-	    jt != clusters.end(); ++jt ) {
-	if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
-	  Length distance = fabs (((*it)->vertex() - (*jt)->vertex()).mag());
-	  candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
-	}
+    tcPDPtr hadron= _hadronSelector->lightestHadron(idQ1,idQ2);
+    
+    // We assume that the candidate reshuffling cluster partner, 
+    // with whom the light cluster can exchange momenta,
+    // is chosen as the closest in space-time between the available
+    // clusters. Notice that an alternative, sensible approach
+    // could be to consider instead the "closeness" in the colour
+    // structure... 
+    // Notice that nor a light cluster (which decays into a single hadron) 
+    // neither its cluster reshuffling partner (which either has a 
+    // redefined cluster or also decays into a single hadron) can be
+    // a reshuffling partner of another light cluster.
+    // This because we are requiring that the considered candidate cluster
+    // reshuffling partner has the status  "isAvailable && isReadyToDecay"  true; 
+    // furthermore, the new redefined clusters are not added to the collection 
+    // of cluster before the end of the entire reshuffling procedure, avoiding
+    // in this way that the redefined cluster of a cluster reshuffling partner 
+    // is used again later. Needless to say, this is just an assumption,
+    // although reasonable, but nothing more than that!
+    
+    // Build a multimap of available reshuffling cluster partners,
+    // with key given by the module of the invariant space-time distance 
+    // w.r.t. the light cluster, so that this new collection is automatically 
+    // ordered in increasing distance values. 
+    // We use a multimap, rather than a map, just for precaution against not properly 
+    // defined cluster positions which could produce all identical (null) distances.
+    multimap<Length,tClusterPtr> candidates;
+    for ( ClusterVector::iterator jt = clusters.begin();
+	  jt != clusters.end(); ++jt ) {
+      if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
+	Length distance = fabs (((*it)->vertex() - (*jt)->vertex()).mag());
+	candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
       }
-
-      // Loop sequentially the multimap.
-      multimap<Length,tClusterPtr>::const_iterator mmapIt = candidates.begin();
-      bool found = false;
-      while (!found && mmapIt  != candidates.end()) {
-	found = reshuffling(idhad, *it, (*mmapIt).second, pstep, redefinedClusters);
-	if (!found) ++mmapIt;
-      }
-      
-      if (!found) {
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  int numCluAvailable = 0, numCluAlreadyReshuffled = 0;
-	  for (ClusterVector::const_iterator iter = clusters.begin();
-		iter != clusters.end(); ++iter ) {
-	    if ( (*iter)->isAvailable() && (*iter)->isReadyToDecay() ) {
-	      numCluAvailable++;
-	    } else if((*iter)->isAvailable() && (*iter)->hasBeenReshuffled()) {
-	      numCluAlreadyReshuffled++;
-	    }
-	  }
-	  generator()->log() << "LightClusterDecayer::decay "
-			     << " (just before throwing the exception) " << endl 
-			     << "         ===> num clusters:  all=" << clusters.size()
-			     << "  already reshuffled=" << numCluAlreadyReshuffled
-			     << "  still available=" << numCluAvailable 
-			     << endl << endl;
-	}
-// 	throw Exception("LightClusterDecayer::decay "
-// 			"***Skip event: too light clusters (reshuffling problem)***",
-// 			Exception::eventerror);
-	// special for partonic b/c decays
-	return partonicReshuffle(idhad,*it,pstep);
-      } 
-      
-      // Debugging.
-      if ( HERWIG_DEBUG_LEVEL == HwDebug::extreme_Hadronization ) {    
-	generator()->log() << "LightClusterDecayer::decay : *** extreme debugging ***" << endl
-			   << " \t Cluster : mass=" << (*it)->mass()
-			   << " components ids= " << idQ1 << " " << idQ2
-			   << " ---> hadron id=" << idhad << endl 
-			   << " before " << ( (*it)->momentum() + 
-					      ((*mmapIt).second)->momentum() )  
-			   << endl 
-			   << " = " << (*it)->momentum() 
-			   << " + " << ((*mmapIt).second)->momentum() << endl
-	                   << "\t multimap of reshuffling candidates : size = " 
-                           << candidates.size() << endl;
-	for(multimap<Length,tClusterPtr>::const_iterator
-	  mmapIt = candidates.begin(); mmapIt != candidates.end(); ++mmapIt ) {
-	  generator()->log() << "\t \t distance = " << (*mmapIt).first << "  [mm] " << endl;
-	}
-      }
-	
-    } // end if mass < threshold
+    }
+    
+    // Loop sequentially the multimap.
+    multimap<Length,tClusterPtr>::const_iterator mmapIt = candidates.begin();
+    bool found = false;
+    while (!found && mmapIt  != candidates.end()) {
+      found = reshuffling(hadron, *it, (*mmapIt).second, pstep, redefinedClusters);
+      if (!found) ++mmapIt;
+    }
+    
+    if (!found) return partonicReshuffle(hadron,*it,pstep);
   } // end loop over collecCluPtr 
 
   // Add to  collecCluPtr  all of the redefined new clusters (indeed the 
@@ -255,7 +190,7 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
 }
 
 
-bool LightClusterDecayer::reshuffling(const long idhad1, 
+bool LightClusterDecayer::reshuffling(const tcPDPtr pdata1, 
 				      tClusterPtr cluPtr1, 
 				      tClusterPtr cluPtr2,
 				      const StepPtr pstep,
@@ -269,7 +204,7 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   // the candidate cluster "2". It returns true if the reshuffling succeed,
   // false otherwise.
 
-  PPtr ptrhad1 = getParticle( idhad1 );
+  PPtr ptrhad1 = pdata1->produceParticle();
   if ( ! ptrhad1 ) {
     generator()->logWarning( Exception("LightClusterDecayer::reshuffling"
 				       "***Cannot create a particle with specified id***", 
@@ -281,21 +216,6 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   // Let's call "3" and "4" the two constituents of the second cluster
   tPPtr part3 = cluPtr2->particle(0);
   tPPtr part4 = cluPtr2->particle(1);
-
-  // Sanity check (normally skipped) to see if the second cluster
-  // is consistently defined.
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {
-    if ( cluPtr2->numComponents() != 2  ||  !part3  ||  !part4 ) { 
-      generator()->logWarning( Exception("LightClusterDecayer::reshuffling "
-					 "***Inconsistent cluster***", 
-					 Exception::warning) );
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===>" << " n=" << cluPtr2->numComponents()
-			   << " compPtr3=" << part3 << " compPtr4=" << part4 
-			   << endl << endl;
-      }
-    }
-  }
   
   // Check if the system of the two clusters can kinematically be replaced by
   // an hadron of mass mhad1 (which is the lightest single hadron with the 
@@ -306,13 +226,9 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   pSystem.rescaleMass();  // set the mass as the invariant of the quadri-vector
   Energy mSystem = pSystem.mass();
   Energy mclu2 = cluPtr2->mass();
-  //***TRICK***: uncomment the following line and replace it to the 
-  //             if statement below if you want to test  LightClusterDecayer
-  //             with a huge statistics.
-  // // // if ( mSystem  <  (mhad1 + mclu2)*(1.0 + rnd()*5.0) ) {
   bool singleHadron = false;
-  Energy mLHP2 = _hadronsSelector->massLightestHadronPair(part3->id(), part4->id());
-  Energy mLH2 = _hadronsSelector->massLightestHadron(part3->id(), part4->id());
+  Energy mLHP2 = _hadronSelector->massLightestHadronPair(part3->id(), part4->id());
+  Energy mLH2 = _hadronSelector->massLightestHadron(part3->id(), part4->id());
 
   if(mSystem > mhad1 + mclu2 && mclu2 > mLHP2) { singleHadron = false; } 
   else if(mSystem > mhad1 + mLH2) { singleHadron = true; mclu2 = mLH2; }
@@ -344,23 +260,6 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
   
   Kinematics::twoBodyDecay(pSystem, mhad1, mclu2, u.vect().unit(), phad1, pclu2);
 
-  // Sanity check (normally skipped) to see if the energy-momentum is conserved.
-  if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
-    Lorentz5Momentum diff = pSystem - ( phad1 + pclu2 );
-    Energy ediff = fabs( diff.m() );
-    if ( ediff > 1e-3*GeV ) {
-      generator()->logWarning( Exception("LightClusterDecayer::reshuffling " 
-					 "***Energy-momentum NOT conserved: system***", 
-					 Exception::warning) );    
-      if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	generator()->log() << "         ===> " << endl
-			   << "   diff " << diff << endl
-			   << " before " << pSystem << " ---> " << (phad1+pclu2) << endl
-			   << "  = " << phad1 << " + " << pclu2 << endl << endl;
-      }      
-    }
-  }
-
   ptrhad1->set5Momentum( phad1 );               // set momentum of first hadron.
   ptrhad1->setLabVertex(cluPtr1->vertex()); // set hadron vertex position to the
                                                 // parent cluster position.
@@ -376,8 +275,8 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
     // redefined cluster (this choice is justified in order to avoid
     // clusters that could have undefined components).
 
-    long idhad2 = _hadronsSelector->lightestHadron(part3->id(), part4->id());
-    PPtr ptrhad2 = getParticle( idhad2 );
+    PPtr ptrhad2 = _hadronSelector->lightestHadron(part3->id(),part4->id())
+      ->produceParticle();
     ptrhad2->set5Momentum( pclu2 );            
     ptrhad2->setLabVertex( cluPtr2->vertex() ); // set hadron vertex position to the
                                                   // parent cluster position.
@@ -418,38 +317,12 @@ bool LightClusterDecayer::reshuffling(const long idhad1,
     p4.boost( pclu2.boostVector() );    // from clu2 (new) to LAB frame    
     cluPtr2new->particle(0)->set5Momentum(p3);
     cluPtr2new->particle(1)->set5Momentum(p4);
-
-    // Sanity check (normally skipped) to see if the energy-momentum is conserved.
-    if ( HERWIG_DEBUG_LEVEL >= HwDebug::minimal_Hadronization ) {    
-      Lorentz5Momentum sumMomentaComponents = Lorentz5Momentum(); 
-      for(int i = 0; i<cluPtr2new->numComponents(); i++)
-	sumMomentaComponents += cluPtr2new->particle(i)->momentum();
-
-      Lorentz5Momentum diff = sumMomentaComponents - cluPtr2new->momentum(); 
-      Energy ediff = fabs( diff.m() );
-      if ( ediff > 1e-3*GeV ) {
-	generator()->logWarning( Exception("LightClusterDecayer::reshuffling " 
-					   "***Energy-momentum NOT conserved: clu2new***", 
-					   Exception::warning) );    
-	if ( HERWIG_DEBUG_LEVEL >= HwDebug::full_Hadronization ) {    
-	  generator()->log() << "         ===> " << endl
-			     << "   sumMomentaComponents = " << sumMomentaComponents << endl 
-			     << "           momentumClu2 = " << cluPtr2new->momentum() << endl
-			     << "                   diff = " << diff << endl << endl;
-	}      
-      }
-    }
-
-
   } // end of  if (singleHadron) 
-
-
   return true;
 }
 
-bool LightClusterDecayer::partonicReshuffle(const long idhad,const PPtr cluster,
-					    const StepPtr pstep)
-{
+bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,const PPtr cluster,
+					    const StepPtr pstep) {
   tPPtr meson(cluster);
   if(!meson->parents().empty()) meson=meson->parents()[0];
   if(!meson->parents().empty()) meson=meson->parents()[0];
@@ -462,27 +335,25 @@ bool LightClusterDecayer::partonicReshuffle(const long idhad,const PPtr cluster,
   unsigned int nlep(0);
   Lorentz5Momentum pleptons;
   Energy mLHP2=Energy();
-  for(unsigned int ix=0;ix<meson->children().size();++ix)
-    {
-      if(!(meson->children()[ix]->dataPtr()->coloured()))
-	{
-	  if(nlep<=2) leptons[nlep]=meson->children()[ix];
-	  ++nlep;
-	  pleptons+=meson->children()[ix]->momentum();
-	  mLHP2+=meson->children()[ix]->mass();
-	}
-      pleptons.rescaleMass();
-    }
+  for(unsigned int ix=0;ix<meson->children().size();++ix) {
+    if(!(meson->children()[ix]->dataPtr()->coloured())) {
+	if(nlep<=2) leptons[nlep]=meson->children()[ix];
+	++nlep;
+	pleptons+=meson->children()[ix]->momentum();
+	mLHP2+=meson->children()[ix]->mass();
+      }
+    pleptons.rescaleMass();
+  }
   // check leptons
-  if(nlep==1)
-    {
-      mLHP2=Energy();
-      for(unsigned int ix=0;ix<leptons[0]->children().size();++ix)
-	{mLHP2+=leptons[0]->children()[ix]->mass();}
+  if(nlep==1) {
+    mLHP2=Energy();
+    for(unsigned int ix=0;ix<leptons[0]->children().size();++ix) {
+      mLHP2+=leptons[0]->children()[ix]->mass();
     }
+  }
   else if (nlep>2) return false;
   // check we can do the reshuffling
-  PPtr ptrhad = getParticle(idhad);
+  PPtr ptrhad = had->produceParticle();
   Energy mhad1(ptrhad->mass());
   Lorentz5Momentum pSystem = pleptons + cluster->momentum();
   pSystem.rescaleMass();
@@ -511,10 +382,9 @@ bool LightClusterDecayer::partonicReshuffle(const long idhad,const PPtr cluster,
   // boost the leptons to the rest frame of the system
   Hep3Vector boost1(-pleptons.boostVector());
   Hep3Vector boost2( pclu2.boostVector());
-  for(unsigned int ix=0;ix<nlep;++ix)
-    {
-      leptons[ix]->deepBoost(boost1);
-      leptons[ix]->deepBoost(boost2);
-    }
+  for(unsigned int ix=0;ix<nlep;++ix) {
+    leptons[ix]->deepBoost(boost1);
+    leptons[ix]->deepBoost(boost2);
+  }
   return true;
 }

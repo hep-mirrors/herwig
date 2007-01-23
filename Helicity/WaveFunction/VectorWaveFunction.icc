@@ -214,7 +214,7 @@ inline VectorWaveFunction & VectorWaveFunction::operator = (const VectorWaveFunc
 }
 
 // return wavefunction as polarization vector
-inline LorentzPolarizationVector VectorWaveFunction::Wave() const{return _wf;}
+inline const LorentzPolarizationVector & VectorWaveFunction::wave() const{return _wf;}
 
 // Get position and time.
 inline Complex VectorWaveFunction::x() const {return _wf.x();}

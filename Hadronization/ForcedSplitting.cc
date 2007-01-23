@@ -344,7 +344,7 @@ PPtr ForcedSplitting::finalSplit(const tPPtr rem, int maxIdx,
     remId = id2*1000+id1*100;
     
     // Now decide if we have spin 0 diquark or spin 1 diquark
-    if(id1 == id2 || UseRandom::rndbool()) spin = 3; // spin 1
+    if(id1 == id2) spin = 3; // spin 1
     else spin = 1; // otherwise spin 0
     remId += sign*spin;
   }

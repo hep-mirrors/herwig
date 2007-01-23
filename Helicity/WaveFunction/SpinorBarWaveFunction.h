@@ -334,7 +334,7 @@ public:
   /**
    * Return wavefunction as LorentzSpinor.
    */
-  inline LorentzSpinorBar Wave() const;
+  inline const LorentzSpinorBar & wave() const;
 
   /**
    * Get the first spin component component.

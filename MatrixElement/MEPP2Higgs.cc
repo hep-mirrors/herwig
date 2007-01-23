@@ -277,13 +277,13 @@ double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1,
   double output(0.);
   Complex w1p2[2],w2p1[2];
   for(unsigned int ihel=0;ihel<2;++ihel) {
-    w1p2[ihel]=g1[ihel].Wave()*g2[0].getMomentum();
-    w2p1[ihel]=g2[ihel].Wave()*g1[0].getMomentum();
+    w1p2[ihel]=g1[ihel].wave()*g2[0].getMomentum();
+    w2p1[ihel]=g2[ihel].wave()*g1[0].getMomentum();
   }
   Complex ii(0.,1.);
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      Complex wdot=g1[ihel1].Wave()*g2[ihel2].Wave();
+      Complex wdot=g1[ihel1].wave()*g2[ihel2].wave();
       Complex me=-ii*A1s*pre*(wdot-2.*w1p2[ihel1]*w2p1[ihel2]/s);
       output+=real(me*conj(me));
       // matrix element if needed

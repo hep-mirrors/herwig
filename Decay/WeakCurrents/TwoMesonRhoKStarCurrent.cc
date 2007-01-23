@@ -269,39 +269,34 @@ void TwoMesonRhoKStarCurrent::Init() {
 bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 					 DecayPhaseSpaceModePtr mode,
 					 unsigned int iloc,unsigned int,
-					 DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if(abs(icharge)!=3){return false;}
   // make sure that the decays are kinematically allowed
   bool kineallowed(true);
   tPDPtr part[2];
-  if(imode==0)
-    {
-      part[0]=getParticleData(ParticleID::piplus);
-      part[1]=getParticleData(ParticleID::pi0);
-    }
-  else if(imode==1)
-    {
-      part[0]=getParticleData(ParticleID::Kplus);
-      part[1]=getParticleData(ParticleID::pi0);
-    }
-  else if(imode==2)
-    {
-      part[0]=getParticleData(ParticleID::K0);
-      part[1]=getParticleData(ParticleID::piplus);
-    }
-  else if(imode==3)
-    {
-      part[0]=getParticleData(ParticleID::Kplus);
-      part[1]=getParticleData(ParticleID::K0);
-    }
-  else if(imode==4)
-    {
-      part[0]=getParticleData(ParticleID::eta);
-      part[1]=getParticleData(ParticleID::Kplus);
-    }
-  else
-    {kineallowed=false;}
+  if(imode==0) {
+    part[0]=getParticleData(ParticleID::piplus);
+    part[1]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==1) {
+    part[0]=getParticleData(ParticleID::Kplus);
+    part[1]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==2) {
+    part[0]=getParticleData(ParticleID::K0);
+    part[1]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==3) {
+    part[0]=getParticleData(ParticleID::Kplus);
+    part[1]=getParticleData(ParticleID::K0);
+  }
+  else if(imode==4) {
+    part[0]=getParticleData(ParticleID::eta);
+    part[1]=getParticleData(ParticleID::Kplus);
+  }
+  else {
+    kineallowed=false;
+  }
   Energy min(part[0]->massMin()+part[1]->massMin());
   if(min>upp){kineallowed=false;}
   if(kineallowed==false){return kineallowed;}
@@ -309,61 +304,60 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
   // set the resonances
   // two pion or  K+ K0 decay
   tPDPtr res[3];
-  if(imode==0||imode==3)
-    {
-      if(icharge==3)
-	{
-	  res[0]=getParticleData(213);
-	  res[1]=getParticleData(100213);
-	  res[2]=getParticleData(30213);
-	}
-      else
-	{
-	  res[0]=getParticleData(-213);
-	  res[1]=getParticleData(-100213);
-	  res[2]=getParticleData(-30213);
-	}
+  if(imode==0||imode==3) {
+    if(icharge==3) {
+      res[0]=getParticleData(213);
+      res[1]=getParticleData(100213);
+      res[2]=getParticleData(30213);
     }
+    else {
+      res[0]=getParticleData(-213);
+      res[1]=getParticleData(-100213);
+      res[2]=getParticleData(-30213);
+    }
+  }
   // K+ pi0 or K0 pi+ or K eta decay
-  else if(imode==1||imode==2||imode==4)
-    {
-      if(icharge==3)
-	{
-	  res[0]=getParticleData(323);
-	  res[1]=getParticleData(100323);
-	  res[2]=getParticleData(30323);
-	}
-      else
-	{
-	  res[0]=getParticleData(-323);
-	  res[1]=getParticleData(-100323);
-	  res[2]=getParticleData(-30323);
-	}
+  else if(imode==1||imode==2||imode==4) {
+    if(icharge==3) {
+      res[0]=getParticleData(323);
+      res[1]=getParticleData(100323);
+      res[2]=getParticleData(30323);
     }
-  else
-    {throw Exception() << "Failure of initialisation in TwoMesonRhoKStarCurrent" 
-		       << Exception::abortnow;}
+    else {
+      res[0]=getParticleData(-323);
+      res[1]=getParticleData(-100323);
+      res[2]=getParticleData(-30323);
+    }
+  }
+  else {
+    throw Exception() << "Failure of initialisation in TwoMesonRhoKStarCurrent" 
+		      << Exception::abortnow;
+  }
   // create the channels
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      if(res[ix])
-	{
-	  newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
-	  newchannel->addIntermediate(res[ix],0,0.0,iloc,iloc+1);
-	  mode->addChannel(newchannel);
-	}
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(res[ix]) {
+      newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
+      newchannel->addIntermediate(res[ix],0,0.0,iloc,iloc+1);
+      mode->addChannel(newchannel);
     }
+  }
   // reset the masses in the intergrators if needed
   // for the rho 
-  if(_rhoparameters&&(imode==0||imode==3))
-    {for(unsigned int ix=0;ix<3;++ix)
-	{if(ix<_rhomasses.size())
-	    {mode->resetIntermediate(res[ix],_rhomasses[ix],_rhowidths[ix]);}}}
+  if(_rhoparameters&&(imode==0||imode==3)) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ix<_rhomasses.size()&&res[ix]) {
+	mode->resetIntermediate(res[ix],_rhomasses[ix],_rhowidths[ix]);
+      }
+    }
+  }
   // for the K*
-  else if(_Kstarparameters&&imode!=0&&imode!=3)
-    {for(unsigned int ix=0;ix<3;++ix)
-	{if(ix<_Kstarmasses.size())
-	    {mode->resetIntermediate(res[ix],_Kstarmasses[ix],_Kstarwidths[ix]);}}}
+  else if(_Kstarparameters&&imode!=0&&imode!=3) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(ix<_Kstarmasses.size()&&res[ix]) {
+	mode->resetIntermediate(res[ix],_Kstarmasses[ix],_Kstarwidths[ix]);
+      }
+    }
+  }
   // return if successful
   return kineallowed;
 }

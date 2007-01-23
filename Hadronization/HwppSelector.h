@@ -1,0 +1,176 @@
+// -*- C++ -*-
+#ifndef HERWIG_HwppSelector_H
+#define HERWIG_HwppSelector_H
+//
+// This is the declaration of the HwppSelector class.
+//
+
+#include "HadronSelector.h"
+#include "HwppSelector.fh"
+
+namespace Herwig {
+
+using namespace ThePEG;
+
+/**
+ * Here is the documentation of the HwppSelector class.
+ *
+ * @see \ref HwppSelectorInterfaces "The interfaces"
+ * defined for HwppSelector.
+ */
+class HwppSelector: public HadronSelector {
+
+public:
+
+  /**
+   * The default constructor.
+   */
+  inline HwppSelector();
+
+  /**
+   *
+   * This method is used to choose a pair of hadrons.
+   *
+   * Given the mass of a cluster and the ids of its two (or three) 
+   * constituents, this returns the pair of ids of the two hadrons with proper
+   * flavour numbers. Furthermore, the first of the two hadron must have the 
+   * constituent with id1, and the second must have the constituent with id2. 
+   * At the moment it does *nothing* in the case that also id3 is present.
+   *
+   * Kupco's method is used, rather than one used in FORTRAN HERWIG
+   * The idea is to build on the fly a table of all possible pairs
+   * of hadrons (Had1,Had2) (that we can call "cluster decay channels")
+   * which are kinematically above threshold  and have flavour 
+   * Had1=(id1,-idQ), Had2=(idQ,id2), where idQ is the id of: 
+   *    ---  d, u, s, c, b   
+   *                        if either id1 or id2 is a diquark;      
+   *    ---  d, u, s, c, b, dd, ud, uu, sd, su, ss, 
+   *                        cd, cu, cs, cc, bd, bu, bs, bc, bb
+   *                        if both id1 and id2 are quarks.
+   * The weight associated with each channel is given by the product
+   * of: the phase space available including the spin factor 2*J+1, 
+   *     the constant weight factor for chosen idQ, 
+   *     the octet-singlet isoscalar mixing factor, and finally 
+   *     the singlet-decuplet weight factor.
+   */
+  pair<tcPDPtr,tcPDPtr> chooseHadronPair(const Energy cluMass, const long id1, 
+					 const long id2, const long id3=0) 
+    throw(Veto, Stop, Exception);
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<HwppSelector> initHwppSelector;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  HwppSelector & operator=(const HwppSelector &);
+
+private:
+
+  /**
+   *  Which algorithm to use
+   */
+  unsigned int _mode;
+
+  /**
+   *  Map containing lightest baryon masses for speed
+   */
+  map<pair<long,long>,Energy> _baryonmass;
+};
+
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of HwppSelector. */
+template <>
+struct BaseClassTrait<Herwig::HwppSelector,1> {
+  /** Typedef of the first base class of HwppSelector. */
+  typedef Herwig::HadronSelector NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the HwppSelector class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::HwppSelector>
+  : public ClassTraitsBase<Herwig::HwppSelector> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig++::HwppSelector"; }
+};
+
+/** @endcond */
+
+}
+
+#include "HwppSelector.icc"
+#ifndef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "HwppSelector.tcc"
+#endif
+
+#endif /* HERWIG_HwppSelector_H */

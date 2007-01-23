@@ -5,8 +5,8 @@
 //
 
 namespace Herwig {
-
-inline TopDalitzAnalysis::TopDalitzAnalysis() {}
+inline TopDalitzAnalysis::TopDalitzAnalysis()
+  : _deltaR(0.7,2.7,100),_logy3(-4.,-1.,120) {}
 
 inline TopDalitzAnalysis::TopDalitzAnalysis(const TopDalitzAnalysis & x)
   : AnalysisHandler(x) {}
@@ -21,13 +21,17 @@ inline IBPtr TopDalitzAnalysis::fullclone() const {
 
 inline void TopDalitzAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  _output.open("TopDalitz.top");
-  _output << "SET FONT DUPLEX\n";
-  _output << "SET LIMITS X 0 1 Y 0.9 1.3\n";
-  _output << "TITLE BOTTOM \"X011\"\n";
-  _output << "CASE         \" X X\"\n";
-  _output << "TITLE LEFT \"X021\"\n";
-  _output << "CASE       \" X X\"\n";
+  _output[0].open("TopDalitz.top");
+  _output[0] << "SET FONT DUPLEX\n";
+  _output[0] << "SET LIMITS X 0 1 Y 0.9 1.3\n";
+  _output[0] << "TITLE BOTTOM \"X011\"\n";
+  _output[0] << "CASE         \" X X\"\n";
+  _output[0] << "TITLE LEFT \"X021\"\n";
+  _output[0] << "CASE       \" X X\"\n";
+
   _nout=0;
+
+  _output[1].open("TopDeltaR.top");
+  _output[2].open("Toplogy3.top");
 }
 }

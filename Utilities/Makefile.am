@@ -1,6 +1,5 @@
 noinst_LTLIBRARIES = libHwUtils.la
 libHwUtils_la_SOURCES = \
-CheckId.cc CheckId.h CheckId.icc \
 EnumParticles.h \
 HerwigRun.cc HerwigRun.h \
 HwDebug.cc HwDebug.h \

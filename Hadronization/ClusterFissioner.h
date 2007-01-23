@@ -325,6 +325,14 @@ private:
    */
   int _iopRem;
 
+  // until ThePEG supports Tension
+  typedef double Tension;
+
+  /**
+   * The string constant
+   */
+  Tension _kappa;
+
 };
 
 }

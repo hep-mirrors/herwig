@@ -1,46 +1,132 @@
 // -*- C++ -*-
 //
 // This is the implementation of the inlined member functions of
-// the HadronsSelector class.
+// the HadronSelector class.
 //
 
 namespace Herwig {
 
+inline map<pair<long,long>,HadronSelector::KupcoData> & HadronSelector::table() {
+  return _table;
+}
 
-inline HadronSelector::HadronSelector() :
-  _PwtDquark( 1.0 ),
-  _PwtUquark( 1.0 ),
-  _PwtSquark( 1.0 ),
-  _PwtCquark( 1.0 ),
-  _PwtBquark( 1.0 ),
-  _PwtDIquark( 1.0 ),
-  _SngWt( 1.0 ),
-  _DecWt( 1.0 ),
-  _table(NumFlavs,vector<KupcoData>(NumFlavs)),
-  _Pwt( NumFlavs+1 ),
-  _Repwt(Lmax,vector<vector<double> >(Jmax,vector<double>(Nmax))),
-  _ClusterDKMode(0),
-  _trial(0)
+inline vector<long> & HadronSelector::partons() {
+  return _partons;
+}
+
+inline map<long,double> & HadronSelector::pwt() {
+  return _pwt;
+}
+
+inline double HadronSelector::pwtDquark() const {
+  return _pwtDquark;
+}
+
+inline double HadronSelector::pwtUquark() const { 
+  return _pwtUquark;
+}
+
+inline double HadronSelector::pwtSquark() const { 
+  return _pwtSquark;
+}
+
+inline double HadronSelector::pwtCquark() const { 
+  return _pwtCquark;
+}
+
+inline double HadronSelector::pwtBquark() const { 
+  return _pwtBquark;
+}
+
+inline double HadronSelector::pwtDIquark() const {
+  return _pwtDIquark;
+}
+
+inline double HadronSelector::probabilityMixing(const double angleMix,
+						const int order) {
+  static double convert=Constants::pi/180.0;
+  if (order == 1)      return sqr( cos( angleMix*convert + atan( sqrt(2.0) ) ) );
+  else if (order == 2) return sqr( sin( angleMix*convert + atan( sqrt(2.0) ) ) );
+  else                 return 1.;
+}
+
+inline HadronSelector::Kupco::Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2,
+				    Energy inwgt) 
+  : idQ(inidQ),hadron1(inhad1),hadron2(inhad2),weight(inwgt)
 {}
 
-inline IBPtr HadronSelector::clone() const {
-  return new_ptr(*this);
+inline HadronSelector::HadronInfo::HadronInfo(long idin,tPDPtr datain,
+					      double swtin,Energy massin) 
+  : id(idin), ptrData(datain), swtef(swtin), wt(1.0), overallWeight(0.0),
+    mass(massin)
+{}
+
+inline bool HadronSelector::HadronInfo::operator<(const HadronInfo &x) const {
+  return mass < x.mass; 
 }
 
-inline IBPtr HadronSelector::fullclone() const {
-  return new_ptr(*this);
+inline Energy HadronSelector::massLightestHadronPair(const long id1, const long id2,
+						     const long id3) const {
+  pair<tcPDPtr,tcPDPtr> pairData = lightestHadronPair(id1,id2,id3);
+  if ( ! pairData.first || ! pairData.second ) return Energy();
+  return ( pairData.first->mass() + pairData.second->mass() ); 
 }
 
-inline void HadronSelector::doinit() throw(InitException) {
-  ThePEG::Interfaced::doinit();
-  initialize();
+inline tcPDPtr HadronSelector::lightestHadron(const long id1, const long id2,
+					      const long id3) const {
+  // The method assumes id3 == 0  
+  if(id3!=0) throw Exception() << "HadronSelector::lightestHadron"
+			       << "called with id3 = " << id3 
+			       << "which is non-zero and not implemented"
+			       << Exception::runerror;
+  // find entry in the table
+  pair<long,long> ids(abs(id1),abs(id2));
+  map<pair<long,long>,KupcoData>::const_iterator tit=_table.find(ids);
+  // throw exception if flavours wrong
+  if(tit==_table.end()||tit->second.empty()) 
+    throw Exception() << "HadronSelector::lightestHadron "
+		      << "failed for " << id1 << " " << id2 
+		      << Exception::runerror;
+  // find the lightest hadron
+  int sign = signHadron(id1,id2,tit->second.begin()->ptrData);
+  return sign >0 ? tit->second.begin()->ptrData : tit->second.begin()->ptrData->CC();
 }
 
-inline double HadronSelector::pwtDquark() const {return _PwtDquark; }
-inline double HadronSelector::pwtUquark() const { return _PwtUquark; }
-inline double HadronSelector::pwtSquark() const { return _PwtSquark; }
-inline double HadronSelector::pwtCquark() const { return _PwtCquark; }
-inline double HadronSelector::pwtBquark() const { return _PwtBquark; }
-inline double HadronSelector::pwtDIquark() const { return _PwtDIquark; }
+inline Energy HadronSelector::massLightestHadron(const long id1, const long id2,
+						 const long id3) const {
+  // The method assumes id3 == 0  
+  if(id3!=0) throw Exception() << "HadronSelector::massLightestHadron"
+			       << "called with id3 = " << id3 
+			       << "which is non-zero and not implemented"
+			       << Exception::runerror;
+  // find entry in the table
+  pair<long,long> ids(abs(id1),abs(id2));
+  map<pair<long,long>,KupcoData>::const_iterator tit=_table.find(ids);
+  // throw exception if flavours wrong
+  if(tit==_table.end()||tit->second.empty()) {
+    throw Exception() <<  "HadronSelector::massLightestHadron "
+		      << "failed for " << id1 << " " << id2 
+		      << Exception::runerror;
+  }
+  // return the mass
+  return tit->second.begin()->mass;
+}
 
+inline Energy HadronSelector::massLightestBaryonPair(const long id1, 
+						     const long id2) const {
+  // Make sure that we don't have any diquarks as input, return arbitrarily
+  // large value if we do
+  Energy currentSum = Constants::MaxEnergy; 
+  for(unsigned int ix=0;ix<_partons.size();++ix) {
+    if(!DiquarkMatcher::Check(_partons[ix])) continue;
+    map<pair<long,long>,KupcoData>::const_iterator 
+      tit1=_table.find(make_pair(abs(id1),_partons[ix])),
+      tit2=_table.find(make_pair(_partons[ix],abs(id2)));
+    if( tit1==_table.end() || tit2==_table.end()) continue;
+    if(tit1->second.empty()||tit2->second.empty()) continue;
+    Energy s = tit1->second.begin()->mass + tit2->second.begin()->mass;
+    if(currentSum > s) currentSum = s;
+  }
+  return currentSum;
+}
 }

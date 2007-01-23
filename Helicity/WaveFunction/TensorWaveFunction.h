@@ -301,7 +301,7 @@ public:
   /**
    * Return wavefunction as polarization vector.
    */
-  inline LorentzTensor Wave() const;
+  inline const LorentzTensor & wave() const;
 
   /**
    * Get the \f$xx\f$ component.

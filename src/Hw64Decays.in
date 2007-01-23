@@ -1199,8 +1199,8 @@ decaymode B_sbar0->D*_s+,D_s-; 0.011 1 /Defaults/Decays/DecayME0
 decaymode B_sbar0->D_s+,D_s-; 0.011 1 /Defaults/Decays/DecayME0
 decaymode B_sbar0->D_s+,rho-; 0.010 1 /Defaults/Decays/DecayME0
 decaymode B_sbar0->D*_s+,rho-; 0.009 1 /Defaults/Decays/DecayME0
-decaymode B_sbar0->u,cbar,s,sbar; 0.008 1 /Defaults/Decays/DecayME100
-decaymode B_sbar0->u,ubar,d,sbar; 0.008 1 /Defaults/Decays/DecayME100
+decaymode B_sbar0->u,cbar,s,sbar; 0.008 1 /Defaults/Decays/HvyDecayME100
+decaymode B_sbar0->u,ubar,d,sbar; 0.008 1 /Defaults/Decays/HvyDecayME100
 decaymode B_sbar0->mu-,nu_mubar,D_1s+; 0.008 1 /Defaults/Decays/DecayME101
 decaymode B_sbar0->e-,nu_ebar,D_1s+; 0.008 1 /Defaults/Decays/DecayME101
 decaymode B_sbar0->mu-,nu_mubar,D*_1s+; 0.008 1 /Defaults/Decays/DecayME101
@@ -1559,7 +1559,7 @@ decaymode Xi_bbar0->sbar,u,cbar,su_0bar; 0.012 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->mu+,nu_mu,ubar,su_0bar; 0.010 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->e+,nu_e,ubar,su_0bar; 0.010 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->ubar,c,sbar,su_0bar; 0.009 1 /Defaults/Decays/HvyDecayME100
-decaymode Xi_bbar0->ubar,u,dbar,su_0bar; 0.009 1 /Defaults/Decays/DecayME100
+decaymode Xi_bbar0->ubar,u,dbar,su_0bar; 0.009 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->tau+,nu_tau,ubar,su_0bar; 0.005 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->cbar,c,dbar,su_0bar; 0.004 1 /Defaults/Decays/HvyDecayME100
 decaymode Xi_bbar0->cbar,u,sbar,su_0bar; 0.004 1 /Defaults/Decays/HvyDecayME100

@@ -149,16 +149,6 @@ private:
   ClusterHadronizationHandler & operator=(const ClusterHadronizationHandler &);
 
   /**
-   * Print the step for debugging.
-   */
-  void printStep(tStepPtr ptrStep, const string & title);
-
-  /**
-   * Print information about the final, complete collections of clusters.
-   */
-  void debuggingInfo(EventHandler & ch, ClusterVector &);
-
-  /**
    * This is a pointer to a Herwig::PartonSplitter object.
    */
   PartonSplitterPtr      _partonSplitter;

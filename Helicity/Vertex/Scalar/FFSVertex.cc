@@ -30,9 +30,8 @@ void FFSVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr) {}
 
 // evaluate the full vertex
 Complex FFSVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
-				    const SpinorBarWaveFunction & sbar,
-				    const ScalarWaveFunction & sca)
-{
+			    const SpinorBarWaveFunction & sbar,
+			    const ScalarWaveFunction & sca) {
   // extract the pointers to the particle data objects
   tcPDPtr Psp=sp.getParticle();
   tcPDPtr Psca=sca.getParticle();
@@ -43,38 +42,34 @@ Complex FFSVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
   Complex ii(0.,1.);
   Complex vertex(0.);
   // low energy conventions
-  if(sp.Wave().Rep()==HaberDRep&&sbar.Wave().Rep()==HaberDRep)
-    {
-      vertex = _left*( (sbar.s1()-sbar.s3())*(sp.s1()-sp.s3())
-		       +(sbar.s2()-sbar.s4())*(sp.s2()-sp.s4()))
-	+_right*( (sbar.s1()+sbar.s3())*(sp.s1()+sp.s3())
-		  +(sbar.s2()+sbar.s4())*(sp.s2()+sp.s4()));
-      vertex=0.5*vertex;
-    }
+  if(sp.wave().Rep()==HaberDRep&&sbar.wave().Rep()==HaberDRep) {
+    vertex = _left*( (sbar.s1()-sbar.s3())*(sp.s1()-sp.s3())
+		    +(sbar.s2()-sbar.s4())*(sp.s2()-sp.s4()))
+           +_right*( (sbar.s1()+sbar.s3())*(sp.s1()+sp.s3())
+		    +(sbar.s2()+sbar.s4())*(sp.s2()+sp.s4()));
+    vertex=0.5*vertex;
+  }
   // high energy conventions
-  else if(sp.Wave().Rep()==HELASDRep&&sbar.Wave().Rep()==HELASDRep)
-    {
-      vertex=  _left*(sbar.s1()*sp.s1()+sbar.s2()*sp.s2())
-	+_right*(sbar.s3()*sp.s3()+sbar.s4()*sp.s4());
-    }
+  else if(sp.wave().Rep()==HELASDRep&&sbar.wave().Rep()==HELASDRep) {
+    vertex=  _left*(sbar.s1()*sp.s1()+sbar.s2()*sp.s2())
+      +_right*(sbar.s3()*sp.s3()+sbar.s4()*sp.s4());
+  }
   // mixing conventions
-  else
-    {
-      sp.Wave().changeRep(HELASDRep);
-      sbar.Wave().changeRep(HELASDRep);
-      vertex=  _left*(sbar.s1()*sp.s1()+sbar.s2()*sp.s2())
-	+_right*(sbar.s3()*sp.s3()+sbar.s4()*sp.s4());
-    }
+  else {
+    LorentzSpinorBar sbart=sbar.wave().transformRep(HELASDRep);
+    LorentzSpinor    spt  =sp  .wave().transformRep(HELASDRep);
+    vertex=  _left*(sbart.s1()*spt.s1()+sbart.s2()*spt.s2())
+           +_right*(sbart.s3()*spt.s3()+sbart.s4()*spt.s4());
+  }
   // final factors
-  vertex = ii*norm*vertex*sca.Wave();
+  vertex *= ii*norm*sca.wave();
   return vertex;
 }
 
 // off-shell scalar
 ScalarWaveFunction FFSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out, 
 				       const SpinorWaveFunction & sp,
-				       const SpinorBarWaveFunction & sbar)
-{
+				       const SpinorBarWaveFunction & sbar) {
   // work out the momentum of the off-shell particle
   Lorentz5Momentum pout = Lorentz5Momentum(sbar.px()+sp.px(),sbar.py()+sp.py(),
 					   sbar.pz()+sp.pz(),sbar.e() +sp.e());
@@ -87,37 +82,34 @@ ScalarWaveFunction FFSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   Complex fact=getNorm()*propagator(iopt,p2,out);
   Complex output;
   // low energy conventions
-  if(sp.Wave().Rep()==HaberDRep&&sbar.Wave().Rep()==HaberDRep)
-    {
-      output = _left*( (sbar.s1()-sbar.s3())*(sp.s1()-sp.s3())
-		       +(sbar.s2()-sbar.s4())*(sp.s2()-sp.s4()))
-	+_right*( (sbar.s1()+sbar.s3())*(sp.s1()+sp.s3())
-		  +(sbar.s2()+sbar.s4())*(sp.s2()+sp.s4()));
-      output=0.5*output;
-    }
+  if(sp.wave().Rep()==HaberDRep&&sbar.wave().Rep()==HaberDRep) {
+    output = _left*( (sbar.s1()-sbar.s3())*(sp.s1()-sp.s3())
+          	    +(sbar.s2()-sbar.s4())*(sp.s2()-sp.s4()))
+           +_right*( (sbar.s1()+sbar.s3())*(sp.s1()+sp.s3())
+		    +(sbar.s2()+sbar.s4())*(sp.s2()+sp.s4()));
+    output*=0.5;
+  }
   // high energy conventions
-  else if(sp.Wave().Rep()==HELASDRep&&sbar.Wave().Rep()==HELASDRep)
-    {
-      output =  _left*(sbar.s1()*sp.s1()+sbar.s2()*sp.s2())
-	+_right*(sbar.s3()*sp.s3()+sbar.s4()*sp.s4());
-    }
-  else
-    {
-      sp.Wave().changeRep(HELASDRep);
-      sbar.Wave().changeRep(HELASDRep);
-      output =  _left*(sbar.s1()*sp.s1()+sbar.s2()*sp.s2())
-	+_right*(sbar.s3()*sp.s3()+sbar.s4()*sp.s4());
-    }
+  else if(sp.wave().Rep()==HELASDRep&&sbar.wave().Rep()==HELASDRep) {
+    output =  _left*(sbar.s1()*sp.s1()+sbar.s2()*sp.s2())
+	    +_right*(sbar.s3()*sp.s3()+sbar.s4()*sp.s4());
+  }
+  else {
+    LorentzSpinor    spt  =sp  .wave().transformRep(HELASDRep);
+    LorentzSpinorBar sbart=sbar.wave().transformRep(HELASDRep);
+    output =  _left*(sbart.s1()*spt.s1()+sbart.s2()*spt.s2())
+            +_right*(sbart.s3()*spt.s3()+sbart.s4()*spt.s4());
+  }
   // final factors and output
-  output=output*fact;
+  output*=fact;
   return ScalarWaveFunction(pout,out,output);
 }
     
 // off-shell spinor
 SpinorWaveFunction FFSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
 				       const SpinorWaveFunction & sp,
-				       const ScalarWaveFunction & sca, DiracRep dirac)
-{
+				       const ScalarWaveFunction & sca,
+				       DiracRep dirac) {
   // work out the momentum of the off-shell particle
   Lorentz5Momentum pout = Lorentz5Momentum(sp.px()+sca.px(),sp.py()+sca.py(),
 					   sp.pz()+sca.pz(),sp.e() +sca.e() );
@@ -127,7 +119,7 @@ SpinorWaveFunction FFSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   // first calculate the couplings
   setCoupling(q2,Psp,Psca,out);
   double p2 = pout.m2();
-  Complex fact=-getNorm()*sca.Wave()*propagator(iopt,p2,out);
+  Complex fact=-getNorm()*sca.wave()*propagator(iopt,p2,out);
   Complex ii(0.,1.);
   // useful combinations of the momenta
   Energy  mass  = out->mass();
@@ -135,35 +127,33 @@ SpinorWaveFunction FFSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   Complex p1m2=pout.px()-ii*pout.py();
   Complex s1(0.),s2(0.),s3(0.),s4(0.);
   // ensure the spinor is in the correct dirac representation
-  sp.Wave().changeRep(dirac);
+  LorentzSpinor    spt  =sp.wave().transformRep(dirac);
   // low energy convention
-  if(dirac==HaberDRep)
-    {
-      fact = 0.5*fact;
-      Complex p0pm=pout.e()+mass;
-      Complex p0mm=pout.e()-mass;
-      Complex pz=pout.pz();
-      Complex lpr=_left+_right;
-      Complex lmr=_left-_right;
-      s1 = fact*( lpr*(sp.s1()*p0pm-  pz*sp.s3()-p1m2*sp.s4())
-		  +lmr*(  pz*sp.s1()+p1m2*sp.s2()-p0pm*sp.s3()));
-      s2 = fact*( lpr*(sp.s2()*p0pm-p1p2*sp.s3()+  pz*sp.s4())
-		  +lmr*(p1p2*sp.s1()-  pz*sp.s2()-p0pm*sp.s4()));
-      s3 =-fact*( lpr*(sp.s3()*p0mm-  pz*sp.s1()-p1m2*sp.s2())
-		  +lmr*(  pz*sp.s3()+p1m2*sp.s4()-p0mm*sp.s1()));
-      s4 =-fact*( lpr*(sp.s4()*p0mm-p1p2*sp.s1()+  pz*sp.s2())
-		  +lmr*(p1p2*sp.s3()-  pz*sp.s4()-p0mm*sp.s2()));
-    }
+  if(dirac==HaberDRep) {
+    fact *= 0.5;
+    Complex p0pm=pout.e()+mass;
+    Complex p0mm=pout.e()-mass;
+    Complex pz=pout.pz();
+    Complex lpr=_left+_right;
+    Complex lmr=_left-_right;
+    s1 = fact*( lpr*(spt.s1()*p0pm-  pz*spt.s3()-p1m2*spt.s4())
+	       +lmr*(  pz*spt.s1()+p1m2*spt.s2()-p0pm*spt.s3()));
+    s2 = fact*( lpr*(spt.s2()*p0pm-p1p2*spt.s3()+  pz*spt.s4())
+	       +lmr*(p1p2*spt.s1()-  pz*spt.s2()-p0pm*spt.s4()));
+    s3 =-fact*( lpr*(spt.s3()*p0mm-  pz*spt.s1()-p1m2*spt.s2())
+	       +lmr*(  pz*spt.s3()+p1m2*spt.s4()-p0mm*spt.s1()));
+    s4 =-fact*( lpr*(spt.s4()*p0mm-p1p2*spt.s1()+  pz*spt.s2())
+	       +lmr*(p1p2*spt.s3()-  pz*spt.s4()-p0mm*spt.s2()));
+  }
   // high energy convention
-  else if(dirac==HELASDRep)
-    {
-      Complex p0p3=pout.e()+pout.pz();
-      Complex p0m3=pout.e()-pout.pz();
-      s1 = fact*( _left*mass*sp.s1()+_right*(p0m3*sp.s3()-p1m2*sp.s4()));
-      s2 = fact*( _left*mass*sp.s2()+_right*(p0p3*sp.s4()-p1p2*sp.s3()));
-      s3 = fact*(_right*mass*sp.s3()+ _left*(p0p3*sp.s1()+p1m2*sp.s2()));
-      s4 = fact*(_right*mass*sp.s4()+ _left*(p0m3*sp.s2()+p1p2*sp.s1()));
-    }
+  else if(dirac==HELASDRep) {
+    Complex p0p3=pout.e()+pout.pz();
+    Complex p0m3=pout.e()-pout.pz();
+    s1 = fact*( _left*mass*spt.s1()+_right*(p0m3*spt.s3()-p1m2*spt.s4()));
+    s2 = fact*( _left*mass*spt.s2()+_right*(p0p3*spt.s4()-p1p2*spt.s3()));
+    s3 = fact*(_right*mass*spt.s3()+ _left*(p0p3*spt.s1()+p1m2*spt.s2()));
+    s4 = fact*(_right*mass*spt.s4()+ _left*(p0m3*spt.s2()+p1p2*spt.s1()));
+  }
   return SpinorWaveFunction(pout,out,s1,s2,s3,s4,dirac);
 }
 
@@ -171,8 +161,7 @@ SpinorWaveFunction FFSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
 SpinorBarWaveFunction FFSVertex::evaluate(Energy q2,int iopt,tcPDPtr out,
 					  const SpinorBarWaveFunction & sbar,
 					  const ScalarWaveFunction & sca,
-					  DiracRep dirac)
-{
+					  DiracRep dirac) {
   // work out the momentum of the off-shell particle
   Lorentz5Momentum pout = Lorentz5Momentum(sbar.px()+sca.px(),sbar.py()+sca.py(),
 					   sbar.pz()+sca.pz(),sbar.e() +sca.e());
@@ -182,7 +171,7 @@ SpinorBarWaveFunction FFSVertex::evaluate(Energy q2,int iopt,tcPDPtr out,
   // first calculate the couplings
   setCoupling(q2,out,Psca,Psbar);
   Energy2 p2=pout.m2();
-  Complex fact=-getNorm()*sca.Wave()*propagator(iopt,p2,out);
+  Complex fact=-getNorm()*sca.wave()*propagator(iopt,p2,out);
   Complex ii(0.,1.);
   // momentum components
   Energy mass  = out->mass();
@@ -191,7 +180,7 @@ SpinorBarWaveFunction FFSVertex::evaluate(Energy q2,int iopt,tcPDPtr out,
   // complex numbers for the spinor
   Complex s1(0.),s2(0.),s3(0.),s4(0.);
   // ensure the spinorbar is in the correct dirac representation
-  sbar.Wave().changeRep(dirac);
+  LorentzSpinorBar sbart=sbar.wave().transformRep(dirac);
   // low energy convention
   if(dirac==HaberDRep)
     {
@@ -201,24 +190,24 @@ SpinorBarWaveFunction FFSVertex::evaluate(Energy q2,int iopt,tcPDPtr out,
       Complex pz=pout.pz();
       Complex lpr=_left+_right;
       Complex lmr=_left-_right;
-      s1 = fact*(-lpr*(p0mm*sbar.s1()+  pz*sbar.s3()+p1p2*sbar.s4())
-		 +lmr*(  pz*sbar.s1()+p1p2*sbar.s2()+p0mm*sbar.s3()));
-      s2 = fact*(-lpr*(p0mm*sbar.s2()+p1m2*sbar.s3()-  pz*sbar.s4())
-		 +lmr*(p1m2*sbar.s1()-  pz*sbar.s2()+p0mm*sbar.s4()));
-      s3 = fact*(+lpr*(p0pm*sbar.s3()+  pz*sbar.s1()+p1p2*sbar.s2())
-		 -lmr*(  pz*sbar.s3()+p1p2*sbar.s4()-p0pm*sbar.s1()));
-      s4 = fact*(+lpr*(p0pm*sbar.s4()+p1m2*sbar.s1()-  pz*sbar.s2())
-		 -lmr*(p1m2*sbar.s3()-  pz*sbar.s4()-p0pm*sbar.s2()));
+      s1 = fact*(-lpr*(p0mm*sbart.s1()+  pz*sbart.s3()+p1p2*sbart.s4())
+		 +lmr*(  pz*sbart.s1()+p1p2*sbart.s2()+p0mm*sbart.s3()));
+      s2 = fact*(-lpr*(p0mm*sbart.s2()+p1m2*sbart.s3()-  pz*sbart.s4())
+		 +lmr*(p1m2*sbart.s1()-  pz*sbart.s2()+p0mm*sbart.s4()));
+      s3 = fact*(+lpr*(p0pm*sbart.s3()+  pz*sbart.s1()+p1p2*sbart.s2())
+		 -lmr*(  pz*sbart.s3()+p1p2*sbart.s4()-p0pm*sbart.s1()));
+      s4 = fact*(+lpr*(p0pm*sbart.s4()+p1m2*sbart.s1()-  pz*sbart.s2())
+		 -lmr*(p1m2*sbart.s3()-  pz*sbart.s4()-p0pm*sbart.s2()));
     }
   // high energy convention
   else if(dirac==HELASDRep)
     {
       Complex p0p3=pout.e() +   pout.pz();
       Complex p0m3=pout.e() -   pout.pz();
-      s1 = fact*( mass*_left*sbar.s1()-_right*(p0p3*sbar.s3()+p1p2*sbar.s4()));
-      s2 = fact*( mass*_left*sbar.s2()-_right*(p1m2*sbar.s3()+p0m3*sbar.s4()));
-      s3 = fact*(mass*_right*sbar.s3()- _left*(p0m3*sbar.s1()-p1p2*sbar.s2()));
-      s4 = fact*(mass*_right*sbar.s4()+ _left*(p1m2*sbar.s1()-p0p3*sbar.s2()));
+      s1 = fact*( mass*_left*sbart.s1()-_right*(p0p3*sbart.s3()+p1p2*sbart.s4()));
+      s2 = fact*( mass*_left*sbart.s2()-_right*(p1m2*sbart.s3()+p0m3*sbart.s4()));
+      s3 = fact*(mass*_right*sbart.s3()- _left*(p0m3*sbart.s1()-p1p2*sbart.s2()));
+      s4 = fact*(mass*_right*sbart.s4()+ _left*(p1m2*sbart.s1()-p0p3*sbart.s2()));
     }
   return SpinorBarWaveFunction(pout,out,s1,s2,s3,s4,dirac);
 }    

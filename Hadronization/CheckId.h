@@ -6,6 +6,7 @@
 // This is the declaration of the CheckId class.
 
 #include "Herwig++/Config/Herwig.h"
+#include "ThePEG/PDT/StandardMatchers.h"
 #include <ThePEG/PDT/EnumParticles.h>
 
 
@@ -13,7 +14,7 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/** \ingroup Utilities
+/** \ingroup Hadronization
  *
  *  This is a pure static class which provides some useful methods
  *  for checking the PDG id of particles.
@@ -36,41 +37,11 @@ class CheckId {
 public:
   
   /**
-   * Return true if the id corresponds to a quark or antiquark; 
-   * false otherwise.
-   */
-  static inline bool isQuark(const long id);
-  
-  /**
-   * Return true if the id corresponds to a diquark or anti-diquark; 
-   * false otherwise.
-   */
-  static inline bool isDiquark(const long id);
-  
-  /**
    * Return the id of the diquark (anti-diquark) made by the two 
    * quarks (antiquarks) of id specified in input (id1, id2).
    * Return 0 if something goes wrong. 
    */
   static long diquarkId(const long id1, const long id2);
-  
-  /**
-   * Return true if the id corresponds to a diquark or anti-diquark 
-   * carrying b flavour; false otherwise.
-   */
-  static inline bool isDiquarkWithB(const long id);
-  
-  /**
-   * Return true if the id corresponds to a diquark or anti-diquark 
-   * carrying c flavour; false otherwise.
-   */
-  static inline bool isDiquarkWithC(const long id);
-  
-  /**
-   * Return true if the id corresponds to a diquark or anti-diquark 
-   * carrying s flavour; false otherwise.
-   */
-  static inline bool isDiquarkWithS(const long id);
   
   /**
    * Return true if the two ids in input can be the components of a meson;
@@ -83,16 +54,6 @@ public:
    * of a baryon; false otherwise.
    */
   static bool canBeBaryon(const long id1, const long id2, const long id3=0);
-  
-  /**
-   * Return true if the id corresponds to a meson.
-   */
-  static inline bool isMeson(const long id);
-  
-  /**
-   * Return true if the id corresponds to a baryon.
-   */
-  static inline bool isBaryon(const long id);
   
   /**
    * Return true if any of the possible three input ids has b-flavour; 
@@ -112,32 +73,20 @@ public:
    */
   static bool hasCharm(const long id1, const long id2=0, const long id3=0);
   
-  /**
-   * Return true if any of the possible three input ids has s-flavour; 
-   * false otherwise.  
-   */
-  static bool hasStrangeness(const long id1, const long id2=0, const long id3=0);
+private:
   
   /**
-   * Return true if the input has a single strange quark for a meson.
-   * You have to use this method in the case of
-   * a meson: notice that it needs in input a flat random number between 
-   * 0 and 1 (rnd) which used to deal with the case of Octet-Singlet 
-   * isoscalar mixing (that is  u ubar, d dbar, s sbar  admixtures).
+   * Return true if the id corresponds to a diquark or anti-diquark 
+   * carrying b flavour; false otherwise.
    */
-  static bool hasStrangeness(const long id, const double rnd);
+  static inline bool isDiquarkWithB(const long id);
   
   /**
-   * Return the probability of mixing for Octet-Singlet isoscalar mixing.
-   * The angleMix is in degree (not radiant) and order is: 
-   *   0 in the case of no mixing resonance (and the returned probability is 1); 
-   *   1 for the first resonance of the pair; 
-   *   2 for the second one. 
-   * For instance, in the case of eta-eta' mixing:
-   * angleMix = -23, order = 1 for eta, order = 2 for eta'.
+   * Return true if the id corresponds to a diquark or anti-diquark 
+   * carrying c flavour; false otherwise.
    */
-  static double probabilityMixing(const double angleMix, const int order);
-  
+  static inline bool isDiquarkWithC(const long id);
+
 private:
   
   /**

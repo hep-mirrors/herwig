@@ -15,7 +15,7 @@ create Herwig++::ColourReconnector theColourReconnector
 create Herwig++::ClusterFissioner theClusterFissioner
 create Herwig++::LightClusterDecayer theLightClusterDecayer
 create Herwig++::ClusterDecayer theClusterDecayer
-create Herwig++::HadronSelector theHadronSelector
+create Herwig++::HwppSelector theHadronSelector
 create Herwig++::PartonicHadronizer PartonicHadronizer
 create Herwig++::ForcedSplitting theForcedSplitting
 
@@ -67,5 +67,5 @@ set theHadronSelector:PwtBquark  1.0
 set theHadronSelector:PwtDIquark 0.55
 set theHadronSelector:SngWt      1.0
 set theHadronSelector:DecWt      0.7
-set theHadronSelector:DKMode 2
+set theHadronSelector:Mode 1
 

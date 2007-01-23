@@ -323,7 +323,7 @@ public:
   /**
    * return wavefunction as LorentzRSSpinor
    */
-  inline LorentzRSSpinor Wave() const;
+  inline const LorentzRSSpinor & wave() const;
 
   /**
    * Get first spinor component for the x vector

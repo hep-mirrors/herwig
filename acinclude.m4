@@ -195,3 +195,33 @@ fi
 AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
 AC_SUBST(HERWIG_PDF_DEFAULT)
 ])
+
+AC_DEFUN([AC_CHECK_EVTGEN],
+[
+AC_MSG_CHECKING([for EVTGEN])
+AC_ARG_WITH(evtgen,
+        AC_HELP_STRING([--with-evtgen=path],[installation path of EvtGen]),
+        [],
+        [
+		with_evtgen=no
+	])
+
+EVTGENPATH=
+
+if test "x$with_evtgen" = "xno"; then
+	AC_MSG_RESULT([not required])
+else
+	AC_MSG_RESULT([$with_evtgen])
+	tmpcxxflags=$CXXFLAGS
+	CXXFLAGS="$CXXFLAGS -L${with_evtgen}/lib"
+	AC_CHECK_LIB([EvtGen],[abort],
+		[],
+		[
+			AC_MSG_ERROR([libEvtGen could not be found at ${with_evtgen}/lib])
+		])
+	CXXFLAGS=$tmpcxxflags
+	EVTGENPATH=$with_evtgen
+fi
+AM_CONDITIONAL(WANT_EVTGEN,[test "x$with_evtgen" != "xno"])
+AC_SUBST(EVTGENPATH)
+])

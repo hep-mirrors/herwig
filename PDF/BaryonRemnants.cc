@@ -46,7 +46,7 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
 					  const LorentzMomentum &parent) 
   const {
   
-  LorentzMomentum p(0.0, 0.0, parent.rho(), parent.e());
+  LorentzMomentum p(0*GeV, 0*GeV, parent.rho(), parent.e());
   // set the weight for the remnant
   pb.remnantWeight(1.0);
   // set an empty remnant info as this feature of ThePEG is useless
@@ -56,7 +56,7 @@ Lorentz5Momentum BaryonRemnants::generate(PartonBinInstance & pb,
   }
   // calculate the momentum of the extracted parton
   double x = pb.xi();
-  p = LorentzMomentum(0.0, 0.0, parent.rho(), parent.e());
+  p = LorentzMomentum(0*GeV, 0*GeV, parent.rho(), parent.e());
   p = parent*x;
   // create the remnant
   PPtr remnant=new_ptr(Remnant(pb,parent-p));

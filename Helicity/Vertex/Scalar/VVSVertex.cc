@@ -41,7 +41,7 @@ Complex VVSVertex::evaluate(Energy2 q2,const VectorWaveFunction & vec1,
   Complex norm=getNorm();
   Complex ii(0.,1.);
   // evaluate the vertex
-  Complex vertex = ii*norm*sca.Wave()*
+  Complex vertex = ii*norm*sca.wave()*
     (vec1.t()*vec2.t()-vec1.x()*vec2.x()-vec1.y()*vec2.y()-vec1.z()*vec2.z());
   return vertex;
 }
@@ -63,35 +63,32 @@ VectorWaveFunction VVSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   Energy2 p2=pout.m2();
   Energy mass = out->mass();
   Energy2 mass2=mass*mass;
-  Complex fact=getNorm()*sca.Wave()*propagator(iopt,p2,out);
+  Complex fact=getNorm()*sca.wave()*propagator(iopt,p2,out);
   // evaluate the wavefunction
   Complex vect[4];
   // massless case
-  if(mass==0.)
-    {
-      vect[0] = fact*vec.x();
-      vect[1] = fact*vec.y();
-      vect[2] = fact*vec.z();
-      vect[3] = fact*vec.t();
-    }
+  if(mass==0.) {
+    vect[0] = fact*vec.x();
+    vect[1] = fact*vec.y();
+    vect[2] = fact*vec.z();
+    vect[3] = fact*vec.t();
+  }
   // massive case
-  else
-    {
-      Complex dot = (+vec.t()*pout.e() -vec.x()*pout.px()
-		     -vec.y()*pout.py()-vec.z()*pout.pz())/mass2;
-      vect[0] = fact*(vec.x()-dot*pout.px());
-      vect[1] = fact*(vec.y()-dot*pout.py());
-      vect[2] = fact*(vec.z()-dot*pout.pz());
-      vect[3] = fact*(vec.t()-dot*pout.e());
-    }
+  else {
+    Complex dot = (+vec.t()*pout.e() -vec.x()*pout.px()
+		   -vec.y()*pout.py()-vec.z()*pout.pz())/mass2;
+    vect[0] = fact*(vec.x()-dot*pout.px());
+    vect[1] = fact*(vec.y()-dot*pout.py());
+    vect[2] = fact*(vec.z()-dot*pout.pz());
+    vect[3] = fact*(vec.t()-dot*pout.e());
+  }
   return VectorWaveFunction(pout,out,vect[0],vect[1],vect[2],vect[3]);
 }
 
 // off-shell scalar
 ScalarWaveFunction VVSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out, 
 				       const VectorWaveFunction & vec1,
-				       const VectorWaveFunction & vec2)
-{
+				       const VectorWaveFunction & vec2) {
   // pointer to the particle data objects
   tcPDPtr Pvec1 = vec1.getParticle();
   tcPDPtr Pvec2 = vec2.getParticle();
