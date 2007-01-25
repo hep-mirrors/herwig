@@ -34,7 +34,7 @@ using ThePEG::Helicity::tcSpinfoPtr;
 using ThePEG::Helicity::SpinfoPtr;
 
 void HwDecayHandler::
-handle(EventHandler & ch, const tPVector & tagged,
+handle(EventHandler &, const tPVector & tagged,
        const Hint &) throw(Veto, Stop, Exception) {
   // First go through the tagged particles for unstable ones
   Timer<46> timer("HwDecayHandler::handle");
@@ -57,9 +57,9 @@ handle(EventHandler & ch, const tPVector & tagged,
     }
   if(parents.empty()) return;
   // Create a new step, decay all particles and add their children to the step
-  tStepPtr newStep = ch.newStep();
+  StepPtr newstep = newStep();
   for(int i = 0, N = parents.size(); i<N; ++i)
-    {performDecay(newStep->find(parents[i]), *newStep);}
+    {performDecay(newstep->find(parents[i]), *newstep);}
 }
 
 

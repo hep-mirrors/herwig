@@ -159,13 +159,13 @@ void ClusterHadronizationHandler::
 handle(EventHandler & ch, const tPVector & tagged,
        const Hint &) throw(Veto, Stop, Exception) {
   ClusterVector clusters;
-  StepPtr pstep = ch.newStep();
+  StepPtr pstep = newStep();
   // split the remnants if needed
   tPVector partonsA=_forcedSplitter->split(tagged,pstep);
   // split the gluons
   tPVector partons=_partonSplitter->split(partonsA,pstep);
-  // form the clusters
-  pstep = ch.newStep();
+  // force a new step to form the clusters
+  pstep = ch.newStep(this);
   _clusterFinder->formClusters(ch.currentCollision(),pstep,partons,clusters); 
   _clusterFinder->reduceToTwoComponents(pstep,clusters); 
   // perform colour reconnection if needed and then
@@ -173,10 +173,12 @@ handle(EventHandler & ch, const tPVector & tagged,
   bool lightOK = false;
   short tried = 0;
   while (!lightOK && tried++ < 10) {
-    pstep = ch.newStep();
+    // force a new step that can be erased
+    pstep = ch.newStep(this);
     _colourReconnector->rearrange(ch,pstep,clusters);
     _clusterFissioner->fission(pstep, isSoftUnderlyingEventON());
-    pstep = ch.newStep();
+    // force a new step that can be erased
+    pstep = ch.newStep(this);
     lightOK = _lightClusterDecayer->decay(pstep);
     if (!lightOK) {
       ch.popStep(); 

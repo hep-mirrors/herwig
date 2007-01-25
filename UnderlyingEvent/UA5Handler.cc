@@ -319,7 +319,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   useMe();
   Timer<10000> timer("UA5Handler::handle()");
   // create a new step for the products
-  StepPtr newStep = ch.newStep();
+  StepPtr newstep = newStep();
   // Constants that should not need changing. This corresponds to ~1fm
   static const Length vclx = 4e-12; 
   static const Length vcly = 4e-12; 
@@ -354,7 +354,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 	int totalcharge(0),numbercharge(0);
 	for(unsigned int ix=0;ix<cluster->children().size();++ix)
 	  {performDecay(cluster->children()[ix],totalcharge,numbercharge);}
-	insertParticle(cluster,newStep,false);
+	insertParticle(cluster,newstep,false);
       }
       // don't to the rest
       return;
@@ -460,7 +460,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
       int totalcharge(0),numbercharge(0);
       for(unsigned int ix=0;ix<cluster->children().size();++ix)
 	{performDecay(cluster->children()[ix],totalcharge,numbercharge);}
-      insertParticle(cluster,newStep,false);
+      insertParticle(cluster,newstep,false);
     }
     // don't to the rest
     return;
@@ -471,10 +471,10 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   for(unsigned int ix=0;ix<clusters.size();++ix) {
     clu[0]->addChild(clusters[ix]);
     clu[1]->addChild(clusters[ix]);
-    newStep->addDecayProduct(clusters[ix]);
+    newstep->addDecayProduct(clusters[ix]);
   }
   for(unsigned int ix=0;ix<clusters.size();++ix) {
-    insertParticle(clusters[ix],newStep,false);
+    insertParticle(clusters[ix],newstep,false);
   }
 }
 
