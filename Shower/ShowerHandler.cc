@@ -120,7 +120,7 @@ void ShowerHandler::Init() {
 
 void ShowerHandler::fillEventRecord() {
   // create a new step 
-  StepPtr pstep = eventHandler()->newStep();
+  StepPtr pstep = newStep();
   if(_done.empty()) throw Exception() << "Must have some showers to insert in "
 				      << "ShowerHandler::fillEventRecord()" 
 				      << Exception::runerror;
