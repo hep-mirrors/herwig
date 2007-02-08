@@ -1,0 +1,35 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HepMCFile class.
+//
+
+namespace Herwig {
+
+inline HepMCFile::HepMCFile() : _eventNumber(1) {}
+
+// cannot copy streams!
+inline HepMCFile::HepMCFile(const HepMCFile & x) 
+  : AnalysisHandler(x), _eventNumber(x._eventNumber), _hepmcfile() {}
+
+inline IBPtr HepMCFile::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr HepMCFile::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void HepMCFile::doinitrun() {
+  AnalysisHandler::doinitrun();
+  string filename = generator()->filename() + ".hepmc";
+  _hepmcfile.open(filename.c_str());
+}
+
+inline void HepMCFile::dofinish() {
+  _hepmcfile.close();
+  AnalysisHandler::dofinish();
+  cout << "\nHepMCFile: generated HepMC output.\n";
+}
+
+}

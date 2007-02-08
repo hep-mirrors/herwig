@@ -4,6 +4,7 @@ create Herwig++::BasicConsistency /Defaults/Handlers/Analysis/Basics
 create Herwig++::MultiplicityCount /Defaults/Handlers/Analysis/Multiplicity
 create Herwig++::GraphvizPlot /Defaults/Handlers/Analysis/Plot
 
+
 insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Multiplicity
 #insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Plot
@@ -14,3 +15,9 @@ create Herwig++::SimpleLHCAnalysis /Defaults/Handlers/Analysis/SimpleLHC
 insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/SimpleLHC
 #insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Plot
+
+
+create Herwig++::HepMCFile /Defaults/Handlers/Analysis/HepMCFile
+set /Defaults/Handlers/Analysis/HepMCFile:PrintEvent 100
+
+#insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HepMCFile

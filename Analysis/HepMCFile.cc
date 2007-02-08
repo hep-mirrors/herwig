@@ -1,0 +1,66 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the HepMCFile class.
+//
+
+#include "HepMCFile.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/EventRecord/Event.h"
+#ifdef ThePEG_TEMPLATES_IN_CC_FILE
+// #include "HepMCFile.tcc"
+#endif
+#include "ThePEG/Repository/EventGenerator.h"
+
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+
+#include "ThePEG/CLHEPWrap/HepMCConverter.h"
+#include "CLHEP/HepMC/GenEvent.h"
+
+
+using namespace Herwig;
+using namespace ThePEG;
+
+namespace ThePEG {
+template<> 
+struct HepMCTraits<HepMC::GenEvent> 
+  : public HepMCTraitsBase<HepMC::GenEvent,
+			   HepMC::GenParticle,
+			   HepMC::GenVertex,
+			   HepMC::Polarization> 
+{};
+}
+
+void HepMCFile::analyze(tEventPtr event, long, int, int) {
+  if (event->number() > _eventNumber) return;
+  HepMC::GenEvent * hepmc = HepMCConverter<HepMC::GenEvent>::convert(*event);
+  hepmc->print(_hepmcfile);
+  delete hepmc;
+}
+
+void HepMCFile::persistentOutput(PersistentOStream & os) const {
+  os << _eventNumber;
+}
+
+void HepMCFile::persistentInput(PersistentIStream & is, int) {
+  is >> _eventNumber;
+}
+
+
+ClassDescription<HepMCFile> HepMCFile::initHepMCFile;
+// Definition of the static class description member.
+
+void HepMCFile::Init() {
+
+  static ClassDocumentation<HepMCFile> documentation
+    ("There is no documentation for the HepMCFile class");
+
+  static Parameter<HepMCFile,long> interfacePrintEvent
+    ("PrintEvent",
+     "The number of events that should be printed.",
+     &HepMCFile::_eventNumber, 1, 1, 1,
+     false, false, Interface::lowerlim);
+}
+

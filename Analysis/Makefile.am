@@ -22,7 +22,8 @@ GammaJetAnalysis.h GammaJetAnalysis.fh \
 GammaJetAnalysis.icc GammaJetAnalysis.cc\
 HiggsJetAnalysis.h HiggsJetAnalysis.fh \
 HiggsJetAnalysis.icc HiggsJetAnalysis.cc\
-GraphvizPlot.h GraphvizPlot.fh GraphvizPlot.icc GraphvizPlot.cc
+GraphvizPlot.h GraphvizPlot.fh GraphvizPlot.icc GraphvizPlot.cc \
+HepMCFile.h HepMCFile.icc HepMCFile.cc
 
 HwLEPAnalysis_la_LDFLAGS = -module
 HwLEPAnalysis_la_SOURCES = \
