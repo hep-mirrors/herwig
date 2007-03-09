@@ -32,6 +32,10 @@ public:
    *  Member to perform the shower
    */
   //@{
+  /**
+   * Perform the shower of the hard process
+   */
+  virtual void showerHardProcess(ShowerTreePtr);
 
   /**
    * Perform the shower of a decay

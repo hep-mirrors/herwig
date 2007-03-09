@@ -52,6 +52,18 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
 
 }
 
+void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
+  // set the tree
+  currentTree(tree);
+  // set up the shower
+  setupShower(false);
+  cerr << "testing in nason hard shower\n";
+  exit(0);
+
+
+
+}
+
 vector<ShowerProgenitorPtr> NasonEvolver::setupShower(bool hard) {
   // set the colour partners
   setColourPartners(hard);
