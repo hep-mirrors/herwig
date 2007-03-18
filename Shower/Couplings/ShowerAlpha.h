@@ -73,7 +73,7 @@ public:
   virtual double overestimateValue() const = 0;
 
   /**
-   *  Virtual method which returns the ratrio of the running alpha
+   *  Virtual method which returns the ratio of the running alpha
    * value at the input scale to the overestimated value.
    * @param scale The scale
    * @return The ratio
