@@ -41,27 +41,23 @@ void NasonEvolver::Init() {
 }
 
 void NasonEvolver::showerDecay(ShowerTreePtr tree) {
+  //cerr << "testing in nason decay shower\n";
   // set the tree
   currentTree(tree);
   // set up the shower
   setupShower(false);
-  cerr << "testing in nason decay shower\n";
-  exit(0);
+  //exit(0);
 
 
 
 }
 
 void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
+  //cerr << "testing in nason hard shower\n";
   // set the tree
   currentTree(tree);
   // set up the shower
-  setupShower(false);
-  cerr << "testing in nason hard shower\n";
-  exit(0);
-
-
-
+  setupShower(true);
 }
 
 vector<ShowerProgenitorPtr> NasonEvolver::setupShower(bool hard) {
@@ -93,7 +89,6 @@ vector<ShowerProgenitorPtr> NasonEvolver::setupShower(bool hard) {
 void NasonEvolver::hardestEmission() {
   // see if there is an appropriate hard emission generator
   HardestEmissionGeneratorPtr currenthard=HardestEmissionGeneratorPtr();
-  cerr << "testing before loop " << _hardgenerator.size() << "\n";
   for(unsigned int ix=0;ix<_hardgenerator.size();++ix) {
     if(!_hardgenerator[ix]->canHandle(currentTree())) continue;
     if(currenthard) {

@@ -14,6 +14,7 @@
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
 #include "pTSudakov.h"
+#include "NasonTree.h"
 
 using namespace Herwig;
 
@@ -89,12 +90,7 @@ void DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
   for(cjt=tree->outgoingLines().begin();
       cjt!=tree->outgoingLines().end();++cjt)
     particlesToShower.push_back((*cjt).first);
-
-
-
-
-  throw Exception() << "In generate DefaultEmissionGenerator::generateHard" 
-		    << Exception::abortnow;
+  return;
 }
 
 void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
@@ -117,11 +113,7 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   Branching happens;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
-    cerr << "testing particle " << *particlesToShower[ix]->progenitor() << "\n";
     Branching newbranch=chooseForwardBranching(*particlesToShower[ix]->progenitor());
-    if(newbranch.kinematics) {
-      cerr << "testing pt " << newbranch.kinematics->pT() << "\n";
-    }
     if(newbranch.kinematics&&newbranch.kinematics->pT()>ptmax) {
       ptmax=newbranch.kinematics->pT();
       imax=ix;
@@ -129,10 +121,6 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
     }
   }
   if(!happens.kinematics) return;
-
-  cerr << "testing emitter" << *particlesToShower[imax]->progenitor() << "\n";
-  cerr << "testing pt " << happens.kinematics->pT() << "\n";
-
   // generate the emission
   ShowerParticlePtr emitter   = particlesToShower[imax]->progenitor();
   ShowerParticlePtr spectator = emitter->partners()[ShowerIndex::QCD];
@@ -148,9 +136,6 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   double lam(2.*n.e()/q.mass());
   n.boost(-boost);
   pt.boost(-boost);
-  cerr << "testing n  " << n  << "\n";
-  cerr << "testing pt " << pt << "\n";
-  cerr << "testing dot " << n*pt << "\n";
   double z(happens.kinematics->z());
   double b(sqr(p.mass()/q.mass())),c(sqr(ppartner.mass()/q.mass()));
   double kappa(sqr(happens.kinematics->pT()/q.mass()));
@@ -164,31 +149,71 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   Lorentz5Momentum pb(alphab*p+betab*n-pt);
   Lorentz5Momentum pc(alphac*p+betac*n);
   Lorentz5Momentum pg(alphag*p+betag*n+pt);
-
-  PPtr newemitter   = getParticleData(happens.ids[1])->produceParticle(pb);
-  PPtr emitted      = getParticleData(happens.ids[2])->produceParticle(pg);
-  PPtr newspectator = spectator->dataPtr()           ->produceParticle(pc);
-
-
-
-
-
-
-
-
-
-  cerr << pb << " " << pb.m() << "\n";
-  cerr << pc << " " << pc.m() << "\n";
-  cerr << pg << " " << pg.m() << "\n";
-
-  cerr << "testing sum " << pb+pc+pg << " " << (pb+pc+pg).m() << "\n";
-
-  // set the momenta
-
-
+  // copy all the particles to make the NasonTree
+  map<ColinePtr,ColinePtr> colourmap;
+  vector<ShowerParticlePtr> newparticles;
+  map<ColinePtr,ColinePtr>::iterator lineit;
+  unsigned int iemit(0),ispect(0);
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    // extract the particle
+    tShowerParticlePtr part=particlesToShower[ix]->progenitor();
+    // check if emitter or spectator
+    if(part==spectator) ispect=ix;
+    if(part==emitter  ) iemit =ix;
+    // make a copy of the particle with same momenta but no record
+    newparticles.push_back(new_ptr(ShowerParticle(part->dataPtr(),
+						  part->isFinalState())));
+    newparticles[ix]->set5Momentum(part->momentum());
+    // set the colour lines
+    if(part->colourLine()) {
+      lineit=colourmap.find(part->colourLine());
+      if(lineit==colourmap.end()) 
+	colourmap[part->colourLine()]=new_ptr(ColourLine());
+      colourmap[part->colourLine()]->addColoured(newparticles[ix]);
+    }
+    if(part->antiColourLine()) {
+      lineit=colourmap.find(part->antiColourLine());
+      if(lineit==colourmap.end())
+	colourmap[part->antiColourLine()]=new_ptr(ColourLine());
+      colourmap[part->antiColourLine()]->addAntiColoured(newparticles[ix]);
+    }
+  }
+  // now set the colour partners
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    tShowerParticlePtr partner=
+      particlesToShower[ix]->progenitor()->partners()[ShowerIndex::QCD];
+    if(partner) {
+      for(unsigned int iy=0;iy<particlesToShower.size();++iy) {
+	if(partner==particlesToShower[iy]->progenitor()) 
+	  newparticles[ix]->setPartner(ShowerIndex::QCD,newparticles[iy]);
+      }
+    }
+  }
+  // create the off-shell particle and particles produced in the branching
+  Lorentz5Momentum offshell(pb+pg);offshell.rescaleMass();
+  newparticles[iemit ]->set5Momentum(offshell);
+  newparticles[ispect]->set5Momentum(pc);
+  ShowerParticlePtr newemitter(new_ptr(ShowerParticle(getParticleData(happens.ids[1]),
+						      true)));
+  ShowerParticlePtr emitted(new_ptr(ShowerParticle(getParticleData(happens.ids[2]),
+						   true)));
+  emitted->set5Momentum(pg);
+  // create the NasonBranching objects
+  vector<NasonBranchingPtr> children;
+  children.push_back(new_ptr(NasonBranching(newemitter)));
+  children.push_back(new_ptr(NasonBranching(emitted)));
+  vector<NasonBranchingPtr> hard;
+  for(unsigned int ix=0;ix<newparticles.size();++ix) {
+    if(ix!=iemit) {
+      hard.push_back(new_ptr(NasonBranching(newparticles[ix])));
+    }
+    else {
+      hard.push_back(new_ptr(NasonBranching(newparticles[ix],false,children)));
+    }
+  }
+  // create the NasonTree
+  NasonTreePtr nasontree=new_ptr(NasonTree(hard));
   exit(1);
-  throw Exception() << "In generate DefaultEmissionGenerator::generateDecay" 
-		    << Exception::abortnow;
 }
 
 Branching DefaultEmissionGenerator::

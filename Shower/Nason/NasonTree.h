@@ -25,7 +25,7 @@ public:
   /**
    * The default constructor.
    */
-  inline NasonTree(ShowerTreePtr);
+  NasonTree(vector<NasonBranchingPtr>);
 
 private:
 
@@ -47,12 +47,20 @@ private:
  */
 class NasonBranching : public Base {
 
+  /**
+   *  The NasonTree is friend
+   */
+  friend class NasonTree;
+
 public:
 
   /**
    * The default constructor
+   * @param particle The particle which is branching
+   * @param children The branching products
    */
-  inline NasonBranching();
+  inline NasonBranching(ShowerParticlePtr particle,bool incoming=false,
+			vector<NasonBranchingPtr> children=vector<NasonBranchingPtr>());
   
 private:
 
@@ -65,6 +73,11 @@ private:
    *  The rescaled momentum
    */
   Lorentz5Momentum original;
+
+  /**
+   *  Whether the branching is incoming or outgoing
+   */
+  bool _incoming;
 
   /**
    *  Information on the Shower variables for the branching

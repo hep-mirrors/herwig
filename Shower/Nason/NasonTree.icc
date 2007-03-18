@@ -6,7 +6,9 @@
 
 namespace Herwig {
 
-inline NasonTree::NasonTree(ShowerTreePtr in) : _tree(in)
+inline NasonBranching::NasonBranching(ShowerParticlePtr particle,bool incoming,
+				      vector<NasonBranchingPtr> children) 
+  : _particle(particle), _incoming(incoming), _children(children)
 {}
 
 }
