@@ -7,5 +7,7 @@ HardestEmissionGenerator.icc HardestEmissionGenerator.cc \
 DefaultEmissionGenerator.h DefaultEmissionGenerator.fh \
 DefaultEmissionGenerator.icc DefaultEmissionGenerator.cc \
 pTSudakov.h pTSudakov.icc pTSudakov.fh pTSudakov.cc \
-NasonTree.h NasonTree.icc NasonTree.fh NasonTree.cc
+NasonTree.h NasonTree.icc NasonTree.fh NasonTree.cc\
+DrellYanHardGenerator.h DrellYanHardGenerator.fh \
+DrellYanHardGenerator.icc DrellYanHardGenerator.cc
 HwNasonShower_la_LDFLAGS = -module
