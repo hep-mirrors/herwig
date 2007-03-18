@@ -55,13 +55,11 @@ inline IBPtr Histogram::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void Histogram::operator+=(double input)
-{
+inline void Histogram::operator+=(double input) {
   addWeighted(input,1.0);
 }
 
-inline void Histogram::addWeighted(double input, double weight)
-{
+inline void Histogram::addWeighted(double input, double weight) {
   if(isnan(input)) return;
   unsigned int ibin;
   for(ibin=1; ibin<_bins.size(); ++ibin) {
@@ -70,6 +68,7 @@ inline void Histogram::addWeighted(double input, double weight)
   }
   _bins[ibin-1].contents   += weight;
   _bins[ibin-1].contentsSq += sqr(weight);
+  ++_bins[ibin-1].points;
   _globalStats += weight * input;
 }
 

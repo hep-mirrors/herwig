@@ -159,10 +159,87 @@ void Histogram::chiSquared(double & chisq,
     }
 }
 
-void Histogram::normaliseToCrossSection()
-{
+void Histogram::normaliseToCrossSection() {
   unsigned int numPoints = _globalStats.numberOfPoints();
   if (numPoints == 0) ++numPoints;
   _prefactor=CurrentGenerator::current().eventHandler()->histogramScale()*
     numPoints/nanobarn;
 }
+
+void Histogram::topdrawOutputAverage(ostream & out,
+			      bool frame,
+			      bool errorbars,
+			      bool xlog, bool ylog,
+			      string colour,
+			      string title,  string titlecase,
+			      string left,   string leftcase,
+			      string bottom, string bottomcase) const {
+  // output the title info if needed
+  if(frame) {
+    out << "NEW FRAME\n";
+    out << "SET FONT DUPLEX\n";
+    out << "TITLE TOP \""    << title     << "\"\n";
+    out << "CASE      \""    << titlecase << "\"\n";
+    out << "TITLE LEFT \""   << left      << "\"\n";
+    out << "CASE       \""   << leftcase  << "\"\n";
+    out << "TITLE BOTTOM \"" << bottom     << "\"\n";
+    out << "CASE        \""  << bottomcase << "\"\n";
+    if (errorbars) out << "SET ORDER X Y DX DY \n";
+    else out << "SET ORDER X Y DX\n";
+  }
+  // scales
+  if(xlog && frame) out << "SET SCALE X LOG " << endl;
+  if(ylog && frame) out << "SET SCALE Y LOG " << endl;
+  // set the x limits
+  
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+  if (xlog && frame) {
+    out << "SET LIMITS X " << _bins[1].limit << " " 
+	<< _bins[lastDataBinIndx+1].limit << endl;
+  }
+  // work out the y points
+  vector<double> yout;
+  double ymax=-9.8765e34,ymin=9.8765e34;
+  unsigned int numPoints = _globalStats.numberOfPoints();
+  if (numPoints == 0) ++numPoints;
+
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double value = _prefactor*_bins[ix].contents / _bins[ix].points;
+    yout.push_back(value);
+    ymax=max(ymax, max(value, _bins[ix].data+_bins[ix].dataerror) );
+    if(yout.back()>0.) ymin=min(ymin,value);
+    if(_bins[ix].data>0) ymin=min(ymin,_bins[ix].data);
+  }
+  if (ymin > 1e34)  ymin = 1e-34;
+  if (ymax < 1e-33) ymax = 1e-33;
+  if (ymax < 10*ymin) ymin = 0.1*ymax;
+  
+  if (ylog && frame) {
+    out << "SET LIMITS Y " << ymin << " " << ymax << endl;
+  }
+  // the histogram from the event generator
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    out << _bins[ix].limit+delta << '\t' << yout[ix-1] << '\t' << delta;
+    if (errorbars) {
+      out << '\t' << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
+    }
+    out << '\n';
+  }
+  out << "HIST " << colour << endl;
+  
+  if (_havedata) {
+    // the real experimental data
+    for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
+      {
+	double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+	out << _bins[ix].limit+delta << '\t' << _bins[ix].data << '\t' << delta;
+	if (errorbars) {
+	  out  << '\t' << _bins[ix].dataerror;
+	}
+	out << '\n';
+      }
+    out << "PLOT " << endl;
+  }
+}
+
