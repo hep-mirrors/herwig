@@ -17,7 +17,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 #include "ThePEG/CLHEPWrap/HepMCConverter.h"
-#include "CLHEP/HepMC/GenEvent.h"
+#include "HepMC/GenEvent.h"
 
 
 using namespace Herwig;
