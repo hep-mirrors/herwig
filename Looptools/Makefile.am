@@ -50,7 +50,7 @@ AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
 
-libHwLooptools_la_LDFLAGS =
+libHwLooptools_la_LDFLAGS = -version-info 2:0:0
 if NEED_APPLE_FIXES
 libHwLooptools_la_LDFLAGS += -Wl,-single_module
 endif

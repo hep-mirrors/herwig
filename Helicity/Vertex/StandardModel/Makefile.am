@@ -21,4 +21,4 @@ SMHGGVertex.cc SMHGGVertex.h SMHGGVertex.icc SMHGGVertex.fh \
 SMHPPVertex.cc SMHPPVertex.h SMHPPVertex.icc SMHPPVertex.fh
 endif
 
-HwSMVertex_la_LDFLAGS = -module
+HwSMVertex_la_LDFLAGS = -module -version-info 2:0:0

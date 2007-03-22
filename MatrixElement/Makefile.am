@@ -10,6 +10,6 @@ MEPP2HiggsJet.h MEPP2HiggsJet.icc MEPP2HiggsJet.fh MEPP2HiggsJet.cc\
 MEPP2GammaGamma.h MEPP2GammaGamma.icc MEPP2GammaGamma.fh MEPP2GammaGamma.cc \
 MEPP2QQ.h MEPP2QQ.icc MEPP2QQ.fh MEPP2QQ.cc\
 MEPP2Higgs.h MEPP2Higgs.icc MEPP2Higgs.fh MEPP2Higgs.cc
-HwME_la_LDFLAGS = -module
+HwME_la_LDFLAGS = -module -version-info 2:1:0
 
 

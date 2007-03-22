@@ -4,7 +4,7 @@ BaryonRemnants.cc BaryonRemnants.h BaryonRemnants.icc \
 MRST.cc MRST.h MRST.icc \
 PartonExtractor.h PartonExtractor.icc PartonExtractor.cc PartonExtractor.fh
 
-HwMRST_la_LDFLAGS = -module
+HwMRST_la_LDFLAGS = -module -version-info 2:0:0
 
 EXTRA_DIST = mrst
 

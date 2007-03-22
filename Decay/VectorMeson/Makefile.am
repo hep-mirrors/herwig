@@ -23,4 +23,4 @@ VectorMesonVectorScalarDecayer.cc VectorMesonVectorScalarDecayer.fh \
 VectorMesonVectorScalarDecayer.h VectorMesonVectorScalarDecayer.icc \
 VectorMesonVectorVectorDecayer.cc VectorMesonVectorVectorDecayer.fh \
 VectorMesonVectorVectorDecayer.h VectorMesonVectorVectorDecayer.icc
-HwVMDecay_la_LDFLAGS = -module
+HwVMDecay_la_LDFLAGS = -module -version-info 2:0:0

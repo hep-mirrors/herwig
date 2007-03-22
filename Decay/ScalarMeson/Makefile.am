@@ -21,4 +21,4 @@ SemiLeptonicScalarDecayer.h SemiLeptonicScalarDecayer.icc ScalarMesonFactorizedD
 ScalarMesonFactorizedDecayer.fh ScalarMesonFactorizedDecayer.h ScalarMesonFactorizedDecayer.icc \
 ScalarVectorVectorDecayer.h ScalarVectorVectorDecayer.icc \
 ScalarVectorVectorDecayer.cc ScalarVectorVectorDecayer.fh
-HwSMDecay_la_LDFLAGS = -module
+HwSMDecay_la_LDFLAGS = -module -version-info 2:0:0

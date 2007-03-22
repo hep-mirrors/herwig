@@ -51,9 +51,63 @@ AC_SUBST(CLHEPLDFLAGS)
 AC_SUBST(CLHEPINCLUDE)
 ])
 
+AC_DEFUN([AC_CHECK_HEPMC],
+[
+AC_REQUIRE([AC_CHECK_CLHEP])
+AC_MSG_CHECKING([for HepMC location])
+HEPMCINCLUDE=""
+HEPMCLIBS="-lHepMC"
+AC_ARG_WITH(HepMC,
+        AC_HELP_STRING([--with-HepMC=path],[location of HepMC installation]),
+        [],
+	[with_HepMC="CLHEP"])
+
+if test "x$with_HepMC" = "xno"; then
+	AC_MSG_RESULT([HepMC support disabled])
+else
+	if test "$with_HepMC" = "CLHEP"; then
+		if test -f "${CLHEPINCLUDE#-I}/CLHEP/HepMC/GenEvent.h"; then
+			AC_MSG_RESULT([part of CLHEP])
+			HEPMCINCLUDE=$CLHEPINCLUDE/CLHEP
+			HEPMCLIBS=""
+		else
+			AC_MSG_RESULT([not found in CLHEP])
+		fi
+	else
+		AC_MSG_RESULT([$with_HepMC])
+		HEPMCINCLUDE=-I$with_HepMC/include
+		HEPMCLIBS="-L$with_HepMC/lib -R$with_HepMC/lib -lHepMC"
+	fi
+
+	# Now lets see if the libraries work properly
+	oldLIBS="$LIBS"
+	oldLDFLAGS="$LDFLAGS"
+	oldCPPFLAGS="$CPPFLAGS"
+	LIBS="$LIBS $CLHEPLIB $HEPMCLIBS"
+	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
+	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE $HEPMCINCLUDE"
+
+	# check HepMC
+	AC_MSG_CHECKING([that HepMC works])
+	AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <HepMC/GenEvent.h>
+]],[[HepMC::GenEvent();]])],[AC_MSG_RESULT([yes])],[AC_MSG_RESULT([no]) 
+	AC_MSG_ERROR([Use '--with-HepMC=' to set a path or use '--without-HepMC'.])
+	])
+	
+	LIBS="$oldLIBS"
+	LDFLAGS="$oldLDFLAGS"
+	CPPFLAGS="$oldCPPFLAGS"
+fi
+
+
+AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_HepMC" != "xno"])
+AC_SUBST(HEPMCINCLUDE)
+AC_SUBST(HEPMCLIBS)
+])
 
 AC_DEFUN([AC_CHECK_THEPEG],
 [
+AC_REQUIRE([AC_CHECK_CLHEP])
 AC_MSG_CHECKING([for THEPEGPATH])
 if test -z "$THEPEGPATH"; then
   AC_MSG_RESULT([none])

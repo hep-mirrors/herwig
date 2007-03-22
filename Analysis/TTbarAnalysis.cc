@@ -20,12 +20,27 @@
 
 using namespace Herwig;
 
-TTbarAnalysis::~TTbarAnalysis() {}
-
 namespace {
-  inline Lorentz5Momentum getMomentum(tcPPtr particle) {
-    return particle->momentum();
-  } 
+
+  bool isLastInShower(const Particle & p) {
+    return p.children().size() > 1 
+      && p.children()[0]->id() != p.id()
+      && p.children()[1]->id() != p.id();
+  }
+
+  struct TTBar {
+    static bool AllCollisions() { return false; }
+    static bool AllSteps() { return true; }
+    // ===
+    // pick the last instance from the shower
+    static bool FinalState() { return false; }
+    static bool Intermediate() { return true; }
+    // ===
+    static bool Check(const Particle & p) { 
+      return abs(p.id()) == ParticleID::t && isLastInShower(p);
+    }
+  };
+
 }
 
 
@@ -34,16 +49,20 @@ void TTbarAnalysis::analyze(tEventPtr event, long, int, int) {
   Lorentz5Momentum ptop, ptbar, ppair;  
   bool foundt = false;
   bool foundtbar = false;
-  set<tcPPtr> particles;
-  event->selectFinalState(inserter(particles));
 
-  for(set<tcPPtr>::const_iterator it = particles.begin(); 
+  tcParticleSet particles;
+  event->select(inserter(particles), ThePEG::ParticleSelector<TTBar>());
+
+  if ( particles.empty() )
+    return;
+
+  for(tcParticleSet::const_iterator it = particles.begin(); 
       it != particles.end(); ++it) {
     if((**it).id() == ParticleID::t) {
-      ptop = getMomentum(*it);
+      ptop = (*it)->momentum();
       foundt = true;
     } else if((**it).id() == ParticleID::tbar) {
-      ptbar = getMomentum(*it);
+      ptbar = (*it)->momentum();
       foundtbar = true;
     }
   }
@@ -89,21 +108,13 @@ void TTbarAnalysis::analyze(const tPVector & particles) {
 
 void TTbarAnalysis::analyze(tPPtr) {}
 
-void TTbarAnalysis::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void TTbarAnalysis::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<TTbarAnalysis> TTbarAnalysis::initTTbarAnalysis;
+NoPIOClassDescription<TTbarAnalysis> TTbarAnalysis::initTTbarAnalysis;
 // Definition of the static class description member.
 
 void TTbarAnalysis::Init() {
 
   static ClassDocumentation<TTbarAnalysis> documentation
-    ("There is no documentation for the TTbarAnalysis class");
+    ("Standard analysis of a t/tbar pair after showering.");
 
 }
 

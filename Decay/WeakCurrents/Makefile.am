@@ -9,7 +9,7 @@ endif
 libHwWeakCurrent_la_SOURCES = \
 WeakDecayCurrent.cc WeakDecayCurrent.fh WeakDecayCurrent.h WeakDecayCurrent.icc
 
-HwWeakCurrents_la_LDFLAGS = -module
+HwWeakCurrents_la_LDFLAGS = -module -version-info 2:0:0
 HwWeakCurrents_la_SOURCES = \
 FourPionNovosibirskCurrent.cc FourPionNovosibirskCurrent.fh \
 FourPionNovosibirskCurrent.h FourPionNovosibirskCurrent.icc \

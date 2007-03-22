@@ -23,6 +23,7 @@ inline IBPtr TTbarAnalysis::fullclone() const {
   return new_ptr(*this);
 }
 
+// parameters are:
 // void Histogram::topdrawOutput(ofstream & out,
 // 			      bool frame,
 // 			      bool errorbars,
@@ -31,7 +32,6 @@ inline IBPtr TTbarAnalysis::fullclone() const {
 // 			      string title,  string titlecase,
 // 			      string left,   string leftcase,
 // 			      string bottom, string bottomcase) const
-
 
 inline void TTbarAnalysis::dofinish() {
   AnalysisHandler::dofinish();

@@ -5,4 +5,4 @@ pkglib_LTLIBRARIES += HwTauDecay.la
 endif
 
 HwTauDecay_la_SOURCES = TauDecayer.cc  TauDecayer.fh  TauDecayer.h  TauDecayer.icc
-HwTauDecay_la_LDFLAGS = -module
+HwTauDecay_la_LDFLAGS = -module -version-info 2:0:0
