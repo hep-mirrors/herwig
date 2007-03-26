@@ -7,7 +7,8 @@ inline ShowerProgenitor::ShowerProgenitor(PPtr original, PPtr copy,
 					  ShowerParticlePtr particle,
 					  Energy pT,bool emitted)
   : _original(original), _copy(copy), _perturbative(true),
-    _particle(particle), _highestPt(pT), _hasEmitted(emitted) {
+    _particle(particle), _highestpT(pT), _maxpT(Constants::MaxEnergy), 
+    _hasEmitted(emitted) {
   // get the BeamParticleData object
   if ( original->parents().empty() ) {
     _beam=dynamic_ptr_cast<tcBeamPtr>(original->dataPtr());
@@ -45,12 +46,20 @@ inline void ShowerProgenitor::perturbative(bool in) {
   _perturbative=in;
 }
 
-inline Energy ShowerProgenitor::pT() const {
-  return _highestPt;
+inline Energy ShowerProgenitor::highestpT() const {
+  return _highestpT;
 }
 
-inline void ShowerProgenitor::pT(Energy in) {
-  _highestPt=in;
+inline void ShowerProgenitor::highestpT(Energy in) {
+  _highestpT=in;
+}
+
+inline Energy ShowerProgenitor::maximumpT() const {
+  return _maxpT;
+}
+
+inline void ShowerProgenitor::maximumpT(Energy in) {
+  _maxpT=in;
 }
 
 inline bool ShowerProgenitor::hasEmitted() const {

@@ -364,7 +364,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // if not just need to remove effect of enhancement
       bool veto(false);
       // if not hardest so far
-      if(pt<initial->pT())
+      if(pt<initial->highestpT())
 	veto=!UseRandom::rndbool(1./_initialenhance);
       // if hardest so far do calculation
       else
@@ -400,7 +400,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
 	      veto = !UseRandom::rndbool(wgt);
 	    }
 	  // if not vetoed reset max
-	  if(!veto) initial->pT(pt);
+	  if(!veto) initial->highestpT(pt);
 	}
       // if vetoing reset the scale
       if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
@@ -415,7 +415,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // if not just need to remove effect of enhancement
       bool veto(false);
       // if not hardest so far
-      if(pt<initial->pT()) return !UseRandom::rndbool(1./_finalenhance);
+      if(pt<initial->highestpT()) return !UseRandom::rndbool(1./_finalenhance);
       // if hardest so far do calculation
       // values of kappa and z
       double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
@@ -438,7 +438,7 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // compute veto from weight
       veto = !UseRandom::rndbool(wgt);
       // if not vetoed reset max
-      if(!veto) initial->pT(pt);
+      if(!veto) initial->highestpT(pt);
       // if vetoing reset the scale
       if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
       // return the veto

@@ -74,15 +74,39 @@ public:
   inline void perturbative(bool);
 
   /**
+   *  Set/Get methods for the hardest \f$p_T\f$ so far
+   */
+  //@{
+  /**
    *  Access the \f$p_T\f$ of the hardest emission so far
    */
-  inline Energy pT() const;
+  inline Energy highestpT() const;
 
   /**
    *  Set the \f$p_T\f$ of the hardest emission so far
    */
-  inline void pT(Energy);
+  inline void highestpT(Energy);
+  //@}
 
+  /**
+   *  Set/Get methods for the maximum \f$p_T\f$ 
+   */
+  //@{
+  /**
+   *  Access the maximum \f$p_T\f$ for radiation
+   */
+  inline Energy maximumpT() const;
+
+  /**
+   *  Set the maximum \f$p_T\f$ for radiation
+   */
+  inline void maximumpT(Energy);
+  //@}
+
+  /**
+   * Set/Get methods for whether the particle has radiated
+   */
+  //@{
   /**
    *  Has this particle radiated
    */
@@ -92,6 +116,7 @@ public:
    *  Set whether or not this particle has radiated
    */
   inline void hasEmitted(bool);
+  //@}
 
   /**
    *  The id of the particle
@@ -127,9 +152,14 @@ private:
   ShowerParticlePtr _particle;
 
   /**
-   *  \f$p_T\f$ of the current emmision
+   *  Highest \f$p_T\f$ emitted in the shower from this particle
    */
-  Energy _highestPt;
+  Energy _highestpT;
+
+  /**
+   *  Maximum allowed \f$p_T\f$ for emission from this particle
+   */
+  Energy _maxpT;
 
   /**
    *  Has there been radiation

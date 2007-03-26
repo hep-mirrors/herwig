@@ -329,7 +329,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   Energy2 d_m2 = parent->momentum().m2();
   Energy pPerp = (1.-d_z)*sqrt( sqr(d_z*d_qt) - d_m2);
   // if not hardest so far don't apply veto
-  if(pPerp<initial->pT()) return false;
+  if(pPerp<initial->highestpT()) return false;
   // calculate the weight
   double weight = 0.;
   if(parent->id()>0) weight = qWeightX(d_qt, d_z);
@@ -337,7 +337,7 @@ softMatrixElementVeto(ShowerProgenitorPtr initial,ShowerParticlePtr parent,Branc
   // compute veto from weight
   bool veto = !UseRandom::rndbool(weight);
   // if not vetoed reset max
-  if(!veto) initial->pT(pPerp);
+  if(!veto) initial->highestpT(pPerp);
   // if vetoing reset the scale
   if(veto) parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
   // return the veto
