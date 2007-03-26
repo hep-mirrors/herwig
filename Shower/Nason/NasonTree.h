@@ -8,6 +8,7 @@
 #include "ThePEG/Config/ThePEG.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
 #include "Herwig++/Shower/Base/ShowerTree.h"
+#include "Herwig++/Shower/Base/SudakovFormFactor.h"
 #include "NasonTree.fh"
 
 namespace Herwig {
@@ -25,8 +26,27 @@ public:
   /**
    * The default constructor.
    */
-  NasonTree(vector<NasonBranchingPtr>);
+  NasonTree(vector<NasonBranchingPtr>,vector<NasonBranchingPtr>);
 
+  /**
+   *  Match particles in the ShowerTree to branchings in the NasonTree
+   */
+  inline void connect(ShowerParticlePtr,NasonBranchingPtr);
+  
+  /**
+   *  Access the map between the ShowerParticle and the NasonBranching
+   */
+  inline map<ShowerParticlePtr,tNasonBranchingPtr> & particles();
+
+  /**
+   *  Access the set of branchings
+   */
+  inline set<NasonBranchingPtr> & branchings();
+  
+  /**
+   * Access the incoming branchings
+   */
+  inline set<NasonBranchingPtr> & incoming();
 private:
 
   /**
@@ -37,8 +57,17 @@ private:
   /**
    *  Map from the particles in the ShowerTree to the NasonBranchings
    */
-  map<ShowerProgenitorPtr,NasonBranchingPtr> _particles;
+  map<ShowerParticlePtr,tNasonBranchingPtr> _particles;
 
+  /**
+   *  The NasonBranchings in the hard process
+   */
+  set<NasonBranchingPtr> _branchings;
+
+  /**
+   *  The NasonBranchings which initiate the space-like showers
+   */
+  set<NasonBranchingPtr> _spacelike;
 };
 
 /**
@@ -57,12 +86,21 @@ public:
   /**
    * The default constructor
    * @param particle The particle which is branching
-   * @param children The branching products
+   * @param sudakov  The Sudakov form factor for the branching
+   * @param parent   The parent for the branching
+   * @param incoming Whether the particle is incoming or outgoing
    */
-  inline NasonBranching(ShowerParticlePtr particle,bool incoming=false,
-			vector<NasonBranchingPtr> children=vector<NasonBranchingPtr>());
-  
-private:
+  inline NasonBranching(ShowerParticlePtr particle,
+			SudakovPtr sudakov,
+			tNasonBranchingPtr parent,bool incoming);
+
+  /**
+   * Add a child of the branching
+   * @param child The child of the branching
+   */
+  inline void addChild(NasonBranchingPtr child);
+
+  void setMomenta(LorentzRotation R,double alpha,Lorentz5Momentum pt);
 
   /**
    *  The branching particle
@@ -72,7 +110,27 @@ private:
   /**
    *  The rescaled momentum
    */
-  Lorentz5Momentum original;
+  Lorentz5Momentum _original;
+
+  /**
+   *  The \f$p\f$ reference vector
+   */
+  Lorentz5Momentum _p;
+
+  /**
+   *  The \f$n\f$ reference vector
+   */
+  Lorentz5Momentum _n;
+
+  /**
+   *  The transverse momentum vector
+   */
+  Lorentz5Momentum _qt;
+
+  /**
+   *  The transverse momentum
+   */
+  Energy _pt;
 
   /**
    *  Whether the branching is incoming or outgoing
@@ -100,9 +158,24 @@ private:
   //@}
 
   /**
+   *  The parent of the branching
+   */
+  tNasonBranchingPtr _parent;
+
+  /**
+   *  The Sudakov form-factor
+   */
+  SudakovPtr _sudakov;
+
+  /**
    * The children
    */
   vector<NasonBranchingPtr> _children;
+
+  /**
+   *  The beam particle
+   */
+  PPtr _beam;
 };
 }
 

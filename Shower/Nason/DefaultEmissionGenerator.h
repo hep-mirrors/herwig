@@ -8,6 +8,7 @@
 #include "HardestEmissionGenerator.h"
 #include "pTSudakov.h"
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "DefaultEmissionGenerator.fh"
 
 namespace Herwig {
@@ -56,7 +57,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual void generateHardest(ShowerTreePtr);
+  virtual NasonTreePtr generateHardest(ShowerTreePtr,EvolverPtr);
 
   /**
    *  Member to decide if the inheriting class can handle this process
@@ -100,12 +101,12 @@ protected:
   /**
    *  Member to generate the hardest emission for a hard process
    */
-  void generateHard(ShowerTreePtr);
+  NasonTreePtr generateHard(ShowerTreePtr,EvolverPtr);
 
   /**
    *  Member to generate the hardest emission for a decay process
    */
-  void generateDecay(ShowerTreePtr);
+  NasonTreePtr generateDecay(ShowerTreePtr,EvolverPtr);
   //@}
 
   /**
@@ -156,6 +157,18 @@ protected:
    */
   pTSudakovPtr constructSudakov(tSudakovPtr);
 
+  /**
+   *  Reconstruct a final emission
+   */
+  bool reconstructFinal(tShowerParticlePtr emitter,tShowerParticlePtr spectator,
+			ShoKinPtr, IdList) const;
+
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  inline LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
+				    const Lorentz5Momentum & oldq) const;
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -165,6 +178,12 @@ protected:
    * a run begins.
    */
   virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
 private:
@@ -192,6 +211,21 @@ private:
    * Lists of the branchings and the appropriate Sudakovs for backward branchings.
    */
   pTBranchingList _bbranchings;
+
+  /**
+   *  Histogram for the thrust
+   */
+  HistogramPtr _thrust[2];
+
+  /**
+   *  Histograms for the pt
+   */
+  HistogramPtr _pthist[2];
+
+  /**
+   * storage for the scatter plot
+   */
+  vector<double> _xq,_xqbar;
 };
 
 }

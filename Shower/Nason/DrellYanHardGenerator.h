@@ -45,7 +45,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual void generateHardest(ShowerTreePtr);
+  virtual NasonTreePtr generateHardest(ShowerTreePtr,EvolverPtr);
 
   /**
    *  Member to decide if the inheriting class can handle this process
@@ -129,10 +129,10 @@ protected:
    */
   virtual double getResult();
 
- /**
+  /**
    *  generates the hardest emission (yj,p)
    */
-  virtual int getEvent();
+  void getEvent(bool & quarkfirst,unsigned int & process);
 
 private:
 
@@ -195,6 +195,16 @@ private:
    *  Pointers to the ParticleDataObjects for the partons
    */
   vector<tcPDPtr> _partons;
+
+  /**
+   *  Whether the quark is in the + or - z direction
+   */
+  bool _quarkplus;
+
+  /**
+   *  The momenta of the new particles
+   */
+  vector<Lorentz5Momentum> _pnew;
 
   HistogramPtr  _hyb;
   HistogramPtr  _hplow;

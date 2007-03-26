@@ -38,8 +38,6 @@ ShoKinPtr pTSudakov::generateNextTimeBranching(const Energy startingScale,
   phi(0.); 
   // perform initialization
   Energy2 tmax(sqr(startingScale)),tmin;
-  cerr << "testing " << startingScale << " " 
-       << ids[0] << " " << ids[1] << " " << ids[2] << "\n";
   initialize(ids,tmin,tmax,cc);
   // check max > min
   if(tmax<=tmin) return ShoKinPtr();
@@ -107,9 +105,10 @@ void pTSudakov::initialize(const IdList & ids, Energy2 & tmin,Energy2 tmax,
 		   -2.*(_masssquared[1]+_masssquared[2])/_q2max
 		   +2.*_masssquared[1]*_masssquared[2]/sqr(_q2max));
   tmin = (1.-_masssquared[0]/_q2max)*(_masssquared[1]+_masssquared[2]
-				      -sqr(mdiff)/_q2max
-				      +mdiff*lambda);
-  cerr << "testing pt2 min " << sqrt(tmin/GeV2) << "\n";
+ 				      -sqr(mdiff)/_q2max
+ 				      +mdiff*lambda);
+  //cerr << "testing " << sqrt(tmin) << "\n";
+  tmin=0.2*GeV;
 }
 
 bool pTSudakov::guessTimeLike(Energy2 &t,Energy2 tmin) {
@@ -126,7 +125,6 @@ bool pTSudakov::guessTimeLike(Energy2 &t,Energy2 tmin) {
   // actual values for z-limits
   _pt2 = t -_masssquared[1]*(1.-z())-_masssquared[2]*z();
   _q2  = _pt2/(z()*(1.-z()))+_masssquared[1]/z()+_masssquared[2]/(1.-z());
-  cerr << "testing guess " << t/GeV2 << " " << tmin/GeV2 << "\n";
   if(t<tmin) {
     t=-1.0*GeV;
     return false;
@@ -134,3 +132,22 @@ bool pTSudakov::guessTimeLike(Energy2 &t,Energy2 tmin) {
   else
     return true; 
 } 
+
+Energy pTSudakov::calculateScale(double z, Energy pt, IdList ids,
+					 unsigned int iopt) {
+  throw Exception() << "Base class SudakovFormFactor::calculateScale() called "
+		    << "this should be overidden in the inheriting class"
+		    << Exception::runerror;
+}
+
+ShoKinPtr pTSudakov::createFinalStateBranching(Energy scale,double z,
+				    double phi, Energy pt) {
+  throw Exception() << " pTSudakov::createFinalStateBranching() not implemented"
+		    << Exception::runerror;
+}
+
+ShoKinPtr pTSudakov::createInitialStateBranching(Energy scale,double z,
+						 double phi, Energy pt) {
+  throw Exception() << " pTSudakov::createInitialStateBranching() not implemented"
+		    << Exception::runerror;
+}

@@ -8,8 +8,7 @@ namespace Herwig {
 
 inline pTSudakov::pTSudakov() {}
 
-inline pTSudakov::pTSudakov(tSudakovPtr in) : SudakovFormFactor(*in)
-{
+inline pTSudakov::pTSudakov(tSudakovPtr in) : SudakovFormFactor(*in) {
   splittingFn(in->splittingFn());
   alpha(in->alpha());
   double temp=in->pdfMax();

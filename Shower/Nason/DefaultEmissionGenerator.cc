@@ -13,6 +13,7 @@
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
 #include "Herwig++/Shower/Base/MECorrectionBase.h"
 #include "Herwig++/Shower/Base/PartnerFinder.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "pTSudakov.h"
 #include "NasonTree.h"
 
@@ -69,14 +70,48 @@ void DefaultEmissionGenerator::doinitrun() {
 					  pTBranchingElement(branch[cit->second.first],
 							     cit->second.second)));
   }
+  _thrust[0] = new_ptr(Histogram(0.,0.5,100));
+  _thrust[1] = new_ptr(Histogram(0.,0.02,100));
+  _pthist[0] = new_ptr(Histogram(0.,50.,100));
+  _pthist[1] = new_ptr(Histogram(0.,5.,100));
 }
 
-void DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree) {
-  if(tree->isDecay()) generateDecay(tree);
-  else                generateHard (tree);
+void DefaultEmissionGenerator::dofinish() {
+  HardestEmissionGenerator::dofinish();
+  ofstream output("hardestemission.top");
+  _thrust[0]->topdrawOutput(output,true,true,false,true,
+			    "RED",
+			    "1-T ",
+			    "    ",
+			    "1/SdS/d(1-T)",
+			    "  G G       ",
+			    "1-T",
+			    "   ");
+  _thrust[1]->topdrawOutput(output,true,true,false,true,
+			    "RED",
+			    "1-T ",
+			    "    ",
+			    "1/SdS/d(1-T)",
+			    "  G G       ",
+			    "1-T",
+			    "   ");
+  _pthist[0]->topdrawOutput(output,true,true,false,true,"red","pt");
+  _pthist[1]->topdrawOutput(output,true,true,false,true,"red","pt");
+  output << "new frame\n";
+  output << "set limits x 0 1 y 0 1\n";
+  for(unsigned int ix=0;ix<_xq.size();++ix) {
+    output << _xq[ix] << " " << _xqbar[ix] << "\n";
+  }
+  output << "plot\n";
 }
 
-void DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
+NasonTreePtr DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree,
+						       EvolverPtr evolver) {
+  if(tree->isDecay()) return generateDecay(tree,evolver);
+  else                return generateHard (tree,evolver);
+}
+
+NasonTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree,EvolverPtr) {
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -90,10 +125,11 @@ void DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
   for(cjt=tree->outgoingLines().begin();
       cjt!=tree->outgoingLines().end();++cjt)
     particlesToShower.push_back((*cjt).first);
-  return;
+  return NasonTreePtr();
 }
 
-void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
+NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree,
+						     EvolverPtr evolver) {
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -113,6 +149,7 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   Branching happens;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
+    //if(particlesToShower[ix]->progenitor()->id()>0) continue;
     Branching newbranch=chooseForwardBranching(*particlesToShower[ix]->progenitor());
     if(newbranch.kinematics&&newbranch.kinematics->pT()>ptmax) {
       ptmax=newbranch.kinematics->pT();
@@ -120,7 +157,62 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
       happens=newbranch;
     }
   }
-  if(!happens.kinematics) return;
+  // no radiation event
+  if(!happens.kinematics) {
+    map<ColinePtr,ColinePtr> colourmap;
+    vector<ShowerParticlePtr> newparticles;
+    map<ColinePtr,ColinePtr>::iterator lineit;
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      // extract the particle
+      tShowerParticlePtr part=particlesToShower[ix]->progenitor();
+      // make a copy of the particle with same momenta but no record
+      newparticles.push_back(new_ptr(ShowerParticle(part->dataPtr(),
+						    part->isFinalState())));
+      newparticles[ix]->set5Momentum(part->momentum());
+      // set the colour lines
+      if(part->colourLine()) {
+	lineit=colourmap.find(part->colourLine());
+	if(lineit==colourmap.end()) 
+	  colourmap[part->colourLine()]=new_ptr(ColourLine());
+	colourmap[part->colourLine()]->addColoured(newparticles[ix]);
+      }
+      if(part->antiColourLine()) {
+	lineit=colourmap.find(part->antiColourLine());
+	if(lineit==colourmap.end())
+	  colourmap[part->antiColourLine()]=new_ptr(ColourLine());
+	colourmap[part->antiColourLine()]->addAntiColoured(newparticles[ix]);
+      }
+    }
+    // now set the colour partners
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      tShowerParticlePtr partner=
+	particlesToShower[ix]->progenitor()->partners()[ShowerIndex::QCD];
+      if(partner) {
+	for(unsigned int iy=0;iy<particlesToShower.size();++iy) {
+	  if(partner==particlesToShower[iy]->progenitor()) 
+	    newparticles[ix]->setPartner(ShowerIndex::QCD,newparticles[iy]);
+	}
+      }
+    }
+    vector<NasonBranchingPtr> hard;
+    for(unsigned int ix=0;ix<newparticles.size();++ix) {
+      hard.push_back(new_ptr(NasonBranching(newparticles[ix],SudakovPtr(),
+					    NasonBranchingPtr(),false)));
+    }
+    // create the NasonTree
+    NasonTreePtr nasontree=new_ptr(NasonTree(hard,vector<NasonBranchingPtr>()));
+    // connect the ShowerParticles with the branchings
+    // and set the maximum pt for the radiation
+    for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+      particlesToShower[ix]->maximumpT(0.);
+      nasontree->connect(particlesToShower[ix]->progenitor(),hard[ix]);
+    }
+    *_thrust[0]+=0.;
+    *_thrust[1]+=0.;
+    *_pthist[0]+=0.;
+    *_pthist[1]+=0.;
+    return nasontree;
+  }
   // generate the emission
   ShowerParticlePtr emitter   = particlesToShower[imax]->progenitor();
   ShowerParticlePtr spectator = emitter->partners()[ShowerIndex::QCD];
@@ -132,7 +224,13 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   Lorentz5Momentum n(0.,ppartner.vect());
   Lorentz5Momentum pt(happens.kinematics->pT()*cos(happens.kinematics->phi()),
 		      happens.kinematics->pT()*sin(happens.kinematics->phi()),0.,0.);
-  pt.rotateUz(-n.vect()/n.vect().mag());
+  Hep3Vector axis(-n.vect().unit());
+  if(axis.perp2()>0.) {
+    LorentzRotation rot;
+    double sinth(sqrt(1.-sqr(axis.z())));
+    rot.setRotate(acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+    pt.transform(rot);
+  }
   double lam(2.*n.e()/q.mass());
   n.boost(-boost);
   pt.boost(-boost);
@@ -148,7 +246,24 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   double betag = 2./lam/(1.+b-c+lam)*(kappa/alphag-b*alphag);
   Lorentz5Momentum pb(alphab*p+betab*n-pt);
   Lorentz5Momentum pc(alphac*p+betac*n);
-  Lorentz5Momentum pg(alphag*p+betag*n+pt);
+  Lorentz5Momentum pg(alphag*p+betag*n+pt); 
+  double xq=2.*pb.e()/q.mass(),xqbar=2.*pc.e()/q.mass(),xg=2.*pg.e()/q.mass();
+  if(emitter->id()<0) swap(xq,xqbar);
+  if(_xq.size()<10000) {
+    _xq.push_back(xq);
+    _xqbar.push_back(xqbar);
+  }
+  double thr=max(xq,xqbar);
+  thr=max(thr,xg);
+  *_thrust[0]+=1.-thr;
+  *_thrust[1]+=1.-thr;
+  *_pthist[0]+=happens.kinematics->pT()/GeV;
+  *_pthist[1]+=happens.kinematics->pT()/GeV;
+
+
+
+
+
   // copy all the particles to make the NasonTree
   map<ColinePtr,ColinePtr> colourmap;
   vector<ShowerParticlePtr> newparticles;
@@ -190,68 +305,235 @@ void DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
     }
   }
   // create the off-shell particle and particles produced in the branching
+  tcPDPtr pdata[2];
+  for(unsigned int ix=0;ix<2;++ix) pdata[ix]=getParticleData(happens.ids[ix+1]);
+  if(emitter->id()!=happens.ids[0]) {
+    for(unsigned int ix=0;ix<2;++ix) {
+      tPDPtr cc(pdata[ix]->CC());
+      if(cc) pdata[ix]=cc;
+    }
+  }
+  BranchingList branchings=evolver->splittingGenerator()->finalStateBranchings();
+  long index=happens.ids[0];
+  SudakovPtr sudakov;
+  for(BranchingList::const_iterator cit = branchings.lower_bound(index); 
+      cit != branchings.upper_bound(index); ++cit ) {
+    IdList ids = cit->second.second;
+    if(happens.ids[0]==ids[0]&&happens.ids[1]==ids[1]&&happens.ids[2]==ids[2])
+      sudakov=cit->second.first;
+  }
+  if(!sudakov) throw Exception() << "Can't find Sudakov for the hard emission in "
+				 << "DefaultEmissionGenerator::generateHardest()" 
+				 << Exception::runerror;
   Lorentz5Momentum offshell(pb+pg);offshell.rescaleMass();
   newparticles[iemit ]->set5Momentum(offshell);
   newparticles[ispect]->set5Momentum(pc);
-  ShowerParticlePtr newemitter(new_ptr(ShowerParticle(getParticleData(happens.ids[1]),
-						      true)));
-  ShowerParticlePtr emitted(new_ptr(ShowerParticle(getParticleData(happens.ids[2]),
-						   true)));
+  ShowerParticlePtr newemitter(new_ptr(ShowerParticle(pdata[0],true)));
+  newemitter->set5Momentum(pb);
+  ShowerParticlePtr emitted(   new_ptr(ShowerParticle(pdata[1],true)));
   emitted->set5Momentum(pg);
   // create the NasonBranching objects
-  vector<NasonBranchingPtr> children;
-  children.push_back(new_ptr(NasonBranching(newemitter)));
-  children.push_back(new_ptr(NasonBranching(emitted)));
   vector<NasonBranchingPtr> hard;
+  tNasonBranchingPtr nasonemit;
   for(unsigned int ix=0;ix<newparticles.size();++ix) {
     if(ix!=iemit) {
-      hard.push_back(new_ptr(NasonBranching(newparticles[ix])));
+      hard.push_back(new_ptr(NasonBranching(newparticles[ix],SudakovPtr(),
+					    NasonBranchingPtr(),false)));
     }
     else {
-      hard.push_back(new_ptr(NasonBranching(newparticles[ix],false,children)));
+      hard.push_back(new_ptr(NasonBranching(newparticles[ix],sudakov,
+					    NasonBranchingPtr(),false)));
+      nasonemit = hard.back();
     }
   }
+  nasonemit->addChild(new_ptr(NasonBranching(newemitter,SudakovPtr(),nasonemit,false)));
+  nasonemit->addChild(new_ptr(NasonBranching(emitted   ,SudakovPtr(),nasonemit,false)));
   // create the NasonTree
-  NasonTreePtr nasontree=new_ptr(NasonTree(hard));
-  exit(1);
+  NasonTreePtr nasontree=new_ptr(NasonTree(hard,vector<NasonBranchingPtr>()));
+  // reconstruct the shower variables
+  evolver->showerModel()->kinematicsReconstructor()->reconstructDecayShower(nasontree,
+ 									    evolver);
+//   double phi=happens.kinematics->phi()- nasonemit->_phi+pi;
+//   if(phi>6.283) phi-=2.*pi;
+//   Energy ptdiff=happens.kinematics->pT() -nasonemit->_children[0]->_pt;
+//   if(ptdiff>1e-9||phi>1e-9) {
+//     cerr << "\n";
+//     cerr << "testing kinematics " 
+// 	 << ptdiff << " " 
+// 	 << phi << "\n";
+//     cerr << "testing pts " 
+// 	 << happens.kinematics->pT() << " " 
+// 	 << nasonemit->_children[0]->_pt << "\n";
+//     cerr << "testing phi " 
+// 	 <<happens.kinematics->phi() << " " << nasonemit->_phi << "\n";
+//     cerr << "testing selected momentum b " << pb << " " << pb.mass() << "\n";
+//     cerr << "testing selected momentum c " << pc << " " << pc.mass() << "\n";
+//     cerr << "testing selected momentum g " << pg << " " << pg.mass() << "\n";
+//     if(emitter->id()<0) swap(xq,xqbar);
+//     cerr << "testing " << xq << " " << xqbar << "\n";
+//   }
+  // connect the ShowerParticles with the branchings
+  // and set the maximum pt for the radiation
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    particlesToShower[ix]->maximumpT(happens.kinematics->pT());
+    nasontree->connect(particlesToShower[ix]->progenitor(),hard[ix]);
+  }
+  return nasontree;
 }
 
 Branching DefaultEmissionGenerator::
 chooseForwardBranching(ShowerParticle & particle) const {
+  // momentum of the particle and its colour partner
+  Lorentz5Momentum p=particle.momentum();
+  Lorentz5Momentum ppartner=particle.partners()[ShowerIndex::QCD]->momentum();
   // maximum scale for the evolution
-  Energy2 q2=(particle.momentum()+
-	      particle.partners()[ShowerIndex::QCD]->momentum()).m2();
+  Lorentz5Momentum singlet=p+ppartner;
+  singlet.rescaleMass();
+  Energy2 q2=sqr(singlet.mass());
   Energy2 q2max=sqr(sqrt(q2)-particle.mass());
-  Energy ptmax=sqrt(0.25*(q2max-sqr(particle.mass())));
   // choose the next scale
   Energy newQ = Energy();
   ShoKinPtr kinematics = ShoKinPtr();
+  SudakovPtr sudakov;
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
   if(_fbranchings.find(index) == _fbranchings.end()) 
-    return Branching(ShoKinPtr(), IdList());
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // otherwise select branching
+  Energy pupper=sqrt(0.25*(q2max-sqr(particle.mass())));
   for(pTBranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
     if(cit->second.first->interactionType()!=ShowerIndex::QCD) continue; 
     cit->second.first->setQ2Max(sqr(sqrt(q2max)-
 				    particle.partners()[ShowerIndex::QCD]->mass()));
-    ShoKinPtr newKin= cit->second.first->
-      generateNextTimeBranching(ptmax,cit->second.second,particle.id()!=cit->first,1.);
+    Energy ptmax=pupper;
+    ShoKinPtr newKin;
+    do {
+      newKin= cit->second.first->
+	generateNextTimeBranching(ptmax,cit->second.second,particle.id()!=cit->first,1.);
+      if(!newKin) break;
+      ptmax=newKin->pT();
+    }
+    while(!reconstructFinal(&particle,particle.partners()[ShowerIndex::QCD],
+			    newKin,cit->second.second));
     if(!newKin) continue;
     // select highest scale
-    if(newKin->scale() > newQ && newKin->scale() <= ptmax) {
+    if(newKin->scale() > newQ && newKin->scale() <= pupper) {
       kinematics=newKin;
       newQ = newKin->scale();
       ids = cit->second.second;
+      sudakov=cit->second.first;
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics)  return Branching(ShoKinPtr(), IdList());
+  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // If a branching has been selected initialize it
   //kinematics->initialize(particle);
   // and return it
-  return Branching(kinematics, ids);
+  return Branching(kinematics, ids, sudakov);
+}
+
+bool DefaultEmissionGenerator::reconstructFinal(tShowerParticlePtr emitter,
+						tShowerParticlePtr spectator,
+						ShoKinPtr kinematics,
+						IdList ids) const {
+  Lorentz5Momentum p[2]={emitter->momentum(),spectator->momentum()};
+  Lorentz5Momentum singlet=p[0]+p[1];
+  singlet.rescaleMass();
+  Hep3Vector boostv=singlet.findBoostToCM();
+  singlet.boost(boostv);
+  singlet.rescaleMass();
+  p[0].boost(boostv);
+  p[1].boost(boostv);
+  Lorentz5Momentum n[2]={Lorentz5Momentum(0,p[1].vect()),
+			 Lorentz5Momentum(0,p[0].vect())};
+  Lorentz5Momentum pnew[2];
+  for(unsigned ix=0;ix<2;++ix) {
+    double alpha= ix==0 ? kinematics->z() : 1.-kinematics->z();
+    Energy mass=getParticleData(ids[ix+1])->mass();
+    double beta =(sqr(mass)+sqr(kinematics->pT())-sqr( alpha )*p[0].m2())
+      / (2.*alpha*(p[0]*n[0]));
+    const Hep3Vector beta_bb = -(p[0]+n[0]).boostVector();
+    Lorentz5Momentum p_bb = p[0];
+    Lorentz5Momentum n_bb = n[0]; 
+    p_bb.boost( beta_bb );
+    n_bb.boost( beta_bb );
+    // set first in b2b frame along z-axis (assuming that p and n are
+    // b2b as checked above)
+    double phi = kinematics->phi();
+    if(ix==1) phi+=pi;
+    Lorentz5Momentum dq(kinematics->pT()*cos(phi), 
+			kinematics->pT()*sin(phi), 
+			(alpha - beta)*p_bb.vect().mag(), 
+			alpha*p_bb.t() + beta*n_bb.t());
+    // rotate to have z-axis parallel to p
+    Hep3Vector axis(p_bb.vect().unit());
+    if(axis.perp2()>0.) {
+      LorentzRotation rot;
+      double sinth(sqrt(1.-sqr(axis.z())));
+      rot.setRotate(acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+      dq.transform(rot);
+    }
+    else if(axis.z()<0.) {
+      dq.setPz(-dq.pz());
+    }
+    // boost back 
+    dq.boost( -beta_bb ); 
+    dq.rescaleMass();
+    pnew[ix]=dq;
+  }
+  Lorentz5Momentum poff=pnew[0]+pnew[1];
+  poff.rescaleMass();
+  double lambda = sqrt(sqr(sqr(singlet.mass())-sqr(p[0].mass())+sqr(poff.mass()))
+		       -sqr(2.*singlet.mass()*poff.mass()))
+    /2./singlet.mass()/p[0].vect().mag();
+  Lorentz5Momentum poff2=lambda*p[0];
+  poff2.setMass(poff.mass());
+  poff2.rescaleEnergy();
+  LorentzRotation R = solveBoost(poff2,poff);
+  Lorentz5Momentum pafter[3]={lambda*p[1],R*pnew[0],R*pnew[1]};
+  for(unsigned int ix=0;ix<3;++ix) pafter[ix].rescaleEnergy();
+  Lorentz5Momentum poff3 = pafter[0]+pafter[2];
+  poff3.rescaleMass();
+  // compute the new reference vector
+  lambda = p[0].vect().mag()/pafter[1].vect().mag();
+  Lorentz5Momentum pn=-lambda*pafter[1];
+  pn.rescaleEnergy();
+  Lorentz5Momentum nn(0.,-pn.vect());
+  double beta = (poff3.m2()-pn.m2())/2/(pn*nn);
+  Lorentz5Momentum poff4=pn+beta*nn;
+  poff4.rescaleMass();
+  R = solveBoost(poff4,poff3);
+  pafter[0]=R*pafter[0];
+  pafter[1]=R*pafter[2];
+  Energy2 ptsum(0.);
+  for(unsigned int ix=0;ix<2;++ix) {
+    double alpha = pafter[ix]*nn/(pn*nn);
+    double beta  = (pafter[ix]*pn-pn.m2())/(pn*nn);
+    Lorentz5Momentum pt=pafter[ix]-alpha*pn-beta*nn;
+    ptsum -=pt.m2();
+  }
+  ptsum*=0.5;
+  return sqrt(ptsum)<kinematics->pT();
+}
+
+LorentzRotation DefaultEmissionGenerator::
+solveBoost(const Lorentz5Momentum & newq, 
+	   const Lorentz5Momentum & oldq ) const {
+  Energy k  = oldq.vect().mag();
+  Energy q  = newq.vect().mag();
+  Energy ek = sqrt(sqr(k)+sqr(oldq.mass()));
+  Energy eq = sqrt(sqr(q)+sqr(newq.mass())); 
+  double betam = -(k*ek-q*eq)/(sqr(k)+sqr(q)+sqr(newq.mass()));
+  Vector3 beta = betam/k*oldq.vect();
+  Hep3Vector ax = newq.vect().cross( oldq.vect() ); 
+  double delta = newq.vect().angle( oldq.vect() );
+  LorentzRotation R;
+  if ( ax.mag2()/GeV2 > 1e-16 )
+    R.rotate( delta, ax ).boost( beta ); 
+  else
+    R.boost( beta ); 
+  return R;
 }

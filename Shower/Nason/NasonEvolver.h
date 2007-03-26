@@ -6,8 +6,8 @@
 //
 
 #include "Herwig++/Shower/Base/Evolver.h"
+#include "NasonEvolver.h"
 #include "HardestEmissionGenerator.h"
-#include "NasonEvolver.fh"
 
 namespace Herwig {
 
@@ -83,7 +83,21 @@ protected:
    *  Generate the hardest emission
    */
   virtual void hardestEmission();
-  
+
+  /**
+   * It does the forward evolution of the time-like input particle
+   * (and recursively for all its radiation products).
+   * accepting only emissions which conforms to the showerVariables
+   * and soft matrix element correction pointed by meCorrectionPtr.
+   * If at least one emission has occurred then the method returns true.
+   * @param particle The particle to be showered
+   */
+  virtual bool truncatedTimeLikeShower(tShowerParticlePtr particle,
+				       NasonBranchingPtr branch);
+ 
+  virtual bool truncatedSpaceLikeShower(tShowerParticlePtr particle,PPtr beam,
+					NasonBranchingPtr branch); 
+
 protected:
 
   /** @name Clone Methods. */
@@ -135,6 +149,10 @@ private:
    */
   vector<HardestEmissionGeneratorPtr> _hardgenerator;
 
+  /**
+   *  The NasonTree currently being showered
+   */
+  NasonTreePtr _nasontree;
 };
 
 }

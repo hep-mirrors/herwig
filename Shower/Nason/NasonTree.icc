@@ -6,9 +6,30 @@
 
 namespace Herwig {
 
-inline NasonBranching::NasonBranching(ShowerParticlePtr particle,bool incoming,
-				      vector<NasonBranchingPtr> children) 
-  : _particle(particle), _incoming(incoming), _children(children)
+inline NasonBranching::NasonBranching(ShowerParticlePtr particle,
+				      SudakovPtr sudakov,
+				      tNasonBranchingPtr parent,bool incoming) 
+  : _particle(particle), _incoming(incoming), _parent(parent),
+    _sudakov(sudakov)
 {}
 
+inline void NasonBranching::addChild(NasonBranchingPtr child) {
+  _children.push_back(child);
+}
+
+inline map<ShowerParticlePtr,tNasonBranchingPtr> & NasonTree::particles() { 
+  return _particles;
+}
+
+inline set<NasonBranchingPtr> & NasonTree::branchings() {
+  return _branchings;
+}
+inline set<NasonBranchingPtr> & NasonTree::incoming() {
+  return _spacelike;
+}
+
+inline void NasonTree::connect(ShowerParticlePtr particle,NasonBranchingPtr branching) {
+  if(_branchings.find(branching)==_branchings.end()) return;
+  _particles[particle]=branching;
+}
 }
