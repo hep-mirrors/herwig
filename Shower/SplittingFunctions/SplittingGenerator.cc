@@ -204,12 +204,13 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
 						     double enhance) const {
   Energy newQ = Energy();
   ShoKinPtr kinematics = ShoKinPtr();
+  SudakovPtr sudakov=SudakovPtr();
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
   if(_fbranchings.find(index) == _fbranchings.end()) 
-    return Branching(ShoKinPtr(), IdList());
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit) {
@@ -226,14 +227,15 @@ Branching SplittingGenerator::chooseForwardBranching(ShowerParticle &particle,
       kinematics=newKin;
       newQ = newKin->scale();
       ids = cit->second.second;
+      sudakov=cit->second.first;
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics)  return Branching(ShoKinPtr(), IdList());
+  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // If a branching has been selected initialize it
   kinematics->initialize(particle,PPtr());
   // and return it
-  return Branching(kinematics, ids);
+  return Branching(kinematics, ids,sudakov);
 }
 
 Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
@@ -242,12 +244,13 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
 						   double enhance) const {
   Energy newQ = Constants::MaxEnergy;
   ShoKinPtr kinematics;
+  SudakovPtr sudakov;
   IdList ids;
   // First, find the eventual branching, corresponding to the lowest scale.
   long index = abs(particle.data().id());
   // if no branchings return empty branching struct
   if(_fbranchings.find(index) == _fbranchings.end()) 
-    return Branching(ShoKinPtr(), IdList());
+    return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // otherwise select branching
   for(BranchingList::const_iterator cit = _fbranchings.lower_bound(index); 
       cit != _fbranchings.upper_bound(index); ++cit)  {
@@ -264,14 +267,15 @@ Branching SplittingGenerator::chooseDecayBranching(ShowerParticle &particle,
       newQ = newKin->scale();
       ids = cit->second.second;
       kinematics=newKin;
+      sudakov=cit->second.first;
     }
   }
   // return empty branching if nothing happened
-  if(!kinematics)  return Branching(ShoKinPtr(), IdList());
+  if(!kinematics)  return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // initialize the branching
   kinematics->initialize(particle,PPtr());
   // and return it
-  return Branching(kinematics, ids);
+  return Branching(kinematics, ids,sudakov);
 }
 
 Branching SplittingGenerator::
@@ -280,12 +284,13 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
 			Ptr<BeamParticleData>::transient_const_pointer beam) const {
   Energy newQ=Energy();
   ShoKinPtr kinematics=ShoKinPtr();
+  SudakovPtr sudakov;
   IdList ids;
   // First, find the eventual branching, corresponding to the highest scale.
   long index = abs(particle.id());
   // if no possible branching return
   if(_bbranchings.find(index) == _bbranchings.end()) 
-    return Branching(ShoKinPtr(), IdList());
+    return Branching(ShoKinPtr(), IdList(),sudakov);
   // select the branching
   for(BranchingList::const_iterator cit = _bbranchings.lower_bound(index); 
       cit != _bbranchings.upper_bound(index); ++cit ) {
@@ -299,14 +304,15 @@ chooseBackwardBranching(ShowerParticle &particle,PPtr beamparticle,
       newQ = newKin->scale();
       kinematics=newKin;
       ids = cit->second.second;
+      sudakov=cit->second.first;
     }
   } 
   // return empty branching if nothing happened
-  if(!kinematics) return Branching(ShoKinPtr(), IdList());
+  if(!kinematics) return Branching(ShoKinPtr(), IdList(),SudakovPtr());
   // initialize the ShowerKinematics 
   // and return it
   kinematics->initialize(particle,beamparticle);
   // return the answer
-  return Branching(kinematics, ids);
+  return Branching(kinematics, ids,sudakov);
 }
 
