@@ -69,7 +69,7 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    */
   virtual bool setQCDInitialEvolutionScales(const ShowerParticleVector &particles,
-                                    const bool isDecayCase);
+					    const bool isDecayCase);
 
   /**
    * Set the initial QED scales
@@ -77,7 +77,7 @@ public:
    * @param isDecayCase      Whether or not this is a decay
    */
   virtual bool setQEDInitialEvolutionScales(const ShowerParticleVector &particles,
-                                    const bool isDecayCase);
+					    const bool isDecayCase);
 
   /**
    * Set the initial electroweak scales
