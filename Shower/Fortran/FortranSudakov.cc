@@ -346,3 +346,22 @@ double FortranSudakovIntegrand::operator() (double zlog) const {
   else      output*=z*_split->P(1.-z,0.,_ids,false);
   return output/2./pi;
 }
+
+Energy FortranSudakov::calculateScale(double z, Energy pt, IdList ids,
+					 unsigned int iopt) {
+  throw Exception() << "Base class udakovFormFactor::calculateScale() called "
+		    << "this should be overidden in the inheriting class"
+		    << Exception::runerror;
+}
+
+ShoKinPtr FortranSudakov::createFinalStateBranching(Energy scale,double z,
+				    double phi, Energy pt) {
+  throw Exception() << " FortranSudakov::createFinalStateBranching() not implemented"
+		    << Exception::runerror;
+}
+
+ShoKinPtr FortranSudakov::createInitialStateBranching(Energy scale,double z,
+						 double phi, Energy pt) {
+  throw Exception() << " FortranSudakov::createInitialStateBranching() not implemented"
+		    << Exception::runerror;
+}

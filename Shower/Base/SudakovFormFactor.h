@@ -230,6 +230,24 @@ public:
    */
   inline double pdfMax() const;
 
+  /**
+   *  Method to return the evolution scale given the
+   *  transverse momentum, \f$p_T\f$ and \f$z\f$.
+   */
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for a final-state branching
+   */
+  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
+					      double phi, Energy pt)=0;
+
+  /**
+   *  Method to create the ShowerKinematics object for an initial-state branching
+   */
+  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
+						double phi, Energy pt)=0;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -255,6 +273,18 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+  /**
+   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
+   * @param scale The scale \f$\delta\f$
+   * @param mq The quark mass \f$m_q\f$.
+   */
+  inline Energy kinematicCutOff(Energy scale, Energy mq) const;
+
+  /**
+   *  The kinematic scale
+   */
+  inline Energy kinScale() const;
 
 protected:
 
@@ -358,18 +388,6 @@ protected:
    *  Access the potential branchings
    */
   inline vector<IdList> particles() const;
-
-  /**
-   * The virtuality cut-off on the gluon \f$Q_g=\frac{\delta-am_q}{b}\f$
-   * @param scale The scale \f$\delta\f$
-   * @param mq The quark mass \f$m_q\f$.
-   */
-  inline Energy kinematicCutOff(Energy scale, Energy mq) const;
-
-  /**
-   *  The kinematic scale
-   */
-  inline Energy kinScale() const;
 
   /**
    *  Methods to set the member variables for inheriting classes

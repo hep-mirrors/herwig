@@ -81,6 +81,24 @@ public:
 					       tcBeamPtr beam);
   //@}
 
+  /**
+   *  Method to return the evolution scale given the
+   *  transverse momentum, \f$p_T\f$ and \f$z\f$.
+   */
+  virtual Energy calculateScale(double z, Energy pt, IdList ids,unsigned int iopt);
+
+  /**
+   *  Method to create the ShowerKinematics object for a final-state branching
+   */
+  virtual ShoKinPtr createFinalStateBranching(Energy scale,double z,
+					      double phi, Energy pt);
+
+  /**
+   *  Method to create the ShowerKinematics object for an initial-state branching
+   */
+  virtual ShoKinPtr createInitialStateBranching(Energy scale,double z,
+						double phi, Energy pt);
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
