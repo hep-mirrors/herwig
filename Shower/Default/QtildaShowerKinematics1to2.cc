@@ -40,7 +40,19 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     dq.setPx(px);
     dq.setPy(py);
     // rotate to have z-axis parallel to p
-    dq.rotateUz( p_bb.vect()/p_bb.vect().mag() );
+    // this rotation changed by PR to a different rotation with the same effect
+    // but different azimuthal angle to make implementing spin correlations easier
+    //dq.rotateUz( p_bb.vect()/p_bb.vect().mag() );
+    Hep3Vector axis(p_bb.vect().unit());
+    if(axis.perp2()>0.) {
+      LorentzRotation rot;
+      double sinth(sqrt(1.-sqr(axis.z())));
+      rot.setRotate(acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+      dq.transform(rot);
+    }
+    else if(axis.z()<0.) {
+      dq.setPz(-dq.pz());
+    }
     // boost back 
     dq.boost( -beta_bb ); 
     dq.rescaleMass(); 
