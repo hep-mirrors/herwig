@@ -77,11 +77,11 @@ void FS_QtildaShowerKinematics1to2::reconstructLast(const tShowerParticlePtr the
 					       unsigned int iopt) const {
   // set beta component and consequently all missing data from that,
   // using the nominal (i.e. PDT) mass.
-  Energy theMass = theLast->data().constituentMass(); 
+  Energy theMass = theLast->data().constituentMass();
   theLast->showerParameters()[1]=
     (sqr(theMass) + sqr(theLast->showerVariables()[2]) 
      - sqr( theLast->showerParameters()[0] )*pVector().m2())
-    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );   
+    / ( 2.*theLast->showerParameters()[0]*p_dot_n() );
   // set that new momentum
   theLast->set5Momentum(sudakov2Momentum( theLast->showerParameters()[0],
 					  theLast->showerParameters()[1], 

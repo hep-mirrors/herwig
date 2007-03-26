@@ -90,8 +90,9 @@ void IS_QtildaShowerKinematics1to2::
 updateLast( const tShowerParticlePtr theLast) const {
   if(theLast->isFinalState()) return;
   theLast->showerParameters()[0]=theLast->x();
-  theLast->showerParameters()[1]=0.5*sqr(theLast->data().mass())/
-    theLast->showerParameters()[0]/p_dot_n();
+  //theLast->showerParameters()[1]=0.5*sqr(theLast->data().mass())/
+  //  theLast->showerParameters()[0]/p_dot_n();
+  theLast->showerParameters()[1]=0.;
   theLast->showerVariables().resize(3);
   theLast->showerParameters().resize(2);
   for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=0.;
