@@ -250,6 +250,26 @@ protected:
   inline void currentTree(tShowerTreePtr);
   //@}
 
+  /**
+   *  Access the maximum number of attempts to generate the shower
+   */
+  inline unsigned int maximumTries();
+
+  /**
+   * Set/Get the ShowerProgenitor for the current shower
+   */
+  //@{
+  /**
+   *  Access the progenitor
+   */
+  inline ShowerProgenitorPtr progenitor();
+
+  /**
+   *  Set the progenitor
+   */
+  inline void progenitor(ShowerProgenitorPtr);
+  //@}
+
 protected:
 
   /** @name Clone Methods. */

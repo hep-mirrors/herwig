@@ -85,4 +85,16 @@ inline void Evolver::currentTree(tShowerTreePtr tree) {
 inline tSplittingGeneratorPtr Evolver::splittingGenerator() const {
   return _splittingGenerator;
 }
+
+inline unsigned int Evolver::maximumTries() {
+  return _maxtry;
+}
+ 
+inline ShowerProgenitorPtr Evolver::progenitor() {
+  return _progenitor;
+}
+
+inline void Evolver::progenitor(ShowerProgenitorPtr in) {
+  _progenitor=in;
+}
 }

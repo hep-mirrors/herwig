@@ -33,8 +33,8 @@ void Evolver::persistentInput(PersistentIStream & is, int) {
 
 void Evolver::doinitrun() {
   Interfaced::doinitrun();
-  for(unsigned int ix=0;ix<_model->meCorrections().size();++ix) {
-    _model->meCorrections()[ix]->evolver(this);
+  for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
+    showerModel()->meCorrections()[ix]->evolver(this);
   }
 }
 
@@ -82,26 +82,26 @@ void Evolver::Init() {
 
 void Evolver::showerHardProcess(ShowerTreePtr hard) {
   // set the current tree
-  _currenttree=hard;
+  currentTree(hard);
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
   unsigned int ntry(0);
   do {
     // clear results of last attempt
     if(ntry!=0) {
-      _currenttree->clear();
+      currentTree()->clear();
       setColourPartners(true);
     }
     // initial-state radiation
-    if(_splittingGenerator->isISRadiationON()) {
+    if(isISRadiationON()) {
       for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// only consider initial-state particles
 	if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// get the PDF
-	_beam=particlesToShower[ix]->beam();
-	if(!_beam) throw Exception() << "The Beam particle does not have"
-				     << " BeamParticleData in Evolver::" 
-				     << "showerhardProcess()" 
-				     << Exception::runerror;
+	setBeamParticle(particlesToShower[ix]->beam());
+	if(!beamParticle()) throw Exception() << "The Beam particle does not have"
+					      << " BeamParticleData in Evolver::" 
+					      << "showerhardProcess()" 
+					      << Exception::runerror;
 	// perform the shower
 	_progenitor=particlesToShower[ix];
 	_progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor(),
@@ -109,7 +109,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
       }
     }
     // final-state radiation
-    if(_splittingGenerator->isFSRadiationON()) {
+    if(isFSRadiationON()) {
       for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// only consider final-state particles
 	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
@@ -119,12 +119,13 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
       }
     }
   }
-  while(!_model->kinematicsReconstructor()->reconstructHardJets(hard)&&_maxtry>++ntry);
-  if(_maxtry==ntry) throw Exception() << "Failed to generate the shower after "
+  while(!showerModel()->kinematicsReconstructor()->reconstructHardJets(hard)&&
+	maximumTries()>++ntry);
+  if(maximumTries()==ntry) throw Exception() << "Failed to generate the shower after "
 				      << ntry 
 				      << " attempts in Evolver::showerHardProcess()"
 				      << Exception::eventerror;
-  _currenttree->hasShowered(true);
+  currentTree()->hasShowered(true);
 }
 
 void Evolver::hardMatrixElementCorrection() {
@@ -136,9 +137,9 @@ void Evolver::hardMatrixElementCorrection() {
   // if hard matrix element switched off return
   if(!MECOn()) return;
   // see if there is an appropraite matrix element correction
-  for(unsigned int ix=0;ix<_model->meCorrections().size();++ix) {
+  for(unsigned int ix=0;ix<showerModel()->meCorrections().size();++ix) {
     double initial,final;
-    if(!_model->meCorrections()[ix]->canHandle(_currenttree,
+    if(!showerModel()->meCorrections()[ix]->canHandle(_currenttree,
 					       initial,final,this)) continue;
     if(_currentme) {
       ostringstream output;
@@ -157,7 +158,7 @@ void Evolver::hardMatrixElementCorrection() {
       throw Exception() << output << Exception::runerror;
     }
     else {
-      _currentme=_model->meCorrections()[ix];
+      _currentme=showerModel()->meCorrections()[ix];
       _initialenhance = initial;
       _finalenhance   = final;
     }
@@ -169,6 +170,7 @@ void Evolver::hardMatrixElementCorrection() {
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
+  return false;
   bool vetoed = true;
   Branching fb;
   while (vetoed) {
@@ -177,6 +179,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
       // apply vetos if needed
     if(fb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
+    if(fb.kinematics && fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -226,6 +229,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 }
 
 bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
+  return false;
   bool vetoed(true);
   Branching bb;
   // generate branching
@@ -236,6 +240,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
     // apply the soft correction
     if(bb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
+    if(bb.kinematics && bb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
   }
   if(!bb.kinematics) return false;
   // assign the splitting function and shower kinematics
@@ -252,7 +257,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // particle, while the newParent is not
   ShowerParticlePtr newParent=new_ptr(ShowerParticle(part[0],false));
   ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1],true,true));
-  ShowerParticleVector theChildren; 
+  ShowerParticleVector theChildren;
   theChildren.push_back(particle); 
   theChildren.push_back(otherChild); 
   particle->showerKinematics()->updateParent(newParent, theChildren);
@@ -276,7 +281,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
 
 void Evolver::showerDecay(ShowerTreePtr decay) {
   // set the ShowerTree to be showered
-  _currenttree=decay;
+  currentTree(decay);
   // extract particles to be shower, set scales and perform hard matrix element 
   // correction
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
@@ -289,7 +294,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       setColourPartners(false);
     }
     // initial-state radiation
-    if(_splittingGenerator->isISRadiationON()) {
+    if(isISRadiationON()) {
       // compute the minimum mass of the final-state
       Energy minmass(0.);
       for(unsigned int ix=0;ix<particlesToShower.size();++ix)
@@ -313,7 +318,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       }
     }
     // final-state radiation
-    if(_splittingGenerator->isFSRadiationON()) {
+    if(isFSRadiationON()) {
       for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
 	// only consider final-state particles
 	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
@@ -323,8 +328,9 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
       }
     }
   }
-  while(!_model->kinematicsReconstructor()->reconstructDecayJets(decay)&&_maxtry>++ntry);
-  if(_maxtry==ntry) throw Exception() << "Failed to generate the shower after "
+  while(!showerModel()->kinematicsReconstructor()->reconstructDecayJets(decay)&&
+	maximumTries()>++ntry);
+  if(maximumTries()==ntry) throw Exception() << "Failed to generate the shower after "
 				      << ntry << " attempts in Evolver::showerDecay()"
 				      << Exception::eventerror;
   _currenttree->hasShowered(true);
@@ -341,6 +347,7 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
     // apply the soft correction
     if(fb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
+    if(fb.kinematics && fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -430,9 +437,9 @@ void Evolver::setColourPartners(bool hard) {
     particles.push_back(cjt->first->progenitor());
   // Set the initial evolution scales
   if(_splittingGenerator->isInteractionON(ShowerIndex::QCD))
-    _model->partnerFinder()->setQCDInitialEvolutionScales(particles,!hard);
+    showerModel()->partnerFinder()->setQCDInitialEvolutionScales(particles,!hard);
   if(_splittingGenerator->isInteractionON(ShowerIndex::QED))
-    _model->partnerFinder()->setQEDInitialEvolutionScales(particles,!hard);
+    showerModel()->partnerFinder()->setQEDInitialEvolutionScales(particles,!hard);
   if(_splittingGenerator->isInteractionON(ShowerIndex::EWK))
-    _model->partnerFinder()->setEWKInitialEvolutionScales(particles,!hard);
+    showerModel()->partnerFinder()->setEWKInitialEvolutionScales(particles,!hard);
 }
