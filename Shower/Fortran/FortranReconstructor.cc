@@ -26,7 +26,7 @@ void FortranReconstructor::Init() {
 
 }
 
-bool FortranReconstructor::reconstructHardJets(ShowerTreePtr hard) const {
+bool FortranReconstructor::reconstructHardJets(ShowerTreePtr ) const {
   return true;
   //throw Exception() << "FortranReconstructor::reconstructHardJets()"
   //		    << " not implemented yet" << Exception::runerror;
@@ -182,3 +182,15 @@ void FortranReconstructor::reconstructTimeLikeMass(tShowerParticlePtr parent) co
 //       PPAR(1,2)=0.
 //       PPAR(2,2)=0.
 //       END
+
+bool FortranReconstructor::reconstructDecayShower(NasonTreePtr,
+						  EvolverPtr) const {
+  throw Exception() << "FortranReconstructor::reconstructDecayShower not "
+		    << "implemented " << Exception::runerror;
+}
+
+bool FortranReconstructor::reconstructHardShower(NasonTreePtr, EvolverPtr) const {
+  throw Exception() << "FortranReconstructor::reconstructHardShower() "
+		    << "not yet implemented"
+		    << Exception::runerror;
+}

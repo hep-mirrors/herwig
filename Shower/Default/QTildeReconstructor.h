@@ -89,6 +89,27 @@ public:
   virtual bool reconstructDecayJets(ShowerTreePtr decay) const;
   //@}
 
+  /**
+   *  Methods to reconstruct the variables used to generate the
+   *  shower given the particles produced.
+   *  This is needed for the CKKW and Nason approaches
+   */
+  //@{
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the 
+   * shower
+   */
+  virtual bool reconstructDecayShower(NasonTreePtr decay,EvolverPtr) const;
+
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the shower
+   *  for a hard process
+   */
+  virtual bool reconstructHardShower(NasonTreePtr hard,EvolverPtr) const;
+  //@}
+
 protected:
 
   /**
@@ -177,6 +198,16 @@ protected:
 			 Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
 			 double & k1, double & k2,Lorentz5Momentum & qt) const;
 
+
+  /**
+   * Compute the momentum rescaling factor needed to invert the shower
+   * @param pout The momenta of the outgoing particles
+   * @param mon  The on-shell masses
+   * @param roots The mass of the decaying particle
+   */
+  double inverseRescaleingFactor(vector<Lorentz5Momentum> pout,
+				 vector<Energy> mon,Energy roots) const;
+
   /**
    * Check the rescaling conserves momentum
    * @param k The rescaling
@@ -191,6 +222,12 @@ protected:
    */
   inline LorentzRotation solveBoost(const double k, const Lorentz5Momentum & newq, 
 				    const Lorentz5Momentum & oldp) const;
+
+  /**
+   * Compute the boost to get from the the old momentum to the new 
+   */
+  inline LorentzRotation solveBoost(const Lorentz5Momentum & newq, 
+				    const Lorentz5Momentum & oldq) const;
 
   /**
    *  Recursively boost the initial-state shower

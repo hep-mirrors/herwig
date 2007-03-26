@@ -9,6 +9,8 @@
 #include "ShowerParticle.h"
 #include "ShowerProgenitor.h"
 #include "ShowerTree.h"
+#include "Herwig++/Shower/Nason/NasonTree.h"
+#include "Evolver.fh"
 #include "KinematicsReconstructor.fh"
 #include <cassert>
 
@@ -49,8 +51,8 @@ public:
    */
   //@{
   /**
-   * Given in input a vector of the particles which initiated the showers
-   * the method does the reconstruction of such jets,
+   * Given the ShowerTree for the shower from a hard process
+   * the method does the reconstruction of the jets,
    * including the appropriate boosts (kinematics reshufflings)  
    * needed to conserve the total energy-momentum of the collision
    * and preserving the invariant mass and the rapidity of the 
@@ -59,14 +61,35 @@ public:
   virtual bool reconstructHardJets(ShowerTreePtr hard) const=0;
 
   /**
-   * Given in input a vector of the particles which initiated the showers
-   * the method does the reconstruction of such jets,
+   * Given the ShowerTree for a decay shower
+   * the method does the reconstruction of the jets,
    * including the appropriate boosts (kinematics reshufflings)  
    * needed to conserve the total energy-momentum of the collision
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
   virtual bool reconstructDecayJets(ShowerTreePtr decay) const=0;
+  //@}
+
+  /**
+   *  Methods to reconstruct the variables used to generate the
+   *  shower given the particles produced.
+   *  This is needed for the CKKW and Nason approaches
+   */
+  //@{
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the 
+   * shower for a decay process
+   */
+  virtual bool reconstructDecayShower(NasonTreePtr decay,EvolverPtr) const=0;
+
+  /**
+   *  Given the particles, with a history which we wish to interpret
+   *  as a shower reconstruct the variables used to generate the shower
+   *  for a hard process
+   */
+  virtual bool reconstructHardShower(NasonTreePtr hard,EvolverPtr) const=0;
   //@}
 
 public:
