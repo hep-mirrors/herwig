@@ -5,4 +5,4 @@ HeavyDecayer.h      HeavyDecayer.icc      HeavyDecayer.cc \
 WeakPartonicDecayer.h WeakPartonicDecayer.icc WeakPartonicDecayer.cc \
 WeakPartonicDecayer.fh BtoSGammaDecayer.h BtoSGammaDecayer.icc \
 BtoSGammaDecayer.cc BtoSGammaDecayer.fh 
-HwPartonicDecay_la_LDFLAGS = -module
+HwPartonicDecay_la_LDFLAGS = -module -version-info 2:0:0

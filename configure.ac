@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([Herwig++],[SVN],[http://hepforge.cedar.ac.uk/herwig/bugtrack/],[Herwig++])
+AC_INIT([Herwig++],[SVN],[http://projects.hepforge.org/herwig/],[Herwig++])
 AC_CONFIG_AUX_DIR([Config])
 
 AC_CONFIG_SRCDIR([UnderlyingEvent/UA5Handler.h])
@@ -50,6 +50,8 @@ AC_PATH_PROG(PERL, perl)
 AC_PDF_PATH
 
 AC_CHECK_CLHEP
+AC_CHECK_HEPMC
+
 AC_CHECK_THEPEG
 
 AC_CHECK_KTJET
@@ -66,9 +68,6 @@ dnl ###########################
 
 AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
 AM_CXXFLAGS="-ansi -pedantic -Wall -W"
-
-# version info should really be specified one-by-one for each lib!
-AM_LDFLAGS="-version-info 2:0:0"
 
 # don't know how else to do this. see bug #14
 if test -n "$GCC"; then

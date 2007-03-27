@@ -1,30 +1,24 @@
 // -*- C++ -*-
-#ifndef HERWIG_TTbarAnalysis_H
-#define HERWIG_TTbarAnalysis_H
+#ifndef THEPEG_HepMCFile_H
+#define THEPEG_HepMCFile_H
 //
-// This is the declaration of the TTbarAnalysis class.
+// This is the declaration of the HepMCFile class.
 //
-
+#include <iostream>
+#include <fstream>
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "TTbarAnalysis.fh"
-#include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {
-
-using namespace ThePEG;
+  using namespace ThePEG;
 
 /**
- * The TTbarAnalysis class tries to find a top antitop pair in the final
- * state and books a number of histograms.  It only makes sense if
- * hadronization and decays are switched off.  However, if there is is
- * no top quark pair in the final state then a warning is printed and
- * nothing is booked.  Some of the histograms will be sensitive to the
- * initial state shower.
+ * Here is the documentation of the HepMCFile class.
  *
- * @see \ref TTbarAnalysisInterfaces "The interfaces"
- * defined for TTbarAnalysis.
+ * @see \ref HepMCFileInterfaces "The interfaces"
+ * defined for HepMCFile.
  */
-class TTbarAnalysis: public AnalysisHandler {
+class HepMCFile: public AnalysisHandler {
 
 public:
 
@@ -33,7 +27,12 @@ public:
   /**
    * The default constructor.
    */
-  inline TTbarAnalysis();
+  inline HepMCFile();
+
+  /**
+   * The copy constructor.
+   */
+  inline HepMCFile(const HepMCFile &);
   //@}
 
 public:
@@ -58,30 +57,25 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
-
-  /**
-   * Transform the event to the desired Lorentz frame and return the
-   * corresponding LorentzRotation.
-   * @param event a pointer to the Event to be transformed.
-   * @return the LorentzRotation used in the transformation.
-   */
-  virtual LorentzRotation transform(tEventPtr event) const;
-
-  /**
-   * Analyze the given vector of particles. The default version calls
-   * analyze(tPPtr) for each of the particles.
-   * @param particles the vector of pointers to particles to be analyzed
-   */
-  virtual void analyze(const tPVector & particles);
-
-  /**
-   * Analyze the given particle.
-   * @param particle pointer to the particle to be analyzed.
-   */
-  virtual void analyze(tPPtr particle);
   //@}
 
 public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
 
   /**
    * The standard Init function used to initialize the interfaces.
@@ -113,71 +107,40 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+   inline virtual void doinitrun();
+
+  /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
   inline virtual void dofinish();
+  //@}
 
 private:
 
   /**
    * The static object used to initialize the description of this class.
-   * Indicates that this is a concrete class without persistent data.
+   * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<TTbarAnalysis> initTTbarAnalysis;
+  static ClassDescription<HepMCFile> initHepMCFile;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  TTbarAnalysis & operator=(const TTbarAnalysis &);
+  HepMCFile & operator=(const HepMCFile &);
 
 private:
-  /**
-   *   \f$p_T\f$ of the tops
-   */
-  Histogram _pttop;
-  Histogram _pttbar;
-  Histogram _ptpair;
 
   /**
-   *   \f$E_T\f$ of the tops
+   * Last event that should be written out as HepMC format
    */
-  Histogram _ettop;
-  Histogram _ettbar;
-  Histogram _etpair;
+  long _eventNumber;
 
-  /**
-   *   Energy of the tops
-   */
-  Histogram _etop;
-  Histogram _etbar;
-  Histogram _epair;
-
-  /**
-   *  Rapidity of the tops
-   */
-  Histogram _raptop;
-  Histogram _raptbar;
-  Histogram _rappair;
-
-  /**
-   *  Azimuth of the tops
-   */
-  Histogram _phitop;
-  Histogram _phitbar;
-  Histogram _deltaphi;
-  
-  /**
-   *  Invariant mass of the pair
-   */
-  Histogram _mpair;
-
-  /**
-   *  scalar sums of Et, pt
-   */
-  Histogram _etsum;
-  Histogram _ptsum;
+  ofstream _hepmcfile;
 };
 
 }
@@ -189,22 +152,22 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of TTbarAnalysis. */
+ *  base classes of HepMCFile. */
 template <>
-struct BaseClassTrait<Herwig::TTbarAnalysis,1> {
-  /** Typedef of the first base class of TTbarAnalysis. */
+struct BaseClassTrait<Herwig::HepMCFile,1> {
+  /** Typedef of the first base class of HepMCFile. */
   typedef AnalysisHandler NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the TTbarAnalysis class and the shared object where it is defined. */
+ *  the HepMCFile class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::TTbarAnalysis>
-  : public ClassTraitsBase<Herwig::TTbarAnalysis> {
+struct ClassTraits<Herwig::HepMCFile>
+  : public ClassTraitsBase<Herwig::HepMCFile> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TTbarAnalysis"; }
+  static string className() { return "Herwig++::HepMCFile"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
-   *  access to the TTbarAnalysis class and any other class on which it depends
+   *  access to the HepMCFile class and any other class on which it depends
    *  (except the base class). */
   static string library() { return "HwAnalysis.so"; }
 };
@@ -213,9 +176,9 @@ struct ClassTraits<Herwig::TTbarAnalysis>
 
 }
 
-#include "TTbarAnalysis.icc"
+#include "HepMCFile.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TTbarAnalysis.tcc"
+// #include "HepMCFile.tcc"
 #endif
 
-#endif /* HERWIG_TTbarAnalysis_H */
+#endif /* THEPEG_HepMCFile_H */

@@ -4,6 +4,9 @@
 // the TopDecayMECorrection class.
 //
 
+// Mac OS X workaround
+extern "C" int isnan(double) throw();
+
 namespace Herwig {
 
 inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),

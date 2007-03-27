@@ -104,8 +104,16 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 					      << Exception::runerror;
 	// perform the shower
 	_progenitor=particlesToShower[ix];
+
+	tPPtr beamparticle; 
+	if ( particlesToShower[ix]->original()->parents().empty() ) {
+	  beamparticle=particlesToShower[ix]->original();
+	} 
+	else {
+	  beamparticle=particlesToShower[ix]->original()->parents()[0];
+	}
 	_progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor(),
-						particlesToShower[ix]->original()->parents()[0]));
+						beamparticle));
       }
     }
     // final-state radiation

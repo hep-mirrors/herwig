@@ -1,0 +1,54 @@
+Herwig++ News				(emacs -*- outline -*- format)
+
+* Herwig++-2.0.2 release: 2007-??-?? (tagged at SVN r????)
+
+** Bug #80
+   Separation of HepMC from CLHEP is handled properly now.
+
+* Herwig++-2.0.1 release: 2006-12-05 (tagged at SVN r1195)
+
+** Bug #54
+   ClusterFissioner vertex calculation fixed.
+
+** Bug #57
+   Crash when showering W+jet events supplied by Les Houches interface.
+
+** Bug #59
+   Fix for #57 applied to LHC events.
+
+** Bug #60
+   Segfault when PDF is set to NoPDF.
+
+** Bug #61
+   Missing weight factor for I=0 mesons
+
+** Bug #62
+   Spinor vertex calculations broken when spinor rep is not default rep.
+
+** Bug #63
+   Top decay never produces tau.
+
+** Bug #69
+   TTbar and HiggsJet analysis handlers fixed.
+
+** unlisted 
+   Reorganization of Hadronization module gives 30% speedup. 
+   Thanks to Vincenzo Innocente at CMS for his profiling work!
+
+** unlisted
+   cleaner automake files in include/ and src/
+
+** unlisted 
+   Hw64 hadron selection algorithm 'abortnow' fixed.
+
+** unlisted 
+   Top/LeptonDalitzAnalysis removed (only worked with modified code).
+
+** unlisted
+   removed f'_0 from particle list, decays were not handled
+
+
+
+* Herwig++-2.0.0 release: 2006-09-28 (tagged at SVN r1066)
+
+** Full simulation of hadron collisions

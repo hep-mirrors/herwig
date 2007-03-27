@@ -62,6 +62,21 @@ MultiplicityCount::MultiplicityCount()
   _data[100443 ] = MultiplicityInfo(0.00229,0.00041,other);
   _data[9000211] = MultiplicityInfo(0.27,0.11,other);
   _data[10221  ] = MultiplicityInfo(0.142,0.011,other);
+  // B mesons
+  _data[511] = MultiplicityInfo(0.000,0.000,other); // B0
+  _data[521] = MultiplicityInfo(0.000,0.000,other); // B+
+  _data[531] = MultiplicityInfo(0.000,0.000,other); // B_s
+  _data[541] = MultiplicityInfo(0.000,0.000,other); // B_c
+  // B baryons
+  _data[5122] = MultiplicityInfo(0.000,0.000,other); // Lambda_b
+  _data[5112] = MultiplicityInfo(0.000,0.000,other); // Sig_b-
+  _data[5212] = MultiplicityInfo(0.000,0.000,other); // Sig_b0
+  _data[5222] = MultiplicityInfo(0.000,0.000,other); // Sig_b+
+  _data[5132] = MultiplicityInfo(0.000,0.000,other); // Xi_b-
+  _data[5232] = MultiplicityInfo(0.000,0.000,other); // Xi_b0
+  _data[5312] = MultiplicityInfo(0.000,0.000,other); // Xi'_b-
+  _data[5322] = MultiplicityInfo(0.000,0.000,other); // Xi'_b0
+  _data[5332] = MultiplicityInfo(0.000,0.000,other); // Omega_b-
 }
 
 void MultiplicityCount::analyze(tEventPtr event, long, int, int) {

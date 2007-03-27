@@ -20,46 +20,49 @@
 
 using namespace Herwig;
 
-HiggsJetAnalysis::~HiggsJetAnalysis() {}
-
 namespace {
-  inline Lorentz5Momentum getMomentum(tcPPtr particle) {
-    return particle->momentum();
-    //Lorentz5Momentum tmp = particle->children()[0]->next()->momentum();
-    //tmp += particle->children()[1]->next()->momentum();
-    //tmp.rescaleMass();
-    //return tmp;
-
+  bool isLastInShower(const Particle & p) {
+    return p.children().size() > 1 
+      && p.children()[0]->id() != p.id()
+      && p.children()[1]->id() != p.id();
   }
+
+  struct Higgs {
+    static bool AllCollisions() { return false; }
+    static bool AllSteps() { return true; }
+    // ===
+    // pick the last instance from the shower
+    static bool FinalState() { return false; }
+    static bool Intermediate() { return true; }
+    // ===
+    static bool Check(const Particle & p) { 
+      return p.id() == ParticleID::h0 && isLastInShower(p);
+    }
+  };
+
+
 }
 
 
 void HiggsJetAnalysis::analyze(tEventPtr event, long, int, int) {
-  //  AnalysisHandler::analyze(event, ieve, loop, state);
-  // Rotate to CMS, extract final state particles and call analyze(particles).
-  // find the Z
-  Lorentz5Momentum ph;  
-  StepVector::const_iterator sit =event->primaryCollision()->steps().begin();
-  StepVector::const_iterator send=event->primaryCollision()->steps().end();
-  for(;sit!=send;++sit)
-    {
-      ParticleSet part=(**sit).all();
-      ParticleSet::const_iterator iter=part.begin();
-      ParticleSet::const_iterator end =part.end();
-      for( ;iter!=end;++iter)
-	{
-	  if((**iter).id()==ParticleID::h0)
-	    {
-	      ph=getMomentum(*iter);
-	      Energy pt = ph.perp()/GeV;
-	      (_pth)+=(pt);
-	      (_pthZoom)+=(pt);
-	      double rap = 0.5*log((ph.e()+ph.z())/(ph.e()-ph.z()));
-	      (_raph)+=(rap);
-	      (_phih)+=ph.phi();
-	    }
-	}
-    }
+  tcParticleSet higgses;
+  event->select(inserter(higgses), ThePEG::ParticleSelector<Higgs>());
+
+  if ( higgses.empty() )
+    return;
+  else if ( higgses.size() > 1 ) {
+    cerr << "\nMultiple h0 found. Only binning first one.\n";
+  }
+
+  tcPPtr higgs = *higgses.begin();
+
+  Lorentz5Momentum ph = higgs->momentum();
+  Energy pt = ph.perp()/GeV;
+  (_pth)+=(pt);
+  (_pthZoom)+=(pt);
+  double rap = 0.5*log((ph.e()+ph.z())/(ph.e()-ph.z()));
+  (_raph)+=(rap);
+  (_phih)+=ph.phi();
 }
 
 LorentzRotation HiggsJetAnalysis::transform(tEventPtr) const {
@@ -73,21 +76,13 @@ void HiggsJetAnalysis::analyze(const tPVector & particles) {
 
 void HiggsJetAnalysis::analyze(tPPtr) {}
 
-void HiggsJetAnalysis::persistentOutput(PersistentOStream &) const {
-  // *** ATTENTION *** os << ; // Add all member variable which should be written persistently here.
-}
-
-void HiggsJetAnalysis::persistentInput(PersistentIStream &, int) {
-  // *** ATTENTION *** is >> ; // Add all member variable which should be read persistently here.
-}
-
-ClassDescription<HiggsJetAnalysis> HiggsJetAnalysis::initHiggsJetAnalysis;
+NoPIOClassDescription<HiggsJetAnalysis> HiggsJetAnalysis::initHiggsJetAnalysis;
 // Definition of the static class description member.
 
 void HiggsJetAnalysis::Init() {
 
   static ClassDocumentation<HiggsJetAnalysis> documentation
-    ("There is no documentation for the HiggsJetAnalysis class");
+    ("Standard analysis of a single h0 after showering.");
 
 }
 

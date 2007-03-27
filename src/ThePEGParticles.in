@@ -1294,9 +1294,9 @@ create /ThePEG/ParticleData /Defaults/Particles/K_1-
 setup /Defaults/Particles/K_1- -10323 K_1- 1.570 0.090 0.010 0.0 -3 0 3 0
 defaultparticle /Defaults/Particles/K_1- 
 makeanti /Defaults/Particles/K_1+ /Defaults/Particles/K_1- 
-create /ThePEG/ParticleData /Defaults/Particles/f'_0 
-setup /Defaults/Particles/f'_0 10331 f'_0 1.40 0.250 0.350 0.0 0 0 1 0
-defaultparticle /Defaults/Particles/f'_0 
+#create /ThePEG/ParticleData /Defaults/Particles/f'_0 
+#setup /Defaults/Particles/f'_0 10331 f'_0 1.40 0.250 0.350 0.0 0 0 1 0
+#defaultparticle /Defaults/Particles/f'_0 
 create /ThePEG/ParticleData /Defaults/Particles/h'_1 
 setup /Defaults/Particles/h'_1 10333 h'_1 1.40 0.080 0.0010 0.0 0 0 3 0
 defaultparticle /Defaults/Particles/h'_1 
