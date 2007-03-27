@@ -185,9 +185,9 @@ tPVector TopDalitzAnalysis::particleID(PPtr top,tPVector final)
   // the tree by one.
   else if(borig->children()[0]->children().size()>1) {
       if((abs(borig->children()[0]->children()[0]->id())==ParticleID::b&&
-	  abs(borig->children()[0]->children()[1]->id())==ParticleID::g)||
-	 (abs(borig->children()[0]->children()[0]->id())==ParticleID::b&&
-	  abs(borig->children()[0]->children()[1]->id())==ParticleID::g))
+          abs(borig->children()[0]->children()[1]->id())==ParticleID::g)||
+         (abs(borig->children()[0]->children()[1]->id())==ParticleID::b&&
+	  abs(borig->children()[0]->children()[0]->id())==ParticleID::g))
       {
           if(borig->children().size()==1)
 	  borig=borig->children()[0];
