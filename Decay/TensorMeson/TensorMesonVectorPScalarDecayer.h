@@ -207,6 +207,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of Herwig::TensorMesonVectorPScalarDecayer.
@@ -222,24 +224,23 @@ struct BaseClassTrait<Herwig::TensorMesonVectorPScalarDecayer,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
- struct ClassTraits<Herwig::TensorMesonVectorPScalarDecayer>
+struct ClassTraits<Herwig::TensorMesonVectorPScalarDecayer>
   : public ClassTraitsBase<Herwig::TensorMesonVectorPScalarDecayer> {
-   /** Return the class name.*/
-   static string className() { return "Herwig++::TensorMesonVectorPScalarDecayer"; }
-   /**
-    * Return the name of the shared library to be loaded to get
-    * access to this class and every other class it uses
-    * (except the base class).
-    */
-   static string library() { return "HwTMDecay.so"; }
-   
- };
+  /** Return the class name.*/
+  static string className() { return "Herwig++::TensorMesonVectorPScalarDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "HwTMDecay.so"; }
+  
+};
+  
+/** @endcond */
 
 }
 
 #include "TensorMesonVectorPScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TensorMesonVectorPScalarDecayer.tcc"
-#endif
 
 #endif /* HERWIG_TensorMesonVectorPScalarDecayer_H */

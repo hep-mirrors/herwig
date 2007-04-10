@@ -305,11 +305,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of BaryonFactorizedDecayer. */
@@ -332,11 +332,10 @@ struct ClassTraits<Herwig::BaryonFactorizedDecayer>
   static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BaryonFactorizedDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonFactorizedDecayer.tcc"
-#endif
 
 #endif /* HERWIG_BaryonFactorizedDecayer_H */

@@ -302,6 +302,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of StandardModel.
@@ -319,12 +321,14 @@ struct BaseClassTrait<Herwig::StandardModel,1> {
 template <>
 struct ClassTraits<Herwig::StandardModel>
   : public ClassTraitsBase<Herwig::StandardModel> {
-
+  
   /**
    * Return the class name.
    */
   static string className() { return "Herwig++::StandardModel"; }
 };
+
+/** @endcond */
 
 }
 

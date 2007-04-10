@@ -145,30 +145,34 @@ private:
 #include "VVVVVertex.icc"
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of VVVVVertex.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::VVVVVertex,1> {
-  /** Typedef of the base class of VVVVVertex. */
-    typedef Herwig::Helicity::VertexBase NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::Helicity::VVVVVertex>
-    : public ClassTraitsBase<Herwig::Helicity::VVVVVertex> {
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::VVVVVertex"; }
-  };
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of VVVVVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::VVVVVertex,1> {
+  /** Typedef of the base class of VVVVVertex. */
+  typedef Herwig::Helicity::VertexBase NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::VVVVVertex>
+  : public ClassTraitsBase<Herwig::Helicity::VVVVVertex> {
+  
+  /**
+   * Return the class name.
+   */
+  static string className() { return "Herwig++::VVVVVertex"; }
+};
+
+/** @endcond */
   
 }
 

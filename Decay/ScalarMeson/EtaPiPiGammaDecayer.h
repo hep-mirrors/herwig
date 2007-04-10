@@ -316,6 +316,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 template <>
 /**
  * The following template specialization informs ThePEG about the
@@ -343,6 +345,8 @@ struct ClassTraits<Herwig::EtaPiPiGammaDecayer>
   static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 
 };
+
+/** @endcond */
 
 }
 

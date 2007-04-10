@@ -181,9 +181,14 @@ private:
   vector<int> _wgtloc;
 
   /**
-   * the maximum weights and the maximums
+   * the maximum weight
    */
-  vector<double> _wgtmax,_weights;
+  vector<double> _wgtmax;
+
+  /**
+   *  The weights for the different channels
+   */
+  vector<double> _weights;
 
 };
 
@@ -193,6 +198,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -222,11 +229,10 @@ struct ClassTraits<Herwig::TauDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "TauDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TauDecayer.tcc"
-#endif
 
 #endif /* THEPEG_TauDecayer_H */

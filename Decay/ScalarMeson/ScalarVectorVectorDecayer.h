@@ -234,6 +234,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of ScalarVectorVectorDecayer. */
 template <>
@@ -255,11 +257,10 @@ struct ClassTraits<Herwig::ScalarVectorVectorDecayer>
   static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "ScalarVectorVectorDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarVectorVectorDecayer.tcc"
-#endif
 
 #endif /* HERWIG_ScalarVectorVectorDecayer_H */

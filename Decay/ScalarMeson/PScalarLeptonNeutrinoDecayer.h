@@ -228,6 +228,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 template <>
 /**
  * The following template specialization informs ThePEG about the
@@ -256,11 +258,10 @@ struct ClassTraits<Herwig::PScalarLeptonNeutrinoDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "PScalarLeptonNeutrinoDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarLeptonNeutrinoDecayer.tcc"
-#endif
 
 #endif /* HERWIG_PScalarLeptonNeutrinoDecayer_H */

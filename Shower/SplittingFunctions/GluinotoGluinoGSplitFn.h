@@ -18,7 +18,7 @@ using namespace ThePEG;
  * splitting function for \f$\tilde{g}\to \tilde{g}g\f$. 
  *
  *  In this case the splitting function is given by
- * \f[P(z,t) =\frac{C_A}\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
+ * \f[P(z,t) =C_A\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
  * where \f$C_A=N_C\f$.
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = \frac{2C_A}{1-z},\f]

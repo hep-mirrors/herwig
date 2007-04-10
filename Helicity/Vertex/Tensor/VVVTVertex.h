@@ -137,6 +137,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** 
  * The following template specialization informs ThePEG about the
  * base class of VVVTVertex.
@@ -168,6 +170,8 @@ struct ClassTraits<Herwig::Helicity::VVVTVertex>
   static string library() { return "HwTVertex.so"; }
 
 };
+
+/** @endcond */
 
 }
 

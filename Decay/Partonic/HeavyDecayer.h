@@ -130,6 +130,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * HeavyDecayer.
@@ -154,6 +156,8 @@ struct ClassTraits<Herwig::HeavyDecayer>: public ClassTraitsBase<Herwig::HeavyDe
    */
   static string library() { return "HwPartonicDecay.so"; }
 };
+
+/** @endcond */
 
 }
 

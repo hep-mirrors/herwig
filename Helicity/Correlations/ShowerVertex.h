@@ -130,8 +130,5 @@ struct ClassTraits<Herwig::Helicity::ShowerVertex>
 }
 
 #include "ShowerVertex.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ShowerVertex.tcc"
-#endif
 
 #endif /* HERWIG_ShowerVertex_H */

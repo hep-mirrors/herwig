@@ -595,6 +595,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of ThreePionCLEOCurrent.
@@ -622,6 +624,9 @@ struct ClassTraits<Herwig::ThreePionCLEOCurrent>
   static string library() { return "HwWeakCurrents.so"; }
 
 };
+
+/** @endcond */
+
 }
 
 

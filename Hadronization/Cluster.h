@@ -289,26 +289,30 @@ private:
 
 namespace ThePEG {
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of Cluster.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Cluster,1> {
-    /** Typedef of the base class of Cluster. */
-    typedef EventRecordBase NthBase;
-  };
+/** @cond TRAITSPECIALIZATIONS */
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */ 
-  template <>
-  struct ClassTraits<Herwig::Cluster>:
-    public ClassTraitsBase<Herwig::Cluster> {
-    /** Return the class name. */
-    static string className() { return "Herwig++::Cluster"; }
-  };
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of Cluster.
+ */
+template <>
+struct BaseClassTrait<Herwig::Cluster,1> {
+  /** Typedef of the base class of Cluster. */
+  typedef EventRecordBase NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */ 
+template <>
+struct ClassTraits<Herwig::Cluster>:
+  public ClassTraitsBase<Herwig::Cluster> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::Cluster"; }
+};
+
+/** @endcond */
 
 }
 

@@ -208,6 +208,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of ScalarMesonCurrent.
@@ -236,11 +238,10 @@ struct ClassTraits<Herwig::ScalarMesonCurrent>
 
 };
 
+/** @endcond */
+
 }
 
 #include "ScalarMesonCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarMesonCurrent.tcc"
-#endif
 
 #endif /* HERWIG_ScalarMesonCurrent_H */

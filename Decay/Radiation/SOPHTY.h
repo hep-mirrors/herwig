@@ -134,8 +134,5 @@ struct ClassTraits<Herwig::SOPHTY>
 }
 
 #include "SOPHTY.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SOPHTY.tcc"
-#endif
 
 #endif /* HERWIG_SOPHTY_H */

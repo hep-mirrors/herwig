@@ -291,6 +291,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of TwoPionPhotonCurrent.
@@ -319,11 +321,10 @@ struct ClassTraits<Herwig::TwoPionPhotonCurrent>
 
 };
 
+/** @endcond */
+
 }
 
 #include "TwoPionPhotonCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoPionPhotonCurrent.tcc"
-#endif
 
 #endif /* HERWIG_TwoPionPhotonCurrent_H */

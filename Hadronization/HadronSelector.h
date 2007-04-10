@@ -302,7 +302,7 @@ protected:
    * and $\eta'$ the second one.
    * The convention used is 
    * \f[\eta  = \cos\theta|\eta_{\rm octet  }\rangle
-   *           -\sin\theta|\eta_{\rm singlet}\rangle}\f]
+   *           -\sin\theta|\eta_{\rm singlet}\rangle\f]
    * \f[\eta' = \sin\theta|\eta_{\rm octet  }\rangle
    *           -\cos\theta|\eta_{\rm singlet}\rangle\f]
    * with 

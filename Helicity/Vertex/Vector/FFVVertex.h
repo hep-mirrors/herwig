@@ -176,6 +176,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of FFVVertex.
@@ -199,6 +201,8 @@ struct ClassTraits<Herwig::Helicity::FFVVertex>
    */
   static string className() { return "Herwig++::FFVVertex"; }
 };
+
+/** @endcond */
 
 }
 

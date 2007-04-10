@@ -356,6 +356,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * BallZwickyVectorFormFactor.
@@ -382,11 +384,10 @@ template <>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BallZwickyVectorFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BallZwickyVectorFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_BallZwickyVectorFormFactor_H */

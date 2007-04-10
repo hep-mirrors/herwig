@@ -327,6 +327,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * ISGWFormFactor.
@@ -353,11 +355,10 @@ struct ClassTraits<Herwig::ISGWFormFactor>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "ISGWFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ISGWFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_ISGWFormFactor_H */

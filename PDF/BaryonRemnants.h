@@ -120,6 +120,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of BaryonRemnants.
@@ -146,6 +148,8 @@ struct ClassTraits<Herwig::BaryonRemnants>
     */
   static string library() { return "HwMRST.so"; }
 };
+
+/** @endcond */
 
 }
 

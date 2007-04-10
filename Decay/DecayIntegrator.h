@@ -412,27 +412,31 @@ private:
 
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
   
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of DecayIntegrator.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::DecayIntegrator,1> {
-    /** Typedef of the base class of DecayIntegrator. */
-    typedef Herwig::HwDecayerBase NthBase;
-  };
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of DecayIntegrator.
+ */
+template <>
+struct BaseClassTrait<Herwig::DecayIntegrator,1> {
+  /** Typedef of the base class of DecayIntegrator. */
+  typedef Herwig::HwDecayerBase NthBase;
+};
   
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::DecayIntegrator>
-    : public ClassTraitsBase<Herwig::DecayIntegrator> {
-    /** Return the class name. */
-    static string className() { return "Herwig++::DecayIntegrator"; }
-  };
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::DecayIntegrator>
+  : public ClassTraitsBase<Herwig::DecayIntegrator> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::DecayIntegrator"; }
+};
+  
+/** @endcond */
 
 }
 

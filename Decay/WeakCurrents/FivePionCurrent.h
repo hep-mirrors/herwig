@@ -380,8 +380,5 @@ struct ClassTraits<Herwig::FivePionCurrent>
 }
 
 #include "FivePionCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FivePionCurrent.tcc"
-#endif
 
 #endif /* HERWIG_FivePionCurrent_H */

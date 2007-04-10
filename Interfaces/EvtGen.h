@@ -413,6 +413,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of EvtGen. */
 template <>
@@ -434,11 +436,10 @@ struct ClassTraits<Herwig::EvtGen>
   static string library() { return "libHwEvtGen.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "EvtGen.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EvtGen.tcc"
-#endif
 
 #endif /* HERWIG_EvtGen_H */

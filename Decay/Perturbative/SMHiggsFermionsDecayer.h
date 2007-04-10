@@ -187,8 +187,5 @@ struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
 }
 
 #include "SMHiggsFermionsDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMHiggsFermionsDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SMHiggsFermionsDecayer_H */

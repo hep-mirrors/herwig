@@ -241,6 +241,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of PScalar4FermionsDecayer.
@@ -269,11 +271,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "PScalar4FermionsDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalar4FermionsDecayer.tcc"
-#endif
 
 #endif /* HERWIG_PScalar4FermionsDecayer_H */

@@ -113,29 +113,33 @@ private:
 
 namespace ThePEG {
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of VSSVertex.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::VSSVertex,1> {
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of VSSVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::VSSVertex,1> {
   /** Typedef of the base class of VSSVertex. */
-    typedef Herwig::Helicity::VertexBase NthBase;
-  };
+  typedef Herwig::Helicity::VertexBase NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::VSSVertex>
+  : public ClassTraitsBase<Herwig::Helicity::VSSVertex> {
   
   /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
+   * Return the class name.
    */
-  template <>
-  struct ClassTraits<Herwig::Helicity::VSSVertex>
-    : public ClassTraitsBase<Herwig::Helicity::VSSVertex> {
+  static string className() { return "Herwig++::VSSVertex"; }
+};
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::VSSVertex"; }
-  };
+/** @endcond */
   
 }
 

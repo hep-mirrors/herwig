@@ -190,6 +190,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of ScalarScalarScalarDecayer.
@@ -218,11 +220,10 @@ struct ClassTraits<Herwig::ScalarScalarScalarDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "ScalarScalarScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarScalarScalarDecayer.tcc"
-#endif
 
 #endif /* HERWIG_ScalarScalarScalarDecayer_H */

@@ -339,6 +339,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 template <>
 /**
  * The following template specialization informs ThePEG about the
@@ -359,6 +361,8 @@ struct ClassTraits<Herwig::ClusterFissioner>
   /** Return the class name. */
   static string className() { return "Herwig++::ClusterFissioner"; }
 };
+
+/** @endcond */
 
 }
 

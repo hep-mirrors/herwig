@@ -515,6 +515,8 @@ ostream & operator<<(ostream &, const VertexBase &);
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of VertexBase.
@@ -538,11 +540,10 @@ struct ClassTraits<Herwig::Helicity::VertexBase>
   static string className() { return "Herwig++::VertexBase"; }
 };
 
+/** @endcond */
+
 }
 
 #include "VertexBase.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VertexBase.tcc"
-#endif
 
 #endif /* HERWIG_VertexBase_H */

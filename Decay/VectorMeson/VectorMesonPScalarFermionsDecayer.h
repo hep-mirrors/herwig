@@ -248,6 +248,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of Herwig::VectorMesonPScalarFermionsDecayer.
@@ -275,6 +277,8 @@ struct ClassTraits<Herwig::VectorMesonPScalarFermionsDecayer>
   static string library() { return "HwVMDecay.so"; }
 
 };
+
+/** @endcond */
 
 }
 

@@ -141,11 +141,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of BaryonWidthGenerator. */
@@ -168,11 +168,10 @@ template <>
   static string library() { return "HwBaryonDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BaryonWidthGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonWidthGenerator.tcc"
-#endif
 
 #endif /* HERWIG_BaryonWidthGenerator_H */

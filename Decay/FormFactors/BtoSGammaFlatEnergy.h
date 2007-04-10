@@ -175,6 +175,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaFlatEnergy. */
 template <>
@@ -196,11 +198,10 @@ struct ClassTraits<Herwig::BtoSGammaFlatEnergy>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BtoSGammaFlatEnergy.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaFlatEnergy.tcc"
-#endif
 
 #endif /* HERWIG_BtoSGammaFlatEnergy_H */

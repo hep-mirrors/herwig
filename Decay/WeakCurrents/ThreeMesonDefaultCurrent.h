@@ -441,6 +441,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of ThreeMesonDefaultCurrent.
@@ -468,6 +470,9 @@ struct ClassTraits<Herwig::ThreeMesonDefaultCurrent>
   static string library() { return "HwWeakCurrents.so"; }
 
 };
+
+/** @endcond */
+
 }
 
 #include "ThreeMesonDefaultCurrent.icc"

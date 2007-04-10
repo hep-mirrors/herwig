@@ -324,6 +324,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of MRST. */
 template <>
@@ -348,11 +350,10 @@ struct ClassTraits<Herwig::MRST>: public ClassTraitsBase<Herwig::MRST> {
   static string library() { return "HwMRST.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "MRST.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MRST.tcc"
-#endif
 
 #endif

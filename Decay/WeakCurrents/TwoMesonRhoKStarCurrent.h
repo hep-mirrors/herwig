@@ -347,6 +347,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of TwoMesonRhoKStarCurrent.
@@ -375,11 +377,10 @@ struct ClassTraits<Herwig::TwoMesonRhoKStarCurrent>
 
 };
 
+/** @endcond */
+
 }
 
 #include "TwoMesonRhoKStarCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoMesonRhoKStarCurrent.tcc"
-#endif
 
 #endif /* HERWIG_TwoMesonRhoKStarCurrent_H */

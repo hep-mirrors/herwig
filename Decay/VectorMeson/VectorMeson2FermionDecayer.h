@@ -202,6 +202,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of VectorMeson2FermionDecayer.
@@ -230,11 +232,10 @@ struct ClassTraits<Herwig::VectorMeson2FermionDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "VectorMeson2FermionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMeson2FermionDecayer.tcc"
-#endif
 
 #endif /* HERWIG_VectorMeson2FermionDecayer_H */

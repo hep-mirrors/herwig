@@ -283,6 +283,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * BaryonThreeQuarkModelFormFactor.
@@ -308,6 +310,8 @@ template <>
    */
   static string library() { return "HwFormFactors.so"; }
 };
+
+/** @endcond */
 
 }
 

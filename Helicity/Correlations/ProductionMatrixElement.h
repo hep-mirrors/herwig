@@ -414,35 +414,36 @@ private:
 
 namespace ThePEG {
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of ProductionMatrixElement.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::ProductionMatrixElement,1> {
-    /** Typedef of the base class of ProductionMatrixElement. */
-    typedef Base NthBase;
-  };
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of ProductionMatrixElement.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::ProductionMatrixElement,1> {
+  /** Typedef of the base class of ProductionMatrixElement. */
+  typedef Base NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::ProductionMatrixElement>
+  : public ClassTraitsBase<Herwig::Helicity::ProductionMatrixElement> {
   
   /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
+   * Return the class name.
    */
-  template <>
-  struct ClassTraits<Herwig::Helicity::ProductionMatrixElement>
-    : public ClassTraitsBase<Herwig::Helicity::ProductionMatrixElement> {
+  static string className() { return "Herwig++::ProductionMatrixElement"; }
+};
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::ProductionMatrixElement"; }
-  };
+/** @endcond */
   
 }
 
 #include "ProductionMatrixElement.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ProductionMatrixElement.tcc"
-#endif
 
 #endif /* HERWIG_ProductionMatrixElement_H */

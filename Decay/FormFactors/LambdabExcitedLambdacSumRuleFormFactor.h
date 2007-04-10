@@ -217,6 +217,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of LambdabExcitedLambdacSumRuleFormFactor.
@@ -245,11 +247,10 @@ struct ClassTraits<Herwig::LambdabExcitedLambdacSumRuleFormFactor>
 
 };
 
+/** @endcond */
+
 }
 
 #include "LambdabExcitedLambdacSumRuleFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LambdabExcitedLambdacSumRuleFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_LambdabExcitedLambdacSumRuleFormFactor_H */

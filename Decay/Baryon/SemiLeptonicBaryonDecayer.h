@@ -243,6 +243,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SemiLeptonicBaryonDecayer.
@@ -271,11 +273,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "SemiLeptonicBaryonDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SemiLeptonicBaryonDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SemiLeptonicBaryonDecayer_H */

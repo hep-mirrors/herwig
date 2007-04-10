@@ -96,36 +96,37 @@ private:
 
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of HardVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::HardVertex,1> {
+  /** Typedef of the base class of HardVertex. */
+  typedef ThePEG::Helicity::HelicityVertex NthBase;
+};
+  
+/**  
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::HardVertex>
+  : public ClassTraitsBase<Herwig::Helicity::HardVertex> {
   
   /**
-   * The following template specialization informs ThePEG about the
-   * base class of HardVertex.
+   * Return the class name.
    */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::HardVertex,1> {
-    /** Typedef of the base class of HardVertex. */
-    typedef ThePEG::Helicity::HelicityVertex NthBase;
-  };
-  
-  /**  
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::Helicity::HardVertex>
-    : public ClassTraitsBase<Herwig::Helicity::HardVertex> {
+  static string className() { return "Herwig++::HardVertex"; }
+};
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::HardVertex"; }
-  };
+/** @endcond */
   
 }
 
 #include "HardVertex.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HardVertex.tcc"
-#endif
 
 #endif /* HERWIG_HardVertex_H */

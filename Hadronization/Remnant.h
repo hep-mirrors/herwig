@@ -183,8 +183,5 @@ struct ClassTraits<Herwig::Remnant>
 }
 
 #include "Remnant.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Remnant.tcc"
-#endif
 
 #endif /* HERWIG_Remnant_H */

@@ -328,6 +328,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of GenericWidthGenerator.
@@ -348,6 +350,8 @@ template <>
    /** Return the class name. */
    static string className() { return "Herwig++::GenericWidthGenerator"; }
 };
+
+/** @endcond */
 
 }
 

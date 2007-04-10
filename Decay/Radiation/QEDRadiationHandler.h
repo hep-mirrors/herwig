@@ -167,8 +167,5 @@ struct ClassTraits<Herwig::QEDRadiationHandler>
 }
 
 #include "QEDRadiationHandler.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QEDRadiationHandler.tcc"
-#endif
 
 #endif /* HERWIG_QEDRadiationHandler_H */

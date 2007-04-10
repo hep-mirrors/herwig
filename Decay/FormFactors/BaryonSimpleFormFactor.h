@@ -233,6 +233,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * BaryonSimpleFormFactor.
@@ -259,11 +261,10 @@ struct ClassTraits<Herwig::BaryonSimpleFormFactor>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BaryonSimpleFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonSimpleFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_BaryonSimpleFormFactor_H */

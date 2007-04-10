@@ -151,6 +151,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of WeakPartonicDecayer. */
 template <>
@@ -172,11 +174,10 @@ struct ClassTraits<Herwig::WeakPartonicDecayer>
   static string library() { return "HwPartonicDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "WeakPartonicDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WeakPartonicDecayer.tcc"
-#endif
 
 #endif /* HERWIG_WeakPartonicDecayer_H */

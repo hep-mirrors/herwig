@@ -96,7 +96,7 @@ private:
   /**
    * Non-perturbatively split a time-like gluon,
    * if something goes wrong null pointers are returned.
-   * @param ptrGluon The gluon to be split
+   * @param gluon The gluon to be split
    * @param quark The quark produced in the splitting
    * @param anti  The antiquark produced in the splitting
    */
@@ -108,6 +108,7 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -129,6 +130,8 @@ struct ClassTraits<Herwig::PartonSplitter>:
   /** Return the class name.*/
   static string className() { return "Herwig++::PartonSplitter"; }
 };
+
+/** @endcond */
 
 }
 

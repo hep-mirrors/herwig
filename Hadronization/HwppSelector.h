@@ -169,8 +169,5 @@ struct ClassTraits<Herwig::HwppSelector>
 }
 
 #include "HwppSelector.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HwppSelector.tcc"
-#endif
 
 #endif /* HERWIG_HwppSelector_H */

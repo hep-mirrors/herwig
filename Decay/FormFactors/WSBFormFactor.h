@@ -259,6 +259,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * WSBFormFactor.
@@ -284,11 +286,10 @@ template <>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "WSBFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WSBFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_WSBFormFactor_H */

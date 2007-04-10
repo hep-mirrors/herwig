@@ -175,38 +175,42 @@ private:
 #include "SMWWWWVertex.icc"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of SMWWWWVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::SMWWWWVertex,1> {
+  /** Typedef of the base class of SMWWWWVertex. */
+  typedef Herwig::Helicity::VVVVVertex NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::SMWWWWVertex>
+  : public ClassTraitsBase<Herwig::Helicity::SMWWWWVertex> {
   
   /**
-   * The following template specialization informs ThePEG about the
-   * base class of SMWWWWVertex.
+   * Return the class name.
    */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::SMWWWWVertex,1> {
-    /** Typedef of the base class of SMWWWWVertex. */
-    typedef Herwig::Helicity::VVVVVertex NthBase;
-  };
+  static string className() { return "Herwig++::SMWWWWVertex"; }
   
   /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::Helicity::SMWWWWVertex>
-    : public ClassTraitsBase<Herwig::Helicity::SMWWWWVertex> {
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */ 
+  static string library() { return "HwSMVertex.so"; }
+  
+};
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::SMWWWWVertex"; }
-
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */ 
-    static string library() { return "HwSMVertex.so"; }
-
-  };
+/** @endcond */
   
 }
 

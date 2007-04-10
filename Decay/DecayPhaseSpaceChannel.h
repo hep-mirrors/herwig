@@ -305,6 +305,8 @@ class DecayPhaseSpaceError: public Exception {};
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of DecayPhaseSpaceChannel.
@@ -327,6 +329,8 @@ struct ClassTraits<Herwig::DecayPhaseSpaceChannel>
     /**  Return the class name.*/
   static string className() { return "Herwig++::DecayPhaseSpaceChannel"; }
 };
+
+/** @endcond */
 
 }
 

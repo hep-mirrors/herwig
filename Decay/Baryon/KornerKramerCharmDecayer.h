@@ -403,6 +403,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of KornerKramerCharmDecayer.
@@ -431,11 +433,10 @@ struct ClassTraits<Herwig::KornerKramerCharmDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "KornerKramerCharmDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KornerKramerCharmDecayer.tcc"
-#endif
 
 #endif /* HERIWG_KornerKramerCharmDecayer_H */

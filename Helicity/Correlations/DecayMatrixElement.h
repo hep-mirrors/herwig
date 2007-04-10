@@ -356,6 +356,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of DecayMatrixElement.
@@ -380,11 +382,10 @@ struct ClassTraits<Herwig::Helicity::DecayMatrixElement>
   static string className() { return "Herwig++::DecayMatrixElement"; }
 };
 
+/** @endcond */
+
 }
 
 #include "DecayMatrixElement.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DecayMatrixElement.tcc"
-#endif
 
 #endif /* HERWIG_DecayMatrixElement_H */

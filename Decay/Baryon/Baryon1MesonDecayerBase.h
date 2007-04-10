@@ -406,6 +406,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of Baryon1MesonDecayerBase.
@@ -434,11 +436,10 @@ struct ClassTraits<Herwig::Baryon1MesonDecayerBase>
 
 };
 
+/** @endcond */
+
 }
 
 #include "Baryon1MesonDecayerBase.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Baryon1MesonDecayerBase.tcc"
-#endif
 
 #endif /* HERWIG_Baryon1MesonDecayerBase_H */
