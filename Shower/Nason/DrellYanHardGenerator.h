@@ -5,6 +5,9 @@
 // This is the declaration of the DrellYanHardGenerator class.
 //
 
+#include <iostream>
+#include <fstream>
+#include <vector>
 #include "Herwig++/Shower/Nason/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
@@ -17,7 +20,7 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
+using namespace std;
 /**
  * Here is the documentation of the DrellYanHardGenerator class.
  *
@@ -127,12 +130,12 @@ protected:
    * Returns the result of the (nason matrix element) splitting function
    * for the current (yb,yj,p)
    */
-  virtual double getResult();
+  virtual double getResult(int emis_type, Energy pt, double yj);
 
-  /**
+ /**
    *  generates the hardest emission (yj,p)
    */
-  void getEvent(bool & quarkfirst,unsigned int & process);
+  virtual int getEvent();
 
 private:
 
@@ -159,11 +162,16 @@ private:
   /**
    *  The prefactor for the overestimate of the true distribution
    */
-  double _prefactor;
+  double _prefactor[3];
 
+  double _prefact;  //just to keep persistent input happy
+  
+  double _max[3];
   /**
    *  The power for the overestimate of the true distribution
    */
+  int _count[4];
+
   double _power;
 
   /**
@@ -179,12 +187,17 @@ private:
   /**
    *  the rapidity of the jet
    */
-  double  _yj;
+  double _yj;
+  double _x;
+  double _y;
+  double _x1;
+  double _y1;
 
   /**
    *  The transverse momentum of the jet
    */
   Energy _pt;
+  bool _inBounds;
 
   /**
    *  Pointers to the BeamParticleData objects
@@ -196,26 +209,19 @@ private:
    */
   vector<tcPDPtr> _partons;
 
-  /**
-   *  Whether the quark is in the + or - z direction
-   */
-  bool _quarkplus;
-
-  /**
-   *  The momenta of the new particles
-   */
-  vector<Lorentz5Momentum> _pnew;
-
   HistogramPtr  _hyb;
   HistogramPtr  _hplow;
   HistogramPtr  _hphigh;
-  HistogramPtr  _hyj;  
+  HistogramPtr  _hyj;
+  HistogramPtr  _htype;
   HistogramPtr  _weighta,_weightb,_weightc;
   /**
    *  vector of points for scatter plot
    */
-  vector<Energy> _ptplot;
-  vector<double> _yjplot;
+  std::vector<double> _ptplot;
+  std::vector<double> _yjplot;
+  std::vector<double> _xplot;
+  std::vector<double> _yplot;
 
 };
 
