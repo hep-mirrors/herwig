@@ -52,7 +52,7 @@ void DrellYanHardGenerator::Init() {
 }
 
 
-NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree,EvolverPtr) {
+NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
   // get the particles to be showered
   _beams.clear();
   _partons.clear();

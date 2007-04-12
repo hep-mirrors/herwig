@@ -232,7 +232,7 @@ void NasonEvolver::hardestEmission() {
   _nasontree=NasonTreePtr();
   if(!currenthard) return;
   // generate the hardest emission
-  _nasontree = currenthard->generateHardest(currentTree(),this);
+  _nasontree = currenthard->generateHardest(currentTree());
 }
 
 bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,

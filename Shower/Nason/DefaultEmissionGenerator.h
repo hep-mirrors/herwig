@@ -38,11 +38,6 @@ typedef pair<long, pTBranchingElement> pTBranchingInsert;
  */
 class DefaultEmissionGenerator: public HardestEmissionGenerator {
 
-/**
- *  The NasonEvolver is a friend to set the evolver pointer at initialisation
- */
-friend class NasonEvolver;
-
 public:
 
   /**
@@ -57,7 +52,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual NasonTreePtr generateHardest(ShowerTreePtr,EvolverPtr);
+  virtual NasonTreePtr generateHardest(ShowerTreePtr);
 
   /**
    *  Member to decide if the inheriting class can handle this process
@@ -101,12 +96,12 @@ protected:
   /**
    *  Member to generate the hardest emission for a hard process
    */
-  NasonTreePtr generateHard(ShowerTreePtr,EvolverPtr);
+  NasonTreePtr generateHard(ShowerTreePtr);
 
   /**
    *  Member to generate the hardest emission for a decay process
    */
-  NasonTreePtr generateDecay(ShowerTreePtr,EvolverPtr);
+  NasonTreePtr generateDecay(ShowerTreePtr);
   //@}
 
   /**

@@ -105,13 +105,12 @@ void DefaultEmissionGenerator::dofinish() {
   output << "plot\n";
 }
 
-NasonTreePtr DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree,
-						       EvolverPtr evolver) {
-  if(tree->isDecay()) return generateDecay(tree,evolver);
-  else                return generateHard (tree,evolver);
+NasonTreePtr DefaultEmissionGenerator::generateHardest(ShowerTreePtr tree) {
+  if(tree->isDecay()) return generateDecay(tree);
+  else                return generateHard (tree);
 }
 
-NasonTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree,EvolverPtr) {
+NasonTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree) {
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -128,8 +127,7 @@ NasonTreePtr DefaultEmissionGenerator::generateHard(ShowerTreePtr tree,EvolverPt
   return NasonTreePtr();
 }
 
-NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree,
-						     EvolverPtr evolver) {
+NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   // get the particles to be showered
   map<ShowerProgenitorPtr, ShowerParticlePtr>::const_iterator cit;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -313,7 +311,7 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree,
       if(cc) pdata[ix]=cc;
     }
   }
-  BranchingList branchings=evolver->splittingGenerator()->finalStateBranchings();
+  BranchingList branchings=evolver()->splittingGenerator()->finalStateBranchings();
   long index=happens.ids[0];
   SudakovPtr sudakov;
   for(BranchingList::const_iterator cit = branchings.lower_bound(index); 
@@ -351,8 +349,8 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree,
   // create the NasonTree
   NasonTreePtr nasontree=new_ptr(NasonTree(hard,vector<NasonBranchingPtr>()));
   // reconstruct the shower variables
-  evolver->showerModel()->kinematicsReconstructor()->reconstructDecayShower(nasontree,
- 									    evolver);
+  evolver()->showerModel()->kinematicsReconstructor()->reconstructDecayShower(nasontree,
+									      evolver());
 //   double phi=happens.kinematics->phi()- nasonemit->_phi+pi;
 //   if(phi>6.283) phi-=2.*pi;
 //   Energy ptdiff=happens.kinematics->pT() -nasonemit->_children[0]->_pt;

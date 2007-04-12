@@ -5,9 +5,6 @@
 // This is the declaration of the DrellYanHardGenerator class.
 //
 
-#include <iostream>
-#include <fstream>
-#include <vector>
 #include "Herwig++/Shower/Nason/HardestEmissionGenerator.h"
 #include "Herwig++/Shower/Couplings/ShowerAlpha.h"
 #include "Herwig++/Shower/Base/ShowerProgenitor.h"
@@ -48,7 +45,7 @@ public:
   /**
    *  Member to generate the hardest emission
    */
-  virtual NasonTreePtr generateHardest(ShowerTreePtr,EvolverPtr);
+  virtual NasonTreePtr generateHardest(ShowerTreePtr);
 
   /**
    *  Member to decide if the inheriting class can handle this process
