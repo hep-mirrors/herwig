@@ -30,11 +30,11 @@ using namespace Herwig;
 using namespace std;
 
 void DrellYanHardGenerator::persistentOutput(PersistentOStream & os) const {
-  os << _alphaS << _prefact << _power;
+  os << _alphaS << _power;
 }
 
 void DrellYanHardGenerator::persistentInput(PersistentIStream & is, int) {
-  is >> _alphaS >> _prefact >> _power;
+  is >> _alphaS >> _power;
 }
 
 ClassDescription<DrellYanHardGenerator> DrellYanHardGenerator::initDrellYanHardGenerator;
@@ -58,10 +58,13 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree,EvolverPt
   _partons.clear();
   ShowerParticleVector incoming;
   map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  _quarkplus=true;
   for(cit=tree->incomingLines().begin(); cit!=tree->incomingLines().end();++cit) {
     incoming.push_back(cit->first->progenitor());
     _beams.push_back(cit->first->beam());
     _partons.push_back(cit->first->progenitor()->dataPtr());
+    if(cit->first->progenitor()->id()>0&&cit->first->progenitor()->momentum().z()<0)
+      _quarkplus=false;
   }
   PPtr boson;
   if(tree->outgoingLines().size()==1) {
@@ -72,13 +75,13 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree,EvolverPt
   }
   _yb=0.5*log((boson->momentum().e()+boson->momentum().pz())/
 	      (boson->momentum().e()-boson->momentum().pz()));
+  _yb *= _quarkplus ? 1. : -1.;
   _mass=boson->mass();
   // we are assuming quark first, swap order to ensure this
   // if antiquark first
   if(_partons[0]->id()<_partons[1]->id()) {
     swap(_partons[0],_partons[1]);
     swap(_beams[0],_beams[1]);
-    _yb *=-1.;
   }
 
   getEvent();
@@ -92,13 +95,7 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree,EvolverPt
   (*_hphigh)+=_pt/GeV;
   (*_hyj)+=_yj;
 }
-  
-  // at the moment yb (born variables) are generated according to the leading order- this will have to be changed to include virtual emissions- (i.e generate with Bbar)  
-
-
-//this part tests to see if we can handle the event (produced by hard scattering) with the nason implementation
-
-
+   
 bool DrellYanHardGenerator::canHandle(ShowerTreePtr tree) {
   // two incoming particles
   if(tree->incomingLines().size()!=2) return false;
@@ -141,63 +138,55 @@ void DrellYanHardGenerator::doinit() throw(InitException) {
 }
 
 double DrellYanHardGenerator::getResult(int emis_type, Energy pt, double yj) {
-
   Energy2 s=sqr(generator()->maximumCMEnergy());
   Energy2 m2(sqr(_mass));
-  Energy et=sqrt(m2+sqr(pt));
   Energy2 scale = m2+sqr(pt);
-
+  Energy  et=sqrt(scale);
   // longitudinal real correction fractions
-  _x  = pt*exp(yj)/sqrt(s)+et*exp(_yb)/sqrt(s);
+  _x  = pt*exp( yj)/sqrt(s)+et*exp( _yb)/sqrt(s);
   _y  = pt*exp(-yj)/sqrt(s)+et*exp(-_yb)/sqrt(s);
-
-  if(_x<0.||_x>1.||_y<0.||_y>1.||_x*_y<m2/s){
-    _inBounds= false;
-    return 0.;
-  }//reject event if not in PS region  
-  else _inBounds=true;
-
+  // reject if outside region
+  if(_x<0.||_x>1.||_y<0.||_y>1.||_x*_y<m2/s) return 0.;
   // longitudinal born fractions
-  _x1 = _mass*exp(_yb)/sqrt(s);          
+  _x1 = _mass*exp( _yb)/sqrt(s);          
   _y1 = _mass*exp(-_yb)/sqrt(s);
- 
+  // mandelstam variables
   Energy2 th = -sqrt(s)*_x*pt*exp(-yj);
-  Energy2 uh = -sqrt(s)*_y*pt*exp(yj);
+  Energy2 uh = -sqrt(s)*_y*pt*exp( yj);
   Energy2 sh = m2-th-uh;
-  //  cerr<<emis_type<<endl;
   double res;
   // pdf part of the cross section
   double pdf[4];
   pdf[0]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],m2,_x1);
   pdf[1]=_beams[1]->pdf()->xfx(_beams[1],_partons[1],m2,_y1);
-  
   //qqbar2Zg
   if(emis_type==0) {
     pdf[2]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],scale,_x);
     pdf[3]=_beams[1]->pdf()->xfx(_beams[1],_partons[1],scale,_y);
     res = 4./3./pi*(sqr(th-m2)+sqr(uh-m2))*pt/(sh*uh*th)*GeV;
+    res=0.;
   }
   //qg2Zq
   else if(emis_type==1) {
-     pdf[2]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],scale,_x);
-     pdf[3]=_beams[1]->pdf()->xfx(_beams[1],getParticleData(ParticleID::g),scale,_y);
-     res = -1./2./pi*(sqr(uh-m2)+sqr(sh-m2))*pt/(sh*sh*uh)*GeV;
+    pdf[2]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],scale,_x);
+    pdf[3]=_beams[1]->pdf()->xfx(_beams[1],getParticleData(ParticleID::g),scale,_y);
+    res = -1./2./pi*(sqr(uh-m2)+sqr(sh-m2))*pt/(sh*sh*uh)*GeV;
+    res=0.;
   }
   //qbarg2Zqbar
   else {
     pdf[2]=_beams[0]->pdf()->xfx(_beams[0],getParticleData(ParticleID::g),scale,_x);
     pdf[3]=_beams[1]->pdf()->xfx(_beams[1],_partons[1],scale,_y);
     res =- 1./2./pi*(sqr(th-m2)+sqr(sh-m2))*pt/(sh*sh*th)*GeV;
-  }
- 
+  }  
+  //deals with pdf zero issue at large x
   if(pdf[0]<=0.||pdf[1]<=0.||pdf[2]<=0.||pdf[3]<=0.) {
-    res=0.;  //deals with pdf zero issue at large x
+    res=0.;
   }
   else {
     res*=pdf[2]*pdf[3]/pdf[0]/pdf[1]*m2/sh;
   }
-  res*=_alphaS->value(scale);
-
+  res*=_alphaS->ratio(scale);
   if(res*sqr(pt/GeV)>_max[emis_type]) _max[emis_type]=res*sqr(pt/GeV);
   return res;
  } 
@@ -219,25 +208,26 @@ int DrellYanHardGenerator::getEvent(){
   double res;
   int type_em=-1;
   Energy pt_last;
-  for(int j=0;j<3;j++){  
-  pt_last=maxp;
+  for(int j=0;j<3;j++) {  
+    pt_last=maxp;
+    double a = _alphaS->overestimateValue()*_prefactor[j]*(maxyj-minyj)/(_power-1.);
     do {
-     pt=GeV/pow(pow(GeV/pt_last,_power-1)-log(UseRandom::rnd())*(_power-1.)/_prefactor[j]/(maxyj-minyj),1./(_power-1.));
-     yj=UseRandom::rnd()*(maxyj-minyj)+ minyj;
-     res=getResult(j,pt,yj);
-     //   cerr<<"res "<<j<<" = "<<res<<endl;
-     wgt = res/(_prefactor[j]*pow(GeV/pt,_power));
-     reject = UseRandom::rnd()>wgt;
-     if(_inBounds)pt_last=pt;
-     //no emission event if p goes past p min - basically set to outside
-     //of the histogram bounds (hopefully hist object just ignores it)
-     if(pt<minp){
-       pt=0.0*GeV;
-       reject = false;
-     }
-     if(wgt>1.0)cerr<< "PROBLEM!!!!"<<endl;
-    }while(reject);
-
+      pt=GeV/pow(pow(GeV/pt_last,_power-1)-log(UseRandom::rnd())/a,1./(_power-1.));
+      yj=UseRandom::rnd()*(maxyj-minyj)+ minyj;
+      res=getResult(j,pt,yj);
+      wgt = res/(_prefactor[j]*pow(GeV/pt,_power));
+      reject = UseRandom::rnd()>wgt;
+      pt_last=pt;
+      //no emission event if p goes past p min - basically set to outside
+      //of the histogram bounds (hopefully hist object just ignores it)
+      if(pt<minp){
+	pt=0.0*GeV;
+	reject = false;
+      }
+      if(wgt>1.0)cerr<< "PROBLEM!!!!"<<endl;
+    }
+    while(reject);
+  
     if(pt>winning_pt){
       type_em = j;
       _pt=pt;
@@ -247,14 +237,12 @@ int DrellYanHardGenerator::getEvent(){
   }
 
   if(winning_pt/GeV<minp/GeV){ //was this an (overall) no emission event?
-     _pt=0.0*GeV;
-     _yj=-10;
-     _yb=-10;
-     type_em = 3;
+    _pt=0.0*GeV;
+    _yj=-10;
+    _yb=-10;
+    type_em = 3;
   }
   (*_htype)+=double(type_em)+0.5;
-  //cerr<<"emiss done#:  ";
-  // cerr<<double(type_em)+0.5<<endl;
   _count[type_em]++;
   return 0;
 }
@@ -294,7 +282,7 @@ void DrellYanHardGenerator::doinitrun() {
   _count[3]=0;
   _hyj= new_ptr(Histogram(-8.0,8.0,100));
   _hplow= new_ptr(Histogram(0.0,5.0,100));
-  _hphigh= new_ptr(Histogram(0.0,100.0,100));
+  _hphigh= new_ptr(Histogram(0.0,200.0,200));
   _hyb= new_ptr(Histogram(-6.0,6.0,100));
   _htype = new_ptr(Histogram(0.0,4.0,4));
   _weighta= new_ptr(Histogram(0.0,100.0,100));

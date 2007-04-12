@@ -163,8 +163,6 @@ private:
    *  The prefactor for the overestimate of the true distribution
    */
   double _prefactor[3];
-
-  double _prefact;  //just to keep persistent input happy
   
   double _max[3];
   /**
@@ -183,6 +181,11 @@ private:
    *  The mass of the gauge boson
    */
   Energy _mass;
+
+  /**
+   *  Whether the quark is in the + or - z direction
+   */
+  bool _quarkplus;
 
   /**
    *  the rapidity of the jet
