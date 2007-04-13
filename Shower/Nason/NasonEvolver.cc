@@ -275,6 +275,7 @@ bool NasonEvolver::truncatedTimeLikeShower(tShowerParticlePtr particle,
     }
     // pt veto
     if(fb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
+    if(vetoed) particle->setEvolutionScale(ShowerIndex::QCD,fb.kinematics->scale());
   }
   // if no branching set decay matrix and return
   if(!fb.kinematics) {
@@ -391,6 +392,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
     if(bb.kinematics->z()<0.5) vetoed=true;
     // pt veto
     if(bb.kinematics->pT()>progenitor()->maximumpT()) vetoed = true;
+    if(vetoed) particle->setEvolutionScale(ShowerIndex::QCD,bb.kinematics->scale());
   }
   if(!bb.kinematics) {
     double z(0.);
@@ -454,7 +456,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   ShowerParticlePtr otherChild = new_ptr(ShowerParticle(part[1],true,true));
   ShowerParticleVector theChildren; 
   theChildren.push_back(particle); 
-  theChildren.push_back(otherChild); 
+  theChildren.push_back(otherChild);
   particle->showerKinematics()->updateParent(newParent, theChildren);
   // update the history if needed
   currentTree()->updateInitialStateShowerProduct(progenitor(),newParent);
@@ -464,9 +466,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   // now continue the shower
   bool emitted=truncatedSpaceLikeShower(newParent,beam,branch);
   // now reconstruct the momentum
-  if(!emitted) {
-    bb.kinematics->updateLast(newParent);
-  }
+  if(!emitted) bb.kinematics->updateLast(newParent);
   particle->showerKinematics()->updateChildren(newParent, theChildren);
   // perform the shower of the final-state particle
   timeLikeShower(otherChild);
