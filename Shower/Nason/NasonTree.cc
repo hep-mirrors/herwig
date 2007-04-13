@@ -80,8 +80,10 @@ void NasonBranching::setMomenta(LorentzRotation R,double aparent,
     else if(axis.z()<0.) {
       vect.setPz(vect.pz());
     }
-    _phi=atan2(vect.y(),vect.x());
+    _phi= atan2(vect.y(),vect.x());
     if(_phi<0.) _phi+=2.*pi;
+    if(_children[1]->_incoming) _phi+=pi;
+    
   }
 }
 
