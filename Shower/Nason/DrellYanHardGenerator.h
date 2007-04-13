@@ -12,8 +12,6 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Utilities/Histogram.h"
 
-
-
 namespace Herwig {
 
 using namespace ThePEG;
@@ -39,7 +37,7 @@ public:
   inline DrellYanHardGenerator();
 
   /**
-   *  Members which must be overridden in the inheriting classes
+   *  Implementation of virtual members from HardestEmissionGenerator
    */
   //@{
   /**
@@ -121,22 +119,26 @@ protected:
   virtual void dofinish();
   //@}
 
-  //METHODS TULLY ADDED
-
- /**
-   * Returns the result of the (nason matrix element) splitting function
-   * for the current (yb,yj,p)
+  /**
+   * Returns the matrix element for a given type of process,
+   * rapidity of the jet \f$y_j\f$ and transverse momentum \f$p_T\f$
+   * @param emis_type the type of emission,
+   * (0 is \f$q\bar{q}\to Vg\f$, 1 is \f$qg\to Vq\f$ and 2 is \f$g\bar{q}\toV\bar{q}\f$)
+   * @param pt The transverse momentum of the jet
+   * @param yj The rapidity of the jet
    */
-  virtual double getResult(int emis_type, Energy pt, double yj);
-
- /**
+  double getResult(int emis_type, Energy pt, double yj);
+  
+  /**
    *  generates the hardest emission (yj,p)
+   * @param pnew The momenta of the new particles
+   * @param emissiontype The type of emission, as for getResult
+   * @return Whether not an emission was generated
    */
-  virtual int getEvent();
-
+  bool getEvent(vector<Lorentz5Momentum> & pnew,int & emissiontype);
+  
 private:
 
- 
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
@@ -157,18 +159,55 @@ private:
   ShowerAlphaPtr _alphaS;
 
   /**
-   *  The prefactor for the overestimate of the true distribution
+   *  Constants for the sampling. The distribution is assumed to have the
+   *  form \f$\frac{c}{{\rm GeV}}\times\left(\frac{{\rm GeV}}{p_T}\right)^n\f$ 
    */
-  double _prefactor[3];
-  
-  double _max[3];
+  //@{
   /**
-   *  The power for the overestimate of the true distribution
+   * The power, \f$n\f$, for the sampling
    */
-  int _count[4];
-
   double _power;
 
+  /**
+   *  The prefactor, \f$c\f$ for the \f$q\bar{q}\f$ channel
+   */
+  double _preqqbar;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$qg\f$ channel
+   */
+  double _preqg;
+
+  /**
+   *  The prefactor, \f$c\f$ for the \f$g\bar{q}\f$ channel
+   */
+  double _pregqbar;
+
+  /**
+   *  The prefactors as a vector for easy use
+   */
+  vector<double> _prefactor;
+  //@}
+
+  /**
+   *  Properties of the incoming particles
+   */
+  //@{
+  /**
+   *  Pointers to the BeamParticleData objects
+   */
+  vector<tcBeamPtr> _beams;
+  
+  /**
+   *  Pointers to the ParticleDataObjects for the partons
+   */
+  vector<tcPDPtr> _partons;
+  //@}
+
+  /**
+   *  Properties of the boson and jets
+   */
+  //@{
   /**
    *  The rapidity of the gauge boson
    */
@@ -188,26 +227,22 @@ private:
    *  the rapidity of the jet
    */
   double _yj;
-  double _x;
-  double _y;
-  double _x1;
-  double _y1;
 
   /**
    *  The transverse momentum of the jet
    */
   Energy _pt;
-  bool _inBounds;
+  //@}
 
   /**
-   *  Pointers to the BeamParticleData objects
+   *  Parameters for plots and debugging, will be deleted in final version
    */
-  vector<tcBeamPtr> _beams;
-
+  //@{
+  double _max[3];
   /**
-   *  Pointers to the ParticleDataObjects for the partons
+   *  The power for the overestimate of the true distribution
    */
-  vector<tcPDPtr> _partons;
+  int _count[4];
 
   HistogramPtr  _hyb;
   HistogramPtr  _hplow;
@@ -222,6 +257,7 @@ private:
   std::vector<double> _yjplot;
   std::vector<double> _xplot;
   std::vector<double> _yplot;
+  //@}
 
 };
 
@@ -263,8 +299,5 @@ struct ClassTraits<Herwig::DrellYanHardGenerator>
 }
 
 #include "DrellYanHardGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DrellYanHardGenerator.tcc"
-#endif
 
 #endif /* HERWIG_DrellYanHardGenerator_H */
