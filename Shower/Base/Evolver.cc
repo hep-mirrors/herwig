@@ -178,7 +178,6 @@ void Evolver::hardMatrixElementCorrection() {
 }
 
 bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
-  return false;
   bool vetoed = true;
   Branching fb;
   while (vetoed) {
@@ -237,7 +236,6 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 }
 
 bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
-  return false;
   bool vetoed(true);
   Branching bb;
   // generate branching
