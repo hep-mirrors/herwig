@@ -1,0 +1,36 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorBosonQQbarHardGenerator class.
+//
+
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <cmath>
+#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/CLHEPWrap/LorentzRotation.h"
+
+using namespace std;
+using namespace ThePEG;
+
+namespace Herwig {
+
+inline VectorBosonQQbarHardGenerator::VectorBosonQQbarHardGenerator() : _prefactor(10.0),_power(1.0)
+{}
+
+
+inline IBPtr VectorBosonQQbarHardGenerator::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VectorBosonQQbarHardGenerator::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline bool VectorBosonQQbarHardGenerator::inRange(){
+  //   return!(0.5*log((1.0+sqrt(1.0-4.0*sqr(_pt)/_s))/(1.0-sqrt(1.0-4.0*sqr(_pt)/_s)))<sqrt(_y*_y));
+   return( _x1 < 1. && _x2 < 1. && _x1+_x2 > 1. ); 
+ }
+
+}
