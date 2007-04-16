@@ -267,6 +267,46 @@ tPVector TopDalitzAnalysis::particleID(PPtr top,tPVector final)
 //      fabs(diff.y())>0.00001||fabs(diff.z())>0.00001) 
 //   { cout << "W boson     : " << diff  << endl; }
 //   cout << endl;
+
+  ///////////////////////////////////////////////
+  // Find the last b/bbar-quark in the b-shower//
+  ///////////////////////////////////////////////
+  PPtr last_b_quark,parent;
+  unsigned int found_last_b(0),n_gluons(0);
+  for(unsigned int ix=0;ix<bottom.size();++ix) {
+      // Count the number of gluons.
+      if(abs(bottom[ix]->id())==ParticleID::g) n_gluons++;
+      // If there is a b/bbar quark in the list.  
+      if(abs(bottom[ix]->id())==5) {
+          // Now look to see if it's the one from the weak decay.
+	  parent = bottom[ix];
+	  do {
+              parent = parent->parents()[0];
+	  } while(abs(parent->id())!=ParticleID::g&&
+		  abs(parent->id())!=ParticleID::t);
+          if(parent==top) {
+		  last_b_quark = bottom[ix];
+		  found_last_b++;
+	  }
+      }
+  }
+  if(found_last_b!=1) { 
+      cout << "TopDalitzAnalysis.cc: can't find a b in top decay." << endl; 
+      cout << "Set last_b_quark momentum " << found_last_b << "times!" << endl;
+      cout << "Parent: " << *parent << endl;
+  }
+  ///////////////////////////////////////
+  // Calculate xb and do histogramming //
+  ///////////////////////////////////////
+  if(n_gluons>=1) {
+      Energy mt=getParticleData(ParticleID::t)->mass();
+      double bvar=sqr(getParticleData(ParticleID::b)->constituentMass()/mt);
+      double wvar=sqr(getParticleData(ParticleID::Wplus)->mass()/mt);
+      Lorentz5Momentum last_b_mom = last_b_quark->momentum();
+      Lorentz5Momentum top_mom    = orig->momentum();
+      _xb_bquark      += 2.*(last_b_mom*top_mom)/sqr(mt)/(1.-wvar+bvar);
+      _xb_bquark_peak += 2.*(last_b_mom*top_mom)/sqr(mt)/(1.-wvar+bvar);
+  }
   ////////////////////
   // Jet Clustering //
   ////////////////////
@@ -295,80 +335,27 @@ void TopDalitzAnalysis::dalitz(tPVector finalPartons)
   // since the finalPartons array will only have one entry if there are no 
   // gluons radiated viz the b-quark which did not emit any other radiation
   // from the top or bottom makes finalPartons.size()>1 .
-  if(finalPartons.size()>1)
-    {
-      _kint.clearMap();
-      // Get KtJet to find two jets out of the list bottom.
-      // Note, if the top did not radiate (tprod.size()==0) then KtJet
-      // is giving back two jets made from the b and whatever the b
-      // radiated. In this case the two jet momenta add to give bq. If
-      // the top radiates then the two jet momenta seem to (and do) equal 
-      // tq and bq respectively!
-      KtJet::KtEvent ev = 
-	  KtJet::KtEvent(_kint.convertToKtVectorList(finalPartons),1,1,1);
-      ev.findJetsN(2);
-      // Get the two jets ordered by their Pt (largest Pt first?).
-      vector<KtJet::KtLorentzVector> ktjets = ev.getJetsPt();
-      // Identify the jets.
-      int nquark[2] = {0,0},iq;
-      for(int ix = 0;ix<ev.getNConstituents();++ix)
-	{
-	  iq = ktjets[1].contains(*ev.getConstituents()[ix]);
-          // iq = 1 if the 2nd jet (ktjets[1]) DOES contain constituent ix.
-          // iq = 0 if the 2nd jet (ktjets[1]) DOESN'T contain constituent ix so
-          // iq = 0 if the 1st jet (ktjets[0]) DOES contain constituent ix.
-	  if(finalPartons[ix]->id() == -5) --nquark[iq];
-          // If constituent ix is a bbar lower nquark[iq] by 1.
-	  else if(finalPartons[ix]->id() == 5) ++nquark[iq];
-          // If constituent ix is a b increase nquark[iq] by 1.
-	}
-      // Therefore nquark[0] is the number of b's-bbar's in jet 0  
-      // Therefore nquark[1] is the number of b's-bbar's in jet 1. 
-      Lorentz5Momentum pb,pg;
-      // Identify the jets as being due to b/bbar quarks or gluons.
-      if(top->id()>0)
-	{
-	  // If the decay is t->bW+ then if nquark[0] has more b-bbar than 
-          // nquark[1] jet ktjet[0] must be the b jet.
-	  if(nquark[0]>nquark[1])
-	    {
-	      pb=ktjets[0];
-	      pg=ktjets[1];
-	    }
-	  else 
-	    {
-	      pb=ktjets[1];
-	      pg=ktjets[0];
-	    }
-	}
-      else
-	{
-	  // If the decay is tbar->bbarW- then if nquark[1] has less b-bbar than 
-          // nquark[0] jet ktjet[1] must be the bbar jet.
-	  if(nquark[0]>nquark[1])
-	    {
-	      pb=ktjets[1];
-	      pg=ktjets[0];
-	    }
-	  else 
-	    {
-	      pb=ktjets[0];
-	      pg=ktjets[1];
-	    }
-	}
-      // Boost to the rest frame
-      Hep3Vector boost;
-      if(orig) boost=-orig->momentum().boostVector();
-      else boost=-top->momentum().boostVector();
-      pg.boost(boost);
-      pb.boost(boost);
-      Energy mt(top->mass());
-      double xg(2.*pg.e()/mt),xb(2.*pb.e()/mt);
-      if(_nout<50000) {
-	_output[0] << xg << " " << 2.-xb-xg << "\n";
+  if(finalPartons.size()==2) {
+      Lorentz5Momentum b_mom,g_mom;
+      if(abs(finalPartons[0]->id())==ParticleID::b&&
+	 finalPartons[1]->id()==ParticleID::g) {
+	  b_mom   = finalPartons[0]->momentum();
+	  g_mom   = finalPartons[1]->momentum();
+      } else if(finalPartons[0]->id()==ParticleID::g&&
+		abs(finalPartons[1]->id())==ParticleID::b) {
+	  b_mom   = finalPartons[1]->momentum();
+	  g_mom   = finalPartons[0]->momentum();
+      } else {
+	  cout << "TopDalitzAnalysis.cc: dalitz - warning odd finalPartons.\n";
+	  return;
       }
+      Lorentz5Momentum t_mom = orig->momentum();
+      Energy mt = getParticleData(ParticleID::t)->mass();
+      double xb(2.*(b_mom*t_mom)/sqr(mt));
+      double xg(2.*(g_mom*t_mom)/sqr(mt));
+      if(_nout<50000) _output[0] << xg << " " << 2.-xb-xg << "\n";
       ++_nout;
-    }
+  }
   return;
 }
 
@@ -537,5 +524,23 @@ void TopDalitzAnalysis::dofinish() {
   /////////////
   _logy3.topdrawOutput(_output[2],true,false,false,false,"RED","log(y3)");
   _output[2].close();
+
+  ////////////////
+  // _xb_bquark //
+  ////////////////
+  _xb_bquark.topdrawOutput(_output[3],true,false,false,false,"RED","xb");
+  _output[3].close();
+
+  ////////////////
+  // _xb_bquark_peak //
+  ////////////////
+  _xb_bquark_peak.topdrawOutput(_output[4],true,false,false,false,"RED","xb");
+  _output[4].close();
+
+  //////////////
+  // _xB_Bhad //
+  //////////////
+  _xB_Bhad.topdrawOutput(_output[5],true,false,false,false,"RED","xB");
+  _output[5].close();
 
 }

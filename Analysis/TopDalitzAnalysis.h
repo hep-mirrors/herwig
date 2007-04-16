@@ -115,6 +115,21 @@ public:
    *  Histogram for log(y3).
    */
   Histogram _logy3;
+
+  /**
+   *  Histogram for the b-quark energy spectrum.
+   */
+  Histogram _xb_bquark;
+
+  /**
+   *  Histogram for the b-quark energy spectrum around the Sudakov peak.
+   */
+  Histogram _xb_bquark_peak;
+
+  /**
+   *  Histogram for the B-hadron energy spectrum.
+   */
+  Histogram _xB_Bhad;
   //@}
 
 public:
@@ -197,7 +212,7 @@ private:
   /**
    *  Output stream
    */
-  ofstream _output[3];
+  ofstream _output[6];
 
   /**
    *  Number of outputs
