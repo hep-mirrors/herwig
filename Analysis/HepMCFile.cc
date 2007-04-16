@@ -55,7 +55,7 @@ ClassDescription<HepMCFile> HepMCFile::initHepMCFile;
 void HepMCFile::Init() {
 
   static ClassDocumentation<HepMCFile> documentation
-    ("There is no documentation for the HepMCFile class");
+    ("This analysis handler will output the event record in HepMC format.");
 
   static Parameter<HepMCFile,long> interfacePrintEvent
     ("PrintEvent",
