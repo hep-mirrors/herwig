@@ -87,17 +87,18 @@ reconstructParent(const tShowerParticlePtr theParent,
 }
 
 void IS_QtildaShowerKinematics1to2::
-updateLast( const tShowerParticlePtr theLast) const {
+updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   if(theLast->isFinalState()) return;
+  Energy2 pt2=sqr(px)+sqr(py);
   theLast->showerParameters()[0]=theLast->x();
-  theLast->showerParameters()[1]=0.5*sqr(theLast->data().mass())/
+  theLast->showerParameters()[1]=0.5*(sqr(theLast->data().mass())+pt2)/
     theLast->showerParameters()[0]/p_dot_n();
   theLast->showerVariables().resize(3);
   theLast->showerParameters().resize(2);
   for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=0.;
   theLast->set5Momentum(sudakov2Momentum(theLast->showerParameters()[0], 
 					 theLast->showerParameters()[1], 
-					 0.,0.,0));
+					 px,py,0));
 }
  
 void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr parent) {
