@@ -152,7 +152,7 @@ private:
    * @param alpha The input coupling
    * @param nflav The number of flavours
    */
-  inline Energy computeLambda(Energy match,double alpha,unsigned int nflav) const;
+  inline Energy computeLambda(Energy match, double alpha, unsigned int nflav) const;
 
   /**
    * Return the value of \f$\Lambda\f$ and the number of flavours at the scale.
@@ -184,10 +184,16 @@ private:
   Energy _qmin;
 
   /**
-   *  Parameter controlling the behaviour of \f$\alpha_S\f$ in the non-perturbative
-   *  region.
+   *  Parameter controlling the behaviour of \f$\alpha_S\f$ in the
+   *  non-perturbative region.
    */ 
   int _asType;
+
+  /**
+   *  Another parameter, a possible (maximum) value of alpha in the
+   *  non-perturbative region.
+   */ 
+  double _asMaxNP;
 
   /**
    *  Thresholds for the different number of flavours 
@@ -271,10 +277,11 @@ struct ClassTraits<Herwig::ShowerAlphaQCD>
   static string className() { return "Herwig++::ShowerAlphaQCD"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * ShowerAlphaQCD is implemented. It may also include several, space-separated,
-   * libraries if the class ShowerAlphaQCD depends on other classes (base classes
-   * excepted). In this case the listed libraries will be dynamically
-   * linked in the order they are specified.
+   * ShowerAlphaQCD is implemented. It may also include several,
+   * space-separated, libraries if the class ShowerAlphaQCD depends on
+   * other classes (base classes excepted). In this case the listed
+   * libraries will be dynamically linked in the order they are
+   * specified.
    */
   static string library() { return "HwShower.so"; }
 };

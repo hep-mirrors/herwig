@@ -10,7 +10,7 @@ using ThePEG::Constants::pi;
 
 inline ShowerAlphaQCD::ShowerAlphaQCD() 
   : ShowerAlpha(), 
-    _qmin(0.630882*GeV), _asType(1), 
+    _qmin(0.630882*GeV), _asType(1), _asMaxNP(1.0), 
     _thresholds(4,0.0), _lambda(4,0.0),
     _nloop(3),_lambdaopt(false),_thresopt(false),
     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
