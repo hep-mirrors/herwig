@@ -177,8 +177,8 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   // final threshold is qmin
   _thresholds[0]=_qmin;
   // compute the maximum value of as 
-  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)); // gives as = 1
-  else _alphamin = _asMaxNP; 
+  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8); // approx as = 1
+  else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8)); 
   // check consistency lambda_3 < qmin
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
@@ -224,12 +224,10 @@ double ShowerAlphaQCD::value(const Energy2 scale) const {
     nflam = getLamNfTwoLoop(q); 
     val = alphaS(q, nflam.second, nflam.first);
   }
-  cout << "q = " << q/GeV << "GeV, qmin = " << _qmin/GeV << " GeV, value = " << scaleFactor()*val << endl; 
   return scaleFactor() * val;
 }
 
 double ShowerAlphaQCD::overestimateValue() const {
-  cout << "overestimateValue = " << scaleFactor()*_alphamin << endl; 
   return scaleFactor() * _alphamin; 
 }
 
@@ -273,6 +271,5 @@ double ShowerAlphaQCD::ratio(const Energy2 scale) const {
     val = alphaS(q, nflam.second, nflam.first);
   }
   // denominator 
-  cout << "q = " << q/GeV << "GeV, qmin = " << _qmin/GeV << "GeV, ratio = " << val << "/" << _alphamin << " = " << val/_alphamin << endl; 
   return val/_alphamin;  
 }
