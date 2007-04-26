@@ -1,0 +1,370 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the UEDBase class.
+//
+
+#include "UEDBase.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Repository/Repository.h"
+
+using namespace Herwig;
+
+void UEDBase::doinit() throw(InitException) {
+  StandardModel::doinit();
+  //level-1 masses and mixing angle
+  calculateKKMasses(1);
+  theMixingAngles.insert(make_pair(1, calculateMixingAngle(1)));
+  //write out the entire spectrum ordered by increasing mass
+  writeSpectrum();
+  //add the level-1 vertices.
+  addVertex(theF1F1Z0Vertex);
+  addVertex(theF1F1G0Vertex);
+  addVertex(theF1F0G1Vertex);
+  addVertex(theG1G1G0Vertex);
+  addVertex(theG0G0G1G1Vertex);
+  addVertex(theF1F1P0Vertex);
+  addVertex(theF1F1W0Vertex);
+  addVertex(theF1F0P1Vertex);
+  addVertex(theF1F0Z1Vertex);
+  addVertex(theF1F0W1Vertex);
+  addVertex(theP0H1H1Vertex);
+  addVertex(theZ0H1H1Vertex);
+  addVertex(theW0A1H1Vertex);
+  addVertex(theZ0A1h1Vertex);
+  addVertex(theW0W1W1Vertex);
+}
+
+void UEDBase::persistentOutput(PersistentOStream & os) const {
+  os << theRadCorr << ounit(theInvRadius, GeV) << ounit(theCutOff, GeV) 
+     << theF1F1Z0Vertex << theF1F1G0Vertex << theF1F0G1Vertex
+     << theG1G1G0Vertex << theG0G0G1G1Vertex << theF1F1P0Vertex
+     << theF1F1W0Vertex << theF1F0P1Vertex << theF1F0Z1Vertex
+     << theF1F0W1Vertex << theP0H1H1Vertex << theZ0H1H1Vertex
+     << theW0A1H1Vertex << theZ0A1h1Vertex << theW0W1W1Vertex;
+}
+
+void UEDBase::persistentInput(PersistentIStream & is, int) {
+  is >> theRadCorr >> iunit(theInvRadius, GeV) >> iunit(theCutOff, GeV) 
+     >> theF1F1Z0Vertex >> theF1F1G0Vertex >> theF1F0G1Vertex
+     >> theG1G1G0Vertex >> theG0G0G1G1Vertex >> theF1F1P0Vertex
+     >> theF1F1W0Vertex >> theF1F0P1Vertex >> theF1F0Z1Vertex 
+     >> theF1F0W1Vertex >>  theP0H1H1Vertex >> theZ0H1H1Vertex
+     >> theW0A1H1Vertex >> theZ0A1h1Vertex >> theW0W1W1Vertex;
+}
+
+ClassDescription<UEDBase> UEDBase::initUEDBase;
+// Definition of the static class description member.
+
+void UEDBase::Init() {
+
+  static ClassDocumentation<UEDBase> documentation
+    ("This class implements/stores the necessary information for the simulation"
+     " of a Universal Extra Dimensions model.");
+
+  static Parameter<UEDBase,bool> interfaceRadiativeCorrections
+    ("RadiativeCorrections",
+     "Switch for calculating the radiative corrections to the KK masses",
+     &UEDBase::theRadCorr, true, 0, 0,
+     false, false, Interface::nolimits);
+
+  static Parameter<UEDBase,Energy> interfaceInverseRadius
+    ("InverseRadius",
+     "The inverse radius of the compactified dimension ",
+     &UEDBase::theInvRadius, GeV, 1000.*GeV, 0.*GeV, 0*GeV,
+     true, false, Interface::nolimits);
+
+  static Parameter<UEDBase,Energy> interfaceCutOffScale
+    ("CutOffScale",
+     "The cut off scale for the theory",
+     &UEDBase::theCutOff, GeV, 10000.*GeV, 0*GeV, 0*GeV,
+     true, false, Interface::nolimits);
+    
+  static Parameter<UEDBase,string> interfaceSPCFileName
+    ("SPCFileName",
+     "The name of the spectrum file",
+     &UEDBase::theSpectrum, "UEDSpectrum.spc", false, false);
+
+  static Parameter<UEDBase,Energy> interfaceVeV
+    ("VeV",
+     "The vacuum expectation value of the Higgs field",
+     &UEDBase::theVeV, GeV, 246.*GeV, 0*GeV, 0*GeV,
+     true, false, Interface::nolimits);
+    
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1Z
+    ("Vertex/F1F1Z",
+     "The F1F1Z UED Vertex",
+     &UEDBase::theF1F1Z0Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1G0
+    ("Vertex/F1F1G0",
+     "The F1F1G UED Vertex",
+     &UEDBase::theF1F1G0Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0G1
+    ("Vertex/F1F0G1",
+     "The F1F0G0 UED Vertex",
+     &UEDBase::theF1F0G1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VVVVertex> interfaceG1G1G0
+    ("Vertex/G1G1G0",
+     "The G1G1G0 UED Vertex",
+     &UEDBase::theG1G1G0Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VVVVVertex> interfaceG0G0G1G1
+    ("Vertex/G0G0G1G1",
+     "The G0G0G1G1 UED Vertex",
+     &UEDBase::theG0G0G1G1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1P
+    ("Vertex/F1F1P",
+     "The F1F1P UED Vertex",
+     &UEDBase::theF1F1P0Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F1W
+    ("Vertex/F1F1W",
+     "The F1F1W UED Vertex",
+     &UEDBase::theF1F1W0Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0P1
+    ("Vertex/F1F0P1",
+     "The F1F0P1 UED Vertex",
+     &UEDBase::theF1F0P1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0Z1
+    ("Vertex/F1F0Z1",
+     "The F1F0Z1 UED Vertex",
+     &UEDBase::theF1F0Z1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0W1
+    ("Vertex/F1F0W1",
+     "The F1F0W1 UED Vertex",
+     &UEDBase::theF1F0W1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VSSVertex> interfaceP0H1H1
+    ("Vertex/P0H1H1",
+     "The P0H1H1 UED Vertex",
+     &UEDBase::theP0H1H1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VSSVertex> interfaceZ0H1H1
+    ("Vertex/Z0H1H1",
+     "The Z0H1H1 UED Vertex",
+     &UEDBase::theZ0H1H1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VSSVertex> interfaceW0A1H1
+    ("Vertex/W0A1H1",
+     "The W0A1H1 UED Vertex",
+     &UEDBase::theW0A1H1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VSSVertex> interfaceZ0A1h1
+    ("Vertex/Z0A1h1",
+     "The W0A1H1 UED Vertex",
+     &UEDBase::theZ0A1h1Vertex, false, false, true, false, false);
+
+  static Reference<UEDBase,Helicity::VVVVertex> interfaceW0W1W1
+    ("Vertex/W0W1W1",
+     "The W0W1W1 UED Vertex",
+     &UEDBase::theW0W1W1Vertex, false, false, true, false, false);
+}
+
+void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
+  if(n == 0)
+    throw InitException() << "UEDBase::resetKKMasses - "
+			  << "Trying to reset masses with KK number == 0!"
+			  << Exception::warning;
+  if(theRadCorr) {
+    fermionMasses(n);
+    bosonMasses(n);
+  }
+  else {
+    //set masses to tree level for each kk mode
+    long level1 = 5000000 + n*100000;
+    long level2 = 6000000 + n*100000;
+    Energy2 ndmass2 = sqr(n*theInvRadius);
+    for(unsigned int i = 1; i < 38; ++i) {
+      if(i == 7 || i == 17) i += 4;
+      if(i == 26) i += 10;
+      Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
+      resetMass(level1 + i, kkmass);
+      if( i < 7 || i == 11 || i == 13 || i == 15 )
+	resetMass(level2 + i, kkmass);
+    }
+  
+  }
+
+}
+
+void UEDBase::bosonMasses(const unsigned int n) {
+  // Common constants
+  const Energy2 invRad2 = theInvRadius*theInvRadius;
+  const double g_em2 = 4.*Constants::pi*alphaEM(invRad2);
+  const double g_s2 = 4.*Constants::pi*alphaS(invRad2);
+  const double g_W2 = g_em2/sin2ThetaW();
+  const double zeta3 = 1.20202020;
+  const Energy2 nmass2 = sqr(n*theInvRadius); 
+  const Energy2 norm = 1./16./Constants::pi/Constants::pi;
+  long level = 5000000 + n*100000;
+  //gluon
+  Energy2 deltaGB = g_s2*invRad2*norm*( (-3.*zeta3/2./pi2) + 
+				       23.*n*n*log(theCutOff/theInvRadius) );
+  resetMass(level + 21, sqrt(nmass2 + deltaGB));
+
+  //W
+  Energy2 deltaGW = g_W2*invRad2*norm*( (-5*zeta3/2./pi2) + 
+					15.*n*n*log(theCutOff/theInvRadius) );
+  Energy2 new_m2 = sqr(getParticleData(24)->mass()) + nmass2 + deltaGW;
+  resetMass(level + 24, sqrt(new_m2));
+
+  //Z and gamma are a mixture of Bn and W3n
+  deltaGB = g_em2*invRad2*norm*( (-39*zeta3/2./pi2) - 
+			       (n*n*log(theCutOff/theInvRadius)/3) );
+  Energy2 mZ2 = sqr(getParticleData(23)->mass());
+  //KK_gamma
+  new_m2 = 0.5*( 2.*nmass2 + mZ2 + deltaGB + deltaGW - 
+		 sqrt( g_W2*(deltaGW - deltaGB)*theVeV*theVeV 
+		       + sqr(mZ2 + deltaGB - deltaGW) ) );
+  resetMass(level + 22, sqrt(new_m2));
+  //KK_Z
+  new_m2 = 0.5*( 2.*nmass2 + mZ2 + deltaGB + deltaGW + 
+		 sqrt( g_W2*(deltaGW - deltaGB)*theVeV*theVeV 
+		       + sqr(mZ2 + deltaGB - deltaGW) ) );
+  resetMass(level + 23, sqrt(new_m2));
+
+  //scalars
+  double lambda_H = sqr(getParticleData(25)->mass())/2./theVeV/theVeV;
+  Energy2 mbarH2 = 0.;
+  deltaGB = n*n*norm*invRad2*(3.*g_W2 + (3.*g_em2/2.) 
+			    - 2.*lambda_H)*log(theCutOff/theInvRadius) + mbarH2;
+  //H0
+  new_m2 = sqr(getParticleData(25)->mass()) + nmass2 + deltaGB;
+  resetMass(level + 25, sqrt(new_m2));
+  //A0
+  new_m2 = sqr(getParticleData(23)->mass()) + nmass2 + deltaGB;
+  resetMass(level + 36, sqrt(new_m2));
+  //H+
+  new_m2 = sqr(getParticleData(24)->mass()) + nmass2 + deltaGB;
+  resetMass(level + 37, sqrt(new_m2));
+}
+
+void UEDBase::fermionMasses(const unsigned int n) {
+  const Energy2 invRad2 = theInvRadius*theInvRadius;
+  const double g_em2 = 4.*Constants::pi*alphaEM(invRad2);
+  const double g_s2 = 4.*Constants::pi*alphaS(invRad2);
+  const double g_W2 = g_em2/sin2ThetaW();
+  const Energy nmass = n*theInvRadius;
+  const Energy norm = 
+    nmass*log(theCutOff/theInvRadius)/16./Constants::pi/Constants::pi;
+  const Energy topMass = getParticleData(6)->mass();
+  const double ht = sqrt(2)*topMass/theVeV;
+  //doublets
+  Energy deltaL = norm*(6.*g_s2 + (27.*g_W2/8.) + (g_em2/8.));
+  Energy deltaQ = deltaL;
+  Energy2 shift = sqr(nmass + deltaL);
+  long level = 5000000 + n*100000;
+  for(long i = 1; i < 17; ++i) {
+    if(i == 6)  {
+      i += 5;
+      deltaL = norm*( (27.*g_W2/8.) + (9.*g_em2/8.) );
+      shift = sqr(nmass + deltaL); 
+    }
+    Energy2 new_m2 = sqr(getParticleData(i)->mass()) + shift;
+    resetMass(level + i, sqrt(new_m2));
+  }
+  //singlet shifts
+  const  Energy deltaU = norm*(6.*g_s2 + 2.*g_em2);
+  const Energy deltaD = norm*(6.*g_s2 + 0.5*g_em2);
+  const Energy2 shiftU = sqr(nmass + deltaU);
+  const Energy2 shiftD = sqr(nmass + deltaD);
+  
+  //Top quarks seperately as they have different corrections
+  const InvEnergy R = 1/theInvRadius; 
+  const Energy2 mt2 = sqr(topMass);
+  const Energy delta_Q3 = -3.*ht*ht*norm/2.;
+  const Energy deltaTD = deltaQ + delta_Q3;
+  const Energy deltaTS = deltaU + 2.*delta_Q3;
+
+  Energy second_term = 
+    0.5*theInvRadius*sqrt( 4.*mt2*R*R + 
+			   sqr( 2.*n + R*(deltaTS + deltaTD) ) );
+  //doublet
+  resetMass(level + 6, abs(0.5*(deltaTD - deltaTS) - second_term) );
+  //singlet
+  level += 1000000;
+  resetMass(level + 6, 0.5*(deltaTD - deltaTS) + second_term);
+  // others
+  //lepton 
+  Energy delta = 9.*norm*g_em2/2.;
+  shift = sqr(nmass + delta);
+
+  for(long i = 1; i < 17; ) {
+    if(i == 6) i += 5;
+    Energy2 new_m2, smMass2(sqr(getParticleData(i)->mass()));
+    if(i < 6) {
+      if( i % 2 == 0)
+	new_m2 = smMass2 + shiftU;
+      else 
+	new_m2 = smMass2 + shiftD;
+      resetMass(level + i, sqrt(new_m2));
+      ++i;
+    }
+    else {
+      resetMass(level + i, sqrt(smMass2 + shift));
+      i += 2;
+    }
+
+  }
+
+}
+
+double UEDBase::calculateMixingAngle(const unsigned int) {
+  //NEED TO IMPLEMENT A CALCULATION ROUTINE
+  return 0.1;
+}
+
+void UEDBase::resetMass(long id, Energy mass) throw(InitException) {
+  theMasses.push_back(make_pair(id, mass));
+  tPDPtr particle = getParticleData(id);
+  if(!particle) {
+    throw InitException() << "UEDBase::resetMass - Trying to reset a mass for "
+			  << "a ParticleData object that does not exist. ID: "
+			  << id << Exception::warning;
+    return;
+  }
+  //find the correct interface
+  const InterfaceBase * ifc = 
+    Repository::FindInterface(particle, "NominalMass");
+  if(!ifc)
+    throw InitException() << "UEDBase::resetMass - There was an error while "
+			  << "retrieving the NominalMass interface for "
+			  << particle->fullName() 
+			  << Exception::abortnow;
+  //put value into a stream
+  ostringstream oss;
+  oss << ounit(mass, GeV);
+  if(!oss)
+    throw InitException() << "UEDBase::resetMass - There was an error while "
+			  << "reading the new mass  into a stream for "
+			  << particle->fullName() 
+			  << Exception::abortnow;
+  ifc->exec(*particle, "set", oss.str());
+}
+
+void UEDBase::writeSpectrum() {
+  sort(theMasses.begin(), theMasses.end(), lowerMass);
+  ofstream ofs(theSpectrum.c_str());
+  ofs << "# UED Model Particle Spectrum\n"
+      << "# R^-1: " << theInvRadius/GeV << " GeV\n"
+      << "# Lambda: " << theCutOff/GeV << " GeV\n"
+      << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
+      << endl;
+  ofs << "#\n# ID\t\t\tMass(GeV)\n";
+  for(vector<IDMassPair>::iterator it = theMasses.begin(); 
+      it != theMasses.end();) {
+    ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
+    theMasses.erase(it);
+  }
+}

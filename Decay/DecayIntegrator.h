@@ -98,7 +98,7 @@ public:
    * @param cc Is this mode the charge conjugate
    * @param dm The decay mode
    */
-  virtual int modeNumber(bool & cc,const DecayMode & dm) const=0;
+  virtual int modeNumber(bool & cc, const DecayMode & dm) const = 0;
 
   /**
    * Add a phase-space mode to the list
@@ -325,6 +325,13 @@ protected:
    * Set whether or not the intermediates are included 
    */ 
   inline void generateIntermediates(bool);
+
+  /**
+   * Initialize the phase-space mode
+   * @param imode The mode
+   * @param init Whether or not to perform the initialization
+   */
+  Energy initializePhaseSpaceMode(unsigned int imode,bool init) const;
 
 protected:
   

@@ -33,11 +33,6 @@ public:
    * The default constructor.
    */
   inline SVVLoopVertex();
-  
-  /**
-   * The copy constructor.
-   */
-  inline SVVLoopVertex(const SVVLoopVertex &);
   //@}
   
   /**
@@ -73,6 +68,30 @@ protected:
    * @return a pointer to the new object.
    */
   inline virtual IBPtr fullclone() const;
+  //@}
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  inline virtual void dofinish();
   //@}
   
 protected:
@@ -122,7 +141,7 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
 
 /** This template specialization informs ThePEG about the
  *  base classes of SVVLoopVertex. */
@@ -141,7 +160,7 @@ struct ClassTraits<Herwig::Helicity::SVVLoopVertex>
   static string className() { return "Herwig++::SVVLoopVertex"; }
 };
 
-/** @endcond */
+/// \endif
 
 }
  

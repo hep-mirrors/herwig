@@ -307,7 +307,31 @@ inline Energy2 VertexBase::invariant(unsigned int ix,unsigned int iy)
 		      << ix << " " << iy << Exception::abortnow;
   return _kine[ix][iy];
 }
+ 
 
+inline void VertexBase::setName(const VertexType & name){
+  _theName = name;
+}
+
+inline VertexType VertexBase::getName() const {
+  return _theName;
+}
+
+inline void VertexBase::orderInGem(unsigned int order) {
+  _ordergEM = order;
+}
+
+inline void VertexBase::orderInGs(unsigned int order){
+  _ordergS = order;
+}
+
+inline unsigned int VertexBase::orderInGem() const {
+  return _ordergEM;
+}
+
+inline unsigned int VertexBase::orderInGs() const {
+  return _ordergS;
+}
 
 }
 }

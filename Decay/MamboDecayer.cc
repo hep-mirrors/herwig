@@ -6,10 +6,8 @@
 
 #include "MamboDecayer.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
-#include <ThePEG/Persistency/PersistentOStream.h>
-#include <ThePEG/Persistency/PersistentIStream.h>
-#include <ThePEG/Repository/StandardRandom.h>
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Utilities/UtilityBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
@@ -94,23 +92,40 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
       out[0]->colourNeighbour(out[1]);
       out[1]->colourNeighbour(out[2]);
     }
-  // fix top-quark decay colour-lines
-  else if(abs(parent.id())==ParticleID::t) 
+  // incoming colour3/3bar state
+  else if(parent.data().iColour() == PDT::Colour3 || 
+	  parent.data().iColour() == PDT::Colour3bar) 
     {          
+      PPtr pparent = const_ptr_cast<PPtr>(&parent);
+      //bool link(false);
       for(int i=0;i < N;++i){ 
-	  if(abs(out[i]->id())==ParticleID::b) {
-	    out[i]->colourNeighbour(const_ptr_cast<PPtr>(&parent),
-				    out[i]->id()<0);
-	  }
-	  else {
-	      if(out[i]->hasColour())
-		out[i]->antiColourNeighbour(out[i + 1]);
-	      if ( out[i]->hasAntiColour() )
-		out[i]->colourNeighbour(out[i + 1]);
-	      ++i;
-	    }
+	if(out[i]->data().iColour() == PDT::Colour3 ||
+	   out[i]->data().iColour() == PDT::Colour3bar) {
+	  out[i]->incomingColour(pparent,out[i]->id() < 0);
+	}
+	else {
+	  if(out[i]->hasColour())
+	    out[i]->antiColourNeighbour(out[i + 1]);
+	  if ( out[i]->hasAntiColour() )
+	    out[i]->colourNeighbour(out[i + 1]);
+	  ++i;
+	}
       }
     }
+  //incoming octet
+  else if(parent.data().iColour() == PDT::Colour8) {
+    PPtr pparent = const_ptr_cast<PPtr>(&parent);
+    for(int i=0; i < N;++i) {
+      if(out[i]->data().iColour() == PDT::Colour8) {
+	out[i]->incomingColour(pparent);
+	out[i]->incomingAntiColour(pparent);
+      }
+      else if(out[i]->data().iColour() == PDT::Colour3 ||
+	      out[i]->data().iColour() == PDT::Colour3bar) {
+	out[i]->incomingColour(pparent,out[i]->id() < 0);
+      }
+    }
+  }
   //everything else
   else  {
       for ( int i = 0; i < N; ++i ) { 	
@@ -269,39 +284,3 @@ double MamboDecayer::calculateMomentum(vector<Lorentz5Momentum> & mom,
     
     return wxi;
 }
-
-  //  //Apply accept/reject 
-//    if(reject(q,mom,comEn,xi,x)) 
-//      {
-//        MamboDecayer::calculateMomentum(mom,comEn);
-//      }
-//    else return;
-// }
-
- // bool MamboDecayer::reject(const vector<Lorentz5Momentum> q,
-// 			   const vector<Lorentz5Momentum> mom,
-// 			   const Energy & comEn, const long double & xi,
-// 			   const long double & r) const
-// {
-//   int N(mom.size());
-//   double s1(1.),s2(0.),s3(0.),wxi(0.);
-//   static StandardRandom gen;
-//   long double maxweight(1.000001);
-//   for(int i=0;i<N;++i) {
-//       s1 *= q[i](3)/mom[i](3);
-//       s2 += mom[i].mass2()/q[i](3);
-//       s3 += mom[i].mass2()/mom[i](3);
-//     }
-//   wxi = pow(xi,(3*N-3))*s1*(comEn-r*r*s2)/(comEn-s3);
-//   if(wxi>maxweight) {
-//     generator()->log() << "MamxboDecayer::reject() - "
-// 			<< "Weight max violation "
-// 			<< wxi  << "   " << maxweight
-// 			<< "!"  << endl;
-//     }
-//   double wgt = UseRandom::rnd()*maxweight;
-//   if(wxi<wgt)
-//     return true;
-//   else
-//     return false;
-// }

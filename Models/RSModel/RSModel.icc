@@ -13,6 +13,15 @@ inline IBPtr RSModel::fullclone() const {
   return new_ptr(*this);
 }
 
+inline void RSModel::doinit() throw(InitException) {
+  addVertex(_theFFGRVertex);
+  addVertex(_theVVGRVertex);
+  addVertex(_theSSGRVertex);
+  addVertex(_theFFVGRVertex);
+  addVertex(_theVVVGRVertex);
+  StandardModel::doinit();
+}
+
 inline Energy RSModel::lambda_pi() const {return _theLambda_pi;}
 
 inline tFFTVertexPtr   RSModel::vertexFFGR()  const {return _theFFGRVertex;}

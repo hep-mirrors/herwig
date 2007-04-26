@@ -62,8 +62,9 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
-   */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
+   * @param ioff Which particle is off-shell
+  */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3, int ioff);
 
 protected:
   
@@ -149,9 +150,9 @@ private:
 #include "SMFFHVertex.icc"
 
 namespace ThePEG {
-
-/** @cond TRAITSPECIALIZATIONS */
   
+/// \if TRAITSPECIALIZATIONS
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SMFFHVertex.
@@ -184,7 +185,7 @@ struct ClassTraits<Herwig::Helicity::SMFFHVertex>
   
 };
 
-/** @endcond */
+/// \endif
   
 }
 

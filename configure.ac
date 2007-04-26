@@ -85,6 +85,9 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/Makefile
 		Models/StandardModel/Makefile
 		Models/RSModel/Makefile
+		Models/General/Makefile
+		Models/Susy/Makefile
+		Models/UED/Makefile
 		Interfaces/Makefile
 		Decay/Makefile
 		Decay/FormFactors/Makefile
@@ -96,6 +99,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 Decay/TensorMeson/Makefile
                 Decay/WeakCurrents/Makefile
 		Decay/Partonic/Makefile
+		Decay/General/Makefile	
 		Decay/Radiation/Makefile
 		PDT/Makefile
 		PDF/Makefile
@@ -116,6 +120,8 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 Helicity/Vertex/StandardModel/Makefile
                 Helicity/Vertex/Tensor/Makefile
                 Helicity/Vertex/Vector/Makefile
+		Helicity/Vertex/Susy/Makefile
+		Helicity/Vertex/UED/Makefile
                 Helicity/WaveFunction/Makefile
 		lib/Makefile
 		include/Makefile

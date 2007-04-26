@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEvv2ff class.
+//
+
+namespace Herwig {
+
+inline MEvv2ff::MEvv2ff() {}
+
+inline IBPtr MEvv2ff::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEvv2ff::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

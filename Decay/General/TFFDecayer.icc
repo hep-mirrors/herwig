@@ -1,0 +1,26 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TFFDecayer class.
+//
+
+namespace Herwig {
+
+inline TFFDecayer::TFFDecayer() {
+  addToSearchList(2);
+}
+
+inline IBPtr TFFDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TFFDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void TFFDecayer::doinit() throw(InitException) {
+  _theFFTPtr = dynamic_ptr_cast<FFTVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
+}

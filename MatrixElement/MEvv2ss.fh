@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEvv2ss class.
+//
+#ifndef HERWIG_MEvv2ss_FH
+#define HERWIG_MEvv2ss_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEvv2ss;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEvv2ss,MEvv2ssPtr);
+
+}
+
+#endif

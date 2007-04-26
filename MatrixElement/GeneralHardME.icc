@@ -1,0 +1,54 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GeneralHardME class.
+//
+
+namespace Herwig {
+
+inline GeneralHardME::GeneralHardME() : theIncoming(0, 0), theOutgoing(0, 0),
+					theDiagrams(0), theNDiags(0), 
+					theColour(0), theNcf(0) {}
+  
+inline void 
+GeneralHardME::setProcessInfo(const vector<HPDiagram> & alldiagrams,
+			      const vector<vector<double> > & factors,
+			      const unsigned int ncf) {
+  theIncoming = alldiagrams.at(0).incoming;
+  theOutgoing = alldiagrams.at(0).outgoing;
+  theDiagrams = alldiagrams;
+  theColour = factors;
+  theNDiags = alldiagrams.size();
+  theNcf = ncf;
+}
+
+inline const vector<HPDiagram> & GeneralHardME::getProcessInfo() const {
+  return theDiagrams;
+}
+
+inline const vector<vector<double> > & 
+GeneralHardME::getColourFactors() const {
+  return theColour;
+}
+
+inline pair<long,long> GeneralHardME::getIncoming() const {
+  return theIncoming;
+}
+
+inline pair<long,long> GeneralHardME::getOutgoing() const {
+  return theOutgoing;
+}
+
+inline const GeneralHardME::HPCount GeneralHardME::numberOfDiags() const {
+  return theNDiags;
+}								    
+
+inline const size_t GeneralHardME::numberOfFlows() const {
+  return theNcf;
+}
+
+inline Energy2 GeneralHardME::scale() const {
+  return sHat();
+}
+
+}

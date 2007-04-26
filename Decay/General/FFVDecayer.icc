@@ -1,0 +1,27 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the FFVDecayer class.
+//
+
+namespace Herwig {
+  
+inline FFVDecayer::FFVDecayer() {
+  addToSearchList(0);
+  addToSearchList(1);
+}
+
+inline IBPtr FFVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr FFVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void FFVDecayer::doinit() throw(InitException) {
+  _theFFVPtr = dynamic_ptr_cast<FFVVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
+}

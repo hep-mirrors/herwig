@@ -32,6 +32,8 @@ inline void SMHGGVertex::doinit() throw(InitException) {
   _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
   _sw = _theSM->sin2ThetaW();
   _sw = sqrt(_sw);
+  orderInGs(2);
+  orderInGem(1);
   SVVLoopVertex::doinit();
 }
 

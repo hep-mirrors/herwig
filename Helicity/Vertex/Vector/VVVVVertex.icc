@@ -14,6 +14,7 @@ inline VVVVVertex::VVVVVertex()
   setNpoint(4);
   // spins of external particles
   setSpin(3,3,3,3);
+  setName(VVVV);
 }
 
 // set order of particles

@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSCFSVertex class.
+//
+#ifndef ThePEG_SSCFSVertex_FH
+#define ThePEG_SSCFSVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+class SSCFSVertex;
+ThePEG_DECLARE_POINTERS(SSCFSVertex,SSCFSVertexPtr);
+  
+}
+}
+
+#endif

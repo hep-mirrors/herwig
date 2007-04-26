@@ -562,8 +562,8 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout)
   unsigned int imode(0),nkaon(0);
   for(unsigned int ix=0;ix<idout.size();++ix)
     {
-      if(idout[ix]==ParticleID::K0){imode=1;++nkaon;}
-      else if (abs(idout[ix])==ParticleID::Kplus){imode=2;++nkaon;}
+      if(abs(idout[ix])==ParticleID::K0){imode=2;++nkaon;}
+      else if (abs(idout[ix])==ParticleID::Kplus){imode=1;++nkaon;}
       else if (idout[ix]==ParticleID::eta){imode=4;}
     }
   if(nkaon==2){imode=3;}

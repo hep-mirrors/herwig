@@ -1,9 +1,8 @@
 pkglib_LTLIBRARIES =
-noinst_LTLIBRARIES =
+noinst_LTLIBRARIES = libHwWeakCurrent.la 
 
 if WANT_NEWDECAYERS
 pkglib_LTLIBRARIES += HwWeakCurrents.la 
-noinst_LTLIBRARIES += libHwWeakCurrent.la 
 endif
 
 libHwWeakCurrent_la_SOURCES = \

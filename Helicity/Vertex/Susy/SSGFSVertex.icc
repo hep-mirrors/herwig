@@ -1,0 +1,36 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSGFSVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+
+inline IBPtr SSGFSVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSGFSVertex::fullclone() const {
+  return new_ptr(*this);
+}
+ 
+inline void SSGFSVertex::doinit() throw(InitException) {
+  FFSVertex::doinit();
+  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+
+  _stop = _theSS->stopMix();
+  _sbottom = _theSS->sbottomMix();
+
+  if(!_stop || !_sbottom)
+    throw InitException() << "SSGFSVertex::doinit() - "
+			  << "There is a null mixing matrix pointer. "
+			  << "stop: " << _stop << " sbottom: " << _sbottom 
+			  << Exception::abortnow;
+
+  orderInGs(1);
+  orderInGem(0);
+}
+
+}
+}

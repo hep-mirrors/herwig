@@ -16,16 +16,15 @@ $(top_builddir)/Helicity/Correlations/libHwCorrelations.la \
 $(top_builddir)/Helicity/WaveFunction/libHwWaveFunction.la \
 $(top_builddir)/Utilities/libHwUtils.la \
 $(top_builddir)/Helicity/Vertex/libHwVertex.la \
+$(top_builddir)/Models/General/libHwModelGenerator.la \
+$(top_builddir)/Decay/General/libHwGeneralDecay.la \
+$(top_builddir)/MatrixElement/libHwGeneralME.la \
+$(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
 $(THEPEGLIB) $(CLHEPLIB) -ldl
 
 if WANT_LOOPTOOLS
 libHerwig_la_LIBADD += \
 $(top_builddir)/Looptools/libHwLooptools.la
-endif
-
-if WANT_NEWDECAYERS
-libHerwig_la_LIBADD += \
-$(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la 
 endif
 
 all-local: done-all-links

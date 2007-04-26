@@ -12,6 +12,7 @@ inline FFSVertex::FFSVertex()
   // number of external particles
   setNpoint(3);
   setSpin(2,2,1);
+  setName(FFS);
 }
 
 // set the left and right couplings

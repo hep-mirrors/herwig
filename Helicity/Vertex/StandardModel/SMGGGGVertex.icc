@@ -26,8 +26,10 @@ inline IBPtr SMGGGGVertex::fullclone() const {
 
 inline void SMGGGGVertex::doinit() throw(InitException) {
   _theSM = generator()->standardModel();
+  orderInGs(2);
+  orderInGem(0);
+  VVVVVertex::doinit();
 }
-
 
 }
 }

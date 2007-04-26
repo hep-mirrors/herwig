@@ -41,6 +41,8 @@ inline IBPtr SMWWWWVertex::fullclone() const {
 }
 
 inline void SMWWWWVertex::doinit() throw(InitException) {
+  orderInGem(2);
+  orderInGs(0);
   VVVVVertex::doinit();
   _theSM = generator()->standardModel();
   // couplings

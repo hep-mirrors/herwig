@@ -24,10 +24,13 @@ inline IBPtr SMGGGVertex::clone() const {
 inline IBPtr SMGGGVertex::fullclone() const {
   return new_ptr(*this);
 }
+
 inline void SMGGGVertex::doinit() throw(InitException) {
   _theSM = generator()->standardModel();
+  orderInGs(1);
+  orderInGem(0);
+  VVVVertex::doinit();
 }
-
 
 }
 }

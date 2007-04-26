@@ -1,0 +1,52 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the UEDBase class.
+//
+
+namespace Herwig {
+
+inline UEDBase::UEDBase() : theRadCorr(true), theInvRadius(1000.*GeV), 
+			    theCutOff(10000.*GeV), theSpectrum("UEDSpectrum.spc"),
+			    theVeV(246.*GeV) {}
+
+inline IBPtr UEDBase::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr UEDBase::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline InvEnergy UEDBase::compactRadius() const {
+  return 1./theInvRadius;
+}
+
+inline Energy UEDBase::cutOffScale() const {
+  return theCutOff;
+}
+
+inline double UEDBase::sinThetaN(const unsigned int n) const {
+  WAMap::const_iterator pos = theMixingAngles.find(n);
+  if(pos != theMixingAngles.end())
+    return pos->second;
+  else
+    return 0.0;
+}
+
+inline void UEDBase::addMassElement(IDMassPair elem) {
+  theMasses.push_back(elem);
+}
+
+inline void UEDBase::addMixingAngle(const unsigned int n, 
+				    const double val) {
+  theMixingAngles.insert(make_pair(n, val));
+}
+
+inline bool UEDBase::lowerMass(const pair<long, Energy> & p1, 
+			       const pair<long, Energy> & p2) {
+  return p1.second < p2.second;
+}
+
+
+}

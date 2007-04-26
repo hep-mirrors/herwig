@@ -1,0 +1,28 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSSDecayer class.
+//
+
+namespace Herwig {
+
+inline SSSDecayer::SSSDecayer() {
+  addToSearchList(0);
+  addToSearchList(1);
+  addToSearchList(2);
+}
+
+inline IBPtr SSSDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSSDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SSSDecayer::doinit() throw(InitException) {
+  _theSSSPtr = dynamic_ptr_cast<SSSVertexPtr>(getVertex());
+  GeneralTwoBodyDecayer::doinit();
+}
+
+}

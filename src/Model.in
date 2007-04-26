@@ -3,6 +3,23 @@
 # this should inherit from the Herwig Standard Model class
 # this is for the standard model
 create /Herwig++/StandardModel /Defaults/Model
+create /Herwig++/ModelGenerator /Defaults/GeneralModel
+insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
+#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/Z0
+#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/t
+#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/h0
+
+create /Herwig++/HardProcessConstructor /Defaults/HardProcessConstructor
+set /Defaults/HardProcessConstructor:QCDandEW 0
+
+create /Herwig++/DecayConstructor /Defaults/DecayConstructor
+set /Defaults/Model:ModelGenerator /Defaults/GeneralModel
+
+set /Defaults/GeneralModel:HardProcessConstructor /Defaults/HardProcessConstructor
+set /Defaults/GeneralModel:DecayConstructor /Defaults/DecayConstructor
+create /Herwig++/TwoBodyDecayConstructor /Defaults/TwoBody
+insert /Defaults/DecayConstructor:NBodyDecayConstructors[0] /Defaults/TwoBody
+
 
 # this is for the Randell-Sundrum model
 #create /Herwig++/RSModel /Defaults/Model HwRSModel.so

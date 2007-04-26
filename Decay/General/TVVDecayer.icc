@@ -1,0 +1,26 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TVVDecayer class.
+//
+
+namespace Herwig {
+
+inline TVVDecayer::TVVDecayer() {
+  addToSearchList(2);
+}
+
+inline IBPtr TVVDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TVVDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void TVVDecayer::doinit() throw(InitException) {
+  GeneralTwoBodyDecayer::doinit();
+  _theVVTPtr = dynamic_ptr_cast<VVTVertexPtr>(getVertex());
+}
+
+}

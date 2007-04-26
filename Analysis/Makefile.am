@@ -1,5 +1,4 @@
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la
-
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwBSMAnalysis.la
 HwAnalysis_la_LDFLAGS = -module -version-info 3:0:0
 HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
 HwAnalysis_la_LIBADD =
@@ -59,3 +58,8 @@ LeptonDalitzAnalysis.h LeptonDalitzAnalysis.icc \
 TopDalitzAnalysis.cc TopDalitzAnalysis.fh \
 TopDalitzAnalysis.h TopDalitzAnalysis.icc
 endif
+
+HwBSMAnalysis_la_LDFLAGS = -module
+HwBSMAnalysis_la_SOURCES = \
+SpinCorrAnalysis.cc SpinCorrAnalysis.h \
+SpinCorrAnalysis.icc SpinCorrAnalysis.fh

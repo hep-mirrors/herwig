@@ -39,7 +39,10 @@ inline IBPtr RSModelFFVGRVertex::fullclone() const {
 }
 
 inline void RSModelFFVGRVertex::doinit() throw(InitException) {
+  orderInGem(1);
   FFVTVertex::doinit();
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
   for(int ix=1;ix<4;++ix)
     {
       _charge[2*ix-1]  = (_theModel->ed());
@@ -52,8 +55,6 @@ inline void RSModelFFVGRVertex::doinit() throw(InitException) {
       _couplast[ix] = 0.;
       _q2last[ix]=0.;
     }
-  _theModel = generator()->standardModel();
-  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
   if(hwRS){_theKappa=2./hwRS->lambda_pi();}
 }
 

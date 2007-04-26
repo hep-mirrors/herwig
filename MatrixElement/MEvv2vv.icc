@@ -1,0 +1,55 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MEvv2vv class.
+//
+
+namespace Herwig {
+
+inline MEvv2vv::MEvv2vv() {}
+
+inline IBPtr MEvv2vv::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MEvv2vv::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void MEvv2vv::doinit() throw(InitException) {
+  GeneralHardME::doinit();
+  size_t ndiags = numberOfDiags();
+  theScaV.resize(ndiags);
+  theVecV.resize(ndiags);
+  theTenV.resize(ndiags);
+  for(size_t i = 0; i < ndiags; ++i) {
+    HPDiagram diag = getProcessInfo()[i];
+    tcPDPtr offshell = diag.intermediate;
+    if(!offshell)
+      theFPVertex = dynamic_ptr_cast<VVVVVertexPtr>
+	(diag.vertices.first);
+    else if(offshell->iSpin() == PDT::Spin0) {
+      VVSVertexPtr vert1 = dynamic_ptr_cast<VVSVertexPtr>
+	(diag.vertices.first);
+      VVSVertexPtr vert2 = dynamic_ptr_cast<VVSVertexPtr>
+	(diag.vertices.second);
+      theScaV[i] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin1) {
+      VVVVertexPtr vert1 = dynamic_ptr_cast<VVVVertexPtr>
+	(diag.vertices.first);
+      VVVVertexPtr vert2 = dynamic_ptr_cast<VVVVertexPtr>
+	(diag.vertices.second);
+      theVecV[i] = make_pair(vert1, vert2);
+    }
+    else if(offshell->iSpin() == PDT::Spin2) {
+      VVTVertexPtr vert1 = dynamic_ptr_cast<VVTVertexPtr>
+	(diag.vertices.first);
+      VVTVertexPtr vert2 = dynamic_ptr_cast<VVTVertexPtr>
+	(diag.vertices.second);
+      theTenV[i] = make_pair(vert1, vert2);
+    }
+  }
+}
+
+}

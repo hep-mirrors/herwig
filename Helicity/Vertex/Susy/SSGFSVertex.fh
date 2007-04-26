@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSGFSVertex class.
+//
+#ifndef ThePEG_SSGFSVertex_FH
+#define ThePEG_SSGFSVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+  
+class SSGFSVertex;
+ThePEG_DECLARE_POINTERS(SSGFSVertex,SSGFSVertexPtr);
+  }
+}
+
+#endif

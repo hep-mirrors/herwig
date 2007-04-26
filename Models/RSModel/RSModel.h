@@ -85,6 +85,18 @@ public:
    * Standard Init function used to initialize the interfaces.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline virtual void doinit() throw(InitException);
+  //@}
   
 protected:
   
@@ -152,7 +164,7 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
   
 /**
  * The following template specialization informs ThePEG about the
@@ -178,11 +190,11 @@ struct ClassTraits<Herwig::RSModel>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwTVertex.so HwRSModel.so"; }
+  static string library() { return "HwRSModel.so"; }
   
 };
-  
-/** @endcond */
+
+/// \endif
   
 }
 

@@ -25,6 +25,9 @@ inline IBPtr SMFFGVertex::fullclone() const {
 
 inline void SMFFGVertex::doinit() throw(InitException) {
   _theSM = generator()->standardModel();
+  orderInGs(1);
+  orderInGem(0);
+  FFVVertex::doinit();
 }
 
 }

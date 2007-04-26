@@ -14,6 +14,7 @@ inline FFTVertex::FFTVertex()
   setNpoint(3);
   // spins
   setSpin(2,2,5);
+  setName(FFT);
 }
   
 }

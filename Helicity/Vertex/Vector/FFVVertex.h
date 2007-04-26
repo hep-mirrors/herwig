@@ -116,11 +116,25 @@ public:
    * @param part3 The ParticleData pointer for the third  particle.
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3)=0;
-  
+  /**
+   * Get the Couplings 
+   */
+  //@{
+  /**
+   * Get the left coupling.
+   */
+  inline const Complex & getLeft();
+
+  /**
+   * Get the right coupling.
+   */
+  inline const Complex & getRight();
+  //@}
+
 protected:
 
   /**
-   *  Set and get the couplings
+   *  Set the couplings
    */
   //@{
   /**
@@ -132,16 +146,6 @@ protected:
    * Set the right coupling.
    */
   inline void setRight(const Complex &);
-
-  /**
-   * Get the left coupling.
-   */
-  inline const Complex & getLeft();
-
-  /**
-   * Get the right coupling.
-   */
-  inline const Complex & getRight();
   //@}
 
 private:
@@ -176,7 +180,7 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
 
 /**
  * The following template specialization informs ThePEG about the
@@ -202,7 +206,7 @@ struct ClassTraits<Herwig::Helicity::FFVVertex>
   static string className() { return "Herwig++::FFVVertex"; }
 };
 
-/** @endcond */
+/// \endif
 
 }
 

@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSH1SFSFVertex class.
+//
+#ifndef ThePEG_SSH1SFSFVertex_FH
+#define ThePEG_SSH1SFSFVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+class SSH1SFSFVertex;
+ThePEG_DECLARE_POINTERS(SSH1SFSFVertex,SSH1SFSFVertexPtr);
+}
+}
+
+#endif

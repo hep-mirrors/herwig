@@ -11,6 +11,8 @@
 #include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "Herwig++/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
+#include "Herwig++/Models/General/ModelGenerator.fh"
 #include "StandardModel.fh"
 
 namespace Herwig {
@@ -45,6 +47,26 @@ class StandardModel: public StandardModelBase {
 
 public:
   
+  /** @name Standard constructors and destructors. */
+  //@{
+  /**
+   * Default constructor
+   */
+  StandardModel();
+
+  /**
+   * Copy-constructor.
+   */
+  StandardModel(const StandardModel &);
+
+  /**
+   * Destructor
+   */
+  virtual ~StandardModel();
+  //@}
+  
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
@@ -167,6 +189,16 @@ public:
    */
   inline tVVVVVertexPtr vertexGGGG() const;
 
+ /**
+   * Pointer to the quartic gluon vertex
+   */
+  inline tGeneralSVVVertexPtr vertexHGG() const;
+
+ /**
+   * Pointer to the quartic gluon vertex
+   */
+  inline tGeneralSVVVertexPtr vertexHPP() const;
+
   /**
    *  Total number of vertices
    */
@@ -207,6 +239,16 @@ protected:
   virtual IBPtr fullclone() const;
   //@}
   
+protected:
+
+  /**
+   * Initialize this object after the setup phase before saving and
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  virtual void doinit() throw(InitException);
+  //@}
+
 protected:
 
   /**
@@ -284,6 +326,16 @@ private:
   VVVVVertexPtr _theWWWWVertex;
 
   /**
+   * Pointer to higgs-gluon-gluon vertex
+   */
+  GeneralSVVVertexPtr _theHGGVertex;
+
+  /**
+   * Pointer to higgs-gamma-gamma vertex
+   */
+  GeneralSVVVertexPtr _theHPPVertex; 
+  
+  /**
    *  Full list of vertices as a vector to allow searching
    */
   vector<VertexBasePtr> _vertexlist;
@@ -293,7 +345,11 @@ private:
    * The running mass.
    */
   runPtr _theRunningMass;
-  
+
+  /**
+   * Pointer to ModelGenerator Class
+   */
+  ModelGeneratorPtr _theModelGenerator;
 };
 
 }  
@@ -302,7 +358,7 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
 
 /**
  * The following template specialization informs ThePEG about the
@@ -321,14 +377,14 @@ struct BaseClassTrait<Herwig::StandardModel,1> {
 template <>
 struct ClassTraits<Herwig::StandardModel>
   : public ClassTraitsBase<Herwig::StandardModel> {
-  
+
   /**
    * Return the class name.
    */
   static string className() { return "Herwig++::StandardModel"; }
 };
 
-/** @endcond */
+/// \endif
 
 }
 

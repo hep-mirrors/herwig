@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSCNWVertex class.
+//
+#ifndef HERWIG_SSCNWVertex_FH
+#define HERWIG_SSCNWVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity{
+
+class SSCNWVertex;
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Helicity::SSCNWVertex,SSCNWVertexPtr);
+
+}
+
+#endif

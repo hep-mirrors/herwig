@@ -315,45 +315,43 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
 				   << "channel must have a pointer to a decay mode "
 				   << Exception::abortnow;}
   // masses and widths of the intermediate particles
-  for(unsigned int ix=0;ix<_intpart.size();++ix)
-    {
-      _intmass.push_back(_intpart[ix]->mass());
-      _intwidth.push_back(_intpart[ix]->width());
-      _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
-      _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
-    }
+  for(unsigned int ix=0;ix<_intpart.size();++ix) {
+    _intmass.push_back(_intpart[ix]->mass());
+    _intwidth.push_back(_intpart[ix]->width());
+    _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
+    _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
+  }
   // external particles for each intermediate particle
   vector<int> temp;
   _intext.resize(_intpart.size());
   // loop over the intermediate particles
   int ix,iy;
-  for(ix=_intpart.size()-1;ix>=0;--ix)
-    {
-      temp.resize(0);
-      // add the first daughter
-      if(_intdau1[ix]>=0)
-	{temp.push_back(_intdau1[ix]);}
-      else
-	{
-	  iy = -_intdau1[ix];
-	  vector<int>::iterator istart=_intext[iy].begin();
-	  vector<int>::iterator iend=_intext[iy].end();
-	  for(;istart!=iend;++istart)
-	    {temp.push_back(*istart);}
-	}
-      // add the second daughter
-      if(_intdau2[ix]>=0)
-	{temp.push_back(_intdau2[ix]);}
-      else
-	{
-	  iy = -_intdau2[ix];
-	  vector<int>::iterator istart=_intext[iy].begin();
-	  vector<int>::iterator iend=_intext[iy].end();
-	  for(;istart!=iend;++istart)
-	    {temp.push_back(*istart);}
-	}
-      _intext[ix]=temp;
-    }
+  for(ix=_intpart.size()-1;ix>=0;--ix) {
+    temp.resize(0);
+    // add the first daughter
+    if(_intdau1[ix]>=0)
+      {temp.push_back(_intdau1[ix]);}
+    else
+      {
+	iy = -_intdau1[ix];
+	vector<int>::iterator istart=_intext[iy].begin();
+	vector<int>::iterator iend=_intext[iy].end();
+	for(;istart!=iend;++istart)
+	  {temp.push_back(*istart);}
+      }
+    // add the second daughter
+    if(_intdau2[ix]>=0)
+      {temp.push_back(_intdau2[ix]);}
+    else
+      {
+	iy = -_intdau2[ix];
+	vector<int>::iterator istart=_intext[iy].begin();
+	vector<int>::iterator iend=_intext[iy].end();
+	for(;istart!=iend;++istart)
+	  {temp.push_back(*istart);}
+      }
+    _intext[ix]=temp;
+  }
 }
 
 // generate the final-state particles including the intermediate resonances
@@ -400,5 +398,5 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   else{out.push_back(resonance[-_intdau2[0]]);}
 }
 
-}
 
+}

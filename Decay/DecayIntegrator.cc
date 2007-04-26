@@ -24,7 +24,7 @@
 #include "Herwig++/PDT/WidthCalculatorBase.h"
 #include "ThePEG/Interface/Reference.h"
 
-namespace Herwig {
+using namespace Herwig; 
 using namespace ThePEG;
 
 // dummy accept method
@@ -125,7 +125,7 @@ void DecayIntegrator::Init() {
 }
 
 // output info on the integrator
-ostream & operator<<(ostream & os, const DecayIntegrator & decay)
+ostream & Herwig::operator<<(ostream & os, const DecayIntegrator & decay)
 {
   os << "The integrator has " << decay._modes.size() << " modes"  << endl;
  for(unsigned int ix=0;ix<decay._modes.size();++ix)
@@ -377,4 +377,10 @@ bool DecayIntegrator::oneLoopVirtualME(double &,unsigned int,const Particle &,
 
 bool DecayIntegrator::realEmmisionME(double &, unsigned int,const Particle &,
 				     const ParticleVector &) {return false;}
+
+Energy DecayIntegrator::initializePhaseSpaceMode(unsigned int imode,bool init) const{
+  tcDecayPhaseSpaceModePtr cmodeptr=mode(imode);
+  tDecayPhaseSpaceModePtr modeptr = const_ptr_cast<tDecayPhaseSpaceModePtr>(cmodeptr);
+  modeptr->init();
+  return modeptr->initializePhaseSpace(init);
 }

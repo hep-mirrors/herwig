@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DecayConstructor class.
+//
+#ifndef ThePEG_DecayConstructor_FH
+#define ThePEG_DecayConstructor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+  using namespace ThePEG;
+  class DecayConstructor;
+ThePEG_DECLARE_POINTERS(DecayConstructor,DecayConstructorPtr);
+
+}
+
+#endif

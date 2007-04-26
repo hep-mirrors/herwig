@@ -12,6 +12,7 @@ inline VVVTVertex::VVVTVertex()
   setNpoint(4);
   // spins
   setSpin(3,3,3,5);
+  setName(VVVT);
 }
 
 }
