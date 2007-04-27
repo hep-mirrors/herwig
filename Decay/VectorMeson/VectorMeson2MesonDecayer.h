@@ -206,40 +206,41 @@ private:
 
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of VectorMeson2MesonDecayer.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::VectorMeson2MesonDecayer,1> {
-    /** Typedef of the base class of VectorMeson2MesonDecayer. */
-    typedef Herwig::DecayIntegrator NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::VectorMeson2MesonDecayer>
-    : public ClassTraitsBase<Herwig::VectorMeson2MesonDecayer> {
-    /** Return the class name. */
-    static string className() { return "Herwig++::VectorMeson2MesonDecayer"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "HwVMDecay.so"; }
 
-  };
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of VectorMeson2MesonDecayer.
+ */
+template <>
+struct BaseClassTrait<Herwig::VectorMeson2MesonDecayer,1> {
+  /** Typedef of the base class of VectorMeson2MesonDecayer. */
+  typedef Herwig::DecayIntegrator NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::VectorMeson2MesonDecayer>
+  : public ClassTraitsBase<Herwig::VectorMeson2MesonDecayer> {
+  /** Return the class name. */
+  static string className() { return "Herwig++::VectorMeson2MesonDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "HwVMDecay.so"; }
+  
+};
+
+/** @endcond */
   
 }
 
 #include "VectorMeson2MesonDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMeson2MesonDecayer.tcc"
-#endif
 
 #endif /* HERWIG_VectorMeson2MesonDecayer_H */

@@ -206,6 +206,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaHadronicMass. */
 template <>
@@ -223,11 +225,10 @@ struct ClassTraits<Herwig::BtoSGammaHadronicMass>
   static string className() { return "Herwig++::BtoSGammaHadronicMass"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BtoSGammaHadronicMass.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaHadronicMass.tcc"
-#endif
 
 #endif /* HERWIG_BtoSGammaHadronicMass_H */

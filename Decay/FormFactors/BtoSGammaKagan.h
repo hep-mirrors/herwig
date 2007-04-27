@@ -449,6 +449,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaKagan. */
 template <>
@@ -469,6 +471,8 @@ struct ClassTraits<Herwig::BtoSGammaKagan>
    *  (except the base class). */
   static string library() { return "HwFormFactors.so"; }
 };
+
+/** @endcond */
 
 }
 

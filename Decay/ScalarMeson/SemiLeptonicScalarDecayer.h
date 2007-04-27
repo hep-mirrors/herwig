@@ -219,6 +219,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SemiLeptonicScalarDecayer.
@@ -247,11 +249,10 @@ struct ClassTraits<Herwig::SemiLeptonicScalarDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "SemiLeptonicScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SemiLeptonicScalarDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SemiLeptonicScalarDecayer_H */

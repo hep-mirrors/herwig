@@ -289,11 +289,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of ScalarMesonFactorizedDecayer. */
@@ -316,11 +316,10 @@ template <>
   static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "ScalarMesonFactorizedDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarMesonFactorizedDecayer.tcc"
-#endif
 
 #endif /* HERWIG_ScalarMesonFactorizedDecayer_H */

@@ -226,6 +226,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of PScalarPScalarVectorDecayer.
@@ -254,11 +256,10 @@ struct ClassTraits<Herwig::PScalarPScalarVectorDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "PScalarPScalarVectorDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarPScalarVectorDecayer.tcc"
-#endif
 
 #endif /* HERWIG_PScalarPScalarVectorDecayer_H */

@@ -153,8 +153,5 @@ struct ClassTraits<Herwig::HwDecayerBase>
 }
 
 #include "HwDecayerBase.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HwDecayerBase.tcc"
-#endif
 
 #endif /* HERWIG_HwDecayerBase_H */

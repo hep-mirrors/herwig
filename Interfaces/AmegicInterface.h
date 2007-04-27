@@ -202,6 +202,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of AmegicInterface. */
 template<>
@@ -222,6 +224,8 @@ struct ClassTraits<Herwig::AmegicInterface>
    *  (except the base class). */
    static string libName() { return "libHwInterfaces.so"; }
 };
+
+/** @endcond */
 
 }
 

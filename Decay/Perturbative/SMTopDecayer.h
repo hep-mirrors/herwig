@@ -167,11 +167,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SMTopDecayer. */
@@ -194,11 +194,10 @@ struct ClassTraits<Herwig::SMTopDecayer>
   static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "SMTopDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMTopDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SMTopDecayer_H */

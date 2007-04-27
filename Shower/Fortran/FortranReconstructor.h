@@ -47,7 +47,9 @@ public:
    * and preserving the invariant mass and the rapidity of the 
    * hard subprocess system.
    */
-  virtual bool reconstructHardJets(ShowerTreePtr hard) const;
+  virtual bool reconstructHardJets(ShowerTreePtr hard,
+				   map<tShowerProgenitorPtr,
+				   pair<Energy,double> > pt) const;
 
   /**
    * Given in input a vector of the particles which initiated the showers

@@ -119,38 +119,42 @@ private:
 #include "RSModelSSGRVertex.icc"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
   
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of RSModelSSGRVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::RSModelSSGRVertex,1> {
+  /** Typedef of the base class of RSModelSSGRVertex. */
+  typedef Herwig::Helicity::SSTVertex NthBase;
+};
+
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::RSModelSSGRVertex>
+  : public ClassTraitsBase<Herwig::Helicity::RSModelSSGRVertex> {
+
   /**
-   * The following template specialization informs ThePEG about the
-   * base class of RSModelSSGRVertex.
+   * Return the class name.
    */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::RSModelSSGRVertex,1> {
-    /** Typedef of the base class of RSModelSSGRVertex. */
-    typedef Herwig::Helicity::SSTVertex NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
+  static string className() { return "Herwig++::RSModelSSGRVertex"; }
+
+  /** 
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
    */
-  template <>
-  struct ClassTraits<Herwig::Helicity::RSModelSSGRVertex>
-    : public ClassTraitsBase<Herwig::Helicity::RSModelSSGRVertex> {
+  static string library() { return "HwTVertex.so HwRSModel.so HwRSVertex.so"; }
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::RSModelSSGRVertex"; }
+};
 
-    /** 
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "HwTVertex.so HwRSModel.so HwRSVertex.so"; }
-
-  };
+/** @endcond */
   
 }
 

@@ -177,11 +177,11 @@ private:
   
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SMHiggsGGHiggsPPDecayer. */
@@ -204,10 +204,10 @@ struct ClassTraits<Herwig::SMHiggsGGHiggsPPDecayer>
   static string library() { return "HwSMVertex.so HwPerturbativeHiggsDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "SMHiggsGGHiggsPPDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-#endif
 
 #endif /* HERWIG_SMHiggsGGHiggsPPDecayer_H */

@@ -80,7 +80,8 @@ reconstructTimeLikeJet(const tShowerParticlePtr particleJetParent,
 }
 
 bool QTildeReconstructor::
-reconstructHardJets(ShowerTreePtr hard) const {
+reconstructHardJets(ShowerTreePtr hard,
+		    map<tShowerProgenitorPtr,pair<Energy,double> > intrinsic) const {
   Timer<1100> timer("QTildeReconstructor::reconstructHardJets");
   try {
     bool radiated[2] = {false,false};
@@ -110,12 +111,14 @@ reconstructHardJets(ShowerTreePtr hard) const {
 	p_cm[0]+=ShowerHardJets[ix]->progenitor()->getThePEGBase()->momentum();
       }
     }
+    radiated[0]|=!intrinsic.empty();
     // initial state shuffling
     // the boosts for the initial state
     Vector3 boostRest,boostNewF;
     bool applyBoost(false);
     if(radiated[0])
-      applyBoost=reconstructISJets(p_cm[0],ShowerHardJets,boostRest,boostNewF);
+      applyBoost=reconstructISJets(p_cm[0],ShowerHardJets,intrinsic,
+				   boostRest,boostNewF);
     if(boostRest.mag()>1.||boostNewF.mag()>1.) return false;
     // final-state reconstruction
     // check if in CMF frame
@@ -271,6 +274,7 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
 bool QTildeReconstructor::
 reconstructISJets(Lorentz5Momentum pcm,
 		  const vector<ShowerProgenitorPtr> & ShowerHardJets,
+		  map<tShowerProgenitorPtr,pair<Energy,double> > intrinsic,
 		  Vector3 & boostRest,Vector3 & boostNewF) const {
   bool atLeastOnce = false;
   vector<Lorentz5Momentum> p, pq, p_in;
@@ -297,6 +301,28 @@ reconstructISJets(Lorentz5Momentum pcm,
 			   << "Warning, bad pq!!!\n"
 			   << Exception::eventerror;
     }
+  }
+  // add the intrinsic pt if needed
+  int iloc=-1;
+  for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
+    // only for initial-state particles which haven't radiated
+    if(ShowerHardJets[ix]->progenitor()->isFinalState()) continue;
+    ++iloc;
+    if(ShowerHardJets[ix]->hasEmitted()) continue;
+    if(intrinsic.find(ShowerHardJets[ix])==intrinsic.end()) continue;
+    pair<Energy,double> pt=intrinsic[ShowerHardJets[ix]];
+    Lorentz5Momentum p_basis(pq[0]),n_basis(pq[1]);
+    if(iloc==1) swap(p_basis,n_basis);
+    double alpha = ShowerHardJets[ix]->progenitor()->x();
+    double beta  = 0.5*(sqr(ShowerHardJets[ix]->progenitor()->data().mass())+
+			sqr(pt.first))/alpha/(p_basis*n_basis);
+    Lorentz5Momentum pnew=alpha*p_basis+beta*n_basis;
+    pnew.setX(pt.first*cos(pt.second));
+    pnew.setY(pt.first*sin(pt.second));
+    pnew.rescaleMass();
+    p[iloc]=pnew;
+    ShowerHardJets[ix]->progenitor()->set5Momentum(pnew);
+    atLeastOnce=true;
   }
   double x1 = p_in[0].z()/pq[0].z();
   double x2 = p_in[1].z()/pq[1].z();
@@ -344,7 +370,10 @@ reconstructISJets(Lorentz5Momentum pcm,
 			 (k1*a1+b1/k1), (k1*a1-b1/k1));
   double beta2 = getBeta((a2+b2), (a2-b2), 
 			 (a2/k2+k2*b2), (a2/k2-k2*b2));
-  if (pq[0].z() > 0) {beta1 = -beta1; beta2 = -beta2;}
+  if (pq[0].z() > 0) {
+    beta1 = -beta1; 
+    beta2 = -beta2;
+  }
   tPVector toBoost;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     if(!ShowerHardJets[ix]->progenitor()->isFinalState())

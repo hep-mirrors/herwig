@@ -396,8 +396,5 @@ struct ClassTraits<Herwig::IFDipole>
 }
 
 #include "IFDipole.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "IFDipole.tcc"
-#endif
 
 #endif /* HERWIG_IFDipole_H */

@@ -323,7 +323,7 @@ private:
   Complex _zsigma;
 
   /**
-   * \f$g_{\rho_k}\f$ is the coupling of the \f$k\f$th \f$\rho\f$ multiplet.
+   * \f$g_{\rho_k}\f$ is the coupling of the \f$k\f$ th \f$\rho\f$ multiplet.
    */
   vector<Complex> _rhocoupling;
 
@@ -383,40 +383,41 @@ private:
 
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of a1ThreePionDecayer.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::a1ThreePionDecayer,1> {
-    /** Typedef of the base class of a1ThreePionDecayer. */
-    typedef Herwig::DecayIntegrator NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::a1ThreePionDecayer>
-    : public ClassTraitsBase<Herwig::a1ThreePionDecayer> {
-    /** Return the class name.*/
-    static string className() { return "Herwig++::a1ThreePionDecayer"; }
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "HwVMDecay.so"; }
 
-  };
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of a1ThreePionDecayer.
+ */ 
+template <>
+struct BaseClassTrait<Herwig::a1ThreePionDecayer,1> {
+  /** Typedef of the base class of a1ThreePionDecayer. */
+  typedef Herwig::DecayIntegrator NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::a1ThreePionDecayer>
+  : public ClassTraitsBase<Herwig::a1ThreePionDecayer> {
+  /** Return the class name.*/
+  static string className() { return "Herwig++::a1ThreePionDecayer"; }
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "HwVMDecay.so"; }
+  
+};
+
+/** @endcond */
   
 }
 
 #include "a1ThreePionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "a1ThreePionDecayer.tcc"
-#endif
 
 #endif /* HERWIG_a1ThreePionDecayer_H */

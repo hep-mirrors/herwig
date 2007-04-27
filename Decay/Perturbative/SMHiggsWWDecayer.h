@@ -258,8 +258,5 @@ struct ClassTraits<Herwig::SMHiggsWWDecayer>
 }
 
 #include "SMHiggsWWDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMHiggsWWDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SMHiggsWWDecayer_H */

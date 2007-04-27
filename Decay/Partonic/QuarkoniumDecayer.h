@@ -124,6 +124,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * QuarkoniumDecayer.
@@ -148,6 +150,8 @@ struct ClassTraits<Herwig::QuarkoniumDecayer>: public ClassTraitsBase<Herwig::Qu
    */
   static string library() { return "HwPartonicDecay.so"; }
 };
+
+/** @endcond */
 
 }
 

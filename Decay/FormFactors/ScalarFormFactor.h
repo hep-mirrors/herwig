@@ -432,6 +432,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * ScalarFormFactor.
@@ -453,11 +455,10 @@ struct ClassTraits<Herwig::ScalarFormFactor>
   static string className() { return "Herwig++::ScalarFormFactor"; }
 };
 
+/** @endcond */
+
 }
 
 #include "ScalarFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_ScalarFormFactor_H */

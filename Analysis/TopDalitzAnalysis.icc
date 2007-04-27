@@ -6,7 +6,9 @@
 
 namespace Herwig {
 inline TopDalitzAnalysis::TopDalitzAnalysis()
-  : _deltaR(0.7,2.7,100),_logy3(-4.,-1.,120) {}
+  : _deltaR(0.7,2.7,100),_logy3(-4.,-1.,120),
+    _xb_bquark(0.0,1.05,200),_xb_bquark_peak(0.8,1.05,200),
+    _xB_Bhad(0.0,1.05,100) {}
 
 inline TopDalitzAnalysis::TopDalitzAnalysis(const TopDalitzAnalysis & x)
   : AnalysisHandler(x) {}
@@ -33,5 +35,8 @@ inline void TopDalitzAnalysis::doinitrun() {
 
   _output[1].open("TopDeltaR.top");
   _output[2].open("Toplogy3.top");
+  _output[3].open("Top_xb_bquark.top");
+  _output[4].open("Top_xb_bquark_peak.top");
+  _output[5].open("Top_xB_Bhad.top");
 }
 }

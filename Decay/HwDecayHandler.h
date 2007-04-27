@@ -142,6 +142,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * Hw64Decayer.
@@ -162,11 +164,10 @@ struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDec
   static string className() { return "Herwig++::HwDecayHandler"; }
 };
 
+/** @endcond */
+
 }
 
 #include "HwDecayHandler.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HwDecayHandler.tcc"
-#endif
 
 #endif /* HERWIG_HwDecayHandler_H */

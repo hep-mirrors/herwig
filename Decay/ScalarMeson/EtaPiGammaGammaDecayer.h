@@ -312,6 +312,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of EtaPiGammaGammaDecayer.
@@ -338,13 +340,12 @@ struct ClassTraits<Herwig::EtaPiGammaGammaDecayer>
    */
   static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
   
- };
+};
+
+/** @endcond */
   
 }
 
 #include "EtaPiGammaGammaDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EtaPiGammaGammaDecayer.tcc"
-#endif
 
 #endif /* HERWIG_EtaPiGammaGammaDecayer_H */

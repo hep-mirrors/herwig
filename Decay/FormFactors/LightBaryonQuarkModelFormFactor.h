@@ -225,6 +225,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of LightBaryonQuarkModelFormFactor.
@@ -254,11 +256,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "LightBaryonQuarkModelFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LightBaryonQuarkModelFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_LightBaryonQuarkModelFormFactor_H */

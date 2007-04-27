@@ -199,6 +199,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of VectorMesonCurrent.
@@ -227,11 +229,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "VectorMesonCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonCurrent.tcc"
-#endif
 
 #endif /* THEPEG_VectorMesonCurrent_H */

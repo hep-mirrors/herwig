@@ -76,8 +76,12 @@ public:
    * fixpoint was found. This will highly depend on the kind of
    * kinematics chosen and will be defined in the inherited concrete
    * classes. This method will be used by the KinematicsReconstructor.
+   * @param theLast The particle.
+   * @param px The \f$x\f$ component of the \f$p_T\f$.
+   * @param py The \f$y\f$ component of the \f$p_T\f$.
    */
-  virtual void updateLast(const tShowerParticlePtr theLast) const;
+  virtual void updateLast(const tShowerParticlePtr theLast,
+			  Energy px, Energy py) const;
 
   /**
    *  Perform any initial calculations needed after the branching has been selected

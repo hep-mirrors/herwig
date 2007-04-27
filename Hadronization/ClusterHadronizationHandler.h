@@ -212,6 +212,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 template <>
 /**
  * The following template specialization informs ThePEG about the
@@ -232,6 +234,8 @@ struct ClassTraits<Herwig::ClusterHadronizationHandler>:
   /** Return the class name.*/
   static string className() { return "Herwig++::ClusterHadronizationHandler"; }
 };
+
+/** @endcond */
 
 }
 

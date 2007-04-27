@@ -207,6 +207,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of TensorMeson2PScalarDecayer.
@@ -235,11 +237,10 @@ struct ClassTraits<Herwig::TensorMeson2PScalarDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "TensorMeson2PScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TensorMeson2PScalarDecayer.tcc"
-#endif
 
 #endif /* HERWIG_TensorMeson2PScalarDecayer_H */

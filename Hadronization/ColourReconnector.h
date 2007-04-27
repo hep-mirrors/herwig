@@ -118,9 +118,9 @@ private:
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /**
@@ -143,9 +143,10 @@ struct ClassTraits<Herwig::ColourReconnector>
   static string className() { return "Herwig++::ColourReconnector"; }
 };
 
+/** @endcond */
+
 }
 
-#endif // DOXYGEN
 
 #include "ColourReconnector.icc"
 

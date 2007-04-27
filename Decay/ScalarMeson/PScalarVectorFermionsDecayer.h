@@ -272,6 +272,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of PScalarVectorFermionsDecayer.
@@ -300,11 +302,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "PScalarVectorFermionsDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarVectorFermionsDecayer.tcc"
-#endif
 
 #endif /* THEPEG_PScalarVectorFermionsDecayer_H */

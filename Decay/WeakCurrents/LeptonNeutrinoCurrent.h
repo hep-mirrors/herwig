@@ -145,6 +145,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of LeptonNeutrinoCurrent.
@@ -173,11 +175,10 @@ struct ClassTraits<Herwig::LeptonNeutrinoCurrent>
 
 };
 
+/** @endcond */
+
 }
 
 #include "LeptonNeutrinoCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LeptonNeutrinoCurrent.tcc"
-#endif
 
 #endif /* HERWIG_LeptonNeutrinoCurrent_H */

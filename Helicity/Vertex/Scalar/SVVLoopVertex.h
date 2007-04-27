@@ -118,11 +118,11 @@ private:
 
 #include "SVVLoopVertex.icc"
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SVVLoopVertex. */
@@ -140,6 +140,8 @@ struct ClassTraits<Herwig::Helicity::SVVLoopVertex>
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SVVLoopVertex"; }
 };
+
+/** @endcond */
 
 }
  

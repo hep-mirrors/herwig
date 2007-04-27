@@ -118,6 +118,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of BtoSGammaDecayer. */
 template <>
@@ -139,11 +141,10 @@ struct ClassTraits<Herwig::BtoSGammaDecayer>
   static string library() { return "HwPartonicDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BtoSGammaDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaDecayer.tcc"
-#endif
 
 #endif /* HERWIG_BtoSGammaDecayer_H */

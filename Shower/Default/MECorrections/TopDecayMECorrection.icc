@@ -11,7 +11,7 @@ namespace Herwig {
 
 inline TopDecayMECorrection::TopDecayMECorrection() : _xg_sampling(1.5),
 						      _initialenhance(1.), 
-						      _finalenhance(1.8),
+						      _finalenhance(2.3),
 						      _useMEforT2(true)
 {}
 

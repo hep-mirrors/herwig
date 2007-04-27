@@ -523,8 +523,5 @@ struct ClassTraits<Herwig::GeneralDipole>
 }
 
 #include "GeneralDipole.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "GeneralDipole.tcc"
-#endif
 
 #endif /* HERWIG_GeneralDipole_H */

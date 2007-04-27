@@ -143,6 +143,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of RSModelFFVGRVertex.
@@ -174,6 +176,8 @@ struct ClassTraits<Herwig::Helicity::RSModelFFVGRVertex>
   static string library() { return "HwTVertex.so HwRSModel.so HwRSVertex.so"; }
 
 };
+
+/** @endcond */
 
 }
 

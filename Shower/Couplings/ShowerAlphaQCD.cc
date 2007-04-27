@@ -16,7 +16,7 @@
 using namespace Herwig;
 
 void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
-  os << _asType << _qmin << _nloop << _lambdaopt << _thresopt 
+  os << _asType << _asMaxNP << _qmin << _nloop << _lambdaopt << _thresopt 
      << _lambdain << _alphain << _inopt
      << _tolerance << _maxtry << _alphamin;
   for(unsigned int ix=0;ix<4;++ix)
@@ -24,7 +24,7 @@ void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
-  is >> _asType >> _qmin >> _nloop >> _lambdaopt >> _thresopt
+  is >> _asType >> _asMaxNP >> _qmin >> _nloop >> _lambdaopt >> _thresopt
      >> _lambdain >> _alphain >> _inopt
      >> _tolerance >> _maxtry >> _alphamin;
   for(unsigned int ix=0;ix<4;++ix)
@@ -52,9 +52,9 @@ void ShowerAlphaQCD::Init() {
   static SwitchOption intAsTypeQuad
     (intAsType, "AsTypeQuad","growing quadratically below Q_min", 4);
   static SwitchOption intAsTypeExx1
-    (intAsType, "AsTypeExx1 ", "quad from 100 down to as(Q_min)", 5);
+    (intAsType, "AsTypeExx1 ", "quad from AlphaMaxNP down to as(Q_min)", 5);
   static SwitchOption intAsTypeExx2
-    (intAsType, "AsTypeExx2 ", "const = 100 below Q_min", 6);
+    (intAsType, "AsTypeExx2 ", "const = AlphaMaxNP below Q_min", 6);
 
   // default such that as(qmin) = 1 in the current parametrization.
   // min = Lambda3
@@ -62,6 +62,12 @@ void ShowerAlphaQCD::Init() {
     ("Qmin", "Q < Qmin is treated with NP parametrization as of (unit [GeV])",
      &ShowerAlphaQCD::_qmin, GeV, 0.630882*GeV, 0.330445*GeV,
      100.0*GeV,false,false,false);
+
+  static Parameter<ShowerAlphaQCD,double> interfaceAlphaMaxNP
+    ("AlphaMaxNP",
+     "Max value of alpha in NP region, only relevant if NPAlphaS = 5,6",
+     &ShowerAlphaQCD::_asMaxNP, 1.0, 0., 100.0,
+     false, false, Interface::limited);
 
   static Parameter<ShowerAlphaQCD,unsigned int> interfaceNumberOfLoops
     ("NumberOfLoops",
@@ -143,8 +149,9 @@ void ShowerAlphaQCD::Init() {
 
 void ShowerAlphaQCD::doinit() throw(InitException) {
   ShowerAlpha::doinit();
-  // calculate the value of 5-flavour lambda
-  // evaluate the initial value of Lambda from alphas if needed using Newton-Raphson
+  // calculate the value of 5-flavour lambda 
+  // evaluate the initial
+  // value of Lambda from alphas if needed using Newton-Raphson
   if(_inopt)
     {_lambda[2]=computeLambda(getParticleData(ParticleID::Z0)->mass(),_alphain,5);}
   // otherwise it was an input parameter
@@ -169,9 +176,9 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   _lambda[0]=computeLambda(_thresholds[1],alphaS(_thresholds[1],_lambda[1],4),3);
   // final threshold is qmin
   _thresholds[0]=_qmin;
-  // compute the minimum value 
-  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)); // gives as = 1
-  else _alphamin = 100.; 
+  // compute the maximum value of as 
+  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8); // approx as = 1
+  else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8)); 
   // check consistency lambda_3 < qmin
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"
@@ -204,12 +211,12 @@ double ShowerAlphaQCD::value(const Energy2 scale) const {
       val = val0*sqr(q/_qmin);
       break; 
     case 5:
-      // quadratic in q, starting off at 100, ending on as(qmin)
-      val = (val0 - 100.)*sqr(q/_qmin) + 100.;
+      // quadratic in q, starting off at asMaxNP, ending on as(qmin)
+      val = (val0 - _asMaxNP)*sqr(q/_qmin) + _asMaxNP;
       break; 
     case 6:
-      // just big and constant
-      val = 100.*val0;
+      // just asMaxNP and constant
+      val = _asMaxNP;
       break; 
     }
   } else {
@@ -223,12 +230,6 @@ double ShowerAlphaQCD::value(const Energy2 scale) const {
 double ShowerAlphaQCD::overestimateValue() const {
   return scaleFactor() * _alphamin; 
 }
-
-
-
-
-
-
 
 double ShowerAlphaQCD::ratio(const Energy2 scale) const {
   pair<short,Energy> nflam;
@@ -256,12 +257,12 @@ double ShowerAlphaQCD::ratio(const Energy2 scale) const {
       val = val0*sqr(q/_qmin);
       break; 
     case 5:
-      // quadratic in q, starting off at 100, ending on as(qmin)
-      val = (val0 - 100.)*sqr(q/_qmin) + 100.;
+      // quadratic in q, starting off at asMaxNP, ending on as(qmin)
+      val = (val0 - _asMaxNP)*sqr(q/_qmin) + _asMaxNP;
       break; 
     case 6:
-      // just big and constant
-      val = 100.*val0;
+      // just asMaxNP and constant
+      val = _asMaxNP;
       break; 
     }
   } else {

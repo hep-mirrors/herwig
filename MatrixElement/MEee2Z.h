@@ -209,6 +209,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of MEee2Z. */
 template <>
@@ -230,11 +232,10 @@ struct ClassTraits<Herwig::MEee2Z>
   static string library() { return "HwME.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "MEee2Z.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEee2Z.tcc"
-#endif
 
 #endif /* HERWIG_MEee2Z_H */

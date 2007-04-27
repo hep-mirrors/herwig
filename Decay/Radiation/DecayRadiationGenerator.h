@@ -94,8 +94,5 @@ struct ClassTraits<Herwig::DecayRadiationGenerator>
 }
 
 #include "DecayRadiationGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DecayRadiationGenerator.tcc"
-#endif
 
 #endif /* HERWIG_DecayRadiationGenerator_H */

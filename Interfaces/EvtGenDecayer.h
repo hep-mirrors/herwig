@@ -187,6 +187,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of EvtGenDecayer. */
 template <>
@@ -208,11 +210,10 @@ struct ClassTraits<Herwig::EvtGenDecayer>
   static string library() { return "libHwEvtGen.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "EvtGenDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EvtGenDecayer.tcc"
-#endif
 
 #endif /* HERWIG_EvtGenDecayer_H */

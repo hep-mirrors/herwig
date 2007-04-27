@@ -408,6 +408,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * BaryonFormFactor.
@@ -429,11 +431,10 @@ template <>
   static string className() { return "Herwig++::BaryonFormFactor"; }
 };
 
+/** @endcond */
+
 }
 
 #include "BaryonFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BaryonFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_BaryonFormFactor_H */

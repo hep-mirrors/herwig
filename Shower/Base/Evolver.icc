@@ -97,4 +97,8 @@ inline ShowerProgenitorPtr Evolver::progenitor() {
 inline void Evolver::progenitor(ShowerProgenitorPtr in) {
   _progenitor=in;
 }
+
+inline map<tShowerProgenitorPtr,pair<Energy,double> > & Evolver::intrinsicpT() {
+  return _intrinsic;
+}
 }

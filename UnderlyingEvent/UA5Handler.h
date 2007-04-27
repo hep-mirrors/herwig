@@ -426,6 +426,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of UA5Handler. */
 template<>
@@ -446,6 +448,8 @@ struct ClassTraits<Herwig::UA5Handler> :
    *  (except the base class). */
     static string library() { return "HwUA5.so"; }
 };
+
+/** @endcond */
 
 }
 

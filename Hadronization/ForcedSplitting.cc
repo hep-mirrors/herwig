@@ -151,33 +151,16 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
       rem[ix]->set5Momentum(prem[ix]);
     }
     // boost the decay products
-    for(unsigned int ix=0;ix<2;++ix) {
-      // factors for Lorentz transform
-      Energy ea(pnew[ix].e()),eb(prem[ix].e()),mr(prem[ix].mass());
-      Energy2 mr2(sqr(mr));
-      long double beta1 = -pnew[ix].pz()/pnew[ix].e();
-      long double beta2 =  prem[ix].pz()/prem[ix].e();
-      long double gamma = (ea*eb)/mr2;
-      long double sum   = beta1+beta2;
-      long double prod  = 1.+beta1*beta2;
-      // small approx for accuracy
-      if(abs(beta1)<1e-5||abs(beta2)<1e-5) {
-	prod = 0.5*mr2*(sqr(1./ea)+sqr(1./eb))
-	  +0.125*sqr(mr2)*sqr(1./ea+1./eb)*sqr(1./ea-1./eb);
-	sum = 0.5*mr2*(1./ea+1./eb)*(1./ea-1./eb)*
-	  (1.+0.25*mr2*(sqr(1./ea)+sqr(1./eb)));
-	if(beta1>0) sum*=-1.;
-      }
-      // boost the children
-      for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) {
-	Energy pz(rem[ix]->children()[iy]->momentum().pz());
-	Energy ee(rem[ix]->children()[iy]->momentum().e());
-	Energy mm(rem[ix]->children()[iy]->momentum().mass());
-	Lorentz5Momentum pold=rem[ix]->children()[iy]->momentum();
-	Lorentz5Momentum ptemp(pold.px(),pold.py(),gamma*(ee*sum+pz*prod),
-			       gamma*(pz*sum+ee*prod),mm);
-	rem[ix]->children()[iy]->set5Momentum(ptemp);
-      }
+    Lorentz5Momentum ptemp; 
+    for(unsigned int ix=0;ix<2;++ix) { 
+      Hep3Vector btorest(-pnew[ix].boostVector()); 
+      Hep3Vector bfmrest( prem[ix].boostVector()); 
+      for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) { 
+	ptemp=rem[ix]->children()[iy]->momentum(); 
+	ptemp.boost(btorest); 
+	ptemp.boost(bfmrest); 
+	rem[ix]->children()[iy]->set5Momentum(ptemp); 
+      } 
     }
   }
   catch(std::exception & e) 

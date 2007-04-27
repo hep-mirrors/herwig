@@ -226,6 +226,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of OmegaXiStarPionDecayer.
@@ -254,11 +256,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "OmegaXiStarPionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "OmegaXiStarPionDecayer.tcc"
-#endif
 
 #endif /* HERWIG_OmegaXiStarPionDecayer_H */

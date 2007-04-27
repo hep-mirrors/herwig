@@ -204,6 +204,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of EtaPiPiPiDecayer.
@@ -232,11 +234,10 @@ struct ClassTraits<Herwig::EtaPiPiPiDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "EtaPiPiPiDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EtaPiPiPiDecayer.tcc"
-#endif
 
 #endif /* HERWIG_EtaPiPiPiDecayer_H */

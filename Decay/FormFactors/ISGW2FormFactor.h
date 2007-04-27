@@ -540,6 +540,9 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * This template specialization informs ThePEG about the base class of
  * ISGW2FormFactor.
@@ -566,12 +569,11 @@ template <>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "ISGW2FormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ISGW2FormFactor.tcc"
-#endif
 
 #endif /* HERWIG_ISGW2FormFactor_H */
 

@@ -100,6 +100,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SSSVertex.
@@ -123,6 +125,8 @@ struct ClassTraits<Herwig::Helicity::SSSVertex>
    */
   static string className() { return "Herwig++::SSSVertex"; }
 };
+
+/** @endcond */
 
 }
 

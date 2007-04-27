@@ -94,30 +94,34 @@ private:
 }
 
 namespace ThePEG {
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of DecayVertex.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::DecayVertex,1> {
-    /** Typedef of the base class of DecayVertex. */
-    typedef Herwig::Helicity::HelicityVertex NthBase;
-  };
-  
-  /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
-   */
-  template <>
-  struct ClassTraits<Herwig::Helicity::DecayVertex>
-    : public ClassTraitsBase<Herwig::Helicity::DecayVertex> {
 
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::DecayVertex"; }
-  };
+/** @cond TRAITSPECIALIZATIONS */
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of DecayVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::DecayVertex,1> {
+  /** Typedef of the base class of DecayVertex. */
+  typedef Herwig::Helicity::HelicityVertex NthBase;
+};
+  
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::DecayVertex>
+  : public ClassTraitsBase<Herwig::Helicity::DecayVertex> {
+  
+  /**
+   * Return the class name.
+   */
+  static string className() { return "Herwig++::DecayVertex"; }
+};
+
+/** @endcond */
   
 }
 
@@ -131,8 +135,5 @@ using namespace ThePEG;
 }
 
 #include "DecayVertex.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DecayVertex.tcc"
-#endif
 
 #endif /* HERWIG_DecayVertex_H */

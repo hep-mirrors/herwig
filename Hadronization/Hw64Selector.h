@@ -133,8 +133,5 @@ struct ClassTraits<Herwig::Hw64Selector>
 }
 
 #include "Hw64Selector.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Hw64Selector.tcc"
-#endif
 
 #endif /* HERWIG_Hw64Selector_H */

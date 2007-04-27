@@ -149,6 +149,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of ThreeMesonCurrentBase.
@@ -176,6 +178,8 @@ template <>
   static string library() { return "HwWeakCurrents.so"; }
 
 };
+
+/** @endcond */
 
 }
 

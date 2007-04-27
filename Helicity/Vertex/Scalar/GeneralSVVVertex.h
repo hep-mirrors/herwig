@@ -127,11 +127,11 @@ private:
 
 #include "GeneralSVVVertex.icc"
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of GeneralSVVVertex. */
@@ -149,6 +149,8 @@ struct ClassTraits<Herwig::Helicity::GeneralSVVVertex>
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::GeneralSVVVertex"; }
 };
+
+/** @endcond */
 
 }
 

@@ -322,6 +322,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of StrongHeavyBaryonDecayer.
@@ -350,11 +352,10 @@ struct ClassTraits<Herwig::StrongHeavyBaryonDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "StrongHeavyBaryonDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "StrongHeavyBaryonDecayer.tcc"
-#endif
 
 #endif /* HERWIG_StrongHeavyBaryonDecayer_H */

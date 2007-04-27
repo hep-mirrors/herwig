@@ -139,37 +139,41 @@ private:
 
 namespace ThePEG {
 
-  /**
-   * The following template specialization informs ThePEG about the
-   * base class of FFTVertex.
-   */
-  template <>
-  struct BaseClassTrait<Herwig::Helicity::FFTVertex,1> {
+/** @cond TRAITSPECIALIZATIONS */
+
+/**
+ * The following template specialization informs ThePEG about the
+ * base class of FFTVertex.
+ */
+template <>
+struct BaseClassTrait<Herwig::Helicity::FFTVertex,1> {
   /** Typedef of the base class of FFTVertex. */
-    typedef Herwig::Helicity::VertexBase NthBase;
-  };
+  typedef Herwig::Helicity::VertexBase NthBase;
+};
 
+/**
+ * The following template specialization informs ThePEG about the
+ * name of this class and the shared object where it is defined.
+ */
+template <>
+struct ClassTraits<Herwig::Helicity::FFTVertex>
+  : public ClassTraitsBase<Herwig::Helicity::FFTVertex> {
+  
   /**
-   * The following template specialization informs ThePEG about the
-   * name of this class and the shared object where it is defined.
+   * Return the class name.
    */
-  template <>
-  struct ClassTraits<Herwig::Helicity::FFTVertex>
-    : public ClassTraitsBase<Herwig::Helicity::FFTVertex> {
-
-    /**
-     * Return the class name.
-     */
-    static string className() { return "Herwig++::FFTVertex"; }
-
-    /**
-     * Return the name of the shared library to be loaded to get
-     * access to this class and every other class it uses
-     * (except the base class).
-     */
-    static string library() { return "HwTVertex.so"; }
-
-  };
+  static string className() { return "Herwig++::FFTVertex"; }
+  
+  /**
+   * Return the name of the shared library to be loaded to get
+   * access to this class and every other class it uses
+   * (except the base class).
+   */
+  static string library() { return "HwTVertex.so"; }
+  
+};
+  
+/** @endcond */
   
 }
 

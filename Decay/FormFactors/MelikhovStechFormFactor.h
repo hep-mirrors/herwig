@@ -404,11 +404,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MelikhovStechFormFactor. */
@@ -431,11 +431,10 @@ struct ClassTraits<Herwig::MelikhovStechFormFactor>
   static string library() { return "HwFormFactors.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "MelikhovStechFormFactor.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MelikhovStechFormFactor.tcc"
-#endif
 
 #endif /* HERWIG_MelikhovStechFormFactor_H */

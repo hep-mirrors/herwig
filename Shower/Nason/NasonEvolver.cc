@@ -47,6 +47,8 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
   currentTree(tree);
   // set up the shower
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
+  // generate the intrinsic p_T once and for all
+  generateIntrinsicpT(particlesToShower);
   // main showering loop
   unsigned int ntry(0);
   do {
@@ -163,7 +165,8 @@ void NasonEvolver::showerHardProcess(ShowerTreePtr tree) {
       }
     }
   }
-  while(!showerModel()->kinematicsReconstructor()->reconstructHardJets(tree)&&
+  while(!showerModel()->kinematicsReconstructor()->
+	reconstructHardJets(tree,intrinsicpT())&&
  	maximumTries()>++ntry);
   if(maximumTries()==ntry) throw Exception() << "Failed to generate the shower after "
  				      << ntry 
@@ -434,7 +437,15 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
       emitted=spaceLikeShower(newParent,beam);
     }
     if(!emitted) {
-      kinematics->updateLast(newParent);
+      if(intrinsicpT().find(progenitor())==intrinsicpT().end()) {
+	bb.kinematics->updateLast(newParent,0.,0.);
+      }
+      else {
+	pair<Energy,double> kt=intrinsicpT()[progenitor()];
+	bb.kinematics->updateLast(newParent,
+				  kt.first*cos(kt.second),
+				  kt.first*sin(kt.second));
+      }
     }
     particle->showerKinematics()->updateChildren(newParent, theChildren);
     // perform the shower of the final-state particle
@@ -466,7 +477,17 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   // now continue the shower
   bool emitted=truncatedSpaceLikeShower(newParent,beam,branch);
   // now reconstruct the momentum
-  if(!emitted) bb.kinematics->updateLast(newParent);
+  if(!emitted) {
+    if(intrinsicpT().find(progenitor())==intrinsicpT().end()) {
+      bb.kinematics->updateLast(newParent,0.,0.);
+    }
+    else {
+      pair<Energy,double> kt=intrinsicpT()[progenitor()];
+      bb.kinematics->updateLast(newParent,
+				kt.first*cos(kt.second),
+				kt.first*sin(kt.second));
+    }
+  }
   particle->showerKinematics()->updateChildren(newParent, theChildren);
   // perform the shower of the final-state particle
   timeLikeShower(otherChild);

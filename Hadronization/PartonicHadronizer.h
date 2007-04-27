@@ -223,6 +223,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the
  *  base classes of PartonicHadronizer. */
 template <>
@@ -240,11 +242,10 @@ struct ClassTraits<Herwig::PartonicHadronizer>
   static string className() { return "Herwig++::PartonicHadronizer"; }
 };
 
+/** @endcond */
+
 }
 
 #include "PartonicHadronizer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PartonicHadronizer.tcc"
-#endif
 
 #endif /* HERWIG_PartonicHadronizer_H */

@@ -101,9 +101,9 @@ private:
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /**
@@ -125,9 +125,9 @@ struct ClassTraits<Herwig::ClusterFinder>: public ClassTraitsBase<Herwig::Cluste
   static string className() { return "Herwig++::ClusterFinder"; }
 };
 
-}
+/** @endcond */
 
-#endif // DOXYGEN
+}
 
 #include "ClusterFinder.icc"
 

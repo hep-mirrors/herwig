@@ -400,8 +400,5 @@ struct ClassTraits<Herwig::FFDipole>
 }
 
 #include "FFDipole.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FFDipole.tcc"
-#endif
 
 #endif /* HERWIG_FFDipole_H */

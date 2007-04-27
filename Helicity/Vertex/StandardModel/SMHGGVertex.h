@@ -146,11 +146,11 @@ private:
 }
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SMHGGVertex. */
@@ -173,11 +173,10 @@ struct ClassTraits<Herwig::Helicity::SMHGGVertex>
   static string library() { return "HwSMVertex.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "SMHGGVertex.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SMHGGVertex.tcc"
-#endif
 
 #endif /* HERWIG_SMHGGVertex_H */

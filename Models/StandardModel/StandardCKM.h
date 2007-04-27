@@ -180,6 +180,9 @@ private:
 #include "StandardCKM.icc"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
 /** This template specialization informs ThePEG about the base classes
  *  of StandardCKM. */
 template <>
@@ -196,6 +199,8 @@ struct ClassTraits<Herwig::StandardCKM>: public ClassTraitsBase<Herwig::Standard
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::StandardCKM"; }
 };
+
+/** @endcond */
 
 }
 

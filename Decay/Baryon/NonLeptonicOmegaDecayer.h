@@ -335,6 +335,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of NonLeptonicOmegaDecayer.
@@ -363,11 +365,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "NonLeptonicOmegaDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "NonLeptonicOmegaDecayer.tcc"
-#endif
 
 #endif /* HERWIG_NonLeptonicOmegaDecayer_H */

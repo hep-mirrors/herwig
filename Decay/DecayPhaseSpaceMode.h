@@ -392,6 +392,8 @@ ostream & operator<<(ostream &, const DecayPhaseSpaceMode &);
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 template <>
 /**
  * The following template specialization informs ThePEG about the
@@ -413,10 +415,9 @@ template <>
    static string className() { return "Herwig++::DecayPhaseSpaceMode"; }
 };
 
+/** @endcond */
+
 }
 #include "DecayPhaseSpaceMode.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DecayPhaseSpaceMode.tcc"
-#endif
 
 #endif /* HERWIG_DecayPhaseSpaceMode_H */

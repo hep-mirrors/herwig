@@ -259,11 +259,11 @@ private:
 
 }
 
-// CLASSDOC OFF
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of RadiativeHeavyBaryonDecayer. */
@@ -286,11 +286,10 @@ template <>
   static string library() { return "HwWeakCurrents.so HwBaryonDecay.so"; }
 };
 
+/** @endcond */
+
 }
 
 #include "RadiativeHeavyBaryonDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "RadiativeHeavyBaryonDecayer.tcc"
-#endif
 
 #endif /* HERWIG_RadiativeHeavyBaryonDecayer_H */

@@ -131,6 +131,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SMGGGVertex.
@@ -162,6 +164,8 @@ struct ClassTraits<Herwig::Helicity::SMGGGVertex>
   static string library() { return "HwSMVertex.so"; }
 
 };
+
+/** @endcond */
 
 }
 

@@ -125,7 +125,7 @@ private:
   /**
    *  This (private) method, called by decay(), performs reshuffling in the 
    * special case of a semileptonic partonic b/c decay 
-   * @param idhad The hadron to be produced
+   * @param hadron The hadron to be produced
    * @param cluster The cluster to be reshuffled
    * @param step The step into which the particles are inserted
    */
@@ -149,9 +149,9 @@ private:
 
 }
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
-
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 template <>
 /**
@@ -174,9 +174,9 @@ struct ClassTraits<Herwig::LightClusterDecayer>:
   static string className() { return "Herwig++::LightClusterDecayer"; }
 };
 
-}
+/** @endcond */
 
-#endif // DOXYGEN STUFF
+}
 
 #include "LightClusterDecayer.icc"
 

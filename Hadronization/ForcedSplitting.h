@@ -253,8 +253,5 @@ struct ClassTraits<Herwig::ForcedSplitting>
 }
 
 #include "ForcedSplitting.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ForcedSplitting.tcc"
-#endif
 
 #endif /* HERWIG_ForcedSplitting_H */

@@ -26,7 +26,9 @@ void FortranReconstructor::Init() {
 
 }
 
-bool FortranReconstructor::reconstructHardJets(ShowerTreePtr ) const {
+bool FortranReconstructor::reconstructHardJets(ShowerTreePtr,
+					       map<tShowerProgenitorPtr,
+					       pair<Energy,double> > pt ) const {
   return true;
   //throw Exception() << "FortranReconstructor::reconstructHardJets()"
   //		    << " not implemented yet" << Exception::runerror;

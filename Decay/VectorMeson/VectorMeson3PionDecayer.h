@@ -350,9 +350,14 @@ private:
   vector<vector <complex<InvEnergy2> > > _ccoupling;
 
   /**
-   * the pion masses
+   * The charge pion mass
    */
-  Energy _mpic,_mpi0;
+  Energy _mpic;
+
+  /**
+   *  The neutral pion mass
+   */
+  Energy _mpi0;
 
   /**
    *  Initial size of the vectors
@@ -366,6 +371,8 @@ private:
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -395,11 +402,10 @@ struct ClassTraits<Herwig::VectorMeson3PionDecayer>
 
 };
 
+/** @endcond */
+
 }
 
 #include "VectorMeson3PionDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMeson3PionDecayer.tcc"
-#endif
 
 #endif /* HERWIG_VectorMeson3PionDecayer_H */

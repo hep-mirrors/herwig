@@ -227,6 +227,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of WeakDecayCurrent.
@@ -248,11 +250,10 @@ struct ClassTraits<Herwig::WeakDecayCurrent>
   static string className() { return "Herwig++::WeakDecayCurrent"; }
 };
 
+/** @endcond */
+
 }
 
 #include "WeakDecayCurrent.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WeakDecayCurrent.tcc"
-#endif
 
 #endif /* HERWIG_WeakDecayCurrent_H */

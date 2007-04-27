@@ -377,6 +377,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of SU3BaryonOctetDecupletScalarDecayer.
@@ -406,11 +408,10 @@ template <>
 
 };
 
+/** @endcond */
+
 }
 
 #include "SU3BaryonOctetDecupletScalarDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SU3BaryonOctetDecupletScalarDecayer.tcc"
-#endif
 
 #endif /* HERWIG_SU3BaryonOctetDecupletScalarDecayer_H */

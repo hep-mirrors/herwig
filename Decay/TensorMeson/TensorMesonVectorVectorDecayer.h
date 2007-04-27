@@ -217,6 +217,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of Herwig::TensorMesonVectorVectorDecayer.
@@ -243,13 +245,12 @@ struct ClassTraits<Herwig::TensorMesonVectorVectorDecayer>
    */
   static string library() { return "HwTMDecay.so"; }
   
- };
+};
+  
+/** @endcond */
   
 }
 
 #include "TensorMesonVectorVectorDecayer.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TensorMesonVectorVectorDecayer.tcc"
-#endif
 
 #endif /* HERWIG_TensorMesonVectorVectorDecayer_H */

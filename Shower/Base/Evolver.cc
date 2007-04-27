@@ -80,10 +80,23 @@ void Evolver::Init() {
 
 }
 
+void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
+  _intrinsic.clear();
+  for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
+    // only consider initial-state particles
+    if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
+    if(!particlesToShower[ix]->progenitor()->dataPtr()->coloured()) continue;
+    pair<Energy,double> pt = make_pair(0.,UseRandom::rnd()*2.*pi);
+    _intrinsic[particlesToShower[ix]] = pt;
+  }
+}
+
 void Evolver::showerHardProcess(ShowerTreePtr hard) {
   // set the current tree
   currentTree(hard);
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
+  // generate the intrinsic p_T once and for all
+  generateIntrinsicpT(particlesToShower);
   unsigned int ntry(0);
   do {
     // clear results of last attempt
@@ -127,12 +140,13 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
       }
     }
   }
-  while(!showerModel()->kinematicsReconstructor()->reconstructHardJets(hard)&&
+  while(!showerModel()->kinematicsReconstructor()->reconstructHardJets(hard,_intrinsic)&&
 	maximumTries()>++ntry);
-  if(maximumTries()==ntry) throw Exception() << "Failed to generate the shower after "
-				      << ntry 
-				      << " attempts in Evolver::showerHardProcess()"
-				      << Exception::eventerror;
+  if(maximumTries()==ntry) throw Exception() 
+    << "Failed to generate the shower after "
+    << ntry 
+    << " attempts in Evolver::showerHardProcess()"
+    << Exception::eventerror;
   currentTree()->hasShowered(true);
 }
 
@@ -276,7 +290,15 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   bool emitted=spaceLikeShower(newParent,beam);
   // now reconstruct the momentum
   if(!emitted) {
-    bb.kinematics->updateLast(newParent);
+    if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
+      bb.kinematics->updateLast(newParent,0.,0.);
+    }
+    else {
+      pair<Energy,double> kt=_intrinsic[_progenitor];
+      bb.kinematics->updateLast(newParent,
+				kt.first*cos(kt.second),
+				kt.first*sin(kt.second));
+    }
   }
   particle->showerKinematics()->updateChildren(newParent, theChildren);
   // perform the shower of the final-state particle

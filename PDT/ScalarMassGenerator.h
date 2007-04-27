@@ -153,6 +153,8 @@ private:
 
 namespace ThePEG {
 
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of ScalarMassGenerator.
@@ -174,11 +176,10 @@ struct ClassTraits<Herwig::ScalarMassGenerator>
   static string className() { return "/Herwig++/ScalarMassGenerator"; }
 };
 
+/** @endcond */
+
 }
 
 #include "ScalarMassGenerator.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarMassGenerator.tcc"
-#endif
 
 #endif /* HERWIG_ScalarMassGenerator_H */

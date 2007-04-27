@@ -270,6 +270,16 @@ protected:
   inline void progenitor(ShowerProgenitorPtr);
   //@}
 
+  /**
+   *  Calculate the intrinsic \f$p_T\f$.
+   */
+  virtual void generateIntrinsicpT(vector<ShowerProgenitorPtr>);
+
+  /**
+   *  Access to the intrinsic \f$p_T\f$ for inheriting classes
+   */
+  inline map<tShowerProgenitorPtr,pair<Energy,double> > & intrinsicpT();
+
 protected:
 
   /** @name Clone Methods. */
@@ -369,6 +379,11 @@ private:
    *  The beam particle data for the current initial-state shower
    */
   Ptr<BeamParticleData>::const_pointer _beam;
+
+  /**
+   *  Storage of the intrinsic \f$p_t\f$ of the particles
+   */
+  map<tShowerProgenitorPtr,pair<Energy,double> > _intrinsic;
 };
 
 }
