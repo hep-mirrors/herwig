@@ -14,6 +14,7 @@ inline VVSVertex::VVSVertex()
   setNpoint(3);
   // spins
   setSpin(3,3,1);
+  setName(VVS);
 }
 
 }

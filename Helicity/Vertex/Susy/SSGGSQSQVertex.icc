@@ -1,0 +1,31 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSGGSQSQVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+
+inline IBPtr SSGGSQSQVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSGGSQSQVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SSGGSQSQVertex::doinit() throw(InitException) {
+  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  if(!_theSS)
+    throw InitException() << "SSGGSQSQVertex::doinit() - "
+			  << "The model pointer is null."
+			  << Exception::abortnow;
+  orderInGs(2);
+  orderInGem(0);
+  VVSSVertex::doinit();
+}
+
+
+}
+}

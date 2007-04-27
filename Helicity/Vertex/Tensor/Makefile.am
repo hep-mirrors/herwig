@@ -1,6 +1,6 @@
-pkglib_LTLIBRARIES = HwTVertex.la
-HwTVertex_la_LDFLAGS = -module -version-info 2:1:0
-HwTVertex_la_SOURCES = \
+noinst_LTLIBRARIES = libHwTVertex.la
+#HwTVertex_la_LDFLAGS = -module -version-info 2:1:0
+libHwTVertex_la_SOURCES = \
 FFTVertex.cc  FFTVertex.h  FFTVertex.fh  FFTVertex.icc  \
 FFVTVertex.cc FFVTVertex.h FFVTVertex.fh FFVTVertex.icc \
 SSTVertex.cc  SSTVertex.h  SSTVertex.fh  SSTVertex.icc \

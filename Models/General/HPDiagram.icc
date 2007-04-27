@@ -1,0 +1,39 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined, non-templated member
+// functions of the HPDiagram struct.
+//
+namespace Herwig {
+
+inline bool HPDiagram::operator==(const HPDiagram & x) const {
+  if( x.channelType == channelType && ordered == x.ordered && 
+      x.incoming == incoming && x.outgoing == outgoing ) {
+    if( (!intermediate && !x.intermediate) ||
+	( abs(intermediate->id()) == abs(x.intermediate->id()) ) ) 
+      return true;
+  } 
+  return false;
+}
+
+inline bool HPDiagram::sameProcess(HPDiagram & x) const {
+  if( x.incoming == incoming && x.outgoing == outgoing ) return true;
+  else return false;
+}
+
+inline PersistentOStream & operator<<(PersistentOStream & os, 
+				      const HPDiagram & x) {
+  os << x.incoming << x.outgoing << x.ordered << x.intermediate
+     << x.vertices << x.channelType << x.colourFlow;
+  return os;
+}
+
+inline PersistentIStream & operator>>(PersistentIStream & is, 
+				      HPDiagram & x) {
+  int chan = -1;
+  is >> x.incoming >> x.outgoing >> x.ordered >> x.intermediate
+     >> x.vertices >> chan >> x.colourFlow;
+  x.channelType = HPDiagram::Channel(chan);
+  return is;
+}
+
+}

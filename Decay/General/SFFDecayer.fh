@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SFFDecayer class.
+//
+#ifndef ThePEG_SFFDecayer_FH
+#define ThePEG_SFFDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+  using namespace ThePEG;
+class SFFDecayer;
+ThePEG_DECLARE_POINTERS(SFFDecayer,SFFDecayerPtr);
+
+}
+
+#endif

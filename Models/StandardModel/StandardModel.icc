@@ -9,14 +9,6 @@ using namespace ThePEG;
 typedef Ptr<Herwig::RunningMassBase>::pointer runPtr;
 typedef Ptr<Herwig::RunningMassBase>::transient_pointer trunPtr;
 
-inline IBPtr StandardModel::clone() const {
-  return new_ptr(*this);
-}
-
-inline IBPtr StandardModel::fullclone() const {
-  return new_ptr(*this);
-}
-
 // Standard Model couplings
 inline double StandardModel::lnu() const 
 {return 0.25/sqrt(sin2ThetaW()*(1.-sin2ThetaW()))*(vnu()+anu());}
@@ -47,7 +39,8 @@ inline tFFSVertexPtr  StandardModel::vertexFFH() const {return _theFFHVertex;}
 inline tVVSVertexPtr  StandardModel::vertexWWH() const {return _theWWHVertex;}
 inline tVVVVVertexPtr StandardModel::vertexWWWW() const {return _theWWWWVertex;}
 inline tVVVVVertexPtr StandardModel::vertexGGGG() const {return _theGGGGVertex;}
-
+inline tGeneralSVVVertexPtr StandardModel::vertexHGG() const {return _theHGGVertex;}
+inline tGeneralSVVVertexPtr StandardModel::vertexHPP() const {return _theHPPVertex;}
 
 inline trunPtr StandardModel::massPtr() const {
   return _theRunningMass;}

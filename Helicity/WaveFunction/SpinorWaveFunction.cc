@@ -419,5 +419,9 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
     }
 }
 
+  
+void SpinorWaveFunction::conjugate() {
+  _wf=_wf.conjugate();
+}
 }
 }

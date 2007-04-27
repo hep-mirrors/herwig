@@ -38,3 +38,11 @@ set /Defaults/Model:Vertex/WWW WWWVertex
 # create the standard model WWWW vertex
 create Herwig++::SMWWWWVertex WWWWVertex
 set /Defaults/Model:Vertex/WWWW WWWWVertex
+
+#create the standard model HGG vertex
+create Herwig++::SMHGGVertex HGGVertex
+set /Defaults/Model:Vertex/HGG HGGVertex
+
+#create the standard model HPP vertex
+create Herwig++::SMHPPVertex HPPVertex
+set /Defaults/Model:Vertex/HPP HPPVertex

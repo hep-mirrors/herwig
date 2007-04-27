@@ -12,4 +12,12 @@ MEPP2QQ.h MEPP2QQ.icc MEPP2QQ.fh MEPP2QQ.cc\
 MEPP2Higgs.h MEPP2Higgs.icc MEPP2Higgs.fh MEPP2Higgs.cc
 HwME_la_LDFLAGS = -module -version-info 2:1:0
 
-
+noinst_LTLIBRARIES = libHwGeneralME.la
+libHwGeneralME_la_SOURCES = \
+GeneralHardME.cc GeneralHardME.h GeneralHardME.icc GeneralHardME.fh \
+MEvv2ff.cc MEvv2ff.h MEvv2ff.fh MEvv2ff.icc MEvv2ss.cc MEvv2ss.h \
+MEvv2ss.icc MEvv2ss.fh MEfv2fs.cc MEfv2fs.h MEfv2fs.icc MEfv2fs.fh MEff2ss.cc \
+MEff2ss.h MEff2ss.icc MEff2ss.fh MEff2ff.cc MEff2ff.h MEff2ff.fh \
+MEff2ff.icc MEff2vv.cc MEff2vv.h MEff2vv.icc MEff2vv.fh \
+MEfv2vf.h MEfv2vf.fh MEfv2vf.icc MEfv2vf.cc \
+MEvv2vv.h MEvv2vv.fh MEvv2vv.icc MEvv2vv.cc

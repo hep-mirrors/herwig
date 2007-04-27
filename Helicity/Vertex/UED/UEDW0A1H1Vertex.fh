@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the UEDW0A1H1Vertex class.
+//
+#ifndef HERWIG_UEDW0A1H1Vertex_FH
+#define HERWIG_UEDW0A1H1Vertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+
+class UEDW0A1H1Vertex;
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Helicity::UEDW0A1H1Vertex,UEDW0A1H1VertexPtr);
+
+}
+
+#endif

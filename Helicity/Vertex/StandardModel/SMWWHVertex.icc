@@ -31,6 +31,8 @@ inline void SMWWHVertex::doinit() throw(InitException) {
   _sw = _theSM->sin2ThetaW();
   _zfact = 1./(1.-_sw);
   _sw=sqrt(_sw);
+  orderInGem(1);
+  orderInGs(0);
   VVSVertex::doinit();
 }
 

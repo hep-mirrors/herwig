@@ -1,0 +1,72 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SusyBase class.
+//
+
+namespace Herwig {
+
+inline SusyBase::SusyBase() {}
+
+inline IBPtr SusyBase::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SusyBase::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline double SusyBase::tanBeta() const {
+  ParamMap::const_iterator it = theMinPar.find(3);
+  if(it == theMinPar.end()) return 0.0;
+  return it->second;
+}
+
+inline double SusyBase::muParameter() const {
+  ParamMap::const_iterator it = theHMix.find(1);
+  if(it == theMinPar.end()) return 0.0;
+  return it->second;
+}
+
+inline double SusyBase::higgsMixingAngle() const {
+  return theAlpha;
+}
+
+inline const vector<Complex> & SusyBase::upTypeTrilinear() const {
+  return theAu;
+}
+
+inline const vector<Complex> & SusyBase::downTypeTrilinear() const {
+  return theAd;
+}
+
+inline const vector<Complex> & SusyBase::leptonTypeTrilinear() const {
+  return theAe;
+}
+
+inline const MixingMatrixPtr & SusyBase::neutralinoMix() const {
+  return theNMix;
+}
+
+inline const MixingMatrixPtr & SusyBase::charginoUMix() const {
+  return theUMix;
+}
+
+inline const MixingMatrixPtr & SusyBase::charginoVMix() const {
+  return theVMix;
+}
+  
+inline const MixingMatrixPtr & SusyBase::stopMix() const {
+  return theStopMix;
+}
+  
+inline const MixingMatrixPtr & SusyBase::sbottomMix() const {
+  return theSbotMix;
+}
+  
+inline const MixingMatrixPtr & SusyBase::stauMix() const {
+  return theStauMix;
+}
+
+}
+

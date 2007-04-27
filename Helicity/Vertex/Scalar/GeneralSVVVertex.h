@@ -56,70 +56,127 @@ public:
   
   /**
    * Calculate coupling.
-   *@param q2 Scale at which to evaluate couplings
-   *@param part1 ParticleDataPointer to first particle 
-   *@param part2 ParticleDataPointer to second particle
-   *@param part3 ParticleDataPointer to third particle 
+   * @param q2 Scale at which to evaluate couplings
+   * @param part1 ParticleDataPointer to first particle 
+   * @param part2 ParticleDataPointer to second particle
+   * @param part3 ParticleDataPointer to third particle 
    */
   virtual void setCoupling(Energy2 q2,tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3)=0;
   //@}
 
-protected:
-  
-  /**@name Tensor Coefficients access and setting functions. */
+public:
+
+  /**@name Set and Get tensor coefficients.*/
   //@{
   /**
-   * Set tensor coefficients 
-   */
-  inline void a00(const Complex & val);
-  
-  inline void a11(const Complex & val);
-  
-  inline void a12(const Complex & val);
-  
-  inline void a21(const Complex & val);
-  
-  inline void a22(const Complex & val);
-  
-  inline void aEp(const Complex & val);
-  
-  /**
-   *Access to tensor coefficients
+   * Access coefficient of \f$g^{\mu\nu}\f$
    */
   inline Complex a00() const;
-  
+      
+  /**
+   * Access coefficient of \f$p_1^\mu p_1^\nu\f$
+   */
   inline Complex a11() const;
-  
+      
+  /**
+   * Access coefficient of \f$p_1^\mu p_2^\nu\f$
+   */
   inline Complex a12() const;
-  
+      
+  /**
+   * Access coefficient of \f$p_2^\mu p_1^\nu\f$
+   */
   inline Complex a21() const;
-  
+      
+  /**
+   * Access coefficient of \f$p_2^\mu p_2^\nu\f$
+   */
   inline Complex a22() const;
-  
+      
+  /**
+   * Access coefficient of \f$\epsilon^{\mu\nu\alpha\beta}p_1\alpha p_2\beta\f$
+   */
   inline Complex aEp() const;
+    
+  /**
+   * Set tensor coefficient of \f$g^{\mu\nu}\f$
+   */
+  inline void a00(const Complex & val);
+      
+  /**
+   * Set tensor coefficient of \f$p_1^\mu p_1^\nu\f$
+   */
+  inline void a11(const Complex & val);
+      
+  /**
+   * Set tensor coefficient of \f$p_1^\mu p_2^\nu\f$
+   */
+  inline void a12(const Complex & val);
+      
+  /**
+   * Set tensor coefficient of \f$p_2^\mu p_1^\nu\f$
+   */
+  inline void a21(const Complex & val);
+      
+  /**
+   * Set tensor coefficient of \f$p_2^\mu p_2^\nu\f$
+   */ 
+  inline void a22(const Complex & val);
+
+  /**
+   * Set tensor coefficient of \f$\epsilon^{\mu\nu\alpha\beta}p_1\alpha p_2\beta\f$
+   */
+  inline void aEp(const Complex & val);
   //@}
-  
+
 private:
-  
+      
   /**
    * The static object used to initialize the description of this class.
    * Indicates that this is an abstract class with persistent data.
    */
   static AbstractNoPIOClassDescription<GeneralSVVVertex> initGeneralSVVVertex;
-  
+
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   GeneralSVVVertex & operator=(const GeneralSVVVertex &);
+      
+private:
   
-  /**@name Store tensor coefficients. */
+  /** @name Store tensor coefficients.*/
   //@{
   /**
-   *  The tensor coefficients
+   * Coefficient of \f$g^{\mu\nu}\f$
    */
-  Complex _a00,_a11,_a12,_a21,_a22,_aEp;
+  Complex _a00;
+
+  /**
+   * Coefficient of \f$p_1^\mu p_1^\nu\f$
+   */
+  Complex _a11;
+
+  /**
+   * Coefficient of \f$p_1^\mu p_2^\nu\f$
+   */
+  Complex _a12;
+
+  /**
+   * Coefficient of \f$p_2^\mu p_1^\nu\f$
+   */
+  Complex _a21;
+
+  /**
+   * Coefficient of \f$p_2^\mu p_2^\nu\f$
+   */
+  Complex _a22;
+
+  /**
+   * Coefficient of \f$\epsilon^{\mu\nu\alpha\beta}p_1\alpha p_2\beta\f$
+   */
+  Complex _aEp;
   //@}
 };
 }
@@ -131,7 +188,7 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
 
 /** This template specialization informs ThePEG about the
  *  base classes of GeneralSVVVertex. */
@@ -150,7 +207,7 @@ struct ClassTraits<Herwig::Helicity::GeneralSVVVertex>
   static string className() { return "Herwig++::GeneralSVVVertex"; }
 };
 
-/** @endcond */
+/// \endif
 
 }
 

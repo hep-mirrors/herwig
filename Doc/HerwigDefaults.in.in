@@ -1,7 +1,6 @@
 # output interfaces for documentation
 # the following need to come first
 library HwWeakCurrents.so
-library HwTVertex.so
 library HwSMVertex.so
 #
 library Hw64Decay.so

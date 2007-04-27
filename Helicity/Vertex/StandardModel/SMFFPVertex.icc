@@ -42,6 +42,8 @@ inline void SMFFPVertex::doinit() throw(InitException) {
     }
   _couplast = 0.;
   _q2last=-1.;
+  orderInGem(1);
+  orderInGs(0);
   FFVVertex::doinit();
 }
 

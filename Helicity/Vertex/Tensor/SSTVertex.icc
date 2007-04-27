@@ -13,6 +13,7 @@ inline SSTVertex::SSTVertex()
   setNpoint(3);
   // spins
   setSpin(1,1,5);
+  setName(SST);
 }
 
 }

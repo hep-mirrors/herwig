@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the GeneralCurrentDecayer class.
+//
+#ifndef HERWIG_GeneralCurrentDecayer_FH
+#define HERWIG_GeneralCurrentDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class GeneralCurrentDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::GeneralCurrentDecayer,GeneralCurrentDecayerPtr);
+
+}
+
+#endif

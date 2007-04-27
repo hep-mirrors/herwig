@@ -116,13 +116,29 @@ public:
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
+   * @param ioff An integer referring to which particle in the list is 
+   * offshell if applicable.
    */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3)=0;
-
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,int ioff)=0;
+   
+  /**
+   *  Get the couplings
+   */
+  //@{
+  /**
+   * Get the left coupling.
+   */
+  inline Complex getLeft();
+  
+  /**
+   * Get the right coupling.
+   */
+  inline Complex getRight();
+  
 protected:
 
   /**
-   *  Set and get the couplings
+   *  Set the couplings
    */
   //@{
   /**
@@ -134,16 +150,6 @@ protected:
    * Set the right coupling.
    */
   inline void setRight(Complex);
-
-  /**
-   * Get the left coupling.
-   */
-  inline Complex getLeft();
-
-  /**
-   * Get the right coupling.
-   */
-  inline Complex getRight();
   //@}
   
 private:
@@ -178,7 +184,7 @@ private:
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
 
 /**
  * The following template specialization informs ThePEG about the
@@ -204,7 +210,7 @@ struct ClassTraits<Herwig::Helicity::FFSVertex>
   static string className() { return "Herwig++::FFSVertex"; }
 };
 
-/** @endcond */
+/// \endif
 
 }
 

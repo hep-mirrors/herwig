@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SVVLoopDecayer class.
+//
+#ifndef ThePEG_SVVLoopDecayer_FH
+#define ThePEG_SVVLoopDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+  
+class SVVLoopDecayer;
+ThePEG_DECLARE_POINTERS(SVVLoopDecayer,SVVLoopDecayerPtr);
+
+}
+
+#endif

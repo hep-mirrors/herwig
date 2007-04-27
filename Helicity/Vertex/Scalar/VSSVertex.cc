@@ -38,7 +38,7 @@ Complex VSSVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec,
   setCoupling(q2,Pvec,Psca1,Psca2);
   Complex norm=getNorm();
   // calculate the vertex
-  Complex vertex = -Complex(0.,1.)*norm*
+  Complex vertex = -Complex(0.,1.)*norm*sca1.wave()*sca2.wave()*
     ( vec.t()*(sca1.e() -sca2.e() )-vec.x()*(sca1.px()-sca2.px()) 
       -vec.y()*(sca1.py()-sca2.py())-vec.z()*(sca1.pz()-sca2.pz()));
   return vertex;

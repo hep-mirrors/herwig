@@ -7,33 +7,6 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-  inline SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0))
-{
-  // particles for the vertex
-  vector<int> first,second,third;
-  // particles for outgoing W-
-  // quarks
-  for(unsigned int ix=1;ix<6;ix+=2)
-    {
-      for(unsigned int iy=2;iy<7;iy+=2)
-	{first.push_back(-ix);second.push_back(iy);third.push_back(-24);}
-    }
-  // leptons
-  for(unsigned int ix=11;ix<17;ix+=2)
-    {first.push_back(-ix);second.push_back(ix+1);third.push_back(-24);}
-  // particles for outgoing W+
-  // quarks
-  for(unsigned int ix=2;ix<7;ix+=2)
-    {
-      for(unsigned int iy=1;iy<6;iy+=2)
-	{first.push_back(-ix);second.push_back(iy);third.push_back(24);}
-    }
-  // leptons
-  for(unsigned int ix=11;ix<17;ix+=2)
-     {first.push_back(-ix-1);second.push_back(ix);third.push_back(24);}
-  setList(first,second,third);
-  _q2last=0.;_couplast=0.;
-}
 
 inline IBPtr SMFFWVertex::clone() const {
   return new_ptr(*this);
@@ -41,24 +14,6 @@ inline IBPtr SMFFWVertex::clone() const {
 
 inline IBPtr SMFFWVertex::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void SMFFWVertex::doinit() throw(InitException) {
-  Herwig::Helicity::FFVVertex::doinit();
-  _theSM  = generator()->standardModel();
-  _theCKM = generator()->standardModel()->CKM();
-  // cast the CKM object to the HERWIG one
-  ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer 
-    hwCKM=ThePEG::dynamic_ptr_cast< ThePEG::Ptr<Herwig::StandardCKM>::transient_const_pointer>(_theCKM);
-  if(hwCKM)
-    {
-      vector< vector<Complex > > CKM;
-      CKM = hwCKM->getUnsquaredMatrix(_theSM->families());
-      for(unsigned int ix=0;ix<3;++ix)
-	{for(unsigned int iy=0;iy<3;++iy){_ckm[ix][iy]=CKM[ix][iy];}}
-    }
-  else
-    {throw InitException();}
 }
 
 }

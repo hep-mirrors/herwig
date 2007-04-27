@@ -16,6 +16,12 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
+/**
+ * Enumeration for naming of vertices
+ */
+enum VertexType {FFS,VSS,VVSS,VVS,SSS,SSSS,GeneralSVV,
+		 FFV,VVV,VVVV,FFT,FFVT,SST,VVT,VVVT};
+
 /** \ingroup Helicity
  * 
  *  The VertexBase class is the base class for all helicity amplitude
@@ -226,6 +232,21 @@ public:
    * @param id5 PDG code of the fifth particle.
    */
   bool allowed(int id1,int id2,int id3,int id4,int id5);
+
+  /**
+   * Get name of Vertex
+   */
+  inline VertexType getName() const;
+
+  /**
+   * Get the order in \f$g_EM\f$
+   */
+  inline unsigned int orderInGem() const;
+
+  /**
+   * Get the order in \f$g_s\f$
+   */
+  inline unsigned int orderInGs() const;
   //@}
 
 protected:
@@ -345,6 +366,7 @@ protected:
   inline Complex normPropagator(int iopt, Energy2 q2,tcPDPtr part);
   //@}    
 
+public:
   /** @name Kinematic invariants for loop diagrams */
   //@{
 
@@ -384,6 +406,26 @@ protected:
    */
   inline Energy2 invariant(unsigned int,unsigned int);
   //@}
+  
+protected:
+  
+  /**
+   * Set the name of the vertex to one of enumerated values.
+   */
+  inline void setName(const VertexType &);
+
+  /**
+   * Set the order in \f$g_EM\f$
+   * @param order The order of the vertex in \f$g_EM\f$
+   */
+  inline void orderInGem(unsigned int order);
+
+  /**
+   * Set the order in \f$g_s\f$
+   * @param order The order of the vertex in \f$g_s\f$
+   */
+  inline void orderInGs(unsigned int order);
+  
 private:
   
   /**
@@ -502,20 +544,35 @@ private:
    * Kinematica quantities needed for loop vertices
    */
   Energy2 _kine[5][5];
+
+  /**
+   * Name of vertex
+   */
+  VertexType _theName;
+
+  /**
+   * Order of vertex in \f$g_EM\f$
+   */
+  unsigned int _ordergEM;
+
+  /**
+   * Order of vertex in \f$g_s\f$
+   */
+  unsigned int _ordergS;
 };
   
 /**
  * Output the information on the vertex.
  */
 ostream & operator<<(ostream &, const VertexBase &);
-
+  
 }
 }
 
 
 namespace ThePEG {
 
-/** @cond TRAITSPECIALIZATIONS */
+/// \if TRAITSPECIALIZATIONS
 
 /**
  * The following template specialization informs ThePEG about the
@@ -540,10 +597,9 @@ struct ClassTraits<Herwig::Helicity::VertexBase>
   static string className() { return "Herwig++::VertexBase"; }
 };
 
-/** @endcond */
+/// \endif
 
 }
-
 #include "VertexBase.icc"
 
 #endif /* HERWIG_VertexBase_H */

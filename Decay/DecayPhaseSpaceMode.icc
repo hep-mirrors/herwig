@@ -27,15 +27,6 @@ inline IBPtr DecayPhaseSpaceMode::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void DecayPhaseSpaceMode::doinit() throw(InitException) {
-  // check the size of the weight vector is the same as the number of channels
-  if(_channelwgts.size()!=numberChannels()) {
-    throw Exception() << "Inconsistent number of channel weights and channels"
-		      << " in DecayPhaseSpaceMode " << Exception::abortnow;
-  }
-  Interfaced::doinit();
-}
-
 // set the maximum weight
 inline void DecayPhaseSpaceMode::setMaxWeight(double wgt) const {_MaxWeight=wgt;}
 

@@ -14,11 +14,6 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/HelicityVertex.h"
 #include "Herwig++/Helicity/Correlations/DecayVertex.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "DecayPhaseSpaceMode.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -32,12 +27,12 @@ using ThePEG::Helicity::SpinfoPtr;
 
 void DecayPhaseSpaceMode::persistentOutput(PersistentOStream & os) const {
   os << _integrator << _channels << _channelwgts << _MaxWeight << _niter 
-     << _npoint << _ntry << _extpart << _partial << _widthgen;
+     << _npoint << _ntry << _extpart << _partial << _widthgen << _massgen;
 }
 
 void DecayPhaseSpaceMode::persistentInput(PersistentIStream & is, int) {
   is >> _integrator >> _channels >> _channelwgts >> _MaxWeight >> _niter 
-     >> _npoint >> _ntry >> _extpart >> _partial >> _widthgen;
+     >> _npoint >> _ntry >> _extpart >> _partial >> _widthgen >> _massgen;
 }
 
 ClassDescription<DecayPhaseSpaceMode> DecayPhaseSpaceMode::initDecayPhaseSpaceMode;
@@ -94,8 +89,9 @@ double DecayPhaseSpaceMode::flatPhaseSpace(bool cc, const Particle & inpart,
 }
 
 // initialise the phase space
-void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
+Energy DecayPhaseSpaceMode::initializePhaseSpace(bool init)
 {
+  Energy output(0.);
   // ensure that the weights add up to one
   if(!_channels.empty())
     {
@@ -103,7 +99,7 @@ void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
       for(unsigned int ix=0;ix<_channels.size();++ix){temp+=_channelwgts[ix];}
       for(unsigned int ix=0;ix<_channels.size();++ix){_channelwgts[ix]/=temp;}
     }
-  if(!init){return;}
+  if(!init) return 0.;
   // create a particle vector from the particle data one
   ThePEG::PPtr inpart=_extpart[0]->produceParticle();
   ParticleVector particles;
@@ -174,6 +170,7 @@ void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
 	   << " +/- " << wsqsum*fact/6.58212E-22<< " s-1" << endl;
       CurrentGenerator::log() << "The maximum weight is " 
 					<< _MaxWeight << endl;
+      output=wsum*fact;
     }
   else
     {
@@ -281,7 +278,9 @@ void DecayPhaseSpaceMode::initializePhaseSpace(bool init)
 	{CurrentGenerator::log() << "Channel " << ix 
 					   << " had weight " << _channelwgts[ix] 
 					   << endl;}
+      output=totsum*fact;
     }
+  return output;
 }
 // generate a phase-space point using multichannel phase space
 Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
@@ -307,8 +306,9 @@ Energy DecayPhaseSpaceMode::channelPhaseSpace(bool cc,
   // compute the denominator of the weight
   wgt=0.;
   unsigned int ix;
-  for(ix=0;ix<_channels.size();++ix)
-    {wgt+=_channelwgts[ix]*_channels[ix]->generateWeight(momenta);}
+  for(ix=0;ix<_channels.size();++ix) {
+    wgt+=_channelwgts[ix]*_channels[ix]->generateWeight(momenta);
+  }
   // now we need to set the momenta of the particles
   // create the particles if they don't exist
   if(outpart.empty())
@@ -457,29 +457,52 @@ Energy DecayPhaseSpaceMode::weight(bool vertex,bool cc,int & ichan,
   return mewgt*phwgt;
 }
 
-void DecayPhaseSpaceMode::doinitrun() {
-  Interfaced::doinitrun();
+void DecayPhaseSpaceMode::doinit() throw(InitException) {
+  // check the size of the weight vector is the same as the number of channels
+  if(_channelwgts.size()!=numberChannels()) {
+    throw Exception() << "Inconsistent number of channel weights and channels"
+		      << " in DecayPhaseSpaceMode " << Exception::abortnow;
+  }
+  Interfaced::doinit();
   _massgen.resize(_extpart.size());
-  if(_extpart[0]->widthGenerator())
-    {
-      _widthgen=
-	dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
-      const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->initrun();
-    }
-  else
-    {_widthgen=cGenericWidthGeneratorPtr();}
+  if(_extpart[0]->widthGenerator()) {
+    _widthgen=
+      dynamic_ptr_cast<cGenericWidthGeneratorPtr>(_extpart[0]->widthGenerator());
+    const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->init();
+  }
+  else {
+    _widthgen=cGenericWidthGeneratorPtr();
+  }
   tcGenericWidthGeneratorPtr wtemp;
-  for(unsigned int ix=0;ix<_extpart.size();++ix)
-    {
-      _massgen[ix]=
-	dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
-      if(ix>0)
-	{
-	  wtemp=
-	    dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());
-	  if(wtemp){const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->initrun();}
-	}
+  for(unsigned int ix=0;ix<_extpart.size();++ix) {
+    _massgen[ix]=
+      dynamic_ptr_cast<cGenericMassGeneratorPtr>(_extpart[ix]->massGenerator());
+    if(ix>0) {
+      wtemp=
+	dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());
+      if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->init();
     }
+  }
+  for(unsigned int ix=0;ix<_channels.size();++ix) {
+    _channels[ix]->init();
+  }
+}
+
+void DecayPhaseSpaceMode::doinitrun() {
+  // check the size of the weight vector is the same as the number of channels
+  if(_channelwgts.size()!=numberChannels()) {
+    throw Exception() << "Inconsistent number of channel weights and channels"
+		      << " in DecayPhaseSpaceMode " << Exception::abortnow;
+  }
+  Interfaced::doinit();
+  if(_widthgen) const_ptr_cast<GenericWidthGeneratorPtr>(_widthgen)->initrun();
+  tcGenericWidthGeneratorPtr wtemp;
+  for(unsigned int ix=1;ix<_extpart.size();++ix) {
+    wtemp=
+      dynamic_ptr_cast<tcGenericWidthGeneratorPtr>(_extpart[ix]->widthGenerator());
+    if(wtemp) const_ptr_cast<tGenericWidthGeneratorPtr>(wtemp)->initrun();
+  }
+  Interfaced::doinitrun();
 }
 
 // generate the masses of the external particles

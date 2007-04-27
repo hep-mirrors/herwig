@@ -1,0 +1,30 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSPSSVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+
+inline IBPtr SSPSSVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSPSSVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SSPSSVertex::doinit() throw(InitException) {
+  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  if(!_theSS)
+    throw InitException() << "SSPSSVertex::doinit() - "
+			  << "The model pointer is null."
+			  << Exception::abortnow;
+  orderInGem(1);
+  orderInGs(0);
+  VSSVertex::doinit();
+}
+
+}
+}

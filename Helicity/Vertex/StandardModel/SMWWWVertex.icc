@@ -26,6 +26,8 @@ inline IBPtr SMWWWVertex::fullclone() const {
 }
 
 inline void SMWWWVertex::doinit() throw(InitException) {
+  orderInGem(1);
+  orderInGs(0);
   VVVVertex::doinit();
   // factor for the Z vertex
   _theSM = generator()->standardModel();

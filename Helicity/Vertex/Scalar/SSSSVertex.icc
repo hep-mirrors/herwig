@@ -13,6 +13,7 @@ inline SSSSVertex::SSSSVertex()
   setNpoint(4);
   // spins
   setSpin(1,1,1,1);
+  setName(SSSS);
 }
 
 }

@@ -53,7 +53,6 @@ void SVVLoopVertex::setCoupling(Energy2, tcPDPtr, tcPDPtr,
       e += 8.*(left[i]+right[i])*masses[i]*(C1 + 2.*C11);
       f += 4.*(left[i]-right[i])*masses[i]*C0;
     }
-    
     else if(type[i] == PDT::Spin1) {
       int theC = Cget(ps2,pv2s,pv1s,mls,mls,mls);
       Complex C1 = Cval(cc1,theC);Complex C2 = Cval(cc2,theC);

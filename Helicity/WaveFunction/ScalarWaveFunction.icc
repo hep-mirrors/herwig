@@ -156,7 +156,7 @@ inline void ScalarWaveFunction::checkParticle(const tcPDPtr & in) {
   if(iSpin()!=1)
     {ThePEG::Helicity::HelicityConsistencyError() 
 	<< "Calculating Scalar WaveFunction for non-scalar Particle " 
-	<< iSpin() << Exception::abortnow;}
+	<< iSpin() << " " << in->PDGName() << Exception::abortnow;}
 }
 
 // Assignment. 

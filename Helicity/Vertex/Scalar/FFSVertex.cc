@@ -25,9 +25,6 @@ void FFSVertex::Init() {
   
 }
   
-// set coupling member
-void FFSVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr,tcPDPtr) {}
-
 // evaluate the full vertex
 Complex FFSVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
 			    const SpinorBarWaveFunction & sbar,
@@ -37,7 +34,18 @@ Complex FFSVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
   tcPDPtr Psca=sca.getParticle();
   tcPDPtr Psbar=sbar.getParticle();
   // calculate the couplings
-  setCoupling(q2,Psp,Psca,Psbar);
+  //integer to determine incoming
+  int iint(0);
+  if(sp.direction() == Helicity::incoming || 
+     sp.direction() == Helicity::intermediate) iint = 1;
+  else if(sca.direction() == Helicity::incoming ||
+	  sp.direction() == Helicity::intermediate) iint = 2;
+  else if(sbar.direction() == Helicity::incoming ||
+	  sp.direction() == Helicity::intermediate) iint = 3;
+  else 
+    throw HelicityLogicalError() << "There is no incoming particle in "
+				 << fullName() << Exception::runerror;
+  setCoupling(q2,Psp,Psca,Psbar,iint);
   Complex norm=getNorm();
   Complex ii(0.,1.);
   Complex vertex(0.);
@@ -76,8 +84,12 @@ ScalarWaveFunction FFSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   // extract the pointers to the particle data objects
   tcPDPtr Psbar=sbar.getParticle();
   tcPDPtr Psp=sp.getParticle();
+  int iint(0);
+  if(sp.direction() == Helicity::incoming) iint = 1;
+  else if(sbar.direction() == Helicity::incoming) iint = 3;
+  else iint = 2;
   // first calculate the couplings
-  setCoupling(q2,Psp,out,Psbar);
+  setCoupling(q2,Psp,out,Psbar,iint);
   Energy2 p2 = pout.m2();
   Complex fact=getNorm()*propagator(iopt,p2,out);
   Complex output;
@@ -116,8 +128,12 @@ SpinorWaveFunction FFSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   // extract the pointers to the particle data objects
   tcPDPtr Psca=sca.getParticle();
   tcPDPtr Psp=sp.getParticle();
+  int iint(0);
+  if(sp.direction() == Helicity::incoming) iint = 1;
+  else if(sca.direction() == Helicity::incoming) iint = 2;
+  else iint = 3;
   // first calculate the couplings
-  setCoupling(q2,Psp,Psca,out);
+  setCoupling(q2,Psp,Psca,out, iint);
   double p2 = pout.m2();
   Complex fact=-getNorm()*sca.wave()*propagator(iopt,p2,out);
   Complex ii(0.,1.);
@@ -168,8 +184,12 @@ SpinorBarWaveFunction FFSVertex::evaluate(Energy q2,int iopt,tcPDPtr out,
   // extract the pointers to the particle data objects
   tcPDPtr  Psbar=sbar.getParticle();
   tcPDPtr  Psca =sca.getParticle();
+  int iint(0);
+  if(sca.direction() == Helicity::incoming) iint = 2;
+  else if(sbar.direction() == Helicity::incoming) iint = 3;
+  else iint = 1;
   // first calculate the couplings
-  setCoupling(q2,out,Psca,Psbar);
+  setCoupling(q2,out,Psca,Psbar, iint);
   Energy2 p2=pout.m2();
   Complex fact=-getNorm()*sca.wave()*propagator(iopt,p2,out);
   Complex ii(0.,1.);

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the HardProcessConstructor class.
+//
+#ifndef HERWIG_HardProcessConstructor_FH
+#define HERWIG_HardProcessConstructor_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class HardProcessConstructor;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::HardProcessConstructor,HPConstructorPtr);
+
+}
+
+#endif

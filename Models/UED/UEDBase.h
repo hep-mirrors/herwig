@@ -1,0 +1,355 @@
+// -*- C++ -*-
+#ifndef HERWIG_UEDBase_H
+#define HERWIG_UEDBase_H
+//
+// This is the declaration of the UEDBase class.
+//
+
+#include "Herwig++/Models/StandardModel/StandardModel.h"
+#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
+#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "UEDBase.fh"
+
+namespace Herwig {
+using namespace ThePEG;
+
+/**
+ * This class serves as a base class for all UED models. It stores the
+ * values of the inverse radius and cut-off scale and has functions
+ * to calculate the radiative corrections to the nth level KK excitations.
+ *
+ * To use this class for n > 1 simply inherit off it, calculate the necessary masses
+ * using the provided functions for the new excitations and add the
+ * appropriate vertices.
+ *
+ * @see \ref UEDBaseInterfaces "The interfaces"
+ * defined for UEDBase.
+ */
+class UEDBase: public StandardModel {
+
+public:
+
+  /** Typedef for ID-Mass pair. */
+  typedef pair<long, Energy> IDMassPair;
+
+  /** Typedef for unsigned int/double map to store Weinburg angles.*/
+  typedef map<unsigned int, double> WAMap;
+
+  /** VSSVertex pointer. */
+  typedef Ptr<Helicity::VSSVertex>::pointer VSSVertexPtr;
+
+public:
+
+  /**
+   * The default constructor.
+   */
+  inline UEDBase();
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * The standard Init function used to initialize the interfaces.
+   * Called exactly once for each class by the class description system
+   * before the main function starts or
+   * when this class is dynamically loaded.
+   */
+  static void Init();
+
+public:
+
+  /** @name Public Access Functions.*/
+  //@{
+  /**
+   * Return the compactification radius
+   */
+  inline InvEnergy compactRadius() const;
+
+  /**
+   * Return the cut-off scale
+   */
+  inline Energy cutOffScale() const;
+
+  /**
+   * Return the Weinburg mixing angle.
+   */
+  inline double sinThetaN(const unsigned int n) const;
+  //@}
+
+protected:
+
+  /**
+   * Add a new ID,mass pair to the mass storage
+   * @param elem The element to add in to storage
+   */
+  inline void addMassElement(IDMassPair elem);
+
+  /**
+   * Add a new mixing angle to the storage
+   * @param n The level
+   * @param val The value
+   */
+  inline void addMixingAngle(const unsigned int n, 
+			     const double val);
+  
+private:
+
+  /** @name Utility Functions for calculating masses. */
+  //@{
+  /**
+   * Calculate the radiative corrections to the masses of the KK excitations
+   * @param n The KK-level for which to calculate the masses. 
+   */
+  void calculateKKMasses(const unsigned int n) throw(InitException);
+
+  /**
+   * Calculate the radiative corrections to the spin-0 and spin-1 
+   * masses of the KK excitations
+   * @param n The KK-level for which to calculate the masses. 
+   */
+  void bosonMasses(const unsigned int n);
+  
+  /**
+   * Calculate the radiative corrections to the spin-1/2
+   * masses of the KK excitations.
+   * @param n The KK-level for which to calculate the masses.
+   */
+  void fermionMasses(const unsigned int n);
+
+  /**
+   * Reset the mass of the ParticleData object
+   *@param id The id of the particles mass to reset
+   *@param value The new mass
+   */  
+  void resetMass(long id, Energy value) throw(InitException);
+
+  /**
+   * Calculate the Weinburg Mixing angle for the appropriate level.
+   * @param n The KK-level for which to calculate the mixing angle.
+   */
+  double calculateMixingAngle(const unsigned int n);
+  //@}
+  
+  /**
+   * Write out a spectrum file ordered in mass (name can be set by an interface).
+   */
+  void writeSpectrum();
+
+  /**
+   * A predicate for sorting the list of masses.
+   */
+  static inline bool lowerMass(const pair<long, Energy> & p1, 
+			       const pair<long, Energy> & p2);
+  
+protected:
+
+  /** @name Clone Methods. */
+  //@{
+  /**
+   * Make a simple clone of this object.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr clone() const;
+
+  /** Make a clone of this object, possibly modifying the cloned object
+   * to make it sane.
+   * @return a pointer to the new object.
+   */
+  inline virtual IBPtr fullclone() const;
+  //@}
+
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  virtual void doinit() throw(InitException);
+  //@}
+
+private:
+
+  /**
+   * The static object used to initialize the description of this class.
+   * Indicates that this is a concrete class with persistent data.
+   */
+  static ClassDescription<UEDBase> initUEDBase;
+
+  /**
+   * The assignment operator is private and must never be called.
+   * In fact, it should not even be implemented.
+   */
+  UEDBase & operator=(const UEDBase &);
+
+private:
+  
+  /**
+   * Whether to calculate the radiative corrections to the KK masses
+   */
+  bool theRadCorr;
+  
+  /**
+   * Store the radius of the compactified dimension.
+   */
+  Energy theInvRadius;
+  
+  /**
+   * The cut-off scale
+   */
+  Energy theCutOff;
+
+  /**
+   * The values of \f$\sin\theta_N\f$
+   */
+  WAMap theMixingAngles;
+
+  /**
+   * Store the masses of the new particles
+   */
+  vector<IDMassPair> theMasses;
+
+  /**
+   * Name of the spectrum file
+   */
+  string theSpectrum;
+
+  /**
+   * The value of the vacuum expectation value of the higgs field.
+   */
+  Energy theVeV;
+  
+  /** @name The level 1 UED vertices. */
+  //@{
+  /**
+   * The \f$\bar{f}^{(1)}f^{(1)}Z^{(0)}\f$
+   */
+  Helicity::FFVVertexPtr theF1F1Z0Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(1)}g^{(0)}\f$
+   */
+  Helicity::FFVVertexPtr theF1F1G0Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(0)}g^{(1)}\f$
+   */
+  Helicity::FFVVertexPtr theF1F0G1Vertex;
+
+  /**
+   * The \f$g^{(1)}g^{(1)}g\f$ vertex
+   */
+  Helicity::VVVVertexPtr theG1G1G0Vertex;
+
+  /**
+   * The \f$g\,g\,g^{(1)},g^{(1)}\f$ vertex
+   */
+  Helicity::VVVVVertexPtr theG0G0G1G1Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(1)}\gamma\f$
+   */
+  Helicity::FFVVertexPtr theF1F1P0Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(1)}W\f$
+   */
+  Helicity::FFVVertexPtr theF1F1W0Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(0)}\gamma^{(1)}\f$
+   */
+  Helicity::FFVVertexPtr theF1F0P1Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(0)}Z^{(1)}\f$
+   */
+  Helicity::FFVVertexPtr theF1F0Z1Vertex;
+
+  /**
+   * The \f$\bar{f}^{(1)}f^{(0)}W^{(1)}\f$
+   */
+  Helicity::FFVVertexPtr theF1F0W1Vertex;
+
+  /**
+   * The \f$ A^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$
+   */
+  VSSVertexPtr theP0H1H1Vertex;
+
+  /**
+   * The \f$ Z^\mu_{(0)}H^+_{(1)}H-_{(1)}\f$
+   */
+  VSSVertexPtr theZ0H1H1Vertex;
+
+  /**
+   * The \f$ W^\pm_{\mu(0)}A_{(1)}H^\mp_{(1)}\f$
+   */
+  VSSVertexPtr theW0A1H1Vertex;
+
+  /**
+   * The \f$ Z^\mu_{\mu(0)}A_{(1)}h_{(1)}\f$
+   */
+  VSSVertexPtr theZ0A1h1Vertex;
+  
+  /**
+   * The \f$W^{(1)}Z^{(1)}W_{(0)}\f$ vertex
+   */
+  Helicity::VVVVertexPtr theW0W1W1Vertex;
+  //@}
+};
+
+
+}
+
+#include "ThePEG/Utilities/ClassTraits.h"
+
+namespace ThePEG {
+
+/** @cond TRAITSPECIALIZATIONS */
+
+/** This template specialization informs ThePEG about the
+ *  base classes of UEDBase. */
+template <>
+struct BaseClassTrait<Herwig::UEDBase,1> {
+  /** Typedef of the first base class of UEDBase. */
+  typedef Herwig::StandardModel NthBase;
+};
+
+/** This template specialization informs ThePEG about the name of
+ *  the UEDBase class and the shared object where it is defined. */
+template <>
+struct ClassTraits<Herwig::UEDBase>
+  : public ClassTraitsBase<Herwig::UEDBase> {
+  /** Return a platform-independent class name */
+  static string className() { return "Herwig++::UEDBase"; }
+  /**
+   * The name of a file containing the dynamic library where the class
+   * UEDBase is implemented. It may also include several, space-separated,
+   * libraries if the class UEDBase depends on other classes (base classes
+   * excepted). In this case the listed libraries will be dynamically
+   * linked in the order they are specified.
+   */
+  static string library() { return "HwUED.so"; }
+};
+
+/** @endcond */
+
+}
+
+#include "UEDBase.icc"
+
+#endif /* HERWIG_UEDBase_H */

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SusyBase class.
+//
+#ifndef HERWIG_SusyBase_FH
+#define HERWIG_SusyBase_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class SusyBase;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SusyBase,SusyBasePtr);
+
+}
+
+#endif

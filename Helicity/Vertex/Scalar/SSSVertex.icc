@@ -13,6 +13,7 @@ inline SSSVertex::SSSVertex()
   setNpoint(3);
   // spins of external particles
   setSpin(1,1,1);
+  setName(SSS);
 }
 
 }

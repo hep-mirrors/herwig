@@ -427,5 +427,9 @@ void SpinorBarWaveFunction::constructSpinInfo(vector<SpinorBarWaveFunction>& wav
     }
 }
 
+void SpinorBarWaveFunction::conjugate() {
+  _wf=_wf.conjugate();
+}
+
 }
 }

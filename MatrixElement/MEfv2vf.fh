@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEfv2vf class.
+//
+#ifndef HERWIG_MEfv2vf_FH
+#define HERWIG_MEfv2vf_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEfv2vf;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEfv2vf,MEfv2vfPtr);
+
+}
+
+#endif

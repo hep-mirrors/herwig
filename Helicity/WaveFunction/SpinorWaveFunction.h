@@ -373,6 +373,13 @@ public:
   //@}
 
   /**
+   * Take the conjugate of the spinor \f$u_c=C\bar{u}^T\f$. This operation
+   * transforms u-spinors to v-spinors and vice-versa and is required when
+   * dealing with majorana particles.
+   */
+  void conjugate();
+
+  /**
    * Reset functions.
    */
   //@{
