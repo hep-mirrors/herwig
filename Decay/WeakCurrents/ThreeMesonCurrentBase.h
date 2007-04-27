@@ -13,8 +13,7 @@ using namespace ThePEG;
  *
  *  This is the base class for the three meson decays of the weak current.
  *  It is designed so that the currents for the following modes can be implemented
- *  in classes inheriting from this. 
- *
+ *  in classes inheriting from this
  * - \f$    \pi^-  \pi^-    \pi^+ \f$, (imode=0)
  * - \f$    \pi^0  \pi^0    \pi^- \f$, (imode=1)
  * - \f$    K^-   \pi^-    K^+ \f$, (imode=2)
@@ -25,9 +24,14 @@ using namespace ThePEG;
  * - \f$    \pi^-  \bar{K}^0  \pi^0 \f$, (imode=7)
  * - \f$    \pi^-  \pi^0    \eta \f$, (imode=8)
  *
- * obvioulsly there are other modes with three pseudoscalar mesons for the decay
+ * obviously there are other modes with three pseudoscalar mesons for the decay
  * of the weak current but this model original came from \f$\tau\f$ decay where
- * these are the only modes.
+ * these are the only modes. However one case which is important is the inclusion
+ * of the mixing in the neutral kaon sector for which we include the additional
+ * currents
+ * - \f$    K^0_S \pi^- K^0_S\f$, (imode=9)
+ * - \f$    K^0_L \pi^- K^0_L\f$, (imode=10)
+ * - \f$    K^0_S \pi^- K^0_L\f$, (imode=11)
  *
  *  In this case the current is given by
  *  \f[ J^\mu = \left(g^{\mu\nu}-\frac{q^\mu q^\nu}{q^2}\right)
@@ -53,7 +57,7 @@ public:
   /**
    * Default constructor
    */
-  inline ThreeMesonCurrentBase();
+  ThreeMesonCurrentBase();
 
   /**
    * Standard Init function used to initialize the interfaces.
@@ -90,6 +94,16 @@ public:
    * @return The number of the mode
    */
   virtual unsigned int decayMode(vector<int> id);
+
+  /**
+   * The particles produced by the current. This returns the mesons for the mode.
+   * @param icharge The total charge of the particles in the current.
+   * @param imode The mode for which the particles are being requested
+   * @param iq The PDG code for the quark
+   * @param ia The PDG code for the antiquark
+   * @return The external particles for the current.
+   */
+  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
 
   /**
    * Output the setup information for the particle database

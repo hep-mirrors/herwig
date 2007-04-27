@@ -8,10 +8,9 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline TauDecayer::TauDecayer() 
-{
-  // default value of the fermi constant taken from PDG 2002
-  _GF = 1.16639E-5/GeV2;
+inline TauDecayer::TauDecayer() {
+  // default value of the fermi constant taken from PDG 2006
+  _gf = 1.16637E-5/GeV2;
   // intermediates
   generateIntermediates(true);
 }
@@ -27,18 +26,17 @@ inline IBPtr TauDecayer::fullclone() const {
 inline void TauDecayer::doinitrun() {
   _current->initrun();
   DecayIntegrator::doinitrun();
-  if(initialize())
-    {
-      _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
-      unsigned int ix,iy;
-      for(ix=0;ix<numberModes();++ix)
-	{
-	  _wgtmax.push_back(mode(ix)->maxWeight());
-	  _wgtloc.push_back(_weights.size());
-	  for(iy=0;iy<mode(ix)->numberChannels();++iy)
-	    {_weights.push_back(mode(ix)->channelWeight(iy));}
-	}
+  if(initialize()) {
+    _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+    unsigned int ix,iy;
+    for(ix=0;ix<numberModes();++ix) {
+      _wgtmax.push_back(mode(ix)->maxWeight());
+      _wgtloc.push_back(_weights.size());
+      for(iy=0;iy<mode(ix)->numberChannels();++iy) {
+	_weights.push_back(mode(ix)->channelWeight(iy));
+      }
     }
+  }
 }
-
+  
 }

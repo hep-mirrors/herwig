@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ExcitedLambdaStrongDecayer class.
+//
+#ifndef HERWIG_ExcitedLambdaStrongDecayer_FH
+#define HERWIG_ExcitedLambdaStrongDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ExcitedLambdaStrongDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ExcitedLambdaStrongDecayer,ExcitedLambdaStrongDecayerPtr);
+
+}
+
+#endif

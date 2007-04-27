@@ -43,23 +43,10 @@ class VectorMesonPScalarFermionsDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   VectorMesonPScalarFermionsDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMesonPScalarFermionsDecayer(const VectorMesonPScalarFermionsDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMesonPScalarFermionsDecayer();
-  //@}
 
 public:
 

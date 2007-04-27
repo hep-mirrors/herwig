@@ -26,19 +26,22 @@ bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
 			      const Energy m1, const Energy m2,
 			      const Vector3 & unitDir1,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
-  if ( p.m() >= m1 + m2  &&  m1 >= 0.0  &&  m2 >= 0.0  ) {
+  Energy min=p.m();
+  if ( min >= m1 + m2  &&  m1 >= 0.0  &&  m2 >= 0.0  ) {
     Momentum3 pstarVector = unitDir1;
-    pstarVector *= pstarTwoBodyDecay(p.m(),m1,m2);
-    p1 = Lorentz5Momentum(m1,pstarVector);
+    pstarVector *= pstarTwoBodyDecay(min,m1,m2);
+    p1 = Lorentz5Momentum(m1, pstarVector);
     p2 = Lorentz5Momentum(m2,-pstarVector);
-    p1.boost( p.boostVector() );   // boost from CM to LAB
-    p2.boost( p.boostVector() );
+    // boost from CM to LAB
+    Vector3 bv=p.boostVector();
+    p1.boost( bv );   
+    p2.boost( bv );
     return true;
   } else {
     CurrentGenerator::log() 
       << "Kinematics::twoBodyDecay() phase space problem\n" 
       << "p = " << p / GeV 
-      << " p.m() = " << p.m() / GeV
+      << " p.m() = " << min / GeV
       << " -> " << m1/GeV 
       << ' ' << m2/GeV << '\n';
     return false;

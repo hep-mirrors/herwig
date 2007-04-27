@@ -165,7 +165,7 @@ private:
 namespace ThePEG {
 
 /// \if TRAITSPECIALIZATIONS
-  
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of RSModel.
@@ -175,7 +175,7 @@ struct BaseClassTrait<Herwig::RSModel,1> {
   /** Typedef of the base class of RSModel. */
   typedef Herwig::StandardModel NthBase;
 };
-  
+
 /**
  * The following template specialization informs ThePEG about the
  * name of this class and the shared object where it is defined.

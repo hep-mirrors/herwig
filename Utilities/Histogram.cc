@@ -6,27 +6,13 @@
 
 #include "Histogram.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Histogram.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
-
-Histogram::~Histogram() {}
-
-void Histogram::persistentOutput(PersistentOStream &) const {
-}
-
-void Histogram::persistentInput(PersistentIStream &, int) {
-}
-
-ClassDescription<Histogram> Histogram::initHistogram;
+NoPIOClassDescription<Histogram> Histogram::initHistogram;
 // Definition of the static class description member.
 
 void Histogram::Init() {

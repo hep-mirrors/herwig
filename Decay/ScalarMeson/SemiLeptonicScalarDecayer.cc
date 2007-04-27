@@ -55,42 +55,37 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
   DecayPhaseSpaceChannelPtr channel;
   int iq,ia; unsigned int ix,iy,iz;
   bool done;
-  for(ix=0;ix<_form->numberOfFactors();++ix)
-    {
-      // get the external particles for this mode
-      extpart.resize(2);
-      _form->particleID(ix,id0,id1);
-      extpart[0]=getParticleData(id0);
-      extpart[1]=getParticleData(id1);
-      Wcharge =(extpart[0]->iCharge()-extpart[1]->iCharge());
-      min = extpart[0]->mass()+extpart[0]->widthUpCut()
-	-extpart[1]->mass()+extpart[1]->widthLoCut();
-      _modemap.push_back(numberModes());
-      for(iy=0;iy<_current->numberOfModes();++iy)
-	{
-	  extpart.resize(2); 	
-	  _current->decayModeInfo(iy,iq,ia);
-	  ptemp=_current->particles(Wcharge,iy,iq,ia);
-	  for(iz=0;iz<ptemp.size();++iz){extpart.push_back(ptemp[iz]);}
-	  // create the mode
-	  mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-	  // create the first piece of the channel
-	  channel = new_ptr(DecayPhaseSpaceChannel(mode));
-	  channel->addIntermediate(extpart[0],0,0.0,1,-1);
-	  done=_current->createMode(Wcharge,iy,mode,2,1,channel,min);
-	  if(done)
-	    {
-	      // the maximum weight
-	      if(_maxwgt.size()>numberModes()){maxweight=_maxwgt[numberModes()];}
-	      else{maxweight=2.;}
-	      channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
-	      addMode(mode,maxweight,channelwgts);
-	    }
-	}
+  for(ix=0;ix<_form->numberOfFactors();++ix) {
+    // get the external particles for this mode
+    extpart.resize(2);
+    _form->particleID(ix,id0,id1);
+    extpart[0]=getParticleData(id0);
+    extpart[1]=getParticleData(id1);
+    Wcharge =(extpart[0]->iCharge()-extpart[1]->iCharge());
+    min = extpart[0]->mass()+extpart[0]->widthUpCut()
+      -extpart[1]->mass()+extpart[1]->widthLoCut();
+    _modemap.push_back(numberModes());
+    for(iy=0;iy<_current->numberOfModes();++iy) {
+      extpart.resize(2); 	
+      _current->decayModeInfo(iy,iq,ia);
+      ptemp=_current->particles(Wcharge,iy,iq,ia);
+      for(iz=0;iz<ptemp.size();++iz){extpart.push_back(ptemp[iz]);}
+      // create the mode
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+      // create the first piece of the channel
+      channel = new_ptr(DecayPhaseSpaceChannel(mode));
+      channel->addIntermediate(extpart[0],0,0.0,1,-1);
+      done=_current->createMode(Wcharge,iy,mode,2,1,channel,min);
+      if(done) {
+	// the maximum weight
+	if(_maxwgt.size()>numberModes()){maxweight=_maxwgt[numberModes()];}
+	else{maxweight=2.;}
+	channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
+	addMode(mode,maxweight,channelwgts);
+      }
     }
+  }
 }
-  
-SemiLeptonicScalarDecayer::~SemiLeptonicScalarDecayer() {}
 
 bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
   // find the non-lepton
@@ -109,20 +104,19 @@ bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
   // and the current
   return _current->accept(idother);
 }
-int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+
+int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   // find the ids of the particles for the decay current
   ParticleMSet::const_iterator pit = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   int idtemp,imes(0),idin(dm.parent()->id());
   vector<int> idother;
   cc=false;
-  for( ; pit!=pend;++pit)
-    {
-      idtemp=(**pit).id();
-      if(abs(idtemp)>16){imes=idtemp;}
-      else{idother.push_back(idtemp);}
-    }
+  for( ; pit!=pend;++pit) {
+    idtemp=(**pit).id();
+    if(abs(idtemp)>16) imes=idtemp;
+    else               idother.push_back(idtemp);
+  }
   return _modemap[_form->formFactorNumber(idin,imes,cc)]
     +_current->decayMode(idother);  
 }

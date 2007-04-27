@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the VectorPScalarFermionsAnalysis class.
+//
+#ifndef HERWIG_VectorPScalarFermionsAnalysis_FH
+#define HERWIG_VectorPScalarFermionsAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class VectorPScalarFermionsAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::VectorPScalarFermionsAnalysis,VectorPScalarFermionsAnalysisPtr);
+
+}
+
+#endif

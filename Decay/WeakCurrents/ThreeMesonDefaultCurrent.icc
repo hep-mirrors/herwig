@@ -17,18 +17,27 @@ inline IBPtr ThreeMesonDefaultCurrent::fullclone() const {
 
 inline void ThreeMesonDefaultCurrent::doinitrun() {
   // set up the running a_1 width
-  inita1width(0);
+  inita1Width(0);
   ThreeMesonCurrentBase::doinitrun();
+}
+
+inline void ThreeMesonDefaultCurrent::doupdate() throw(UpdateException) {
+  ThreeMesonCurrentBase::doupdate();
+  // update running width if needed
+  if ( !touched() ) return;
+  if(_maxmass!=_maxcalc) inita1Width(-1);
 }
 
 // functions to return the Breit-Wigners
 inline Complex ThreeMesonDefaultCurrent::BrhoF123(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
-  for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix)
-    {norm+=_rhoF123wgts[ix];}
+  for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
+    norm+=_rhoF123wgts[ix];
+  }
   if(ires<0) {
-    for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix)
+    for(unsigned int ix=0,N=min(3,int(_rhoF123wgts.size()));ix<N;++ix) {
       output+=_rhoF123wgts[ix]*rhoKBreitWigner(q2,0,ix);
+    }
   }
   else {
     unsigned int temp(ires);
@@ -42,50 +51,58 @@ inline Complex ThreeMesonDefaultCurrent::BrhoF123(Energy2 q2,int ires) const {
 
 inline Complex ThreeMesonDefaultCurrent::BrhoF5(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
-  for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix)
-    {norm+=_rhoF5wgts[ix];}
-  if(ires<0)
-    {for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix)
-	{output+=_rhoF5wgts[ix]*rhoKBreitWigner(q2,1,ix);}}
-  else
-    {
-      unsigned int temp(ires);
-      if(temp<_rhoF5wgts.size()&&temp<3)
-	{output=_rhoF5wgts[temp]*rhoKBreitWigner(q2,1,temp);}
+  for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix) {
+    norm+=_rhoF5wgts[ix];
+  }
+  if(ires<0) {
+    for(unsigned int ix=0,N=min(3,int(_rhoF5wgts.size()));ix<N;++ix) {
+      output+=_rhoF5wgts[ix]*rhoKBreitWigner(q2,1,ix);
     }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_rhoF5wgts.size()&&temp<3) {
+      output=_rhoF5wgts[temp]*rhoKBreitWigner(q2,1,temp);
+    }
+  }
   return output/norm;
 }
 
-inline Complex ThreeMesonDefaultCurrent::BKstarF123(Energy2 q2,int ires) const
-{
+inline Complex ThreeMesonDefaultCurrent::BKstarF123(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
-  for(unsigned int ix=0,N=min(3,int(_KstarF123wgts.size()));ix<N;++ix)
-    {norm+=_KstarF123wgts[ix];}
-  if(ires<0)
-    {for(unsigned int ix=0,N=min(3,int(_KstarF123wgts.size()));ix<N;++ix)
-	{output+=_KstarF123wgts[ix]*rhoKBreitWigner(q2,2,ix);}}
-  else
-    {
-      unsigned int temp(ires);
-      if(temp<_KstarF123wgts.size()&&temp<3)
-	{output=_KstarF123wgts[temp]*rhoKBreitWigner(q2,2,temp);}
+  for(unsigned int ix=0,N=min(3,int(_kstarF123wgts.size()));ix<N;++ix) {
+    norm+=_kstarF123wgts[ix];
+  }
+  if(ires<0) {
+    for(unsigned int ix=0,N=min(3,int(_kstarF123wgts.size()));ix<N;++ix) {
+      output+=_kstarF123wgts[ix]*rhoKBreitWigner(q2,2,ix);
     }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_kstarF123wgts.size()&&temp<3) {
+      output=_kstarF123wgts[temp]*rhoKBreitWigner(q2,2,temp);
+    }
+  }
   return output/norm;
 }
-inline Complex ThreeMesonDefaultCurrent::BKstarF5(Energy2 q2,int ires) const
-{
+  
+inline Complex ThreeMesonDefaultCurrent::BKstarF5(Energy2 q2,int ires) const {
   Complex output(0.),norm(0.);
-  for(unsigned int ix=0,N=min(3,int(_KstarF5wgts.size()));ix<N;++ix)
-    {norm+=_KstarF5wgts[ix];}
-  if(ires<0)
-    {for(unsigned int ix=0,N=min(3,int(_KstarF5wgts.size()));ix<N;++ix)
-	{output+=_KstarF5wgts[ix]*rhoKBreitWigner(q2,3,ix);}}
-  else
-    {
-      unsigned int temp(ires);
-      if(temp<_KstarF5wgts.size()&&temp<3)
-	{output=_KstarF5wgts[ires]*rhoKBreitWigner(q2,3,temp);}
+  for(unsigned int ix=0,N=min(3,int(_kstarF5wgts.size()));ix<N;++ix) {
+    norm+=_kstarF5wgts[ix];
+  }
+  if(ires<0) {
+    for(unsigned int ix=0,N=min(3,int(_kstarF5wgts.size()));ix<N;++ix) {
+      output+=_kstarF5wgts[ix]*rhoKBreitWigner(q2,3,ix);
     }
+  }
+  else {
+    unsigned int temp(ires);
+    if(temp<_kstarF5wgts.size()&&temp<3) {
+      output=_kstarF5wgts[ires]*rhoKBreitWigner(q2,3,temp);
+    }
+  }
   return output/norm;
 }
 
@@ -95,7 +112,7 @@ threeBodyMatrixElement(const int,  const Energy2 q2,
 		       const Energy2 s3, const Energy2 s2, 
 		       const Energy2 s1, const Energy, 
 		       const Energy, const Energy) const {
-  Energy2 mpi2(getParticleData(ParticleID::piplus)->mass());mpi2*=mpi2; 
+  Energy2 mpi2(sqr(_mpi));
   Complex propb(BrhoF123(s1,-1)),propa(BrhoF123(s2,-1)); 
   // the matrix element
   double output(0.); 
@@ -109,9 +126,29 @@ threeBodyMatrixElement(const int,  const Energy2 q2,
   return output;
 }
 
+inline double ThreeMesonDefaultCurrent::g(Energy2 q2) const {
+  double output;
+  if(q2<9.*_mpi*_mpi) {
+    output=0.;
+  }
+  else if(q2<sqr(_rhoF123masses[0]+_mpi)) {
+    double diff=(q2-9.*_mpi*_mpi)/GeV2;
+    
+    output=4.1*sqr(diff)*diff*(1.-3.3*diff+5.8*sqr(diff));
+  }
+  else {
+    double ratio = q2/GeV2;
+    output = ratio*(1.623+10.38/ratio-9.32/sqr(ratio)+0.65/(ratio*sqr(ratio)));
+  }
+  return output;
+}
+
 // running width of the a_1
-inline Energy ThreeMesonDefaultCurrent::a1width(Energy2 q2) const {
-  return (*_a1runinter)(q2);
+inline Energy ThreeMesonDefaultCurrent::a1Width(Energy2 q2) const {
+  Energy output;
+  if(!_a1opt) output = _a1mass*_a1width*g(q2)/g(_a1mass*_a1mass)/sqrt(q2);
+  else        output=(*_a1runinter)(q2);
+  return output;
 }
 
 // a_1 Breit Wigner
@@ -119,14 +156,14 @@ inline Complex  ThreeMesonDefaultCurrent::a1BreitWigner(Energy2 q2) const {
   Complex ii(0.,1.);
   Energy2 m2(_a1mass*_a1mass);
   Energy  q(sqrt(q2));
-  return m2/(m2-q2-ii*q*a1width(q2));
+  return m2/(m2-q2-ii*q*a1Width(q2));
 }
 
 // K_1 Breit Wigner
 inline Complex  ThreeMesonDefaultCurrent::K1BreitWigner(Energy2 q2) const {
-  Energy m2(_K1mass*_K1mass);
+  Energy m2(_k1mass*_k1mass);
   Complex ii(0.,1.);
-  complex<Energy2> fact(m2-ii*_K1mass*_K1width);
+  complex<Energy2> fact(m2-ii*_k1mass*_k1width);
   return fact/(fact-q2);
 }
 
@@ -142,16 +179,29 @@ inline Complex ThreeMesonDefaultCurrent::FKrho(Energy2 si, Energy2 sj,int ires) 
 
 inline Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int itype,
 							 unsigned int ires) const {
-  Energy q(sqrt(q2)),mass,width,mout[2];
+  Energy q(sqrt(q2)),mass,width,mout[2]={_mpi,_mpi};
   // get the mass and width of the requested resonance
-  if(itype==0){mass=_rhoF123masses[ires];width=_rhoF123widths[ires];}
-  else if(itype==1){mass=_rhoF5masses[ires];width=_rhoF5widths[ires];}
-  else if(itype==2){mass=_KstarF123masses[ires];width=_KstarF123widths[ires];}
-  else if(itype==3){mass=_KstarF5masses[ires];width=_KstarF5widths[ires];}
-  else{return 0.;}
+  if(itype==0) {
+    mass=_rhoF123masses[ires];
+    width=_rhoF123widths[ires];
+  }
+  else if(itype==1) {
+    mass=_rhoF5masses[ires];
+    width=_rhoF5widths[ires];
+  }
+  else if(itype==2) {
+    mass=_kstarF123masses[ires];
+    width=_kstarF123widths[ires];
+  }
+  else if(itype==3) {
+    mass=_kstarF5masses[ires];
+    width=_kstarF5widths[ires];
+  }
+  else {
+    return 0.;
+  }
   // calculate the momenta for the running widths
-  if(itype<=1){mout[0]=_mpi;mout[1]=_mpi;}
-  else{mout[0]=_mK;mout[1]=_mpi;}
+  if(itype>1) mout[0]=_mK;
   Energy pcm0(Kinematics::pstarTwoBodyDecay(mass,mout[0],mout[1])),pcm(0.);
   if(mout[0]+mout[1]<q){pcm=Kinematics::pstarTwoBodyDecay(q,mout[0],mout[1]);}
   double ratio(pcm/pcm0);ratio*=ratio*ratio;

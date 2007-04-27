@@ -197,24 +197,6 @@ AC_SUBST(AMEGICLIBS)
 
 ])
 
-AC_DEFUN([AC_CHECK_NEWDECAYERS],
-[
-AC_MSG_CHECKING([whether to build new decayers])
-AC_ARG_ENABLE(new-decayers,
-        AC_HELP_STRING([--enable-new-decayers],[build the new decayers.]),
-	[],
-	[enable_new_decayers=no]
-	)
-AC_MSG_RESULT([$enable_new_decayers])
-AM_CONDITIONAL(WANT_NEWDECAYERS,[test "x$enable_new_decayers" = "xyes"])
-
-LOAD_NEW_DECAYERS=""
-if test "x$enable_new_decayers" = "xyes" ; then
-  LOAD_NEW_DECAYERS="read NewDecayers.in"
-fi
-AC_SUBST(LOAD_NEW_DECAYERS)
-])
-
 
 AC_DEFUN([AC_LOOPTOOLS],
 [

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Pi4ElectronAnalysis class.
+//
+#ifndef HERWIG_Pi4ElectronAnalysis_FH
+#define HERWIG_Pi4ElectronAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Pi4ElectronAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Pi4ElectronAnalysis,Pi4ElectronAnalysisPtr);
+
+}
+
+#endif

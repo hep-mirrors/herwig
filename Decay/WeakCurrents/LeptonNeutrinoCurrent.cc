@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "LeptonNeutrinoCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -40,24 +35,22 @@ void LeptonNeutrinoCurrent::Init() {
 bool LeptonNeutrinoCurrent::createMode(int icharge, unsigned int imode,
 				       DecayPhaseSpaceModePtr mode,
 				       unsigned int iloc,unsigned int,
-				       DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+				       DecayPhaseSpaceChannelPtr phase,Energy upp) {
   // make sure the the decays are kinematically allowed
-  bool kineallowed(true);
   Energy min = getParticleData(11+2*imode)->mass()+getParticleData(12+2*imode)->mass();
-  if(min>=upp){kineallowed=false; return false;}
+  if(min>=upp) return false;
   DecayPhaseSpaceChannelPtr newchannel;
   // set the resonances
   tPDPtr res;
-  if(icharge==3){res=getParticleData(ParticleID::Wplus);}
-  else if(icharge==-3){res=getParticleData(ParticleID::Wminus);}
-  else{return false;}
+  if(icharge==3)       res=getParticleData(ParticleID::Wplus);
+  else if(icharge==-3) res=getParticleData(ParticleID::Wminus);
+  else                 return false;
   // create the channel
   newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
   newchannel->addIntermediate(res,0,0.0,iloc,iloc+1);
   mode->addChannel(newchannel);
   // return if successful
-  return kineallowed;
+  return true;
 }
 
 // the particles produced by the current
@@ -143,9 +136,9 @@ unsigned int LeptonNeutrinoCurrent::decayMode(vector<int> idout)
 void LeptonNeutrinoCurrent::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const
 {
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create /Herwig++/LeptonNeutrinoCurrent " << fullName() << " \n";}
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create /Herwig++/LeptonNeutrinoCurrent " << fullName() 
+		    << "  HwWeakCurrents.so\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }

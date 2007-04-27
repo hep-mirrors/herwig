@@ -97,16 +97,6 @@ public:
   virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
 			  unsigned int iloc,unsigned int ires,
 			  DecayPhaseSpaceChannelPtr phase,Energy upp);
-
-  /**
-   * The particles produced by the current. This returns the mesons for the mode.
-   * @param icharge The total charge of the particles in the current.
-   * @param imode The mode for which the particles are being requested
-   * @param iq The PDG code for the quark
-   * @param ia The PDG code for the antiquark
-   * @return The external particles for the current.
-   */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
@@ -193,6 +183,11 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
+
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
   //@}
 
 private:
@@ -269,13 +264,18 @@ private:
    * @param q2 The scale \f$q^2\f$ for the Breit-Wigner
    * @return The \f$a_1\f$ running width.
    */
-  inline Energy a1width(Energy2 q2) const ;
+  inline Energy a1Width(Energy2 q2) const ;
   
+  /**
+   *  The \f$g(Q^2)\f$ function of Kuhn and Santamaria
+   */
+  inline double g(Energy q2) const;
+
   /**
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
-  void inita1width(int iopt);
+  void inita1Width(int iopt);
 
   /**
    * Breit-Wigners for the \f$\rho\f$ and \f$K^*\f$.
@@ -297,7 +297,7 @@ private:
    * Parameters for the \f$K^*\f$ Breit-Wigner in the
    * \f$F_{1,2,3}\f$ form factors.
    */
-  vector<double> _KstarF123wgts;
+  vector<double> _kstarF123wgts;
   
   /**
    * Parameters for the \f$\rho\f$ Breit-Wigner in the
@@ -309,7 +309,7 @@ private:
    * Parameters for the \f$K^*\f$ Breit-Wigner in the
    * \f$F_5\f$ form factors.
    */
-  vector<double> _KstarF5wgts;
+  vector<double> _kstarF5wgts;
   
   /**
    * The relative weight of the \f$\rho\f$ and \f$K^*\f$ where needed.
@@ -350,12 +350,12 @@ private:
   /**
    * The mass of the \f$aK1\f$ resonances.
    */
-  Energy _K1mass;
+  Energy _k1mass;
 
   /**
    * The width of the \f$K_1\f$ resonances.
    */
-  Energy _K1width;
+  Energy _k1width;
 
   /**
    * The pion decay constant, \f$f_\pi\f$.
@@ -400,27 +400,27 @@ private:
   /**
    * use local values of the \f$K^*\f$ resonances masses and widths
    */
-  bool _Kstarparameters;
+  bool _kstarparameters;
 
   /**
    * The \f$K^*\f$ masses for the \f$F_{1,2,3}\f$ form factors.
    */
-  vector<Energy> _KstarF123masses;
+  vector<Energy> _kstarF123masses;
 
   /**
    * The \f$K^*\f$ masses for the \f$F_5\f$ form factors.
    */
-  vector<Energy> _KstarF5masses;
+  vector<Energy> _kstarF5masses;
 
   /**
    * The \f$K^*\f$ widths for the \f$F_{1,2,3}\f$ form factors.
    */
-  vector<Energy> _KstarF123widths;
+  vector<Energy> _kstarF123widths;
 
   /**
    * The \f$K^*\f$ widths for the \f$F_5\f$ form factors.
    */
-  vector<Energy> _KstarF5widths;
+  vector<Energy> _kstarF5widths;
   
   /**
    * Use local values of the \f$a_1\f$ parameters
@@ -430,7 +430,22 @@ private:
   /**
    * Use local values of the \f$K_1\f$ parameters
    */
-  bool _K1parameters;
+  bool _k1parameters;
+
+  /**
+   * Option for the \f$a_1\f$ width
+   */
+  bool _a1opt;
+
+  /**
+   *  The maximum mass of the hadronic system
+   */
+  Energy _maxmass;
+
+  /**
+   *  The maximum mass when the running width was calculated
+   */
+  Energy _maxcalc;
   
 };
 

@@ -1,3 +1,4 @@
+
 // -*- C++ -*-
 #ifndef HERWIG_DecayPhaseSpaceChannel_H
 #define HERWIG_DecayPhaseSpaceChannel_H
@@ -10,6 +11,7 @@
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include "DecayPhaseSpaceChannel.fh"
 #include "DecayIntegrator.h"
+#include "Herwig++/Utilities/Kinematics.h"
 #include "DecayPhaseSpaceMode.fh"
 
 namespace Herwig {
@@ -148,6 +150,19 @@ protected:
    * 
    */
   void generateIntermediates(bool cc,const Particle & in, ParticleVector & out);
+
+  /**
+   * Calculate the momenta for a two body decay
+   * The return value indicates success or failure.
+   * @param p The momentum of the decaying particle
+   * @param m1 The mass of the first decay product
+   * @param m2 The mass of the second decay product
+   * @param p1 The momentum of the first decay product
+   * @param p2 The momentum of the second decay product
+   */
+  inline void twoBodyDecay(const Lorentz5Momentum & p, 
+		    const Energy m1, const Energy m2,
+		    Lorentz5Momentum & p1, Lorentz5Momentum & p2);
   //@}
   
 public:
@@ -191,6 +206,7 @@ protected:
   //@}
 
 protected:  
+
   /** @name Standard Interfaced functions. */
   //@{
   /**
@@ -199,6 +215,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  virtual void doinitrun();
   //@}
 
 private:

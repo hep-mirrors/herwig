@@ -23,8 +23,8 @@ using namespace ThePEG;
  * calculate the running width for a given particle using information from
  * the decayModes and the Decayers to construct the running width.
  *
- *  It also gives us the option of selecting the decay modes for a particle
- *  based on the mass.
+ * It also gives us the option of selecting the decay modes for a particle
+ * based on the mass.
  *
  * @see WidthGenerator
  * @see DecayIntegrator

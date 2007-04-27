@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "FivePionCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
@@ -20,8 +15,7 @@
 using namespace Herwig;
 using ThePEG::Helicity::ScalarSpinInfo;  
 
-FivePionCurrent::FivePionCurrent() 
-{
+FivePionCurrent::FivePionCurrent() {
   // set the number of modes
   addDecayMode(2,-1);
   addDecayMode(2,-1);
@@ -39,27 +33,49 @@ FivePionCurrent::FivePionCurrent()
   _sigmawidth = 600*MeV;
   // use local values of the resonance parameters
   _localparameters=true;
+  // include the rho Breit-Wigners in omega decay
+  _rhoomega = true;
   // Normalisation parameters for the different currents
-  _c =4.;
+  _c =4.*GeV2;
   _c0=3.;
   // various meson coupling constants
   _fomegarhopi=0.07/MeV;
   _grhopipi=6.0;
-  _garhopi=6.;
-  _faaf=4.;
-  _ffpipi=5.;
+  _garhopi=6.*GeV;
+  _faaf=4.*GeV;
+  _ffpipi=5.*GeV;
+}
+
+inline void FivePionCurrent::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+  if(!_localparameters) {
+    _rhomass    = getParticleData(ParticleID::rhominus)->mass();
+    _rhowidth   = getParticleData(ParticleID::rhominus)->width();
+    _omegamass  = getParticleData(ParticleID::omega)->mass();
+    _omegawidth = getParticleData(ParticleID::omega)->width();
+    _sigmamass  = getParticleData(9000221)->mass();
+    _sigmawidth = getParticleData(9000221)->width();
+    _a1mass    = getParticleData(ParticleID::a_1minus)->mass();
+    _a1width   = getParticleData(ParticleID::a_1minus)->width();
+  }
+  // prefactors
+  _presigma =  _c/sqr(sqr(_a1mass)*_sigmamass*_rhomass)*_faaf*_ffpipi*
+    _garhopi*_grhopipi;      
+  _preomega = _c0*_fomegarhopi*sqr(_grhopipi/(sqr(_rhomass)*_omegamass));
 }
 
 void FivePionCurrent::persistentOutput(PersistentOStream & os) const {
   os << _rhomass  << _a1mass << _omegamass << _sigmamass << _rhowidth  
      << _a1width << _omegawidth << _sigmawidth << _localparameters << _c << _c0 
-     << _fomegarhopi << _grhopipi << _garhopi << _faaf << _ffpipi;
+     << _fomegarhopi << _grhopipi << _garhopi << _faaf << _ffpipi
+     << _preomega << _presigma << _rhoomega;
 }
 
 void FivePionCurrent::persistentInput(PersistentIStream & is, int) {
   is >> _rhomass  >> _a1mass >> _omegamass >> _sigmamass >> _rhowidth  
      >> _a1width >> _omegawidth >> _sigmawidth >> _localparameters >> _c >> _c0 
-     >> _fomegarhopi >> _grhopipi >> _garhopi >> _faaf >> _ffpipi;
+     >> _fomegarhopi >> _grhopipi >> _garhopi >> _faaf >> _ffpipi 
+     >> _preomega >> _presigma >> _rhoomega;
 }
 
 ClassDescription<FivePionCurrent> FivePionCurrent::initFivePionCurrent;
@@ -108,8 +124,8 @@ void FivePionCurrent::Init() {
      &FivePionCurrent::_a1width, MeV, 400*MeV, 100*MeV, 800*MeV,
      false, false, Interface::limited);
 
-  static Parameter<FivePionCurrent,Energy> interfaceOmegaWidthj
-    ("OmegaWidthj",
+  static Parameter<FivePionCurrent,Energy> interfaceOmegaWidth
+    ("OmegaWidth",
      "The width of the omega meson",
      &FivePionCurrent::_omegawidth, MeV, 8.5*MeV, 1.0*MeV, 20.0*MeV,
      false, false, Interface::limited);
@@ -136,10 +152,25 @@ void FivePionCurrent::Init() {
      "Use values from the particle data objects",
      false);
 
-  static Parameter<FivePionCurrent,double> interfaceC
+  static Switch<FivePionCurrent,bool> interfaceRhoOmega
+    ("RhoOmega",
+     "Option for the treatment of the rho Breit-Wigners in the omega decay",
+     &FivePionCurrent::_rhoomega, true, false, false);
+  static SwitchOption interfaceRhoOmegaInclude
+    (interfaceRhoOmega,
+     "Include",
+     "Include the rho Breit-Wigners",
+     true);
+  static SwitchOption interfaceRhoOmegaOmit
+    (interfaceRhoOmega,
+     "Omit",
+     "Don't include the rho Breit-Wigners",
+     false);
+
+  static Parameter<FivePionCurrent,Energy2> interfaceC
     ("C",
      "The normalisation parameter for the a_1 sigma current",
-     &FivePionCurrent::_c, 4.0, 0.1, 20.0,
+     &FivePionCurrent::_c, GeV2, 4.0*GeV2, 0.1*GeV2, 20.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<FivePionCurrent,double> interfaceC0
@@ -149,7 +180,7 @@ void FivePionCurrent::Init() {
      false, false, Interface::limited);
 
   static Parameter<FivePionCurrent,InvEnergy> interfacegomegarhopi
-    ("gomegarhopi",
+    ("fomegarhopi",
      "The coupling of omega-rho-pi",
      &FivePionCurrent::_fomegarhopi, 1./MeV, 0.07/MeV, 0.01/MeV, 0.2/MeV,
      false, false, Interface::limited);
@@ -160,41 +191,39 @@ void FivePionCurrent::Init() {
      &FivePionCurrent::_grhopipi, 6.0, 1.0, 20.0,
      false, false, Interface::limited);
 
-  static Parameter<FivePionCurrent,double> interfacegarhopi
+  static Parameter<FivePionCurrent,Energy> interfacegarhopi
     ("garhopi",
      "The coupling of a-rho-pi",
-     &FivePionCurrent::_garhopi, 6.0, 0.1, 20.0,
+     &FivePionCurrent::_garhopi, GeV, 6.0*GeV, 0.1*GeV, 20.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<FivePionCurrent,double> interfacefaaf
+  static Parameter<FivePionCurrent,Energy> interfacefaaf
     ("faaf",
      "The coupling of a-a-f",
-     &FivePionCurrent::_faaf, 4.0, 0.1, 20.0,
+     &FivePionCurrent::_faaf, GeV, 4.0*GeV, 0.1*GeV, 20.0*GeV,
      false, false, Interface::limited);
 
-  static Parameter<FivePionCurrent,double> interfaceffpipi
+  static Parameter<FivePionCurrent,Energy> interfaceffpipi
     ("ffpipi",
      "The coupling of f-pi-pi",
-     &FivePionCurrent::_ffpipi, 5.0, 0.1, 20.0,
+     &FivePionCurrent::_ffpipi, GeV, 5.0*GeV, 0.1*GeV, 20.0*GeV,
      false, false, Interface::limited);
 }
 
-bool FivePionCurrent::accept(vector<int> id)
-{
+bool FivePionCurrent::accept(vector<int> id) {
   bool allowed(false);
   // check five products
   if(id.size()!=5){return false;}
   int npiminus=0,npiplus=0,npi0=0;
-  for(unsigned int ix=0;ix<id.size();++ix)
-    {
-      if(id[ix]==ParticleID:: piplus){++npiplus;}
-      else if(id[ix]==ParticleID::piminus){++npiminus;}
-      else if(id[ix]==ParticleID::pi0){++npi0;}
-    }
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(id[ix]==ParticleID:: piplus){++npiplus;}
+    else if(id[ix]==ParticleID::piminus){++npiminus;}
+    else if(id[ix]==ParticleID::pi0){++npi0;}
+  }
   if(npiplus>npiminus) swap(npiplus,npiminus);
-  if(     npiminus==3&&npiplus==2&&npi0==0){allowed=true;}
-  else if(npiminus==2&&npiplus==1&&npi0==2){allowed=true;}
-  else if(npiminus==1&&npiplus==0&&npi0==4){allowed=true;}
+  if(     npiminus==3&&npiplus==2&&npi0==0) allowed=true;
+  else if(npiminus==2&&npiplus==1&&npi0==2) allowed=true;
+  else if(npiminus==1&&npiplus==0&&npi0==4) allowed=true;
   return allowed;
 }
 
@@ -204,7 +233,6 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
 				 DecayPhaseSpaceChannelPtr phase,Energy upp) {
   // check the charge
   if(abs(icharge)!=3) return false;
-  bool kineallowed=true;
   // check that the modes are kinematical allowed
   Energy min(0.);
   // 3 pi- 2pi+
@@ -221,7 +249,7 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
     min=   getParticleData(ParticleID::piplus)->mass()
       +4.*getParticleData(ParticleID::pi0)->mass();
   }
-  if(min>upp) kineallowed=false;
+  if(min>upp) return false;
   // intermediates for the channels
   tPDPtr omega(getParticleData(ParticleID::omega)),rhop,rhom,
     rho0(getParticleData(ParticleID::rho0)),a1m,a10(getParticleData(ParticleID::a_10)),
@@ -529,15 +557,16 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
     mode->resetIntermediate(rhop,_rhomass,_rhowidth);
     mode->resetIntermediate(rho0,_rhomass,_rhowidth);
     mode->resetIntermediate(omega,_omegamass,_omegawidth);
+    mode->resetIntermediate(a1m,_a1mass,_a1width);
+    mode->resetIntermediate(a10,_a1mass,_a1width);
     if(sigma) mode->resetIntermediate(sigma,_sigmamass,_sigmawidth);
   }
   // return if successful
-  return kineallowed;
+  return true;
 }
 
 // the particles produced by the current
-PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int)
-{
+PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int) {
   // particle data objects for the pions
   PDPtr piplus (getParticleData(ParticleID::piplus ));
   PDPtr pi0    (getParticleData(ParticleID::pi0    ));
@@ -545,50 +574,46 @@ PDVector FivePionCurrent::particles(int icharge, unsigned int imode,int,int)
   if(icharge==3) swap(piplus,piminus);
   PDVector output(5);
   // all charged
-  if(imode==0)
-    {
-      output[0]=piminus;
-      output[1]=piminus;
-      output[2]=piplus;;
-      output[3]=piplus;
-      output[4]=piminus;
-    }
+  if(imode==0) {
+    output[0]=piminus;
+    output[1]=piminus;
+    output[2]=piplus;;
+    output[3]=piplus;
+    output[4]=piminus;
+  }
   // two neutral
-  else if(imode==1)
-    {
-      output[0]=piplus;
-      output[1]=piminus;
-      output[2]=pi0;;
-      output[3]=piminus;
-      output[4]=pi0;
-    }
+  else if(imode==1) {
+    output[0]=piplus;
+    output[1]=piminus;
+    output[2]=pi0;;
+    output[3]=piminus;
+    output[4]=pi0;
+  }
   // four neutral
-  else
-    {
-      output[0]=pi0;
-      output[1]=pi0;
-      output[2]=piminus;;
-      output[3]=pi0;
-      output[4]=pi0;
-    }
+  else {
+    output[0]=pi0;
+    output[1]=pi0;
+    output[2]=piminus;;
+    output[3]=pi0;
+    output[4]=pi0;
+  }
   return output;
 }
 
 // the decay mode
-unsigned int FivePionCurrent::decayMode(vector<int> idout)
-{
+unsigned int FivePionCurrent::decayMode(vector<int> idout) {
   unsigned int npi(0);
-  for(unsigned int ix=0;ix<idout.size();++ix)
-    {if(abs(idout[ix])==ParticleID::pi0){++npi;}}
+  for(unsigned int ix=0;ix<idout.size();++ix) {
+    if(abs(idout[ix])==ParticleID::pi0) ++npi;
+  }
   return npi/2;
 }
 
 // output the information for the database
-void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::FivePionCurrent " << fullName() << " \n";}
+void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::FivePionCurrent " << fullName() 
+		    << " HwWeakCurrents.so\n";
   output << "set " << fullName() << ":RhoMass "    << _rhomass/MeV << "\n";
   output << "set " << fullName() << ":A1Mass  "    << _a1mass/MeV  << "\n";
   output << "set " << fullName() << ":SigmaMass  " << _sigmamass/MeV  << "\n";
@@ -598,26 +623,27 @@ void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) 
   output << "set " << fullName() << ":SigmaWidth  " << _sigmawidth/MeV  << "\n";
   output << "set " << fullName() << ":OmegaWidth  " << _omegawidth/MeV  << "\n";
   output << "set " << fullName() << ":LocalParameters " <<  _localparameters << "\n";
-  output << "set " << fullName() << ":C " << _c << "\n";
+  output << "set " << fullName() << ":RhoOmega " << _rhoomega << "\n";
+  output << "set " << fullName() << ":C " << _c/GeV2 << "\n";
   output << "set " << fullName() << ":C0 " << _c0 << "\n";
   output << "set " << fullName() << ":fomegarhopi " <<_fomegarhopi*MeV << "\n";
   output << "set " << fullName() << ":grhopipi " <<_grhopipi << "\n";
-  output << "set " << fullName() << ":garhopi " << _garhopi<< "\n";
-  output << "set " << fullName() << ":faaf " <<_faaf << "\n";
-  output << "set " << fullName() << ":ffpipi " << _ffpipi<< "\n";
+  output << "set " << fullName() << ":garhopi " << _garhopi/GeV << "\n";
+  output << "set " << fullName() << ":faaf " <<_faaf/GeV << "\n";
+  output << "set " << fullName() << ":ffpipi " << _ffpipi/GeV << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }
 
 vector<LorentzPolarizationVector> 
 FivePionCurrent::current(bool vertex, const int imode,const int ichan,
-			 Energy & scale,const ParticleVector & decay) const
-{
+			 Energy & scale,const ParticleVector & decay) const {
   LorentzPolarizationVector output;
   // construct the spininfo objects if needed
-  if(vertex)
-    {for(unsigned int ix=0;ix<decay.size();++ix)
-	{decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));}}
+  if(vertex) {
+    for(unsigned int ix=0;ix<decay.size();++ix)
+      decay[ix]->spinInfo(new_ptr(ScalarSpinInfo(decay[ix]->momentum(),true)));
+  }
   Lorentz5Momentum q1(decay[0]->momentum());
   Lorentz5Momentum q2(decay[1]->momentum());
   Lorentz5Momentum q3(decay[2]->momentum());
@@ -628,98 +654,93 @@ FivePionCurrent::current(bool vertex, const int imode,const int ichan,
   Q.rescaleMass();
   scale=Q.mass();
   // decide which decay mode
-  if(imode==0)
-    {
-      if(ichan<0)
-	{
-	  output=
-	    a1SigmaCurrent(0,Q,q1,q2,q3,q4,q5)+
-	    a1SigmaCurrent(0,Q,q5,q2,q3,q4,q1)+
-	    a1SigmaCurrent(0,Q,q1,q5,q3,q4,q2)+
-	    a1SigmaCurrent(0,Q,q1,q2,q4,q3,q5)+
-	    a1SigmaCurrent(0,Q,q5,q2,q4,q3,q1)+
-	    a1SigmaCurrent(0,Q,q1,q5,q4,q3,q2);
-	}
-      else if(ichan==0 ) output=a1SigmaCurrent(2,Q,q1,q2,q3,q4,q5);
-      else if(ichan==1 ) output=a1SigmaCurrent(1,Q,q1,q2,q3,q4,q5);
-      else if(ichan==2 ) output=a1SigmaCurrent(2,Q,q5,q2,q3,q4,q1);
-      else if(ichan==3 ) output=a1SigmaCurrent(1,Q,q5,q2,q3,q4,q1);
-      else if(ichan==4 ) output=a1SigmaCurrent(2,Q,q1,q5,q3,q4,q2);
-      else if(ichan==5 ) output=a1SigmaCurrent(1,Q,q1,q5,q3,q4,q2);
-      else if(ichan==6 ) output=a1SigmaCurrent(2,Q,q1,q2,q4,q3,q5);
-      else if(ichan==7 ) output=a1SigmaCurrent(1,Q,q1,q2,q4,q3,q5);
-      else if(ichan==8 ) output=a1SigmaCurrent(2,Q,q5,q2,q4,q3,q1);
-      else if(ichan==9 ) output=a1SigmaCurrent(1,Q,q5,q2,q4,q3,q1);
-      else if(ichan==10) output=a1SigmaCurrent(2,Q,q1,q5,q4,q3,q2);
-      else if(ichan==11) output=a1SigmaCurrent(1,Q,q1,q5,q4,q3,q2);
-      // identical particle symmetry factor
-      output/=sqrt(12.);
+  if(imode==0) {
+    if(ichan<0) {
+      output=
+	a1SigmaCurrent(0,Q,q1,q2,q3,q4,q5)+
+	a1SigmaCurrent(0,Q,q5,q2,q3,q4,q1)+
+	a1SigmaCurrent(0,Q,q1,q5,q3,q4,q2)+
+	a1SigmaCurrent(0,Q,q1,q2,q4,q3,q5)+
+	a1SigmaCurrent(0,Q,q5,q2,q4,q3,q1)+
+	a1SigmaCurrent(0,Q,q1,q5,q4,q3,q2);
     }
-  else if(imode==1)
-    {
-      if(ichan<0)
-	{
-	  output=
-	    rhoOmegaCurrent(0,Q,q1,q2,q3,q4,q5)+
- 	    rhoOmegaCurrent(0,Q,q1,q4,q3,q2,q5)+
- 	    rhoOmegaCurrent(0,Q,q1,q2,q5,q4,q3)+
- 	    rhoOmegaCurrent(0,Q,q1,q4,q5,q2,q3)+
-	    a1SigmaCurrent(0,Q,q2,q4,q1,q3,q5)+
-	    a1SigmaCurrent(0,Q,q3,q5,q2,q1,q4)+
-	    a1SigmaCurrent(0,Q,q3,q5,q4,q1,q2);
-	}
-      else if(ichan==0 ) output=rhoOmegaCurrent(3,Q,q1,q2,q3,q4,q5);
-      else if(ichan==1 ) output=rhoOmegaCurrent(2,Q,q1,q2,q3,q4,q5);
-      else if(ichan==2 ) output=rhoOmegaCurrent(1,Q,q1,q2,q3,q4,q5);
-      else if(ichan==3 ) output=rhoOmegaCurrent(3,Q,q1,q4,q3,q2,q5);
-      else if(ichan==4 ) output=rhoOmegaCurrent(2,Q,q1,q4,q3,q2,q5);
-      else if(ichan==5 ) output=rhoOmegaCurrent(1,Q,q1,q4,q3,q2,q5);
-      else if(ichan==6 ) output=rhoOmegaCurrent(3,Q,q1,q2,q5,q4,q3);
-      else if(ichan==7 ) output=rhoOmegaCurrent(2,Q,q1,q2,q5,q4,q3);
-      else if(ichan==8 ) output=rhoOmegaCurrent(1,Q,q1,q2,q5,q4,q3);
-      else if(ichan==9 ) output=rhoOmegaCurrent(3,Q,q1,q4,q5,q2,q3);
-      else if(ichan==10) output=rhoOmegaCurrent(2,Q,q1,q4,q5,q2,q3);
-      else if(ichan==11) output=rhoOmegaCurrent(1,Q,q1,q4,q5,q2,q3);
-      else if(ichan==12) output=a1SigmaCurrent(2,Q,q3,q5,q4,q1,q2);
-      else if(ichan==13) output=a1SigmaCurrent(1,Q,q3,q5,q4,q1,q2);
-      else if(ichan==14) output=a1SigmaCurrent(2,Q,q3,q5,q2,q1,q4);
-      else if(ichan==15) output=a1SigmaCurrent(1,Q,q3,q5,q2,q1,q4);
-      else if(ichan==16) output=a1SigmaCurrent(2,Q,q2,q4,q1,q3,q5);
-      else if(ichan==17) output=a1SigmaCurrent(1,Q,q2,q4,q1,q3,q5);
-      // identical particle symmetry factor
-      output/=2.;
+    else if(ichan==0 ) output=a1SigmaCurrent(2,Q,q1,q2,q3,q4,q5);
+    else if(ichan==1 ) output=a1SigmaCurrent(1,Q,q1,q2,q3,q4,q5);
+    else if(ichan==2 ) output=a1SigmaCurrent(2,Q,q5,q2,q3,q4,q1);
+    else if(ichan==3 ) output=a1SigmaCurrent(1,Q,q5,q2,q3,q4,q1);
+    else if(ichan==4 ) output=a1SigmaCurrent(2,Q,q1,q5,q3,q4,q2);
+    else if(ichan==5 ) output=a1SigmaCurrent(1,Q,q1,q5,q3,q4,q2);
+    else if(ichan==6 ) output=a1SigmaCurrent(2,Q,q1,q2,q4,q3,q5);
+    else if(ichan==7 ) output=a1SigmaCurrent(1,Q,q1,q2,q4,q3,q5);
+    else if(ichan==8 ) output=a1SigmaCurrent(2,Q,q5,q2,q4,q3,q1);
+    else if(ichan==9 ) output=a1SigmaCurrent(1,Q,q5,q2,q4,q3,q1);
+    else if(ichan==10) output=a1SigmaCurrent(2,Q,q1,q5,q4,q3,q2);
+    else if(ichan==11) output=a1SigmaCurrent(1,Q,q1,q5,q4,q3,q2);
+    // identical particle symmetry factor
+    output/=sqrt(12.);
+  }
+  else if(imode==1) {
+    if(ichan<0) {
+      output=
+	rhoOmegaCurrent(0,Q,q1,q2,q3,q4,q5)
+	+rhoOmegaCurrent(0,Q,q1,q4,q3,q2,q5)
+	+rhoOmegaCurrent(0,Q,q1,q2,q5,q4,q3)
+	+rhoOmegaCurrent(0,Q,q1,q4,q5,q2,q3)
+	+a1SigmaCurrent(0,Q,q2,q4,q1,q3,q5)
+	+a1SigmaCurrent(0,Q,q3,q5,q2,q1,q4)
+	+a1SigmaCurrent(0,Q,q3,q5,q4,q1,q2);
     }
-  else if(imode==2)
-    {
-      if(ichan<0)
-	{
-	  output=
-	    a1SigmaCurrent(0,Q,q1,q2,q3,q4,q5)+
-	    a1SigmaCurrent(0,Q,q5,q2,q3,q4,q1)+
-	    a1SigmaCurrent(0,Q,q2,q4,q3,q1,q5)+
-	    a1SigmaCurrent(0,Q,q1,q4,q3,q2,q5)+
-	    a1SigmaCurrent(0,Q,q1,q5,q3,q4,q2)+
-	    a1SigmaCurrent(0,Q,q4,q5,q3,q1,q2);
-	}
-      else if(ichan==0 ) output=a1SigmaCurrent(1,Q,q1,q2,q3,q4,q5);
-      else if(ichan==1 ) output=a1SigmaCurrent(2,Q,q1,q2,q3,q4,q5);
-      else if(ichan==2 ) output=a1SigmaCurrent(1,Q,q5,q2,q3,q4,q1);
-      else if(ichan==3 ) output=a1SigmaCurrent(2,Q,q5,q2,q3,q4,q1);
-      else if(ichan==4 ) output=a1SigmaCurrent(2,Q,q2,q4,q3,q1,q5);
-      else if(ichan==5 ) output=a1SigmaCurrent(1,Q,q2,q4,q3,q1,q5);
-      else if(ichan==6 ) output=a1SigmaCurrent(1,Q,q1,q4,q3,q2,q5);
-      else if(ichan==7 ) output=a1SigmaCurrent(2,Q,q1,q4,q3,q2,q5);
-      else if(ichan==8 ) output=a1SigmaCurrent(1,Q,q1,q5,q3,q4,q2);
-      else if(ichan==9 ) output=a1SigmaCurrent(2,Q,q1,q5,q3,q4,q2);
-      else if(ichan==10) output=a1SigmaCurrent(2,Q,q4,q5,q3,q1,q2);
-      else if(ichan==11) output=a1SigmaCurrent(1,Q,q4,q5,q3,q1,q2);
-      // identical particle symmetry factor
-      output/=sqrt(24.);
+    else if(ichan==0 ) output=rhoOmegaCurrent(3,Q,q1,q2,q3,q4,q5);
+    else if(ichan==1 ) output=rhoOmegaCurrent(2,Q,q1,q2,q3,q4,q5);
+    else if(ichan==2 ) output=rhoOmegaCurrent(1,Q,q1,q2,q3,q4,q5);
+    else if(ichan==3 ) output=rhoOmegaCurrent(3,Q,q1,q4,q3,q2,q5);
+    else if(ichan==4 ) output=rhoOmegaCurrent(2,Q,q1,q4,q3,q2,q5);
+    else if(ichan==5 ) output=rhoOmegaCurrent(1,Q,q1,q4,q3,q2,q5);
+    else if(ichan==6 ) output=rhoOmegaCurrent(3,Q,q1,q2,q5,q4,q3);
+    else if(ichan==7 ) output=rhoOmegaCurrent(2,Q,q1,q2,q5,q4,q3);
+    else if(ichan==8 ) output=rhoOmegaCurrent(1,Q,q1,q2,q5,q4,q3);
+    else if(ichan==9 ) output=rhoOmegaCurrent(3,Q,q1,q4,q5,q2,q3);
+    else if(ichan==10) output=rhoOmegaCurrent(2,Q,q1,q4,q5,q2,q3);
+    else if(ichan==11) output=rhoOmegaCurrent(1,Q,q1,q4,q5,q2,q3);
+    else if(ichan==12) output=a1SigmaCurrent(2,Q,q3,q5,q4,q1,q2);
+    else if(ichan==13) output=a1SigmaCurrent(1,Q,q3,q5,q4,q1,q2);
+    else if(ichan==14) output=a1SigmaCurrent(2,Q,q3,q5,q2,q1,q4);
+    else if(ichan==15) output=a1SigmaCurrent(1,Q,q3,q5,q2,q1,q4);
+    else if(ichan==16) output=a1SigmaCurrent(2,Q,q2,q4,q1,q3,q5);
+    else if(ichan==17) output=a1SigmaCurrent(1,Q,q2,q4,q1,q3,q5);
+    // identical particle symmetry factor
+    output/=2.;
+  }
+  else if(imode==2) {
+    if(ichan<0) {
+      output=
+	a1SigmaCurrent(0,Q,q1,q2,q3,q4,q5)+
+	a1SigmaCurrent(0,Q,q5,q2,q3,q4,q1)+
+	a1SigmaCurrent(0,Q,q2,q4,q3,q1,q5)+
+	a1SigmaCurrent(0,Q,q1,q4,q3,q2,q5)+
+	a1SigmaCurrent(0,Q,q1,q5,q3,q4,q2)+
+	a1SigmaCurrent(0,Q,q4,q5,q3,q1,q2);
     }
-  else
-    {throw DecayIntegratorError() << "Unknown decay mode in the " 
-				  << "FivePionCurrent::"
-				  << "hadronCurrent()" << Exception::abortnow;}
+    else if(ichan==0 ) output=a1SigmaCurrent(1,Q,q1,q2,q3,q4,q5);
+    else if(ichan==1 ) output=a1SigmaCurrent(2,Q,q1,q2,q3,q4,q5);
+    else if(ichan==2 ) output=a1SigmaCurrent(1,Q,q5,q2,q3,q4,q1);
+    else if(ichan==3 ) output=a1SigmaCurrent(2,Q,q5,q2,q3,q4,q1);
+    else if(ichan==4 ) output=a1SigmaCurrent(2,Q,q2,q4,q3,q1,q5);
+    else if(ichan==5 ) output=a1SigmaCurrent(1,Q,q2,q4,q3,q1,q5);
+    else if(ichan==6 ) output=a1SigmaCurrent(1,Q,q1,q4,q3,q2,q5);
+    else if(ichan==7 ) output=a1SigmaCurrent(2,Q,q1,q4,q3,q2,q5);
+    else if(ichan==8 ) output=a1SigmaCurrent(1,Q,q1,q5,q3,q4,q2);
+    else if(ichan==9 ) output=a1SigmaCurrent(2,Q,q1,q5,q3,q4,q2);
+    else if(ichan==10) output=a1SigmaCurrent(2,Q,q4,q5,q3,q1,q2);
+    else if(ichan==11) output=a1SigmaCurrent(1,Q,q4,q5,q3,q1,q2);
+    // identical particle symmetry factor
+    output/=sqrt(24.);
+  }
+  else {
+    throw DecayIntegratorError() << "Unknown decay mode in the " 
+				 << "FivePionCurrent::"
+				 << "hadronCurrent()" << Exception::abortnow;
+  }
   // normalise and return the current
   output*=scale*sqr(scale);
   return vector<LorentzPolarizationVector>(1,output);

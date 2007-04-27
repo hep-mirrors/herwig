@@ -342,7 +342,7 @@ private:
   /**
    * the maximum weight for the decay
    */
-  mutable double _MaxWeight;
+  mutable double _maxweight;
 
   /**
    * Number of iterations for the initialization.

@@ -43,24 +43,11 @@ using namespace ThePEG;
 class VectorMeson2MesonDecayer: public DecayIntegrator {
   
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * Default constructor.
    */
   VectorMeson2MesonDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson2MesonDecayer(const VectorMeson2MesonDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson2MesonDecayer();
-  //@}
   
 public:
   

@@ -1,0 +1,182 @@
+// -*- C++ -*-
+//
+// This is the implementation of the non-inlined, non-templated member
+// functions of the ZPhotonsAnalysis class.
+//
+
+#include "ZPhotonsAnalysis.h"
+#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Interface/Parameter.h"
+
+using namespace Herwig;
+
+void ZPhotonsAnalysis::analyze(tEventPtr event, long, int loop, int state) {
+  if ( loop > 0 || state != 0 || !event ) return;
+  transform(event);
+  tPVector particles;
+  // Rotate to CMS, extract final state particles and call analyze(particles).
+  for(unsigned int ix=1, nstep=event->primaryCollision()->steps().size();
+      ix<nstep;++ix) {
+    ThePEG::ParticleSet part(event->primaryCollision()->step(ix)->all());
+    ThePEG::ParticleSet::iterator iter(part.begin()),end(part.end());
+    for( ;iter!=end;++iter) {
+      if((**iter).id()==ParticleID::Z0&&(**iter).children().size()>=2) {
+	particles.push_back(*iter);
+      }
+    }
+  }
+  // analyse them
+  analyze(particles);
+}
+
+void ZPhotonsAnalysis::analyze(const tPVector & particles) {
+  AnalysisHandler::analyze(particles);
+  // Calls analyze() for each particle.
+}
+
+void ZPhotonsAnalysis::analyze(tPPtr part) {
+  // check we have the right decay
+  if(abs(part->children()[0]->id())!=_iferm) return;
+  if(abs(part->children()[1]->id())!=_iferm) return;
+  Lorentz5Momentum pphoton;
+  unsigned int mult=0;
+  Energy emax=0.;
+  int imax=-1;
+  for(unsigned int ix=2;ix<part->children().size();++ix) {
+    if(part->children()[ix]->id()!=ParticleID::gamma) return;
+    pphoton+=part->children()[ix]->momentum();
+    *_etotal[4]+=part->children()[ix]->momentum().e();
+    if(part->children()[ix]->momentum().e()>emax) {
+      emax=part->children()[ix]->momentum().e();
+      imax=ix;
+    }
+    ++mult;
+  }
+  Lorentz5Momentum pferm(part->children()[0]->momentum()+
+			 part->children()[1]->momentum());
+  pferm.boost(-part->momentum().boostVector());
+  pphoton.boost(-part->momentum().boostVector());
+  pferm.rescaleMass();
+  pphoton.rescaleMass();
+  *_nphoton+=mult;
+  for(unsigned int ix=0;ix<3;++ix) {
+    *_masstotal[ix]+=pferm.mass();
+    if(mult>0) *_etotal[ix]+=pphoton.e();
+  }
+  if(imax>0) *_etotal[3]+=part->children()[imax]->momentum().e();
+  if(mult<20) {
+    *_mphoton[mult]+=pferm.mass();
+    *_ephoton[mult]+=pphoton.e();
+  }
+}
+
+ClassDescription<ZPhotonsAnalysis> ZPhotonsAnalysis::initZPhotonsAnalysis;
+// Definition of the static class description member.
+
+void ZPhotonsAnalysis::Init() {
+
+  static ClassDocumentation<ZPhotonsAnalysis> documentation
+    ("There is no documentation for the ZPhotonsAnalysis class");
+
+  static Parameter<ZPhotonsAnalysis,int> interfaceFermion
+    ("Fermion",
+     "Id code of fermion",
+     &ZPhotonsAnalysis::_iferm, 11, 11, 15,
+     false, false, Interface::limited);
+
+}
+
+inline void ZPhotonsAnalysis::dofinish() {
+  AnalysisHandler::dofinish();
+  ofstream output("ZPhotons.top");
+  _nphoton->topdrawOutput(output,true,true,false,true,
+			  "RED",
+			  "Photon Multiplicity",
+			  "                   ",
+			  "1/SdS/dN0G1",
+			  "  G G   XGX",
+			  "N0G1",
+			  " XGX");
+  for(unsigned int ix=0;ix<3;++ix) {
+    _masstotal[ix]->topdrawOutput(output,true,true,false,true,
+			  "RED",
+			  "Fermion mass for all events",
+			  "                          ",
+			  "1/SdS/d/GeV2-13",
+			  "  G G      X  X",
+			  "m0l2+3l2-31/GeV",
+			  " X X X X XX    ");
+    _etotal[ix]->topdrawOutput(output,true,true,false,true,
+			  "RED",
+			  "Photon Energy for all events",
+			  "                   ",
+			  "1/SdS/dE0G1/GeV2-13",
+			  "  G G   XGX    X  X",
+			  "E0G1/GeV",
+			  " XGX    ");
+  }
+  _etotal[3]->topdrawOutput(output,true,true,false,true,
+			    "RED",
+			    "Photon Energy for all events",
+			    "                   ",
+			    "1/SdS/dE0G1/GeV2-13",
+			    "  G G   XGX    X  X",
+			    "E0G1/GeV",
+			    " XGX    ");
+  _etotal[4]->topdrawOutput(output,true,true,false,true,
+			    "RED",
+			    "Photon Energy for all events",
+			    "                   ",
+			    "1/SdS/dE0G1/GeV2-13",
+			    "  G G   XGX    X  X",
+			    "E0G1/GeV",
+			    " XGX    ");
+  for(unsigned int ix=0;ix<20;++ix) {
+    ostringstream titlea;
+    titlea << "Fermion mass for "  << ix << " photons " << flush;
+    _mphoton[ix]->topdrawOutput(output,true,true,false,true,
+				"RED",titlea.str(),"",
+				"1/SdS/d/GeV2-13",
+				"  G G      X  X",
+				"m0l2+3l2-31/GeV",
+				" X X X X XX    ");
+    ostringstream titleb;
+    titleb << "photon energy for " << ix << " photons " << flush;
+    _ephoton[ix]->topdrawOutput(output,true,true,false,true,
+				"RED",titleb.str(),"",
+				"1/SdS/dE0G1/GeV2-13",
+				"  G G   XGX    X  X",
+				"E0G1/GeV",
+				" XGX    ");;
+  }
+}
+
+inline void ZPhotonsAnalysis::doinitrun() {
+  AnalysisHandler::doinitrun();
+  _masstotal.push_back(new_ptr(Histogram(0.,92.*GeV,400)));
+  _etotal   .push_back(new_ptr(Histogram( 0.,92.*GeV,400)));
+  _masstotal.push_back(new_ptr(Histogram( 0.,80.*GeV,200)));
+  _etotal   .push_back(new_ptr(Histogram(0.,10.*GeV,200)));
+  _masstotal.push_back(new_ptr(Histogram(80.*GeV,92.*GeV,200)));
+  _etotal   .push_back(new_ptr(Histogram(10.*GeV,92.*GeV,200)));
+  for(unsigned int ix=0;ix<20;++ix) {
+    _mphoton.push_back(new_ptr(Histogram(0.,92.*GeV,400)));
+    _ephoton.push_back(new_ptr(Histogram(0.,92.*GeV,400)));
+  }
+  _etotal.push_back(new_ptr(Histogram(0.*GeV,92.*GeV,400)));
+  _etotal.push_back(new_ptr(Histogram(0.*GeV,92.*GeV,400)));
+  _nphoton=new_ptr(Histogram(-0.5,100.5,101));
+}
+
+void ZPhotonsAnalysis::persistentOutput(PersistentOStream & os) const {
+  os <<_iferm;
+}
+
+void ZPhotonsAnalysis::persistentInput(PersistentIStream & is, int) {
+  is >> _iferm;
+}

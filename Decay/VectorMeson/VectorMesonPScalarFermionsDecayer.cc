@@ -123,8 +123,6 @@ void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
     }
   }
 }
-  
-VectorMesonPScalarFermionsDecayer::~VectorMesonPScalarFermionsDecayer() {}
 
 int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int imode(-1);

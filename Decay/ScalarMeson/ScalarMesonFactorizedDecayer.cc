@@ -11,12 +11,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Reference.h"
-
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarMesonFactorizedDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
@@ -33,8 +27,6 @@ using Helicity::VectorWaveFunction;
 using Helicity::TensorWaveFunction;
 using Helicity::incoming;
 using Helicity::outgoing;
-
-ScalarMesonFactorizedDecayer::~ScalarMesonFactorizedDecayer() {}
 
 inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
@@ -317,8 +309,7 @@ bool ScalarMesonFactorizedDecayer::accept(const DecayMode & dm) const {
   return allowed;
 }
 
-int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int imode(-1);
   // id's of the particles and CC
   // of the parent
@@ -328,12 +319,11 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) con
   vector<int> ids,idbars;
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
-  for( ;pit!=pend;++pit)
-    {
-      ids.push_back((**pit).id());
-      if((**pit).CC()){idbars.push_back((**pit).CC()->id());}
-      else{idbars.push_back(ids.back());}
-    }
+  for( ;pit!=pend;++pit) {
+    ids.push_back((**pit).id());
+    if((**pit).CC()){idbars.push_back((**pit).CC()->id());}
+    else{idbars.push_back(ids.back());}
+  }
   // loop over the modes
   vector<bool> done(ids.size(),false);
   unsigned int nfound,ix,iy,iz;
@@ -341,42 +331,46 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) con
   bool found;
   cc=false;
   ix=0;
-  do
-    {
-      // particle mode
-      if(id0==mode(ix)->externalParticles(0)->id()&&
-	 ids.size()+1==mode(ix)->numberofParticles())
-	{
-	  nfound=0;
-	  for(iy=0;iy<ids.size();++iy){done[iy]=false;}
-	  for(iy=0;iy<ids.size();++iy)
-	    {
-	      idtemp=mode(ix)->externalParticles(iy+1)->id();
-	      iz=0;found=false;
-	      do{if(idtemp==ids[iz]&&!done[iz]){done[iz]=true;found=true;}++iz;}
-	      while(iz<ids.size()&&!found);
-	      if(found){++nfound;}
-	    }
-	  if(nfound==ids.size()){cc=false;imode=ix;}
-	}
-      // CC mode
-      if(id0bar==mode(ix)->externalParticles(0)->id()&&
-	 ids.size()+1==mode(ix)->numberofParticles())
-	{
-	  nfound=0;
-	  for(iy=0;iy<idbars.size();++iy){done[iy]=false;}
-	  for(iy=0;iy<idbars.size();++iy)
-	    {
-	      idtemp=mode(ix)->externalParticles(iy+1)->id();
-	      iz=0;found=false;
-	      do{if(idtemp==idbars[iz]&&!done[iz]){done[iz]=true;found=true;}++iz;}
-	      while(iz<idbars.size()&&!found);
-	      if(found){++nfound;}
-	    }
-	  if(nfound==idbars.size()){cc=true;imode=ix;}
-	}
-      ++ix;
+  do {
+    // particle mode
+    if(id0==mode(ix)->externalParticles(0)->id()&&
+       ids.size()+1==mode(ix)->numberofParticles()) {
+      nfound=0;
+      for(iy=0;iy<ids.size();++iy){done[iy]=false;}
+      for(iy=0;iy<ids.size();++iy) {
+	idtemp=mode(ix)->externalParticles(iy+1)->id();
+	iz=0;found=false;
+	do{if(idtemp==ids[iz]&&!done[iz]){done[iz]=true;found=true;}++iz;}
+	while(iz<ids.size()&&!found);
+	if(found){++nfound;}
+      }
+      if(nfound==ids.size()){cc=false;imode=ix;}
     }
+    // CC mode
+    if(id0bar==mode(ix)->externalParticles(0)->id()&&
+       ids.size()+1==mode(ix)->numberofParticles()) {
+      nfound=0;
+      for(iy=0;iy<idbars.size();++iy) done[iy]=false;
+      for(iy=0;iy<idbars.size();++iy) {
+	idtemp=mode(ix)->externalParticles(iy+1)->id();
+	iz=0;found=false;
+	do {
+	  if(idtemp==idbars[iz]&&!done[iz]) {
+	    done[iz]=true;
+	    found=true;
+	  }
+	  ++iz;
+	}
+	while(iz<idbars.size()&&!found);
+	if(found) ++nfound;
+      }
+      if(nfound==idbars.size()) {
+	cc=true;
+	imode=ix;
+      }
+    }
+    ++ix;
+  }
   while(imode<0&&ix<numberModes());
   if(imode<0){throw DecayIntegratorError() << "Unable to find the mode in " 
 					   << "ScalarMesonFactorizedDecayer::decay()" 

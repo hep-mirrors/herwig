@@ -23,20 +23,10 @@ class FivePionCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FivePionCurrent();
-
-  /**
-   * The copy constructor.
-   */
-  inline FivePionCurrent(const FivePionCurrent &);
-  //@}
-
-public:
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{
@@ -232,7 +222,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -302,13 +292,18 @@ private:
   bool _localparameters;
 
   /**
+   *  Option for the treatment of \f$\rho\f$ Breit-Wigners in \f$\omega\f$ decay
+   */
+  bool _rhoomega;
+
+  /**
    *  Normalisation parameters for the different currents
    */
   //@{
   /**
    *  The \f$c\f$ parameter
    */
-  double _c;
+  Energy2 _c;
 
   /**
    *  The \f$c_0\f$ parameter
@@ -328,17 +323,32 @@ private:
   /**
    * The \f$G_{a\rho\pi}\f$ parameter
    */
-  double _garhopi;
+  Energy _garhopi;
 
   /**
    *  The \f$f_{aaf}\f$ parameter
    */
-  double _faaf;
+  Energy _faaf;
 
   /**
    *  The \f$f_{f\pi\pi}\f$ parameter
    */
-  double _ffpipi;
+  Energy _ffpipi;
+  //@}
+
+  /**
+   *  Values cached to avoid unnessacary calculations
+   */
+  //@{
+  /**
+   *  Prefactor for the \f$\rho\omega\f$ current
+   */
+  double _preomega;
+
+  /**
+   *  Prefactor for the \f$a_1\sigaa\f$ current
+   */
+  double _presigma;
   //@}
 };
 

@@ -28,8 +28,7 @@ using namespace Herwig;
 using namespace ThePEG;
 
 // dummy accept method
-bool DecayIntegrator::accept(const DecayMode & dm) const 
-{
+bool DecayIntegrator::accept(const DecayMode & dm) const {
   bool cc;
   return modeNumber(cc,dm)>=0;
 }
@@ -77,7 +76,7 @@ void DecayIntegrator::Init() {
   static Parameter<DecayIntegrator,int> interfacePoints
     ("Points",
      "number of phase space points to generate in the initialisation.",
-     &DecayIntegrator::_npoint, 10000, 100, 100000000,
+     &DecayIntegrator::_npoint, 10000, 100, 1000000000,
      false, false, true);
   
   static Parameter<DecayIntegrator,int> interfaceNtry
@@ -105,7 +104,6 @@ void DecayIntegrator::Init() {
      "IncludeIntermediates",
      "include the intermediates",
      true);
-
 
   static Switch<DecayIntegrator,bool> interfaceOutputModes
     ("OutputModes",
@@ -143,7 +141,6 @@ ParticleVector DecayIntegrator::generate(bool inter,bool cc, const unsigned int 
   return _modes[imode]->generate(inter,cc,inpart);
 }  
 
-
 // initialization for a run
 void DecayIntegrator::doinitrun() {
   HwDecayerBase::doinitrun();
@@ -151,17 +148,16 @@ void DecayIntegrator::doinitrun() {
     << "testing start of the initialisation for " 
     << this->fullName() << "\n";
   if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
-  for(unsigned int ix=0;ix<_modes.size();++ix)
-    {
-      _modes[ix]->initrun();
-      _imode=ix;_modes[ix]->initializePhaseSpace(initialize());
-    }
+  for(unsigned int ix=0;ix<_modes.size();++ix) {
+    _modes[ix]->initrun();
+    _imode=ix;
+    _modes[ix]->initializePhaseSpace(initialize());
+  }
 }
 
 // add a new mode
 void DecayIntegrator::addMode(DecayPhaseSpaceModePtr in,double maxwgt,
-				     const vector<double> inwgt) const
-{
+				     const vector<double> inwgt) const {
   _modes.push_back(in);
   in->setMaxWeight(maxwgt);
   in->setWeights(inwgt);
@@ -170,15 +166,14 @@ void DecayIntegrator::addMode(DecayPhaseSpaceModePtr in,double maxwgt,
 }
 
 // reset the properities of all intermediates
-void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width)
-{
-  for(unsigned int ix=0,N=_modes.size();ix<N;++ix)
-    {_modes[ix]->resetIntermediate(part,mass,width);}
+void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width) {
+  for(unsigned int ix=0,N=_modes.size();ix<N;++ix) {
+    _modes[ix]->resetIntermediate(part,mass,width);
+  }
 } 
 
 bool DecayIntegrator::twoBodyMEcode(const DecayMode &, 
-				    int & imode, double & g) const
-{
+				    int & imode, double & g) const {
   g=1.;
   imode=-1;
   return true;
@@ -189,20 +184,22 @@ double DecayIntegrator::threeBodyMatrixElement(const int,const Energy2, const En
 					       const Energy2,const Energy2,
 					       const Energy, const Energy, 
 					       const Energy) const {
-  throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
-			       << "method. This must be overwritten in the classes "
-			       << "inheriting from DecayIntegrator where it is needed"
-			       << Exception::runerror;
+  throw DecayIntegratorError() 
+    << "Calling the virtual DecayIntegrator::threeBodyMatrixElement"
+    << "method. This must be overwritten in the classes "
+    << "inheriting from DecayIntegrator where it is needed"
+    << Exception::runerror;
 }
 
   // the differential three body decay rate with one integral performed
 double DecayIntegrator::threeBodydGammads(const int, const Energy2, const Energy2,
-					  const Energy, const Energy, const Energy) const
-{
-  throw DecayIntegratorError() << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
-			       <<"method. This must be overwritten in the classes "
-			       << "inheriting from DecayIntegrator where it is needed"
-			       << Exception::runerror;
+					  const Energy, const Energy, 
+					  const Energy) const {
+  throw DecayIntegratorError() 
+    << "Calling the virtual DecayIntegrator::threeBodydGammads()" 
+    <<"method. This must be overwritten in the classes "
+    << "inheriting from DecayIntegrator where it is needed"
+    << Exception::runerror;
 }
 
 WidthCalculatorBasePtr 
@@ -212,171 +209,179 @@ DecayIntegrator::threeBodyMEIntegrator(const DecayMode &) const {
 
 
 // set the code for the partial width
-void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode)
-{
+void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
   vector<int> extid;
   tcPDPtr cc,cc2;
   int nfound(0),ifound,nmax(1),id;
   unsigned int ix(0),iy,N,iz,tmax,nmatched;
-  if(dm.parent()->CC()){nmax=2;}
-  if(_modes.size()==0){return;}
-  do 
-    {
-      cc = _modes[ix]->externalParticles(0)->CC();
-      tmax=1;if(!cc){++tmax;}
-      for(iz=0;iz<tmax;++iz)
-	{
-	  ifound=-1;
-	  extid.resize(0);
-	  // check the parent
-	  if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0)
-	    {for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
-		{extid.push_back(_modes[ix]->externalParticles(iy)->id());}}
-	  else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1)
-	    {
-	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
-		{
-		  cc2=_modes[ix]->externalParticles(iy)->CC();
-		  if(cc2){extid.push_back(cc2->id());}
-		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
-		}
-	    }
-	  else if(cc&&dm.parent()->id()==cc->id())
-	    {
-	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
-		{
-		  cc = _modes[ix]->externalParticles(iy)->CC();
-		  if(cc){extid.push_back(cc->id());}
-		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
-		}
-	    }
-	  // if the parents match
-	  if(!extid.empty())
-	    {
-	      vector<bool> matched(extid.size(),false);bool done;
-	      nmatched=0;
-	      ParticleMSet::const_iterator pit = dm.products().begin();
-	      do
-		{
-		  id=(**pit).id();
-		  done=false;
-		  iy=1;
-		  do 
-		    {
-		      if(id==extid[iy]&&!matched[iy])
-			{matched[iy]=true;++nmatched;done=true;}
-		      ++iy;
-		    }
-		  while(iy<extid.size()&&!done);
-		  ++pit;
-		}
-	      while(pit!=dm.products().end());
-	      if(nmatched==extid.size()-1){ifound=ix;++nfound;}
-	    }
-	  if(ifound>=0){_modes[ifound]->setPartialWidth(imode);}
+  if(dm.parent()->CC()) nmax=2;
+  if(_modes.size()==0) return;
+  do {
+    cc = _modes[ix]->externalParticles(0)->CC();
+    tmax=1;if(!cc){++tmax;}
+    for(iz=0;iz<tmax;++iz) {
+      ifound=-1;
+      extid.resize(0);
+      // check the parent
+      if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0) {
+	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
+	  extid.push_back(_modes[ix]->externalParticles(iy)->id());
 	}
-      ++ix;
+      }
+      else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1) {
+	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
+	  cc2=_modes[ix]->externalParticles(iy)->CC();
+	  if(cc2) extid.push_back(cc2->id());
+	  else    extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	}
+      }
+      else if(cc&&dm.parent()->id()==cc->id()) {
+	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
+	  cc = _modes[ix]->externalParticles(iy)->CC();
+	  if(cc) extid.push_back(cc->id());
+	  else   extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	}
+      }
+      // if the parents match
+      if(!extid.empty()) {
+	vector<bool> matched(extid.size(),false);
+	bool done;
+	nmatched=0;
+	ParticleMSet::const_iterator pit = dm.products().begin();
+	do {
+	  id=(**pit).id();
+	  done=false;
+	  iy=1;
+	  do {
+	    if(id==extid[iy]&&!matched[iy]) {
+	      matched[iy]=true;
+	      ++nmatched;
+	      done=true;
+	    }
+	    ++iy;
+	  }
+	  while(iy<extid.size()&&!done);
+	  ++pit;
+	}
+	while(pit!=dm.products().end());
+	if(nmatched==extid.size()-1) {
+	  ifound=ix;
+	  ++nfound;
+	}
+      }
+      if(ifound>=0) _modes[ifound]->setPartialWidth(imode);
     }
+    ++ix;
+  }
   while(nfound<nmax&&ix<_modes.size());
 }
 
-int DecayIntegrator::findMode(const DecayMode & dm)
-{
+int DecayIntegrator::findMode(const DecayMode & dm) {
   int imode(-1);
   vector<int> extid;
   tcPDPtr cc,cc2;
   bool found(false);
   int id;
   unsigned int ix(0),iy,N,iz,tmax,nmatched;
-  if(_modes.size()==0){return -1;}
-  do 
-    {
-      cc = _modes[ix]->externalParticles(0)->CC();
-      tmax=1;if(!cc){++tmax;}
-      for(iz=0;iz<tmax;++iz)
-	{
-	  extid.resize(0);
-	  // check the parent
-	  if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0)
-	    {for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
-		{extid.push_back(_modes[ix]->externalParticles(iy)->id());}}
-	  else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1)
-	    {
-	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
-		{
-		  cc2=_modes[ix]->externalParticles(iy)->CC();
-		  if(cc2){extid.push_back(cc2->id());}
-		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
-		}
-	    }
-	  else if(cc&&dm.parent()->id()==cc->id())
-	    {
-	      for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy)
-		{
-		  cc = _modes[ix]->externalParticles(iy)->CC();
-		  if(cc){extid.push_back(cc->id());}
-		  else{extid.push_back(_modes[ix]->externalParticles(iy)->id());}
-		}
-	    }
-	  // if the parents match
-	  if(!extid.empty())
-	    {
-	      vector<bool> matched(extid.size(),false);bool done;
-	      nmatched=0;
-	      ParticleMSet::const_iterator pit = dm.products().begin();
-	      do
-		{
-		  id=(**pit).id();
-		  done=false;
-		  iy=1;
-		  do 
-		    {
-		      if(id==extid[iy]&&!matched[iy])
-			{matched[iy]=true;++nmatched;done=true;}
-		      ++iy;
-		    }
-		  while(iy<extid.size()&&!done);
-		  ++pit;
-		}
-	      while(pit!=dm.products().end());
-	      if(nmatched==extid.size()-1){imode=ix;found=true;}
-	    }
+  if(_modes.size()==0) return -1;
+  do {
+    cc = _modes[ix]->externalParticles(0)->CC();
+    tmax=1;if(!cc){++tmax;}
+    for(iz=0;iz<tmax;++iz) {
+      extid.resize(0);
+      // check the parent
+      if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0) {
+	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
+	  extid.push_back(_modes[ix]->externalParticles(iy)->id());
 	}
-      ++ix;
+      }
+      else if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==1) {
+	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
+	  cc2=_modes[ix]->externalParticles(iy)->CC();
+	  if(cc2) extid.push_back(cc2->id());
+	  else    extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	}
+      }
+      else if(cc&&dm.parent()->id()==cc->id()) {
+	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
+	  cc = _modes[ix]->externalParticles(iy)->CC();
+	  if(cc) extid.push_back(cc->id());
+	  else   extid.push_back(_modes[ix]->externalParticles(iy)->id());
+	}
+      }
+      // if the parents match
+      if(!extid.empty()) {
+	vector<bool> matched(extid.size(),false);
+	bool done;
+	nmatched=0;
+	ParticleMSet::const_iterator pit = dm.products().begin();
+	do {
+	  id=(**pit).id();
+	  done=false;
+	  iy=1;
+	  do {
+	    if(id==extid[iy]&&!matched[iy]) {
+	      matched[iy]=true;
+	      ++nmatched;
+	      done=true;
+	    }
+	    ++iy;
+	  }
+	  while(iy<extid.size()&&!done);
+	  ++pit;
+	}
+	while(pit!=dm.products().end());
+	if(nmatched==extid.size()-1) {
+	  imode=ix;
+	  found=true;
+	}
+      }
     }
+    ++ix;
+  }
   while(!found&&ix<_modes.size());
   return imode;
 }
-
+  
 // output the information for the database
-void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const
-{
+void DecayIntegrator::dataBaseOutput(ofstream & output,bool header) const {
   // header for MySQL
-  if(header){output << "update decayers set parameters=\"";}
+  if(header) output << "update decayers set parameters=\"";
   HwDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":Iteration " << _niter << "\n";
   output << "set " << fullName() << ":Ntry " << _ntry << "\n";
   output << "set " << fullName() << ":Points " << _npoint << "\n";
-  if(_photongen){;}
+  //if(_photongen){;}
   output << "set " << fullName() << ":GenerateIntermediates " << _generateinter << " \n";
   // footer for MySQL
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
+  }
 }
   
 // pointer to a mode
-tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix){return _modes[ix];}
-tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const
-{return _modes[ix];}
+tDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) {
+  return _modes[ix];
+}
+
+tcDecayPhaseSpaceModePtr DecayIntegrator::mode(unsigned int ix) const {
+  return _modes[ix];
+}
  
 ParticleVector DecayIntegrator::generatePhotons(const Particle & p,
-						ParticleVector children)
-{return _photongen->generatePhotons(p,children);}
+						ParticleVector children) {
+  return _photongen->generatePhotons(p,children);
+}
 
 bool DecayIntegrator::oneLoopVirtualME(double &,unsigned int,const Particle &,
-				       const ParticleVector &) {return false;}
+				       const ParticleVector &) {
+  return false;
+}
 
 bool DecayIntegrator::realEmmisionME(double &, unsigned int,const Particle &,
-				     const ParticleVector &) {return false;}
+				     const ParticleVector &) {
+  return false;
+}
 
 Energy DecayIntegrator::initializePhaseSpaceMode(unsigned int imode,bool init) const{
   tcDecayPhaseSpaceModePtr cmodeptr=mode(imode);

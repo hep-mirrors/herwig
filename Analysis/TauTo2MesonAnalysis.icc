@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the TauTo2MesonAnalysis class.
+//
+
+namespace Herwig {
+
+inline IBPtr TauTo2MesonAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr TauTo2MesonAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

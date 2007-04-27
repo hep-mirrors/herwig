@@ -22,6 +22,11 @@ library HwTMDecay.so
 library HwVMDecay.so
 library HwAnalysis.so
 library HwLEPAnalysis.so
-@LOAD_NEW_DECAYERS@
+library HwBaryonDecay.so
+library HwFormFactors.so
+library HwSMDecay.so
+library HwTauDecay.so
+library HwTMDecay.so
+library HwVMDecay.so
 @LOAD_KTJET@
 doxygendump Herwig++:: AllInterfaces.h

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the EtaDecayAnalysis class.
+//
+#ifndef HERWIG_EtaDecayAnalysis_FH
+#define HERWIG_EtaDecayAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class EtaDecayAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::EtaDecayAnalysis,EtaDecayAnalysisPtr);
+
+}
+
+#endif

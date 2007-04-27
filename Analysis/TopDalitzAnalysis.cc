@@ -21,8 +21,6 @@
 
 using namespace Herwig;
 
-TopDalitzAnalysis::~TopDalitzAnalysis() {}
-
 void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
   // Gets all the particles in the primaryCollision step(1)
   ParticleSet pert=event->primaryCollision()->step(1)->all();

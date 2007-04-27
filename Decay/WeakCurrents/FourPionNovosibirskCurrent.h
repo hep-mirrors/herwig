@@ -38,20 +38,10 @@ class FourPionNovosibirskCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   FourPionNovosibirskCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline FourPionNovosibirskCurrent(const FourPionNovosibirskCurrent &);
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -161,7 +151,7 @@ public:
 				       const Energy2 s3, const Energy2 s2, 
 				       const Energy2 s1, const Energy  m1,
 				       const Energy  m2, const Energy  m3) const;
-
+  
 protected:
 
   /** @name Clone Methods. */
@@ -188,12 +178,17 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
+
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
   //@}
 
 private:
@@ -228,9 +223,10 @@ protected:
   /**
    * Breit-Wigner for the \f$\sigma\f$ meson
    * @param q2 The scale \f$q^2\f$.
+   * @param iopt The pion masses to used (0=\f$\pi^0\f$, 1=\f$\pi^+\f$)
    * @return The Breit-Wigner for the \f$\sigma\f$ meson
    */
-  inline Complex sigmaBreitWigner(Energy2 q2) const;
+  inline Complex sigmaBreitWigner(Energy2 q2,unsigned int iopt) const;
 
   /**
    * The \f$a_1\f$ breit wigner.
@@ -277,10 +273,12 @@ protected:
    * @param q2 The first momentum.
    * @param q3 The first momentum.
    * @param q4 The first momentum.
+   * @param iopt 0 for \f$\sigma\to\pi^+\pi^-\f$ and 1 for \f$\sigma\to\pi^0\pi^0\f$
    * @return The current \f$t_2\f$.
    */
   inline LorentzPolarizationVector t2(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
-				      Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
+				      Lorentz5Momentum & q3,Lorentz5Momentum & q4,
+				      unsigned int iopt) const;
 
   /**
    * The \f$t_3\f$ current used in calculating the current.
@@ -346,9 +344,14 @@ private:
   //@}
 
   /**
-   * the pion mass
+   * The charged pion mass
    */
-  Energy _mpi;
+  Energy _mpic;
+
+  /**
+   * The neutral pion mass
+   */
+  Energy _mpi0;
 
   /**
    * The mass of the \f$\rho\f$ for the current.
@@ -437,12 +440,17 @@ private:
    * The momentum of the  pions in on-shell \f$\sigma\f$ decay which is used
    * in the calculation of the running \f$\sigma\f$ width.
    */
-  Energy _psigma;
+  vector<Energy> _psigma;
 
   /**
-   * The pion mass squared.
+   *  The charged pion mass squared.
    */
-  Energy2 _mpi2;
+  Energy2 _mpic2;
+
+  /**
+   * The neutral pion mass squared
+   */
+  Energy2 _mpi02;
 
   /**
    *  The h function evaluated at the \f$\rho\f$ mass.
@@ -538,6 +546,16 @@ private:
    * The interpolator for the running \f$a_1\f$ width.
    */
   InterpolatorPtr _a1runinter;
+
+  /**
+   *  The maximum mass of the hadronic system
+   */
+  Energy _maxmass;
+
+  /**
+   *  The maximum mass when the running width was calculated
+   */
+  Energy _maxcalc;
 };
 
 }

@@ -193,8 +193,7 @@ void VectorMeson3PionDecayer::doinit() throw(InitException) {
 
 VectorMeson3PionDecayer::~VectorMeson3PionDecayer() {}
 
-int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   cc=false;
   int imode(-1),id;
   // must be three outgoing particles
@@ -202,13 +201,12 @@ int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
   // check the id's of the outgoing particles
   unsigned int npi0(0),npip(0),npim(0);
   ParticleMSet::const_iterator pit(dm.products().begin());
-  for(;pit!=dm.products().end();++pit)
-    {
-      id = (*pit)->id();
-      if(id==ParticleID::pi0){++npi0;}
-      else if(id==ParticleID::piplus){++npip;}
-      else if(id==ParticleID::piminus){++npim;}
-    }
+  for(;pit!=dm.products().end();++pit) {
+    id = (*pit)->id();
+    if(id==ParticleID::pi0){++npi0;}
+    else if(id==ParticleID::piplus){++npip;}
+    else if(id==ParticleID::piminus){++npim;}
+  }
   if(!(npi0==1&&npip==1&&npim==1)){return imode;}
   unsigned int ix(0);
   id=dm.parent()->id();
@@ -368,10 +366,10 @@ void VectorMeson3PionDecayer::Init() {
      0, 0, 1, 0, 1, false, false, true);
 
 }
+
 double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
 				    const Particle & inpart,
-				    const ParticleVector & decay) const
-{
+				    const ParticleVector & decay) const {
   // wavefunctions for the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<LorentzPolarizationVector> invec;
@@ -399,61 +397,54 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
   Energy mrhom(temp.mass());
   // contribution of the resonances
   int ichannow(-3);
-  for(ix=0;ix<3;++ix)
-    {
+  for(ix=0;ix<3;++ix) {
       ichannow+=3;
-      if((ix==0 && _rho1wgt[imode()]>0.) || 
-	 (ix==1 && _rho2wgt[imode()]>0.) ||
-	 (ix==2 && _rho3wgt[imode()]>0.))
-	{
-	  if(ichan<0)
-	    {
-	      // rho0 contribution
-	      pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-	      resfact = _rhomass2[imode()][ix]/
-		(mrho0*mrho0-_rhomass2[imode()][ix]
-		 +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	      // rho+ contribution
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-	      resfact+= _rhomass2[imode()][ix]/
-		(mrhop*mrhop-_rhomass2[imode()][ix]
-		 +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	      // rho- contribution
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-	      resfact+= _rhomass2[imode()][ix]/
-		(mrhom*mrhom-_rhomass2[imode()][ix]
-		 +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	      resfact*=_ccoupling[imode()][ix];
-	      // add the contribution
-	    }
-	  else if(ichan==ichannow)
-	    {
-	      pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
-	      resfact = _rhomass2[imode()][ix]/
-		(mrho0*mrho0-_rhomass2[imode()][ix]
-		 +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	      resfact*=_ccoupling[imode()][ix];
-	    }
-	  else if(ichan==ichannow+1)
-	    {
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
-	      resfact+= _rhomass2[imode()][ix]/
-		(mrhop*mrhop-_rhomass2[imode()][ix]
-		 +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	      resfact*=_ccoupling[imode()][ix];
-	    }
-	  else if(ichan==ichannow+2)
-	    {
-	      pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
-	      resfact+= _rhomass2[imode()][ix]/
-		(mrhom*mrhom-_rhomass2[imode()][ix]
-		 +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	      resfact*=_ccoupling[imode()][ix];
-	    }
-	  pre+=resfact;
-	  ichannow+=3;
+      if((ix==0 && _rho1wgt[imode()]>0.) || (ix==1 && _rho2wgt[imode()]>0.) ||
+	 (ix==2 && _rho3wgt[imode()]>0.)) {
+	if(ichan<0) {
+	  // rho0 contribution
+	  pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	  resfact = _rhomass2[imode()][ix]/
+	    (mrho0*mrho0-_rhomass2[imode()][ix]
+	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+	  // rho+ contribution
+	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	  resfact+= _rhomass2[imode()][ix]/
+	    (mrhop*mrhop-_rhomass2[imode()][ix]
+	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+	  // rho- contribution
+	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	  resfact+= _rhomass2[imode()][ix]/
+	    (mrhom*mrhom-_rhomass2[imode()][ix]
+	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+	  resfact*=_ccoupling[imode()][ix];
+	  // add the contribution
 	}
-    }
+	else if(ichan==ichannow) {
+	  pcm = Kinematics::pstarTwoBodyDecay(mrho0,_mpic,_mpic);
+	  resfact = _rhomass2[imode()][ix]/
+	    (mrho0*mrho0-_rhomass2[imode()][ix]
+	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
+	  resfact*=_ccoupling[imode()][ix];
+	}
+	else if(ichan==ichannow+1) {
+	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
+	  resfact+= _rhomass2[imode()][ix]/
+	    (mrhop*mrhop-_rhomass2[imode()][ix]
+	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
+	  resfact*=_ccoupling[imode()][ix];
+	}
+	else if(ichan==ichannow+2) {
+	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
+	  resfact+= _rhomass2[imode()][ix]/
+	    (mrhom*mrhom-_rhomass2[imode()][ix]
+	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
+	  resfact*=_ccoupling[imode()][ix];
+	}
+	pre+=resfact;
+	ichannow+=3;
+      }
+  }
   // overall coupling
   pre *=_coupling[imode()];
   // polarization vector piece
@@ -461,8 +452,9 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
     scalar=pre*EpsFunction::product(decay[0]->momentum(),decay[1]->momentum(),
 				    decay[2]->momentum());
   // compute the matrix element
-  for(ix=0;ix<3;++ix)
-    {newME(ix,0,0,0)=scalar*invec[ix];}
+  for(ix=0;ix<3;++ix) {
+    newME(ix,0,0,0)=scalar*invec[ix];
+  }
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();
@@ -490,24 +482,23 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
   Complex pre(_ccoupling[imode][3]),resfact,ii(0.,1.);
   // rho0 contribution
   Energy pcm,mrho1(sqrt(s1)),mrho2(sqrt(s2)),mrho3(sqrt(s3));
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      // rho0 contribution
-      pcm = Kinematics::pstarTwoBodyDecay(mrho1,_mpic,_mpic);
-      resfact = _rhomass2[imode][ix]/(mrho1*mrho1-_rhomass2[imode][ix]
-				      +ii*pcm*pcm*pcm*_rho0const[imode][ix]/mrho1);
-      // rho+ contribution
-      pcm = Kinematics::pstarTwoBodyDecay(mrho2,_mpic,_mpi0);
-      resfact+= _rhomass2[imode][ix]/(mrho2*mrho3-_rhomass2[imode][ix]
-				      +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho2);
-      // rho- contribution
-      pcm = Kinematics::pstarTwoBodyDecay(mrho3,_mpic,_mpi0);
-      resfact+= _rhomass2[imode][ix]/(mrho3*mrho3-_rhomass2[imode][ix]
-				      +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho3);
-      resfact*=_ccoupling[imode][ix];
-      // add the contribution
-      pre+=resfact;
-    }
+  for(unsigned int ix=0;ix<3;++ix) {
+    // rho0 contribution
+    pcm = Kinematics::pstarTwoBodyDecay(mrho1,_mpic,_mpic);
+    resfact = _rhomass2[imode][ix]/(mrho1*mrho1-_rhomass2[imode][ix]
+				    +ii*pcm*pcm*pcm*_rho0const[imode][ix]/mrho1);
+    // rho+ contribution
+    pcm = Kinematics::pstarTwoBodyDecay(mrho2,_mpic,_mpi0);
+    resfact+= _rhomass2[imode][ix]/(mrho2*mrho3-_rhomass2[imode][ix]
+				    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho2);
+    // rho- contribution
+    pcm = Kinematics::pstarTwoBodyDecay(mrho3,_mpic,_mpi0);
+    resfact+= _rhomass2[imode][ix]/(mrho3*mrho3-_rhomass2[imode][ix]
+				    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho3);
+    resfact*=_ccoupling[imode][ix];
+    // add the contribution
+    pre+=resfact;
+  }
   pre*=_coupling[imode];
   LorentzPolarizationVector current(pre*EpsFunction::product(p1,p2,p3));
   Complex temp(current*(current.conjugate()));
@@ -515,12 +506,14 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
 } 
 
 WidthCalculatorBasePtr 
-VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
-{
+VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   // workout which mode we are doing
   int imode(-1),id(dm.parent()->id());
   unsigned int ix=0;
-  do{if(_incoming[ix]==id){imode=ix;}++ix;}
+  do {
+    if(_incoming[ix]==id) imode=ix; 
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   // construct the integrator
   vector<double> inweights(3,1./3.);
@@ -538,97 +531,92 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
 }
 
 void VectorMeson3PionDecayer::dataBaseOutput(ofstream & output,
-					     bool header) const
-{
+					     bool header) const {
   if(header){output << "update decayers set parameters=\"";}
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming " 
-		 << ix << " " << _incoming[ix] << endl;
-	  output << "set " << fullName() << ":Coupling " 
-		 << ix << " " << _coupling[ix]*GeV << endl;
-	  output << "set " << fullName() << ":DirectCoupling " 
-		 << ix << " " << _directcoupling[ix] << endl;
-	  output << "set " << fullName() << ":Rho2Coupling " 
-		 << ix << " " << _rho2coupling[ix] << endl;
-	  output << "set " << fullName() << ":Rho3Coupling " 
-		 << ix << " " << _rho3coupling[ix] << endl;
-	  output << "set " << fullName() << ":DirectPhase " 
-		 << ix << " " << _directphase[ix] << endl;
-	  output << "set " << fullName() << ":Rho2Phase " 
-		 << ix << " " << _rho2phase[ix] << endl;
-	  output << "set " << fullName() << ":Rho3Phase " 
-		 << ix << " " << _rho3phase[ix] << endl;
-	  output << "set " << fullName() << ":MaxWeight " 
-		 << ix << " " << _maxwgt[ix] << endl;
-	  output << "set " << fullName() << ":Rho1Weight " 
-		 << ix << " " << _rho1wgt[ix] << endl;
-	  output << "set " << fullName() << ":Rho2Weight " 
-		 << ix << " " << _rho2wgt[ix] << endl;
-	  output << "set " << fullName() << ":Rho3Weight " 
-		 << ix << " " << _rho3wgt[ix] << endl;
-	  output << "set " << fullName() << ":Rho1Mass " 
-		 << ix << " " << _rho1mass[ix]/GeV << endl;
-	  output << "set " << fullName() << ":Rho2Mass " 
-		 << ix << " " << _rho2mass[ix]/GeV<< endl;
-	  output << "set " << fullName() << ":Rho3Mass " 
-		 << ix << " " << _rho3mass[ix]/GeV<< endl;
-	  output << "set " << fullName() << ":Rho1Width " 
-		 << ix << " " << _rho1width[ix]/GeV << endl;
-	  output << "set " << fullName() << ":Rho2Width " 
-		 << ix << " " << _rho2width[ix]/GeV << endl;
-	  output << "set " << fullName() << ":Rho3Width " 
-		 << ix << " " << _rho3width[ix]/GeV << endl;
-	  output << "set " << fullName() << ":DefaultParameters " 
-		 << ix << " " << _defaultmass[ix] << endl;
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming " 
-		 << ix << " " << _incoming[ix] << endl;
-	  output << "insert " << fullName() << ":Coupling " 
-		 << ix << " " << _coupling[ix]*GeV << endl;
-	  output << "insert " << fullName() << ":DirectCoupling " 
-		 << ix << " " << _directcoupling[ix] << endl;
-	  output << "insert " << fullName() << ":Rho2Coupling " 
-		 << ix << " " << _rho2coupling[ix] << endl;
-	  output << "insert " << fullName() << ":Rho3Coupling " 
-		 << ix << " " << _rho3coupling[ix] << endl;
-	  output << "insert " << fullName() << ":DirectPhase " 
-		 << ix << " " << _directphase[ix] << endl;
-	  output << "insert " << fullName() << ":Rho2Phase " 
-		 << ix << " " << _rho2phase[ix] << endl;
-	  output << "insert " << fullName() << ":Rho3Phase " 
-		 << ix << " " << _rho3phase[ix] << endl;
-	  output << "insert " << fullName() << ":MaxWeight " 
-		 << ix << " " << _maxwgt[ix] << endl;
-	  output << "insert " << fullName() << ":Rho1Weight " 
-		 << ix << " " << _rho1wgt[ix] << endl;
-	  output << "insert " << fullName() << ":Rho2Weight " 
-		 << ix << " " << _rho2wgt[ix] << endl;
-	  output << "insert " << fullName() << ":Rho3Weight " 
-		 << ix << " " << _rho3wgt[ix] << endl;
-	  output << "insert " << fullName() << ":Rho1Mass " 
-		 << ix << " " << _rho1mass[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":Rho2Mass " 
-		 << ix << " " << _rho2mass[ix]/GeV<< endl;
-	  output << "insert " << fullName() << ":Rho3Mass " 
-		 << ix << " " << _rho3mass[ix]/GeV<< endl;
-	  output << "insert " << fullName() << ":Rho1Width " 
-		 << ix << " " << _rho1width[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":Rho2Width " 
-		 << ix << " " << _rho2width[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":Rho3Width " 
-		 << ix << " " << _rho3width[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":DefaultParameters " 
-		 << ix << " " << _defaultmass[ix] << endl;
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":Incoming " 
+	     << ix << " " << _incoming[ix] << endl;
+      output << "set " << fullName() << ":Coupling " 
+	     << ix << " " << _coupling[ix]*GeV << endl;
+      output << "set " << fullName() << ":DirectCoupling " 
+	     << ix << " " << _directcoupling[ix] << endl;
+      output << "set " << fullName() << ":Rho2Coupling " 
+	     << ix << " " << _rho2coupling[ix] << endl;
+      output << "set " << fullName() << ":Rho3Coupling " 
+	     << ix << " " << _rho3coupling[ix] << endl;
+      output << "set " << fullName() << ":DirectPhase " 
+	     << ix << " " << _directphase[ix] << endl;
+      output << "set " << fullName() << ":Rho2Phase " 
+	     << ix << " " << _rho2phase[ix] << endl;
+      output << "set " << fullName() << ":Rho3Phase " 
+	     << ix << " " << _rho3phase[ix] << endl;
+      output << "set " << fullName() << ":MaxWeight " 
+	     << ix << " " << _maxwgt[ix] << endl;
+      output << "set " << fullName() << ":Rho1Weight " 
+	     << ix << " " << _rho1wgt[ix] << endl;
+      output << "set " << fullName() << ":Rho2Weight " 
+	     << ix << " " << _rho2wgt[ix] << endl;
+      output << "set " << fullName() << ":Rho3Weight " 
+	     << ix << " " << _rho3wgt[ix] << endl;
+      output << "set " << fullName() << ":Rho1Mass " 
+	     << ix << " " << _rho1mass[ix]/GeV << endl;
+      output << "set " << fullName() << ":Rho2Mass " 
+	     << ix << " " << _rho2mass[ix]/GeV<< endl;
+      output << "set " << fullName() << ":Rho3Mass " 
+	     << ix << " " << _rho3mass[ix]/GeV<< endl;
+      output << "set " << fullName() << ":Rho1Width " 
+	     << ix << " " << _rho1width[ix]/GeV << endl;
+      output << "set " << fullName() << ":Rho2Width " 
+	     << ix << " " << _rho2width[ix]/GeV << endl;
+      output << "set " << fullName() << ":Rho3Width " 
+	     << ix << " " << _rho3width[ix]/GeV << endl;
+      output << "set " << fullName() << ":DefaultParameters " 
+	     << ix << " " << _defaultmass[ix] << endl;
     }
+    else {
+      output << "insert " << fullName() << ":Incoming " 
+	     << ix << " " << _incoming[ix] << endl;
+      output << "insert " << fullName() << ":Coupling " 
+	     << ix << " " << _coupling[ix]*GeV << endl;
+      output << "insert " << fullName() << ":DirectCoupling " 
+	     << ix << " " << _directcoupling[ix] << endl;
+      output << "insert " << fullName() << ":Rho2Coupling " 
+	     << ix << " " << _rho2coupling[ix] << endl;
+      output << "insert " << fullName() << ":Rho3Coupling " 
+	     << ix << " " << _rho3coupling[ix] << endl;
+      output << "insert " << fullName() << ":DirectPhase " 
+	     << ix << " " << _directphase[ix] << endl;
+      output << "insert " << fullName() << ":Rho2Phase " 
+	     << ix << " " << _rho2phase[ix] << endl;
+      output << "insert " << fullName() << ":Rho3Phase " 
+	     << ix << " " << _rho3phase[ix] << endl;
+      output << "insert " << fullName() << ":MaxWeight " 
+	     << ix << " " << _maxwgt[ix] << endl;
+      output << "insert " << fullName() << ":Rho1Weight " 
+	     << ix << " " << _rho1wgt[ix] << endl;
+      output << "insert " << fullName() << ":Rho2Weight " 
+	     << ix << " " << _rho2wgt[ix] << endl;
+      output << "insert " << fullName() << ":Rho3Weight " 
+	     << ix << " " << _rho3wgt[ix] << endl;
+      output << "insert " << fullName() << ":Rho1Mass " 
+	     << ix << " " << _rho1mass[ix]/GeV << endl;
+      output << "insert " << fullName() << ":Rho2Mass " 
+	     << ix << " " << _rho2mass[ix]/GeV<< endl;
+      output << "insert " << fullName() << ":Rho3Mass " 
+	     << ix << " " << _rho3mass[ix]/GeV<< endl;
+      output << "insert " << fullName() << ":Rho1Width " 
+	     << ix << " " << _rho1width[ix]/GeV << endl;
+      output << "insert " << fullName() << ":Rho2Width " 
+	     << ix << " " << _rho2width[ix]/GeV << endl;
+      output << "insert " << fullName() << ":Rho3Width " 
+	     << ix << " " << _rho3width[ix]/GeV << endl;
+      output << "insert " << fullName() << ":DefaultParameters " 
+	     << ix << " " << _defaultmass[ix] << endl;
+    }
+  }
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 }
-

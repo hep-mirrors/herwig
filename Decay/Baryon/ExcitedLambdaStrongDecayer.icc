@@ -1,0 +1,30 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ExcitedLambdaStrongDecayer class.
+//
+
+namespace Herwig {
+
+inline IBPtr ExcitedLambdaStrongDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ExcitedLambdaStrongDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void ExcitedLambdaStrongDecayer::doinitrun() {
+  DecayIntegrator::doinitrun();
+  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+  unsigned int ix,iy;
+  for(ix=0;ix<numberModes();++ix) {
+    _wgtmax.push_back(mode(ix)->maxWeight());
+    _wgtloc.push_back(_weights.size());
+    for(iy=0;iy<mode(ix)->numberChannels();++iy) {
+      _weights.push_back(mode(ix)->channelWeight(iy));
+    }
+  }
+}
+  
+}

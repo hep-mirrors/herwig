@@ -55,20 +55,10 @@ class TwoPionPhotonCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline TwoPionPhotonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline TwoPionPhotonCurrent(const TwoPionPhotonCurrent &);
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{

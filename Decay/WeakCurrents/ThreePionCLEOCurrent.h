@@ -100,20 +100,10 @@ class ThreePionCLEOCurrent: public ThreeMesonCurrentBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline ThreePionCLEOCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline ThreePionCLEOCurrent(const ThreePionCLEOCurrent &);
-  //@}
-
-public:
+  ThreePionCLEOCurrent();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -158,16 +148,6 @@ public:
   virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
 			  unsigned int iloc,unsigned int ires,
 			  DecayPhaseSpaceChannelPtr phase,Energy upp);
-
-  /**
-   * The particles produced by the current. This returns the mesons for the mode.
-   * @param icharge The total charge of the particles in the current.
-   * @param imode The mode for which the particles are being requested
-   * @param iq The PDG code for the quark
-   * @param ia The PDG code for the antiquark
-   * @return The external particles for the current.
-   */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
@@ -271,6 +251,11 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
+
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
   //@}
 
 private:
@@ -298,7 +283,7 @@ private:
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
-  void inita1width(int iopt);
+  void inita1Width(int iopt);
   
   /**
    * \f$a_1\f$ Breit-Wigner
@@ -585,6 +570,21 @@ private:
    * Initialize the running \f$a_1\f$ width.
    */
   bool _initializea1;
+
+  /**
+   * Option for the \f$a_1\f$ width
+   */
+  bool _a1opt;
+
+  /**
+   *  The maximum mass of the hadronic system
+   */
+  Energy _maxmass;
+
+  /**
+   *  The maximum mass when the running width was calculated
+   */
+  Energy _maxcalc;
 
 };
 

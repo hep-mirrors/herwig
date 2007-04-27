@@ -12,51 +12,42 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoPionPhotonCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using Helicity::ScalarWaveFunction;
-using Helicity::VectorWaveFunction;
-using Helicity::outgoing;
+using Herwig::Helicity::ScalarWaveFunction;
+using Herwig::Helicity::VectorWaveFunction;
+using Herwig::Helicity::outgoing;
 
 void TwoPionPhotonCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();
   // set up the rho masses and widths
   tPDPtr temp;
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      if(ix==0){temp = getParticleData(-213);}
-      else if(ix==1){temp = getParticleData(-100213);}
-      else if(ix==2){temp = getParticleData(-30213);}
-      // if using local values
-      if(!_rhoparameters&&ix<_rhomasses.size())
-	{
-	  _rhomasses[ix]=temp->mass();
-	  _rhowidths[ix]=temp->width();
-	}
-      else if(ix>=_rhomasses.size())
-	{
-	  _rhomasses.push_back(temp->mass());
-	  _rhowidths.push_back(temp->width());
-	}
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==0)      temp = getParticleData(-213);
+    else if(ix==1) temp = getParticleData(-100213);
+    else if(ix==2) temp = getParticleData(-30213);
+    // if using local values
+    if(!_rhoparameters&&ix<_rhomasses.size()) {
+      _rhomasses[ix]=temp->mass();
+      _rhowidths[ix]=temp->width();
     }
+    else if(ix>=_rhomasses.size()) {
+      _rhomasses.push_back(temp->mass());
+      _rhowidths.push_back(temp->width());
+    }
+  }
   // set up the omega masses and widths
-  if(!_omegaparameters)
-    {
-      temp = getParticleData(ParticleID::omega);
-      _omegamass  = temp->mass();
-      _omegawidth = temp->width();
-    }
+  if(!_omegaparameters) {
+    temp = getParticleData(ParticleID::omega);
+    _omegamass  = temp->mass();
+    _omegawidth = temp->width();
+  }
 }
 
 void TwoPionPhotonCurrent::persistentOutput(PersistentOStream & os) const {
@@ -171,19 +162,16 @@ void TwoPionPhotonCurrent::Init() {
 bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int,
 				      DecayPhaseSpaceModePtr mode,
 				      unsigned int iloc,unsigned int ires,
-				      DecayPhaseSpaceChannelPtr phase,Energy upp)
-{
+				      DecayPhaseSpaceChannelPtr phase,Energy upp) {
   if(icharge!=3&&icharge!=-3){return false;}
-  bool kineallowed(true);
   // check that the mode is are kinematical allowed
   Energy min(getParticleData(ParticleID::piplus)->mass()+
 	     getParticleData(ParticleID::pi0)->mass());
-  if(min>upp){kineallowed=false;}
-  if(kineallowed==false){return kineallowed;}
+  if(min>upp) return false;
   // set up the integration channels;
   tPDPtr omega(getParticleData(ParticleID::omega));
   tPDPtr W(getParticleData(ParticleID::Wplus));
-  if(icharge<0){W=W->CC();}
+  if(icharge<0) W=W->CC();
   DecayPhaseSpaceChannelPtr newchannel; 
   newchannel=new_ptr(DecayPhaseSpaceChannel(*phase));
   newchannel->addIntermediate(W,0,0.0,-ires-1,iloc);
@@ -192,26 +180,18 @@ bool TwoPionPhotonCurrent::createMode(int icharge, unsigned int,
   // reset the masses and widths of the resonances if needed
   mode->resetIntermediate(W,_intmass,_intwidth);
   // set up the omega masses and widths
-  if(_omegaparameters){mode->resetIntermediate(omega,_omegamass,_omegawidth);}
-  return kineallowed;
+  if(_omegaparameters) mode->resetIntermediate(omega,_omegamass,_omegawidth);
+  return true;
 }
 
 // the particles produced by the current
-PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int)
-{
+PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int) {
   PDVector extpart;
-  if(icharge==3)
-    {
-      extpart.push_back(getParticleData(ParticleID::piplus));
-      extpart.push_back(getParticleData(ParticleID::pi0));
-      extpart.push_back(getParticleData(ParticleID::gamma));
-    }
-  else if(icharge==-3)
-    {
-      extpart.push_back(getParticleData(ParticleID::piminus));
-      extpart.push_back(getParticleData(ParticleID::pi0));
-      extpart.push_back(getParticleData(ParticleID::gamma));
-    }
+  if(abs(icharge)!=3) return extpart;
+  if(icharge==3)       extpart.push_back(getParticleData(ParticleID::piplus));
+  else if(icharge==-3) extpart.push_back(getParticleData(ParticleID::piminus));
+  extpart.push_back(getParticleData(ParticleID::pi0));
+  extpart.push_back(getParticleData(ParticleID::gamma));
   return extpart;
 }
 
@@ -219,8 +199,7 @@ PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int)
 // the hadronic currents    
 vector<LorentzPolarizationVector> 
 TwoPionPhotonCurrent::current(bool vertex, const int, const int, 
-			      Energy & scale,const ParticleVector & decay) const
-{
+			      Energy & scale,const ParticleVector & decay) const {
   vector<LorentzPolarizationVector> temp;
   // locate the particles
   Lorentz5Momentum pout(decay[1]->momentum()+decay[2]->momentum()+decay[0]->momentum());
@@ -253,36 +232,32 @@ TwoPionPhotonCurrent::current(bool vertex, const int, const int,
 
   VectorWaveFunction(temp,decay[2],outgoing,true,true,vertex);
   Complex dote2,dote3,coeffa,coeffb,coeffc;
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      if(ix!=1)
-	{
-	  // obtain the dot products we need
-	  dote2 = temp[ix]*decay[1]->momentum();
-	  dote3 = temp[ix]*decay[0]->momentum();
-	  // now compute the coefficients
-	  coeffa = mpi2*dot13-dot12*(dot23-dot13);
-	  coeffb = dote2*dot13-dote3*dot12;
-	  coeffc = dote2*dot23-dote3*(mpi2+dot12);
-	  // finally compute the current
-	  temp[ix]= prefactor*(coeffa*temp[ix]-coeffb*decay[1]->momentum()+
-			       coeffc*decay[2]->momentum());
-	}
-      else{temp[ix]=LorentzPolarizationVector();}
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix!=1) {
+      // obtain the dot products we need
+      dote2 = temp[ix]*decay[1]->momentum();
+      dote3 = temp[ix]*decay[0]->momentum();
+      // now compute the coefficients
+      coeffa = mpi2*dot13-dot12*(dot23-dot13);
+      coeffb = dote2*dot13-dote3*dot12;
+      coeffc = dote2*dot23-dote3*(mpi2+dot12);
+      // finally compute the current
+      temp[ix]= prefactor*(coeffa*temp[ix]-coeffb*decay[1]->momentum()+
+			   coeffc*decay[2]->momentum());
     }
+    else{temp[ix]=LorentzPolarizationVector();}
+  }
   return temp;
 }
 
-bool TwoPionPhotonCurrent::accept(vector<int> id)
-{
+bool TwoPionPhotonCurrent::accept(vector<int> id) {
   if(id.size()!=3){return false;}
   unsigned int npiplus(0),npi0(0),ngamma(0);
-  for(unsigned int ix=0;ix<id.size();++ix)
-    {
-      if(abs(id[ix])==ParticleID::piplus){++npiplus;}
-      else if(id[ix]==ParticleID::gamma){++ngamma;}
-      else if(id[ix]==ParticleID::pi0){++npi0;}
-    }
+  for(unsigned int ix=0;ix<id.size();++ix) {
+    if(abs(id[ix])==ParticleID::piplus) ++npiplus;
+    else if(id[ix]==ParticleID::gamma)  ++ngamma;
+    else if(id[ix]==ParticleID::pi0)    ++npi0;
+  }
   return npiplus==1&&ngamma==1&&npi0==1;
 }
 
@@ -292,11 +267,10 @@ unsigned int TwoPionPhotonCurrent::decayMode(vector<int>) {
 
 // output the information for the database
 void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
-					  bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::TwoPionPhotonCurrent " << fullName() << " \n";}
+					  bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::TwoPionPhotonCurrent " << fullName() 
+		    << " HwWeakCurrents.so\n";
   output << "set " << fullName() << ":RhoParameters "    << _rhoparameters << "\n";
   output << "set " << fullName() << ":omegaParameters "    << _omegaparameters << "\n";
   output << "set " << fullName() << ":omegamass "    << _omegamass/GeV << "\n";
@@ -306,28 +280,25 @@ void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
   output << "set " << fullName() << ":IntegrationMass "  << _intmass/GeV  << "\n";
   output << "set " << fullName() << ":IntegrationWidth " << _intwidth/GeV  << "\n";
   unsigned int ix;
-  for(ix=0;ix<_resweights.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":Weights " << ix 
-		      << " " << _resweights[ix] << "\n";}
-      else{output << "insert " << fullName() << ":Weights " << ix 
-		  << " " << _resweights[ix] << "\n";}
-    }
-  for(ix=0;ix<_rhomasses.size();++ix)
-    {
-      if(ix<2){output << "set " << fullName() << ":RhoMasses " << ix 
-		      << " " << _rhomasses[ix]/MeV << "\n";}
-      else{output << "insert " << fullName() << ":RhoMasses " << ix 
-		  << " " << _rhomasses[ix]/MeV << "\n";}
-    }
-  for(ix=0;ix<_rhowidths.size();++ix)
-    {
-      if(ix<2){output << "set " << fullName() << ":RhoWidths " << ix 
-		      << " " << _rhowidths[ix]/MeV << "\n";}
-      else{output << "insert " << fullName() << ":RhoWidths " << ix 
-		  << " " << _rhowidths[ix]/MeV << "\n";}
-    }
+  for(ix=0;ix<_resweights.size();++ix) {
+    if(ix<3) output << "set " << fullName() << ":Weights " << ix 
+		    << " " << _resweights[ix] << "\n";
+    else     output << "insert " << fullName() << ":Weights " << ix 
+		    << " " << _resweights[ix] << "\n";
+  }
+  for(ix=0;ix<_rhomasses.size();++ix) {
+    if(ix<2) output << "set " << fullName() << ":RhoMasses " << ix 
+		    << " " << _rhomasses[ix]/MeV << "\n";
+    else     output << "insert " << fullName() << ":RhoMasses " << ix 
+		    << " " << _rhomasses[ix]/MeV << "\n";
+  }
+  for(ix=0;ix<_rhowidths.size();++ix) {
+    if(ix<2) output << "set " << fullName() << ":RhoWidths " << ix 
+		    << " " << _rhowidths[ix]/MeV << "\n";
+    else     output << "insert " << fullName() << ":RhoWidths " << ix 
+		    << " " << _rhowidths[ix]/MeV << "\n";
+  }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

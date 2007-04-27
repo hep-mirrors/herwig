@@ -3,6 +3,9 @@ HwME_la_SOURCES = \
 MEqq2gZ2ff.cc MEqq2gZ2ff.h MEqq2gZ2ff.icc MEqq2gZ2ff.fh \
 MEqq2W2ff.cc MEqq2W2ff.h MEqq2W2ff.icc MEqq2W2ff.fh \
 MEee2gZ2qq.h MEee2gZ2qq.icc MEee2gZ2qq.cc MEee2gZ2qq.fh  \
+MEee2gZ2ll.h MEee2gZ2ll.icc MEee2gZ2ll.cc MEee2gZ2ll.fh  \
+MEee2VectorMeson.h MEee2VectorMeson.icc MEee2VectorMeson.cc MEee2VectorMeson.fh  \
+MEee2Higgs2SM.h MEee2Higgs2SM.icc MEee2Higgs2SM.cc MEee2Higgs2SM.fh  \
 MEee2Z.h MEee2Z.icc MEee2Z.cc \
 MEPP2GammaJet.h MEPP2GammaJet.icc MEPP2GammaJet.fh MEPP2GammaJet.cc\
 MEQCD2to2.h MEQCD2to2.icc MEQCD2to2.fh MEQCD2to2.cc\

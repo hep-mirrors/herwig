@@ -1,8 +1,4 @@
-pkglib_LTLIBRARIES =
-
-if WANT_NEWDECAYERS
-pkglib_LTLIBRARIES += HwSMDecay.la
-endif
+pkglib_LTLIBRARIES = HwSMDecay.la
 
 HwSMDecay_la_SOURCES = \
 EtaPiGammaGammaDecayer.cc EtaPiGammaGammaDecayer.fh EtaPiGammaGammaDecayer.h \
@@ -20,5 +16,9 @@ ScalarScalarScalarDecayer.icc SemiLeptonicScalarDecayer.cc SemiLeptonicScalarDec
 SemiLeptonicScalarDecayer.h SemiLeptonicScalarDecayer.icc ScalarMesonFactorizedDecayer.cc \
 ScalarMesonFactorizedDecayer.fh ScalarMesonFactorizedDecayer.h ScalarMesonFactorizedDecayer.icc \
 ScalarVectorVectorDecayer.h ScalarVectorVectorDecayer.icc \
-ScalarVectorVectorDecayer.cc ScalarVectorVectorDecayer.fh
+ScalarVectorVectorDecayer.cc ScalarVectorVectorDecayer.fh \
+GoityRobertsDecayer.h GoityRobertsDecayer.icc \
+GoityRobertsDecayer.fh GoityRobertsDecayer.cc \
+BtoBaryonsDecayer.h BtoBaryonsDecayer.icc \
+BtoBaryonsDecayer.fh BtoBaryonsDecayer.cc
 HwSMDecay_la_LDFLAGS = -module -version-info 2:0:0

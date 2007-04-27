@@ -23,7 +23,8 @@ inline IBPtr DecayPhaseSpaceChannel::fullclone() const {
 inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
   Energy mass=0;
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
-					       << " not allowed";
+					       << " not allowed" 
+					       << Exception::eventerror;
   if(abs(lower-upper)/(lower+upper)>1e-10) {
     lower +=1e-10*(lower+upper);
     upper -=1e-10*(lower+upper);
@@ -49,7 +50,8 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
   } 
   else {
     throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
-				 << "DecayPhaseSpaceChannel::generateMass";
+				 << "DecayPhaseSpaceChannel::generateMass" 
+				 << Exception::eventerror;
   }
   if(mass<lower)      mass=lower+1e-10*(lower+upper);
   else if(mass>upper) mass=upper-1e-10*(lower+upper);
@@ -63,7 +65,7 @@ inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   if(lower>upper) {
     throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
-				 << moff;
+				 << moff << Exception::eventerror;
   } 
   // use a Breit-Wigner 
   if(_jactype[ires]==0) { 
@@ -83,7 +85,8 @@ inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   } 
   else {
     throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
-				 << "DecayPhaseSpaceChannel::massWeight";
+				 << "DecayPhaseSpaceChannel::massWeight"
+				 << Exception::eventerror;
   } 
   return wgt;
 }
@@ -121,6 +124,37 @@ inline void DecayPhaseSpaceChannel::resetDaughter(int oldp,int newp) {
       _intdau2[ix]=newp;
     }
   }
+}
+ 
+inline void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,                    
+						 const Energy m1, const Energy m2,
+						 Lorentz5Momentum & p1,
+						 Lorentz5Momentum & p2 ) {
+  static double eps=1e-6;
+  double ctheta,phi;
+  Kinematics::generateAngles(ctheta,phi);
+  Vector3 unitDir1=Kinematics::unitDirection(ctheta,phi);
+  Momentum3 pstarVector = unitDir1;
+  Energy min=p.m();
+  if ( min >= m1 + m2  &&  m1 >= 0.0  &&  m2 >= 0.0  ) {
+    pstarVector *= Kinematics::pstarTwoBodyDecay(min,m1,m2);
+  }
+  else if( m1 >= 0.0  &&  m2 >= 0.0 &&(m1+m2-min)/(min+m1+m2)<eps) {
+    pstarVector *=0.;
+  }
+  else {
+    throw DecayPhaseSpaceError() << "Two body decay cannot proceed "
+				 << "p = " << p / GeV 
+				 << " p.m() = " << min / GeV
+				 << " -> " << m1/GeV 
+				 << ' ' << m2/GeV << Exception::eventerror;
+  }
+  p1 = Lorentz5Momentum(m1, pstarVector);
+  p2 = Lorentz5Momentum(m2,-pstarVector);
+  // boost from CM to LAB
+  Vector3 bv=p.boostVector();
+  p1.boost( bv );   
+  p2.boost( bv );
 }
 
 }

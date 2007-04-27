@@ -150,8 +150,8 @@ private:
 #include "SMFFHVertex.icc"
 
 namespace ThePEG {
-  
-/// \if TRAITSPECIALIZATIONS
+
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -185,7 +185,7 @@ struct ClassTraits<Herwig::Helicity::SMFFHVertex>
   
 };
 
-/// \endif
+/** @endcond */
   
 }
 

@@ -29,18 +29,10 @@ class ScalarMesonCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   ScalarMesonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline ScalarMesonCurrent(const ScalarMesonCurrent &);
-  //@}
 
 public:
 
@@ -182,7 +174,7 @@ private:
   /**
    * the pdg code for the meson
    */
-  vector<int> _id;
+  vector<long> _id;
 
   /**
    * the decay constant

@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -106,14 +101,13 @@ bool VectorMesonCurrent::createMode(int icharge, unsigned int imode,
   // check the mode has the correct charge
   if(abs(icharge)!=abs(int(getParticleData(_id[imode])->iCharge()))){return false;}
   // check if the particle is kinematically allowed
-  bool kineallowed(true);
-  Energy min=part->mass()-part->widthLoCut();
-  if(min>upp){kineallowed=false;return false;}
+  Energy min=part->massMin();
+  if(min>upp) return false;
   // construct the mode
   DecayPhaseSpaceChannelPtr newchannel(new_ptr(DecayPhaseSpaceChannel(*phase)));
   newchannel->resetDaughter(-ires,iloc);
   mode->addChannel(newchannel);
-  return kineallowed;
+  return true;
 }
 
 // outgoing particles 
@@ -183,26 +177,23 @@ unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
 
 void VectorMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::VectorMesonCurrent " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<_id.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":ID " << ix 
-		 << " " << _id[ix] << "\n";
-	  output << "set " << fullName() << ":Decay_Constant " << ix 
-		 << " " << _decay_constant[ix]/GeV2 << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":ID " << ix 
-		 << " " << _id[ix] << "\n";
-	  output << "insert " << fullName() << ":Decay_Constant " << ix 
-		 << " " << _decay_constant[ix]/GeV2 << "\n";
-	}
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::VectorMesonCurrent " << fullName() 
+		    << " HwWeakCurrents.so\n";
+  for(unsigned int ix=0;ix<_id.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":ID " << ix 
+	     << " " << _id[ix] << "\n";
+      output << "set " << fullName() << ":Decay_Constant " << ix 
+	     << " " << _decay_constant[ix]/GeV2 << "\n";
     }
+    else {
+      output << "insert " << fullName() << ":ID " << ix 
+	     << " " << _id[ix] << "\n";
+      output << "insert " << fullName() << ":Decay_Constant " << ix 
+	     << " " << _decay_constant[ix]/GeV2 << "\n";
+    }
+  }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }

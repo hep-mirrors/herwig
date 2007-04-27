@@ -7,20 +7,5 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ThreeMesonCurrentBase::ThreeMesonCurrentBase() 
-{
-  // the quarks for the different modes
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-1);
-  addDecayMode(2,-3);
-  addDecayMode(2,-3);
-  addDecayMode(2,-3);
-  addDecayMode(2,-1);
-  setInitialModes(9);
-}
-
 }
 

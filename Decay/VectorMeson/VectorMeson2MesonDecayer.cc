@@ -198,11 +198,8 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer()
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }
-
-VectorMeson2MesonDecayer::~VectorMeson2MesonDecayer() {}
  
-int VectorMeson2MesonDecayer::modeNumber(bool & cc, const DecayMode & dm) const
-{
+int VectorMeson2MesonDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
   int imode(-1);
   int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
@@ -214,16 +211,15 @@ int VectorMeson2MesonDecayer::modeNumber(bool & cc, const DecayMode & dm) const
   if((**pit).CC()){id2bar=(**pit).CC()->id();}
   unsigned int ix(0);
   cc=false;
-  do 
-    {
-      if(id   ==_incoming[ix])
-	{if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
-	    (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){imode=ix;}}
-      if(idbar==_incoming[ix])
-	{if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
-	    (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){imode=ix;cc=true;}}
-      ++ix;
-    }
+  do {
+    if(id   ==_incoming[ix])
+      {if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
+	  (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){imode=ix;}}
+    if(idbar==_incoming[ix])
+      {if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
+	  (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){imode=ix;cc=true;}}
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   return imode;
 }

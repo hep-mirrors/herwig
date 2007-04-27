@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the BtoBaryonsDecayer class.
+//
+#ifndef HERWIG_BtoBaryonsDecayer_FH
+#define HERWIG_BtoBaryonsDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class BtoBaryonsDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::BtoBaryonsDecayer,BtoBaryonsDecayerPtr);
+
+}
+
+#endif

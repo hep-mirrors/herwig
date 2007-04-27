@@ -1,8 +1,4 @@
-pkglib_LTLIBRARIES =
-
-if WANT_NEWDECAYERS
-pkglib_LTLIBRARIES += HwVMDecay.la
-endif
+pkglib_LTLIBRARIES = HwVMDecay.la
 
 HwVMDecay_la_SOURCES = \
 a1ThreePionCLEODecayer.cc a1ThreePionCLEODecayer.h a1ThreePionCLEODecayer.icc \

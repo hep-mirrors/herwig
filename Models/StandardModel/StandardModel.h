@@ -358,7 +358,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -384,7 +384,7 @@ struct ClassTraits<Herwig::StandardModel>
   static string className() { return "Herwig++::StandardModel"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

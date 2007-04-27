@@ -43,15 +43,10 @@ class TauDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline TauDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -163,7 +158,7 @@ private:
   /**
    * Fermi coupling constant, \f$G_F\f$.
    */
-  InvEnergy2 _GF;
+  InvEnergy2 _gf;
 
   /**
    * mapping of the modes to the currents
