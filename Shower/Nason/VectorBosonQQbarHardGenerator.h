@@ -126,8 +126,6 @@ protected:
   virtual void dofinish();
   //@}
 
-  //METHODS TULLY ADDED
-
 private:
 
   Lorentz5Momentum getEvent();
@@ -150,10 +148,13 @@ private:
 
   /**
    * Rotates the final state momenta in such a way to take into account correlation
-  * between plane of branching and gluon polarization. (I think??)
+  * between plane of branching and gluon polarization. 
   */
   void azimuthal();
 
+  /** Returns the value of the radiative cross section (R(v,r)/B(v))
+   *for the current (_x1,_x2)
+   */
   double getResult();
 
   /**
@@ -186,12 +187,19 @@ private:
    */
   double _prefactor;  
 
+ /**
+  * The power (GeV/pt)^_power of overestimate distribution
+  */
   double _power;
-
-  double _max;
-  /**dalitz variables
+  
+  /**
+   * The maximum value of the 'prefactor' of the actual distribution
    */
-
+  double _max;
+  
+  /**
+   *The dalitz variables (x1,x2)
+   */
   double _x1;
   double _x2;
 
@@ -203,13 +211,14 @@ private:
   //com energy
   Energy2 _s;
  
-  // herwig variables
+  // The Herwig variables, used for momentum reconstruction
   double _ktild;
   double _k;
   double _z;
   double _phi;
 
-  bool _qemission;
+  // iemit = 0 quark emission: =1 antiquark emission
+  int _iemit;
 
   HistogramPtr  _hyb;
   HistogramPtr  _hplow;
@@ -226,11 +235,14 @@ private:
   std::vector<double> _x1plot;
   std::vector<double> _x2plot;
 
-  Lorentz5Momentum  _pa;
-  Lorentz5Momentum  _pb;
-  Lorentz5Momentum _quark[2];
+  // The quark momenta
+  vector<Lorentz5Momentum> _quark;
+  // The gluon momenta
   Lorentz5Momentum _g;
+  // Rotation for the azimuthal correlation
   LorentzRotation _r;
+  // LT to take into lab frame - momenta calculated in c.o.m frame 
+  // with q along z.
   LorentzRotation  _eventFrame;
 
 };
