@@ -39,9 +39,9 @@ Complex FFSVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
   if(sp.direction() == Helicity::incoming || 
      sp.direction() == Helicity::intermediate) iint = 1;
   else if(sca.direction() == Helicity::incoming ||
-	  sp.direction() == Helicity::intermediate) iint = 2;
+	  sca.direction() == Helicity::intermediate) iint = 2;
   else if(sbar.direction() == Helicity::incoming ||
-	  sp.direction() == Helicity::intermediate) iint = 3;
+	  sbar.direction() == Helicity::intermediate) iint = 3;
   else 
     throw HelicityLogicalError() << "There is no incoming particle in "
 				 << fullName() << Exception::runerror;
