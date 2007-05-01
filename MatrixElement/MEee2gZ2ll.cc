@@ -112,7 +112,7 @@ void MEee2gZ2ll::Init() {
      4);
 
   static ClassDocumentation<MEee2gZ2ll> documentation
-    ("The \\classname{MEee2gZ2ll} class implements the matrix element for"
+    ("The MEee2gZ2ll class implements the matrix element for"
      "e+e- to leptons via Z and photon exchange using helicity amplitude"
      "techniques");
 }

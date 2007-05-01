@@ -133,7 +133,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SSGSGSGVertex. */
@@ -160,7 +160,7 @@ struct ClassTraits<Herwig::Helicity::SSGSGSGVertex>
   static string library() { return "HwSusy.so HwSusyVertex.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

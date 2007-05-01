@@ -117,7 +117,7 @@ protected:
    *  Value of the energy fraction and scale for time-like branching
    * @param t  The scale
    * @param tmin The minimum scale
-   * @paran enhance The radiation enhancement factor
+   * @param enhance The radiation enhancement factor
    * @return False if scale less than minimum, true otherwise
    */
   bool guessTimeLike(Energy2 &t, Energy2 tmin, double enhance);
@@ -127,7 +127,7 @@ protected:
    * @param t  The scale
    * @param tmax The maximum scale
    * @param minmass The minimum mass of the particle after the branching
-   * @paran enhance The radiation enhancement factor
+   * @param enhance The radiation enhancement factor
    */
   bool guessDecay(Energy2 &t, Energy2 tmax,Energy minmass,
 		  double enhance);
@@ -137,7 +137,7 @@ protected:
    * @param t  The scale
    * @param tmin The minimum scale
    * @param x Fraction of the beam momentum.
-   * @paran enhance The radiation enhancement factor
+   * @param enhance The radiation enhancement factor
    */
   bool guessSpaceLike(Energy2 &t, Energy2 tmin, const double x,
 		      double enhance);

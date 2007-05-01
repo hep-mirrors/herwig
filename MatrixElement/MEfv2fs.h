@@ -117,7 +117,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MEfv2fs. */
@@ -144,7 +144,7 @@ struct ClassTraits<Herwig::MEfv2fs>
   static string library() { return "libGeneralHardME.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

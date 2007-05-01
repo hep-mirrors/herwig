@@ -141,7 +141,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SVVLoopVertex. */
@@ -160,7 +160,7 @@ struct ClassTraits<Herwig::Helicity::SVVLoopVertex>
   static string className() { return "Herwig++::SVVLoopVertex"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
  

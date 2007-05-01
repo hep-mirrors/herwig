@@ -346,7 +346,7 @@ private:
   double _preomega;
 
   /**
-   *  Prefactor for the \f$a_1\sigaa\f$ current
+   *  Prefactor for the \f$a_1\sigma\f$ current
    */
   double _presigma;
   //@}

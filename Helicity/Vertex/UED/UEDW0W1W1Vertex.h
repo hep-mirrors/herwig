@@ -117,7 +117,7 @@ private:
   tUEDBasePtr theUEDBase;
 
   /**
-   * The factor \f$\frac{\cos\theta_N}{\sin\theta_W}.
+   * The factor \f$\frac{\cos\theta_N}{\sin\theta_W}\f$.
    */
   double theZfact;
   

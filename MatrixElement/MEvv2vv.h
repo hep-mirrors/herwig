@@ -25,7 +25,7 @@ using Herwig::Helicity::ProductionMatrixElement;
 
 /**
  * This is the implementation of the matrix element for 
- * $2\ra 2$ massless vector-boson pair to vector-boson pair. It inherits from
+ * \f$2\to 2\f$ massless vector-boson pair to vector-boson pair. It inherits from
  * GeneralHardME and implements the appropriate virtual member functions.
  *
  * @see \ref MEvv2vvInterfaces "The interfaces"
@@ -69,7 +69,7 @@ public:
   //@}
 
   /**
-   * Compute the matrix element for \f$V\,V\ra V\,V\f$
+   * Compute the matrix element for \f$V\, V\to V\, V\f$
    * @param vin VectorWaveFunctions for first incoming particle
    * @param vin2 VectorWaveFunctions for second incoming particle
    * @param vout VectorWaveFunctions for first outgoing particle

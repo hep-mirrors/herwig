@@ -14,7 +14,7 @@ namespace Helicity {
 using namespace ThePEG;
 
 /**
- * The implementation of the \f$ f_{(1)}f_{(0)H_{(1)}^\pm} vertex. It inherits 
+ * The implementation of the \f$ f_{(1)}f_{(0)}H_{(1)}^\pm\f$ vertex. It inherits 
  * from FFSVertex and implements the setCoupling member function. 
  *
  * @see \ref UEDF1F0H1VertexInterfaces "The interfaces"

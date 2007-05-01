@@ -194,7 +194,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SpinCorrAnalysis. */
@@ -221,7 +221,7 @@ struct ClassTraits<Herwig::SpinCorrAnalysis>
   static string library() { return "HwBSMAnalysis.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

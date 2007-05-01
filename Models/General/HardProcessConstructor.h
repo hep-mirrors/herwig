@@ -362,7 +362,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of HardProcessConstructor. */
@@ -390,7 +390,7 @@ struct ClassTraits<Herwig::HardProcessConstructor>
   static string library() { return "libHwModelGenerator.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

@@ -1,4 +1,3 @@
-
 // -*- C++ -*-
 #ifndef HERWIG_DecayPhaseSpaceChannel_H
 #define HERWIG_DecayPhaseSpaceChannel_H
@@ -84,11 +83,11 @@ public:
    * 0 is a Breit-Wigner and 1 is a power-law
    * @param power The power to beb used for the mass generation if a power law
    * mass distribution is chosen.
-   * @param dau1 The first daughter. If this is postive it is the \f$dau1\f$th
+   * @param dau1 The first daughter. If this is postive it is the \f$dau1\f$ th
    * outgoing particle (0 is the incoming particle), if it is negative it is the 
    * \f$|dau1|\f$ intermediate. The intermediates are specified in the order they
    * are added with 0 being the incoming particle.
-   * @param dau2 The first daughter. If this is postive it is the \f$dau2\f$th
+   * @param dau2 The first daughter. If this is postive it is the \f$dau2\f$ th
    * outgoing particle (0 is the incoming particle), if it is negative it is the 
    * \f$|dau2|\f$ intermediate. The intermediates are specified in the order they
    * are added with 0 being the incoming particle.

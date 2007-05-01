@@ -542,7 +542,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of KaonThreeMesonCurrent. */
@@ -569,7 +569,7 @@ struct ClassTraits<Herwig::KaonThreeMesonCurrent>
   static string library() { return "HwWeakCurrents.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

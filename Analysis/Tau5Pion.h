@@ -133,7 +133,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of Tau5Pion. */
@@ -160,7 +160,7 @@ struct ClassTraits<Herwig::Tau5Pion>
   static string library() { return "HwDecayAnalysis.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

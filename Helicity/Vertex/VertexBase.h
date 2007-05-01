@@ -572,7 +572,7 @@ ostream & operator<<(ostream &, const VertexBase &);
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -597,7 +597,7 @@ struct ClassTraits<Herwig::Helicity::VertexBase>
   static string className() { return "Herwig++::VertexBase"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 #include "VertexBase.icc"

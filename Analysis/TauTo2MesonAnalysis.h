@@ -16,7 +16,7 @@ using namespace ThePEG;
 /**
  * The TauTo2MesonAnalysis class is designed to perform the analysis of the 
  * mass distribution of the hadronic decay products of the \f$\tau\f$ in the decays
- * \f$\tau^\pm\to\nu_\tau\{\pi^\pm\pi^0,K^\pm\pi^0,K^0\pi^\pm,K^\pm\eta,K^\pmK^0\}\f$.
+ * \f$\tau^\pm\to\nu_\tau\{\pi^\pm\pi^0,K^\pm\pi^0,K^0\pi^\pm,K^\pm\eta,K^\pm K^0\}\f$.
  * In order to work the \f$\pi^0\f$, \f$K^0\f$, \f$K^\pm\f$ and \f$\eta\f$ should be
  * set stable.
  *
@@ -126,7 +126,7 @@ private:
   HistogramPtr _m2pipiBELLE,_mpipiCLEO;
 
   /**
-   *  Mass of the Kaons and pions in \f$\tau\to\K\pi\f$
+   *  Mass of the Kaons and pions in \f$\tau\to K\pi\f$
    */
   HistogramPtr _m2KpiA,_m2KpiB,_mKpiA,_mKpiB,_m2KpiC,_m2KpiD;
 

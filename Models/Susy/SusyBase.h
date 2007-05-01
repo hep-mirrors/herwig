@@ -409,7 +409,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SusyBase. */
@@ -436,7 +436,7 @@ struct ClassTraits<Herwig::SusyBase>
   static string library() { return "HwSusy.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

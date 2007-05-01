@@ -164,7 +164,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -194,7 +194,7 @@ struct ClassTraits<Herwig::RSModel>
   
 };
 
-/// \endif
+/** @endcond */
   
 }
 

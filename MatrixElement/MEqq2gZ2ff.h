@@ -271,8 +271,5 @@ struct ClassTraits<Herwig::MEqq2gZ2ff>
 }
 
 #include "MEqq2gZ2ff.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEqq2gZ2ff.tcc"
-#endif
 
 #endif /* HERWIG_MEqq2gZ2ff_H */

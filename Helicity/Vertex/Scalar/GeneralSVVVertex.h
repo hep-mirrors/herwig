@@ -188,7 +188,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of GeneralSVVVertex. */
@@ -207,7 +207,7 @@ struct ClassTraits<Herwig::Helicity::GeneralSVVVertex>
   static string className() { return "Herwig++::GeneralSVVVertex"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

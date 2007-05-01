@@ -87,7 +87,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of NBodyDecayConstructorBase. */
@@ -109,7 +109,7 @@ struct ClassTraits<Herwig::NBodyDecayConstructorBase>
   static string library() { return "libHwModelGenerator.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

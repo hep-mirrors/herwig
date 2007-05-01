@@ -15,7 +15,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
 /**\ingroup Hadronization
  *  \class HadronSelector
  *  \brief This class selects the hadron flavours of a cluster decay.
@@ -297,9 +296,9 @@ protected:
    * @param angleMix The mixing angle in degrees (not radians)
    * @param order is 0 for no mixing, 1 for the first resonance of a pair,
    *                 2 for the second one.
-   * The mixing is defined so that for example with $\eta-\eta'$ mixing where
-   * the mixing angle is $\theta=-23^0$ with $\eta$ as the first particle
-   * and $\eta'$ the second one.
+   * The mixing is defined so that for example with \f$\eta-\eta'\f$ mixing where
+   * the mixing angle is \f$\theta=-23^0$ with $\eta\f$ as the first particle
+   * and \f$\eta'\f$ the second one.
    * The convention used is 
    * \f[\eta  = \cos\theta|\eta_{\rm octet  }\rangle
    *           -\sin\theta|\eta_{\rm singlet}\rangle\f]

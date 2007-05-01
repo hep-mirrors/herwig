@@ -16,7 +16,14 @@ namespace Herwig {
 using namespace ThePEG;
 using namespace Herwig::Helicity;
 
+/**
+ * Typedef for the \f$H\to gg\f$ vertex
+ */
 typedef Ptr<Herwig::Helicity::SMHGGVertex>::pointer HGGPtr;
+
+/**
+ * Typedef for the \f$H\to \gamma\gamma\f$ vertex
+ */
 typedef Ptr<Herwig::Helicity::SMHPPVertex>::pointer HPPPtr;
   
 /**
