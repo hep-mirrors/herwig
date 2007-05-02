@@ -20,6 +20,9 @@
 namespace Herwig {
 using namespace ThePEG;
 
+/**
+ *  Define some sets
+ */
 ThePEG_DECLARE_MULTISET(tcPDPtr,cParticleMSet);
 
 /** \ingroup Hadronization

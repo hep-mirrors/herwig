@@ -234,7 +234,7 @@ private:
   /**
    * Convert a particle from an EvtGen one to ThePEG one.
    * @param evtpart The EvtGen particle.
-   * @param Pointer to the particle data object of ThePEG for the particle.
+   * @param pd Pointer to the particle data object of ThePEG for the particle.
    * @param spin Convert the spin information as well
    */
   inline PPtr ThePEGParticle(EvtParticle *evtpart, tcPDPtr pd,bool spin);
@@ -261,7 +261,7 @@ private:
 
   /**
    * Convert a Lorentz5Momentum to a real EvtGen 4-vector
-   * @param The momentum to be converted
+   * @param mom The momentum to be converted
    */
   inline EvtVector4R EvtGenMomentum(const Lorentz5Momentum & mom);
 
@@ -298,7 +298,7 @@ private:
   /**
    * Convert a LorentzSpinor to an EvtGen one. The spinor is converted to the 
    * EvtGen Dirac representation/
-   * @paran sp The LorentzSpinor
+   * @param sp The LorentzSpinor
    */
   inline EvtDiracSpinor EvtGenSpinor(LorentzSpinor sp);
 

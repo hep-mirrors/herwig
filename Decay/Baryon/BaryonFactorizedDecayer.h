@@ -293,9 +293,14 @@ private:
   vector<int> _wgtloc;
 
   /**
-   * the maximum weights and the weights
+   * the maximum weights
    */
-  vector<double> _wgtmax,_weights;
+  vector<double> _wgtmax;
+
+  /**
+   *  weights for the different channels
+   */
+  vector<double> _weights;
 
   /**
    * Pointer to the CKM object.

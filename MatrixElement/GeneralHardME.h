@@ -105,6 +105,7 @@ public:
    * @param process vector of MEDiagram with information that 
    * will allow the diagrams to be created in the specific matrix element
    * @param factors
+   * @param ncf Number of colour flows
    */
   inline void setProcessInfo(const vector<HPDiagram> & process,
 			     const vector<DVector> & factors,

@@ -325,7 +325,9 @@ private:
    */
   int _iopRem;
 
-  // until ThePEG supports Tension
+  /**
+   * until ThePEG supports Tension
+   */
   typedef double Tension;
 
   /**

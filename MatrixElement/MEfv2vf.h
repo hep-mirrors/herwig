@@ -80,6 +80,7 @@ public:
    * @param vecIn A vector of VectorWaveFunctions for the incoming boson
    * @param spbOut A vector of SpinorBarWaveFunctions for the outgoing fermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
+   * @param mesq The matrix element squared
   */
   ProductionMatrixElement
   fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn, VBVector & vecOut, 
@@ -87,10 +88,11 @@ public:
 
   /**
    * Calculate the matrix element for an incoming anti-fermion
-   * @param spIn A vector of SpinorBarWaveFunctions for the incoming anti-fermion
+   * @param spbIn A vector of SpinorBarWaveFunctions for the incoming anti-fermion
    * @param vecIn A vector of VectorWaveFunctions for the incoming boson
-   * @param spbOut A vector of Spinors for the outgoing antifermion
+   * @param spOut A vector of Spinors for the outgoing antifermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
+   * @param mesq The matrix element squared
   */
   ProductionMatrixElement
   fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn, VBVector & vecOut, 

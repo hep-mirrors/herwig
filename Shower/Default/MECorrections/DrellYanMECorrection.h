@@ -21,6 +21,9 @@ using namespace ThePEG;
  */
 class DrellYanMECorrection: public QTildeMECorrection {
 
+/**
+ *  Typedef for BeamParticleData pointers
+ */
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 public:

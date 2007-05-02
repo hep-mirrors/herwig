@@ -157,7 +157,17 @@ private:
    * Histogram of the \f$\phi\f$ angle in 
    *  \f$H\to\tau^+\tau^-\to\rho^+\bar{\nu}_tau\rho^-\nu_tau\f$
    */
-  HistogramPtr _rhoangle1,_rhoangle2;
+  //@{
+  /**
+   *  First angle
+   */
+  HistogramPtr _rhoangle1;
+
+  /**
+   *  Second angle
+   */
+  HistogramPtr _rhoangle2;
+  //@}
 };
 
 }

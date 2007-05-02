@@ -6,8 +6,7 @@
 //
 #include <ThePEG/Helicity/HelicityVertex.h>
 #include "DecayMatrixElement.h"
-// #include "DecayVertex.fh"
-// #include "DecayVertex.xh"
+#include "DecayVertex.fh"
 
 namespace Herwig {
 namespace Helicity {
@@ -123,15 +122,6 @@ struct ClassTraits<Herwig::Helicity::DecayVertex>
 
 /** @endcond */
   
-}
-
-namespace Herwig {
-namespace Helicity {
-using namespace ThePEG;
-
-  ThePEG_DECLARE_CLASS_POINTERS(Herwig::Helicity::DecayVertex,DVertexPtr);
-
-}
 }
 
 #include "DecayVertex.icc"

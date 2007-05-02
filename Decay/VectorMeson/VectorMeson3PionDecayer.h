@@ -330,9 +330,19 @@ private:
   vector<bool> _defaultmass;
 
   /**
-   * constants for the running widths
+   * Constants for the running widths
    */
-  vector<vector <double> > _rho0const,_rhocconst;
+  //@{
+  /**
+   *  For the neutral \f$\rho\f$
+   */
+  vector<vector <double> > _rho0const;
+
+  /**
+   *  For the charged \f$\rho\f$
+   */
+  vector<vector <double> > _rhocconst;
+  //@}
 
   /**
    * rho mass parameters

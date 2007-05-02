@@ -57,7 +57,6 @@ struct Branching {
   /**
    *  Constructor for the struct
    * @param a pointer to the ShowerKinematics object for the branching
-   * @param b pointer to the SudakovFormFactor object for the branching
    * @param c PDG codes of the particles in the branching
    */
   Branching(ShoKinPtr a, IdList c) : kinematics(a), ids(c) {}

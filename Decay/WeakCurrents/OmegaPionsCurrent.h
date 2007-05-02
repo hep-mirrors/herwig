@@ -173,14 +173,14 @@ private:
 
   /**
    *  Breit-Wigner for the \f$a_1\f$.
-   * @param Include the numerator (iopt=0) or not (iopt=1)
+   * @param iopt Include the numerator (iopt=0) or not (iopt=1)
    * @param q2 The scale
    */
   inline Complex a1BreitWigner(unsigned int iopt, Energy q2) const;
 
   /**
    *  Breit-Wigner for the \f$\rho\f$.
-   * @param Include the numerator (iopt=0) or not (iopt=1)
+   * @param iopt Include the numerator (iopt=0) or not (iopt=1)
    * @param q2 The scale
    */
   inline Complex rhoBreitWigner(unsigned int iopt, Energy q2) const;
@@ -209,7 +209,6 @@ private:
    *  the alphas index and multiplied by the \f$\rho\f$ BreitWigner factor
    * @param alpha The vector to contract with the first index
    * @param q2 The scale for the current
-   * @param r2 The scale for the rho
    * @param q The total momentum for the current
    * @param p1 The momentum of the first particle
    * @param p2 The momentum of the second particle

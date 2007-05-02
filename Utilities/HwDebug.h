@@ -61,12 +61,14 @@ namespace Herwig {
 
   public:
 
+    /**
+     * The different levels.
+     */
     enum Levels {
 
       /**
-       * The different levels.
+       *  No debugging
        */
-
       noDebug = 0,
 
       /**
@@ -113,17 +115,6 @@ namespace Herwig {
      * The current level.
      */
     static int level;
-
-    
-//     static SampleHistogram lambda1Histo;
-//     static SampleHistogram lambda2Histo;
-//     static SampleHistogram lambda3Histo;
-//     static SampleHistogram CparameterHisto;
-//     static SampleHistogram DparameterHisto;
-//     static SampleHistogram multiplicityHisto;
-//     static SampleHistogram multHist1;
-//     static SampleHistogram multHist2;
-//     static SampleHistogram multHist3;
     
   };
 

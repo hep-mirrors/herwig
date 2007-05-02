@@ -35,6 +35,9 @@ class MEvv2vv: public GeneralHardME {
 
 public:
 
+  /**
+   *  Typedef for VectorWaveFunction
+   */
   typedef vector<VectorWaveFunction> VBVector;
 
 public:
@@ -70,9 +73,9 @@ public:
 
   /**
    * Compute the matrix element for \f$V\, V\to V\, V\f$
-   * @param vin VectorWaveFunctions for first incoming particle
+   * @param vin1 VectorWaveFunctions for first incoming particle
    * @param vin2 VectorWaveFunctions for second incoming particle
-   * @param vout VectorWaveFunctions for first outgoing particle
+   * @param vout1 VectorWaveFunctions for first outgoing particle
    * @param vout2  VectorWaveFunctions for outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @return ProductionMatrixElement containing results of 

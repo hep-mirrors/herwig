@@ -106,8 +106,14 @@ public:
    */
   static void Init();
 
+  /**
+   *  Find the decay particle
+   */
   tPPtr findDecayingParticle(tPPtr) const;
 
+  /**
+   *  Find the child
+   */
   tPPtr findChild(tPPtr, long) const;
 
 protected:

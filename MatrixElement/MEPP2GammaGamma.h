@@ -20,7 +20,7 @@ using namespace Herwig::Helicity;
 
 /**
  * The MEPP2GammaGamma class implements the production of photon pairs in 
- * hadron hadron collisions..
+ * hadron hadron collisions.
  *
  * @see \ref MEPP2GammaGammaInterfaces "The interfaces"
  * defined for MEPP2GammaGamma.

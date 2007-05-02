@@ -140,6 +140,9 @@ private:
    */
   long _eventNumber;
 
+  /**
+   *  The HepMC file
+   */
   ofstream _hepmcfile;
 };
 

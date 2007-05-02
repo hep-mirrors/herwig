@@ -11,24 +11,53 @@
 namespace Herwig { 
 using namespace ThePEG;
 
-  /** \ingroup Shower
-   *  
-   *  Handy header file to be included in all Shower classes.
-   *  It contains only some useful typedefs.
+/** \ingroup Shower
+ *  
+ *  Handy header file to be included in all Shower classes.
+ *  It contains only some useful typedefs.
+ */
+
+  /**
+   *  Forward declaration of the ColourLine of ThePEG
    */
   class ThePEG::ColourLine;
-
+  
+  /**
+   * Pointer to a ColourLine
+   */
   typedef Ptr<ThePEG::ColourLine>::pointer ColinePtr;
+  
+  /**
+   * Transient Pointer to a ColourLine
+   */
   typedef Ptr<ThePEG::ColourLine>::transient_pointer tColinePtr;
+  
+  /**
+   * A pair of ColourLine pointers
+   */
   typedef pair<ColinePtr,ColinePtr> ColinePair;
+
+  /**
+   * A pair of transient ColourLine pointers
+   */
   typedef pair<tColinePtr,tColinePtr> tColinePair;
 
+  /**
+   *  A Vector of ShowerParticle pointers
+   */
   typedef vector<ShowerParticlePtr> ShowerParticleVector;
+
+  /**
+   *  A Vector of transient ShowerParticle pointers
+   */
   typedef vector<tShowerParticlePtr> tShowerParticleVector;
 
+  /**
+   *  Definition of the IdList for branchings
+   */
   typedef vector<long> IdList;
 
-} // end Herwig namespace
+}
 
 #endif // HERWIG_ShowerConfig_H 
 

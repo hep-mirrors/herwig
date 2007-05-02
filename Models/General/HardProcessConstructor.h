@@ -191,6 +191,7 @@ private:
    * @param inter pointer to particle data for intermediate
    * @param chan the channel type 
    * @param vertices pair of vertices for the diagram
+   * @param order The order
    */
   void makeDiagrams(IDPair in, long out1, const PDSet & out2, PDPtr inter,
 		    HPDiagram::Channel chan, VBPair vertices, BPair order);

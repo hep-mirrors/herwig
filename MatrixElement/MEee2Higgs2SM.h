@@ -168,10 +168,18 @@ protected:
 
 private: 
 
+  /**
+   *  The matrix element
+   * @param fin The incoming spinor wavefunction
+   * @param ain The incoming spinorbar wavefunction
+   * @param fout The outgoing spinor bar wavefunction
+   * @param aout The outgoing spinor wavefunction
+   * @param me The spin averaged matrix element
+   */
   ProductionMatrixElement HelicityME(vector<SpinorWaveFunction> fin,
 				     vector<SpinorBarWaveFunction> ain,
 				     vector<SpinorBarWaveFunction> fout,
-				     vector<SpinorWaveFunction> aout,double&) const;
+				     vector<SpinorWaveFunction> aout,double& me) const;
   
 private:
 
