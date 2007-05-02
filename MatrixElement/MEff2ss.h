@@ -20,6 +20,7 @@ using Herwig::Helicity::FFVVertexPtr;
 using Herwig::Helicity::VSSVertex;
 using Herwig::Helicity::FFTVertexPtr;
 using Herwig::Helicity::SSTVertexPtr;
+using Herwig::Helicity::VSSVertexPtr;
 
 /**
  * The MEff2ss class is designed to implement the matrix element for a
@@ -32,13 +33,6 @@ using Herwig::Helicity::SSTVertexPtr;
  * @see GeneralHardME
  */
 class MEff2ss: public GeneralHardME {
-  
-public: 
-  
-  /**
-   * Convenient typedef for VSSVertex pointer
-   */
-  typedef Ptr<VSSVertex>::pointer VSSVertexPtr;
 
 public:
 
@@ -46,8 +40,6 @@ public:
    * The default constructor.
    */
   inline MEff2ss();
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{

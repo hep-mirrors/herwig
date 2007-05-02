@@ -26,13 +26,10 @@ class SMTopDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SMTopDecayer();
-  //@}
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -62,7 +59,7 @@ public:
    * @param cc Is this mode the charge conjugate
    * @param dm The decay mode
    */
-  virtual int modeNumber(bool &,const DecayMode &) const {return -1;}
+  virtual int modeNumber(bool & cc,const DecayMode & dm) const {return -1;}
 
 
   /**

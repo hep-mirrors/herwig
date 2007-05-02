@@ -6,6 +6,7 @@
 #include <ThePEG/EventRecord/Step.h>
 #include "CluHadConfig.h"
 #include "HadronSelector.h"
+#include "LightClusterDecayer.fh"
 
 
 namespace Herwig {

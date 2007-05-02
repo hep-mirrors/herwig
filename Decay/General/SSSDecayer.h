@@ -12,35 +12,25 @@
 
 namespace Herwig {
 using namespace ThePEG;
-typedef Ptr<Helicity::SSSVertex>::pointer SSSVertexPtr;
+using Helicity::SSSVertexPtr;
   
-  /** \ingroup Decay
-   * The SSDecayer class implements the decay of a scalar
-   * to 2 scalars in a general model. It holds a SSSVertex
-   * pointer that must be typecast from the VertexBase pointer held in
-   * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
-   * partialWidth().
-   *
-   * @see GeneralTwoBodyDecayer
-   */
+/** \ingroup Decay
+ * The SSDecayer class implements the decay of a scalar
+ * to 2 scalars in a general model. It holds a SSSVertex
+ * pointer that must be typecast from the VertexBase pointer held in
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
+ * partialWidth().
+ *
+ * @see GeneralTwoBodyDecayer
+ */
 class SSSDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline SSSDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSSDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{

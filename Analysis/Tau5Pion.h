@@ -108,23 +108,82 @@ private:
   /**
    *  Histograms for the \f$\pi\pi\f$ masses
    */
-  vector<HistogramPtr> _pipi1,_pipi2,_pipi3;
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipi1;
+
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  vector<HistogramPtr> _pipi2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipi3;
+  //@}
 
   /**
    *  Histograms for the \f$\pi\pi\pi\f$ masses
    */
-  vector<HistogramPtr> _pipipi1,_pipipi2,_pipipi3;
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipi1;
+
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  vector<HistogramPtr> _pipipi2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipi3;
+  //@}
 
   /**
    *  Histograms for the \f$\pi\pi\pi\pi\f$ masses
    */
-  vector<HistogramPtr> _pipipipi1,_pipipipi2,_pipipipi3;
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipipi1;
+
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  vector<HistogramPtr> _pipipipi2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  vector<HistogramPtr> _pipipipi3;
+  //@}
 
   /**
    *  Histograms for the total hadronic mass
    */
-  HistogramPtr _q1,_q2,_q3;
+  //@{
+  /**
+   *  Histograms for the \f$2\pi^02\pi^-\pi^+\f$ decay
+   */
+  HistogramPtr _q1;
 
+  /**
+   *  Histograms for the \f$4\pi^02\pi^-\f$ decay
+   */
+  HistogramPtr _q2;
+
+  /**
+   *  Histograms for the \f$3\pi^-2\pi^+\f$ decay
+   */
+  HistogramPtr _q3;
+  //@}
 };
 
 }

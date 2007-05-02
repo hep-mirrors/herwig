@@ -11,6 +11,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 class EventShapes;
+
 ThePEG_DECLARE_POINTERS(EventShapes,EventShapesPtr);
 
 }

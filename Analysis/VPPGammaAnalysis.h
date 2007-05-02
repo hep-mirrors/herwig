@@ -132,7 +132,17 @@ private:
   /**
    *  id's of the outgoing decay products
    */
-  vector<long> _outgoing1,_outgoing2;
+  //@{
+  /**
+   *  First outgoing particle
+   */
+  vector<long> _outgoing1;
+
+  /**
+   *  Second outgoing particle
+   */
+  vector<long> _outgoing2;
+  //@}
 
   /**
    *  histogram for the mass
@@ -140,9 +150,23 @@ private:
   vector<HistogramPtr> _masstotal;
 
   /**
-   *  histograms for the energies
+   *  Histograms for the energies
    */
-  vector<HistogramPtr> _etotal,_eall,_esingle;
+  /**
+   *  Total photon energy
+   */
+  vector<HistogramPtr> _etotal;
+
+  /**
+   *  Energy of all the photons
+   */
+  vector<HistogramPtr> _eall;
+
+  /**
+   *  Single photon energy
+   */
+  vector<HistogramPtr> _esingle;
+  //@}
 
   /**
    *  histograms for the multiplicities

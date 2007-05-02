@@ -315,9 +315,13 @@ private:
   
 };
 
-ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
+
 /**
  * write the phase space channel to a stream
+ */
+ostream & operator<<(ostream &, const DecayPhaseSpaceChannel &);
+
+/**
  * exception for this class and those inheriting from it
  */
 class DecayPhaseSpaceError: public Exception {};

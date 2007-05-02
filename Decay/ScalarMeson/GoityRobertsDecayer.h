@@ -267,9 +267,14 @@ private:
   vector<int> _wgtloc;
 
   /**
-   * the maximum weights and the maximums
+   * the maximum weights
    */
-  vector<double> _wgtmax,_weights;
+  vector<double> _wgtmax;
+
+  /**
+   *  The weights for the different channels
+   */
+  vector<double> _weights;
 };
 
 }

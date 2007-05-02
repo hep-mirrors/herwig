@@ -89,7 +89,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() {
        859.377*MeV, 866.164*MeV, 872.95 *MeV, 879.736*MeV, 886.523*MeV,
        893.309*MeV, 900.096*MeV, 906.882*MeV, 913.668*MeV, 920.455*MeV, 
        927.241*MeV, 934.028*MeV, 940.814*MeV, 947.6  *MeV, 954.387*MeV};
-  _Omnesenergy=vector<Energy>(omnesen,omnesen+100);
+  _omnesenergy=vector<Energy>(omnesen,omnesen+100);
   double omnesre[100]
     ={ 0.860676  , 0.851786  , 0.843688  , 0.835827  , 0.828031  ,
        0.820229  , 0.812370  , 0.804424  , 0.796354  , 0.788143  ,
@@ -111,7 +111,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() {
       -0.208597  ,-0.227864  ,-0.247185  ,-0.267306  ,-0.287382  ,
       -0.307707  ,-0.328882  ,-0.350103  ,-0.37178   ,-0.394464  ,
       -0.417228  ,-0.440561  ,-0.464976  ,-0.490278  ,-0.517527};
-  _Omnesfunctionreal=vector<double>(omnesre,omnesre+100);
+  _omnesfunctionreal=vector<double>(omnesre,omnesre+100);
   double omnesim[100]
     ={ 0.00243346, 0.000894972,-0.000612496,-0.00209178,-0.00354344,
       -0.00496737,-0.00636316 ,-0.00773022 ,-0.00906769,-0.0103569 ,
@@ -133,11 +133,11 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() {
       -0.239178  ,-0.244082   ,-0.24836    ,-0.252492  ,-0.257394  ,
       -0.261812  ,-0.266156   ,-0.271161   ,-0.275849  ,-0.280675  ,
       -0.286275  ,-0.291716   ,-0.297353   ,-0.303621  ,-0.310452  };
-  _Omnesfunctionimag=vector<double>(omnesim,omnesim+100);
+  _omnesfunctionimag=vector<double>(omnesim,omnesim+100);
   // integration cut parameter
   _epscut=0.4*MeV;
   // size of the arrays
-  _nsize[0]=_energy.size();_nsize[1]=_Omnesenergy.size();
+  _nsize[0]=_energy.size();_nsize[1]=_omnesenergy.size();
   // intermediates
   generateIntermediates(false);
 }
@@ -147,8 +147,8 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
   // check the consistence of the parameters
   unsigned int isize=_incoming.size();
   if(isize!=_coupling.size()||isize!=_option.size()||isize!=_maxweight.size()||
-     _energy.size()!=_phase.size()||_Omnesenergy.size()!=_Omnesfunctionreal.size()||
-     _Omnesenergy.size()!=_Omnesfunctionimag.size())
+     _energy.size()!=_phase.size()||_omnesenergy.size()!=_omnesfunctionreal.size()||
+     _omnesenergy.size()!=_omnesfunctionimag.size())
     {throw InitException() << "Inconsistent parameters in " 
 			   << "EtaPiPiGammaDecayer::doinit()" << Exception::abortnow;}
   // set the parameters
@@ -178,9 +178,9 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
     double D1real,D1imag;
     Complex ii(0.,1.),answer;
     moff+=0.5*step;
-    _Omnesfunctionreal.resize(0);
-    _Omnesfunctionimag.resize(0);
-    _Omnesenergy.resize(0);
+    _omnesfunctionreal.resize(0);
+    _omnesfunctionimag.resize(0);
+    _omnesenergy.resize(0);
     for( ;moff<upp;moff+=step) {
       D1.setScale(moff*moff);
       // piece between 0 and 1 GeV
@@ -192,9 +192,9 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
       // calculate the answer
       answer = exp(D1real+ii*D1imag);
       // put into the arrays
-      _Omnesfunctionreal.push_back(answer.real());
-      _Omnesfunctionimag.push_back(answer.imag());
-      _Omnesenergy.push_back(moff);
+      _omnesfunctionreal.push_back(answer.real());
+      _omnesfunctionimag.push_back(answer.imag());
+      _omnesenergy.push_back(moff);
     }
   }
   // set up the modes
@@ -242,16 +242,16 @@ int EtaPiPiGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
 void EtaPiPiGammaDecayer::persistentOutput(PersistentOStream & os) const {
   os << _fpi << _incoming << _coupling << _maxweight << _option << _aconst 
      << _cconst <<_mrho << _rhowidth << _rhoconst << _mpi << _localparameters
-     << _energy << _Omnesenergy 
-     << _phase << _Omnesfunctionreal << _Omnesfunctionimag << _initialize
+     << _energy << _omnesenergy 
+     << _phase << _omnesfunctionreal << _omnesfunctionimag << _initialize
      << _npoints << _epscut;
 }
 
 void EtaPiPiGammaDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _fpi >> _incoming >> _coupling >> _maxweight >> _option >> _aconst 
      >> _cconst >>_mrho >> _rhowidth >> _rhoconst >> _mpi >> _localparameters
-     >> _energy >> _Omnesenergy 
-     >> _phase >> _Omnesfunctionreal >> _Omnesfunctionimag >> _initialize
+     >> _energy >> _omnesenergy 
+     >> _phase >> _omnesfunctionreal >> _omnesfunctionimag >> _initialize
      >> _npoints >> _epscut;
 }
 
@@ -354,20 +354,20 @@ void EtaPiPiGammaDecayer::Init() {
   static ParVector<EtaPiPiGammaDecayer,Energy> interfaceOmnesEnergy
     ("OmnesEnergy",
      "The energy values for the interpolation of the experimental Omnes function",
-     &EtaPiPiGammaDecayer::_Omnesenergy, MeV, -1, 1.*MeV, 250.0*MeV, 2000.*MeV,
+     &EtaPiPiGammaDecayer::_omnesenergy, MeV, -1, 1.*MeV, 250.0*MeV, 2000.*MeV,
      false, false, true);
 
   static ParVector<EtaPiPiGammaDecayer,InvEnergy> interfaceOmnesReal
     ("OmnesReal",
      "The real part of the experimental Omnes function for the interpolation.",
-     &EtaPiPiGammaDecayer::_Omnesfunctionreal, 1./MeV/MeV, -1, 1./MeV/MeV, -100./MeV/MeV,
+     &EtaPiPiGammaDecayer::_omnesfunctionreal, 1./MeV/MeV, -1, 1./MeV/MeV, -100./MeV/MeV,
      100./MeV/MeV,
      false, false, true);
 
   static ParVector<EtaPiPiGammaDecayer,InvEnergy> interfaceOmnesImag
     ("OmnesImag",
      "The imaginary part of the experimental Omnes function for the interpolation.",
-     &EtaPiPiGammaDecayer::_Omnesfunctionimag, 1./MeV/MeV, -1, 1./MeV/MeV, -100./MeV/MeV,
+     &EtaPiPiGammaDecayer::_omnesfunctionimag, 1./MeV/MeV, -1, 1./MeV/MeV, -100./MeV/MeV,
      100./MeV/MeV,
      false, false, true);
 
@@ -545,22 +545,22 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
 	     << _phase[ix]  << "\n";
     }
   }
-  for(unsigned int ix=0;ix<_Omnesenergy.size();++ix) {
+  for(unsigned int ix=0;ix<_omnesenergy.size();++ix) {
       if(ix<_nsize[1]) {
 	output << "set " << fullName() << ":OmnesEnergy " << ix << "  " 
-	       << _Omnesenergy[ix]/MeV << "\n";
+	       << _omnesenergy[ix]/MeV << "\n";
 	output << "set " << fullName() << ":OmnesReal " << ix << "  " 
-	       << _Omnesfunctionreal[ix]*MeV*MeV << "\n";
+	       << _omnesfunctionreal[ix]*MeV*MeV << "\n";
 	output << "set " << fullName() << ":OmnesImag " << ix << "  " 
-	       << _Omnesfunctionimag [ix]*MeV*MeV << "\n";
+	       << _omnesfunctionimag [ix]*MeV*MeV << "\n";
       }
       else {
 	output << "insert " << fullName() << ":OmnesEnergy " << ix << "  " 
-	       << _Omnesenergy[ix]/MeV << "\n";
+	       << _omnesenergy[ix]/MeV << "\n";
 	output << "insert " << fullName() << ":OmnesReal " << ix << "  " 
-	       << _Omnesfunctionreal[ix]*MeV*MeV << "\n";
+	       << _omnesfunctionreal[ix]*MeV*MeV << "\n";
 	output << "insert " << fullName() << ":OmnesImag " << ix << "  " 
-	       << _Omnesfunctionimag [ix]*MeV*MeV << "\n";
+	       << _omnesfunctionimag [ix]*MeV*MeV << "\n";
       }
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;

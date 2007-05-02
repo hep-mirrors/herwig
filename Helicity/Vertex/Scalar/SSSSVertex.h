@@ -6,6 +6,7 @@
 //
 #include "Herwig++/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "SSSSVertex.fh"
 
 namespace Herwig {
 namespace Helicity {

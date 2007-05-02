@@ -136,12 +136,36 @@ private:
   /**
    *  Histograms for the masses
    */
-  vector<HistogramPtr> _mplus,_mminus,_m0;
+  //@{
+  /**
+   *  The mass of the \f$\rho^+\f$
+   */
+  vector<HistogramPtr> _mplus;
 
+  /**
+   *  The mass of the \f$\rho^-\f$
+   */
+  vector<HistogramPtr> _mminus;
+
+  /**
+   *  The mass of the \f$\rho^0\f$
+   */
+  vector<HistogramPtr> _m0;
+  //@}
   /**
    *  Vectors to store the \f$x\f$ and\f$y\f$ values for
    */
-  vector<vector<Energy> > _xvalue,_yvalue;
+  //@{
+  /**
+   *  The \f$x\f$ value
+   */
+  vector<vector<Energy> > _xvalue;
+
+  /**
+   *  The \f$y\f$ value
+   */
+  vector<vector<Energy> > _yvalue;
+  //@}
 
   /**
    *  Maximum number of points for the Dalitz plots

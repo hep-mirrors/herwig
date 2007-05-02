@@ -22,7 +22,7 @@ using Herwig::Helicity::FFTVertexPtr;
 using Herwig::Helicity::FFSVertexPtr;
 using Herwig::Helicity::VVSVertexPtr;
 using Herwig::Helicity::GeneralSVVVertexPtr;
-using Herwig::Helicity::VVTVertex;
+using Herwig::Helicity::VVTVertexPtr;
 using Herwig::Helicity::VVVVertexPtr;
 
 /**
@@ -35,20 +35,11 @@ using Herwig::Helicity::VVVVertexPtr;
 class MEff2vv: public GeneralHardME {
 
 public:
-  
-  /**
-   * Convenient typedef for VVTVertex pointer
-   */
-  typedef Ptr<VVTVertex>::pointer VVTVertexPtr;
-
-public:
 
   /**
    * The default constructor.
    */
   inline MEff2vv();
-
-public:
 
   /** @name Virtual functions required by the GeneralHardME class. */
   //@{

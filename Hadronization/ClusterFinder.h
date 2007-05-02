@@ -4,11 +4,9 @@
 
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
-
+#include "ClusterFinder.fh"
 
 namespace Herwig {
-
-
 using namespace ThePEG;
 
 /*! \ingroup Hadronization

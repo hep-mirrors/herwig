@@ -130,7 +130,17 @@ private:
   /**
    *  Histograms
    */
-  vector<HistogramPtr> _energy,_scale;
+  //@{
+  /**
+   *  The lepton energy
+   */
+  vector<HistogramPtr> _energy;
+
+  /**
+   *  The \f$q\f$ value
+   */
+  vector<HistogramPtr> _scale;
+  //@}
 };
 
 }

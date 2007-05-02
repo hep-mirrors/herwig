@@ -18,8 +18,6 @@ using Herwig::Helicity::Direction;
 using Herwig::Helicity::incoming;
 using Herwig::Helicity::outgoing;
 
-SSSDecayer::~SSSDecayer() {}
-
 void SSSDecayer::persistentOutput(PersistentOStream & os) const {
   os << _theSSSPtr;
 }

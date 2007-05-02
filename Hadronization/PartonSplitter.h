@@ -4,6 +4,7 @@
 
 #include "CluHadConfig.h"
 #include <ThePEG/Interface/Interfaced.h>
+#include "PartonSplitter.fh"
 
 namespace Herwig {
 

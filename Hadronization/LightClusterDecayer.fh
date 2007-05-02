@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the LightClusterDecayer class.
+//
+#ifndef HERWIG_LightClusterDecayer_FH
+#define HERWIG_LightClusterDecayer_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class LightClusterDecayer;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::LightClusterDecayer,LightClusterDecayerPtr);
+
+}
+
+#endif

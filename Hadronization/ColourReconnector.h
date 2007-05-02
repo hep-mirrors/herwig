@@ -4,6 +4,7 @@
 
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
+#include "ColourReconnector.fh"
 
 
 namespace Herwig {

@@ -210,13 +210,32 @@ private:
   /**
    * Mapping of the modes to the currents
    */
-  vector<vector<unsigned int> > _currentmapA,_currentmapB;
+  //@{
+  /**
+   *  First map
+   */
+  vector<vector<unsigned int> > _currentmapA;
+
+  /**
+   *  Second map
+   */
+  vector<vector<unsigned int> > _currentmapB;
+  //@}
 
   /**
    * Mapping of the modes to the form factors
    */
-  vector<vector<unsigned int> > _formmapA,_formmapB;
+  //@{
+  /**
+   *  First map
+   */
+  vector<vector<unsigned int> > _formmapA;
 
+  /**
+   *  Second map
+   */
+  vector<vector<unsigned int> > _formmapB;
+  //@}
   /**
    *  Outgoing particle from the form factor
    */
@@ -233,9 +252,14 @@ private:
   vector<int> _wgtloc;
 
   /**
-   * the maximum weights and the maximums
+   * the maximum weights
    */
-  vector<double> _wgtmax,_weights;
+  vector<double> _wgtmax;
+
+  /**
+   *  Weights for the different channels
+   */
+  vector<double> _weights;
 
   /**
    * Pointer to the CKM object.

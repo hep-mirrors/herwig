@@ -21,6 +21,9 @@ using namespace ThePEG;
  */
 class ShowerProgenitor : public Base {
 
+/**
+ *  Typedef for the BeamParticleData objects
+ */
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 public:

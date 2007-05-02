@@ -13,8 +13,8 @@ inline EtaPiPiGammaDecayer::EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer & x)
     _option(x._option), _aconst(x._aconst),_cconst(x._cconst), _mrho(x._mrho),
     _rhowidth(x._rhowidth),_rhoconst(x._rhoconst),_mpi(x._mpi),
     _localparameters(x._localparameters),_energy(x._energy), _phase(x._phase),
-    _Omnesenergy(x._Omnesenergy),
-    _Omnesfunctionreal(x._Omnesfunctionreal), _Omnesfunctionimag(x._Omnesfunctionimag),
+    _omnesenergy(x._omnesenergy),
+    _omnesfunctionreal(x._omnesfunctionreal), _omnesfunctionimag(x._omnesfunctionimag),
     _initialize(x._initialize), _npoints(x._npoints), _epscut(x._epscut)  {
   for(unsigned int ix=0;ix<2;++ix){_nsize[ix]=x._nsize[ix];}
 }
@@ -58,12 +58,12 @@ inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
 }
   
 inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const {
-  if(!_Oreal) {
-    _Oreal = new_ptr(Interpolator(_Omnesfunctionreal,_Omnesenergy,3));
-    _Oimag = new_ptr(Interpolator(_Omnesfunctionimag,_Omnesenergy,3));
+  if(!_oreal) {
+    _oreal = new_ptr(Interpolator(_omnesfunctionreal,_omnesenergy,3));
+    _oimag = new_ptr(Interpolator(_omnesfunctionimag,_omnesenergy,3));
   }
   Energy q(sqrt(s)); Complex ii(0.,1.);
-  return (*_Oreal)(q)+ii*(*_Oimag)(q);
+  return (*_oreal)(q)+ii*(*_oimag)(q);
 }
 
 inline OmnesIntegrand::OmnesIntegrand(InterpolatorPtr in,Energy2 eps) {

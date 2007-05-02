@@ -184,6 +184,9 @@ private:
   friend ostream & operator<<(ostream & os,const MixingMatrix & mix);
 };
 
+  /**
+   * Output operator for the MixingMatrix
+   */
   ostream & operator<<(ostream &,const MixingMatrix &);
 
   /** Exception class to indicate problem with mixing matrix .*/

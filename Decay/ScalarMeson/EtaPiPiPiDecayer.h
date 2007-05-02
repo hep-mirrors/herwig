@@ -182,9 +182,24 @@ private:
   vector<double> _prefactor;
 
   /**
-   * the constants for the matrix elements
+   * The constants for the matrix elements
    */
-  vector<double> _a,_b,_c;
+  //*{
+  /**
+   * The \f$a\f$ constant
+   */
+  vector<double> _a;
+
+  /**
+   * The \f$a\f$ constant
+   */
+  vector<double> _b;
+
+  /**
+   * The \f$a\f$ constant
+   */
+  vector<double> _c;
+  //@}
 
   /**
    * maximum weights

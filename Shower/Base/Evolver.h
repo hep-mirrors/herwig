@@ -152,6 +152,7 @@ protected:
    * accepting only emissions which conforms to the showerVariables.
    * If at least one emission has occurred then the method returns true
    * @param particle The particle to be showered
+   * @param beam The beam particle
    */
   virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam); 
 

@@ -47,8 +47,8 @@ public:
   /**
    * Function to return partial Width
    * @param inpart Pointer to incoming particle data object
-   * @param outa Pointer to incoming particle data object
-   * @param outb Pointer to incoming particle data object
+   * @param outa Pointer to first outgoing particle data object
+   * @param currout The outgoing particles from the current
    */
   virtual double partialWidth(tPDPtr inpart, tPDPtr outa,
 			      vector<tPDPtr> currout);

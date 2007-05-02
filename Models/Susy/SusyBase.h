@@ -29,15 +29,6 @@ public:
   
   /*@name Some convenient typedefs. */
   //@{
-  /** VSSVertex pointer. */
-  typedef Ptr<Helicity::VSSVertex>::pointer VSSVertexPtr;
-  
-  /** VVSSVertex pointer. */
-  typedef Ptr<Helicity::VVSSVertex>::pointer VVSSVertexPtr;
-
-  /** SSSVertex pointer. */
-  typedef Ptr<Helicity::SSSVertex>::pointer SSSVertexPtr;
-  
   /** Map to hold key, parameter pairs. */
   typedef map<long, double> ParamMap;
   //@}
@@ -48,8 +39,6 @@ public:
    * The default constructor.
    */
   inline SusyBase();
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -317,7 +306,22 @@ private:
    * Trilinear couplings stored as vector of complex numbers to make use
    * of routine already available to read complex matrices
    */
-  vector<Complex> theAu, theAd, theAe;
+  //@{
+  /**
+   *  For the up type squarks
+   */
+  vector<Complex> theAu;
+
+  /**
+   *  For the down type squarks
+   */
+  vector<Complex> theAd;
+
+  /**
+   *  For the charged sleptons
+   */
+  vector<Complex> theAe;
+  //@}
 
   /**@name Vertex pointers. */
   //@{

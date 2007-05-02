@@ -36,17 +36,12 @@ public:
   /** Typedef for unsigned int/double map to store Weinburg angles.*/
   typedef map<unsigned int, double> WAMap;
 
-  /** VSSVertex pointer. */
-  typedef Ptr<Helicity::VSSVertex>::pointer VSSVertexPtr;
-
 public:
 
   /**
    * The default constructor.
    */
   inline UEDBase();
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{

@@ -239,9 +239,14 @@ private:
   double _cconst;
 
   /**
-   * The \f$\rho\f$ mass and width .
+   * The \f$\rho\f$ mass
    */
-  Energy _mrho,_rhowidth;
+  Energy _mrho;
+
+  /**
+   * The \f$\rho\f$ width
+   */
+  Energy _rhowidth;
 
   /**
    * Constant for the running \f$rho\f$ width.
@@ -271,17 +276,17 @@ private:
   /**
    *  Energy values for the interpolation table for the Omnes function.
    */
-  vector<Energy> _Omnesenergy;
+  vector<Energy> _omnesenergy;
 
   /**
    * Real part of the Omnes function for the interpolation table
    */
-  vector<InvEnergy2> _Omnesfunctionreal;
+  vector<InvEnergy2> _omnesfunctionreal;
 
   /**
    * Imaginary part of the Omnes function for the interpolation table
    */
-  vector<InvEnergy2> _Omnesfunctionimag;
+  vector<InvEnergy2> _omnesfunctionimag;
 
   /**
    * set up of the interpolation table
@@ -296,8 +301,17 @@ private:
   /**
    * Interpolators for the experimental Omnes function.
    */
-  mutable InterpolatorPtr _Oreal,_Oimag;
+  //@{
+  /**
+   *  The interpolator for the real part
+   */
+  mutable InterpolatorPtr _oreal;
 
+  /**
+   *  The interpolator for the imaginary part
+   */
+  mutable InterpolatorPtr _oimag;
+  //@}
   /**
    *  Cut-off parameter for the integral of the experimental function
    */ 
@@ -381,9 +395,14 @@ struct OmnesIntegrand {
   InterpolatorPtr _interpolator;
 
   /**
-   *  The scale and precision.
+   *  The scale
    */
-  Energy2 _s,_precision; 
+  Energy2 _s;
+
+  /**
+   * The precision.
+   */
+  Energy2 _precision; 
 };
 }
 

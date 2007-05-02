@@ -122,17 +122,83 @@ private:
   /**
    *  Histograms for the decay \f$\eta\to\pi^0\gamma\gamma\f$
    */
-  vector<HistogramPtr> _mgammagamma,_mpi0gamma;
+  //@{
+  /**
+   * Histogram for the mass of \f$\gamma\gamma\f$
+   */
+  vector<HistogramPtr> _mgammagamma;
+
+  /**
+   * Histogrma for the mass of \f$\pi^0\gamma\f$
+   */
+  vector<HistogramPtr> _mpi0gamma;
+  //@}
 
   /**
    *  Histograms for the decay \f$\eta\to\pi^+\pi^-\gamma\f$
    */
-  vector<HistogramPtr> _mpipgamma,_mpimgamma,_mpippim,_photonenergy;
+  //@{
+  /**
+   *  Histogram for the mass of \f$\pi^+\gamma\f$
+   */
+  vector<HistogramPtr> _mpipgamma;
+
+  /**
+   *  Histogram for the mass of \f$\pi^-\gamma\f$
+   */
+  vector<HistogramPtr> _mpimgamma;
+
+  /**
+   *  Histogram for the mass of \f$\pi^+\pi^-\f$
+   */
+  vector<HistogramPtr> _mpippim;
+
+  /**
+   *  Histogram for the photon energy
+   */
+  vector<HistogramPtr> _photonenergy;
+  //@}
 
   /**
    * Histograms for the decay \f$\eta\pi\pi\pi\f$ and \f$\eta'\to\eta\pi\pi\f$.
    */
-  vector<HistogramPtr> _dpippim,_dpi0pi0,_dpi0pip,_dpi0pim,_dpipeta,_dpimeta,_dpi0eta;
+  //@{
+  /**
+   *  Histogram for the mass of \f$\pi^+\pi^-\f$
+   */
+  vector<HistogramPtr> _dpippim;
+
+  /**
+   *  Histogram for the mass of \f$\pi^0\pi^0\f$
+   */
+  vector<HistogramPtr> _dpi0pi0;
+
+  /**
+   *  Histogram for the mass of \f$\pi^0\pi^+\f$
+   */
+  vector<HistogramPtr> _dpi0pip;
+
+  /**
+   *  Histogram for the mass of \f$\pi^0\pi^-\f$
+   */
+  vector<HistogramPtr> _dpi0pim;
+
+  /**
+   *  Histogram for the mass of \f$\pi^+\eta\f$
+   */
+  vector<HistogramPtr> _dpipeta;
+
+  /**
+   *  Histogram for the mass of \f$\pi^-\eta\f$
+   */
+  vector<HistogramPtr> _dpimeta;
+
+  /**
+   *  Histogram for the mass of \f$\pi^0\eta\f$
+   */
+  vector<HistogramPtr> _dpi0eta;
+
+  //@}
 };
 
 }

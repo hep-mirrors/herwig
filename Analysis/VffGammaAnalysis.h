@@ -135,12 +135,26 @@ private:
   vector<HistogramPtr> _masstotal;
 
   /**
-   *  histograms for the energies
+   *  Histograms for the energies
    */
-  vector<HistogramPtr> _etotal,_eall,_esingle;
+  /**
+   *  Total photon energy
+   */
+  vector<HistogramPtr> _etotal;
 
   /**
-   *  histograms for the multiplicities
+   *  Energy of all the photons
+   */
+  vector<HistogramPtr> _eall;
+
+  /**
+   *  Single photon energy
+   */
+  vector<HistogramPtr> _esingle;
+  //@}
+
+  /**
+   *  Histogram for the multiplicities
    */
   vector<HistogramPtr> _nphoton;
 };
