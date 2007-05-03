@@ -52,15 +52,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
    // get the particles to be showered
   vector<tcPDPtr> partons;
-
-  partons.clear();
   // find the incoming particles
   ShowerParticleVector incoming;
-
   vector<ShowerProgenitorPtr> particlesToShower;
-
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
-
+  _quark.resize(0);
   for ( cjt=tree->outgoingLines().begin();
 	cjt!=tree->outgoingLines().end(); ++cjt ) {
     incoming.push_back( cjt->first->progenitor() );
@@ -502,10 +498,8 @@ void VectorBosonQQbarHardGenerator::azimuthal() {
 void VectorBosonQQbarHardGenerator::constructVectors(){
 
   _phi = UseRandom::rnd() * 2.* pi;
-
   //quark emitted
   if( _iemit == 0 ){
-
    _quark[0].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );
    _quark[0].setX( sqrt(_s) * _k * cos( _phi ) );
    _quark[0].setY( sqrt(_s) * _k * sin( _phi ) );
@@ -524,7 +518,6 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   }
   //antiquark emitted
   else{
-
    _quark[0].setT( sqrt( _s ) * ( 1. - _k * _k / _z / ( 1. - _z ) ) / 2.);
    _quark[0].setX(0.);
    _quark[0].setY(0.);
