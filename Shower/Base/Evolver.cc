@@ -121,10 +121,6 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     }
   }
 
-  cout << "\n--- setupMaximumScales called, has "
-       << (isPartonic ? "" : "no ") << "partonic subprocess." 
-       << flush << endl; 
-  
   // find maximum pt from hard process, the maximum pt from all
   // outgoing coloured lines (this is simpler and more general than
   // 2stu/(s^2+t^2+u^2)).
@@ -134,29 +130,20 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
     map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
     cjt = hard->outgoingLines().begin();
     for(; cjt!=hard->outgoingLines().end(); ++cjt) {
-      cout << cjt->first->progenitor()->id() << " ";
-      cout << cjt->first->progenitor()->momentum().perp()/GeV; 
       if (cjt->first->progenitor()->coloured()) {
 	pt = cjt->first->progenitor()->momentum().perp();
 	if (pt > ptmax) {
 	  ptmax = pt;      
-	  cout << "*";
 	}
       }
-      cout << endl;
     }
-    cout << "found ptmax = " << ptmax/GeV << " GeV" << flush << endl; 
     // if there are no coloured FS particles, use shat as maximum
     if (ptmax < 0.0*GeV) {
       ptmax = pcm.m(); 
-      cout << "no coloured FS particles: set ptmax = root(shat) = " 
-	   << ptmax/GeV << " GeV\n";       
     }
   } else {
     // if no coloured IS use shat as well
     ptmax = pcm.m();
-    cout << "not partonic: set ptmax = root(shat) = " 
-	 << ptmax/GeV << " GeV\n"; 
   }
   
   // set maxHardPt for all progenitors.  For partonic processes this
@@ -165,10 +152,7 @@ void Evolver::setupMaximumScales(ShowerTreePtr hard,
   vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
   for (; ckt != p.end(); ckt++) {
     (*ckt)->maxHardPt(ptmax);
-    cout << (*ckt)->progenitor()->id() << "-" 
-	 << (*ckt)->maxHardPt()/GeV << "|";
   }
-  cout << flush << endl;
 }
 
 void Evolver::showerHardProcess(ShowerTreePtr hard) {
@@ -178,7 +162,6 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
   // setup the maximum scales for the shower, given by the hard process
   if (hardVetoOn()) {
     setupMaximumScales(_currenttree, particlesToShower);
-    cout << "setMaximumScales finished" << flush << endl;
   }
 
   // generate the intrinsic p_T once and for all
@@ -187,7 +170,6 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
   do {
     // clear results of last attempt
     if(ntry!=0) {
-      cout << "clearing old shower attempt" << endl;
       _currenttree->clear();
       setColourPartners(true);
     }
@@ -212,13 +194,8 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 	else {
 	  beamparticle=particlesToShower[ix]->original()->parents()[0];
 	}
-	cout << "IS/showerHardProcess: calling progenitor " 
-	     << _progenitor->id() 
-	     << " with maxHardPt = " << _progenitor->maxHardPt()/GeV 
-	     << " GeV...\n";
 	_progenitor->hasEmitted(spaceLikeShower(particlesToShower[ix]->progenitor(),
 						beamparticle));
-	cout << "...done" << flush << endl;
       }
     }
     // final-state radiation
@@ -228,12 +205,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
 	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// perform shower
 	_progenitor=particlesToShower[ix];
-	cout << "FS/showerHardProcess: calling progenitor " 
-	     << _progenitor->id() 
-	     << " with maxHardPt = " << _progenitor->maxHardPt()/GeV 
-	     << " GeV...\n";
 	_progenitor->hasEmitted(timeLikeShower(particlesToShower[ix]->progenitor()));
-	cout << "...done" << flush << endl;
       }
     }
   }
@@ -299,15 +271,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
     if (hardVetoIS() && fb.kinematics 
 	&& fb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
-      cout << "timeLikeShower vetos this: \n" 
-	   << "  pT_shower = " << fb.kinematics->pT()/GeV
-	   << " GeV > " << _progenitor->maxHardPt()/GeV 
-	   << " GeV = maxHardPt" << flush << endl
-	   << " oldScale = " 
-	   << particle->evolutionScales()[ShowerIndex::QCD]/GeV;
       particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
-      cout << " GeV, newScale = " 
-	   << particle->evolutionScales()[ShowerIndex::QCD]/GeV << " GeV\n";
     }
 
     // apply vetos if needed
@@ -374,15 +338,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
     if (hardVetoFS() && bb.kinematics 
 	&& bb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
-      cout << "spaceLikeShower vetos this: \n" 
-	   << "  pT_shower = " << bb.kinematics->pT()/GeV
-	   << " GeV > " << _progenitor->maxHardPt()/GeV 
-	   << " GeV = maxHardPt" << flush << endl
-	   << " oldScale = " 
-	   << particle->evolutionScales()[ShowerIndex::QCD]/GeV;
       particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
-      cout << " GeV, newScale = " 
-	   << particle->evolutionScales()[ShowerIndex::QCD]/GeV << " GeV\n";
     }
 
     // apply the soft correction
@@ -469,12 +425,9 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 	_progenitor->progenitor()->setEvolutionScale(ShowerIndex::QED,startScale);
 	_progenitor->progenitor()->setEvolutionScale(ShowerIndex::EWK,startScale);
 	// perform the shower
-	cout << "IS/showerDecay: calling progenitor " << _progenitor->id() 
-	     << " with maxHardPt = " << _progenitor->maxHardPt()/GeV 
-	     << " GeV...\n";
 	_progenitor->hasEmitted(spaceLikeDecayShower(_progenitor->progenitor(),
 						     maxscale,minmass)); 
-	cout << "...done." << flush << endl;       }
+      }
     }
     // final-state radiation
     if(_splittingGenerator->isFSRadiationON()) {
@@ -483,11 +436,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
 	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
 	// perform shower
 	_progenitor=particlesToShower[ix];
-	cout << "FS/showerDecay: calling progenitor " << _progenitor->id() 
-	     << " with maxHardPt = " << _progenitor->maxHardPt()/GeV 
-	     << " GeV...\n";
 	_progenitor->hasEmitted(timeLikeShower(particlesToShower[ix]->progenitor()));
-	cout << "...done." << flush << endl; 
       }
     }
   }
@@ -506,6 +455,10 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
     vetoed = false;
     fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
 						 _initialenhance);
+    
+    // SG: here could be the veto of too hard radiation.  I think the
+    // initial conditions don't allow this anyway.
+
     // apply the soft correction
     if(fb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
