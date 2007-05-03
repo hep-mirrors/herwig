@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1),
+inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
 			    _initialenhance(1.),_finalenhance(1.) {
 }
 
@@ -47,6 +47,18 @@ inline bool Evolver::hardMEC() const {
 
 inline bool Evolver::softMEC() const {
   return (_meCorrMode == 1 || _meCorrMode > 2); 
+}
+
+inline bool Evolver::hardVetoOn() const {
+  return _hardVetoMode > 0; 
+}
+
+inline bool Evolver::hardVetoIS() const {
+  return (_hardVetoMode == 1 || _hardVetoMode == 2); 
+}
+
+inline bool Evolver::hardVetoFS() const {
+  return (_hardVetoMode == 1 || _hardVetoMode > 2); 
 }
 
 inline double Evolver::initialStateRadiationEnhancementFactor() const {

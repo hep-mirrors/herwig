@@ -65,14 +65,14 @@ public:
   inline void copy(PPtr);
 
   /**
-   *  Whether the particle came from the hard process or was added by the matrix
-   *  element correction
+   *  Whether the particle came from the hard process or was added by
+   *  the matrix element correction
    */
   inline bool perturbative() const;
 
   /**
-   *  Whether the particle came from the hard process or was added by the matrix
-   *  element correction
+   *  Whether the particle came from the hard process or was added by
+   *  the matrix element correction
    */
   inline void perturbative(bool);
 
@@ -85,6 +85,16 @@ public:
    *  Set the \f$p_T\f$ of the hardest emission so far
    */
   inline void pT(Energy);
+
+  /**
+   *  Access the maximum hard \f$p_T\f$, given by the hard process
+   */
+  inline Energy maxHardPt() const;
+
+  /**
+   *  Set the maximum hard \f$p_T\f$, given by the hard process
+   */
+  inline void maxHardPt(Energy);
 
   /**
    *  Has this particle radiated
@@ -119,8 +129,8 @@ private:
   PPtr _copy;
 
   /**
-   *  Whether the particle came from the hard process or was added by the matrix
-   *  element correction
+   *  Whether the particle came from the hard process or was added by
+   *  the matrix element correction
    */
   bool _perturbative;
 
@@ -133,6 +143,11 @@ private:
    *  \f$p_T\f$ of the current emmision
    */
   Energy _highestPt;
+
+  /**
+   *  maximum hard \f$p_T\f$ from the hard process
+   */
+  Energy _maxHardPt;
 
   /**
    *  Has there been radiation

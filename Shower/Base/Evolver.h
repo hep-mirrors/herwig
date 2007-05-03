@@ -191,6 +191,26 @@ protected:
   //@}
 
   /**
+   *  Switches for vetoing hard emissions
+   */
+  //@{
+  /**
+   * Vetos on? 
+   */
+  inline bool hardVetoOn() const;
+
+  /**
+   * veto hard emissions in IS shower?
+   */
+  inline bool hardVetoIS() const;
+
+  /**
+   * veto hard emissions in FS shower?
+   */
+  inline bool hardVetoFS() const;
+  //@}
+
+  /**
    *  Enhancement factors for radiation needed to generate the soft matrix
    *  element correction.
    */
@@ -235,6 +255,11 @@ protected:
    *  Calculate the intrinsic \f$p_T\f$.
    */
   virtual void generateIntrinsicpT(vector<ShowerProgenitorPtr>);
+
+  /**
+   *  find the maximally allowed pt acc to the hard process. 
+   */
+  void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
 
 protected:
 
@@ -299,6 +324,11 @@ private:
    * Matrix element correction switch
    */
   unsigned int _meCorrMode; 
+
+  /**
+   * Hard emission veto switch
+   */
+  unsigned int _hardVetoMode; 
 
   /**
    *  The progenitor of the current shower
