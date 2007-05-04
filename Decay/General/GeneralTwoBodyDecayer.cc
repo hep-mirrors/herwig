@@ -182,6 +182,16 @@ colourConnections(const Particle & parent,
     else if(outaColour == PDT::Colour0 && outbColour == PDT::Colour3) {
       out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
     }
+    // octet + triplet
+    else if(outaColour == PDT::Colour8 && outbColour == PDT::Colour3) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->antiColourNeighbour(out[0]);
+    }
+    //opposite order
+    else if(outaColour == PDT::Colour3 && outbColour == PDT::Colour8) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->antiColourNeighbour(out[1]);
+    }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour triplet in "
@@ -198,6 +208,16 @@ colourConnections(const Particle & parent,
     //opposite order
     else if(outaColour == PDT::Colour0 && outbColour == PDT::Colour3bar) {
       out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    //octet + antitriplet
+    else if(outaColour == PDT::Colour3bar && outbColour == PDT::Colour8) {
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->colourNeighbour(out[1]);
+    }
+    //opposite order
+    else if(outaColour == PDT::Colour8 && outbColour == PDT::Colour3bar) {
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->colourNeighbour(out[0]);
     }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
