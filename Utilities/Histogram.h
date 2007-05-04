@@ -129,6 +129,11 @@ public:
 		     string bottom=string(),
 		     string bottomcase =string()) const;
 
+  /**
+   * Output into a simple ascii file, easily readable by gnuplot.
+   */
+  void simpleOutput(ostream & out, bool errorbars) const;
+
 public:
 
   /**

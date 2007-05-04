@@ -105,6 +105,47 @@ void Histogram::topdrawOutput(ostream & out,
   }
 }
 
+void Histogram::simpleOutput(ostream & out, bool errorbars) const {
+  // simple ascii output (eg for gnuplot)
+  // work out the y points
+  vector<double> yout;
+  unsigned int numPoints = _globalStats.numberOfPoints();  
+  if (numPoints == 0) ++numPoints;
+
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
+    yout.push_back(value);
+  }
+
+  out << "# " << numPoints << " entries, mean +- sigma = "
+      << _globalStats.mean() << " +- " 
+      << _globalStats.stdDev() << "\n"
+      << "# xlo xhi ynorm " 
+      << (errorbars ? "yerr " : "")
+      << (_havedata ? "data " : "")
+      << (_havedata && errorbars ? "dataerr " : "")
+      << "\n";
+
+  // the histogram from the event generator
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    out << _bins[ix].limit << " "
+	<< _bins[ix+1].limit << " " 
+	<< yout[ix-1];
+    if (errorbars) {
+      out << " " << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
+    }
+    if (_havedata) {
+      out << " " << _bins[ix].data;
+      if (errorbars)
+	out << _bins[ix].dataerror;
+    }
+    out << '\n';
+  }
+}
+
 void Histogram::normaliseToData()
 {
   double numer(0.),denom(0.);
