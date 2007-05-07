@@ -304,6 +304,7 @@ void HardProcessConstructor::makeFourPointDiagrams(long parta, long partb,
       nhp.outgoing = make_pair(partc, (*iter)->id());
       nhp.vertices = make_pair(vert, vert);
       nhp.channelType = HPDiagram::fourPoint;
+      fixFSOrder(nhp);
       if( !duplicate(nhp, theProcesses) ) {
 	assignToCF(nhp);
 	theProcesses.push_back(nhp);
@@ -431,15 +432,38 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
 }
 
 void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
+  tcPDPtr psa = getParticleData(diag.incoming.first);
+  tcPDPtr psb = getParticleData(diag.incoming.second);
   tcPDPtr psc = getParticleData(diag.outgoing.first);
   tcPDPtr psd = getParticleData(diag.outgoing.second);
 
+  //fix a spin order
   if( psc->iSpin() < psd->iSpin() ) {
     swap(diag.outgoing.first, diag.outgoing.second);
     if(diag.channelType == HPDiagram::tChannel) {
       diag.ordered.second = !diag.ordered.second;
     }
+    return;
   }
+  
+  //for diagrams with different flavour incoming states
+  if( !flavour(psa->id(), psb->id()) &&
+      flavour(psa->id(), psd->id()) ) {
+    swap(diag.outgoing.first, diag.outgoing.second);
+    if(diag.channelType == HPDiagram::tChannel) {
+      diag.ordered.second = !diag.ordered.second;
+    }
+    return;
+  }
+  
+  if(  psc->id() < 0 && psd->id() > 0 ) {
+    swap(diag.outgoing.first, diag.outgoing.second);
+    if(diag.channelType == HPDiagram::tChannel) {
+      diag.ordered.second = !diag.ordered.second;
+    }
+    return;
+  }
+
 }
 
 void HardProcessConstructor::assignToCF(HPDiagram & diag) {
@@ -536,8 +560,12 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(3, 1);
     }
   }
-  else 
-    cfv[0] = make_pair(2, 1);  
+  else {
+    if(outa == PDT::Colour0)
+      cfv[0] = make_pair(1, 1);
+    else
+      cfv[0] = make_pair(2, 1);
+  }
   
   diag.colourFlow = cfv; 
 }

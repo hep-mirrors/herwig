@@ -244,7 +244,8 @@ void SusyBase::readDecay(ifstream & ifs,
       is >> products[i - 1];
     createDecayMode(parent, products, brat);
     if(ifs.peek() == 'B' || ifs.peek() == 'D' ||
-       ifs.peek() == 'b' || ifs.peek() == 'd') break;
+       ifs.peek() == 'b' || ifs.peek() == 'd' || 
+       ifs.peek() == '#') break;
   }
 }
 
