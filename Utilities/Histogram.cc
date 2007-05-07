@@ -123,10 +123,10 @@ void Histogram::simpleOutput(ostream & out, bool errorbars) const {
       << _globalStats.mean() << " +- " 
       << _globalStats.stdDev() << "\n"
       << "# xlo xhi ynorm " 
-      << (errorbars ? "yerr " : "")
+      << (errorbars ? "ynorm_err " : "")
       << (_havedata ? "data " : "")
       << (_havedata && errorbars ? "dataerr " : "")
-      << "\n";
+      << "y_entr\n";
 
   // the histogram from the event generator
   for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
@@ -140,9 +140,9 @@ void Histogram::simpleOutput(ostream & out, bool errorbars) const {
     if (_havedata) {
       out << " " << _bins[ix].data;
       if (errorbars)
-	out << _bins[ix].dataerror;
+	out << " " << _bins[ix].dataerror;
     }
-    out << '\n';
+    out << " " << _bins[ix].contents << '\n';
   }
 }
 
