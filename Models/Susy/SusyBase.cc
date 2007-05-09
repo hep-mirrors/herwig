@@ -166,18 +166,20 @@ void SusyBase::readSetup(istream &is) throw(SetupException) {
       iss >> theAlpha;
       continue;      
     }
-    if(line.find("minpar") != string::npos)
+    if(line.find("block minpar") != string::npos)
       theMinPar = readBlock(file);
-    if(line.find("hmix") != string::npos)
+    if(line.find("block  hmix") != string::npos)
       theHMix = readBlock(file);
-    if(line.find("mass") != string::npos)
+    if(line.find("block mass") != string::npos)
       theMasses = readBlock(file);
-    if(line.find("decay") != string::npos)
+    if(line.find("block decay") != string::npos)
       readDecay(file, line);
-    if(line.find("nmix") != string::npos || line.find("umix") != string::npos ||
-       line.find("vmix") != string::npos || line.find("stopmix") != string::npos ||
-       line.find("sbotmix") != string::npos || 
-       line.find("staumix") != string::npos) {
+    if(line.find("block nmix") != string::npos || 
+       line.find("block umix") != string::npos ||
+       line.find("block vmix") != string::npos || 
+       line.find("block stopmix") != string::npos ||
+       line.find("block sbotmix") != string::npos || 
+       line.find("block staumix") != string::npos) {
       unsigned int size(0);
       string name = StringUtils::car(StringUtils::cdr(line), " #");
       vector<Complex> vals = readMatrix(file, size);
