@@ -162,14 +162,14 @@ MEfv2fs::colourGeometries(tcDiagPtr diag) const {
   cl[1] = ColourLines("1 -2, 2 3 4, 5 -4 ");
   cl[2] = ColourLines("1 2 -3, -4 -2  5, 3 4");
   //3b8->83b
-  cl[3] = ColourLines("-1 -4, 3 -2 4, -3 -5");
+  cl[3] = ColourLines("-1 -4, 3 2 4, -3 -5");
   cl[4] = ColourLines("-1 2, -4 -3 -2, 4 -5");
   cl[5] = ColourLines("-1 -2 3, -5 2 4, -3 -4");
   //38->13
   cl[6] = ColourLines("1 2 -3, 3 5");
   cl[7] = ColourLines("1-2, 2 3 5");
   //3b8->13b
-  cl[8] = ColourLines("-1 -2 3, -3 -5");
+  cl[8] = ColourLines("-1 2 3, -3 -5");
   cl[9] = ColourLines("-1 2, -5 -3 -2");
   vector<ColourLines>::size_type offset;
   if(mePartonData()[0]->id() > 0 && 

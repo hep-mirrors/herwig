@@ -232,7 +232,7 @@ MEfv2vf::colourGeometries(tcDiagPtr diag) const {
   cf[6] = ColourLines("1 2 -3, 3 5");
   cf[7] = ColourLines("1 -2, 2 3 5");
   //3b 8 -> 0 3b
-  cf[8] = ColourLines("3 -2 -1, -3 -5");
+  cf[8] = ColourLines("3 2 -1, -3 -5");
   cf[9] = ColourLines("2 -1, -5 -3 -2");
   
   HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
@@ -267,10 +267,12 @@ MEfv2vf::colourGeometries(tcDiagPtr diag) const {
 }
 
 
-void MEfv2vf::persistentOutput(PersistentOStream &) const {
+void MEfv2vf::persistentOutput(PersistentOStream & os) const {
+  os << theFerm << theVec;
 }
 
-void MEfv2vf::persistentInput(PersistentIStream &, int) {
+void MEfv2vf::persistentInput(PersistentIStream & is, int) {
+  is >> theFerm >> theVec;
 }
 
 ClassDescription<MEfv2vf> MEfv2vf::initMEfv2vf;
