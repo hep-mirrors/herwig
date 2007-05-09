@@ -51,25 +51,10 @@ class EvtGen: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline EvtGen();
-
-  /**
-   * The copy constructor.
-   */
-  inline EvtGen(const EvtGen &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~EvtGen();
-  //@}
-
-public:
 
   /**
    * Return the decay products for a decay where EvtGen selects the decay mode
@@ -149,47 +134,10 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
   virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -263,7 +211,7 @@ private:
    * Convert a Lorentz5Momentum to a real EvtGen 4-vector
    * @param mom The momentum to be converted
    */
-  inline EvtVector4R EvtGenMomentum(const Lorentz5Momentum & mom);
+  inline EvtVector4R EvtGenMomentum(const Lorentz5Momentum & mom) const;
 
   /**
    * Convert from EvtGen momentum to Lorentz5Momentum
@@ -348,14 +296,16 @@ private:
   /**
    * Convert a PDG code from ThePEG into an EvtGen particle id
    * @param id The PDG code
+   * @param exception Whether or not to throw an Exception if fails
    */
-  EvtId EvtGenID(int id);
+  EvtId EvtGenID(int id,bool exception=true);
 
   /**
    * Convert an EvtGen EvtId to a PDG code in our conventions
    * @param id The EvtGen ID.
+   * @param exception Whether or not to throw an Exception if fails
    */
-  int   ThePEGID(EvtId id);
+  int   ThePEGID(EvtId id,bool exception=true);
 
   /**
    *  Construct the DecayVertex for Herwig using the information from
@@ -373,6 +323,17 @@ private:
    *  a given decay mode.
    */
   int EvtGenChannel(const DecayMode &dm);
+
+  /**
+   *  Check the conversion of particles between Herwig++ and EvtGen
+   */
+  void checkConversion();
+
+  /**
+   * Output the EvtGen decay modes for a given particle
+   * @param id The PDG code of the particle to output
+   */
+  void outputEvtGenDecays(long id);
 
 private:
 
@@ -405,6 +366,16 @@ private:
    *  Maximum number of tries for EvtGen to unweight
    */
   unsigned int _maxunwgt;
+
+  /**
+   *  Check the conversion of the particles
+   */
+  bool _checkconv;
+
+  /**
+   *  Particles for which to output the EvtGen decays
+   */
+  vector<long> _convid;
 };
 
 }
@@ -433,7 +404,7 @@ struct ClassTraits<Herwig::EvtGen>
   /** Return the name of the shared library be loaded to get
    *  access to the EvtGen class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwEvtGen.so"; }
+  static string library() { return "HwEvtGen.so"; }
 };
 
 /** @endcond */

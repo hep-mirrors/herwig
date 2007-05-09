@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EvtGenDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -20,25 +15,24 @@
 namespace Herwig {
 using namespace ThePEG;
 
-EvtGenDecayer::~EvtGenDecayer() {}
-
 bool EvtGenDecayer::accept(const DecayMode & dm) const {
   // this decayer should only be used if letting EvtGen pick the mode
   if((_evtopt==0||_evtopt==2)&&dm.wildProductMatcher()&&
-     dm.wildProductMatcher()->name()=="MatchAny")
-    {return true;}
-  else if(_evtopt==1){return true;}
-  return false;
+     dm.wildProductMatcher()->name()=="MatchAny") return true;
+  else if(_evtopt==1||_evtopt==3)                 return true;
+  else                                            return false;
 }
 
 ParticleVector EvtGenDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+				    const Particle & parent) const {
   ParticleVector output;
-  if(_evtopt==0){output=_evtgen->randomDecayAll(parent);}
-  else if(_evtopt==1){output=_evtgen->decayAll(dm,parent);}
-  else if(_evtopt==2){output=_evtgen->randomDecay(parent);}
-  else {throw Exception() << "Unknown option in EvtGenDecayer::decay() " 
-			  << Exception::runerror;}
+  if(_evtopt==0)      output=_evtgen->randomDecayAll(parent);
+  else if(_evtopt==1) output=_evtgen->decayAll(dm,parent);
+  else if(_evtopt==2) output=_evtgen->randomDecay(parent);
+  else if(_evtopt==3) throw Exception() << "option 3 needs to be implemented"
+					<< Exception::runerror;
+  else  throw Exception() << "Unknown option in EvtGenDecayer::decay() " 
+			  << Exception::runerror;
   return output;
 }
 
@@ -65,7 +59,6 @@ void EvtGenDecayer::Init() {
      "Pointer to the EvtGen object which encapsulates the EvtGen decay package.",
      &EvtGenDecayer::_evtgen, false, false, true, false, false);
 
-
   static Switch<EvtGenDecayer,unsigned int> interfaceOption
     ("Option",
      "The way in which EvtGen is used.",
@@ -73,7 +66,7 @@ void EvtGenDecayer::Init() {
   static SwitchOption interfaceOptionEvtGenAll
     (interfaceOption,
      "EvtGenAll",
-     "vtGen selects the decay mode of the particle and decays all"
+     "EvtGen selects the decay mode of the particle and decays all"
      " the unstable particles produced in the decay.",
      0);
   static SwitchOption interfaceOptionHerwigModeEvtGenAll
@@ -88,6 +81,12 @@ void EvtGenDecayer::Init() {
      "EvtGen selects the decay mode and then EvtGen decays the particle"
      "but not the unstable particles produced in the decay.",
      2);
+  static SwitchOption interfaceOptionHerwigMode
+    (interfaceOption,
+     "HerwigMode",
+     "Herwig++ selects the decay mode and then EvtGen decays the particle"
+     "but not the unstable particles produced in the decay.",
+     3);
 }
 
 }
