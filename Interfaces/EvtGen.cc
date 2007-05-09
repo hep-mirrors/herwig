@@ -23,6 +23,13 @@
 #include "EvtGenBase/EvtAbsRadCorr.hh"
 #include "EvtGenBase/EvtRadCorr.hh"
 #include "EvtGenModels/EvtPHOTOS.hh"
+#include "EvtGenBase/EvtScalarParticle.hh"
+#include "EvtGenBase/EvtDiracParticle.hh"
+#include "EvtGenBase/EvtVectorParticle.hh"
+#include "EvtGenBase/EvtRaritaSchwingerParticle.hh"
+#include "EvtGenBase/EvtTensorParticle.hh"
+#include "EvtGenBase/EvtStringParticle.hh"
+#include "EvtGenBase/EvtHighSpinParticle.hh"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -129,32 +136,29 @@ void EvtGen::Init() {
 
 }
 
-ParticleVector EvtGen::randomDecayAll(const Particle & parent) {
+ParticleVector EvtGen::randomDecayAll(const Particle & parent) const {
   // create the particle from EvtGen using the PDG code, set's id and momentum
   EvtParticle *part=EvtGenParticle(parent);
   unsigned int ntry(1);
   int ii;
   bool done(false);
-  do 
-    {
-      EvtStatus::initRejectFlag();
-      part->decay();
-      done=(EvtStatus::getRejectFlag()==0);
-      if(!done)
-	{
-	  for (ii=0;ii<part->getNDaug();ii++)
-	    {
-	      EvtParticle *temp=part->getDaug(ii);
-	      temp->deleteTree();
-	    }
-	  part->resetFirstOrNot();
-	  part->resetNDaug();
-	}
+  do {
+    EvtStatus::initRejectFlag();
+    part->decay();
+    done=(EvtStatus::getRejectFlag()==0);
+    if(!done) {
+      for (ii=0;ii<part->getNDaug();ii++) {
+	EvtParticle *temp=part->getDaug(ii);
+	temp->deleteTree();
+      }
+      part->resetFirstOrNot();
+      part->resetNDaug();
     }
+  }
   while(ntry<_maxtry&&!done);
-  if(!done)
-    {throw Exception() << "Failed to generate a decay in EvtGen::randomDecayAll"
-			<< Exception::eventerror;}
+  if(!done) throw Exception() << "Failed to generate a "
+			      << "decay in EvtGen::randomDecayAll"
+			      << Exception::eventerror;
   // translate the decay products
   ParticleVector output(decayProducts(part,false));
   // sort out the spin info
@@ -171,105 +175,98 @@ ParticleVector EvtGen::randomDecayAll(const Particle & parent) {
 }
 
 // obtain and convert a particle's decay products from EvtGen
-ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin)
-{
+ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
   ParticleVector output,temp;
   tcPDPtr pd;
   EvtParticle * daug;
   Hep3Vector bv;
   unsigned int ix,iy;
   int id;
-  for(ix=0;ix<abs(part->getNDaug());++ix)
-    {
-      daug=part->getDaug(ix);
-      id=ThePEGID(daug->getId());
-      pd=getParticleData(id);      
-      if(pd)
-	{output.push_back(ThePEGParticle(daug,pd,spin));}
-      // special for EvtGen particles like string we don't need to include
-      else if(id==90)
-	{
-	  // check if needs to be decayed by EvtGen
-	  bool evtdec(daug->getNDaug()==0);
-	  if(daug->getNDaug()!=0)
-	    {if(abs(EvtPDL::getStdHep(daug->getDaug(0)->getId()))<=6){evtdec=true;}}
-	  if(!evtdec)
-	    {
-	      temp=decayProducts(daug,spin);
-	      if(temp.size()!=0)
-		{for(iy=0;iy<temp.size();++iy){output.push_back(temp[iy]);}}
-	      else
-		{throw Exception() << "Found EvtGen special particle with no decay"
-				   << " products in EvtGen::decayProducts()" 
-				   << Exception::eventerror;}
-	    }
-	  // get EvtGen to decay the particle
-	  else
-	    {
-	      EvtDecayAmp* damp=0;
-	      EvtDecayIncoherent* dinc=0;
-	      EvtDecayProb* dprob=0;
-	      unsigned int nbeforerad(0);
-	      evtDecay(daug,0,damp,dinc,dprob,nbeforerad);
-	      // add the particles
-	      ParticleVector temp(decayProducts(daug,spin));
-	      for(iy=0;iy<temp.size();++iy){output.push_back(temp[iy]);}
-	    }
+  for(ix=0;ix<abs(part->getNDaug());++ix) {
+    daug=part->getDaug(ix);
+    id=ThePEGID(daug->getId());
+    pd=getParticleData(id);      
+    // if easy to convert do it
+    if(pd) output.push_back(ThePEGParticle(daug,pd,spin));
+    // special for EvtGen particles like string we don't need to include
+    else if(id==90) {
+      // check if needs to be decayed by EvtGen
+      bool evtdec(daug->getNDaug()==0);
+      if(daug->getNDaug()!=0) {
+	evtdec = abs(EvtPDL::getStdHep(daug->getDaug(0)->getId()))<=6;
+	if(!evtdec) {
+	  temp=decayProducts(daug,spin);
+	  if(temp.size()!=0) {
+	    for(iy=0;iy<temp.size();++iy) output.push_back(temp[iy]);
+	  }
+	  else {
+	    throw Exception() << "Found EvtGen special particle with no decay"
+			      << " products in EvtGen::decayProducts()" 
+			      << Exception::eventerror;
+	  }
 	}
-      else
-	{throw Exception() << "Tried to convert an unknown particle, PDG code = " << id 
-			   << " from EvtGen in EvtGen::decayproducts which is "
-			   << " unknown to Herwig++. Killing event." 
-			   << Exception::eventerror;}
+	// get EvtGen to decay the particle
+	else {
+	    EvtDecayAmp* damp=0;
+	    EvtDecayIncoherent* dinc=0;
+	    EvtDecayProb* dprob=0;
+	    unsigned int nbeforerad(0);
+	    evtDecay(daug,0,damp,dinc,dprob,nbeforerad);
+	    // add the particles
+	    ParticleVector temp(decayProducts(daug,spin));
+	    for(iy=0;iy<temp.size();++iy){output.push_back(temp[iy]);}
+	  }
+      }
     }
-  if(output.size()>0)
-    {
-      bv=ThePEGMomentum(part->getP4(),part->mass()).boostVector();
-      for(ix=0;ix<output.size();++ix){output[ix]->deepBoost(bv);}
+    else {
+      throw Exception() << "Tried to convert an unknown particle, PDG code = " << id 
+			<< " from EvtGen in EvtGen::decayproducts which is "
+			<< " unknown to Herwig++. Killing event." 
+			<< Exception::eventerror;
     }
+  }
+  // boost to lab
+  if(output.size()>0) {
+    bv=ThePEGMomentum(part->getP4(),part->mass()).boostVector();
+    for(ix=0;ix<output.size();++ix) output[ix]->deepBoost(bv); 
+  }
   return output;
 }
 
-// convert EvtGen spin density to ThePEG 
-RhoDMatrix EvtGen::ThePEGSpinDensity(const EvtSpinDensity & rho, int id)
-{
+RhoDMatrix EvtGen::ThePEGSpinDensity(const EvtSpinDensity & rho, int id) const {
   RhoDMatrix output;
   unsigned int ix,iy;
   // special for neutrinos
-  if(abs(id)%2==0&&abs(id)>=12&&abs(id)<=16)
-    {
-      output.iSpin(PDT::Spin1Half);output.zero();
-      if(id>0){output(0,0)=ThePEGComplex(rho.Get(0,0));}
-      else{output(1,1)=ThePEGComplex(rho.Get(0,0));}
-    }
+  if(abs(id)%2==0&&abs(id)>=12&&abs(id)<=16) {
+    output.iSpin(PDT::Spin1Half);output.zero();
+    if(id>0) output(0,0)=ThePEGComplex(rho.Get(0,0));
+    else     output(1,1)=ThePEGComplex(rho.Get(0,0));
+  }
   // special for photons
-  else if(id==ParticleID::gamma)
-    {
-      output.iSpin(PDT::Spin1);output.zero();
-      for(ix=0;ix<2;++ix)
-	{for(iy=0;iy<2;++iy)
-	    {output(2*ix,2*iy)=ThePEGComplex(rho.Get(ix,iy));}}
+  else if(id==ParticleID::gamma) {
+    output.iSpin(PDT::Spin1);output.zero();
+    for(ix=0;ix<2;++ix) {
+      for(iy=0;iy<2;++iy) output(2*ix,2*iy)=ThePEGComplex(rho.Get(ix,iy));
     }
+  }
   // normal behaviour
-  else
-    {
-      unsigned int ndim(abs(rho.GetDim()));
-      if(ndim!=0)
-	{
-	  output.iSpin(PDT::Spin(ndim));
-	  for(ix=0;ix<ndim;++ix)
-	    {for(iy=0;iy<ndim;++iy)
-		{output(ix,iy)=ThePEGComplex(rho.Get(ix,iy));}}
-	}
-      else if(ndim==0)
-	{output.iSpin(PDT::Spin0);output.average();}
+  else {
+    unsigned int ndim(abs(rho.GetDim()));
+    if(ndim!=0) {
+      output.iSpin(PDT::Spin(ndim));
+      for(ix=0;ix<ndim;++ix) {
+	for(iy=0;iy<ndim;++iy) output(ix,iy)=ThePEGComplex(rho.Get(ix,iy));
+      }
     }
+    else if(ndim==0) {
+      output.iSpin(PDT::Spin0);
+      output.average();
+    }
+  }
   return output;
 }
 
-// location of mode in EvtGen list
-int EvtGen::EvtGenChannel(const DecayMode & dm)
-{
+int EvtGen::EvtGenChannel(const DecayMode & dm) const {
   // get evtid for parent
   EvtId parent(EvtGenID(dm.parent()->id()));
   // get evtids for children
@@ -278,32 +275,30 @@ int EvtGen::EvtGenChannel(const DecayMode & dm)
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
   EvtId etemp;
-  for( ;pit!=pend&&ndaug<20;++pit)
-    {
-      etemp=EvtGenID((**pit).id());
-      daugs[ndaug]=etemp;
-      ndaug++;
-    }
-  if(ndaug>=20){throw Exception() << "Too many decay products in EvtGen::EvtGenChannel"
-				  << Exception::eventerror;}
+  for( ;pit!=pend&&ndaug<20;++pit) {
+    etemp=EvtGenID((**pit).id());
+    daugs[ndaug]=etemp;
+    ndaug++;
+  }
+  if(ndaug>=20) throw Exception() << "Too many decay products "
+				  << "in EvtGen::EvtGenChannel"
+				  << Exception::eventerror;
   // find the channel
   int output=EvtDecayTable::inChannelList(parent,ndaug,daugs);
-  if(output<0)
-    {
-      string dmode;
-      dmode = "decay of " + dm.parent()->PDGName() + " -> ";
-      pit  = dm.products().begin();
-      pend = dm.products().end();
-      for( ;pit!=pend&&ndaug<20;++pit){dmode += (**pit).PDGName()+" ";}
-      throw Exception() << "Can't find EVtGen decay mode in EvtGenChannel for " 
-		       << dmode << " in EvtGen::EvtGenChannel" << Exception::runerror;
-    }
+  if(output<0) {
+    string dmode;
+    dmode = "decay of " + dm.parent()->PDGName() + " -> ";
+    pit  = dm.products().begin();
+    pend = dm.products().end();
+    for( ;pit!=pend&&ndaug<20;++pit) dmode += (**pit).PDGName()+" ";
+    throw Exception() << "Can't find EVtGen decay mode in EvtGenChannel for " 
+		      << dmode << " in EvtGen::EvtGenChannel" 
+		      << Exception::runerror;
+  }
   return output;
 }
 
-// evtgen performing all decays of particle but herwig picks inital mode
-ParticleVector EvtGen::decayAll(const DecayMode & dm,const Particle & parent)
-{
+ParticleVector EvtGen::decayAll(const DecayMode & dm,const Particle & parent) const {
   // find the location of the decay mode in the EvtGen list
   int imode(EvtGenChannel(dm));
   EvtId parID(EvtGenID(parent.id()));
@@ -316,29 +311,25 @@ ParticleVector EvtGen::decayAll(const DecayMode & dm,const Particle & parent)
   unsigned int ntry(1);
   int ii;
   bool done(false);
-  do 
-    {
-      EvtStatus::initRejectFlag();
-      // generate masses
-      if (part->getNDaug()==0){part->generateMassTree();}
-      // perform the decay
-      decayer->makeDecay(part);
-      done=(EvtStatus::getRejectFlag()==0);
-      if(!done)
-	{
-	  for (ii=0;ii<part->getNDaug();ii++)
-	    {
-	      EvtParticle *temp=part->getDaug(ii);
-	      temp->deleteTree();
-	    }
-	  part->resetFirstOrNot();
-	  part->resetNDaug();
-	}
+  do {
+    EvtStatus::initRejectFlag();
+    // generate masses
+    if (part->getNDaug()==0) part->generateMassTree();
+    // perform the decay
+    decayer->makeDecay(part);
+    done=(EvtStatus::getRejectFlag()==0);
+    if(!done) {
+      for (ii=0;ii<part->getNDaug();ii++) {
+	EvtParticle *temp=part->getDaug(ii);
+	temp->deleteTree();
+      }
+      part->resetFirstOrNot();
+      part->resetNDaug();
     }
+  }
   while(ntry<_maxtry&&!done);
-  if(!done)
-    {throw Exception() << "Failed to generate a decay in EvtGen::decayAll"
-			<< Exception::eventerror;}
+  if(!done) throw Exception() << "Failed to generate a decay in EvtGen::decayAll"
+			      << Exception::eventerror;
   // translate the decay products
   ParticleVector output(decayProducts(part,false));
   // sort out the spin info
@@ -354,12 +345,12 @@ ParticleVector EvtGen::decayAll(const DecayMode & dm,const Particle & parent)
   return output;
 }
 
-ParticleVector EvtGen::randomDecay(const Particle & parent) {
+ParticleVector EvtGen::randomDecay(const Particle & parent) const {
   // create the particle from EvtGen using the PDG code, set it's id and momentum
-  EvtParticle *part=EvtGenParticle(parent);
-  EvtDecayAmp *damp=0;
-  EvtDecayIncoherent* dinc=0;
-  EvtDecayProb* dprob=0;
+  EvtParticle        *part=EvtGenParticle(parent);
+  EvtDecayAmp        *damp ;
+  EvtDecayIncoherent *dinc ;
+  EvtDecayProb       *dprob;
   unsigned int nbeforerad(0);
   evtDecay(part,0,damp,dinc,dprob,nbeforerad);
   // translate the decay products
@@ -367,20 +358,18 @@ ParticleVector EvtGen::randomDecay(const Particle & parent) {
   // sort out the spin info
   tSpinfoPtr pspin(getSpinInfo(parent));
   // if using amplitudes
-  if(damp)
-    {
-      ParticleVector products;
-      for(unsigned int ix=0;ix<nbeforerad;++ix)
-	{products.push_back(output[ix]);}
-      constructVertex(parent,products,damp);
-    }
+  if(damp) {
+    ParticleVector products;
+    for(unsigned int ix=0;ix<nbeforerad;++ix) products.push_back(output[ix]);
+    constructVertex(parent,products,damp);
+  }
   // otherwise
-  else
-    {
-      pspin->setDeveloped(true);
-      RhoDMatrix rhotemp(pspin->iSpin());rhotemp.average();
-      pspin->DMatrix()=rhotemp;
-    }
+  else {
+    pspin->setDeveloped(true);
+    RhoDMatrix rhotemp(pspin->iSpin());
+    rhotemp.average();
+    pspin->DMatrix()=rhotemp;
+  }
   pspin->decayed(true);
   // delete the EvtGen particle
   part->deleteDaughters();
@@ -389,8 +378,7 @@ ParticleVector EvtGen::randomDecay(const Particle & parent) {
   return output;
 }
 
-
-void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) {
+void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) const {
   // if no corresponding ThePEG spin type return
   if(evt->getSpinType()==EvtSpinType::STRING||
      evt->getSpinType()==EvtSpinType::SPIN3||evt->getSpinType()==EvtSpinType::SPIN4||
@@ -439,12 +427,10 @@ void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) {
   }
   // massive spin 3/2
   else if(evt->getSpinType()==EvtSpinType::RARITASCHWINGER) {
-    cerr << "testing rs access function not implemented\n";
-    exit(0);
-//     RSFermionSpinPtr rs(new_ptr(RSFermionSpinInfo(peg->momentum(),true)));
-//     spin=rs;
-//     for(ix=0;ix<4;++ix) {
-//       rs->setBasisState(ix,ThePEGRSSpinor(evt->spRSParent(ix)));}
+    RSFermionSpinPtr rs(new_ptr(RSFermionSpinInfo(peg->momentum(),true)));
+    spin=rs;
+    for(ix=0;ix<4;++ix) {
+      rs->setBasisState(ix,ThePEGRSSpinor(evt->spRSParent(ix)));}
   }
   // tensors
   else if(evt->getSpinType()==EvtSpinType::TENSOR) {
@@ -475,20 +461,31 @@ void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) {
 
 // translate the matrix element to our form
 void EvtGen::constructVertex(const Particle & parent,ParticleVector products,
-			     EvtDecayAmp* damp) {
+			     EvtDecayAmp* damp) const {
   unsigned int ix,iy;
   vector <PDT::Spin> outspin;
-  for(ix=0;ix<products.size();++ix){outspin.push_back(products[ix]->dataPtr()->iSpin());}
+  for(ix=0;ix<products.size();++ix) {
+    outspin.push_back(products[ix]->dataPtr()->iSpin());
+  }
   vector<int> constants(products.size()+2,0);
   unsigned int nstate(1),idtemp;
   for(ix=outspin.size();ix>0;--ix) {
     idtemp=abs(products[ix-1]->id());
-    if(idtemp==ParticleID::gamma){nstate*=2;constants[ix]=nstate;}
-    else if(idtemp%2==0&&idtemp>=12&&idtemp<=16){constants[ix]=nstate;}
-    else{nstate*=outspin[ix-1];constants[ix]=nstate;}
+    if(idtemp==ParticleID::gamma) {
+      nstate*=2;
+      constants[ix]=nstate;
+    }
+    else if(idtemp%2==0&&idtemp>=12&&idtemp<=16) {
+      constants[ix]=nstate;
+    }
+    else {
+      nstate*=outspin[ix-1];
+      constants[ix]=nstate;
+    }
   }
   PDT::Spin inspin(parent.dataPtr()->iSpin());
-  nstate*=inspin;constants[0]=nstate;
+  nstate*=inspin;
+  constants[0]=nstate;
   constants[outspin.size()+1]=1;
   int eind[10];
   unsigned int iloc;
@@ -502,38 +499,39 @@ void EvtGen::constructVertex(const Particle & parent,ParticleVector products,
       ++iloc;
     }
     for(iy=0;iy<outspin.size();++iy) {
-      if(outspin[iy]==PDT::Spin0)
-	{hind[iy+1]=0;}
-      else if(products[iy]->id()==ParticleID::gamma)
-	{
-	  hind[iy+1]=2*(ix%constants[iy+1])/constants[iy+2];
-	  eind[iloc]=hind[iy+1]/2;++iloc;
+      if(outspin[iy]==PDT::Spin0) {
+	hind[iy+1]=0;
+      }
+      else if(products[iy]->id()==ParticleID::gamma) {
+	hind[iy+1]=2*(ix%constants[iy+1])/constants[iy+2];
+	eind[iloc]=hind[iy+1]/2;
+	++iloc;
 	}
-      else if(constants[iy+1]==1)
-	{hind[iy+1]=products[iy]->id()<0;}
-      else
-	{
-	  hind[iy+1]=(ix%constants[iy+1])/constants[iy+2];
-	  eind[iloc]=hind[iy+1];++iloc;
-	}
+      else if(constants[iy+1]==1) {
+	hind[iy+1]=products[iy]->id()<0;
+      }
+      else {
+	hind[iy+1]=(ix%constants[iy+1])/constants[iy+2];
+	eind[iloc]=hind[iy+1];++iloc;
+      }
     }
-    cerr << "testing can't get amplitude\n";
-    //newME(hind)=ThePEGComplex(damp->amplitude().getAmp(eind));
+    newME(hind)=ThePEGComplex(damp->amplitude().getAmp(eind));
   }
   // create the decay vertex
   VertexPtr vertex(new_ptr(Helicity::DecayVertex()));
   Helicity::DVertexPtr Dvertex(dynamic_ptr_cast<Helicity::DVertexPtr>(vertex));
   // set the incoming particle for the decay vertex
   dynamic_ptr_cast<tcSpinfoPtr>(parent.spinInfo())->setDecayVertex(vertex);
-  for(ix=0;ix<products.size();++ix)
-    {dynamic_ptr_cast<tcSpinfoPtr>
-	(products[ix]->spinInfo())->setProductionVertex(vertex);}
+  for(ix=0;ix<products.size();++ix) {
+    dynamic_ptr_cast<tcSpinfoPtr>(products[ix]->spinInfo())
+      ->setProductionVertex(vertex);
+  }
   // set the matrix element
   Dvertex->ME().reset(newME);
 }
 
 // convert from ThePEG to EvtGen
-EvtId EvtGen::EvtGenID(int id, bool exception) {
+EvtId EvtGen::EvtGenID(int id, bool exception) const {
   EvtId output;
   int absid=abs(id),ispin(absid%10),isgn(id/absid);
   // handle the easy cases
@@ -635,7 +633,7 @@ EvtId EvtGen::EvtGenID(int id, bool exception) {
 }
 
 // convert from EvtGen to ThePEG
-int EvtGen::ThePEGID(EvtId eid,bool exception) {
+int EvtGen::ThePEGID(EvtId eid,bool exception) const {
   int output(0);
   int id(EvtPDL::getStdHep(eid)),absid(abs(id)),ispin(absid%10),isgn(id/absid);
   // handle the easy cases
@@ -743,93 +741,177 @@ int EvtGen::ThePEGID(EvtId eid,bool exception) {
   return output;
 }
 
-// translate a particle to EvtGen
-EvtParticle * EvtGen::EvtGenParticle(const Particle & part) {
-  // create the new particle with the correct momentum
+EvtParticle * EvtGen::EvtGenParticle(const Particle & part) const {
+  // convert the momentum
   Lorentz5Momentum inmom(part.momentum());
+  EvtVector4R p4(EvtGenMomentum(inmom));
   EvtParticle *evtpart;
-  evtpart=EvtParticleFactory::particleFactory(EvtGenID(part.id()),EvtGenMomentum(inmom));
+  // EvtGen ID and spin type
+  EvtId id = EvtGenID(part.id());
+  EvtSpinType::spintype thisSpin=EvtPDL::getSpinType(id);
   // boost to the rest frame to get the basis states right
   PPtr decay(const_ptr_cast<PPtr>(new_ptr(part)));
   decay->transform(LorentzRotation(-inmom.boostVector()));
-  // transfer the spin information to EvtGen
-  // N.B. don't handle special massless (i.e. photon and neutrino cases as shouldn't
-  // be needed)
+  // get spin information so can transfer to EvtGen
   tcSpinfoPtr spin(dynamic_ptr_cast<tcSpinfoPtr>(part.spinInfo()));
-  if(spin) {
-    spin->decay();
-    RhoDMatrix rho;
-    // scalar particles
-    if(part.dataPtr()->iSpin()==PDT::Spin0) {
-      tcScalarSpinPtr sp(dynamic_ptr_cast<tcScalarSpinPtr>(spin));
-      if(sp) evtpart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
+  if(spin) spin->decay();
+  // don't convert neutrinos, aren't decays so waste of time
+  if         ( thisSpin == EvtSpinType::NEUTRINO) {
+    throw Exception() << "Tried to convert a neutrino to EvtGen in "
+		      << "EvtGen::EvtParticle. This should not be needed as"
+		      << "EvtGen does not decay neutrinos" 
+		      << Exception::eventerror;
+  }
+  // don't convert photons, aren't decays so waste of time
+  else if ( thisSpin == EvtSpinType::PHOTON ) {
+    throw Exception() << "Tried to convert a photon to EvtGen in "
+		      << "EvtGen::EvtParticle. This should not be needed as"
+		      << "EvtGen does not decay photons" 
+		      << Exception::eventerror;
+  }
+  // scalar particles
+  else if ( thisSpin == EvtSpinType::SCALAR ) {
+    // create particle
+    EvtScalarParticle * myPart = new EvtScalarParticle;
+    myPart->init(id, p4);
+    // set rho matrix if needed
+    tcScalarSpinPtr sp(dynamic_ptr_cast<tcScalarSpinPtr>(spin));
+    if(sp) {
+      myPart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
     }
-    // spin 1/2 particles
-    else if(part.dataPtr()->iSpin()==PDT::Spin1Half) {
-      tcFermionSpinPtr sp(dynamic_ptr_cast<tcFermionSpinPtr>(spin));
-      if(sp) {
-	unsigned int ix,id(abs(part.id()));
-	// special for neutrinos as only one state in EvtGen
-	if(id%2==0&&id>=12&&id<=16) {
-	  throw Exception() << "Tried to convert a neutrino to EvtGen in "
-			    << "EvtGen::EvtParticle. This should not be needed as"
-			    << "EvtGen does not decay neutrinos" 
-			    << Exception::eventerror;
-	}
-	else {
-	  evtpart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
-	  cerr << "can't set fermion spin\n";
-	  for(ix=0;ix<2;++ix) {
-	    //evtpart->
-	    //  setspParent(ix,EvtGenSpinor(sp->getProductionBasisState(ix)));
-	    //evtpart->setsp(ix,EvtGenSpinor(sp->getDecayBasisState(ix)));
-	  }
-	}
+    else {
+      EvtSpinDensity rho;
+      rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+      myPart->setSpinDensityForward(rho);
+    }
+    evtpart=myPart;
+  }
+  else if ( thisSpin == EvtSpinType::DIRAC ) {
+    EvtDiracParticle *myPart =new EvtDiracParticle;
+    // get the spin info
+    tcFermionSpinPtr sp(dynamic_ptr_cast<tcFermionSpinPtr>(spin));
+    // has spin info transfer
+    if(sp) {
+      vector<EvtDiracSpinor> prod,decay;
+      // transfer spinors
+      for(unsigned int ix=0;ix<2;++ix) {
+	prod .push_back(EvtGenSpinor(sp->getProductionBasisState(ix)));
+	decay.push_back(EvtGenSpinor(sp->getDecayBasisState     (ix)));
       }
+      myPart->init(id, p4,prod[0],prod[1],decay[0],decay[1]);
+      // set the density matrix
+      myPart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
     }
-    // vector particles
-    else if(part.dataPtr()->iSpin()==PDT::Spin1) {
-      tcVectorSpinPtr sp(dynamic_ptr_cast<tcVectorSpinPtr>(spin));
-      if(sp) {
-	if(part.id()==ParticleID::gamma) {
-	  throw Exception() << "Tried to convert a photon to EvtGen in "
-			    << "EvtGen::EvtParticle. This should not be needed as"
-			    << "EvtGen does not decay photons" 
-			    << Exception::eventerror;
-	}
-	else {
-	  evtpart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
-	  cerr << "can't set spin vector\n";
-	  //for(unsigned int ix=0;ix<3;++ix) {
-	  //  evtpart->seteps(ix,EvtGenPolarization(sp->getDecayBasisState(ix)));
-	  //}
-	}
+    // no spin info
+    else {
+      myPart->init(id, p4);
+      EvtSpinDensity rho;
+      rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+      myPart->setSpinDensityForward(rho);
+    }
+    evtpart=myPart;
+  }
+  // vector particles
+  else if ( thisSpin == EvtSpinType::VECTOR ) {
+    EvtVectorParticle *myPart=new EvtVectorParticle;
+    // get the spin info
+    tcVectorSpinPtr sp(dynamic_ptr_cast<tcVectorSpinPtr>(spin));
+    // has spin info transfer
+    if(sp) {
+      // transfer polarization vectors
+      vector<EvtVector4C> eps;
+      for(unsigned int ix=0;ix<3;++ix) {
+	eps.push_back(EvtGenPolarization(sp->getDecayBasisState(ix)));
       }
+      myPart->init(id, p4,eps[0],eps[1],eps[2]);
+      // set spin density matrix
+      myPart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
     }
-    // spin 3/2 particles
-    else if(part.dataPtr()->iSpin()==PDT::Spin3Half) {
-      tcRSFermionSpinPtr sp(dynamic_ptr_cast<tcRSFermionSpinPtr>(spin));
-      if(sp) {
-	evtpart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
-	cerr << "can't set spin 3/2\n";
-// 	for(unsigned ix=0;ix<4;++ix) {
-// 	  evtpart->
-// 	    setspRSParent(ix,EvtGenRSSpinor(sp->getProductionBasisState(ix)));
-// 	  evtpart->setspRS(ix,EvtGenRSSpinor(sp->getDecayBasisState(ix)));
-// 	}
+    // no spin info
+    else {
+      myPart->init(id, p4);
+      EvtSpinDensity rho;
+      rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+      myPart->setSpinDensityForward(rho);
+    }
+    evtpart=myPart;
+  }    
+  // spin 3/2 particles
+  else if ( thisSpin == EvtSpinType::RARITASCHWINGER ) {
+    EvtRaritaSchwingerParticle *myPart=new EvtRaritaSchwingerParticle;
+    // get the spin info
+    tcRSFermionSpinPtr sp(dynamic_ptr_cast<tcRSFermionSpinPtr>(spin));
+    // has spin info transfer
+    if(sp) {
+      // transfer spinors
+      vector<EvtRaritaSchwinger> prod,decay;
+      for(unsigned int ix=0;ix<4;++ix) {
+	prod .push_back(EvtGenRSSpinor(sp->getProductionBasisState(ix)));
+	decay.push_back(EvtGenRSSpinor(sp->getDecayBasisState(ix)     ));
       }
+      myPart->init(id, p4,
+		   prod[0] ,prod[1] ,prod[2] , prod[3],
+		   decay[0],decay[1],decay[2],decay[3]);
+      // set spin density matrix
+      myPart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
     }
-    // spin-2 particles
-    else if(part.dataPtr()->iSpin()==PDT::Spin2) {
-      tcTensorSpinPtr sp(dynamic_ptr_cast<tcTensorSpinPtr>(spin));
-      if(sp) {
-	evtpart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
-	cerr << "can't set spin 2\n";
-// 	for(unsigned int ix=0;ix<5;++ix) {
-// 	  evtpart->setepsTensor(ix,EvtGenTensor(sp->getDecayBasisState(ix)));
-// 	}
+    // no spin info
+    else {
+      myPart->init(id, p4);
+      EvtSpinDensity rho;
+      rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+      myPart->setSpinDensityForward(rho);
+    }
+    evtpart=myPart;
+  }
+  // spin-2 particles
+  else if ( thisSpin == EvtSpinType::TENSOR ) {
+    EvtTensorParticle *myPart =new EvtTensorParticle;
+    tcTensorSpinPtr sp(dynamic_ptr_cast<tcTensorSpinPtr>(spin));
+    // has spin info transfer
+    if(sp) {
+      // transfer the polarization tensors
+      vector<EvtTensor4C> eps;
+      for(unsigned int ix=0;ix<5;++ix) {
+	eps.push_back(EvtGenTensor(sp->getDecayBasisState(ix)));
       }
+      myPart->init(id, p4,eps[0],eps[1],eps[2],eps[3],eps[4]);
+      // set spin density matrix
+      myPart->setSpinDensityForward(EvtGenSpinDensity(sp->rhoMatrix()));
     }
+    // no spin info
+    else {
+      myPart->init(id, p4);
+      EvtSpinDensity rho;
+      rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+      myPart->setSpinDensityForward(rho);
+    }
+    evtpart=myPart;
+  }
+  // shouldn't be doing this but here for safety
+  else if ( thisSpin == EvtSpinType::STRING ) {
+    EvtStringParticle *myPart;
+    myPart=new EvtStringParticle;
+    myPart->init(id, p4);
+    EvtSpinDensity rho;
+    rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+    myPart->setSpinDensityForward(rho);
+    evtpart=myPart;
+  }
+  // high spin particles
+  else if ( thisSpin == EvtSpinType::SPIN3 || thisSpin == EvtSpinType::SPIN5HALF ||
+	    thisSpin == EvtSpinType::SPIN4 || thisSpin == EvtSpinType::SPIN7HALF) {
+    EvtHighSpinParticle *myPart;
+    myPart=new EvtHighSpinParticle;
+    myPart->init(id, p4);
+    EvtSpinDensity rho;
+    rho.SetDiag(EvtSpinType::getSpinStates(thisSpin));
+    myPart->setSpinDensityForward(rho);
+    evtpart=myPart;
+  }
+  else {
+    throw Exception() << "Can't convert particle to EvtGen " 
+		      << part << Exception::eventerror;
   }
   // boost particle back and return the particle
   decay->boost(inmom.boostVector());
@@ -839,7 +921,7 @@ EvtParticle * EvtGen::EvtGenParticle(const Particle & part) {
 void EvtGen::evtDecay(EvtParticle * part,EvtDecayBase* decayerin,
 		      EvtDecayAmp* damp,
 		      EvtDecayIncoherent* dinc, EvtDecayProb* dprob,
-		      unsigned int & nbeforerad) {
+		      unsigned int & nbeforerad) const {
   unsigned int ntry(1);
   int ii;
   bool done(false);
@@ -854,7 +936,6 @@ void EvtGen::evtDecay(EvtParticle * part,EvtDecayBase* decayerin,
   EvtId pid(part->getId());
   do {
     bool selected(true);
-    cout << "testing the particleA " << EvtPDL::name(part->getId()) << endl;
     do {
       EvtStatus::initRejectFlag();
       // get the decayer
@@ -879,17 +960,18 @@ void EvtGen::evtDecay(EvtParticle * part,EvtDecayBase* decayerin,
 	  selected=false;
 	}
       }
-      else{selected=true;}
+      else {
+	selected=true;
+      }
     }
     while(!selected);
-    cout << "testing the particleB " << EvtPDL::name(part->getId()) << endl;
     // work out which type it is and perform decay
     damp  = dynamic_cast<EvtDecayAmp*>(decayer);
     dinc  = dynamic_cast<EvtDecayIncoherent*>(decayer);
     dprob = dynamic_cast<EvtDecayProb*>(decayer);
     // EvtDecayAmp is base class can do the correlations
     if(damp) {
-      cerr << "testing can't get amplitude\n";
+      cerr << "need to implement\n";
       //damp->amplitude().init(part->getId(),damp->getNDaug(),damp->getDaugs());
       double prob,prob_max;
       EvtSpinDensity rho;
@@ -901,14 +983,11 @@ void EvtGen::evtDecay(EvtParticle * part,EvtDecayBase* decayerin,
 	damp->setWeight(1.);
 	nbeforerad=damp->getNDaug();
 	damp->decay(part);
-	cerr << "testing can't get amplitude\n";
-	//rho=damp->amplitude().getSpinDensity();
+	rho=damp->amplitude().getSpinDensity();
 	prob=part->getSpinDensityForward().NormalizedProb(rho);
-	if(prob<0.)
-	  {throw Exception() << "Negative probablity in EvtGen::randomDecay() " 
-			     << Exception::runerror;}
-	cerr << "testing can't get weight\n";
-	//prob/=damp->getWeight();
+	if(prob<0.) throw Exception() << "Negative probablity in EvtGen::evtDecay() " 
+				      << Exception::runerror;
+	prob/=damp->getWeight();
 	prob_max = damp->getProbMax(prob);
 	cerr << "testing can't set decay prob\n";
 	//part->setDecayProb(prob/prob_max);
@@ -986,7 +1065,7 @@ void EvtGen::evtDecay(EvtParticle * part,EvtDecayBase* decayerin,
   part=unmix;
 }
 
-void EvtGen::checkConversion() {
+void EvtGen::checkConversion() const {
   // check the translation of particles from ThePEG to EvtGen.
   ParticleMap::const_iterator pit  = generator()->particles().begin();
   ParticleMap::const_iterator pend = generator()->particles().end();
@@ -1032,7 +1111,7 @@ void EvtGen::checkConversion() {
   }
 }
 
-void EvtGen::outputEvtGenDecays(long parentid) {
+void EvtGen::outputEvtGenDecays(long parentid) const {
   // output the decay modes from EvtGen so we can read them in
   EvtId parent(EvtGenID(parentid));
   // get evtids for children

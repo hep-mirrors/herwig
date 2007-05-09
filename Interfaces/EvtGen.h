@@ -61,14 +61,14 @@ public:
    * and performs all the subsequent decays of the particles produced.
    * @param parent The decaying parent
    */
-  ParticleVector randomDecayAll(const Particle &parent);
+  ParticleVector randomDecayAll(const Particle &parent) const;
 
   /**
    * Return the decay products for a decay where EvtGen selects the decay mode
    * but only performs the particle's decay and leaves the rest to Herwig.
    * @param parent The decaying parent
    */
-  ParticleVector randomDecay(const Particle &parent);
+  ParticleVector randomDecay(const Particle &parent) const;
 
   /**
    * Return the decay products for a decay where Herwig++ chooses the decay mode
@@ -76,7 +76,7 @@ public:
    * @param dm The DecayMode
    * @param parent The decaying parent. 
    */
-  ParticleVector decayAll(const DecayMode & dm,const Particle & parent);
+  ParticleVector decayAll(const DecayMode & dm,const Particle & parent) const;
     
   /**
    * Return the decay products for a decay where Herwig++ chooses the decay mode
@@ -157,7 +157,7 @@ private:
 private:
 
   /**
-   *   get EvtGen to perform the decay of a particle
+   * Get EvtGen to perform the decay of a particle
    * @param part The decaying particle
    * @param decayer Pointer to the decayer to be used if we have already
    * selected one.
@@ -168,7 +168,7 @@ private:
    */
   void evtDecay(EvtParticle * part,EvtDecayBase* decayer, EvtDecayAmp* damp,
 		EvtDecayIncoherent* dinc, EvtDecayProb* dprob,
-		unsigned int & nbeforerad);
+		unsigned int & nbeforerad) const;
 
 
   /** @name Functions to convert between EvtGen and Herwig++ classes */
@@ -177,7 +177,7 @@ private:
    * Convert a particle to an EvtGen particle.
    * @param part The particle to be converted.
    */
-  EvtParticle *EvtGenParticle(const Particle & part);
+  EvtParticle *EvtGenParticle(const Particle & part) const;
 
   /**
    * Convert a particle from an EvtGen one to ThePEG one.
@@ -185,27 +185,27 @@ private:
    * @param pd Pointer to the particle data object of ThePEG for the particle.
    * @param spin Convert the spin information as well
    */
-  inline PPtr ThePEGParticle(EvtParticle *evtpart, tcPDPtr pd,bool spin);
+  inline PPtr ThePEGParticle(EvtParticle *evtpart, tcPDPtr pd,bool spin) const;
 
   /**
-   *  Check the particle has SpinInfo and if not create it
+   * Check the particle has SpinInfo and if not create it
    * @param part The particle
    */
-  inline tSpinfoPtr getSpinInfo(const Particle &part);
+  inline tSpinfoPtr getSpinInfo(const Particle &part) const;
 
   /**
    * Set the SpinInfo for a ThePEG particle using an EvtGen particle
    * @param pegpart ThePEG particle.
    * @param evtpart The EvtGen particle.
    */
-  void ThePEGSpin(PPtr pegpart,EvtParticle *evtpart);
+  void ThePEGSpin(PPtr pegpart,EvtParticle *evtpart) const;
 
   /**
    *  Return the decay products of an EvtGen particle in as ThePEG particles
    * @param evtpart The EvtGen particle
    * @param spin Produce spin information for the particles
    */
-  ParticleVector decayProducts(EvtParticle* evtpart,bool spin);
+  ParticleVector decayProducts(EvtParticle* evtpart,bool spin) const;
 
   /**
    * Convert a Lorentz5Momentum to a real EvtGen 4-vector
@@ -218,94 +218,94 @@ private:
    * @param mom The EvtGen 4-momentum
    * @param mass The mass
    */
-  inline Lorentz5Momentum ThePEGMomentum(EvtVector4R mom,double mass);
+  inline Lorentz5Momentum ThePEGMomentum(const EvtVector4R & mom,double mass) const;
 
   /**
    * Convert a spin density matrix to an EvtGen spin density matrix.
    * @param rho The spin density matrix to be converted.
    */
-  inline EvtSpinDensity EvtGenSpinDensity(const RhoDMatrix & rho);
+  inline EvtSpinDensity EvtGenSpinDensity(const RhoDMatrix & rho) const;
 
   /**
    * Convert a spin density to a ThePEG one from an EvtGen one
    * @param rho The spin density matrix to be converted
    * @param id The PDG code of the particle to get special cases right.
    */
-  RhoDMatrix ThePEGSpinDensity(const EvtSpinDensity & rho, int id);
+  RhoDMatrix ThePEGSpinDensity(const EvtSpinDensity & rho, int id) const;
 
   /**
    * Convert from our complex to the EvtGen one
    */
-  inline EvtComplex EvtGenComplex(Complex);
+  inline EvtComplex EvtGenComplex(Complex) const;
 
   /**
    * Convert from EvtGen complex to ours
    */
-  inline Complex ThePEGComplex(EvtComplex);
+  inline Complex ThePEGComplex(EvtComplex) const;
 
   /**
    * Convert a LorentzSpinor to an EvtGen one. The spinor is converted to the 
    * EvtGen Dirac representation/
    * @param sp The LorentzSpinor
    */
-  inline EvtDiracSpinor EvtGenSpinor(LorentzSpinor sp);
+  inline EvtDiracSpinor EvtGenSpinor(const LorentzSpinor & sp) const;
 
   /**
    * Convert an EvtDiracSpinor a LorentzSpinor. This spinor is converted to 
    * the default Dirac matrix representation used by ThePEG.
    * @param sp The EvtDiracSpinor
    */
-  inline LorentzSpinor ThePEGSpinor(EvtDiracSpinor sp);
+  inline LorentzSpinor ThePEGSpinor(const EvtDiracSpinor & sp) const;
 
   /**
    * Convert a LorentzPolarizationVector to a complex EvtGen 4-vector
    * @param eps The polarization vector to be converted
    */
-  inline EvtVector4C EvtGenPolarization(const LorentzPolarizationVector eps);
+  inline EvtVector4C EvtGenPolarization(const LorentzPolarizationVector & eps) const;
 
   /**
    * Convert an EvtGen complex 4-vector to a LorentzPolarizationVector
    * @param eps The complex 4-vector to be converted.
    */
-  inline LorentzPolarizationVector ThePEGPolarization(const EvtVector4C eps);
+  inline LorentzPolarizationVector ThePEGPolarization(const EvtVector4C & eps) const;
 
   /**
    * Convert our Rarita-Schwinger spinor to the EvtGen one
    * @param sp Our  RS Spinor
    */
-  inline EvtRaritaSchwinger EvtGenRSSpinor(const LorentzRSSpinor sp);
+  inline EvtRaritaSchwinger EvtGenRSSpinor(const LorentzRSSpinor & sp) const;
 
   /**
    * Convert an EvtGen Rarita-Schwinger spinor to ours
    * @param sp The EvtGen RS spinor.
    */
-  inline LorentzRSSpinor ThePEGRSSpinor(const EvtRaritaSchwinger sp);
+  inline LorentzRSSpinor ThePEGRSSpinor(const EvtRaritaSchwinger & sp) const;
 
   /**
    * Convert our tensor to the EvtGen one.
    * @param ten Our tensor
    */
-  inline EvtTensor4C EvtGenTensor(const LorentzTensor ten);
+  inline EvtTensor4C EvtGenTensor(const LorentzTensor & ten) const;
 
   /**
    * Convert an EvtGen tensor to ThePEG
    * @param ten The EvtGen tensor
    */
-  inline LorentzTensor ThePEGTensor(const EvtTensor4C ten);
+  inline LorentzTensor ThePEGTensor(const EvtTensor4C & ten) const;
 
   /**
    * Convert a PDG code from ThePEG into an EvtGen particle id
    * @param id The PDG code
    * @param exception Whether or not to throw an Exception if fails
    */
-  EvtId EvtGenID(int id,bool exception=true);
+  EvtId EvtGenID(int id,bool exception=true) const;
 
   /**
    * Convert an EvtGen EvtId to a PDG code in our conventions
    * @param id The EvtGen ID.
    * @param exception Whether or not to throw an Exception if fails
    */
-  int   ThePEGID(EvtId id,bool exception=true);
+  int   ThePEGID(EvtId id,bool exception=true) const;
 
   /**
    *  Construct the DecayVertex for Herwig using the information from
@@ -315,25 +315,25 @@ private:
    * @param damp Pointer to the EvtGen decayer
    */
   void constructVertex(const Particle & parent,ParticleVector products,
-		       EvtDecayAmp* damp);
+		       EvtDecayAmp* damp) const;
   //@}
 
   /**
    *  Find the location in the EvtGen list of decay channels for
    *  a given decay mode.
    */
-  int EvtGenChannel(const DecayMode &dm);
+  int EvtGenChannel(const DecayMode &dm) const;
 
   /**
    *  Check the conversion of particles between Herwig++ and EvtGen
    */
-  void checkConversion();
+  void checkConversion() const;
 
   /**
    * Output the EvtGen decay modes for a given particle
    * @param id The PDG code of the particle to output
    */
-  void outputEvtGenDecays(long id);
+  void outputEvtGenDecays(long id) const;
 
 private:
 
