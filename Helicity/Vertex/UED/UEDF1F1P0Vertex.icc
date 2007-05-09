@@ -25,6 +25,8 @@ inline void UEDF1F1P0Vertex::doinit() throw(InitException) {
   theCharges[0] = theUEDBase->ee();
   theCharges[1] = theUEDBase->ed();
   theCharges[2] = theUEDBase->eu();
+  orderInGs(0);
+  orderInGem(0);
 }
 
 }

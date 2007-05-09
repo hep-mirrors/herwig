@@ -24,6 +24,8 @@ inline void UEDF1F1W0Vertex::doinit() throw(InitException) {
 			  << Exception::runerror;
   theSinThW = sqrt(theUEDBase->sin2ThetaW());
   theRadius = theUEDBase->compactRadius();
+  orderInGs(0);
+  orderInGem(0);
 }
 
 

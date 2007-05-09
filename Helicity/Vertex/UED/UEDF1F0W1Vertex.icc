@@ -23,6 +23,8 @@ inline void UEDF1F0W1Vertex::doinit() throw(InitException) {
 			  << "the UEDBase object is null!"
 			  << Exception::runerror;
   theSinThetaW2 = theUEDBase->sin2ThetaW();
+  orderInGs(0);
+  orderInGem(1);
 }
 
 }
