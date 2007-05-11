@@ -43,25 +43,10 @@ class PScalarVectorFermionsDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   PScalarVectorFermionsDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline PScalarVectorFermionsDecayer(const PScalarVectorFermionsDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~PScalarVectorFermionsDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required

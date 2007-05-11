@@ -30,20 +30,10 @@ class ScalarScalarScalarDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   ScalarScalarScalarDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline ScalarScalarScalarDecayer(const ScalarScalarScalarDecayer &);
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -184,7 +174,6 @@ private:
 };
 
 }
-
 
 #include "ThePEG/Utilities/ClassTraits.h"
 

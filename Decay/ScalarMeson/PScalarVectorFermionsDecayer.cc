@@ -7,11 +7,6 @@
 #include "PScalarVectorFermionsDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarVectorFermionsDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -86,56 +81,53 @@ void PScalarVectorFermionsDecayer::doinit() throw(InitException) {
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
   vector<double> wgt(1,1.);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0] = getParticleData(_incoming[ix]);
-      extpart[1] = getParticleData(_outgoingV[ix]);
-      extpart[2] = getParticleData(_outgoingf[ix]);
-      extpart[3] = getParticleData(_outgoinga[ix]);
-      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
-      newchannel->addIntermediate(gamma     ,1,-1.1, 2,3);
-      mode->addChannel(newchannel);
-      addMode(mode,_maxweight[ix],wgt);
-    }
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extpart[0] = getParticleData(_incoming[ix]);
+    extpart[1] = getParticleData(_outgoingV[ix]);
+    extpart[2] = getParticleData(_outgoingf[ix]);
+    extpart[3] = getParticleData(_outgoinga[ix]);
+    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
+    newchannel->addIntermediate(gamma     ,1,-1.1, 2,3);
+    mode->addChannel(newchannel);
+    addMode(mode,_maxweight[ix],wgt);
+  }
   // set up the values for the VMD factor if needed (copy the default mass and width 
   //                                                 into the array)
-  for(unsigned ix=0;ix<isize;++ix)
-    {
-      if(_includeVMD[ix]==1)
-	{
-	  _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
-	  _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
-	}
+  for(unsigned ix=0;ix<isize;++ix) {
+    if(_includeVMD[ix]==1) {
+      _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
+      _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
     }
+  }
 }
 
-PScalarVectorFermionsDecayer::~PScalarVectorFermionsDecayer() {}
-
-int PScalarVectorFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int PScalarVectorFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int imode(-1);
   // must be three outgoing particles
-  if(dm.products().size()!=3){return imode;}
+  if(dm.products().size()!=3) return imode;
   // ids of the particles
   int id0(dm.parent()->id()),idf[2],idv(0);
   unsigned int nf(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit)
-    {
-      if((**pit).iSpin()==PDT::Spin1){idv=(**pit).id();}
-      else{idf[nf]=(**pit).id();++nf;}
+  for( ;pit!=dm.products().end();++pit) {
+    if((**pit).iSpin()==PDT::Spin1) {
+      idv=(**pit).id();
     }
+    else {
+      idf[nf]=(**pit).id();
+      ++nf;
+    }
+  }
   // loop over the modes and see if this is one of them
   unsigned int ix=0;
-  do
-    {
-      if(_incoming[ix]==id0&&_outgoingV[ix]==idv)
-	{if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
-	    (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])){imode=ix;}}
-      ++ix;
-    }
+  do {
+    if(_incoming[ix]==id0&&_outgoingV[ix]==idv)
+      {if((idf[0]==_outgoingf[ix]&&idf[1]==_outgoinga[ix])||
+	  (idf[1]==_outgoingf[ix]&&idf[0]==_outgoinga[ix])){imode=ix;}}
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   cc=false;
   return imode;
@@ -228,8 +220,7 @@ void PScalarVectorFermionsDecayer::Init() {
 
 double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
 					 const Particle & inpart,
-					 const ParticleVector & decay) const
-{
+					 const ParticleVector & decay) const {
   // workaround for gcc 3.2.3 bug
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
   tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
@@ -376,59 +367,57 @@ double PScalarVectorFermionsDecayer::threeBodydGammads(const int imodeb,
 
 // output the setup information for the particle database
 void PScalarVectorFermionsDecayer::dataBaseOutput(ofstream & output,
-						  bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+						  bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming   " << ix << "  " 
-		 << _incoming[ix]   << "\n";
-	  output << "set " << fullName() << ":OutgoingVector  " 
-		 << ix << "  " << _outgoingV[ix]  << "\n";
-	  output << "set " << fullName() << ":OutgoingFermion  " 
-		 << ix << "  " << _outgoingf[ix]  << "\n";
-	  output << "set " << fullName() << ":OutgoingAntiFermion " 
-		 << ix << "  " << _outgoinga[ix]  << "\n";
-	  output << "set " << fullName() << ":Coupling   " << ix << "  " 
-		 << _coupling[ix]   << "\n";
-	  output << "set " << fullName() << ":MaxWeight  " << ix << "  " 
-		 << _maxweight[ix]  << "\n";
-	  output << "set " << fullName() << ":IncludeVMD " << ix << "  " 
-		 << _includeVMD[ix] << "\n";
-	  output << "set " << fullName() << ":VMDID      " << ix << "  " 
-		 << _VMDid[ix]      << "\n";
-	  output << "set " << fullName() << ":VMDmass    " << ix << "  " 
-		 << _VMDmass[ix]    << "\n";
-	  output << "set " << fullName() << ":VMDwidth   " << ix << "  " 
-		 << _VMDwidth[ix]   << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming   " << ix << "  " 
-		 << _incoming[ix]   << "\n";
-	  output << "insert " << fullName() << ":OutgoingVector  " 
-		 << ix << "  " << _outgoingV[ix]  << "\n";
-	  output << "insert " << fullName() << ":OutgoingFermion  " 
-		 << ix << "  " << _outgoingf[ix]  << "\n";
-	  output << "insert " << fullName() << ":OutgoingAntiFermion " 
-		 << ix << "  " << _outgoinga[ix]  << "\n";
-	  output << "insert " << fullName() << ":Coupling   " << ix << "  " 
-		 << _coupling[ix]   << "\n";
-	  output << "insert " << fullName() << ":IncludeVMD " << ix << "  " 
-		 << _includeVMD[ix] << "\n";
-	  output << "insert " << fullName() << ":VMDID      " << ix << "  " 
-		 << _VMDid[ix]      << "\n";
-	  output << "insert " << fullName() << ":VMDmass    " << ix << "  " 
-		 << _VMDmass[ix]    << "\n";
-	  output << "insert " << fullName() << ":VMDwidth   " << ix << "  " 
-		 << _VMDwidth[ix]   << "\n";
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":Incoming   " << ix << "  " 
+	     << _incoming[ix]   << "\n";
+      output << "set " << fullName() << ":OutgoingVector  " 
+	     << ix << "  " << _outgoingV[ix]  << "\n";
+      output << "set " << fullName() << ":OutgoingFermion  " 
+	     << ix << "  " << _outgoingf[ix]  << "\n";
+      output << "set " << fullName() << ":OutgoingAntiFermion " 
+	     << ix << "  " << _outgoinga[ix]  << "\n";
+      output << "set " << fullName() << ":Coupling   " << ix << "  " 
+	     << _coupling[ix]   << "\n";
+      output << "set " << fullName() << ":MaxWeight  " << ix << "  " 
+	     << _maxweight[ix]  << "\n";
+      output << "set " << fullName() << ":IncludeVMD " << ix << "  " 
+	     << _includeVMD[ix] << "\n";
+      output << "set " << fullName() << ":VMDID      " << ix << "  " 
+	     << _VMDid[ix]      << "\n";
+      output << "set " << fullName() << ":VMDmass    " << ix << "  " 
+	     << _VMDmass[ix]    << "\n";
+      output << "set " << fullName() << ":VMDwidth   " << ix << "  " 
+	     << _VMDwidth[ix]   << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+    else {
+      output << "insert " << fullName() << ":Incoming   " << ix << "  " 
+	     << _incoming[ix]   << "\n";
+      output << "insert " << fullName() << ":OutgoingVector  " 
+	     << ix << "  " << _outgoingV[ix]  << "\n";
+      output << "insert " << fullName() << ":OutgoingFermion  " 
+	     << ix << "  " << _outgoingf[ix]  << "\n";
+      output << "insert " << fullName() << ":OutgoingAntiFermion " 
+	     << ix << "  " << _outgoinga[ix]  << "\n";
+      output << "insert " << fullName() << ":Coupling   " << ix << "  " 
+	     << _coupling[ix]   << "\n";
+      output << "insert " << fullName() << ":IncludeVMD " << ix << "  " 
+	     << _includeVMD[ix] << "\n";
+      output << "insert " << fullName() << ":VMDID      " << ix << "  " 
+	     << _VMDid[ix]      << "\n";
+      output << "insert " << fullName() << ":VMDmass    " << ix << "  " 
+	     << _VMDmass[ix]    << "\n";
+      output << "insert " << fullName() << ":VMDwidth   " << ix << "  " 
+	     << _VMDwidth[ix]   << "\n";
+    }
+  }
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
 }
 }
 
