@@ -312,6 +312,11 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
     _intwidth.push_back(_intpart[ix]->width());
     _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
     _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
+    if(_intwidth.back()==0.&&ix>0) {
+      throw InitException() << "Width zero for " << _intpart[ix]->PDGName()
+			    << " in DecayPhaseSpaceChannel::doinit()"
+			    << Exception::runerror;
+    }
   }
   // external particles for each intermediate particle
   vector<int> temp;
