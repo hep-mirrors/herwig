@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DtoKPiPiE791 class.
+//
+#ifndef HERWIG_DtoKPiPiE791_FH
+#define HERWIG_DtoKPiPiE791_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DtoKPiPiE791;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DtoKPiPiE791,DtoKPiPiE791Ptr);
+
+}
+
+#endif

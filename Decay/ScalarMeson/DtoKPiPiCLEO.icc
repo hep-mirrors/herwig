@@ -1,0 +1,64 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DtoKPiPiCLEO class.
+//
+
+namespace Herwig {
+
+inline IBPtr DtoKPiPiCLEO::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DtoKPiPiCLEO::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
+					Energy mA , Energy mB , Energy mC ,
+					Energy mAB, Energy mAC, Energy mBC,
+					Energy mres, Energy wres) const{
+  // compute the production momenta
+  Energy pDR  = Kinematics::CMMomentum(mD,mres,mC);
+  Energy pDAB = Kinematics::CMMomentum(mD,mAB ,mC);
+  // and the decay momenta
+  Energy pAB = Kinematics::CMMomentum(mAB ,mA,mB);
+  Energy pR  = Kinematics::CMMomentum(mres,mA,mB);
+  double Fd(1.),Fr(1.),s(1.);
+  switch(ispin) {
+  case 0:
+    // default values of parameters are correct
+    break;
+  case 1:
+    Fr = sqrt((1.+sqr(_rres*pR ))/(1.+sqr(_rres*pAB )));
+    Fd = sqrt((1.+sqr(_rD0 *pDR))/(1.+sqr(_rD0 *pDAB)));
+    s = ((mAC-mBC)*(mAC+mBC)+(mD-mC)*(mD+mC)*(mB-mA)*(mB+mA)/sqr(mres))/GeV2;
+    break;
+  case 2:
+    Fr = sqrt((9.+3.*sqr(_rres*pR  )+Math::powi(_rres*pR  ,4))/
+	      (9.+3.*sqr(_rres*pAB )+Math::powi(_rres*pAB ,4)));
+    Fd = sqrt((9.+3.*sqr(_rD0 *pDR )+Math::powi(_rD0 *pDR ,4))/
+	      (9.+3.*sqr(_rD0 *pDAB)+Math::powi(_rD0 *pDAB,4)));
+    s = sqr(((mBC-mAC)*(mBC+mAC)+(mD-mC)*(mD+mC)*(mA-mB)*(mA+mB)/sqr(mres))/GeV2)
+      -(mAB*mAB-2.*mD*mD-2.*mC*mC+sqr((mD-mC)*(mD+mC))/sqr(mres))*
+       (mAB*mAB-2.*mA*mA-2.*mB*mB+sqr((mA-mB)*(mA+mB))/sqr(mres))/3./GeV2/GeV2;
+    break;
+  default:
+    throw Exception() << "D0toK0PiPiBaBar::amplitude spin is too high ispin = " 
+		      << ispin << Exception::runerror;
+  }
+  // calculate the width term
+  Complex bw;
+  if(!f0) {
+    Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres)/mAB;
+    bw = sqr(mres)-sqr(mAB)-Complex(0.,mwid);
+  }
+  else {
+    Energy Gamma_pi = _gpi*sqrt(0.25*sqr(mAB)-sqr(_mpi));
+    Energy Gamma_K  = 0.5*_gK *(sqrt(0.25*sqr(mAB)-sqr(_mkp))+
+				sqrt(0.25*sqr(mAB)-sqr(_mk0)));
+    bw = sqr(mres)-sqr(mAB)-Complex(0.,Gamma_pi+Gamma_K);
+  }
+  return s*Fr*Fd*GeV2/bw;
+}
+}

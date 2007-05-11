@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DtoKPiPiE791 class.
+//
+
+namespace Herwig {
+
+
+inline IBPtr DtoKPiPiE791::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DtoKPiPiE791::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

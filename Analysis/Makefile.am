@@ -77,7 +77,9 @@ Pi4ElectronAnalysis.fh Pi4ElectronAnalysis.cc  \
 BtoSGammaAnalysis.h BtoSGammaAnalysis.icc \
 BtoSGammaAnalysis.fh BtoSGammaAnalysis.cc   \
 ZPhotonsAnalysis.h ZPhotonsAnalysis.icc \
-ZPhotonsAnalysis.fh ZPhotonsAnalysis.cc 
+ZPhotonsAnalysis.fh ZPhotonsAnalysis.cc \
+DDalitzAnalysis.h DDalitzAnalysis.icc \
+DDalitzAnalysis.fh DDalitzAnalysis.cc 
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
