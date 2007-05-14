@@ -416,6 +416,14 @@ MEff2ff::ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin,
       }
     }
   }	  
+  const double identfact = mePartonData()[2]->id() == mePartonData()[3]->id()  
+    ? 0.5 : 1.; 
+  const double colfact = mePartonData()[0]->coloured() ? 1./9. : 1; 
+  DVector save(ndiags); 
+  for(DVector::size_type ix = 0; ix < ndiags; ++ix) 
+    save[ix] = 0.25*identfact*colfact*me[ix]; 
+  meInfo(save); 
+  me2 *= 0.25*identfact*colfact; 
   return prodME;
 }
 
