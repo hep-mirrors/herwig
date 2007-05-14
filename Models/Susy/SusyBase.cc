@@ -160,43 +160,35 @@ void SusyBase::readSetup(istream &is) throw(SetupException) {
   while(getline(file, line)) {
     if(line[0] == '#') continue;
     transform(line.begin(), line.end(), line.begin(), pf);
-    if(line.find("alpha") != string::npos) {
+    if(line.find("alpha") == 0) {
       getline(file, line);
       istringstream iss(line);
       iss >> theAlpha;
       continue;      
     }
-    if(line.find("block minpar") != string::npos)
+    if(line.find("block minpar") == 0)
       theMinPar = readBlock(file);
-    if(line.find("block  hmix") != string::npos)
+    if(line.find("block  hmix") == 0)
       theHMix = readBlock(file);
-    if(line.find("block mass") != string::npos)
+    if(line.find("block mass") == 0)
       theMasses = readBlock(file);
-    if(line.find("block decay") != string::npos)
+    if(line.find("decay") == 0)
       readDecay(file, line);
-    if(line.find("block nmix") != string::npos || 
-       line.find("block umix") != string::npos ||
-       line.find("block vmix") != string::npos || 
-       line.find("block stopmix") != string::npos ||
-       line.find("block sbotmix") != string::npos || 
-       line.find("block staumix") != string::npos) {
+    if(line.find("block nmix") == 0 || line.find("block umix") == 0 ||
+       line.find("block vmix") == 0 || line.find("block stopmix") == 0 ||
+       line.find("block sbotmix") == 0 || line.find("block staumix") == 0) {
       unsigned int size(0);
       string name = StringUtils::car(StringUtils::cdr(line), " #");
       vector<Complex> vals = readMatrix(file, size);
       createMixingMatrix(name, vals, size);
     }
-    if(line.find("block au") != string::npos) {
-      unsigned int dummy;
+    unsigned int dummy;
+    if(line.find("block au") == 0)
       theAu = readMatrix(file, dummy);
-    }
-    if(line.find("block ad") != string::npos) {
-      unsigned int dummy;
+    if(line.find("block ad") == 0)
       theAd = readMatrix(file, dummy);
-    }
-    if(line.find("block ae") != string::npos) {
-      unsigned int dummy;
+    if(line.find("block ae") == 0)
       theAe = readMatrix(file, dummy);
-    }
   }
   //This has to be done afterwards because the mixing matrices
   //must have been read in first
