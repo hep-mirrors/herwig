@@ -447,7 +447,7 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
   }
   
   //for diagrams with different flavour incoming states
-  if( !flavour(psa->id(), psb->id()) &&
+  if( psa->iSpin() == psb->iSpin() && !flavour(psa->id(), psb->id()) &&
       flavour(psa->id(), psd->id()) ) {
     swap(diag.outgoing.first, diag.outgoing.second);
     if(diag.channelType == HPDiagram::tChannel) {
