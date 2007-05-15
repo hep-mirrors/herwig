@@ -121,17 +121,21 @@ int GeneralTwoBodyDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
   unsigned ii(0), nipart(_inpart.size());
   cc = false;
   do {
-    if( parentID == _inpart[ii] && 
-	((id1 == _outparta[ii] && id2 == _outpartb[ii]) || 
-	 (id1 == _outpartb[ii] && id2 == _outparta[ii])) )
+    long listpid(_inpart[ii]), listid1(_outparta[ii]),
+      listid2(_outpartb[ii]);
+    if( parentID == listpid && 
+	((id1 == listid1 && id2 == listid2) || 
+	 (id1 == listid2 && id2 == listid1)) )
       imode = ii;
     //cc-mode
-    else if(parentID == -_inpart[ii]) {
+    else if(parentID == -listpid) {
       cc = true;
-      if((id1 == -_outparta[ii] && id2 == -_outpartb[ii]) || 
-	 (id1 == -_outpartb[ii] && id2 == -_outparta[ii]) ||
-	 (id1 == _outparta[ii] && id2 == -_outpartb[ii])  || 
-	 (id1 == -_outparta[ii] && id2 == _outpartb[ii]))
+      if((id1 == -listid1 && id2 == -listid2) || 
+	 (id1 == -listid2 && id2 == -listid1) ||
+	 (id1 == listid1 && id2 == -listid2)  || 
+	 (id1 == -listid1 && id2 == listid2)  ||
+	 (id1 == listid2 && id2 == -listid1)  || 
+	 (id1 == -listid2 && id2 == listid1) )
 	imode = ii;
       else ++ii;
     }
