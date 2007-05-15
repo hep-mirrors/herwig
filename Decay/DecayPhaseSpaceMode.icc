@@ -45,7 +45,8 @@ inline unsigned int DecayPhaseSpaceMode::numberChannels() const {
 
 // reset the properties of one of the intermediate particles
 inline void DecayPhaseSpaceMode::resetIntermediate(int ichan, tcPDPtr part,
-					       Energy mass, Energy width) {
+						   Energy mass, Energy width) {
+  if(!part) return;
   _channels[ichan]->resetIntermediate(part,mass,width);
 }
 

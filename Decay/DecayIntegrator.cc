@@ -167,6 +167,7 @@ void DecayIntegrator::addMode(DecayPhaseSpaceModePtr in,double maxwgt,
 
 // reset the properities of all intermediates
 void DecayIntegrator::resetIntermediate(tcPDPtr part, Energy mass, Energy width) {
+  if(!part) return;
   for(unsigned int ix=0,N=_modes.size();ix<N;++ix) {
     _modes[ix]->resetIntermediate(part,mass,width);
   }

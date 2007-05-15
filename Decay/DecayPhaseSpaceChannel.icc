@@ -104,6 +104,7 @@ inline void DecayPhaseSpaceChannel::addIntermediate(PDPtr part,int jac,double po
 // reset the mass and width of an intermediate particle
 inline void DecayPhaseSpaceChannel::resetIntermediate(tcPDPtr part,Energy mass,
 						      Energy width) {
+  if(!part) return;
   int idin=part->id();
   for(unsigned int ix=0;ix<_intpart.size();++ix) {
     if(_intpart[ix] && _intpart[ix]->id()==idin) {
