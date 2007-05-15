@@ -204,6 +204,35 @@ private:
   vector<pair<Energy2,Energy2> > _points2;
   //@}
 
+  /**
+   *  Histograms for \f$D^+\to K^-\pi^+\pi^+\f$
+   */
+  //@{
+  /**
+   *  Histogram for \f$K^-\pi^+\f$ low
+   */
+  HistogramPtr _mKpilow3;
+
+  /**
+   *  Histogram for \f$K^-\pi^+\f$ high
+   */
+  HistogramPtr _mKpihigh3;
+
+  /**
+   *  Histogram for \f$K^-\pi^+\f$ all
+   */
+  HistogramPtr _mKpiall3;
+  //@}
+
+  /**
+   *  Histogram for \f$\pi^+\pi^-\f$
+   */
+  HistogramPtr _mpipi3;
+
+  /**
+   *  Vectors for the Dalitz plot
+   */
+  vector<pair<Energy2,Energy2> > _points3;
 };
 
 }
