@@ -81,6 +81,39 @@ public:
 
 protected:
 
+  /**
+   *  Calculate the amplitude
+   * @param ispin The spin of the intermediate resonance
+   * @param k0  Whether to use a form-factor for the \f$K_0(1430)\f$
+   * @param mD  The mass of the decaying particle
+   * @param mA  The mass of the first  decay product
+   * @param mB  The mass of the second decay product
+   * @param mC  The mass of the third  decay product
+   * @param mAB The mass of the pair AB 
+   * @param ctheta The cosine of the angle between the two pions
+   * @param p2    The magnitude of the three momentum for the first  pion
+   * @param p3    The magnitude of the three momentum for the second pion
+   * @param mres The on-shell mass of the intermediate resonance
+   * @param wres The width         of the intermediate resonance
+   */
+  inline Complex amplitude(int ispin, Energy mD, Energy mA, Energy mB,
+			   Energy mC, Energy mAB, double ctheta, Energy p2, Energy p3,
+			   Energy mres, Energy wres) const;
+
+  /**
+   * Calculate the decay angle for the amplitude, the angle is the 
+   * angle between the 2 and 3 for the decay $D\to(12)3$ in the rest frame of
+   * the resonance which decays to 1 and 2.
+   * @param pparent The momentum of the parent
+   * @param pres    The momentum of the resonance
+   * @paran p1      The momentum of the first decay product of the resonance
+   */
+  inline double decayAngle(const Lorentz5Momentum & pparent,
+			   const Lorentz5Momentum & pres,
+			   const Lorentz5Momentum & p1) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -161,7 +194,7 @@ private:
   /**
    *  Phase for the \f$K^*_0(1430)^-\f$ component in model A
    */
-  double _phiA14300;
+  double _phiAK14300;
 
   /**
    *  Amplitude for the \f$K^*_2(1430)^-\f$ component in model A
@@ -171,7 +204,7 @@ private:
   /**
    *  Phase for the \f$K^*_2(1430)^-\f$ component in model A
    */
-  double _phiA14302;
+  double _phiAK14302;
 
   /**
    *  Amplitude for the \f$K^*(1680)^-\f$ component in model A
@@ -211,7 +244,7 @@ private:
   /**
    *  Phase for the \f$K^*_0(1430)^-\f$ component in model B
    */
-  double _phiB14300;
+  double _phiBK14300;
 
   /**
    *  Amplitude for the \f$K^*_2(1430)^-\f$ component in model B
@@ -221,7 +254,7 @@ private:
   /**
    *  Phase for the \f$K^*_2(1430)^-\f$ component in model B
    */
-  double _phiB14302;
+  double _phiBK14302;
 
   /**
    *  Amplitude for the \f$K^*(1680)^-\f$ component in model B
@@ -271,7 +304,7 @@ private:
   /**
    *  Phase for the \f$K^*_0(1430)^-\f$ component in model C
    */
-  double _phiC14300;
+  double _phiCK14300;
 
   /**
    *  Amplitude for the \f$K^*_2(1430)^-\f$ component in model C
@@ -281,7 +314,7 @@ private:
   /**
    *  Phase for the \f$K^*_2(1430)^-\f$ component in model C
    */
-  double _phiC14302;
+  double _phiCK14302;
 
   /**
    *  Amplitude for the \f$K^*(1680)^-\f$ component in model C
@@ -298,6 +331,11 @@ private:
    *  Complex amplitudes for the various components
    */
   //@{
+  /**
+   *  Complex amplitude for the non-resonant term
+   */
+  Complex _cNR;
+
   /**
    *  Complex amplitude for the \f$\kappa\f$ component in 
    */
@@ -389,6 +427,16 @@ private:
   Energy _wK892;
 
   /**
+   *  Mass of \f$K^*_0(1430)\f$ actually used 
+   */
+  Energy _mK1430;
+
+  /**
+   *  Width of \f$K^*_0(1430)\f$ actually used
+   */
+  Energy _wK1430;
+
+  /**
    *  Mass of \f$K^*_0(1430)\f$ in model A
    */
   Energy _mK1430A;
@@ -439,6 +487,21 @@ private:
   Energy _wK1680;
   //@}
 
+  /**
+   *  Parameters for the integration
+   */
+  //@{
+  /**
+   *  Maximum weight for the integration
+   */
+  double _maxwgt;
+
+  /**
+   *  Weights for the integration channel
+   */
+  vector<double> _weights;
+  //@}
+
 };
 
 }
@@ -471,7 +534,7 @@ struct ClassTraits<Herwig::DtoKPiPiE791>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwSMDecay.so"; }
+  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 };
 
 /** @endcond */

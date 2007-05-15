@@ -36,5 +36,7 @@ DtoKPiPiBaBar.icc DtoKPiPiBaBar.cc\
 DtoKPiPiCLEO.h   DtoKPiPiCLEO.fh \
 DtoKPiPiCLEO.icc DtoKPiPiCLEO.cc \
 DtoKPiPiE791.h   DtoKPiPiE791.fh \
-DtoKPiPiE791.icc DtoKPiPiE791.cc
+DtoKPiPiE791.icc DtoKPiPiE791.cc \
+DtoKPiPiE691.h   DtoKPiPiE691.fh \
+DtoKPiPiE691.icc DtoKPiPiE691.cc
 HwSMDecay_la_LDFLAGS = -module -version-info 2:0:0
