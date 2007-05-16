@@ -108,6 +108,21 @@ private:
 	    double & me2) const;
   
   /**
+   * Compute the matrix element for \f$\bar{\Psi}\bar{\Psi}\to\bar{\Psi}\bar{\Psi}\f$
+   * @param fin SpinorBars for first incoming particle
+   * @param fin2 SpinorBars  for second incoming particle
+   * @param fbout Spinors for first outgoing particle
+   * @param fbout2 Spinors Wavefunctions for outgoing particle
+   * @param me2 colour averaged, spin summed ME
+   * @return ProductionMatrixElement containing results of 
+   * helicity calculations
+   */
+  ProductionMatrixElement
+  fbfb2fbfbHeME(SpinorBarVector & fbin, SpinorBarVector & fbin2,
+		SpinorVector & fout, SpinorVector & fout2,
+		double & me2) const;
+
+  /**
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\lambda\lambda\f$
    * @param fin Spinors for first incoming particle
    * @param fbin SpinorBar Wavefunctions for second incoming particle
