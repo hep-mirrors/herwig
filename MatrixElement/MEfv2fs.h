@@ -6,10 +6,26 @@
 //
 
 #include "GeneralHardME.h"
+#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
+#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.fh"
+#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.fh"
 #include "MEfv2fs.fh"
 
 namespace Herwig {
 using namespace ThePEG;
+using Herwig::Helicity::FFVVertexPtr;
+using Herwig::Helicity::FFSVertexPtr;
+using Herwig::Helicity::VSSVertexPtr;
+using Herwig::Helicity::SpinorWaveFunction;
+using Herwig::Helicity::SpinorBarWaveFunction;
+using Herwig::Helicity::VectorWaveFunction;
+using Herwig::Helicity::ScalarWaveFunction;
+using Herwig::Helicity::ProductionMatrixElement;
 
 /**
  * This class is designed to implement the matrix element for 
@@ -21,6 +37,15 @@ using namespace ThePEG;
  * @see GeneralHardME
  */
 class MEfv2fs: public GeneralHardME {
+
+  /** Vector of SpinorWaveFunctions. */
+  typedef vector<SpinorWaveFunction> SpinorVector;
+
+  /** Vector of SpinorBarWaveFunctions. */
+  typedef vector<SpinorBarWaveFunction> SpinorBarVector;
+
+  /** Vector of VectorWaveFunctions. */
+  typedef vector<VectorWaveFunction> VecWFVector;
 
 public:
 
@@ -53,6 +78,45 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param subp Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr subp);
+
+private:
+
+  /** @name Functions to calculate production matrix elements and me2. */
+  //@{
+  /**
+   * Calculate me2 and the production matrix element for the normal mode.
+   * @param spIn Vector of SpinorWaveFunction for the incoming fermion
+   * @param vecIm Vector of VectorWaveFunction for incoming boson
+   * @param spbOut Vector of SpinorBarWaveFunction for outgoing fermion
+   * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param full_me The value of me2 calculation
+   */
+  ProductionMatrixElement fv2fbsHeME(const SpinorVector & spIn, 
+				     const VecWFVector & vecIn,
+				     const SpinorBarVector & spbOut,
+				     const ScalarWaveFunction & scaOut,
+				     double & full_me) const;
+  
+  /**
+   * Calculate me2 and the production matrix element for the cc mode.
+   * @param spbIn Vector of SpinorBarWaveFunction for the incoming fermion
+   * @param vecIm Vector of VectorWaveFunction for incoming boson
+   * @param spOut Vector of SpinorWaveFunction for outgoing fermion
+   * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param full_me The value of me2 calculation
+   */
+  ProductionMatrixElement fbv2fsHeME(const SpinorBarVector & spbIn, 
+				     const VecWFVector & vecIn,
+				     const SpinorVector & spOut,
+				     const ScalarWaveFunction & scaOut,
+				     double & full_me) const;
+  //@}
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -78,6 +142,18 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline void doinit() throw(InitException);
+  //@}
 
 protected:
 
@@ -109,6 +185,19 @@ private:
    * In fact, it should not even be implemented.
    */
   MEfv2fs & operator=(const MEfv2fs &);
+
+private:
+
+  /**
+   * Store a pair of  FFSVertex and VSSVertex pointers  
+   */
+  vector<pair<FFSVertexPtr, VSSVertexPtr> > theScaV;
+
+  /**
+   * Store a pair of  FFSVertex and FFVVertex pointers  
+   */
+  vector<pair<FFSVertexPtr, FFVVertexPtr> > theFermV;
+  
 };
 
 }
