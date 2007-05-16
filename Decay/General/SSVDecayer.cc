@@ -60,11 +60,24 @@ double SSVDecayer::me2(bool , const int , const Particle & inpart,
   vector<VectorWaveFunction> vecWave;
   VectorWaveFunction(vecWave,decay[ivec],outgoing,true,false,true);
   Energy2 scale(inpart.mass()*inpart.mass());
-  DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
-  for(unsigned int ix=0;ix<3;++ix) {
-    newme(0,0,ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+  //make sure decay matrix element is in the correct order
+  double output(0.);
+  if(ivec == 0) {
+    DecayMatrixElement newme(PDT::Spin0,PDT::Spin1,PDT::Spin0);
+    for(unsigned int ix=0;ix<3;++ix) {
+      newme(0,ix,0) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+    }
+    ME(newme);
+    output = (newme.contract(rhoin)).real()/scale;
   }
-  double output = (newme.contract(rhoin)).real()/scale;
+  else {
+    DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
+    for(unsigned int ix=0;ix<3;++ix) {
+      newme(0,0,ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+    }
+    ME(newme);
+    output = (newme.contract(rhoin)).real()/scale;
+  }
   colourConnections(inpart, decay);
   return output;
 }
