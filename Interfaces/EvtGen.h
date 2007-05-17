@@ -57,34 +57,15 @@ public:
   inline EvtGen();
 
   /**
-   * Return the decay products for a decay where EvtGen selects the decay mode
-   * and performs all the subsequent decays of the particles produced.
-   * @param parent The decaying parent
+   *  Use EvtGen to perform a decay
+   * @param parent The decaying particle
+   * @param recursive Whether or not EvtGen should recursively decay the
+   * products of the decay
+   * @param dm The decaymode
+   * @return The decay products
    */
-  ParticleVector randomDecayAll(const Particle &parent) const;
-
-  /**
-   * Return the decay products for a decay where EvtGen selects the decay mode
-   * but only performs the particle's decay and leaves the rest to Herwig.
-   * @param parent The decaying parent
-   */
-  ParticleVector randomDecay(const Particle &parent) const;
-
-  /**
-   * Return the decay products for a decay where Herwig++ chooses the decay mode
-   * and EvtGen performs all the subsquent decays of the particles produced.
-   * @param dm The DecayMode
-   * @param parent The decaying parent. 
-   */
-  ParticleVector decayAll(const DecayMode & dm,const Particle & parent) const;
-    
-  /**
-   * Return the decay products for a decay where Herwig++ chooses the decay mode
-   * and will perform the decay of any unstable particles produced.
-   * @param dm The DecayMode
-   * @param parent The decaying parent. 
-   */ 
-  ParticleVector decay(const DecayMode &dm,const Particle & parent);
+  ParticleVector decay(const Particle &parent,bool recursive,
+		       const DecayMode & dm) const;
   
 public:
   
@@ -155,21 +136,6 @@ private:
   EvtGen & operator=(const EvtGen &);
 
 private:
-
-  /**
-   * Get EvtGen to perform the decay of a particle
-   * @param part The decaying particle
-   * @param decayer Pointer to the decayer to be used if we have already
-   * selected one.
-   * @param damp  Pointer to the decayer in based on EvtDecayAmp 
-   * @param dinc  Pointer to the decayer in based on EvtDecayIncoherent
-   * @param dprob Pointer to the decayer in based on EvtDecayProb
-   * @param nbeforerad Number of decay products before photon radiation added.
-   */
-  void evtDecay(EvtParticle * part,EvtDecayBase* decayer, EvtDecayAmp* damp,
-		EvtDecayIncoherent* dinc, EvtDecayProb* dprob,
-		unsigned int & nbeforerad) const;
-
 
   /** @name Functions to convert between EvtGen and Herwig++ classes */
   //@{

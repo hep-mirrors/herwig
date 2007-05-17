@@ -17,6 +17,10 @@ using namespace ThePEG;
  * The EvtGenDecayer class is designed to allow the EvtGen decay package to be used
  * as a Decayer in the Herwig++ structure.
  *
+ * It is a simple wrapper which uses members of the Herwig++ EvtGen class to perform
+ * the decay
+ *
+ * @see EvtGen
  * @see \ref EvtGenDecayerInterfaces "The interfaces"
  * defined for EvtGenDecayer.
  */
@@ -76,6 +80,15 @@ public:
 
 protected:
 
+  /**
+   *  Method to check conservation of charge and momentum in the decay
+   *  for testing only
+   * @param parent The decaying particle
+   */
+  void checkDecay(PPtr parent) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -116,6 +129,11 @@ private:
    *  Option for how EvtGen is used
    */
   unsigned int _evtopt;
+
+  /**
+   *  Perform checks ?
+   */
+  bool _check;
 };
 
 }
