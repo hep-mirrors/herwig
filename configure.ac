@@ -49,6 +49,10 @@ AC_PATH_PROG(PERL, perl)
 
 AC_PDF_PATH
 
+AC_CHECK_LIB(m,main)
+AC_CHECK_LIB(gslcblas,main)
+AC_CHECK_LIB(gsl,main)
+
 AC_CHECK_CLHEP
 AC_CHECK_HEPMC
 
