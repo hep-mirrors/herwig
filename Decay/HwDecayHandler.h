@@ -137,6 +137,11 @@ private:
    *  Number of tries to regenerate a partonic decay to sucessfully hadronize it
    */
   unsigned int _hadtry;
+
+  /**
+   *  Option for adding particles in a new Step
+   */
+  bool _newstep;
 };
 }
 
