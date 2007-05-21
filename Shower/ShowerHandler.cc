@@ -160,14 +160,11 @@ void ShowerHandler::findShoweringParticles() {
     if(!(*taggedP)->parents().empty()) {
 	parent = (*taggedP)->parents()[0];
 	// check if from s channel decaying colourless particle
-	// (must be same as in findParent)
-	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.&&
-	  parent != eventHandler()->lastPartons().first &&
-	  parent != eventHandler()->lastPartons().second;
+	isDecayProd = decayProduct(parent);
       }
     // add to list of outgoing hard particles if needed
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    if(isDecayProd) hardParticles.insert(findParent(parent));
+    if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset));
     else            hardParticles.insert(*taggedP);
   }
   // there must be something to shower
@@ -187,6 +184,8 @@ void ShowerHandler::findShoweringParticles() {
 
 void ShowerHandler::cascade() {
   Timer<1002> timer("ShowerHandler::cascade");
+  // set the current step
+  _current=currentStep();
   //  start of the try block for the whole showering process
   unsigned int countFailures=0;
   ShowerTreePtr hard;
@@ -212,8 +211,7 @@ void ShowerHandler::cascade() {
       // shower the decay products
       while(!_decay.empty()) {
 	multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
-	while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
-	  --dit;
+	while(!dit->second->parent()->hasShowered() && dit!=_decay.begin()) --dit;
 	// get the particle and the width
 	ShowerTreePtr decayingTree = dit->second;
 	// 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
@@ -257,48 +255,52 @@ void ShowerHandler::makeRemnants() {
   // get the remnants
   tParticleSet remn=generator()->currentEvent()->primaryCollision()->getRemnants();
   // fix the momenta
-  for(unsigned int ix=0;ix<in.size();++ix)
-    {
-      Lorentz5Momentum pnew;
-      ParticleVector prem,pother;
-      if(in[ix]->children().size()==1) continue;
-      for(unsigned int iy=0;iy<in[ix]->children().size();++iy)
-	{
-	  if(remn.find(in[ix]->children()[iy])==remn.end())
-	    {
-	      pnew+=in[ix]->children()[iy]->momentum();
-	      pother.push_back(in[ix]->children()[iy]);
-	    }
-	  else
-	    prem.push_back(in[ix]->children()[iy]);
-	}
-      pnew=in[ix]->momentum()-pnew;
-      pnew.rescaleMass();
-      // throw exception if gone wrong
-      if(prem.size()!=1||pother.size()!=1) 
-	throw Exception() 
-	  << "Must be one and only 1 remnant for beam in ShowerHandler::makeRemnants()"
-	  << Exception::eventerror;
-	  // remake the remnant
-      if(prem[0]->id()==ExtraParticleID::Remnant)
-	{
-	  tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(prem[0]);
-	  if(rem) rem->regenerate(pother[0],pnew);
-	}
+  for(unsigned int ix=0;ix<in.size();++ix) {
+    Lorentz5Momentum pnew;
+    ParticleVector prem,pother;
+    if(in[ix]->children().size()==1) continue;
+    for(unsigned int iy=0;iy<in[ix]->children().size();++iy) {
+      if(remn.find(in[ix]->children()[iy])==remn.end()) {
+	pnew+=in[ix]->children()[iy]->momentum();
+	pother.push_back(in[ix]->children()[iy]);
+      }
+      else
+	prem.push_back(in[ix]->children()[iy]);
     }
+    pnew=in[ix]->momentum()-pnew;
+    pnew.rescaleMass();
+    // throw exception if gone wrong
+    if(prem.size()!=1||pother.size()!=1) 
+      throw Exception() 
+	<< "Must be one and only 1 remnant for beam in ShowerHandler::makeRemnants()"
+	<< Exception::eventerror;
+    // remake the remnant
+    if(prem[0]->id()==ExtraParticleID::Remnant) {
+      tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(prem[0]);
+      if(rem) rem->regenerate(pother[0],pnew);
+    }
+  }
 }
 
-PPtr ShowerHandler::findParent(PPtr original) const {
+PPtr ShowerHandler::findParent(PPtr original, bool & isHard, 
+			       set<PPtr> outgoingset) const {
   PPtr parent=original;
+  isHard |=(outgoingset.find(original) != outgoingset.end());
   if(!original->parents().empty()) {
-    // must be the same as in findShoweringParticles
     PPtr orig=original->parents()[0];
-    if(orig->momentum().m2() > 0. 
-       && !orig->dataPtr()->coloured()
-       && orig != eventHandler()->lastPartons().first 
-       && orig != eventHandler()->lastPartons().second
-       )
-      parent=findParent(original);
+    if(_current->find(orig)&&decayProduct(orig)) {
+      parent=findParent(orig,isHard,outgoingset);
+    }
   }
   return parent;
+}
+
+bool ShowerHandler::decayProduct(tPPtr particle) const{
+  return 
+    !(particle->dataPtr()->coloured()&&
+      (particle->parents()[0]==eventHandler()->lastPartons().first||
+       particle->parents()[0]==eventHandler()->lastPartons().second)) && 
+    particle->momentum().m2()>0.&&
+    particle != eventHandler()->lastPartons().first &&
+    particle != eventHandler()->lastPartons().second;
 }
