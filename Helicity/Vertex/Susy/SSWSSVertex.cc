@@ -151,7 +151,11 @@ void SSWSSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
   }
   else {
     throw HelicityConsistencyError() << "SSWSSVertex::setCoupling "
-				     << "Unknown particle in WSS vertex\n"
+				     << "Unknown particle "
+				     << part1->PDGName() << " " 
+				     << part2->PDGName() << " "
+				     << part3->PDGName() 
+				     << " in WSS vertex\n"
 				     << Exception::warning;
     setNorm(0.);
   }
