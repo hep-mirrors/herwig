@@ -73,7 +73,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
     {
       // exit if fails
       if ( ++ntry >= maxLoop() ) 
-	throw Exception() << "Too many tries " << maxLoop() << "to generate decay in "
+	throw Exception() << "Too many tries " << maxLoop() << "to generate decay of "
+			  << *parent << "in "
 			  << "HwDecayHandler::performDecay" << Exception::eventerror;
       tDMPtr dm(parent->data().selectMode(*parent));
       if ( !dm ) 
