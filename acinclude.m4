@@ -248,13 +248,28 @@ if test "x$with_evtgen" = "xno"; then
 	AC_MSG_RESULT([not required])
 else
 	AC_MSG_RESULT([$with_evtgen])
+
+	oldLIBS="$LIBS"
+	oldLDFLAGS="$LDFLAGS"
+	oldCPPFLAGS="$CPPFLAGS"
+
+
+	# Now lets see if the libraries work properly
+	
+	LIBS="$LIBS $CLHEPLIB $HEPMCLIBS"
+	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
+	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE $HEPMCINCLUDE"
 	tmpcxxflags=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS -L${with_evtgen}/lib"
-	AC_CHECK_LIB([EvtGen],[abort],
+
+	AC_CHECK_LIB([evtgenlhc],[abort],
 		[],
 		[
-			AC_MSG_ERROR([libEvtGen could not be found at ${with_evtgen}/lib])
+			AC_MSG_ERROR([libevtgenlhc could not be found at ${with_evtgen}/lib])
 		])
+	LIBS="$oldLIBS"
+	LDFLAGS="$oldLDFLAGS"
+	CPPFLAGS="$oldCPPFLAGS"
 	CXXFLAGS=$tmpcxxflags
 	EVTGENPATH=$with_evtgen
 fi
