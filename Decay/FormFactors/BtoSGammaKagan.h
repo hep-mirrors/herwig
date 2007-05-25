@@ -480,9 +480,9 @@ namespace Herwig {
 
 /**
  *  A struct for the integrand which can access the integrands22
-   * and integrands27 members of the spectrum 
-   * of the BtoSGammaKagan class. This function can then
-   * be integrated to give the coefficients.
+ * and integrands27 members of the spectrum 
+ * of the BtoSGammaKagan class. This function can then
+ * be integrated to give the coefficients.
  */
 struct KaganIntegrand {
 
