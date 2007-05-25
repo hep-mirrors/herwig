@@ -222,7 +222,6 @@ private:
    *  Histogram for \f$K^-\pi^+\f$ all
    */
   HistogramPtr _mKpiall3;
-  //@}
 
   /**
    *  Histogram for \f$\pi^+\pi^-\f$
@@ -233,6 +232,57 @@ private:
    *  Vectors for the Dalitz plot
    */
   vector<pair<Energy2,Energy2> > _points3;
+  //@}
+
+  /**
+   *  Histograms for \f$D^+\to K^+\pi^-\pi^+\f$
+   */
+  //@{
+  /**
+   *  Histogram for \f$K^+\pi^-\f$
+   */
+  HistogramPtr _mkppim5;
+
+  /**
+   *  Histogram for \f$K^+\pi^+\f$
+   */
+  HistogramPtr _mkppip5;
+
+  /**
+   *  Histogram for \f$\pi^+\pi^-\f$
+   */
+  HistogramPtr _mpippim5;
+
+  /**
+   *  Vectors for the Dalitz plot
+   */
+  vector<pair<Energy2,Energy2> > _points5;
+  //@}
+
+  /**
+   *  Histograms for \f$D_s^+\to K^+\pi^-\pi^+\f$
+   */
+  //@{
+  /**
+   *  Histogram for \f$K^+\pi^-\f$
+   */
+  HistogramPtr _mkppim6;
+
+  /**
+   *  Histogram for \f$K^+\pi^+\f$
+   */
+  HistogramPtr _mkppip6;
+
+  /**
+   *  Histogram for \f$\pi^+\pi^-\f$
+   */
+  HistogramPtr _mpippim6;
+
+  /**
+   *  Vectors for the Dalitz plot
+   */
+  vector<pair<Energy2,Energy2> > _points6;
+  //@}
 };
 
 }

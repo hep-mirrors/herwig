@@ -44,7 +44,7 @@ inline Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
        (mAB*mAB-2.*mA*mA-2.*mB*mB+sqr((mA-mB)*(mA+mB))/sqr(mres))/3./GeV2/GeV2;
     break;
   default:
-    throw Exception() << "D0toK0PiPiBaBar::amplitude spin is too high ispin = " 
+    throw Exception() << "D0toKPiPiCLEO::amplitude spin is too high ispin = " 
 		      << ispin << Exception::runerror;
   }
   // calculate the width term

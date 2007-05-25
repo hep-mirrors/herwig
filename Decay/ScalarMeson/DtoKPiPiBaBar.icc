@@ -39,7 +39,7 @@ inline Complex DtoKPiPiBaBar::amplitude(int ispin,bool gs, Energy mD,
 	      (9.+3.*sqr(_rres*pAB )+Math::powi(_rres*pAB ,4)));
     Fd = sqrt((9.+3.*sqr(_rD0 *pDR )+Math::powi(_rD0 *pDR ,4))/
 	      (9.+3.*sqr(_rD0 *pDAB)+Math::powi(_rD0 *pDAB,4)));
-    s = sqr(((mBC-mAC)*(mBC+mAC)+(mD-mC)*(mD+mC)*(mB-mA)*(mB+mA)/sqr(mres))/GeV2)
+    s = sqr(((mBC-mAC)*(mBC+mAC)+(mD-mC)*(mD+mC)*(mA-mB)*(mA+mB)/sqr(mres))/GeV2)
       -(mAB*mAB-2.*mD*mD-2.*mC*mC+sqr((mD-mC)*(mD+mC))/sqr(mres))*
        (mAB*mAB-2.*mA*mA-2.*mB*mB+sqr((mA-mB)*(mA+mB))/sqr(mres))/3./GeV2/GeV2;
     break;
@@ -63,10 +63,65 @@ inline Complex DtoKPiPiBaBar::amplitude(int ispin,bool gs, Energy mD,
     InvEnergy2 dh =(0.5+sqr(mA)/mres/kM*log((mres+2.*kM)/2./mA))/pi/M2;
     bw = M2-s+wres*(M2/Math::powi(kM,3))*(sqr(ks)*(hs-hM)+sqr(kM)*dh*(M2-s))
       -Complex(0.,M2*wres*Math::powi(ks/kM,3)/mAB);
-    Energy d = 3./pi*sqr(mA/kM)*log((mres+2.*kM)/2./mA)
-      +mres/2./pi/kM-sqr(mA)*mres/pi/Math::powi(kM,3);
-    bw/=1.4;
+//     Energy d = 3./pi*sqr(mA/kM)*log((mres+2.*kM)/2./mA)
+//       +mres/2./pi/kM-sqr(mA)*mres/pi/Math::powi(kM,3);
   }
   return s*Fr*Fd*GeV2/bw;
+}
+
+inline double DtoKPiPiBaBar::rho3(Energy2 s,Energy2 s1, Energy2 s2) const {
+  // return if rho's below threshold
+  Energy2 low(4.*sqr(_mpi));
+  if(s1<low||s2<low) return 0.;
+  // return is total below threshold
+  Energy m1(sqrt(s1)),m2(sqrt(s2)),m0(sqrt(s));
+  if(m0<m1+m2) return 0.;
+  // calulate running widths
+  Energy p0 = Kinematics::CMMomentum(_mrho770,_mpi,_mpi);
+  Energy p1 = Kinematics::CMMomentum(   m1   ,_mpi,_mpi);
+  Energy p2 = Kinematics::CMMomentum(   m2   ,_mpi,_mpi);
+  double F1 = sqrt((1.+sqr(_rres*p0))/(1.+sqr(_rres*p1)));
+  double F2 = sqrt((1.+sqr(_rres*p0))/(1.+sqr(_rres*p2)));
+  Energy2 mwid1 = _wrho770*Math::powi(p1/p0,3)*sqr(F1*_mrho770)/m1;
+  Energy2 mwid2 = _wrho770*Math::powi(p2/p0,3)*sqr(F2*_mrho770)/m2;
+  return sqr(GeV2)*mwid1*mwid2*sqrt(sqr(s+s1-s2)-4*s*s1)/s/
+    (sqr(sqr(_mrho770)-s1)+sqr(mwid1))/
+    (sqr(sqr(_mrho770)-s2)+sqr(mwid2))/sqr(pi);
+}
+
+inline DtoKPiPiBaBarInnerIntegrand::
+DtoKPiPiBaBarInnerIntegrand(DtoKPiPiBaBarPtr in) : _decayer(in) 
+{}
+
+inline double DtoKPiPiBaBarInnerIntegrand::operator ()(double in) const {
+  Energy2 s2 = in*GeV2;
+  double output = _decayer->rho3(_s,_s1,s2);
+  return output;
+}
+
+inline void DtoKPiPiBaBarInnerIntegrand::s(Energy2 in) const {
+  _s=in;
+}
+
+inline void DtoKPiPiBaBarInnerIntegrand::s1(Energy2 in) const {
+  _s1=in;
+}
+
+inline DtoKPiPiBaBarOuterIntegrand::
+DtoKPiPiBaBarOuterIntegrand(DtoKPiPiBaBarPtr din,Energy min) : _decayer(din),
+							       integral(din),_mpi(min)
+{}
+
+inline double DtoKPiPiBaBarOuterIntegrand::operator ()(double in) const {
+  Energy2 s1=in*GeV2;
+  double low = sqr(2.*_mpi/GeV);
+  double upp = sqr(sqrt(_s)-sqrt(s1))/GeV2;
+  integral. s(_s);
+  integral.s1(s1);
+  return _integrator.value(integral,low,upp);
+}
+
+inline void DtoKPiPiBaBarOuterIntegrand::s(Energy2 in) const {
+  _s=in;
 }
 }

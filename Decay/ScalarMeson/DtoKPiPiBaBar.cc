@@ -24,35 +24,35 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   _imodel=0;
   // Parameters for the K-matrix based fit
   // g_pipi
-  _gpipi.push_back( 0.229);
-  _gpipi.push_back( 0.941);
-  _gpipi.push_back( 0.369);
-  _gpipi.push_back( 0.337);
-  _gpipi.push_back( 0.182);
+  _gpipi.push_back( 0.229*GeV);
+  _gpipi.push_back( 0.941*GeV);
+  _gpipi.push_back( 0.369*GeV);
+  _gpipi.push_back( 0.337*GeV);
+  _gpipi.push_back( 0.182*GeV);
   // g_KK
-  _gKK.push_back(-0.554);
-  _gKK.push_back( 0.551);
-  _gKK.push_back( 0.239);
-  _gKK.push_back( 0.409);
-  _gKK.push_back(-0.176);
+  _gKK.push_back(-0.554*GeV);
+  _gKK.push_back( 0.551*GeV);
+  _gKK.push_back( 0.239*GeV);
+  _gKK.push_back( 0.409*GeV);
+  _gKK.push_back(-0.176*GeV);
   // g_4pi
-  _g4pi.push_back( 0.000);
-  _g4pi.push_back( 0.000);
-  _g4pi.push_back( 0.556);
-  _g4pi.push_back( 0.857);
-  _g4pi.push_back(-0.797);
+  _g4pi.push_back( 0.000*GeV);
+  _g4pi.push_back( 0.000*GeV);
+  _g4pi.push_back( 0.556*GeV);
+  _g4pi.push_back( 0.857*GeV);
+  _g4pi.push_back(-0.797*GeV);
   // g_etaeta
-  _getaeta.push_back(-0.399);
-  _getaeta.push_back( 0.391);
-  _getaeta.push_back( 0.183);
-  _getaeta.push_back( 0.199);
-  _getaeta.push_back(-0.004);
+  _getaeta.push_back(-0.399*GeV);
+  _getaeta.push_back( 0.391*GeV);
+  _getaeta.push_back( 0.183*GeV);
+  _getaeta.push_back( 0.199*GeV);
+  _getaeta.push_back(-0.004*GeV);
   // g_etaetap
-  _getaetap.push_back(-0.346);
-  _getaetap.push_back( 0.315);
-  _getaetap.push_back( 0.187);
-  _getaetap.push_back(-0.010);
-  _getaetap.push_back( 0.224);
+  _getaetap.push_back(-0.346*GeV);
+  _getaetap.push_back( 0.315*GeV);
+  _getaetap.push_back( 0.187*GeV);
+  _getaetap.push_back(-0.010*GeV);
+  _getaetap.push_back( 0.224*GeV);
   // m_alpha
   _malpha.push_back(0.651*GeV);
   _malpha.push_back(1.204*GeV);
@@ -72,77 +72,95 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   // s_A
   _sA  = 1.*GeV2;
   // the beta production coupling
-  _betare.push_back( -3.78);_betaim.push_back(1.23);
-  _betare.push_back(  9.55);_betaim.push_back(3.43);
-  _betare.push_back(  0.00);_betaim.push_back(0.00);
-  _betare.push_back( 12.97);_betaim.push_back(1.27);
-  _betare.push_back(  0.00);_betaim.push_back(0.00);
+  _betare.push_back( -3.78*GeV);_betaim.push_back(1.23*GeV);
+  _betare.push_back(  9.55*GeV);_betaim.push_back(3.43*GeV);
+  _betare.push_back(  0.00*GeV);_betaim.push_back(0.00*GeV);
+  _betare.push_back( 12.97*GeV);_betaim.push_back(1.27*GeV);
+  _betare.push_back(  0.00*GeV);_betaim.push_back(0.00*GeV);
   // f^prod
-  _fprodre.push_back(-10.22);_fprodim.push_back( -6.35);
-  _fprodre.push_back(  0.00);_fprodim.push_back(  0.00);
-  _fprodre.push_back(  0.00);_fprodim.push_back(  0.00);
-  _fprodre.push_back(  0.00);_fprodim.push_back(  0.00);
-  _fprodre.push_back(  0.00);_fprodim.push_back(  0.00);
+  _fprodre = -10.22; _fprodim = -6.35;
+  // zero the masses
+  _mpi   = 0.;
+  _mK    = 0.;
+  _meta  = 0.;
+  _metap = 0.;
+  // rho_3 interpolation tables
+  _initrho3 = false;
+  double rscale[101]={0.311677,0.31856 ,0.325443,0.332326,0.339209,
+		      0.346093,0.352976,0.359859,0.366742,0.373626,
+		      0.380509,0.387392,0.394275,0.401159,0.408042,
+		      0.414925,0.421808,0.428692,0.435575,0.442458,
+		      0.449341,0.456224,0.463108,0.469991,0.476874,
+		      0.483757,0.490641,0.497524,0.504407,0.51129 ,
+		      0.518174,0.525057,0.53194 ,0.538823,0.545707,
+		      0.55259 ,0.559473,0.566356,0.573239,0.580123,
+		      0.587006,0.593889,0.600772,0.607656,0.614539,
+		      0.621422,0.628305,0.635189,0.642072,0.648955,
+		      0.655838,0.662722,0.669605,0.676488,0.683371,
+		      0.690254,0.697138,0.704021,0.710904,0.717787,
+		      0.724671,0.731554,0.738437,0.74532 ,0.752204,
+		      0.759087,0.76597 ,0.772853,0.779736,0.78662 ,
+		      0.793503,0.800386,0.807269,0.814153,0.821036,
+		      0.827919,0.834802,0.841686,0.848569,0.855452,
+		      0.862335,0.869219,0.876102,0.882985,0.889868,
+		      0.896751,0.903635,0.910518,0.917401,0.924284,
+		      0.931168,0.938051,0.944934,0.951817,0.958701,
+		      0.965584,0.972467,0.97935 ,0.986234,0.993117,
+		      1};
+  double rvalue[101]={0          ,8.53899e-12,3.80878e-10,3.49296e-09,1.67667e-08,
+		      5.64581e-08,1.51939e-07,3.50344e-07,7.21493e-07,1.36305e-06,
+		      2.40589e-06,4.0196e-06 ,6.41823e-06,9.8661e-06 ,1.46838e-05,
+		      2.12546e-05,3.00302e-05,4.15379e-05,5.6387e-05 ,7.52756e-05,
+		      9.89975e-05,0.00012845 ,0.000164641,0.000208697,0.00026187 ,
+		      0.000325548,0.00040126 ,0.00049069 ,0.00059568 ,0.000718245,
+		      0.000860577,0.00102506 ,0.00121429 ,0.00143104 ,0.00167836 ,
+		      0.00195948 ,0.00227793 ,0.00263745 ,0.00304208 ,0.00349616 ,
+		      0.00400431 ,0.00457147 ,0.00520293 ,0.0059043  ,0.00668158 ,
+		      0.00754116 ,0.00848981 ,0.00953475 ,0.0106836  ,0.0119445  ,
+		      0.0133261  ,0.0148374  ,0.0164882  ,0.0182885  ,0.0202493  ,
+		      0.022382   ,0.0246986  ,0.0272118  ,0.0299351  ,0.0328828  ,
+		      0.0360698  ,0.0395118  ,0.0432257  ,0.0472288  ,0.0515398  ,
+		      0.0561781  ,0.0611643  ,0.0665199  ,0.0722678  ,0.0784319  ,
+		      0.0850375  ,0.092111   ,0.0996805  ,0.107775   ,0.116426   ,
+		      0.125666   ,0.135529   ,0.146051   ,0.15727    ,0.169226   ,
+		      0.18196    ,0.195517   ,0.209943   ,0.225286   ,0.241599   ,
+		      0.258934   ,0.277349   ,0.296904   ,0.31766    ,0.339684   ,
+		      0.363046   ,0.387818   ,0.414078   ,0.441905   ,0.471385   ,
+		      0.502608   ,0.535667   ,0.570662   ,0.607696   ,0.646878   ,
+		      0.688323};
+  _rho3scale=vector<double>(rscale,rscale+101);
+  _rho3     =vector<double>(rvalue,rvalue+101);
   // The amplitudes and phases for the K-matrix fit
-  _k892mre   =-1.159;
-  _k892mim   = 1.361;
-  _k1430mre0 = 2.482*GeV2;
-  _k1430mim0 =-0.653*GeV2;
-  _k1430mre2 = 0.852/GeV2;
-  _k1430mim2 =-0.729/GeV2;
-  _k1410mre  =-0.402;
-  _k1410mim  = 0.050;
-  _k1680mre  =-1.000;
-  _k1680mim  = 1.690;
-  _k892pre   = 0.133;
-  _k892pim   =-0.132;
-  _k1430pre0 = 0.375*GeV2;
-  _k1430pim0 =-0.143*GeV2;
-  _k1430pre2 = 0.088/GeV2;
-  _k1430pim2 =-0.057/GeV2;
-  _rho770re  = 1.000;
-  _rho770im  = 0.000;
-  _omegare   =-0.0182;
-  _omegaim   =-0.0367;
-  _f2re      = 0.787/GeV2;
-  _f2im      =-0.397/GeV2;
-  _rho1450re = 0.405;
-  _rho1450im =-0.458;
+  _k892mre   =-1.159     ; _k892mim   = 1.361     ;
+  _k1430mre0 = 2.482*GeV2; _k1430mim0 =-0.653*GeV2;
+  _k1430mre2 = 0.852/GeV2; _k1430mim2 =-0.729/GeV2;
+  _k1410mre  =-0.402     ; _k1410mim  = 0.050     ;
+  _k1680mre  =-1.000     ; _k1680mim  = 1.690     ;
+  _k892pre   = 0.133     ; _k892pim   =-0.132     ;
+  _k1430pre0 = 0.375*GeV2; _k1430pim0 =-0.143*GeV2;
+  _k1430pre2 = 0.088/GeV2; _k1430pim2 =-0.057/GeV2;
+  _rho770re  = 1.000     ; _rho770im  = 0.000     ;
+  _omegare   =-0.0182    ; _omegaim   =-0.0367    ;
+  _f2re      = 0.787/GeV2; _f2im      =-0.397/GeV2;
+  _rho1450re = 0.405     ; _rho1450im =-0.458     ;
   // amplitudes and phase for the normal fit
-  _k892mamp     = 1.781;
-  _k892mphase   = 131.0;
-  _k1430mamp0   = 2.45*GeV2;
-  _k1430mphase0 =-8.3;
-  _k1430mamp2   = 1.05/GeV2;
-  _k1430mphase2 =-54.3;
-  _k1410mamp    = 0.52;
-  _k1410mphase  = 154;
-  _k1680mamp    = 0.89;
-  _k1680mphase  =-139;
-  _k892pamp     = 0.180;
-  _k892pphase   =-44.1;
-  _k1430pamp0   = 0.37*GeV2;
-  _k1430pphase0 = 18;
-  _k1430pamp2   = 0.075/GeV2;
-  _k1430pphase2 =-104;
-  _rho770amp    = 1.0;
-  _rho770phase  = 0.;
-  _omegaamp     = 0.0391;
-  _omegaphase   = 115.3;
-  _f2amp        = 0.922/GeV2;
-  _f2phase      =-21.3;
-  _rho1450amp   = 0.52;
-  _rho1450phase = 38;
-  _f980amp      = 0.482*GeV2;
-  _f980phase    =-141.8;
-  _f1370amp     = 2.25*GeV2;
-  _f1370phase   = 113.2;
-  _sigmaamp     = 1.36*GeV2;
-  _sigmaphase   =-177.9;
-  _sigmapamp    = 0.34*GeV2;
-  _sigmapphase  = 153;
-  _nonamp       = 3.53;
-  _nonphase     = 128;
+  _k892mamp     = 1.781     ; _k892mphase   =  131.0;
+  _k1430mamp0   = 2.45*GeV2 ; _k1430mphase0 = -  8.3;
+  _k1430mamp2   = 1.05/GeV2 ; _k1430mphase2 = - 54.3;
+  _k1410mamp    = 0.52      ; _k1410mphase  =  154. ;
+  _k1680mamp    = 0.89      ; _k1680mphase  = -139. ;
+  _k892pamp     = 0.180     ; _k892pphase   =  -44.1;
+  _k1430pamp0   = 0.37*GeV2 ; _k1430pphase0 =   18. ;
+  _k1430pamp2   = 0.075/GeV2; _k1430pphase2 = -104. ;
+  _rho770amp    = 1.0       ; _rho770phase  =    0. ;
+  _omegaamp     = 0.0391    ; _omegaphase   =  115.3;
+  _f2amp        = 0.922/GeV2; _f2phase      = - 21.3;
+  _rho1450amp   = 0.52      ; _rho1450phase =   38. ;
+  _f980amp      = 0.482*GeV2; _f980phase    = -141.8;
+  _f1370amp     = 2.25*GeV2 ; _f1370phase   =  113.2;
+  _sigmaamp     = 1.36*GeV2 ; _sigmaphase   = -177.9;
+  _sigmapamp    = 0.34*GeV2 ; _sigmapphase  =  153. ;
+  _nonamp       = 3.53      ; _nonphase     =  128. ;
   // radial sizes
   _rD0  = 5.0/GeV;
   _rres = 1.5/GeV;
@@ -178,6 +196,7 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   _asigma   = 0.;
   _asigmap  = 0.;
   _aNR      = 0.;
+  // generate the intermediates
   generateIntermediates(true);
 }
 
@@ -223,23 +242,27 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
     _asigmap  = 0.;
     _aNR      = 0.;
   }
-  cerr << "testing _aKm892   " <<_aKm892   << " " << _k892mphase   << "\n";  
-  cerr << "testing _aKm14300 " <<_aKm14300 << " " << _k1430mphase0 << "\n";
-  cerr << "testing _aKm14302 " <<_aKm14302 << " " << _k1430mphase2 << "\n";
-  cerr << "testing _aKm1410  " <<_aKm1410  << " " << _k1410mphase  << "\n";
-  cerr << "testing _aKm1680  " <<_aKm1680  << " " << _k1680mphase  << "\n";
-  cerr << "testing _aKp892   " <<_aKp892   << " " << _k892pphase   << "\n";  
-  cerr << "testing _aKp14300 " <<_aKp14300 << " " << _k1430pphase0 << "\n";
-  cerr << "testing _aKp14302 " <<_aKp14302 << " " << _k1430pphase2 << "\n";
-  cerr << "testing _arho770  " <<_arho770  << " " << _rho770phase  << "\n";
-  cerr << "testing _aomega   " <<_aomega   << " " << _omegaphase   << "\n";  
-  cerr << "testing _af2      " <<_af2      << " " << _f2phase      << "\n";  
-  cerr << "testing _arho1450 " <<_arho1450 << " " << _rho1450phase << "\n";
-  cerr << "testing _af980    " <<_af980    << " " << _f980phase    << "\n";  
-  cerr << "testing _af1370   " <<_af1370   << " " << _f1370phase   << "\n";  
-  cerr << "testing _asigma   " <<_asigma   << " " << _sigmaphase   << "\n";  
-  cerr << "testing _asigmap  " <<_asigmap  << " " << _sigmapphase  << "\n";
-  cerr << "testing _aNR      " <<_aNR      << " " << _nonphase     << "\n";  
+  if(_malpha  .size()!=5||_gKK     .size()!=5||_betaim.size()!=5||
+     _g4pi    .size()!=5||_getaeta .size()!=5||_betare.size()!=5||
+     _getaetap.size()!=5||_gpipi   .size()!=5) 
+    throw InitException() << "Inconsitent sizes for vectors in DtoKPiPiBaBar::doinit()"
+			  << Exception::runerror; 
+  // K-matrix parameters
+  _gialpha.push_back(_gpipi   );
+  _gialpha.push_back(_gKK     );
+  _gialpha.push_back(_g4pi    );
+  _gialpha.push_back(_getaeta );
+  _gialpha.push_back(_getaetap);
+  _fprod = Complex(_fprodre,_fprodim);
+  _beta.resize(5);
+  for(unsigned int ix=0;ix<5;++ix) {
+    _beta[ix]=Complex(_betare[ix],_betaim[ix]);
+  }
+  // masses for the K-matrix
+  _mpi   = getParticleData(ParticleID::piplus  )->mass();
+  _mK    = getParticleData(ParticleID::Kplus   )->mass();
+  _meta  = getParticleData(ParticleID::eta     )->mass();
+  _metap = getParticleData(ParticleID::etaprime)->mass();
   // particle data objects for the intermediates
   tPDPtr k892m   = getParticleData(ParticleID::Kstarminus);
   tPDPtr k892p   = getParticleData(ParticleID::Kstarplus );
@@ -390,6 +413,77 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
     _maxwgt=1.;
   }
   addMode(mode,_maxwgt,_weights);
+  // calculate the rho 3 function if needed
+  if(_initrho3) {
+    _rho3.resize(0);
+    _rho3scale.resize(0);
+    DtoKPiPiBaBarOuterIntegrand integrand(this,_mpi);
+    GaussianIntegrator integrator;
+    Energy2 step = (GeV2-16.*sqr(_mpi))/100.;
+    integrand.s(GeV2);
+    double low = sqr(2.*_mpi/GeV);
+    double upp = sqr(GeV-2.*_mpi)/GeV2;
+    double norm = (GeV2-16.*sqr(_mpi))/GeV2/integrator.value(integrand,low,upp);
+    for(Energy2 s=16.*sqr(_mpi);s<GeV2;s+=step) {
+      integrand.s(s);
+      low = sqr(2.*_mpi/GeV);
+      upp = sqr(sqrt(s)-2.*_mpi)/GeV2;
+      integrand.s(s);
+      double output = norm*integrator.value(integrand,low,upp);
+      _rho3     .push_back(output);
+      _rho3scale.push_back(s/GeV2);
+    }
+  }
+  _rho3inter = new_ptr(Interpolator(_rho3,_rho3scale,3));
+
+
+  for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+    Complex test=F1(s);
+    cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+  }
+  cerr << "join\n";
+   Energy mD=getParticleData(ParticleID::D0    )->mass();
+   Energy mA=getParticleData(ParticleID::K0    )->mass();
+   Energy mB=getParticleData(ParticleID::piplus)->mass();
+  for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+    Complex test=
+      _af980  /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_mf980  ,_wf980  )+
+      _af1370 /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_mf1370 ,_wf1370 )+
+      _asigma /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_msigma ,_wsigma )+
+      _asigmap/GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_msigmap,_wsigmap)+
+      _aNR;
+    cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+  }
+  cerr << "join red\n";
+//   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+//     Complex test=
+//       _af980  /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_mf980  ,_wf980  );
+//     cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+//   }
+//   cerr << "join blue\n";
+//   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+//     Complex test=
+//       _af1370 /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_mf1370 ,_wf1370 );
+//     cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+//   }
+//   cerr << "join green\n";
+//    for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+//      Complex test=
+//        _asigma /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_msigma ,_wsigma );
+//      cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+//    }
+//    cerr << "join magenta\n";
+//   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+//     Complex test=
+//       _asigmap/GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_msigmap,_wsigmap);
+//     cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+//   }
+//   cerr << "join cyan\n";
+//   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
+//     Complex test=_aNR;
+//     cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
+//   }
+//   cerr << "join yellow\n";
 }
 
 void DtoKPiPiBaBar::persistentOutput(PersistentOStream & os) const {
@@ -416,7 +510,8 @@ void DtoKPiPiBaBar::persistentOutput(PersistentOStream & os) const {
      << _mf980 << _mf1370 << _msigma << _msigmap << _wK892 << _wK14300 
      << _wK14302 << _wK1410 << _wK1680 << _wrho770 << _womega << _wf2 
      << _wrho1450 << _wf980 << _wf1370 << _wsigma << _wsigmap << _maxwgt 
-     << _weights;
+     << _weights << _gialpha << _mpi << _mK << _meta << _metap << _rho3scale 
+     << _rho3 << _initrho3 << _rho3inter;
 }
 
 void DtoKPiPiBaBar::persistentInput(PersistentIStream & is, int) {
@@ -443,7 +538,8 @@ void DtoKPiPiBaBar::persistentInput(PersistentIStream & is, int) {
      >> _mf980 >> _mf1370 >> _msigma >> _msigmap >> _wK892 >> _wK14300 
      >> _wK14302 >> _wK1410 >> _wK1680 >> _wrho770 >> _womega >> _wf2 
      >> _wrho1450 >> _wf980 >> _wf1370 >> _wsigma >> _wsigmap >> _maxwgt 
-     >> _weights;
+     >> _weights >> _gialpha >> _mpi >> _mK >> _meta >> _metap >> _rho3scale 
+     >> _rho3 >> _initrho3 >> _rho3inter;
 }
 
 ClassDescription<DtoKPiPiBaBar> DtoKPiPiBaBar::initDtoKPiPiBaBar;
@@ -1111,28 +1207,31 @@ double DtoKPiPiBaBar::me2(bool vertex, const int ichan,
   // compute the amplitudes for the resonaces present in both models
   Complex amp(0);
   if(ichan<0) {
-    amp = 
-      _aKm892       *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK892   ,_wK892   )+
-      _aKm14300/GeV2*amplitude(0,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300 ,_wK14300 )+
-      _aKm14302*GeV2*amplitude(2,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302 ,_wK14302 )+
-      _aKm1410      *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK1410  ,_wK1410  )+
-      _aKm1680      *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK1680  ,_wK1680  )+
-      _aKp892       *amplitude(1,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK892   ,_wK892   )+
-      _aKp14300/GeV2*amplitude(0,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14300 ,_wK14300 )+
-      _aKp14302*GeV2*amplitude(2,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14302 ,_wK14302 )+
-      _arho770      *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho770 ,_wrho770 )+
-      _aomega       *amplitude(1,false,mD,mB,mC,mA,mBC,mAB,mAC,_momega  ,_womega  )+
-      _af2     *GeV2*amplitude(2,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf2     ,_wf2     )+
-      _arho1450     *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho1450,_wrho1450);
+    amp =0.
+      +_aKm892       *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK892   ,_wK892   )
+      +_aKm14300/GeV2*amplitude(0,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300 ,_wK14300 )
+      +_aKm14302*GeV2*amplitude(2,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302 ,_wK14302 )
+      +_aKm1410      *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK1410  ,_wK1410  )
+      +_aKm1680      *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK1680  ,_wK1680  )
+      +_aKp892       *amplitude(1,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK892   ,_wK892   )
+      +_aKp14300/GeV2*amplitude(0,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14300 ,_wK14300 )
+      +_aKp14302*GeV2*amplitude(2,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14302 ,_wK14302 )
+      +_arho770      *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho770 ,_wrho770 )
+      +_aomega       *amplitude(1,false,mD,mB,mC,mA,mBC,mAB,mAC,_momega  ,_womega  )
+      +_af2     *GeV2*amplitude(2,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf2     ,_wf2     )
+      +_arho1450     *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho1450,_wrho1450)
+      ;
     if(_imodel==0) {
       amp+= 
-	_af980  /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )+
-	_af1370 /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )+
-	_asigma /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_msigma ,_wsigma )+
-	_asigmap/GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_msigmap,_wsigmap)+
-	_aNR;
+      _af980  /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )+
+      _af1370 /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )+
+      _asigma /GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_msigma ,_wsigma )+
+      _asigmap/GeV2*amplitude(0,false,mD,mB,mC,mA,mBC,mAB,mAC,_msigmap,_wsigmap)+
+      _aNR
+	;
     }
     else {
+      amp+=F1(sqr(mBC));
     }
   }
   else if(ichan==0 ) {
@@ -1178,4 +1277,217 @@ double DtoKPiPiBaBar::me2(bool vertex, const int ichan,
 
 void DtoKPiPiBaBar::dataBaseOutput(ofstream & output,
 					       bool header) const {
+}
+
+Complex DtoKPiPiBaBar::F1(Energy2 s) const {
+  // rho values
+  vector<Complex> rho(5);
+  if(s>=4.*sqr(_mpi))      rho[0] =            sqrt( 1.-sqr(_mpi  + _mpi  )/s);
+  else                     rho[0] = Complex(0.,sqrt(-1.+sqr(_mpi  + _mpi  )/s));
+  if(s>=4.*sqr(_mK))       rho[1] = sqrt(1.-sqr(_mK   + _mK   )/s);
+  else                     rho[1] = Complex(0.,sqrt(-1.+sqr(_mK   + _mK   )/s));
+  if(s<=16.*sqr(_mpi))     rho[2] = 0.;
+  else if(s<GeV2)          rho[2] = (*_rho3inter)(s/GeV2);
+  else                     rho[2] = 1.-16.*sqr(_mpi)/s;
+  if(s>=4.*sqr(_meta))     rho[3] =            sqrt( 1.-sqr(_meta + _meta )/s);
+  else                     rho[3] = Complex(0.,sqrt(-1.+sqr(_meta + _meta )/s));
+  if(s>=sqr(_meta+_metap)) rho[4] =            sqrt( 1.-sqr(_meta + _metap)/s);
+  else                     rho[4] = Complex(0.,sqrt(-1.+sqr(_meta + _metap)/s));
+  // K -matrix
+  Complex K[5][5];
+  for(unsigned int i=0;i<5;++i) {
+    for(unsigned int j=0;j<5;++j) {
+      K[i][j]=0.;
+      for(unsigned int alpha=0;alpha<5;++alpha) {
+	K[i][j]+=_gialpha[i][alpha]*_gialpha[j][alpha]/(sqr(_malpha[alpha])-s);
+      }
+//       if(i==0) K[i][j]+= _fscatt[j]*(GeV2-_s0scatt)/(s-_s0scatt);
+//       else if(j==0) K[i][j]+= _fscatt[i]*(GeV2-_s0scatt)/(s-_s0scatt);
+      K[i][j] *= (GeV2-_sA0)/(s-_sA0)*(s-0.5*_sA*sqr(_mpi)/GeV2)/GeV2;
+      // multiply in rho
+      K[i][j] *= -Complex(0.,1.)*rho[j];
+      // add identity
+      if(i==j) K[i][j]+=1.;
+    }
+  }
+  vector<Complex> m(25);
+  for(unsigned int i=0;i<5;++i) {
+    for(unsigned int j=0;j<5;++j) {
+      m[i*5+j]=K[i][j];
+    }
+  }
+  // Find all NECESSARY 2x2 dets:  (30 of them)
+  Complex Det2_23_01 = m[10]*m[16] - m[11]*m[15];
+  Complex Det2_23_02 = m[10]*m[17] - m[12]*m[15];
+  Complex Det2_23_03 = m[10]*m[18] - m[13]*m[15];
+  Complex Det2_23_04 = m[10]*m[19] - m[14]*m[15];
+  Complex Det2_23_12 = m[11]*m[17] - m[12]*m[16];
+  Complex Det2_23_13 = m[11]*m[18] - m[13]*m[16];
+  Complex Det2_23_14 = m[11]*m[19] - m[14]*m[16];
+  Complex Det2_23_23 = m[12]*m[18] - m[13]*m[17];
+  Complex Det2_23_24 = m[12]*m[19] - m[14]*m[17];
+  Complex Det2_23_34 = m[13]*m[19] - m[14]*m[18];
+  Complex Det2_24_01 = m[10]*m[21] - m[11]*m[20];
+  Complex Det2_24_02 = m[10]*m[22] - m[12]*m[20];
+  Complex Det2_24_03 = m[10]*m[23] - m[13]*m[20];
+  Complex Det2_24_04 = m[10]*m[24] - m[14]*m[20];
+  Complex Det2_24_12 = m[11]*m[22] - m[12]*m[21];
+  Complex Det2_24_13 = m[11]*m[23] - m[13]*m[21];
+  Complex Det2_24_14 = m[11]*m[24] - m[14]*m[21];
+  Complex Det2_24_23 = m[12]*m[23] - m[13]*m[22];
+  Complex Det2_24_24 = m[12]*m[24] - m[14]*m[22];
+  Complex Det2_24_34 = m[13]*m[24] - m[14]*m[23];
+  Complex Det2_34_01 = m[15]*m[21] - m[16]*m[20];
+  Complex Det2_34_02 = m[15]*m[22] - m[17]*m[20];
+  Complex Det2_34_03 = m[15]*m[23] - m[18]*m[20];
+  Complex Det2_34_04 = m[15]*m[24] - m[19]*m[20];
+  Complex Det2_34_12 = m[16]*m[22] - m[17]*m[21];
+  Complex Det2_34_13 = m[16]*m[23] - m[18]*m[21];
+  Complex Det2_34_14 = m[16]*m[24] - m[19]*m[21];
+  Complex Det2_34_23 = m[17]*m[23] - m[18]*m[22];
+  Complex Det2_34_24 = m[17]*m[24] - m[19]*m[22];
+  Complex Det2_34_34 = m[18]*m[24] - m[19]*m[23];
+  // Find all NECESSARY 3x3 dets:   (40 of them)
+  Complex Det3_123_012 = m[ 5]*Det2_23_12 - m[ 6]*Det2_23_02 + m[ 7]*Det2_23_01;
+  Complex Det3_123_013 = m[ 5]*Det2_23_13 - m[ 6]*Det2_23_03 + m[ 8]*Det2_23_01;
+  Complex Det3_123_014 = m[ 5]*Det2_23_14 - m[ 6]*Det2_23_04 + m[ 9]*Det2_23_01;
+  Complex Det3_123_023 = m[ 5]*Det2_23_23 - m[ 7]*Det2_23_03 + m[ 8]*Det2_23_02;
+  Complex Det3_123_024 = m[ 5]*Det2_23_24 - m[ 7]*Det2_23_04 + m[ 9]*Det2_23_02;
+  Complex Det3_123_034 = m[ 5]*Det2_23_34 - m[ 8]*Det2_23_04 + m[ 9]*Det2_23_03;
+  Complex Det3_123_123 = m[ 6]*Det2_23_23 - m[ 7]*Det2_23_13 + m[ 8]*Det2_23_12;
+  Complex Det3_123_124 = m[ 6]*Det2_23_24 - m[ 7]*Det2_23_14 + m[ 9]*Det2_23_12;
+  Complex Det3_123_134 = m[ 6]*Det2_23_34 - m[ 8]*Det2_23_14 + m[ 9]*Det2_23_13;
+  Complex Det3_123_234 = m[ 7]*Det2_23_34 - m[ 8]*Det2_23_24 + m[ 9]*Det2_23_23;
+  Complex Det3_124_012 = m[ 5]*Det2_24_12 - m[ 6]*Det2_24_02 + m[ 7]*Det2_24_01;
+  Complex Det3_124_013 = m[ 5]*Det2_24_13 - m[ 6]*Det2_24_03 + m[ 8]*Det2_24_01;
+  Complex Det3_124_014 = m[ 5]*Det2_24_14 - m[ 6]*Det2_24_04 + m[ 9]*Det2_24_01;
+  Complex Det3_124_023 = m[ 5]*Det2_24_23 - m[ 7]*Det2_24_03 + m[ 8]*Det2_24_02;
+  Complex Det3_124_024 = m[ 5]*Det2_24_24 - m[ 7]*Det2_24_04 + m[ 9]*Det2_24_02;
+  Complex Det3_124_034 = m[ 5]*Det2_24_34 - m[ 8]*Det2_24_04 + m[ 9]*Det2_24_03;
+  Complex Det3_124_123 = m[ 6]*Det2_24_23 - m[ 7]*Det2_24_13 + m[ 8]*Det2_24_12;
+  Complex Det3_124_124 = m[ 6]*Det2_24_24 - m[ 7]*Det2_24_14 + m[ 9]*Det2_24_12;
+  Complex Det3_124_134 = m[ 6]*Det2_24_34 - m[ 8]*Det2_24_14 + m[ 9]*Det2_24_13;
+  Complex Det3_124_234 = m[ 7]*Det2_24_34 - m[ 8]*Det2_24_24 + m[ 9]*Det2_24_23;
+  Complex Det3_134_012 = m[ 5]*Det2_34_12 - m[ 6]*Det2_34_02 + m[ 7]*Det2_34_01;
+  Complex Det3_134_013 = m[ 5]*Det2_34_13 - m[ 6]*Det2_34_03 + m[ 8]*Det2_34_01;
+  Complex Det3_134_014 = m[ 5]*Det2_34_14 - m[ 6]*Det2_34_04 + m[ 9]*Det2_34_01;
+  Complex Det3_134_023 = m[ 5]*Det2_34_23 - m[ 7]*Det2_34_03 + m[ 8]*Det2_34_02;
+  Complex Det3_134_024 = m[ 5]*Det2_34_24 - m[ 7]*Det2_34_04 + m[ 9]*Det2_34_02;
+  Complex Det3_134_034 = m[ 5]*Det2_34_34 - m[ 8]*Det2_34_04 + m[ 9]*Det2_34_03;
+  Complex Det3_134_123 = m[ 6]*Det2_34_23 - m[ 7]*Det2_34_13 + m[ 8]*Det2_34_12;
+  Complex Det3_134_124 = m[ 6]*Det2_34_24 - m[ 7]*Det2_34_14 + m[ 9]*Det2_34_12;
+  Complex Det3_134_134 = m[ 6]*Det2_34_34 - m[ 8]*Det2_34_14 + m[ 9]*Det2_34_13;
+  Complex Det3_134_234 = m[ 7]*Det2_34_34 - m[ 8]*Det2_34_24 + m[ 9]*Det2_34_23;
+  Complex Det3_234_012 = m[10]*Det2_34_12 - m[11]*Det2_34_02 + m[12]*Det2_34_01;
+  Complex Det3_234_013 = m[10]*Det2_34_13 - m[11]*Det2_34_03 + m[13]*Det2_34_01;
+  Complex Det3_234_014 = m[10]*Det2_34_14 - m[11]*Det2_34_04 + m[14]*Det2_34_01;
+  Complex Det3_234_023 = m[10]*Det2_34_23 - m[12]*Det2_34_03 + m[13]*Det2_34_02;
+  Complex Det3_234_024 = m[10]*Det2_34_24 - m[12]*Det2_34_04 + m[14]*Det2_34_02;
+  Complex Det3_234_034 = m[10]*Det2_34_34 - m[13]*Det2_34_04 + m[14]*Det2_34_03;
+  Complex Det3_234_123 = m[11]*Det2_34_23 - m[12]*Det2_34_13 + m[13]*Det2_34_12;
+  Complex Det3_234_124 = m[11]*Det2_34_24 - m[12]*Det2_34_14 + m[14]*Det2_34_12;
+  Complex Det3_234_134 = m[11]*Det2_34_34 - m[13]*Det2_34_14 + m[14]*Det2_34_13;
+  Complex Det3_234_234 = m[12]*Det2_34_34 - m[13]*Det2_34_24 + m[14]*Det2_34_23;
+  // Find all NECESSARY 4x4 dets:   (25 of them)
+  Complex Det4_0123_0123 = m[0]*Det3_123_123 - m[1]*Det3_123_023 
+				+ m[2]*Det3_123_013 - m[3]*Det3_123_012;
+  Complex Det4_0123_0124 = m[0]*Det3_123_124 - m[1]*Det3_123_024 
+				+ m[2]*Det3_123_014 - m[4]*Det3_123_012;
+  Complex Det4_0123_0134 = m[0]*Det3_123_134 - m[1]*Det3_123_034 
+				+ m[3]*Det3_123_014 - m[4]*Det3_123_013;
+  Complex Det4_0123_0234 = m[0]*Det3_123_234 - m[2]*Det3_123_034 
+				+ m[3]*Det3_123_024 - m[4]*Det3_123_023;
+  Complex Det4_0123_1234 = m[1]*Det3_123_234 - m[2]*Det3_123_134 
+				+ m[3]*Det3_123_124 - m[4]*Det3_123_123;
+  Complex Det4_0124_0123 = m[0]*Det3_124_123 - m[1]*Det3_124_023 
+				+ m[2]*Det3_124_013 - m[3]*Det3_124_012;
+  Complex Det4_0124_0124 = m[0]*Det3_124_124 - m[1]*Det3_124_024 
+				+ m[2]*Det3_124_014 - m[4]*Det3_124_012;
+  Complex Det4_0124_0134 = m[0]*Det3_124_134 - m[1]*Det3_124_034 
+				+ m[3]*Det3_124_014 - m[4]*Det3_124_013;
+  Complex Det4_0124_0234 = m[0]*Det3_124_234 - m[2]*Det3_124_034 
+				+ m[3]*Det3_124_024 - m[4]*Det3_124_023;
+  Complex Det4_0124_1234 = m[1]*Det3_124_234 - m[2]*Det3_124_134 
+				+ m[3]*Det3_124_124 - m[4]*Det3_124_123;
+  Complex Det4_0134_0123 = m[0]*Det3_134_123 - m[1]*Det3_134_023 
+				+ m[2]*Det3_134_013 - m[3]*Det3_134_012;
+  Complex Det4_0134_0124 = m[0]*Det3_134_124 - m[1]*Det3_134_024 
+				+ m[2]*Det3_134_014 - m[4]*Det3_134_012;
+  Complex Det4_0134_0134 = m[0]*Det3_134_134 - m[1]*Det3_134_034 
+				+ m[3]*Det3_134_014 - m[4]*Det3_134_013;
+  Complex Det4_0134_0234 = m[0]*Det3_134_234 - m[2]*Det3_134_034 
+				+ m[3]*Det3_134_024 - m[4]*Det3_134_023;
+  Complex Det4_0134_1234 = m[1]*Det3_134_234 - m[2]*Det3_134_134 
+				+ m[3]*Det3_134_124 - m[4]*Det3_134_123;
+  Complex Det4_0234_0123 = m[0]*Det3_234_123 - m[1]*Det3_234_023 
+				+ m[2]*Det3_234_013 - m[3]*Det3_234_012;
+  Complex Det4_0234_0124 = m[0]*Det3_234_124 - m[1]*Det3_234_024 
+				+ m[2]*Det3_234_014 - m[4]*Det3_234_012;
+  Complex Det4_0234_0134 = m[0]*Det3_234_134 - m[1]*Det3_234_034 
+				+ m[3]*Det3_234_014 - m[4]*Det3_234_013;
+  Complex Det4_0234_0234 = m[0]*Det3_234_234 - m[2]*Det3_234_034 
+				+ m[3]*Det3_234_024 - m[4]*Det3_234_023;
+  Complex Det4_0234_1234 = m[1]*Det3_234_234 - m[2]*Det3_234_134 
+				+ m[3]*Det3_234_124 - m[4]*Det3_234_123;
+  Complex Det4_1234_0123 = m[5]*Det3_234_123 - m[6]*Det3_234_023 
+				+ m[7]*Det3_234_013 - m[8]*Det3_234_012;
+  Complex Det4_1234_0124 = m[5]*Det3_234_124 - m[6]*Det3_234_024 
+				+ m[7]*Det3_234_014 - m[9]*Det3_234_012;
+  Complex Det4_1234_0134 = m[5]*Det3_234_134 - m[6]*Det3_234_034 
+				+ m[8]*Det3_234_014 - m[9]*Det3_234_013;
+  Complex Det4_1234_0234 = m[5]*Det3_234_234 - m[7]*Det3_234_034 
+				+ m[8]*Det3_234_024 - m[9]*Det3_234_023;
+  Complex Det4_1234_1234 = m[6]*Det3_234_234 - m[7]*Det3_234_134 
+				+ m[8]*Det3_234_124 - m[9]*Det3_234_123;
+  // Find the 5x5 det:
+  Complex det =   m[0]*Det4_1234_1234 
+	 	- m[1]*Det4_1234_0234 
+		+ m[2]*Det4_1234_0134 
+		- m[3]*Det4_1234_0124 
+		+ m[4]*Det4_1234_0123;
+  if ( det == Complex(0.,0.) ) {
+    throw Exception() << "Matrix inversion fails in DtoKPiPiBaBar::F1()"
+		      << Exception::runerror;
+  } 
+  Complex oneOverDet = 1.0/det;
+  Complex mn1OverDet = - oneOverDet;
+  Complex inverse[5][5];
+  inverse[0][0] =  Det4_1234_1234 * oneOverDet;
+  inverse[0][1] =  Det4_0234_1234 * mn1OverDet;
+  inverse[0][2] =  Det4_0134_1234 * oneOverDet;
+  inverse[0][3] =  Det4_0124_1234 * mn1OverDet;
+  inverse[0][4] =  Det4_0123_1234 * oneOverDet;
+  inverse[1][0] =  Det4_1234_0234 * mn1OverDet;
+  inverse[1][1] =  Det4_0234_0234 * oneOverDet;
+  inverse[1][2] =  Det4_0134_0234 * mn1OverDet;
+  inverse[1][3] =  Det4_0124_0234 * oneOverDet;
+  inverse[1][4] =  Det4_0123_0234 * mn1OverDet;
+  inverse[2][0] =  Det4_1234_0134 * oneOverDet;
+  inverse[2][1] =  Det4_0234_0134 * mn1OverDet;
+  inverse[2][2] =  Det4_0134_0134 * oneOverDet;
+  inverse[2][3] =  Det4_0124_0134 * mn1OverDet;
+  inverse[2][4] =  Det4_0123_0134 * oneOverDet;
+  inverse[3][0] =  Det4_1234_0124 * mn1OverDet;
+  inverse[3][1] =  Det4_0234_0124 * oneOverDet;
+  inverse[3][2] =  Det4_0134_0124 * mn1OverDet;
+  inverse[3][3] =  Det4_0124_0124 * oneOverDet;
+  inverse[3][4] =  Det4_0123_0124 * mn1OverDet;
+  inverse[4][0] =  Det4_1234_0123 * oneOverDet;
+  inverse[4][1] =  Det4_0234_0123 * mn1OverDet;
+  inverse[4][2] =  Det4_0134_0123 * oneOverDet;
+  inverse[4][3] =  Det4_0124_0123 * mn1OverDet;
+  inverse[4][4] =  Det4_0123_0123 * oneOverDet;
+  // calculate the production vector
+  Complex p[5];
+  for(unsigned int i=0;i<5;++i) {
+    p[i]=0.;
+    for(unsigned int alpha=0;alpha<5;++alpha) {
+      p[i]+=_gialpha[i][alpha]*_beta[alpha]/(sqr(_malpha[alpha])-s);
+    }
+    if(i==0) p[i]+=_fprod*(GeV2-_s0scatt)/(s-_s0scatt);
+  }
+  // finally compute the answer
+  Complex output(0.);
+  for(unsigned int j=0;j<5;++j) output += inverse[1][j]*p[j];
+  return output;
 }

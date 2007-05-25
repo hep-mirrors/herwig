@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/EventRecord/Event.h"
 
 using namespace Herwig;
@@ -25,7 +26,8 @@ void DDalitzAnalysis::analyze(tEventPtr event, long , int loop, int state) {
     ThePEG::ParticleSet::iterator end=part.end();
     for( ;iter!=end;++iter) {
       if(abs((**iter).id())==ParticleID::D0||
-	 abs((**iter).id())==ParticleID::Dplus) {
+	 abs((**iter).id())==ParticleID::Dplus||
+	 abs((**iter).id())==ParticleID::D_splus) {
 	particles.push_back(*iter);
       }
     }
@@ -58,8 +60,8 @@ void DDalitzAnalysis::analyze(tPPtr part) {
     else if(abs(id0)==ParticleID::K0)     pk0 .push_back(products[ix]->momentum());
     else if(id0==ParticleID::K_L0)        pk0 .push_back(products[ix]->momentum());
     else if(id0==ParticleID::K_S0)        pk0 .push_back(products[ix]->momentum());
-    else if(abs(id0)==ParticleID::Kplus)  pkp.push_back(products[ix]->momentum());
-    else if(abs(id0)==ParticleID::Kminus) pkm.push_back(products[ix]->momentum());
+    else if(id0==ParticleID::Kplus)  pkp.push_back(products[ix]->momentum());
+    else if(id0==ParticleID::Kminus) pkm.push_back(products[ix]->momentum());
   }
   Energy2 mplus,mminus,mpipi,mneut;
   if(ppim.size()==1&&ppip.size()==1&&pk0.size()==1) {
@@ -121,6 +123,49 @@ void DDalitzAnalysis::analyze(tPPtr part) {
       _points3.push_back(make_pair(mminus,mpipi));
     }
   }
+  else if ((ppim.size()==1&&pkp.size()==1&&ppip.size()==1)||
+	   (ppim.size()==1&&pkm.size()==1&&ppip.size()==1)) {
+    unsigned int itype(0);
+    if(part->id()==ParticleID::Dplus) {
+      itype=1;
+      mplus  = (pkp [0]+ppip[0]).m2();
+      mminus = (pkp [0]+ppim[0]).m2();
+      mpipi  = (ppip[0]+ppim[0]).m2();
+    }
+    else if(part->id()==ParticleID::Dminus) {
+      itype=1;
+      mplus  = (pkm [0]+ppim[0]).m2();
+      mminus = (pkm [0]+ppip[0]).m2();
+      mpipi  = (ppip[0]+ppim[0]).m2();
+    }
+    else if(part->id()==ParticleID::D_splus) {
+      itype=2;
+      mplus  = (pkp [0]+ppip[0]).m2();
+      mminus = (pkp [0]+ppim[0]).m2();
+      mpipi  = (ppip[0]+ppim[0]).m2();
+    }
+    else if(part->id()==ParticleID::D_sminus) {
+      itype=2;
+      mplus  = (pkm [0]+ppim[0]).m2();
+      mminus = (pkm [0]+ppip[0]).m2();
+      mpipi  = (ppip[0]+ppim[0]).m2();
+    }
+    else return;
+    if(itype==1) {
+      *_mkppim5 +=mminus/GeV2;
+      *_mkppip5 +=mplus /GeV2;
+      *_mpippim5+=mpipi /GeV2;
+      _points5.push_back(make_pair(mminus,mpipi));
+    }
+    else {
+      *_mkppim6 +=mminus/GeV2;
+      *_mkppip6 +=mplus /GeV2;
+      *_mpippim6+=mpipi /GeV2;
+      _points6.push_back(make_pair(mminus,mpipi));
+    }
+  }
+
+
 }
 
 void DDalitzAnalysis::persistentOutput(PersistentOStream & ) const {
@@ -260,8 +305,80 @@ void DDalitzAnalysis::dofinish() {
      if(ix%50000==0) output << "plot\n";
    }
    output << "plot\n";
-
-
+  _mkppim5->topdrawOutput(output,true,false,false,false,"RED",
+			  "m0K2+3P2-31223 for D2+3RK2+3P2-3P2+3",
+			  " X X XGX XXX X      X XW X XGX XGX X",
+			  "1/GdG/m0K2+3P2-31223/GeV2-23",
+			  "  F F  X X XGX XXX X    X  X",
+			  "m0K2+3P2-31223/GeV223",
+			  " X X XGX XXX X    X X");
+  _mkppip5->topdrawOutput(output,true,false,false,false,"RED",
+			  "m0K2+3P2+31223 for D2+3RK2+3P2-3P2+3",
+			  " X X XGX XXX X      X XW X XGX XGX X",
+			  "1/GdG/m0K2+3P2+31223/GeV2-23",
+			  "  F F  X X XGX XXX X    X  X",
+			  "m0K2+3P2+31223/GeV223",
+			  " X X XGX XXX X    X X");
+  _mpippim5->topdrawOutput(output,true,false,false,false,"RED",
+			   "m0P2+3P2-31223 for D2+3RK2+3P2-3P2+3",
+			   " XGX XGX XXX X      X XW X XGX XGX X",
+			   "1/GdG/m0P2+3P2-31223/GeV2-23",
+			   "  F F  XGX XGX XXX X    X  X",
+			   "m0P2+3P2-31223/GeV223",
+			   " XGX XGX XXX X    X X");
+   output << "new frame\n";
+   output << "set font duplex\n";
+   output << "set limits x 0 3 y 0 3\n";
+   output << "set order x y \n";
+   output << "title top \"Dalitz plot for D2+3RK2+3P2-3P2+3\"\n";
+   output << "case      \"                 X XW X XGX XGX X\"\n";
+   output << "title left   \"m0P2+3P2-31223\"\n";
+   output << "case         \" XGX XGX XXX X\"\n";
+   output << "title bottom \"m0K2+3P2-31223\"\n";
+   output << "case         \" X X XGX XXX X\"\n";
+   for(unsigned int ix=0;ix<_points5.size();++ix) {
+     output << _points5[ix].first /GeV2 << " "
+	    << _points5[ix].second/GeV2 << "\n"; 
+     if(ix%50000==0) output << "plot\n";
+   }
+   output << "plot\n";
+  _mkppim6->topdrawOutput(output,true,false,false,false,"RED",
+			  "m0K2+3P2-31223 for D0s12+3RK2+3P2-3P2+3",
+			  " X X XGX XXX X      X XX XW X XGX XGX X",
+			  "1/GdG/m0K2+3P2-31223/GeV2-23",
+			  "  F F  X X XGX XXX X    X  X",
+			  "m0K2+3P2-31223/GeV223",
+			  " X X XGX XXX X    X X");
+  _mkppip6->topdrawOutput(output,true,false,false,false,"RED",
+			  "m0K2+3P2+31223 for D0s12+3RK2+3P2-3P2+3",
+			  " X X XGX XXX X      X XX XW X XGX XGX X",
+			  "1/GdG/m0K2+3P2+31223/GeV2-23",
+			  "  F F  X X XGX XXX X    X  X",
+			  "m0K2+3P2+31223/GeV223",
+			  " X X XGX XXX X    X X");
+  _mpippim6->topdrawOutput(output,true,false,false,false,"RED",
+			   "m0P2+3P2-31223 for D0s12+3RK2+3P2-3P2+3",
+			   " XGX XGX XXX X      X XX XW X XGX XGX X",
+			   "1/GdG/m0P2+3P2-31223/GeV2-23",
+			   "  F F  XGX XGX XXX X    X  X",
+			   "m0P2+3P2-31223/GeV223",
+			   " XGX XGX XXX X    X X");
+   output << "new frame\n";
+   output << "set font duplex\n";
+   output << "set limits x 0 3.5 y 0 2.5\n";
+   output << "set order x y \n";
+   output << "title top \"Dalitz plot for D0s12+3RK2+3P2-3P2+3\"\n";
+   output << "case      \"                 X XX XW X XGX XGX X\"\n";
+   output << "title left   \"m0P2+3P2-31223\"\n";
+   output << "case         \" XGX XGX XXX X\"\n";
+   output << "title bottom \"m0K2+3P2-31223\"\n";
+   output << "case         \" X X XGX XXX X\"\n";
+   for(unsigned int ix=0;ix<_points6.size();++ix) {
+     output << _points6[ix].first /GeV2 << " "
+	    << _points6[ix].second/GeV2 << "\n"; 
+     if(ix%50000==0) output << "plot\n";
+   }
+   output << "plot\n";
 }
  
 void DDalitzAnalysis::doinitrun() {
@@ -276,4 +393,10 @@ void DDalitzAnalysis::doinitrun() {
   _mKpihigh3  = new_ptr(Histogram(0.,3.,200));
   _mKpiall3   = new_ptr(Histogram(0.,3.,200));
   _mpipi3     = new_ptr(Histogram(0.,2.,200));
+  _mkppim5    = new_ptr(Histogram(0.,3.,200));
+  _mkppip5    = new_ptr(Histogram(0.,3.,200));
+  _mpippim5   = new_ptr(Histogram(0.,3.,200));
+  _mkppim6    = new_ptr(Histogram(0.,3.5,200));
+  _mkppip6    = new_ptr(Histogram(0.,3.5,200));
+  _mpippim6   = new_ptr(Histogram(0.,3.,200));
 }

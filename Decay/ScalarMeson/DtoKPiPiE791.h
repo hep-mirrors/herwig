@@ -82,35 +82,42 @@ public:
 protected:
 
   /**
-   *  Calculate the amplitude
-   * @param ispin The spin of the intermediate resonance
-   * @param k0  Whether to use a form-factor for the \f$K_0(1430)\f$
-   * @param mD  The mass of the decaying particle
-   * @param mA  The mass of the first  decay product
-   * @param mB  The mass of the second decay product
-   * @param mC  The mass of the third  decay product
-   * @param mAB The mass of the pair AB 
-   * @param ctheta The cosine of the angle between the two pions
-   * @param p2    The magnitude of the three momentum for the first  pion
-   * @param p3    The magnitude of the three momentum for the second pion
-   * @param mres The on-shell mass of the intermediate resonance
-   * @param wres The width         of the intermediate resonance
+   *  Methods to calculate the amplitudes for a given channel
    */
-  inline Complex amplitude(int ispin, Energy mD, Energy mA, Energy mB,
-			   Energy mC, Energy mAB, double ctheta, Energy p2, Energy p3,
-			   Energy mres, Energy wres) const;
-
+  //@{
   /**
    * Calculate the decay angle for the amplitude, the angle is the 
    * angle between the 2 and 3 for the decay $D\to(12)3$ in the rest frame of
    * the resonance which decays to 1 and 2.
    * @param pparent The momentum of the parent
    * @param pres    The momentum of the resonance
-   * @paran p1      The momentum of the first decay product of the resonance
+   * @param p1      The momentum of the first decay product of the resonance
+   * @param cost    The cosine of the angle between 1 and 3
+   * @param ac      The product of the magnitudes of the three-momenta of 1 and 3.
    */
-  inline double decayAngle(const Lorentz5Momentum & pparent,
-			   const Lorentz5Momentum & pres,
-			   const Lorentz5Momentum & p1) const;
+  inline void decayAngle(const Lorentz5Momentum & pparent,
+			 const Lorentz5Momentum & pres,
+			 const Lorentz5Momentum & p1,
+			 double & cost, Energy2 & ac) const;
+
+  /**
+   * Calculate the amplitude for a resonance
+   * @param ispin The spin of the intermediate resonance
+   * @param mD  The mass of the decaying particle
+   * @param mA  The mass of the first  decay product
+   * @param mB  The mass of the second decay product
+   * @param mC  The mass of the third  decay product
+   * @param mAB The mass of the pair AB 
+   * @param mres The on-shell mass of the intermediate resonance
+   * @param wres The width         of the intermediate resonance
+   * @param ac   The product \f$|a||c|\f$
+   * @param cost The cosine of the angle between a and c.
+   */
+  inline Complex amplitude(int ispin, Energy mD, 
+			   Energy mA , Energy mB , Energy mC ,
+			   Energy mAB, double cost, Energy2 ac,
+			   Energy mres, Energy wres) const;
+  //@}
 
 protected:
 

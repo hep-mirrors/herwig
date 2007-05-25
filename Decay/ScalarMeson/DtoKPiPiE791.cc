@@ -21,17 +21,20 @@ using Herwig::Helicity::outgoing;
 
 DtoKPiPiE791::DtoKPiPiE791() {
   // which model to use
-  _imodel=1;
+  _imodel=3;
+  // amplitudes and phases for model A
   _aANR     = 1.00     ; _phiANR     =    0.;
   _aAK892   = 0.39     ; _phiAK892   =   54.;
   _aAK14300 = 0.58*GeV2; _phiAK14300 =   54.;
   _aAK14302 = 0.07/GeV2; _phiAK14302 =   33.;
   _aAK1680  = 0.19     ; _phiAK1680  =   66.;
+  // amplitudes and phases for model B
   _aBNR     = 2.72     ; _phiBNR     = - 49.;
   _aBK892   = 1.00     ; _phiBK892   =    0.;
   _aBK14300 = 1.54*GeV2; _phiBK14300 =    6.;
   _aBK14302 = 0.21/GeV2; _phiBK14302 = -  3.;
   _aBK1680  = 0.56     ; _phiBK1680  =   36.;
+  // amplitudes and phase for model C
   _aCNR     = 1.03     ; _phiCNR     = - 11.;
   _aCkappa  = 1.97*GeV2; _phiCkappa  =  187.;
   _aCK892   = 1.00     ; _phiCK892   =    0.;
@@ -597,95 +600,95 @@ double DtoKPiPiE791::me2(bool vertex, const int ichan,
     PPtr mytemp = decay[ix]; 
     ScalarWaveFunction(mytemp,outgoing,true,vertex);
   }
-  // compute the angles and momenta we need
-  Energy p2[2],p3[2];
-  double ctheta[2];
-  for(unsigned int ix=0;ix<2;++ix) {
-    Lorentz5Momentum p[3]={decay[0]->momentum(),decay[1]->momentum(),
-			   decay[2]->momentum()};
-    if(ix==1) swap(p[1],p[2]);
-    Lorentz5Momentum pres=p[0]+p[1];
-    Hep3Vector boost=-pres.boostVector();
-    for(unsigned int iy=0;iy<3;++iy) p[iy].boost(boost);
-    p2[ix]=p[1].vect().mag();
-    p3[ix]=p[2].vect().mag();
-    ctheta[ix]=-p[1].vect().cosTheta(p[2].vect());
-    //cerr << "testing p " << p2[ix] << " " << p3[ix] << "\n";
-  }
-//   cerr << "testing angles A " << ctheta[0] << " " << ctheta[1] << "\n";
-//   Lorentz5Momentum pres1(decay[0]->momentum()+decay[1]->momentum());
-//   pres1.rescaleMass();
-//   cerr << "testing angle B " << decayAngle(inpart.momentum(),pres1,decay[0]->momentum())
-//        << "\n";
-//   Lorentz5Momentum pres2(decay[0]->momentum()+decay[2]->momentum());
-//   pres2.rescaleMass();
-//   cerr << "testing angle C " << decayAngle(inpart.momentum(),pres2,decay[0]->momentum())
-//        << "\n";
-
-
-
-  // masses of the particles and intermediates
+  // masses of the particles
   Energy mA  = decay[0]->mass();
   Energy mB  = decay[1]->mass();
   Energy mC  = decay[2]->mass();
   Energy mD  = inpart.mass();
-  Energy mAB = (decay[0]->momentum()+decay[1]->momentum()).m();
-  Energy mAC = (decay[0]->momentum()+decay[2]->momentum()).m();
-  Complex amp;
+  // compute the angles and momenta we need
+  double ctheta[2];
+  Energy2 p2p3[2];
+  Energy mres[2];
+  for(unsigned int ix=0;ix<2;++ix) {
+    Lorentz5Momentum pres=decay[0]->momentum()+decay[1+ix]->momentum();
+    pres.rescaleMass();
+    mres[ix]=pres.mass();
+    Hep3Vector boost=-pres.boostVector();
+    decayAngle(inpart.momentum(),pres,decay[ix+1]->momentum(),ctheta[ix],p2p3[ix]);
+  }
+  Complex amp(0.);
   if(ichan<0) {
+    // model A renormalisation to indiv
+//     amp=
+//       +_cNR
+//       +_ckappa/GeV2 *amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mkappa ,_wkappa )
+//       +_ckappa/GeV2 *amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mkappa ,_wkappa )
+//       +_cK892       *0.9736*amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK892  ,_wK892  )
+//       +_cK892       *0.9736*amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK892  ,_wK892  )
+//       +_cK14300/GeV2*0.4647*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1430 ,_wK1430 )
+//       +_cK14300/GeV2*0.4647*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1430 ,_wK1430 )
+//       +_cK14302*GeV2*45.80 *amplitude(2,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK14302,_wK14302)
+//       +_cK14302*GeV2*45.80 *amplitude(2,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK14302,_wK14302)
+//       +_cK1680      *7.3693*amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1680 ,_wK1680)
+//       +_cK1680      *7.3693*amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1680 ,_wK1680)
+//       ;
+// to sum
+//     amp=
+//       +_cNR
+//       +_ckappa/GeV2 *amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mkappa ,_wkappa )
+//       +_ckappa/GeV2 *amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mkappa ,_wkappa )
+//       +_cK892       *0.9423*amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK892  ,_wK892  )
+//       +_cK892       *0.9423*amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK892  ,_wK892  )
+//       +_cK14300/GeV2*0.4012*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1430 ,_wK1430 )
+//       +_cK14300/GeV2*0.4012*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1430 ,_wK1430 )
+//       +_cK14302*GeV2*41.51 *amplitude(2,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK14302,_wK14302)
+//       +_cK14302*GeV2*41.51 *amplitude(2,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK14302,_wK14302)
+//       +_cK1680      *5.913 *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1680 ,_wK1680)
+//       +_cK1680      *5.913 *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1680 ,_wK1680)
+//       ;
     amp=
-      +_cNR
-      +_ckappa/GeV2 *amplitude(0,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],_mkappa ,_wkappa )
-      +_ckappa/GeV2 *amplitude(0,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],_mkappa ,_wkappa )
-      +_cK892       *amplitude(1,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],_mK892  ,_wK892  )
-      -_cK892       *amplitude(1,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],_mK892  ,_wK892  )
-      +_cK14300/GeV2/2.5*amplitude(0,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],_mK1430 ,_wK1430 )
-      +_cK14300/GeV2/2.5*amplitude(0,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],_mK1430 ,_wK1430 )
-      +_cK14302*GeV2*8.5*amplitude(2,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],_mK14302,_wK14302)
-      +_cK14302*GeV2*8.5*amplitude(2,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],_mK14302,_wK14302)
-      +_cK1680*5.9*amplitude(1,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],_mK1680 ,_wK1680 )
-      -_cK1680*5.9*amplitude(1,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],_mK1680 ,_wK1680)
+      +_cNR    *1.091
+      +_ckappa *0.935/GeV2*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mkappa ,_wkappa )
+      +_ckappa *0.935/GeV2*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mkappa ,_wkappa )
+      +_cK892             *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK892  ,_wK892  )
+      +_cK892             *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK892  ,_wK892  )
+      +_cK14300*0.533/GeV2*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1430 ,_wK1430 )
+      +_cK14300*0.533/GeV2*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1430 ,_wK1430 )
+      +_cK14302*46.88*GeV2*amplitude(2,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK14302,_wK14302)
+      +_cK14302*46.88*GeV2*amplitude(2,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK14302,_wK14302)
+      +_cK1680 *6.366     *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1680 ,_wK1680)
+      +_cK1680 *6.366     *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1680 ,_wK1680)
       ;
   }
   else if(ichan==0) {
-    amp=_ckappa/GeV2 *amplitude(0,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],
-				_mkappa ,_wkappa );
+    amp=_ckappa/GeV2 *amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mkappa ,_wkappa );
   }
   else if(ichan==1) {
-    amp=_ckappa/GeV2 *amplitude(0,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],
-				_mkappa ,_wkappa );
+    amp=_ckappa/GeV2 *amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mkappa ,_wkappa );
   }
   else if(ichan==2) {
-    amp=_cK892       *amplitude(1,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],
-				_mK892  ,_wK892  );
+    amp=_cK892       *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK892  ,_wK892  );
   }
   else if(ichan==3) {
-    amp=_cK892       *amplitude(1,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],
-				_mK892  ,_wK892  );
+    amp=_cK892       *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK892  ,_wK892  );
   }
   else if(ichan==4) {
-    amp=_cK14300/GeV2*amplitude(0,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],
-				_mK1430 ,_wK1430 );
+    amp=_cK14300/GeV2*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1430 ,_wK1430 );
   }
   else if(ichan==5) {
-    amp=_cK14300/GeV2*amplitude(0,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],
-				_mK1430 ,_wK1430 );
+    amp=_cK14300/GeV2*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1430 ,_wK1430 );
   }
   else if(ichan==6) {
-    amp=_cK14302*GeV2*amplitude(2,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],
-				_mK14302,_wK14302);
+    amp=_cK14302*GeV2*amplitude(2,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK14302,_wK14302);
   }
   else if(ichan==7) {
-    amp=_cK14302*GeV2*amplitude(2,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1],
-				_mK14302,_wK14302);
+    amp=_cK14302*GeV2*amplitude(2,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK14302,_wK14302);
   }
   else if(ichan==8) {
-    amp=_cK1680      *amplitude(1,mD,mA,mB,mC,mAB,ctheta[0],p2[0],p3[0],
-				_mK1680 ,_wK1680 );
+    amp=_cK1680      *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1680 ,_wK1680 );
   }
   else if(ichan==9) {
-    amp=_cK1680      *amplitude(1,mD,mA,mC,mB,mAC,ctheta[1],p2[1],p3[1]
-				,_mK1680 ,_wK1680);;
+    amp=_cK1680      *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1680 ,_wK1680 );
   }
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);

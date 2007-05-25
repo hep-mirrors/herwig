@@ -8,6 +8,8 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "ThePEG/Utilities/Math.h"
+#include "Herwig++/Utilities/Interpolator.h"
+#include "Herwig++/Utilities/GaussianIntegrator.h"
 #include "DtoKPiPiBaBar.fh"
 
 namespace Herwig {
@@ -22,6 +24,11 @@ using namespace ThePEG;
  */
 class DtoKPiPiBaBar: public DecayIntegrator {
 
+/**
+ *  The struct for the integration is a friend
+ */
+friend struct DtoKPiPiBaBarInnerIntegrand;
+  
 public:
 
   /**
@@ -102,6 +109,17 @@ protected:
 			   Energy mAB, Energy mAC, Energy mBC,
 			   Energy mres, Energy wres) const;
 
+  /**
+   *  The \f$F_1(s)\f$ contribution from the scalar \f$\pi\pi\f$ states
+   * @param s The mass squared of the \f$\pi\pi\f$ status
+   */
+  Complex F1(Energy2 s) const;
+ 
+  /**
+   *  Integrand for the \f$\rho\f$ function for the \f$4\pi\f$ state
+   */
+  inline double rho3(Energy2 s,Energy2 s1, Energy2 s2) const;
+
 protected:
 
   /** @name Clone Methods. */
@@ -160,31 +178,31 @@ private:
    *  The \f$g^\alpha_{\pi^+\pi^-}\f$ coupling for the different resonances in
    *  the K-matrix fit
    */
-  vector<double> _gpipi;
+  vector<Energy> _gpipi;
 
   /**
    *  The \f$g^\alpha_{K\bar{K}}\f$ coupling for the different resonances in
    *  the K-matrix fit
    */
-  vector<double> _gKK;
+  vector<Energy> _gKK;
 
   /**
    *  The \f$g^\alpha_{4\pi}\f$ coupling for the different resonances in
    *  the K-matrix fit
    */
-  vector<double> _g4pi;
+  vector<Energy> _g4pi;
 
   /**
    *  The \f$g^\alpha_{\eta\eta}\f$ coupling for the different resonances in
    *  the K-matrix fit
    */
-  vector<double> _getaeta;
+  vector<Energy> _getaeta;
 
   /**
    *  The \f$g^\alpha_{\eta\eta'}\f$ coupling for the different resonances in
    *  the K-matrix fit
    */
-  vector<double> _getaetap;
+  vector<Energy> _getaetap;
 
   /**
    *  The masses of the resonances
@@ -215,6 +233,31 @@ private:
    *  The \f$\rho_0\f$ parameter for the multi-body function
    */
   Energy2 _rho0;
+
+  /**
+   *  \f$g\f$ couplings for easy access
+   */
+  vector<vector<Energy> > _gialpha;
+
+  /**
+   *  Pion mass
+   */
+  Energy _mpi;
+
+  /**
+   *  Kaon mass
+   */
+  Energy _mK;
+
+  /**
+   * \f$\eta\f$ mass
+   */
+  Energy _meta;
+
+  /**
+   *  \f$\eta'\f$ mass
+   */
+  Energy _metap;
   //@}
 
   /**
@@ -224,17 +267,17 @@ private:
   /**
    *  The real part
    */
-  vector<double> _betare;
+  vector<Energy> _betare;
   
   /**
    *  The imaginary part
    */
-  vector<double> _betaim;
+  vector<Energy> _betaim;
   
   /**
    *  The full coupling
    */
-  vector<Complex> _beta;
+  vector<complex<Energy> > _beta;
   //@}
 
   /**
@@ -244,17 +287,37 @@ private:
   /**
    *  The real part
    */
-  vector<double> _fprodre;
+  double _fprodre;
 
   /**
    *  The imaginary part
    */
-  vector<double> _fprodim;
+  double _fprodim;
 
   /**
    *  The full coupling
    */
-  vector<double> _fprod;
+  Complex _fprod;
+
+  /**
+   *  \f$s\f$ values for the interpolation table for \f$\rho_3\f$.
+   */
+  vector<double> _rho3scale;
+
+  /**
+   *  \f$\rho_3\f values for the interpolation table for \f$\rho_3\f$.
+   */
+  vector<double> _rho3;
+
+  /**
+   *  Initialise the interpolation table for \f$\rho_3\f$
+   */
+  bool _initrho3;
+
+  /**
+   *  The interpolator for \f$\rho_3\f$
+   */
+  InterpolatorPtr _rho3inter;
   //@}
 
   /**
@@ -849,6 +912,98 @@ struct ClassTraits<Herwig::DtoKPiPiBaBar>
 /** @endcond */
 
 }
+
+namespace Herwig {
+
+/**
+ * A struct for the integration of \f$\rho_3\f$, this is the outer integrand
+ */
+struct DtoKPiPiBaBarInnerIntegrand {
+
+  /**
+   *  The constructor
+   */
+  inline DtoKPiPiBaBarInnerIntegrand(DtoKPiPiBaBarPtr);
+
+  /**
+   * Get the function value
+   */
+  inline double operator ()(double argument) const;
+
+  /**
+   * Set the value of s
+   */
+  inline void s(Energy2) const;
+
+  /**
+   * Set the value of \f$s_1\f$
+   */
+  inline void s1(Energy2) const;
+
+  /**
+   * Mass squared of the system
+   */
+  mutable Energy _s;
+
+  /**
+   * Mass squared of the first rho
+   */
+  mutable Energy _s1;
+
+  /**
+   *  Pointer to the DtoKPiPiBaBar class
+   */
+  DtoKPiPiBaBarPtr _decayer;
+};
+
+/**
+ * A struct for the integration of \f$\rho_3\f$, this is the outer integrand
+ */
+struct DtoKPiPiBaBarOuterIntegrand {
+
+  /**
+   *  The constructor
+   */
+  inline DtoKPiPiBaBarOuterIntegrand(DtoKPiPiBaBarPtr,Energy );
+
+  /**
+   * Get the function value
+   */
+  inline double operator ()(double argument) const;
+
+  /**
+   * Set the value of s
+   */
+  inline void s(Energy2) const;
+
+  /**
+   *  Pointer to the DtoKPiPiBaBar class
+   */
+  DtoKPiPiBaBarPtr _decayer;
+
+  /**
+   *  The inner integrand
+   */
+  DtoKPiPiBaBarInnerIntegrand integral;
+
+  /**
+   *  The value of \f$m_\pi\f$
+   */
+  Energy _mpi;
+
+  /**
+   * Mass squared of the system
+   */
+  mutable Energy _s;
+
+  /**
+   *  Integrator
+   */
+  GaussianIntegrator _integrator;
+};
+
+}
+
 
 #include "DtoKPiPiBaBar.icc"
 

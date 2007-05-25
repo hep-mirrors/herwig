@@ -45,7 +45,6 @@ DtoKPiPiE691::DtoKPiPiE691() {
 }
 
 void DtoKPiPiE691::doinit() throw(InitException) {
-  cerr << "testing in doinit\n";
   DecayIntegrator::doinit();
   // complex amplitudes calculated from magnitudes and phases
   double fact = pi/180.;
@@ -265,6 +264,28 @@ void DtoKPiPiE691::Init() {
 //    *  Phase of the non-resonant component for \f$D^+\to K^-\pi^+\pi^+\f$
 //    */
 //   double _phi1NR;
+//   // amplitudes and phases for D+ -> K-pi+pi+
+//   _a1NR    = 1.  ; _phi1NR    =    0.;
+//   _a1K892  = 0.78; _phi1K892  = - 60.;
+//   _a1K1430 = 0.53; _phi1K1430 =  132.;
+//   _a1K1680 = 0.47; _phi1K1680 = - 51.;
+//   // amplitudes and phases for D0 -> K-pi+pi0
+//   _a2NR    = 1.00; _phi2NR    =    0.;
+//   _a2K8920 = 3.19; _phi2K8920 =  167.;
+//   _a2K892m = 2.96; _phi2K892m = -112.;
+//   _a2rho   = 8.56; _phi2rho   =   40.;
+//   // amplitudes and phases for D0 -> Kbar0 pi+pi-
+//   _a3NR    = 1.00; _phi3NR    =    0.;
+//   _a3K892  = 2.31; _phi3K892  =  109.;
+//   _a3rho   = 1.59; _phi3rho   = -123.;
+//   // masses and widths
+//   _localparameters=true;
+//   _mK8920 = 0.8961 *GeV; _wK8920 = 0.0505*GeV;
+//   _mK892m = 0.89159*GeV; _wK892m = 0.0498*GeV;
+//   _mK1680 = 1.714  *GeV; _wK1680 = 0.323 *GeV;
+//   _mK1430 = 1.429  *GeV; _wK1430 = 0.287 *GeV;
+//   _mrho0  = 0.7681 *GeV; _wrho0  = 0.1515*GeV;
+//   _mrhop  = 0.7681 *GeV; _wrhop  = 0.1515*GeV;
 
 //   /**
 //    *  Amplitude of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
@@ -560,7 +581,6 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
   Complex amp;
   // D+ -> K-pi+pi_
   if(imode()==0) {
-    double ort(sqrt(0.5));
     Lorentz5Momentum pres1=decay[0]->momentum()+decay[1]->momentum();
     pres1.rescaleMass();
     double ct1 =-decayAngle(inpart.momentum(),pres1,decay[0]->momentum());
@@ -569,30 +589,30 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
     double ct2 =-decayAngle(inpart.momentum(),pres2,decay[0]->momentum());
     if(ichan<0) {
       amp = _c1NR
-	+ort*_c1K892 *amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920)
-	+ort*_c1K892 *amplitude(1,ct2,pres2.mass(),_wK8920,_mK8920)
-	+ort*_c1K1430*amplitude(0,ct1,pres1.mass(),_wK1430,_mK1430)
-	+ort*_c1K1430*amplitude(0,ct2,pres2.mass(),_wK1430,_mK1430)
-	+ort*_c1K1680*amplitude(1,ct1,pres1.mass(),_wK1680,_mK1680)
-	+ort*_c1K1680*amplitude(1,ct2,pres2.mass(),_wK1680,_mK1680);
+	+_c1K892 *amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920)
+	+_c1K892 *amplitude(1,ct2,pres2.mass(),_wK8920,_mK8920)
+	+_c1K1430*amplitude(0,ct1,pres1.mass(),_wK1430,_mK1430)
+	+_c1K1430*amplitude(0,ct2,pres2.mass(),_wK1430,_mK1430)
+	+_c1K1680*amplitude(1,ct1,pres1.mass(),_wK1680,_mK1680)
+	+_c1K1680*amplitude(1,ct2,pres2.mass(),_wK1680,_mK1680);
     }
     else if(ichan==0) {
-      amp=ort*_c1K892 *amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920);
+      amp=_c1K892 *amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920);
     }
     else if(ichan==1) {
-      amp=ort*_c1K892 *amplitude(1,ct2,pres2.mass(),_wK8920,_mK8920);
+      amp=_c1K892 *amplitude(1,ct2,pres2.mass(),_wK8920,_mK8920);
     }
     else if(ichan==2) {
-      amp=ort*_c1K1430*amplitude(1,ct1,pres1.mass(),_wK1430,_mK1430);
+      amp=_c1K1430*amplitude(1,ct1,pres1.mass(),_wK1430,_mK1430);
     }
     else if(ichan==3) {
-      amp=ort*_c1K1430*amplitude(1,ct2,pres2.mass(),_wK1430,_mK1430);
+      amp=_c1K1430*amplitude(1,ct2,pres2.mass(),_wK1430,_mK1430);
     }
     else if(ichan==4) {
-      amp=ort*_c1K1680*amplitude(1,ct1,pres1.mass(),_wK1680,_mK1680);
+      amp=_c1K1680*amplitude(1,ct1,pres1.mass(),_wK1680,_mK1680);
     }
     else if(ichan==5) {
-      amp=ort*_c1K1680*amplitude(1,ct2,pres2.mass(),_wK1680,_mK1680);
+      amp=_c1K1680*amplitude(1,ct2,pres2.mass(),_wK1680,_mK1680);
     }
   }
   // D0 -> K-pi+pi0

@@ -863,10 +863,10 @@ double DtoKPiPiCLEO::me2(bool vertex, const int ichan,
     ScalarWaveFunction(mytemp,outgoing,true,vertex);
   }
   // compute the invariant masses needed to calulate the amplitudes
+  Energy mD  = inpart.mass();
   Energy mA  = decay[0]->mass();
   Energy mB  = decay[1]->mass();
   Energy mC  = decay[2]->mass();
-  Energy mD  = inpart.mass();
   Energy mAB = (decay[0]->momentum()+decay[1]->momentum()).m();
   Energy mAC = (decay[0]->momentum()+decay[2]->momentum()).m();
   Energy mBC = (decay[1]->momentum()+decay[2]->momentum()).m();

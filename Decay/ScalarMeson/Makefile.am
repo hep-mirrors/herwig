@@ -38,5 +38,9 @@ DtoKPiPiCLEO.icc DtoKPiPiCLEO.cc \
 DtoKPiPiE791.h   DtoKPiPiE791.fh \
 DtoKPiPiE791.icc DtoKPiPiE791.cc \
 DtoKPiPiE691.h   DtoKPiPiE691.fh \
-DtoKPiPiE691.icc DtoKPiPiE691.cc
+DtoKPiPiE691.icc DtoKPiPiE691.cc\
+DtoKPiPiFOCUS.h   DtoKPiPiFOCUS.fh \
+DtoKPiPiFOCUS.icc DtoKPiPiFOCUS.cc\
+DtoKPiPiCabibboFOCUS.h   DtoKPiPiCabibboFOCUS.fh \
+DtoKPiPiCabibboFOCUS.icc DtoKPiPiCabibboFOCUS.cc
 HwSMDecay_la_LDFLAGS = -module -version-info 2:0:0
