@@ -34,17 +34,17 @@ DtoKPiPiMarkIII::DtoKPiPiMarkIII() {
   _a3Kstar  = 0.517; _phi3Kstar  =  43.;
   _a3NR     = 2.490; _phi3NR     = 250.;
   // Amplitudes and phases for D+ -> K- pi+ pi+
-  _a4Kstar  = 1.   ; _phi4Kstar  = 105.;
-  _a4NR     = 20.35; _phi4NR     =   0.;
+  _a4Kstar  = 0.049; _phi4Kstar  = 105.;
+  _a4NR     = 1.   ; _phi4NR     =   0.;
   // masses and widths of the resonances
   _localparameters = true;
-  _mrhop   = 0.7699*GeV; _wrhop   = 0.1512*GeV;
-  _mrho0   = 0.7699*GeV; _wrho0   = 0.1512*GeV;
-  _mKstarm = 0.8916*GeV; _wKstarm = 0.0505*GeV;
-  _mKstar0 = 0.8695*GeV; _wKstar0 = 0.0498*GeV;
+  _mrhop   = 0.770*GeV; _wrhop   = 0.1533*GeV;
+  _mrho0   = 0.770*GeV; _wrho0   = 0.1533*GeV;
+  _mKstarm = 0.8921*GeV; _wKstarm = 0.0511*GeV;
+  _mKstar0 = 0.8695*GeV; _wKstar0 = 0.0502*GeV;
   // radii of the mesons
-  _rrho   = 5.*fermi; 
-  _rKstar = 2.*fermi;
+  _rrho   = 5.*fermi/hbarc; 
+  _rKstar = 2.*fermi/hbarc;
 }
 
 
@@ -76,8 +76,244 @@ ClassDescription<DtoKPiPiMarkIII> DtoKPiPiMarkIII::initDtoKPiPiMarkIII;
 void DtoKPiPiMarkIII::Init() {
 
   static ClassDocumentation<DtoKPiPiMarkIII> documentation
-    ("There is no documentation for the DtoKPiPiMarkIII class");
+    ("The DtoKPiPiMarkIII class performs the D -> K pi pi decays using the fit"
+     "of the MarkIII collaboration",
+     "The fit of the Mark III collaboration \\cite{Adler:1987sd} was used for "
+     "$D\\to K\\pi\\pi$ decays",
+     "\\bibitem{Adler:1987sd} J.~Adler {\\it et al.} [MARK-III Collaboration], "
+     "Phys.\\ Lett.\\  B {\\bf 196} (1987) 107.");
 
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0RhoMagnitude
+    ("KmPipPi0RhoMagnitude",
+     "The magnitude of the rho component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_a1rho, 1.00, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0RhoPhase
+    ("KmPipPi0RhoPhase",
+     "The phase of the rho component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_phi1rho,  0., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0KstarmMagnitude
+    ("KmPipPi0KstarmMagnitude",
+     "The magnitude of the K*(892)- component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_a1Kstarm, 0.371, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0KstarmPhase
+    ("KmPipPi0KstarmPhase",
+     "The phase of the K*(892)- component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_phi1Kstarm, 154., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0Kstar0Magnitude
+    ("KmPipPi0Kstar0Magnitude",
+     "The magnitude of the K*(892)0 component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_a1Kstar0, 0.391, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0Kstar0Phase
+    ("KmPipPi0Kstar0Phase",
+     "The phase of the K*(892)0 component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_phi1Kstar0, 7., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0NonResonantMagnitude
+    ("KmPipPi0NonResonantMagnitude",
+     "The magnitude of the non-resonant component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_a1NR, 1.889, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPi0NonResonantPhase
+    ("KmPipPi0NonResonantPhase",
+     "The phase of the non-resonant component for D0 -> K- pi+ pi0",
+     &DtoKPiPiMarkIII::_phi1NR, 52., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimRhoMagnitude
+    ("K0PipPimRhoMagnitude",
+     "The magnitude of the rho component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_a2rho, 1.000, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimRhoPhase
+    ("K0PipPimRhoPhase",
+     "The phase of the rho component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_phi2rho,  93., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimKstarMagnitude
+    ("K0PipPimKstarMagnitude",
+     "The magnitude of the K*(892) component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_a2Kstar, 2.106, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimKstarPhase
+    ("K0PipPimKstarPhase",
+     "The phase of the K*(892)0 component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_phi2Kstar, 0., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimNonResonantMagnitude
+    ("K0PipPimNonResonantMagnitude",
+     "The magnitude of the non-resonant component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_a2NR, 9.379, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPimNonResonantPhase
+    ("K0PipPimNonResonantPhase",
+     "The phase of the non-resonant component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_phi2NR, 0., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0RhoMagnitude
+    ("K0PipPi0RhoMagnitude",
+     "The magnitude of the rho component for D+ -> Kbar0 pi+ pi0",
+     &DtoKPiPiMarkIII::_a3rho, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0RhoPhase
+    ("K0PipPi0RhoPhase",
+     "The phase of the rho component for D+ -> Kbar0 pi+ pi0",
+     &DtoKPiPiMarkIII::_phi3rho, 0.0, 0.0, 360.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0KstarMagnitude
+    ("K0PipPi0KstarMagnitude",
+     "The magnitude of the K* component for D+ -> Kbar0 pi+ pi0",
+     &DtoKPiPiMarkIII::_a3Kstar, 0.517, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0KstarPhase
+    ("K0PipPi0KstarPhase",
+     "The phase of the K* component for D+ -> Kbar0 pi+ pi0",
+     &DtoKPiPiMarkIII::_phi3Kstar, 43.0, 0.0, 360.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0NonResonantMagnitude
+    ("K0PipPi0NonResonantMagnitude",
+     "The magnitude of the non-resonant component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_a3NR, 2.490, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceK0PipPi0NonResonantPhase
+    ("K0PipPi0NonResonantPhase",
+     "The phase of the non-resonant component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiMarkIII::_phi3NR, 250., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipNonResonantMagnitude
+    ("KmPipPipNonResonantMagnitude",
+     "The magnitude of the non-resonant component for D+ -> K- pi+ pi+",
+     &DtoKPiPiMarkIII::_a4NR, 1.00, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipNonResonantPhase
+    ("KmPipPipNonResonantPhase",
+     "The phase of the non-resonant component for D+ -> K- pi+ pi+",
+     &DtoKPiPiMarkIII::_phi4NR, 0., -180., 180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipKstarMagnitude
+    ("KmPipPipKstarMagnitude",
+     "The magnitude of the K*(892) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiMarkIII::_a4Kstar, 0.049, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,double> interfaceKmPipPipKstarPhase
+    ("KmPipPipKstarPhase",
+     "The phase of the K*(892) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiMarkIII::_phi4Kstar, 105., -180., 180.,
+     false, false, Interface::limited);
+
+  static Switch<DtoKPiPiMarkIII,bool> interfaceLocalParameters
+    ("LocalParameters",
+     "Whether to use local values for the masses and widths or"
+     " those from the ParticleData objects",
+     &DtoKPiPiMarkIII::_localparameters, true, false, false);
+  static SwitchOption interfaceLocalParametersLocal
+    (interfaceLocalParameters,
+     "Local",
+     "Use local values",
+     true);
+  static SwitchOption interfaceLocalParametersParticleData
+    (interfaceLocalParameters,
+     "ParticleData",
+     "Use the values from the ParticleData objects",
+     false);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstar0Mass
+    ("Kstar0Mass",
+     "The mass of the K*(892)0",
+     &DtoKPiPiMarkIII::_mKstar0, GeV, 0.8965 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstar0Width
+    ("Kstar0Width",
+     "The width of the K*(892)0",
+     &DtoKPiPiMarkIII::_wKstar0, GeV, 0.0502*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstarMinusMass
+    ("KstarMinusMass",
+     "The mass of the K*(892)-",
+     &DtoKPiPiMarkIII::_mKstarm, GeV, 0.8921*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceKstarMinusWidth
+    ("KstarMinusWidth",
+     "The width of the K*(892)-",
+     &DtoKPiPiMarkIII::_wKstarm, GeV, 0.0511*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceRho0Mass
+    ("Rho0Mass",
+     "The mass of the rho0",
+     &DtoKPiPiMarkIII::_mrho0, GeV, 0.770 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceRho0Width
+    ("Rho0Width",
+     "The width of the rho0",
+     &DtoKPiPiMarkIII::_wrho0, GeV, 0.1533*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceRhoPlusMass
+    ("RhoPlusMass",
+     "The mass of the rho+",
+     &DtoKPiPiMarkIII::_mrhop, GeV, 0.770 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,Energy> interfaceRhoPlusWidth
+    ("RhoPlusWidth",
+     "The width of the rho+",
+     &DtoKPiPiMarkIII::_wrhop, GeV, 0.1533*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,InvEnergy> interfaceRhoRadius
+    ("RhoRadius",
+     "The radius of the rho for the Blatt-Weisskopf factor",
+     &DtoKPiPiMarkIII::_rrho, fermi/hbarc, 5.0*fermi/hbarc, 0.0*fermi/hbarc, 10.0*fermi/hbarc,
+     true, false, Interface::limited);
+
+  static Parameter<DtoKPiPiMarkIII,InvEnergy> interfaceKstarRadius
+    ("KstarRadius",
+     "The radius of the K* for the Blatt-Weisskopf factor",
+     &DtoKPiPiMarkIII::_rKstar, fermi/hbarc, 2.0*fermi/hbarc, 0.0*fermi/hbarc, 10.0*fermi/hbarc,
+     true, false, Interface::limited);
+
+  static ParVector<DtoKPiPiMarkIII,double> interfaceMaximumWeights
+    ("MaximumWeights",
+     "The maximum weights for the unweighting of the decays",
+     &DtoKPiPiMarkIII::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     false, false, Interface::limited);
+
+  static ParVector<DtoKPiPiMarkIII,double> interfaceWeights
+    ("Weights",
+     "The weights for the different channels for the phase-space integration",
+     &DtoKPiPiMarkIII::_weights, -1, 1.0, 0.0, 1.0,
+     false, false, Interface::limited);
 }
 
 void DtoKPiPiMarkIII::doinit() throw(InitException) {
@@ -254,7 +490,6 @@ void DtoKPiPiMarkIII::doinit() throw(InitException) {
     _wrho0   = rho0 ->width();
     _wrhop   = rhop ->width();
   }
-  cerr << *this << "\n";
 }
 
 int DtoKPiPiMarkIII::modeNumber(bool & cc,const DecayMode & dm) const {
@@ -352,8 +587,8 @@ double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart
   else if(imode()==2) {
     if(ichan<0) {
       amp = _c3NR
-	+_c3rho  *amplitude(true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrhop  ,_wrhop  )
- 	+_c3Kstar*amplitude(false,mD,mA,mC,mB,mAC,mAB,mBC,_mKstar0,_wKstar0);
+ 	-_c3rho  *amplitude(true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrhop  ,_wrhop  )
+  	-_c3Kstar*amplitude(false,mD,mA,mC,mB,mAC,mAB,mBC,_mKstar0,_wKstar0);
     }
     else if(ichan==0) {
       amp = _c3rho  *amplitude(true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrhop,_wrhop);
