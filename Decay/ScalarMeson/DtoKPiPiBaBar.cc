@@ -1301,8 +1301,8 @@ Complex DtoKPiPiBaBar::F1(Energy2 s) const {
       for(unsigned int alpha=0;alpha<5;++alpha) {
 	K[i][j]+=_gialpha[i][alpha]*_gialpha[j][alpha]/(sqr(_malpha[alpha])-s);
       }
-//       if(i==0) K[i][j]+= _fscatt[j]*(GeV2-_s0scatt)/(s-_s0scatt);
-//       else if(j==0) K[i][j]+= _fscatt[i]*(GeV2-_s0scatt)/(s-_s0scatt);
+      if(i==0) K[i][j]+= _fscatt[j]*(GeV2-_s0scatt)/(s-_s0scatt);
+      else if(j==0) K[i][j]+= _fscatt[i]*(GeV2-_s0scatt)/(s-_s0scatt);
       K[i][j] *= (GeV2-_sA0)/(s-_sA0)*(s-0.5*_sA*sqr(_mpi)/GeV2)/GeV2;
       // multiply in rho
       K[i][j] *= -Complex(0.,1.)*rho[j];

@@ -235,6 +235,31 @@ private:
   //@}
 
   /**
+   *  Histograms for \f$D^+\to\bar{K}^0\pi^+\pi^0\f$
+   */
+  //@{
+  /**
+   *  Histogram for the \f$\bar{K}^0\pi^+\f$ mass
+   */
+  HistogramPtr _m2Kpip4;
+
+  /**
+   *  Histogram for the \f$\pi^+\pi^0\f$ mass
+   */
+  HistogramPtr _m2pipi4;
+
+  /**
+   *  Histogram for the \f$\bar{K}^0\pi^0\f$ mass
+   */
+  HistogramPtr _m2Kpi04;
+
+  /**
+   *  Vectors for the Dalitz plot
+   */
+  vector<pair<Energy2,Energy2> > _points4;
+  //@}
+
+  /**
    *  Histograms for \f$D^+\to K^+\pi^-\pi^+\f$
    */
   //@{

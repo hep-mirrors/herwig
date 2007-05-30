@@ -305,7 +305,7 @@ private:
   vector<double> _rho3scale;
 
   /**
-   *  \f$\rho_3\f values for the interpolation table for \f$\rho_3\f$.
+   *  \f$\rho_3\f$ values for the interpolation table for \f$\rho_3\f$.
    */
   vector<double> _rho3;
 

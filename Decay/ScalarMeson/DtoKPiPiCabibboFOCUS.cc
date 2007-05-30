@@ -5,7 +5,9 @@
 //
 
 #include "DtoKPiPiCabibboFOCUS.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Interface/Switch.h"
+#include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
@@ -27,17 +29,17 @@ DtoKPiPiCabibboFOCUS::DtoKPiPiCabibboFOCUS() {
   _mf980    =  972. *MeV; _wf980    =  59. *MeV;
   _mrho1450 = 1465. *MeV; _wrho1450 = 310. *MeV;
   // Amplitudes and Phases for the D+ ->  K+pi-pi+
-  _aDrho770 = 1.000     ; _phiDrho770 =    0.0;
-  _aDK892   = 1.151     ; _phiDK892   = -167.1;
-  _aDf980   = 0.476*GeV2; _phiDf980   = -134.5;
-  _aDK1430  = 0.451/GeV2; _phiDK1430  =   54.4;
+  _aDrho770   = 1.000     ; _phiDrho770   =    0.0;
+  _aDK892     = 1.151     ; _phiDK892     = -167.1;
+  _aDf980     = 0.476*GeV2; _phiDf980     = -134.5;
+  _aDK1430    = 0.451/GeV2; _phiDK1430    =   54.4;
   // Amplitudes and Phases for the D_s+ -> K+pi-pi+
-  _aDsNR      = 0.640; _phiDsNR      =   43.1;
-  _aDsrho770  = 1.000; _phiDsrho770  =    0.0;
-  _aDsK892    = 0.747; _phiDsK892    =  161.7;
-  _aDsK1410   = 0.696; _phiDsK1410   = - 34.8;
+  _aDsNR      = 0.640     ; _phiDsNR      =   43.1;
+  _aDsrho770  = 1.000     ; _phiDsrho770  =    0.0;
+  _aDsK892    = 0.747     ; _phiDsK892    =  161.7;
+  _aDsK1410   = 0.696     ; _phiDsK1410   = - 34.8;
   _aDsK1430   = 0.444*GeV2; _phiDsK1430   =   59.3;
-  _aDsrho1450 = 0.523; _phiDsrho1450 = -151.7;
+  _aDsrho1450 = 0.523     ; _phiDsrho1450 = -151.7;
   // radial sizes
   _rD0  = 5.0/GeV;
   _rres = 1.5/GeV;
@@ -73,7 +75,272 @@ ClassDescription<DtoKPiPiCabibboFOCUS> DtoKPiPiCabibboFOCUS::initDtoKPiPiCabibbo
 void DtoKPiPiCabibboFOCUS::Init() {
 
   static ClassDocumentation<DtoKPiPiCabibboFOCUS> documentation
-    ("There is no documentation for the DtoKPiPiCabibboFOCUS class");
+    ("The DtoKPiPiCabibboFOCUS class implements the Dalitz decays for"
+     " the cabibbo supressed modes D+> K+ pi+ pi- and D_s -> K+ pi+ pi-",
+     "The decays $D^+\\to K^+\\pi^-\\pi^+$ and $D_s+\\to K^+\\pi^-\\pi^+$ were modelled"
+     "using the results of \\cite{Edera:2005na} and \\bibitem{Link:2004mx}.",
+     "\\bibitem{Edera:2005na} L.~Edera, \"Study of the  doubly and singly"
+     " Cabibbo suppressed decays $D^+\\to K^+\\pi^-\\pi^+$ and $D_s+\\to K^+\\pi^-\\pi^+$ "
+     "in the FOCUS experiment\", FERMILAB-THESIS-2005-26 2005.\n"
+     "\\bibitem{Link:2004mx} J.~M.~Link {\\it et al.}  [FOCUS Collaboration], "
+     "Phys.\\ Lett.\\  B {\\bf 601} (2004) 10 [arXiv:hep-ex/0407014]");
+
+  static Switch<DtoKPiPiCabibboFOCUS,bool> interfaceLocalParameters
+    ("LocalParameters",
+     "Whether to use local values for the masses and widths or"
+     " those from the ParticleData objects",
+     &DtoKPiPiCabibboFOCUS::_localparameters, true, false, false);
+  static SwitchOption interfaceLocalParametersLocal
+    (interfaceLocalParameters,
+     "Local",
+     "Use local values",
+     true);
+  static SwitchOption interfaceLocalParametersParticleData
+    (interfaceLocalParameters,
+     "ParticleData",
+     "Use the values from the ParticleData objects",
+     false);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceKstar892Mass
+    ("Kstar892Mass",
+     "The mass of the K*(892) meson",
+     &DtoKPiPiCabibboFOCUS::_mK892, MeV,  896.1*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceKstar1410Mass
+    ("Kstar1410Mass",
+     "The mass of the K*(1410) meson",
+     &DtoKPiPiCabibboFOCUS::_mK1410, MeV,  1414.*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceK_01430Mass
+    ("K_01430Mass",
+     "The mass of the K_0(1430) meson",
+     &DtoKPiPiCabibboFOCUS::_mK14300, MeV, 1412. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceK_21430Mass
+    ("K_21430Mass",
+     "The mass of the K_2(1430) meson",
+     &DtoKPiPiCabibboFOCUS::_mK14302, MeV, 1432.4*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceRho770Mass
+    ("Rho770Mass",
+     "The mass of the rho(770)",
+     &DtoKPiPiCabibboFOCUS::_mrho770, MeV, 768.5*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceF980Mass
+    ("F980Mass",
+     "The mass of the f_0(980)",
+     &DtoKPiPiCabibboFOCUS::_mf980, MeV, 972. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceRho1450Mass
+    ("Rho1450Mass",
+     "The mass of the rho(1450)",
+     &DtoKPiPiCabibboFOCUS::_mrho1450, MeV, 1465. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceKstar892Width
+    ("Kstar892Width",
+     "The width of the K*(892) meson",
+     &DtoKPiPiCabibboFOCUS::_wK892, MeV, 50.7*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceKstar1410Width
+    ("Kstar1410Width",
+     "The width of the K*(1410) meson",
+     &DtoKPiPiCabibboFOCUS::_wK1410, MeV,  232. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceK_01430Width
+    ("K_01430Width",
+     "The width of the K_0(1430) meson",
+     &DtoKPiPiCabibboFOCUS::_wK14300, MeV, 294. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceK_21430Width
+    ("K_21430Width",
+     "The width of the K_2(1430) meson",
+     &DtoKPiPiCabibboFOCUS::_wK14302, MeV, 109. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceRho770Width
+    ("Rho770Width",
+     "The width of the rho(770)",
+     &DtoKPiPiCabibboFOCUS::_wrho770, MeV, 150.7*MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceF980Width
+    ("F980Width",
+     "The width of the f_0(980)",
+     &DtoKPiPiCabibboFOCUS::_wf980, MeV,  59. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy> interfaceRho1450Width
+    ("Rho1450Width",
+     "The width of the rho(1450)",
+     &DtoKPiPiCabibboFOCUS::_wrho1450, MeV, 310. *MeV, 0.0*MeV, 10000.0*MeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDRhoMagnitude
+    ("DRhoMagnitude",
+     "The magnitude of the rho(770) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDrho770, 1.000, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDRhoPhase
+    ("DRhoPhase",
+     "The phase of the rho(770) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_phiDrho770, 0.0, -180.,180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDK892Magnitude
+    ("DK892Magnitude",
+     "The magnitude of the K*(892) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDK892, 1.151, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDK892Phase
+    ("DK892Phase",
+     "The phase of the K*(892) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_phiDK892, -167.1, -180.,180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,Energy2> interfaceDF980Magnitude
+    ("DF980Magnitude",
+     "The magnitude of the f_0(980) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDf980, GeV2, 0.476*GeV2, 0.0*GeV2, 10.0*GeV2,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDF980Phase
+    ("DF980Phase",
+     "The phase of the f_0(980) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_phiDf980, -134.5, -180.,180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,InvEnergy2> interfaceDK1430Magnitude
+    ("DK1430Magnitude",
+     "The magnitude of the K*2(1430) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDK1430, 1./GeV2, 0.451/GeV2, 0.0/GeV2, 10.0/GeV2,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDK1430Phase
+    ("DK1430Phase",
+     "The phase of the K*2(1430) component for D+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_phiDK1430,   54.4, -180.,180.,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDsNRMagnitude
+    ("DsNRMagnitude",
+     "The magnitude of the non-resonant component for D_s+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDsNR, 0.640, 0.0, 10.0,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDsRho770Magnitude
+    ("DsRho770Magnitude",
+     "The magnitude of the non-resonant component for D_s+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDsrho770, 1.000, 0.0, 10.0,
+     false, false, Interface::limited);
+
+
+//   // Amplitudes and Phases for the D_s+ -> K+pi-pi+
+//_phiDsNR      =   43.1;
+//_phiDsrho770  =    0.0;
+//   _aDsK892    = 0.747     ; _phiDsK892    =  161.7;
+//   _aDsK1410   = 0.696     ; _phiDsK1410   = - 34.8;
+//   _aDsK1430   = 0.444*GeV2; _phiDsK1430   =   59.3;
+//_phiDsrho1450 = -151.7;
+
+  static Parameter<DtoKPiPiCabibboFOCUS,double> interfaceDsRho1450Magnitude
+    ("DsRho1450Magnitude",
+     "The magnitude of the non-resonant component for D_s+ -> K+ pi+ pi-",
+     &DtoKPiPiCabibboFOCUS::_aDsrho1450, 0.523, 0.0, 10.0,
+     false, false, Interface::limited);
+
+
+
+//   /**
+//    *  Phase for the non-resonant component
+//    */
+//   double _phiDsNR;
+
+//   /**
+//    *  Amplitude for the \f$\rho(770)\f$
+//    */
+//   double _aDsrho770;
+
+//   /**
+//    *  Phase for the \f$\rho(770)\f$
+//    */
+//   double _phiDsrho770;
+
+//   /**
+//    *  Amplitude for \f$K^*(892)\f$
+//    */
+//   double _aDsK892;
+
+//   /**
+//    *  Phase for \f$K^*(892)\f$
+//    */
+//   double _phiDsK892;
+
+//   /**
+//    *  Amplitude for \f$K^*(1410)\f$
+//    */
+//   double _aDsK1410;
+
+//   /**
+//    *  Phase for \f$K^*(1410)\f$
+//    */
+//   double _phiDsK1410;
+
+//   /**
+//    *  Amplitude for \f$K^*_0(1430)\f$
+//    */
+//   Energy2 _aDsK1430;
+
+//   /**
+//    *  Phase for \f$K^*_0(1430)\f$
+//    */
+//   double _phiDsK1430;
+
+//   /**
+//    *  Amplitude for the \f$\rho(1450)\f$
+//    */
+//   double _aDsrho1450;
+
+//   /**
+//    *  Phase for the \f$\rho(1450)\f$
+//    */
+//   double _phiDsrho1450;
+ 
+  static Parameter<DtoKPiPiCabibboFOCUS,InvEnergy> interfaceDRadius
+    ("DRadius",
+     "The radius parameter for the Blatt-Weisskopf form-factor for the D",
+     &DtoKPiPiCabibboFOCUS::_rD0, 1./GeV, 5./GeV, 0./GeV, 10./GeV,
+     false, false, Interface::limited);
+
+  static Parameter<DtoKPiPiCabibboFOCUS,InvEnergy> interfaceResonanceRadius
+    ("ResonanceRadius",
+     "The radius parameter for the Blatt-Weisskopf form-factor for the"
+     "intermediate resonances",
+     &DtoKPiPiCabibboFOCUS::_rres, 1./GeV, 1.5/GeV, 0./GeV, 10./GeV,
+     false, false, Interface::limited);
+
+  static ParVector<DtoKPiPiCabibboFOCUS,double> interfaceMaximumWeights
+    ("MaximumWeights",
+     "The maximum weights for the unweighting of the decays",
+     &DtoKPiPiCabibboFOCUS::_maxweight, -1, 1.0, 0.0, 10000.0,
+     false, false, Interface::limited);
+
+  static ParVector<DtoKPiPiCabibboFOCUS,double> interfaceWeights
+    ("Weights",
+     "The weights for the different channels for the phase-space integration",
+     &DtoKPiPiCabibboFOCUS::_weights, -1, 1.0, 0.0, 1.0,
+     false, false, Interface::limited);
 
 }
 

@@ -123,6 +123,25 @@ void DDalitzAnalysis::analyze(tPPtr part) {
       _points3.push_back(make_pair(mminus,mpipi));
     }
   }
+  else if ((ppip.size()==1&&ppi0.size()==1&&pk0.size()==1)||
+	   (ppim.size()==1&&ppi0.size()==1&&pk0.size()==1)) {
+    if(part->id()==ParticleID::Dplus) {
+      mminus = (pk0[0]+ppip[0]).m2();
+      mplus  = (pk0[0]+ppi0[0]).m2();
+      mpipi  = (ppip[0]+ppi0[0]).m2();
+    }
+    else {
+      mminus = (pk0[0]+ppim[0]).m2();
+      mplus  = (pk0[0]+ppi0[0]).m2();
+      mpipi  = (ppim[0]+ppi0[0]).m2();
+    }
+    *_m2Kpip4 += mminus/GeV2;
+    *_m2pipi4 += mpipi /GeV2;
+    *_m2Kpi04 += mplus /GeV2;
+    if(_points4.size()<200000) {
+      _points4.push_back(make_pair(mplus,mpipi));
+    }
+  }
   else if ((ppim.size()==1&&pkp.size()==1&&ppip.size()==1)||
 	   (ppim.size()==1&&pkm.size()==1&&ppip.size()==1)) {
     unsigned int itype(0);
@@ -305,6 +324,43 @@ void DDalitzAnalysis::dofinish() {
      if(ix%50000==0) output << "plot\n";
    }
    output << "plot\n";
+  _m2Kpip4->topdrawOutput(output,true,false,false,false,"RED",
+			 "m0K203P2+31223 for D2+3RK203P2+3P203",
+			 " X X XGX XXX X      X XW X XGX XGX X",
+			 "1/GdG/m0K203P2+31223/GeV2-23",
+			 "  F F  X X XGX XXX X    X  X",
+			 "m0K203P2+31223/GeV223",
+			 " X X XGX XXX X    X X");
+  _m2pipi4->topdrawOutput(output,true,false,false,false,"RED",
+			  "m0P203P2+31223 for D2+3RK203P2+3P203",
+			  " XGX XGX XXX X      X XW X XGX XGX X",
+			  "1/GdG/m0P203P2+31223/GeV2-23",
+			  "  F F  XGX XGX XXX X    X  X",
+			  "m0P203P2+31223/GeV223",
+			  " XGX XGX XXX X    X X");
+  _m2Kpi04->topdrawOutput(output,true,false,false,false,"RED",
+			 "m0K203P2-31223 for D2+3RK203P2+3P203",
+			 " X X XGX XXX X      X XW X XGX XGX X",
+			 "1/GdG/m0K203P2-31223/GeV2-23",
+			 "  F F  X X XGX XXX X    X  X",
+			 "m0K203P2-31223/GeV223",
+			 " X X XGX XXX X    X X");
+   output << "new frame\n";
+   output << "set font duplex\n";
+   output << "set limits x 0 3 y 0 3\n";
+   output << "set order x y \n";
+   output << "title top \"Dalitz plot for D2+3RK203P2+3P203\"\n";
+   output << "case      \"                 X XW X XGX XGX X\"\n";
+   output << "title left   \"m0P2+3P2031223\"\n";
+   output << "case         \" XGX XGX XXX X\"\n";
+   output << "title bottom \"m0K203P2031223\"\n";
+   output << "case         \" X X XGX XXX X\"\n";
+   for(unsigned int ix=0;ix<_points4.size();++ix) {
+     output << _points4[ix].first /GeV2 << " "
+	    << _points4[ix].second/GeV2 << "\n"; 
+     if(ix%50000==0) output << "plot\n";
+   }
+   output << "plot\n";
   _mkppim5->topdrawOutput(output,true,false,false,false,"RED",
 			  "m0K2+3P2-31223 for D2+3RK2+3P2-3P2+3",
 			  " X X XGX XXX X      X XW X XGX XGX X",
@@ -393,6 +449,9 @@ void DDalitzAnalysis::doinitrun() {
   _mKpihigh3  = new_ptr(Histogram(0.,3.,200));
   _mKpiall3   = new_ptr(Histogram(0.,3.,200));
   _mpipi3     = new_ptr(Histogram(0.,2.,200));
+  _m2Kpip4    = new_ptr(Histogram(0.,3.,200));
+  _m2pipi4    = new_ptr(Histogram(0.,2.,200));
+  _m2Kpi04    = new_ptr(Histogram(0.,3.,200));
   _mkppim5    = new_ptr(Histogram(0.,3.,200));
   _mkppip5    = new_ptr(Histogram(0.,3.,200));
   _mpippim5   = new_ptr(Histogram(0.,3.,200));

@@ -87,7 +87,7 @@ protected:
   //@{
   /**
    * Calculate the decay angle for the amplitude, the angle is the 
-   * angle between the 2 and 3 for the decay $D\to(12)3$ in the rest frame of
+   * angle between the 2 and 3 for the decay \f$D\to(12)3\f$ in the rest frame of
    * the resonance which decays to 1 and 2.
    * @param pparent The momentum of the parent
    * @param pres    The momentum of the resonance
@@ -560,22 +560,22 @@ private:
   Energy _wK1680;
 
   /**
-   *  Mass of the \f%K^*_0(1430)\f$
+   *  Mass of the \f$K^*_0(1430)\f$
    */
   Energy _mK14300;
 
   /**
-   *  Width of the \f%K^*_0(1430)\f$
+   *  Width of the \f$K^*_0(1430)\f$
    */
   Energy _wK14300;
 
   /**
-   *  Mass of the \f%K^*_2(1430)\f$
+   *  Mass of the \f$K^*_2(1430)\f$
    */
   Energy _mK14302;
 
   /**
-   *  Width of the \f%K^*_2(1430)\f$
+   *  Width of the \f$K^*_2(1430)\f$
    */
   Energy _wK14302;
   //@}

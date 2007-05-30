@@ -86,11 +86,11 @@ protected:
   //@{
   /**
    * Calculate the decay angle for the amplitude, the angle is the 
-   * angle between the 2 and 3 for the decay $D\to(12)3$ in the rest frame of
+   * angle between the 2 and 3 for the decay \f$D\to(12)3\f$ in the rest frame of
    * the resonance which decays to 1 and 2.
    * @param pparent The momentum of the parent
    * @param pres    The momentum of the resonance
-   * @paran p1      The momentum of the first decay product of the resonance
+   * @param p1      The momentum of the first decay product of the resonance
    */
   inline double decayAngle(const Lorentz5Momentum & pparent,
 			   const Lorentz5Momentum & pres,
@@ -168,32 +168,32 @@ private:
   double _phi1NR;
 
   /**
-   *  Amplitude of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Amplitude of the \f$\bar{K}^*(892)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   double _a1K892;
 
   /**
-   *  Phase of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Phase of the \f$\bar{K}^*(892)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   double _phi1K892;
 
   /**
-   *  Amplitude of the \f$\bar{K}^*_0(1430)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Amplitude of the \f$\bar{K}^*_0(1430)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   double _a1K1430;
 
   /**
-   *  Phase of the \f$\bar{K}^*_0(1430)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Phase of the \f$\bar{K}^*_0(1430)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   double _phi1K1430;
 
   /**
-   *  Amplitude of the \f$\bar{K}^*_0(1680)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Amplitude of the \f$\bar{K}^*_0(1680)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   double _a1K1680;
 
   /**
-   *  Phase of the \f$\bar{K}^*_0(1680)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Phase of the \f$\bar{K}^*_0(1680)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   double _phi1K1680;
 
@@ -278,17 +278,17 @@ private:
   Complex _c1NR;
 
   /**
-   *  Amplitude of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Amplitude of the \f$\bar{K}^*(892)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   Complex _c1K892;
 
   /**
-   *  Amplitude of the \f$\bar{K}^*_0(1430)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Amplitude of the \f$\bar{K}^*_0(1430)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   Complex _c1K1430;
 
   /**
-   *  Amplitude of the \f$\bar{K}^*_0(1680)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
+   *  Amplitude of the \f$\bar{K}^*_0(1680)^0\f$ component for \f$D^+\to K^-\pi^+\pi^+\f$
    */
   Complex _c1K1680;
 

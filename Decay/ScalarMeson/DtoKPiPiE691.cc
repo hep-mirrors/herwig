@@ -42,6 +42,8 @@ DtoKPiPiE691::DtoKPiPiE691() {
   _mK1430 = 1.429  *GeV; _wK1430 = 0.287 *GeV;
   _mrho0  = 0.7681 *GeV; _wrho0  = 0.1515*GeV;
   _mrhop  = 0.7681 *GeV; _wrhop  = 0.1515*GeV;
+  // generate the intermediate particles
+  generateIntermediates(true);
 }
 
 void DtoKPiPiE691::doinit() throw(InitException) {
@@ -248,290 +250,243 @@ ClassDescription<DtoKPiPiE691> DtoKPiPiE691::initDtoKPiPiE691;
 void DtoKPiPiE691::Init() {
 
   static ClassDocumentation<DtoKPiPiE691> documentation
-    ("There is no documentation for the DtoKPiPiE691 class");
+    ("The DtoKPiPiE691 class implements the model of E691 for D -> K pi pi"
+     "Dalitz decays",
+     "The model of \\cite{Anjos:1992kb} for $D\\to K\\pi\\pi$ decays was used",
+     "\\bibitem{Anjos:1992kb} J.~C.~Anjos {\\it et al.}  [E691 Collaboration],"
+     "Phys.\\ Rev.\\  D {\\bf 48} (1993) 56.");
 
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipNonResonantMagnitude
+    ("KmPipPipNonResonantMagnitude",
+     "The magnitude of the non-resonant component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_a1NR, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitudes and phases for the different components
-//    */
-//   //@{
-//   /**
-//    *  Amplitude of the non-resonant component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _a1NR;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipNonResonantPhase
+    ("KmPipPipNonResonantPhase",
+     "The phase of the non-resonant component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_phi1NR, 0., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the non-resonant component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _phi1NR;
-//   // amplitudes and phases for D+ -> K-pi+pi+
-//   _a1NR    = 1.  ; _phi1NR    =    0.;
-//   _a1K892  = 0.78; _phi1K892  = - 60.;
-//   _a1K1430 = 0.53; _phi1K1430 =  132.;
-//   _a1K1680 = 0.47; _phi1K1680 = - 51.;
-//   // amplitudes and phases for D0 -> K-pi+pi0
-//   _a2NR    = 1.00; _phi2NR    =    0.;
-//   _a2K8920 = 3.19; _phi2K8920 =  167.;
-//   _a2K892m = 2.96; _phi2K892m = -112.;
-//   _a2rho   = 8.56; _phi2rho   =   40.;
-//   // amplitudes and phases for D0 -> Kbar0 pi+pi-
-//   _a3NR    = 1.00; _phi3NR    =    0.;
-//   _a3K892  = 2.31; _phi3K892  =  109.;
-//   _a3rho   = 1.59; _phi3rho   = -123.;
-//   // masses and widths
-//   _localparameters=true;
-//   _mK8920 = 0.8961 *GeV; _wK8920 = 0.0505*GeV;
-//   _mK892m = 0.89159*GeV; _wK892m = 0.0498*GeV;
-//   _mK1680 = 1.714  *GeV; _wK1680 = 0.323 *GeV;
-//   _mK1430 = 1.429  *GeV; _wK1430 = 0.287 *GeV;
-//   _mrho0  = 0.7681 *GeV; _wrho0  = 0.1515*GeV;
-//   _mrhop  = 0.7681 *GeV; _wrhop  = 0.1515*GeV;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipK892Magnitude
+    ("KmPipPipK892Magnitude",
+     "The magnitude of the K*(892) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_a1K892, 0.78, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _a1K892;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipK892Phase
+    ("KmPipPipK892Phase",
+     "The phase of the K*(892) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_phi1K892, -60., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _phi1K892;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipK1430Magnitude
+    ("KmPipPipK1430Magnitude",
+     "The magnitude of the K*0(1430) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_a1K1430, 0.53, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*_0(1430)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _a1K1430;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipK1430Phase
+    ("KmPipPipK1430Phase",
+     "The phase of the K*0(1430) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_phi1K1430, 132., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the \f$\bar{K}^*_0(1430)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _phi1K1430;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipK1680Magnitude
+    ("KmPipPipK1680Magnitude",
+     "The magnitude of the K*(1680) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_a1K1680, 0.47, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*_0(1680)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _a1K1680;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPipK1680Phase
+    ("KmPipPipK1680Phase",
+     "The phase of the K*(1680) component for D+ -> K- pi+ pi+",
+     &DtoKPiPiE691::_phi1K1680, - 51., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the \f$\bar{K}^*_0(1680)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   double _phi1K1680;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0NonResonantMagnitude
+    ("KmPipPi0NonResonantMagnitude",
+     "The magnitude of the non-resonant component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_a2NR, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the non-resonant component for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _a2NR;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0NonResonantPhase
+    ("KmPipPi0NonResonantPhase",
+     "The phase of the non-resonant component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_phi2NR, 0., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the non-resonant component for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _phi2NR;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0K8920Magnitude
+    ("KmPipPi0K8920Magnitude",
+     "The magnitude of the K*(892)0 component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_a2K8920, 3.19, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*(892)^0\f$  component for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _a2K8920;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0K8920Phase
+    ("KmPipPi0K8920Phase",
+     "The phase of the K*(892)0 component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_phi2K8920, 167., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the \f$\bar{K}^*(892)^0\f$  component for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _phi2K8920;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0K892mMagnitude
+    ("KmPipPi0K892mMagnitude",
+     "The magnitude of the K*(892)- component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_a2K892m, 2.96, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$K^*(892)^-\f$ component  for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _a2K892m;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0K892mPhase
+    ("KmPipPi0K892mPhase",
+     "The phase of the K*(892)- component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_phi2K892m, -112., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the \f$K^*(892)^-\f$ component  for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _phi2K892m;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0RhoMagnitude
+    ("KmPipPi0RhoMagnitude",
+     "The magnitude of the rho component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_a2rho, 8.56, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\rho^+\f$ component  for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _a2rho;
+  static Parameter<DtoKPiPiE691,double> interfaceKmPipPi0RhoPhase
+    ("KmPipPi0RhoPhase",
+     "The phase of the rho component for D0 -> K- pi+ pi0",
+     &DtoKPiPiE691::_phi2rho, 40., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the \f$\rho^+\f$  component for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   double _phi2rho;
+  static Parameter<DtoKPiPiE691,double> interfaceK0PipPimNonResonantMagnitude
+    ("K0PipPimNonResonantMagnitude",
+     "The magnitude of the non-resonant component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiE691::_a3NR, 1.0, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the non-resonant component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   double _a3NR;
+  static Parameter<DtoKPiPiE691,double> interfaceK0PipPimNonResonantPhase
+    ("K0PipPimNonResonantPhase",
+     "The phase of the non-resonant component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiE691::_phi3NR, 0., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the non-resonant component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   double _phi3NR;
+  static Parameter<DtoKPiPiE691,double> interfaceK0PipPimK892Magnitude
+    ("K0PipPimK892Magnitude",
+     "The magnitude of the K*(892) component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiE691::_a3K892, 2.31, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the  \f$K^*(892)^-\f$ component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   double _a3K892;
+  static Parameter<DtoKPiPiE691,double> interfaceK0PipPimK892Phase
+    ("K0PipPimK892Phase",
+     "The phase of the K*(892)0 component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiE691::_phi3K892, 109., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the  \f$K^*(892)^-\f$ component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   double _phi3K892;
+  static Parameter<DtoKPiPiE691,double> interfaceK0PipPimRhoMagnitude
+    ("K0PipPimRhoMagnitude",
+     "The magnitude of the rho component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiE691::_a3rho, 1.59, 0.0, 10.0,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the  \f$\rho^0\f$ component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   double _a3rho;
+  static Parameter<DtoKPiPiE691,double> interfaceK0PipPimRhoPhase
+    ("K0PipPimRhoPhase",
+     "The phase of the rho component for D0 -> Kbar0 pi+pi-",
+     &DtoKPiPiE691::_phi3rho, -123., -180., 180.,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Phase of the  \f$\rho^0\f$ component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   double _phi3rho;
-//   //@}
+  static Switch<DtoKPiPiE691,bool> interfaceLocalParameters
+    ("LocalParameters",
+     "Whether to use local values for the masses and widths or"
+     " those from the ParticleData objects",
+     &DtoKPiPiE691::_localparameters, true, false, false);
+  static SwitchOption interfaceLocalParametersLocal
+    (interfaceLocalParameters,
+     "Local",
+     "Use local values",
+     true);
+  static SwitchOption interfaceLocalParametersParticleData
+    (interfaceLocalParameters,
+     "ParticleData",
+     "Use the values from the ParticleData objects",
+     false);
 
-//   /**
-//    *  Complex amplitudes for use in the matrix element
-//    */
-//   //@{
-//   /**
-//    *  Amplitude of the non-resonant component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   Complex _c1NR;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK8920Mass
+    ("K8920Mass",
+     "The mass of the K*(892)0",
+     &DtoKPiPiE691::_mK8920, GeV, 0.8961 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*(892)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   Complex _c1K892;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK8920Width
+    ("K8920Width",
+     "The width of the K*(892)0",
+     &DtoKPiPiE691::_wK8920, GeV, 0.0505*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*_0(1430)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   Complex _c1K1430;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK892MinusMass
+    ("K892MinusMass",
+     "The mass of the K*(892)-",
+     &DtoKPiPiE691::_mK892m, GeV, 0.89159*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*_0(1680)^0 component for \f$D^+\to K^-\pi^+\pi^+\f$
-//    */
-//   Complex _c1K1680;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK892MinusWidth
+    ("K892MinusWidth",
+     "The width of the K*(892)-",
+     &DtoKPiPiE691::_wK892m, GeV, 0.0498*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the non-resonant component for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   Complex _c2NR;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK1680Mass
+    ("K1680Mass",
+     "The mass of the K*(1680)",
+     &DtoKPiPiE691::_mK1680, GeV, 1.714  *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\bar{K}^*(892)^0\f$ for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   Complex _c2K8920;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK1680Width
+    ("K1680Width",
+     "The width of the K*(1680)",
+     &DtoKPiPiE691::_wK1680, GeV, 0.323 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$K^*(892)^-\f$ for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   Complex _c2K892m;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK1430Mass
+    ("K1430Mass",
+     "The mass of the K*(1430)",
+     &DtoKPiPiE691::_mK1430, GeV, 1.429  *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the \f$\rho^+\f$ for \f$D^0\to K^-\pi^+\pi^0\f$
-//    */
-//   Complex _c2rho;
+  static Parameter<DtoKPiPiE691,Energy> interfaceK1430Width
+    ("K1430Width",
+     "The width of the K*(1430)",
+     &DtoKPiPiE691::_wK1430, GeV, 0.287 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the non-resonant component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   Complex _c3NR;
+  static Parameter<DtoKPiPiE691,Energy> interfaceRho0Mass
+    ("Rho0Mass",
+     "The mass of the rho0",
+     &DtoKPiPiE691::_mrho0, GeV, 0.7681 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the  \f$K^*(892)^-\f$ component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   Complex _c3K892;
+  static Parameter<DtoKPiPiE691,Energy> interfaceRho0Width
+    ("Rho0Width",
+     "The width of the rho0",
+     &DtoKPiPiE691::_wrho0, GeV, 0.1515*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Amplitude of the  \f$\rho^0\f$ component for \f$D^0\to \bar{K}^0\pi^+\pi^-\f$
-//    */
-//   Complex _c3rho;
-//   //@}
+  static Parameter<DtoKPiPiE691,Energy> interfaceRhoPlusMass
+    ("RhoPlusMass",
+     "The mass of the rho+",
+     &DtoKPiPiE691::_mrhop, GeV, 0.7681 *GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    *  Masses and widths of the various resonances
-//    */
-//   //@{
-//   /**
-//    *  Use local values for the masses and widths
-//    */
-//   bool _localparameters;
+  static Parameter<DtoKPiPiE691,Energy> interfaceRhoPlusWidth
+    ("RhoPlusWidth",
+     "The width of the rho+",
+     &DtoKPiPiE691::_wrhop, GeV, 0.1515*GeV, 0.0*GeV, 10.0*GeV,
+     false, false, Interface::limited);
 
-//   /**
-//    * Mass of the \f$K^*(892)^0\f$
-//    */
-//   Energy _mK8920;
+  static ParVector<DtoKPiPiE691,double> interfaceMaximumWeights
+    ("MaximumWeights",
+     "The maximum weights for the unweighting of the decays",
+     &DtoKPiPiE691::_maxwgt, -1, 1.0, 0.0, 10000.0,
+     false, false, Interface::limited);
 
-//   /**
-//    * Width of the \f$K^*(892)^0\f$
-//    */
-//   Energy _wK8920;
-
-//   /**
-//    * Mass of the \f$K^*(892)^-\f$
-//    */
-//   Energy _mK892m;
-
-//   /**
-//    * Width of the \f$K^*(892)^-\f$
-//    */
-//   Energy _wK892m;
-
-//   /**
-//    * Mass of the \f$K^*(1680)^0\f$
-//    */
-//   Energy _mK1680;
-
-//   /**
-//    * Width of the \f$K^*(1680)^0\f$
-//    */
-//   Energy _wK1680;
-
-//   /**
-//    * Mass of the \f$K^*_0(1430)^0\f$
-//    */
-//   Energy _mK1430;
-
-//   /**
-//    * Width of the \f$K^*_0(1430)^0\f$
-//    */
-//   Energy _wK1430;
-
-//   /**
-//    * Mass of the \f$\rho^0\f$
-//    */
-//   Energy _mrho0;
-
-//   /**
-//    * Width of the \f$\rho^0\f$
-//    */
-//   Energy _wrho0;
-
-//   /**
-//    * Mass of the \f$\rho^+\f$
-//    */
-//   Energy _mrhop;
-
-//   /**
-//    * Width of the \f$\rho^+\f$
-//    */
-//   Energy _wrhop;
-//   //@}
-
-//   /**
-//    *  Parameters for the phase-space integration
-//    */
-//   //@{
-//   /**
-//    *  Maximum weights for the various modes
-//    */
-//   vector<double> _maxwgt;
-
-//   /**
-//    *  Weights for the different integration channels
-//    */
-//   vector<double> _weights;
-//   //@}
+  static ParVector<DtoKPiPiE691,double> interfaceWeights
+    ("Weights",
+     "The weights for the different channels for the phase-space integration",
+     &DtoKPiPiE691::_weights, -1, 1.0, 0.0, 1.0,
+     false, false, Interface::limited);
 }
 
 int DtoKPiPiE691::modeNumber(bool & cc,const DecayMode & dm) const {
@@ -655,6 +610,12 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
 	+_c3K892*amplitude(1,ct1,pres1.mass(),_wK892m,_mK892m)
 	+_c3rho *amplitude(1,ct2,pres2.mass(),_wrho0 ,_mrho0 );
     }
+    else if(ichan==0) {
+      amp = _c3K892*amplitude(1,ct1,pres1.mass(),_wK892m,_mK892m);
+    }
+    else if(ichan==1) {
+      amp = _c3rho *amplitude(1,ct2,pres2.mass(),_wrho0 ,_mrho0 );
+    }
   }
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin0);
@@ -664,4 +625,76 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
 }
 
 void DtoKPiPiE691::dataBaseOutput(ofstream & output, bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  // parameters
+  output << "set " << fullName() << ":KmPipPipNonResonantMagnitude " 
+	 << _a1NR      << "\n";
+  output << "set " << fullName() << ":KmPipPipNonResonantPhase     " 
+	 << _phi1NR    << "\n";
+  output << "set " << fullName() << ":KmPipPipK892Magnitude        " 
+	 << _a1K892    << "\n";
+  output << "set " << fullName() << ":KmPipPipK892Phase            " 
+	 << _phi1K892  << "\n";
+  output << "set " << fullName() << ":KmPipPipK1430Magnitude       " 
+	 << _a1K1430   << "\n";
+  output << "set " << fullName() << ":KmPipPipK1430Phase           " 
+	 << _phi1K1430 << "\n";
+  output << "set " << fullName() << ":KmPipPipK1680Magnitude       " 
+	 << _a1K1680   << "\n";
+  output << "set " << fullName() << ":KmPipPipK1680Phase           " 
+	 << _phi1K1680 << "\n";
+  output << "set " << fullName() << ":KmPipPi0NonResonantMagnitude " 
+	 << _a2NR      << "\n";
+  output << "set " << fullName() << ":KmPipPi0NonResonantPhase     " 
+	 << _phi2NR    << "\n";
+  output << "set " << fullName() << ":KmPipPi0K8920Magnitude       " 
+	 << _a2K8920   << "\n";
+  output << "set " << fullName() << ":KmPipPi0K8920Phase           " 
+	 << _phi2K8920 << "\n";
+  output << "set " << fullName() << ":KmPipPi0K892mMagnitude       " 
+	 << _a2K892m   << "\n";
+  output << "set " << fullName() << ":KmPipPi0K892mPhase           " 
+	 << _phi2K892m << "\n";
+  output << "set " << fullName() << ":KmPipPi0RhoMagnitude         " 
+	 << _a2rho     << "\n";
+  output << "set " << fullName() << ":KmPipPi0RhoPhase             " 
+	 << _phi2rho   << "\n";
+  output << "set " << fullName() << ":K0PipPimNonResonantMagnitude " 
+	 << _a3NR      << "\n";
+  output << "set " << fullName() << ":K0PipPimNonResonantPhase     " 
+	 << _phi3NR    << "\n";
+  output << "set " << fullName() << ":K0PipPimK892Magnitude        " 
+	 << _a3K892    << "\n";
+  output << "set " << fullName() << ":K0PipPimK892Phase            " 
+	 << _phi3K892  << "\n";
+  output << "set " << fullName() << ":K0PipPimRhoMagnitude         " 
+	 << _a3rho     << "\n";
+  output << "set " << fullName() << ":K0PipPimRhoPhase             " 
+	 << _phi3rho   << "\n";
+  output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
+  output << "set " << fullName() << ":K8920Mass      " << _mK8920/GeV << "\n";
+  output << "set " << fullName() << ":K8920Width     " << _wK8920/GeV << "\n";
+  output << "set " << fullName() << ":K892MinusMass  " << _mK892m/GeV << "\n";
+  output << "set " << fullName() << ":K892MinusWidth " << _wK892m/GeV << "\n";
+  output << "set " << fullName() << ":K1680Mass      " << _mK1680/GeV << "\n";
+  output << "set " << fullName() << ":K1680Width     " << _wK1680/GeV << "\n";
+  output << "set " << fullName() << ":K1430Mass      " << _mK1430/GeV << "\n";
+  output << "set " << fullName() << ":K1430Width     " << _wK1430/GeV << "\n";
+  output << "set " << fullName() << ":Rho0Mass       " << _mrho0 /GeV << "\n";
+  output << "set " << fullName() << ":Rho0Width      " << _wrho0 /GeV << "\n";
+  output << "set " << fullName() << ":RhoPlusMass    " << _mrhop /GeV << "\n";
+  output << "set " << fullName() << ":RhoPlusWidth   " << _wrhop /GeV << "\n";
+  for(unsigned int ix=0;ix<_maxwgt.size();++ix) {
+    output << "insert " << fullName() << ":MaximumWeights " 
+	   << ix << " " << _maxwgt[ix] << "\n";
+  }
+  for(unsigned int ix=0;ix<_weights.size();++ix) {
+    output << "insert " << fullName() << ":Weights " 
+	   << ix << " " << _weights[ix] << "\n";
+  }
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
 }
