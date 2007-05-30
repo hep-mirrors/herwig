@@ -217,9 +217,13 @@ SusyBase::readBlock(ifstream & ifs) const throw(SetupException) {
 }
 
 void SusyBase::readDecay(ifstream & ifs, 
-			    string decay) const throw(SetupException){
+			 string decay) const throw(SetupException){
   if(!ifs)
     throw SetupException() <<"The input stream is in a bad state";
+  //if the particle is stable then next line will be the start of a 
+  //new decaymode or a new block so just return if this is found
+  if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
+      ifs.peek() == 'd' || ifs.peek() == 'b' ) return;
   istringstream iss(decay);
   string dummy;
   long parent;
@@ -237,8 +241,8 @@ void SusyBase::readDecay(ifstream & ifs,
     while(is && ++i < nda + 1)
       is >> products[i - 1];
     createDecayMode(parent, products, brat);
-    if(ifs.peek() == 'B' || ifs.peek() == 'D' ||
-       ifs.peek() == 'b' || ifs.peek() == 'd' || 
+    if(ifs.peek() == 'D' || ifs.peek() == 'B' ||
+       ifs.peek() == 'd' || ifs.peek() == 'b' ||
        ifs.peek() == '#') break;
   }
 }
