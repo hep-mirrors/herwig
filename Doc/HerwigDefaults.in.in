@@ -12,6 +12,10 @@ library HwPerturbativeDecay.so
 library HwPerturbativeHiggsDecay.so
 library HwRSModel.so
 library HwRSVertex.so
+library HwSusy.so
+library HwSusyVertex.so
+library HwUED.so
+library HwUEDVertex.so
 library HwShower.so
 library HwUA5.so
 library HwBaryonDecay.so
@@ -22,6 +26,7 @@ library HwTMDecay.so
 library HwVMDecay.so
 library HwAnalysis.so
 library HwLEPAnalysis.so
+library HwDecayAnalysis.so
 library HwBaryonDecay.so
 library HwFormFactors.so
 library HwSMDecay.so
