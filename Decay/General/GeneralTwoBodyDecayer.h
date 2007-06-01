@@ -24,6 +24,8 @@ using Helicity::VertexBasePtr;
  * member should be called from inside me2() in the inheriting decayer
  * to set up the colour lines.
  *
+ * @see \ref GeneralTwoBodyDecayerInterfaces "The interfaces"
+ * defined for GeneralTwoBodyDecayer.
  * @see DecayIntegrator
  */
 class GeneralTwoBodyDecayer: public DecayIntegrator {

@@ -91,7 +91,7 @@ private:
   /**
    * Calculate me2 and the production matrix element for the normal mode.
    * @param spIn Vector of SpinorWaveFunction for the incoming fermion
-   * @param vecIm Vector of VectorWaveFunction for incoming boson
+   * @param vecIn Vector of VectorWaveFunction for incoming boson
    * @param spbOut Vector of SpinorBarWaveFunction for outgoing fermion
    * @param scaOut ScalarWaveFunction for outgoing scalar.
    * @param full_me The value of me2 calculation
@@ -105,7 +105,7 @@ private:
   /**
    * Calculate me2 and the production matrix element for the cc mode.
    * @param spbIn Vector of SpinorBarWaveFunction for the incoming fermion
-   * @param vecIm Vector of VectorWaveFunction for incoming boson
+   * @param vecIn Vector of VectorWaveFunction for incoming boson
    * @param spOut Vector of SpinorWaveFunction for outgoing fermion
    * @param scaOut ScalarWaveFunction for outgoing scalar.
    * @param full_me The value of me2 calculation
