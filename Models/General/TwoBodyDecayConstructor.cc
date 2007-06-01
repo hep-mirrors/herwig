@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.h"
 
@@ -65,18 +64,17 @@ void TwoBodyDecayConstructor::Init() {
 }
 
 void TwoBodyDecayConstructor::DecayList(const vector<PDPtr> & part) {
+  unsigned int np = part.size();
+  if( np == 0 ) return;
   _theModel->init();
   unsigned int nv(_theModel->numberOfVertices());
-  
-// make sure vertices are initialized
+  // make sure vertices are initialized
   for(unsigned int i = 0; i < nv; ++i) 
      _theModel->vertex(i)->init();
 
   _theExistingDecayers.resize(nv,
      vector<GeneralTwoBodyDecayerPtr>(3,GeneralTwoBodyDecayerPtr()));
-
   PDVector decays;
-  unsigned int np = part.size();
   for(unsigned int ipart = 0; ipart < np; ++ipart) {
     for(unsigned int iv = 0; iv < nv; ++iv) {
       for(unsigned int ilist = 0; ilist < 3; ++ilist) { 
@@ -168,89 +166,86 @@ vector<PDPtr> TwoBodyDecayConstructor::
 void TwoBodyDecayConstructor::createDecayer(const VertexBasePtr vert,
 					    unsigned int icol,
 					    unsigned int ivert) {
-  if(!_theExistingDecayers[ivert][icol]) {
-    string name;
-    switch(vert->getName()) {
-    case FFV : {
-      if( icol == 0 || icol == 1)
-      	name = "FFVDecayer";
-      else
-	name = "VFFDecayer";
-    }
-      break;
-    case FFS : {
-      if( icol == 0 || icol == 1) 
-	name = "FFSDecayer";
-      else 
-	name = "SFFDecayer";
-    }
-      break;
-    case VVS : {
-      if( icol == 0 || icol == 1) 
-	name = "VVSDecayer";
-      else 
-	name = "SVVDecayer";
-    } 
-      break;
-    case GeneralSVV : {
-      if(icol == 0) 
-	name = "SVVLoopDecayer";
-    }
-      break;
-    case VSS : {
-      if(icol == 0)
-	name = "VSSDecayer";
-      else 
-	name = "SSVDecayer";
-    }
-      break;
-    case VVT : {
-      if(icol == 2)
-	name = "TVVDecayer";
-    }
-      break;
-    case FFT : {
-      if(icol == 2)
-	name = "TFFDecayer";
-    }
-      break;
-    case SST : {
-      if(icol == 2)
-	name = "TSSDecayer";
-    }
-      break;
-    case SSS : {
-      name = "SSSDecayer";
-    }
-      break;
-    default : throw NBodyDecayConstructorError() << "Cannot find appropriate "
-						 << "vertex to create "
-						 << "decayer\n";
-    }
-    ostringstream fullname;
-    fullname << "/Defaults/Decays/" << name << "_" 
-	     << ivert << "_" << icol;
-    string classname = "/Herwig++/" + name;
-    
-    GeneralTwoBodyDecayerPtr decayer;
-    decayer = dynamic_ptr_cast<GeneralTwoBodyDecayerPtr>
-      (generator()->preinitCreate(classname,fullname.str()));
-    string msg = generator()->preinitInterface(decayer, "DecayVertex", 
-					       "set", vert->fullName());
-    if(msg.find("Error:") != string::npos)
-      throw NBodyDecayConstructorError() 
-	<< "TwoBodyDecayConstructor::createDecayer - An error occurred while "
-	<< "setting the vertex for " << decayer->fullName()
-	<< " - " << msg
-	<< Exception::abortnow;
-    decayer->init();
-    if(_init) 
-       initializeDecayers(fullname.str());
-    
-    _theExistingDecayers[ivert][icol] = decayer;
+  if( _theExistingDecayers[ivert][icol] ) return;
+  string name;
+  switch(vert->getName()) {
+  case FFV : {
+    if( icol == 0 || icol == 1)
+      name = "FFVDecayer";
+    else
+      name = "VFFDecayer";
   }
-  else 
-    return;
+    break;
+  case FFS : {
+    if( icol == 0 || icol == 1) 
+      name = "FFSDecayer";
+    else 
+      name = "SFFDecayer";
+  }
+    break;
+  case VVS : {
+    if( icol == 0 || icol == 1) 
+      name = "VVSDecayer";
+    else 
+      name = "SVVDecayer";
+  } 
+    break;
+  case GeneralSVV : {
+    if(icol == 0) 
+      name = "SVVLoopDecayer";
+  }
+    break;
+  case VSS : {
+    if(icol == 0)
+      name = "VSSDecayer";
+    else 
+      name = "SSVDecayer";
+  }
+    break;
+  case VVT : {
+    if(icol == 2)
+      name = "TVVDecayer";
+  }
+    break;
+  case FFT : {
+    if(icol == 2)
+      name = "TFFDecayer";
+  }
+    break;
+  case SST : {
+    if(icol == 2)
+      name = "TSSDecayer";
+  }
+    break;
+  case SSS : {
+    name = "SSSDecayer";
+  }
+    break;
+  default : throw NBodyDecayConstructorError() << "Cannot find appropriate "
+					       << "vertex to create "
+					       << "decayer\n";
+  }
+  ostringstream fullname;
+  fullname << "/Defaults/Decays/" << name << "_" 
+	   << ivert << "_" << icol;
+  string classname = "/Herwig++/" + name;
+    
+  GeneralTwoBodyDecayerPtr decayer;
+  decayer = dynamic_ptr_cast<GeneralTwoBodyDecayerPtr>
+    (generator()->preinitCreate(classname,fullname.str()));
+  string msg = generator()->preinitInterface(decayer, "DecayVertex", 
+					     "set", vert->fullName());
+  if(msg.find("Error:") != string::npos)
+    throw NBodyDecayConstructorError() 
+      << "TwoBodyDecayConstructor::createDecayer - An error occurred while "
+      << "setting the vertex for " << decayer->fullName()
+      << " - " << msg
+      << Exception::abortnow;
+  decayer->init();
+  if(_init) 
+    initializeDecayers(fullname.str());
+    
+  _theExistingDecayers[ivert][icol] = decayer;
 }
 
 void TwoBodyDecayConstructor::
@@ -263,72 +258,82 @@ createDecayMode(PDPtr inpart, const PDVector & decays,
       << Exception::runerror;
   
   double totalWidth(0.);
-  vector<double> pWidths(decays.size()/3);
+  DVector pWidths(decays.size()/3);
   vector<string> tags(decays.size()/3),rvtags(decays.size()/3);
-  PDVector particles(3);
-  
+  PDVector children(2);
   if(inpart->CC())
     inpart = (inpart->CC());
   inpart->stable(false);
-  particles[0] = inpart;
-  string dmtag,rvtag;
   for(unsigned int ix = 0; ix < decays.size(); ix += 3) {
+//     if(decays[ix]->id() == inpart->id()) {
+//       particles[1] = decays[ix+1];
+//       particles[2] = decays[ix+2];
+//       pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix+1],decays[ix+2]);
+//       totalWidth += pWidths[ix/3];
+//       dmtag = decays[ix]->PDGName() + "->" + decays[ix+1]->PDGName() +
+// 	"," + decays[ix+2]->PDGName() + ";";
+//       rvtag = decays[ix]->PDGName() + "->" + decays[ix+2]->PDGName() +
+// 	"," + decays[ix+1]->PDGName() + ";";
+//       tags[ix/3] = dmtag;
+//       rvtags[ix/3] = rvtag;
+//     }
+//     else if(decays[ix+1]->id() == inpart->id()) {
+//       particles[1] = decays[ix];
+//       particles[2] = decays[ix+2];
+//       pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix],decays[ix+2]);
+//       totalWidth += pWidths[ix/3];
+//       dmtag = decays[ix+1]->PDGName() + "->" + decays[ix]->PDGName() +
+// 	"," + decays[ix+2]->PDGName() + ";";
+//       rvtag = decays[ix+1]->PDGName() + "->" + decays[ix+2]->PDGName() +
+// 	"," + decays[ix]->PDGName() + ";";
+//       tags[ix/3] = dmtag;
+//       rvtags[ix/3] = rvtag;
+//     }
+//     else {
+//       particles[1] = decays[ix];
+//       particles[2] = decays[ix+1];
+//       pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix],decays[ix+1]);
+//       totalWidth += pWidths[ix/3];
+//       dmtag = decays[ix+2]->PDGName() + "->" + decays[ix]->PDGName() +
+// 	"," + decays[ix+1]->PDGName() + ";";
+//       rvtag = decays[ix+2]->PDGName() + "->" + decays[ix+1]->PDGName() +
+// 	"," + decays[ix]->PDGName() + ";";
+//       tags[ix/3] = dmtag;
+//       rvtags[ix/3] = rvtag;
+//     }
     if(decays[ix]->id() == inpart->id()) {
-      particles[1] = decays[ix+1];
-      particles[2] = decays[ix+2];
-      pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix+1],decays[ix+2]);
-      totalWidth += pWidths[ix/3];
-      dmtag = decays[ix]->PDGName() + "->" + decays[ix+1]->PDGName() +
-	"," + decays[ix+2]->PDGName() + "; ";
-      rvtag = decays[ix]->PDGName() + "->" + decays[ix+2]->PDGName() +
-	"," + decays[ix+1]->PDGName() + ";";
-      tags[ix/3] = dmtag;
-      rvtags[ix/3] = rvtag;
+      children[0] = decays[ix+1];
+      children[1] = decays[ix+2];
     }
     else if(decays[ix+1]->id() == inpart->id()) {
-      particles[1] = decays[ix];
-      particles[2] = decays[ix+2];
-      pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix],decays[ix+2]);
-      totalWidth += pWidths[ix/3];
-      dmtag = decays[ix+1]->PDGName() + "->" + decays[ix]->PDGName() +
-	"," + decays[ix+2]->PDGName() + "; ";
-      rvtag = decays[ix+1]->PDGName() + "->" + decays[ix+2]->PDGName() +
-	"," + decays[ix]->PDGName() + ";";
-      tags[ix/3] = dmtag;
-      rvtags[ix/3] = rvtag;
+       children[0] = decays[ix];
+       children[1] = decays[ix+2];
     }
     else {
-      particles[1] = decays[ix];
-      particles[2] = decays[ix+1];
-      pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix],decays[ix+1]);
-      totalWidth += pWidths[ix/3];
-      dmtag = decays[ix+2]->PDGName() + "->" + decays[ix]->PDGName() +
-	"," + decays[ix+1]->PDGName() + ";";
-      rvtag = decays[ix+2]->PDGName() + "->" + decays[ix+1]->PDGName() +
-	"," + decays[ix]->PDGName() + ";";
-      tags[ix/3] = dmtag;
-      rvtags[ix/3] = rvtag;
+      children[0] = decays[ix];
+      children[1] = decays[ix+1];
     }
+    pWidths[ix/3] = decayer->partialWidth(inpart, children[0], children[1]);
+    totalWidth += pWidths[ix/3];
+    tags[ix/3] = inpart->PDGName() + "->" + children[0]->PDGName() +
+      "," + children[1]->PDGName() + ";";
+    rvtags[ix/3] = inpart->PDGName() + "->" + children[1]->PDGName() +
+      "," + children[0]->PDGName() + ";";
   }
-  for(unsigned int ix=0;ix<tags.size();++ix) {
+  //now create DecayMode objects that do not already exist 
+  tEGPtr eg = generator();
+  for(unsigned int ix = 0; ix < tags.size(); ++ix) {
     double tbr = pWidths[ix]/totalWidth;
-    tDMPtr tdm = generator()->findDecayMode(tags[ix]);
-    tDMPtr rdm = generator()->findDecayMode(rvtags[ix]);
-    tDMPtr thedm;
+    tDMPtr dm = eg->findDecayMode(tags[ix]);
+    if( !dm )
+      dm = eg->findDecayMode(rvtags[ix]);
     
-    if(tdm) 
-      thedm = tdm;
-    else if(rdm) 
-      thedm = rdm;
-    else 
-      thedm = tDMPtr();
-    
-    if( !thedm ) {
-      tDMPtr ndm = generator()->preinitCreateDecayMode(tags[ix]);
+    if( !dm ) {
+      tDMPtr ndm = eg->preinitCreateDecayMode(tags[ix]);
       if(ndm) {
-	generator()->preinitInterface(ndm, "Decayer", "set",
+	eg->preinitInterface(ndm, "Decayer", "set",
 				      decayer->fullName());
-	generator()->preinitInterface(ndm, "OnOff", "set", "1");
+	eg->preinitInterface(ndm, "OnOff", "set", "1");
 	ostringstream br;
 	br << tbr;
 	if(!br)
@@ -338,7 +343,7 @@ createDecayMode(PDPtr inpart, const PDVector & decays,
 		<< tags[ix]
 		<< Exception::warning;
 	else {
-	  generator()->preinitInterface(ndm, "BranchingRatio",
+	  eg->preinitInterface(ndm, "BranchingRatio",
 					"set", br.str());
 	}
       }
@@ -350,9 +355,9 @@ createDecayMode(PDPtr inpart, const PDVector & decays,
 	  << Exception::warning;
     }
     else {
-      string::size_type idx = (thedm->decayer()->fullName()).find("Mambo");
+      string::size_type idx = (dm->decayer()->fullName()).find("Mambo");
       if(idx != string::npos)
-	generator()->preinitInterface(thedm, "Decayer", "set", 
+	eg->preinitInterface(dm, "Decayer", "set", 
 				      decayer->fullName());
     }
   }
