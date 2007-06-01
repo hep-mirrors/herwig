@@ -438,11 +438,11 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
     }
     if(!emitted) {
       if(intrinsicpT().find(progenitor())==intrinsicpT().end()) {
-	bb.kinematics->updateLast(newParent,0.,0.);
+	kinematics->updateLast(newParent,0.,0.);
       }
       else {
 	pair<Energy,double> kt=intrinsicpT()[progenitor()];
-	bb.kinematics->updateLast(newParent,
+	kinematics->updateLast(newParent,
 				  kt.first*cos(kt.second),
 				  kt.first*sin(kt.second));
       }
