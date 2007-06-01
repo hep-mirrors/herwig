@@ -6,6 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/KinematicsReconstructor.h"
+#include "ThePEG/Repository/UseRandom.h"
 #include "QTildeReconstructor.fh"
 #include <cassert>
 
@@ -177,7 +178,8 @@ protected:
    * @param qt The transverse momentum vector
    */
   bool solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet, 
-			 Lorentz5Momentum pother, Lorentz5Momentum ppartner[2], 
+			 const JetKinVect & jetKinematics, ShowerParticlePtr partner,
+			 Lorentz5Momentum ppartner[2],
 			 double & k1, double & k2,Lorentz5Momentum & qt) const;
 
   /**

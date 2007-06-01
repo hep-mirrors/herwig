@@ -43,13 +43,21 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   double betam = (q*sqrt(qs + Q2) - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
   Vector3 beta = -betam*(k/kp)*oldp.vect();
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
-  Hep3Vector ax = newq.vect().cross( oldp.vect() ); 
+  Hep3Vector ax = newq.vect().cross( oldp.vect() );
   double delta = newq.vect().angle( oldp.vect() );
   LorentzRotation R;
-  if ( ax.mag2()/GeV2 > 1e-16 )
-    R.rotate( delta, ax ).boost( beta ); 
-  else
-    R.boost( beta ); 
+  if ( ax.mag2()/GeV2 > 1e-16 ) {
+    R.rotate( delta, ax ).boost( beta );
+  } 
+  else if(abs(delta-pi)/pi<0.001) {
+    double phi=2.*pi*UseRandom::rnd();
+    Hep3Vector axis(cos(phi),sin(phi),0.);
+    axis.rotateUz(newq.vect().unit());
+    R.rotate(delta,axis).boost( beta );
+  }
+  else {
+    R.boost( beta );
+  } 
   return R;
 }
 
