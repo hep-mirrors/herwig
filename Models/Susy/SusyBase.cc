@@ -203,7 +203,11 @@ SusyBase::readBlock(ifstream & ifs) const throw(SetupException) {
   string line;
   ParamMap store;
   while(getline(ifs, line)) {
-    if(line[0] == '#') continue;
+    if(line[0] == '#') {
+      if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
+	  ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
+      else continue;
+    }
     istringstream is(line);
     long index;
     double value;   
@@ -229,9 +233,17 @@ void SusyBase::readDecay(ifstream & ifs,
   long parent;
   double width;
   iss >> dummy >> parent >> width;
+  //set the width
+  tPDPtr inpart = getParticleData(parent);
+  inpart->width(width);
+  string tag = "decaymode " + inpart->PDGName() + "->";
   string line;
   while(getline(ifs, line)) {
-    if(line[0] == '#') continue;
+    if(line[0] == '#') {
+      if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
+	  ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
+      else continue;
+    }
     istringstream is(line);
     double brat(0.);
     unsigned int nda(0);
@@ -240,10 +252,10 @@ void SusyBase::readDecay(ifstream & ifs,
     vector<long>::size_type i(0);
     while(is && ++i < nda + 1)
       is >> products[i - 1];
-    createDecayMode(parent, products, brat);
-    if(ifs.peek() == 'D' || ifs.peek() == 'B' ||
-       ifs.peek() == 'd' || ifs.peek() == 'b' ||
-       ifs.peek() == '#') break;
+    if( products.size() > 0 )
+      createDecayMode(tag, products, brat);
+     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
+         ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
 }
 
@@ -255,7 +267,11 @@ SusyBase::readMatrix(ifstream & ifs, unsigned int & size) throw(SetupException) 
   unsigned int rowmax(0), colmax(0);
   vector<Complex> values;
   while(getline(ifs, line)) {
-    if(line[0] == '#') continue;
+    if(line[0] == '#') {
+      if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
+	  ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
+      else continue;
+    }
     istringstream is(line);
     unsigned int index1, index2;
     double real(0.), imag(0.);   
@@ -263,9 +279,8 @@ SusyBase::readMatrix(ifstream & ifs, unsigned int & size) throw(SetupException) 
     values.push_back(Complex(real, imag));
     if(index1 > rowmax) rowmax = index1; 
     if(index2 > colmax) colmax = index2; 
-    if(ifs.peek() == 'B' || ifs.peek() == 'D' ||
-       ifs.peek() == 'b' || ifs.peek() == 'd' ||
-       ifs.peek() == '#') {
+    if( ifs.peek() == 'B' || ifs.peek() == 'D' ||
+        ifs.peek() == 'b' || ifs.peek() == 'd' ) {
       if(rowmax != colmax)
 	throw SetupException() << "A square matrix has unequal row/col size!";
       size = rowmax;
@@ -275,10 +290,10 @@ SusyBase::readMatrix(ifstream & ifs, unsigned int & size) throw(SetupException) 
   return values;
 }
 
-void SusyBase::createDecayMode(long parent, vector<long> products,
-				  double brat) const {
+void SusyBase::createDecayMode(string tag, vector<long> products,
+			       double brat) const {
   ostringstream cmd;
-  cmd << "decaymode " + getParticleData(parent)->PDGName() + "->";
+  cmd << tag;
   vector<long>::size_type nda = products.size();
   for(vector<long>::size_type i = 0; i < nda; ++i) {
     cmd << getParticleData(products[i])->PDGName();

@@ -164,11 +164,11 @@ private:
 
   /**
    * Create a DecayMode object in the repository
-   * @param parent ID of parent particle
+   * @param tag string containing first portion of tag including '->'
    * @param products Decay products
    * @param brat Branching ratio of this mode 
    */
-  void createDecayMode(long parent, vector<long> products,
+  void createDecayMode(string tag, vector<long> products,
 		       double brat) const;
 
   /**
