@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
-#include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.h"
 
 using namespace Herwig;
@@ -63,7 +62,7 @@ void TwoBodyDecayConstructor::Init() {
 
 }
 
-void TwoBodyDecayConstructor::DecayList(const vector<PDPtr> & part) {
+void TwoBodyDecayConstructor::DecayList(const PDVector & part) {
   unsigned int np = part.size();
   if( np == 0 ) return;
   _theModel->init();
@@ -92,24 +91,17 @@ void TwoBodyDecayConstructor::DecayList(const vector<PDPtr> & part) {
       }
     }
   }
-  //ParticleData objects need updating 
-  for(unsigned int ip= 0; ip < np; ++ip) {
-    PDPtr pdp = part[ip];
-    pdp->touch();
-    pdp->update();
-    if(pdp->CC()) pdp->CC()->synchronize();
-  }
 }
   
-vector<PDPtr> TwoBodyDecayConstructor::
-  createModes(const PDPtr inpart,const VertexBasePtr vert,
-	      unsigned int ilist, unsigned int iv) {
+PDVector TwoBodyDecayConstructor::
+createModes(tPDPtr inpart, VertexBasePtr vert,
+	    unsigned int ilist, unsigned int iv) {
   int id = inpart->id();
-  if(id < 0) {
-    return vector<PDPtr>(0);
-  }
+  if(id < 0)
+    return PDVector(0);
+  
   Energy m1(inpart->mass());
-  vector<PDPtr> decaylist;
+  PDVector decaylist;
   if(vert->getNpoint()==3 && vert->incoming(id)) {
     decaylist = vert->search(ilist,id);
     for(PDVector::iterator iter=decaylist.begin();iter!=decaylist.end();) {
@@ -163,7 +155,7 @@ vector<PDPtr> TwoBodyDecayConstructor::
   return decaylist;
 } 
 
-void TwoBodyDecayConstructor::createDecayer(const VertexBasePtr vert,
+void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vert,
 					    unsigned int icol,
 					    unsigned int ivert) {
   if( _theExistingDecayers[ivert][icol] ) return;
@@ -249,120 +241,94 @@ void TwoBodyDecayConstructor::createDecayer(const VertexBasePtr vert,
 }
 
 void TwoBodyDecayConstructor::
-createDecayMode(PDPtr inpart, const PDVector & decays,
-		const GeneralTwoBodyDecayerPtr decayer) {
+createDecayMode(tPDPtr inpart, const PDVector & decays,
+		GeneralTwoBodyDecayerPtr decayer) {
   if(!decayer)
     throw NBodyDecayConstructorError() 
       << "TwoBodyDecayConstructor::createDecayMode - The decayer "
       << "pointer is null!\n"
       << Exception::runerror;
-  
-  double totalWidth(0.);
-  DVector pWidths(decays.size()/3);
-  vector<string> tags(decays.size()/3),rvtags(decays.size()/3);
   PDVector children(2);
   if(inpart->CC())
     inpart = (inpart->CC());
   inpart->stable(false);
+  tEGPtr eg = generator();
   for(unsigned int ix = 0; ix < decays.size(); ix += 3) {
-//     if(decays[ix]->id() == inpart->id()) {
-//       particles[1] = decays[ix+1];
-//       particles[2] = decays[ix+2];
-//       pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix+1],decays[ix+2]);
-//       totalWidth += pWidths[ix/3];
-//       dmtag = decays[ix]->PDGName() + "->" + decays[ix+1]->PDGName() +
-// 	"," + decays[ix+2]->PDGName() + ";";
-//       rvtag = decays[ix]->PDGName() + "->" + decays[ix+2]->PDGName() +
-// 	"," + decays[ix+1]->PDGName() + ";";
-//       tags[ix/3] = dmtag;
-//       rvtags[ix/3] = rvtag;
-//     }
-//     else if(decays[ix+1]->id() == inpart->id()) {
-//       particles[1] = decays[ix];
-//       particles[2] = decays[ix+2];
-//       pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix],decays[ix+2]);
-//       totalWidth += pWidths[ix/3];
-//       dmtag = decays[ix+1]->PDGName() + "->" + decays[ix]->PDGName() +
-// 	"," + decays[ix+2]->PDGName() + ";";
-//       rvtag = decays[ix+1]->PDGName() + "->" + decays[ix+2]->PDGName() +
-// 	"," + decays[ix]->PDGName() + ";";
-//       tags[ix/3] = dmtag;
-//       rvtags[ix/3] = rvtag;
-//     }
-//     else {
-//       particles[1] = decays[ix];
-//       particles[2] = decays[ix+1];
-//       pWidths[ix/3] = decayer->partialWidth(inpart,decays[ix],decays[ix+1]);
-//       totalWidth += pWidths[ix/3];
-//       dmtag = decays[ix+2]->PDGName() + "->" + decays[ix]->PDGName() +
-// 	"," + decays[ix+1]->PDGName() + ";";
-//       rvtag = decays[ix+2]->PDGName() + "->" + decays[ix+1]->PDGName() +
-// 	"," + decays[ix]->PDGName() + ";";
-//       tags[ix/3] = dmtag;
-//       rvtags[ix/3] = rvtag;
-//     }
     if(decays[ix]->id() == inpart->id()) {
       children[0] = decays[ix+1];
       children[1] = decays[ix+2];
     }
     else if(decays[ix+1]->id() == inpart->id()) {
-       children[0] = decays[ix];
-       children[1] = decays[ix+2];
+      children[0] = decays[ix];
+      children[1] = decays[ix+2];
     }
     else {
       children[0] = decays[ix];
       children[1] = decays[ix+1];
     }
-    pWidths[ix/3] = decayer->partialWidth(inpart, children[0], children[1]);
-    totalWidth += pWidths[ix/3];
-    tags[ix/3] = inpart->PDGName() + "->" + children[0]->PDGName() +
+    string tag = inpart->PDGName() + "->" + children[0]->PDGName() +
       "," + children[1]->PDGName() + ";";
-    rvtags[ix/3] = inpart->PDGName() + "->" + children[1]->PDGName() +
-      "," + children[0]->PDGName() + ";";
-  }
-  //now create DecayMode objects that do not already exist 
-  tEGPtr eg = generator();
-  for(unsigned int ix = 0; ix < tags.size(); ++ix) {
-    double tbr = pWidths[ix]/totalWidth;
-    tDMPtr dm = eg->findDecayMode(tags[ix]);
-    if( !dm )
-      dm = eg->findDecayMode(rvtags[ix]);
-    
+    //now create DecayMode objects that do not already exist      
+    tDMPtr dm = eg->findDecayMode(tag);
+    if ( !dm ) {
+      tag = inpart->PDGName() + "->" + children[1]->PDGName() +
+	"," + children[0]->PDGName() + ";";
+      dm = eg->findDecayMode(tag);
+    }
     if( !dm ) {
-      tDMPtr ndm = eg->preinitCreateDecayMode(tags[ix]);
+      tDMPtr ndm = eg->preinitCreateDecayMode(tag);
       if(ndm) {
 	eg->preinitInterface(ndm, "Decayer", "set",
-				      decayer->fullName());
+			     decayer->fullName());
 	eg->preinitInterface(ndm, "OnOff", "set", "1");
-	ostringstream br;
-	br << tbr;
-	if(!br)
-	  throw NBodyDecayConstructorError()
-		<< "Error with branching ratio stream. "
-		<< "Branching ratio set to zero for decay mode "
-		<< tags[ix]
-		<< Exception::warning;
-	else {
-	  eg->preinitInterface(ndm, "BranchingRatio",
-					"set", br.str());
-	}
+	double width = decayer->partialWidth(inpart, children[0], 
+					     children[1]);
+	setBranchingRatio(ndm, width);
       }
-      else 
+      else
 	throw NBodyDecayConstructorError() 
 	  << "TwoBodyDecayConstructor::createDecayMode - Needed to create "
 	  << "new decaymode but one could not be created for the tag " 
-	  << tags[ix] 
-	  << Exception::warning;
+	  << tag << Exception::warning;
     }
     else {
-      string::size_type idx = (dm->decayer()->fullName()).find("Mambo");
-      if(idx != string::npos)
+      if((dm->decayer()->fullName()).find("Mambo") != string::npos)
 	eg->preinitInterface(dm, "Decayer", "set", 
-				      decayer->fullName());
+			     decayer->fullName());
     }
   }
+  //update CC mode if it exists
+  if( inpart->CC() )
+    inpart->CC()->synchronize();
 }
 
+void TwoBodyDecayConstructor::setBranchingRatio(tDMPtr dm, double pwidth) {
+  //Need width and branching ratios for all currently created decay modes
+  PDPtr parent = const_ptr_cast<PDPtr>(dm->parent());
+  Selector<tDMPtr> modes = parent->decaySelector();
+  double currentwidth(0.);
+  if( !modes.empty() ) currentwidth = parent->width(); 
+  double newWidth = currentwidth + pwidth;
+  parent->width(newWidth);
+  //need to reweight current branching fractions if there are any
+  for(Selector<tDMPtr>::const_iterator dit = modes.begin(); 
+      dit != modes.end(); ++dit) {
+    double newbrat = ((*dit).second->brat())*currentwidth/newWidth;
+    ostringstream brf;
+    brf << newbrat;
+    generator()->preinitInterface((*dit).second, "BranchingRatio",
+				  "set", brf.str());
+  }
+  //set brat for current mode
+  double brat = pwidth/newWidth;
+  ostringstream br;
+  br << brat;
+  generator()->preinitInterface(dm, "BranchingRatio",
+				"set", br.str());
+  parent->touch();
+  parent->update();
+  parent->reset();
+}
 
 void TwoBodyDecayConstructor::initializeDecayers(string fullname) const {
   ostringstream value;
