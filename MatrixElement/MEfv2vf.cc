@@ -222,11 +222,11 @@ MEfv2vf::colourGeometries(tcDiagPtr diag) const {
   static vector<ColourLines> cf(10);
   //3 8->8 3
   cf[0] = ColourLines("1 4, -4 2 -3, 3 5");
-  cf[1] = ColourLines("1 2 -3, 4 -2 5, 3 4");
+  cf[1] = ColourLines("1 2 -3, -4 -2 5, 3 4");
   cf[2] = ColourLines("1 -2, 2 3 4, -4 5");
   //3b 8 -> 8 3b
-  cf[3] = ColourLines("-4 -1, 3 -2 4, -5 -3");
-  cf[4] = ColourLines("3 -2 -1, -5 2 4, -3 -4");
+  cf[3] = ColourLines("-4 -1, 3 2 4, -5 -3");
+  cf[4] = ColourLines("3 2 -1, -5 -2 4, -4 -3");
   cf[5] = ColourLines("2 -1, -4 -3 -2, -5 4");
   //3 8 -> 0 3
   cf[6] = ColourLines("1 2 -3, 3 5");

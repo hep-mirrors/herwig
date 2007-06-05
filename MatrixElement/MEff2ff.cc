@@ -644,6 +644,7 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   hardpro[1] = subp->incoming().second;
   hardpro[2] = subp->outgoing()[0]; 
   hardpro[3] = subp->outgoing()[1];
+
 //particle ordering. If q qb initial q = 0, qb = 1
   if( hardpro[0]->id() < hardpro[1]->id() )
     swap(hardpro[0], hardpro[1]);
@@ -653,17 +654,18 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
 
   //pick which process we are doing
   if( hardpro[0]->id() > 0) {
-    SpinorVector spA, spB;
-    SpinorBarVector spbA, spbB;
+    //common spinors
+    SpinorVector spA;
+    SpinorBarVector spbB;
     SpinorWaveFunction(spA, hardpro[0], incoming, false, true);
-    SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
     SpinorBarWaveFunction(spbB, hardpro[2], outgoing,true, true);
-    SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
     //majorana
     if(!hardpro[2]->dataPtr()->CC() || hardpro[2]->id() == 1000024 || 
        hardpro[2]->id() == 1000037) {
-      SpinorVector spC;
-      SpinorBarVector spbC;
+      SpinorVector spB, spC;
+      SpinorBarVector spbA, spbC;
+      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
+      SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
       for(unsigned int ix=0;ix<2;++ix) {
 	spC.push_back(SpinorWaveFunction(-spbB[ix].getMomentum(),
 					 spbB[ix].getParticle(),
@@ -686,6 +688,10 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     }
     //ffbar->ffbar
     else if( hardpro[1]->id() < 0 ) {
+      SpinorVector spB;
+      SpinorBarVector spbA;
+      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
+      SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
       double dummy;
       ProductionMatrixElement prodME = ffb2ffbHeME(spA, spbA, spbB, spB,
 						   dummy);
@@ -697,14 +703,13 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
     }
     //ff2ff
     else {
-      SpinorVector spA, spB;
-      SpinorBarVector spbA, spbB;
-      SpinorWaveFunction(spA,hardpro[0],incoming, false, true);
+      SpinorVector spB;
+      SpinorBarVector spbA;
       SpinorWaveFunction(spB,hardpro[1],incoming, false, true);
-      SpinorBarWaveFunction(spbA, hardpro[2], outgoing, true, true);
-      SpinorBarWaveFunction(spbB, hardpro[3], outgoing, true, true);
+      SpinorBarWaveFunction(spbA, hardpro[3], outgoing, true, true);
+
       double dummy;
-      ProductionMatrixElement prodME = ff2ffHeME(spA, spB, spbA, spbB,
+      ProductionMatrixElement prodME = ff2ffHeME(spA, spB, spbB, spbA,
 						 dummy);
       HardVertexPtr hardvertex = new_ptr(HardVertex());
       hardvertex->ME(prodME);
