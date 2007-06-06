@@ -29,9 +29,7 @@ public:
   /**
    * The default constructor.
    */
-  inline GoityRobertsDecayer();
-
-public:
+  GoityRobertsDecayer();
 
   /** @name Virtual functions required by the Decayer and DecayIntegrator classes. */
   //@{
@@ -129,7 +127,7 @@ protected:
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:
@@ -239,7 +237,7 @@ private:
   /**
    * The \f$\bar{\Lambda}\f$ parameter for the form factors.
    */
-  Energy _Lambdabar;
+  Energy _lambdabar;
 
   /**
    * The \f$g\f$ coupling for the decays.
@@ -275,6 +273,31 @@ private:
    *  The weights for the different channels
    */
   vector<double> _weights;
+
+  /**
+   *  Parameters for the masses and mass differences
+   */
+  //@{
+  /**
+   *  Mass difference between ground and excited B mesons
+   */
+  Energy _deltaMb;
+
+  /**
+   *  Width of the excited B mesons
+   */
+  Energy _gammaB;
+
+  /**
+   *  Width of the \f$D^{*0}\f$
+   */
+  Energy _gammaD0;
+
+  /**
+   *  Width of the \f$D^{*+}\f$
+   */
+  Energy _gammaDp;
+  //@}
 };
 
 }
@@ -307,7 +330,7 @@ struct ClassTraits<Herwig::GoityRobertsDecayer>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwSMDecay.so"; }
+  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 };
 
 /** @endcond */

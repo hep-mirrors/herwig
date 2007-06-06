@@ -6,37 +6,6 @@
 
 namespace Herwig {
 
-inline GoityRobertsDecayer::GoityRobertsDecayer() {
-  // fermi constant
-  _GF = 1.16639E-5/GeV2;
-  //  Include the D* in the B to D\pi decay
-  _includeDstar=false;
-  //  Include the D** in the B to D\pi decay
-  _includeDstarstar=false;
-  // wavefunction beta parameters
-  _beta1S=0.29*GeV;
-  _beta2S=0.29*GeV;
-  _beta1P=0.28*GeV;
-  _beta1D=0.26*GeV;
-  // The pion decay constant
-  _fpi = 92.4*MeV;
-  // The mass difference for the mesons
-  _deltaM2S=0.56*GeV;
-  _deltaM1P=0.39*GeV;
-  _deltaM1D=0.71*GeV;
-  // the widths for the mesons
-  _gamma2S= 191*MeV;
-  _gamma1P=1040*MeV;
-  _gamma1D= 405*MeV;
-  // Lambdabar parameter for the form factors.
-  _Lambdabar=0.75*GeV;
-  // The couplings for the decays
-  _g      = 0.50;
-  _alpha1 =-1.43;
-  _alpha2 =-0.14;
-  _alpha3 = 0.69;
-}
-
 inline IBPtr GoityRobertsDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -45,33 +14,23 @@ inline IBPtr GoityRobertsDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void GoityRobertsDecayer::doinitrun() {
-  unsigned int ix,iy;
-  _current->initrun();
-  cout << *this << endl;
-  DecayIntegrator::doinitrun();
-  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
-  for(ix=0;ix<numberModes();++ix) {
-    _wgtmax.push_back(mode(ix)->maxWeight());
-    _wgtloc.push_back(_weights.size());
-    for(iy=0;iy<mode(ix)->numberChannels();++iy) {
-      _weights.push_back(mode(ix)->channelWeight(iy));
-    }
-  }
-}
-
 inline void GoityRobertsDecayer::calculateFormFactors(double omega,double & xi,
 						      double & xi1,double & rho1,
 						      double & rho2) const {
   double w2(omega*omega);
-  Energy2 beta2(_beta1S*_beta1S),lam2(_Lambdabar*_Lambdabar),
-    betaSP(_beta1S*_beta1S+_beta1P*_beta1P),
-    betaSD(_beta1S*_beta1S+_beta1D*_beta1D);
-  xi   =                                     exp(-0.25*lam2*(w2-1.)/beta2);
-  xi1  =-0.25*sqrt(2./3.)*lam2/beta2*(w2-1.)*exp(-0.25*lam2*(w2-1.)/beta2);
-  rho1 = sqrt(0.5)*_Lambdabar/_beta1S*pow(2.*_beta1S*_beta1P/betaSP,2.5)*
-                                             exp(- 0.5*lam2*(w2-1.)/betaSP);
-  rho2 = sqrt(0.125)*lam2/beta2*      pow(2.*_beta1S*_beta1D/betaSD,3.5)*
-                                             exp(- 0.5*lam2*(w2-1.)/betaSD);
+  Energy2 beta2  = sqr(_beta1S   );
+  Energy2 lam2   = sqr(_lambdabar);
+  Energy2 betaSP = beta2+sqr(_beta1P);
+  Energy2 betaSD = beta2+sqr(_beta1D);
+  double fact = -0.25*lam2*(w2-1.)/beta2;
+  // s-wave
+  xi   =                  exp(fact);
+  xi1  = sqrt(2./3.)*fact*exp(fact);
+  // p-wave
+  rho1 = sqrt(0.5 )*_lambdabar/_beta1S*pow(2.*_beta1S*_beta1P/betaSP,2.5)*
+    exp(- 0.5*lam2*(w2-1.)/betaSP);
+  // d-wave
+  rho2 = sqrt(0.125)*lam2/beta2*       pow(2.*_beta1S*_beta1D/betaSD,3.5)*
+    exp(- 0.5*lam2*(w2-1.)/betaSD);
 }
 }

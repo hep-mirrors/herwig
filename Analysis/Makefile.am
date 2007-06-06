@@ -79,7 +79,9 @@ BtoSGammaAnalysis.fh BtoSGammaAnalysis.cc   \
 ZPhotonsAnalysis.h ZPhotonsAnalysis.icc \
 ZPhotonsAnalysis.fh ZPhotonsAnalysis.cc \
 DDalitzAnalysis.h DDalitzAnalysis.icc \
-DDalitzAnalysis.fh DDalitzAnalysis.cc 
+DDalitzAnalysis.fh DDalitzAnalysis.cc  \
+SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.icc \
+SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc 
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
