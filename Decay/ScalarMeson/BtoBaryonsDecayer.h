@@ -290,7 +290,7 @@ struct ClassTraits<Herwig::BtoBaryonsDecayer>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "BtoBaryonsDecayer.so"; }
+  static string library() { return "HwWeakCurrents.so HwSMDecay.so"; }
 };
 
 /** @endcond */
