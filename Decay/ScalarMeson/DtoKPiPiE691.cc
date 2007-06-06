@@ -534,7 +534,7 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
     ScalarWaveFunction(mytemp,outgoing,true,vertex);
   }
   Complex amp;
-  // D+ -> K-pi+pi_
+  // D+ -> K-pi+pi+
   if(imode()==0) {
     Lorentz5Momentum pres1=decay[0]->momentum()+decay[1]->momentum();
     pres1.rescaleMass();
@@ -543,7 +543,7 @@ double DtoKPiPiE691::me2(bool vertex, const int ichan,
     pres2.rescaleMass();
     double ct2 =-decayAngle(inpart.momentum(),pres2,decay[0]->momentum());
     if(ichan<0) {
-      amp = _c1NR
+      amp = _c1NR*sqrt(2.)
 	+_c1K892 *amplitude(1,ct1,pres1.mass(),_wK8920,_mK8920)
 	+_c1K892 *amplitude(1,ct2,pres2.mass(),_wK8920,_mK8920)
 	+_c1K1430*amplitude(0,ct1,pres1.mass(),_wK1430,_mK1430)
