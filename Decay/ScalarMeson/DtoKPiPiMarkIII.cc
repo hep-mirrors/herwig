@@ -21,21 +21,21 @@ using Herwig::Helicity::outgoing;
 
 DtoKPiPiMarkIII::DtoKPiPiMarkIII() {
   // Amplitudes and phases for D0 -> K- pi+ pi0
-  _a1rho    = 1.000; _phi1rho    =   0.;
-  _a1Kstarm = 0.371; _phi1Kstarm = 154.;
-  _a1Kstar0 = 0.391; _phi1Kstar0 =   7.;
-  _a1NR     = 1.889; _phi1NR     =  52.;
+  _a1rho    = 1.0000; _phi1rho    =   0.;
+  _a1Kstarm = 0.4018; _phi1Kstarm = 154.;
+  _a1Kstar0 = 0.4244; _phi1Kstar0 =   7.;
+  _a1NR     = 2.0693; _phi1NR     =  52.;
   // Amplitudes and phases for D0 -> Kbar0 pi+ pi-
-  _a2rho    = 1.000; _phi2rho    =  93.;
-  _a2Kstar  = 2.106; _phi2Kstar  =   0.;
-  _a2NR     = 9.379; _phi2NR     =   0.;
+  _a2rho    = 0.0975; _phi2rho    =  93.;
+  _a2Kstar  = 0.2225; _phi2Kstar  =   0.;
+  _a2NR     = 1.0000; _phi2NR     =   0.;
   // Amplitudes and phases for D+ -> Kbar0 pi+ pi0
-  _a3rho    = 1.000; _phi3rho    =   0.;
-  _a3Kstar  = 0.517; _phi3Kstar  =  43.;
-  _a3NR     = 2.490; _phi3NR     = 250.;
+  _a3rho    = 1.0000; _phi3rho    =   0.;
+  _a3Kstar  = 0.5617; _phi3Kstar  =  43.;
+  _a3NR     = 2.7250; _phi3NR     = 250.;
   // Amplitudes and phases for D+ -> K- pi+ pi+
-  _a4Kstar  = 0.049; _phi4Kstar  = 105.;
-  _a4NR     = 1.   ; _phi4NR     =   0.;
+  _a4Kstar  = 0.04749; _phi4Kstar  = 105.;
+  _a4NR     = 1.00000; _phi4NR     =   0.;
   // masses and widths of the resonances
   _localparameters = true;
   _mrhop   = 0.770*GeV; _wrhop   = 0.1533*GeV;
@@ -573,8 +573,7 @@ double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart
     if(ichan<0) {
       amp = _c2NR*(-1.+2.*UseRandom::rndbool())
 	-_c2rho  *amplitude(true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho0  ,_wrho0  )
- 	+_c2Kstar*amplitude(false,mD,mA,mC,mB,mAC,mAB,mBC,_mKstarm,_wKstarm)
-	;
+ 	+_c2Kstar*amplitude(false,mD,mA,mC,mB,mAC,mAB,mBC,_mKstarm,_wKstarm);
     }
     else if(ichan==0) {
       amp =_c2rho  *amplitude(true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho0  ,_wrho0  );
