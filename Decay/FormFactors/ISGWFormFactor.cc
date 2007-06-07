@@ -7,20 +7,13 @@
 #include "ISGWFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ISGWFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
-
-ISGWFormFactor::ISGWFormFactor() 
-{
+ISGWFormFactor::ISGWFormFactor() {
   // default values of the parameters
   // fudge factor
   _kappa=0.7;
@@ -40,12 +33,6 @@ ISGWFormFactor::ISGWFormFactor()
   _betaPuc = 0.34*GeV;
   // the mixing for eta/eta'
   _thetaeta=-pi/18.;
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      _mquark[ix]=0.;
-      for(iy=0;iy<5;++iy){_betaS[ix][iy]=0.;_betaP[ix][iy]=0.;}
-    }
   // B_u decays to d ubar
   addFormFactor(-521,-211  ,0,-2, 5, 1);
   addFormFactor(-521,-213  ,1,-2, 5, 1);
@@ -183,12 +170,15 @@ ISGWFormFactor::ISGWFormFactor()
 void ISGWFormFactor::doinit() throw(InitException) {
   ScalarFormFactor::doinit();
   // set up the quark masses
+  _mquark.resize(5);
   _mquark[0]=_mdown;
   _mquark[1]=_mup;
   _mquark[2]=_mstrange;
   _mquark[3]=_mcharm;
   _mquark[4]=_mbottom;
   // and the beta values
+  _betaS.resize(5,vector<Energy>(5));
+  _betaP.resize(5,vector<Energy>(5));
   _betaS[0][0] = _betaSud;_betaP[0][0] = _betaPud;
   _betaS[1][0] = _betaSud;_betaP[1][0] = _betaPud;
   _betaS[2][0] = _betaSus;_betaP[2][0] = _betaPus;
@@ -216,30 +206,16 @@ void ISGWFormFactor::doinit() throw(InitException) {
   _betaS[4][4] = 0.      ;_betaP[4][4] = 0.      ;
 }
 
-ISGWFormFactor::~ISGWFormFactor() {}
-
 void ISGWFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _kappa << _mdown << _mup << _mstrange << _mcharm << _mbottom << _betaSud 
      << _betaSus << _betaSuc << _betaSub << _betaPud << _betaPus << _betaPuc
-     << _thetaeta;
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      os << _mquark[ix];
-      for(iy=0;iy<5;++iy){os << _betaS[ix][iy] << _betaP[ix][iy];}
-    }
+     << _thetaeta << _mquark << _betaS << _betaP;
 }
 
 void ISGWFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _kappa >> _mdown >> _mup >> _mstrange >> _mcharm >> _mbottom >> _betaSud 
      >> _betaSus >> _betaSuc >> _betaSub >> _betaPud >> _betaPus >> _betaPuc
-     >> _thetaeta;
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      is >> _mquark[ix];
-      for(iy=0;iy<5;++iy){is >> _betaS[ix][iy] >> _betaP[ix][iy];}
-    }
+     >> _thetaeta >> _mquark >> _betaS >> _betaP;
 }
 
 ClassDescription<ISGWFormFactor> ISGWFormFactor::initISGWFormFactor;
@@ -341,8 +317,7 @@ void ISGWFormFactor::Init() {
 // form-factor for scalar to scalar
 void ISGWFormFactor::ScalarScalarFormFactor(Energy2 q2, unsigned int iloc,int id0,
 					    int id1,Energy mY,Energy mX,
-					    Complex & f0,Complex & fp) const
-{
+					    Complex & f0,Complex & fp) const {
   Complex d1(0.),d2(0.);
   formFactor(q2,iloc,id0,id1,mY,mX,f0,fp,d1,d2);
 }
@@ -351,22 +326,24 @@ void ISGWFormFactor::ScalarScalarFormFactor(Energy2 q2, unsigned int iloc,int id
 void ISGWFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0,
 					    int id1,Energy mY, Energy mX,
 					    Complex & A0,Complex & A1,
-					    Complex & A2,Complex & V) const
-{formFactor(q2,iloc,id0,id1,mY,mX,A0,A1,A2,V);}
+					    Complex & A2,Complex & V) const {
+  formFactor(q2,iloc,id0,id1,mY,mX,A0,A1,A2,V);
+}
 
 
 // form-factor for scalar to tensor
 void ISGWFormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0,
 					    int id1, Energy mY, Energy mX,
 					    Complex & h,Complex & k,
-					    Complex & bp,Complex & bm) const
-{formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);}
+					    Complex & bp,Complex & bm) const {
+  formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);
+}
 
 // member which does the work
 void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 				Energy mY,Energy mX, Complex & f1,Complex & f2,
-				Complex & f3, Complex & f4) const
-{
+				Complex & f3, Complex & f4) const {
+  useMe();
   // work out the flavour of the heavy quarks etc
   int jspin,spect,inquark,outquark;
   formFactorInfo(iloc,jspin,spect,inquark,outquark);
@@ -379,8 +356,12 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   // wavefunction parameters for the mesons
   Energy betaX(0.),betaY(_betaS[ifl0-1][ifls-1]);
   // spin-0 outgoing mesons
-  if(ispin==0&&jspin<2){betaX=_betaS[ifl0-1][ifls-1];}
-  else{betaX=_betaP[ifl0-1][ifls-1];}
+  if(ispin==0&&jspin<2) {
+    betaX=_betaS[ifl1-1][ifls-1];
+  }
+  else {
+    betaX=_betaP[ifl1-1][ifls-1];
+  }
   // compute the F_n function we will need
   Energy2 beta2XY(0.5*(betaX*betaX+betaY*betaY)),tm((mY-mX)*(mY-mX));
   double betar(betaX*betaY/beta2XY),kappa2(_kappa*_kappa),
@@ -390,128 +371,124 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 	    exp(-0.25*ms*ms/(mtildeX*mtildeY)*slope));
   // now we can compute the form-factors
   // for scalars
-  if(jspin==0)
-    {
-      Complex fp,fm;
-      // 1 1S0
-      if(ispin==0)
-	{
-	  double yratio(ms/mtildeX*betaY*betaY/beta2XY);
-	  fp = fn*(1.+0.5*mQ/mum-0.25*mQ*mq/mup/mum*yratio);
-	  fm = fn*(1.-(mtildeX+mtildeY)*(0.5/mq-0.25/mup*yratio));
-	}
+  if(jspin==0) {
+    Complex fp,fm;
+    // 1 1S0
+    if(ispin==0) {
+      double yratio(ms/mtildeX*betaY*betaY/beta2XY);
+      fp = fn*(1.+0.5*mQ/mum-0.25*mQ*mq/mup/mum*yratio);
+      fm = fn*(1.-(mtildeX+mtildeY)*(0.5/mq-0.25/mup*yratio));
+    }
       // 1 3P0
-      else if(ispin<100)
-	{
-	  // extra power of beta factors
-	  fn*=betar;
-	  fp = fn*ms*mQ*mq/sqrt(6.)/betaY/mtildeX/mum;
-	  fm =-fn*ms/betaY/sqrt(6.)*(mtildeX+mtildeY)/mtildeX;
-	}
-      // 2 1S0
-      else
-	{throw Exception() << "ISGWFormFactor::formFactor" 
-			   << " 2S not implemented" << Exception::abortnow;}
-      // convert to the standard form
-      f1 = q2/(mY*mY-mX*mX)*fm+fp;
-      f2 = fp;
+    else if(ispin<100) {
+      // extra power of beta factors
+      fn*=betar;
+      fp = fn*ms*mQ*mq/sqrt(6.)/betaY/mtildeX/mum;
+      fm =-fn*ms/betaY/sqrt(6.)*(mtildeX+mtildeY)/mtildeX;
     }
+    // 2 1S0
+    else {
+      throw Exception() << "ISGWFormFactor::formFactor" 
+			<< " 2S not implemented" << Exception::abortnow;
+    }
+    // convert to the standard form
+    f1 = q2/(mY*mY-mX*mX)*fm+fp;
+    f2 = fp;
+  }
   // for vectors
-  else if(jspin==1)
-    {
-      Complex f,g,ap,am;
-      Energy2 betaX2(betaX*betaX),betaY2(betaY*betaY);
-      //  1 3S1
-      if(ispin==0)
-	{
-	  f  = 2.*mtildeY*fn;
-	  g  = 0.5*fn*(1./mq-0.5/mum*ms/mtildeX*betaY2/beta2XY);
-	  ap =-0.5*fn/mtildeX*(1.+ms/mQ*(betaY2-betaX2)/(betaX2+betaY2)
-			       -0.25*ms*ms/mum/mtildeY*betaX2*betaX2/beta2XY/beta2XY);
-	  am = 0.5*fn/mtildeX*(1.+ms/mQ+ms*ms/mq/mQ*betaX2/beta2XY*
-			       (1.-0.25*(mtildeX+mtildeY)/mtildeY*betaX2/beta2XY));
-	}
-      // 1 3P1
-      else if(ispin==20)
-	{
-	  fn*=betar;
-	  f  =-fn*mtildeY*betaY*(1./mum+0.5*ms/mtildeY*slope*
-				 (1./mq-0.5/mum*ms/mtildeX*betaY2/beta2XY));
-	  g  = 0.5*fn*ms/mtildeX/betaY;
-	  ap = 0.25*fn*ms*mQ/mtildeY/betaY/mum*(1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
-	  am = -0.25*fn*ms*(mtildeX+mtildeY)/mq/betaY/mtildeY*
-	    (1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
-	}
-      //  1 1P1
-      else if(ispin==10)
-	{
-	  fn*=betar;
-	  double ort(1./sqrt(2.));
-	  f  = fn*ort*mtildeY*betaY/mup;
-	  g  = 0.25*fn*mtildeY*betaY*ort/mq/mQ/mtildeX;
-	  Energy msum(mtildeX+mtildeY);
-	  ap = fn*ms*ort/betaY/mtildeY*(1.+0.5*mQ/mum
-					-0.25*mq*mQ*ms/mum/mup/mtildeX*betaY2/beta2XY);
-	  am = fn*ms*ort/betaY/mtildeY*(1.-0.5/mq*msum
-					+0.25*ms*betaY2/mup/beta2XY*msum/mtildeX);
-	}
-      // 2 1S0
-      else
-	{throw Exception() << "ISGWScalarVectorDecayer::formFactor" 
-			    << " 2S not implemented" << Exception::abortnow;}
-      // convert to the standard notation
-      Energy msum(mX+mY),mdiff(mY-mX);
-      Complex ii(0.,1.);
-      f2 = -ii*f/msum;
-      f3 = +ii*ap*msum;
-      f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
-      f4 = -ii*g*msum;
+  else if(jspin==1) {
+    Complex f,g,ap,am;
+    Energy2 betaX2(betaX*betaX),betaY2(betaY*betaY);
+    //  1 3S1
+    if(ispin==0) {
+      f  = 2.*mtildeY*fn;
+      g  = 0.5*fn*(1./mq-0.5/mum*ms/mtildeX*betaY2/beta2XY);
+      ap =-0.5*fn/mtildeX*(1.+ms/mQ*(betaY2-betaX2)/(betaX2+betaY2)
+			   -0.25*ms*ms/mum/mtildeY*betaX2*betaX2/beta2XY/beta2XY);
+      am = 0.5*fn/mtildeX*(1.+ms/mQ+ms*ms/mq/mQ*betaX2/beta2XY*
+			   (1.-0.25*(mtildeX+mtildeY)/mtildeY*betaX2/beta2XY));
     }
+    // 1 3P1
+    else if(ispin==20) {
+      fn*=betar;
+      f  =-fn*mtildeY*betaY*(1./mum+0.5*ms/mtildeY*slope*
+			     (1./mq-0.5/mum*ms/mtildeX*betaY2/beta2XY));
+      g  = 0.5*fn*ms/mtildeX/betaY;
+      ap = 0.25*fn*ms*mQ/mtildeY/betaY/mum*(1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
+      am = -0.25*fn*ms*(mtildeX+mtildeY)/mq/betaY/mtildeY*
+	(1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
+    }
+    //  1 1P1
+    else if(ispin==10) {
+      fn*=betar;
+      double ort(1./sqrt(2.));
+      f  = fn*ort*mtildeY*betaY/mup;
+      g  = 0.25*fn*mtildeY*betaY*ort/mq/mQ/mtildeX;
+      Energy msum(mtildeX+mtildeY);
+      ap = fn*ms*ort/betaY/mtildeY*(1.+0.5*mQ/mum
+				    -0.25*mq*mQ*ms/mum/mup/mtildeX*betaY2/beta2XY);
+      am = fn*ms*ort/betaY/mtildeY*(1.-0.5/mq*msum
+				    +0.25*ms*betaY2/mup/beta2XY*msum/mtildeX);
+    }
+    // 2 1S0
+    else {
+      throw Exception() << "ISGWFormFactor::formFactor" 
+			<< " 2S not implemented" << Exception::abortnow;
+    }
+    // convert to the standard notation
+    Energy msum(mX+mY),mdiff(mY-mX);
+    Complex ii(0.,1.);
+    f2 = -ii*f/msum;
+    f3 = +ii*ap*msum;
+    f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
+    f4 = -ii*g*msum;
+  }
   // for tensors
-  else if(jspin==5)
-    {
-      fn *=fn/sqrt(2.);
-      double betaXb2(betaX*betaX/beta2XY);
-      // 1 3P2
-      if(ispin==0)
-	{
-	  f1 = 0.5*fn*ms/mtildeY/betaY*(1./mq
-				       -0.5*ms/mtildeX/mum*betaY*betaY/beta2XY);
-	  f2 = 2.*fn*ms/betaY;
-	  f3 =-0.5*fn*ms/mtildeX/mQ/betaY*
-	    (1.-0.5*ms*mQ/mup/mtildeY*betaXb2
-	     +0.25*ms*mQ/mtildeY/mum*betaXb2*(1.-0.5*ms*betaXb2/mtildeY));
-	  f4 = 0.5*fn*ms/mtildeX/mQ/betaY*
-	    (1.-0.5*ms*mQ/mup/mtildeY*betaXb2+
-	     0.25*ms*betaXb2/mq*(mtildeX+mtildeY)/mtildeY*(1.-0.5*ms*betaXb2/mtildeY));
-	}
+  else if(jspin==2) {
+    fn *=fn/sqrt(2.);
+    double betaXb2(betaX*betaX/beta2XY);
+    // 1 3P2
+    if(ispin==0) {
+      f1 = 0.5*fn*ms/mtildeY/betaY*(1./mq
+				    -0.5*ms/mtildeX/mum*betaY*betaY/beta2XY);
+      f2 = 2.*fn*ms/betaY;
+      f3 =-0.5*fn*ms/mtildeX/mQ/betaY*
+	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2
+	 +0.25*ms*mQ/mtildeY/mum*betaXb2*(1.-0.5*ms*betaXb2/mtildeY));
+      f4 = 0.5*fn*ms/mtildeX/mQ/betaY*
+	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2+
+	 0.25*ms*betaXb2/mq*(mtildeX+mtildeY)/mtildeY*(1.-0.5*ms*betaXb2/mtildeY));
     }
+  }
+  else {
+    throw Exception() << "ISGWFormFactor::FormFactor spin = " << jspin 
+		      << " but spins higher than 2 not implemented"
+		      << Exception::runerror;
+  }
   // special for mixing
-  double fact;
-  if(id1==ParticleID::eta)
-    {
-      if(ifl1==3&&ifls==3){fact=-2.*cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
-      else{fact=cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
-      f1*=fact;f2*=fact;f3*=fact;f4*=fact;
-    }
-  else if(id1==ParticleID::etaprime)
-    {
-      if(ifl1==3&&ifls==3){fact=-2.*sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
-      else{fact=sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
-      f1*=fact;f2*=fact;f3*=fact;f4*=fact;
-    }
-  else if(ifl1==ifls&&ifl1<3)
-    {
-      if(abs(ifl1)==1&&int(id1/10)%100==1){fact=-sqrt(0.5);}
-      else{fact=sqrt(0.5);}
-      f1*=fact;f2*=fact;f3*=fact;f4*=fact;
-    }
+  double fact(1.);
+  if(id1==ParticleID::eta) {
+    if(ifl1==3&&ifls==3) fact = -2.*cos(_thetaeta)/sqrt(6.) - sin(_thetaeta)/sqrt(3.);
+    else                 fact =     cos(_thetaeta)/sqrt(6.) - sin(_thetaeta)/sqrt(3.);
+   
+  }
+  else if(id1==ParticleID::etaprime) {
+    if(ifl1==3&&ifls==3) fact = -2.*sin(_thetaeta)/sqrt(6.) + cos(_thetaeta)/sqrt(3.);
+    else                 fact =     sin(_thetaeta)/sqrt(6.) + cos(_thetaeta)/sqrt(3.);
+  }
+  else if(ifl1==ifls&&ifl1<3) {
+    if(abs(ifl1)==1&&int(id1/10)%100==1) fact = -sqrt(0.5);
+    else                                 fact =  sqrt(0.5);
+  } 
+  f1*=fact;
+  f2*=fact;
+  f3*=fact;
+  f4*=fact;
 }
 
-void ISGWFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create){output << "create Herwig::ISGWFormFactor " << fullName() << "\n";}
+void ISGWFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::ISGWFormFactor " << fullName() << "\n";
   output << "set " << fullName() << ":Kappa    "    << _kappa        << "\n";
   output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
   output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
@@ -527,6 +504,5 @@ void ISGWFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) c
   output << "set " << fullName() << ":BetaPuc "     << _betaPuc/GeV  << "\n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
