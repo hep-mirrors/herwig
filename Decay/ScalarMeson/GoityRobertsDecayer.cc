@@ -30,16 +30,16 @@ GoityRobertsDecayer::GoityRobertsDecayer() {
   //  Include the D** in the B to D(*) pi decay
   _includeDstarstar=false;
   // wavefunction beta parameters
-  _beta1S=0.29*GeV;
-  _beta2S=0.29*GeV;
+  _beta1S=0.285*GeV;
+  _beta2S=0.285*GeV;
   _beta1P=0.28*GeV;
   _beta1D=0.26*GeV;
   // The pion decay constant
   _fpi = 92.4*MeV;
   // The mass difference for the mesons
-  _deltaM2S=0.56*GeV;
-  _deltaM1P=0.39*GeV;
-  _deltaM1D=0.71*GeV;
+  _deltaM2S=0.563*GeV;
+  _deltaM1P=0.392*GeV;
+  _deltaM1D=0.709*GeV;
   // the widths for the mesons
   _gamma2S= 191*MeV;
   _gamma1P=1040*MeV;
@@ -140,13 +140,13 @@ void GoityRobertsDecayer::Init() {
   static Parameter<GoityRobertsDecayer,Energy> interfaceBeta1S
     ("Beta1S",
      "The beta parameter for the 1S states",
-     &GoityRobertsDecayer::_beta1S, GeV, 0.29*GeV, 0.0*GeV, 10.0*GeV,
+     &GoityRobertsDecayer::_beta1S, GeV, 0.285*GeV, 0.0*GeV, 10.0*GeV,
      false, false, true);
 
   static Parameter<GoityRobertsDecayer,Energy> interfaceBeta2S
     ("Beta2S",
      "The beta parameter for the 2S states",
-     &GoityRobertsDecayer::_beta2S, GeV, 0.29*GeV, 0.0*GeV, 10.0*GeV,
+     &GoityRobertsDecayer::_beta2S, GeV, 0.285*GeV, 0.0*GeV, 10.0*GeV,
      false, false, true);
 
   static Parameter<GoityRobertsDecayer,Energy> interfaceBeta1P
@@ -311,6 +311,10 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   extpart[2]=getParticleData(ParticleID::piminus);
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
+  // effective D* resonance parameters
+  Energy Mstar = sqrt(extpart[1]->mass()*(2.*D01m->mass()-extpart[1]->mass())
+		      +sqr(extpart[2]->mass()));
+  Energy Gstar = _gammaD0*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
     channel.resize(0);extpart.resize(3);
     // get the particles for the current
@@ -354,6 +358,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
     else {
       channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
     }
+    mode->resetIntermediate(D01m,Mstar,Gstar);
     addMode(mode,maxweight,channelwgts);
   }
   // then B- to D0 pi0
@@ -362,6 +367,10 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   extpart[2]=getParticleData(ParticleID::pi0);
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
+  // effective D* resonance parameters
+  Mstar = sqrt(extpart[1]->mass()*(2.*D01m->mass()-extpart[1]->mass())
+		      +sqr(extpart[2]->mass()));
+  Gstar = _gammaD0*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
     channel.resize(0);extpart.resize(3);
     // get the particles for the current
@@ -405,6 +414,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
     else {
       channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
     }
+    mode->resetIntermediate(D01m,Mstar,Gstar);
     addMode(mode,maxweight,channelwgts);
   }
   // then B0bar  to D0 pi+
@@ -413,6 +423,10 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   extpart[2]=getParticleData(ParticleID::piplus);
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
+  // effective D* resonance parameters
+  Mstar =  sqrt(extpart[1]->mass()*(2.*Dp1m->mass()-extpart[1]->mass())
+		      +sqr(extpart[2]->mass()));
+  Gstar = _gammaDp*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
     channel.resize(0);extpart.resize(3);
     // get the particles for the current
@@ -456,6 +470,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
     else {
       channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
     }
+    mode->resetIntermediate(Dp1m,Mstar,Gstar);
     addMode(mode,maxweight,channelwgts);
   }
   // first B- to D+ pi0
@@ -464,6 +479,10 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   extpart[2]=getParticleData(ParticleID::pi0);
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
+  // effective D* resonance parameters
+  Mstar =  sqrt(extpart[1]->mass()*(2.*Dp1m->mass()-extpart[1]->mass())
+		      +sqr(extpart[2]->mass()));
+  Gstar = _gammaDp*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
     channel.resize(0);extpart.resize(3);
     // get the particles for the current
@@ -507,6 +526,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
     else {
       channelwgts.resize(mode->numberChannels(),1./(mode->numberChannels()));
     }
+    mode->resetIntermediate(Dp1m,Mstar,Gstar);
     addMode(mode,maxweight,channelwgts);
   }
   // B- to D*+ pi-
@@ -850,13 +870,12 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
     if(abs(decay[0]->id())%10==1) {
       dmd = getParticleData(iother+3)->mass()-
 	    getParticleData(iout+1  )->mass();
-      dmd += iother==410 ? -ii*0.5*_gammaDp : -ii*0.5*_gammaD0;
     }
     else {
       dmd = getParticleData(iout+3  )->mass()-
 	    getParticleData(iother+1)->mass();
-      dmd += iout==410 ? -ii*0.5*_gammaDp : -ii*0.5*_gammaD0;
     }
+    dmd += iout==410 ? -ii*0.5*_gammaDp : -ii*0.5*_gammaD0;
   }
   // get the IW form factors and calculate some useful prefactors
   double xi,xi1,rho1,rho2;
