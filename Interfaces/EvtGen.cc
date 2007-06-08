@@ -30,6 +30,8 @@
 #include "EvtGenBase/EvtTensorParticle.hh"
 #include "EvtGenBase/EvtStringParticle.hh"
 #include "EvtGenBase/EvtHighSpinParticle.hh"
+#include <iostream>
+#include <fstream>
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -873,6 +875,12 @@ void EvtGen::outputEvtGenDecays(long parentid) const {
 
 ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
 			     const DecayMode & dm) const {
+  // redirect cout to the log file
+  ostringstream stemp;
+  std::streambuf *psbuf[2] ={generator()->log().rdbuf(),stemp.rdbuf()};
+  std::streambuf *temp[2] = {cout.rdbuf(),cerr.rdbuf()};
+  cout.rdbuf(psbuf[0]);
+  cerr.rdbuf(psbuf[1]);
   // create the particle from EvtGen using the PDG code, set's id and momentum
   // and spin information
   EvtParticle *part = EvtGenParticle(parent);
@@ -931,6 +939,15 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
   // delete the EvtGen particle
   part->deleteDaughters();
   delete part;
+  // change stream back
+  cout.rdbuf(temp[0]);
+  cerr.rdbuf(temp[1]);
+  string stemp2=stemp.str();
+  if(stemp2.length()>0) 
+    throw Exception() << "EvtGen report error in EvtGen::decay "
+		      << "killing event\n"
+		      << "Error was " << stemp2 
+		      << Exception::eventerror;
   // return the decay products
   return output;
 }
