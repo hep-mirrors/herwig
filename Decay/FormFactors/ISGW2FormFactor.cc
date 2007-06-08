@@ -7,19 +7,13 @@
 #include "ISGW2FormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ISGW2FormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
-ISGW2FormFactor::ISGW2FormFactor() 
-{ 
+ISGW2FormFactor::ISGW2FormFactor() { 
   // values of a_S at matching scale
   _alphamuQM=0.6;
   // the quark masses
@@ -769,8 +763,7 @@ void ISGW2FormFactor::Init() {
 void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 				 Energy mY,
 				 Energy mX, Complex & f1,Complex & f2,Complex & f3,
-				 Complex & f4) const
-{
+				 Complex & f4) const {
   // get the flavours of the quarks etc
   int jspin,spect,inquark,outquark;
   formFactorInfo(iloc,jspin,spect,inquark,outquark);
@@ -787,49 +780,44 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   double Cf(1.);
   // the wavefunction parameter for the outgoing meson
   // 1S0
-  if(ispin==0&&jspin==0)
-    {
-      betaX=_beta1S0[ifl1-1][ifls-1];
-      mbarX=_mass1S0[ifl1-1][ifls-1];
-    }
+  if(ispin==0&&jspin==0) {
+    betaX=_beta1S0[ifl1-1][ifls-1];
+    mbarX=_mass1S0[ifl1-1][ifls-1];
+  }
   // 3S1
-  else if(ispin==0&&jspin==1)
-    {
-      betaX = _beta3S1[ifl1-1][ifls-1];
-      mbarX = _mass1S0[ifl1-1][ifls-1];
-      // set the relativistic correction parameter
-      // decaying b
-      if(ifl0==5)
-	{
-	  if(ifls<3)
-	    {if(ifl1<3){Cf=_CfBrho;}else {Cf=_CfBDstar;}}
-	  else if(ifls==3)
-	    {if(ifl1==4){Cf=_CfBsDstar;}else{Cf=_CfBsKstar;}}
-	  else if(ifls==4)
-	    {if(ifl1==4){Cf=_CfBcpsi;}else {Cf=_CfBcDstar;}}
-	}
-      // decaying D
-      else if(ifl0==4)
-	{
-	  if(ifls<3)
-	    {if(ifl1<3){Cf=_CfDrho;}else {Cf=_CfDKstar;}}
-	  else if(ifls==3)
-	    {if(ifl1<3){Cf=_CfDsKstar;}else{Cf=_CfDsphi;}}
-	  else if(ifls==5)
-	    {if(ifl1<3){Cf=_CfBcBstar;}else{Cf=_CfBcBsstar;}}
-	} 
+  else if(ispin==0&&jspin==1) {
+    betaX = _beta3S1[ifl1-1][ifls-1];
+    mbarX = _mass1S0[ifl1-1][ifls-1];
+    // set the relativistic correction parameter
+    // decaying b
+    if(ifl0==5) {
+      if(ifls<3)
+	{if(ifl1<3){Cf=_CfBrho;}else {Cf=_CfBDstar;}}
+      else if(ifls==3)
+	{if(ifl1==4){Cf=_CfBsDstar;}else{Cf=_CfBsKstar;}}
+      else if(ifls==4)
+	{if(ifl1==4){Cf=_CfBcpsi;}else {Cf=_CfBcDstar;}}
     }
-  else if(ispin==10&&jspin==0)
-    {
-      betaX=_beta1P[ifl1-1][ifls-1];
-      mbarX=_massPoh[ifl1-1][ifls-1];
-    }
+    // decaying D
+    else if(ifl0==4)
+      {
+	if(ifls<3)
+	  {if(ifl1<3){Cf=_CfDrho;}else {Cf=_CfDKstar;}}
+	else if(ifls==3)
+	  {if(ifl1<3){Cf=_CfDsKstar;}else{Cf=_CfDsphi;}}
+	else if(ifls==5)
+	  {if(ifl1<3){Cf=_CfBcBstar;}else{Cf=_CfBcBsstar;}}
+      } 
+  }
+  else if(ispin==10&&jspin==0) {
+    betaX=_beta1P[ifl1-1][ifls-1];
+    mbarX=_massPoh[ifl1-1][ifls-1];
+  }
   // 1 3/2 P 1 (1 P1)
-  else if(ispin==10&&jspin==1)
-    {
-      betaX = _beta1P[ifl1-1][ifls-1];
-      mbarX=_massPth[ifl1-1][ifls-1];
-    }
+  else if(ispin==10&&jspin==1) {
+    betaX = _beta1P[ifl1-1][ifls-1];
+    mbarX=_massPth[ifl1-1][ifls-1];
+  }
   // 1 1/2 P1 ( 3 P1) 
   else if((ispin==0&&jspin==2)||(ispin==20&&jspin==1))
     {
