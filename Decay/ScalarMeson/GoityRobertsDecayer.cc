@@ -61,7 +61,6 @@ GoityRobertsDecayer::GoityRobertsDecayer() {
 void GoityRobertsDecayer::doinitrun() {
   unsigned int ix,iy;
   _current->initrun();
-  cout << *this << endl;
   DecayIntegrator::doinitrun();
   _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
   for(ix=0;ix<numberModes();++ix) {
