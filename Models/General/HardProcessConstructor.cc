@@ -487,7 +487,9 @@ void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
   vector<CFPair> cfv(1, make_pair(1, 1.));
   
   if(offshell == PDT::Colour0) {
-    if( !flavour(diag.incoming.first, diag.incoming.second) )
+    if(getParticleData(diag.outgoing.first)->iColour() == PDT::Colour0) 
+      cfv[0].first = 1;
+    else if( !flavour(diag.incoming.first, diag.incoming.second) )
       cfv[0].first = 2;
     else
       cfv[0].first = 3;
@@ -506,7 +508,9 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
     cfv.push_back(make_pair(2, -1.));
   }
   else if(offshell == PDT::Colour0) {
-    if( flavour(diag.incoming.first, diag.incoming.second) )
+    if(outa == PDT::Colour0) 
+      cfv[0].first = 1;
+    else if( flavour(diag.incoming.first, diag.incoming.second) )
       cfv[0].first = 4;
     else
       cfv[0].first = 3;
@@ -599,6 +603,7 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
     }
   }
   cout << "---------------------------\n";
+  cout << flush;
   tcPDVector extpart(4);
   extpart[0] = getParticleData(process[0].incoming.first);
   extpart[1] = getParticleData(process[0].incoming.second);
