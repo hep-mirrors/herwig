@@ -86,18 +86,43 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
 
   // fix 3-gluon colour lines / general colour lines
   if(N == 3 && out[0]->id()==ParticleID::g && out[1]->id()==ParticleID::g
-     && out[2]->id()== ParticleID::g ) 
-    {
-      out[0]->antiColourNeighbour(out[2]);
-      out[0]->colourNeighbour(out[1]);
-      out[1]->colourNeighbour(out[2]);
+     && out[2]->id()== ParticleID::g ) {
+    out[0]->antiColourNeighbour(out[2]);
+    out[0]->colourNeighbour(out[1]);
+    out[1]->colourNeighbour(out[2]);
     }
   // incoming colour3/3bar state
   else if(parent.data().iColour() == PDT::Colour3 || 
-	  parent.data().iColour() == PDT::Colour3bar) 
-    {          
-      PPtr pparent = const_ptr_cast<PPtr>(&parent);
-      //bool link(false);
+	  parent.data().iColour() == PDT::Colour3bar) {          
+    PPtr pparent = const_ptr_cast<PPtr>(&parent);
+    if(N==2) {
+      if(out[0]->data().iColour() == parent.data().iColour()) {
+	out[0]->incomingColour(pparent,out[0]->id() < 0);
+      }
+      else if(out[1]->data().iColour() == parent.data().iColour()) {
+	out[1]->incomingColour(pparent,out[1]->id() < 0);
+      }
+      else if(parent.data().iColour() == PDT::Colour3 &&
+	      out[0]->data().iColour() == PDT::Colour3bar &&
+	      out[1]->data().iColour() == PDT::Colour3bar) {
+	tColinePtr col[2] = {ColourLine::create(out[0],true),
+			     ColourLine::create(out[1],true)};
+	parent.colourLine()->setSinkNeighbours(col[0],col[1]);
+      }
+      else if(parent.data().iColour() == PDT::Colour3bar &&
+	      out[0]->data().iColour() == PDT::Colour3 &&
+	      out[1]->data().iColour() == PDT::Colour3) {
+	tColinePtr col[2] = {ColourLine::create(out[0]),
+			     ColourLine::create(out[1])};
+	parent.antiColourLine()->setSourceNeighbours(col[0],col[1]);
+      }
+      else {
+	throw Exception() << "MamboDecayer::decay() can't make colour connections for "
+			  << "the two-body decay of the coloured particle " 
+			  << parent << Exception::eventerror;
+      }
+    }
+    else {
       for(int i=0;i < N;++i){ 
 	if(out[i]->data().iColour() == PDT::Colour3 ||
 	   out[i]->data().iColour() == PDT::Colour3bar) {
@@ -112,6 +137,7 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
 	}
       }
     }
+  }
   //incoming octet
   else if(parent.data().iColour() == PDT::Colour8) {
     PPtr pparent = const_ptr_cast<PPtr>(&parent);
