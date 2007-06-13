@@ -13,7 +13,7 @@
 using namespace Herwig;
 using namespace ThePEG;
 
-void SemiLeptonicDPiAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
+void SemiLeptonicDPiAnalysis::analyze(tEventPtr event, long, int loop, int state) {
   if ( loop > 0 || state != 0 || !event ) return;
   transform(event); 
   tPVector particles;
@@ -32,7 +32,7 @@ void SemiLeptonicDPiAnalysis::analyze(tEventPtr event, long ieve, int loop, int 
   analyze(particles);
 }
 
-LorentzRotation SemiLeptonicDPiAnalysis::transform(tEventPtr event) const {
+LorentzRotation SemiLeptonicDPiAnalysis::transform(tEventPtr) const {
   return LorentzRotation();
   // Return the Rotation to the frame in which you want to perform the analysis.
 }
@@ -109,11 +109,9 @@ void SemiLeptonicDPiAnalysis::analyze(tPPtr part) {
   *_mDpi[ix]+=mdpi;
 }
 
-void SemiLeptonicDPiAnalysis::persistentOutput(PersistentOStream & os) const {
-}
+void SemiLeptonicDPiAnalysis::persistentOutput(PersistentOStream &) const {}
 
-void SemiLeptonicDPiAnalysis::persistentInput(PersistentIStream & is, int) {
-}
+void SemiLeptonicDPiAnalysis::persistentInput(PersistentIStream &, int) {}
 
 ClassDescription<SemiLeptonicDPiAnalysis> SemiLeptonicDPiAnalysis::initSemiLeptonicDPiAnalysis;
 // Definition of the static class description member.

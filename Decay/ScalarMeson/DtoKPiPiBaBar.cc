@@ -1275,9 +1275,7 @@ double DtoKPiPiBaBar::me2(bool vertex, const int ichan,
   return real(amp*conj(amp));
 }
 
-void DtoKPiPiBaBar::dataBaseOutput(ofstream & output,
-					       bool header) const {
-}
+void DtoKPiPiBaBar::dataBaseOutput(ofstream &, bool) const {}
 
 Complex DtoKPiPiBaBar::F1(Energy2 s) const {
   // rho values

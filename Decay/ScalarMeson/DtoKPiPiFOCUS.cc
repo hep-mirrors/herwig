@@ -734,7 +734,7 @@ int DtoKPiPiFOCUS::modeNumber(bool & cc,const DecayMode & dm) const {
   return (npip==2&&nkm==1) ? 0 : -1;
 }
 
-double DtoKPiPiFOCUS::me2(bool vertex, const int ichan,const Particle & inpart,
+double DtoKPiPiFOCUS::me2(bool vertex, const int, const Particle & inpart,
 			  const ParticleVector & decay) const {
   useMe();
   // wavefunnction for the decaying particle
@@ -807,8 +807,7 @@ double DtoKPiPiFOCUS::me2(bool vertex, const int ichan,const Particle & inpart,
   return real(amp*conj(amp));
 }
 
-void DtoKPiPiFOCUS::dataBaseOutput(ofstream & os,bool header) const {
-}
+void DtoKPiPiFOCUS::dataBaseOutput(ofstream &, bool) const {}
 
 Complex DtoKPiPiFOCUS::F(Energy2 s) {
   double rhoa[2]={(1.-sqr(_mpi  +_mK)/s)*(1.-sqr(_mpi  -_mK)/s),

@@ -697,5 +697,4 @@ double DtoKPiPiE791::me2(bool vertex, const int ichan,
   return real(amp*conj(amp));
 }
 
-void DtoKPiPiE791::dataBaseOutput(ofstream & output, bool header) const {
-}
+void DtoKPiPiE791::dataBaseOutput(ofstream &, bool) const {}

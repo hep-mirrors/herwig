@@ -245,7 +245,7 @@ DtoPiPiPiFOCUS::DtoPiPiPiFOCUS() {
 
 }
 
-void DtoPiPiPiFOCUS::persistentOutput(PersistentOStream & os) const {
+void DtoPiPiPiFOCUS::persistentOutput(PersistentOStream & ) const {
 
 //   /**
 //    *  Parameters for the K-matrix
@@ -500,8 +500,7 @@ void DtoPiPiPiFOCUS::persistentOutput(PersistentOStream & os) const {
 
 }
 
-void DtoPiPiPiFOCUS::persistentInput(PersistentIStream & is, int) {
-}
+void DtoPiPiPiFOCUS::persistentInput(PersistentIStream &, int) {}
 
 ClassDescription<DtoPiPiPiFOCUS> DtoPiPiPiFOCUS::initDtoPiPiPiFOCUS;
 // Definition of the static class description member.
@@ -1020,13 +1019,10 @@ void DtoPiPiPiFOCUS::doinit() throw(InitException) {
 //   //@}
 
 }
-int DtoPiPiPiFOCUS::modeNumber(bool & cc,const DecayMode & dm) const {
-}
+int DtoPiPiPiFOCUS::modeNumber(bool &,const DecayMode & ) const {}
 
-double DtoPiPiPiFOCUS::me2(bool vertex, const int ichan,const Particle & part,
-			   const ParticleVector & decay) const {
-}
+double DtoPiPiPiFOCUS::me2(bool, const int, const Particle &,
+			   const ParticleVector & ) const {}
 
-void DtoPiPiPiFOCUS::dataBaseOutput(ofstream & os,bool header) const {
-}
+void DtoPiPiPiFOCUS::dataBaseOutput(ofstream &, bool) const {}
 

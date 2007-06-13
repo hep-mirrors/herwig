@@ -617,6 +617,5 @@ double DtoKPiPiMarkIII::me2(bool vertex, const int ichan,const Particle & inpart
   return real(amp*conj(amp));
 }
 
-void DtoKPiPiMarkIII::dataBaseOutput(ofstream & os,bool header) const {
-}
+void DtoKPiPiMarkIII::dataBaseOutput(ofstream &, bool) const {}
 

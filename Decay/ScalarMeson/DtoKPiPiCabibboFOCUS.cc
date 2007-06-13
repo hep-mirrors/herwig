@@ -514,7 +514,7 @@ int DtoKPiPiCabibboFOCUS::modeNumber(bool & cc,const DecayMode & dm) const {
   return abs(id0)==ParticleID::Dplus ? 0 : 1;
 }
 
-double DtoKPiPiCabibboFOCUS::me2(bool vertex, const int ichan,const Particle & inpart,
+double DtoKPiPiCabibboFOCUS::me2(bool vertex, const int,const Particle & inpart,
 				 const ParticleVector & decay) const {
   useMe();
   // wavefunnction for the decaying particle
@@ -565,5 +565,4 @@ double DtoKPiPiCabibboFOCUS::me2(bool vertex, const int ichan,const Particle & i
   return real(amp*conj(amp));
 }
 
-void DtoKPiPiCabibboFOCUS::dataBaseOutput(ofstream & os,bool header) const {
-}
+void DtoKPiPiCabibboFOCUS::dataBaseOutput(ofstream &, bool) const {}

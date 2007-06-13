@@ -981,12 +981,14 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 
 WidthCalculatorBasePtr 
 ExcitedLambdaStrongDecayer::threeBodyMEIntegrator(const DecayMode & ) const {
+  return WidthCalculatorBasePtr();
 }
 
 double ExcitedLambdaStrongDecayer::threeBodyMatrixElement(int ,Energy2 ,
 							  Energy2 ,Energy2 ,
 							  Energy2 ,Energy ,
 							  Energy ,Energy ) {
+  return -1;
 }
 
 void ExcitedLambdaStrongDecayer::dataBaseOutput(ofstream & , bool) const{
