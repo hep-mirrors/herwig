@@ -234,7 +234,7 @@ private:
    * @param id1 The PDG code of the first particle
    * @param id2 The PDG code of the first particle
    */
-  bool flavour(long id1, long id2) const;
+  bool sameQuarkFlavour(long id1, long id2) const;
    //@}
   
   /** Functions to set up colour flows and matrix elements. */

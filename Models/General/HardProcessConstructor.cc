@@ -447,8 +447,8 @@ void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
   }
   
   //for diagrams with different flavour incoming states
-  if( psa->iSpin() == psb->iSpin() && !flavour(psa->id(), psb->id()) &&
-      flavour(psa->id(), psd->id()) ) {
+  if( psa->iSpin() == psb->iSpin() && !sameQuarkFlavour(psa->id(), psb->id()) &&
+      sameQuarkFlavour(psa->id(), psd->id()) ) {
     swap(diag.outgoing.first, diag.outgoing.second);
     if(diag.channelType == HPDiagram::tChannel) {
       diag.ordered.second = !diag.ordered.second;
@@ -483,16 +483,21 @@ void HardProcessConstructor::assignToCF(HPDiagram & diag) {
 }
 
 void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
-  PDT::Colour offshell = diag.intermediate->iColour();
   vector<CFPair> cfv(1, make_pair(1, 1.));
-  
-  if(offshell == PDT::Colour0) {
-    if(getParticleData(diag.outgoing.first)->iColour() == PDT::Colour0) 
-      cfv[0].first = 1;
-    else if( !flavour(diag.incoming.first, diag.incoming.second) )
-      cfv[0].first = 2;
-    else
-      cfv[0].first = 3;
+  if(diag.intermediate->iColour() == PDT::Colour0) {
+    long id1 = abs(diag.incoming.first);
+    long id2 = abs(diag.incoming.second);
+    long id3 = abs(diag.outgoing.first);
+    long id4 = abs(diag.outgoing.second);
+    if( getParticleData(id1)->iColour() == PDT::Colour3 && 
+	getParticleData(id2)->iColour() == PDT::Colour3 &&
+	getParticleData(id3)->iColour() == PDT::Colour3 && 
+	getParticleData(id4)->iColour() == PDT::Colour3 ) {
+      if( !sameQuarkFlavour(diag.incoming.first, diag.incoming.second) )
+	cfv[0].first = 2;
+      else
+	cfv[0].first = 3;
+    }
   }
   diag.colourFlow = cfv;
 }
@@ -502,18 +507,25 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   PDT::Colour outa = getParticleData(diag.outgoing.first)->iColour();
   PDT::Colour outb = getParticleData(diag.outgoing.second)->iColour();
   vector<CFPair> cfv(1, make_pair(2, 1.));
-  
   if(offshell == PDT::Colour8 && (outa != outb) ) {
     cfv[0].first = 1;
     cfv.push_back(make_pair(2, -1.));
   }
-  else if(offshell == PDT::Colour0) {
-    if(outa == PDT::Colour0) 
+  else {
+    long id1 = abs(diag.incoming.first);
+    long id2 = abs(diag.incoming.second);
+    if( getParticleData(id1)->iColour() == PDT::Colour3 && 
+	getParticleData(id2)->iColour() == PDT::Colour3 &&
+	outa == PDT::Colour3 && outb == PDT::Colour3 ) {
+      if( offshell == PDT::Colour0 ) {
+	if( sameQuarkFlavour(id1, id2) ) 
+	  cfv[0].first = 4;
+	else
+	  cfv[0].first = 3;
+      }
+    }
+    if( outa == PDT::Colour0 || outb == PDT::Colour0 )
       cfv[0].first = 1;
-    else if( flavour(diag.incoming.first, diag.incoming.second) )
-      cfv[0].first = 4;
-    else
-      cfv[0].first = 3;
   }
   diag.colourFlow = cfv;
 }
@@ -544,7 +556,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       cfv[0].second = -prefact;
       cfv.push_back(make_pair(2, prefact));
     }
-    else if( !flavour(diag.incoming.first, diag.outgoing.first) )
+    else if( !sameQuarkFlavour(diag.incoming.first, diag.outgoing.first) )
       cfv[0] = make_pair(1, 1);
     else
       cfv[0] = make_pair(2, 1);
@@ -554,8 +566,8 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	outa == PDT::Colour0 || outb == PDT::Colour0 )
       cfv[0] = make_pair(1, 1);
     else {
-      if( flavour(diag.incoming.first, diag.incoming.second) ) {
-	if( flavour(diag.incoming.first, diag.outgoing.first) )
+      if( sameQuarkFlavour(diag.incoming.first, diag.incoming.second) ) {
+	if( sameQuarkFlavour(diag.incoming.first, diag.outgoing.first) )
 	  cfv[0] = make_pair(4, 1);
 	else
 	  cfv[0] = make_pair(2, 1);
@@ -657,8 +669,8 @@ getColourFactors(const tcPDVector & extpart, unsigned int & ncf) const {
       return the33bto88;
   }
   else {
-    if( flavour(extpart[0]->id(), extpart[1]->id()) &&
-	flavour(extpart[0]->id(), extpart[2]->id()) ) {
+    if( sameQuarkFlavour(extpart[0]->id(), extpart[1]->id()) &&
+	sameQuarkFlavour(extpart[0]->id(), extpart[2]->id()) ) {
       if(theAllDiagrams) ncf = 4;
       else ncf = 2;
       return the33bto33b;
@@ -706,7 +718,10 @@ string HardProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
   return classname;  
 }
 
-bool HardProcessConstructor::flavour(long id1, long id2) const {
+bool HardProcessConstructor::sameQuarkFlavour(long id1, long id2) const {
+  //if ids are not quarks or quark partners return false
+  if( getParticleData(abs(id1))->iColour() != PDT::Colour3 && 
+      getParticleData(abs(id2))->iColour() != PDT::Colour3 ) return false;
   long diff = abs(abs(id2) - abs(id1));
   if(diff == 0 || diff % 10 == 0) return true;
   return false;
