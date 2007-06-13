@@ -51,6 +51,8 @@ void HardProcessConstructor::doinit() throw(InitException) {
   Interfaced::doinit();
   theNout = theOutgoing.size();
   PDVector::size_type ninc = theIncoming.size();
+  // exit if nothing to do
+  if(theNout==0||ninc==0) return;
   //create vector of initial-state pairs
   for(PDVector::size_type i = 0; i < ninc; ++i) {
     for(PDVector::size_type j = 0; j < ninc; ++j) {
