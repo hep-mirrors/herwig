@@ -126,6 +126,24 @@ ParticleVector MamboDecayer::decay(const DecayMode & dm,
       }
     }
   }
+  else if(N==3 && parent.data().iColour() == PDT::Colour0&&
+	  out[0]->data().iColour() == PDT::Colour3 &&
+	  out[1]->data().iColour() == PDT::Colour3 &&
+	  out[2]->data().iColour() == PDT::Colour3) {
+    tColinePtr col[3] = {ColourLine::create(out[0]),
+			 ColourLine::create(out[1]),
+			 ColourLine::create(out[2])};
+    col[0]->setSourceNeighbours(col[1],col[2]);
+  }
+  else if(N==3 && parent.data().iColour() == PDT::Colour0&&
+	  out[0]->data().iColour() == PDT::Colour3bar &&
+	  out[1]->data().iColour() == PDT::Colour3bar &&
+	  out[2]->data().iColour() == PDT::Colour3bar) {
+    tColinePtr col[3] = {ColourLine::create(out[0],true),
+			 ColourLine::create(out[1],true),
+			 ColourLine::create(out[2],true)};
+    col[0]->setSinkNeighbours(col[1],col[2]);
+  }
   //everything else
   else  {
       for ( int i = 0; i < N; ++i ) { 	
