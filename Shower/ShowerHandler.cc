@@ -11,7 +11,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Handlers/XComb.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
@@ -136,7 +135,6 @@ void ShowerHandler::fillEventRecord() {
 } 
 
 void ShowerHandler::findShoweringParticles() {
-  Timer<1001> timer("ShowerHandler::findShoweringParticles");
   // clear the storage
   _hard=ShowerTreePtr();
   _decay.clear();
@@ -183,7 +181,6 @@ void ShowerHandler::findShoweringParticles() {
 }
 
 void ShowerHandler::cascade() {
-  Timer<1002> timer("ShowerHandler::cascade");
   // set the current step
   _current=currentStep();
   //  start of the try block for the whole showering process

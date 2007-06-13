@@ -102,11 +102,45 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
 	isPartner = true;
       if(isPartner) partners.push_back(*cjt);
     }
-    if (partners.empty())
-      throw Exception() << "Failed to make colour connections in " 
-			<< "PartnerFinder::setQCDInitialEvolutionScales"
-			<< (**cit)
-			<< Exception::eventerror;
+    if (partners.empty()) {
+      // special for RPV
+      tColinePtr col = CL(cit); 
+      if(FS(*cit)&&col&&col->sourceNeighbours().first) {
+	tColinePair cpair = col->sourceNeighbours();
+	for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	  if((FS(*cjt) && ( CL(cjt) == cpair.first || CL(cjt)  == cpair.second))||
+	     (             ACL(cjt) == cpair.first || ACL(cjt) == cpair.second )) {
+	    partners.push_back(*cjt);
+	  }
+	}
+      }
+      else if(col&&col->sinkNeighbours().first) {
+	throw Exception() << "PartnerFinder::setQCDInitialEvolutionScale() does not yet"
+			  << "support a colour line connected to a sink"
+			  << Exception::runerror;
+      }
+      col = ACL(cit);
+      if(FS(*cit)&&col&&col->sinkNeighbours().first) {
+	tColinePair cpair = col->sinkNeighbours();
+	for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	  if((FS(*cjt) && ( CL(cjt) == cpair.first || CL(cjt)  == cpair.second))||
+	     (             ACL(cjt) == cpair.first || ACL(cjt) == cpair.second )) {
+	    partners.push_back(*cjt);
+	  }
+	}
+      }
+      else if(col&&col->sourceNeighbours().first) {
+	throw Exception() << "PartnerFinder::setQCDInitialEvolutionScale() does not yet"
+			  << "support an anti-colour line connected to a source"
+			  << Exception::runerror;
+      }
+      if(partners.empty()) {
+	throw Exception() << "`Failed to make colour connections in " 
+			  << "PartnerFinder::setQCDInitialEvolutionScales"
+			  << (**cit)
+			  << Exception::eventerror;
+      }
+    }
     // In the case of more than one candidate colour partners,
     //               our treatment is based on two assumptions:
     //               1) the choice of which is the colour partner is done

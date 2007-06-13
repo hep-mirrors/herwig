@@ -58,6 +58,7 @@ ShowerTree::ShowerTree(tEHPtr eh,
   assert(original.size() == copy.size());
   for(unsigned int ix=0;ix<original.size();++ix) {
     ShowerParticlePtr temp=new_ptr(ShowerParticle(*copy[ix],1,ix>=2));
+    fixColour(temp);
     // incoming
     if(ix<2) {
       if(ix==0)      temp->x(x1);
@@ -125,6 +126,7 @@ ShowerTree::ShowerTree(PPtr in,tShowerHandlerPtr hand,
   colourIsolate(original,copy);
   // create the parent
   ShowerParticlePtr sparent(new_ptr(ShowerParticle(*copy[0],2,false)));
+  fixColour(sparent);
   _incomingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[0],copy[0],sparent))
  				  ,sparent));
   // return if not decayed
@@ -133,6 +135,7 @@ ShowerTree::ShowerTree(PPtr in,tShowerHandlerPtr hand,
   assert(copy.size() == original.size());
   for (unsigned int ix=1;ix<original.size();++ix) {
     ShowerParticlePtr stemp= new_ptr(ShowerParticle(*copy[ix],2,true));
+    fixColour(stemp);
     _outgoingLines.insert(make_pair(new_ptr(ShowerProgenitor(original[ix],copy[ix],
 							     stemp)),
 				    stemp));
@@ -185,6 +188,7 @@ void ShowerTree::colourIsolate(const vector<PPtr> & original,
   vector<pair<PPtr,PPtr> >::const_iterator cit,cjt;
   for(cit=particles.begin();cit!=particles.end();++cit)
     if((*cit).first->colourInfo()) (*cit).first->colourInfo(new_ptr(ColourBase()));
+  map<tColinePtr,tColinePtr> cmap;
   // make the colour connections of the copies
   for(cit=particles.begin();cit!=particles.end();++cit) {
     ColinePtr c1=ColinePtr(),newline=ColinePtr();
@@ -192,6 +196,7 @@ void ShowerTree::colourIsolate(const vector<PPtr> & original,
     if((*cit).second->colourLine()&&!(*cit).first->colourLine()) {
       c1=(*cit).second->colourLine();
       newline=ColourLine::create((*cit).first);
+      cmap[c1]=newline;
       for(cjt=particles.begin();cjt!=particles.end();++cjt) {
 	if(cjt==cit) continue;
 	if((*cjt).second->colourLine()==c1)
@@ -204,12 +209,47 @@ void ShowerTree::colourIsolate(const vector<PPtr> & original,
     if((*cit).second->antiColourLine()&&!(*cit).first->antiColourLine()) {
       c1=(*cit).second->antiColourLine();
       newline=ColourLine::create((*cit).first,true);
+      cmap[c1]=newline;
       for(cjt=particles.begin();cjt!=particles.end();++cjt) {
 	if(cjt==cit) continue;
 	if((*cjt).second->colourLine()==c1)
 	  newline->addColoured((*cjt).first);
 	else if((*cjt).second->antiColourLine()==c1)
 	  newline->addColoured((*cjt).first,true);
+      }
+    }
+  }
+  // sort out sinks and sources
+  for(cit=particles.begin();cit!=particles.end();++cit) {
+    tColinePtr cline[2];
+    tColinePair cpair;
+    for(unsigned int ix=0;ix<4;++ix) {
+      cline[0] = ix<2 ? cit->second->colourLine() : cit->second->antiColourLine();
+      cline[1] = ix<2 ? cit->first ->colourLine() : cit->first ->antiColourLine();
+      if(cline[0]) {
+	switch (ix) {
+	case 0: case 2:
+ 	  cpair = cline[0]->sinkNeighbours();
+	  break;
+	case 1: case 3:
+	  cpair = cline[0]->sourceNeighbours();
+	  break;
+	};
+      }
+      else {
+	cpair = make_pair(tColinePtr(),tColinePtr());
+      }
+      if(cline[0]&&cpair.first) {
+ 	map<tColinePtr,tColinePtr>::const_iterator 
+	  mit[2] = {cmap.find(cpair.first),cmap.find(cpair.second)};
+	if(mit[0]!=cmap.end()&&mit[1]!=cmap.end()) {
+	  if(ix==0||ix==2) {
+	    cline[1]->setSinkNeighbours(mit[0]->second,mit[1]->second);
+	  }
+	  else {
+	    cline[1]->setSourceNeighbours(mit[0]->second,mit[1]->second);
+	  }
+	}
       }
     }
   }
@@ -423,6 +463,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
     colourIsolate(original,copy);
     // make the new progenitor
     ShowerParticlePtr stemp=new_ptr(ShowerParticle(*copy[0],2,false));
+    fixColour(stemp);
     ShowerProgenitorPtr newprog=new_ptr(ShowerProgenitor(original[0],copy[0],stemp));
     _incomingLines.clear();
     _incomingLines.insert(make_pair(newprog,stemp));
@@ -482,6 +523,7 @@ void ShowerTree::decay(multimap<Energy,ShowerTreePtr> & decay,
       PPtr ncopy=new_ptr(Particle(*orig));
       //copy[0]->addChild(ncopy);
       ShowerParticlePtr nshow=new_ptr(ShowerParticle(*ncopy,2,true));
+      fixColour(nshow);
       ShowerProgenitorPtr prog=new_ptr(ShowerProgenitor(children[ix],
 							ncopy,nshow));
       _outgoingLines.insert(make_pair(prog,nshow));
@@ -647,6 +689,7 @@ void ShowerTree::clear() {
 	new_ptr(ShowerParticle(*cjt->first->copy(),
 			       cjt->first->progenitor()->perturbative(),
 			       cjt->first->progenitor()->isFinalState()));
+      fixColour(temp);
       temp->x(cjt->first->progenitor()->x());
       assert(parent);
       cjt->first->hasEmitted(false);

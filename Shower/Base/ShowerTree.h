@@ -251,6 +251,13 @@ protected:
    */
   void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
 
+  /**
+   *  After the creatation of a ShowerParticle make sure it is properly attached 
+   *  to its ColourLine
+   * @param part The particle
+   */
+  inline void fixColour(tShowerParticlePtr part);
+ 
 private:
   
   /**
