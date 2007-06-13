@@ -595,7 +595,29 @@ void ShowerTree::insertDecay(StepPtr pstep,bool ISR, bool) {
   }
   // get the decaying particles
   // make the copy
+  tColinePair cline=make_pair(copy->colourLine(),copy->antiColourLine());
   updateColour(copy);
+  // sort out sinks and sources if needed
+  if(cline.first) {
+    if(cline.first->sourceNeighbours().first) {
+      copy->colourLine()->setSourceNeighbours(cline.first->sourceNeighbours().first,
+					      cline.first->sourceNeighbours().second);
+    }
+    else if (cline.first->sinkNeighbours().first) {
+      copy->colourLine()->setSinkNeighbours(cline.first->sinkNeighbours().first,
+					    cline.first->sinkNeighbours().second);
+    }
+  }
+  if(cline.second) {
+    if(cline.second->sourceNeighbours().first) {
+      copy->antiColourLine()->setSourceNeighbours(cline.second->sourceNeighbours().first,
+						  cline.second->sourceNeighbours().second);
+    }
+    else if (cline.second->sinkNeighbours().first) {
+      copy->antiColourLine()->setSinkNeighbours(cline.second->sinkNeighbours().first,
+						cline.second->sinkNeighbours().second);
+    }
+  }
   // copy of the one from the hard process
   tParticleVector dpar=copy->parents();
   for(unsigned int ix=0;ix<dpar.size();++ix) dpar[ix]->abandonChild(copy);
