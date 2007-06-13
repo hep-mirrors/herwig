@@ -79,36 +79,41 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       tPPtr partner=pstep->antiColourNeighbour(*pit);
       if(partner) {
 	connected[iElement++]= partner;
-      } 
-      else {       // colour source : baryon-violating process
-
-	// this is not supported yet exit
-	throw Exception() << "Baryon number violating colour flows not yet implemented"
-			  << " if you are not trying to simulation a BNV process some"
-			  << "thing is probably wrong with the colour connections"
-			  << Exception::runerror;
-
-
-//         if((*pit)->colourLine()->sourceNeighbours() != tColinePair()) {
-// 	  tColinePair sourcePair = (*pit)->colourLine()->sourceNeighbours();
-// 	  tColinePtr intCL = tColinePtr();
-// 	  for(int i = 0; i < 2; ++i) {
-// 	    tColinePtr pLine = sourcePair.first; 
-// 	    if(i == 1) pLine = sourcePair.second;
-//             int saveNumElements = iElement;
-// 	    for(tPVector::const_iterator cit = pLine->coloured().begin(); 
-// 		cit != pLine->coloured().end(); ++cit )
-// 	      for(ParticleSet::const_iterator cjt = inputParticles.begin();
-// 		   cjt != inputParticles.end(); ++cjt)
-// 		if((*cit) == (*cjt)) connected[iElement++]= (*cit);      
-// 	    if(iElement == saveNumElements) intCL = pLine;
-// 	  }
-// 	  if(intCL && iElement == 2) {
-// 	    specialCase = true;
-// 	    pair<tPPtr,tPPtr> qp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
-// 	    quarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,qp)); 
-// 	  }
-//      }	
+      }        
+      // colour source : baryon-violating process
+      else {
+	if((*pit)->colourLine()->sourceNeighbours() != tColinePair()) {
+	  tColinePair sourcePair = (*pit)->colourLine()->sourceNeighbours();
+	  tColinePtr intCL = tColinePtr();
+	  for(int i = 0; i < 2; ++i) {
+	    tColinePtr pLine = i==0 ? sourcePair.first : sourcePair.second;
+            int saveNumElements = iElement;
+	    for(tPVector::const_iterator cit = pLine->coloured().begin(); 
+		cit != pLine->coloured().end(); ++cit ) {
+	      ParticleSet::const_iterator cjt = inputParticles.find(*cit);
+	      if(cjt!=inputParticles.end()) connected[iElement++]= (*cit);
+	    }      
+	    if(iElement == saveNumElements) intCL = pLine;
+	  }
+	  if(intCL && iElement == 2) {
+	    specialCase = true;
+	    pair<tPPtr,tPPtr> qp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
+	    quarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,qp)); 
+	  }
+	  else if(iElement != 3) {
+	    throw Exception() << "Colour connections fail in the hadronization for " 
+			      << **pit << "in ClusterFinder::formClusters"
+			      << " for a coloured particle."
+			      << " Failed to find particles from a source"
+			      << Exception::runerror;
+	  }
+	}
+	else {
+	  throw Exception() << "Colour connections fail in the hadronization for " 
+			    << **pit << "in ClusterFinder::formClusters for"
+			    << " a coloured particle"
+			    << Exception::runerror;
+	}
       }
     }
 
@@ -116,57 +121,55 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       tPPtr partner=pstep->colourNeighbour(*pit);
       if(partner) {
 	connected[iElement++]=partner; 
-      } 
-      else {       // colour sink : baryon-violating process
-
-	// this is not supported yet exit
-	throw Exception() << "Baryon number violating colour flows not yet implemented"
-			  << " if you are not trying to simulation a BNV process some"
-			  << "thing is probably wrong with the colour connections"
-			  << Exception::runerror;
-//         if((*pit)->antiColourLine()->sinkNeighbours() != tColinePair()) {
-// 	  tColinePair sinkPair = (*pit)->antiColourLine()->sinkNeighbours();
-// 	  tColinePtr intCL = tColinePtr();
-// 	  for(int i = 0; i < 2; ++i) {
-// 	    tColinePtr pLine = sinkPair.first; 
-// 	    if(i == 1) pLine = sinkPair.second;
-//             int saveNumElements = iElement;
-// 	    for(tPVector::const_iterator cit = pLine->antiColoured().begin();
-// 		cit != pLine->antiColoured().end(); ++cit) {
-// 	      for(ParticleSet::const_iterator cjt = inputParticles.begin();
-// 		  cjt != inputParticles.end(); ++cjt) {
-// 		if((*cit) == (*cjt)) connected[iElement++]= (*cit);      
-// 	      }
-// 	    }
-// 	    if(iElement == saveNumElements) intCL = pLine;
-// 	  }
-// 	  if(intCL && iElement == 2) {
-// 	    specialCase = true;
-// 	    pair<tPPtr,tPPtr> aqp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
-// 	    aQuarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,aqp));
-// 	  }
-// 	} 
+      }
+      // colour sink : baryon-violating process
+      else {
+        if((*pit)->antiColourLine()->sinkNeighbours() != tColinePair()) {
+	  tColinePair sinkPair = (*pit)->antiColourLine()->sinkNeighbours();
+	  tColinePtr intCL = tColinePtr();
+	  for(int i = 0; i < 2; ++i) {
+	    tColinePtr pLine = i==0 ? sinkPair.first : sinkPair.second;
+            int saveNumElements = iElement;
+	    for(tPVector::const_iterator cit = pLine->antiColoured().begin(); 
+		cit != pLine->antiColoured().end(); ++cit ) {
+	      ParticleSet::const_iterator cjt = inputParticles.find(*cit);
+	      if(cjt!=inputParticles.end()) connected[iElement++]= (*cit);
+	    }
+	    if(iElement == saveNumElements) intCL = pLine;
+	  }
+	  if(intCL && iElement == 2) {
+	    specialCase = true;
+	    pair<tPPtr,tPPtr> aqp=pair<tPPtr,tPPtr>(connected[0],connected[1]);
+	    aQuarkQuark.insert(pair<tColinePtr,pair<tPPtr,tPPtr> >(intCL,aqp));
+	  }
+	  else if( iElement !=3) {
+	    throw Exception() << "Colour connections fail in the hadronization for " 
+			      << **pit << "in ClusterFinder::formClusters for"
+			      << " an anti-coloured particle."
+			      << " Failed to find particles from a sink"
+			      << Exception::runerror;
+	  }
+	}
+	else {
+	  throw Exception() << "Colour connections fail in the hadronization for " 
+			    << **pit << "in ClusterFinder::formClusters for"
+			    << " an anti-coloured particle"
+			    << Exception::runerror;
+	}
       }
     }
 
     if(!specialCase) {
       // Tag the components of the found cluster as already examined.
-      for (int i=0; i<iElement; ++i) {
-	examinedSet.insert(connected[i]);        
-      }
-
+      for (int i=0; i<iElement; ++i) examinedSet.insert(connected[i]);
       // Create the cluster object with the colour connected particles
-      ClusterPtr cluPtr = new_ptr(Cluster(connected[0],
-					  connected[1],
+      ClusterPtr cluPtr = new_ptr(Cluster(connected[0],connected[1],
 					  connected[2]));
-
       clusters.push_back(cluPtr);
-
+      // add to the step
       pstep->addDecayProduct(connected[0], cluPtr);
       pstep->addDecayProduct(connected[1], cluPtr);
       if(connected[2]) pstep->addDecayProduct(connected[2], cluPtr);
-   
-
       // Check if any of the components is a beam remnant, and if this
       // is the case then inform the cluster.   
       // this will only work for baryon collisions  
@@ -177,12 +180,7 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       }
     }
 
-  } // end main loop over particles in the step.   
-  // Sanity checks (normally skipped) to see if the two special maps 
-  // are consistent, that is they have the same size, and for each 
-  // quark-quark pair there is a corresponding antiQuark-antiQuark pair,
-  // and, viceversa, for each antiQuark-antiQuark pair there is a 
-  // corresponding quark-quark pair.
+  }
 
   // Treat now the special cases, if any. The idea is to find for each pair
   // of quarks coming from a common colour source the corresponding pair of
@@ -214,10 +212,12 @@ void ClusterFinder::formClusters(tCollPtr collisionPtr, const StepPtr & pstep,
       }
       clusters.push_back(cluPtr1);
       clusters.push_back(cluPtr2);
-    } else {
-      throw Exception("ClusterFinder::formClusters : " 
-      "***Skip event: unable to match pairs in Baryon-violating processes***",
-		      Exception::eventerror);
+    } 
+    else {
+      throw Exception() << "ClusterFinder::formClusters : " 
+			<< "***Skip event: unable to match pairs in "
+			<< "Baryon-violating processes***"
+			<< Exception::eventerror;
     }
   }
 }
@@ -244,7 +244,6 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
     
     for(int i = 0; i<(*cluIter)->numComponents(); i++)
 	  vec[i] = (*cluIter)->particle(i);
-
     
     // Randomly selects two components to be considered as a (anti)diquark
     // and place them as the second and third element of  vec.
@@ -262,8 +261,6 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
     }
     
     long idDiquark = CheckId::diquarkId( vec[1]->id(), vec[2]->id() );
-   
-    
     // Create the new cluster (with two components) and assign to it the same
     // momentum and position of the original (with three components) one.
     // Furthermore, assign to the diquark component a momentum given by the
@@ -281,12 +278,13 @@ void ClusterFinder::reduceToTwoComponents(const StepPtr & pstep,
     // a similar situation), but it is not harmful.
     
     PPtr diquark = getParticle(idDiquark);
-    pstep->addDecayProduct(vec.begin()+1, vec.end(), diquark);
+    pstep->addDecayProduct(vec.begin()+1, vec.end(), diquark,false);
     ClusterPtr nclus = new_ptr(Cluster(vec[0],diquark));
     tParticleVector pv;
     pv.push_back(vec[0]);
     pv.push_back(diquark);
-    pstep->addDecayProduct(pv.begin(), pv.end(), nclus);
+    pv.push_back(*cluIter);
+    pstep->addDecayProduct(pv.begin(), pv.end(), nclus,false);
     nclus->set5Momentum((*cluIter)->momentum());
     nclus->setVertex((*cluIter)->vertex());
     for(int i = 0; i<nclus->numComponents(); i++) {

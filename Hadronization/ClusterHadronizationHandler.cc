@@ -166,7 +166,7 @@ handle(EventHandler & ch, const tPVector & tagged,
   tPVector partons=_partonSplitter->split(partonsA,pstep);
   // force a new step to form the clusters
   pstep = ch.newStep(this);
-  _clusterFinder->formClusters(ch.currentCollision(),pstep,partons,clusters); 
+  _clusterFinder->formClusters(ch.currentCollision(),pstep,partons,clusters);
   _clusterFinder->reduceToTwoComponents(pstep,clusters); 
   // perform colour reconnection if needed and then
   // decay the clusters into one hadron

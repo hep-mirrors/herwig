@@ -60,11 +60,13 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
     Energy Q0 = getParticleData(ParticleID::g)->constituentMass();
     ptrQ->scale(Q0*Q0);
     ptrQbar->scale(Q0*Q0);
-    pstep->addDecayProduct(*pit,ptrQ);
-    pstep->addDecayProduct(*pit,ptrQbar);
+    pstep->addDecayProduct(*pit,ptrQ,false);
+    (*pit)->colourLine()->addColoured(ptrQ);
+    pstep->addDecayProduct(*pit,ptrQbar,false);
+    (*pit)->antiColourLine()->addAntiColoured(ptrQbar);
     newtag.push_back(ptrQ);
     newtag.push_back(ptrQbar);
-    pstep->fixColourFlow();
+    //pstep->fixColourFlow();
   }
   return newtag;
 }
