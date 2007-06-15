@@ -331,6 +331,25 @@ private:
   unsigned int _hardVetoMode; 
 
   /**
+   * IntrinsicpT switch
+   */
+  unsigned int _intrinsicpT;
+
+  /**
+   * rms intrinsic pT of Gaussian distribution
+   */
+  Energy _iptrms;
+
+   /**
+   * Proportion of inverse quadratic intrinsic pT distribution
+   */
+  double _beta;
+
+  /**
+   * Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))
+   */
+  Energy _gamma;
+  /**
    *  The progenitor of the current shower
    */
   ShowerProgenitorPtr _progenitor;

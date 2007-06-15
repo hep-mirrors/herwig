@@ -25,12 +25,14 @@ using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
-     << _meCorrMode << _hardVetoMode;
+     << _meCorrMode << _hardVetoMode << _intrinsicpT 
+     << _iptrms << _beta << _gamma ;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
-     >> _meCorrMode >> _hardVetoMode;
+     >> _meCorrMode >> _hardVetoMode >> _intrinsicpT 
+     >> _iptrms >> _beta >> _gamma;
 }
 
 void Evolver::doinitrun() {
@@ -93,14 +95,42 @@ void Evolver::Init() {
   static SwitchOption HVFS
     (ifaceHardVetoMode,"HV-FS","only FS emissions vetoed", 3);
 
+  static Parameter<Evolver,unsigned int> ifaceIntrinsicpT
+    ("GenerateIntrinsicpT",
+     "Switch Intrinsic pT on or off",
+     &Evolver::_intrinsicpT, 0, 0, 1,
+     false, false, Interface::limited);
+   static Parameter<Evolver, Energy> ifaceiptrms
+    ("Iptrms",
+     "rms intrinsic pT of Gaussian distribution:2*(1-Beta)*exp(-sqr(intrinsicpT/iptrms))/sqr(iptrms)",
+     &Evolver::_iptrms, GeV, 0*GeV, 0*GeV, 1000000.0*GeV,
+     false, false, Interface::limited);
+  static Parameter<Evolver, double> ifacebeta
+    ("Beta",
+     "Proportion of inverse quadratic distribution. (1-Beta) is the proportion of Gaussian distribution",
+     &Evolver::_beta, 0, 0, 1,
+     false, false, Interface::limited);
+  static Parameter<Evolver, Energy> ifacegamma
+    ("Gamma",
+     "Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
+     &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
+     false, false, Interface::limited);
+ }
 }
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
+  if ( _intrinsicpT != 1 ) return;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     // only consider initial-state particles
     if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
     if(!particlesToShower[ix]->progenitor()->dataPtr()->coloured()) continue;
+  Energy ipt;
+    if(UseRandom::rnd() > _beta) {
+       ipt=_iptrms*sqrt(-log(UseRandom::rnd()));
+     }
+    else {
+       ipt=_gamma*tan(pi*UseRandom::rnd()/2.);}
     pair<Energy,double> pt = make_pair(0.,UseRandom::rnd()*2.*pi);
     _intrinsic[particlesToShower[ix]] = pt;
   }

@@ -1,4 +1,4 @@
-mkdir /Defaults/Handlers/Shower
+erwig/srcmkdir /Defaults/Handlers/Shower
 cd /Defaults/Handlers/Shower
 library HwShower.so
 #
@@ -44,6 +44,11 @@ set theShowerAlphaQCD:NPAlphaS 2
 set theShowerAlphaQCD:Qmin 0.630882*GeV
 set theShowerAlphaQCD:NumberOfLoops 3
 set theShowerAlphaQCD:InputOption 1
+set theEvolver:GenerateIntrinsicpT 1
+# Recommended: 2.1 GeV for Tevatron Z production and 2.3 GeV for Tevatron W production
+set theEvolver:Iptrms 2.1*GeV
+set theEvolver:Beta  0
+set theEvolver:Gamma 0*GeV
 #
 #############################################################
 # read this as a 2x3 matrix with FSR/ISR being the rows 
