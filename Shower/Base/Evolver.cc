@@ -116,7 +116,7 @@ void Evolver::Init() {
      &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
      false, false, Interface::limited);
  }
-}
+
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
