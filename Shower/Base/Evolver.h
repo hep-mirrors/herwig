@@ -191,6 +191,16 @@ protected:
   //@}
 
   /**
+   *  Switch for intrinsic pT
+   */
+  //@{
+  /**
+   * Any intrinsic pT?
+   */
+  inline bool ipTon() const;
+   //@}  
+
+  /**
    *  Switches for vetoing hard emissions
    */
   //@{

@@ -95,16 +95,20 @@ void Evolver::Init() {
   static SwitchOption HVFS
     (ifaceHardVetoMode,"HV-FS","only FS emissions vetoed", 3);
 
-  static Parameter<Evolver,unsigned int> ifaceIntrinsicpT
-    ("GenerateIntrinsicpT",
-     "Switch Intrinsic pT on or off",
-     &Evolver::_intrinsicpT, 0, 0, 1,
-     false, false, Interface::limited);
+  static Switch<Evolver, unsigned int> ifaceIntrinsicpT
+  ("GenerateIntrinsicpT",
+  "Switch Intrinsic pT on or off",
+   &Evolver::_intrinsicpT, 1, false, false); 
+   static SwitchOption ipToff
+ (ifaceIntrinsicpT,"ipT-off","Intrinsic pT off",0);  
+   static SwitchOption ipTon
+ (ifaceIntrinsicpT,"ipT-on","Intrinsic pT on",1);
    static Parameter<Evolver, Energy> ifaceiptrms
-    ("Iptrms",
+  ("Iptrms",
      "rms intrinsic pT of Gaussian distribution:2*(1-Beta)*exp(-sqr(intrinsicpT/iptrms))/sqr(iptrms)",
      &Evolver::_iptrms, GeV, 0*GeV, 0*GeV, 1000000.0*GeV,
      false, false, Interface::limited);
+
   static Parameter<Evolver, double> ifacebeta
     ("Beta",
      "Proportion of inverse quadratic distribution. (1-Beta) is the proportion of Gaussian distribution",
@@ -120,7 +124,7 @@ void Evolver::Init() {
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
-  if ( _intrinsicpT != 1 ) return;
+  if (!ipTon()) return;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     // only consider initial-state particles
     if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
