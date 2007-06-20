@@ -6,42 +6,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-			     
-inline ISGW2FormFactor::ISGW2FormFactor(const ISGW2FormFactor & x)
-  : ScalarFormFactor(x),_mdown(x._mdown),_mup(x._mup),
-    _mstrange(x._mstrange),_mcharm(x._mcharm),_mbottom(x._mbottom),
-    _beta1S0ud(x._beta1S0ud),_beta1S0us(x._beta1S0us),_beta1S0ss(x._beta1S0ss),
-    _beta1S0cu(x._beta1S0cu),_beta1S0cs(x._beta1S0cs),_beta1S0ub(x._beta1S0ub),
-    _beta1S0sb(x._beta1S0sb),_beta1S0cc(x._beta1S0cc),_beta1S0bc(x._beta1S0bc),
-    _beta3S1ud(x._beta3S1ud),_beta3S1us(x._beta3S1us),_beta3S1ss(x._beta3S1ss),
-    _beta3S1cu(x._beta3S1cu),_beta3S1cs(x._beta3S1cs),_beta3S1ub(x._beta3S1ub),
-    _beta3S1sb(x._beta3S1sb),_beta3S1cc(x._beta3S1cc),_beta3S1bc(x._beta3S1bc),
-    _beta1Pud(x._beta1Pud),_beta1Pus(x._beta1Pus),
-    _beta1Pss(x._beta1Pss),_beta1Pcu(x._beta1Pcu),_beta1Pcs(x._beta1Pcs),
-    _beta1Pub(x._beta1Pub),_beta1Psb(x._beta1Psb),_beta1Pcc(x._beta1Pcc),
-    _beta1Pbc(x._beta1Pbc),_alphamuQM(x._alphamuQM),
-    _CfDrho(x._CfDrho),
-    _CfDKstar(x._CfDKstar),_CfDsKstar(x._CfDsKstar),_CfDsphi(x._CfDsphi),
-    _CfBrho(x._CfBrho),_CfBDstar(x._CfBDstar),_CfBsKstar(x._CfBsKstar),
-    _CfBsDstar(x._CfBsDstar),_CfBcDstar(x._CfBcDstar),_CfBcpsi(x._CfBcpsi),
-    _CfBcBsstar(x._CfBcBsstar),_CfBcBstar(x._CfBcBstar), _thetaeta(x._thetaeta)
-{
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      _mquark[ix] = x._mquark[ix];
-      _alphaQ[ix] = x._alphaQ[ix];
-      for(iy=0;iy<5;++iy)
-	{
-	  _beta1S0[ix][iy]=x._beta1S0[ix][iy];
-	  _beta3S1[ix][iy]=x._beta3S1[ix][iy];
-	  _beta1P[ ix][iy]=x._beta1P[ ix][iy];
-	  _mass1S0[ix][iy]=x._mass1S0[ix][iy];
-	  _massPoh[ix][iy]=x._massPoh[ix][iy];
-	  _massPth[ix][iy]=x._massPth[ix][iy]; 
-	}
-    }
-}
 
 inline IBPtr ISGW2FormFactor::clone() const {
   return new_ptr(*this);
@@ -51,54 +15,14 @@ inline IBPtr ISGW2FormFactor::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void ISGW2FormFactor::doupdate() throw(UpdateException) {
-  ScalarFormFactor::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void ISGW2FormFactor::dofinish() {
-  ScalarFormFactor::dofinish();
-}
-
-inline void ISGW2FormFactor::doinitrun() {
-  ScalarFormFactor::doinitrun();
-}
-
-inline void ISGW2FormFactor::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  ScalarFormFactor::rebind(trans);
-}
-
-inline IVector ISGW2FormFactor::getReferences() {
-  IVector ret = ScalarFormFactor::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
-
-inline double ISGW2FormFactor::alphaS(Energy massq, Energy2 scale) const
-{
+inline double ISGW2FormFactor::alphaS(Energy massq, Energy2 scale) const {
   Energy lqcd2(0.04*GeV2);
-  double nflav(4);
+  double nflav(4.);
   double output(_alphamuQM);
-  if (scale>0.36*GeV2) 
-    {
-      if(massq<_mcharm+0.03*GeV){nflav=3.0;}
-      output = 12.*pi/(33.-2.*nflav)/log(scale/lqcd2);
-    }
+  if (scale>0.36*GeV2) {
+    if(massq<_mcharm+0.03*GeV) nflav=3.0;
+    output = 12.*pi/(33.-2.*nflav)/log(scale/lqcd2);
+  }
   return output;
 }
 }

@@ -302,28 +302,28 @@ ISGW2FormFactor::ISGW2FormFactor() {
   addFormFactor( 411,-10311,0,-1, 4, 3);
   // set the initial number of modes
   initialModes(numberOfFactors());
-  // zero the variables
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      _mquark[ix]=0.;_alphaQ[ix]=0.;
-      for(iy=0;iy<5;++iy)
-	{
-	  _beta1S0[ix][iy]=0.;_mass1S0[ix][iy]=0.;
-	  _beta3S1[ix][iy]=0.;_beta1P[ ix][iy]=0.;
-	  _massPoh[ix][iy]=0.;_massPth[ix][iy]=0.;
-	}
-    }
 }			     
 
 inline void ISGW2FormFactor::doinit() throw(InitException) {
   ScalarFormFactor::doinit();
   // set up the quark masses
+  _mquark.resize(5);
   _mquark[0]=_mdown;
   _mquark[1]=_mup;
   _mquark[2]=_mstrange;
   _mquark[3]=_mcharm;
   _mquark[4]=_mbottom;
+  // value of alpha_S at the quark masses
+  _alphaQ.resize(5);
+  for(unsigned int ix=0;ix<5;++ix) {
+    _alphaQ[ix]=alphaS(_mquark[ix],sqr(_mquark[ix]));
+  }
+  _beta1S0.resize(5,vector<Energy>(5));
+  _mass1S0.resize(5,vector<Energy>(5));
+  _beta3S1.resize(5,vector<Energy>(5));
+  _beta1P .resize(5,vector<Energy>(5));
+  _massPoh.resize(5,vector<Energy>(5));
+  _massPth.resize(5,vector<Energy>(5));
   // set up the beta values
   _beta1S0[0][0] = _beta1S0ud;_beta3S1[0][0] = _beta3S1ud;_beta1P[0][0] = _beta1Pud;
   _beta1S0[1][0] = _beta1S0ud;_beta3S1[1][0] = _beta3S1ud;_beta1P[1][0] = _beta1Pud;
@@ -350,91 +350,152 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
   _beta1S0[2][4] = _beta1S0sb;_beta3S1[2][4] = _beta3S1sb;_beta1P[2][4] = _beta1Psb;
   _beta1S0[3][4] = _beta1S0bc;_beta3S1[3][4] = _beta3S1bc;_beta1P[3][4] = _beta1Pbc;
   _beta1S0[4][4] = 0.0       ;_beta3S1[4][4] = 0.0       ;_beta1P[4][4] = 0.0      ;
-  // value of alpha_S at the quark masses
-  for(unsigned int ix=0;ix<5;++ix)
-    {_alphaQ[ix]=alphaS(_mquark[ix],_mquark[ix]*_mquark[ix]);}
   // set up the values of mbar
-  // 1S0
-  _mass1S0[0][0] = 0.75*getParticleData(113)->mass()+0.25*getParticleData(111)->mass();
-  _mass1S0[1][0] = 0.75*getParticleData(213)->mass()+0.25*getParticleData(211)->mass();
-  _mass1S0[2][0] = 0.75*getParticleData(313)->mass()+0.25*getParticleData(311)->mass();
-  _mass1S0[3][0] = 0.75*getParticleData(413)->mass()+0.25*getParticleData(411)->mass();
-  _mass1S0[4][0] = 0.75*getParticleData(513)->mass()+0.25*getParticleData(511)->mass();
-  _mass1S0[0][1] = 0.75*getParticleData(213)->mass()+0.25*getParticleData(211)->mass();
-  _mass1S0[1][1] = 0.75*getParticleData(113)->mass()+0.25*getParticleData(111)->mass();
-  _mass1S0[2][1] = 0.75*getParticleData(323)->mass()+0.25*getParticleData(321)->mass();
-  _mass1S0[3][1] = 0.75*getParticleData(423)->mass()+0.25*getParticleData(421)->mass();
-  _mass1S0[4][1] = 0.75*getParticleData(523)->mass()+0.25*getParticleData(521)->mass();
-  _mass1S0[0][2] = 0.75*getParticleData(313)->mass()+0.25*getParticleData(311)->mass();
-  _mass1S0[1][2] = 0.75*getParticleData(323)->mass()+0.25*getParticleData(321)->mass();
-  _mass1S0[2][2] = 0.75*getParticleData(333)->mass()+0.25*getParticleData(331)->mass();
-  _mass1S0[3][2] = 0.75*getParticleData(433)->mass()+0.25*getParticleData(431)->mass(); 
-  _mass1S0[4][2] = 0.75*getParticleData(533)->mass()+0.25*getParticleData(531)->mass(); 
-  _mass1S0[0][3] = 0.75*getParticleData(413)->mass()+0.25*getParticleData(411)->mass(); 
-  _mass1S0[1][3] = 0.75*getParticleData(423)->mass()+0.25*getParticleData(421)->mass();
-  _mass1S0[2][3] = 0.75*getParticleData(433)->mass()+0.25*getParticleData(431)->mass();
-  _mass1S0[3][3] = 0.75*getParticleData(443)->mass()+0.25*getParticleData(441)->mass();
-  _mass1S0[4][3] = 0.75*getParticleData(543)->mass()+0.25*getParticleData(541)->mass();
-  _mass1S0[0][4] = 0.75*getParticleData(513)->mass()+0.25*getParticleData(511)->mass(); 
-  _mass1S0[1][4] = 0.75*getParticleData(523)->mass()+0.25*getParticleData(521)->mass();
-  _mass1S0[2][4] = 0.75*getParticleData(533)->mass()+0.25*getParticleData(531)->mass();
-  _mass1S0[3][4] = 0.75*getParticleData(543)->mass()+0.25*getParticleData(541)->mass();
-  _mass1S0[4][4] = 0.75*getParticleData(553)->mass()+0.25*getParticleData(551)->mass();
-  //  1p 1/2
-  _massPoh[0][0]=.75*getParticleData(20113)->mass()+.25*getParticleData(10111)->mass();
-  _massPoh[1][0]=.75*getParticleData(20213)->mass()+.25*getParticleData(10211)->mass();
-  _massPoh[2][0]=.75*getParticleData(20313)->mass()+.25*getParticleData(10311)->mass();
-  _massPoh[3][0]=.75*getParticleData(20413)->mass()+.25*getParticleData(10411)->mass();
-  _massPoh[4][0]=.75*getParticleData(20513)->mass()+.25*getParticleData(10511)->mass();
-  _massPoh[0][1]=.75*getParticleData(20213)->mass()+.25*getParticleData(10211)->mass();
-  _massPoh[1][1]=.75*getParticleData(20113)->mass()+.25*getParticleData(10111)->mass();
-  _massPoh[2][1]=.75*getParticleData(20323)->mass()+.25*getParticleData(10321)->mass();
-  _massPoh[3][1]=.75*getParticleData(20423)->mass()+.25*getParticleData(10421)->mass();
-  _massPoh[4][1]=.75*getParticleData(20523)->mass()+.25*getParticleData(10521)->mass();
-  _massPoh[0][2]=.75*getParticleData(20313)->mass()+.25*getParticleData(10311)->mass();
-  _massPoh[1][2]=.75*getParticleData(20323)->mass()+.25*getParticleData(10321)->mass();
-  _massPoh[2][2]=.75*getParticleData(20333)->mass()+.25*getParticleData(10331)->mass();
-  _massPoh[3][2]=.75*getParticleData(20433)->mass()+.25*getParticleData(10431)->mass();
-  _massPoh[4][2]=.75*getParticleData(20533)->mass()+.25*getParticleData(10531)->mass();
-  _massPoh[0][3]=.75*getParticleData(20413)->mass()+.25*getParticleData(10411)->mass();
-  _massPoh[1][3]=.75*getParticleData(20423)->mass()+.25*getParticleData(10421)->mass();
-  _massPoh[2][3]=.75*getParticleData(20433)->mass()+.25*getParticleData(10431)->mass();
-  _massPoh[3][3]=.75*getParticleData(20443)->mass()+.25*getParticleData(10441)->mass();
-  _massPoh[4][3]=.75*getParticleData(20543)->mass()+.25*getParticleData(10541)->mass();
-  _massPoh[0][4]=.75*getParticleData(20513)->mass()+.25*getParticleData(10511)->mass();
-  _massPoh[1][4]=.75*getParticleData(20523)->mass()+.25*getParticleData(10521)->mass();
-  _massPoh[2][4]=.75*getParticleData(20533)->mass()+.25*getParticleData(10531)->mass();
-  _massPoh[3][4]=.75*getParticleData(20543)->mass()+.25*getParticleData(10541)->mass();
-  _massPoh[4][4]=.75*getParticleData(20553)->mass()+.25*getParticleData(10551)->mass();
-  //  1p 3/2
-  _massPth[0][0]=.625*getParticleData(115)->mass()+.375*getParticleData(10113)->mass();
-  _massPth[1][0]=.625*getParticleData(215)->mass()+.375*getParticleData(10213)->mass();
-  _massPth[2][0]=.625*getParticleData(315)->mass()+.375*getParticleData(10313)->mass();
-  _massPth[3][0]=.625*getParticleData(415)->mass()+.375*getParticleData(10413)->mass();
-  _massPth[4][0]=.625*getParticleData(515)->mass()+.375*getParticleData(10513)->mass();
-  _massPth[0][1]=.625*getParticleData(215)->mass()+.375*getParticleData(10213)->mass();
-  _massPth[1][1]=.625*getParticleData(115)->mass()+.375*getParticleData(10113)->mass();
-  _massPth[2][1]=.625*getParticleData(325)->mass()+.375*getParticleData(10323)->mass();
-  _massPth[3][1]=.625*getParticleData(425)->mass()+.375*getParticleData(10423)->mass();
-  _massPth[4][1]=.625*getParticleData(525)->mass()+.375*getParticleData(10523)->mass();
-  _massPth[0][2]=.625*getParticleData(315)->mass()+.375*getParticleData(10313)->mass();
-  _massPth[1][2]=.625*getParticleData(325)->mass()+.375*getParticleData(10323)->mass();
-  _massPth[2][2]=.625*getParticleData(335)->mass()+.375*getParticleData(10333)->mass();
-  _massPth[3][2]=.625*getParticleData(435)->mass()+.375*getParticleData(10433)->mass();
-  _massPth[4][2]=.625*getParticleData(535)->mass()+.375*getParticleData(10533)->mass();
-  _massPth[0][3]=.625*getParticleData(415)->mass()+.375*getParticleData(10413)->mass();
-  _massPth[1][3]=.625*getParticleData(425)->mass()+.375*getParticleData(10423)->mass();
-  _massPth[2][3]=.625*getParticleData(435)->mass()+.375*getParticleData(10433)->mass();
-  _massPth[3][3]=.625*getParticleData(445)->mass()+.375*getParticleData(10443)->mass();
-  _massPth[4][3]=.625*getParticleData(545)->mass()+.375*getParticleData(10543)->mass();
-  _massPth[0][4]=.625*getParticleData(515)->mass()+.375*getParticleData(10513)->mass();
-  _massPth[1][4]=.625*getParticleData(525)->mass()+.375*getParticleData(10523)->mass();
-  _massPth[2][4]=.625*getParticleData(535)->mass()+.375*getParticleData(10533)->mass();
-  _massPth[3][4]=.625*getParticleData(545)->mass()+.375*getParticleData(10543)->mass();
-  _massPth[4][4]=.625*getParticleData(555)->mass()+.375*getParticleData(10553)->mass();
+  // get the particle data objects
+  tcPDPtr p1S0[5][5],p3S1[5][5];
+  p1S0[0][0] = getParticleData(111); p3S1[0][0] = getParticleData(113);
+  p1S0[1][0] = getParticleData(211); p3S1[1][0] = getParticleData(213);
+  p1S0[2][0] = getParticleData(311); p3S1[2][0] = getParticleData(313);
+  p1S0[3][0] = getParticleData(411); p3S1[3][0] = getParticleData(413);
+  p1S0[4][0] = getParticleData(511); p3S1[4][0] = getParticleData(513);
+  p1S0[0][1] = getParticleData(211); p3S1[0][1] = getParticleData(213);
+  p1S0[1][1] = getParticleData(111); p3S1[1][1] = getParticleData(113);
+  p1S0[2][1] = getParticleData(321); p3S1[2][1] = getParticleData(323);
+  p1S0[3][1] = getParticleData(421); p3S1[3][1] = getParticleData(423);
+  p1S0[4][1] = getParticleData(521); p3S1[4][1] = getParticleData(523);
+  p1S0[0][2] = getParticleData(311); p3S1[0][2] = getParticleData(313);
+  p1S0[1][2] = getParticleData(321); p3S1[1][2] = getParticleData(323);
+  p1S0[2][2] = getParticleData(331); p3S1[2][2] = getParticleData(333);
+  p1S0[3][2] = getParticleData(431); p3S1[3][2] = getParticleData(433);
+  p1S0[4][2] = getParticleData(531); p3S1[4][2] = getParticleData(533);
+  p1S0[0][3] = getParticleData(411); p3S1[0][3] = getParticleData(413);
+  p1S0[1][3] = getParticleData(421); p3S1[1][3] = getParticleData(423);
+  p1S0[2][3] = getParticleData(431); p3S1[2][3] = getParticleData(433);
+  p1S0[3][3] = getParticleData(441); p3S1[3][3] = getParticleData(443);
+  p1S0[4][3] = getParticleData(541); p3S1[4][3] = getParticleData(543);
+  p1S0[0][4] = getParticleData(511); p3S1[0][4] = getParticleData(513);
+  p1S0[1][4] = getParticleData(521); p3S1[1][4] = getParticleData(523);
+  p1S0[2][4] = getParticleData(531); p3S1[2][4] = getParticleData(533);
+  p1S0[3][4] = getParticleData(541); p3S1[3][4] = getParticleData(543);
+  p1S0[4][4] = getParticleData(551); p3S1[4][4] = getParticleData(553);
+  tcPDPtr p3P0[5][5],p3P1[5][5],p3P2[5][5],p1P1[5][5];
+  p3P0[0][0] = getParticleData(10111); p3P1[0][0] = getParticleData(20113);
+  p3P0[1][0] = getParticleData(10211); p3P1[1][0] = getParticleData(20213);
+  p3P0[2][0] = getParticleData(10311); p3P1[2][0] = getParticleData(20313);
+  p3P0[3][0] = getParticleData(10411); p3P1[3][0] = getParticleData(20413);
+  p3P0[4][0] = getParticleData(10511); p3P1[4][0] = getParticleData(20513);
+  p3P0[0][1] = getParticleData(10211); p3P1[0][1] = getParticleData(20213);
+  p3P0[1][1] = getParticleData(10111); p3P1[1][1] = getParticleData(20113);
+  p3P0[2][1] = getParticleData(10321); p3P1[2][1] = getParticleData(20323);
+  p3P0[3][1] = getParticleData(10421); p3P1[3][1] = getParticleData(20423);
+  p3P0[4][1] = getParticleData(10521); p3P1[4][1] = getParticleData(20523);
+  p3P0[0][2] = getParticleData(10311); p3P1[0][2] = getParticleData(20313);
+  p3P0[1][2] = getParticleData(10321); p3P1[1][2] = getParticleData(20323);
+  p3P0[2][2] = getParticleData(10331); p3P1[2][2] = getParticleData(20333);
+  p3P0[3][2] = getParticleData(10431); p3P1[3][2] = getParticleData(20433);
+  p3P0[4][2] = getParticleData(10531); p3P1[4][2] = getParticleData(20533);
+  p3P0[0][3] = getParticleData(10411); p3P1[0][3] = getParticleData(20413);
+  p3P0[1][3] = getParticleData(10421); p3P1[1][3] = getParticleData(20423);
+  p3P0[2][3] = getParticleData(10431); p3P1[2][3] = getParticleData(20433);
+  p3P0[3][3] = getParticleData(10441); p3P1[3][3] = getParticleData(20443);
+  p3P0[4][3] = getParticleData(10541); p3P1[4][3] = getParticleData(20543);
+  p3P0[0][4] = getParticleData(10511); p3P1[0][4] = getParticleData(20513);
+  p3P0[1][4] = getParticleData(10521); p3P1[1][4] = getParticleData(20523);
+  p3P0[2][4] = getParticleData(10531); p3P1[2][4] = getParticleData(20533);
+  p3P0[3][4] = getParticleData(10541); p3P1[3][4] = getParticleData(20543);
+  p3P0[4][4] = getParticleData(10551); p3P1[4][4] = getParticleData(20553);
+  p1P1[0][0]=getParticleData(10113); p3P2[0][0]=getParticleData(115);
+  p1P1[1][0]=getParticleData(10213); p3P2[1][0]=getParticleData(215);
+  p1P1[2][0]=getParticleData(10313); p3P2[2][0]=getParticleData(315);
+  p1P1[3][0]=getParticleData(10413); p3P2[3][0]=getParticleData(415);
+  p1P1[4][0]=getParticleData(10513); p3P2[4][0]=getParticleData(515);
+  p1P1[0][1]=getParticleData(10213); p3P2[0][1]=getParticleData(215);
+  p1P1[1][1]=getParticleData(10113); p3P2[1][1]=getParticleData(115);
+  p1P1[2][1]=getParticleData(10323); p3P2[2][1]=getParticleData(325);
+  p1P1[3][1]=getParticleData(10423); p3P2[3][1]=getParticleData(425);
+  p1P1[4][1]=getParticleData(10523); p3P2[4][1]=getParticleData(525);
+  p1P1[0][2]=getParticleData(10313); p3P2[0][2]=getParticleData(315);
+  p1P1[1][2]=getParticleData(10323); p3P2[1][2]=getParticleData(325);
+  p1P1[2][2]=getParticleData(10333); p3P2[2][2]=getParticleData(335);
+  p1P1[3][2]=getParticleData(10433); p3P2[3][2]=getParticleData(435);
+  p1P1[4][2]=getParticleData(10533); p3P2[4][2]=getParticleData(535);
+  p1P1[0][3]=getParticleData(10413); p3P2[0][3]=getParticleData(415);
+  p1P1[1][3]=getParticleData(10423); p3P2[1][3]=getParticleData(425);
+  p1P1[2][3]=getParticleData(10433); p3P2[2][3]=getParticleData(435);
+  p1P1[3][3]=getParticleData(10443); p3P2[3][3]=getParticleData(445);
+  p1P1[4][3]=getParticleData(10543); p3P2[4][3]=getParticleData(545);
+  p1P1[0][4]=getParticleData(10513); p3P2[0][4]=getParticleData(515);
+  p1P1[1][4]=getParticleData(10523); p3P2[1][4]=getParticleData(525);
+  p1P1[2][4]=getParticleData(10533); p3P2[2][4]=getParticleData(535);
+  p1P1[3][4]=getParticleData(10543); p3P2[3][4]=getParticleData(545);
+  p1P1[4][4]=getParticleData(10553); p3P2[4][4]=getParticleData(555);
+  // calculate the masses
+  for(unsigned int ix=0;ix<5;++ix) {
+    for(unsigned int iy=0;iy<5;++iy) {
+      Energy m1S0,m3S1,m3P0,m3P1,m3P2,m1P1;
+      if(!p1S0[ix][iy]) {
+	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
+			   << "ParticleData object for 1S0 " << ix << " " << iy 
+			   << " setting mass to zero\n";
+	m1S0 = 0.;
+      }
+      else {
+	m1S0 = p1S0[ix][iy]->mass();
+      }
+      if(!p3S1[ix][iy]) {
+	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
+			   << "ParticleData object for 3S1 " << ix << " " << iy 
+			   << " setting mass to zero\n";
+	m3S1 = 0.;
+      }
+      else {
+	m3S1 = p3S1[ix][iy]->mass();
+      }
+      if(!p3P0[ix][iy]) {
+	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
+			   << "ParticleData object for 3P0 " << ix << " " << iy 
+			   << " setting mass to zero\n";
+	m3P0 = 0.;
+      }
+      else {
+	m3P0 = p3P0[ix][iy]->mass();
+      }
+      if(!p3P1[ix][iy]) {
+	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
+			   << "ParticleData object for 3P1 " << ix << " " << iy 
+			   << " setting mass to zero\n";
+	m3P1 = 0.;
+      }
+      else {
+	m3P1 = p3P1[ix][iy]->mass();
+      }
+      if(!p3P2[ix][iy]) {
+	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
+			   << "ParticleData object for 3P2 " << ix << " " << iy 
+			   << " setting mass to zero\n";
+	m3P2 = 0.;
+      }
+      else {
+	m3P2 = p3P2[ix][iy]->mass();
+      }
+      if(!p1P1[ix][iy]) {
+	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
+			   << "ParticleData object for 1P1 " << ix << " " << iy 
+			   << " setting mass to zero\n";
+	m1P1 = 0.;
+      }
+      else {
+	m1P1 = p1P1[ix][iy]->mass();
+      }
+      // 1S0
+      _mass1S0[ix][iy] = 0.75 *m3S1+0.25 *m1S0;
+      //  1p 1/2
+      _massPoh[ix][iy] = 0.75 *m3P1+0.25 *m3P0;
+      //  1p 3/2
+      _massPth[ix][iy] = 0.625*m3P2+0.375*m1P1;
+    }
+  }
 }
-
-ISGW2FormFactor::~ISGW2FormFactor() {}
 
 void ISGW2FormFactor::persistentOutput(PersistentOStream & os) const {
   os <<_mdown << _mup << _mstrange << _mcharm << _mbottom << _beta1S0ud 
@@ -445,15 +506,8 @@ void ISGW2FormFactor::persistentOutput(PersistentOStream & os) const {
      << _beta1Pcu  << _beta1Pcs  << _beta1Pub  << _beta1Psb  << _beta1Pcc << _beta1Pbc
      << _alphamuQM  << _CfDrho << _CfDKstar << _CfDsKstar << _CfDsphi 
      << _CfBrho << _CfBDstar << _CfBsKstar << _CfBsDstar << _CfBcDstar << _CfBcpsi
-     << _CfBcBsstar << _CfBcBstar << _thetaeta;
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      os  << _mquark[ix] << _alphaQ[ix];
-      for(iy=0;iy<5;++iy)
-	{os << _beta1S0[ix][iy] << _mass1S0[ix][iy] << _beta3S1[ix][iy]
-	    << _beta1P[ ix][iy] << _massPoh[ix][iy] << _massPth[ix][iy];}
-    }
+     << _CfBcBsstar << _CfBcBstar << _thetaeta << _mquark << _alphaQ << _beta1S0 
+     << _mass1S0 << _beta3S1 << _beta1P << _massPoh << _massPth;
 }
 
 void ISGW2FormFactor::persistentInput(PersistentIStream & is, int) {
@@ -465,15 +519,8 @@ void ISGW2FormFactor::persistentInput(PersistentIStream & is, int) {
      >> _beta1Pcu  >> _beta1Pcs  >> _beta1Pub  >> _beta1Psb  >> _beta1Pcc >> _beta1Pbc
      >> _alphamuQM >> _CfDrho >> _CfDKstar >> _CfDsKstar >> _CfDsphi 
      >> _CfBrho >> _CfBDstar >> _CfBsKstar >> _CfBsDstar >> _CfBcDstar >> _CfBcpsi
-     >> _CfBcBsstar >> _CfBcBstar >> _thetaeta;
-  unsigned int ix,iy;
-  for(ix=0;ix<5;++ix)
-    {
-      is  >> _mquark[ix] >> _alphaQ[ix];
-      for(iy=0;iy<5;++iy)
-	{is >> _beta1S0[ix][iy] >> _mass1S0[ix][iy] >> _beta3S1[ix][iy]
-	    >> _beta1P[ ix][iy] >> _massPoh[ix][iy] >> _massPth[ix][iy];}
-    }
+     >> _CfBcBsstar >> _CfBcBstar >> _thetaeta >> _mquark >> _alphaQ >> _beta1S0 
+     >> _mass1S0 >> _beta3S1 >> _beta1P >> _massPoh >> _massPth;
 }
 
 ClassDescription<ISGW2FormFactor> ISGW2FormFactor::initISGW2FormFactor;
@@ -791,23 +838,34 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     // set the relativistic correction parameter
     // decaying b
     if(ifl0==5) {
-      if(ifls<3)
-	{if(ifl1<3){Cf=_CfBrho;}else {Cf=_CfBDstar;}}
-      else if(ifls==3)
-	{if(ifl1==4){Cf=_CfBsDstar;}else{Cf=_CfBsKstar;}}
-      else if(ifls==4)
-	{if(ifl1==4){Cf=_CfBcpsi;}else {Cf=_CfBcDstar;}}
+      if(ifls<3) {
+	if(ifl1<3) Cf= _CfBrho;
+	else       Cf= _CfBDstar;
+      }
+      else if(ifls==3) {
+	if(ifl1==4) Cf=_CfBsDstar; 
+	else        Cf=_CfBsKstar;
+      }
+      else if(ifls==4) {
+	if(ifl1==4) Cf=_CfBcpsi;
+	else        Cf=_CfBcDstar;
+      }
     }
     // decaying D
-    else if(ifl0==4)
-      {
-	if(ifls<3)
-	  {if(ifl1<3){Cf=_CfDrho;}else {Cf=_CfDKstar;}}
-	else if(ifls==3)
-	  {if(ifl1<3){Cf=_CfDsKstar;}else{Cf=_CfDsphi;}}
-	else if(ifls==5)
-	  {if(ifl1<3){Cf=_CfBcBstar;}else{Cf=_CfBcBsstar;}}
-      } 
+    else if(ifl0==4) {
+      if(ifls<3) {
+	if(ifl1<3) Cf=_CfDrho;
+	else       Cf=_CfDKstar;
+      }
+      else if(ifls==3) {
+	if(ifl1<3) Cf=_CfDsKstar;
+	else       Cf=_CfDsphi;
+      }
+      else if(ifls==5) {
+	if(ifl1<3) Cf=_CfBcBstar; 
+	else       Cf=_CfBcBsstar;
+      }
+    } 
   }
   else if(ispin==10&&jspin==0) {
     betaX=_beta1P[ifl1-1][ifls-1];
@@ -819,17 +877,18 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     mbarX=_massPth[ifl1-1][ifls-1];
   }
   // 1 1/2 P1 ( 3 P1) 
-  else if((ispin==0&&jspin==2)||(ispin==20&&jspin==1))
-    {
-      betaX = _beta1P[ifl1-1][ifls-1];
-      mbarX=_massPoh[ifl1-1][ifls-1];
-    }
-  else
-    {throw Exception() << "ISGWS2FormFactor::formFactor" 
-		       << " unknown multiplet" << Exception::abortnow;}
+  else if((ispin==0&&jspin==2)||(ispin==20&&jspin==1)) {
+    betaX = _beta1P[ifl1-1][ifls-1];
+    mbarX=_massPoh[ifl1-1][ifls-1];
+  }
+  else {
+    throw Exception() << "ISGWS2FormFactor::formFactor" 
+		      << " unknown multiplet" << Exception::abortnow;
+  }
   Energy2 beta2XY(0.5*(betaX*betaX+betaY*betaY));
   // number of active flavours
-  int Nf(ifl0-1),Nfp(ifl1-1);if(Nfp==1){Nfp=0;}
+  int Nf  = ifl0-1;
+  int Nfp = ifl1==2 ? 0 : ifl1-1;
   // first piece of the f_n function
   double betar(betaX*betaY/beta2XY),fn(sqrt(mtildeX/mtildeY)*betar*sqrt(betar));
   // q dependent piece
@@ -845,233 +904,217 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   double fpmfm(0.),fppfm(0.),f(0.),g(0.),appam(0.),apmam(0.),
     h(0.),k(0.),bp(0.),bm(0.);
   // scalar and vector from 1S levels
-  if(ispin==0)
-    {
-      // parameters for the beta functions
-      double asopi(alphaS(mq,mq*mQ)/pi),w(1.+0.5*tmmt/mX/mY);
-      double aI(-6./(33.-2.*Nf)),rw(1./sqrt(w*w-1)*log(w+sqrt(w*w-1.)));
-      double aLw(8./(33.-2.*Nfp)*(w*rw-1.)); 
-      double cji(pow(_alphaQ[ifl0-1]/_alphaQ[ifl1-1],aI)*
-		 pow(_alphaQ[ifl1-1]/_alphamuQM,aLw));
-      double zji(mq/mQ); 
-      double gamji(-2.*zji/(1.-zji)*log(zji)-2.),chiji(-1.-gamji/(1.-zji));
-      // scalar
-      if(jspin==0)
-	{
-	  double fact((1.+1./12.*r2*tmmt));
-	  fn/=(fact*fact);
-	  fact = (1.-0.5*ms*mq/mup/mtildeX*betaY*betaY/beta2XY);
-	  fppfm = fn*rmbmtX/rmbmtY*cji*(1.+asopi*(gamji-2./3.*chiji))*
-	    (2.-mtildeX/mq*fact);
-	  fpmfm = fn*rmbmtY/rmbmtX*cji*(1.+asopi*(gamji+2./3.*chiji))*mtildeY/mq*fact;
-	}
-      else if(jspin==1)
-	{
-	  // factors for the F and R functions
-	  double fact((1.+1./12.*r2*tmmt));
-	  fn/=(fact*fact);
-	  double betaapmam=1./3.-4./3./(1-zji)-chiji
-	    +gamji*(1.-2./3.*(1.+zji)/(1.-zji)/(1.-zji));
-	  f     = Cf*fn*rmbmtX*rmbmtY*cji*(1.+asopi*(-2./3.+gamji));
-	  g     = fn/rmbmtX/rmbmtY*cji*(1.+asopi*( 2./3.+gamji));
-	  appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY)*cji;
-	  apmam = fn/rmbmtX/rmbmtY*cji*(1.+asopi*betaapmam);
-	  // rest of the calculation
-	  f     *=mtildeY*(1.+wt+0.5*ms*(wt-1.)/mup);
-	  g     *=0.5*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
-	  appam *=(ms*betaX*betaX/(1.+wt)/mq/mQ/beta2XY*
-		   (1.-0.5*ms*betaX*betaX/mtildeY/beta2XY)
-		   +asopi/mtildeY*(-1.-chiji+4./3./(1.-zji)
-				   +2./3.*(1.+zji)/(1.-zji)/(1.-zji)*gamji));
-	  apmam *=-1./mtildeX*(mtildeY/mQ
-			       -0.5*ms*betaX*betaX/mup/beta2XY
-			       +wt*ms*mtildeY*betaX*betaX/(wt+1.)/mq/mQ/beta2XY*
-			       (1.-0.5*ms/mtildeY*betaX*betaX/beta2XY)); 
-	}
-      else if(jspin==2)
-	{
-	  // factors for the F function
-	  double fact((1.+1./18.*r2*tmmt));
-	  fn*=betar/(fact*fact*fact);
-	  h = fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
-	  k = fn*rmbmtX/rmbmtY;
-	  double bppbm(fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY*rmbmtY*rmbmtY));
-	  double bpmbm(fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY));
-	  // functions themselves
-	  double or2(sqrt(0.5));
-	  h *= 0.5*ms*or2/mtildeY/betaY*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
-	  k *= or2*ms/betaY*(1.+wt);
-	  bppbm *= 0.25*or2*ms*ms/mq/mQ/mtildeY/betaY*betaX*betaX/beta2XY*
-	    (1.-0.5*ms/mtildeY*betaX*betaX/beta2XY);
-	  bpmbm *= -or2*ms/mQ/mtildeX/betaY*
-	    (1.-0.5*ms*mQ/mup/mtildeY*betaX*betaX/beta2XY
-	     +0.25*ms/mq*betaX*betaX/beta2XY*(1.-0.5*ms/mtildeY*betaX*betaX/beta2XY));
-	  // conversion
-	  bp = 0.5*(bppbm+bpmbm);
-	  bm = 0.5*(bppbm-bpmbm);
-	}
+  if(ispin==0) {
+    // parameters for the beta functions
+    double asopi(alphaS(mq,mq*mQ)/pi),w(1.+0.5*tmmt/mX/mY);
+    double aI(-6./(33.-2.*Nf)),rw(1./sqrt(w*w-1)*log(w+sqrt(w*w-1.)));
+    double aLw(8./(33.-2.*Nfp)*(w*rw-1.)); 
+    double cji(pow(_alphaQ[ifl0-1]/_alphaQ[ifl1-1],aI)*
+	       pow(_alphaQ[ifl1-1]/_alphamuQM,aLw));
+    double zji(mq/mQ); 
+    double gamji(-2.*zji/(1.-zji)*log(zji)-2.),chiji(-1.-gamji/(1.-zji));
+    // scalar
+    if(jspin==0) {
+      double fact((1.+1./12.*r2*tmmt));
+      fn/=(fact*fact);
+      fact = (1.-0.5*ms*mq/mup/mtildeX*betaY*betaY/beta2XY);
+      fppfm = fn*rmbmtX/rmbmtY*cji*(1.+asopi*(gamji-2./3.*chiji))*
+	(2.-mtildeX/mq*fact);
+      fpmfm = fn*rmbmtY/rmbmtX*cji*(1.+asopi*(gamji+2./3.*chiji))*mtildeY/mq*fact;
     }
+    else if(jspin==1) {
+      // factors for the F and R functions
+      double fact((1.+1./12.*r2*tmmt));
+      fn/=(fact*fact);
+      double betaapmam=1./3.-4./3./(1-zji)-chiji
+	+gamji*(1.-2./3.*(1.+zji)/(1.-zji)/(1.-zji));
+      f     = Cf*fn*rmbmtX*rmbmtY*cji*(1.+asopi*(-2./3.+gamji));
+      g     = fn/rmbmtX/rmbmtY*cji*(1.+asopi*( 2./3.+gamji));
+      appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY)*cji;
+      apmam = fn/rmbmtX/rmbmtY*cji*(1.+asopi*betaapmam);
+      // rest of the calculation
+      f     *=mtildeY*(1.+wt+0.5*ms*(wt-1.)/mup);
+      g     *=0.5*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
+      appam *=(ms*betaX*betaX/(1.+wt)/mq/mQ/beta2XY*
+	       (1.-0.5*ms*betaX*betaX/mtildeY/beta2XY)
+	       +asopi/mtildeY*(-1.-chiji+4./3./(1.-zji)
+			       +2./3.*(1.+zji)/(1.-zji)/(1.-zji)*gamji));
+      apmam *=-1./mtildeX*(mtildeY/mQ
+			   -0.5*ms*betaX*betaX/mup/beta2XY
+			   +wt*ms*mtildeY*betaX*betaX/(wt+1.)/mq/mQ/beta2XY*
+			   (1.-0.5*ms/mtildeY*betaX*betaX/beta2XY)); 
+    }
+    else if(jspin==2) {
+      // factors for the F function
+      double fact((1.+1./18.*r2*tmmt));
+      fn*=betar/(fact*fact*fact);
+      h = fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
+      k = fn*rmbmtX/rmbmtY;
+      double bppbm(fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY*rmbmtY*rmbmtY));
+      double bpmbm(fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY));
+      // functions themselves
+      double or2(sqrt(0.5));
+      h *= 0.5*ms*or2/mtildeY/betaY*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
+      k *= or2*ms/betaY*(1.+wt);
+      bppbm *= 0.25*or2*ms*ms/mq/mQ/mtildeY/betaY*betaX*betaX/beta2XY*
+	(1.-0.5*ms/mtildeY*betaX*betaX/beta2XY);
+      bpmbm *= -or2*ms/mQ/mtildeX/betaY*
+	(1.-0.5*ms*mQ/mup/mtildeY*betaX*betaX/beta2XY
+	 +0.25*ms/mq*betaX*betaX/beta2XY*(1.-0.5*ms/mtildeY*betaX*betaX/beta2XY));
+      // conversion
+      bp = 0.5*(bppbm+bpmbm);
+      bm = 0.5*(bppbm-bpmbm);
+    }
+  }
   // 1 3P0
-  else if(ispin==10&&jspin==0)
-    {
-      fn*=betar;
-      double fact=(1.+1./18.*r2*tmmt);
-      fn/=(fact*fact*fact);
-      fn *= sqrt(2./3.)*ms/betaY;
-      fppfm =-fn*rmbmtX/rmbmtY;
-      fpmfm = fn*rmbmtY/rmbmtX*mtildeY/mtildeX;
-    }
+  else if(ispin==10&&jspin==0) {
+    fn*=betar;
+    double fact=(1.+1./18.*r2*tmmt);
+    fn/=(fact*fact*fact);
+    fn *= sqrt(2./3.)*ms/betaY;
+    fppfm =-fn*rmbmtX/rmbmtY;
+    fpmfm = fn*rmbmtY/rmbmtX*mtildeY/mtildeX;
+  }
   // 1 3/2 P1 ( 1 P1) 
-  else if(ispin==10&&jspin==1)
-    {
-      // factors for the F and R functions
-      double fact=(1.+1./18.*r2*tmmt);
-      fn*=betar/(fact*fact*fact);
-      f     = fn*rmbmtX*rmbmtY;
-      g     = fn/rmbmtX/rmbmtY;
-      appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
-      apmam = fn/rmbmtX/rmbmtY;
-      // light meson or onium
-      if((ifls<3&&ifl1<3)||(ifls==ifl1))
-	{
-	  double oor2(sqrt(0.5));
-	  f     *= oor2*mtildeY*betaY*(1./mup
-				      +ms*mtildeX/3./mq/betaY/betaY*(wt-1.)*(wt-1.));
-	  g     *= oor2*(0.25*mtildeY*betaY/mQ/mq/mtildeX+(wt-1.)*ms/6./mtildeX/betaY);
-	  appam *= oor2*ms/mtildeY/betaY*(1.-ms/mq+0.5*ms/mup*betaY*betaY/beta2XY);
-	  apmam *= oor2*ms/mq/betaY*((4.-wt)/3.
-				     -0.5*ms*mq/mtildeX/mup*betaY*betaY/beta2XY);
-	}
-      // heavy meson
-      else
-	{
-	  double oor3(1./sqrt(3.));
-	  f     *=-2.*oor3*mtildeY*betaY*
-	    (1./mq+0.5*mtildeX*ms*(wt-1.)/betaY/betaY*
-	     (0.5*(wt+1.)/mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY)); 
-	  g     *=-0.5*oor3*(0.5*(1.+wt)+0.5*betaY*betaY*mtildeY/ms/mq/mQ)*ms
-	    /betaY/mtildeX;
-	  appam *=-0.5/oor3*ms/betaY/mtildeY*(1.-ms/3./mq-ms/3.*betaY*betaY/beta2XY*
-					      (0.5/mum-1./mup));
-	  apmam *=-0.5*oor3*ms/betaY/mtildeX*((2.-wt)*mtildeX/mq+ms*betaY*betaY/beta2XY*
-					      (0.5/mum-1./mup));
-	}
+  else if(ispin==10&&jspin==1) {
+    // factors for the F and R functions
+    double fact=(1.+1./18.*r2*tmmt);
+    fn*=betar/(fact*fact*fact);
+    f     = fn*rmbmtX*rmbmtY;
+    g     = fn/rmbmtX/rmbmtY;
+    appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
+    apmam = fn/rmbmtX/rmbmtY;
+    // light meson or onium
+    if((ifls<3&&ifl1<3)||(ifls==ifl1)) {
+      double oor2(sqrt(0.5));
+      f     *= oor2*mtildeY*betaY*(1./mup
+				   +ms*mtildeX/3./mq/betaY/betaY*(wt-1.)*(wt-1.));
+      g     *= oor2*(0.25*mtildeY*betaY/mQ/mq/mtildeX+(wt-1.)*ms/6./mtildeX/betaY);
+      appam *= oor2*ms/mtildeY/betaY*(1.-ms/mq+0.5*ms/mup*betaY*betaY/beta2XY);
+      apmam *= oor2*ms/mq/betaY*((4.-wt)/3.
+				 -0.5*ms*mq/mtildeX/mup*betaY*betaY/beta2XY);
     }
+    // heavy meson
+    else {
+      double oor3(1./sqrt(3.));
+      f     *=-2.*oor3*mtildeY*betaY*
+	(1./mq+0.5*mtildeX*ms*(wt-1.)/betaY/betaY*
+	 (0.5*(wt+1.)/mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY)); 
+      g     *=-0.5*oor3*(0.5*(1.+wt)+0.5*betaY*betaY*mtildeY/ms/mq/mQ)*ms
+	/betaY/mtildeX;
+      appam *=-0.5/oor3*ms/betaY/mtildeY*(1.-ms/3./mq-ms/3.*betaY*betaY/beta2XY*
+					  (0.5/mum-1./mup));
+      apmam *=-0.5*oor3*ms/betaY/mtildeX*((2.-wt)*mtildeX/mq+ms*betaY*betaY/beta2XY*
+					  (0.5/mum-1./mup));
+    }
+  }
   // 1 1/2 P 1 (3 P1)
-  else if(ispin==20&&jspin==1)
-    {
-      // factors for the F and R functions
-      double fact=(1.+1./18.*r2*tmmt);
-      fn*=betar/(fact*fact*fact);
-      f     = fn*rmbmtX*rmbmtY;
-      g     = fn/rmbmtX/rmbmtY;
-      appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
-      apmam = fn/rmbmtX/rmbmtY;
-      // light meson
-      if(ifls<3&&ifl1<3||(ifl1==ifls))
-	{
-	  f     *=-mtildeY*betaY*(1./mum
-				  +ms*mtildeX*(wt-1.)/betaY/betaY*
-				  ((5.+wt)/6./mq-0.5/mum*ms/mtildeX*
-				   betaY*betaY/beta2XY)); 
-	  g     *=-0.5*ms/mtildeX/betaY*(5.+wt)/6.;
-	  appam *=-0.5*ms*mtildeX/mq/mtildeY/betaY*
-	    (1.-0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY); 
-	  apmam *= 0.5*ms/mq/betaY*((wt+2.)/3.
-				    -0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY);
-	}
-      // heavy meson
-      else
-	{
-	  double r2o3(sqrt(2./3.));
-	  f     *= r2o3*mtildeY*betaY*(0.5/mq-1.5/mQ+ms*mtildeX*(wt-1.)/betaY/betaY*
-				       (1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY));
-	  g     *= 0.5*r2o3*ms/betaY/mtildeX*(1.-0.25*betaY*betaY*mtildeY/ms/mq/mQ);
-	  appam *= 0.5*r2o3*ms*ms*betaX*betaX/mtildeY/mq/betaY/beta2XY; 
-	  apmam *= -r2o3*ms/mtildeX/betaY*(1.+0.5*ms*betaX*betaX/mq/beta2XY);
-	}
+  else if(ispin==20&&jspin==1) {
+    // factors for the F and R functions
+    double fact=(1.+1./18.*r2*tmmt);
+    fn*=betar/(fact*fact*fact);
+    f     = fn*rmbmtX*rmbmtY;
+    g     = fn/rmbmtX/rmbmtY;
+    appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
+    apmam = fn/rmbmtX/rmbmtY;
+    // light meson
+    if(ifls<3&&ifl1<3||(ifl1==ifls)) {
+      f     *=-mtildeY*betaY*(1./mum
+			      +ms*mtildeX*(wt-1.)/betaY/betaY*
+			      ((5.+wt)/6./mq-0.5/mum*ms/mtildeX*
+			       betaY*betaY/beta2XY)); 
+      g     *=-0.5*ms/mtildeX/betaY*(5.+wt)/6.;
+      appam *=-0.5*ms*mtildeX/mq/mtildeY/betaY*
+	(1.-0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY); 
+      apmam *= 0.5*ms/mq/betaY*((wt+2.)/3.
+				-0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY);
     }
-  else
-    {throw Exception() << "ISGWS2FormFactor::formFactor" 
-		       << " unknown multiplet" << Exception::abortnow;}
+    // heavy meson
+    else {
+      double r2o3(sqrt(2./3.));
+      f     *= r2o3*mtildeY*betaY*(0.5/mq-1.5/mQ+ms*mtildeX*(wt-1.)/betaY/betaY*
+				   (1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY));
+      g     *= 0.5*r2o3*ms/betaY/mtildeX*(1.-0.25*betaY*betaY*mtildeY/ms/mq/mQ);
+      appam *= 0.5*r2o3*ms*ms*betaX*betaX/mtildeY/mq/betaY/beta2XY; 
+      apmam *= -r2o3*ms/mtildeX/betaY*(1.+0.5*ms*betaX*betaX/mq/beta2XY);
+    }
+  }
+  else {
+    throw Exception() << "ISGWS2FormFactor::formFactor" 
+		      << " unknown multiplet" << Exception::abortnow;
+  }
   // the final manipulations
-  if(jspin==0)
-    {
-      double fp,fm;
-      fp = 0.5*(fppfm+fpmfm);
-      fm = 0.5*(fppfm-fpmfm);
-      // convert to the standard form
-      f1 = q2/(mY*mY-mX*mX)*fm+fp;
-      f2 = fp;
-    }
-  else if(jspin==1)
-    {
-      double ap(0.5*(appam+apmam)),am(0.5*(appam-apmam));
-      // convert to the standard notation
-      Energy msum(mX+mY),mdiff(mY-mX);
-      Complex ii(0.,1.);
-      f2 = -ii*f/msum;
-      f3 = +ii*ap*msum;
-      f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
-      f4 = -ii*g*msum;
-    }
-  else if(jspin==2)
-    {
-      f1 = h;
-      f2 = k;
-      f3 = bp;
-      f4 = bm;
-    }
+  if(jspin==0) {
+    double fp,fm;
+    fp = 0.5*(fppfm+fpmfm);
+    fm = 0.5*(fppfm-fpmfm);
+    // convert to the standard form
+    f1 = q2/(mY*mY-mX*mX)*fm+fp;
+    f2 = fp;
+  }
+  else if(jspin==1) {
+    double ap(0.5*(appam+apmam)),am(0.5*(appam-apmam));
+    // convert to the standard notation
+    Energy msum(mX+mY),mdiff(mY-mX);
+    Complex ii(0.,1.);
+    f2 = -ii*f/msum;
+    f3 = +ii*ap*msum;
+    f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
+    f4 = -ii*g*msum;
+  }
+  else if(jspin==2) {
+    f1 = h;
+    f2 = k;
+    f3 = bp;
+    f4 = bm;
+  }
   // special for mixing
   double fact;
-  if(id1==ParticleID::eta)
-    {
-      if(ifl1==3&&ifls==3){fact=-2.*cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
-      else{fact=cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
-      f1*=fact;f2*=fact;f3*=fact;f4*=fact;
-    }
-  else if(id1==ParticleID::etaprime)
-    {
-      if(ifl1==3&&ifls==3){fact=-2.*sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
-      else{fact=sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
-      f1*=fact;f2*=fact;f3*=fact;f4*=fact;
-    }
-  else if(ifl1==ifls&&ifl1<3)
-    {
-      if(abs(ifl1)==1&&int(id1/10)%100==1){fact=-sqrt(0.5);}
-      else{fact=sqrt(0.5);}
-      f1*=fact;f2*=fact;f3*=fact;f4*=fact;
-    }
+  if(id1==ParticleID::eta) {
+    if(ifl1==3&&ifls==3){fact=-2.*cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
+    else{fact=cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
+    f1*=fact;f2*=fact;f3*=fact;f4*=fact;
+  }
+  else if(id1==ParticleID::etaprime) {
+    if(ifl1==3&&ifls==3){fact=-2.*sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
+    else{fact=sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
+    f1*=fact;f2*=fact;f3*=fact;f4*=fact;
+  }
+  else if(ifl1==ifls&&ifl1<3) {
+    if(abs(ifl1)==1&&int(id1/10)%100==1){fact=-sqrt(0.5);}
+    else{fact=sqrt(0.5);}
+    f1*=fact;f2*=fact;f3*=fact;f4*=fact;
+  }
 }
 
 // form-factor for scalar to scalar
-void ISGW2FormFactor::ScalarScalarFormFactor(Energy2 q2, unsigned int iloc,int id0, int id1,
-					     Energy mY, Energy mX,
-					     Complex & f0,Complex & fp) const
- {
-   Complex d1(0.),d2(0.);
-   formFactor(q2,iloc,id0,id1,mY,mX,f0,fp,d1,d2);
- }
+void ISGW2FormFactor::ScalarScalarFormFactor(Energy2 q2, unsigned int iloc,int id0,
+					     int id1, Energy mY, Energy mX,
+					     Complex & f0,Complex & fp) const {
+  Complex d1(0.),d2(0.);
+  formFactor(q2,iloc,id0,id1,mY,mX,f0,fp,d1,d2);
+}
 
 // form-factor for scalar to vector
-void ISGW2FormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1, 
-					     Energy mY, Energy mX,
+void ISGW2FormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int id0, 
+					     int id1, Energy mY, Energy mX,
 					     Complex & A0,Complex & A1,
-					     Complex & A2,Complex & V) const
- {formFactor(q2,iloc,id0,id1,mY,mX,A0,A1,A2,V);}
+					     Complex & A2,Complex & V) const {
+  formFactor(q2,iloc,id0,id1,mY,mX,A0,A1,A2,V);
+}
 
 
 // form-factor for scalar to tensor
 void ISGW2FormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1, 
 					     Energy mY, Energy mX,
 					     Complex & h,Complex & k,
-					     Complex & bp,Complex & bm) const
- {formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);}
+					     Complex & bp,Complex & bm) const {
+  formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);
+}
 
-void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create){output << "create Herwig++::ISGW2FormFactor " << fullName() << "\n";}
+void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::ISGW2FormFactor " << fullName() << "\n";
   output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
   output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
   output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << "\n";
@@ -1119,6 +1162,6 @@ void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) 
   output << "set " << fullName() << ":CfBcBstar "   << _CfBcBstar    << "\n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 }

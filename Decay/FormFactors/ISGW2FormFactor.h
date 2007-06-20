@@ -31,25 +31,10 @@ class ISGW2FormFactor: public ScalarFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   ISGW2FormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline ISGW2FormFactor(const ISGW2FormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~ISGW2FormFactor();
-  //@}
-
-public:
 
   /** @name Form-Factors */
   //@{
@@ -175,48 +160,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -273,7 +221,7 @@ private:
   /**
    * The masses of the quarks as a vector
    */
-  Energy _mquark[5];
+  vector<Energy> _mquark;
   //@}
 
   /** @name Wave function parameters for the \f$1^1S_0\f$ level.*/
@@ -327,12 +275,12 @@ private:
   /**
    *  The wavefunction parameters as an array
    */
-  Energy _beta1S0[5][5];
+  vector<vector<Energy> > _beta1S0;
 
   /**
    *  The masses as a array
    */
-  Energy _mass1S0[5][5];
+  vector<vector<Energy> > _mass1S0;
   //@}
 
   /** @name Wave function parameters for the \f$1^3S_1\f$ level.*/
@@ -385,7 +333,7 @@ private:
   /**
    * The wavefunction paramaeters as an array.
    */
-  Energy _beta3S1[5][5];
+  vector<vector<Energy> > _beta3S1;
   //@}
 
 
@@ -440,18 +388,18 @@ private:
   /**
    * The wavefunction paramaeters as an array.
    */
-  Energy _beta1P[5][5];
+  vector<vector<Energy> > _beta1P;
 
   /**
    * The spin-1/2 masses
    */
   // the 1/2 spin masses
-  Energy _massPoh[5][5];
+  vector<vector<Energy> > _massPoh;
 
   /**
    * The spin-3/2 masses
    */
-  Energy _massPth[5][5];
+  vector<vector<Energy> > _massPth;
   //@}
 
   /**@name Parameters for the strong coupling*/
@@ -463,7 +411,7 @@ private:
   /**
    * The values of \f$\alpha_S\f$ at the quark masses.
    */
-  double _alphaQ[5];
+  vector<double> _alphaQ;
   //@}
 
   /**@name Relativistic correction factors */
