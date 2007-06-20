@@ -10,11 +10,6 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SemiLeptonicScalarDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -61,6 +56,7 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
     _form->particleID(ix,id0,id1);
     extpart[0]=getParticleData(id0);
     extpart[1]=getParticleData(id1);
+    if(!extpart[0]||!extpart[1]) continue;
     Wcharge =(extpart[0]->iCharge()-extpart[1]->iCharge());
     min = extpart[0]->mass()+extpart[0]->widthUpCut()
       -extpart[1]->mass()+extpart[1]->widthLoCut();
@@ -93,14 +89,13 @@ bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
   vector<int> idother; bool dummy;
   ParticleMSet::const_iterator pit  = dm.products().begin();
   ParticleMSet::const_iterator pend = dm.products().end();
-  for( ; pit!=pend;++pit)
-    {
-      idtemp=(**pit).id();
-      if(abs(idtemp)>16){imes=idtemp;}
-      else{idother.push_back(idtemp);}
-    }
+  for( ; pit!=pend;++pit) {
+    idtemp=(**pit).id();
+    if(abs(idtemp)>16) imes=idtemp;
+    else               idother.push_back(idtemp);
+  }
   // check that the form factor exists
-  if(_form->formFactorNumber(idin,imes,dummy)<0){return false;}
+  if(_form->formFactorNumber(idin,imes,dummy)<0) return false;
   // and the current
   return _current->accept(idother);
 }
