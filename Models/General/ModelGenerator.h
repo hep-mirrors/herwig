@@ -104,6 +104,13 @@ private:
   ModelGenerator & operator=(const ModelGenerator &);
 
 private:
+
+  /**
+   * Write out the spectrum of masses and decay modes
+   */
+  void writeDecayModes(ofstream & ofs, tcPDPtr parent) const;
+
+private:
   
   /**
    * Pointer to the HardProcessConstructor

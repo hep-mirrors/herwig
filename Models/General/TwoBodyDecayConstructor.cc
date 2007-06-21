@@ -281,8 +281,9 @@ createDecayMode(tPDPtr inpart, const PDVector & decays,
 	eg->preinitInterface(ndm, "Decayer", "set",
 			     decayer->fullName());
 	eg->preinitInterface(ndm, "OnOff", "set", "1");
-	double width = decayer->partialWidth(inpart, children[0], 
-					     children[1]);
+	//width in partialWidth gives widht in MeV
+	Energy width = decayer->partialWidth(inpart, children[0], 
+					     children[1])/GeV;
 	setBranchingRatio(ndm, width);
       }
       else
@@ -302,13 +303,13 @@ createDecayMode(tPDPtr inpart, const PDVector & decays,
     inpart->CC()->synchronize();
 }
 
-void TwoBodyDecayConstructor::setBranchingRatio(tDMPtr dm, double pwidth) {
+void TwoBodyDecayConstructor::setBranchingRatio(tDMPtr dm, Energy pwidth) {
   //Need width and branching ratios for all currently created decay modes
   PDPtr parent = const_ptr_cast<PDPtr>(dm->parent());
   Selector<tDMPtr> modes = parent->decaySelector();
-  double currentwidth(0.);
+  Energy currentwidth(0.);
   if( !modes.empty() ) currentwidth = parent->width(); 
-  double newWidth = currentwidth + pwidth;
+  Energy newWidth = currentwidth + pwidth;
   parent->width(newWidth);
   //need to reweight current branching fractions if there are any
   for(Selector<tDMPtr>::const_iterator dit = modes.begin(); 

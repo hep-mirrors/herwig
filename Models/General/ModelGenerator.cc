@@ -10,7 +10,7 @@
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "ThePEG/PDT/ParticleData.h"
+#include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
 
@@ -71,7 +71,32 @@ void ModelGenerator::doinit() throw(InitException) {
     _theRPConstructor->constructResonances();
   }
   if(_theParticles.size() > 0) {
-      _theDecayConstructor->createDecayers(_theParticles);
+    _theDecayConstructor->createDecayers(_theParticles);
+    ofstream ofs("ModelSpectrum.spc");
+    ofs << "# Automatically Generated Decay Modes\n";
+    ofs << "#\n#";
+    for( PDVector::iterator it = _theParticles.begin();
+	 it != _theParticles.end(); ++it ) {
+      tPDPtr parent = *it;
+      if( parent->decaySelector().empty() ) {
+	parent->stable(false);
+	parent->width(0.0);
+      }
+      else
+	writeDecayModes(ofs, parent);
+    }
   }
 }
+
+void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
+  ofs << " Parent: " << parent->PDGName() << "   Mass (GeV): " 
+      << parent->mass()/GeV << "   Width: " << parent->width() << '\n';
+  Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
+  Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
+  for(; dit != dend; ++dit)
+    ofs << (*dit).second->tag() << "   " << (*dit).second->brat() << '\n';
+  ofs << "#\n#";
+  
+}
+
 
