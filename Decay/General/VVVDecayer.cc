@@ -68,7 +68,7 @@ double VVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
+Energy VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
                                 const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theVVVPtr->setCoupling(scale,inpart,outa,outb);
@@ -80,9 +80,9 @@ double VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
     mu1sq*mu1sq*(27. + 64.*mu2sq + 18.*mu2sq*mu2sq) + 
     mu1sq*(7. - 32.*mu2sq - 2.*mu2sq*mu2sq + 10.*pow(mu2sq,3));
   me2 *= norm.real()/3./(4.*mu1sq*mu2sq);
-  double pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double pWidth = me2*pcm/8./Constants::pi;
+  Energy pWidth = me2*pcm/8./Constants::pi;
   if(outa->id() == outb->id()) {
     pWidth /= 2.;
   }

@@ -73,7 +73,7 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return matrixElement2;
 }
   
-double SVVDecayer::partialWidth(const PDPtr inpart,
+Energy SVVDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
@@ -86,7 +86,7 @@ double SVVDecayer::partialWidth(const PDPtr inpart,
   double mu2(outb->mass()/inpart->mass()),mu2sq(mu2*mu2);
   double matrixElement2 = 2 + (mu1sq/mu2sq) - (1/mu2sq) + (0.25/mu1sq/mu2sq);
   matrixElement2 *= norm.real();
-  double output = matrixElement2*pcm/(8*Constants::pi)/scale;
+  Energy output = matrixElement2*pcm/(8*Constants::pi)/scale;
   if(outa->id() == outb->id()) 
     output /= 2.;
   return output;

@@ -50,7 +50,7 @@ public:
    * @param outa Pointer to first outgoing particle data object
    * @param currout The outgoing particles from the current
    */
-  virtual double partialWidth(tPDPtr inpart, tPDPtr outa,
+  virtual Energy partialWidth(tPDPtr inpart, tPDPtr outa,
 			      vector<tPDPtr> currout);
   //@}
 

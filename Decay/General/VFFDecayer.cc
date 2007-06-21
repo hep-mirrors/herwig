@@ -85,7 +85,7 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
+Energy VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
 				const PDPtr ferm) const {
   //Use analytic expression for partial width
   double mu1 = ferm->mass()/inpart->mass();
@@ -100,7 +100,7 @@ double VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
   double matrixElement2 = (cl*cl+cr*cr)*((mu1*mu1 + mu2*mu2 )*(mu1*mu1 + mu2*mu2) + mu2*mu2 + mu1*mu1 + 2);
   matrixElement2 += -12.*cl*cr*mu1*mu2;
   matrixElement2 *= norm.real()/3.;
-  double output = matrixElement2*pcm/(8*Constants::pi);
+  Energy output = matrixElement2*pcm/(8*Constants::pi);
   if(ferm->coloured())
     output *= 3.;
   return output;

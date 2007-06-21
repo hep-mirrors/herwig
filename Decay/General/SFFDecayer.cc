@@ -92,7 +92,7 @@ double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double SFFDecayer::partialWidth(const PDPtr inpart,
+Energy SFFDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   double mu1(outa->mass()/inpart->mass()),mu2(outb->mass()/inpart->mass());
@@ -108,7 +108,7 @@ double SFFDecayer::partialWidth(const PDPtr inpart,
   matrixElement2 *= norm.real();
   Energy pcm(Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				    outb->mass()));
-  double output = matrixElement2*pcm/(8*Constants::pi);
+  Energy output = matrixElement2*pcm/(8*Constants::pi);
   if(outa->coloured() && outb->coloured()){
     output *= 3.;
   }

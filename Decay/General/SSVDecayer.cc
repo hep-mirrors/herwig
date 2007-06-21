@@ -82,7 +82,7 @@ double SSVDecayer::me2(bool , const int , const Particle & inpart,
   return output;
 }
 
-double SSVDecayer::partialWidth(const PDPtr inpart,
+Energy SSVDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   double mu1sq(0.),mu2sq(0.);
@@ -109,6 +109,6 @@ double SSVDecayer::partialWidth(const PDPtr inpart,
   Complex norm2 = (_theVSSPtr->getNorm()*_theVSSPtr->getNorm());
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double output = pcm*me2*norm2.real()/8./Constants::pi;
+  Energy output = pcm*me2*norm2.real()/8./Constants::pi;
   return output;
 }

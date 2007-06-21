@@ -113,7 +113,7 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
+Energy FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
 				const PDPtr outb) const {
   double mu1,mu2;
   if(outa->iSpin() == PDT::Spin1Half) {
@@ -131,9 +131,9 @@ double FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
   double cr = (_theFFSPtr->getRight()).real();
   double me2 = norm.real()*((1.+ mu1*mu1 - mu2*mu2)*(cl*cl + cr*cr) 
 			    + 4.*cl*cr*mu1)/2.;
-  double pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				       outb->mass());
-  double pWidth = me2*pcm/8./Constants::pi;
+  Energy pWidth = me2*pcm/8./Constants::pi;
   if(inpart->iColour()==PDT::Colour8) {
     pWidth *= 0.5;
   }

@@ -89,7 +89,7 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
   
-double TVVDecayer::partialWidth(const PDPtr inpart,
+Energy TVVDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass()); 
@@ -107,7 +107,7 @@ double TVVDecayer::partialWidth(const PDPtr inpart,
   }
   Complex norm(_theVVTPtr->getNorm()*_theVVTPtr->getNorm());
   me2 *= norm.real();
-  double output = me2*pcm/(8.*Constants::pi);
+  Energy output = me2*pcm/(8.*Constants::pi);
   if(outa->id()==outb->id()) {
     output /=2;
   }

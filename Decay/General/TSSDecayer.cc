@@ -74,7 +74,7 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 }
 
 
-double TSSDecayer::partialWidth(const PDPtr inpart,
+Energy TSSDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
@@ -86,7 +86,7 @@ double TSSDecayer::partialWidth(const PDPtr inpart,
   me2 *= norm.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double output = me2*pcm/(8.*Constants::pi);
+  Energy output = me2*pcm/(8.*Constants::pi);
   if(outa->id() == outb->id()) {
     output /= 2;
   }

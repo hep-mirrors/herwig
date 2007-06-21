@@ -136,7 +136,7 @@ double FFVCurrentDecayer::me2(bool vertex, const int ichan, const Particle & inp
   return output;
 }
  
-double FFVCurrentDecayer::partialWidth(tPDPtr inpart, tPDPtr outa,
+Energy FFVCurrentDecayer::partialWidth(tPDPtr inpart, tPDPtr outa,
 				       vector<tPDPtr> currout) {
   vector<long> id;
   id.push_back(inpart->id());

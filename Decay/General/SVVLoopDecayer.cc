@@ -80,7 +80,7 @@ double SVVLoopDecayer::me2(bool vertex, const int ,
   return output;
 }
   
-double SVVLoopDecayer::partialWidth(const PDPtr inpart,
+Energy SVVLoopDecayer::partialWidth(const PDPtr inpart,
 				    const PDPtr outa,
 				    const PDPtr outb) const {
   Lorentz5Momentum in(0.,0.,0.,inpart->mass()),out1,out2;
@@ -109,7 +109,7 @@ double SVVLoopDecayer::partialWidth(const PDPtr inpart,
   me2 /= 2;
   Complex norm(_theSVVPtr->getNorm()*_theSVVPtr->getNorm());
   me2 *= norm;
-  double pWidth = me2.real()*pcm/(8.*Constants::pi)/scale;
+  Energy pWidth = me2.real()*pcm/(8.*Constants::pi)/scale;
   if(outa->id() == outb->id()) {
     pWidth /= 2;
   }

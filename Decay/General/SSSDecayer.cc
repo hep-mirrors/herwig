@@ -59,15 +59,15 @@ double SSSDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double SSSDecayer::partialWidth(const PDPtr inpart,
+Energy SSSDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theSSSPtr->setCoupling(scale,inpart,outa,outb);
   Complex norm = (_theSSSPtr->getNorm()*_theSSSPtr->getNorm());
-  double pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double pWidth = norm.real()*pcm/8./Constants::pi/scale;
+  Energy pWidth = norm.real()*pcm/8./Constants::pi/scale;
   if(outa->id() == outb->id()) {
     pWidth /=2;
   }

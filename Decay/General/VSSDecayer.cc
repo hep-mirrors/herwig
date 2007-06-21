@@ -68,7 +68,7 @@ void VSSDecayer::Init() {
    return output;
  }
 
-double VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
+Energy VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theVSSPtr->setCoupling(scale,inpart,outa,outb);
@@ -80,7 +80,7 @@ double VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
   me2 *= norm2.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double output = me2*pcm/(8.*Constants::pi);
+  Energy output = me2*pcm/(8.*Constants::pi);
   if(outa->id() == outb->id()) {
     output /= 2.;
   }

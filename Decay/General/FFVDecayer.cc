@@ -100,7 +100,7 @@ double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
+Energy FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
 				const PDPtr part2) const {
   double mu1 = part1->mass()/inpart->mass();
   double mu2 = part2->mass()/inpart->mass();
@@ -113,9 +113,9 @@ double FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
   double matrixElement2 = (-2*mu2*mu2 + mu1*mu1 + 1)*x - 6.*y*mu1;
   matrixElement2 += (mu1*mu1 - 1)*(mu1*mu1 - 1)*x/mu2/mu2;
   matrixElement2 *= norm.real()/2.;
-  double pcm = Kinematics::CMMomentum(inpart->mass(),part1->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),part1->mass(),
 				      part2->mass());
-  double output =matrixElement2*pcm/(8.*Constants::pi);
+  Energy output =matrixElement2*pcm/(8.*Constants::pi);
   return output;
   
 }
