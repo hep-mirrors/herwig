@@ -182,8 +182,8 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
     Complex fp,f0;
     _form->ScalarScalarFormFactor(q2,iloc,id0,id1,inpart.mass(),decay[0]->mass(),
 				  f0,fp);
-    double pre((inpart.mass()*inpart.mass()-decay[0]->mass()*decay[0]->mass())/q2);
-    hadron.push_back(fp*sum+pre*(f0-fp)*q);
+    Complex pre((sqr(inpart.mass())-sqr(decay[0]->mass()))/q2*(f0-fp));
+    hadron.push_back(fp*sum+(pre*q));
   }
   else if(jspin==1) {
     vector<LorentzPolarizationVector> vwave;

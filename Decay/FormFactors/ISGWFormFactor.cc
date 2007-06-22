@@ -85,12 +85,12 @@ ISGWFormFactor::ISGWFormFactor() {
   addFormFactor( 511, 20113,1, 1,-5,-1);
   addFormFactor( 511, 10111,0, 1,-5,-1);
   // B_d to u dbar
-  addFormFactor( 511,-211  ,0, 1,-5,-2);
-  addFormFactor( 511,-213  ,1, 1,-5,-2);
-  addFormFactor( 511,-215  ,2, 1,-5,-2);
-  addFormFactor( 511,-10213,1, 1,-5,-2);
-  addFormFactor( 511,-20213,1, 1,-5,-2);
-  addFormFactor( 511,-10211,0, 1,-5,-2);
+  addFormFactor(-511, 211  ,0, 1,-5,-2);
+  addFormFactor(-511, 213  ,1, 1,-5,-2);
+  addFormFactor(-511, 215  ,2, 1,-5,-2);
+  addFormFactor(-511, 10213,1, 1,-5,-2);
+  addFormFactor(-511, 20213,1, 1,-5,-2);
+  addFormFactor(-511, 10211,0, 1,-5,-2);
   // B_d to s dbar 
   addFormFactor( 511, 311  ,0, 1,-5,-3);
   addFormFactor( 511, 313  ,1, 1,-5,-3);
@@ -99,12 +99,12 @@ ISGWFormFactor::ISGWFormFactor() {
   addFormFactor( 511, 20313,1, 1,-5,-3);
   addFormFactor( 511, 10311,0, 1,-5,-3);
   // B_d decays to  c dbar
-  addFormFactor( 511,-411  ,0, 1,-5,-4);
-  addFormFactor( 511,-413  ,1, 1,-5,-4);
-  addFormFactor( 511,-415  ,2, 1,-5,-4);
-  addFormFactor( 511,-10413,1, 1,-5,-4);
-  addFormFactor( 511,-20413,1, 1,-5,-4);
-  addFormFactor( 511,-10411,0, 1,-5,-4);
+  addFormFactor(-511, 411  ,0, 1,-5,-4);
+  addFormFactor(-511, 413  ,1, 1,-5,-4);
+  addFormFactor(-511, 415  ,2, 1,-5,-4);
+  addFormFactor(-511, 10413,1, 1,-5,-4);
+  addFormFactor(-511, 20413,1, 1,-5,-4);
+  addFormFactor(-511, 10411,0, 1,-5,-4);
   // D0 to d ubar
   addFormFactor( 421,-211  ,0,-2, 4, 1);
   addFormFactor( 421,-213  ,1,-2, 4, 1);
@@ -340,7 +340,7 @@ void ISGWFormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int i
 }
 
 // member which does the work
-void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
+void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 				Energy mY,Energy mX, Complex & f1,Complex & f2,
 				Complex & f3, Complex & f4) const {
   useMe();
@@ -406,17 +406,17 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
       ap =-0.5*fn/mtildeX*(1.+ms/mQ*(betaY2-betaX2)/(betaX2+betaY2)
 			   -0.25*ms*ms/mum/mtildeY*betaX2*betaX2/beta2XY/beta2XY);
       am = 0.5*fn/mtildeX*(1.+ms/mQ+ms*ms/mq/mQ*betaX2/beta2XY*
-			   (1.-0.25*(mtildeX+mtildeY)/mtildeY*betaX2/beta2XY));
+ 			   (1.-0.25*(mtildeX+mtildeY)/mtildeY*betaX2/beta2XY));
     }
     // 1 3P1
     else if(ispin==20) {
       fn*=betar;
-      f  =-fn*mtildeY*betaY*(1./mum+0.5*ms/mtildeY*slope*
+      f  =-fn*mtildeY*betaY*(1./mum+0.5*ms/mtildeY*beta2XY*slope/betaY2*
 			     (1./mq-0.5/mum*ms/mtildeX*betaY2/beta2XY));
       g  = 0.5*fn*ms/mtildeX/betaY;
       ap = 0.25*fn*ms*mQ/mtildeY/betaY/mum*(1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
       am = -0.25*fn*ms*(mtildeX+mtildeY)/mq/betaY/mtildeY*
-	(1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
+ 	(1.-0.5*ms*mq/mtildeX/mum*betaY2/beta2XY);
     }
     //  1 1P1
     else if(ispin==10) {
@@ -456,8 +456,8 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2
 	 +0.25*ms*mQ/mtildeY/mum*betaXb2*(1.-0.5*ms*betaXb2/mtildeY));
       f4 = 0.5*fn*ms/mtildeX/mQ/betaY*
-	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2+
-	 0.25*ms*betaXb2/mq*(mtildeX+mtildeY)/mtildeY*(1.-0.5*ms*betaXb2/mtildeY));
+ 	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2+
+ 	 0.25*ms*betaXb2/mq*(mtildeX+mtildeY)/mtildeY*(1.-0.5*ms*betaXb2/mtildeY));
     }
   }
   else {
