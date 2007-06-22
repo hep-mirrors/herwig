@@ -266,7 +266,8 @@ inline void VectorWaveFunction::checkParticle(const tcPDPtr & in)
   if(iSpin()!=3)
     {
       ThePEG::Helicity::HelicityConsistencyError()
-	<< "Calculating Vector WaveFunction for non-spin 1 Particle" 
+	<< "Calculating Vector WaveFunction for non-spin 1 Particle "
+	<< in->PDGName() 
 	<< Exception::abortnow;
     }
 }
