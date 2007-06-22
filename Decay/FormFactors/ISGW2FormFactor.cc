@@ -1060,7 +1060,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     f2 = -ii*f/msum;
     f3 = +ii*ap*msum;
     f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
-    f4 = -ii*g*msum;
+    f4 =  ii*g*msum;
   }
   else if(jspin==2) {
     f1 = h;

@@ -379,7 +379,7 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
       fp = fn*(1.+0.5*mQ/mum-0.25*mQ*mq/mup/mum*yratio);
       fm = fn*(1.-(mtildeX+mtildeY)*(0.5/mq-0.25/mup*yratio));
     }
-      // 1 3P0
+    // 1 3P0
     else if(ispin<100) {
       // extra power of beta factors
       fn*=betar;
@@ -441,11 +441,11 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     f2 = -ii*f/msum;
     f3 = +ii*ap*msum;
     f1 = -ii*0.5/mX*(am*q2+ii*msum*f2-ii*mdiff*f3);
-    f4 = -ii*g*msum;
+    f4 =  ii*g*msum;
   }
   // for tensors
   else if(jspin==2) {
-    fn *=fn/sqrt(2.);
+    fn *=betar/sqrt(2.);
     double betaXb2(betaX*betaX/beta2XY);
     // 1 3P2
     if(ispin==0) {
@@ -479,7 +479,7 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
   else if(ifl1==ifls&&ifl1<3) {
     if(abs(ifl1)==1&&int(id1/10)%100==1) fact = -sqrt(0.5);
     else                                 fact =  sqrt(0.5);
-  } 
+  }
   f1*=fact;
   f2*=fact;
   f3*=fact;
