@@ -1,4 +1,4 @@
-erwig/srcmkdir /Defaults/Handlers/Shower
+mkdir /Defaults/Handlers/Shower
 cd /Defaults/Handlers/Shower
 library HwShower.so
 #
