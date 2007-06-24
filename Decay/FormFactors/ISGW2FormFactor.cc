@@ -6,6 +6,7 @@
 
 #include "ISGW2FormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -14,6 +15,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 ISGW2FormFactor::ISGW2FormFactor() { 
+  // include the a(omega) piece
+  _includeaW = true;
   // values of a_S at matching scale
   _alphamuQM=0.6;
   // the quark masses
@@ -99,55 +102,55 @@ ISGW2FormFactor::ISGW2FormFactor() {
   addFormFactor(-541, 20443,1,-4, 5, 4);
   addFormFactor(-541, 10441,0, 4, 5, 4);
   // B_c to b dbar
-  addFormFactor(-541,-511  ,0, 5,-4,-1);
-  addFormFactor(-541,-513  ,1, 5,-4,-1);
-  addFormFactor(-541,-515  ,2, 5,-4,-1);
-  addFormFactor(-541,-10513,1, 5,-4,-1); 
-  addFormFactor(-541,-20513,1, 5,-4,-1);
-  addFormFactor(-541,-10511,0, 5,-4,-1);
+  addFormFactor( 541, 511  ,0, 5,-4,-1);
+  addFormFactor( 541, 513  ,1, 5,-4,-1);
+  addFormFactor( 541, 515  ,2, 5,-4,-1);
+  addFormFactor( 541, 10513,1, 5,-4,-1); 
+  addFormFactor( 541, 20513,1, 5,-4,-1);
+  addFormFactor( 541, 10511,0, 5,-4,-1);
   // B_c to b ubar
-  addFormFactor(-541,-521  ,0, 5,-4,-2);
-  addFormFactor(-541,-523  ,1, 5,-4,-2);
-  addFormFactor(-541,-525  ,2, 5,-4,-2);
-  addFormFactor(-541,-10523,1, 5,-4,-2); 
-  addFormFactor(-541,-20523,1, 5,-4,-2);
-  addFormFactor(-541,-10521,0, 5,-4,-2);
+  addFormFactor( 541, 521  ,0, 5,-4,-2);
+  addFormFactor( 541, 523  ,1, 5,-4,-2);
+  addFormFactor( 541, 525  ,2, 5,-4,-2);
+  addFormFactor( 541, 10523,1, 5,-4,-2); 
+  addFormFactor( 541, 20523,1, 5,-4,-2);
+  addFormFactor( 541, 10521,0, 5,-4,-2);
   // B_c decays to s bbar
-  addFormFactor(-541,-531  ,0, 5,-4,-3);
-  addFormFactor(-541,-533  ,1, 5,-4,-3);
-  addFormFactor(-541,-535  ,2, 5,-4,-3);
-  addFormFactor(-541,-10533,1, 5,-4,-3);
-  addFormFactor(-541,-20533,1, 5,-4,-3);
-  addFormFactor(-541,-10531,0, 5,-4,-3);
+  addFormFactor( 541, 531  ,0, 5,-4,-3);
+  addFormFactor( 541, 533  ,1, 5,-4,-3);
+  addFormFactor( 541, 535  ,2, 5,-4,-3);
+  addFormFactor( 541, 10533,1, 5,-4,-3);
+  addFormFactor( 541, 20533,1, 5,-4,-3);
+  addFormFactor( 541, 10531,0, 5,-4,-3);
   // B_s to d sbar
-  addFormFactor( 531,-311  ,0, 3,-5,-1);
-  addFormFactor( 531,-313  ,1, 3,-5,-1);
-  addFormFactor( 531,-315  ,2, 3,-5,-1);
-  addFormFactor( 531,-10313,1, 3,-5,-1);
-  addFormFactor( 531,-20313,1, 3,-5,-1);
-  addFormFactor( 531,-10311,0, 3,-5,-1);
+  addFormFactor(-531, 311  ,0, 3,-5,-1);
+  addFormFactor(-531, 313  ,1, 3,-5,-1);
+  addFormFactor(-531, 315  ,2, 3,-5,-1);
+  addFormFactor(-531, 10313,1, 3,-5,-1);
+  addFormFactor(-531, 20313,1, 3,-5,-1);
+  addFormFactor(-531, 10311,0, 3,-5,-1);
   // B_s to u sbar
-  addFormFactor( 531,-321  ,0, 3,-5,-2);
-  addFormFactor( 531,-323  ,1, 3,-5,-2);
-  addFormFactor( 531,-325  ,2, 3,-5,-2);
-  addFormFactor( 531,-10323,1, 3,-5,-2);
-  addFormFactor( 531,-20323,1, 3,-5,-2);
-  addFormFactor( 531,-10321,0, 3,-5,-2);
+  addFormFactor(-531, 321  ,0, 3,-5,-2);
+  addFormFactor(-531, 323  ,1, 3,-5,-2);
+  addFormFactor(-531, 325  ,2, 3,-5,-2);
+  addFormFactor(-531, 10323,1, 3,-5,-2);
+  addFormFactor(-531, 20323,1, 3,-5,-2);
+  addFormFactor(-531, 10321,0, 3,-5,-2);
   // B_s to s sbar
-  addFormFactor( 531, 221  ,0, 3,-5,-3);
-  addFormFactor( 531, 331  ,0, 3,-5,-3);
-  addFormFactor( 531, 333  ,1, 3,-5,-3);
-  addFormFactor( 531, 335  ,2, 3,-5,-3);
-  addFormFactor( 531, 10333,1, 3,-5,-3);
-  addFormFactor( 531, 20333,1, 3,-5,-3);
-  addFormFactor( 531, 10331,0, 3,-5,-3);
+  addFormFactor(-531, 221  ,0, 3,-5,-3);
+  addFormFactor(-531, 331  ,0, 3,-5,-3);
+  addFormFactor(-531, 333  ,1, 3,-5,-3);
+  addFormFactor(-531, 335  ,2, 3,-5,-3);
+  addFormFactor(-531, 10333,1, 3,-5,-3);
+  addFormFactor(-531, 20333,1, 3,-5,-3);
+  addFormFactor(-531, 10331,0, 3,-5,-3);
   // B_s decays to c sbar
-  addFormFactor( 531,-431  ,0, 3,-5,-4);
-  addFormFactor( 531,-433  ,1, 3,-5,-4);
-  addFormFactor( 531,-435  ,2, 3,-5,-4);
-  addFormFactor( 531,-10433,1, 3,-5,-4);
-  addFormFactor( 531,-20433,1, 3,-5,-4);
-  addFormFactor( 531,-10431,0, 3,-5,-4);
+  addFormFactor(-531, 431  ,0, 3,-5,-4);
+  addFormFactor(-531, 433  ,1, 3,-5,-4);
+  addFormFactor(-531, 435  ,2, 3,-5,-4);
+  addFormFactor(-531, 10433,1, 3,-5,-4);
+  addFormFactor(-531, 20433,1, 3,-5,-4);
+  addFormFactor(-531, 10431,0, 3,-5,-4);
   // B_u decays to d ubar
   addFormFactor(-521,-211  ,0,-2, 5, 1);
   addFormFactor(-521,-213  ,1,-2, 5, 1);
@@ -185,41 +188,41 @@ ISGW2FormFactor::ISGW2FormFactor() {
   addFormFactor(-521, 20423,1,-2, 5, 4);
   addFormFactor(-521, 10421,0,-2, 5, 4);
   // B_d decays to d dbar (I=0)
-  addFormFactor( 511, 221  ,0, 1,-5,-1); 
-  addFormFactor( 511, 331  ,0, 1,-5,-1); 
-  addFormFactor( 511, 223  ,1, 1,-5,-1); 
-  addFormFactor( 511, 225  ,2, 1,-5,-1); 
-  addFormFactor( 511, 10223,1, 1,-5,-1); 
-  addFormFactor( 511, 20223,1, 1,-5,-1);
-  addFormFactor( 511, 10221,0, 1,-5,-1);
+  addFormFactor(-511, 221  ,0, 1,-5,-1); 
+  addFormFactor(-511, 331  ,0, 1,-5,-1); 
+  addFormFactor(-511, 223  ,1, 1,-5,-1); 
+  addFormFactor(-511, 225  ,2, 1,-5,-1); 
+  addFormFactor(-511, 10223,1, 1,-5,-1); 
+  addFormFactor(-511, 20223,1, 1,-5,-1);
+  addFormFactor(-511, 10221,0, 1,-5,-1);
   // B_d decays to d dbar (I=1)
-  addFormFactor( 511, 111  ,0, 1,-5,-1); 
-  addFormFactor( 511, 113  ,1, 1,-5,-1); 
-  addFormFactor( 511, 115  ,2, 1,-5,-1); 
-  addFormFactor( 511, 10113,1, 1,-5,-1); 
-  addFormFactor( 511, 20113,1, 1,-5,-1);
-  addFormFactor( 511, 10111,0, 1,-5,-1);
+  addFormFactor(-511, 111  ,0, 1,-5,-1); 
+  addFormFactor(-511, 113  ,1, 1,-5,-1); 
+  addFormFactor(-511, 115  ,2, 1,-5,-1); 
+  addFormFactor(-511, 10113,1, 1,-5,-1); 
+  addFormFactor(-511, 20113,1, 1,-5,-1);
+  addFormFactor(-511, 10111,0, 1,-5,-1);
   // B_d decays to u dbar
-  addFormFactor( 511,-211  ,0, 1,-5,-2); 
-  addFormFactor( 511,-213  ,1, 1,-5,-2); 
-  addFormFactor( 511,-215  ,2, 1,-5,-2); 
-  addFormFactor( 511,-10213,1, 1,-5,-2); 
-  addFormFactor( 511,-20213,1, 1,-5,-2);
-  addFormFactor( 511,-10211,0, 1,-5,-2);
+  addFormFactor(-511, 211  ,0, 1,-5,-2); 
+  addFormFactor(-511, 213  ,1, 1,-5,-2); 
+  addFormFactor(-511, 215  ,2, 1,-5,-2); 
+  addFormFactor(-511, 10213,1, 1,-5,-2); 
+  addFormFactor(-511, 20213,1, 1,-5,-2);
+  addFormFactor(-511, 10211,0, 1,-5,-2);
   // B_d decays to  s dbar
-  addFormFactor( 511, 311  ,0, 1,-5,-3);
-  addFormFactor( 511, 313  ,1, 1,-5,-3);
-  addFormFactor( 511, 315  ,2, 1,-5,-3);
-  addFormFactor( 511, 10313,1, 1,-5,-3);
-  addFormFactor( 511, 20313,1, 1,-5,-3);
-  addFormFactor( 511, 10311,0, 1,-5,-3);
+  addFormFactor(-511, 311  ,0, 1,-5,-3);
+  addFormFactor(-511, 313  ,1, 1,-5,-3);
+  addFormFactor(-511, 315  ,2, 1,-5,-3);
+  addFormFactor(-511, 10313,1, 1,-5,-3);
+  addFormFactor(-511, 20313,1, 1,-5,-3);
+  addFormFactor(-511, 10311,0, 1,-5,-3);
   // B_d decays to  c dbar
-  addFormFactor( 511,-411  ,0, 1,-5,-4);
-  addFormFactor( 511,-413  ,1, 1,-5,-4);
-  addFormFactor( 511,-415  ,2, 1,-5,-4);
-  addFormFactor( 511,-10413,1, 1,-5,-4);
-  addFormFactor( 511,-20413,1, 1,-5,-4);
-  addFormFactor( 511,-10411,0, 1,-5,-4);
+  addFormFactor(-511, 411  ,0, 1,-5,-4);
+  addFormFactor(-511, 413  ,1, 1,-5,-4);
+  addFormFactor(-511, 415  ,2, 1,-5,-4);
+  addFormFactor(-511, 10413,1, 1,-5,-4);
+  addFormFactor(-511, 20413,1, 1,-5,-4);
+  addFormFactor(-511, 10411,0, 1,-5,-4);
   // D_s to d sbar
   addFormFactor( 431,   311,0,-3, 4, 1);
   addFormFactor( 431,   313,1,-3, 4, 1);
@@ -272,13 +275,13 @@ ISGW2FormFactor::ISGW2FormFactor() {
   addFormFactor( 421,-20323,1,-2, 4, 3);
   addFormFactor( 421,-10321,0,-2, 4, 3);
   // D+ to d dbar I=0
-  addFormFactor( 411, 221  ,0,-1, 4, 1);
-  addFormFactor( 411, 331  ,0,-1, 4, 1);
-  addFormFactor( 411, 223  ,1,-1, 4, 1);
-  addFormFactor( 411, 225  ,2,-1, 4, 1);
-  addFormFactor( 411, 10223,1,-1, 4, 1);
-  addFormFactor( 411, 20223,1,-1, 4, 1);
-  addFormFactor( 411, 10221,0,-1, 4, 1);
+  addFormFactor( 411,-221  ,0,-1, 4, 1);
+  addFormFactor( 411,-331  ,0,-1, 4, 1);
+  addFormFactor( 411,-223  ,1,-1, 4, 1);
+  addFormFactor( 411,-225  ,2,-1, 4, 1);
+  addFormFactor( 411,-10223,1,-1, 4, 1);
+  addFormFactor( 411,-20223,1,-1, 4, 1);
+  addFormFactor( 411,-10221,0,-1, 4, 1);
   // D+ to d dbar I=1
   addFormFactor( 411, 111  ,0,-1, 4, 1);
   addFormFactor( 411, 113  ,1,-1, 4, 1);
@@ -495,6 +498,13 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
       _massPth[ix][iy] = 0.625*m3P2+0.375*m1P1;
     }
   }
+  for(unsigned int ix=0;ix<3;++ix) {
+    for(unsigned int iy=0;iy<3;++iy) {
+      Energy mtemp = (4.*_massPoh[ix][iy]+8.*_massPth[ix][iy])/12.;
+      _massPoh[ix][iy]=mtemp;
+      _massPth[ix][iy]=mtemp;
+    }
+  }
 }
 
 void ISGW2FormFactor::persistentOutput(PersistentOStream & os) const {
@@ -507,7 +517,7 @@ void ISGW2FormFactor::persistentOutput(PersistentOStream & os) const {
      << _alphamuQM  << _CfDrho << _CfDKstar << _CfDsKstar << _CfDsphi 
      << _CfBrho << _CfBDstar << _CfBsKstar << _CfBsDstar << _CfBcDstar << _CfBcpsi
      << _CfBcBsstar << _CfBcBstar << _thetaeta << _mquark << _alphaQ << _beta1S0 
-     << _mass1S0 << _beta3S1 << _beta1P << _massPoh << _massPth;
+     << _mass1S0 << _beta3S1 << _beta1P << _massPoh << _massPth << _includeaW;
 }
 
 void ISGW2FormFactor::persistentInput(PersistentIStream & is, int) {
@@ -520,7 +530,7 @@ void ISGW2FormFactor::persistentInput(PersistentIStream & is, int) {
      >> _alphamuQM >> _CfDrho >> _CfDKstar >> _CfDsKstar >> _CfDsphi 
      >> _CfBrho >> _CfBDstar >> _CfBsKstar >> _CfBsDstar >> _CfBcDstar >> _CfBcpsi
      >> _CfBcBsstar >> _CfBcBstar >> _thetaeta >> _mquark >> _alphaQ >> _beta1S0 
-     >> _mass1S0 >> _beta3S1 >> _beta1P >> _massPoh >> _massPth;
+     >> _mass1S0 >> _beta3S1 >> _beta1P >> _massPoh >> _massPth >> _includeaW;
 }
 
 ClassDescription<ISGW2FormFactor> ISGW2FormFactor::initISGW2FormFactor;
@@ -804,10 +814,25 @@ void ISGW2FormFactor::Init() {
      &ISGW2FormFactor::_thetaeta, -pi/9., -pi, pi,
      false, false, true);
 
+  static Switch<ISGW2FormFactor,bool> interfaceIncludeaW
+    ("IncludeaW",
+     "Include the a(omega) piece of the Cji factor",
+     &ISGW2FormFactor::_includeaW, true, false, false);
+  static SwitchOption interfaceIncludeaWInclude
+    (interfaceIncludeaW,
+     "Include",
+     "Include the factor",
+     true);
+  static SwitchOption interfaceIncludeaWDoNot
+    (interfaceIncludeaW,
+     "DoNot",
+     "Do not include the factor",
+     false);
+
 }
 
 // member which does the work
-void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
+void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 				 Energy mY,
 				 Energy mX, Complex & f1,Complex & f2,Complex & f3,
 				 Complex & f4) const {
@@ -909,8 +934,8 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     double asopi(alphaS(mq,mq*mQ)/pi),w(1.+0.5*tmmt/mX/mY);
     double aI(-6./(33.-2.*Nf)),rw(1./sqrt(w*w-1)*log(w+sqrt(w*w-1.)));
     double aLw(8./(33.-2.*Nfp)*(w*rw-1.)); 
-    double cji(pow(_alphaQ[ifl0-1]/_alphaQ[ifl1-1],aI)*
-	       pow(_alphaQ[ifl1-1]/_alphamuQM,aLw));
+    double cji(pow(_alphaQ[ifl0-1]/_alphaQ[ifl1-1],aI));
+    if(_includeaW) cji*=pow(_alphaQ[ifl1-1]/_alphamuQM,aLw);
     double zji(mq/mQ); 
     double gamji(-2.*zji/(1.-zji)*log(zji)-2.),chiji(-1.-gamji/(1.-zji));
     // scalar

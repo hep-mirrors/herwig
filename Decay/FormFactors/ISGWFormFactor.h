@@ -171,7 +171,6 @@ private:
    * Describe a concrete class with persistent data.
    */
   static ClassDescription<ISGWFormFactor> initISGWFormFactor;
-
   /**
    * Private and non-existent assignment operator.
    */

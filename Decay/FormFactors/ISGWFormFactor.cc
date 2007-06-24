@@ -70,20 +70,20 @@ ISGWFormFactor::ISGWFormFactor() {
   addFormFactor(-521, 20423,1,-2, 5, 4);
   addFormFactor(-521, 10421,0,-2, 5, 4);
   // B_d to d dbar (I=0)
-  addFormFactor( 511, 221  ,0, 1,-5,-1);
-  addFormFactor( 511, 331  ,0, 1,-5,-1);
-  addFormFactor( 511, 223  ,1, 1,-5,-1);
-  addFormFactor( 511, 225  ,2, 1,-5,-1);
-  addFormFactor( 511, 10223,1, 1,-5,-1);
-  addFormFactor( 511, 20223,1, 1,-5,-1);
-  addFormFactor( 511, 10221,0, 1,-5,-1);
+  addFormFactor(-511, 221  ,0, 1,-5,-1);
+  addFormFactor(-511, 331  ,0, 1,-5,-1);
+  addFormFactor(-511, 223  ,1, 1,-5,-1);
+  addFormFactor(-511, 225  ,2, 1,-5,-1);
+  addFormFactor(-511, 10223,1, 1,-5,-1);
+  addFormFactor(-511, 20223,1, 1,-5,-1);
+  addFormFactor(-511, 10221,0, 1,-5,-1);
   // B_d to d dbar (I=1)
-  addFormFactor( 511, 111  ,0, 1,-5,-1);
-  addFormFactor( 511, 113  ,1, 1,-5,-1);
-  addFormFactor( 511, 115  ,2, 1,-5,-1);
-  addFormFactor( 511, 10113,1, 1,-5,-1);
-  addFormFactor( 511, 20113,1, 1,-5,-1);
-  addFormFactor( 511, 10111,0, 1,-5,-1);
+  addFormFactor(-511, 111  ,0, 1,-5,-1);
+  addFormFactor(-511, 113  ,1, 1,-5,-1);
+  addFormFactor(-511, 115  ,2, 1,-5,-1);
+  addFormFactor(-511, 10113,1, 1,-5,-1);
+  addFormFactor(-511, 20113,1, 1,-5,-1);
+  addFormFactor(-511, 10111,0, 1,-5,-1);
   // B_d to u dbar
   addFormFactor(-511, 211  ,0, 1,-5,-2);
   addFormFactor(-511, 213  ,1, 1,-5,-2);
@@ -92,12 +92,12 @@ ISGWFormFactor::ISGWFormFactor() {
   addFormFactor(-511, 20213,1, 1,-5,-2);
   addFormFactor(-511, 10211,0, 1,-5,-2);
   // B_d to s dbar 
-  addFormFactor( 511, 311  ,0, 1,-5,-3);
-  addFormFactor( 511, 313  ,1, 1,-5,-3);
-  addFormFactor( 511, 315  ,2, 1,-5,-3);
-  addFormFactor( 511, 10313,1, 1,-5,-3);
-  addFormFactor( 511, 20313,1, 1,-5,-3);
-  addFormFactor( 511, 10311,0, 1,-5,-3);
+  addFormFactor(-511, 311  ,0, 1,-5,-3);
+  addFormFactor(-511, 313  ,1, 1,-5,-3);
+  addFormFactor(-511, 315  ,2, 1,-5,-3);
+  addFormFactor(-511, 10313,1, 1,-5,-3);
+  addFormFactor(-511, 20313,1, 1,-5,-3);
+  addFormFactor(-511, 10311,0, 1,-5,-3);
   // B_d decays to  c dbar
   addFormFactor(-511, 411  ,0, 1,-5,-4);
   addFormFactor(-511, 413  ,1, 1,-5,-4);

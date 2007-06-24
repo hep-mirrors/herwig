@@ -481,6 +481,11 @@ private:
    * The \f$\eta-\eta'\f$ mixing angle 
    */
   double _thetaeta;
+
+  /**
+   * Include the \f$a_L(\omega)\f$ piece of the \f$C_{ji}\f$ factor
+   */
+  bool _includeaW;
 };
 
 }
