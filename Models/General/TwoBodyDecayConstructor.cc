@@ -213,9 +213,11 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vert,
     name = "SSSDecayer";
   }
     break;
-  default : throw NBodyDecayConstructorError() << "Cannot find appropriate "
-					       << "vertex to create "
-					       << "decayer\n";
+  case VVV : name = "VVVDecayer";
+    break;
+  default : throw NBodyDecayConstructorError() 
+    << "Error: Cannot assign " << vert->fullName() << " to a decayer. " 
+    <<  "Looking in column " << icol;
   }
   ostringstream fullname;
   fullname << "/Defaults/Decays/" << name << "_" 
