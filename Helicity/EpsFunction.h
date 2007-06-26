@@ -6,15 +6,14 @@
 
 #include "ThePEG/Config/ThePEG.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-
-// #include "EpsFunction.fh"
-// #include "EpsFunction.xh"
+#include "ThePEG/Helicity/LorentzTensor.h"
 
 namespace Herwig {
 namespace Helicity {
 
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
+using ThePEG::Helicity::LorentzTensor;
 
 /** \ingroup Helicity
  *  \author Peter Richardson
@@ -133,6 +132,12 @@ public:
   static inline LorentzPolarizationVector product(const LorentzPolarizationVector & v1,
 						  const LorentzPolarizationVector & v2,
 						  const LorentzPolarizationVector & v3);
+
+  /**
+   *  Return the product \f$\epsilon^{\mu\nu\alpha\beta}v_{1\alpha}v_{2\beta}\f$.
+   */
+  static inline LorentzTensor product(const LorentzPolarizationVector & v1,
+				      const LorentzPolarizationVector & v2);
 
 private:
 

@@ -13,8 +13,7 @@ using namespace ThePEG;
 
 inline LorentzPolarizationVector EpsFunction::product(const Lorentz5Momentum & p1,
 						      const Lorentz5Momentum & p2,
-						      const Lorentz5Momentum & p3)
-{
+						      const Lorentz5Momentum & p3) {
   // array to contain the answer
   Complex vect[4];
   // calculate some useful differences
@@ -36,10 +35,10 @@ inline LorentzPolarizationVector EpsFunction::product(const Lorentz5Momentum & p
   return LorentzPolarizationVector(vect[0],vect[1],vect[2],vect[3]);
 }
 
-inline LorentzPolarizationVector EpsFunction::product(const LorentzPolarizationVector & p1,
-						      const Lorentz5Momentum & p2,
-						      const Lorentz5Momentum & p3)
-{
+inline LorentzPolarizationVector 
+EpsFunction::product(const LorentzPolarizationVector & p1,
+		     const Lorentz5Momentum & p2,
+		     const Lorentz5Momentum & p3) {
   // array to contain the answer
   Complex vect[4];
   // calculate some useful differences
@@ -61,10 +60,10 @@ inline LorentzPolarizationVector EpsFunction::product(const LorentzPolarizationV
   return LorentzPolarizationVector(vect[0],vect[1],vect[2],vect[3]);
 }
 
-inline LorentzPolarizationVector EpsFunction::product(const LorentzPolarizationVector & p1,
-						      const LorentzPolarizationVector & p2,
-						      const Lorentz5Momentum & p3)
-{
+inline LorentzPolarizationVector 
+EpsFunction::product(const LorentzPolarizationVector & p1,
+		     const LorentzPolarizationVector & p2,
+		     const Lorentz5Momentum & p3) {
   // array to contain the answer
   Complex vect[4];
   // calculate some useful differences
@@ -86,26 +85,48 @@ inline LorentzPolarizationVector EpsFunction::product(const LorentzPolarizationV
   return LorentzPolarizationVector(vect[0],vect[1],vect[2],vect[3]);
 }
 
-inline LorentzPolarizationVector EpsFunction::product(const Lorentz5Momentum & p1,
-						      const LorentzPolarizationVector & p2,
-						      const Lorentz5Momentum & p3)
-{return product(p2,p3,p1);}
+inline LorentzPolarizationVector 
+EpsFunction::product(const Lorentz5Momentum & p1,
+		     const LorentzPolarizationVector & p2,
+		     const Lorentz5Momentum & p3) {
+  return product(p2,p3,p1);
+}
 
-inline LorentzPolarizationVector EpsFunction::product(const Lorentz5Momentum & p1,
-						      const Lorentz5Momentum & p2,
-						      const LorentzPolarizationVector & p3)
-{return product(p3,p1,p2);}
+inline LorentzPolarizationVector 
+EpsFunction::product(const Lorentz5Momentum & p1,
+		     const Lorentz5Momentum & p2,
+		     const LorentzPolarizationVector & p3) {
+  return product(p3,p1,p2);
+}
 
-inline LorentzPolarizationVector EpsFunction::product(const Lorentz5Momentum & p1,
-						      const LorentzPolarizationVector & p2,
-						      const LorentzPolarizationVector & p3)
-{return product(p2,p3,p1);}
+inline LorentzPolarizationVector 
+EpsFunction::product(const Lorentz5Momentum & p1,
+		     const LorentzPolarizationVector & p2,
+		     const LorentzPolarizationVector & p3) {
+  return product(p2,p3,p1);
+}
 
-inline LorentzPolarizationVector EpsFunction::product(const LorentzPolarizationVector & p1,
-						      const Lorentz5Momentum & p2,
-						      const LorentzPolarizationVector & p3)
-{return product(p3,p1,p2);}
+inline LorentzPolarizationVector 
+EpsFunction::product(const LorentzPolarizationVector & p1,
+		     const Lorentz5Momentum & p2,
+		     const LorentzPolarizationVector & p3) {
+  return product(p3,p1,p2);
+}
 
+inline LorentzTensor
+EpsFunction::product(const LorentzPolarizationVector & v1,
+		     const LorentzPolarizationVector & v2) {
+  Complex xy = v1.z()*v2.t()-v1.t()*v2.z();
+  Complex zt = v1.x()*v2.y()-v1.y()*v2.x();
+  Complex zx = v1.y()*v2.t()-v1.t()*v2.y();
+  Complex zy = v1.x()*v2.t()-v1.t()*v2.x();
+  Complex yt = v1.x()*v2.z()-v1.z()*v2.x();
+  Complex tx = v1.y()*v2.z()-v1.z()*v2.y();
+  return LorentzTensor(0. ,-xy, zx,-tx,
+		        xy, 0.,-zy, yt,
+		       -zx,+zy, 0., zt,
+		       +tx,-yt,-zt, 0.);
+}
 
 }
 }
