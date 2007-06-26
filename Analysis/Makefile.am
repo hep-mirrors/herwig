@@ -81,7 +81,9 @@ ZPhotonsAnalysis.fh ZPhotonsAnalysis.cc \
 DDalitzAnalysis.h DDalitzAnalysis.icc \
 DDalitzAnalysis.fh DDalitzAnalysis.cc  \
 SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.icc \
-SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc 
+SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc  \
+OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.icc \
+OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc 
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET

@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the OniumToOniumPiPiAnalysis class.
+//
+
+namespace Herwig {
+
+inline IBPtr OniumToOniumPiPiAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr OniumToOniumPiPiAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
