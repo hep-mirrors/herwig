@@ -10,11 +10,6 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonVectorScalarDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -173,9 +168,8 @@ void VectorMesonVectorScalarDecayer::Init() {
 }
 
 double VectorMesonVectorScalarDecayer::me2(bool vertex, const int,
-				   const Particle & inpart,
-				   const ParticleVector & decay) const
-{
+					   const Particle & inpart,
+					   const ParticleVector & decay) const {
   // wavefunction for the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<LorentzPolarizationVector> invec;
@@ -194,18 +188,18 @@ double VectorMesonVectorScalarDecayer::me2(bool vertex, const int,
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
   Complex epsdot(0.),pre(_coupling[imode()]/inpart.mass());
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      if(ix==1&&photon)
-	{for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=0.;}}
-      else
-	{
-	  epsdot=vout[ix]*inpart.momentum();
-	  for(unsigned int iy=0;iy<3;++iy)
-	    {newME(iy,ix,0)=pre*invec[iy]*(p0dotpv*vout[ix]-
-					   epsdot*decay[0]->momentum());}
-	}
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1&&photon) {
+      for(unsigned int iy=0;iy<3;++iy) newME(iy,ix,0)=0.;
     }
+    else {
+      epsdot=vout[ix]*inpart.momentum();
+      for(unsigned int iy=0;iy<3;++iy) {
+	newME(iy,ix,0)=pre*invec[iy]*(p0dotpv*vout[ix]-
+				      epsdot*decay[0]->momentum());
+      }
+    }
+  }
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();
@@ -213,8 +207,7 @@ double VectorMesonVectorScalarDecayer::me2(bool vertex, const int,
 
 bool VectorMesonVectorScalarDecayer::twoBodyMEcode(const DecayMode & dm,
 						     int & mecode,
-						     double & coupling) const
-{
+						     double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id()),idbar(id);
   if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
