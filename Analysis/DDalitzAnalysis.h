@@ -180,7 +180,7 @@ private:
   //@}
 
   /**
-   *  Histograms for \f$D^0\toK^-\pi^+\pi^0\f$
+   *  Histograms for \f$D^0\to K^-\pi^+\pi^0\f$
    */
   //@{
   /**

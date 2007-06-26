@@ -640,42 +640,42 @@ private:
    */
   //@{
   /**
-   *  Amplitude for \f$K^*(892)^-$
+   *  Amplitude for \f$K^*(892)^-\f$
    */
   Complex _aKm892;
 
   /**
-   *  Amplitude for \f$K^*_0(1430)^-$
+   *  Amplitude for \f$K^*_0(1430)^-\f$
    */
   complex<Energy2> _aKm14300;
 
   /**
-   *  Amplitude for \f$K^*_2(1430)^-$
+   *  Amplitude for \f$K^*_2(1430)^-\f$
    */
   complex<InvEnergy2> _aKm14302;
 
   /**
-   *  Amplitude for \f$K^*(1410)^-$
+   *  Amplitude for \f$K^*(1410)^-\f$
    */
   Complex _aKm1410;
 
   /**
-   *  Amplitude for \f$K^*(1680)^-$
+   *  Amplitude for \f$K^*(1680)^-\f$
    */
   Complex _aKm1680;
 
   /**
-   *  Amplitude for \f$K^*(892)^+$
+   *  Amplitude for \f$K^*(892)^+\f$
    */
   Complex _aKp892;
 
   /**
-   *  Amplitude for \f$K^*_0(1430)^+$
+   *  Amplitude for \f$K^*_0(1430)^+\f$
    */
   complex<Energy2> _aKp14300;
 
   /**
-   *  Amplitude for \f$K^*_2(1430)^+$
+   *  Amplitude for \f$K^*_2(1430)^+\f$
    */
   complex<InvEnergy2> _aKp14302;
 
