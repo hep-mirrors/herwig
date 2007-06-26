@@ -164,12 +164,12 @@ private:
   vector<int> _incoming;
 
   /**
-   * the PDG codes for the outgoing fermion
+   * the PDG codes for the first outgoing meson
    */
   vector<int> _outgoing1;
 
   /**
-   * the PDG codes for the outgoing antifermion.
+   * the PDG codes for the second outgoing meson 
    */
   vector<int> _outgoing2;
 

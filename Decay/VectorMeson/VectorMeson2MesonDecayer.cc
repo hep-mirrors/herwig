@@ -13,39 +13,33 @@
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig; 
 using namespace ThePEG::Helicity;
-using Herwig::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::VectorWaveFunction;
-using Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using namespace Herwig::Helicity;
   
 void VectorMeson2MesonDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check consistence of the parameters
   unsigned int isize=_incoming.size();
   if(isize!=_outgoing1.size()||isize!=_outgoing2.size()||isize!=_maxweight.size()||
-     isize!=_coupling.size())
-    {throw InitException() << "Inconsistent parameters in "
-			   << "VectorMeson2MesonDecayer" << Exception::runerror;}
+     isize!=_coupling.size()) {
+    throw InitException() << "Inconsistent parameters in "
+			  << "VectorMeson2MesonDecayer" << Exception::runerror;
+  }
   // set up the integration channels
   vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0]=getParticleData( _incoming[ix]);
-      extpart[1]=getParticleData(_outgoing1[ix]);
-      extpart[2]=getParticleData(_outgoing2[ix]);
-      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
-      addMode(mode,_maxweight[ix],wgt);
-    }
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extpart[0]=getParticleData( _incoming[ix]);
+    extpart[1]=getParticleData(_outgoing1[ix]);
+    extpart[2]=getParticleData(_outgoing2[ix]);
+    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    addMode(mode,_maxweight[ix],wgt);
+  }
 }
 
-VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() 
-{
+VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() {
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
@@ -201,34 +195,41 @@ VectorMeson2MesonDecayer::VectorMeson2MesonDecayer()
  
 int VectorMeson2MesonDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
   int imode(-1);
-  int id(dm.parent()->id()),idbar(id);
-  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
   ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
   ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0);
   cc=false;
   do {
-    if(id   ==_incoming[ix])
-      {if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
-	  (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])){imode=ix;}}
-    if(idbar==_incoming[ix])
-      {if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
-	  (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])){imode=ix;cc=true;}}
+    if(id   ==_incoming[ix]) {
+      if((id1   ==_outgoing1[ix]&&id2   ==_outgoing2[ix])||
+	 (id2   ==_outgoing1[ix]&&id1   ==_outgoing2[ix])) imode=ix;
+    }
+    if(idbar==_incoming[ix]) {
+      if((id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix])||
+	 (id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix])) {
+	imode=ix;
+	cc=true;
+      }
+    }
     ++ix;
   }
   while(ix<_incoming.size()&&imode<0);
   return imode;
 }
   
-void VectorMeson2MesonDecayer::persistentOutput(PersistentOStream & os) const
-{os << _incoming << _outgoing1 << _outgoing2 << _maxweight << _coupling;}
+void VectorMeson2MesonDecayer::persistentOutput(PersistentOStream & os) const {
+  os << _incoming << _outgoing1 << _outgoing2 << _maxweight << _coupling;
+}
   
-void VectorMeson2MesonDecayer::persistentInput(PersistentIStream & is, int) 
-{is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> _coupling;}
+void VectorMeson2MesonDecayer::persistentInput(PersistentIStream & is, int) {
+  is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> _coupling;
+}
   
 ClassDescription<VectorMeson2MesonDecayer> VectorMeson2MesonDecayer::initVectorMeson2MesonDecayer;
   // Definition of the static class description member.
@@ -275,56 +276,64 @@ void VectorMeson2MesonDecayer::Init() {
 
 double VectorMeson2MesonDecayer::me2(bool vertex, const int,
 				     const Particle & inpart,
-				     const ParticleVector & decay) const
-{
+				     const ParticleVector & decay) const {
   // polarization vector of the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<LorentzPolarizationVector> invec;
   VectorWaveFunction(invec,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);
   // setup the spininfomation for the decay products
-  for(unsigned int ix=0;ix<decay.size();++ix)
+  for(unsigned int ix=0;ix<decay.size();++ix) {
     // workaround for gcc 3.2.3 bug
-    //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    {PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+    //ALB ScalarWaveFunction(decay[ix],outgoing,true,vertex);
+    PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  }
   // difference of the momenta
   Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
   pdiff *=_coupling[imode()]/inpart.mass();
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0)=invec[ix]*pdiff;}
+  for(unsigned int ix=0;ix<3;++ix) newME(ix,0,0)=invec[ix]*pdiff;
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();
 }
  
 bool VectorMeson2MesonDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
-					     double & coupling) const
-{
+					     double & coupling) const {
   int imode(-1);
   int id(dm.parent()->id()),idbar(id);
-  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  if(dm.parent()->CC()) idbar=dm.parent()->CC()->id();
   ParticleMSet::const_iterator pit(dm.products().begin());
   int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
+  if((**pit).CC()) id1bar=(**pit).CC()->id();
   ++pit;
   int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  if((**pit).CC()) id2bar=(**pit).CC()->id();
   unsigned int ix(0); bool order(false);
-  do 
-    {
-      if(id   ==_incoming[ix])
-	{
-	  if(id1==_outgoing1[ix]&&id2==_outgoing2[ix]){imode=ix;order=true;}
-	  if(id2==_outgoing1[ix]&&id1==_outgoing2[ix]){imode=ix;order=false;}
-	}
-      if(idbar==_incoming[ix]&&imode<0)
-	{
-	  if(id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix]){imode=ix;order=true;}
-	  if(id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix]){imode=ix;order=false;}
-	}
-      ++ix;
+  do {
+    if(id   ==_incoming[ix]) {
+      if(id1==_outgoing1[ix]&&id2==_outgoing2[ix]) {
+	imode=ix;
+	order=true;
+      }
+      if(id2==_outgoing1[ix]&&id1==_outgoing2[ix]) {
+	imode=ix;
+	order=false;
+      }
     }
+    if(idbar==_incoming[ix]&&imode<0) {
+      if(id1bar==_outgoing1[ix]&&id2bar==_outgoing2[ix]) {
+	imode=ix;
+	order=true;
+      }
+      if(id2bar==_outgoing1[ix]&&id1bar==_outgoing2[ix]) {
+	imode=ix;
+	order=false;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   coupling=_coupling[imode];
   mecode=0;
@@ -333,41 +342,37 @@ bool VectorMeson2MesonDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
 
 // output the setup information for the particle database
 void VectorMeson2MesonDecayer::dataBaseOutput(ofstream & output,
-					      bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+					      bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming " << ix << " " 
-		 << _incoming[ix] << "\n";
-	  output << "set " << fullName() << ":FirstOutgoing " << ix << " " 
-		 << _outgoing1[ix] << "\n";
-	  output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
-		 << _outgoing2[ix] << "\n";
-	  output << "set " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
-	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
-		 << _maxweight[ix] << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming " << ix << " " 
-		 << _incoming[ix] << "\n";
-	  output << "insert " << fullName() << ":FirstOutgoing " << ix << " " 
-		 << _outgoing1[ix] << "\n";
-	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
-		 << _outgoing2[ix] << "\n";
-	  output << "insert " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
-	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
-		 << _maxweight[ix] << "\n";
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":Incoming " << ix << " " 
+	     << _incoming[ix] << "\n";
+      output << "set " << fullName() << ":FirstOutgoing " << ix << " " 
+	     << _outgoing1[ix] << "\n";
+      output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
+	     << _outgoing2[ix] << "\n";
+      output << "set " << fullName() << ":Coupling " << ix << " " 
+	     << _coupling[ix] << "\n";
+      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+	     << _maxweight[ix] << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
+    else {
+      output << "insert " << fullName() << ":Incoming " << ix << " " 
+	     << _incoming[ix] << "\n";
+      output << "insert " << fullName() << ":FirstOutgoing " << ix << " " 
+	     << _outgoing1[ix] << "\n";
+      output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
+	     << _outgoing2[ix] << "\n";
+      output << "insert " << fullName() << ":Coupling " << ix << " " 
+	     << _coupling[ix] << "\n";
+      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+	     << _maxweight[ix] << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
-}
+

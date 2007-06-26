@@ -73,6 +73,15 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
       }
     }
   }
+  id0=511;
+  id1=-411;
+  Energy2 q2=5.22436*GeV2;
+  bool cc(false);
+  Energy m0(getParticleData(id0)->mass()),m1(getParticleData(id1)->mass());
+  unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
+  Complex f0,fp;
+  _form->ScalarScalarFormFactor(q2,iloc,id0,id1,m0,m1,f0,fp);
+  //_form->ScalarVectorFormFactor(q2,iloc,id0,id1,MP,MV,A0,A1,A2,V);
 }
 
 bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
