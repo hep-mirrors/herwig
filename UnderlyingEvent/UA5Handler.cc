@@ -316,7 +316,6 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 			const Hint &) throw(Veto,Stop,Exception) {
-  useMe();
   Timer<10000> timer("UA5Handler::handle()");
   // create a new step for the products
   StepPtr newstep = newStep();
@@ -344,6 +343,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   if(i!=2) throw Exception() << "Must have two and only two beam clusters in "
 			     << "UA5Handler::handle " 
 			     << Exception::eventerror;
+  useMe();
   // if not generating the soft underlying event 
   // just hadronize and decay the two clusters
   if(rnd()>_probSoft)
