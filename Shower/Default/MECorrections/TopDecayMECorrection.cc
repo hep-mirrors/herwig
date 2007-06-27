@@ -420,8 +420,19 @@ bool TopDecayMECorrection::softMatrixElementVeto(ShowerProgenitorPtr initial,
       // values of kappa and z
       double z(br.kinematics->z()),kappa(sqr(br.kinematics->scale()/_mt));
       // momentum fractions
-      double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a),
-	xg((2.-xa)*(1.-r)-(z-r)*root);
+      double xa(1.+_a-_c-z*(1.-z)*kappa),r(0.5*(1.+_c/(1.+_a-xa))),root(sqr(xa)-4.*_a);
+      if(root<0.) {
+	  generator()->log() << "Imaginary root for final-state veto in "
+			     << "TopDecayMECorrection::softMatrixElementVeto"
+			     << "\nz =  " << z  << "\nkappa = " << kappa
+			     << "\nxa = " << xa 
+			     << "\nroot^2= " << root;
+	  parent->setEvolutionScale(ShowerIndex::QCD,br.kinematics->scale());
+	  return true;
+      } 
+      root=sqrt(root);
+      double xg((2.-xa)*(1.-r)-(z-r)*root);
+      // xfact (below) is supposed to equal xg/(1-z). 
       double xfact(z*kappa/2./(z*(1.-z)*kappa+_c)*(2.-xa-root)+root);
       // calculate the full result
       double f(me(xa,xg));
