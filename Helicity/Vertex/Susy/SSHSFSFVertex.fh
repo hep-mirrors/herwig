@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSHSFSFVertex class.
+//
+#ifndef HERWIG_SSHSFSFVertex_FH
+#define HERWIG_SSHSFSFVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class SSHSFSFVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SSHSFSFVertex,SSHSFSFVertexPtr);
+
+}
+
+#endif

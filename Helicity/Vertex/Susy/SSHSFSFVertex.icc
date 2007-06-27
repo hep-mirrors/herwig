@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSHSFSFVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+
+inline IBPtr SSHSFSFVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSHSFSFVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
+}
