@@ -55,8 +55,8 @@ void MSSM::createMixingMatrices() {
   if(!theHiggsMix) {
     vector<MixingElement> hmix;
     hmix.push_back(MixingElement(1,1, cos(theAlpha)));
-    hmix.push_back(MixingElement(1,2, sin(theAlpha)));
-    hmix.push_back(MixingElement(2,1,-sin(theAlpha)));
+    hmix.push_back(MixingElement(1,2,-sin(theAlpha)));
+    hmix.push_back(MixingElement(2,1, sin(theAlpha)));
     hmix.push_back(MixingElement(2,2, cos(theAlpha)));
     vector<long> ids(2);
     ids[0] = 25; ids[1] = 35;
