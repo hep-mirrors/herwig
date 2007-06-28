@@ -17,7 +17,7 @@ inline IBPtr SSCFSVertex::fullclone() const {
 
 inline void SSCFSVertex::doinit() throw(InitException) {
   FFSVertex::doinit();
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   //mixing matrices
   _stop = _theSS->stopMix();
   _sbottom = _theSS->sbottomMix();

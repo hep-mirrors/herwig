@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
+#include "Herwig++/Models/Susy/MSSM.h"
 #include "SSWSSVertex.fh"
 
 namespace Herwig {
@@ -108,9 +108,9 @@ private:
   SSWSSVertex & operator=(const SSWSSVertex &);
 
   /**
-   * Pointer to the SusyBase object
+   * Pointer to the MSSM object
    */
-  tSusyBasePtr _theSS;
+  tMSSMPtr _theSS;
 
 /**
    * Value of \f$sin(\theta_w)\f$

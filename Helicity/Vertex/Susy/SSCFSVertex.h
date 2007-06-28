@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
+#include "Herwig++/Models/Susy/MSSM.h"
 #include "SSCFSVertex.fh"
 
 namespace Herwig {
@@ -111,9 +111,9 @@ private:
   SSCFSVertex & operator=(const SSCFSVertex &);
 
   /**
-   * Pointer to the SusyBase object
+   * Pointer to the MSSM object
    */
-  tSusyBasePtr _theSS;
+  tMSSMPtr _theSS;
 
   /**
    * \f$\tan(\beta)\f$

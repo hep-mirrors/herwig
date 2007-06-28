@@ -18,11 +18,12 @@ SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(0.),
   vector<int> first, second, third;
   //iw == -1 outgoing W-, iw == +1 outgoing W+
   for(int iw = -1; iw < 2; iw += 2) {
-    for(unsigned int ine = 0; ine < 4; ++ine) {
+    for(unsigned int ine = 0; ine < 5; ++ine) {
       int neu(1000022);
       if(ine == 1) neu = 1000023;
       if(ine == 2) neu = 1000025;
       if(ine == 3) neu = 1000035;
+      if(ine == 4) neu = 1000045;
       for(unsigned int ic = 0; ic < 2; ++ic) {
 	int cha(1000024);
 	if(ic == 1) cha = 1000037;
@@ -99,7 +100,8 @@ void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				     << Exception::warning;
   if((abs(cha) == 1000024 || abs(cha) == 1000037) && 
      (abs(neu) == 1000022 || abs(neu) == 1000023 || 
-      abs(neu) == 1000025 || abs(neu) == 1000035) ) {
+      abs(neu) == 1000025 || abs(neu) == 1000035 || 
+      abs(neu) == 1000045) ) {
     if(q2 != _q2last) {
       _q2last = q2;
       _couplast = sqrt(4.*Constants::pi*_theSS->alphaEM(q2))/_sw;
@@ -114,6 +116,7 @@ void SSCNWVertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
       if(abs(neu) == 1000023) eign = 1;
       if(abs(neu) == 1000025) eign = 2;
       if(abs(neu) == 1000035) eign = 3;
+      if(abs(neu) == 1000045) eign = 4;
       _leftlast = (*_theN)(eign, 1)*conj((*_theV)(eigc, 0)) - 
 	( (*_theN)(eign, 3)*conj((*_theV)(eigc, 1))/sqrt(2));
 

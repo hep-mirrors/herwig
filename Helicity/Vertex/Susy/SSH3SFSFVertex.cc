@@ -54,7 +54,7 @@ void SSH3SFSFVertex::persistentInput(PersistentIStream & is, int) {
 
 void SSH3SFSFVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!_theSS)
     throw InitException() << "SSGSSVertex::doinit() - "
 			  << "The model pointer is null."
@@ -63,18 +63,16 @@ void SSH3SFSFVertex::doinit() throw(InitException) {
   _sw = _theSS->sin2ThetaW();
   _tb = _theSS->tanBeta();
   _mu = _theSS->muParameter();
-  vector<Complex> au(_theSS->upTypeTrilinear());
-  vector<Complex> ad(_theSS->downTypeTrilinear());
-  vector<Complex> ae(_theSS->leptonTypeTrilinear());
-  _trilinear[0] = ad[0].real();
-  _trilinear[1] = au[0].real();
-  _trilinear[2] = ad[1].real();
-  _trilinear[3] = au[1].real();
-  _trilinear[4] = ad[2].real();
-  _trilinear[5] = au[2].real();
-  _trilinear[6] = ae[0].real();
-  _trilinear[7] = ae[1].real();
-  _trilinear[8] = ae[2].real();
+  
+  _trilinear[0] = 0.*GeV; 
+  _trilinear[1] = 0.*GeV;
+  _trilinear[2] = 0.*GeV; 
+  _trilinear[3] = 0.*GeV;
+  _trilinear[4] = _theSS->bottomTrilinear().real();
+  _trilinear[5] = _theSS->topTrilinear().real();
+  _trilinear[6] = 0.*GeV;
+  _trilinear[7] = 0.*GeV;
+  _trilinear[8] = _theSS->tauTrilinear().real();
   orderInGem(1);
   orderInGs(0);
   }

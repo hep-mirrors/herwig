@@ -15,12 +15,13 @@ SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(0.),
 			   _sb(0.), _cb(0.), _leftlast(0.), 
 			   _rightlast(0), _id1last(0), _id2last(0) {
   vector<int> first,second,third;
-  for(unsigned int ineu=0;ineu<4;++ineu) {
+  for(unsigned int ineu=0;ineu<5;++ineu) {
     int neu(-1);
     if(ineu==0){neu=1000022;}
     if(ineu==1){neu=1000023;}
     if(ineu==2){neu=1000025;}
     if(ineu==3){neu=1000035;}
+    if(ineu==4){neu=1000045;}
     for(unsigned int ix=1;ix<7;++ix){
       first.push_back(neu);
       second.push_back(ix);
@@ -82,7 +83,7 @@ void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
 
 void SSNFSVertex::doinit() throw(InitException) {
   FFSVertex::doinit();
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!_theSS)
     throw InitException() << "SSGSSVertex::doinit() - "
 			  << "The model pointer is null."
@@ -124,7 +125,8 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 			      tcPDPtr part2,tcPDPtr part3, int iinc) {
   long isc(0), iferm(0), ineut(0);
   if(part1->id() == 1000022 || part1->id() == 1000023 ||
-     part1->id() == 1000025 || part1->id() == 1000035) {
+     part1->id() == 1000025 || part1->id() == 1000035 || 
+     part1->id() == 1000045) {
     ineut = part1->id();
     if(part2->iSpin() == PDT::Spin1Half) {
       iferm = part2->id();
@@ -136,7 +138,8 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     }
   }
   else if(part2->id() == 1000022 || part2->id() == 1000023 ||
-	  part2->id() == 1000025 || part2->id() == 1000035) {
+	  part2->id() == 1000025 || part2->id() == 1000035 || 
+	  part2->id() == 1000045) {
     ineut = part2->id();
     if(part1->iSpin() == PDT::Spin1Half) {
       iferm = part1->id();
@@ -148,7 +151,8 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
     } 
   }
   else if(part3->id() == 1000022 || part3->id() == 1000023 ||
-	  part3->id() == 1000025 || part3->id() == 1000035){
+	  part3->id() == 1000025 || part3->id() == 1000035 || 
+	  part3->id() == 1000045){
     ineut = part3->id();
     if(part1->iSpin() == PDT::Spin1Half) {
       iferm = part1->id();
@@ -180,6 +184,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       if(ineut == 1000023) neu = 1;
       if(ineut == 1000025) neu = 2;
       if(ineut == 1000035) neu = 3;
+      if(ineut == 1000045) neu = 3;
       double gE = sqrt(4.*Constants::pi*_theSS->alphaEM(q2));
       Complex n1prime = (*_theN)(neu,0)*_cw + (*_theN)(neu,1)*_sw;
       Complex n2prime = (*_theN)(neu,1)*_cw - (*_theN)(neu,0)*_sw;

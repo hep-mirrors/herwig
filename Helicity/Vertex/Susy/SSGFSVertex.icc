@@ -17,7 +17,7 @@ inline IBPtr SSGFSVertex::fullclone() const {
  
 inline void SSGFSVertex::doinit() throw(InitException) {
   FFSVertex::doinit();
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
 
   _stop = _theSS->stopMix();
   _sbottom = _theSS->sbottomMix();

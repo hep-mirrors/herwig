@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
+#include "Herwig++/Models/Susy/MSSM.h"
 #include "SSGFSVertex.fh"
 
 namespace Herwig {
@@ -96,9 +96,9 @@ protected:
   //@}
 
   /**
-   * Pointer to the SusyBase object
+   * Pointer to the MSSM object
    */
-  tSusyBasePtr _theSS;
+  tMSSMPtr _theSS;
   
   /**
    * Pointer to the stop mixing matrix

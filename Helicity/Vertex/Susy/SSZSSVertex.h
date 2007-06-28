@@ -7,7 +7,7 @@
 
 #include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
+#include "Herwig++/Models/Susy/MSSM.h"
 #include "SSZSSVertex.fh"
 
 namespace Herwig {
@@ -110,7 +110,7 @@ private:
   /**
    * Pointer to the Standard Model object
    */
-  tSusyBasePtr _theSS;
+  tMSSMPtr _theSS;
 
   /**
    * Value of \f$sin(\theta_w)\f$

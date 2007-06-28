@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
+#include "Herwig++/Models/Susy/MSSM.h"
 #include "SSH1SFSFVertex.fh"
 
 namespace Herwig {
@@ -109,9 +109,9 @@ private:
   SSH1SFSFVertex & operator=(const SSH1SFSFVertex &);
   
   /**
-   * Pointer to the SusyBase object
+   * Pointer to the MSSM object
    */
-  tSusyBasePtr _theSS;
+  tMSSMPtr _theSS;
 
   /**
    * Higgs mixing angle \f$\sin(\alpha)\f$

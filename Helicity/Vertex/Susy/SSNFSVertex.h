@@ -7,7 +7,7 @@
 
 #include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Models/Susy/SusyBase.h"
+#include "Herwig++/Models/Susy/MSSM.h"
 #include "SSNFSVertex.fh"
 
 namespace Herwig {
@@ -133,7 +133,7 @@ private:
   /**
    * Pointer to the Susy Model object
    */
-  tSusyBasePtr _theSS;
+  tMSSMPtr _theSS;
 
   /**
    * \f$\tan(\beta)\f$

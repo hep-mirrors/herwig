@@ -79,7 +79,7 @@ void SSH2SFSFVertex::persistentInput(PersistentIStream & is, int) {
 void SSH2SFSFVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
 
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   _sinAlpha = sin(_theSS->higgsMixingAngle());
   _cosAlpha = sqrt(1. - _sinAlpha*_sinAlpha);
   double tb = _theSS->tanBeta();
@@ -92,18 +92,15 @@ void SSH2SFSFVertex::doinit() throw(InitException) {
   _mu = _theSS->muParameter();
   _cosAB = _cosAlpha*_cb - _sinAlpha*_sb;
   
-  vector<Complex> au(_theSS->upTypeTrilinear());
-  vector<Complex> ad(_theSS->downTypeTrilinear());
-  vector<Complex> ae(_theSS->leptonTypeTrilinear());
-  _trilin[0] = ad[0].real();
-  _trilin[1] = au[0].real();
-  _trilin[2] = ad[1].real();
-  _trilin[3] = au[1].real();
-  _trilin[4] = ad[2].real();
-  _trilin[5] = au[2].real();
-  _trilin[6] = ae[0].real();
-  _trilin[7] = ae[1].real();
-  _trilin[8] = ae[2].real();
+  _trilin[0] = 0.*GeV; 
+  _trilin[1] = 0.*GeV;
+  _trilin[2] = 0.*GeV; 
+  _trilin[3] = 0.*GeV;
+  _trilin[4] = _theSS->bottomTrilinear().real();
+  _trilin[5] = _theSS->topTrilinear().real();
+  _trilin[6] = 0.*GeV;
+  _trilin[7] = 0.*GeV;
+  _trilin[8] = _theSS->tauTrilinear().real();
  
   _stop = _theSS->stopMix();
   _sbottom = _theSS->sbottomMix();

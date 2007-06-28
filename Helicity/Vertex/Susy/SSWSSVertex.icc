@@ -17,7 +17,7 @@ inline IBPtr SSWSSVertex::fullclone() const {
 
 inline void SSWSSVertex::doinit() throw(InitException) {
   VSSVertex::doinit();
-  _theSS = dynamic_ptr_cast<SusyBasePtr>(generator()->standardModel());
+  _theSS = dynamic_ptr_cast<MSSMPtr>(generator()->standardModel());
   if(!_theSS)
     throw InitException() << "SSWSSVertex::doinit() - "
 			  << "The model pointer is null."
