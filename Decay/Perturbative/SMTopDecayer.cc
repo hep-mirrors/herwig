@@ -203,16 +203,13 @@ double SMTopDecayer::me2(bool vertex, const int,
 
 void SMTopDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
-  
   //get vertices from SM object
   tcHwSMPtr hwsm = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
-  if(hwsm)
-    {
-      _wvertex = hwsm->vertexFFW();
-      //initialise
-      _wvertex->init();
-    }
-  else{throw InitException();}
+  if(!hwsm) throw InitException() << "Must have Herwig++::StandardModel in "
+				  << "SMTopDecayer::doinit()";
+  _wvertex = hwsm->vertexFFW();
+  //initialise
+  _wvertex->init();
   //set up decay modes
   tPDPtr Wplus(getParticleData(ParticleID::Wplus));
   DecayPhaseSpaceModePtr mode;
@@ -221,7 +218,6 @@ void SMTopDecayer::doinit() throw(InitException) {
   vector<double> wgt(1,1.0);
   extpart[0] = getParticleData(ParticleID::t);
   extpart[1] = getParticleData(ParticleID::b);
-  
   //lepton modes
   for(int i=11; i<17;i+=2) {
     extpart[2] = getParticleData(-i);
@@ -236,30 +232,28 @@ void SMTopDecayer::doinit() throw(InitException) {
   }
   //quark modes
   unsigned int iz=0;
-  for(int ix=1;ix<6;ix+=2)
-    {
-      for(int iy=2;iy<6;iy+=2)
- 	{
- 	  // check that the combination of particles is allowed
- 	  if(_wvertex->allowed(-ix,iy,ParticleID::Wminus))
- 	    {
- 	      extpart[2] = getParticleData(-ix);
- 	      extpart[3] = getParticleData( iy);
-	      mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-	      Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
-	      Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
-	      Wchannel->addIntermediate(Wplus,0,0.0,2,3);
-	      Wchannel->init();
-	      mode->addChannel(Wchannel);
- 	      addMode(mode,_wquarkwgt[iz],wgt);
- 	      ++iz;
- 	    }
- 	  else
- 	    {throw InitException() << "SMTopDecayer::doinit() the W vertex" 
- 				   << "cannot handle all the quark modes" 
- 				   << Exception::abortnow;}
-	}
+  for(int ix=1;ix<6;ix+=2) {
+    for(int iy=2;iy<6;iy+=2) {
+      // check that the combination of particles is allowed
+      if(_wvertex->allowed(-ix,iy,ParticleID::Wminus)) {
+	extpart[2] = getParticleData(-ix);
+	extpart[3] = getParticleData( iy);
+	mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+	Wchannel = new_ptr(DecayPhaseSpaceChannel(mode));
+	Wchannel->addIntermediate(extpart[0],0,0.0,-1,1);
+	Wchannel->addIntermediate(Wplus,0,0.0,2,3);
+	Wchannel->init();
+	mode->addChannel(Wchannel);
+	addMode(mode,_wquarkwgt[iz],wgt);
+	++iz;
+      }
+      else {
+	throw InitException() << "SMTopDecayer::doinit() the W vertex" 
+			      << "cannot handle all the quark modes" 
+			      << Exception::abortnow;
+      }
     }
+  }
 }
 
 }
