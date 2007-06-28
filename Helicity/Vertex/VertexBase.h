@@ -300,7 +300,7 @@ protected:
    * @param id2 The PDG codes for the second set of particles.
    * @param id3 The PDG codes for the third  set of particles.
    */
-  inline void setList(vector<int> id1,vector<int> id2,vector<int> id3);
+  void setList(vector<int> id1,vector<int> id2,vector<int> id3);
 
   /**
    * Set up the lists of particles for the three point vertex.
@@ -309,7 +309,7 @@ protected:
    * @param id3 The PDG codes for the third  set of particles.
    * @param id4 The PDG codes for the fourth set of particles.
    */
-  inline void setList(vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4);
+  void setList(vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4);
 
   /**
    * Set up the lists of particles for the three point vertex.
@@ -319,8 +319,8 @@ protected:
    * @param id4 The PDG codes for the fourth set of particles.
    * @param id5 The PDG codes for the fifth  set of particles.
    */
-  inline void setList(vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4,
-		      vector<int> id5);
+  void setList(vector<int> id1,vector<int> id2,vector<int> id3,vector<int> id4,
+	       vector<int> id5);
 
   /**
    * Set the list of incoming particles.
@@ -470,29 +470,9 @@ private:
   vector<int> _iparticlee;
 
   /**
-   * Particle data pointers for the first set of particles.
+   *  Particles interacting at the vertex
    */
-  vector<PDPtr> _particlea;
-
-  /**
-   * Particle data pointers for the second set of particles.
-   */
-  vector<PDPtr> _particleb;
-
-  /**
-   * Particle data pointers for the third set of particles.
-   */
-  vector<PDPtr> _particlec;
-
-  /**
-   * Particle data pointers for the fourth set of particles.
-   */
-  vector<PDPtr> _particled;
-
-  /**
-   * Particle data pointers for the fifth set of particles.
-   */
-  vector<PDPtr> _particlee;
+  vector<vector<PDPtr> > _particles;
 
   /**
    * Spin.
