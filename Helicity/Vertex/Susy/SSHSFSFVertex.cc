@@ -156,7 +156,7 @@ SSHSFSFVertex::~SSHSFSFVertex() {}
 
 void SSHSFSFVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
-  theSBase = dynamic_ptr_cast<tSusyBasePtr>(generator()->standardModel());
+  theSBase = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
   if( !theSBase )
     throw InitException() << "SSHSFSFVertex::doinit - A problem occurred"
 			  << "while trying to cast the SM pointer to "
@@ -174,13 +174,11 @@ void SSHSFSFVertex::doinit() throw(InitException) {
 			  << Exception::abortnow;
   //trilinear vector should have been sized correctly already
   assert( theTriC.size() == 9 );
-  for( vector<Complex>::size_type i = 0; i < 9; ++i ) {
-    if( i < 6 )
-      theTriC[i] = i % 2 == 0 ? theSBase->downTypeTrilinear()[i/2] :
-	theSBase->upTypeTrilinear()[(i - 1)/2];
-    else
-      theTriC[i] = theSBase->leptonTypeTrilinear()[i - 6];
-  }
+
+  for( vector<Complex>::size_type i = 0; i < 9; ++i ) theTriC[i]=0.;
+  theTriC[4]=theSBase->bottomTrilinear().real();
+  theTriC[5]=theSBase->topTrilinear().real();
+  theTriC[8]=theSBase->tauTrilinear().real();
   //Masses
   theMw = getParticleData(ParticleID::Wplus)->mass()/GeV;
   theMz = getParticleData(ParticleID::Z0)->mass()/GeV;
