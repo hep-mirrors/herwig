@@ -15,6 +15,16 @@
 namespace Herwig {
 using namespace ThePEG;
 
+/*@name Some convenient typedefs. */
+//@{
+
+  /** 
+   * Map to hold key, parameter pairs. 
+   */
+  typedef map<long, double> ParamMap;
+
+//@}
+  
 /** \ingroup Models
    * This class is designed to be a base class for SUSY models. It implements
    * the readSetup function from InterfacedBase to open a LesHouches file and
@@ -24,14 +34,6 @@ using namespace ThePEG;
    */  
 
 class SusyBase: public StandardModel {
-
-public:
-  
-  /*@name Some convenient typedefs. */
-  //@{
-  /** Map to hold key, parameter pairs. */
-  typedef map<long, double> ParamMap;
-  //@}
   
 public:
 
@@ -39,6 +41,38 @@ public:
    * The default constructor.
    */
   inline SusyBase();
+
+public:
+
+  /** @name Access functions. */
+  //@{
+  /**
+   * Value of \f$\tan\beta\f$.
+   */
+  inline double tanBeta() const;
+
+  /**
+   * Value of \f$\mu\f$ parameter.
+   */
+  inline double muParameter() const;
+
+  /**
+   * The neutralino mixing matrix
+   */
+  inline const MixingMatrixPtr & neutralinoMix() const;
+
+  /**
+   * The U-type chargino mixing matrix
+   */
+  inline const MixingMatrixPtr & charginoUMix() const;
+
+  /**
+   * The V-type chargino mixing matrix
+   */
+  inline const MixingMatrixPtr & charginoVMix() const;
+  //@}
+
+public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -72,71 +106,6 @@ protected:
    */
   virtual void readSetup(istream & is) throw(SetupException);
 
-public:
-
-  /** @name Access functions. */
-  //@{
-  /**
-   * Value of \f$\tan\beta\f$.
-   */
-  inline double tanBeta() const;
-
-  /**
-   * Value of \f$\mu\f$ parameter.
-   */
-  inline double muParameter() const;
-
-  /**
-   * Value of Higgs mixing angle \f$\alpha\f$.
-   */
-  inline double higgsMixingAngle() const;
-
-  /**
-   * Value of up-type trilinear couplings
-   */
-  inline const vector<Complex> & upTypeTrilinear() const;
-
-  /**
-   * Value of down-type trilinear couplings
-   */
-  inline const vector<Complex> & downTypeTrilinear() const;
-
-  /**
-   * Value of lepton trilinear couplings
-   */
-  inline const vector<Complex> & leptonTypeTrilinear() const;
-
-  /**
-   * The neutralino mixing matrix
-   */
-  inline const MixingMatrixPtr & neutralinoMix() const;
-
-  /**
-   * The U-type chargino mixing matrix
-   */
-  inline const MixingMatrixPtr & charginoUMix() const;
-
-  /**
-   * The V-type chargino mixing matrix
-   */
-  inline const MixingMatrixPtr & charginoVMix() const;
-
-  /**
-   * The stop mixing matrix
-   */
-  inline const MixingMatrixPtr & stopMix() const;
-
-  /**
-   * The sbottom chargino mixing matrix
-   */
-  inline const MixingMatrixPtr & sbottomMix() const;
-
-  /**
-   * The stau mixing matrix
-   */
-  inline const MixingMatrixPtr & stauMix() const;
-  //@}
-
 private:
   
   /**@name Functions to help file read-in. */
@@ -144,15 +113,18 @@ private:
   /**
    * Read block from LHA file
    * @param ifs input stream containg data
+   * @param name The name of the block
    */
-  ParamMap readBlock(ifstream & ifs) const throw(SetupException);
+  void readBlock(ifstream & ifs,string name) throw(SetupException);
 
   /**
    * Function to read mixing matrix from LHA file
    * @param ifs input stream containg data
-   * @param size The size of the matrix read-in
+   * @param row Number of rows
+   * @param col Number of columns
    */
-  const vector<Complex> readMatrix(ifstream & ifs, unsigned int & size)
+  const vector<MixingElement> readMatrix(ifstream & ifs, unsigned int & row,
+				   unsigned int & col)
     throw(SetupException);
 
   /**
@@ -171,14 +143,28 @@ private:
   void createDecayMode(string tag, vector<long> products,
 		       double brat) const;
 
+protected:
+
+  /**
+   *  Create the mixing matrices for the model
+   */
+  virtual void createMixingMatrices();
+
+  /**
+   *  Extract the parameters from the input blocks
+   */
+  virtual void extractParameters(bool checkmodel=true);
+
   /**
    * Create a object MixingMatrix in the repository
+   * @param Pointer to the mixing matrix
    * @param name Name of the mixing matrix, i.e. nmix, umix...
    * @param values Value of each entry in the matrix
    * @param size The size of the matrix
    */
-  void createMixingMatrix(string name, vector<Complex> & values,
-			  unsigned int size);
+  void createMixingMatrix(MixingMatrixPtr & matrix, string name, 
+			  const vector<MixingElement> & values,
+			  pair<unsigned int,unsigned int> size);
 
   /**
    * Reset masses in the repository to values read from LHA file.
@@ -189,7 +175,23 @@ private:
    * Adjust row of Mixing Matrix if a negative mass occurs in LHA file
    * @param id The PDG code of the particle with a negative mass
    */
-  void adjustMixingMatrix(long id);
+  virtual void adjustMixingMatrix(long id);
+  //@}
+
+  /**
+   *  Access to the mixings and parameters for the inheriting classes
+   */
+  //@{
+  /**
+   *  Parameter blocks
+   */
+  inline const map<string,ParamMap> & parameters() const;
+
+  /**
+   *  Mixing blocks
+   */
+  inline const map<string,pair<pair<unsigned int,unsigned int>, 
+			       vector<MixingElement> > >& mixings() const;
   //@}
   
 protected:
@@ -242,22 +244,30 @@ private:
    */
   //@{
   /**
-   *  The minpar parameter block
+   *  Parameter blocks
    */
-   ParamMap theMinPar;
+  map<string,ParamMap> _parameters;
 
   /**
-   * The hmix parameter block
+   *  Mixing blocks
    */
-   ParamMap theHMix;
+  map<string,pair<pair<unsigned int,unsigned int>, vector<MixingElement> > > _mixings;
+
+  /**
+   *  \f$\tan\beta\f$
+   */
+  double _tanbeta;
+
+  /**
+   *  \f$\mu\f$
+   */
+  Energy _mu;
   //@}
 
   /**
-   * Storage of the masses (gets cleared once they have been set in the 
-   * repository) .
+   *  Neutralino and Chargino mixing matrices
    */
-   ParamMap theMasses;
-
+  //@{
   /**
    * Store pointers to the gaugino mixing matrices
    */
@@ -276,51 +286,6 @@ private:
    * The \f$V\f$ mixing matrix for the charginos
    */
   MixingMatrixPtr theVMix; 
-  //@}
-
-  /**
-   * Store pointers to the squark/slepton mixing matrices
-   */
-  //@{
-  /**
-   *  The \f$\tilde{t}\f$ mixing matrix
-   */
-  MixingMatrixPtr theStopMix;
-
-  /**
-   *  The \f$\tilde{b}\f$ mixing matrix
-   */
-  MixingMatrixPtr theSbotMix;
-
-  /**
-   *  The \f$\tilde{\tau}\f$ mixing matrix
-   */
-  MixingMatrixPtr theStauMix;
-  //@}
-  /**
-   * Value of higgs mixing angle.
-   */
-  double theAlpha;
-
-  /**
-   * Trilinear couplings stored as vector of complex numbers to make use
-   * of routine already available to read complex matrices
-   */
-  //@{
-  /**
-   *  For the up type squarks
-   */
-  vector<Complex> theAu;
-
-  /**
-   *  For the down type squarks
-   */
-  vector<Complex> theAd;
-
-  /**
-   *  For the charged sleptons
-   */
-  vector<Complex> theAe;
   //@}
 
   /**@name Vertex pointers. */

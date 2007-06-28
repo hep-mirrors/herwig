@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MSSM class.
+//
+#ifndef HERWIG_MSSM_FH
+#define HERWIG_MSSM_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MSSM;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MSSM,MSSMPtr);
+
+}
+
+#endif

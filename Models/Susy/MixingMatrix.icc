@@ -10,12 +10,12 @@ inline MixingMatrix::MixingMatrix() {}
   
 inline MixingMatrix::MixingMatrix(const CMatrix & mix,
 				  const vector<long> & ids): 
-  _theMixingMatrix(mix),_theIds(ids), _theSize(mix.size()) {}
+  _theMixingMatrix(mix),_theIds(ids), _theSize(make_pair(mix.size(),mix[0].size())) 
+{}
 
-inline MixingMatrix::MixingMatrix(unsigned int size) : _theSize(size) {
-  _theMixingMatrix.resize(size,vector<Complex>(size,Complex(0.,0.)));
-  _theIds.resize(size,0);
-}
+inline MixingMatrix::MixingMatrix(unsigned int row, unsigned int col) 
+  :  _theMixingMatrix(row,vector<Complex>(col,Complex(0.,0.))), _theSize(row,col)
+{}
 
 inline IBPtr MixingMatrix::clone() const {
   return new_ptr(*this);
@@ -27,10 +27,10 @@ inline IBPtr MixingMatrix::fullclone() const {
 
 inline void MixingMatrix::setMatrix(const CMatrix & mixing) {
   _theMixingMatrix = mixing;
-  _theSize = mixing.size();
+  _theSize = make_pair(mixing.size(),mixing[0].size());
 }
   
-inline MixingMatrix::CMatrix MixingMatrix::getMatrix() const {
+inline CMatrix MixingMatrix::getMatrix() const {
   return _theMixingMatrix;
 }
 
@@ -45,12 +45,12 @@ inline Complex & MixingMatrix::operator()(unsigned int row,
   return _theMixingMatrix.at(row).at(col);
 }
  
-inline unsigned int MixingMatrix::size() const {
+  inline pair<unsigned int,unsigned int> MixingMatrix::size() const {
   return _theSize;
 }
 
 inline void MixingMatrix::addCode(long id) {
-  if(_theIds.size() >= _theSize) {
+  if(_theIds.size() >= _theSize.first) {
     throw MixingMatrixError() << "MixingMatrix::addCode() - Trying to add a"
 			      << "PDG code but the vector already contains the "
 			      << "same number as the matrix size " 
@@ -61,7 +61,7 @@ inline void MixingMatrix::addCode(long id) {
 }
 
 inline void MixingMatrix::setIds(const vector<long> & mixingCodes) {
-  if(mixingCodes.size() != _theSize) {
+  if(mixingCodes.size() != _theSize.first) {
     throw MixingMatrixError() << "MixingMatrix::setIds() - The number "
 			      << "of PDG codes does not match the size of the "
 			      << "matrix" << Exception::warning;

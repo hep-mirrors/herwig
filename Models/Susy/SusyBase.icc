@@ -17,31 +17,11 @@ inline IBPtr SusyBase::fullclone() const {
 }
 
 inline double SusyBase::tanBeta() const {
-  ParamMap::const_iterator it = theMinPar.find(3);
-  if(it == theMinPar.end()) return 0.0;
-  return it->second;
+  return _tanbeta;
 }
 
-inline double SusyBase::muParameter() const {
-  ParamMap::const_iterator it = theHMix.find(1);
-  if(it == theMinPar.end()) return 0.0;
-  return it->second;
-}
-
-inline double SusyBase::higgsMixingAngle() const {
-  return theAlpha;
-}
-
-inline const vector<Complex> & SusyBase::upTypeTrilinear() const {
-  return theAu;
-}
-
-inline const vector<Complex> & SusyBase::downTypeTrilinear() const {
-  return theAd;
-}
-
-inline const vector<Complex> & SusyBase::leptonTypeTrilinear() const {
-  return theAe;
+inline Energy SusyBase::muParameter() const {
+  return _mu;
 }
 
 inline const MixingMatrixPtr & SusyBase::neutralinoMix() const {
@@ -56,17 +36,13 @@ inline const MixingMatrixPtr & SusyBase::charginoVMix() const {
   return theVMix;
 }
   
-inline const MixingMatrixPtr & SusyBase::stopMix() const {
-  return theStopMix;
-}
-  
-inline const MixingMatrixPtr & SusyBase::sbottomMix() const {
-  return theSbotMix;
-}
-  
-inline const MixingMatrixPtr & SusyBase::stauMix() const {
-  return theStauMix;
+inline const map<string,ParamMap> & SusyBase::parameters() const {
+  return _parameters;
 }
 
+inline const map<string,pair<pair<unsigned int,unsigned int>, vector<MixingElement> > >
+& SusyBase::mixings() const {
+  return _mixings;
+}
 }
 

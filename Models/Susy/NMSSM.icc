@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the NMSSM class.
+//
+
+namespace Herwig {
+
+inline NMSSM::NMSSM() {}
+
+inline IBPtr NMSSM::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr NMSSM::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
