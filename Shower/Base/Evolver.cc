@@ -129,13 +129,13 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
     // only consider initial-state particles
     if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
     if(!particlesToShower[ix]->progenitor()->dataPtr()->coloured()) continue;
-  Energy ipt;
+    Energy ipt;
     if(UseRandom::rnd() > _beta) {
-       ipt=_iptrms*sqrt(-log(UseRandom::rnd()));
-     }
+      ipt=_iptrms*sqrt(-log(UseRandom::rnd()));
+    }
     else {
-       ipt=_gamma*tan(pi*UseRandom::rnd()/2.);}
-    pair<Energy,double> pt = make_pair(0.,UseRandom::rnd()*2.*pi);
+      ipt=_gamma*tan(pi*UseRandom::rnd()/2.);}
+    pair<Energy,double> pt = make_pair(ipt,UseRandom::rnd()*2.*pi);
     _intrinsic[particlesToShower[ix]] = pt;
   }
 }

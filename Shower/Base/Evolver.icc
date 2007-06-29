@@ -7,8 +7,8 @@
 namespace Herwig {
 
 inline Evolver::Evolver() : _maxtry(100), _meCorrMode(1), _hardVetoMode(1), 
-			    _initialenhance(1.),_finalenhance(1.), _intrinsicpT(1){
-}
+			    _intrinsicpT(1), _initialenhance(1.), _finalenhance(1.)
+{}
 
 inline IBPtr Evolver::clone() const {
   return new_ptr(*this);
