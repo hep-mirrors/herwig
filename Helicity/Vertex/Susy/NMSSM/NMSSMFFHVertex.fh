@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NMSSMFFHVertex class.
+//
+#ifndef HERWIG_NMSSMFFHVertex_FH
+#define HERWIG_NMSSMFFHVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+
+class NMSSMFFHVertex;
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Helicity::NMSSMFFHVertex,NMSSMFFHVertexPtr);
+
+}
+
+#endif

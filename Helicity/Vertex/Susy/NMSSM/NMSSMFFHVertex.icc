@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the NMSSMFFHVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+using namespace ThePEG;
+
+inline IBPtr NMSSMFFHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr NMSSMFFHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
+}

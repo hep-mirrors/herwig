@@ -1,3 +1,4 @@
+SUBDIRS = NMSSM
 pkglib_LTLIBRARIES = HwSusyVertex.la
 HwSusyVertex_la_SOURCES = \
 SSCFSVertex.cc SSCFSVertex.fh SSCFSVertex.h SSCFSVertex.icc \
