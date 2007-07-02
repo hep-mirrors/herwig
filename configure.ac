@@ -124,6 +124,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 Helicity/Vertex/Tensor/Makefile
                 Helicity/Vertex/Vector/Makefile
 		Helicity/Vertex/Susy/Makefile
+		Helicity/Vertex/Susy/NMSSM/Makefile
 		Helicity/Vertex/UED/Makefile
                 Helicity/WaveFunction/Makefile
 		lib/Makefile
