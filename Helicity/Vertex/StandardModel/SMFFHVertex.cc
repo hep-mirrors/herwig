@@ -10,10 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Config/Constants.h"
 
-namespace Herwig {
-namespace Helicity {
-using namespace ThePEG;
-using ThePEG::Constants::pi;
+using namespace Herwig;
 
 void SMFFHVertex::persistentOutput(PersistentOStream & os) const {
   os << _theSM << _mw << _sw;
@@ -29,49 +26,45 @@ SMFFHVertex::initSMFFHVertex;
 // Definition of the static class description member.
 
 void SMFFHVertex::Init() {
+
   static ClassDocumentation<SMFFHVertex> documentation
     ("The SMFFHVertex class is the implementation"
      " of the helicity amplitude calculation of the Standard Model Higgs"
      " fermion-antiferiom vertex.");
   
 }
-void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int)
-{
+
+void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
   int iferm=abs(a->id());
   // left and right couplings set to one
   setLeft(1.); setRight(1.);
   // first the overall normalisation
-  if(q2!=_q2last)
-    {
-      double alpha = _theSM->alphaEM(q2);
-      _couplast = -0.5*sqrt(4.0*pi*alpha)/_sw/_mw;
-      _q2last=q2;
-      _idlast=iferm;
-      if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16))
-        {_masslast=_theSM->mass(q2,a);}
-      else
-        {
-	  throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
-					   << "Unknown particle in Higgs vertex" 
-					   << Exception::warning;
-	  _masslast = 0;
-        }
+  if(q2!=_q2last) {
+    double alpha = _theSM->alphaEM(q2);
+    _couplast = -0.5*sqrt(4.0*Constants::pi*alpha)/_sw/_mw;
+    _q2last=q2;
+    _idlast=iferm;
+    if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
+      _masslast=_theSM->mass(q2,a);
     }
-  else if(iferm!=_idlast)
-    {
-      _idlast=iferm;
-      if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16))
-        {_masslast=_theSM->mass(q2,a);}
-      else
-        {
-	  throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
-					   << "Unknown particle in Higgs vertex" 
-					   << Exception::warning;
-	  _masslast = 0;
-        }
+    else {
+      throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
+				       << "Unknown particle in Higgs vertex" 
+				       << Exception::warning;
+      _masslast = 0;
     }
+  }
+  else if(iferm!=_idlast) {
+    _idlast=iferm;
+    if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16)) {
+      _masslast=_theSM->mass(q2,a);
+    }
+    else {
+      throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
+				       << "Unknown particle in Higgs vertex" 
+				       << Exception::warning;
+      _masslast = 0;
+    }
+  }
   setNorm(_couplast*_masslast);
-} 
- 
-}
 }
