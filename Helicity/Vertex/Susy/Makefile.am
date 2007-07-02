@@ -14,5 +14,10 @@ SSGSGSGVertex.cc SSGSGSGVertex.h SSGSGSGVertex.icc SSGSGSGVertex.fh \
 SSNNZVertex.cc SSNNZVertex.h SSNNZVertex.fh SSNNZVertex.icc \
 SSCCPVertex.cc SSCCPVertex.h SSCCPVertex.icc SSCCPVertex.fh \
 SSCCZVertex.cc SSCCZVertex.h SSCCZVertex.icc SSCCZVertex.fh \
-SSCNWVertex.cc SSCNWVertex.h SSCNWVertex.icc SSCNWVertex.fh
+SSCNWVertex.cc SSCNWVertex.h SSCNWVertex.icc SSCNWVertex.fh \
+SSFFHVertex.cc SSFFHVertex.h SSFFHVertex.icc SSFFHVertex.fh \
+SSGOGOHVertex.cc SSGOGOHVertex.h SSGOGOHVertex.icc SSGOGOHVertex.fh \
+SSWWHVertex.cc SSWWHVertex.h SSWWHVertex.icc SSWWHVertex.fh \
+SSWHHVertex.cc SSWHHVertex.h SSWHHVertex.icc SSWHHVertex.fh \
+SSHHHVertex.cc SSHHHVertex.h SSHHHVertex.icc SSHHHVertex.fh
 HwSusyVertex_la_LDFLAGS = -module

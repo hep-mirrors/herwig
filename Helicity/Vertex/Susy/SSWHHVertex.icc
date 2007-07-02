@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSWHHVertex class.
+//
+
+namespace Herwig {
+namespace Helicity {
+
+inline IBPtr SSWHHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSWHHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+}
+}

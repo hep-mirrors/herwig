@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSGOGOHVertex class.
+//
+#ifndef HERWIG_SSGOGOHVertex_FH
+#define HERWIG_SSGOGOHVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+
+class SSGOGOHVertex;
+
+}
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Helicity::SSGOGOHVertex,SSGOGOHVertexPtr);
+
+}
+
+#endif
