@@ -316,19 +316,9 @@ private:
   FFSVertexPtr theGFSFVertex;
 
   /**
-   * Pointer to the \f$h^0\f$-sfermion-sfermion vertex
+   * Pointer to the Higgs-sfermion-sfermion vertex
    */
-  SSSVertexPtr theH1SFSFVertex;
-  
-  /**
-   * Pointer to the \f$H^0\f$-sfermion-sfermion vertex
-   */
-  SSSVertexPtr theH2SFSFVertex;
-
-  /**
-   * Pointer to the \f$H^0\f$-sfermion-sfermion vertex
-   */
-  SSSVertexPtr theH3SFSFVertex;
+  SSSVertexPtr theHSFSFVertex;
 
   /**
    * Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex

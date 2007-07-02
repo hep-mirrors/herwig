@@ -20,9 +20,7 @@ void SusyBase::doinit() throw(InitException) {
   addVertex(theWSFSFVertex);
   addVertex(theNFSFVertex);
   addVertex(theGFSFVertex);
-  addVertex(theH1SFSFVertex);
-  addVertex(theH2SFSFVertex);
-  addVertex(theH3SFSFVertex);
+  addVertex(theHSFSFVertex);
   addVertex(theCFSFVertex);
   addVertex(theGSFSFVertex);
   addVertex(theGGSQSQVertex);
@@ -37,8 +35,7 @@ void SusyBase::doinit() throw(InitException) {
 void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << theNMix << theUMix << theVMix 
      << theZSFSFVertex << thePSFSFVertex << theWSFSFVertex 
-     << theNFSFVertex << theGFSFVertex << theH1SFSFVertex 
-     << theH2SFSFVertex << theH3SFSFVertex << theCFSFVertex 
+     << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
      << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
      << theNNZVertex << theCCPVertex << theCCZVertex << theCNWVertex
      << _tanbeta << _mu;
@@ -47,8 +44,7 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
 void SusyBase::persistentInput(PersistentIStream & is, int) {
   is >> theNMix >> theUMix >> theVMix  
      >> theZSFSFVertex >> thePSFSFVertex >> theWSFSFVertex 
-     >> theNFSFVertex >> theGFSFVertex >> theH1SFSFVertex 
-     >> theH2SFSFVertex >> theH3SFSFVertex >> theCFSFVertex 
+     >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theCCPVertex >> theCCZVertex >> theCNWVertex
      >> _tanbeta >> _mu;
@@ -88,20 +84,10 @@ void SusyBase::Init() {
      "Reference to the gluino-fermion-sfermion vertex",
      &SusyBase::theGFSFVertex, false, false, true, false);
   
-  static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexH1SFSF
-    ("Vertex/H1SFSF",
-     "Reference to the first higgs fermion-sfermion vertex",
-     &SusyBase::theH1SFSFVertex, false, false, true, false);
-
-  static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexH2SFSF
-  ("Vertex/H2SFSF",
-     "Reference to the 2nd higgs fermion-sfermion vertex",
-     &SusyBase::theH2SFSFVertex, false, false, true, false);
-
-  static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexH3SFSF
-  ("Vertex/H3SFSF",
-     "Reference to the 3nd higgs fermion-sfermion vertex",
-     &SusyBase::theH3SFSFVertex, false, false, true, false);
+  static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexHSFSF
+    ("Vertex/HSFSF",
+     "Reference to the Higgs-fermion-sfermion vertex",
+     &SusyBase::theHSFSFVertex, false, false, true, false);
 
    static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexCFSF
    ("Vertex/CFSF",
