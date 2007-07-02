@@ -639,10 +639,12 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   else 
     throw HardProcessConstructorError() 
       << "createMatrixElement - No matrix element object could be created for "
-      << "the process " << extpart[0]->PDGName() << "," 
-      << extpart[1]->PDGName() << "->" << extpart[2]->PDGName() 
-      << "," << extpart[3]->PDGName() << ".  No class for this spin-structure "
-      << "exists! \n"
+      << "the process " 
+      << extpart[0]->PDGName() << " " << extpart[0]->iSpin() << "," 
+      << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
+      << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
+      << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
+      << ".  No class for this spin-structure exists! \n"
       << Exception::warning;
 }
 
