@@ -43,4 +43,9 @@ inline const MixingMatrixPtr & MSSM::sbottomMix() const {
 inline const MixingMatrixPtr & MSSM::stauMix() const {
   return theStauMix;
 }
+
+inline const MixingMatrixPtr & MSSM::CPevenHiggsMix() const {
+  return theHiggsMix;
+}
+
 }

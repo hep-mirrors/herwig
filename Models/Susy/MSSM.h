@@ -64,6 +64,11 @@ public:
    */
   inline const MixingMatrixPtr & stauMix() const;
 
+  /**
+   * Mixing matrix for the neutral CP-even Higgs bosons
+   */
+  inline const MixingMatrixPtr & CPevenHiggsMix() const;
+
 public:
 
   /** @name Functions used by the persistent I/O system. */

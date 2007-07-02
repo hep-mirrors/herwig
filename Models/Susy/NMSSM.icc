@@ -16,4 +16,8 @@ inline IBPtr NMSSM::fullclone() const {
   return new_ptr(*this);
 }
 
+inline const MixingMatrixPtr & NMSSM::CPoddHiggsMix() const {
+  return theHiggsAMix;
+}
+
 }

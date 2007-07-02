@@ -29,6 +29,13 @@ public:
 
 public:
 
+  /**
+   * Mixing matrix for the neutral CP-odd Higgs bosons
+   */
+  inline const MixingMatrixPtr & CPoddHiggsMix() const;
+
+public:
+
   /** @name Functions used by the persistent I/O system. */
   //@{
   /**
