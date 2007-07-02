@@ -13,7 +13,7 @@
 
 using namespace Herwig::Helicity;
 
-SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9), theSinA(0.0),
+SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, Complex(0.)), theSinA(0.0),
 				 theCosA(0.0), theSinB(0.0), theCosB(0.0),
 				 theTanB(0.0), theSinAB(0.0), theCosAB(0.0),
 				 theMw(0.0), theMz(0.0), theMu(0.0), 
@@ -174,8 +174,7 @@ void SSHSFSFVertex::doinit() throw(InitException) {
 			  << Exception::abortnow;
   //trilinear vector should have been sized correctly already
   assert( theTriC.size() == 9 );
-
-  for( vector<Complex>::size_type i = 0; i < 9; ++i ) theTriC[i]=0.;
+  //vector has been zeroed in construvtor
   theTriC[4]=theSBase->bottomTrilinear().real();
   theTriC[5]=theSBase->topTrilinear().real();
   theTriC[8]=theSBase->tauTrilinear().real();

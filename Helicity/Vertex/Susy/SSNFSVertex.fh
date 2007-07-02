@@ -9,11 +9,16 @@
 
 namespace Herwig {
 namespace Helicity {
-using namespace ThePEG;
 
 class SSNFSVertex;
-ThePEG_DECLARE_POINTERS(SSNFSVertex,SSNFSVertexPtr);
+
 }
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Helicity::SSNFSVertex,SSNFSVertexPtr);
+
 }
 
 #endif

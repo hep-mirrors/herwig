@@ -17,7 +17,7 @@ class SSGSSVertex;
 
 namespace ThePEG {
 
-ThePEG_DECLARE_POINTERS(Herwig::SSGSSVertex,SSGSSVertexPtr);
+ThePEG_DECLARE_POINTERS(Herwig::Helicity::SSGSSVertex,SSGSSVertexPtr);
 
 }
 

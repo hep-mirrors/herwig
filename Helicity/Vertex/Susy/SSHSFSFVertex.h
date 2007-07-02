@@ -176,7 +176,7 @@ private:
   /**
    * A vector containing the trilinear couplings, quarks then leptons
    */
-  vector<Complex> theTriC;
+  vector<complex<Energy> > theTriC;
     
   /**
    * The value of \f$\sin\alpha\f$.
@@ -226,7 +226,7 @@ private:
   /**
    * The \f$\mu\f$ parameter. 
    */
-  double theMu;
+  Energy theMu;
 
   /**
    * The value of \f$\sin\theta_W\f$

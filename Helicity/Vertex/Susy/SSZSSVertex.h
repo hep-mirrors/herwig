@@ -6,7 +6,6 @@
 //
 
 #include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSZSSVertex.fh"
 
