@@ -29,6 +29,11 @@ void SusyBase::doinit() throw(InitException) {
   addVertex(theCCPVertex);
   addVertex(theCCZVertex);
   addVertex(theCNWVertex);
+  addVertex(theFFHVertex);
+  addVertex(theGOGOHVertex);
+  addVertex(theWWHVertex);
+  addVertex(theWHHVertex);
+  addVertex(theHHHVertex);
   StandardModel::doinit();
 }
 
@@ -36,9 +41,11 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
   os << theNMix << theUMix << theVMix 
      << theZSFSFVertex << thePSFSFVertex << theWSFSFVertex 
      << theNFSFVertex << theGFSFVertex << theHSFSFVertex << theCFSFVertex 
-     << theGSFSFVertex << theGGSQSQVertex << theGSGSGVertex 
-     << theNNZVertex << theCCPVertex << theCCZVertex << theCNWVertex
-     << _tanbeta << _mu;
+     << theGSFSFVertex << theGGSQSQVertex 
+     << theGSGSGVertex << theNNZVertex << theCCPVertex 
+     << theCCZVertex << theCNWVertex << theFFHVertex << theGOGOHVertex
+     << theWWHVertex << theWHHVertex << theHHHVertex
+     << _tanbeta << _mu << theMone << theMtwo << theMthree;
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -47,7 +54,9 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theNFSFVertex >> theGFSFVertex >> theHSFSFVertex >> theCFSFVertex 
      >> theGSFSFVertex >> theGGSQSQVertex >> theGSGSGVertex 
      >> theNNZVertex >> theCCPVertex >> theCCZVertex >> theCNWVertex
-     >> _tanbeta >> _mu;
+     >> theFFHVertex >> theGOGOHVertex >> theWWHVertex >> theWHHVertex
+     >> theHHHVertex
+     >> _tanbeta >> _mu >> theMone >> theMtwo >> theMthree;
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -129,6 +138,30 @@ void SusyBase::Init() {
      "Reference to ~chi_i+-chi_i0-W vertex",
      &SusyBase::theCNWVertex, false, false, true, false);
 
+   static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexSSFFH
+   ("Vertex/SSFFH",
+    "Reference to the fermion-antifermion-higgs vertex",
+    &SusyBase::theFFHVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexGOGOH
+   ("Vertex/GOGOH",
+    "Reference to the gaugino-gaugino-higgs vertex",
+    &SusyBase::theGOGOHVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::VVSVertex> interfaceVertexWWH
+   ("Vertex/SSWWH",
+    "Reference to the boson-boson-higgs vertex",
+    &SusyBase::theWWHVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexWHH
+    ("Vertex/SSWHH",
+     "Reference to Susy WHHVertex",
+     &SusyBase::theWHHVertex, false, false, true, false);
+
+   static Reference<SusyBase,Helicity::SSSVertex> interfaceVertexHHH
+    ("Vertex/HHH",
+     "Triple higgs coupling",
+     &SusyBase::theHHHVertex, false, false, true, false);
 }
 
 void SusyBase::readSetup(istream &is) throw(SetupException) {
@@ -149,7 +182,7 @@ void SusyBase::readSetup(istream &is) throw(SetupException) {
     // make everything lower case
     transform(line.begin(), line.end(), line.begin(), pf);
     // start of a block
-    if(line.find("block") ==0) {
+    if(line.find("block") == 0) {
       string name = StringUtils::car(StringUtils::cdr(line), " #");
       // mixing matrix
       if((name.find("mix")  != string::npos && 
@@ -489,6 +522,17 @@ void SusyBase::extractParameters(bool checkmodel) {
       _mu=it->second*GeV;
     }
   }
+  pit = _parameters.find("msoft");
+  if( pit == _parameters.end() )
+    throw Exception() << "BLOCK MSOFT not found in " 
+		      << "SusyBase::extractParameters()"
+		      << Exception::runerror;
+  it = pit->second.find(1);
+  theMone = it->second*GeV;
+  it = pit->second.find(2);
+  theMtwo = it->second*GeV;
+  it = pit->second.find(3);
+  theMthree = it->second*GeV;
   if(checkmodel) {
     throw Exception() << "The SusyBase class should not be used as a "
 		      << "Model class, use one of the models which inherit"

@@ -24,6 +24,18 @@ inline Energy SusyBase::muParameter() const {
   return _mu;
 }
 
+inline Energy SusyBase::softMOne() const {
+  return theMone;
+}
+
+inline Energy SusyBase::softMTwo() const {
+  return theMtwo;
+}
+
+inline Energy SusyBase::softMThree() const {
+  return theMthree;
+}
+
 inline const MixingMatrixPtr & SusyBase::neutralinoMix() const {
   return theNMix;
 }

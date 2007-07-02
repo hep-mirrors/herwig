@@ -54,7 +54,22 @@ public:
   /**
    * Value of \f$\mu\f$ parameter.
    */
-  inline double muParameter() const;
+  inline Energy muParameter() const;
+
+  /**
+   * Value of soft breaking mass for the bino
+   */
+  inline Energy softMOne() const;
+
+  /**
+   * Value of soft breaking mass for the wino
+   */
+  inline Energy softMTwo() const;
+
+  /**
+   * Value of soft breaking mass for the gluino
+   */
+  inline Energy softMThree() const;
 
   /**
    * The neutralino mixing matrix
@@ -252,7 +267,6 @@ private:
    *  Mixing blocks
    */
   map<string,pair<pair<unsigned int,unsigned int>, vector<MixingElement> > > _mixings;
-
   /**
    *  \f$\tan\beta\f$
    */
@@ -262,6 +276,21 @@ private:
    *  \f$\mu\f$
    */
   Energy _mu;
+
+  /**
+   * The bilinear breaking mass term for the bino
+   */
+  Energy theMone;
+  
+  /**
+   * The bilinear breaking mass term for the wino
+   */
+  Energy theMtwo;
+
+  /**
+   * The bilinear breaking mass term for the gluinos
+   */
+  Energy theMthree;  
   //@}
 
   /**
@@ -359,6 +388,31 @@ private:
    * Pointer to the  vertex chargino-neutralino-Z vertex
    */
   FFVVertexPtr theCNWVertex;
+
+  /**
+   * Pointer to the vertex fermion-antifermion-higgs vertex
+   */
+  FFSVertexPtr theFFHVertex;
+
+  /**
+   * Pointer to the vertex gaugino-gaugino-higgs vertex
+   */
+  FFSVertexPtr theGOGOHVertex;
+  
+  /**
+   * Pointer to the vertex for a pair of gauge bosons and higgs
+   */
+  VVSVertexPtr theWWHVertex;
+  
+  /**
+   * Pointer to the vertex for a gauge boson and higgs
+   */
+  VSSVertexPtr theWHHVertex;
+
+  /**
+   * Pointer to triple higgs vertex
+   */
+  SSSVertexPtr theHHHVertex;
   //@}
 };
 
