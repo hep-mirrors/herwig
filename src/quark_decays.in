@@ -1,0 +1,8 @@
+#
+#  taken from Hw64Decays.in
+#
+decaymode t->u,dbar,b; 0.334 1 /Defaults/Decays/Top
+decaymode t->c,sbar,b; 0.333 1 /Defaults/Decays/Top
+decaymode t->nu_tau,tau+,b; 0.111 1 /Defaults/Decays/Top
+decaymode t->nu_mu,mu+,b; 0.111 1 /Defaults/Decays/Top
+decaymode t->nu_e,e+,b; 0.111 1 /Defaults/Decays/Top

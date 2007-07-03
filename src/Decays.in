@@ -41,14 +41,34 @@ create Herwig++::SMHiggsWWDecayer        /Defaults/Decays/HWW HwPerturbativeHigg
 set /Defaults/Decays/HWW:BreitWigner 0
 set /Defaults/Decays/HWW:Power 0.0
 set /Defaults/Decays/HWW:Ntry 1000
+
+# for new Decayer structure
+# read decayers.in
+
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files
 #
 read Hw64Decays.in
+# for new Decayer structure
+# read quark_decays.in
+# read baryon_decays.in
+# read boson_decays.in
+# read lepton_decays.in
+# read meson_decays.in
 #
-# To override modes in Hw64Decays, simply add a new read command below with the
-# new modes overridden.
-#
-# e.g. read MyImprovedDecays.in
-#
+
+#  Left over from Hw64Decays.in
+#  for new Decayer structure
+#decaymode b'->b,tbar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->s,cbar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->d,ubar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->mu-,nu_mubar,c; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode b'->e-,nu_ebar,c; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode b'->tau-,nu_taubar,c; 0.080 1 /Defaults/Decays/DecayME100
+#decaymode t'->t,bbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->c,sbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->u,dbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_mu,mu+,b'; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_e,e+,b'; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_tau,tau+,b'; 0.080 1 /Defaults/Decays/DecayME100
