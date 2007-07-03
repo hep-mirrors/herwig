@@ -115,7 +115,7 @@ calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
      *********/ 
     unsigned int phase_space = initialFinalDecayConditions();
     pa              = pb-pc               ;
-    Energy mb2(sqr(ppair.first->mass()));
+    Energy2 mb2(sqr(ppair.first->mass()));
     double a=(pb-pc).m2()/mb2;
     double c=sqr(ppair.second->mass())/mb2;
     double lambda   = sqrt(1. + a*a + c*c - 2.*a - 2.*c - 2.*a*c);
@@ -171,7 +171,7 @@ calculateFinalFinalScales(const ShowerPPair &particlePair) {
   Lorentz5Momentum p1= particlePair.first->momentum(); 
   Lorentz5Momentum p2 = particlePair.second->momentum(); 
   Lorentz5Momentum p12(p1+p2);
-  Hep3Vector boostv=p12.findBoostToCM();
+  Boost boostv=p12.findBoostToCM();
   p1.boost(boostv);
   p2.boost(boostv);
   // calculate quantities for the scales

@@ -73,7 +73,7 @@ public:
    * @param iloc The required component 0,1,2 is \f$p_x\f$, \f$p_y\f$, \f$p_z\f$,
    * 3 is \f$E\f$ and 4 is the mass.
    */
-  inline Energy operator [](int iloc) const;
+  //inline Energy operator [](int iloc) const;
 
   /**
    * Get the x component of the momentum.
@@ -167,7 +167,7 @@ public:
    * Set 4-momentum using a vector.
    * @param p The momentum.
    */
-  inline void setMomentum(LorentzVector p);
+  inline void setMomentum(LorentzMomentum p);
 
   /**
    * Set mass and zero momentum.
@@ -180,7 +180,7 @@ public:
    * @param p The momentum.
    * @param m The mass
    */
-  inline void setMomentum(LorentzVector p,Energy m);
+  inline void setMomentum(LorentzMomentum p,Energy m);
 
   /**
    * Zero the 4 momentum and mass.

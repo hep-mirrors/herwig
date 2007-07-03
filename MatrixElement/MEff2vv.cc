@@ -39,8 +39,8 @@ double MEff2vv::me2() const {
   VectorWaveFunction vec1(meMomenta()[2], mePartonData()[2], outgoing);
   VectorWaveFunction vec2(meMomenta()[3], mePartonData()[3], outgoing);
   //Massless vectors?
-  bool masslC  = (mePartonData()[2]->mass() == 0.);
-  bool masslD  = (mePartonData()[3]->mass() == 0.);
+  bool masslC  = (mePartonData()[2]->mass() == 0.*MeV);
+  bool masslD  = (mePartonData()[3]->mass() == 0.*MeV);
   //Define vectors to store diagrams and square elements
   const HPCount ndiags(numberOfDiags());
   const size_t ncf(numberOfFlows());

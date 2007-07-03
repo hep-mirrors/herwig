@@ -12,7 +12,7 @@
 using namespace Herwig::Helicity;
 
 inline SSZSSVertex::SSZSSVertex() : _sw(0.),_cw(0.),_zfact(0.),_couplast(0.),
-				    _q2last(0.),_idlast(0) {
+				    _q2last(),_idlast(0) {
   vector<int> first,second,third;
   //LL-sleptons
   for(unsigned int ix=1000011;ix<1000017;++ix) {
@@ -75,7 +75,7 @@ void SSZSSVertex::persistentOutput(PersistentOStream & os) const {
 void SSZSSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _sw >> _cw >> _stop >> _sbottom >> _stau;
   _couplast=0;
-  _q2last=0;
+  _q2last=0*GeV2;
   _idlast=0;
 }
 

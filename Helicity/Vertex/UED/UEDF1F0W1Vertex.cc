@@ -11,7 +11,7 @@
 
 using namespace Herwig::Helicity;
 
-UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinThetaW2(0.0), theq2Last(0.0),
+UEDF1F0W1Vertex::UEDF1F0W1Vertex() : theSinThetaW2(0.0), theq2Last(),
 				     theCoupLast(0.0) {
   vector<int> ferm, anti, wboson;
   //outgoing W+

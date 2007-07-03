@@ -15,13 +15,12 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using Helicity::EpsFunction;
 using Helicity::ScalarWaveFunction;
 using Helicity::VectorWaveFunction;
 using Helicity::TensorWaveFunction;
@@ -69,7 +68,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 		  // get the particles from the current
 		  _current[icurr]->decayModeInfo(iy,iq,ia);
 		  ptemp=_current[icurr]->particles(Wcharge,iy,iq,ia);
-		  minb=0.;
+		  minb=0.*MeV;
 		  for(iz=0;iz<ptemp.size();++iz)
 		    {
 		      extpart.push_back(ptemp[iz]);
@@ -93,7 +92,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 		      extpart.resize(2);
 		      // get the particles from the current
 		      ptemp=_current[icurr]->particles(Wcharge,iy,-ia,-iq);
-		      minb=0.;
+		      minb=0.*MeV;
 		      for(iz=0;iz<ptemp.size();++iz)
 			{
 			  extpart.push_back(ptemp[iz]);
@@ -380,14 +379,18 @@ int ScalarMesonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) con
 
 
 void ScalarMesonFactorizedDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _theCKM << _GF << _a1b << _a2b << _a1c << _a2c 
-     << _currentmapA << _currentmapB << _formmapA << _formmapB << _formpart << _wgtloc 
+  os << _current << _form << _theCKM << ounit(_GF,1/GeV2)
+     << _a1b << _a2b << _a1c << _a2c 
+     << _currentmapA << _currentmapB 
+     << _formmapA << _formmapB << _formpart << _wgtloc 
      << _wgtmax << _weights << _CKMfact ;
 }
 
 void ScalarMesonFactorizedDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _theCKM >> _GF >> _a1b >> _a2b >> _a1c >> _a2c 
-     >> _currentmapA >> _currentmapB >> _formmapA >> _formmapB >> _formpart >> _wgtloc
+  is >> _current >> _form >> _theCKM >> iunit(_GF ,1/GeV2)
+     >> _a1b >> _a2b >> _a1c >> _a2c 
+     >> _currentmapA >> _currentmapB 
+     >> _formmapA >> _formmapB >> _formpart >> _wgtloc
      >> _wgtmax >> _weights >> _CKMfact;
 }
 
@@ -484,7 +487,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   vector<unsigned int> ihel(decay.size());
   // get the wavefunctions of the decay products
   vector<vector<LorentzPolarizationVector> > vecwave(decay.size());
-  vector<vector<LorentzTensor> > tenwave(decay.size());
+  vector<vector<LorentzTensor<double> > > tenwave(decay.size());
   for(ix=0;ix<decay.size();++ix)
     {
       iy=decay[ix]->dataPtr()->iSpin();
@@ -502,7 +505,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       else if(iy==5)
 	//ALB {TensorWaveFunction(tenwave[ix],decay[ix],outgoing,true,false,vertex);}
 	{
-	  vector<LorentzTensor> mytempLT;
+	  vector<LorentzTensor<double> > mytempLT;
 	  TensorWaveFunction(mytempLT,decay[ix],outgoing,true,false,vertex);
 	  tenwave[ix]=mytempLT;
 	}
@@ -512,11 +515,13 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   for(ix=0;ix<decay.size();++ix){spin.push_back(decay[ix]->dataPtr()->iSpin());}
   DecayMatrixElement newME(PDT::Spin0,spin);
   // loop over the different diagrams
-  vector<LorentzPolarizationVector> form,curr;
-  Complex fp,f0,A0,A1,A2,A3,V,dot,h,k,bp,bm;
-  Lorentz5Momentum q,sum; Energy q2;
+  vector<LorentzPolarizationVectorE> form;
+  Complex fp,f0,A0,A1,A2,A3,V,h,k,bp,bm;
+  // complex<Energy2> dot;
+  Lorentz5Momentum q,sum; 
+  Energy2 q2;
   Energy MP(part.mass()),MV,msum,mdiff,scale;
-  LorentzPolarizationVector dotv;
+  LorentzPolarizationVectorE dotv;
   double pre;
   ParticleVector cpart;
   for(unsigned int iy=0;iy<_CKMfact[mode].size();++iy)
@@ -549,13 +554,15 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	  for(ix=0;ix<3;++ix)
 	    {
 	      // dot product
-	      dot = vecwave[_formpart[mode][iy]][ix]*part.momentum();
+	      complex<Energy>
+		dot = vecwave[_formpart[mode][iy]][ix]*part.momentum();
 	      // current
 	      form.push_back(-ii*msum*A1*vecwave[_formpart[mode][iy]][ix]
 			     +ii*A2/msum*dot*sum
 			     +2.*ii*MV/q2*(A3-A0)*dot*q
 			     +2.*V/msum*
-			     EpsFunction::product(vecwave[_formpart[mode][iy]][ix],
+			     Helicity::
+			     epsilon(vecwave[_formpart[mode][iy]][ix],
 						  part.momentum(),
 						  decay[_formpart[mode][iy]]->momentum())); 
 	    }
@@ -569,9 +576,11 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	  for(ix=0;ix<5;++ix)
 	    {
 	      dotv = tenwave[_formpart[mode][iy]][ix]*part.momentum();
-	      dot = dotv*part.momentum();
-	      form.push_back(ii*h*EpsFunction::product(dotv,sum,q)
-			     -k*dotv-bp*dot*sum-bm*dot*q);
+	      complex<Energy2> dot = dotv*part.momentum();
+	      form.push_back(UnitRemoval::InvE2*(ii*h*
+						 Helicity::epsilon(dotv,sum,q)
+						 -k*dotv*UnitRemoval::E2
+						 -bp*dot*sum-bm*dot*q));
 	    }
 	}
       // find the particles for the current
@@ -592,7 +601,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       if(_formpart[mode][iy]!=decay.size())
 	{constants[_formpart[mode][iy]]=constants[_formpart[mode][iy]+1];}
       // calculate the current
-      curr=_current[_currentmapA[mode][iy]]->current(vertex,_currentmapB[mode][iy],ichan,
+      vector<LorentzPolarizationVectorE>
+	curr=_current[_currentmapA[mode][iy]]->current(vertex,_currentmapB[mode][iy],ichan,
 						     scale,cpart);
       pre = (pow(part.mass()/scale,int(cpart.size()-2)));
       // loop over the helicities to calculate the matrix element
@@ -605,7 +615,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	  for(fhel=0;fhel<form.size();++fhel)
 	    {
 	      ihel[_formpart[mode][iy]+1]=fhel;
-	      newME(ihel)+=pre*_CKMfact[mode][iy]*form[fhel]*curr[chel];
+	      newME(ihel)+=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])
+		*UnitRemoval::InvE2;
 	    }
 	}
     }
@@ -613,7 +624,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   ME(newME);
   // perform the contraction
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
-  return 0.5*_GF*_GF*(newME.contract(rhoin)).real();
+  return 0.5*_GF*_GF*(newME.contract(rhoin)).real()*UnitRemoval::E4;
 }
 
 void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,

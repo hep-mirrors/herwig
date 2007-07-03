@@ -58,7 +58,7 @@ void BasicConsistency::analyze(tEventPtr event, long, int, int) {
 		       << "in event " << event->number()  << '\n' 
 		       << *event;
   }
-  if (ptotal.mag() > 5. || abs(ptotal.t()) > 5.) {
+  if (ptotal.mag() > 5.*MeV || abs(ptotal.t()) > 5.*MeV) {
     cerr << "\nMomentum imbalance by " << ptotal/GeV 
 	 << " GeV in event " << event->number() << '\n';// << *event;
     generator()->log() <<"\nMomentum imbalance by " << ptotal/GeV 

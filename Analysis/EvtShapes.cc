@@ -1,4 +1,9 @@
 #include "EvtShapes.h"
+#include "CLHEP/Matrix/Matrix.h"
+#include "CLHEP/Matrix/SymMatrix.h"
+
+using namespace CLHEP;
+
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -21,12 +26,12 @@ EvtShapes::EvtShapes(const tPVector& part) {
 // some convenient single particle variables
 double EvtShapes::getX(const Lorentz5Momentum & p, 
 			      const Energy & Ebeam) {
-  return(Ebeam > 0 ? p.vect().mag()/Ebeam : -1.); 
+  return(Ebeam > Energy() ? double(p.vect().mag()/Ebeam) : -1.); 
 }
 
 double EvtShapes::getXi(const Lorentz5Momentum & p, 
 			       const Energy & Ebeam) {
-  return((Ebeam > 0 && p.vect().mag() > 0) ? 
+  return((Ebeam > Energy() && p.vect().mag() > Energy()) ? 
 	 log(Ebeam/p.vect().mag()) : -1.); 
 }
 
@@ -34,7 +39,7 @@ Energy EvtShapes::getPt(const Lorentz5Momentum & p) {
   return p.perp(); 
 }
 
-Energy EvtShapes::getRapidity(const Lorentz5Momentum & p) {
+double EvtShapes::getRapidity(const Lorentz5Momentum & p) {
   return (p.t() > p.z() ? p.rapidity() : 1e99); 
 }
 
@@ -92,17 +97,17 @@ double EvtShapes::oblateness() {
   return _thrust[1]-_thrust[2];
 }
 
-Vector3 EvtShapes::thrustAxis() {
+Axis EvtShapes::thrustAxis() {
   checkThrust(); 
   return _thrustAxis[0];
 }
 
-Vector3 EvtShapes::majorAxis() {
+Axis EvtShapes::majorAxis() {
   checkThrust(); 
   return _thrustAxis[1];
 }
 
-Vector3 EvtShapes::minorAxis() {
+Axis EvtShapes::minorAxis() {
   checkThrust(); 
   return _thrustAxis[2];
 }
@@ -113,7 +118,7 @@ vector<double> EvtShapes::linTenEigenValues() {
   return _linTen; 
 }
 
-vector<Vector3> EvtShapes::linTenEigenVectors() {
+vector<Axis> EvtShapes::linTenEigenVectors() {
   checkLinTen(); 
   return _linTenAxis; 
 }
@@ -145,7 +150,7 @@ double EvtShapes::planarity() {
   return _spher[1]-_spher[2]; 
 }
 
-Vector3 EvtShapes::sphericityAxis() {
+Axis EvtShapes::sphericityAxis() {
   checkSphericity(); 
   return _spherAxis[0]; 
 }
@@ -155,7 +160,7 @@ vector<double> EvtShapes::sphericityEigenValues() {
   return _spher; 
 }
 
-vector<Vector3> EvtShapes::sphericityEigenVectors() {
+vector<Axis> EvtShapes::sphericityEigenVectors() {
   checkSphericity(); 
   return _spherAxis; 
 }
@@ -205,7 +210,7 @@ void EvtShapes::bookEEC(vector<double> & hi) {
   // hi is the histogram.  It is understood that hi.front() contains
   // the bin [-1 < cos(chi) < -1+delta] and hi.back() the bin [1-delta
   // < cos(chi) < 1].  Here, delta = 2/hi.size().
-  Energy Evis(0.);
+  Energy Evis(0.*MeV);
   Lorentz5Momentum p_i, p_j; 
   for (unsigned int bin = 0; bin < hi.size(); bin++) {
     double delta = 2./((double) hi.size());
@@ -218,11 +223,11 @@ void EvtShapes::bookEEC(vector<double> & hi) {
 	  p_j = _pv[j]->momentum();
 	  double diff = abs(coschi-cos( p_i.vect().angle(p_j.vect()) )); 
 	  if (delta > diff) 
-	    hi[bin] += p_i.e()*p_j.e();
+	    hi[bin] += p_i.e()*p_j.e()/sqr(MeV);
 	}
       }
     }
-    hi[bin] /= (Evis*Evis);
+    hi[bin] /= (Evis*Evis)/sqr(MeV);
   }
 }
 
@@ -258,13 +263,13 @@ void EvtShapes::diagonalizeTensors(bool linear, bool cmboost) {
     for(int j=0; j<3; j++) 
       Theta[i][j] = 0.0;
   double sum = 0.; 
-  Vector3 sumvec = Vector3();
+  Momentum3 sumvec = Momentum3();
   vector<double> lam;
-  vector<Vector3> n; 
+  vector<Axis> n; 
   // get cm-frame
   Lorentz5Momentum pcm = Lorentz5Momentum(); 
   tPVector::const_iterator cit;
-  Vector3 beta; 
+  Boost beta; 
   if (cmboost) {
     for(cit=_pv.begin(); cit != _pv.end(); ++cit) 
       pcm += (*cit)->momentum();    
@@ -274,19 +279,20 @@ void EvtShapes::diagonalizeTensors(bool linear, bool cmboost) {
   for(cit=_pv.begin(); cit != _pv.end(); ++cit) {
     Lorentz5Momentum dum = (*cit)->momentum();
     if (cmboost) dum.boost( beta );
-    Vector3 pvec = dum.vect();
-    if (pvec.mag() > 0) {
+    Momentum3 pvec = dum.vect();
+    double pvec_MeV[3] = {pvec.x()/MeV, pvec.y()/MeV, pvec.z()/MeV};
+    if (pvec.mag() > 0*MeV) {
       sumvec += pvec;
       if (linear) 
-	sum += pvec.mag();
+	sum += pvec.mag()/MeV;
       else 
-	sum += pvec.mag2();
+	sum += pvec.mag2()/sqr(MeV);
       for(int i=0; i<3; i++) 
 	for(int j=i; j<3; j++) 
 	  if (linear) 
-	    Theta[i][j] += (pvec[i])*(pvec[j])/(pvec.mag());      
+	    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j])*MeV/(pvec.mag());      
 	  else 
-	    Theta[i][j] += (pvec[i])*(pvec[j]);      
+	    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j]);      
     }
   }
   Theta /= sum;      
@@ -294,9 +300,7 @@ void EvtShapes::diagonalizeTensors(bool linear, bool cmboost) {
   HepMatrix U = diagonalize(&Theta);
   for(int i=0; i<3; i++) {
     lam.push_back( Theta[i][i] );
-    Vector3 ndum;
-    for(int j=0; j<3; j++) 
-      ndum[j] = U[j][i]; 
+    Axis ndum(U[0][i], U[1][i], U[2][i]);
     n.push_back( ndum ); 
   }
   // sort according to size of eigenvalues
@@ -329,67 +333,68 @@ inline void EvtShapes::checkThrust() {
   }
 }
 
-void EvtShapes::calcT(const vector<Vector3> &p, double &t, Vector3 &taxis) {
-  double tval;
-  t = 0.0;
-  Vector3 tv, ptot;
-  vector<Vector3> cpm;
+void EvtShapes::calcT(const vector<Momentum3> &p, 
+		      Energy2 &t, Axis & taxis) {
+  Energy2 tval;
+  t = Energy2();
+  Vector3<Energy2> tv;
+  Momentum3 ptot;
   for (unsigned int k=1; k < p.size(); k++) {
     for (unsigned int j=0; j<k; j++) {
       tv = p[j].cross(p[k]);
-      ptot = Vector3();
+      ptot = Momentum3();
       for (unsigned int l=0; l<p.size(); l++) {
 	if (l!=j && l!=k) {
-	  if (p[l]*tv > 0.0) { 
+	  if (p[l]*tv > Energy3()) { 
 	    ptot += p[l];
 	  } else {
 	    ptot -= p[l];
 	  }
 	}
       }
-      cpm.clear();
+      vector<Momentum3> cpm;
       cpm.push_back(ptot-p[j]-p[k]);
       cpm.push_back(ptot-p[j]+p[k]);
       cpm.push_back(ptot+p[j]-p[k]);
       cpm.push_back(ptot+p[j]+p[k]);
-      for (vector<Vector3>::iterator it = cpm.begin();
+      for (vector<Momentum3>::iterator it = cpm.begin();
 	   it != cpm.end(); it++) {
-	tval = (*it).mag2();
+	tval = it->mag2();
 	if (tval > t) {
 	  t = tval;
-	  taxis = *it;
+	  taxis = it->unit();
 	}
       }
     }
   }
 }
 
-void EvtShapes::calcM(const vector<Vector3> &p, double &m, Vector3 &maxis) {
-  double mval;
-  m = 0.0;
-  Vector3 tv, ptot;
-  vector<Vector3> cpm;
+void EvtShapes::calcM(const vector<Momentum3> &p, 
+		      Energy2 &m, Axis & maxis) {
+  Energy2 mval;
+  m = Energy2();
+  Momentum3 tv, ptot;
   for (unsigned int j=0; j < p.size(); j++) {
     tv = p[j];
-    ptot = Vector3();
+    ptot = Momentum3();
     for (unsigned int l=0; l<p.size(); l++) {
       if (l!=j) {
-	if (p[l]*tv > 0.0) { 
+	if (p[l]*tv > Energy2()) { 
 	  ptot += p[l];
 	} else {
 	  ptot -= p[l];
 	}
       }
     }
-    cpm.clear();
+    vector<Momentum3> cpm;
     cpm.push_back(ptot-p[j]);
     cpm.push_back(ptot+p[j]);
-    for (vector<Vector3>::iterator it = cpm.begin();
+    for (vector<Momentum3>::iterator it = cpm.begin();
 	 it != cpm.end(); it++) {
-      mval = (*it).mag2();
+      mval = it->mag2();
       if (mval > m) {
 	m = mval;
-	maxis = *it;
+	maxis = it->unit();
       }
     }
   }
@@ -409,22 +414,22 @@ void EvtShapes::calculateThrust() {
   if (_pv.size() < 2) {
     for (int i=0; i<3; i++) {
       _thrust.push_back(-1);
-      _thrustAxis.push_back(Vector3());
+      _thrustAxis.push_back(Axis());
     }
     return;
   }
 
   // thrust
-  vector<Vector3> p;
+  vector<Momentum3 > p;
   p.clear();
-  double psum = 0.0;
+  Energy psum = 0*MeV;
   for (unsigned int l=0; l<_pv.size(); l++) {
-    p.push_back(_pv[l]->momentum().vect()/MeV);
+    p.push_back(_pv[l]->momentum().vect());
     psum += p.back().mag();
   }
 
-  double val; 
-  Vector3 axis;
+  Energy2 val; 
+  Axis axis;
   if (p.size() == 2) {
     _thrust.push_back(1.0);
     _thrust.push_back(0.0);
@@ -468,10 +473,10 @@ void EvtShapes::calculateThrust() {
 
   //major 
   p.clear();
-  Vector3 par;
+  Momentum3 par;
   for (unsigned int l=0; l<_pv.size(); l++) {
-    par = ((_pv[l]->momentum().vect()/MeV)*axis.unit())*axis.unit();
-    p.push_back(_pv[l]->momentum().vect()/MeV - par);
+    par = (_pv[l]->momentum().vect() * axis.unit())*axis.unit();
+    p.push_back(_pv[l]->momentum().vect() - par);
   }
   calcM(p, val, axis);
   _thrust.push_back(sqrt(val)/psum);
@@ -480,16 +485,16 @@ void EvtShapes::calculateThrust() {
   
   // minor
   if (_thrustAxis[0]*_thrustAxis[1] < 1e-10) {
-    val = 0.;
+    Energy value;
     axis = _thrustAxis[0].cross(_thrustAxis[1]);
     _thrustAxis.push_back(axis); 
     for (unsigned int l=0; l<_pv.size(); l++) {
-      val += abs(axis*(_pv[l]->momentum().vect()/MeV));
+      value += abs(axis*(_pv[l]->momentum().vect()));
     }
-    _thrust.push_back(val/psum);
+    _thrust.push_back(value/psum);
   } else {
     _thrust.push_back(-1.0);
-    _thrustAxis.push_back(Vector3()); 
+    _thrustAxis.push_back(Axis()); 
   }
 }
 
@@ -504,7 +509,7 @@ void EvtShapes::calcHemisphereMasses() {
   Lorentz5Momentum pos, neg;
   tPVector::const_iterator cit;
   for(cit = _pv.begin(); cit != _pv.end(); cit++) 
-    if ((*cit)->momentum().vect()*thrustAxis() > 0) 
+    if ((*cit)->momentum().vect()*thrustAxis() > Energy()) 
       pos += (*cit)->momentum();
     else neg += (*cit)->momentum();
   _mPlus = pos.m()/(pos+neg).e();
@@ -526,14 +531,14 @@ void EvtShapes::calcBroadening() {
   pos = neg = den = 0.0*MeV;
   tPVector::const_iterator cit;
   for(cit = _pv.begin(); cit != _pv.end(); cit++) {
-    if ((*cit)->momentum().vect()*thrustAxis() > 0) 
+    if ((*cit)->momentum().vect()*thrustAxis() > Energy()) 
       pos += (*cit)->momentum().perp(thrustAxis());
     else 
       neg += (*cit)->momentum().perp(thrustAxis());
     den += (*cit)->momentum().vect().mag();
   }
-  _bPlus = pos/den/2.;
-  _bMinus = neg/den/2;
+  _bPlus = 0.5*pos/den;
+  _bMinus = 0.5*neg/den;
   if (_bPlus < _bMinus) swap(_bPlus, _bMinus);
 }
 

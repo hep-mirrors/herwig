@@ -8,7 +8,7 @@ namespace Helicity {
 using namespace ThePEG;
 
 inline RSModelFFVGRVertex::RSModelFFVGRVertex() 
-    : _charge(17,0.), _couplast(2,0.), _q2last(2,0.)
+    : _charge(17,0.), _couplast(2,0.), _q2last(2)
 {
   vector<int> first,second,third,fourth;
   for(unsigned int ix=1;ix<7;++ix)
@@ -27,7 +27,7 @@ inline RSModelFFVGRVertex::RSModelFFVGRVertex()
       third.push_back(21);fourth.push_back(39);
     }
   setList(first,second,third,fourth);
-  _theKappa=0.;
+  _theKappa=InvEnergy();
 }
 
 inline IBPtr RSModelFFVGRVertex::clone() const {
@@ -53,7 +53,7 @@ inline void RSModelFFVGRVertex::doinit() throw(InitException) {
   for(int ix=0;ix<2;++ix)
     {
       _couplast[ix] = 0.;
-      _q2last[ix]=0.;
+      _q2last[ix]=0.*GeV2;
     }
   if(hwRS){_theKappa=2./hwRS->lambda_pi();}
 }

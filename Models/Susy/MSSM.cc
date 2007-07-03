@@ -13,12 +13,14 @@ using namespace Herwig;
 
 void MSSM::persistentOutput(PersistentOStream & os) const {
   os << theStopMix << theSbotMix << theStauMix << theAlpha 
-     << theAtop << theAbottom << theAtau << theHiggsMix;
+     << ounit(theAtop,GeV) << ounit(theAbottom,GeV) << ounit(theAtau,GeV) 
+     << theHiggsMix;
 }
 
 void MSSM::persistentInput(PersistentIStream & is, int) {
   is >> theStopMix >> theSbotMix >> theStauMix >> theAlpha 
-     >> theAtop >> theAbottom >> theAtau >> theHiggsMix;
+     >> iunit(theAtop,GeV) >> iunit(theAbottom,GeV) >> iunit(theAtau,GeV) 
+     >> theHiggsMix;
 }
 
 ClassDescription<MSSM> MSSM::initMSSM;

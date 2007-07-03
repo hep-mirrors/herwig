@@ -16,23 +16,23 @@ using namespace ThePEG;
 // use a 5-momentum and specify all components (specifiy Dirac representation)
 inline RSSpinorWaveFunction::
 RSSpinorWaveFunction(const Lorentz5Momentum &p, const tcPDPtr & part,
-		     Complex xs1, Complex xs2, Complex xs3, Complex xs4,
-		     Complex ys1, Complex ys2, Complex ys3, Complex ys4,
-		     Complex zs1, Complex zs2, Complex zs3, Complex zs4,
-		     Complex ts1, Complex ts2, Complex ts3, Complex ts4,
+		     complex<double> xs1, complex<double> xs2, complex<double> xs3, complex<double> xs4,
+		     complex<double> ys1, complex<double> ys2, complex<double> ys3, complex<double> ys4,
+		     complex<double> zs1, complex<double> zs2, complex<double> zs3, complex<double> zs4,
+		     complex<double> ts1, complex<double> ts2, complex<double> ts3, complex<double> ts4,
 		     DiracRep dirac) 
 {
   direction(intermediate);
   setMomentum(p);
   checkParticle(part);
-  _wf = LorentzRSSpinor(xs1,xs2,xs3,xs4,ys1,ys2,ys3,ys4,
+  _wf = LorentzRSSpinor<double>(xs1,xs2,xs3,xs4,ys1,ys2,ys3,ys4,
 			zs1,zs2,zs3,zs4,ts1,ts2,ts3,ts4,dirac);
 }	
 
 // use a 5-momentum and a LorentzRSSpinor
 inline RSSpinorWaveFunction::RSSpinorWaveFunction(const Lorentz5Momentum & p,
 					      const tcPDPtr & part,
-					      LorentzRSSpinor & inspin)
+					      LorentzRSSpinor<double> & inspin)
 {
   direction(intermediate);
   setMomentum(p);
@@ -76,7 +76,7 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify Dirac representation)
-inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzVector pin,
+inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzMomentum pin,
 						  const tcPDPtr & part,unsigned int ihel,
 						   Direction dir, DiracRep dirac)
 {
@@ -98,7 +98,7 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(Energy mm, const tcPDPtr & par
 }
 
 // set 4 momentum and mass (specify Dirac representation)
-inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzVector pin,Energy mm,
+inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, DiracRep dirac)
 {
@@ -146,7 +146,7 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify Dirac representation)
-inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzVector pin, const tcPDPtr & part,
+inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzMomentum pin, const tcPDPtr & part,
 					      Direction dir, DiracRep dirac) 
 {
   direction(dir);
@@ -166,7 +166,7 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(Energy mm,const tcPDPtr & part
 }
 
 // set 4 momentum and mass
-inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzVector pin,Energy mm,
+inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part, Direction dir, 
 					      DiracRep dirac) 
 {
@@ -177,7 +177,7 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(LorentzVector pin,Energy mm,
 }
 
 // special setup constructor
-inline RSSpinorWaveFunction::RSSpinorWaveFunction(vector<LorentzRSSpinor>& wave,
+inline RSSpinorWaveFunction::RSSpinorWaveFunction(vector<LorentzRSSpinor<SqrtEnergy> >& wave,
 						  tPPtr part,Direction dir,bool time,
 						  bool vertex,DiracRep dirac)
 {
@@ -189,7 +189,7 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(vector<LorentzRSSpinor>& wave,
 }
 
 // special setup constructor
-inline RSSpinorWaveFunction::RSSpinorWaveFunction(vector<LorentzRSSpinor>& wave,
+inline RSSpinorWaveFunction::RSSpinorWaveFunction(vector<LorentzRSSpinor<SqrtEnergy> >& wave,
 						  RhoDMatrix& rho,
 						  tPPtr part,Direction dir,bool time,
 						  bool vertex,DiracRep dirac)
@@ -213,19 +213,19 @@ inline RSSpinorWaveFunction::RSSpinorWaveFunction(DiracRep dirac)
 inline RSSpinorWaveFunction::~RSSpinorWaveFunction(){;}
 
 // subscript operator
-inline Complex RSSpinorWaveFunction::operator ()(int i,int j) const
+inline complex<double> RSSpinorWaveFunction::operator ()(int i,int j) const
 {
   if(i<0 || i>3 || j<0 || j>3)
     {ThePEG::Helicity::HelicityConsistencyError()
 	<< "RSSpinorWaveFunction requested for invalid index" 
 	<< i << " " << j<< Exception::abortnow;
-    return 0.;}
+    return complex<double>();}
   return _wf(i,j);
 }
 // Set components by index.
-inline Complex & RSSpinorWaveFunction::operator () (int i, int j)
+inline complex<double> & RSSpinorWaveFunction::operator () (int i, int j)
 {
-  static Complex dummy;
+  static complex<double> dummy;
   if(i>=0 &&i<=3|| j<0 || j>3)
     {return _wf(i,j);}
   else
@@ -247,43 +247,43 @@ RSSpinorWaveFunction::operator = (const RSSpinorWaveFunction & w)
 }
 
 // return the wavefunction as a LorentzRSSpinor
-inline const LorentzRSSpinor & RSSpinorWaveFunction::wave() const{return _wf;}
+inline LorentzRSSpinor<double> RSSpinorWaveFunction::wave() const{return _wf;}
 
 // Get components
-inline Complex RSSpinorWaveFunction::xs1() const {return _wf.xs1();}
-inline Complex RSSpinorWaveFunction::xs2() const {return _wf.xs2();}
-inline Complex RSSpinorWaveFunction::xs3() const {return _wf.xs3();}
-inline Complex RSSpinorWaveFunction::xs4() const {return _wf.xs4();}
-inline Complex RSSpinorWaveFunction::ys1() const {return _wf.ys1();}
-inline Complex RSSpinorWaveFunction::ys2() const {return _wf.ys2();}
-inline Complex RSSpinorWaveFunction::ys3() const {return _wf.ys3();}
-inline Complex RSSpinorWaveFunction::ys4() const {return _wf.ys4();}
-inline Complex RSSpinorWaveFunction::zs1() const {return _wf.zs1();}
-inline Complex RSSpinorWaveFunction::zs2() const {return _wf.zs2();}
-inline Complex RSSpinorWaveFunction::zs3() const {return _wf.zs3();}
-inline Complex RSSpinorWaveFunction::zs4() const {return _wf.zs4();}
-inline Complex RSSpinorWaveFunction::ts1() const {return _wf.ts1();}
-inline Complex RSSpinorWaveFunction::ts2() const {return _wf.ts2();}
-inline Complex RSSpinorWaveFunction::ts3() const {return _wf.ts3();}
-inline Complex RSSpinorWaveFunction::ts4() const {return _wf.ts4();}
+inline complex<double> RSSpinorWaveFunction::xs1() const {return _wf.xs1();}
+inline complex<double> RSSpinorWaveFunction::xs2() const {return _wf.xs2();}
+inline complex<double> RSSpinorWaveFunction::xs3() const {return _wf.xs3();}
+inline complex<double> RSSpinorWaveFunction::xs4() const {return _wf.xs4();}
+inline complex<double> RSSpinorWaveFunction::ys1() const {return _wf.ys1();}
+inline complex<double> RSSpinorWaveFunction::ys2() const {return _wf.ys2();}
+inline complex<double> RSSpinorWaveFunction::ys3() const {return _wf.ys3();}
+inline complex<double> RSSpinorWaveFunction::ys4() const {return _wf.ys4();}
+inline complex<double> RSSpinorWaveFunction::zs1() const {return _wf.zs1();}
+inline complex<double> RSSpinorWaveFunction::zs2() const {return _wf.zs2();}
+inline complex<double> RSSpinorWaveFunction::zs3() const {return _wf.zs3();}
+inline complex<double> RSSpinorWaveFunction::zs4() const {return _wf.zs4();}
+inline complex<double> RSSpinorWaveFunction::ts1() const {return _wf.ts1();}
+inline complex<double> RSSpinorWaveFunction::ts2() const {return _wf.ts2();}
+inline complex<double> RSSpinorWaveFunction::ts3() const {return _wf.ts3();}
+inline complex<double> RSSpinorWaveFunction::ts4() const {return _wf.ts4();}
 
 // Set components
-inline void RSSpinorWaveFunction::setXS1(Complex in){_wf.setXS1(in);}
-inline void RSSpinorWaveFunction::setXS2(Complex in){_wf.setXS2(in);}
-inline void RSSpinorWaveFunction::setXS3(Complex in){_wf.setXS3(in);}
-inline void RSSpinorWaveFunction::setXS4(Complex in){_wf.setXS4(in);}
-inline void RSSpinorWaveFunction::setYS1(Complex in){_wf.setYS1(in);}
-inline void RSSpinorWaveFunction::setYS2(Complex in){_wf.setYS2(in);}
-inline void RSSpinorWaveFunction::setYS3(Complex in){_wf.setYS3(in);}
-inline void RSSpinorWaveFunction::setYS4(Complex in){_wf.setYS4(in);}
-inline void RSSpinorWaveFunction::setZS1(Complex in){_wf.setZS1(in);}
-inline void RSSpinorWaveFunction::setZS2(Complex in){_wf.setZS2(in);}
-inline void RSSpinorWaveFunction::setZS3(Complex in){_wf.setZS3(in);}
-inline void RSSpinorWaveFunction::setZS4(Complex in){_wf.setZS4(in);}
-inline void RSSpinorWaveFunction::setTS1(Complex in){_wf.setTS1(in);}
-inline void RSSpinorWaveFunction::setTS2(Complex in){_wf.setTS2(in);}
-inline void RSSpinorWaveFunction::setTS3(Complex in){_wf.setTS3(in);}
-inline void RSSpinorWaveFunction::setTS4(Complex in){_wf.setTS4(in);}
+inline void RSSpinorWaveFunction::setXS1(complex<double> in){_wf.setXS1(in);}
+inline void RSSpinorWaveFunction::setXS2(complex<double> in){_wf.setXS2(in);}
+inline void RSSpinorWaveFunction::setXS3(complex<double> in){_wf.setXS3(in);}
+inline void RSSpinorWaveFunction::setXS4(complex<double> in){_wf.setXS4(in);}
+inline void RSSpinorWaveFunction::setYS1(complex<double> in){_wf.setYS1(in);}
+inline void RSSpinorWaveFunction::setYS2(complex<double> in){_wf.setYS2(in);}
+inline void RSSpinorWaveFunction::setYS3(complex<double> in){_wf.setYS3(in);}
+inline void RSSpinorWaveFunction::setYS4(complex<double> in){_wf.setYS4(in);}
+inline void RSSpinorWaveFunction::setZS1(complex<double> in){_wf.setZS1(in);}
+inline void RSSpinorWaveFunction::setZS2(complex<double> in){_wf.setZS2(in);}
+inline void RSSpinorWaveFunction::setZS3(complex<double> in){_wf.setZS3(in);}
+inline void RSSpinorWaveFunction::setZS4(complex<double> in){_wf.setZS4(in);}
+inline void RSSpinorWaveFunction::setTS1(complex<double> in){_wf.setTS1(in);}
+inline void RSSpinorWaveFunction::setTS2(complex<double> in){_wf.setTS2(in);}
+inline void RSSpinorWaveFunction::setTS3(complex<double> in){_wf.setTS3(in);}
+inline void RSSpinorWaveFunction::setTS4(complex<double> in){_wf.setTS4(in);}
 
 // reset functions
 
@@ -326,7 +326,7 @@ inline void RSSpinorWaveFunction::reset(const tcPDPtr & part)
 
 // zero the wavefunction (set specify Dirac representation)
 inline void RSSpinorWaveFunction::zeroWaveFunction(DiracRep dirac)
-{_wf=LorentzRSSpinor(dirac);}
+{_wf=LorentzRSSpinor<double>(dirac);}
 
 // check the particles
 inline void RSSpinorWaveFunction::checkParticle(const tcPDPtr & in)
@@ -339,7 +339,7 @@ inline void RSSpinorWaveFunction::checkParticle(const tcPDPtr & in)
 }
 
 // construct the spininfo object
-inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wave,
+inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor<SqrtEnergy> >& wave,
 						    tRSFermionSpinPtr spin,
 						    bool vertex)
 {
@@ -349,18 +349,18 @@ inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wav
       // calculate the wavefunction for the first helicity
       reset(ix);
       // add to output array
-      wave[ix] = _wf;
+      wave[ix] = dimensionedWf();
       // setup the spininfo object
       if(vertex)
 	{
-	  if(direction()==outgoing){spin->setBasisState(ix,_wf);}
-	  else{spin->setDecayState(ix,_wf);}
+	  if(direction()==outgoing){spin->setBasisState(ix,dimensionedWf());}
+	  else{spin->setDecayState(ix,dimensionedWf());}
 	}
     }
 }
 
 // construct the spininfo object
-inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wave,
+inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor<SqrtEnergy> >& wave,
 						    tPPtr part,bool time, bool vertex)
 {
   tRSFermionSpinPtr inspin;
@@ -412,7 +412,7 @@ inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wav
 }
 
 // construct the spininfo object
-inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor>& wave,
+inline void RSSpinorWaveFunction::constructSpinInfo(vector<LorentzRSSpinor<SqrtEnergy> >& wave,
 						    RhoDMatrix& rho,tPPtr part,bool time,
 						    bool vertex)
 {

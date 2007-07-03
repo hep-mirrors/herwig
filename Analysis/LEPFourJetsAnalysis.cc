@@ -27,14 +27,21 @@ LorentzRotation LEPFourJetsAnalysis::transform(tEventPtr) const {
 
 void LEPFourJetsAnalysis::analyze(const tPVector & particles) {
   _kint.clearMap();
-  KtJet::KtEvent ev = KtJet::KtEvent(_kint.convertToKtVectorList(particles), 1, 1, 1);
+  KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(particles), 1, 1, 1);
   // four jet distributions
   ev.findJetsY(0.008); 
-  vector<KtJet::KtLorentzVector> ktjets;
+  vector<KtJet::KtLorentzVector> ktjets = ev.getJetsE();
   vector<Lorentz5Momentum> jets;
-  ktjets = ev.getJetsE();
+
   if (ktjets.size() == 4) {
-    for (int j=0; j<4; j++){jets.push_back(ktjets[j]);}
+    for (int j=0; j<4; ++j) {
+      if (! ktjets[j].isJet()) {
+	throw Exception() << "LEPFourJetsAnalysis: Trying to extract jet " 
+			  << "momenta from a single particle." 
+			  << Exception::warning;
+      }
+      jets.push_back(KtJetInterface::convert(ktjets[j]));
+    }
     *_cchiBZ += abs(cosChiBZ(jets));
     *_cphiKSW += cosPhiKSW(jets);
     *_cthNR += abs(cosThetaNR(jets));

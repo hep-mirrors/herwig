@@ -15,13 +15,13 @@
 using namespace Herwig;
 
 void GeneralCurrentDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theVertex << _inpart << _outpart << _current << _maxmass
-     << _GF << _modemap << _modestart << _wgtloc << _wgtmax << _weights;
+  os << _theVertex << _inpart << _outpart << _current << ounit(_maxmass,GeV)
+     << ounit(_GF,1/GeV2) << _modemap << _modestart << _wgtloc << _wgtmax << _weights;
 }
 
 void GeneralCurrentDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theVertex >> _inpart >> _outpart >> _current >> _maxmass
-     >> _GF >> _modemap >> _modestart >> _wgtloc >> _wgtmax >> _weights;
+  is >> _theVertex >> _inpart >> _outpart >> _current >> iunit(_maxmass,GeV)
+     >> iunit(_GF,1/GeV2) >> _modemap >> _modestart >> _wgtloc >> _wgtmax >> _weights;
 }
 
 AbstractClassDescription<GeneralCurrentDecayer> GeneralCurrentDecayer::initGeneralCurrentDecayer;

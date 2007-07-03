@@ -100,7 +100,7 @@ protected:
   virtual bool reconstructISJets(Lorentz5Momentum pcm,
 				 const vector<ShowerProgenitorPtr> & ShowerHardJets,
 				 map<tShowerProgenitorPtr,pair<Energy,double> > intrinsic,
-				 Vector3 & boostRest,Vector3 & boostNewF) const;
+				 Boost & boostRest, Boost & boostNewF) const;
 
   /**
    *  Methods to reconstruct the kinematics of individual jets
@@ -188,7 +188,7 @@ protected:
    * @param root_s The centre-of-mass energy
    * @param jets The jets
    */
-  inline double momConsEq(const double & k, const Energy & root_s,
+  inline Energy momConsEq(const double & k, const Energy & root_s,
 			  const JetKinVect & jets) const;
 
   /**
@@ -203,7 +203,7 @@ protected:
    * @param bv The boost
    * @param parent The parent of the chain
    */
-  inline void boostChain(tPPtr p, const Vector3 &bv,tPPtr & parent) const;
+  inline void boostChain(tPPtr p, const Boost &bv, tPPtr & parent) const;
 
   /**
    * Given a 5-momentum and a scale factor, the method returns the
@@ -213,15 +213,15 @@ protected:
    * outgoing jet-momenta are parallel to the momenta of the particles
    * leaving the hard subprocess. 
    */
-  Vector3 solveBoostBeta( const double k, const Lorentz5Momentum & newq, 
+  Boost solveBoostBeta( const double k, const Lorentz5Momentum & newq, 
 			  const Lorentz5Momentum & oldp);
 
   /**
    * Compute boost parameter along z axis to get (Ep, any perp, qp)
    * from (E, same perp, q).
    */
-  inline double getBeta(const Energy E, const Energy q, 
-			const Energy Ep, const Energy qp) const {
+  inline double getBeta(const double E, const double q, 
+			const double Ep, const double qp) const {
     return (q*E-qp*Ep)/(sqr(qp)+sqr(E));
   }
 

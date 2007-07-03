@@ -61,7 +61,6 @@ public:
    */
   virtual int modeNumber(bool &, const DecayMode &) const {return -1;}
 
-
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
    * @param dm the DecayMode describing the decay.

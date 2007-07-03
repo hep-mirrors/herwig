@@ -153,7 +153,7 @@ private:
    * @param dm The decaymode for which to set the branching ratio
    * @param pwidth The calculated width of the mode
    */
-    void setBranchingRatio(tDMPtr dm, double pwidth);
+    void setBranchingRatio(tDMPtr dm, Energy pwidth);
 
   /**
    * Set the interfaces on the decayers to initialise them

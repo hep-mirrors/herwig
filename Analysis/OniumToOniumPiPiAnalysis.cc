@@ -82,7 +82,7 @@ void OniumToOniumPiPiAnalysis::analyze(tPPtr part) {
   q.rescaleMass();
   Energy mq=q.mass();
   // calculate the helicity angle
-  Hep3Vector boost = -q.boostVector();
+  Boost boost = -q.boostVector();
   Lorentz5Momentum qp=out->momentum();
   Lorentz5Momentum ppi=pip;
   qp.boost(boost);

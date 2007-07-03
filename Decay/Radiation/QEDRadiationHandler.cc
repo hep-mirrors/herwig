@@ -41,7 +41,7 @@ handle(EventHandler & eh, const tPVector & tagged,
     if(find(_decayProducts.begin(),_decayProducts.end(),id)!=_decayProducts.end()) {
       PPtr par=tagged[ix]->parents()[0];
       id=par->id();
-      if(tagged[ix]->parents()[0]->mass()>0.&&
+      if(tagged[ix]->parents()[0]->mass()>0.*GeV&&
 	 find(_decayingParticles.begin(),_decayingParticles.end(),id)!=
 	 _decayingParticles.end()) parents.insert(par);
     }

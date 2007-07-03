@@ -16,12 +16,12 @@ inline IBPtr ISGW2FormFactor::fullclone() const {
 }
 
 inline double ISGW2FormFactor::alphaS(Energy massq, Energy2 scale) const {
-  Energy lqcd2(0.04*GeV2);
+  Energy2 lqcd2(0.04*GeV2);
   double nflav(4.);
   double output(_alphamuQM);
   if (scale>0.36*GeV2) {
     if(massq<_mcharm+0.03*GeV) nflav=3.0;
-    output = 12.*pi/(33.-2.*nflav)/log(scale/lqcd2);
+    output = 12.*Constants::pi/(33.-2.*nflav)/log(scale/lqcd2);
   }
   return output;
 }

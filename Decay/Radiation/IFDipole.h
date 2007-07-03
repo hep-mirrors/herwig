@@ -172,7 +172,7 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Hep3Vector boost,ParticleVector children);
+  double makePhotons(Boost boost,ParticleVector children);
 
 private:
 

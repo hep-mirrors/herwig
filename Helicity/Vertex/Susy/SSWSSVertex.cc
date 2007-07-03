@@ -11,7 +11,7 @@
 
 using namespace Herwig::Helicity;
 
-inline SSWSSVertex::SSWSSVertex():_sw(0.),_q2last(0.),_couplast(0.) {
+inline SSWSSVertex::SSWSSVertex():_sw(0.),_q2last(),_couplast(0.) {
   vector<int> first,second,third;
   //W-
   //LL-squarks
@@ -83,7 +83,7 @@ void SSWSSVertex::persistentOutput(PersistentOStream & os) const {
 
 void SSWSSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _sw >> _stau >> _stop >> _sbottom;
-  _q2last=0.;
+  _q2last=0.*GeV2;
   _couplast=0.;
 }
 

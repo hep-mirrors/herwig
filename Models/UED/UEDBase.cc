@@ -206,7 +206,8 @@ void UEDBase::bosonMasses(const unsigned int n) {
   const double g_W2 = g_em2/sin2ThetaW();
   const double zeta3 = 1.20202020;
   const Energy2 nmass2 = sqr(n*theInvRadius); 
-  const Energy2 norm = 1./16./Constants::pi/Constants::pi;
+  const double pi2 = sqr(Constants::pi);
+  const double norm = 1./16./pi2;
   long level = 5000000 + n*100000;
   //gluon
   Energy2 deltaGB = g_s2*invRad2*norm*( (-3.*zeta3/2./pi2) + 
@@ -236,7 +237,7 @@ void UEDBase::bosonMasses(const unsigned int n) {
 
   //scalars
   double lambda_H = sqr(getParticleData(25)->mass())/2./theVeV/theVeV;
-  Energy2 mbarH2 = 0.;
+  Energy2 mbarH2 = 0.*sqr(MeV);
   deltaGB = n*n*norm*invRad2*(3.*g_W2 + (3.*g_em2/2.) 
 			    - 2.*lambda_H)*log(theCutOff/theInvRadius) + mbarH2;
   //H0

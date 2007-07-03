@@ -33,7 +33,7 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
       throw ThePEG::Helicity::HelicityConsistencyError() 
 	<< "Invalid Helicity = " << ihel << " requested for Spinor" 
 	<< Exception::abortnow;
-      for(int ix=0;ix<4;++ix){_wf[ix]=0.;}
+      for(int ix=0;ix<4;++ix){_wf[ix]=0.0;}
     }
   else
     {
@@ -41,9 +41,9 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
       double fact=-1.; if(dir==incoming){fact=1.;}
       Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
       // define and calculate some kinematic quantities
-      Energy ptran  = ppx*ppx+ppy*ppy;
-      Energy pabs   = sqrt(ptran+ppz*ppz);
-      ptran  = sqrt(ptran);
+      Energy2 ptran2  = ppx*ppx+ppy*ppy;
+      Energy pabs   = sqrt(ptran2+ppz*ppz);
+      Energy ptran  = sqrt(ptran2);
       // first need to evalulate the 2-component helicity spinors 
       // this is the same regardless of which definition of the spinors
       // we are using
@@ -52,9 +52,9 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
       if((dir==incoming && ihel== 1) || (dir==outgoing && ihel==0))
 	{
 	  // no transverse momentum 
-	  if(ptran==0.)
+	  if(ptran==Energy())
 	    {
-	      if(ppz>=0)
+	      if(ppz>=Energy())
 		{
 		  hel_wf[0] = 1;
 		  hel_wf[1] = 0;
@@ -67,23 +67,23 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 	    }
 	  else
 	    {
-	      double denominator = 1./sqrt(2.*pabs);
-	      double rtppluspz;
-	      if(ppz>=0)
+	      InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
+	      SqrtEnergy rtppluspz;
+	      if(ppz>=Energy())
 		{rtppluspz = sqrt(pabs+ppz);}
 	      else
 		{rtppluspz = ptran/sqrt(pabs-ppz);} 
 	      hel_wf[0] = denominator*rtppluspz;
-	      hel_wf[1] = denominator/rtppluspz*Complex(ppx,ppy);
+	      hel_wf[1] = denominator/rtppluspz*complex<Energy>(ppx,ppy);
 	    }
 	}
       // compute the - spinor for - helicty particles and + helicity antiparticles
       else
 	{
 	  // no transverse momentum
-	  if(ptran==0.)
+	  if(ptran==Energy())
 	    {
-	      if(ppz>=0.)
+	      if(ppz>=Energy())
 		{
 		  hel_wf[0] = 0;
 		  hel_wf[1] = 1;
@@ -97,19 +97,19 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 	    }
 	  else
 	    {
-	      double denominator = 1./sqrt(2.*pabs);
-	      double rtppluspz;
-	      if(ppz>=0.)
+	      InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
+	      SqrtEnergy rtppluspz;
+	      if(ppz>=Energy())
 		{rtppluspz = sqrt(pabs+ppz);}
 	      else
 		{rtppluspz = ptran/sqrt(pabs-ppz);}
 	      hel_wf[0] = denominator/rtppluspz*
-		complex<double>(-ppx,ppy);
+		complex<Energy>(-ppx,ppy);
 	      hel_wf[1] = denominator*rtppluspz;
 	    }
 	}
       // decide which definition of the spinors we are using
-      Energy eplusm,eminusm,eplusp,eminusp,upper,lower;
+      SqrtEnergy eplusm,eminusm,eplusp,eminusp,upper,lower;
       switch(dirac)
 	{
 	  // Haber lower energy
@@ -136,10 +136,10 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 	case HELASDRep:
 	  // HELAS
 	  eplusp = sqrt(pee+pabs);
-	  if(pmm!=0.) 
+	  if(pmm!=Energy()) 
 	    {eminusp=pmm/eplusp;}
 	  else
-	    {eminusp=0.;}
+	    {eminusp=SqrtEnergy();}
 	  // set up the coefficients for the different cases
 	  if(dir==incoming)
 	    {
@@ -170,24 +170,28 @@ void SpinorWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep dirac)
 	  break;
 	  // invalid choice
 	default:
-	  upper=-1.; lower=-1.; // no warnings about uninitialized
+	  upper=lower=SqrtEnergy(); // no warnings about uninitialized
 	  ThePEG::Helicity::HelicityConsistencyError() 
 	    << "Invalid choice of Dirac representation in "
 	    << "SpinorWaveFunction::calculateWaveFunction() " << Exception::abortnow; 
 	  break;
 	}
       // now finally we can construct the spinors
-      if(dir==incoming)
-	{_wf=LorentzSpinor(upper*hel_wf[0],upper*hel_wf[1],lower*hel_wf[0],
-			   lower*hel_wf[1],u_spinortype,dirac);}
-      else
-	{_wf=LorentzSpinor(upper*hel_wf[0],upper*hel_wf[1],lower*hel_wf[0],
-			   lower*hel_wf[1],v_spinortype,dirac);}
+      if(dir==incoming) {
+	_wf=LorentzSpinor<double>(u_spinortype,dirac);
+      }
+      else {
+	_wf=LorentzSpinor<double>(v_spinortype,dirac);
+      }
+      _wf[0]=upper*hel_wf[0]*UnitRemoval::InvSqrtE;
+      _wf[1]=upper*hel_wf[1]*UnitRemoval::InvSqrtE;
+      _wf[2]=lower*hel_wf[0]*UnitRemoval::InvSqrtE;
+      _wf[3]=lower*hel_wf[1]*UnitRemoval::InvSqrtE;
     }
 }
 
 // construct the spininfo object
-void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr part,
+void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor<SqrtEnergy> >& wave,tPPtr part,
 					   bool time, bool vertex)
 {
   tFermionSpinPtr inspin;
@@ -242,7 +246,7 @@ void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr par
 }
 
 // construct the spininfo object
-void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatrix& rho,
+void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor<SqrtEnergy> >& wave,RhoDMatrix& rho,
 					   tPPtr part,bool time,bool vertex)
 {
   tFermionSpinPtr inspin;
@@ -311,9 +315,13 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 	{
 	  wave.resize(2);
 	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getProductionBasisState(0),direction());
+				     inspin->getProductionBasisState(0),
+				     DummyType(),
+				     direction());
 	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getProductionBasisState(1),direction());
+				     inspin->getProductionBasisState(1),
+				     DummyType(),
+				     direction());
 	}
       else
 	{
@@ -334,9 +342,13 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 	  // rho matrix should be here
 	  wave.resize(2);
 	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getDecayBasisState(0),direction());
+				     inspin->getDecayBasisState(0),
+				     DummyType(),
+				     direction());
 	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getDecayBasisState(1),direction());
+				     inspin->getDecayBasisState(1),
+				     DummyType(),
+				     direction());
 	}
       else
 	{
@@ -371,9 +383,13 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 	{
 	  wave.resize(2);
 	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getProductionBasisState(0),direction());
+				     inspin->getProductionBasisState(0),
+				     DummyType(),
+				     direction());
 	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getProductionBasisState(1),direction());
+				     inspin->getProductionBasisState(1),
+				     DummyType(),
+				     direction());
 	}
       else
 	{
@@ -395,9 +411,13 @@ void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wave,
 	  rho = inspin->rhoMatrix();
 	  wave.resize(2);
 	  wave[0]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getDecayBasisState(0),direction());
+				     inspin->getDecayBasisState(0),
+				     DummyType(),
+				     direction());
 	  wave[1]=SpinorWaveFunction(getMomentum(),getParticle(),
-				     inspin->getDecayBasisState(1),direction());
+				     inspin->getDecayBasisState(1),
+				     DummyType(),
+				     direction());
 	}
       else
 	{

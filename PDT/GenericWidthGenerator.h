@@ -35,11 +35,6 @@ class GenericWidthGenerator: public WidthGenerator {
 public:
 
   /**
-   * Typedef to define a DecayMoap
-   */
-  typedef Selector<tDMPtr> DecayMap;
-
-  /**
    * A friend class so the off-shell matrix elements can be integrated.
    */
   friend class TwoBodyAllOnCalculator;
@@ -313,7 +308,7 @@ private:
   /**
    * intepolators for the running width
    */
-  vector<InterpolatorPtr> _interpolators;
+  vector<Interpolator<Energy,Energy>::Ptr> _interpolators;
 
   /**
    * minimum branching ratio for the inclusion in the total running width

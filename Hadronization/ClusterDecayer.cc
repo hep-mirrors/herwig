@@ -110,7 +110,7 @@ void ClusterDecayer::decay(const StepPtr &pstep)
 
 pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr) 
   throw(Veto, Stop, Exception) {
-
+  using Constants::pi;
   // To decay the cluster into two hadrons one must distinguish between
   // constituent quarks (or diquarks) that originate from perturbative
   // processes (hard process or parton shower) from those that are generated
@@ -197,7 +197,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   }
 
   Lorentz5Momentum pClu = ptr->momentum();
-  Vector3 uSmear_v3;
+  Axis uSmear_v3;
   bool secondHad = false;
   if ( priorityHad1  ||  priorityHad2 ) { 
 
@@ -226,7 +226,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
     // (always in the same parent cluster frame).
 
     pQ.boost( -pClu.boostVector() );    // boost from Lab to Cluster frame 
-    Vector3 u_v3 = pQ.vect().unit(); 
+    Axis u_v3 = unitVector(pQ.vect()); 
     uSmear_v3 = u_v3;
     if ( cluSmear > 0.001 ) {           // skip if cluSmear is too small
       double cosThetaQ = pQ.cosTheta();    
@@ -246,7 +246,7 @@ pair<PPtr,PPtr> ClusterDecayer::decayIntoTwoHadrons(tClusterPtr ptr)
   else {
     
     // Isotropic decay: flat in cosTheta and phi. 
-    uSmear_v3 = Vector3(1.0, 0.0, 0.0);  // just to set the rho to 1
+    uSmear_v3 = Axis(1.0, 0.0, 0.0);  // just to set the rho to 1
     uSmear_v3.setTheta( acos( UseRandom::rnd( -1.0 , 1.0 ) ) );
     uSmear_v3.setPhi( UseRandom::rnd( -pi , pi ) );   
     
@@ -321,8 +321,8 @@ calculatePositions(const Lorentz5Momentum &pClu,
 		   const Lorentz5Momentum &, 
 		   const Lorentz5Momentum &, 
 		   LorentzPoint &positionHad1, 
-		   LorentzPoint &positionHad2 ) const {
-
+		   LorentzPoint &positionHad2 ) const 
+{
   // First, determine the relative positions of the children hadrons
   // with respect to their parent cluster, in the cluster reference frame,
   // assuming gaussian smearing with width inversely proportional to the 
@@ -332,11 +332,12 @@ calculatePositions(const Lorentz5Momentum &pClu,
   for ( int i = 0; i < 2; i++ ) {   // i==0 is the first hadron; i==1 is the second one
     for ( int j = 0; j < 4; j++ ) {  // the four components of the LorentzDistance
       double delta;
-      while ( ! Smearing::gaussianSmearing( 0.0, smearingWidth, delta ) ) { }
+      while ( ! Smearing::gaussianSmearing( 0.0, smearingWidth/mm, delta ) ) { }
       if ( i == 0 ) {
-	distanceHad1[j] = delta;
+	// DGRELL fudge!
+	distanceHad1 = LorentzDistance(0*mm,0*mm,delta*mm,0*mm);
       } else {
-	distanceHad2[j] = delta;	
+	distanceHad2 = LorentzDistance(0*mm,0*mm,delta*mm,0*mm);	
       }
     }
   }

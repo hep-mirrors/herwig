@@ -20,7 +20,7 @@ using Herwig::Helicity::ScalarWaveFunction;
 
 KPiCurrent::KPiCurrent() :
   _localparameters(true),_transverse(false), _cV(1.),_cS(0.2),
-  _mpi(0.), _mK(0.) {
+  _mpi(0.*MeV), _mK(0.*MeV) {
   // set up for the modes in the base class
   addDecayMode(2,-3);
   addDecayMode(2,-3);
@@ -38,16 +38,24 @@ KPiCurrent::KPiCurrent() :
 }
 
 void KPiCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _cV << _cS << _localparameters << _mpi << _mK << _resmap
-     << _vecmag << _vecphase << _vecwgt << _vecmass << _vecwidth 
-     << _scamag << _scaphase << _scawgt << _scamass << _scawidth
+  os << _cV << _cS << _localparameters 
+     << ounit(_mpi,GeV) << ounit(_mK,GeV) 
+     << _resmap
+     << _vecmag << _vecphase << _vecwgt 
+     << ounit(_vecmass,MeV) << ounit(_vecwidth,MeV)
+     << _scamag << _scaphase << _scawgt 
+     << ounit(_scamass,MeV) << ounit(_scawidth,MeV)
      << _transverse;
 }
 
 void KPiCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _cV >> _cS >> _localparameters >> _mpi >> _mK >> _resmap
-     >> _vecmag >> _vecphase >> _vecwgt >> _vecmass >> _vecwidth 
-     >> _scamag >> _scaphase >> _scawgt >> _scamass >> _scawidth
+  is >> _cV >> _cS >> _localparameters 
+     >> iunit(_mpi,GeV) >> iunit(_mK,GeV) 
+     >> _resmap
+     >> _vecmag >> _vecphase >> _vecwgt 
+     >> iunit(_vecmass,MeV) >> iunit(_vecwidth,MeV) 
+     >> _scamag >> _scaphase >> _scawgt 
+     >> iunit(_scamass,MeV) >> iunit(_scawidth,MeV)
      >> _transverse;
 }
 
@@ -367,24 +375,24 @@ void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
   for(unsigned int ix=0;ix<_vecmass.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":VectorMass "  << ix << " " << _vecmass[ix]  << "\n";
+    output << fullName() << ":VectorMass "  << ix << " " << _vecmass[ix]/MeV  << "\n";
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":VectorWidth " << ix << " " << _vecwidth[ix] << "\n";
+    output << fullName() << ":VectorWidth " << ix << " " << _vecwidth[ix]/MeV << "\n";
   }
   for(unsigned int ix=0;ix<_scamass.size();++ix) {
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":ScalarMass "  << ix << " " << _scamass[ix]  << "\n";
+    output << fullName() << ":ScalarMass "  << ix << " " << _scamass[ix]/MeV  << "\n";
     if(ix<2) output << "set ";
     else     output << "insert ";
-    output << fullName() << ":ScalarWidth " << ix << " " << _scawidth[ix] << "\n";
+    output << fullName() << ":ScalarWidth " << ix << " " << _scawidth[ix]/MeV << "\n";
   }
   WeakDecayCurrent::dataBaseOutput(output,false,false);
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
 
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scale,
 		    const ParticleVector & decay) const {
   // momentum difference and sum of the mesons
@@ -397,7 +405,7 @@ KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scal
   Energy2 dot(psum*pdiff);
   // contribution of the vector resonances
   Complex vnorm(0.),gterm(0.),sterm(0.),snorm(0.);
-  complex<InvEnergy2> qterm(0.);
+  complex<InvEnergy2> qterm(0./MeV2);
   for(unsigned int ix=0;ix<_vecwgt.size();++ix) {
     vnorm+=_vecwgt[ix];
     if(ichan<0||_resmap[ix]==ichan) {
@@ -415,14 +423,14 @@ KPiCurrent::current(bool vertex, const int imode, const int ichan, Energy & scal
   }
   // compute the current
   gterm *=_cV/vnorm;
-  qterm *=_cV*dot/vnorm;
+  Complex qtermnew = qterm*_cV*dot/vnorm;
   sterm *=_cS/snorm;
-  LorentzPolarizationVector output=gterm*pdiff+(-qterm+sterm)*psum;
+  LorentzPolarizationVectorE output=gterm*pdiff+(-qtermnew+sterm)*psum;
   for(unsigned int ix=0;ix<2;++ix) {
     PPtr mytemp=decay[ix]; 
     ScalarWaveFunction(mytemp,outgoing,true,vertex);
   }
   // return the answer
   if(imode==0) output *= sqrt(0.5);
-  return vector<LorentzPolarizationVector>(1,output);
+  return vector<LorentzPolarizationVectorE>(1,output);
 }

@@ -51,15 +51,19 @@ void TwoPionPhotonCurrent::doinit() throw(InitException) {
 }
 
 void TwoPionPhotonCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _grho << _grhoomegapi << _resweights << _rhoparameters << _rhomasses 
-     << _rhowidths << _omegaparameters << _omegamass << _omegawidth << _intmass 
-     << _intwidth ;
+  os << ounit(_grho,GeV2) << ounit(_grhoomegapi,1/GeV) << _resweights 
+     << _rhoparameters << ounit(_rhomasses,GeV) 
+     << ounit(_rhowidths,GeV) << _omegaparameters << ounit(_omegamass,GeV) 
+     << ounit(_omegawidth,GeV) << ounit(_intmass,GeV) 
+     << ounit(_intwidth,GeV) ;
 }
 
 void TwoPionPhotonCurrent::persistentInput(PersistentIStream & is, int) { 
-  is >> _grho >> _grhoomegapi >> _resweights >> _rhoparameters >> _rhomasses 
-     >> _rhowidths >> _omegaparameters >> _omegamass >> _omegawidth >> _intmass
-     >> _intwidth;
+  is >> iunit(_grho,GeV2) >> iunit(_grhoomegapi,1/GeV) >> _resweights 
+     >> _rhoparameters >> iunit(_rhomasses,GeV) 
+     >> iunit(_rhowidths,GeV) >> _omegaparameters >> iunit(_omegamass,GeV) 
+     >> iunit(_omegawidth,GeV) >> iunit(_intmass,GeV)
+     >> iunit(_intwidth,GeV);
 }
 
 ClassDescription<TwoPionPhotonCurrent> TwoPionPhotonCurrent::initTwoPionPhotonCurrent;
@@ -197,10 +201,9 @@ PDVector TwoPionPhotonCurrent::particles(int icharge, unsigned int,int,int) {
 
 
 // the hadronic currents    
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 TwoPionPhotonCurrent::current(bool vertex, const int, const int, 
 			      Energy & scale,const ParticleVector & decay) const {
-  vector<LorentzPolarizationVector> temp;
   // locate the particles
   Lorentz5Momentum pout(decay[1]->momentum()+decay[2]->momentum()+decay[0]->momentum());
   // overall hadronic mass
@@ -210,16 +213,16 @@ TwoPionPhotonCurrent::current(bool vertex, const int, const int,
   // mass of the omega
   pout = decay[1]->momentum()+decay[2]->momentum();
   pout.rescaleMass();
-  Energy s2(pout.m2());
+  Energy2 s2(pout.m2());
   // compute the prefactor
-  Complex prefactor(-FFunction(0.)*FFunction(q2)*scale*
-		    sqrt(2.*pi*generator()->standardModel()->alphaEM())*
-		    BreitWigner(s2,10));
+  complex<InvEnergy3> prefactor(-FFunction(0.*MeV2)*FFunction(q2)*scale*
+			    sqrt(Constants::twopi*generator()->standardModel()->alphaEM())*
+			    BreitWigner(s2,10));
   // dot products which don't depend on the polarization vector
   Energy2 dot12(decay[2]->momentum()*decay[1]->momentum());
   Energy2 dot13(decay[2]->momentum()*decay[0]->momentum());
   Energy2 dot23(decay[1]->momentum()*decay[0]->momentum());
-  Energy2 mpi2 (decay[0]->mass()*decay[0]->mass());
+  Energy2 mpi2 = sqr(decay[0]->mass());
 
   // workaround for gcc 3.2.3 bug
   // construct the spininfomation objects for the decay products
@@ -227,27 +230,30 @@ TwoPionPhotonCurrent::current(bool vertex, const int, const int,
   //ALB ScalarWaveFunction(decay[1],outgoing,true,vertex);
   PPtr mytemp = decay[0];
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
-  PPtr mytemp_bis = decay[1];
-  ScalarWaveFunction(mytemp_bis,outgoing,true,vertex);
+  mytemp = decay[1];
+  ScalarWaveFunction(mytemp,outgoing,true,vertex);
 
+  vector<LorentzPolarizationVector> temp;
   VectorWaveFunction(temp,decay[2],outgoing,true,true,vertex);
-  Complex dote2,dote3,coeffa,coeffb,coeffc;
+
+  vector<LorentzPolarizationVectorE> ret(3);
   for(unsigned int ix=0;ix<3;++ix) {
     if(ix!=1) {
       // obtain the dot products we need
-      dote2 = temp[ix]*decay[1]->momentum();
-      dote3 = temp[ix]*decay[0]->momentum();
+      complex<Energy> dote2 = temp[ix]*decay[1]->momentum();
+      complex<Energy> dote3 = temp[ix]*decay[0]->momentum();
       // now compute the coefficients
-      coeffa = mpi2*dot13-dot12*(dot23-dot13);
-      coeffb = dote2*dot13-dote3*dot12;
-      coeffc = dote2*dot23-dote3*(mpi2+dot12);
+      complex<Energy4> coeffa = mpi2*dot13-dot12*(dot23-dot13);
+      complex<Energy3> coeffb = dote2*dot13-dote3*dot12;
+      complex<Energy3> coeffc = dote2*dot23-dote3*(mpi2+dot12);
       // finally compute the current
-      temp[ix]= prefactor*(coeffa*temp[ix]-coeffb*decay[1]->momentum()+
-			   coeffc*decay[2]->momentum());
+      ret[ix]= prefactor*(coeffa*temp[ix]
+			   -coeffb*decay[1]->momentum()
+			   +coeffc*decay[2]->momentum());
     }
-    else{temp[ix]=LorentzPolarizationVector();}
+    else{ret[ix]=LorentzPolarizationVectorE();}
   }
-  return temp;
+  return ret;
 }
 
 bool TwoPionPhotonCurrent::accept(vector<int> id) {

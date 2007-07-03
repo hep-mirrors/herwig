@@ -281,8 +281,8 @@ double SMWZGammaDecayer::me2(bool vertex, const int ichan, const Particle & inpa
 	for(phel=0;phel<3;phel+=2) {
 	  vwave.reset(phel);
 	  // calculate the combinations of photon and (anti)fermion
-	  atemp=_pvertex->evaluate(0.,3,decay[ianti]->dataPtr(),awave,vwave);
-	  ftemp=_pvertex->evaluate(0.,3,decay[iferm]->dataPtr(),fwave,vwave);
+	  atemp=_pvertex->evaluate(0.*GeV2,3,decay[ianti]->dataPtr(),awave,vwave);
+	  ftemp=_pvertex->evaluate(0.*GeV2,3,decay[iferm]->dataPtr(),fwave,vwave);
 	  // calculate the matrix element
 	  for(vhel=0;vhel<3;++vhel) {
 	    if(inpart.id()==ParticleID::Z0) {
@@ -319,7 +319,8 @@ double SMWZGammaDecayer::me2(bool vertex, const int ichan, const Particle & inpa
     awave=SpinorWaveFunction(   p1,decay[ianti]->dataPtr(),outgoing);
     fwave=SpinorBarWaveFunction(p2,decay[iferm]->dataPtr(),outgoing);
     vwave=VectorWaveFunction(decay[2]->momentum(),decay[2]->dataPtr(),outgoing);
-    Complex me0[3][2][2],dipole[3][2];
+    complex<Energy> me0[3][2][2];
+    complex<InvEnergy> dipole[3][2];
     // leading order matrix element
     unsigned int ifm,ia,vhel,phel;
     for(ifm=0;ifm<2;++ifm) {
@@ -327,15 +328,16 @@ double SMWZGammaDecayer::me2(bool vertex, const int ichan, const Particle & inpa
       for(ia=0;ia<2;++ia) {
 	awave.reset(ia);
 	for(vhel=0;vhel<3;++vhel) {
-	  me0[ifm][ia][vhel]=_zvertex->evaluate(scale,awave,fwave,inwave[vhel]);}
+	  me0[ifm][ia][vhel]=_zvertex->evaluate(scale,awave,fwave,inwave[vhel])
+	    * UnitRemoval::E;}
       }
     }
     // dipole term
     Energy2 
       p1dot(decay[2]->momentum()*decay[0]->momentum()),
       p2dot(decay[2]->momentum()*decay[1]->momentum());
-    Complex eps1,eps2;
-    double fact(sqrt(4.*pi*standardModel()->alphaEM())*
+    complex<Energy> eps1,eps2;
+    double fact(sqrt(4.*Constants::pi*standardModel()->alphaEM())*
 		decay[0]->dataPtr()->iCharge()/3.);
     for(phel=0;phel<3;phel+=2) {
       vwave.reset(phel);
@@ -387,8 +389,8 @@ double SMWZGammaDecayer::me2(bool vertex, const int ichan, const Particle & inpa
       awave.reset(ix);
       fwave.reset(ix);
       vwave.reset(2*ix);
-      ferm->setBasisState(ix  ,fwave.wave().bar());
-      anti->setBasisState(ix  ,awave.wave());
+      ferm->setBasisState(ix  ,fwave.dimensionedWave().bar());
+      anti->setBasisState(ix  ,awave.dimensionedWave());
       vect->setBasisState(2*ix,vwave.wave());
     }
   }

@@ -10,7 +10,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 
@@ -240,7 +240,7 @@ OmegaPionsCurrent::current(bool vertex,const int imode,const int ichan,Energy & 
   if(imode==0) {
     for(ix=0;ix<3;++ix) {
       temp[ix] = 3./sqr(pi)/_gfact/_fpi*rhoBreitWigner(0,q2)*
-	EpsFunction::product(decay[0]->momentum(),temp[ix],decay[1]->momentum());
+	epsilon(decay[0]->momentum(),temp[ix],decay[1]->momentum());
     }
   }
   else if(imode==1) {
@@ -264,8 +264,8 @@ OmegaPionsCurrent::current(bool vertex,const int imode,const int ichan,Energy & 
     Energy A1(Acoupling(q2,k2)),A2(Acoupling(q2,kp2));
     Complex prod1,prod2;
     for(ix=0;ix<3;++ix) {
-      vec1=EpsFunction::product(temp[ix],decay[0]->momentum(),decay[2]->momentum());
-      vec2=EpsFunction::product(temp[ix],decay[0]->momentum(),decay[1]->momentum());
+      vec1=epsilon(temp[ix],decay[0]->momentum(),decay[2]->momentum());
+      vec2=epsilon(temp[ix],decay[0]->momentum(),decay[1]->momentum());
       prod1=vec1*ptotal;
       prod2=vec2*ptotal;
       temp[ix] =
@@ -283,9 +283,9 @@ OmegaPionsCurrent::current(bool vertex,const int imode,const int ichan,Energy & 
     Complex pre(3.*q2/(sqr(pi)*_gfact*_fpi)*rhoBreitWigner(0,q2));
     LorentzPolarizationVector vec1,vec2,vec3;
     for(ix=0;ix<3;++ix) {
-      vec1=EpsFunction::product(decay[2]->momentum(),decay[0]->momentum(),temp[ix]);
-      vec2=EpsFunction::product(decay[3]->momentum(),decay[0]->momentum(),temp[ix]);
-      vec3=EpsFunction::product(decay[1]->momentum(),decay[0]->momentum(),temp[ix]);
+      vec1=epsilon(decay[2]->momentum(),decay[0]->momentum(),temp[ix]);
+      vec2=epsilon(decay[3]->momentum(),decay[0]->momentum(),temp[ix]);
+      vec3=epsilon(decay[1]->momentum(),decay[0]->momentum(),temp[ix]);
       temp[ix]=
 	pre*(
 	     ffunction(vec3,q2,ptotal,decay[2]->momentum(),decay[3]->momentum())
@@ -299,9 +299,9 @@ OmegaPionsCurrent::current(bool vertex,const int imode,const int ichan,Energy & 
     Complex pre(3.*q2/(sqr(pi)*_gfact*_fpi)*rhoBreitWigner(0,q2));
     LorentzPolarizationVector vec1,vec2,vec3;
     for(ix=0;ix<3;++ix) {
-      vec1=EpsFunction::product(decay[1]->momentum(),decay[0]->momentum(),temp[ix]);
-      vec2=EpsFunction::product(decay[3]->momentum(),decay[0]->momentum(),temp[ix]);
-      vec3=EpsFunction::product(decay[2]->momentum(),decay[0]->momentum(),temp[ix]);
+      vec1=epsilon(decay[1]->momentum(),decay[0]->momentum(),temp[ix]);
+      vec2=epsilon(decay[3]->momentum(),decay[0]->momentum(),temp[ix]);
+      vec3=epsilon(decay[2]->momentum(),decay[0]->momentum(),temp[ix]);
       temp[ix]=
 	pre*(
 	     ffunction(vec3,q2,ptotal,decay[1]->momentum(),decay[3]->momentum())

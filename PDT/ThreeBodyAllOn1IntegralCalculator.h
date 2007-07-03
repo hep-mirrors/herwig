@@ -29,6 +29,7 @@ public:
    * @param intype The types of the different integration channels.
    * @param inmass The mass for the Jacobian for the different channels.
    * @param inwidth The width for the Jacobian for the different channels.
+   * @param inpow  The power for the power-law smoothing function
    * @param indGamma The pointer to the function which gives \f$d\Gamma/ds\f$.
    * @param mode The mode to be calculated
    * @param m1 The mass of the first particle.
@@ -36,6 +37,7 @@ public:
    * @param m3 The mass of the third  particle.
    */
   inline ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
+					   double inpow,
 					   T indGamma,int mode,
 					   Energy m1,Energy m2,Energy m3);
 
@@ -76,7 +78,9 @@ public:
    * @param argument The mass squared for the inner integral
    * @return The value of the inner integrand.
    */
-  double operator ()(double argument) const;
+  Energy operator ()(double argument) const;
+  typedef double ArgType;
+  typedef Energy ValType;
 
 private:
 
@@ -102,6 +106,12 @@ private:
    * The width for the jacobian
    */
   Energy _intwidth;
+
+  /**
+   * The power for power-law smoothing
+   */
+  double _intpower;
+
 
   /**
    *  The mode to be integrated

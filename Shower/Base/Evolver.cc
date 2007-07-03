@@ -26,13 +26,13 @@ using namespace Herwig;
 void Evolver::persistentOutput(PersistentOStream & os) const {
   os << _model << _splittingGenerator << _maxtry 
      << _meCorrMode << _hardVetoMode << _intrinsicpT 
-     << _iptrms << _beta << _gamma ;
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) ;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
   is >> _model >> _splittingGenerator >> _maxtry 
      >> _meCorrMode >> _hardVetoMode >> _intrinsicpT 
-     >> _iptrms >> _beta >> _gamma;
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV);
 }
 
 void Evolver::doinitrun() {
@@ -134,8 +134,8 @@ void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower)
       ipt=_iptrms*sqrt(-log(UseRandom::rnd()));
     }
     else {
-      ipt=_gamma*tan(pi*UseRandom::rnd()/2.);}
-    pair<Energy,double> pt = make_pair(ipt,UseRandom::rnd()*2.*pi);
+      ipt=_gamma*tan(Constants::pi*UseRandom::rnd()/2.);}
+    pair<Energy,double> pt = make_pair(ipt,UseRandom::rnd()*Constants::twopi);
     _intrinsic[particlesToShower[ix]] = pt;
   }
 }
@@ -408,7 +408,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
-      bb.kinematics->updateLast(newParent,0.,0.);
+      bb.kinematics->updateLast(newParent,0.*MeV,0.*MeV);
     }
     else {
       pair<Energy,double> kt=_intrinsic[_progenitor];
@@ -442,7 +442,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     // initial-state radiation
     if(_splittingGenerator->isISRadiationON()) {
       // compute the minimum mass of the final-state
-      Energy minmass(0.);
+      Energy minmass(0.*MeV);
       for(unsigned int ix=0;ix<particlesToShower.size();++ix)
 	{if(particlesToShower[ix]->progenitor()->isFinalState())
 	    minmass+=particlesToShower[ix]->progenitor()->mass();}

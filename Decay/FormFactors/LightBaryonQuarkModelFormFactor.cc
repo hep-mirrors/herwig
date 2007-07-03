@@ -100,10 +100,14 @@ LightBaryonQuarkModelFormFactor::LightBaryonQuarkModelFormFactor()
 LightBaryonQuarkModelFormFactor::~LightBaryonQuarkModelFormFactor() {}
 
 void LightBaryonQuarkModelFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _f1 << _f2 << _g1 << _g2 << _Lambdaf1 << _Lambdaf2 << _Lambdag1 << _Lambdag2;}
+  os << _f1 << ounit(_f2,1/GeV) << _g1 << ounit(_g2,1/GeV) 
+     << ounit(_Lambdaf1,GeV) << ounit(_Lambdaf2,GeV) 
+     << ounit(_Lambdag1,GeV) << ounit(_Lambdag2,GeV);}
 
 void LightBaryonQuarkModelFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _f1 >> _f2 >> _g1 >> _g2 >> _Lambdaf1 >> _Lambdaf2 >> _Lambdag1 >> _Lambdag2;}
+  is >> _f1 >> iunit(_f2,1/GeV) >> _g1 >> iunit(_g2,1/GeV) 
+     >> iunit(_Lambdaf1,GeV) >> iunit(_Lambdaf2,GeV) 
+     >> iunit(_Lambdag1,GeV) >> iunit(_Lambdag2,GeV);}
 
 ClassDescription<LightBaryonQuarkModelFormFactor> LightBaryonQuarkModelFormFactor::initLightBaryonQuarkModelFormFactor;
 // Definition of the static class description member.
@@ -131,37 +135,37 @@ void LightBaryonQuarkModelFormFactor::Init() {
     ("f2",
      "The form-factor f2 at zero q^2",
      &LightBaryonQuarkModelFormFactor::_f2,
-     1./GeV, 0, 0, -10./GeV, 10./GeV, false, false, true);
+     1./GeV, 0, 0/GeV, -10./GeV, 10./GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,InvEnergy> interfaceg2
     ("g2",
      "The form-factor g2 at zero q^2",
      &LightBaryonQuarkModelFormFactor::_g2,
-     1./GeV, 0, 0, -10./GeV, 10./GeV, false, false, true);
+     1./GeV, 0, 0/GeV, -10./GeV, 10./GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdaf1
     ("Lambdaf1",
      "The first mass for the energy dependence of the f1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdaf1,
-     1.*GeV, 0, 0, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdaf2
     ("Lambdaf2",
      "The second mass for the energy dependence of the f1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdaf2,
-     1.*GeV, 0, 0, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdag1
     ("Lambdag1",
      "The first mass for the energy dependence of the g1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdag1,
-     1.*GeV, 0, 0, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
 
   static ParVector<LightBaryonQuarkModelFormFactor,Energy> interfaceLambdag2
     ("Lambdag2",
      "The second mass for the energy dependence of the g1 form-factor.",
      &LightBaryonQuarkModelFormFactor::_Lambdag2,
-     1.*GeV, 0, 0, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
 }
 
 // form factor for spin-1/2 to spin-1/2

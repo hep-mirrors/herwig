@@ -102,7 +102,8 @@ inline Energy ThreePionCLEOCurrent::a1width(Energy2 q2) const {
       gam+= -15.41100+32.08800*p-17.66600*sqr(p)
 	+4.93550*sqr(p)*p-0.37498*sqr(sqr(p));
     }
-    Energy mkst=0.894*GeV,mk=0.496*GeV,mk1sq=sqr(mkst+mk),mk2sq=sqr(mkst-mk);
+    Energy mkst=0.894*GeV,mk=0.496*GeV;
+    Energy2 mk1sq=sqr(mkst+mk), mk2sq=sqr(mkst-mk);
     double c3pi=sqr(0.2384),ckst=sqr(4.7621)*c3pi;
     gam*=c3pi;
     if(q2>mk1sq) gam+=0.5*ckst*sqrt((q2-mk1sq)*(q2-mk2sq))/q2;
@@ -125,7 +126,8 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
 					     const Energy2 s3, const Energy2 s2, 
 					     const Energy2 s1, const Energy,
 					     const Energy, const Energy) const {
-  Energy p1[6],p2[6],p3[6];
+  Energy p1[5],p2[5],p3[5];
+  Energy2 p1sq, p2sq, p3sq;
   Energy q=sqrt(q2);
   Energy2 mpi2c=_mpic*_mpic;
   Energy2 mpi20=_mpi0*_mpi0;
@@ -133,45 +135,45 @@ ThreePionCLEOCurrent::threeBodyMatrixElement(const int iopt, const Energy2 q2,
   Complex F1,F2,F3;
   if(iopt==0) {
     // construct the momenta of the decay products
-    p1[0] = 0.5*(q2+mpi20-s1)/q; p1[5]=p1[0]*p1[0]; p1[4]=sqrt(p1[5]-mpi20);
-    p2[0] = 0.5*(q2+mpi20-s2)/q; p2[5]=p2[0]*p2[0]; p2[4]=sqrt(p2[5]-mpi20);
-    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3[5]=p3[0]*p3[0]; p3[4]=sqrt(p3[5]-mpi2c);
+    p1[0] = 0.5*(q2+mpi20-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi20);
+    p2[0] = 0.5*(q2+mpi20-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-mpi20);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
     // take momentum of 1 parallel to z axis
-    p1[1]=0.;p1[2]=0.;p1[3]=p1[4];
+    p1[1]=0.*MeV;p1[2]=0.*MeV;p1[3]=p1[4];
     // construct 2 
-    double cos2 = 0.5*(p1[5]+p2[5]-p3[5]-2.*mpi20+mpi2c)/p1[4]/p2[4];
-    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.; p2[3]=-p2[4]*cos2;
+    double cos2 = 0.5*(p1sq+p2sq-p3sq-2.*mpi20+mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.*MeV; p2[3]=-p2[4]*cos2;
     // construct 3
-    double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
-    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
+    double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.*MeV; p3[3]=-p3[4]*cos3; 
     // calculate the form factors
     CLEOFormFactor(1,-1,q2,s1,s2,s3,F1,F2,F3);
   }
   // construct the momenta for the 3 charged mode 
   else {
     // construct the momenta of the decay products
-    p1[0] = 0.5*(q2+mpi2c-s1)/q; p1[5]=p1[0]*p1[0]; p1[4]=sqrt(p1[5]-mpi2c);
-    p2[0] = 0.5*(q2+mpi2c-s2)/q; p2[5]=p2[0]*p2[0]; p2[4]=sqrt(p2[5]-mpi2c);
-    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3[5]=p3[0]*p3[0]; p3[4]=sqrt(p3[5]-mpi2c);
+    p1[0] = 0.5*(q2+mpi2c-s1)/q; p1sq=p1[0]*p1[0]; p1[4]=sqrt(p1sq-mpi2c);
+    p2[0] = 0.5*(q2+mpi2c-s2)/q; p2sq=p2[0]*p2[0]; p2[4]=sqrt(p2sq-mpi2c);
+    p3[0] = 0.5*(q2+mpi2c-s3)/q; p3sq=p3[0]*p3[0]; p3[4]=sqrt(p3sq-mpi2c);
     // take momentum of 1 parallel to z axis
-    p1[1]=0.;p1[2]=0.;p1[3]=p1[4];
+    p1[1]=0.*MeV;p1[2]=0.*MeV;p1[3]=p1[4];
     // construct 2 
-    double cos2 = 0.5*(p1[5]+p2[5]-p3[5]-mpi2c)/p1[4]/p2[4];
-    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.; p2[3]=-p2[4]*cos2;
+    double cos2 = 0.5*(p1sq+p2sq-p3sq-mpi2c)/p1[4]/p2[4];
+    p2[1] = p2[4]*sqrt(1.-cos2*cos2); p2[2]=0.*MeV; p2[3]=-p2[4]*cos2;
     // construct 3
-    double cos3 = 0.5*(p1[5]-p2[5]+p3[5]-mpi2c)/p1[4]/p3[4];
-    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.; p3[3]=-p3[4]*cos3; 
+    double cos3 = 0.5*(p1sq-p2sq+p3sq-mpi2c)/p1[4]/p3[4];
+    p3[1] =-p3[4]*sqrt(1.-cos3*cos3); p3[2]=0.*MeV; p3[3]=-p3[4]*cos3; 
     // calculate the form factors
     CLEOFormFactor(0,-1,q2,s1,s2,s3,F1,F2,F3);
   }
   // construct a vector with the current
-  Complex current[4];
+  complex<Energy> current[4];
   for(unsigned int ix=0;ix<4;++ix)
     current[ix] = F1*(p2[ix]-p3[ix])-F2*(p3[ix]-p1[ix])+F3*(p1[ix]-p2[ix]);
-  Complex dot1=current[0]*conj(current[0]);
+  complex<Energy2> dot1=current[0]*conj(current[0]);
   for(unsigned int ix=1;ix<4;++ix) dot1-=current[ix]*conj(current[ix]);
-  Complex dot2=current[0]*q;
-  return(-dot1+dot2*conj(dot2)/q2).real();
+  complex<Energy2> dot2=current[0]*q;
+  return(-dot1+dot2*conj(dot2)/q2).real() / sqr(_rhomass[0]);
 }
 
 }

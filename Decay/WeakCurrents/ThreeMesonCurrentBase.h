@@ -76,7 +76,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale,
 						     const ParticleVector & decay) const;
 
@@ -123,6 +123,24 @@ protected:
   virtual bool acceptMode(int imode) const=0;
 
   /**
+   * Helper class for form factors
+   */
+  struct FormFactors {
+    complex<InvEnergy>  F1;
+    complex<InvEnergy>  F2; 
+    complex<InvEnergy>  F3; 
+    complex<InvEnergy>  F4;
+    complex<InvEnergy3> F5;
+
+    FormFactors(complex<InvEnergy>  f1 = 0/MeV, 
+		complex<InvEnergy>  f2 = 0/MeV, 
+		complex<InvEnergy>  f3 = 0/MeV, 
+		complex<InvEnergy>  f4 = 0/MeV, 
+		complex<InvEnergy3> f5 = 0/MeV/MeV2) 
+      : F1(f1), F2(f2), F3(f3), F4(f4), F5(f5) {}
+  };
+
+  /**
    * Calculate the form factor for the current.
    * @param ichan The phase space channel
    * @param imode The mode
@@ -130,16 +148,10 @@ protected:
    * @param s1 The invariant mass squared of particles 2 and 3, \f$s_1=m^2_{23}\f$.
    * @param s2 The invariant mass squared of particles 1 and 3, \f$s_2=m^2_{13}\f$.
    * @param s3 The invariant mass squared of particles 1 and 2, \f$s_3=m^2_{12}\f$.
-   * @param F1 The form factor \f$F_1\f$.
-   * @param F2 The form factor \f$F_2\f$.
-   * @param F3 The form factor \f$F_3\f$.
-   * @param F4 The form factor \f$F_4\f$.
-   * @param F5 The form factor \f$F_5\f$.
    */
-  virtual void calculateFormFactors(const int ichan,const int imode,
-				    Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3,
-				    Complex&F1,Complex&F2,Complex&F3,
-				    Complex&F4,Complex&F5) const=0;
+  virtual FormFactors calculateFormFactors(const int ichan, const int imode,
+					   Energy2 q2,
+					   Energy2 s1, Energy2 s2, Energy2 s3) const = 0;
 
 private:
 
@@ -196,7 +208,5 @@ template <>
 /** @endcond */
 
 }
-
-#include "ThreeMesonCurrentBase.icc"
 
 #endif /* HERWIG_ThreeMesonCurrentBase_H */

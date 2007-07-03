@@ -24,3 +24,9 @@ MEff2ss.h MEff2ss.icc MEff2ss.fh MEff2ff.cc MEff2ff.h MEff2ff.fh \
 MEff2ff.icc MEff2vv.cc MEff2vv.h MEff2vv.icc MEff2vv.fh \
 MEfv2vf.h MEfv2vf.fh MEfv2vf.icc MEfv2vf.cc \
 MEvv2vv.h MEvv2vv.fh MEvv2vv.icc MEvv2vv.cc
+
+pkglib_LTLIBRARIES += HwMEWZJet.la
+HwMEWZJet_la_SOURCES = \
+MEPP2WJet.cc  MEPP2WJet.fh  MEPP2WJet.h  MEPP2WJet.icc  \
+MEPP2ZJet.cc  MEPP2ZJet.fh  MEPP2ZJet.h  MEPP2ZJet.icc
+HwMEWZJet_la_LDFLAGS = -module -version-info 1:0:0

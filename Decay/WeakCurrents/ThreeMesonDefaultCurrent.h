@@ -146,10 +146,9 @@ protected:
    * @param F4 The form factor \f$F_4\f$.
    * @param F5 The form factor \f$F_5\f$.
    */
-  virtual void calculateFormFactors(const int ichan,const int imode,
-				    Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3,
-				    Complex&F1,Complex&F2,Complex&F3,
-				    Complex&F4,Complex&F5) const;
+  virtual FormFactors calculateFormFactors(const int ichan, const int imode,
+					   Energy2 q2,
+					   Energy2 s1, Energy2 s2, Energy2 s3) const;
 
 protected:
 
@@ -269,7 +268,7 @@ private:
   /**
    *  The \f$g(Q^2)\f$ function of Kuhn and Santamaria
    */
-  inline double g(Energy q2) const;
+  inline double g(Energy2 q2) const;
 
   /**
    * Initialize the \f$a_1\f$ running width
@@ -330,7 +329,7 @@ private:
   /**
    * The interpolator for the running \f$a_1\f$ width calculation.
    */
-  InterpolatorPtr _a1runinter;
+  Interpolator<Energy,Energy2>::Ptr _a1runinter;
 
   /**
    * Initialize the running \f$a_1\f$ width.

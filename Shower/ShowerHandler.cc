@@ -156,10 +156,10 @@ void ShowerHandler::findShoweringParticles() {
     bool isDecayProd=false;
     tPPtr parent;
     if(!(*taggedP)->parents().empty()) {
-	parent = (*taggedP)->parents()[0];
-	// check if from s channel decaying colourless particle
-	isDecayProd = decayProduct(parent);
-      }
+      parent = (*taggedP)->parents()[0];
+      // check if from s channel decaying colourless particle
+      isDecayProd = decayProduct(parent);
+    }
     // add to list of outgoing hard particles if needed
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
     if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset));
@@ -297,7 +297,7 @@ bool ShowerHandler::decayProduct(tPPtr particle) const{
     !(particle->dataPtr()->coloured()&&
       (particle->parents()[0]==eventHandler()->lastPartons().first||
        particle->parents()[0]==eventHandler()->lastPartons().second)) && 
-    particle->momentum().m2()>0.&&
+    particle->momentum().m2()>0.0*GeV2&&
     particle != eventHandler()->lastPartons().first &&
     particle != eventHandler()->lastPartons().second;
 }

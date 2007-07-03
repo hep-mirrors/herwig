@@ -34,14 +34,16 @@ inline Complex FivePionCurrent::sigmaBreitWigner(Energy2 scale) const {
   return m2/(m2-scale-Complex(0.,1.)*_sigmamass*_sigmawidth);
 }
 
-inline LorentzPolarizationVector 
+inline LorentzVector<complex<InvEnergy2> > 
 FivePionCurrent::rhoOmegaCurrent(unsigned int iopt,const Lorentz5Momentum & Q,
-				 const Lorentz5Momentum & q1,const Lorentz5Momentum & q2,
-				 const Lorentz5Momentum & q3,const Lorentz5Momentum & q4,
+				 const Lorentz5Momentum & q1,
+				 const Lorentz5Momentum & q2,
+				 const Lorentz5Momentum & q3,
+				 const Lorentz5Momentum & q4,
 				 const Lorentz5Momentum & q5) const {
   // prefactor
-  Complex pre(_preomega*a1BreitWigner(Q.m2())*omegaBreitWigner((q1+q2+q3).m2())*
-	      rhoBreitWigner((q4+q5).m2()));
+  complex<InvEnergy7> pre(_preomega*a1BreitWigner(Q.m2())*omegaBreitWigner((q1+q2+q3).m2())*
+			  rhoBreitWigner((q4+q5).m2()));
   // omega piece
   Complex omega(-1.);
   if(_rhoomega) {
@@ -52,34 +54,32 @@ FivePionCurrent::rhoOmegaCurrent(unsigned int iopt,const Lorentz5Momentum & Q,
       omega=rhoBreitWigner((q2+q3).m2())+rhoBreitWigner((q1+q3).m2())+
 	rhoBreitWigner((q1+q2).m2());
   }
-  LorentzPolarizationVector omegacurrent(Helicity::EpsFunction::product(q1,q2,q3));
-  LorentzPolarizationVector output=pre*omega*
-    Helicity::EpsFunction::product(Lorentz5Momentum(q4-q5),omegacurrent,Q);
+  LorentzVector<complex<Energy3> > omegacurrent(Helicity::epsilon(q1,q2,q3));
+  LorentzVector<complex<InvEnergy2> > output =
+    pre * omega * Helicity::epsilon(q4-q5,omegacurrent,Q);
   return output;
 }
   
-inline LorentzPolarizationVector  
+inline LorentzVector<complex<InvEnergy2> > 
 FivePionCurrent::a1SigmaCurrent(unsigned int iopt,const Lorentz5Momentum & Q,
 				const Lorentz5Momentum & q1,const Lorentz5Momentum & q2,
 				const Lorentz5Momentum & q3,const Lorentz5Momentum & q4,
 				const Lorentz5Momentum & q5) const {
   Lorentz5Momentum pa1(q1+q2+q3);pa1.rescaleMass();
   Energy2 ma12(pa1.m2());
-  Complex pre(_presigma*a1BreitWigner(Q.m2())*a1BreitWigner(ma12)*
+  complex<InvEnergy3> pre(_presigma*a1BreitWigner(Q.m2())*a1BreitWigner(ma12)*
 	      sigmaBreitWigner((q4+q5).m2()));
   Energy2 pdot[2]={q2*(q1-q3),q1*(q2-q3)};
-  LorentzPolarizationVector rho[2]={pdot[0]/ma12*pa1-q1+q3,pdot[1]/ma12*pa1-q2+q3};
-  rho[0] *=rhoBreitWigner((q1+q3).m2());
-  rho[1] *=rhoBreitWigner((q2+q3).m2());
-  LorentzPolarizationVector total;
-  if(iopt==1)      total=rho[0];
-  else if(iopt==2) total=rho[1];
-  else             total=rho[0]+rho[1];
-  Complex qdot=total*Q/Q.m2();
-  LorentzPolarizationVector cq(Q);
-  cq*=qdot;
-  cq-=total;
-  cq*=pre;
-  return cq;
+  LorentzPolarizationVectorE rho[2] = {(pdot[0]/ma12*pa1-q1+q3)*rhoBreitWigner((q1+q3).m2()),
+				      (pdot[1]/ma12*pa1-q2+q3)*rhoBreitWigner((q2+q3).m2())};
+  LorentzPolarizationVectorE total;
+  if(iopt==1)      total = rho[0];
+  else if(iopt==2) total = rho[1];
+  else             total = rho[0]+rho[1];
+  Complex qdot = total * Q / Q.m2();
+  LorentzPolarizationVectorE cq(Q);
+  cq = cq * qdot;
+  cq -= total;
+  return pre * cq;
 }
 }

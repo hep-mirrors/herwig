@@ -25,7 +25,7 @@ void VVVTVertex::Init() {
 }
 
 // function to evaluate the vertex
-Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
+Complex VVVTVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1,
     				 const VectorWaveFunction & vec2,
     				 const VectorWaveFunction & vec3,
     				 const TensorWaveFunction & ten)
@@ -50,13 +50,13 @@ Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +vec2.t()*vec3.t()-vec2.x()*vec3.x()
     -vec2.y()*vec3.y()-vec2.z()*vec3.z();
   // dot product of wavefunctions and momenta
-  Complex dotv1k23 = 
+  complex<Energy> dotv1k23 = 
     +vec1.t()*(vec2.e() -vec3.e() )-vec1.x()*(vec2.px()-vec3.px())
     -vec1.y()*(vec2.py()-vec3.py())-vec1.z()*(vec2.pz()-vec3.pz());
-  Complex dotv2k31 = 
+  complex<Energy> dotv2k31 = 
     +vec2.t()*(vec3.e() -vec1.e() )-vec2.x()*(vec3.px()-vec1.px())
     -vec2.y()*(vec3.py()-vec1.py())-vec2.z()*(vec3.pz()-vec1.pz());
-  Complex dotv3k12 = 
+  complex<Energy> dotv3k12 = 
     +vec3.t()*(vec1.e() -vec2.e() )-vec3.x()*(vec1.px()-vec2.px())
     -vec3.y()*(vec1.py()-vec2.py())-vec3.z()*(vec1.pz()-vec2.pz());
   // components of the tensor
@@ -94,7 +94,7 @@ Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +tenxy*(vec2.x()*vec3.y()+vec2.y()*vec3.x())
     +tenxz*(vec2.x()*vec3.z()+vec2.z()*vec3.x())
     +tenyz*(vec2.y()*vec3.z()+vec2.z()*vec3.y());
-  Complex tenv1k23 =
+  complex<Energy> tenv1k23 =
     2.*(+ten.tt()*vec1.t()*(vec2.e() -vec3.e() )
         +ten.xx()*vec1.x()*(vec2.px()-vec3.px())
         +ten.yy()*vec1.y()*(vec2.py()-vec3.py())
@@ -105,7 +105,7 @@ Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +tenxy*(vec1.x()*(vec2.py()-vec3.py())+vec1.y()*(vec2.px()-vec3.px()))
     +tenxz*(vec1.x()*(vec2.pz()-vec3.pz())+vec1.z()*(vec2.px()-vec3.px()))
     +tenyz*(vec1.y()*(vec2.pz()-vec3.pz())+vec1.z()*(vec2.py()-vec3.py()));
-  Complex tenv2k31 =
+  complex<Energy> tenv2k31 =
     2.*(+ten.tt()*vec2.t()*(vec3.e() -vec1.e() )
         +ten.xx()*vec2.x()*(vec3.px()-vec1.px())
         +ten.yy()*vec2.y()*(vec3.py()-vec1.py())
@@ -116,7 +116,7 @@ Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +tenxy*(vec2.x()*(vec3.py()-vec1.py())+vec2.y()*(vec3.px()-vec1.px()))
     +tenxz*(vec2.x()*(vec3.pz()-vec1.pz())+vec2.z()*(vec3.px()-vec1.px()))
     +tenyz*(vec2.y()*(vec3.pz()-vec1.pz())+vec2.z()*(vec3.py()-vec1.py()));
-  Complex tenv3k12 =
+  complex<Energy> tenv3k12 =
     2.*(+ten.tt()*vec3.t()*(vec1.e() -vec2.e() )
         +ten.xx()*vec3.x()*(vec1.px()-vec2.px())
         +ten.yy()*vec3.y()*(vec1.py()-vec2.py())
@@ -130,12 +130,13 @@ Complex VVVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
   // trace of the tensor
   Complex trace = ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // compute the vertex
-  Complex 
-    vertex= -0.5*ii*norm*(
-    		      +dotv3k12*(tenv1v2-trace*dotv1v2)
-    		      +dotv2k31*(tenv1v3-trace*dotv1v3)
-    		      +dotv1k23*(tenv2v3-trace*dotv2v3)
-    		      +dotv2v3*tenv1k23+dotv1v3*tenv2k31+dotv1v2*tenv3k12);
+  Complex  vertex= -0.5*ii*norm * UnitRemoval::InvE *
+    (
+     +dotv3k12*(tenv1v2-trace*dotv1v2)
+     +dotv2k31*(tenv1v3-trace*dotv1v3)
+     +dotv1k23*(tenv2v3-trace*dotv2v3)
+     +dotv2v3*tenv1k23+dotv1v3*tenv2k31+dotv1v2*tenv3k12
+     );
   // return the answer
   return vertex;
 }

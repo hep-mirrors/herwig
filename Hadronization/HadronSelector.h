@@ -599,7 +599,7 @@ public:
    * @param swtin  The singlet/decuplet/orbital factor
    * @param massin The mass of the hadron
    */
-  HadronInfo(long idin=0,tPDPtr datain=tPDPtr(),double swtin=1.,Energy massin=0.);
+  HadronInfo(long idin=0,tPDPtr datain=tPDPtr(),double swtin=1.,Energy massin=0.*MeV);
 
   /**
    *  Comparision operator on mass
@@ -648,7 +648,7 @@ public:
    */
   friend PersistentOStream & operator<< (PersistentOStream & os, 
 					 const HadronInfo & hi ) {
-    os << hi.id << hi.ptrData << hi.swtef << hi.wt << hi.overallWeight << hi.mass;
+    os << hi.id << hi.ptrData << hi.swtef << hi.wt << hi.overallWeight << ounit(hi.mass,GeV);
     return os;
   }
   
@@ -657,7 +657,7 @@ public:
    */
   friend PersistentIStream & operator>> (PersistentIStream & is, 
 					 HadronInfo & hi ) {
-    is >> hi.id >> hi.ptrData >> hi.swtef >> hi.wt >> hi.overallWeight >> hi.mass;
+    is >> hi.id >> hi.ptrData >> hi.swtef >> hi.wt >> hi.overallWeight >> iunit(hi.mass,GeV);
     return is;
   }
 };
@@ -681,7 +681,7 @@ public:
    * @param inhad2 ParticleData for the second hadron produced.
    * @param inwgt  The weight for the hadron pair 
    */
-  inline Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2, double inwgt);
+  inline Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt);
   
   /**
    * id of the quark drawn from the vacuum.
@@ -725,7 +725,7 @@ template <>
 struct ClassTraits<Herwig::HadronSelector>
   : public ClassTraitsBase<Herwig::HadronSelector> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig::HadronSelector"; }
+  static string className() { return "Herwig++::HadronSelector"; }
 };
 
 /** @endcond */

@@ -6,7 +6,7 @@
 //
 
 #include "WeakDecayCurrent.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "FivePionCurrent.fh"
 
 namespace Herwig {
@@ -69,7 +69,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale, 
 						     const ParticleVector & decay) const;
 
@@ -168,13 +168,14 @@ protected:
    * @param q4 The first momentum
    * @param q5 The first momentum
    */
-  inline LorentzPolarizationVector rhoOmegaCurrent(unsigned int iopt,
-						   const Lorentz5Momentum & Q,
-						   const Lorentz5Momentum & q1,
-						   const Lorentz5Momentum & q2,
-						   const Lorentz5Momentum & q3,
-						   const Lorentz5Momentum & q4,
-						   const Lorentz5Momentum & q5) const;
+  inline LorentzVector<complex<InvEnergy2> >
+  rhoOmegaCurrent(unsigned int iopt,
+		  const Lorentz5Momentum & Q,
+		  const Lorentz5Momentum & q1,
+		  const Lorentz5Momentum & q2,
+		  const Lorentz5Momentum & q3,
+		  const Lorentz5Momentum & q4,
+		  const Lorentz5Momentum & q5) const;
 
   /**
    *  The \f$a_1\sigma\f$ current
@@ -187,13 +188,14 @@ protected:
    * @param q4 The first momentum
    * @param q5 The first momentum
    */
-  inline LorentzPolarizationVector a1SigmaCurrent(unsigned int iopt,
-						  const Lorentz5Momentum & Q,
-						  const Lorentz5Momentum & q1,
-						  const Lorentz5Momentum & q2,
-						  const Lorentz5Momentum & q3,
-						  const Lorentz5Momentum & q4,
-						  const Lorentz5Momentum & q5) const;
+  inline LorentzVector<complex<InvEnergy2> > 
+  a1SigmaCurrent(unsigned int iopt,
+		 const Lorentz5Momentum & Q,
+		 const Lorentz5Momentum & q1,
+		 const Lorentz5Momentum & q2,
+		 const Lorentz5Momentum & q3,
+		 const Lorentz5Momentum & q4,
+		 const Lorentz5Momentum & q5) const;
   //@}
 
 protected:
@@ -343,12 +345,12 @@ private:
   /**
    *  Prefactor for the \f$\rho\omega\f$ current
    */
-  double _preomega;
+  InvEnergy7 _preomega;
 
   /**
    *  Prefactor for the \f$a_1\sigma\f$ current
    */
-  double _presigma;
+  InvEnergy3 _presigma;
   //@}
 };
 

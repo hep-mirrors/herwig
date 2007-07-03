@@ -13,7 +13,7 @@
 
 using namespace Herwig::Helicity;
 
-SSCCPVertex::SSCCPVertex() :_couplast(0.), _q2last(0.) {
+SSCCPVertex::SSCCPVertex() :_couplast(0.), _q2last() {
   vector<int> first, second, third(2, 22);
   for(unsigned int ic = 0; ic < 2; ++ic) {
     int chType(1000024);
@@ -31,7 +31,7 @@ void SSCCPVertex::persistentOutput(PersistentOStream & os) const {
 void SSCCPVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
 }
 
 ClassDescription<SSCCPVertex> SSCCPVertex::initSSCCPVertex;

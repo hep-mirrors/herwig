@@ -7,7 +7,8 @@ namespace Herwig {
 namespace Helicity {
 using namespace ThePEG;
 
-inline SMWWHVertex::SMWWHVertex() :   _couplast(0.), _q2last(0.), _mw(), _zfact(), _sw()
+inline SMWWHVertex::SMWWHVertex() :   _couplast(0.), _q2last(),
+				      _mw(), _zfact(), _sw()
 {
   // particles
   vector<int> first,second,third;

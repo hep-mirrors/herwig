@@ -95,7 +95,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale,  
 						     const ParticleVector & decay) const;
 
@@ -214,7 +214,7 @@ private:
    * @param ires Which of the \f$\rho\f$ or \f$K^*\f$ resonances to use
    * @return The value of \f$\frac{dh}{dq^2}\f$ at \f$q^2=m^2\f$.
    */
-  inline double GSModeldhdq2Parameter(const unsigned int ires)const ;
+  inline InvEnergy2 GSModeldhdq2Parameter(const unsigned int ires)const ;
   
   /**
    * The \f$h\f$ function in the GS model.
@@ -360,7 +360,7 @@ private:
    * The function \f$h\f$ at \f$q^2=m^2\f$ for the GS form of the
    *  Breit-Wigner
    */
-  vector<InvEnergy2> _hm2;
+  vector<double> _hm2;
 
   /**
    * The \f$d\f$ parameter  for the GS form of the

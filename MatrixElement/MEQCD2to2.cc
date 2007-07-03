@@ -52,8 +52,8 @@ Energy2 MEQCD2to2::scale() const {
 bool MEQCD2to2::generateKinematics(const double * r) {
   double ctmin = -1.0;
   double ctmax = 1.0;
-  meMomenta()[2].setMass(0.);
-  meMomenta()[3].setMass(0.);
+  meMomenta()[2].setMass(0.*GeV);
+  meMomenta()[3].setMass(0.*GeV);
 
 
   Energy q = 0.0*GeV;
@@ -101,9 +101,9 @@ bool MEQCD2to2::generateKinematics(const double * r) {
 
   Energy pt = q*sqrt(1.0-sqr(cth));
   phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setV(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
+  meMomenta()[2].setVect(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
 
-  meMomenta()[3].setV(Momentum3(-pt*sin(phi()),	-pt*cos(phi()), -q*cth));
+  meMomenta()[3].setVect(Momentum3(-pt*sin(phi()),-pt*cos(phi()), -q*cth));
 
   meMomenta()[2].rescaleEnergy();
   meMomenta()[3].rescaleEnergy();

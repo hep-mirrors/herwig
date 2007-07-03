@@ -1,6 +1,6 @@
 bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc
-Herwig___LDFLAGS = -export-dynamic $(CLHEPLDFLAGS)
+Herwig___LDFLAGS = -export-dynamic
 Herwig___LDADD = $(top_builddir)/lib/libHerwig.la
 
 DOTINFILES = Analysis.in Decays.in Hadronization.in \
@@ -54,11 +54,11 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -L$(top_builddir)/lib &> valgrind-init.log
+	$(VALGRIND) ./Herwig++ init -L$(top_builddir)/lib &> /tmp/valgrind-init.log
 valgrind-read:
-	$(VALGRIND) ./Herwig++ read LHC.in &> valgrind-read.log
+	$(VALGRIND) ./Herwig++ read LHC.in &> /tmp/valgrind-read.log
 valgrind-run:
-	$(VALGRIND) ./Herwig++ run -N1 LHC.run &> valgrind-run.log
+	$(VALGRIND) ./Herwig++ run -N1 LHC.run &> /tmp/valgrind-run.log
 
 ## ## ## ## ## ## 
 

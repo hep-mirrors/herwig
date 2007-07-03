@@ -12,7 +12,7 @@
 namespace Herwig {
 
 using namespace ThePEG;
-using ThePEG::Constants::pi;
+using Constants::pi;
 using Math::ReLi2;
 
 /**
@@ -64,12 +64,12 @@ public:
    * @param charge The product of the charges of the particles in the dipole
    * @param emin The minimum photon energy
    */
-  inline static double exponentialYFSIF(const double  & beta0,const double  & ombeta0,
-					const double  & beta1,const double  & ombeta1,
-					const Energy  & en0  ,const Energy  & en1    ,
-					const Energy  & m0   ,const Energy  & m1     , 
-					const Energy2 & t    ,const double  & charge ,
-					const Energy  & emin);
+  inline static double exponentialYFSIF(double  beta0,double  ombeta0,
+					double  beta1,double  ombeta1,
+					Energy  en0  ,Energy  en1    ,
+					Energy  m0   ,Energy  m1     , 
+					Energy2 t    ,double  charge ,
+					Energy  emin);
   /**
    * The exponential of the YFS form factor for the final-final dipole
    * The \f$2\alpha\tilde{B}\f$ function for the final-final dipole
@@ -85,12 +85,12 @@ public:
    * @param charge The product of the charges of the particles in the dipole
    * @param emin The minimum photon energy
    */
-  inline static double exponentialYFSFF(const double  & beta1, const double  & ombeta1,
-					const double  & beta2, const double  & ombeta2,
-					const Energy  & en1  , const Energy  & en2    ,
-					const Energy  & m1   , const Energy  & m2     , 
-					const Energy2 & s    , const double  & charge ,
-					const Energy  & emin);
+  inline static double exponentialYFSFF(double  beta1, double  ombeta1,
+					double  beta2, double  ombeta2,
+					Energy  en1  , Energy  en2    ,
+					Energy  m1   , Energy  m2     , 
+					Energy2 s    , double  charge ,
+					Energy  emin);
   //@}
   /**
    *  The YFS form factors for the initial-final and final-final dipoles
@@ -110,12 +110,12 @@ public:
    * @param charge The product of the charges of the particles in the dipole
    * @param emin The minimum photon energy
    */
-  inline static double YFSIF(const double  & beta0   ,const double  & ombeta0 ,
-			     const double  & beta1   ,const double  & ombeta1 ,
-			     const Energy  & en0     ,const Energy  & en1     ,
-			     const Energy  & m0      ,const Energy  & m1      , 
-			     const Energy2 & t       ,const double  & charge  ,
-			     const Energy  & emin);
+  inline static double YFSIF(double  beta0   ,double  ombeta0 ,
+			     double  beta1   ,double  ombeta1 ,
+			     Energy  en0     ,Energy  en1     ,
+			     Energy  m0      ,Energy  m1      , 
+			     Energy2 t       ,double  charge  ,
+			     Energy  emin);
   /**
    *  The YFS form factor for the final-final dipole
    * The \f$2\alpha\tilde{B}\f$ function for the final-final dipole
@@ -131,12 +131,12 @@ public:
    * @param charge The product of the charges of the particles in the dipole
    * @param emin The minimum photon energy
    */
-  inline static double YFSFF(const double  & beta1   ,const double  & ombeta1 ,
-			     const double  & beta2   ,const double  & ombeta2 ,
-			     const Energy  & en1     ,const Energy  & en2     ,
-			     const Energy  & m1      ,const Energy  & m2      , 
-			     const Energy2 & s       ,const double  & charge  ,
-			     const Energy  & emin);
+  inline static double YFSFF(double  beta1   ,double  ombeta1 ,
+			     double  beta2   ,double  ombeta2 ,
+			     Energy  en1     ,Energy  en2     ,
+			     Energy  m1      ,Energy  m2      , 
+			     Energy2 s       ,double  charge  ,
+			     Energy  emin);
   //@}
 
   /**
@@ -153,11 +153,11 @@ public:
    * @param Emax The minimum energy for the integral
    * @param massterms Whether or not to include the mass terms
    */
-  inline static double nbarFF(const double & beta1, const double & ombeta1,
-			      const double & beta2, const double & ombeta2,
-			      const double & charge,
-			      const Energy & Emax , const Energy & Emin,
-			      const bool massterms=false);
+  inline static double nbarFF(double beta1, double ombeta1,
+			      double beta2, double ombeta2,
+			      double charge,
+			      Energy Emax , Energy Emin,
+			      bool massterms=false);
 
   /**
    * Crude multiplicity for the initial-final dipole
@@ -170,10 +170,10 @@ public:
    * @param massterms Whether or not to include the mass terms
    */
   //@}
-  inline static double nbarIF(const double & beta, const double & ombeta,
-			      const double & charge,
-			      const Energy & Emax , const Energy & Emin,
-			      const bool massterms=false);
+  inline static double nbarIF(double beta, double ombeta,
+			      double charge,
+			      Energy Emax , Energy Emin,
+			      bool massterms=false);
 
   /**
    *  The virtual piece for the initial-final and final-final dipoles
@@ -188,10 +188,10 @@ public:
    * @param includegamma Include the photon mass terms
    * @param mgamma The photon mass,
    */
-  inline static double ReBIF(const Energy  & m0      ,const Energy  & m1      , 
-			     const Energy2 & t       ,const double  & charge  ,
-			     const bool    & includegamma=true,
-			     const Energy  & mgamma=_mgamma);
+  inline static double ReBIF(Energy  m0      ,Energy  m1      , 
+			     Energy2 t       ,double  charge  ,
+			     bool    includegamma=true,
+			     Energy  mgamma=_mgamma);
 
   /**
    *  The \f$2\alpha\mathcal{R}B\f$ function for the final-final dipole
@@ -202,10 +202,10 @@ public:
    * @param includegamma Include the photon mass terms
    * @param mgamma The photon mass,
    */
-  inline static double ReBFF(const Energy & m1,const Energy & m2,
-			     const Energy2 & s,const double  & charge,
-			     const bool    & includegamma=true,
-			     const Energy  & mgamma=_mgamma);
+  inline static double ReBFF(Energy m1,Energy m2,
+			     Energy2 s,double  charge,
+			     bool    includegamma=true,
+			     Energy  mgamma=_mgamma);
   //@}
 
   /**
@@ -228,14 +228,14 @@ public:
    * @param includegamma Include the photon mass terms
    * @param mgamma The photon mass,
    */
-  inline static double BtildeIF(const double  & beta0   ,const double  & ombeta0 ,
-				const double  & beta1   ,const double  & ombeta1 ,
-				const Energy  & en0     ,const Energy  & en1     ,
-				const Energy  & m0      ,const Energy  & m1      , 
-				const Energy2 & t       ,const double  & charge  ,
-				const Energy  & emin    ,
-				const bool    & includegamma=true,
-				const Energy  & mgamma=_mgamma);
+  inline static double BtildeIF(double  beta0   ,double  ombeta0 ,
+				double  beta1   ,double  ombeta1 ,
+				Energy  en0     ,Energy  en1     ,
+				Energy  m0      ,Energy  m1      , 
+				Energy2 t       ,double  charge  ,
+				Energy  emin    ,
+				bool    includegamma=true,
+				Energy  mgamma=_mgamma);
 
   /**
    * The \f$2\alpha\tilde{B}\f$ function for the final-final dipole
@@ -253,14 +253,14 @@ public:
    * @param includegamma Include the photon mass terms
    * @param mgamma The photon mass,
    */
-  inline static double BtildeFF(const double  & beta1   ,const double  & ombeta1 ,
-				const double  & beta2   ,const double  & ombeta2 ,
-				const Energy  & en1     ,const Energy  & en2     ,
-				const Energy  & m1      ,const Energy  & m2      , 
-				const Energy2 & s       ,const double  & charge  ,
-				const Energy  & emin    ,
-				const bool    & includegamma=true,
-				const Energy  & mgamma=_mgamma);
+  inline static double BtildeFF(double  beta1   ,double  ombeta1 ,
+				double  beta2   ,double  ombeta2 ,
+				Energy  en1     ,Energy  en2     ,
+				Energy  m1      ,Energy  m2      , 
+				Energy2 s       ,double  charge  ,
+				Energy  emin    ,
+				bool    includegamma=true,
+				Energy  mgamma=_mgamma);
   //@}
   
 private:
@@ -280,10 +280,10 @@ private:
    * @param m2 The mass of the second particle
    * @param s   The invariant mass of the charged particles
    */
-  inline static InvEnergy2 A4FFFull(const Energy  & en1  ,const Energy & en2,
-				    const double  & beta1,const double & beta2,
-				    const Energy  &  m1  ,const Energy & m2,
-				    const Energy2 & s    );
+  inline static InvEnergy2 A4FFFull(Energy  en1  ,Energy en2,
+				    double  beta1,double beta2,
+				    Energy   m1  ,Energy m2,
+				    Energy2 s    );
 
   /**
    *  The \f$A_4\f$ function of hep-ph0302065 using the special cases where
@@ -298,17 +298,17 @@ private:
    * @param m1 The mass of the outgoing particle
    * @param t  The invariant mass of the charged particles
    */
-  inline static InvEnergy2 A4IF(const double  & beta0   ,const double  & ombeta0 ,
-				const double  & beta1   ,const double  & ombeta1 ,
-				const Energy  & en0  ,const Energy & en1  ,
-				const Energy  & m0   ,const Energy & m1   ,
-				const Energy2 & t);
+  inline static InvEnergy2 A4IF(double  beta0   ,double  ombeta0 ,
+				double  beta1   ,double  ombeta1 ,
+				Energy  en0  ,Energy en1  ,
+				Energy  m0   ,Energy m1   ,
+				Energy2 t);
 
   /**
    * The \f$A_4\f$ function of hep-ph/0302065 for a single particle, without the \f$1/p^2\f$
    * pre-factor
    */
-  inline static double A4single(const double & beta,const double & ombeta);
+  inline static double A4single(double beta,double ombeta);
 
   /**
    * The \f$A_4\f$ function of hep-ph/0302065 for the initial-final dipole with \f$t=0\f$ in the
@@ -316,7 +316,7 @@ private:
    * @param m0 The mass of the incoming particle
    * @param m1 The mass of the outgoing particle
    */
-  inline static InvEnergy2 A4IFRestZero(const Energy  & m0, const Energy & m1);
+  inline static InvEnergy2 A4IFRestZero(Energy  m0, Energy m1);
 
   /**
    * The \f$A_4\f$ function for the initial-final dipole with \f$t=0\f$.
@@ -327,9 +327,9 @@ private:
    * @param m0 The mass of the incoming particle
    * @param m1 The mass of the outgoing particle
    */
-  inline static InvEnergy2 A4IFZero(const double  & beta0, const double & beta1,
-			     const Energy  & en0  , const Energy & en1  ,
-			     const Energy  & m0   , const Energy & m1);
+  inline static InvEnergy2 A4IFZero(double  beta0, double beta1,
+			     Energy  en0  , Energy en1  ,
+			     Energy  m0   , Energy m1);
 
   /**
    * The \f$A_4\f$ function for the initial-final dipole in the rest frame of 
@@ -340,9 +340,9 @@ private:
    * @param ombeta1 \f$1-\beta\f$ for the decay product
    * @param E1 The energy of the outgoing particle
    */
-  inline static InvEnergy2 A4IFRest(const Energy & m0   ,const Energy & m1, 
-				    const double & beta1,const double & ombeta1,
-				    const Energy & E1);
+  inline static InvEnergy2 A4IFRest(Energy m0   ,Energy m1, 
+				    double beta1,double ombeta1,
+				    Energy E1);
 
   /**
    * The \f$A_4\f$ function for the full initial-final dipole
@@ -354,10 +354,10 @@ private:
    * @param m1 The mass of the outgoing particle
    * @param t  The invariant mass of the charged particles
    */
-  inline static InvEnergy2 A4IFFull(const double  & beta0,const double & beta1,
-				    const Energy  & en0  ,const Energy & en1  ,
-				    const Energy  & m0   ,const Energy & m1   ,
-				    const Energy2 & t);
+  inline static InvEnergy2 A4IFFull(Velocity beta0,Velocity beta1,
+				    Energy  en0  ,Energy en1  ,
+				    Energy  m0   ,Energy m1   ,
+				    Energy2 t);
   //@}
 
   /**
@@ -371,8 +371,8 @@ private:
    * @param yi The value of \f$y_i\f$ 
    * @param yj The value of \f$y_j\f$ 
    */
-  inline static double Zij(const long double & eta, const long double & yi,
-			   const long double & yj);
+  template <typename T>
+  inline static double Zij(T eta, T yi, T yj);
   
   /**
    * The function \f$X^{ij}_{kl}(\eta)\f$  from hep-ph/9606429 for the evaluation of the \f$A_4\f$ 
@@ -383,9 +383,10 @@ private:
    * @param yk The value of \f$y_k\f$ 
    * @param yl The value of \f$y_l\f$ 
    */
-  inline static double Xijkl(const long double & eta,
-			     const long double & yi, const long double & yj,
-			     const long double & yk, const long double & yl);
+  template <typename T>
+  inline static double Xijkl(T eta,
+			     T yi, T yj,
+			     T yk, T yl);
   //@}
 
 private:

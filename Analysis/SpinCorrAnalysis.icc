@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-inline SpinCorrAnalysis::SpinCorrAnalysis() : theMaxInvMass(1.) {}
+inline SpinCorrAnalysis::SpinCorrAnalysis() : theMaxInvMass(1.*MeV) {}
 
 inline IBPtr SpinCorrAnalysis::clone() const {
   return new_ptr(*this);

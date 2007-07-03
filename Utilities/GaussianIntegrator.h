@@ -51,7 +51,11 @@ public:
    * @param upper The upper limit of integration.
    */
   template <class T>
-  inline double value(const T &, const double lower,const double upper) const;
+  inline typename BinaryOpTraits<typename T::ValType,
+				 typename T::ArgType>::MulT
+  value(const T &, 
+	const typename T::ArgType lower,
+	const typename T::ArgType upper) const;
 
 private:
 

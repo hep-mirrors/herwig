@@ -67,21 +67,23 @@ VectorWaveFunction VVSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   // evaluate the wavefunction
   Complex vect[4];
   // massless case
-  if(mass==0.) {
-    vect[0] = fact*vec.x();
-    vect[1] = fact*vec.y();
-    vect[2] = fact*vec.z();
-    vect[3] = fact*vec.t();
-  }
+  if(mass==Energy())
+    {
+      vect[0] = fact*vec.x();
+      vect[1] = fact*vec.y();
+      vect[2] = fact*vec.z();
+      vect[3] = fact*vec.t();
+    }
   // massive case
-  else {
-    Complex dot = (+vec.t()*pout.e() -vec.x()*pout.px()
-		   -vec.y()*pout.py()-vec.z()*pout.pz())/mass2;
-    vect[0] = fact*(vec.x()-dot*pout.px());
-    vect[1] = fact*(vec.y()-dot*pout.py());
-    vect[2] = fact*(vec.z()-dot*pout.pz());
-    vect[3] = fact*(vec.t()-dot*pout.e());
-  }
+  else
+    {
+      complex<InvEnergy> dot = ( vec.t()*pout.e()-vec.x()*pout.x()
+				-vec.y()*pout.y()-vec.z()*pout.z())/mass2;
+      vect[0] = fact*(vec.x()-dot*pout.x());
+      vect[1] = fact*(vec.y()-dot*pout.y());
+      vect[2] = fact*(vec.z()-dot*pout.z());
+      vect[3] = fact*(vec.t()-dot*pout.e());
+    }
   return VectorWaveFunction(pout,out,vect[0],vect[1],vect[2],vect[3]);
 }
 

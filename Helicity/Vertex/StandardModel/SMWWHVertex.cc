@@ -13,12 +13,12 @@ namespace Helicity {
 using namespace ThePEG;
     
 void SMWWHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << _mw << _zfact << _sw;
+  os << _theSM << ounit(_mw,GeV) << _zfact << _sw;
 }
 
 void SMWWHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> _mw >> _zfact >> _sw;
-  _couplast=0.; _q2last=0.;
+  is >> _theSM >> iunit(_mw,GeV) >> _zfact >> _sw;
+  _couplast=0.; _q2last=0.*GeV2;
 }
     
 ClassDescription<SMWWHVertex>SMWWHVertex::initSMWWHVertex;
@@ -39,7 +39,8 @@ void SMWWHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr)
   if(q2!=_q2last)
     {
       double alpha = _theSM->alphaEM(q2);
-      _couplast = sqrt(4.0*3.14159265*alpha)*_mw/_sw;
+      _couplast = UnitRemoval::InvE * 
+	sqrt(4.0*Constants::pi*alpha)*_mw/_sw;
       _q2last=q2;
     }
   if(ibos==24){setNorm(_couplast);}

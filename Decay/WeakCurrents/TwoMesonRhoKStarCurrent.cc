@@ -144,16 +144,20 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
 
 void TwoMesonRhoKStarCurrent::persistentOutput(PersistentOStream & os) const {
   os << _pimodel << _kmodel << _piwgt << _pimag << _piphase << _kwgt << _kmag 
-     << _kphase << _rhoparameters << _kstarparameters << _rhomasses << _rhowidths 
-     << _kstarmasses << _kstarwidths <<  _mass << _width << _mass2 << _massw << _massa 
-     <<_massb << _mom << _dhdq2 << _hm2 << _dparam;
+     << _kphase << _rhoparameters << _kstarparameters << ounit(_rhomasses,GeV) << ounit(_rhowidths,GeV) 
+     << ounit(_kstarmasses,GeV) << ounit(_kstarwidths,GeV) 
+     << ounit(_mass,GeV) << ounit(_width,GeV) << ounit(_mass2,GeV2) << ounit(_massw,GeV2) 
+     << ounit(_massa,GeV) <<ounit(_massb,GeV) << ounit(_mom,GeV) << ounit(_dhdq2,1/GeV2) 
+     << _hm2 << _dparam;
 }
 
 void TwoMesonRhoKStarCurrent::persistentInput(PersistentIStream & is, int) {
   is >> _pimodel >> _kmodel >> _piwgt >> _pimag >> _piphase >> _kwgt >> _kmag 
-     >> _kphase >> _rhoparameters >> _kstarparameters >> _rhomasses >> _rhowidths 
-     >> _kstarmasses >> _kstarwidths >> _mass >> _width >> _mass2 >> _massw >> _massa 
-     >> _massb >> _mom >> _dhdq2 >> _hm2 >> _dparam;
+     >> _kphase >> _rhoparameters >> _kstarparameters >> iunit(_rhomasses,GeV) >> iunit(_rhowidths,GeV) 
+     >> iunit(_kstarmasses,GeV) >> iunit(_kstarwidths,GeV) 
+     >> iunit(_mass,GeV) >> iunit(_width,GeV) >> iunit(_mass2,GeV2) >> iunit(_massw,GeV2) 
+     >> iunit(_massa,GeV) >> iunit(_massb,GeV) >> iunit(_mom,GeV) >> iunit(_dhdq2,1/GeV2) 
+     >> _hm2 >> _dparam;
 }
 
 ClassDescription<TwoMesonRhoKStarCurrent> TwoMesonRhoKStarCurrent::initTwoMesonRhoKStarCurrent;
@@ -401,7 +405,7 @@ PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
 }
 
 // hadronic current   
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
 				 Energy & scale,const ParticleVector & outpart) const {
   // momentum difference and sum of the mesons
@@ -462,7 +466,7 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
   }
   // compute the current
   pdiff-=psum;
-  return vector<LorentzPolarizationVector>(1,FPI*pdiff);
+  return vector<LorentzPolarizationVectorE>(1,FPI*pdiff);
 }
    
 bool TwoMesonRhoKStarCurrent::accept(vector<int> id) {

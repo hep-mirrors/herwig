@@ -47,7 +47,7 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
   double ycut[2]={0.,0.};
   if(gluon.size()!=0)
     {
-      Energy eq(0.),eg(0.),ea(0.);
+      Energy eq(0.*MeV),eg(0.*MeV),ea(0.*MeV);
       for(unsigned int ix=0;ix<quark.size();++ix)
 	eq+=quark[ix]->momentum().e();
       for(unsigned int ix=0;ix<anti.size();++ix)
@@ -62,7 +62,7 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
   else if(quark.size()>1)
     {
       _kint.clearMap();
-      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convertToKtVectorList(quark), 1, 1, 1);
+      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(quark), 1, 1, 1);
       ev.findJetsN(2);
       vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
       ycut[0]=ev.getDMerge(1);
@@ -76,20 +76,20 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
 	}
       if(nquark[0]>nquark[1])
 	{
-	  pquark[0]=ktjets[0];
-	  pquark[1]=ktjets[1];
+	  pquark[0] = KtJetInterface::convert(ktjets[0]);
+	  pquark[1] = KtJetInterface::convert(ktjets[1]);
 	}
       else
 	{
-	  pquark[1]=ktjets[0];
-	  pquark[0]=ktjets[1];
+	  pquark[1] = KtJetInterface::convert(ktjets[0]);
+	  pquark[0] = KtJetInterface::convert(ktjets[1]);
 	}
     }
   // antiquark jets
   if(anti.size()>1)
     {
       _kint.clearMap();
-      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convertToKtVectorList(anti), 1, 1, 1);
+      KtJet::KtEvent ev = KtJet::KtEvent(_kint.convert(anti), 1, 1, 1);
       ev.findJetsN(2);
       vector<KtJet::KtLorentzVector> ktjets=ev.getJetsPt();
       ycut[1]=ev.getDMerge(1);
@@ -103,16 +103,16 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
 	}
       if(nanti[0]<nanti[1])
 	{
-	  panti[0]=ktjets[0];
-	  panti[1]=ktjets[1];
+	  panti[0] = KtJetInterface::convert(ktjets[0]);
+	  panti[1] = KtJetInterface::convert(ktjets[1]);
 	}
       else
 	{
-	  panti[1]=ktjets[0];
-	  panti[0]=ktjets[1];
+	  panti[1] = KtJetInterface::convert(ktjets[0]);
+	  panti[0] = KtJetInterface::convert(ktjets[1]);
 	}
     }
-  double x[2],sum;
+  double x[2];
   if(quark.size()==1&&anti.size()==1)
     {
       x[0]=1.0;
@@ -120,36 +120,37 @@ void LeptonDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int sta
     }
   else if(quark.size()==1&&anti.size()>1)
     {
-      x[0]=quark[0]->momentum().e();
-      x[1]=panti[0].e();
-      sum=x[0]+x[1]+panti[1].e();
-      x[0]*=2./sum;
-      x[1]*=2./sum;
+      Energy x0 = quark[0]->momentum().e();
+      Energy x1 = panti[0].e();
+      Energy sum = x0+x1+panti[1].e();
+      x[0] = x0 * 2./sum;
+      x[1] = x1 * 2./sum;
     }
   else if(quark.size()>1&&anti.size()==1)
     {
-      x[0]=pquark[0].e();
-      x[1]=anti[0]->momentum().e();
-      sum=x[0]+x[1]+pquark[1].e();
-      x[0]*=2./sum;
-      x[1]*=2./sum;
+      Energy x0=pquark[0].e();
+      Energy x1=anti[0]->momentum().e();
+      Energy sum=x0+x1+pquark[1].e();
+      x[0] = x0 * 2./sum;
+      x[1] = x1 * 2./sum;
     }
   else if(quark.size()>1&&anti.size()>1)
     {
+      Energy x0, x1, sum;
       if(ycut[0]>ycut[1])
 	{
-	  x[0]=pquark[0].e();
-	  x[1]=panti[0].e()+panti[1].e();
-	  sum=x[0]+x[1]+pquark[1].e();
+	  x0=pquark[0].e();
+	  x1=panti[0].e()+panti[1].e();
+	  sum=x0+x1+pquark[1].e();
 	}
       else
 	{
-	  x[0]=pquark[0].e()+pquark[1].e();
-	  x[1]=panti[0].e();
-	  sum=x[0]+x[1]+panti[1].e();
+	  x0=pquark[0].e()+pquark[1].e();
+	  x1=panti[0].e();
+	  sum=x0+x1+panti[1].e();
 	}
-      x[0]*=2./sum;
-      x[1]*=2./sum;
+      x[0] = x0 * 2./sum;
+      x[1] = x1 * 2./sum;
     }
   else
     {

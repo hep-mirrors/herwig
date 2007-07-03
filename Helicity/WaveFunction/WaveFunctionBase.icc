@@ -14,14 +14,14 @@ using namespace ThePEG;
 inline WaveFunctionBase::WaveFunctionBase()
 {_momentum=Lorentz5Momentum();}
 // subscript operator to access momentum
-inline Energy WaveFunctionBase::operator [](int i) const {return _momentum[i];}
+//inline Energy WaveFunctionBase::operator [](int i) const {return _momentum[i];}
 // Get components of the momentum
 // get the x component of the momentum
-inline Energy WaveFunctionBase::px() const{return _momentum.px();}
+inline Energy WaveFunctionBase::px() const{return _momentum.x();}
 // get the y component of the momentum
-inline Energy WaveFunctionBase::py() const{return _momentum.py();}
+inline Energy WaveFunctionBase::py() const{return _momentum.y();}
 // get the z component of the momentum
-inline Energy WaveFunctionBase::pz() const{return _momentum.pz();}
+inline Energy WaveFunctionBase::pz() const{return _momentum.z();}
 // get the energy
 inline Energy WaveFunctionBase::e() const{return _momentum.e();}
 // get the mass
@@ -61,7 +61,7 @@ inline void WaveFunctionBase::setMomentum(Energy x, Energy y,
   else if(_dir==-1||_dir==0){_momentum=Lorentz5Momentum(x,y,z,t);}
 }
 // set 4-momentum 
-inline void WaveFunctionBase::setMomentum(LorentzVector p)
+inline void WaveFunctionBase::setMomentum(LorentzMomentum p)
 {
   if(_dir==1){_momentum=Lorentz5Momentum(-p);}
   else if(_dir==-1||_dir==0){_momentum=Lorentz5Momentum(p);}
@@ -73,7 +73,7 @@ inline void WaveFunctionBase::setMomentum(Energy m)
   if(_dir==1){_momentum.setT(-_momentum.t());}
 }
 // set 4 momentum and mass
-inline void WaveFunctionBase::setMomentum(LorentzVector p,Energy m)
+inline void WaveFunctionBase::setMomentum(LorentzMomentum p,Energy m)
 {
   if(_dir==1){_momentum=Lorentz5Momentum(-p,m);}
   else if(_dir==-1||_dir==0){_momentum=Lorentz5Momentum(p,m);}

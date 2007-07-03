@@ -57,7 +57,7 @@ void HiggsJetAnalysis::analyze(tEventPtr event, long, int, int) {
   tcPPtr higgs = *higgses.begin();
 
   Lorentz5Momentum ph = higgs->momentum();
-  Energy pt = ph.perp()/GeV;
+  double pt = ph.perp()/GeV;
   (_pth)+=(pt);
   (_pthZoom)+=(pt);
   double rap = 0.5*log((ph.e()+ph.z())/(ph.e()-ph.z()));

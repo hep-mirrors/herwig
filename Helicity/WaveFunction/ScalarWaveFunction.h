@@ -90,7 +90,7 @@ public:
    * @param wave The wavefunction.
    * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector p,const tcPDPtr & part,Complex wave,
+  inline ScalarWaveFunction(LorentzMomentum p,const tcPDPtr & part,Complex wave,
 			    Direction dir);
 
   /**
@@ -110,7 +110,7 @@ public:
    * @param wave The wavefunction.
    * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Complex wave,
+  inline ScalarWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,Complex wave,
 			    Direction dir);
 
   /**
@@ -154,7 +154,7 @@ public:
    * @param part The ParticleData pointer
    * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir);
+  inline ScalarWaveFunction(LorentzMomentum p,const tcPDPtr & part,Direction dir);
 
   /**
    * Constructor, set the mass, direction and zero the wavefunction.
@@ -171,7 +171,7 @@ public:
    * @param part The ParticleData pointer
    * @param dir The direction of the particle.
    */
-  inline ScalarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
+  inline ScalarWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,Direction dir);
 
   /**
    * Special constructor which set's up a particle's SpinInfo.

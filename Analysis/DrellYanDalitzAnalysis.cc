@@ -82,9 +82,9 @@ void DrellYanDalitzAnalysis::analyze(tEventPtr event, long ieve, int loop, int s
 	}
     }
   Energy2 Q2=(pb+pc-pg).m2();
-  Energy2 sbar=(pb+pc).m2()/Q2;
-  Energy2 tbar=(pb-pg).m2()/Q2;
-  //Energy2 ubar=(pc-pg).m2()/Q2;
+  double sbar=(pb+pc).m2()/Q2;
+  double tbar=(pb-pg).m2()/Q2;
+  //double ubar=(pc-pg).m2()/Q2;
   ++_nout;
   if(type)
     {

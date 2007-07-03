@@ -14,13 +14,13 @@ using namespace Herwig::Helicity;
 
 void UEDZ0H1H1Vertex::persistentOutput(PersistentOStream & os) const {
   os << theUEDBase << theSinThetaW << theCosThetaW << theCosTheta2W
-     << theMw2 << theR2;
+     << ounit(theMw2,GeV2) << ounit(theR2,1/GeV2);
 }
 
 void UEDZ0H1H1Vertex::persistentInput(PersistentIStream & is, int) {
   is >> theUEDBase >> theSinThetaW >> theCosThetaW >> theCosTheta2W
-     >> theMw2 >> theR2;
-  theq2Last = 0.;
+     >> iunit(theMw2,GeV2) >> iunit(theR2,1/GeV2);
+  theq2Last = 0.*GeV2;
   theCoupLast = 0.;
 }
 

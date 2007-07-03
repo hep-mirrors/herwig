@@ -69,7 +69,7 @@ AM_CONDITIONAL(NEED_APPLE_FIXES,
 dnl ###########################
 dnl ###########################
 
-AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
+AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE"
 AM_CXXFLAGS="-ansi -pedantic -Wall -W"
 
 # don't know how else to do this. see bug #14

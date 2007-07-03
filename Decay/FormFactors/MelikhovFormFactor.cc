@@ -52,13 +52,15 @@ void MelikhovFormFactor::doinit() throw(InitException) {
 MelikhovFormFactor::~MelikhovFormFactor() {}
 
 void MelikhovFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _ifit << _Rplus0 << _Mplus << _nplus << _RV0 << _MV << _nV << _R10 << _M1
-     << _n1 << _R20 << _M2 << _n2; 
+  os << _ifit << _Rplus0 << ounit(_Mplus,GeV) << _nplus << _RV0 << ounit(_MV,GeV) 
+     << _nV << _R10 << ounit(_M1,GeV)
+     << _n1 << _R20 << ounit(_M2,GeV) << _n2; 
 }
 
 void MelikhovFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _ifit >> _Rplus0 >> _Mplus >> _nplus >> _RV0 >> _MV >> _nV >> _R10 >> _M1
-     >> _n1 >> _R20 >> _M2 >> _n2; 
+  is >> _ifit >> _Rplus0 >> iunit(_Mplus,GeV) >> _nplus >> _RV0 >> iunit(_MV,GeV) 
+     >> _nV >> _R10 >> iunit(_M1,GeV)
+     >> _n1 >> _R20 >> iunit(_M2,GeV) >> _n2; 
 }
 
 ClassDescription<MelikhovFormFactor> MelikhovFormFactor::initMelikhovFormFactor;

@@ -8,7 +8,7 @@ namespace Helicity {
 using namespace ThePEG;
 
 inline SMFFZVertex::SMFFZVertex() : _gl(17,0.0), _gr(17,0.0),
-				    _couplast(0.0), _q2last(0.0)
+				    _couplast(0.0), _q2last()
 {
   // PDG codes for the particles
   vector<int> first,second,third;
@@ -45,7 +45,9 @@ inline void SMFFZVertex::doinit() throw(InitException) {
       _gr[2*ix+10] = fact*((_theSM->vnu())-(_theSM->anu()));
     }
   _couplast=0.;
-  _q2last=0.; 
+  _q2last=0.*GeV2; 
+  orderInGem(1);
+  orderInGs(0);
   orderInGem(1);
   orderInGs(0);
   FFVVertex::doinit();

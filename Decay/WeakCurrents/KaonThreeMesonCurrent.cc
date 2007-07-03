@@ -15,6 +15,11 @@
 
 using namespace Herwig;
 
+namespace {
+  inline Energy  timesGeV (double x) { return x * GeV; }
+  inline Energy2 timesGeV2(double x) { return x * GeV2; }
+}
+
 inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   // rho parameters
   // use local values
@@ -55,7 +60,7 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   _a1opt        = true;
   _a1mass  = 1.251*GeV;
   _a1width = 0.475*GeV;
-  Energy2 a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
+  double a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
 		       126309,142098,157886,173675,189464,205252,221041,236830,
 		       252618,268407,284196,299984,315773,331562,347350,363139,
 		       378927,394716,410505,426293,442082,457871,473659,489448,
@@ -91,7 +96,7 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
 		       2.98405e+06,2.99984e+06,3.01563e+06,3.03142e+06,3.04721e+06,
 		       3.063e+06,3.07879e+06,3.09457e+06,3.11036e+06,3.12615e+06,
 		       3.14194e+06};
-  Energy a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
+  double a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
 			 0.105567,0.199612,0.333825,0.513831,0.745192,1.0336,1.38501,
 			 1.80581,2.30295,2.88403,3.5575,4.33278,5.22045,6.23243,
 			 7.38223,8.68521,10.1589,11.8234,13.7018,15.8206,18.2107,
@@ -119,8 +124,20 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
 			 726.468,727.041,727.608,728.166,728.718,729.262,729.808,
 			 730.337,730.856,731.374,731.883,732.386,732.884,733.373,
 			 733.859,734.339,734.813};
-  _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
-  _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
+  
+  vector<double> tmp1(a1widthin,a1widthin+200);
+  _a1runwidth.clear();
+  std::transform(tmp1.begin(), tmp1.end(),
+		 back_inserter(_a1runwidth),
+		 timesGeV);
+  
+  vector<double> tmp2(a1q2in,a1q2in+200);
+  _a1runq2.clear();
+  std::transform(tmp2.begin(), tmp2.end(),
+		 back_inserter(_a1runq2),
+		 timesGeV2);
+
+
   // K_1 parameters
   _k1parameters=true;
   _k1mass.push_back(1.270*GeV);_k1width.push_back(0.090*GeV);
@@ -137,34 +154,40 @@ inline KaonThreeMesonCurrent::KaonThreeMesonCurrent() {
   _omegaKstarwgt=1./sqrt(2.);
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.;_mK=0.;
+  _mpi=0.*MeV;_mK=0.*MeV;
   _maxmass=0.*GeV;
   _maxcalc=0.*GeV;
 }
 
 
 void KaonThreeMesonCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _rho1wgts << _rho1mass << _rho1width 
-     << _rho2wgts << _rho2mass << _rho2width
-     << _kstar1wgts << _kstar1mass << _kstar1width 
-     << _kstar2wgts << _kstar2mass << _kstar2width 
-     << _a1mass << _a1width << _k1mass << _k1width << _k1wgta << _k1wgtb 
-     << _a1runwidth << _a1runq2 << _epsomega << _omegamass << _omegawidth 
-     << _phimass << _phiwidth << _omegaKstarwgt << _fpi << _mpi << _mK 
+  os << _rho1wgts << ounit(_rho1mass,GeV) << ounit(_rho1width,GeV) 
+     << _rho2wgts << ounit(_rho2mass,GeV) << ounit(_rho2width,GeV)
+     << _kstar1wgts << ounit(_kstar1mass,GeV) << ounit(_kstar1width,GeV) 
+     << _kstar2wgts << ounit(_kstar2mass,GeV) << ounit(_kstar2width,GeV) 
+     << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_k1mass,GeV) 
+     << ounit(_k1width,GeV) << _k1wgta << _k1wgtb 
+     << ounit(_a1runwidth,GeV) << ounit(_a1runq2,GeV2) << _epsomega 
+     << ounit(_omegamass,GeV) << ounit(_omegawidth,GeV) 
+     << ounit(_phimass,GeV) << ounit(_phiwidth,GeV) << _omegaKstarwgt 
+     << ounit(_fpi,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV) 
      << _initializea1 << _rhoparameters << _kstarparameters << _a1parameters 
-     << _k1parameters << _a1opt << _omegaopt << _maxmass << _maxcalc;
+     << _k1parameters << _a1opt << _omegaopt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void KaonThreeMesonCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _rho1wgts >> _rho1mass >> _rho1width 
-     >> _rho2wgts >> _rho2mass >> _rho2width 
-     >> _kstar1wgts >> _kstar1mass >> _kstar1width 
-     >> _kstar2wgts >> _kstar2mass >> _kstar2width 
-     >> _a1mass >> _a1width >> _k1mass >> _k1width >> _k1wgta >> _k1wgtb 
-     >> _a1runwidth >> _a1runq2 >> _epsomega >> _omegamass >> _omegawidth 
-     >> _phimass >> _phiwidth >> _omegaKstarwgt >> _fpi >> _mpi >> _mK 
+  is >> _rho1wgts >> iunit(_rho1mass,GeV) >> iunit(_rho1width,GeV) 
+     >> _rho2wgts >> iunit(_rho2mass,GeV) >> iunit(_rho2width,GeV) 
+     >> _kstar1wgts >> iunit(_kstar1mass,GeV) >> iunit(_kstar1width,GeV) 
+     >> _kstar2wgts >> iunit(_kstar2mass,GeV) >> iunit(_kstar2width,GeV) 
+     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >> iunit(_k1mass,GeV) 
+     >> iunit(_k1width,GeV) >> _k1wgta >> _k1wgtb 
+     >> iunit(_a1runwidth,GeV) >> iunit(_a1runq2,GeV2) >> _epsomega 
+     >> iunit(_omegamass,GeV) >> iunit(_omegawidth,GeV) 
+     >> iunit(_phimass,GeV) >> iunit(_phiwidth,GeV) >> _omegaKstarwgt 
+     >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV) 
      >> _initializea1 >> _rhoparameters >> _kstarparameters >> _a1parameters 
-     >> _k1parameters >> _a1opt >> _omegaopt >> _maxmass >> _maxcalc;
+     >> _k1parameters >> _a1opt >> _omegaopt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
 ClassDescription<KaonThreeMesonCurrent> KaonThreeMesonCurrent::initKaonThreeMesonCurrent;
@@ -449,7 +472,7 @@ void KaonThreeMesonCurrent::Init() {
 void KaonThreeMesonCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.) return; 
+    if(!_initializea1||_maxmass==0.*MeV) return; 
     // parameters for the table of values
     Energy2 step(sqr(_maxmass)/199.);
     // integrator to perform the integral
@@ -458,21 +481,21 @@ void KaonThreeMesonCurrent::inita1Width(int iopt) {
     Energy mrho(getParticleData(ParticleID::rhoplus)->mass()),
       wrho(getParticleData(ParticleID::rhoplus)->width());
     vector<Energy> inmass(2,mrho),inwidth(2,wrho);
+    vector<double> inpow(2,0.0);
     ThreeBodyAllOnCalculator<KaonThreeMesonCurrent> 
-      widthgen(inweights,intype,inmass,inwidth,*this,0,_mpi,_mpi,_mpi);
+      widthgen(inweights,intype,inmass,inwidth,inpow,*this,0,_mpi,_mpi,_mpi);
     // normalisation constant to give physical width if on shell
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
     // loop to give the values
-    Energy moff2(0.);
-    _a1runq2.resize(0);_a1runwidth.resize(0);
-		 for(;moff2<=sqr(_maxmass);moff2+=step) {
+    _a1runq2.clear();_a1runwidth.clear();
+    for(Energy2 moff2 = 0.*MeV2; moff2<=sqr(_maxmass); moff2+=step) {
       _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
       _a1runq2.push_back(moff2);
     }
   }
   // set up the interpolator
   else if(iopt==0) {
-    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
+    _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
   }
 }
   
@@ -491,7 +514,7 @@ bool KaonThreeMesonCurrent::createMode(int icharge, unsigned int imode,
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
   PDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.);
+  Energy min(0.*MeV);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   // the particles we will use a lot
@@ -1077,11 +1100,11 @@ void KaonThreeMesonCurrent::doinit() throw(InitException) {
   inita1Width(0);
 }
 
-void KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
+KaonThreeMesonCurrent::FormFactors
+KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 						 Energy2 q2,Energy2 s1,
-						 Energy2 s2,Energy2 s3,
-						 Complex&F1,Complex&F2,Complex&F3,
-						 Complex&F4,Complex&F5) const {
+						 Energy2 s2,Energy2 s3) const {
+  Complex F1, F2, F5;
   // calculate the K- pi - K+ factor
   if(imode==2) {
     Complex a1fact(a1BreitWigner(q2)*sqrt(2.)/3.);
@@ -1217,10 +1240,9 @@ void KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode
     else                F5 = -sqrt(0.5)*TKstar2(q2,ichan/9)*
       TOmegaKStar(s3,s2,2*((ichan-6)%9))/sqrt(2.);
   }
-  F1/=_fpi;
-  F2/=_fpi;
-  F3/=_fpi;
-  F4/=_fpi;
-  F5/=_fpi;
-  F5 =-F5/4./pi/pi/_fpi/_fpi;
+  return FormFactors(F1 / _fpi,
+		     F2 / _fpi,
+		     0. / MeV,
+		     0. / MeV,
+		     F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
 }

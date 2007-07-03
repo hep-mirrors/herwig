@@ -19,7 +19,7 @@ inline RSModelFFGRVertex::RSModelFFGRVertex()
   for(unsigned int ix=11;ix<17;++ix)
     {first.push_back(-ix);second.push_back(ix);third.push_back(39);}
   setList(first,second,third);
-  _theKappa=0.;
+  _theKappa=InvEnergy();
 }
 
 inline IBPtr RSModelFFGRVertex::clone() const {

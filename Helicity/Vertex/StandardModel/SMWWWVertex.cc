@@ -19,7 +19,7 @@ void SMWWWVertex::persistentOutput(PersistentOStream & os) const {
 
 void SMWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> _zfact;
-  _couplast=0.;_q2last=0.;
+  _couplast=0.;_q2last=0.*GeV2;
 }
 
 ClassDescription<SMWWWVertex>
@@ -43,7 +43,7 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
   if(q2!=_q2last)
     {
       double alpha = _theSM->alphaEM(q2);
-      _couplast = sqrt(4.0*3.14159265*alpha);
+      _couplast = sqrt(4.0*Constants::pi*alpha);
       _q2last=q2;
     }
   // W- W+ photon and cylic perms

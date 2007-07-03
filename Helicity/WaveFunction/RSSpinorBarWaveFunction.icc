@@ -15,23 +15,23 @@ using namespace ThePEG;
 // use a 5-momentum and specify all components (specifiy Dirac representation)
 inline RSSpinorBarWaveFunction::
 RSSpinorBarWaveFunction(const Lorentz5Momentum &p, const tcPDPtr & part,
-			Complex xs1, Complex xs2, Complex xs3, Complex xs4,
-			Complex ys1, Complex ys2, Complex ys3, Complex ys4,
-			Complex zs1, Complex zs2, Complex zs3, Complex zs4,
-			Complex ts1, Complex ts2, Complex ts3, Complex ts4,
+			complex<double> xs1, complex<double> xs2, complex<double> xs3, complex<double> xs4,
+			complex<double> ys1, complex<double> ys2, complex<double> ys3, complex<double> ys4,
+			complex<double> zs1, complex<double> zs2, complex<double> zs3, complex<double> zs4,
+			complex<double> ts1, complex<double> ts2, complex<double> ts3, complex<double> ts4,
 			DiracRep dirac) 
 {
   direction(intermediate);
   setMomentum(p);
   checkParticle(part);
-  _wf = LorentzRSSpinorBar(xs1,xs2,xs3,xs4,ys1,ys2,ys3,ys4,
+  _wf = LorentzRSSpinorBar<double>(xs1,xs2,xs3,xs4,ys1,ys2,ys3,ys4,
 			   zs1,zs2,zs3,zs4,ts1,ts2,ts3,ts4,dirac);
 }	
 
 // use a 5-momentum and a LorentzRSSpinorBar
 inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(const Lorentz5Momentum & p,
 							const tcPDPtr & part,
-							LorentzRSSpinorBar & inspin)
+							LorentzRSSpinorBar<double> & inspin)
 {
   direction(intermediate);
   setMomentum(p);
@@ -79,7 +79,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify Dirac representation)
-inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzMomentum pin,
 							const tcPDPtr & part,
 							unsigned int ihel,
 							Direction dir, DiracRep dirac)
@@ -102,7 +102,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy mm, const tcPDPtr
 }
 
 // set 4 momentum and mass (specify Dirac representation)
-inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy mm,
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzMomentum pin,Energy mm,
 							const tcPDPtr & part,
 							unsigned int ihel,
 							Direction dir, DiracRep dirac)
@@ -151,7 +151,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify Dirac representation)
-inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzMomentum pin,
 							const tcPDPtr & part,
 							Direction dir, DiracRep dirac) 
 {
@@ -172,7 +172,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(Energy mm,const tcPDPtr 
 }
 
 // set 4 momentum and mass
-inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy mm,
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzMomentum pin,Energy mm,
 							const tcPDPtr & part,
 							Direction dir,DiracRep dirac) 
 {
@@ -183,7 +183,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(LorentzVector pin,Energy
 }
 
 // special setup constructor
-inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave,
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,
 							tPPtr part,Direction dir,
 							bool time,bool vertex,
 							DiracRep dirac)
@@ -196,7 +196,7 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBa
 }
 
 // special setup constructor
-inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave,
+inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,
 							RhoDMatrix & rho,tPPtr part,
 							Direction dir,bool time,
 							bool vertex,DiracRep dirac)
@@ -220,19 +220,19 @@ inline RSSpinorBarWaveFunction::RSSpinorBarWaveFunction(DiracRep dirac)
 inline RSSpinorBarWaveFunction::~RSSpinorBarWaveFunction(){;}
 
 // subscript operator
-inline Complex RSSpinorBarWaveFunction::operator ()(int i,int j) const
+inline complex<double> RSSpinorBarWaveFunction::operator ()(int i,int j) const
 {
   if(i<0 || i>3 || j<0 || j>3)
     {ThePEG::Helicity::HelicityConsistencyError() 
 	<< "RSSpinorBarWaveFunction requested for invalid index" 
 	<< i << " " << j<< Exception::abortnow;
-    return 0.;}
+    return complex<double>();}
   return _wf(i,j);
 }
 // Set components by index.
-inline Complex & RSSpinorBarWaveFunction::operator () (int i, int j)
+inline complex<double> & RSSpinorBarWaveFunction::operator () (int i, int j)
 {
-  static Complex dummy;
+  static complex<double> dummy = complex<double>();
   if(i>=0 &&i<=3|| j<0 || j>3)
     {return _wf(i,j);}
   else
@@ -254,45 +254,43 @@ RSSpinorBarWaveFunction::operator = (const RSSpinorBarWaveFunction & w)
 }
 
 // return the wavefunction as a LorentzRSSpinorBar
-inline const LorentzRSSpinorBar & RSSpinorBarWaveFunction::wave() const {
-  return _wf;
-}
+inline LorentzRSSpinorBar<double> RSSpinorBarWaveFunction::wave() const{return _wf;}
 
 // Get components
-inline Complex RSSpinorBarWaveFunction::xs1() const {return _wf.xs1();}
-inline Complex RSSpinorBarWaveFunction::xs2() const {return _wf.xs2();}
-inline Complex RSSpinorBarWaveFunction::xs3() const {return _wf.xs3();}
-inline Complex RSSpinorBarWaveFunction::xs4() const {return _wf.xs4();}
-inline Complex RSSpinorBarWaveFunction::ys1() const {return _wf.ys1();}
-inline Complex RSSpinorBarWaveFunction::ys2() const {return _wf.ys2();}
-inline Complex RSSpinorBarWaveFunction::ys3() const {return _wf.ys3();}
-inline Complex RSSpinorBarWaveFunction::ys4() const {return _wf.ys4();}
-inline Complex RSSpinorBarWaveFunction::zs1() const {return _wf.zs1();}
-inline Complex RSSpinorBarWaveFunction::zs2() const {return _wf.zs2();}
-inline Complex RSSpinorBarWaveFunction::zs3() const {return _wf.zs3();}
-inline Complex RSSpinorBarWaveFunction::zs4() const {return _wf.zs4();}
-inline Complex RSSpinorBarWaveFunction::ts1() const {return _wf.ts1();}
-inline Complex RSSpinorBarWaveFunction::ts2() const {return _wf.ts2();}
-inline Complex RSSpinorBarWaveFunction::ts3() const {return _wf.ts3();}
-inline Complex RSSpinorBarWaveFunction::ts4() const {return _wf.ts4();}
+inline complex<double> RSSpinorBarWaveFunction::xs1() const {return _wf.xs1();}
+inline complex<double> RSSpinorBarWaveFunction::xs2() const {return _wf.xs2();}
+inline complex<double> RSSpinorBarWaveFunction::xs3() const {return _wf.xs3();}
+inline complex<double> RSSpinorBarWaveFunction::xs4() const {return _wf.xs4();}
+inline complex<double> RSSpinorBarWaveFunction::ys1() const {return _wf.ys1();}
+inline complex<double> RSSpinorBarWaveFunction::ys2() const {return _wf.ys2();}
+inline complex<double> RSSpinorBarWaveFunction::ys3() const {return _wf.ys3();}
+inline complex<double> RSSpinorBarWaveFunction::ys4() const {return _wf.ys4();}
+inline complex<double> RSSpinorBarWaveFunction::zs1() const {return _wf.zs1();}
+inline complex<double> RSSpinorBarWaveFunction::zs2() const {return _wf.zs2();}
+inline complex<double> RSSpinorBarWaveFunction::zs3() const {return _wf.zs3();}
+inline complex<double> RSSpinorBarWaveFunction::zs4() const {return _wf.zs4();}
+inline complex<double> RSSpinorBarWaveFunction::ts1() const {return _wf.ts1();}
+inline complex<double> RSSpinorBarWaveFunction::ts2() const {return _wf.ts2();}
+inline complex<double> RSSpinorBarWaveFunction::ts3() const {return _wf.ts3();}
+inline complex<double> RSSpinorBarWaveFunction::ts4() const {return _wf.ts4();}
 
 // Set components
-inline void RSSpinorBarWaveFunction::setXS1(Complex in){_wf.setXS1(in);}
-inline void RSSpinorBarWaveFunction::setXS2(Complex in){_wf.setXS2(in);}
-inline void RSSpinorBarWaveFunction::setXS3(Complex in){_wf.setXS3(in);}
-inline void RSSpinorBarWaveFunction::setXS4(Complex in){_wf.setXS4(in);}
-inline void RSSpinorBarWaveFunction::setYS1(Complex in){_wf.setYS1(in);}
-inline void RSSpinorBarWaveFunction::setYS2(Complex in){_wf.setYS2(in);}
-inline void RSSpinorBarWaveFunction::setYS3(Complex in){_wf.setYS3(in);}
-inline void RSSpinorBarWaveFunction::setYS4(Complex in){_wf.setYS4(in);}
-inline void RSSpinorBarWaveFunction::setZS1(Complex in){_wf.setZS1(in);}
-inline void RSSpinorBarWaveFunction::setZS2(Complex in){_wf.setZS2(in);}
-inline void RSSpinorBarWaveFunction::setZS3(Complex in){_wf.setZS3(in);}
-inline void RSSpinorBarWaveFunction::setZS4(Complex in){_wf.setZS4(in);}
-inline void RSSpinorBarWaveFunction::setTS1(Complex in){_wf.setTS1(in);}
-inline void RSSpinorBarWaveFunction::setTS2(Complex in){_wf.setTS2(in);}
-inline void RSSpinorBarWaveFunction::setTS3(Complex in){_wf.setTS3(in);}
-inline void RSSpinorBarWaveFunction::setTS4(Complex in){_wf.setTS4(in);}
+inline void RSSpinorBarWaveFunction::setXS1(complex<double> in){_wf.setXS1(in);}
+inline void RSSpinorBarWaveFunction::setXS2(complex<double> in){_wf.setXS2(in);}
+inline void RSSpinorBarWaveFunction::setXS3(complex<double> in){_wf.setXS3(in);}
+inline void RSSpinorBarWaveFunction::setXS4(complex<double> in){_wf.setXS4(in);}
+inline void RSSpinorBarWaveFunction::setYS1(complex<double> in){_wf.setYS1(in);}
+inline void RSSpinorBarWaveFunction::setYS2(complex<double> in){_wf.setYS2(in);}
+inline void RSSpinorBarWaveFunction::setYS3(complex<double> in){_wf.setYS3(in);}
+inline void RSSpinorBarWaveFunction::setYS4(complex<double> in){_wf.setYS4(in);}
+inline void RSSpinorBarWaveFunction::setZS1(complex<double> in){_wf.setZS1(in);}
+inline void RSSpinorBarWaveFunction::setZS2(complex<double> in){_wf.setZS2(in);}
+inline void RSSpinorBarWaveFunction::setZS3(complex<double> in){_wf.setZS3(in);}
+inline void RSSpinorBarWaveFunction::setZS4(complex<double> in){_wf.setZS4(in);}
+inline void RSSpinorBarWaveFunction::setTS1(complex<double> in){_wf.setTS1(in);}
+inline void RSSpinorBarWaveFunction::setTS2(complex<double> in){_wf.setTS2(in);}
+inline void RSSpinorBarWaveFunction::setTS3(complex<double> in){_wf.setTS3(in);}
+inline void RSSpinorBarWaveFunction::setTS4(complex<double> in){_wf.setTS4(in);}
 
 // reset functions
 
@@ -335,7 +333,7 @@ inline void RSSpinorBarWaveFunction::reset(const tcPDPtr & part)
 
 // zero the wavefunction (set specify Dirac representation)
 inline void RSSpinorBarWaveFunction::zeroWaveFunction(DiracRep dirac)
-{_wf=LorentzRSSpinorBar(dirac);}
+{_wf=LorentzRSSpinorBar<double>(dirac);}
 
 // check the particles
 inline void RSSpinorBarWaveFunction::checkParticle(const tcPDPtr & in)
@@ -348,7 +346,7 @@ inline void RSSpinorBarWaveFunction::checkParticle(const tcPDPtr & in)
 }
 
 // construct the spininfo object
-inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar>& wave,
+inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,
 						       tRSFermionSpinPtr spin,
 						       bool vertex)
 {
@@ -358,19 +356,25 @@ inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar
       // calculate the wavefunction for the first helicity
       reset(ix);
       // add to output array
-      wave[ix] = _wf;
+      wave[ix] = dimensionedWf();
       // setup the spininfo object
       if(vertex)
 	{
-	  if(direction()==outgoing){spin->setBasisState(ix,_wf.bar());}
-	  else{spin->setDecayState(ix,_wf.bar());}
+	  if(direction()==outgoing) {
+	    spin->setBasisState(ix,dimensionedWf().bar());
+	  }
+	  else {
+	    spin->setDecayState(ix,dimensionedWf().bar());
+	  }
 	}
     }
 }
 
 // construct the spininfo object
-inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar>& wave,
-						       tPPtr part,bool time, bool vertex)
+inline void 
+RSSpinorBarWaveFunction::
+constructSpinInfo(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,
+		  tPPtr part, bool time, bool vertex)
 {
   tRSFermionSpinPtr inspin;
   if(direction()==outgoing)
@@ -425,7 +429,7 @@ inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar
 }
 
 // construct the spininfo object
-inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar>& wave,
+inline void RSSpinorBarWaveFunction::constructSpinInfo(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,
 						       RhoDMatrix& rho,
 						       tPPtr part,bool time, bool vertex)
 {

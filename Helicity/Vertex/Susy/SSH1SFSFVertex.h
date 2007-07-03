@@ -156,12 +156,12 @@ private:
   /**
    * \f$\mu\f$
    */
-  double _mu;
+  Energy _mu;
 
   /**
    * vector holding the trilinear couplings quarks then leptons
    */
-  vector<double> _trilin;
+  vector<Energy> _trilin;
 
   /**
    * \f$\sin(\alpha + \beta)\f$
@@ -196,7 +196,7 @@ private:
   /**
    * Value of mixing matrix dependent part when last evaluated
    */
-  Complex _hfact;
+  complex<Energy> _hfact;
 
   /**
    * Id of first scalar when coupling was last evaluated

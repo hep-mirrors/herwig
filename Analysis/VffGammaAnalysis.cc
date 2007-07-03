@@ -62,13 +62,13 @@ void VffGammaAnalysis::analyze(tPPtr part) {
   imode = 3*imode+(abs(part->children()[0]->id())-11)/2;
   Lorentz5Momentum pphoton;
   unsigned int mult(0);
-  Energy emax(0.);
+  Energy emax(0.*MeV);
   int imax=-1;
   Lorentz5Momentum pferm(part->children()[0]->momentum()+
 			 part->children()[1]->momentum());
   pferm.boost(-part->momentum().boostVector());
   pferm.rescaleMass();
-  *_masstotal[imode] += pferm.mass();
+  *_masstotal[imode] += pferm.mass()/MeV;
   if(part->children().size()==2) {
     *_etotal[ imode]+=0.;
     *_esingle[imode]+=0.;
@@ -82,7 +82,7 @@ void VffGammaAnalysis::analyze(tPPtr part) {
     pphoton+=part->children()[ix]->momentum();
     ptemp=part->children()[ix]->momentum();
     ptemp.boost(-part->momentum().boostVector());
-    *_eall[imode]+=ptemp.e();
+    *_eall[imode]+=ptemp.e()/MeV;
     if(part->children()[ix]->momentum().e()>emax) {
       emax=part->children()[ix]->momentum().e();
       imax=ix;
@@ -91,10 +91,10 @@ void VffGammaAnalysis::analyze(tPPtr part) {
   }
   pphoton.boost(-part->momentum().boostVector());
   pphoton.rescaleMass();
-  *_etotal[imode]+=pphoton.e();
+  *_etotal[imode]+=pphoton.e()/MeV;
   ptemp=part->children()[imax]->momentum();
   ptemp.boost(-part->momentum().boostVector());
-  *_esingle[imode]+=ptemp.e();
+  *_esingle[imode]+=ptemp.e()/MeV;
   *_nphoton[imode]+=mult;
 }
 
@@ -169,7 +169,7 @@ inline void VffGammaAnalysis::dofinish() {
 inline void VffGammaAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
   for(unsigned int ix=0;ix<_id.size();++ix) {
-    Energy mass = getParticleData(_id[ix])->mass();
+    double mass = getParticleData(_id[ix])->mass()/MeV;
     for(unsigned iy=0;iy<3;++iy)  {
       _masstotal.push_back(new_ptr(Histogram(0.,mass,1000)));
       _etotal.push_back(new_ptr(Histogram(0.,mass,1000)));

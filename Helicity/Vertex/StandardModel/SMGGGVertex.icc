@@ -8,7 +8,7 @@ namespace Helicity {
 using namespace ThePEG;
 
   inline SMGGGVertex::SMGGGVertex() 
-    : _couplast(0.), _q2last(0.)
+    : _couplast(0.), _q2last()
 {
   // the particles
   vector<int> first,second,third;

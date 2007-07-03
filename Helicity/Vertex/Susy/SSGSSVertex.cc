@@ -12,7 +12,7 @@
 
 using namespace Herwig::Helicity;
 
-SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last(0.) {
+SSGSSVertex::SSGSSVertex() : _couplast(0.),_q2last() {
   vector<int> first,second,third;
   for(int ix=1000001;ix<1000007;++ix) {
     first.push_back(21);
@@ -34,7 +34,7 @@ void SSGSSVertex::persistentOutput(PersistentOStream & os) const {
 void SSGSSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS;
   _couplast=0.;
-  _q2last=0.;
+  _q2last=0.*GeV2;
 }
 
 ClassDescription<SSGSSVertex> SSGSSVertex::initSSGSSVertex;

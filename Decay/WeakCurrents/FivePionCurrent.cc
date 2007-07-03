@@ -65,17 +65,27 @@ inline void FivePionCurrent::doinit() throw(InitException) {
 }
 
 void FivePionCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _rhomass  << _a1mass << _omegamass << _sigmamass << _rhowidth  
-     << _a1width << _omegawidth << _sigmawidth << _localparameters << _c << _c0 
-     << _fomegarhopi << _grhopipi << _garhopi << _faaf << _ffpipi
-     << _preomega << _presigma << _rhoomega;
+  static const InvEnergy7 InvGeV7 = pow<-7,1>(GeV);
+  static const InvEnergy3 InvGeV3 = pow<-3,1>(GeV);
+  os << ounit(_rhomass,GeV)  << ounit(_a1mass,GeV) << ounit(_omegamass,GeV) 
+     << ounit(_sigmamass,GeV) << ounit(_rhowidth,GeV)  
+     << ounit(_a1width,GeV) << ounit(_omegawidth,GeV) << ounit(_sigmawidth,GeV) 
+     << _localparameters << ounit(_c,GeV2) << _c0 
+     << ounit(_fomegarhopi,1/GeV) << _grhopipi << ounit(_garhopi,GeV) 
+     << ounit(_faaf,GeV) << ounit(_ffpipi,GeV)
+     << ounit(_preomega,InvGeV7) << ounit(_presigma,InvGeV3) << _rhoomega;
 }
 
 void FivePionCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _rhomass  >> _a1mass >> _omegamass >> _sigmamass >> _rhowidth  
-     >> _a1width >> _omegawidth >> _sigmawidth >> _localparameters >> _c >> _c0 
-     >> _fomegarhopi >> _grhopipi >> _garhopi >> _faaf >> _ffpipi 
-     >> _preomega >> _presigma >> _rhoomega;
+  static const InvEnergy7 InvGeV7 = pow<-7,1>(GeV);
+  static const InvEnergy3 InvGeV3 = pow<-3,1>(GeV);
+  is >> iunit(_rhomass,GeV)  >> iunit(_a1mass,GeV) >> iunit(_omegamass,GeV) 
+     >> iunit(_sigmamass,GeV) >> iunit(_rhowidth,GeV)  
+     >> iunit(_a1width,GeV) >> iunit(_omegawidth,GeV) >> iunit(_sigmawidth,GeV) 
+     >> _localparameters >> iunit(_c,GeV2) >> _c0 
+     >> iunit(_fomegarhopi,1/GeV) >> _grhopipi >> iunit(_garhopi,GeV) 
+     >> iunit(_faaf,GeV) >> iunit(_ffpipi,GeV) 
+     >> iunit(_preomega,InvGeV7) >> iunit(_presigma,InvGeV3) >> _rhoomega;
 }
 
 ClassDescription<FivePionCurrent> FivePionCurrent::initFivePionCurrent;
@@ -234,7 +244,7 @@ bool FivePionCurrent::createMode(int icharge, unsigned int imode,
   // check the charge
   if(abs(icharge)!=3) return false;
   // check that the modes are kinematical allowed
-  Energy min(0.);
+  Energy min(0.*MeV);
   // 3 pi- 2pi+
   if(imode==0) {
     min=5.*getParticleData(ParticleID::piplus)->mass();
@@ -635,10 +645,10 @@ void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) 
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }
 
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 FivePionCurrent::current(bool vertex, const int imode,const int ichan,
 			 Energy & scale,const ParticleVector & decay) const {
-  LorentzPolarizationVector output;
+  LorentzVector<complex<InvEnergy2> > output;
   // construct the spininfo objects if needed
   if(vertex) {
     for(unsigned int ix=0;ix<decay.size();++ix)
@@ -742,6 +752,5 @@ FivePionCurrent::current(bool vertex, const int imode,const int ichan,
 				 << "hadronCurrent()" << Exception::abortnow;
   }
   // normalise and return the current
-  output*=scale*sqr(scale);
-  return vector<LorentzPolarizationVector>(1,output);
+  return vector<LorentzPolarizationVectorE>(1, output * pow<3,1>(scale));
 }

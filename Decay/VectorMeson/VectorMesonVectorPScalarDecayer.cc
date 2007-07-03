@@ -11,7 +11,7 @@
 #include "ThePEG/Helicity/VectorSpinInfo.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "VectorMesonVectorPScalarDecayer.tcc"
 #endif
@@ -25,7 +25,7 @@ using ThePEG::Helicity::LorentzPolarizationVector;
 using ThePEG::Helicity::RhoDMatrix;
 using Helicity::VectorWaveFunction;
 using Helicity::ScalarWaveFunction;
-using Helicity::EpsFunction;
+using Helicity::epsilon;
 using Helicity::incoming;
 using Helicity::outgoing;
 
@@ -254,10 +254,10 @@ int VectorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) 
 
 
 void VectorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const 
-{os << _incoming << _outgoingV << _outgoingP << _maxweight << _coupling;}
+{os << _incoming << _outgoingV << _outgoingP << _maxweight << ounit(_coupling,1/MeV);}
 
 void VectorMesonVectorPScalarDecayer::persistentInput(PersistentIStream & is, int) 
-{is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> _coupling;}
+{is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> iunit(_coupling,1/MeV);}
 
 ClassDescription<VectorMesonVectorPScalarDecayer> VectorMesonVectorPScalarDecayer::initVectorMesonVectorPScalarDecayer;
 // Definition of the static class description member.
@@ -291,7 +291,7 @@ void VectorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &VectorMesonVectorPScalarDecayer::_coupling,
-     0, 0, 0, -10000000, 10000000, false, false, true);
+     1/MeV, 0, 0/MeV, -10000000/MeV, 10000000/MeV, false, false, true);
 
   static ParVector<VectorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -328,8 +328,8 @@ double VectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
       else
 	{
 	  vtemp=_coupling[imode()]/inpart.mass()*
-	    EpsFunction::product(inpart.momentum(),vout[ix],decay[0]->momentum());
-	  for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=invec[iy]*vtemp;}
+	    epsilon(inpart.momentum(),vout[ix],decay[0]->momentum());
+	  for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=invec[iy].dot(vtemp);}
 	}
     }
   ME(newME);
@@ -389,7 +389,7 @@ void VectorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
 		 << _outgoingP[ix] << "\n";
 	  output << "set " << fullName() << ":Coupling " << ix << " "
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*MeV << "\n";
 	  output << "set " << fullName() << ":MaxWeight " << ix << " "
 		 << _maxweight[ix] << "\n";
 	}
@@ -402,7 +402,7 @@ void VectorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
 		 << _outgoingP[ix] << "\n";
 	  output << "insert " << fullName() << ":Coupling " << ix << " "
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*MeV << "\n";
 	  output << "insert " << fullName() << ":MaxWeight " << ix << " "
 		 << _maxweight[ix] << "\n";
 	}

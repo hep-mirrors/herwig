@@ -12,9 +12,9 @@
 
 using namespace Herwig::Helicity;
 
-UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(0.0),
+UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,
-				     theq2Last(0.), theCoupLast(0.), 
+				     theq2Last(), theCoupLast(0.), 
 				     theLeftLast(0.), theRightLast(0.) {
   vector<int> anti, ferm, boson(25, 23);
   //QQ, uu, dd
@@ -41,14 +41,14 @@ UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(0.0),
 }
 
 void UEDF1F1Z0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSin2ThW << theCosThW << theRadius;
+  os << theUEDBase << theSin2ThW << theCosThW << ounit(theRadius,1/GeV);
 }
 
 void UEDF1F1Z0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSin2ThW >> theCosThW >> theRadius;
+  is >> theUEDBase >> theSin2ThW >> theCosThW >> iunit(theRadius,1/GeV);
   theID1Last = 0;
   theID2Last = 0;
-  theq2Last = 0.;
+  theq2Last = 0.*GeV2;
   theCoupLast = 0.;
   theLeftLast = 0.;
   theRightLast = 0.;

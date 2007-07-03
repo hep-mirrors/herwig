@@ -146,16 +146,22 @@ BallZwickyVectorFormFactor::~BallZwickyVectorFormFactor() {}
 
 void BallZwickyVectorFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _Vr1 << _Vr2 << _A0r1 << _A0r2 << _A1r1 << _A1r2 << _A2r1 << _A2r2 << _T1r1
-     << _T1r2 << _T2r1 << _T2r2 << _T3r1 << _T3r2 << _VmR2 << _Vmfit2 << _A0mR2 
-     << _A0mfit2 << _A1mR2 << _A1mfit2 << _A2mR2 << _A2mfit2 << _T1mR2 << _T1mfit2 
-     << _T2mR2 << _T2mfit2 << _T3mR2 << _T3mfit2 << _cutoff;
+     << _T1r2 << _T2r1 << _T2r2 << _T3r1 << _T3r2 
+     << ounit(_VmR2,GeV2) << ounit(_Vmfit2,GeV2) << ounit(_A0mR2,GeV2) 
+     << ounit(_A0mfit2,GeV2) << ounit(_A1mR2,GeV2) << ounit(_A1mfit2,GeV2) 
+     << ounit(_A2mR2,GeV2) << ounit(_A2mfit2,GeV2) << ounit(_T1mR2,GeV2) << ounit(_T1mfit2,GeV2) 
+     << ounit(_T2mR2,GeV2) << ounit(_T2mfit2,GeV2) << ounit(_T3mR2,GeV2) << ounit(_T3mfit2,GeV2) 
+     << ounit(_cutoff,GeV2);
 }
 
 void BallZwickyVectorFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _Vr1 >> _Vr2 >> _A0r1 >> _A0r2 >> _A1r1 >> _A1r2 >> _A2r1 >> _A2r2 >> _T1r1
-     >> _T1r2 >> _T2r1 >> _T2r2 >> _T3r1 >> _T3r2 >> _VmR2 >> _Vmfit2 >> _A0mR2 
-     >> _A0mfit2 >> _A1mR2 >> _A1mfit2 >> _A2mR2 >> _A2mfit2 >> _T1mR2 >> _T1mfit2 
-     >> _T2mR2 >> _T2mfit2 >> _T3mR2 >> _T3mfit2 >> _cutoff;
+     >> _T1r2 >> _T2r1 >> _T2r2 >> _T3r1 >> _T3r2 
+     >> iunit(_VmR2,GeV2) >> iunit(_Vmfit2,GeV2) >> iunit(_A0mR2 ,GeV2)
+     >> iunit(_A0mfit2,GeV2) >> iunit(_A1mR2,GeV2) >> iunit(_A1mfit2,GeV2) 
+     >> iunit(_A2mR2,GeV2) >> iunit(_A2mfit2,GeV2) >> iunit(_T1mR2,GeV2) >> iunit(_T1mfit2,GeV2) 
+     >> iunit(_T2mR2,GeV2) >> iunit(_T2mfit2,GeV2) >> iunit(_T3mR2,GeV2) >> iunit(_T3mfit2,GeV2) 
+     >> iunit(_cutoff,GeV2);
 }
 
 ClassDescription<BallZwickyVectorFormFactor> BallZwickyVectorFormFactor::initBallZwickyVectorFormFactor;
@@ -354,22 +360,22 @@ void BallZwickyVectorFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int 
 {
   // the form-factors
   // A_0
-  if(_A0mR2[mode]<0)
+  if(_A0mR2[mode]<0*GeV2)
     {A0 = (_A0r1[mode]+_A0r2[mode]/(1.-q2/_A0mfit2[mode]))/(1.-q2/_A0mfit2[mode]);}
   else
     {A0 = _A0r1[mode]/(1.-q2/_A0mR2[mode])+_A0r2[mode]/(1.-q2/_A0mfit2[mode]);}
   // A_1
-  if(_A1mR2[mode]<0)
+  if(_A1mR2[mode]<0*GeV2)
     {A1 = (_A1r1[mode]+_A1r2[mode]/(1.-q2/_A1mfit2[mode]))/(1.-q2/_A1mfit2[mode]);}
   else
     {A1 = _A1r1[mode]/(1.-q2/_A1mR2[mode])+_A1r2[mode]/(1.-q2/_A1mfit2[mode]);}
   // A_2
-  if(_A2mR2[mode]<0)
+  if(_A2mR2[mode]<0*GeV2)
     {A2 = (_A2r1[mode]+_A2r2[mode]/(1.-q2/_A2mfit2[mode]))/(1.-q2/_A2mfit2[mode]);}
   else
     {A2 = _A2r1[mode]/(1.-q2/_A2mR2[mode])+_A2r2[mode]/(1.-q2/_A2mfit2[mode]);}
   // V
-  if(_VmR2[mode]<0)
+  if(_VmR2[mode]<0*GeV2)
     {V = (_Vr1[mode]+_Vr2[mode]/(1.-q2/_Vmfit2[mode]))/(1.-q2/_Vmfit2[mode]);}
   else
     {V = _Vr1[mode]/(1.-q2/_VmR2[mode])+_Vr2[mode]/(1.-q2/_Vmfit2[mode]);}
@@ -382,19 +388,19 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
 							     Complex & T3) const
 {
   // T_1
-  if(_T1mR2[mode]<0)
+  if(_T1mR2[mode]<0*GeV2)
     {T1 = (_T1r1[mode]+_T1r2[mode]/(1.-q2/_T1mfit2[mode]))/(1.-q2/_T1mfit2[mode]);}
   else
     {T1 = _T1r1[mode]/(1.-q2/_T1mR2[mode])+_T1r2[mode]/(1.-q2/_T1mfit2[mode]);}
   // T_2
-  if(_T2mR2[mode]<0)
+  if(_T2mR2[mode]<0*GeV2)
     {T2 = (_T2r1[mode]+_T2r2[mode]/(1.-q2/_T2mfit2[mode]))/(1.-q2/_T2mfit2[mode]);}
   else
     {T2 = _T2r1[mode]/(1.-q2/_T2mR2[mode])+_T2r2[mode]/(1.-q2/_T2mfit2[mode]);}
   // T_3
   if(q2>_cutoff)
     {
-      if(_T3mR2[mode]<0)
+      if(_T3mR2[mode]<0*GeV2)
 	{T3 = (_T3r1[mode]+_T3r2[mode]/(1.-q2/_T3mfit2[mode]))/(1.-q2/_T3mfit2[mode]);}
       else
 	{T3 = _T3r1[mode]/(1.-q2/_T3mR2[mode])+_T3r2[mode]/(1.-q2/_T3mfit2[mode]);}
@@ -404,7 +410,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
   else
     {
       InvEnergy2 smallT2,smallT3;
-      if(_T2mR2[mode]<0)
+      if(_T2mR2[mode]<0*GeV2)
 	{
 	  double a(q2/_T2mfit2[mode]);
 	  smallT2=1./_T2mfit2[mode]*
@@ -418,7 +424,7 @@ void BallZwickyVectorFormFactor::ScalarVectorSigmaFormFactor(Energy2 q2,
 		 +_T2r2[mode]/_T2mfit2[mode]/_T2mfit2[mode])
 	    +q2*q2*(+_T2r1[mode]/_T2mR2[mode]/_T2mR2[mode]/_T2mR2[mode]
 		   +_T2r2[mode]/_T2mfit2[mode]/_T2mfit2[mode]/_T2mfit2[mode]);}
-      if(_T3mR2[mode]<0)
+      if(_T3mR2[mode]<0*GeV2)
 	{
 	  double a(q2/_T3mfit2[mode]);
 	  smallT3=1./_T3mfit2[mode]*

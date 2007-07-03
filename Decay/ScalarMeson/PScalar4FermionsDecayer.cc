@@ -14,7 +14,7 @@
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "PScalar4FermionsDecayer.tcc"
@@ -29,7 +29,6 @@ using namespace ThePEG::Helicity;
 using Helicity::ScalarWaveFunction;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using Helicity::EpsFunction;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using Helicity::incoming;
@@ -136,13 +135,17 @@ int PScalar4FermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 }
 
 void PScalar4FermionsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight 
-     << _includeVMD << _VMDid << _VMDmass << _VMDwidth;
+  os << ounit(_coupling,1/MeV) 
+     << _incoming << _outgoing1 << _outgoing2 << _maxweight 
+     << _includeVMD << _VMDid 
+     << ounit(_VMDmass,MeV) << ounit(_VMDwidth,MeV);
 }
 
 void PScalar4FermionsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight 
-     >> _includeVMD >> _VMDid >> _VMDmass >> _VMDwidth;
+  is >> iunit(_coupling,1/MeV) 
+     >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight 
+     >> _includeVMD >> _VMDid 
+     >> iunit(_VMDmass,MeV) >> iunit(_VMDwidth,MeV);
 }
 
 ClassDescription<PScalar4FermionsDecayer> PScalar4FermionsDecayer::initPScalar4FermionsDecayer;
@@ -177,7 +180,7 @@ void PScalar4FermionsDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PScalar4FermionsDecayer::_coupling,
-     0, 0, 0, -10000, 10000, false, false, true);
+     1/MeV, 0, 0/MeV, -10000/MeV, 10000/MeV, false, false, true);
 
   static ParVector<PScalar4FermionsDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -200,17 +203,17 @@ void PScalar4FermionsDecayer::Init() {
      &PScalar4FermionsDecayer::_VMDid,
      0, 0, 0, -10000, 10000, false, false, true);
 
-  static ParVector<PScalar4FermionsDecayer,double> interfaceVMDmass
+  static ParVector<PScalar4FermionsDecayer,Energy> interfaceVMDmass
     ("VMDmass",
      "The mass to use for the particle in the VMD factor",
      &PScalar4FermionsDecayer::_VMDmass,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0*MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
 
-  static ParVector<PScalar4FermionsDecayer,double> interfaceVMDwidth
+  static ParVector<PScalar4FermionsDecayer,Energy> interfaceVMDwidth
     ("VMDwidth",
      "The width to use for the particle in the VMD factor",
      &PScalar4FermionsDecayer::_VMDwidth,
-     0, 0, 0, -10000, 10000, false, false, true);
+     0*MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
 
 }
 
@@ -224,8 +227,8 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
   tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
   // vectors for the spinors
-  vector<LorentzSpinor> wave[2];
-  vector<LorentzSpinorBar> wavebar[2];
+  vector<LorentzSpinor<SqrtEnergy> > wave[2];
+  vector<LorentzSpinorBar<SqrtEnergy> > wavebar[2];
 
   // workaround for gcc 3.2.3 bug
   // set up the spin info for the outgoing particles
@@ -233,10 +236,10 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
     {
       //ALB SpinorBarWaveFunction(wavebar[ix],decay[2*ix  ],outgoing,true,vertex);
       //ALB SpinorWaveFunction   (   wave[ix],decay[2*ix+1],outgoing,true,vertex);
-      vector<LorentzSpinorBar> mytempLSbar;
+      vector<LorentzSpinorBar<SqrtEnergy> > mytempLSbar;
       SpinorBarWaveFunction(mytempLSbar,decay[2*ix],outgoing,true,vertex);
       wavebar[ix]=mytempLSbar;
-      vector<LorentzSpinor> mytempLS;
+      vector<LorentzSpinor<SqrtEnergy> > mytempLS;
       SpinorWaveFunction(mytempLS,decay[2*ix+1],outgoing,true,vertex);
       wave[ix]=mytempLS;
     }
@@ -251,7 +254,7 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
       momentum[3]=decay[0]->momentum()+decay[3]->momentum();momentum[3].rescaleMass();
     }
   // compute the currents for the two leptonic decays
-  LorentzPolarizationVector current[4][2][2];
+  LorentzPolarizationVectorE current[4][2][2];
   unsigned int it,ix,iy,iz;
   for(iz=0;iz<2;++iz)
     {
@@ -269,9 +272,11 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
 	}
     }
   // invariants
-  Energy m12(momentum[0].mass()*momentum[0].mass());
-  Energy m34(momentum[1].mass()*momentum[1].mass()),m14(0.),m23(0.);
-  Complex prop1(1./m12/m34),prop2(0.),ii(0.,1.);
+  Energy2 m12(momentum[0].mass()*momentum[0].mass());
+  Energy2 m34(momentum[1].mass()*momentum[1].mass());
+  Energy2 m14(0.*MeV2), m23(0.*MeV2);
+  complex<InvEnergy4> prop1(1./m12/m34),prop2(0./sqr(MeV2));
+  Complex ii(0.,1.);
   if(identical)
     {
       m14=momentum[2].mass()*momentum[2].mass();
@@ -292,9 +297,11 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
 	    (-mrho2+ii*mwrho)/(m23-mrho2+ii*mwrho);}
     }
   // prefactor
-  Complex pre(_coupling[imode()]*4.*pi*SM().alphaEM()*inpart.mass()),diag;
+  Complex pre(_coupling[imode()]*4.*Constants::pi
+	      *SM().alphaEM()*inpart.mass());
+  Complex diag;
   // now compute the matrix element
-  LorentzPolarizationVector eps;
+  LorentzVector<complex<Energy3> > eps;
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half,
 			   PDT::Spin1Half,PDT::Spin1Half);
   vector<unsigned int> ispin(5,0);
@@ -307,16 +314,19 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
 	      for(ispin[4]=0;ispin[4]<2;++ispin[4])
 		{
 		  // the first diagram
-		  eps = EpsFunction::product(current[0][ispin[1]][ispin[2]],momentum[1],
-					     current[1][ispin[3]][ispin[4]]);
+		  eps = Helicity::
+		    epsilon(current[0][ispin[1]][ispin[2]],
+					 momentum[1],
+					 current[1][ispin[3]][ispin[4]]);
 		  diag = prop1*(eps*momentum[0]);
 		  // exchanged diagram if identical particles
 		  //  (sign due normal ordering) 
 	          if(identical)
 		    {
-		      eps = EpsFunction::product(current[2][ispin[1]][ispin[4]],
-						 momentum[3],
-						 current[3][ispin[3]][ispin[2]]);
+		      eps = Helicity::
+			epsilon(current[2][ispin[1]][ispin[4]],
+					     momentum[3],
+					     current[3][ispin[3]][ispin[2]]);
 		      diag-= prop2*(eps*momentum[2]);
 		    }
 		  newME(ispin)=pre*diag;
@@ -349,7 +359,7 @@ void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":Outgoing2  " << ix << " " 
 		 << _outgoing2[ix]  << "\n";
 	  output << "set " << fullName() << ":Coupling   " << ix << " " 
-		 << _coupling[ix]   << "\n";
+		 << _coupling[ix]*MeV   << "\n";
 	  output << "set " << fullName() << ":MaxWeight  " << ix << " " 
 		 << _maxweight[ix]  << "\n";
 	  output << "set " << fullName() << ":IncludeVMD " << ix << " " 
@@ -357,9 +367,9 @@ void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":VMDID      " << ix << " " 
 		 << _VMDid[ix]      << "\n";
 	  output << "set " << fullName() << ":VMDmass    " << ix << " " 
-		 << _VMDmass[ix]    << "\n";
+		 << _VMDmass[ix]/MeV    << "\n";
 	  output << "set " << fullName() << ":VMDwidth   " << ix << " " 
-		 << _VMDwidth[ix]   << "\n";
+		 << _VMDwidth[ix]/MeV   << "\n";
 	}
       else
 	{
@@ -370,7 +380,7 @@ void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":Outgoing2  " << ix << " " 
 		 << _outgoing2[ix]  << "\n";
 	  output << "insert " << fullName() << ":Coupling   " << ix << " " 
-		 << _coupling[ix]   << "\n";
+		 << _coupling[ix]*MeV   << "\n";
 	  output << "insert " << fullName() << ":MaxWeight  " << ix << " " 
 		 << _maxweight[ix]  << "\n";
 	  output << "insert " << fullName() << ":IncludeVMD " << ix << " " 
@@ -378,9 +388,9 @@ void PScalar4FermionsDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":VMDID      " << ix << " " 
 		 << _VMDid[ix]      << "\n";
 	  output << "insert " << fullName() << ":VMDmass    " << ix << " " 
-		 << _VMDmass[ix]    << "\n";
+		 << _VMDmass[ix]/MeV    << "\n";
 	  output << "insert " << fullName() << ":VMDwidth   " << ix << " " 
-		 << _VMDwidth[ix]   << "\n";
+		 << _VMDwidth[ix]/MeV   << "\n";
 	}
     }
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}

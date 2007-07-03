@@ -5,7 +5,7 @@ LINK = $(LIBTOOL) --tag=CXX --mode=link $(CXX) $(AM_CXXFLAGS) $(CXXFLAGS) \
 pkglib_LTLIBRARIES = libHerwig.la
 libHerwig_la_SOURCES =
 libHerwig_la_LDFLAGS = -version-info 3:0:0 -export-dynamic 
-libHerwig_la_LDFLAGS += $(THEPEGLDFLAGS) $(CLHEPLDFLAGS)
+libHerwig_la_LDFLAGS += $(THEPEGLDFLAGS)
 libHerwig_la_LIBADD = \
 $(top_builddir)/Hadronization/libHwHadronization.la \
 $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
@@ -20,7 +20,7 @@ $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/libHwGeneralME.la \
 $(top_builddir)/Decay/WeakCurrents/libHwWeakCurrent.la \
-$(THEPEGLIB) $(CLHEPLIB) -ldl
+$(THEPEGLIB) -ldl
 
 if WANT_LOOPTOOLS
 libHerwig_la_LIBADD += \

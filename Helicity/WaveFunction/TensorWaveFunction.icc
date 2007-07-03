@@ -209,9 +209,7 @@ inline TensorWaveFunction  & TensorWaveFunction::operator =
 }
 
 // return wavefunction as polarization vector
-inline const LorentzTensor & TensorWaveFunction::wave() const {
-  return _wf;
-}
+inline LorentzTensor<double> TensorWaveFunction::wave() const{return _wf;}
 
 // Get components
 inline Complex TensorWaveFunction::xx() const{return _wf.xx();}
@@ -293,7 +291,7 @@ inline void TensorWaveFunction::checkParticle(const tcPDPtr & in)
 }
 
 // special setup constructor
-inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor>& wave,tPPtr part,
+inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor<double> >& wave,tPPtr part,
 					      Direction dir,bool time,bool massless,
 					      bool vertex, TensorPhase phase)
 {
@@ -305,7 +303,7 @@ inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor>& wave,tPPtr 
 }
 
 // special setup constructor
-inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor>& wave,RhoDMatrix&rho,
+inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor<double> >& wave,RhoDMatrix&rho,
 					      tPPtr part,Direction dir,bool time,
 					      bool massless,bool vertex,
 					      TensorPhase phase)
@@ -318,7 +316,7 @@ inline TensorWaveFunction::TensorWaveFunction(vector<LorentzTensor>& wave,RhoDMa
 }
 
 // construct the spininfo object
-inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,
+inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor<double> >& wave,
 						  tTensorSpinPtr spin,bool massless,
 						  TensorPhase phase,bool vertex)
 {
@@ -326,7 +324,7 @@ inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,
   for(unsigned int ix=0;ix<5;++ix)
     {
       // calculate the wavefunction for the first helicity
-      if(massless&&ix==2){_wf=LorentzTensor();}
+      if(massless&&ix==2){_wf=LorentzTensor<double>();}
       else{reset(ix,phase);}
       // add to output array
       wave[ix] = _wf;
@@ -340,7 +338,7 @@ inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,
 }
 
 // construct the spininfo object
-inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,tPPtr part,
+inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor<double> >& wave,tPPtr part,
 						  bool time,bool massless,
 						  TensorPhase phase,bool vertex)
 {
@@ -393,7 +391,7 @@ inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,tP
 }
 
 // construct the spininfo object
-inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor>& wave,
+inline void TensorWaveFunction::constructSpinInfo(vector<LorentzTensor<double> >& wave,
 						  RhoDMatrix& rho,tPPtr part,
 						  bool time,bool massless,
 						  TensorPhase phase,bool vertex)

@@ -23,7 +23,8 @@ inline void ScalarMassGenerator::doinit() throw(InitException) {
       _m2plus.push_back(_mplus[ix]*_mplus[ix]);
       _mminus.push_back(abs(_mass1[ix]-_mass2[ix]));
       _m2minus.push_back(_mminus[ix]*_mminus[ix]);
-      _term.push_back(-abs(log(_mass1[ix]/_mass2[ix]))*_mminus[ix]*_mplus[ix]/pi);
+      _term.push_back(-abs(log(_mass1[ix]/_mass2[ix]))*_mminus[ix]*_mplus[ix]
+		      /Constants::pi);
     }
   // rest of the initialisation is handled in the base class
   GenericMassGenerator::doinit();
@@ -41,17 +42,18 @@ inline double ScalarMassGenerator::weight(Energy q) const
   // complex denominantor
   complex<Energy2> 
     denom = sq+real(selfEnergy(nominalMass()))-selfEnergy(q)-Complex(0.,1.)*num;
-  double den = real(denom*conj(denom));
-  return num/den*(sq*sq+mwidth*mwidth)/pi/mwidth;
+  Energy4 den = real(denom*conj(denom));
+  return num/den*(sq*sq+mwidth*mwidth)/Constants::pi/mwidth;
 }
 
   inline complex<Energy2> ScalarMassGenerator::selfEnergy(Energy q) const
 {
-  complex<Energy2> self(0.);
-  Energy q2=q*q;
+  using Constants::pi;
+  complex<Energy2> self(0.*GeV2);
+  Energy2 q2=q*q;
   double rho(0.); 
   Energy rootp,rootm; 
-  double temp(0.);
+  //  Energy2 temp(0.*GeV2);
   for(unsigned int ix=0;ix<_mass1.size();++ix)
     {
       if(q>_mplus[ix])
@@ -61,7 +63,7 @@ inline double ScalarMassGenerator::weight(Energy q) const
 	  rho = rootp*rootm/q2;
 	  self+=_coupling[ix]*_coupling[ix]/16./pi*
 	    (_term[ix]/q2+rho/pi*log((rootm-rootp)/(rootm+rootp)));
-	  temp+=rho*_coupling[ix]*_coupling[ix]/16./pi;
+	  //  temp+=rho*_coupling[ix]*_coupling[ix]/16./pi;
 	}
       else if(q>_mminus[ix])
 	{

@@ -14,13 +14,13 @@ namespace Helicity {
 using namespace ThePEG;
     
 void SMHPPVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << _mw << _sw;
+  os << _theSM << ounit(_mw,GeV) << _sw;
 }
 
 void SMHPPVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> _mw >> _sw;
+  is >> _theSM >> iunit(_mw,GeV) >> _sw;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
 }
 
 ClassDescription<SMHPPVertex> SMHPPVertex::initSMHPPVertex;
@@ -33,17 +33,17 @@ void SMHPPVertex::Init() {
   
 }
 
-void SMHPPVertex::setCoupling(Energy q2, tcPDPtr part1,
+void SMHPPVertex::setCoupling(Energy2 q2, tcPDPtr part1,
                               tcPDPtr part2, tcPDPtr part3) {
   type.resize(2,PDT::SpinUnknown);
   type[0] = PDT::Spin1Half;
   type[1] = PDT::Spin1;
-  masses.resize(2,0.);
+  masses.resize(2,0.*GeV);
   left.resize(2,0.);right.resize(2,0.);
   masses[0] = _theSM->mass(q2,getParticleData(ParticleID::t));
   masses[1] = _mw;
   left[0] = -_theSM->mass(q2,getParticleData(6))*(4./3.)/_mw/2.;
-  left[1] =  _mw;
+  left[1] =  _mw * UnitRemoval::InvE;
   right = left;
   if(q2 != _q2last) {
     double alpha = _theSM->alphaEM(q2);

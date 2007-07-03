@@ -8,22 +8,21 @@ namespace Herwig{
 using namespace ThePEG;
 
 template <class T> 
-double ThreeBodyAllOn1IntegralCalculator<T>::operator() (double x) const {
+Energy ThreeBodyAllOn1IntegralCalculator<T>::operator() (double x) const {
   Energy2 scale;
-  if(_intmass>0) scale = _intmass*(_intmass+_intwidth*tan(x));
-  else           scale = pow(x,1./(_intwidth+1.));
-  Energy output=_theDgamma.threeBodydGammads(_mode,_m2[0],scale,_m[1],_m[2],_m[3]);
+  if(_intmass>0*MeV) scale = _intmass*(_intmass+_intwidth*tan(x));
+  else           scale = UnitRemoval::E2 * pow(x,1./(_intpower + 1.));
+  InvEnergy output=_theDgamma.threeBodydGammads(_mode,_m2[0],scale,_m[1],_m[2],_m[3]);
   // the jacobian
-  double term;
+  InvEnergy2 term;
   Energy2 rm2,rw2;
-  if(_intmass>0) {
-    rm2=_intmass*_intmass;
-    rw2 = _intwidth*_intwidth;
-    term = (scale-rm2)*(scale-rm2)+rw2*rm2;
-    term = _intmass*_intwidth/term;
+  if(_intmass>0*MeV) {
+    rm2 = sqr(_intmass);
+    rw2 = sqr(_intwidth);
+    term = _intmass*_intwidth / (sqr(scale-rm2) + rw2 * rm2);
   }
   else {
-    term = (_intwidth+1.)*pow(scale,_intwidth);
+    term = UnitRemoval::InvE2 * (_intpower+1.)*pow(scale * UnitRemoval::InvE2, _intpower);
   }
   return output/term;
 }
@@ -33,7 +32,7 @@ Energy ThreeBodyAllOn1IntegralCalculator<T>::partialWidth(Energy2 scale) const {
   _m2[0]=scale;
   _m[0]=sqrt(scale);
   // limits for the outer integral
-  Energy2 upp=0.,low=0.;
+  Energy2 upp=0.*MeV2,low=0.*MeV2;
   switch(_variabletype) {
   case 1:
     upp = (_m[0]-_m[3])*(_m[0]-_m[3]);
@@ -48,16 +47,17 @@ Energy ThreeBodyAllOn1IntegralCalculator<T>::partialWidth(Energy2 scale) const {
     low = (_m[2]+_m[3])*(_m[2]+_m[3]);
     break;
   }
+  double rupp, rlow;
   // transform them
-  if(_intmass>0) {
-    upp = atan((upp-_intmass*_intmass)/_intmass/_intwidth);
-    low = atan((low-_intmass*_intmass)/_intmass/_intwidth);
+  if(_intmass>0*MeV) {
+    rupp = atan((upp-_intmass*_intmass)/_intmass/_intwidth);
+    rlow = atan((low-_intmass*_intmass)/_intmass/_intwidth);
   }
   else {
-    upp = pow(upp,_intwidth+1.);
-    low = pow(low,_intwidth+1.);
+    rupp = pow(upp * UnitRemoval::InvE2, _intpower+1.);
+    rlow = pow(low * UnitRemoval::InvE2, _intpower+1.);
   }
-  return _integrator.value(*this,low,upp);
+  return _integrator.value(*this,rlow,rupp);
 }
 
 }

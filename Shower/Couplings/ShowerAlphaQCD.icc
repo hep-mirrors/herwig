@@ -11,7 +11,7 @@ using ThePEG::Constants::pi;
 inline ShowerAlphaQCD::ShowerAlphaQCD() 
   : ShowerAlpha(), 
     _qmin(0.630882*GeV), _asType(1), _asMaxNP(1.0), 
-    _thresholds(4,0.0), _lambda(4,0.0),
+    _thresholds(4), _lambda(4),
     _nloop(3),_lambdaopt(false),_thresopt(false),
     _lambdain(0.208364*GeV),_alphain(0.118),_inopt(true),_tolerance(1e-10),
     _maxtry(100),_alphamin(0.)
@@ -53,7 +53,7 @@ ShowerAlphaQCD::computeLambda(Energy match,double alpha,unsigned int nflav) cons
 }
 
 inline double 
-ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, short nf) const
+ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, int nf) const
 {
   double lx(log(sqr(q/lam)));
   double b0 = 11. - 2./3.*nf;
@@ -73,7 +73,7 @@ ShowerAlphaQCD::derivativealphaS(Energy q, Energy lam, short nf) const
 				  3.*(sqr(log(lx) - 0.5)+b2*b0/(8.*sqr(b1))-1.25)));}
 }
 
-inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, short nf) const {
+inline double ShowerAlphaQCD::alphaS(Energy q, Energy lam, int nf) const {
   double lx(log(sqr(q/lam)));
   double b0 = 11. - 2./3.*nf;
   double b1 = 51. - 19./3.*nf;

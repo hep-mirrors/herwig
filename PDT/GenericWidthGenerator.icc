@@ -8,7 +8,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline GenericWidthGenerator::GenericWidthGenerator() 
-  : _mass(0.),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
+  : _mass(),_prefactor(0.),_initialize(false),_BRnorm(true),_npoints(50),
     _BRminimum(0.01)
 {}
 
@@ -26,11 +26,12 @@ inline Energy GenericWidthGenerator::partial2BodyWidth(int imode,Energy q) const
 
 inline Energy GenericWidthGenerator::partial2BodyWidth(int imode, Energy q,Energy m1,
 						       Energy m2) const {
-  if(q<m1+m2){return 0.;}
+  using Constants::pi;
+  if(q<m1+m2){return Energy();}
   // calcluate the decay momentum
   Energy2 q2(q*q),m02(_mass*_mass),m12(m1*m1),m22(m2*m2),
     pcm2(0.25*(q2*(q2-2.*m12-2.*m22)+(m12-m22)*(m12-m22))/q2);
-  Energy  pcm(sqrt(pcm2)),gam(0.);
+  Energy  pcm(sqrt(pcm2)),gam=Energy();
   if(_MEcode[imode]==-1)
     {gam=q/_mass*_theParticle->width();}
   // V -> P P

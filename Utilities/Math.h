@@ -23,6 +23,16 @@ namespace Math {
    * The real part of the dilog function taken from FORTRAN Herwig
    */
   long double ReLi2(long double);
+
+  /**
+   * Fold angles into the range (-Pi,Pi)
+   */
+  inline double angleMinusPiToPi(double angle);
+
+  /**
+   * Fold angles into the range (0,2 Pi)
+   */
+  inline double angleZeroTo2Pi(double angle);
 }
 
 }

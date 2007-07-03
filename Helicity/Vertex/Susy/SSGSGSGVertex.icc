@@ -7,7 +7,7 @@
 namespace Herwig {
 namespace Helicity {
 
-inline SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last(0.) {
+inline SSGSGSGVertex::SSGSGSGVertex() : _couplast(0.),_q2last() {
   vector<int> first(1,1000021), third(1, 21);
   setList(first, first, third);
 }

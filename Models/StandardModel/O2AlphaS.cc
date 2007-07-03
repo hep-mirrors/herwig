@@ -22,13 +22,13 @@
 using namespace Herwig;
 
 void O2AlphaS::persistentOutput(PersistentOStream & os) const {
-  os << _lambdaQCD << _bcoeff << _ccoeff << _lambdas 
-     << _threshold << _match << _copt;
+  os << ounit(_lambdaQCD,GeV) << _bcoeff << _ccoeff << ounit(_lambdas,GeV) 
+     << ounit(_threshold,GeV) << _match << _copt;
 }
 
 void O2AlphaS::persistentInput(PersistentIStream & is, int) {
-  is >> _lambdaQCD >> _bcoeff >> _ccoeff >> _lambdas 
-     >> _threshold >> _match >> _copt;
+  is >> iunit(_lambdaQCD,GeV) >> _bcoeff >> _ccoeff >> iunit(_lambdas,GeV) 
+     >> iunit(_threshold,GeV) >> _match >> _copt;
 }
 
 ClassDescription<O2AlphaS> O2AlphaS::initO2AlphaS;
@@ -85,13 +85,13 @@ void O2AlphaS::doinit() throw(InitException) {
   const double cf = (sqr(ca)-1.)/2./ca;
   for(unsigned int ix=3;ix<7;++ix)
     {
-      _bcoeff[ix-1]=(11.*ca-2.*ix)/(12.*pi);
-      _ccoeff[ix-1]=(17.*sqr(ca)-ix*(5.*ca+3.*cf))/(24.*sqr(pi))/sqr(_bcoeff[ix-1]);
+      _bcoeff[ix-1]=(11.*ca-2.*ix)/(12.*Constants::pi);
+      _ccoeff[ix-1]=(17.*sqr(ca)-ix*(5.*ca+3.*cf))/(24.*sqr(Constants::pi))/sqr(_bcoeff[ix-1]);
     }
   if(_copt==0)
     {
-      double kfac(ca*(67./18.-sqr(pi)/6.)-25./9.);
-      _lambdas[5]=_lambdaQCD*exp(kfac/(4.*pi*_bcoeff[4]))/sqrt(2.);
+      double kfac(ca*(67./18.-sqr(Constants::pi)/6.)-25./9.);
+      _lambdas[5]=_lambdaQCD*exp(kfac/(4.*Constants::pi*_bcoeff[4]))/sqrt(2.);
     }
   else{_lambdas[5]=_lambdaQCD;}
   // calculate the threshold matching
@@ -139,13 +139,13 @@ vector<Energy> O2AlphaS::LambdaQCDs() const
 double O2AlphaS::value(Energy2 scale, const StandardModelBase &) const
 {
   Energy rs=sqrt(scale);
-  if(scale<_lambdas[5]) {
+  if(scale<sqr(_lambdas[5])) {
     cerr << "O2AlphaS called with scale less than Lambda QCD "
-	 << "scale = " << rs << " MeV and "
-	 << "Lambda = " << _lambdas[5] << " MeV\n";
+	 << "scale = " << rs/MeV << " MeV and "
+	 << "Lambda = " << _lambdas[5]/MeV << " MeV\n";
     generator()->log() << "O2AlphaS called with scale less than Lambda QCD "
-		       << "scale = " << rs << " MeV and "
-		       << "Lambda = " << _lambdas[5] << " MeV\n";
+		       << "scale = " << rs/MeV << " MeV and "
+		       << "Lambda = " << _lambdas[5]/MeV << " MeV\n";
     return 0.;
   }
   double rho=2.*log(rs/_lambdas[5]),rat(log(rho)/rho);

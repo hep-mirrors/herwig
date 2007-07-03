@@ -12,9 +12,9 @@
 using namespace Herwig::Helicity;
 
 SSH1SFSFVertex::SSH1SFSFVertex(): _sinAlpha(0.),_cosAlpha(0.),_sb(0.),
-				  _cb(0.),_mz(0.),_mw(0.),_sw(0.),
-				  _cw(0.),_mu(0.),_trilin(9,0.),
-				  _sinAB(0.),_glast(0.),_hfact(0.),
+				  _cb(0.),_mz(0.*MeV),_mw(0.*MeV),_sw(0.),
+				  _cw(0.),_mu(0.*MeV),_trilin(9,0.*MeV),
+				  _sinAB(0.),_glast(0.),_hfact(0.*MeV),
 				  _id1last(0),_id2last(0) {
   vector<int> first,second,third;
   //LL squarks
@@ -69,18 +69,20 @@ SSH1SFSFVertex::SSH1SFSFVertex(): _sinAlpha(0.),_cosAlpha(0.),_sb(0.),
 }
 
 void SSH1SFSFVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _sinAlpha << _cosAlpha << _sb << _cb << _mz 
-     << _mw << _sw << _cw << _mu << _trilin << _sinAB << _stop 
+  os << _theSS << _sinAlpha << _cosAlpha << _sb << _cb << ounit(_mz,GeV) 
+     << ounit(_mw,GeV) << _sw << _cw << ounit(_mu,GeV) << ounit(_trilin,GeV) 
+     << _sinAB << _stop 
      <<  _sbottom << _stau;
 }
 
 void SSH1SFSFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _sinAlpha >> _cosAlpha >> _sb >> _cb >> _mz 
-     >> _mw >> _sw >> _cw >> _mu >>  _trilin >>  _sinAB >> _stop 
+  is >> _theSS >> _sinAlpha >> _cosAlpha >> _sb >> _cb >> iunit(_mz,GeV) 
+     >> iunit(_mw,GeV) >> _sw >> _cw >> iunit(_mu,GeV) >>  iunit(_trilin,GeV)
+     >>  _sinAB >> _stop 
      >> _sbottom >> _stau;
   _glast=0.;
-  _q2last=0.;
-  _hfact=0;
+  _q2last=0.*sqr(MeV);
+  _hfact=0*MeV;
   _id1last=0;
   _id2last=0;
 }
@@ -268,7 +270,7 @@ void SSH1SFSFVertex::setCoupling(Energy2 q2,tcPDPtr part1,
 	_hfact = -_mz*_sinAB/2./_cw;
       }
     }
-    setNorm(_glast*_hfact);
+    setNorm(_glast*_hfact*UnitRemoval::InvE);
   }
   else {
     throw HelicityConsistencyError() << "Incorrect particle found "

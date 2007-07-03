@@ -54,7 +54,7 @@ public:
   /**
    *  Dot product of thew basis vectors
    */
-  inline const double p_dot_n() const;
+  inline const Energy2 p_dot_n() const;
 
   /**
    * Converts a Sudakov parametrization of a momentum w.r.t. the given 

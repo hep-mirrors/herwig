@@ -11,7 +11,7 @@
 
 using namespace Herwig::Helicity;
 
-SSPSSVertex::SSPSSVertex():_couplast(0.),_q2last(0.) {
+SSPSSVertex::SSPSSVertex():_couplast(0.),_q2last() {
   vector<int> first,second,third;
   //sleptons
   for(unsigned int ix=1000011;ix<1000016;ix+=2) {
@@ -45,7 +45,7 @@ void SSPSSVertex::persistentOutput(PersistentOStream & os) const {
 void SSPSSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS;
   _couplast=0.;
-  _q2last=0;
+  _q2last=0*GeV2;
 }
 
 ClassDescription<SSPSSVertex> SSPSSVertex::initSSPSSVertex;

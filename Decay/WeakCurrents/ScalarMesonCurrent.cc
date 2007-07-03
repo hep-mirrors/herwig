@@ -59,11 +59,11 @@ ScalarMesonCurrent::ScalarMesonCurrent() {
 }
 
 void ScalarMesonCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _id << _decay_constant << _thetaeta;
+  os << _id << ounit(_decay_constant,GeV) << _thetaeta;
 }
 
 void ScalarMesonCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _id >> _decay_constant >> _thetaeta;
+  is >> _id >> iunit(_decay_constant,GeV) >> _thetaeta;
 }
 
 ClassDescription<ScalarMesonCurrent> ScalarMesonCurrent::initScalarMesonCurrent;
@@ -90,7 +90,7 @@ void ScalarMesonCurrent::Init() {
   static Parameter<ScalarMesonCurrent,double> interfaceThetaEtaEtaPrime
     ("ThetaEtaEtaPrime",
      "The eta-eta' mixing angle",
-     &ScalarMesonCurrent::_thetaeta, -0.194, -pi, pi,
+     &ScalarMesonCurrent::_thetaeta, -0.194, -Constants::pi, Constants::pi,
      false, false, true);
 
 }
@@ -138,7 +138,7 @@ PDVector ScalarMesonCurrent::particles(int icharge, unsigned int imode, int iq, 
   return output;
 }
 
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 ScalarMesonCurrent::current(bool vertex, const int imode, const int, 
 			    Energy & scale,const ParticleVector & decay) const {
   static const Complex ii(0.,1.);
@@ -171,7 +171,7 @@ ScalarMesonCurrent::current(bool vertex, const int imode, const int,
     }
   }
   // return the answer
-  return vector<LorentzPolarizationVector>(1,pre*decay[0]->momentum());
+  return vector<LorentzPolarizationVectorE>(1,pre*decay[0]->momentum());
 }
   
 bool ScalarMesonCurrent::accept(vector<int> id) {

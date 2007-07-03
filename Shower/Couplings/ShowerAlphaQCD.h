@@ -134,7 +134,7 @@ private:
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  inline double alphaS(Energy q, Energy lam, short nf) const; 
+  inline double alphaS(Energy q, Energy lam, int nf) const; 
 
   /**
    * The derivative of \f$\alpha_S\f$ with respect to \f$\ln(Q^2/\Lambda^2)\f$
@@ -142,7 +142,7 @@ private:
    * @param lam \f$\Lambda_{\rm QCD}\f$
    * @param nf The number of flavours 
    */
-  inline double derivativealphaS(Energy q, Energy lam, short nf) const; 
+  inline double derivativealphaS(Energy q, Energy lam, int nf) const; 
 
   /**
    * Compute the value of \f$Lambda\f$ needed to get the input value of

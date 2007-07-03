@@ -58,7 +58,7 @@ void Pi4ElectronAnalysis::analyze(tPPtr part) {
     for(iy=0;iy<2;++iy) {
       ptemp=pe[ix]+pp[iy];
       ptemp.rescaleMass();
-      *_mffbar+=ptemp.mass();
+      *_mffbar+=ptemp.mass()/MeV;
     }
   }
 }
@@ -88,5 +88,5 @@ void Pi4ElectronAnalysis::dofinish() {
 
 void Pi4ElectronAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  _mffbar=new_ptr(Histogram(0.0,140.0*MeV,1000));
+  _mffbar=new_ptr(Histogram(0.0,140.0,1000));
 }

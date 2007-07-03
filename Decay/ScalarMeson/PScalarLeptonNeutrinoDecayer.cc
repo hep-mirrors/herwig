@@ -138,13 +138,15 @@ int PScalarLeptonNeutrinoDecayer::modeNumber(bool & cc,const DecayMode & dm) con
 
 
 void PScalarLeptonNeutrinoDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _decayconstant << _leptons << _maxweighte << _maxweightmu 
-     << _maxweighttau << _GF;
+  os << _incoming << ounit(_decayconstant,GeV)
+     << _leptons << _maxweighte << _maxweightmu 
+     << _maxweighttau << ounit(_GF,1/GeV2);
 }
 
 void PScalarLeptonNeutrinoDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _decayconstant >> _leptons >> _maxweighte >> _maxweightmu 
-     >> _maxweighttau >> _GF;
+  is >> _incoming >> iunit(_decayconstant,GeV) 
+     >> _leptons >> _maxweighte >> _maxweightmu 
+     >> _maxweighttau >> iunit(_GF,1/GeV2);
 }
 
 ClassDescription<PScalarLeptonNeutrinoDecayer> PScalarLeptonNeutrinoDecayer::initPScalarLeptonNeutrinoDecayer;
@@ -198,7 +200,7 @@ void PScalarLeptonNeutrinoDecayer::Init() {
     ("DecayConstant",
      "The decay constant for the incoming pseudoscaalr meson.",
      &PScalarLeptonNeutrinoDecayer::_decayconstant,
-     0, 0, 0, 0*GeV, 10*GeV, false, false, true);
+     GeV, 0, 0*GeV, 0*GeV, 10*GeV, false, false, true);
 }
 
 double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
@@ -228,19 +230,19 @@ double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
     }
   }
   // spinors for the lepton and neutrino
-  vector<LorentzSpinor> wave;
-  vector<LorentzSpinorBar> wbar;
+  vector<LorentzSpinor<SqrtEnergy> > wave;
+  vector<LorentzSpinorBar<SqrtEnergy> > wbar;
   // construct the spininfo's of the outgoing particles
   SpinorWaveFunction(   wave,decay[ianti],outgoing,true,vertex);
   SpinorBarWaveFunction(wbar,decay[iferm],outgoing,true,vertex);
   // the prefactor
-  double pre;
-  if(idferm%2==0) pre=decay[ianti]->mass();
-  else            pre=decay[iferm]->mass();
-  pre*=2.*_decayconstant[icoup]*_GF/inpart.mass();
+  Energy premass;
+  if(idferm%2==0) premass=decay[ianti]->mass();
+  else            premass=decay[iferm]->mass();
+  InvEnergy pre = premass * 2.*_decayconstant[icoup]*_GF/inpart.mass();
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
-  Complex ii(0.,1.),term;
+
   vector<unsigned int> ispin(3,0);
   for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1])
     {
@@ -286,7 +288,7 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
       output << "set " << fullName() << ":DecayConstant "     << ix << " "
-	     << _decayconstant[ix]  << "\n";
+	     << _decayconstant[ix]/GeV  << "\n";
     }
     else {
       output << "insert " << fullName() << ":Incoming   " << ix << " "
@@ -300,7 +302,7 @@ void PScalarLeptonNeutrinoDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":MaxWeightTau "      << ix << " "
 	     << _maxweighttau[ix]   << "\n";
       output << "insert " << fullName() << ":DecayConstant "     << ix << " "
-	     << _decayconstant[ix]  << "\n";
+	     << _decayconstant[ix]/GeV  << "\n";
     }
   }
   if(header) 

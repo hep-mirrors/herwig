@@ -135,6 +135,7 @@ void TauTo2MesonAnalysis::analyze(tEventPtr event, long ieve, int loop, int stat
   for(tit=taus.begin();tit!=taus.end();++tit) {
     if(tit->second.size()!=3) continue;
     ParticleVector decay=tit->second;
+    using Constants::pi;
     unsigned int npi0(0),npip(0),nkp(0),nk0(0),neta(0);
     Lorentz5Momentum pdecay;
     for(unsigned int ix=0;ix<decay.size();++ix) {

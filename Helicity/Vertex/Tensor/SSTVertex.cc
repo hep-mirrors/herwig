@@ -41,11 +41,13 @@ Complex SSTVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
   Complex trace = ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // dot product of the two momenta
   Energy2 dot=
-    + sca1.e()*sca2.e() -sca1.px()*sca2.px()
-    -sca1.py()*sca2.py()-sca1.pz()*sca2.pz();
+    sca1.e()*sca2.e() 
+    -sca1.px()*sca2.px()
+    -sca1.py()*sca2.py()
+    -sca1.pz()*sca2.pz();
   Energy mass=Psca1->mass();
   // second term
-  Complex second = 
+  complex<Energy2> second = 
     +2.*ten.tt()*sca1.e()*sca2.e()  +2.*ten.xx()*sca1.px()*sca2.px()
     +2.*ten.yy()*sca1.py()*sca2.py()+2.*ten.zz()*sca1.pz()*sca2.pz()
     -(ten.tx()+ten.xt())*(sca1.e()*sca2.px() +sca1.px()*sca2.e())
@@ -55,10 +57,12 @@ Complex SSTVertex::evaluate(Energy2 q2, const ScalarWaveFunction & sca1,
     +(ten.xz()+ten.zx())*(sca1.pz()*sca2.px()+sca1.px()*sca2.pz())
     +(ten.yz()+ten.zy())*(sca1.pz()*sca2.py()+sca1.py()*sca2.pz());
   // return the answer
-  return -0.5*ii*norm*(trace*(mass*mass-dot)+second)*sca1.wave()*sca2.wave();
+  Complex answer = -0.5*ii*norm*UnitRemoval::InvE2*
+    (trace*(mass*mass-dot)+second)*sca1.wave()*sca2.wave();
+  return answer;
 }
 // off-shell tensor
-TensorWaveFunction SSTVertex::evaluate(Energy q2, int iopt, tcPDPtr out,
+TensorWaveFunction SSTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
     				   const ScalarWaveFunction & sca1,
     				   const ScalarWaveFunction & sca2)
 {
@@ -79,49 +83,50 @@ TensorWaveFunction SSTVertex::evaluate(Energy q2, int iopt, tcPDPtr out,
   Complex fact=0.5*getNorm()*sca1.wave()*sca2.wave()*propagator(iopt,p2,out);
   // dot products we need
   Energy2 dot12 = 
-    +sca1.e()*sca2.e()  -sca1.px()*sca2.px()
+     sca1.e()*sca2.e()  -sca1.px()*sca2.px()
     -sca1.py()*sca2.py()-sca1.pz()*sca2.pz();
   Energy2 dot1 = 
-    +sca1.e()*pout.e()  -sca1.px()*pout.px()
-    -sca1.py()*pout.py()-sca1.pz()*pout.pz();
+     sca1.e()*pout.e()  -sca1.px()*pout.x()
+    -sca1.py()*pout.y()-sca1.pz()*pout.z();
   Energy2 dot2 = 
-    +pout.e()*sca2.e()  -pout.px()*sca2.px()
-    -pout.py()*sca2.py()-pout.pz()*sca2.pz();
+     pout.e()*sca2.e()  -pout.x()*sca2.px()
+    -pout.y()*sca2.py()-pout.z()*sca2.pz();
   // the vectors that we need for the tensor
-  Energy vec1[4],vec2[4];
-  Energy2 a,b;
-  Energy2 mphi2=(Psca1->mass())*(Psca1->mass());
+  LorentzMomentum vec1,vec2;
+  double a,b;
+  Energy2 mphi2 = sqr(Psca1->mass());
   // massive case
-  if(mass!=0.)
+  if(mass!=Energy())
     {
       double norm1=dot1/mass2;
       double norm2=dot2/mass2;
-      a = ((mphi2+dot12)*(2.*p2/mass2-5)
-           +4.*(dot12-dot1*dot2/mass2))/3.;
-      b = -(-(mphi2+dot12)*(2.+p2/mass2)+4*(dot12-dot1*dot2/mass2))/3./mass2;
-      for(int ix=0;ix<4;++ix)
-        {
-          vec1[ix] =sca1[ix]-norm1*pout[ix];
-          vec2[ix] =sca2[ix]-norm2*pout[ix];
-        }
+      a = UnitRemoval::InvE2 * ((mphi2+dot12)*(2.*p2/mass2-5)
+				+4.*(dot12-dot1*dot2/mass2))/3.;
+      b = -(-(mphi2+dot12)*(2.+p2/mass2)+4*(dot12-dot1*(dot2/mass2)))/3./mass2;
+      vec1 = sca1.getMomentum() - norm1 * pout;
+      vec2 = sca2.getMomentum() - norm2 * pout;
     }
   // massless case
   else
     {
-      a = (-5.*(mphi2+dot12)+4.*dot12)/3.;
+      a = UnitRemoval::InvE2 * (-5.*(mphi2+dot12)+4.*dot12)/3.;
       b = 0.;
-      for(int ix=0;ix<4;++ix)
-        {
-          vec1[ix] =sca1[ix];
-          vec2[ix] =sca2[ix];
-        }
+      vec1 = sca1.getMomentum();
+      vec2 = sca2.getMomentum();
     }
   // calculate the wavefunction
+  Energy vec1_tmp[4] = {vec1.x(), vec1.y(), vec1.z(), vec1.t()};
+  Energy vec2_tmp[4] = {vec2.x(), vec2.y(), vec2.z(), vec2.t()};
+  Energy pout_tmp[4] = {pout.x(), pout.y(), pout.z(), pout.t()};
   for(int ix=0;ix<4;++ix)
     {
       for(int iy=0;iy<4;++iy)
         {
-          ten[ix][iy]=-2.*(vec1[ix]*vec2[iy]+vec1[ix]*vec2[iy])-b*pout[ix]*pout[iy];
+	  // DGRELL CHECK bug here?
+	  Energy2 temp = -2.*( vec1_tmp[ix]*vec2_tmp[iy]
+			      +vec1_tmp[ix]*vec2_tmp[iy])
+	    -b*pout_tmp[ix]*pout_tmp[iy];
+          ten[ix][iy]= UnitRemoval::InvE2 * temp;
         }
     }
   ten[3][3]=ten[3][3]-a;
@@ -136,7 +141,7 @@ TensorWaveFunction SSTVertex::evaluate(Energy q2, int iopt, tcPDPtr out,
     			ten[3][0],ten[3][1],ten[3][2],ten[3][3]);
 }
 // off-shell scalar
-ScalarWaveFunction SSTVertex::evaluate(Energy q2,int iopt, tcPDPtr out,
+ScalarWaveFunction SSTVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
     				   const ScalarWaveFunction & sca,
     				   const TensorWaveFunction & ten)
 {
@@ -154,26 +159,27 @@ ScalarWaveFunction SSTVertex::evaluate(Energy q2,int iopt, tcPDPtr out,
   Energy2 p2 = pout.m2();
   Complex fact=0.5*getNorm()*sca.wave()*propagator(iopt,p2,out);
   // trace of the tensor
-  Complex trace =ten.tt()-ten.xx()-ten.yy()-ten.zz();
+  Complex trace1 =ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // dot product of the two momenta
   Energy2 dot = 
-    + sca.e()*pout.e() -sca.px()*pout.px()
-    -sca.py()*pout.py()-sca.pz()*pout.pz();
+     sca.e()*pout.e() -sca.px()*pout.x()
+    -sca.py()*pout.y()-sca.pz()*pout.z();
   // first term
-  trace = trace*(mass2-dot);
+  complex<Energy2> trace = trace1*(mass2-dot);
   // second term
-  Complex second = 
-    +2.*ten.tt()*sca.e()*pout.e()  +2.*ten.xx()*sca.px()*pout.px()
-    +2.*ten.yy()*sca.py()*pout.py()+2.*ten.zz()*sca.pz()*pout.pz()
-    -(ten.tx()+ten.xt())*( sca.e()*pout.px()+sca.px()*pout.e())
-    -(ten.ty()+ten.yt())*( sca.e()*pout.py()+sca.py()*pout.e())
-    -(ten.tz()+ten.zt())*( sca.e()*pout.pz()+sca.pz()*pout.e())
-    +(ten.xy()+ten.yx())*(sca.py()*pout.px()+sca.px()*pout.py())
-    +(ten.xz()+ten.zx())*(sca.pz()*pout.px()+sca.px()*pout.pz())
-    +(ten.yz()+ten.zy())*(sca.py()*pout.pz()+sca.pz()*pout.py());
+  complex<Energy2> second = 
+    +2.*ten.tt()*sca.e()*pout.e()  +2.*ten.xx()*sca.px()*pout.x()
+    +2.*ten.yy()*sca.py()*pout.y()+2.*ten.zz()*sca.pz()*pout.z()
+    -(ten.tx()+ten.xt())*( sca.e()*pout.x()+sca.px()*pout.e())
+    -(ten.ty()+ten.yt())*( sca.e()*pout.y()+sca.py()*pout.e())
+    -(ten.tz()+ten.zt())*( sca.e()*pout.z()+sca.pz()*pout.e())
+    +(ten.xy()+ten.yx())*(sca.py()*pout.x()+sca.px()*pout.y())
+    +(ten.xz()+ten.zx())*(sca.pz()*pout.x()+sca.px()*pout.z())
+    +(ten.yz()+ten.zy())*(sca.py()*pout.z()+sca.pz()*pout.y());
   // put it all together
   second  = fact*(trace+second);
-  return ScalarWaveFunction(pout,out,second);
+  Complex result = second * UnitRemoval::InvE2;
+  return ScalarWaveFunction(pout,out,result);
 }
 
 }

@@ -17,7 +17,7 @@
 #include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -162,10 +162,10 @@ int TensorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) 
 }
 
 void TensorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const
-{os << _incoming << _outgoingV << _outgoingP << _maxweight << _coupling;}
+{os << _incoming << _outgoingV << _outgoingP << _maxweight << ounit(_coupling,1/GeV2);}
 
 void TensorMesonVectorPScalarDecayer::persistentInput(PersistentIStream & is, int)
-{is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> _coupling;}
+{is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> iunit(_coupling,1/GeV2);}
 
 ClassDescription<TensorMesonVectorPScalarDecayer> TensorMesonVectorPScalarDecayer::initTensorMesonVectorPScalarDecayer;
 // Definition of the static class description member.
@@ -198,7 +198,7 @@ void TensorMesonVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorPScalarDecayer::_coupling,
-     0, 0, 0, 0., 100./GeV2, false, false, true);
+     1/GeV2, 0, 0/GeV2, 0/GeV2, 100./GeV2, false, false, true);
 
   static ParVector<TensorMesonVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -215,7 +215,7 @@ double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 					    const ParticleVector & decay) const
 {
   // wave functions etc for the incoming particle
-  vector<LorentzTensor> inten;
+  vector<LorentzTensor<double> > inten;
   RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
   TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);
@@ -231,7 +231,7 @@ double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
   // vector
   VectorWaveFunction(vwave,decay[0],outgoing,true,photon,vertex);
-  double fact(_coupling[imode()]/inpart.mass());
+  InvEnergy3 fact(_coupling[imode()]/inpart.mass());
   // set up the matrix element
   DecayMatrixElement newME(PDT::Spin2,PDT::Spin1,PDT::Spin0);
   // calculate the matrix element
@@ -242,10 +242,9 @@ double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 	  if(vhel==1&&photon){newME(inhel,vhel,0)=0.;}
 	  else
 	    {
-	      LorentzPolarizationVector vtemp=
-		fact*EpsFunction::product(decay[0]->momentum(),vwave[vhel],
-					  decay[1]->momentum());
-	      newME(inhel,vhel,0)= (decay[1]->momentum()*inten[inhel])*vtemp;
+	      LorentzVector<complex<InvEnergy> > vtemp=
+		fact*epsilon(decay[0]->momentum(),vwave[vhel],decay[1]->momentum());
+	      newME(inhel,vhel,0)= (decay[1]->momentum()*inten[inhel]).dot(vtemp);
 	    }
 	}
     }
@@ -305,7 +304,7 @@ void TensorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
 		 << _outgoingP[ix] << "\n";
 	  output << "set " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*GeV2 << "\n";
 	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}
@@ -318,7 +317,7 @@ void TensorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
 		 << _outgoingP[ix] << "\n";
 	  output << "insert " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*GeV2 << "\n";
 	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}

@@ -140,7 +140,7 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Hep3Vector boost,ParticleVector children);
+  double makePhotons(Boost boost,ParticleVector children);
 
   /**
    *  Boost all the momenta from the dipole rest frame via the parent rest frame
@@ -148,7 +148,7 @@ protected:
    * @param boost The boost vector from the rest frame to the lab
    * @return Whether or not it suceeded
    */
-  bool boostMomenta(Hep3Vector boost);
+  bool boostMomenta(Boost boost);
 
   /**
    *  Remove any photons which fail the energy cuts

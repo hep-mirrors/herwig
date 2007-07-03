@@ -22,7 +22,7 @@ void SMWWWWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM >> _gamma >> _Z0 >> _wplus >> _wminus
      >> _vfact >> _sw2 >> _cw2;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
 }
 
 ClassDescription<SMWWWWVertex>SMWWWWVertex::initSMWWWWVertex;
@@ -138,7 +138,7 @@ void SMWWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
   if(q2!=_q2last)
     {
       double alpha = _theSM->alphaEM(q2);
-      _couplast = 4.0*3.14159265*alpha;
+      _couplast = 4.0*Constants::pi*alpha;
       _q2last=q2;
     }
   // id's of the first two particles

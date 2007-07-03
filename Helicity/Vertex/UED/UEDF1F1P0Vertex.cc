@@ -12,7 +12,7 @@
 
 using namespace Herwig::Helicity;
 
-UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(0.0),
+UEDF1F1P0Vertex::UEDF1F1P0Vertex() : theCoupLast(0.0), theq2Last(),
 				     thefermLast(0), theLRLast(0.0), 
 				     theCharges(3) {
   //lists
@@ -44,7 +44,7 @@ void UEDF1F1P0Vertex::persistentOutput(PersistentOStream & os) const {
 void UEDF1F1P0Vertex::persistentInput(PersistentIStream & is, int) {
   is >> theUEDBase;
   theCoupLast = 0.;
-  theq2Last = 0.;
+  theq2Last = 0.*GeV2;
   thefermLast = 0;
   theLRLast = 0.;
 }

@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-inline BasicConsistency::BasicConsistency() : _epsmom(0.0) {}
+inline BasicConsistency::BasicConsistency() : _epsmom(0.0*MeV) {}
 
 inline IBPtr BasicConsistency::clone() const {
   return new_ptr(*this);

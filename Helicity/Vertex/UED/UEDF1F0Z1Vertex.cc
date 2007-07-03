@@ -13,7 +13,7 @@ using namespace Herwig::Helicity;
 
 UEDF1F0Z1Vertex::UEDF1F0Z1Vertex() : theSinThetaW(0.), theCosThetaW(0.),
 				     theSinThetaOne(0.),
-				     theCosWmOne(0.), theq2Last(0.), 
+				     theCosWmOne(0.), theq2Last(), 
 				     theCoupLast(0.), theKKLast(0), 
 				     theLeftLast(0.), theRightLast(0.) {
 vector<int> anti, ferm, kkz(42, 5100023);
@@ -52,7 +52,7 @@ void UEDF1F0Z1Vertex::persistentOutput(PersistentOStream & os) const {
 void UEDF1F0Z1Vertex::persistentInput(PersistentIStream & is, int) {
   is >> theUEDBase >> theSinThetaW >> theCosThetaW  >> theSinThetaOne
      >> theCosWmOne;
-  theq2Last = 0.;
+  theq2Last = 0.*GeV2;
   theCoupLast = 0.;
   theKKLast = 0;
   theLeftLast = 0.;
@@ -70,7 +70,7 @@ void UEDF1F0Z1Vertex::Init() {
 
 }
 
-void UEDF1F0Z1Vertex::setCoupling(Energy q2, tcPDPtr part1, tcPDPtr part2,
+void UEDF1F0Z1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				  tcPDPtr part3) {
   long kkparticle(0);
   if(part1->id() == 5100023) {
@@ -105,13 +105,13 @@ void UEDF1F0Z1Vertex::setCoupling(Energy q2, tcPDPtr part1, tcPDPtr part2,
       Charge Qf = getParticleData(smID)->charge();
       if(kkparticle/1000000 == 5) {
 	double I3f = (abs(smID) % 2 == 0) ? 0.5 : -0.5;
-	theLeftLast = (Qf*theSinThetaOne)
+	theLeftLast = (Qf/eplus*theSinThetaOne)
  	  - (I3f*theCosWmOne/theSinThetaW);
 	theRightLast = 0.;
       }
       else {
 	theLeftLast = 0.;
-	theRightLast = Qf*theSinThetaOne;
+	theRightLast = Qf/eplus*theSinThetaOne;
       }	
     }
     setLeft(theLeftLast);

@@ -231,7 +231,7 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     }
   else
     {
-      _a1mass2=getParticleData(ParticleID::a_1plus)->mass();_a1mass2=_a1mass2*_a1mass2;
+      _a1mass2=sqr(getParticleData(ParticleID::a_1plus)->mass());
       _sigmamass=sigma->mass();_sigmawidth=sigma->width();
       _rhomass.resize(_rhocoupling.size());_rhowidth.resize(_rhocoupling.size());
       for(unsigned int ix=0;ix<_rhocoupling.size();++ix)
@@ -293,16 +293,20 @@ int a1ThreePionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 }
   
 void a1ThreePionDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _rhomass << _rhowidth << _prho << _hm2 << _rhoD << _dhdq2m2 <<  _sigmamass
-     << _sigmawidth << _psigma << _mpi << _mpi2 << _lambda2 << _a1mass2 << _zsigma 
+  os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV) << ounit(_prho,GeV) 
+     << ounit(_hm2,GeV2) << ounit(_rhoD,GeV2) << _dhdq2m2 <<  ounit(_sigmamass,GeV)
+     << ounit(_sigmawidth,GeV) << ounit(_psigma,GeV) << ounit(_mpi,GeV) 
+     << ounit(_mpi2,GeV2) << ounit(_lambda2,GeV2) << ounit(_a1mass2,GeV2) << _zsigma 
      << _rhocoupling << _coupling << _localparameters << _zerowgts << _onewgts 
      << _twowgts << _threewgts << _zeromax
      << _onemax << _twomax << _threemax << _coupling;
 }
   
 void a1ThreePionDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _rhomass >> _rhowidth >> _prho >> _hm2 >> _rhoD >> _dhdq2m2 >>  _sigmamass
-     >> _sigmawidth >> _psigma >> _mpi >> _mpi2 >> _lambda2 >> _a1mass2 >> _zsigma 
+  is >> iunit(_rhomass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_prho,GeV) 
+     >> iunit(_hm2,GeV2) >> iunit(_rhoD,GeV2) >> _dhdq2m2 >>  iunit(_sigmamass,GeV)
+     >> iunit(_sigmawidth,GeV) >> iunit(_psigma,GeV) >> iunit(_mpi,GeV) 
+     >> iunit(_mpi2,GeV2) >> iunit(_lambda2,GeV2) >> iunit(_a1mass2,GeV2) >> _zsigma 
      >> _rhocoupling >> _coupling >> _localparameters >> _zerowgts >> _onewgts 
      >> _twowgts >> _threewgts >> _zeromax
      >> _onemax >> _twomax >> _threemax >> _coupling;
@@ -420,13 +424,13 @@ void a1ThreePionDecayer::Init() {
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &a1ThreePionDecayer::_rhomass,
-     0, 0, 0, -10000, 10000, false, false, true);
+     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
 
   static ParVector<a1ThreePionDecayer,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &a1ThreePionDecayer::_rhowidth,
-     0, 0, 0, -10000, 10000, false, false, true);
+     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
 
 }
 double a1ThreePionDecayer::me2(bool vertex, const int ichan,
@@ -447,8 +451,6 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
 	{PPtr mytemp = decay[ix] ; ScalarWaveFunction(mytemp,outgoing,true,vertex);}}
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
-  // vector for the output
-  LorentzPolarizationVector output=LorentzPolarizationVector();
   // identify the mesons
   int npi0=0,npiplus=0,npiminus=0,ipi0[3],ipim[3],ipip[3],idtemp;
   for(unsigned int ix=0; ix<decay.size();++ix)
@@ -460,6 +462,8 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
     }
   // work out which decay mode we are doing
   idtemp=inpart.id();
+  // vector for the output
+  LorentzVector<complex<Energy3> > output;
   // a_10 -> pi0pi0pi0
   if(imode()==0)
     {
@@ -475,25 +479,26 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
       Complex sig2=sigmaBreitWigner(pb.mass2());
       Complex sig3=sigmaBreitWigner(pc.mass2());
       // compute the vector
+      LorentzPolarizationVectorE tmpoutput;
       if(ichan<0)
 	{
-	  output= 
+	  tmpoutput= 
 	    sig1*(decay[0]->momentum())
 	    +sig2*(decay[1]->momentum())
 	    +sig3*(decay[2]->momentum());
 	}
       else if(ichan==15)
-	{output=sig1*(decay[0]->momentum());}
+	{tmpoutput=sig1*(decay[0]->momentum());}
       else if(ichan==16)
-	{output=sig2*(decay[1]->momentum());}
+	{tmpoutput=sig2*(decay[1]->momentum());}
       else if(ichan==17)
-	{output=sig3*(decay[2]->momentum());}
+	{tmpoutput=sig3*(decay[2]->momentum());}
       else
 	{cerr << "Unknown channel for a_1^0->pi0pi0pi0 in " 
 	      << "a1ThreePionDecayer::decayCurrent" << endl;
-	output=LorentzPolarizationVector();}
+	tmpoutput=LorentzPolarizationVectorE();}
       // the coupling z and identical particle factor
-      output *=_zsigma*0.4082482904638631*Q.mass2();
+      output = tmpoutput * _zsigma*0.4082482904638631*Q.mass2();
     }
   // a_1+ -> pi0pi0pi+
   else if(imode()==1)
@@ -575,11 +580,12 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
       Complex sig1=sigmaBreitWigner(pa.mass2());
       Complex sig2=sigmaBreitWigner(pb.mass2());
       // sigma terms
+      LorentzPolarizationVectorE tmpoutput;
       if(ichan<0||ichan==6)
-	{output+=sig1*(decay[ipip[0]]->momentum());}
+	{tmpoutput+=sig1*(decay[ipip[0]]->momentum());}
       if(ichan<0||ichan==7)
-	{output+=sig2*(decay[ipip[1]]->momentum());}
-      output *=_zsigma*Q.mass2();
+	{tmpoutput+=sig2*(decay[ipip[1]]->momentum());}
+      output = tmpoutput * _zsigma * Q.mass2();
       // rho terms
       complex<Energy2> dot01=Q*decay[ipip[0]]->momentum();
       complex<Energy2> dot02=Q*decay[ipip[1]]->momentum();
@@ -599,10 +605,11 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
       output *=0.7071067811865476;
     }
   // form-factor
-  output*=a1FormFactor(Q.mass2())*_coupling/(Q.mass()*_rhomass[0]*_rhomass[0]);
+  LorentzPolarizationVector outputFinal 
+    = output * a1FormFactor(Q.mass2())*_coupling/(Q.mass()*_rhomass[0]*_rhomass[0]);
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0,0)=output*invec[ix];}
+  for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0,0)=outputFinal.dot(invec[ix]);}
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();

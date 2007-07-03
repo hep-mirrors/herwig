@@ -8,8 +8,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline MelikhovFormFactor::MelikhovFormFactor() : 
-  _ifit(1), _Rplus0(0), _Mplus(0), _nplus(0), _RV0(0), _MV(0), _nV(0),
-  _R10(0), _M1(0), _n1(0), _R20(0), _M2(0), _n2(0)
+  _ifit(1), _Rplus0(0), _Mplus(0*MeV), _nplus(0), _RV0(0), _MV(0*MeV), _nV(0),
+  _R10(0), _M1(0*MeV), _n1(0), _R20(0), _M2(0*MeV), _n2(0)
 {
   // the possible modes
   // B to rho

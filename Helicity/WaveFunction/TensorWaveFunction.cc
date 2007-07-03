@@ -22,16 +22,16 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 	<< "particle must be incoming or outgoing not intermediate" 
 	<< Exception::abortnow;}
   // check for a valid helicty combination
-  if((jhel<=2 && jhel>=-2   && mass() >0.) || 
-     ((jhel==2 || jhel==-2) && mass()==0.)) 
+  if((jhel<=2 && jhel>=-2   && mass() >Energy()) || 
+     ((jhel==2 || jhel==-2) && mass()==Energy())) 
     {
       // extract the momentum components
       double fact=-1.; if(dir==incoming){fact=1.;}
       Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
       // calculate some kinematic quantites;
-      Energy pt = ppx*ppx+ppy*ppy;
-      Energy pabs = sqrt(pt+ppz*ppz);
-      pt = sqrt(pt);
+      Energy2 pt2 = ppx*ppx+ppy*ppy;
+      Energy pabs = sqrt(pt2+ppz*ppz);
+      Energy pt = sqrt(pt2);
       // polarization vectors
       complex<double> epsp[4],epsm[4],eps0[4];
       // + helicity vector if needed
@@ -41,16 +41,16 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 	  complex<double>phase;
 	  if(tphase==tensor_phase)
 	    {
-	      if(pt==0.){phase=1.;}
-	      else{phase = complex<double>(ppx,-fact*ppy)/pt;}
+	      if(pt==Energy()){phase=1.;}
+	      else{phase = complex<double>(ppx/pt,-fact*ppy/pt);}
 	    }
 	  else{phase = 1.;} 
 	  phase = phase/sqrt(2.);
 	  // first the no pt case
-	  if(pt==0.)
+	  if(pt==Energy())
 	    {
 	      double sgnz;
-	      if(ppz<0){sgnz=-1.;}
+	      if(ppz<Energy()){sgnz=-1.;}
 	      else{sgnz=1.;}
 	      epsp[0]=-phase;
 	      epsp[1]= sgnz*phase*complex<double>(0,-fact);
@@ -59,8 +59,8 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 	    }
 	  else
 	    {
-	      double opabs=1./pabs;
-	      double opt  =1./pt;
+	      InvEnergy opabs=1./pabs;
+	      InvEnergy opt  =1./pt;
 	      epsp[0]=phase*complex<double>(-ppz*ppx*opabs*opt,
 					  fact*ppy*opt);
 	      epsp[1]=phase*complex<double>(-ppz*ppy*opabs*opt,
@@ -76,16 +76,16 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 	  complex<double> phase;
 	  if(tphase==tensor_phase)
 	    {
-	      if(pt==0.){phase=1.;}
-	      else{phase = complex<double>(ppx,fact*ppy)/pt;}
+	      if(pt==Energy()){phase=1.;}
+	      else{phase = complex<double>(ppx/pt,fact*ppy/pt);}
 	    }
 	  else{phase = 1.;}
 	  phase = phase/sqrt(2.);
 	  // first the no pt case
-	  if(pt==0.)
+	  if(pt==Energy())
 	    {
 	      double sgnz;
-	      if(ppz<0){sgnz=-1.;}
+	      if(ppz<Energy()){sgnz=-1.;}
 	      else{sgnz=1.;}
 	      epsm[0]= phase;
 	      epsm[1]= sgnz*phase*complex<double>(0,-fact);
@@ -94,8 +94,8 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 	    }
 	  else
 	    {
-	      double opabs=1./pabs;
-	      double opt  =1./pt;
+	      InvEnergy opabs=1./pabs;
+	      InvEnergy opt  =1./pt;
 	      epsm[0]=phase*complex<double>(ppz*ppx*opabs*opt,
 					  fact*ppy*opt);
 	      epsm[1]=phase*complex<double>(ppz*ppy*opabs*opt,
@@ -107,7 +107,7 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
       // 0 helicity vector if needed
       if(jhel<=1 && jhel>=-1)
 	{
-	  if(pabs==0)
+	  if(pabs==Energy())
 	    {
 	      eps0[0] = 0.;
 	      eps0[1] = 0.;
@@ -116,7 +116,7 @@ void TensorWaveFunction::calculateWaveFunction(unsigned int ihel, TensorPhase tp
 	    }
 	  else
 	    {
-	      double empabs=pee/pmm/pabs;
+	      InvEnergy empabs=pee/pmm/pabs;
 	      eps0[0] = empabs*ppx;
 	      eps0[1] = empabs*ppy;
 	      eps0[2] = empabs*ppz;

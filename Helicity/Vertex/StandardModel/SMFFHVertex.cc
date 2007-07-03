@@ -13,12 +13,11 @@
 using namespace Herwig;
 
 void SMFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << _mw << _sw;
+  os << _theSM << ounit(_mw,GeV) << _sw;
 }
 
 void SMFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> _mw >> _sw;
-  _couplast=0.;_idlast=0;_q2last=0.;_masslast=0.;
+  is >> _theSM >> iunit(_mw,GeV) >> _sw;
 }
 
 ClassDescription<SMFFHVertex> 
@@ -51,7 +50,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
       throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
 				       << "Unknown particle in Higgs vertex" 
 				       << Exception::warning;
-      _masslast = 0;
+      _masslast = 0*MeV;
     }
   }
   else if(iferm!=_idlast) {
@@ -63,7 +62,7 @@ void SMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr, tcPDPtr, int) {
       throw HelicityConsistencyError() << "SMFFHVertex::setCoupling " 
 				       << "Unknown particle in Higgs vertex" 
 				       << Exception::warning;
-      _masslast = 0;
+      _masslast = 0*MeV;
     }
   }
   setNorm(_couplast*_masslast);

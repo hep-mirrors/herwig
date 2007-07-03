@@ -7,7 +7,7 @@
 namespace Herwig {
 namespace Helicity {
 
-inline UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(0.), theCoupLast(0.) {
+inline UEDP0H1H1Vertex::UEDP0H1H1Vertex() : theq2Last(), theCoupLast(0.) {
   setList(vector<int>(1, 22), vector<int>(1, 5100037), 
 	  vector<int>(1, -5100037));
 }

@@ -60,9 +60,9 @@ inline double FFDipole::exactDipoleWeight(double beta1, double ombeta1,
 
 inline double FFDipole::jacobianWeight()
 {
-  double pcm1=Kinematics::pstarTwoBodyDecay(_m[0],_m[1],_m[2]);
+  Energy pcm1=Kinematics::pstarTwoBodyDecay(_m[0],_m[1],_m[2]);
   Energy m12 =sqrt((_qnewdrf[0]+_qnewdrf[1]).m2())            ;
-  double pcm2=Kinematics::pstarTwoBodyDecay(m12,_m[1],_m[2])  ;
+  Energy pcm2=Kinematics::pstarTwoBodyDecay(m12,_m[1],_m[2])  ;
   double betaprobeta = pcm2*_m[0]/pcm1/m12   ;
   double spros       = sqr(m12/_m[0])        ;
   double deltafn     = m12/(m12+_bigLdrf.e());

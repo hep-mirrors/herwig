@@ -14,7 +14,7 @@
 using namespace Herwig::Helicity;
 
 SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0), 
-			     _id2last(0), _q2last(0.), _couplast(0.),
+			     _id2last(0), _q2last(), _couplast(0.),
 			     _leftlast(0.), _rightlast(0.) {
   vector<int> first, second, third(25, 23);
   for(unsigned int i = 0; i < 5; ++i) {
@@ -46,7 +46,7 @@ void SSNNZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _sw >> _cw >> _theN;
   _id1last = 0;
   _id2last = 0;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
   _couplast = 0.;
   _leftlast = 0.;
   _rightlast = 0.;

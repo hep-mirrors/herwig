@@ -37,7 +37,7 @@ public:
    * @param emitted Whether or not the particle has radiated
    */
   inline ShowerProgenitor(PPtr original,PPtr copy, ShowerParticlePtr particle,
-			  Energy pT=0.,bool emitted=false);
+			  Energy pT=0.*MeV,bool emitted=false);
 
   /**
    *  Access to the particle

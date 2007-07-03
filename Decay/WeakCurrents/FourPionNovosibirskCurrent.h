@@ -108,9 +108,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale, 
-						     const ParticleVector & decay) const;
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
+						      const int ichan,Energy & scale, 
+						      const ParticleVector & decay) const;
 
   /**
    * Accept the decay. Checks this is one of the four pion modes.
@@ -264,8 +264,9 @@ protected:
    * @param q4 The first momentum.
    * @return The current \f$t_1\f$.
    */
-  inline LorentzPolarizationVector t1(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
-				      Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
+  inline LorentzVector<complex<Energy5> > 
+  t1(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
+     Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
 
   /**
    * The \f$t_2\f$ current used in calculating the current.
@@ -276,9 +277,10 @@ protected:
    * @param iopt 0 for \f$\sigma\to\pi^+\pi^-\f$ and 1 for \f$\sigma\to\pi^0\pi^0\f$
    * @return The current \f$t_2\f$.
    */
-  inline LorentzPolarizationVector t2(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
-				      Lorentz5Momentum & q3,Lorentz5Momentum & q4,
-				      unsigned int iopt) const;
+  inline LorentzVector<complex<Energy5> > 
+  t2(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
+     Lorentz5Momentum & q3,Lorentz5Momentum & q4,
+     unsigned int iopt) const;
 
   /**
    * The \f$t_3\f$ current used in calculating the current.
@@ -288,8 +290,9 @@ protected:
    * @param q4 The first momentum.
    * @return The current \f$t_3\f$.
    */
-  inline LorentzPolarizationVector t3(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
-				      Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
+  inline LorentzVector<complex<Energy5> > 
+  t3(Lorentz5Momentum & q1,Lorentz5Momentum & q2,
+     Lorentz5Momentum & q3,Lorentz5Momentum & q4) const;
 
   /**
    * The G functions of hep-ph/0201149
@@ -297,7 +300,7 @@ protected:
    * @param ichan Which of the four pion channels this is for.
    * @return The G function.
    */
-  inline double gFunction(Energy2 q2, int ichan) const;
+  inline InvEnergy6 gFunction(Energy2 q2, int ichan) const;
 
   /**
    * The d parameter in \f$\rho\f$ the propagator.
@@ -325,22 +328,22 @@ private:
   /**
    * The interpolator for the \f$\omega\f$ current.
    */
-  InterpolatorPtr _Fomega;
+  Interpolator<double,Energy>::Ptr _Fomega;
 
   /**
    * The interpolator for the three charged pion \f$a_1\f$ current. 
    */
-  InterpolatorPtr _Fthreec;
+  Interpolator<double,Energy>::Ptr _Fthreec;
 
   /**
    * The interpolator for the one   charged pion \f$a_1\f$ current.
    */
-  InterpolatorPtr _Fonec;
+  Interpolator<double,Energy>::Ptr _Fonec;
 
   /**
    * The interpolator for the \f$\sigma\f$ current.
    */
-  InterpolatorPtr _Fsigma;
+  Interpolator<double,Energy2>::Ptr _Fsigma;
   //@}
 
   /**
@@ -475,17 +478,17 @@ private:
   /**
    * Magic number for the omega current.
    */
-  InvEnergy2 _aomega;
+  InvEnergy _aomega;
 
   /**
    * Magic number for the three charged pion current.
    */
-  InvEnergy2 _athreec;
+  InvEnergy _athreec;
 
   /**
    * Magic number for the one charged pion current
    */
-  InvEnergy2 _aonec;
+  InvEnergy _aonec;
 
   /**
    * Magic number for the omega current.
@@ -505,17 +508,17 @@ private:
   /**
    * Magic number for the omega current.
    */
-  Energy _comega;
+  double _comega;
 
   /**
    * Magic number for the three charged pion current.
    */
-  Energy _cthreec;
+  double _cthreec;
 
   /**
    * Magic number for the one charged pion current
    */
-  Energy _conec;
+  double _conec;
 
   /**
    * magic numbers for the running omega width
@@ -545,7 +548,17 @@ private:
   /**
    * The interpolator for the running \f$a_1\f$ width.
    */
-  InterpolatorPtr _a1runinter;
+  Interpolator<Energy,Energy2>::Ptr _a1runinter;
+
+  /**
+   *  The maximum mass of the hadronic system
+   */
+  Energy _maxmass;
+
+  /**
+   *  The maximum mass when the running width was calculated
+   */
+  Energy _maxcalc;
 
   /**
    *  The maximum mass of the hadronic system

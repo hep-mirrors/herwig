@@ -248,7 +248,7 @@ public:
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
-  inline TensorWaveFunction(vector<LorentzTensor>& wave, tPPtr part,
+  inline TensorWaveFunction(vector<LorentzTensor<double> >& wave, tPPtr part,
 			    Direction dir, bool time, bool massless, bool vertex,
 			    TensorPhase phase=default_tensor_phase);
 
@@ -264,7 +264,7 @@ public:
    * @param vertex Whether or not to create the VectorSpinInfo object 
    * @param phase The phase choice.
    */
-  inline TensorWaveFunction(vector<LorentzTensor>& wave, RhoDMatrix& rho,tPPtr part,
+  inline TensorWaveFunction(vector<LorentzTensor<double> >& wave, RhoDMatrix& rho,tPPtr part,
 			    Direction dir, bool time, bool massless, bool vertex,
 			    TensorPhase phase=default_tensor_phase);
 
@@ -301,7 +301,7 @@ public:
   /**
    * Return wavefunction as polarization vector.
    */
-  inline const LorentzTensor & wave() const;
+  inline LorentzTensor<double> wave() const;
 
   /**
    * Get the \f$xx\f$ component.
@@ -520,7 +520,7 @@ public:
    * @param phase The phase choice.
    * @param vertex Whether or not to create the TensorSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzTensor>& wave,tPPtr part,
+  inline void constructSpinInfo(vector<LorentzTensor<double> >& wave,tPPtr part,
 				bool time, bool massless,
 				TensorPhase phase=default_tensor_phase,bool vertex=true);
 
@@ -535,7 +535,7 @@ public:
    * @param phase The phase choice.
    * @param vertex Whether or not to create the TensorSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzTensor>& wave,RhoDMatrix& rho,tPPtr part,
+  inline void constructSpinInfo(vector<LorentzTensor<double> >& wave,RhoDMatrix& rho,tPPtr part,
 				bool time, bool massless,
 				TensorPhase phase=default_tensor_phase,bool vertex=true);
 
@@ -568,7 +568,7 @@ private:
    * @param phase The phase choice.
    * @param vertex Whether or not to set up the TensorSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzTensor>& wave,
+  inline void constructSpinInfo(vector<LorentzTensor<double> >& wave,
 				tTensorSpinPtr spin, bool massless,
 				TensorPhase phase=default_tensor_phase,bool vertex=true);
 
@@ -577,7 +577,7 @@ private:
   /**
    * Storage of the wavefunction as a Lorentz Tensor.
    */
-  LorentzTensor _wf;
+  LorentzTensor<double> _wf;
 
 };
 }

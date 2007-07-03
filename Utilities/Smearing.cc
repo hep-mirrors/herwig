@@ -11,15 +11,20 @@ using namespace Herwig;
 // using namespace ThePEG;
 
 
-bool Smearing::gaussianSmearing( const double mean, const double sigma, double & x ) {
+bool Smearing::gaussianSmearing(const double mean, 
+				const double sigma, 
+				double & x ) {
   double xN01, trash; 
-  if ( ! azimuthalSmearing( -2.0*log( UseRandom::rnd() ), xN01, trash ) ) return false;
+  if ( ! azimuthalSmearing( -2.0*log( UseRandom::rnd() ), xN01, trash ) ) 
+    return false;
   x = mean + sigma*xN01;
   return true;
 }
 
 
-bool Smearing::azimuthalSmearing( const double rho, double & vx, double & vy ) {
+bool Smearing::azimuthalSmearing(const double rho, 
+				 double & vx, 
+				 double & vy ) {
   double cosine = 2.0 * UseRandom::rnd() - 1.0;
   double sine   = 2.0 * UseRandom::rnd() - 1.0;
   double cs = sqr(cosine) + sqr(sine);

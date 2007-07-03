@@ -64,7 +64,7 @@ public:
    *@param part2 ParticleData pointer to first particle
    *@param part3 ParticleData pointer to first particle
    */
-  virtual void setCoupling(Energy q2, tcPDPtr part1, tcPDPtr part2,
+  virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3);
   
 protected:

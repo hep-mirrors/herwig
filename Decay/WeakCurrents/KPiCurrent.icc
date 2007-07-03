@@ -15,8 +15,8 @@ inline IBPtr KPiCurrent::fullclone() const {
 }
 
 inline Complex KPiCurrent::sWaveBreitWigner(Energy2 q2, unsigned int ires) const {
-  Energy q=sqrt(q2),gam(0.);
-  Energy m2=sqr(_vecmass[ires]);
+  Energy q=sqrt(q2),gam(0.*MeV);
+  Energy2 m2=sqr(_vecmass[ires]);
   if(q>_mK+_mpi) {
     Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);
     Energy p =Kinematics::pstarTwoBodyDecay( q            ,_mK,_mpi);
@@ -26,8 +26,8 @@ inline Complex KPiCurrent::sWaveBreitWigner(Energy2 q2, unsigned int ires) const
 }
 
 inline Complex KPiCurrent::pWaveBreitWigner(Energy2 q2, unsigned int ires) const {
-  Energy q=sqrt(q2),gam(0.);
-  Energy m2=sqr(_vecmass[ires]);
+  Energy q=sqrt(q2),gam(0.*MeV);
+  Energy2 m2=sqr(_vecmass[ires]);
   if(q>_mK+_mpi) {
     Energy pX=Kinematics::pstarTwoBodyDecay(_vecmass[ires],_mK,_mpi);
     Energy p =Kinematics::pstarTwoBodyDecay( q            ,_mK,_mpi);

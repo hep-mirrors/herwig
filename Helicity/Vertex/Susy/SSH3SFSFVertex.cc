@@ -11,9 +11,9 @@
 
 using namespace Herwig::Helicity;
 
-SSH3SFSFVertex::SSH3SFSFVertex():_mw(0.),_sw(0.),_tb(0.),_mu(0.),
-				 _trilinear(9,0.),_q2last(0.),
-				 _glast(0.),_hfact(0.),_id1last(0),
+SSH3SFSFVertex::SSH3SFSFVertex():_mw(),_sw(0.),_tb(0.),_mu(),
+				 _trilinear(9),_q2last(),
+				 _glast(0.),_hfact(),_id1last(0),
 				 _id2last(0) {
   vector<int> first,second,third;
   for(unsigned int ix=1000001;ix<1000007;++ix){
@@ -40,14 +40,16 @@ SSH3SFSFVertex::SSH3SFSFVertex():_mw(0.),_sw(0.),_tb(0.),_mu(0.),
 }
 
 void SSH3SFSFVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _mw << _sw << _tb << _mu << _trilinear;
+  os << _theSS << ounit(_mw,GeV) << _sw << _tb 
+     << ounit(_mu,GeV) << ounit(_trilinear,GeV);
 }
 
 void SSH3SFSFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _mw >> _sw >> _tb >> _mu >> _trilinear;
-  _q2last=0.;
+  is >> _theSS >> iunit(_mw,GeV) >> _sw >> _tb 
+     >> iunit(_mu,GeV) >> iunit(_trilinear,GeV);
+  _q2last=0.*GeV2;
   _glast=0.;
-  _hfact=0.;
+  _hfact=0.*MeV;
   _id1last=0;
   _id2last=0;
 }
@@ -127,12 +129,12 @@ void SSH3SFSFVertex::Init() {
        if((isf1/1000000)==1) {imass=isf1-1000000;}
        else {imass=isf1-2000000;}
        Energy fmass = getParticleData(imass)->mass();
-       _hfact = fmass/2./_mw;
+       double fact = fmass/2./_mw;
        if(isf1%2==0) {
 	 unsigned int tri;
 	 if((isf1/1000000)==1) {tri=isf1-1000001;}
 	 else {tri=isf1-2000001;}
-	 _hfact *= (_mu + (_trilinear[tri]/_tb));
+	 _hfact = fact * (_mu + (_trilinear[tri]/_tb));
        }
        else {
 	 unsigned int tri;
@@ -144,10 +146,10 @@ void SSH3SFSFVertex::Init() {
 	   if((isf1/1000000)==1) {tri=isf1-1000001;}
 	   else {tri=isf1-2000001;}
 	 }
-	 _hfact *= (_mu + _trilinear[tri]*_tb);
+	 _hfact = fact * (_mu + _trilinear[tri]*_tb);
        }
      }
-      setNorm(_glast*_hfact);
+      setNorm(_glast*_hfact*UnitRemoval::InvE);
    }
    else {
      throw HelicityConsistencyError() << "Incorrect particles detected in "

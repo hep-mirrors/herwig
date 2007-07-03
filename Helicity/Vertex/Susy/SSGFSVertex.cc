@@ -11,7 +11,7 @@
 
 using namespace Herwig::Helicity;
 
-SSGFSVertex::SSGFSVertex() :_q2last(0.),_couplast(0.), 
+SSGFSVertex::SSGFSVertex() :_q2last(0.*sqr(MeV)),_couplast(0.), 
 			    _id1last(0), _id2last(0) {
   vector<int> first,second,third;
   for(unsigned int ix=1;ix<7;++ix) {
@@ -44,7 +44,7 @@ void SSGFSVertex::persistentOutput(PersistentOStream & os) const {
 void SSGFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _stop >> _sbottom;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*sqr(MeV);
   _id1last = 0;
   _id2last = 0;
 }

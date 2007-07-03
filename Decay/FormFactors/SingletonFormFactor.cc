@@ -66,13 +66,13 @@ void SingletonFormFactor::doinit() throw(InitException) {
 }
 
 void SingletonFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _mcharm << _mstrange <<  _thetalambda << _thetasigma << _thetaxi 
-     << _thetaxip << _polemass << _xi << _NmM << _mquark;
+  os << ounit(_mcharm,GeV) << ounit(_mstrange,GeV) <<  _thetalambda << _thetasigma << _thetaxi 
+     << _thetaxip << ounit(_polemass,GeV) << _xi << _NmM << ounit(_mquark,GeV);
 }
 
 void SingletonFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _mcharm >> _mstrange >>  _thetalambda >> _thetasigma >> _thetaxi 
-     >> _thetaxip >> _polemass >> _xi >> _NmM >> _mquark;
+  is >> iunit(_mcharm,GeV) >> iunit(_mstrange,GeV) >>  _thetalambda >> _thetasigma >> _thetaxi 
+     >> _thetaxip >> iunit(_polemass,GeV) >> _xi >> _NmM >> iunit(_mquark,GeV);
 }
 
 ClassDescription<SingletonFormFactor> SingletonFormFactor::initSingletonFormFactor;
@@ -125,7 +125,7 @@ void SingletonFormFactor::Init() {
     ("PoleMass",
      "The mass for the energy dependence of the form-factors.",
      &SingletonFormFactor::_polemass,
-     1.*GeV, 0, 0, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
 }
 
 // form factor for spin-1/2 to spin-1/2

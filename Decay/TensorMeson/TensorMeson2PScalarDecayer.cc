@@ -203,10 +203,10 @@ int TensorMeson2PScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 
 
 void TensorMeson2PScalarDecayer::persistentOutput(PersistentOStream & os) const 
-{os << _incoming << _outgoing1 << _outgoing2 << _maxweight << _coupling;}
+{os << _incoming << _outgoing1 << _outgoing2 << _maxweight << ounit(_coupling,1/GeV);}
 
 void TensorMeson2PScalarDecayer::persistentInput(PersistentIStream & is, int) 
-{is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> _coupling;}
+{is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> iunit(_coupling,1/GeV);}
 
 ClassDescription<TensorMeson2PScalarDecayer> TensorMeson2PScalarDecayer::initTensorMeson2PScalarDecayer;
 // Definition of the static class description member.
@@ -239,7 +239,7 @@ void TensorMeson2PScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMeson2PScalarDecayer::_coupling,
-     0, 0, 0, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, 0/GeV, 0/GeV, 100./GeV, false, false, true);
 
   static ParVector<TensorMeson2PScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -254,7 +254,7 @@ double TensorMeson2PScalarDecayer::me2(bool vertex, const int,
 				       const Particle & inpart,
 				       const ParticleVector & decay) const
 {
-  vector<LorentzTensor> inten;
+  vector<LorentzTensor<double> > inten;
   // wave functions etc for the incoming particle
   RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
   TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
@@ -327,7 +327,7 @@ void TensorMeson2PScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
 		 << _outgoing2[ix] << "\n";
 	  output << "set " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*GeV << "\n";
 	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}
@@ -340,7 +340,7 @@ void TensorMeson2PScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
 		 << _outgoing2[ix] << "\n";
 	  output << "insert " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*GeV << "\n";
 	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}

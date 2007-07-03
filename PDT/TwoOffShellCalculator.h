@@ -19,7 +19,6 @@ using namespace ThePEG;
  * to perform the integral.
  */
 struct TwoOffShellIntegrand {
-  
   /**
    * Constructor.
    * @param in Pointer to the OneOffShellCalculator class this is doing the 
@@ -34,8 +33,10 @@ struct TwoOffShellIntegrand {
   /**
    * Retreive function value
    */
-  inline double operator ()(double argument) const;
-  
+  inline Energy operator ()(double argument) const;
+  typedef double ArgType;
+  typedef Energy ValType;
+
 private:
 
   /**

@@ -47,7 +47,7 @@ tPVector PartonSplitter::split(const tPVector & tagged, tStepPtr pstep) {
       continue;
     }
     // should not have been called for massless or space-like gluons
-    if((**pit).momentum().m2() <= 0.0 ) {
+    if((**pit).momentum().m2() <= 0.0*sqr(MeV) ) {
       throw Exception()
 	<< "Spacelike or massless gluon m2= " << (**pit).momentum().m2()/GeV2
 	<< "GeV2 in PartonSplitter::split()"
@@ -81,6 +81,7 @@ void PartonSplitter::splitTimeLikeGluon(tcPPtr ptrGluon, PPtr & ptrQ, PPtr & ptr
   Lorentz5Momentum momentumQ = Lorentz5Momentum();
   Lorentz5Momentum momentumQbar = Lorentz5Momentum();
   double cosThetaStar = UseRandom::rnd( -1.0 , 1.0 );
+  using Constants::pi;
   double phiStar = UseRandom::rnd( -pi , pi );
   Energy constituentQmass = getParticleData(newId)->constituentMass();
 

@@ -83,9 +83,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual double threeBodydGammads(const int imode, const Energy q2, const  Energy2 s,
-				   const Energy m1, const Energy m2, 
-				   const Energy m3) const;
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2, 
+				      const Energy2 s,
+				      const Energy m1, const Energy m2, 
+				      const Energy m3) const;
 
   /**
    * Output the setup information for the particle database

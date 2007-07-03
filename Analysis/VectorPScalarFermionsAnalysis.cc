@@ -60,26 +60,26 @@ void VectorPScalarFermionsAnalysis::analyze(tPPtr part) {
     _outgoingP.push_back(id[0]);
     _outgoingf.push_back(abs(id[1]));
     _mff.push_back(new_ptr(Histogram(0.0,
-				     part->nominalMass()+part->dataPtr()->widthUpCut(),
+				     (part->nominalMass()+part->dataPtr()->widthUpCut())/MeV,
 				     200)));
     _mPf.push_back(new_ptr(Histogram(0.0,
-				     part->nominalMass()+part->dataPtr()->widthUpCut(),
+				     (part->nominalMass()+part->dataPtr()->widthUpCut())/MeV,
 				     200)));
     _mPfbar.push_back(new_ptr(Histogram(0.0,
-				     part->nominalMass()+part->dataPtr()->widthUpCut(),
+				     (part->nominalMass()+part->dataPtr()->widthUpCut())/MeV,
 				     200)));
   }
   // add the results to the histogram
   Lorentz5Momentum ptemp;
   ptemp=part->children()[1]->momentum()+part->children()[2]->momentum();
   ptemp.rescaleMass();
-  *_mff[ix]+=ptemp.mass();
+  *_mff[ix]+=ptemp.mass()/MeV;
   ptemp=part->children()[0]->momentum()+part->children()[1]->momentum();
   ptemp.rescaleMass();
-  *_mPf[ix]+=ptemp.mass();
+  *_mPf[ix]+=ptemp.mass()/MeV;
   ptemp=part->children()[0]->momentum()+part->children()[2]->momentum();
   ptemp.rescaleMass();
-  *_mPfbar[ix]+=ptemp.mass();
+  *_mPfbar[ix]+=ptemp.mass()/MeV;
 }
 
 NoPIOClassDescription<VectorPScalarFermionsAnalysis> VectorPScalarFermionsAnalysis::initVectorPScalarFermionsAnalysis;

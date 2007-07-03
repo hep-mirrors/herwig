@@ -9,10 +9,10 @@ using namespace ThePEG;
 
 template <class T>
 inline ThreeBodyAllOn1IntegralCalculator<T>::
-ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth,
+ThreeBodyAllOn1IntegralCalculator(int intype, Energy inmass, Energy inwidth, double inpow,
 				  T indGamma,int mode,
 				  Energy m1,Energy m2,Energy m3)
-  : _variabletype(intype),_intmass(inmass),_intwidth(inwidth),_mode(mode),
+  : _variabletype(intype),_intmass(inmass),_intwidth(inwidth),_intpower(inpow),_mode(mode),
     _theDgamma(indGamma) 
 {
   _m .resize(4);
@@ -37,7 +37,7 @@ inline Energy ThreeBodyAllOn1IntegralCalculator<T>::getMass(const int id) const 
   if(id<4) return _m[id]; 
   else {
     cerr << "Tried to set invalid mass" << endl; 
-    return 0.;
+    return 0.*MeV;
   }
 }
 
@@ -48,7 +48,7 @@ inline Energy ThreeBodyAllOn1IntegralCalculator<T>::otherMass(const int id) cons
   else if(id==3) return _m[1]+_m[2];
   else {
     cerr << "Tried to set invalid mass" << endl;
-    return 0.;
+    return 0.*MeV;
   }
 }
 }

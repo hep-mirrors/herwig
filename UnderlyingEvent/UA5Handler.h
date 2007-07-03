@@ -248,7 +248,7 @@ private:
    */
   void generateMomentum(tClusterPtr clu1,tClusterPtr clu2,
 			const ClusterVector &clusters, Energy CME,
-			Lorentz5Momentum cm) const throw(Veto,Exception);
+			const Lorentz5Momentum & cm) const throw(Veto,Exception);
   
   /**
    * The implementation of the cylindrical phase space.
@@ -273,7 +273,8 @@ private:
    * @param stdev the standard deviation of the distribution
    * @return Arandom value from the gaussian distribution
    */
-  inline double gaussDistribution(double mean, double stdev) const;
+  template <typename T>
+  inline T gaussDistribution(T mean, T stdev) const;
   
   /**
    * This returns a random number with a flat distribution
@@ -292,7 +293,8 @@ private:
    * @param px The x component after random rotation
    * @param py The y component after random rotation
    */
-  inline void randAzm(Energy pt, Energy &px, Energy &py) const;
+  template <typename T>
+  inline void randAzm(T pt, T &px, T &py) const;
   
   /**
    * This returns random number from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ distribution,
@@ -301,7 +303,7 @@ private:
    * @param B The slope
    * @return the value distributed from \f$dN/dp_T^2=exp(-p_{1,2,3}m_T\f$ with mean av
    */
-  inline double randExt(Energy AM0,InvEnergy B) const;
+  inline Energy randExt(Energy AM0,InvEnergy B) const;
   //@}
   
 private:

@@ -241,7 +241,7 @@ double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
   return me;
 }
 
-double EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy q2,
+InvEnergy EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy2 q2,
 					   const  Energy2 s, const Energy m1,
 					   const Energy m2, const Energy m3) const {
   Energy q(sqrt(q2)),m34(m1+m2),msum(m34+m3),Q(q-msum);
@@ -252,9 +252,10 @@ double EtaPiPiPiDecayer::threeBodydGammads(const int imodeb, const Energy q2,
   Energy rs(sqrt(s)),e2star(0.5*(s-m12+m22)/rs),e3star(0.5*(q2-s-m32)/rs);
   Energy e2sm(sqrt(e2star*e2star-m22)),e3sm(sqrt(e3star*e3star-m32));
   Energy2 a(2*e2star*e3star+m22+m32),b(2*e2sm*e3sm);
-  double output=2*b*(1+_a[imodeb]*y+_b[imodeb]*y2+_c[imodeb]*xfact*xfact*(xc*xc))
+  Energy2 output=2*b*(1+_a[imodeb]*y+_b[imodeb]*y2+_c[imodeb]*xfact*xfact*(xc*xc))
     +_c[imodeb]*(-8.*xfact*xfact*xc*a*b
 		 +4.*2*b*(3.*a*a+b*b)/3.*xfact*xfact);
+  using Constants::pi;
   return output*_prefactor[imodeb]/256./pi/pi/pi/q2/q;
 }
 
@@ -283,7 +284,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   Energy m[3]={mpi,mpi,getParticleData(_outgoing[imode])->mass()};
   WidthCalculatorBasePtr 
     temp(new_ptr(ThreeBodyAllOn1IntegralCalculator<EtaPiPiPiDecayer>
-		 (1,-1000.,0.0,*this,imode,m[0],m[1],m[2])));
+		 (1,-1000.*MeV,0.0*MeV,0.0,*this,imode,m[0],m[1],m[2])));
   if(_outgoing[imode]==ParticleID::eta) {
     tcGenericMassGeneratorPtr test;
     tGenericMassGeneratorPtr massptr;
@@ -294,7 +295,7 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
     }
     if(massptr) {
       massptr->init();
-      return new_ptr(OneOffShellCalculator(3,temp,massptr,0.));
+      return new_ptr(OneOffShellCalculator(3,temp,massptr,0.*MeV));
     }
   }
   return temp;

@@ -37,18 +37,18 @@ inline IBPtr TwoPionPhotonCurrent::fullclone() const {
 }
 
 // calculate the F function at a given scale  
-inline complex<double> TwoPionPhotonCurrent::FFunction(Energy2 q2) const {
-  Complex output(0.);
+inline complex<InvEnergy> TwoPionPhotonCurrent::FFunction(Energy2 q2) const {
+  complex<InvEnergy2> output(0./MeV2);
   for(unsigned int ix=0, N=_resweights.size(); ix<N && ix <3;++ix) {
-    output-=_resweights[ix]*BreitWigner(q2,ix);
+    output -= _resweights[ix]*BreitWigner(q2,ix);
   }
   return output*_grho*_grhoomegapi*sqrt(2.);
 }
 
 // fixed width Breit wigner
-inline Complex TwoPionPhotonCurrent::BreitWigner(Energy2 q2,unsigned int ires) const {
+inline complex<InvEnergy2> TwoPionPhotonCurrent::BreitWigner(Energy2 q2,unsigned int ires) const {
   static const Complex ii(0.,1.);
-  Complex denom;
+  complex<Energy2> denom;
   if(ires<_rhomasses.size()) {
     denom = q2-_rhomasses[ires]*_rhomasses[ires]+ii*_rhomasses[ires]*_rhowidths[ires];
   }

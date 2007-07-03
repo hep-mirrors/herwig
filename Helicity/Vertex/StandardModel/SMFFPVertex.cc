@@ -19,7 +19,6 @@ void SMFFPVertex::persistentOutput(PersistentOStream & os) const {
 
 void SMFFPVertex::persistentInput(PersistentIStream & is, int) {
   is >> _charge >> _theSM;
-  _couplast=0.;_q2last=-1.;
 }
 
 ClassDescription<SMFFPVertex> 

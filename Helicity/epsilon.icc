@@ -1,0 +1,42 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the epsilon class.
+//
+//  Author: Peter Richardson
+//
+
+namespace Herwig {
+namespace Helicity {
+
+using namespace ThePEG;
+
+template <typename A, typename B, typename C>
+inline LorentzVector<typename BinaryOpTraits<typename BinaryOpTraits<A,B>::MulT, 
+					     C>::MulT>
+epsilon(const LorentzVector<A> & a,
+		     const LorentzVector<B> & b,
+		     const LorentzVector<C> & c)
+{
+  typedef typename BinaryOpTraits<A,B>::MulT ABType;
+  typedef typename BinaryOpTraits<ABType, C>::MulT ABCType;
+  typedef LorentzVector<ABCType> ResultType;
+
+  ABType diffxy = a.x() * b.y()  -  a.y() * b.x();
+  ABType diffxz = a.x() * b.z()  -  a.z() * b.x();
+  ABType diffxt = a.x() * b.t()  -  a.t() * b.x();
+  ABType diffyz = a.y() * b.z()  -  a.z() * b.y();
+  ABType diffyt = a.y() * b.t()  -  a.t() * b.y();
+  ABType diffzt = a.z() * b.t()  -  a.t() * b.z();
+
+  ResultType result;
+  result.setX( c.z() * diffyt  - c.t() * diffyz  - c.y() * diffzt); 
+  result.setY( c.t() * diffxz  - c.z() * diffxt  + c.x() * diffzt);
+  result.setZ(-c.t() * diffxy  + c.y() * diffxt  - c.x() * diffyt);
+  result.setT(-c.z() * diffxy  + c.y() * diffxz  - c.x() * diffyz);
+
+  return result;
+}
+
+}
+}

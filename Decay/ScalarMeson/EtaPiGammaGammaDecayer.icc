@@ -16,7 +16,7 @@ inline EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   // the mass and width of the rho 
   _rhomass  =771.1*MeV;
   _rhowidth =149.2*MeV;
-  _rhoconst=0.;_mpi=0.;
+  _rhoconst=0.;_mpi=0.*MeV;
   // the coupling for the conversion of a rho to a photon
   _grho=_rhomass/_fpi;
   // use local values of the rho mass and width
@@ -24,12 +24,12 @@ inline EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
   // ratios of the decay constants
   _ratiofpif8 =1./1.3;
   _ratiofpif0 =1./1.04;
-  _theta = -pi/9.;
+  _theta = -Constants::pi/9.;
   // the maximum weights for the different decays
   _etamax  = 1.35;
   _etapmax = 0.006;
   // the constants for the matrix elements
-  for(unsigned int ix=0;ix<2;++ix){_Dconst[ix]=0.;_Econst[ix]=0.;}
+  for(unsigned int ix=0;ix<2;++ix){_Dconst[ix]=0./MeV2;_Econst[ix]=0./MeV2;}
   // intermediates
   generateIntermediates(false);
 }

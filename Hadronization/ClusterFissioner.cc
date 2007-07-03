@@ -21,13 +21,15 @@
 using namespace Herwig;
 
 void ClusterFissioner::persistentOutput(PersistentOStream & os) const {
-  os << _hadronsSelector << _clMax << _clPow << _pSplit1 << _pSplit2 
-     << _btClM << _iopRem << ounit(_kappa, GeV/meter);
+  os << _hadronsSelector << ounit(_clMax,GeV) 
+     << _clPow << _pSplit1 << _pSplit2 << ounit(_btClM,GeV) << _iopRem
+     << ounit(_kappa, GeV/meter);
 }
 
 void ClusterFissioner::persistentInput(PersistentIStream & is, int) {
-  is >> _hadronsSelector >> _clMax >> _clPow >> _pSplit1 >> _pSplit2 
-     >> _btClM >> _iopRem >> iunit(_kappa, GeV/meter);
+  is >> _hadronsSelector >> iunit(_clMax,GeV) 
+     >> _clPow >> _pSplit1 >> _pSplit2 >> iunit(_btClM,GeV) >> _iopRem
+     >> iunit(_kappa, GeV/meter);
 }
 
 ClassDescription<ClusterFissioner> ClusterFissioner::initClusterFissioner;
@@ -125,8 +127,9 @@ void ClusterFissioner::fission(const StepPtr &pstep, bool softUEisOn) {
     // to be split
     if((*it)->isBeamCluster()) splitClusters.push_back(*it);
     // If the cluster is heavy add it to the vector of clusters to be split.
-    else if(pow((*it)->mass() , _clPow) > 
-	    pow(_clMax, _clPow) + pow((*it)->sumConstituentMasses(), _clPow))
+    else if(pow((*it)->mass()/MeV , _clPow) > 
+	    pow(_clMax/MeV, _clPow) 
+	    + pow((*it)->sumConstituentMasses()/MeV, _clPow))
       splitClusters.push_back(*it);
   }
   // split the clusters
@@ -203,8 +206,9 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
       clusters.push_back(one);
       if(one->isBeamCluster() && softUEisOn)
 	one->isAvailable(false);
-      if(pow(one->mass(), _clPow) > 
-	 pow(_clMax, _clPow) + pow(one->sumConstituentMasses(), _clPow)
+      if(pow(one->mass()/MeV, _clPow) > 
+	 pow(_clMax/MeV, _clPow) 
+	 + pow(one->sumConstituentMasses()/MeV, _clPow)
 	 &&one->isAvailable()) {
 	clusterStack.push_back(one);
       } 
@@ -213,8 +217,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
       clusters.push_back(two);
       if(two->isBeamCluster() && softUEisOn)
 	two->isAvailable(false);
-      if(pow(two->mass(), _clPow) > 
-	 pow(_clMax, _clPow) + pow(two->sumConstituentMasses(), _clPow)
+      if(pow(two->mass()/MeV, _clPow) > 
+	 pow(_clMax/MeV, _clPow) + pow(two->sumConstituentMasses()/MeV, _clPow)
 	 && two->isAvailable()) {
 	clusterStack.push_back(two);
       } 
@@ -475,8 +479,11 @@ void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
   if(rmin > 50.0) rmin = 0.0;
 
   // hard cluster
-  if(!soft)
-    {Mclu = pow(UseRandom::rnd(pow(M-m1-m2-m, expt), pow(m, expt)), 1./expt) + m1;}
+  if(!soft) {
+    Mclu = pow(UseRandom::rnd(pow((M-m1-m2-m)/MeV, expt), 
+			      pow(m/MeV, expt)), 1./expt
+		)*MeV + m1;
+  }
   // Otherwise it uses a soft mass distribution
   else 
     { 

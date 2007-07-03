@@ -92,7 +92,7 @@ void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
 		   << "\"]\n";
     }
     
-    if ((*it)->check_momentum_conservation() > 1.0 * MeV)
+    if ((*it)->check_momentum_conservation() > 1.0)
       hepmcdotfile << (*it)->barcode() 
 		   << " [color=red,width=0.2,height=0.2]\n";
     

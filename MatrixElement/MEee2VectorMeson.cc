@@ -44,8 +44,7 @@ void MEee2VectorMeson::setKinematics() {
 bool MEee2VectorMeson::generateKinematics(const double *) {
   Lorentz5Momentum pout=meMomenta()[0]+meMomenta()[1];
   pout.rescaleMass();
-  meMomenta()[2].setMass(pout.mass());
-  meMomenta()[2].set(pout.x(),pout.y(),pout.z(),pout.t());
+  meMomenta()[2] = pout;
   jacobian(1.0);
   // check passes all the cuts
   vector<LorentzMomentum> out(1,meMomenta()[2]);
@@ -121,16 +120,16 @@ MEee2VectorMeson::diagrams(const DiagramVector &) const {
 }
 
 CrossSection MEee2VectorMeson::dSigHatDR() const {
-  double wgt;
+  InvEnergy2 wgt;
   Energy  M(_vector->mass()),G(_vector->width());
   Energy2 M2(sqr(M)),GM(G*M);
   if(_massgen&&_lineshape) {
-    wgt =Constants::pi*_massgen->weight(sqrt(sHat()))/(sqr(sHat()-M2)+sqr(GM));
+    wgt =Constants::pi*_massgen->weight(sqrt(sHat()))/(sqr(sHat()-M2)+sqr(GM))*UnitRemoval::E2;
   }
   else {
     wgt = sHat()*G/M/(sqr(sHat()-M2)+sqr(sHat()*G/M));
   }
-  return me2()*jacobian()*wgt;
+  return me2()*jacobian()*wgt*sqr(hbarc);
 }
 
 void MEee2VectorMeson::doinit() throw(InitException) {
@@ -181,13 +180,13 @@ ProductionMatrixElement MEee2VectorMeson::HelicityME(vector<SpinorWaveFunction> 
       vec =  fin[inhel1].wave().vectorCurrent(ain[inhel2].wave());
       vec*=_coupling;
       for(outhel1=0;outhel1<3;++outhel1) {
-	product=vec*vout[outhel1].wave();
+	product = vec.dot(vout[outhel1].wave());
 	output(inhel1,inhel2,outhel1)=product;
 	me+=real(product*conj(product));
       }
     }
   }
-  aver=me/sHat();
+  aver=me/sHat()*UnitRemoval::E2;
   return output;
 }
 

@@ -71,19 +71,23 @@ BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()
   // initial number of modes
   initialModes(numberOfFactors());
   // eta-eta' mixing angle
-  _thetaeta = -pi/9.;
+  _thetaeta = -Constants::pi/9.;
 }
 
 BallZwickyScalarFormFactor::~BallZwickyScalarFormFactor() {}
 
 void BallZwickyScalarFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _r10 << _r20 << _r1plus << _r2plus << _r1T << _r2T << _m120 << _mfit20 
-     << _m12plus << _mfit2plus << _m12T << _mfit2T << _thetaeta;
+  os << _r10 << _r20 << _r1plus << _r2plus << _r1T << _r2T 
+     << ounit(_m120,GeV2) << ounit(_mfit20,GeV2) 
+     << ounit(_m12plus,GeV2) << ounit(_mfit2plus,GeV2) 
+     << ounit(_m12T,GeV2) << ounit(_mfit2T,GeV2) << _thetaeta;
 }
 
 void BallZwickyScalarFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _r10 >> _r20 >> _r1plus >> _r2plus >> _r1T >> _r2T >> _m120 >> _mfit20 
-     >> _m12plus >> _mfit2plus >> _m12T >> _mfit2T >> _thetaeta;
+  is >> _r10 >> _r20 >> _r1plus >> _r2plus >> _r1T >> _r2T 
+     >> iunit(_m120,GeV2) >> iunit(_mfit20,GeV2) 
+     >> iunit(_m12plus,GeV2) >> iunit(_mfit2plus,GeV2) 
+     >> iunit(_m12T,GeV2) >> iunit(_mfit2T,GeV2) >> _thetaeta;
 }
 
 ClassDescription<BallZwickyScalarFormFactor> BallZwickyScalarFormFactor::initBallZwickyScalarFormFactor;
@@ -171,7 +175,7 @@ void BallZwickyScalarFormFactor::Init() {
   static Parameter<BallZwickyScalarFormFactor,double> interfaceThetaEtaEtaPrime
     ("ThetaEtaEtaPrime",
      "The eta-eta' mixing angle",
-     &BallZwickyScalarFormFactor::_thetaeta, -pi/9., -pi, pi,
+     &BallZwickyScalarFormFactor::_thetaeta, -Constants::pi/9., -Constants::pi, Constants::pi,
      false, false, true);
 }
 
@@ -183,16 +187,16 @@ void BallZwickyScalarFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned  int
 						 	Complex & f0, Complex & fp) const
 {
   // the F_0 form-factor
-  if(_m120[mode]<0)
+  if(_m120[mode]<0*GeV2)
     {f0=_r20[mode]/(1.-q2/_mfit20[mode]);}
-  else if(_mfit20[mode]<0)
+  else if(_mfit20[mode]<0*GeV2)
     {f0=(_r10[mode]+_r20[mode]/(1.-q2/_m120[mode]))/(1.-q2/_m120[mode]);}
   else
-    {f0=_r10[mode]/(1.-q2/_m120[mode])+_r20[mode]/(1.-_mfit20[mode]);}
+    {f0=_r10[mode]/(1.-q2/_m120[mode])+_r20[mode]/(1.-q2/_mfit20[mode]);}
   // the F_1 form-factor
-  if(_m12plus[mode]<0)
+  if(_m12plus[mode]<0*GeV2)
     {fp = _r2plus[mode]/(1.-q2/_mfit2plus[mode]);}
-  else if(_mfit2plus[mode]<0)
+  else if(_mfit2plus[mode]<0*GeV2)
     {fp = (_r1plus[mode]+_r2plus[mode]/(1.-q2/_m12plus[mode]))/(1.-q2/_m12plus[mode]);}
   else
     {fp =_r1plus[mode]/(1.-q2/_m12plus[mode])+_r2plus[mode]/(1.-q2/_mfit2plus[mode]);}
@@ -210,9 +214,9 @@ void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
 							     Complex & fT) const
 {
   // the F_T form-factor
-  if(_m12T[mode]<0)
+  if(_m12T[mode]<0*GeV2)
     {fT = _r2T[mode]/(1.-q2/_mfit2T[mode]);}
-  else if(_mfit2T[mode]<0)
+  else if(_mfit2T[mode]<0*GeV2)
     {fT = (_r1T[mode]+_r2T[mode]/(1.-q2/_m12T[mode]))/(1.-q2/_m12T[mode]);}
   else
     {fT =_r1T[mode]/(1.-q2/_m12T[mode])+_r2T[mode]/(1.-q2/_mfit2T[mode]);}

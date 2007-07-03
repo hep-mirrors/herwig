@@ -1,7 +1,7 @@
 pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 3:0:0
-HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwAnalysis_la_LIBADD =
+HwAnalysis_la_LDFLAGS = -module -version-info 3:0:0 $(CLHEPLDFLAGS)
+HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(CLHEPINCLUDE)
+HwAnalysis_la_LIBADD = $(CLHEPLIB)
 HwAnalysis_la_SOURCES = \
 EvtShapes.fh EvtShapes.icc EvtShapes.cc EvtShapes.h \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \

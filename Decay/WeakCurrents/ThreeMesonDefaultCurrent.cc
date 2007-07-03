@@ -16,10 +16,15 @@
 using namespace Herwig;
 using namespace ThePEG;
 
+namespace {
+  inline Energy  timesGeV (double x) { return x * GeV; }
+  inline Energy2 timesGeV2(double x) { return x * GeV2; }
+}
+
 ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   // the pion decay constant
   _fpi=130.7*MeV/sqrt(2.);
-  _mpi=0.;_mK=0.;
+  _mpi=0.*MeV;_mK=0.*MeV;
   // set the initial weights for the resonances
   // the rho weights
   _rhoF123wgts.push_back(1.0);_rhoF123wgts.push_back(-0.145);
@@ -54,7 +59,7 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
   _kstarF5widths.push_back(0.0513*GeV);
   // initialization of the a_1 running width
   _initializea1=false;
-  Energy2 a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
+  double a1q2in[200]={0,15788.6,31577.3,47365.9,63154.6,78943.2,94731.9,110521,
 		       126309,142098,157886,173675,189464,205252,221041,236830,
 		       252618,268407,284196,299984,315773,331562,347350,363139,
 		       378927,394716,410505,426293,442082,457871,473659,489448,
@@ -90,7 +95,7 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
 		       2.98405e+06,2.99984e+06,3.01563e+06,3.03142e+06,3.04721e+06,
 		       3.063e+06,3.07879e+06,3.09457e+06,3.11036e+06,3.12615e+06,
 		       3.14194e+06};
-  Energy a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
+  double a1widthin[200]={0,0,0,0,0,0,0,0,0,0,0,0,0.00153933,0.0136382,0.0457614,
 			 0.105567,0.199612,0.333825,0.513831,0.745192,1.0336,1.38501,
 			 1.80581,2.30295,2.88403,3.5575,4.33278,5.22045,6.23243,
 			 7.38223,8.68521,10.1589,11.8234,13.7018,15.8206,18.2107,
@@ -118,8 +123,19 @@ ThreeMesonDefaultCurrent::ThreeMesonDefaultCurrent() {
 			 726.468,727.041,727.608,728.166,728.718,729.262,729.808,
 			 730.337,730.856,731.374,731.883,732.386,732.884,733.373,
 			 733.859,734.339,734.813};
-  _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
-  _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
+
+  vector<double> tmp1(a1widthin,a1widthin+200);
+  _a1runwidth.clear();
+  std::transform(tmp1.begin(), tmp1.end(),
+		 back_inserter(_a1runwidth),
+		 timesGeV);
+  
+  vector<double> tmp2(a1q2in,a1q2in+200);
+  _a1runq2.clear();
+  std::transform(tmp2.begin(), tmp2.end(),
+		 back_inserter(_a1runq2),
+		 timesGeV2);
+
   _maxmass=0.*GeV;
   _maxcalc=0.*GeV;
 }
@@ -237,22 +253,32 @@ void ThreeMesonDefaultCurrent::doinit() throw(InitException) {
 
 void ThreeMesonDefaultCurrent::persistentOutput(PersistentOStream & os) const {
   os << _rhoF123wgts << _kstarF123wgts << _rhoF5wgts << _kstarF5wgts
-     << _rhoKstarwgt <<  _a1runwidth << _a1runq2 <<  _initializea1
-     << _a1mass << _a1width << _k1mass << _k1width << _fpi << _mpi << _mK
-     <<_rhoparameters << _rhoF123masses << _rhoF5masses << _rhoF123widths 
-     << _rhoF5widths << _kstarparameters << _kstarF123masses <<_kstarF5masses
-     << _kstarF123widths << _kstarF5widths << _a1parameters << _k1parameters
-     << _a1opt << _maxmass << _maxcalc;
+     << _rhoKstarwgt <<  ounit(_a1runwidth,GeV)<< ounit(_a1runq2,GeV2)
+     <<  _initializea1
+     << ounit(_a1mass,GeV)<< ounit(_a1width,GeV)<< ounit(_k1mass,GeV)
+     << ounit(_k1width,GeV)<< ounit(_fpi,GeV) << ounit(_mpi,GeV)<< ounit(_mK,GeV)
+     <<_rhoparameters << ounit(_rhoF123masses,GeV) << ounit(_rhoF5masses,GeV) 
+     << ounit(_rhoF123widths,GeV) 
+     << ounit(_rhoF5widths,GeV) << _kstarparameters << ounit(_kstarF123masses,GeV) 
+     <<ounit(_kstarF5masses,GeV)
+     << ounit(_kstarF123widths,GeV) << ounit(_kstarF5widths,GeV) << _a1parameters 
+     << _k1parameters
+     << _a1opt << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void ThreeMesonDefaultCurrent::persistentInput(PersistentIStream & is, int) {
   is >> _rhoF123wgts >> _kstarF123wgts >> _rhoF5wgts >> _kstarF5wgts
-     >> _rhoKstarwgt >>  _a1runwidth >> _a1runq2 >>  _initializea1
-     >> _a1mass >> _a1width >> _k1mass >> _k1width >> _fpi >> _mpi >> _mK
-     >>_rhoparameters >> _rhoF123masses >> _rhoF5masses >> _rhoF123widths 
-     >> _rhoF5widths >> _kstarparameters >> _kstarF123masses >>_kstarF5masses
-     >> _kstarF123widths >> _kstarF5widths >> _a1parameters >> _k1parameters
-     >> _a1opt >> _maxmass >> _maxcalc;
+     >> _rhoKstarwgt >>  iunit(_a1runwidth,GeV) >> iunit(_a1runq2,GeV2) 
+     >>  _initializea1
+     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >> iunit(_k1mass,GeV) 
+     >> iunit(_k1width,GeV) >> iunit(_fpi,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV)
+     >>_rhoparameters >> iunit(_rhoF123masses,GeV) >> iunit(_rhoF5masses,GeV) 
+     >> iunit(_rhoF123widths,GeV) 
+     >> iunit(_rhoF5widths,GeV) >> _kstarparameters >> iunit(_kstarF123masses,GeV) 
+     >>iunit(_kstarF5masses,GeV)
+     >> iunit(_kstarF123widths,GeV) >> iunit(_kstarF5widths,GeV) >> _a1parameters 
+     >> _k1parameters
+     >> _a1opt >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
 ClassDescription<ThreeMesonDefaultCurrent> ThreeMesonDefaultCurrent::initThreeMesonDefaultCurrent;
@@ -485,11 +511,12 @@ bool ThreeMesonDefaultCurrent::acceptMode(int imode) const {
 }
 
 // calculate the form-factors
-void ThreeMesonDefaultCurrent::
-calculateFormFactors(const int ichan, const int imode,
-		     Energy2 q2, Energy2 s1, Energy2 s2, Energy2 s3,
-		     Complex & F1, Complex & F2, Complex & F3, Complex & F4,
-		     Complex & F5) const {
+ThreeMesonDefaultCurrent::FormFactors 
+ThreeMesonDefaultCurrent::calculateFormFactors(const int ichan, const int imode,
+					       Energy2 q2, Energy2 s1, 
+					       Energy2 s2, Energy2 s3) const {
+  Complex F1, F2, F3, F4, F5;
+  F1 = F2 = F3 = F4 = F5 = 0.0;
   // calculate the pi- pi- pi+ factor
   if(imode==0) {
     Complex a1fact(a1BreitWigner(q2)*2./3.);
@@ -578,8 +605,13 @@ calculateFormFactors(const int ichan, const int imode,
     else        F5 = BrhoF5(q2,ichan/3)*BrhoF123(s3,ichan%3)*sqrt(2./3.);
   }
   // multiply by the prefactors
-  F1/=_fpi;F2/=_fpi;F3/=_fpi;F4/=_fpi;F5/=_fpi;
-  F5 =-F5/4./pi/pi/_fpi/_fpi;
+  using Constants::twopi;
+  return FormFactors(F1/_fpi,
+		     F2/_fpi,
+		     F3/_fpi,
+		     F4/_fpi,
+		     -F5/sqr(twopi)/pow<3,1>(_fpi)
+		     );
 }
 
 // complete the construction of the decay mode for integration
@@ -590,7 +622,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
   int iq(0),ia(0);
   if(!acceptMode(imode)) return false;
   PDVector extpart(particles(1,imode,iq,ia));
-  Energy min(0.);
+  Energy min(0.*MeV);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   // the particles we will use a lot
@@ -851,7 +883,7 @@ bool ThreeMesonDefaultCurrent::createMode(int icharge, unsigned int imode,
 void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.) return;
+    if(!_initializea1||_maxmass==0.*MeV) return;
     // parameters for the table of values
     Energy2 step(sqr(_maxcalc)/199.);
     // integrator to perform the integral
@@ -860,21 +892,21 @@ void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
     Energy mrho(getParticleData(ParticleID::rhoplus)->mass()),
       wrho(getParticleData(ParticleID::rhoplus)->width());
     vector<Energy> inmass(2,mrho),inwidth(2,wrho);
+    vector<double> inpow(2,0.0);
     ThreeBodyAllOnCalculator<ThreeMesonDefaultCurrent> 
-      widthgen(inweights,intype,inmass,inwidth,*this,0,_mpi,_mpi,_mpi);
+      widthgen(inweights,intype,inmass,inwidth,inpow,*this,0,_mpi,_mpi,_mpi);
     // normalisation constant to give physical width if on shell
     double a1const(_a1width/(widthgen.partialWidth(sqr(_a1mass))));
     // loop to give the values
-    Energy moff2(0.);
-    _a1runq2.resize(0);_a1runwidth.resize(0);
-    for(;moff2<=sqr(_maxcalc);moff2+=step) {
+    _a1runq2.clear(); _a1runwidth.clear();
+    for(Energy2 moff2(0.*MeV2); moff2<=sqr(_maxcalc); moff2+=step) {
       _a1runwidth.push_back(widthgen.partialWidth(moff2)*a1const);
       _a1runq2.push_back(moff2);
     }
   }
   // set up the interpolator
   else if(iopt==0) {
-    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
+    _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
   }
 }
 

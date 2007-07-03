@@ -40,7 +40,7 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
     }
     PDVector extpart(3);
     for(PDVector::iterator iter=decaylist.begin();iter!=decaylist.end();) {
-      Energy m2(0.),m3(0.);
+      Energy m2(0.*MeV),m3(0.*MeV);
       bool cc1(false),cc2(false),cc3(false);
       if((*iter)->CC()) {cc1=true;}
       if((*(iter+1))->CC()) {cc2=true;}

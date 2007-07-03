@@ -51,6 +51,7 @@ void TauCorrelationAnalysis::dofinish() {
 
 void TauCorrelationAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
+  using Constants::pi;
   _phi       = new_ptr(Histogram(0.,pi,100));
   _delta     = new_ptr(Histogram(3.,pi,100));
   _rhoangle1 = new_ptr(Histogram(0.,pi,100));
@@ -132,15 +133,15 @@ void TauCorrelationAnalysis::analyzePi(tPPtr part) {
     }
   }
   if(!taup||!taum||!pim||!pip||!nu||!nub){return;}
-  Hep3Vector bv(-part->momentum().boostVector());
+  Boost bv(-part->momentum().boostVector());
   Lorentz5Momentum ptaup(taup->momentum());ptaup.boost(bv);
   Lorentz5Momentum ptaum(taum->momentum());ptaum.boost(bv);
   Lorentz5Momentum ppim( pim->momentum() );ppim.boost(bv);
   Lorentz5Momentum ppip( pip->momentum() );ppip.boost(bv);
   Lorentz5Momentum pnu(  nu->momentum()  );pnu.boost(bv);
   Lorentz5Momentum pnub( nub->momentum() );pnub.boost(bv);
-  Hep3Vector norm1(ppip.vect().cross(pnub.vect()));
-  Hep3Vector norm2(ppim.vect().cross(pnu.vect()));
+  Vector3<Energy2> norm1(ppip.vect().cross(pnub.vect()));
+  Vector3<Energy2> norm2(ppim.vect().cross(pnu.vect()));
   double phi=norm1.angle(norm2);
   *_phi   +=phi;
   *_delta +=ppip.vect().angle(ppim.vect());
@@ -188,14 +189,14 @@ void TauCorrelationAnalysis::analyzeRho(tPPtr part) {
     else if(idtemp==ParticleID::pi0) pi0b=rhop->children()[ix];
   }
   if(!pim||!pip||!pi0a||!pi0b) return;
-  LorentzVector prest(rhom->momentum()+rhop->momentum());
-  Hep3Vector bv(-prest.boostVector());
+  LorentzMomentum prest(rhom->momentum()+rhop->momentum());
+  Boost bv(-prest.boostVector());
   Lorentz5Momentum ppim( pim->momentum() );ppim.boost(bv);
   Lorentz5Momentum ppip( pip->momentum() );ppip.boost(bv);
   Lorentz5Momentum ppi0a( pi0a->momentum() );ppi0a.boost(bv);
   Lorentz5Momentum ppi0b( pi0b->momentum() );ppi0b.boost(bv);
-  Hep3Vector norm1(ppip.vect().cross(ppi0b.vect()));
-  Hep3Vector norm2(ppim.vect().cross(ppi0a.vect()));
+  Vector3<Energy2> norm1(ppip.vect().cross(ppi0b.vect()));
+  Vector3<Energy2> norm2(ppim.vect().cross(ppi0a.vect()));
   double phi=norm1.angle(norm2);
 
   Lorentz5Momentum ptaup(taup->momentum());

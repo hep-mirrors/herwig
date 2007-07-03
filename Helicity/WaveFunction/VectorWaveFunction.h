@@ -142,7 +142,7 @@ public:
    * @param dir The direction.
    * @param phase The phase choice.
    */
-  inline VectorWaveFunction(LorentzVector p,const tcPDPtr & part,
+  inline VectorWaveFunction(LorentzMomentum p,const tcPDPtr & part,
 			    unsigned int ihel,Direction dir,
 			    VectorPhase phase=default_vector_phase);
 
@@ -169,7 +169,7 @@ public:
    * @param dir The direction.
    * @param phase The phase choice.
    */
-  inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+  inline VectorWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,
 			    unsigned int ihel,
 			    Direction dir,VectorPhase phase=default_vector_phase);
 
@@ -215,7 +215,7 @@ public:
    * @param part The ParticleData pointer.
    * @param dir The direction.
    */
-  inline VectorWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir);
+  inline VectorWaveFunction(LorentzMomentum p,const tcPDPtr & part,Direction dir);
 
   /**
    * Constructor, set the mass   and direction,
@@ -234,7 +234,7 @@ public:
    * @param part The ParticleData pointer.
    * @param dir The direction.
    */
-  inline VectorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir);
+  inline VectorWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,Direction dir);
 
   /**
    * Special constructor which calculates all the polarization vectors,
@@ -324,15 +324,15 @@ public:
    *  Access to the wavefunction and its components.
    */
   //@{
-  /**
-   * Subscript operator for the wavefunction.
-   */
-  inline Complex operator ()(int ) const;
+ //  /**
+//    * Subscript operator for the wavefunction.
+//    */
+//   inline Complex operator ()(int ) const;
 
-  /**
-   * Set components by index.
-   */
-  inline Complex & operator () (int);
+//   /**
+//    * Set components by index.
+//    */
+//   inline Complex & operator () (int);
 
   /**
    * Return wavefunction as polarization vector. 

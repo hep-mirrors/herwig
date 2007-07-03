@@ -61,11 +61,11 @@ VectorMesonCurrent::VectorMesonCurrent()
 }
 
 void VectorMesonCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _id << _decay_constant;
+  os << _id << ounit(_decay_constant,GeV2);
 }
 
 void VectorMesonCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _id >> _decay_constant;
+  is >> _id >> iunit(_decay_constant,GeV2);
 }
 
 ClassDescription<VectorMesonCurrent> VectorMesonCurrent::initVectorMesonCurrent;
@@ -130,7 +130,7 @@ PDVector VectorMesonCurrent::particles(int icharge, unsigned int imode, int iq, 
   return output;
 }
 
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 VectorMesonCurrent::current(bool vertex, const int imode, const int, 
 			    Energy & scale,const ParticleVector & decay) const
 {
@@ -149,9 +149,12 @@ VectorMesonCurrent::current(bool vertex, const int imode, const int,
   // set up the spin information for the particle and calculate the wavefunctions
   VectorWaveFunction(temp,decay[0],outgoing,true,false,vertex);
   // normalise the current
-  for(unsigned int ix=0;ix<3;++ix){temp[ix]*=fact;}
+  vector<LorentzPolarizationVectorE> returnval(3);
+  for(unsigned int ix=0;ix<3;++ix) {
+    returnval[ix] = temp[ix] * fact;
+  }
   // return the answer
-  return temp;
+  return returnval;
 }
 
 bool VectorMesonCurrent::accept(vector<int> id)

@@ -109,7 +109,7 @@ private:
   /**
    * The coupling.
    */
-  double _theKappa;
+  InvEnergy _theKappa;
 
 };
 }

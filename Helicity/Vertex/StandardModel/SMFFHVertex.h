@@ -117,7 +117,7 @@ private:
   /**
    *  Last evaluation of the coupling
    */
-  Complex _couplast;
+  complex<InvEnergy> _couplast;
 
   /**
    *  The value of \f$\sin\theta_w\f$.

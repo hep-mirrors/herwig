@@ -38,7 +38,7 @@ inline void EtaPiPiGammaDecayer::doinitrun() {
 // the analytic omnes function  
 inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
   Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
-  double root,pi2(pi*pi);
+  double root, pi2 = sqr(Constants::pi);
   Complex f,ii(0.,1.);
   double pre(mpi2/12./pi2/_fpi/_fpi);
   if(s>4.*mpi2) {
@@ -59,14 +59,14 @@ inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
   
 inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const {
   if(!_oreal) {
-    _oreal = new_ptr(Interpolator(_omnesfunctionreal,_omnesenergy,3));
-    _oimag = new_ptr(Interpolator(_omnesfunctionimag,_omnesenergy,3));
+    _oreal = make_InterpolatorPtr(_omnesfunctionreal,_omnesenergy,3);
+    _oimag = make_InterpolatorPtr(_omnesfunctionimag,_omnesenergy,3);
   }
   Energy q(sqrt(s)); Complex ii(0.,1.);
   return (*_oreal)(q)+ii*(*_oimag)(q);
 }
 
-inline OmnesIntegrand::OmnesIntegrand(InterpolatorPtr in,Energy2 eps) {
+inline OmnesIntegrand::OmnesIntegrand(Interpolator<double,Energy>::Ptr in,Energy2 eps) {
   _interpolator=in;
   _precision=eps;
 }
@@ -75,8 +75,9 @@ inline void OmnesIntegrand::setScale(Energy2 in) {
   _s=in;
 }
 
-inline double OmnesIntegrand::operator ()(double xpoint) const {
-  double output(0.); Energy q(sqrt(xpoint));
+inline InvEnergy4 OmnesIntegrand::operator ()(Energy2 xpoint) const {
+  InvEnergy4 output = InvEnergy4();
+  Energy q(sqrt(xpoint));
   if(abs(xpoint-_s)>_precision) 
     output= (*_interpolator)(q)/xpoint/(xpoint-_s);
   return output;

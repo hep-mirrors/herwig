@@ -142,10 +142,10 @@ int VectorMesonPVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm)
 
 
 void VectorMesonPVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const {
-os << _incoming << _outgoingA << _outgoingP << _maxweight << _coupling;}
+os << _incoming << _outgoingA << _outgoingP << _maxweight << ounit(_coupling,1/GeV);}
 
 void VectorMesonPVectorPScalarDecayer::persistentInput(PersistentIStream & is, int) {
-is >> _incoming >> _outgoingA >> _outgoingP >> _maxweight >> _coupling;}
+is >> _incoming >> _outgoingA >> _outgoingP >> _maxweight >> iunit(_coupling,1/GeV);}
 
 ClassDescription<VectorMesonPVectorPScalarDecayer> VectorMesonPVectorPScalarDecayer::initVectorMesonPVectorPScalarDecayer;
 // Definition of the static class description member.
@@ -179,7 +179,7 @@ void VectorMesonPVectorPScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &VectorMesonPVectorPScalarDecayer::_coupling,
-     0, 0, 0, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, 0/GeV, 0./GeV, 100./GeV, false, false, true);
 
   static ParVector<VectorMesonPVectorPScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -207,13 +207,14 @@ double VectorMesonPVectorPScalarDecayer::me2(bool vertex, const int,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   Energy2 p0dotpv(inpart.momentum()*decay[0]->momentum());
-  Complex epsdot(0.),pre(_coupling[imode()]/inpart.mass());  
+  complex<Energy> epsdot(0.*MeV);
+  InvEnergy2 pre(_coupling[imode()]/inpart.mass());  
   for(unsigned int ix=0;ix<3;++ix)
     {
       epsdot=vout[ix]*inpart.momentum();
       for(unsigned int iy=0;iy<3;++iy)
 	{
-	  newME(iy,ix,0)=pre*(p0dotpv*(vout[ix]*invec[iy])-
+	  newME(iy,ix,0)=pre*(p0dotpv*(vout[ix].dot(invec[iy]))-
 			      epsdot*(invec[iy]*decay[0]->momentum()));
 	}
     }
@@ -273,7 +274,7 @@ void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
 		 << _outgoingP[ix] << "\n";
 	  output << "set " << fullName() << ":Coupling " << ix << " "
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*MeV << "\n";
 	  output << "set " << fullName() << ":MaxWeight " << ix << " "
 		 << _maxweight[ix] << "\n";
 	}
@@ -286,7 +287,7 @@ void VectorMesonPVectorPScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
 		 << _outgoingP[ix] << "\n";
 	  output << "insert " << fullName() << ":Coupling " << ix << " "
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*MeV << "\n";
 	  output << "insert " << fullName() << ":MaxWeight " << ix << " "
 		 << _maxweight[ix] << "\n";
 	}

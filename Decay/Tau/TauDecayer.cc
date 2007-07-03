@@ -130,11 +130,11 @@ int TauDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
 
 
 void TauDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _gf << _modemap << _current << _wgtloc << _wgtmax << _weights;
+  os << ounit(_gf,1/GeV2) << _modemap << _current << _wgtloc << _wgtmax << _weights;
 }
 
 void TauDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _gf >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights;
+  is >> iunit(_gf,1/GeV2) >> _modemap >> _current >> _wgtloc >> _wgtmax >> _weights;
 }
 
 ClassDescription<TauDecayer> TauDecayer::initTauDecayer;
@@ -182,8 +182,8 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
   // spin density matrix for the decaying particle
   RhoDMatrix temp(PDT::Spin1Half);temp.average();
   // storage for the wavefunctions of the tau and neutrino
-  vector<LorentzSpinor> wave;
-  vector<LorentzSpinorBar> wavebar;
+  vector<LorentzSpinor<SqrtEnergy> > wave;
+  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
   // calculate or extract the wavefunctions of the neutrino
   if(inpart.id()==ParticleID::tauminus) {
     SpinorWaveFunction   (wave   ,temp,const_ptr_cast<tPPtr>(&inpart),
@@ -202,7 +202,7 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
   ParticleVector hadpart(start,end);
   // calculate the hadron current
   Energy q;
-  vector<LorentzPolarizationVector> 
+  vector<LorentzPolarizationVectorE> 
     hadron(_current->current(vertex,mode,ichan,q,hadpart));
   // prefactor
   double pre(pow(inpart.mass()/q,int(hadpart.size()-2)));pre*=pre;
@@ -220,11 +220,13 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
   constants[decay.size()]=1;
   constants[0]=constants[1];
   // calculate the lepton current
-  LorentzPolarizationVector lepton[2][2];
+  LorentzPolarizationVectorE lepton[2][2];
   for(ix=0;ix<2;++ix) {
     for(iy=0;iy<2;++iy) {
-      if(inpart.id()==15) lepton[ix][iy]=2.*wave[ix].leftCurrent(wavebar[iy]); 
-      else                lepton[iy][ix]=2.*wave[ix].leftCurrent(wavebar[iy]); 
+      if(inpart.id()==15) 
+	lepton[ix][iy]=2.*wave[ix].leftCurrent(wavebar[iy]); 
+      else                
+	lepton[iy][ix]=2.*wave[ix].leftCurrent(wavebar[iy]); 
     }
   }
   // compute the matrix element
@@ -238,7 +240,7 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
     // element
     for(ihel[1]=0;ihel[1]<2;++ihel[1]){
       for(ihel[0]=0;ihel[0]<2;++ihel[0]) {
-	newME(ihel)= lepton[ihel[0]][ihel[1]]*hadron[hhel];
+	newME(ihel)= lepton[ihel[0]][ihel[1]].dot(hadron[hhel])*UnitRemoval::InvE2;
       }
     }
   }
@@ -252,7 +254,7 @@ double TauDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
     if(iq%2==0) ckm = SM().CKM(iq/2-1,(abs(ia)-1)/2);
     else        ckm = SM().CKM(abs(ia)/2-1,(iq-1)/2);
   }
-  return 0.5*pre*ckm*(newME.contract(temp)).real()*_gf*_gf;
+  return 0.5*pre*ckm*(newME.contract(temp)).real()*_gf*_gf*UnitRemoval::E4;
 }
   
 // output the setup information for the particle database

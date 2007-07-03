@@ -303,11 +303,13 @@ WSBFormFactor::WSBFormFactor()
 WSBFormFactor::~WSBFormFactor() {}
 
 void WSBFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _F0 << _V << _A0 << _A1 << _A2 << _mS0 << _mS1 << _mV0 << _mV1 << _thetaeta;
+  os << _F0 << _V << _A0 << _A1 << _A2 
+     << ounit(_mS0,GeV) << ounit(_mS1,GeV) << ounit(_mV0,GeV) << ounit(_mV1,GeV) << _thetaeta;
 }
 
 void WSBFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _F0 >> _V >> _A0 >> _A1 >> _A2 >> _mS0 >> _mS1 >> _mV0 >> _mV1 >> _thetaeta;
+  is >> _F0 >> _V >> _A0 >> _A1 >> _A2 
+     >> iunit(_mS0,GeV) >> iunit(_mS1,GeV) >> iunit(_mV0,GeV) >> iunit(_mV1,GeV) >> _thetaeta;
 }
 
 ClassDescription<WSBFormFactor> WSBFormFactor::initWSBFormFactor;
@@ -376,7 +378,7 @@ void WSBFormFactor::Init() {
   static Parameter<WSBFormFactor,double> interfaceThetaEtaEtaPrime
     ("ThetaEtaEtaPrime",
      "The eta-eta' mixing angle",
-     &WSBFormFactor::_thetaeta, -0.194, -pi, pi,
+     &WSBFormFactor::_thetaeta, -0.194, -Constants::pi, Constants::pi,
      false, false, true);
 }
 

@@ -108,7 +108,7 @@ private:
   /**
    * Weighting of phase space for V-A matrix elements
    */
-  static double VAWt(double*);
+  static double VAWt(Energy2, Energy2, Energy2, InvEnergy4);
 
   /**
    *  Describe a concrete class with persistent data.

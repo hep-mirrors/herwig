@@ -230,11 +230,13 @@ int ScalarScalarScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const 
 }
 
 void ScalarScalarScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << ounit(_coupling,MeV)
+     << _incoming << _outgoing1 << _outgoing2 << _maxweight;
 }
 
 void ScalarScalarScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> iunit(_coupling,MeV)
+     >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
 }
 
 ClassDescription<ScalarScalarScalarDecayer> 
@@ -269,7 +271,7 @@ void ScalarScalarScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarScalarScalarDecayer::_coupling,
-     0, 0, 0, 0.0, 1000000., false, false, true);
+     MeV, 0, 0*MeV, 0.0*MeV, 1000000.*MeV, false, false, true);
 
   static ParVector<ScalarScalarScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -288,14 +290,17 @@ double ScalarScalarScalarDecayer::me2(bool vertex, const int,
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
   // set up the spin info for the outgoing particles
   //ALB for(unsigned int ix=0;ix<2;++ix){ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-  for(unsigned int ix=0;ix<2;++ix){PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
+  for (unsigned int ix=0;ix<2;++ix) {
+    PPtr mytemp = decay[ix]; 
+    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  }
 
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0);
   double fact(_coupling[imode()]/inpart.mass());
-  newME(0,0,0)=fact;
+  newME(0,0,0) = fact;
   ME(newME);
-  return fact*fact;
+  return sqr(fact);
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
@@ -348,7 +353,7 @@ void ScalarScalarScalarDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
       output << "set " << fullName() << ":Coupling " << ix << " " 
-	     << _coupling[ix] << "\n";
+	     << _coupling[ix]/MeV << "\n";
       output << "set " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }
@@ -360,7 +365,7 @@ void ScalarScalarScalarDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
 	     << _outgoing2[ix] << "\n";
       output << "insert " << fullName() << ":Coupling " << ix << " " 
-	     << _coupling[ix] << "\n";
+	     << _coupling[ix]/MeV << "\n";
       output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
     }

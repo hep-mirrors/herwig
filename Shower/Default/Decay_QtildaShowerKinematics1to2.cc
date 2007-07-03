@@ -26,8 +26,8 @@ updateChildren(const tShowerParticlePtr theParent,
   double dphi = phi();
   // set the values
   if(theParent->showerVariables().empty()) {
-    theParent->showerVariables().resize(3,0.);
-    theParent->showerParameters().resize(2,0.);
+    theParent->showerVariables().resize(3);
+    theParent->showerParameters().resize(2);
     theParent->showerParameters()[0]=1.;
   }
   for(unsigned int ix=0;ix<2;++ix) {
@@ -59,7 +59,7 @@ updateChildren(const tShowerParticlePtr theParent,
 }
 
 void Decay_QtildaShowerKinematics1to2::
-reconstructParent( const tShowerParticlePtr, const ParticleVector) const {
+reconstructParent( const tShowerParticlePtr, const ParticleVector ) const {
   throw Exception() << "Decay_QtildaShowerKinematics1to2::updateParent not implemented"
 		    << Exception::abortnow;
 }
@@ -90,9 +90,9 @@ void Decay_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr
     Lorentz5Momentum ppartner(partner->momentum());
     if(partner->getThePEGBase()) ppartner=partner->getThePEGBase()->momentum();
     pcm=ppartner;
-    Hep3Vector boost(p.findBoostToCM());
+    Boost boost(p.findBoostToCM());
     pcm.boost(boost);
-    n = Lorentz5Momentum( 0.0,0.5*p.mass()*pcm.vect().unit()); 
+    n = Lorentz5Momentum( 0.0*MeV,0.5*p.mass()*pcm.vect().unit()); 
     n.boost( -boost);
   }
   else {

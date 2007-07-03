@@ -57,7 +57,7 @@ void VSSDecayer::Init() {
      newme(ix,0,0) = _theVSSPtr->evaluate(scale,inwave[ix],sca1,sca2);
    }
    ME(newme);
-   double output=(newme.contract(rhoin)).real()/scale;
+   double output=(newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
    if(decay[0]->id() == decay[1]->id()) {
      output /= 2.;
    }

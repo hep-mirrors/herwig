@@ -12,7 +12,7 @@
 
 using namespace Herwig::Helicity;
 
-SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(0.), 
+SSCNWVertex::SSCNWVertex() : _sw(0.),  _couplast(0.), _q2last(), 
 			     _id1last(0), _id2last(0), _leftlast(0.),
 			     _rightlast(0.) {
   vector<int> first, second, third;
@@ -44,7 +44,7 @@ void SSCNWVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _sw >> _theN >> _theU >> _theV;
   _id1last = 0;
   _id2last = 0;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
   _couplast = 0.;
   _leftlast = 0.;
   _rightlast = 0.;

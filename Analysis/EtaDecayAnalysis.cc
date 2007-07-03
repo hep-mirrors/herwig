@@ -349,7 +349,7 @@ void EtaDecayAnalysis::dofinish() {
 
 void EtaDecayAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  Energy meta[2]={547.45,957.78};
+  double meta[2]={547.45, 957.78};
   for(unsigned int ix=0;ix<2;++ix) {
     _mgammagamma .push_back(new_ptr(Histogram(0.,meta[ix],200)));
     _mpi0gamma   .push_back(new_ptr(Histogram(0.,meta[ix],200)));

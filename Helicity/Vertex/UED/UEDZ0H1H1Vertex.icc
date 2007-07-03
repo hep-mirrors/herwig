@@ -8,8 +8,8 @@ namespace Herwig {
 namespace Helicity {
 
 inline UEDZ0H1H1Vertex::UEDZ0H1H1Vertex() : theSinThetaW(0.), theCosThetaW(0.),
-					    theCosTheta2W(0.), theMw2(0.), 
-					    theR2(0.), theq2Last(0.), 
+					    theCosTheta2W(0.), theMw2(), 
+					    theR2(), theq2Last(), 
 					    theCoupLast(0.) {
   setList(vector<int>(1, 23), vector<int>(1, 5100037), 
 	  vector<int>(1, -5100037));

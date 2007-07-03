@@ -215,7 +215,7 @@ public:
    * @param scale The scale \f$q^2\f$.
    * @param part The ParticleData object for the particle
    */
-  inline double mass(Energy2 scale,tcPDPtr part) const;
+  inline Energy mass(Energy2 scale,tcPDPtr part) const;
   
   /**
    * Return a pointer to the object handling the running mass.

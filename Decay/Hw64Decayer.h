@@ -109,7 +109,7 @@ private:
   /**
    * Weighting of phase space for V-A matrix elements
    */
-  static double VAWt(double*);
+  static double VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3);
 
   /**
    * Take an array of momenta and set the momentum member of the particles.

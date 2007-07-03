@@ -22,12 +22,12 @@ inline void TwoBodyAllOnCalculator::resetMass(int ipart,Energy mass) {
 inline Energy TwoBodyAllOnCalculator::getMass(const int ipart) const {
   if(ipart==1){return _mass1;}
   else if(ipart==2){return _mass2;}
-  else{cerr << "unknown particle" << endl;return 0.;}
+  else{cerr << "unknown particle" << endl;return Energy();}
 }
 
 inline Energy TwoBodyAllOnCalculator::otherMass(const int ipart) const {
   if(ipart==1){return _mass2;}
   else if(ipart==2){return _mass1;}
-  else{cerr << "unknown particle" << endl;return 0.;}
+  else{cerr << "unknown particle" << endl;return Energy();}
 }
 }

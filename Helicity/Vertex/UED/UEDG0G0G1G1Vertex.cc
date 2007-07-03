@@ -18,7 +18,7 @@ void UEDG0G0G1G1Vertex::persistentOutput(PersistentOStream & os) const {
 
 void UEDG0G0G1G1Vertex::persistentInput(PersistentIStream & is, int) {
   is >> theUEDBase;
-  theq2Last = 0.;
+  theq2Last = 0.*GeV2;
   theCoupLast = 0.;
 }
 

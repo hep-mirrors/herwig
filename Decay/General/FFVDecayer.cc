@@ -95,7 +95,7 @@ double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newME);
-  double output = (newME.contract(rhoin)).real()/scale;
+  double output = (newME.contract(rhoin)).real()/scale*UnitRemoval::E2;
   colourConnections(inpart, decay);  
   return output;
 }

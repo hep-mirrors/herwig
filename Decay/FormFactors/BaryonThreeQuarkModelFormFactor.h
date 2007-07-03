@@ -334,6 +334,8 @@ struct BaryonCFunction {
    *  Return the value
    */
   inline double operator ()(double argument) const;
+  typedef double ArgType;
+  typedef double ValType;
   
   /**
    *  A pointer to the form factor to supply the integrand.

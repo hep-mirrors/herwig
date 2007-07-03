@@ -343,7 +343,7 @@ Energy2 MEPP2ZJet::scale() const {
 }
 
 CrossSection MEPP2ZJet::dSigHatDR() const {
-  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat());
+  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
 }
 
 bool MEPP2ZJet::generateKinematics(const double * r) {
@@ -363,10 +363,10 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // maximum mass of the gauge boson so pt is possible
   Energy2 maxMass2 = min(ecm*(ecm-2.*ptmin),lastCuts().maxS(ptemp));
   if(maxMass2<minMass2) return false;
-  Energy mz2;
+  Energy2 mz2;
   // generation of the mass
   Energy M=_z0->mass(),Gamma=_z0->width();
-  Energy M2=sqr(M),MG=(M*Gamma);
+  Energy2 M2=sqr(M),MG=(M*Gamma);
   double rhomin=atan((minMass2-M2)/MG);
   double rhomax=atan((maxMass2-M2)/MG);
   if(UseRandom::rnd()<_pprob) {
@@ -382,7 +382,7 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   // jacobian
   jacobian(jacobian()/(emjac1+emjac2)/sHat());
   // set the masses of the outgoing particles to 2-2 scattering
-  meMomenta()[2].setMass(0.);
+  meMomenta()[2].setMass(0.*MeV);
   Lorentz5Momentum pz(mz);
   // generate the polar angle of the hard scattering
   double ctmin = -1.0, ctmax = 1.0;
@@ -403,8 +403,8 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
   double cth = getCosTheta(ctmin, ctmax, r);
   Energy pt = q*sqrt(1.0-sqr(cth));
   double phi=UseRandom::rnd()*2.0*Constants::pi;
-  meMomenta()[2].setV(Momentum3( pt*sin(phi), pt*cos(phi), q*cth));
-  pz.setV(            Momentum3(-pt*sin(phi),-pt*cos(phi),-q*cth));
+  meMomenta()[2].setVect(Momentum3( pt*sin(phi), pt*cos(phi), q*cth));
+  pz.setVect(            Momentum3(-pt*sin(phi),-pt*cos(phi),-q*cth));
   meMomenta()[2].rescaleEnergy();
   pz.rescaleEnergy();
   // generate the momenta of the Z decay products
@@ -418,19 +418,19 @@ bool MEPP2ZJet::generateKinematics(const double * r) {
     return false;
   }
   double cth2 =-1.+2.*UseRandom::rnd();
-  double phi2=2.*pi*UseRandom::rnd();
-  double pt2 =q2*sqrt(1.-sqr(cth2));
-  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.,
+  double phi2=Constants::twopi*UseRandom::rnd();
+  Energy pt2 =q2*sqrt(1.-sqr(cth2));
+  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.*MeV,
 					    meMomenta()[3].mass()),
-			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.,
+			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.*MeV,
 					   meMomenta()[4].mass())};
   pl[0].rescaleEnergy();
   pl[1].rescaleEnergy();
-  Hep3Vector boostv(pz.boostVector());
+  Boost boostv(pz.boostVector());
   pl[0].boost(boostv);
   pl[1].boost(boostv);
-  meMomenta()[3].set(pl[0].x(),pl[0].y(),pl[0].z(),pl[0].t());
-  meMomenta()[4].set(pl[1].x(),pl[1].y(),pl[1].z(),pl[1].t());
+  meMomenta()[3] = pl[0];
+  meMomenta()[4] = pl[1];
   // check passes all the cuts
   vector<LorentzMomentum> out(3);
   tcPDVector tout(3);
@@ -609,7 +609,7 @@ double MEPP2ZJet::qqbarME(vector<SpinorWaveFunction> & fin,
   if(mePartonData()[3]->coloured()) colspin*=3.;
   DVector save;
   for(unsigned int ix=0;ix<5;++ix) {
-    me[ix]*=colspin*sHat();
+    me[ix]*=colspin*sHat()*UnitRemoval::InvE2;
     if(ix>0) save.push_back(me[ix]);
   }
   meInfo(save);
@@ -698,7 +698,7 @@ double MEPP2ZJet::qgME(vector<SpinorWaveFunction> & fin,
   if(mePartonData()[3]->coloured()) colspin*=3.;
   DVector save;
   for(unsigned int ix=0;ix<5;++ix) {
-    me[ix]*=colspin*sHat();
+    me[ix]*=colspin*sHat()*UnitRemoval::InvE2;
     if(ix>0) save.push_back(me[ix]);
   }
   meInfo(save);
@@ -787,7 +787,7 @@ double MEPP2ZJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   if(mePartonData()[3]->coloured()) colspin*=3.;
   DVector save;
   for(unsigned int ix=0;ix<5;++ix) {
-    me[ix]*=colspin*sHat();
+    me[ix]*=colspin*sHat()*UnitRemoval::InvE2;
     if(ix>0) save.push_back(me[ix]);
   }
   meInfo(save);

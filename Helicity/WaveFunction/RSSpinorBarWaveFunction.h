@@ -89,10 +89,10 @@ public:
    * @param drep The Dirac representation.
    */
   inline RSSpinorBarWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,
-			      Complex xs1, Complex xs2, Complex xs3, Complex xs4,
-			      Complex ys1, Complex ys2, Complex ys3, Complex ys4,
-			      Complex zs1, Complex zs2, Complex zs3, Complex zs4,
-			      Complex ts1, Complex ts2, Complex ts3, Complex ts4,
+			      complex<double> xs1, complex<double> xs2, complex<double> xs3, complex<double> xs4,
+			      complex<double> ys1, complex<double> ys2, complex<double> ys3, complex<double> ys4,
+			      complex<double> zs1, complex<double> zs2, complex<double> zs3, complex<double> zs4,
+			      complex<double> ts1, complex<double> ts2, complex<double> ts3, complex<double> ts4,
 			      DiracRep drep=defaultDRep);
 
   /**
@@ -102,7 +102,7 @@ public:
    * @param wave The wavefunction.
    */
   inline RSSpinorBarWaveFunction(const Lorentz5Momentum & p,
-				 const tcPDPtr & part,LorentzRSSpinorBar & wave);
+				 const tcPDPtr & part,LorentzRSSpinorBar<double> & wave);
 
   /**
    * Constructor, set the momentum, helicity, direction and Dirac representation.
@@ -158,7 +158,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(LorentzVector p,const tcPDPtr & part,
+  inline RSSpinorBarWaveFunction(LorentzMomentum p,const tcPDPtr & part,
 				 unsigned int ihel,
 				 Direction dir,DiracRep drep=defaultDRep);
   
@@ -184,7 +184,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+  inline RSSpinorBarWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,
 				 unsigned int ihel,
 				 Direction dir,DiracRep drep=defaultDRep);
   
@@ -238,7 +238,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir,
+  inline RSSpinorBarWaveFunction(LorentzMomentum p,const tcPDPtr & part,Direction dir,
 				 DiracRep drep=defaultDRep);
   
   /**
@@ -261,7 +261,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+  inline RSSpinorBarWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,
 				 Direction dir,DiracRep drep=defaultDRep);
   
   /**
@@ -274,7 +274,7 @@ public:
    * @param vertex Whether or not to create the RSFermionSpinInfo object 
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave, tPPtr part,
+  inline RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave, tPPtr part,
 				 Direction dir,bool time, bool vertex,
 				 DiracRep drep=defaultDRep);
 
@@ -289,7 +289,7 @@ public:
    * @param vertex Whether or not to create the RSFermionSpinInfo object 
    * @param drep The Dirac representation.
    */
-  inline RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar>& wave,RhoDMatrix& rho,
+  inline RSSpinorBarWaveFunction(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,RhoDMatrix& rho,
 				 tPPtr part,Direction dir,bool time, bool vertex,
 				 DiracRep drep=defaultDRep);
   
@@ -317,177 +317,177 @@ public:
    * subscript operator for the wavefunction
    * Set components by index.
    */
-  inline Complex operator ()(int,int ) const;
+  inline complex<double> operator ()(int,int ) const;
   /**
    * subscript operator for the wavefunction
    * Set components by index.
    */
-  inline Complex & operator () (int,int);
+  inline complex<double> & operator () (int,int);
     
   /**
    * return wavefunction as LorentzRSSpinorBar
    */
-  inline const LorentzRSSpinorBar & wave() const;
+  inline LorentzRSSpinorBar<double> wave() const;
   
   /**
    * Get first spinor component for the x vector
    */
-  inline Complex xs1() const;
+  inline complex<double> xs1() const;
 
   /**
    * Get second spinor component for the x vector
    */
-  inline Complex xs2() const;
+  inline complex<double> xs2() const;
 
   /**
    * Get third  spinor component for the x vector
    */
-  inline Complex xs3() const;
+  inline complex<double> xs3() const;
 
   /**
    * Get fourth  spinor component for the x vector
    */
-  inline Complex xs4() const;
+  inline complex<double> xs4() const;
 
   /**
    * Get first spinor component for the y vector
    */
-  inline Complex ys1() const;
+  inline complex<double> ys1() const;
 
   /**
    * Get second spinor component for the y vector
    */
-  inline Complex ys2() const;
+  inline complex<double> ys2() const;
   
   /**
    * Get third spinor component for the y vector
    */
-  inline Complex ys3() const;
+  inline complex<double> ys3() const;
   
   /**
    * Get fourth spinor component for the y vector
    */
-  inline Complex ys4() const;
+  inline complex<double> ys4() const;
   
   /**
    * Get first spinor component for the z vector
    */
-  inline Complex zs1() const;
+  inline complex<double> zs1() const;
   
   /**
    * Get second spinor component for the z vector
    */
-  inline Complex zs2() const;
+  inline complex<double> zs2() const;
   
   /**
    * Get third spinor component for the z vector
    */
-  inline Complex zs3() const;
+  inline complex<double> zs3() const;
   
   /**
    * Get fourth spinor component for the z vector
    */
-  inline Complex zs4() const;
+  inline complex<double> zs4() const;
   
   /**
    * Get first spinor component for the t vector
    */
-  inline Complex ts1() const;
+  inline complex<double> ts1() const;
   
   /**
    * Get second spinor component for the t vector
    */
-  inline Complex ts2() const;
+  inline complex<double> ts2() const;
   
   /**
    * Get third spinor component for the t vector
    */
-  inline Complex ts3() const;
+  inline complex<double> ts3() const;
   
   /**
    * Get fourth spinor component for the t vector
    */
-  inline Complex ts4() const;
+  inline complex<double> ts4() const;
   
   /**
    * Set first spinor component for the x vector
    */
-  inline void setXS1(Complex);
+  inline void setXS1(complex<double>);
   
   /**
    * Set second spinor component for the x vector
    */
-  inline void setXS2(Complex);
+  inline void setXS2(complex<double>);
   
   /**
    * Set third spinor component for the x vector
    */
-  inline void setXS3(Complex);
+  inline void setXS3(complex<double>);
   
   /**
    * Set fourth spinor component for the x vector
    */
-  inline void setXS4(Complex);
+  inline void setXS4(complex<double>);
   
   /**
    * Set first spinor component for the y vector
    */
-  inline void setYS1(Complex);
+  inline void setYS1(complex<double>);
   
   /**
    * Set second spinor component for the y vector
    */
-  inline void setYS2(Complex);
+  inline void setYS2(complex<double>);
   
   /**
    * Set third spinor component for the y vector
    */
-  inline void setYS3(Complex);
+  inline void setYS3(complex<double>);
   
   /**
    * Set fourth spinor component for the y vector
    */
-  inline void setYS4(Complex);
+  inline void setYS4(complex<double>);
   
   /**
    * Set first spinor component for the z vector
    */
-  inline void setZS1(Complex);
+  inline void setZS1(complex<double>);
   
   /**
    * Set second spinor component for the z vector
    */
-  inline void setZS2(Complex);
+  inline void setZS2(complex<double>);
   
   /**
    * Set third spinor component for the z vector
    */
-  inline void setZS3(Complex);
+  inline void setZS3(complex<double>);
   
   /**
    * Set fourth spinor component for the z vector
    */
-  inline void setZS4(Complex);
+  inline void setZS4(complex<double>);
   
   /**
    * Set first spinor component for the t vector
    */
-  inline void setTS1(Complex);
+  inline void setTS1(complex<double>);
   
   /**
    * Set second spinor component for the t vector
    */
-  inline void setTS2(Complex);
+  inline void setTS2(complex<double>);
   
   /**
    * Set third spinor component for the t vector
    */
-  inline void setTS3(Complex);
+  inline void setTS3(complex<double>);
   
   /**
    * Set fourth spinor component for the t vector
    */
-  inline void setTS4(Complex);
+  inline void setTS4(complex<double>);
   //@}
 
   /**
@@ -543,7 +543,7 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the RSFermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzRSSpinorBar>& wave,tPPtr part,bool time,
+  inline void constructSpinInfo(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,tPPtr part,bool time,
 				bool vertex=true);
 
   /**
@@ -554,7 +554,7 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the RSFermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzRSSpinorBar>& wave,RhoDMatrix& rho,
+  inline void constructSpinInfo(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,RhoDMatrix& rho,
 				tPPtr part,bool time,bool vertex=true);
 
  private:
@@ -583,7 +583,7 @@ public:
    * @param spin Pointer to the RSFermionSpinInfo object
    * @param vertex Whether or not to set up the RSFermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzRSSpinorBar>& wave,tRSFermionSpinPtr spin,
+  inline void constructSpinInfo(vector<LorentzRSSpinorBar<SqrtEnergy> >& wave,tRSFermionSpinPtr spin,
 				bool vertex=true);
   
  private:
@@ -591,8 +591,16 @@ public:
   /**
    * storage of the Lorentz RSSpinorBar
    */
-  LorentzRSSpinorBar _wf;
+  LorentzRSSpinorBar<double> _wf;
+
   
+  LorentzRSSpinorBar<SqrtEnergy> dimensionedWf() {
+    LorentzRSSpinorBar<SqrtEnergy> temp(_wf.Type(),_wf.Rep());
+    for (unsigned int i=0; i<4; ++i)
+      for (unsigned int j=0; j<4; ++j)
+	temp(i,j) = _wf(i,j)*UnitRemoval::SqrtE;
+    return temp;
+  }
 };
 
 }

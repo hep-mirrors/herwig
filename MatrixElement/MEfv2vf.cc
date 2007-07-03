@@ -36,7 +36,7 @@ double MEfv2vf::me2() const {
       spb[i] = SpinorBarWaveFunction(meMomenta()[3], mePartonData()[3], i, 
 				     outgoing);
     }
-    if(mePartonData()[2]->mass() > 0.0)
+    if(mePartonData()[2]->mass() > 0.0*MeV)
       vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
     fv2vfHeME(sp, vecIn, vecOut, spb, fullme);
@@ -51,7 +51,7 @@ double MEfv2vf::me2() const {
 				     outgoing);
       sp[i] = SpinorWaveFunction(meMomenta()[3], mePartonData()[3], i, outgoing);
     }
-    if(mePartonData()[2]->mass() > 0.0)
+    if(mePartonData()[2]->mass() > 0.0*MeV)
       vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
     fbv2vfbHeME(spb, vecIn, vecOut, sp, fullme);
@@ -67,7 +67,7 @@ MEfv2vf::fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn,
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
-  const bool masslessC = mePartonData()[2]->mass() == 0.0;
+  const bool masslessC = mePartonData()[2]->mass() == 0.0*MeV;
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
 				 PDT::Spin1Half);
   vector<Complex> diag(ndiags, Complex(0., 0.));
@@ -146,7 +146,7 @@ MEfv2vf::fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn,
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
-  const bool masslessC = mePartonData()[2]->mass() == 0.0;
+  const bool masslessC = mePartonData()[2]->mass() == 0.0*MeV;
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
 				 PDT::Spin1Half);
   vector<Complex> diag(ndiags, Complex(0., 0.));

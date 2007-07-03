@@ -11,7 +11,7 @@
 
 using namespace Herwig::Helicity;
 
-SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(0.),_couplast(0.) {
+SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
   vector<int> first,second,third,fourth;
   //L-L squarks
   for(unsigned int ix=1000001;ix<1000007;++ix) {
@@ -37,7 +37,7 @@ void SSGGSQSQVertex::persistentOutput(PersistentOStream & os) const {
 void SSGGSQSQVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
 }
 
 ClassDescription<SSGGSQSQVertex> SSGGSQSQVertex::initSSGGSQSQVertex;

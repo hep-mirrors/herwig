@@ -9,9 +9,7 @@ using namespace ThePEG;
 
   inline SMFFPVertex::SMFFPVertex() : _charge(17,0.0)
 {
-  // zero the couplings (will be set in doinit)
-  for(int ix=0;ix<17;++ix){_charge[ix]=0.;};
-  _q2last=-1.;_couplast=0.;
+  _q2last=-1.*GeV2;_couplast=0.;
   // PDG codes for the particles
   vector<int> first,second,third;
   // the quarks
@@ -41,7 +39,9 @@ inline void SMFFPVertex::doinit() throw(InitException) {
       _charge[2*ix+10] = (_theSM->enu());
     }
   _couplast = 0.;
-  _q2last=-1.;
+  _q2last=-1.*GeV2;
+  orderInGem(1);
+  orderInGs(0);
   orderInGem(1);
   orderInGs(0);
   FFVVertex::doinit();

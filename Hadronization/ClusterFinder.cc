@@ -6,8 +6,6 @@
 
 #include "ClusterFinder.h"
 #include <ThePEG/Interface/ClassDocumentation.h>
-#include <ThePEG/Persistency/PersistentOStream.h>
-#include <ThePEG/Persistency/PersistentIStream.h>
 #include <ThePEG/PDT/StandardMatchers.h>
 #include <ThePEG/PDT/EnumParticles.h>
 #include <ThePEG/Repository/EventGenerator.h>

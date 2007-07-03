@@ -8,7 +8,7 @@ namespace Helicity {
 using namespace ThePEG;
 
   inline SMWWWWVertex::SMWWWWVertex() 
-    : _couplast(0.0), _q2last(0.0), 
+    : _couplast(0.0), _q2last(), 
       _vfact(4,0.0), _sw2(0.), _cw2(0.)
 {
   // particles

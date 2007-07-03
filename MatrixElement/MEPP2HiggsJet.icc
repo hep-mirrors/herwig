@@ -20,25 +20,27 @@ inline IBPtr MEPP2HiggsJet::fullclone() const {
 
 inline Complex MEPP2HiggsJet::W1(Energy2 s,Energy2 mf2) const {
   double root = sqrt(abs(1.-4.*mf2/s));
-  if(s<0.)          return 2.*root*asinh(0.5*sqrt(-s/mf2));
+  if(s<0.*GeV2)     return 2.*root*asinh(0.5*sqrt(-s/mf2));
   else if(s<4.*mf2) return 2.*root*asin(0.5*sqrt( s/mf2));
-  else              return root*(2.*acosh(0.5*sqrt(s/mf2))-pi*Complex(0.,1.));
+  else              return root*(2.*acosh(0.5*sqrt(s/mf2))
+				 -Constants::pi*Complex(0.,1.));
 }
 
 inline Complex MEPP2HiggsJet::W2(Energy2 s,Energy2 mf2) const {
   double root=0.5*sqrt(abs(s)/mf2);
-  if(s<0.)          return 4.*sqr(asinh(root));
+  if(s<0.*GeV2)     return 4.*sqr(asinh(root));
   else if(s<4.*mf2) return -4.*sqr(asin(root));
-  else              return 4.*sqr(acosh(root))-sqr(pi)-4.*pi*acosh(root)*Complex(0.,1.);
+  else              return 4.*sqr(acosh(root))-sqr(Constants::pi)
+		      -4.*Constants::pi*acosh(root)*Complex(0.,1.);
 }
 
 inline Complex MEPP2HiggsJet::I3(Energy2 s, Energy2 t, Energy2 u, Energy2 v,
 				 Energy2 mf2) const
 {
   double ratio=(4.*mf2*t/(u*s)),root(sqrt(1+ratio));
-  if(v==0.) return 0.;
+  if(v==0.*GeV2) return 0.;
   else {
-    Complex y=0.5*(1.+sqrt(1.-4.*(mf2+_epsi)/v));
+    Complex y=0.5*(1.+sqrt(1.-4.*(mf2+_epsi*MeV*MeV)/v));
     Complex xp=0.5*(1.+root),xm=0.5*(1.-root);
     Complex output = 
       Math::Li2(xm/(xm-y))-Math::Li2(xp/(xp-y))+
@@ -50,7 +52,7 @@ inline Complex MEPP2HiggsJet::I3(Energy2 s, Energy2 t, Energy2 u, Energy2 v,
 
 inline Complex MEPP2HiggsJet::b2(Energy2 s, Energy2 t, Energy2 u, Energy2 mf2) const {
   Energy2 mh2(s+u+t);
-  Complex output=s*(u-s)/(s+u)+2.*u*t*(u+2.*s)/sqr(s+u)*(W1(t,mf2)-W1(mh2,mf2))
+  complex<Energy2> output=s*(u-s)/(s+u)+2.*u*t*(u+2.*s)/sqr(s+u)*(W1(t,mf2)-W1(mh2,mf2))
     +(mf2-0.25*s)*(0.5*(W2(s,mf2)+W2(mh2,mf2))-W2(t,mf2)+W3(s,t,u,mh2,mf2))
     +sqr(s)*(2.*mf2/sqr(s+u)-0.5/(s+u))*(W2(t,mf2)-W2(mh2,mf2))
     +0.5*u*t/s*(W2(mh2,mf2)-2.*W2(t,mf2))

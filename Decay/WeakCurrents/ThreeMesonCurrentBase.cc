@@ -8,7 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 
 
@@ -50,7 +50,7 @@ void ThreeMesonCurrentBase::Init() {
 }
 
 // the hadronic currents    
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan, 
 			       Energy & scale,const ParticleVector & decay) const {
   // spininfo for the particles
@@ -60,7 +60,7 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
     }
   }
   // calculate q2,s1,s2,s3
-  Lorentz5Momentum q=0;
+  Lorentz5Momentum q=0*MeV;
   for(unsigned int ix=0;ix<decay.size();++ix){q+=decay[ix]->momentum();}
   q.rescaleMass();
   scale=q.mass();
@@ -68,23 +68,23 @@ ThreeMesonCurrentBase::current(bool vertex, const int imode, const int ichan,
   Energy2 s1 = (decay[1]->momentum()+decay[2]->momentum()).m2();
   Energy2 s2 = (decay[0]->momentum()+decay[2]->momentum()).m2();
   Energy2 s3 = (decay[0]->momentum()+decay[1]->momentum()).m2();
-  Complex F1(0.),F2(0.),F3(0.),F4(0.),F5(0.);
-  calculateFormFactors(ichan,imode,q2,s1,s2,s3,F1,F2,F3,F4,F5);
-  //if(inpart.id()==ParticleID::tauplus){F5=conj(F5);}
+  FormFactors F = calculateFormFactors(ichan,imode,q2,s1,s2,s3);
+  //if(inpart.id()==ParticleID::tauplus){F.F5=conj(F.F5);}
   // the first three form-factors
   LorentzPolarizationVector vect;
-  vect = (F2-F1)*decay[2]->momentum()
-        +(F1-F3)*decay[1]->momentum()
-        +(F3-F2)*decay[0]->momentum();
+  vect = (F.F2-F.F1)*decay[2]->momentum()
+        +(F.F1-F.F3)*decay[1]->momentum()
+        +(F.F3-F.F2)*decay[0]->momentum();
   // multiply by the transverse projection operator
-  Complex dot=(vect*q)/q2;
+  complex<InvEnergy> dot=(vect*q)/q2;
   // scalar and parity violating terms
-  vect += (F4-dot)*q;
-  if(F5!=0.) vect += Complex(0.,1.)*F5*Helicity::EpsFunction::product(decay[0]->momentum(),
-								      decay[1]->momentum(),
-								      decay[2]->momentum());
+  vect += (F.F4-dot)*q;
+  if(F.F5!=0./MeV/MeV2) 
+    vect += Complex(0.,1.)*F.F5*Helicity::epsilon(decay[0]->momentum(),
+							       decay[1]->momentum(),
+							       decay[2]->momentum());
   // factor to get dimensions correct
-  return vector<LorentzPolarizationVector>(1,q.mass()*vect);
+  return vector<LorentzPolarizationVectorE>(1,q.mass()*vect);
 }
 
 bool ThreeMesonCurrentBase::accept(vector<int> id) {

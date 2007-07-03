@@ -24,18 +24,24 @@ using namespace ThePEG::Helicity;
 using namespace Herwig::Helicity;
 
 void BtoBaryonsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _gf << _c1eff << _c2eff << _x << _x1 << _x2 
+  os << ounit(_gf,1/GeV2) << _c1eff << _c2eff 
+     << ounit(_x,GeV*GeV2) << ounit(_x1,GeV*GeV2) << ounit(_x2,GeV*GeV2) 
      << _gsigmabBbar0p << _glambdabBminusp
-     << _gsigmabBminusp << _glambdabBbar0n << _gsigmabBbar0n << _gsigmabBminusDelta 
-     << _a << _b << _incoming << _outgoingB << _outgoingA << _outgoingM
+     << _gsigmabBminusp << _glambdabBbar0n 
+     << _gsigmabBbar0n << _gsigmabBminusDelta 
+     << _a << _b << _incoming << _outgoingB 
+     << _outgoingA << _outgoingM
      << _wgtloc << _wgtmax << _weights;
 }
 
 void BtoBaryonsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _gf >> _c1eff >> _c2eff >> _x >> _x1 >> _x2 
+  is >> iunit(_gf,1/GeV2) >> _c1eff >> _c2eff 
+     >> iunit(_x,GeV*GeV2) >> iunit(_x1,GeV*GeV2) >> iunit(_x2,GeV*GeV2) 
      >> _gsigmabBbar0p >> _glambdabBminusp
-     >> _gsigmabBminusp >> _glambdabBbar0n >> _gsigmabBbar0n >> _gsigmabBminusDelta 
-     >> _a >> _b >> _incoming >> _outgoingB >> _outgoingA >> _outgoingM
+     >> _gsigmabBminusp >> _glambdabBbar0n 
+     >> _gsigmabBbar0n >> _gsigmabBminusDelta 
+     >> _a >> _b >> _incoming >> _outgoingB 
+     >> _outgoingA >> _outgoingM
      >>  _wgtloc >> _wgtmax >> _weights;
 }
 
@@ -163,12 +169,12 @@ double BtoBaryonsDecayer::me2(bool vertex, const int ichan,
 
 double BtoBaryonsDecayer::twoBodyME(bool vertex, const int,const Particle & inpart,
 				    const ParticleVector & decay) const {
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
   unsigned int ix,iy;
   // spinors for the first particle
   if(decay[0]->id()>0&&decay[0]->dataPtr()->iSpin()==4) {
-    vector<LorentzRSSpinorBar> Rsbar;
+    vector<LorentzRSSpinorBar<SqrtEnergy> > Rsbar;
     RSSpinorBarWaveFunction(Rsbar,decay[0],outgoing,true,vertex);
     sbar.resize(Rsbar.size());
     for(ix=0;ix<Rsbar.size();++ix) {
@@ -179,7 +185,7 @@ double BtoBaryonsDecayer::twoBodyME(bool vertex, const int,const Particle & inpa
     SpinorBarWaveFunction(sbar,decay[0],outgoing,true,vertex);
   }
   else if(decay[0]->id()<0&&decay[0]->dataPtr()->iSpin()==4) { 
-    vector<LorentzRSSpinor> Rs;
+    vector<LorentzRSSpinor<SqrtEnergy> > Rs;
     RSSpinorWaveFunction(Rs,decay[0],outgoing,true,vertex);
     sp.resize(Rs.size());
     for(ix=0;ix<Rs.size();++ix) {
@@ -191,7 +197,7 @@ double BtoBaryonsDecayer::twoBodyME(bool vertex, const int,const Particle & inpa
   }
   // spinors for the second particle
   if(decay[1]->id()>0&&decay[1]->dataPtr()->iSpin()==4) { 
-    vector<LorentzRSSpinorBar> Rsbar;
+    vector<LorentzRSSpinorBar<SqrtEnergy> > Rsbar;
     RSSpinorBarWaveFunction(Rsbar,decay[1],outgoing,true,vertex);
     sbar.resize(Rsbar.size());
     for(ix=0;ix<Rsbar.size();++ix) {
@@ -202,7 +208,7 @@ double BtoBaryonsDecayer::twoBodyME(bool vertex, const int,const Particle & inpa
     SpinorBarWaveFunction(sbar,decay[1],outgoing,true,vertex);
   }
   else if(decay[1]->id()<0&&decay[1]->dataPtr()->iSpin()==4) { 
-    vector<LorentzRSSpinor> Rs;
+    vector<LorentzRSSpinor<SqrtEnergy> > Rs;
     RSSpinorWaveFunction(Rs,decay[1],outgoing,true,vertex);
     sp.resize(Rs.size());
     for(ix=0;ix<Rs.size();++ix) {
@@ -235,17 +241,19 @@ double BtoBaryonsDecayer::twoBodyME(bool vertex, const int,const Particle & inpa
 	ispin[1]=ix;
 	ispin[2]=iy;
       }
-      newME(ispin)=sp[ix].generalScalar(sbar[iy],left,right);
+      newME(ispin)=sp[ix].generalScalar(sbar[iy],left,right)*UnitRemoval::InvE;
     }
   }
   // store the matrix element
   ME(newME);
   RhoDMatrix temp(PDT::Spin0);temp.average();
-  double pre(1./inpart.mass()/inpart.mass());
-  if(decay[0]->dataPtr()->iSpin()==4||decay[1]->dataPtr()->iSpin()==4) {
-    pre*=1./inpart.mass()/inpart.mass();
+  InvEnergy2 pre = 1./sqr(inpart.mass());
+  if(decay[0]->dataPtr()->iSpin()==4
+     ||
+     decay[1]->dataPtr()->iSpin()==4) {
+    pre*=1./sqr(inpart.mass())*UnitRemoval::E2;
   }
-  return pre*(newME.contract(temp)).real();
+  return pre*(newME.contract(temp)).real()*UnitRemoval::E2;
 }
 
 void BtoBaryonsDecayer::doinit() throw(InitException) {
@@ -255,6 +263,7 @@ void BtoBaryonsDecayer::doinit() throw(InitException) {
     ckma(sqrt(0.5*SM().CKM(0,0)*SM().CKM(1,2))),
     ckmb(sqrt(0.5*SM().CKM(0,0)*SM().CKM(0,2)));
   // the weak factors
+  using Constants::pi;
   Energy asbplcp(-_gf*ckma*(_c1eff-_c2eff)*sqrt(2./3.)*(_x1+3.*_x2)*4.*pi);
   Energy alb0sc0(-_gf*ckma*(_c1eff-_c2eff)*sqrt(2./3.)*(_x1-3.*_x2)*4.*pi);
   Energy asb0sc0(-_gf*ckma*(_c1eff-_c2eff)*sqrt(2.)/3.*(_x1+9.*_x2)*4.*pi);
@@ -271,51 +280,51 @@ void BtoBaryonsDecayer::doinit() throw(InitException) {
     mp  (getParticleData(ParticleID::pplus)->mass()),
     mn  (getParticleData(ParticleID::n0)->mass());
   // Bbar0 -> Lambda_c+ pbar
-  _a.push_back(0.);_b.push_back(_gsigmabBbar0p*asbplcp/(mlcp-msbp));
+  _a.push_back(0.);_b.push_back(Complex(_gsigmabBbar0p*asbplcp/(mlcp-msbp)));
   _incoming.push_back(ParticleID::Bbar0);_outgoingB.push_back(ParticleID::Lambda_cplus);
   _outgoingA.push_back(ParticleID::pbarminus);_outgoingM.push_back(0);
   // B- -> Sigma_c0 pbar
-  _a.push_back(0.);_b.push_back(_glambdabBminusp*alb0sc0/(msc0-mlb0)+
-				_gsigmabBminusp *asb0sc0/(msc0-msb0));
+  _a.push_back(0.);_b.push_back(Complex(_glambdabBminusp*alb0sc0/(msc0-mlb0)+
+				       _gsigmabBminusp *asb0sc0/(msc0-msb0)));
   _incoming.push_back(ParticleID::Bminus);_outgoingB.push_back(ParticleID::Sigma_c0);
   _outgoingA.push_back(ParticleID::pbarminus);_outgoingM.push_back(0);
   // Bbar0 -> Sigma_c0 nbar
-  _a.push_back(0.);_b.push_back(_glambdabBbar0n*alb0sc0/(msc0-mlb0)+
-				_gsigmabBbar0n *asb0sc0/(msc0-msb0));
+  _a.push_back(0.);_b.push_back(Complex(_glambdabBbar0n*alb0sc0/(msc0-mlb0)+
+				_gsigmabBbar0n *asb0sc0/(msc0-msb0)));
   _incoming.push_back(ParticleID::Bbar0);_outgoingB.push_back(ParticleID::Sigma_c0);
   _outgoingA.push_back(ParticleID::nbar0);_outgoingM.push_back(0);
   // B- -> Lambda_c+ Delta--
-  _b.push_back(0.);_a.push_back(_gsigmabBminusDelta*asbplcp/(mlcp-msbp));
+  _b.push_back(0.);_a.push_back(Complex(_gsigmabBminusDelta*asbplcp/(mlcp-msbp)));
   _incoming.push_back(ParticleID::Bminus);_outgoingB.push_back(ParticleID::Lambda_cplus);
   _outgoingA.push_back(ParticleID::Deltabarminus2);_outgoingM.push_back(0);
   // Bbar0 -> p pbar
-  _a.push_back(0.);_b.push_back(_gsigmabBbar0p*asbpp/(mp-msbp));
+  _a.push_back(0.);_b.push_back(Complex(_gsigmabBbar0p*asbpp/(mp-msbp)));
   _incoming.push_back(ParticleID::Bbar0);_outgoingB.push_back(ParticleID::pplus);
   _outgoingA.push_back(ParticleID::pbarminus);_outgoingM.push_back(0);
   // Bbar0 -> n nbar
-  _a.push_back(0.);_b.push_back(-_gsigmabBbar0p/sqrt(2.)*(3.*sqrt(3.)*alb0n/(mn-mlb0)-
-						 asb0n/(mn-msb0)));
+  _a.push_back(0.);_b.push_back(Complex(-_gsigmabBbar0p/sqrt(2.)*(3.*sqrt(3.)*alb0n/(mn-mlb0)-
+						 asb0n/(mn-msb0))));
   _incoming.push_back(ParticleID::Bbar0);_outgoingB.push_back(ParticleID::n0);
   _outgoingA.push_back(ParticleID::nbar0);_outgoingM.push_back(0);
   // B- -> n pbar
-  _a.push_back(0.);_b.push_back(-_gsigmabBbar0p/sqrt(2.)*(3.*sqrt(3.)*alb0n/(mp-mlb0)+
-						 asb0n/(mp-msb0)));
+  _a.push_back(0.);_b.push_back(Complex(-_gsigmabBbar0p/sqrt(2.)*(3.*sqrt(3.)*alb0n/(mp-mlb0)+
+						 asb0n/(mp-msb0))));
   _incoming.push_back(ParticleID::Bminus);_outgoingB.push_back(ParticleID::n0);
   _outgoingA.push_back(ParticleID::pbarminus);_outgoingM.push_back(0);
   // B- to p Deltabar--
-  _b.push_back(0.);_a.push_back(-_gsigmabBminusDelta*asbpp/(mp-msbp));
+  _b.push_back(0.);_a.push_back(Complex(-_gsigmabBminusDelta*asbpp/(mp-msbp)));
   _incoming.push_back(ParticleID::Bminus);_outgoingB.push_back(ParticleID::pplus);
   _outgoingA.push_back(ParticleID::Deltabarminus2);_outgoingM.push_back(0);
   // B- to n Deltabar-
-  _b.push_back(0.);_a.push_back(-_gsigmabBminusDelta/sqrt(1.5)*asb0n/(mn-msb0));
+  _b.push_back(0.);_a.push_back(Complex(-_gsigmabBminusDelta/sqrt(1.5)*asb0n/(mn-msb0)));
   _incoming.push_back(ParticleID::Bminus);_outgoingB.push_back(ParticleID::n0);
   _outgoingA.push_back(ParticleID::Deltabarminus);_outgoingM.push_back(0);
   // Bbar0 to p deltabar-
-  _b.push_back(0.);_a.push_back(-_gsigmabBminusDelta/sqrt(3.)*asbpp/(mp-msbp));
+  _b.push_back(0.);_a.push_back(Complex(-_gsigmabBminusDelta/sqrt(3.)*asbpp/(mp-msbp)));
   _incoming.push_back(ParticleID::Bbar0);_outgoingB.push_back(ParticleID::pplus);
   _outgoingA.push_back(ParticleID::Deltabarminus);_outgoingM.push_back(0);
   // Bbar0 to n deltabar0
-  _b.push_back(0.);_a.push_back(-_gsigmabBminusDelta/sqrt(1.5)*asb0n/(mn-msb0));
+  _b.push_back(0.);_a.push_back(Complex(-_gsigmabBminusDelta/sqrt(1.5)*asb0n/(mn-msb0)));
   _incoming.push_back(ParticleID::Bbar0);_outgoingB.push_back(ParticleID::n0);
   _outgoingA.push_back(ParticleID::Deltabar0);_outgoingM.push_back(0);
   /*

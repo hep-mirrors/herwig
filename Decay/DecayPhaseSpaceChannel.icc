@@ -21,7 +21,7 @@ inline IBPtr DecayPhaseSpaceChannel::fullclone() const {
 
 // generate the mass of an intermediate
 inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy upper) {
-  Energy mass=0;
+  Energy mass=Energy();
   if(lower>upper) throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::generateMass"
 					       << " not allowed" 
 					       << Exception::eventerror;
@@ -40,10 +40,10 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
   }
   // use a power-law
   else if(_jactype[ires]==1) {
-    double rhomin = pow(lower*lower,_intpower[ires]+1.);
-    double rhomax = pow(upper*upper,_intpower[ires]+1.)-rhomin;
+    double rhomin = pow(sqr(lower/MeV),_intpower[ires]+1.);
+    double rhomax = pow(sqr(upper/MeV),_intpower[ires]+1.)-rhomin;
     double rho = rhomin+rhomax*UseRandom::rnd();
-    mass = pow(rho,0.5/(_intpower[ires]+1.));
+    mass = pow(rho,0.5/(_intpower[ires]+1.))*MeV;
   }
   else if(_jactype[ires]==2) {
     mass = _intmass[ires];
@@ -61,11 +61,11 @@ inline Energy DecayPhaseSpaceChannel::generateMass(int ires,Energy lower,Energy 
 // return the weight for a given resonance
 inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
 						     Energy lower,Energy upper) {
-  double wgt=0.;
+  InvEnergy2 wgt=InvEnergy2();
   if(lower>upper) {
     throw DecayPhaseSpaceError() << "DecayPhaseSpaceChannel::massWeight not allowed" 
 				 << ires << "   " << _intpart[ires]->id() << "   " 
-				 << moff << Exception::eventerror;
+				 << moff/GeV << Exception::eventerror;
   } 
   // use a Breit-Wigner 
   if(_jactype[ires]==0) { 
@@ -76,12 +76,13 @@ inline InvEnergy2 DecayPhaseSpaceChannel::massWeight(int ires, Energy moff,
   } 
   // power law
   else if(_jactype[ires]==1) {
-    double rhomin = pow(lower*lower,_intpower[ires]+1.);
-    double rhomax = pow(upper*upper,_intpower[ires]+1.)-rhomin;
-    wgt = (_intpower[ires]+1.)/rhomax*pow(moff*moff,_intpower[ires]);
+    double rhomin = pow(sqr(lower/MeV),_intpower[ires]+1.);
+    double rhomax = pow(sqr(upper/MeV),_intpower[ires]+1.)-rhomin;
+    wgt = (_intpower[ires]+1.)/rhomax*pow(sqr(moff/MeV),_intpower[ires])
+      /MeV/MeV;
   }
   else if(_jactype[ires]==2) {
-    wgt = 1./pi/_intmwidth[ires];
+    wgt = 1./Constants::pi/_intmwidth[ires];
   } 
   else {
     throw DecayPhaseSpaceError() << "Unknown type of Jacobian in " 
@@ -131,17 +132,17 @@ inline void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
 						 const Energy m1, const Energy m2,
 						 Lorentz5Momentum & p1,
 						 Lorentz5Momentum & p2 ) {
-  static double eps=1e-6;
+  static const double eps=1e-6;
   double ctheta,phi;
   Kinematics::generateAngles(ctheta,phi);
-  Vector3 unitDir1=Kinematics::unitDirection(ctheta,phi);
-  Momentum3 pstarVector = unitDir1;
+  Axis unitDir1=Kinematics::unitDirection(ctheta,phi);
+  Momentum3 pstarVector;
   Energy min=p.m();
-  if ( min >= m1 + m2  &&  m1 >= 0.0  &&  m2 >= 0.0  ) {
-    pstarVector *= Kinematics::pstarTwoBodyDecay(min,m1,m2);
+  if ( min >= m1 + m2  &&  m1 >= 0.0*MeV  &&  m2 >= 0.0*MeV  ) {
+    pstarVector = unitDir1 * Kinematics::pstarTwoBodyDecay(min,m1,m2);
   }
-  else if( m1 >= 0.0  &&  m2 >= 0.0 &&(m1+m2-min)/(min+m1+m2)<eps) {
-    pstarVector *=0.;
+  else if( m1 >= 0.0*MeV  &&  m2 >= 0.0*MeV && (m1+m2-min)/(min+m1+m2)<eps) {
+    pstarVector = Momentum3();
   }
   else {
     throw DecayPhaseSpaceError() << "Two body decay cannot proceed "
@@ -153,7 +154,7 @@ inline void DecayPhaseSpaceChannel::twoBodyDecay(const Lorentz5Momentum & p,
   p1 = Lorentz5Momentum(m1, pstarVector);
   p2 = Lorentz5Momentum(m2,-pstarVector);
   // boost from CM to LAB
-  Vector3 bv=p.boostVector();
+  Boost bv=p.boostVector();
   p1.boost( bv );   
   p2.boost( bv );
 }

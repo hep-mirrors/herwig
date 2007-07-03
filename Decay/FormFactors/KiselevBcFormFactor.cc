@@ -120,13 +120,15 @@ inline KiselevBcFormFactor::KiselevBcFormFactor()
 KiselevBcFormFactor::~KiselevBcFormFactor() {}
 
 void KiselevBcFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _fp << _fm << _FV << _F0A << _FpA << _FmA << _Mfp << _Mfm << _MFV << _MF0A
-     << _MFpA << _MFmA;
+  os << _fp << _fm << ounit(_FV,1/GeV) << ounit(_F0A,GeV) << ounit(_FpA,1/GeV) 
+     << ounit(_FmA,1/GeV) << ounit(_Mfp,GeV) << ounit(_Mfm,GeV) << ounit(_MFV,GeV) 
+     << ounit(_MF0A,GeV) << ounit(_MFpA,GeV) << ounit(_MFmA,GeV);
 }
 
 void KiselevBcFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _fp >> _fm >> _FV >> _F0A >> _FpA >> _FmA >> _Mfp >> _Mfm >> _MFV >> _MF0A
-     >> _MFpA >> _MFmA;
+  is >> _fp >> _fm >> iunit(_FV,1/GeV) >> iunit(_F0A,GeV) >> iunit(_FpA,1/GeV) 
+     >> iunit(_FmA,1/GeV) >> iunit(_Mfp,GeV) >> iunit(_Mfm,GeV) >> iunit(_MFV,GeV) 
+     >> iunit(_MF0A,GeV) >> iunit(_MFpA,GeV) >> iunit(_MFmA,GeV);
 }
 
 ClassDescription<KiselevBcFormFactor> KiselevBcFormFactor::initKiselevBcFormFactor;
@@ -216,7 +218,7 @@ void KiselevBcFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,
 						 Complex & f0,Complex & fp) const
 {
   fp = _fp[iloc]/(1.-q2/_Mfp[iloc]/_Mfp[iloc]);
-  f0 = q2/(m0+m1)/(m0-m1)*_fm[iloc]/(1.-q2/_Mfm[iloc]/_Mfm[iloc])+fp;
+  f0 = Complex(q2/(m0+m1)/(m0-m1)*_fm[iloc]/(1.-q2/_Mfm[iloc]/_Mfm[iloc]))+fp;
 }
 
 void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int,
@@ -226,13 +228,13 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
 {
   InvEnergy fv,fp,fm;
   Energy f0;
-  if(_MFV[iloc]>0){fv=_FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);}
+  if(_MFV[iloc]>0*MeV){fv=_FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);}
   else{fv=_FV[iloc];}
-  if(_MFmA[iloc]>0){fm=_FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);}
+  if(_MFmA[iloc]>0*MeV){fm=_FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);}
   else{fm=_FmA[iloc];}
-  if(_MFpA[iloc]>0){fp=_FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);}
+  if(_MFpA[iloc]>0*MeV){fp=_FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);}
   else{fp=_FpA[iloc];}
-  if(_MF0A[iloc]>0){f0=_F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);}
+  if(_MF0A[iloc]>0*MeV){f0=_F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);}
   else{f0=_F0A[iloc];}
   Energy msum(m0+m1);
   V  =-fv*msum;

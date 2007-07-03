@@ -22,9 +22,9 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 {
   // check ihelicity is O.K.
   Direction dir = direction();
-  LorentzRSSpinorBar news;
-  if(dir==incoming){news=LorentzRSSpinorBar(u_spinortype,dirac);}
-  else{news=LorentzRSSpinorBar(v_spinortype,dirac);}
+  LorentzRSSpinorBar<double> news;
+  if(dir==incoming){news=LorentzRSSpinorBar<double>(u_spinortype,dirac);}
+  else{news=LorentzRSSpinorBar<double>(v_spinortype,dirac);}
   unsigned int ix,iy;
   static double eps=1E-5;
   if(dir==intermediate)
@@ -37,11 +37,11 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
       throw HelicityLogicalError() << "Invalid Helicity = " << ihel 
 				   << " requested for RSSpinorBar" 
 				   << Exception::abortnow;
-      for(iy=0;iy<4;++iy){for(ix=0;ix<4;++ix){_wf(ix,iy)=0.;}}
+      for(iy=0;iy<4;++iy){for(ix=0;ix<4;++ix){_wf(ix,iy)=0.0;}}
     }
   else
     {
-      if(mass()>0)
+      if(mass()>0.0*GeV)
 	{
 	  // extract the momentum components
 	  // compute the normal spinors to construct the RS spinor
@@ -65,7 +65,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 	      hel_wf[1][1] = 1.;
 	    }
 	  // decide which definition of the spinors we are using
-	  Energy eplusm,eplusp,upper[2],lower[2];
+	  SqrtEnergy eplusm,eplusp,upper[2],lower[2];
 	  switch(dirac)
 	    {
 	      // Haber lower energy
@@ -73,8 +73,8 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 	      eplusm = sqrt(2.*mass());
 	      if(dir==incoming)
 		{
-		  upper[0] = 0.;
-		  upper[1] = 0.;
+		  upper[0] = SqrtEnergy();
+		  upper[1] = SqrtEnergy();
 		  lower[0] = eplusm;
 		  lower[1] =-eplusm;
 		}
@@ -82,8 +82,8 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		{
 		  upper[0] = eplusm;
 		  upper[1] = eplusm;
-		  lower[0] = 0.;
-		  lower[1] = 0.;
+		  lower[0] = SqrtEnergy();
+		  lower[1] = SqrtEnergy();
 		}
 	      break;
 	    case HELASDRep:
@@ -113,7 +113,7 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 	      break;
 	    }
 	  // now construct the spinors
-	  Complex spinor[4][2];
+	  complex<SqrtEnergy> spinor[4][2];
 	  for(ix=0;ix<2;++ix)
 	    {
 	      spinor[0][ix] = upper[ix]*hel_wf[0][ix];
@@ -156,26 +156,26 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 	    }
 	  // now we can put the bits together to compute the RS spinor
 	  double or3(sqrt(1./3.)),tor3(sqrt(2./3.));
-	  if(ihel==0)
+	  if(ihel==0) 
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
-		  {news(ix,iy)=
+		  {news(ix,iy)=UnitRemoval::InvSqrtE*
 		      vec[ix][0]*spinor[iy][0];}}
 	    }
 	  else if(ihel==1)
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
-		  {news(ix,iy)=
-		      or3*vec[ix][0]*spinor[iy][1]+tor3*vec[ix][1]*spinor[iy][0];}}}
+	      {news(ix,iy)=UnitRemoval::InvSqrtE*(
+		      or3*vec[ix][0]*spinor[iy][1]+tor3*vec[ix][1]*spinor[iy][0]);}}}
 	  else if(ihel==2)
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
-		  {news(ix,iy)=
-		      or3*vec[ix][2]*spinor[iy][0]+tor3*vec[ix][1]*spinor[iy][1];}}}
+	      {news(ix,iy)=UnitRemoval::InvSqrtE*(
+				      or3*vec[ix][2]*spinor[iy][0]+tor3*vec[ix][1]*spinor[iy][1]);}}}
 	  else if(ihel==3)
 	    {for(ix=0;ix<4;++ix){for(iy=0;iy<4;++iy)
-		  {news(ix,iy)=
-		      vec[ix][2]*spinor[iy][1];}}
+	      {news(ix,iy)=UnitRemoval::InvSqrtE*(
+		      vec[ix][2]*spinor[iy][1]);}}
 	    }
 	  // boost the spinor to the lab frame
-	  Hep3Vector boostv = getMomentum().boostVector();
+	  Boost boostv = getMomentum().boostVector();
 	  if(boostv.mag()>eps){_wf=news.boost(boostv);}
 	  else{_wf=news;}
 	}
@@ -193,9 +193,9 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 	      double fact=-1.; if(dir==incoming){fact=1.;}
 	      Energy ppx=fact*px(),ppy=fact*py(),ppz=fact*pz(),pee=fact*e(),pmm=mass();
 	      // define and calculate some kinematic quantities
-	      Energy ptran  = ppx*ppx+ppy*ppy;
-	      Energy pabs   = sqrt(ptran+ppz*ppz);
-	      ptran  = sqrt(ptran);
+	      Energy2 ptran2 = ppx*ppx+ppy*ppy;
+	      Energy pabs   = sqrt(ptran2+ppz*ppz);
+	      Energy ptran  = sqrt(ptran2);
 	      Complex hel_wf[2],vec[4],ii(0.,1.);
 	      double root = 1./sqrt(2.);
 	      // positve 3/2 helicity spinor
@@ -203,16 +203,16 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		{
 		  // the polarization vector
 		  // first the no pt case
-		  if(ptran==0.)
+		  if(ptran==Energy())
 		    {
 		      double sgnz;
-		      if(ppz<0){sgnz=-1.;}
+		      if(ppz<Energy()){sgnz=-1.;}
 		      else{sgnz=1.;}
 		      vec[0]= root;
 		      vec[1]= sgnz*root*ii;
 		      vec[2]=0.;
 		      vec[3]=0.;
-		      if(ppz>=0)
+		      if(ppz>=Energy())
 			{
 			  hel_wf[0] = 0;
 			  hel_wf[1] = 1;
@@ -225,19 +225,19 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		    }
 		  else
 		    {
-		      double opabs=1./pabs;
-		      double opt  =1./ptran;
+		      InvEnergy opabs=1./pabs;
+		      InvEnergy opt  =1./ptran;
 		      vec[0]=root*Complex(ppz*ppx*opabs*opt,-ppy*opt);
 		      vec[1]=root*Complex(ppz*ppy*opabs*opt,ppx*opt);
 		      vec[2]=-ptran*opabs*root;
 		      vec[3]=0.;
-		      double denominator = 1./sqrt(2.*pabs);
-		      double rtppluspz;
-		      if(ppz>=0.)
+		      InvSqrtEnergy denominator = 1.0/sqrt(2.*pabs);
+		      SqrtEnergy rtppluspz;
+		      if(ppz>=Energy())
 			{rtppluspz = sqrt(pabs+ppz);}
 		      else
 			{rtppluspz = ptran/sqrt(pabs-ppz);}
-		      hel_wf[0] = denominator/rtppluspz*Complex(-ppx,-ppy);
+		      hel_wf[0] = denominator/rtppluspz*complex<Energy>(-ppx,-ppy);
 		      hel_wf[1] = denominator*rtppluspz;
 		    }
 		}
@@ -246,16 +246,16 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		{
 		  // the polarization vector
 		  // first the no pt case
-		  if(ptran==0.)
+		  if(ptran==Energy())
 		    {
 		      double sgnz;
-		      if(ppz<0){sgnz=-1.;}
+		      if(ppz<Energy()){sgnz=-1.;}
 		      else{sgnz=1.;}
 		      vec[0]=-root;
 		      vec[1]= sgnz*root*ii;
 		      vec[2]=0.;
 		      vec[3]=0.;
-		      if(ppz>=0.)
+		      if(ppz>=Energy())
 			{
 			  hel_wf[0] = 1;
 			  hel_wf[1] = 0;
@@ -269,24 +269,24 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		    }
 		  else
 		    {
-		      double opabs=1./pabs;
-		      double opt  =1./ptran;
+		      InvEnergy opabs=1./pabs;
+		      InvEnergy opt  =1./ptran;
 		      vec[0]=root*Complex(-ppz*ppx*opabs*opt,-ppy*opt);
 		      vec[1]=root*Complex(-ppz*ppy*opabs*opt, ppx*opt);
 		      vec[2]=ptran*opabs*root;
 		      vec[3]=0.;
-		      double denominator = 1./sqrt(2.*pabs);
-		      double rtppluspz;
-		      if(ppz>=0)
+		      InvSqrtEnergy denominator = 1./sqrt(2.*pabs);
+		      SqrtEnergy rtppluspz;
+		      if(ppz>=Energy())
 			{rtppluspz = sqrt(pabs+ppz);}
 		      else
 			{rtppluspz = ptran/sqrt(pabs-ppz);} 
 		      hel_wf[0] = denominator*rtppluspz;
-		      hel_wf[1] = denominator/rtppluspz*Complex(ppx,-ppy);
+		      hel_wf[1] = denominator/rtppluspz*complex<Energy>(ppx,-ppy);
 		    }
 		}
 	      // decide which definition of the spinors we are using
-	      Energy eplusm,eminusm,eplusp,eminusp,upper,lower;
+	      SqrtEnergy eplusm,eminusm,eplusp,eminusp,upper,lower;
 	      switch(dirac)
 		{
 		  // Haber lower energy
@@ -313,10 +313,10 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		case HELASDRep:
 		  // HELAS
 		  eplusp = sqrt(pee+pabs);
-		  if(pmm!=0.) 
+		  if(pmm!=Energy()) 
 		    {eminusp=pmm/eplusp;}
 		  else
-		    {eminusp=0.;}
+		    {eminusp=SqrtEnergy();}
 		  // set up the coefficients for the different cases
 		  if(dir==incoming)
 		    {
@@ -347,17 +347,18 @@ void RSSpinorBarWaveFunction::calculateWaveFunction(unsigned int ihel,DiracRep d
 		  break;
 		  // invalid choice
 		default:
-		  upper=-1.; lower=-1.; // no warnings about uninitialized
+		  upper = lower = SqrtEnergy();
 		  ThePEG::Helicity::HelicityConsistencyError() 
 		    << "Invalid choice of Dirac representation in "
 		    << "SpinorBarWaveFunction::calculateWaveFunction() " 
 		    << Exception::abortnow; 
 		  break;
 		}
-	      Complex spinor[4]={upper*hel_wf[0],upper*hel_wf[1],
+	      complex<SqrtEnergy> spinor[4]={upper*hel_wf[0],upper*hel_wf[1],
 				 lower*hel_wf[0],lower*hel_wf[1]};
 	      for(ix=0;ix<4;++ix)
-		{for(iy=0;iy<4;++iy){news(ix,iy) = vec[ix]*spinor[iy];}}
+		for(iy=0;iy<4;++iy)
+		  news(ix,iy) = UnitRemoval::InvSqrtE*vec[ix]*spinor[iy];
 	      _wf=news;
 	    }
 	}

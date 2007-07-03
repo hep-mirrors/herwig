@@ -12,9 +12,9 @@
 
 using namespace Herwig::Helicity;
 
-UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theSinThetaW(0.), theMw2(0.),
-				     theMz2(0.), theR2(0.), 
-				     theq2Last(0.), theCoupLast(0.) {
+UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theSinThetaW(0.), theMw2(),
+				     theMz2(), theR2(), 
+				     theq2Last(), theCoupLast(0.) {
   vector<int> wboson(2), higgsA(2), higgsH(2);
   wboson[0] = 24;
   higgsA[0] = 5100036;
@@ -28,13 +28,15 @@ UEDW0A1H1Vertex::UEDW0A1H1Vertex() : theSinThetaW(0.), theMw2(0.),
 }
 
 void UEDW0A1H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinThetaW << theMw2 << theMz2 << theR2;  
+  os << theUEDBase << theSinThetaW 
+     << ounit(theMw2,GeV2) << ounit(theMz2,GeV2) << ounit(theR2,1/GeV2);  
 }
 
 void UEDW0A1H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinThetaW >> theMw2 >> theMz2 >> theR2;
+  is >> theUEDBase >> theSinThetaW 
+     >> iunit(theMw2,GeV2) >> iunit(theMz2,GeV2) >> iunit(theR2,1/GeV2);
   theCoupLast = 0.;
-  theq2Last = 0.;
+  theq2Last = 0.*GeV2;
 }
 
 ClassDescription<UEDW0A1H1Vertex> UEDW0A1H1Vertex::initUEDW0A1H1Vertex;

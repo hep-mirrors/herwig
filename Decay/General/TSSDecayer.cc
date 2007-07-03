@@ -47,12 +47,12 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin2);
   rhoin.average();
-  vector<LorentzTensor> in;
+  vector<LorentzTensor<double> > in;
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);
   ScalarWaveFunction sca1(decay[0],outgoing,true,vertex);
   ScalarWaveFunction sca2(decay[1],outgoing,true,vertex);
-  Energy2 scale(inpart.scale()*inpart.scale());
+  Energy2 scale(inpart.scale());
   DecayMatrixElement newme(PDT::Spin2,PDT::Spin0,PDT::Spin0);
   for(unsigned int thel=0;thel<5;++thel) {
     TensorWaveFunction inwave(inpart.momentum(),
@@ -66,7 +66,7 @@ double TSSDecayer::me2(bool vertex, const int , const Particle & inpart,
     newme(thel,0,0) =_theSSTPtr->evaluate(scale,sca1,sca2,inwave); 
   }
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()) {
     output /=2.;
   }
@@ -81,7 +81,7 @@ Energy TSSDecayer::partialWidth(const PDPtr inpart,
   _theSSTPtr->setCoupling(scale,outa,outb,inpart);
   double musq = sqr(outa->mass()/inpart->mass());
   double b = sqrt(1.-4.*musq);
-  double me2 = scale*pow(b,4)/120;
+  double me2 = scale*pow(b,4)/120*UnitRemoval::InvE2;
   Complex norm(_theSSTPtr->getNorm()*_theSSTPtr->getNorm());
   me2 *= norm.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),

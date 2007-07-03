@@ -14,18 +14,18 @@ inline IBPtr QTildeReconstructor::fullclone() const {
   return new_ptr(*this);
 }
 
-inline double QTildeReconstructor::momConsEq(const double & k, 
+inline Energy QTildeReconstructor::momConsEq(const double & k, 
 					  const Energy & root_s, 
 					  const JetKinVect & jets) const {
   static Energy2 eps=1e-9*GeV2;
   Energy dum = Energy();
-  Energy dum2;
+  Energy2 dum2;
   for(JetKinVect::const_iterator it = jets.begin(); it != jets.end(); ++it) {
-    dum2=(it->q).m2() + sqr(k)*(it->p).vect().mag2();
-    if(dum2<0.)
+    dum2 = (it->q).m2() + sqr(k)*(it->p).vect().mag2();
+    if(dum2 < Energy2())
       {
-	if(dum2<-eps) throw Veto();
-	else dum2=0.;
+	if(dum2 < -eps) throw Veto();
+	else dum2 = Energy2();
       }
     dum += sqrt(dum2);
   }
@@ -41,17 +41,18 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   Energy kp = k*(oldp.vect().mag()); 
   Energy2 kps = sqr(kp); 
   double betam = (q*sqrt(qs + Q2) - kp*sqrt(kps + Q2))/(kps + qs + Q2); 
-  Vector3 beta = -betam*(k/kp)*oldp.vect();
+  Boost beta = -betam*(k/kp)*oldp.vect();
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
-  Hep3Vector ax = newq.vect().cross( oldp.vect() );
+  Vector3<Energy2> ax = newq.vect().cross( oldp.vect() ); 
   double delta = newq.vect().angle( oldp.vect() );
   LorentzRotation R;
-  if ( ax.mag2()/GeV2 > 1e-16 ) {
-    R.rotate( delta, ax ).boost( beta );
+  using Constants::pi;
+  if ( ax.mag2()/GeV2/MeV2 > 1e-16 ) {
+    R.rotate( delta, unitVector(ax) ).boost( beta );
   } 
-  else if(abs(delta-pi)/pi<0.001) {
+  else if(abs(delta-pi)/pi < 0.001) {
     double phi=2.*pi*UseRandom::rnd();
-    Hep3Vector axis(cos(phi),sin(phi),0.);
+    Axis axis(cos(phi),sin(phi),0.);
     axis.rotateUz(newq.vect().unit());
     R.rotate(delta,axis).boost( beta );
   }
@@ -61,7 +62,7 @@ solveBoost(const double k, const Lorentz5Momentum & newq,
   return R;
 }
 
-inline void QTildeReconstructor::boostChain(tPPtr p, const Vector3 &bv,
+inline void QTildeReconstructor::boostChain(tPPtr p, const Boost &bv,
 					    tPPtr & parent) const {
   if(!p->parents().empty()) boostChain(p->parents()[0], bv,parent);
   else parent=p;

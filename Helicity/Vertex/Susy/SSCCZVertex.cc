@@ -13,7 +13,7 @@
 using namespace Herwig::Helicity;
 
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
-			     _q2last(0.), _id1last(0), _id2last(0) {
+			     _q2last(), _id1last(0), _id2last(0) {
   vector<int> first, second, third(4, 23);
   for(unsigned int ix = 0; ix < 2; ++ix) {
     int ic1(1000024);
@@ -35,7 +35,7 @@ void SSCCZVertex::persistentOutput(PersistentOStream & os) const {
 void SSCCZVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS >> _sw2 >> _cw >> _theU >> _theV;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
   _id1last = 0;
   _id2last = 0;
   _leftlast = 0.;

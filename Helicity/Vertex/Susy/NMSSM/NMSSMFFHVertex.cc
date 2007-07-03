@@ -47,22 +47,24 @@ NMSSMFFHVertex::NMSSMFFHVertex() {
     third.push_back(-37);
   }
   setList(first,second,third);
-  _mw=0.;
+  _mw=0.*MeV;
   _sinb=0.;
   _cosb=0.;
   _tanb=0.;
   _idlast=make_pair(0,0);
-  _q2last=0.;
-  _masslast=make_pair(0.,0);
+  _q2last=0.*MeV2;
+  _masslast=make_pair(0.*MeV,0);
   _couplast=0.;
 }
 
 void NMSSMFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << _mixS << _mixP << _mw << _sinb << _cosb << _tanb << _sw << _theSM;
+  os << _mixS << _mixP << ounit(_mw,GeV)
+     << _sinb << _cosb << _tanb << _sw << _theSM;
 }
 
 void NMSSMFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _mixS >> _mixP >> _mw >> _sinb >> _cosb >> _tanb >> _sw >> _theSM;
+  is >> _mixS >> _mixP >> iunit(_mw,GeV)
+     >> _sinb >> _cosb >> _tanb >> _sw >> _theSM;
 }
 
 void NMSSMFFHVertex::doinit() throw(InitException) {
@@ -109,7 +111,7 @@ void NMSSMFFHVertex::Init() {
 void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int) {
   int ihiggs=c->id();
   int id(abs(a->id()));
-  Complex output(1.);
+  complex<Energy> output(1.*MeV);
   // neutral Higgs
   if(ihiggs==25||ihiggs==35||ihiggs==45||ihiggs==36||ihiggs==46) {
     // left and right couplings set to one
@@ -117,7 +119,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
       _idlast.first=id;
       _masslast.first = _theSM->mass(q2,a);
     }
-    output*=_masslast.first;
+    output = _masslast.first;
     // CP-even 
     if(ihiggs==25||ihiggs==35||ihiggs==45) {
       int iloc = (ihiggs-25)/10;

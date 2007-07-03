@@ -552,7 +552,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   // set the initial number of modes
   initialModes(numberOfFactors());
   // eta-eta' mixing angle
-  _thetaeta = 2./9.*pi;
+  _thetaeta = 2./9.*Constants::pi;
 }
 
 MelikhovStechFormFactor::~MelikhovStechFormFactor() {}
@@ -562,7 +562,7 @@ void MelikhovStechFormFactor::persistentOutput(PersistentOStream & os) const {
      << _sigma1fT << _sigma2fT << _V0 << _sigma1V0 << _sigma2V0 << _A00 << _sigma1A0 
      << _sigma2A0 << _A10 << _sigma1A1 << _sigma2A1 << _A20 << _sigma1A2 << _sigma2A2 
      << _T10 << _sigma1T1 << _sigma2T1 << _T20 << _sigma1T2 << _sigma2T2 << _T30 
-     << _sigma1T3 << _sigma2T3 << _massP << _massV << _thetaeta;
+     << _sigma1T3 << _sigma2T3 << ounit(_massP,GeV) << ounit(_massV,GeV) << _thetaeta;
 }
 
 void MelikhovStechFormFactor::persistentInput(PersistentIStream & is, int) {
@@ -570,7 +570,7 @@ void MelikhovStechFormFactor::persistentInput(PersistentIStream & is, int) {
      >> _sigma1fT >> _sigma2fT >> _V0 >> _sigma1V0 >> _sigma2V0 >> _A00 >> _sigma1A0 
      >> _sigma2A0 >> _A10 >> _sigma1A1 >> _sigma2A1 >> _A20 >> _sigma1A2 >> _sigma2A2 
      >> _T10 >> _sigma1T1 >> _sigma2T1 >> _T20 >> _sigma1T2 >> _sigma2T2 >> _T30 
-     >> _sigma1T3 >> _sigma2T3 >> _massP >> _massV >> _thetaeta;
+     >> _sigma1T3 >> _sigma2T3 >> iunit(_massP,GeV) >> iunit(_massV,GeV) >> _thetaeta;
 }
 
 ClassDescription<MelikhovStechFormFactor> MelikhovStechFormFactor::initMelikhovStechFormFactor;
@@ -777,7 +777,7 @@ void MelikhovStechFormFactor::Init() {
   static Parameter< MelikhovStechFormFactor,double> interfaceThetaEtaEtaPrime
     ("ThetaEtaEtaPrime",
      "The eta-eta' mixing angle",
-     & MelikhovStechFormFactor::_thetaeta, 2.*pi/9., -pi, pi,
+     & MelikhovStechFormFactor::_thetaeta, 2.*Constants::pi/9., -Constants::pi, Constants::pi,
      false, false, true);
 }
 

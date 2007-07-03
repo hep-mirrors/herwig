@@ -38,9 +38,12 @@ Complex VSSVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec,
   setCoupling(q2,Pvec,Psca1,Psca2);
   Complex norm=getNorm();
   // calculate the vertex
-  Complex vertex = -Complex(0.,1.)*norm*sca1.wave()*sca2.wave()*
-    ( vec.t()*(sca1.e() -sca2.e() )-vec.x()*(sca1.px()-sca2.px()) 
-      -vec.y()*(sca1.py()-sca2.py())-vec.z()*(sca1.pz()-sca2.pz()));
+  Complex vertex(0.);
+  vertex = UnitRemoval::InvE * -Complex(0.,1.) * norm * sca1.wave()*sca2.wave()*
+    ( vec.t() *(sca1.e() -sca2.e() )
+      -vec.x()*(sca1.px()-sca2.px()) 
+      -vec.y()*(sca1.py()-sca2.py())
+      -vec.z()*(sca1.pz()-sca2.pz()));
   return vertex;
 }
 
@@ -66,12 +69,12 @@ VectorWaveFunction VSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   // compute the vector
   Complex vec[4];
   // massive outgoing vector
-  if(mass!=0.)
+  if(mass!=Energy())
     {
-      vec[0] = fact*(sca2.px()-sca1.px());
-      vec[1] = fact*(sca2.py()-sca1.py());
-      vec[2] = fact*(sca2.pz()-sca1.pz());
-      vec[3] = fact*(sca2.e() -sca1.e() );
+      vec[0] = UnitRemoval::InvE * fact*(sca2.px()-sca1.px());
+      vec[1] = UnitRemoval::InvE * fact*(sca2.py()-sca1.py());
+      vec[2] = UnitRemoval::InvE * fact*(sca2.pz()-sca1.pz());
+      vec[3] = UnitRemoval::InvE * fact*(sca2.e() -sca1.e() );
     }
   // massless outgoing vector
   else
@@ -79,10 +82,10 @@ VectorWaveFunction VSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
       // first the dot product for the second term
       double dot = (sca1.m2()-sca2.m2())/mass2;
       // compute the vector
-      vec[0] = fact*(sca2.px()-sca1.px()+dot*pout.px());
-      vec[1] = fact*(sca2.py()-sca1.py()+dot*pout.py());
-      vec[2] = fact*(sca2.pz()-sca1.pz()+dot*pout.pz());
-      vec[3] = fact*(sca2.e() -sca1.e() +dot*pout.e() );
+      vec[0] = UnitRemoval::InvE * fact*(sca2.px()-sca1.px()+dot*pout.x());
+      vec[1] = UnitRemoval::InvE * fact*(sca2.py()-sca1.py()+dot*pout.y());
+      vec[2] = UnitRemoval::InvE * fact*(sca2.pz()-sca1.pz()+dot*pout.z());
+      vec[3] = UnitRemoval::InvE * fact*(sca2.e() -sca1.e() +dot*pout.e() );
     }
   return VectorWaveFunction(pout,out,vec[0],vec[1],vec[2],vec[3]);
 }
@@ -104,8 +107,10 @@ ScalarWaveFunction VSSVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Energy2 p2 = pout.m2();
   Complex fact=getNorm()*sca.wave()*propagator(iopt,p2,out);
   // compute the wavefunction
-  fact = fact*(+vec.t()*(sca.e() +pout.e() )-vec.x()*(sca.px()+pout.px())
-	       -vec.y()*(sca.py()+pout.py())-vec.z()*(sca.pz()+pout.pz()));
+  fact = UnitRemoval::InvE * fact*(+vec.t()*(sca.e() +pout.e() )
+				   -vec.x()*(sca.px()+pout.x())
+				   -vec.y()*(sca.py()+pout.y())
+				   -vec.z()*(sca.pz()+pout.z()));
   return ScalarWaveFunction(pout,out,fact);
 }
 

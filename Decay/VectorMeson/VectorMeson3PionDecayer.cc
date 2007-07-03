@@ -11,7 +11,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
@@ -20,7 +20,7 @@ namespace Herwig {
 using namespace ThePEG;
 using Herwig::Helicity::outgoing;
 using Herwig::Helicity::incoming;
-using Herwig::Helicity::EpsFunction;
+using Herwig::Helicity::epsilon;
 using Herwig::Helicity::ScalarWaveFunction;
 using Herwig::Helicity::VectorWaveFunction;
 using ThePEG::Helicity::RhoDMatrix;
@@ -63,7 +63,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer() {
   _rho2width.push_back(0.3100*GeV);
   _rho3width.push_back(0.2400*GeV);
   _defaultmass.push_back(false);
-  _mpi0=0.;_mpic=0.;
+  _mpi0=0.*MeV;_mpic=0.*MeV;
   // initial size of the arrays
   _initsize=_coupling.size();
 }
@@ -216,21 +216,21 @@ int VectorMeson3PionDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
 }
 
 void VectorMeson3PionDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _coupling << _directcoupling << _rho2coupling << _rho3coupling 
+  os << _incoming << ounit(_coupling,1/MeV) << _directcoupling << _rho2coupling << _rho3coupling 
      << _directphase << _rho2phase << _rho3phase 
-     << _maxwgt << _rho1wgt << _rho2wgt << _rho3wgt << _rho1mass << _rho2mass
-     << _rho3mass << _rho1width << _rho2width << _rho3width << _defaultmass 
-     << _rho0const << _rhocconst << _rhomass << _rhomass2 << _ccoupling
-     << _mpi0 << _mpic;
+     << _maxwgt << _rho1wgt << _rho2wgt << _rho3wgt << ounit(_rho1mass,GeV) << ounit(_rho2mass,GeV)
+     << ounit(_rho3mass,GeV) << ounit(_rho1width,GeV) << ounit(_rho2width,GeV) << ounit(_rho3width,GeV) << _defaultmass 
+     << _rho0const << _rhocconst << ounit(_rhomass,GeV) << ounit(_rhomass2,GeV2) << ounit(_ccoupling,1/MeV2)
+     << ounit(_mpi0,MeV) << ounit(_mpic,MeV);
 }
 
 void VectorMeson3PionDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _coupling >> _directcoupling >> _rho2coupling >> _rho3coupling 
+  is >> _incoming >> iunit(_coupling,1/MeV) >> _directcoupling >> _rho2coupling >> _rho3coupling 
      >> _directphase >> _rho2phase >> _rho3phase 
-     >> _maxwgt >> _rho1wgt >> _rho2wgt >> _rho3wgt >> _rho1mass >> _rho2mass
-     >> _rho3mass >> _rho1width >> _rho2width >> _rho3width >> _defaultmass
-     >> _rho0const >> _rhocconst >> _rhomass >> _rhomass2 >> _ccoupling
-     >> _mpi0 >> _mpic;
+     >> _maxwgt >> _rho1wgt >> _rho2wgt >> _rho3wgt >> iunit(_rho1mass,GeV) >> iunit(_rho2mass,GeV)
+     >> iunit(_rho3mass,GeV) >> iunit(_rho1width,GeV) >> iunit(_rho2width,GeV) >> iunit(_rho3width,GeV) >> _defaultmass
+     >> _rho0const >> _rhocconst >> iunit(_rhomass,GeV) >> iunit(_rhomass2,GeV2) >> iunit(_ccoupling,1/MeV2)
+     >> iunit(_mpi0,MeV) >> iunit(_mpic,MeV);
 }
 
 ClassDescription<VectorMeson3PionDecayer> VectorMeson3PionDecayer::initVectorMeson3PionDecayer;
@@ -282,21 +282,21 @@ void VectorMeson3PionDecayer::Init() {
      "The phase of the coupling of the direct term with respect to the "
      "coupling of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_directphase,
-     0, 0, 0, -2.*pi, 2.*pi, false, false, true);
+     0, 0, 0, -Constants::twopi, Constants::twopi, false, false, true);
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceRho2Phase
     ("Rho2Phase",
      "The phasee of the coupling of the second rho multiplet with respect to the "
      "lowest lying  multiplet",
      &VectorMeson3PionDecayer::_rho2phase,
-     0, 0, 0, -2.*pi, 2.*pi, false, false, true);
+     0, 0, 0, -Constants::twopi, Constants::twopi, false, false, true);
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceRho3Phase
     ("Rho3Phase",
      "The phase of the coupling of the third rho multiplet with respect to the "
      "lowest lying multiplet",
      &VectorMeson3PionDecayer::_rho3phase,
-     0, 0, 0, -2.*pi, 2.*pi, false, false, true);
+     0, 0, 0, -Constants::twopi, Constants::twopi, false, false, true);
   
   static ParVector<VectorMeson3PionDecayer,double> interfaceMaxWgt
     ("MaxWeight",
@@ -322,37 +322,37 @@ void VectorMeson3PionDecayer::Init() {
      &VectorMeson3PionDecayer::_rho3wgt,
      0, 0, 0, -2., 1., false, false, true);
 
-  static ParVector<VectorMeson3PionDecayer,double> interfaceRho1Mass
+  static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho1Mass
     ("Rho1Mass",
      "The mass of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_rho1mass,
      GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
 
-  static ParVector<VectorMeson3PionDecayer,double> interfaceRho2Mass
+  static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho2Mass
     ("Rho2Mass",
      "The mass of the second rho multiplet",
      &VectorMeson3PionDecayer::_rho2mass,
      GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
 
-  static ParVector<VectorMeson3PionDecayer,double> interfaceRho3Mass
+  static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho3Mass
     ("Rho3Mass",
      "The mass of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3mass,
      GeV, -1, 0.77*GeV, 0.*GeV, 5.*GeV, false, false, true);
 
-  static ParVector<VectorMeson3PionDecayer,double> interfaceRho1Width
+  static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho1Width
     ("Rho1Width",
      "The width of the lowest lying rho multiplet",
      &VectorMeson3PionDecayer::_rho1width,
      GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
 
-  static ParVector<VectorMeson3PionDecayer,double> interfaceRho2Width
+  static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho2Width
     ("Rho2Width",
      "The width of the second rho multiplet",
      &VectorMeson3PionDecayer::_rho2width,
      GeV, -1, 0.15*GeV, 0.*GeV, 1.*GeV, false, false, true);
 
-  static ParVector<VectorMeson3PionDecayer,double> interfaceRho3Width
+  static ParVector<VectorMeson3PionDecayer,Energy> interfaceRho3Width
     ("Rho3Width",
      "The width of the third rho multiplet",
      &VectorMeson3PionDecayer::_rho3width,
@@ -385,7 +385,8 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0,PDT::Spin0);
   // work out the prefactor
-  Complex pre(0.),resfact,ii(0.,1.);
+  complex<InvEnergy2> pre(0./MeV2);
+  Complex resfact,ii(0.,1.);
   if(ichan<0){pre=_ccoupling[imode()][3];}
   Energy pcm;
   // work out the direct invariant masses needed
@@ -417,7 +418,6 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
 	  resfact+= _rhomass2[imode()][ix]/
 	    (mrhom*mrhom-_rhomass2[imode()][ix]
 	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	  resfact*=_ccoupling[imode()][ix];
 	  // add the contribution
 	}
 	else if(ichan==ichannow) {
@@ -425,35 +425,31 @@ double VectorMeson3PionDecayer::me2(bool vertex, const int ichan,
 	  resfact = _rhomass2[imode()][ix]/
 	    (mrho0*mrho0-_rhomass2[imode()][ix]
 	     +ii*pcm*pcm*pcm*_rho0const[imode()][ix]/mrho0);
-	  resfact*=_ccoupling[imode()][ix];
 	}
 	else if(ichan==ichannow+1) {
 	  pcm = Kinematics::pstarTwoBodyDecay(mrhop,_mpic,_mpi0);
 	  resfact+= _rhomass2[imode()][ix]/
 	    (mrhop*mrhop-_rhomass2[imode()][ix]
 	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhop);
-	  resfact*=_ccoupling[imode()][ix];
 	}
 	else if(ichan==ichannow+2) {
 	  pcm = Kinematics::pstarTwoBodyDecay(mrhom,_mpic,_mpi0);
 	  resfact+= _rhomass2[imode()][ix]/
 	    (mrhom*mrhom-_rhomass2[imode()][ix]
 	     +ii*pcm*pcm*pcm*_rhocconst[imode()][ix]/mrhom);
-	  resfact*=_ccoupling[imode()][ix];
 	}
-	pre+=resfact;
+	pre += resfact * _ccoupling[imode()][ix];
 	ichannow+=3;
       }
   }
-  // overall coupling
-  pre *=_coupling[imode()];
   // polarization vector piece
   LorentzPolarizationVector 
-    scalar=pre*EpsFunction::product(decay[0]->momentum(),decay[1]->momentum(),
-				    decay[2]->momentum());
+    scalar=_coupling[imode()]*pre*epsilon(decay[0]->momentum(),
+					  decay[1]->momentum(),
+					  decay[2]->momentum());
   // compute the matrix element
   for(ix=0;ix<3;++ix) {
-    newME(ix,0,0,0)=scalar*invec[ix];
+    newME(ix,0,0,0)=scalar.dot(invec[ix]);
   }
   ME(newME);
   // return the answer
@@ -471,15 +467,16 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
   p2.setE(0.5*(q2+mpi2c-s2)/q); ee2=p2.e()*p2.e(); pp2=sqrt(ee2-mpi2c);
   p3.setE(0.5*(q2+mpi2c-s3)/q); ee3=p3.e()*p3.e(); pp3=sqrt(ee3-mpi2c);
   // take momentum of 1 parallel to z axis
-  p1.setPx(0.);p1.setPy(0.);p1.setPz(pp1);
+  p1.setX(0.*MeV);p1.setY(0.*MeV);p1.setZ(pp1);
   // construct 2 
   double cos2(0.5*(ee1+ee2-ee3-mpi20)/pp1/pp2);
-  p2.setPx(pp2*sqrt(1.-cos2*cos2)); p2.setPy(0.); p2.setPz(-pp2*cos2);
+  p2.setX(pp2*sqrt(1.-cos2*cos2)); p2.setY(0.*MeV); p2.setZ(-pp2*cos2);
   // construct 3
   double cos3(0.5*(ee1-ee2+ee3-mpi20)/pp1/pp3);
-  p3.setPx(-pp3*sqrt(1.-cos3*cos3)); p3.setPy(0.); p3.setPz(-pp3*cos3); 
+  p3.setX(-pp3*sqrt(1.-cos3*cos3)); p3.setY(0.*MeV); p3.setZ(-pp3*cos3); 
   // compute the prefactor
-  Complex pre(_ccoupling[imode][3]),resfact,ii(0.,1.);
+  complex<InvEnergy2> pre(_ccoupling[imode][3]);
+  Complex resfact,ii(0.,1.);
   // rho0 contribution
   Energy pcm,mrho1(sqrt(s1)),mrho2(sqrt(s2)),mrho3(sqrt(s3));
   for(unsigned int ix=0;ix<3;++ix) {
@@ -495,13 +492,12 @@ threeBodyMatrixElement(const int imode, const Energy2 q2,
     pcm = Kinematics::pstarTwoBodyDecay(mrho3,_mpic,_mpi0);
     resfact+= _rhomass2[imode][ix]/(mrho3*mrho3-_rhomass2[imode][ix]
 				    +ii*pcm*pcm*pcm*_rhocconst[imode][ix]/mrho3);
-    resfact*=_ccoupling[imode][ix];
     // add the contribution
-    pre+=resfact;
+    pre+=resfact *_ccoupling[imode][ix];
   }
-  pre*=_coupling[imode];
-  LorentzPolarizationVector current(pre*EpsFunction::product(p1,p2,p3));
-  Complex temp(current*(current.conjugate()));
+  LorentzPolarizationVector current =
+    _coupling[imode]*(pre*epsilon(p1,p2,p3));
+  Complex temp(current.dot(current.conjugate()));
   return -temp.real()/3.;
 } 
 
@@ -520,12 +516,13 @@ VectorMeson3PionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   vector<int> intype;intype.push_back(1);intype.push_back(2);intype.push_back(3);
   Energy mrho(getParticleData(ParticleID::rhoplus)->mass());
   Energy wrho(getParticleData(ParticleID::rhoplus)->width());
-  vector<double> inmass(3,mrho);
-  vector<double> inwidth(3,wrho);
+  vector<Energy> inmass(3,mrho);
+  vector<Energy> inwidth(3,wrho);
+  vector<double> inpow(2,0.0);
   //tcDecayIntegratorPtr decayer(this);
   WidthCalculatorBasePtr output(
     new_ptr(ThreeBodyAllOnCalculator<VectorMeson3PionDecayer>
-	    (inweights,intype,inmass,inwidth,
+	    (inweights,intype,inmass,inwidth,inpow,
 	     *this,imode,_mpi0,_mpic,_mpic)));
   return output;
 }

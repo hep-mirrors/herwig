@@ -1,7 +1,6 @@
-#ifndef _EVT_SHAPES_H
-#define _EVT_SHAPES_H
+#ifndef EVT_SHAPES_H
+#define EVT_SHAPES_H
 
-#include "ThePEG/CLHEPWrap/Matrix.h"
 #include "ThePEG/CLHEPWrap/ThreeVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 
@@ -54,7 +53,7 @@ public:
   /**
    *  Rapidity with respect to the beam direction
    */
-  Energy getRapidity(const Lorentz5Momentum & p);
+  double getRapidity(const Lorentz5Momentum & p);
   //@}
 
   /**
@@ -119,17 +118,17 @@ public:
   /**
    *  The thrust axis
    */
-  Vector3 thrustAxis(); 
+  Axis thrustAxis(); 
 
   /**
    *  The major axis
    */ 
-  Vector3 majorAxis(); 
+  Axis majorAxis(); 
 
   /**
    *  The minor axis
    */
-  Vector3 minorAxis(); 
+  Axis minorAxis(); 
   //@}
 
 
@@ -155,7 +154,7 @@ public:
   /**
    *  The eigenvectors in order of descending eigenvalue
    */
-  vector<Vector3> linTenEigenVectors();
+  vector<Axis> linTenEigenVectors();
   //@}
 
   /**
@@ -180,7 +179,7 @@ public:
   /**
    *  The sphericity axis
    */
-  Vector3 sphericityAxis();
+  Axis sphericityAxis();
 
   /**
    *  The sphericity eigenvalues
@@ -190,7 +189,7 @@ public:
   /**
    *  The sphericity eigenvectors
    */
-  vector<Vector3> sphericityEigenVectors();
+  vector<Axis> sphericityEigenVectors();
   //@}
 
   /**
@@ -339,15 +338,16 @@ private:
    * @param t The thrust
    * @param taxis The thrust axis
    */
-  void calcT(const vector<Vector3> &p, double &t, Vector3 &taxis);
-
+  void calcT(const vector<Momentum3 > &p,
+	     Energy2 &t, Axis & taxis);
   /**
    *  Member to calculate the major
    * @param p The three vectors
    * @param m The major
    * @param maxis The major axis
    */
-  void calcM(const vector<Vector3> &p, double &m, Vector3 &maxis);
+  void calcM(const vector<Momentum3 > &p, 
+	     Energy2 &m, Axis & maxis);
   //@}
 
 
@@ -365,17 +365,17 @@ private:
   /**
    *  The thrust related axes
    */
-  vector<Vector3> _thrustAxis;
+  vector<Axis> _thrustAxis;
 
   /**
    *  The sphericity related axes
    */
-  vector<Vector3> _spherAxis; 
+  vector<Axis> _spherAxis; 
 
   /**
    *  The linearised tensor axes
    */
-  vector<Vector3> _linTenAxis; 
+  vector<Axis> _linTenAxis; 
   //@}
 
   /**

@@ -54,10 +54,10 @@ void BtoSGammaAnalysis::analyze(tPPtr part) {
   Lorentz5Momentum ptemp;
   ptemp = part->children()[0]->momentum()+part->children()[1]->momentum();
   ptemp.rescaleMass();
-  *_hadmass[imode] +=ptemp.mass();
+  *_hadmass[imode] +=ptemp.mass()/MeV;
   ptemp= part->children()[1]->momentum();
   ptemp.boost(-part->momentum().boostVector());
-  *_spectrum[imode]+=ptemp.e();
+  *_spectrum[imode]+=ptemp.e()/MeV;
 }
 
 NoPIOClassDescription<BtoSGammaAnalysis> BtoSGammaAnalysis::initBtoSGammaAnalysis;
@@ -116,7 +116,7 @@ void BtoSGammaAnalysis::dofinish() {
 void BtoSGammaAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
   for(unsigned int ix=0;ix<4;++ix) {
-    _hadmass.push_back(new_ptr(Histogram(0.,5300.*MeV,100)));
-    _spectrum.push_back(new_ptr(Histogram(0.,5300.*MeV,100)));
+    _hadmass.push_back(new_ptr(Histogram(0.,5300.,100)));
+    _spectrum.push_back(new_ptr(Histogram(0.,5300.,100)));
   }
 }

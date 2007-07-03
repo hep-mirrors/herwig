@@ -17,12 +17,14 @@ using namespace ThePEG;
 using namespace Herwig::Helicity;
 
 void RSModel::persistentOutput(PersistentOStream & os) const {
-  os << _theLambda_pi << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 
+  os << ounit(_theLambda_pi,GeV) 
+     << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 
      << _theFFVGRVertex << _theVVVGRVertex;
 }
 
 void RSModel::persistentInput(PersistentIStream & is, int) {
-  is >> _theLambda_pi >> _theFFGRVertex >> _theVVGRVertex >> _theSSGRVertex
+  is >> iunit(_theLambda_pi,GeV) 
+     >> _theFFGRVertex >> _theVVGRVertex >> _theSSGRVertex
      >> _theFFVGRVertex >> _theVVVGRVertex;
 }
 

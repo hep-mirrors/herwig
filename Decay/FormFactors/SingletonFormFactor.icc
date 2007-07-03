@@ -13,6 +13,7 @@ inline SingletonFormFactor::SingletonFormFactor()
   _mcharm   = 1.80*GeV;
   _mstrange = 0.51*GeV;
   // mixing angles
+  using Constants::pi;
   _thetalambda =pi/4.;
   _thetasigma  =pi/4.;
   _thetaxi     =pi/4.;

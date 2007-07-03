@@ -9,10 +9,10 @@ namespace Herwig {
 inline ShowerKinematics::ShowerKinematics()
   : Base(), 
     _isTheJetStartingPoint( false ),
-    _scale( Energy() ),
+    _scale(),
     _z( 0.0 ),
     _phi( 0.0 ),
-    _pt(0.),
+    _pt(),
     _splitFun( tSplittingFnPtr() )
 {}
 

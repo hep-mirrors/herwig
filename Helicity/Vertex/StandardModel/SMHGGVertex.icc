@@ -9,8 +9,8 @@ namespace Helicity {
 using namespace ThePEG;
     
 inline SMHGGVertex::SMHGGVertex() 
-  : _couplast(0.), _q2last(0.),
-    _mw(0.), _sw(0.), _qopt(0)
+  : _couplast(0.), _q2last(),
+    _mw(), _sw(0.), _qopt(0)
 {
   //PDG codes for particles at vertices
   vector<int> first(1,25),second(1,21),third(1,21);

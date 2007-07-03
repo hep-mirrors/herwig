@@ -49,7 +49,7 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin2);
   rhoin.average();
-  vector<LorentzTensor> in;
+  vector<LorentzTensor<double> > in;
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);
   unsigned int iferm,ianti;
@@ -91,7 +91,7 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->coloured()) {
     output *= 3.;
   }
@@ -106,7 +106,7 @@ Energy TFFDecayer::partialWidth(const PDPtr inpart,
   _theFFTPtr->setCoupling(scale,inpart,outa,outb);
   double musq = sqr(outa->mass()/inpart->mass());
   double b = sqrt(1- 4.*musq);
-  double me2 = b*b*(5-2*b*b)*scale/120;
+  double me2 = b*b*(5-2*b*b)*scale/120*UnitRemoval::InvE2;
   Complex norm(_theFFTPtr->getNorm()*_theFFTPtr->getNorm());
   me2 *= norm.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),

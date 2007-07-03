@@ -11,7 +11,7 @@
 
 using namespace Herwig::Helicity;
 
-SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(0.),
+SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(),
 			   _sb(0.), _cb(0.), _leftlast(0.), 
 			   _rightlast(0), _id1last(0), _id2last(0) {
   vector<int> first,second,third;
@@ -68,12 +68,12 @@ SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(0.),
 
 void SSNFSVertex::persistentOutput(PersistentOStream & os) const {
   os << _theStop << _theSbottom << _theStau << _theN << _theSS 
-     << _tanB << _sw << _cw << _mw << _sb << _cb;
+     << _tanB << _sw << _cw << ounit(_mw,GeV) << _sb << _cb;
 }
 
 void SSNFSVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theStop >> _theSbottom >> _theStau >> _theN >> _theSS 
-     >> _tanB >> _sw >> _cw >> _mw >> _sb >> _cb;
+     >> _tanB >> _sw >> _cw >> iunit(_mw,GeV) >> _sb >> _cb;
   _leftlast = 0.;
   _rightlast = 0.;
   _id1last = 0;
@@ -189,7 +189,7 @@ void SSNFSVertex::setCoupling(Energy2 q2,tcPDPtr part1,
       Complex n1prime = (*_theN)(neu,0)*_cw + (*_theN)(neu,1)*_sw;
       Complex n2prime = (*_theN)(neu,1)*_cw - (*_theN)(neu,0)*_sw;
       Energy fmass = getParticleData(abs(iferm))->mass();
-      Complex fact1 = gE*fmass/2./_mw/_sw;
+      Complex fact1 = double(gE*fmass/2./_mw/_sw);
       Complex fact2 = (0.5 - _sw*_sw);
       double eu = _theSS->eu();
       Complex fact3 = (0.5 - eu*_sw*_sw);

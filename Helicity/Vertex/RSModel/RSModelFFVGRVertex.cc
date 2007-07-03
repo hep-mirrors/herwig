@@ -15,12 +15,12 @@ namespace Helicity {
 using namespace ThePEG;
 
 void RSModelFFVGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _charge <<  _theModel << _theKappa;
+  os << _charge <<  _theModel << ounit(_theKappa,InvGeV);
 }
 
 void RSModelFFVGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _charge >> _theModel >> _theKappa;
-  for(int ix=0;ix<2;++ix){_couplast[ix]=0.;_q2last[ix]=0.;}
+  is >> _charge >> _theModel >> iunit(_theKappa,InvGeV);
+  for(int ix=0;ix<2;++ix){_couplast[ix]=0.;_q2last[ix]=0.*GeV2;}
 }
 
 ClassDescription<RSModelFFVGRVertex> RSModelFFVGRVertex::initRSModelFFVGRVertex;
@@ -51,7 +51,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
           _couplast[0] = sqrt(4.0*3.14159265*alpha);
           _q2last[0]=q2;
         }
-      norm = _theKappa*_couplast[0];
+      norm = UnitRemoval::E * _theKappa*_couplast[0];
       // _charge of particle
       if((iferm>=1 && iferm<=6)||(iferm>=11 &&iferm<=16))
         {norm = norm*_charge[iferm];}
@@ -73,7 +73,7 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
           _couplast[1] = sqrt(4.0*3.14159265*alphas);
           _q2last[1]=q2;
         }
-      norm = _theKappa*_couplast[1];
+      norm = UnitRemoval::E * _theKappa*_couplast[1];
     }
   else
     {

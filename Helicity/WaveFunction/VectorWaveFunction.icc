@@ -69,7 +69,7 @@ inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify phase choice)
-inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,
+inline VectorWaveFunction::VectorWaveFunction(LorentzMomentum pin,
 					      const tcPDPtr & part,unsigned int ihel,
 					      Direction dir, VectorPhase phase)
 {
@@ -91,7 +91,7 @@ inline VectorWaveFunction::VectorWaveFunction(Energy mm, const tcPDPtr & part,
 }
 
 // set 4 momentum and mass (specify phase choice)
-inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,Energy mm,
+inline VectorWaveFunction::VectorWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part,
 					      unsigned int ihel,
 					      Direction dir, VectorPhase phase)
@@ -137,7 +137,7 @@ inline VectorWaveFunction::VectorWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum 
-inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,
+inline VectorWaveFunction::VectorWaveFunction(LorentzMomentum pin,
 					      const tcPDPtr & part, Direction dir) 
 {
   direction(dir);
@@ -157,7 +157,7 @@ inline VectorWaveFunction::VectorWaveFunction(Energy mm,
 }
 
 // set 4 momentum and mass
-inline VectorWaveFunction::VectorWaveFunction(LorentzVector pin,Energy mm,
+inline VectorWaveFunction::VectorWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part, Direction dir) 
 {
   direction(dir);
@@ -177,31 +177,31 @@ inline VectorWaveFunction::VectorWaveFunction()
 // descructor
 inline VectorWaveFunction::~VectorWaveFunction(){;}
 
-// subscript operator
-inline Complex VectorWaveFunction::operator ()(int i) const
-{
-  if(i<0 || i>3)
-    {
-      ThePEG::Helicity::HelicityConsistencyError()
-	<< "VectorWaveFunction requested for invalid index" << Exception::abortnow;
-      return 0.;
-    }
-  return _wf[i];
-}
+// // subscript operator
+// inline Complex VectorWaveFunction::operator ()(int i) const
+// {
+//   if(i<0 || i>3)
+//     {
+//       ThePEG::Helicity::HelicityConsistencyError()
+// 	<< "VectorWaveFunction requested for invalid index" << Exception::abortnow;
+//       return 0.;
+//     }
+//   return _wf[i];
+// }
 
-// Set components by index.
-inline Complex & VectorWaveFunction::operator () (int i)
-{
-  static Complex dummy;
-  if(i>=0 &&i<=3)
-    {return _wf(i);}
-  else
-    {
-      ThePEG::Helicity::HelicityConsistencyError() 
-	<< "Invalid index " << i << " called for VectorWaveFunction" 
-	<< Exception::abortnow;
-    return dummy;}
-}
+// // Set components by index.
+// inline Complex & VectorWaveFunction::operator () (int i)
+// {
+//   static Complex dummy;
+//   if(i>=0 &&i<=3)
+//     {return _wf(i);}
+//   else
+//     {
+//       ThePEG::Helicity::HelicityConsistencyError() 
+// 	<< "Invalid index " << i << " called for VectorWaveFunction" 
+// 	<< Exception::abortnow;
+//     return dummy;}
+// }
 
 // Assignment. 
 inline VectorWaveFunction & VectorWaveFunction::operator = (const VectorWaveFunction & w)

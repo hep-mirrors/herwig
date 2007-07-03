@@ -8,17 +8,12 @@ namespace Herwig {
 using namespace ThePEG;
 
 inline GenericMassGenerator::GenericMassGenerator() 
-{
- 
-  _lowermass=0.;_uppermass=0.;
-  _maxwgt=0.;
-  _BWshape=0;
-  _ngenerate=100;
-  _mass=0.;_width=0.; 
-  _mass2=0.;_mwidth=0.;
-  _ninitial=1000;
-  _initialize=false;
-}
+  : _maxwgt(),_BWshape(0),_ngenerate(100),
+    _lowermass(),_uppermass(),
+    _mass(),_width(), 
+    _mass2(),_mwidth(),
+    _ninitial(1000),
+    _initialize(false) {}
 
 inline IBPtr GenericMassGenerator::clone() const {
   return new_ptr(*this);
@@ -99,22 +94,22 @@ inline double GenericMassGenerator::weight(Energy q) const
 inline double GenericMassGenerator::weight(Energy q,int shape) const
 {
   Energy2 q2 = q*q;
-  double  sq=(q2-_mass2)*(q2-_mass2);
+  Energy4 sq=(q2-_mass2)*(q2-_mass2);
   Energy gam=width(q);
   // finish the calculation of the width
   Energy2 num;
   if(shape==2){num=_mass*gam;}
-  else if(shape==3){num=1.;}
+  else if(shape==3){num=1.*UnitRemoval::E2;}
   else{num=q*gam;}
-  Energy2 den;
+  Energy4 den;
   if(shape==2){den=sq+_mass2*gam*gam;}
   else{den=sq+q2*gam*gam;}
-  return num/den*(sq+_mwidth*_mwidth)/pi/_mwidth;
+  return num/den*(sq+_mwidth*_mwidth)/Constants::pi/_mwidth;
 }
 
 inline Energy GenericMassGenerator::width(Energy q) const
 {
-  Energy gam(0.);
+  Energy gam(0.*GeV);
   if(_BWshape==1||!_widthgen){gam=_width;}
   else{gam=_widthgen->width(*_particle,q);}
   return gam;

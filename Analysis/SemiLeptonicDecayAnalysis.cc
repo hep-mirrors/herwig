@@ -73,27 +73,27 @@ void SemiLeptonicDecayAnalysis::analyze(tPPtr part) {
     _outgoing.push_back(part->children()[0]->id());
     _outgoingL.push_back(ilep);
     _energy.push_back(new_ptr(Histogram(0.0,
-					part->nominalMass()+part->dataPtr()->widthUpCut()
+					(part->nominalMass()+part->dataPtr()->widthUpCut()
 					-part->children()[0]->nominalMass()
-					+part->children()[0]->dataPtr()->widthLoCut(),
+					+part->children()[0]->dataPtr()->widthLoCut())/MeV,
 					200)));
     _scale.push_back(new_ptr(Histogram(0.0,
-				       part->nominalMass()+part->dataPtr()->widthUpCut()
+				       (part->nominalMass()+part->dataPtr()->widthUpCut()
 				       -part->children()[0]->nominalMass()
-				       +part->children()[0]->dataPtr()->widthLoCut(),
+				       +part->children()[0]->dataPtr()->widthLoCut())/MeV,
 				       200)));
   }
   // add the results to the histogram
   Lorentz5Momentum ptemp;
   ptemp = lep[0]->momentum()+lep[1]->momentum();
   ptemp.rescaleMass();
-  *_scale[ix]+=ptemp.mass();
+  *_scale[ix] += ptemp.mass()/MeV;
   ptemp = part->children()[0]->momentum()+lep[locn]->momentum();
   ptemp.rescaleMass();
   Energy ee = 1./2./part->mass()*
     ( part->mass()*part->mass()-ptemp.mass()*ptemp.mass()
       +lep[loce]->mass()*lep[loce]->mass());
-  *_energy[ix]+=ee;
+  *_energy[ix] += ee/MeV;
 }
 
 NoPIOClassDescription<SemiLeptonicDecayAnalysis> SemiLeptonicDecayAnalysis::initSemiLeptonicDecayAnalysis;

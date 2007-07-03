@@ -13,6 +13,11 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
+namespace {
+  inline Energy  timesGeV (double x) { return x * GeV; }
+  inline Energy2 timesGeV2(double x) { return x * GeV2; }
+}
+
 namespace Herwig {
 using namespace ThePEG;
 
@@ -40,6 +45,7 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
   _fpi = 130.7*MeV/sqrt(2.);
   // couplings and phases for the different channels
   // p-wave rho and rho prime
+  using Constants::pi;
   if(_rhomagP.size()==0) {
     _rhomagP.push_back(1.)  ;_rhophaseP.push_back(0.);
     _rhomagP.push_back(0.12);_rhophaseP.push_back(0.99*pi);
@@ -50,14 +56,14 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
     _rhomagD.push_back(0.87/GeV2);_rhophaseD.push_back( 0.53*pi);
   }
   // f_2
-  _f2mag=0.71/GeV2;_f2phase=0.56*pi;_f2coup=0.;
+  _f2mag=0.71/GeV2;_f2phase=0.56*pi;_f2coup=0./MeV2;
   // sigma
   _sigmamag=2.10;_sigmaphase=0.23*pi;_sigmacoup=0.;
   // f_0
   _f0mag=0.77;_f0phase=-0.54*pi;_f0coup=0.;
   // initialize the a_1 width
   _initializea1=false;
-  Energy2 a1q2in[200]={0      ,15788.6,31577.3,47365.9,63154.6,78943.2,
+  double  a1q2in[200]={0      ,15788.6,31577.3,47365.9,63154.6,78943.2,
 		       94731.9,110521 ,126309 ,142098 ,157886 ,173675 ,
 		       189464 ,205252 ,221041 ,236830 ,252618 ,268407 ,     
 		       284196 ,299984 ,315773 ,331562 ,347350 ,363139 ,     
@@ -102,7 +108,7 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
 		       2.96827e+06,2.98405e+06,2.99984e+06,3.01563e+06, 
 		       3.03142e+06,3.04721e+06,3.06300e+06,3.07879e+06, 
 		       3.09457e+06,3.11036e+06,3.12615e+06,3.14194e+06};
-  Energy a1widthin[200]={0,0,0,0,0,0,0,0,
+  double a1widthin[200]={0,0,0,0,0,0,0,0,
 			 0,0,0,0.00021256,0.0107225,0.0554708,0.150142,0.303848,
 			 0.522655,0.81121,1.1736,1.61381,2.13606,2.74499,3.44583,4.24454,
 			 5.14795,6.16391,7.3014,8.57079,9.98398,11.5547,13.2987,15.2344,
@@ -127,22 +133,30 @@ inline ThreePionCLEOCurrent::ThreePionCLEOCurrent() {
 			 1623.63,1642.08,1653.51,1668.69,1684.03,1699.53,1715.21,1731.04,
 			 1747.05,1763.23,1779.59,1796.12,1812.83,1829.72,1846.79,1864.04,
 			 1881.49,1899.11,1916.93,1934.93,1953.13,1971.52,1990.12,2008.89};
-  if(_a1runwidth.size()==0) {
-    _a1runwidth=vector<Energy>(a1widthin,a1widthin+200);
-    _a1runq2=vector<Energy2>(a1q2in,a1q2in+200);
+  if(_a1runwidth.empty()) {
+    vector<double> tmp1(a1widthin,a1widthin+200);
+    std::transform(tmp1.begin(), tmp1.end(),
+		   back_inserter(_a1runwidth),
+		   timesGeV);
+    
+    vector<double> tmp2(a1q2in,a1q2in+200);
+    _a1runq2.clear();
+    std::transform(tmp2.begin(), tmp2.end(),
+		   back_inserter(_a1runq2),
+		   timesGeV2);
   }
   // zero parameters which will be calculated later to avoid problems
-  _pf2cc=0.; 
-  _pf200=0.;
-  _pf0cc=0.;
-  _pf000=0.;
-  _psigmacc=0.;
-  _psigma00=0.; 
-  _mpi0=0.;
-  _mpic=0.;
-  _fact=0.;
-  _maxmass=0.*GeV;
-  _maxcalc=0.*GeV;
+  _pf2cc=0.*MeV; 
+  _pf200=0.*MeV;
+  _pf0cc=0.*MeV;
+  _pf000=0*MeV;
+  _psigmacc=0.*MeV;
+  _psigma00=0.*MeV; 
+  _mpi0=0.*MeV;
+  _mpic=0.*MeV;
+  _fact=0./MeV;
+  _maxmass=0.*MeV;
+  _maxcalc=0.*MeV;
 }
 
 void ThreePionCLEOCurrent::doinit() throw(InitException) {
@@ -215,27 +229,41 @@ void ThreePionCLEOCurrent::doinit() throw(InitException) {
 }
 
 void ThreePionCLEOCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _rhomass << _rhowidth << _prhocc << _prhoc0 << _f2mass << _f2width << _pf2cc 
-     << _pf200 << _f0mass << _f0width << _pf0cc << _pf000 << _sigmamass << _sigmawidth
-     << _psigmacc << _psigma00 << _mpi0 << _mpic << _fpi << _fact 
+  os << ounit(_rhomass,GeV) << ounit(_rhowidth,GeV) << ounit(_prhocc,GeV) << ounit(_prhoc0,GeV) 
+     << ounit(_f2mass,GeV) << ounit(_f2width,GeV) << ounit(_pf2cc,GeV) 
+     << ounit(_pf200,GeV) << ounit(_f0mass,GeV) << ounit(_f0width,GeV) 
+     << ounit(_pf0cc,GeV) << ounit(_pf000,GeV) 
+     << ounit(_sigmamass,GeV) << ounit(_sigmawidth,GeV)
+     << ounit(_psigmacc,GeV) << ounit(_psigma00,GeV) << ounit(_mpi0,GeV) << ounit(_mpic,GeV) 
+     << ounit(_fpi,GeV) << ounit(_fact,1/GeV) 
      << _rhomagP << _rhophaseP 
-     << _rhocoupP << _rhomagD << _rhophaseD << _rhocoupD <<_f2mag << _f2phase << _f2coup 
+     << _rhocoupP << ounit(_rhomagD,1/GeV2) << _rhophaseD 
+     << ounit(_rhocoupD,1/GeV2) <<ounit(_f2mag,1/GeV2) << _f2phase << ounit(_f2coup ,1/GeV2)
      << _f0mag << _f0phase << _f0coup << _sigmamag << _sigmaphase << _sigmacoup 
      << _localparameters 
-     <<_a1mass<< _a1width <<  _a1runwidth << _a1runq2 <<  _initializea1
-     << _mKstar << _mK << _gammk << _a1opt << _maxmass << _maxcalc;
+     << ounit(_a1mass,GeV) << ounit(_a1width,GeV) << ounit(_a1runwidth,GeV) 
+     << ounit(_a1runq2,GeV2) <<  _initializea1
+     << ounit(_mKstar,GeV) << ounit(_mK,GeV) << _gammk << _a1opt 
+     << ounit(_maxmass,GeV) << ounit(_maxcalc,GeV);
 }
 
 void ThreePionCLEOCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _rhomass >> _rhowidth >> _prhocc >> _prhoc0 >> _f2mass >> _f2width >> _pf2cc 
-     >> _pf200 >> _f0mass >> _f0width >> _pf0cc >> _pf000 >> _sigmamass >> _sigmawidth
-     >> _psigmacc >> _psigma00 >> _mpi0 >> _mpic >> _fpi >> _fact 
+  is >> iunit(_rhomass,GeV) >> iunit(_rhowidth,GeV) >> iunit(_prhocc,GeV) >> iunit(_prhoc0,GeV) 
+     >> iunit(_f2mass,GeV) >> iunit(_f2width,GeV) >> iunit(_pf2cc,GeV)
+     >> iunit(_pf200,GeV) >> iunit(_f0mass,GeV) >> iunit(_f0width,GeV) 
+     >> iunit(_pf0cc,GeV) >> iunit(_pf000,GeV) 
+     >> iunit(_sigmamass,GeV) >> iunit(_sigmawidth,GeV)
+     >> iunit(_psigmacc,GeV) >> iunit(_psigma00,GeV) >> iunit(_mpi0,GeV) >> iunit(_mpic,GeV) 
+     >> iunit(_fpi,GeV) >> iunit(_fact,1/GeV) 
      >> _rhomagP >> _rhophaseP 
-     >> _rhocoupP >> _rhomagD >> _rhophaseD >> _rhocoupD>>_f2mag >> _f2phase >> _f2coup 
+     >> _rhocoupP >> iunit(_rhomagD,1/GeV2) >> _rhophaseD >> iunit(_rhocoupD,1/GeV2) 
+     >> iunit(_f2mag,1/GeV2) >> _f2phase >> iunit(_f2coup,1/GeV2) 
      >> _f0mag >> _f0phase >> _f0coup >> _sigmamag >> _sigmaphase >> _sigmacoup 
      >> _localparameters 
-     >> _a1mass >> _a1width >>  _a1runwidth >> _a1runq2 >>  _initializea1
-     >> _mKstar >> _mK >> _gammk >> _a1opt >> _maxmass >> _maxcalc;
+     >> iunit(_a1mass,GeV) >> iunit(_a1width,GeV) >>  iunit(_a1runwidth,GeV) 
+     >> iunit(_a1runq2,GeV2) >>  _initializea1
+     >> iunit(_mKstar,GeV) >> iunit(_mK,GeV) >> _gammk >> _a1opt 
+     >> iunit(_maxmass,GeV) >> iunit(_maxcalc,GeV);
 }
 
 ClassDescription<ThreePionCLEOCurrent> ThreePionCLEOCurrent::initThreePionCLEOCurrent;
@@ -251,13 +279,13 @@ void ThreePionCLEOCurrent::Init() {
     ("RhoMasses",
      "The masses of the different rho resonnaces",
      &ThreePionCLEOCurrent::_rhomass,
-     0, 0, 0, -10000, 10000, false, false, true);
+     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
 
   static ParVector<ThreePionCLEOCurrent,Energy> interfacerhowidth
     ("RhoWidths",
      "The widths of the different rho resonnaces",
      &ThreePionCLEOCurrent::_rhowidth,
-     0, 0, 0, -10000, 10000, false, false, true);
+     MeV, 0, 0*MeV, -10000*MeV, 10000*MeV, false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,Energy> interfacef_2Mass
     ("f_2Mass",
@@ -341,36 +369,36 @@ void ThreePionCLEOCurrent::Init() {
     ("RhoPWavePhase",
      "The phase of the couplings for the p-wave rho currents",
      &ThreePionCLEOCurrent::_rhophaseP,
-     0, 0, 0, -2.*pi, 2.*pi, false, false, true);
+     0, 0, 0, -Constants::twopi, Constants::twopi, false, false, true);
 
   static ParVector<ThreePionCLEOCurrent,InvEnergy2> interfacerhomagD
     ("RhoDWaveMagnitude",
      "The magnitude of the couplings for the d-wave rho currents",
      &ThreePionCLEOCurrent::_rhomagD,
-     0, 0, 0, 0, 10000, false, false, true);
+     1/MeV2, 0, 0/MeV2, 0/MeV2, 10000/MeV2, false, false, true);
 
   static ParVector<ThreePionCLEOCurrent,double> interfacerhophaseD
     ("RhoDWavePhase",
      "The phase of the couplings for the d-wave rho currents",
      &ThreePionCLEOCurrent::_rhophaseD,
-     0, 0, 0, -2.*pi, 2.*pi, false, false, true);
+     0, 0, 0, -Constants::twopi, Constants::twopi, false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,double> interfacef0Phase
     ("f0Phase",
      "The phase of the f_0 scalar current",
-     &ThreePionCLEOCurrent::_f0phase, 0.54*pi, -2.*pi, 2.*pi,
+     &ThreePionCLEOCurrent::_f0phase, 0.54*Constants::pi, -Constants::twopi, Constants::twopi,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,double> interfacef2Phase
     ("f2Phase",
      "The phase of the f_2 tensor current",
-     &ThreePionCLEOCurrent::_f2phase, 0.56*pi,-2.*pi, 2.*pi,
+     &ThreePionCLEOCurrent::_f2phase, 0.56*Constants::pi,-Constants::twopi, Constants::twopi,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,double> interfacesigmaPhase
     ("sigmaPhase",
      "The phase of the sigma scalar current",
-     &ThreePionCLEOCurrent::_sigmaphase, 0.23*pi, -2.*pi, 2.*pi,
+     &ThreePionCLEOCurrent::_sigmaphase, 0.23*Constants::pi, -Constants::twopi, Constants::twopi,
      false, false, true);
 
   static Parameter<ThreePionCLEOCurrent,double> interfacef0Magnitude
@@ -407,17 +435,17 @@ void ThreePionCLEOCurrent::Init() {
      "Use the values from the particleData objects",
      false);
 
-  static ParVector<ThreePionCLEOCurrent,double> interfacea1RunningWidth
+  static ParVector<ThreePionCLEOCurrent,Energy> interfacea1RunningWidth
     ("a1RunningWidth",
      "The values of the a_1 width for interpolation to giving the running width.",
      &ThreePionCLEOCurrent::_a1runwidth,
-     0, 0, 0, 0, 10000000, false, false, true);
+     MeV, 0, 0*MeV, 0*MeV, 10000000*MeV, false, false, true);
   
-  static ParVector<ThreePionCLEOCurrent,double> interfacea1RunningQ2
+  static ParVector<ThreePionCLEOCurrent,Energy2> interfacea1RunningQ2
     ("a1RunningQ2",
      "The values of the q^2 for interpolation to giving the running width.",
      &ThreePionCLEOCurrent::_a1runq2,
-     0, 0, 0, 0, 10000000, false, false, true);
+     MeV2, 0, 0*MeV2, 0*MeV2, 10000000*MeV2, false, false, true);
 
   static Switch<ThreePionCLEOCurrent,bool> interfaceInitializea1
     ("Initializea1",
@@ -457,8 +485,7 @@ void ThreePionCLEOCurrent::Init() {
 void ThreePionCLEOCurrent::inita1Width(int iopt) {
   if(iopt==-1) {
     _maxcalc=_maxmass;
-    if(!_initializea1||_maxmass==0.) return;
-    double total;
+    if(!_initializea1||_maxmass==0.*MeV) return;
     // parameters for the table of values
     Energy2 step=sqr(_maxmass)/200.;
     // function to be integrated to give the matrix element
@@ -467,31 +494,32 @@ void ThreePionCLEOCurrent::inita1Width(int iopt) {
     vector<int> intype;intype.push_back(2);intype.push_back(3);
     Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
     Energy wrho=getParticleData(ParticleID::rhoplus)->width();
-    vector<double> inmass;inmass.push_back(mrho);inmass.push_back(mrho);
-    vector<double> inwidth;inwidth.push_back(wrho);inwidth.push_back(wrho);
+    vector<Energy> inmass;inmass.push_back(mrho);inmass.push_back(mrho);
+    vector<Energy> inwidth;inwidth.push_back(wrho);inwidth.push_back(wrho);
+    vector<double> inpow(2,0.0);
     ThreeBodyAllOnCalculator<ThreePionCLEOCurrent>
-      widthgenN(inweights,intype,inmass,inwidth,*this,0,_mpi0,_mpi0,_mpic);
+      widthgenN(inweights,intype,inmass,inwidth,inpow,*this,0,_mpi0,_mpi0,_mpic);
     ThreeBodyAllOnCalculator<ThreePionCLEOCurrent>
-      widthgenC(inweights,intype,inmass,inwidth,*this,1,_mpic,_mpic,_mpic);
+      widthgenC(inweights,intype,inmass,inwidth,inpow,*this,1,_mpic,_mpic,_mpic);
     // normalisation constant to give physical width if on shell
     double a1const = _a1width/(widthgenN.partialWidth(sqr(_a1mass))+
 			       widthgenC.partialWidth(sqr(_a1mass)));
     // loop to give the values
     _a1runq2.resize(0);_a1runwidth.resize(0);
-    for(Energy2 moff2=0.;moff2<=sqr(_maxmass);moff2+=step) {
+    for(Energy2 moff2=0.*MeV2; moff2<=sqr(_maxmass); moff2+=step) {
       Energy moff=sqrt(moff2);
       _a1runq2.push_back(moff2);
       Energy charged=a1const*widthgenC.partialWidth(moff2);
       Energy neutral=a1const*widthgenN.partialWidth(moff2);
-      Energy kaon = moff<=_mK+_mKstar ? 0. : 2.870*_gammk*_gammk/8./pi*
+      Energy kaon = moff<=_mK+_mKstar ? 0.*MeV : 2.870*_gammk*_gammk/8./Constants::pi*
 	Kinematics::pstarTwoBodyDecay(moff,_mK,_mKstar)/moff2*GeV2;
-      total=charged+neutral+kaon;
+      Energy total = charged + neutral + kaon;
       _a1runwidth.push_back(total);
     }
   }
   // set up the interpolator
   else if(iopt==0) {
-    _a1runinter = new_ptr(Interpolator(_a1runwidth,_a1runq2,3));
+    _a1runinter = make_InterpolatorPtr(_a1runwidth,_a1runq2,3);
   }
 }
 
@@ -500,19 +528,17 @@ bool ThreePionCLEOCurrent::acceptMode(int imode) const {
   return imode>=0&&imode<=1;
 }
 
-void ThreePionCLEOCurrent::
+ThreePionCLEOCurrent::FormFactors ThreePionCLEOCurrent::
   calculateFormFactors(const int ichan, const int imode,
-		      Energy2 q2, Energy2 s1, Energy2 s2, Energy2 s3,
-		      Complex & F1, Complex & F2, Complex & F3, Complex & F4,
-		      Complex & F5) const {
-  F1=0.;F2=0.;F3=0.;F4=0.;F5=0.;
+		      Energy2 q2, Energy2 s1, Energy2 s2, Energy2 s3) const {
+  Complex F1=0., F2=0., F3=0.;//F4=0.;F5=0.;
   // calculate the form factors without the a_1 piece
   CLEOFormFactor(imode,ichan,q2,s1,s2,s3,F1,F2,F3);
   // change sign of the f_2 term
   F2=-F2;
   // multiply by the a_1 factor
-  Complex a1fact=a1BreitWigner(q2)*_fact;
-  F1*=a1fact;F2*=a1fact;F3*=a1fact;
+  complex<InvEnergy> a1fact = a1BreitWigner(q2) * _fact;
+  return FormFactors(F1*a1fact, F2*a1fact, F3*a1fact);
 }
 
 void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
@@ -552,8 +578,8 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
       F3+=-2./3.*(_sigmacoup*sigbws1+_f0coup*f0bws1)
 	  +2./3.*(_sigmacoup*sigbws2+_f0coup*f0bws2);
       // the tensor terms
-      Complex sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
-      Complex sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
+      complex<Energy2> sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
+      complex<Energy2> sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
       F1+=_f2coup*(0.5*(s3-s2)*f2bws1-sfact2);
       F2+=_f2coup*(0.5*(s3-s1)*f2bws2-sfact1);
       F3+=_f2coup*(-sfact1+sfact2);
@@ -587,13 +613,13 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
       F3+=2./3.*_sigmacoup*sigbws2;
     }
     else if(ichan==8) {
-      Complex sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
+      complex<Energy2> sfact1 = 1./18.*(4.*_mpic*_mpic-s1)*(q2+s1-_mpic*_mpic)/s1*f2bws1;
       F1+=_f2coup*0.5*(s3-s2)*f2bws1;
       F2-=_f2coup*sfact1;
       F3-=_f2coup*sfact1;
     }
     else if(ichan==9) {
-      Complex sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
+      complex<Energy2> sfact2 = 1./18.*(4.*_mpic*_mpic-s2)*(q2+s2-_mpic*_mpic)/s2*f2bws2;
       F1-=_f2coup*sfact2;
       F2+=_f2coup*0.5*(s3-s1)*f2bws2;
       F3+=_f2coup*sfact2;
@@ -689,7 +715,7 @@ bool ThreePionCLEOCurrent::createMode(int icharge, unsigned int imode,
   if(!acceptMode(imode)){return false;}
   int iq(0),ia(0);
   PDVector extpart=particles(1,imode,iq,ia);
-  Energy min(0.);
+  Energy min(0.*MeV);
   for(unsigned int ix=0;ix<extpart.size();++ix) min+=extpart[ix]->massMin();
   if(min>upp) return false;
   _maxmass=max(_maxmass,upp);
@@ -831,21 +857,21 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {
     if(ix<2) {
       output << "set    " << fullName() << ":RhoMasses " << ix 
-	     << " " << _rhomass[ix] << "\n";
+	     << " " << _rhomass[ix]/MeV << "\n";
     }
     else {
       output << "insert " << fullName() << ":RhoMasses " << ix 
-	     << " " << _rhomass[ix] << "\n";
+	     << " " << _rhomass[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhowidth.size();++ix) {
     if(ix<2) {
       output << "set    " << fullName() << ":RhoWidths " << ix 
-	     << " " << _rhowidth[ix] << "\n";
+	     << " " << _rhowidth[ix]/MeV << "\n";
     }
     else {
       output << "insert " << fullName() << ":RhoWidths " << ix 
-	     << " " << _rhowidth[ix] << "\n";
+	     << " " << _rhowidth[ix]/MeV << "\n";
     }
   }
   output << "set " << fullName() << ":f_2Mass " << _f2mass/GeV << "\n";
@@ -884,11 +910,11 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   for(unsigned int ix=0;ix<_rhomagD.size();++ix) {
     if(ix<2) {
       output << "set    " << fullName() << ":RhoDWaveMagnitude " << ix 
-	     << " " << _rhomagD[ix] << "\n";
+	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
     else {
       output << "insert " << fullName() << ":RhoDWaveMagnitude " << ix 
-	     << " " << _rhomagD[ix] << "\n";
+	     << " " << _rhomagD[ix]*MeV2 << "\n";
     }
   }
   for(unsigned int ix=0;ix<_rhophaseD.size();++ix) {
@@ -912,21 +938,21 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
   for(unsigned int ix=0;ix<_a1runwidth.size();++ix) {
     if(ix<200) {
       output << "set    " << fullName() << ":a1RunningWidth " << ix 
-	     << " " << _a1runwidth[ix] << "\n";
+	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
     else {
       output << "insert " << fullName() << ":a1RunningWidth " << ix 
-	     << " " << _a1runwidth[ix] << "\n";
+	     << " " << _a1runwidth[ix]/MeV << "\n";
     }
   }
   for(unsigned int ix=0;ix<_a1runq2.size();++ix) {
     if(ix<200) {
       output << "set    " << fullName() << ":a1RunningQ2 " << ix 
-	     << " " << _a1runq2[ix] << "\n";
+	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
     else {
       output << "insert " << fullName() << ":a1RunningQ2 " << ix 
-	     << " " << _a1runq2[ix] << "\n";
+	     << " " << _a1runq2[ix]/MeV2 << "\n";
     }
   }
   ThreeMesonCurrentBase::dataBaseOutput(output,false,false);

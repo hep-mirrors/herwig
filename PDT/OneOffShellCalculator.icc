@@ -30,7 +30,7 @@ inline Energy OneOffShellCalculator::otherMass(const int id) const {
 // the integrand
 inline  Energy OneOffShellCalculator::dGamma(Energy min) {
   _onshellwidth->resetMass(_themass,min);
-  double wgt = (_onshellwidth->partialWidth(_scale));
+  Energy wgt = (_onshellwidth->partialWidth(_scale));
   wgt*=(_massptr->weight(min));
   return wgt;
 }
@@ -41,7 +41,7 @@ OneOffShellIntegrand(tOneOffShellCalculatorPtr in, Energy2 m2,
   : _integrand(in),_mass2(m2),_mwidth(mw) 
 {}
  
-inline double OneOffShellIntegrand::operator() (double x) const  {
+inline Energy OneOffShellIntegrand::operator() (double x) const  {
   return _integrand->dGamma(sqrt(_mass2+_mwidth*tan(x)));
 }
 }

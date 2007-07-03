@@ -9,7 +9,7 @@ namespace Helicity {
 using namespace ThePEG;
 
   inline SMHPPVertex::SMHPPVertex() 
-    : _couplast(0.), _q2last(0.), _mw(0.), _sw(0.)
+    : _couplast(0.), _q2last(), _mw(), _sw(0.)
 {
   //PDG codes for particles at vertices
   vector<int> first(1,25),second(1,22),third(1,22);

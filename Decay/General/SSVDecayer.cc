@@ -68,7 +68,7 @@ double SSVDecayer::me2(bool , const int , const Particle & inpart,
       newme(0,ix,0) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
     }
     ME(newme);
-    output = (newme.contract(rhoin)).real()/scale;
+    output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   }
   else {
     DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
@@ -76,7 +76,7 @@ double SSVDecayer::me2(bool , const int , const Particle & inpart,
       newme(0,0,ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
     }
     ME(newme);
-    output = (newme.contract(rhoin)).real()/scale;
+    output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   }
   colourConnections(inpart, decay);
   return output;

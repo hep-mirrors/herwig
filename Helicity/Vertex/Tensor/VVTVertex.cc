@@ -28,7 +28,7 @@ void VVTVertex::Init() {
 }
 
 // function to evaluate the vertex
-Complex VVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
+Complex VVTVertex::evaluate(Energy2 q2, const VectorWaveFunction & vec1,
     				const VectorWaveFunction & vec2, 
     				const TensorWaveFunction & ten)
 {
@@ -44,15 +44,15 @@ Complex VVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
   Energy vmass = Pvec1->mass();
   // mass+k1.k2
   Energy2 mdot =
-    + vec1.e()*vec2.e() -vec1.px()*vec2.px()
+     vec1.e()*vec2.e() -vec1.px()*vec2.px()
     -vec1.py()*vec2.py()-vec1.pz()*vec2.pz();
-  if(vmass!=0.){mdot=mdot+vmass*vmass;}
+  if(vmass!=Energy()){mdot=mdot+vmass*vmass;}
   // dot product of wavefunctions and momenta
   Complex dotv1v2  = vec1.t()*vec2.t()- vec1.x()*vec2.x()
     - vec1.y()*vec2.y()- vec1.z()*vec2.z();
-  Complex dotk1v2 =  vec1.e()*vec2.t()-vec1.px()*vec2.x()
+  complex<Energy> dotk1v2 =  vec1.e()*vec2.t()-vec1.px()*vec2.x()
     -vec1.py()*vec2.y()-vec1.pz()*vec2.z();
-  Complex dotk2v1 = vec1.t()*vec2.e() -vec1.x()*vec2.px()
+  complex<Energy> dotk2v1 = vec1.t()*vec2.e() -vec1.x()*vec2.px()
     -vec1.y()*vec2.py()-vec1.z()*vec2.pz();
   // components of the tensor
   Complex tentx = ten.tx()+ten.xt();
@@ -71,7 +71,7 @@ Complex VVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +tenxy*(vec1.x()*vec2.y()+vec1.y()*vec2.x())
     +tenxz*(vec1.x()*vec2.z()+vec1.z()*vec2.x())
     +tenyz*(vec1.y()*vec2.z()+vec1.z()*vec2.y());
-  Complex tenk1v2 =
+  complex<Energy> tenk1v2 =
     2.*(+ten.tt()*vec1.e()*vec2.t() +ten.xx()*vec1.px()*vec2.x()
         +ten.yy()*vec1.py()*vec2.y()+ten.zz()*vec1.pz()*vec2.z())
     -tentx*(vec1.e()*vec2.x() +vec1.px()*vec2.t())
@@ -80,7 +80,7 @@ Complex VVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +tenxy*(vec1.px()*vec2.y()+vec1.py()*vec2.x())
     +tenxz*(vec1.px()*vec2.z()+vec1.pz()*vec2.x())
     +tenyz*(vec1.py()*vec2.z()+vec1.pz()*vec2.y());
-  Complex tenk2v1 =
+  complex<Energy> tenk2v1 =
     2.*(+ten.tt()*vec1.t()*vec2.e() +ten.xx()*vec1.x()*vec2.px()
         +ten.yy()*vec1.y()*vec2.py()+ten.zz()*vec1.z()*vec2.pz())
     -tentx*(vec1.t()*vec2.px()+vec1.x()*vec2.e())
@@ -89,7 +89,7 @@ Complex VVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
     +tenxy*(vec1.x()*vec2.py()+vec1.y()*vec2.px())
     +tenxz*(vec1.x()*vec2.pz()+vec1.z()*vec2.px())
     +tenyz*(vec1.y()*vec2.pz()+vec1.z()*vec2.py());
-  Complex tenk1k2 =
+   complex<Energy2> tenk1k2 =
     2.*(+ten.tt()*vec1.e()*vec2.e()  +ten.xx()*vec1.px()*vec2.px()
         +ten.yy()*vec1.py()*vec2.py()+ten.zz()*vec1.pz()*vec2.pz())
     -tentx*(vec1.e()*vec2.px() +vec1.px()*vec2.e())
@@ -102,9 +102,11 @@ Complex VVTVertex::evaluate(Energy q2, const VectorWaveFunction & vec1,
   Complex 
     trace = ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // evaluate the vertex
-  Complex vertex = -0.5*ii*norm*(trace*(dotk1v2*dotk2v1-dotv1v2*mdot)
-    				 +mdot*tenv1v2-dotk2v1*tenk1v2
-    				     -dotk1v2*tenk2v1+dotv1v2*tenk1k2);
+  Complex vertex;
+  vertex = -0.5*ii*norm*UnitRemoval::InvE2 *
+    (trace*(dotk1v2*dotk2v1-dotv1v2*mdot)
+     +mdot*tenv1v2-dotk2v1*tenk1v2
+     -dotk1v2*tenk2v1+dotv1v2*tenk1k2);
   return vertex;
 }
 // evaluate an off-shell vector
@@ -121,18 +123,18 @@ VectorWaveFunction VVTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Lorentz5Momentum pout= Lorentz5Momentum(ten.px()+vec.px(),ten.py()+vec.py(),
     				      ten.pz()+vec.pz(),ten.e() +vec.e());  
   // normalisation factor
-  Energy2 mass  = out->mass();
+  Energy mass  = out->mass();
   Energy2 mass2 = mass*mass;
   Energy2 p2=  pout.m2();
   Complex fact=-0.5*getNorm()*propagator(iopt,p2,out);
   // dot product of wavefunctions and momenta
-  Complex dotk1k2 =+vec.e()*pout.e()  -vec.px()*pout.px()
-    -vec.py()*pout.py()-vec.pz()*pout.pz();
-  Complex dotk2v1 = vec.t()*pout.e() -vec.x()*pout.px()
-    -vec.y()*pout.py()-vec.z()*pout.pz();
+  complex<Energy2> dotk1k2 =vec.e()*pout.e()  -vec.px()*pout.x()
+    -vec.py()*pout.y()-vec.pz()*pout.z();
+  complex<Energy> dotk2v1 = vec.t()*pout.e() -vec.x()*pout.x()
+    -vec.y()*pout.y()-vec.z()*pout.z();
   // mass-k1.k2
-  Complex mdot = -dotk1k2;
-  if(mass!=0.){mdot=mdot+mass2;}
+  complex<Energy2> mdot = -dotk1k2;
+  if(mass!=Energy()){mdot=mdot+mass2;}
   // components of the tensor
   Complex tentx = ten.tx()+ten.xt();
   Complex tenty = ten.ty()+ten.yt();
@@ -141,56 +143,72 @@ VectorWaveFunction VVTVertex::evaluate(Energy2 q2, int iopt, tcPDPtr out,
   Complex tenxz = ten.xz()+ten.zx();
   Complex tenyz = ten.yz()+ten.zy();
   // dot product of momenta and polarization vectors with the tensor
-  Complex tenk2v1 =
-    2.*(+ten.tt()*vec.t()*pout.e() +ten.xx()*vec.x()*pout.px()
-        +ten.yy()*vec.y()*pout.py()+ten.zz()*vec.z()*pout.pz())
-    -tentx*(vec.t()*pout.px()+vec.x()*pout.e())
-    -tenty*(vec.t()*pout.py()+vec.y()*pout.e())
-    -tentz*(vec.t()*pout.pz()+vec.z()*pout.e())
-    +tenxy*(vec.x()*pout.py()+vec.y()*pout.px())
-    +tenxz*(vec.x()*pout.pz()+vec.z()*pout.px())
-    +tenyz*(vec.y()*pout.pz()+vec.z()*pout.py());
-  Complex tenk1k2 =
-    2.*(+ten.tt()*vec.e()*pout.e()  +ten.xx()*vec.px()*pout.px()
-        +ten.yy()*vec.py()*pout.py()+ten.zz()*vec.pz()*pout.pz())
-    -tentx*(vec.e()*pout.px() +vec.px()*pout.e())
-    -tenty*(vec.e()*pout.py() +vec.py()*pout.e())
-    -tentz*(vec.e()*pout.pz() +vec.pz()*pout.e())
-    +tenxy*(vec.px()*pout.py()+vec.py()*pout.px())
-    +tenxz*(vec.px()*pout.pz()+vec.pz()*pout.px())
-    +tenyz*(vec.py()*pout.pz()+vec.pz()*pout.py());
+  complex<Energy> tenk2v1 =
+    2.*(+ten.tt()*vec.t()*pout.e() +ten.xx()*vec.x()*pout.x()
+        +ten.yy()*vec.y()*pout.y()+ten.zz()*vec.z()*pout.z())
+    -tentx*(vec.t()*pout.x()+vec.x()*pout.e())
+    -tenty*(vec.t()*pout.y()+vec.y()*pout.e())
+    -tentz*(vec.t()*pout.z()+vec.z()*pout.e())
+    +tenxy*(vec.x()*pout.y()+vec.y()*pout.x())
+    +tenxz*(vec.x()*pout.z()+vec.z()*pout.x())
+    +tenyz*(vec.y()*pout.z()+vec.z()*pout.y());
+  complex<Energy2> tenk1k2 =
+    2.*(+ten.tt()*vec.e()*pout.e()  +ten.xx()*vec.px()*pout.x()
+        +ten.yy()*vec.py()*pout.y()+ten.zz()*vec.pz()*pout.z())
+    -tentx*(vec.e()*pout.x() +vec.px()*pout.e())
+    -tenty*(vec.e()*pout.y() +vec.py()*pout.e())
+    -tentz*(vec.e()*pout.z() +vec.pz()*pout.e())
+    +tenxy*(vec.px()*pout.y()+vec.py()*pout.x())
+    +tenxz*(vec.px()*pout.z()+vec.pz()*pout.x())
+    +tenyz*(vec.py()*pout.z()+vec.pz()*pout.y());
   // trace of the tensor
   Complex trace = ten.tt()-ten.xx()-ten.yy()-ten.zz();
   // compute the vector
-  Complex vec1[3];
-  vec1[0] = mdot*(+   tentx*   vec.t()-2.*ten.xx()*vec.x()
-    	      -   tenxy*   vec.y()-    tenxz*  vec.z()-trace*vec.x())
-    +(tenk2v1-trace*dotk2v1)*vec.px()-tenk1k2*vec.x()
-    +dotk2v1*(+   tentx*   vec.e() -2.*ten.xx()*vec.px()
-    	  -   tenxy*   vec.py()-    tenxz*  vec.pz());
-  vec1[1] = mdot*(+   tenty*   vec.t()-    tenxy*  vec.x()
-    	      -2.*ten.yy()*vec.y()-    tenyz*  vec.z()-trace*vec.y())
-    +(tenk2v1-trace*dotk2v1)*vec.py()-tenk1k2*vec.y()
-    +dotk2v1*(+    tenty*  vec.e() -    tenxy*  vec.px()
-    	  -2.*ten.yy()*vec.py()-    tenyz*  vec.pz());
-  vec1[2] =  mdot*(+   tentz*   vec.t()-    tenxz*  vec.x()
-    	       -   tenyz*   vec.y()-2.*ten.zz()*vec.z()-trace*vec.z())
-    +(tenk2v1-trace*dotk2v1)*vec.pz()-tenk1k2*vec.z()
-    +dotk2v1*(+   tentz*   vec.e() -    tenxz  *vec.px()
-    	  -   tenyz*   vec.py()-2.*ten.zz()*vec.pz());
-  vec1[3] = mdot*(+2.*ten.tt()*vec.t()-    tentx*  vec.x()
-    	      -   tenty*   vec.y()-    tentz*  vec.z()-trace*vec.t())
-    +(tenk2v1-trace*dotk2v1)*vec.e() -tenk1k2*vec.t()
-    +dotk2v1*(+2.*ten.tt()*vec.e() -    tentx*  vec.px()
-    	  -   tenty*   vec.py()-    tentz*  vec.pz());
+  Complex vec1[4];
+  vec1[0] = UnitRemoval::InvE2*
+    (mdot*(+   tentx*   vec.t()-2.*ten.xx()*vec.x()
+	   -   tenxy*   vec.y()-    tenxz*  vec.z()-trace*vec.x())
+     +(tenk2v1-trace*dotk2v1)*vec.px()-tenk1k2*vec.x()
+     +dotk2v1*(+   tentx*   vec.e() -2.*ten.xx()*vec.px()
+	       -   tenxy*   vec.py()-    tenxz*  vec.pz()));
+  vec1[1] = UnitRemoval::InvE2*(
+    mdot *
+    (+    tenty*  vec.t()
+     -    tenxy*  vec.x()
+     -2.*ten.yy()*vec.y()
+     -    tenyz*  vec.z()-trace*vec.y()
+     )
+    +(tenk2v1-trace*dotk2v1)*vec.py()
+    -tenk1k2*vec.y()
+    +dotk2v1*(+    tenty*  vec.e() 
+	      -    tenxy*  vec.px()
+	      -2.*ten.yy()*vec.py()
+	      -    tenyz*  vec.pz()));
+
+  
+  vec1[2] = UnitRemoval::InvE2*
+    (mdot*
+     (+   tentz*   vec.t()-    tenxz*  vec.x()
+      -   tenyz*   vec.y()-2.*ten.zz()*vec.z()-trace*vec.z())
+     +(tenk2v1-trace*dotk2v1)*vec.pz()-tenk1k2*vec.z()
+     +dotk2v1*(+   tentz*   vec.e() -    tenxz  *vec.px()
+	       -   tenyz*   vec.py()-2.*ten.zz()*vec.pz()));
+  vec1[3] = UnitRemoval::InvE2*
+    (mdot*(+2.*ten.tt()*vec.t()-    tentx*  vec.x()
+	   -   tenty*   vec.y()-    tentz*  vec.z()-trace*vec.t())
+     +(tenk2v1-trace*dotk2v1)*vec.e() -tenk1k2*vec.t()
+     +dotk2v1*(+2.*ten.tt()*vec.e() -    tentx*  vec.px()
+	       -   tenty*   vec.py()-    tentz*  vec.pz()));
   // now add the piece for massive bosons
-  if(mass!=0.)
+  if(mass!=Energy())
     {
-      Complex dot = tenk2v1-dotk1k2*trace;
-      vec1[0]-=dot*pout.px();
-      vec1[1]-=dot*pout.py();
-      vec1[2]-=dot*pout.pz();
-      vec1[3]-=dot*pout.e();
+      // DGRELL unit problem?
+      Complex dot = tenk2v1 * UnitRemoval::InvE 
+	-  dotk1k2 * trace  * UnitRemoval::InvE2;
+      vec1[0] -= dot*pout.x() * UnitRemoval::InvE;
+      vec1[1] -= dot*pout.y() * UnitRemoval::InvE;
+      vec1[2] -= dot*pout.z() * UnitRemoval::InvE;
+      vec1[3] -= dot*pout.e() * UnitRemoval::InvE;
     }
   // return the VectorWaveFunction
   for(int ix=0;ix<4;++ix){vec1[ix]=vec1[ix]*fact;}
@@ -218,64 +236,86 @@ TensorWaveFunction VVTVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   Energy2 p2=pout.m2();
   Complex fact=0.5*getNorm()*propagator(iopt,p2,out);
   // dot products we need to construct the tensor
-  Complex dotk1k2=
-    +vec1.e() *vec2.e() -vec1.px()*vec2.px()
+  complex<Energy2> dotk1k2=
+    vec1.e() *vec2.e() -vec1.px()*vec2.px()
     -vec1.py()*vec2.py()-vec1.pz()*vec2.pz();
-  Complex dotv1k2=
-    +vec1.t()*vec2.e() -vec1.x()*vec2.px()
+  complex<Energy> dotv1k2=
+    vec1.t()*vec2.e() -vec1.x()*vec2.px()
     -vec1.y()*vec2.py()-vec1.z()*vec2.pz();
   Complex dotv1v2=
-    +vec1.t()*vec2.t()-vec1.x()*vec2.x()
+    vec1.t()*vec2.t()-vec1.x()*vec2.x()
     -vec1.y()*vec2.y()-vec1.z()*vec2.z();
-  Complex dotk1v2=
-    +vec1.e() *vec2.t()-vec1.px()*vec2.x()
+  complex<Energy> dotk1v2=
+    vec1.e() *vec2.t()-vec1.px()*vec2.x()
     -vec1.py()*vec2.y()-vec1.pz()*vec2.z();
-  Complex dotkk1=
-    +vec1.e() *pout.e() -vec1.px()*pout.px()
-    -vec1.py()*pout.py()-vec1.pz()*pout.pz();
-  Complex dotkk2=
-    +vec2.e() *pout.e() -vec2.px()*pout.px()
-    -vec2.py()*pout.py()-vec2.pz()*pout.pz();
-  Complex dotkv1=
-    +vec1.t()*pout.e() -vec1.x()*pout.px()
-    -vec1.y()*pout.py()-vec1.z()*pout.pz();
-  Complex dotkv2=
-    +vec2.t() *pout.e()-vec2.x()*pout.px()
-    -vec2.y()*pout.py()-vec2.z()*pout.pz();
+  complex<Energy2> dotkk1=
+    vec1.e() *pout.e()-vec1.px()*pout.x()
+    -vec1.py()*pout.y()-vec1.pz()*pout.z();
+  complex<Energy2> dotkk2=
+    vec2.e() *pout.e()-vec2.px()*pout.x()
+    -vec2.py()*pout.y()-vec2.pz()*pout.z();
+  complex<Energy> dotkv1=
+    vec1.t()*pout.e() -vec1.x()*pout.x()
+    -vec1.y()*pout.y()-vec1.z()*pout.z();
+  complex<Energy> dotkv2=
+    vec2.t()*pout.e()-vec2.x()*pout.x()
+    -vec2.y()*pout.y()-vec2.z()*pout.z();
   // dot product ma^2+k1.k2
-  Complex mdot=vmass2+dotk1k2;
+  complex<Energy2> mdot=vmass2+dotk1k2;
   // vectors to help construct the tensor
-  Complex vecv1[4],vecv2[4],veck1[4],veck2[4];
-  for(int ix=0;ix<4;++ix)
-    {
-      vecv1[ix]=vec1(ix)-pout[ix]*dotkv1/tmass2;
-      vecv2[ix]=vec2(ix)-pout[ix]*dotkv2/tmass2;
-      veck1[ix]=vec1[ix]-pout[ix]*dotkk1/tmass2;
-      veck2[ix]=vec2[ix]-pout[ix]*dotkk2/tmass2;
-    }
+  Complex vecv1[4],vecv2[4];
+  complex<Energy> veck1[4],veck2[4];
+  InvEnergy2 tmass2inv = 1/tmass2;
+  vecv1[0]=vec1.x() -pout.x()*dotkv1*tmass2inv;
+  vecv2[0]=vec2.x() -pout.x()*dotkv2*tmass2inv;
+  veck1[0]=vec1.px()-pout.x()*dotkk1*tmass2inv;
+  veck2[0]=vec2.px()-pout.x()*dotkk2*tmass2inv;
+    
+  vecv1[1]=vec1.y() -pout.y()*dotkv1*tmass2inv;
+  vecv2[1]=vec2.y() -pout.y()*dotkv2*tmass2inv;
+  veck1[1]=vec1.py()-pout.y()*dotkk1*tmass2inv;
+  veck2[1]=vec2.py()-pout.y()*dotkk2*tmass2inv;
+    
+  vecv1[2]=vec1.z() -pout.z()*dotkv1*tmass2inv;
+  vecv2[2]=vec2.z() -pout.z()*dotkv2*tmass2inv;
+  veck1[2]=vec1.pz()-pout.z()*dotkk1*tmass2inv;
+  veck2[2]=vec2.pz()-pout.z()*dotkk2*tmass2inv;
+    
+  vecv1[3]=vec1.t() -pout.e()*dotkv1*tmass2inv;
+  vecv2[3]=vec2.t() -pout.e()*dotkv2*tmass2inv;
+  veck1[3]=vec1.e() -pout.e()*dotkk1*tmass2inv;
+  veck2[3]=vec2.e() -pout.e()*dotkk2*tmass2inv;
+    
   // coefficient of g(nu,mu)-k^muk^nu/m^2
-  Complex coeff1 =
-    +4./3.*mdot*(-2.*dotv1v2+(dotkv1*dotkv2+p2*dotv1v2)/tmass2)
-    +4./3.*(+dotv1k2*(dotk1v2-dotkk1*dotkv2/tmass2)
-    	+dotk1v2*(dotv1k2-dotkk2*dotkv1/tmass2)
-    	-dotv1v2*(dotk1k2-dotkk1*dotkk2/tmass2)
-    	+(1.-p2/tmass2)*dotk1v2*dotv1k2);
+  Complex coeff1 = UnitRemoval::InvE2 * 
+    (
+     +4./3.*mdot*(-2.*dotv1v2+Complex((dotkv1*dotkv2+p2*dotv1v2)*tmass2inv))
+     +4./3.*(dotv1k2*(dotk1v2-dotkk1*dotkv2*tmass2inv)
+	     +dotk1v2*(dotv1k2-dotkk2*dotkv1*tmass2inv)
+	     -dotv1v2*(dotk1k2-dotkk1*dotkk2*tmass2inv)
+	     +(1.-p2*tmass2inv)*dotk1v2*dotv1k2)
+     );
   // coefficient of g(nu,mu)
-  Complex coeff2 =
-    +2.*mdot*(1.-p2/tmass2)*dotv1v2
-    -2.*(1.-p2/tmass2)*dotk1v2*dotv1k2; 
+  Complex coeff2 = UnitRemoval::InvE2 * 
+    (
+     2.*mdot*(1.-p2*tmass2inv)*dotv1v2
+     -2.*(1.-p2*tmass2inv)*dotk1v2*dotv1k2
+     );
   // construct the tensor
   Complex ten[4][4];
+  const Energy pout_tmp[4] = {pout.x(), pout.y(), pout.z(), pout.e()};
   for(int ix=0;ix<4;++ix)
     {
       for(int iy=0;iy<4;++iy)
         {
-          ten[ix][iy] = 
-    	+2.*mdot*   (vecv1[ix]*vecv2[iy]+vecv1[iy]*vecv2[ix])
-    	-2.*dotv1k2*(veck1[ix]*vecv2[iy]+veck1[iy]*vecv2[ix])
-    	-2.*dotk1v2*(veck2[ix]*vecv1[iy]+veck2[iy]*vecv1[ix])
-    	+2.*dotv1v2*(veck1[ix]*veck2[iy]+veck1[iy]*veck2[ix])
-    	-coeff1/tmass2*pout[ix]*pout[iy];
+	  complex<Energy2> temp;
+	  temp  = 2.*mdot*   (vecv1[ix]*vecv2[iy]+vecv1[iy]*vecv2[ix]);
+	  temp -= 2.*dotv1k2*(veck1[ix]*vecv2[iy]+veck1[iy]*vecv2[ix]);
+	  temp -= 2.*dotk1v2*(veck2[ix]*vecv1[iy]+veck2[iy]*vecv1[ix]);
+	  temp += 2.*dotv1v2*(veck1[ix]*veck2[iy]+veck1[iy]*veck2[ix]);
+
+          ten[ix][iy] = UnitRemoval::InvE2 * temp
+	    -coeff1*tmass2inv*pout_tmp[ix]*pout_tmp[iy];
         }
     }
   // add the g(mu,nu) term

@@ -14,7 +14,7 @@ namespace Helicity {
 using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)),_couplast(0.),
-			     _q2last(0.)
+			     _q2last(0.*sqr(MeV))
 {
   // particles for the vertex
   vector<int> first,second,third;

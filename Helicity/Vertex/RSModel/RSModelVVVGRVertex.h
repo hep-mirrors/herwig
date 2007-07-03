@@ -118,7 +118,7 @@ private:
   /**
    * The graviton coupling.
    */
-  double _theKappa;
+  InvEnergy _theKappa;
 
   /**
    *  The last value of the coupling/

@@ -11,8 +11,8 @@
 
 using namespace Herwig::Helicity;
 
-SSCFSVertex::SSCFSVertex(): _tanB(0.),_sb(0.),_cb(0.),_mw(0.),
-			    _sw(0.),_q2last(0.),_couplast(0.),
+SSCFSVertex::SSCFSVertex(): _tanB(0.),_sb(0.),_cb(0.),_mw(0.*MeV),
+			    _sw(0.),_q2last(0.*sqr(MeV)),_couplast(0.),
 			    _leftlast(0.),_rightlast(0.),
 			    _id1last(0), _id2last(0), _id3last(0) {
   vector<int> first,second,third;
@@ -97,14 +97,14 @@ SSCFSVertex::SSCFSVertex(): _tanB(0.),_sb(0.),_cb(0.),_mw(0.),
 }
 
 void SSCFSVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSS << _tanB << _sb << _cb << _mw << _sw << _stop <<
+  os << _theSS << _tanB << _sb << _cb << ounit(_mw,GeV) << _sw << _stop <<
     _sbottom << _stau << _chargU << _chargV;
 }
 
 void SSCFSVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSS >> _tanB >> _sb >> _cb >> _mw >> _sw >> _stop >>
+  is >> _theSS >> _tanB >> _sb >> _cb >> iunit(_mw,GeV) >> _sw >> _stop >>
     _sbottom >> _stau >> _chargU >> _chargV;
-  _q2last=0.;
+  _q2last=0.*sqr(MeV);
   _couplast=0.;
   _leftlast=0.;
   _rightlast=0.;

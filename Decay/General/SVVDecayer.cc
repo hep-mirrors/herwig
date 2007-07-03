@@ -65,7 +65,7 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newME);
-  double matrixElement2 = newME.contract(rhoin).real()/scale;
+  double matrixElement2 = newME.contract(rhoin).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()){
     matrixElement2 /= 2.;
   } 
@@ -86,7 +86,7 @@ Energy SVVDecayer::partialWidth(const PDPtr inpart,
   double mu2(outb->mass()/inpart->mass()),mu2sq(mu2*mu2);
   double matrixElement2 = 2 + (mu1sq/mu2sq) - (1/mu2sq) + (0.25/mu1sq/mu2sq);
   matrixElement2 *= norm.real();
-  Energy output = matrixElement2*pcm/(8*Constants::pi)/scale;
+  Energy output = matrixElement2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
   if(outa->id() == outb->id()) 
     output /= 2.;
   return output;

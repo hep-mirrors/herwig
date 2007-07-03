@@ -132,7 +132,7 @@ private:
   /**
    * The graviton coupling.
    */
-  double _theKappa;
+  InvEnergy _theKappa;
   //@}
 };
 

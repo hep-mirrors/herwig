@@ -39,7 +39,7 @@ void ClusterHadronizationHandler::persistentOutput(PersistentOStream & os)
      << _clusterDecayer
      << _forcedSplitter
      << ounit(_minVirtuality2,GeV2)
-     << ounit(_maxDisplacement,millimeter)
+     << ounit(_maxDisplacement,mm)
      << _softUnderlyingEventMode
      << _underlyingEventHandler;
 }
@@ -54,7 +54,7 @@ void ClusterHadronizationHandler::persistentInput(PersistentIStream & is, int) {
      >> _clusterDecayer
      >> _forcedSplitter
      >> iunit(_minVirtuality2,GeV2)
-     >> iunit(_maxDisplacement,millimeter)
+     >> iunit(_maxDisplacement,mm)
      >> _softUnderlyingEventMode
      >> _underlyingEventHandler;
 }
@@ -117,8 +117,8 @@ void ClusterHadronizationHandler::Init() {
   static Parameter<ClusterHadronizationHandler,Length> interfaceMaxDisplacement 
     ("MaxDisplacement",
      "Maximum displacement that is allowed for a particle  (unit [millimeter]).",
-     &ClusterHadronizationHandler::_maxDisplacement, millimeter, 1.0e-10*millimeter, 
-     0.0*millimeter, 1.0e-9*millimeter,false,false,false);
+     &ClusterHadronizationHandler::_maxDisplacement, mm, 1.0e-10*mm, 
+     0.0*mm, 1.0e-9*mm,false,false,false);
 
   static Switch<ClusterHadronizationHandler, bool> interfaceSoftUnderlyingEventMode
     ("OnOffSoftUnderlyingEventMode",

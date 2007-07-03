@@ -13,9 +13,6 @@ namespace Herwig {
 
 using namespace ThePEG;
 
-/** Energy\f$^3\f$. */
-typedef double Energy3;
-
 /**
  * The BtoBaryonsDecayer class implements the results of PRD65 054028, hep-ph/0210275
  * and hep-ph/0208185 for the decay of B mesons to baryons.

@@ -45,12 +45,12 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
   if(abs(part->children()[1]->id())!=_iferm) return;
   Lorentz5Momentum pphoton;
   unsigned int mult=0;
-  Energy emax=0.;
+  Energy emax=0.*MeV;
   int imax=-1;
   for(unsigned int ix=2;ix<part->children().size();++ix) {
     if(part->children()[ix]->id()!=ParticleID::gamma) return;
     pphoton+=part->children()[ix]->momentum();
-    *_etotal[4]+=part->children()[ix]->momentum().e();
+    *_etotal[4]+=part->children()[ix]->momentum().e()/MeV;
     if(part->children()[ix]->momentum().e()>emax) {
       emax=part->children()[ix]->momentum().e();
       imax=ix;
@@ -65,13 +65,13 @@ void ZPhotonsAnalysis::analyze(tPPtr part) {
   pphoton.rescaleMass();
   *_nphoton+=mult;
   for(unsigned int ix=0;ix<3;++ix) {
-    *_masstotal[ix]+=pferm.mass();
-    if(mult>0) *_etotal[ix]+=pphoton.e();
+    *_masstotal[ix]+=pferm.mass()/MeV;
+    if(mult>0) *_etotal[ix]+=pphoton.e()/MeV;
   }
-  if(imax>0) *_etotal[3]+=part->children()[imax]->momentum().e();
+  if(imax>0) *_etotal[3]+=part->children()[imax]->momentum().e()/MeV;
   if(mult<20) {
-    *_mphoton[mult]+=pferm.mass();
-    *_ephoton[mult]+=pphoton.e();
+    *_mphoton[mult]+=pferm.mass()/MeV;
+    *_ephoton[mult]+=pphoton.e()/MeV;
   }
 }
 
@@ -158,18 +158,18 @@ inline void ZPhotonsAnalysis::dofinish() {
 
 inline void ZPhotonsAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  _masstotal.push_back(new_ptr(Histogram(0.,92.*GeV,400)));
-  _etotal   .push_back(new_ptr(Histogram( 0.,92.*GeV,400)));
-  _masstotal.push_back(new_ptr(Histogram( 0.,80.*GeV,200)));
-  _etotal   .push_back(new_ptr(Histogram(0.,10.*GeV,200)));
-  _masstotal.push_back(new_ptr(Histogram(80.*GeV,92.*GeV,200)));
-  _etotal   .push_back(new_ptr(Histogram(10.*GeV,92.*GeV,200)));
+  _masstotal.push_back(new_ptr(Histogram(0.,92000.,400)));
+  _etotal   .push_back(new_ptr(Histogram(0.,92000.,400)));
+  _masstotal.push_back(new_ptr(Histogram(0.,80000.,200)));
+  _etotal   .push_back(new_ptr(Histogram(0.,10000.,200)));
+  _masstotal.push_back(new_ptr(Histogram(80000.,92000.,200)));
+  _etotal   .push_back(new_ptr(Histogram(10000.,92000.,200)));
   for(unsigned int ix=0;ix<20;++ix) {
-    _mphoton.push_back(new_ptr(Histogram(0.,92.*GeV,400)));
-    _ephoton.push_back(new_ptr(Histogram(0.,92.*GeV,400)));
+    _mphoton.push_back(new_ptr(Histogram(0.,92000.,400)));
+    _ephoton.push_back(new_ptr(Histogram(0.,92000.,400)));
   }
-  _etotal.push_back(new_ptr(Histogram(0.*GeV,92.*GeV,400)));
-  _etotal.push_back(new_ptr(Histogram(0.*GeV,92.*GeV,400)));
+  _etotal.push_back(new_ptr(Histogram(0.,92000.,400)));
+  _etotal.push_back(new_ptr(Histogram(0.,92000.,400)));
   _nphoton=new_ptr(Histogram(-0.5,100.5,101));
 }
 

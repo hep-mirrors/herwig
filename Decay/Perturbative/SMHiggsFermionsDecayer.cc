@@ -158,7 +158,7 @@ double SMHiggsFermionsDecayer::me2(bool vertex, const int, const Particle & inpa
 	}
     }
   ME(newme);
-  double output=(newme.contract(rhoin)).real()/scale;
+  double output=(newme.contract(rhoin)).real()*UnitRemoval::E2/scale;
   if(abs(decay[0]->id())<=6){output*=3.;}
   // test of the partial width
   /*

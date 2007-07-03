@@ -111,14 +111,14 @@ reconstructHardJets(ShowerTreePtr hard,
     radiated[0]|=!intrinsic.empty();
     // initial state shuffling
     // the boosts for the initial state
-    Vector3 boostRest,boostNewF;
+    Boost boostRest,boostNewF;
     bool applyBoost(false);
     if(radiated[0])
       applyBoost=reconstructISJets(p_cm[0],ShowerHardJets,intrinsic,
 				   boostRest,boostNewF);
     // final-state reconstruction
     // check if in CMF frame
-    Vector3 beta_cm = p_cm[1].findBoostToCM();
+    Boost beta_cm = p_cm[1].findBoostToCM();
     bool gottaBoost = (beta_cm.mag() > 1e-12);
     // check if any radiation
     bool atLeastOnce = radiated[1];
@@ -169,7 +169,7 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
   // must be at least two jets
   if ( jets.size() < 2) return -1.0;
   // sum of jet masses must be less than roots
-  if(momConsEq( 0.0, root_s, jets )>0.0) return -1.0;
+  if(momConsEq( 0.0, root_s, jets )>0.0*MeV) return -1.0;
   // if two jets simple solution
   if ( jets.size() == 2 ) {
     if ( sqr((jets[0].p.x()+jets[1].p.x())/MeV) < 1.e-4 &&
@@ -186,17 +186,17 @@ QTildeReconstructor::solveKfactor(const Energy & root_s,
   else {
     double k1 = 0.,k2 = 1.,k = 0.; 
     
-    if ( momConsEq( k1, root_s, jets ) < 0.0 ) {
-      while ( momConsEq( k2, root_s, jets ) < 0.0 ) {
+    if ( momConsEq( k1, root_s, jets ) < 0.0*MeV ) {
+      while ( momConsEq( k2, root_s, jets ) < 0.0*MeV ) {
 	k1 = k2; 
 	k2 *= 2;       
       }
       while ( fabs( (k1 - k2)/(k1 + k2) ) > 1.e-10 ) { 
-	if( momConsEq( k2, root_s, jets ) == 0. ) {
+	if( momConsEq( k2, root_s, jets ) == 0.*MeV ) {
 	  return k2; 
 	} else {
 	  k = (k1+k2)/2.;
-	  if ( momConsEq( k, root_s, jets ) > 0 ) {
+	  if ( momConsEq( k, root_s, jets ) > 0*MeV ) {
 	    k2 = k;
 	  } else {
 	    k1 = k; 
@@ -237,7 +237,7 @@ reconstructSpaceLikeJet( const tShowerParticlePtr p) const {
   return emitted;
 }
 
-Vector3 QTildeReconstructor::
+Boost QTildeReconstructor::
 solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Momentum & oldp ) {
 
   // try something different, purely numerical first: 
@@ -259,19 +259,19 @@ solveBoostBeta( const double k, const Lorentz5Momentum & newq, const Lorentz5Mom
 
   
   // move directly to 'return' 
-  Vector3 beta = -betam*(k/kp)*oldp.vect();
+  Boost beta = -betam*(k/kp)*oldp.vect();
   // note that (k/kp)*oldp.vect() = oldp.vect()/oldp.vect().mag() but cheaper. 
 
   // leave this out if it's running properly! 
   if ( betam >= 0 ) return beta;
-  else              return Vector3(0., 0., 0.); 
+  else              return Boost(0., 0., 0.); 
 }
 
 bool QTildeReconstructor::
 reconstructISJets(Lorentz5Momentum pcm,
 		  const vector<ShowerProgenitorPtr> & ShowerHardJets,
 		  map<tShowerProgenitorPtr,pair<Energy,double> > intrinsic,
-		  Vector3 & boostRest,Vector3 & boostNewF) const {
+		  Boost & boostRest, Boost & boostNewF) const {
   bool atLeastOnce = false;
   vector<Lorentz5Momentum> p, pq, p_in;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
@@ -289,8 +289,8 @@ reconstructISJets(Lorentz5Momentum pcm,
     else {
       if (!ShowerHardJets[ix]->original()->parents().empty()) {
 	Energy etemp = ShowerHardJets[ix]->original()->
-	  parents()[0]->momentum().pz();
-	Lorentz5Momentum ptemp = Lorentz5Momentum(0, 0, etemp, abs(etemp));
+	  parents()[0]->momentum().z();
+	Lorentz5Momentum ptemp = Lorentz5Momentum(0*MeV, 0*MeV, etemp, abs(etemp));
 	pq.push_back(ptemp);
       } 
       else 
@@ -336,11 +336,11 @@ reconstructISJets(Lorentz5Momentum pcm,
   Lorentz5Momentum p1p = p[0] - a1*pq[0] - b1*pq[1];
   Lorentz5Momentum p2p = p[1] - a2*pq[0] - b2*pq[1];
   // compute kappa12
-  // is this textbook method for solving a quadratic
+  // DGRELL is this textbook method for solving a quadratic
   // numerically stable if 4AC ~= B^2 ? check Numerical Recipes
   double kp = 1.0;
   Energy2 A = a1*b2*S;
-  Energy2 B = sqr(MDY) - (a1*b1+a2*b2)*S - sqr(p1p+p2p);
+  Energy2 B = Energy2(sqr(MDY)) - (a1*b1+a2*b2)*S - (p1p+p2p).mag2();
   Energy2 C = a2*b1*S; 
   double rad = 1.-4.*A*C/sqr(B);
   if (rad >= 0) {kp = B/(2.*A)*(1.+sqrt(rad));}
@@ -365,21 +365,23 @@ reconstructISJets(Lorentz5Momentum pcm,
 			 (k1*a1+b1/k1), (k1*a1-b1/k1));
   double beta2 = getBeta((a2+b2), (a2-b2), 
 			 (a2/k2+k2*b2), (a2/k2-k2*b2));
-  if (pq[0].z() > 0) {
+
+  if (pq[0].z() > 0*MeV) {
     beta1 = -beta1; 
     beta2 = -beta2;
   }
+
   tPVector toBoost;
   for(unsigned int ix=0;ix<ShowerHardJets.size();++ix) {
     if(!ShowerHardJets[ix]->progenitor()->isFinalState())
       toBoost.push_back(ShowerHardJets[ix]->progenitor());
   }
   // before boost
-  Hep3Vector betaboost = Vector3(0, 0, beta1);
+  Boost betaboost(0, 0, beta1);
   tPPtr parent;
   boostChain(toBoost[0], betaboost,parent);
   if(parent->momentum().e()/pq[0].e()>1.||parent->momentum().z()/pq[0].z()>1.) throw Veto();
-  betaboost = Vector3(0, 0, beta2);
+  betaboost = Boost(0, 0, beta2);
   boostChain(toBoost[1], betaboost,parent);
   if(parent->momentum().e()/pq[1].e()>1.||parent->momentum().z()/pq[1].z()>1.) throw Veto();
   boostRest = pcm.findBoostToCM();
@@ -434,7 +436,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       nvect= initial->progenitor()->showerKinematics()->getBasis()[1];
     }
     // find boost to the rest frame if needed
-    Hep3Vector boosttorest=-initial->progenitor()->momentum().boostVector();
+    Boost boosttorest=-initial->progenitor()->momentum().boostVector();
     // check if need to boost to rest frame
     bool gottaBoost = (boosttorest.mag() > 1e-12);
     // boost initial state jet and basis vector if needed
@@ -470,7 +472,7 @@ reconstructDecayJets(ShowerTreePtr decay) const {
       unsigned int iloc = UseRandom::irnd(0,possiblepartners.size()-1);
       partner = possiblepartners[iloc].parent;
       nvect = possiblepartners[iloc].p;
-      nvect = Lorentz5Momentum(0.,0.5*initial->progenitor()->mass()*
+      nvect = Lorentz5Momentum(0.*MeV,0.5*initial->progenitor()->mass()*
 			       nvect.vect().unit());
       nvect.boost(-boosttorest);
       ppartner[0] = possiblepartners[iloc].p;
@@ -535,15 +537,15 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
 		  const JetKinVect & jetKinematics, ShowerParticlePtr partner, 
 		  Lorentz5Momentum ppartner[2],
 		  double & k1, double & k2,Lorentz5Momentum & qt) const {
-  long double pjn  = partner ? pjet.vect()*n.vect()        : 0.;
-  long double pcn  = partner ? ppartner[0].vect()*n.vect() : 1.;
-  long double nmag = n.vect().mag2();
+  Energy2 pjn  = partner ? pjet.vect()*n.vect()        : 0.*MeV2;
+  Energy2 pcn  = partner ? ppartner[0].vect()*n.vect() : 1.*MeV2;
+  Energy2 nmag = n.vect().mag2();
   Lorentz5Momentum pn=(pjn/nmag)*n;
-  qt=pjet-pn;qt.setE(0.);
-  long double pt2=qt.vect().mag2();
-  long double Ejet = pjet.e();
+  qt=pjet-pn;qt.setE(0.*MeV);
+  Energy2 pt2=qt.vect().mag2();
+  Energy  Ejet = pjet.e();
   // magnitudes of the momenta for fast access
-  vector<long double> pmag;
+  vector<Energy2> pmag;
   Energy total(Ejet);
   Lorentz5Momentum ptest;
   for(unsigned int ix=0;ix<jetKinematics.size();++ix) {
@@ -553,17 +555,17 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
   }
   // return if no possible solution
   if(total>mb) return false;
-  long double pcmag=ppartner[0].vect().mag2();
+  Energy2 pcmag=ppartner[0].vect().mag2();
   // used newton-raphson to get the rescaling
-  static long double eps=1e-8*GeV;
+  static const Energy eps=1e-8*GeV;
   long double d1(1.),d2(1.);
-  long double roots,ds,ea,ec;
+  Energy roots, ea, ec, ds;
   unsigned int ix=0;
   do {
     ++ix;
     d2    = d1 + pjn/pcn;
     roots = Ejet;
-    ds    = 0.;
+    ds    = 0.*MeV;
     for(unsigned int iy=0;iy<jetKinematics.size();++iy) {
       if(jetKinematics[iy].parent==partner) continue;
       ea = sqrt(sqr(d2)*pmag[iy]+jetKinematics[iy].q.mass2());
@@ -571,7 +573,7 @@ solveDecayKFactor(Energy mb, Lorentz5Momentum n, Lorentz5Momentum pjet,
       ds    += d2/ea*pmag[iy];
     }
     if(partner) {
-      ec = sqrt(sqr(d1)*pcmag+pt2+ppartner[1].mass2());
+      ec = sqrt(sqr(d1)*pcmag + pt2 + ppartner[1].mass2());
       roots += ec;
       ds    += d1/ec*pcmag;
     }

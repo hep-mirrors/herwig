@@ -211,7 +211,7 @@ private:
    * @param q2 The scale, \f$q^2\f$.
    * @return The Breit-Wigner
    */
-  inline complex<InvEnergy2> sigmaBreitWigner(Energy2 q2) const;
+  inline Complex sigmaBreitWigner(Energy2 q2) const;
   
   /**
    * The \f$a_1\f$ form factor, \f$F_{a_1}(q^2)\f$
@@ -313,9 +313,9 @@ private:
   Energy2 _lambda2;
   
   /**
-   * The mass of the \f$a_1\f$ meson, \f$m_{a_1}\f$.
+   * The mass squared of the \f$a_1\f$ meson, \f$m_{a_1}^2\f$.
    */
-  Energy _a1mass2;
+  Energy2 _a1mass2;
 
   /**
    * The \f$z\f$ coupling for the \f$\sigma\f$ resonance.

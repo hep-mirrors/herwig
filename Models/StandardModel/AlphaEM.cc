@@ -15,11 +15,13 @@
 using namespace Herwig;
 
 void AlphaEM::persistentOutput(PersistentOStream & os) const {
-  os << _me << _mmu << _mtau << _mtop;
+  os << ounit(_me,GeV2) << ounit(_mmu,GeV2) 
+     << ounit(_mtau,GeV2) << ounit(_mtop,GeV2);
 }
 
 void AlphaEM::persistentInput(PersistentIStream & is, int) {
-  is >> _me >> _mmu >> _mtau >> _mtop;
+  is >> iunit(_me,GeV2) >> iunit(_mmu,GeV2) 
+     >> iunit(_mtau,GeV2) >> iunit(_mtop,GeV2);
 }
 
 ClassDescription<AlphaEM> AlphaEM::initAlphaEM;

@@ -289,11 +289,15 @@ double VectorMeson2MesonDecayer::me2(bool vertex, const int,
     PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
   }
   // difference of the momenta
-  Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
-  pdiff *=_coupling[imode()]/inpart.mass();
+  Lorentz5Vector<double> pdiff
+    = (decay[0]->momentum()-decay[1]->momentum()) 
+    * _coupling[imode()]
+    /inpart.mass();
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0);
-  for(unsigned int ix=0;ix<3;++ix) newME(ix,0,0)=invec[ix]*pdiff;
+  for(unsigned int ix=0;ix<3;++ix) {
+    newME(ix,0,0)=invec[ix].dot(pdiff);
+  }
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();

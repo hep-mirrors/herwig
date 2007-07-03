@@ -131,12 +131,12 @@ private:
   /**
    * \f$\mu\f$ paramter
    */
-  double _mu;
+  Energy _mu;
 
   /**
    * vector holding the trilinear couplings quarks then leptons
    */
-  vector<double> _trilinear;
+  vector<Energy> _trilinear;
 
   /**
    * The scale at which the coupling was last evaluated  
@@ -151,7 +151,7 @@ private:
   /**
    * Value of fermion dependent part when last evaluated
    */
-  Complex _hfact;
+  complex<Energy> _hfact;
    /**
    * Id of first scalar when coupling was last evaluated
    */

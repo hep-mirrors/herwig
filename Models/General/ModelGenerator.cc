@@ -80,7 +80,7 @@ void ModelGenerator::doinit() throw(InitException) {
       tPDPtr parent = *it;
       if( parent->decaySelector().empty() ) {
 	parent->stable(false);
-	parent->width(0.0);
+	parent->width(0.0*MeV);
       }
       else
 	writeDecayModes(ofs, parent);
@@ -90,7 +90,7 @@ void ModelGenerator::doinit() throw(InitException) {
 
 void ModelGenerator::writeDecayModes(ofstream & ofs, tcPDPtr parent) const {
   ofs << " Parent: " << parent->PDGName() << "   Mass (GeV): " 
-      << parent->mass()/GeV << "   Width: " << parent->width() << '\n';
+      << parent->mass()/GeV << "   Width: " << parent->width()/GeV << '\n';
   Selector<tDMPtr>::const_iterator dit = parent->decaySelector().begin();
   Selector<tDMPtr>::const_iterator dend = parent->decaySelector().end();
   for(; dit != dend; ++dit)

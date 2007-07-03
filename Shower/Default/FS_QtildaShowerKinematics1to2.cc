@@ -25,8 +25,8 @@ updateChildren(const tShowerParticlePtr theParent,
   double dphi = phi();
   // resize the parameter vectors
   if(theParent->showerVariables().empty()) {
-    theParent->showerVariables().resize(3,0.);
-    theParent->showerParameters().resize(2,0.);
+    theParent->showerVariables().resize(3);
+    theParent->showerParameters().resize(2);
     theParent->showerParameters()[0]=1.;
   }
   theChildren[0]->showerVariables() .resize(3);
@@ -104,24 +104,24 @@ void FS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle,PPtr) {
     // if the partner is a final-state particle then the reference
     // vector is along the partner in the rest frame of the pair
     if(partner->isFinalState()) {
-      Hep3Vector boost=(p + ppartner).findBoostToCM();
+      Boost boost=(p + ppartner).findBoostToCM();
       pcm = ppartner;
       pcm.boost(boost);
-      n = Lorentz5Momentum(0.,pcm.vect());
+      n = Lorentz5Momentum(0.*MeV,pcm.vect());
       n.boost( -boost);
     }
     else if(!partner->isFinalState()) {
       // if the partner is an initial-state particle then the reference
       // vector is along the partner which should be massless
       if(particle.perturbative()==1)
-	{n = Lorentz5Momentum(0.,ppartner.vect());}
+	{n = Lorentz5Momentum(0.*MeV,ppartner.vect());}
       // if the partner is an initial-state decaying particle then the reference
       // vector is along the backwards direction in rest frame of decaying particle
       else {
-	Hep3Vector boost=ppartner.findBoostToCM();
+	Boost boost=ppartner.findBoostToCM();
 	pcm = p;
 	pcm.boost(boost);
-	  n = Lorentz5Momentum( 0.0, -pcm.vect()); 
+	  n = Lorentz5Momentum( 0.0*MeV, -pcm.vect()); 
 	  n.boost( -boost);
       } 
     } 

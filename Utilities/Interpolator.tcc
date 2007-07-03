@@ -10,11 +10,17 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include <cassert>
 
 using namespace Herwig;
 
-Interpolator::Interpolator(vector<double> f, vector<double> x, int order) 
-  : _xval(x),_fun(f),_order(order)
+template <typename ValT, typename ArgT>
+Interpolator<ValT,ArgT>::Interpolator(vector<ValT> f, 
+				      vector<ArgT> x, 
+				      unsigned int order) 
+  : _fun(f.size(),0.0),_xval(x.size(),0.0),_order(order),
+    _funit(TypeTraits<ValT>::baseunit), 
+    _xunit(TypeTraits<ArgT>::baseunit)
 {
   // check the size of the vectors is the same
   if(_fun.size()!=_xval.size())
@@ -25,44 +31,100 @@ Interpolator::Interpolator(vector<double> f, vector<double> x, int order)
     throw Exception() << "Interpolator: The order of interpolation is too low" 
 		      << " using linear interpolation" 
 		      << Exception::runerror;
+  assert(x.size() == f.size());
+  for (size_t i = 0; i < f.size(); ++i) {
+    _fun [i] = f[i] / _funit;
+    _xval[i] = x[i] / _xunit;
+  }
 }
 
-void Interpolator::persistentOutput(PersistentOStream & os) const {
-  os << _xval << _fun << _order;
+template <typename ValT, typename ArgT>
+Interpolator<ValT,ArgT>::Interpolator(size_t size, 
+				      double f[], ValT funit,
+				      double x[], ArgT xunit,
+				      unsigned int order)
+  : _fun(size,0.0),_xval(size,0.0),_order(order),
+    _funit(funit),_xunit(xunit)
+{
+  // check the size of the vectors is the same
+  if(_order<1)
+    throw Exception() << "Interpolator: The order of interpolation is too low" 
+		      << " using linear interpolation" 
+		      << Exception::runerror;
+  for (size_t i = 0; i < size; ++i) {
+    _fun [i] = f[i];
+    _xval[i] = x[i];
+  }
 }
 
-void Interpolator::persistentInput(PersistentIStream & is, int) {
-  is >> _xval >> _fun >> _order;
+template <typename ValT, typename ArgT>
+void Interpolator<ValT,ArgT>::persistentOutput(PersistentOStream & os) const {
+  os << _xval << _fun << _order 
+     << ounit(_funit,TypeTraits<ValT>::baseunit) 
+     << ounit(_xunit,TypeTraits<ArgT>::baseunit);
 }
 
-ClassDescription<Interpolator> Interpolator::initInterpolator;
+template <typename ValT, typename ArgT>
+void Interpolator<ValT,ArgT>::persistentInput(PersistentIStream & is, int) {
+  is >> _xval >> _fun >> _order 
+     >> iunit(_funit,TypeTraits<ValT>::baseunit) 
+     >> iunit(_xunit,TypeTraits<ArgT>::baseunit);
+}
+
+template <typename ValT, typename ArgT>
+ClassDescription<Interpolator<ValT,ArgT> > 
+Interpolator<ValT,ArgT>::initInterpolator;
 // Definition of the static class description member.
 
-void Interpolator::Init() {
+template <typename ValT, typename ArgT>
+void Interpolator<ValT,ArgT>::Init() {
 
-  static ClassDocumentation<Interpolator> documentation
+  static ClassDocumentation<Interpolator<ValT,ArgT> > documentation
     ("The Interpolator class is design to interpolate a table of values");
 
-  static Parameter<Interpolator,unsigned int> interfaceOrder
+  static Parameter<Interpolator<ValT,ArgT>,unsigned int> interfaceOrder
     ("Order",
      "Order of the interpolation",
      &Interpolator::_order, 3, 1, 10,
      false, false, Interface::limited);
 
-  static ParVector<Interpolator,double> interfaceXValues
+  static ParVector<Interpolator<ValT,ArgT>,double> interfaceXValues
     ("XValues",
      "The x values for the interpolation",
      &Interpolator::_xval, -1, 0., 0, 0,
      false, false, Interface::nolimits);
 
-  static ParVector<Interpolator,double> interfaceFunctionValues
+  static ParVector<Interpolator<ValT,ArgT>,double> interfaceFunctionValues
     ("FunctionValues",
      "The function values for the interpolation",
      &Interpolator::_fun, -1, 0., 0, 0,
      false, false, Interface::nolimits);
+
+  static Parameter<Interpolator<ValT,ArgT>,ValT> interfaceValueType
+    ("ValueType",
+     "The unit of the function values",
+     &Interpolator<ValT,ArgT>::_funit, 
+     TypeTraits<ValT>::baseunit, 
+     1.0*TypeTraits<ValT>::baseunit, 
+     0*TypeTraits<ValT>::baseunit, 
+     0*TypeTraits<ValT>::baseunit,
+     false, true, Interface::nolimits);
+
+  static Parameter<Interpolator<ValT,ArgT>,ArgT> interfaceArgType
+    ("ArgType",
+     "The unit of the function arguments",
+     &Interpolator<ValT,ArgT>::xfunit, 
+     TypeTraits<ArgT>::baseunit, 
+     1.0*TypeTraits<ArgT>::baseunit, 
+     0*TypeTraits<ArgT>::baseunit, 
+     0*TypeTraits<ArgT>::baseunit,
+     false, true, Interface::nolimits);
+
 }
 
-double Interpolator::operator ()(double xpoint) const {
+template <typename ValT, typename ArgT>
+ValT Interpolator<ValT,ArgT>::operator ()(ArgT xpt) const {
+  const double xpoint = xpt / _xunit;
   // size of the vectors
   unsigned int isize(_xval.size());
   // workout the numer of points we need
@@ -125,5 +187,5 @@ double Interpolator::operator ()(double xpoint) const {
     sum=copyfun[i]+(xpoint-copyx[i])*sum;
     --i;
   }
-  return sum;
+  return sum * _funit;
 }

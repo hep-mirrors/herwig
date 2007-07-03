@@ -127,7 +127,8 @@ double MEee2gZ2qq::me2() const {
   meInfo(save);
   // add the QCD K-factor
   int Nf = SM().Nf(scale());
-  me *= (1.0 + alphaS()/pi + (1.986-0.115*Nf)*sqr(alphaS()/pi));
+  me *= (1.0 + alphaS()/Constants::pi 
+	 + (1.986-0.115*Nf)*sqr(alphaS()/Constants::pi));
   // return the answer
   return me;
 }

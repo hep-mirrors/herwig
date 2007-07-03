@@ -138,10 +138,10 @@ int TensorMesonVectorVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) c
 
 
 void TensorMesonVectorVectorDecayer::persistentOutput(PersistentOStream & os) const 
-{os << _incoming << _outgoing1 << _outgoing2 << _maxweight << _coupling;}
+{os << _incoming << _outgoing1 << _outgoing2 << _maxweight << ounit(_coupling,1/GeV);}
 
 void TensorMesonVectorVectorDecayer::persistentInput(PersistentIStream & is, int)
-{is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> _coupling;}
+{is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> iunit(_coupling,1/GeV);}
 
 ClassDescription<TensorMesonVectorVectorDecayer> TensorMesonVectorVectorDecayer::initTensorMesonVectorVectorDecayer;
 // Definition of the static class description member.
@@ -174,7 +174,7 @@ void TensorMesonVectorVectorDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &TensorMesonVectorVectorDecayer::_coupling,
-     0, 0, 0, 0./GeV, 1000./GeV, false, false, true);
+     1/GeV, 0, 0/GeV, 0./GeV, 1000./GeV, false, false, true);
 
   static ParVector<TensorMesonVectorVectorDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -190,7 +190,7 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
 					   const ParticleVector & decay) const
 {
   // wave functions etc for the incoming particle
-  vector<LorentzTensor> inten;
+  vector<LorentzTensor<double> > inten;
   RhoDMatrix rhoin(PDT::Spin2);rhoin.average();
   TensorWaveFunction(inten,rhoin,const_ptr_cast<tPPtr>(&inpart),incoming,
 		     true,false,vertex);
@@ -208,7 +208,7 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
       pol[ix]=mytempLPV;
     }
   // compute some useful dot products etc
-  Complex p1eps2[3],p2eps1[3];
+  complex<Energy> p1eps2[3],p2eps1[3];
   Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
   for(unsigned int ix=0;ix<3;++ix)
     {
@@ -216,8 +216,9 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
       p2eps1[ix]=pol[0][ix]*decay[1]->momentum();
     }
   // compute the traces and useful dot products
-  Complex trace[5],pboth[5];
-  LorentzPolarizationVector pleft[2][5],pright[2][5];
+  Complex trace[5];
+  complex<Energy2> pboth[5];
+  LorentzPolarizationVectorE pleft[2][5],pright[2][5];
   for(unsigned int ix=0;ix<5;++ix)
     {
       trace[ix]=inten[ix].xx() + inten[ix].yy() + inten[ix].zz() + inten[ix].tt();
@@ -230,23 +231,23 @@ double TensorMesonVectorVectorDecayer::me2(bool vertex, const int,
   // loop to compute the matrix element
   DecayMatrixElement newME(PDT::Spin2,PDT::Spin1,PDT::Spin1);
   Complex e1e2;
-  LorentzTensor te1e2;
-  double fact(_coupling[imode()]/inpart.mass());
-  Complex me;
+  LorentzTensor<Energy2> te1e2;
+  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
+  complex<Energy2> me;
   for(unsigned int ix=0;ix<3;++ix)
     {
       for(unsigned iy=0;iy<3;++iy)
 	{
-	  e1e2=pol[0][ix]*pol[1][iy];
-	  te1e2=p1p2*(LorentzTensor(pol[0][ix],pol[1][iy])
-		       +LorentzTensor(pol[1][iy],pol[0][ix]));
+	  e1e2=pol[0][ix].dot(pol[1][iy]);
+	  te1e2=complex<Energy2>(p1p2)*(LorentzTensor<double>(pol[0][ix],pol[1][iy])
+		       +LorentzTensor<double>(pol[1][iy],pol[0][ix]));
 	  for(unsigned int inhel=0;inhel<5;++inhel)
 	    {
-	      me = inten[inhel]*te1e2
-		-p2eps1[ix]*(pol[1][iy]*(pleft[0][inhel]+pright[0][inhel])) 
-		-p1eps2[iy]*(pol[0][ix]*(pleft[1][inhel]+pright[1][inhel]))
+	      me = (inten[inhel]*te1e2
+		-p2eps1[ix]*(pol[1][iy].dot(pleft[0][inhel]+pright[0][inhel])) 
+		-p1eps2[iy]*(pol[0][ix].dot(pleft[1][inhel]+pright[1][inhel]))
 		+pboth[inhel]*e1e2
-		+(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*trace[inhel];
+		+(p2eps1[ix]*p1eps2[iy]-e1e2*p1p2)*trace[inhel]);
 	      newME(inhel,ix,iy)=fact*me;
 	    }
 
@@ -329,7 +330,7 @@ void TensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":SecondOutgoing " << ix << " " 
 		 << _outgoing2[ix] << "\n";
 	  output << "set " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*GeV << "\n";
 	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}
@@ -342,7 +343,7 @@ void TensorMesonVectorVectorDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " " 
 		 << _outgoing2[ix] << "\n";
 	  output << "insert " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*GeV << "\n";
 	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}

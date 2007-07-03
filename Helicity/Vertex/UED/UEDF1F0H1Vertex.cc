@@ -11,8 +11,8 @@
 
 using namespace Herwig::Helicity;
 
-UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(0.), theMw(0.), 
-				     theSinThetaW(0.), theq2Last(0.),
+UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(), theMw(), 
+				     theSinThetaW(0.), theq2Last(),
 				     theCoupLast(0.), theLeftLast(0.),
 				     theRightLast(0.), theKKLast(0),
 				     theSMLast(0) {
@@ -53,12 +53,14 @@ UEDF1F0H1Vertex::UEDF1F0H1Vertex() : theRadius(0.), theMw(0.),
 
 
 void UEDF1F0H1Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theRadius << theMw << theSinThetaW ;
+  os << theUEDBase << ounit(theRadius,1/GeV) << ounit(theMw,GeV) 
+     << theSinThetaW ;
 }
 
 void UEDF1F0H1Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theRadius >> theMw >> theSinThetaW;
-  theq2Last = 0.;
+  is >> theUEDBase >> iunit(theRadius,1/GeV) >> iunit(theMw,GeV)
+     >> theSinThetaW;
+  theq2Last = 0.*GeV2;
   theCoupLast = 0.;
   theLeftLast = 0.;
   theRightLast = 0.;
@@ -129,27 +131,29 @@ void UEDF1F0H1Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
     if(q2 != theq2Last) {
       theq2Last = q2;
       theCoupLast = sqrt(2.*Constants::pi*theUEDBase->alphaEM(q2))/theSinThetaW;
-      theCoupLast *= theRadius/sqrt(1. + theMw*theMw*theRadius*theRadius);
+      theCoupLast *= theRadius/sqrt(1. + theMw*theMw*theRadius*theRadius) 
+	* UnitRemoval::E;
     }
     setNorm(theCoupLast);
     if(kkferm != theKKLast || abs(smferm) != theSMLast) {
       long smID = (kkferm > 6100000) ? kkferm - 6100000 : kkferm - 5100000;
       Energy smMass = getParticleData(smID)->mass();
-      smMass = 0.;
       double beta = smMass*theRadius;
       double gamma = beta*beta/(1. + beta*beta);
       double sinAl = sqrt(0.5 - 0.5*sqrt(1. - gamma));
       double cosAl = sqrt(1. - sinAl*sinAl);
       unsigned int kkstate = kkferm/1000000;
 
-      theRightLast = smMass/theRadius/theMw;
+      theRightLast = smMass/theRadius/theMw * UnitRemoval::InvE;
       if(kkstate == 5) {
-	theLeftLast = theMw*cosAl - (smMass*sinAl/theRadius/theMw);
-	theRightLast = cosAl;
+	theLeftLast = (theMw*cosAl - (smMass*sinAl/theRadius/theMw)) 
+	  * UnitRemoval::InvE;
+	theRightLast *= cosAl;
       }
       else {
-	theLeftLast = theMw*sinAl + (smMass*cosAl/theRadius/theMw);
-	theRightLast =-sinAl;
+	theLeftLast = (theMw*sinAl + (smMass*cosAl/theRadius/theMw))
+	  * UnitRemoval::InvE;
+	theRightLast *= -sinAl;
       }
     }
     if(kkhiggs < 0) {

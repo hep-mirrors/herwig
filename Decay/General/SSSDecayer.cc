@@ -48,7 +48,7 @@ double SSSDecayer::me2(bool vertex, const int , const Particle & inpart,
   DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin0);
   newme(0,0,0) = _theSSSPtr->evaluate(scale,s1,s2,inwave);
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()) {
     output /=2;
   }
@@ -67,7 +67,7 @@ Energy SSSDecayer::partialWidth(const PDPtr inpart,
   Complex norm = (_theSSSPtr->getNorm()*_theSSSPtr->getNorm());
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  Energy pWidth = norm.real()*pcm/8./Constants::pi/scale;
+  Energy pWidth = norm.real()*pcm/8./Constants::pi/scale*UnitRemoval::E2;
   if(outa->id() == outb->id()) {
     pWidth /=2;
   }

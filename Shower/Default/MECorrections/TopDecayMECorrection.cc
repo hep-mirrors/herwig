@@ -164,7 +164,7 @@ void TopDecayMECorrection::applyHardMatrixElementCorrection(ShowerTreePtr tree) 
   // Set masses in 5-vectors:
   newfs[0].setMass(ba[0]->mass());
   newfs[1].setMass(ba[1]->mass());
-  newfs[2].setMass(0.);
+  newfs[2].setMass(0.*MeV);
   // The next part of this routine sets the colour structure.
   // To do this for decays we assume that the gluon comes from c!
   // First create new particle objects for c, a and gluon:
@@ -273,14 +273,14 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
     pa_lab = p[0]->momentum(); 
   }
   // Calculate the boost to the b rest frame:
-  HepLorentzRotation rot0(pb_lab.findBoostToCM());
+  SpinOneLorentzRotation rot0(pb_lab.findBoostToCM());
   // Calculate the rotation matrix to position a along the +z direction
   // in the rest frame of b and does a random rotation about z:
-  LorentzRotation    rot1 = rotateToZ(rot0*pa_lab);
+  SpinOneLorentzRotation    rot1 = rotateToZ(rot0*pa_lab);
   // Calculate the boost from the b rest frame back to the lab:
   // and the inverse of the random rotation about the z-axis and the 
   // rotation required to align a with +z:
-  HepLorentzRotation invrot = rot0.inverse()*rot1.inverse();
+  SpinOneLorentzRotation invrot = rot0.inverse()*rot1.inverse();
 
   // ************************************ //
   // Now we construct the momenta in the  //
@@ -296,19 +296,19 @@ applyHard(const ParticleVector &p,double ktb, double ktc)
   pg_brf.setE(0.5*_mt*_xg);
   // then their masses,
   pc_brf.setMass(_mc);
-  pg_brf.setMass(0.);
+  pg_brf.setMass(0.*MeV);
   // Now set the z-component of c and g. For pg we simply start from
   // _xa and _xg, while for pc we assume it is equal to minus the sum
   // of the z-components of a (assumed to point in the +z direction) and g.
   double root=sqrt(_xa*_xa-4.*_a);
-  pg_brf.setPz(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a)/root);
-  pc_brf.setPz(-1.*( pg_brf.z()+_mt*0.5*root));
+  pg_brf.setZ(_mt*(1.-_xa-_xg+0.5*_xa*_xg-_c+_a)/root);
+  pc_brf.setZ(-1.*( pg_brf.z()+_mt*0.5*root));
   // Now set the y-component of c and g's momenta
-  pc_brf.setPy(0.);
-  pg_brf.setPy(0.);
+  pc_brf.setY(0.*MeV);
+  pg_brf.setY(0.*MeV);
   // Now set the x-component of c and g's momenta
-  pg_brf.setPx(sqrt(sqr(pg_brf.t())-sqr(pg_brf.z())));
-  pc_brf.setPx(-pg_brf.x());
+  pg_brf.setX(sqrt(sqr(pg_brf.t())-sqr(pg_brf.z())));
+  pc_brf.setX(-pg_brf.x());
   // Momenta b,c,g are now set. Now we obtain a from momentum conservation,
   pa_brf = pb_brf-pc_brf-pg_brf;
   pa_brf.setMass(pa_brf.m());
@@ -346,8 +346,9 @@ double TopDecayMECorrection::getHard(double ktb, double ktc)
   // Compute the weight for this phase space point:
   double weight = volume_factor*me(_xa,_xg)*(1.+_a-_c-_xa); 
   // Alpha_S and colour factors - this hard wired Alpha_S needs removing.
-  weight *= (4./3.)/pi*(coupling()->value(_mt*_mt*_xg*(1.-_xa+_a-_c)
-			                 /(2.-_xg-_xa-_c)));
+  weight *= (4./3.)/Constants::pi
+    *(coupling()->value(_mt*_mt*_xg*(1.-_xa+_a-_c)
+			/(2.-_xg-_xa-_c)));
   return weight; 
 }
 

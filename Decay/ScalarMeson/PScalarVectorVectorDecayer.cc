@@ -18,7 +18,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -26,7 +26,6 @@ using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
 using Herwig::Helicity::ScalarWaveFunction;
 using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::EpsFunction;
 using Herwig::Helicity::incoming;
 using Herwig::Helicity::outgoing;
 
@@ -89,11 +88,13 @@ int PScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const
 }
 
 void PScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << ounit(_coupling,1/GeV) 
+     << _incoming << _outgoing1 << _outgoing2 << _maxweight;
 }
 
 void PScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> iunit(_coupling,1/GeV)
+     >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
 }
 
 ClassDescription<PScalarVectorVectorDecayer> PScalarVectorVectorDecayer::initPScalarVectorVectorDecayer;
@@ -127,7 +128,7 @@ void PScalarVectorVectorDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &PScalarVectorVectorDecayer::_coupling,
-     0, 0, 0, 0., 10000/GeV, false, false, true);
+     1/GeV, 0, 0/GeV, 0./GeV, 10000/GeV, false, false, true);
 
   static ParVector<PScalarVectorVectorDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -160,14 +161,15 @@ double PScalarVectorVectorDecayer::me2(bool vertex, const int,
     }
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
-  double fact(_coupling[imode()]/inpart.mass());
+  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix)
     {
       for(iy=0;iy<3;++iy)
 	{
 	  newME(0,ix,iy)=fact*
-	    EpsFunction::product(wave[0][ix],decay[1]->momentum(),wave[1][iy])
+	    Helicity::
+	    epsilon(wave[0][ix],decay[1]->momentum(),wave[1][iy])
 	    *decay[0]->momentum();
 	}
     }
@@ -218,7 +220,7 @@ void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":SecondOutgoing " << ix << " "
 		 << _outgoing2[ix]  << "\n";
 	  output << "set " << fullName() << ":Coupling   " << ix << " "
-		 << _coupling[ix]   << "\n";
+		 << _coupling[ix]*MeV   << "\n";
 	  output << "set " << fullName() << ":MaxWeight  " << ix << " "
 		 << _maxweight[ix]  << "\n";
 	}
@@ -231,7 +233,7 @@ void PScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " "
 		 << _outgoing2[ix]  << "\n";
 	  output << "insert " << fullName() << ":Coupling   " << ix << " "
-		 << _coupling[ix]   << "\n";
+		 << _coupling[ix]*MeV   << "\n";
 	  output << "insert " << fullName() << ":MaxWeight  " << ix << " "
 		 << _maxweight[ix]  << "\n";
 	}

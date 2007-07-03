@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-inline LightClusterDecayer::LightClusterDecayer() : _B1Lim( 0.0 )     
+inline LightClusterDecayer::LightClusterDecayer() : _B1Lim()     
 {} 
 
 inline IBPtr LightClusterDecayer::clone() const {

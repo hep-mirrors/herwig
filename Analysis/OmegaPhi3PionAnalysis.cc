@@ -68,21 +68,21 @@ void OmegaPhi3PionAnalysis::analyze(tPPtr part) {
   if(part->id()==ParticleID::omega) imode=0;
   else if(part->id()==ParticleID::phi) imode=1;
   else return;
-  Hep3Vector boostv(-part->momentum().boostVector());
+  Boost boostv(-part->momentum().boostVector());
   pi0.boost(boostv);
   pip.boost(boostv);
   pim.boost(boostv);
   Lorentz5Momentum ptemp;
   ptemp = pi0+pip;ptemp.rescaleMass();
-  *_mplus[imode]+=ptemp.mass();
+  *_mplus[imode]+=ptemp.mass()/MeV;
   ptemp = pi0+pim;ptemp.rescaleMass();
-  *_mminus[imode]+=ptemp.mass();
+  *_mminus[imode]+=ptemp.mass()/MeV;
   ptemp = pip+pim;ptemp.rescaleMass();
-  *_m0[imode]+=ptemp.mass();
-  double x = pip.e()-pim.e();
-  double y = pi0.e()-pi0.m();
-  *_xhist[imode]+=x;
-  *_yhist[imode]+=y;
+  *_m0[imode]+=ptemp.mass()/MeV;
+  Energy x = pip.e()-pim.e();
+  Energy y = pi0.e()-pi0.m();
+  *_xhist[imode]+=x/MeV;
+  *_yhist[imode]+=y/MeV;
   if(_xvalue[imode].size()<_nmax) {
     _xvalue[imode].push_back(x);
     _yvalue[imode].push_back(y);
@@ -155,7 +155,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
    output << "title top \"Dalitz plot for W\"\n";
    output << "case      \"                G\"\n"; 
    for(unsigned int ix=0;ix<_xvalue[0].size();++ix) {
-     output << _xvalue[0][ix] << "   " << _yvalue[0][ix] << "\n";
+     output << ounit(_xvalue[0][ix],MeV) << "   " << ounit(_yvalue[0][ix],MeV) << "\n";
    }
    output << "plot\n";
   _xhist[1]->topdrawOutput(output,true,true,false,true,
@@ -205,7 +205,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
    output << "title top \"Dalitz plot for W\"\n";
    output << "case      \"                G\"\n"; 
    for(unsigned int ix=0;ix<_xvalue[1].size();++ix) {
-     output << _xvalue[1][ix] << "   " << _yvalue[1][ix] << "\n";
+     output << _xvalue[1][ix]/MeV << "   " << _yvalue[1][ix]/MeV << "\n";
    }
    output << "plot\n";
 }
@@ -215,9 +215,9 @@ void OmegaPhi3PionAnalysis::doinitrun() {
   for(unsigned int ix=0;ix<2;++ix) {
     _xhist  .push_back(new_ptr(Histogram(-400.,400.  ,200)));
     _yhist  .push_back(new_ptr(Histogram(0.   ,400.  ,200)));
-    _mplus  .push_back(new_ptr(Histogram(0.   ,1.*GeV,200)));
-    _mminus .push_back(new_ptr(Histogram(0.   ,1.*GeV,200)));
-    _m0     .push_back(new_ptr(Histogram(0.   ,1.*GeV,200)));
+    _mplus  .push_back(new_ptr(Histogram(0.   ,1000.,200)));
+    _mminus .push_back(new_ptr(Histogram(0.   ,1000.,200)));
+    _m0     .push_back(new_ptr(Histogram(0.   ,1000.,200)));
   }
   _xvalue.resize(2);
   _yvalue.resize(2);

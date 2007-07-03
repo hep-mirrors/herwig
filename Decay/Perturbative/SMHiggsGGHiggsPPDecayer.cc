@@ -120,7 +120,7 @@ namespace Herwig {
     }
     //store matrix element
     ME(higgs);
-    double output = higgs.contract(rhoH).real()/scale;
+    double output = higgs.contract(rhoH).real()*UnitRemoval::E2/scale;
     //colour factor (N^2 - 1)/4
     if(decay[0]->id() == ParticleID::g &&
        decay[1]->id() == ParticleID::g) {

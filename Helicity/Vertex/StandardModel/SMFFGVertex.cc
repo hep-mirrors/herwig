@@ -19,7 +19,7 @@ void SMFFGVertex::persistentOutput(PersistentOStream & os) const {
 
 void SMFFGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSM;
-  _couplast=0.;_q2last=0.;
+  _couplast=0.;_q2last=0.*GeV2;
 }
 
 ClassDescription<SMFFGVertex> 

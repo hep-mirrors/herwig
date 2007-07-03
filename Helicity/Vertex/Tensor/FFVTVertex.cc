@@ -26,7 +26,7 @@ void FFVTVertex::Init() {
 }
 
 // function to evaluate the vertex
-Complex FFVTVertex::evaluate(Energy q2, const SpinorWaveFunction & sp,
+Complex FFVTVertex::evaluate(Energy2 q2, const SpinorWaveFunction & sp,
     				 const SpinorBarWaveFunction & sbar,
     				 const VectorWaveFunction & vec,
     				 const TensorWaveFunction & ten)
@@ -43,8 +43,8 @@ Complex FFVTVertex::evaluate(Energy q2, const SpinorWaveFunction & sp,
   // spinor vector
   // low energy convention
   Complex aspin[4];
-  LorentzSpinorBar sbart=sbar.wave();
-  LorentzSpinor    spt  =sp.wave();
+  LorentzSpinorBar<double> sbart=sbar.wave();
+  LorentzSpinor<double>    spt  =sp.wave();
   if(sp.wave().Rep()==HaberDRep&&sbar.wave().Rep()==HaberDRep) {
     aspin[3] = sbart.s1()*spt.s1()+sbart.s2()*spt.s2()
       -sbart.s3()*spt.s3()-sbart.s4()*spt.s4();

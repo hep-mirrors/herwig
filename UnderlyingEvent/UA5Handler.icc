@@ -23,23 +23,24 @@ inline double UA5Handler::negativeBinomial(int N, double mean, double ek) const 
 
 // This returns random number from dN/d(x**2)=exp(-B*TM) distribution, where
 // TM = SQRT(X**2+AM0**2).  Uses Newton's method to solve F-R=0
-inline double UA5Handler::randExt(Energy AM0, InvEnergy B) const {
+inline Energy UA5Handler::randExt(Energy AM0, InvEnergy B) const {
   double r = rnd();
   // Starting value
   Energy am = AM0-log(r)/B;
   for(int i = 1; i<20; ++i) {
     double a = exp(-B*(am-AM0))/(1.+B*AM0);
     double f = (1.+B*am)*a-r;
-    double df = -B*B*am*a;
-    double dam = -f/df;
+    InvEnergy df = -B*B*am*a;
+    Energy dam = -f/df;
     am += dam;
-    if(am<AM0) am=AM0+.001;
-    if(abs(dam) < .001) break;
+    if(am<AM0) am = AM0 + .001*MeV;
+    if(abs(dam) < .001*MeV) break;
   }
   return am;
 }
 
-inline double UA5Handler::gaussDistribution(double mean, double stdev) const {
+template <typename T>
+inline T UA5Handler::gaussDistribution(T mean, T stdev) const {
    double x = rnd();
    x = sqrt(-2.*log(x));
    double y;
@@ -62,7 +63,8 @@ inline double UA5Handler::randUng(double A, double B) const {
 }
 
 // Generates a random azimuthal angle and creates a 2 vector of length x with angle phi
-inline void UA5Handler::randAzm(double x, double &px, double &py) const {
+template <typename T>
+inline void UA5Handler::randAzm (T x, T &px, T &py) const {
    double c,s,cs;
    while(true) {
       c = 2.*rnd()-1.;
@@ -70,7 +72,7 @@ inline void UA5Handler::randAzm(double x, double &px, double &py) const {
       cs = c*c+s*s;
       if(cs <= 1.&&cs!=0.) break;
    }
-   double qt = x/cs;
+   T qt = x/cs;
    px = (c*c-s*s)*qt;
    py = 2.*c*s*qt;
 }

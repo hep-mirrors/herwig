@@ -14,7 +14,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
@@ -119,11 +119,11 @@ int  SemiLeptonicScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 
 
 void SemiLeptonicScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _maxwgt << _modemap << _GF;
+  os << _current << _form << _maxwgt << _modemap << ounit(_GF,1/GeV2);
 }
 
 void SemiLeptonicScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _maxwgt >> _modemap >> _GF;
+  is >> _current >> _form >> _maxwgt >> _modemap >> iunit(_GF,1/GeV2);
 }
 
 ClassDescription<SemiLeptonicScalarDecayer> SemiLeptonicScalarDecayer::initSemiLeptonicScalarDecayer;
@@ -176,12 +176,14 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   int spect,iq,ia;
   _form->formFactorInfo(iloc,jspin,spect,iq,ia);
   // work out the value of q and calculate the form factors
-  Lorentz5Momentum q(inpart.momentum()-decay[0]->momentum());q.rescaleMass();
+  Lorentz5Momentum q(inpart.momentum()-decay[0]->momentum());
+  q.rescaleMass();
+  
   Energy2 q2(q.mass2());
   Lorentz5Momentum sum(inpart.momentum()+decay[0]->momentum());
   // calculate the hadronic current for the decay
   Complex ii(0.,1.);
-  vector<LorentzPolarizationVector> hadron;
+  vector<LorentzPolarizationVectorE> hadron;
   if(jspin==0) {
     // workaround for gcc 3.2.3 bug
     //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
@@ -236,8 +238,8 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   ParticleVector leptons;
   leptons.push_back(decay[decay.size()-2]);
   leptons.push_back(decay[decay.size()-1]);
-  vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,
-							     ichan,scale,leptons));
+  vector<LorentzPolarizationVectorE> 
+    lepton(_current->current(vertex,mode,ichan,scale,leptons));
   // work out the mapping for the lepton vector
   vector<unsigned int> constants(decay.size()+1),ihel(decay.size()+1);
   vector<PDT::Spin> ispin(decay.size());
@@ -274,7 +276,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   else          ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);
   }
   // return the answer
-  return 0.5*(newME.contract(temp)).real()*_GF*_GF*ckm; 
+  return 0.5*(newME.contract(temp)).real()*_GF*_GF*ckm*UnitRemoval::E4; 
 }
  
 // output the setup information for the particle database

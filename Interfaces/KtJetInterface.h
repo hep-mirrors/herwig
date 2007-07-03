@@ -14,7 +14,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace KtJet;
 
 /** \ingroup Interfaces
  * 
@@ -48,19 +47,29 @@ public:
   /**
    *  Convert ThePEG particles to KtJet vectors
    */
-  vector<KtLorentzVector> convertToKtVectorList(const tPVector &);
+  vector<KtJet::KtLorentzVector> convert(const tPVector &);
+
+  /**
+   *  Convert  KtJet Lorentz vectors to ThePEG momenta
+   */
+  static vector<LorentzMomentum> convert(const vector<KtJet::KtLorentzVector> &);
 
   /**
    *  Get the PDG code for a KtJet vector
    */ 
-  int getThePEGID(KtLorentzVector &);
+  int getThePEGID(KtJet::KtLorentzVector &);
+
+  /**
+   * Convert KtJet vector back to ThePEG
+   */
+  static LorentzMomentum convert(const KtJet::KtLorentzVector & kt);
 
  private:
 
   /**
    *  Convert one particle to KtJet
    */
-  KtLorentzVector convertToKtVector(const PPtr &);
+  static KtJet::KtLorentzVector convert(tcPPtr);
 
   /**
    *  Map between Herwig++ and KtJet

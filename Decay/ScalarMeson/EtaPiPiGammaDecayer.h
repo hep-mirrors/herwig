@@ -281,12 +281,12 @@ private:
   /**
    * Real part of the Omnes function for the interpolation table
    */
-  vector<InvEnergy2> _omnesfunctionreal;
+  vector<double> _omnesfunctionreal;
 
   /**
    * Imaginary part of the Omnes function for the interpolation table
    */
-  vector<InvEnergy2> _omnesfunctionimag;
+  vector<double> _omnesfunctionimag;
 
   /**
    * set up of the interpolation table
@@ -305,13 +305,14 @@ private:
   /**
    *  The interpolator for the real part
    */
-  mutable InterpolatorPtr _oreal;
+  mutable Interpolator<double,Energy>::Ptr _oreal;
 
   /**
    *  The interpolator for the imaginary part
    */
-  mutable InterpolatorPtr _oimag;
+  mutable Interpolator<double,Energy>::Ptr _oimag;
   //@}
+
   /**
    *  Cut-off parameter for the integral of the experimental function
    */ 
@@ -377,7 +378,7 @@ struct OmnesIntegrand {
    * @param inter The interpolator for the phase shift
    * @param cut   The cut-off
    */
-  inline OmnesIntegrand(InterpolatorPtr inter, Energy2 cut);
+  inline OmnesIntegrand(Interpolator<double,Energy>::Ptr inter, Energy2 cut);
 
   /**
    *  Set the scale
@@ -387,12 +388,14 @@ struct OmnesIntegrand {
   /**
    *  get the value
    */
-  inline double operator ()(double) const;
+  inline InvEnergy4 operator ()(Energy2) const;
+  typedef InvEnergy4 ValType;
+  typedef Energy2 ArgType;
   
   /**
    *  The interpolator
    */
-  InterpolatorPtr _interpolator;
+  Interpolator<double,Energy>::Ptr _interpolator;
 
   /**
    *  The scale

@@ -14,11 +14,11 @@ namespace Helicity {
 using namespace ThePEG;
 
 void RSModelVVGRVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theModel << _theKappa;
+  os << _theModel << ounit(_theKappa,InvGeV);
 }
 
 void RSModelVVGRVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theModel >> _theKappa;
+  is >> _theModel >> iunit(_theKappa,InvGeV);
 }
 
 ClassDescription<RSModelVVGRVertex> RSModelVVGRVertex::initRSModelVVGRVertex;
@@ -32,7 +32,7 @@ void RSModelVVGRVertex::Init() {
 }
   
 void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
-{setNorm(_theKappa);}
+{setNorm(Complex(UnitRemoval::E * _theKappa));}
 
 }
 }

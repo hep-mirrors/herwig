@@ -45,7 +45,8 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theGSGSGVertex << theNNZVertex << theCCPVertex 
      << theCCZVertex << theCNWVertex << theFFHVertex << theGOGOHVertex
      << theWWHVertex << theWHHVertex << theHHHVertex
-     << _tanbeta << _mu << theMone << theMtwo << theMthree;
+     << _tanbeta << ounit(_mu,GeV) 
+     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -56,7 +57,8 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theNNZVertex >> theCCPVertex >> theCCZVertex >> theCNWVertex
      >> theFFHVertex >> theGOGOHVertex >> theWWHVertex >> theWHHVertex
      >> theHHHVertex
-     >> _tanbeta >> _mu >> theMone >> theMtwo >> theMthree;
+     >> _tanbeta >> iunit(_mu,GeV) 
+     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -264,7 +266,7 @@ void SusyBase::readDecay(ifstream & ifs,
 				     << parent << " does not exist in "
 				     << "SusyBase::readDecay()" 
 				     << Exception::runerror;
-  inpart->width(width);
+  inpart->width(width*GeV);
   string tag = "decaymode " + inpart->PDGName() + "->";
   string line;
   while(getline(ifs, line)) {

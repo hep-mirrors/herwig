@@ -68,8 +68,8 @@ public:
    * @param s4 The fourth component
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,Complex s1,
-			    Complex s2,Complex s3,Complex s4,DiracRep drep=defaultDRep);
+  inline SpinorWaveFunction(const Lorentz5Momentum & p,const tcPDPtr & part,complex<double> s1,
+			    complex<double> s2,complex<double> s3,complex<double> s4,DiracRep drep=defaultDRep);
 
   /**
    * Constructor, set the momentum and the wavefunction.
@@ -79,7 +79,12 @@ public:
    * @param dir The direction of the particle
    */
   inline SpinorWaveFunction(const Lorentz5Momentum & p, const tcPDPtr & part,
-			    const LorentzSpinor & wave,Direction dir=intermediate);
+			    const LorentzSpinor<double> & wave,
+			    Direction dir=intermediate);
+  inline SpinorWaveFunction(const Lorentz5Momentum & p, const tcPDPtr & part,
+			    const LorentzSpinor<SqrtEnergy> & wave,
+			    DummyType,
+			    Direction dir=intermediate);
 
   /**
    * Constructor, set the momentum, helicity, direction and Dirac representation.
@@ -134,7 +139,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(LorentzVector p,const tcPDPtr & part,unsigned int ihel,
+  inline SpinorWaveFunction(LorentzMomentum p,const tcPDPtr & part,unsigned int ihel,
 			    Direction dir,DiracRep drep=defaultDRep);
 
   /**
@@ -159,7 +164,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,
+  inline SpinorWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,
 			    unsigned int ihel,
 			    Direction dir, DiracRep drep=defaultDRep);
 
@@ -212,7 +217,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(LorentzVector p,const tcPDPtr & part,Direction dir,
+  inline SpinorWaveFunction(LorentzMomentum p,const tcPDPtr & part,Direction dir,
 			    DiracRep drep=defaultDRep);
 
   /**
@@ -235,7 +240,7 @@ public:
    * @param dir The direction.
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(LorentzVector p,Energy m,const tcPDPtr & part,Direction dir,
+  inline SpinorWaveFunction(LorentzMomentum p,Energy m,const tcPDPtr & part,Direction dir,
 			    DiracRep drep=defaultDRep);
 
   /**
@@ -248,7 +253,7 @@ public:
    * @param vertex Whether or not to create the FermionSpinInfo object 
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(vector<LorentzSpinor>& wave, tPPtr part,Direction dir,
+  inline SpinorWaveFunction(vector<LorentzSpinor<SqrtEnergy> >& wave, tPPtr part,Direction dir,
 			    bool time, bool vertex, DiracRep drep=defaultDRep);
 
   /**
@@ -262,7 +267,7 @@ public:
    * @param vertex Whether or not to create the FermionSpinInfo object 
    * @param drep The Dirac representation.
    */
-  inline SpinorWaveFunction(vector<LorentzSpinor>& wave, RhoDMatrix& rho,tPPtr part,
+  inline SpinorWaveFunction(vector<LorentzSpinor<SqrtEnergy> >& wave, RhoDMatrix& rho,tPPtr part,
 			    Direction dir,bool time, bool vertex,
 			    DiracRep drep=defaultDRep);
 
@@ -319,57 +324,58 @@ public:
   /**
    * Subscript operator for the wavefunction.
    */
-  inline Complex operator ()(int ) const;
+  inline complex<double> operator ()(int ) const;
 
   /**
    * Set components by index.
    */
-  inline Complex & operator () (int);
+  inline complex<double> & operator () (int);
 
   /**
    * Return wavefunction as LorentzSpinor.
    */
-  inline const LorentzSpinor & wave() const;
+  inline LorentzSpinor<double> wave() const;
+  inline LorentzSpinor<SqrtEnergy> dimensionedWave() const;
 
   /**
    * Get the first spin component component.
    */
-  inline Complex s1() const;
+  inline complex<double> s1() const;
 
   /**
    * Get the second spin component component.
    */
-  inline Complex s2() const;
+  inline complex<double> s2() const;
 
   /**
    * Get the third spin component component.
    */
-  inline Complex s3() const;
+  inline complex<double> s3() const;
 
   /**
    * Get the fourth spin component component.
    */
-  inline Complex s4() const;
+  inline complex<double> s4() const;
 
   /**
    * Set first spin component.
    */
-  inline void setS1(Complex);
+  inline void setS1(complex<double>);
 
   /**
    * Set second spin component.
    */
-  inline void setS2(Complex);
+  inline void setS2(complex<double>);
 
   /**
    * Set third spin component.
    */
-  inline void setS3(Complex);
+  inline void setS3(complex<double>);
 
   /**
    * Set fourth spin component.
    */
-  inline void setS4(Complex);
+  inline void setS4(complex<double>);
   //@}
 
   /**
@@ -433,7 +439,7 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  void constructSpinInfo(vector<LorentzSpinor>& wave,tPPtr part,bool time,
+  void constructSpinInfo(vector<LorentzSpinor<SqrtEnergy> >& wave,tPPtr part,bool time,
 			 bool vertex=true);
 
   /**
@@ -445,7 +451,7 @@ public:
    * @param time Is this is timelike (true) or spacelike (false ) particle?
    * @param vertex Whether or not to create the FermionSpinInfo object 
    */
-  void constructSpinInfo(vector<LorentzSpinor>& wave,RhoDMatrix& rho,tPPtr part,
+  void constructSpinInfo(vector<LorentzSpinor<SqrtEnergy> >& wave,RhoDMatrix& rho,tPPtr part,
 			 bool time,bool vertex=true);
 
   /**
@@ -497,7 +503,7 @@ private:
    * @param spin Pointer to the FermionSpinInfo object
    * @param vertex Whether or not to set up the FermionSpinInfo object 
    */
-  inline void constructSpinInfo(vector<LorentzSpinor>& wave,tFermionSpinPtr spin,
+  inline void constructSpinInfo(vector<LorentzSpinor<SqrtEnergy> >& wave,tFermionSpinPtr spin,
 				bool vertex=true);
 
   /**
@@ -514,8 +520,15 @@ private:
   /**
    * Storage of the Lorentz Spinor.
    */
-  LorentzSpinor _wf;
+  LorentzSpinor<double> _wf;
 
+  LorentzSpinor<SqrtEnergy> dimensionedWf() const {
+    LorentzSpinor<SqrtEnergy> temp(_wf.Type(),_wf.Rep());
+    for (unsigned int i=0; i<4; ++i)
+      temp(i) = _wf(i)*UnitRemoval::SqrtE;
+    return temp;
+  }
+  
 };
 
 }

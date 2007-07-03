@@ -21,11 +21,11 @@ using namespace ThePEG;
 BtoSGammaHadronicMass::~BtoSGammaHadronicMass() {}
 
 void BtoSGammaHadronicMass::persistentOutput(PersistentOStream & os) const {
-  os << _minMass << _maxMass;
+  os << ounit(_minMass,GeV) << ounit(_maxMass,GeV);
 }
 
 void BtoSGammaHadronicMass::persistentInput(PersistentIStream & is, int) {
-  is >> _minMass >> _maxMass;
+  is >> iunit(_minMass,GeV) >> iunit(_maxMass,GeV);
 }
 
 AbstractClassDescription<BtoSGammaHadronicMass> BtoSGammaHadronicMass::initBtoSGammaHadronicMass;

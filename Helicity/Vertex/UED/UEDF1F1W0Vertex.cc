@@ -12,8 +12,8 @@
 
 using namespace Herwig::Helicity;
 
-UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theSinThW(0.), theRadius(0.),
-				    theQ2Last(0.), theCoupLast(0.), 
+UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theSinThW(0.), theRadius(),
+				    theQ2Last(), theCoupLast(0.), 
 				    theLeftLast(0.), thefermALast(0),
 				    thefermBLast(0) {
   vector<int> anti, ferm, wboson;
@@ -63,12 +63,12 @@ UEDF1F1W0Vertex::UEDF1F1W0Vertex(): theSinThW(0.), theRadius(0.),
 
 
 void UEDF1F1W0Vertex::persistentOutput(PersistentOStream & os) const {
-  os << theUEDBase << theSinThW << theRadius;
+  os << theUEDBase << theSinThW << ounit(theRadius,1/GeV);
 }
 
 void UEDF1F1W0Vertex::persistentInput(PersistentIStream & is, int) {
-  is >> theUEDBase >> theSinThW >> theRadius;
-  theQ2Last = 0.0;
+  is >> theUEDBase >> theSinThW >> iunit(theRadius,1/GeV);
+  theQ2Last = 0.0*GeV2;
   theCoupLast = 0.0;
   theLeftLast = 0.0;
   thefermALast = 0;
@@ -86,7 +86,7 @@ void UEDF1F1W0Vertex::Init() {
 
 }
 
-void UEDF1F1W0Vertex::setCoupling(Energy q2, tcPDPtr part1, tcPDPtr part2,
+void UEDF1F1W0Vertex::setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 				  tcPDPtr part3) {
   long iferm(0), ianti(0);
   if(abs(part1->id()) == ParticleID::Wplus) {

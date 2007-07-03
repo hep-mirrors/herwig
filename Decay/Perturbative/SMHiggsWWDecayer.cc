@@ -247,7 +247,7 @@ double SMHiggsWWDecayer::me2(bool vertex, const int, const Particle & inpart,
     }
   }
   ME(newme);
-  double output=(newme.contract(rhoin)).real()*scale0;
+  double output=(newme.contract(rhoin)).real()*scale0*UnitRemoval::InvE2;
   // set up the colour flows
   if(decay[0]->coloured()) {
     output*=3.;

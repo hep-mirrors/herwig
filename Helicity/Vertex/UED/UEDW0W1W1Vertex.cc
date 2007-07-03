@@ -12,7 +12,7 @@
 using namespace Herwig::Helicity;
 
 UEDW0W1W1Vertex::UEDW0W1W1Vertex() : theZfact(0.), theSinThetaOne(0.), 
-				     theq2Last(0.), theCoupLast(0.) {
+				     theq2Last(), theCoupLast(0.) {
   vector<int> first(4), second(4), third(4);
   first[0] = 24;
   second[0] = -5100024;
@@ -38,7 +38,7 @@ void UEDW0W1W1Vertex::persistentOutput(PersistentOStream & os) const {
 
 void UEDW0W1W1Vertex::persistentInput(PersistentIStream & is, int) {
   is >> theUEDBase  >> theZfact >> theSinThetaOne;
-  theq2Last = 0.;
+  theq2Last = 0.*GeV2;
   theCoupLast = 0.;
 }
 

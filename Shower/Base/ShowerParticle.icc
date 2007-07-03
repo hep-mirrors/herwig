@@ -23,7 +23,7 @@ inline ShowerParticle::ShowerParticle(const Particle &x, unsigned int pert,
     _initiatesTLS( tls ),
     _x(1.0),
     _showerKinematics( tShoKinPtr() ),
-    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy() ),
     _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
      _thePEGBase( &x )
 {}
@@ -36,7 +36,7 @@ inline ShowerParticle::ShowerParticle(tcEventPDPtr x,bool fs,bool tls)
     _initiatesTLS( tls ),
     _x(1.0),
     _showerKinematics( tShoKinPtr() ),
-    _scales( ShowerIndex::NumInteractionTypes, Energy(0.0) ),
+    _scales( ShowerIndex::NumInteractionTypes, Energy() ),
     _partners( ShowerIndex::NumInteractionTypes, tShowerParticlePtr() ),
     _thePEGBase( PPtr() )
 {}

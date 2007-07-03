@@ -19,7 +19,7 @@ void SSGSGSGVertex::persistentOutput(PersistentOStream & os) const {
 void SSGSGSGVertex::persistentInput(PersistentIStream & is, int) {
   is >> _theSS;
   _couplast = 0.;
-  _q2last = 0.;
+  _q2last = 0.*GeV2;
 }
 
 ClassDescription<SSGSGSGVertex> SSGSGSGVertex::initSSGSGSGVertex;

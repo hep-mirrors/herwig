@@ -104,7 +104,7 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   }
 
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if((inpart.data()).iColour()==PDT::Colour8) {
     output *= 0.5;
   }

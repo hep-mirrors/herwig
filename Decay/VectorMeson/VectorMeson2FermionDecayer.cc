@@ -257,12 +257,12 @@ double VectorMeson2FermionDecayer::me2(bool vertex, const int,
   unsigned int iferm(0),ianti(1);
   if(_outgoingf[imode()]!=decay[iferm]->id()){iferm=1;ianti=0;}
   // construct the spin information objects for the  decay products
-  vector<LorentzSpinor> wave;
-  vector<LorentzSpinorBar> wavebar;
+  vector<LorentzSpinor<SqrtEnergy> > wave;
+  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
   SpinorBarWaveFunction(wavebar,decay[iferm],outgoing,true,vertex);
   SpinorWaveFunction(   wave   ,decay[ianti],outgoing,true,vertex);
   // prefactor
-  double pre(_coupling[imode()]/inpart.mass());
+  InvEnergy pre(_coupling[imode()]/inpart.mass());
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   // now compute the currents
@@ -274,8 +274,8 @@ double VectorMeson2FermionDecayer::me2(bool vertex, const int,
 	  temp = pre*wave[ix].vectorCurrent(wavebar[iy]);
 	  for(unsigned int iz=0;iz<3;++iz)
 	    {
-	      if(iferm>ianti){newME(iz,ix,iy)=invec[iz]*temp;}
-	      else           {newME(iz,iy,ix)=invec[iz]*temp;}
+	      if(iferm>ianti){newME(iz,ix,iy)=invec[iz].dot(temp);}
+	      else           {newME(iz,iy,ix)=invec[iz].dot(temp);}
 	    }
 	}
     }

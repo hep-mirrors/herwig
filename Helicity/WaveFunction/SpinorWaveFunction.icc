@@ -16,19 +16,19 @@ using namespace ThePEG;
 // use a 5-momentum and specify all components (specifiy Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum &p,
 					      const tcPDPtr & part,
-					      Complex s1, Complex s2,
-					      Complex s3, Complex s4, DiracRep dirac) 
+					      complex<double> s1, complex<double> s2,
+					      complex<double> s3, complex<double> s4, DiracRep dirac) 
 {
   direction(intermediate);
   setMomentum(p);
   checkParticle(part);
-  _wf = LorentzSpinor(s1,s2,s3,s4,dirac);
+  _wf = LorentzSpinor<double>(s1,s2,s3,s4,dirac);
 }	
 
 // use a 5-momentum and a LorentzSpinor
 inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
 					      const tcPDPtr & part,
-					      const LorentzSpinor & inspin,
+					      const LorentzSpinor<double> & inspin,
 					      Direction dir)
 {
   direction(dir);
@@ -36,11 +36,25 @@ inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
   checkParticle(part); 
   _wf=inspin;
 }
+inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
+					      const tcPDPtr & part,
+					      const LorentzSpinor<SqrtEnergy> & inspin,
+					      DummyType,
+					      Direction dir)
+{
+  direction(dir);
+  setMomentum(p);
+  checkParticle(part); 
+  _wf = LorentzSpinor<double>(inspin.Type(), inspin.Rep());
+  for (unsigned int i=0; i<4; ++i)
+    _wf[i]=inspin[i]*UnitRemoval::InvSqrtE;
+}
 
 // use a 5-momentum (specify Dirac representation)
 inline SpinorWaveFunction::SpinorWaveFunction(const Lorentz5Momentum & p,
 					      const tcPDPtr & part,unsigned int ihel,
-					      Direction dir, DiracRep dirac) 
+					      Direction dir, 
+					      DiracRep dirac) 
 {
   direction(dir);
   setMomentum(p);
@@ -73,7 +87,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify Dirac representation)
-inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin, const tcPDPtr & part,
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzMomentum pin, const tcPDPtr & part,
 					      unsigned int ihel, Direction dir,
 					      DiracRep dirac)
 {
@@ -95,7 +109,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy mm, const tcPDPtr & part,
 }
 
 // set 4 momentum and mass (specify Dirac representation)
-inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,Energy mm,
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part, unsigned int ihel,
 					      Direction dir, DiracRep dirac)
 {
@@ -142,7 +156,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum (specify Dirac representation)
-inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin, const tcPDPtr & part,
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzMomentum pin, const tcPDPtr & part,
 					      Direction dir, DiracRep dirac) 
 {
   direction(dir);
@@ -162,7 +176,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(Energy mm,const tcPDPtr & part,
 }
 
 // set 4 momentum and mass
-inline SpinorWaveFunction::SpinorWaveFunction(LorentzVector pin,Energy mm,
+inline SpinorWaveFunction::SpinorWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part, Direction dir, 
 					      DiracRep dirac) 
 {
@@ -184,20 +198,20 @@ inline SpinorWaveFunction::SpinorWaveFunction(DiracRep dirac)
 inline SpinorWaveFunction::~SpinorWaveFunction(){;}
 
 // subscript operator
-inline Complex SpinorWaveFunction::operator ()(int i) const
+inline complex<double> SpinorWaveFunction::operator ()(int i) const
 {
   if(i<0 || i>3)
     {
       throw ThePEG::Helicity::HelicityConsistencyError() 
 	<< "SpinorWaveFunction requested for invalid index" << Exception::abortnow;
-      return 0.;
+      return complex<double>();
     }
   return _wf[i];
 }
 // Set components by index.
-inline Complex & SpinorWaveFunction::operator () (int i)
+inline complex<double> & SpinorWaveFunction::operator () (int i)
 {
-  static Complex dummy;
+  static complex<double> dummy;
   if(i>=0 &&i<=3)
     {return _wf(i);}
   else
@@ -220,21 +234,22 @@ inline SpinorWaveFunction & SpinorWaveFunction::operator = (const SpinorWaveFunc
 }
 
 // return the wavefunction as a LorentzSpinor
-inline LorentzSpinor const & SpinorWaveFunction::wave() const {
-  return _wf;
+inline LorentzSpinor<double> SpinorWaveFunction::wave() const{return _wf;}
+inline LorentzSpinor<SqrtEnergy> SpinorWaveFunction::dimensionedWave() const {
+  return dimensionedWf();
 }
 
 // Get components
-inline Complex SpinorWaveFunction::s1() const {return _wf.s1();}
-inline Complex SpinorWaveFunction::s2() const {return _wf.s2();}
-inline Complex SpinorWaveFunction::s3() const {return _wf.s3();}
-inline Complex SpinorWaveFunction::s4() const {return _wf.s4();}
+inline complex<double> SpinorWaveFunction::s1() const {return _wf.s1();}
+inline complex<double> SpinorWaveFunction::s2() const {return _wf.s2();}
+inline complex<double> SpinorWaveFunction::s3() const {return _wf.s3();}
+inline complex<double> SpinorWaveFunction::s4() const {return _wf.s4();}
 
 // Set components
-inline void SpinorWaveFunction::setS1(Complex in){_wf.setS1(in);}
-inline void SpinorWaveFunction::setS2(Complex in){_wf.setS2(in);}
-inline void SpinorWaveFunction::setS3(Complex in){_wf.setS3(in);}
-inline void SpinorWaveFunction::setS4(Complex in){_wf.setS4(in);}
+inline void SpinorWaveFunction::setS1(complex<double> in){_wf.setS1(in);}
+inline void SpinorWaveFunction::setS2(complex<double> in){_wf.setS2(in);}
+inline void SpinorWaveFunction::setS3(complex<double> in){_wf.setS3(in);}
+inline void SpinorWaveFunction::setS4(complex<double> in){_wf.setS4(in);}
 
 
 // reset functions
@@ -278,7 +293,7 @@ inline void SpinorWaveFunction::reset(const tcPDPtr & part)
 
 // zero the wavefunction (set specify Dirac representation)
 inline void SpinorWaveFunction::zeroWaveFunction(DiracRep dirac)
-{_wf=LorentzSpinor(dirac);}
+{_wf=LorentzSpinor<double>(dirac);}
 
 // check the particles
 inline void SpinorWaveFunction::checkParticle(const tcPDPtr & in)
@@ -293,7 +308,7 @@ inline void SpinorWaveFunction::checkParticle(const tcPDPtr & in)
 }
 
 // special setup constructor
-inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor>& wave, tPPtr part,
+inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor<SqrtEnergy> >& wave, tPPtr part,
 					      Direction dir,bool time, bool vertex,
 					      DiracRep dirac)
 {
@@ -305,7 +320,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor>& wave, tPPtr
 }
 
 // special setup constructor
-inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor>& wave,
+inline SpinorWaveFunction::SpinorWaveFunction(vector<LorentzSpinor<SqrtEnergy> >& wave,
 					      RhoDMatrix& rho,
 					      tPPtr part,Direction dir,bool time,
 					      bool vertex,DiracRep dirac)
@@ -345,7 +360,7 @@ inline SpinorWaveFunction::SpinorWaveFunction(vector<SpinorWaveFunction>& wave,
 }
 
 // construct the spininfo object
-inline void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,
+inline void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor<SqrtEnergy> >& wave,
 						  tFermionSpinPtr spin,bool vertex)
 {
   wave.resize(2);
@@ -354,12 +369,12 @@ inline void SpinorWaveFunction::constructSpinInfo(vector<LorentzSpinor>& wave,
       // calculate the wavefunction for the first helicity
       reset(ix);
       // add to output array
-      wave[ix] = _wf;
+      wave[ix] = dimensionedWf();
       // setup the spininfo object
       if(vertex)
 	{
-	  if(direction()==outgoing){spin->setBasisState(ix,_wf);}
-	  else{spin->setDecayState(ix,_wf);}
+	  if(direction()==outgoing){spin->setBasisState(ix,dimensionedWf());}
+	  else{spin->setDecayState(ix,dimensionedWf());}
 	}
     }
 }
@@ -378,8 +393,8 @@ inline void SpinorWaveFunction::constructSpinInfo(vector<SpinorWaveFunction>& wa
       // setup the spininfo object
       if(vertex)
 	{
-	  if(direction()==outgoing){spin->setBasisState(ix,_wf);}
-	  else{spin->setDecayState(ix,_wf);}
+	  if(direction()==outgoing){spin->setBasisState(ix,dimensionedWf());}
+	  else{spin->setDecayState(ix,dimensionedWf());}
 	}
     }
 }

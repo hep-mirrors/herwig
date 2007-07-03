@@ -51,7 +51,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum
-inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
+inline ScalarWaveFunction::ScalarWaveFunction(LorentzMomentum pin,
 					      const tcPDPtr & part, Complex wave,
 					      Direction dir) {
   direction(dir);
@@ -71,7 +71,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
 }
 
 // set 4 momentum and mass
-inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
+inline ScalarWaveFunction::ScalarWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part, Complex wave,
 					      Direction dir) {
   direction(dir);
@@ -112,7 +112,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy px, Energy py,
 }
 
 // set 4-momentum 
-inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,
+inline ScalarWaveFunction::ScalarWaveFunction(LorentzMomentum pin,
 					      const tcPDPtr & part,Direction dir) {
   direction(dir);
   setMomentum(pin);
@@ -130,7 +130,7 @@ inline ScalarWaveFunction::ScalarWaveFunction(Energy mm,
 }
 
 // set 4 momentum and mass
-inline ScalarWaveFunction::ScalarWaveFunction(LorentzVector pin,Energy mm,
+inline ScalarWaveFunction::ScalarWaveFunction(LorentzMomentum pin,Energy mm,
 					      const tcPDPtr & part,Direction dir) {
   direction(dir);
   setMomentum(pin,mm);

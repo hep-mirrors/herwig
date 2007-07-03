@@ -87,12 +87,12 @@ double MEee2Z::me2() const {
   // add the Breit-Wigner factors
   Energy width=mePartonData()[2]->width();
   Energy mass =mePartonData()[2]->mass();
-  double fact = width*mass/(sqr(sHat()-mass*mass)+sqr(mass*width));
-  return aver*fact;
+  InvEnergy2 fact = width*mass/(sqr(sHat()-mass*mass)+sqr(mass*width));
+  return aver*fact*sHat();
 }
 
 CrossSection MEee2Z::dSigHatDR() const {
-  return me2()*jacobian()/sHat();
+  return (me2()*jacobian()/sHat())*sqr(hbarc);
 }
 
 unsigned int MEee2Z::orderInAlphaS() const {

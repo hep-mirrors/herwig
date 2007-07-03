@@ -72,16 +72,16 @@ PDVector LeptonNeutrinoCurrent::particles(int icharge, unsigned int imode,
 }
 
 // hadronic current   
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 LeptonNeutrinoCurrent::current(bool vertex, const int, const int,
 			       Energy & scale,const ParticleVector & outpart) const
 {
   Lorentz5Momentum q(outpart[0]->momentum()+outpart[1]->momentum());q.rescaleMass();
   scale=q.mass();
   // storage for the currents
-  vector<LorentzPolarizationVector> temp(4);
-  vector<LorentzSpinor> wave;
-  vector<LorentzSpinorBar> wavebar;
+  vector<LorentzPolarizationVectorE> temp(4);
+  vector<LorentzSpinor<SqrtEnergy> > wave;
+  vector<LorentzSpinorBar<SqrtEnergy> > wavebar;
   // construct the spin information objects for the  decay products and calculate
   // their wavefunctions
   if(outpart[0]->id()>0)
