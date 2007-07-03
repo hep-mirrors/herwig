@@ -42,8 +42,6 @@ inline void SMFFPVertex::doinit() throw(InitException) {
   _q2last=-1.*GeV2;
   orderInGem(1);
   orderInGs(0);
-  orderInGem(1);
-  orderInGs(0);
   FFVVertex::doinit();
 }
 

@@ -59,8 +59,9 @@ namespace Herwig {
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2);
 
     /**
-     * Again, as the name implies, this is an isotropic four-body decay.
-     * The return value indicates success or failure.
+     * As the name implies, this takes the momentum p0 and does a flat three
+     * body decay into p1..p3. The argument fcn is used to add additional
+     * weights. If it is not used, the default is just flat in phasespace.
      * The return value indicates success or failure.
      */
     static bool threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
@@ -69,8 +70,7 @@ namespace Herwig {
 
 
     /**
-     * Again as the name implies, this is an isotropic five-body decay.
-     * The return value indicates success or failure.
+     * Again as the name implies, this is an isotropic four-body decay.
      * The return value indicates success or failure.
      */
     static bool fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
