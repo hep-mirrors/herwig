@@ -212,13 +212,13 @@ private:
    * The integrand for the smeared distribution
    * @param kp The integration variable
    */
-  inline double integrandPy(Energy kp);
+  inline InvEnergy integrandPy(Energy kp);
 
   /**
    *  Fermi motion function
    * @param kp The scale
    */
-  inline double fermiFunction(Energy kp);
+  inline InvEnergy fermiFunction(Energy kp);
   //@}
 
 private:
@@ -353,17 +353,17 @@ private:
   /**
    *  Interpolator for the \f$s_{22}\f$ function
    */
-  InterpolatorPtr _s22inter;
+  Interpolator<double,double>::Ptr _s22inter;
 
   /**
    *  Interpolator for the \f$s_{27}\f$ function
    */
-  InterpolatorPtr _s27inter;
+  Interpolator<double,double>::Ptr _s27inter;
 
   /**
    *  Interpolator for the spectrum
    */
-  InterpolatorPtr _pmHinter;
+  Interpolator<InvEnergy,Energy>::Ptr _pmHinter;
 
   /**
    *  Values of \f$m_H\f$ for the interpolation of the spectrum
@@ -495,6 +495,8 @@ struct KaganIntegrand {
    * Get the function value
    */
   inline double operator ()(double argument) const;
+  typedef double ValType;
+  typedef double ArgType;
 
   /**
    *  A pointer to the form factor to supply the integrand.

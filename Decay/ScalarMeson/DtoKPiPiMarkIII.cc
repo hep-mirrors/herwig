@@ -43,8 +43,8 @@ DtoKPiPiMarkIII::DtoKPiPiMarkIII() {
   _mKstarm = 0.8921*GeV; _wKstarm = 0.0511*GeV;
   _mKstar0 = 0.8695*GeV; _wKstar0 = 0.0502*GeV;
   // radii of the mesons
-  _rrho   = 5.*fermi/hbarc; 
-  _rKstar = 2.*fermi/hbarc;
+  _rrho   = 5.*mm*1e-12/hbarc; 
+  _rKstar = 2.*mm*1e-12/hbarc;
 }
 
 
@@ -54,9 +54,10 @@ void DtoKPiPiMarkIII::persistentOutput(PersistentOStream & os) const {
      << _phi2rho << _a2Kstar << _phi2Kstar << _a2NR << _phi2NR << _c2rho << _c2Kstar 
      << _c2NR << _a3rho << _phi3rho << _a3Kstar << _phi3Kstar << _a3NR << _phi3NR 
      << _c3rho << _c3Kstar << _c3NR << _a4Kstar << _phi4Kstar << _a4NR << _phi4NR 
-     << _c4Kstar << _c4NR << _localparameters << _mrhop << _wrhop << _mrho0 << _wrho0 
-     << _mKstarm << _wKstarm << _mKstar0 << _wKstar0 << _rrho << _rKstar 
-     << _maxwgt << _weights;
+     << _c4Kstar << _c4NR << _localparameters << ounit(_mrhop,GeV) << ounit(_wrhop,GeV) 
+     << ounit(_mrho0,GeV) << ounit(_wrho0,GeV) << ounit(_mKstarm,GeV) 
+     << ounit(_wKstarm,GeV) << ounit(_mKstar0,GeV) << ounit(_wKstar0,GeV) 
+     << ounit(_rrho,1./GeV) << ounit(_rKstar,1./GeV) << _maxwgt << _weights;
 }
 
 void DtoKPiPiMarkIII::persistentInput(PersistentIStream & is, int) {
@@ -65,9 +66,10 @@ void DtoKPiPiMarkIII::persistentInput(PersistentIStream & is, int) {
      >> _phi2rho >> _a2Kstar >> _phi2Kstar >> _a2NR >> _phi2NR >> _c2rho >> _c2Kstar 
      >> _c2NR >> _a3rho >> _phi3rho >> _a3Kstar >> _phi3Kstar >> _a3NR >> _phi3NR 
      >> _c3rho >> _c3Kstar >> _c3NR >> _a4Kstar >> _phi4Kstar >> _a4NR >> _phi4NR 
-     >> _c4Kstar >> _c4NR >> _localparameters >> _mrhop >> _wrhop >> _mrho0 >> _wrho0 
-     >> _mKstarm >> _wKstarm >> _mKstar0 >> _wKstar0 >> _rrho >> _rKstar
-     >> _maxwgt >> _weights;
+     >> _c4Kstar >> _c4NR >> _localparameters >> iunit(_mrhop,GeV) >> iunit(_wrhop,GeV) 
+     >> iunit(_mrho0,GeV) >> iunit(_wrho0,GeV) >> iunit(_mKstarm,GeV) 
+     >> iunit(_wKstarm,GeV) >> iunit(_mKstar0,GeV) >> iunit(_wKstar0,GeV) 
+     >> iunit(_rrho,1./GeV) >> iunit(_rKstar,1./GeV) >> _maxwgt >> _weights;
 }
 
 ClassDescription<DtoKPiPiMarkIII> DtoKPiPiMarkIII::initDtoKPiPiMarkIII;
@@ -294,13 +296,13 @@ void DtoKPiPiMarkIII::Init() {
   static Parameter<DtoKPiPiMarkIII,InvEnergy> interfaceRhoRadius
     ("RhoRadius",
      "The radius of the rho for the Blatt-Weisskopf factor",
-     &DtoKPiPiMarkIII::_rrho, fermi/hbarc, 5.0*fermi/hbarc, 0.0*fermi/hbarc, 10.0*fermi/hbarc,
+     &DtoKPiPiMarkIII::_rrho, mm*1e-12/hbarc, 5.0*mm*1e-12/hbarc, 0.0*mm*1e-12/hbarc, 10.0*mm*1e-12/hbarc,
      true, false, Interface::limited);
 
   static Parameter<DtoKPiPiMarkIII,InvEnergy> interfaceKstarRadius
     ("KstarRadius",
      "The radius of the K* for the Blatt-Weisskopf factor",
-     &DtoKPiPiMarkIII::_rKstar, fermi/hbarc, 2.0*fermi/hbarc, 0.0*fermi/hbarc, 10.0*fermi/hbarc,
+     &DtoKPiPiMarkIII::_rKstar, mm*1e-12/hbarc, 2.0*mm*1e-12/hbarc, 0.0*mm*1e-12/hbarc, 10.0*mm*1e-12/hbarc,
      true, false, Interface::limited);
 
   static ParVector<DtoKPiPiMarkIII,double> interfaceMaximumWeights
@@ -318,7 +320,7 @@ void DtoKPiPiMarkIII::Init() {
 
 void DtoKPiPiMarkIII::doinit() throw(InitException) {
   DecayIntegrator::doinit();
-  double fact = pi/180.;
+  double fact = Constants::pi/180.;
   // amplitudes for D0 -> K- pi+ pi0
   _c1rho    = _a1rho   *Complex(cos(_phi1rho   *fact),sin(_phi1rho   *fact));
   _c1Kstarm = _a1Kstarm*Complex(cos(_phi1Kstarm*fact),sin(_phi1Kstarm*fact));

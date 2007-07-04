@@ -14,7 +14,7 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * The documentation of the DtoKPiPiCLEO class implements the Daltiz plot fits
+ * The documentation of the DtoKPiPiCLEO class implements the Dalitz plot fits
  * of the CLEO collaboration for \f$D^0\to\bar{K}^0\pi^+\pi^-\f$,
  *  Phys. Rev. Lett. 89 (2002) 251802,
  * and \f$D^0\to K^-\pi^+\pi^0\f$, Phys. Rev. D63 (2001) 092001.

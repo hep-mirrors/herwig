@@ -46,27 +46,35 @@ DtoKPiPiCabibboFOCUS::DtoKPiPiCabibboFOCUS() {
 }
 
 void DtoKPiPiCabibboFOCUS::persistentOutput(PersistentOStream & os) const {
-  os << _localparameters << _mK892 << _wK892 << _mK1410 << _wK1410 << _mK14300 
-     << _wK14300 << _mK14302 << _wK14302 << _mrho770 << _wrho770 << _mf980 
-     << _wf980 << _mrho1450 << _wrho1450 << _aDrho770 << _phiDrho770 
-     << _aDK892 << _phiDK892 << _aDf980 << _phiDf980 << _aDK1430 << _phiDK1430 
-     << _cDrho770 << _cDK892 << _cDf980 << _cDK1430 << _aDsNR << _phiDsNR 
+  os << _localparameters << ounit(_mK892,GeV) << ounit(_wK892,GeV) 
+     << ounit(_mK1410,GeV) << ounit(_wK1410,GeV) << ounit(_mK14300,GeV) 
+     << ounit(_wK14300,GeV) << ounit(_mK14302,GeV) << ounit(_wK14302,GeV) 
+     << ounit(_mrho770,GeV) << ounit(_wrho770,GeV) << ounit(_mf980,GeV) 
+     << ounit(_wf980,GeV) << ounit(_mrho1450,GeV) << ounit(_wrho1450,GeV) 
+     << _aDrho770 << _phiDrho770 << _aDK892 << _phiDK892 << ounit(_aDf980,GeV2) 
+     << _phiDf980 << ounit(_aDK1430,1./GeV2) << _phiDK1430 << _cDrho770 << _cDK892 
+     << ounit(_cDf980,GeV2) << ounit(_cDK1430,1./GeV2) << _aDsNR << _phiDsNR 
      << _aDsrho770 << _phiDsrho770 << _aDsK892 << _phiDsK892 << _aDsK1410 
-     << _phiDsK1410 << _aDsK1430 << _phiDsK1430 << _aDsrho1450 << _phiDsrho1450 
-     << _cDsNR << _cDsrho770 << _cDsK892 << _cDsK1410 << _cDsK1430 
-     << _cDsrho1450 << _maxweight << _weights << _rD0 << _rres;
+     << _phiDsK1410 << ounit(_aDsK1430,GeV2) << _phiDsK1430 << _aDsrho1450 
+     << _phiDsrho1450 << _cDsNR << _cDsrho770 << _cDsK892 << _cDsK1410 
+     << ounit(_cDsK1430,GeV2) << _cDsrho1450 << _maxweight << _weights 
+     << ounit(_rD0,1./GeV) << ounit(_rres,1./GeV);
 }
 
 void DtoKPiPiCabibboFOCUS::persistentInput(PersistentIStream & is, int) {
-  is >> _localparameters >> _mK892 >> _wK892 >> _mK1410 >> _wK1410 >> _mK14300 
-     >> _wK14300 >> _mK14302 >> _wK14302 >> _mrho770 >> _wrho770 >> _mf980 
-     >> _wf980 >> _mrho1450 >> _wrho1450 >> _aDrho770 >> _phiDrho770 
-     >> _aDK892 >> _phiDK892 >> _aDf980 >> _phiDf980 >> _aDK1430 >> _phiDK1430 
-     >> _cDrho770 >> _cDK892 >> _cDf980 >> _cDK1430 >> _aDsNR >> _phiDsNR 
+  is >> _localparameters >> iunit(_mK892,GeV) >> iunit(_wK892,GeV) 
+     >> iunit(_mK1410,GeV) >> iunit(_wK1410,GeV) >> iunit(_mK14300,GeV) 
+     >> iunit(_wK14300,GeV) >> iunit(_mK14302,GeV) >> iunit(_wK14302,GeV) 
+     >> iunit(_mrho770,GeV) >> iunit(_wrho770,GeV) >> iunit(_mf980,GeV) 
+     >> iunit(_wf980,GeV) >> iunit(_mrho1450,GeV) >> iunit(_wrho1450,GeV) 
+     >> _aDrho770 >> _phiDrho770 >> _aDK892 >> _phiDK892 >> iunit(_aDf980,GeV2) 
+     >> _phiDf980 >> iunit(_aDK1430,1./GeV2) >> _phiDK1430 >> _cDrho770 >> _cDK892 
+     >> iunit(_cDf980,GeV2) >> iunit(_cDK1430,1./GeV2) >> _aDsNR >> _phiDsNR 
      >> _aDsrho770 >> _phiDsrho770 >> _aDsK892 >> _phiDsK892 >> _aDsK1410 
-     >> _phiDsK1410 >> _aDsK1430 >> _phiDsK1430 >> _aDsrho1450 >> _phiDsrho1450 
-     >> _cDsNR >> _cDsrho770 >> _cDsK892 >> _cDsK1410 >> _cDsK1430 
-     >> _cDsrho1450 >> _maxweight >> _weights >> _rD0 >> _rres;
+     >> _phiDsK1410 >> iunit(_aDsK1430,GeV2) >> _phiDsK1430 >> _aDsrho1450 
+     >> _phiDsrho1450 >> _cDsNR >> _cDsrho770 >> _cDsK892 >> _cDsK1410 
+     >> iunit(_cDsK1430,GeV2) >> _cDsrho1450 >> _maxweight >> _weights 
+     >> iunit(_rD0,1./GeV) >> iunit(_rres,1./GeV);
 }
 
 ClassDescription<DtoKPiPiCabibboFOCUS> DtoKPiPiCabibboFOCUS::initDtoKPiPiCabibboFOCUS;
@@ -347,7 +355,7 @@ void DtoKPiPiCabibboFOCUS::Init() {
 void DtoKPiPiCabibboFOCUS::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // complex amplitudes for D+ -> K+pi-pi+
-  double fact = pi/180.;
+  double fact = Constants::pi/180.;
   _cDrho770   = _aDrho770*Complex(cos(fact*_phiDrho770),sin(fact*_phiDrho770));
   _cDK892     = _aDK892  *Complex(cos(fact*_phiDK892  ),sin(fact*_phiDK892  ));
   _cDf980     = _aDf980  *Complex(cos(fact*_phiDf980  ),sin(fact*_phiDf980  ));
@@ -545,8 +553,8 @@ double DtoKPiPiCabibboFOCUS::me2(bool vertex, const int,const Particle & inpart,
     amp = 
       _cDrho770           *amplitude(1,mD,mB,mC,mA,pres1.mass(),_mrho770,_wrho770,E1,ct1)
       +_cDK892 *0.975     *amplitude(1,mD,mA,mB,mC,pres2.mass(),_mK892  ,_wK892  ,E2,ct2)
-      +_cDf980 *0.124/GeV2*amplitude(0,mD,mB,mC,mA,pres1.mass(),_mf980  ,_wf980  ,E1,ct1)
-      +_cDK1430*32.3 *GeV2*amplitude(2,mD,mA,mB,mC,pres2.mass(),_mK14302,_wK14302,E2,ct2)
+      +Complex(_cDf980 *0.124/GeV2)*amplitude(0,mD,mB,mC,mA,pres1.mass(),_mf980  ,_wf980  ,E1,ct1)
+      +Complex(_cDK1430*32.3 *GeV2)*amplitude(2,mD,mA,mB,mC,pres2.mass(),_mK14302,_wK14302,E2,ct2)
       ;
   }
   else {
@@ -555,7 +563,7 @@ double DtoKPiPiCabibboFOCUS::me2(bool vertex, const int,const Particle & inpart,
       +_cDsrho770      *amplitude(1,mD,mB,mC,mA,pres1.mass(),_mrho770 ,_wrho770 ,E1,ct1)
       +_cDsK892  *0.981*amplitude(1,mD,mA,mB,mC,pres2.mass(),_mK892   ,_wK892   ,E2,ct2)
       +_cDsK1410 *3.03 *amplitude(1,mD,mA,mB,mC,pres2.mass(),_mK1410  ,_wK1410  ,E2,ct2)
-      +_cDsK1430*0.467  /GeV2*amplitude(0,mD,mA,mB,mC,pres2.mass(),_mK14300 ,_wK14300 ,E2,ct2)
+    +Complex(_cDsK1430*0.467  /GeV2)*amplitude(0,mD,mA,mB,mC,pres2.mass(),_mK14300 ,_wK14300 ,E2,ct2)
       +_cDsrho1450*4.59*amplitude(1,mD,mB,mC,mA,pres1.mass(),_mrho1450,_wrho1450,E1,ct1);
   }
   // now compute the matrix element

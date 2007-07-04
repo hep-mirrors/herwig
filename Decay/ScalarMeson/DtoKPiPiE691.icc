@@ -46,7 +46,7 @@ inline Complex DtoKPiPiE691::amplitude(int ispin, double costheta,Energy mAB,
 		      << Exception::runerror;
 
   }
-  Complex bw = sqrt(0.5*wres*GeV/pi)/(mAB-mres-Complex(0.,0.5*wres));
+  Complex bw = sqrt(0.5*wres/GeV/Constants::pi)*GeV/(mAB-mres-complex<Energy>(0.*MeV,0.5*wres));
   return s*bw;
 }
 }

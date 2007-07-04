@@ -49,7 +49,7 @@ DtoKPiPiE691::DtoKPiPiE691() {
 void DtoKPiPiE691::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // complex amplitudes calculated from magnitudes and phases
-  double fact = pi/180.;
+  double fact = Constants::pi/180.;
   // D+ -> K-pi+pi+
   _c1NR   = _a1NR   *Complex(cos(_phi1NR   *fact),sin(_phi1NR   *fact)); 
   _c1K892 = _a1K892 *Complex(cos(_phi1K892 *fact),sin(_phi1K892 *fact));
@@ -228,9 +228,11 @@ void DtoKPiPiE691::persistentOutput(PersistentOStream & os) const {
      << _a2K892m << _phi2K892m << _a2rho << _phi2rho << _a3NR << _phi3NR 
      << _a3K892 << _phi3K892 << _a3rho << _phi3rho << _c1NR << _c1K892 << _c1K1430 
      << _c1K1680 << _c2NR << _c2K8920 << _c2K892m << _c2rho << _c3NR << _c3K892 
-     << _c3rho << _localparameters << _mK8920 << _wK8920 << _mK892m << _wK892m 
-     << _mK1680 << _wK1680 << _mK1430 << _wK1430 << _mrho0 << _wrho0 << _mrhop 
-     << _wrhop << _maxwgt << _weights;
+     << _c3rho << _localparameters << ounit(_mK8920,GeV) << ounit(_wK8920,GeV) 
+     << ounit(_mK892m,GeV) << ounit(_wK892m,GeV) << ounit(_mK1680,GeV) 
+     << ounit(_wK1680,GeV) << ounit(_mK1430,GeV) << ounit(_wK1430,GeV) 
+     << ounit(_mrho0 ,GeV) << ounit(_wrho0 ,GeV) << ounit(_mrhop ,GeV) 
+     << ounit(_wrhop ,GeV) << _maxwgt << _weights;
 }
 
 void DtoKPiPiE691::persistentInput(PersistentIStream & is, int) {
@@ -239,9 +241,11 @@ void DtoKPiPiE691::persistentInput(PersistentIStream & is, int) {
      >> _a2K892m >> _phi2K892m >> _a2rho >> _phi2rho >> _a3NR >> _phi3NR 
      >> _a3K892 >> _phi3K892 >> _a3rho >> _phi3rho >> _c1NR >> _c1K892 >> _c1K1430 
      >> _c1K1680 >> _c2NR >> _c2K8920 >> _c2K892m >> _c2rho >> _c3NR >> _c3K892 
-     >> _c3rho >> _localparameters >> _mK8920 >> _wK8920 >> _mK892m >> _wK892m 
-     >> _mK1680 >> _wK1680 >> _mK1430 >> _wK1430 >> _mrho0 >> _wrho0 >> _mrhop 
-     >> _wrhop >> _maxwgt >> _weights;
+     >> _c3rho >> _localparameters >> iunit(_mK8920,GeV) >> iunit(_wK8920,GeV) 
+     >> iunit(_mK892m,GeV) >> iunit(_wK892m,GeV) >> iunit(_mK1680,GeV) 
+     >> iunit(_wK1680,GeV) >> iunit(_mK1430,GeV) >> iunit(_wK1430,GeV) 
+     >> iunit(_mrho0 ,GeV) >> iunit(_wrho0 ,GeV) >> iunit(_mrhop ,GeV) 
+     >> iunit(_wrhop ,GeV) >> _maxwgt >> _weights;
 }
 
 ClassDescription<DtoKPiPiE691> DtoKPiPiE691::initDtoKPiPiE691;

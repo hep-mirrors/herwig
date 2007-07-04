@@ -269,7 +269,7 @@ double VectorMesonPScalarFermionsDecayer::me2(bool vertex, const int,
   if(_includeVMD[imode()]>0) {
     Energy2 mrho2(_VMDmass[imode()]*_VMDmass[imode()]);
     Energy2 mwrho(_VMDmass[imode()]*_VMDwidth[imode()]);
-    pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
+    pre = pre*(-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
   }
   // calculate the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
@@ -352,7 +352,7 @@ threeBodydGammads(int imodeb, const Energy2 q2, const Energy2 mff2,
   if(_includeVMD[imodeb]>0) {
     Energy2 mrho2(_VMDmass[imodeb]*_VMDmass[imodeb]),
       mwrho(_VMDmass[imodeb]*_VMDwidth[imodeb]);
-    pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
+    pre = pre*(-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
   }
   InvEnergy6 factor(real(pre*conj(pre)));
   // compute the pieces from the integration limits

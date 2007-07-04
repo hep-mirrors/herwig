@@ -334,9 +334,16 @@ void ISGWFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int i
 // form-factor for scalar to tensor
 void ISGWFormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0,
 					    int id1, Energy mY, Energy mX,
-					    Complex & h,Complex & k,
-					    Complex & bp,Complex & bm) const {
-  formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);
+					    complex<InvEnergy2> & h,Complex & k,
+					    complex<InvEnergy2> & bp,
+					    complex<InvEnergy2> & bm) const {
+  Complex f1,f2,f3,f4;
+  formFactor(q2,iloc,id0,id1,mY,mX,f1,f2,f3,f4);
+  Energy msum(mX+mY);
+  h = f1/sqr(msum);
+  k = f2;
+  bp = f3/sqr(msum);
+  bm = f4/sqr(msum);
 }
 
 // member which does the work
@@ -446,20 +453,22 @@ void ISGWFormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
   }
   // for tensors
   else if(jspin==2) {
+    Energy msum(mX+mY);
     fn *=betar/sqrt(2.);
     double betaXb2(betaX*betaX/beta2XY);
     // 1 3P2
     if(ispin==0) {
       f1 = 0.5*fn*ms/mtildeY/betaY*(1./mq
-				    -0.5*ms/mtildeX/mum*betaY*betaY/beta2XY)
-	* UnitRemoval::E2;
+				    -0.5*ms/mtildeX/mum*betaY*betaY/beta2XY)*sqr(msum);
       f2 = 2.*fn*ms/betaY;
       f3 =-0.5*fn*ms/mtildeX/mQ/betaY*
 	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2
-	 +0.25*ms*mQ/mtildeY/mum*betaXb2*(1.-0.5*ms*betaXb2/mtildeY))* UnitRemoval::E2;
+	 +0.25*ms*mQ/mtildeY/mum*betaXb2*(1.-0.5*ms*betaXb2/mtildeY))* 
+	sqr(msum);
       f4 = 0.5*fn*ms/mtildeX/mQ/betaY*
  	(1.-0.5*ms*mQ/mup/mtildeY*betaXb2+
- 	 0.25*ms*betaXb2/mq*(mtildeX+mtildeY)/mtildeY*(1.-0.5*ms*betaXb2/mtildeY))* UnitRemoval::E2;
+ 	 0.25*ms*betaXb2/mq*(mtildeX+mtildeY)/mtildeY*(1.-0.5*ms*betaXb2/mtildeY))*
+	sqr(msum);
     }
   }
   else {

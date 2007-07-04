@@ -199,7 +199,8 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   else if(jspin==1) {
     vector<LorentzPolarizationVector> vwave;
     VectorWaveFunction(vwave,decay[0],outgoing,true,false,vertex);
-    Complex A0,A1,A2,A3,V,dot;
+    Complex A0,A1,A2,A3,V;
+    complex<Energy> dot;
     Energy MP(inpart.mass()),MV(decay[0]->mass()),msum(MP+MV),mdiff(MP-MV);
     _form->ScalarVectorFormFactor(q2,iloc,id0,id1,MP,MV,A0,A1,A2,V);
     A3 = 0.5/MV*(msum*A1-mdiff*A2);
@@ -212,23 +213,25 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       hadron.push_back(-ii*msum*A1*vwave[ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       +2.*V/msum*EpsFunction::product(vwave[ix],inpart.momentum(),
-						       decay[0]->momentum()));
+		       +2.*V/msum*Helicity::epsilon(vwave[ix],inpart.momentum(),
+						    decay[0]->momentum()));
     }
   }
   else if(jspin==2) {
-    vector<LorentzTensor> twave;
+    vector<LorentzTensor<double> > twave;
     TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
-    Complex h,k,bp,bm,dot;
+    complex<InvEnergy2> h,bp,bm;
+    complex<double> k;
+    complex<Energy2> dot;
     _form->ScalarTensorFormFactor(q2,iloc,id0,id1,inpart.mass(),decay[0]->mass(),
 				  h,k,bp,bm);
     if(!cc) h*=-1.;
-    LorentzPolarizationVector dotv;
+    LorentzPolarizationVectorE dotv;
     // compute the hadron currents
     for(unsigned int ix=0;ix<5;++ix) {
       dotv = twave[ix]*inpart.momentum();
       dot = dotv*inpart.momentum();
-      hadron.push_back(ii*h*EpsFunction::product(dotv,sum,q)
+      hadron.push_back(ii*h*Helicity::epsilon(dotv,sum,q)
 		       -k*dotv-bp*dot*sum-bm*dot*q);
     }
   }
@@ -264,7 +267,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       // helicities of mesons
       ihel[0]=0;
       ihel[imes+1]=mhel;
-      newME(ihel)= lepton[lhel]*hadron[mhel];
+      newME(ihel)= lepton[lhel].dot(hadron[mhel])*_GF;
     }
   }
   RhoDMatrix temp(PDT::Spin0); temp.average();
@@ -276,7 +279,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   else          ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);
   }
   // return the answer
-  return 0.5*(newME.contract(temp)).real()*_GF*_GF*ckm*UnitRemoval::E4; 
+  return 0.5*(newME.contract(temp)).real()*ckm; 
 }
  
 // output the setup information for the particle database

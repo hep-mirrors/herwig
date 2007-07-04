@@ -169,47 +169,47 @@ private:
   /**
    *  The real part of \f$A\f$
    */
-  vector<double> _reA;
+  vector<InvEnergy2> _reA;
 
   /**
    *  The imaginary part of \f$A\f$
    */
-  vector<double> _imA;
+  vector<InvEnergy2> _imA;
 
   /**
    *  The complex \f$A\f$ coupling
    */
-  vector<Complex> _cA;
+  vector<complex<InvEnergy2> > _cA;
 
   /**
    *  The real part of \f$B\f$
    */
-  vector<double> _reB;
+  vector<InvEnergy2> _reB;
 
   /**
    *  The imaginary part of \f$B\f$
    */
-  vector<double> _imB;
+  vector<InvEnergy2> _imB;
 
   /**
    *  The complex \f$B\f$ coupling
    */
-  vector<Complex> _cB;
+  vector<complex<InvEnergy2> > _cB;
 
   /**
    *  The real part of \f$C\f$
    */
-  vector<double> _reC;
+  vector<InvEnergy2> _reC;
 
   /**
    *  The imaginary part of \f$C\f$
    */
-  vector<double> _imC;
+  vector<InvEnergy2> _imC;
 
   /**
    *  The complex \f$C\f$ coupling
    */
-  vector<Complex> _cC;
+  vector<complex<InvEnergy2> > _cC;
   //@}
 
 };

@@ -425,25 +425,27 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
   Energy2 q2(q*q);
   Complex ii(0.,1.);
   // first VMD option
+  Complex fact;
   if(_option[imode()]==0) {
     Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
     Complex resfact(q2/(_mrho*_mrho-q2-ii*_mrho*pcm*pcm*pcm*_rhoconst/q2));
-    pre*=(1.+1.5*resfact);
+    fact=(1.+1.5*resfact);
   }
   // second VMD option
   else if(_option[imode()]==1) {
     Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
     Complex resfact(q2/(_mrho*_mrho-q2-ii*pcm*pcm*pcm*_rhoconst/q));
-    pre*=(1.+1.5*resfact);
+    fact=(1.+1.5*resfact);
   }
   // analytic omne function
   else if(_option[imode()]==2) {
-    pre*=(1.-_cconst+_cconst*(1.+_aconst*q2)/analyticOmnes(q2));
+    fact=(1.-_cconst+_cconst*(1.+_aconst*q2)/analyticOmnes(q2));
   }
   // experimental omnes function
   else if(_option[imode()]==3) {
-    pre*=(1.-_cconst+_cconst*(1.+_aconst*q2)/experimentalOmnes(q2));
+    fact=(1.-_cconst+_cconst*(1.+_aconst*q2)/experimentalOmnes(q2));
   }
+  pre = pre*fact;
   LorentzPolarizationVector epstemp(pre*Helicity::epsilon(decay[0]->momentum(),
 								       decay[1]->momentum(),
 								       decay[2]->momentum()));
@@ -468,25 +470,27 @@ threeBodyMatrixElement(const int imodeb,const Energy2 ,const  Energy2 s3,const
   Energy q(sqrt(s3));
   Complex ii(0.,1.);
   // first VMD option
+  Complex fact;
   if(_option[imodeb]==0) {
     Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
     Complex resfact(s3/(_mrho*_mrho-s3-ii*_mrho*pcm*pcm*pcm*_rhoconst/s3));
-    pre*=(1.+1.5*resfact);
+    fact=(1.+1.5*resfact);
   }
   // second VMD option
   else if(_option[imodeb]==1) {
     Energy pcm(Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi));
     Complex resfact(s3/(_mrho*_mrho-s3-ii*pcm*pcm*pcm*_rhoconst/q));
-    pre*=(1.+1.5*resfact);
+    fact=(1.+1.5*resfact);
   }
   // analytic omne function
   else if(_option[imodeb]==2) {
-    pre*=(1.-_cconst+_cconst*(1.+_aconst*s3)/analyticOmnes(s3));
+    fact=(1.-_cconst+_cconst*(1.+_aconst*s3)/analyticOmnes(s3));
   }
   // experimental omnes function
   else if(_option[imodeb]==3) {
-    pre*=(1.-_cconst+_cconst*(1.+_aconst*s3)/experimentalOmnes(s3));
+    fact=(1.-_cconst+_cconst*(1.+_aconst*s3)/experimentalOmnes(s3));
   }
+  pre =pre*fact;
   InvEnergy6 factor((pre*conj(pre)).real());
   Energy2 mpi2(_mpi*_mpi);
   return factor*((-mpi2*(-2*mpi2+s1+s2)*(-2*mpi2+s1+s2)+(mpi2-s1)*(mpi2-s2)*s3)/4.);

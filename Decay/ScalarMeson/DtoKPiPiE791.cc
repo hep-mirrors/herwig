@@ -60,10 +60,10 @@ DtoKPiPiE791::DtoKPiPiE791() {
 void DtoKPiPiE791::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // amplitudes for model A
-  double fact = pi/180.;
+  double fact = Constants::pi/180.;
   if(_imodel==1) {
     _cNR     = _aANR    *Complex(cos(_phiANR    *fact),sin(_phiANR    *fact));
-    _ckappa  = 0.;
+    _ckappa  = 0.*GeV2;
     _cK892   = _aAK892  *Complex(cos(_phiAK892  *fact),sin(_phiAK892  *fact));
     _cK14300 = _aAK14300*Complex(cos(_phiAK14300*fact),sin(_phiAK14300*fact));
     _cK14302 = _aAK14302*Complex(cos(_phiAK14302*fact),sin(_phiAK14302*fact));
@@ -74,7 +74,7 @@ void DtoKPiPiE791::doinit() throw(InitException) {
   // amplitudes for model B
   else if(_imodel==2) {
     _cNR     = _aBNR    *Complex(cos(_phiBNR   *fact),sin(_phiBNR   *fact));
-    _ckappa  = 0.;
+    _ckappa  = 0.*GeV2;
     _cK892   = _aBK892  *Complex(cos(_phiBK892  *fact),sin(_phiBK892  *fact));
     _cK14300 = _aBK14300*Complex(cos(_phiBK14300*fact),sin(_phiBK14300*fact));
     _cK14302 = _aBK14302*Complex(cos(_phiBK14302*fact),sin(_phiBK14302*fact));
@@ -256,10 +256,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiAK892, 54., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelAAmplitudeK_01430
+  static Parameter<DtoKPiPiE791,Energy2> interfaceModelAAmplitudeK_01430
     ("ModelAAmplitudeK_01430",
      "Amplitude for the K_0*(1430) component in model A",
-     &DtoKPiPiE791::_aAK14300, 0.58, 0.0, 10.0,
+     &DtoKPiPiE791::_aAK14300, GeV2, 0.58*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelAPhaseK_01430
@@ -268,10 +268,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiAK14300, 54., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelAAmplitudeK_21430
+  static Parameter<DtoKPiPiE791,InvEnergy2> interfaceModelAAmplitudeK_21430
     ("ModelAAmplitudeK_21430",
      "Amplitude for the K_2*(1430) component in model A",
-     &DtoKPiPiE791::_aAK14302, 0.07, 0.0, 10.0,
+     &DtoKPiPiE791::_aAK14302, 1./GeV2, 0.07/GeV2, 0.0/GeV2, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelAPhaseK_21430
@@ -316,10 +316,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiBK892, 0., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelBAmplitudeK_01430
+  static Parameter<DtoKPiPiE791,Energy2> interfaceModelBAmplitudeK_01430
     ("ModelBAmplitudeK_01430",
      "Amplitude for the K_0*(1430) component in model B",
-     &DtoKPiPiE791::_aBK14300, 1.54, 0.0, 10.0,
+     &DtoKPiPiE791::_aBK14300, GeV2, 1.54*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelBPhaseK_01430
@@ -328,10 +328,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiBK14300, 6., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelBAmplitudeK_21430
+  static Parameter<DtoKPiPiE791,InvEnergy2> interfaceModelBAmplitudeK_21430
     ("ModelBAmplitudeK_21430",
      "Amplitude for the K_2*(1430) component in model B",
-     &DtoKPiPiE791::_aBK14302, 0.21, 0.0, 10.0,
+     &DtoKPiPiE791::_aBK14302, 1./GeV2, 0.21/GeV2, 0.0/GeV2, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelBPhaseK_21430
@@ -364,10 +364,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiCNR, -11., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelCAmplitudeKappa
+  static Parameter<DtoKPiPiE791,Energy2> interfaceModelCAmplitudeKappa
     ("ModelCAmplitudeKappa",
      "Amplitude for the kappa component in model C",
-     &DtoKPiPiE791::_aCkappa, 1.97, 0.0, 10.0,
+     &DtoKPiPiE791::_aCkappa, GeV2, 1.97*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelCPhaseKappa
@@ -388,10 +388,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiCK892, 0., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelCAmplitudeK_01430
+  static Parameter<DtoKPiPiE791,Energy2> interfaceModelCAmplitudeK_01430
     ("ModelCAmplitudeK_01430",
      "Amplitude for the K_0*(1430) component in model C",
-     &DtoKPiPiE791::_aCK14300, 1.01, 0.0, 10.0,
+     &DtoKPiPiE791::_aCK14300, GeV2, 1.01*GeV2, 0.0*GeV2, 10.0*GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelCPhaseK_01430
@@ -400,10 +400,10 @@ void DtoKPiPiE791::Init() {
      &DtoKPiPiE791::_phiCK14300, 48., -360.0, 360.0,
      false, false, Interface::limited);
 
-  static Parameter<DtoKPiPiE791,double> interfaceModelCAmplitudeK_21430
+  static Parameter<DtoKPiPiE791,InvEnergy2> interfaceModelCAmplitudeK_21430
     ("ModelCAmplitudeK_21430",
      "Amplitude for the K_2*(1430) component in model C",
-     &DtoKPiPiE791::_aCK14302, 0.20, 0.0, 10.0,
+     &DtoKPiPiE791::_aCK14302, 1./GeV2, 0.20/GeV2, 0.0/GeV2, 10.0/GeV2,
      false, false, Interface::limited);
 
   static Parameter<DtoKPiPiE791,double> interfaceModelCPhaseK_21430
@@ -543,31 +543,41 @@ void DtoKPiPiE791::Init() {
 
 
 void DtoKPiPiE791::persistentOutput(PersistentOStream & os) const {
-  os << _imodel << _aANR << _phiANR << _aAK892 << _phiAK892 << _aAK14300 
-     << _phiAK14300 << _aAK14302 << _phiAK14302 << _aAK1680 << _phiAK1680 
-     << _aBNR << _phiBNR << _aBK892 << _phiBK892 << _aBK14300 << _phiBK14300 
-     << _aBK14302 << _phiBK14302 << _aBK1680 << _phiBK1680 << _aCNR << _phiCNR 
-     << _aCkappa << _phiCkappa << _aCK892 << _phiCK892 << _aCK14300 << _phiCK14300 
-     << _aCK14302 << _phiCK14302 << _aCK1680 << _phiCK1680 << _ckappa << _cNR << _cK892 
-     << _cK14300 << _cK14302 << _cK1680 << _rD0A << _rresA << _rD0B << _rresB
-     << _rD0C << _rresC << _localparameters << _mK1430 << _wK1430
-     << _mkappa << _wkappa << _mK892 << _wK892 << _mK1430A << _wK1430A << _mK1430B
-     << _wK1430B << _mK1430C << _wK1430C << _mK14302 << _wK14302 << _mK1680 << _wK1680
-     << _maxwgt << _weights;
+  os << _imodel << _aANR << _phiANR << _aAK892 << _phiAK892 << ounit(_aAK14300,GeV2) 
+     << _phiAK14300 << ounit(_aAK14302,1./GeV2) << _phiAK14302 << _aAK1680 << _phiAK1680 
+     << _aBNR << _phiBNR << _aBK892 << _phiBK892 << ounit(_aBK14300,GeV2) << _phiBK14300 
+     << ounit(_aBK14302,1./GeV2) << _phiBK14302 << _aBK1680 << _phiBK1680 << _aCNR 
+     << _phiCNR << ounit(_aCkappa,GeV2) << _phiCkappa << _aCK892 << _phiCK892 
+     << ounit(_aCK14300,GeV2) << _phiCK14300 << ounit(_aCK14302,1./GeV2) << _phiCK14302 
+     << _aCK1680 << _phiCK1680 << ounit(_ckappa,GeV2) << _cNR << _cK892 
+     << ounit(_cK14300,GeV2) << ounit(_cK14302,1./GeV2) << _cK1680 << ounit(_rD0A,1./GeV)
+     << ounit(_rresA,1./GeV) << ounit(_rD0B,1./GeV) << ounit(_rresB,1./GeV) 
+     << ounit(_rD0C,1./GeV) << ounit(_rresC,1./GeV) << _localparameters 
+     << ounit(_mK1430,GeV) << ounit(_wK1430,GeV) << ounit(_mkappa,GeV) 
+     << ounit(_wkappa,GeV) << ounit(_mK892 ,GeV) << ounit(_wK892 ,GeV) 
+     << ounit(_mK1430A,GeV) << ounit(_wK1430A,GeV) << ounit(_mK1430B,GeV)
+     << ounit(_wK1430B,GeV) << ounit(_mK1430C,GeV) << ounit(_wK1430C,GeV) 
+     << ounit(_mK14302,GeV) << ounit(_wK14302,GeV) << ounit(_mK1680,GeV) 
+     << ounit(_wK1680,GeV) << _maxwgt << _weights;
 }
 
 void DtoKPiPiE791::persistentInput(PersistentIStream & is, int) {
-  is >> _imodel >> _aANR >> _phiANR >> _aAK892 >> _phiAK892 >> _aAK14300 
-     >> _phiAK14300 >> _aAK14302 >> _phiAK14302 >> _aAK1680 >> _phiAK1680 
-     >> _aBNR >> _phiBNR >> _aBK892 >> _phiBK892 >> _aBK14300 >> _phiBK14300 
-     >> _aBK14302 >> _phiBK14302 >> _aBK1680 >> _phiBK1680 >> _aCNR >> _phiCNR 
-     >> _aCkappa >> _phiCkappa >> _aCK892 >> _phiCK892 >> _aCK14300 >> _phiCK14300 
-     >> _aCK14302 >> _phiCK14302 >> _aCK1680 >> _phiCK1680 >> _ckappa >> _cNR >> _cK892 
-     >> _cK14300 >> _cK14302 >> _cK1680 >> _rD0A >> _rresA >> _rD0B >> _rresB
-     >> _rD0C >> _rresC >> _localparameters >> _mK1430 >> _wK1430
-     >> _mkappa >> _wkappa >> _mK892 >> _wK892 >> _mK1430A >> _wK1430A >> _mK1430B
-     >> _wK1430B >> _mK1430C >> _wK1430C >> _mK14302 >> _wK14302 >> _mK1680 >> _wK1680
-     >> _maxwgt >> _weights;
+  is >> _imodel >> _aANR >> _phiANR >> _aAK892 >> _phiAK892 >> iunit(_aAK14300,GeV2) 
+     >> _phiAK14300 >> iunit(_aAK14302,1./GeV2) >> _phiAK14302 >> _aAK1680 >> _phiAK1680 
+     >> _aBNR >> _phiBNR >> _aBK892 >> _phiBK892 >> iunit(_aBK14300,GeV2) >> _phiBK14300 
+     >> iunit(_aBK14302,1./GeV2) >> _phiBK14302 >> _aBK1680 >> _phiBK1680 >> _aCNR 
+     >> _phiCNR >> iunit(_aCkappa,GeV2) >> _phiCkappa >> _aCK892 >> _phiCK892 
+     >> iunit(_aCK14300,GeV2) >> _phiCK14300 >> iunit(_aCK14302,1./GeV2) >> _phiCK14302 
+     >> _aCK1680 >> _phiCK1680 >> iunit(_ckappa,GeV2) >> _cNR >> _cK892 
+     >> iunit(_cK14300,GeV2) >> iunit(_cK14302,1./GeV2) >> _cK1680 >> iunit(_rD0A,1./GeV)
+     >> iunit(_rresA,1./GeV) >> iunit(_rD0B,1./GeV) >> iunit(_rresB,1./GeV) 
+     >> iunit(_rD0C,1./GeV) >> iunit(_rresC,1./GeV) >> _localparameters 
+     >> iunit(_mK1430,GeV) >> iunit(_wK1430,GeV) >> iunit(_mkappa,GeV) 
+     >> iunit(_wkappa,GeV) >> iunit(_mK892 ,GeV) >> iunit(_wK892 ,GeV) 
+     >> iunit(_mK1430A,GeV) >> iunit(_wK1430A,GeV) >> iunit(_mK1430B,GeV)
+     >> iunit(_wK1430B,GeV) >> iunit(_mK1430C,GeV) >> iunit(_wK1430C,GeV) 
+     >> iunit(_mK14302,GeV) >> iunit(_wK14302,GeV) >> iunit(_mK1680,GeV) 
+     >> iunit(_wK1680,GeV) >> _maxwgt >> _weights;
 }
 
 int DtoKPiPiE791::modeNumber(bool & cc,const DecayMode & dm) const {
@@ -613,7 +623,7 @@ double DtoKPiPiE791::me2(bool vertex, const int ichan,
     Lorentz5Momentum pres=decay[0]->momentum()+decay[1+ix]->momentum();
     pres.rescaleMass();
     mres[ix]=pres.mass();
-    Hep3Vector boost=-pres.boostVector();
+    Boost boost=-pres.boostVector();
     decayAngle(inpart.momentum(),pres,decay[ix+1]->momentum(),ctheta[ix],p2p3[ix]);
   }
   Complex amp(0.);
@@ -648,14 +658,14 @@ double DtoKPiPiE791::me2(bool vertex, const int ichan,
 //       ;
     amp=
       +_cNR    *1.091
-      +_ckappa *0.935/GeV2*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mkappa ,_wkappa )
-      +_ckappa *0.935/GeV2*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mkappa ,_wkappa )
+      +Complex(_ckappa *0.935/GeV2)*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mkappa ,_wkappa )
+      +Complex(_ckappa *0.935/GeV2)*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mkappa ,_wkappa )
       +_cK892             *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK892  ,_wK892  )
       +_cK892             *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK892  ,_wK892  )
-      +_cK14300*0.533/GeV2*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1430 ,_wK1430 )
-      +_cK14300*0.533/GeV2*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1430 ,_wK1430 )
-      +_cK14302*46.88*GeV2*amplitude(2,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK14302,_wK14302)
-      +_cK14302*46.88*GeV2*amplitude(2,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK14302,_wK14302)
+      +Complex(_cK14300*0.533/GeV2)*amplitude(0,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1430 ,_wK1430 )
+      +Complex(_cK14300*0.533/GeV2)*amplitude(0,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1430 ,_wK1430 )
+      +Complex(_cK14302*46.88*GeV2)*amplitude(2,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK14302,_wK14302)
+      +Complex(_cK14302*46.88*GeV2)*amplitude(2,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK14302,_wK14302)
       +_cK1680 *6.366     *amplitude(1,mD,mA,mB,mC,mres[0],ctheta[0],p2p3[0],_mK1680 ,_wK1680)
       +_cK1680 *6.366     *amplitude(1,mD,mA,mC,mB,mres[1],ctheta[1],p2p3[1],_mK1680 ,_wK1680)
       ;

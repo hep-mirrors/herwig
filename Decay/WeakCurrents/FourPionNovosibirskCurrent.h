@@ -559,16 +559,6 @@ private:
    *  The maximum mass when the running width was calculated
    */
   Energy _maxcalc;
-
-  /**
-   *  The maximum mass of the hadronic system
-   */
-  Energy _maxmass;
-
-  /**
-   *  The maximum mass when the running width was calculated
-   */
-  Energy _maxcalc;
 };
 
 }

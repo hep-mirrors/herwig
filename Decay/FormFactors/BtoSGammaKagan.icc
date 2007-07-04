@@ -90,11 +90,11 @@ inline double BtoSGammaKagan::KNLO(double y) {
 					       s27(y)*_c20*(_c70-_c80/3.));
 }
   
-inline double BtoSGammaKagan::integrandPy(Energy kp) {
+inline InvEnergy BtoSGammaKagan::integrandPy(Energy kp) {
   return KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp)*fermiFunction(kp);
 }
 
-inline double BtoSGammaKagan::fermiFunction(Energy kp) {
+inline InvEnergy BtoSGammaKagan::fermiFunction(Energy kp) {
   return exponentialFermiFunction(kp,_fermilambda,_fermia,_ferminorm,_fermilambda1);
 }
 
@@ -106,7 +106,7 @@ inline KaganIntegrand::KaganIntegrand(BtoSGammaKaganPtr in,unsigned int ioptin)
 inline double KaganIntegrand::operator() (double x) const {
   if(_iopt==0)      return _kagan->integrands22(x);
   else if(_iopt==1) return _kagan->integrands27(x);
-  else if(_iopt==2) return _kagan->integrandPy(x);
-  else              return _kagan->fermiFunction(x);
+  else if(_iopt==2) return _kagan->integrandPy(x*UnitRemoval::E)   * UnitRemoval::E;
+  else              return _kagan->fermiFunction(x*UnitRemoval::E) * UnitRemoval::E;
 }
 }

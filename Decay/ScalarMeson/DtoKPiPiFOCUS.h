@@ -372,17 +372,17 @@ private:
   /**
    *  The position of the Adler zero in the \f$I=\frac12\f$ channel
    */
-  Energy _s0half;
+  Energy2 _s0half;
 
   /**
    *  The position of the Adler zero in the \f$I=\frac32\f$ channel
    */
-  Energy _s0threehalf;
+  Energy2 _s0threehalf;
 
   /**
    *  The position of the pole in the \f$I=\frac12\f$ channel
    */
-  Energy _s1;
+  Energy2 _s1;
 
   /**
    *  Magnitude of the coupling to the pole for the 'initial' production

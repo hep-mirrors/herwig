@@ -196,8 +196,8 @@ double VectorMesonVectorScalarDecayer::me2(bool vertex, const int,
     else {
       epsdot=vout[ix]*inpart.momentum();
       for(unsigned int iy=0;iy<3;++iy) {
-	newME(iy,ix,0)=pre*invec[iy]*(p0dotpv*vout[ix]-
-				      epsdot*decay[0]->momentum());
+	newME(iy,ix,0)=pre*invec[iy].dot(p0dotpv*vout[ix]-
+					 epsdot*decay[0]->momentum());
       }
     }
   }

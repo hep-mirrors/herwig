@@ -59,15 +59,15 @@ DtoKPiPiCLEO::DtoKPiPiCLEO() {
   _a2K1680    = 5.6      ; _phi2K1680  = 174;
   _a2NR       = 1.1      ; _phi2NR     = 340;
   // zero masses
-  _mpi=0.;
-  _mkp=0.;
-  _mk0=0.;
+  _mpi=0.*MeV;
+  _mkp=0.*MeV;
+  _mk0=0.*MeV;
 }
 
 void DtoKPiPiCLEO::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // complex amplitudes for K-pi+pi0
-  double fact = pi/180.;
+  double fact = Constants::pi/180.;
   _c1NR      = _a1NR     *Complex(cos(_phi1NR     *fact),sin(_phi1NR     *fact));
   _c1rho     = _a1rho    *Complex(cos(_phi1rho    *fact),sin(_phi1rho    *fact));
   _c1Kstarm  = _a1Kstarm *Complex(cos(_phi1Kstarm *fact),sin(_phi1Kstarm *fact));
@@ -318,41 +318,57 @@ void DtoKPiPiCLEO::doinit() throw(InitException) {
 }
 
 void DtoKPiPiCLEO::persistentOutput(PersistentOStream & os) const {
-  os << _momega << _womega << _mf980 << _gpi << _gK << _mf2 << _wf2 << _mf1370 
-     << _wf1370 << _mK14300 << _wK14300 << _mK14302 << _wK14302 << _mK1680 
-     << _wK1680 << _mrho1700 << _wrho1700 << _mK8920 << _wK8920 << _mK892A 
-     << _wK892A << _mK892B << _wK892B << _mrhoA << _wrhoA << _mrhoB << _wrhoB 
-     << _a1NR << _phi1NR << _a1rho << _phi1rho << _a1Kstarm << _phi1Kstarm 
-     << _a1Kstar0 << _phi1Kstar0 << _a1K1430m << _phi1K1430m << _a1K14300 
-     << _phi1K14300 << _a1rho1700 << _phi1rho1700 << _a1K1680 << _phi1K1680 
-     << _c1NR << _c1rho << _c1Kstarm << _c1Kstar0 << _c1K1430m << _c1K14300 
+  os << ounit(_momega,GeV) << ounit(_womega,GeV) << ounit(_mf980,GeV) 
+     << _gpi << _gK  << ounit(_mf2,GeV) << ounit(_wf2,GeV) << ounit(_mf1370,GeV) 
+     << ounit(_wf1370,GeV) << ounit(_mK14300,GeV) << ounit(_wK14300,GeV) 
+     << ounit(_mK14302,GeV) << ounit(_wK14302,GeV) << ounit(_mK1680,GeV) 
+     << ounit(_wK1680,GeV) << ounit(_mrho1700,GeV) << ounit(_wrho1700,GeV) 
+     << ounit(_mK8920,GeV) << ounit(_wK8920,GeV) << ounit(_mK892A,GeV) 
+     << ounit(_wK892A,GeV) << ounit(_mK892B,GeV) << ounit(_wK892B,GeV) 
+     << ounit(_mrhoA,GeV) << ounit(_wrhoA,GeV) << ounit(_mrhoB,GeV) 
+     << ounit(_wrhoB,GeV) << _a1NR << _phi1NR << _a1rho << _phi1rho 
+     << _a1Kstarm << _phi1Kstarm << _a1Kstar0 << _phi1Kstar0 << ounit(_a1K1430m,GeV2) 
+     << _phi1K1430m << ounit(_a1K14300,GeV2) << _phi1K14300 << _a1rho1700 
+     << _phi1rho1700 << _a1K1680 << _phi1K1680 << _c1NR << _c1rho << _c1Kstarm 
+     << _c1Kstar0 << ounit(_c1K1430m,GeV2) << ounit(_c1K14300,GeV2) 
      << _c1rho1700 << _c1K1680 << _a2Kstarp << _phi2Kstarp << _a2rho 
      << _phi2rho << _a2omega << _phi2omega << _a2Kstarm << _phi2Kstarm 
-     << _a2f980 << _phi2f980 << _a2f2 << _phi2f2 << _a2f1370 << _phi2f1370 
-     << _a2K14300 << _phi2K14300 << _a2K14302 << _phi2K14302 << _a2K1680 
-     << _phi2K1680 << _a2NR << _phi2NR << _c2Kstarp << _c2rho << _c2omega 
-     << _c2Kstarm << _c2f980 << _c2f2 << _c2f1370 << _c2K14300 << _c2K14302 
-     << _c2K1680 << _c2NR << _maxwgt << _weights << _rD0 << _rres << _mpi 
-     << _mkp << _mk0 << _wf980 << _f0opt << _localparameters;
+     << ounit(_a2f980,GeV2) << _phi2f980 << ounit(_a2f2,1./GeV2) << _phi2f2 
+     << ounit(_a2f1370,GeV2) << _phi2f1370  << ounit(_a2K14300,GeV2) << _phi2K14300 
+     << ounit(_a2K14302,1./GeV2) << _phi2K14302 << _a2K1680 << _phi2K1680 << _a2NR 
+     << _phi2NR << _c2Kstarp << _c2rho << _c2omega << _c2Kstarm << ounit(_c2f980,GeV2)
+     << ounit(_c2f2,1./GeV2) << ounit(_c2f1370,GeV2) << ounit(_c2K14300,GeV2) 
+     << ounit(_c2K14302,1./GeV2) << _c2K1680 << _c2NR << _maxwgt << _weights 
+     << ounit(_rD0,1./GeV) << ounit(_rres,1./GeV) << ounit(_mpi,GeV) 
+     << ounit(_mkp,GeV) << ounit(_mk0,GeV) << ounit(_wf980,GeV) << _f0opt 
+     << _localparameters;
 }
 
 void DtoKPiPiCLEO::persistentInput(PersistentIStream & is, int) {
-  is >> _momega >> _womega >> _mf980 >> _gpi >> _gK >> _mf2 >> _wf2 >> _mf1370 
-     >> _wf1370 >> _mK14300 >> _wK14300 >> _mK14302 >> _wK14302 >> _mK1680 
-     >> _wK1680 >> _mrho1700 >> _wrho1700 >> _mK8920 >> _wK8920 >> _mK892A 
-     >> _wK892A >> _mK892B >> _wK892B >> _mrhoA >> _wrhoA >> _mrhoB >> _wrhoB 
-     >> _a1NR >> _phi1NR >> _a1rho >> _phi1rho >> _a1Kstarm >> _phi1Kstarm 
-     >> _a1Kstar0 >> _phi1Kstar0 >> _a1K1430m >> _phi1K1430m >> _a1K14300 
-     >> _phi1K14300 >> _a1rho1700 >> _phi1rho1700 >> _a1K1680 >> _phi1K1680 
-     >> _c1NR >> _c1rho >> _c1Kstarm >> _c1Kstar0 >> _c1K1430m >> _c1K14300 
+  is >> iunit(_momega,GeV) >> iunit(_womega,GeV) >> iunit(_mf980,GeV) 
+     >> _gpi >> _gK  >> iunit(_mf2,GeV) >> iunit(_wf2,GeV) >> iunit(_mf1370,GeV) 
+     >> iunit(_wf1370,GeV) >> iunit(_mK14300,GeV) >> iunit(_wK14300,GeV) 
+     >> iunit(_mK14302,GeV) >> iunit(_wK14302,GeV) >> iunit(_mK1680,GeV) 
+     >> iunit(_wK1680,GeV) >> iunit(_mrho1700,GeV) >> iunit(_wrho1700,GeV) 
+     >> iunit(_mK8920,GeV) >> iunit(_wK8920,GeV) >> iunit(_mK892A,GeV) 
+     >> iunit(_wK892A,GeV) >> iunit(_mK892B,GeV) >> iunit(_wK892B,GeV) 
+     >> iunit(_mrhoA,GeV) >> iunit(_wrhoA,GeV) >> iunit(_mrhoB,GeV) 
+     >> iunit(_wrhoB,GeV) >> _a1NR >> _phi1NR >> _a1rho >> _phi1rho 
+     >> _a1Kstarm >> _phi1Kstarm >> _a1Kstar0 >> _phi1Kstar0 >> iunit(_a1K1430m,GeV2) 
+     >> _phi1K1430m >> iunit(_a1K14300,GeV2) >> _phi1K14300 >> _a1rho1700 
+     >> _phi1rho1700 >> _a1K1680 >> _phi1K1680 >> _c1NR >> _c1rho >> _c1Kstarm 
+     >> _c1Kstar0 >> iunit(_c1K1430m,GeV2) >> iunit(_c1K14300,GeV2) 
      >> _c1rho1700 >> _c1K1680 >> _a2Kstarp >> _phi2Kstarp >> _a2rho 
      >> _phi2rho >> _a2omega >> _phi2omega >> _a2Kstarm >> _phi2Kstarm 
-     >> _a2f980 >> _phi2f980 >> _a2f2 >> _phi2f2 >> _a2f1370 >> _phi2f1370 
-     >> _a2K14300 >> _phi2K14300 >> _a2K14302 >> _phi2K14302 >> _a2K1680 
-     >> _phi2K1680 >> _a2NR >> _phi2NR >> _c2Kstarp >> _c2rho >> _c2omega 
-     >> _c2Kstarm >> _c2f980 >> _c2f2 >> _c2f1370 >> _c2K14300 >> _c2K14302 
-     >> _c2K1680 >> _c2NR >> _maxwgt >> _weights >> _rD0 >> _rres >> _mpi 
-     >> _mkp >> _mk0 >> _wf980 >> _f0opt >> _localparameters;
+     >> iunit(_a2f980,GeV2) >> _phi2f980 >> iunit(_a2f2,1./GeV2) >> _phi2f2 
+     >> iunit(_a2f1370,GeV2) >> _phi2f1370  >> iunit(_a2K14300,GeV2) >> _phi2K14300 
+     >> iunit(_a2K14302,1./GeV2) >> _phi2K14302 >> _a2K1680 >> _phi2K1680 >> _a2NR 
+     >> _phi2NR >> _c2Kstarp >> _c2rho >> _c2omega >> _c2Kstarm >> iunit(_c2f980,GeV2)
+     >> iunit(_c2f2,1./GeV2) >> iunit(_c2f1370,GeV2) >> iunit(_c2K14300,GeV2) 
+     >> iunit(_c2K14302,1./GeV2) >> _c2K1680 >> _c2NR >> _maxwgt >> _weights 
+     >> iunit(_rD0,1./GeV) >> iunit(_rres,1./GeV) >> iunit(_mpi,GeV) 
+     >> iunit(_mkp,GeV) >> iunit(_mk0,GeV) >> iunit(_wf980,GeV) >> _f0opt 
+     >> _localparameters;
 }
 
 ClassDescription<DtoKPiPiCLEO> DtoKPiPiCLEO::initDtoKPiPiCLEO;
@@ -910,15 +926,15 @@ double DtoKPiPiCLEO::me2(bool vertex, const int ichan,
     if(ichan<0) {
       amp = _c2NR
 	+_c2Kstarm     *amplitude(1,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK892B ,_wK892B )
-	+_c2K14300/GeV2*amplitude(0,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300,_wK14300)
-	+_c2K14302*GeV2*amplitude(2,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302,_wK14302)
+	+Complex(_c2K14300/GeV2)*amplitude(0,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300,_wK14300)
+	+Complex(_c2K14302*GeV2)*amplitude(2,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302,_wK14302)
 	+_c2K1680      *amplitude(1,false ,mD,mA,mC,mB,mAC,mAB,mBC,_mK1680 ,_wK1680 )
 	+_c2Kstarp     *amplitude(1,false ,mD,mA,mB,mC,mAB,mAC,mBC,_mK892B ,_wK892B )
 	+_c2rho        *amplitude(1,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mrhoB  ,_wrhoB  )
 	+_c2omega      *amplitude(1,false ,mD,mB,mC,mA,mBC,mAB,mAC,_momega ,_womega )
-	+_c2f980/GeV2  *amplitude(0,_f0opt,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )
-	+_c2f1370/GeV2 *amplitude(0,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )
-	+_c2f2*GeV2    *amplitude(2,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf2    ,_wf2    );
+	+Complex(_c2f980/GeV2  )*amplitude(0,_f0opt,mD,mB,mC,mA,mBC,mAB,mAC,_mf980  ,_wf980  )
+	+Complex(_c2f1370/GeV2 )*amplitude(0,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf1370 ,_wf1370 )
+	+Complex(_c2f2*GeV2    )*amplitude(2,false ,mD,mB,mC,mA,mBC,mAB,mAC,_mf2    ,_wf2    );
     }
     else if(ichan==0) {
       amp=_c2Kstarp     *amplitude(1,false ,mD,mA,mB,mC,mAB,mAC,mBC,_mK892B ,_wK892B );

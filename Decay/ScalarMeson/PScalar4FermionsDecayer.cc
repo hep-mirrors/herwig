@@ -284,18 +284,16 @@ double PScalar4FermionsDecayer::me2(bool vertex, const int,
       prop2=1./m14/m23;
     }
   // the VMD factor if needed
-  if(_includeVMD[imode()]>0)
-    {
-      Energy2 mrho2(_VMDmass[imode()]*_VMDmass[imode()]);
-      Energy2 mwrho(_VMDmass[imode()]*_VMDwidth[imode()]);
-      prop1*= 
-	(-mrho2+ii*mwrho)/(m12-mrho2+ii*mwrho)*
-	(-mrho2+ii*mwrho)/(m34-mrho2+ii*mwrho);
-      if(identical)
-	{prop2*= 
-	    (-mrho2+ii*mwrho)/(m14-mrho2+ii*mwrho)*
-	    (-mrho2+ii*mwrho)/(m23-mrho2+ii*mwrho);}
+  if(_includeVMD[imode()]>0) {
+    Energy2 mrho2(_VMDmass[imode()]*_VMDmass[imode()]);
+    Energy2 mwrho(_VMDmass[imode()]*_VMDwidth[imode()]);
+    prop1 = prop1*(-mrho2+ii*mwrho)/(m12-mrho2+ii*mwrho)*
+                  (-mrho2+ii*mwrho)/(m34-mrho2+ii*mwrho);
+    if(identical) {
+      prop2 = prop2*(-mrho2+ii*mwrho)/(m14-mrho2+ii*mwrho)*
+	            (-mrho2+ii*mwrho)/(m23-mrho2+ii*mwrho);
     }
+  }
   // prefactor
   Complex pre(_coupling[imode()]*4.*Constants::pi
 	      *SM().alphaEM()*inpart.mass());

@@ -25,7 +25,7 @@ inline Complex DtoKPiPiMarkIII::amplitude(bool rho, Energy mD,
     (1.+sqr(radius*pR))/(1.+sqr(radius*pAB));
   Energy2 s = (sqr(mAC)-sqr(mBC)-(sqr(mD)-sqr(mC))*(sqr(mA)-sqr(mB))/sqr(mres))*
     sqrt((1.+sqr(radius*pR))/(1.+sqr(radius*pAB))); 
-  Complex output=s/((sqr(mres)- sqr(mAB)-Complex(0.,mgam)));
+  Complex output=s/((sqr(mres)- sqr(mAB)-complex<Energy2>(0.*MeV2,mgam)));
   return output;
 }
 }

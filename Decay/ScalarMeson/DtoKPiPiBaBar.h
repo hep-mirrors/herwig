@@ -317,7 +317,7 @@ private:
   /**
    *  The interpolator for \f$\rho_3\f$
    */
-  InterpolatorPtr _rho3inter;
+  Interpolator<double,double>::Ptr _rho3inter;
   //@}
 
   /**
@@ -929,6 +929,8 @@ struct DtoKPiPiBaBarInnerIntegrand {
    * Get the function value
    */
   inline double operator ()(double argument) const;
+  typedef double ArgType;
+  typedef double ValType;
 
   /**
    * Set the value of s
@@ -943,12 +945,12 @@ struct DtoKPiPiBaBarInnerIntegrand {
   /**
    * Mass squared of the system
    */
-  mutable Energy _s;
+  mutable Energy2 _s;
 
   /**
    * Mass squared of the first rho
    */
-  mutable Energy _s1;
+  mutable Energy2 _s1;
 
   /**
    *  Pointer to the DtoKPiPiBaBar class
@@ -970,6 +972,8 @@ struct DtoKPiPiBaBarOuterIntegrand {
    * Get the function value
    */
   inline double operator ()(double argument) const;
+  typedef double ArgType;
+  typedef double ValType;
 
   /**
    * Set the value of s
@@ -994,7 +998,7 @@ struct DtoKPiPiBaBarOuterIntegrand {
   /**
    * Mass squared of the system
    */
-  mutable Energy _s;
+  mutable Energy2 _s;
 
   /**
    *  Integrator

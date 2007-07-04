@@ -48,16 +48,16 @@ inline Complex DtoKPiPiCLEO::amplitude(int ispin,bool f0, Energy mD,
 		      << ispin << Exception::runerror;
   }
   // calculate the width term
-  Complex bw;
+  complex<Energy2> bw;
   if(!f0) {
     Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres)/mAB;
-    bw = sqr(mres)-sqr(mAB)-Complex(0.,mwid);
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mwid);
   }
   else {
     Energy Gamma_pi = _gpi*sqrt(0.25*sqr(mAB)-sqr(_mpi));
     Energy Gamma_K  = 0.5*_gK *(sqrt(0.25*sqr(mAB)-sqr(_mkp))+
 				sqrt(0.25*sqr(mAB)-sqr(_mk0)));
-    bw = sqr(mres)-sqr(mAB)-Complex(0.,Gamma_pi+Gamma_K);
+    bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mres*(Gamma_pi+Gamma_K));
   }
   return s*Fr*Fd*GeV2/bw;
 }

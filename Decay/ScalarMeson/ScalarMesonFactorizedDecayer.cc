@@ -516,7 +516,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   DecayMatrixElement newME(PDT::Spin0,spin);
   // loop over the different diagrams
   vector<LorentzPolarizationVectorE> form;
-  Complex fp,f0,A0,A1,A2,A3,V,h,k,bp,bm;
+  Complex fp,f0,A0,A1,A2,A3,V,k;
+  complex<InvEnergy2> h,bp,bm;
   // complex<Energy2> dot;
   Lorentz5Momentum q,sum; 
   Energy2 q2;
@@ -577,10 +578,8 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	    {
 	      dotv = tenwave[_formpart[mode][iy]][ix]*part.momentum();
 	      complex<Energy2> dot = dotv*part.momentum();
-	      form.push_back(UnitRemoval::InvE2*(ii*h*
-						 Helicity::epsilon(dotv,sum,q)
-						 -k*dotv*UnitRemoval::E2
-						 -bp*dot*sum-bm*dot*q));
+	      form.push_back(ii*h*Helicity::epsilon(dotv,sum,q)-k*dotv
+			     -bp*dot*sum-bm*dot*q);
 	    }
 	}
       // find the particles for the current
@@ -615,8 +614,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
 	  for(fhel=0;fhel<form.size();++fhel)
 	    {
 	      ihel[_formpart[mode][iy]+1]=fhel;
-	      newME(ihel)+=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])
-		*UnitRemoval::InvE2;
+	      newME(ihel)+=pre*_CKMfact[mode][iy]*form[fhel].dot(curr[chel])*_GF;
 	    }
 	}
     }
@@ -624,7 +622,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
   ME(newME);
   // perform the contraction
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
-  return 0.5*_GF*_GF*(newME.contract(rhoin)).real()*UnitRemoval::E4;
+  return 0.5*(newME.contract(rhoin)).real();
 }
 
 void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,

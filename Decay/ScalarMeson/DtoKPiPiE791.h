@@ -291,7 +291,7 @@ private:
   /**
    *  Phase for the \f$\kappa\f$ component in model C
    */
-  Energy2 _phiCkappa;
+  double _phiCkappa;
 
   /**
    *  Amplitude for the \f$K^*(892)^-\f$ component in model C

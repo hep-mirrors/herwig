@@ -14,7 +14,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "Herwig++/Helicity/epsilon.h"
 #include "ThePEG/Helicity/LorentzTensor.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
@@ -73,17 +73,23 @@ void GoityRobertsDecayer::doinitrun() {
 }
 
 void GoityRobertsDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _GF << _includeDstar << _includeDstarstar << _beta1S << _beta2S 
-     << _beta1P << _beta1D << _fpi << _deltaM2S << _deltaM1P << _deltaM1D << _gamma2S 
-     << _gamma1P << _gamma1D << _lambdabar << _g << _alpha1 << _alpha2 << _alpha3 
-     << _wgtloc << _wgtmax << _weights << _deltaMb << _gammaB << _gammaD0 << _gammaDp;
+  os << _current << ounit(_GF,1./GeV2) << _includeDstar << _includeDstarstar 
+     << ounit(_beta1S,GeV) << ounit(_beta2S,GeV) << ounit(_beta1P,GeV) 
+     << ounit(_beta1D,GeV) << ounit(_fpi,GeV) << ounit(_deltaM2S,GeV)
+     << ounit(_deltaM1P,GeV) << ounit(_deltaM1D,GeV) << ounit(_gamma2S,GeV)
+     << ounit(_gamma1P,GeV) << ounit(_gamma1D,GeV) << ounit(_lambdabar,GeV) 
+     << _g << _alpha1 << _alpha2 << _alpha3 << _wgtloc << _wgtmax << _weights 
+     << ounit(_deltaMb,GeV) << ounit(_gammaB,GeV) << ounit(_gammaD0,GeV) << ounit(_gammaDp,GeV);
 }
 
 void GoityRobertsDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _GF >> _includeDstar >> _includeDstarstar >> _beta1S >> _beta2S 
-     >> _beta1P >> _beta1D >> _fpi >> _deltaM2S >> _deltaM1P >> _deltaM1D >> _gamma2S 
-     >> _gamma1P >> _gamma1D >> _lambdabar >> _g >> _alpha1 >> _alpha2 >> _alpha3 
-     >> _wgtloc >> _wgtmax >> _weights >> _deltaMb >> _gammaB >> _gammaD0 >> _gammaDp;
+  is >> _current >> iunit(_GF,1./GeV2) >> _includeDstar >> _includeDstarstar 
+     >> iunit(_beta1S,GeV) >> iunit(_beta2S,GeV) >> iunit(_beta1P,GeV) 
+     >> iunit(_beta1D,GeV) >> iunit(_fpi,GeV) >> iunit(_deltaM2S,GeV) 
+     >> iunit(_deltaM1P,GeV) >> iunit(_deltaM1D,GeV) >> iunit(_gamma2S,GeV) 
+     >> iunit(_gamma1P,GeV) >> iunit(_gamma1D,GeV) >> iunit(_lambdabar,GeV) 
+     >> _g >> _alpha1 >> _alpha2 >> _alpha3 >> _wgtloc >> _wgtmax >> _weights 
+     >> iunit(_deltaMb,GeV) >> iunit(_gammaB,GeV) >> iunit(_gammaD0,GeV) >> iunit(_gammaDp,GeV);
 }
 
 ClassDescription<GoityRobertsDecayer> GoityRobertsDecayer::initGoityRobertsDecayer;
@@ -886,7 +892,7 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   complex<Energy> dotvb  = dotv  + dmb;
   complex<Energy> dotvpd = dotvp - dmd;
   // hadronic current
-  vector<LorentzPolarizationVector> hadron;
+  vector<LorentzVector<complex<InvEnergy> > > hadron;
   // calculate the matrix element
   // for D pi
   if(decay[0]->dataPtr()->iSpin()==PDT::Spin0) {
@@ -909,7 +915,7 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
     complex<InvEnergy2> A1r =-a2fact*(sqr(omega)-1.)/(dotv+dmt2)
                              -a3fact*(1.+omega     )/(dotv+dmt3);
     complex<InvEnergy > A2r = 
-      +a1fact/(dotv+dmt1)*dotv
+       a1fact/(dotv+dmt1)*dotv
       +a2fact/(dotv+dmt2)*(omega*dotvp-dotv+2.*(dotvp-omega*dotv))
       +a3fact/(dotv+dmt3)*(dotv+dotvp);
     complex<InvEnergy > A3r =
@@ -930,9 +936,9 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
     hadron.resize(1);
     // construct the hadron vector
     hadron[0] =
-      -ii*epssign*(hnr+hr)/mb/md*EpsFunction::product(inpart.momentum(),
-						      decay[0]->momentum(),
-						      decay[1]->momentum())
+      -ii*epssign*(hnr+hr)/mb/md*Helicity::epsilon(inpart.momentum(),
+						   decay[0]->momentum(),
+						   decay[1]->momentum())
       +(A1nr+A1r)*decay[1]->momentum()
       +(A2nr+A2r)/mb*inpart.momentum()
       +(A3nr+A3r)/md*decay[0]->momentum();
@@ -949,8 +955,8 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
     complex<InvEnergy2> f1nr =-   xfact*(1./dotvb-1./(dotvp+dmd));
     complex<InvEnergy > f5nr =    xfact*(1.+dotv/dotvb);
     complex<InvEnergy2> f6nr =    xfact*(1./dotvb-1./dotvp);
-    complex<InvEnergy > knr  =    xfact*((dotvp-omega*dotv)/dotvb+
-					 (dotv-omega*dotvp)/dotvp);
+    complex<InvEnergy > knr  =    xfact*(complex<double>((dotvp-omega*dotv)/dotvb)+
+					 complex<double>((dotv-omega*dotvp)/dotvp));
     complex<InvEnergy2> g2nr = 0. /MeV/MeV;
     complex<InvEnergy2> g4nr = 2.*xfact/dotvp;
     // resonant part (D** removed)
@@ -1006,22 +1012,22 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
  	(f5nr+f5r)/mb/md*Beps *decay[0]->momentum()+
  	(f6nr+f6r)/mb*Beps *decay[1]->momentum()
 	  	+iii*0.5*((g2r+g2nr)*Beps)/mb/mb/md*
- 	EpsFunction::product(inpart.momentum(),
+ 	Helicity::epsilon(inpart.momentum(),
  			     decay[0]->momentum(),
  			     decay[1]->momentum())
-	+iii*0.5/mb/md*(eps[ix]*EpsFunction::product(inpart.momentum(),
-						     decay[0]->momentum(),
-						     decay[1]->momentum()))*
+	+iii*0.5/mb/md*(eps[ix].dot(Helicity::epsilon(inpart.momentum(),
+						      decay[0]->momentum(),
+						      decay[1]->momentum())))*
 	(-(g2r+g2nr)/mb*inpart.momentum()
 	 +(g4r+g4nr)/md*decay[0]->momentum())
  	+iii*0.5*
- 	((h1r+h1nr)/mb/md*EpsFunction::product(eps[ix],
+ 	((h1r+h1nr)/mb/md*Helicity::epsilon(eps[ix],
  					       inpart.momentum(),
  					       decay[0]->momentum())+
- 	 (h2r+h2nr)/mb   *EpsFunction::product(eps[ix],
+ 	 (h2r+h2nr)/mb   *Helicity::epsilon(eps[ix],
  					       inpart.momentum(),
  					       decay[1]->momentum())+
- 	 (h3r+h3nr)/md   *EpsFunction::product(eps[ix],
+ 	 (h3r+h3nr)/md   *Helicity::epsilon(eps[ix],
  					       decay[0]->momentum(),
  					       decay[1]->momentum()));
     }
@@ -1031,8 +1037,8 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   ParticleVector leptons;
   leptons.push_back(decay[2]);leptons.push_back(decay[3]);
   int mode=(abs(decay[2]->id())-11)/2;
-  vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,
-							     ichan,scale,leptons));
+  vector<LorentzPolarizationVectorE> lepton(_current->current(vertex,mode,
+							      ichan,scale,leptons));
   // calculate the matrix elemet
   DecayMatrixElement newME(PDT::Spin0,decay[0]->dataPtr()->iSpin(),PDT::Spin0,
 			   PDT::Spin1Half,PDT::Spin1Half);
@@ -1042,14 +1048,14 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   for(ihel[1]=0;ihel[1]<hadron.size();++ihel[1]) {
     for(ihel[3]=0;ihel[3]<2;++ihel[3]) {
       for(ihel[4]=0;ihel[4]<2;++ihel[4]) {
-	newME(ihel)= lepton[2*ihel[3]+ihel[4]]*hadron[ihel[1]];
+	newME(ihel)= lepton[2*ihel[3]+ihel[4]].dot(hadron[ihel[1]]);
       }
     }
   }
   RhoDMatrix temp(PDT::Spin0); temp.average();
   // store the matrix element
   ME(newME);
-  double me=0.5*(newME.contract(temp)).real()*_GF*_GF*md*mb*SM().CKM(1,2);
+  double me=0.5*(newME.contract(temp)).real()*md*mb*SM().CKM(1,2)*sqr(inpart.mass()*_GF);
   if(abs(decay[1]->id())==ParticleID::piplus) me*=2.;
-  return me*sqr(inpart.mass());
+  return me;
 }

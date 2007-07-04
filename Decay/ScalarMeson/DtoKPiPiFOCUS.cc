@@ -65,41 +65,53 @@ DtoKPiPiFOCUS::DtoKPiPiFOCUS() {
   _gamma2 = 126.;
   _gamma3 = 211.;
   // masses of the stable particles (reset in doinit)
-  _mK=0.;
-  _mpi=0.;
-  _metap=0.;
+  _mK=0.*MeV;
+  _mpi=0.*MeV;
+  _metap=0.*MeV;
   // integration parameters
   _maxwgt = 1.;
 }
 
 void DtoKPiPiFOCUS::persistentOutput(PersistentOStream & os) const {
-  os << _imodel << _a1NR << _phi1NR << _a1kappa << _phi1kappa << _a1K892 << _phi1K892 
-     << _a1K1410 << _phi1K1410 << _a1K1680 << _phi1K1680 << _a1K14300 << _phi1K14300 
-     << _a1K14302 << _phi1K14302 << _a2K892 << _phi2K892 << _a2K1410 << _phi2K1410 
-     << _a2K1680 << _phi2K1680 << _a2K14302 << _phi2K14302 << _g1 << _g2 << _c110 
-     << _c111 << _c112 << _c120 << _c121 << _c122 << _c220 << _c221 << _c222 << _d110 
-     << _d111 << _d112 << _s0half << _s0threehalf << _s1 << _beta << _theta << _c10 
-     << _c20 << _c30 << _c11 << _c21 << _c31 << _c12 << _c22 << _c32 << _gamma1 
-     << _gamma2 << _gamma3 << _mK << _mpi << _metap << _cNR << _ckappa << _cK892 
-     << _cK1410 << _cK1680 << _cK14300 << _cK14302 << _localparameters << _mkappa 
-     << _wkappa << _mK892 << _wK892 << _mK1410 << _wK1410 << _mK1680 << _wK1680 
-     << _mK14300 << _wK14300 << _mK14302 << _wK14302 << _rD0 << _rres << _maxwgt 
-     << _weights;
+  os << _imodel << _a1NR << _phi1NR << ounit(_a1kappa,GeV2) << _phi1kappa 
+     << _a1K892 << _phi1K892 << _a1K1410 << _phi1K1410 << _a1K1680 
+     << _phi1K1680 << ounit(_a1K14300,GeV2) << _phi1K14300 
+     << ounit(_a1K14302,1./GeV2) << _phi1K14302 << _a2K892 << _phi2K892 
+     << _a2K1410 << _phi2K1410 << _a2K1680 << _phi2K1680 
+     << ounit(_a2K14302,1./GeV2) << _phi2K14302 << ounit(_g1,GeV) << ounit(_g2,GeV) 
+     << _c110 << _c111 << _c112 << _c120 << _c121 << _c122 << _c220 << _c221 
+     << _c222 << _d110 << _d111 << _d112 << ounit(_s0half,GeV2) << ounit(_s0threehalf,GeV2)
+     << ounit(_s1,GeV2) << ounit(_beta,GeV) << _theta << _c10 << _c20 << _c30 
+     << _c11 << _c21 << _c31 << _c12 << _c22 << _c32 << _gamma1 << _gamma2 
+     << _gamma3 << ounit(_mK,GeV) << ounit(_mpi,GeV) << ounit(_metap,GeV) 
+     << _cNR << ounit(_ckappa,GeV2) << _cK892 << _cK1410 << _cK1680 << ounit(_cK14300,GeV2)
+     << ounit(_cK14302,1./GeV2) << _localparameters << ounit(_mkappa,GeV) 
+     << ounit(_wkappa,GeV) << ounit(_mK892,GeV) << ounit(_wK892,GeV) 
+     << ounit(_mK1410,GeV) << ounit(_wK1410,GeV) << ounit(_mK1680,GeV) 
+     << ounit(_wK1680,GeV) << ounit(_mK14300,GeV) << ounit(_wK14300,GeV) 
+     << ounit(_mK14302,GeV) << ounit(_wK14302,GeV) << ounit(_rD0,1./GeV) 
+     << ounit(_rres,1./GeV) << _maxwgt << _weights;
 }
 
 void DtoKPiPiFOCUS::persistentInput(PersistentIStream & is, int) {
-  is >> _imodel >> _a1NR >> _phi1NR >> _a1kappa >> _phi1kappa >> _a1K892 >> _phi1K892 
-     >> _a1K1410 >> _phi1K1410 >> _a1K1680 >> _phi1K1680 >> _a1K14300 >> _phi1K14300 
-     >> _a1K14302 >> _phi1K14302 >> _a2K892 >> _phi2K892 >> _a2K1410 >> _phi2K1410 
-     >> _a2K1680 >> _phi2K1680 >> _a2K14302 >> _phi2K14302 >> _g1 >> _g2 >> _c110 
-     >> _c111 >> _c112 >> _c120 >> _c121 >> _c122 >> _c220 >> _c221 >> _c222 >> _d110 
-     >> _d111 >> _d112 >> _s0half >> _s0threehalf >> _s1 >> _beta >> _theta >> _c10 
-     >> _c20 >> _c30 >> _c11 >> _c21 >> _c31 >> _c12 >> _c22 >> _c32 >> _gamma1 
-     >> _gamma2 >> _gamma3 >> _mK >> _mpi >> _metap >> _cNR >> _ckappa >> _cK892 
-     >> _cK1410 >> _cK1680 >> _cK14300 >> _cK14302 >> _localparameters >> _mkappa 
-     >> _wkappa >> _mK892 >> _wK892 >> _mK1410 >> _wK1410 >> _mK1680 >> _wK1680 
-     >> _mK14300 >> _wK14300 >> _mK14302 >> _wK14302 >> _rD0 >> _rres >> _maxwgt 
-     >> _weights;
+  is >> _imodel >> _a1NR >> _phi1NR >> iunit(_a1kappa,GeV2) >> _phi1kappa 
+     >> _a1K892 >> _phi1K892 >> _a1K1410 >> _phi1K1410 >> _a1K1680 
+     >> _phi1K1680 >> iunit(_a1K14300,GeV2) >> _phi1K14300 
+     >> iunit(_a1K14302,1./GeV2) >> _phi1K14302 >> _a2K892 >> _phi2K892 
+     >> _a2K1410 >> _phi2K1410 >> _a2K1680 >> _phi2K1680 
+     >> iunit(_a2K14302,1./GeV2) >> _phi2K14302 >> iunit(_g1,GeV) >> iunit(_g2,GeV) 
+     >> _c110 >> _c111 >> _c112 >> _c120 >> _c121 >> _c122 >> _c220 >> _c221 
+     >> _c222 >> _d110 >> _d111 >> _d112 >> iunit(_s0half,GeV2) >> iunit(_s0threehalf,GeV2)
+     >> iunit(_s1,GeV2) >> iunit(_beta,GeV) >> _theta >> _c10 >> _c20 >> _c30 
+     >> _c11 >> _c21 >> _c31 >> _c12 >> _c22 >> _c32 >> _gamma1 >> _gamma2 
+     >> _gamma3 >> iunit(_mK,GeV) >> iunit(_mpi,GeV) >> iunit(_metap,GeV) 
+     >> _cNR >> iunit(_ckappa,GeV2) >> _cK892 >> _cK1410 >> _cK1680 >> iunit(_cK14300,GeV2)
+     >> iunit(_cK14302,1./GeV2) >> _localparameters >> iunit(_mkappa,GeV) 
+     >> iunit(_wkappa,GeV) >> iunit(_mK892,GeV) >> iunit(_wK892,GeV) 
+     >> iunit(_mK1410,GeV) >> iunit(_wK1410,GeV) >> iunit(_mK1680,GeV) 
+     >> iunit(_wK1680,GeV) >> iunit(_mK14300,GeV) >> iunit(_wK14300,GeV) 
+     >> iunit(_mK14302,GeV) >> iunit(_wK14302,GeV) >> iunit(_rD0,1./GeV) 
+     >> iunit(_rres,1./GeV) >> _maxwgt >> _weights;
 }
 
 ClassDescription<DtoKPiPiFOCUS> DtoKPiPiFOCUS::initDtoKPiPiFOCUS;
@@ -564,7 +576,7 @@ void DtoKPiPiFOCUS::Init() {
 void DtoKPiPiFOCUS::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // complex amplitudes
-  double fact = pi/180.;
+  double fact = Constants::pi/180.;
   if(_imodel==0) {
     _cNR     = _a1NR    *Complex(cos(fact*_phi1NR    ),sin(fact*_phi1NR    ));
     _ckappa  = _a1kappa *Complex(cos(fact*_phi1kappa ),sin(fact*_phi1kappa ));
@@ -576,11 +588,11 @@ void DtoKPiPiFOCUS::doinit() throw(InitException) {
   }
   else {
     _cNR     = 0.;
-    _ckappa  = 0.;
+    _ckappa  = 0.*GeV2;
     _cK892   = _a2K892  *Complex(cos(fact*_phi2K892  ),sin(fact*_phi2K892  ));
     _cK1410  = _a2K1410 *Complex(cos(fact*_phi2K1410 ),sin(fact*_phi2K1410 ));
     _cK1680  = _a2K1680 *Complex(cos(fact*_phi2K1680 ),sin(fact*_phi2K1680 ));
-    _cK14300 = 0.;
+    _cK14300 = 0.*GeV2;
     _cK14302 = _a2K14302*Complex(cos(fact*_phi2K14302),sin(fact*_phi2K14302));
   }
   // intermediate resonances
@@ -711,7 +723,7 @@ void DtoKPiPiFOCUS::doinit() throw(InitException) {
   cerr << "set limits y -200 200\n";
   for(Energy2 s = sqr(_mK+_mpi);s<sqr(1.75*GeV);s+=0.01*GeV2) {
     Complex test = F(s);
-    cerr << sqrt(s/GeV2) << " " << atan2(test.imag(),test.real())/pi*180 << "\n";
+    cerr << sqrt(s/GeV2) << " " << atan2(test.imag(),test.real())/Constants::pi*180 << "\n";
   }
   cerr << "join\n";
 }
@@ -781,18 +793,18 @@ double DtoKPiPiFOCUS::me2(bool vertex, const int, const Particle & inpart,
 // normalised to sum
     amp = 
       _cNR*1.067
-      +_ckappa *0.407/GeV2*amplitude(0,mD,mA,mB,mC,pres1.mass(),_mkappa ,_wkappa ,E1,ct1)
-      +_ckappa *0.407/GeV2*amplitude(0,mD,mA,mC,mB,pres2.mass(),_mkappa ,_wkappa ,E2,ct2)
+      +Complex(_ckappa *0.407/GeV2)*amplitude(0,mD,mA,mB,mC,pres1.mass(),_mkappa ,_wkappa ,E1,ct1)
+      +Complex(_ckappa *0.407/GeV2)*amplitude(0,mD,mA,mC,mB,pres2.mass(),_mkappa ,_wkappa ,E2,ct2)
       +_cK892             *amplitude(1,mD,mA,mB,mC,pres1.mass(),_mK892  ,_wK892  ,E1,ct1)
       +_cK892             *amplitude(1,mD,mA,mC,mB,pres2.mass(),_mK892  ,_wK892  ,E2,ct2)
       +_cK1410 *3.036     *amplitude(1,mD,mA,mB,mC,pres1.mass(),_mK1410 ,_wK1410 ,E1,ct1)
       +_cK1410 *3.036     *amplitude(1,mD,mA,mC,mB,pres2.mass(),_mK1410 ,_wK1410 ,E2,ct2)
       +_cK1680 *6.413     *amplitude(1,mD,mA,mB,mC,pres1.mass(),_mK1680 ,_wK1680 ,E1,ct1)
       +_cK1680 *6.413     *amplitude(1,mD,mA,mC,mB,pres2.mass(),_mK1680 ,_wK1680 ,E2,ct2)
-      +_cK14300*0.351/GeV2*amplitude(0,mD,mA,mB,mC,pres1.mass(),_mK14300,_wK14300,E1,ct1)
-      +_cK14300*0.351/GeV2*amplitude(0,mD,mA,mC,mB,pres2.mass(),_mK14300,_wK14300,E2,ct2)
-      +_cK14302*31.20*GeV2*amplitude(2,mD,mA,mB,mC,pres1.mass(),_mK14302,_wK14302,E1,ct1)
-      +_cK14302*31.20*GeV2*amplitude(2,mD,mA,mC,mB,pres2.mass(),_mK14302,_wK14302,E2,ct2)
+      +Complex(_cK14300*0.351/GeV2)*amplitude(0,mD,mA,mB,mC,pres1.mass(),_mK14300,_wK14300,E1,ct1)
+      +Complex(_cK14300*0.351/GeV2)*amplitude(0,mD,mA,mC,mB,pres2.mass(),_mK14300,_wK14300,E2,ct2)
+      +Complex(_cK14302*31.20*GeV2)*amplitude(2,mD,mA,mB,mC,pres1.mass(),_mK14302,_wK14302,E1,ct1)
+      +Complex(_cK14302*31.20*GeV2)*amplitude(2,mD,mA,mC,mB,pres2.mass(),_mK14302,_wK14302,E2,ct2)
       ;
   }
   // K-matrix model
@@ -827,7 +839,7 @@ Complex DtoKPiPiFOCUS::F(Energy2 s) {
   Khalf[0][1] = (s-_s0half)/snorm*(_g1*_g2 /(_s1-s)+_c120+_c121*stilde
 				   +_c122*sqr(stilde));
   Khalf[1][0] = Khalf[0][1];
-  Complex K3half = (s-_s0threehalf)/snorm*(_d110+_d111*stilde+_d112*sqr(stilde));
+  Complex K3half = double((s-_s0threehalf)/snorm*(_d110+_d111*stilde+_d112*sqr(stilde)));
   // multiply by i rho and add unit matrix
   Complex ii(0.,1.);
   Khalf[0][0] = 1.-ii*Khalf[0][0]*rho[0];
@@ -844,7 +856,7 @@ Complex DtoKPiPiFOCUS::F(Energy2 s) {
   Khalfinv[1][1] =  Khalf[0][0]/det;
   Complex K3halfinv=1./K3half;
   double shat = (s-2.*GeV2)/GeV2;
-  double conv(pi/180.);
+  double conv(Constants::pi/180.);
   // calculate the production piece
   Complex Phalf[2],P3half,etheta(cos(_theta*conv),sin(_theta*conv));
   Phalf[0] = _beta*_g1*etheta/(_s1-s)+(_c10+_c11*shat+_c12*sqr(shat))*

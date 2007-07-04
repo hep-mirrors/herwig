@@ -244,12 +244,11 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
   // compute the prefactor
   complex<InvEnergy3> pre(_coupling[imode()]/mff2);
   // the VMD factor
-  if(_includeVMD[imode()]>0)
-    {
-      Energy2 mrho2=_VMDmass[imode()]*_VMDmass[imode()];
-      Energy2 mwrho=_VMDmass[imode()]*_VMDwidth[imode()];
-      pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
-    }
+  if(_includeVMD[imode()]>0) {
+    Energy2 mrho2=_VMDmass[imode()]*_VMDmass[imode()];
+    Energy2 mwrho=_VMDmass[imode()]*_VMDwidth[imode()];
+    pre = pre*(-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
+  }
   LorentzVector<complex<Energy3> > eps;
   LorentzVector<complex<Energy> > fcurrent;
   // compute the matrix element
@@ -344,7 +343,7 @@ InvEnergy PScalarVectorFermionsDecayer::threeBodydGammads(const int imodeb,
   if(_includeVMD[imodeb]>0) {
     Energy2 mrho2=_VMDmass[imodeb]*_VMDmass[imodeb];
     Energy2 mwrho=_VMDmass[imodeb]*_VMDwidth[imodeb];
-    pre*= (-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
+    pre = pre*(-mrho2+ii*mwrho)/(mff2-mrho2+ii*mwrho);
   }
   InvEnergy6 factor=real(pre*conj(pre));
   // compute the pieces from the integration limits

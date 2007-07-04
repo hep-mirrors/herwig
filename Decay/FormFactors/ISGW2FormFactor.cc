@@ -72,7 +72,7 @@ ISGW2FormFactor::ISGW2FormFactor() {
   _CfBcBsstar = 1.0;
   _CfBcBstar  = 1.0;
   // eta-eta' mixing angle
-  _thetaeta = -pi/9.;
+  _thetaeta = -Constants::pi/9.;
   // B_c to d cbar
   addFormFactor(-541,-411  ,0,-4, 5, 1);
   addFormFactor(-541,-413  ,1,-4, 5, 1);
@@ -352,7 +352,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
   _beta1S0[1][4] = _beta1S0ub;_beta3S1[1][4] = _beta3S1ub;_beta1P[1][4] = _beta1Pub;
   _beta1S0[2][4] = _beta1S0sb;_beta3S1[2][4] = _beta3S1sb;_beta1P[2][4] = _beta1Psb;
   _beta1S0[3][4] = _beta1S0bc;_beta3S1[3][4] = _beta3S1bc;_beta1P[3][4] = _beta1Pbc;
-  _beta1S0[4][4] = 0.0       ;_beta3S1[4][4] = 0.0       ;_beta1P[4][4] = 0.0      ;
+  _beta1S0[4][4] = 0.*MeV    ;_beta3S1[4][4] = 0.*MeV    ;_beta1P[4][4] = 0.*MeV   ;
   // set up the values of mbar
   // get the particle data objects
   tcPDPtr p1S0[5][5],p3S1[5][5];
@@ -440,7 +440,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 1S0 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m1S0 = 0.;
+	m1S0 = 0.*MeV;
       }
       else {
 	m1S0 = p1S0[ix][iy]->mass();
@@ -449,7 +449,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3S1 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3S1 = 0.;
+	m3S1 = 0.*MeV;
       }
       else {
 	m3S1 = p3S1[ix][iy]->mass();
@@ -458,7 +458,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3P0 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3P0 = 0.;
+	m3P0 = 0.*MeV;
       }
       else {
 	m3P0 = p3P0[ix][iy]->mass();
@@ -467,7 +467,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3P1 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3P1 = 0.;
+	m3P1 = 0.*MeV;
       }
       else {
 	m3P1 = p3P1[ix][iy]->mass();
@@ -476,7 +476,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 3P2 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m3P2 = 0.;
+	m3P2 = 0.*MeV;
       }
       else {
 	m3P2 = p3P2[ix][iy]->mass();
@@ -485,7 +485,7 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 	generator()->log() << "Error in ISGW2FormFactor::doinit don't have "
 			   << "ParticleData object for 1P1 " << ix << " " << iy 
 			   << " setting mass to zero\n";
-	m1P1 = 0.;
+	m1P1 = 0.*MeV;
       }
       else {
 	m1P1 = p1P1[ix][iy]->mass();
@@ -508,29 +508,41 @@ inline void ISGW2FormFactor::doinit() throw(InitException) {
 }
 
 void ISGW2FormFactor::persistentOutput(PersistentOStream & os) const {
-  os <<_mdown << _mup << _mstrange << _mcharm << _mbottom << _beta1S0ud 
-     << _beta1S0us << _beta1S0ss << _beta1S0cu << _beta1S0cs << _beta1S0ub 
-     << _beta1S0sb << _beta1S0cc << _beta1S0bc << _beta3S1ud << _beta3S1us 
-     << _beta3S1ss << _beta3S1cu << _beta3S1cs << _beta3S1ub << _beta3S1sb 
-     << _beta3S1cc << _beta3S1bc << _beta1Pud  << _beta1Pus  << _beta1Pss  
-     << _beta1Pcu  << _beta1Pcs  << _beta1Pub  << _beta1Psb  << _beta1Pcc << _beta1Pbc
+  os << ounit(_mdown,GeV)  << ounit(_mup,GeV) << ounit(_mstrange,GeV) 
+     << ounit(_mcharm,GeV) << ounit(_mbottom,GeV) << ounit(_beta1S0ud,GeV)
+     << ounit(_beta1S0us,GeV) << ounit(_beta1S0ss,GeV) << ounit(_beta1S0cu,GeV) 
+     << ounit(_beta1S0cs,GeV) << ounit(_beta1S0ub,GeV) << ounit(_beta1S0sb,GeV) 
+     << ounit(_beta1S0cc,GeV) << ounit(_beta1S0bc,GeV) << ounit(_beta3S1ud,GeV) 
+     << ounit(_beta3S1us,GeV) << ounit(_beta3S1ss,GeV) << ounit(_beta3S1cu,GeV) 
+     << ounit(_beta3S1cs,GeV) << ounit(_beta3S1ub,GeV) << ounit(_beta3S1sb,GeV) 
+     << ounit(_beta3S1cc,GeV) << ounit(_beta3S1bc,GeV) << ounit(_beta1Pud ,GeV) 
+     << ounit(_beta1Pus ,GeV) << ounit(_beta1Pss ,GeV) << ounit(_beta1Pcu ,GeV) 
+     << ounit(_beta1Pcs ,GeV) << ounit(_beta1Pub ,GeV) << ounit(_beta1Psb ,GeV) 
+     << ounit(_beta1Pcc ,GeV) << ounit(_beta1Pbc ,GeV)
      << _alphamuQM  << _CfDrho << _CfDKstar << _CfDsKstar << _CfDsphi 
      << _CfBrho << _CfBDstar << _CfBsKstar << _CfBsDstar << _CfBcDstar << _CfBcpsi
-     << _CfBcBsstar << _CfBcBstar << _thetaeta << _mquark << _alphaQ << _beta1S0 
-     << _mass1S0 << _beta3S1 << _beta1P << _massPoh << _massPth << _includeaW;
+     << _CfBcBsstar << _CfBcBstar << _thetaeta << ounit(_mquark,GeV) << _alphaQ 
+     << ounit(_beta1S0,GeV) << ounit(_mass1S0,GeV) << ounit(_beta3S1,GeV) 
+     << ounit(_beta1P,GeV) << ounit(_massPoh,GeV) << ounit(_massPth,GeV) << _includeaW;
 }
 
 void ISGW2FormFactor::persistentInput(PersistentIStream & is, int) {
-  is >>_mdown >> _mup >> _mstrange >> _mcharm >> _mbottom >> _beta1S0ud 
-     >> _beta1S0us >> _beta1S0ss >> _beta1S0cu >> _beta1S0cs >> _beta1S0ub 
-     >> _beta1S0sb >> _beta1S0cc >> _beta1S0bc >> _beta3S1ud >> _beta3S1us 
-     >> _beta3S1ss >> _beta3S1cu >> _beta3S1cs >> _beta3S1ub >> _beta3S1sb 
-     >> _beta3S1cc >> _beta3S1bc >> _beta1Pud  >> _beta1Pus  >> _beta1Pss  
-     >> _beta1Pcu  >> _beta1Pcs  >> _beta1Pub  >> _beta1Psb  >> _beta1Pcc >> _beta1Pbc
+  is >> iunit(_mdown,GeV) >> iunit(_mup,GeV) >> iunit(_mstrange,GeV) 
+     >> iunit(_mcharm,GeV) >> iunit(_mbottom,GeV) >> iunit(_beta1S0ud,GeV) 
+     >> iunit(_beta1S0us,GeV) >> iunit(_beta1S0ss,GeV) >> iunit(_beta1S0cu,GeV) 
+     >> iunit(_beta1S0cs,GeV) >> iunit(_beta1S0ub,GeV) >> iunit(_beta1S0sb,GeV) 
+     >> iunit(_beta1S0cc,GeV) >> iunit(_beta1S0bc,GeV) >> iunit(_beta3S1ud,GeV) 
+     >> iunit(_beta3S1us,GeV) >> iunit(_beta3S1ss,GeV) >> iunit(_beta3S1cu,GeV) 
+     >> iunit(_beta3S1cs,GeV) >> iunit(_beta3S1ub,GeV) >> iunit(_beta3S1sb,GeV) 
+     >> iunit(_beta3S1cc,GeV) >> iunit(_beta3S1bc,GeV) >> iunit(_beta1Pud ,GeV) 
+     >> iunit(_beta1Pus ,GeV) >> iunit(_beta1Pss ,GeV) >> iunit(_beta1Pcu ,GeV) 
+     >> iunit(_beta1Pcs ,GeV) >> iunit(_beta1Pub ,GeV) >> iunit(_beta1Psb ,GeV) 
+     >> iunit(_beta1Pcc ,GeV) >> iunit(_beta1Pbc ,GeV) 
      >> _alphamuQM >> _CfDrho >> _CfDKstar >> _CfDsKstar >> _CfDsphi 
      >> _CfBrho >> _CfBDstar >> _CfBsKstar >> _CfBsDstar >> _CfBcDstar >> _CfBcpsi
-     >> _CfBcBsstar >> _CfBcBstar >> _thetaeta >> _mquark >> _alphaQ >> _beta1S0 
-     >> _mass1S0 >> _beta3S1 >> _beta1P >> _massPoh >> _massPth >> _includeaW;
+     >> _CfBcBsstar >> _CfBcBstar >> _thetaeta >> iunit(_mquark,GeV) >> _alphaQ 
+     >> iunit(_beta1S0,GeV) >> iunit(_mass1S0,GeV) >> iunit(_beta3S1,GeV) 
+     >> iunit(_beta1P,GeV) >> iunit(_massPoh,GeV) >> iunit(_massPth,GeV) >> _includeaW;
 }
 
 ClassDescription<ISGW2FormFactor> ISGW2FormFactor::initISGW2FormFactor;
@@ -811,7 +823,7 @@ void ISGW2FormFactor::Init() {
   static Parameter<ISGW2FormFactor,double> interfaceThetaEtaEtaPrime
     ("ThetaEtaEtaPrime",
      "The eta-eta' mixing angle",
-     &ISGW2FormFactor::_thetaeta, -pi/9., -pi, pi,
+     &ISGW2FormFactor::_thetaeta, -Constants::pi/9., -Constants::pi, Constants::pi,
      false, false, true);
 
   static Switch<ISGW2FormFactor,bool> interfaceIncludeaW
@@ -847,7 +859,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
   // of the mesons
   Energy mtildeX(mq+ms),mtildeY(mQ+ms),mup(mq*mQ/(mQ+mq)),mum(mq*mQ/(mQ-mq));
   // wavefunction parameters for the mesons
-  Energy betaX(0.),mbarX(0.),
+  Energy betaX(0.*MeV),mbarX(0.*MeV),
     betaY(_beta1S0[ifl0-1][ifls-1]),mbarY(_mass1S0[ifl0-1][ifls-1]);
   double Cf(1.);
   // the wavefunction parameter for the outgoing meson
@@ -926,12 +938,14 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
   // work out wtilde
   double wt(1.+0.5*tmmt/mbarX/mbarY);
   // storage of the form factors
-  double fpmfm(0.),fppfm(0.),f(0.),g(0.),appam(0.),apmam(0.),
-    h(0.),k(0.),bp(0.),bm(0.);
+  Energy f(0.*MeV);
+  InvEnergy g(0./MeV),appam(0./MeV),apmam(0./MeV);
+  InvEnergy2 h(0./MeV2),bp(0./MeV2),bm(0./MeV2);
+  double fpmfm(0.),fppfm(0.),k(0.);
   // scalar and vector from 1S levels
   if(ispin==0) {
     // parameters for the beta functions
-    double asopi(alphaS(mq,mq*mQ)/pi),w(1.+0.5*tmmt/mX/mY);
+    double asopi(alphaS(mq,mq*mQ)/Constants::pi),w(1.+0.5*tmmt/mX/mY);
     double aI(-6./(33.-2.*Nf)),rw(1./sqrt(w*w-1)*log(w+sqrt(w*w-1.)));
     double aLw(8./(33.-2.*Nfp)*(w*rw-1.)); 
     double cji(pow(_alphaQ[ifl0-1]/_alphaQ[ifl1-1],aI));
@@ -953,37 +967,37 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
       fn/=(fact*fact);
       double betaapmam=1./3.-4./3./(1-zji)-chiji
 	+gamji*(1.-2./3.*(1.+zji)/(1.-zji)/(1.-zji));
-      f     = Cf*fn*rmbmtX*rmbmtY*cji*(1.+asopi*(-2./3.+gamji));
-      g     = fn/rmbmtX/rmbmtY*cji*(1.+asopi*( 2./3.+gamji));
-      appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY)*cji;
-      apmam = fn/rmbmtX/rmbmtY*cji*(1.+asopi*betaapmam);
+      double ftemp  = Cf*fn*rmbmtX*rmbmtY*cji*(1.+asopi*(-2./3.+gamji));
+      double gtemp  = fn/rmbmtX/rmbmtY*cji*(1.+asopi*( 2./3.+gamji));
+      double amtemp = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY)*cji;
+      double aptemp = fn/rmbmtX/rmbmtY*cji*(1.+asopi*betaapmam);
       // rest of the calculation
-      f     *=mtildeY*(1.+wt+0.5*ms*(wt-1.)/mup);
-      g     *=0.5*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
-      appam *=(ms*betaX*betaX/(1.+wt)/mq/mQ/beta2XY*
-	       (1.-0.5*ms*betaX*betaX/mtildeY/beta2XY)
-	       +asopi/mtildeY*(-1.-chiji+4./3./(1.-zji)
-			       +2./3.*(1.+zji)/(1.-zji)/(1.-zji)*gamji));
-      apmam *=-1./mtildeX*(mtildeY/mQ
-			   -0.5*ms*betaX*betaX/mup/beta2XY
-			   +wt*ms*mtildeY*betaX*betaX/(wt+1.)/mq/mQ/beta2XY*
-			   (1.-0.5*ms/mtildeY*betaX*betaX/beta2XY)); 
+      f     =    ftemp*mtildeY*(1.+wt+0.5*ms*(wt-1.)/mup);
+      g     =0.5*gtemp*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
+      appam = aptemp*(ms*betaX*betaX/(1.+wt)/mq/mQ/beta2XY*
+		      (1.-0.5*ms*betaX*betaX/mtildeY/beta2XY)
+		      +asopi/mtildeY*(-1.-chiji+4./3./(1.-zji)
+				      +2./3.*(1.+zji)/(1.-zji)/(1.-zji)*gamji));
+      apmam =-amtemp/mtildeX*(mtildeY/mQ
+			      -0.5*ms*betaX*betaX/mup/beta2XY
+			      +wt*ms*mtildeY*betaX*betaX/(wt+1.)/mq/mQ/beta2XY*
+			      (1.-0.5*ms/mtildeY*betaX*betaX/beta2XY)); 
     }
     else if(jspin==2) {
       // factors for the F function
       double fact((1.+1./18.*r2*tmmt));
       fn*=betar/(fact*fact*fact);
-      h = fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
-      k = fn*rmbmtX/rmbmtY;
-      double bppbm(fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY*rmbmtY*rmbmtY));
-      double bpmbm(fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY));
+      double htemp = fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
+      double ktemp = fn*rmbmtX/rmbmtY;
+      double bptemp(fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY*rmbmtY*rmbmtY));
+      double bmtemp(fn/rmbmtX/(rmbmtY*rmbmtY*rmbmtY));
       // functions themselves
       double or2(sqrt(0.5));
-      h *= 0.5*ms*or2/mtildeY/betaY*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
-      k *= or2*ms/betaY*(1.+wt);
-      bppbm *= 0.25*or2*ms*ms/mq/mQ/mtildeY/betaY*betaX*betaX/beta2XY*
+      h = 0.5*htemp*ms*or2/mtildeY/betaY*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
+      k = or2*ktemp*ms/betaY*(1.+wt);
+      InvEnergy2 bppbm = 0.25*bptemp*or2*ms*ms/mq/mQ/mtildeY/betaY*betaX*betaX/beta2XY*
 	(1.-0.5*ms/mtildeY*betaX*betaX/beta2XY);
-      bpmbm *= -or2*ms/mQ/mtildeX/betaY*
+      InvEnergy2 bpmbm = -or2*bmtemp*ms/mQ/mtildeX/betaY*
 	(1.-0.5*ms*mQ/mup/mtildeY*betaX*betaX/beta2XY
 	 +0.25*ms/mq*betaX*betaX/beta2XY*(1.-0.5*ms/mtildeY*betaX*betaX/beta2XY));
       // conversion
@@ -1005,32 +1019,33 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
     // factors for the F and R functions
     double fact=(1.+1./18.*r2*tmmt);
     fn*=betar/(fact*fact*fact);
-    f     = fn*rmbmtX*rmbmtY;
-    g     = fn/rmbmtX/rmbmtY;
-    appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
-    apmam = fn/rmbmtX/rmbmtY;
+    double ftemp  = fn*rmbmtX*rmbmtY;
+    double gtemp  = fn/rmbmtX/rmbmtY;
+    double aptemp = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
+    double amtemp = fn/rmbmtX/rmbmtY;
     // light meson or onium
     if((ifls<3&&ifl1<3)||(ifls==ifl1)) {
       double oor2(sqrt(0.5));
-      f     *= oor2*mtildeY*betaY*(1./mup
-				   +ms*mtildeX/3./mq/betaY/betaY*(wt-1.)*(wt-1.));
-      g     *= oor2*(0.25*mtildeY*betaY/mQ/mq/mtildeX+(wt-1.)*ms/6./mtildeX/betaY);
-      appam *= oor2*ms/mtildeY/betaY*(1.-ms/mq+0.5*ms/mup*betaY*betaY/beta2XY);
-      apmam *= oor2*ms/mq/betaY*((4.-wt)/3.
-				 -0.5*ms*mq/mtildeX/mup*betaY*betaY/beta2XY);
+      f     = oor2*ftemp*mtildeY*betaY*(1./mup
+				       +ms*mtildeX/3./mq/betaY/betaY*(wt-1.)*(wt-1.));
+      g     = oor2*gtemp *(0.25*mtildeY*betaY/mQ/mq/mtildeX+(wt-1.)*ms/6./mtildeX/betaY);
+      appam = oor2*aptemp*ms/mtildeY/betaY*(1.-ms/mq+0.5*ms/mup*betaY*betaY/beta2XY);
+      apmam = oor2*amtemp*ms/mq/betaY*((4.-wt)/3.
+				       -0.5*ms*mq/mtildeX/mup*betaY*betaY/beta2XY);
     }
     // heavy meson
     else {
       double oor3(1./sqrt(3.));
-      f     *=-2.*oor3*mtildeY*betaY*
+      f     =-2.*ftemp*oor3*mtildeY*betaY*
 	(1./mq+0.5*mtildeX*ms*(wt-1.)/betaY/betaY*
 	 (0.5*(wt+1.)/mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY)); 
-      g     *=-0.5*oor3*(0.5*(1.+wt)+0.5*betaY*betaY*mtildeY/ms/mq/mQ)*ms
+      g     =-0.5*gtemp*oor3*(0.5*(1.+wt)+0.5*betaY*betaY*mtildeY/ms/mq/mQ)*ms
 	/betaY/mtildeX;
-      appam *=-0.5/oor3*ms/betaY/mtildeY*(1.-ms/3./mq-ms/3.*betaY*betaY/beta2XY*
-					  (0.5/mum-1./mup));
-      apmam *=-0.5*oor3*ms/betaY/mtildeX*((2.-wt)*mtildeX/mq+ms*betaY*betaY/beta2XY*
-					  (0.5/mum-1./mup));
+      appam =-0.5*aptemp/oor3*ms/betaY/mtildeY*
+	(1.-ms/3./mq-ms/3.*betaY*betaY/beta2XY*
+	 (0.5/mum-1./mup));
+      apmam =-0.5*amtemp*oor3*ms/betaY/mtildeX*
+	((2.-wt)*mtildeX/mq+ms*betaY*betaY/beta2XY*(0.5/mum-1./mup));
     }
   }
   // 1 1/2 P 1 (3 P1)
@@ -1038,30 +1053,30 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
     // factors for the F and R functions
     double fact=(1.+1./18.*r2*tmmt);
     fn*=betar/(fact*fact*fact);
-    f     = fn*rmbmtX*rmbmtY;
-    g     = fn/rmbmtX/rmbmtY;
-    appam = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
-    apmam = fn/rmbmtX/rmbmtY;
+    double ftemp  = fn*rmbmtX*rmbmtY;
+    double gtemp  = fn/rmbmtX/rmbmtY;
+    double aptemp = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY);
+    double amtemp = fn/rmbmtX/rmbmtY;
     // light meson
     if(ifls<3&&ifl1<3||(ifl1==ifls)) {
-      f     *=-mtildeY*betaY*(1./mum
-			      +ms*mtildeX*(wt-1.)/betaY/betaY*
-			      ((5.+wt)/6./mq-0.5/mum*ms/mtildeX*
-			       betaY*betaY/beta2XY)); 
-      g     *=-0.5*ms/mtildeX/betaY*(5.+wt)/6.;
-      appam *=-0.5*ms*mtildeX/mq/mtildeY/betaY*
+      f     =-ftemp *mtildeY*betaY*(1./mum
+				   +ms*mtildeX*(wt-1.)/betaY/betaY*
+				   ((5.+wt)/6./mq-0.5/mum*ms/mtildeX*
+				    betaY*betaY/beta2XY)); 
+      g     =-gtemp *0.5*ms/mtildeX/betaY*(5.+wt)/6.;
+      appam =-aptemp*0.5*ms*mtildeX/mq/mtildeY/betaY*
 	(1.-0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY); 
-      apmam *= 0.5*ms/mq/betaY*((wt+2.)/3.
-				-0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY);
+      apmam = amtemp*0.5*ms/mq/betaY*((wt+2.)/3.
+				      -0.5*ms*mq/mtildeX/mum*betaY*betaY/beta2XY);
     }
     // heavy meson
     else {
       double r2o3(sqrt(2./3.));
-      f     *= r2o3*mtildeY*betaY*(0.5/mq-1.5/mQ+ms*mtildeX*(wt-1.)/betaY/betaY*
-				   (1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY));
-      g     *= 0.5*r2o3*ms/betaY/mtildeX*(1.-0.25*betaY*betaY*mtildeY/ms/mq/mQ);
-      appam *= 0.5*r2o3*ms*ms*betaX*betaX/mtildeY/mq/betaY/beta2XY; 
-      apmam *= -r2o3*ms/mtildeX/betaY*(1.+0.5*ms*betaX*betaX/mq/beta2XY);
+      f     =  ftemp*r2o3*mtildeY*betaY*(0.5/mq-1.5/mQ+ms*mtildeX*(wt-1.)/betaY/betaY*
+					 (1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY));
+      g     =  gtemp *0.5*r2o3*ms/betaY/mtildeX*(1.-0.25*betaY*betaY*mtildeY/ms/mq/mQ);
+      appam =  aptemp*0.5*r2o3*ms*ms*betaX*betaX/mtildeY/mq/betaY/beta2XY; 
+      apmam = -amtemp*r2o3*ms/mtildeX/betaY*(1.+0.5*ms*betaX*betaX/mq/beta2XY);
     }
   }
   else {
@@ -1078,7 +1093,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
     f2 = fp;
   }
   else if(jspin==1) {
-    double ap(0.5*(appam+apmam)),am(0.5*(appam-apmam));
+    InvEnergy ap(0.5*(appam+apmam)),am(0.5*(appam-apmam));
     // convert to the standard notation
     Energy msum(mX+mY),mdiff(mY-mX);
     Complex ii(0.,1.);
@@ -1088,10 +1103,11 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
     f4 =  ii*g*msum;
   }
   else if(jspin==2) {
-    f1 = h;
+    Energy msum(mX+mY);
+    f1 = h*sqr(msum);
     f2 = k;
-    f3 = bp;
-    f4 = bm;
+    f3 = bp*sqr(msum);
+    f4 = bm*sqr(msum);
   }
   // special for mixing
   double fact;
@@ -1130,11 +1146,18 @@ void ISGW2FormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int 
 
 
 // form-factor for scalar to tensor
-void ISGW2FormFactor::ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1, 
-					     Energy mY, Energy mX,
-					     Complex & h,Complex & k,
-					     Complex & bp,Complex & bm) const {
-  formFactor(q2,iloc,id0,id1,mY,mX,h,k,bp,bm);
+void ISGW2FormFactor::
+ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1, 
+		       Energy mY, Energy mX, complex<InvEnergy2> & h,
+		       Complex & k,complex<InvEnergy2> & bp,
+		       complex<InvEnergy2> & bm) const {
+  Complex f1,f2,f3,f4;
+  formFactor(q2,iloc,id0,id1,mY,mX,f1,f2,f3,f4);
+  Energy msum(mX+mY);
+  h = f1/sqr(msum);
+  k = f2;
+  bp = f3/sqr(msum);
+  bm = f4/sqr(msum);
 }
 
 void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {

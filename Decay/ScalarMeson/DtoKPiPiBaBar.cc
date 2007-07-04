@@ -80,10 +80,10 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   // f^prod
   _fprodre = -10.22; _fprodim = -6.35;
   // zero the masses
-  _mpi   = 0.;
-  _mK    = 0.;
-  _meta  = 0.;
-  _metap = 0.;
+  _mpi   = 0.*MeV;
+  _mK    = 0.*MeV;
+  _meta  = 0.*MeV;
+  _metap = 0.*MeV;
   // rho_3 interpolation tables
   _initrho3 = false;
   double rscale[101]={0.311677,0.31856 ,0.325443,0.332326,0.339209,
@@ -180,21 +180,21 @@ DtoKPiPiBaBar::DtoKPiPiBaBar() {
   _msigmap  = 1014.00*MeV; _wsigmap  =  88.00*MeV;
   // zero all the amplitudes
   _aKm892   = 0.;
-  _aKm14300 = 0.;
-  _aKm14302 = 0.;
+  _aKm14300 = 0.*MeV2;
+  _aKm14302 = 0./MeV2;
   _aKm1410  = 0.;
   _aKm1680  = 0.;
   _aKp892   = 0.;
-  _aKp14300 = 0.;
-  _aKp14302 = 0.;
+  _aKp14300 = 0.*MeV2;
+  _aKp14302 = 0./MeV2;
   _arho770  = 0.;
   _aomega   = 0.;
-  _af2      = 0.;
+  _af2      = 0./MeV2;
   _arho1450 = 0.;
-  _af980    = 0.;
-  _af1370   = 0.;
-  _asigma   = 0.;
-  _asigmap  = 0.;
+  _af980    = 0.*MeV2;
+  _af1370   = 0.*MeV2;
+  _asigma   = 0.*MeV2;
+  _asigmap  = 0.*MeV2;
   _aNR      = 0.;
   // generate the intermediates
   generateIntermediates(true);
@@ -204,7 +204,7 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // calculate the amplitudes for the different terms
   if(_imodel==0) {
-    double fact = pi/180.;
+    double fact = Constants::pi/180.;
     _aKm892   = _k892mamp  *Complex(cos(_k892mphase  *fact),sin(_k892mphase  *fact));
     _aKm14300 = _k1430mamp0*Complex(cos(_k1430mphase0*fact),sin(_k1430mphase0*fact));
     _aKm14302 = _k1430mamp2*Complex(cos(_k1430mphase2*fact),sin(_k1430mphase2*fact));
@@ -225,21 +225,21 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
   }
   else {
     _aKm892   = Complex(_k892mre  ,_k892mim  );
-    _aKm14300 = Complex(_k1430mre0,_k1430mim0);
-    _aKm14302 = Complex(_k1430mre2,_k1430mim2);
+    _aKm14300 = complex<Energy2>(_k1430mre0,_k1430mim0);
+    _aKm14302 = complex<InvEnergy2>(_k1430mre2,_k1430mim2);
     _aKm1410  = Complex(_k1410mre ,_k1410mim );
     _aKm1680  = Complex(_k1680mre ,_k1680mim );
     _aKp892   = Complex(_k892pre  ,_k892pim  );
-    _aKp14300 = Complex(_k1430pre0,_k1430pim0);
-    _aKp14302 = Complex(_k1430pre2,_k1430pim2);
+    _aKp14300 = complex<Energy2>(_k1430pre0,_k1430pim0);
+    _aKp14302 = complex<InvEnergy2>(_k1430pre2,_k1430pim2);
     _arho770  = Complex(_rho770re ,_rho770im );
     _aomega   = Complex(_omegare  ,_omegaim  );
-    _af2      = Complex(_f2re     ,_f2re     );
+    _af2      = complex<InvEnergy2>(_f2re     ,_f2re     );
     _arho1450 = Complex(_rho1450re,_rho1450im);
-    _af980    = 0.;
-    _af1370   = 0.;
-    _asigma   = 0.;
-    _asigmap  = 0.;
+    _af980    = 0.*MeV2;
+    _af1370   = 0.*MeV2;
+    _asigma   = 0.*MeV2;
+    _asigmap  = 0.*MeV2;
     _aNR      = 0.;
   }
   if(_malpha  .size()!=5||_gKK     .size()!=5||_betaim.size()!=5||
@@ -256,7 +256,7 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
   _fprod = Complex(_fprodre,_fprodim);
   _beta.resize(5);
   for(unsigned int ix=0;ix<5;++ix) {
-    _beta[ix]=Complex(_betare[ix],_betaim[ix]);
+    _beta[ix]=complex<Energy>(_betare[ix],_betaim[ix]);
   }
   // masses for the K-matrix
   _mpi   = getParticleData(ParticleID::piplus  )->mass();
@@ -434,7 +434,7 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
       _rho3scale.push_back(s/GeV2);
     }
   }
-  _rho3inter = new_ptr(Interpolator(_rho3,_rho3scale,3));
+  _rho3inter = new_ptr(Interpolator<double,double>(_rho3,_rho3scale,3));
 
 
   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
@@ -447,10 +447,10 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
    Energy mB=getParticleData(ParticleID::piplus)->mass();
   for(Energy2 s=4.*sqr(_mpi);s<2.*GeV2;s+=0.01*GeV2) {
     Complex test=
-      _af980  /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_mf980  ,_wf980  )+
-      _af1370 /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_mf1370 ,_wf1370 )+
-      _asigma /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_msigma ,_wsigma )+
-      _asigmap/GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.,0.,_msigmap,_wsigmap)+
+      _af980  /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.*MeV,0.*MeV,_mf980  ,_wf980  )+
+      _af1370 /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.*MeV,0.*MeV,_mf1370 ,_wf1370 )+
+      _asigma /GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.*MeV,0.*MeV,_msigma ,_wsigma )+
+      _asigmap/GeV2*amplitude(0,false,mD,mB,mB,mA,sqrt(s),0.*MeV,0.*MeV,_msigmap,_wsigmap)+
       _aNR;
     cerr << s/GeV2 << " " << real(test*conj(test)) << "\n";
   }
@@ -487,59 +487,71 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
 }
 
 void DtoKPiPiBaBar::persistentOutput(PersistentOStream & os) const {
-  os << _imodel << _gpipi << _gKK << _g4pi << _getaeta << _getaetap
-     << _malpha << _fscatt << _s0scatt << _sA0 << _sA << _rho0 
-     << _betare << _betaim << _beta << _fprodre << _fprodim << _fprod
-     << _k892mre << _k892mim << _k1430mre0 << _k1430mim0 << _k1430mre2
-     << _k1430mim2 << _k1410mre << _k1410mim << _k1680mre << _k1680mim
-     << _k892pre << _k892pim << _k1430pre0 << _k1430pim0 << _k1430pre2
-     << _k1430pim2 << _rho770re << _rho770im << _omegare << _omegaim
-     << _f2re << _f2im << _rho1450re << _rho1450im << _k892mamp 
-     << _k892mphase << _k1430mamp0 << _k1430mphase0 << _k1430mamp2 
-     << _k1430mphase2 << _k1410mamp << _k1410mphase << _k1680mamp 
-     << _k1680mphase << _k892pamp << _k892pphase << _k1430pamp0 
-     << _k1430pphase0 << _k1430pamp2 << _k1430pphase2 << _rho770amp 
-     << _rho770phase << _omegaamp << _omegaphase << _f2amp << _f2phase 
-     << _rho1450amp << _rho1450phase << _f980amp << _f980phase << _f1370amp 
-     << _f1370phase << _sigmaamp << _sigmaphase << _sigmapamp << _sigmapphase 
-     << _nonamp  << _nonphase << _rD0 << _rres << _aKm892 << _aKm14300 
-     << _aKm14302 << _aKm1410 << _aKm1680 << _aKp892 <<  _aKp14300 << _aKp14302 
-     << _arho770 << _aomega << _af2 << _arho1450 << _af980 << _af1370 
-     << _asigma << _asigmap << _aNR <<  _mK892 << _mK14300 << _mK14302 
-     << _mK1410 << _mK1680 << _mrho770 << _momega << _mf2 << _mrho1450 
-     << _mf980 << _mf1370 << _msigma << _msigmap << _wK892 << _wK14300 
-     << _wK14302 << _wK1410 << _wK1680 << _wrho770 << _womega << _wf2 
-     << _wrho1450 << _wf980 << _wf1370 << _wsigma << _wsigmap << _maxwgt 
-     << _weights << _gialpha << _mpi << _mK << _meta << _metap << _rho3scale 
-     << _rho3 << _initrho3 << _rho3inter;
+  os << _imodel << ounit(_gpipi,GeV) << ounit(_gKK,GeV) << ounit(_g4pi,GeV) 
+     << ounit(_getaeta,GeV) << ounit(_getaetap,GeV) << ounit(_malpha,GeV) 
+     << _fscatt << ounit(_s0scatt,GeV2) << ounit(_sA0,GeV2) << ounit(_sA,GeV2) 
+     << ounit(_rho0,GeV2) << ounit(_betare,GeV) << ounit(_betaim,GeV) << ounit(_beta,GeV) 
+     << _fprodre << _fprodim << _fprod << _k892mre << _k892mim 
+     << ounit(_k1430mre0,GeV2) << ounit(_k1430mim0,GeV2) << ounit(_k1430mre2,1./GeV2)
+     << ounit(_k1430mim2,1./GeV2) << _k1410mre << _k1410mim << _k1680mre << _k1680mim
+     << _k892pre << _k892pim << ounit(_k1430pre0,GeV2) << ounit(_k1430pim0,GeV2) 
+     << ounit(_k1430pre2,1./GeV2) << ounit(_k1430pim2,1./GeV2) << _rho770re << _rho770im 
+     << _omegare << _omegaim << ounit(_f2re,1./GeV2) << ounit(_f2im,1./GeV2) << _rho1450re 
+     << _rho1450im << _k892mamp << _k892mphase << ounit(_k1430mamp0,GeV2) << _k1430mphase0 
+     << ounit(_k1430mamp2,1./GeV2) << _k1430mphase2 << _k1410mamp << _k1410mphase << _k1680mamp 
+     << _k1680mphase << _k892pamp << _k892pphase << ounit(_k1430pamp0,GeV2) 
+     << _k1430pphase0 << ounit(_k1430pamp2,1./GeV2) << _k1430pphase2 << _rho770amp 
+     << _rho770phase << _omegaamp << _omegaphase << ounit(_f2amp,1./GeV2) << _f2phase 
+     << _rho1450amp << _rho1450phase << ounit(_f980amp,GeV2) << _f980phase 
+     << ounit(_f1370amp,GeV2) << _f1370phase << ounit(_sigmaamp,GeV2) << _sigmaphase 
+     << ounit(_sigmapamp,GeV2) << _sigmapphase << _nonamp  << _nonphase 
+     << ounit(_rD0,1./GeV) << ounit(_rres,1./GeV) << _aKm892 << ounit(_aKm14300,GeV2) 
+     << ounit(_aKm14302,1./GeV2) << _aKm1410 << _aKm1680 << _aKp892 <<  ounit(_aKp14300,GeV2) 
+     << ounit(_aKp14302,1./GeV2) << _arho770 << _aomega << ounit(_af2,1./GeV2) << _arho1450 
+     << ounit(_af980,GeV2) << ounit(_af1370,GeV2) << ounit(_asigma,GeV2) << ounit(_asigmap,GeV2)
+     << _aNR <<  ounit(_mK892,GeV) << ounit(_mK14300,GeV) << ounit(_mK14302,GeV) 
+     << ounit(_mK1410,GeV) << ounit(_mK1680,GeV) << ounit(_mrho770,GeV) << ounit(_momega,GeV) 
+     << ounit(_mf2,GeV) << ounit(_mrho1450,GeV) << ounit(_mf980,GeV) << ounit(_mf1370,GeV) 
+     << ounit(_msigma,GeV) << ounit(_msigmap,GeV) << ounit(_wK892,GeV) << ounit(_wK14300,GeV) 
+     << ounit(_wK14302,GeV) << ounit(_wK1410,GeV) << ounit(_wK1680,GeV) << ounit(_wrho770,GeV) 
+     << ounit(_womega,GeV) << ounit(_wf2,GeV) << ounit(_wrho1450,GeV) << ounit(_wf980,GeV) 
+     << ounit(_wf1370,GeV) << ounit(_wsigma,GeV) << ounit(_wsigmap,GeV) << _maxwgt 
+     << _weights << ounit(_gialpha,GeV) << ounit(_mpi,GeV) << ounit(_mK,GeV) << ounit(_meta,GeV) 
+     << ounit(_metap,GeV) << _rho3scale << _rho3 << _initrho3 << _rho3inter;
 }
 
 void DtoKPiPiBaBar::persistentInput(PersistentIStream & is, int) {
-  is >> _imodel >> _gpipi >> _gKK >> _g4pi >> _getaeta >> _getaetap
-     >> _malpha >> _fscatt >> _s0scatt >> _sA0 >> _sA >> _rho0 
-     >> _betare >> _betaim >> _beta >> _fprodre >> _fprodim >> _fprod
-     >> _k892mre >> _k892mim >> _k1430mre0 >> _k1430mim0 >> _k1430mre2
-     >> _k1430mim2 >> _k1410mre >> _k1410mim >> _k1680mre >> _k1680mim
-     >> _k892pre >> _k892pim >> _k1430pre0 >> _k1430pim0 >> _k1430pre2
-     >> _k1430pim2 >> _rho770re >> _rho770im >> _omegare >> _omegaim
-     >> _f2re >> _f2im >> _rho1450re >> _rho1450im >> _k892mamp 
-     >> _k892mphase >> _k1430mamp0 >> _k1430mphase0 >> _k1430mamp2 
-     >> _k1430mphase2 >> _k1410mamp >> _k1410mphase >> _k1680mamp 
-     >> _k1680mphase >> _k892pamp >> _k892pphase >> _k1430pamp0 
-     >> _k1430pphase0 >> _k1430pamp2 >> _k1430pphase2 >> _rho770amp 
-     >> _rho770phase >> _omegaamp >> _omegaphase >> _f2amp >> _f2phase 
-     >> _rho1450amp >> _rho1450phase >> _f980amp >> _f980phase >> _f1370amp 
-     >> _f1370phase >> _sigmaamp >> _sigmaphase >> _sigmapamp >> _sigmapphase 
-     >> _nonamp  >> _nonphase >> _rD0 >> _rres >> _aKm892 >> _aKm14300 
-     >> _aKm14302 >> _aKm1410 >> _aKm1680 >> _aKp892 >>  _aKp14300 >> _aKp14302 
-     >> _arho770 >> _aomega >> _af2 >> _arho1450 >> _af980 >> _af1370 
-     >> _asigma >> _asigmap >> _aNR >>  _mK892 >> _mK14300 >> _mK14302 
-     >> _mK1410 >> _mK1680 >> _mrho770 >> _momega >> _mf2 >> _mrho1450 
-     >> _mf980 >> _mf1370 >> _msigma >> _msigmap >> _wK892 >> _wK14300 
-     >> _wK14302 >> _wK1410 >> _wK1680 >> _wrho770 >> _womega >> _wf2 
-     >> _wrho1450 >> _wf980 >> _wf1370 >> _wsigma >> _wsigmap >> _maxwgt 
-     >> _weights >> _gialpha >> _mpi >> _mK >> _meta >> _metap >> _rho3scale 
-     >> _rho3 >> _initrho3 >> _rho3inter;
+  is >> _imodel >> iunit(_gpipi,GeV) >> iunit(_gKK,GeV) >> iunit(_g4pi,GeV) 
+     >> iunit(_getaeta,GeV) >> iunit(_getaetap,GeV) >> iunit(_malpha,GeV) 
+     >> _fscatt >> iunit(_s0scatt,GeV2) >> iunit(_sA0,GeV2) >> iunit(_sA,GeV2) 
+     >> iunit(_rho0,GeV2) >> iunit(_betare,GeV) >> iunit(_betaim,GeV) >> iunit(_beta,GeV) 
+     >> _fprodre >> _fprodim >> _fprod >> _k892mre >> _k892mim 
+     >> iunit(_k1430mre0,GeV2) >> iunit(_k1430mim0,GeV2) >> iunit(_k1430mre2,1./GeV2)
+     >> iunit(_k1430mim2,1./GeV2) >> _k1410mre >> _k1410mim >> _k1680mre >> _k1680mim
+     >> _k892pre >> _k892pim >> iunit(_k1430pre0,GeV2) >> iunit(_k1430pim0,GeV2) 
+     >> iunit(_k1430pre2,1./GeV2) >> iunit(_k1430pim2,1./GeV2) >> _rho770re >> _rho770im 
+     >> _omegare >> _omegaim >> iunit(_f2re,1./GeV2) >> iunit(_f2im,1./GeV2) >> _rho1450re 
+     >> _rho1450im >> _k892mamp >> _k892mphase >> iunit(_k1430mamp0,GeV2) >> _k1430mphase0 
+     >> iunit(_k1430mamp2,1./GeV2) >> _k1430mphase2 >> _k1410mamp >> _k1410mphase >> _k1680mamp 
+     >> _k1680mphase >> _k892pamp >> _k892pphase >> iunit(_k1430pamp0,GeV2) 
+     >> _k1430pphase0 >> iunit(_k1430pamp2,1./GeV2) >> _k1430pphase2 >> _rho770amp 
+     >> _rho770phase >> _omegaamp >> _omegaphase >> iunit(_f2amp,1./GeV2) >> _f2phase 
+     >> _rho1450amp >> _rho1450phase >> iunit(_f980amp,GeV2) >> _f980phase 
+     >> iunit(_f1370amp,GeV2) >> _f1370phase >> iunit(_sigmaamp,GeV2) >> _sigmaphase 
+     >> iunit(_sigmapamp,GeV2) >> _sigmapphase >> _nonamp  >> _nonphase 
+     >> iunit(_rD0,1./GeV) >> iunit(_rres,1./GeV) >> _aKm892 >> iunit(_aKm14300,GeV2) 
+     >> iunit(_aKm14302,1./GeV2) >> _aKm1410 >> _aKm1680 >> _aKp892 >>  iunit(_aKp14300,GeV2) 
+     >> iunit(_aKp14302,1./GeV2) >> _arho770 >> _aomega >> iunit(_af2,1./GeV2) >> _arho1450 
+     >> iunit(_af980,GeV2) >> iunit(_af1370,GeV2) >> iunit(_asigma,GeV2) >> iunit(_asigmap,GeV2)
+     >> _aNR >>  iunit(_mK892,GeV) >> iunit(_mK14300,GeV) >> iunit(_mK14302,GeV) 
+     >> iunit(_mK1410,GeV) >> iunit(_mK1680,GeV) >> iunit(_mrho770,GeV) >> iunit(_momega,GeV) 
+     >> iunit(_mf2,GeV) >> iunit(_mrho1450,GeV) >> iunit(_mf980,GeV) >> iunit(_mf1370,GeV) 
+     >> iunit(_msigma,GeV) >> iunit(_msigmap,GeV) >> iunit(_wK892,GeV) >> iunit(_wK14300,GeV) 
+     >> iunit(_wK14302,GeV) >> iunit(_wK1410,GeV) >> iunit(_wK1680,GeV) >> iunit(_wrho770,GeV) 
+     >> iunit(_womega,GeV) >> iunit(_wf2,GeV) >> iunit(_wrho1450,GeV) >> iunit(_wf980,GeV) 
+     >> iunit(_wf1370,GeV) >> iunit(_wsigma,GeV) >> iunit(_wsigmap,GeV) >> _maxwgt 
+     >> _weights >> iunit(_gialpha,GeV) >> iunit(_mpi,GeV) >> iunit(_mK,GeV) >> iunit(_meta,GeV) 
+     >> iunit(_metap,GeV) >> _rho3scale >> _rho3 >> _initrho3 >> _rho3inter;
 }
 
 ClassDescription<DtoKPiPiBaBar> DtoKPiPiBaBar::initDtoKPiPiBaBar;
@@ -565,40 +577,40 @@ void DtoKPiPiBaBar::Init() {
      "Use the K-matrix model",
      1);
 
-  static ParVector<DtoKPiPiBaBar,double> interfacegPiPi
+  static ParVector<DtoKPiPiBaBar,Energy> interfacegPiPi
     ("gPiPi",
      "The K-matrix coupling for the pi-pi channel",
-     &DtoKPiPiBaBar::_gpipi, -1, 0., -100., 100.,
+     &DtoKPiPiBaBar::_gpipi, GeV, -1, 1.0*GeV, -10.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static ParVector<DtoKPiPiBaBar,double> interfacegKK
+  static ParVector<DtoKPiPiBaBar,Energy> interfacegKK
     ("gKK",
      "The K-matrix coupling for the KK channel",
-     &DtoKPiPiBaBar::_gKK, -1, 0.0, -100., 100.,
+     &DtoKPiPiBaBar::_gKK, GeV, -1, 1.0*GeV, -10.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static ParVector<DtoKPiPiBaBar,double> interfaceg4pi
+  static ParVector<DtoKPiPiBaBar,Energy> interfaceg4pi
     ("g4pi",
      "The K-matrix coupling for the 4pi channel",
-     &DtoKPiPiBaBar::_g4pi, -1, 0.0, -100., 100.,
+     &DtoKPiPiBaBar::_g4pi, GeV, -1, 1.0*GeV, -10.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static ParVector<DtoKPiPiBaBar,double> interfacegetaeta
+  static ParVector<DtoKPiPiBaBar,Energy> interfacegetaeta
     ("getaeta",
      "The K-matrix coupling for the etaeta channel",
-     &DtoKPiPiBaBar::_getaeta, -1, 0.0, -100., 100.,
+     &DtoKPiPiBaBar::_getaeta, GeV, -1, 1.0*GeV, -10.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
-  static ParVector<DtoKPiPiBaBar,double> interfacegetaetap
+  static ParVector<DtoKPiPiBaBar,Energy> interfacegetaetap
     ("getaetap",
      "The K-matrix coupling for the eta etaprime channel",
-     &DtoKPiPiBaBar::_getaeta, -1, 0.0, -100., 100.,
+     &DtoKPiPiBaBar::_getaeta, GeV, -1, 1.0*GeV, -10.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
   static ParVector<DtoKPiPiBaBar,Energy> interfaceKMatrixMasses
     ("KMatrixMasses",
      "The masses of the resonances in the K-matrix fix",
-     &DtoKPiPiBaBar::_malpha, MeV, -1, 1.0*GeV, 0.0*MeV, 10.0*MeV,
+     &DtoKPiPiBaBar::_malpha, GeV, -1, 1.0*GeV, -10.0*GeV, 10.0*GeV,
      false, false, Interface::limited);
 
 //   /**
@@ -1209,16 +1221,16 @@ double DtoKPiPiBaBar::me2(bool vertex, const int ichan,
   if(ichan<0) {
     amp =0.
       +_aKm892       *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK892   ,_wK892   )
-      +_aKm14300/GeV2*amplitude(0,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300 ,_wK14300 )
-      +_aKm14302*GeV2*amplitude(2,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302 ,_wK14302 )
+      +Complex(_aKm14300/GeV2)*amplitude(0,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14300 ,_wK14300 )
+      +Complex(_aKm14302*GeV2)*amplitude(2,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK14302 ,_wK14302 )
       +_aKm1410      *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK1410  ,_wK1410  )
       +_aKm1680      *amplitude(1,false,mD,mA,mC,mB,mAC,mAB,mBC,_mK1680  ,_wK1680  )
       +_aKp892       *amplitude(1,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK892   ,_wK892   )
-      +_aKp14300/GeV2*amplitude(0,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14300 ,_wK14300 )
-      +_aKp14302*GeV2*amplitude(2,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14302 ,_wK14302 )
+      +Complex(_aKp14300/GeV2)*amplitude(0,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14300 ,_wK14300 )
+      +Complex(_aKp14302*GeV2)*amplitude(2,false,mD,mA,mB,mC,mAB,mAC,mBC,_mK14302 ,_wK14302 )
       +_arho770      *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho770 ,_wrho770 )
       +_aomega       *amplitude(1,false,mD,mB,mC,mA,mBC,mAB,mAC,_momega  ,_womega  )
-      +_af2     *GeV2*amplitude(2,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf2     ,_wf2     )
+      +Complex(_af2     *GeV2)*amplitude(2,false,mD,mB,mC,mA,mBC,mAB,mAC,_mf2     ,_wf2     )
       +_arho1450     *amplitude(1,true ,mD,mB,mC,mA,mBC,mAB,mAC,_mrho1450,_wrho1450)
       ;
     if(_imodel==0) {

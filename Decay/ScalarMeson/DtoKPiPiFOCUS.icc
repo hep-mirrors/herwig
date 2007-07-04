@@ -65,7 +65,7 @@ inline Complex DtoKPiPiFOCUS::amplitude(int ispin, Energy mD,
   }
   // calculate the width term
   Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres/Fr0)/mAB;
-  Complex bw = sqr(mres)-sqr(mAB)-Complex(0.,mwid);
+  complex<Energy2> bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mwid);
   return s*Fr*Fd*GeV2/bw;
 }
 

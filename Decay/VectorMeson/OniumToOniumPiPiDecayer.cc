@@ -22,57 +22,57 @@ OniumToOniumPiPiDecayer::OniumToOniumPiPiDecayer() {
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back(-2.523);_imB.push_back( 1.189);
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back(-2.523/MeV2);_imB.push_back( 1.189/MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // Upsilon(3S)->Upsilon(2S) pi pi
   _incoming.push_back(200553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back(-0.395);_imB.push_back( 0.001);
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back(-0.395/MeV2);_imB.push_back( 0.001/MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // Upsilon(2S)->Upsilon(1S) pi pi
   _incoming.push_back(100553);
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back(-0.753);_imB.push_back( 0.000);
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back(-0.753/MeV2);_imB.push_back( 0.000/MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // Upsilon(4S)->Upsilon(1S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(   553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back( 0.   );_imB.push_back( 0.   );
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // Upsilon(3S)->Upsilon(2S) pi pi
   _incoming.push_back(300553);
   _outgoing.push_back(100553);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back(-2.35   );_imB.push_back( 0.55);
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back(-2.35   /MeV2);_imB.push_back( 0.55/MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // psi(2s)->psi(1S) pi pi
   _incoming.push_back(100443);
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back(-0.336);_imB.push_back( 0.   );
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back(-0.336/MeV2);_imB.push_back( 0.   /MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // psi(3770)->psi(1S) pi pi
   _incoming.push_back(30443);
   _outgoing.push_back(   443);
   _maxweight.push_back(1.);
   _maxweight.push_back(1.);
-  _reA.push_back( 1.   );_imA.push_back( 0.   );
-  _reB.push_back( 0.   );_imB.push_back( 0.   );
-  _reC.push_back( 0.   );_imC.push_back( 0.   );
+  _reA.push_back( 1.   /MeV2);_imA.push_back( 0.   /MeV2);
+  _reB.push_back( 0.   /MeV2);_imB.push_back( 0.   /MeV2);
+  _reC.push_back( 0.   /MeV2);_imC.push_back( 0.   /MeV2);
   // Initial size of the vectors
   _initsize=_incoming.size();
   // don'y generate the intermediates in the phase-space
@@ -92,9 +92,9 @@ void OniumToOniumPiPiDecayer::doinit() throw(InitException) {
 			  << Exception::runerror;
   // construct the complex couplings
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    _cA.push_back(Complex(_reA[ix],_imA[ix]));
-    _cB.push_back(Complex(_reB[ix],_imB[ix]));
-    _cC.push_back(Complex(_reC[ix],_imC[ix]));
+    _cA.push_back(complex<InvEnergy2>(_reA[ix],_imA[ix]));
+    _cB.push_back(complex<InvEnergy2>(_reB[ix],_imB[ix]));
+    _cC.push_back(complex<InvEnergy2>(_reC[ix],_imC[ix]));
   }
   // construct the decay channels
   PDVector extpart(4);
@@ -135,13 +135,17 @@ void OniumToOniumPiPiDecayer::doinit() throw(InitException) {
 
 
 void OniumToOniumPiPiDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _incoming << _outgoing << _maxweight << _initsize << _reA << _imA << _cA
-     << _reB << _imB << _cB << _reC << _imC << _cC;
+  os << _incoming << _outgoing << _maxweight << _initsize << ounit(_reA,1./GeV2) 
+     << ounit(_imA,1./GeV2) << ounit(_cA,1./GeV2) << ounit(_reB,1./GeV2) 
+     << ounit(_imB,1./GeV2) << ounit(_cB,1./GeV2) << ounit(_reC,1./GeV2) 
+     << ounit(_imC,1./GeV2) << ounit(_cC,1./GeV2);
 }
 
 void OniumToOniumPiPiDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _incoming >> _outgoing >> _maxweight >> _initsize >> _reA >> _imA >> _cA
-     >> _reB >> _imB >> _cB >> _reC >> _imC >> _cC;
+  is >> _incoming >> _outgoing >> _maxweight >> _initsize >> iunit(_reA,1./GeV2) 
+     >> iunit(_imA,1./GeV2) >> iunit(_cA,1./GeV2) >> iunit(_reB,1./GeV2) 
+     >> iunit(_imB,1./GeV2) >> iunit(_cB,1./GeV2) >> iunit(_reC,1./GeV2) 
+     >> iunit(_imC,1./GeV2) >> iunit(_cC,1./GeV2);
 }
 
 ClassDescription<OniumToOniumPiPiDecayer> OniumToOniumPiPiDecayer::initOniumToOniumPiPiDecayer;
@@ -198,40 +202,40 @@ void OniumToOniumPiPiDecayer::Init() {
      &OniumToOniumPiPiDecayer::_maxweight, -1, 1.0, 0.0, 10000.0,
      false, false, Interface::limited);
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceReA
+  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReA
     ("ReA",
      "The real part of the A coupling",
-     &OniumToOniumPiPiDecayer::_reA, -1, 1.0, -1000.0, 1000.0,
+     &OniumToOniumPiPiDecayer::_reA, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
      false, false, Interface::limited);
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceImA
+  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceImA
     ("ImA",
      "The imaginary part of the A coupling",
-     &OniumToOniumPiPiDecayer::_imA, -1, 1.0, -1000.0, 1000.0,
+     &OniumToOniumPiPiDecayer::_imA, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
      false, false, Interface::limited);
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceReB
+  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReB
     ("ReB",
      "The real part of the B coupling",
-     &OniumToOniumPiPiDecayer::_reB, -1, 1.0, -1000.0, 1000.0,
+     &OniumToOniumPiPiDecayer::_reB, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
      false, false, Interface::limited);
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceImB
+  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceImB
     ("ImB",
      "The imaginary part of the B coupling",
-     &OniumToOniumPiPiDecayer::_imB, -1, 1.0, -1000.0, 1000.0,
+     &OniumToOniumPiPiDecayer::_imB, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
      false, false, Interface::limited);
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceReC
+  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceReC
     ("ReC",
      "The real part of the C coupling",
-     &OniumToOniumPiPiDecayer::_reC, -1, 1.0, -1000.0, 1000.0,
+     &OniumToOniumPiPiDecayer::_reC, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
      false, false, Interface::limited);
 
-  static ParVector<OniumToOniumPiPiDecayer,double> interfaceImC
+  static ParVector<OniumToOniumPiPiDecayer,InvEnergy2> interfaceImC
     ("ImC",
      "The imaginary part of the C coupling",
-     &OniumToOniumPiPiDecayer::_imC, -1, 1.0, -1000.0, 1000.0,
+     &OniumToOniumPiPiDecayer::_imC, 1./MeV2, -1, 1.0/MeV2, -1000.0/MeV2, 1000.0/MeV2,
      false, false, Interface::limited);
 }
 
@@ -279,12 +283,12 @@ double OniumToOniumPiPiDecayer::me2(bool vertex, const int,
   }
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0,PDT::Spin0);
-  Complex A(_cA[imode()/2]),B(_cB[imode()/2]),C(_cC[imode()/2]);
+  complex<InvEnergy2> A(_cA[imode()/2]),B(_cB[imode()/2]),C(_cC[imode()/2]);
   Energy2 q2  =(decay[1]->momentum()+decay[2]->momentum()).m2();
   Energy2 mpi2=sqr(decay[1]->mass());
   for(unsigned int ix=0;ix<3;++ix) {
     for(unsigned int iy=0;iy<3;++iy) {
-      Complex dota = vin[ix]*vout[iy];
+      Complex dota = vin[ix].dot(vout[iy]);
       complex<Energy2> dotb = 
 	vin[ix]*decay[1]->momentum()*vout[iy]*decay[2]->momentum()+
 	vin[ix]*decay[2]->momentum()*vout[iy]*decay[1]->momentum();
@@ -314,17 +318,17 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
       output << "set " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
       output << "set " << fullName() << ":ReA " << ix << " " 
-	     << _reA[ix] << "\n";
+	     << _reA[ix]*MeV2 << "\n";
       output << "set " << fullName() << ":ImA " << ix << " " 
-	     << _imA[ix] << "\n";
+	     << _imA[ix]*MeV2 << "\n";
       output << "set " << fullName() << ":ReB " << ix << " " 
-	     << _reB[ix] << "\n";
+	     << _reB[ix]*MeV2 << "\n";
       output << "set " << fullName() << ":ImB " << ix << " " 
-	     << _imB[ix] << "\n";
+	     << _imB[ix]*MeV2 << "\n";
       output << "set " << fullName() << ":ReC " << ix << " " 
-	     << _reC[ix] << "\n";
+	     << _reC[ix]*MeV2 << "\n";
       output << "set " << fullName() << ":ImC " << ix << " " 
-	     << _imC[ix] << "\n";
+	     << _imC[ix]*MeV2 << "\n";
     }
     else {
       output << "insert " << fullName() << ":Incoming " << ix << " " 
@@ -334,17 +338,17 @@ void OniumToOniumPiPiDecayer::dataBaseOutput(ofstream & output,
       output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 	     << _maxweight[ix] << "\n";
       output << "insert " << fullName() << ":ReA " << ix << " " 
-	     << _reA[ix] << "\n";
+	     << _reA[ix]*MeV2 << "\n";
       output << "insert " << fullName() << ":ImA " << ix << " " 
-	     << _imA[ix] << "\n";
+	     << _imA[ix]*MeV2 << "\n";
       output << "insert " << fullName() << ":ReB " << ix << " " 
-	     << _reB[ix] << "\n";
+	     << _reB[ix]*MeV2 << "\n";
       output << "insert " << fullName() << ":ImB " << ix << " " 
-	     << _imB[ix] << "\n";
+	     << _imB[ix]*MeV2 << "\n";
       output << "insert " << fullName() << ":ReC " << ix << " " 
-	     << _reC[ix] << "\n";
+	     << _reC[ix]*MeV2 << "\n";
       output << "insert " << fullName() << ":ImC " << ix << " " 
-	     << _imC[ix] << "\n";
+	     << _imC[ix]*MeV2 << "\n";
     }
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
