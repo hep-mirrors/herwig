@@ -844,7 +844,7 @@ void ISGW2FormFactor::Init() {
 }
 
 // member which does the work
-void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
+void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
 				 Energy mY,
 				 Energy mX, Complex & f1,Complex & f2,Complex & f3,
 				 Complex & f4) const {
