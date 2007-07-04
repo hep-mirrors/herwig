@@ -828,7 +828,7 @@ FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int icha
       vecomega1 = vecomega * gFunction(Q.mass2(),2);
     output = vecomega1 + veca1rho1;
     // this is 1/sqrt(2) for identical particles
-    fact*=0.7071067811865476;
+    fact *= 1./sqrt(2.);
   }
   else if(imode==0) {
     // momenta of the particles
@@ -857,7 +857,7 @@ FourPionNovosibirskCurrent::current(bool vertex, const int imode, const int icha
     // add them up 
     output = (veca1rho + veca1sig) * gFunction(Q.mass2(),0);
     // this is sqrt(1/3!) for identical particles
-    fact *= 0.40824829046386631;
+    fact *= 1./sqrt(6.);
   }     
   else {
     throw DecayIntegratorError() << "Unknown decay mode in the " 

@@ -251,12 +251,15 @@ void Hw64Decayer::persistentInput(PersistentIStream &is, int)
  * This function takes the array of momentum generated and sets the momentum
  * to the particles.
  *****/
-void Hw64Decayer::setParticleMomentum(ParticleVector &out, cPDVector particles, 
-                                      vector<Lorentz5Momentum> moms) const 
+void Hw64Decayer::setParticleMomentum(ParticleVector &out, 
+				      const cPDVector & particles, 
+                                      const vector<Lorentz5Momentum> & moms) 
+const 
 {
    unsigned int numProds = particles.size();
-   for(unsigned int ix=0;ix<numProds;++ix)
-     {out.push_back(particles[ix]->produceParticle(moms[ix]));}
+   for(unsigned int ix=0;ix<numProds;++ix) {
+     out.push_back(particles[ix]->produceParticle(moms[ix]));
+   }
 }
 
 double Hw64Decayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) { 
@@ -269,9 +272,10 @@ double Hw64Decayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
 //   return 1.0;
 //}
 
-void Hw64Decayer::oneBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1)
+void Hw64Decayer::oneBodyDecay(const Lorentz5Momentum & p0, 
+			       Lorentz5Momentum & p1)
 {
-   p1 = static_cast<LorentzMomentum>(p0);
+   p1 = p0;
 }
 
 

@@ -498,7 +498,7 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
 	      << "a1ThreePionDecayer::decayCurrent" << endl;
 	tmpoutput=LorentzPolarizationVectorE();}
       // the coupling z and identical particle factor
-      output = tmpoutput * _zsigma*0.4082482904638631*Q.mass2();
+      output = tmpoutput * _zsigma* 1./sqrt(6.) *Q.mass2();
     }
   // a_1+ -> pi0pi0pi+
   else if(imode()==1)
@@ -531,7 +531,7 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
 			    -dot01*(decay[ipip[0]]->momentum()));}
 	}
       // the identical particle factor
-      output *=0.7071067811865476;
+      output *= 1./sqrt(2.);
     }
   // a_10->pi+pi-pi0
   else if(imode()==2)
@@ -602,7 +602,7 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
 			    -dot01*(decay[ipim[0]]->momentum()));}
 	}
       // the identical particle factor
-      output *=0.7071067811865476;
+      output *= 1./sqrt(2.);
     }
   // form-factor
   LorentzPolarizationVector outputFinal 

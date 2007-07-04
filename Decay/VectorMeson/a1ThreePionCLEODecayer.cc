@@ -704,7 +704,7 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
   // a_1^0 pi0 pi0 pi0 mode
   if(iopt==0)
     {
-      fact*=0.40824829;
+      fact*=1./sqrt(6.);
       // compute the breit wigners we need
       Complex sigbws1 = sigmaBreitWigner(s1,1);
       Complex sigbws2 = sigmaBreitWigner(s2,1);
@@ -757,7 +757,7 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
   // a_1^+ -> pi0 pi0 pi+
   else if(iopt==1)
     {
-      fact*=0.70710678;
+      fact *= 1./sqrt(2.);
       // compute the breit wigners we need
       Complex rhos1bw[3],rhos2bw[3],f0bw,sigbw,f2bw;
       for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)
@@ -890,7 +890,7 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
   // a_1^+ -> pi+ pi+ pi- mode
   else
     {
-      fact*=0.70710678;
+      fact *= 1./sqrt(2.);
       // compute the breit wigners we need
       Complex rhos1bw[3],rhos2bw[3],f0bws1,sigbws1,f2bws1,f0bws2,sigbws2,f2bws2;
       for(unsigned int ix=0,N=max(_rhocoupP.size(),_rhocoupD.size());ix<N;++ix)

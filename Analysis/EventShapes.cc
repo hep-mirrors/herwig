@@ -15,10 +15,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "CLHEP/Matrix/Matrix.h"
 #include "CLHEP/Matrix/SymMatrix.h"
-
 using namespace CLHEP;
-
-
 
 using namespace Herwig;
 
@@ -49,7 +46,7 @@ void EventShapes::diagonalizeTensors(bool linear, bool cmboost) {
     for(int j=0; j<3; j++) 
       Theta[i][j] = 0.0;
   double sum = 0.; 
-  Momentum3 sumvec = Momentum3();
+  Momentum3 sumvec;
   vector<double> lam;
   vector<Axis> n; 
   // get cm-frame
@@ -69,14 +66,16 @@ void EventShapes::diagonalizeTensors(bool linear, bool cmboost) {
       if (pvec.mag() > 0*MeV) 
 	{
 	  sumvec += pvec;
-	  if (linear) sum += pvec.mag()/MeV;
-	  else        sum += pvec.mag2()/sqr(MeV);
+	  if (linear) sum += pvec.mag()  * UnitRemoval::InvE;
+	  else        sum += pvec.mag2() * UnitRemoval::InvE2;
 	  for(int i=0; i<3; i++) 
 	    {
 	      for(int j=i; j<3; j++) 
 		{
-		  if (linear) Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j])*MeV/(pvec.mag());
-		  else        Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j]);
+		  if (linear) 
+		    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j])*MeV/(pvec.mag());      
+		  else        
+		    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j]);
 		}
 	    }
 	}
@@ -123,7 +122,8 @@ void EventShapes::calculateThrust() {
   _thrustAxis.clear(); 
 
   if (_pv.size() < 2) {
-    for (int i=0; i<3; i++) {_thrust.push_back(-1);
+    for (int i=0; i<3; i++) {
+      _thrust.push_back(-1);
       _thrustAxis.push_back(Axis());
     }
     return;
@@ -138,7 +138,6 @@ void EventShapes::calculateThrust() {
       psum += p.back().mag();
     }
 
-  Energy2 val; 
   Axis axis;
   if (p.size() == 2) {
     _thrust.push_back(1.0);
@@ -175,7 +174,7 @@ void EventShapes::calculateThrust() {
 
   // ACHTUNG special case with >= 4 coplanar particles will still fail. 
   // probably not too important... 
-
+  Energy2 val;
   calcT(p, val, axis);
   _thrust.push_back(sqrt(val)/psum);
   if (axis.z() < 0) axis = -axis;
@@ -196,12 +195,12 @@ void EventShapes::calculateThrust() {
   // minor
   if (_thrustAxis[0]*_thrustAxis[1] < 1e-10) 
     {
-      Energy value = 0*MeV;
+      Energy eval = 0.*MeV;
       axis = _thrustAxis[0].cross(_thrustAxis[1]);
       _thrustAxis.push_back(axis); 
       for (unsigned int l=0; l<_pv.size(); l++) 
-	value += abs(axis*_pv[l].vect());
-      _thrust.push_back(value/psum);
+	eval += abs(axis*_pv[l].vect());
+      _thrust.push_back(eval/psum);
     } 
   else 
     {
@@ -212,7 +211,7 @@ void EventShapes::calculateThrust() {
 
 void EventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
   Energy2 tval;
-  t = Energy2();
+  t = 0.0*MeV2;
   Vector3<Energy2> tv;
   Momentum3 ptot;
   vector<Momentum3> cpm;
@@ -222,7 +221,7 @@ void EventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
       ptot = Momentum3();
       for (unsigned int l=0; l<p.size(); l++) {
 	if (l!=j && l!=k) {
-	  if (p[l]*tv > Energy3()) { 
+	  if (p[l]*tv > 0.0*MeV*MeV2) { 
 	    ptot += p[l];
 	  } else {
 	    ptot -= p[l];
@@ -248,7 +247,7 @@ void EventShapes::calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis) {
 
 void EventShapes::calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis) {
   Energy2 mval;
-  m = Energy2();
+  m = 0.0 * MeV2;
   Momentum3 tv, ptot;
   vector<Momentum3> cpm;
   for (unsigned int j=0; j < p.size(); j++) {
@@ -256,7 +255,7 @@ void EventShapes::calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis) {
     ptot = Momentum3();
     for (unsigned int l=0; l<p.size(); l++) {
       if (l!=j) {
-	if (p[l]*tv > Energy2()) { 
+	if (p[l]*tv > 0.0*MeV2) { 
 	  ptot += p[l];
 	} else {
 	  ptot -= p[l];
@@ -268,7 +267,7 @@ void EventShapes::calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis) {
     cpm.push_back(ptot+p[j]);
     for (vector<Momentum3>::iterator it = cpm.begin();
 	 it != cpm.end(); it++) {
-      mval = (*it).mag2();
+      mval = it->mag2();
       if (mval > m) {
 	m = mval;
 	maxis = it->unit();
@@ -283,7 +282,7 @@ void EventShapes::bookEEC(vector<double> & hi) {
   // < cos(chi) < 1].  Here, delta = 2/hi.size().
   Energy Evis(0.*MeV);
   for (unsigned int bin = 0; bin < hi.size(); bin++) {
-    double delta = 2./((double) hi.size());
+    double delta = 2./hi.size();
     double coschi = -1+bin*delta;
     if (_pv.size() > 1) {
       for (unsigned int i = 0; i < _pv.size()-1; i++) {
@@ -291,11 +290,11 @@ void EventShapes::bookEEC(vector<double> & hi) {
 	for (unsigned int j = i+1; j < _pv.size(); j++) {
 	  double diff = abs(coschi-cos( _pv[i].vect().angle(_pv[j].vect()) )); 
 	  if (delta > diff) 
-	    hi[bin] += _pv[i].e()*_pv[j].e()/sqr(MeV);
+	    hi[bin] += _pv[i].e()*_pv[j].e() * UnitRemoval::InvE2;
 	}
       }
     }
-    hi[bin] /= (Evis*Evis)/sqr(MeV);
+    hi[bin] /= (Evis*Evis) * UnitRemoval::InvE2;
   }
 }
 

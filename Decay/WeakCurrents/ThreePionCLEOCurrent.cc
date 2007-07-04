@@ -703,7 +703,7 @@ void ThreePionCLEOCurrent::CLEOFormFactor(int imode,int ichan,
 				 << Exception::abortnow;
   }
   // identical particle factors
-  double fact=0.70710678;
+  double fact = 1./sqrt(2.);
   F1*=fact;F2*=fact;F3*=fact;
 }
 

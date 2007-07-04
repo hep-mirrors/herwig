@@ -104,7 +104,7 @@ private:
    * Perform a one body decay, used for \f$K^0,\bar{K}^0\to K_{L,S}\f$.
    * Two body decay is handled in static class Kinematics
    */
-  static void oneBodyDecay(Lorentz5Momentum, Lorentz5Momentum &);
+  static void oneBodyDecay(const Lorentz5Momentum &, Lorentz5Momentum &);
 
   /**
    * Weighting of phase space for V-A matrix elements
@@ -117,8 +117,8 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  void setParticleMomentum(ParticleVector & out, cPDVector particles, 
-			   vector<Lorentz5Momentum> moms) const;
+  void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
+			   const vector<Lorentz5Momentum> & moms) const;
 
   /**
    *  Describe a concrete class with persistant data.

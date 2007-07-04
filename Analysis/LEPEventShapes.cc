@@ -5,7 +5,7 @@
 //
 
 #include "LEPEventShapes.h"
-#include "EvtShapes.h"
+#include "EventShapes.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"

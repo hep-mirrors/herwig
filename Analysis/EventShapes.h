@@ -431,7 +431,7 @@ private:
   /**
    *  Member to calculate the thrust
    * @param p The three vectors
-   * @param t The thrust
+   * @param t The thrust-squared (up to an Energy scale factor)
    * @param taxis The thrust axis
    */
   void calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis);
@@ -439,7 +439,7 @@ private:
   /**
    *  Member to calculate the major
    * @param p The three vectors
-   * @param m The major
+   * @param m The major-squared (up to an Energy scale factor)
    * @param maxis The major axis
    */
   void calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis);

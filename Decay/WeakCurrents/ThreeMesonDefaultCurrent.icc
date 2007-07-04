@@ -223,7 +223,6 @@ inline Complex ThreeMesonDefaultCurrent::rhoKBreitWigner(Energy2 q2,unsigned int
   Energy pcm(0.*MeV);
   if(mout[0]+mout[1]<q){pcm=Kinematics::pstarTwoBodyDecay(q,mout[0],mout[1]);}
   double ratio = Math::Pow<3>(pcm/pcm0);
-  ratio*=ratio*ratio;
   Energy gamrun(width*mass*ratio/q);
   Complex ii(0.,1.);
   complex<Energy2> denom(q2-mass*mass+ii*mass*gamrun), numer(-mass*mass);

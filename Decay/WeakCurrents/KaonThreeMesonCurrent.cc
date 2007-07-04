@@ -449,7 +449,7 @@ void KaonThreeMesonCurrent::Init() {
   static Parameter<KaonThreeMesonCurrent,double> interfaceOmegaKStarWeight
     ("OmegaKStarWeight",
      "The relative weight of the omega-phi and K* terms",
-     &KaonThreeMesonCurrent::_omegaKstarwgt, 0.70710678, 0.0, 100.0,
+     &KaonThreeMesonCurrent::_omegaKstarwgt, 1./sqrt(2.), 0.0, 100.0,
      false, false, Interface::limited);
   
   static Switch<KaonThreeMesonCurrent,bool> interfaceOmegaParameters
@@ -1244,5 +1244,5 @@ KaonThreeMesonCurrent::calculateFormFactors(const int ichan,const int imode,
 		     F2 / _fpi,
 		     0. / MeV,
 		     0. / MeV,
-		     F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
+		     -F5 / sqr(Constants::twopi) / pow<3,1>(_fpi));
 }
