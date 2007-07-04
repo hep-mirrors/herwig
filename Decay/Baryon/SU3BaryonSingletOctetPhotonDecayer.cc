@@ -51,13 +51,13 @@ int SU3BaryonSingletOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & d
 }
 
 void SU3BaryonSingletOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _C << _parity << _sigma0 << _lambda << _elambda << _outgoingB 
-     << _maxweight << _prefactor;
+  os << ounit(_C,1./GeV) << _parity << _sigma0 << _lambda << _elambda << _outgoingB 
+     << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonSingletOctetPhotonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _C >> _parity >> _sigma0 >> _lambda >> _elambda >> _outgoingB 
-     >> _maxweight >> _prefactor;
+  is >> iunit(_C,1./GeV) >> _parity >> _sigma0 >> _lambda >> _elambda >> _outgoingB 
+     >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
 ClassDescription<SU3BaryonSingletOctetPhotonDecayer> SU3BaryonSingletOctetPhotonDecayer::initSU3BaryonSingletOctetPhotonDecayer;
@@ -123,13 +123,17 @@ halfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 {
   if(_parity)
     {
-      A1=    _prefactor[imode]*(m0+m1);B1=0.;
-      A2=-2.*_prefactor[imode]*(m0+m1);B2=0.;
+      A1=    _prefactor[imode]*(m0+m1);
+      B1=0.;
+      A2=-2.*_prefactor[imode]*(m0+m1);
+      B2=0.;
     }
   else
     {
-      A1=0.;B1=    _prefactor[imode]*(m1-m0);
-      A2=0.;B2=-2.*_prefactor[imode]*(m0+m1);
+      A1=0.;
+      B1=    _prefactor[imode]*(m1-m0);
+      A2=0.;
+      B2=-2.*_prefactor[imode]*(m0+m1);
     }
 }
 
@@ -159,7 +163,7 @@ void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const
   if(iopt==1){_outgoingB.resize(0);}
   // set up for the various different decay modes
   vector<int> outtemp;
-  vector<double> factor;
+  vector<InvEnergy> factor;
   if(_elambda==0){throw DecayIntegratorError() << "Invalid incoming particle in "
 					       << "SU3BaryonSingletOctetScalarDecayer::" 
 					       << "setupModes()" << Exception::abortnow;}

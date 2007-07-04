@@ -146,8 +146,8 @@ halfHalfScalar(bool vertex, const int,const Particle & inpart,
 {
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
   if(inpart.id()>0)
     {
       SpinorWaveFunction(sp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
@@ -183,7 +183,7 @@ halfHalfScalar(bool vertex, const int,const Particle & inpart,
 	{
 	  if(decay[0]->id()>0){ispin[0]=iy;ispin[1]=ix;}
 	  else{ispin[0]=ix;ispin[1]=iy;}
-	  newME(ispin)=sp[iy].generalScalar(sbar[ix],left,right);
+	  newME(ispin)=sp[iy].generalScalar(sbar[ix],left,right)/inpart.mass();
 	  //output+=newME(ispin)*conj(newME(ispin));
 	}
     }
@@ -199,7 +199,7 @@ halfHalfScalar(bool vertex, const int,const Particle & inpart,
   */
   // store the matrix element
   ME(newME);
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return (newME.contract(temp)).real();
 }
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-1/2 fermion and
@@ -212,8 +212,8 @@ halfHalfVector(bool vertex, const int,const Particle & inpart,
   bool photon=decay[1]->id()==ParticleID::gamma;
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
   vector<LorentzPolarizationVector> eps;
   if(inpart.id()>0)
     {
@@ -234,7 +234,8 @@ halfHalfVector(bool vertex, const int,const Particle & inpart,
   Complex A1,A2,B1,B2;
   halfHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			 A1,A2,B1,B2);
-  Complex lS,rS,lV,rV,scalar;
+  Complex lS,rS,lV,rV;
+  complex<Energy> scalar;
   // couplings for an incoming particle
   if(inpart.id()>0){lS=(A2-B2);rS=(A2+B2);lV=(A1-B1);rV=(A1+B1);}
   else{lS=-conj(A2+B2);rS=-conj(A2-B2);lV=conj(A1-B1);rV=conj(A1+B1);}
@@ -244,7 +245,7 @@ halfHalfVector(bool vertex, const int,const Particle & inpart,
   DecayMatrixElement newME(PDT::Spin1Half,decay[0]->dataPtr()->iSpin(),
 			   decay[1]->dataPtr()->iSpin());
   vector<unsigned int> ispin(3);
-  LorentzPolarizationVector svec;
+  LorentzVector<complex<Energy> > svec;
   Complex prod;
   //Complex output(0.);
   unsigned int ix,iy;
@@ -261,9 +262,8 @@ halfHalfVector(bool vertex, const int,const Particle & inpart,
 	  for(ispin[2]=0;ispin[2]<3;++ispin[2])
 	    {
 	      ispin[2]=ispin[2];
-	      prod=eps[ispin[2]]*inpart.momentum();
-	      prod/=msum;
-	      newME(ispin)=svec*eps[ispin[2]]+prod*scalar;
+	      prod=eps[ispin[2]].dot(inpart.momentum())/msum;
+	      newME(ispin)=(svec.dot(eps[ispin[2]])+prod*scalar)/inpart.mass();
 	      //	      output+=newME(ispin)*conj(newME(ispin));
 	    }
 	}
@@ -285,7 +285,7 @@ halfHalfVector(bool vertex, const int,const Particle & inpart,
   // store the matrix element
   ME(newME);
   // return the answer
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return (newME.contract(temp)).real();
 }
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-3/2 fermion and
@@ -297,24 +297,25 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int,
   unsigned int ix,iy,ixa,iya;
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  LorentzPolarizationVector in=UnitRemoval::InvE*inpart.momentum();
   if(inpart.id()>0)
     {
       SpinorWaveFunction(sp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
-      vector<LorentzRSSpinorBar> Rsbar;
+      vector<LorentzRSSpinorBar<SqrtEnergy> > Rsbar;
       RSSpinorBarWaveFunction(Rsbar,decay[0],outgoing,true,vertex);
       sbar.resize(Rsbar.size());
-      for(ix=0;ix<Rsbar.size();++ix){sbar[ix]=Rsbar[ix].dot(inpart.momentum());}
+      for(ix=0;ix<Rsbar.size();++ix) sbar[ix]=Rsbar[ix].dot(in);
     }
   else
     {
       SpinorBarWaveFunction(sbar,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,
 			    vertex);
-      vector<LorentzRSSpinor> Rsp;
+      vector<LorentzRSSpinor<SqrtEnergy> > Rsp;
       RSSpinorWaveFunction(Rsp,decay[0],outgoing,true,vertex);
       sp.resize(Rsp.size());
-      for(ix=0;ix<Rsp.size();++ix){sp[ix]=Rsp[ix].dot(inpart.momentum());}
+      for(ix=0;ix<Rsp.size();++ix) sp[ix]=Rsp[ix].dot(in);
     }
 
   // workaround for gcc 3.2.3 bug
@@ -329,9 +330,15 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int,
   halfThreeHalfScalarCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			      A,B);
   // incoming particle
-  if(inpart.id()>0){left=(A-B)/msum;right=(A+B)/msum;}
+  if(inpart.id()>0) {
+    left=(A-B);
+    right=(A+B);
+  }
   // incoming anti-particle
-  else{left=conj(A+B)/msum;right=conj(A-B)/msum;}
+  else {
+    left=conj(A+B);
+    right=conj(A-B);
+  }
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin0);
   vector<unsigned int> ispin(3,0);
@@ -344,7 +351,8 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int,
 	  else{ix=ixa;iy=iya;}
 	  // low energy conventions
 	  ispin[0]=ixa;ispin[1]=iya;
-	  newME(ispin)=sp[iy].generalScalar(sbar[ix],left,right);
+	  newME(ispin)=sp[iy].generalScalar(sbar[ix],left,right)
+	    *UnitRemoval::E/inpart.mass()/msum;
 	  //output+=newME(ispin)*conj(newME(ispin));
 	}
     }
@@ -363,7 +371,7 @@ double Baryon1MesonDecayerBase::halfThreeHalfScalar(bool vertex, const int,
        << 0.50*(h1*conj(h1)+h2*conj(h2))/output << endl;
   */
   // return the answer
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return (newME.contract(temp)).real();
 }
 
 // matrix element for the decay of a spin-1/2 fermion to a spin-3/2 fermion and
@@ -376,18 +384,18 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
   bool photon=decay[1]->id()==ParticleID::gamma;
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
-  vector<LorentzRSSpinor> RSsp;
-  vector<LorentzRSSpinorBar> RSsbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  vector<LorentzRSSpinor<SqrtEnergy> > RSsp;
+  vector<LorentzRSSpinorBar<SqrtEnergy> > RSsbar;
   vector<LorentzPolarizationVector> eps;
+  LorentzPolarizationVector in=UnitRemoval::InvE*inpart.momentum();
   if(inpart.id()>0)
     {
       SpinorWaveFunction(sp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
       RSSpinorBarWaveFunction(RSsbar,decay[0],outgoing,true,vertex);
       sbar.resize(RSsbar.size());
-      for(unsigned int ix=0;ix<RSsbar.size();++ix)
-	{sbar[ix]=RSsbar[ix].dot(inpart.momentum());}
+      for(unsigned int ix=0;ix<RSsbar.size();++ix) sbar[ix]=RSsbar[ix].dot(in);
     }
   else
     {
@@ -395,8 +403,7 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
 			    vertex);
       RSSpinorWaveFunction(RSsp,decay[0],outgoing,true,vertex);
       sp.resize(RSsp.size());
-      for(unsigned int ix=0;ix<RSsp.size();++ix)
-	{sp[ix]=RSsp[ix].dot(inpart.momentum());}
+      for(unsigned int ix=0;ix<RSsp.size();++ix) sp[ix]=RSsp[ix].dot(in);
     }
   // construct the wavefunction and spin info for the vector
   VectorWaveFunction(eps,decay[1],outgoing,true,photon,vertex);
@@ -405,7 +412,7 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
   halfThreeHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			      A1,A2,A3,B1,B2,B3);
   Energy msum(inpart.mass()+decay[0]->mass());
-  Complex lS,rS,lV,rV,scalar,left,right;
+  Complex lS,rS,lV,rV,left,right;
   // incoming particle
   if(inpart.id()>0)
     {
@@ -423,11 +430,12 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1Half,PDT::Spin3Half,PDT::Spin1);
   vector<unsigned int> ispin(3);
-  LorentzPolarizationVector svec;
+  LorentzVector<complex<Energy> > svec;
   Complex prod,meout;
+  complex<Energy> scalar;
   unsigned int ix,iy,ixa,iya;
-  LorentzSpinor stemp;
-  LorentzSpinorBar sbtemp;
+  LorentzSpinor<SqrtEnergy> stemp;
+  LorentzSpinorBar<SqrtEnergy> sbtemp;
   for(iya=0;iya<4;++iya)
     {
       ispin[1]=iya;
@@ -443,9 +451,8 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
 	  for(unsigned int iz=0;iz<3;++iz)
 	    {
 	      ispin[2]=iz;
-	      prod=eps[iz]*inpart.momentum();
-	      prod/=msum;
-	      newME(ispin)+=(svec*eps[iz]+prod*scalar)/msum;
+	      prod=eps[iz].dot(inpart.momentum())/msum;
+	      newME(ispin)+=(svec.dot(eps[iz])+prod*scalar)*UnitRemoval::E/msum/inpart.mass();
 	    }
 	}
       // the piece where the vector spinor is dotted with the polarization vector
@@ -460,7 +467,7 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
 	      ispin[0]=ixa;
 	      if(decay[0]->id()>0){stemp=sp[ixa];}
 	      else{sbtemp=sbar[ixa];}
-	      meout = stemp.generalScalar(sbtemp,left,right);
+	      meout = stemp.generalScalar(sbtemp,left,right)/inpart.mass();
 	      newME(ispin)+=meout;
 	    }
 	}
@@ -498,7 +505,7 @@ halfThreeHalfVector(bool vertex, const int,const Particle & inpart,
        << 0.50*(h1*conj(h1)+h2*conj(h2)+h3*conj(h3)+h4*conj(h4)+h5*conj(h5)+h6*conj(h6))/output << endl;
   */
   // return the answer
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return (newME.contract(temp)).real();
 }
 
 
@@ -510,26 +517,25 @@ threeHalfHalfScalar(bool vertex, const int,const Particle & inpart,
 {
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  LorentzPolarizationVector out=UnitRemoval::InvE*decay[0]->momentum();
   if(inpart.id()>0)
     {
-      vector<LorentzRSSpinor> Rsp;
+      vector<LorentzRSSpinor<SqrtEnergy> > Rsp;
       RSSpinorWaveFunction(Rsp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
       SpinorBarWaveFunction(sbar,decay[0],outgoing,true,vertex);
       sp.resize(Rsp.size());
-      for(unsigned int ix=0;ix<Rsp.size();++ix)
-	{sp[ix]=Rsp[ix].dot(decay[0]->momentum());}
+      for(unsigned int ix=0;ix<Rsp.size();++ix) sp[ix]=Rsp[ix].dot(out);
     }
   else
     {
-      vector<LorentzRSSpinorBar> Rsbar;
+      vector<LorentzRSSpinorBar<SqrtEnergy> > Rsbar;
       RSSpinorBarWaveFunction(Rsbar,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,
 			    vertex);
       SpinorWaveFunction(sp,decay[0],outgoing,true,vertex);
       sbar.resize(Rsbar.size());
-      for(unsigned int ix=0;ix<Rsbar.size();++ix)
-	{sbar[ix]=Rsbar[ix].dot(decay[0]->momentum());}
+      for(unsigned int ix=0;ix<Rsbar.size();++ix) sbar[ix]=Rsbar[ix].dot(out);
     }
   // workaround for gcc 3.2.3 bug
   // construct the spinInfo for the scalar
@@ -544,9 +550,15 @@ threeHalfHalfScalar(bool vertex, const int,const Particle & inpart,
 			      A,B);
   Complex left,right;
   // incoming particle
-  if(inpart.id()>0){left=(A-B)/msum;right=(A+B)/msum;}
+  if(inpart.id()>0) {
+    left=(A-B);
+    right=(A+B);
+  }
   // incoming anti-particle
-  else{left=conj(A+B)/msum;right=conj(A-B)/msum;}
+  else {
+    left=conj(A+B);
+    right=conj(A-B);
+  }
   // compute the matrix element
   vector<unsigned int> ispin(3,0);
   DecayMatrixElement newME(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin0);
@@ -558,12 +570,12 @@ threeHalfHalfScalar(bool vertex, const int,const Particle & inpart,
 	  if(decay[0]->id()>0){iy=iya;ix=ixa;}
 	  else{iy=ixa;ix=iya;}
 	  ispin[0]=iya;ispin[1]=ixa;
-	  newME(ispin) = sp[iy].generalScalar(sbar[ix],left,right);
+	  newME(ispin) = sp[iy].generalScalar(sbar[ix],left,right)*UnitRemoval::E/msum/inpart.mass();
 	}
     }
   // store the matrix element
   ME(newME);
-  double output=(newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  double output=(newME.contract(temp)).real();
   // return the answer
   return output;
 }
@@ -575,10 +587,11 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
 							 const ParticleVector & decay) const
 {
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
-  vector<LorentzRSSpinor> Rsp;
-  vector<LorentzRSSpinorBar> Rsbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  vector<LorentzRSSpinor<SqrtEnergy> > Rsp;
+  vector<LorentzRSSpinorBar<SqrtEnergy> > Rsbar;
+  LorentzPolarizationVector in=UnitRemoval::InvE*inpart.momentum();
   if(inpart.id()>0)
     {
       RSSpinorWaveFunction(Rsp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
@@ -586,7 +599,7 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
       for(unsigned int ix=0;ix<4;++ix)
 	{
 	  sp.push_back(Rsp[ix].dot(decay[0]->momentum()));
-	  sbar.push_back(Rsbar[ix].dot(inpart.momentum()));
+	  sbar.push_back(Rsbar[ix].dot(in));
 	}
     }
   else
@@ -598,11 +611,11 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
 	{
           // workaround for gcc 3.2.3 bug
 	  //ALB sbar.push_back(Rsbar[ix].dot(decay[0]->momentum()));
-	  //ALB sp.push_back(Rsp[ix].dot(inpart.momentum()));
-          LorentzRSSpinorBar tempRsbar=Rsbar[ix];
+	  //ALB sp.push_back(Rsp[ix].dot(LorentzPolarizationVector(UnitRemoval::InvE*inpart.momentum())));
+          LorentzRSSpinorBar<SqrtEnergy> tempRsbar=Rsbar[ix];
 	  sbar.push_back(tempRsbar.dot(decay[0]->momentum()));
-	  LorentzRSSpinor tempRsp=Rsp[ix];
-	  sp.push_back(tempRsp.dot(inpart.momentum()));
+	  LorentzRSSpinor<SqrtEnergy> tempRsp=Rsp[ix];
+	  sp.push_back(tempRsp.dot(in));
 	}
     }
 
@@ -619,17 +632,15 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
 				   decay[1]->mass(),A1,A2,B1,B2);
   Complex left1,right1,left2,right2;
   // incoming particle
-  if(inpart.id()>0)
-    {
-      left1=(A1-B1);           right1=(A1+B1);
-      left2=(A2-B2)/msum/msum; right2=(A2+B2)/msum/msum;
-    }
+  if(inpart.id()>0) {
+    left1=(A1-B1); right1=(A1+B1);
+    left2=(A2-B2); right2=(A2+B2);
+  }
   // incoming anti-particle
-  else
-    {
-      left1=(A1+B1);           right1=(A1-B1);
-      left2=(A2+B2)/msum/msum; right2=(A2-B2)/msum/msum;
-    }
+  else {
+    left1=(A1+B1); right1=(A1-B1);
+    left2=(A2+B2); right2=(A2-B2);
+  }
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin3Half,PDT::Spin3Half,PDT::Spin0);
   vector<unsigned int> ispin(3,0);
@@ -642,14 +653,15 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
 	  else{iy=ixa;ix=iya;}
 	  ispin[0]=iya;
 	  ispin[1]=ixa;
-	  newME(ispin)=Rsp[iy].generalScalar(Rsbar[ix],left1,right1)
-	               +sp[iy].generalScalar( sbar[ix],left2,right2);;
+ 	  newME(ispin)=Rsp[iy].generalScalar(Rsbar[ix],left1,right1)/inpart.mass();
+// 	  newME(ispin)=(Rsp[iy].generalScalar(Rsbar[ix],left1,right1)
+// 			+sp[iy].generalScalar( sbar[ix],left2,right2)*UnitRemoval::E2/sqr(msum))/inpart.mass();
 	}
     }
   // store the matrix element
   ME(newME);
   // return the answer
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return (newME.contract(temp)).real();
 }
 
 // matrix element for the decay of a spin-3/2 fermion to a spin-1/2 fermion and
@@ -663,19 +675,19 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
   bool photon=decay[1]->id()==ParticleID::gamma;
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
-  vector<LorentzRSSpinor> RSsp;
-  vector<LorentzRSSpinorBar> RSsbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  vector<LorentzRSSpinor<SqrtEnergy> > RSsp;
+  vector<LorentzRSSpinorBar<SqrtEnergy> > RSsbar;
   vector<LorentzPolarizationVector> eps;
+  LorentzPolarizationVector out=UnitRemoval::InvE*decay[0]->momentum();
   if(inpart.id()>0)
     {
       RSSpinorWaveFunction(RSsp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,
 			   vertex);
       SpinorBarWaveFunction(sbar,decay[0],outgoing,true,vertex);
       sp.resize(RSsp.size());
-      for(unsigned int ix=0;ix<RSsp.size();++ix)
-	{sp[ix]=RSsp[ix].dot(decay[0]->momentum());}
+      for(unsigned int ix=0;ix<RSsp.size();++ix) sp[ix]=RSsp[ix].dot(out);
     }
   else
     {
@@ -683,8 +695,7 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
 			    vertex);
       SpinorWaveFunction(sp,decay[0],outgoing,true,vertex);
       sbar.resize(RSsbar.size());
-      for(unsigned int ix=0;ix<RSsbar.size();++ix)
-	{sbar[ix]=RSsbar[ix].dot(decay[0]->momentum());}
+      for(unsigned int ix=0;ix<RSsbar.size();++ix) sbar[ix]=RSsbar[ix].dot(out);
     }
   // construct the wavefunction and spin info for the vector
   VectorWaveFunction(eps,decay[1],outgoing,true,photon,vertex);
@@ -695,7 +706,7 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
   threeHalfHalfVectorCoupling(imode(),inpart.mass(),decay[0]->mass(),decay[1]->mass(),
 			      A1,A2,A3,B1,B2,B3);
   Energy msum(inpart.mass()+decay[0]->mass());
-  Complex lS,rS,lV,rV,scalar,left,right;
+  Complex lS,rS,lV,rV,left,right;
   // incoming particle
   if(inpart.id()>0)
     {
@@ -713,10 +724,11 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin1);
   vector<unsigned int> ispin(3);
-  LorentzPolarizationVector svec;
+  LorentzVector<complex<Energy> > svec;
   unsigned int ix,iy,ixa,iya,iz;
-  LorentzSpinor stemp;
-  LorentzSpinorBar sbtemp;
+  LorentzSpinor<SqrtEnergy> stemp;
+  LorentzSpinorBar<SqrtEnergy> sbtemp;
+  complex<Energy> scalar;
   for(iya=0;iya<4;++iya)
     {
       ispin[0]=iya;
@@ -730,9 +742,8 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
 	  for(iz=0;iz<3;++iz)
 	    {
 	      ispin[2]=iz;
-	      prod=eps[iz]*decay[0]->momentum();
-	      prod/=msum;
-	      newME(ispin)+=(svec*eps[iz]+prod*scalar)/msum;
+	      prod=eps[iz].dot(decay[0]->momentum())/msum;
+	      newME(ispin)+=(svec.dot(eps[iz])+prod*scalar)*UnitRemoval::E/msum/inpart.mass();
 	    }
 	}
       // the piece where the vector spinor is dotted with the polarization vector
@@ -746,7 +757,7 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
 	      ispin[1]=ixa;
 	      if(decay[0]->id()>0){sbtemp=sbar[ixa];}
 	      else{stemp=sp[ixa];}
-	      meout = stemp.generalScalar(sbtemp,left,right);
+	      meout = stemp.generalScalar(sbtemp,left,right)/inpart.mass();
 	      newME(ispin)+=meout;
 	    }
 	}
@@ -754,7 +765,7 @@ threeHalfHalfVector(bool vertex, const int,const Particle & inpart,
   // store the matrix element
   ME(newME);
   // return the answer
-  return (newME.contract(temp)).real()/inpart.mass()/inpart.mass();
+  return (newME.contract(temp)).real();
 }
 
 

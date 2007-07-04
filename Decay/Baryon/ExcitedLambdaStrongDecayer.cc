@@ -473,12 +473,14 @@ void ExcitedLambdaStrongDecayer::doinit() throw(InitException) {
 }
 
 void ExcitedLambdaStrongDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _fpi << _g2 << _h2 << _h8 << _incoming << _outgoing << _charged << _wgtloc 
+  os << ounit(_fpi,GeV) << _g2 << _h2 << ounit(_h8,1./GeV) 
+     << _incoming << _outgoing << _charged << _wgtloc 
      << _wgtmax << _weights;
 }
 
 void ExcitedLambdaStrongDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _fpi >> _g2 >> _h2 >> _h8 >> _incoming >> _outgoing >> _charged >> _wgtloc 
+  is >> iunit(_fpi,GeV) >> _g2 >> _h2 >> iunit(_h8,1./GeV) 
+     >> _incoming >> _outgoing >> _charged >> _wgtloc 
      >> _wgtmax >> _weights;
 }
 
@@ -558,10 +560,10 @@ void ExcitedLambdaStrongDecayer::Init() {
 double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 				       const Particle & part,
 				       const ParticleVector & decay) const {
-  vector<LorentzSpinor> sp;
-  vector<LorentzRSSpinor> Rsp;
-  vector<LorentzSpinorBar> sbar;
-  vector<LorentzRSSpinorBar> Rsbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzRSSpinor<SqrtEnergy> > Rsp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  vector<LorentzRSSpinorBar<SqrtEnergy> > Rsbar;
   RhoDMatrix temp;
   // workaround for gcc 3.2.3 bug
   // construct or obtain the spin information
@@ -639,7 +641,7 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
   Energy ppi,mpi(decay[1]->mass());
   for(unsigned int ix=0;ix<6;++ix) {
     ppi = Kinematics::pstarTwoBodyDecay(res[ix]->mass(),mpi,decay[0]->mass());
-    gam[ix] = 0.5*_g2*_g2*decay[0]->mass()*ppi*ppi*ppi/pi/_fpi/_fpi/res[ix]->mass();
+    gam[ix] = 0.5*_g2*_g2*decay[0]->mass()*ppi*ppi*ppi/Constants::pi/_fpi/_fpi/res[ix]->mass();
   }
   double output;
   complex<InvEnergy> prop[4];
@@ -668,24 +670,24 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	prop[3] = 1./(delta-res[4]->mass()+mout-E2+ii*0.5*gam[4]);
       }
       if(ichan==0) {
-	prop[1]=0.;
-	prop[2]=0.;
-	prop[3]=0.;
+	prop[1]=0./MeV;
+	prop[2]=0./MeV;
+	prop[3]=0./MeV;
       }
       else if(ichan==1) {
-	prop[0]=0.;
-	prop[1]=0.;
-	prop[3]=0.;
+	prop[0]=0./MeV;
+	prop[1]=0./MeV;
+	prop[3]=0./MeV;
       }
       else if(ichan==2) {
-	prop[0]=0.;
-	prop[2]=0.;
-	prop[3]=0.;
+	prop[0]=0./MeV;
+	prop[2]=0./MeV;
+	prop[3]=0./MeV;
       }
       else if(ichan==3) {
-	prop[0]=0.;
-	prop[1]=0.;
-	prop[2]=0.;
+	prop[0]=0./MeV;
+	prop[1]=0./MeV;
+	prop[2]=0./MeV;
       }
       // the coefficients
       A = _h2*E1*prop[0]-2.*_h8*p12/3.*prop[2]+2.*_h8*(E1*E2-dot12)*prop[3];
@@ -710,8 +712,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_bminus)&&_charged[imode()]==1) {
       prop[0] = 1./(delta-res[1]->mass()+mout-E1+ii*0.5*gam[1]);
       prop[1] = 1./(delta-res[0]->mass()+mout-E2+ii*0.5*gam[0]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       A = 0.35355339*_h2*E1*prop[0];
       B = 0.35355339*_h2*E2*prop[1];
     }
@@ -720,8 +722,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_b0    )&&_charged[imode()]==1) {
       prop[0] = 1./(delta-res[0]->mass()+mout-E1+ii*0.5*gam[0]);
       prop[1] = 1./(delta-res[1]->mass()+mout-E2+ii*0.5*gam[1]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       A = 0.35355339*_h2*E1*prop[0];
       B = 0.35355339*_h2*E2*prop[1];
     }
@@ -730,8 +732,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_b0     )&&_charged[imode()]==0) {
       prop[0] = 1./(delta-res[0]->mass()+mout-E1+ii*0.5*gam[0]);
       prop[1] = 1./(delta-res[0]->mass()+mout-E2+ii*0.5*gam[0]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       A = 0.25*_h2*E1*prop[0];
       B = 0.25*_h2*E2*prop[1];
     }
@@ -740,15 +742,15 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_bminus)&&_charged[imode()]==0) {
       prop[0] = 1./(delta-res[1]->mass()+mout-E1+ii*0.5*gam[1]);
       prop[1] = 1./(delta-res[1]->mass()+mout-E2+ii*0.5*gam[1]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       A = 0.25*_h2*E1*prop[0];
       B = 0.25*_h2*E2*prop[1];
     }
     // compute the matrix element
     unsigned int ixa,iya;
     vector<unsigned int> ihel(4);ihel[2]=0;ihel[3]=0;
-    LorentzPolarizationVector current;
+    LorentzPolarizationVectorE current;
     for(ixa=0;ixa<2;++ixa) {
       for(iya=0;iya<2;++iya) {
 	if(part.id()>0) {
@@ -760,11 +762,11 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	  ihel[1]=ixa;
 	}
 	current = sp[iya].generalCurrent(sbar[ixa],-1.,1.);
-	newME(ihel) = A*(current*decay[2]->momentum())
-	  +B*(current*decay[1]->momentum());
+	newME(ihel) = (A*(current*decay[2]->momentum())
+	  +B*(current*decay[1]->momentum()))/sqr(_fpi);
       }
     }
-    output=(newME.contract(temp)).real()*_g2*_g2/_fpi/_fpi/_fpi/_fpi;
+    output=(newME.contract(temp)).real()*_g2*_g2;
     /*
     // full matrix element
     Energy2 dot01(part.momentum()*decay[1]->momentum());
@@ -788,7 +790,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
   }
   else {
     DecayMatrixElement newME(PDT::Spin3Half,PDT::Spin1Half,PDT::Spin0,PDT::Spin0);
-    Complex C(0.),D(0.),E(0.),F(0.);
+    Complex C(0.),E(0.);
+    complex<InvEnergy2> D(0./MeV2),F(0./MeV2);
     if(abs(decay[0]->id())==ParticleID::Lambda_cplus||
        abs(decay[0]->id())==ParticleID::Lambda_b0) {
       // propagators
@@ -805,24 +808,24 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	prop[3] = 1./(delta-res[4]->mass()+mout-E2+ii*0.5*gam[4]);
 	    }
       if(ichan==0) {
-	prop[1]=0.;
-	prop[2]=0.;
-	prop[3]=0.;
+	prop[1]=0./MeV;
+	prop[2]=0./MeV;
+	prop[3]=0./MeV;
       }
       else if(ichan==1) {
-	prop[0]=0.;
-	prop[1]=0.;
-	prop[3]=0.;
+	prop[0]=0./MeV;
+	prop[1]=0./MeV;
+	prop[3]=0./MeV;
       }
       else if(ichan==2) {
-	prop[0]=0.;
-	prop[2]=0.;
-	prop[3]=0.;
+	prop[0]=0./MeV;
+	prop[2]=0./MeV;
+	prop[3]=0./MeV;
       }
       else if(ichan==3) {
-	prop[0]=0.;
-	prop[1]=0.;
-	prop[2]=0.;
+	prop[0]=0./MeV;
+	prop[1]=0./MeV;
+	prop[2]=0./MeV;
       }
       // coefficients
       C = (_h2*E2-2./3.*_h8*p22)*prop[3]
@@ -851,8 +854,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_bminus)&&_charged[imode()]==1) {
       prop[0] = 1./(delta-res[3]->mass()+mout-E1+ii*0.5*gam[3]);
       prop[1] = 1./(delta-res[2]->mass()+mout-E2+ii*0.5*gam[2]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       E = 0.35355339*_h2*E1*prop[0];
       C = 0.35355339*_h2*E2*prop[1];
     }
@@ -861,8 +864,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_b0    )&&_charged[imode()]==1) {
       prop[0] = 1./(delta-res[2]->mass()+mout-E1+ii*0.5*gam[2]);
       prop[1] = 1./(delta-res[3]->mass()+mout-E2+ii*0.5*gam[3]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       E = 0.35355339*_h2*E1*prop[0];
       C = 0.35355339*_h2*E2*prop[1];
     }
@@ -871,8 +874,8 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_b0     )&&_charged[imode()]==0) {
       prop[0] = 1./(delta-res[2]->mass()+mout-E1+ii*0.5*gam[2]);
       prop[1] = 1./(delta-res[2]->mass()+mout-E2+ii*0.5*gam[2]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       E = 0.25*_h2*E1*prop[0];
       C = 0.25*_h2*E2*prop[1];
     }
@@ -881,49 +884,49 @@ double ExcitedLambdaStrongDecayer::me2(bool vertex, const int ichan,
 	     abs(decay[0]->id())==ParticleID::Xi_bminus)&&_charged[imode()]==0) {
       prop[0] = 1./(delta-res[3]->mass()+mout-E1+ii*0.5*gam[3]);
       prop[1] = 1./(delta-res[3]->mass()+mout-E2+ii*0.5*gam[3]);
-      if(ichan==0)      prop[1]=0.;
-      else if(ichan==1) prop[0]=0.;
+      if(ichan==0)      prop[1]=0./MeV;
+      else if(ichan==1) prop[0]=0./MeV;
       E = 0.25*_h2*E1*prop[0];
       C = 0.25*_h2*E2*prop[1];
     }
     vector<unsigned int> ihel(4);ihel[2]=0;ihel[3]=0;
-    Complex Cm,Dm,Em,Fm;
+    complex<Energy2> Cm,Em;
+    complex<Energy4> Dm,Fm;
     Energy  msum(part.mass()+decay[0]->mass());
     Energy2 dot(decay[1]->momentum()*(part.momentum()+decay[0]->momentum()));
     if(part.id()>0) {
-      LorentzSpinor sp1,sp2;
+      LorentzSpinor<SqrtEnergy> sp1,sp2;
       for(ihel[0]=0;ihel[0]<4;++ihel[0]) {
 	sp1 = Rsp[ihel[0]].dot(decay[1]->momentum());
 	sp2 = Rsp[ihel[0]].dot(decay[2]->momentum());
 	for(ihel[1]=0;ihel[1]<2;++ihel[1]) {
-	  Cm = sp1.scalar(sbar[ihel[1]]);
-	  Dm = -msum*(sp1.vectorCurrent(sbar[ihel[1]]))*decay[1]->momentum()
-	    +dot*Cm;
-	  Em = sp2.scalar(sbar[ihel[1]]);
-	  Fm = -msum*(sp2.vectorCurrent(sbar[ihel[1]]))*decay[1]->momentum()
-	    +dot*Em;
-	  newME(ihel) = C*Cm+D*Dm+E*Em+F*Fm;
+	  Cm = sp1.scalar(sbar[ihel[1]])*UnitRemoval::E;
+ 	  Dm = -complex<Energy4>(msum*(sp1.vectorCurrent(sbar[ihel[1]]))*decay[1]->momentum()*UnitRemoval::E)+complex<Energy4>(dot*Cm);
+	  Em = sp2.scalar(sbar[ihel[1]])*UnitRemoval::E;
+	  Fm = -complex<Energy4>(msum*(sp2.vectorCurrent(sbar[ihel[1]])).dot(decay[1]->momentum())*UnitRemoval::E)
+	    +complex<Energy4>(dot*Em);
+	  newME(ihel) = (C*Cm+D*Dm+E*Em+F*Fm)/sqr(_fpi);
 	}
       }
     }
     else {
-      LorentzSpinorBar sp1,sp2;
+      LorentzSpinorBar<SqrtEnergy> sp1,sp2;
       for(ihel[0]=0;ihel[0]<4;++ihel[0]) {
 	sp1 = Rsbar[ihel[0]].dot(decay[1]->momentum());
 	sp2 = Rsbar[ihel[0]].dot(decay[2]->momentum());
 	for(ihel[1]=0;ihel[1]<2;++ihel[1]) {
-	  Cm = sp[ihel[1]].scalar(sp1);
-	  Dm = -msum*(sp[ihel[1]].vectorCurrent(sp1))*decay[1]->momentum()
-	    +dot*Cm;
-	  Em = sp[ihel[1]].scalar(sp2);
-	  Fm =  msum*(sp[ihel[1]].vectorCurrent(sp2))*decay[1]->momentum()
-	    -dot*Em;
-	  newME(ihel) = C*Cm+D*Dm+E*Em+F*Fm;
+	  Cm = sp[ihel[1]].scalar(sp1)*UnitRemoval::E;
+	  Dm = -complex<Energy4>(msum*(sp[ihel[1]].vectorCurrent(sp1))*decay[1]->momentum()*UnitRemoval::E)
+	    +complex<Energy4>(dot*Cm);
+	  Em = sp[ihel[1]].scalar(sp2)*UnitRemoval::E;
+	  Fm =  complex<Energy4>(msum*(sp[ihel[1]].vectorCurrent(sp2))*decay[1]->momentum()*UnitRemoval::E)
+	    -complex<Energy4>(dot*Em);
+	  newME(ihel) = (C*Cm+D*Dm+E*Em+F*Fm)/sqr(_fpi);
 	}
       }
     }
     // final calculation
-    output=3.*(newME.contract(temp)).real()*_g2*_g2/_fpi/_fpi/_fpi/_fpi;
+    output=3.*(newME.contract(temp)).real()*_g2*_g2;
     ME(newME);
     /*
       double test = 4.*part.mass()*decay[0]->mass()/_fpi/_fpi/_fpi/_fpi*_g2*_g2*

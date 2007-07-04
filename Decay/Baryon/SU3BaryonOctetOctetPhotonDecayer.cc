@@ -49,17 +49,17 @@ int SU3BaryonOctetOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & dm)
 }
 
 void SU3BaryonOctetOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _lf << _ld <<  _parity << _proton << _neutron << _sigma0 << _sigmap << _sigmam 
-     << _lambda << _xi0 << _xim << _eproton << _eneutron << _esigma0 << _esigmap 
-     << _esigmam << _elambda << _exi0 << _exim << _incomingB << _outgoingB << _maxweight
-     << _prefactor;
+  os << ounit(_lf,1./GeV) << ounit(_ld,1./GeV) <<  _parity << _proton << _neutron 
+     << _sigma0 << _sigmap << _sigmam << _lambda << _xi0 << _xim << _eproton 
+     << _eneutron << _esigma0 << _esigmap << _esigmam << _elambda << _exi0 << _exim 
+     << _incomingB << _outgoingB << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonOctetOctetPhotonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _lf >> _ld >>  _parity >> _proton >> _neutron >> _sigma0 >> _sigmap >> _sigmam 
-     >> _lambda >> _xi0 >> _xim >> _eproton >> _eneutron >> _esigma0 >> _esigmap 
-     >> _esigmam >> _elambda >> _exi0 >> _exim >> _incomingB >> _outgoingB >> _maxweight
-     >> _prefactor;
+  is >> iunit(_lf,1./GeV) >> iunit(_ld,1./GeV) >>  _parity >> _proton >> _neutron 
+     >> _sigma0 >> _sigmap >> _sigmam >> _lambda >> _xi0 >> _xim >> _eproton 
+     >> _eneutron >> _esigma0 >> _esigmap >> _esigmam >> _elambda >> _exi0 >> _exim 
+     >> _incomingB >> _outgoingB >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
 ClassDescription<SU3BaryonOctetOctetPhotonDecayer> SU3BaryonOctetOctetPhotonDecayer::initSU3BaryonOctetOctetPhotonDecayer;
@@ -247,7 +247,7 @@ void SU3BaryonOctetOctetPhotonDecayer::setupModes(unsigned int iopt) const
   if(_incomingB.size()!=0&&iopt==0){return;}
   if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);}
   // set up for the various different decay modes
-  vector<double> factor;
+  vector<InvEnergy> factor;
   vector<int> intemp,outtemp;
   // decays of the excited proton
   intemp.push_back(_eproton);outtemp.push_back(_proton);

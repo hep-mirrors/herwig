@@ -279,7 +279,7 @@ private:
   /**
    * The couplings for the different modes.
    */
-  mutable vector<double> _prefactor;
+  mutable vector<InvEnergy> _prefactor;
 };
 
 }

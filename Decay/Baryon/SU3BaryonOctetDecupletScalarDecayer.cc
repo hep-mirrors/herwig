@@ -59,17 +59,17 @@ int SU3BaryonOctetDecupletScalarDecayer::modeNumber(bool & cc,const DecayMode & 
 }
 
 void SU3BaryonOctetDecupletScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _C << _parity << _fpi << _proton << _neutron << _sigma0 << _sigmap 
+  os << _C << _parity << ounit(_fpi,GeV) << _proton << _neutron << _sigma0 << _sigmap 
      << _sigmam << _lambda << _xi0 << _xim << _deltapp << _deltap << _delta0 << _deltam
      << _sigmasp << _sigmas0 << _sigmasm << _omega << _xism << _xis0 << _incomingB 
-     << _outgoingB << _outgoingM << _maxweight << _prefactor;
+     << _outgoingB << _outgoingM << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonOctetDecupletScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _C >> _parity >> _fpi >> _proton >> _neutron >> _sigma0 >> _sigmap 
+  is >> _C >> _parity >> iunit(_fpi,GeV) >> _proton >> _neutron >> _sigma0 >> _sigmap 
      >> _sigmam >> _lambda >> _xi0 >> _xim >> _deltapp >> _deltap >> _delta0 >> _deltam
      >> _sigmasp >> _sigmas0 >> _sigmasm >> _omega >> _xism >> _xis0 >> _incomingB 
-     >> _outgoingB >> _outgoingM >> _maxweight >> _prefactor;
+     >> _outgoingB >> _outgoingM >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
 ClassDescription<SU3BaryonOctetDecupletScalarDecayer> SU3BaryonOctetDecupletScalarDecayer::initSU3BaryonOctetDecupletScalarDecayer;
@@ -402,7 +402,7 @@ void SU3BaryonOctetDecupletScalarDecayer::dataBaseOutput(ofstream & output,
   Baryon1MesonDecayerBase::dataBaseOutput(output,false);
   output << "set " << fullName() << ":Coupling " << _C<< "\n";
   output << "set " << fullName() << ":Parity " << _parity<< "\n";
-  output << "set " << fullName() << ":Fpi " << _fpi << "\n";
+  output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
   output << "set " << fullName() << ":Proton " << _proton << "\n";
   output << "set " << fullName() << ":Neutron " << _neutron << "\n";
   output << "set " << fullName() << ":Sigma+ " << _sigmap << "\n";
