@@ -646,7 +646,7 @@ double FFDipole::meWeight(ParticleVector children)
 	      else if(spin1==2)
 		{twgt+=opbc*ratio/(1.+(1.+beta1*beta2)/ratio/opbc);}
 	      else             
-		{twgt+= 2.*sqr(opbc)*ratio*
+		{twgt+= 2.*sqr(opbc*ratio)*
 		    (+1./(1+beta1*beta2+_ldrf[i].e()/_qnewdrf[1].e()*ombc)
 		     +(1.+beta1*beta2)/sqr(1.+beta1*beta2
 					   +_ldrf[i].e()/_qnewdrf[0].e()*opbc));}
@@ -657,8 +657,7 @@ double FFDipole::meWeight(ParticleVector children)
 	      else if(spin2==2)
 		twgt+=ombc*ratio/(1.+(1.+beta1*beta2)/ratio/ombc);
 	      else {
-		// DGRELL units?
-		twgt += 2.*sqr(ombc)/sqr(_qnewdrf[1].e()) * UnitRemoval::E2
+		twgt += 2.*sqr(ombc*ratio)
 		  * (1./(1. + beta1*beta2 + _ldrf[i].e()/_qnewdrf[0].e()*opbc)
 		     + (1.+beta1*beta2) / sqr(1. + beta1*beta2
 					      + _ldrf[i].e()/_qnewdrf[1].e()*ombc));

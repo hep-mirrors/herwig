@@ -18,7 +18,7 @@ const double  YFSFormFactors::_alpha=1./137.03599911;
 
 const Energy  YFSFormFactors::_mgamma=1e-10*MeV;
 
-const Energy2 YFSFormFactors::_tcut=1.e-8*GeV2;
+const Energy2 YFSFormFactors::_tcut=1.e-11*GeV2;
 
 const Energy YFSFormFactors::_ecut=1e-6*GeV;
 
