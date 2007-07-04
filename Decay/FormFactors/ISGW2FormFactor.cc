@@ -969,8 +969,8 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int id0, int id1
 	+gamji*(1.-2./3.*(1.+zji)/(1.-zji)/(1.-zji));
       double ftemp  = Cf*fn*rmbmtX*rmbmtY*cji*(1.+asopi*(-2./3.+gamji));
       double gtemp  = fn/rmbmtX/rmbmtY*cji*(1.+asopi*( 2./3.+gamji));
-      double amtemp = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY)*cji;
-      double aptemp = fn/rmbmtX/rmbmtY*cji*(1.+asopi*betaapmam);
+      double aptemp = fn*rmbmtX/(rmbmtY*rmbmtY*rmbmtY)*cji;
+      double amtemp = fn/rmbmtX/rmbmtY*cji*(1.+asopi*betaapmam);
       // rest of the calculation
       f     =    ftemp*mtildeY*(1.+wt+0.5*ms*(wt-1.)/mup);
       g     =0.5*gtemp*(1./mq-0.5*ms*betaY*betaY/mum/mtildeX/beta2XY);
