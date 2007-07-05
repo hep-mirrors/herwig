@@ -34,6 +34,21 @@ public:
    */
   inline const MixingMatrixPtr & CPoddHiggsMix() const;
 
+  /**
+   *  The NMSSM couplings
+   */
+  //@{
+  /**
+   *  Superpotential \f$\lambda\f$ term
+   */
+  inline double lambda() const;
+
+  /**
+   *  Superpotential \f$\kappa\f$ coupling
+   */
+  inline double kappa() const;
+  //@}
+
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -109,6 +124,21 @@ private:
    *  Higgs mixing matrix
    */
   MixingMatrixPtr theHiggsAMix;
+
+  /**
+   *  The NMSSM couplings
+   */
+  //@{
+  /**
+   *  Superpotential \f$\lambda\f$ term
+   */
+  double _lambda;
+
+  /**
+   *  Superpotential \f$\kappa\f$ coupling
+   */
+  double _kappa;
+  //@}
 };
 
 }

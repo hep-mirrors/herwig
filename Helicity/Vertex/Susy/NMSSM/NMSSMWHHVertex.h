@@ -1,35 +1,35 @@
 // -*- C++ -*-
-#ifndef HERWIG_NMSSMFFHVertex_H
-#define HERWIG_NMSSMFFHVertex_H
+#ifndef HERWIG_NMSSMWHHVertex_H
+#define HERWIG_NMSSMWHHVertex_H
 //
-// This is the declaration of the NMSSMFFHVertex class.
+// This is the declaration of the NMSSMWHHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "NMSSMFFHVertex.fh"
+#include "NMSSMWHHVertex.fh"
 
 namespace Herwig {
 namespace Helicity {
+
 using namespace ThePEG;
 
-/** \ingroup Helicity
+/**
+ * The NMSSMWHHVertex class implements the coupling of an electroweak"
+ * gauge boson with two Higgs bosons in the NMSSM.
  *
- * The NMSSMFFHVertex class implements the interactions of the NMSSM Higgs bosons
- * with the  Standard Model fermions.
- *
- * @see \ref NMSSMFFHVertexInterfaces "The interfaces"
- * defined for NMSSMFFHVertex.
+ * @see \ref NMSSMWHHVertexInterfaces "The interfaces"
+ * defined for NMSSMWHHVertex.
  */
-class NMSSMFFHVertex: public FFSVertex {
+class NMSSMWHHVertex: public VSSVertex {
 
 public:
 
   /**
    * The default constructor.
    */
-  NMSSMFFHVertex();
+  inline NMSSMWHHVertex();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -54,17 +54,16 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
-  
+
   /**
-   * Calculate the couplings. 
+   * Calculate the couplings. This method is virtual and must be implemented in 
+   * classes inheriting from this.
    * @param q2 The scale \f$q^2\f$ for the coupling at the vertex.
    * @param part1 The ParticleData pointer for the first  particle.
    * @param part2 The ParticleData pointer for the second particle.
    * @param part3 The ParticleData pointer for the third  particle.
-   * @param ioff Which particle is off-shell
-  */
-  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3,
-			   int ioff);
+   */
+  virtual void setCoupling(Energy2 q2,tcPDPtr part1,tcPDPtr part2,tcPDPtr part3);
 
 protected:
 
@@ -101,15 +100,45 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<NMSSMFFHVertex> initNMSSMFFHVertex;
+  static ClassDescription<NMSSMWHHVertex> initNMSSMWHHVertex;
 
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
-  NMSSMFFHVertex & operator=(const NMSSMFFHVertex &);
+  NMSSMWHHVertex & operator=(const NMSSMWHHVertex &);
 
 private:
+
+  /**
+   * \f$\sin\beta\f$
+   */
+  double _sinb;
+
+  /**
+   * \f$\cos\beta\f$
+   */
+  double _cosb;
+
+  /**
+   * \f$\sin\theta_W\f$
+   */
+  double _sw;
+
+  /**
+   * \f$\cos\theta_W\f$
+   */
+  double _cw;
+
+  /**
+   *  The last \f$q^2\f$ the coupling was evaluated at.
+   */
+  Energy2 _q2last;
+
+  /**
+   *  The last value of the coupling
+   */
+  double _couplast;
 
   /**
    *  Mixing matrix for the CP-even Higgs bosons
@@ -126,51 +155,6 @@ private:
    */
   tcHwSMPtr _theSM;
 
-  /**
-   *  Mass of the \f$W\f$ boson
-   */
-  Energy _mw;
-
-  /**
-   *  \f$\sin\beta\f$
-   */
-  double _sinb;
-
-  /**
-   *  \f$\cos\beta\f$
-   */
-  double _cosb;
-
-  /**
-   *  \f$\tan\beta\f$
-   */
-  double _tanb;
-
-  /**
-   *  \f$\sin\theta_W\f$
-   */
-  double _sw;
-
-  /**
-   *  The PDG code of the last fermion the coupling was evaluated for.
-   */
-  pair<int,int> _idlast;
-
-  /**
-   *  The last \f$q^2\f$ the coupling was evaluated at.
-   */
-  Energy2 _q2last;
-
-  /**
-   * The mass of the last fermion for which the coupling was evaluated.
-   */
-  pair<Energy,Energy> _masslast;
-
-  /**
-   *  The last value of the coupling
-   */
-  double _couplast;
-
 };
 
 }
@@ -183,24 +167,24 @@ namespace ThePEG {
 /** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
- *  base classes of NMSSMFFHVertex. */
+ *  base classes of NMSSMWHHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::NMSSMFFHVertex,1> {
-  /** Typedef of the first base class of NMSSMFFHVertex. */
-  typedef Herwig::Helicity::FFSVertex NthBase;
+struct BaseClassTrait<Herwig::Helicity::NMSSMWHHVertex,1> {
+  /** Typedef of the first base class of NMSSMWHHVertex. */
+  typedef Herwig::Helicity::VSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
- *  the NMSSMFFHVertex class and the shared object where it is defined. */
+ *  the NMSSMWHHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::NMSSMFFHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::NMSSMFFHVertex> {
+struct ClassTraits<Herwig::Helicity::NMSSMWHHVertex>
+  : public ClassTraitsBase<Herwig::Helicity::NMSSMWHHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::NMSSMFFHVertex"; }
+  static string className() { return "Herwig+::NMSSMWHHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
-   * NMSSMFFHVertex is implemented. It may also include several, space-separated,
-   * libraries if the class NMSSMFFHVertex depends on other classes (base classes
+   * NMSSMWHHVertex is implemented. It may also include several, space-separated,
+   * libraries if the class NMSSMWHHVertex depends on other classes (base classes
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
@@ -211,6 +195,6 @@ struct ClassTraits<Herwig::Helicity::NMSSMFFHVertex>
 
 }
 
-#include "NMSSMFFHVertex.icc"
+#include "NMSSMWHHVertex.icc"
 
-#endif /* HERWIG_NMSSMFFHVertex_H */
+#endif /* HERWIG_NMSSMWHHVertex_H */

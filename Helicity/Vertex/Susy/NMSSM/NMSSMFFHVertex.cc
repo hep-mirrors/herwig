@@ -68,7 +68,6 @@ void NMSSMFFHVertex::persistentInput(PersistentIStream & is, int) {
 }
 
 void NMSSMFFHVertex::doinit() throw(InitException) {
-  FFSVertex::doinit();
   // cast to NMSSM model
   tcNMSSMPtr model=dynamic_ptr_cast<tcNMSSMPtr>(generator()->standardModel());
   if(!model) 
@@ -94,7 +93,11 @@ void NMSSMFFHVertex::doinit() throw(InitException) {
   double beta = atan(_tanb);
   _sinb=sin(beta);
   _cosb=cos(beta);
-  cerr << *this << "\n";
+  // order in couplings
+  orderInGem(1);
+  orderInGs(0);
+  // base class
+  FFSVertex::doinit();
 }
 
 ClassDescription<NMSSMFFHVertex> NMSSMFFHVertex::initNMSSMFFHVertex;

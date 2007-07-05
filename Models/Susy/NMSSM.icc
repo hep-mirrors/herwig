@@ -20,4 +20,12 @@ inline const MixingMatrixPtr & NMSSM::CPoddHiggsMix() const {
   return theHiggsAMix;
 }
 
+inline double NMSSM::lambda() const {
+  return _lambda;
+}
+
+inline double NMSSM::kappa() const {
+  return _kappa;
+}
+
 }

@@ -12,11 +12,11 @@
 using namespace Herwig;
 
 void NMSSM::persistentOutput(PersistentOStream & os) const {
-  os << theHiggsAMix;
+  os << theHiggsAMix << _lambda << _kappa;
 }
 
 void NMSSM::persistentInput(PersistentIStream & is, int) {
-  is >> theHiggsAMix;
+  is >> theHiggsAMix >> _lambda >> _kappa;
 }
 
 ClassDescription<NMSSM> NMSSM::initNMSSM;
@@ -25,7 +25,7 @@ ClassDescription<NMSSM> NMSSM::initNMSSM;
 void NMSSM::Init() {
 
   static ClassDocumentation<NMSSM> documentation
-    ("There is no documentation for the NMSSM class");
+    ("The NMSSM class is the base class for the NMSSM model");
 
 }
 
@@ -59,6 +59,17 @@ void NMSSM::extractParameters(bool checkmodel) {
 				 << "flavour violation"
 				 << Exception::runerror;
   }
+  // get the NMSSM parameters
+  map<string,ParamMap>::const_iterator pit;
+  pit=parameters().find("extpar");
+  _lambda=0.;
+  _kappa =0.;
+  if(pit!=parameters().end()) {
+    ParamMap::const_iterator it = pit->second.find(61);
+    if(it!=pit->second.end()) _lambda=it->second;
+    it = pit->second.find(62);
+    if(it!=pit->second.end()) _kappa=it->second;
+  }
 }
 
 void NMSSM::createMixingMatrices() {
@@ -68,7 +79,6 @@ void NMSSM::createMixingMatrices() {
     string name=it->first;
     // pseudo-scalar higgs mixing
     if (name == "nmamix") {
-      cerr << "testing amix\n";
       createMixingMatrix(theHiggsAMix,name,it->second.second,it->second.first);
     }
   }

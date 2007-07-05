@@ -29,7 +29,7 @@ ClassDescription<MSSM> MSSM::initMSSM;
 void MSSM::Init() {
 
   static ClassDocumentation<MSSM> documentation
-    ("There is no documentation for the MSSM class");
+    ("The MSSM class is the base class for the MSSM model.");
 
 }
 

@@ -1,0 +1,24 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the NMSSMGOGOHVertex class.
+//
+#ifndef HERWIG_NMSSMGOGOHVertex_FH
+#define HERWIG_NMSSMGOGOHVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+namespace Helicity {
+
+class NMSSMGOGOHVertex;
+
+}
+}
+
+namespace ThePEG {
+
+  ThePEG_DECLARE_POINTERS(Herwig::Helicity::NMSSMGOGOHVertex,NMSSMGOGOHVertexPtr);
+
+}
+
+#endif
