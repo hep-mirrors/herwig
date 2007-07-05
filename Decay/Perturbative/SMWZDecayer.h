@@ -193,7 +193,7 @@ template <>
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
+  static string library() { return "HwPerturbativeDecay.so"; }
 
 };
 

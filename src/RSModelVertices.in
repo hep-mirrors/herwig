@@ -1,5 +1,3 @@
-library HwRSVertex.so
-
 create /Herwig++/Helicity/RSModelFFGRVertex FFGRVertex
 set /Defaults/Model:Vertex/FFGR FFGRVertex
 set FFGRVertex:Model /Defaults/Model

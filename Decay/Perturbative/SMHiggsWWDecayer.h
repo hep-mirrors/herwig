@@ -250,7 +250,7 @@ struct ClassTraits<Herwig::SMHiggsWWDecayer>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwSMVertex.so HwPerturbativeHiggsDecay.so"; }
+  static string library() { return "HwPerturbativeHiggsDecay.so"; }
 };
 
 /** @endcond */

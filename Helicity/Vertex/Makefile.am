@@ -1,4 +1,4 @@
-SUBDIRS = Scalar Vector Tensor StandardModel RSModel Susy UED
+SUBDIRS = Scalar Vector Tensor
 
 noinst_LTLIBRARIES = libHwVertex.la
 libHwVertex_la_SOURCES = VertexBase.cc VertexBase.h \

@@ -1,5 +1,3 @@
-library HwUEDVertex.so
-
 # level-1 fermions with the SM Z
 create /Herwig++/UEDF1F1Z0Vertex /Defaults/Vertices/UEDFFZ
 set /Defaults/Model:Vertex/F1F1Z /Defaults/Vertices/UEDFFZ

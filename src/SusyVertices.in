@@ -1,5 +1,3 @@
-library HwSusyVertex.so
-
 # create the Z scalar-scalar vertex
 create /Herwig++/SSZSSVertex ZSFSFVertex
 set /Defaults/Model:Vertex/ZSFSF ZSFSFVertex

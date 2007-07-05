@@ -1,8 +1,0 @@
-pkglib_LTLIBRARIES = HwNMSSMVertex.la
-HwNMSSMVertex_la_SOURCES = \
-NMSSMFFHVertex.h NMSSMFFHVertex.fh NMSSMFFHVertex.icc NMSSMFFHVertex.cc\
-NMSSMWWHVertex.h NMSSMWWHVertex.fh NMSSMWWHVertex.icc NMSSMWWHVertex.cc\
-NMSSMWHHVertex.h NMSSMWHHVertex.fh NMSSMWHHVertex.icc NMSSMWHHVertex.cc\
-NMSSMHSFSFVertex.h NMSSMHSFSFVertex.fh NMSSMHSFSFVertex.icc NMSSMHSFSFVertex.cc\
-NMSSMGOGOHVertex.h NMSSMGOGOHVertex.fh NMSSMGOGOHVertex.icc NMSSMGOGOHVertex.cc
-HwNMSSMVertex_la_LDFLAGS = -module

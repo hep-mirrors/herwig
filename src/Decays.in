@@ -33,7 +33,6 @@ set /Defaults/Decays/QDecayME130:MECode 130
 #
 # create the decays for perturbative particles, i.e. top, W and Z
 #
-library HwSMVertex.so
 create Herwig++::SMTopDecayer            /Defaults/Decays/Top HwPerturbativeDecay.so
 create Herwig++::SMWZDecayer             /Defaults/Decays/WZ  HwPerturbativeDecay.so
 create Herwig++::SMHiggsFermionsDecayer  /Defaults/Decays/Hff HwPerturbativeHiggsDecay.so

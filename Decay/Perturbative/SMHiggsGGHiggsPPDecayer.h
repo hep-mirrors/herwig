@@ -8,8 +8,8 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/StandardModel/SMHGGVertex.h"
-#include "Herwig++/Helicity/Vertex/StandardModel/SMHPPVertex.h"
+#include "Herwig++/Models/StandardModel/SMHGGVertex.h"
+#include "Herwig++/Models/StandardModel/SMHPPVertex.h"
 #include "SMHiggsGGHiggsPPDecayer.fh"
 
 namespace Herwig {
@@ -208,7 +208,7 @@ struct ClassTraits<Herwig::SMHiggsGGHiggsPPDecayer>
   /** Return the name of the shared library be loaded to get
    *  access to the SMHiggsGGHiggsPPDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwSMVertex.so HwPerturbativeHiggsDecay.so"; }
+  static string library() { return "HwPerturbativeHiggsDecay.so"; }
 };
 
 /** @endcond */
