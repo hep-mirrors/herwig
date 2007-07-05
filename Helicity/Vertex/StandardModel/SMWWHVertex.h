@@ -24,16 +24,11 @@ using namespace ThePEG;
 class SMWWHVertex: public VVSVertex {
   
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * Default constructor.
    */
-  inline SMWWHVertex();
-  //@}  
-
-public:
+  SMWWHVertex();
   
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -91,7 +86,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
   
 private:
