@@ -23,20 +23,10 @@ class SSFFHVertex: public FFSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSFFHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSFFHVertex();
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{

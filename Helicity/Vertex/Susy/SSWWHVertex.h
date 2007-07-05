@@ -148,7 +148,7 @@ private:
   /**
    * The value of the coupling when it was last evaluated
    */
-  Complex theCoupLast;
+  complex<Energy> theCoupLast;
 
   /**
    * The value of \f$\sqrt{4\pi \alpha(q2)}\f$ when it was last evaluated.

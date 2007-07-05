@@ -53,7 +53,7 @@ NMSSMFFHVertex::NMSSMFFHVertex() {
   _tanb=0.;
   _idlast=make_pair(0,0);
   _q2last=0.*MeV2;
-  _masslast=make_pair(0.*MeV,0);
+  _masslast=make_pair(0.*MeV,0.*MeV);
   _couplast=0.;
 }
 
@@ -111,7 +111,7 @@ void NMSSMFFHVertex::Init() {
 void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int) {
   int ihiggs=c->id();
   int id(abs(a->id()));
-  complex<Energy> output(1.*MeV);
+  Complex output(1.);
   // neutral Higgs
   if(ihiggs==25||ihiggs==35||ihiggs==45||ihiggs==36||ihiggs==46) {
     // left and right couplings set to one
@@ -119,7 +119,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
       _idlast.first=id;
       _masslast.first = _theSM->mass(q2,a);
     }
-    output = _masslast.first;
+    output = _masslast.first/_mw;
     // CP-even 
     if(ihiggs==25||ihiggs==35||ihiggs==45) {
       int iloc = (ihiggs-25)/10;
@@ -146,14 +146,11 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
       _masslast.first  = _theSM->mass(q2,a);
       _masslast.second = _theSM->mass(q2,b);
     }
-    if(ihiggs>0) {
-      setRight(_masslast.first *_tanb);
-      setLeft (_masslast.second/_tanb);
-    }
-    else {
-      setLeft (_masslast.first *_tanb);
-      setRight(_masslast.second/_tanb);
-    }
+    double right=_masslast.first *_tanb/_mw;
+    double left =_masslast.second/_tanb/_mw;
+    if(ihiggs<0) swap(left,right);
+    setRight(right);
+    setLeft (left);
   }
   else {
     throw Exception() << "Unknown Higgs boson, PDG code = " << ihiggs 
@@ -163,7 +160,7 @@ void NMSSMFFHVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c, int)
   // prefact
   if(q2!=_q2last) {
     double alpha = _theSM->alphaEM(q2);
-    _couplast = 0.5*sqrt(4.0*pi*alpha)/_sw/_mw;
+    _couplast = 0.5*sqrt(4.0*Constants::pi*alpha)/_sw;
     _q2last=q2;
   }
   setNorm(-_couplast*output);

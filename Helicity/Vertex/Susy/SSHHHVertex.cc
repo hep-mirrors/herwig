@@ -13,11 +13,12 @@
 
 using namespace Herwig::Helicity;
 
-SSHHHVertex::SSHHHVertex() : theMw(0.), theZfact(0.), theSw(0.),
+SSHHHVertex::SSHHHVertex() : theMw(0.*MeV), theZfact(0.*MeV), theSw(0.),
 			     theSbpa(0.), theCbpa(0.), theSbma(0.),
 			     theCbma(0.), theS2a(0.), theC2a(0.),
 			     theS2b(0.), theC2b(0.), theElast(0.),
-			     theq2last(0.) {
+			     theq2last(0.*MeV2) 
+{
   vector<int> first, second, third;
   int sec = 35;
   for(unsigned int h = 25; h < 36; h += 10) {
@@ -44,8 +45,6 @@ SSHHHVertex::SSHHHVertex() : theMw(0.), theZfact(0.), theSw(0.),
   setList(first, second, third);
 
 }
-
-SSHHHVertex::~SSHHHVertex() {}
 
 void SSHHHVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
@@ -79,15 +78,13 @@ void SSHHHVertex::doinit() throw(InitException) {
 }
 
 void SSHHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMw << theZfact << theSw << theSbpa << theCbpa << theSbma 
-     << theCbma << theS2a << theC2a << theS2b << theC2b; 
+  os << ounit(theMw,GeV) << ounit(theZfact,GeV) << theSw << theSbpa 
+     << theCbpa << theSbma << theCbma << theS2a << theC2a << theS2b << theC2b; 
 }
 
 void SSHHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMw >> theZfact >> theSw >> theSbpa >> theCbpa >> theSbma 
-     >> theCbma >> theS2a >> theC2a >> theS2b >> theC2b;
-  theElast = 0.;
-  theq2last = 0.;
+  is >> iunit(theMw,GeV) >> iunit(theZfact,GeV) >> theSw >> theSbpa 
+     >> theCbpa >> theSbma >> theCbma >> theS2a >> theC2a >> theS2b >> theC2b;
 }
 
 ClassDescription<SSHHHVertex> SSHHHVertex::initSSHHHVertex;
@@ -120,7 +117,7 @@ void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
   }
   assert(h1 + h2 + h3 + hc == 3);
   
-  Complex coupling;
+  complex<Energy> coupling;
   bool unrec(false);
   if( h1 == 3 || h2 == 3 ) {
     coupling = -3.*theZfact*theC2a;
@@ -162,7 +159,7 @@ void SSHHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     theElast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2));
   }
 
-  setNorm(theElast*coupling);
+  setNorm(theElast*coupling*UnitRemoval::InvE);
   
 }
 			      

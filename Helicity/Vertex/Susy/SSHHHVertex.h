@@ -23,20 +23,10 @@ class SSHHHVertex: public SSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSHHHVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSHHHVertex();
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{

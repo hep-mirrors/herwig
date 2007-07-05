@@ -13,10 +13,10 @@
 
 using namespace Herwig::Helicity;
 
-SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.0), 
+SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.*MeV), 
 			     theSw(0.0), theSa(0.0), theSb(0.0),
 			     theCa(0.0), theCb(0.0), theCoupLast(0.0), 
-			     theLLast(0.0), theRLast(0.0) {
+			     theLLast(0.0), theRLast(0.0), theHLast(0), theFLast(0) {
   vector<int> first, second, third;
   //neutral higgs
   int higgs = 25;
@@ -52,8 +52,6 @@ SSFFHVertex::SSFFHVertex() : thetanb(0.0), theMw(0.0),
   setList(first, second, third);
 }
 
-SSFFHVertex::~SSFFHVertex() {}
-
 void SSFFHVertex::doinit() throw(InitException) {
   FFSVertex::doinit();
   theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
@@ -74,18 +72,13 @@ void SSFFHVertex::doinit() throw(InitException) {
 }
 
 void SSFFHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM  << thetanb << theMw << theSw << theSa
+  os << theMSSM  << thetanb << ounit(theMw,GeV) << theSw << theSa
      << theSb << theCa << theCb;
 }
 
 void SSFFHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM  >> thetanb >> theMw >> theSw >> theSa
+  is >> theMSSM  >> thetanb >> iunit(theMw,GeV) >> theSw >> theSa
      >> theSb >> theCa >> theCb;
-  theCoupLast = 0.0;
-  theLLast = 0.0;
-  theRLast = 0.0;
-  theHLast = 0;
-  theFLast = 0;
 }
 
 ClassDescription<SSFFHVertex> SSFFHVertex::initSSFFHVertex;
@@ -179,9 +172,9 @@ void SSFFHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
   else {
     if( id1 % 2 != 0 ) swap(f1ID, f2ID);
     theFLast = f1ID;
-    theCoupLast = sqrt(2.*Constants::pi*theMSSM->alphaEM(q2))/theMw;
-    theLLast = getParticleData(f1ID)->mass()*thetanb;
-    theRLast = getParticleData(f2ID)->mass()/thetanb;
+    theCoupLast = sqrt(2.*Constants::pi*theMSSM->alphaEM(q2));
+    theLLast = getParticleData(f1ID)->mass()*thetanb/theMw;
+    theRLast = getParticleData(f2ID)->mass()/thetanb/theMw;
   }
   setNorm(theCoupLast);
   setLeft(theLLast);

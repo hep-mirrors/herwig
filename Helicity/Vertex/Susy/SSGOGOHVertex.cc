@@ -13,7 +13,7 @@
 
 using namespace Herwig::Helicity;
 
-SSGOGOHVertex::SSGOGOHVertex() : theMw(0.0), theRij(2, vector<Complex>(2,0.0)),
+SSGOGOHVertex::SSGOGOHVertex() : theMw(0.*MeV), theRij(2, vector<Complex>(2,0.0)),
 				 theQij(2, vector<Complex>(2,0.0)),
 				 theQijLp(4, vector<Complex>(2,0.0)),
 				 theQijRp(4, vector<Complex>(2,0.0)),
@@ -115,13 +115,13 @@ void SSGOGOHVertex::doinit() throw(InitException) {
 
 void SSGOGOHVertex::persistentOutput(PersistentOStream & os) const {
   os << theMSSM  << theRij << theQij << theQijLp << theQijRp << theRijdp
-     << theQijdp << theMw << theSw << theSa << theSb << theCa << theCb 
+     << theQijdp << ounit(theMw,GeV) << theSw << theSa << theSb << theCa << theCb 
      << theC2b << theSba << theCba;
 }
 
 void SSGOGOHVertex::persistentInput(PersistentIStream & is, int) {
   is >> theMSSM  >> theRij >> theQij >> theQijLp >> theQijRp >> theRijdp
-     >> theQijdp >> theMw >> theSw >> theSa >> theSb >> theCa >> theCb 
+     >> theQijdp >> iunit(theMw,GeV) >> theSw >> theSa >> theSb >> theCa >> theCb 
      >> theC2b >> theSba >> theCba;
   theCoupLast = 0.0;
   theLLast = 0.0;

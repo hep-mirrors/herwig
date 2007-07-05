@@ -13,10 +13,10 @@
 
 using namespace Herwig::Helicity;
 
-SSWWHVertex::SSWWHVertex() : theh0Wfact(0.0), theH0Wfact(0.0), 
-			     theh0Zfact(0.0), theH0Zfact(0.0),
-			     theCoupLast(0.0), theElast(0.0),
-			     theq2last(0.0), theHlast(0), 
+SSWWHVertex::SSWWHVertex() : theh0Wfact(0.*MeV), theH0Wfact(0.*MeV), 
+			     theh0Zfact(0.*MeV), theH0Zfact(0.*MeV),
+			     theCoupLast(0.*MeV), theElast(0.0),
+			     theq2last(0.*MeV2), theHlast(0), 
 			     theGBlast(0) {
   vector<int> first, second, third;
   //ZZh0
@@ -70,16 +70,13 @@ void SSWWHVertex::doinit() throw(InitException) {
 }
 
 void SSWWHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theh0Wfact << theH0Wfact << theh0Zfact << theH0Zfact;
+  os << ounit(theh0Wfact,GeV) << ounit(theH0Wfact,GeV) 
+     << ounit(theh0Zfact,GeV) << ounit(theH0Zfact,GeV);
 }
 
 void SSWWHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theh0Wfact >> theH0Wfact >> theh0Zfact >> theH0Zfact;
-  theCoupLast = 0.0;
-  theElast = 0.0;
-  theq2last = 0.0;
-  theHlast = 0;
-  theGBlast = 0;
+  is >> iunit(theh0Wfact,GeV) >> iunit(theH0Wfact,GeV) 
+     >> iunit(theh0Zfact,GeV) >> iunit(theH0Zfact,GeV);
 }
 
 ClassDescription<SSWWHVertex> SSWWHVertex::initSSWWHVertex;
@@ -137,5 +134,5 @@ void SSWWHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
     theElast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2));
   }
 
-  setNorm(theElast*theCoupLast);
+  setNorm(theElast*theCoupLast*UnitRemoval::InvE);
 }

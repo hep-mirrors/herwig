@@ -27,20 +27,10 @@ class SSHSFSFVertex: public SSSVertex {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SSHSFSFVertex();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSHSFSFVertex();
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -241,7 +231,7 @@ private:
   /**
    * The value of the coupling when it was last evaluated
    */
-  Complex theCoupLast;
+  complex<Energy> theCoupLast;
   
   /**
    * The scale at which the coupling was last evaluated
@@ -251,7 +241,7 @@ private:
   /**
    * The value of g coupling when it was last evaluated
    */
-  Energy2 thegLast;
+  double thegLast;
   
   /**
    * The ID of the higgs when the vertex was last evaluated 
