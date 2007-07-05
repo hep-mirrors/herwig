@@ -653,9 +653,10 @@ double Baryon1MesonDecayerBase::threeHalfThreeHalfScalar(bool vertex, const int,
 	  else{iy=ixa;ix=iya;}
 	  ispin[0]=iya;
 	  ispin[1]=ixa;
- 	  newME(ispin)=Rsp[iy].generalScalar(Rsbar[ix],left1,right1)/inpart.mass();
-// 	  newME(ispin)=(Rsp[iy].generalScalar(Rsbar[ix],left1,right1)
-// 			+sp[iy].generalScalar( sbar[ix],left2,right2)*UnitRemoval::E2/sqr(msum))/inpart.mass();
+ 	  newME(ispin)=(Rsp[iy].generalScalar(Rsbar[ix],left1,right1)
+ 			+sp[iy].generalScalar( sbar[ix],left2,right2)
+			  *UnitRemoval::E2/sqr(msum))
+	    /inpart.mass();
 	}
     }
   // store the matrix element

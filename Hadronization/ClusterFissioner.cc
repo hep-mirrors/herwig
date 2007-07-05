@@ -127,9 +127,9 @@ void ClusterFissioner::fission(const StepPtr &pstep, bool softUEisOn) {
     // to be split
     if((*it)->isBeamCluster()) splitClusters.push_back(*it);
     // If the cluster is heavy add it to the vector of clusters to be split.
-    else if(pow((*it)->mass()/MeV , _clPow) > 
-	    pow(_clMax/MeV, _clPow) 
-	    + pow((*it)->sumConstituentMasses()/MeV, _clPow))
+    else if(pow((*it)->mass()*UnitRemoval::InvE , _clPow) > 
+	    pow(_clMax*UnitRemoval::InvE, _clPow) 
+	    + pow((*it)->sumConstituentMasses()*UnitRemoval::InvE, _clPow))
       splitClusters.push_back(*it);
   }
   // split the clusters
@@ -206,9 +206,9 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
       clusters.push_back(one);
       if(one->isBeamCluster() && softUEisOn)
 	one->isAvailable(false);
-      if(pow(one->mass()/MeV, _clPow) > 
-	 pow(_clMax/MeV, _clPow) 
-	 + pow(one->sumConstituentMasses()/MeV, _clPow)
+      if(pow(one->mass()*UnitRemoval::InvE, _clPow) > 
+	 pow(_clMax*UnitRemoval::InvE, _clPow) 
+	 + pow(one->sumConstituentMasses()*UnitRemoval::InvE, _clPow)
 	 &&one->isAvailable()) {
 	clusterStack.push_back(one);
       } 
@@ -217,8 +217,8 @@ void ClusterFissioner::cut(tClusterPtr cluster, const StepPtr &pstep,
       clusters.push_back(two);
       if(two->isBeamCluster() && softUEisOn)
 	two->isAvailable(false);
-      if(pow(two->mass()/MeV, _clPow) > 
-	 pow(_clMax/MeV, _clPow) + pow(two->sumConstituentMasses()/MeV, _clPow)
+      if(pow(two->mass()*UnitRemoval::InvE, _clPow) > 
+	 pow(_clMax*UnitRemoval::InvE, _clPow) + pow(two->sumConstituentMasses()*UnitRemoval::InvE, _clPow)
 	 && two->isAvailable()) {
 	clusterStack.push_back(two);
       } 
@@ -480,9 +480,9 @@ void ClusterFissioner::drawChildMass(const Energy M, const Energy m1,
 
   // hard cluster
   if(!soft) {
-    Mclu = pow(UseRandom::rnd(pow((M-m1-m2-m)/MeV, expt), 
-			      pow(m/MeV, expt)), 1./expt
-		)*MeV + m1;
+    Mclu = pow(UseRandom::rnd(pow((M-m1-m2-m)*UnitRemoval::InvE, expt), 
+			      pow(m*UnitRemoval::InvE, expt)), 1./expt
+	       )*UnitRemoval::E + m1;
   }
   // Otherwise it uses a soft mass distribution
   else 

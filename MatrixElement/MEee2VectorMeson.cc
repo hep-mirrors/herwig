@@ -186,7 +186,7 @@ ProductionMatrixElement MEee2VectorMeson::HelicityME(vector<SpinorWaveFunction> 
       }
     }
   }
-  aver=me/sHat()*UnitRemoval::E2;
+  aver=(me*UnitRemoval::E2)/sHat();
   return output;
 }
 
