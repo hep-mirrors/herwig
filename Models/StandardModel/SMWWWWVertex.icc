@@ -4,7 +4,6 @@
 // the SMWWWWVertex class.
 //
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
   inline SMWWWWVertex::SMWWWWVertex() 
@@ -59,7 +58,5 @@ inline void SMWWWWVertex::doinit() throw(InitException) {
   _Z0     = getParticleData(ThePEG::ParticleID::Z0);
   _wplus  = getParticleData(ThePEG::ParticleID::Wplus);
   _wminus = getParticleData(ThePEG::ParticleID::Wminus);
-}
-
 }
 }

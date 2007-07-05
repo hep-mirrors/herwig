@@ -8,11 +8,9 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-namespace Helicity {
 
 class UEDG1G1G0Vertex;
 
-}
 }
 
 namespace ThePEG {

@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline IBPtr UEDF1F1P0Vertex::clone() const {
   return new_ptr(*this);
@@ -27,7 +26,5 @@ inline void UEDF1F1P0Vertex::doinit() throw(InitException) {
   theCharges[2] = theUEDBase->eu();
   orderInGs(0);
   orderInGem(0);
-}
-
 }
 }

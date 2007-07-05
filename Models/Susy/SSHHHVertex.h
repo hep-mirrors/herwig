@@ -5,12 +5,11 @@
 // This is the declaration of the SSHHHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSHHHVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -178,9 +177,8 @@ private:
   Energy2 theq2last;
   
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -191,16 +189,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSHHHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSHHHVertex,1> {
+struct BaseClassTrait<Herwig::SSHHHVertex,1> {
   /** Typedef of the first base class of SSHHHVertex. */
-  typedef Herwig::Helicity::SSSVertex NthBase;
+  typedef ThePEG::Helicity::SSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSHHHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSHHHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSHHHVertex> {
+struct ClassTraits<Herwig::SSHHHVertex>
+  : public ClassTraitsBase<Herwig::SSHHHVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSHHHVertex"; }
   /**

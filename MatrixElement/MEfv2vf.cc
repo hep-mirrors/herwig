@@ -12,13 +12,13 @@
 #include <numeric>
 
 using namespace Herwig;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::VVVVertexPtr;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
 
 double MEfv2vf::me2() const {
   //wavefunctions

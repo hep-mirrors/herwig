@@ -8,16 +8,12 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-namespace Helicity {
-
 class UEDZ0H1H1Vertex;
-
-}
 }
 
 namespace ThePEG {
 
-ThePEG_DECLARE_POINTERS(Herwig::Helicity::UEDZ0H1H1Vertex,UEDZ0H1H1VertexPtr);
+ThePEG_DECLARE_POINTERS(Herwig::UEDZ0H1H1Vertex,UEDZ0H1H1VertexPtr);
 
 }
 

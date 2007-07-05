@@ -5,12 +5,11 @@
 // This is the declaration of the SSWWHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSWWHVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -171,9 +170,8 @@ private:
    */
   long theGBlast;
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -184,16 +182,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSWWHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSWWHVertex,1> {
+struct BaseClassTrait<Herwig::SSWWHVertex,1> {
   /** Typedef of the first base class of SSWWHVertex. */
-  typedef Herwig::Helicity::VVSVertex NthBase;
+  typedef ThePEG::Helicity::VVSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSWWHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSWWHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSWWHVertex> {
+struct ClassTraits<Herwig::SSWWHVertex>
+  : public ClassTraitsBase<Herwig::SSWWHVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSWWHVertex"; }
   /**

@@ -5,12 +5,11 @@
 // This is the declaration of the SSH3SFSFVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSH3SFSFVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -174,16 +173,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSH3SFSFVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSH3SFSFVertex,1> {
+struct BaseClassTrait<Herwig::SSH3SFSFVertex,1> {
   /** Typedef of the first base class of SSH3SFSFVertex. */
-  typedef Herwig::Helicity::SSSVertex NthBase;
+  typedef ThePEG::Helicity::SSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSH3SFSFVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSH3SFSFVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSH3SFSFVertex> {
+struct ClassTraits<Herwig::SSH3SFSFVertex>
+  : public ClassTraitsBase<Herwig::SSH3SFSFVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSH3SFSFVertex"; }
   /** Return the name of the shared library be loaded to get

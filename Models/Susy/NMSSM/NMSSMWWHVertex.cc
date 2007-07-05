@@ -12,7 +12,7 @@
 #include "NMSSM.h"
 
 using namespace Herwig;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 NMSSMWWHVertex::NMSSMWWHVertex() 
   : _couplast(0.), _q2last(), _mw(), _zfact(0.), _sw(0.), _sinb(0.),_cosb(0.) {

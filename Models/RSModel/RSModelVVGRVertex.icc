@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 inline RSModelVVGRVertex::RSModelVVGRVertex() 
@@ -33,7 +32,5 @@ inline void RSModelVVGRVertex::doinit() throw(InitException) {
   tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
   if(hwRS){_theKappa=2./hwRS->lambda_pi();}
   else{throw InitException();}
-}
-
 }
 }

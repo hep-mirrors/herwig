@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
     
 SMFFWVertex::SMFFWVertex() : _ckm(3,vector<Complex>(3,0.0)),_couplast(0.),
@@ -60,7 +59,7 @@ void SMFFWVertex::persistentInput(PersistentIStream & is, int) {
 }
   
 void SMFFWVertex::doinit() throw(InitException) {
-  Herwig::Helicity::FFVVertex::doinit();
+  ThePEG::Helicity::FFVVertex::doinit();
   _theSM  = generator()->standardModel();
   _theCKM = generator()->standardModel()->CKM();
   // cast the CKM object to the HERWIG one
@@ -146,7 +145,7 @@ void SMFFWVertex::setCoupling(Energy2 q2, tcPDPtr a, tcPDPtr b, tcPDPtr) {
 }
  
 }
-}
+
 
 
 

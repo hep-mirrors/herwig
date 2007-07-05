@@ -8,7 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/epsilon.h"
+#include "ThePEG/Helicity/epsilon.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 
 

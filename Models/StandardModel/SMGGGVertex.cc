@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
-namespace Helicity{
 using namespace ThePEG;
 
 void SMGGGVertex::persistentOutput(PersistentOStream & os) const {
@@ -42,8 +41,6 @@ void SMGGGVertex::setCoupling(Energy2 q2,tcPDPtr,tcPDPtr, tcPDPtr)
       _q2last=q2;
     }
   setNorm(_couplast);
-}
-
 }
 }
 

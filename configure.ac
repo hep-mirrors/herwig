@@ -116,13 +116,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
-		Helicity/Makefile
-                Helicity/Correlations/Makefile
-		Helicity/Vertex/Makefile
-                Helicity/Vertex/Scalar/Makefile
-                Helicity/Vertex/Tensor/Makefile
-                Helicity/Vertex/Vector/Makefile
-                Helicity/WaveFunction/Makefile
 		lib/Makefile
 		include/Makefile
 		src/Makefile

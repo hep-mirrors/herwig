@@ -6,7 +6,7 @@
 //
 
 #include "WeakDecayCurrent.h"
-#include "Herwig++/Helicity/epsilon.h"
+#include "ThePEG/Helicity/epsilon.h"
 #include "FivePionCurrent.fh"
 
 namespace Herwig {

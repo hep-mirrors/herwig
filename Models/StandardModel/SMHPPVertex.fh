@@ -8,12 +8,9 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-namespace Helicity {
   using namespace ThePEG;
   class SMHPPVertex;
   ThePEG_DECLARE_POINTERS(SMHPPVertex,SMHPPVertexPtr);
-
-}  
 }
 
 #endif

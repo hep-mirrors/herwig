@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
 					    theq2Last(), theCoupLast(0.) {
@@ -35,7 +34,5 @@ inline void UEDZ0A1h1Vertex::doinit() throw(InitException) {
   theKappa = 1./sqrt(1. + mz2*rad2);
   orderInGs(0);
   orderInGem(0);
-}
-
 }
 }

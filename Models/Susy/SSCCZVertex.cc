@@ -10,7 +10,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSCCZVertex::SSCCZVertex() : _sw2(0.), _cw(0.), _couplast(0.),
 			     _q2last(), _id1last(0), _id2last(0) {

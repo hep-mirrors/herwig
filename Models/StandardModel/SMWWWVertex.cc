@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 void SMWWWVertex::persistentOutput(PersistentOStream & os) const {
@@ -67,11 +66,10 @@ void SMWWWVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b, tcPDPtr c)
     {setNorm(-_couplast*_zfact);}
   else
     {
-      throw HelicityConsistencyError() << "SMWWWVertex::setCoupling "
-				       << "Invalid particles in WWW Vertex" 
-				       << Exception::warning;
+      throw Helicity::HelicityConsistencyError() 
+	<< "SMWWWVertex::setCoupling "
+	<< "Invalid particles in WWW Vertex" 
+	<< Exception::warning;
     }
-}
-
 }
 }

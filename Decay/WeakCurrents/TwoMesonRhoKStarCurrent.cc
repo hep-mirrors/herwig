@@ -15,13 +15,13 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
 
 TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   // set up for the modes in the base class

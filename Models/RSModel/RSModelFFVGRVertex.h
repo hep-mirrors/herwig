@@ -4,11 +4,10 @@
 //
 // This is the declaration of the RSModelFFVGRVertex class.
 
-#include "Herwig++/Helicity/Vertex/Tensor/FFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFVTVertex.h"
 #include "Herwig++/Models/RSModel/RSModel.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /** \ingroup Helicity
@@ -135,9 +134,8 @@ private:
   InvEnergy _theKappa;
   //@}
 };
+}
 
-}
-}
 
 #include "RSModelFFVGRVertex.icc"
 
@@ -150,9 +148,9 @@ namespace ThePEG {
  * base class of RSModelFFVGRVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::RSModelFFVGRVertex,1> {
+struct BaseClassTrait<Herwig::RSModelFFVGRVertex,1> {
     /** Typedef of the base class of RSModelFFVGRVertex. */
-  typedef Herwig::Helicity::FFVTVertex NthBase;
+  typedef ThePEG::Helicity::FFVTVertex NthBase;
 };
 
 /**
@@ -160,8 +158,8 @@ struct BaseClassTrait<Herwig::Helicity::RSModelFFVGRVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::RSModelFFVGRVertex>
-  : public ClassTraitsBase<Herwig::Helicity::RSModelFFVGRVertex> {
+struct ClassTraits<Herwig::RSModelFFVGRVertex>
+  : public ClassTraitsBase<Herwig::RSModelFFVGRVertex> {
 
   /**
    * Return the class name.

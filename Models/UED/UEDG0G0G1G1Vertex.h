@@ -5,12 +5,11 @@
 // This is the declaration of the UEDG0G0G1G1Vertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
 #include "Herwig++/Models/UED/UEDBase.h"
 #include "UEDG0G0G1G1Vertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -126,7 +125,6 @@ private:
   Complex theCoupLast;
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -137,16 +135,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of UEDG0G0G1G1Vertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::UEDG0G0G1G1Vertex,1> {
+struct BaseClassTrait<Herwig::UEDG0G0G1G1Vertex,1> {
   /** Typedef of the first base class of UEDG0G0G1G1Vertex. */
-  typedef Herwig::Helicity::VVVVVertex NthBase;
+  typedef ThePEG::Helicity::VVVVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the UEDG0G0G1G1Vertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::UEDG0G0G1G1Vertex>
-  : public ClassTraitsBase<Herwig::Helicity::UEDG0G0G1G1Vertex> {
+struct ClassTraits<Herwig::UEDG0G0G1G1Vertex>
+  : public ClassTraitsBase<Herwig::UEDG0G0G1G1Vertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::UEDG0G0G1G1Vertex"; }
   /**

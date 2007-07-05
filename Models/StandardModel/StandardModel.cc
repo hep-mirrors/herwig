@@ -78,65 +78,65 @@ ClassDescription<StandardModel> StandardModel::initStandardModel;
 
 void StandardModel::Init() {
 
-static Reference<StandardModel,Herwig::Helicity::FFVVertex> interfaceVertexFFZ
+static Reference<StandardModel,ThePEG::Helicity::FFVVertex> interfaceVertexFFZ
   ("Vertex/FFZ",
    "Reference to the Standard Model FFZ Vertex",
    &StandardModel::_theFFZVertex, false, false, true, false);
 
-static Reference<StandardModel,Herwig::Helicity::FFVVertex> interfaceVertexFFP
+static Reference<StandardModel,ThePEG::Helicity::FFVVertex> interfaceVertexFFP
   ("Vertex/FFP",
    "Reference to the Standard Model FFP Vertex",
    &StandardModel::_theFFPVertex, false, false, true, false);
 
-static Reference<StandardModel,Herwig::Helicity::FFVVertex> interfaceVertexFFG
+static Reference<StandardModel,ThePEG::Helicity::FFVVertex> interfaceVertexFFG
   ("Vertex/FFG",
    "Reference to the Standard Model FFG Vertex",
    &StandardModel::_theFFGVertex, false, false, true, false);
 
-static Reference<StandardModel,Herwig::Helicity::FFVVertex> interfaceVertexFFW
+static Reference<StandardModel,ThePEG::Helicity::FFVVertex> interfaceVertexFFW
   ("Vertex/FFW",
    "Reference to the Standard Model FFW Vertex",
    &StandardModel::_theFFWVertex, false, false, true, false);
 
 
-static Reference<StandardModel,Herwig::Helicity::FFSVertex> interfaceVertexFFH
+static Reference<StandardModel,ThePEG::Helicity::FFSVertex> interfaceVertexFFH
   ("Vertex/FFH",
    "Reference to the Standard Model FFH Vertex.",
    &StandardModel::_theFFHVertex, false, false, true, false);
 
-static Reference<StandardModel,Herwig::Helicity::VVVVertex> interfaceVertexGGG
+static Reference<StandardModel,ThePEG::Helicity::VVVVertex> interfaceVertexGGG
   ("Vertex/GGG",
    "Reference to the Standard Model GGG Vertex",
    &StandardModel::_theGGGVertex, false, false, true, false, false);
 
-static Reference<StandardModel,Herwig::Helicity::VVVVertex> interfaceVertexWWW
+static Reference<StandardModel,ThePEG::Helicity::VVVVertex> interfaceVertexWWW
   ("Vertex/WWW",
    "Reference to the Standard Model WWW Vertex",
    &StandardModel::_theWWWVertex, false, false, true, false, false);
 
 
-static Reference<StandardModel,Herwig::Helicity::VVSVertex> interfaceVertexWWH
+static Reference<StandardModel,ThePEG::Helicity::VVSVertex> interfaceVertexWWH
   ("Vertex/WWH",
    "Reference to the Standard Model WWH Vertex",
    &StandardModel::_theWWHVertex, false, false, true, false);
 
 
-static Reference<StandardModel,Herwig::Helicity::VVVVVertex> interfaceVertexWWWW
+static Reference<StandardModel,ThePEG::Helicity::VVVVVertex> interfaceVertexWWWW
   ("Vertex/WWWW",
    "Reference to the Standard Model WWWW Vertex",
    &StandardModel::_theWWWWVertex, false, false, true, false);
 
-static Reference<StandardModel,Herwig::Helicity::VVVVVertex> interfaceVertexGGGG
+static Reference<StandardModel,ThePEG::Helicity::VVVVVertex> interfaceVertexGGGG
   ("Vertex/GGGG",
    "Reference to the Standard Model GGGG Vertex",
    &StandardModel::_theGGGGVertex, false, false, true, false);
 
-static Reference<StandardModel,Herwig::Helicity::GeneralSVVVertex> interfaceVertexHGG
+static Reference<StandardModel,ThePEG::Helicity::GeneralSVVVertex> interfaceVertexHGG
   ("Vertex/HGG",
    "Reference to the StandardModel HGG Vertex",
    &StandardModel::_theHGGVertex, false, false, true, false);
  
-static Reference<StandardModel,Herwig::Helicity::GeneralSVVVertex> interfaceVertexHPP
+static Reference<StandardModel,ThePEG::Helicity::GeneralSVVVertex> interfaceVertexHPP
   ("Vertex/HPP",
    "Reference to StandardModel HPPVertex",
    &StandardModel::_theHPPVertex, false, false, true, false);

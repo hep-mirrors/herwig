@@ -5,12 +5,11 @@
 // This is the declaration of the SSGFSVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSGFSVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -156,7 +155,6 @@ private:
 
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -167,16 +165,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSGFSVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSGFSVertex,1> {
+struct BaseClassTrait<Herwig::SSGFSVertex,1> {
   /** Typedef of the first base class of SSGFSVertex. */
-  typedef Herwig::Helicity::FFSVertex NthBase;
+  typedef ThePEG::Helicity::FFSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSGFSVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSGFSVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSGFSVertex> {
+struct ClassTraits<Herwig::SSGFSVertex>
+  : public ClassTraitsBase<Herwig::SSGFSVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSGFSVertex"; }
   /** Return the name of the shared library be loaded to get

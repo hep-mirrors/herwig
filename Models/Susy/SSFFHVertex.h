@@ -5,12 +5,11 @@
 // This is the declaration of the SSFFHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSFFHVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 
 /**
  * The is the coupling of higgs bosons in the MSSM to a pair
@@ -174,9 +173,8 @@ private:
    */
   long theFLast;
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -187,16 +185,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSFFHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSFFHVertex,1> {
+struct BaseClassTrait<Herwig::SSFFHVertex,1> {
   /** Typedef of the first base class of SSFFHVertex. */
-  typedef Herwig::Helicity::FFSVertex NthBase;
+  typedef ThePEG::Helicity::FFSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSFFHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSFFHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSFFHVertex> {
+struct ClassTraits<Herwig::SSFFHVertex>
+  : public ClassTraitsBase<Herwig::SSFFHVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSFFHVertex"; }
   /**

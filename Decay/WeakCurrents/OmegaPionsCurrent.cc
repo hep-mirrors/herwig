@@ -10,13 +10,13 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/epsilon.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/epsilon.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 void OmegaPionsCurrent::persistentOutput(PersistentOStream & os) const {
   os << _fpi << _gfact << _mrho << _ma1 << _localparameters << _fa << _cfact << _mpi 

@@ -11,7 +11,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include <cassert>
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSGOGOHVertex::SSGOGOHVertex() : theMw(0.*MeV), theRij(2, vector<Complex>(2,0.0)),
 				 theQij(2, vector<Complex>(2,0.0)),

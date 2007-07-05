@@ -4,11 +4,10 @@
 //
 // This is the declaration of the RSModelSSGRVertex class.
 
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
 #include "Herwig++/Models/RSModel/RSModel.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
     
 /** \ingroup Helicity
@@ -114,7 +113,6 @@ private:
 };
 
 }
-}    
 
 #include "RSModelSSGRVertex.icc"
 
@@ -127,9 +125,9 @@ namespace ThePEG {
  * base class of RSModelSSGRVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::RSModelSSGRVertex,1> {
+struct BaseClassTrait<Herwig::RSModelSSGRVertex,1> {
   /** Typedef of the base class of RSModelSSGRVertex. */
-  typedef Herwig::Helicity::SSTVertex NthBase;
+  typedef ThePEG::Helicity::SSTVertex NthBase;
 };
 
 /**
@@ -137,8 +135,8 @@ struct BaseClassTrait<Herwig::Helicity::RSModelSSGRVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::RSModelSSGRVertex>
-  : public ClassTraitsBase<Herwig::Helicity::RSModelSSGRVertex> {
+struct ClassTraits<Herwig::RSModelSSGRVertex>
+  : public ClassTraitsBase<Herwig::RSModelSSGRVertex> {
 
   /**
    * Return the class name.

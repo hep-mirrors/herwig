@@ -10,7 +10,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 NMSSMHSFSFVertex::NMSSMHSFSFVertex() {}
 

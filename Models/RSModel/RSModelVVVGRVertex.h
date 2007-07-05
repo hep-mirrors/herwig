@@ -4,11 +4,10 @@
 //
 // This is the declaration of the RSModelVVVGRVertex class.
 
-#include "Herwig++/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
 #include "Herwig++/Models/RSModel/RSModel.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
     
 /** \ingroup Helicity
@@ -136,9 +135,8 @@ private:
   double _zfact;
   //@}
 };
+}
 
-}
-}
 
 #include "RSModelVVVGRVertex.icc"
 
@@ -151,9 +149,9 @@ namespace ThePEG {
  * base class of RSModelVVVGRVertex. 
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::RSModelVVVGRVertex,1> {
+struct BaseClassTrait<Herwig::RSModelVVVGRVertex,1> {
     /** Typedef of the base class of RSModelVVVGRVertex. */
-  typedef Herwig::Helicity::VVVTVertex NthBase;
+  typedef ThePEG::Helicity::VVVTVertex NthBase;
 };
 
 /**
@@ -161,8 +159,8 @@ struct BaseClassTrait<Herwig::Helicity::RSModelVVVGRVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::RSModelVVVGRVertex>
-  : public ClassTraitsBase<Herwig::Helicity::RSModelVVVGRVertex> {
+struct ClassTraits<Herwig::RSModelVVVGRVertex>
+  : public ClassTraitsBase<Herwig::RSModelVVVGRVertex> {
 
   /**
    * Return the class name.

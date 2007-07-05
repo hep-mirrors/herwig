@@ -9,7 +9,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 inline SSZSSVertex::SSZSSVertex() : _sw(0.),_cw(0.),_zfact(0.),_couplast(0.),
 				    _q2last(),_idlast(0) {

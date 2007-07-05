@@ -12,10 +12,7 @@ $(top_builddir)/Models/StandardModel/libHwStandardModel.la \
 $(top_builddir)/Decay/libHwDecay.la \
 $(top_builddir)/Decay/FormFactors/libHwFormFactor.la \
 $(top_builddir)/Decay/Radiation/libHwDecRad.la \
-$(top_builddir)/Helicity/Correlations/libHwCorrelations.la \
-$(top_builddir)/Helicity/WaveFunction/libHwWaveFunction.la \
 $(top_builddir)/Utilities/libHwUtils.la \
-$(top_builddir)/Helicity/Vertex/libHwVertex.la \
 $(top_builddir)/Models/General/libHwModelGenerator.la \
 $(top_builddir)/Decay/General/libHwGeneralDecay.la \
 $(top_builddir)/MatrixElement/libHwGeneralME.la \

@@ -11,7 +11,7 @@
 #include "NMSSM.h"
 
 using namespace Herwig;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 NMSSMGOGOHVertex::NMSSMGOGOHVertex() {
   _q2last=0.*GeV2;

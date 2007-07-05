@@ -7,16 +7,16 @@
 
 #include "ThePEG/MatrixElement/MEBase.h"
 #include "Herwig++/PDT/GenericMassGenerator.fh"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "MEee2VectorMeson.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using Helicity::ProductionMatrixElement;
+
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
 using Helicity::VectorWaveFunction;

@@ -8,21 +8,21 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::HardVertex;
-using Herwig::Helicity::HardVertexPtr;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
+
+
 using ThePEG::Helicity::SpinfoPtr;
 
 double MEff2ff::me2() const {

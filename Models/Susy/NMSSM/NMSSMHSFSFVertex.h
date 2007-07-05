@@ -5,11 +5,10 @@
 // This is the declaration of the NMSSMHSFSFVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "NMSSMHSFSFVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 
 using namespace ThePEG;
 
@@ -19,7 +18,7 @@ using namespace ThePEG;
  * @see \ref NMSSMHSFSFVertexInterfaces "The interfaces"
  * defined for NMSSMHSFSFVertex.
  */
-class NMSSMHSFSFVertex: public SSSVertex {
+class NMSSMHSFSFVertex: public Helicity::SSSVertex {
 
 public:
 
@@ -106,9 +105,8 @@ private:
   NMSSMHSFSFVertex & operator=(const NMSSMHSFSFVertex &);
 
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -119,16 +117,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of NMSSMHSFSFVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::NMSSMHSFSFVertex,1> {
+struct BaseClassTrait<Herwig::NMSSMHSFSFVertex,1> {
   /** Typedef of the first base class of NMSSMHSFSFVertex. */
-  typedef Herwig::Helicity::SSSVertex NthBase;
+  typedef ThePEG::Helicity::SSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the NMSSMHSFSFVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::NMSSMHSFSFVertex>
-  : public ClassTraitsBase<Herwig::Helicity::NMSSMHSFSFVertex> {
+struct ClassTraits<Herwig::NMSSMHSFSFVertex>
+  : public ClassTraitsBase<Herwig::NMSSMHSFSFVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::NMSSMHSFSFVertex"; }
   /**

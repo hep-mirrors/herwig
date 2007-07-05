@@ -5,12 +5,11 @@
 // This is the declaration of the SSPSSVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "SSPSSVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -124,7 +123,6 @@ private:
   Energy2 _q2last;
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -135,16 +133,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSPSSVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSPSSVertex,1> {
+struct BaseClassTrait<Herwig::SSPSSVertex,1> {
   /** Typedef of the first base class of SSPSSVertex. */
-  typedef Herwig::Helicity::VSSVertex NthBase;
+  typedef ThePEG::Helicity::VSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSPSSVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSPSSVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSPSSVertex> {
+struct ClassTraits<Herwig::SSPSSVertex>
+  : public ClassTraitsBase<Herwig::SSPSSVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSPSSVertex"; }
   /** Return the name of the shared library be loaded to get

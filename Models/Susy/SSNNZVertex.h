@@ -5,13 +5,12 @@
 // This is the declaration of the SSNNZVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "Herwig++/Models/Susy/MixingMatrix.fh"
 #include "SSNNZVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -162,9 +161,8 @@ private:
    */
   Complex _rightlast;
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -175,16 +173,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSNNZVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSNNZVertex,1> {
+struct BaseClassTrait<Herwig::SSNNZVertex,1> {
   /** Typedef of the first base class of SSNNZVertex. */
-  typedef Herwig::Helicity::FFVVertex NthBase;
+  typedef ThePEG::Helicity::FFVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSNNZVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSNNZVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSNNZVertex> {
+struct ClassTraits<Herwig::SSNNZVertex>
+  : public ClassTraitsBase<Herwig::SSNNZVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSNNZVertex"; }
   /**

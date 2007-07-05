@@ -4,11 +4,10 @@
 //
 // This is the declaration of the SMWWWVertex class.
 //
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 namespace Herwig {
-namespace Helicity{
 using namespace ThePEG;
 
 /** \ingroup Helicity
@@ -19,7 +18,7 @@ using namespace ThePEG;
  * @see VVVVertex
  * @see VertexBase
  */
-class SMWWWVertex: public VVVVertex {
+class SMWWWVertex: public Helicity::VVVVertex {
   
 public:
   
@@ -131,7 +130,7 @@ private:
 
 }; 
 }
-}
+
 
 #include "SMWWWVertex.icc"
 
@@ -144,9 +143,9 @@ namespace ThePEG {
  * base class of SMWWWVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SMWWWVertex,1> {
+struct BaseClassTrait<Herwig::SMWWWVertex,1> {
     /** Typedef of the base class of SMWWWVertex. */
-  typedef Herwig::Helicity::VVVVertex NthBase;
+  typedef ThePEG::Helicity::VVVVertex NthBase;
 };
 
 /**
@@ -154,8 +153,8 @@ struct BaseClassTrait<Herwig::Helicity::SMWWWVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::SMWWWVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SMWWWVertex> {
+struct ClassTraits<Herwig::SMWWWVertex>
+  : public ClassTraitsBase<Herwig::SMWWWVertex> {
 
   /**
    * Return the class name.

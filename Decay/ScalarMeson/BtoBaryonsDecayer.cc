@@ -12,16 +12,16 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/RSSpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 void BtoBaryonsDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_gf,1/GeV2) << _c1eff << _c2eff 

@@ -11,12 +11,12 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
 
 KPiCurrent::KPiCurrent() :
   _localparameters(true),_transverse(false), _cV(1.),_cS(0.2),

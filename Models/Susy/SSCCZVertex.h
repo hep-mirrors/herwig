@@ -5,12 +5,11 @@
 // This is the declaration of the SSCCZVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "SSCCZVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -166,9 +165,8 @@ private:
    */
   Complex _rightlast;
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -179,16 +177,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSCCZVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSCCZVertex,1> {
+struct BaseClassTrait<Herwig::SSCCZVertex,1> {
   /** Typedef of the first base class of SSCCZVertex. */
-  typedef Herwig::Helicity::FFVVertex NthBase;
+  typedef ThePEG::Helicity::FFVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSCCZVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSCCZVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSCCZVertex> {
+struct ClassTraits<Herwig::SSCCZVertex>
+  : public ClassTraitsBase<Herwig::SSCCZVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSCCZVertex"; }
   /**

@@ -6,24 +6,24 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "MEff2vv.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::VVSVertexPtr;
-using Herwig::Helicity::GeneralSVVVertexPtr;
-using Herwig::Helicity::VVTVertexPtr;
-using Herwig::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::GeneralSVVVertexPtr;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
 
 /**
  * This class implements the matrix element calculation for a generic

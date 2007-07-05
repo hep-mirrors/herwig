@@ -6,22 +6,22 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
 #include "MEff2ff.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::ProductionMatrixElement;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+
 
 /**
  * This is the implementation of the \f$ 2\to 2\f$ matrix element for

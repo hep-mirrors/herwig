@@ -5,13 +5,12 @@
 // This is the declaration of the NMSSMWHHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 #include "NMSSMWHHVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 
 using namespace ThePEG;
 
@@ -156,9 +155,8 @@ private:
   tcHwSMPtr _theSM;
 
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -169,16 +167,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of NMSSMWHHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::NMSSMWHHVertex,1> {
+struct BaseClassTrait<Herwig::NMSSMWHHVertex,1> {
   /** Typedef of the first base class of NMSSMWHHVertex. */
-  typedef Herwig::Helicity::VSSVertex NthBase;
+  typedef ThePEG::Helicity::VSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the NMSSMWHHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::NMSSMWHHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::NMSSMWHHVertex> {
+struct ClassTraits<Herwig::NMSSMWHHVertex>
+  : public ClassTraitsBase<Herwig::NMSSMWHHVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig+::NMSSMWHHVertex"; }
   /**

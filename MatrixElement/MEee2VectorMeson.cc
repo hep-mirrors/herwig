@@ -16,11 +16,11 @@
 #include "ThePEG/Cuts/Cuts.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 
 using namespace Herwig;
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 using ThePEG::Helicity::SpinfoPtr;
 
 void MEee2VectorMeson::getDiagrams() const {

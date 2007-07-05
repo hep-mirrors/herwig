@@ -12,7 +12,7 @@
 #include "NMSSM.h"
 
 using namespace Herwig;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 NMSSMWHHVertex::NMSSMWHHVertex() {
   // PDG codes for the particles

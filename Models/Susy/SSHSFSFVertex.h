@@ -5,12 +5,11 @@
 // This is the declaration of the SSHSFSFVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSHSFSFVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -259,9 +258,8 @@ private:
   long theSF2Last;
   
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -272,16 +270,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSHSFSFVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSHSFSFVertex,1> {
+struct BaseClassTrait<Herwig::SSHSFSFVertex,1> {
   /** Typedef of the first base class of SSHSFSFVertex. */
-  typedef Herwig::Helicity::SSSVertex NthBase;
+  typedef ThePEG::Helicity::SSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSHSFSFVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSHSFSFVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSHSFSFVertex> {
+struct ClassTraits<Herwig::SSHSFSFVertex>
+  : public ClassTraitsBase<Herwig::SSHSFSFVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSHSFSFVertex"; }
   /**

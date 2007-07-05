@@ -9,17 +9,17 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
 #include <numeric>
 
 using namespace Herwig;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::VVTVertexPtr;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 double MEvv2vv::me2() const {
   VBVector va(2), vb(2), vc(3), vd(3);  

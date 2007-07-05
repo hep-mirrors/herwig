@@ -8,15 +8,13 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-namespace Helicity {
 class SSNNZVertex;
 
-}
 }
 
 namespace ThePEG {
 
-ThePEG_DECLARE_POINTERS(Herwig::Helicity::SSNNZVertex,SSNNZVertexPtr);
+ThePEG_DECLARE_POINTERS(Herwig::SSNNZVertex,SSNNZVertexPtr);
 
 }
 

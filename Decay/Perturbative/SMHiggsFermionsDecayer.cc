@@ -15,10 +15,10 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/Correlations/DecayVertex.h"
+#include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {

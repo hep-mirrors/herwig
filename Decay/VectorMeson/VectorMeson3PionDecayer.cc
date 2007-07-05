@@ -11,18 +11,18 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/epsilon.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/epsilon.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::epsilon;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::epsilon;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
 

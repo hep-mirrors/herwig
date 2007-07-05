@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline IBPtr SSWSSVertex::clone() const {
   return new_ptr(*this);
@@ -34,7 +33,5 @@ inline void SSWSSVertex::doinit() throw(InitException) {
 			  << " stau: " << _stau << Exception::abortnow;
   orderInGem(1);
   orderInGs(0);
-}
-
 }
 }

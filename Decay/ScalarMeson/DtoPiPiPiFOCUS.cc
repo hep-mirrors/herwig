@@ -1019,10 +1019,10 @@ void DtoPiPiPiFOCUS::doinit() throw(InitException) {
 //   //@}
 
 }
-int DtoPiPiPiFOCUS::modeNumber(bool &,const DecayMode & ) const {}
+int DtoPiPiPiFOCUS::modeNumber(bool &,const DecayMode & ) const {return -999;}
 
 double DtoPiPiPiFOCUS::me2(bool, const int, const Particle &,
-			   const ParticleVector & ) const {}
+			   const ParticleVector & ) const {return -1;}
 
 void DtoPiPiPiFOCUS::dataBaseOutput(ofstream &, bool) const {}
 

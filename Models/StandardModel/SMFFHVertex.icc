@@ -4,7 +4,6 @@
 // the SMFFHVertex class.
 //
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 inline SMFFHVertex::SMFFHVertex()  {
@@ -47,7 +46,5 @@ inline void SMFFHVertex::doinit() throw(InitException) {
   orderInGem(1);
   orderInGs(0);
   FFSVertex::doinit();
-}
-
 }
 }

@@ -13,15 +13,13 @@
 #include "DecayIntegrator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/HelicityVertex.h"
-#include "Herwig++/Helicity/Correlations/DecayVertex.h"
+#include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig{
 using namespace ThePEG;
 using ThePEG::Helicity::VertexPtr;
-using Herwig::Helicity::DecayVertex;
-using Herwig::Helicity::DVertexPtr;
 using ThePEG::Helicity::tcSpinfoPtr;
 using ThePEG::Helicity::SpinfoPtr;
 

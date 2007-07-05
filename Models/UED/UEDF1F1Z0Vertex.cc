@@ -10,7 +10,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 UEDF1F1Z0Vertex::UEDF1F1Z0Vertex() : theSin2ThW(0.0), theRadius(),
 				     theID1Last(0), theID2Last(0) ,

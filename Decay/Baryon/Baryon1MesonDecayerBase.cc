@@ -15,13 +15,13 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/RSSpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;

@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline IBPtr SSCCZVertex::clone() const {
   return new_ptr(*this);
@@ -31,7 +30,5 @@ inline void SSCCZVertex::doinit() throw(InitException) {
 			  << "A mixing matrix pointer is null.  U: " 
 			  << _theU << "  V: " << _theV
 			  << Exception::abortnow;
-}
-
 }
 }

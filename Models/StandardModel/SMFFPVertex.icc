@@ -4,7 +4,6 @@
 // the SMFFPVertex class.
 //
 namespace Herwig{
-namespace Helicity {
 using namespace ThePEG;
 
   inline SMFFPVertex::SMFFPVertex() : _charge(17,0.0)
@@ -43,7 +42,5 @@ inline void SMFFPVertex::doinit() throw(InitException) {
   orderInGem(1);
   orderInGs(0);
   FFVVertex::doinit();
-}
-
 }
 }

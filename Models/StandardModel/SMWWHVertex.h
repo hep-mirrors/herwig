@@ -4,12 +4,11 @@
 //
 // This is the declaration of the SMWWHVertex class.
 //
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /** \ingroup Helicity
@@ -136,9 +135,8 @@ private:
   double _sw;
   //@}
 };
+}
 
-}
-}
 
 #include "SMWWHVertex.icc"
 
@@ -151,9 +149,9 @@ namespace ThePEG {
  * base class of SMWWHVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SMWWHVertex,1> {
+struct BaseClassTrait<Herwig::SMWWHVertex,1> {
   /** Typedef of the base class of SMWWHVertex. */
-  typedef Herwig::Helicity::VVSVertex NthBase;
+  typedef ThePEG::Helicity::VVSVertex NthBase;
 };
   
 /**
@@ -161,8 +159,8 @@ struct BaseClassTrait<Herwig::Helicity::SMWWHVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::SMWWHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SMWWHVertex> {
+struct ClassTraits<Herwig::SMWWHVertex>
+  : public ClassTraitsBase<Herwig::SMWWHVertex> {
   
   /**
    * Return the class name.

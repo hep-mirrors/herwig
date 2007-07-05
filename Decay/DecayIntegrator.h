@@ -7,7 +7,7 @@
 #include <ThePEG/PDT/Decayer.h>
 #include "DecayPhaseSpaceChannel.h"
 #include <ThePEG/PDT/EnumParticles.h>
-#include <Herwig++/Helicity/Correlations/DecayVertex.h>
+#include <Herwig++/Decay/DecayVertex.h>
 #include "ThePEG/Utilities/Timer.h"
 #include <ThePEG/Helicity/SpinInfo.h>
 #include "DecayPhaseSpaceMode.fh"
@@ -19,7 +19,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::DecayMatrixElement;
 
   /** \ingroup Decay
    * \class DecayIntegrator

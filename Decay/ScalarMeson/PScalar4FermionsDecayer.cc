@@ -11,10 +11,10 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Helicity/ScalarSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/epsilon.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/epsilon.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "PScalar4FermionsDecayer.tcc"

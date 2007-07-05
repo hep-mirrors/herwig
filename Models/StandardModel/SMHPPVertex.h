@@ -5,13 +5,12 @@
 // This is the declaration of the SMHPPVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/SVVLoopVertex.h"
+#include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "SMHPPVertex.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
     
 /**
@@ -139,7 +138,6 @@ private:
   
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -150,16 +148,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SMHPPVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SMHPPVertex,1> {
+struct BaseClassTrait<Herwig::SMHPPVertex,1> {
   /** Typedef of the first base class of SMHPPVertex. */
-  typedef Herwig::Helicity::SVVLoopVertex NthBase;
+  typedef Herwig::SVVLoopVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SMHPPVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SMHPPVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SMHPPVertex> {
+struct ClassTraits<Herwig::SMHPPVertex>
+  : public ClassTraitsBase<Herwig::SMHPPVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SMHPPVertex"; }
 };

@@ -7,9 +7,9 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
 #include "SusyBase.fh"
 
 namespace Herwig {

@@ -5,12 +5,11 @@
 // This is the declaration of the SSGGSQSQVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 #include "SSGGSQSQVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -126,9 +125,8 @@ private:
    */
   Complex _couplast;
 };
+}
 
-}
-}
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
@@ -138,16 +136,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSGGSQSQVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSGGSQSQVertex,1> {
+struct BaseClassTrait<Herwig::SSGGSQSQVertex,1> {
   /** Typedef of the first base class of SSGGSQSQVertex. */
-  typedef Herwig::Helicity::VVSSVertex NthBase;
+  typedef ThePEG::Helicity::VVSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSGGSQSQVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSGGSQSQVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSGGSQSQVertex> {
+struct ClassTraits<Herwig::SSGGSQSQVertex>
+  : public ClassTraitsBase<Herwig::SSGGSQSQVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSGGSQSQVertex"; }
   /**

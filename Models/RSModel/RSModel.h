@@ -4,16 +4,16 @@
 // This is the declaration of the RSModel class.
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
 #include "RSModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *

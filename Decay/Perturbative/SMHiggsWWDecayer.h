@@ -7,14 +7,14 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.fh"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
 #include "SMHiggsWWDecayer.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The SMHiggsWWDecayer class performs the decay of the Standard Model

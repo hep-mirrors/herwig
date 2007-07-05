@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
     
 inline SMHGGVertex::SMHGGVertex() 
@@ -37,5 +36,4 @@ inline void SMHGGVertex::doinit() throw(InitException) {
   SVVLoopVertex::doinit();
 }
 
-}
 }

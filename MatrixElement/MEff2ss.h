@@ -6,21 +6,21 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
 #include "MEff2ss.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::VSSVertex;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::SSTVertexPtr;
-using Herwig::Helicity::VSSVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::VSSVertex;
+using ThePEG::Helicity::FFTVertexPtr;
+using ThePEG::Helicity::SSTVertexPtr;
+using ThePEG::Helicity::VSSVertexPtr;
 
 /**
  * The MEff2ss class is designed to implement the matrix element for a

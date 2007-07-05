@@ -12,5 +12,5 @@ WeakCurrentDecayConstructor.icc WeakCurrentDecayConstructor.cc \
 HardProcessConstructor.icc HardProcessConstructor.fh \
 HardProcessConstructor.cc HPDiagram.h HPDiagram.icc \
 ResonantProcessConstructor.cc ResonantProcessConstructor.h \
-ResonantProcessConstructor.icc ResonantProcessConstructor.fh
-
+ResonantProcessConstructor.icc ResonantProcessConstructor.fh \
+SVVLoopVertex.fh SVVLoopVertex.h SVVLoopVertex.icc SVVLoopVertex.cc

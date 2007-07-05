@@ -12,7 +12,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE

@@ -8,7 +8,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "VectorMesonVectorVectorDecayer.tcc"

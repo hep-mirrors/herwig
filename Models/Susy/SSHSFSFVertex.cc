@@ -11,7 +11,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include <cassert>
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)), 
 				 theSinA(0.0),

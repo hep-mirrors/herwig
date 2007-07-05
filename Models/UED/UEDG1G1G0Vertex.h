@@ -5,12 +5,11 @@
 // This is the declaration of the UEDG1G1G0Vertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "Herwig++/Models/UED/UEDBase.h"
 #include "UEDG1G1G0Vertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -127,7 +126,6 @@ private:
   
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -138,16 +136,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of UEDG1G1G0Vertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::UEDG1G1G0Vertex,1> {
+struct BaseClassTrait<Herwig::UEDG1G1G0Vertex,1> {
   /** Typedef of the first base class of UEDG1G1G0Vertex. */
-  typedef Herwig::Helicity::VVVVertex NthBase;
+  typedef ThePEG::Helicity::VVVVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the UEDG1G1G0Vertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::UEDG1G1G0Vertex>
-  : public ClassTraitsBase<Herwig::Helicity::UEDG1G1G0Vertex> {
+struct ClassTraits<Herwig::UEDG1G1G0Vertex>
+  : public ClassTraitsBase<Herwig::UEDG1G1G0Vertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::UEDG1G1G0Vertex"; }
   /**

@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline IBPtr UEDF1F0W1Vertex::clone() const {
   return new_ptr(*this);
@@ -25,7 +24,5 @@ inline void UEDF1F0W1Vertex::doinit() throw(InitException) {
   theSinThetaW2 = theUEDBase->sin2ThetaW();
   orderInGs(0);
   orderInGem(1);
-}
-
 }
 }

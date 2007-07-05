@@ -11,7 +11,8 @@
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0), 
 			     _id2last(0), _q2last(), _couplast(0.),

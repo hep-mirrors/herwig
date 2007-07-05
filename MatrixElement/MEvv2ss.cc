@@ -9,35 +9,31 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
 #include <cassert>
 
 using namespace Herwig;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::VVSVertexPtr;
-using Herwig::Helicity::VSSVertex;
-using Herwig::Helicity::VVVVertexPtr;
-using Herwig::Helicity::SSSVertex;
-using Herwig::Helicity::VVTVertexPtr;
-using Herwig::Helicity::SSTVertexPtr;
-using Herwig::Helicity::VVSSVertex;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
-
-typedef Ptr<VSSVertex>::pointer VSSVertexPtr;
-typedef Ptr<SSSVertex>::pointer SSSVertexPtr;
-typedef Ptr<VVSSVertex>::pointer VVSSVertexPtr;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::VSSVertex;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::SSSVertex;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::SSTVertexPtr;
+using ThePEG::Helicity::VVSSVertex;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 double MEvv2ss::me2() const {
   //setup wavefunctions

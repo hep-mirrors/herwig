@@ -9,7 +9,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 SMWWHVertex::SMWWHVertex() 
   : _couplast(0.), _q2last(), _mw(), _zfact(), _sw() {

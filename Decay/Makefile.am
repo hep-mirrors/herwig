@@ -18,4 +18,6 @@ DecayPhaseSpaceChannel.h DecayPhaseSpaceChannel.icc \
 DecayPhaseSpaceMode.cc DecayPhaseSpaceMode.fh \
 DecayPhaseSpaceMode.h DecayPhaseSpaceMode.icc \
 HwDecayerBase.cc HwDecayerBase.fh HwDecayerBase.h HwDecayerBase.icc \
-HwDecayHandler.cc HwDecayHandler.h HwDecayHandler.icc HwDecayHandler.fh 
+HwDecayHandler.cc HwDecayHandler.h HwDecayHandler.icc HwDecayHandler.fh \
+DecayVertex.fh DecayVertex.h DecayVertex.icc DecayVertex.cc \
+DecayMatrixElement.h DecayMatrixElement.icc DecayMatrixElement.cc

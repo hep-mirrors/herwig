@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline UEDG1G1G0Vertex::UEDG1G1G0Vertex() {
   vector<int> kkg1(1, 5100021);
@@ -29,7 +28,5 @@ inline void UEDG1G1G0Vertex::doinit() throw(InitException) {
 			  << Exception::runerror;
   orderInGs(1);
   orderInGem(0);
-}
-
 }
 }

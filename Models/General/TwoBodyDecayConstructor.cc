@@ -13,7 +13,7 @@
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.h"
 
 using namespace Herwig;
-using Herwig::Helicity::VertexBasePtr;
+using ThePEG::Helicity::VertexBasePtr;
 
 void TwoBodyDecayConstructor::persistentOutput(PersistentOStream & os) const {
   os << _theExistingDecayers << _init << _iteration << _points;

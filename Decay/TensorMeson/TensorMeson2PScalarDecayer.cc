@@ -7,8 +7,8 @@
 #include "TensorMeson2PScalarDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "TensorMeson2PScalarDecayer.tcc"
@@ -21,7 +21,7 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 void TensorMeson2PScalarDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();

@@ -9,7 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
  
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 SSH1SFSFVertex::SSH1SFSFVertex(): _sinAlpha(0.),_cosAlpha(0.),_sb(0.),
 				  _cb(0.),_mz(0.*MeV),_mw(0.*MeV),_sw(0.),

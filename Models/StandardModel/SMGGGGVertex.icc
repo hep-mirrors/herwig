@@ -4,7 +4,6 @@
 // the SMGGGGVertex class.
 //
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
   inline SMGGGGVertex::SMGGGGVertex() : _couplast(0.),_q2last()
@@ -29,7 +28,5 @@ inline void SMGGGGVertex::doinit() throw(InitException) {
   orderInGs(2);
   orderInGem(0);
   VVVVVertex::doinit();
-}
-
 }
 }

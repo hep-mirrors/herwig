@@ -5,13 +5,12 @@
 // This is the declaration of the NMSSMFFHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
 #include "NMSSMFFHVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /** \ingroup Helicity
@@ -172,9 +171,8 @@ private:
   double _couplast;
 
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -185,16 +183,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of NMSSMFFHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::NMSSMFFHVertex,1> {
+struct BaseClassTrait<Herwig::NMSSMFFHVertex,1> {
   /** Typedef of the first base class of NMSSMFFHVertex. */
-  typedef Herwig::Helicity::FFSVertex NthBase;
+  typedef ThePEG::Helicity::FFSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the NMSSMFFHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::NMSSMFFHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::NMSSMFFHVertex> {
+struct ClassTraits<Herwig::NMSSMFFHVertex>
+  : public ClassTraitsBase<Herwig::NMSSMFFHVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::NMSSMFFHVertex"; }
   /**

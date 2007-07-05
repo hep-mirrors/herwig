@@ -5,12 +5,11 @@
 // This is the declaration of the SSZSSVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSZSSVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 /**
  * This is the implementation of the \f$Z^0\f$ coupling to 2 sfermions.
@@ -157,7 +156,6 @@ private:
   long _idlast;
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -168,16 +166,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSZSSVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSZSSVertex,1> {
+struct BaseClassTrait<Herwig::SSZSSVertex,1> {
   /** Typedef of the first base class of SSZSSVertex. */
-  typedef Herwig::Helicity::VSSVertex NthBase;
+  typedef ThePEG::Helicity::VSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSZSSVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSZSSVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSZSSVertex> {
+struct ClassTraits<Herwig::SSZSSVertex>
+  : public ClassTraitsBase<Herwig::SSZSSVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSZSSVertex"; }
   /** Return the name of the shared library be loaded to get

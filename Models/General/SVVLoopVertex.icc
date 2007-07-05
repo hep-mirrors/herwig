@@ -1,0 +1,38 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SVVLoopVertex class.
+//
+
+namespace Herwig {
+using namespace Looptools;
+    
+inline SVVLoopVertex::SVVLoopVertex() {
+  kinematics(true);
+}
+    
+inline IBPtr SVVLoopVertex::clone() const {
+  return new_ptr(*this);
+}
+    
+inline IBPtr SVVLoopVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SVVLoopVertex::doinit() throw(InitException) {
+  ffini();
+  GeneralSVVVertex::doinit();
+}
+
+inline void SVVLoopVertex::dofinish() {
+  ffexi();
+  GeneralSVVVertex::dofinish();
+}
+
+inline void SVVLoopVertex::doinitrun() {
+  ffini();
+  GeneralSVVVertex::doinitrun();
+}
+
+ 
+}

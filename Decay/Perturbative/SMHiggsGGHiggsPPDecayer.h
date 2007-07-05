@@ -14,17 +14,17 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * Typedef for the \f$H\to gg\f$ vertex
  */
-typedef Ptr<Herwig::Helicity::SMHGGVertex>::pointer HGGPtr;
+typedef Ptr<Herwig::SMHGGVertex>::pointer HGGPtr;
 
 /**
  * Typedef for the \f$H\to \gamma\gamma\f$ vertex
  */
-typedef Ptr<Herwig::Helicity::SMHPPVertex>::pointer HPPPtr;
+typedef Ptr<Herwig::SMHPPVertex>::pointer HPPPtr;
   
 /**
  * The <code>SMHiggsGGHiggsPPDecayer</code> class performs the

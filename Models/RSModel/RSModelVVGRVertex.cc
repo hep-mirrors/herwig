@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 void RSModelVVGRVertex::persistentOutput(PersistentOStream & os) const {
@@ -33,7 +32,5 @@ void RSModelVVGRVertex::Init() {
   
 void RSModelVVGRVertex::setCoupling(Energy2,tcPDPtr,tcPDPtr, tcPDPtr)
 {setNorm(Complex(UnitRemoval::E * _theKappa));}
-
-}
 }
 

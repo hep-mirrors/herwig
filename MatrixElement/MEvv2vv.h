@@ -6,22 +6,22 @@
 //
 
 #include "Herwig++/MatrixElement/GeneralHardME.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ProductionMatrixElement.h"
 #include "MEvv2vv.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::VectorWaveFunction;
-using Herwig::Helicity::VVSVertexPtr;
-using Herwig::Helicity::VVVVertexPtr;
-using Herwig::Helicity::VVTVertexPtr;
-using Herwig::Helicity::VVVVVertexPtr;
-using Herwig::Helicity::ProductionMatrixElement;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::VVVVVertexPtr;
+
 
 /**
  * This is the implementation of the matrix element for 

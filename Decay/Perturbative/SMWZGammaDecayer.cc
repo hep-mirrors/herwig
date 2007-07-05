@@ -13,11 +13,11 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/Helicity/VectorSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 
 void SMWZGammaDecayer::doinit() throw(InitException) {

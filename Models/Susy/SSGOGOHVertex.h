@@ -5,12 +5,11 @@
 // This is the declaration of the SSGOGOHVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSGOGOHVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 
 /**
  * The is the coupling of higgs bosons in the MSSM to a pair
@@ -230,9 +229,8 @@ private:
    */
   long theID2Last;
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -243,16 +241,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of SSGOGOHVertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SSGOGOHVertex,1> {
+struct BaseClassTrait<Herwig::SSGOGOHVertex,1> {
   /** Typedef of the first base class of SSGOGOHVertex. */
-  typedef Herwig::Helicity::FFSVertex NthBase;
+  typedef ThePEG::Helicity::FFSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the SSGOGOHVertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::SSGOGOHVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SSGOGOHVertex> {
+struct ClassTraits<Herwig::SSGOGOHVertex>
+  : public ClassTraitsBase<Herwig::SSGOGOHVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::SSGOGOHVertex"; }
   /**

@@ -11,7 +11,6 @@
 
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 void RSModelFFVGRVertex::persistentOutput(PersistentOStream & os) const {
@@ -85,8 +84,6 @@ void RSModelFFVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr,
     }
   // set the coupling
   setNorm(norm);
-}
-
 }
 }
 

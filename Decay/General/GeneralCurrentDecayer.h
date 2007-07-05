@@ -8,7 +8,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralCurrentDecayer.fh"
 
 namespace Herwig {

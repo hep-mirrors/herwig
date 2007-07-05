@@ -6,26 +6,26 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.fh"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.fh"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.fh"
 #include "MEfv2fs.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::VSSVertexPtr;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::ProductionMatrixElement;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::VSSVertexPtr;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+
 
 /**
  * This class is designed to implement the matrix element for 

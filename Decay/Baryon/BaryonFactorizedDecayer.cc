@@ -18,11 +18,11 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/RSSpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Correlations/DecayVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/RSSpinorBarWaveFunction.h"
+#include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/RSFermionSpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -30,7 +30,7 @@
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 BaryonFactorizedDecayer::~BaryonFactorizedDecayer() {}
 

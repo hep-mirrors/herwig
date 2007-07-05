@@ -4,11 +4,10 @@
 //
 // This is the declaration of the SMFFZVertex class.
 //
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /** \ingroup Helicity
@@ -133,9 +132,8 @@ private:
   Energy2 _q2last;
   //@}
 };
+}
 
-}
-}
 
 #include "SMFFZVertex.icc"
     
@@ -148,9 +146,9 @@ namespace ThePEG {
  * base class of SMFFZVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SMFFZVertex,1> {
+struct BaseClassTrait<Herwig::SMFFZVertex,1> {
   /** Typedef of the base class of SMFFZVertex. */
-  typedef Herwig::Helicity::FFVVertex NthBase;
+  typedef ThePEG::Helicity::FFVVertex NthBase;
 };
   
 /**
@@ -158,8 +156,8 @@ struct BaseClassTrait<Herwig::Helicity::SMFFZVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::SMFFZVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SMFFZVertex> {
+struct ClassTraits<Herwig::SMFFZVertex>
+  : public ClassTraitsBase<Herwig::SMFFZVertex> {
   
   /**
    * Return the class name.

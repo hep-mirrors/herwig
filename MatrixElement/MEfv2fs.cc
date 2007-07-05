@@ -8,21 +8,21 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Helicity/SpinInfo.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include<numeric>
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include <numeric>
 
 using namespace Herwig;
 
-using Herwig::Helicity::HardVertexPtr;
-using Herwig::Helicity::HardVertex;
+
+
 using ThePEG::Helicity::SpinfoPtr;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 void MEfv2fs::doinit() throw(InitException) {
  GeneralHardME::doinit();

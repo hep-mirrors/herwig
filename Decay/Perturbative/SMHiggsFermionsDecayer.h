@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "SMHiggsFermionsDecayer.fh"
 

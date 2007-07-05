@@ -5,12 +5,11 @@
 // This is the declaration of the UEDF1F0H1Vertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Models/UED/UEDBase.h"
 #include "UEDF1F0H1Vertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -159,9 +158,8 @@ private:
    */
   long theSMLast;
 };
+}
 
-}
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -172,16 +170,16 @@ namespace ThePEG {
 /** This template specialization informs ThePEG about the
  *  base classes of UEDF1F0H1Vertex. */
 template <>
-struct BaseClassTrait<Herwig::Helicity::UEDF1F0H1Vertex,1> {
+struct BaseClassTrait<Herwig::UEDF1F0H1Vertex,1> {
   /** Typedef of the first base class of UEDF1F0H1Vertex. */
-  typedef Herwig::Helicity::FFSVertex NthBase;
+  typedef ThePEG::Helicity::FFSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the UEDF1F0H1Vertex class and the shared object where it is defined. */
 template <>
-struct ClassTraits<Herwig::Helicity::UEDF1F0H1Vertex>
-  : public ClassTraitsBase<Herwig::Helicity::UEDF1F0H1Vertex> {
+struct ClassTraits<Herwig::UEDF1F0H1Vertex>
+  : public ClassTraitsBase<Herwig::UEDF1F0H1Vertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig++::UEDF1F0H1Vertex"; }
   /**

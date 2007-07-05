@@ -11,7 +11,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include <cassert>
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSHHHVertex::SSHHHVertex() : theMw(0.*MeV), theZfact(0.*MeV), theSw(0.),
 			     theSbpa(0.), theCbpa(0.), theSbma(0.),

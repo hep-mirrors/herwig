@@ -9,7 +9,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 UEDF1F0Z1Vertex::UEDF1F0Z1Vertex() : theSinThetaW(0.), theCosThetaW(0.),
 				     theSinThetaOne(0.),

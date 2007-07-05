@@ -10,7 +10,6 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 void RSModelVVVGRVertex::persistentOutput(PersistentOStream & os) const {
@@ -88,5 +87,4 @@ void RSModelVVVGRVertex::setCoupling(Energy2 q2,tcPDPtr a,tcPDPtr b,
     }
 }
     
-}
 }

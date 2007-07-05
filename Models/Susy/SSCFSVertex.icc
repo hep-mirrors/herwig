@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline IBPtr SSCFSVertex::clone() const {
   return new_ptr(*this);
@@ -40,7 +39,5 @@ inline void SSCFSVertex::doinit() throw(InitException) {
   _cb = sqrt(1.- _sb*_sb);
   orderInGem(1);
   orderInGs(0);
-}
-
 }
 }

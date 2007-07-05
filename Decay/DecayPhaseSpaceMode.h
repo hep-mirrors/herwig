@@ -9,7 +9,7 @@
 #include "DecayPhaseSpaceChannel.h"
 #include "Herwig++/PDT/GenericWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
-#include <Herwig++/Helicity/Correlations/DecayVertex.h>
+#include <Herwig++/Decay/DecayVertex.h>
 #include "DecayIntegrator.h"
 
 namespace Herwig {

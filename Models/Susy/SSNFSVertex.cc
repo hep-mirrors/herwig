@@ -9,7 +9,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSNFSVertex::SSNFSVertex():_tanB(0.), _sw(0.), _cw(0.), _mw(),
 			   _sb(0.), _cb(0.), _leftlast(0.), 

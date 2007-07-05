@@ -6,7 +6,7 @@
 //
 
 #include "NBodyDecayConstructorBase.h"
-#include "Herwig++/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Decay/General/GeneralCurrentDecayer.fh"

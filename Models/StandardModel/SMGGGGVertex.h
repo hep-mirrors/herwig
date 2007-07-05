@@ -4,12 +4,11 @@
 //
 // This is the declaration of the SMGGGGVertex class.
 //
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
     
 /** \ingroup Helicity
@@ -127,9 +126,8 @@ private:
   Energy2 _q2last;
   //@}
 };
+}
 
-}
-}
 
 #include "SMGGGGVertex.icc"
 
@@ -142,9 +140,9 @@ namespace ThePEG {
  * base class of SMGGGGVertex.
  */
 template <>
-struct BaseClassTrait<Herwig::Helicity::SMGGGGVertex,1> {
+struct BaseClassTrait<Herwig::SMGGGGVertex,1> {
     /** Typedef of the base class of SMGGGGVertex. */
-  typedef Herwig::Helicity::VVVVVertex NthBase;
+  typedef ThePEG::Helicity::VVVVVertex NthBase;
 };
 
 /**
@@ -152,8 +150,8 @@ struct BaseClassTrait<Herwig::Helicity::SMGGGGVertex,1> {
  * name of this class and the shared object where it is defined.
  */
 template <>
-struct ClassTraits<Herwig::Helicity::SMGGGGVertex>
-  : public ClassTraitsBase<Herwig::Helicity::SMGGGGVertex> {
+struct ClassTraits<Herwig::SMGGGGVertex>
+  : public ClassTraitsBase<Herwig::SMGGGGVertex> {
 
   /**
    * Return the class name.

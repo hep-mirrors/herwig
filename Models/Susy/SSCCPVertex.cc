@@ -11,7 +11,8 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "Herwig++/Models/Susy/SusyBase.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSCCPVertex::SSCCPVertex() :_couplast(0.), _q2last() {
   vector<int> first, second, third(2, 22);

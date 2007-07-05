@@ -8,12 +8,10 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 class SSH1SFSFVertex;
 ThePEG_DECLARE_POINTERS(SSH1SFSFVertex,SSH1SFSFVertexPtr);
-}
 }
 
 #endif

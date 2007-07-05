@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DecayVertex class.
+//
+#ifndef HERWIG_DecayVertex_FH
+#define HERWIG_DecayVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+using namespace ThePEG;
+
+class DecayVertex;
+ThePEG_DECLARE_POINTERS(DecayVertex,DVertexPtr);
+
+}
+
+#endif

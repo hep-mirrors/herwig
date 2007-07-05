@@ -4,7 +4,6 @@
 // the StandardModelFFGVertex class.
 //
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 inline SMFFGVertex::SMFFGVertex() {
@@ -30,5 +29,4 @@ inline void SMFFGVertex::doinit() throw(InitException) {
   FFVVertex::doinit();
 }
 
-}
 }

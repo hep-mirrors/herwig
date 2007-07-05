@@ -9,7 +9,8 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 SSGGSQSQVertex::SSGGSQSQVertex() : _q2last(),_couplast(0.) {
   vector<int> first,second,third,fourth;

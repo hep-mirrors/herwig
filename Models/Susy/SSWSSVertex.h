@@ -5,12 +5,11 @@
 // This is the declaration of the SSWSSVertex class.
 //
 
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "Herwig++/Models/Susy/MSSM.h"
 #include "SSWSSVertex.fh"
 
 namespace Herwig {
-namespace Helicity {
 using namespace ThePEG;
 
 /**
@@ -143,7 +142,6 @@ private:
   tMixingMatrixPtr _sbottom;
 };
 }
-}
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -156,7 +154,7 @@ namespace ThePEG {
 template <>
 struct BaseClassTrait<Herwig::SSWSSVertex,1> {
   /** Typedef of the first base class of SSWSSVertex. */
-  typedef Herwig::Helicity::VSSVertex NthBase;
+  typedef ThePEG::Helicity::VSSVertex NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of

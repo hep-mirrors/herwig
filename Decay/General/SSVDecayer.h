@@ -6,7 +6,7 @@
 //
 
 #include "GeneralTwoBodyDecayer.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "SSVDecayer.fh"
 

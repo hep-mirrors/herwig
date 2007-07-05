@@ -10,7 +10,8 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
 
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
+using namespace Herwig;
 
 void UEDZ0H1H1Vertex::persistentOutput(PersistentOStream & os) const {
   os << theUEDBase << theSinThetaW << theCosThetaW << theCosTheta2W

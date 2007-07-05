@@ -5,7 +5,6 @@
 //
 
 namespace Herwig {
-namespace Helicity {
 
 inline IBPtr SSGFSVertex::clone() const {
   return new_ptr(*this);
@@ -30,7 +29,5 @@ inline void SSGFSVertex::doinit() throw(InitException) {
 
   orderInGs(1);
   orderInGem(0);
-}
-
 }
 }
