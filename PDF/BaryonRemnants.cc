@@ -6,7 +6,7 @@
 
 #include "BaryonRemnants.h"
 #include "Herwig++/Hadronization/Remnant.h"
-#include <ThePEG/CLHEPWrap/LorentzVector.h>
+#include <ThePEG/Vectors/LorentzVector.h>
 #include <ThePEG/PDT/ParticleData.h>
 #include <ThePEG/EventRecord/Particle.h>
 #include <ThePEG/PDT/StandardMatchers.h>

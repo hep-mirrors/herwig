@@ -6,8 +6,8 @@
 // This is the declaration of the Kinematics class.
 
 #include "Herwig++/Config/Herwig.h"
-#include "ThePEG/CLHEPWrap/ThreeVector.h"
-#include "ThePEG/CLHEPWrap/LorentzRotation.h"
+#include "ThePEG/Vectors/ThreeVector.h"
+#include "ThePEG/Vectors/LorentzRotation.h"
 
 namespace Herwig {
 

@@ -6,7 +6,7 @@
 //
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "EventShapes.h"
 #include "LEPEventShapes.fh"
 #include "Herwig++/Utilities/Histogram.h"

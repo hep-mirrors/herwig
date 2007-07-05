@@ -18,7 +18,7 @@
 #include "EvtGenBase/EvtParticleFactory.hh"
 #include "EvtGenRandom.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Helicity/LorentzSpinor.h"
 #include "ThePEG/Helicity/LorentzPolarizationVector.h"

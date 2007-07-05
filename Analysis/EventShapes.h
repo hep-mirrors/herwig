@@ -7,8 +7,8 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
-#include "ThePEG/CLHEPWrap/ThreeVector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+#include "ThePEG/Vectors/ThreeVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "EventShapes.fh"
 

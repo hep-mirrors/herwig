@@ -7,7 +7,7 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "TopDalitzAnalysis.fh"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "../Utilities/Histogram.h"
 #include "KtJet/KtJet.h"

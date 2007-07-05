@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {

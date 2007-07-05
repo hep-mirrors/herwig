@@ -5,9 +5,9 @@
 //
 
 #include "Kinematics.h"
-#include <ThePEG/CLHEPWrap/Lorentz5Vector.h>
-#include <ThePEG/CLHEPWrap/LorentzVector.h>
-#include <ThePEG/CLHEPWrap/LorentzRotation.h>
+#include <ThePEG/Vectors/Lorentz5Vector.h>
+#include <ThePEG/Vectors/LorentzVector.h>
+#include <ThePEG/Vectors/LorentzRotation.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include <ThePEG/EventRecord/Event.h>

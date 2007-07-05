@@ -16,7 +16,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "ThePEG/CLHEPWrap/HepMCConverter.h"
+#include "ThePEG/Vectors/HepMCConverter.h"
 #include "HepMC/GenEvent.h"
 
 

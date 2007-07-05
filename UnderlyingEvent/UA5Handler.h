@@ -4,7 +4,7 @@
 
 #include <ThePEG/Handlers/HadronizationHandler.h>
 #include "Herwig++/Hadronization/CluHadConfig.h"
-#include <ThePEG/CLHEPWrap/LorentzRotation.h>
+#include <ThePEG/Vectors/LorentzRotation.h>
 
 namespace Herwig {
 
