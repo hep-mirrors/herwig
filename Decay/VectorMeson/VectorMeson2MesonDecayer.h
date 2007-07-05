@@ -214,7 +214,7 @@ template <>
 struct ClassTraits<Herwig::VectorMeson2MesonDecayer>
   : public ClassTraitsBase<Herwig::VectorMeson2MesonDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::VectorMeson2MesonDecayer"; }
+  static string className() { return "Herwig::VectorMeson2MesonDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -435,7 +435,7 @@ struct ClassTraits<Herwig::ProductionMatrixElement>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::ProductionMatrixElement"; }
+  static string className() { return "Herwig::ProductionMatrixElement"; }
 };
 
 /** @endcond */

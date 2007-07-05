@@ -392,7 +392,7 @@ template <>
 struct ClassTraits<Herwig::FFDipole>
   : public ClassTraitsBase<Herwig::FFDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FFDipole"; }
+  static string className() { return "Herwig::FFDipole"; }
 };
 
 /** @endcond */

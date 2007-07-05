@@ -322,7 +322,7 @@ template <>
 struct ClassTraits<Herwig::GoityRobertsDecayer>
   : public ClassTraitsBase<Herwig::GoityRobertsDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GoityRobertsDecayer"; }
+  static string className() { return "Herwig::GoityRobertsDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GoityRobertsDecayer is implemented. It may also include several, space-separated,

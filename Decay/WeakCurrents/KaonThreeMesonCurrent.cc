@@ -835,7 +835,7 @@ bool KaonThreeMesonCurrent::createMode(int icharge, unsigned int imode,
 void KaonThreeMesonCurrent::dataBaseOutput(ofstream & os,
 					   bool header,bool create) const {
   if(header) os << "update decayers set parameters=\"";
-  if(create) os << "create Herwig++::KaonThreeMesonCurrent " 
+  if(create) os << "create Herwig::KaonThreeMesonCurrent " 
 		<< fullName() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rho1wgts.size();++ix) {
     if(ix<3) {

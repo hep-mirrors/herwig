@@ -290,7 +290,7 @@ template <>
  struct ClassTraits<Herwig::ScalarMesonFactorizedDecayer>
   : public ClassTraitsBase<Herwig::ScalarMesonFactorizedDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ScalarMesonFactorizedDecayer"; }
+  static string className() { return "Herwig::ScalarMesonFactorizedDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the ScalarMesonFactorizedDecayer class and every other class it uses
    *  (except the base class). */

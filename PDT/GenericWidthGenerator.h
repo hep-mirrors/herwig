@@ -343,7 +343,7 @@ template <>
  struct ClassTraits<Herwig::GenericWidthGenerator>
   : public ClassTraitsBase<Herwig::GenericWidthGenerator> {
    /** Return the class name. */
-   static string className() { return "Herwig++::GenericWidthGenerator"; }
+   static string className() { return "Herwig::GenericWidthGenerator"; }
 };
 
 /** @endcond */

@@ -147,7 +147,7 @@ template <>
 struct ClassTraits<Herwig::SSGSGSGVertex>
   : public ClassTraitsBase<Herwig::SSGSGSGVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSGSGSGVertex"; }
+  static string className() { return "Herwig::SSGSGSGVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSGSGSGVertex is implemented. It may also include several, space-separated,

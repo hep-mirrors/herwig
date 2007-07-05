@@ -3,7 +3,7 @@
 # from the Herwig++ Particles Database at 20:7:46 on the 24/4/2007.
 #
 library HwTauDecay.so
-create Herwig++::TauDecayer  /Defaults/Decays/Tau1Meson
+create Herwig::TauDecayer  /Defaults/Decays/Tau1Meson
 set /Defaults/Decays/Tau1Meson:Iteration 1
 set /Defaults/Decays/Tau1Meson:Ntry 500
 set /Defaults/Decays/Tau1Meson:Points 10000
@@ -13,7 +13,7 @@ insert /Defaults/Decays/Tau1Meson:WeightLocation 0 0
 insert /Defaults/Decays/Tau1Meson:WeightLocation 1 0
 insert /Defaults/Decays/Tau1Meson:MaximumWeight 0 0.23633
 insert /Defaults/Decays/Tau1Meson:MaximumWeight 1 0.0161327
-create Herwig++::ScalarMesonCurrent /Defaults/Decays/Tau1MesonCurrent HwWeakCurrents.so
+create Herwig::ScalarMesonCurrent /Defaults/Decays/Tau1MesonCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau1MesonCurrent:ThetaEtaEtaPrime -0.194
 set /Defaults/Decays/Tau1MesonCurrent:ID 0 211
 set /Defaults/Decays/Tau1MesonCurrent:Decay_Constant 0 130.7
@@ -77,7 +77,7 @@ set /Defaults/Decays/Tau1MesonCurrent:Quark 14  4
 set /Defaults/Decays/Tau1MesonCurrent:AntiQuark 14  -3
 set /Defaults/Decays/Tau1Meson:WeakCurrent /Defaults/Decays/Tau1MesonCurrent 
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau2Meson
+create Herwig::TauDecayer  /Defaults/Decays/Tau2Meson
 set /Defaults/Decays/Tau2Meson:Iteration 10
 set /Defaults/Decays/Tau2Meson:Ntry 500
 set /Defaults/Decays/Tau2Meson:Points 10000
@@ -108,7 +108,7 @@ insert /Defaults/Decays/Tau2Meson:Weights 11 0.0919263
 insert /Defaults/Decays/Tau2Meson:Weights 12 0.549109
 insert /Defaults/Decays/Tau2Meson:Weights 13 0.196521
 insert /Defaults/Decays/Tau2Meson:Weights 14 0.254371
-create Herwig++::TwoMesonRhoKStarCurrent /Defaults/Decays/Tau2MesonCurrent HwWeakCurrents.so
+create Herwig::TwoMesonRhoKStarCurrent /Defaults/Decays/Tau2MesonCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau2MesonCurrent:RhoMasses 0 774.6
 set /Defaults/Decays/Tau2MesonCurrent:RhoMasses 1 1408
 set /Defaults/Decays/Tau2MesonCurrent:RhoMasses 2 1700
@@ -150,7 +150,7 @@ set /Defaults/Decays/Tau2MesonCurrent:AntiQuark 4  -3
 set /Defaults/Decays/Tau2Meson:WeakCurrent /Defaults/Decays/Tau2MesonCurrent 
 
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau4Pion
+create Herwig::TauDecayer  /Defaults/Decays/Tau4Pion
 set /Defaults/Decays/Tau4Pion:Iteration 10
 set /Defaults/Decays/Tau4Pion:Ntry 500
 set /Defaults/Decays/Tau4Pion:Points 10000
@@ -188,7 +188,7 @@ insert /Defaults/Decays/Tau4Pion:Weights 24 0.0516766
 insert /Defaults/Decays/Tau4Pion:Weights 25 0.0517304
 insert /Defaults/Decays/Tau4Pion:Weights 26 0.0522081
 insert /Defaults/Decays/Tau4Pion:Weights 27 0.0522389
-create Herwig++::FourPionNovosibirskCurrent /Defaults/Decays/Tau4PionCurrent HwWeakCurrents.so
+create Herwig::FourPionNovosibirskCurrent /Defaults/Decays/Tau4PionCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau4PionCurrent:rhoMass 0.7761
 set /Defaults/Decays/Tau4PionCurrent:a1Mass  1.23
 set /Defaults/Decays/Tau4PionCurrent:sigmaMass  0.8
@@ -612,7 +612,7 @@ set /Defaults/Decays/Tau4PionCurrent:Quark 1  2
 set /Defaults/Decays/Tau4PionCurrent:AntiQuark 1  -1
 set /Defaults/Decays/Tau4Pion:WeakCurrent /Defaults/Decays/Tau4PionCurrent 
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau2MesonPhoton
+create Herwig::TauDecayer  /Defaults/Decays/Tau2MesonPhoton
 set /Defaults/Decays/Tau2MesonPhoton:Iteration 10
 set /Defaults/Decays/Tau2MesonPhoton:Ntry 500
 set /Defaults/Decays/Tau2MesonPhoton:Points 10000
@@ -621,7 +621,7 @@ set /Defaults/Decays/Tau2MesonPhoton:GFermi 1.16637e-05
 insert /Defaults/Decays/Tau2MesonPhoton:WeightLocation 0 0
 insert /Defaults/Decays/Tau2MesonPhoton:MaximumWeight 0 0.0107705
 insert /Defaults/Decays/Tau2MesonPhoton:Weights 0 1
-create Herwig++::TwoPionPhotonCurrent /Defaults/Decays/Tau2MesonPhotonCurrent HwWeakCurrents.so
+create Herwig::TwoPionPhotonCurrent /Defaults/Decays/Tau2MesonPhotonCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau2MesonPhotonCurrent:RhoParameters 1
 set /Defaults/Decays/Tau2MesonPhotonCurrent:omegaParameters 1
 set /Defaults/Decays/Tau2MesonPhotonCurrent:omegamass 0.782
@@ -643,7 +643,7 @@ set /Defaults/Decays/Tau2MesonPhotonCurrent:Quark 0  2
 set /Defaults/Decays/Tau2MesonPhotonCurrent:AntiQuark 0  -1
 set /Defaults/Decays/Tau2MesonPhoton:WeakCurrent /Defaults/Decays/Tau2MesonPhotonCurrent
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau2Leptons
+create Herwig::TauDecayer  /Defaults/Decays/Tau2Leptons
 set /Defaults/Decays/Tau2Leptons:Iteration 1
 set /Defaults/Decays/Tau2Leptons:Ntry 500
 set /Defaults/Decays/Tau2Leptons:Points 10000
@@ -655,7 +655,7 @@ insert /Defaults/Decays/Tau2Leptons:MaximumWeight 0 1.17959
 insert /Defaults/Decays/Tau2Leptons:MaximumWeight 1 1.033
 insert /Defaults/Decays/Tau2Leptons:Weights 0 1
 insert /Defaults/Decays/Tau2Leptons:Weights 1 1
-create /Herwig++/LeptonNeutrinoCurrent /Defaults/Decays/Tau2LeptonCurrent  HwWeakCurrents.so
+create Herwig::LeptonNeutrinoCurrent /Defaults/Decays/Tau2LeptonCurrent  HwWeakCurrents.so
 set /Defaults/Decays/Tau2LeptonCurrent:Quark 0  11
 set /Defaults/Decays/Tau2LeptonCurrent:AntiQuark 0  -12
 set /Defaults/Decays/Tau2LeptonCurrent:Quark 1  13
@@ -664,7 +664,7 @@ set /Defaults/Decays/Tau2LeptonCurrent:Quark 2  15
 set /Defaults/Decays/Tau2LeptonCurrent:AntiQuark 2  -16
 set /Defaults/Decays/Tau2Leptons:WeakCurrent /Defaults/Decays/Tau2LeptonCurrent 
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau3Pion
+create Herwig::TauDecayer  /Defaults/Decays/Tau3Pion
 set /Defaults/Decays/Tau3Pion:Iteration 10
 set /Defaults/Decays/Tau3Pion:Ntry 500
 set /Defaults/Decays/Tau3Pion:Points 10000
@@ -695,7 +695,7 @@ insert /Defaults/Decays/Tau3Pion:Weights 17 0.109846
 insert /Defaults/Decays/Tau3Pion:Weights 18 0.083262
 insert /Defaults/Decays/Tau3Pion:Weights 19 0.0614481
 insert /Defaults/Decays/Tau3Pion:Weights 20 0.0609271
-create Herwig++::ThreePionCLEOCurrent /Defaults/Decays/Tau3PionCurrent HwWeakCurrents.so
+create Herwig::ThreePionCLEOCurrent /Defaults/Decays/Tau3PionCurrent HwWeakCurrents.so
 set    /Defaults/Decays/Tau3PionCurrent:RhoMasses 0 774.3
 set    /Defaults/Decays/Tau3PionCurrent:RhoMasses 1 1370
 insert /Defaults/Decays/Tau3PionCurrent:RhoMasses 2 1720
@@ -1159,7 +1159,7 @@ set /Defaults/Decays/Tau3PionCurrent:Quark 11  2
 set /Defaults/Decays/Tau3PionCurrent:AntiQuark 11  -1
 set /Defaults/Decays/Tau3Pion:WeakCurrent /Defaults/Decays/Tau3PionCurrent
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau3Meson
+create Herwig::TauDecayer  /Defaults/Decays/Tau3Meson
 set /Defaults/Decays/Tau3Meson:Iteration 10
 set /Defaults/Decays/Tau3Meson:Ntry 500
 set /Defaults/Decays/Tau3Meson:Points 10000
@@ -1306,7 +1306,7 @@ insert /Defaults/Decays/Tau3Meson:Weights 119 0.259295
 insert /Defaults/Decays/Tau3Meson:Weights 120 0.0580792
 insert /Defaults/Decays/Tau3Meson:Weights 121 0.0809131
 insert /Defaults/Decays/Tau3Meson:Weights 122 0.0788567
-create Herwig++::ThreeMesonDefaultCurrent /Defaults/Decays/Tau3MesonCurrent HwWeakCurrents.so
+create Herwig::ThreeMesonDefaultCurrent /Defaults/Decays/Tau3MesonCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau3MesonCurrent:F123RhoWeight 0 1
 set /Defaults/Decays/Tau3MesonCurrent:F123RhoWeight 1 -0.145
 set /Defaults/Decays/Tau3MesonCurrent:F123RhoWeight 2 0
@@ -1777,7 +1777,7 @@ set /Defaults/Decays/Tau3MesonCurrent:Quark 11  2
 set /Defaults/Decays/Tau3MesonCurrent:AntiQuark 11  -1
 set /Defaults/Decays/Tau3Meson:WeakCurrent /Defaults/Decays/Tau3MesonCurrent
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau1Vector
+create Herwig::TauDecayer  /Defaults/Decays/Tau1Vector
 set /Defaults/Decays/Tau1Vector:Iteration 1
 set /Defaults/Decays/Tau1Vector:Ntry 500
 set /Defaults/Decays/Tau1Vector:Points 10000
@@ -1789,7 +1789,7 @@ insert /Defaults/Decays/Tau1Vector:WeightLocation 2 0
 insert /Defaults/Decays/Tau1Vector:MaximumWeight 0 0.655878
 insert /Defaults/Decays/Tau1Vector:MaximumWeight 1 0.0320164
 insert /Defaults/Decays/Tau1Vector:MaximumWeight 2 1.05267
-create Herwig++::VectorMesonCurrent /Defaults/Decays/Tau1VectorCurrent HwWeakCurrents.so
+create Herwig::VectorMesonCurrent /Defaults/Decays/Tau1VectorCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau1VectorCurrent:ID 0 213
 set /Defaults/Decays/Tau1VectorCurrent:Decay_Constant 0 0.1764
 set /Defaults/Decays/Tau1VectorCurrent:ID 1 113
@@ -1860,7 +1860,7 @@ set /Defaults/Decays/Tau1VectorCurrent:Quark 16  4
 set /Defaults/Decays/Tau1VectorCurrent:AntiQuark 16  -3
 set /Defaults/Decays/Tau1Vector:WeakCurrent /Defaults/Decays/Tau1VectorCurrent 
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau5Pion
+create Herwig::TauDecayer  /Defaults/Decays/Tau5Pion
 set /Defaults/Decays/Tau5Pion:Iteration 10
 set /Defaults/Decays/Tau5Pion:Ntry 500
 set /Defaults/Decays/Tau5Pion:Points 10000000
@@ -1914,7 +1914,7 @@ insert /Defaults/Decays/Tau5Pion:Weights 38 0.0833049
 insert /Defaults/Decays/Tau5Pion:Weights 39 0.0834099
 insert /Defaults/Decays/Tau5Pion:Weights 40 0.0835021
 insert /Defaults/Decays/Tau5Pion:Weights 41 0.0831312
-create Herwig++::FivePionCurrent /Defaults/Decays/Tau5PionCurrent HwWeakCurrents.so
+create Herwig::FivePionCurrent /Defaults/Decays/Tau5PionCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau5PionCurrent:RhoMass 776
 set /Defaults/Decays/Tau5PionCurrent:A1Mass  1260
 set /Defaults/Decays/Tau5PionCurrent:SigmaMass  800
@@ -1940,7 +1940,7 @@ set /Defaults/Decays/Tau5PionCurrent:Quark 2  2
 set /Defaults/Decays/Tau5PionCurrent:AntiQuark 2  -1
 set /Defaults/Decays/Tau5Pion:WeakCurrent /Defaults/Decays/Tau5PionCurrent 
 #
-create Herwig++::TauDecayer  /Defaults/Decays/Tau3Kaon
+create Herwig::TauDecayer  /Defaults/Decays/Tau3Kaon
 set /Defaults/Decays/Tau3Kaon:Iteration 10
 set /Defaults/Decays/Tau3Kaon:Ntry 500
 set /Defaults/Decays/Tau3Kaon:Points 10000
@@ -2201,7 +2201,7 @@ insert /Defaults/Decays/Tau3Kaon:Weights 233 0.0164451
 insert /Defaults/Decays/Tau3Kaon:Weights 234 0.0164756
 insert /Defaults/Decays/Tau3Kaon:Weights 235 0.0168248
 insert /Defaults/Decays/Tau3Kaon:Weights 236 0.0169443
-create Herwig++::KaonThreeMesonCurrent /Defaults/Decays/Tau3KaonCurrent HwWeakCurrents.so
+create Herwig::KaonThreeMesonCurrent /Defaults/Decays/Tau3KaonCurrent HwWeakCurrents.so
 set /Defaults/Decays/Tau3KaonCurrent:AxialRhoWeight 0 1
 set /Defaults/Decays/Tau3KaonCurrent:AxialRhoWeight 1 -0.145
 set /Defaults/Decays/Tau3KaonCurrent:AxialRhoWeight 2 0
@@ -2688,7 +2688,7 @@ set /Defaults/Decays/Tau3KaonCurrent:Quark 11  2
 set /Defaults/Decays/Tau3KaonCurrent:AntiQuark 11  -1
 set /Defaults/Decays/Tau3Kaon:WeakCurrent /Defaults/Decays/Tau3KaonCurrent
 #
-create Herwig++::TauDecayer  /Defaults/Decays/TauKPi
+create Herwig::TauDecayer  /Defaults/Decays/TauKPi
 set /Defaults/Decays/TauKPi:Iteration 10
 set /Defaults/Decays/TauKPi:Ntry 500
 set /Defaults/Decays/TauKPi:Points 10000000
@@ -2706,7 +2706,7 @@ insert /Defaults/Decays/TauKPi:Weights 4 0.707078
 insert /Defaults/Decays/TauKPi:Weights 5 0.112029
 insert /Defaults/Decays/TauKPi:Weights 6 0.063015
 insert /Defaults/Decays/TauKPi:Weights 7 0.117878
-create Herwig++::KPiCurrent /Defaults/Decays/TauKPiCurrent HeWeakCurrents.so
+create Herwig::KPiCurrent /Defaults/Decays/TauKPiCurrent HeWeakCurrents.so
 set /Defaults/Decays/TauKPiCurrent:LocalParameters 1
 set /Defaults/Decays/TauKPiCurrent:Transverse 0
 set /Defaults/Decays/TauKPiCurrent:cV 1

@@ -272,7 +272,7 @@ template <>
 struct ClassTraits<Herwig::VectorBosonQQBarMECorrection>
   : public ClassTraitsBase<Herwig::VectorBosonQQBarMECorrection> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::VectorBosonQQBarMECorrection"; }
+  static string className() { return "Herwig::VectorBosonQQBarMECorrection"; }
   /**
    * The name of a file containing the dynamic library where the class
    * VectorBosonQQBarMECorrection is implemented. It may also include several, space-separated,

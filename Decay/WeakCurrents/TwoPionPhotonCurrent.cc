@@ -275,7 +275,7 @@ unsigned int TwoPionPhotonCurrent::decayMode(vector<int>) {
 void TwoPionPhotonCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::TwoPionPhotonCurrent " << fullName() 
+  if(create) output << "create Herwig::TwoPionPhotonCurrent " << fullName() 
 		    << " HwWeakCurrents.so\n";
   output << "set " << fullName() << ":RhoParameters "    << _rhoparameters << "\n";
   output << "set " << fullName() << ":omegaParameters "    << _omegaparameters << "\n";

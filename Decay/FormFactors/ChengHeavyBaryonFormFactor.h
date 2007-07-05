@@ -352,7 +352,7 @@ template <>
 struct ClassTraits<Herwig::ChengHeavyBaryonFormFactor>
   : public ClassTraitsBase<Herwig::ChengHeavyBaryonFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ChengHeavyBaryonFormFactor"; }
+  static string className() { return "Herwig::ChengHeavyBaryonFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

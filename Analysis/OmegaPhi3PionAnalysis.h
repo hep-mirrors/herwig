@@ -195,7 +195,7 @@ template <>
 struct ClassTraits<Herwig::OmegaPhi3PionAnalysis>
   : public ClassTraitsBase<Herwig::OmegaPhi3PionAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::OmegaPhi3PionAnalysis"; }
+  static string className() { return "Herwig::OmegaPhi3PionAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * OmegaPhi3PionAnalysis is implemented. It may also include several, space-separated,

@@ -162,7 +162,7 @@ template <>
 struct ClassTraits<Herwig::SSVDecayer>
   : public ClassTraitsBase<Herwig::SSVDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSVDecayer"; }
+  static string className() { return "Herwig::SSVDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSVDecayer is implemented. It may also include several, space-separated,

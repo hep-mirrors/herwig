@@ -382,7 +382,7 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/ChengHeavyBaryonFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::ChengHeavyBaryonFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":DownMass     " << _md/GeV << " \n";
   output << "set " << fullName() << ":UpMass       " << _mu/GeV << " \n";
   output << "set " << fullName() << ":StrangeMass  " << _ms/GeV << " \n";

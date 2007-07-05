@@ -236,7 +236,7 @@ template <>
 struct ClassTraits<Herwig::OniumToOniumPiPiDecayer>
   : public ClassTraitsBase<Herwig::OniumToOniumPiPiDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::OniumToOniumPiPiDecayer"; }
+  static string className() { return "Herwig::OniumToOniumPiPiDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * OniumToOniumPiPiDecayer is implemented. It may also include several, space-separated,

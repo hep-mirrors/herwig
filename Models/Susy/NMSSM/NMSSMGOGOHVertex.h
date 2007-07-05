@@ -217,7 +217,7 @@ template <>
 struct ClassTraits<Herwig::NMSSMGOGOHVertex>
   : public ClassTraitsBase<Herwig::NMSSMGOGOHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::NMSSMGOGOHVertex"; }
+  static string className() { return "Herwig::NMSSMGOGOHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * NMSSMGOGOHVertex is implemented. It may also include several, space-separated,

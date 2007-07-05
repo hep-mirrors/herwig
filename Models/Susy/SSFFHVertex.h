@@ -196,7 +196,7 @@ template <>
 struct ClassTraits<Herwig::SSFFHVertex>
   : public ClassTraitsBase<Herwig::SSFFHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSFFHVertex"; }
+  static string className() { return "Herwig::SSFFHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSFFHVertex is implemented. It may also include several, space-separated,

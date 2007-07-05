@@ -147,7 +147,7 @@ template <>
 struct ClassTraits<Herwig::SSGGSQSQVertex>
   : public ClassTraitsBase<Herwig::SSGGSQSQVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSGGSQSQVertex"; }
+  static string className() { return "Herwig::SSGGSQSQVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSGGSQSQVertex is implemented. It may also include several, space-separated,

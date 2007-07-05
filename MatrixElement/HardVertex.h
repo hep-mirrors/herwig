@@ -118,7 +118,7 @@ struct ClassTraits<Herwig::HardVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::HardVertex"; }
+  static string className() { return "Herwig::HardVertex"; }
 };
 
 /** @endcond */

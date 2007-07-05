@@ -166,7 +166,7 @@ template <>
 struct ClassTraits<Herwig::VectorPScalarFermionsAnalysis>
   : public ClassTraitsBase<Herwig::VectorPScalarFermionsAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::VectorPScalarFermionsAnalysis"; }
+  static string className() { return "Herwig::VectorPScalarFermionsAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * VectorPScalarFermionsAnalysis is implemented. It may also include several, space-separated,

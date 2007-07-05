@@ -224,7 +224,7 @@ template <>
 struct ClassTraits<Herwig::ShowerHandler>
   : public ClassTraitsBase<Herwig::ShowerHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerHandler"; }
+  static string className() { return "Herwig::ShowerHandler"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ShowerHandler is implemented. It may also include several, space-separated,

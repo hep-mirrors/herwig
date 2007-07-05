@@ -330,7 +330,7 @@ template <>
 struct ClassTraits<Herwig::UEDBase>
   : public ClassTraitsBase<Herwig::UEDBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::UEDBase"; }
+  static string className() { return "Herwig::UEDBase"; }
   /**
    * The name of a file containing the dynamic library where the class
    * UEDBase is implemented. It may also include several, space-separated,

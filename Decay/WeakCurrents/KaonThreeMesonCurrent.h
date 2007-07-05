@@ -551,7 +551,7 @@ template <>
 struct ClassTraits<Herwig::KaonThreeMesonCurrent>
   : public ClassTraitsBase<Herwig::KaonThreeMesonCurrent> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::KaonThreeMesonCurrent"; }
+  static string className() { return "Herwig::KaonThreeMesonCurrent"; }
   /**
    * The name of a file containing the dynamic library where the class
    * KaonThreeMesonCurrent is implemented. It may also include several, space-separated,

@@ -295,7 +295,7 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool head
 						     bool create) const
 {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create /Herwig++/BaryonThreeQuarkModelFormFactor " 
+  if(create) output << "create Herwig::BaryonThreeQuarkModelFormFactor " 
 		    << fullName() << " \n";
   output << "set " << fullName() << ":Order       " << _order        << " \n";
   output << "set " << fullName() << ":LightMass   " << _mlight/GeV   << " \n";

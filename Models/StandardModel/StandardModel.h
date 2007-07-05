@@ -381,7 +381,7 @@ struct ClassTraits<Herwig::StandardModel>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::StandardModel"; }
+  static string className() { return "Herwig::StandardModel"; }
 };
 
 /** @endcond */

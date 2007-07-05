@@ -257,7 +257,7 @@ template <>
 struct ClassTraits<Herwig::MEff2ff>
   : public ClassTraitsBase<Herwig::MEff2ff> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEff2ff"; }
+  static string className() { return "Herwig::MEff2ff"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEff2ff is implemented. It may also include several, space-separated,

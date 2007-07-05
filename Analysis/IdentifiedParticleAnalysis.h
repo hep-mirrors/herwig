@@ -294,7 +294,7 @@ template <>
 struct ClassTraits<Herwig::IdentifiedParticleAnalysis>
   : public ClassTraitsBase<Herwig::IdentifiedParticleAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::IdentifiedParticleAnalysis"; }
+  static string className() { return "Herwig::IdentifiedParticleAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the IdentifiedParticleAnalysis class and any other class on which it depends
    *  (except the base class). */

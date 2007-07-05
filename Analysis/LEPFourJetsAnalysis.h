@@ -224,7 +224,7 @@ template <>
 struct ClassTraits<Herwig::LEPFourJetsAnalysis>
   : public ClassTraitsBase<Herwig::LEPFourJetsAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LEPFourJetsAnalysis"; }
+  static string className() { return "Herwig::LEPFourJetsAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the LEPFourJetsAnalysis class and any other class on which it depends
    *  (except the base class). */

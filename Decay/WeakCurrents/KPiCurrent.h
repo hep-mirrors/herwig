@@ -318,7 +318,7 @@ template <>
 struct ClassTraits<Herwig::KPiCurrent>
   : public ClassTraitsBase<Herwig::KPiCurrent> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::KPiCurrent"; }
+  static string className() { return "Herwig::KPiCurrent"; }
   /**
    * The name of a file containing the dynamic library where the class
    * KPiCurrent is implemented. It may also include several, space-separated,

@@ -400,7 +400,7 @@ template <>
 struct ClassTraits<Herwig::DtoPiPiPiFOCUS>
   : public ClassTraitsBase<Herwig::DtoPiPiPiFOCUS> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DtoPiPiPiFOCUS"; }
+  static string className() { return "Herwig::DtoPiPiPiFOCUS"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DtoPiPiPiFOCUS is implemented. It may also include several, space-separated,

@@ -280,7 +280,7 @@ template <>
  struct ClassTraits<Herwig::KiselevBcFormFactor>
   : public ClassTraitsBase<Herwig::KiselevBcFormFactor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::KiselevBcFormFactor"; }
+  static string className() { return "Herwig::KiselevBcFormFactor"; }
   /** Return the name of the shared library be loaded to get
    *  access to the KiselevBcFormFactor class and every other class it uses
    *  (except the base class). */

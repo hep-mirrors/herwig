@@ -465,7 +465,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaKagan>
   : public ClassTraitsBase<Herwig::BtoSGammaKagan> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaKagan"; }
+  static string className() { return "Herwig::BtoSGammaKagan"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaKagan class and every other class it uses
    *  (except the base class). */

@@ -900,7 +900,7 @@ unsigned int FourPionNovosibirskCurrent::decayMode(vector<int> idout) {
 void FourPionNovosibirskCurrent::dataBaseOutput(ofstream & output,bool header,
 						bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::FourPionNovosibirskCurrent " 
+  if(create) output << "create Herwig::FourPionNovosibirskCurrent " 
 		    << fullName() << " HwWeakCurrents.so\n";
   output << "set " << fullName() << ":rhoMass "    << _rhomass/GeV << "\n";
   output << "set " << fullName() << ":a1Mass  "    << _a1mass/GeV  << "\n";

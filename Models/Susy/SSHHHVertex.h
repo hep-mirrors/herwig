@@ -200,7 +200,7 @@ template <>
 struct ClassTraits<Herwig::SSHHHVertex>
   : public ClassTraitsBase<Herwig::SSHHHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSHHHVertex"; }
+  static string className() { return "Herwig::SSHHHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSHHHVertex is implemented. It may also include several, space-separated,

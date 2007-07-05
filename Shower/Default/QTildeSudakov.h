@@ -314,7 +314,7 @@ template <>
 struct ClassTraits<Herwig::QTildeSudakov>
   : public ClassTraitsBase<Herwig::QTildeSudakov> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QTildeSudakov"; }
+  static string className() { return "Herwig::QTildeSudakov"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QTildeSudakov is implemented. It may also include several, space-separated,

@@ -34,4 +34,4 @@ library HwTauDecay.so
 library HwTMDecay.so
 library HwVMDecay.so
 @LOAD_KTJET@
-doxygendump Herwig++:: AllInterfaces.h
+doxygendump Herwig:: AllInterfaces.h

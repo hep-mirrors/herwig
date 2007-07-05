@@ -75,7 +75,7 @@ void SMFFWVertex::doinit() throw(InitException) {
     }
   }
   else {
-    throw InitException() << "Must have access to the Herwig++::StandardCKM object"
+    throw InitException() << "Must have access to the Herwig::StandardCKM object"
 			  << "for the CKM matrix in SMFFWVertex::doinit()"
 			  << Exception::runerror;
   }

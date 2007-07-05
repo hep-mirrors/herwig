@@ -181,7 +181,7 @@ unsigned int VectorMesonCurrent::decayMode(vector<int> idout)
 void VectorMesonCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::VectorMesonCurrent " << fullName() 
+  if(create) output << "create Herwig::VectorMesonCurrent " << fullName() 
 		    << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_id.size();++ix) {
     if(ix<_initsize) {

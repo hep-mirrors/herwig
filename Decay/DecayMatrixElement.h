@@ -377,7 +377,7 @@ struct ClassTraits<Herwig::DecayMatrixElement>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::DecayMatrixElement"; }
+  static string className() { return "Herwig::DecayMatrixElement"; }
 };
 
 /** @endcond */

@@ -161,7 +161,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int, int, Energy m0, Energy m1,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/SingletonFormFactor " << fullName() << " \n ";}
+    {output << "create Herwig::SingletonFormFactor " << fullName() << " \n ";}
   output << "set " << fullName() << ":CharmMass " << _mcharm/GeV << " \n";
   output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << " \n";
   output << "set " << fullName() << ":ThetaLambda " << _thetalambda << " \n";

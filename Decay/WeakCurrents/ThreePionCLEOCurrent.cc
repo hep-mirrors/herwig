@@ -851,7 +851,7 @@ void ThreePionCLEOCurrent::dataBaseOutput(ofstream & output,bool header,
 					  bool create) const {
   if(header){output << "update decayers set parameters=\"";}
   if(create) {
-    output << "create Herwig++::ThreePionCLEOCurrent " << fullName() 
+    output << "create Herwig::ThreePionCLEOCurrent " << fullName() 
 	   << " HwWeakCurrents.so\n";
   }
   for(unsigned int ix=0;ix<_rhomass.size();++ix) {

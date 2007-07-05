@@ -320,7 +320,7 @@ void OmegaPionsCurrent::dataBaseOutput(ofstream & output,bool header,bool create
     output << "update decayers set parameters=\"";
   }
   if(create) {
-    output << "create Herwig++::OmegaPionsCurrent " << fullName() << " \n";
+    output << "create Herwig::OmegaPionsCurrent " << fullName() << " \n";
   }
   output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
   output << "set " << fullName() << ":g " <<_gfact << "\n";

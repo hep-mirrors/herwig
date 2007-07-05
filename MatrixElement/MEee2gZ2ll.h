@@ -254,7 +254,7 @@ template <>
 struct ClassTraits<Herwig::MEee2gZ2ll>
   : public ClassTraitsBase<Herwig::MEee2gZ2ll> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEee2gZ2ll"; }
+  static string className() { return "Herwig::MEee2gZ2ll"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEee2gZ2ll is implemented. It may also include several, space-separated,

@@ -115,7 +115,7 @@ struct ClassTraits<Herwig::DecayVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::DecayVertex"; }
+  static string className() { return "Herwig::DecayVertex"; }
 };
 
 /** @endcond */

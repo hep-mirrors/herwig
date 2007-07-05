@@ -161,7 +161,7 @@ template <>
 struct ClassTraits<Herwig::RelativePtReconstructor>
   : public ClassTraitsBase<Herwig::RelativePtReconstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::RelativePtReconstructor"; }
+  static string className() { return "Herwig::RelativePtReconstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * RelativePtReconstructor is implemented. It may also include several, space-separated,

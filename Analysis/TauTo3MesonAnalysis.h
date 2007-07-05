@@ -208,7 +208,7 @@ template <>
 struct ClassTraits<Herwig::TauTo3MesonAnalysis>
   : public ClassTraitsBase<Herwig::TauTo3MesonAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TauTo3MesonAnalysis"; }
+  static string className() { return "Herwig::TauTo3MesonAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * TauTo3MesonAnalysis is implemented. It may also include several, space-separated,

@@ -164,7 +164,7 @@ template <>
 struct ClassTraits<Herwig::TVVDecayer>
   : public ClassTraitsBase<Herwig::TVVDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TVVDecayer"; }
+  static string className() { return "Herwig::TVVDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the TVVDecayer class and every other class it uses
    *  (except the base class). */

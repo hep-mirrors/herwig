@@ -177,7 +177,7 @@ template <>
 struct ClassTraits<Herwig::GraphvizPlot>
   : public ClassTraitsBase<Herwig::GraphvizPlot> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GraphvizPlot"; }
+  static string className() { return "Herwig::GraphvizPlot"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GraphvizPlot class and any other class on which it depends
    *  (except the base class). */

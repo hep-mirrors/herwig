@@ -201,7 +201,7 @@ void ScalarMesonCurrent::dataBaseOutput(ofstream & output,
     output << "update decayers set parameters=\"";
   }
   if(create) {
-    output << "create Herwig++::ScalarMesonCurrent " << fullName() 
+    output << "create Herwig::ScalarMesonCurrent " << fullName() 
 	   << " HwWeakCurrents.so\n";
   }
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";

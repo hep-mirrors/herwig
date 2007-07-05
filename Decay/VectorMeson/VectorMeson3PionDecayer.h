@@ -402,7 +402,7 @@ template <>
 struct ClassTraits<Herwig::VectorMeson3PionDecayer>
   : public ClassTraitsBase<Herwig::VectorMeson3PionDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::VectorMeson3PionDecayer"; }
+  static string className() { return "Herwig::VectorMeson3PionDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -246,7 +246,7 @@ template <>
 struct ClassTraits<Herwig::GeneralHardME>
   : public ClassTraitsBase<Herwig::GeneralHardME> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralHardME"; }
+  static string className() { return "Herwig::GeneralHardME"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GeneralHardME is implemented. It may also include several, space-separated,

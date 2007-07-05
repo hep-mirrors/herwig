@@ -48,7 +48,7 @@ void WeakDecayCurrent::dataBaseOutput(ofstream & output,bool header,bool create)
     output << "update decayers set parameters=\"";
   }
   if(create) {
-    output << "create Herwig++::WeakDecayCurrent " << fullName() << " \n";
+    output << "create Herwig::WeakDecayCurrent " << fullName() << " \n";
   }
   for(unsigned int ix=0;ix<_quark.size();++ix) {
     if(ix<_numbermodes) {

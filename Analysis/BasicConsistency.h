@@ -151,7 +151,7 @@ template <>
 struct ClassTraits<Herwig::BasicConsistency>
   : public ClassTraitsBase<Herwig::BasicConsistency> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BasicConsistency"; }
+  static string className() { return "Herwig::BasicConsistency"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the BasicConsistency class and any other class on which it depends
    *  (except the base class). */

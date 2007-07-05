@@ -223,7 +223,7 @@ template <>
 struct ClassTraits<Herwig::GeneralCurrentDecayer>
   : public ClassTraitsBase<Herwig::GeneralCurrentDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralCurrentDecayer"; }
+  static string className() { return "Herwig::GeneralCurrentDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GeneralCurrentDecayer is implemented. It may also include several, space-separated,

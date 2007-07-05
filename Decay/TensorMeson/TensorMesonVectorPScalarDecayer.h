@@ -227,7 +227,7 @@ template <>
 struct ClassTraits<Herwig::TensorMesonVectorPScalarDecayer>
   : public ClassTraitsBase<Herwig::TensorMesonVectorPScalarDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TensorMesonVectorPScalarDecayer"; }
+  static string className() { return "Herwig::TensorMesonVectorPScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

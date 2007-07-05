@@ -220,7 +220,7 @@ template <>
 struct ClassTraits<Herwig::ScalarMesonCurrent>
   : public ClassTraitsBase<Herwig::ScalarMesonCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ScalarMesonCurrent"; }
+  static string className() { return "Herwig::ScalarMesonCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

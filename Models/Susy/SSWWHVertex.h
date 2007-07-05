@@ -193,7 +193,7 @@ template <>
 struct ClassTraits<Herwig::SSWWHVertex>
   : public ClassTraitsBase<Herwig::SSWWHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSWWHVertex"; }
+  static string className() { return "Herwig::SSWWHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSWWHVertex is implemented. It may also include several, space-separated,

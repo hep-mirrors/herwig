@@ -243,7 +243,7 @@ template <>
 struct ClassTraits<Herwig::TopDalitzAnalysis>
   : public ClassTraitsBase<Herwig::TopDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TopDalitzAnalysis"; }
+  static string className() { return "Herwig::TopDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * TopDalitzAnalysis is implemented. It may also include several, space-separated,

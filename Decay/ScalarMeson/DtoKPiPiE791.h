@@ -533,7 +533,7 @@ template <>
 struct ClassTraits<Herwig::DtoKPiPiE791>
   : public ClassTraitsBase<Herwig::DtoKPiPiE791> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DtoKPiPiE791"; }
+  static string className() { return "Herwig::DtoKPiPiE791"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DtoKPiPiE791 is implemented. It may also include several, space-separated,

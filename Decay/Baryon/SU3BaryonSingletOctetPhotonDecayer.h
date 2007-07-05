@@ -309,7 +309,7 @@ template <>
  struct ClassTraits<Herwig::SU3BaryonSingletOctetPhotonDecayer>
   : public ClassTraitsBase<Herwig::SU3BaryonSingletOctetPhotonDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::SU3BaryonSingletOctetPhotonDecayer"; }
+  static string className() { return "Herwig::SU3BaryonSingletOctetPhotonDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

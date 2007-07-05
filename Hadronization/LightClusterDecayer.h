@@ -172,7 +172,7 @@ template <>
 struct ClassTraits<Herwig::LightClusterDecayer>: 
     public ClassTraitsBase<Herwig::LightClusterDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::LightClusterDecayer"; }
+  static string className() { return "Herwig::LightClusterDecayer"; }
 };
 
 /** @endcond */

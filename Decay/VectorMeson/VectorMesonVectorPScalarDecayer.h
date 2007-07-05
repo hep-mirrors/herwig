@@ -229,7 +229,7 @@ template <>
 struct ClassTraits<Herwig::VectorMesonVectorPScalarDecayer>
   : public ClassTraitsBase<Herwig::VectorMesonVectorPScalarDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::VectorMesonVectorPScalarDecayer"; }
+  static string className() { return "Herwig::VectorMesonVectorPScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

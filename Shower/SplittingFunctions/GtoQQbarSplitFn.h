@@ -178,7 +178,7 @@ template <>
 struct ClassTraits<Herwig::GtoQQbarSplitFn>
   : public ClassTraitsBase<Herwig::GtoQQbarSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GtoQQbarSplitFn"; }
+  static string className() { return "Herwig::GtoQQbarSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GtoQQbarSplitFn is implemented. It may also include several, space-separated,

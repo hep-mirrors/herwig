@@ -153,7 +153,7 @@ struct ClassTraits<Herwig::SMFFGVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::SMFFGVertex"; }
+  static string className() { return "Herwig::SMFFGVertex"; }
   
 };
   

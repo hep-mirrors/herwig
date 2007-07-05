@@ -187,7 +187,7 @@ template <>
  struct ClassTraits<Herwig::SMWZDecayer>
   : public ClassTraitsBase<Herwig::SMWZDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::SMWZDecayer"; }
+  static string className() { return "Herwig::SMWZDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

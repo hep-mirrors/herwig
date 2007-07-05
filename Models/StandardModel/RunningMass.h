@@ -160,7 +160,7 @@ struct ClassTraits<Herwig::RunningMass>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::RunningMass"; }
+  static string className() { return "Herwig::RunningMass"; }
 };
 
 /** @endcond */

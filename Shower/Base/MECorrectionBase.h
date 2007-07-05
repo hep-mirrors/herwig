@@ -161,7 +161,7 @@ template <>
 struct ClassTraits<Herwig::MECorrectionBase>
   : public ClassTraitsBase<Herwig::MECorrectionBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MECorrectionBase"; }
+  static string className() { return "Herwig::MECorrectionBase"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MECorrectionBase is implemented. It may also include several, space-separated,

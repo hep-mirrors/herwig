@@ -205,7 +205,7 @@ void SMTopDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   //get vertices from SM object
   tcHwSMPtr hwsm = dynamic_ptr_cast<tcHwSMPtr>(standardModel());
-  if(!hwsm) throw InitException() << "Must have Herwig++::StandardModel in "
+  if(!hwsm) throw InitException() << "Must have Herwig::StandardModel in "
 				  << "SMTopDecayer::doinit()";
   _wvertex = hwsm->vertexFFW();
   //initialise

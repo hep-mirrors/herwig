@@ -172,7 +172,7 @@ template <>
 struct ClassTraits<Herwig::Remnant>
   : public ClassTraitsBase<Herwig::Remnant> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Remnant"; }
+  static string className() { return "Herwig::Remnant"; }
   /** Create a Particle object. */
   static TPtr create() { return TPtr::Create(Herwig::Remnant(tcEventPDPtr())); }
 };

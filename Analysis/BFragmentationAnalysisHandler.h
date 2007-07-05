@@ -232,7 +232,7 @@ template <>
 struct ClassTraits<Herwig::BFragmentationAnalysisHandler>
   : public ClassTraitsBase<Herwig::BFragmentationAnalysisHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BFragmentationAnalysisHandler"; }
+  static string className() { return "Herwig::BFragmentationAnalysisHandler"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the BFragmentationAnalysisHandler class and any other class on which it depends
    *  (except the base class). */

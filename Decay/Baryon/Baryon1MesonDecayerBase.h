@@ -426,7 +426,7 @@ template <>
 struct ClassTraits<Herwig::Baryon1MesonDecayerBase>
   : public ClassTraitsBase<Herwig::Baryon1MesonDecayerBase> {
   /** Return the class name. */
-  static string className() { return "Herwig++::Baryon1MesonDecayerBase";}
+  static string className() { return "Herwig::Baryon1MesonDecayerBase";}
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

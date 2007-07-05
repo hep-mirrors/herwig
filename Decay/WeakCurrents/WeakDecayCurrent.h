@@ -240,7 +240,7 @@ template <>
 struct ClassTraits<Herwig::WeakDecayCurrent>
   : public ClassTraitsBase<Herwig::WeakDecayCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::WeakDecayCurrent"; }
+  static string className() { return "Herwig::WeakDecayCurrent"; }
 };
 
 /** @endcond */

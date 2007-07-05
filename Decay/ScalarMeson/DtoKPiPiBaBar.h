@@ -898,7 +898,7 @@ template <>
 struct ClassTraits<Herwig::DtoKPiPiBaBar>
   : public ClassTraitsBase<Herwig::DtoKPiPiBaBar> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DtoKPiPiBaBar"; }
+  static string className() { return "Herwig::DtoKPiPiBaBar"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DtoKPiPiBaBar is implemented. It may also include several, space-separated,

@@ -423,7 +423,7 @@ template <>
 struct ClassTraits<Herwig::Evolver>
   : public ClassTraitsBase<Herwig::Evolver> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Evolver"; }
+  static string className() { return "Herwig::Evolver"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Evolver is implemented. It may also include several, space-separated,

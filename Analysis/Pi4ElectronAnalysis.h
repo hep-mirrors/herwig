@@ -147,7 +147,7 @@ template <>
 struct ClassTraits<Herwig::Pi4ElectronAnalysis>
   : public ClassTraitsBase<Herwig::Pi4ElectronAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Pi4ElectronAnalysis"; }
+  static string className() { return "Herwig::Pi4ElectronAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Pi4ElectronAnalysis is implemented. It may also include several, space-separated,

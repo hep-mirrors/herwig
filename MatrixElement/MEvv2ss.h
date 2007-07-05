@@ -133,7 +133,7 @@ template <>
 struct ClassTraits<Herwig::MEvv2ss>
   : public ClassTraitsBase<Herwig::MEvv2ss> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEvv2ss"; }
+  static string className() { return "Herwig::MEvv2ss"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEvv2ss is implemented. It may also include several, space-separated,

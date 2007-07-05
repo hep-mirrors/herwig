@@ -208,7 +208,7 @@ template <>
 struct ClassTraits<Herwig::Tau5Pion>
   : public ClassTraitsBase<Herwig::Tau5Pion> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Tau5Pion"; }
+  static string className() { return "Herwig::Tau5Pion"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Tau5Pion is implemented. It may also include several, space-separated,

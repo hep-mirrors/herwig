@@ -216,7 +216,7 @@ template <>
 struct ClassTraits<Herwig::SpinCorrAnalysis>
   : public ClassTraitsBase<Herwig::SpinCorrAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SpinCorrAnalysis"; }
+  static string className() { return "Herwig::SpinCorrAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SpinCorrAnalysis is implemented. It may also include several, space-separated,

@@ -32,7 +32,7 @@ void MEPP2ZJet::doinit() throw(InitException) {
     ::transient_const_pointer>(standardModel());
   // do the initialisation
   if(!hwsm) 
-    throw InitException() << "Must be Herwig++::StandardModel in MEPP2ZJet::doinit()"
+    throw InitException() << "Must be Herwig::StandardModel in MEPP2ZJet::doinit()"
 			  << Exception::runerror;
   // set the vertex pointers
   _theFFZVertex = hwsm->vertexFFZ();

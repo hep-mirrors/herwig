@@ -151,7 +151,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaAnalysis>
   : public ClassTraitsBase<Herwig::BtoSGammaAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaAnalysis"; }
+  static string className() { return "Herwig::BtoSGammaAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * BtoSGammaAnalysis is implemented. It may also include several, space-separated,

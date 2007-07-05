@@ -159,7 +159,7 @@ template <>
 struct ClassTraits<Herwig::SMHPPVertex>
   : public ClassTraitsBase<Herwig::SMHPPVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHPPVertex"; }
+  static string className() { return "Herwig::SMHPPVertex"; }
 };
 
 /** @endcond */

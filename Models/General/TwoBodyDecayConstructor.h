@@ -213,7 +213,7 @@ template <>
 struct ClassTraits<Herwig::TwoBodyDecayConstructor>
   : public ClassTraitsBase<Herwig::TwoBodyDecayConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TwoBodyDecayConstructor"; }
+  static string className() { return "Herwig::TwoBodyDecayConstructor"; }
   /** Return the name of the shared library be loaded to get
    *  access to the TwoBodyDecayConstructor class and every other class it uses
    *  (except the base class). */

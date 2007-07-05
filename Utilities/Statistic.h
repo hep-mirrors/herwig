@@ -185,7 +185,7 @@ template <>
 struct ClassTraits<Herwig::Statistic>
   : public ClassTraitsBase<Herwig::Statistic> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Statistic"; }
+  static string className() { return "Herwig::Statistic"; }
 };
 
 /** @endcond */

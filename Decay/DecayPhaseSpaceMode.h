@@ -412,7 +412,7 @@ template <>
  struct ClassTraits<Herwig::DecayPhaseSpaceMode>
   : public ClassTraitsBase<Herwig::DecayPhaseSpaceMode> {
    /** Return the class name. */
-   static string className() { return "Herwig++::DecayPhaseSpaceMode"; }
+   static string className() { return "Herwig::DecayPhaseSpaceMode"; }
 };
 
 /** @endcond */

@@ -211,7 +211,7 @@ template <>
 struct ClassTraits<Herwig::SSNFSVertex>
   : public ClassTraitsBase<Herwig::SSNFSVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSNFSVertex"; }
+  static string className() { return "Herwig::SSNFSVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SSNFSVertex class and every other class it uses
    *  (except the base class). */

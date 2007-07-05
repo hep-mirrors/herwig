@@ -204,7 +204,7 @@ template <>
 struct ClassTraits<Herwig::SMHiggsGGHiggsPPDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsGGHiggsPPDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsGGHiggsPPDecayer"; }
+  static string className() { return "Herwig::SMHiggsGGHiggsPPDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMHiggsGGHiggsPPDecayer class and every other class it uses
    *  (except the base class). */

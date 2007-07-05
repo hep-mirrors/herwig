@@ -242,7 +242,7 @@ template <>
 struct ClassTraits<Herwig::SMHiggsWWDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsWWDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsWWDecayer"; }
+  static string className() { return "Herwig::SMHiggsWWDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SMHiggsWWDecayer is implemented. It may also include several, space-separated,

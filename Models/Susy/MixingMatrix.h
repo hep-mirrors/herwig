@@ -247,7 +247,7 @@ template <>
 struct ClassTraits<Herwig::MixingMatrix>
   : public ClassTraitsBase<Herwig::MixingMatrix> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MixingMatrix"; }
+  static string className() { return "Herwig::MixingMatrix"; }
   /** Return the name of the shared library be loaded to get
    *  access to the MixingMatrix class and every other class it uses
    *  (except the base class). */

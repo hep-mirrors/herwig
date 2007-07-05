@@ -613,7 +613,7 @@ template <>
 struct ClassTraits<Herwig::ThreePionCLEOCurrent>
   : public ClassTraitsBase<Herwig::ThreePionCLEOCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ThreePionCLEOCurrent"; }
+  static string className() { return "Herwig::ThreePionCLEOCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

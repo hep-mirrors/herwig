@@ -279,7 +279,7 @@ template <>
 struct ClassTraits<Herwig::QTildeReconstructor>
   : public ClassTraitsBase<Herwig::QTildeReconstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QTildeReconstructor"; }
+  static string className() { return "Herwig::QTildeReconstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QTildeReconstructor is implemented. It may also include several, space-separated,

@@ -235,7 +235,7 @@ template <>
 struct ClassTraits<Herwig::MEee2Higgs2SM>
   : public ClassTraitsBase<Herwig::MEee2Higgs2SM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEee2Higgs2SM"; }
+  static string className() { return "Herwig::MEee2Higgs2SM"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEee2Higgs2SM is implemented. It may also include several, space-separated,

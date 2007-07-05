@@ -149,7 +149,7 @@ template <>
 struct ClassTraits<Herwig::SSCCPVertex>
   : public ClassTraitsBase<Herwig::SSCCPVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSCCPVertex"; }
+  static string className() { return "Herwig::SSCCPVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSCCPVertex is implemented. It may also include several, space-separated,

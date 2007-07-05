@@ -4,14 +4,14 @@ library HwShower.so
 #
 # create the main objects
 #
-create Herwig++::SplittingGenerator theSplittingGenerator
-create Herwig++::ShowerAlphaQCD theShowerAlphaQCD
-create Herwig++::ShowerAlphaQED theShowerAlphaQED
-create Herwig++::ShowerHandler stdShowerHandler
-create Herwig++::Evolver theEvolver
-create Herwig++::QTildeModel theShowerModel
-create Herwig++::QTildeFinder thePartnerFinder
-create Herwig++::QTildeReconstructor theKinematicsReconstructor
+create Herwig::SplittingGenerator theSplittingGenerator
+create Herwig::ShowerAlphaQCD theShowerAlphaQCD
+create Herwig::ShowerAlphaQED theShowerAlphaQED
+create Herwig::ShowerHandler stdShowerHandler
+create Herwig::Evolver theEvolver
+create Herwig::QTildeModel theShowerModel
+create Herwig::QTildeFinder thePartnerFinder
+create Herwig::QTildeReconstructor theKinematicsReconstructor
 #
 # Set the pointers to the relevant objects 
 #
@@ -24,15 +24,15 @@ set theEvolver:SplittingGenerator theSplittingGenerator
 #  create the matrix element corrections
 # 
 # vector boson decay
-create Herwig++::VectorBosonQQBarMECorrection qqbarg
+create Herwig::VectorBosonQQBarMECorrection qqbarg
 insert theShowerModel:MECorrections 0 qqbarg
 set qqbarg:Coupling theShowerAlphaQCD
 # top decay
-create Herwig++::TopDecayMECorrection TopME
+create Herwig::TopDecayMECorrection TopME
 insert theShowerModel:MECorrections 1  TopME
 set TopME:Coupling theShowerAlphaQCD
 # drell-yan
-create Herwig++::DrellYanMECorrection DrellYan
+create Herwig::DrellYanMECorrection DrellYan
 insert theShowerModel:MECorrections 2  DrellYan
 set DrellYan:Coupling theShowerAlphaQCD
 #
@@ -76,14 +76,14 @@ set theSplittingGenerator:OnOffFSR_EWKMode 1
 ###########################################################
 #
 # Lets set up all the splittings
-create Herwig++::QtoQGSplitFn theQtoQGSplitFn
-create Herwig++::GtoQQbarSplitFn theGtoQQbarSplitFn
-create Herwig++::GtoGGSplitFn theGtoGGSplitFn
-create Herwig++::QtoQGammaSplitFn theQtoQGammaSplitFn
-create Herwig++::QtoGQSplitFn theQtoGQSplitFn
+create Herwig::QtoQGSplitFn theQtoQGSplitFn
+create Herwig::GtoQQbarSplitFn theGtoQQbarSplitFn
+create Herwig::GtoGGSplitFn theGtoGGSplitFn
+create Herwig::QtoQGammaSplitFn theQtoQGammaSplitFn
+create Herwig::QtoGQSplitFn theQtoGQSplitFn
 #
 # Now the Sudakovs
-create Herwig++::QTildeSudakov QtoQGSudakov
+create Herwig::QTildeSudakov QtoQGSudakov
 set QtoQGSudakov:SplittingFunction theQtoQGSplitFn
 set QtoQGSudakov:Alpha theShowerAlphaQCD
 set QtoQGSudakov:PDFmax 1.9
@@ -92,7 +92,7 @@ set QtoQGSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoQGSudakov:CutoffQEDMassScale 0.75*GeV
 set QtoQGSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov GtoGGSudakov
+create Herwig::QTildeSudakov GtoGGSudakov
 set GtoGGSudakov:SplittingFunction theGtoGGSplitFn
 set GtoGGSudakov:Alpha theShowerAlphaQCD
 set GtoGGSudakov:PDFmax 1.0
@@ -101,7 +101,7 @@ set GtoGGSudakov:CutoffQCDMassScale 0.75*GeV
 set GtoGGSudakov:CutoffQEDMassScale 0.75*GeV
 set GtoGGSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov GtoQQbarSudakov
+create Herwig::QTildeSudakov GtoQQbarSudakov
 set GtoQQbarSudakov:SplittingFunction theGtoQQbarSplitFn
 set GtoQQbarSudakov:Alpha theShowerAlphaQCD
 set GtoQQbarSudakov:PDFmax 120.0
@@ -110,7 +110,7 @@ set GtoQQbarSudakov:CutoffQCDMassScale 0.75*GeV
 set GtoQQbarSudakov:CutoffQEDMassScale 0.75*GeV
 set GtoQQbarSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov GtobbbarSudakov
+create Herwig::QTildeSudakov GtobbbarSudakov
 set GtobbbarSudakov:SplittingFunction theGtoQQbarSplitFn
 set GtobbbarSudakov:Alpha theShowerAlphaQCD
 set GtobbbarSudakov:PDFmax 4000.0
@@ -119,7 +119,7 @@ set GtobbbarSudakov:CutoffQCDMassScale 0.75*GeV
 set GtobbbarSudakov:CutoffQEDMassScale 0.75*GeV
 set GtobbbarSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov GtoccbarSudakov
+create Herwig::QTildeSudakov GtoccbarSudakov
 set GtoccbarSudakov:SplittingFunction theGtoQQbarSplitFn
 set GtoccbarSudakov:Alpha theShowerAlphaQCD
 set GtoccbarSudakov:PDFmax 600.0
@@ -128,7 +128,7 @@ set GtoccbarSudakov:CutoffQCDMassScale 0.75*GeV
 set GtoccbarSudakov:CutoffQEDMassScale 0.75*GeV
 set GtoccbarSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov QtoQGammaSudakov
+create Herwig::QTildeSudakov QtoQGammaSudakov
 set QtoQGammaSudakov:SplittingFunction theQtoQGammaSplitFn
 set QtoQGammaSudakov:Alpha theShowerAlphaQED
 set QtoQGammaSudakov:PDFmax 1.0
@@ -137,7 +137,7 @@ set QtoQGammaSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoQGammaSudakov:CutoffQEDMassScale 0.75*GeV
 set QtoQGammaSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov QtoGQSudakov
+create Herwig::QTildeSudakov QtoGQSudakov
 set QtoGQSudakov:SplittingFunction theQtoGQSplitFn
 set QtoGQSudakov:Alpha theShowerAlphaQCD
 set QtoGQSudakov:PDFmax 1.0
@@ -146,7 +146,7 @@ set QtoGQSudakov:CutoffQCDMassScale 0.75*GeV
 set QtoGQSudakov:CutoffQEDMassScale 0.75*GeV
 set QtoGQSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov utoGuSudakov
+create Herwig::QTildeSudakov utoGuSudakov
 set utoGuSudakov:SplittingFunction theQtoGQSplitFn
 set utoGuSudakov:Alpha theShowerAlphaQCD
 set utoGuSudakov:PDFmax 150.0
@@ -155,7 +155,7 @@ set utoGuSudakov:CutoffQCDMassScale 0.75*GeV
 set utoGuSudakov:CutoffQEDMassScale 0.75*GeV
 set utoGuSudakov:CutoffEWKMassScale 91.0*GeV
 
-create Herwig++::QTildeSudakov dtoGdSudakov
+create Herwig::QTildeSudakov dtoGdSudakov
 set dtoGdSudakov:SplittingFunction theQtoGQSplitFn
 set dtoGdSudakov:Alpha theShowerAlphaQCD
 set dtoGdSudakov:PDFmax 40.0

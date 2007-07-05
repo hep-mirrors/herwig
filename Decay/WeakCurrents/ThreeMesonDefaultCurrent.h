@@ -475,7 +475,7 @@ template <>
 struct ClassTraits<Herwig::ThreeMesonDefaultCurrent>
   : public ClassTraitsBase<Herwig::ThreeMesonDefaultCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ThreeMesonDefaultCurrent"; }
+  static string className() { return "Herwig::ThreeMesonDefaultCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

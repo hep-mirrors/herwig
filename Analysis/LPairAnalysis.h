@@ -226,7 +226,7 @@ template <>
 struct ClassTraits<Herwig::LPairAnalysis>
   : public ClassTraitsBase<Herwig::LPairAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LPairAnalysis"; }
+  static string className() { return "Herwig::LPairAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the LPairAnalysis class and any other class on which it depends
    *  (except the base class). */

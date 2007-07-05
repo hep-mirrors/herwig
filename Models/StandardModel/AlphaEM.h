@@ -167,7 +167,7 @@ template <>
 struct ClassTraits<Herwig::AlphaEM>
   : public ClassTraitsBase<Herwig::AlphaEM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::AlphaEM"; }
+  static string className() { return "Herwig::AlphaEM"; }
 };
 
 /** @endcond */

@@ -183,7 +183,7 @@ template <>
 struct ClassTraits<Herwig::SMTopDecayer>
   : public ClassTraitsBase<Herwig::SMTopDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMTopDecayer"; }
+  static string className() { return "Herwig::SMTopDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMTopDecayer class and every other class it uses
    *  (except the base class). */

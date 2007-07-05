@@ -438,7 +438,7 @@ template <>
 struct ClassTraits<Herwig::SusyBase>
   : public ClassTraitsBase<Herwig::SusyBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SusyBase"; }
+  static string className() { return "Herwig::SusyBase"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SusyBase is implemented. It may also include several, space-separated,

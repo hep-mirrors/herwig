@@ -187,7 +187,7 @@ void BaryonSimpleFormFactor::dataBaseOutput(ofstream& output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::BaryonSimpleFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::BaryonSimpleFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":g_A " <<  _gA << " \n";
   output << "set " << fullName() << ":alpha_D " << _alphaD  << " \n";
   output << "set " << fullName() << ":eta_V " << _etaV  << " \n";

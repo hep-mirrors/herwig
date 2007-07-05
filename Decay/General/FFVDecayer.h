@@ -157,7 +157,7 @@ template <>
 struct ClassTraits<Herwig::FFVDecayer>
   : public ClassTraitsBase<Herwig::FFVDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FFVDecayer"; }
+  static string className() { return "Herwig::FFVDecayer"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the FFVDecayer class and any other class on which it depends
    *  (except the base class). */

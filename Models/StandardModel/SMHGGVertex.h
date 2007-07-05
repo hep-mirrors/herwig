@@ -164,7 +164,7 @@ template <>
 struct ClassTraits<Herwig::SMHGGVertex>
   : public ClassTraitsBase<Herwig::SMHGGVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHGGVertex"; }
+  static string className() { return "Herwig::SMHGGVertex"; }
 };
 
 /** @endcond */

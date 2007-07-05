@@ -197,7 +197,7 @@ template <>
 struct ClassTraits<Herwig::VPPGammaAnalysis>
   : public ClassTraitsBase<Herwig::VPPGammaAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::VPPGammaAnalysis"; }
+  static string className() { return "Herwig::VPPGammaAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * VPPGammaAnalysis is implemented. It may also include several, space-separated,

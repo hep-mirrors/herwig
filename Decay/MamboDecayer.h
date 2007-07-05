@@ -180,7 +180,7 @@ template <>
 struct ClassTraits<Herwig::MamboDecayer>
   : public ClassTraitsBase<Herwig::MamboDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MamboDecayer"; }
+  static string className() { return "Herwig::MamboDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the MamboDecayer class and every other class it uses
    *  (except the base class). */

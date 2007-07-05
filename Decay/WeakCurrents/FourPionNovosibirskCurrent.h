@@ -588,7 +588,7 @@ template <>
 struct ClassTraits<Herwig::FourPionNovosibirskCurrent>
   : public ClassTraitsBase<Herwig::FourPionNovosibirskCurrent> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::FourPionNovosibirskCurrent"; }
+  static string className() { return "Herwig::FourPionNovosibirskCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

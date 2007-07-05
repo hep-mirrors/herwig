@@ -140,7 +140,7 @@ template <>
 struct ClassTraits<Herwig::BaryonRemnants>
   : public ClassTraitsBase<Herwig::BaryonRemnants> {
    /** Return the class name. */
-  static string className() { return "Herwig++::BaryonRemnants"; }
+  static string className() { return "Herwig::BaryonRemnants"; }
    /**
     * Return the name of the shared library to be loaded to get
     * access to this class and every other class it uses

@@ -170,7 +170,7 @@ template <>
 struct ClassTraits<Herwig::SVVLoopDecayer>
   : public ClassTraitsBase<Herwig::SVVLoopDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SVVLoopDecayer"; }
+  static string className() { return "Herwig::SVVLoopDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SVVLoopDecayer class and every other class it uses
    *  (except the base class). */

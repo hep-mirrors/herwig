@@ -221,7 +221,7 @@ template <>
 struct ClassTraits<Herwig::MSSM>
   : public ClassTraitsBase<Herwig::MSSM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MSSM"; }
+  static string className() { return "Herwig::MSSM"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MSSM is implemented. It may also include several, space-separated,

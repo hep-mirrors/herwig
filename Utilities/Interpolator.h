@@ -193,7 +193,7 @@ template <typename ValT, typename ArgT>
 struct ClassTraits<Herwig::Interpolator<ValT,ArgT> >
   : public ClassTraitsBase<Herwig::Interpolator<ValT,ArgT> > {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Interpolator<"
+  static string className() { return "Herwig::Interpolator<"
 				+ ClassTraits<ValT>::className() + ","
 				+ ClassTraits<ArgT>::className() + ">"; }
   /**

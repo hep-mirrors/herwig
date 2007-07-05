@@ -124,7 +124,7 @@ void  ScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::ScalarFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::ScalarFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {
       if(ix<_numbermodes)

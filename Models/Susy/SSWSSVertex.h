@@ -163,7 +163,7 @@ template <>
 struct ClassTraits<Herwig::SSWSSVertex>
   : public ClassTraitsBase<Herwig::SSWSSVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSWSSVertex"; }
+  static string className() { return "Herwig::SSWSSVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSWSSVertex is implemented. It may also include several, space-separated,

@@ -246,7 +246,7 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
 void KiselevBcFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
 {
   if(header){output << "update decayers set parameters=\"";}
-  if(create){output << "create Herwig++::KiselevBcFormFactor " << fullName() << " \n";}
+  if(create){output << "create Herwig::KiselevBcFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       if(ix<initialModes())

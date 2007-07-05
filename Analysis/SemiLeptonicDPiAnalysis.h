@@ -209,7 +209,7 @@ template <>
 struct ClassTraits<Herwig::SemiLeptonicDPiAnalysis>
   : public ClassTraitsBase<Herwig::SemiLeptonicDPiAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SemiLeptonicDPiAnalysis"; }
+  static string className() { return "Herwig::SemiLeptonicDPiAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SemiLeptonicDPiAnalysis is implemented. It may also include several, space-separated,

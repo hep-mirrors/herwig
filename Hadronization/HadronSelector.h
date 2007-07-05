@@ -725,7 +725,7 @@ template <>
 struct ClassTraits<Herwig::HadronSelector>
   : public ClassTraitsBase<Herwig::HadronSelector> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HadronSelector"; }
+  static string className() { return "Herwig::HadronSelector"; }
 };
 
 /** @endcond */

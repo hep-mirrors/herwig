@@ -99,7 +99,7 @@ template <>
 struct ClassTraits<Herwig::QTildeModel>
   : public ClassTraitsBase<Herwig::QTildeModel> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QTildeModel"; }
+  static string className() { return "Herwig::QTildeModel"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QTildeModel is implemented. It may also include several, space-separated,

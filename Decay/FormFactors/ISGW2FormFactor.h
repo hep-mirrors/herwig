@@ -515,7 +515,7 @@ template <>
  struct ClassTraits<Herwig::ISGW2FormFactor>
   : public ClassTraitsBase<Herwig::ISGW2FormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ISGW2FormFactor"; }
+  static string className() { return "Herwig::ISGW2FormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

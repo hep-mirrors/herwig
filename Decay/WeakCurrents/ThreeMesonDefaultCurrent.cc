@@ -913,7 +913,7 @@ void ThreeMesonDefaultCurrent::inita1Width(int iopt) {
 void ThreeMesonDefaultCurrent::dataBaseOutput(ofstream & output,bool header,
 					      bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::ThreeMesonDefaultCurrent " 
+  if(create) output << "create Herwig::ThreeMesonDefaultCurrent " 
 		    << fullName() << " HwWeakCurrents.so\n";
   for(unsigned int ix=0;ix<_rhoF123wgts.size();++ix) {
     if(ix<3) output << "set ";

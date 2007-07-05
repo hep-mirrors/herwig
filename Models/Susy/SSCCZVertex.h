@@ -188,7 +188,7 @@ template <>
 struct ClassTraits<Herwig::SSCCZVertex>
   : public ClassTraitsBase<Herwig::SSCCZVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSCCZVertex"; }
+  static string className() { return "Herwig::SSCCZVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSCCZVertex is implemented. It may also include several, space-separated,

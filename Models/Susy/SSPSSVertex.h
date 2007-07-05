@@ -144,7 +144,7 @@ template <>
 struct ClassTraits<Herwig::SSPSSVertex>
   : public ClassTraitsBase<Herwig::SSPSSVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSPSSVertex"; }
+  static string className() { return "Herwig::SSPSSVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SSPSSVertex class and every other class it uses
    *  (except the base class). */

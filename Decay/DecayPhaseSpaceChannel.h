@@ -352,7 +352,7 @@ template <>
 struct ClassTraits<Herwig::DecayPhaseSpaceChannel>
   : public ClassTraitsBase<Herwig::DecayPhaseSpaceChannel> {
     /**  Return the class name.*/
-  static string className() { return "Herwig++::DecayPhaseSpaceChannel"; }
+  static string className() { return "Herwig::DecayPhaseSpaceChannel"; }
 };
 
 /** @endcond */

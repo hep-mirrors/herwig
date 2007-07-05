@@ -242,7 +242,7 @@ template <>
 struct ClassTraits<Herwig::PartonicHadronizer>
   : public ClassTraitsBase<Herwig::PartonicHadronizer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::PartonicHadronizer"; }
+  static string className() { return "Herwig::PartonicHadronizer"; }
 };
 
 /** @endcond */

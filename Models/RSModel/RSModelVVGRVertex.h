@@ -141,7 +141,7 @@ struct ClassTraits<Herwig::RSModelVVGRVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::RSModelVVGRVertex"; }
+  static string className() { return "Herwig::RSModelVVGRVertex"; }
 
   /**
    * Return the name of the shared library to be loaded to get

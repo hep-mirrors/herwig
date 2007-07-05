@@ -141,7 +141,7 @@ template <>
 struct ClassTraits<Herwig::ColourReconnector>
   : public ClassTraitsBase<Herwig::ColourReconnector> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::ColourReconnector"; }
+  static string className() { return "Herwig::ColourReconnector"; }
 };
 
 /** @endcond */

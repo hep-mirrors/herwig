@@ -163,7 +163,7 @@ template <>
 struct ClassTraits<Herwig::NMSSM>
   : public ClassTraitsBase<Herwig::NMSSM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::NMSSM"; }
+  static string className() { return "Herwig::NMSSM"; }
   /**
    * The name of a file containing the dynamic library where the class
    * NMSSM is implemented. It may also include several, space-separated,

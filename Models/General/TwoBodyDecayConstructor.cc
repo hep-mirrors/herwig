@@ -222,7 +222,7 @@ void TwoBodyDecayConstructor::createDecayer(VertexBasePtr vert,
   ostringstream fullname;
   fullname << "/Defaults/Decays/" << name << "_" 
 	   << ivert << "_" << icol;
-  string classname = "/Herwig++/" + name;
+  string classname = "Herwig::" + name;
     
   GeneralTwoBodyDecayerPtr decayer;
   decayer = dynamic_ptr_cast<GeneralTwoBodyDecayerPtr>

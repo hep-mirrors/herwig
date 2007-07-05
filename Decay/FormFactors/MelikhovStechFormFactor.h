@@ -424,7 +424,7 @@ template <>
 struct ClassTraits<Herwig::MelikhovStechFormFactor>
   : public ClassTraitsBase<Herwig::MelikhovStechFormFactor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MelikhovStechFormFactor"; }
+  static string className() { return "Herwig::MelikhovStechFormFactor"; }
   /** Return the name of the shared library be loaded to get
    *  access to the MelikhovStechFormFactor class and every other class it uses
    *  (except the base class). */

@@ -263,7 +263,7 @@ template <>
  struct ClassTraits<Herwig::SemiLeptonicBaryonDecayer>
   : public ClassTraitsBase<Herwig::SemiLeptonicBaryonDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::SemiLeptonicBaryonDecayer"; }
+  static string className() { return "Herwig::SemiLeptonicBaryonDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

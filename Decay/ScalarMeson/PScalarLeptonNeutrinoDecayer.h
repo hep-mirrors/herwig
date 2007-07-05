@@ -205,7 +205,7 @@ template <>
 struct ClassTraits<Herwig::PScalarLeptonNeutrinoDecayer>
   : public ClassTraitsBase<Herwig::PScalarLeptonNeutrinoDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::PScalarLeptonNeutrinoDecayer"; }
+  static string className() { return "Herwig::PScalarLeptonNeutrinoDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

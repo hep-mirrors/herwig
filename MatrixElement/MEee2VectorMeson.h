@@ -252,7 +252,7 @@ template <>
 struct ClassTraits<Herwig::MEee2VectorMeson>
   : public ClassTraitsBase<Herwig::MEee2VectorMeson> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEee2VectorMeson"; }
+  static string className() { return "Herwig::MEee2VectorMeson"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEee2VectorMeson is implemented. It may also include several, space-separated,

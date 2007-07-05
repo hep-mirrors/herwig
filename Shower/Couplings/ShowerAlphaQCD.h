@@ -274,7 +274,7 @@ template <>
 struct ClassTraits<Herwig::ShowerAlphaQCD>
   : public ClassTraitsBase<Herwig::ShowerAlphaQCD> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerAlphaQCD"; }
+  static string className() { return "Herwig::ShowerAlphaQCD"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ShowerAlphaQCD is implemented. It may also include several,

@@ -145,7 +145,7 @@ template <>
 struct ClassTraits<Herwig::HwDecayerBase>
   : public ClassTraitsBase<Herwig::HwDecayerBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HwDecayerBase"; }
+  static string className() { return "Herwig::HwDecayerBase"; }
 };
 
 /** @endcond */

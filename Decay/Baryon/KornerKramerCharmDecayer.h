@@ -423,7 +423,7 @@ template <>
 struct ClassTraits<Herwig::KornerKramerCharmDecayer>
   : public ClassTraitsBase<Herwig::KornerKramerCharmDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::KornerKramerCharmDecayer"; }
+  static string className() { return "Herwig::KornerKramerCharmDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

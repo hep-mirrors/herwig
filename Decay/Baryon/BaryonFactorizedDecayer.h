@@ -330,7 +330,7 @@ template <>
 struct ClassTraits<Herwig::BaryonFactorizedDecayer>
   : public ClassTraitsBase<Herwig::BaryonFactorizedDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BaryonFactorizedDecayer"; }
+  static string className() { return "Herwig::BaryonFactorizedDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BaryonFactorizedDecayer class and every other class it uses
    *  (except the base class). */

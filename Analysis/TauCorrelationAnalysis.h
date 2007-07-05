@@ -192,7 +192,7 @@ template <>
 struct ClassTraits<Herwig::TauCorrelationAnalysis>
   : public ClassTraitsBase<Herwig::TauCorrelationAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TauCorrelationAnalysis"; }
+  static string className() { return "Herwig::TauCorrelationAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * TauCorrelationAnalysis is implemented. It may also include several, space-separated,

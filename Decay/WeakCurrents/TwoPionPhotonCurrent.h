@@ -301,7 +301,7 @@ template <>
 struct ClassTraits<Herwig::TwoPionPhotonCurrent>
   : public ClassTraitsBase<Herwig::TwoPionPhotonCurrent> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TwoPionPhotonCurrent"; }
+  static string className() { return "Herwig::TwoPionPhotonCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

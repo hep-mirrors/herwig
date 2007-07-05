@@ -193,7 +193,7 @@ void LightBaryonQuarkModelFormFactor::dataBaseOutput(ofstream& output,bool heade
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/LightBaryonQuarkModelFormFactor " 
+    {output << "create Herwig::LightBaryonQuarkModelFormFactor " 
 	    << fullName() << " \n";}
   for(unsigned int ix=0;ix<_f1.size();++ix)
     {

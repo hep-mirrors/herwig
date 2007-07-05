@@ -222,7 +222,7 @@ template <>
 struct ClassTraits<Herwig::SSCFSVertex>
   : public ClassTraitsBase<Herwig::SSCFSVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSCFSVertex"; }
+  static string className() { return "Herwig::SSCFSVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SSCFSVertex class and every other class it uses
    *  (except the base class). */

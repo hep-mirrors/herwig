@@ -278,7 +278,7 @@ template <>
  struct ClassTraits<Herwig::WSBFormFactor>
   : public ClassTraitsBase<Herwig::WSBFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::WSBFormFactor"; }
+  static string className() { return "Herwig::WSBFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

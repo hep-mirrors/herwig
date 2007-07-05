@@ -261,7 +261,7 @@ template <>
  struct ClassTraits<Herwig::PScalar4FermionsDecayer>
   : public ClassTraitsBase<Herwig::PScalar4FermionsDecayer> {
    /** Return the class name. */
-  static string className() { return "Herwig++::PScalar4FermionsDecayer"; }
+  static string className() { return "Herwig::PScalar4FermionsDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -237,7 +237,7 @@ void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
     ostringstream fullname;
     fullname << "/Defaults/Decays/" << name << "_" 
  	     << ivert << "_" << icol;
-    string classname = "Herwig++::" + name;
+    string classname = "Herwig::" + name;
     ostringstream cut;
     cut << _masscut/GeV;
     for(unsigned int ix=0;ix<_part1.size();++ix) {

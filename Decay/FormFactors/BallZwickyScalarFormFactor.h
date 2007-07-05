@@ -288,7 +288,7 @@ template <>
  struct ClassTraits<Herwig::BallZwickyScalarFormFactor>
   : public ClassTraitsBase<Herwig::BallZwickyScalarFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::BallZwickyScalarFormFactor"; }
+  static string className() { return "Herwig::BallZwickyScalarFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

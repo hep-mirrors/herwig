@@ -163,7 +163,7 @@ template <>
 struct ClassTraits<Herwig::VSSDecayer>
   : public ClassTraitsBase<Herwig::VSSDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::VSSDecayer"; }
+  static string className() { return "Herwig::VSSDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * VSSDecayer is implemented. It may also include several, space-separated,

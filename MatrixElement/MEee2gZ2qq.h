@@ -261,7 +261,7 @@ template <>
 struct ClassTraits<Herwig::MEee2gZ2qq>
   : public ClassTraitsBase<Herwig::MEee2gZ2qq> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEee2gZ2qq"; }
+  static string className() { return "Herwig::MEee2gZ2qq"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEee2gZ2qq class and any other class on which it depends
    *  (except the base class). */

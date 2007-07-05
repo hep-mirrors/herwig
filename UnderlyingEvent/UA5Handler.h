@@ -444,7 +444,7 @@ template<>
 struct ClassTraits<Herwig::UA5Handler> :
   public ClassTraitsBase<Herwig::UA5Handler> {
   /** Return a platform-independent class name */
-    static string className() { return "Herwig++::UA5Handler"; }
+    static string className() { return "Herwig::UA5Handler"; }
   /** Return the name of the shared library be loaded to get
    *  access to the WeakPartonicDecayer class and every other class it uses
    *  (except the base class). */

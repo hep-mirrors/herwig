@@ -69,7 +69,7 @@ template <>
 struct ClassTraits<Herwig::QTildeMECorrection>
   : public ClassTraitsBase<Herwig::QTildeMECorrection> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QTildeMECorrection"; }
+  static string className() { return "Herwig::QTildeMECorrection"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QTildeMECorrection is implemented. It may also include several, space-separated,

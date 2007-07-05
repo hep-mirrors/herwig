@@ -439,7 +439,7 @@ template <>
 struct ClassTraits<Herwig::DecayIntegrator>
   : public ClassTraitsBase<Herwig::DecayIntegrator> {
   /** Return the class name. */
-  static string className() { return "Herwig++::DecayIntegrator"; }
+  static string className() { return "Herwig::DecayIntegrator"; }
 };
   
 /** @endcond */

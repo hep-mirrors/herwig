@@ -381,7 +381,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2HiggsJet>
   : public ClassTraitsBase<Herwig::MEPP2HiggsJet> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2HiggsJet"; }
+  static string className() { return "Herwig::MEPP2HiggsJet"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2HiggsJet is implemented. It may also include several, space-separated,

@@ -350,7 +350,7 @@ bool KPiCurrent::createMode(int icharge,unsigned int imode,
 void KPiCurrent::dataBaseOutput(ofstream & output,bool header,
 				bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::KPiCurrent " << fullName() 
+  if(create) output << "create Herwig::KPiCurrent " << fullName() 
 		    << " HeWeakCurrents.so\n";
   output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
   output << "set " << fullName() << ":Transverse "      << _transverse << "\n";

@@ -293,7 +293,7 @@ template <>
 struct ClassTraits<Herwig::OmegaPionsCurrent>
   : public ClassTraitsBase<Herwig::OmegaPionsCurrent> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::OmegaPionsCurrent"; }
+  static string className() { return "Herwig::OmegaPionsCurrent"; }
   /**
    * The name of a file containing the dynamic library where the class
    * OmegaPionsCurrent is implemented. It may also include several, space-separated,

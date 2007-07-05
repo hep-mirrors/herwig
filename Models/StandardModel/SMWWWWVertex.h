@@ -197,7 +197,7 @@ struct ClassTraits<Herwig::SMWWWWVertex>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::SMWWWWVertex"; }
+  static string className() { return "Herwig::SMWWWWVertex"; }
   
 };
 

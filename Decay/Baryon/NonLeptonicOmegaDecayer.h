@@ -355,7 +355,7 @@ template <>
  struct ClassTraits<Herwig::NonLeptonicOmegaDecayer>
   : public ClassTraitsBase<Herwig::NonLeptonicOmegaDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::NonLeptonicOmegaDecayer"; }
+  static string className() { return "Herwig::NonLeptonicOmegaDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -366,7 +366,7 @@ template <>
 struct ClassTraits<Herwig::EvtGen>
   : public ClassTraitsBase<Herwig::EvtGen> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EvtGen"; }
+  static string className() { return "Herwig::EvtGen"; }
   /** Return the name of the shared library be loaded to get
    *  access to the EvtGen class and every other class it uses
    *  (except the base class). */

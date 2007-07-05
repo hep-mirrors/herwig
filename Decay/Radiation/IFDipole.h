@@ -388,7 +388,7 @@ template <>
 struct ClassTraits<Herwig::IFDipole>
   : public ClassTraitsBase<Herwig::IFDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::IFDipole"; }
+  static string className() { return "Herwig::IFDipole"; }
 };
 
 /** @endcond */

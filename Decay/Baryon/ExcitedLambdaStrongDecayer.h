@@ -237,7 +237,7 @@ template <>
 struct ClassTraits<Herwig::ExcitedLambdaStrongDecayer>
   : public ClassTraitsBase<Herwig::ExcitedLambdaStrongDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ExcitedLambdaStrongDecayer"; }
+  static string className() { return "Herwig::ExcitedLambdaStrongDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ExcitedLambdaStrongDecayer is implemented. It may also include several, space-separated,

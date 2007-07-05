@@ -209,7 +209,7 @@ template <>
 struct ClassTraits<Herwig::SplittingFunction>
   : public ClassTraitsBase<Herwig::SplittingFunction> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SplittingFunction"; }
+  static string className() { return "Herwig::SplittingFunction"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SplittingFunction is implemented. It may also include several, space-separated,

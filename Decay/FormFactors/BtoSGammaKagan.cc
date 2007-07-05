@@ -433,7 +433,7 @@ void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::BtoSGammaKagan " << fullName() << " \n";}
+    {output << "create Herwig::BtoSGammaKagan " << fullName() << " \n";}
   output << "set " << fullName() << ":TopMass "    << _mt/GeV << " \n";
   output << "set " << fullName() << ":BottomMass " << _mb/GeV << " \n";
   output << "set " << fullName() << ":CharmMass "  << _mc/GeV << " \n";

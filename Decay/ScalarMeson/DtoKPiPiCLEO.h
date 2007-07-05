@@ -671,7 +671,7 @@ template <>
 struct ClassTraits<Herwig::DtoKPiPiCLEO>
   : public ClassTraitsBase<Herwig::DtoKPiPiCLEO> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DtoKPiPiCLEO"; }
+  static string className() { return "Herwig::DtoKPiPiCLEO"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DtoKPiPiCLEO is implemented. It may also include several, space-separated,

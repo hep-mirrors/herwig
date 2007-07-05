@@ -281,7 +281,7 @@ template <>
 struct ClassTraits<Herwig::SSHSFSFVertex>
   : public ClassTraitsBase<Herwig::SSHSFSFVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSHSFSFVertex"; }
+  static string className() { return "Herwig::SSHSFSFVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SSHSFSFVertex is implemented. It may also include several, space-separated,

@@ -457,7 +457,7 @@ template <>
 struct ClassTraits<Herwig::DtoKPiPiCabibboFOCUS>
   : public ClassTraitsBase<Herwig::DtoKPiPiCabibboFOCUS> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DtoKPiPiCabibboFOCUS"; }
+  static string className() { return "Herwig::DtoKPiPiCabibboFOCUS"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DtoKPiPiCabibboFOCUS is implemented. It may also include several, space-separated,

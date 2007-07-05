@@ -447,7 +447,7 @@ void BallZwickyVectorFormFactor::dataBaseOutput(ofstream & output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::BallZwickyVectorFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::BallZwickyVectorFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":CutOff " << _cutoff/GeV2 << "\n";
   for(unsigned int ix=0;ix<_Vr1.size();++ix)
     {

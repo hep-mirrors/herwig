@@ -525,7 +525,7 @@ unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout) {
 void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output,bool header,
 					     bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::TwoMesonRhoKStarCurrent " 
+  if(create) output << "create Herwig::TwoMesonRhoKStarCurrent " 
 		    << fullName() << " HwWeakCurrents.so\n";
   unsigned int ix;
   for(ix=0;ix<_rhomasses.size();++ix) {

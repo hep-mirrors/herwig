@@ -258,7 +258,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2GammaGamma>
   : public ClassTraitsBase<Herwig::MEPP2GammaGamma> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2GammaGamma"; }
+  static string className() { return "Herwig::MEPP2GammaGamma"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2GammaGamma is implemented. It may also include several, space-separated,

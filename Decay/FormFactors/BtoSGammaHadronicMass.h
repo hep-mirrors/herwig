@@ -222,7 +222,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaHadronicMass>
   : public ClassTraitsBase<Herwig::BtoSGammaHadronicMass> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaHadronicMass"; }
+  static string className() { return "Herwig::BtoSGammaHadronicMass"; }
 };
 
 /** @endcond */

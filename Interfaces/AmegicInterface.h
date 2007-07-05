@@ -218,7 +218,7 @@ template<>
 struct ClassTraits<Herwig::AmegicInterface> 
   : public ClassTraitsBase<Herwig::AmegicInterface> {
   /** Return a platform-independent class name */
-   static string className() { return "Herwig++::AmegicInterface"; }
+   static string className() { return "Herwig::AmegicInterface"; }
   /** Return the name of the shared library be loaded to get
    *  access to the AmegicInterface class and every other class it uses
    *  (except the base class). */

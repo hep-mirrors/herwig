@@ -434,7 +434,7 @@ template <>
 struct ClassTraits<Herwig::SplittingGenerator>
   : public ClassTraitsBase<Herwig::SplittingGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SplittingGenerator"; }
+  static string className() { return "Herwig::SplittingGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SplittingGenerator is implemented. It may also include several, space-separated,

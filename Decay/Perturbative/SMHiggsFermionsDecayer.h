@@ -174,7 +174,7 @@ template <>
 struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsFermionsDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsFermionsDecayer"; }
+  static string className() { return "Herwig::SMHiggsFermionsDecayer"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the SMHiggsFermionsDecayer class and any other class on which it depends
    *  (except the base class). */

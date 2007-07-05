@@ -166,7 +166,7 @@ struct BaseClassTrait<Herwig::HwDecayHandler,1> {
 template <>
 struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDecayHandler> {
   /** Return the class name. */
-  static string className() { return "Herwig++::HwDecayHandler"; }
+  static string className() { return "Herwig::HwDecayHandler"; }
 };
 
 /** @endcond */

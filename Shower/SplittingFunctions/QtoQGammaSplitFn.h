@@ -176,7 +176,7 @@ template <>
 struct ClassTraits<Herwig::QtoQGammaSplitFn>
   : public ClassTraitsBase<Herwig::QtoQGammaSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QtoQGammaSplitFn"; }
+  static string className() { return "Herwig::QtoQGammaSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QtoQGammaSplitFn is implemented. It may also include several, space-separated,

@@ -183,7 +183,7 @@ template <>
 struct ClassTraits<Herwig::UEDF1F0Z1Vertex>
   : public ClassTraitsBase<Herwig::UEDF1F0Z1Vertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::UEDF1F0Z1Vertex"; }
+  static string className() { return "Herwig::UEDF1F0Z1Vertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * UEDF1F0Z1Vertex is implemented. It may also include several, space-separated,

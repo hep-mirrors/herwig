@@ -356,7 +356,7 @@ template <>
 struct ClassTraits<Herwig::ClusterFissioner>
   : public ClassTraitsBase<Herwig::ClusterFissioner> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ClusterFissioner"; }
+  static string className() { return "Herwig::ClusterFissioner"; }
 };
 
 /** @endcond */

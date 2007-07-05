@@ -120,7 +120,7 @@ template <>
 struct ClassTraits<Herwig::ShowerVertex>
   : public ClassTraitsBase<Herwig::ShowerVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerVertex"; }
+  static string className() { return "Herwig::ShowerVertex"; }
 };
 
 /** @endcond */

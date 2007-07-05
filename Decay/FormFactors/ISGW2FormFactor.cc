@@ -1162,7 +1162,7 @@ ScalarTensorFormFactor(Energy2 q2, unsigned int iloc, int id0, int id1,
 
 void ISGW2FormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::ISGW2FormFactor " << fullName() << "\n";
+  if(create) output << "create Herwig::ISGW2FormFactor " << fullName() << "\n";
   output << "set " << fullName() << ":DownMass "    << _mdown/GeV    << "\n";
   output << "set " << fullName() << ":UpMass "      << _mup/GeV      << "\n";
   output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << "\n";

@@ -230,7 +230,7 @@ createMatrixElement(const HPDiagram & diag) const {
 
 string ResonantProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
 					       string & objname) const {
- string classname("/Herwig++/ME");
+ string classname("Herwig::ME");
   for(vector<tcPDPtr>::size_type ix = 0; ix < extpart.size(); ++ix) {
     if(ix == 2) classname += "2";
     if(extpart[ix]->iSpin() == PDT::Spin0) classname += "s";

@@ -255,7 +255,7 @@ template <>
 struct ClassTraits<Herwig::Histogram>
   : public ClassTraitsBase<Herwig::Histogram> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Histogram"; }
+  static string className() { return "Herwig::Histogram"; }
 };
 
 /** @endcond */

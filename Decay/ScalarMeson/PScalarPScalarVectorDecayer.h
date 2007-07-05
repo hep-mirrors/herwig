@@ -246,7 +246,7 @@ template <>
 struct ClassTraits<Herwig::PScalarPScalarVectorDecayer>
   : public ClassTraitsBase<Herwig::PScalarPScalarVectorDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::PScalarPScalarVectorDecayer"; }
+  static string className() { return "Herwig::PScalarPScalarVectorDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

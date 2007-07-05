@@ -334,7 +334,7 @@ template <>
 struct ClassTraits<Herwig::GenericMassGenerator>
   : public ClassTraitsBase<Herwig::GenericMassGenerator> {
   /** Return the class name. */
-  static string className() { return "Herwig++::GenericMassGenerator"; }
+  static string className() { return "Herwig::GenericMassGenerator"; }
 };
 
 /** @endcond */

@@ -155,7 +155,7 @@ template <>
 struct ClassTraits<Herwig::SVVLoopVertex>
   : public ClassTraitsBase<Herwig::SVVLoopVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SVVLoopVertex"; }
+  static string className() { return "Herwig::SVVLoopVertex"; }
 };
 
 /** @endcond */

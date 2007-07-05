@@ -112,7 +112,7 @@ void BaryonFormFactor::dataBaseOutput(ofstream & output,bool header,bool create)
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::BaryonFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::BaryonFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {
       if(ix<_numbermodes)

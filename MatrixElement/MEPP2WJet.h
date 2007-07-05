@@ -331,7 +331,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2WJet>
   : public ClassTraitsBase<Herwig::MEPP2WJet> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2WJet"; }
+  static string className() { return "Herwig::MEPP2WJet"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2WJet is implemented. It may also include several, space-separated,

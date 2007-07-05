@@ -205,7 +205,7 @@ template <>
 struct ClassTraits<Herwig::GeneralTwoBodyDecayer>
   : public ClassTraitsBase<Herwig::GeneralTwoBodyDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralTwoBodyDecayer"; }
+  static string className() { return "Herwig::GeneralTwoBodyDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the GeneralTwoBodyDecayer class and every other class it uses
    *  (except the base class). */

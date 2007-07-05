@@ -511,7 +511,7 @@ template <>
 struct ClassTraits<Herwig::GeneralDipole>
   : public ClassTraitsBase<Herwig::GeneralDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralDipole"; }
+  static string className() { return "Herwig::GeneralDipole"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GeneralDipole class and any other class on which it depends
    *  (except the base class). */

@@ -170,7 +170,7 @@ template <>
 struct ClassTraits<Herwig::HiggsJetAnalysis>
   : public ClassTraitsBase<Herwig::HiggsJetAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HiggsJetAnalysis"; }
+  static string className() { return "Herwig::HiggsJetAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the HiggsJetAnalysis class and any other class on which it depends
    *  (except the base class). */

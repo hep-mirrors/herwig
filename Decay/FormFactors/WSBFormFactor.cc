@@ -434,7 +434,7 @@ void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) co
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::WSBFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::WSBFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {

@@ -164,7 +164,7 @@ template <>
 struct ClassTraits<Herwig::SFFDecayer>
   : public ClassTraitsBase<Herwig::SFFDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SFFDecayer"; }
+  static string className() { return "Herwig::SFFDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SFFDecayer class and every other class it uses
    *  (except the base class). */

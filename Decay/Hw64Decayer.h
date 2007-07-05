@@ -166,7 +166,7 @@ struct BaseClassTrait<Herwig::Hw64Decayer,1> {
 template <>
 struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Decayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::Hw64Decayer"; }
+  static string className() { return "Herwig::Hw64Decayer"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

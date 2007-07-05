@@ -168,7 +168,7 @@ template <>
 struct ClassTraits<Herwig::HepMCFile>
   : public ClassTraitsBase<Herwig::HepMCFile> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HepMCFile"; }
+  static string className() { return "Herwig::HepMCFile"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the HepMCFile class and any other class on which it depends
    *  (except the base class). */

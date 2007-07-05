@@ -404,7 +404,7 @@ template <>
 struct ClassTraits<Herwig::a1ThreePionDecayer>
   : public ClassTraitsBase<Herwig::a1ThreePionDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::a1ThreePionDecayer"; }
+  static string className() { return "Herwig::a1ThreePionDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -622,7 +622,7 @@ unsigned int FivePionCurrent::decayMode(vector<int> idout) {
 // output the information for the database
 void FivePionCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create Herwig++::FivePionCurrent " << fullName() 
+  if(create) output << "create Herwig::FivePionCurrent " << fullName() 
 		    << " HwWeakCurrents.so\n";
   output << "set " << fullName() << ":RhoMass "    << _rhomass/MeV << "\n";
   output << "set " << fullName() << ":A1Mass  "    << _a1mass/MeV  << "\n";

@@ -159,7 +159,7 @@ template <>
 struct ClassTraits<Herwig::OniumToOniumPiPiAnalysis>
   : public ClassTraitsBase<Herwig::OniumToOniumPiPiAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::OniumToOniumPiPiAnalysis"; }
+  static string className() { return "Herwig::OniumToOniumPiPiAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * OniumToOniumPiPiAnalysis is implemented. It may also include several, space-separated,

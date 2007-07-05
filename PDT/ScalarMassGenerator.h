@@ -188,7 +188,7 @@ template <>
 struct ClassTraits<Herwig::ScalarMassGenerator>
   : public ClassTraitsBase<Herwig::ScalarMassGenerator> {
   /** Return the class name. */
-  static string className() { return "/Herwig++/ScalarMassGenerator"; }
+  static string className() { return "Herwig::ScalarMassGenerator"; }
 };
 
 /** @endcond */

@@ -159,7 +159,7 @@ template <>
 struct ClassTraits<Herwig::QEDRadiationHandler>
   : public ClassTraitsBase<Herwig::QEDRadiationHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QEDRadiationHandler"; }
+  static string className() { return "Herwig::QEDRadiationHandler"; }
 };
 
 /** @endcond */

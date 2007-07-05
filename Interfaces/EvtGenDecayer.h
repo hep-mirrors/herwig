@@ -158,7 +158,7 @@ template <>
 struct ClassTraits<Herwig::EvtGenDecayer>
   : public ClassTraitsBase<Herwig::EvtGenDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EvtGenDecayer"; }
+  static string className() { return "Herwig::EvtGenDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the EvtGenDecayer class and every other class it uses
    *  (except the base class). */

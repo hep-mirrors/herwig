@@ -192,7 +192,7 @@ template <>
 struct ClassTraits<Herwig::ZPhotonsAnalysis>
   : public ClassTraitsBase<Herwig::ZPhotonsAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ZPhotonsAnalysis"; }
+  static string className() { return "Herwig::ZPhotonsAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ZPhotonsAnalysis is implemented. It may also include several, space-separated,

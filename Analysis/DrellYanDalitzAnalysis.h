@@ -189,7 +189,7 @@ template <>
 struct ClassTraits<Herwig::DrellYanDalitzAnalysis>
   : public ClassTraitsBase<Herwig::DrellYanDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DrellYanDalitzAnalysis"; }
+  static string className() { return "Herwig::DrellYanDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DrellYanDalitzAnalysis is implemented. It may also include several, space-separated,

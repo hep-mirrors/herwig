@@ -589,7 +589,7 @@ template <>
 struct ClassTraits<Herwig::EventShapes>
   : public ClassTraitsBase<Herwig::EventShapes> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EventShapes"; }
+  static string className() { return "Herwig::EventShapes"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the EventShapes class and any other class on which it depends
    *  (except the base class). */

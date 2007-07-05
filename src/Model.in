@@ -2,27 +2,27 @@
 # this line selects the model class
 # this should inherit from the Herwig Standard Model class
 # this is for the standard model
-create /Herwig++/StandardModel /Defaults/Model
-create /Herwig++/ModelGenerator /Defaults/GeneralModel
+create Herwig::StandardModel /Defaults/Model
+create Herwig::ModelGenerator /Defaults/GeneralModel
 insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/Z0
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/t
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/h0
 
-create /Herwig++/HardProcessConstructor /Defaults/HardProcessConstructor
+create Herwig::HardProcessConstructor /Defaults/HardProcessConstructor
 set /Defaults/HardProcessConstructor:QCDandEW 0
 
-create /Herwig++/DecayConstructor /Defaults/DecayConstructor
+create Herwig::DecayConstructor /Defaults/DecayConstructor
 set /Defaults/Model:ModelGenerator /Defaults/GeneralModel
 
 set /Defaults/GeneralModel:HardProcessConstructor /Defaults/HardProcessConstructor
 set /Defaults/GeneralModel:DecayConstructor /Defaults/DecayConstructor
-create /Herwig++/TwoBodyDecayConstructor /Defaults/TwoBody
+create Herwig::TwoBodyDecayConstructor /Defaults/TwoBody
 insert /Defaults/DecayConstructor:NBodyDecayConstructors[0] /Defaults/TwoBody
 
 
 # this is for the Randell-Sundrum model
-#create /Herwig++/RSModel /Defaults/Model HwRSModel.so
+#create Herwig::RSModel /Defaults/Model HwRSModel.so
 #set /Defaults/Model:Lambda_pi 10000
 
 # set up the Standard Model couplings (this always needs to be done)
@@ -33,10 +33,10 @@ set /Defaults/Model:QCD/RunningAlphaS /Defaults/AlphaS
 create /ThePEG/SimpleAlphaEM /Defaults/AlphaEM SimpleAlphaEM.so
 set /Defaults/Model:EW/RunningAlphaEM /Defaults/AlphaEM
 # the CKM matrix
-create /Herwig++/StandardCKM /Defaults/CKM
+create Herwig::StandardCKM /Defaults/CKM
 set /Defaults/Model:EW/CKM /Defaults/CKM
 # the running mass
-create /Herwig++/RunningMass /Defaults/RunningMass
+create Herwig::RunningMass /Defaults/RunningMass
 set /Defaults/RunningMass:MaxFlav 6
 set /Defaults/RunningMass:QCDOrder 2
 set /Defaults/Model:RunningMass /Defaults/RunningMass

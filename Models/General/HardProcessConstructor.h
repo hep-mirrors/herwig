@@ -379,7 +379,7 @@ template <>
 struct ClassTraits<Herwig::HardProcessConstructor>
   : public ClassTraitsBase<Herwig::HardProcessConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HardProcessConstructor"; }
+  static string className() { return "Herwig::HardProcessConstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * HardProcessConstructor is implemented. It may also include several,

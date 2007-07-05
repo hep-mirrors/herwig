@@ -231,7 +231,7 @@ template <>
 struct ClassTraits<Herwig::SSH2SFSFVertex>
   : public ClassTraitsBase<Herwig::SSH2SFSFVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSH2SFSFVertex"; }
+  static string className() { return "Herwig::SSH2SFSFVertex"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SSH2SFSFVertex class and every other class it uses
    *  (except the base class). */

@@ -447,7 +447,7 @@ template <>
 struct ClassTraits<Herwig::DtoKPiPiMarkIII>
   : public ClassTraitsBase<Herwig::DtoKPiPiMarkIII> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DtoKPiPiMarkIII"; }
+  static string className() { return "Herwig::DtoKPiPiMarkIII"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DtoKPiPiMarkIII is implemented. It may also include several, space-separated,

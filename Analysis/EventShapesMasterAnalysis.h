@@ -157,7 +157,7 @@ template <>
 struct ClassTraits<Herwig::EventShapesMasterAnalysis>
   : public ClassTraitsBase<Herwig::EventShapesMasterAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EventShapesMasterAnalysis"; }
+  static string className() { return "Herwig::EventShapesMasterAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the EventShapesMasterAnalysis class and any other class on which it depends
    *  (except the base class). */

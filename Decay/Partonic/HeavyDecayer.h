@@ -149,7 +149,7 @@ struct BaseClassTrait<Herwig::HeavyDecayer,1> {
 template <>
 struct ClassTraits<Herwig::HeavyDecayer>: public ClassTraitsBase<Herwig::HeavyDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::HeavyDecayer"; }
+  static string className() { return "Herwig::HeavyDecayer"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

@@ -51,6 +51,6 @@ void BtoSGammaFlatEnergy::dataBaseOutput(ofstream & output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::BtoSGammaFlatEnergy " << fullName() << " \n";}
+    {output << "create Herwig::BtoSGammaFlatEnergy " << fullName() << " \n";}
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }

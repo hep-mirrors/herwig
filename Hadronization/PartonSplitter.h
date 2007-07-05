@@ -129,7 +129,7 @@ template <>
 struct ClassTraits<Herwig::PartonSplitter>:
     public ClassTraitsBase<Herwig::PartonSplitter> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::PartonSplitter"; }
+  static string className() { return "Herwig::PartonSplitter"; }
 };
 
 /** @endcond */

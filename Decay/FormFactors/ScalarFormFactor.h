@@ -453,7 +453,7 @@ template <>
 struct ClassTraits<Herwig::ScalarFormFactor>
   : public ClassTraitsBase<Herwig::ScalarFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ScalarFormFactor"; }
+  static string className() { return "Herwig::ScalarFormFactor"; }
 };
 
 /** @endcond */

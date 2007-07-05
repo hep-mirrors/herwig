@@ -223,7 +223,7 @@ template <>
 struct ClassTraits<Herwig::EtaDecayAnalysis>
   : public ClassTraitsBase<Herwig::EtaDecayAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EtaDecayAnalysis"; }
+  static string className() { return "Herwig::EtaDecayAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * EtaDecayAnalysis is implemented. It may also include several, space-separated,

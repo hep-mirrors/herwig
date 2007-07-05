@@ -376,7 +376,7 @@ template <>
 struct ClassTraits<Herwig::FivePionCurrent>
   : public ClassTraitsBase<Herwig::FivePionCurrent> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FivePionCurrent"; }
+  static string className() { return "Herwig::FivePionCurrent"; }
   /**
    * The name of a file containing the dynamic library where the class
    * FivePionCurrent is implemented. It may also include several, space-separated,

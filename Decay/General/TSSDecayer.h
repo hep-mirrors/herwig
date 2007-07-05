@@ -164,7 +164,7 @@ template <>
 struct ClassTraits<Herwig::TSSDecayer>
   : public ClassTraitsBase<Herwig::TSSDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TSSDecayer"; }
+  static string className() { return "Herwig::TSSDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the TSSDecayer class and every other class it uses
    *  (except the base class). */

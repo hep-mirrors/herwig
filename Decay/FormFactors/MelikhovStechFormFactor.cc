@@ -885,7 +885,7 @@ void MelikhovStechFormFactor::dataBaseOutput(ofstream & output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::MelikhovStechFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::MelikhovStechFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {

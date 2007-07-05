@@ -196,7 +196,7 @@ template <>
 struct ClassTraits<Herwig::GammaJetAnalysis>
   : public ClassTraitsBase<Herwig::GammaJetAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GammaJetAnalysis"; }
+  static string className() { return "Herwig::GammaJetAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GammaJetAnalysis class and any other class on which it depends
    *  (except the base class). */

@@ -191,7 +191,7 @@ template <>
 struct ClassTraits<Herwig::O2AlphaS>
   : public ClassTraitsBase<Herwig::O2AlphaS> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::O2AlphaS"; }
+  static string className() { return "Herwig::O2AlphaS"; }
 };
 
 /** @endcond */

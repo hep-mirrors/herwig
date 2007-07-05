@@ -187,7 +187,7 @@ template <>
 struct ClassTraits<Herwig::NMSSMWWHVertex>
   : public ClassTraitsBase<Herwig::NMSSMWWHVertex> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::NMSSMWWHVertex"; }
+  static string className() { return "Herwig::NMSSMWWHVertex"; }
   /**
    * The name of a file containing the dynamic library where the class
    * NMSSMWWHVertex is implemented. It may also include several, space-separated,

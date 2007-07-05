@@ -161,7 +161,7 @@ template <>
 struct ClassTraits<Herwig::HwppSelector>
   : public ClassTraitsBase<Herwig::HwppSelector> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HwppSelector"; }
+  static string className() { return "Herwig::HwppSelector"; }
 };
 
 /** @endcond */
