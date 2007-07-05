@@ -10,11 +10,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "SemiLeptonicBaryonDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
@@ -131,10 +126,12 @@ int SemiLeptonicBaryonDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 
 
 void SemiLeptonicBaryonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _current << _form << _maxwgt << _modemap << _GF;}
+  os << _current << _form << _maxwgt << _modemap << ounit(_GF,1./GeV2);
+}
 
 void SemiLeptonicBaryonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _current >> _form >> _maxwgt >> _modemap >> _GF;}
+  is >> _current >> _form >> _maxwgt >> _modemap >> iunit(_GF,1./GeV2);
+}
 
 ClassDescription<SemiLeptonicBaryonDecayer> SemiLeptonicBaryonDecayer::initSemiLeptonicBaryonDecayer;
 // Definition of the static class description member.
@@ -201,8 +198,8 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
 					   const ParticleVector & decay) const
 {
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
   if(inpart.id()>0)
     {
       SpinorWaveFunction(sp,temp,const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
@@ -225,23 +222,23 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
   Energy2 q2(q.mass2());
   Lorentz5Momentum sum(inpart.momentum()+decay[0]->momentum());
   // calculate the hadronic current for the decay
-  vector<LorentzPolarizationVector> hadron;
+  vector<LorentzPolarizationVectorE> hadron;
   // calculate the form factors
   Complex f1v,f2v,f3v,f1a,f2a,f3a;
   _form->SpinHalfSpinHalfFormFactor(q2,iloc,id0,id1,m0,m1,
 				    f1v,f2v,f3v,f1a,f2a,f3a);
   // now we need to construct the current
-  LorentzPolarizationVector vtemp;
+  LorentzPolarizationVectorE vtemp;
   hadron.resize(4);
-  Complex left  =f1v-f1a-f2v-(m0-m1)/(m0+m1)*f2a;
-  Complex right =f1v+f1a-f2v+(m0-m1)/(m0+m1)*f2a;
+  Complex left  =f1v-f1a-f2v-double((m0-m1)/(m0+m1))*f2a;
+  Complex right =f1v+f1a-f2v+double((m0-m1)/(m0+m1))*f2a;
   for(unsigned int ix=0;ix<2;++ix)
     {
       for(unsigned int iy=0;iy<2;++iy)
 	{
 	  vtemp = sp[ix].generalCurrent(sbar[iy],left,right);
-	  Complex vspin = sp[ix].scalar(sbar[iy]);
-	  Complex aspin = sp[ix].pseudoScalar(sbar[iy]);
+	  complex<Energy> vspin = sp[ix].scalar(sbar[iy]);
+	  complex<Energy> aspin = sp[ix].pseudoScalar(sbar[iy]);
 	  // the momentum like pieces
 	  if(inpart.id()>0)
 	    {
@@ -263,8 +260,8 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
   ParticleVector leptons;
   leptons.push_back(decay[decay.size()-2]);
   leptons.push_back(decay[decay.size()-1]);
-  vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,ichan,
-							     scale,leptons));
+  vector<LorentzPolarizationVectorE> lepton(_current->current(vertex,mode,ichan,
+							      scale,leptons));
   // work out the mapping for the lepton vector
   vector<unsigned int> constants(decay.size()+1), ihel(decay.size()+1);
   vector<PDT::Spin> ispin(decay.size());
@@ -288,7 +285,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
 	  // map the index for the leptons to a helicity state
 	  for(ix=decay.size();ix>0;--ix)
 	    {if(ix-1!=ibar){ihel[ix]=(lhel%constants[ix-1])/constants[ix];}}
-	  newME(ihel)= lepton[lhel]*hadron[mhel];
+	  newME(ihel)= lepton[lhel].dot(hadron[mhel])*_GF;
 	}
     }  
   // store the matrix element
@@ -300,7 +297,7 @@ double SemiLeptonicBaryonDecayer::halfHalf(bool vertex, const int ichan,
       if(inquark%2==0){ckm = SM().CKM(inquark/2-1,(abs(outquark)-1)/2);}
       else{ckm = SM().CKM(abs(outquark)/2-1,(inquark-1)/2);}
     }
-  return 0.5*(newME.contract(temp)).real()*_GF*_GF*ckm;
+  return 0.5*(newME.contract(temp)).real()*ckm;
 }
 
 // matrix element for a 1/2 -> 3/2 semi-leptonic decay
@@ -310,10 +307,10 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
 {
   // set up the spins and calculate the spinors
   RhoDMatrix temp;
-  vector<LorentzSpinor> sp;
-  vector<LorentzSpinorBar> sbar;
-  vector<LorentzRSSpinor> RSsp;
-  vector<LorentzRSSpinorBar> RSsbar;
+  vector<LorentzSpinor<SqrtEnergy> > sp;
+  vector<LorentzSpinorBar<SqrtEnergy> > sbar;
+  vector<LorentzRSSpinor<SqrtEnergy> > RSsp;
+  vector<LorentzRSSpinorBar<SqrtEnergy> > RSsbar;
   vector<LorentzPolarizationVector> eps;
   if(inpart.id()>0)
     {
@@ -343,15 +340,18 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
   Energy2 q2(q.mass2());
   Lorentz5Momentum sum(inpart.momentum()+decay[0]->momentum());
   // calculate the hadronic current for the decay
-  LorentzPolarizationVector hadron[4][2];
+  LorentzPolarizationVectorE hadron[4][2];
   // calculate the form factors
   Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
   _form->SpinHalfSpinThreeHalfFormFactor(q2,iloc,id0,id1,m0,m1,
 					 f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a);
   // now we need to construct the current
   LorentzPolarizationVector vtemp;
-  Complex lS1,lS2,rS1,rS2,left,right,lV,rV;
-  InvEnergy ms(1./(m0+m1)),ms2(ms*ms);
+  complex<InvEnergy2> lS1,lS2,rS1,rS2;
+  complex<InvEnergy> lV,rV;
+  Complex left,right;
+  InvEnergy ms(1./(m0+m1));
+  InvEnergy2 ms2(ms*ms);
   if(inpart.id()>0)
     {
       left  = f1a-f1v;
@@ -376,8 +376,10 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
     }
   unsigned int ix,iy;
   // construct the vectors for the decay
-  Complex scalar1,scalar2,lfact,rfact;
-  LorentzPolarizationVector svec,tvec;
+  Complex scalar1,scalar2;
+  complex<Energy> lfact,rfact;
+  LorentzPolarizationVectorE tvec;
+  LorentzPolarizationVector svec;
   for(unsigned int iya=0;iya<4;++iya)
     {
       for(unsigned int ixa=0;ixa<2;++ixa)
@@ -387,14 +389,12 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
 	  // scalar like terms
 	  lfact = sp[iy].leftScalar(sbar[ix]);
 	  rfact = sp[iy].rightScalar(sbar[ix]);
-	  scalar1 = lS1*lfact+rS1*rfact;
-	  scalar2 = lS2*lfact+rS2*rfact;
-	  svec = sp[iy].generalCurrent(sbar[ix],lV,rV);
-	  if(inpart.id()>0)
-	    {tvec=RSsbar[ix].generalCurrent(sp[iy],left,right);}
-	  else
-	    {tvec=RSsp[iy].generalCurrent(sbar[ix],left,right);}
-	  hadron[iya][ixa] = tvec+svec+scalar1*decay[0]->momentum()
+	  scalar1 = (lS1*lfact+rS1*rfact)*UnitRemoval::E;
+	  scalar2 = (lS2*lfact+rS2*rfact)*UnitRemoval::E;
+	  svec = sp[iy].generalCurrent(sbar[ix],lV/ms,rV/ms)*ms;
+	  if(inpart.id()>0) tvec=RSsbar[ix].generalCurrent(sp[iy],left,right);
+	  else              tvec=RSsp[iy].generalCurrent(sbar[ix],left,right);
+ 	  hadron[iya][ixa] = tvec+svec*UnitRemoval::E+scalar1*decay[0]->momentum()
 	    +scalar2*inpart.momentum();
 	}
     }
@@ -404,7 +404,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
   ParticleVector leptons;
   leptons.push_back(decay[decay.size()-2]);
   leptons.push_back(decay[decay.size()-1]);
-  vector<LorentzPolarizationVector> lepton(_current->current(vertex,mode,ichan,
+  vector<LorentzPolarizationVectorE> lepton(_current->current(vertex,mode,ichan,
 							     scale,leptons));
   // work out the mapping for the lepton vector
   vector<unsigned int> ihel(decay.size()+1);
@@ -421,7 +421,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
 	    {
 	      ihel[2] = lhel/2;
 	      ihel[3] = lhel%2;
-	      newME(ihel) = lepton[lhel]*hadron[iya][ixa];
+	      newME(ihel) = lepton[lhel].dot(hadron[iya][ixa])*_GF;
 	    }
 	}  
     }
@@ -435,7 +435,7 @@ double SemiLeptonicBaryonDecayer::halfThreeHalf(bool vertex, const int ichan,
       else{ckm = SM().CKM(abs(outquark)/2-1,(inquark-1)/2);}
     }
   // return the answer
-  return 0.5*(newME.contract(temp)).real()*_GF*_GF*ckm;
+  return 0.5*(newME.contract(temp)).real()*ckm;
 }
 
 // output the setup information for the particle database
