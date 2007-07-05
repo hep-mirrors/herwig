@@ -89,7 +89,7 @@ ScalarWaveFunction FFSVertex::evaluate(Energy2 q2,int iopt, tcPDPtr out,
   else if(sbar.direction() == Helicity::incoming) iint = 3;
   else iint = 2;
   // first calculate the couplings
-  setCoupling(q2,Psp,out,Psbar,iint);
+  setCoupling(q2,Psp,Psbar,out,iint);
   Energy2 p2 = pout.m2();
   Complex fact=getNorm()*propagator(iopt,p2,out);
   Complex output;
@@ -133,7 +133,7 @@ SpinorWaveFunction FFSVertex::evaluate(Energy2 q2, int iopt,tcPDPtr out,
   else if(sca.direction() == Helicity::incoming) iint = 2;
   else iint = 3;
   // first calculate the couplings
-  setCoupling(q2,Psp,Psca,out, iint);
+  setCoupling(q2,Psp,out,Psca, iint);
   Energy2 p2 = pout.m2();
   Complex fact=-getNorm()*sca.wave()*propagator(iopt,p2,out);
   Complex ii(0.,1.);
@@ -199,7 +199,7 @@ SpinorBarWaveFunction FFSVertex::evaluate(Energy2 q2,int iopt,tcPDPtr out,
   else if(sbar.direction() == Helicity::incoming) iint = 3;
   else iint = 1;
   // first calculate the couplings
-  setCoupling(q2,out,Psca,Psbar, iint);
+  setCoupling(q2,out,Psbar,Psca, iint);
   Energy2 p2=pout.m2();
   Complex fact=-getNorm()*sca.wave()*propagator(iopt,p2,out);
   Complex ii(0.,1.);
