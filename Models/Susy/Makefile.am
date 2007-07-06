@@ -11,7 +11,7 @@ SSPSSVertex.cc SSPSSVertex.fh SSPSSVertex.h SSPSSVertex.icc\
 SSWSSVertex.cc SSWSSVertex.fh SSWSSVertex.h SSWSSVertex.icc \
 SSZSSVertex.cc SSZSSVertex.fh SSZSSVertex.h SSZSSVertex.icc \
 SSGSSVertex.h SSGSSVertex.icc SSGSSVertex.fh SSGSSVertex.cc \
-SSGGSQSQVertex.cc SGGSQSQVertex.h SSGGSQSQVertex.fh SSGGSQSQVertex.icc \
+SSGGSQSQVertex.cc SSGGSQSQVertex.h SSGGSQSQVertex.fh SSGGSQSQVertex.icc \
 SSGSGSGVertex.cc SSGSGSGVertex.h SSGSGSGVertex.icc SSGSGSGVertex.fh \
 SSNNZVertex.cc SSNNZVertex.h SSNNZVertex.fh SSNNZVertex.icc \
 SSCCPVertex.cc SSCCPVertex.h SSCCPVertex.icc SSCCPVertex.fh \

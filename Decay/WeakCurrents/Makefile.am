@@ -10,7 +10,7 @@ FourPionNovosibirskCurrent.h FourPionNovosibirskCurrent.icc \
 ScalarMesonCurrent.cc ScalarMesonCurrent.fh \
 ScalarMesonCurrent.h ScalarMesonCurrent.icc \
 ThreeMesonCurrentBase.cc ThreeMesonCurrentBase.fh \
-ThreeMesonCurrentBase.h ThreeMesonCurrentBase.icc\
+ThreeMesonCurrentBase.h \
 ThreeMesonDefaultCurrent.cc ThreeMesonDefaultCurrent.fh \
 ThreeMesonDefaultCurrent.h ThreeMesonDefaultCurrent.icc \
 ThreePionCLEOCurrent.cc ThreePionCLEOCurrent.fh \
