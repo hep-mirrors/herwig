@@ -125,7 +125,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   addFormFactor(511,-211,0,1,-5,-2);
   addFormFactor(521, 211,0,2,-5,-1);
   addFormFactor(511, 111,0,1,-5,-1);
-  for(unsigned int ix=20,;ix<24;++ix) {
+  for(unsigned int ix=20;ix<24;++ix) {
     _fplus0[ix] = 0.29;_sigma1fp[ix] = 0.48;_sigma2fp[ix] = 0.00;
     _f00[ix] = 0.29   ;_sigma1f0[ix] = 0.76;_sigma2f0[ix] = 0.28;
     _fT0[ix] = 0.28   ;_sigma1fT[ix] = 0.48;_sigma2fT[ix] = 0.00;
@@ -136,7 +136,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   addFormFactor(511,-213,1,1,-5,-2);
   addFormFactor(521, 213,1,2,-5,-1);
   addFormFactor(511, 113,1,1,-5,-1);
-  for(unsigned int ix=24,;ix<28;++ix) {
+  for(unsigned int ix=24;ix<28;++ix) {
     _V0[ix] = 0.31    ;_sigma1V0[ix] = 0.59;_sigma2V0[ix] = 0.00;
     _A00[ix] = 0.30   ;_sigma1A0[ix] = 0.54;_sigma2A0[ix] = 0.00;
     _A10[ix] = 0.26   ;_sigma1A1[ix] = 0.73;_sigma2A1[ix] = 0.10;
@@ -149,7 +149,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   // D_s to K
   addFormFactor(431,311,0,-3,4,1);
   addFormFactor(431,321,0,-3,4,2);
-  for(unsigned int ix=28,;ix<30;++ix) {
+  for(unsigned int ix=28;ix<30;++ix) {
     _fplus0[ix] = 0.72;_sigma1fp[ix] = 0.20;_sigma2fp[ix] = 0.00;
     _f00[ix] = 0.72   ;_sigma1f0[ix] = 0.41;_sigma2f0[ix] = 0.70;
     _fT0[ix] = 0.77   ;_sigma1fT[ix] = 0.24;_sigma2fT[ix] = 0.00;
@@ -158,7 +158,7 @@ MelikhovStechFormFactor::MelikhovStechFormFactor()
   // D_s to K*
   addFormFactor(431,313,1,-3,4,1);
   addFormFactor(431,323,1,-3,4,2);
-  for(unsigned int ix=30,;ix<32;++ix) {
+  for(unsigned int ix=30;ix<32;++ix) {
     _V0[ix] = 1.04    ;_sigma1V0[ix] =  0.24;_sigma2V0[ix] = 0.00;
     _A00[ix] = 0.67   ;_sigma1A0[ix] =  0.20;_sigma2A0[ix] = 0.00;
     _A10[ix] = 0.57   ;_sigma1A1[ix] =  0.29;_sigma2A1[ix] = 0.42;
