@@ -844,9 +844,12 @@ int  GoityRobertsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
 double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & inpart,
 				const ParticleVector & decay) const {
   // spin info for the decaying particle
-  ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
+  // gcc-3.3 workaround
+  tPPtr temp1 = const_ptr_cast<tPPtr>(&inpart);
+  ScalarWaveFunction(temp1,incoming,true,vertex);
   // spin info for the outgoing pion
-  ScalarWaveFunction(decay[1],outgoing,true,vertex);
+  tPPtr temp2 = decay[1];
+  ScalarWaveFunction(temp2,outgoing,true,vertex);
   // calculate some common variables
   Energy mb(inpart.mass()),md(decay[0]->mass());
   double omega(inpart.momentum()*decay[0]->momentum()/inpart.mass()/decay[0]->mass());
@@ -897,7 +900,9 @@ double GoityRobertsDecayer::me2(bool vertex, const int ichan,const Particle & in
   // for D pi
   if(decay[0]->dataPtr()->iSpin()==PDT::Spin0) {
     // spin info for the outgoing scalar
-    ScalarWaveFunction(decay[0],outgoing,true,vertex);
+    // gcc 3.3 workaround
+    tPPtr temp = decay[0];
+    ScalarWaveFunction(temp,outgoing,true,vertex);
     // non-resonant form factors ( without D*)
     complex<InvEnergy2> hnr  = xfact             /dotvb;
     complex<InvEnergy2> A1nr =-xfact*(1.+omega)  /dotvb;

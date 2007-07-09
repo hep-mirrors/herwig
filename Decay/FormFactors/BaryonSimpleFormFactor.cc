@@ -23,7 +23,7 @@ void BaryonSimpleFormFactor::doinit() throw(InitException) {
   _f1.resize(0);_f2.resize(0);_g1.resize(0);_g2.resize(0);
   // calculate the couplings for the different modes
   int id0,id1;
-  double root23(sqrt(2./3.)),root2(sqrt(2)),root32(sqrt(3./2.));
+  double root23(sqrt(2./3.)),root2(sqrt(2.)),root32(sqrt(3./2.));
   for(unsigned int ix=0;ix<numberOfFactors();++ix)
     {
       // get the particle ids for the mode
