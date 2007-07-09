@@ -3,121 +3,105 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the KiselevBcFormFactor class.
 //
-
 #include "KiselevBcFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "KiselevBcFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 
-using namespace ThePEG;
-
-inline KiselevBcFormFactor::KiselevBcFormFactor() 
-{
+inline KiselevBcFormFactor::KiselevBcFormFactor() :
+  _fp  (16,0.    ), _fm  (16,0.    ), _FV( 16,0./GeV),
+  _F0A (16,0.*GeV), _FpA (16,0./GeV), _FmA (16,0./GeV),
+  _Mfp (16,0.*GeV), _Mfm (16,0.*GeV), _MFV (16,0.*GeV),
+  _MF0A(16,0.*GeV), _MFpA(16,0.*GeV), _MFmA(16,0.*GeV) {
   // B_c to B_s
   addFormFactor(541,531,0,-5,4,3);
-  _fp.push_back(  1.30    );_fm.push_back( -5.80    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  1.8*GeV);_Mfm.push_back(  1.8*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
+  _fp[0] =   1.30    ;_Mfp[0] =   1.8*GeV;
+  _fm[0] =  -5.80    ;_Mfm[0] =   1.8*GeV;
   // B_c to B_s*
   addFormFactor(541,533,1,-5,4,3);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  1.10/GeV);
-  _F0A.push_back( 8.10*GeV);_FpA.push_back( 0.20/GeV);_FmA.push_back( 1.80/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  1.8*GeV);
-  _MF0A.push_back( 1.8*GeV);_MFpA.push_back( 1.8*GeV);_MFmA.push_back( 1.8*GeV);
+  _FV[1] =   1.10/GeV;_MFV[1] =   1.8*GeV;
+  _F0A[1] =  8.10*GeV;_MF0A[1] =  1.8*GeV;
+  _FpA[1] =  0.20/GeV;_MFpA[1] =  1.8*GeV;
+  _FmA[1] =  1.80/GeV;_MFmA[1] =  1.8*GeV;
   // B_c to B
   addFormFactor(541,511,0,-5,4,1);
   addFormFactor(541,521,0,-5,4,2);
-  _fp.push_back(  1.27    );_fm.push_back( -7.30    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  1.7*GeV);_Mfm.push_back(  1.7*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
-  _fp.push_back(  1.27    );_fm.push_back( -7.30    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  1.7*GeV);_Mfm.push_back(  1.7*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
+  for(unsigned int ix=2;ix<4;++ix) {
+    _fp[ix] =   1.27    ;_Mfp[ix] =   1.7*GeV;
+    _fm[ix] =  -7.30    ;_Mfm[ix] =   1.7*GeV;
+  }
   // B_c to B*
   addFormFactor(541,513,1,-5,4,1);
   addFormFactor(541,523,1,-5,4,2);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  1.35/GeV);
-  _F0A.push_back( 9.80*GeV);_FpA.push_back( 0.35/GeV);_FmA.push_back( 2.50/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  2.2*GeV);
-  _MF0A.push_back( 3.2*GeV);_MFpA.push_back( 2.2*GeV);_MFmA.push_back( 3.2*GeV);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  1.35/GeV);
-  _F0A.push_back( 9.80*GeV);_FpA.push_back( 0.35/GeV);_FmA.push_back( 2.50/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  2.2*GeV);
-  _MF0A.push_back( 3.2*GeV);_MFpA.push_back( 2.2*GeV);_MFmA.push_back( 3.2*GeV);
+  for(unsigned int ix=4;ix<6;++ix) {
+    _FV[ix] =   1.35/GeV; _MFV[ix] =   2.2*GeV;
+    _F0A[ix] =  9.80*GeV; _MF0A[ix] =  3.2*GeV;
+    _FpA[ix] =  0.35/GeV; _MFpA[ix] =  2.2*GeV;
+    _FmA[ix] =  2.50/GeV; _MFmA[ix] =  3.2*GeV;
+  }
   // B_c to D
-  addFormFactor(541,411,0,4,-5,-1);
-  addFormFactor(541,421,0,4,-5,-2);
-  _fp.push_back(  0.32    );_fm.push_back( -0.34    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  5.0*GeV);_Mfm.push_back(  5.0*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
-  _fp.push_back(  0.32    );_fm.push_back( -0.34    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  5.0*GeV);_Mfm.push_back(  5.0*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
+  addFormFactor(-541,-411,0,-4,5,1);
+  addFormFactor(-541,-421,0,-4,5,2);
+  for(unsigned int ix=6;ix<8;++ix) {
+    _fp[ix] =   0.32    ; _Mfp[ix] =   5.0*GeV;
+    _fm[ix] =  -0.34    ; _Mfm[ix] =   5.0*GeV;
+  }
   // B_c to D*
-  addFormFactor(541,413,1,4,-5,-1);
-  addFormFactor(541,423,1,4,-5,-2);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  0.20/GeV);
-  _F0A.push_back( 3.60*GeV);_FpA.push_back(-0.062/GeV);_FmA.push_back( 0.10/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  6.2*GeV);
-  _MF0A.push_back(-1.0*GeV);_MFpA.push_back( 6.2*GeV);_MFmA.push_back( 6.2*GeV);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  0.20/GeV);
-  _F0A.push_back( 3.60*GeV);_FpA.push_back(-0.062/GeV);_FmA.push_back( 0.10/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  6.2*GeV);
-  _MF0A.push_back(-1.0*GeV);_MFpA.push_back( 6.2*GeV);_MFmA.push_back( 6.2*GeV);
+  addFormFactor(-541,-413,1,-4,5,1);
+  addFormFactor(-541,-423,1,-4,5,2);
+  for(unsigned int ix=8;ix<10;++ix) {
+    _FV[ix] =   0.20 /GeV; _MFV[ix] =   6.2*GeV;
+    _F0A[ix] =  3.60 *GeV; _MF0A[ix] = -1.0*GeV;
+    _FpA[ix] = -0.062/GeV; _MFpA[ix] =  6.2*GeV;
+    _FmA[ix] =  0.10 /GeV; _MFmA[ix] =  6.2*GeV;
+  }
   // B_c to D_s
-  addFormFactor(541,431,0,4,-5,-3);
-  _fp.push_back(  0.45    );_fm.push_back( -0.43    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  5.0*GeV);_Mfm.push_back(  5.0*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
+  addFormFactor(-541,-431,0,-4,5,3);
+  _fp[10] =   0.45    ; _Mfp[10] =   5.0*GeV;
+  _fm[10] =  -0.43    ; _Mfm[10] =   5.0*GeV;
   // B_c to D_s
-  addFormFactor(541,433,1,4,-5,-3);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  0.24/GeV);
-  _F0A.push_back( 4.70*GeV);_FpA.push_back(-0.077/GeV);_FmA.push_back( 0.13/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  6.2*GeV);
-  _MF0A.push_back(-1.0*GeV);_MFpA.push_back( 6.2*GeV);_MFmA.push_back( 6.2*GeV);
+  addFormFactor(-541,-433,1,-4,5,3);
+  _FV[11] =   0.24 /GeV; _MFV[11] =   6.2*GeV;
+  _F0A[11] =  4.70 *GeV; _MF0A[11] = -1.0*GeV;
+  _FpA[11] = -0.077/GeV; _MFpA[11] =  6.2*GeV;
+  _FmA[11] =  0.13 /GeV; _MFmA[11] =  6.2*GeV;
   // B_c to eta_c
-  addFormFactor(541,441,0,4,-5,-4);
-  _fp.push_back(  0.66    );_fm.push_back( -0.36    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  4.5*GeV);_Mfm.push_back(  4.5*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
+  addFormFactor(-541,441,0,-4,5,4);
+  _fp[12] =   0.66    ; _Mfp[12] =   4.5*GeV;
+  _fm[12] =  -0.36    ; _Mfm[12] =   4.5*GeV;
   // B_c to J/psi
-  addFormFactor(541,443,1,4,-5,-4);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  0.11/GeV);
-  _F0A.push_back( 5.90*GeV);_FpA.push_back(-0.074/GeV);_FmA.push_back( 0.12/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  5.5*GeV);
-  _MF0A.push_back( 5.5*GeV);_MFpA.push_back( 5.5*GeV);_MFmA.push_back( 5.5*GeV);
+  addFormFactor(-541,443,1,-4,5,4);
+  _FV[13] =   0.11 /GeV; _MFV[13] =   5.5*GeV;
+  _F0A[13] =  5.90 *GeV; _MF0A[13] =  5.5*GeV;
+  _FpA[13] = -0.074/GeV; _MFpA[13] =  5.5*GeV;
+  _FmA[13] =  0.12 /GeV; _MFmA[13] =  5.5*GeV;
   // B_c to eta_c(2S)
-  addFormFactor(541,100441,0,4,-5,-4);
-  _fp.push_back(  0.17    );_fm.push_back( -0.16    );_FV.push_back(  0.00/GeV);
-  _F0A.push_back( 0.00*GeV);_FpA.push_back( 0.00/GeV);_FmA.push_back( 0.00/GeV);
-  _Mfp.push_back(  4.5*GeV);_Mfm.push_back(  4.5*GeV);_MFV.push_back(  0.0*GeV);
-  _MF0A.push_back( 0.0*GeV);_MFpA.push_back( 0.0*GeV);_MFmA.push_back( 0.0*GeV);
+  addFormFactor(-541,100441,0,-4,5,4);
+  _fp[14] =   0.17    ; _Mfp[14] =   4.5*GeV;
+  _fm[14] =  -0.16    ; _Mfm[14] =   4.5*GeV;
   // B_c to J/psi(2S)
-  addFormFactor(541,100443,1,4,-5,-4);
-  _fp.push_back(  0.00    );_fm.push_back(  0.00    );_FV.push_back(  0.032/GeV);
-  _F0A.push_back( 1.97*GeV);_FpA.push_back(-0.015/GeV);_FmA.push_back( 0.052/GeV);
-  _Mfp.push_back(  0.0*GeV);_Mfm.push_back(  0.0*GeV);_MFV.push_back(  4.5*GeV);
-  _MF0A.push_back( 4.5*GeV);_MFpA.push_back( 4.5*GeV);_MFmA.push_back( 4.5*GeV);
+  addFormFactor(-541,100443,1,-4,5,4);
+  _FV[15] =   0.035/GeV; _MFV[15] =   4.2*GeV;
+  _F0A[15] =  1.686*GeV; _MF0A[15] =  4.2*GeV;
+  _FpA[15] = -0.015/GeV; _MFpA[15] =  4.2*GeV;
+  _FmA[15] =  0.052/GeV; _MFmA[15] =  4.2*GeV;
   // set the inital number of modes
   initialModes(numberOfFactors());
 }
 
-KiselevBcFormFactor::~KiselevBcFormFactor() {}
+void KiselevBcFormFactor::doinit() throw(InitException) {
+  ScalarFormFactor::doinit();
+  unsigned int isize(numberOfFactors());
+  if(isize!=_fp.size() ||isize!=_fm.size()  ||isize!=_FV.size()  ||isize!=_F0A.size()||
+     isize!=_FpA.size()||isize!=_FmA.size() ||isize!=_Mfp.size() ||isize!=_Mfm.size()||
+     isize!=_MFV.size()||isize!=_MF0A.size()||isize!=_MFpA.size()||isize!=_MFmA.size())
+    throw InitException() << "Inconsistent parameters in KiselevBcFormFactor::doinit()" 
+			  << Exception::abortnow;
+
+}
 
 void KiselevBcFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _fp << _fm << ounit(_FV,1/GeV) << ounit(_F0A,GeV) << ounit(_FpA,1/GeV) 
@@ -138,7 +122,11 @@ void KiselevBcFormFactor::Init() {
 
   static ClassDocumentation<KiselevBcFormFactor> documentation
     ("The KiselevBcFormFactor class implements the form factors from hep-ph/0211021"
-     " for the decay of the B_c");
+     " for the decay of the B_c",
+     "The form factors of \\cite{Kiselev:2002vz} for the decay of the $B_c$ meson"
+     " were used.",
+     "\\bibitem{Kiselev:2002vz} V.~V.~Kiselev, arXiv:hep-ph/0211021.\n"
+     "%%CITATION = HEP-PH/0211021;%%");
 
   static ParVector<KiselevBcFormFactor,double> interfaceFplus
     ("Fplus",
@@ -215,8 +203,8 @@ void KiselevBcFormFactor::Init() {
 
 void KiselevBcFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,
 						 int,int,Energy m0,Energy m1,
-						 Complex & f0,Complex & fp) const
-{
+						 Complex & f0,Complex & fp) const {
+  useMe();
   fp = _fp[iloc]/(1.-q2/_Mfp[iloc]/_Mfp[iloc]);
   f0 = Complex(q2/(m0+m1)/(m0-m1)*_fm[iloc]/(1.-q2/_Mfm[iloc]/_Mfm[iloc]))+fp;
 }
@@ -224,18 +212,18 @@ void KiselevBcFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,
 void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, int,
 						 int,Energy m0, Energy m1,
 						 Complex & A0,Complex & A1,Complex & A2,
-						 Complex & V) const
-{
+						 Complex & V) const {
+  useMe();
   InvEnergy fv,fp,fm;
   Energy f0;
-  if(_MFV[iloc]>0*MeV){fv=_FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);}
-  else{fv=_FV[iloc];}
-  if(_MFmA[iloc]>0*MeV){fm=_FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);}
-  else{fm=_FmA[iloc];}
-  if(_MFpA[iloc]>0*MeV){fp=_FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);}
-  else{fp=_FpA[iloc];}
-  if(_MF0A[iloc]>0*MeV){f0=_F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);}
-  else{f0=_F0A[iloc];}
+  if(_MFV[iloc]>0*MeV)  fv = _FV[iloc]/(1.-q2/_MFV[iloc]/_MFV[iloc]);
+  else                  fv = _FV[iloc];
+  if(_MFmA[iloc]>0*MeV) fm = _FmA[iloc]/(1.-q2/_MFmA[iloc]/_MFmA[iloc]);
+  else                  fm = _FmA[iloc];
+  if(_MFpA[iloc]>0*MeV) fp = _FpA[iloc]/(1.-q2/_MFpA[iloc]/_MFpA[iloc]);
+  else                  fp = _FpA[iloc];
+  if(_MF0A[iloc]>0*MeV) f0 = _F0A[iloc]/(1.-q2/_MF0A[iloc]/_MF0A[iloc]);
+  else                  f0 = _F0A[iloc];
   Energy msum(m0+m1);
   V  =-fv*msum;
   A1 = f0/msum;
@@ -243,68 +231,64 @@ void KiselevBcFormFactor::ScalarVectorFormFactor(Energy2 q2, unsigned int iloc, 
   A0 = 0.5/m1*(f0+msum*(m0-m1)*fp+q2*fm);
 }
 
-void KiselevBcFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create){output << "create Herwig::KiselevBcFormFactor " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<numberOfFactors();++ix)
-    {
-      if(ix<initialModes())
-	{
-	  output << "set " << fullName() << ":Fplus "  << ix << "  " 
-		 << _fp[ix]  << "\n";
-	  output << "set " << fullName() << ":Fminus "  << ix << "  " 
-		 << _fm[ix]  << "\n";
-	  output << "set " << fullName() << ":FV "  << ix << "  " 
-		 << _FV[ix]*GeV  << "\n";
-	  output << "set " << fullName() << ":F0A "  << ix << "  " 
-		 << _F0A[ix]/GeV  << "\n";
-	  output << "set " << fullName() << ":FplusA "  << ix << "  " 
-		 << _FpA[ix]*GeV  << "\n";
-	  output << "set " << fullName() << ":FminusA "  << ix << "  " 
-		 << _FmA[ix]*GeV  << "\n";
-	  output << "set " << fullName() << ":MpoleFplus "  << ix << "  " 
-		 << _Mfp[ix]/GeV  << "\n";
-	  output << "set " << fullName() << ":MpoleFminus "  << ix << "  " 
-		 << _Mfm[ix]/GeV  << "\n";
-	  output << "set " << fullName() << ":MpoleFV "  << ix << "  " 
-		 << _MFV[ix]/GeV  << "\n";
-	  output << "set " << fullName() << ":MpoleF0A "  << ix << "  " 
-		 << _MF0A[ix]/GeV  << "\n";
-	  output << "set " << fullName() << ":MpoleFplusA "  << ix << "  " 
-		 << _MFpA[ix]/GeV  << "\n";
-	  output << "set " << fullName() << ":MpoleFminusA "  << ix << "  " 
-		 << _MFmA[ix]/GeV  << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Fplus "  << ix << "  " 
-		 << _fp[ix]  << "\n";
-	  output << "insert " << fullName() << ":Fminus "  << ix << "  " 
-		 << _fm[ix]  << "\n";
-	  output << "insert " << fullName() << ":FV "  << ix << "  " 
-		 << _FV[ix]*GeV  << "\n";
-	  output << "insert " << fullName() << ":F0A "  << ix << "  " 
-		 << _F0A[ix]/GeV  << "\n";
-	  output << "insert " << fullName() << ":FplusA "  << ix << "  " 
-		 << _FpA[ix]*GeV  << "\n";
-	  output << "insert " << fullName() << ":FminusA "  << ix << "  " 
-		 << _FmA[ix]*GeV  << "\n";
-	  output << "insert " << fullName() << ":MpoleFplus "  << ix << "  " 
-		 << _Mfp[ix]/GeV  << "\n";
-	  output << "insert " << fullName() << ":MpoleFminus "  << ix << "  " 
-		 << _Mfm[ix]/GeV  << "\n";
-	  output << "insert " << fullName() << ":MpoleFV "  << ix << "  " 
-		 << _MFV[ix]/GeV  << "\n";
-	  output << "insert " << fullName() << ":MpoleF0A "  << ix << "  " 
-		 << _MF0A[ix]/GeV  << "\n";
-	  output << "insert " << fullName() << ":MpoleFplusA "  << ix << "  " 
-		 << _MFpA[ix]/GeV  << "\n";
-	  output << "insert " << fullName() << ":MpoleFminusA "  << ix << "  " 
-		 << _MFmA[ix]/GeV  << "\n";
-	}
+void KiselevBcFormFactor::dataBaseOutput(ofstream & output,
+					 bool header,bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::KiselevBcFormFactor " << fullName() << " \n";
+  for(unsigned int ix=0;ix<numberOfFactors();++ix) {
+    if(ix<initialModes()) {
+      output << "set " << fullName() << ":Fplus "  << ix << "  " 
+	     << _fp[ix]  << "\n";
+      output << "set " << fullName() << ":Fminus "  << ix << "  " 
+	     << _fm[ix]  << "\n";
+      output << "set " << fullName() << ":FV "  << ix << "  " 
+	     << _FV[ix]*GeV  << "\n";
+      output << "set " << fullName() << ":F0A "  << ix << "  " 
+	     << _F0A[ix]/GeV  << "\n";
+      output << "set " << fullName() << ":FplusA "  << ix << "  " 
+	     << _FpA[ix]*GeV  << "\n";
+      output << "set " << fullName() << ":FminusA "  << ix << "  " 
+	     << _FmA[ix]*GeV  << "\n";
+      output << "set " << fullName() << ":MpoleFplus "  << ix << "  " 
+	     << _Mfp[ix]/GeV  << "\n";
+      output << "set " << fullName() << ":MpoleFminus "  << ix << "  " 
+	     << _Mfm[ix]/GeV  << "\n";
+      output << "set " << fullName() << ":MpoleFV "  << ix << "  " 
+	     << _MFV[ix]/GeV  << "\n";
+      output << "set " << fullName() << ":MpoleF0A "  << ix << "  " 
+	     << _MF0A[ix]/GeV  << "\n";
+      output << "set " << fullName() << ":MpoleFplusA "  << ix << "  " 
+	     << _MFpA[ix]/GeV  << "\n";
+      output << "set " << fullName() << ":MpoleFminusA "  << ix << "  " 
+	     << _MFmA[ix]/GeV  << "\n";
     }
+    else {
+      output << "insert " << fullName() << ":Fplus "  << ix << "  " 
+	     << _fp[ix]  << "\n";
+      output << "insert " << fullName() << ":Fminus "  << ix << "  " 
+	     << _fm[ix]  << "\n";
+      output << "insert " << fullName() << ":FV "  << ix << "  " 
+	     << _FV[ix]*GeV  << "\n";
+      output << "insert " << fullName() << ":F0A "  << ix << "  " 
+	     << _F0A[ix]/GeV  << "\n";
+      output << "insert " << fullName() << ":FplusA "  << ix << "  " 
+	     << _FpA[ix]*GeV  << "\n";
+      output << "insert " << fullName() << ":FminusA "  << ix << "  " 
+	     << _FmA[ix]*GeV  << "\n";
+      output << "insert " << fullName() << ":MpoleFplus "  << ix << "  " 
+	     << _Mfp[ix]/GeV  << "\n";
+      output << "insert " << fullName() << ":MpoleFminus "  << ix << "  " 
+	     << _Mfm[ix]/GeV  << "\n";
+      output << "insert " << fullName() << ":MpoleFV "  << ix << "  " 
+	     << _MFV[ix]/GeV  << "\n";
+      output << "insert " << fullName() << ":MpoleF0A "  << ix << "  " 
+	     << _MF0A[ix]/GeV  << "\n";
+      output << "insert " << fullName() << ":MpoleFplusA "  << ix << "  " 
+	     << _MFpA[ix]/GeV  << "\n";
+      output << "insert " << fullName() << ":MpoleFminusA "  << ix << "  " 
+	     << _MFmA[ix]/GeV  << "\n";
+    }
+  }
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

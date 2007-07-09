@@ -8,11 +8,6 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BallZwickyScalarFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
@@ -20,11 +15,9 @@
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
-BallZwickyScalarFormFactor::BallZwickyScalarFormFactor() 
-{
+BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()  {
   double ort(1./sqrt(2.));
   // parameters for the B to pi  form-factors
   // B+ to pi0
@@ -74,7 +67,54 @@ BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()
   _thetaeta = -Constants::pi/9.;
 }
 
-BallZwickyScalarFormFactor::~BallZwickyScalarFormFactor() {}
+void BallZwickyScalarFormFactor::doinit() throw(InitException) {
+  ScalarFormFactor::doinit();
+  // check all the vectors have the same size
+  unsigned int isize=numberOfFactors();
+  if(isize!=_r10.size()||isize!=_r20.size()||isize!=_r1plus.size()||
+     isize!=_r2plus.size()||isize!=_r1T.size()||
+     isize!=_r2T.size()||isize!=_m120.size()||isize!=_mfit20.size()||
+     isize!=_m12plus.size()||isize!=_mfit2plus.size()||
+     isize!=_m12T.size()||isize!=_mfit2T.size())
+    throw InitException() << "Inconsistent parameters in " 
+			  << "BallZwickyScalarFormFactor::doinit()" 
+			  << Exception::abortnow;
+  // output some graphs to check the answers
+  /*
+  int id0,id1;
+  unsigned int iz;
+  Energy m0,m1; 
+  Energy2 q2,step(14./100.*GeV2);
+  tcPDPtr in,out;
+  Complex f0,fp,ft;
+  ofstream output("Ball.top");
+  for(unsigned int ix=0;ix<numberOfFactors();++ix) {
+    particleID(ix,id0,id1);
+    in = getParticleData(id0);m0=in->mass();
+    out= getParticleData(id1);m1=out->mass();
+    output << "new frame " << endl;
+    output << "set font duplex" << endl;
+    output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
+	   << " scalar form factors \"" << endl;
+    output << "set limits x 0 14. y 0 1" << endl;
+    double rt(sqrt(2.));
+    for(iz=0;iz<3;++iz) {
+      q2=0.*MeV2;
+      for( ;q2<14.*GeV2+step;q2+=step) {
+	ScalarScalarFormFactor(q2,ix,id0,id1,m0,m1,f0,fp);
+	ScalarScalarSigmaFormFactor(q2,ix,id0,id1,m0,m1,ft);
+	if(id1==111||id1==221){f0*=rt;fp*=rt;ft*=rt;}
+	if(iz==0)      output << q2/GeV2 << "   " << f0.real() << "\n";
+	else if(iz==1) output << q2/GeV2 << "   " << fp.real() << "\n";
+	else if(iz==2) output << q2/GeV2 << "   " << ft.real() << "\n";
+      }
+      if(iz==0)      output << "join red  \n";
+      else if(iz==1) output << "join blue \n";
+      else if(iz==2) output << "join green\n";
+    }
+  }
+  */
+}
 
 void BallZwickyScalarFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _r10 << _r20 << _r1plus << _r2plus << _r1T << _r2T 
@@ -82,7 +122,7 @@ void BallZwickyScalarFormFactor::persistentOutput(PersistentOStream & os) const 
      << ounit(_m12plus,GeV2) << ounit(_mfit2plus,GeV2) 
      << ounit(_m12T,GeV2) << ounit(_mfit2T,GeV2) << _thetaeta;
 }
-
+  
 void BallZwickyScalarFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _r10 >> _r20 >> _r1plus >> _r2plus >> _r1T >> _r2T 
      >> iunit(_m120,GeV2) >> iunit(_mfit20,GeV2) 
@@ -97,8 +137,12 @@ void BallZwickyScalarFormFactor::Init() {
 
   static ClassDocumentation<BallZwickyScalarFormFactor> documentation
     ("The BallZwickyScalarFormFactor class implements the form-factors"
-     " of hep-ph/0406232 for the form-factor for the decay of a B-meson to a"
-     " light pseudoscalar meson");
+     " of PRD71 014015 (2005) for the form-factor for the decay of a B-meson to a"
+     " light pseudoscalar meson",
+     "The form factors of \\cite{Ball:2004ye} for $B\\to\\pi, K, \\eta$ were used.",
+     "\\bibitem{Ball:2004ye} P.~Ball and R.~Zwicky,\n "
+     "Phys.\\ Rev.\\  D {\\bf 71} (2005) 014015 [arXiv:hep-ph/0406232].\n"
+     "%%CITATION = PHRVA,D71,014015;%%\n");
 
   static ParVector<BallZwickyScalarFormFactor,double> interfacer_10
     ("r_10",
@@ -175,44 +219,49 @@ void BallZwickyScalarFormFactor::Init() {
   static Parameter<BallZwickyScalarFormFactor,double> interfaceThetaEtaEtaPrime
     ("ThetaEtaEtaPrime",
      "The eta-eta' mixing angle",
-     &BallZwickyScalarFormFactor::_thetaeta, -Constants::pi/9., -Constants::pi, Constants::pi,
+     &BallZwickyScalarFormFactor::_thetaeta, -Constants::pi/9.,
+     -Constants::pi, Constants::pi,
      false, false, true);
 }
 
-
 // form-factor for scalar to scalar
-void BallZwickyScalarFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned  int mode,
-							int id0,
-							int,Energy, Energy,
-						 	Complex & f0, Complex & fp) const
-{
+void BallZwickyScalarFormFactor::
+ScalarScalarFormFactor(Energy2 q2,unsigned  int mode,
+		       int id0, int,Energy, Energy,
+		       Complex & f0, Complex & fp) const {
+  useMe();
   // the F_0 form-factor
-  if(_m120[mode]<0*GeV2)
-    {f0=_r20[mode]/(1.-q2/_mfit20[mode]);}
-  else if(_mfit20[mode]<0*GeV2)
-    {f0=(_r10[mode]+_r20[mode]/(1.-q2/_m120[mode]))/(1.-q2/_m120[mode]);}
-  else
-    {f0=_r10[mode]/(1.-q2/_m120[mode])+_r20[mode]/(1.-q2/_mfit20[mode]);}
+  if(_m120[mode]<0*GeV2) {
+    f0=_r20[mode]/(1.-q2/_mfit20[mode]);
+  }
+  else if(_mfit20[mode]<0*GeV2) {
+    f0=(_r10[mode]+_r20[mode]/(1.-q2/_m120[mode]))/(1.-q2/_m120[mode]);
+  }
+  else {
+    f0=_r10[mode]/(1.-q2/_m120[mode])+_r20[mode]/(1.-q2/_mfit20[mode]);
+  }
   // the F_1 form-factor
-  if(_m12plus[mode]<0*GeV2)
-    {fp = _r2plus[mode]/(1.-q2/_mfit2plus[mode]);}
-  else if(_mfit2plus[mode]<0*GeV2)
-    {fp = (_r1plus[mode]+_r2plus[mode]/(1.-q2/_m12plus[mode]))/(1.-q2/_m12plus[mode]);}
-  else
-    {fp =_r1plus[mode]/(1.-q2/_m12plus[mode])+_r2plus[mode]/(1.-q2/_mfit2plus[mode]);}
-  if(id0==ParticleID::eta)
-    {
-      double fact(sqrt(1./3.)*cos(_thetaeta)-sqrt(2./3.)*sin(_thetaeta));
-      fp *=fact;f0*=fact;
-    }
+  if(_m12plus[mode]<0*GeV2) {
+    fp = _r2plus[mode]/(1.-q2/_mfit2plus[mode]);
+  }
+  else if(_mfit2plus[mode]<0*GeV2) {
+    fp = (_r1plus[mode]+_r2plus[mode]/(1.-q2/_m12plus[mode]))/(1.-q2/_m12plus[mode]);
+  }
+  else {
+    fp =_r1plus[mode]/(1.-q2/_m12plus[mode])+_r2plus[mode]/(1.-q2/_mfit2plus[mode]);
+  }
+  if(id0==ParticleID::eta) {
+    double fact(sqrt(1./3.)*cos(_thetaeta)-sqrt(2./3.)*sin(_thetaeta));
+    fp *=fact;f0*=fact;
+  }
 }
 
 void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
 							     unsigned int mode,int id0,
 							     int,Energy,
 							     Energy,
-							     Complex & fT) const
-{
+							     Complex & fT) const {
+  useMe();
   // the F_T form-factor
   if(_m12T[mode]<0*GeV2)
     {fT = _r2T[mode]/(1.-q2/_mfit2T[mode]);}
@@ -225,63 +274,57 @@ void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
 }
 
 void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
-						bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig::BallZwickyScalarFormFactor " << fullName() << " \n";}
+						bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::BallZwickyScalarFormFactor "
+		    << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
-  for(unsigned int ix=0;ix<numberOfFactors();++ix)
-    {
-      if(ix<initialModes())
-	{
-	  output << "set " << fullName() << ":r_10 " << ix << " " << _r10[ix] << "\n";
-	  output << "set " << fullName() << ":r_20 " << ix << " " << _r20[ix] << "\n";
-	  output << "set " << fullName() << ":r_1plus " << ix << " " << _r1plus[ix] << "\n";
-	  output << "set " << fullName() << ":r_2plus " << ix << " " << _r2plus[ix] << "\n";
-	  output << "set " << fullName() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
-	  output << "set " << fullName() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
-	  output << "set " << fullName() << ":m_120 " 
-		 << ix << " " << _m120[ix]/GeV2 << "\n";
-	  output << "set " << fullName() << ":mfit20 " 
-		 << ix << " " << _mfit20[ix]/GeV2 << "\n";
-	  output << "set " << fullName() << ":m_12plus " 
-		 << ix << " " << _m12plus[ix]/GeV2 << "\n";
-	  output << "set " << fullName() << ":mfit2plus " 
-		 << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
-	  output << "set " << fullName() << ":m_12T " 
-		 << ix << " " << _m12T[ix]/GeV2 << "\n";
-	  output << "set " << fullName() << ":mfit2T " 
-		 << ix << " " << _mfit2T[ix]/GeV2 << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":r_10 " 
-		 << ix << " " << _r10[ix] << "\n";
-	  output << "insert " << fullName() << ":r_20 " 
-		 << ix << " " << _r20[ix] << "\n";
-	  output << "insert " << fullName() << ":r_1plus " 
-		 << ix << " " << _r1plus[ix] << "\n";
-	  output << "insert " << fullName() << ":r_2plus " 
-		 << ix << " " << _r2plus[ix] << "\n";
-	  output << "insert " << fullName() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
-	  output << "insert " << fullName() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
-	  output << "insert " << fullName() << ":m_120 " 
-		 << ix << " " << _m120[ix]/GeV2 << "\n";
-	  output << "insert " << fullName() << ":mfit20 " 
-		 << ix << " " << _mfit20[ix]/GeV2 << "\n";
-	  output << "insert " << fullName() << ":m_12plus " 
-		 << ix << " " << _m12plus[ix]/GeV2 << "\n";
-	  output << "insert " << fullName() << ":mfit2plus " 
-		 << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
-	  output << "insert " << fullName() << ":m_12T " 
-		 << ix << " " << _m12T[ix]/GeV2 << "\n";
-	  output << "insert " << fullName() << ":mfit2T " 
-		 << ix << " " << _mfit2T[ix]/GeV2 << "\n";
-	}
+  for(unsigned int ix=0;ix<numberOfFactors();++ix) {
+    if(ix<initialModes()) {
+      output << "set " << fullName() << ":r_10 " << ix << " " << _r10[ix] << "\n";
+      output << "set " << fullName() << ":r_20 " << ix << " " << _r20[ix] << "\n";
+      output << "set " << fullName() << ":r_1plus " << ix << " " << _r1plus[ix] << "\n";
+      output << "set " << fullName() << ":r_2plus " << ix << " " << _r2plus[ix] << "\n";
+      output << "set " << fullName() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
+      output << "set " << fullName() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
+      output << "set " << fullName() << ":m_120 " 
+	     << ix << " " << _m120[ix]/GeV2 << "\n";
+      output << "set " << fullName() << ":mfit20 " 
+	     << ix << " " << _mfit20[ix]/GeV2 << "\n";
+      output << "set " << fullName() << ":m_12plus " 
+	     << ix << " " << _m12plus[ix]/GeV2 << "\n";
+      output << "set " << fullName() << ":mfit2plus " 
+	     << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
+      output << "set " << fullName() << ":m_12T " 
+	     << ix << " " << _m12T[ix]/GeV2 << "\n";
+      output << "set " << fullName() << ":mfit2T " 
+	     << ix << " " << _mfit2T[ix]/GeV2 << "\n";
     }
+    else {
+      output << "insert " << fullName() << ":r_10 " 
+	     << ix << " " << _r10[ix] << "\n";
+      output << "insert " << fullName() << ":r_20 " 
+	     << ix << " " << _r20[ix] << "\n";
+      output << "insert " << fullName() << ":r_1plus " 
+	     << ix << " " << _r1plus[ix] << "\n";
+      output << "insert " << fullName() << ":r_2plus " 
+	     << ix << " " << _r2plus[ix] << "\n";
+      output << "insert " << fullName() << ":r_1T " << ix << " " << _r1T[ix] << "\n";
+      output << "insert " << fullName() << ":r_2T " << ix << " " << _r2T[ix] << "\n";
+      output << "insert " << fullName() << ":m_120 " 
+	     << ix << " " << _m120[ix]/GeV2 << "\n";
+      output << "insert " << fullName() << ":mfit20 " 
+	     << ix << " " << _mfit20[ix]/GeV2 << "\n";
+      output << "insert " << fullName() << ":m_12plus " 
+	     << ix << " " << _m12plus[ix]/GeV2 << "\n";
+      output << "insert " << fullName() << ":mfit2plus " 
+	     << ix << " " << _mfit2plus[ix]/GeV2 << "\n";
+      output << "insert " << fullName() << ":m_12T " 
+	     << ix << " " << _m12T[ix]/GeV2 << "\n";
+      output << "insert " << fullName() << ":mfit2T " 
+	     << ix << " " << _mfit2T[ix]/GeV2 << "\n";
+    }
+  }
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

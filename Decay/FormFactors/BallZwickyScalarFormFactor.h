@@ -10,42 +10,25 @@
 namespace Herwig {
 using namespace ThePEG;
 
-  /** \ingroup Decay
-   *
-   *  This class is the implementation of the form-factors of hep-ph/0406232 for
-   *  the form-factor for the decay of a B-meson to a light pseudoscalar meson.
-   *
-   *  This class is one of the few which includes the penguin form factors in addition
-   *  to the standard weak decay form factors.
-   *
-   * @see ScalarFormFactor
-   * @see BallZwickyVectorFormFactor
-   */
-
+/** \ingroup Decay
+ *
+ *  This class is the implementation of the form-factors of PRD71 014015 (2005) for
+ *  the form-factor for the decay of a B-meson to a light pseudoscalar meson.
+ *
+ *  This class is one of the few which includes the penguin form factors in addition
+ *  to the standard weak decay form factors.
+ *
+ * @see ScalarFormFactor
+ * @see BallZwickyVectorFormFactor
+ */
 class BallZwickyScalarFormFactor: public ScalarFormFactor {
-
+  
 public:
-
-  /** @name Standard constructors and destructors. */
-  //@{
 
   /**
    * Default constructor
    */
   BallZwickyScalarFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline BallZwickyScalarFormFactor(const BallZwickyScalarFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~BallZwickyScalarFormFactor();
-  //@}
-
-public:
 
   /** @name Form-Factors */
   //@{
@@ -60,8 +43,9 @@ public:
    * @param f0 The form-factor \f$f_0\f$. 
    * @param fp The form-factor \f$f_+\f$.
    */
-  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
-				      Energy m1,Complex & f0,Complex & fp) const;
+  virtual void ScalarScalarFormFactor(Energy2 q2,unsigned int iloc,int id0,
+				      int id1, Energy m0, Energy m1,
+				      Complex & f0,Complex & fp) const;
 
   /**
    * The form factor for the weak penguin decay of a scalar meson to a scalar meson.
@@ -130,47 +114,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:

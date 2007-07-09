@@ -8,16 +8,28 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MelikhovFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Helicity/LorentzTensor.h"
+#include "ThePEG/PDT/ParticleData.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
+
+MelikhovFormFactor::MelikhovFormFactor() : 
+  _ifit(1), _Rplus0(0), _Mplus(0*MeV), _nplus(0), _RV0(0), _MV(0*MeV), _nV(0),
+  _R10(0), _M1(0*MeV), _n1(0), _R20(0), _M2(0*MeV), _n2(0) {
+  // the possible modes
+  // B to rho
+  addFormFactor(-521, 113,1,2,5,2);
+  addFormFactor(-511, 213,1,1,5,2);
+  addFormFactor(-521,-213,1,2,5,1);
+  addFormFactor(-511, 113,1,1,5,1);
+  // B to pi
+  addFormFactor(-521, 111,0,2,5,2);
+  addFormFactor(-511, 211,0,1,5,2);
+  addFormFactor(-521,-211,0,2,5,1);
+  addFormFactor(-511, 111,0,1,5,1);
+}
 
 void MelikhovFormFactor::doinit() throw(InitException) {
   ScalarFormFactor::doinit();
@@ -49,18 +61,14 @@ void MelikhovFormFactor::doinit() throw(InitException) {
   _n2=n2[_ifit-1];
 }
 
-MelikhovFormFactor::~MelikhovFormFactor() {}
-
 void MelikhovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _ifit << _Rplus0 << ounit(_Mplus,GeV) << _nplus << _RV0 << ounit(_MV,GeV) 
-     << _nV << _R10 << ounit(_M1,GeV)
-     << _n1 << _R20 << ounit(_M2,GeV) << _n2; 
+     << _nV << _R10 << ounit(_M1,GeV) << _n1 << _R20 << ounit(_M2,GeV) << _n2; 
 }
 
 void MelikhovFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _ifit >> _Rplus0 >> iunit(_Mplus,GeV) >> _nplus >> _RV0 >> iunit(_MV,GeV) 
-     >> _nV >> _R10 >> iunit(_M1,GeV)
-     >> _n1 >> _R20 >> iunit(_M2,GeV) >> _n2; 
+     >> _nV >> _R10 >> iunit(_M1,GeV) >> _n1 >> _R20 >> iunit(_M2,GeV) >> _n2; 
 }
 
 ClassDescription<MelikhovFormFactor> MelikhovFormFactor::initMelikhovFormFactor;
@@ -70,7 +78,10 @@ void MelikhovFormFactor::Init() {
 
   static ClassDocumentation<MelikhovFormFactor> documentation
     ("The MelikhovFormFactor class implements the form factors from"
-     " hep-ph/9603340 for B to pi,rho");
+     " Phys. Lett. B 380 (1996) 363 for B to pi,rho",
+     "The form factors of \\cite{Melikhov:1996ge} were used for $B\\to \\pi,\\rho$.",
+     "\\bibitem{Melikhov:1996ge} D.~Melikhov, Phys.\\ Lett.\\  B {\\bf 380} (1996) 363\n"
+     "[arXiv:hep-ph/9603340]. %%CITATION = PHLTA,B380,363;%%\n");
 
   static Parameter<MelikhovFormFactor,unsigned int> interfaceFit
     ("Fit",
@@ -84,53 +95,51 @@ void MelikhovFormFactor::Init() {
 void MelikhovFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
 						int,int id1,
 						Energy, Energy,Complex & f0,
-						Complex & fp) const
-{
+						Complex & fp) const {
+  useMe();
   fp = _Rplus0/pow((1.-q2/_Mplus/_Mplus),_nplus);
   f0 = fp;
   int jspin,spect,inquark,outquark;
   formFactorInfo(mode,jspin,spect,inquark,outquark);
-  if(abs(outquark)==abs(spect))
-    {
-      double fact(sqrt(0.5));
-      if(id1==ParticleID::pi0&&abs(outquark)==1){fact=-fact;}
-      f0*=fact;fp*=fact;
-    }
+  if(abs(outquark)==abs(spect)) {
+    double fact = (id1==ParticleID::pi0&&abs(outquark)==1) ? -sqrt(0.5) : sqrt(0.5);
+    f0 *= fact;
+    fp *= fact;
+  }
 }
 
 void MelikhovFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
 						int, int id1, Energy mY, Energy mX,
 						Complex & A0,Complex & A1,Complex & A2,
-						Complex & V) const
-{
+						Complex & V) const {
+  useMe();
   // constants
   double r(mX/mY),y(q2/mY/mY);
   // V form-factor
-  V  = (1.+r)*_RV0/pow((1.-q2/_MV/_MV),_nV);
+  V  = double((1.+r)*_RV0/pow((1.-q2/_MV/_MV),_nV));
   // A_1 form-factor
   A1 = (1.+r*r-y)/(1.+r)*_R10/pow((1.-q2/_M1/_M1),_n1);
   // A_2 form-factor
   A2 = (1.+r)*(1.-r*r-y)/((1.+r)*(1.+r)-y)*_R20/pow((1.-q2/_M2/_M2),_n2);
   // set the a_- factor to zero
-  A0 = 0.5/mX*((mY+mX)*A1-(mY-mX)*A2);
+//   A0 = 0.5/mX*((mY+mX)*A1-(mY-mX)*A2);
+  A0 = 0.;
   int jspin,spect,inquark,outquark;
   formFactorInfo(mode,jspin,spect,inquark,outquark);
-  if(abs(outquark)==abs(spect)&&abs(spect)<3)
-    {
-      double fact(sqrt(0.5));
-      if(id1==ParticleID::rho0&&abs(outquark)==1){fact=-fact;}
-      A0*=fact;A1*=fact;A2*=fact;V*=fact;
-    }
+  if(abs(outquark)==abs(spect)&&abs(spect)<3) {
+    double fact = (id1==ParticleID::rho0&&abs(outquark)==1) ? -sqrt(0.5) : sqrt(0.5);
+    A0 *= fact;
+    A1 *= fact;
+    A2 *= fact;
+    V  *= fact;
+  }
 }
 
 void MelikhovFormFactor::dataBaseOutput(ofstream & output,bool header,
-					bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig::MelikhovFormFactor " << fullName() << " \n";}
+					bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig++::MelikhovFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":Fit " << _ifit << " \n";
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

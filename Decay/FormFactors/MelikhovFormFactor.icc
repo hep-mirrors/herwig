@@ -7,73 +7,12 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline MelikhovFormFactor::MelikhovFormFactor() : 
-  _ifit(1), _Rplus0(0), _Mplus(0*MeV), _nplus(0), _RV0(0), _MV(0*MeV), _nV(0),
-  _R10(0), _M1(0*MeV), _n1(0), _R20(0), _M2(0*MeV), _n2(0)
-{
-  // the possible modes
-  // B to rho
-  addFormFactor(521, 113,1,2,-5,-2);
-  addFormFactor(511,-213,1,1,-5,-2);
-  addFormFactor(521, 213,1,2,-5,-1);
-  addFormFactor(511, 113,1,1,-5,-1);
-  // B to pi
-  addFormFactor(521, 111,0,2,-5,-2);
-  addFormFactor(511,-211,0,1,-5,-2);
-  addFormFactor(521, 211,0,2,-5,-1);
-  addFormFactor(511, 111,0,1,-5,-1);
-  // zero the other parameters
-}
-
-inline MelikhovFormFactor::MelikhovFormFactor(const MelikhovFormFactor & x)
-  : ScalarFormFactor(x), _ifit(x._ifit), _Rplus0(x._Rplus0), _Mplus(x._Mplus), 
-    _nplus(x._nplus), _RV0(x._RV0), _MV(x._MV),	_nV(x._nV), _R10(x._R10),	 
-    _M1(x._M1),	_n1(x._n1), _R20(x._R20), _M2(x._M2), _n2(x._n2) {}
-
 inline IBPtr MelikhovFormFactor::clone() const {
   return new_ptr(*this);
 }
 
 inline IBPtr MelikhovFormFactor::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void MelikhovFormFactor::doupdate() throw(UpdateException) {
-  ScalarFormFactor::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void MelikhovFormFactor::dofinish() {
-  ScalarFormFactor::dofinish();
-}
-
-inline void MelikhovFormFactor::doinitrun() {
-  ScalarFormFactor::doinitrun();
-}
-
-inline void MelikhovFormFactor::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  ScalarFormFactor::rebind(trans);
-}
-
-inline IVector MelikhovFormFactor::getReferences() {
-  IVector ret = ScalarFormFactor::getReferences();
-  // ret.push_back(dummy);
-  return ret;
 }
 
 }
