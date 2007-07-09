@@ -73,14 +73,14 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
       }
     }
   }
-  id0=511;
-  id1=-411;
-  Energy2 q2=5.22436*GeV2;
-  bool cc(false);
-  Energy m0(getParticleData(id0)->mass()),m1(getParticleData(id1)->mass());
-  unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
-  Complex f0,fp;
-  _form->ScalarScalarFormFactor(q2,iloc,id0,id1,m0,m1,f0,fp);
+//   id0=511;
+//   id1=-411;
+//   Energy2 q2=5.22436*GeV2;
+//   bool cc(false);
+//   Energy m0(getParticleData(id0)->mass()),m1(getParticleData(id1)->mass());
+//   unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
+//   Complex f0,fp;
+//   _form->ScalarScalarFormFactor(q2,iloc,id0,id1,m0,m1,f0,fp);
   //_form->ScalarVectorFormFactor(q2,iloc,id0,id1,MP,MV,A0,A1,A2,V);
 }
 
@@ -213,7 +213,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       hadron.push_back(-ii*msum*A1*vwave[ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       +2.*V/msum*Helicity::epsilon(vwave[ix],inpart.momentum(),
+		       -2.*V/msum*Helicity::epsilon(vwave[ix],inpart.momentum(),
 						    decay[0]->momentum()));
     }
   }

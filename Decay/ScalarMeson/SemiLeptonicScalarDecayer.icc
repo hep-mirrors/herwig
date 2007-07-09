@@ -7,9 +7,7 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() {
-  // default value of the fermi constant taken from PDG 2002
-  _GF = 1.16639E-5/GeV2;
+inline SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() : _GF(1.16639E-5/GeV2) {
   // intermediates
   generateIntermediates(true);
 }
