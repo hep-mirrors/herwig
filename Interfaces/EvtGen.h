@@ -214,14 +214,14 @@ private:
    * EvtGen Dirac representation/
    * @param sp The LorentzSpinor
    */
-  inline EvtDiracSpinor EvtGenSpinor(const LorentzSpinor & sp) const;
+  inline EvtDiracSpinor EvtGenSpinor(const LorentzSpinor<SqrtEnergy> & sp) const;
 
   /**
    * Convert an EvtDiracSpinor a LorentzSpinor. This spinor is converted to 
    * the default Dirac matrix representation used by ThePEG.
    * @param sp The EvtDiracSpinor
    */
-  inline LorentzSpinor ThePEGSpinor(const EvtDiracSpinor & sp) const;
+  inline LorentzSpinor<SqrtEnergy> ThePEGSpinor(const EvtDiracSpinor & sp) const;
 
   /**
    * Convert a LorentzPolarizationVector to a complex EvtGen 4-vector
@@ -239,25 +239,25 @@ private:
    * Convert our Rarita-Schwinger spinor to the EvtGen one
    * @param sp Our  RS Spinor
    */
-  inline EvtRaritaSchwinger EvtGenRSSpinor(const LorentzRSSpinor & sp) const;
+  inline EvtRaritaSchwinger EvtGenRSSpinor(const LorentzRSSpinor<SqrtEnergy> & sp) const;
 
   /**
    * Convert an EvtGen Rarita-Schwinger spinor to ours
    * @param sp The EvtGen RS spinor.
    */
-  inline LorentzRSSpinor ThePEGRSSpinor(const EvtRaritaSchwinger & sp) const;
+  inline LorentzRSSpinor<SqrtEnergy> ThePEGRSSpinor(const EvtRaritaSchwinger & sp) const;
 
   /**
    * Convert our tensor to the EvtGen one.
    * @param ten Our tensor
    */
-  inline EvtTensor4C EvtGenTensor(const LorentzTensor & ten) const;
+  inline EvtTensor4C EvtGenTensor(const LorentzTensor<double> & ten) const;
 
   /**
    * Convert an EvtGen tensor to ThePEG
    * @param ten The EvtGen tensor
    */
-  inline LorentzTensor ThePEGTensor(const EvtTensor4C & ten) const;
+  inline LorentzTensor<double> ThePEGTensor(const EvtTensor4C & ten) const;
 
   /**
    * Convert a PDG code from ThePEG into an EvtGen particle id

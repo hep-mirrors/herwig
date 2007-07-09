@@ -19,7 +19,7 @@ inline IBPtr EvtGen::fullclone() const {
 }
 
 inline EvtVector4R  EvtGen::EvtGenMomentum(const Lorentz5Momentum & mom) const {
-  return EvtVector4R(mom.e()/GeV,mom.px()/GeV,mom.py()/GeV,mom.pz()/GeV);
+  return EvtVector4R(mom.t()/GeV,mom.x()/GeV,mom.y()/GeV,mom.z()/GeV);
 }
 
 inline Lorentz5Momentum EvtGen::ThePEGMomentum(const EvtVector4R & mom,
@@ -47,21 +47,22 @@ inline Complex EvtGen::ThePEGComplex(EvtComplex c) const {
   return Complex(real(c),imag(c));
 }
 
-inline EvtDiracSpinor EvtGen::EvtGenSpinor(const LorentzSpinor & sp) const {
-  LorentzSpinor temp(sp.transformRep(Helicity::HaberDRep));
-  double norm(1./sqrt(GeV));
+inline EvtDiracSpinor EvtGen::EvtGenSpinor(const LorentzSpinor<SqrtEnergy> & sp) const {
+  LorentzSpinor<SqrtEnergy> temp(sp.transformRep(Helicity::HaberDRep));
+  InvSqrtEnergy norm(1./sqrt(GeV));
   EvtDiracSpinor output;
-  output.set(norm*EvtGenComplex(temp.s1()),norm*EvtGenComplex(temp.s2()),
-	     norm*EvtGenComplex(temp.s3()),norm*EvtGenComplex(temp.s4()));
+  output.set(EvtGenComplex(norm*temp.s1()),EvtGenComplex(norm*temp.s2()),
+	     EvtGenComplex(norm*temp.s3()),EvtGenComplex(norm*temp.s4()));
   return output;
 }
 
-inline LorentzSpinor EvtGen::ThePEGSpinor(const EvtDiracSpinor & sp) const {
-  double norm(sqrt(GeV));
-  LorentzSpinor output(norm*ThePEGComplex(sp.get_spinor(0)),
-		       norm*ThePEGComplex(sp.get_spinor(1)),
-		       norm*ThePEGComplex(sp.get_spinor(2)),
-		       norm*ThePEGComplex(sp.get_spinor(3)),Helicity::HaberDRep);
+inline LorentzSpinor<SqrtEnergy> EvtGen::ThePEGSpinor(const EvtDiracSpinor & sp) const {
+  SqrtEnergy norm(sqrt(GeV));
+  LorentzSpinor<SqrtEnergy> output(norm*ThePEGComplex(sp.get_spinor(0)),
+				   norm*ThePEGComplex(sp.get_spinor(1)),
+				   norm*ThePEGComplex(sp.get_spinor(2)),
+				   norm*ThePEGComplex(sp.get_spinor(3)),
+				   Helicity::HaberDRep);
   output.changeRep(Helicity::defaultDRep);
   return output;
 }
@@ -81,11 +82,11 @@ EvtGen::ThePEGPolarization(const EvtVector4C & eps) const {
 }
 
 inline EvtRaritaSchwinger 
-EvtGen::EvtGenRSSpinor(const LorentzRSSpinor & sp) const {
-  LorentzRSSpinor temp(sp.transformRep(Helicity::HaberDRep));
+EvtGen::EvtGenRSSpinor(const LorentzRSSpinor<SqrtEnergy> & sp) const {
+  LorentzRSSpinor<SqrtEnergy> temp(sp.transformRep(Helicity::HaberDRep));
   EvtRaritaSchwinger output;
   unsigned int ix,iy;
-  double norm(1./sqrt(GeV));
+  InvSqrtEnergy norm(1./sqrt(GeV));
   // remember we have vec,spin and evtgen spin,vec
   for(ix=0;ix<4;++ix) {
     for(iy=0;iy<4;++iy) output.set(ix,iy,EvtGenComplex(norm*temp(iy,ix)));
@@ -93,10 +94,11 @@ EvtGen::EvtGenRSSpinor(const LorentzRSSpinor & sp) const {
   return output;
 }
 
-inline LorentzRSSpinor EvtGen::ThePEGRSSpinor(const EvtRaritaSchwinger & sp) const {
-  LorentzRSSpinor output(Helicity::HaberDRep);
+inline LorentzRSSpinor<SqrtEnergy> 
+EvtGen::ThePEGRSSpinor(const EvtRaritaSchwinger & sp) const {
+  LorentzRSSpinor<SqrtEnergy> output(Helicity::HaberDRep);
   unsigned int ix,iy;
-  double norm(sqrt(GeV));
+  SqrtEnergy norm(sqrt(GeV));
   // remember we have vec,spin and evtgen spin,vec
   for(ix=0;ix<4;++ix) {
     for(iy=0;iy<4;++iy) output(ix,iy)=norm*ThePEGComplex(sp.get(iy,ix));
@@ -105,7 +107,7 @@ inline LorentzRSSpinor EvtGen::ThePEGRSSpinor(const EvtRaritaSchwinger & sp) con
   return output;
 }
 
-inline EvtTensor4C EvtGen::EvtGenTensor(const LorentzTensor & ten) const {
+inline EvtTensor4C EvtGen::EvtGenTensor(const LorentzTensor<double> & ten) const {
   EvtTensor4C output;
   unsigned int ix,iy;
   for(ix=0;ix<4;++ix){
@@ -114,8 +116,8 @@ inline EvtTensor4C EvtGen::EvtGenTensor(const LorentzTensor & ten) const {
   return output;
 }
 
-inline LorentzTensor EvtGen::ThePEGTensor(const EvtTensor4C & ten) const {
-  LorentzTensor output;
+inline LorentzTensor<double> EvtGen::ThePEGTensor(const EvtTensor4C & ten) const {
+  LorentzTensor<double> output;
   unsigned int ix,iy;
   for(ix=0;ix<4;++ix) {
     for(iy=0;iy<4;++iy)output(ix,iy)=conj(ThePEGComplex(ten.get(ix,iy)));

@@ -142,7 +142,6 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
   ParticleVector output,temp;
   tcPDPtr pd;
   EvtParticle * daug;
-  Hep3Vector bv;
   unsigned int ix,iy;
   int id;
   for(ix=0;ix<abs(part->getNDaug());++ix) {
@@ -187,7 +186,7 @@ ParticleVector EvtGen::decayProducts(EvtParticle *part,bool spin) const {
   }
   // boost to lab
   if(output.size()>0) {
-    bv=ThePEGMomentum(part->getP4(),part->mass()).boostVector();
+    Boost bv=ThePEGMomentum(part->getP4(),part->mass()).boostVector();
     for(ix=0;ix<output.size();++ix) output[ix]->deepBoost(bv); 
   }
   return output;
@@ -279,7 +278,7 @@ void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) const {
     ix=peg->id()<0;
     fer->setBasisState(ix,ThePEGSpinor(evt->spParentNeutrino()));
     ix=peg->id()>0;
-    fer->setBasisState(ix,LorentzSpinor());
+    fer->setBasisState(ix,LorentzSpinor<SqrtEnergy>());
   }
   // massive spin-1/2
   else if(evt->getSpinType()==EvtSpinType::DIRAC) {
@@ -295,7 +294,7 @@ void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) const {
     spin=vec;
     for(ix=0;ix<1;++ix) {
       vec->setBasisState(2*ix,ThePEGPolarization(evt->epsParentPhoton(ix)));}
-    vec->setBasisState(1,LorentzVector());
+    vec->setBasisState(1,LorentzVector<Complex>());
   }
   // massive vectors
   else if(evt->getSpinType()==EvtSpinType::VECTOR) {
@@ -370,7 +369,7 @@ void EvtGen::constructVertex(const Particle & parent,ParticleVector products,
   int eind[10];
   unsigned int iloc;
   vector<unsigned int> hind(outspin.size()+1,0);
-  Helicity::DecayMatrixElement newME(inspin,outspin);
+  DecayMatrixElement newME(inspin,outspin);
   for(ix=0;ix<nstate;++ix) {
     iloc=0;
     hind[0]=ix/constants[1];
@@ -399,8 +398,8 @@ void EvtGen::constructVertex(const Particle & parent,ParticleVector products,
     newME(hind)=ThePEGComplex(damp->amplitude().getAmp(eind));
   }
   // create the decay vertex
-  VertexPtr vertex(new_ptr(Helicity::DecayVertex()));
-  Helicity::DVertexPtr Dvertex(dynamic_ptr_cast<Helicity::DVertexPtr>(vertex));
+  VertexPtr vertex(new_ptr(DecayVertex()));
+  DVertexPtr Dvertex(dynamic_ptr_cast<DVertexPtr>(vertex));
   // set the incoming particle for the decay vertex
   dynamic_ptr_cast<tcSpinfoPtr>(parent.spinInfo())->setDecayVertex(vertex);
   for(ix=0;ix<products.size();++ix) {
