@@ -103,23 +103,22 @@ void StandardCKM::Init() {
     ("theta_12",
      "The mixing angle between the first and second generation in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::theta12, 0.222357, 0.0, Constants::twopi, false, false, true);
+     &StandardCKM::theta12, 0.2262, 0.0, Constants::twopi, false, false, true);
   static Parameter<StandardCKM,double> interfaceTheta13
     ("theta_13",
      "The mixing angle between the first and third generation in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::theta13, 0.0003150, 0.0, Constants::twopi, false, false, true);
+     &StandardCKM::theta13, 0.0037, 0.0, Constants::twopi, false, false, true);
   static Parameter<StandardCKM,double> interfaceTheta23
     ("theta_23",
      "The mixing angle between the second and third generation in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::theta12, 0.039009, 0.0, Constants::twopi, false, false, true);
+     &StandardCKM::theta23, 0.0413, 0.0, Constants::twopi, false, false, true);
   static Parameter<StandardCKM,double> interfaceDelta
     ("delta",
      "The phase angle in the standard "
      "parameterization of the CKM matrix",
-     &StandardCKM::delta, 1.35819, 0.0, Constants::twopi, false, false, true);
-  
+     &StandardCKM::delta, 1.05, 0.0, Constants::twopi, false, false, true);
 }
 
 }
