@@ -2148,8 +2148,8 @@ decaymode Upsilon3s->d,dbar; 0.007 1 /Defaults/Decays/QDecayME0
 decaymode Upsilon4s->g,g,g; 0.385 1 /Defaults/Decays/QDecayME130
 decaymode Upsilon4s->B0,Bbar0; 0.250 1 /Defaults/Decays/DecayME0
 decaymode Upsilon4s->B+,B-; 0.250 1 /Defaults/Decays/DecayME0
-decaymode Upsilon4s->c,cbar; 0.020 1 /Defaults/Decays/DecayME0
-decaymode Upsilon4s->u,ubar; 0.020 1 /Defaults/Decays/DecayME0
+decaymode Upsilon4s->c,cbar; 0.020 1 /Defaults/Decays/QDecayME0
+decaymode Upsilon4s->u,ubar; 0.020 1 /Defaults/Decays/QDecayME0
 decaymode Upsilon4s->g,g,gamma; 0.020 1 /Defaults/Decays/QDecayME130
 decaymode Upsilon4s->tau-,tau+; 0.015 1 /Defaults/Decays/DecayME0
 decaymode Upsilon4s->mu-,mu+; 0.015 1 /Defaults/Decays/DecayME0
