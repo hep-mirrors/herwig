@@ -347,7 +347,6 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
   if(i!=2) throw Exception() << "Must have two and only two beam clusters in "
 			     << "UA5Handler::handle " 
 			     << Exception::eventerror;
-  useMe();
   // if not generating the soft underlying event 
   // just hadronize and decay the two clusters
   if(rnd()>_probSoft)
@@ -363,6 +362,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
       // don't to the rest
       return;
     }
+  useMe();
   // and their cm
   Lorentz5Momentum cm = clu[0]->momentum() + clu[1]->momentum();
   Energy theCM = cm.mass();
