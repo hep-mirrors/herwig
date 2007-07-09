@@ -21,15 +21,10 @@ class MamboDecayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MamboDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -117,6 +112,7 @@ private:
      **/
   double calculateMomentum(vector<Lorentz5Momentum> & mom,
 			   const Energy & comEn) const;
+
   /**
    *Bessel function of first kind(n=0)
    *@param x Argument of Bessel Function 
