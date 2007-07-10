@@ -36,9 +36,14 @@ bool DecayIntegrator::accept(const DecayMode & dm) const {
 // dummy decay method
 ParticleVector DecayIntegrator::decay(const DecayMode & dm,
 				      const Particle & parent) const {
+  // return empty vector if products heavier than parent
+  Energy mout(0.*GeV);
+  for(ParticleMSet::const_iterator it=dm.products().begin();
+      it!=dm.products().end();++it) mout+=(**it).massMin();
+  if(mout>parent.mass()) return ParticleVector();
+  // generate the decay
   bool cc;
   int imode=modeNumber(cc,dm);
-  // generate the decay
   return generate(_generateinter,cc,imode,parent);
 }
   
@@ -149,6 +154,7 @@ void DecayIntegrator::doinitrun() {
     << this->fullName() << "\n";
   if(_outputmodes) CurrentGenerator::current().log() << *this << "\n";
   for(unsigned int ix=0;ix<_modes.size();++ix) {
+    if(!_modes[ix]) continue;
     _modes[ix]->initrun();
     _imode=ix;
     _modes[ix]->initializePhaseSpace(initialize());
@@ -159,10 +165,12 @@ void DecayIntegrator::doinitrun() {
 void DecayIntegrator::addMode(DecayPhaseSpaceModePtr in,double maxwgt,
 				     const vector<double> inwgt) const {
   _modes.push_back(in);
-  in->setMaxWeight(maxwgt);
-  in->setWeights(inwgt);
-  in->setIntegrate(_niter,_npoint,_ntry);
-  in->init();
+  if(in) {
+    in->setMaxWeight(maxwgt);
+    in->setWeights(inwgt);
+    in->setIntegrate(_niter,_npoint,_ntry);
+    in->init();
+  }
 }
 
 // reset the properities of all intermediates
@@ -218,6 +226,10 @@ void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
   if(dm.parent()->CC()) nmax=2;
   if(_modes.size()==0) return;
   do {
+    if(!_modes[ix]) {
+      ++ix;
+      continue;
+    }
     cc = _modes[ix]->externalParticles(0)->CC();
     tmax=1;if(!cc){++tmax;}
     for(iz=0;iz<tmax;++iz) {
