@@ -27,12 +27,10 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
 
   vector<double> wgt(0);  
   PDVector inc(_theVertex->getIncoming());
-  for(unsigned int i=0;i<inc.size();++i) {
+  for(unsigned int i = 0; i < inc.size(); ++i) {
     int id = inc[i]->id();
-    if(id < 0) {
-      continue;
-    }
-    Energy m1 = getParticleData(id)->mass();
+    if(id < 0)  continue;
+    Energy m1 = inc[i]->mass();
     PDVector decaylist(0);
     for(unsigned int il=0;il<_thelist.size();++il) {
       PDVector dtemp = _theVertex->search(_thelist[il],id);
@@ -110,6 +108,21 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
       }
     }
   }
+  unsigned int isize(_inpart.size()), oasize(_outparta.size()),
+    obsize(_outpartb.size());
+  if(  isize == 0 ||  oasize == 0 || obsize == 0 )
+    throw InitException()
+      << "GeneralTwoBodyDecayer::doinit() - Atleast one of the particle "
+      << "vectors has zero size, cannot continue." 
+      << isize << " " << oasize << " " << obsize 
+      << Exception::abortnow;
+  
+  if(  isize != oasize || isize != obsize )
+    throw InitException()
+      << "GeneralTwoBodyDecayer::doinit() - The particle vectors have "
+      << "different sizes. " << isize << " " << oasize << " " << obsize
+      << Exception::abortnow;
+
 }
 
 int GeneralTwoBodyDecayer::modeNumber(bool & cc, const DecayMode & dm) const {

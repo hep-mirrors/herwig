@@ -7,6 +7,7 @@
 namespace Herwig {
 
 inline SSVDecayer::SSVDecayer() {
+  addToSearchList(1);
   addToSearchList(2);
 }
 

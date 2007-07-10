@@ -41,40 +41,41 @@ void SSVDecayer::Init() {
 
 }
 
-double SSVDecayer::me2(bool , const int , const Particle & inpart,
+double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
+
   RhoDMatrix rhoin(PDT::Spin0);
   rhoin.average();
   ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),rhoin,incoming,
-			    true,true);
+			    true,vertex);
   unsigned int isc,ivec;
-  if((decay[0]->data()).iSpin() == PDT::Spin0) {
-    isc=0;
-    ivec=1;
+  if(decay[0]->dataPtr()->iSpin() == PDT::Spin0) {
+    isc = 0;
+    ivec = 1;
   }
   else {
-    isc=1;
-    ivec=0;
+    isc = 1;
+    ivec = 0;
   }
-  ScalarWaveFunction sca(decay[isc],outgoing,true,true);
+  ScalarWaveFunction sca(decay[isc],outgoing,true,vertex);
   vector<VectorWaveFunction> vecWave;
-  VectorWaveFunction(vecWave,decay[ivec],outgoing,true,false,true);
+  VectorWaveFunction(vecWave,decay[ivec],outgoing,true,false,vertex);
   Energy2 scale(inpart.mass()*inpart.mass());
   //make sure decay matrix element is in the correct order
   double output(0.);
   if(ivec == 0) {
     DecayMatrixElement newme(PDT::Spin0,PDT::Spin1,PDT::Spin0);
-    for(unsigned int ix=0;ix<3;++ix) {
-      newme(0,ix,0) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
-    }
+    for(unsigned int ix = 0; ix < 3; ++ix)
+      newme(0, ix, 0) = _theVSSPtr->evaluate(scale,vecWave[ix],sca, inwave);
+    
     ME(newme);
     output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   }
   else {
     DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
-    for(unsigned int ix=0;ix<3;++ix) {
-      newme(0,0,ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
-    }
+    for(unsigned int ix = 0; ix < 3; ++ix)
+      newme(0, 0, ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+    
     ME(newme);
     output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   }
