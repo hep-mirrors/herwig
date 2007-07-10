@@ -49,13 +49,13 @@ void StandardModel::doinit() throw(InitException) {
   addVertex(_theFFPVertex);
   addVertex(_theFFGVertex);
   addVertex(_theFFWVertex);
-  addVertex(_theFFHVertex);
-  addVertex(_theWWHVertex);
+  addVertex(vertexFFH());
+  addVertex(vertexWWH());
   addVertex(_theGGGVertex);
   addVertex(_theWWWVertex);
   addVertex(_theGGGGVertex);
   addVertex(_theWWWWVertex);
-  addVertex(_theHGGVertex);
+  addVertex(vertexHGG());
   addVertex(_theHPPVertex);
 }
 

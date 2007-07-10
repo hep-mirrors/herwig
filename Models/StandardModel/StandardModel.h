@@ -162,7 +162,7 @@ public:
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  inline tFFSVertexPtr  vertexFFH() const;
+  virtual inline tFFSVertexPtr  vertexFFH() const;
 
   /**
    * Pointer to the triple gluon vertex
@@ -177,7 +177,7 @@ public:
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  inline tVVSVertexPtr  vertexWWH() const;
+  virtual inline tVVSVertexPtr  vertexWWH() const;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
@@ -192,7 +192,7 @@ public:
  /**
    * Pointer to the quartic gluon vertex
    */
-  inline tGeneralSVVVertexPtr vertexHGG() const;
+  virtual inline tGeneralSVVVertexPtr vertexHGG() const;
 
  /**
    * Pointer to the quartic gluon vertex
