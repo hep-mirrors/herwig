@@ -1,7 +1,7 @@
 bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc
-Herwig___LDFLAGS = -export-dynamic
-Herwig___LDADD = $(top_builddir)/lib/libHerwig.la
+Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
+Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
 DOTINFILES = Analysis.in Decays.in Hadronization.in \
 HerwigDefaults.in HerwigParticles.in Particles.in \
