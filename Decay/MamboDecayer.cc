@@ -36,7 +36,12 @@ void MamboDecayer::Init() {
   
   static ClassDocumentation<MamboDecayer> documentation
     ("Decayer class that implements MAMBO algorithm of Kleiss-"
-     "Stirling.");
+     "Stirling.",
+     "The MAMBO algorithm of \\cite{Kleiss:1991rn} was used for high"
+     " multiplicity decays",
+     "\\bibitem{Kleiss:1991rn} R.~Kleiss and W.~J.~Stirling,\n"
+     "Nucl.\\ Phys.\\  B {\\bf 385} (1992) 413.\n"
+     "%%CITATION = NUPHA,B385,413;%%\n");
   
   static Parameter<MamboDecayer,double> interfaceMaximumWeight
     ("MaxWeight",
@@ -48,6 +53,7 @@ void MamboDecayer::Init() {
 
 ParticleVector MamboDecayer::decay(const DecayMode & dm,
 				   const Particle & parent) const {
+  useMe();
   PDVector children = dm.orderedProducts();
   const int N = children.size();
   ParticleVector out(N);

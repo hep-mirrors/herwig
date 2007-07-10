@@ -14,7 +14,7 @@ namespace Herwig {
   /**
    * The MamboDecayer class inherits from the Decayer class in 
    * ThePEG and implements the algorithm of R.Kleiss and 
-   * W.J.Stirling for massive multi-particle phase-space
+   * W.J.Stirling NPB 385 (1992) 413-432 for massive multi-particle phase-space
    * decays 
    */
 class MamboDecayer: public Decayer {
