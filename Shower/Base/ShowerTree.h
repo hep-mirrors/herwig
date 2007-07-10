@@ -6,7 +6,7 @@
 #include "Herwig++/Shower/ShowerHandler.h"
 #include "Herwig++/Shower/ShowerConfig.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
-#include "ShowerProgenitor.fh"
+#include "ShowerProgenitor.h"
 #include "ThePEG/EventRecord/Step.h"
 #include <cassert>
 #include "ShowerTree.fh"
