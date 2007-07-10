@@ -124,6 +124,11 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object to the begining of the run phase.
+   */
+  inline virtual void doinitrun();
   //@}
 
 private:
