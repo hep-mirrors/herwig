@@ -158,16 +158,16 @@ SSHSFSFVertex::SSHSFSFVertex() : theMix(3), theTriC(9, complex<Energy>(0.*MeV)),
 
 void SSHSFSFVertex::doinit() throw(InitException) {
   SSSVertex::doinit();
-  theSBase = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
-  if( !theSBase )
+  theMSSM = dynamic_ptr_cast<tMSSMPtr>(generator()->standardModel());
+  if( !theMSSM )
     throw InitException() << "SSHSFSFVertex::doinit - A problem occurred"
 			  << "while trying to cast the SM pointer to "
 			  << "a Susy one." << Exception::abortnow;
   //mixing vector should have been sized correctly already
   assert( theMix.size() == 3 );
-  theMix[0] = theSBase->stopMix();
-  theMix[1] = theSBase->sbottomMix();
-  theMix[2] = theSBase->stauMix();
+  theMix[0] = theMSSM->stopMix();
+  theMix[1] = theMSSM->sbottomMix();
+  theMix[2] = theMSSM->stauMix();
 
   if(!theMix[0] || !theMix[1] || !theMix[2])
     throw InitException() << "SSHSFSFVertex::doinit -  "
@@ -176,40 +176,43 @@ void SSHSFSFVertex::doinit() throw(InitException) {
 			  << Exception::abortnow;
   //trilinear vector should have been sized correctly already
   assert( theTriC.size() == 9 );
-  //vector has been zeroed in construvtor
-  theTriC[4]=theSBase->bottomTrilinear().real();
-  theTriC[5]=theSBase->topTrilinear().real();
-  theTriC[8]=theSBase->tauTrilinear().real();
+  //vector has been zeroed in constructor
+  theTriC[4]=theMSSM->bottomTrilinear().real();
+  theTriC[5]=theMSSM->topTrilinear().real();
+  theTriC[8]=theMSSM->tauTrilinear().real();
   //Masses
   theMw = getParticleData(ParticleID::Wplus)->mass();
   theMz = getParticleData(ParticleID::Z0)->mass();
   //parameters
-  theSinA = sin(theSBase->higgsMixingAngle());
+  theSinA = sin(theMSSM->higgsMixingAngle());
   theCosA = sqrt(1. - sqr(theSinA));
-  theTanB = theSBase->tanBeta();
-  theMu = theSBase->muParameter();
+  theTanB = theMSSM->tanBeta();
+  theMu = theMSSM->muParameter();
   theSinB = theTanB/sqrt(1. + sqr(theTanB));
   theCosB = sqrt( 1. - sqr(theSinB) );
   theSinAB = theSinA*theCosB + theCosA*theSinB;
   theCosAB = theCosA*theCosB - theSinA*theSinB;
 
-  theSw = sqrt(theSBase->sin2ThetaW());
-  theCw = sqrt(1. - theSBase->sin2ThetaW());
+  theSw = sqrt(theMSSM->sin2ThetaW());
+  theCw = sqrt(1. - theMSSM->sin2ThetaW());
 
   orderInGem(1);
   orderInGs(0);
 }
 
 void SSHSFSFVertex::persistentOutput(PersistentOStream & os) const {
-  os << theSBase << theMix << ounit(theTriC,GeV) << theSinA << theCosA << theSinB
-     << theCosB << theTanB << theSinAB << theCosAB << ounit(theMw,GeV) 
-     << ounit(theMz,GeV) << theSw << theCw;
+  os << theMSSM << theMix << theSinA << theCosA << theSinB
+     << theCosB << theTanB << ounit(theMu, GeV) << theSinAB << theCosAB 
+     << ounit(theMw,GeV) << ounit(theMz,GeV) << theSw << theCw 
+     << ounit(theTriC,GeV);
+
 }
 
 void SSHSFSFVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theSBase >> theMix >> iunit(theTriC,GeV) >> theSinA >> theCosA >> theSinB
-     >> theCosB >> theTanB >> theSinAB >> theCosAB >> iunit(theMw,GeV) 
-     >> iunit(theMz,GeV) >> theSw >> theCw;
+  is >> theMSSM >> theMix >>  theSinA >> theCosA >> theSinB
+     >> theCosB >> theTanB >> iunit(theMu, GeV) >> theSinAB >> theCosAB 
+     >> iunit(theMw,GeV) >> iunit(theMz,GeV) >> theSw >> theCw
+     >> iunit(theTriC,GeV);
 }
 
 ClassDescription<SSHSFSFVertex> SSHSFSFVertex::initSSHSFSFVertex;
@@ -254,9 +257,12 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
   }
   assert( higgsID != 0 && sq1ID != 0 && sq2ID != 0);
   
+  if( q2 != theq2Last ) {
+      thegLast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw;
+      theq2Last = q2;
+    }
+  
   if( higgsID == theHLast && sq1ID == theSF1Last && sq2ID == theSF2Last) {
-    if( q2 != theq2Last )
-      thegLast = sqrt(4.*Constants::pi*theSBase->alphaEM(q2))/theSw;
     setNorm(thegLast*theCoupLast*UnitRemoval::InvE);
     return;
   }
@@ -283,9 +289,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
       leptonSF(higgsID, smID, alpha, beta);
   
   }
-  
-  if( q2 != theq2Last )
-    thegLast = sqrt(4.*Constants::pi*theSBase->alphaEM(q2))/theSw;
+ 
   setNorm(thegLast*theCoupLast*UnitRemoval::InvE);
 }
 
@@ -301,7 +305,7 @@ void SSHSFSFVertex::setCoupling(Energy2 q2, tcPDPtr particle1,
    }
    Energy mfactb = sqr(fmass)/theMw/theCosB;
    Energy facta = theMz/theCw;
-   double factb = theSBase->ed()*theSw*theSw;
+   double factb = theMSSM->ed()*theSw*theSw;
    //mixing parameters
    Complex q1a(0.), q1b(0.), q2a(0.), q2b(0.);  
    if( smID == 1 || smID == 3) {
@@ -345,7 +349,7 @@ void SSHSFSFVertex::upSF(long higgs, long smID,
   }
   Energy mfactb = sqr(fmass)/theMw/theSinB;
   Energy facta = theMz/theCw;
-  double factb = theSBase->eu()*theSw*theSw;
+  double factb = theMSSM->eu()*theSw*theSw;
   //mixing parameters
   Complex q1a(0.), q1b(0.), q2a(0.), q2b(0.);  
   if( smID == 2 || smID == 4) {
@@ -392,7 +396,7 @@ void SSHSFSFVertex::leptonSF(long higgs, long smID,
   Energy fmass = getParticleData(smID)->mass();
   double mfacta = fmass/2./theMw;
   if( higgs == ParticleID::A0 ) {
-    theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[(smID + 1)/2] + theMu);
+    theCoupLast = -Complex(0.,1.)*mfacta*(theTriC[(smID + 1)/2]*theTanB + theMu);
     return;
   }
   Energy mfactb = fmass*fmass/theMw/theCosB;
@@ -420,7 +424,7 @@ void SSHSFSFVertex::leptonSF(long higgs, long smID,
    }
    else if( higgs == ParticleID::H0 ) {
      theCoupLast = facta*theCosAB*fbrac - mfactb*theCosA*sbrac 
-       + mfacta*(theMu*theSinA - theTriC[(smID - 1)/2]*theCosA)*tbrac/theCosB;
+       + mfacta*(theMu*theSinA - theTriC[(smID + 1)/2]*theCosA)*tbrac/theCosB;
    }
    else
      throw HelicityConsistencyError() 
@@ -450,8 +454,9 @@ void SSHSFSFVertex::chargedHiggs(long id1, long id2) {
       l1b = (*theMix[2])(0, beta);
       l2b = (*theMix[2])(1, beta);
     }
-    theCoupLast = (l1b*(mfd*mfd*theTanB - facta) 
-		   + l2b*mfd*(theTriC[(smdID + 1)/2]*theTanB + theMu))/theMw/sqrt(2.);
+    theCoupLast = ( l1b*(mfd*mfd*theTanB - facta) 
+		    + l2b*mfd*(theTriC[(smdID + 1)/2]*theTanB + theMu)
+		   )/theMw/sqrt(2.);
   }
   else {
     unsigned int alpha(0);
@@ -480,9 +485,10 @@ void SSHSFSFVertex::chargedHiggs(long id1, long id2) {
     q2b = (*theMix[1])(1, beta);
   }
   
-  theCoupLast = (q1a*q1b*(mfd*mfd*theTanB + mfu*mfu/theTanB - facta)
-		 + q2a*q2b*mfu*mfd*(theTanB + (1./theTanB))
-		 + q1a*q1b*mfd*(theTriC[smdID - 1]*theTanB + theMu)
-		 + q2a*q1b*mfu*(theMu + theTriC[(smuID + 1)/2]/theTanB))/theMw/sqrt(2.);
+  theCoupLast = ( q1a*q1b*(mfd*mfd*theTanB + mfu*mfu/theTanB - facta)
+		  + q2a*q2b*mfu*mfd*(theTanB + (1./theTanB))
+		  + q1a*q1b*mfd*(theTriC[smdID - 1]*theTanB + theMu)
+		  + q2a*q1b*mfu*(theMu + theTriC[(smuID + 1)/2]/theTanB)
+		 )/theMw/sqrt(2.);
   }
 }

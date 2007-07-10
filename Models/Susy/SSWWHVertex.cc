@@ -59,7 +59,7 @@ void SSWWHVertex::doinit() throw(InitException) {
   double sinbeta = tanbeta/sqrt(1. + sqr(tanbeta));
   double cosbeta = sqrt( 1. - sqr(sinbeta) );
   double sinbma = sinbeta*cosalp - cosbeta*sinalp;
-  double cosbma = cosbeta*cosalp - sinbeta*sinalp;
+  double cosbma = cosbeta*cosalp + sinbeta*sinalp;
   
   theh0Wfact = mw*sinbma/sw;
   theH0Wfact = mw*cosbma/sw;
@@ -71,12 +71,12 @@ void SSWWHVertex::doinit() throw(InitException) {
 }
 
 void SSWWHVertex::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theh0Wfact,GeV) << ounit(theH0Wfact,GeV) 
+  os << theMSSM << ounit(theh0Wfact,GeV) << ounit(theH0Wfact,GeV) 
      << ounit(theh0Zfact,GeV) << ounit(theH0Zfact,GeV);
 }
 
 void SSWWHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theh0Wfact,GeV) >> iunit(theH0Wfact,GeV) 
+  is >> theMSSM >> iunit(theh0Wfact,GeV) >> iunit(theH0Wfact,GeV) 
      >> iunit(theh0Zfact,GeV) >> iunit(theH0Zfact,GeV);
 }
 

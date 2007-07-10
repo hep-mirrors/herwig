@@ -113,6 +113,25 @@ public:
    */
   static void Init();
 
+  /**@name Functions to access specific vertices.*/
+  //@{
+  /**
+   * Pointer to the MSSM fermion-antifermion-higgs vertex 
+   */
+  virtual inline tFFSVertexPtr vertexFFH() const;
+  
+  /**
+   * Pointer to the MSSM double gauge boson-higgs vertex 
+   */
+  virtual inline tVVSVertexPtr vertexWWH() const;
+  
+  /**
+   * Pointer to the MSSM effective higgs-gluon-gluon vertex
+   */
+  virtual inline tGeneralSVVVertexPtr vertexHGG() const;
+  //@}
+
+
 protected:
   
   /**
@@ -392,7 +411,7 @@ private:
   /**
    * Pointer to the vertex fermion-antifermion-higgs vertex
    */
-  FFSVertexPtr theFFHVertex;
+  FFSVertexPtr theSSFFHVertex;
 
   /**
    * Pointer to the vertex gaugino-gaugino-higgs vertex
@@ -402,7 +421,7 @@ private:
   /**
    * Pointer to the vertex for a pair of gauge bosons and higgs
    */
-  VVSVertexPtr theWWHVertex;
+  VVSVertexPtr theSSWWHVertex;
   
   /**
    * Pointer to the vertex for a gauge boson and higgs
@@ -413,6 +432,11 @@ private:
    * Pointer to triple higgs vertex
    */
   SSSVertexPtr theHHHVertex;
+  
+  /**
+   * The effective coupling of the higgs to a pai of gluons in the MSSM
+   */
+  GeneralSVVVertexPtr theSSHGGVertex;
   //@}
 };
 

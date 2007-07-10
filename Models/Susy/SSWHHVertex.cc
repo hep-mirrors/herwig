@@ -15,7 +15,7 @@ using namespace ThePEG::Helicity;
 using namespace Herwig;
 
 SSWHHVertex::SSWHHVertex() : 
-  theSw(0.), theS2w(0.), theC2w(0.), theSab(0.), theCab(0.), 
+  theSw(0.), theS2w(0.), theC2w(0.), thesbma(0.), thecbma(0.), 
   theGBlast(0), theHlast(0), theCouplast(0.), theq2last(0.*MeV2), 
   theElast(0.) {
   vector<int> first, second, third;
@@ -70,14 +70,23 @@ void SSWHHVertex::doinit() throw(InitException) {
   double cw = sqrt(1. - sqr(theSw));
   theS2w = 2.*theSw*cw;
   theC2w = cw*cw - theSw*theSw;
+
+  double sina = sin(theMSSM->higgsMixingAngle());
+  double cosa =  sqrt(1. - sqr(sina));
+  double tanb = theMSSM->tanBeta();
+  double sinb = tanb/sqrt(1. + sqr(tanb));
+  double cosb = sqrt( 1. - sqr(sinb) );
+  thesbma = sinb*cosa - sina*cosb;
+  thecbma = cosa*cosb + sina*sinb;
+
 }
 
 void SSWHHVertex::persistentOutput(PersistentOStream & os) const {
-  os <<  theSw << theS2w << theC2w << theSab << theCab;
+  os << theMSSM << theSw << theS2w << theC2w << thesbma << thecbma;
 }
 
 void SSWHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >>  theSw >> theS2w >> theC2w >> theSab >> theCab;
+  is >> theMSSM >> theSw >> theS2w >> theC2w >> thesbma >> thecbma;
 }
 
 ClassDescription<SSWHHVertex> SSWHHVertex::initSSWHHVertex;
@@ -144,23 +153,24 @@ void SSWHHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2,
       if( higgs == ParticleID::Hplus ) 
 	theCouplast = theC2w/theS2w;
       else if( higgs == ParticleID::h0 ) 
-	theCouplast = Complex(0., 1.)*theCab/theS2w;
+	theCouplast = -Complex(0., 1.)*thecbma/theS2w;
       else 
-	theCouplast = Complex(0., 1.)*theSab/theS2w;
+	theCouplast = Complex(0., 1.)*thesbma/theS2w;
     }
     else {
-      if( higgs == ParticleID::h0 )
-	theCouplast = theCab/2./theSw;
-      else if( higgs == ParticleID::H0)
-	theCouplast = theSab/2./theSw;
+      if( higgs == ParticleID::h0 ) {
+	theCouplast = -0.5*thecbma/theSw;
+      }
+      else if( higgs == ParticleID::H0) 
+	theCouplast = 0.5*thesbma/theSw;
       else 
-	theCouplast = Complex(0., 1.)/2./theSw;
+	theCouplast = Complex(0., 0.5)/theSw;
     }
   }
   if( q2 != theq2last ) {
     theq2last = q2;
     theElast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2));
   }
-  
+
   setNorm(theElast*theCouplast);
 }

@@ -57,7 +57,7 @@ void SSHHHVertex::doinit() throw(InitException) {
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
   theSw = sqrt(theMSSM->sin2ThetaW());
-  theZfact = getParticleData(ParticleID::Z0)->mass()/2./theSw/(1. - sqr(theSw));
+  theZfact = getParticleData(ParticleID::Z0)->mass()/2./theSw/sqrt(1. - sqr(theSw));
   
   double tanbeta = theMSSM->tanBeta();
   double sinbeta = tanbeta/sqrt(1. + sqr(tanbeta));
@@ -79,13 +79,15 @@ void SSHHHVertex::doinit() throw(InitException) {
 }
 
 void SSHHHVertex::persistentOutput(PersistentOStream & os) const {
-  os << ounit(theMw,GeV) << ounit(theZfact,GeV) << theSw << theSbpa 
-     << theCbpa << theSbma << theCbma << theS2a << theC2a << theS2b << theC2b; 
+  os << theMSSM << ounit(theMw,GeV) << ounit(theZfact,GeV) << theSw 
+     << theSbpa << theCbpa << theSbma << theCbma << theS2a << theC2a 
+     << theS2b << theC2b; 
 }
 
 void SSHHHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(theMw,GeV) >> iunit(theZfact,GeV) >> theSw >> theSbpa 
-     >> theCbpa >> theSbma >> theCbma >> theS2a >> theC2a >> theS2b >> theC2b;
+  is >> theMSSM >> iunit(theMw,GeV) >> iunit(theZfact,GeV) >> theSw 
+     >> theSbpa >> theCbpa >> theSbma >> theCbma >> theS2a >> theC2a 
+     >> theS2b >> theC2b;
 }
 
 ClassDescription<SSHHHVertex> SSHHHVertex::initSSHHHVertex;

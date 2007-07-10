@@ -130,9 +130,9 @@ private:
   Energy theMw;
 
   /**
-   * The matrix \f$R_{ij}\f$ 
+   * The matrix \f$S_{ij}\f$ 
    */
-  vector<vector<Complex> > theRij;
+  vector<vector<Complex> > theSij;
 
   /**
    * The matrix \f$Q_{ij}\f$ 
@@ -150,9 +150,9 @@ private:
   vector<vector<Complex> > theQijRp;
 
   /**
-   * The matrix \f$R_{ij}^{''}\f$ 
+   * The matrix \f$S_{ij}^{''}\f$ 
    */
-  vector<vector<Complex> > theRijdp;
+  vector<vector<Complex> > theSijdp;
 
   /**
    * The matrix \f$Q_{ij}^{''}\f$ 
@@ -185,21 +185,6 @@ private:
   double theCb;  
 
   /**
-   * The value of \f$\cos 2\beta\f$ 
-   */
-  double theC2b;  
-  
-  /**
-   * The value of \f$\sin(\beta - \alpha)\f$ 
-   */
-  double theSba;
-
-  /**
-   * The value of \f$\cos(\beta - \alpha)\f$ 
-   */
-  double theCba;
-
-  /**
    * The value of the coupling when it was last evaluated.
    */
   Complex theCoupLast;
@@ -228,6 +213,11 @@ private:
    * The ID of the first gaugino when the coupling was las evaluated
    */
   long theID2Last;
+
+  /**
+   * The scale at which the coupling was last evaluated 
+   */
+  Energy2 theq2last;
 };
 }
 

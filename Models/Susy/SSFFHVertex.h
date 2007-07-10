@@ -172,6 +172,16 @@ private:
    * The ID of the last fermion for which the vertex was evaluated
    */
   long theFLast;
+    
+  /**
+   * The value of \f$ \frac{e}{\sin\theta_W} \f$ when it was last evaluated.
+   */
+  double theGlast;
+
+    /**
+   * The scale at which then coupling was last evaluated. 
+   */
+  Energy2 theq2last;
 };
 }
 

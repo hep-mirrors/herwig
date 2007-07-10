@@ -56,5 +56,19 @@ inline const map<string,pair<pair<unsigned int,unsigned int>, vector<MixingEleme
 & SusyBase::mixings() const {
   return _mixings;
 }
+
+inline tFFSVertexPtr SusyBase::vertexFFH() const {
+  return theSSFFHVertex;
+}  
+
+inline tVVSVertexPtr SusyBase::vertexWWH() const {
+  return theSSWWHVertex;
+}
+  
+inline tGeneralSVVVertexPtr SusyBase::vertexHGG() const{
+  return theSSHGGVertex;
+}
+
+
 }
 

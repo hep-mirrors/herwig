@@ -14,16 +14,15 @@
 using namespace ThePEG::Helicity;
 using namespace Herwig;
 
-SSGOGOHVertex::SSGOGOHVertex() : theMw(0.*MeV), theRij(2, vector<Complex>(2,0.0)),
+SSGOGOHVertex::SSGOGOHVertex() : theMw(), theSij(2, vector<Complex>(2,0.0)),
 				 theQij(2, vector<Complex>(2,0.0)),
 				 theQijLp(4, vector<Complex>(2,0.0)),
 				 theQijRp(4, vector<Complex>(2,0.0)),
-				 theRijdp(4, vector<Complex>(4,0.0)),
+				 theSijdp(4, vector<Complex>(4,0.0)),
 				 theQijdp(4, vector<Complex>(4,0.0)),
 				 theSw(0.0), theSa(0.0), theSb(0.0),
-				 theCa(0.0), theCb(0.0),theC2b(0.0),
-				 theSba(0.), theCba(0.0), theCoupLast(0.0), 
-				 theLLast(0.0), theRLast(0.0) {
+				 theCa(0.0), theCb(0.0), theCoupLast(0.0),
+				 theLLast(0.0), theRLast(0.0), theq2last() {
   vector<int> first, second, third;
   int neu[4] = {1000022, 1000023, 1000025, 1000035};
   int chg[2] = {1000024, 1000037};
@@ -70,14 +69,13 @@ void SSGOGOHVertex::doinit() throw(InitException) {
   
   theMw = getParticleData(ParticleID::Wplus)->mass();
   theSw = sqrt(theMSSM->sin2ThetaW());
-  double tw = theSw/(1. - theSw*theSw);
+  double tw = theSw/sqrt(1. - theSw*theSw);
   double tanb = theMSSM->tanBeta();
   Energy mu = theMSSM->muParameter();
   theSb = tanb/sqrt(1. + sqr(tanb));
-  theCb = sqrt( 1. - sqr(tanb) );
+  theCb = sqrt( 1. - sqr(theSb) );
   theSa = sin(theMSSM->higgsMixingAngle());
   theCa = sqrt(1. - sqr(theSa));
-  theC2b = theCb*theCb - theSb*theSb;
   
   MixingMatrix nmix = *theMSSM->neutralinoMix();
   MixingMatrix umix = *theMSSM->charginoUMix();
@@ -86,27 +84,46 @@ void SSGOGOHVertex::doinit() throw(InitException) {
   Energy mOne = theMSSM->softMOne();
   Energy mTwo = theMSSM->softMTwo();
 
+//   for(unsigned int i = 0; i < 4; ++i) {
+//     for(unsigned int j = 0; j < 4; ++j) {
+//       if( i < 2 && j < 2 ) { 
+// 	theRij[i][j] = 
+// 	  ( mTwo*umix(i,0)*vmix(j,0) + mu*umix(i,1)*vmix(j,1))/2./theMw;
+
+// 	theQij[i][j] = umix(i,1)*vmix(j,0)/sqrt(2);
+//       }
+//       if( j < 2 ) {
+// 	theQijLp[i][j] = theCb*( nmix(i, 3)*vmix(j,0) 
+// 				 + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2));
+// 	theQijRp[i][j] = theSb*( nmix(i, 3)*umix(j,0) 
+// 				 - (nmix(i,1) + nmix(i,0)*tw)*umix(j,1)/sqrt(2));
+//       }
+
+//       theRijdp[i][j] = 
+// 	( mTwo*nmix(i,1)*nmix(j,1) + mOne*nmix(i,0)*nmix(j,0)
+// 	  - mu*(nmix(i,2)*nmix(j,3) + nmix(i,3)*nmix(j,2)) )/2./theMw;
+      
+//       theQijdp[i][j] = 0.5*( nmix(i,2)*( nmix(j,1) - theSw*nmix(j,0) )
+// 			     + nmix(j,2)*( nmix(i,1) - theSw*nmix(i,0) ) );
+//     }
+//   }
+
   for(unsigned int i = 0; i < 4; ++i) {
     for(unsigned int j = 0; j < 4; ++j) {
       if( i < 2 && j < 2 ) { 
-	theRij[i][j] = 
-	  ( mTwo*umix(i,0)*vmix(j,0) + mu*umix(i,1)*vmix(j,1))/2./theMw;
-
-	theQij[i][j] = umix(i,1)*vmix(j,0)/sqrt(2);
+	theQij[i][j] = vmix(i,0)*umix(j,1)/sqrt(2);
+	theSij[i][j] = vmix(i,1)*umix(j,0)/sqrt(2);
       }
       if( j < 2 ) {
-	theQijLp[i][j] = theCb*( nmix(i, 3)*vmix(j,0) 
-				 + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2));
-	theQijRp[i][j] = theSb*( nmix(i, 3)*umix(j,0) 
-				 - (nmix(i,1) + nmix(i,0)*tw)*umix(j,1)/sqrt(2));
+	theQijLp[i][j] = nmix(i, 3)*vmix(j,0) 
+	  + (nmix(i,1) + nmix(i,0)*tw)*vmix(j,1)/sqrt(2);
+	theQijRp[i][j] = nmix(i, 2)*umix(j,0) 
+	  - (nmix(i,1) + nmix(i,0)*tw)*umix(j,1)/sqrt(2);
       }
-
-      theRijdp[i][j] = 
-	( mTwo*nmix(i,1)*nmix(j,1) + mOne*nmix(i,0)*nmix(j,0)
-	  - mu*(nmix(i,2)*nmix(j,3) + nmix(i,3)*nmix(j,2)) )/2./theMw;
-      
-      theQijdp[i][j] = 0.5*( nmix(i,2)*( nmix(j,1) - theSw*nmix(j,0) )
-			     + nmix(j,2)*( nmix(i,1) - theSw*nmix(i,0) ) );
+      theQijdp[i][j] = 0.5*( nmix(i,2)*( nmix(j,1) - tw*nmix(j,0) )
+			     + nmix(j,2)*( nmix(i,1) - tw*nmix(i,0) ) );
+      theSijdp[i][j] = 0.5*( nmix(i,3)*( nmix(j,1) - tw*nmix(j,0) )
+			     + nmix(j,3)*( nmix(i,1) - tw*nmix(i,0) ) );
     }
   }
   
@@ -115,21 +132,15 @@ void SSGOGOHVertex::doinit() throw(InitException) {
 }
 
 void SSGOGOHVertex::persistentOutput(PersistentOStream & os) const {
-  os << theMSSM  << theRij << theQij << theQijLp << theQijRp << theRijdp
-     << theQijdp << ounit(theMw,GeV) << theSw << theSa << theSb << theCa << theCb 
-     << theC2b << theSba << theCba;
+  os << theMSSM  << theSij << theQij << theQijLp << theQijRp << theSijdp
+     << theQijdp << ounit(theMw,GeV) << theSw << theSa << theSb << theCa 
+     << theCb;
 }
 
 void SSGOGOHVertex::persistentInput(PersistentIStream & is, int) {
-  is >> theMSSM  >> theRij >> theQij >> theQijLp >> theQijRp >> theRijdp
-     >> theQijdp >> iunit(theMw,GeV) >> theSw >> theSa >> theSb >> theCa >> theCb 
-     >> theC2b >> theSba >> theCba;
-  theCoupLast = 0.0;
-  theLLast = 0.0;
-  theRLast = 0.0;
-  theHLast = 0;
-  theID1Last = 0;
-  theID2Last = 0;
+  is >> theMSSM  >> theSij >> theQij >> theQijLp >> theQijRp >> theSijdp
+     >> theQijdp >> iunit(theMw,GeV) >> theSw >> theSa >> theSb >> theCa 
+     >> theCb;
 }
 
 ClassDescription<SSGOGOHVertex> SSGOGOHVertex::initSSGOGOHVertex;
@@ -172,7 +183,11 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
     return;
   }
   if( f1ID < 0 ) swap(f1ID, f2ID);
-
+  
+  if( q2 != theq2last ) {
+    theCoupLast = sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw;
+    theq2last = q2;
+  }
   if( higgsID == theHLast && f1ID == theID1Last && f2ID == theID2Last) {
     setNorm(theCoupLast);
     setLeft(theLLast);
@@ -183,22 +198,13 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
   theID1Last = f1ID;
   theID2Last = f2ID;
   
-  theCoupLast = -sqrt(4.*Constants::pi*theMSSM->alphaEM(q2))/theSw/theSb;
-
   if( higgsID == ParticleID::h0 ) {
     //charginos
     if( f2ID < 0 ) {
       unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-      theLLast = -( conj(theQij[ei][ej])*theCba 
-		    + conj(theRij[ei][ej])*theCa );
-      theRLast = -( theQij[ej][ei]*theCba 
-		    + theRij[ej][ei]*theCa );
-      if( ei == ej ) {
-	double delta = theCa*getParticleData(f1ID)->mass()/theMw/2.;
-	theLLast += delta;
-	theRLast += delta;
-      }
+      theLLast =  conj(theQij[ej][ei])*theSa - conj(theSij[ej][ei])*theCa;
+      theRLast = theQij[ei][ej]*theSa - theSij[ei][ej]*theCa;
     }
     //neutralinos
     else {
@@ -208,62 +214,19 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
 	ei = ( ei == 13 ) ? 3 : 2;
       if( ej > 1 )
 	ej = ( ej == 13 ) ? 3 : 2;
-      theRLast = -( theQijdp[ei][ej]*theCba 
-		    + theRijdp[ei][ej]*theCa ) ;
-      theLLast = conj(theRLast);
-      if( ei == ej ) {
-	double delta = theCa*getParticleData(f1ID)->mass()/theMw/2.;
-	theLLast += delta;
-	theRLast += delta;
-      }
+      theLLast = conj(theQijdp[ej][ei])*theSa + conj(theSijdp[ej][ei])*theCa;
+      theRLast = theQijdp[ei][ej]*theSa + theSijdp[ei][ej]*theCa ;
     }
     
   }
   else if( higgsID == ParticleID::H0 ) {
     //charginos
     if( f2ID < 0 ) {
+   
       unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
       unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-      theLLast = conj(theQij[ei][ej])*theSba 
-	- conj(theRij[ei][ej])*theSa;
-      theRLast = theQij[ej][ei]*theSba 
-	- theRij[ej][ei]*theSa ;
-      if( ei == ej ) {
-	double delta = theSa*getParticleData(f1ID)->mass()/theMw/2.;
-	theLLast += delta;
-	theRLast += delta;
-      }
-    }
-    //neutralinos
-    else {
-      unsigned int ei(f1ID - ParticleID::SUSY_chi_10), 
-	ej(f2ID - ParticleID::SUSY_chi_10);
-      if( ei > 1 )
-	ei = ( ei == 13 ) ? 3 : 2;
-      if( ej > 1 )
-	ej = ( ej == 13 ) ? 3 : 2;
-      theRLast = theQijdp[ei][ej]*theSba 
-	- theRijdp[ei][ej]*theSa;
-      theLLast = conj(theRLast);
-      if( ei == ej ) {
-	double delta = theSa*getParticleData(f1ID)->mass()/theMw/2.;
-	theLLast += delta;
-	theRLast += delta;
-      }
-    }
-  }
-  else if( higgsID == ParticleID::A0 ) {
-    theCoupLast *= Complex(0., 1.);
-    if( f2ID < 0 ) {
-      unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-      unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
-      theLLast = conj(theQij[ei][ej])*theC2b + conj(theRij[ei][ej])*theCb;
-      theRLast = -theQij[ej][ei]*theC2b - theRij[ej][ei]*theCb;
-      if( ei == ej ) {
-	double delta = theCb*getParticleData(f1ID)->mass()/theMw/2.;
-	theLLast += delta;
-	theRLast -= delta;
-      }
+      theLLast =  -conj(theQij[ej][ei])*theCa - conj(theSij[ej][ei])*theSa;
+      theRLast = -theQij[ei][ej]*theCa - theSij[ei][ej]*theSa;
     }
     //neutralinos
     else {
@@ -274,13 +237,31 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
       if( ej > 1 )
 	ej = ( ej == 13 ) ? 3 : 2;
       
-      theRLast = -theQijdp[ei][ej]*theC2b - theRijdp[ei][ej]*theCb;
-      theLLast = -conj(theRLast);
-      if( ei == ej ) {
-	double delta = theCb*getParticleData(f1ID)->mass()/theMw/2.;
-	theLLast += delta;
-	theRLast -= delta;
-      }
+      theLLast = -conj(theQijdp[ej][ei])*theCa + conj(theSijdp[ej][ei])*theSa;
+      theRLast = -theQijdp[ei][ej]*theCa + theSijdp[ei][ej]*theSa;
+    }
+  }
+  else if( higgsID == ParticleID::A0 ) {
+    if( f2ID < 0 ) {
+            unsigned int ei = (f1ID == ParticleID::SUSY_chi_1plus) ? 0 : 1;
+      unsigned int ej = (abs(f2ID) == ParticleID::SUSY_chi_1plus) ? 0 : 1;
+
+      theLLast = Complex(0.,1.)*( conj(theQij[ej][ei])*theSb 
+				  + conj(theSij[ej][ei])*theCb );
+      theRLast = -Complex(0.,1.)*(theQij[ei][ej]*theSb + theSij[ei][ej]*theCb);
+    }
+    //neutralinos
+    else {
+      unsigned int ei(f1ID - ParticleID::SUSY_chi_10), 
+	ej(f2ID - ParticleID::SUSY_chi_10);
+      if( ei > 1 )
+	ei = ( ei == 13 ) ? 3 : 2;
+      if( ej > 1 )
+	ej = ( ej == 13 ) ? 3 : 2;
+
+      theLLast = Complex(0.,1.)*( conj(theQijdp[ej][ei])*theSb 
+				  - conj(theSijdp[ej][ei])*theCb );
+      theRLast = -Complex(0.,1.)*(theQijdp[ei][ej]*theSb - theSijdp[ei][ej]*theCb);
     }
   }
   //charged higgs
@@ -293,10 +274,9 @@ void SSGOGOHVertex::setCoupling(Energy2 q2, tcPDPtr particle1, tcPDPtr particle2
     ei = neu - ParticleID::SUSY_chi_10;
     if( ei > 1 )
       ei = ( ei == 13 ) ? 3 : 2;
-    
-    theCoupLast *= theSb;
-    theLLast = theQijLp[ei][ej];
-    theRLast = theQijRp[ei][ej];
+        
+    theLLast = -theQijLp[ei][ej]*theCb;
+    theRLast = -theQijRp[ei][ej]*theSb;
     if( chg < 0 ) {
       Complex tmp = theLLast;
       theLLast = conj(theRLast);

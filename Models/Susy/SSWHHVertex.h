@@ -138,14 +138,14 @@ private:
   double theC2w;
 
   /**
-   * The value of \f$\sin(\alpha - \beta)\f$ 
+   * The value of \f$\sin(\beta - \alpha)\f$ 
    */
-  double theSab;
+  double thesbma;
 
   /**
-   * The value of \f$\cos(\alpha - \beta)\f$ 
+   * The value of \f$\cos(\beta - \alpha)\f$ 
    */
-  double theCab;
+  double thecbma;
   
   /**
    * The ID of the gauge boson when the vertex was last evaluated
