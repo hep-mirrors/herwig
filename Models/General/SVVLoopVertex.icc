@@ -7,7 +7,7 @@
 namespace Herwig {
 using namespace Looptools;
     
-inline SVVLoopVertex::SVVLoopVertex() {
+inline SVVLoopVertex::SVVLoopVertex() : theNpart(0) {
   kinematics(true);
 }
     
@@ -34,5 +34,8 @@ inline void SVVLoopVertex::doinitrun() {
   GeneralSVVVertex::doinitrun();
 }
 
- 
+inline void SVVLoopVertex::setNParticles(unsigned int npart) {
+  theNpart = npart;
+}
+
 }

@@ -69,6 +69,24 @@ protected:
   inline virtual IBPtr fullclone() const;
   //@}
 
+public:
+  
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+  
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
 protected:
 
   /** @name Standard Interfaced functions. */
@@ -104,16 +122,16 @@ protected:
    * Vector of loop types
    */
   vector<PDT::Spin> type;
-  
+
   /**
-   * Vector of left couplings
+   * The left and right couplings for a fermion loop 
    */
-  vector<double> left;
-  
+  vector<pair<Complex, Complex> > couplings;
+
   /**
-   * Vector of right couplings
+   * Set the number of particles in the loop 
    */
-  vector<double> right;
+  inline void setNParticles(unsigned int npart);
   
 private:
   
@@ -121,14 +139,20 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static NoPIOClassDescription<SVVLoopVertex> initSVVLoopVertex;
+  static ClassDescription<SVVLoopVertex> initSVVLoopVertex;
   
   /**
    * The assignment operator is private and must never be called.
    * In fact, it should not even be implemented.
    */
   SVVLoopVertex & operator=(const SVVLoopVertex &);
+
+private:
   
+  /**
+   * The number of particles in the loop 
+   */
+  unsigned int theNpart;
 };
   
 }

@@ -6,12 +6,10 @@
 //
 
 #include "Herwig++/Models/General/SVVLoopVertex.h"
-#include "SMHPPVertex.fh"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/PDT/EnumParticles.h"
+#include "SMHPPVertex.fh"
 
 namespace Herwig {
-using namespace ThePEG;
     
 /**
  * The <code>SMHPPVertex</code> class implements the
@@ -60,8 +58,8 @@ public:
    * Calculate couplings
    *@param q2 Scale at which to evaluate coupling
    *@param part1 ParticleData pointer to first particle
-   *@param part2 ParticleData pointer to first particle
-   *@param part3 ParticleData pointer to first particle
+   *@param part2 ParticleData pointer to second particle
+   *@param part3 ParticleData pointer to third particle
    */
   virtual void setCoupling(Energy2 q2, tcPDPtr part1, tcPDPtr part2,
 			   tcPDPtr part3);
@@ -127,17 +125,27 @@ private:
   tcHwSMPtr _theSM;
   
   /**
-   * Mass of W boson for higgs coupling
+   * The mass of the \f$W\f$ boson.
    */
   Energy _mw;
-  
+
   /**
    * Storage of \f$\sin\theta_W\f$
    */
   double _sw;
   
+  /**
+   * A pointer to the top quark ParticleData object 
+   */
+  tcPDPtr _top;
+
+  /**
+   * Whether we have calculated the tensor coefficients already
+   */
+  bool _haveCoeff;  
 };
 }
+
 
 #include "ThePEG/Utilities/ClassTraits.h"
 
@@ -160,6 +168,10 @@ struct ClassTraits<Herwig::SMHPPVertex>
   : public ClassTraitsBase<Herwig::SMHPPVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SMHPPVertex"; }
+  /** Return the name of the shared library be loaded to get
+   *  access to the SMHPPVertex class and every other class it uses
+   *  (except the base class). */
+  static string library() { return "HwSMVertex.so"; }
 };
 
 /** @endcond */

@@ -9,18 +9,41 @@
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/PDT/EnumParticles.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
+
+void SMHGGVertex::doinit() throw(InitException) {
+  _theSM = dynamic_ptr_cast<tcHwSMPtr>(generator()->standardModel());
+  if( !_theSM ) 
+    throw InitException() 
+      << "SMHGGVertex::doinit() - The pointer to the SM object is null."
+      << Exception::abortnow;
+  _sw = sqrt(_theSM->sin2ThetaW());
+  
+  _mw = getParticleData(ThePEG::ParticleID::Wplus)->mass();
+  _top = getParticleData(ParticleID::t);
+  _bottom = getParticleData(ParticleID::b);
+  if( _qopt == 0 ) {
+    setNParticles(1);
+    type.resize(1, PDT::Spin1Half);
+  }
+  else {
+    setNParticles(2);
+    type.resize(2, PDT::Spin1Half);
+  }
+  orderInGs(2);
+  orderInGem(1);
+  SVVLoopVertex::doinit();
+}
+
 
 void SMHGGVertex::persistentOutput(PersistentOStream & os) const {
-  os << _theSM << ounit(_mw,GeV) << _sw;
+  os << _theSM << ounit(_mw, GeV) << _sw << _top << _qopt << _haveCoeff;
 }
 
 void SMHGGVertex::persistentInput(PersistentIStream & is, int) {
-  is >> _theSM >> iunit(_mw,GeV) >> _sw;
-  _couplast =0.;
-  _q2last = 0.*GeV2;
+  is >> _theSM >> iunit(_mw, GeV) >> _sw >> _top >> _qopt >> _haveCoeff;
 }
 
 ClassDescription<SMHGGVertex> SMHGGVertex::initSMHGGVertex;
@@ -48,40 +71,48 @@ void SMHGGVertex::Init() {
 }
   
 void SMHGGVertex::setCoupling(Energy2 q2, tcPDPtr part1,
-			      tcPDPtr part2, tcPDPtr part3)
-{
-  tcPDPtr t = getParticleData(ParticleID::t);
-  tcPDPtr b = getParticleData(ParticleID::b);
-  if(_qopt == 0) {
-    type.resize(1,PDT::SpinUnknown);
-    type[0] = PDT::Spin1Half;
-    masses.resize(1,0.*GeV);
-    masses[0] = _theSM->mass(q2,t);
-    left.resize(1,0.);right.resize(1,0.);
-    left[0] = _theSM->mass(q2,t)/_mw;
-    right=left;
+			      tcPDPtr part2, tcPDPtr part3) {
+  if( part1->id() != ParticleID::h0 && 
+      part2->id() != ParticleID::g &&
+      part3->id() != ParticleID::g ) {
+    throw HelicityConsistencyError() 
+      << "SMHGGVertex::setCoupling() - The particle content of this vertex "
+      << "is incorrect: " << part1->id() << " " << part2->id()
+      << part3->id() << Exception::warning;
+    setNorm(0.);
+    return;
   }
-  else {
-    type.resize(2,PDT::SpinUnknown);
-    type[0] = PDT::Spin1Half;
-    type[1] = PDT::Spin1Half;
-    masses.resize(2,0.*GeV);
-    masses[0] = _theSM->mass(q2,t);
-    masses[1] = _theSM->mass(q2,b);
-    left.resize(2,0.);right.resize(2,0.);
-    left[0] = _theSM->mass(q2,t)/_mw;
-    left[1] = _theSM->mass(q2,b)/_mw;
-    right = left; 
-  }
-  if(q2 != _q2last)	{
+  if(q2 != _q2last) {
     double alphaStr = _theSM->alphaS(q2);
     double alpha = _theSM->alphaEM(q2);
-    _couplast =2.*Constants::pi*alphaStr*sqrt(4*Constants::pi*alpha)/_sw;
+    _couplast = 2.*Constants::pi*alphaStr*sqrt(4*Constants::pi*alpha)/_sw;
+    Energy mt = _theSM->mass(q2, _top);
+    if(_qopt == 0 ) {
+      masses.push_back(mt);
+      couplings.push_back(make_pair(mt/_mw, mt/_mw));
+    }
+    else if( _qopt == 1 ) {
+      Energy mb = _theSM->mass(q2, _bottom);
+      masses.push_back(mb);
+      couplings.push_back(make_pair(mb/_mw, mb/_mw));
+    }
+    else {
+      throw InitException() 
+	<< "SMHGGVertex::setCoupling() - Unknown option for particles "
+	<< "in the loop " << _qopt
+	<< Exception::warning;
+      setNorm(0.);
+      return;
+    }
+    _haveCoeff = false;
     _q2last = q2;
   }
   setNorm(_couplast);
   //calculate tensor coefficients
-  SVVLoopVertex::setCoupling(q2,part1,part2,part3);
-}
+  if( !_haveCoeff ) {
+    SVVLoopVertex::setCoupling(q2,part1,part2,part3);
+    _haveCoeff = true;
+  }
+
 }
  

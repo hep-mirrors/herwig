@@ -7,11 +7,9 @@
 
 #include "Herwig++/Models/General/SVVLoopVertex.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "ThePEG/PDT/EnumParticles.h"
 #include "SMHGGVertex.fh"
 
 namespace Herwig {
-using namespace ThePEG;
     
   /**
    * The <code>SMHGGVertex</code> class implements the
@@ -90,7 +88,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   
 private:
   
@@ -127,19 +125,34 @@ private:
   tcHwSMPtr _theSM;
   
   /**
-   *Mass of W boson for higgs coupling
+   * The \f$W\f$ mass 
    */
   Energy _mw;
-  
+
   /**
    *Storage of \f$\sin\theta_W\f$
    */
   double _sw;
+
+  /**
+   * A pointer to the top quark ParticleData object
+   */
+  tcPDPtr _top;
   
+  /**
+   * A pointer to the bottom quark ParticleData object
+   */
+  tcPDPtr _bottom;
+    
   /**
    * Option to turn on b in quark loop
    */
   int _qopt;
+  
+  /**
+   * Whether the loop coefficents have been calculated
+   */
+  bool _haveCoeff;
 };
 
 }
@@ -165,6 +178,10 @@ struct ClassTraits<Herwig::SMHGGVertex>
   : public ClassTraitsBase<Herwig::SMHGGVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SMHGGVertex"; }
+  /** Return the name of the shared library be loaded to get
+   *  access to the SMHGGVertex class and every other class it uses
+   *  (except the base class). */
+  static string library() { return "HwSMVertex.so"; }
 };
 
 /** @endcond */

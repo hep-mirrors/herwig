@@ -8,9 +8,16 @@
 #include "ThePEG/Config/Pointers.h"
 
 namespace Herwig {
-  using namespace ThePEG;
-  class SMHPPVertex;
-  ThePEG_DECLARE_POINTERS(SMHPPVertex,SMHPPVertexPtr);
+
+class SMHPPVertex;
+
+}  
+
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SMHPPVertex,SMHPPVertexPtr);
+
 }
 
 #endif
