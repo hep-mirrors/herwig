@@ -24,8 +24,10 @@ SSHGGVertex::SSHGGVertex() : theSw(0.), theMw(), theZfact(),
   //set 5 particles in loop
   setNParticles(5);
   //PDG codes for particles at vertices
-  vector<int> first(2,25), second(2,21), third(2,21);
+  vector<int> first(3), second(3,21), third(3,21);
+  first[0] = 25;
   first[1] = 35;
+  first[2] = 36;
   setList(first,second,third);
 }
 
