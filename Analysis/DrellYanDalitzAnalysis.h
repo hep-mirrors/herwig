@@ -5,6 +5,7 @@
 // This is the declaration of the DrellYanDalitzAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "DrellYanDalitzAnalysis.fh"
 

@@ -91,7 +91,8 @@ void TauTo4MesonAnalysis::Init() {
 
 inline void TauTo4MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("Tau4Meson.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _mpipi[0]->topdrawOutput(output,true,true,false,true,
 			   "RED",
 			   "P203P2-3 mass in T2-3RN0T1P203P203P203P2-3",

@@ -35,7 +35,8 @@ inline IBPtr LPairAnalysis::fullclone() const {
 
 inline void LPairAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("LPairAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   _ptp.topdrawOutput(outfile,true,false,false,true,"RED","pt lp, lm");
   _ptm.topdrawOutput(outfile,false,false,false,true,"BLUE","");
   _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");

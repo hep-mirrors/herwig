@@ -33,7 +33,8 @@ void TauTo3MesonAnalysis::doinitrun() {
 
 void TauTo3MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("Tau3Meson.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _m3pippimpim[0]->topdrawOutput(output,true,true,false,true,
 			    "RED",
 			    "P2+3P2-3P2-3 mass in T2-3RN0T1P2+3P2-3P2-3",

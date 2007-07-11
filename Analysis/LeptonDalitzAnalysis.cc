@@ -9,6 +9,7 @@
 #include "ThePEG/Repository/UseRandom.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "LeptonDalitzAnalysis.tcc"
@@ -186,7 +187,8 @@ void LeptonDalitzAnalysis::Init() {
 void LeptonDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   ofstream file;
-  file.open("e+e-Dalitz.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  file.open(fname.c_str());
   file << "SET WINDOW X 2 9 Y 2 9\n";
   file << "SET FONT DUPLEX\n";
   file << "SET LIMITS X 0 1 Y 0 1\n";

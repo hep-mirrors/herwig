@@ -9,7 +9,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
-
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -107,7 +107,8 @@ void OmegaPhi3PionAnalysis::Init() {
 
 void OmegaPhi3PionAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("PhiOmega.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _xhist[0]->topdrawOutput(output,true,true,false,true,
 			   "RED",
 			   "x distribution in WRP2+3P2-3P203",

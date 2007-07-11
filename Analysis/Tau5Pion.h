@@ -5,6 +5,7 @@
 // This is the declaration of the Tau5Pion class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "Tau5Pion.fh"

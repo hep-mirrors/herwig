@@ -40,9 +40,11 @@ struct HepMCTraits<HepMC::GenEvent>
 void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
   if (event->number() != _eventNumber) return;
 
-  ostringstream filename;
-  filename << _fileBaseName << '-' << event->number() << ".dot";
-  ofstream hepmcdotfile(filename.str().c_str());
+  ostringstream fname;
+  fname << CurrentGenerator::current().filename() << '-' 
+	<< name() << '-'
+	<< event->number() << ".dot";
+  ofstream hepmcdotfile(fname.str().c_str());
   
   hepmcdotfile << header 
 	       << "node [width=0.1,height=0.1,shape=point,label=\"\"];\n";
@@ -112,11 +114,11 @@ LorentzRotation GraphvizPlot::transform(tEventPtr) const {
 void GraphvizPlot::analyze(tPPtr) {}
 
 void GraphvizPlot::persistentOutput(PersistentOStream & os) const {
-  os << _fileBaseName << _eventNumber;
+  os << _eventNumber;
 }
 
 void GraphvizPlot::persistentInput(PersistentIStream & is, int) {
-  is >> _fileBaseName >> _eventNumber;
+  is >> _eventNumber;
 }
 
 
@@ -127,12 +129,6 @@ void GraphvizPlot::Init() {
 
   static ClassDocumentation<GraphvizPlot> documentation
     ("There is no documentation for the GraphvizPlot class");
-
-  static Parameter<GraphvizPlot,string> interfaceFileName
-    ("BaseName",
-     "The base name of the output file. The event number will be added.",
-     &GraphvizPlot::_fileBaseName, "graphviz",
-     true, false);
 
   static Parameter<GraphvizPlot,long> interfaceEventNumber
     ("EventNumber",

@@ -14,7 +14,8 @@ using namespace Herwig;
 
 void TauCorrelationAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("HiggsCorr.top");  
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _phi->topdrawOutput(output,true,true,false,false,
 		      "RED",
 		      "F2*3 in h203RT2+3T2-3 with TRPN0T1",

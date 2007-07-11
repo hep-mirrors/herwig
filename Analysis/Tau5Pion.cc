@@ -151,7 +151,8 @@ void Tau5Pion::Init() {
 
 void Tau5Pion::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("Tau5Pion.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _pipi1[0]->topdrawOutput(output,true,true,false,true,
 			   "RED",
 			   "P2-3P2-3 mass in T2-3RN0T12P2-3P2+32P203",

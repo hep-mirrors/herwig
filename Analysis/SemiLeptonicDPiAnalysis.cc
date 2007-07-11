@@ -9,6 +9,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 using namespace ThePEG;
@@ -125,7 +126,8 @@ void SemiLeptonicDPiAnalysis::Init() {
 
 void SemiLeptonicDPiAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("SemiLeptonicDpi.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   string title,temp;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     title= getParticleData(_incoming[ix])->PDGName() +

@@ -5,6 +5,7 @@
 // This is the declaration of the GammaGammaAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "GammaGammaAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"

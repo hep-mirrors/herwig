@@ -16,7 +16,8 @@ inline IBPtr LEPEventShapes::fullclone() const {
 
 inline void LEPEventShapes::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("eventshapes.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _omthr->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"1-T compared to DELPHI data",

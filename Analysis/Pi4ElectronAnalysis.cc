@@ -9,7 +9,7 @@
 #include "ThePEG/EventRecord/Event.h"
 #include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/PDT/EnumParticles.h>
-
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -75,7 +75,8 @@ void Pi4ElectronAnalysis::Init() {
 
 void Pi4ElectronAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("pi4electron.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _mffbar->topdrawOutput(output,true,true,false,true,
 			 "RED",
 			 "Mass of the e2+3e2-3 pair in P203Re2+3e2-3e2+3e2-3",

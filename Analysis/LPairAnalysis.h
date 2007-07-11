@@ -5,6 +5,7 @@
 // This is the declaration of the LPairAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "LPairAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"

@@ -20,7 +20,8 @@ inline IBPtr HiggsJetAnalysis::fullclone() const {
 
 inline void HiggsJetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("HiggsJetAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   _pth.topdrawOutput(outfile,true,false,false,false,"BLACK","pt of Higgs");
   _pth.topdrawOutput(outfile,true,false,false,true,"BLACK","pt of Higgs");
   _pthZoom.topdrawOutput(outfile,true,false,false,false,"BLACK","35<pt/GeV<65 of Higgs");

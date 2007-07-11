@@ -205,7 +205,8 @@ void DDalitzAnalysis::Init() {
 
 void DDalitzAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("DDalitz.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _m2plus1->topdrawOutput(output,true,false,false,false,"RED",
 			 "m0+1223 for D203RK203P2+3P2-3",
 			 " X XX X      X XW X XGX XGX X",

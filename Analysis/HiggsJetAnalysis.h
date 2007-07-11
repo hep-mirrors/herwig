@@ -5,6 +5,7 @@
 // This is the declaration of the HiggsJetAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "HiggsJetAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"

@@ -4,7 +4,8 @@
 //
 // This is the declaration of the TTbarAnalysis class.
 //
-
+       
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "TTbarAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"

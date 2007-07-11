@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include <ThePEG/EventRecord/Event.h>
 #include <ThePEG/PDT/EnumParticles.h>
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -92,7 +93,8 @@ void PScalarVectorFermionsAnalysis::Init() {
 
 void PScalarVectorFermionsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("PScalarVectorFermions.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   string title,temp;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     title= getParticleData(_incoming[ix])->PDGName() +

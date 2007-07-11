@@ -11,6 +11,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -116,7 +117,8 @@ void VffGammaAnalysis::Init() {
 
 inline void VffGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("VffGammaAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   string titlea,titleb,titlec;
   for(unsigned int ix=0;ix<_id.size();++ix) {
     titlea = " for decay " + getParticleData(_id[ix])->PDGName() + " -> ";

@@ -5,6 +5,7 @@
 // This is the declaration of the TauTo3MesonAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "TauTo3MesonAnalysis.fh"

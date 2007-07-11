@@ -5,6 +5,7 @@
 // This is the declaration of the SimpleLHCAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "SimpleLHCAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"

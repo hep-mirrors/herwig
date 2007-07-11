@@ -5,6 +5,7 @@
 // This is the declaration of the GraphvizPlot class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "GraphvizPlot.fh"
 
@@ -142,11 +143,6 @@ private:
   GraphvizPlot & operator=(const GraphvizPlot &);
 
 private:
-  /**
-   * Base name of output file
-   */
-
-  string _fileBaseName;
 
   /**
    * Event number that should be drawn 

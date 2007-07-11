@@ -8,6 +8,7 @@
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/Event.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -131,7 +132,8 @@ void VPPGammaAnalysis::Init() {
 
 void VPPGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("VPPGammaAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   string titlea,titleb;
   for(unsigned int ix=0;ix<_id.size();++ix) {
     titlea = " for decay " + getParticleData(_id[ix])->PDGName() + " -> "

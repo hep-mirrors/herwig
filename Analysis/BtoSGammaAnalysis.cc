@@ -8,7 +8,7 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
-
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -72,7 +72,8 @@ void BtoSGammaAnalysis::Init() {
 
 void BtoSGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("BtoSGamma.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   // output the histograms
   string title,temp[2],tcase;
    for(unsigned int ix=0;ix<4;++ix) {

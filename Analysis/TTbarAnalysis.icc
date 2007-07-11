@@ -35,7 +35,8 @@ inline IBPtr TTbarAnalysis::fullclone() const {
 
 inline void TTbarAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("TTbarAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   _pttop.topdrawOutput(outfile,true,false,false,true,"RED","pt t, tbar");
   _pttbar.topdrawOutput(outfile,false,false,false,true,"BLUE","pt tbar");
   _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");

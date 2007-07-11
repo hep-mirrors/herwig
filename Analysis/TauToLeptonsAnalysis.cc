@@ -69,7 +69,8 @@ void TauToLeptonsAnalysis::Init() {
 
 void TauToLeptonsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("Tau2Leptons.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _emode->topdrawOutput(output,true,true,false,true,
 			"RED",
 			"e2-3N0O0e1 mass for T2-3RN0T1e2-3N0O0e1",

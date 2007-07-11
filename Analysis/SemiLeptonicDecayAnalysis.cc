@@ -108,7 +108,8 @@ void SemiLeptonicDecayAnalysis::Init() {
 
 void SemiLeptonicDecayAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("SemiLeptonic.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   string title,temp;
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     title= getParticleData(_incoming[ix])->PDGName() +

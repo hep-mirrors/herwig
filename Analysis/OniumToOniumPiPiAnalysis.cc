@@ -8,6 +8,7 @@
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -111,7 +112,8 @@ void OniumToOniumPiPiAnalysis::Init() {
 
 void OniumToOniumPiPiAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("OniumToOniumPiPi.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
     string title= 
       getParticleData(_incoming[ix])->PDGName() + " -> " +

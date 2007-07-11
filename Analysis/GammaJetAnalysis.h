@@ -5,6 +5,7 @@
 // This is the declaration of the GammaJetAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "GammaJetAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"

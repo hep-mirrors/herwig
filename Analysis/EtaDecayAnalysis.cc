@@ -136,7 +136,8 @@ void EtaDecayAnalysis::Init() {
 
 void EtaDecayAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("eta.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _mgammagamma[0]->topdrawOutput(output,true,true,false,false,
 				 "RED",
 				 "GG mass in HRP203GG",

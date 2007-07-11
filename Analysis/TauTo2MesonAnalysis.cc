@@ -203,7 +203,8 @@ void TauTo2MesonAnalysis::Init() {
 
 void TauTo2MesonAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("Tau2Meson.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _m2pipiBELLE->topdrawOutput(output,true,true,false,true,
 			 "RED",
 			 "P2+3P203 mass",

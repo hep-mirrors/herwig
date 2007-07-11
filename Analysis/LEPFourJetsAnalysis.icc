@@ -16,7 +16,8 @@ inline IBPtr LEPFourJetsAnalysis::fullclone() const {
 
 inline void LEPFourJetsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("fourjets.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _ca34->normaliseToData();
   _cchiBZ->normaliseToData();
   _cphiKSW->normaliseToData();

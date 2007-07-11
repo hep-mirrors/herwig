@@ -13,6 +13,7 @@
 #include "KtJet/KtLorentzVector.h"
 #include "LEPFourJetsAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 

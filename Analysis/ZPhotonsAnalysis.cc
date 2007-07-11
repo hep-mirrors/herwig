@@ -12,6 +12,7 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/EventRecord/Event.h"
 #include "ThePEG/Interface/Parameter.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -93,7 +94,8 @@ void ZPhotonsAnalysis::Init() {
 
 inline void ZPhotonsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("ZPhotons.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _nphoton->topdrawOutput(output,true,true,false,true,
 			  "RED",
 			  "Photon Multiplicity",

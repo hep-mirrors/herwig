@@ -23,7 +23,8 @@ inline IBPtr GammaGammaAnalysis::fullclone() const {
 
 inline void GammaGammaAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("GammaGammaAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   _ptharder.topdrawOutput(outfile,true,false,false,true,"BLACK","pt harder");
   _ptsofter.topdrawOutput(outfile,true,false,false,true,"BLACK","pt softer");
   _ptpair.topdrawOutput(outfile,true,false,false,true,"BLACK","pt pair");

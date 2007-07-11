@@ -5,6 +5,7 @@
 // This is the declaration of the IdentifiedParticleAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "EventShapes.h"

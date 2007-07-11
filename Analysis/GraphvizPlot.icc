@@ -6,8 +6,7 @@
 
 namespace Herwig {
 
-inline GraphvizPlot::GraphvizPlot() : _fileBaseName("graphviz"),
-  _eventNumber(1) {}
+inline GraphvizPlot::GraphvizPlot() : _eventNumber(1) {}
 
 inline IBPtr GraphvizPlot::clone() const {
   return new_ptr(*this);
@@ -27,7 +26,10 @@ inline void GraphvizPlot::dofinish() {
   AnalysisHandler::dofinish();
   cout << "\nGraphvizPlot: plots can be generated like this:\n"
        << "GraphvizPlot: 'dot -Tpng " 
-       << _fileBaseName << "-NNN.dot > plot.png'";
+       << CurrentGenerator::current().filename() 
+       << '-'
+       << name() 
+       << "-NNN.dot > plot.png'";
 }
 
 }

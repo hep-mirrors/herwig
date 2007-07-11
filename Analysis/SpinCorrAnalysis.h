@@ -9,6 +9,7 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SpinCorrAnalysis.fh"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;

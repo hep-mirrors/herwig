@@ -5,6 +5,7 @@
 // This is the declaration of the BFragmentationAnalysisHandler class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
 #include "BFragmentationAnalysisHandler.fh"

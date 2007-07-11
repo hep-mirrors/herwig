@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include "ThePEG/Handlers/AnalysisHandler.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
 namespace Herwig {

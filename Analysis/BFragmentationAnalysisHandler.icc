@@ -44,7 +44,8 @@ inline void BFragmentationAnalysisHandler::doinit() throw(InitException) {
 inline void BFragmentationAnalysisHandler::dofinish() {
   AnalysisHandler::dofinish();
   // output the histograms
-  ofstream output("Bfragmentation.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _fragBxE->topdrawOutput(output,true,true,false,false,
 			  "RED",
 			  "B Hadron fragmentation function compared to SLD data",

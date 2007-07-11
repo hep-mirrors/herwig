@@ -36,13 +36,13 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
       // All kinds of stuff is coming through here, b's, W's, t's, g's
       // c's, e's gamma's... 
       // Must be top
-      if((*pit)->id()!=6) continue;
+      if((*pit)->id() != 6) continue;
       // must have two children
-      if((*pit)->children().size()!=2) continue;
+      if((*pit)->children().size() != 2) continue;
       // neither should be top
-      if(abs((*pit)->children()[0]->id())==6||
-	 abs((*pit)->children()[1]->id())==6) continue;
-      tShower=particleID(*pit,final);
+      if(abs((*pit)->children()[0]->id()) == 6 ||
+	 abs((*pit)->children()[1]->id()) == 6) continue;
+      tShower = particleID(*pit,final);
       dalitz(tShower);
     }
   for(pit=pert.begin();pit!=pert.end();++pit)
@@ -59,6 +59,9 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
       tbarShower=particleID(*pit,final);
       dalitz(tbarShower);
     }
+  // quit analysis if we haven't found anything
+  if (tShower.empty() || tbarShower.empty())
+    return;
   Energy2 s = sqr(event->incoming().first->momentum().e()
             +     event->incoming().second->momentum().e()
                  );

@@ -21,7 +21,8 @@ inline IBPtr GammaJetAnalysis::fullclone() const {
 
 inline void GammaJetAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("GammaJetAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   _Eg.topdrawOutput(outfile,true,false,false,false,"BLACK","Energy of Gamma");
   _Eg.topdrawOutput(outfile,true,false,false,true,"BLACK","Energy of Gamma");
   _ptg.topdrawOutput(outfile,true,false,false,false,"BLACK","pt of Gamma");
