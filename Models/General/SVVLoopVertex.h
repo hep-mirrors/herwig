@@ -6,13 +6,11 @@
 //
 
 #include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
-#include "Herwig++/Looptools/clooptools.h"
 #include "ThePEG/PDT/PDT.h"
 #include "SVVLoopVertex.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Looptools;
 
 /**
  * The <code>SVVLoopVertex</code> is designed to
@@ -96,19 +94,19 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object. Called in the run phase just before
    * a run begins.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
 
   /**
    * Finalize this object. Called in the run phase just after a
    * run has ended. Used eg. to write out statistics.
    */
-  inline virtual void dofinish();
+  virtual void dofinish();
   //@}
   
 protected:

@@ -5,6 +5,7 @@
 //
 
 #include "SVVLoopVertex.h"
+#include "Herwig++/Looptools/clooptools.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
@@ -20,6 +21,21 @@ void SVVLoopVertex::persistentOutput(PersistentOStream & os) const {
 
 void SVVLoopVertex::persistentInput(PersistentIStream & is, int) {
   is >> iunit(masses,GeV) >> type >> couplings >> theNpart;
+}
+
+void SVVLoopVertex::doinit() throw(InitException) {
+  Looptools::ffini();
+  GeneralSVVVertex::doinit();
+}
+
+void SVVLoopVertex::dofinish() {
+  Looptools::ffexi();
+  GeneralSVVVertex::dofinish();
+}
+
+void SVVLoopVertex::doinitrun() {
+  Looptools::ffini();
+  GeneralSVVVertex::doinitrun();
 }
 
 ClassDescription<SVVLoopVertex> SVVLoopVertex::initSVVLoopVertex;

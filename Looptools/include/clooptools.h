@@ -1,11 +1,12 @@
-/*
+/* -*- C++ -*-
   clooptools.h
   the C++ header file with all definitions for LoopTools
   this file is part of LoopTools
   last modified 22 Jul 04 th
 
   Major modifiactions for Herwig 2005-06-09 D.Grellscheid
-  Changes to reduce DOXYGEM warnings 2007/02/05 PR
+  Changes to reduce DOXYGEN warnings 2007/02/05 PR
+  Output redirected to log file. 2007-07-11 dgrell
 */
 
 #ifndef HERWIG_CLOOPTOOLS_H
@@ -13,6 +14,8 @@
 
 #include <complex>
 typedef std::complex<double> double_complex;
+#include <cstdio>
+#include <string>
 
 // don't know why that line is here. The function is not declared anywhere.
 // #define cachelookup cachelookup_
@@ -372,12 +375,50 @@ namespace Herwig {
     /**
      *  Looptools initialisation
      */
-    inline void ffini() {ffini_();}
+    inline void ffini(std::string logfilename 
+		      = std::string("Looptools.log")) {
+      // trying to redirect stdout --- unix specific solution!
+      // ======== C FAQ http://c-faq.com/stdio/undofreopen.html =======
+      int    fd;
+      fpos_t pos;
+      fflush(stdout);
+      fgetpos(stdout, &pos);
+      fd = dup(fileno(stdout));
+      freopen(logfilename.c_str(), "a", stdout);
+      // =====
+      ffini_();
+      // =====
+      fflush(stdout);
+      dup2(fd, fileno(stdout));
+      close(fd);
+      clearerr(stdout);
+      fsetpos(stdout, &pos);
+      // ==============================================================
+    }
 
     /**
      *  Looptools termination
      */
-    inline void ffexi() {ffexi_();}
+    inline void ffexi(std::string logfilename 
+		      = std::string("Looptools.log")) {
+      // trying to redirect stdout --- unix specific solution!
+      // ======== C FAQ http://c-faq.com/stdio/undofreopen.html =======
+      int    fd;
+      fpos_t pos;
+      fflush(stdout);
+      fgetpos(stdout, &pos);
+      fd = dup(fileno(stdout));
+      freopen(logfilename.c_str(), "a", stdout);
+      // =====
+      ffexi_();
+      // =====
+      fflush(stdout);
+      dup2(fd, fileno(stdout));
+      close(fd);
+      clearerr(stdout);
+      fsetpos(stdout, &pos);
+      // ==============================================================
+    }
 
     /**
      *  Set \f$\mu\f$
