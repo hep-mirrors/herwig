@@ -33,7 +33,7 @@ inline void ScalarMesonFactorizedDecayer::doinitrun() {
   for(ix=0;ix<_form.size();++ix){_form[ix]->initrun();}
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+    _weights.clear();_wgtloc.clear();_wgtmax.clear();
     for(ix=0;ix<numberModes();++ix) {
       _wgtmax.push_back(mode(ix)->maxWeight());
       _wgtloc.push_back(_weights.size());

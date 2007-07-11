@@ -375,7 +375,7 @@ ParticleVector DecayPhaseSpaceMode::generate(bool intermediates,bool cc,
 				 << _widthgen << "  " << _partial << "\n";}
       else
 	{CurrentGenerator::log() << _widthgen << "  " << _partial << "\n";}
-      particles.resize(0);
+      particles.clear();
       throw Veto();
       return particles;
     }

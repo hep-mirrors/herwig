@@ -91,14 +91,14 @@ void KPiCurrent::doinit() throw(InitException) {
     }
   }
   else {
-    _vecmass.resize(0);_vecwidth.resize(0);
+    _vecmass.clear();_vecwidth.clear();
     for(unsigned int ix=0;ix<3;++ix) {
       if(vec[ix]) {
 	_vecmass .push_back(vec[ix]->mass() );
 	_vecwidth.push_back(vec[ix]->width());
       }
     }
-    _scamass.resize(0);_scawidth.resize(0);
+    _scamass.clear();_scawidth.clear();
     for(unsigned int ix=0;ix<2;++ix) {
       if(sca[ix]) {
 	_scamass .push_back(sca[ix]->mass() );

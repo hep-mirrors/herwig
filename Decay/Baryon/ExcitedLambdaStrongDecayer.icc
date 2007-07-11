@@ -16,7 +16,7 @@ inline IBPtr ExcitedLambdaStrongDecayer::fullclone() const {
 
 inline void ExcitedLambdaStrongDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+  _weights.clear();_wgtloc.clear();_wgtmax.clear();
   unsigned int ix,iy;
   for(ix=0;ix<numberModes();++ix) {
     _wgtmax.push_back(mode(ix)->maxWeight());

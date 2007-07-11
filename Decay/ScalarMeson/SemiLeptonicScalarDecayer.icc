@@ -25,7 +25,7 @@ inline void SemiLeptonicScalarDecayer::doinitrun() {
   _form->initrun();
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    _maxwgt.resize(0);
+    _maxwgt.clear();
     for(unsigned int ix=0;ix<numberModes();++ix) {
       _maxwgt.push_back(mode(ix)->maxWeight());
     }

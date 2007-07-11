@@ -160,7 +160,7 @@ threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 void SU3BaryonSingletOctetPhotonDecayer::setupModes(unsigned int iopt) const
 {
   if(_outgoingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);}
+  if(iopt==1){_outgoingB.clear();}
   // set up for the various different decay modes
   vector<int> outtemp;
   vector<InvEnergy> factor;

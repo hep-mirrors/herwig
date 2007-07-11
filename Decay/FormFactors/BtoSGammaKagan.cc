@@ -364,7 +364,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     _s22inter = new_ptr(Interpolator<double,double>(sfunct,yvalues,3));
     // s_27 function;
     integrand=KaganIntegrand(this,1);
-    sfunct.resize(0);yvalues.resize(0);
+    sfunct.clear();yvalues.clear();
     sfunct.push_back(0.),yvalues.push_back(0.);
     _y=-0.5*step;
     // perform integrals
@@ -380,8 +380,8 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       integrator.value(integrand,(_MB*(1.-_deltacut)-_mb)*UnitRemoval::InvE,
 		       (_MB-_mb)*UnitRemoval::InvE);
     // now for the spectrum
-    _mHinter.resize(0);
-    _spectrum.resize(0);
+    _mHinter.clear();
+    _spectrum.clear();
     _spectmax=0./GeV;
     // limits on the mass
     Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);

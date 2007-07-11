@@ -48,7 +48,7 @@ void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
   if(_initialize) {
     GaussianIntegrator integrator;
     BaryonCFunction integrand(this);
-    _C0.resize(0);_C1.resize(0);_C2.resize(0);
+    _C0.clear();_C1.clear();_C2.clear();
     double pre(0.),root(2.*sqrt(6.));
     double gamma1(1),gamma2(1),gamma3(sqrt(acos(-1.)));
     unsigned int ix,iy;

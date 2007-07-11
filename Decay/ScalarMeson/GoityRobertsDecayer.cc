@@ -62,7 +62,7 @@ void GoityRobertsDecayer::doinitrun() {
   unsigned int ix,iy;
   _current->initrun();
   DecayIntegrator::doinitrun();
-  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+  _weights.clear();_wgtloc.clear();_wgtmax.clear();
   for(ix=0;ix<numberModes();++ix) {
     _wgtmax.push_back(mode(ix)->maxWeight());
     _wgtloc.push_back(_weights.size());
@@ -321,7 +321,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
 		      +sqr(extpart[2]->mass()));
   Energy Gstar = _gammaD0*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -377,7 +377,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
 		      +sqr(extpart[2]->mass()));
   Gstar = _gammaD0*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -433,7 +433,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
 		      +sqr(extpart[2]->mass()));
   Gstar = _gammaDp*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -489,7 +489,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
 		      +sqr(extpart[2]->mass()));
   Gstar = _gammaDp*extpart[1]->mass()/Mstar;
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -541,7 +541,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -589,7 +589,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
   for(iy=0;iy<_current->numberOfModes();++iy)  {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -637,7 +637,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);
@@ -685,7 +685,7 @@ void GoityRobertsDecayer::doinit() throw(InitException) {
   min = extpart[0]->massMax()-extpart[1]->massMin()-extpart[2]->massMin();
   Wcharge = extpart[0]->iCharge()-extpart[1]->iCharge()-extpart[2]->iCharge();
   for(iy=0;iy<_current->numberOfModes();++iy) {
-    channel.resize(0);extpart.resize(3);
+    channel.clear();extpart.resize(3);
     // get the particles for the current
     _current->decayModeInfo(iy,iq,ia);
     ptemp=_current->particles(Wcharge,iy,iq,ia);

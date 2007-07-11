@@ -113,8 +113,8 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
   vector<double>::iterator start,end;
   double maxweight;
   vector<double> channelwgts;
-  _formmap.resize(0);
-  _currentmap.resize(0);
+  _formmap.clear();
+  _currentmap.clear();
   // loop over the modes and find the dupliciates
   for(ix=0;ix<particles.size();++ix)
     {
@@ -135,7 +135,7 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
 					  << "BaryonFactorizedDecayer::doinit()." 
 					  << Exception::abortnow;}
 	  // set the parameters for the additional modes
-	  ttform.resize(0);ttcurr.resize(0);
+	  ttform.clear();ttcurr.clear();
 	  ttform.push_back(tformmap[ix]);ttcurr.push_back(tcurrmap[ix]);
 	  id=particles[ix][1]->id();
 	  if(particles[ix][1]->CC()){idbar=particles[ix][1]->CC()->id();}
@@ -145,7 +145,7 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
 	      ttform.push_back(tformmap[modeloc[iy]]);
 	      ttcurr.push_back(tcurrmap[modeloc[iy]]);
 	    }
-	  tCKM.resize(0);
+	  tCKM.clear();
 	  for(iy=0;iy<ttcurr.size();++iy)
 	    {
 	      // get the quarks involved in the process
@@ -221,7 +221,7 @@ void BaryonFactorizedDecayer::doinit() throw(InitException) {
 	  // don't need channels for two body decays
 	  if(particles[ix].size()==3)
 	    {
-	      channelwgts.resize(0);
+	      channelwgts.clear();
 	      mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
 	    }
 	  addMode(mode,maxweight,channelwgts);
@@ -250,7 +250,7 @@ bool BaryonFactorizedDecayer::accept(const DecayMode & dm) const {
       if(ibaryon!=0)
 	{
 	  foundb=false;
-	  idother.resize(0);
+	  idother.clear();
 	  for(ix=0;ix<idall.size();++ix)
 	    {
 	      if(idall[ix]==ibaryon){foundb=true;}
@@ -281,7 +281,7 @@ int BaryonFactorizedDecayer::modeNumber(bool & cc,const DecayMode & dm) const
       else if(id0==-idin){ibaryon=-id1;}
       ++iform;
       foundb=false;
-      idother.resize(0);
+      idother.clear();
       for(ix=0;ix<idall.size();++ix)
 	{
 	  if(idall[ix]==ibaryon){foundb=true;}
@@ -679,7 +679,7 @@ void BaryonFactorizedDecayer::findModes(unsigned int imode,
 {
   unsigned int ix,iy,nfound,iz;
   // resize the vectors
-  loc.resize(0);cc.resize(0);
+  loc.clear();cc.clear();
   // get the id's for the mode
   vector<int> id,idbar;
   int idtemp; bool found;

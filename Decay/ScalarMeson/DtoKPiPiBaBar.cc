@@ -415,8 +415,8 @@ void DtoKPiPiBaBar::doinit() throw(InitException) {
   addMode(mode,_maxwgt,_weights);
   // calculate the rho 3 function if needed
   if(_initrho3) {
-    _rho3.resize(0);
-    _rho3scale.resize(0);
+    _rho3.clear();
+    _rho3scale.clear();
     DtoKPiPiBaBarOuterIntegrand integrand(this,_mpi);
     GaussianIntegrator integrator;
     Energy2 step = (GeV2-16.*sqr(_mpi))/100.;

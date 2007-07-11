@@ -309,11 +309,11 @@ double IFDipole::makePhotons(Boost boostv,ParticleVector children)
   // number of photons (zero)
   _multiplicity=0;
   // zero size of photon vectors
-  _lprf.resize(0);
-  _llab.resize(0);
+  _lprf.clear();
+  _llab.clear();
   // zero size of angle storage
-  _sinphot.resize(0);
-  _cosphot.resize(0);
+  _sinphot.clear();
+  _cosphot.clear();
   // zero total momenta of the photons
   _bigLprf=Lorentz5Momentum();
   // set the initial values of the reweighting factors to one

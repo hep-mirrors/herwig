@@ -74,7 +74,7 @@ void Remnant::obtainConstituents(int extracted)
   // set the code of the extracted particle
   _extracted=extracted;
   // construct the remnant
-  _constituents.resize(0);
+  _constituents.clear();
   // copy of the valence partons to construct the remnant
   vector<int> vtemp(_valence);
   // see if the parton is one of the valence ones

@@ -258,7 +258,7 @@ void SU3BaryonOctetOctetScalarDecayer::threeHalfHalfScalarCoupling(int imode,Ene
 void SU3BaryonOctetOctetScalarDecayer::setupModes(unsigned int iopt) const
 {
   if(_incomingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);_outgoingM.resize(0);}
+  if(iopt==1){_outgoingB.clear();_incomingB.clear();_outgoingM.clear();}
   // set up for the various different decay modes
   vector<double> factor;
   vector<int> intemp,outtemp,mestemp;

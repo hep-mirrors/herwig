@@ -21,7 +21,7 @@ void SingletonFormFactor::doinit() throw(InitException) {
 			  << Exception::abortnow;
   // calculate the constants for the form-factors
   int id0,id1;
-  _xi.resize(0);_NmM.resize(0);_mquark.resize(0);
+  _xi.clear();_NmM.clear();_mquark.clear();
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     // id codes for the particles
     particleID(ix,id0,id1);

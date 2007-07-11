@@ -44,7 +44,7 @@ void SemiLeptonicBaryonDecayer::doinit() throw(InitException) {
   _form->init();
   // the channels
   PDVector extpart,ptemp;
-  _modemap.resize(0);
+  _modemap.clear();
   double maxweight;
   vector<double> channelwgts(1,1.);
   int id0(0),id1(0),Wcharge(0),inspin,spect1,spect2,inquark,outquark,outspin;

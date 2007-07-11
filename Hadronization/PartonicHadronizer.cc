@@ -115,7 +115,7 @@ bool PartonicHadronizer::hadronize(tPPtr parent,StepPtr pstep,EventHandler & ch,
   vector<tcPPtr> pclusters;
   tPVector tagged;
   do {
-    tagged.resize(0);
+    tagged.clear();
     ClusterVector clusters;
     for(unsigned int ix=0;ix<parent->children().size();++ix) {
       if(parent->children()[ix]->coloured())

@@ -237,7 +237,7 @@ threeHalfHalfScalarCoupling(int imode,Energy m0,Energy m1,Energy,
 void SU3BaryonDecupletOctetScalarDecayer::setupModes(unsigned int iopt) const
 {
   if(_incomingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);_outgoingM.resize(0);}
+  if(iopt==1){_outgoingB.clear();_incomingB.clear();_outgoingM.clear();}
   vector<double> factor;
   vector<int> intemp,outtemp,mestemp;
   double ort(1./sqrt(2.)),ors(1./sqrt(6.)),rt(sqrt(2.)),orr(1./sqrt(3.));

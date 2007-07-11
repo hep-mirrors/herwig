@@ -47,7 +47,7 @@ void TauDecayer::doinit() throw(InitException) {
   double maxweight;
   vector<double> channelwgts;
   int iq(0),ia(0);
-  _modemap.resize(0);
+  _modemap.clear();
   unsigned int ix,iy;
   bool done;
   vector<double>::iterator start,end;
@@ -79,7 +79,7 @@ void TauDecayer::doinit() throw(InitException) {
       _modemap.push_back(ix);
       // special for the two body modes
       if(extpart.size()==3) {
-	channelwgts.resize(0);
+	channelwgts.clear();
 	mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
       }
       addMode(mode,maxweight,channelwgts);

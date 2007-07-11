@@ -430,16 +430,16 @@ double GeneralDipole::makePhotons()
   // number of photons (zero)
   _multiplicity=0;
   // zero size of photon vectors
-  _ldrf.resize(0);
-  _lprf.resize(0);
-  _llab.resize(0);
+  _ldrf.clear();
+  _lprf.clear();
+  _llab.clear();
   // zero size of angle storage
-  _photonwgt.resize(0);
-  _photonemit.resize(0);
-  _photonspect.resize(0);
-  _cosphot.resize(0);
-  _sinphot.resize(0);
-  _photcut.resize(0);
+  _photonwgt.clear();
+  _photonemit.clear();
+  _photonspect.clear();
+  _cosphot.clear();
+  _sinphot.clear();
+  _photcut.clear();
   // zero total momenta of the photons
   _bigLdrf=Lorentz5Momentum();
   _bigLprf=Lorentz5Momentum();

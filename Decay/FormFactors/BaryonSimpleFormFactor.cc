@@ -20,7 +20,7 @@ using namespace ThePEG;
 
 void BaryonSimpleFormFactor::doinit() throw(InitException) {
   BaryonFormFactor::doinit();
-  _f1.resize(0);_f2.resize(0);_g1.resize(0);_g2.resize(0);
+  _f1.clear();_f2.clear();_g1.clear();_g2.clear();
   // calculate the couplings for the different modes
   int id0,id1;
   double root23(sqrt(2./3.)),root2(sqrt(2.)),root32(sqrt(3./2.));

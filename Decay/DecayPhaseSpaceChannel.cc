@@ -332,7 +332,7 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
   // loop over the intermediate particles
   int ix,iy;
   for(ix=_intpart.size()-1;ix>=0;--ix) {
-    temp.resize(0);
+    temp.clear();
     // add the first daughter
     if(_intdau1[ix]>=0)
       {temp.push_back(_intdau1[ix]);}
@@ -384,7 +384,7 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   external.push_back(const_ptr_cast<tPPtr>(&in));
   // outgoing
   for(ix=0;ix<out.size();++ix){external.push_back(out[ix]);}
-  out.resize(0);
+  out.clear();
   // now create the intermediates
   ParticleVector resonance; resonance.push_back(external[0]);
   PPtr respart;

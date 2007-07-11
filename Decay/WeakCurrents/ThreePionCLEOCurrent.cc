@@ -505,7 +505,7 @@ void ThreePionCLEOCurrent::inita1Width(int iopt) {
     double a1const = _a1width/(widthgenN.partialWidth(sqr(_a1mass))+
 			       widthgenC.partialWidth(sqr(_a1mass)));
     // loop to give the values
-    _a1runq2.resize(0);_a1runwidth.resize(0);
+    _a1runq2.clear();_a1runwidth.clear();
     for(Energy2 moff2=0.*MeV2; moff2<=sqr(_maxmass); moff2+=step) {
       Energy moff=sqrt(moff2);
       _a1runq2.push_back(moff2);

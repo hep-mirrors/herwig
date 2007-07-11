@@ -103,7 +103,7 @@ inline void SU3BaryonOctetDecupletScalarDecayer::doinitrun() {
   Baryon1MesonDecayerBase::doinitrun();
   if(initialize())
     {
-      _maxweight.resize(0);
+      _maxweight.clear();
       for(unsigned int ix=0;ix<numberModes();++ix)
 	{_maxweight.push_back(mode(ix)->maxWeight());}
     }

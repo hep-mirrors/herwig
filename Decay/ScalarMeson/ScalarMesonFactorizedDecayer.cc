@@ -130,11 +130,11 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 				      << "ScalarMesonFactorizedDecayer::doinit()." 
 				      << Exception::abortnow;
       // set the parameters for the additional modes
-      ttform[0].resize(0);ttform[1].resize(0);
-      ttcurr[0].resize(0);ttcurr[1].resize(0);
+      ttform[0].clear();ttform[1].clear();
+      ttcurr[0].clear();ttcurr[1].clear();
       ttform[0].push_back(tformmap[0][ix]);ttform[1].push_back(tformmap[1][ix]);
       ttcurr[0].push_back(tcurrmap[0][ix]);ttcurr[1].push_back(tcurrmap[1][ix]);
-      tformpart.resize(0);tformpart.push_back(0);
+      tformpart.clear();tformpart.push_back(0);
       id=particles[ix][1]->id();
       if(particles[ix][1]->CC()){idbar=particles[ix][1]->CC()->id();}
       else{idbar=id;}
@@ -153,7 +153,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
 	while(tformpart.size()!=iy+2&&iz<3);
       }
       // calculate ckm factors
-      tCKM.resize(0);
+      tCKM.clear();
       for(iy=0;iy<ttcurr[0].size();++iy) {
 	// get the quarks involved in the process
 	if(iy==0) {
@@ -234,7 +234,7 @@ inline void ScalarMesonFactorizedDecayer::doinit() throw(InitException) {
       }
       // don't need channels for two body decays
       if(particles[ix].size()==3) {
-	channelwgts.resize(0);
+	channelwgts.clear();
 	mode=new_ptr(DecayPhaseSpaceMode(particles[ix],this));
       }
       addMode(mode,maxweight,channelwgts);
@@ -257,7 +257,7 @@ bool ScalarMesonFactorizedDecayer::accept(const DecayMode & dm) const {
   // loop over the possible particles in the formfactor
   unsigned int ipart(0),iform,icurr,ix;
   do {
-    idcurr.resize(0);
+    idcurr.clear();
     for(ix=0;ix<ids.size();++ix){if(ix!=ipart){idcurr.push_back(ids[ix]);}}
     iform=0;
     do {
@@ -497,7 +497,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
     _form[_formmapA[mode][iy]]->particleID(_formmapB[mode][iy],id0t,id1t);
     bool cc(id0t!=id0);
     // calculate the form-factor part
-    form.resize(0);
+    form.clear();
     q   = part.momentum()-decay[_formpart[mode][iy]]->momentum();  q.rescaleMass();
     sum = part.momentum()+decay[_formpart[mode][iy]]->momentum();sum.rescaleMass();
     q2=q.mass2();
@@ -541,7 +541,7 @@ double ScalarMesonFactorizedDecayer::me2(bool vertex, const int ichan,
       }
     }
     // find the particles for the current
-    cpart.resize(0);
+    cpart.clear();
     for(ix=0;ix<decay.size();++ix)
       {if(ix!=_formpart[mode][iy]){cpart.push_back(decay[ix]);}}
     ix=decay.size();
@@ -589,7 +589,7 @@ void ScalarMesonFactorizedDecayer::findModes(unsigned int imode,
 					     vector<bool> & cc) {
   unsigned int ix,iy,nfound,iz;
   // resize the vectors
-  loc.resize(0);cc.resize(0);
+  loc.clear();cc.clear();
   // get the id's for the mode
   vector<int> id,idbar;
   int idtemp; bool found;

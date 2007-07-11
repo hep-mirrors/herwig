@@ -233,7 +233,7 @@ threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 void SU3BaryonDecupletOctetPhotonDecayer::setupModes(unsigned int iopt) const
 {
   if(_incomingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);}
+  if(iopt==1){_outgoingB.clear();_incomingB.clear();}
   vector<InvEnergy> factor;
   vector<int> intemp,outtemp;
   double ortw(1./sqrt(12.)),orr(1./sqrt(3.));

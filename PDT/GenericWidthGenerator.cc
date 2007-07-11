@@ -187,17 +187,17 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     // the initial prefactor
     _prefactor=1.;
     // resize all the storage vectors
-    _MEtype.resize(0);
-    _MEcode.resize(0);
-    _MEmass1.resize(0);
-    _MEmass2.resize(0);
-    _MEcoupling.resize(0); 
-    _modeon.resize(0);
-    _minmass.resize(0);
-    _intermasses.resize(0);
-    _interwidths.resize(0);
-    _noofentries.resize(0);
-    _decaytags.resize(0);
+    _MEtype.clear();
+    _MEcode.clear();
+    _MEmass1.clear();
+    _MEmass2.clear();
+    _MEcoupling.clear(); 
+    _modeon.clear();
+    _minmass.clear();
+    _intermasses.clear();
+    _interwidths.clear();
+    _noofentries.clear();
+    _decaytags.clear();
     // integrators that we may need
     WidthCalculatorBasePtr widthptr;
     // get the list of decay modes as a decay selector
@@ -441,7 +441,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
   else {
     // get the decay modes from the tags
     if(_decaytags.size()!=0) {
-      _decaymodes.resize(0);
+      _decaymodes.clear();
       for(unsigned int ix=0;ix<_decaytags.size();++ix) {
 	_decaymodes.push_back(Repository::findDecayMode(_decaytags[ix]));
       }

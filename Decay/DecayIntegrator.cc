@@ -234,7 +234,7 @@ void DecayIntegrator::setPartialWidth(const DecayMode & dm, int imode) {
     tmax=1;if(!cc){++tmax;}
     for(iz=0;iz<tmax;++iz) {
       ifound=-1;
-      extid.resize(0);
+      extid.clear();
       // check the parent
       if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {
@@ -301,7 +301,7 @@ int DecayIntegrator::findMode(const DecayMode & dm) {
     cc = _modes[ix]->externalParticles(0)->CC();
     tmax=1;if(!cc){++tmax;}
     for(iz=0;iz<tmax;++iz) {
-      extid.resize(0);
+      extid.clear();
       // check the parent
       if(dm.parent()->id()==_modes[ix]->externalParticles(0)->id()&&iz==0) {
 	for(iy=0,N=_modes[ix]->numberofParticles();iy<N;++iy) {

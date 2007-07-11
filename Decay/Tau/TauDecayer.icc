@@ -27,7 +27,7 @@ inline void TauDecayer::doinitrun() {
   _current->initrun();
   DecayIntegrator::doinitrun();
   if(initialize()) {
-    _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+    _weights.clear();_wgtloc.clear();_wgtmax.clear();
     unsigned int ix,iy;
     for(ix=0;ix<numberModes();++ix) {
       _wgtmax.push_back(mode(ix)->maxWeight());

@@ -70,7 +70,7 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
     }
   }
   else if(!_rhoparameters) {
-    _rhomasses.resize(0);_rhowidths.resize(0);
+    _rhomasses.clear();_rhowidths.clear();
     for(unsigned int ix=0;ix<3;++ix) {
       if(res[ix]) _rhomasses.push_back(res[ix]->mass() );
       if(res[ix]) _rhowidths.push_back(res[ix]->width());
@@ -84,7 +84,7 @@ void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
     }
   }
   else if(!_kstarparameters) {
-    _kstarmasses.resize(0);_kstarwidths.resize(0);
+    _kstarmasses.clear();_kstarwidths.clear();
     for(unsigned int ix=0;ix<3;++ix) {
       if(res[ix+3]) _kstarmasses.push_back(res[ix+3]->mass());
       if(res[ix+3]) _kstarwidths.push_back(res[ix+3]->width());
