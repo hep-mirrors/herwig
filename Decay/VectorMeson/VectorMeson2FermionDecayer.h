@@ -38,25 +38,10 @@ class VectorMeson2FermionDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   VectorMeson2FermionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson2FermionDecayer(const VectorMeson2FermionDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson2FermionDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required

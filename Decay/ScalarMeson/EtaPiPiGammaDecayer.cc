@@ -21,14 +21,9 @@
 using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
 
-EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() {
+EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() 
+  : _incoming(2), _coupling(2), _maxweight(2), _option(2) {
   // the pion decay constant
   _fpi=130.7*MeV;
   // the rho mass
@@ -41,12 +36,17 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() {
   _localparameters=true;
   // the modes
   // eta decay
-  _incoming.push_back(221);_option.push_back(3);
-  _coupling.push_back(0.005261433);_maxweight.push_back(4.);
+  _incoming[0] = 221; 
+  _option[0] = 3; 
+  _coupling[0] = 0.005261433; 
+  _maxweight[0] = 4.; 
   // eta' decay
-  _incoming.push_back(331);_option.push_back(3);
-  _coupling.push_back(0.004494391);_maxweight.push_back(4.);
-  _rhoconst=0.;_mpi=0.*MeV;
+  _incoming[1] = 331; 
+  _option[1] = 3; 
+  _coupling[1] = 0.004494391; 
+  _maxweight[1] = 4.; 
+  _rhoconst=0.;
+  _mpi=0.*MeV;
   // initialization of the experimental function
   _initialize =false;
   _npoints=100;
@@ -137,7 +137,7 @@ EtaPiPiGammaDecayer::EtaPiPiGammaDecayer() {
   // integration cut parameter
   _epscut=0.4*MeV;
   // size of the arrays
-  _nsize[0]=_energy.size();_nsize[1]=_omnesenergy.size();
+  _nsizea = _energy.size();_nsizeb = _omnesenergy.size();
   // intermediates
   generateIntermediates(false);
 }
@@ -149,15 +149,17 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
   if(isize!=_coupling.size()||isize!=_option.size()||isize!=_maxweight.size()||
      _energy.size()!=_phase.size()||_omnesenergy.size()!=_omnesfunctionreal.size()||
      _omnesenergy.size()!=_omnesfunctionimag.size())
-    {throw InitException() << "Inconsistent parameters in " 
-			   << "EtaPiPiGammaDecayer::doinit()" << Exception::abortnow;}
+    throw InitException() << "Inconsistent parameters in " 
+			  << "EtaPiPiGammaDecayer::doinit()" << Exception::abortnow;
   // set the parameters
   tPDPtr rho(getParticleData(ParticleID::rho0));
-  if(!_localparameters)
-    {_mrho=rho->mass();_rhowidth=rho->width();}
+  if(!_localparameters) {
+    _mrho=rho->mass();
+    _rhowidth=rho->width();
+  }
   _mpi=getParticleData(ParticleID::piplus)->mass();
   Energy pcm(Kinematics::pstarTwoBodyDecay(_mrho,_mpi,_mpi));
-  _rhoconst=_mrho*_mrho*_rhowidth/(pcm*pcm*pcm);
+  _rhoconst=sqr(_mrho)*_rhowidth/pow<3,1>(pcm);
   // set up the experimental omnes function if needed
   if(_initialize) {
     // convert the phase shift into radians
@@ -173,7 +175,7 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
     // intergrator
     GaussianIntegrator integrator;
     // integrand
-    OmnesIntegrand D1(intphase,_epscut*_epscut);
+    OmnesIntegrand D1(intphase,sqr(_epscut));
     // loop for integrals
     double D1real,D1imag;
     Complex ii(0.,1.),answer;
@@ -185,8 +187,9 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
       D1.setScale(moff*moff);
       // piece between 0 and 1 GeV
       using Constants::pi;
-      D1real=-moff*moff*(integrator.value(D1,4.*_mpi*_mpi,moff*moff-_epscut*_epscut)+
-			 integrator.value(D1,moff*moff+_epscut*_epscut,upp*upp))/pi;
+      Energy2 moff2(sqr(moff)),eps2(sqr(_epscut));
+      D1real=-moff2*(integrator.value(D1,4.*_mpi*_mpi,moff2-eps2)+
+		     integrator.value(D1,moff2+eps2,upp*upp))/pi;
       D1imag=-(*intphase)(moff);
       // piece above 1 GeV
       D1real+=-(*intphase)(upp)/pi*log(upp*upp/(upp*upp-moff*moff));
@@ -208,7 +211,7 @@ void EtaPiPiGammaDecayer::doinit() throw(InitException) {
   DecayPhaseSpaceModePtr mode;
   for(unsigned int ix=0;ix<_coupling.size();++ix) {
     extpart[0] = getParticleData(_incoming[ix]);
-    mode = new DecayPhaseSpaceMode(extpart,this);
+    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
     newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
     newchannel->addIntermediate(rho,0,0.0, 1,2);
@@ -227,11 +230,11 @@ int EtaPiPiGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int id;
   for(;pit!=dm.products().end();++pit) {
     id=(**pit).id();
-    if(id==ParticleID::piplus){++npip;}
-    else if(id==ParticleID::piminus){++npim;}
-    else if(id==ParticleID::gamma){++ngamma;}
+    if(id==ParticleID::piplus)       ++npip;
+    else if(id==ParticleID::piminus) ++npim;
+    else if(id==ParticleID::gamma)   ++ngamma;
   }
-  if(!(npip==1&&npim==1&&ngamma==1)){return imode;}
+  if(!(npip==1&&npim==1&&ngamma==1)) return imode;
   unsigned int ix(0);
   id=dm.parent()->id();
   do{if(id==_incoming[ix]){imode=ix;}++ix;}
@@ -241,16 +244,18 @@ int EtaPiPiGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
 }
 
 void EtaPiPiGammaDecayer::persistentOutput(PersistentOStream & os) const {
-  os << ounit(_fpi,MeV) << _incoming << _coupling << _maxweight << _option << ounit(_aconst,1/MeV2) 
-     << _cconst <<ounit(_mrho,MeV) << ounit(_rhowidth,MeV) << _rhoconst << ounit(_mpi,MeV) << _localparameters
+  os << ounit(_fpi,MeV) << _incoming << _coupling << _maxweight << _option 
+     << ounit(_aconst,1/MeV2) << _cconst <<ounit(_mrho,MeV) << ounit(_rhowidth,MeV) 
+     << _rhoconst << ounit(_mpi,MeV) << _localparameters
      << ounit(_energy,MeV) << ounit(_omnesenergy,MeV) 
      << _phase << _omnesfunctionreal << _omnesfunctionimag << _initialize
      << _npoints << ounit(_epscut,MeV);
 }
 
 void EtaPiPiGammaDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> iunit(_fpi,MeV) >> _incoming >> _coupling >> _maxweight >> _option >> iunit(_aconst,1/MeV2) 
-     >> _cconst >>iunit(_mrho,MeV) >> iunit(_rhowidth,MeV) >> _rhoconst >> iunit(_mpi,MeV) >> _localparameters
+  is >> iunit(_fpi,MeV) >> _incoming >> _coupling >> _maxweight >> _option 
+     >> iunit(_aconst,1/MeV2) >> _cconst >>iunit(_mrho,MeV) >> iunit(_rhowidth,MeV) 
+     >> _rhoconst >> iunit(_mpi,MeV) >> _localparameters
      >> iunit(_energy,MeV) >> iunit(_omnesenergy,MeV) 
      >> _phase >>_omnesfunctionreal >> _omnesfunctionimag >> _initialize
      >> _npoints >> iunit(_epscut,MeV);
@@ -447,14 +452,14 @@ double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
   }
   pre = pre*fact;
   LorentzPolarizationVector epstemp(pre*Helicity::epsilon(decay[0]->momentum(),
-								       decay[1]->momentum(),
-								       decay[2]->momentum()));
+							  decay[1]->momentum(),
+							  decay[2]->momentum()));
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin0,PDT::Spin1);
   vector<unsigned int> ispin(4,0);
   for(ispin[3]=0;ispin[3]<3;++ispin[3]) {
-    if(ispin[3]==1){newME(ispin)=0.;}
-    else{newME(ispin)=epstemp.dot(wave[ispin[3]]);}
+    if(ispin[3]==1) newME(ispin)=0.;
+    else            newME(ispin)=epstemp.dot(wave[ispin[3]]);
   }
   // contract the whole thing
   ME(newME);
@@ -466,7 +471,7 @@ double EtaPiPiGammaDecayer::
 threeBodyMatrixElement(const int imodeb,const Energy2 ,const  Energy2 s3,const 
 		       Energy2 s2,const Energy2 s1,const Energy ,
 		       const Energy ,const Energy ) const {
-  complex<InvEnergy3> pre(_coupling[imodeb]*2.*sqrt(2.)/(_fpi*_fpi*_fpi));
+  complex<InvEnergy3> pre(_coupling[imodeb]*2.*sqrt(2.)/pow<3,1>(_fpi));
   Energy q(sqrt(s3));
   Complex ii(0.,1.);
   // first VMD option
@@ -538,7 +543,7 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
 	   << _option[ix]      << "\n";
   }
   for(unsigned int ix=0;ix<_energy.size();++ix) {
-    if(ix<_nsize[0]) {
+    if(ix<_nsizea) {
       output << "set " << fullName() << ":Phase_Energy " << ix << "  " 
 	     << _energy[ix]/MeV << "\n";
       output << "set " << fullName() << ":Phase_Shift  " << ix << "  " 
@@ -552,7 +557,7 @@ void EtaPiPiGammaDecayer::dataBaseOutput(ofstream & output,
     }
   }
   for(unsigned int ix=0;ix<_omnesenergy.size();++ix) {
-      if(ix<_nsize[1]) {
+      if(ix<_nsizeb) {
 	output << "set " << fullName() << ":OmnesEnergy " << ix << "  " 
 	       << _omnesenergy[ix]/MeV << "\n";
 	output << "set " << fullName() << ":OmnesReal " << ix << "  " 

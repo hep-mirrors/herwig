@@ -50,18 +50,10 @@ class EtaPiPiGammaDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   EtaPiPiGammaDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer &);
-  //@}
 
 public:
 
@@ -321,7 +313,7 @@ private:
   /**
    *  size parameters for the output
    */
-  unsigned int _nsize[2];
+  unsigned int _nsizea,_nsizeb;
  };
 
 }

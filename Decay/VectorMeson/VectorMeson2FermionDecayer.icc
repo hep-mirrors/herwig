@@ -7,12 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline VectorMeson2FermionDecayer::VectorMeson2FermionDecayer
-(const VectorMeson2FermionDecayer & x)
-  : DecayIntegrator(x), _coupling(x._coupling), _incoming(x._incoming),
-    _outgoingf(x._outgoingf),_outgoinga(x._outgoinga), _maxweight(x._maxweight),
-    _initsize(x._initsize) {}
-
 inline IBPtr VectorMeson2FermionDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -23,7 +17,8 @@ inline IBPtr VectorMeson2FermionDecayer::fullclone() const {
 
 inline void VectorMeson2FermionDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {if(initialize()){_maxweight[ix] = mode(ix)->maxWeight();}}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(initialize()) _maxweight[ix] = mode(ix)->maxWeight();
+  }
 }
 }

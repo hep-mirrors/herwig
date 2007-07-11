@@ -34,161 +34,167 @@ void VectorMeson2MesonDecayer::doinit() throw(InitException) {
     extpart[0]=getParticleData( _incoming[ix]);
     extpart[1]=getParticleData(_outgoing1[ix]);
     extpart[2]=getParticleData(_outgoing2[ix]);
-    mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    if(extpart[0]&&extpart[1]&&extpart[2]) 
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    else
+      mode=DecayPhaseSpaceModePtr();
     addMode(mode,_maxweight[ix],wgt);
   }
 }
 
-VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() {
+VectorMeson2MesonDecayer::VectorMeson2MesonDecayer() :
+  _incoming(61), _outgoing1(61), _outgoing2(61), _maxweight(61), _coupling(61) {
   // don't generate intermediates
   generateIntermediates(false);
   // reserve size of vectors for speed
-  _incoming.reserve(65);_outgoing1.reserve(65);_outgoing2.reserve(65);
-  _coupling.reserve(65);_maxweight.reserve(65);
   // particles and couplings for the different modes
   // rho -> pi pi
-  _incoming.push_back( 113);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
-  _incoming.push_back( 213);_outgoing1.push_back( 111);_outgoing2.push_back( 211);
-  _coupling.push_back(6.);_coupling.push_back(6.);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[0] =  113; _outgoing1[0] =  211; _outgoing2[0] = -211;
+  _coupling[0] = 6.; _maxweight[0] = 2.;
+  _incoming[1] =  213; _outgoing1[1] =  111; _outgoing2[1] =  211;
+  _coupling[1] = 6.; _maxweight[1] = 2.;
   // rho' -> pi pi
-  _incoming.push_back( 100113);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
-  _incoming.push_back( 100213);_outgoing1.push_back( 111);_outgoing2.push_back( 211);
-  _coupling.push_back(3.428);_coupling.push_back(3.428);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[2] =  100113; _outgoing1[2] =  211; _outgoing2[2] = -211;  
+  _coupling[2] = 3.428; _maxweight[2] = 2.;
+  _incoming[3] =  100213; _outgoing1[3] =  111; _outgoing2[3] =  211;
+  _coupling[3] = 3.428; _maxweight[3] = 2.; 
   // rho'' -> pi pi
-  _incoming.push_back( 30113);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
-  _incoming.push_back( 30213);_outgoing1.push_back( 111);_outgoing2.push_back( 211);
-  _coupling.push_back(1.611);_coupling.push_back(1.611);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[4] =  30113; _outgoing1[4] =  211; _outgoing2[4] = -211; 
+  _coupling[4] = 1.611; _maxweight[4] = 2.; 
+  _incoming[5] =  30213; _outgoing1[5] =  111; _outgoing2[5] =  211; 
+  _coupling[5] = 1.611; _maxweight[5] = 2.;
   // rho'' -> K K
-  _incoming.push_back( 30113);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
-  _incoming.push_back( 30113);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
-  _incoming.push_back( 30213);_outgoing1.push_back( 321);_outgoing2.push_back(-311);
-  _coupling.push_back(0.294);_coupling.push_back(0.294);_coupling.push_back(0.416);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[6] =  30113; _outgoing1[6] =  321; _outgoing2[6] = -321; 
+  _coupling[6] = 0.294; _maxweight[6] = 2.;
+  _incoming[7] =  30113; _outgoing1[7] =  311; _outgoing2[7] = -311; 
+  _coupling[7] = 0.294; _maxweight[7] = 2.;
+  _incoming[8] =  30213; _outgoing1[8] =  321; _outgoing2[8] = -311; 
+  _coupling[8] = 0.416; _maxweight[8] = 2.;
   // rho'' -> pi' pi
-  _incoming.push_back( 30113);_outgoing1.push_back(100211);_outgoing2.push_back(-211);
-  _incoming.push_back( 30213);_outgoing1.push_back(100111);_outgoing2.push_back( 211);
-  _incoming.push_back( 30213);_outgoing1.push_back(111);_outgoing2.push_back( 100211);
-  _coupling.push_back(7.630);_coupling.push_back(7.630);_coupling.push_back(7.630);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);_maxweight.push_back(5.);
+  _incoming[ 9] =  30113; _outgoing1[ 9] = 100211; _outgoing2[ 9] = -211; 
+  _coupling[ 9] = 7.630; _maxweight[ 9] = 5.; 
+  _incoming[10] =  30213; _outgoing1[10] = 100111; _outgoing2[10] =  211; 
+  _coupling[10] = 7.630; _maxweight[10] = 5.; 
+  _incoming[11] =  30213; _outgoing1[11] = 111   ; _outgoing2[11] =  100211; 
+  _coupling[11] = 7.630; _maxweight[11] = 5.; 
   // rho' -> pi' pi
-  _incoming.push_back( 100113);_outgoing1.push_back(100211);_outgoing2.push_back(-211);
-  _incoming.push_back( 100213);_outgoing1.push_back(100111);_outgoing2.push_back( 211);
-  _incoming.push_back( 100213);_outgoing1.push_back(111);_outgoing2.push_back( 100211);
-  _coupling.push_back(28.6);_coupling.push_back(28.6);_coupling.push_back(28.6); 
-  _maxweight.push_back(5.);_maxweight.push_back(5.);_maxweight.push_back(5.);
+  _incoming[12] =  100113; _outgoing1[12] = 100211; _outgoing2[12] = -211; 
+  _coupling[12] = 28.6;  _maxweight[12] = 5.;
+  _incoming[13] =  100213; _outgoing1[13] = 100111; _outgoing2[13] =  211; 
+  _coupling[13] = 28.6;  _maxweight[13] = 5.;
+  _incoming[14] =  100213; _outgoing1[14] = 111   ; _outgoing2[14] =  100211; 
+  _coupling[14] = 28.6;  _maxweight[14] = 5.;
   // omega -> pi pi
-  _incoming.push_back(223);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
-  _coupling.push_back(0.1847);_maxweight.push_back(2.);
+  _incoming[15] = 223; _outgoing1[15] =  211; _outgoing2[15] = -211; 
+  _coupling[15] = 0.1847; _maxweight[15] = 2.;
   // K* decays
-  _incoming.push_back( 313);_outgoing1.push_back( 321);_outgoing2.push_back(-211);
-  _incoming.push_back( 313);_outgoing1.push_back( 311);_outgoing2.push_back( 111);
-  _incoming.push_back( 323);_outgoing1.push_back( 311);_outgoing2.push_back( 211);
-  _incoming.push_back( 323);_outgoing1.push_back( 321);_outgoing2.push_back( 111);
-  _coupling.push_back(4.57);_coupling.push_back(3.23);
-  _coupling.push_back(4.57);_coupling.push_back(3.23);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[16] =  313; _outgoing1[16] =  321; _outgoing2[16] = -211; 
+  _coupling[16] = 4.57; _maxweight[16] = 2.;
+  _incoming[17] =  313; _outgoing1[17] =  311; _outgoing2[17] =  111; 
+  _coupling[17] = 3.23; _maxweight[17] = 2.;
+  _incoming[18] =  323; _outgoing1[18] =  311; _outgoing2[18] =  211; 
+  _coupling[18] = 4.57; _maxweight[18] = 2.;
+  _incoming[19] =  323; _outgoing1[19] =  321; _outgoing2[19] =  111; 
+  _coupling[19] = 3.23; _maxweight[19] = 2.;
   // K*' decays
-  _incoming.push_back( 100313);_outgoing1.push_back( 321);_outgoing2.push_back(-211);
-  _incoming.push_back( 100313);_outgoing1.push_back( 311);_outgoing2.push_back( 111);
-  _incoming.push_back( 100323);_outgoing1.push_back( 311);_outgoing2.push_back( 211);
-  _incoming.push_back( 100323);_outgoing1.push_back( 321);_outgoing2.push_back( 111);
-  _coupling.push_back(1.296);_coupling.push_back(0.916);
-  _coupling.push_back(1.296);_coupling.push_back(0.916);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[20] =  100313; _outgoing1[20] =  321; _outgoing2[20] = -211; 
+  _coupling[20] = 1.296; _maxweight[20] = 2.;  
+  _incoming[21] =  100313; _outgoing1[21] =  311; _outgoing2[21] =  111; 
+  _coupling[21] = 0.916; _maxweight[21] = 2.;  
+  _incoming[22] =  100323; _outgoing1[22] =  311; _outgoing2[22] =  211; 
+  _coupling[22] = 1.296; _maxweight[22] = 2.;  
+  _incoming[23] =  100323; _outgoing1[23] =  321; _outgoing2[23] =  111; 
+  _coupling[23] = 0.916; _maxweight[23] = 2.;  
   // K*'' decays
-  _incoming.push_back( 30313);_outgoing1.push_back( 321);_outgoing2.push_back(-211);
-  _incoming.push_back( 30313);_outgoing1.push_back( 311);_outgoing2.push_back( 111);
-  _incoming.push_back( 30323);_outgoing1.push_back( 311);_outgoing2.push_back( 211);
-  _incoming.push_back( 30323);_outgoing1.push_back( 321);_outgoing2.push_back( 111);
-  _coupling.push_back(3.114);_coupling.push_back(2.201);
-  _coupling.push_back(3.114);_coupling.push_back(2.201);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[24] =  30313; _outgoing1[24] =  321; _outgoing2[24] = -211; 
+  _coupling[24] = 3.114;  _maxweight[24] = 2.;
+  _incoming[25] =  30313; _outgoing1[25] =  311; _outgoing2[25] =  111; 
+  _coupling[25] = 2.201;  _maxweight[25] = 2.;
+  _incoming[26] =  30323; _outgoing1[26] =  311; _outgoing2[26] =  211; 
+  _coupling[26] = 3.114;  _maxweight[26] = 2.;
+  _incoming[27] =  30323; _outgoing1[27] =  321; _outgoing2[27] =  111; 
+  _coupling[27] = 2.201;  _maxweight[27] = 2.;
   // phi decays
-  _incoming.push_back( 333);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
-  _incoming.push_back( 333);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
-  _incoming.push_back( 333);_outgoing1.push_back( 211);_outgoing2.push_back(-211);
-  _coupling.push_back(4.48);_coupling.push_back(4.59);_coupling.push_back(8.986E-3);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[28] =  333; _outgoing1[28] =  321; _outgoing2[28] = -321; 
+  _coupling[28] = 4.48;      _maxweight[28] = 2.; 
+  _incoming[29] =  333; _outgoing1[29] =  311; _outgoing2[29] = -311; 
+  _coupling[29] = 4.59;      _maxweight[29] = 2.; 
+  _incoming[30] =  333; _outgoing1[30] =  211; _outgoing2[30] = -211; 
+  _coupling[30] = 8.986E-3;  _maxweight[30] = 2.; 
   // phi' decays
-  _incoming.push_back( 100333);_outgoing1.push_back( 321);_outgoing2.push_back(-321);
-  _incoming.push_back( 100333);_outgoing1.push_back( 311);_outgoing2.push_back(-311);
-  _coupling.push_back(0.912);_coupling.push_back(0.918);
-  _maxweight.push_back(2.);_maxweight.push_back(2.);
+  _incoming[31] =  100333; _outgoing1[31] =  321; _outgoing2[31] = -321; 
+  _coupling[31] = 0.912; _maxweight[31] = 2.;  
+  _incoming[32] =  100333; _outgoing1[32] =  311; _outgoing2[32] = -311; 
+  _coupling[32] = 0.918; _maxweight[32] = 2.;  
   // excited psi decays
-  _incoming.push_back(30443);_outgoing1.push_back( 411);_outgoing2.push_back(-411);
-  _incoming.push_back(30443);_outgoing1.push_back( 421);_outgoing2.push_back(-421);
-  _coupling.push_back(13.375);_maxweight.push_back(2.);
-  _coupling.push_back(13.375);_maxweight.push_back(2.);
+  _incoming[33] = 30443; _outgoing1[33] =  411; _outgoing2[33] = -411; 
+  _coupling[33] = 13.375; _maxweight[33] = 2.; 
+  _incoming[34] = 30443; _outgoing1[34] =  421; _outgoing2[34] = -421; 
+  _coupling[34] = 13.375; _maxweight[34] = 2.; 
   // D* decays
-  _incoming.push_back( 423);_outgoing1.push_back( 421);_outgoing2.push_back(111);
-  _incoming.push_back( 413);_outgoing1.push_back( 411);_outgoing2.push_back(111);
-  _incoming.push_back( 413);_outgoing1.push_back( 421);_outgoing2.push_back(211);
-  _coupling.push_back(6.366);_maxweight.push_back(2.);
-  _coupling.push_back(6.370);_maxweight.push_back(2.);
-  _coupling.push_back(9.019);_maxweight.push_back(2.);
+  _incoming[35] =  423; _outgoing1[35] =  421; _outgoing2[35] = 111; 
+  _coupling[35] = 6.366; _maxweight[35] = 2.; 
+  _incoming[36] =  413; _outgoing1[36] =  411; _outgoing2[36] = 111; 
+  _coupling[36] = 6.370; _maxweight[36] = 2.; 
+  _incoming[37] =  413; _outgoing1[37] =  421; _outgoing2[37] = 211; 
+  _coupling[37] = 9.019; _maxweight[37] = 2.; 
   // D_s* decays
-  _incoming.push_back( 433);_outgoing1.push_back( 431);_outgoing2.push_back(111);
-  _coupling.push_back(5.635);_maxweight.push_back(2.);
+  _incoming[38] =  433; _outgoing1[38] =  431; _outgoing2[38] = 111; 
+  _coupling[38] = 5.635; _maxweight[38] = 2.; 
   // K_1 decays to K*_0 pion
-  _incoming.push_back( 10323);_outgoing1.push_back( 10321);_outgoing2.push_back( 111);
-  _incoming.push_back( 10323);_outgoing1.push_back( 10311);_outgoing2.push_back( 211);
-  _incoming.push_back( 10313);_outgoing1.push_back( 10311);_outgoing2.push_back( 111);
-  _incoming.push_back( 10313);_outgoing1.push_back( 10321);_outgoing2.push_back(-211);
-  _coupling.push_back(20.366);_maxweight.push_back(12.5);
-  _coupling.push_back(28.802);_maxweight.push_back(12.5);
-  _coupling.push_back(20.366);_maxweight.push_back(12.5);
-  _coupling.push_back(28.802);_maxweight.push_back(12.5);
+  _incoming[39] =  10323; _outgoing1[39] =  10321; _outgoing2[39] =  111;  
+  _coupling[39] = 20.366; _maxweight[39] = 12.5; 
+  _incoming[40] =  10323; _outgoing1[40] =  10311; _outgoing2[40] =  211; 
+  _coupling[40] = 28.802; _maxweight[40] = 12.5; 
+  _incoming[41] =  10313; _outgoing1[41] =  10311; _outgoing2[41] =  111; 
+  _coupling[41] = 20.366; _maxweight[41] = 12.5; 
+  _incoming[42] =  10313; _outgoing1[42] =  10321; _outgoing2[42] = -211;
+  _coupling[42] = 28.802; _maxweight[42] = 12.5;
   // K_1 decays to f(1370) kaon
-  _incoming.push_back( 10323);_outgoing1.push_back( 321);_outgoing2.push_back( 10221);
-  _incoming.push_back( 10313);_outgoing1.push_back( 311);_outgoing2.push_back( 10221);
-  _coupling.push_back(38.8);_maxweight.push_back(6.);
-  _coupling.push_back(38.8);_maxweight.push_back(6.);
+  _incoming[43] =  10323; _outgoing1[43] =  321; _outgoing2[43] =  10221; 
+  _coupling[43] = 38.8; _maxweight[43] = 6.; 
+  _incoming[44] =  10313; _outgoing1[44] =  311; _outgoing2[44] =  10221; 
+  _coupling[44] = 38.8; _maxweight[44] = 6.; 
   // K'_1 decays to f(1370) kaon
-  _incoming.push_back( 20323);_outgoing1.push_back( 321);_outgoing2.push_back( 10221);
-  _incoming.push_back( 20313);_outgoing1.push_back( 311);_outgoing2.push_back( 10221);
-  _coupling.push_back(23.34);_maxweight.push_back(6.);
-  _coupling.push_back(23.34);_maxweight.push_back(6.);
+  _incoming[45] =  20323; _outgoing1[45] =  321; _outgoing2[45] =  10221; 
+  _coupling[45] = 23.34; _maxweight[45] = 6.; 
+  _incoming[46] =  20313; _outgoing1[46] =  311; _outgoing2[46] =  10221; 
+  _coupling[46] = 23.34; _maxweight[46] = 6.; 
   // upsilon(4s)
-  _incoming.push_back(300553);_outgoing1.push_back(521);_outgoing2.push_back(-521);
-  _incoming.push_back(300553);_outgoing1.push_back(511);_outgoing2.push_back(-511);
-  _coupling.push_back(23.653);_maxweight.push_back(2.);
-  _coupling.push_back(23.653);_maxweight.push_back(2.);
+  _incoming[47] = 300553; _outgoing1[47] = 521; _outgoing2[47] = -521; 
+  _coupling[47] = 23.653; _maxweight[47] = 2.; 
+  _incoming[48] = 300553; _outgoing1[48] = 511; _outgoing2[48] = -511; 
+  _coupling[48] = 23.653; _maxweight[48] = 2.; 
   // jpsi to pions
-  _incoming.push_back(443);_outgoing1.push_back(211);_outgoing2.push_back(-211);
-  _coupling.push_back(2.568E-3);_maxweight.push_back(2.);
+  _incoming[49] = 443; _outgoing1[49] = 211; _outgoing2[49] = -211; 
+  _coupling[49] = 2.568E-3; _maxweight[49] = 2.; 
   // jpsi to kaons
-  _incoming.push_back(443);_outgoing1.push_back(321);_outgoing2.push_back(-321);
-  _coupling.push_back(1.111E-3);_maxweight.push_back(2.);
-  _incoming.push_back(443);_outgoing1.push_back(311);_outgoing2.push_back(-311);
-  _coupling.push_back(0.873E-3);_maxweight.push_back(2.);
+  _incoming[50] = 443; _outgoing1[50] = 321; _outgoing2[50] = -321; 
+  _coupling[50] = 1.111E-3; _maxweight[50] = 2.; 
+  _incoming[51] = 443; _outgoing1[51] = 311; _outgoing2[51] = -311; 
+  _coupling[51] = 0.873E-3; _maxweight[51] = 2.; 
   // psi(2s) to pions
-  _incoming.push_back(100443);_outgoing1.push_back(211);_outgoing2.push_back(-211);
-  _coupling.push_back(0.963E-3);_maxweight.push_back(2.);
+  _incoming[52] = 100443; _outgoing1[52] = 211; _outgoing2[52] = -211; 
+  _coupling[52] = 0.963E-3; _maxweight[52] = 2.; 
   // psi(2s) to kaons
-  _incoming.push_back(100443);_outgoing1.push_back(321);_outgoing2.push_back(-321);
-  _coupling.push_back(0.817E-3);_maxweight.push_back(2.);
-  _incoming.push_back(100443);_outgoing1.push_back(311);_outgoing2.push_back(-311);
-  _coupling.push_back(0.817E-3);_maxweight.push_back(2.);
+  _incoming[53] = 100443; _outgoing1[53] = 321; _outgoing2[53] = -321; 
+  _coupling[53] = 0.817E-3; _maxweight[53] = 2.; 
+  _incoming[54] = 100443; _outgoing1[54] = 311; _outgoing2[54] = -311; 
+  _coupling[54] = 0.817E-3; _maxweight[54] = 2.; 
   // f_1 to a_0 pi
-  _incoming.push_back(20223);_outgoing1.push_back( 9000111);_outgoing2.push_back( 111);
-  _coupling.push_back(3.035);_maxweight.push_back(10.);
-  _incoming.push_back(20223);_outgoing1.push_back( 9000211);_outgoing2.push_back(-211);
-  _coupling.push_back(3.035);_maxweight.push_back(10.);
-  _incoming.push_back(20223);_outgoing1.push_back(-9000211);_outgoing2.push_back( 211);
-  _coupling.push_back(3.035);_maxweight.push_back(10.);
+  _incoming[55] = 20223; _outgoing1[55] =  9000111; _outgoing2[55] =  111; 
+  _coupling[55] = 3.035; _maxweight[55] = 10.; 
+  _incoming[56] = 20223; _outgoing1[56] =  9000211; _outgoing2[56] = -211; 
+  _coupling[56] = 3.035; _maxweight[56] = 10.; 
+  _incoming[57] = 20223; _outgoing1[57] = -9000211; _outgoing2[57] =  211; 
+  _coupling[57] = 3.035; _maxweight[57] = 10.; 
   // f'_1 to a_0 pi
-  _incoming.push_back(20333);_outgoing1.push_back( 9000111);_outgoing2.push_back( 111);
-  _coupling.push_back(0.954);_maxweight.push_back(10.);
-  _incoming.push_back(20333);_outgoing1.push_back( 9000211);_outgoing2.push_back(-211);
-  _coupling.push_back(0.954);_maxweight.push_back(10.);
-  _incoming.push_back(20333);_outgoing1.push_back(-9000211);_outgoing2.push_back( 211);
-  _coupling.push_back(0.954);_maxweight.push_back(10.);
+  _incoming[58] = 20333; _outgoing1[58] =  9000111; _outgoing2[58] =  111; 
+  _coupling[58] = 0.954; _maxweight[58] = 10.; 
+  _incoming[59] = 20333; _outgoing1[59] =  9000211; _outgoing2[59] = -211; 
+  _coupling[59] = 0.954; _maxweight[59] = 10.; 
+  _incoming[60] = 20333; _outgoing1[60] = -9000211; _outgoing2[60] =  211; 
+  _coupling[60] = 0.954; _maxweight[60] = 10.; 
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }
@@ -379,4 +385,3 @@ void VectorMeson2MesonDecayer::dataBaseOutput(ofstream & output,
   }
   if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
-

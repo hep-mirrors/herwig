@@ -12,22 +12,11 @@
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/epsilon.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "VectorMesonVectorPScalarDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::VectorWaveFunction;
-using Helicity::ScalarWaveFunction;
-using Helicity::epsilon;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 void VectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
@@ -35,231 +24,234 @@ void VectorMesonVectorPScalarDecayer::doinit() throw(InitException) {
   unsigned int isize=_incoming.size();
   if(isize!=_outgoingV.size()||isize!=_outgoingP.size()||
      isize!=_maxweight.size()||isize!=_coupling.size())
-    {throw InitException() << "Inconsistent parameters in " 
-			   << "VectorMesonVectorPScalarDecayer" << Exception::runerror;}
+    throw InitException() << "Inconsistent parameters in " 
+			  << "VectorMesonVectorPScalarDecayer" << Exception::runerror;
   // set up the integration channels
   vector<double> wgt(0);
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      extpart[0]=getParticleData(_incoming[ix]);
-      extpart[1]=getParticleData(_outgoingV[ix]);
-      extpart[2]=getParticleData(_outgoingP[ix]);
-      mode = new DecayPhaseSpaceMode(extpart,this);
-      addMode(mode,_maxweight[ix],wgt);
-    }
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extpart[0]=getParticleData(_incoming[ix]);
+    extpart[1]=getParticleData(_outgoingV[ix]);
+    extpart[2]=getParticleData(_outgoingP[ix]);
+    if(extpart[0]&&extpart[1]&&extpart[2]) 
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    else
+      mode=DecayPhaseSpaceModePtr();
+    addMode(mode,_maxweight[ix],wgt);
+  }
 }
 
 VectorMesonVectorPScalarDecayer::VectorMesonVectorPScalarDecayer() 
-{
+  : _coupling(61), _incoming(61), _outgoingV(61), _outgoingP(61), _maxweight(61) {
   // intermediates
   generateIntermediates(false);
-  // reserve the sizes of the vectors
-  _incoming.reserve(65);_outgoingV.reserve(65);_outgoingP.reserve(65);
-  _coupling.reserve(65);_maxweight.reserve(65);
   // rho -> gamma pi modes
-  _incoming.push_back( 113);_outgoingV.push_back( 22);_outgoingP.push_back( 111);
-  _incoming.push_back( 213);_outgoingV.push_back( 22);_outgoingP.push_back( 211);
-  _coupling.push_back(0.2527/GeV);_maxweight.push_back(2.);
-  _coupling.push_back(0.2210/GeV);_maxweight.push_back(2.);
+  _incoming[0] =  113; _outgoingV[0] =  22; _outgoingP[0] =  111; 
+  _coupling[0] = 0.2527/GeV; _maxweight[0] = 2.; 
+  _incoming[1] =  213; _outgoingV[1] =  22; _outgoingP[1] =  211; 
+  _coupling[1] = 0.2210/GeV; _maxweight[1] = 2.; 
   // rho  -> gamma eta mode
-  _incoming.push_back( 113);_outgoingV.push_back( 22);_outgoingP.push_back( 221);
-  _coupling.push_back(0.492/GeV);_maxweight.push_back(2.);
+  _incoming[2] =  113; _outgoingV[2] =  22; _outgoingP[2] =  221; 
+  _coupling[2] = 0.492/GeV; _maxweight[2] = 2.; 
   // omega -> gamma pi 
-  _incoming.push_back( 223);_outgoingV.push_back( 22);_outgoingP.push_back( 111);
-  _coupling.push_back(0.7279465/GeV);_maxweight.push_back(2.);
+  _incoming[3] =  223; _outgoingV[3] =  22; _outgoingP[3] =  111; 
+  _coupling[3] = 0.7279465/GeV; _maxweight[3] = 2.; 
   // omega -> gamma eta
-  _incoming.push_back( 223);_outgoingV.push_back( 22);_outgoingP.push_back( 221);
-  _coupling.push_back(0.143/GeV);_maxweight.push_back(2.);
+  _incoming[4] =  223; _outgoingV[4] =  22; _outgoingP[4] =  221; 
+  _coupling[4] = 0.143/GeV; _maxweight[4] = 2.; 
   // phi -> gamma pi 
-  _incoming.push_back( 333);_outgoingV.push_back( 22);_outgoingP.push_back( 111);
-  _coupling.push_back(0.0397/GeV);_maxweight.push_back(2.);
+  _incoming[5] =  333; _outgoingV[5] =  22; _outgoingP[5] =  111; 
+  _coupling[5] = 0.0397/GeV; _maxweight[5] = 2.; 
   // phi -> gamma eta
-  _incoming.push_back( 333);_outgoingV.push_back( 22);_outgoingP.push_back( 221);
-  _coupling.push_back(0.212/GeV);_maxweight.push_back(2.);
+  _incoming[6] =  333; _outgoingV[6] =  22; _outgoingP[6] =  221; 
+  _coupling[6] = 0.212/GeV; _maxweight[6] = 2.; 
   // phi -> gamma eta'
-  _incoming.push_back( 333);_outgoingV.push_back( 22);_outgoingP.push_back( 331);
-  _coupling.push_back(0.219/GeV);_maxweight.push_back(2.5);
+  _incoming[7] =  333; _outgoingV[7] =  22; _outgoingP[7] =  331; 
+  _coupling[7] = 0.219/GeV; _maxweight[7] = 2.5; 
   // phi -> omega pi
-  _incoming.push_back( 333);_outgoingV.push_back(223);_outgoingP.push_back( 111);
-  _coupling.push_back(0.0417/GeV);_maxweight.push_back(2.5);
+  _incoming[8] =  333; _outgoingV[8] = 223; _outgoingP[8] =  111; 
+  _coupling[8] = 0.0417/GeV; _maxweight[8] = 2.5; 
   // phi' -> K* K
-  _incoming.push_back( 100333);_outgoingV.push_back( 323);_outgoingP.push_back(-321);
-  _coupling.push_back(3.934/GeV);_maxweight.push_back(5.);
-  _incoming.push_back( 100333);_outgoingV.push_back( 313);_outgoingP.push_back(-311);
-  _coupling.push_back(4.011/GeV);_maxweight.push_back(5.);
+  _incoming[9] =  100333; _outgoingV[9] =  323; _outgoingP[9] = -321; 
+  _coupling[9] = 3.934/GeV; _maxweight[9] = 5.; 
+  _incoming[10] =  100333; _outgoingV[10] =  313; _outgoingP[10] = -311; 
+  _coupling[10] = 4.011/GeV; _maxweight[10] = 5.; 
   // K* -> gamma K 
-  _incoming.push_back( 313);_outgoingV.push_back( 22);_outgoingP.push_back( 311);
-  _incoming.push_back( 323);_outgoingV.push_back( 22);_outgoingP.push_back( 321);
-  _coupling.push_back(0.384/GeV);_maxweight.push_back(2.);
-  _coupling.push_back(0.253/GeV);_maxweight.push_back(2.);
+  _incoming[11] =  313; _outgoingV[11] =  22; _outgoingP[11] =  311; 
+  _coupling[11] = 0.384/GeV; _maxweight[11] = 2.; 
+  _incoming[12] =  323; _outgoingV[12] =  22; _outgoingP[12] =  321; 
+  _coupling[12] = 0.253/GeV; _maxweight[12] = 2.; 
   // d* decay
-  _incoming.push_back( 423);_outgoingV.push_back(22);_outgoingP.push_back( 421);
-  _coupling.push_back(0.616/GeV);_maxweight.push_back(2.);
-  _incoming.push_back( 413);_outgoingV.push_back(22);_outgoingP.push_back( 411);
-  _coupling.push_back(0.152/GeV);_maxweight.push_back(2.);
+  _incoming[13] =  423; _outgoingV[13] = 22; _outgoingP[13] =  421; 
+  _coupling[13] = 0.616/GeV; _maxweight[13] = 2.; 
+  _incoming[14] =  413; _outgoingV[14] = 22; _outgoingP[14] =  411; 
+  _coupling[14] = 0.152/GeV; _maxweight[14] = 2.; 
   // D_s* decays
-  _incoming.push_back( 433);_outgoingV.push_back(22);_outgoingP.push_back( 431);
-  _coupling.push_back(0.189/GeV);_maxweight.push_back(2.);
+  _incoming[15] =  433; _outgoingV[15] = 22; _outgoingP[15] =  431; 
+  _coupling[15] = 0.189/GeV; _maxweight[15] = 2.; 
   // B_s* decays
-  _incoming.push_back( 533);_outgoingV.push_back(22);_outgoingP.push_back( 531);
-  _coupling.push_back(0.235/GeV);_maxweight.push_back(2.);
+  _incoming[16] =  533; _outgoingV[16] = 22; _outgoingP[16] =  531; 
+  _coupling[16] = 0.235/GeV; _maxweight[16] = 2.; 
   // B_c* decays
-  _incoming.push_back( 543);_outgoingV.push_back(22);_outgoingP.push_back( 541);
-  _coupling.push_back(0.1025/GeV);_maxweight.push_back(2.);
+  _incoming[17] =  543; _outgoingV[17] = 22; _outgoingP[17] =  541; 
+  _coupling[17] = 0.1025/GeV; _maxweight[17] = 2.; 
   // B* decay
-  _incoming.push_back( 523);_outgoingV.push_back(22);_outgoingP.push_back( 521);
-  _coupling.push_back(0.553/GeV);_maxweight.push_back(2.);
-  _incoming.push_back( 513);_outgoingV.push_back(22);_outgoingP.push_back( 511);
-  _coupling.push_back(0.310/GeV);_maxweight.push_back(2.);
+  _incoming[18] =  523; _outgoingV[18] = 22; _outgoingP[18] =  521; 
+  _coupling[18] = 0.553/GeV; _maxweight[18] = 2.; 
+  _incoming[19] =  513; _outgoingV[19] = 22; _outgoingP[19] =  511; 
+  _coupling[19] = 0.310/GeV; _maxweight[19] = 2.; 
   // rho'' eta rho
-  _incoming.push_back( 30113);_outgoingV.push_back( 113);_outgoingP.push_back(221);
-  _incoming.push_back( 30213);_outgoingV.push_back( 213);_outgoingP.push_back(221);
-  _coupling.push_back(2.600/GeV);_maxweight.push_back(5.);
-  _coupling.push_back(2.600/GeV);_maxweight.push_back(5.);
+  _incoming[20] =  30113; _outgoingV[20] =  113; _outgoingP[20] = 221; 
+  _coupling[20] = 2.600/GeV; _maxweight[20] = 5.; 
+  _incoming[21] =  30213; _outgoingV[21] =  213; _outgoingP[21] = 221; 
+  _coupling[21] = 2.600/GeV; _maxweight[21] = 5.; 
   // rho '' K* K
-  _incoming.push_back( 30113);_outgoingV.push_back( 323);_outgoingP.push_back(-321);
-  _incoming.push_back( 30113);_outgoingV.push_back( 313);_outgoingP.push_back(-311);
-  _incoming.push_back( 30213);_outgoingV.push_back( 323);_outgoingP.push_back(-311);
-  _incoming.push_back( 30213);_outgoingV.push_back(-313);_outgoingP.push_back( 321);
-  _coupling.push_back(1.357/GeV);_maxweight.push_back(3.);
-  _coupling.push_back(1.378/GeV);_maxweight.push_back(3.);
-  _coupling.push_back(1.932/GeV);_maxweight.push_back(3.);
-  _coupling.push_back(1.932/GeV);_maxweight.push_back(3.);
+  _incoming[22] =  30113; _outgoingV[22] =  323; _outgoingP[22] = -321; 
+  _coupling[22] = 1.357/GeV; _maxweight[22] = 3.; 
+  _incoming[23] =  30113; _outgoingV[23] =  313; _outgoingP[23] = -311; 
+  _coupling[23] = 1.378/GeV; _maxweight[23] = 3.; 
+  _incoming[24] =  30213; _outgoingV[24] =  323; _outgoingP[24] = -311; 
+  _coupling[24] = 1.932/GeV; _maxweight[24] = 3.; 
+  _incoming[25] =  30213; _outgoingV[25] = -313; _outgoingP[25] =  321; 
+  _coupling[25] = 1.932/GeV; _maxweight[25] = 3.; 
   // omega'' rho pi
-  _incoming.push_back( 30223);_outgoingV.push_back( 213);_outgoingP.push_back(-211);
-  _incoming.push_back( 30223);_outgoingV.push_back( 113);_outgoingP.push_back( 111);
-  _coupling.push_back(2.996/GeV);_maxweight.push_back(3.);
-  _coupling.push_back(2.996/GeV);_maxweight.push_back(3.);
+  _incoming[26] =  30223; _outgoingV[26] =  213; _outgoingP[26] = -211; 
+  _incoming[26] =  30223; _outgoingV[26] =  113; _outgoingP[26] =  111; 
+  _coupling[27] = 2.996/GeV; _maxweight[27] = 3.; 
+  _coupling[27] = 2.996/GeV; _maxweight[27] = 3.; 
   // omega' rho pi
-  _incoming.push_back( 100223);_outgoingV.push_back( 213);_outgoingP.push_back(-211);
-  _incoming.push_back( 100223);_outgoingV.push_back( 113);_outgoingP.push_back( 111);
-  _coupling.push_back(4.507/GeV);_maxweight.push_back(5.);
-  _coupling.push_back(4.507/GeV);_maxweight.push_back(5.);
+  _incoming[28] =  100223; _outgoingV[28] =  213; _outgoingP[28] = -211; 
+  _coupling[28] = 4.507/GeV; _maxweight[28] = 5.; 
+  _incoming[29] =  100223; _outgoingV[29] =  113; _outgoingP[29] =  111; 
+  _coupling[29] = 4.507/GeV; _maxweight[29] = 5.; 
   // K*''->K* pi decays
-  _incoming.push_back( 30313);_outgoingV.push_back( 323);_outgoingP.push_back(-211);
-  _incoming.push_back( 30313);_outgoingV.push_back( 313);_outgoingP.push_back( 111);
-  _incoming.push_back( 30323);_outgoingV.push_back( 313);_outgoingP.push_back( 211);
-  _incoming.push_back( 30323);_outgoingV.push_back( 323);_outgoingP.push_back( 111);
-  _coupling.push_back(3.36/GeV);_coupling.push_back(2.38/GeV);
-  _coupling.push_back(3.36/GeV);_coupling.push_back(2.38/GeV);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);
+  _incoming[30] =  30313; _outgoingV[30] =  323; _outgoingP[30] = -211; 
+  _coupling[30] = 3.36/GeV;  _maxweight[30] = 5.; 
+  _incoming[31] =  30313; _outgoingV[31] =  313; _outgoingP[31] =  111; 
+  _coupling[31] = 2.38/GeV;  _maxweight[31] = 5.; 
+  _incoming[32] =  30323; _outgoingV[32] =  313; _outgoingP[32] =  211; 
+  _coupling[32] = 3.36/GeV;  _maxweight[32] = 5.; 
+  _incoming[33] =  30323; _outgoingV[33] =  323; _outgoingP[33] =  111; 
+  _coupling[33] = 2.38/GeV;  _maxweight[33] = 5.; 
   // K*''->K rho decays
-  _incoming.push_back( 30313);_outgoingP.push_back( 321);_outgoingV.push_back(-213);
-  _incoming.push_back( 30313);_outgoingP.push_back( 311);_outgoingV.push_back( 113);
-  _incoming.push_back( 30323);_outgoingP.push_back( 311);_outgoingV.push_back( 213);
-  _incoming.push_back( 30323);_outgoingP.push_back( 321);_outgoingV.push_back( 113);
-  _coupling.push_back(4.159/GeV);_coupling.push_back(2.939/GeV);
-  _coupling.push_back(4.159/GeV);_coupling.push_back(2.939/GeV);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);
+  _incoming[34] =  30313; _outgoingP[34] =  321; _outgoingV[34] = -213; 
+  _coupling[34] = 4.159/GeV;  _maxweight[34] = 5.; 
+  _incoming[35] =  30313; _outgoingP[35] =  311; _outgoingV[35] =  113; 
+  _coupling[35] = 2.939/GeV;  _maxweight[35] = 5.; 
+  _incoming[36] =  30323; _outgoingP[36] =  311; _outgoingV[36] =  213; 
+  _coupling[36] = 4.159/GeV;  _maxweight[36] = 5.; 
+  _incoming[37] =  30323; _outgoingP[37] =  321; _outgoingV[37] =  113; 
+  _coupling[37] = 2.939/GeV;  _maxweight[37] = 5.; 
   // K*' decays
-  _incoming.push_back( 100313);_outgoingV.push_back( 323);_outgoingP.push_back(-211);
-  _incoming.push_back( 100313);_outgoingV.push_back( 313);_outgoingP.push_back( 111);
-  _incoming.push_back( 100323);_outgoingV.push_back( 313);_outgoingP.push_back( 211);
-  _incoming.push_back( 100323);_outgoingV.push_back( 323);_outgoingP.push_back( 111);
-  _coupling.push_back(9.469/GeV);_coupling.push_back(6.781/GeV);
-  _coupling.push_back(9.469/GeV);_coupling.push_back(6.781/GeV);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);
-  _maxweight.push_back(5.);_maxweight.push_back(5.);
+  _incoming[38] =  100313; _outgoingV[38] =  323; _outgoingP[38] = -211; 
+  _coupling[38] = 9.469/GeV;  _maxweight[38] = 5.; 
+  _incoming[39] =  100313; _outgoingV[39] =  313; _outgoingP[39] =  111; 
+  _coupling[39] = 6.781/GeV;  _maxweight[39] = 5.; 
+  _incoming[40] =  100323; _outgoingV[40] =  313; _outgoingP[40] =  211; 
+  _coupling[40] = 9.469/GeV;  _maxweight[40] = 5.; 
+  _incoming[41] =  100323; _outgoingV[41] =  323; _outgoingP[41] =  111; 
+  _coupling[41] = 6.781/GeV;  _maxweight[41] = 5.; 
   // J/psi -> gamma eta_c decay
-  _incoming.push_back(443);_outgoingV.push_back(22);_outgoingP.push_back(441);
-  _coupling.push_back(0.160/GeV);_maxweight.push_back(20.);
+  _incoming[42] = 443; _outgoingV[42] = 22; _outgoingP[42] = 441; 
+  _coupling[42] = 0.160/GeV; _maxweight[42] = 20.; 
   // J/psi -> gamma eta' decay
-  _incoming.push_back(443);_outgoingV.push_back(22);_outgoingP.push_back(331);
-  _coupling.push_back(0.00236/GeV);_maxweight.push_back(2.);
+  _incoming[43] = 443; _outgoingV[43] = 22; _outgoingP[43] = 331; 
+  _coupling[43] = 0.00236/GeV; _maxweight[43] = 2.; 
   // J/psi -> rho pi decay
-  _incoming.push_back(443);_outgoingV.push_back(213);_outgoingP.push_back(-211);
-  _incoming.push_back(443);_outgoingV.push_back(113);_outgoingP.push_back(111);
-  _coupling.push_back(0.00234/GeV);_maxweight.push_back(4.);
-  _coupling.push_back(0.00234/GeV);_maxweight.push_back(4.);
+  _incoming[44] = 443; _outgoingV[44] = 213; _outgoingP[44] = -211; 
+  _coupling[44] = 0.00234/GeV; _maxweight[44] = 4.; 
+  _incoming[45] = 443; _outgoingV[45] = 113; _outgoingP[45] = 111; 
+  _coupling[45] = 0.00234/GeV; _maxweight[45] = 4.; 
   // J/psi -> K* K decay
-  _incoming.push_back(443);_outgoingV.push_back(323);_outgoingP.push_back(-321);
-  _incoming.push_back(443);_outgoingV.push_back(313);_outgoingP.push_back(-311);
-  _coupling.push_back(0.00177/GeV);_maxweight.push_back(7.);
-  _coupling.push_back(0.00177/GeV);_maxweight.push_back(7.);
+  _incoming[46] = 443; _outgoingV[46] = 323; _outgoingP[46] = -321; 
+  _coupling[46] = 0.00177/GeV; _maxweight[46] = 7.; 
+  _incoming[47] = 443; _outgoingV[47] = 313; _outgoingP[47] = -311; 
+  _coupling[47] = 0.00177/GeV; _maxweight[47] = 7.; 
   // J/psi -> omega eta decay
-  _incoming.push_back(443);_outgoingV.push_back(223);_outgoingP.push_back(221);
-  _coupling.push_back(0.00145/GeV);_maxweight.push_back(7.);
+  _incoming[48] = 443; _outgoingV[48] = 223; _outgoingP[48] = 221; 
+  _coupling[48] = 0.00145/GeV; _maxweight[48] = 7.; 
   // J/psi -> gamma eta decay
-  _incoming.push_back(443);_outgoingV.push_back(22);_outgoingP.push_back(221);
-  _coupling.push_back(0.00095/GeV);_maxweight.push_back(2.);
+  _incoming[49] = 443; _outgoingV[49] = 22; _outgoingP[49] = 221; 
+  _coupling[49] = 0.00095/GeV; _maxweight[49] = 2.; 
   // J/psi -> phi eta decay
-  _incoming.push_back(443);_outgoingV.push_back(333);_outgoingP.push_back(221);
-  _coupling.push_back(0.00102/GeV);_maxweight.push_back(7.);
+  _incoming[50] = 443; _outgoingV[50] = 333; _outgoingP[50] = 221; 
+  _coupling[50] = 0.00102/GeV; _maxweight[50] = 7.; 
   // J/psi -> phi eta' decay
-  _incoming.push_back(443);_outgoingV.push_back(333);_outgoingP.push_back(331);
-  _coupling.push_back(0.00084/GeV);_maxweight.push_back(6.5);
+  _incoming[51] = 443; _outgoingV[51] = 333; _outgoingP[51] = 331; 
+  _coupling[51] = 0.00084/GeV; _maxweight[51] = 6.5; 
   // J/psi -> omega pi0 decay
-  _incoming.push_back(443);_outgoingV.push_back(223);_outgoingP.push_back(111);
-  _coupling.push_back(0.00069/GeV);_maxweight.push_back(7.);
+  _incoming[52] = 443; _outgoingV[52] = 223; _outgoingP[52] = 111; 
+  _coupling[52] = 0.00069/GeV; _maxweight[52] = 7.; 
   // J/psi -> rho0 eta decay
-  _incoming.push_back(443);_outgoingV.push_back(113);_outgoingP.push_back(221);
-  _coupling.push_back(0.00054/GeV);_maxweight.push_back(4.);
+  _incoming[53] = 443; _outgoingV[53] = 113; _outgoingP[53] = 221; 
+  _coupling[53] = 0.00054/GeV; _maxweight[53] = 4.; 
   // J/psi -> rho0 eta' decay
-  _incoming.push_back(443);_outgoingV.push_back(113);_outgoingP.push_back(331);
-  _coupling.push_back(0.00045/GeV);_maxweight.push_back(3.5);
+  _incoming[54] = 443; _outgoingV[54] = 113; _outgoingP[54] = 331; 
+  _coupling[54] = 0.00045/GeV; _maxweight[54] = 3.5; 
   // J/psi -> omega eta' decay
-  _incoming.push_back(443);_outgoingV.push_back(223);_outgoingP.push_back(331);
-  _coupling.push_back(0.00054/GeV);_maxweight.push_back(7.);
+  _incoming[55] = 443; _outgoingV[55] = 223; _outgoingP[55] = 331; 
+  _coupling[55] = 0.00054/GeV; _maxweight[55] = 7.; 
   // J/psi -> gamma pi0 decay
-  _incoming.push_back(443);_outgoingV.push_back(22);_outgoingP.push_back(111);
-  _coupling.push_back(0.00019/GeV);_maxweight.push_back(2.);
+  _incoming[56] = 443; _outgoingV[56] = 22; _outgoingP[56] = 111; 
+  _coupling[56] = 0.00019/GeV; _maxweight[56] = 2.; 
   // psi(2s)-> j/psi eta decay
-  _incoming.push_back(100443);_outgoingV.push_back(443);_outgoingP.push_back(221);
-  _coupling.push_back(0.213/GeV);_maxweight.push_back(2.);
+  _incoming[57] = 100443; _outgoingV[57] = 443; _outgoingP[57] = 221; 
+  _coupling[57] = 0.213/GeV; _maxweight[57] = 2.; 
   // psi(2s)-> gamma eta_c decay
-  _incoming.push_back(100443);_outgoingV.push_back(22);_outgoingP.push_back(441);
-  _coupling.push_back(0.0108/GeV);_maxweight.push_back(3.5);
+  _incoming[58] = 100443; _outgoingV[58] = 22; _outgoingP[58] = 441; 
+  _coupling[58] = 0.0108/GeV; _maxweight[58] = 3.5; 
   // psi(2s)-> gamma eta' decay
-  _incoming.push_back(100443);_outgoingV.push_back(22);_outgoingP.push_back(331);
-  _coupling.push_back(0.00057/GeV);_maxweight.push_back(2.);
+  _incoming[59] = 100443; _outgoingV[59] = 22; _outgoingP[59] = 331; 
+  _coupling[59] = 0.00057/GeV; _maxweight[59] = 2.; 
   // psi(2s)-> J/psi pi0 decay
-  _incoming.push_back(100443);_outgoingV.push_back(443);_outgoingP.push_back(111);
-  _coupling.push_back(0.00846/GeV);_maxweight.push_back(2.);
+  _incoming[60] = 100443; _outgoingV[60] = 443; _outgoingP[60] = 111; 
+  _coupling[60] = 0.00846/GeV; _maxweight[60] = 2.; 
   // initial size of the vectors for the database output
   _initsize=_incoming.size();
 }
 
-VectorMesonVectorPScalarDecayer::~VectorMesonVectorPScalarDecayer() {}
-
-int VectorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int VectorMesonVectorPScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   int imode(-1);
-  int id(dm.parent()->id()),idbar(id);
-  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
   ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
   ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0);
   cc=false;
-  do 
-    {
-      if(id   ==_incoming[ix])
-	{if((id1   ==_outgoingV[ix]&&id2   ==_outgoingP[ix])||
-	    (id2   ==_outgoingV[ix]&&id1   ==_outgoingP[ix])){imode=ix;}}
-      if(idbar==_incoming[ix])
-	{if((id1bar==_outgoingV[ix]&&id2bar==_outgoingP[ix])||
-	    (id2bar==_outgoingV[ix]&&id1bar==_outgoingP[ix])){imode=ix;cc=true;}}
-      ++ix;
+  do {
+    if(id   ==_incoming[ix]) {
+      if((id1   ==_outgoingV[ix]&&id2   ==_outgoingP[ix])||
+	 (id2   ==_outgoingV[ix]&&id1   ==_outgoingP[ix])) imode=ix;
     }
+    if(idbar==_incoming[ix]) {
+      if((id1bar==_outgoingV[ix]&&id2bar==_outgoingP[ix])||
+	 (id2bar==_outgoingV[ix]&&id1bar==_outgoingP[ix])) {
+	imode=ix;
+	cc=true;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   return imode;
 }
 
 
-void VectorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const 
-{os << _incoming << _outgoingV << _outgoingP << _maxweight << ounit(_coupling,1/MeV);}
+void VectorMesonVectorPScalarDecayer::persistentOutput(PersistentOStream & os) const  {
+  os << _incoming << _outgoingV << _outgoingP << _maxweight << ounit(_coupling,1/MeV);
+}
 
-void VectorMesonVectorPScalarDecayer::persistentInput(PersistentIStream & is, int) 
-{is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> iunit(_coupling,1/MeV);}
+void VectorMesonVectorPScalarDecayer::persistentInput(PersistentIStream & is, int)  {
+  is >> _incoming >> _outgoingV >> _outgoingP >> _maxweight >> iunit(_coupling,1/MeV);
+}
 
-ClassDescription<VectorMesonVectorPScalarDecayer> VectorMesonVectorPScalarDecayer::initVectorMesonVectorPScalarDecayer;
+ClassDescription<VectorMesonVectorPScalarDecayer> 
+VectorMesonVectorPScalarDecayer::initVectorMesonVectorPScalarDecayer;
 // Definition of the static class description member.
 
 void VectorMesonVectorPScalarDecayer::Init() {
@@ -303,8 +295,7 @@ void VectorMesonVectorPScalarDecayer::Init() {
 
 double VectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 					    const Particle & inpart,
-					    const ParticleVector & decay) const
-{
+					    const ParticleVector & decay) const {
   // wavefunction for the decaying particle
   RhoDMatrix rhoin(PDT::Spin1);rhoin.average();
   vector<LorentzPolarizationVector> invec;
@@ -322,48 +313,54 @@ double VectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin0);
   LorentzPolarizationVector vtemp;
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      if(ix==1&&photon){for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=0.;}}
-      else
-	{
-	  vtemp=_coupling[imode()]/inpart.mass()*
-	    epsilon(inpart.momentum(),vout[ix],decay[0]->momentum());
-	  for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=invec[iy].dot(vtemp);}
-	}
+  for(unsigned int ix=0;ix<3;++ix) {
+    if(ix==1&&photon){for(unsigned int iy=0;iy<3;++iy){newME(iy,ix,0)=0.;}}
+    else {
+      vtemp=_coupling[imode()]/inpart.mass()*
+	epsilon(inpart.momentum(),vout[ix],decay[0]->momentum());
+      for(unsigned int iy=0;iy<3;++iy) newME(iy,ix,0)=invec[iy].dot(vtemp);
     }
+  }
   ME(newME);
   // return the answer
   return newME.contract(rhoin).real();
 }
- 
+
 bool VectorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & mecode,
-						    double & coupling) const
-{
+						    double & coupling) const {
   int imode(-1);
-  int id(dm.parent()->id()),idbar(id);
-  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
   ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
   ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0); bool order(false);
-  do 
-    {
-      if(id==_incoming[ix])
-	{
-	  if(id1   ==_outgoingV[ix]&&id2   ==_outgoingP[ix]){imode=ix;order=true;}
-	  if(id2   ==_outgoingV[ix]&&id1   ==_outgoingP[ix]){imode=ix;order=false;}
-	}
-      if(idbar==_incoming[ix]&&imode<0)
-	{
-	  if(id1bar==_outgoingV[ix]&&id2bar==_outgoingP[ix]){imode=ix;order=true;}
-	  if(id2bar==_outgoingV[ix]&&id1bar==_outgoingP[ix]){imode=ix;order=false;}
-	}
-      ++ix;
+  do {
+    if(id==_incoming[ix]) {
+      if(id1   ==_outgoingV[ix]&&id2   ==_outgoingP[ix]) {
+	imode=ix;
+	order=true;
+      }
+      if(id2   ==_outgoingV[ix]&&id1   ==_outgoingP[ix]) {
+	imode=ix;
+	order=false;
+      }
     }
+    if(idbar==_incoming[ix]&&imode<0) {
+      if(id1bar==_outgoingV[ix]&&id2bar==_outgoingP[ix]) {
+	imode=ix;
+	order=true;
+      }
+      if(id2bar==_outgoingV[ix]&&id1bar==_outgoingP[ix]) {
+	imode=ix;
+	order=false;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   coupling = _coupling[imode]*dm.parent()->mass();  
   mecode = 1;
@@ -372,42 +369,36 @@ bool VectorMesonVectorPScalarDecayer::twoBodyMEcode(const DecayMode & dm,int & m
 
 // output the setup info for the particle database
 void VectorMesonVectorPScalarDecayer::dataBaseOutput(ofstream & output,
-						     bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+						     bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming " << ix << " "
-		 << _incoming[ix] << "\n";
-	  output << "set " << fullName() << ":OutgoingVector " << ix << " "
-		 << _outgoingV[ix] << "\n";
-	  output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
-		 << _outgoingP[ix] << "\n";
-	  output << "set " << fullName() << ":Coupling " << ix << " "
-		 << _coupling[ix]*MeV << "\n";
-	  output << "set " << fullName() << ":MaxWeight " << ix << " "
-		 << _maxweight[ix] << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming "  << ix << " "
-		 << _incoming[ix] << "\n";
-	  output << "insert " << fullName() << ":OutgoingVector " << ix << " "
-		 << _outgoingV[ix] << "\n";
-	  output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
-		 << _outgoingP[ix] << "\n";
-	  output << "insert " << fullName() << ":Coupling " << ix << " "
-		 << _coupling[ix]*MeV << "\n";
-	  output << "insert " << fullName() << ":MaxWeight " << ix << " "
-		 << _maxweight[ix] << "\n";
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":Incoming " << ix << " "
+	     << _incoming[ix] << "\n";
+      output << "set " << fullName() << ":OutgoingVector " << ix << " "
+	     << _outgoingV[ix] << "\n";
+      output << "set " << fullName() << ":OutgoingPScalar " << ix << " "
+	     << _outgoingP[ix] << "\n";
+      output << "set " << fullName() << ":Coupling " << ix << " "
+	     << _coupling[ix]*MeV << "\n";
+      output << "set " << fullName() << ":MaxWeight " << ix << " "
+	     << _maxweight[ix] << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+    else {
+      output << "insert " << fullName() << ":Incoming "  << ix << " "
+	     << _incoming[ix] << "\n";
+      output << "insert " << fullName() << ":OutgoingVector " << ix << " "
+	     << _outgoingV[ix] << "\n";
+      output << "insert " << fullName() << ":OutgoingPScalar " << ix << " "
+	     << _outgoingP[ix] << "\n";
+      output << "insert " << fullName() << ":Coupling " << ix << " "
+	     << _coupling[ix]*MeV << "\n";
+      output << "insert " << fullName() << ":MaxWeight " << ix << " "
+	     << _maxweight[ix] << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
