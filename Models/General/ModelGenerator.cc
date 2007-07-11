@@ -11,6 +11,7 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 using namespace Herwig;
 
@@ -72,7 +73,8 @@ void ModelGenerator::doinit() throw(InitException) {
   }
   if(_theParticles.size() > 0) {
     _theDecayConstructor->createDecayers(_theParticles);
-    ofstream ofs("ModelSpectrum.spc");
+    ofstream ofs(string(CurrentGenerator::current().filename() 
+			+ "-ModelSpectrum.spc").c_str());
     ofs << "# Automatically Generated Decay Modes\n";
     ofs << "#\n#";
     for( PDVector::iterator it = _theParticles.begin();
