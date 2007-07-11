@@ -329,7 +329,7 @@ void EvtGen::ThePEGSpin(PPtr peg,EvtParticle *evt) const {
   if(evt->getSpinDensityForward().GetDim()!=0) {
     spin->rhoMatrix()=ThePEGSpinDensity(evt->getSpinDensityForward(),peg->id());
   }
-  if(evt->getNDaug()>0) {
+  if(evt->isDecayed()) {
     spin->decayed(true);
     spin->setDeveloped(true);
     if(evt->getSpinDensityBackward().GetDim()!=0) {
