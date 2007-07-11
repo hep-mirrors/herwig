@@ -9,7 +9,7 @@
 #include "TopDalitzAnalysis.fh"
 #include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
-#include "../Utilities/Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
 

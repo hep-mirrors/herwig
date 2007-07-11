@@ -10,7 +10,7 @@ pkglib_LTLIBRARIES += HwEvtGen.la
 endif
 
 HwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
-HwKtJet_la_LIBADD = -L$(KTJETPATH)/lib -lKtEvent
+HwKtJet_la_LIBADD = $(KTJETLIBS)
 HwKtJet_la_LDFLAGS = -module -version-info 2:0:0
 HwKtJet_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE)
 

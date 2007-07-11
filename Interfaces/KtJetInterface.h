@@ -1,5 +1,5 @@
-#ifndef _KTJET_INTERFACE_H_
-#define _KTJET_INTERFACE_H_
+#ifndef HERWIG_KTJET_INTERFACE_H
+#define HERWIG_KTJET_INTERFACE_H
 
 // This is the declaration of the KtJetInterface class.
 
@@ -29,11 +29,6 @@ public:
    * The default constructor.
    */
   KtJetInterface() {}
-
-  /**
-   * The copy constructor.
-   */
-  ~KtJetInterface() {}
 
 public:
 
@@ -80,4 +75,4 @@ public:
 
 }
 
-#endif // _KTJET_INTERFACE_H_
+#endif // HERWIG_KTJET_INTERFACE_H
