@@ -87,8 +87,10 @@ void TauCorrelationAnalysis::analyze(tPPtr part) {
   if(abs(part->children()[0]->id())!=ParticleID::tauminus||
      abs(part->children()[1]->id())!=ParticleID::tauminus) return;
   // and number of children
-  if(part->children()[0]->children().size()!=2||
-     part->children()[1]->children().size()!=2) return;
+  if(!((part->children()[0]->children().size()==2||
+	part->children()[0]->children().size()==3)&&
+       (part->children()[1]->children().size()==2||
+	part->children()[1]->children().size()==3))) return;
   // call rho and pi specific analysis
   analyzePi(part);
   analyzeRho(part);
@@ -106,6 +108,8 @@ void TauCorrelationAnalysis::Init() {
 }
 
 void TauCorrelationAnalysis::analyzePi(tPPtr part) {
+  if(part->children()[0]->children().size()!=2||
+     part->children()[1]->children().size()!=2) return;
   // now examine the decay products
   tPPtr taup,taum,pim,pip,nu,nub;
   for(unsigned int ix=0;ix<2;++ix) {
@@ -154,42 +158,48 @@ void TauCorrelationAnalysis::analyzeRho(tPPtr part) {
   for(unsigned int ix=0;ix<2;++ix) {
     if(part->children()[ix]->id()==ParticleID::tauminus) {
       taum=part->children()[ix];
-      for(unsigned int ix=0;ix<2;++ix) {
-	idtemp=taum->children()[ix]->id();
+      for(unsigned int iz=0;iz<taum->children().size();++iz) {
+	idtemp=taum->children()[iz]->id();
 	if(idtemp==-213||idtemp==-100213||idtemp==-30213) {
-	  rhom=taum->children()[ix];
+	  tPPtr rhom=taum->children()[iz];
+	  if(rhom->children().size()!=2) return;
+	  for(unsigned int iy=0;iy<2;++iy) {
+	    int idb=rhom->children()[iy]->id();
+	    if(idb==ParticleID::piminus)  pim=rhom->children()[iy];
+	    else if(idb==ParticleID::pi0) pi0a=rhom->children()[iy];
+	  }
 	}
 	else if(idtemp==ParticleID::nu_tau) {
-	  nu=taum->children()[ix];
+	  nu=taum->children()[iz];
 	}
+	else if(idtemp==ParticleID::piminus)  pim =taum->children()[iz];
+	else if(idtemp==ParticleID::pi0)      pi0a=taum->children()[iz];
       }
     }
     else {
       taup=part->children()[ix];
-      for(unsigned int ix=0;ix<2;++ix) {
-	idtemp=taup->children()[ix]->id();
+      for(unsigned int iz=0;iz<taup->children().size();++iz) {
+	idtemp=taup->children()[iz]->id();
 	if(idtemp==213||idtemp==100213||idtemp==30213) {
-	  rhop=taup->children()[ix];
+	  tPPtr rhop=taup->children()[iz];
+	  if(rhop->children().size()!=2) return;
+	  for(unsigned int iy=0;iy<2;++iy) {
+	    int idb=rhop->children()[iy]->id();
+	    if(idb==ParticleID::piplus)   pip=rhop->children()[iy];
+	    else if(idb==ParticleID::pi0) pi0b=rhop->children()[iy];
+	  }
 	}
 	else if(idtemp==ParticleID::nu_taubar) {
-	  nub=taup->children()[ix];
+	  nub=taup->children()[iz];
 	}
+	else if(idtemp==ParticleID::piplus) pip  = taup->children()[iz];
+	else if(idtemp==ParticleID::pi0)    pi0b = taup->children()[iz];
       }
     }
   }
-  if(!taup||!taum||!rhom||!rhop||!nu||!nub){return;}
-  // find the children of the rho's
-  if(rhom->children().size()!=2||rhop->children().size()!=2){return;}
-  for(unsigned int ix=0;ix<2;++ix) {
-    idtemp=rhom->children()[ix]->id();
-    if(idtemp==ParticleID::piminus)  pim=rhom->children()[ix];
-    else if(idtemp==ParticleID::pi0) pi0a=rhom->children()[ix];
-    idtemp=rhop->children()[ix]->id();
-    if(idtemp==ParticleID::piplus)   pip=rhop->children()[ix];
-    else if(idtemp==ParticleID::pi0) pi0b=rhop->children()[ix];
-  }
-  if(!pim||!pip||!pi0a||!pi0b) return;
-  LorentzMomentum prest(rhom->momentum()+rhop->momentum());
+  if(!taup||!taum||!pim||!pip||!pi0a||!pi0b||!nu||!nub) return;
+  LorentzMomentum prest(pim ->momentum()+pip ->momentum()+
+			pi0a->momentum()+pi0b->momentum());
   Boost bv(-prest.boostVector());
   Lorentz5Momentum ppim( pim->momentum() );ppim.boost(bv);
   Lorentz5Momentum ppip( pip->momentum() );ppip.boost(bv);
