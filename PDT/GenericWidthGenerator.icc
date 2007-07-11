@@ -90,4 +90,12 @@ inline tPDPtr GenericWidthGenerator::particle() const {
   return _theParticle;
 }
 
+inline DecayMap GenericWidthGenerator::rate(const ParticleData & in) const {
+  return in.decaySelector();
+}
+
+inline bool GenericWidthGenerator::accept(const ParticleData & in) const {
+  if(!_theParticle) return false;
+  return &in==_theParticle||(in.CC()&&in.CC()==_theParticle);
+}
 }

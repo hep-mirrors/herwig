@@ -17,6 +17,12 @@
 namespace Herwig {
 using namespace ThePEG;
 
+/**
+ * Typedef to define a DecayMoap
+ */
+typedef Selector<tDMPtr> DecayMap;
+
+
 /** \ingroup PDT
  *
  * The <code>GenericWidthGenerator</code> class is designed to automatically
@@ -74,7 +80,7 @@ public:
    * @param part The particle data pointer of the particle.
    * @return True if this class can handle the particle and false otherwise
    */
-  virtual bool accept(const ParticleData & part) const;
+  inline virtual bool accept(const ParticleData & part) const;
 
   /** @name Members to calculate the width and decay modes. */
   //@{
@@ -91,7 +97,7 @@ public:
    * @param part The particle data pointer of the particle.
    * @return The decay map
    */
-  virtual DecayMap rate(const ParticleData & part) const;
+  inline virtual DecayMap rate(const ParticleData & part) const;
 
   /**
    * Return a decay map for a given particle instance. This allows us to
@@ -177,6 +183,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
   /**
@@ -231,6 +243,11 @@ private:
    */
   vector<DMPtr> _decaymodes;
 
+  /**
+   *  The tags for the DecayMode s
+   */
+  vector<string> _decaytags;
+  
   /**
    *  The minimum mass of the decaying particle for which this decay mode is possible
    */

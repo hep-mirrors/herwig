@@ -6,7 +6,6 @@
 
 #include "GenericWidthGenerator.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
@@ -16,17 +15,16 @@
 #include "TwoOffShellCalculator.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Repository/Repository.h"
 
-namespace Herwig {
-using namespace ThePEG;
-typedef Selector<tDMPtr> DecayMap;
+using namespace Herwig;
 
 void GenericWidthGenerator::persistentOutput(PersistentOStream & os) const {
   os << _theParticle << ounit(_mass,GeV) << _prefactor << _MEtype << _MEcode
      << ounit(_MEmass1,GeV) << ounit(_MEmass2,GeV) << _MEcoupling << _modeon
      << ounit(_intermasses,GeV) << ounit(_interwidths,GeV) 
      << _noofentries << _initialize << _BRnorm
-     << _npoints << _decaymodes << ounit(_minmass,GeV) 
+     << _npoints << _decaymodes << _decaytags << ounit(_minmass,GeV) 
      << _BRminimum << _interpolators;
 }
 
@@ -35,7 +33,7 @@ void GenericWidthGenerator::persistentInput(PersistentIStream & is, int) {
      >> iunit(_MEmass1,GeV) >> iunit(_MEmass2,GeV) >> _MEcoupling >>_modeon
      >> iunit(_intermasses,GeV) >> iunit(_interwidths,GeV)
      >> _noofentries >> _initialize >> _BRnorm
-     >> _npoints >> _decaymodes >> iunit(_minmass,GeV)
+     >> _npoints >> _decaymodes >> _decaytags >> iunit(_minmass,GeV)
      >> _BRminimum >> _interpolators;
 }
 
@@ -163,29 +161,20 @@ void GenericWidthGenerator::Init() {
      &GenericWidthGenerator::_npoints, 50, 5, 1000,
      false, false, true);
 
-  static RefVector<GenericWidthGenerator,DecayMode> interfaceDecayModes
+  static ParVector<GenericWidthGenerator,string> interfaceDecayModes
     ("DecayModes",
-     "The decay modes used in the width generator",
-     &GenericWidthGenerator::_decaymodes, -1, false, false, true, false, false);
-
+     "The tags for the decay modes used in the width generator",
+     &GenericWidthGenerator::_decaytags, -1, "", "", "",
+     false, false, Interface::nolimits);
 }
 
-bool GenericWidthGenerator::accept(const ParticleData & in) const
-{
-  if(!_theParticle){return false;}
-  return &in==_theParticle||(in.CC()&&in.CC()==_theParticle);
- }
-
-Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const
-{
+Energy GenericWidthGenerator::width(const ParticleData &, Energy m) const {
   Energy gamma= Energy();
-  for(unsigned int ix =0;ix<_MEcoupling.size();++ix)
-    {if(_modeon[ix]){gamma +=partialWidth(ix,m);}}
+  for(unsigned int ix =0;ix<_MEcoupling.size();++ix) {
+    if(_modeon[ix]) gamma +=partialWidth(ix,m);
+  }
   return gamma*_prefactor;
 }
-
-DecayMap GenericWidthGenerator::rate(const ParticleData & in) const
-{return in.decaySelector();}
 
 void GenericWidthGenerator::doinit() throw(InitException) {
   WidthGenerator::doinit();
@@ -198,13 +187,17 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     // the initial prefactor
     _prefactor=1.;
     // resize all the storage vectors
-    _MEtype.resize(0);_MEcode.resize(0);
-    _MEmass1.resize(0);_MEmass2.resize(0);
+    _MEtype.resize(0);
+    _MEcode.resize(0);
+    _MEmass1.resize(0);
+    _MEmass2.resize(0);
     _MEcoupling.resize(0); 
     _modeon.resize(0);
     _minmass.resize(0);
-    _intermasses.resize(0);_interwidths.resize(0);
-    _noofentries.resize(0);_decaymodes.resize(0);
+    _intermasses.resize(0);
+    _interwidths.resize(0);
+    _noofentries.resize(0);
+    _decaytags.resize(0);
     // integrators that we may need
     WidthCalculatorBasePtr widthptr;
     // get the list of decay modes as a decay selector
@@ -218,6 +211,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
       // the decay mode
       tcDMPtr mode=(*start).second;      
       _decaymodes.push_back(const_ptr_cast<DMPtr>(mode));
+      _decaytags.push_back(_decaymodes.back()->tag());
       ParticleMSet::const_iterator pit(mode->products().begin());
       // minimum mass for the decaymode
       Energy minmass = Energy();
@@ -445,8 +439,15 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     // output the info so it can be read back in
   }
   else {
-    setInterpolators();
-    if(_decaymodes.size()==0) {
+    // get the decay modes from the tags
+    if(_decaytags.size()!=0) {
+      _decaymodes.resize(0);
+      for(unsigned int ix=0;ix<_decaytags.size();++ix) {
+	_decaymodes.push_back(Repository::findDecayMode(_decaytags[ix]));
+      }
+    }
+    // otherwise just use the modes from the selector
+    else {
       DecayMap modes(_theParticle->decaySelector());
       DecayMap::const_iterator start(modes.begin()),end(modes.end());
       tcDMPtr mode;
@@ -455,6 +456,8 @@ void GenericWidthGenerator::doinit() throw(InitException) {
 	_decaymodes.push_back(const_ptr_cast<DMPtr>(mode));
       }
     }
+    // set up the interpolators
+    setInterpolators();
   }
   // setup the partial widths in the decayers for normalization
   tDecayIntegratorPtr temp;
@@ -466,7 +469,7 @@ void GenericWidthGenerator::doinit() throw(InitException) {
     }
   }
 }
-  
+ 
 void GenericWidthGenerator::setInterpolators() {
   // create the interpolators
   _interpolators.resize(_MEtype.size());
@@ -495,52 +498,63 @@ void GenericWidthGenerator::dataBaseOutput(ofstream & output, bool header)
   output << "set " << fullName() << ":BRMinimum "   << _BRminimum << "\n";
   output << "set " << fullName() << ":Points "      << _npoints   << "\n";
   // the type of the matrix element
-  for(unsigned int ix=0;ix<_MEtype.size();++ix)
-    {output << "insert " << fullName() << ":MEtype " << ix << " " 
-	    << _MEtype[ix] << "\n";}
+  for(unsigned int ix=0;ix<_MEtype.size();++ix) {
+    output << "insert " << fullName() << ":MEtype " << ix << " " 
+	   << _MEtype[ix] << "\n";
+  }
   // the code for thew two body matrix elements
-  for(unsigned int ix=0;ix<_MEcode.size();++ix)
-    {output << "insert " << fullName() << ":MEcode " 
-	    << ix << " " << _MEcode[ix] << "\n";}
+  for(unsigned int ix=0;ix<_MEcode.size();++ix) {
+    output << "insert " << fullName() << ":MEcode " 
+	   << ix << " " << _MEcode[ix] << "\n";
+  }
   // the coupling for trhe two body matrix elements
-  for(unsigned int ix=0;ix<_MEcoupling.size();++ix)
-    {output << "insert " << fullName() << ":MEcoupling " 
-	    << ix << " " << _MEcoupling[ix] << "\n";}
+  for(unsigned int ix=0;ix<_MEcoupling.size();++ix) {
+    output << "insert " << fullName() << ":MEcoupling " 
+	   << ix << " " << _MEcoupling[ix] << "\n";
+  }
   // use this mode for the running width
-  for(unsigned int ix=0;ix<_modeon.size();++ix)
-    {output << "insert " << fullName() << ":ModeOn " 
-	    << ix << " " << _modeon[ix] << "\n";}
+  for(unsigned int ix=0;ix<_modeon.size();++ix) {
+    output << "insert " << fullName() << ":ModeOn " 
+	   << ix << " " << _modeon[ix] << "\n";
+  }
   // first outgoing mass
-  for(unsigned int ix=0;ix<_minmass.size();++ix)
-    {output << "insert " << fullName() << ":MinimumMasses " 
-	    << ix << " " << _minmass[ix]/GeV << "\n";}
+  for(unsigned int ix=0;ix<_minmass.size();++ix) {
+    output << "insert " << fullName() << ":MinimumMasses " 
+	   << ix << " " << _minmass[ix]/GeV << "\n";
+  }
   // first outgoing mass
-  for(unsigned int ix=0;ix<_MEmass1.size();++ix)
-    {output << "insert " << fullName() << ":MEmass1 " 
-	    << ix << " " << _MEmass1[ix]/GeV << "\n";}
+  for(unsigned int ix=0;ix<_MEmass1.size();++ix) {
+    output << "insert " << fullName() << ":MEmass1 " 
+	   << ix << " " << _MEmass1[ix]/GeV << "\n";
+  }
   // second outgoing mass
-  for(unsigned int ix=0;ix<_MEmass2.size();++ix)
-    {output << "insert " << fullName() << ":MEmass2 " 
-	    << ix << " " << _MEmass2[ix]/GeV << "\n";}
-  for(unsigned int ix=0;ix<_decaymodes.size();++ix)
-    {output << "insert " << fullName() << ":DecayModes "
-	    << ix << " " << _decaymodes[ix]->fullName() << " \n";}
+  for(unsigned int ix=0;ix<_MEmass2.size();++ix) {
+    output << "insert " << fullName() << ":MEmass2 " 
+	   << ix << " " << _MEmass2[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
+    output << "insert " << fullName() << ":DecayModes "
+	   << ix << " " << _decaytags[ix] << " \n";
+  }
   // data for the interpolation tables
   std::streamsize curpre=output.precision();
   output.precision(curpre+2);
-  for(unsigned int ix=0;ix<_intermasses.size();++ix)
-    {output << "insert " << fullName() 
-	    << ":InterpolationMasses " 
-	    << ix << " " << _intermasses[ix]/GeV << "\n";}
-  for(unsigned int ix=0;ix<_interwidths.size();++ix)
-    {output << "insert " << fullName() 
-	    << ":InterpolationWidths " 
-	    << ix << " " << _interwidths[ix]/GeV << "\n";}
+  for(unsigned int ix=0;ix<_intermasses.size();++ix) {
+    output << "insert " << fullName() 
+	   << ":InterpolationMasses " 
+	   << ix << " " << _intermasses[ix]/GeV << "\n";
+  }
+  for(unsigned int ix=0;ix<_interwidths.size();++ix) {
+    output << "insert " << fullName() 
+	   << ":InterpolationWidths " 
+	   << ix << " " << _interwidths[ix]/GeV << "\n";
+  }
   output.precision(curpre);
-  for(unsigned int ix=0;ix<_noofentries.size();++ix)
-    {output << "insert " << fullName() 
-	    << ":NumberofEntries " 
-	    << ix << " " << _noofentries[ix] << "\n";}  
+  for(unsigned int ix=0;ix<_noofentries.size();++ix) {
+    output << "insert " << fullName() 
+	   << ":NumberofEntries " 
+	   << ix << " " << _noofentries[ix] << "\n";
+  }  
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
 }
 
@@ -548,25 +562,23 @@ DecayMap GenericWidthGenerator::rate(const Particle & p) {
   Energy scale(p.mass());
   DecayMap dm;
   // use the running widths to generate the branching ratios
-  if(_theParticle->variableRatio())
-    {
-      DecayMap newmap;
-      for(unsigned int ix=0;ix<_decaymodes.size();++ix)
-	{
-	  // DGRELL units?
-	  if(p.id()==_theParticle->id())
-	    {newmap.insert(partialWidth(ix,scale)/MeV,_decaymodes[ix]);}
-	  else
-	    {newmap.insert(partialWidth(ix,scale)/MeV,_decaymodes[ix]->CC());}
-	}
-      dm=newmap;
+  if(_theParticle->variableRatio()) {
+    DecayMap newmap;
+    Energy width = _theParticle->width();
+    for(unsigned int ix=0;ix<_decaymodes.size();++ix) {
+      // DGRELL units?
+      if(p.id()==_theParticle->id())
+	newmap.insert(partialWidth(ix,scale)/width,_decaymodes[ix]);
+      else
+	newmap.insert(partialWidth(ix,scale)/width,_decaymodes[ix]->CC());
     }
+    dm=newmap;
+  }
   // if we are not varying the width return the default
-  else
-    {dm=p.data().decaySelector();}
+  else dm=p.data().decaySelector();
   return dm;
-} 
-  
+}
+
 void GenericWidthGenerator::setupMode(tcDMPtr, tDecayIntegratorPtr,
 				      unsigned int)
 {}
@@ -592,4 +604,12 @@ Energy GenericWidthGenerator::partialWidth(int imode,Energy q) const {
   return max(gamma,Energy());
 }
 
+void GenericWidthGenerator::dofinish() {
+  cerr << "testing in dofinish " << fullName() << " " << _initialize << "\n";
+  if(_initialize) {
+    string fname = _theParticle->PDGName() + "width.output";
+    ofstream output(fname.c_str());
+    dataBaseOutput(output,false);
+  }
+  WidthGenerator::dofinish();
 }
