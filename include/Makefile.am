@@ -22,7 +22,6 @@ done-all-links: $(DIRLINKS) $(CONFIGHEADERS) $(LOOPTOOLHEADERS)
 	mkdir -p Herwig++/Config Herwig++/Looptools
 	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++
 	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) Herwig++/Config
-	$(LN_S) -f ../../../Config/config.h Herwig++/Config
 	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools
 	touch done-all-links
 
