@@ -3,16 +3,10 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the EtaPiGammaGammaDecayer class.
 //
-
 #include "EtaPiGammaGammaDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EtaPiGammaGammaDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
@@ -20,25 +14,27 @@
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using Helicity::outgoing;
-using Helicity::incoming;
-using Helicity::VectorWaveFunction;
-using Helicity::ScalarWaveFunction;
+
+EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer()
+  : _grhoomega(12.924/GeV), _fpi(130.7*MeV),_rhomass(771.1*MeV),
+    _rhowidth(149.2*MeV),_grho(_rhomass/_fpi),_mpi(0.*MeV),_rhoconst(0.),
+    _localparameters(true),_ratiofpif8(1./1.3),_ratiofpif0(1./1.04),
+    _theta(-Constants::pi/9.),_etamax(1.35),_etapmax(0.006),
+    _dconst(2), _econst(2) {
+  // intermediates
+  generateIntermediates(false);
+}
 
 void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // set rho parameters if needed
   tPDPtr rho(getParticleData(ParticleID::rho0));
-  if(!_localparameters)
-    {
-      _rhomass  = rho->mass();
-      _rhowidth = rho->width();
-    }
+  if(!_localparameters) {
+    _rhomass  = rho->mass();
+    _rhowidth = rho->width();
+  }
   // constant for the running rho width
   _mpi=getParticleData(ParticleID::pi0)->mass();
   Energy pcm =Kinematics::pstarTwoBodyDecay(_rhomass,_mpi,_mpi);
@@ -52,11 +48,10 @@ void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
   fact[0] = _ratiofpif8*cos(_theta)-sqrt(2.)*_ratiofpif0*sin(_theta);
   // constants for eta'
   fact[1] = _ratiofpif8*sin(_theta)+sqrt(2.)*_ratiofpif0*cos(_theta);
-  for(unsigned int ix=0;ix<2;++ix)
-    {
-      _Dconst[ix]=fact[ix]*pre;
-      _Econst[ix]=fact[ix]*pre;
-    }
+  for(unsigned int ix=0;ix<2;++ix) {
+    _dconst[ix]=fact[ix]*pre;
+    _econst[ix]=fact[ix]*pre;
+  }
   // set up the phsae space for the decays
   tPDPtr eta[2]={getParticleData(ParticleID::eta),getParticleData(ParticleID::etaprime)};
   PDVector extpart;extpart.resize(4);
@@ -66,72 +61,71 @@ void EtaPiGammaGammaDecayer::doinit() throw(InitException) {
   vector<double> dummyweights(2,0.5);
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr mode;
-  for(unsigned int ix=0;ix<2;++ix)
-    {
-      extpart[0] = eta[ix];
-      mode = new DecayPhaseSpaceMode(extpart,this);
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
-      newchannel->addIntermediate(rho,0,0.0, 1,3);
-      mode->addChannel(newchannel);
-      newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
-      newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
-      newchannel->addIntermediate(rho,0,0.0, 1,2);
-      mode->addChannel(newchannel);
-      if(ix==0){addMode(mode,_etamax,dummyweights);}
-      else if(ix==1){addMode(mode,_etapmax,dummyweights);}
-    }
+  for(unsigned int ix=0;ix<2;++ix) {
+    extpart[0] = eta[ix];
+    mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
+    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(extpart[0],0, 0.0,-1,2);
+    newchannel->addIntermediate(rho,0,0.0, 1,3);
+    mode->addChannel(newchannel);
+    newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
+    newchannel->addIntermediate(extpart[0],0, 0.0,-1,3);
+    newchannel->addIntermediate(rho,0,0.0, 1,2);
+    mode->addChannel(newchannel);
+    addMode(mode, (ix==0 ? _etamax : _etapmax),dummyweights);
+  }
 }
 
-EtaPiGammaGammaDecayer::~EtaPiGammaGammaDecayer() {}
-
-int EtaPiGammaGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
+int EtaPiGammaGammaDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   cc=false;
-  int id,imode(-1);
-  if(dm.products().size()!=3){return imode;}
+  int id;
+  if(dm.products().size()!=3) return -1;
   ParticleMSet::const_iterator pit = dm.products().begin();
   unsigned int npi0(0),ngamma(0);
-  for( ;pit!=dm.products().end();++pit)
-    {
-      id=(**pit).id();
-      if(id==ParticleID::pi0){++npi0;}
-      else if(id==ParticleID::gamma){++ngamma;}
-    }
-  if(!(npi0==1&&ngamma==2)){return imode;}
+  for( ;pit!=dm.products().end();++pit) {
+    id=(**pit).id();
+    if(id==ParticleID::pi0)         ++npi0;
+    else if(id==ParticleID::gamma)  ++ngamma;
+  }
+  if(!(npi0==1&&ngamma==2)) return -1;
   // number of the mode
-  id=dm.parent()->id();
-  if(id==ParticleID::eta){imode=0;}
-  else if(id==ParticleID::etaprime){imode=1;}
-  return imode;
+  switch (dm.parent()->id()) {
+  case ParticleID::eta     : return 0;
+  case ParticleID::etaprime: return 1;
+  default: return -1;
+  }
 }
 
 void EtaPiGammaGammaDecayer::persistentOutput(PersistentOStream & os) const {
   os << ounit(_grhoomega,1/GeV)<< ounit(_fpi,GeV)<< _grho 
      << ounit(_rhomass,GeV)<< ounit(_rhowidth,GeV)<< _localparameters 
      << _ratiofpif8 << _ratiofpif0 << _theta << _etamax << _etapmax 
-     << _rhoconst << ounit(_mpi,GeV);
-  for(unsigned int ix=0;ix<2;++ix){os << ounit(_Dconst[ix],1/GeV2) 
-				      << ounit(_Econst[ix],1/GeV2);}
+     << _rhoconst << ounit(_mpi,GeV) << ounit(_dconst,1/GeV2) 
+     << ounit(_econst,1/GeV2);
 }
 
 void EtaPiGammaGammaDecayer::persistentInput(PersistentIStream & is, int) {
   is >> iunit(_grhoomega,1/GeV) >> iunit(_fpi,GeV)>> _grho 
      >> iunit(_rhomass,GeV)>> iunit(_rhowidth,GeV)>> _localparameters 
      >> _ratiofpif8 >> _ratiofpif0 >> _theta >> _etamax >> _etapmax 
-     >> _rhoconst >> iunit(_mpi,GeV);
-  for(unsigned int ix=0;ix<2;++ix){is >> iunit(_Dconst[ix],1/GeV2) 
-				      >> iunit(_Econst[ix],1/GeV2);}
+     >> _rhoconst >> iunit(_mpi,GeV) >> iunit(_dconst,1/GeV2) 
+     >> iunit(_econst,1/GeV2);
 }
 
-ClassDescription<EtaPiGammaGammaDecayer> EtaPiGammaGammaDecayer::initEtaPiGammaGammaDecayer;
+ClassDescription<EtaPiGammaGammaDecayer> 
+EtaPiGammaGammaDecayer::initEtaPiGammaGammaDecayer;
 // Definition of the static class description member.
 
 void EtaPiGammaGammaDecayer::Init() {
 
   static ClassDocumentation<EtaPiGammaGammaDecayer> documentation
     ("The EtaPiGammaGammaDecayer class implements a VMD model for the"
-     " decay of the eta or etaprime to a pion and two photons.");
+     " decay of the eta or etaprime to a pion and two photons.",
+     "The decays of $\\eta,\\eta'\\to\\pi^0\\gamma\\gamma$ were simulated using"
+     " the matrix elements of \\cite{Holstein:2001bt}",
+     "\\bibitem{Holstein:2001bt} B.~R.~Holstein,\n"
+     " Phys.\\ Scripta {\\bf T99} (2002) 55 [arXiv:hep-ph/0112150].\n"
+     "%%CITATION = PHSTB,T99,55;%%\n");
 
   static Parameter<EtaPiGammaGammaDecayer,InvEnergy> interfacegrhoomega
     ("grhoomega",
@@ -210,51 +204,47 @@ void EtaPiGammaGammaDecayer::Init() {
 }
 
 double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpart,
-				   const ParticleVector & decay) const
-{
+				   const ParticleVector & decay) const {
   unsigned int ix,iy;
   // workaround for gcc 3.2.3 bug
   // spin info of the decaying particle
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
   tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-
   // spin info and wavefunctions for outgoing particles
   vector<LorentzPolarizationVector> vwave[2];
-
   // workaround for gcc 3.2.3 bug
-  for(ix=0;ix<2;++ix)
+  for(ix=0;ix<2;++ix) {
     //ALB  {VectorWaveFunction(vwave[ix],decay[ix+1],outgoing,true,true,vertex);}
-  //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
-    {
-      vector<LorentzPolarizationVector> mytempLPV;
-      VectorWaveFunction(mytempLPV,decay[ix+1],outgoing,true,true,vertex);
-      vwave[ix]=mytempLPV; 
-    }
+    //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
+    vector<LorentzPolarizationVector> mytempLPV;
+    VectorWaveFunction(mytempLPV,decay[ix+1],outgoing,true,true,vertex);
+    vwave[ix]=mytempLPV; 
+  }
   PPtr mytemp = decay[0];
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
   // dot products we need
   Energy2 q1dotq2(decay[1]->momentum()*decay[2]->momentum()),
     pdotq1(inpart.momentum()*decay[1]->momentum()),
     pdotq2(inpart.momentum()*decay[2]->momentum());
   complex<Energy> e1dotq2[3],e1dotp[3],e2dotq1[3],e2dotp[3];
-  for(ix=0;ix<3;++ix)
-    {
-      if(ix==1)
-	{e1dotq2[ix]=0.*MeV;e1dotp[ix] =0.*MeV;e2dotq1[ix]=0.*MeV;e2dotp[ix] =0.*MeV;}
-      else
-	{
-	  e1dotq2[ix] =vwave[0][ix]*decay[2]->momentum();
-	  e1dotp[ix]  =vwave[0][ix]*inpart.momentum();
-	  e2dotq1[ix] =vwave[1][ix]*decay[1]->momentum();
-	  e2dotp[ix]  =vwave[1][ix]*inpart.momentum();
-	}
+  for(ix=0;ix<3;++ix) {
+    if(ix==1) {
+      e1dotq2[ix]=0.*MeV;
+      e1dotp[ix] =0.*MeV;
+      e2dotq1[ix]=0.*MeV;
+      e2dotp[ix] =0.*MeV;
     }
+    else {
+      e1dotq2[ix] =vwave[0][ix]*decay[2]->momentum();
+      e1dotp[ix]  =vwave[0][ix]*inpart.momentum();
+      e2dotq1[ix] =vwave[1][ix]*decay[1]->momentum();
+      e2dotp[ix]  =vwave[1][ix]*inpart.momentum();
+    }
+  }
   // the momentum dependent pieces of the matrix element
   Complex ii(0.,1.);
-  Energy2 mpi2(sqr(decay[0]->mass())),
-    meta2(sqr(inpart.mass())),
+  Energy2 mpi2(sqr(decay[0]->mass())),meta2(sqr(inpart.mass())),
     mrho2(sqr(_rhomass)),
     t(mpi2+2.*((decay[0]->momentum())*(decay[1]->momentum()))),
     u(mpi2+2.*((decay[0]->momentum())*(decay[2]->momentum())));
@@ -263,29 +253,27 @@ double EtaPiGammaGammaDecayer::me2(bool vertex, const int,const Particle & inpar
   q=sqrt(u);pcm = Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
   complex<Energy2> ugamma(ii*pcm*pcm*pcm*_rhoconst/q);
   complex<InvEnergy2> prop1(1./(mrho2-t-tgamma)),prop2(1./(mrho2-u-ugamma));
-  complex<InvEnergy2> Dfact(_Dconst[imode()]*(prop1*(pdotq2-meta2)+prop2*(pdotq1-meta2)));
-  complex<InvEnergy4> Efact(_Econst[imode()]*(prop1+prop2));
+  complex<InvEnergy2> Dfact(_dconst[imode()]*(prop1*(pdotq2-meta2)
+					      +prop2*(pdotq1-meta2)));
+  complex<InvEnergy4> Efact(_econst[imode()]*(prop1+prop2));
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin1,PDT::Spin1);
   Complex e1dote2;
-  for(ix=0;ix<3;++ix)
-    {
-      for(iy=0;iy<3;++iy)
-	{
-	  if(ix==1||iy==1){newME(0,0,ix,iy)=0.;}
-	  else
-	    {
-	      e1dote2=vwave[0][ix].dot(vwave[1][iy]);
-	      newME(0,0,ix,iy) = 
-		Dfact*complex<Energy2>(e1dote2*q1dotq2
-				       -e1dotq2[ix]*e2dotq1[iy])
-		-Efact*complex<Energy4>(-e1dote2*pdotq1*pdotq2
-					-e1dotp[ix]*e2dotp[iy]*q1dotq2
-					+e1dotq2[ix]*e2dotp[iy]*pdotq1
-					+e1dotp[ix]*e2dotq1[iy]*pdotq2);
-	    }
-	}
+  for(ix=0;ix<3;++ix) {
+    for(iy=0;iy<3;++iy) {
+      if(ix==1||iy==1) newME(0,0,ix,iy)=0.;
+      else {
+	e1dote2=vwave[0][ix].dot(vwave[1][iy]);
+	newME(0,0,ix,iy) = 
+	  Dfact*complex<Energy2>(e1dote2*q1dotq2-
+				 e1dotq2[ix]*e2dotq1[iy])
+	  -Efact*complex<Energy4>(-e1dote2*pdotq1*pdotq2
+				  -e1dotp[ix]*e2dotp[iy]*q1dotq2
+				  +e1dotq2[ix]*e2dotp[iy]*pdotq1
+				  +e1dotp[ix]*e2dotq1[iy]*pdotq2);
+      }
     }
+  }
   // contract the whole thing
   ME(newME);
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
@@ -316,18 +304,13 @@ threeBodyMatrixElement(const int imodeb, const Energy2 q2,const  Energy2 s3,
   Energy pcm = Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
   Complex ii(0.,1.);
   complex<Energy2> tgamma(ii*pcm*pcm*pcm*_rhoconst/q);
-
   q = sqrt(s2);
   pcm = Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
   complex<Energy2> ugamma(ii*pcm*pcm*pcm*_rhoconst/q);
-
   complex<InvEnergy2> prop1(1./(mrho2-s3-tgamma)), prop2(1./(mrho2-s2-ugamma));
-
   Energy2 pdotq2(0.5*(q2-s3)), pdotq1(0.5*(q2-s2));
-
-  complex<InvEnergy2> Dfact(_Dconst[imodeb]*(prop1*(pdotq2-q2)+prop2*(pdotq1-q2)));
-  complex<InvEnergy4> Efact(_Econst[imodeb]*(prop1+prop2));
-
+  complex<InvEnergy2> Dfact(_dconst[imodeb]*(prop1*(pdotq2-q2)+prop2*(pdotq1-q2)));
+  complex<InvEnergy4> Efact(_econst[imodeb]*(prop1+prop2));
   InvEnergy4 D2 = (Dfact*conj(Dfact)).real();
   InvEnergy8 E2((Efact*conj(Efact)).real());
   InvEnergy6 ED((Efact*conj(Dfact)).real());
@@ -338,8 +321,7 @@ threeBodyMatrixElement(const int imodeb, const Energy2 q2,const  Energy2 s3,
 }
 
 WidthCalculatorBasePtr 
-EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
-{
+EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   // workout which mode we are doing
   int id(dm.parent()->id()),imode(1);
   if(id==ParticleID::eta){imode=0;}
@@ -357,9 +339,8 @@ EtaPiGammaGammaDecayer::threeBodyMEIntegrator(const DecayMode & dm) const
 }
 
 void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output, 
-					    bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+					    bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   DecayIntegrator::dataBaseOutput(output,false);
   output << "set " << fullName() << ":grhoomega " << _grhoomega*GeV << "\n";
   output << "set " << fullName() << ":Fpi " << _fpi/MeV  << "\n";
@@ -372,6 +353,5 @@ void EtaPiGammaGammaDecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":EtaMax " << _etamax << "\n";
   output << "set " << fullName() << ":EtaPrimeMax " << _etapmax << "\n";
   output << "set " << fullName() << ":LocalParameters " << _localparameters << "\n";
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

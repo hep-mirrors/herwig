@@ -268,7 +268,15 @@ void EtaPiPiGammaDecayer::Init() {
 
   static ClassDocumentation<EtaPiPiGammaDecayer> documentation
     ("The EtaPiPiGammaDecayer class is design for the decay of"
-     " the eta and eta prime to pi+pi-gamma");
+     " the eta and eta prime to pi+pi-gamma",
+     "The decays of $\\eta,\\eta'\\to\\pi^+\\pi^-\\gamma$ were simulated"
+     " using the matrix elements from \\cite{Venugopal:1998fq,Holstein:2001bt}",
+     "\\bibitem{Venugopal:1998fq} E.~P.~Venugopal and B.~R.~Holstein,\n"
+     "Phys.\\ Rev.\\  D {\bf 57} (1998) 4397 [arXiv:hep-ph/9710382].\n"
+     "%%CITATION = PHRVA,D57,4397;%%\n"
+     "\\bibitem{Holstein:2001bt} B.~R.~Holstein,\n"
+     " Phys.\\ Scripta {\\bf T99} (2002) 55 [arXiv:hep-ph/0112150].\n"
+     "%%CITATION = PHSTB,T99,55;%%\n");
 
   static Parameter<EtaPiPiGammaDecayer,Energy> interfacefpi
     ("fpi",
@@ -409,6 +417,7 @@ void EtaPiPiGammaDecayer::Init() {
 
 double EtaPiPiGammaDecayer::me2(bool vertex,const int,const Particle & inpart,
 				 const ParticleVector & decay) const {
+  useMe();
   // workaround for gcc 3.2.3 bug
   // set up the spin info
   vector<LorentzPolarizationVector> wave;
