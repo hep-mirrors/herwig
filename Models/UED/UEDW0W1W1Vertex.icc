@@ -14,16 +14,4 @@ inline IBPtr UEDW0W1W1Vertex::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void UEDW0W1W1Vertex::doinit() throw(InitException) {
-  VVVVertex::doinit();
-   theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
-  if(!theUEDBase)
-    throw InitException() << "UEDW0W1W1Vertex::doinit() - The pointer to "
-			  << "the UEDBase object is null!"
-			  << Exception::runerror;
-  theSinThetaOne = theUEDBase->sinThetaN(1);
-  theZfact = sqrt( (1. - sqr(theSinThetaOne))/theUEDBase->sin2ThetaW() );
-  orderInGs(0);
-  orderInGem(1);
-}
 }

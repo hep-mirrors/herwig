@@ -18,14 +18,6 @@ set /Defaults/Model:Vertex/F1F1G0 /Defaults/Vertices/UEDF1F1G0
 create Herwig::UEDF1F0G1Vertex /Defaults/Vertices/UEDF1F0G1
 set /Defaults/Model:Vertex/F1F0G1 /Defaults/Vertices/UEDF1F0G1
 
-# level-1 fermion with an SM fermion and a level-1 photon
-create Herwig::UEDF1F0P1Vertex /Defaults/Vertices/UEDF1F0P1
-set /Defaults/Model:Vertex/F1F0P1 /Defaults/Vertices/UEDF1F0P1
-
-# level-1 fermion with an SM fermion and a level-1 Z
-create Herwig::UEDF1F0Z1Vertex /Defaults/Vertices/UEDF1F0Z1
-set /Defaults/Model:Vertex/F1F0Z1 /Defaults/Vertices/UEDF1F0Z1
-
 # level-1 fermion with an SM fermion and a level-1 W
 create Herwig::UEDF1F0W1Vertex /Defaults/Vertices/UEDF1F0W1
 set /Defaults/Model:Vertex/F1F0W1 /Defaults/Vertices/UEDF1F0W1
@@ -54,6 +46,6 @@ set /Defaults/Model:Vertex/W0A1H1 /Defaults/Vertices/UEDW0A1H1
 create Herwig::UEDZ0A1h1Vertex /Defaults/Vertices/UEDZ0A1h1
 set /Defaults/Model:Vertex/Z0A1h1 /Defaults/Vertices/UEDZ0A1h1
 
-# A SM W with 2 level-1 W bosons
+# A SM Gauge Boson with 2 level-1 W bosons
 create Herwig::UEDW0W1W1Vertex /Defaults/Vertices/UEDW0W1W1
 set /Defaults/Model:Vertex/W0W1W1 /Defaults/Vertices/UEDW0W1W1

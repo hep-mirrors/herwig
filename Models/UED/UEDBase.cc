@@ -18,7 +18,6 @@ void UEDBase::doinit() throw(InitException) {
   StandardModel::doinit();
   //level-1 masses and mixing angle
   calculateKKMasses(1);
-  theMixingAngles.insert(make_pair(1, calculateMixingAngle(1)));
   //write out the entire spectrum ordered by increasing mass
   writeSpectrum();
   //add the level-1 vertices.
@@ -29,8 +28,6 @@ void UEDBase::doinit() throw(InitException) {
   addVertex(theG0G0G1G1Vertex);
   addVertex(theF1F1P0Vertex);
   addVertex(theF1F1W0Vertex);
-  addVertex(theF1F0P1Vertex);
-  addVertex(theF1F0Z1Vertex);
   addVertex(theF1F0W1Vertex);
   addVertex(theP0H1H1Vertex);
   addVertex(theZ0H1H1Vertex);
@@ -40,21 +37,24 @@ void UEDBase::doinit() throw(InitException) {
 }
 
 void UEDBase::persistentOutput(PersistentOStream & os) const {
-  os << theRadCorr << ounit(theInvRadius, GeV) << ounit(theCutOff, GeV) 
+  os << theRadCorr << ounit(theInvRadius, GeV) << theLambdaR 
      << theF1F1Z0Vertex << theF1F1G0Vertex << theF1F0G1Vertex
      << theG1G1G0Vertex << theG0G0G1G1Vertex << theF1F1P0Vertex
-     << theF1F1W0Vertex << theF1F0P1Vertex << theF1F0Z1Vertex
-     << theF1F0W1Vertex << theP0H1H1Vertex << theZ0H1H1Vertex
-     << theW0A1H1Vertex << theZ0A1h1Vertex << theW0W1W1Vertex;
+     << theF1F1W0Vertex << theF1F0W1Vertex << theP0H1H1Vertex 
+     << theZ0H1H1Vertex << theW0A1H1Vertex << theZ0A1h1Vertex 
+     << theW0W1W1Vertex << ounit(theVeV,GeV) << ounit(theMbarH, GeV) 
+     << theSinThetaOne;
 }
 
 void UEDBase::persistentInput(PersistentIStream & is, int) {
-  is >> theRadCorr >> iunit(theInvRadius, GeV) >> iunit(theCutOff, GeV) 
+  is >> theRadCorr >> iunit(theInvRadius, GeV) >> theLambdaR
      >> theF1F1Z0Vertex >> theF1F1G0Vertex >> theF1F0G1Vertex
      >> theG1G1G0Vertex >> theG0G0G1G1Vertex >> theF1F1P0Vertex
-     >> theF1F1W0Vertex >> theF1F0P1Vertex >> theF1F0Z1Vertex 
-     >> theF1F0W1Vertex >>  theP0H1H1Vertex >> theZ0H1H1Vertex
-     >> theW0A1H1Vertex >> theZ0A1h1Vertex >> theW0W1W1Vertex;
+     >> theF1F1W0Vertex >> theF1F0W1Vertex >> theP0H1H1Vertex 
+     >> theZ0H1H1Vertex >> theW0A1H1Vertex >> theZ0A1h1Vertex 
+     >> theW0W1W1Vertex >> iunit(theVeV,GeV) >> iunit(theMbarH, GeV) 
+     >> theSinThetaOne;
+
 }
 
 ClassDescription<UEDBase> UEDBase::initUEDBase;
@@ -75,15 +75,21 @@ void UEDBase::Init() {
   static Parameter<UEDBase,Energy> interfaceInverseRadius
     ("InverseRadius",
      "The inverse radius of the compactified dimension ",
-     &UEDBase::theInvRadius, GeV, 1000.*GeV, 0.*GeV, 0*GeV,
+     &UEDBase::theInvRadius, GeV, 500.*GeV, 0.*GeV, 0*GeV,
      true, false, Interface::nolimits);
 
-  static Parameter<UEDBase,Energy> interfaceCutOffScale
-    ("CutOffScale",
-     "The cut off scale for the theory",
-     &UEDBase::theCutOff, GeV, 10000.*GeV, 0*GeV, 0*GeV,
-     true, false, Interface::nolimits);
-    
+  static Parameter<UEDBase,double> interfaceLambdaR
+    ("LambdaR",
+     "The product of the cut-off scale  and the radius of compactification",
+     &UEDBase::theLambdaR, 20.0, 0.0, 0,
+     false, false, Interface::lowerlim);
+
+    static Parameter<UEDBase,Energy> interfaceBoundaryMass
+    ("BoundaryMass",
+     "The boundary mass for the Higgs",
+     &UEDBase::theMbarH, GeV, 0.0*GeV, 0.0*GeV, 0*GeV,
+     false, false, Interface::lowerlim);
+
   static Parameter<UEDBase,string> interfaceSPCFileName
     ("SPCFileName",
      "The name of the spectrum file",
@@ -130,16 +136,6 @@ void UEDBase::Init() {
      "The F1F1W UED Vertex",
      &UEDBase::theF1F1W0Vertex, false, false, true, false, false);
 
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0P1
-    ("Vertex/F1F0P1",
-     "The F1F0P1 UED Vertex",
-     &UEDBase::theF1F0P1Vertex, false, false, true, false, false);
-
-  static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0Z1
-    ("Vertex/F1F0Z1",
-     "The F1F0Z1 UED Vertex",
-     &UEDBase::theF1F0Z1Vertex, false, false, true, false, false);
-
   static Reference<UEDBase,Helicity::FFVVertex> interfaceF1F0W1
     ("Vertex/F1F0W1",
      "The F1F0W1 UED Vertex",
@@ -176,25 +172,27 @@ void UEDBase::calculateKKMasses(const unsigned int n) throw(InitException) {
     throw InitException() << "UEDBase::resetKKMasses - "
 			  << "Trying to reset masses with KK number == 0!"
 			  << Exception::warning;
-  if(theRadCorr) {
-    fermionMasses(n);
-    bosonMasses(n);
-  }
-  else {
-    //set masses to tree level for each kk mode
-    long level1 = 5000000 + n*100000;
-    long level2 = 6000000 + n*100000;
-    Energy2 ndmass2 = sqr(n*theInvRadius);
-    for(unsigned int i = 1; i < 38; ++i) {
-      if(i == 7 || i == 17) i += 4;
-      if(i == 26) i += 10;
-      Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
-      resetMass(level1 + i, kkmass);
-      if( i < 7 || i == 11 || i == 13 || i == 15 )
-	resetMass(level2 + i, kkmass);
+    if(theRadCorr) {
+      fermionMasses(n);
+      bosonMasses(n);
     }
-  
-  }
+    else {
+      cerr << "Warning! Radiative corrections have been turned off."
+	   << " Therefore the particle spectrum will be degenerate and "
+	   << "no decays will occur.\n";
+      //set masses to tree level for each kk mode
+      long level1 = 5000000 + n*100000;
+      long level2 = 6000000 + n*100000;
+      Energy2 ndmass2 = sqr(n*theInvRadius);
+      for(unsigned int i = 1; i < 38; ++i) {
+	if(i == 7 || i == 17) i += 4;
+	if(i == 26) i += 10;
+	Energy kkmass = sqrt( ndmass2 + sqr(getParticleData(i)->mass()) );
+	resetMass(level1 + i, kkmass);
+	if( i < 7 || i == 11 || i == 13 || i == 15 )
+	  resetMass(level2 + i, kkmass);
+      }
+    }
 
 }
 
@@ -204,51 +202,54 @@ void UEDBase::bosonMasses(const unsigned int n) {
   const double g_em2 = 4.*Constants::pi*alphaEM(invRad2);
   const double g_s2 = 4.*Constants::pi*alphaS(invRad2);
   const double g_W2 = g_em2/sin2ThetaW();
-  const double zeta3 = 1.20202020;
+  
+  //Should probably use a function  to calculate zeta.
+  const double zeta3 = 1.20206;
   const Energy2 nmass2 = sqr(n*theInvRadius); 
   const double pi2 = sqr(Constants::pi);
   const double norm = 1./16./pi2;
+  const double nnlogLR = n*n*log(theLambdaR);
   long level = 5000000 + n*100000;
   //gluon
-  Energy2 deltaGB = g_s2*invRad2*norm*( (-3.*zeta3/2./pi2) + 
-				       23.*n*n*log(theCutOff/theInvRadius) );
+  Energy2 deltaGB = g_s2*invRad2*norm*(23.*nnlogLR - 3.*zeta3/2./pi2 );
   resetMass(level + 21, sqrt(nmass2 + deltaGB));
 
-  //W
-  Energy2 deltaGW = g_W2*invRad2*norm*( (-5*zeta3/2./pi2) + 
-					15.*n*n*log(theCutOff/theInvRadius) );
-  Energy2 new_m2 = sqr(getParticleData(24)->mass()) + nmass2 + deltaGW;
-  resetMass(level + 24, sqrt(new_m2));
+  //W+/-
+  Energy2 deltaGW = g_W2*invRad2*norm*( 15.*nnlogLR - 5.*zeta3/2./pi2 );
+
+  Energy2 mw2 = sqr(getParticleData(24)->mass());
+  resetMass(level + 24, sqrt(mw2 + nmass2 + deltaGW));
 
   //Z and gamma are a mixture of Bn and W3n
-  deltaGB = g_em2*invRad2*norm*( (-39*zeta3/2./pi2) - 
-			       (n*n*log(theCutOff/theInvRadius)/3) );
-  Energy2 mZ2 = sqr(getParticleData(23)->mass());
-  //KK_gamma
-  new_m2 = 0.5*( 2.*nmass2 + mZ2 + deltaGB + deltaGW - 
-		 sqrt( g_W2*(deltaGW - deltaGB)*theVeV*theVeV 
-		       + sqr(mZ2 + deltaGB - deltaGW) ) );
-  resetMass(level + 22, sqrt(new_m2));
-  //KK_Z
-  new_m2 = 0.5*( 2.*nmass2 + mZ2 + deltaGB + deltaGW + 
-		 sqrt( g_W2*(deltaGW - deltaGB)*theVeV*theVeV 
-		       + sqr(mZ2 + deltaGB - deltaGW) ) );
-  resetMass(level + 23, sqrt(new_m2));
-
+  deltaGB = -g_em2*invRad2*norm*( 39.*zeta3/2./pi2 + nnlogLR/3. );
+  Energy2 mz2 = sqr(getParticleData(23)->mass());  
+  Energy2 fp = 0.5*(mz2 + deltaGB + deltaGW + 2.*nmass2);
+  Energy2 sp = 0.5*sqrt( sqr(deltaGB - deltaGW - 2.*mw2 + mz2)
+			 - 4.*mw2*(mw2 - mz2) );
+  resetMass(level + 22, sqrt(fp - sp));
+  resetMass(level + 23, sqrt(fp + sp));
+  //mixing angle will now depend on both Z* and gamma* mass
+  //Derived expression:
+  // 
+  // cos^2_theta_N = ( (n/R)^2 + delta_GW + mw^2 - m_gam*^2)/(m_z*^2 - m_gam*^2)
+  //
+  double cn2 = (nmass2 + deltaGW + mw2 - fp + sp)/2./sp;
+  double sn = sqrt(1. - cn2);
+  theMixingAngles.insert(make_pair(n, sn));
+  if( n == 1 ) theSinThetaOne = sn;
+  
   //scalars
-  double lambda_H = sqr(getParticleData(25)->mass())/2./theVeV/theVeV;
-  Energy2 mbarH2 = 0.*sqr(MeV);
-  deltaGB = n*n*norm*invRad2*(3.*g_W2 + (3.*g_em2/2.) 
-			    - 2.*lambda_H)*log(theCutOff/theInvRadius) + mbarH2;
+  Energy2 mh2 = sqr(getParticleData(25)->mass());
+  double lambda_H = mh2/theVeV/theVeV;
+  deltaGB = nnlogLR*norm*invRad2*(3.*g_W2 + (3.*g_em2/2.) - 2.*lambda_H) 
+    + sqr(theMbarH);
   //H0
-  new_m2 = sqr(getParticleData(25)->mass()) + nmass2 + deltaGB;
-  resetMass(level + 25, sqrt(new_m2));
+  Energy2 new_m2 = nmass2 + deltaGB;
+  resetMass(level + 25, sqrt( mh2 + new_m2 ));
   //A0
-  new_m2 = sqr(getParticleData(23)->mass()) + nmass2 + deltaGB;
-  resetMass(level + 36, sqrt(new_m2));
+  resetMass(level + 36, sqrt( mz2 + new_m2 ));
   //H+
-  new_m2 = sqr(getParticleData(24)->mass()) + nmass2 + deltaGB;
-  resetMass(level + 37, sqrt(new_m2));
+  resetMass(level + 37, sqrt( mw2 + new_m2 ));
 }
 
 void UEDBase::fermionMasses(const unsigned int n) {
@@ -258,7 +259,7 @@ void UEDBase::fermionMasses(const unsigned int n) {
   const double g_W2 = g_em2/sin2ThetaW();
   const Energy nmass = n*theInvRadius;
   const Energy norm = 
-    nmass*log(theCutOff/theInvRadius)/16./Constants::pi/Constants::pi;
+    nmass*log(theLambdaR)/16./Constants::pi/Constants::pi;
   const Energy topMass = getParticleData(6)->mass();
   const double ht = sqrt(2)*topMass/theVeV;
   //doublets
@@ -289,8 +290,7 @@ void UEDBase::fermionMasses(const unsigned int n) {
   const Energy deltaTS = deltaU + 2.*delta_Q3;
 
   Energy second_term = 
-    0.5*theInvRadius*sqrt( 4.*mt2*R*R + 
-			   sqr( 2.*n + R*(deltaTS + deltaTD) ) );
+    0.5*sqrt( sqr(2.*nmass + deltaTS + deltaTD) + 4.*mt2 );
   //doublet
   resetMass(level + 6, abs(0.5*(deltaTD - deltaTS) - second_term) );
   //singlet
@@ -321,10 +321,6 @@ void UEDBase::fermionMasses(const unsigned int n) {
 
 }
 
-double UEDBase::calculateMixingAngle(const unsigned int) {
-  //NEED TO IMPLEMENT A CALCULATION ROUTINE
-  return 0.1;
-}
 
 void UEDBase::resetMass(long id, Energy mass) throw(InitException) {
   theMasses.push_back(make_pair(id, mass));
@@ -359,7 +355,7 @@ void UEDBase::writeSpectrum() {
   ofstream ofs(theSpectrum.c_str());
   ofs << "# UED Model Particle Spectrum\n"
       << "# R^-1: " << theInvRadius/GeV << " GeV\n"
-      << "# Lambda: " << theCutOff/GeV << " GeV\n"
+      << "# Lambda * R: " << theLambdaR << "\n"
       << "# Higgs Mass: " << getParticleData(25)->mass()/GeV << " GeV"
       << endl;
   ofs << "#\n# ID\t\t\tMass(GeV)\n";
@@ -367,5 +363,19 @@ void UEDBase::writeSpectrum() {
       it != theMasses.end();) {
     ofs << (*it).first << "\t\t\t" << (*it).second/GeV << endl;
     theMasses.erase(it);
+  }
+}
+
+double UEDBase::sinThetaN(const unsigned int n) const {
+  WAMap::const_iterator pos = theMixingAngles.find(n);
+  if(pos != theMixingAngles.end())
+    return pos->second;
+  else {
+    throw Exception() << "UEDBase::sinThetaN() - A mixing angle has "
+		      << "been requested for a level that does not "
+		      << "exist. Check that the radiative corrections "
+		      << "for the " << n << "th level have been "
+		      << "calculated." << Exception::warning;
+    return 0.0;
   }
 }

@@ -91,7 +91,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -116,24 +116,49 @@ private:
   tUEDBasePtr theUEDBase;
 
   /**
-   * The factor \f$\frac{\cos\theta_N}{\sin\theta_W}\f$.
+   * The value of \f$\sin\theta_W\f$.
    */
-  double theZfact;
-  
+  double theSinW;
+
+  /**
+   * The value of \f$\cos\theta_W\f$.
+   */
+  double theCosW;
+
   /**
    * The value of \f$\sin\theta_1\f$.
    */
   double theSinThetaOne;
 
   /**
+   * The value of \f$\cos\theta_1\f$.
+   */
+  double theCosThetaOne;
+
+  /**
    * The scale at which the coupling was last evaluated.
    */
-  Energy2 theq2Last;
+  Energy2 theq2last;
+
+  /**
+   * The value of \f$ \sqrt{4\pi\alpha}\f$ when it was last evaluated.
+   */
+  Complex theElast;
 
   /**
    * The value of the coupling when it was last evaluated.
    */
-  Complex theCoupLast;
+  Complex theCouplast;
+
+  /**
+   * The PDG code of the last SM particle in the vertex 
+   */
+  long theSMlast;
+
+  /**
+   * The PDG code of the last KK-particle in the vertex 
+   */
+  long theKKlast;
 };
 }
 

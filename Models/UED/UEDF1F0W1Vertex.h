@@ -13,7 +13,8 @@ namespace Herwig {
 using namespace ThePEG;
 
 /**
- * This is the \f$ \bar{f}^{(1)} f^{(0)} W^{(1)}\f$ coupling. The class
+ * This is the \f$ \bar{f}^{(1)} f^{(0)} W^{(1)}\f$ coupling, where  
+ * \f$W^{(1)}\f$ is any level 1 EW gauge boson. The class
  * inherits from FFVVertex and implements the setCoupling virtual member.
  *
  * @see \ref UEDF1F0W1VertexInterfaces "The interfaces"
@@ -114,19 +115,74 @@ private:
   tUEDBasePtr theUEDBase;
 
   /**
-   * The value of \f$\sin^2\theta_W\f$
+   * The value of \f$\sin\theta_W\f$
    */
-  double theSinThetaW2;  
+  double theSinW;  
+
+  /**
+   * The value of \f$\cos\theta_W\f$
+   */
+  double theCosW;  
+
+  /**
+   * The value of \f$\sin\theta_1\f$
+   */
+  double theSinOne;  
+
+  /**
+   * The value of \f$\cos\theta_1\f$
+   */
+  double theCosOne;  
+
+  /**
+   * The value of \f$\sin(\theta_W - \theta_1)\f$
+   */
+  double theSinWmO;  
+
+  /**
+   * The value of \f$\cos(\theta_W - \theta_1)\f$
+   */
+  double theCosWmO;
+  
+  /**
+   * Store the CKM matrix for the \f$W\f$ interactions 
+   */
+  vector< vector<Complex> > theCKM;
 
   /**
    * The scale at which the coupling was last evaluated.
    */
-  Energy2 theq2Last;
+  Energy2 theq2last;
 
   /**
-   * The value of the coupling when it was last evaluated.
+   * The value of \f$\sqrt{4\pi\alpha}\f$ when it was last evaluated.
    */
-  Complex theCoupLast;
+  Complex theCouplast;
+  
+  /**
+   * The value of the left coupling when it was last evaluated.
+   */
+  Complex theLlast;
+
+  /**
+   * The value of the right coupling when it was last evaluated.
+   */
+  Complex theRlast;
+
+  /**
+   * The last gauge boson in the vertex 
+   */
+  long theGBlast;
+
+  /**
+   * The last KK-fermion in the vertex 
+   */
+  long theKKlast;
+
+  /**
+   * The last SM fermion in the vertex 
+   */
+  long theSMlast;
 };
 }
 
