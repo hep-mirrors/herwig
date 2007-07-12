@@ -19,7 +19,8 @@ insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/Basics
 #insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HJet
 
 
-#create Herwig::HepMCFile /Defaults/Handlers/Analysis/HepMCFile
-#set /Defaults/Handlers/Analysis/HepMCFile:PrintEvent 100
+create Herwig::HepMCFile /Defaults/Handlers/Analysis/HepMCFile
+set /Defaults/Handlers/Analysis/HepMCFile:PrintEvent 10
 
-#insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HepMCFile
+insert LHCGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HepMCFile
+insert LEPGenerator:AnalysisHandlers 0 /Defaults/Handlers/Analysis/HepMCFile

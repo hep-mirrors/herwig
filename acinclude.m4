@@ -57,6 +57,7 @@ AC_REQUIRE([AC_CHECK_CLHEP])
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
 HEPMCLIBS="-lHepMC"
+hepmclinkname=HepMC
 AC_ARG_WITH(HepMC,
         AC_HELP_STRING([--with-HepMC=path],[location of HepMC installation]),
         [],
@@ -70,6 +71,7 @@ else
 			AC_MSG_RESULT([part of CLHEP])
 			HEPMCINCLUDE=$CLHEPINCLUDE/CLHEP
 			HEPMCLIBS=""
+			hepmclinkname=CLHEP
 		else
 			AC_MSG_RESULT([not found in CLHEP])
 		fi
@@ -103,6 +105,7 @@ fi
 AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_HepMC" != "xno"])
 AC_SUBST(HEPMCINCLUDE)
 AC_SUBST(HEPMCLIBS)
+AC_CONFIG_LINKS([Config/HepMCHelper.h:Config/HepMCHelper_$hepmclinkname.h])
 ])
 
 AC_DEFUN([AC_CHECK_THEPEG],

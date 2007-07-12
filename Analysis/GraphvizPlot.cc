@@ -16,25 +16,13 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "ThePEG/Vectors/HepMCConverter.h"
-#include "HepMC/GenEvent.h"
+#include <HepMCHelper.h>
 
-
-using namespace Herwig;
 using namespace ThePEG;
+using namespace Herwig;
 
 namespace {
   const string header = "digraph test {\nrankdir=LR;\nranksep=1.5;\n";
-}
-
-namespace ThePEG {
-template<> 
-struct HepMCTraits<HepMC::GenEvent> 
-  : public HepMCTraitsBase<HepMC::GenEvent,
-			   HepMC::GenParticle,
-			   HepMC::GenVertex,
-			   HepMC::Polarization> 
-{};
 }
 
 void GraphvizPlot::analyze(tEventPtr event, long, int, int) {

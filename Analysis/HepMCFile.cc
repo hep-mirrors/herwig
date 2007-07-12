@@ -8,30 +8,15 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Event.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "HepMCFile.tcc"
-#endif
 #include "ThePEG/Repository/EventGenerator.h"
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "ThePEG/Vectors/HepMCConverter.h"
-#include "HepMC/GenEvent.h"
+#include <HepMCHelper.h>
 
-
-using namespace Herwig;
 using namespace ThePEG;
-
-namespace ThePEG {
-template<> 
-struct HepMCTraits<HepMC::GenEvent> 
-  : public HepMCTraitsBase<HepMC::GenEvent,
-			   HepMC::GenParticle,
-			   HepMC::GenVertex,
-			   HepMC::Polarization> 
-{};
-}
+using namespace Herwig;
 
 void HepMCFile::analyze(tEventPtr event, long, int, int) {
   if (event->number() > _eventNumber) return;
