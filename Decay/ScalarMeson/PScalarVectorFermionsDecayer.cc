@@ -17,48 +17,41 @@
 #include "ThePEG/Helicity/epsilon.h"
 #include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using Helicity::ScalarWaveFunction;
-using Helicity::VectorWaveFunction;
-using Helicity::SpinorWaveFunction;
-using Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 PScalarVectorFermionsDecayer::PScalarVectorFermionsDecayer() 
-{
+  : _coupling(5), _incoming(5), _outgoingV(5), _outgoingf(5), 
+    _outgoinga(5),_maxweight(5), _includeVMD(5), _VMDid(5),
+    _VMDmass(5), _VMDwidth(5) {
   // pi0 -> gamma e+e-
-  _incoming.push_back(111);_outgoingV.push_back( 22);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _coupling.push_back(0.00761872/GeV);_maxweight.push_back(0.025);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  _incoming[0] = 111;_outgoingV[0] =  22;
+  _outgoingf[0] = 11;_outgoinga[0] = -11;
+  _coupling[0] = 0.00761872/GeV;_maxweight[0] = 0.025;
+  _includeVMD[0] = 2;_VMDid[0] = 113;
+  _VMDmass[0] = 0.7758*GeV;_VMDwidth[0] = 0.1503*GeV;
   // eta -> gamma e+e-/mu+/mu-
-  _incoming.push_back(221);_outgoingV.push_back( 22);
-  _incoming.push_back(221);_outgoingV.push_back( 22);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.007554164/GeV);_maxweight.push_back(2.5);
-  _coupling.push_back(0.007554164/GeV);_maxweight.push_back(2.);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  _incoming[1] = 221;_outgoingV[1] =  22;
+  _outgoingf[1] = 11;_outgoinga[1] = -11;
+  _coupling[1] = 0.007554164/GeV;_maxweight[1] = 2.5;
+  _includeVMD[1] = 2;_VMDid[1] = 113;
+  _VMDmass[1] = 0.7758*GeV;_VMDwidth[1] = 0.1503*GeV;
+  _incoming[2] = 221;_outgoingV[2] =  22;
+  _outgoingf[2] = 13;_outgoinga[2] = -13;
+  _coupling[2] = 0.007554164/GeV;_maxweight[2] = 2.;
+  _includeVMD[2] = 2;_VMDid[2] = 113;
+  _VMDmass[2] = 0.7758*GeV;_VMDwidth[2] = 0.1503*GeV;
   // eta' -> gamma e+e-/mu+mu-
-  _incoming.push_back(331);_outgoingV.push_back( 22);
-  _incoming.push_back(331);_outgoingV.push_back( 22);
-  _outgoingf.push_back(11);_outgoinga.push_back(-11);
-  _outgoingf.push_back(13);_outgoinga.push_back(-13);
-  _coupling.push_back(0.0104/GeV);_maxweight.push_back(4.5);
-  _coupling.push_back(0.0104/GeV);_maxweight.push_back(3.0);
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
-  // eta' -> gamma mu+mu-  
-  _includeVMD.push_back(2);_VMDid.push_back(113);
-  _VMDmass.push_back(0.7758*GeV);_VMDwidth.push_back(0.1503*GeV);
+  _incoming[3] = 331;_outgoingV[3] =  22;
+  _outgoingf[3] = 11;_outgoinga[3] = -11;
+  _coupling[3] = 0.0104/GeV;_maxweight[3] = 4.5;
+  _includeVMD[3] = 2;_VMDid[3] = 113;
+  _VMDmass[3] = 0.7758*GeV;_VMDwidth[3] = 0.1503*GeV;
+  _incoming[4] = 331;_outgoingV[4] =  22;
+  _outgoingf[4] = 13;_outgoinga[4] = -13;
+  _coupling[4] = 0.0104/GeV;_maxweight[4] = 3.0;
+  _includeVMD[4] = 2;_VMDid[4] = 113;
+  _VMDmass[4] = 0.7758*GeV;_VMDwidth[4] = 0.1503*GeV;
   // initial size of the arrays
   _initsize = _incoming.size();
   // intermediates
@@ -254,43 +247,42 @@ double PScalarVectorFermionsDecayer::me2(bool vertex, const int,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1Half,PDT::Spin1Half);
   vector<unsigned int> ispin(4);ispin[0]=0;
-  for(ispin[3]=0;ispin[3]<2;++ispin[3])
-    {
-      for(ispin[2]=0;ispin[2]<2;++ispin[2])
-	{
-	  fcurrent = wave[ispin[3]].vectorCurrent(wavebar[ispin[2]]);
-	  // compute the current for this part
-	  eps = Helicity::
-	    epsilon(decay[0]->momentum(),pff,fcurrent);
-	  for(ispin[1]=0;ispin[1]<3;++ispin[1])
-	    {newME(ispin)=pre * vwave[ispin[1]].dot(eps);}
-	}	  
-    }
+  for(ispin[3]=0;ispin[3]<2;++ispin[3]) {
+    for(ispin[2]=0;ispin[2]<2;++ispin[2]) {
+      fcurrent = wave[ispin[3]].vectorCurrent(wavebar[ispin[2]]);
+      // compute the current for this part
+      eps = epsilon(decay[0]->momentum(),pff,fcurrent);
+      for(ispin[1]=0;ispin[1]<3;++ispin[1]) {
+	newME(ispin)=pre * vwave[ispin[1]].dot(eps);
+      }
+    }	  
+  }
   ME(newME);
   RhoDMatrix rhoin=RhoDMatrix(PDT::Spin0);rhoin.average();
-  /*code to test the matrix element against the analytic result
-  Energy  m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
-  Energy m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};
-  Lorentz5Momentum p12=decay[0]->momentum()+decay[1]->momentum();p12.rescaleMass();
-  Energy m122(p12.mass2());
-  cout << "testing the matrix element " 
-       <<(pre*conj(pre)).real()*(
-				 -2*m122*m122*mff2 - mff2*mff2*mff2 + 
-				 m2[1]*(2*m2[2]*m2[3] - 2*m2[3]*m2[3] + 
-					m2[1]*(m2[2] - 2*m[2]*m[3] - m2[3])) - 
-				 2*m[2]*(m[2]*m2[2] - 2*m2[1]*m[3] - m[2]*m2[3])*
-				 m2[0] - (m2[2] + 2*m[2]*m[3] - m2[3])*
-				 m2[0]*m2[0] +mff2*mff2*
-				 (2*m2[1] + (m[2] - m[3])*(m[2] - m[3]) + 2*m2[0]) - 
-				 mff2*(m2[1]*m2[1] + 2*m2[1]*m[2]*(m[2] - 2*m[3]) + 
-				       2*m2[2]*m2[3] - 2*(2*m[2] - m[3])*m[3]*m2[0] + 
-				       m2[0]*m2[0]) + 2*m122*
-				 (-mff2*mff2 - (m2[2] - m2[3])*
-				  (m2[1] - m2[0]) + 
-				  mff2*(m2[1] + m2[2] + m2[3] + 
-					m2[0]))) + me << endl;
-  */
-  return newME.contract(rhoin).real();
+  double me = newME.contract(rhoin).real();
+//   //code to test the matrix element against the analytic result
+//   Energy   m[4]={inpart.mass(),decay[0]->mass(),decay[1]->mass(),decay[2]->mass()};
+//   Energy2 m2[4]={m[0]*m[0],m[1]*m[1],m[2]*m[2],m[3]*m[3]};
+//   Lorentz5Momentum p12=decay[0]->momentum()+decay[1]->momentum();p12.rescaleMass();
+//   Energy2 m122(p12.mass2());
+//   Complex output( ((pre*conj(pre)).real()*(
+// 				 -2*m122*m122*mff2 - mff2*mff2*mff2 + 
+// 				 m2[1]*(2*m2[2]*m2[3] - 2*m2[3]*m2[3] + 
+// 					m2[1]*(m2[2] - 2*m[2]*m[3] - m2[3])) - 
+// 				 2*m[2]*(m[2]*m2[2] - 2*m2[1]*m[3] - m[2]*m2[3])*
+// 				 m2[0] - (m2[2] + 2*m[2]*m[3] - m2[3])*
+// 				 m2[0]*m2[0] +mff2*mff2*
+// 				 (2*m2[1] + (m[2] - m[3])*(m[2] - m[3]) + 2*m2[0]) - 
+// 				 mff2*(m2[1]*m2[1] + 2*m2[1]*m[2]*(m[2] - 2*m[3]) + 
+// 				       2*m2[2]*m2[3] - 2*(2*m[2] - m[3])*m[3]*m2[0] + 
+// 				       m2[0]*m2[0]) + 2*m122*
+// 				 (-mff2*mff2 - (m2[2] - m2[3])*
+// 				  (m2[1] - m2[0]) + 
+// 				  mff2*(m2[1] + m2[2] + m2[3] + 
+// 					m2[0])))));
+//   cout << "testing the matrix element " 
+//        << real(output) << " " << me << " " << test2 << endl;
+  return me;
 }
 
 // method to return an object to calculate the 3 or higher body partial width
@@ -420,10 +412,5 @@ void PScalarVectorFermionsDecayer::dataBaseOutput(ofstream & output,
 	     << _VMDwidth[ix]/MeV   << "\n";
     }
   }
-  if(header) {
-    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
-  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }
-}
-
-
