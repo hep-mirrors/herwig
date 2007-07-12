@@ -9,7 +9,7 @@
 #include "Herwig++/Shower/SplittingFunctions/SplittingGenerator.h"
 #include "ShowerModel.h"
 #include "ThePEG/PDF/BeamParticleData.h"
-#include "ShowerTree.fh"
+#include "ShowerTree.h"
 #include "MECorrectionBase.fh"
 #include "ShowerProgenitor.fh"
 #include "Herwig++/Shower/ShowerHandler.fh"
