@@ -8,6 +8,7 @@
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "BFragmentationAnalysisHandler.fh"
 
 namespace Herwig {
@@ -64,6 +65,12 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
+
+  /**
+   *  Identifies which step(2) final state particles originate
+   *  from the b/bbar...
+   */
+  void analyze_bquarks(ParticleSet);
 
   /**
    * Transform the event to the desired Lorentz frame and return the
@@ -203,6 +210,12 @@ private:
    *  Histogram for the ALEPH binning
    */
   HistogramPtr _fragBxEa;
+
+  /**
+   *  Histograms for quark energy fraction and b jet mass
+   */
+  HistogramPtr _fragbquarkxE;
+  HistogramPtr _fragbquarkjetmass;
 
   /**
    *  Centre-of-mass energy of the collision
