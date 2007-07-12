@@ -167,7 +167,7 @@ private:
   double theC2b;
   
   /**
-   * The value of \f$ \sqrt(4.*\pi*\alpha)\f$ when it was last evaluated.
+   * The value of \f$ \sqrt{4\pi\alpha}\f$ when it was last evaluated.
    */
   double theElast;
 

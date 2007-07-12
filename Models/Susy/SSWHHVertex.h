@@ -128,12 +128,12 @@ private:
   double theSw;
 
   /**
-   * The value of \f$\sin\2theta_W\f$ 
+   * The value of \f$\sin2\theta_W\f$ 
    */
   double theS2w;
 
   /**
-   * The value of \f$\cos\2theta_W\f$ 
+   * The value of \f$\cos2\theta_W\f$ 
    */
   double theC2w;
 
@@ -168,7 +168,7 @@ private:
   Energy2 theq2last;
   
   /**
-   * The value of the \f$\sqrt(4\pi\alpha)\f$  when last evaluated.
+   * The value of the \f$\sqrt{4\pi\alpha}\f$  when last evaluated.
    */
   double theElast;
 };

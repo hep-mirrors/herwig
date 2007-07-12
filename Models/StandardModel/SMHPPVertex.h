@@ -168,10 +168,6 @@ struct ClassTraits<Herwig::SMHPPVertex>
   : public ClassTraitsBase<Herwig::SMHPPVertex> {
   /** Return a platform-independent class name */
   static string className() { return "Herwig::SMHPPVertex"; }
-  /** Return the name of the shared library be loaded to get
-   *  access to the SMHPPVertex class and every other class it uses
-   *  (except the base class). */
-  static string library() { return "HwSMVertex.so"; }
 };
 
 /** @endcond */
