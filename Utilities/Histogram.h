@@ -121,6 +121,8 @@ public:
    * @param leftcase topdraw format for left axis label
    * @param bottom  Bottom axis lable
    * @param bottomcase Bottom axis lable ofr topdraw
+   * @param smooth_line Plot a smooth line instead of bars?
+   * N.B. in td smoothing only works for histograms with uniform binning.
    */
   void topdrawOutput(ostream & out,
 		     bool frame,
@@ -132,7 +134,8 @@ public:
 		     string left=string(),
 		     string leftcase =string(),
 		     string bottom=string(),
-		     string bottomcase =string()) const;
+		     string bottomcase =string(),
+		     bool smooth=bool(false)) const;
 
 
   /**
