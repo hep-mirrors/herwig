@@ -54,6 +54,14 @@ inline void BFragmentationAnalysisHandler::dofinish() {
 			  "  G G   X X",
 			  "x0B1",
 			  " X X");
+  _fragbquarkxE->topdrawOutput(output,false,false,false,false,
+		       "RED",
+		       "b quark fragmentation function compared to SLD data",
+		       "                                                    ",
+		       "1/SdS/dx0B1",
+		       "  G G   X X",
+		       "x0B1",
+		       " X X",true);
   _fragBxEa->topdrawOutput(output,true,true,false,false,
 			   "RED",
 			   "B Hadron framgentation function compared to ALEPH data",
@@ -62,6 +70,22 @@ inline void BFragmentationAnalysisHandler::dofinish() {
 			   "  G G   X X",
 			   "x0B1",
 			   " X X");
+  _fragbquarkxE->topdrawOutput(output,false,false,false,false,
+		      "RED",
+		      "b quark fragmentation function compared to ALEPH data",
+		      "                                                      ",
+		      "1/SdS/dx0B1",
+		      "  G G   X X",
+		      "x0B1",
+		      " X X",true);
+  _fragbquarkjetmass->topdrawOutput(output,true,false,false,false,
+		       "RED",
+		       "b quark jet mass",
+		       "                                                    ",
+		       "1/SdS/dm0J1223",
+		       "  G G   X XX X",
+		       "m0J1223",
+		       " X XX X",true);
 }
 
 inline void BFragmentationAnalysisHandler::doinitrun() {
@@ -111,6 +135,8 @@ inline void BFragmentationAnalysisHandler::doinitrun() {
   data  = vector<double>(BxEadata,BxEadata+20);
   error = vector<double>(BxEaerror,BxEaerror+20);
   _fragBxEa = new_ptr(Histogram(bins,data,error));
+  _fragbquarkxE = new_ptr(Histogram(0.,1.0,100));
+  _fragbquarkjetmass = new_ptr(Histogram(0.,90.0,90));
 }
 
 inline void BFragmentationAnalysisHandler::rebind(const TranslationMap & trans)
