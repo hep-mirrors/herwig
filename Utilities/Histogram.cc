@@ -30,7 +30,8 @@ void Histogram::topdrawOutput(ostream & out,
 			      string colour,
 			      string title,  string titlecase,
 			      string left,   string leftcase,
-			      string bottom, string bottomcase) const
+			      string bottom, string bottomcase,
+			      bool smooth) const
 {
   // output the title info if needed
   if(frame)
@@ -88,8 +89,13 @@ void Histogram::topdrawOutput(ostream & out,
       }
       out << '\n';
     }
-  out << "HIST " << colour << endl;
-
+  // N.B. in td smoothing only works for histograms with uniform binning.
+  if(!smooth) {
+      out << "HIST " << colour << endl;
+  } else {
+      out << "SMOOTH Y LEVEL 2 " << endl;
+      out << "JOIN " << colour   << endl;
+  }
   if (_havedata) {
     // the real experimental data
     for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix)
