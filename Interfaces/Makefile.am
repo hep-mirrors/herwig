@@ -12,7 +12,7 @@ endif
 HwKtJet_la_SOURCES = KtJetInterface.cc KtJetInterface.h
 HwKtJet_la_LIBADD = $(KTJETLIBS)
 HwKtJet_la_LDFLAGS = -module -version-info 2:0:0
-HwKtJet_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE)
+HwKtJet_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 
 HwEvtGen_la_SOURCES = \
 EvtGen.cc EvtGen.icc EvtGen.fh EvtGen.h \
