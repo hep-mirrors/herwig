@@ -73,8 +73,9 @@ void ModelGenerator::doinit() throw(InitException) {
   }
   if(_theParticles.size() > 0) {
     _theDecayConstructor->createDecayers(_theParticles);
-    ofstream ofs(string(CurrentGenerator::current().filename() 
-			+ "-ModelSpectrum.spc").c_str());
+    string filename;
+    filename = CurrentGenerator::current().filename() + "-ModelSpectrum.spc";
+    ofstream ofs(filename.c_str());
     ofs << "# Automatically Generated Decay Modes\n";
     ofs << "#\n#";
     for( PDVector::iterator it = _theParticles.begin();
