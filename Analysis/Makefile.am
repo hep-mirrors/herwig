@@ -88,7 +88,7 @@ OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
 HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 3:0:0
-HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE)
+HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh \
