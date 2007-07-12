@@ -82,6 +82,8 @@ void BFragmentationAnalysisHandler::analyze_bquarks(ParticleSet pert)
       if(bline->id()== 5&&(bline->parents()[0]->id()!=21)) b_orig    = bline;
       if(bline->id()==-5&&(bline->parents()[0]->id()!=21)) bbar_orig = bline;
   }
+  if(!b_orig) return;
+  if(!bbar_orig) return;
   // Note down the Z/Photon that decays to the b & bbar:
   if(b_orig->parents()[0]==bbar_orig->parents()[0]) 
       ZGamma = b_orig->parents()[0];
