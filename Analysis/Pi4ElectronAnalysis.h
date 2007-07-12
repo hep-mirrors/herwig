@@ -121,7 +121,7 @@ private:
   /**
    *  Histogram for the mass distribution
    */
-  HistogramPtr _mffbar;
+  vector<HistogramPtr> _mffbar;
 
 };
 

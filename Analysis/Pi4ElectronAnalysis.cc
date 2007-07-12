@@ -58,7 +58,9 @@ void Pi4ElectronAnalysis::analyze(tPPtr part) {
     for(iy=0;iy<2;++iy) {
       ptemp=pe[ix]+pp[iy];
       ptemp.rescaleMass();
-      *_mffbar+=ptemp.mass()/MeV;
+      for(unsigned int iz=0;iz<_mffbar.size();++iz) {
+	*_mffbar[iz]+=ptemp.mass()/MeV;
+      }
     }
   }
 }
@@ -77,17 +79,20 @@ void Pi4ElectronAnalysis::dofinish() {
   AnalysisHandler::dofinish();
   string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
   ofstream output(fname.c_str());
-  _mffbar->topdrawOutput(output,true,true,false,true,
-			 "RED",
-			 "Mass of the e2+3e2-3 pair in P203Re2+3e2-3e2+3e2-3",
-			 "             X X X X         GX XW X X X X X X X X",
-			 "1/SdS/dm0e2+3e2-31/GeV2-13",
-			 "  G G   X X X X XX    X  X",
-			 "m0e2+3e2-31",
-			 " X X X X XX");
+  for(unsigned int ix=0;ix<_mffbar.size();++ix) {
+    _mffbar[ix]->topdrawOutput(output,true,true,false,true,
+			       "RED",
+			       "Mass of the e2+3e2-3 pair in P203Re2+3e2-3e2+3e2-3",
+			       "             X X X X         GX XW X X X X X X X X",
+			       "1/SdS/dm0e2+3e2-31/GeV2-13",
+			       "  G G   X X X X XX    X  X",
+			       "m0e2+3e2-31",
+			       " X X X X XX");
+  }
 }
 
 void Pi4ElectronAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  _mffbar=new_ptr(Histogram(0.0,140.0,1000));
+  _mffbar.push_back(new_ptr(Histogram(0.0,140.0,1000)));
+  _mffbar.push_back(new_ptr(Histogram(0.0, 20.0,100 )));
 }
