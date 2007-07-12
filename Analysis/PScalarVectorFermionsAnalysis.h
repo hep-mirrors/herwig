@@ -130,7 +130,12 @@ private:
   /**
    *  Histograms for the mass of the fermion-antifermion pair
    */
-  vector<HistogramPtr> _mff;
+  vector<HistogramPtr> _mffa;
+
+  /**
+   *  Histograms for the mass of the fermion-antifermion pair
+   */
+  vector<HistogramPtr> _mffb;
 
   /**
    *  Histograms for the masses of the vector and the fermion
