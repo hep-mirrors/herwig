@@ -94,25 +94,10 @@ class VectorMeson3PionDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline VectorMeson3PionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson3PionDecayer(const VectorMeson3PionDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson3PionDecayer();
-  //@}
-
-public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
