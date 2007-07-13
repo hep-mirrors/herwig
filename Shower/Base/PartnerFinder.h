@@ -194,7 +194,7 @@ template <>
 struct ClassTraits<Herwig::PartnerFinder>
   : public ClassTraitsBase<Herwig::PartnerFinder> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::PartnerFinder"; }
+  static string className() { return "Herwig::PartnerFinder"; }
   /**
    * The name of a file containing the dynamic library where the class
    * PartnerFinder is implemented. It may also include several, space-separated,

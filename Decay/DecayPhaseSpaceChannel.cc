@@ -10,32 +10,30 @@
 #include "DecayPhaseSpaceMode.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/RefVector.h"
 #include "ThePEG/Interface/Switch.h"
-#include "Herwig++/Utilities/Kinematics.h"
 #include <ThePEG/Helicity/SpinInfo.h>
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 using ThePEG::Helicity::SpinInfo;
   
 DecayPhaseSpaceChannel::DecayPhaseSpaceChannel(tcDecayPhaseSpaceModePtr in) 
   : _mode(in) {}
 
-void DecayPhaseSpaceChannel::persistentOutput(PersistentOStream & os) const 
-{
-  os << _intpart << _jactype << _intmass << _intwidth 
-     << _intmass2 << _intmwidth << _intpower 
+void DecayPhaseSpaceChannel::persistentOutput(PersistentOStream & os) const {
+  os << _intpart << _jactype << ounit(_intmass,GeV) << ounit(_intwidth,GeV)
+     << ounit(_intmass2,GeV2) << ounit(_intmwidth,GeV2) << _intpower 
      << _intdau1 << _intdau2 << _intext << _mode;
 }
   
-void DecayPhaseSpaceChannel::persistentInput(PersistentIStream & is, int) 
-{
-  is >> _intpart >> _jactype >> _intmass >> _intwidth 
-     >> _intmass2 >> _intmwidth >> _intpower
+void DecayPhaseSpaceChannel::persistentInput(PersistentIStream & is, int) {
+  is >> _intpart >> _jactype >> iunit(_intmass,GeV) >> iunit(_intwidth,GeV) 
+     >> iunit(_intmass2,GeV2) >> iunit(_intmwidth,GeV2) >> _intpower
      >> _intdau1 >> _intdau2 >> _intext >> _mode;
 }
   
@@ -86,7 +84,6 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
 					const vector<Energy> & massext) {
   // integers for loops
   unsigned int ix,iy,idau[2],iz;
-  double ctheta,phi;
   // storage of the momenta of the external particles
   vector<Lorentz5Momentum> pexternal;
   // and the internal particles
@@ -96,7 +93,9 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
   pexternal.resize(_mode->numberofParticles());
   pinter.resize(_intpart.size());
   // masses of the intermediate particles
-  vector<Energy> massint; massint.resize(_intpart.size());massint[0]=pin[5];
+  vector<Energy> massint; 
+  massint.resize(_intpart.size());
+  massint[0]=pin.mass();
   // generate all the decays in the chain
   Energy lower,upper,lowerb[2];
   for(ix=0;ix<_intpart.size();++ix) {
@@ -106,7 +105,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
     if(_intdau1[ix]<0&&_intdau2[ix]<0) {
       // lower limits on the masses of the two resonances
       for(iy=0;iy<2;++iy) {
-	lowerb[iy]=0.;
+	lowerb[iy]=Energy();
 	for(iz=0;iz<_intext[idau[iy]].size();++iz) {
 	  lowerb[iy]+=massext[_intext[idau[iy]][iz]];
 	}
@@ -133,44 +132,40 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
 	massint[idau[0]]=generateMass(idau[0],lower,upper);
       }
       // generate the momenta of the decay products
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(pinter[ix],massint[idau[0]],massint[idau[1]], 
-			       ctheta,phi,pinter[idau[0]],pinter[idau[1]]);
+      twoBodyDecay(pinter[ix],massint[idau[0]],massint[idau[1]],
+		   pinter[idau[0]],pinter[idau[1]]);
     }
     // only first off-shell
     else if(_intdau1[ix]<0) {
       // compute the limits of integration
       upper = massint[ix]-massext[idau[1]];
-      lower = 0.;
+      lower = Energy();
       for(iy=0;iy<_intext[idau[0]].size();++iy) {
 	lower+=massext[_intext[idau[0]][iy]];
       }
       massint[idau[0]]=generateMass(idau[0],lower,upper);
       // generate the momenta of the decay products
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]], 
-				   ctheta,phi,pinter[idau[0]],pexternal[idau[1]]);
+      twoBodyDecay(pinter[ix],massint[idau[0]],massext[idau[1]], 
+		   pinter[idau[0]],pexternal[idau[1]]);
     }
     // only second off-shell
     else if(_intdau2[ix]<0) {
       // compute the limits of integration
       upper = massint[ix]-massext[idau[0]];
-      lower = 0;
+      lower = 0*MeV;
       for(iy=0;iy<_intext[idau[1]].size();++iy) {
 	lower+=massext[_intext[idau[1]][iy]];
       }
       massint[idau[1]]=generateMass(idau[1],lower,upper);
       // generate the momenta of the decay products
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(pinter[ix],massext[idau[0]],massint[idau[1]], 
-			       ctheta,phi,pexternal[idau[0]],pinter[idau[1]]);
+      twoBodyDecay(pinter[ix],massext[idau[0]],massint[idau[1]], 
+		   pexternal[idau[0]],pinter[idau[1]]);
     }
     // both on-shell
     else {
       // generate the momenta of the decay products
-      Kinematics::generateAngles(ctheta,phi);
-      Kinematics::twoBodyDecay(pinter[ix],massext[idau[0]],massext[idau[1]], 
-			       ctheta,phi,pexternal[idau[0]],pexternal[idau[1]]);
+      twoBodyDecay(pinter[ix],massext[idau[0]],massext[idau[1]], 
+		   pexternal[idau[0]],pexternal[idau[1]]);
     }
   }
   // return the external momenta
@@ -180,6 +175,7 @@ DecayPhaseSpaceChannel::generateMomenta(const Lorentz5Momentum & pin,
 // generate the weight for this channel given a phase space configuration
 double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & output)
 {
+  using Constants::pi;
   // integers for loops
   unsigned int ix,iy,idau[2],iz;
   // include the prefactor due to the weight of the channel
@@ -209,29 +205,29 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
 	  // lower limits on the masses of the two resonances
 	  for(iy=0;iy<2;++iy)
 	    {
-	      lowerb[iy]=0.;
+	      lowerb[iy]=Energy();
 	      for(iz=0;iz<_intext[idau[iy]].size();++iz)
-		{lowerb[iy]+=output[_intext[idau[iy]][iz]][5];}
+		{lowerb[iy]+=output[_intext[idau[iy]][iz]].mass();}
 	    }
 	  // undo effect of randomising
 	  // weight for the first order
 	  // contribution of first resonance
 	  upper = intmass[ix]-lowerb[1];
 	  lower = lowerb[0];
-	  double wgta=massWeight(idau[0],intmass[idau[0]],lower,upper);
+	  InvEnergy2 wgta=massWeight(idau[0],intmass[idau[0]],lower,upper);
 	  // contribution of second resonance
 	  upper = intmass[ix]-intmass[idau[0]];
 	  lower = lowerb[1];
-	  wgta*=massWeight(idau[1],intmass[idau[1]],lower,upper);
+	  InvEnergy4 wgta2 = wgta*massWeight(idau[1],intmass[idau[1]],lower,upper);
 	  // weight for the second order
 	  upper = intmass[ix]-lowerb[0];
 	  lower = lowerb[1];
-	  double wgtb=massWeight(idau[1],intmass[idau[1]],lower,upper);
+	  InvEnergy2 wgtb=massWeight(idau[1],intmass[idau[1]],lower,upper);
 	  upper = intmass[ix]-intmass[idau[1]];
 	  lower = lowerb[0];
-	  wgtb*=massWeight(idau[0],intmass[idau[0]],lower,upper);
+	  InvEnergy4 wgtb2=wgtb*massWeight(idau[0],intmass[idau[0]],lower,upper);
 	  // weight factor
-	  wgt *=0.5*sqr(scale)*(wgta+wgtb);
+	  wgt *=0.5*sqr(scale)*(wgta2+wgtb2);
 	  // factor for the kinematics
 	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
 				       intmass[idau[1]]);
@@ -241,33 +237,33 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
       else if(_intdau1[ix]<0)
 	{
 	  // compute the limits of integration
-	  upper = intmass[ix]-output[idau[1]][5];
-	  lower = 0.;
+	  upper = intmass[ix]-output[idau[1]].mass();
+	  lower = Energy();
 	  for(iy=0;iy<_intext[idau[0]].size();++iy)
-	    {lower+=output[_intext[idau[0]][iy]][5];}
+	    {lower+=output[_intext[idau[0]][iy]].mass();}
 	  wgt *=scale*massWeight(idau[0],intmass[idau[0]],lower,upper);
 	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[0]],
-				       output[idau[1]][5]);
+				       output[idau[1]].mass());
 	  wgt *= intmass[ix]*8.*pi*pi/pcm;
 	}
       // only second off-shell
       else if(_intdau2[ix]<0)
 	{
 	    // compute the limits of integration
-	  upper = intmass[ix]-output[idau[0]][5]; 
-	  lower = 0;
+	  upper = intmass[ix]-output[idau[0]].mass(); 
+	  lower = Energy();
 	  for(iy=0;iy<_intext[idau[1]].size();++iy)
-	    {lower+=output[_intext[idau[1]][iy]][5];}
+	    {lower+=output[_intext[idau[1]][iy]].mass();}
 	  wgt *=scale*massWeight(idau[1],intmass[idau[1]],lower,upper);
 	  pcm = Kinematics::CMMomentum(intmass[ix],intmass[idau[1]],
-				       output[idau[0]][5]);
+				       output[idau[0]].mass());
 	  wgt *=intmass[ix]*8.*pi*pi/pcm;
 	}
       // both on-shell
       else
 	{
-	  pcm = Kinematics::CMMomentum(intmass[ix],output[idau[1]][5],
-				       output[idau[0]][5]);
+	  pcm = Kinematics::CMMomentum(intmass[ix],output[idau[1]].mass(),
+				       output[idau[0]].mass());
 	  wgt *=intmass[ix]*8.*pi*pi/pcm;
 	}
     }
@@ -278,8 +274,7 @@ double DecayPhaseSpaceChannel::generateWeight(const vector<Lorentz5Momentum> & o
 }
 
 // output the information to a stream
-ostream & operator<<(ostream & os, const DecayPhaseSpaceChannel & channel)
-{
+ostream & Herwig::operator<<(ostream & os, const DecayPhaseSpaceChannel & channel) {
   // output of the external particles
   os << "Channel for the decay of " << channel._mode->externalParticles(0)->PDGName() 
      << " -> ";
@@ -320,6 +315,16 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
     _intwidth.push_back(_intpart[ix]->width());
     _intmass2.push_back(_intpart[ix]->mass()*_intpart[ix]->mass());
     _intmwidth.push_back(_intpart[ix]->mass()*_intpart[ix]->width());
+    if(_intwidth.back()==0.*MeV && ix>0 && _jactype[ix]==0 ) {
+      string modeout;
+      for(unsigned int iy=0;iy<_mode->numberofParticles();++iy) {
+	modeout += _mode->externalParticles(iy)->PDGName() + " ";
+      }
+      throw InitException() << "Width zero for " << _intpart[ix]->PDGName()
+			    << " in DecayPhaseSpaceChannel::doinit()"
+			    << modeout
+			    << Exception::runerror;
+    }
   }
   // external particles for each intermediate particle
   vector<int> temp;
@@ -327,7 +332,7 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
   // loop over the intermediate particles
   int ix,iy;
   for(ix=_intpart.size()-1;ix>=0;--ix) {
-    temp.resize(0);
+    temp.clear();
     // add the first daughter
     if(_intdau1[ix]>=0)
       {temp.push_back(_intdau1[ix]);}
@@ -354,10 +359,23 @@ void DecayPhaseSpaceChannel::doinit() throw(InitException) {
   }
 }
 
+void DecayPhaseSpaceChannel::doinitrun() {
+  Interfaced::doinitrun();
+  for(unsigned int ix=1;ix<_jactype.size();++ix) {
+    if(_jactype[ix]==0) {
+      if(_intmass[ix]==0.*MeV || _intwidth[ix]==0*MeV) {
+	CurrentGenerator::log() << "DecayPhaseSpaceChannel::doinitrun()" 
+				<< " Problem with parameters for " 
+				<< _intpart[ix]->PDGName()
+				<< " in phase-space integraton "
+				<< _intmass[ix]/GeV << " " << _intwidth[ix]/GeV << "\n";
+      }
+    }
+  }
+}
 // generate the final-state particles including the intermediate resonances
 void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
-						   ParticleVector & out)
-{
+						   ParticleVector & out) {
   // integers for the loops
   unsigned int ix,iz;
   // create the particles
@@ -366,7 +384,7 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   external.push_back(const_ptr_cast<tPPtr>(&in));
   // outgoing
   for(ix=0;ix<out.size();++ix){external.push_back(out[ix]);}
-  out.resize(0);
+  out.clear();
   // now create the intermediates
   ParticleVector resonance; resonance.push_back(external[0]);
   PPtr respart;
@@ -396,7 +414,4 @@ void DecayPhaseSpaceChannel::generateIntermediates(bool cc, const Particle & in,
   else{out.push_back(resonance[-_intdau1[0]]);}
   if(_intdau2[0]>0){out.push_back(external[_intdau2[0]]);}
   else{out.push_back(resonance[-_intdau2[0]]);}
-}
-
-
 }

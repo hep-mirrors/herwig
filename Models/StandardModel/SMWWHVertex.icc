@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMWWHVertex class.
+//
+namespace Herwig {
+using namespace ThePEG;
+
+inline IBPtr SMWWHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMWWHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+}

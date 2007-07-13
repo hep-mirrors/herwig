@@ -228,6 +228,7 @@ protected:
   /**
    *  Add the initial-state shwoer from the particle to the step
    * @param particle The final-state particle
+   * @param hadron The incoming hadron
    * @param step The step
    * @param addchildren Add the children of the particle
    */
@@ -250,6 +251,13 @@ protected:
    */
   void colourIsolate(const vector<PPtr> & original, const vector<PPtr> & copy);
 
+  /**
+   *  After the creatation of a ShowerParticle make sure it is properly attached 
+   *  to its ColourLine
+   * @param part The particle
+   */
+  inline void fixColour(tShowerParticlePtr part);
+ 
 private:
   
   /**

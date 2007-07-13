@@ -30,20 +30,10 @@ class ScalarScalarScalarDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   ScalarScalarScalarDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline ScalarScalarScalarDecayer(const ScalarScalarScalarDecayer &);
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -185,7 +175,6 @@ private:
 
 }
 
-
 #include "ThePEG/Utilities/ClassTraits.h"
 
 namespace ThePEG {
@@ -210,7 +199,7 @@ template <>
 struct ClassTraits<Herwig::ScalarScalarScalarDecayer>
   : public ClassTraitsBase<Herwig::ScalarScalarScalarDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::ScalarScalarScalarDecayer"; }
+  static string className() { return "Herwig::ScalarScalarScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -74,4 +74,16 @@ inline ShowerTreePtr ShowerTree::parent() const {
   return _parent;
 }
 
+inline void ShowerTree::fixColour(tShowerParticlePtr part) {
+  ColinePtr line=part->colourLine();
+  if(line) {
+    line->removeColoured(part);
+    line->addColoured(part);
+  }
+  line=part->antiColourLine();
+  if(line) {
+    line->removeAntiColoured(part);
+    line->addAntiColoured(part);
+  }
+}
 }

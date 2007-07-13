@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the Pi4ElectronAnalysis class.
+//
+
+namespace Herwig {
+
+inline IBPtr Pi4ElectronAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr Pi4ElectronAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

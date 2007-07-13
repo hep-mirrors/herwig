@@ -7,15 +7,10 @@
 #include "WeakDecayCurrent.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WeakDecayCurrent.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 
 void WeakDecayCurrent::persistentOutput(PersistentOStream & os) const {
@@ -48,28 +43,28 @@ void WeakDecayCurrent::Init() {
      0, 0, 0, -16, 0, false, false, true);
 }
 
-void WeakDecayCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::WeakDecayCurrent " << fullName() << " \n";}
-  for(unsigned int ix=0;ix<_quark.size();++ix)
-    {
-      if(ix<_numbermodes)
-	{
-	  output << "set " << fullName() << ":Quark "     
-		 << ix << "  " << _quark[ix]     << endl;
-	  output << "set " << fullName() << ":AntiQuark " 
-		 << ix << "  " << _antiquark[ix] << endl;
-	}
-      else
-	{
-	  output << "insert "  << fullName() << ":Quark "     
-		 << ix << "  " << _quark[ix]     << endl;
-	  output << "insert "  << fullName() << ":AntiQuark " 
-		 << ix << "  " << _antiquark[ix] << endl;
-	}
+void WeakDecayCurrent::dataBaseOutput(ofstream & output,bool header,bool create) const {
+  if(header) {
+    output << "update decayers set parameters=\"";
+  }
+  if(create) {
+    output << "create Herwig::WeakDecayCurrent " << fullName() << " \n";
+  }
+  for(unsigned int ix=0;ix<_quark.size();++ix) {
+    if(ix<_numbermodes) {
+      output << "set " << fullName() << ":Quark "     
+	     << ix << "  " << _quark[ix]     << endl;
+      output << "set " << fullName() << ":AntiQuark " 
+	     << ix << "  " << _antiquark[ix] << endl;
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+    else {
+      output << "insert "  << fullName() << ":Quark "     
+	     << ix << "  " << _quark[ix]     << endl;
+      output << "insert "  << fullName() << ":AntiQuark " 
+	     << ix << "  " << _antiquark[ix] << endl;
+    }
+  }
+  if(header) {
+    output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
+  }
 }

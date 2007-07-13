@@ -14,8 +14,8 @@
 #include "VectorBosonQQbarHardGenerator.fh"
 #include "ThePEG/Repository/UseRandom.h"
 #include "Herwig++/Utilities/Histogram.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
-#include "ThePEG/CLHEPWrap/LorentzRotation.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+#include "ThePEG/Vectors/LorentzRotation.h"
 
 
 

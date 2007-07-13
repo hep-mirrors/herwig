@@ -7,7 +7,7 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/Math.h"
@@ -511,7 +511,7 @@ template <>
 struct ClassTraits<Herwig::GeneralDipole>
   : public ClassTraitsBase<Herwig::GeneralDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralDipole"; }
+  static string className() { return "Herwig::GeneralDipole"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GeneralDipole class and any other class on which it depends
    *  (except the base class). */

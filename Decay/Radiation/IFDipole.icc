@@ -8,7 +8,7 @@ namespace Herwig {
 
 inline IFDipole::IFDipole() :
   _alpha(), _emin(1.0*MeV), _emax(), _multiplicity(), _nphotonmax(20),
-  _map(2,0), _m(3,0.0), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
+  _map(2,0), _m(3), _chrg1(), _chrg2(), _qprf(2), _qnewprf(2),
   _lprf(), _bigLprf(), _qlab(2), _qnewlab(2), _llab(), _bigLlab(),
   _dipolewgt(), _yfswgt(), _jacobianwgt(), _mewgt(), _maxwgt(2.0),
   _mode(1), _maxtry(500), _energyopt(1), _betaopt(1), _dipoleopt()

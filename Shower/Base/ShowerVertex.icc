@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ShowerVertex class.
+//
+
+namespace Herwig {
+using namespace ThePEG;
+
+// get the ME
+inline const DecayMatrixElement & ShowerVertex::ME() const
+{return _matrixelement;}
+
+// set the ME
+inline void ShowerVertex::ME(const DecayMatrixElement & in) const
+{_matrixelement.reset(in);}
+}

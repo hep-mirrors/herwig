@@ -253,7 +253,7 @@ template <>
 struct ClassTraits<Herwig::MultiplicityCount>
   : public ClassTraitsBase<Herwig::MultiplicityCount> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MultiplicityCount"; }
+  static string className() { return "Herwig::MultiplicityCount"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MultiplicityCount class and any other class on which it depends
    *  (except the base class). */

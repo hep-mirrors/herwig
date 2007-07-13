@@ -1,15 +1,20 @@
 bin_PROGRAMS = Herwig++
 Herwig___SOURCES = Herwig++.cc
-Herwig___LDFLAGS = -export-dynamic $(CLHEPLDFLAGS)
-Herwig___LDADD = $(top_builddir)/lib/libHerwig.la
+Herwig___LDFLAGS = -export-dynamic $(THEPEGLDFLAGS)
+Herwig___LDADD = $(top_builddir)/lib/libHerwig.la $(THEPEGLIB) -ldl
 
 DOTINFILES = Analysis.in Decays.in Hadronization.in \
-HerwigDefaults.in HerwigParticles.in \
+HerwigDefaults.in HerwigParticles.in Particles.in \
 Hw64Decays.in Model.in RSModelVertices.in \
 Shower.in StandardModelVertices.in \
 ThePEGParticles.in UnderlyingEvent.in \
 MatrixElements.in QED.in Cuts.in \
-ILC.in LEP.in LHC.in TVT.in 
+ILC.in LEP.in LHC.in TVT.in \
+bosons.in diquarks.in leptons.in \
+quarks.in mesons.in baryons.in \
+quark_decays.in baryon_decays.in \
+boson_decays.in lepton_decays.in \
+meson_decays.in decayers.in
 
 dist_pkgdata_DATA = $(DOTINFILES)
 
@@ -54,11 +59,11 @@ VALGRIND=valgrind --leak-check=full --num-callers=25 --freelist-vol=100000000 --
 valgrind: valgrind-init valgrind-read valgrind-run
 
 valgrind-init:
-	$(VALGRIND) ./Herwig++ init -L$(top_builddir)/lib &> valgrind-init.log
+	$(VALGRIND) ./Herwig++ init -L$(top_builddir)/lib &> /tmp/valgrind-init.log
 valgrind-read:
-	$(VALGRIND) ./Herwig++ read LHC.in &> valgrind-read.log
+	$(VALGRIND) ./Herwig++ read LHC.in &> /tmp/valgrind-read.log
 valgrind-run:
-	$(VALGRIND) ./Herwig++ run -N1 LHC.run &> valgrind-run.log
+	$(VALGRIND) ./Herwig++ run -N1 LHC.run &> /tmp/valgrind-run.log
 
 ## ## ## ## ## ## 
 

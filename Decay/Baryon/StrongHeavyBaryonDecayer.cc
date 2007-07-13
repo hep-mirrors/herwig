@@ -388,18 +388,22 @@ void StrongHeavyBaryonDecayer::doinit() throw(InitException) {
 StrongHeavyBaryonDecayer::~StrongHeavyBaryonDecayer() {}
 
 void StrongHeavyBaryonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _gsigma_clambda_cpi << _gxistar_cxi_cpi << _flambda_c1sigma_cpi 
-     << _fxi_c1xi_cpi << _flambda_c1starsigma_cpi << _fxi_c1starxi_cpi
-     << _gsigma_blambda_bpi << _gxistar_bxi_bpi << _flambda_b1sigma_bpi 
-     << _fxi_b1xi_bpi << _flambda_b1starsigma_bpi << _fxi_b1starxi_bpi 
+  os << ounit(_gsigma_clambda_cpi,1./GeV) << ounit(_gxistar_cxi_cpi,1./GeV) 
+     << _flambda_c1sigma_cpi << _fxi_c1xi_cpi << ounit(_flambda_c1starsigma_cpi,1./GeV2) 
+     << ounit(_fxi_c1starxi_cpi,1./GeV2) << ounit(_gsigma_blambda_bpi,1./GeV) 
+     << ounit(_gxistar_bxi_bpi,1./GeV) << _flambda_b1sigma_bpi 
+     << _fxi_b1xi_bpi << ounit(_flambda_b1starsigma_bpi,1./GeV2) 
+     << ounit(_fxi_b1starxi_bpi,1./GeV2) 
      << _incoming << _outgoingB << _outgoingM << _maxweight << _prefactor << _modetype;
 }
 
 void StrongHeavyBaryonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _gsigma_clambda_cpi >> _gxistar_cxi_cpi >> _flambda_c1sigma_cpi 
-     >> _fxi_c1xi_cpi >> _flambda_c1starsigma_cpi >> _fxi_c1starxi_cpi
-     >> _gsigma_blambda_bpi >> _gxistar_bxi_bpi >> _flambda_b1sigma_bpi 
-     >> _fxi_b1xi_bpi >> _flambda_b1starsigma_bpi >> _fxi_b1starxi_bpi 
+  is >> iunit(_gsigma_clambda_cpi,1./GeV) >> iunit(_gxistar_cxi_cpi,1./GeV) 
+     >> _flambda_c1sigma_cpi >> _fxi_c1xi_cpi >> iunit(_flambda_c1starsigma_cpi,1./GeV2) 
+     >> iunit(_fxi_c1starxi_cpi,1./GeV2) >> iunit(_gsigma_blambda_bpi,1./GeV) 
+     >> iunit(_gxistar_bxi_bpi,1./GeV) >> _flambda_b1sigma_bpi 
+     >> _fxi_b1xi_bpi >> iunit(_flambda_b1starsigma_bpi,1./GeV2) 
+     >> iunit(_fxi_b1starxi_bpi,1./GeV2) 
      >> _incoming >> _outgoingB >> _outgoingM >> _maxweight >> _prefactor >> _modetype;
 }
 

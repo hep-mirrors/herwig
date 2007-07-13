@@ -156,9 +156,9 @@ void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
       tcPDPtr part1=getParticleData(id1);Energy m1=part1->mass();
       Complex f1v,f2v,f3v,f4v,f1a,f2a,f3a,f4a;
       if(part1->iSpin()==2)
-	{SpinHalfSpinHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
+	{SpinHalfSpinHalfFormFactor(0.*GeV2,ix,id0,id1,m0,m1,f1v,f2v,f3v,f1a,f2a,f3a);}
       else
-	{SpinHalfSpinThreeHalfFormFactor(0.,ix,id0,id1,m0,m1,f1v,f2v,f3v,
+	{SpinHalfSpinThreeHalfFormFactor(0.*GeV2,ix,id0,id1,m0,m1,f1v,f2v,f3v,
 					 f4v,f1a,f2a,f3a,f4a);}
     }
 }
@@ -166,16 +166,20 @@ void ChengHeavyBaryonFormFactor::doinit() throw(InitException) {
 ChengHeavyBaryonFormFactor::~ChengHeavyBaryonFormFactor() {}
   
 void ChengHeavyBaryonFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _mu << _md << _ms << _mc << _mb << _Nfi << _eta << _f1 << _f2 << _f3 
-     << _g1 << _g2 << _g3 << _mVbc << _mVbs << _mVcs << _mVbd << _mVcu << _mAbc 
-     << _mAbs << _mAcs << _mAbd << _mAcu;
+  os << ounit(_mu,MeV) << ounit(_md,MeV) << ounit(_ms,MeV) << ounit(_mc,MeV) << ounit(_mb,MeV) 
+     << _Nfi << _eta << _f1 << _f2 << _f3 
+     << _g1 << _g2 << _g3 << ounit(_mVbc,MeV) << ounit(_mVbs,MeV) << ounit(_mVcs,MeV) 
+     << ounit(_mVbd,MeV) << ounit(_mVcu,MeV) << ounit(_mAbc,MeV) 
+     << ounit(_mAbs,MeV) << ounit(_mAcs,MeV) << ounit(_mAbd,MeV) << ounit(_mAcu,MeV);
  }
   
 
 void ChengHeavyBaryonFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _mu >> _md >> _ms >> _mc >> _mb >> _Nfi >> _eta >> _f1 >> _f2 >> _f3 
-     >> _g1 >> _g2 >> _g3 >> _mVbc >> _mVbs >> _mVcs >> _mVbd >> _mVcu >> _mAbc 
-     >> _mAbs >> _mAcs >> _mAbd >> _mAcu;
+  is >> iunit(_mu,MeV) >> iunit(_md,MeV) >> iunit(_ms,MeV) >> iunit(_mc,MeV) >> iunit(_mb,MeV) 
+     >> _Nfi >> _eta >> _f1 >> _f2 >> _f3 
+     >> _g1 >> _g2 >> _g3 >> iunit(_mVbc,MeV) >> iunit(_mVbs,MeV) >> iunit(_mVcs,MeV) 
+     >> iunit(_mVbd,MeV) >> iunit(_mVcu,MeV) >> iunit(_mAbc,MeV) 
+     >> iunit(_mAbs,MeV) >> iunit(_mAcs,MeV) >> iunit(_mAbd,MeV) >> iunit(_mAcu,MeV);
 }
 
 ClassDescription<ChengHeavyBaryonFormFactor> ChengHeavyBaryonFormFactor::initChengHeavyBaryonFormFactor;
@@ -378,7 +382,7 @@ void ChengHeavyBaryonFormFactor::dataBaseOutput(ofstream& output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/ChengHeavyBaryonFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::ChengHeavyBaryonFormFactor " << fullName() << " \n";}
   output << "set " << fullName() << ":DownMass     " << _md/GeV << " \n";
   output << "set " << fullName() << ":UpMass       " << _mu/GeV << " \n";
   output << "set " << fullName() << ":StrangeMass  " << _ms/GeV << " \n";

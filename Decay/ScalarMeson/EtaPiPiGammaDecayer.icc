@@ -7,18 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline EtaPiPiGammaDecayer::EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer & x)
-  : DecayIntegrator(x), _fpi(x._fpi), _incoming(x._incoming),
-    _coupling(x._coupling), _maxweight(x._maxweight),
-    _option(x._option), _aconst(x._aconst),_cconst(x._cconst), _mrho(x._mrho),
-    _rhowidth(x._rhowidth),_rhoconst(x._rhoconst),_mpi(x._mpi),
-    _localparameters(x._localparameters),_energy(x._energy), _phase(x._phase),
-    _Omnesenergy(x._Omnesenergy),
-    _Omnesfunctionreal(x._Omnesfunctionreal), _Omnesfunctionimag(x._Omnesfunctionimag),
-    _initialize(x._initialize), _npoints(x._npoints), _epscut(x._epscut)  {
-  for(unsigned int ix=0;ix<2;++ix){_nsize[ix]=x._nsize[ix];}
-}
-
 inline IBPtr EtaPiPiGammaDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -38,7 +26,7 @@ inline void EtaPiPiGammaDecayer::doinitrun() {
 // the analytic omnes function  
 inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
   Energy2 mpi2(_mpi*_mpi),mrho2(_mrho*_mrho);
-  double root,pi2(pi*pi);
+  double root, pi2 = sqr(Constants::pi);
   Complex f,ii(0.,1.);
   double pre(mpi2/12./pi2/_fpi/_fpi);
   if(s>4.*mpi2) {
@@ -47,10 +35,10 @@ inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
     f=(1.-0.25*s/mpi2)*root*log((root+1.)/(-root+1.))-2.;
     f *=pre;
     // imaginary piece
-    f += ii*s/mrho2*_rhoconst/8.*root*root*root;
+    f += ii*s/mrho2*_rhoconst/8.*pow(root,3);
   }
   else {
-    root=sqrt((4.*mpi2-s)/s);
+    root=sqrt(4.*mpi2/s-1.);
     f=2.*(1.-0.25*s/mpi2)*root*atan(1./root)-2.;
     f *=pre;
   }
@@ -58,15 +46,15 @@ inline Complex EtaPiPiGammaDecayer::analyticOmnes(Energy2 s) const {
 }
   
 inline Complex EtaPiPiGammaDecayer::experimentalOmnes(Energy2 s) const {
-  if(!_Oreal) {
-    _Oreal = new_ptr(Interpolator(_Omnesfunctionreal,_Omnesenergy,3));
-    _Oimag = new_ptr(Interpolator(_Omnesfunctionimag,_Omnesenergy,3));
+  if(!_oreal) {
+    _oreal = make_InterpolatorPtr(_omnesfunctionreal,_omnesenergy,3);
+    _oimag = make_InterpolatorPtr(_omnesfunctionimag,_omnesenergy,3);
   }
   Energy q(sqrt(s)); Complex ii(0.,1.);
-  return (*_Oreal)(q)+ii*(*_Oimag)(q);
+  return (*_oreal)(q)+ii*(*_oimag)(q);
 }
 
-inline OmnesIntegrand::OmnesIntegrand(InterpolatorPtr in,Energy2 eps) {
+inline OmnesIntegrand::OmnesIntegrand(Interpolator<double,Energy>::Ptr in,Energy2 eps) {
   _interpolator=in;
   _precision=eps;
 }
@@ -75,8 +63,9 @@ inline void OmnesIntegrand::setScale(Energy2 in) {
   _s=in;
 }
 
-inline double OmnesIntegrand::operator ()(double xpoint) const {
-  double output(0.); Energy q(sqrt(xpoint));
+inline InvEnergy4 OmnesIntegrand::operator ()(Energy2 xpoint) const {
+  InvEnergy4 output = InvEnergy4();
+  Energy q(sqrt(xpoint));
   if(abs(xpoint-_s)>_precision) 
     output= (*_interpolator)(q)/xpoint/(xpoint-_s);
   return output;

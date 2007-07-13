@@ -43,24 +43,11 @@ using namespace ThePEG;
 class VectorMeson2MesonDecayer: public DecayIntegrator {
   
 public:
-  
-  /** @name Standard constructors and destructors. */
-  //@{
+
   /**
    * Default constructor.
    */
   VectorMeson2MesonDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson2MesonDecayer(const VectorMeson2MesonDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson2MesonDecayer();
-  //@}
   
 public:
   
@@ -177,12 +164,12 @@ private:
   vector<int> _incoming;
 
   /**
-   * the PDG codes for the outgoing fermion
+   * the PDG codes for the first outgoing meson
    */
   vector<int> _outgoing1;
 
   /**
-   * the PDG codes for the outgoing antifermion.
+   * the PDG codes for the second outgoing meson 
    */
   vector<int> _outgoing2;
 
@@ -227,7 +214,7 @@ template <>
 struct ClassTraits<Herwig::VectorMeson2MesonDecayer>
   : public ClassTraitsBase<Herwig::VectorMeson2MesonDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::VectorMeson2MesonDecayer"; }
+  static string className() { return "Herwig::VectorMeson2MesonDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

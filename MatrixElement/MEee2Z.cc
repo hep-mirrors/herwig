@@ -15,12 +15,12 @@
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/Helicity/VectorSpinInfo.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Cuts/Cuts.h"
@@ -32,7 +32,7 @@ using ThePEG::Helicity::VectorSpinPtr;
 using ThePEG::Helicity::VertexPtr;
 using ThePEG::Helicity::FermionSpinInfo;
 using ThePEG::Helicity::VectorSpinInfo;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 using ThePEG::Helicity::DiracRep;
 using ThePEG::Helicity::HaberDRep;
 using ThePEG::Helicity::HELASDRep;
@@ -87,12 +87,12 @@ double MEee2Z::me2() const {
   // add the Breit-Wigner factors
   Energy width=mePartonData()[2]->width();
   Energy mass =mePartonData()[2]->mass();
-  double fact = width*mass/(sqr(sHat()-mass*mass)+sqr(mass*width));
-  return aver*fact;
+  InvEnergy2 fact = width*mass/(sqr(sHat()-mass*mass)+sqr(mass*width));
+  return aver*fact*sHat();
 }
 
 CrossSection MEee2Z::dSigHatDR() const {
-  return me2()*jacobian()/sHat();
+  return (me2()*jacobian()/sHat())*sqr(hbarc);
 }
 
 unsigned int MEee2Z::orderInAlphaS() const {

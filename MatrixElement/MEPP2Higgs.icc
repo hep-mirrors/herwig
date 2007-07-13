@@ -25,7 +25,8 @@ inline Complex MEPP2Higgs::A1(Energy2 s,Energy2 mf2) const {
 
 inline Complex MEPP2Higgs::W2(Energy2 s,Energy2 mf2) const {
   double root=0.5*sqrt(abs(s)/mf2);
-  if(s<0.)
+  using Constants::pi;
+  if(s<0.*GeV2)
     return 4.*sqr(asinh(root));
   else if(s<4.*mf2)
     return -4.*sqr(asin(root));

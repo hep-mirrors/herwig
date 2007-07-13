@@ -7,14 +7,14 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.fh"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.fh"
 #include "SMHiggsWWDecayer.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The SMHiggsWWDecayer class performs the decay of the Standard Model
@@ -63,7 +63,7 @@ public:
    * @param cc Is this mode the charge conjugate
    * @param dm The decay mode
    */
-  virtual int modeNumber(bool &,const DecayMode &) const {return -1;}
+  virtual int modeNumber(bool &, const DecayMode &) const {return -1;}
  
    /**
     * Return the matrix element squared for a given mode and phase-space channel.
@@ -242,7 +242,7 @@ template <>
 struct ClassTraits<Herwig::SMHiggsWWDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsWWDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsWWDecayer"; }
+  static string className() { return "Herwig::SMHiggsWWDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SMHiggsWWDecayer is implemented. It may also include several, space-separated,
@@ -250,7 +250,7 @@ struct ClassTraits<Herwig::SMHiggsWWDecayer>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "HwSMVertex.so HwPerturbativeHiggsDecay.so"; }
+  static string library() { return "HwPerturbativeHiggsDecay.so"; }
 };
 
 /** @endcond */

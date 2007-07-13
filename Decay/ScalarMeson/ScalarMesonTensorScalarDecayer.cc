@@ -15,19 +15,19 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzTensor;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 ScalarMesonTensorScalarDecayer::ScalarMesonTensorScalarDecayer() 
 {
@@ -71,11 +71,13 @@ int ScalarMesonTensorScalarDecayer::modeNumber(bool & cc,const DecayMode & dm) c
 }
 
 void ScalarMesonTensorScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoingT << _outgoingS << _maxweight;
+  os << ounit(_coupling,1/GeV)
+     << _incoming << _outgoingT << _outgoingS << _maxweight;
 }
 
 void ScalarMesonTensorScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoingT >> _outgoingS >> _maxweight;
+  is >> iunit(_coupling,1/GeV)
+     >> _incoming >> _outgoingT >> _outgoingS >> _maxweight;
 }
 
 ClassDescription<ScalarMesonTensorScalarDecayer> ScalarMesonTensorScalarDecayer::initScalarMesonTensorScalarDecayer;
@@ -109,7 +111,7 @@ void ScalarMesonTensorScalarDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarMesonTensorScalarDecayer::_coupling,
-     0, 0, 0, 0./GeV, 100./GeV, false, false, true);
+     1/GeV, 0, 0/GeV, 0./GeV, 100./GeV, false, false, true);
 
   static ParVector<ScalarMesonTensorScalarDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -128,7 +130,7 @@ double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
 
   // set up the spin info for the outgoing particles
-  vector<LorentzTensor> twave;
+  vector<LorentzTensor<double> > twave;
   TensorWaveFunction(twave,decay[0],outgoing,true,false,vertex);
 
   // workaround for gcc 3.2.3 bug
@@ -138,12 +140,12 @@ double ScalarMesonTensorScalarDecayer::me2(bool vertex, const int,
 
   // calculate the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin2,PDT::Spin0);
-  Complex fact(_coupling[imode()]/inpart.mass());
-  LorentzPolarizationVector vtemp;
+  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
+  LorentzPolarizationVectorE vtemp;
   for(unsigned int ix=0;ix<5;++ix)
     {
       vtemp = twave[ix]*inpart.momentum(); 
-      newME(0,ix,0) = fact*decay[1]->momentum()*vtemp;
+      newME(0,ix,0) = fact * decay[1]->momentum().dot(vtemp);
     }
   ME(newME);
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
@@ -203,7 +205,7 @@ void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":OutgoingScalar " << ix << " " 
 		 << _outgoingS[ix] << "\n";
 	  output << "set " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*MeV << "\n";
 	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}
@@ -216,7 +218,7 @@ void ScalarMesonTensorScalarDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":OutgoingScalar " << ix << " " 
 		 << _outgoingS[ix] << "\n";
 	  output << "insert " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
+		 << _coupling[ix]*MeV << "\n";
 	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
 		 << _maxweight[ix] << "\n";
 	}

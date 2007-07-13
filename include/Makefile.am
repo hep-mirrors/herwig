@@ -3,7 +3,6 @@ BUILT_SOURCES = done-all-links
 DIRLINKS = $(top_srcdir)/Analysis \
 	   $(top_srcdir)/Decay \
            $(top_srcdir)/Hadronization \
-           $(top_srcdir)/Helicity \
            $(top_srcdir)/Interfaces \
            $(top_srcdir)/MatrixElement \
            $(top_srcdir)/Models \
@@ -23,7 +22,6 @@ done-all-links: $(DIRLINKS) $(CONFIGHEADERS) $(LOOPTOOLHEADERS)
 	mkdir -p Herwig++/Config Herwig++/Looptools
 	$(LN_S) -f $(addprefix ../, $(DIRLINKS)) Herwig++
 	$(LN_S) -f $(addprefix ../../, $(CONFIGHEADERS)) Herwig++/Config
-	$(LN_S) -f ../../../Config/config.h Herwig++/Config
 	$(LN_S) -f $(addprefix ../../, $(LOOPTOOLHEADERS)) Herwig++/Looptools
 	touch done-all-links
 

@@ -1,0 +1,72 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the DtoKPiPiFOCUS class.
+//
+
+namespace Herwig {
+
+inline IBPtr DtoKPiPiFOCUS::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr DtoKPiPiFOCUS::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void DtoKPiPiFOCUS::decayAngle(const Lorentz5Momentum & pparent,
+				      const Lorentz5Momentum & pres,
+				      const Lorentz5Momentum & p1,
+				      double & cost, Energy2 & ac) const{
+  Energy2 dot   = pparent*p1;
+  Energy2 mREp  = pres*pparent;
+  Energy2 mRE1  = pres*p1;
+  Energy2 mp2   = pparent.mass2();
+  Energy2 mres2 = pres.mass2();
+  Energy2 m12   = p1.mass2();
+  // magnitudes
+  ac = sqrt((mREp*mREp-mres2*mp2)*(mRE1*mRE1-mres2*m12))/mres2; 
+  // angle
+  cost=(dot*mres2-mREp*mRE1)/ac/mres2;
+}
+  
+inline Complex DtoKPiPiFOCUS::amplitude(int ispin, Energy mD, 
+					Energy mA , Energy mB , Energy mC ,
+					Energy mAB,Energy mres, Energy wres,
+					Energy2 ac, double cost) const {
+  // compute the production momenta
+  Energy pDR  = Kinematics::CMMomentum(mD,mres,mC);
+  Energy pDAB = Kinematics::CMMomentum(mD,mAB ,mC);
+  // and the decay momenta
+  Energy pAB = Kinematics::CMMomentum(mAB ,mA,mB);
+  Energy pR  = Kinematics::CMMomentum(mres,mA,mB);
+  double Fd(1.),Fr(1.),Fr0(1.),s(1.),Fd0(1.);
+  switch(ispin) {
+  case 0:
+    // default values of parameters are correct
+    break;
+  case 1:
+    Fr  = 1./sqrt(1.+sqr(_rres*pAB ));
+    Fr0 = 1./sqrt(1.+sqr(_rres*pR  ));
+    Fd  = 1./sqrt(1.+sqr(_rD0 *pDAB));
+    Fd0 = 1./sqrt(1.+sqr(_rD0 *pDR ));
+    s =-2.*ac/GeV2*cost;
+    break;
+  case 2:
+    Fr  = 1./sqrt(9.+3.*sqr(_rres*pAB )+Math::powi(_rres*pAB ,4));
+    Fr0 = 1./sqrt(9.+3.*sqr(_rres*pR  )+Math::powi(_rres*pR  ,4));
+    Fd  = 1./sqrt(9.+3.*sqr(_rD0 *pDAB)+Math::powi(_rD0 *pDAB,4));
+    Fd0 = 1./sqrt(9.+3.*sqr(_rD0 *pDR )+Math::powi(_rD0 *pDR ,4));
+    s = 2.*sqr(ac/GeV2)*(3.*sqr(cost)-1.);
+    break;
+  default:
+    throw Exception() << "D0toK0PiPiFOCUS::amplitude spin is too high ispin = " 
+		      << ispin << Exception::runerror;
+  }
+  // calculate the width term
+  Energy2 mwid=wres*Math::powi(pAB/pR,2*ispin+1)*sqr(Fr*mres/Fr0)/mAB;
+  complex<Energy2> bw = sqr(mres)-sqr(mAB)-complex<Energy2>(0.*MeV2,mwid);
+  return s*Fr*Fd*GeV2/bw;
+}
+
+}

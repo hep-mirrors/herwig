@@ -237,7 +237,7 @@ template <>
 struct ClassTraits<Herwig::ForcedSplitting>
   : public ClassTraitsBase<Herwig::ForcedSplitting> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ForcedSplitting"; }
+  static string className() { return "Herwig::ForcedSplitting"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ForcedSplitting is implemented. It may also include several, space-separated,

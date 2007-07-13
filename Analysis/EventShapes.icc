@@ -82,17 +82,17 @@ inline double EventShapes::oblateness() {
   return _thrust[1]-_thrust[2];
 }
 
-inline Vector3 EventShapes::thrustAxis() {
+inline Axis EventShapes::thrustAxis() {
   checkThrust(); 
   return _thrustAxis[0];
 }
 
-inline Vector3 EventShapes::majorAxis() {
+inline Axis EventShapes::majorAxis() {
   checkThrust(); 
   return _thrustAxis[1];
 }
 
-inline Vector3 EventShapes::minorAxis() {
+inline Axis EventShapes::minorAxis() {
   checkThrust(); 
   return _thrustAxis[2];
 }
@@ -123,7 +123,7 @@ inline double EventShapes::planarity() {
   return _spher[1]-_spher[2]; 
 }
 
-inline Vector3 EventShapes::sphericityAxis() {
+inline Axis EventShapes::sphericityAxis() {
   checkSphericity(); 
   return _spherAxis[0]; 
 }
@@ -133,7 +133,7 @@ inline vector<double> EventShapes::sphericityEigenValues() {
   return _spher; 
 }
 
-inline vector<Vector3> EventShapes::sphericityEigenVectors() {
+inline vector<Axis> EventShapes::sphericityEigenVectors() {
   checkSphericity(); 
   return _spherAxis; 
 }
@@ -143,7 +143,7 @@ inline vector<double> EventShapes::linTenEigenValues() {
   return _linTen; 
 }
 
-inline vector<Vector3> EventShapes::linTenEigenVectors() {
+inline vector<Axis> EventShapes::linTenEigenVectors() {
   checkLinTen(); 
   return _linTenAxis; 
 }
@@ -224,10 +224,10 @@ inline void EventShapes::checkHemispheres() {
 
 inline void EventShapes::calcHemisphereMasses() {
   Lorentz5Momentum pos, neg;
-  Energy pden(0.),epos(0.),eneg(0.);
+  Energy pden(0.*MeV),epos(0.*MeV),eneg(0.*MeV);
   for(unsigned int ix=0;ix<_pv.size();++ix)
     {
-      if(_pv[ix]*thrustAxis()>0.)
+      if(_pv[ix].vect() * thrustAxis() > 0.*MeV)
 	{
 	  pos  += _pv[ix];
 	  epos += _pv[ix].perp(thrustAxis()); 
@@ -251,13 +251,13 @@ inline void EventShapes::calcHemisphereMasses() {
 }
 
 inline double EventShapes::getX(const Lorentz5Momentum & p, 
-			      const Energy & Ebeam) {
-  return(Ebeam > 0 ? p.vect().mag()/Ebeam : -1.); 
+				const Energy & Ebeam) {
+  return(Ebeam > 0*MeV ? double(p.vect().mag()/Ebeam) : -1.); 
 }
 
 inline double EventShapes::getXi(const Lorentz5Momentum & p, 
-			       const Energy & Ebeam) {
-  return((Ebeam > 0 && p.vect().mag() > 0) ? 
+				 const Energy & Ebeam) {
+  return((Ebeam > 0*MeV && p.vect().mag() > 0*MeV) ? 
 	 log(Ebeam/p.vect().mag()) : -1.); 
 }
 
@@ -265,7 +265,7 @@ inline Energy EventShapes::getPt(const Lorentz5Momentum & p) {
   return p.perp(); 
 }
 
-inline Energy EventShapes::getRapidity(const Lorentz5Momentum & p) {
+inline double EventShapes::getRapidity(const Lorentz5Momentum & p) {
   return (p.t() > p.z() ? p.rapidity() : 1e99); 
 }
 

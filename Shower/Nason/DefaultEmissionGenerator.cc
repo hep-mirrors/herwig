@@ -202,7 +202,7 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
     // connect the ShowerParticles with the branchings
     // and set the maximum pt for the radiation
     for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
-      particlesToShower[ix]->maximumpT(0.);
+      particlesToShower[ix]->maximumpT(0.*MeV);
       nasontree->connect(particlesToShower[ix]->progenitor(),hard[ix]);
     }
     *_thrust[0]+=0.;
@@ -217,16 +217,19 @@ NasonTreePtr DefaultEmissionGenerator::generateDecay(ShowerTreePtr tree) {
   Lorentz5Momentum p(emitter->momentum()),ppartner(spectator->momentum());
   Lorentz5Momentum q(p+ppartner);
   q.rescaleMass();
-  Hep3Vector boost=-q.boostVector();
+  Boost boost=-q.boostVector();
   ppartner.boost(boost);
-  Lorentz5Momentum n(0.,ppartner.vect());
+  Lorentz5Momentum n(0.*MeV,ppartner.vect());
   Lorentz5Momentum pt(happens.kinematics->pT()*cos(happens.kinematics->phi()),
-		      happens.kinematics->pT()*sin(happens.kinematics->phi()),0.,0.);
-  Hep3Vector axis(-n.vect().unit());
+		      happens.kinematics->pT()*sin(happens.kinematics->phi()),
+		      0.*MeV,
+		      0.*MeV);
+  Axis axis(-n.vect().unit());
   if(axis.perp2()>0.) {
     LorentzRotation rot;
     double sinth(sqrt(1.-sqr(axis.z())));
-    rot.setRotate(acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+    rot.setRotate(acos(axis.z()),
+		  Axis(-axis.y()/sinth,axis.x()/sinth,0.));
     pt.transform(rot);
   }
   double lam(2.*n.e()/q.mass());
@@ -440,20 +443,20 @@ bool DefaultEmissionGenerator::reconstructFinal(tShowerParticlePtr emitter,
   Lorentz5Momentum p[2]={emitter->momentum(),spectator->momentum()};
   Lorentz5Momentum singlet=p[0]+p[1];
   singlet.rescaleMass();
-  Hep3Vector boostv=singlet.findBoostToCM();
+  Boost boostv=singlet.findBoostToCM();
   singlet.boost(boostv);
   singlet.rescaleMass();
   p[0].boost(boostv);
   p[1].boost(boostv);
-  Lorentz5Momentum n[2]={Lorentz5Momentum(0,p[1].vect()),
-			 Lorentz5Momentum(0,p[0].vect())};
+  Lorentz5Momentum n[2]={Lorentz5Momentum(0*MeV,p[1].vect()),
+			 Lorentz5Momentum(0*MeV,p[0].vect())};
   Lorentz5Momentum pnew[2];
   for(unsigned ix=0;ix<2;++ix) {
     double alpha= ix==0 ? kinematics->z() : 1.-kinematics->z();
     Energy mass=getParticleData(ids[ix+1])->mass();
     double beta =(sqr(mass)+sqr(kinematics->pT())-sqr( alpha )*p[0].m2())
       / (2.*alpha*(p[0]*n[0]));
-    const Hep3Vector beta_bb = -(p[0]+n[0]).boostVector();
+    const Boost beta_bb = -(p[0]+n[0]).boostVector();
     Lorentz5Momentum p_bb = p[0];
     Lorentz5Momentum n_bb = n[0]; 
     p_bb.boost( beta_bb );
@@ -461,21 +464,22 @@ bool DefaultEmissionGenerator::reconstructFinal(tShowerParticlePtr emitter,
     // set first in b2b frame along z-axis (assuming that p and n are
     // b2b as checked above)
     double phi = kinematics->phi();
-    if(ix==1) phi+=pi;
+    if(ix==1) phi+=Constants::pi;
     Lorentz5Momentum dq(kinematics->pT()*cos(phi), 
 			kinematics->pT()*sin(phi), 
 			(alpha - beta)*p_bb.vect().mag(), 
 			alpha*p_bb.t() + beta*n_bb.t());
     // rotate to have z-axis parallel to p
-    Hep3Vector axis(p_bb.vect().unit());
+    Axis axis(p_bb.vect().unit());
     if(axis.perp2()>0.) {
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate(acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.setRotate(acos(axis.z()),
+		    Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       dq.transform(rot);
     }
     else if(axis.z()<0.) {
-      dq.setPz(-dq.pz());
+      dq.setZ(-dq.z());
     }
     // boost back 
     dq.boost( -beta_bb ); 
@@ -499,14 +503,14 @@ bool DefaultEmissionGenerator::reconstructFinal(tShowerParticlePtr emitter,
   lambda = p[0].vect().mag()/pafter[1].vect().mag();
   Lorentz5Momentum pn=-lambda*pafter[1];
   pn.rescaleEnergy();
-  Lorentz5Momentum nn(0.,-pn.vect());
+  Lorentz5Momentum nn(0.*MeV,-pn.vect());
   double beta = (poff3.m2()-pn.m2())/2/(pn*nn);
   Lorentz5Momentum poff4=pn+beta*nn;
   poff4.rescaleMass();
   R = solveBoost(poff4,poff3);
   pafter[0]=R*pafter[0];
   pafter[1]=R*pafter[2];
-  Energy2 ptsum(0.);
+  Energy2 ptsum(0.*MeV2);
   for(unsigned int ix=0;ix<2;++ix) {
     double alpha = pafter[ix]*nn/(pn*nn);
     double beta  = (pafter[ix]*pn-pn.m2())/(pn*nn);
@@ -525,12 +529,12 @@ solveBoost(const Lorentz5Momentum & newq,
   Energy ek = sqrt(sqr(k)+sqr(oldq.mass()));
   Energy eq = sqrt(sqr(q)+sqr(newq.mass())); 
   double betam = -(k*ek-q*eq)/(sqr(k)+sqr(q)+sqr(newq.mass()));
-  Vector3 beta = betam/k*oldq.vect();
-  Hep3Vector ax = newq.vect().cross( oldq.vect() ); 
+  Boost beta = betam/k*oldq.vect();
+  Vector3<Energy2> ax = newq.vect().cross( oldq.vect() ); 
   double delta = newq.vect().angle( oldq.vect() );
   LorentzRotation R;
-  if ( ax.mag2()/GeV2 > 1e-16 )
-    R.rotate( delta, ax ).boost( beta ); 
+  if ( ax.mag2()/GeV2/MeV2 > 1e-16 )
+    R.rotate( delta, ax.unit() ).boost( beta ); 
   else
     R.boost( beta ); 
   return R;

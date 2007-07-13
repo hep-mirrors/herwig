@@ -21,6 +21,9 @@ using namespace ThePEG;
  */
 class ShowerProgenitor : public Base {
 
+/**
+ *  Typedef for the BeamParticleData objects
+ */
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 public:
@@ -34,7 +37,7 @@ public:
    * @param emitted Whether or not the particle has radiated
    */
   inline ShowerProgenitor(PPtr original,PPtr copy, ShowerParticlePtr particle,
-			  Energy pT=0.,bool emitted=false);
+			  Energy pT=0.*MeV,bool emitted=false);
 
   /**
    *  Access to the particle
@@ -62,14 +65,14 @@ public:
   inline void copy(PPtr);
 
   /**
-   *  Whether the particle came from the hard process or was added by the matrix
-   *  element correction
+   *  Whether the particle came from the hard process or was added by
+   *  the matrix element correction
    */
   inline bool perturbative() const;
 
   /**
-   *  Whether the particle came from the hard process or was added by the matrix
-   *  element correction
+   *  Whether the particle came from the hard process or was added by
+   *  the matrix element correction
    */
   inline void perturbative(bool);
 
@@ -108,6 +111,16 @@ public:
    */
   //@{
   /**
+   *  Access the maximum hard \f$p_T\f$, given by the hard process
+   */
+  inline Energy maxHardPt() const;
+
+  /**
+   *  Set the maximum hard \f$p_T\f$, given by the hard process
+   */
+  inline void maxHardPt(Energy);
+
+  /**
    *  Has this particle radiated
    */
   inline bool hasEmitted() const;
@@ -141,8 +154,8 @@ private:
   PPtr _copy;
 
   /**
-   *  Whether the particle came from the hard process or was added by the matrix
-   *  element correction
+   *  Whether the particle came from the hard process or was added by
+   *  the matrix element correction
    */
   bool _perturbative;
 
@@ -160,6 +173,11 @@ private:
    *  Maximum allowed \f$p_T\f$ for emission from this particle
    */
   Energy _maxpT;
+
+  /**
+   *  maximum hard \f$p_T\f$ from the hard process
+   */
+  Energy _maxHardPt;
 
   /**
    *  Has there been radiation

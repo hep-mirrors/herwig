@@ -6,26 +6,26 @@
 //
 
 #include "Herwig++/MatrixElement/GeneralHardME.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ProductionMatrixElement.h"
 #include "MEvv2vv.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::VectorWaveFunction;
-using Herwig::Helicity::VVSVertexPtr;
-using Herwig::Helicity::VVVVertexPtr;
-using Herwig::Helicity::VVTVertexPtr;
-using Herwig::Helicity::VVVVVertexPtr;
-using Herwig::Helicity::ProductionMatrixElement;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::VVVVVertexPtr;
+
 
 /**
  * This is the implementation of the matrix element for 
- * $2\ra 2$ massless vector-boson pair to vector-boson pair. It inherits from
+ * \f$2\to 2\f$ massless vector-boson pair to vector-boson pair. It inherits from
  * GeneralHardME and implements the appropriate virtual member functions.
  *
  * @see \ref MEvv2vvInterfaces "The interfaces"
@@ -35,6 +35,9 @@ class MEvv2vv: public GeneralHardME {
 
 public:
 
+  /**
+   *  Typedef for VectorWaveFunction
+   */
   typedef vector<VectorWaveFunction> VBVector;
 
 public:
@@ -69,10 +72,10 @@ public:
   //@}
 
   /**
-   * Compute the matrix element for \f$V\,V\ra V\,V\f$
-   * @param vin VectorWaveFunctions for first incoming particle
+   * Compute the matrix element for \f$V\, V\to V\, V\f$
+   * @param vin1 VectorWaveFunctions for first incoming particle
    * @param vin2 VectorWaveFunctions for second incoming particle
-   * @param vout VectorWaveFunctions for first outgoing particle
+   * @param vout1 VectorWaveFunctions for first outgoing particle
    * @param vout2  VectorWaveFunctions for outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @return ProductionMatrixElement containing results of 
@@ -198,7 +201,7 @@ template <>
 struct ClassTraits<Herwig::MEvv2vv>
   : public ClassTraitsBase<Herwig::MEvv2vv> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEvv2vv"; }
+  static string className() { return "Herwig::MEvv2vv"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEvv2vv is implemented. It may also include several, space-separated,

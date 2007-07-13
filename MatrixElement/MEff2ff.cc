@@ -8,27 +8,26 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include <numeric>
 
 using namespace Herwig;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::HardVertex;
-using Herwig::Helicity::HardVertexPtr;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
+
+
 using ThePEG::Helicity::SpinfoPtr;
 
 double MEff2ff::me2() const {
-  // Three different cases to handle, Psi,Psibar->Psi,Psibar, Psi,Psi->PsiPsi &
-  // Psi,Psibar->lambda,lambda
-  tcPDPtr outa(mePartonData()[2]), outb(mePartonData()[3]);
+  tcPDPtr ina(mePartonData()[0]), inb(mePartonData()[1]),
+    outa(mePartonData()[2]), outb(mePartonData()[3]);
   bool majorana(false);
   if( (!outa->CC() && !outb->CC() ) || 
       ((abs(outa->id()) > 1000000 && abs(outa->id()) < 2000000) &&
@@ -38,11 +37,11 @@ double MEff2ff::me2() const {
   double full_me(0.);
   vector<SpinorWaveFunction> spA(2), spB(2);
   vector<SpinorBarWaveFunction> spbA(2), spbB(2);
-  if(mePartonData()[1]->id() < 0) {
+  if( ina->id() > 0 && inb->id() < 0) {
     for(unsigned int ih = 0; ih < 2; ++ih) {
-      spA[ih] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], ih, 
+      spA[ih] = SpinorWaveFunction(meMomenta()[0], ina, ih, 
 				   incoming);
-      spbA[ih] = SpinorBarWaveFunction(meMomenta()[1], mePartonData()[1], ih, 
+      spbA[ih] = SpinorBarWaveFunction(meMomenta()[1], inb, ih, 
 				       incoming);
       spB[ih] = SpinorWaveFunction(meMomenta()[3], outb, ih, outgoing);
       spbB[ih] = SpinorBarWaveFunction(meMomenta()[2], outa, ih, outgoing);
@@ -58,16 +57,17 @@ double MEff2ff::me2() const {
       SpinorWaveFunction spOut2(meMomenta()[2], outa, outgoing);
       SpinorBarWaveFunction spbarOut2(meMomenta()[3], outb, outgoing);
      }
-    else 
+    else {
       ffb2ffbHeME(spA, spbA, spbB, spB, full_me); 
+    }
   }
-  else {
+  else if( ina->id() > 0 && inb->id() > 0 ) {
     SpinorVector spA(2), spB(2);
     SpinorBarVector spbA(2), spbB(2);
     for(unsigned int ih = 0; ih < 2; ++ih) {
-      spA[ih] = SpinorWaveFunction(meMomenta()[0], mePartonData()[0], ih,
+      spA[ih] = SpinorWaveFunction(meMomenta()[0], ina, ih,
 				   incoming);
-      spB[ih] = SpinorWaveFunction(meMomenta()[1], mePartonData()[1], ih,
+      spB[ih] = SpinorWaveFunction(meMomenta()[1], inb, ih,
 				   incoming);
       spbA[ih] = SpinorBarWaveFunction(meMomenta()[2], outa, ih,
 				       outgoing);
@@ -76,6 +76,26 @@ double MEff2ff::me2() const {
     }
     ff2ffHeME(spA, spB, spbA, spbB, full_me);
   }
+  else if( ina->id() < 0 && inb->id() < 0 ) {
+    SpinorVector spA(2), spB(2);
+    SpinorBarVector spbA(2), spbB(2);
+    for(unsigned int ih = 0; ih < 2; ++ih) {
+      spbA[ih] = SpinorBarWaveFunction(meMomenta()[0], ina, ih,
+				       incoming);
+      spbB[ih] = SpinorBarWaveFunction(meMomenta()[1], inb, ih,
+				   incoming);
+      spA[ih] = SpinorWaveFunction(meMomenta()[2], outa, ih,
+				   outgoing);
+      spB[ih] = SpinorWaveFunction(meMomenta()[3], outb, ih,
+				   outgoing);
+    }
+    fbfb2fbfbHeME(spbA, spbB, spA, spB, full_me);
+  }
+  else 
+    throw MEException() 
+      << "MEff2ff::me2() - Cannot find correct function to deal with process " 
+      << ina->PDGName() << "," << inb->PDGName() << "->" << outa->PDGName() 
+      << "," << outb->PDGName() << "\n";
   return full_me;
 }
 
@@ -288,6 +308,109 @@ MEff2ff:: ff2ffHeME(SpinorVector & fin, SpinorVector & fin2,
   return prodME;
 }
 
+ProductionMatrixElement
+MEff2ff::fbfb2fbfbHeME(SpinorBarVector & fbin, SpinorBarVector & fbin2,
+		       SpinorVector & fout, SpinorVector & fout2,
+		       double & me2) const {
+  const HPCount ndiags = getProcessInfo().size();
+  const size_t ncf(numberOfFlows());
+  const vector<vector<double> > cfactors(getColourFactors());
+  const Energy2 q2(scale());
+  vector<Complex> diag(ndiags, Complex(0.)), flows(ncf, Complex(0.));
+  vector<double> me(ndiags, 0.);
+  ScalarWaveFunction interS; VectorWaveFunction interV;
+  TensorWaveFunction interT;
+  ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1Half, PDT::Spin1Half,
+				 PDT::Spin1Half);
+  for(unsigned int ifhel1 = 0; ifhel1 < 2; ++ifhel1) {
+    for(unsigned int ifhel2 = 0; ifhel2 < 2; ++ifhel2) {
+      for(unsigned int ofhel1 = 0; ofhel1 < 2; ++ofhel1) {
+	for(unsigned int ofhel2 = 0; ofhel2 < 2; ++ofhel2) {
+	  flows = vector<Complex>(ncf, Complex(0.));
+	  for(HPCount ix = 0; ix < ndiags; ++ix) {
+	    HPDiagram current = getProcessInfo()[ix];
+	    tcPDPtr offshell = current.intermediate;
+	    if(current.channelType == HPDiagram::tChannel) {
+	      if(offshell->iSpin() == PDT::Spin0) {
+		if(current.ordered.second) {
+		  interS = theScaV[ix].second->evaluate(q2, 3, offshell, 
+							fout2[ofhel2],
+							fbin2[ifhel2]);
+		  diag[ix] = theScaV[ix].first->evaluate(q2, fout[ofhel1],
+							 fbin[ifhel1], interS);
+		}
+		else {
+		  interS = theScaV[ix].second->evaluate(q2, 3, offshell, 
+							fout[ofhel1],
+							fbin2[ifhel2]);
+		  diag[ix] = -theScaV[ix].first->evaluate(q2, fout2[ofhel2],
+							 fbin[ifhel1], interS);
+		}
+	      }
+	      else if(offshell->iSpin() == PDT::Spin1) {
+		if(current.ordered.second) {
+		  interV = theVecV[ix].second->evaluate(q2, 3, offshell, 
+							fout2[ofhel2],
+							fbin2[ifhel2]);
+		  diag[ix] = theVecV[ix].first->evaluate(q2, fout[ofhel1],
+							 fbin[ifhel1], interV);
+		}
+		else {
+		  interV = theVecV[ix].second->evaluate(q2, 3, offshell, 
+							fout[ofhel1],
+							fbin2[ifhel2]);
+		  diag[ix] = -theVecV[ix].first->evaluate(q2, fout2[ofhel2],
+							 fbin[ifhel1], interV);
+		}
+	      }
+	      else if(offshell->iSpin() == PDT::Spin2) {
+		if(current.ordered.second) {
+		  interT = theTenV[ix].second->evaluate(q2, 3, offshell, 
+							fout2[ofhel2],
+							fbin2[ifhel2]);
+		  diag[ix] = theTenV[ix].first->evaluate(q2, fout[ofhel1],
+							 fbin[ifhel1], interT);
+		}
+		else {
+		  interT = theTenV[ix].second->evaluate(q2, 3, offshell, 
+							fout[ofhel1],
+							fbin2[ifhel2]);
+		  diag[ix] = -theTenV[ix].first->evaluate(q2, fout2[ofhel2],
+							 fbin[ifhel1], interT);
+		}
+	      }
+	    }
+	    me[ix] += norm(diag[ix]);
+	    //Compute flows
+	    for(size_t iy = 0; iy < current.colourFlow.size(); ++iy)
+	      flows[current.colourFlow[iy].first - 1] += 
+		current.colourFlow[iy].second * diag[ix];
+ 	    
+	  }//diagram loop
+	  //Now add flows to me2 with appropriate colour factors
+	  for(size_t ii = 0; ii < ncf; ++ii)
+	    for(size_t ij = 0; ij < ncf; ++ij)
+	      me2 += cfactors[ii][ij]*(flows[ii]*conj(flows[ij])).real();
+
+	  prodME(ifhel1, ifhel2, ofhel1, ofhel2) = 
+	    std::accumulate(flows.begin(), flows.end(), Complex(0., 0.));
+
+	}
+      }
+    }
+  }
+  const double identfact = mePartonData()[2]->id() == mePartonData()[3]->id() 
+    ? 0.5 : 1.;
+  const double colfact = (mePartonData()[0]->iColour() == PDT::Colour3bar) 
+    ? 1./9. : 1;
+  DVector save(ndiags);
+  for(DVector::size_type ix = 0; ix < ndiags; ++ix)
+    save[ix] = 0.25*identfact*colfact*me[ix];
+  meInfo(save);
+  me2 *= 0.25*identfact*colfact;
+  return prodME;
+}
+
 ProductionMatrixElement 
 MEff2ff::ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin, 
 		      SpinorBarVector & fbout, SpinorVector & fout,
@@ -393,8 +516,8 @@ MEff2ff::ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin,
 	    }
 	    else {
 	      throw MEException() << "Incorrect diagram type in matrix element "
-				  << fullName()
-				  << Exception::warning;
+ 				  << fullName()
+ 				  << Exception::warning;
 	      diag[ix] = 0.;
 	    }
 	    me[ix] += norm(diag[ix]);
@@ -416,6 +539,14 @@ MEff2ff::ffb2mfmfHeME(SpinorVector & fin, SpinorBarVector & fbin,
       }
     }
   }	  
+  const double identfact = mePartonData()[2]->id() == mePartonData()[3]->id()  
+    ? 0.5 : 1.; 
+  const double colfact = mePartonData()[0]->coloured() ? 1./9. : 1; 
+  DVector save(ndiags); 
+  for(DVector::size_type ix = 0; ix < ndiags; ++ix) 
+    save[ix] = 0.25*identfact*colfact*me[ix]; 
+  meInfo(save); 
+  me2 *= 0.25*identfact*colfact; 
   return prodME;
 }
 
@@ -513,30 +644,35 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
   hardpro[1] = subp->incoming().second;
   hardpro[2] = subp->outgoing()[0]; 
   hardpro[3] = subp->outgoing()[1];
-  //particle ordering
-  if(hardpro[0] < 0 && (hardpro[0]->id() != hardpro[1]->id())) 
+
+//particle ordering. If q qb initial q = 0, qb = 1
+  if( hardpro[0]->id() < hardpro[1]->id() )
     swap(hardpro[0], hardpro[1]);
-  if(hardpro[2]->id() < 0 && (hardpro[2]->id() != hardpro[3]->id())) 
+
+  if( hardpro[2]->id() < hardpro[3]->id() )
     swap(hardpro[2], hardpro[3]);
+
   //pick which process we are doing
-  //qqbar initial state
-  if( hardpro[1]->id() < 0 && (hardpro[0]->id() != hardpro[1]->id()) ) {
-    SpinorVector spA, spB;
-    SpinorBarVector spbA, spbB;
+  if( hardpro[0]->id() > 0) {
+    //common spinors
+    SpinorVector spA;
+    SpinorBarVector spbB;
     SpinorWaveFunction(spA, hardpro[0], incoming, false, true);
-    SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
     SpinorBarWaveFunction(spbB, hardpro[2], outgoing,true, true);
-    SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
     //majorana
     if(!hardpro[2]->dataPtr()->CC() || hardpro[2]->id() == 1000024 || 
        hardpro[2]->id() == 1000037) {
-      SpinorVector spC;
-      SpinorBarVector spbC;
+      SpinorVector spB, spC;
+      SpinorBarVector spbA, spbC;
+      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
+      SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
       for(unsigned int ix=0;ix<2;++ix) {
-	spC.push_back(SpinorWaveFunction(-spbB[ix].getMomentum(),spbB[ix].getParticle(),
+	spC.push_back(SpinorWaveFunction(-spbB[ix].getMomentum(),
+					 spbB[ix].getParticle(),
 					 spbB[ix].wave().bar().conjugate(),
 					 spbB[ix].direction()));
-	spbC.push_back(SpinorBarWaveFunction(-spB[ix].getMomentum(),spB[ix].getParticle(),
+	spbC.push_back(SpinorBarWaveFunction(-spB[ix].getMomentum(),
+					     spB[ix].getParticle(),
 					     spB[ix].wave().bar().conjugate(),
 					     spB[ix].direction()));
       }
@@ -551,7 +687,11 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
       }
     }
     //ffbar->ffbar
-    else {
+    else if( hardpro[1]->id() < 0 ) {
+      SpinorVector spB;
+      SpinorBarVector spbA;
+      SpinorBarWaveFunction(spbA, hardpro[1], incoming, false, true);
+      SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
       double dummy;
       ProductionMatrixElement prodME = ffb2ffbHeME(spA, spbA, spbB, spB,
 						   dummy);
@@ -561,24 +701,40 @@ void MEff2ff::constructVertex(tSubProPtr subp) {
 	dynamic_ptr_cast<SpinfoPtr>(hardpro[i]->spinInfo())->
 	  setProductionVertex(hardvertex);
     }
-  }   
+    //ff2ff
+    else {
+      SpinorVector spB;
+      SpinorBarVector spbA;
+      SpinorWaveFunction(spB,hardpro[1],incoming, false, true);
+      SpinorBarWaveFunction(spbA, hardpro[3], outgoing, true, true);
+
+      double dummy;
+      ProductionMatrixElement prodME = ff2ffHeME(spA, spB, spbB, spbA,
+						 dummy);
+      HardVertexPtr hardvertex = new_ptr(HardVertex());
+      hardvertex->ME(prodME);
+      for(ParticleVector::size_type i = 0; i < 4; ++i)
+	dynamic_ptr_cast<SpinfoPtr>(hardpro[i]->spinInfo())->
+	  setProductionVertex(hardvertex);
+    }
+  } 
+  //fbarfbar->fbarfbar
   else {
     SpinorVector spA, spB;
     SpinorBarVector spbA, spbB;
-    SpinorWaveFunction(spA,hardpro[0],incoming, false, true);
-    SpinorWaveFunction(spB,hardpro[1],incoming, false, true);
-    SpinorBarWaveFunction(spbA, hardpro[2], outgoing, true, true);
-    SpinorBarWaveFunction(spbB, hardpro[3], outgoing, true, true);
+    SpinorBarWaveFunction(spbA,hardpro[0],incoming, false, true);
+    SpinorBarWaveFunction(spbB,hardpro[1],incoming, false, true);
+    SpinorWaveFunction(spA, hardpro[2], outgoing, true, true);
+    SpinorWaveFunction(spB, hardpro[3], outgoing, true, true);
     double dummy;
-    ProductionMatrixElement prodME = ff2ffHeME(spA, spB, spbA, spbB,
-					       dummy);
+    ProductionMatrixElement prodME = fbfb2fbfbHeME(spbA, spbB, spA, spB,
+						   dummy);
     HardVertexPtr hardvertex = new_ptr(HardVertex());
     hardvertex->ME(prodME);
     for(ParticleVector::size_type i = 0; i < 4; ++i)
       dynamic_ptr_cast<SpinfoPtr>(hardpro[i]->spinInfo())->
 	setProductionVertex(hardvertex);
   }
-
 }
 
 void MEff2ff::persistentOutput(PersistentOStream & os) const {

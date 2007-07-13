@@ -33,12 +33,12 @@ FortranSudakov::FortranSudakov() : _sudord(1), _inter(3),
 {}
 
 void FortranSudakov::persistentOutput(PersistentOStream & os) const {
-  os << _sudord << _inter << _vqcut << _vgcut << _vpcut << _nqev 
+  os << _sudord << _inter << ounit(_vqcut,GeV) << ounit(_vgcut,GeV) << ounit(_vpcut,GeV) << _nqev 
      << _sudakovQ << _sudakovP << _linearQ << _linearP << _fortranQCD;
 }
 
 void FortranSudakov::persistentInput(PersistentIStream & is, int) {
-  is >> _sudord >> _inter >> _vqcut >> _vgcut >> _vpcut >> _nqev 
+  is >> _sudord >> _inter >> iunit(_vqcut,GeV) >> iunit(_vgcut,GeV) >> iunit(_vpcut,GeV) >> _nqev 
      >> _sudakovQ >> _sudakovP >> _linearQ >> _linearP >> _fortranQCD;
 }
 
@@ -172,13 +172,13 @@ void FortranSudakov::doinit() throw(InitException) {
     while (qnow<1.1*qlim);
     //cerr << "join red\n";
     // now construct the interpolators
-    InterpolatorPtr newint=new_ptr(Interpolator(sud,qev,_inter));
+    Interpolator<double,double>::Ptr newint = make_InterpolatorPtr(sud,qev,_inter);
     _sudakovQ.push_back(newint);
-    newint=new_ptr(Interpolator(qev,sud,_inter));
+    newint = make_InterpolatorPtr(qev,sud,_inter);
     _sudakovP.push_back(newint);
-    newint=new_ptr(Interpolator(sud,qev,1));
+    newint = make_InterpolatorPtr(sud,qev,1);
     _linearQ.push_back(newint);
-    newint=new_ptr(Interpolator(qev,sud,1));
+    newint = make_InterpolatorPtr(qev,sud,1);
     _linearP.push_back(newint);
   }
 }
@@ -192,14 +192,14 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   // get the minimum scale
   Energy qmin=cutOff(ids[1])+cutOff(ids[2]);
   cerr << "testing ids " << ids[1] << " " << ids[2] << "\n";
-  cerr << "testing ids " << cutOff(ids[1]) << " " << cutOff(ids[2]) << "\n";
-  cerr << "testing scales " << startingScale << " " << qmin << "\n";
+  cerr << "testing ids " << cutOff(ids[1])/MeV << " " << cutOff(ids[2])/MeV << "\n";
+  cerr << "testing scales " << startingScale/MeV << " " << qmin/MeV << "\n";
   // return if no allowed branching
   if(qmin>startingScale) return ShoKinPtr();
   // find which sudakov table to use
   unsigned int iloc=findSudakov(ids,cc);
   cerr << "testing sudakov" << iloc << "\n";
-  cerr << "testing starting scale " << startingScale << " " << qmin << "\n"; 
+  cerr << "testing starting scale " << startingScale/MeV << " " << qmin/MeV << "\n"; 
   Energy qnow=-1.*GeV;
   for(unsigned int irej=0;irej<nrej;++irej) {
     double rn=UseRandom::rnd();
@@ -226,7 +226,7 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   }
   cerr << "testing selected" << qnow/GeV << "\n";
   // if no branching selected return
-  if(qnow<0.) return ShoKinPtr();
+  if(qnow<0.*MeV) return ShoKinPtr();
   // limits on z
   double zmin=cutOff(ids[1])/qnow;
   double zmax=1.-cutOff(ids[2])/qnow;
@@ -236,7 +236,7 @@ ShoKinPtr FortranSudakov::generateNextTimeBranching(const Energy startingScale,
   do {
     z=splittingFn()->invIntegOverP(fmin+UseRandom::rnd()*(fmax-fmin));
   }
-  while(splittingFn()->ratioP(z,qnow,ids,false)<=UseRandom::rnd());
+  while(splittingFn()->ratioP(z,sqr(qnow),ids,false)<=UseRandom::rnd());
   cerr << "testing selected " << z << endl;
   // create the ShowerKinematics object
   FortranShowerKinematicsPtr showerKin = new_ptr(FortranShowerKinematics());
@@ -285,7 +285,7 @@ FortranSudakovIntegrand::FortranSudakovIntegrand(Energy qcdlam,
     _bet.push_back((11.*3.-2.*nf)/(12.*pi));
     _bep.push_back((17*9.-(5*3.+4.)*nf)/(24.*sqr(pi))/_bet.back());
     if(nf==3) {
-      _mumi.push_back(0.);
+      _mumi.push_back(0.*MeV);
       _almi.push_back(1e30);
     }
     else {
@@ -342,8 +342,8 @@ double FortranSudakovIntegrand::operator() (double zlog) const {
     }
   }
   // compute the splitting function piece
-  if(_zord) output*=z*_split->P(   z,0.,_ids,false);
-  else      output*=z*_split->P(1.-z,0.,_ids,false);
+  if(_zord) output*=z*_split->P(   z,0.*MeV2,_ids,false);
+  else      output*=z*_split->P(1.-z,0.*MeV2,_ids,false);
   return output/2./pi;
 }
 

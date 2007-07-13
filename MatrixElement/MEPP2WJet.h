@@ -6,17 +6,17 @@
 //
 
 #include "ThePEG/MatrixElement/MEBase.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
 #include "MEPP2WJet.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The MEPP2WJet class implements the matrix element for the production of
@@ -331,7 +331,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2WJet>
   : public ClassTraitsBase<Herwig::MEPP2WJet> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2WJet"; }
+  static string className() { return "Herwig::MEPP2WJet"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2WJet is implemented. It may also include several, space-separated,

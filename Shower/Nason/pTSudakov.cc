@@ -46,12 +46,13 @@ ShoKinPtr pTSudakov::generateNextTimeBranching(const Energy startingScale,
   do {
     if(!guessTimeLike(t,tmin)) break;
   }
-  while(_pt2<0.||_q2>_q2max||SplittingFnVeto(t/(z()*(1.-z())),ids,true) || 
+  while(_pt2<0.*MeV2
+	||_q2>_q2max||SplittingFnVeto(t/(z()*(1.-z())),ids,true) || 
 	alphaSVeto(t));
-  if(t > 0) _q = sqrt(t);
-  else _q = -1.;
-  phi(2.*pi*UseRandom::rnd());
-  if(_q<0) return ShoKinPtr();
+  if(t > 0*MeV2) _q = sqrt(t);
+  else _q = -1.*MeV;
+  phi(Constants::twopi*UseRandom::rnd());
+  if(_q<0*MeV) return ShoKinPtr();
   // construct the ShowerKinematics object
   FS_QtildaShowerKinematics1to2Ptr showerKin = 
     new_ptr(FS_QtildaShowerKinematics1to2());
@@ -87,7 +88,7 @@ void pTSudakov::initialize(const IdList & ids, Energy2 & tmin,Energy2 tmax,
   _ids=ids;
   _masses.clear();
   _masssquared.clear();
-  tmin=0.;
+  tmin=0.*MeV2;
   unsigned int ix;
   for(ix=0;ix<_ids.size();++ix) {
     tcPDPtr part=getParticleData(_ids[ix]);
@@ -108,7 +109,7 @@ void pTSudakov::initialize(const IdList & ids, Energy2 & tmin,Energy2 tmax,
  				      -sqr(mdiff)/_q2max
  				      +mdiff*lambda);
   //cerr << "testing " << sqrt(tmin) << "\n";
-  tmin=0.2*GeV;
+  tmin=0.2*GeV*MeV;
 }
 
 bool pTSudakov::guessTimeLike(Energy2 &t,Energy2 tmin) {
@@ -126,7 +127,7 @@ bool pTSudakov::guessTimeLike(Energy2 &t,Energy2 tmin) {
   _pt2 = t -_masssquared[1]*(1.-z())-_masssquared[2]*z();
   _q2  = _pt2/(z()*(1.-z()))+_masssquared[1]/z()+_masssquared[2]/(1.-z());
   if(t<tmin) {
-    t=-1.0*GeV;
+    t=-1.0*MeV2;
     return false;
   }
   else

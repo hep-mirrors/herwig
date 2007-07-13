@@ -9,15 +9,15 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 VVVDecayer::~VVVDecayer() {}
 
@@ -61,14 +61,14 @@ double VVVDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()) {
     output /= 2.;
   }
   return output;
 }
 
-double VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
+Energy VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
                                 const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theVVVPtr->setCoupling(scale,inpart,outa,outb);
@@ -80,9 +80,9 @@ double VVVDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
     mu1sq*mu1sq*(27. + 64.*mu2sq + 18.*mu2sq*mu2sq) + 
     mu1sq*(7. - 32.*mu2sq - 2.*mu2sq*mu2sq + 10.*pow(mu2sq,3));
   me2 *= norm.real()/3./(4.*mu1sq*mu2sq);
-  double pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double pWidth = me2*pcm/8./Constants::pi;
+  Energy pWidth = me2*pcm/8./Constants::pi;
   if(outa->id() == outb->id()) {
     pWidth /= 2.;
   }

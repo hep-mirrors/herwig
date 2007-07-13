@@ -1,8 +1,4 @@
-pkglib_LTLIBRARIES =
-
-if WANT_NEWDECAYERS
-pkglib_LTLIBRARIES += HwVMDecay.la
-endif
+pkglib_LTLIBRARIES = HwVMDecay.la
 
 HwVMDecay_la_SOURCES = \
 a1ThreePionCLEODecayer.cc a1ThreePionCLEODecayer.h a1ThreePionCLEODecayer.icc \
@@ -22,5 +18,7 @@ VectorMesonVectorPScalarDecayer.h VectorMesonVectorPScalarDecayer.icc \
 VectorMesonVectorScalarDecayer.cc VectorMesonVectorScalarDecayer.fh \
 VectorMesonVectorScalarDecayer.h VectorMesonVectorScalarDecayer.icc \
 VectorMesonVectorVectorDecayer.cc VectorMesonVectorVectorDecayer.fh \
-VectorMesonVectorVectorDecayer.h VectorMesonVectorVectorDecayer.icc
+VectorMesonVectorVectorDecayer.h VectorMesonVectorVectorDecayer.icc \
+OniumToOniumPiPiDecayer.cc OniumToOniumPiPiDecayer.fh \
+OniumToOniumPiPiDecayer.h OniumToOniumPiPiDecayer.icc
 HwVMDecay_la_LDFLAGS = -module -version-info 2:0:0

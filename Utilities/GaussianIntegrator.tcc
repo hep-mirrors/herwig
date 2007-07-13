@@ -8,14 +8,22 @@ namespace Herwig {
 using namespace ThePEG;
 
 template <class T>
-inline double GaussianIntegrator::value(const T & function, const double lower, 
-					const double upper) const {
+inline typename BinaryOpTraits<typename T::ValType,
+			       typename T::ArgType>::MulT
+GaussianIntegrator::value(const T & function, 
+			  const typename T::ArgType lower, 
+			  const typename T::ArgType upper) const {
+  typedef typename T::ValType ValType;
+  typedef typename T::ArgType ArgType;
+  const ValType ValUnit = TypeTraits<ValType>::baseunit;
+  const ArgType ArgUnit = TypeTraits<ArgType>::baseunit;
+
   // vector for the limits of the bin
   vector<double> lowerlim,upperlim;
   // start with the whole interval as 1 bin
-  lowerlim.push_back(lower);upperlim.push_back(upper);
+  lowerlim.push_back(lower/ArgUnit);upperlim.push_back(upper/ArgUnit);
   // set the minimum bin width
-  double xmin=_binwidth*abs(upper-lower);
+  double xmin=_binwidth*abs(upper-lower)/ArgUnit;
   // counters for the number of function evals
   int neval=0;
   // and number of bad intervals
@@ -35,8 +43,10 @@ inline double GaussianIntegrator::value(const T & function, const double lower,
     iorder=0;
     // compute a trail value using sixth order GQ
     for(ix=0;ix<_weights[0].size();++ix) {
-      value+=_weights[0][ix]*(+function(mid+wid*_abscissae[0][ix])
-			      +function(mid-wid*_abscissae[0][ix]));
+      value+=_weights[0][ix]
+	*( function((mid+wid*_abscissae[0][ix])*ArgUnit)
+	  +function((mid-wid*_abscissae[0][ix])*ArgUnit)
+	   )/ValUnit;
       ++neval;
       if(neval>_maxeval) 
 	CurrentGenerator::log() << "Error in Gaussian Integrator: Setting to zero" 
@@ -51,8 +61,9 @@ inline double GaussianIntegrator::value(const T & function, const double lower,
       value=0.;
       for(ix=0;ix<_weights[iorder].size();++ix) {
 	value+=_weights[iorder][ix]*
-	  (+function(mid+wid*_abscissae[iorder][ix])
-	   +function(mid-wid*_abscissae[iorder][ix]));
+	  ( function((mid+wid*_abscissae[iorder][ix])*ArgUnit)
+	   +function((mid-wid*_abscissae[iorder][ix])*ArgUnit)
+	    )/ValUnit;
 	++neval;
 	if(neval>_maxeval)
 	   CurrentGenerator::log() << "Error in Gaussian Integrator: Setting to zero" 
@@ -90,7 +101,7 @@ inline double GaussianIntegrator::value(const T & function, const double lower,
     CurrentGenerator::log() << "Error in GaussianIntegrator: Bad Convergence for " 
 			    << nbad << "intervals" << endl;
   // return the answer
-  return output;
+  return output * ValUnit * ArgUnit;
 }
 
 }

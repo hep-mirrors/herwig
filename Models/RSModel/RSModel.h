@@ -4,16 +4,16 @@
 // This is the declaration of the RSModel class.
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVVTVertex.h"
 #include "RSModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *
@@ -164,8 +164,8 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
-  
+/** @cond TRAITSPECIALIZATIONS */
+
 /**
  * The following template specialization informs ThePEG about the
  * base class of RSModel.
@@ -175,7 +175,7 @@ struct BaseClassTrait<Herwig::RSModel,1> {
   /** Typedef of the base class of RSModel. */
   typedef Herwig::StandardModel NthBase;
 };
-  
+
 /**
  * The following template specialization informs ThePEG about the
  * name of this class and the shared object where it is defined.
@@ -184,7 +184,7 @@ template <>
 struct ClassTraits<Herwig::RSModel>
   : public ClassTraitsBase<Herwig::RSModel> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::RSModel"; }
+  static string className() { return "Herwig::RSModel"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -194,7 +194,7 @@ struct ClassTraits<Herwig::RSModel>
   
 };
 
-/// \endif
+/** @endcond */
   
 }
 

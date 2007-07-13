@@ -28,11 +28,11 @@ void HwppSelector::doinit() throw(InitException) {
 }
 
 void HwppSelector::persistentOutput(PersistentOStream & os) const {
-  os << _mode << _baryonmass;
+  os << _mode << ounit(_baryonmass,GeV);
 }
 
 void HwppSelector::persistentInput(PersistentIStream & is, int) {
-  is >> _mode >> _baryonmass;
+  is >> _mode >> iunit(_baryonmass,GeV);
 }
 
 ClassDescription<HwppSelector> HwppSelector::initHwppSelector;
@@ -84,7 +84,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,
   }
   // weights for the different possibilities
   vector<Kupco> hadrons;
-  Energy weight,wgtsum(0.);
+  Energy weight,wgtsum(0.0*MeV);
   // loop over all hadron pairs with the allowed flavours
   for(unsigned int ix=0;ix<partons().size();++ix) {
     if(!quark  &&  QuarkMatcher::Check(partons()[ix])) continue;
@@ -107,7 +107,7 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,
  	// break if cluster too light
  	if(cluMass < H1->mass + H2->mass) break;
  	// calculate the weight
- 	weight = pwt()[partons()[ix]]*H1->overallWeight*H2->overallWeight*
+ 	weight = pwt()[partons()[ix]] * H1->overallWeight * H2->overallWeight *
  	  Kinematics::pstarTwoBodyDecay(cluMass, H1->mass, H2->mass );
 	int signQ = 0;
 	long idQ = partons()[ix];
@@ -133,8 +133,8 @@ pair<tcPDPtr,tcPDPtr> HwppSelector::chooseHadronPair(const Energy cluMass,
     wgtsum-=hadrons[ix].weight;
     ++ix;
   }
-  while(wgtsum>0&&ix<hadrons.size());
-  if(ix==hadrons.size()&&wgtsum>0) return make_pair(tcPDPtr(),tcPDPtr());
+  while(wgtsum>0*MeV && ix<hadrons.size());
+  if(ix==hadrons.size()&&wgtsum>0*MeV) return make_pair(tcPDPtr(),tcPDPtr());
   --ix;
   int signHad1 = signHadron(id1,-hadrons[ix].idQ, hadrons[ix].hadron1);
   int signHad2 = signHadron(id2, hadrons[ix].idQ, hadrons[ix].hadron2);

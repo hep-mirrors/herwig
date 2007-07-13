@@ -161,7 +161,7 @@ template <>
  struct ClassTraits<Herwig::BaryonWidthGenerator>
   : public ClassTraitsBase<Herwig::BaryonWidthGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BaryonWidthGenerator"; }
+  static string className() { return "Herwig::BaryonWidthGenerator"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BaryonWidthGenerator class and every other class it uses
    *  (except the base class). */

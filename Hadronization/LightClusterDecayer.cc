@@ -42,7 +42,7 @@ void LightClusterDecayer::Init() {
 			     &Herwig::LightClusterDecayer::_hadronSelector,
 			     false, false, true, false);
   
-  static Parameter<LightClusterDecayer,Energy>
+  static Parameter<LightClusterDecayer,double>
     interfaceB1Lim ("B1Lim","one-hadron decay of b-cluster over threshold",
                     &LightClusterDecayer::_B1Lim, 0, 0.0, 0.0, 100.0,false,false,false);
 
@@ -164,7 +164,7 @@ bool LightClusterDecayer::decay(const StepPtr &pstep) {
     for ( ClusterVector::iterator jt = clusters.begin();
 	  jt != clusters.end(); ++jt ) {
       if ((*jt)->isAvailable() && (*jt)->isReadyToDecay() && jt != it) {
-	Length distance = fabs (((*it)->vertex() - (*jt)->vertex()).mag());
+	Length distance = abs (((*it)->vertex() - (*jt)->vertex()).mag());
 	candidates.insert(pair<Length,tClusterPtr>(distance,*jt)); 
       }
     }
@@ -380,8 +380,8 @@ bool LightClusterDecayer::partonicReshuffle(const tcPDPtr had,const PPtr cluster
   pstep->addDecayProduct(cluster, ptrhad);
   // reshuffle the leptons
   // boost the leptons to the rest frame of the system
-  Hep3Vector boost1(-pleptons.boostVector());
-  Hep3Vector boost2( pclu2.boostVector());
+  Boost boost1(-pleptons.boostVector());
+  Boost boost2( pclu2.boostVector());
   for(unsigned int ix=0;ix<nlep;++ix) {
     leptons[ix]->deepBoost(boost1);
     leptons[ix]->deepBoost(boost2);

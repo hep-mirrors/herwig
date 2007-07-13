@@ -17,15 +17,15 @@
 #include "ThePEG/PDT/DecayMode.h"
 
 using namespace Herwig;
-using Herwig::Helicity::VertexBasePtr;
+using ThePEG::Helicity::VertexBasePtr;
 
 void WeakCurrentDecayConstructor::persistentOutput(PersistentOStream & os) const {
-  os << _theExistingDecayers << _init << _iteration << _points << _masscut
+  os << _theExistingDecayers << _init << _iteration << _points << ounit(_masscut,GeV)
      << _part1 << _part2 << _part3 << _part4 << _part5 << _norm << _current;
 }
 
 void WeakCurrentDecayConstructor::persistentInput(PersistentIStream & is, int) {
-  is >>_theExistingDecayers >> _init >> _iteration >> _points >> _masscut
+  is >>_theExistingDecayers >> _init >> _iteration >> _points >> iunit(_masscut,GeV)
      >> _part1 >> _part2 >> _part3 >> _part4 >> _part5 >> _norm >> _current;
 }
 
@@ -189,8 +189,8 @@ vector<PDPtr> WeakCurrentDecayConstructor::createModes(const PDPtr inpart,
 	  if(cc2) *(iter+1) = (*(iter+1))->CC();
 	}
       }
-      if(id2==ParticleID::Wplus&&(m1-m3>=0.&&m1-m3<=_masscut))      iter+=3;
-      else if(id3==ParticleID::Wplus&&(m1-m2>=0.&&m1-m2<=_masscut)) iter+=3;
+      if(id2==ParticleID::Wplus&&(m1-m3>=0.*MeV && m1-m3<=_masscut))      iter+=3;
+      else if(id3==ParticleID::Wplus&&(m1-m2>=0.*MeV && m1-m2<=_masscut)) iter+=3;
       else decaylist.erase(iter,iter+3);
     }
     if(decaylist.size() > 0) createDecayer(vert,ilist,iv);
@@ -237,7 +237,7 @@ void WeakCurrentDecayConstructor::createDecayer(const VertexBasePtr vert,
     ostringstream fullname;
     fullname << "/Defaults/Decays/" << name << "_" 
  	     << ivert << "_" << icol;
-    string classname = "Herwig++::" + name;
+    string classname = "Herwig::" + name;
     ostringstream cut;
     cut << _masscut/GeV;
     for(unsigned int ix=0;ix<_part1.size();++ix) {
@@ -290,8 +290,8 @@ createDecayMode(PDPtr inpart, const PDVector & decays,
       << Exception::runerror;
   }
   // the partial widths
-  Energy totalWidth(0.);
-  vector<vector<double> > pWidths(decays.size()/3);
+  Energy totalWidth(0.*MeV);
+  vector<vector<Energy> > pWidths(decays.size()/3);
   vector<vector<string> > tags(decays.size()/3);
   vector<vector<WeakDecayCurrentPtr> > currents(decays.size()/3);
   PDVector particles(3);
@@ -343,7 +343,7 @@ createDecayMode(PDPtr inpart, const PDVector & decays,
   }
   for(unsigned int ix=0;ix<tags.size();++ix) {
     for(unsigned int iy=0;iy<tags[ix].size();++iy) {
-      Energy tbr = pWidths[ix][iy]/totalWidth;
+      double tbr = pWidths[ix][iy]/totalWidth;
       tDMPtr thedm= generator()->findDecayMode(tags[ix][iy]);
       if( !thedm ) {
 	tDMPtr ndm = generator()->preinitCreateDecayMode(tags[ix][iy]);

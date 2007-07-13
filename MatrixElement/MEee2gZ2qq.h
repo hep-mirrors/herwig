@@ -10,9 +10,9 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Utilities/Rebinder.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "MEee2gZ2qq.fh"
 
 namespace Herwig {
@@ -32,15 +32,10 @@ class MEee2gZ2qq: public ME2to2Base {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MEee2gZ2qq();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -266,7 +261,7 @@ template <>
 struct ClassTraits<Herwig::MEee2gZ2qq>
   : public ClassTraitsBase<Herwig::MEee2gZ2qq> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEee2gZ2qq"; }
+  static string className() { return "Herwig::MEee2gZ2qq"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEee2gZ2qq class and any other class on which it depends
    *  (except the base class). */
@@ -278,8 +273,5 @@ struct ClassTraits<Herwig::MEee2gZ2qq>
 }
 
 #include "MEee2gZ2qq.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEee2gZ2qq.tcc"
-#endif
 
 #endif /* HERWIG_MEee2gZ2qq_H */

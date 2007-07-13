@@ -16,7 +16,8 @@ inline IBPtr SingleParticleAnalysis::fullclone() const {
 
 inline void SingleParticleAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("singleparticle.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   // normalize the data
   _yT->normaliseToData();
   _yS->normaliseToData();

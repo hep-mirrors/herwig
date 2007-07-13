@@ -46,7 +46,7 @@ inline trunPtr StandardModel::massPtr() const {
   return _theRunningMass;}
 
 // Return the running mass for a given scale and particle type 
-inline double StandardModel::mass(Energy2 scale,tcPDPtr part) const
+inline Energy StandardModel::mass(Energy2 scale,tcPDPtr part) const
 {return _theRunningMass->value(scale,part);}
 
 // Total number of vertices

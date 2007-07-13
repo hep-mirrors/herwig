@@ -53,29 +53,6 @@ public:
    */
   TwoMesonRhoKStarCurrent();
 
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
-
-public:
-
   /** @name Methods for the construction of the phase space integrator. */
   //@{ 
   /**
@@ -118,7 +95,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale,  
 						     const ParticleVector & decay) const;
 
@@ -143,6 +120,29 @@ public:
    * @param create Whether or not to add a statement creating the object
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
+
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
 
 protected:
 
@@ -214,7 +214,7 @@ private:
    * @param ires Which of the \f$\rho\f$ or \f$K^*\f$ resonances to use
    * @return The value of \f$\frac{dh}{dq^2}\f$ at \f$q^2=m^2\f$.
    */
-  inline double GSModeldhdq2Parameter(const unsigned int ires)const ;
+  inline InvEnergy2 GSModeldhdq2Parameter(const unsigned int ires)const ;
   
   /**
    * The \f$h\f$ function in the GS model.
@@ -239,12 +239,42 @@ private:
   /**
    * Weights for the different \f$\rho\f$ resonances in the current, \f$\alpha_k\f$.
    */
-  vector<double> _piwgt;
+  //@{
+  /**
+   *  The Complex weight used in the calculation
+   */
+  vector<Complex> _piwgt;
+
+  /**
+   *  The magnitude for input
+   */
+  vector<double> _pimag;
+
+  /**
+   *  The phase for input
+   */
+  vector<double> _piphase;
+  //@}
 
   /**
    * Weights for the different \f$K^*\f$ resonances in the current, \f$\alpha_k\f$.
    */
-  vector<double> _kwgt;
+  //@{
+  /**
+   *  The Complex weight used in the calculation
+   */
+  vector<Complex> _kwgt;
+
+  /**
+   *  The magnitude for input
+   */
+  vector<double> _kmag;
+
+  /**
+   *  The phase for input
+   */
+  vector<double> _kphase;
+  //@}
 
   /**
    * Model to use for the \f$\rho\f$ propagator.
@@ -254,7 +284,7 @@ private:
   /**
    * Model to use for the \f$K^*\f$ propagator.
    */
-  int _Kmodel;
+  int _kmodel;
 
   /**
    * Option not to use the physical masses and widths for the \f$\rho\f$.
@@ -274,17 +304,17 @@ private:
   /**
    * Option not to use the physical masses and widths for the \f$K^*\f$.
    */
-  bool _Kstarparameters;
+  bool _kstarparameters;
 
   /**
    *  The masses of the \f$K^*\f$ resonances.
    */
-  vector<Energy> _Kstarmasses;
+  vector<Energy> _kstarmasses;
 
   /**
    *  The masses of the \f$K^*\f$ resonances.
    */
-  vector<Energy> _Kstarwidths;
+  vector<Energy> _kstarwidths;
 
   /**
    * Parameters for the Breit-Wigners
@@ -330,7 +360,7 @@ private:
    * The function \f$h\f$ at \f$q^2=m^2\f$ for the GS form of the
    *  Breit-Wigner
    */
-  vector<InvEnergy2> _hm2;
+  vector<double> _hm2;
 
   /**
    * The \f$d\f$ parameter  for the GS form of the
@@ -367,7 +397,7 @@ template <>
 struct ClassTraits<Herwig::TwoMesonRhoKStarCurrent>
   : public ClassTraitsBase<Herwig::TwoMesonRhoKStarCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::TwoMesonRhoKStarCurrent"; }
+  static string className() { return "Herwig::TwoMesonRhoKStarCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -460,9 +460,11 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 			   << " KornerKramerCharmDecayer::doinit()" 
 			   << Exception::abortnow;}
   // compute the various coefficients
-  Energy m1,m2,m3,fmes(0.); 
-  Energy2 P1P2,Qplus,Qminus,gmes(0.);
-  double Fnonfact,H2,H3,A,B,A2,B2,A3,B3,Ffact[2];
+  Energy m1,m2,m3,fmes(0.*MeV); 
+  Energy2 P1P2,Qplus,Qminus,gmes(0.*MeV2);
+  double Fnonfact,A3,B3,Ffact[2];
+  Energy H2,H3,A2,B2;
+  Energy2 A,B;
   int mspin,bspin;
   double chi,
     chiplus( 0.5*(_cplus*(1.+_oneNC)+_cminus*(1.-_oneNC))),
@@ -524,10 +526,11 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	}
       else
 	{
-	  fmes=0.;chi=0.;
+	  fmes=0.*MeV;
+	  chi=0.;
 	  mform2[0]=1./(_mscminus*_mscminus);
 	  mform2[1]=1./(_mscplus *_mscplus);
-	  gmes=0.;
+	  gmes=0.*MeV2;
 	}
       // form factor for the factorising diagrams
       for(iy=0;iy<2;++iy)
@@ -556,8 +559,8 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	      B +=0.25/m1/m2*chi*fmes*Qplus*(m1+m2)/3.*(4.*_I1[ix]+5.*_I2[ix])*Ffact[1];
 	      // add to vectors
 	      _A1.push_back(A*pre);_B1.push_back(B*pre);
-	      _A2.push_back(0.);_B2.push_back(0.);
-	      _A3.push_back(0.);_B3.push_back(0.);
+	      _A2.push_back(0./MeV);_B2.push_back(0./MeV);
+	      _A3.push_back(0./MeV2);_B3.push_back(0./MeV2);
 	    }
 	  else if(mspin==3)
 	    {
@@ -565,13 +568,13 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	      A  = -0.25*H2/m1/m2*_cminus*
 		( (m1*P1P2-m1*m2*(m2+m3))*(   _I3[ix]+2.*   _I4[ix])
 		 +(m2*P1P2-m1*m2*(m1+m3))*(_Ihat3[ix]+2.*_Ihat4[ix]));
-	      A2 = -0.25*H2/m1/m2*_cminus*(m1+m2+m3)*(+m1*(   _I3[ix]+2.*   _I4[ix])
+	      A2 = -0.25*H2/m1/m2*_cminus*(m1+m2+m3)*( m1*(   _I3[ix]+2.*   _I4[ix])
 						      -m2*(_Ihat3[ix]+2.*_Ihat4[ix]));
-	      B  = +0.25/m1/m2*_cminus*(0.5*H2*Qplus*(+m1*(   _I3[ix]+2.*   _I4[ix])
+	      B  = +0.25/m1/m2*_cminus*(0.5*H2*Qplus*( m1*(   _I3[ix]+2.*   _I4[ix])
 						      +m2*(_Ihat3[ix]+2.*_Ihat4[ix]))
 					+H3*m1*m2*(m1+m2+m3)*12.*_I5[ix]);
 	      B2 = -0.25/m1/m2*_cminus*
-		(+H2*(+m1*(m1+m2)*(   _I3[ix]+2.*   _I4[ix])-3.*m1*m3*   _I3[ix]
+		( H2*( m1*(m1+m2)*(   _I3[ix]+2.*   _I4[ix])-3.*m1*m3*   _I3[ix]
 		      +m2*(m1+m2)*(_Ihat3[ix]+2.*_Ihat4[ix])-3.*m2*m3*_Ihat3[ix])
 		 +H3*m1*m2*24.*_I5[ix]);
 	      // the factorizing piece
@@ -581,7 +584,7 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	      // add to vectors
 	      _A1.push_back(A*pre);_B1.push_back(B*pre);
 	      _A2.push_back(A2*pre);_B2.push_back(B2*pre);
-	      _A3.push_back(0.);_B3.push_back(0.);
+	      _A3.push_back(0./MeV2);_B3.push_back(0./MeV2);
 	    }
 	  else
 	    {throw InitException() << "Invalid outgoing meson spin in"
@@ -593,33 +596,33 @@ void KornerKramerCharmDecayer::doinit() throw(InitException) {
 	  if(mspin==1)
 	    {
 	      // first the non-factorizing piece
-	      B  = -1.5*_cminus*H2*_I2[ix];
+	      B2  = -1.5*_cminus*H2*_I2[ix];
 	      // then the factorizing piece
-	      B  += chi*fmes*(1.+m2/m1)*_I1[ix]*Ffact[1];
+	      B2  += chi*fmes*(1.+m2/m1)*_I1[ix]*Ffact[1];
 	      // add to vectors
 	      // make the coupling dimensionless
 	      _A1.push_back(0.);_B1.push_back(0.);
-	      _A2.push_back(0.);_B2.push_back(B*pre);
-	      _A3.push_back(0.);_B3.push_back(0.);
+	      _A2.push_back(0./MeV);_B2.push_back(B2*pre);
+	      _A3.push_back(0./MeV2);_B3.push_back(0./MeV2);
 	    }
 	  else if(mspin==3)
 	    {
-	      double norm(0.75/m1/m2*_cminus*H2*_I2[ix]);
+	      InvEnergy norm(0.75/m1/m2*_cminus*H2*_I2[ix]);
 	      // first the non-factorizing piece
 	      A  = -norm*m1*(P1P2-m2*(m2+m3))*2.;
-	      A2 = 0.;
+	      A2 = 0.*MeV;
 	      A3 =  norm*m1*2.;
 	      B  = -norm*m1*Qplus;
 	      B2 = -norm*m1*m2*2.;
 	      B3 =  norm*m1*2.;
 	      // then the factorizing piece
-	      norm = 0.5/m1/m2*chi*gmes*_I1[ix];
-	      A  += norm*Qplus*Ffact[1];
-	      A2 += 0.;
-	      A3 +=-norm*2.*Ffact[1];
-	      B  += norm*Qplus*Ffact[0];
-	      B2 += norm*m2*2.*Ffact[0];
-	      B3 +=-norm*2.*Ffact[0];
+	      double norm2 = 0.5/m1/m2*chi*gmes*_I1[ix];
+	      A  += norm2*Qplus*Ffact[1];
+	      A2 += 0.*MeV;
+	      A3 +=-norm2*2.*Ffact[1];
+	      B  += norm2*Qplus*Ffact[0];
+	      B2 += norm2*m2*2.*Ffact[0];
+	      B3 +=-norm2*2.*Ffact[0];
 	      // add to vectors
 	      _A1.push_back( A*pre);_B1.push_back( B*pre);
 	      _A2.push_back(2.*A2*pre);_B2.push_back(2.*B2*pre);
@@ -675,17 +678,21 @@ int KornerKramerCharmDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 }
 
 void KornerKramerCharmDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _GF << _oneNC << _fpi << _FK << _frho << _fKstar << _mdcplus << _mdcminus 
-     << _mscplus << _mscminus << _cplus << _cminus << _H2 << _H3 << _I1 << _I2 
-     << _I3 << _I4 << _I5 << _Ihat3 << _Ihat4 << _incoming << _outgoingB 
-     << _outgoingM << _maxweight << _A1 << _A2 << _A3 << _B1 << _B2 << _B3 << _initsize;
+  os << ounit(_GF,1./GeV2) << _oneNC << ounit(_fpi,GeV) << ounit(_FK,GeV) << _frho 
+     << _fKstar << ounit(_mdcplus,GeV) << ounit(_mdcminus,GeV) << ounit(_mscplus,GeV) 
+     << ounit(_mscminus,GeV) << _cplus << _cminus << ounit(_H2,GeV) << ounit(_H3,GeV) 
+     << _I1 << _I2 << _I3 << _I4 << _I5 << _Ihat3 << _Ihat4 << _incoming << _outgoingB 
+     << _outgoingM << _maxweight << _A1 << ounit(_A2,1./GeV) << ounit(_A3,1./GeV2) 
+     << _B1 << ounit(_B2,1./GeV) << ounit(_B3,1./GeV2) << _initsize;
 }
 
 void KornerKramerCharmDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _GF >> _oneNC >> _fpi >> _FK >> _frho >> _fKstar >> _mdcplus >> _mdcminus 
-     >> _mscplus >> _mscminus >> _cplus >> _cminus >> _H2 >> _H3 >> _I1 >> _I2 
-     >> _I3 >> _I4 >> _I5 >> _Ihat3 >> _Ihat4 >> _incoming >> _outgoingB 
-     >> _outgoingM >> _maxweight >> _A1 >> _A2 >> _A3 >> _B1 >> _B2 >> _B3 >> _initsize;
+  is >> iunit(_GF,1./GeV2) >> _oneNC >> iunit(_fpi,GeV) >> iunit(_FK,GeV) >> _frho 
+     >> _fKstar >> iunit(_mdcplus,GeV) >> iunit(_mdcminus,GeV) >> iunit(_mscplus,GeV) 
+     >> iunit(_mscminus,GeV) >> _cplus >> _cminus >> iunit(_H2,GeV) >> iunit(_H3,GeV) 
+     >> _I1 >> _I2 >> _I3 >> _I4 >> _I5 >> _Ihat3 >> _Ihat4 >> _incoming >> _outgoingB 
+     >> _outgoingM >> _maxweight >> _A1 >> iunit(_A2,1./GeV) >> iunit(_A3,1./GeV2) 
+     >> _B1 >> iunit(_B2,1./GeV) >> iunit(_B3,1./GeV2) >> _initsize;
 }
 
 ClassDescription<KornerKramerCharmDecayer> 

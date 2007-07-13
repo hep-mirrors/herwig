@@ -105,6 +105,7 @@ public:
    * @param process vector of MEDiagram with information that 
    * will allow the diagrams to be created in the specific matrix element
    * @param factors
+   * @param ncf Number of colour flows
    */
   inline void setProcessInfo(const vector<HPDiagram> & process,
 			     const vector<DVector> & factors,
@@ -229,7 +230,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of GeneralHardME. */
@@ -245,7 +246,7 @@ template <>
 struct ClassTraits<Herwig::GeneralHardME>
   : public ClassTraitsBase<Herwig::GeneralHardME> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralHardME"; }
+  static string className() { return "Herwig::GeneralHardME"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GeneralHardME is implemented. It may also include several, space-separated,
@@ -256,7 +257,7 @@ struct ClassTraits<Herwig::GeneralHardME>
   static string library() { return "libHwGeneralME.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

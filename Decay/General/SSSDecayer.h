@@ -7,40 +7,30 @@
 
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
 #include "SSSDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-typedef Ptr<Helicity::SSSVertex>::pointer SSSVertexPtr;
+using Helicity::SSSVertexPtr;
   
-  /** \ingroup Decay
-   * The SSDecayer class implements the decay of a scalar
-   * to 2 scalars in a general model. It holds a SSSVertex
-   * pointer that must be typecast from the VertexBase pointer held in
-   * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
-   * partialWidth().
-   *
-   * @see GeneralTwoBodyDecayer
-   */
+/** \ingroup Decay
+ * The SSDecayer class implements the decay of a scalar
+ * to 2 scalars in a general model. It holds a SSSVertex
+ * pointer that must be typecast from the VertexBase pointer held in
+ * GeneralTwoBodyDecayer. It implents the virtual functions me2() and
+ * partialWidth().
+ *
+ * @see GeneralTwoBodyDecayer
+ */
 class SSSDecayer: public GeneralTwoBodyDecayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline SSSDecayer();
-
-  /**
-   * The destructor.
-   */
-  virtual ~SSSDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -61,7 +51,7 @@ public:
    * @param outa Pointer to incoming particle data object
    * @param outb Pointer to incoming particle data object
    */
-  virtual double partialWidth(const PDPtr inpart,
+  virtual Energy partialWidth(const PDPtr inpart,
                               const PDPtr outa,
                               const PDPtr outb) const;
   //@}
@@ -149,7 +139,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SSSDecayer. */
@@ -165,14 +155,14 @@ template <>
 struct ClassTraits<Herwig::SSSDecayer>
   : public ClassTraitsBase<Herwig::SSSDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SSSDecayer"; }
+  static string className() { return "Herwig::SSSDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SSSDecayer class and every other class it uses
    *  (except the base class). */
   static string library() { return "libHwGeneralDecay.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

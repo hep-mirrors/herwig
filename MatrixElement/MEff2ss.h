@@ -6,20 +6,21 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/SSTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/SSTVertex.h"
 #include "MEff2ss.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::VSSVertex;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::SSTVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::VSSVertex;
+using ThePEG::Helicity::FFTVertexPtr;
+using ThePEG::Helicity::SSTVertexPtr;
+using ThePEG::Helicity::VSSVertexPtr;
 
 /**
  * The MEff2ss class is designed to implement the matrix element for a
@@ -32,13 +33,6 @@ using Herwig::Helicity::SSTVertexPtr;
  * @see GeneralHardME
  */
 class MEff2ss: public GeneralHardME {
-  
-public: 
-  
-  /**
-   * Convenient typedef for VSSVertex pointer
-   */
-  typedef Ptr<VSSVertex>::pointer VSSVertexPtr;
 
 public:
 
@@ -46,8 +40,6 @@ public:
    * The default constructor.
    */
   inline MEff2ss();
-
-public:
 
   /** @name Virtual functions required by the MEBase class. */
   //@{
@@ -168,7 +160,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MEff2ss. */
@@ -184,7 +176,7 @@ template <>
 struct ClassTraits<Herwig::MEff2ss>
   : public ClassTraitsBase<Herwig::MEff2ss> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEff2ss"; }
+  static string className() { return "Herwig::MEff2ss"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEff2ss is implemented. It may also include several, space-separated,
@@ -195,7 +187,7 @@ struct ClassTraits<Herwig::MEff2ss>
   static string library() { return "libHwGeneralME.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

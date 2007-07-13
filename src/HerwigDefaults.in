@@ -9,6 +9,8 @@ mkdir /Defaults/Generators
 # uncomment if required
 read ThePEGParticles.in
 read HerwigParticles.in
+# for new Decayer structure
+# read Particles.in
 
 # Make some default things
 create ThePEG::ThePEGStrategy /Defaults/ThePEGStrategy ThePEGStrategy.so
@@ -19,7 +21,7 @@ set /Defaults/ACDCSampler:Margin  1.1
 # Create NoPDF and RemnantHandlers
 cd /Defaults/Partons
 create ThePEG::NoRemnants NoRemnants
-create Herwig++::BaryonRemnants BaryonRemnants HwMRST.so
+create Herwig::BaryonRemnants BaryonRemnants HwMRST.so
 create ThePEG::LeptonLeptonRemnant LeptonRemnants LeptonLeptonRemnant.so
 create ThePEG::NoPDF NoPDF
 set NoPDF:RemnantHandler NoRemnants

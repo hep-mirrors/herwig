@@ -1,0 +1,36 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the GoityRobertsDecayer class.
+//
+
+namespace Herwig {
+
+inline IBPtr GoityRobertsDecayer::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr GoityRobertsDecayer::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void GoityRobertsDecayer::calculateFormFactors(double omega,double & xi,
+						      double & xi1,double & rho1,
+						      double & rho2) const {
+  double w2(omega*omega);
+  Energy2 beta2  = sqr(_beta1S   );
+  Energy2 lam2   = sqr(_lambdabar);
+  Energy2 betaSP = beta2+sqr(_beta1P);
+  Energy2 betaSD = beta2+sqr(_beta1D);
+  double fact = -0.25*lam2*(w2-1.)/beta2;
+  // s-wave
+  xi   =                  exp(fact);
+  xi1  = sqrt(2./3.)*fact*exp(fact);
+  // p-wave
+  rho1 = sqrt(0.5 )*_lambdabar/_beta1S*pow(2.*_beta1S*_beta1P/betaSP,2.5)*
+    exp(- 0.5*lam2*(w2-1.)/betaSP);
+  // d-wave
+  rho2 = sqrt(0.125)*lam2/beta2*       pow(2.*_beta1S*_beta1D/betaSD,3.5)*
+    exp(- 0.5*lam2*(w2-1.)/betaSD);
+}
+}

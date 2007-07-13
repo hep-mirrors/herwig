@@ -20,7 +20,6 @@ namespace Herwig {
  * @see OneOffShellCalculator
  */
 struct OneOffShellIntegrand  {
-
   /**
    * Constructor.
    * @param in Pointer to the OneOffShellCalculator class this is doing the 
@@ -35,8 +34,10 @@ struct OneOffShellIntegrand  {
   /**
    * return the value
    */
-  inline  double operator ()(double argument) const;
-  
+  inline  Energy operator ()(double argument) const;
+  typedef double ArgType;
+  typedef Energy ValType;
+
   /**
    * pointer to the decay integrator
    */

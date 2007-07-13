@@ -9,26 +9,26 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 using namespace Herwig;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::VVSVertexPtr;
-using Herwig::Helicity::GeneralSVVVertexPtr;
-using Herwig::Helicity::VVTVertex;
-using Herwig::Helicity::VVVVertexPtr;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::GeneralSVVVertexPtr;
+using ThePEG::Helicity::VVTVertex;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 typedef Ptr<VVTVertex>::pointer VVTVertexPtr;
 
@@ -39,8 +39,8 @@ double MEff2vv::me2() const {
   VectorWaveFunction vec1(meMomenta()[2], mePartonData()[2], outgoing);
   VectorWaveFunction vec2(meMomenta()[3], mePartonData()[3], outgoing);
   //Massless vectors?
-  bool masslC  = (mePartonData()[2]->mass() == 0.);
-  bool masslD  = (mePartonData()[3]->mass() == 0.);
+  bool masslC  = (mePartonData()[2]->mass() == 0.*MeV);
+  bool masslD  = (mePartonData()[3]->mass() == 0.*MeV);
   //Define vectors to store diagrams and square elements
   const HPCount ndiags(numberOfDiags());
   const size_t ncf(numberOfFlows());

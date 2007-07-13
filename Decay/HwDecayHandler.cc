@@ -11,6 +11,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/PDT/Decayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
+#include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/EventRecord/Particle.h"
@@ -39,27 +40,25 @@ handle(EventHandler &, const tPVector & tagged,
   // First go through the tagged particles for unstable ones
   Timer<46> timer("HwDecayHandler::handle");
   tPVector parents;
-  for(int i = 0, N = tagged.size(); i<N; ++i)
-    {
-      if(tagged[i])
-	{
-	  // add to tagged if not stable
-	  if(!tagged[i]->data().stable())
-	    {parents.push_back(tagged[i]);}
-	  // if stable and has spinInfo set the developed flag
-	  else if(tagged[i]->spinInfo())
-	    {
-	      tcSpinfoPtr 
-		hwspin=dynamic_ptr_cast<tcSpinfoPtr>(tagged[i]->spinInfo());
-	      if(hwspin){hwspin->setDeveloped(true);}
-	    }
-	}
+  for(int i = 0, N = tagged.size(); i<N; ++i) {
+    if(tagged[i]) {
+      // add to tagged if not stable
+      if(!tagged[i]->data().stable()) {
+	parents.push_back(tagged[i]);
+      }
+      // if stable and has spinInfo set the developed flag
+      else if(tagged[i]->spinInfo()) {
+	tcSpinfoPtr hwspin=dynamic_ptr_cast<tcSpinfoPtr>(tagged[i]->spinInfo());
+	if(hwspin) hwspin->setDeveloped(true);
+      }
     }
+  }
   if(parents.empty()) return;
   // Create a new step, decay all particles and add their children to the step
-  StepPtr newstep = newStep();
-  for(int i = 0, N = parents.size(); i<N; ++i)
-    {performDecay(newstep->find(parents[i]), *newstep);}
+  StepPtr newstep = _newstep ? newStep() : currentStep();
+  for(int i = 0, N = parents.size(); i<N; ++i) {
+    performDecay(newstep->find(parents[i]), *newstep);
+  }
 }
 
 
@@ -74,7 +73,8 @@ void HwDecayHandler::performDecay(tPPtr parent, Step & s) const
     {
       // exit if fails
       if ( ++ntry >= maxLoop() ) 
-	throw Exception() << "Too many tries " << maxLoop() << "to generate decay in "
+	throw Exception() << "Too many tries " << maxLoop() << "to generate decay of "
+			  << *parent << "in "
 			  << "HwDecayHandler::performDecay" << Exception::eventerror;
       tDMPtr dm(parent->data().selectMode(*parent));
       if ( !dm ) 
@@ -221,16 +221,17 @@ void HwDecayHandler::addDecayedParticle(tPPtr parent, Step & s) const
   return;
 }
 
-void HwDecayHandler::persistentOutput(PersistentOStream & os) const 
-{os << _partonhad << _hadtry;}
+void HwDecayHandler::persistentOutput(PersistentOStream & os) const {
+  os << _partonhad << _hadtry << _newstep;
+}
 
-void HwDecayHandler::persistentInput(PersistentIStream & is, int) 
-{is >> _partonhad >> _hadtry;}
+void HwDecayHandler::persistentInput(PersistentIStream & is, int)  {
+  is >> _partonhad >> _hadtry >> _newstep;
+}
 
 ClassDescription<HwDecayHandler> HwDecayHandler::initHwDecayHandler;
 
-void HwDecayHandler::Init() 
-{
+void HwDecayHandler::Init() {
 
   static ClassDocumentation<HwDecayHandler> documentation
     ("This is the handler for decays in Herwig++.");
@@ -240,13 +241,28 @@ void HwDecayHandler::Init()
      "Pointer to the object which hadronizes partonic decays.",
      &HwDecayHandler::_partonhad, false, false, true, true, false);
 
-
   static Parameter<HwDecayHandler,unsigned int> interfaceHadronizationTries
     ("HadronizationTries",
      "Number of times to regenerate a partonic decay to try and sucessfully"
      " hadronize it.",
      &HwDecayHandler::_hadtry, 20, 1, 50,
      false, false, Interface::limited);
+
+
+  static Switch<HwDecayHandler,bool> interfaceNewStep
+    ("NewStep",
+     "Add the particles in a new step",
+     &HwDecayHandler::_newstep, true, false, false);
+  static SwitchOption interfaceNewStepNew
+    (interfaceNewStep,
+     "New",
+     "Add particles in a new step",
+     true);
+  static SwitchOption interfaceNewStepCurrent
+    (interfaceNewStep,
+     "Current",
+     "Add them in the current step",
+     false);
 
 }
 

@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Shower/Base/ShowerKinematics.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "QtildaShowerKinematics1to2.fh"
 
 namespace Herwig {
@@ -54,7 +54,7 @@ public:
   /**
    *  Dot product of thew basis vectors
    */
-  inline const double p_dot_n() const;
+  inline const Energy2 p_dot_n() const;
 
   /**
    * Converts a Sudakov parametrization of a momentum w.r.t. the given 

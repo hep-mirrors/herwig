@@ -14,15 +14,17 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 void RSModel::persistentOutput(PersistentOStream & os) const {
-  os << _theLambda_pi << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 
+  os << ounit(_theLambda_pi,GeV) 
+     << _theFFGRVertex << _theVVGRVertex << _theSSGRVertex 
      << _theFFVGRVertex << _theVVVGRVertex;
 }
 
 void RSModel::persistentInput(PersistentIStream & is, int) {
-  is >> _theLambda_pi >> _theFFGRVertex >> _theVVGRVertex >> _theSSGRVertex
+  is >> iunit(_theLambda_pi,GeV) 
+     >> _theFFGRVertex >> _theVVGRVertex >> _theSSGRVertex
      >> _theFFVGRVertex >> _theVVVGRVertex;
 }
 
@@ -32,26 +34,26 @@ ClassDescription<RSModel> RSModel::initRSModel;
 void RSModel::Init() {
   
 
-static Reference<RSModel,Herwig::Helicity::FFTVertex> interfaceVertexFFGR
+static Reference<RSModel,ThePEG::Helicity::FFTVertex> interfaceVertexFFGR
   ("Vertex/FFGR",
    "Reference to the fermion-fermion-graviton vertex",
    &RSModel::_theFFGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,Herwig::Helicity::VVTVertex> interfaceVertexVVGR
+static Reference<RSModel,ThePEG::Helicity::VVTVertex> interfaceVertexVVGR
   ("Vertex/VVGR",
    "Reference to the vector-vector-graviton vertex",
    &RSModel::_theVVGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,Herwig::Helicity::SSTVertex> interfaceVertexSSGR
+static Reference<RSModel,ThePEG::Helicity::SSTVertex> interfaceVertexSSGR
   ("Vertex/SSGR",
    "Reference to the scalar-scalar-graviton vertex",
    &RSModel::_theSSGRVertex, false, false, true, false, false);
 
-static Reference<RSModel,Herwig::Helicity::FFVTVertex> interfaceVertexFFVGR
+static Reference<RSModel,ThePEG::Helicity::FFVTVertex> interfaceVertexFFVGR
   ("Vertex/FFVGR",
    "Reference to the fermion-antifermion-vector graviton vertex",
    &RSModel::_theFFVGRVertex, false, false, true, false, false);
-static Reference<RSModel,Herwig::Helicity::VVVTVertex> interfaceVertexVVVGR
+static Reference<RSModel,ThePEG::Helicity::VVVTVertex> interfaceVertexVVVGR
   ("Vertex/VVVGR",
    "Reference to the three vector graviton vertex",
    &RSModel::_theVVVGRVertex, false, false, true, false, false);

@@ -191,7 +191,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaFlatEnergy>
   : public ClassTraitsBase<Herwig::BtoSGammaFlatEnergy> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaFlatEnergy"; }
+  static string className() { return "Herwig::BtoSGammaFlatEnergy"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaFlatEnergy class and every other class it uses
    *  (except the base class). */

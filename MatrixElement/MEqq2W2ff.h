@@ -6,16 +6,16 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
 #include "MEqq2W2ff.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The MEqq2W2ff class implements the matrix element for \f$q\bar{q'}\to W^\pm\f$
@@ -249,7 +249,7 @@ template <>
 struct ClassTraits<Herwig::MEqq2W2ff>
   : public ClassTraitsBase<Herwig::MEqq2W2ff> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEqq2W2ff"; }
+  static string className() { return "Herwig::MEqq2W2ff"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2W2ff class and any other class on which it depends
    *  (except the base class). */

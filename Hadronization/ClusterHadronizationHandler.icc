@@ -7,7 +7,8 @@
 namespace Herwig {
 
 inline ClusterHadronizationHandler::ClusterHadronizationHandler() 
-  : _minVirtuality2( 0.1*GeV2 ), _maxDisplacement( 1.0e-10*millimeter )
+  : _minVirtuality2( 0.1*GeV2 ), _maxDisplacement( 1.0e-10*mm ),
+    _softUnderlyingEventMode( false )
 {}
 
 inline IBPtr ClusterHadronizationHandler::clone() const {

@@ -7,7 +7,7 @@
 
 #include "GeneralCurrentDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "FFVCurrentDecayer.fh"
 
 namespace Herwig {
@@ -47,10 +47,10 @@ public:
   /**
    * Function to return partial Width
    * @param inpart Pointer to incoming particle data object
-   * @param outa Pointer to incoming particle data object
-   * @param outb Pointer to incoming particle data object
+   * @param outa Pointer to first outgoing particle data object
+   * @param currout The outgoing particles from the current
    */
-  virtual double partialWidth(tPDPtr inpart, tPDPtr outa,
+  virtual Energy partialWidth(tPDPtr inpart, tPDPtr outa,
 			      vector<tPDPtr> currout);
   //@}
 
@@ -174,7 +174,7 @@ template <>
 struct ClassTraits<Herwig::FFVCurrentDecayer>
   : public ClassTraitsBase<Herwig::FFVCurrentDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FFVCurrentDecayer"; }
+  static string className() { return "Herwig::FFVCurrentDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * FFVCurrentDecayer is implemented. It may also include several, space-separated,

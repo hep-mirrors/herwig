@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VectorPScalarFermionsAnalysis class.
+//
+
+namespace Herwig {
+
+inline IBPtr VectorPScalarFermionsAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VectorPScalarFermionsAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+}

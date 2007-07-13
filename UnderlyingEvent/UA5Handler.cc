@@ -28,15 +28,19 @@ UA5Handler::UA5Handler()
 // Saving things into run file
 void UA5Handler::persistentOutput(PersistentOStream &os) const {
   os << clusterFissioner << clusterDecayer
-     << _n1 << _n2 << _n3 << _k1 << _k2 << _m1 << _m2 << _p1
-     << _p2 << _p3 << _probSoft << _enhanceCM << _maxtries;
+     << _n1 << _n2 << _n3 << _k1 << _k2 
+     << ounit(_m1,GeV) << ounit(_m2,InvGeV)
+     << ounit(_p1,InvGeV) << ounit(_p2,InvGeV) << ounit(_p3,InvGeV) 
+     << _probSoft << _enhanceCM << _maxtries;
 }
 
 // Reading them back in, in the same order
 void UA5Handler::persistentInput(PersistentIStream &is, int) {
   is >> clusterFissioner >> clusterDecayer
-     >> _n1 >> _n2 >> _n3 >> _k1 >> _k2 >> _m1 >> _m2 >> _p1
-     >> _p2 >> _p3 >> _probSoft >> _enhanceCM >> _maxtries;
+     >> _n1 >> _n2 >> _n3 >> _k1 >> _k2 
+     >> iunit(_m1,GeV) >> iunit(_m2,InvGeV) 
+     >> iunit(_p1,InvGeV) >> iunit(_p2,InvGeV) >> iunit(_p3,InvGeV) 
+     >> _probSoft >> _enhanceCM >> _maxtries;
 }
 
 // We must define this static member for ThePEG
@@ -195,18 +199,18 @@ unsigned int UA5Handler::multiplicity(Energy E) const {
 LorentzRotation UA5Handler::rotate(const LorentzMomentum &p) const {
   LorentzRotation R;
   static const double ptcut = 1e-20;
-  Energy2 pt2 = sqr(p.px())+sqr(p.py());
-  Energy2 pp2 = sqr(p.pz())+pt2;
+  Energy2 pt2 = sqr(p.x())+sqr(p.y());
+  Energy2 pp2 = sqr(p.z())+pt2;
   double phi, theta;
   if(pt2 <= pp2*ptcut) {
-     if(p.pz() > 0) theta = 0.;
-     else theta = pi;
+     if(p.z() > 0*GeV) theta = 0.;
+     else theta = Constants::pi;
      phi = 0.;
   } else {
      Energy pp = sqrt(pp2);
      Energy pt = sqrt(pt2);
-     double ct = p.pz()/pp;
-     double cf = p.px()/pt;
+     double ct = p.z()/pp;
+     double cf = p.x()/pt;
      phi = -acos(cf);
      theta = acos(ct);
   }
@@ -228,7 +232,7 @@ void UA5Handler::performDecay(PPtr parent,int & totalcharge,int & numbercharge) 
   // for a stable particle just add the charge
   else if(parent->data().stable())
     {
-      int charge=int(parent->data().charge());
+      int charge=parent->data().charge()/eplus;
       totalcharge  +=    charge ;
       numbercharge +=abs(charge);
     }
@@ -301,7 +305,7 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
       products=clusterFissioner->produceHadron(id1,id2, mom, vert);
       // put the cluster and the hadron on mass-shell
       Energy mass=products.first->nominalMass();
-      Lorentz5Momentum newp(0.,0.,0.,mass,mass);
+      Lorentz5Momentum newp(0.*MeV,0.*MeV,0.*MeV,mass,mass);
       cluster->set5Momentum(newp);
       products.first->set5Momentum(newp);
       cluster->addChild(products.first);
@@ -316,15 +320,14 @@ void UA5Handler::decayCluster(ClusterPtr cluster,bool single) const
 // This is the routine that is called to start the algorithm. 
 void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 			const Hint &) throw(Veto,Stop,Exception) {
-  useMe();
   Timer<10000> timer("UA5Handler::handle()");
   // create a new step for the products
   StepPtr newstep = newStep();
-  // Constants that should not need changing. This corresponds to ~1fm
-  static const Length vclx = 4e-12; 
-  static const Length vcly = 4e-12; 
-  static const Length vclz = 4e-12; 
-  static const Length vclt = 4e-12;
+  // Constants that should not need changing.
+  static const Length vclx = 4e-12*mm; 
+  static const Length vcly = 4e-12*mm; 
+  static const Length vclz = 4e-12*mm; 
+  static const Length vclt = 4e-12*mm;
   // Find the first two clusters
   // Lets find the clusters, set the partons inside to be on shell and no momentum
   tClusterPtr clu[2];
@@ -359,6 +362,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
       // don't to the rest
       return;
     }
+  useMe();
   // and their cm
   Lorentz5Momentum cm = clu[0]->momentum() + clu[1]->momentum();
   Energy theCM = cm.mass();
@@ -382,7 +386,7 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
      ++ntry;
      unsigned int numberCluster = 0;
      int theMult = nppbar;
-     Energy sumMasses = 0.;
+     Energy sumMasses = 0.*GeV;
      // delete the particles from the previous attempt if needed
      if(ntry > 1) clusters.clear();
      int numCharge = 0;
@@ -410,14 +414,14 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 	 getParticleData(id2)->constituentMass() 
 	 + _m1 - log(rnd()*rnd())/_m2;
        // set momentum of the cluster
-       Lorentz5Momentum cp(0.,0.,0.,newMass,newMass);
+       Lorentz5Momentum cp(0.*MeV,0.*MeV,0.*MeV,newMass,newMass);
        cluster->set5Momentum(cp);
        // Now the gaussian distribution of the x,y,z components,
        // and a time component given by
        // sqrt(vx^2+vy^2+vz^2) - vclt*log(r)
-       Length vx = gaussDistribution(0.,vclx);
-       Length vy = gaussDistribution(0.,vcly);
-       Length vz = gaussDistribution(0.,vclz);
+       Length vx = gaussDistribution(0.*mm,vclx);
+       Length vy = gaussDistribution(0.*mm,vcly);
+       Length vz = gaussDistribution(0.*mm,vclz);
        LorentzPoint vert(vx,vy,vz, sqrt(sqr(vx)+sqr(vy)+sqr(vz)) - vclt*log(rnd()));
        cluster->setVertex(vert);
        // Now need to measure displacement relative to soft cm (TODO:)
@@ -482,19 +486,20 @@ void UA5Handler::handle(EventHandler &ch, const tPVector &tagged,
 // Jadach from Computer Physics Communications 9 (1975) 297-304
 void UA5Handler::generateMomentum(tClusterPtr clu1, tClusterPtr clu2,
 				  const ClusterVector &clusters, 
-				  double CME, Lorentz5Momentum cm) const throw(Veto,Exception) {
+				  Energy CME, const Lorentz5Momentum & cm) 
+  const throw(Veto,Exception) {
   Timer<10001> timer("UA5Handler::generateMomentum()");
   // begin with the cylindrical phase space generation described in the paper of Jadach
   generateCylindricalPS(clusters, CME);
   // boost momentum of incoming cluster along z axis to cluster cmf frame
-  if(clu2->momentum().pz()>0) swap(clu1,clu2);
-  LorentzVector bmp = clu1->momentum();
+  if(clu2->momentum().z()>0*MeV) swap(clu1,clu2);
+  LorentzMomentum bmp = clu1->momentum();
   bmp = bmp.boost(cm.findBoostToCM());
   // Rotation to put bmp on the z axis
   LorentzRotation R = rotate(bmp);
   // We need to use the inverse
   R = R.inverse();
-  Hep3Vector boostv=cm.boostVector();
+  Boost boostv=cm.boostVector();
   for(unsigned int i = 0; i<clusters.size(); i++) {
     // So we now take each cluster and transform it according to the
     // rotation defined above
@@ -510,11 +515,11 @@ void UA5Handler::generateMomentum(tClusterPtr clu1, tClusterPtr clu2,
     } catch(exception &e) {
       cerr << "Caught an problem boosting. " << e.what() << endl;
       cerr << "Must decide how to handle this..." << endl;
-      cerr << "Old p = " << oldP << endl << "New p = " << newP << endl;
+      cerr << "Old p = " << oldP/GeV << endl << "New p = " << newP/GeV << endl;
       cerr << "This is from cluster " << *clusters[i] << " and has z component > energy" << endl;
       cerr << "Cluster 0 is = " << *clusters[0] << endl;
-      cerr << "Original momentum = " << origP << endl;
-      cerr << "The cm vector is = " << cm << endl;
+      cerr << "Original momentum = " << origP/GeV << endl;
+      cerr << "The cm vector is = " << cm/GeV << endl;
       cerr << "Mass error of original momentum is " << origP.massError() << endl;
       throw Veto();
     }
@@ -556,38 +561,38 @@ void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME
   double eps = 1e-10/double(ncl);
   vector<double> xi(ncl);
   unsigned int its(0);
-  Energy sum1(0.);
+  Energy sum1(0.*MeV);
   double yy(0.);
   while(its < _maxtries) {
     ++its;
-    Energy sumx = 0.;
-    Energy sumy = 0.;
+    Energy sumx = 0.*MeV;
+    Energy sumy = 0.*MeV;
     for(unsigned int i = 0; i<ncl; ++i) {
       // Generate the pt given the parameter slope
       Energy   pt = randExt(clusters[i]->mass(), slope[i]);
       Energy2 ptp = pt*pt - sqr(mom[i].mass());
-      if(ptp <= 0) pt = - sqrt(-ptp);
+      if(ptp <= Energy2()) pt = - sqrt(-ptp);
       else pt = sqrt(ptp);
       // randomize azimuth
       Energy px,py;
       randAzm(pt,px,py);
       // set transverse momentum
-      mom[i].setPx(px);
-      mom[i].setPy(py);
+      mom[i].setX(px);
+      mom[i].setY(py);
       sumx += px;
       sumy += py;
     }
     sumx /= ncl;
     sumy /= ncl;
     // find the sum of the transverse mass
-    Energy sumtm=0.;
+    Energy sumtm=0.*MeV;
     for(unsigned int ix = 0; ix<ncl; ++ix) {
-      mom[ix].setX(mom[ix].px()-sumx);
-      mom[ix].setY(mom[ix].py()-sumy);
-      Energy pt2 = mom[ix].perp2();
+      mom[ix].setX(mom[ix].x()-sumx);
+      mom[ix].setY(mom[ix].y()-sumy);
+      Energy2 pt2 = mom[ix].perp2();
       // Use the z component of the clusters momentum for temporary storage
-      mom[ix].setPz(sqrt(pt2+mom[ix].mass2()));
-      sumtm += mom[ix].pz();
+      mom[ix].setZ(sqrt(pt2+mom[ix].mass2()));
+      sumtm += mom[ix].z();
     }
     // if transverse mass greater the CMS try again
     if(sumtm > CME) continue;
@@ -599,13 +604,13 @@ void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME
     xi[0] = 0.;
     for(unsigned int i = ncl-2; i>=1; i--) xi[i+1] = (xi[i]-ximin)/ximax;
     xi[1] = 1.;
-    yy= log(CME*CME/(mom[0].pz()*mom[1].pz()));
+    yy= log(CME*CME/(mom[0].z()*mom[1].z()));
     bool suceeded=false;
     Energy sum2,sum3,sum4;
     for(unsigned int j = 0; j<10; j++) {
-      sum1 = sum2 = sum3 = sum4 = 0.;
+      sum1 = sum2 = sum3 = sum4 = 0.*MeV;
       for(unsigned int i = 0; i<ncl; i++) {
-        Energy tm = mom[i].pz();
+        Energy tm = mom[i].z();
         double ex = exp(yy*xi[i]);
         sum1 += tm*ex;
 	sum2 += tm/ex;
@@ -631,9 +636,9 @@ void UA5Handler::generateCylindricalPS(const ClusterVector &clusters, Energy CME
 		      << Exception::eventerror;
   double zz = log(CME/sum1);
   for(unsigned int i = 0; i<ncl; i++) {
-    Energy tm = mom[i].pz();
+    Energy tm = mom[i].z();
     double E1 = exp(zz + yy*xi[i]);
-    mom[i].setPz(0.5*tm*(1./E1-E1));
+    mom[i].setZ(0.5*tm*(1./E1-E1));
     mom[i].setE( 0.5*tm*(1./E1+E1));
     clusters[i]->set5Momentum(mom[i]);
   }

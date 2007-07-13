@@ -126,7 +126,7 @@ template <>
 struct ClassTraits<Herwig::SOPHTY>
   : public ClassTraitsBase<Herwig::SOPHTY> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SOPHTY"; }
+  static string className() { return "Herwig::SOPHTY"; }
 };
 
 /** @endcond */

@@ -7,7 +7,7 @@
 #include <ThePEG/PDT/Decayer.h>
 #include "DecayPhaseSpaceChannel.h"
 #include <ThePEG/PDT/EnumParticles.h>
-#include <Herwig++/Helicity/Correlations/DecayVertex.h>
+#include <Herwig++/Decay/DecayVertex.h>
 #include "ThePEG/Utilities/Timer.h"
 #include <ThePEG/Helicity/SpinInfo.h>
 #include "DecayPhaseSpaceMode.fh"
@@ -19,7 +19,6 @@
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::DecayMatrixElement;
 
   /** \ingroup Decay
    * \class DecayIntegrator
@@ -173,7 +172,7 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual double threeBodydGammads(const int imode, const Energy q2, const Energy2 s,
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2, const Energy2 s,
 				   const Energy m1, const Energy m2, 
 				   const Energy m3) const;
   
@@ -440,7 +439,7 @@ template <>
 struct ClassTraits<Herwig::DecayIntegrator>
   : public ClassTraitsBase<Herwig::DecayIntegrator> {
   /** Return the class name. */
-  static string className() { return "Herwig++::DecayIntegrator"; }
+  static string className() { return "Herwig::DecayIntegrator"; }
 };
   
 /** @endcond */

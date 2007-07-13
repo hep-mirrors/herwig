@@ -43,15 +43,10 @@ class TauDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline TauDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -163,7 +158,7 @@ private:
   /**
    * Fermi coupling constant, \f$G_F\f$.
    */
-  InvEnergy2 _GF;
+  InvEnergy2 _gf;
 
   /**
    * mapping of the modes to the currents
@@ -219,7 +214,7 @@ template <>
 struct ClassTraits<Herwig::TauDecayer>
   : public ClassTraitsBase<Herwig::TauDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TauDecayer"; }
+  static string className() { return "Herwig::TauDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

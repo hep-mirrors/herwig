@@ -1,0 +1,21 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the SSCCPVertex class.
+//
+#ifndef HERWIG_SSCCPVertex_FH
+#define HERWIG_SSCCPVertex_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+class SSCCPVertex;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::SSCCPVertex,SSCCPVertexPtr);
+
+}
+
+#endif

@@ -9,6 +9,7 @@
 #include "Herwig++/Utilities/Histogram.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "SpinCorrAnalysis.fh"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 using namespace ThePEG;
@@ -106,8 +107,14 @@ public:
    */
   static void Init();
 
+  /**
+   *  Find the decay particle
+   */
   tPPtr findDecayingParticle(tPPtr) const;
 
+  /**
+   *  Find the child
+   */
   tPPtr findChild(tPPtr, long) const;
 
 protected:
@@ -194,7 +201,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SpinCorrAnalysis. */
@@ -210,7 +217,7 @@ template <>
 struct ClassTraits<Herwig::SpinCorrAnalysis>
   : public ClassTraitsBase<Herwig::SpinCorrAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SpinCorrAnalysis"; }
+  static string className() { return "Herwig::SpinCorrAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SpinCorrAnalysis is implemented. It may also include several, space-separated,
@@ -221,7 +228,7 @@ struct ClassTraits<Herwig::SpinCorrAnalysis>
   static string library() { return "HwBSMAnalysis.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

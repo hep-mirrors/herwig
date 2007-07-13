@@ -16,33 +16,23 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-#include "ThePEG/CLHEPWrap/HepMCConverter.h"
-#include "HepMC/GenEvent.h"
+#include <HepMCHelper.h>
 
-
-using namespace Herwig;
 using namespace ThePEG;
+using namespace Herwig;
 
 namespace {
   const string header = "digraph test {\nrankdir=LR;\nranksep=1.5;\n";
 }
 
-namespace ThePEG {
-template<> 
-struct HepMCTraits<HepMC::GenEvent> 
-  : public HepMCTraitsBase<HepMC::GenEvent,
-			   HepMC::GenParticle,
-			   HepMC::GenVertex,
-			   HepMC::Polarization> 
-{};
-}
-
 void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
   if (event->number() != _eventNumber) return;
 
-  ostringstream filename;
-  filename << _fileBaseName << '-' << event->number() << ".dot";
-  ofstream hepmcdotfile(filename.str().c_str());
+  ostringstream fname;
+  fname << CurrentGenerator::current().filename() << '-' 
+	<< name() << '-'
+	<< event->number() << ".dot";
+  ofstream hepmcdotfile(fname.str().c_str());
   
   hepmcdotfile << header 
 	       << "node [width=0.1,height=0.1,shape=point,label=\"\"];\n";
@@ -92,7 +82,7 @@ void GraphvizPlot::analyze(tEventPtr event, long, int, int) {
 		   << "\"]\n";
     }
     
-    if ((*it)->check_momentum_conservation() > 1.0 * MeV)
+    if ((*it)->check_momentum_conservation() > 1.0)
       hepmcdotfile << (*it)->barcode() 
 		   << " [color=red,width=0.2,height=0.2]\n";
     
@@ -112,11 +102,11 @@ LorentzRotation GraphvizPlot::transform(tEventPtr) const {
 void GraphvizPlot::analyze(tPPtr) {}
 
 void GraphvizPlot::persistentOutput(PersistentOStream & os) const {
-  os << _fileBaseName << _eventNumber;
+  os << _eventNumber;
 }
 
 void GraphvizPlot::persistentInput(PersistentIStream & is, int) {
-  is >> _fileBaseName >> _eventNumber;
+  is >> _eventNumber;
 }
 
 
@@ -127,12 +117,6 @@ void GraphvizPlot::Init() {
 
   static ClassDocumentation<GraphvizPlot> documentation
     ("There is no documentation for the GraphvizPlot class");
-
-  static Parameter<GraphvizPlot,string> interfaceFileName
-    ("BaseName",
-     "The base name of the output file. The event number will be added.",
-     &GraphvizPlot::_fileBaseName, "graphviz",
-     true, false);
 
   static Parameter<GraphvizPlot,long> interfaceEventNumber
     ("EventNumber",

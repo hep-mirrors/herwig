@@ -38,25 +38,10 @@ class PScalar4FermionsDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline PScalar4FermionsDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline PScalar4FermionsDecayer(const PScalar4FermionsDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~PScalar4FermionsDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -127,10 +112,6 @@ protected:
 
   /** @name Standard Interfaced functions. */
   //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
 
   /**
    * Initialize this object after the setup phase before saving and
@@ -143,30 +124,6 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in
-   * this object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -261,7 +218,7 @@ template <>
  struct ClassTraits<Herwig::PScalar4FermionsDecayer>
   : public ClassTraitsBase<Herwig::PScalar4FermionsDecayer> {
    /** Return the class name. */
-  static string className() { return "Herwig++::PScalar4FermionsDecayer"; }
+  static string className() { return "Herwig::PScalar4FermionsDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

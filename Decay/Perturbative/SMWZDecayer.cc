@@ -15,10 +15,10 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/Correlations/DecayVertex.h"
+#include "Herwig++/Decay/DecayVertex.h"
 #include "ThePEG/Helicity/VectorSpinInfo.h"
 #include "ThePEG/Helicity/FermionSpinInfo.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 
 namespace Herwig {
@@ -272,7 +272,7 @@ double SMWZDecayer::me2(bool vertex, const int, const Particle & inpart,
 	}
     }
   ME(newme);
-  double output=(newme.contract(rhoin)).real()/scale;
+  double output=(newme.contract(rhoin)).real()*UnitRemoval::E2/scale;
   if(abs(decay[0]->id())<=6){output*=3.;}
   if(decay[0]->hasColour())
     {decay[0]->antiColourNeighbour(decay[1]);}

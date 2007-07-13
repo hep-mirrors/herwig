@@ -6,8 +6,8 @@
 // This is the declaration of the Kinematics class.
 
 #include "Herwig++/Config/Herwig.h"
-#include "ThePEG/CLHEPWrap/ThreeVector.h"
-#include "ThePEG/CLHEPWrap/LorentzRotation.h"
+#include "ThePEG/Vectors/ThreeVector.h"
+#include "ThePEG/Vectors/LorentzRotation.h"
 
 namespace Herwig {
 
@@ -38,7 +38,7 @@ namespace Herwig {
      */
     static bool twoBodyDecay(const Lorentz5Momentum & p, 
 			     const Energy m1, const Energy m2,
-			     const Vector3 & unitDir1,
+			     const Axis & unitDir1,
 			     Lorentz5Momentum & p1, Lorentz5Momentum & p2);
 
     /**
@@ -66,10 +66,11 @@ namespace Herwig {
      */
     static bool threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
-			       double (*fcn)(double*) = NULL);
+			       double (*fcn)(Energy2,Energy2,Energy2,InvEnergy4) = NULL);
+
 
     /**
-     * Again, as the name implies, this is an isotropic four-body decay.
+     * Again as the name implies, this is an isotropic four-body decay.
      * The return value indicates success or failure.
      */
     static bool fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
@@ -94,7 +95,7 @@ namespace Herwig {
     /**
      * It returns the unit 3-vector with the given  cosTheta  and  phi.
      */
-    static inline Vector3 unitDirection(const double, const double);
+    static inline Axis unitDirection(const double, const double);
 
     /**
      * This returns the CMMomentum of a two body decay, given M, m1, m2.

@@ -6,21 +6,21 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "MEPP2GammaGamma.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The MEPP2GammaGamma class implements the production of photon pairs in 
- * hadron hadron collisions..
+ * hadron hadron collisions.
  *
  * @see \ref MEPP2GammaGammaInterfaces "The interfaces"
  * defined for MEPP2GammaGamma.
@@ -258,7 +258,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2GammaGamma>
   : public ClassTraitsBase<Herwig::MEPP2GammaGamma> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2GammaGamma"; }
+  static string className() { return "Herwig::MEPP2GammaGamma"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2GammaGamma is implemented. It may also include several, space-separated,

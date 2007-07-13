@@ -214,7 +214,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of ResonantProcessConstructor. */
@@ -230,7 +230,7 @@ template <>
 struct ClassTraits<Herwig::ResonantProcessConstructor>
   : public ClassTraitsBase<Herwig::ResonantProcessConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ResonantProcessConstructor"; }
+  static string className() { return "Herwig::ResonantProcessConstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ResonantProcessConstructor is implemented. It may also include several, space-separated,
@@ -241,7 +241,7 @@ struct ClassTraits<Herwig::ResonantProcessConstructor>
   static string library() { return "libHwModelGenerator.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

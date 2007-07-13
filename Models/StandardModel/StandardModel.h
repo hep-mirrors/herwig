@@ -6,18 +6,18 @@
 
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Models/StandardModel/RunningMassBase.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
 #include "Herwig++/Models/General/ModelGenerator.fh"
 #include "StandardModel.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Models
  *  
@@ -162,7 +162,7 @@ public:
   /**
    * Pointer to the fermion-fermion-Higgs vertex
    */
-  inline tFFSVertexPtr  vertexFFH() const;
+  virtual inline tFFSVertexPtr  vertexFFH() const;
 
   /**
    * Pointer to the triple gluon vertex
@@ -177,7 +177,7 @@ public:
   /**
    * Pointer to the two electroweak gauge boson Higgs vertex.
    */
-  inline tVVSVertexPtr  vertexWWH() const;
+  virtual inline tVVSVertexPtr  vertexWWH() const;
 
   /**
    * Pointer to the quartic electroweak gauge boson vertex.
@@ -192,7 +192,7 @@ public:
  /**
    * Pointer to the quartic gluon vertex
    */
-  inline tGeneralSVVVertexPtr vertexHGG() const;
+  virtual inline tGeneralSVVVertexPtr vertexHGG() const;
 
  /**
    * Pointer to the quartic gluon vertex
@@ -215,7 +215,7 @@ public:
    * @param scale The scale \f$q^2\f$.
    * @param part The ParticleData object for the particle
    */
-  inline double mass(Energy2 scale,tcPDPtr part) const;
+  inline Energy mass(Energy2 scale,tcPDPtr part) const;
   
   /**
    * Return a pointer to the object handling the running mass.
@@ -358,7 +358,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /**
  * The following template specialization informs ThePEG about the
@@ -381,10 +381,10 @@ struct ClassTraits<Herwig::StandardModel>
   /**
    * Return the class name.
    */
-  static string className() { return "Herwig++::StandardModel"; }
+  static string className() { return "Herwig::StandardModel"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

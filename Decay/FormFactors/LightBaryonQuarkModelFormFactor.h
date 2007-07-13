@@ -245,7 +245,7 @@ template <>
  struct ClassTraits<Herwig::LightBaryonQuarkModelFormFactor>
   : public ClassTraitsBase<Herwig::LightBaryonQuarkModelFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::LightBaryonQuarkModelFormFactor"; }
+  static string className() { return "Herwig::LightBaryonQuarkModelFormFactor"; }
   /**
    * Return the class name.
    * Return the name of the shared library to be loaded to get

@@ -25,12 +25,14 @@ extern "C" int isnan(double) throw();
 using namespace Herwig;
 
 void FFDipole::persistentOutput(PersistentOStream & os) const {
-  os << _emin << _eminrest << _eminlab << _nphotonmax << _maxwgt
+  os << ounit(_emin,GeV) << ounit(_eminrest,GeV) << ounit(_eminlab,GeV) 
+     << _nphotonmax << _maxwgt
      << _mode << _maxtry << _energyopt << _betaopt << _dipoleopt;
 }
 
 void FFDipole::persistentInput(PersistentIStream & is, int) {
-  is >> _emin >> _eminrest >> _eminlab >> _nphotonmax >> _maxwgt
+  is >> iunit(_emin,GeV) >> iunit(_eminrest,GeV) >> iunit(_eminlab,GeV) 
+     >> _nphotonmax >> _maxwgt
      >> _mode >> _maxtry >> _energyopt >> _betaopt >> _dipoleopt;
 }
 
@@ -192,7 +194,7 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
   // get the charges of the particles in units of the positron charge
   _charge=children[0]->dataPtr()->iCharge()*children[1]->dataPtr()->iCharge()/9.;
   // boost the momenta to the rest frame
-  Hep3Vector boostv(-p.momentum().boostVector());
+  Boost boostv(-p.momentum().boostVector());
   // boost the particles to the parent rest frame
   // and set the initial momenta of the charged particles 
   // in the dipole rest frame: currently this is the same 
@@ -231,19 +233,19 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
 			       << " New Maximum = " << 10.0 << endl;
 	  }
 	  generator()->log() << "testing input mass " 
-			     << p.mass() << " " 
-			     << children[0]->mass() << " " 
-			     << children[1]->mass() << endl; 
+			     << p.mass()/GeV << " " 
+			     << children[0]->mass()/GeV << " " 
+			     << children[1]->mass()/GeV << endl; 
 	  generator()->log() << "testing momenta " << endl;
-	  generator()->log() << p.momentum() << endl;
+	  generator()->log() << ounit(p.momentum(),GeV) << endl;
 	  for(unsigned int ix=0;ix<2;++ix)
 	    {generator()->log() << "charged " 
                                 << ix << " " 
-                                << _qnewlab[ix] << endl;}
+                                << ounit(_qnewlab[ix],GeV) << endl;}
 	  for(unsigned int ix=0;ix<_multiplicity;++ix)
 	    {generator()->log() << "photons " 
                                 << ix << " " 
-                                << _llab[ix] << endl;}
+                                << ounit(_llab[ix],GeV) << endl;}
           generator()->log() << "wgt         : " << wgt          << endl;
           generator()->log() << "_mewgt      : " << _mewgt       << endl;
           generator()->log() << "_jacobianwgt: " << _jacobianwgt << endl;
@@ -270,7 +272,7 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
       for(unsigned int ix=0;ix<2;++ix)
 	{
 	  // unit vector along direction
-	  Hep3Vector br=children[ix]->momentum().vect().unit();
+	  Boost br = children[ix]->momentum().vect().unit();
 	  // calculate the boost vector using expression accurate for beta->1
 	  double beta(sqrt((_qdrf[ix].e()+_m[ix+1])*(_qdrf[ix].e()-_m[ix+1]))/
 		      _qdrf[ix].e());
@@ -314,20 +316,20 @@ ParticleVector FFDipole::generatePhotons(const Particle & p,
 }
 
 // member which generates the photons
-double FFDipole::makePhotons(Hep3Vector boostv,ParticleVector children)
+double FFDipole::makePhotons(Boost boostv,ParticleVector children)
 {
   // set the initial parameters
   // number of photons (zero)
   _multiplicity=0;
   // zero size of photon vectors
-  _ldrf.resize(0);
-  _lprf.resize(0);
-  _llab.resize(0);
+  _ldrf.clear();
+  _lprf.clear();
+  _llab.clear();
   // zero size of angle storage
-  _sinphot.resize(0);
-  _cosphot.resize(0);
-  _photcut.resize(0);
-  _photonwgt.resize(0);
+  _sinphot.clear();
+  _cosphot.clear();
+  _photcut.clear();
+  _photonwgt.clear();
   // zero total momenta of the photons
   _bigLdrf=Lorentz5Momentum();
   _bigLprf=Lorentz5Momentum();
@@ -360,7 +362,8 @@ double FFDipole::makePhotons(Hep3Vector boostv,ParticleVector children)
 	{_photonwgt[ix]=photon(beta1,ombeta1,beta2,ombeta2);}
       // rotate the photons so in dipole rest frame rather 
       // than angle measured w.r.t q1 first work out the rotation
-      HepLorentzRotation rotation(HepRotationZ(-_qdrf[0].phi()));
+      SpinOneLorentzRotation rotation;
+      rotation.setRotateZ(-_qdrf[0].phi());
       rotation.rotateY(_qdrf[0].theta());
       rotation.rotateZ(_qdrf[0].phi());
       // rotate the total
@@ -421,7 +424,7 @@ double FFDipole::makePhotons(Hep3Vector boostv,ParticleVector children)
 	  Lorentz5Momentum pnew(_bigLdrf.x(),_bigLdrf.y(),
 				_bigLdrf.z(),_bigLdrf.e(),_m[0]);
 	  pnew.rescaleEnergy();
-	  HepLorentzRotation boost(HepBoost(pnew.findBoostToCM()));
+	  SpinOneLorentzRotation boost(pnew.findBoostToCM());
 	  Lorentz5Momentum q1=boost*_qdrf[0];
 	  Lorentz5Momentum q2=boost*_qdrf[1];
 	  // use this to calculate the form factor
@@ -455,11 +458,11 @@ double FFDipole::makePhotons(Hep3Vector boostv,ParticleVector children)
 	  Lorentz5Momentum pnew(_bigLdrf.x(),_bigLdrf.y(),
 				_bigLdrf.z(),_bigLdrf.e(),_m[0]);
 	  pnew.rescaleEnergy();
-	  HepLorentzRotation boost(HepBoost(pnew.findBoostToCM()));
+	  SpinOneLorentzRotation boost(pnew.findBoostToCM());
 	  Lorentz5Momentum q1=boost*_qdrf[0];
 	  Lorentz5Momentum q2=boost*_qdrf[1];
 	  // then boost to the lab
-	  boost=HepBoost(boostv);
+	  boost.setBoost(boostv);
 	  q1 *=boost;
 	  q2 *=boost;
 	  // use this to calculate the form factor
@@ -581,8 +584,11 @@ double FFDipole::photon(double beta1,double ombeta1,
   _cosphot.push_back(costh);
   _sinphot.push_back(sinth);
   // store the four vector for the photon
-  _ldrf.push_back(Lorentz5Momentum(en*sinth*cos(phi),en*sinth*sin(phi),
-				   en*costh,en,0.));
+  _ldrf.push_back(Lorentz5Momentum(en*sinth*cos(phi),
+				   en*sinth*sin(phi),
+				   en*costh,
+				   en,
+				   0.*GeV));
   // add the photon momentum to the total
   _bigLdrf+=_ldrf.back();
   // return the weight
@@ -640,21 +646,22 @@ double FFDipole::meWeight(ParticleVector children)
 	      else if(spin1==2)
 		{twgt+=opbc*ratio/(1.+(1.+beta1*beta2)/ratio/opbc);}
 	      else             
-		{twgt+= 2.*sqr(opbc)*ratio*
+		{twgt+= 2.*sqr(opbc*ratio)*
 		    (+1./(1+beta1*beta2+_ldrf[i].e()/_qnewdrf[1].e()*ombc)
 		     +(1.+beta1*beta2)/sqr(1.+beta1*beta2
 					   +_ldrf[i].e()/_qnewdrf[0].e()*opbc));}
 	      // correction for the second particle
 	      ratio =_ldrf[i].e()/_qnewdrf[1].e();
-	      if(spin2==1)     
-		{twgt+=0.;}
+	      if(spin2==1) 
+		twgt+=0.;
 	      else if(spin2==2)
-		{twgt+=ombc*ratio/(1.+(1.+beta1*beta2)/ratio/ombc);}
-	      else             
-		{twgt+=2.*sqr(ombc)/sqr(_qnewdrf[1].e())*
-		    (+1./(1+beta1*beta2+_ldrf[i].e()/_qnewdrf[0].e()*opbc)
-		     +(1.+beta1*beta2)/sqr(1.+beta1*beta2
-					   +_ldrf[i].e()/_qnewdrf[1].e()*ombc));}
+		twgt+=ombc*ratio/(1.+(1.+beta1*beta2)/ratio/ombc);
+	      else {
+		twgt += 2.*sqr(ombc*ratio)
+		  * (1./(1. + beta1*beta2 + _ldrf[i].e()/_qnewdrf[0].e()*opbc)
+		     + (1.+beta1*beta2) / sqr(1. + beta1*beta2
+					      + _ldrf[i].e()/_qnewdrf[1].e()*ombc));
+	      }
 	      twgt/=dipole;
 	      outwgt+=twgt;
 	    }
@@ -663,7 +670,7 @@ double FFDipole::meWeight(ParticleVector children)
   return outwgt;
 }
 
-bool FFDipole::boostMomenta(Hep3Vector boostv)
+bool FFDipole::boostMomenta(Boost boostv)
 {
   // total energy  and momentum of photons
   Energy L0(_bigLdrf.e()),modL(_bigLdrf.rho());
@@ -689,7 +696,7 @@ bool FFDipole::boostMomenta(Hep3Vector boostv)
   // Find the momenta of the particles in the rest frame 
   // of the parent...
   // First get the boost from the parent particle
-  HepLorentzRotation boost(HepBoost(pnew.findBoostToCM()));
+  SpinOneLorentzRotation boost(pnew.findBoostToCM());
   // Boost the momenta of the charged particles
   for(unsigned int ix=0;ix<2;++ix){_qnewprf[ix]=boost*_qnewdrf[ix];}
   // Boost the total photon momentum
@@ -697,7 +704,7 @@ bool FFDipole::boostMomenta(Hep3Vector boostv)
   // Boost the individual photon momenta
   for(unsigned int ix=0;ix<_multiplicity;++ix){_lprf[ix]=boost*_ldrf[ix];}
   // Now boost from the parent rest frame to the lab frame
-  boost = HepBoost(boostv);
+  boost.setBoost(boostv);
   // Boosting charged particles
   for(unsigned int ix=0;ix<2;++ix){_qnewlab[ix]=boost*_qnewprf[ix];}
   // Boosting total photon momentum
@@ -720,7 +727,7 @@ unsigned int FFDipole::removePhotons()
 	      ++nremoved;
 	      _photcut[ix]=true;
 	      _bigLdrf-=_ldrf[ix];
-	      _ldrf[ix]=Lorentz5Momentum(0.,0.,0.,0.,0.);
+	      _ldrf[ix]=Lorentz5Momentum();
 	    }
 	}
     }
@@ -734,7 +741,7 @@ unsigned int FFDipole::removePhotons()
 	      ++nremoved;
 	      _photcut[ix]=true;
 	      _bigLdrf-=_ldrf[ix];
-	      _ldrf[ix]=Lorentz5Momentum(0.,0.,0.,0.,0.);
+	      _ldrf[ix]=Lorentz5Momentum();
 	    }
 	}
     }

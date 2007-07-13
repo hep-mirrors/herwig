@@ -9,9 +9,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
@@ -19,12 +19,12 @@ using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::u_spinortype;
 using ThePEG::Helicity::v_spinortype;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 void FFVDecayer::persistentOutput(PersistentOStream & os) const {
   os << _theFFVPtr;
@@ -95,12 +95,12 @@ double FFVDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newME);
-  double output = (newME.contract(rhoin)).real()/scale;
+  double output = (newME.contract(rhoin)).real()/scale*UnitRemoval::E2;
   colourConnections(inpart, decay);  
   return output;
 }
 
-double FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
+Energy FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
 				const PDPtr part2) const {
   double mu1 = part1->mass()/inpart->mass();
   double mu2 = part2->mass()/inpart->mass();
@@ -113,9 +113,9 @@ double FFVDecayer::partialWidth(const PDPtr inpart, const PDPtr part1,
   double matrixElement2 = (-2*mu2*mu2 + mu1*mu1 + 1)*x - 6.*y*mu1;
   matrixElement2 += (mu1*mu1 - 1)*(mu1*mu1 - 1)*x/mu2/mu2;
   matrixElement2 *= norm.real()/2.;
-  double pcm = Kinematics::CMMomentum(inpart->mass(),part1->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),part1->mass(),
 				      part2->mass());
-  double output =matrixElement2*pcm/(8.*Constants::pi);
+  Energy output =matrixElement2*pcm/(8.*Constants::pi);
   return output;
   
 }

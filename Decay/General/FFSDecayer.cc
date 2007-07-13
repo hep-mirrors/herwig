@@ -9,9 +9,9 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
@@ -19,12 +19,12 @@ using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::u_spinortype;
 using ThePEG::Helicity::v_spinortype;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 
 FFSDecayer::~FFSDecayer() {}
@@ -104,7 +104,7 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   }
 
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if((inpart.data()).iColour()==PDT::Colour8) {
     output *= 0.5;
   }
@@ -113,7 +113,7 @@ double FFSDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
+Energy FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
 				const PDPtr outb) const {
   double mu1,mu2;
   if(outa->iSpin() == PDT::Spin1Half) {
@@ -131,9 +131,9 @@ double FFSDecayer::partialWidth(const PDPtr inpart, const PDPtr outa,
   double cr = (_theFFSPtr->getRight()).real();
   double me2 = norm.real()*((1.+ mu1*mu1 - mu2*mu2)*(cl*cl + cr*cr) 
 			    + 4.*cl*cr*mu1)/2.;
-  double pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
+  Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				       outb->mass());
-  double pWidth = me2*pcm/8./Constants::pi;
+  Energy pWidth = me2*pcm/8./Constants::pi;
   if(inpart->iColour()==PDT::Colour8) {
     pWidth *= 0.5;
   }

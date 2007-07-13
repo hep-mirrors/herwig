@@ -226,25 +226,25 @@ private:
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the Sudakov given the scale
    */
-  vector<InterpolatorPtr> _sudakovQ;
+  vector<Interpolator<double,double>::Ptr> _sudakovQ;
 
   /**
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the scale given the Sudakov
    */
-  vector<InterpolatorPtr> _sudakovP;
+  vector<Interpolator<double,double>::Ptr> _sudakovP;
 
   /**
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the Sudakov given the scale using linear extrapolation as a backup
    */
-  vector<InterpolatorPtr> _linearQ;
+  vector<Interpolator<double,double>::Ptr> _linearQ;
 
   /**
    *  Vector of interpolators for the Sudakovs to interpolate
    *  to give the scale given the Sudakov using linear extrapolation as a backup
    */
-  vector<InterpolatorPtr> _linearP;
+  vector<Interpolator<double,double>::Ptr> _linearP;
 
   /**
    *  Reference to the object for \f$\alpha_S\f$ after dynamic casting
@@ -285,6 +285,8 @@ public:
    *  Return the value of the integrand
    */
   double operator() (double) const;
+  typedef double ArgType;
+  typedef double ValType;
 
   /**
    *  Set the scales

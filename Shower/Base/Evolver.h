@@ -157,6 +157,7 @@ protected:
    * accepting only emissions which conforms to the showerVariables.
    * If at least one emission has occurred then the method returns true
    * @param particle The particle to be showered
+   * @param beam The beam particle
    */
   virtual bool spaceLikeShower(tShowerParticlePtr particle,PPtr beam); 
 
@@ -192,6 +193,36 @@ protected:
    * Any soft ME correction? 
    */
   inline bool softMEC() const;
+  //@}
+
+  /**
+   *  Switch for intrinsic pT
+   */
+  //@{
+  /**
+   * Any intrinsic pT?
+   */
+  inline bool ipTon() const;
+   //@}  
+
+  /**
+   *  Switches for vetoing hard emissions
+   */
+  //@{
+  /**
+   * Vetos on? 
+   */
+  inline bool hardVetoOn() const;
+
+  /**
+   * veto hard emissions in IS shower?
+   */
+  inline bool hardVetoIS() const;
+
+  /**
+   * veto hard emissions in FS shower?
+   */
+  inline bool hardVetoFS() const;
   //@}
 
   /**
@@ -280,6 +311,11 @@ protected:
    */
   inline map<tShowerProgenitorPtr,pair<Energy,double> > & intrinsicpT();
 
+  /**
+   *  find the maximally allowed pt acc to the hard process. 
+   */
+  void setupMaximumScales(ShowerTreePtr, vector<ShowerProgenitorPtr>);
+
 protected:
 
   /** @name Clone Methods. */
@@ -345,6 +381,30 @@ private:
   unsigned int _meCorrMode; 
 
   /**
+   * Hard emission veto switch
+   */
+  unsigned int _hardVetoMode; 
+
+  /**
+   * IntrinsicpT switch
+   */
+  unsigned int _intrinsicpT;
+
+  /**
+   * rms intrinsic pT of Gaussian distribution
+   */
+  Energy _iptrms;
+
+   /**
+   * Proportion of inverse quadratic intrinsic pT distribution
+   */
+  double _beta;
+
+  /**
+   * Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))
+   */
+  Energy _gamma;
+  /**
    *  The progenitor of the current shower
    */
   ShowerProgenitorPtr _progenitor;
@@ -408,7 +468,7 @@ template <>
 struct ClassTraits<Herwig::Evolver>
   : public ClassTraitsBase<Herwig::Evolver> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Evolver"; }
+  static string className() { return "Herwig::Evolver"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Evolver is implemented. It may also include several, space-separated,

@@ -7,11 +7,12 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "TopDalitzAnalysis.fh"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
-#include "../Utilities/Histogram.h"
+#include "Herwig++/Utilities/Histogram.h"
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 
@@ -243,7 +244,7 @@ template <>
 struct ClassTraits<Herwig::TopDalitzAnalysis>
   : public ClassTraitsBase<Herwig::TopDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TopDalitzAnalysis"; }
+  static string className() { return "Herwig::TopDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * TopDalitzAnalysis is implemented. It may also include several, space-separated,

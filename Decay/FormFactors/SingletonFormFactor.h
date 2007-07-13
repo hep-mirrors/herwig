@@ -244,7 +244,7 @@ template <>
  struct ClassTraits<Herwig::SingletonFormFactor>
   : public ClassTraitsBase<Herwig::SingletonFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::SingletonFormFactor"; }
+  static string className() { return "Herwig::SingletonFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).*/

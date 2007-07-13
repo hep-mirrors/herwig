@@ -48,7 +48,7 @@ void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
   if(_initialize) {
     GaussianIntegrator integrator;
     BaryonCFunction integrand(this);
-    _C0.resize(0);_C1.resize(0);_C2.resize(0);
+    _C0.clear();_C1.clear();_C2.clear();
     double pre(0.),root(2.*sqrt(6.));
     double gamma1(1),gamma2(1),gamma3(sqrt(acos(-1.)));
     unsigned int ix,iy;
@@ -57,8 +57,8 @@ void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
       for(ix=0;ix<=_order;++ix) {
 	if(ix>0)    gamma1*=ix;
 	if(ix%2==1) gamma2*=(ix+1)/2.0;gamma3*=ix/2.0;
-	if(ix%2==0) pre=pow(root,ix)/12.*gamma2/gamma1;
-	else        pre=pow(root,ix)/12.*gamma3/gamma1;
+	if(ix%2==0) pre=pow(root,double(ix))/12.*gamma2/gamma1;
+	else        pre=pow(root,double(ix))/12.*gamma3/gamma1;
 	// for the xi_0 function
 	_a=_mu2;_b=2.;_N=ix;
 	_C0.push_back(pre*integrator.value(integrand,0.,1.));
@@ -75,12 +75,12 @@ void BaryonThreeQuarkModelFormFactor::doinit() throw(InitException) {
 }
 
 void BaryonThreeQuarkModelFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _initialize << _order << _mlight << _mstrange << _LambdaQ << _Lambdaqq 
-     << _Lambdasq << _Lambdass << _C0 << _C1 << _C2;}
+  os << _initialize << _order << ounit(_mlight,MeV) << ounit(_mstrange,MeV) << ounit(_LambdaQ,MeV) << ounit(_Lambdaqq,MeV) 
+     << ounit(_Lambdasq,MeV) << ounit(_Lambdass,MeV) << _C0 << _C1 << _C2;}
 
 void BaryonThreeQuarkModelFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _initialize >> _order >> _mlight >> _mstrange >> _LambdaQ >> _Lambdaqq
-     >> _Lambdasq >> _Lambdass >> _C0 >> _C1 >> _C2;}
+  is >> _initialize >> _order >> iunit(_mlight,MeV) >> iunit(_mstrange,MeV) >> iunit(_LambdaQ,MeV) >> iunit(_Lambdaqq,MeV)
+     >> iunit(_Lambdasq,MeV) >> iunit(_Lambdass,MeV) >> _C0 >> _C1 >> _C2;}
 
 ClassDescription<BaryonThreeQuarkModelFormFactor> 
 BaryonThreeQuarkModelFormFactor::initBaryonThreeQuarkModelFormFactor;
@@ -225,8 +225,8 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int,int id0,int id1,Energy m0,Energy m1,
     g2a = 2./3.*(xi1-(omega+1.)*xi2);
     g3a =-g2a;
     // convert to our form
-    f1v = g1v+0.5*(m0+m1)*(g2v/m0+g3v/m1);
-    f1a =-g1a+0.5*(m0-m1)*(g2a/m0+g3a/m1);
+    f1v = g1v+Complex(0.5*(m0+m1)*(g2v/m0+g3v/m1));
+    f1a =-g1a+Complex(0.5*(m0-m1)*(g2a/m0+g3a/m1));
     f2v = 0.5*(m0+m1)*( g2v/m0+g3v/m1);
     f3v = 0.5*(m0+m1)*( g2v/m0-g3v/m1);
     f2a =-0.5*(m0+m1)*( g2a/m0+g3a/m1);
@@ -295,7 +295,7 @@ void BaryonThreeQuarkModelFormFactor::dataBaseOutput(ofstream & output,bool head
 						     bool create) const
 {
   if(header) output << "update decayers set parameters=\"";
-  if(create) output << "create /Herwig++/BaryonThreeQuarkModelFormFactor " 
+  if(create) output << "create Herwig::BaryonThreeQuarkModelFormFactor " 
 		    << fullName() << " \n";
   output << "set " << fullName() << ":Order       " << _order        << " \n";
   output << "set " << fullName() << ":LightMass   " << _mlight/GeV   << " \n";

@@ -94,25 +94,10 @@ class VectorMeson3PionDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline VectorMeson3PionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson3PionDecayer(const VectorMeson3PionDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson3PionDecayer();
-  //@}
-
-public:
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -330,9 +315,19 @@ private:
   vector<bool> _defaultmass;
 
   /**
-   * constants for the running widths
+   * Constants for the running widths
    */
-  vector<vector <double> > _rho0const,_rhocconst;
+  //@{
+  /**
+   *  For the neutral \f$\rho\f$
+   */
+  vector<vector <double> > _rho0const;
+
+  /**
+   *  For the charged \f$\rho\f$
+   */
+  vector<vector <double> > _rhocconst;
+  //@}
 
   /**
    * rho mass parameters
@@ -392,7 +387,7 @@ template <>
 struct ClassTraits<Herwig::VectorMeson3PionDecayer>
   : public ClassTraitsBase<Herwig::VectorMeson3PionDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::VectorMeson3PionDecayer"; }
+  static string className() { return "Herwig::VectorMeson3PionDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

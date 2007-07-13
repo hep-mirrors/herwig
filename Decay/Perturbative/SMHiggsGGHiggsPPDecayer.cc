@@ -13,8 +13,8 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/PDT/DecayMode.h"
 
 
@@ -72,14 +72,14 @@ namespace Herwig {
       ("This is an implentation of h0->gg or h0->gamma,gamma "
        "decayer using the SMHGGVertex.");
 
-       static Reference<SMHiggsGGHiggsPPDecayer,Helicity::SMHGGVertex> 
+       static Reference<SMHiggsGGHiggsPPDecayer,SMHGGVertex> 
 	 interfaceSMHGGVertex
 	 ("SMHGGVertex",
 	  "Pointer to SMHGGVertex",
 	  &SMHiggsGGHiggsPPDecayer::_hggvertex, false, false, true, 
 	  false, false);
        
-       static Reference<SMHiggsGGHiggsPPDecayer,Helicity::SMHPPVertex> 
+       static Reference<SMHiggsGGHiggsPPDecayer,SMHPPVertex> 
 	 interfaceSMHPPVertex
 	 ("SMHPPVertex",
 	  "Pointer to SMHPPVertex",
@@ -120,7 +120,7 @@ namespace Herwig {
     }
     //store matrix element
     ME(higgs);
-    double output = higgs.contract(rhoH).real()/scale;
+    double output = higgs.contract(rhoH).real()*UnitRemoval::E2/scale;
     //colour factor (N^2 - 1)/4
     if(decay[0]->id() == ParticleID::g &&
        decay[1]->id() == ParticleID::g) {

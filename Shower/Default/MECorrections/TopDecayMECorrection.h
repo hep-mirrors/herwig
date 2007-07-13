@@ -351,7 +351,7 @@ template <>
 struct ClassTraits<Herwig::TopDecayMECorrection>
   : public ClassTraitsBase<Herwig::TopDecayMECorrection> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TopDecayMECorrection"; }
+  static string className() { return "Herwig::TopDecayMECorrection"; }
   /**
    * The name of a file containing the dynamic library where the class
    * TopDecayMECorrection is implemented. It may also include several, space-separated,

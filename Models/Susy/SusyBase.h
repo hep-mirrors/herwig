@@ -7,14 +7,24 @@
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "Herwig++/Models/Susy/MixingMatrix.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/SSSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/SSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSSVertex.h"
 #include "SusyBase.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 
+/*@name Some convenient typedefs. */
+//@{
+
+  /** 
+   * Map to hold key, parameter pairs. 
+   */
+  typedef map<long, double> ParamMap;
+
+//@}
+  
 /** \ingroup Models
    * This class is designed to be a base class for SUSY models. It implements
    * the readSetup function from InterfacedBase to open a LesHouches file and
@@ -24,23 +34,6 @@ using namespace ThePEG;
    */  
 
 class SusyBase: public StandardModel {
-
-public:
-  
-  /*@name Some convenient typedefs. */
-  //@{
-  /** VSSVertex pointer. */
-  typedef Ptr<Helicity::VSSVertex>::pointer VSSVertexPtr;
-  
-  /** VVSSVertex pointer. */
-  typedef Ptr<Helicity::VVSSVertex>::pointer VVSSVertexPtr;
-
-  /** SSSVertex pointer. */
-  typedef Ptr<Helicity::SSSVertex>::pointer SSSVertexPtr;
-  
-  /** Map to hold key, parameter pairs. */
-  typedef map<long, double> ParamMap;
-  //@}
   
 public:
 
@@ -48,6 +41,51 @@ public:
    * The default constructor.
    */
   inline SusyBase();
+
+public:
+
+  /** @name Access functions. */
+  //@{
+  /**
+   * Value of \f$\tan\beta\f$.
+   */
+  inline double tanBeta() const;
+
+  /**
+   * Value of \f$\mu\f$ parameter.
+   */
+  inline Energy muParameter() const;
+
+  /**
+   * Value of soft breaking mass for the bino
+   */
+  inline Energy softMOne() const;
+
+  /**
+   * Value of soft breaking mass for the wino
+   */
+  inline Energy softMTwo() const;
+
+  /**
+   * Value of soft breaking mass for the gluino
+   */
+  inline Energy softMThree() const;
+
+  /**
+   * The neutralino mixing matrix
+   */
+  inline const MixingMatrixPtr & neutralinoMix() const;
+
+  /**
+   * The U-type chargino mixing matrix
+   */
+  inline const MixingMatrixPtr & charginoUMix() const;
+
+  /**
+   * The V-type chargino mixing matrix
+   */
+  inline const MixingMatrixPtr & charginoVMix() const;
+  //@}
 
 public:
 
@@ -75,6 +113,25 @@ public:
    */
   static void Init();
 
+  /**@name Functions to access specific vertices.*/
+  //@{
+  /**
+   * Pointer to the MSSM fermion-antifermion-higgs vertex 
+   */
+  virtual inline tFFSVertexPtr vertexFFH() const;
+  
+  /**
+   * Pointer to the MSSM double gauge boson-higgs vertex 
+   */
+  virtual inline tVVSVertexPtr vertexWWH() const;
+  
+  /**
+   * Pointer to the MSSM effective higgs-gluon-gluon vertex
+   */
+  virtual inline tGeneralSVVVertexPtr vertexHGG() const;
+  //@}
+
+
 protected:
   
   /**
@@ -83,71 +140,6 @@ protected:
    */
   virtual void readSetup(istream & is) throw(SetupException);
 
-public:
-
-  /** @name Access functions. */
-  //@{
-  /**
-   * Value of \f$\tan\beta\f$.
-   */
-  inline double tanBeta() const;
-
-  /**
-   * Value of \f$\mu\f$ parameter.
-   */
-  inline double muParameter() const;
-
-  /**
-   * Value of Higgs mixing angle \f$\alpha\f$.
-   */
-  inline double higgsMixingAngle() const;
-
-  /**
-   * Value of up-type trilinear couplings
-   */
-  inline const vector<Complex> & upTypeTrilinear() const;
-
-  /**
-   * Value of down-type trilinear couplings
-   */
-  inline const vector<Complex> & downTypeTrilinear() const;
-
-  /**
-   * Value of lepton trilinear couplings
-   */
-  inline const vector<Complex> & leptonTypeTrilinear() const;
-
-  /**
-   * The neutralino mixing matrix
-   */
-  inline const MixingMatrixPtr & neutralinoMix() const;
-
-  /**
-   * The U-type chargino mixing matrix
-   */
-  inline const MixingMatrixPtr & charginoUMix() const;
-
-  /**
-   * The V-type chargino mixing matrix
-   */
-  inline const MixingMatrixPtr & charginoVMix() const;
-
-  /**
-   * The stop mixing matrix
-   */
-  inline const MixingMatrixPtr & stopMix() const;
-
-  /**
-   * The sbottom chargino mixing matrix
-   */
-  inline const MixingMatrixPtr & sbottomMix() const;
-
-  /**
-   * The stau mixing matrix
-   */
-  inline const MixingMatrixPtr & stauMix() const;
-  //@}
-
 private:
   
   /**@name Functions to help file read-in. */
@@ -155,15 +147,18 @@ private:
   /**
    * Read block from LHA file
    * @param ifs input stream containg data
+   * @param name The name of the block
    */
-  ParamMap readBlock(ifstream & ifs) const throw(SetupException);
+  void readBlock(ifstream & ifs,string name) throw(SetupException);
 
   /**
    * Function to read mixing matrix from LHA file
    * @param ifs input stream containg data
-   * @param size The size of the matrix read-in
+   * @param row Number of rows
+   * @param col Number of columns
    */
-  const vector<Complex> readMatrix(ifstream & ifs, unsigned int & size)
+  const vector<MixingElement> readMatrix(ifstream & ifs, unsigned int & row,
+				   unsigned int & col)
     throw(SetupException);
 
   /**
@@ -175,21 +170,35 @@ private:
 
   /**
    * Create a DecayMode object in the repository
-   * @param parent ID of parent particle
+   * @param tag string containing first portion of tag including '->'
    * @param products Decay products
    * @param brat Branching ratio of this mode 
    */
-  void createDecayMode(long parent, vector<long> products,
+  void createDecayMode(string tag, vector<long> products,
 		       double brat) const;
+
+protected:
+
+  /**
+   *  Create the mixing matrices for the model
+   */
+  virtual void createMixingMatrices();
+
+  /**
+   *  Extract the parameters from the input blocks
+   */
+  virtual void extractParameters(bool checkmodel=true);
 
   /**
    * Create a object MixingMatrix in the repository
+   * @param Pointer to the mixing matrix
    * @param name Name of the mixing matrix, i.e. nmix, umix...
    * @param values Value of each entry in the matrix
    * @param size The size of the matrix
    */
-  void createMixingMatrix(string name, vector<Complex> & values,
-			  unsigned int size);
+  void createMixingMatrix(MixingMatrixPtr & matrix, string name, 
+			  const vector<MixingElement> & values,
+			  pair<unsigned int,unsigned int> size);
 
   /**
    * Reset masses in the repository to values read from LHA file.
@@ -200,7 +209,23 @@ private:
    * Adjust row of Mixing Matrix if a negative mass occurs in LHA file
    * @param id The PDG code of the particle with a negative mass
    */
-  void adjustMixingMatrix(long id);
+  virtual void adjustMixingMatrix(long id);
+  //@}
+
+  /**
+   *  Access to the mixings and parameters for the inheriting classes
+   */
+  //@{
+  /**
+   *  Parameter blocks
+   */
+  inline const map<string,ParamMap> & parameters() const;
+
+  /**
+   *  Mixing blocks
+   */
+  inline const map<string,pair<pair<unsigned int,unsigned int>, 
+			       vector<MixingElement> > >& mixings() const;
   //@}
   
 protected:
@@ -253,22 +278,44 @@ private:
    */
   //@{
   /**
-   *  The minpar parameter block
+   *  Parameter blocks
    */
-   ParamMap theMinPar;
+  map<string,ParamMap> _parameters;
 
   /**
-   * The hmix parameter block
+   *  Mixing blocks
    */
-   ParamMap theHMix;
+  map<string,pair<pair<unsigned int,unsigned int>, vector<MixingElement> > > _mixings;
+  /**
+   *  \f$\tan\beta\f$
+   */
+  double _tanbeta;
+
+  /**
+   *  \f$\mu\f$
+   */
+  Energy _mu;
+
+  /**
+   * The bilinear breaking mass term for the bino
+   */
+  Energy theMone;
+  
+  /**
+   * The bilinear breaking mass term for the wino
+   */
+  Energy theMtwo;
+
+  /**
+   * The bilinear breaking mass term for the gluinos
+   */
+  Energy theMthree;  
   //@}
 
   /**
-   * Storage of the masses (gets cleared once they have been set in the 
-   * repository) .
+   *  Neutralino and Chargino mixing matrices
    */
-   ParamMap theMasses;
-
+  //@{
   /**
    * Store pointers to the gaugino mixing matrices
    */
@@ -288,36 +335,6 @@ private:
    */
   MixingMatrixPtr theVMix; 
   //@}
-
-  /**
-   * Store pointers to the squark/slepton mixing matrices
-   */
-  //@{
-  /**
-   *  The \f$\tilde{t}\f$ mixing matrix
-   */
-  MixingMatrixPtr theStopMix;
-
-  /**
-   *  The \f$\tilde{b}\f$ mixing matrix
-   */
-  MixingMatrixPtr theSbotMix;
-
-  /**
-   *  The \f$\tilde{\tau}\f$ mixing matrix
-   */
-  MixingMatrixPtr theStauMix;
-  //@}
-  /**
-   * Value of higgs mixing angle.
-   */
-  double theAlpha;
-
-  /**
-   * Trilinear couplings stored as vector of complex numbers to make use
-   * of routine already available to read complex matrices
-   */
-  vector<Complex> theAu, theAd, theAe;
 
   /**@name Vertex pointers. */
   //@{
@@ -347,19 +364,9 @@ private:
   FFSVertexPtr theGFSFVertex;
 
   /**
-   * Pointer to the \f$h^0\f$-sfermion-sfermion vertex
+   * Pointer to the Higgs-sfermion-sfermion vertex
    */
-  SSSVertexPtr theH1SFSFVertex;
-  
-  /**
-   * Pointer to the \f$H^0\f$-sfermion-sfermion vertex
-   */
-  SSSVertexPtr theH2SFSFVertex;
-
-  /**
-   * Pointer to the \f$H^0\f$-sfermion-sfermion vertex
-   */
-  SSSVertexPtr theH3SFSFVertex;
+  SSSVertexPtr theHSFSFVertex;
 
   /**
    * Pointer to the \f$\tilde{\chi}^+\f$-fermion-sfermion vertex
@@ -400,6 +407,36 @@ private:
    * Pointer to the  vertex chargino-neutralino-Z vertex
    */
   FFVVertexPtr theCNWVertex;
+
+  /**
+   * Pointer to the vertex fermion-antifermion-higgs vertex
+   */
+  FFSVertexPtr theSSFFHVertex;
+
+  /**
+   * Pointer to the vertex gaugino-gaugino-higgs vertex
+   */
+  FFSVertexPtr theGOGOHVertex;
+  
+  /**
+   * Pointer to the vertex for a pair of gauge bosons and higgs
+   */
+  VVSVertexPtr theSSWWHVertex;
+  
+  /**
+   * Pointer to the vertex for a gauge boson and higgs
+   */
+  VSSVertexPtr theWHHVertex;
+
+  /**
+   * Pointer to triple higgs vertex
+   */
+  SSSVertexPtr theHHHVertex;
+  
+  /**
+   * The effective coupling of the higgs to a pai of gluons in the MSSM
+   */
+  GeneralSVVVertexPtr theSSHGGVertex;
   //@}
 };
 
@@ -409,7 +446,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SusyBase. */
@@ -425,7 +462,7 @@ template <>
 struct ClassTraits<Herwig::SusyBase>
   : public ClassTraitsBase<Herwig::SusyBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SusyBase"; }
+  static string className() { return "Herwig::SusyBase"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SusyBase is implemented. It may also include several, space-separated,
@@ -436,7 +473,7 @@ struct ClassTraits<Herwig::SusyBase>
   static string library() { return "HwSusy.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

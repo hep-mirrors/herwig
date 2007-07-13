@@ -27,12 +27,10 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
 
   vector<double> wgt(0);  
   PDVector inc(_theVertex->getIncoming());
-  for(unsigned int i=0;i<inc.size();++i) {
+  for(unsigned int i = 0; i < inc.size(); ++i) {
     int id = inc[i]->id();
-    if(id < 0) {
-      continue;
-    }
-    Energy m1 = getParticleData(id)->mass();
+    if(id < 0)  continue;
+    Energy m1 = inc[i]->mass();
     PDVector decaylist(0);
     for(unsigned int il=0;il<_thelist.size();++il) {
       PDVector dtemp = _theVertex->search(_thelist[il],id);
@@ -40,7 +38,7 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
     }
     PDVector extpart(3);
     for(PDVector::iterator iter=decaylist.begin();iter!=decaylist.end();) {
-      Energy m2(0.),m3(0.);
+      Energy m2(0.*MeV),m3(0.*MeV);
       bool cc1(false),cc2(false),cc3(false);
       if((*iter)->CC()) {cc1=true;}
       if((*(iter+1))->CC()) {cc2=true;}
@@ -110,6 +108,21 @@ void GeneralTwoBodyDecayer::doinit() throw(InitException) {
       }
     }
   }
+  unsigned int isize(_inpart.size()), oasize(_outparta.size()),
+    obsize(_outpartb.size());
+  if(  isize == 0 ||  oasize == 0 || obsize == 0 )
+    throw InitException()
+      << "GeneralTwoBodyDecayer::doinit() - Atleast one of the particle "
+      << "vectors has zero size, cannot continue." 
+      << isize << " " << oasize << " " << obsize 
+      << Exception::abortnow;
+  
+  if(  isize != oasize || isize != obsize )
+    throw InitException()
+      << "GeneralTwoBodyDecayer::doinit() - The particle vectors have "
+      << "different sizes. " << isize << " " << oasize << " " << obsize
+      << Exception::abortnow;
+
 }
 
 int GeneralTwoBodyDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
@@ -121,17 +134,21 @@ int GeneralTwoBodyDecayer::modeNumber(bool & cc, const DecayMode & dm) const {
   unsigned ii(0), nipart(_inpart.size());
   cc = false;
   do {
-    if( parentID == _inpart[ii] && 
-	((id1 == _outparta[ii] && id2 == _outpartb[ii]) || 
-	 (id1 == _outpartb[ii] && id2 == _outparta[ii])) )
+    long listpid(_inpart[ii]), listid1(_outparta[ii]),
+      listid2(_outpartb[ii]);
+    if( parentID == listpid && 
+	((id1 == listid1 && id2 == listid2) || 
+	 (id1 == listid2 && id2 == listid1)) )
       imode = ii;
     //cc-mode
-    else if(parentID == -_inpart[ii]) {
+    else if(parentID == -listpid) {
       cc = true;
-      if((id1 == -_outparta[ii] && id2 == -_outpartb[ii]) || 
-	 (id1 == -_outpartb[ii] && id2 == -_outparta[ii]) ||
-	 (id1 == _outparta[ii] && id2 == -_outpartb[ii])  || 
-	 (id1 == -_outparta[ii] && id2 == _outpartb[ii]))
+      if((id1 == -listid1 && id2 == -listid2) || 
+	 (id1 == -listid2 && id2 == -listid1) ||
+	 (id1 == listid1 && id2 == -listid2)  || 
+	 (id1 == -listid1 && id2 == listid2)  ||
+	 (id1 == listid2 && id2 == -listid1)  || 
+	 (id1 == -listid2 && id2 == listid1) )
 	imode = ii;
       else ++ii;
     }
@@ -182,6 +199,16 @@ colourConnections(const Particle & parent,
     else if(outaColour == PDT::Colour0 && outbColour == PDT::Colour3) {
       out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
     }
+    // octet + triplet
+    else if(outaColour == PDT::Colour8 && outbColour == PDT::Colour3) {
+      out[0]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->antiColourNeighbour(out[0]);
+    }
+    //opposite order
+    else if(outaColour == PDT::Colour3 && outbColour == PDT::Colour8) {
+      out[1]->incomingColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->antiColourNeighbour(out[1]);
+    }
     else
       throw Exception() << "Unknown outgoing colours for decaying "
 			<< "colour triplet in "
@@ -198,6 +225,16 @@ colourConnections(const Particle & parent,
     //opposite order
     else if(outaColour == PDT::Colour0 && outbColour == PDT::Colour3bar) {
       out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+    }
+    //octet + antitriplet
+    else if(outaColour == PDT::Colour3bar && outbColour == PDT::Colour8) {
+      out[1]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[0]->colourNeighbour(out[1]);
+    }
+    //opposite order
+    else if(outaColour == PDT::Colour8 && outbColour == PDT::Colour3bar) {
+      out[0]->incomingAntiColour(const_ptr_cast<tPPtr>(&parent));
+      out[1]->colourNeighbour(out[0]);
     }
     else
       throw Exception() << "Unknown outgoing colours for decaying "

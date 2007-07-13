@@ -9,12 +9,16 @@ using namespace ThePEG;
 
 template <class T>
 inline ThreeBodyAllOnCalculator<T>::
-ThreeBodyAllOnCalculator(vector<double> inweights,vector<int> intype,
-			 vector<Energy> inmass, vector<Energy> inwidth,
-			 T inme, int mode, Energy m1,Energy m2,Energy m3)
+ThreeBodyAllOnCalculator(vector<double> inweights,
+			 vector<int> intype,
+			 vector<Energy> inmass, 
+			 vector<Energy> inwidth, 
+			 vector<double> inpow,
+			 T inme, int mode, 
+			 Energy m1,Energy m2,Energy m3)
   : _channelweights(inweights),_channeltype(intype),_channelmass(inmass),
-    _channelwidth(inwidth),_theME(inme),_mode(mode),
-    _thechannel(0),_souter(0.),_outer(this)
+    _channelwidth(inwidth),_channelpower(inpow),_theME(inme),_mode(mode),
+    _thechannel(0),_souter(0.*MeV2),_outer(this)
 {
   _m.resize(4);
   _m[1]=m1;_m[2]=m2;_m[3]=m3;
@@ -40,7 +44,7 @@ inline Energy ThreeBodyAllOnCalculator<T>::getMass(const int id) const {
   if(id<4) return _m[id];
   else {
     cerr << "Tried to get invalid mass" << endl;
-    return 0.;
+    return 0.*MeV;
   }
 }
 
@@ -51,7 +55,7 @@ inline Energy ThreeBodyAllOnCalculator<T>::otherMass(const int id) const {
   else if(id==3) return _m[1]+_m[2];
   else {
     cerr << "Tried to set invalid mass" << endl; 
-    return 0.;
+    return 0.*MeV;
   }
 }
 
@@ -62,8 +66,8 @@ Outer(typename Ptr< ThreeBodyAllOnCalculator<T> >::pointer in)
 {}
 
 template <class T>
-inline double ThreeBodyAllOnCalculator<T>::Outer::operator() (double x) const {
-  double low,upp;
+inline Energy4 ThreeBodyAllOnCalculator<T>::Outer::operator() (double x) const {
+  Energy2 low, upp;
   _integrand->outerVariables(x,low,upp);
   return _integrator.value(*_integrand,low,upp);
 }

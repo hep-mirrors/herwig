@@ -5,6 +5,7 @@
 // This is the declaration of the SimpleLHCAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "SimpleLHCAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
@@ -201,7 +202,7 @@ template <>
 struct ClassTraits<Herwig::SimpleLHCAnalysis>
   : public ClassTraitsBase<Herwig::SimpleLHCAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SimpleLHCAnalysis"; }
+  static string className() { return "Herwig::SimpleLHCAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the SimpleLHCAnalysis class and any other class on which it depends
    *  (except the base class). */

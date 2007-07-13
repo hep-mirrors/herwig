@@ -12,7 +12,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
@@ -322,9 +322,9 @@ double MEPP2GammaJet::qqbarME(vector<SpinorWaveFunction>    & fin,
 	  // first diagram
 	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
 					 fin[inhel1],gout[outhel1]);
-	  diag[0] = _photonvertex->evaluate(0.,inter,ain[inhel2],pout[outhel2]);
+	  diag[0] = _photonvertex->evaluate(0.*GeV2,inter,ain[inhel2],pout[outhel2]);
 	  // second diagram
-	  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
 					  fin[inhel1],pout[outhel2]);
 	  diag[1] = _gluonvertex->evaluate(mt,inter,ain[inhel2],gout[outhel1]);
 	  // compute the running totals
@@ -376,13 +376,13 @@ double MEPP2GammaJet::qgME(vector<SpinorWaveFunction>    & fin,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(0.,5,fin[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(0.*GeV2,5,fin[inhel1].getParticle(),
 					  fin[inhel1],pout[outhel1]);
 	  diag[0]=_gluonvertex->evaluate(mt,inter,fout[outhel2],gin[inhel2]);
 	  // second diagram
 	  inter = _gluonvertex->evaluate(mt,5,fin[inhel1].getParticle(),
 					 fin[inhel1],gin[inhel2]);
-	  diag[1]=_photonvertex->evaluate(0.,inter,fout[outhel2],pout[outhel1]);
+	  diag[1]=_photonvertex->evaluate(0.*GeV2,inter,fout[outhel2],pout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
 	  diag1 +=real(diag[0]*conj(diag[0]));
@@ -433,13 +433,13 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
       for(outhel1=0;outhel1<2;++outhel1) {
 	for(outhel2=0;outhel2<2;++outhel2) {
 	  // first diagram
-	  inter = _photonvertex->evaluate(0.,5,ain[inhel1].getParticle(),
+	  inter = _photonvertex->evaluate(0.*GeV2,5,ain[inhel1].getParticle(),
 					  ain[inhel1],pout[outhel1]);
 	  diag[0]=_gluonvertex->evaluate(mt,aout[outhel2],inter,gin[inhel2]);
 	  // second diagram
 	  inter = _gluonvertex->evaluate(mt,5,ain[inhel1].getParticle(),
 					 ain[inhel1],gin[inhel2]);
-	  diag[1]=_photonvertex->evaluate(0.,aout[outhel2],inter,pout[outhel1]);
+	  diag[1]=_photonvertex->evaluate(0.*GeV2,aout[outhel2],inter,pout[outhel1]);
 	  // compute the running totals
 	  diag[2]=diag[0]+diag[1];
 	  diag1 +=real(diag[0]*conj(diag[0]));
@@ -467,8 +467,8 @@ double MEPP2GammaJet::qbargME(vector<SpinorBarWaveFunction> & ain,
 bool MEPP2GammaJet::generateKinematics(const double * r) {
   double ctmin = -1.0;
   double ctmax = 1.0;
-  meMomenta()[2].setMass(0.);
-  meMomenta()[3].setMass(0.);
+  meMomenta()[2].setMass(0.*GeV);
+  meMomenta()[3].setMass(0.*GeV);
 
 
   Energy q = 0.0*GeV;
@@ -516,9 +516,9 @@ bool MEPP2GammaJet::generateKinematics(const double * r) {
 
   Energy pt = q*sqrt(1.0-sqr(cth));
   phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setV(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
+  meMomenta()[2].setVect(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
 
-  meMomenta()[3].setV(Momentum3(-pt*sin(phi()),	-pt*cos(phi()), -q*cth));
+  meMomenta()[3].setVect(Momentum3(-pt*sin(phi()),-pt*cos(phi()), -q*cth));
 
   meMomenta()[2].rescaleEnergy();
   meMomenta()[3].rescaleEnergy();

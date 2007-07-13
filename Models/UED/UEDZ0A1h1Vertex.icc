@@ -1,0 +1,38 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the UEDZ0A1h1Vertex class.
+//
+
+namespace Herwig {
+
+inline UEDZ0A1h1Vertex::UEDZ0A1h1Vertex() : theSin2ThetaW(0.), theKappa(0.),	    
+					    theq2Last(), theCoupLast(0.) {
+  setList(vector<int>(1, 23), vector<int>(1, 5100036), 
+	  vector<int>(1, 5100025));
+}
+
+inline IBPtr UEDZ0A1h1Vertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr UEDZ0A1h1Vertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void UEDZ0A1h1Vertex::doinit() throw(InitException) {
+  VSSVertex::doinit();
+  theUEDBase = dynamic_ptr_cast<tUEDBasePtr>(generator()->standardModel());
+  if(!theUEDBase)
+    throw InitException() << "UEDZ0A1h1Vertex::doinit() - The pointer to "
+			  << "the UEDBase object is null!"
+			  << Exception::runerror;
+  double sw2 = theUEDBase->sin2ThetaW();
+  theSin2ThetaW = 2.*sqrt(sw2*(1. - sw2));
+  Energy2 mz2 = sqr(getParticleData(23)->mass());
+  InvEnergy2 rad2 = sqr(theUEDBase->compactRadius());
+  theKappa = 1./sqrt(1. + mz2*rad2);
+  orderInGs(0);
+  orderInGem(0);
+}
+}

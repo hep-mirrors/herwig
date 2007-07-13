@@ -28,7 +28,7 @@ inline IBPtr DecayPhaseSpaceMode::fullclone() const {
 }
 
 // set the maximum weight
-inline void DecayPhaseSpaceMode::setMaxWeight(double wgt) const {_MaxWeight=wgt;}
+inline void DecayPhaseSpaceMode::setMaxWeight(double wgt) const {_maxweight=wgt;}
 
 // add a new channel
 inline void DecayPhaseSpaceMode::
@@ -45,7 +45,8 @@ inline unsigned int DecayPhaseSpaceMode::numberChannels() const {
 
 // reset the properties of one of the intermediate particles
 inline void DecayPhaseSpaceMode::resetIntermediate(int ichan, tcPDPtr part,
-					       Energy mass, Energy width) {
+						   Energy mass, Energy width) {
+  if(!part) return;
   _channels[ichan]->resetIntermediate(part,mass,width);
 }
 
@@ -106,7 +107,7 @@ inline void DecayPhaseSpaceMode::resetIntermediate(tcPDPtr part, Energy mass,
 }
 
 // get the maximum weight
-inline double DecayPhaseSpaceMode::maxWeight() const {return _MaxWeight;}
+inline double DecayPhaseSpaceMode::maxWeight() const {return _maxweight;}
 
 // get the weight for a channel
 inline double DecayPhaseSpaceMode::channelWeight(unsigned int in) const {

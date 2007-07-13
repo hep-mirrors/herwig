@@ -1,0 +1,19 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the HardVertex class.
+//
+// Author: Peter Richardson
+//
+
+namespace Herwig {
+using namespace ThePEG;
+  
+// get ME
+inline const ProductionMatrixElement & HardVertex::ME() const
+{return _matrixelement;}
+
+// set ME
+inline void HardVertex::ME(const ProductionMatrixElement & in) const
+{_matrixelement.reset(in);}
+}

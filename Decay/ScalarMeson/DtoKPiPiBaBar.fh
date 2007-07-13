@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DtoKPiPiBaBar class.
+//
+#ifndef HERWIG_DtoKPiPiBaBar_FH
+#define HERWIG_DtoKPiPiBaBar_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DtoKPiPiBaBar;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DtoKPiPiBaBar,DtoKPiPiBaBarPtr);
+
+}
+
+#endif

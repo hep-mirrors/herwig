@@ -75,11 +75,11 @@ void SpinCorrAnalysis::analyze(const tPVector &) {
 void SpinCorrAnalysis::analyze(tPPtr) {}
 
 void SpinCorrAnalysis::persistentOutput(PersistentOStream & os) const {
-  os << theMaxInvMass;
+  os << ounit(theMaxInvMass,GeV);
 }
 
 void SpinCorrAnalysis::persistentInput(PersistentIStream & is, int) {
-  is >> theMaxInvMass;
+  is >> iunit(theMaxInvMass,GeV);
 }
 
 ClassDescription<SpinCorrAnalysis> SpinCorrAnalysis::initSpinCorrAnalysis;

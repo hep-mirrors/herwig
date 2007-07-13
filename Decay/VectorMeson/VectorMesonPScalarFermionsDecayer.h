@@ -43,23 +43,10 @@ class VectorMesonPScalarFermionsDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   VectorMesonPScalarFermionsDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMesonPScalarFermionsDecayer(const VectorMesonPScalarFermionsDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMesonPScalarFermionsDecayer();
-  //@}
 
 public:
 
@@ -98,9 +85,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual double threeBodydGammads(const int imode, const Energy q2, const Energy2 s,
-				   const Energy m1, const Energy m2,
-				   const Energy m3) const;
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
+				      const Energy2 s,
+				      const Energy m1, const Energy m2,
+				      const Energy m3) const;
 
   /**
    * Output the setup information for the particle database
@@ -268,7 +256,7 @@ template <>
 struct ClassTraits<Herwig::VectorMesonPScalarFermionsDecayer>
   : public ClassTraitsBase<Herwig::VectorMesonPScalarFermionsDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::VectorMesonPScalarFermionsDecayer"; }
+  static string className() { return "Herwig::VectorMesonPScalarFermionsDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

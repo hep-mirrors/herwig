@@ -60,17 +60,17 @@ int SU3BaryonOctetOctetScalarDecayer::modeNumber(bool & cc,const DecayMode & dm)
 }
 
 void SU3BaryonOctetOctetScalarDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _sf << _sd << _parity << _fpi << _proton << _neutron << _sigma0 << _sigmap 
+  os << _sf << _sd << _parity << ounit(_fpi,GeV) << _proton << _neutron << _sigma0 << _sigmap 
      << _sigmam << _lambda << _xi0 << _xim << _eproton << _eneutron << _esigma0 
      << _esigmap << _esigmam << _elambda << _exi0 << _exim << _incomingB << _outgoingB 
-     << _outgoingM << _maxweight << _prefactor;
+     << _outgoingM << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonOctetOctetScalarDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _sf >> _sd >> _parity >> _fpi >> _proton >> _neutron >> _sigma0 >> _sigmap 
+  is >> _sf >> _sd >> _parity >> iunit(_fpi,GeV) >> _proton >> _neutron >> _sigma0 >> _sigmap 
      >> _sigmam >> _lambda >> _xi0 >> _xim >> _eproton >> _eneutron >> _esigma0 
      >> _esigmap >> _esigmam >> _elambda >> _exi0 >> _exim >> _incomingB >> _outgoingB 
-     >> _outgoingM >> _maxweight >> _prefactor;
+     >> _outgoingM >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
 ClassDescription<SU3BaryonOctetOctetScalarDecayer> SU3BaryonOctetOctetScalarDecayer::initSU3BaryonOctetOctetScalarDecayer;
@@ -258,7 +258,7 @@ void SU3BaryonOctetOctetScalarDecayer::threeHalfHalfScalarCoupling(int imode,Ene
 void SU3BaryonOctetOctetScalarDecayer::setupModes(unsigned int iopt) const
 {
   if(_incomingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);_outgoingM.resize(0);}
+  if(iopt==1){_outgoingB.clear();_incomingB.clear();_outgoingM.clear();}
   // set up for the various different decay modes
   vector<double> factor;
   vector<int> intemp,outtemp,mestemp;
@@ -416,7 +416,7 @@ void SU3BaryonOctetOctetScalarDecayer::dataBaseOutput(ofstream & output,
   output << "set " << fullName() << ":Fcoupling " << _sf << "\n";
   output << "set " << fullName() << ":Dcoupling " << _sd << "\n";
   output << "set " << fullName() << ":Parity " << _parity<< "\n";
-  output << "set " << fullName() << ":Fpi " << _fpi << "\n";
+  output << "set " << fullName() << ":Fpi " << _fpi/MeV << "\n";
   output << "set " << fullName() << ":Proton " << _proton << "\n";
   output << "set " << fullName() << ":Neutron " << _neutron << "\n";
   output << "set " << fullName() << ":Sigma+ " << _sigmap << "\n";

@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the VffGammaAnalysis class.
+//
+
+namespace Herwig {
+
+inline VffGammaAnalysis::VffGammaAnalysis() {
+  // c cbar mesons
+  _id.push_back(443);_id.push_back(100443);_id.push_back(30443);
+  // b bbar mesons
+  _id.push_back(553);_id.push_back(100553);
+  _id.push_back(200553);_id.push_back(300553);
+}
+
+inline IBPtr VffGammaAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr VffGammaAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

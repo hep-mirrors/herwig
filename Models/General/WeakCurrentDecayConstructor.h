@@ -6,7 +6,7 @@
 //
 
 #include "NBodyDecayConstructorBase.h"
-#include "Herwig++/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Decay/General/GeneralCurrentDecayer.fh"
@@ -251,7 +251,7 @@ template <>
 struct ClassTraits<Herwig::WeakCurrentDecayConstructor>
   : public ClassTraitsBase<Herwig::WeakCurrentDecayConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::WeakCurrentDecayConstructor"; }
+  static string className() { return "Herwig::WeakCurrentDecayConstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * WeakCurrentDecayConstructor is implemented. It may also include several, space-separated,

@@ -118,7 +118,7 @@ void LambdabExcitedLambdacSumRuleFormFactor::dataBaseOutput(ofstream & output,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/LambdabExcitedLambdacSumRuleFormFactor " 
+    {output << "create Herwig::LambdabExcitedLambdacSumRuleFormFactor " 
 	    << fullName() << " \n";}
   output << "set " << fullName() << ":Xi          " << _xi1          << " \n";
   output << "set " << fullName() << ":Rho2        " << _rho2         << " \n";

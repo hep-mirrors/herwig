@@ -6,7 +6,7 @@
 //
 
 #include "NBodyDecayConstructorBase.h"
-#include "Herwig++/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Decay/General/GeneralTwoBodyDecayer.fh"
@@ -39,7 +39,7 @@ public:
    * Function used to determine allowed decaymodes
    *@param part vector of ParticleData pointers containing particles in model
    */
-  virtual void DecayList(const vector<PDPtr> & part);
+  virtual void DecayList(const PDVector & part);
   
 public:
 
@@ -122,10 +122,9 @@ private:
    * @param iv Row number in _theExistingDecayers member
    * @return vector of ParticleData ptrs
    */
-  vector<PDPtr> createModes(const PDPtr inpart,
-			    const VertexBasePtr vert,
-			    unsigned int ilist,
-			    unsigned int iv);
+  PDVector createModes(tPDPtr inpart, VertexBasePtr vert,
+		       unsigned int ilist,
+		       unsigned int iv);
 
   /**
    * Function to create decayer for specific vertex
@@ -134,7 +133,7 @@ private:
    * @param ivert Integer referring to the row in _theExistingDecayers
    * member variable
    */
-  void createDecayer(const VertexBasePtr vert, unsigned int icol,
+  void createDecayer(VertexBasePtr vert, unsigned int icol,
 		     unsigned int ivert);
 
   /**
@@ -143,9 +142,18 @@ private:
    * @param decays list of allowed interactions
    * @param decayer The decayer responsible for this decay
    */
-  void createDecayMode(PDPtr inpart,
+  void createDecayMode(tPDPtr inpart,
 		       const PDVector & decays,
-		       const GeneralTwoBodyDecayerPtr decayer);
+		       GeneralTwoBodyDecayerPtr decayer);
+
+  /**
+   * Set the branching ratio of this mode. This requires 
+   * calculating a new width for the decaying particle and reweighting
+   * the current branching fractions.
+   * @param dm The decaymode for which to set the branching ratio
+   * @param pwidth The calculated width of the mode
+   */
+    void setBranchingRatio(tDMPtr dm, Energy pwidth);
 
   /**
    * Set the interfaces on the decayers to initialise them
@@ -189,7 +197,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of TwoBodyDecayConstructor. */
@@ -205,14 +213,14 @@ template <>
 struct ClassTraits<Herwig::TwoBodyDecayConstructor>
   : public ClassTraitsBase<Herwig::TwoBodyDecayConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TwoBodyDecayConstructor"; }
+  static string className() { return "Herwig::TwoBodyDecayConstructor"; }
   /** Return the name of the shared library be loaded to get
    *  access to the TwoBodyDecayConstructor class and every other class it uses
    *  (except the base class). */
   static string library() { return "libHwModelGenerator.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

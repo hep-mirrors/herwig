@@ -17,7 +17,7 @@
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Cuts/Cuts.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 
 using namespace Herwig;
 
@@ -122,8 +122,8 @@ void MEPP2HiggsJet::Init() {
 bool MEPP2HiggsJet::generateKinematics(const double * r) {
   double ctmin = -1.0;
   double ctmax = 1.0;
-  if(mePartonData()[2]->id()!=ParticleID::h0) meMomenta()[2].setMass(0.);
-  if(mePartonData()[3]->id()!=ParticleID::h0) meMomenta()[3].setMass(0.);
+  if(mePartonData()[2]->id()!=ParticleID::h0) meMomenta()[2].setMass(0.*GeV);
+  if(mePartonData()[3]->id()!=ParticleID::h0) meMomenta()[3].setMass(0.*GeV);
 
   Energy q = 0.0*GeV;
   try {
@@ -170,9 +170,13 @@ bool MEPP2HiggsJet::generateKinematics(const double * r) {
 
   Energy pt = q*sqrt(1.0-sqr(cth));
   phi(rnd(2.0*Constants::pi));
-  meMomenta()[2].setV(Momentum3(pt*sin(phi()), pt*cos(phi()), q*cth));
+  meMomenta()[2].setX(pt*sin(phi()));
+  meMomenta()[2].setY(pt*cos(phi()));
+  meMomenta()[2].setZ(q*cth);
 
-  meMomenta()[3].setV(Momentum3(-pt*sin(phi()),	-pt*cos(phi()), -q*cth));
+  meMomenta()[3].setX(-pt*sin(phi()));
+  meMomenta()[3].setY(-pt*cos(phi()));
+  meMomenta()[3].setZ(-q*cth);
 
   meMomenta()[2].rescaleEnergy();
   meMomenta()[3].rescaleEnergy();
@@ -347,13 +351,13 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
   // get the kinematic invariants
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
-  Complex A5(0.);
+  complex<Energy2> A5 = Energy2();
   for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
     // full mass dependance
     if(_massopt==0) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
-      A5+= mf2*(4.+4.*s/(u+t)*(W1(s,mf2)-W1(mh2,mf2))
-		+(1.-4.*mf2/(u+t))*(W2(s,mf2)-W2(mh2,mf2)));
+      A5+= mf2*(4.+4.*double(s/(u+t))*(W1(s,mf2)-W1(mh2,mf2))
+		+(1.-4.*double(mf2/(u+t)))*(W2(s,mf2)-W2(mh2,mf2)));	
     }
     // infinite mass limit
     else {
@@ -361,28 +365,32 @@ double MEPP2HiggsJet::qqbarME(vector<SpinorWaveFunction>    & fin,
     }
   }
   // multiply by the rest of the form factors
+  using Constants::pi;
   double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
-  A5 *=Complex(0.,1.)*g*sqr(gs)*gs/(32.*s*sqr(pi)*mw);
+  complex<InvEnergy> A5c = A5 * Complex(0.,1.)*g*sqr(gs)*gs/(32.*s*sqr(pi)*mw);
   // compute the matrix element
-  LorentzPolarizationVector fcurrent;
-  Complex fdotp,epsdot[2],diag;
+  LorentzPolarizationVectorE fcurrent;
+  complex<Energy2> fdotp;
+  complex<Energy> epsdot[2];
+  Complex diag;
   Lorentz5Momentum ps(fin[0].getMomentum()+ain[0].getMomentum());
   ps.rescaleMass();
-  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gout[ix].wave()*ps;}
+  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gout[ix].wave().dot(ps);}
   Energy2 denom(-ps*gout[0].getMomentum());
-  LorentzSpinorBar atemp;
+  LorentzSpinorBar<double> atemp;
   double output(0.);
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
       // compute the fermion current
       atemp=ain[ihel2].wave();
-      fcurrent=fin[ihel1].wave().vectorCurrent(atemp);
-      fdotp=-(fcurrent*(gout[0].getMomentum()));
+      fcurrent=UnitRemoval::E*fin[ihel1].wave().vectorCurrent(atemp);
+      fdotp = -(fcurrent.dot(gout[0].getMomentum()));
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5*(fcurrent*gout[ghel].wave()-fdotp*epsdot[ghel]/denom);
+	diag=A5c*(fcurrent.dot(gout[ghel].wave())
+		 -fdotp*epsdot[ghel]/denom);
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel1,ihel2,0,2*ghel)=diag;
@@ -412,40 +420,43 @@ double MEPP2HiggsJet::qgME(vector<SpinorWaveFunction> & fin,
   // get the kinematic invariants
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
-  Complex A5(0.);
+  complex<Energy2> A5 = Energy2();
   for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
       if(_massopt==0) {
 	Energy2 mf2=sqr(getParticleData(ix)->mass());
-	A5+= mf2*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
-		  +(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
+	A5+= mf2*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
+		  +(1.-4.*double(mf2/(s+t)))*(W2(u,mf2)-W2(mh2,mf2)));
       }
       else {
 	A5+=2.*(u-mh2)/3.;
       }
   }
   // multiply by the rest of the form factors
+  using Constants::pi;
   double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
-  A5 *=Complex(0.,1.)*g*sqr(gs)*gs/(32.*u*sqr(pi)*mw);
+  complex<InvEnergy> A5c =A5*Complex(0.,1.)*g*sqr(gs)*gs/(32.*u*sqr(pi)*mw);
   // compute the matrix element
-  LorentzPolarizationVector fcurrent;
-  Complex fdotp,epsdot[2],diag;
+  LorentzPolarizationVectorE fcurrent;
+  complex<Energy2> fdotp;
+  complex<Energy> epsdot[2];
+  Complex diag;
   Lorentz5Momentum pu(fin[0].getMomentum()+fout[0].getMomentum());
   pu.rescaleMass();
-  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave()*pu;}
+  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave().dot(pu);}
   Energy2 denom(pu*gin[0].getMomentum());
-  LorentzSpinorBar atemp;
+  LorentzSpinorBar<double> atemp;
   double output(0.);
   for(unsigned int ihel=0;ihel<2;++ihel) {
     for(unsigned int ohel=0;ohel<2;++ohel) {
       // compute the fermion current
       atemp=fout[ohel].wave();
-      fcurrent=fin[ihel].wave().vectorCurrent(atemp);
-      fdotp=fcurrent*gin[0].getMomentum();
+      fcurrent=UnitRemoval::E*fin[ihel].wave().vectorCurrent(atemp);
+      fdotp=fcurrent.dot(gin[0].getMomentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5*(fcurrent*gin[ghel].wave()-fdotp*epsdot[ghel]/denom);
+	diag=A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom);
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
@@ -474,40 +485,43 @@ double MEPP2HiggsJet::qbargME(vector<SpinorBarWaveFunction> & fin,
   // get the kinematic invariants
   Energy2 s(sHat()),u(uHat()),t(tHat()),mh2(hout.m2()),et(scale());
   // calculate the loop function
-  Complex A5(0.);
+  complex<Energy2> A5 = Energy2();
   for(unsigned int ix=_minloop;ix<=_maxloop;++ix) {
     if(_massopt==0) {
       Energy2 mf2=sqr(getParticleData(ix)->mass());
-      A5+= mf2*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
-		+(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
+      A5+= mf2*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
+		+(1.-4.*double(mf2/(s+t)))*(W2(u,mf2)-W2(mh2,mf2)));
     }
     else { 
       A5+=2.*(u-mh2)/3.;
     }
   }
   // multiply by the rest of the form factors
+  using Constants::pi;
   double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
-  A5 *=Complex(0.,1.)*g*sqr(gs)*gs/(32.*u*sqr(pi)*mw);
+  complex<InvEnergy> A5c = A5*Complex(0.,1.)*g*sqr(gs)*gs/(32.*u*sqr(pi)*mw);
   // compute the matrix element
-  LorentzPolarizationVector fcurrent;
-  Complex fdotp,epsdot[2],diag;
+  LorentzPolarizationVectorE fcurrent;
+  complex<Energy2> fdotp;
+  complex<Energy> epsdot[2];
+  Complex diag;
   Lorentz5Momentum pu(fin[0].getMomentum()+fout[0].getMomentum());
   pu.rescaleMass();
-  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave()*pu;}
+  for(unsigned int ix=0;ix<2;++ix){epsdot[ix]=gin[ix].wave().dot(pu);}
   Energy2 denom(pu*gin[0].getMomentum());
-  LorentzSpinorBar atemp;
+  LorentzSpinorBar<double> atemp;
   double output(0.);
   for(unsigned int ihel=0;ihel<2;++ihel) {
     for(unsigned int ohel=0;ohel<2;++ohel) {
       // compute the fermion current
       atemp=fin[ihel].wave();
-      fcurrent=fout[ohel].wave().vectorCurrent(atemp);
-      fdotp=fcurrent*(gin[0].getMomentum());
+      fcurrent=UnitRemoval::E*fout[ohel].wave().vectorCurrent(atemp);
+      fdotp=fcurrent.dot(gin[0].getMomentum());
       for(unsigned int ghel=0;ghel<2;++ghel) {
 	// calculate the matrix element
-	diag=A5*(fcurrent*gin[ghel].wave()-fdotp*epsdot[ghel]/denom);
+	diag=A5c*(fcurrent.dot(gin[ghel].wave())-fdotp*epsdot[ghel]/denom);
 	// calculate the matrix element
 	output+=real(diag*conj(diag));
 	if(calc) newme(ihel,2*ghel,0,ohel)=diag;
@@ -585,12 +599,12 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
        A2stu+=A2(s,t,u,mf2);
        A2tsu+=A2(u,s,t,mf2);
        A2ust+=A2(t,s,u,mf2);
-       A5s+= mf2/s*(4.+4.*s/(u+t)*(W1(s,mf2)-W1(mh2,mf2))
-		    +(1.-4.*mf2/(u+t))*(W2(s,mf2)-W2(mh2,mf2)));
-       A5t+= mf2/t*(4.+4.*t/(s+u)*(W1(t,mf2)-W1(mh2,mf2))
-		    +(1.-4.*mf2/(s+u))*(W2(t,mf2)-W2(mh2,mf2)));
-       A5u+= mf2/u*(4.+4.*u/(s+t)*(W1(u,mf2)-W1(mh2,mf2))
-		    +(1.-4.*mf2/(s+t))*(W2(u,mf2)-W2(mh2,mf2)));
+       A5s+= mf2/s*(4.+4.*double(s/(u+t))*(W1(s,mf2)-W1(mh2,mf2))
+		    +(1.-4.*double(mf2/(u+t)))*(W2(s,mf2)-W2(mh2,mf2)));
+       A5t+= mf2/t*(4.+4.*double(t/(s+u))*(W1(t,mf2)-W1(mh2,mf2))
+		    +(1.-4.*double(mf2/(s+u)))*(W2(t,mf2)-W2(mh2,mf2)));
+       A5u+= mf2/u*(4.+4.*double(u/(s+t))*(W1(u,mf2)-W1(mh2,mf2))
+		    +(1.-4.*double(mf2/(s+t)))*(W2(u,mf2)-W2(mh2,mf2)));
      }
      else {
        A4stu=-1./3.;
@@ -604,19 +618,19 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    }
    Complex A3stu=0.5*(A2stu+A2ust+A2tsu-A4stu);
    // compute the dot products for the matrix element
-   Complex eps[3][4][2];
+   complex<InvEnergy> eps[3][4][2];
    Energy2 pdot[4][4];
-   pdot[0][0]=0.;
+   pdot[0][0]=0.*GeV2;
    pdot[0][1]= g1[0].getMomentum()*g2[0].getMomentum();
    pdot[0][2]=-1.*g1[0].getMomentum()*g4[0].getMomentum();
    pdot[0][3]=-1.*g1[0].getMomentum()*hout.getMomentum();
    pdot[1][0]= pdot[0][1];
-   pdot[1][1]= 0.;
+   pdot[1][1]= 0.*GeV2;
    pdot[1][2]=-1.*g2[0].getMomentum()*g4[0].getMomentum();
    pdot[1][3]=-1.*g2[0].getMomentum()*hout.getMomentum();
    pdot[2][0]= pdot[0][2];
    pdot[2][1]= pdot[1][2];
-   pdot[2][2]= 0.;
+   pdot[2][2]= 0.*GeV2;
    pdot[2][3]= g4[0].getMomentum()*hout.getMomentum();
    pdot[3][0]=pdot[0][3];
    pdot[3][1]=pdot[1][3];
@@ -624,24 +638,25 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    pdot[3][3]=mh2;
    for(unsigned int ix=0;ix<2;++ix)
      {
-       eps[0][0][ix]=0.;
-       eps[0][1][ix]=g1[ix].wave()*g2[0].getMomentum()/    pdot[0][1];
-       eps[0][2][ix]=-1.*g1[ix].wave()*g4[0].getMomentum()/pdot[0][2];
-       eps[0][3][ix]=-1.*g1[ix].wave()*hout.getMomentum()/ pdot[0][3];
-       eps[1][0][ix]=g2[ix].wave()*g1[0].getMomentum()/    pdot[1][0];
-       eps[1][1][ix]=0.;
-       eps[1][2][ix]=-1.*g2[ix].wave()*g4[0].getMomentum()/pdot[1][2];
-       eps[1][3][ix]=-1.*g2[ix].wave()*hout.getMomentum()/ pdot[1][3];
-       eps[2][0][ix]=g4[ix].wave()*g1[0].getMomentum()/    pdot[2][0];
-       eps[2][1][ix]=g4[ix].wave()*g2[0].getMomentum()/    pdot[2][1];
-       eps[2][2][ix]=0.;
-       eps[2][3][ix]=-1.*g4[ix].wave()*hout.getMomentum()/     pdot[2][3];
+       eps[0][0][ix]=InvEnergy();
+       eps[0][1][ix]=g1[ix].wave().dot(g2[0].getMomentum())/pdot[0][1];
+       eps[0][2][ix]=-1.*g1[ix].wave().dot(g4[0].getMomentum())/pdot[0][2];
+       eps[0][3][ix]=-1.*g1[ix].wave().dot(hout.getMomentum())/ pdot[0][3];
+       eps[1][0][ix]=g2[ix].wave().dot(g1[0].getMomentum())/    pdot[1][0];
+       eps[1][1][ix]=InvEnergy();
+       eps[1][2][ix]=-1.*g2[ix].wave().dot(g4[0].getMomentum())/pdot[1][2];
+       eps[1][3][ix]=-1.*g2[ix].wave().dot(hout.getMomentum())/ pdot[1][3];
+       eps[2][0][ix]=g4[ix].wave().dot(g1[0].getMomentum())/    pdot[2][0];
+       eps[2][1][ix]=g4[ix].wave().dot(g2[0].getMomentum())/    pdot[2][1];
+       eps[2][2][ix]=InvEnergy();
+       eps[2][3][ix]=-1.*g4[ix].wave().dot(hout.getMomentum())/     pdot[2][3];
      }
    // prefactors
+   using Constants::pi;
    double g(sqrt(4.*pi*SM().alphaEM(mh2)/SM().sin2ThetaW()));
    double gs(sqrt(4.*pi*SM().alphaS(et)));
    Energy mw(getParticleData(ParticleID::Wplus)->mass());
-   double pre=g*sqr(mh2)*gs*sqr(gs)/(32.*sqr(pi)*mw);
+   Energy3 pre=g*sqr(mh2)*gs*sqr(gs)/(32.*sqr(pi)*mw);
    // compute the matrix element
    double output(0.);
    Complex diag[4],wdot[3][3];
@@ -651,33 +666,32 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
    for(unsigned int ihel1=0;ihel1<2;++ihel1) {
      for(unsigned int ihel2=0;ihel2<2;++ihel2) {
        for(unsigned int ohel=0;ohel<2;++ohel) {
-	 wdot[0][1]=g1[ihel1].wave()*g2[ihel2].wave();
-	 wdot[0][2]=g1[ihel1].wave()*g4[ohel ].wave();
+	 wdot[0][1]=g1[ihel1].wave().dot(g2[ihel2].wave());
+	 wdot[0][2]=g1[ihel1].wave().dot(g4[ohel ].wave());
 	 wdot[1][0]=wdot[0][1];
-	 wdot[1][2]=g2[ihel2].wave()*g4[ohel ].wave();
+	 wdot[1][2]=g2[ihel2].wave().dot(g4[ohel ].wave());
 	 wdot[2][0]=wdot[0][2];
 	 wdot[2][1]=wdot[1][2];
 	 // last piece
-	 diag[3]=A3stu*(eps[0][2][ihel1]*eps[1][0][ihel2]*eps[2][1][ohel]-
-			eps[0][1][ihel1]*eps[1][2][ihel2]*eps[2][0][ohel]+
-			(eps[2][0][ohel ]-eps[2][1][ohel ])*wdot[0][1]/pdot[0][1]+
-			(eps[1][2][ihel2]-eps[1][0][ihel2])*wdot[0][2]/pdot[0][2]+
-			(eps[0][1][ihel1]-eps[0][2][ihel1])*wdot[1][2]/pdot[1][2]);
+	 diag[3]=pre*A3stu*(eps[0][2][ihel1]*eps[1][0][ihel2]*eps[2][1][ohel]-
+			    eps[0][1][ihel1]*eps[1][2][ihel2]*eps[2][0][ohel]+
+			    (eps[2][0][ohel ]-eps[2][1][ohel ])*wdot[0][1]/pdot[0][1]+
+			    (eps[1][2][ihel2]-eps[1][0][ihel2])*wdot[0][2]/pdot[0][2]+
+			    (eps[0][1][ihel1]-eps[0][2][ihel1])*wdot[1][2]/pdot[1][2]);
 	 // first piece
-	 diag[3]+=
-	   +A2stu*(eps[0][1][ihel1]*eps[1][0][ihel2]-wdot[0][1]/pdot[0][1])*
-	   (eps[2][0][ohel ]-eps[2][1][ohel ])
-	   +A2ust*(eps[0][2][ihel1]*eps[2][0][ohel ]-wdot[0][2]/pdot[0][2])*
-	   (eps[1][2][ihel2]-eps[1][0][ihel2])
-	   +A2tsu*(eps[1][2][ihel2]*eps[2][1][ohel ]-wdot[1][2]/pdot[1][2])*
-	   (eps[0][1][ihel1]-eps[0][2][ihel1]);
-	 // prefactors
-	 diag[3] *=pre;
+	 diag[3]+=pre*(
+		       +A2stu*(eps[0][1][ihel1]*eps[1][0][ihel2]-wdot[0][1]/pdot[0][1])*
+		       (eps[2][0][ohel ]-eps[2][1][ohel ])
+		       +A2ust*(eps[0][2][ihel1]*eps[2][0][ohel ]-wdot[0][2]/pdot[0][2])*
+		       (eps[1][2][ihel2]-eps[1][0][ihel2])
+		       +A2tsu*(eps[1][2][ihel2]*eps[2][1][ohel ]-wdot[1][2]/pdot[1][2])*
+		       (eps[0][1][ihel1]-eps[0][2][ihel1])
+		       );
 	 output+=real(diag[3]*conj(diag[3]));
 	 // matrix element if needed
 	 if(calc) newme(2*ihel1,2*ihel2,0,2*ohel)=diag[3];
 	 // different diagrams 
-	 diag[0] = A5t*(-eps[0][3][ihel1]*
+	 diag[0] = A5t*UnitRemoval::InvE*(-eps[0][3][ihel1]*
 			(-2.*eps[2][1][ohel ]*eps[1][0][ihel2]*pdot[2][1]*pdot[1][0]
 			 -2.*eps[1][2][ihel2]*eps[2][0][ohel ]*pdot[1][2]*pdot[2][0]
 			 +wdot[1][2]*(pdot[0][1]+pdot[0][2]))
@@ -685,7 +699,7 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
 			-2.*eps[1][2][ihel2]*pdot[1][2]*wdot[0][2]
 			+wdot[1][2]*(eps[0][1][ihel1]*pdot[0][1]+
 				     eps[0][2][ihel1]*pdot[0][2]));
-	 diag[1] = A5u*(-eps[1][3][ihel2]*
+	 diag[1] = A5u*UnitRemoval::InvE*(-eps[1][3][ihel2]*
 			(+2.*eps[0][1][ihel1]*eps[2][0][ohel ]*pdot[0][1]*pdot[2][0]
 			 +2.*eps[0][2][ihel1]*eps[2][1][ohel ]*pdot[0][2]*pdot[2][1]
 			 -wdot[0][2]*(pdot[1][0]+pdot[1][2]))
@@ -693,7 +707,7 @@ double MEPP2HiggsJet::ggME(vector<VectorWaveFunction> g1, vector<VectorWaveFunct
 			+2.*eps[0][2][ihel1]*pdot[0][2]*wdot[2][1]
 			-wdot[0][2]*(eps[1][0][ihel2]*pdot[1][0]+
 				     eps[1][2][ihel2]*pdot[1][2]));
-	 diag[2] = A5s*(-eps[2][3][ohel ]*
+	 diag[2] = A5s*UnitRemoval::InvE*(-eps[2][3][ohel ]*
 			(+2.*eps[0][1][ihel1]*eps[1][2][ihel2]*pdot[0][1]*pdot[1][2]
 			 -2.*eps[1][0][ihel2]*eps[0][2][ihel1]*pdot[1][0]*pdot[1][3]
 			 +wdot[0][1]*(pdot[2][0]-pdot[2][1]))

@@ -21,11 +21,11 @@ using namespace ThePEG;
 BtoSGammaHadronicMass::~BtoSGammaHadronicMass() {}
 
 void BtoSGammaHadronicMass::persistentOutput(PersistentOStream & os) const {
-  os << _minMass << _maxMass;
+  os << ounit(_minMass,GeV) << ounit(_maxMass,GeV);
 }
 
 void BtoSGammaHadronicMass::persistentInput(PersistentIStream & is, int) {
-  is >> _minMass >> _maxMass;
+  is >> iunit(_minMass,GeV) >> iunit(_maxMass,GeV);
 }
 
 AbstractClassDescription<BtoSGammaHadronicMass> BtoSGammaHadronicMass::initBtoSGammaHadronicMass;
@@ -57,7 +57,7 @@ void BtoSGammaHadronicMass::dataBaseOutput(ofstream & output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::BtoSGammaHadronicMass " << fullName() << " \n";}
+    {output << "create Herwig::BtoSGammaHadronicMass " << fullName() << " \n";}
   output << "set " << fullName() << ":MinimumMass " << _minMass/GeV << " \n";
   output << "set " << fullName() << ":MaximumMass " << _maxMass/GeV << " \n";
   if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}

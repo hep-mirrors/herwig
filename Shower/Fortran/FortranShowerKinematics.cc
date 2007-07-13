@@ -18,15 +18,17 @@ void FortranShowerKinematics::updateChildren(const tShowerParticlePtr theParent,
   const ShowerIndex::InteractionType interaction = splittingFn()->interactionType();
   // if parent not from the shower set up
   if(theParent->showerParameters().empty()) {
+    // DGRELL is resize intended here? The argument may not be 
+    // used if there is a value already there.
     theParent->showerParameters().resize(1,1.);
-    theParent->showerVariables().resize(5,0.);
+    theParent->showerVariables().resize(5,0.*MeV);
     theParent->showerVariables()[0]=theParent->evolutionScales()[interaction];
   }
   Energy dqtilde = scale();
   double dz = z(); 
   double dphi = phi();
-  theChildren[0]->showerVariables().resize(5,0.);
-  theChildren[1]->showerVariables().resize(5,0.);
+  theChildren[0]->showerVariables().resize(5,0.*MeV);
+  theChildren[1]->showerVariables().resize(5,0.*MeV);
   // note that 1st child gets z, 2nd gets (1-z) by our convention.
   theChildren[0]->setEvolutionScale(interaction, dz*dqtilde);
   theChildren[1]->setEvolutionScale(interaction, (1.-dz)*dqtilde);
@@ -81,11 +83,11 @@ void FortranShowerKinematics::reconstructParent(const tShowerParticlePtr thePare
   c2->showerVariables()[3]=-sqrt(ptsq);
   c1->showerVariables()[4]=sqrt(sqr(c1->showerVariables()[4])-ptsq);
   c2->showerVariables()[4]=theParent->showerVariables()[4]-c1->showerVariables()[4];
-  theParent->set5Momentum(sqrt(m2));
+  theParent->set5Momentum(Energy(sqrt(m2)));
   cerr << "testing A " << theParent->PDGName() << " -> " 
        << c1->PDGName() << " " 
        << c2->PDGName() << "\n";
-  cerr << "testing branching" << theParent->mass() << " " << c1->showerVariables()[3]
+  cerr << "testing branching" << theParent->mass()/MeV << " " << c1->showerVariables()[3]/MeV
        << "\n";
 }
 
@@ -95,7 +97,7 @@ void FortranShowerKinematics::reconstructLast(const tShowerParticlePtr theLast,
   theLast->set5Momentum(mass);
   Energy2 p2=sqr(theLast->showerVariables()[0])-sqr(mass);
   theLast->showerVariables()[4]=sqrt(p2);
-  cerr << "testing last " << theLast->mass() << "\n";
+  cerr << "testing last " << theLast->mass()/MeV << "\n";
 }
 
 void FortranShowerKinematics::initialize(ShowerParticle & particle) {

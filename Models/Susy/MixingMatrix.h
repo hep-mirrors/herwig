@@ -13,6 +13,43 @@
 namespace Herwig {
 using namespace ThePEG;
 
+/*@name Some convenient typedefs. */
+//@{
+
+  /**
+   * A complex valued nested vector. 
+   */
+  typedef vector<vector<Complex> > CMatrix;
+  
+  /**
+   * Struct for the elements of a mixing matrix
+   */
+  struct MixingElement{
+
+    /**
+     *  Constructor
+     */
+    MixingElement(unsigned int irow, unsigned int icol,Complex ivalue) 
+      : row(irow), col(icol), value(ivalue) {}
+
+    /**
+     * row
+     */
+    unsigned int row;
+
+    /**
+     * column
+     */
+    unsigned int col;
+
+    /**
+     *  value
+     */
+    Complex value;
+  };
+
+//@}
+
 /**
  * This class is desinged to store the mixing matrices needed for Susy
  * studies. The actual matrix is stored as a nested complex vector. It
@@ -22,9 +59,6 @@ using namespace ThePEG;
  * @see Interfaced
  */
 class MixingMatrix: public Interfaced {
-
-  /** A complex valued nested vector. */
-  typedef vector<vector<Complex> > CMatrix;
 
 public:
 
@@ -40,7 +74,7 @@ public:
   /**
    * Contructor that initializes size of matrix
    */
-  inline MixingMatrix(unsigned int size);
+  inline MixingMatrix(unsigned int col, unsigned int row);
 
   /**
    * Standard Constructor.
@@ -125,7 +159,7 @@ public:
   /**
    * Return the size of the mixing matrix
    */
-  inline unsigned int size() const;
+  inline pair<unsigned int,unsigned int> size() const;
 
   // /**
 //    * Overloaded multiplication operator
@@ -176,7 +210,7 @@ private:
   /**
    * Size of matrix
    */
-  unsigned int _theSize;
+  pair<unsigned int,unsigned int> _theSize;
   
   /**
    * Print the matrix to the stream
@@ -184,6 +218,9 @@ private:
   friend ostream & operator<<(ostream & os,const MixingMatrix & mix);
 };
 
+  /**
+   * Output operator for the MixingMatrix
+   */
   ostream & operator<<(ostream &,const MixingMatrix &);
 
   /** Exception class to indicate problem with mixing matrix .*/
@@ -194,7 +231,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MixingMatrix. */
@@ -210,14 +247,14 @@ template <>
 struct ClassTraits<Herwig::MixingMatrix>
   : public ClassTraitsBase<Herwig::MixingMatrix> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MixingMatrix"; }
+  static string className() { return "Herwig::MixingMatrix"; }
   /** Return the name of the shared library be loaded to get
    *  access to the MixingMatrix class and every other class it uses
    *  (except the base class). */
   static string library() { return "HwSusy.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

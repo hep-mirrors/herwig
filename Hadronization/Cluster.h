@@ -309,7 +309,7 @@ template <>
 struct ClassTraits<Herwig::Cluster>:
   public ClassTraitsBase<Herwig::Cluster> {
   /** Return the class name. */
-  static string className() { return "Herwig++::Cluster"; }
+  static string className() { return "Herwig::Cluster"; }
 };
 
 /** @endcond */

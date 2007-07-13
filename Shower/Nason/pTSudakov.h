@@ -195,7 +195,7 @@ private:
   /**
    *  The mass squared of the particles in the current branching
    */
-  vector<Energy> _masssquared;
+  vector<Energy2> _masssquared;
 
   /**
    *  Kinematic cut-off

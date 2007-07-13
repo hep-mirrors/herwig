@@ -6,24 +6,24 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "MEff2vv.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::VVSVertexPtr;
-using Herwig::Helicity::GeneralSVVVertexPtr;
-using Herwig::Helicity::VVTVertex;
-using Herwig::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::GeneralSVVVertexPtr;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
 
 /**
  * This class implements the matrix element calculation for a generic
@@ -35,20 +35,11 @@ using Herwig::Helicity::VVVVertexPtr;
 class MEff2vv: public GeneralHardME {
 
 public:
-  
-  /**
-   * Convenient typedef for VVTVertex pointer
-   */
-  typedef Ptr<VVTVertex>::pointer VVTVertexPtr;
-
-public:
 
   /**
    * The default constructor.
    */
   inline MEff2vv();
-
-public:
 
   /** @name Virtual functions required by the GeneralHardME class. */
   //@{
@@ -181,7 +172,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MEff2vv. */
@@ -197,7 +188,7 @@ template <>
 struct ClassTraits<Herwig::MEff2vv>
   : public ClassTraitsBase<Herwig::MEff2vv> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEff2vv"; }
+  static string className() { return "Herwig::MEff2vv"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEff2vv is implemented. It may also include several, space-separated,
@@ -208,7 +199,7 @@ struct ClassTraits<Herwig::MEff2vv>
   static string library() { return "libHwGeneralME.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

@@ -11,4 +11,5 @@ ShowerParticle.cc  ShowerParticle.fh  ShowerParticle.h  ShowerParticle.icc \
 Evolver.h Evolver.fh Evolver.icc Evolver.cc \
 ShowerKinematics.fh  ShowerKinematics.h  ShowerKinematics.icc ShowerKinematics.cc \
 ShowerTree.h ShowerTree.fh ShowerTree.icc ShowerTree.cc \
-ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc
+ShowerProgenitor.fh ShowerProgenitor.h ShowerProgenitor.icc \
+ShowerVertex.fh ShowerVertex.h ShowerVertex.icc ShowerVertex.cc

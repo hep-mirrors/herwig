@@ -136,7 +136,8 @@ inline double TopDecayMECorrection::xginvc0(double xg , double kt)
   double u2=u*u,v3=v*v*v;
   if(u>0.&&(-4.*v3-u2)>0.)      output = cos(  atan(sqrt(-4.*v3-u2)/u)/3.);
   else if(u>0.&&(-4.*v3-u2)<0.) output = cosh(atanh(sqrt( 4.*v3+u2)/u)/3.);
-  else                          output = cos(( atan(sqrt(-4.*v3-u2)/u)+pi)/3.);
+  else                          output = cos(( atan(sqrt(-4.*v3-u2)/u)
+					       +Constants::pi)/3.);
   return ( 1.+_a +2.*sqrt(-v)*output)/3.;
 }
 

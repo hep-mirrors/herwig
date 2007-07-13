@@ -6,26 +6,26 @@
 //
 
 #include "GeneralHardME.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Tensor/FFTVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Tensor/FFTVertex.h"
 #include "MEff2ff.fh"
 
 namespace Herwig {
 using namespace ThePEG;
 using Helicity::SpinorWaveFunction;
 using Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::FFSVertexPtr;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::FFTVertexPtr;
-using Herwig::Helicity::ProductionMatrixElement;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFTVertexPtr;
+
 
 /**
- * This is the implementation of the 2->2 matrix element for
- * a fermion-antifermion -> fermion-antifermion. It inherits from 
+ * This is the implementation of the \f$ 2\to 2\f$ matrix element for
+ * a \f$ \Psi \Psi \to \Psi \Psi\f$ process. It inherits from 
  * GeneralHardME and implements the appropriate virtual functions.
  *
  * @see \ref MEff2ffInterfaces "The Interfaces"
@@ -81,8 +81,8 @@ private:
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\Psi\bar{\Psi}\f$
    * @param fin Spinors for first incoming particle
    * @param fbin SpinorBar Wavefunctions for second incoming particle
-   * @param fout Spinors for first outgoing particle
    * @param fbout SpinorBar Wavefunctions for outgoing particle
+   * @param fout Spinors for first outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
@@ -108,13 +108,29 @@ private:
 	    double & me2) const;
   
   /**
+   * Compute the matrix element for 
+   * \f$\bar{\Psi}\bar{\Psi}\to\bar{\Psi}\bar{\Psi}\f$
+   * @param fbin SpinorBars for first incoming particle
+   * @param fbin2 SpinorBars  for second incoming particle
+   * @param fout Spinors for first outgoing particle
+   * @param fout2 Spinors Wavefunctions for outgoing particle
+   * @param me2 colour averaged, spin summed ME
+   * @return ProductionMatrixElement containing results of 
+   * helicity calculations
+   */
+  ProductionMatrixElement
+  fbfb2fbfbHeME(SpinorBarVector & fbin, SpinorBarVector & fbin2,
+		SpinorVector & fout, SpinorVector & fout2,
+		double & me2) const;
+
+  /**
    * Compute the matrix element for \f$\Psi\bar{\Psi}\to\lambda\lambda\f$
    * @param fin Spinors for first incoming particle
    * @param fbin SpinorBar Wavefunctions for second incoming particle
    * @param fbout SpinorBar Wavefunctions for first outgoing particle
    * @param fout Spinors for second outgoing particle
-   * @param fbout2 SpinorBar Wavefunctions for first outgoing particle
-   * @param fout2 Spinors for second outgoing particle
+   * @param fout2 Spinor Wavefunctions for first outgoing particle
+   * @param fbout2 SpinorBar Wavefunctions for second outgoing particle
    * @param me2 colour averaged, spin summed ME
    * @return ProductionMatrixElement containing results of 
    * helicity calculations
@@ -225,7 +241,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MEff2ff. */
@@ -241,7 +257,7 @@ template <>
 struct ClassTraits<Herwig::MEff2ff>
   : public ClassTraitsBase<Herwig::MEff2ff> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEff2ff"; }
+  static string className() { return "Herwig::MEff2ff"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEff2ff is implemented. It may also include several, space-separated,
@@ -252,7 +268,7 @@ struct ClassTraits<Herwig::MEff2ff>
   static string library() { return "libHwGeneralME.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

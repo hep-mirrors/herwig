@@ -7,16 +7,21 @@
 namespace Herwig {
 
 
-  inline Energy Kinematics::pstarTwoBodyDecay(const Energy M, 
-					      const Energy m1, const Energy m2) {
-    return ( M <= 0.0  ||  m1 < 0.0  ||  m2 < 0.0  ||  M <= m1+m2  ?  0.0  : 
-	     sqrt(( M*M - (m1+m2)*(m1+m2) )*( M*M - (m1-m2)*(m1-m2) )) / (2.0*M) ); 
+  inline Energy 
+  Kinematics::pstarTwoBodyDecay(const Energy M, 
+				const Energy m1, 
+				const Energy m2) {
+    return ( M <= Energy()  ||  m1 < Energy()  
+	     ||  m2 < Energy()  ||  M <= m1+m2  ?  
+	     Energy()  : 
+	     Energy(sqrt(( M*M - (m1+m2)*(m1+m2) )*( M*M - (m1-m2)*(m1-m2) )) 
+	     / (2.0*M) )); 
   }
  
 
-  inline Vector3 Kinematics::unitDirection(const double cosTheta, const double phi) {
-    return ( fabs( cosTheta ) > 1.0  ?  Vector3() :
-	     Vector3( cos(phi)*sqrt(1.0-cosTheta*cosTheta) , 
+  inline Axis Kinematics::unitDirection(const double cosTheta, const double phi) {
+    return ( fabs( cosTheta ) > 1.0  ?  Axis() :
+	     Axis( cos(phi)*sqrt(1.0-cosTheta*cosTheta) , 
 		      sin(phi)*sqrt(1.0-cosTheta*cosTheta) , cosTheta) );
   }
 

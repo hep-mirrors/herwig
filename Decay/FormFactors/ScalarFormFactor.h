@@ -255,9 +255,10 @@ public:
    * @param bp The form factor \f$b_+\f$.
    * @param bm The form factor \f$b_-\f$.
    */
-  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
-				      Energy m1, Complex & h,Complex & k,
-				      Complex & bp, Complex & bm) const;
+  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0, Energy m1, complex<InvEnergy2> & h,
+				      Complex & k, complex<InvEnergy2> & bp,
+				      complex<InvEnergy2> & bm) const;
 
   /**
    * The form factor for the weak penguin decay of a scalar meson to a scalar meson.
@@ -452,7 +453,7 @@ template <>
 struct ClassTraits<Herwig::ScalarFormFactor>
   : public ClassTraitsBase<Herwig::ScalarFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ScalarFormFactor"; }
+  static string className() { return "Herwig::ScalarFormFactor"; }
 };
 
 /** @endcond */

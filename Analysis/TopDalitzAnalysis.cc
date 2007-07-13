@@ -13,6 +13,7 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
+#include "Herwig++/Utilities/Math.h"
 
 using namespace Herwig;
 
@@ -30,13 +31,13 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
       // All kinds of stuff is coming through here, b's, W's, t's, g's
       // c's, e's gamma's... 
       // Must be top
-      if((*pit)->id()!=6) continue;
+      if((*pit)->id() != 6) continue;
       // must have two children
-      if((*pit)->children().size()!=2) continue;
+      if((*pit)->children().size() != 2) continue;
       // neither should be top
-      if(abs((*pit)->children()[0]->id())==6||
-	 abs((*pit)->children()[1]->id())==6) continue;
-      tShower=particleID(*pit,final);
+      if(abs((*pit)->children()[0]->id()) == 6 ||
+	 abs((*pit)->children()[1]->id()) == 6) continue;
+      tShower = particleID(*pit,final);
       dalitz(tShower);
     }
   for(pit=pert.begin();pit!=pert.end();++pit)
@@ -53,6 +54,9 @@ void TopDalitzAnalysis::analyze(tEventPtr event, long, int, int) {
       tbarShower=particleID(*pit,final);
       dalitz(tbarShower);
     }
+  // quit analysis if we haven't found anything
+  if (tShower.empty() || tbarShower.empty())
+    return;
   Energy2 s = sqr(event->incoming().first->momentum().e()
             +     event->incoming().second->momentum().e()
                  );
@@ -99,7 +103,7 @@ tPVector TopDalitzAnalysis::particleID(PPtr top,tPVector final)
   //////////////////////////////////////////////
   do
   {
-      if(sqrt(orig->parents()[0]->momentum().m2())>=175001.) break;
+      if(sqrt(orig->parents()[0]->momentum().m2())>=175001.*MeV) break;
       orig=orig->parents()[0];
       sorig=dynamic_ptr_cast<ShowerParticlePtr>(orig);
       if(sorig)
@@ -377,7 +381,7 @@ void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antito
       // the top radiates then the two jet momenta seem to (and do) equal 
       // tq and bq respectively!
       KtJet::KtEvent ev = 
-	  KtJet::KtEvent(_kint.convertToKtVectorList(finalPartons),1,1,1);
+	  KtJet::KtEvent(_kint.convert(finalPartons),1,1,1);
       ev.findJetsN(3);
       // Get the two jets ordered by their Pt (largest Pt first?).
       vector<KtJet::KtLorentzVector> ktjets = ev.getJetsPt();
@@ -387,15 +391,12 @@ void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antito
       // Calculate delta R //
       ///////////////////////
       double deltaR(0.);
-      deltaR =            sqrt(sqr(ktjets[0].rapidity()-ktjets[1].rapidity())
-         		      +sqr(KtJet::phiAngle(ktjets[0].phi()
-						   -ktjets[1].phi()))) ;
-      deltaR = min(deltaR,sqrt(sqr(ktjets[0].rapidity()-ktjets[2].rapidity())
-			      +sqr(KtJet::phiAngle(ktjets[0].phi()
-						   -ktjets[2].phi()))));
-      deltaR = min(deltaR,sqrt(sqr(ktjets[1].rapidity()-ktjets[2].rapidity())
-			      +sqr(KtJet::phiAngle(ktjets[1].phi()
-						   -ktjets[2].phi()))));
+      deltaR =            sqrt(sqr(ktjets[0].rapidity() - ktjets[1].rapidity())
+			       + sqr(Math::angleMinusPiToPi(ktjets[0].phi() - ktjets[1].phi())));
+      deltaR = min(deltaR,sqrt(sqr(ktjets[0].rapidity() - ktjets[2].rapidity())
+			       + sqr(Math::angleMinusPiToPi(ktjets[0].phi() - ktjets[2].phi()))));
+      deltaR = min(deltaR,sqrt(sqr(ktjets[1].rapidity() - ktjets[2].rapidity())
+			       + sqr(Math::angleMinusPiToPi(ktjets[1].phi() - ktjets[2].phi()))));
       // If jets pass Et and deltaR separation cuts then add a 
       // point to the histogram.
       if(deltaR>0.7&&ktjets[0].et()>10000.&&ktjets[1].et()>10000.&&
@@ -404,24 +405,26 @@ void TopDalitzAnalysis::threeJetAnalysis(Energy2 s,tPVector top, tPVector antito
       //////////////////
       // Calculate y3 //
       //////////////////
+      vector<LorentzMomentum> jets = KtJetInterface::convert(ktjets);
       double y3(0.);
-      Hep3Vector np0,np1,np2;
-      np0 = ktjets[0].vect()/ktjets[0].vect().mag(); 
-      np1 = ktjets[1].vect()/ktjets[1].vect().mag(); 
-      np2 = ktjets[2].vect()/ktjets[2].vect().mag(); 
-      y3  =        (2./s)*min(sqr(ktjets[0].e()),
-	 		      sqr(ktjets[1].e()))*(1.-np0*np1) ;
-      y3  = min(y3,(2./s)*min(sqr(ktjets[0].e()),
-			      sqr(ktjets[2].e()))*(1.-np0*np2));
-      y3  = min(y3,(2./s)*min(sqr(ktjets[1].e()),
-			      sqr(ktjets[2].e()))*(1.-np1*np2));
+      Axis np0,np1,np2;
+      np0 = jets[0].vect().unit();
+      np1 = jets[1].vect().unit();
+      np2 = jets[2].vect().unit();
+      y3  =        (2./s)*min(sqr(jets[0].e()),
+	 		      sqr(jets[1].e()))*(1.-np0*np1) ;
+      y3  = min(y3,(2./s)*min(sqr(jets[0].e()),
+			      sqr(jets[2].e()))*(1.-np0*np2));
+      y3  = min(y3,(2./s)*min(sqr(jets[1].e()),
+			      sqr(jets[2].e()))*(1.-np1*np2));
       // If jets pass Et and deltaR separation cuts then add a 
       // point to the histogram.
       // *Do log to base 10* 
-      if(deltaR>0.7&&ktjets[0].et()>10000.&&ktjets[1].et()>10000.&&
-	 ktjets[2].et()>10000.&&ktjets.size()==3) _logy3 += log(y3)/log(10.);
+      if (deltaR>0.7 && ktjets[0].et()>10000. && ktjets[1].et()>10000. 
+	  && ktjets[2].et()>10000. && ktjets.size()==3) {
+	_logy3 += log(y3)/log(10.);
+      }
     }
-  return;
 }
 
 void TopDalitzAnalysis::dofinish() {

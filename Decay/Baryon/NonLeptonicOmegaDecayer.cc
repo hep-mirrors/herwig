@@ -43,16 +43,16 @@ void NonLeptonicOmegaDecayer::doinit() throw(InitException) {
   _A[0] = 0.5*_C/sqrt(3.)/_fpi*((_d-3.*_f)/(_Mlambda-_Mxi)
 			       +_hc/(_Momega-_MXistar))
     +_CBstar/2./sqrt(3.)/_fpi*(_dstar-3.*_fstar)/(_Mlambda/_MBstar-1.);
-  _B[0] =0.;
+  _B[0] =0./MeV;
     //-0.5*_sc/sqrt(3.)/_fpi*(_omegad-3.*_omegaf)/(_Mlambda/_MR-1.);
   // couplings for xi0 pi-
   _A[1] = _C/   sqrt(2.)/_fpi*(_hc/3./(_Momega-_MXistar)
 			       +_hpi*_mpip*_mpip/2./(_MKp*_MKp-_mpip*_mpip));
-  _B[1] = 0.;
+  _B[1] = 0./MeV;
   // couplings for xi- pi0
   _A[2] = _C/2./         _fpi*(_hc/3./(_Momega-_MXistar)
 			       +_hpi*_mpi0*_mpi0/2./(_MK0*_MK0-_mpi0*_mpi0));
-  _B[2] = 0.;
+  _B[2] = 0./MeV;
   // set up the decay modes
   PDVector extpart(3);
   DecayPhaseSpaceModePtr mode;
@@ -107,17 +107,21 @@ int NonLeptonicOmegaDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 }
 
 void NonLeptonicOmegaDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _dstar << _fstar << _omegad << _omegaf << _CBstar << _sc << _C << _fpi << _hc 
-     << _hpi <<_d << _f << _Mlambda << _Mxi << _Momega << _MXistar << _mpip << _mpi0 
-     << _MKp << _MK0 << _MBstar << _MR << _localmasses << _incomingB << _outgoingB 
-     << _outgoingM << _A << _B << _maxweight;
+  os << _dstar << _fstar << _omegad << _omegaf << _CBstar << _sc << _C << ounit(_fpi,GeV) 
+     << ounit(_hc,GeV) << _hpi << ounit(_d,GeV) << ounit(_f,GeV) << ounit(_Mlambda,GeV) 
+     << ounit(_Mxi,GeV) << ounit(_Momega,GeV) << ounit(_MXistar,GeV) << ounit(_mpip,GeV) 
+     << ounit(_mpi0,GeV) << ounit(_MKp,GeV) << ounit(_MK0,GeV) << ounit(_MBstar,GeV) 
+     << ounit(_MR,GeV) << _localmasses << _incomingB << _outgoingB << _outgoingM 
+     << ounit(_A,1./GeV) << ounit(_B,1./GeV) << _maxweight;
 }
 
 void NonLeptonicOmegaDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _dstar >> _fstar >> _omegad >> _omegaf >> _CBstar >> _sc >> _C >> _fpi >> _hc 
-     >> _hpi >> _d >> _f >> _Mlambda >> _Mxi >> _Momega >> _MXistar >> _mpip >> _mpi0 
-     >> _MKp >> _MK0 >> _MBstar >> _MR >> _localmasses >> _incomingB >> _outgoingB 
-     >> _outgoingM >> _A >> _B >> _maxweight;
+  is >> _dstar >> _fstar >> _omegad >> _omegaf >> _CBstar >> _sc >> _C >> iunit(_fpi,GeV) 
+     >> iunit(_hc,GeV) >> _hpi >> iunit(_d,GeV) >> iunit(_f,GeV) >> iunit(_Mlambda,GeV) 
+     >> iunit(_Mxi,GeV) >> iunit(_Momega,GeV) >> iunit(_MXistar,GeV) >> iunit(_mpip,GeV) 
+     >> iunit(_mpi0,GeV) >> iunit(_MKp,GeV) >> iunit(_MK0,GeV) >> iunit(_MBstar,GeV) 
+     >> iunit(_MR,GeV) >> _localmasses >> _incomingB >> _outgoingB >> _outgoingM 
+     >> iunit(_A,1./GeV) >> iunit(_B,1./GeV) >> _maxweight;
 }
 
 ClassDescription<NonLeptonicOmegaDecayer> NonLeptonicOmegaDecayer::initNonLeptonicOmegaDecayer;
@@ -177,7 +181,7 @@ void NonLeptonicOmegaDecayer::Init() {
      &NonLeptonicOmegaDecayer::_fpi, MeV, 92.4*MeV, 0.0*MeV, 200.0*MeV,
      false, false, true);
 
-  static Parameter<NonLeptonicOmegaDecayer,double> interfacehc
+  static Parameter<NonLeptonicOmegaDecayer,Energy> interfacehc
     ("hc",
      "The h_c coupling from hep-ph/9905398",
      &NonLeptonicOmegaDecayer::_hc, GeV, 0.39e-7*GeV, -10.0e-7*GeV, 10.0e-7*GeV,

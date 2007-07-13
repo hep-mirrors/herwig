@@ -6,27 +6,13 @@
 
 #include "Histogram.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Histogram.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/EventHandler.h"
 
 using namespace Herwig;
-
-Histogram::~Histogram() {}
-
-void Histogram::persistentOutput(PersistentOStream &) const {
-}
-
-void Histogram::persistentInput(PersistentIStream &, int) {
-}
-
-ClassDescription<Histogram> Histogram::initHistogram;
+NoPIOClassDescription<Histogram> Histogram::initHistogram;
 // Definition of the static class description member.
 
 void Histogram::Init() {
@@ -122,6 +108,47 @@ void Histogram::topdrawOutput(ostream & out,
 	out << '\n';
       }
     out << "PLOT " << endl;
+  }
+}
+
+void Histogram::simpleOutput(ostream & out, bool errorbars) const {
+  // simple ascii output (eg for gnuplot)
+  // work out the y points
+  vector<double> yout;
+  unsigned int numPoints = _globalStats.numberOfPoints();  
+  if (numPoints == 0) ++numPoints;
+
+  const unsigned int lastDataBinIndx = _bins.size()-2;
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    double value = 0.5*_prefactor*_bins[ix].contents / (delta*numPoints);
+    yout.push_back(value);
+  }
+
+  out << "# " << numPoints << " entries, mean +- sigma = "
+      << _globalStats.mean() << " +- " 
+      << _globalStats.stdDev() << "\n"
+      << "# xlo xhi ynorm " 
+      << (errorbars ? "ynorm_err " : "")
+      << (_havedata ? "data " : "")
+      << (_havedata && errorbars ? "dataerr " : "")
+      << "y_entr\n";
+
+  // the histogram from the event generator
+  for(unsigned int ix=1; ix<=lastDataBinIndx; ++ix) {
+    double delta = 0.5*(_bins[ix+1].limit-_bins[ix].limit);
+    out << _bins[ix].limit << " "
+	<< _bins[ix+1].limit << " " 
+	<< yout[ix-1];
+    if (errorbars) {
+      out << " " << 0.5*sqrt(_bins[ix].contentsSq)/(delta*numPoints);
+    }
+    if (_havedata) {
+      out << " " << _bins[ix].data;
+      if (errorbars)
+	out << " " << _bins[ix].dataerror;
+    }
+    out << " " << _bins[ix].contents << '\n';
   }
 }
 

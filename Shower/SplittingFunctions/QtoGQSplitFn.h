@@ -172,7 +172,7 @@ template <>
 struct ClassTraits<Herwig::QtoGQSplitFn>
   : public ClassTraitsBase<Herwig::QtoGQSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QtoGQSplitFn"; }
+  static string className() { return "Herwig::QtoGQSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QtoGQSplitFn is implemented. It may also include several, space-separated,

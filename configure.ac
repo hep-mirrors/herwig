@@ -49,6 +49,10 @@ AC_PATH_PROG(PERL, perl)
 
 AC_PDF_PATH
 
+AC_CHECK_LIB(m,main)
+AC_CHECK_LIB(gslcblas,main)
+AC_CHECK_LIB(gsl,main)
+
 AC_CHECK_CLHEP
 AC_CHECK_HEPMC
 
@@ -57,7 +61,6 @@ AC_CHECK_THEPEG
 AC_CHECK_KTJET
 AC_CHECK_EVTGEN
 
-AC_CHECK_NEWDECAYERS
 AC_LOOPTOOLS
 
 AM_CONDITIONAL(NEED_APPLE_FIXES,
@@ -66,7 +69,7 @@ AM_CONDITIONAL(NEED_APPLE_FIXES,
 dnl ###########################
 dnl ###########################
 
-AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE $CLHEPINCLUDE"
+AM_CPPFLAGS="-I\$(top_builddir)/include $THEPEGINCLUDE"
 AM_CXXFLAGS="-ansi -pedantic -Wall -W"
 
 # don't know how else to do this. see bug #14
@@ -87,6 +90,7 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
 		Models/RSModel/Makefile
 		Models/General/Makefile
 		Models/Susy/Makefile
+		Models/Susy/NMSSM/Makefile
 		Models/UED/Makefile
 		Interfaces/Makefile
 		Decay/Makefile
@@ -114,17 +118,6 @@ AC_CONFIG_FILES([UnderlyingEvent/Makefile
                 Shower/Makefile
                 Utilities/Makefile
                 Hadronization/Makefile
-		Helicity/Makefile
-                Helicity/Correlations/Makefile
-		Helicity/Vertex/Makefile
-                Helicity/Vertex/RSModel/Makefile
-                Helicity/Vertex/Scalar/Makefile
-                Helicity/Vertex/StandardModel/Makefile
-                Helicity/Vertex/Tensor/Makefile
-                Helicity/Vertex/Vector/Makefile
-		Helicity/Vertex/Susy/Makefile
-		Helicity/Vertex/UED/Makefile
-                Helicity/WaveFunction/Makefile
 		lib/Makefile
 		include/Makefile
 		src/Makefile

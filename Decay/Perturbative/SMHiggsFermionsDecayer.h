@@ -6,7 +6,7 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Helicity/Vertex/Scalar/FFSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "SMHiggsFermionsDecayer.fh"
 
@@ -44,8 +44,7 @@ SMHiggsFermionsDecayer();
    * @param cc Is this mode the charge conjugate
    * @param dm The decay mode
    */
-  virtual int modeNumber(bool &,const DecayMode &) const {return -1;}
-
+  virtual int modeNumber(bool &, const DecayMode &) const {return -1;}
 
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
@@ -175,11 +174,11 @@ template <>
 struct ClassTraits<Herwig::SMHiggsFermionsDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsFermionsDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsFermionsDecayer"; }
+  static string className() { return "Herwig::SMHiggsFermionsDecayer"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the SMHiggsFermionsDecayer class and any other class on which it depends
    *  (except the base class). */
-  static string library() { return "HwSMVertex.so HwPerturbativeHiggsDecay.so"; }
+  static string library() { return "HwPerturbativeHiggsDecay.so"; }
 };
 
 /** @endcond */

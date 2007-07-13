@@ -97,17 +97,17 @@ ParticleVector HeavyDecayer::decay(const DecayMode &dm, const Particle &p) const
    // Three Body Decay
    // Free Massless (V-A)*(V-A) ME
    if(MECode == 100) {
-     double EMwSq, GMwSq, EmLim, EmTest, GamW;
      Energy Mw = getParticleData(ParticleID::Wplus)->mass();
-     GamW = getParticleData(ParticleID::Wplus)->width();
-     EMwSq = sqr(Mw);
-     GMwSq = sqr(Mw*GamW);
-     EmLim = GMwSq + sqr(EMwSq - sqr(inter->mass()-p.mass()));
+     Energy GamW = getParticleData(ParticleID::Wplus)->width();
+     Energy2 EMwSq = sqr(Mw);
+     Energy4 GMwSq = sqr(Mw*GamW);
+     Energy4 EmLim = GMwSq + sqr(EMwSq - sqr(inter->mass()-p.mass()));
+     Energy4 EmTest;
      do {
        Kinematics::threeBodyDecay(inter->momentum(),products[0], products[1], 
 				  products[2], &VAWt);
        Lorentz5Momentum pw = products[0]+products[1];
-       double pw2 = pw*pw;
+       Energy2 pw2 = pw*pw;
        EmTest = sqr(pw2-EMwSq);
      } while((EmTest+GMwSq)*rnd() > EmLim);
    }
@@ -139,5 +139,6 @@ void HeavyDecayer::persistentInput(PersistentIStream &is, int) {
   is >> MECode; 
 }
 
-double HeavyDecayer::VAWt(double *temp) 
-{ return (temp[1]-temp[0])*(temp[0]-temp[2])*temp[3]; }
+double HeavyDecayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
+  return (t1-t0)*(t0-t2)*t3; 
+}

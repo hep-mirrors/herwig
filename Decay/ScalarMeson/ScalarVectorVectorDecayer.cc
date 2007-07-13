@@ -17,17 +17,17 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzPolarizationVector;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 
 inline ScalarVectorVectorDecayer::ScalarVectorVectorDecayer() 
@@ -85,11 +85,13 @@ int ScalarVectorVectorDecayer::modeNumber(bool &,const DecayMode & dm) const
 }
 
 void ScalarVectorVectorDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _coupling << _incoming << _outgoing1 << _outgoing2 << _maxweight;
+  os << ounit(_coupling,1/GeV)
+     << _incoming << _outgoing1 << _outgoing2 << _maxweight;
 }
 
 void ScalarVectorVectorDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _coupling >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
+  is >> iunit(_coupling,1/GeV)
+     >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight;
 }
 
 ClassDescription<ScalarVectorVectorDecayer> ScalarVectorVectorDecayer::initScalarVectorVectorDecayer;
@@ -123,7 +125,7 @@ void ScalarVectorVectorDecayer::Init() {
     ("Coupling",
      "The coupling for the decay mode",
      &ScalarVectorVectorDecayer::_coupling,
-     0, 0, 0, 0., 10000/GeV, false, false, true);
+     1/GeV, 0, 0/GeV, 0./GeV, 10000/GeV, false, false, true);
 
   static ParVector<ScalarVectorVectorDecayer,double> interfaceMaxWeight
     ("MaxWeight",
@@ -156,12 +158,12 @@ double ScalarVectorVectorDecayer::me2(bool vertex, const int,
     }
   // now compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1,PDT::Spin1);
-  double fact(_coupling[imode()]/inpart.mass());
-  Energy p1p2(decay[0]->momentum()*decay[1]->momentum());
+  InvEnergy2 fact(_coupling[imode()]/inpart.mass());
+  Energy2 p1p2(decay[0]->momentum()*decay[1]->momentum());
   unsigned int ix,iy;
   for(ix=0;ix<3;++ix)
     {for(iy=0;iy<3;++iy)
-	{newME(0,ix,iy)=fact*(p1p2*wave[0][ix]*wave[1][iy]-
+	{newME(0,ix,iy)=fact*(p1p2*wave[0][ix].dot(wave[1][iy])-
 			      (wave[1][iy]*decay[0]->momentum())*
 			      (wave[0][ix]*decay[1]->momentum()));}}
   ME(newME);
@@ -187,7 +189,7 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
 	  output << "set " << fullName() << ":SecondOutgoing " << ix << " "
 		 << _outgoing2[ix]  << "\n";
 	  output << "set " << fullName() << ":Coupling   " << ix << " "
-		 << _coupling[ix]   << "\n";
+		 << _coupling[ix]*MeV   << "\n";
 	  output << "set " << fullName() << ":MaxWeight  " << ix << " "
 		 << _maxweight[ix]  << "\n";
 	}
@@ -200,7 +202,7 @@ void ScalarVectorVectorDecayer::dataBaseOutput(ofstream & output,
 	  output << "insert " << fullName() << ":SecondOutgoing " << ix << " "
 		 << _outgoing2[ix]  << "\n";
 	  output << "insert " << fullName() << ":Coupling   " << ix << " "
-		 << _coupling[ix]   << "\n";
+		 << _coupling[ix]*MeV   << "\n";
 	  output << "insert " << fullName() << ":MaxWeight  " << ix << " "
 		 << _maxweight[ix]  << "\n";
 	}

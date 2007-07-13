@@ -23,7 +23,8 @@ inline IBPtr TopDalitzAnalysis::fullclone() const {
 
 inline void TopDalitzAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
-  _output[0].open("TopDalitz.top");
+  string basename = CurrentGenerator::current().filename() + string("-") + name();
+  _output[0].open((basename+".top").c_str());
   _output[0] << "SET FONT DUPLEX\n";
   _output[0] << "SET LIMITS X 0 1 Y 0.9 1.3\n";
   _output[0] << "TITLE BOTTOM \"X011\"\n";
@@ -33,10 +34,10 @@ inline void TopDalitzAnalysis::doinitrun() {
 
   _nout=0;
 
-  _output[1].open("TopDeltaR.top");
-  _output[2].open("Toplogy3.top");
-  _output[3].open("Top_xb_bquark.top");
-  _output[4].open("Top_xb_bquark_peak.top");
-  _output[5].open("Top_xB_Bhad.top");
+  _output[1].open((basename+"-DeltaR.top").c_str());
+  _output[2].open((basename+"-logy3.top").c_str());
+  _output[3].open((basename+"-xb_bquark.top").c_str());
+  _output[4].open((basename+"-xb_bquark_peak.top").c_str());
+  _output[5].open((basename+"-xB_Bhad.top").c_str());
 }
 }

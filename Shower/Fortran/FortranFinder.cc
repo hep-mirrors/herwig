@@ -24,35 +24,35 @@ void FortranFinder::Init() {
 pair<Energy,Energy> FortranFinder::
 calculateInitialFinalScales(const ShowerPPair &ppair, const bool isDecayCase) {
   Energy2 ertxi=ppair.first->momentum()*ppair.second->momentum();
-  if(ertxi<0.) ertxi=0.;
-  if(ppair.first==ppair.second) ertxi=0.;
+  if(ertxi<0.*MeV2) ertxi=0.*MeV2;
+  if(ppair.first==ppair.second) ertxi=0.*MeV2;
   if(isDecayCase) {
     Energy scale=ertxi/ppair.first->mass();
     return make_pair(0.*GeV,scale);
   }
   else {
     Energy scale=sqrt(ertxi);
-    if(ertxi==0.) return make_pair(0.*GeV,0.*GeV);
-    else          return make_pair(scale,scale);
+    if(ertxi==0.*MeV2) return make_pair(0.*GeV,0.*GeV);
+    else               return make_pair(scale,scale);
   }
 }
 
 pair<Energy,Energy> FortranFinder::
 calculateInitialInitialScales(const ShowerPPair &ppair) {
   Energy2 ertxi=ppair.first->momentum()*ppair.second->momentum();
-  if(ertxi<0.) ertxi=0.;
-  if(ppair.first==ppair.second) ertxi=0.;
+  if(ertxi<0.*MeV2) ertxi=0.*MeV2;
+  if(ppair.first==ppair.second) ertxi=0.*MeV2;
   Energy scale=sqrt(ertxi);
-  if(ertxi==0.) return make_pair(0.*GeV,0.*GeV);
-  else          return make_pair(scale,scale);
+  if(ertxi==0.*MeV2) return make_pair(0.*GeV,0.*GeV);
+  else               return make_pair(scale,scale);
 }
 
 pair<Energy,Energy> FortranFinder::
 calculateFinalFinalScales(const ShowerPPair & ppair) {
   Energy2 ertxi=ppair.first->momentum()*ppair.second->momentum();
-  if(ertxi<0.) ertxi=0.;
-  if(ppair.first==ppair.second) ertxi=0.;
+  if(ertxi<0.*MeV2) ertxi=0.*MeV2;
+  if(ppair.first==ppair.second) ertxi=0.*MeV2;
   Energy scale=sqrt(ertxi);
-  if(ertxi==0.) return make_pair(0.*GeV,0.*GeV);
-  else          return make_pair(scale,scale);
+  if(ertxi==0.*MeV2) return make_pair(0.*GeV,0.*GeV);
+  else               return make_pair(scale,scale);
 }

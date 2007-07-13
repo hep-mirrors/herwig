@@ -1,0 +1,25 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SVVLoopVertex class.
+//
+
+namespace Herwig {
+    
+inline SVVLoopVertex::SVVLoopVertex() : theNpart(0) {
+  kinematics(true);
+}
+    
+inline IBPtr SVVLoopVertex::clone() const {
+  return new_ptr(*this);
+}
+    
+inline IBPtr SVVLoopVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SVVLoopVertex::setNParticles(unsigned int npart) {
+  theNpart = npart;
+}
+
+}

@@ -32,7 +32,7 @@ public:
 
 public:
 
-  /*
+  /**
    * Constructor.
    * @param inwidth Pointer to the  GenericWidthGenerator class.
    * @param imode The mode in the GenericWidthGenerator class we are integrating

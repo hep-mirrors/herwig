@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the ZPhotonsAnalysis class.
+//
+
+namespace Herwig {
+
+inline ZPhotonsAnalysis::ZPhotonsAnalysis() : _iferm(11)
+{}
+
+inline IBPtr ZPhotonsAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr ZPhotonsAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

@@ -109,7 +109,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of DecayConstructor. */
@@ -125,14 +125,14 @@ template <>
 struct ClassTraits<Herwig::DecayConstructor>
   : public ClassTraitsBase<Herwig::DecayConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DecayConstructor"; }
+  static string className() { return "Herwig::DecayConstructor"; }
   /** Return the name of the shared library be loaded to get
    *  access to the DecayConstructor class and every other class it uses
    *  (except the base class). */
   static string library() { return "libHwModelGenerator.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

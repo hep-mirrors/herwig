@@ -5,6 +5,7 @@
 // This is the declaration of the GammaGammaAnalysis class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "GammaGammaAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
@@ -208,7 +209,7 @@ template <>
 struct ClassTraits<Herwig::GammaGammaAnalysis>
   : public ClassTraitsBase<Herwig::GammaGammaAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GammaGammaAnalysis"; }
+  static string className() { return "Herwig::GammaGammaAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the GammaGammaAnalysis class and any other class on which it depends
    *  (except the base class). */

@@ -10,31 +10,20 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "TwoMesonRhoKStarCurrent.tcc"
-#endif
-
-#include "ThePEG/Persistency/PersistentOStream.h"
-#include "ThePEG/Persistency/PersistentIStream.h"
-
-
-namespace Herwig {
+using namespace Herwig;
 using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
 
-TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() 
-{
+TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent() {
   // set up for the modes in the base class
   addDecayMode(2,-1);
   addDecayMode(2,-3);
@@ -43,10 +32,12 @@ TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent()
   addDecayMode(2,-3);
   setInitialModes(5);
   // the weights of the different resonances in the matrix elements
-  _piwgt.push_back(1.0);_piwgt.push_back(-0.167);_piwgt.push_back(0.05);
-  _kwgt.push_back(1.0);_kwgt.push_back(-0.038);_kwgt.push_back(0.00);
+  _pimag.push_back(  1.0);_pimag.push_back(  0.167);_pimag.push_back(  0.05);
+  _piphase.push_back(0.0);_piphase.push_back(  180);_piphase.push_back(0.0);
+  _kmag.push_back(  1.0);_kmag.push_back(  0.038);_kmag.push_back(  0.00);
+  _kphase.push_back(0.0);_kphase.push_back(  180);_kphase.push_back(0.0);
   // models to use
-  _pimodel = 0;_Kmodel=0;
+  _pimodel = 0;_kmodel=0;
   // parameter for the masses (use the parameters freom the CLEO fit 
   // rather than the PDG masses etc)
   _rhoparameters=true;
@@ -54,102 +45,118 @@ TwoMesonRhoKStarCurrent::TwoMesonRhoKStarCurrent()
   _rhomasses.push_back(1700*MeV);
   _rhowidths.push_back(149*MeV);_rhowidths.push_back(502*MeV);
   _rhowidths.push_back(235*MeV);
-  _Kstarparameters=true;
-  _Kstarmasses.push_back(0.8921*GeV);_Kstarmasses.push_back(1.700*GeV);
-  _Kstarwidths.push_back(0.0513*GeV);_Kstarwidths.push_back(0.235*GeV);
+  _kstarparameters=true;
+  _kstarmasses.push_back(0.8921*GeV);_kstarmasses.push_back(1.700*GeV);
+  _kstarwidths.push_back(0.0513*GeV);_kstarwidths.push_back(0.235*GeV);
 }
 
 void TwoMesonRhoKStarCurrent::doinit() throw(InitException) {
   WeakDecayCurrent::doinit();
   // check consistency of parametrers
-  if(_rhomasses.size()!=_rhowidths.size()||_Kstarmasses.size()!=_Kstarwidths.size())
-    {throw InitException() << "Inconsistent parameters in TwoMesonRhoKStarCurrent"
-			   << "::doinit()" << Exception::abortnow;}
+  if(_rhomasses.size()!=_rhowidths.size()||
+     _kstarmasses.size()!=_kstarwidths.size()) {
+    throw InitException() << "Inconsistent parameters in TwoMesonRhoKStarCurrent"
+			  << "::doinit()" << Exception::abortnow;
+  }
   // the resonances
   tPDPtr res[6]={getParticleData(-213   ),getParticleData(-100213),
 		 getParticleData(-30213 ),getParticleData(-323   ),
 		 getParticleData(-100323),getParticleData(-30323 )};
   // reset the masses in the form-factors if needed
-  if(_rhoparameters&&_rhomasses.size()<3)
-    {
-      for(unsigned int ix=_rhomasses.size();ix<3;++ix)
-	{
-	  _rhomasses.push_back(res[ix]->mass() );
-	  _rhowidths.push_back(res[ix]->width());
-	}
+  if(_rhoparameters&&_rhomasses.size()<3) {
+    for(unsigned int ix=_rhomasses.size();ix<3;++ix) {
+      if(res[ix]) _rhomasses.push_back(res[ix]->mass() );
+      if(res[ix]) _rhowidths.push_back(res[ix]->width());
     }
-  else if(!_rhoparameters)
-    {
-      _rhomasses.resize(0);_rhowidths.resize(0);
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  _rhomasses.push_back(res[ix]->mass() );
-	  _rhowidths.push_back(res[ix]->width());
-	}
+  }
+  else if(!_rhoparameters) {
+    _rhomasses.clear();_rhowidths.clear();
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(res[ix]) _rhomasses.push_back(res[ix]->mass() );
+      if(res[ix]) _rhowidths.push_back(res[ix]->width());
     }
+  }
   // then the Kstar resonances
-  if(_Kstarparameters&&_Kstarmasses.size()<3)
-    {
-      for(unsigned int ix=_Kstarmasses.size();ix<3;++ix)
-	{
-	  _Kstarmasses.push_back(res[ix+3]->mass());
-	  _Kstarwidths.push_back(res[ix+3]->width());
-	}
+  if(_kstarparameters&&_kstarmasses.size()<3) {
+    for(unsigned int ix=_kstarmasses.size();ix<3;++ix) {
+      if(res[ix+3]) _kstarmasses.push_back(res[ix+3]->mass());
+      if(res[ix+3]) _kstarwidths.push_back(res[ix+3]->width());
     }
-  else if(!_Kstarparameters)
-    {
-      _Kstarmasses.resize(0);_Kstarwidths.resize(0);
-      for(unsigned int ix=0;ix<3;++ix)
-	{
-	  _Kstarmasses.push_back(res[ix+3]->mass());
-	  _Kstarwidths.push_back(res[ix+3]->width());
-	}
+  }
+  else if(!_kstarparameters) {
+    _kstarmasses.clear();_kstarwidths.clear();
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(res[ix+3]) _kstarmasses.push_back(res[ix+3]->mass());
+      if(res[ix+3]) _kstarwidths.push_back(res[ix+3]->width());
     }
+  }
   // set up for the Breit Wigners
-  Energy mpi0(getParticleData(ParticleID::pi0)->mass());
+  Energy mpi0(   getParticleData(ParticleID::pi0   )->mass());
   Energy mpiplus(getParticleData(ParticleID::piplus)->mass());
-  Energy mk0(getParticleData(ParticleID::Kplus)->mass());
+  Energy mk0(    getParticleData(ParticleID::K0    )->mass());
   // rho resonances
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      _mass.push_back(_rhomasses[ix]);
-      _width.push_back(_rhowidths[ix]);
-      _mass2.push_back(_mass[ix]*_mass[ix]);
-      _massw.push_back(_mass[ix]*_width[ix]);
-      _massa.push_back(mpi0);
-      _massb.push_back(mpiplus);
-      _mom.push_back(pcm(ix,_mass[ix]));
-      _hm2.push_back(GSModelhFunction(ix,_mass[ix]));
-      _dparam.push_back(GSModelDParameter(ix));
-      _dhdq2.push_back(GSModeldhdq2Parameter(ix));
-    }
+  for(unsigned int ix=0;ix<3;++ix) {
+    _mass.push_back(_rhomasses[ix]);
+    _width.push_back(_rhowidths[ix]);
+    _mass2.push_back(_mass[ix]*_mass[ix]);
+    _massw.push_back(_mass[ix]*_width[ix]);
+    _massa.push_back(mpi0);
+    _massb.push_back(mpiplus);
+    _mom.push_back(pcm(ix,_mass[ix]));
+    _hm2.push_back(GSModelhFunction(ix,_mass[ix]));
+    _dparam.push_back(GSModelDParameter(ix));
+    _dhdq2.push_back(GSModeldhdq2Parameter(ix));
+  }
   // Kstar resonances
-  for(unsigned int ix=0;ix<3;++ix)
-    {
-      _mass.push_back(_Kstarmasses[ix]);
-      _width.push_back(_Kstarwidths[ix]);
-      _mass2.push_back(_mass[ix+3]*_mass[ix+3]);
-      _massw.push_back(_mass[ix+3]*_width[ix+3]);
-      _massa.push_back(mk0);
-      _massb.push_back(mpiplus);
-      _mom.push_back(pcm(ix+3,_mass[ix+3]));
-      _hm2.push_back(GSModelhFunction(ix+3,_mass[ix+3]));
-      _dparam.push_back(GSModelDParameter(ix+3));
-      _dhdq2.push_back(GSModeldhdq2Parameter(ix+3));
-    }
+  for(unsigned int ix=0;ix<3;++ix) {
+    _mass.push_back(_kstarmasses[ix]);
+    _width.push_back(_kstarwidths[ix]);
+    _mass2.push_back(_mass[ix+3]*_mass[ix+3]);
+    _massw.push_back(_mass[ix+3]*_width[ix+3]);
+    _massa.push_back(mk0);
+    _massb.push_back(mpiplus);
+    _mom.push_back(pcm(ix+3,_mass[ix+3]));
+    _hm2.push_back(GSModelhFunction(ix+3,_mass[ix+3]));
+    _dparam.push_back(GSModelDParameter(ix+3));
+    _dhdq2.push_back(GSModeldhdq2Parameter(ix+3));
+  }
+  // weights for the rho channels
+  if(_pimag.size()!=_piphase.size()) 
+    throw InitException() << "The vectors containing the weights and phase for the"
+			  << " rho channel must be the same size in "
+			  << "TwoMesonRhoKStarCurrent::doinit()" << Exception::runerror;
+  _piwgt.resize(_pimag.size());
+  for(unsigned int ix=0;ix<_pimag.size();++ix) {
+    double angle = _piphase[ix]/180.*Constants::pi;
+    _piwgt[ix] = _pimag[ix]*(cos(angle)+Complex(0.,1.)*sin(angle));
+  }
+  // weights for the K* channels
+  if(_kmag.size()!=_kphase.size()) 
+    throw InitException() << "The vectors containing the weights and phase for the"
+			  << " K* channel must be the same size in "
+			  << "TwoMesonRhoKStarCurrent::doinit()" << Exception::runerror;
+  _kwgt.resize(_kmag.size());
+  for(unsigned int ix=0;ix<_kmag.size();++ix) {
+    double angle = _kphase[ix]/180.*Constants::pi;
+    _kwgt[ix] = _kmag[ix]*(cos(angle)+Complex(0.,1.)*sin(angle));
+  }
 }
 
 void TwoMesonRhoKStarCurrent::persistentOutput(PersistentOStream & os) const {
-  os << _pimodel << _Kmodel << _piwgt << _kwgt << _rhoparameters
-     << _Kstarparameters << _rhomasses << _rhowidths << _Kstarmasses << _Kstarwidths
-     <<  _mass << _width << _mass2 << _massw << _massa <<_massb << _mom << _dhdq2
+  os << _pimodel << _kmodel << _piwgt << _pimag << _piphase << _kwgt << _kmag 
+     << _kphase << _rhoparameters << _kstarparameters << ounit(_rhomasses,GeV) << ounit(_rhowidths,GeV) 
+     << ounit(_kstarmasses,GeV) << ounit(_kstarwidths,GeV) 
+     << ounit(_mass,GeV) << ounit(_width,GeV) << ounit(_mass2,GeV2) << ounit(_massw,GeV2) 
+     << ounit(_massa,GeV) <<ounit(_massb,GeV) << ounit(_mom,GeV) << ounit(_dhdq2,1/GeV2) 
      << _hm2 << _dparam;
 }
 
 void TwoMesonRhoKStarCurrent::persistentInput(PersistentIStream & is, int) {
-  is >> _pimodel >> _Kmodel >> _piwgt >> _kwgt >> _rhoparameters
-     >> _Kstarparameters >> _rhomasses >> _rhowidths >> _Kstarmasses >> _Kstarwidths
-     >> _mass >> _width >> _mass2 >> _massw >> _massa >> _massb >> _mom >> _dhdq2
+  is >> _pimodel >> _kmodel >> _piwgt >> _pimag >> _piphase >> _kwgt >> _kmag 
+     >> _kphase >> _rhoparameters >> _kstarparameters >> iunit(_rhomasses,GeV) >> iunit(_rhowidths,GeV) 
+     >> iunit(_kstarmasses,GeV) >> iunit(_kstarwidths,GeV) 
+     >> iunit(_mass,GeV) >> iunit(_width,GeV) >> iunit(_mass2,GeV2) >> iunit(_massw,GeV2) 
+     >> iunit(_massa,GeV) >> iunit(_massb,GeV) >> iunit(_mom,GeV) >> iunit(_dhdq2,1/GeV2) 
      >> _hm2 >> _dparam;
 }
 
@@ -173,13 +180,13 @@ void TwoMesonRhoKStarCurrent::Init() {
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarMasses
     ("KstarMasses",
      "The masses of the different K* resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_Kstarmasses, MeV, -1, 891.66*MeV, 0.0*MeV, 10000.*MeV,
+     &TwoMesonRhoKStarCurrent::_kstarmasses, MeV, -1, 891.66*MeV, 0.0*MeV, 10000.*MeV,
      false, false, true);
 
   static ParVector<TwoMesonRhoKStarCurrent,Energy> interfaceKstarWidths
     ("KstarWidths",
      "The widths of the different K* resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_Kstarwidths, MeV, -1, 50.8*MeV, 0.0*MeV, 1000.*MeV,
+     &TwoMesonRhoKStarCurrent::_kstarwidths, MeV, -1, 50.8*MeV, 0.0*MeV, 1000.*MeV,
      false, false, true);
   
   static Switch<TwoMesonRhoKStarCurrent,bool> interfaceRhoParameters
@@ -200,7 +207,7 @@ void TwoMesonRhoKStarCurrent::Init() {
   static Switch<TwoMesonRhoKStarCurrent,bool> interfaceKstarParameters
     ("KstarParameters",
      "Use local values for the Kstar meson masses and widths",
-     &TwoMesonRhoKStarCurrent::_Kstarparameters, true, false, false);
+     &TwoMesonRhoKStarCurrent::_kstarparameters, true, false, false);
   static SwitchOption interfaceKstarParameterstrue
     (interfaceKstarParameters,
      "Local",
@@ -211,18 +218,30 @@ void TwoMesonRhoKStarCurrent::Init() {
      "ParticleData",
      "Use the value from the particle data objects",
      false);
-
-  static ParVector<TwoMesonRhoKStarCurrent,double> interfacepiwgt
-    ("PiWeight",
-     "The weights of the different resonances for the pi pi channel",
-     &TwoMesonRhoKStarCurrent::_piwgt,
-     0, 0, 0, -1000, 1000, false, false, true);
   
-  static ParVector<TwoMesonRhoKStarCurrent,double> interfacekwgt
-    ("KWeight",
-     "The weights of the different resonances for the K pi channel",
-     &TwoMesonRhoKStarCurrent::_kwgt,
-     0, 0, 0, -1000, 1000, false, false, true);
+  static ParVector<TwoMesonRhoKStarCurrent,double> interfacePiMagnitude
+    ("PiMagnitude",
+     "Magnitude of the weight of the different resonances for the pi pi channel",
+     &TwoMesonRhoKStarCurrent::_pimag, -1, 0., 0, 0,
+     false, false, Interface::nolimits);
+
+  static ParVector<TwoMesonRhoKStarCurrent,double> interfacePiPhase
+    ("PiPhase",
+     "Phase of the weight of the different resonances for the pi pi channel",
+     &TwoMesonRhoKStarCurrent::_piphase, -1, 0., 0, 0,
+     false, false, Interface::nolimits);
+
+  static ParVector<TwoMesonRhoKStarCurrent,double> interfaceKMagnitude
+    ("KMagnitude",
+     "Magnitude of the weight of the different resonances for the K pi channel",
+     &TwoMesonRhoKStarCurrent::_kmag, -1, 0., 0, 0,
+     false, false, Interface::nolimits);
+
+  static ParVector<TwoMesonRhoKStarCurrent,double> interfaceKPhase
+    ("KPhase",
+     "Phase of the weight of the different resonances for the K pi channel",
+     &TwoMesonRhoKStarCurrent::_kphase, -1, 0., 0, 0,
+     false, false, Interface::nolimits);
   
   static Switch<TwoMesonRhoKStarCurrent,int> interfacePiModel
     ("PiModel",
@@ -242,7 +261,7 @@ void TwoMesonRhoKStarCurrent::Init() {
   static Switch<TwoMesonRhoKStarCurrent,int> interfaceKModel
     ("KModel",
      "The model to use for the propagator for the kaon modes.",
-     &TwoMesonRhoKStarCurrent::_Kmodel, 0, false, false);
+     &TwoMesonRhoKStarCurrent::_kmodel, 0, false, false);
   static SwitchOption interfaceKModelKuhn
     (interfaceKModel,
      "Kuhn",
@@ -270,7 +289,7 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
 					 DecayPhaseSpaceModePtr mode,
 					 unsigned int iloc,unsigned int,
 					 DecayPhaseSpaceChannelPtr phase,Energy upp) {
-  if(abs(icharge)!=3){return false;}
+  if(abs(icharge)!=3) return false; 
   // make sure that the decays are kinematically allowed
   bool kineallowed(true);
   tPDPtr part[2];
@@ -298,40 +317,30 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
     kineallowed=false;
   }
   Energy min(part[0]->massMin()+part[1]->massMin());
-  if(min>upp){kineallowed=false;}
-  if(kineallowed==false){return kineallowed;}
+  if(min>upp) return false;
   DecayPhaseSpaceChannelPtr newchannel;
   // set the resonances
   // two pion or  K+ K0 decay
   tPDPtr res[3];
   if(imode==0||imode==3) {
-    if(icharge==3) {
-      res[0]=getParticleData(213);
-      res[1]=getParticleData(100213);
-      res[2]=getParticleData(30213);
-    }
-    else {
-      res[0]=getParticleData(-213);
-      res[1]=getParticleData(-100213);
-      res[2]=getParticleData(-30213);
-    }
+    res[0]=getParticleData(213);
+    res[1]=getParticleData(100213);
+    res[2]=getParticleData(30213);
   }
   // K+ pi0 or K0 pi+ or K eta decay
   else if(imode==1||imode==2||imode==4) {
-    if(icharge==3) {
-      res[0]=getParticleData(323);
-      res[1]=getParticleData(100323);
-      res[2]=getParticleData(30323);
-    }
-    else {
-      res[0]=getParticleData(-323);
-      res[1]=getParticleData(-100323);
-      res[2]=getParticleData(-30323);
-    }
+    res[0]=getParticleData(323);
+    res[1]=getParticleData(100323);
+    res[2]=getParticleData(30323);
   }
   else {
     throw Exception() << "Failure of initialisation in TwoMesonRhoKStarCurrent" 
 		      << Exception::abortnow;
+  }
+  if(icharge==-3) {
+    for(unsigned int ix=0;ix<3;++ix) {
+      if(res[ix]&&res[ix]->CC()) res[ix]=res[ix]->CC();
+    }
   }
   // create the channels
   for(unsigned int ix=0;ix<3;++ix) {
@@ -351,86 +360,54 @@ bool TwoMesonRhoKStarCurrent::createMode(int icharge, unsigned int imode,
     }
   }
   // for the K*
-  else if(_Kstarparameters&&imode!=0&&imode!=3) {
+  else if(_kstarparameters&&imode!=0&&imode!=3) {
     for(unsigned int ix=0;ix<3;++ix) {
-      if(ix<_Kstarmasses.size()&&res[ix]) {
-	mode->resetIntermediate(res[ix],_Kstarmasses[ix],_Kstarwidths[ix]);
+      if(ix<_kstarmasses.size()&&res[ix]) {
+	mode->resetIntermediate(res[ix],_kstarmasses[ix],_kstarwidths[ix]);
       }
     }
   }
   // return if successful
-  return kineallowed;
+  return true;
 }
 
 // the particles produced by the current
-  PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
-					      int,int)
-{
+PDVector TwoMesonRhoKStarCurrent::particles(int icharge, unsigned int imode,
+					    int,int) {
+  if(abs(icharge)!=3) return PDVector();
   PDVector output(2);
-  if(icharge==3)
-    {
-      if(imode==0)
-	{
-	  output[0]=getParticleData(ParticleID::piplus);
-	  output[1]=getParticleData(ParticleID::pi0);
-	}
-      else if(imode==1)
-	{
-	  output[0]=getParticleData(ParticleID::Kplus);
-	  output[1]=getParticleData(ParticleID::pi0);
-	}
-      else if(imode==2)
-	{
-	  output[0]=getParticleData(ParticleID::K0);
-	  output[1]=getParticleData(ParticleID::piplus);
-	}
-      else if(imode==3)
-	{
-	  output[0]=getParticleData(ParticleID::Kplus);
-	  output[1]=getParticleData(ParticleID::Kbar0);
-	}
-      else
-	{
-	  output[0]=getParticleData(ParticleID::eta);
-	  output[1]=getParticleData(ParticleID::Kplus);
-	}
+  if(imode==0) {
+    output[0]=getParticleData(ParticleID::piplus);
+    output[1]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==1) {
+    output[0]=getParticleData(ParticleID::Kplus);
+    output[1]=getParticleData(ParticleID::pi0);
+  }
+  else if(imode==2) {
+    output[0]=getParticleData(ParticleID::K0);
+    output[1]=getParticleData(ParticleID::piplus);
+  }
+  else if(imode==3) {
+    output[0]=getParticleData(ParticleID::Kplus);
+    output[1]=getParticleData(ParticleID::Kbar0);
+  }
+  else {
+    output[0]=getParticleData(ParticleID::eta);
+    output[1]=getParticleData(ParticleID::Kplus);
+  }
+  if(icharge==-3) {
+    for(unsigned int ix=0;ix<output.size();++ix) {
+      if(output[ix]->CC()) output[ix]=output[ix]->CC();
     }
-  else if(icharge==-3)
-    {
-      if(imode==0)
-	{
-	  output[0]=getParticleData(ParticleID::piminus);
-	  output[1]=getParticleData(ParticleID::pi0);
-	}
-      else if(imode==1)
-	{
-	  output[0]=getParticleData(ParticleID::Kminus);
-	  output[1]=getParticleData(ParticleID::pi0);
-	}
-      else if(imode==2)
-	{
-	  output[0]=getParticleData(ParticleID::Kbar0);
-	  output[1]=getParticleData(ParticleID::piminus);
-	}
-      else if(imode==3)
-	{
-	  output[0]=getParticleData(ParticleID::Kminus);
-	  output[1]=getParticleData(ParticleID::K0);
-	}
-      else
-	{
-	  output[0]=getParticleData(ParticleID::eta);
-	  output[1]=getParticleData(ParticleID::Kminus);
-	}
-    }
+  }
   return output;
 }
 
 // hadronic current   
-vector<LorentzPolarizationVector> 
+vector<LorentzPolarizationVectorE> 
 TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
-				 Energy & scale,const ParticleVector & outpart) const
-{;
+				 Energy & scale,const ParticleVector & outpart) const {
   // momentum difference and sum of the mesons
   Lorentz5Momentum pdiff(outpart[0]->momentum()-outpart[1]->momentum());
   Lorentz5Momentum psum (outpart[0]->momentum()+outpart[1]->momentum());
@@ -438,88 +415,61 @@ TwoMesonRhoKStarCurrent::current(bool vertex, const int imode, const int ichan,
   scale=psum.mass();
   // mass2 of vector intermediate state
   Energy2 q2(psum.m2());
-  double dot(psum.dot(pdiff)/q2);
+  double dot(psum*pdiff/q2);
   psum *=dot;
   LorentzPolarizationVector vect;
   // calculate the current
   Complex FPI(0.),denom(0.);
+  // rho
+  if(imode==0||imode==3) {
+    if(ichan<0) {
+      for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix) {
+	FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,0,ix);
+	denom+=_piwgt[ix];
+      }
+    }
+    else if(ichan<int(_piwgt.size())&&ichan<3) {
+      FPI=_piwgt[ichan]*BreitWigner(q2,_pimodel,0,ichan);
+      for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix) denom+=_piwgt[ix];
+    }
+  }
+  // K*
+  else {
+    if(ichan<0) {
+      for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix) {
+	FPI+=_kwgt[ix]*BreitWigner(q2,_kmodel,1,ix);
+	denom+=_kwgt[ix];
+      }
+    }
+    else if (ichan<int(_kwgt.size())&&ichan<3) {
+      FPI=_kwgt[ichan]*BreitWigner(q2,_kmodel,1,ichan);
+      for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix) denom+=_kwgt[ix];
+    }
+  }
+  // additional prefactors
+  FPI/=denom;
   // pion mode
-  if(imode==0)
-    {
-      if(ichan<0)
-	{
-	  for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix)
-	    {
-	      FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,0,ix);
-	      denom+=_piwgt[ix];
-	    }
-	}
-      else if(ichan<int(_piwgt.size())&&ichan<3)
-	{FPI=_piwgt[ichan]*BreitWigner(q2,_pimodel,0,ichan);denom=1.;}
-      FPI *= sqrt(2.0)/denom;
-    }
+  if(imode==0)           FPI *= sqrt(2.0);
   // single kaon modes
-  else if(imode==1||imode==2)
-    {
-      if(ichan<0)
-	{
-	  for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix)
-	    {
-	      FPI+=_kwgt[ix]*BreitWigner(q2,_Kmodel,1,ix);
-	      denom+=_kwgt[ix];
-	    }
-	}
-      else if (ichan<int(_kwgt.size())&&ichan<3)
-	{FPI=_kwgt[ichan]*BreitWigner(q2,_Kmodel,1,ichan);denom=1.;}
-      if(imode==1){FPI *= sqrt(2./3.)/denom;}
-      else{FPI *= sqrt(4./3.)/denom;}
-      // compute the current
-      pdiff-=psum;
-    }
-  // two kaon modes
-  else if(imode==3)
-    {
-      if(ichan<0)
-	{
-	  for(unsigned int ix=0;ix<_piwgt.size()&&ix<3;++ix)
-	    {
-	      FPI+=_piwgt[ix]*BreitWigner(q2,_pimodel,0,ix);
-	      denom+=_piwgt[ix];
-	    }
-	}
-      else if(ichan<int(_piwgt.size())&&ichan<3)
-	{FPI=_piwgt[ichan]*BreitWigner(q2,_pimodel,0,ichan);denom=1.;}
-      FPI *= sqrt(2.0)/denom;
-      pdiff-=psum;
-    }
+  else if(imode==1)      FPI *= sqrt(0.5);
+  else if(imode==2)      FPI *= 1.       ;
+    // two kaon modes
+  else if(imode==3)      FPI *= 1.       ;
   // the kaon eta mode
-  else if(imode==4)
-    {
-      if(ichan<0)
-	{
-	  for(unsigned int ix=0;ix<_kwgt.size()&&ix<3;++ix)
-	    {
-	      FPI+=_kwgt[ix]*BreitWigner(q2,_Kmodel,1,ix);
-	      denom+=_kwgt[ix];
-	    }
-	}
-      else if (ichan<int(_kwgt.size())&&ichan<3)
-	{FPI=_kwgt[ichan]*BreitWigner(q2,_Kmodel,1,ichan);denom=1.;
-      FPI *=2.*denom;}
-      pdiff-=psum;
-    }
-
+  else if(imode==4)      FPI *=sqrt(1.5);
   // workaround for gcc 3.2.3 bug
   // set up the spininfo for the decay products
   //ALB for(ix=0;ix<2;++ix){ScalarWaveFunction(outpart[ix],outgoing,true,vertex);}
-  for(unsigned int ix=0;ix<2;++ix){PPtr mytemp=outpart[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
-
-  // return the answer
-  return vector<LorentzPolarizationVector>(1,FPI*pdiff);
+  for(unsigned int ix=0;ix<2;++ix) {
+    PPtr mytemp=outpart[ix]; 
+    ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  }
+  // compute the current
+  pdiff-=psum;
+  return vector<LorentzPolarizationVectorE>(1,FPI*pdiff);
 }
    
-bool TwoMesonRhoKStarCurrent::accept(vector<int> id)
-{
+bool TwoMesonRhoKStarCurrent::accept(vector<int> id) {
   bool allowed(false);
   // check there are only two particles
   if(id.size()!=2){return false;}
@@ -527,105 +477,97 @@ bool TwoMesonRhoKStarCurrent::accept(vector<int> id)
   if((id[0]==ParticleID::piminus && id[1]==ParticleID::pi0)     ||
      (id[0]==ParticleID::pi0     && id[1]==ParticleID::piminus) ||
      (id[0]==ParticleID::piplus  && id[1]==ParticleID::pi0)     ||
-     (id[0]==ParticleID::pi0     && id[1]==ParticleID::piplus))
-    {allowed=true;}
+     (id[0]==ParticleID::pi0     && id[1]==ParticleID::piplus)) allowed=true;
   // single charged kaon
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::pi0)    ||
 	  (id[0]==ParticleID::pi0    && id[1]==ParticleID::Kminus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::pi0)    ||
-	  (id[0]==ParticleID::pi0    && id[1]==ParticleID::Kplus))
-    {allowed=true;}
+	  (id[0]==ParticleID::pi0    && id[1]==ParticleID::Kplus)) allowed=true;
   // single neutral kaon
   else if((id[0]==ParticleID::piminus && id[1]==ParticleID::Kbar0)   ||
 	  (id[0]==ParticleID::Kbar0   && id[1]==ParticleID::piminus) ||
 	  (id[0]==ParticleID::piplus  && id[1]==ParticleID::K0)      ||
-	  (id[0]==ParticleID::K0      && id[1]==ParticleID::piplus))
-    {allowed=true;}
+	  (id[0]==ParticleID::K0      && id[1]==ParticleID::piplus)) allowed=true;
   // two kaons
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::K0)     ||
 	  (id[0]==ParticleID::K0     && id[1]==ParticleID::Kminus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::Kbar0)  ||
-	  (id[0]==ParticleID::Kbar0  && id[1]==ParticleID::Kplus))
-    {allowed=true;}
+	  (id[0]==ParticleID::Kbar0  && id[1]==ParticleID::Kplus)) allowed=true;
   // charged kaon and eta
   else if((id[0]==ParticleID::Kminus && id[1]==ParticleID::eta)    ||
 	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kminus) ||
 	  (id[0]==ParticleID::Kplus  && id[1]==ParticleID::eta)    ||
-	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kplus))
-    {allowed=true;}
+	  (id[0]==ParticleID::eta    && id[1]==ParticleID::Kplus)) allowed=true;
   return allowed;
 }
 
 // the decay mode
-unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout)
-{
+unsigned int TwoMesonRhoKStarCurrent::decayMode(vector<int> idout) {
   unsigned int imode(0),nkaon(0);
-  for(unsigned int ix=0;ix<idout.size();++ix)
-    {
-      if(abs(idout[ix])==ParticleID::K0){imode=2;++nkaon;}
-      else if (abs(idout[ix])==ParticleID::Kplus){imode=1;++nkaon;}
-      else if (idout[ix]==ParticleID::eta){imode=4;}
+  for(unsigned int ix=0;ix<idout.size();++ix) {
+    if(abs(idout[ix])==ParticleID::K0) {
+      imode=2;
+      ++nkaon;
     }
-  if(nkaon==2){imode=3;}
+    else if (abs(idout[ix])==ParticleID::Kplus) {
+      imode=1;
+      ++nkaon;
+    }
+    else if (idout[ix]==ParticleID::eta) {
+      imode=4;
+    }
+  }
+  if(nkaon==2) imode=3;
   return imode;
 }
 
 // output the information for the database
 void TwoMesonRhoKStarCurrent::dataBaseOutput(ofstream & output,bool header,
-					     bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig++::TwoMesonRhoKStarCurrent " << fullName() << " \n";}
+					     bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::TwoMesonRhoKStarCurrent " 
+		    << fullName() << " HwWeakCurrents.so\n";
   unsigned int ix;
-  for(ix=0;ix<_rhomasses.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":RhoMasses " << ix 
-		      << " " << _rhomasses[ix]/MeV << "\n";}
-      else{output << "insert " << fullName() << ":RhoMasses " << ix 
-		  << " " << _rhomasses[ix]/MeV << "\n";}
-    }
-  for(ix=0;ix<_rhowidths.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":RhoWidths " << ix 
-		      << " " << _rhowidths[ix]/MeV << "\n";}
-      else{output << "insert " << fullName() << ":RhoWidths " << ix 
-		  << " " << _rhowidths[ix]/MeV << "\n";}
-    }
-  for(ix=0;ix<_Kstarmasses.size();++ix)
-    {
-      if(ix<2){output << "set " << fullName() << ":KstarMasses " << ix 
-		      << " " << _Kstarmasses[ix]/MeV << "\n";}
-      else{output << "insert " << fullName() << ":KstarMasses " << ix 
-		  << " " << _Kstarmasses[ix]/MeV << "\n";}
-    }
-  for(ix=0;ix<_Kstarwidths.size();++ix)
-    {
-      if(ix<2){output << "set " << fullName() << ":KstarWidths " << ix 
-		      << " " << _Kstarwidths[ix]/MeV << "\n";}
-      else{output << "insert " << fullName() << ":KstarWidths " << ix 
-		  << " " << _Kstarwidths[ix]/MeV << "\n";}
-    }
+  for(ix=0;ix<_rhomasses.size();++ix) {
+    if(ix<3)  output << "set ";
+    else      output << "insert ";
+    output << fullName() << ":RhoMasses " << ix << " " << _rhomasses[ix]/MeV << "\n";
+  }
+  for(ix=0;ix<_rhowidths.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":RhoWidths " << ix << " " << _rhowidths[ix]/MeV << "\n";
+  }
+  for(ix=0;ix<_kstarmasses.size();++ix) {
+    if(ix<2) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":KstarMasses " << ix << " " << _kstarmasses[ix]/MeV << "\n";
+  }
+  for(ix=0;ix<_kstarwidths.size();++ix) {
+    if(ix<2) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":KstarWidths " << ix << " " << _kstarwidths[ix]/MeV << "\n";
+  }
   output << "set " << fullName() << ":RhoParameters " << _rhoparameters << "\n";
-  output << "set " << fullName() << ":KstarParameters " << _Kstarparameters << "\n";
-  for(ix=0;ix<_piwgt.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":PiWeight " << ix 
-		     << " " << _piwgt[ix] << "\n";}
-      else{output << "insert " << fullName() << ":PiWeight " << ix 
-		  << " " << _piwgt[ix] << "\n";}
-    }
-  for(ix=0;ix<_kwgt.size();++ix)
-    {
-      if(ix<3){output << "set " << fullName() << ":KWeight " << ix 
-		      << " " << _kwgt[ix] << "\n";}
-      else{output << "insert " << fullName() << ":KWeight " << ix 
-		      << " " << _kwgt[ix] << "\n";}
-    }
+  output << "set " << fullName() << ":KstarParameters " << _kstarparameters << "\n";
+  for(ix=0;ix<_piwgt.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":PiMagnitude " << ix << " " << _pimag[ix]   << "\n";
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":PiPhase "     << ix << " " << _piphase[ix] << "\n";
+  }
+  for(ix=0;ix<_kwgt.size();++ix) {
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":KMagnitude " << ix << " " << _kmag[ix]   << "\n";
+    if(ix<3) output << "set ";
+    else     output << "insert ";
+    output << fullName() << ":KPhase "     << ix << " " << _kphase[ix] << "\n";
+  }
   output << "set " << fullName() << ":PiModel " << _pimodel << "\n";
-  output << "set " << fullName() << ":KModel  " << _Kmodel << "\n";
+  output << "set " << fullName() << ":KModel  " << _kmodel  << "\n";
   WeakDecayCurrent::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
-
+  if(header) output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;
 }

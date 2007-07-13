@@ -1,5 +1,5 @@
 # create the DecayHandler
-create Herwig++::HwDecayHandler /Defaults/Handlers/DecayHandler
+create Herwig::HwDecayHandler /Defaults/Handlers/DecayHandler
 set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer
 # make directory
 mkdir /Defaults/Decays/
@@ -7,18 +7,18 @@ mkdir /Defaults/Decays/
 #  create the standard fortran decayers
 #
 library Hw64Decay.so
-create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME0
-create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME100
-create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME101
-create /Herwig++/Hw64Decayer /Defaults/Decays/DecayME130
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME0
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME100
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME101
+create Herwig::Hw64Decayer /Defaults/Decays/DecayME130
 library HwPartonicDecay.so
-create /Herwig++/HeavyDecayer /Defaults/Decays/HvyDecayME0
-create /Herwig++/HeavyDecayer /Defaults/Decays/HvyDecayME100
-create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME0
-create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME100
-create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME101
-create /Herwig++/QuarkoniumDecayer /Defaults/Decays/QDecayME130
-create /Herwig++/MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
+create Herwig::HeavyDecayer /Defaults/Decays/HvyDecayME0
+create Herwig::HeavyDecayer /Defaults/Decays/HvyDecayME100
+create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME0
+create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME100
+create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME101
+create Herwig::QuarkoniumDecayer /Defaults/Decays/QDecayME130
+create Herwig::MamboDecayer /Defaults/Decays/Mambo HwMamboDecay.so
 #
 set /Defaults/Decays/DecayME0:MECode 0
 set /Defaults/Decays/DecayME100:MECode 100 
@@ -33,22 +33,41 @@ set /Defaults/Decays/QDecayME130:MECode 130
 #
 # create the decays for perturbative particles, i.e. top, W and Z
 #
-library HwSMVertex.so
-create Herwig++::SMTopDecayer            /Defaults/Decays/Top HwPerturbativeDecay.so
-create Herwig++::SMWZDecayer             /Defaults/Decays/WZ  HwPerturbativeDecay.so
-create Herwig++::SMHiggsFermionsDecayer  /Defaults/Decays/Hff HwPerturbativeHiggsDecay.so
-create Herwig++::SMHiggsWWDecayer        /Defaults/Decays/HWW HwPerturbativeHiggsDecay.so
+create Herwig::SMTopDecayer            /Defaults/Decays/Top HwPerturbativeDecay.so
+create Herwig::SMWZDecayer             /Defaults/Decays/WZ  HwPerturbativeDecay.so
+create Herwig::SMHiggsFermionsDecayer  /Defaults/Decays/Hff HwPerturbativeHiggsDecay.so
+create Herwig::SMHiggsWWDecayer        /Defaults/Decays/HWW HwPerturbativeHiggsDecay.so
 set /Defaults/Decays/HWW:BreitWigner 0
 set /Defaults/Decays/HWW:Power 0.0
 set /Defaults/Decays/HWW:Ntry 1000
+
+# for new Decayer structure
+# read decayers.in
+
 #
 # Now load the files with the decay modes defined. Any new modes in
 # each successive file will override the previous mode in previous files
 #
 read Hw64Decays.in
+# for new Decayer structure
+# read quark_decays.in
+# read baryon_decays.in
+# read boson_decays.in
+# read lepton_decays.in
+# read meson_decays.in
 #
-# To override modes in Hw64Decays, simply add a new read command below with the
-# new modes overridden.
-#
-# e.g. read MyImprovedDecays.in
-#
+
+#  Left over from Hw64Decays.in
+#  for new Decayer structure
+#decaymode b'->b,tbar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->s,cbar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->d,ubar,c; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode b'->mu-,nu_mubar,c; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode b'->e-,nu_ebar,c; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode b'->tau-,nu_taubar,c; 0.080 1 /Defaults/Decays/DecayME100
+#decaymode t'->t,bbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->c,sbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->u,dbar,b'; 0.250 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_mu,mu+,b'; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_e,e+,b'; 0.085 1 /Defaults/Decays/DecayME100
+#decaymode t'->nu_tau,tau+,b'; 0.080 1 /Defaults/Decays/DecayME100

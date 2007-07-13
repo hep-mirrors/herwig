@@ -100,20 +100,10 @@ class ThreePionCLEOCurrent: public ThreeMesonCurrentBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
-  inline ThreePionCLEOCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline ThreePionCLEOCurrent(const ThreePionCLEOCurrent &);
-  //@}
-
-public:
+  ThreePionCLEOCurrent();
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -158,16 +148,6 @@ public:
   virtual bool createMode(int icharge,unsigned int imode,DecayPhaseSpaceModePtr mode,
 			  unsigned int iloc,unsigned int ires,
 			  DecayPhaseSpaceChannelPtr phase,Energy upp);
-
-  /**
-   * The particles produced by the current. This returns the mesons for the mode.
-   * @param icharge The total charge of the particles in the current.
-   * @param imode The mode for which the particles are being requested
-   * @param iq The PDG code for the quark
-   * @param ia The PDG code for the antiquark
-   * @return The external particles for the current.
-   */
-  virtual PDVector particles(int icharge, unsigned int imode, int iq, int ia);
   //@}
 
   /**
@@ -218,10 +198,8 @@ protected:
    * @param F4 The form factor \f$F_4\f$.
    * @param F5 The form factor \f$F_5\f$.
    */
-  virtual void calculateFormFactors(const int ichan,const int imode,
-				    Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3,
-				    Complex&F1,Complex&F2,Complex&F3,
-				    Complex&F4,Complex&F5) const;
+  virtual FormFactors calculateFormFactors(const int ichan,const int imode,
+					   Energy2 q2,Energy2 s1,Energy2 s2,Energy2 s3) const;
 
   /**
    * Calculate CLEO form factors for the current. Implements the form factors
@@ -271,6 +249,11 @@ protected:
    * Initialize this object to the begining of the run phase.
    */
   inline virtual void doinitrun();
+
+  /**
+   * Check sanity of the object during the setup phase.
+   */
+  inline virtual void doupdate() throw(UpdateException);
   //@}
 
 private:
@@ -298,7 +281,7 @@ private:
    * Initialize the \f$a_1\f$ running width
    * @param iopt Initialization option (-1 full calculation, 0 set up the interpolation)
    */
-  void inita1width(int iopt);
+  void inita1Width(int iopt);
   
   /**
    * \f$a_1\f$ Breit-Wigner
@@ -579,12 +562,27 @@ private:
   /**
    * The interpolator for the running \f$a_1\f$ width calculation.
    */
-  InterpolatorPtr _a1runinter;
+  Interpolator<Energy,Energy2>::Ptr _a1runinter;
 
   /**
    * Initialize the running \f$a_1\f$ width.
    */
   bool _initializea1;
+
+  /**
+   * Option for the \f$a_1\f$ width
+   */
+  bool _a1opt;
+
+  /**
+   *  The maximum mass of the hadronic system
+   */
+  Energy _maxmass;
+
+  /**
+   *  The maximum mass when the running width was calculated
+   */
+  Energy _maxcalc;
 
 };
 
@@ -615,7 +613,7 @@ template <>
 struct ClassTraits<Herwig::ThreePionCLEOCurrent>
   : public ClassTraitsBase<Herwig::ThreePionCLEOCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ThreePionCLEOCurrent"; }
+  static string className() { return "Herwig::ThreePionCLEOCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -24,11 +24,15 @@
 using namespace Herwig;
 
 void Evolver::persistentOutput(PersistentOStream & os) const {
-  os << _model << _splittingGenerator << _maxtry << _meCorrMode;
+  os << _model << _splittingGenerator << _maxtry 
+     << _meCorrMode << _hardVetoMode << _intrinsicpT 
+     << ounit(_iptrms,GeV) << _beta << ounit(_gamma,GeV) ;
 }
 
 void Evolver::persistentInput(PersistentIStream & is, int) {
-  is >> _model >> _splittingGenerator >> _maxtry >> _meCorrMode;
+  is >> _model >> _splittingGenerator >> _maxtry 
+     >> _meCorrMode >> _hardVetoMode >> _intrinsicpT 
+     >> iunit(_iptrms,GeV) >> _beta >> iunit(_gamma,GeV);
 }
 
 void Evolver::doinitrun() {
@@ -78,16 +82,110 @@ void Evolver::Init() {
   static SwitchOption soft
     (ifaceMECorrMode,"MEC-soft","only soft on", 3);
 
-}
+  static Switch<Evolver, unsigned int> ifaceHardVetoMode
+    ("HardVetoMode",
+     "Choice of the Hard Veto Mode",
+     &Evolver::_hardVetoMode, 1, false, false);
+  static SwitchOption HVoff
+    (ifaceHardVetoMode,"HV-off","hard vetos off", 0);
+  static SwitchOption HVon
+    (ifaceHardVetoMode,"HV-on","hard vetos on", 1);
+  static SwitchOption HVIS
+    (ifaceHardVetoMode,"HV-IS", "only IS emissions vetoed", 2);
+  static SwitchOption HVFS
+    (ifaceHardVetoMode,"HV-FS","only FS emissions vetoed", 3);
+
+  static Switch<Evolver, unsigned int> ifaceIntrinsicpT
+  ("GenerateIntrinsicpT",
+  "Switch Intrinsic pT on or off",
+   &Evolver::_intrinsicpT, 1, false, false); 
+   static SwitchOption ipToff
+ (ifaceIntrinsicpT,"ipT-off","Intrinsic pT off",0);  
+   static SwitchOption ipTon
+ (ifaceIntrinsicpT,"ipT-on","Intrinsic pT on",1);
+   static Parameter<Evolver, Energy> ifaceiptrms
+  ("Iptrms",
+     "rms intrinsic pT of Gaussian distribution:2*(1-Beta)*exp(-sqr(intrinsicpT/iptrms))/sqr(iptrms)",
+     &Evolver::_iptrms, GeV, 0*GeV, 0*GeV, 1000000.0*GeV,
+     false, false, Interface::limited);
+
+  static Parameter<Evolver, double> ifacebeta
+    ("Beta",
+     "Proportion of inverse quadratic distribution. (1-Beta) is the proportion of Gaussian distribution",
+     &Evolver::_beta, 0, 0, 1,
+     false, false, Interface::limited);
+  static Parameter<Evolver, Energy> ifacegamma
+    ("Gamma",
+     "Parameter for inverse quadratic: 2*Beta*Gamma/(sqr(Gamma)+sqr(intrinsicpT))",
+     &Evolver::_gamma,GeV, 0*GeV, 0*GeV, 100000.0*GeV,
+     false, false, Interface::limited);
+ }
+
 
 void Evolver::generateIntrinsicpT(vector<ShowerProgenitorPtr> particlesToShower) {
   _intrinsic.clear();
+  if (!ipTon()) return;
   for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
     // only consider initial-state particles
     if(particlesToShower[ix]->progenitor()->isFinalState()) continue;
     if(!particlesToShower[ix]->progenitor()->dataPtr()->coloured()) continue;
-    pair<Energy,double> pt = make_pair(0.,UseRandom::rnd()*2.*pi);
+    Energy ipt;
+    if(UseRandom::rnd() > _beta) {
+      ipt=_iptrms*sqrt(-log(UseRandom::rnd()));
+    }
+    else {
+      ipt=_gamma*tan(Constants::pi*UseRandom::rnd()/2.);}
+    pair<Energy,double> pt = make_pair(ipt,UseRandom::rnd()*Constants::twopi);
     _intrinsic[particlesToShower[ix]] = pt;
+  }
+}
+
+void Evolver::setupMaximumScales(ShowerTreePtr hard, 
+				 vector<ShowerProgenitorPtr> p) {
+
+  // find out if hard partonic subprocess.
+  bool isPartonic(false); 
+  map<ShowerProgenitorPtr,ShowerParticlePtr>::const_iterator cit;
+  cit = _currenttree->incomingLines().begin();
+  Lorentz5Momentum pcm;
+  for(; cit!=hard->incomingLines().end(); ++cit) {
+    pcm += cit->first->progenitor()->momentum(); 
+    if (isPartonic || cit->first->progenitor()->coloured()) {
+      isPartonic = true; 
+    }
+  }
+
+  // find maximum pt from hard process, the maximum pt from all
+  // outgoing coloured lines (this is simpler and more general than
+  // 2stu/(s^2+t^2+u^2)).
+  Energy ptmax = -1.0*GeV, pt = 0.0*GeV;
+
+  if (isPartonic) {
+    map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+    cjt = hard->outgoingLines().begin();
+    for(; cjt!=hard->outgoingLines().end(); ++cjt) {
+      if (cjt->first->progenitor()->coloured()) {
+	pt = cjt->first->progenitor()->momentum().perp();
+	if (pt > ptmax) {
+	  ptmax = pt;      
+	}
+      }
+    }
+    // if there are no coloured FS particles, use shat as maximum
+    if (ptmax < 0.0*GeV) {
+      ptmax = pcm.m(); 
+    }
+  } else {
+    // if no coloured IS use shat as well
+    ptmax = pcm.m();
+  }
+  
+  // set maxHardPt for all progenitors.  For partonic processes this
+  // is now the max pt in the FS, for non-partonic processes or
+  // processes with no coloured FS the invariant mass of the IS
+  vector<ShowerProgenitorPtr>::const_iterator ckt = p.begin();
+  for (; ckt != p.end(); ckt++) {
+    (*ckt)->maxHardPt(ptmax);
   }
 }
 
@@ -95,6 +193,11 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
   // set the current tree
   currentTree(hard);
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(true);
+  // setup the maximum scales for the shower, given by the hard process
+  if (hardVetoOn()) {
+    setupMaximumScales(_currenttree, particlesToShower);
+  }
+
   // generate the intrinsic p_T once and for all
   generateIntrinsicpT(particlesToShower);
   unsigned int ntry(0);
@@ -150,6 +253,7 @@ void Evolver::showerHardProcess(ShowerTreePtr hard) {
   currentTree()->hasShowered(true);
 }
 
+
 void Evolver::hardMatrixElementCorrection() {
   // set me correction to null pointer
   _currentme=MECorrectionPtr();
@@ -197,7 +301,15 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
   while (vetoed) {
     vetoed = false; 
     fb=_splittingGenerator->chooseForwardBranching(*particle,_finalenhance);
-      // apply vetos if needed
+
+    // check whether emission was harder than largest pt of hard subprocess
+    if (hardVetoIS() && fb.kinematics 
+	&& fb.kinematics->pT() > _progenitor->maxHardPt()) {
+      vetoed = true;
+      particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
+    }
+
+    // apply vetos if needed
     if(fb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
     if(fb.kinematics && fb.kinematics->pT()>_progenitor->maximumpT()) vetoed=true;
@@ -257,6 +369,14 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
     vetoed=false;
     bb=_splittingGenerator->chooseBackwardBranching(*particle,beam,
 						    _initialenhance,_beam);
+
+    // check whether emission was harder than largest pt of hard subprocess
+    if (hardVetoFS() && bb.kinematics 
+	&& bb.kinematics->pT() > _progenitor->maxHardPt()) {
+      vetoed = true;
+      particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
+    }
+
     // apply the soft correction
     if(bb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,bb);
@@ -291,7 +411,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
   // now reconstruct the momentum
   if(!emitted) {
     if(_intrinsic.find(_progenitor)==_intrinsic.end()) {
-      bb.kinematics->updateLast(newParent,0.,0.);
+      bb.kinematics->updateLast(newParent,0.*MeV,0.*MeV);
     }
     else {
       pair<Energy,double> kt=_intrinsic[_progenitor];
@@ -313,6 +433,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
   // extract particles to be shower, set scales and perform hard matrix element 
   // correction
   vector<ShowerProgenitorPtr> particlesToShower=setupShower(false);
+  setupMaximumScales(_currenttree, particlesToShower);
   // main showering loop
   unsigned int ntry(0);
   do {
@@ -324,7 +445,7 @@ void Evolver::showerDecay(ShowerTreePtr decay) {
     // initial-state radiation
     if(isISRadiationON()) {
       // compute the minimum mass of the final-state
-      Energy minmass(0.);
+      Energy minmass(0.*MeV);
       for(unsigned int ix=0;ix<particlesToShower.size();++ix)
 	{if(particlesToShower[ix]->progenitor()->isFinalState())
 	    minmass+=particlesToShower[ix]->progenitor()->mass();}
@@ -372,6 +493,10 @@ bool Evolver::spaceLikeDecayShower(tShowerParticlePtr particle,vector<Energy> ma
     vetoed = false;
     fb=_splittingGenerator->chooseDecayBranching(*particle,maxscale,minmass,
 						 _initialenhance);
+    
+    // SG: here could be the veto of too hard radiation.  I think the
+    // initial conditions don't allow this anyway.
+
     // apply the soft correction
     if(fb.kinematics && _currentme && softMEC())
       vetoed=_currentme->softMatrixElementVeto(_progenitor,particle,fb);
@@ -438,7 +563,8 @@ vector<ShowerProgenitorPtr> Evolver::setupShower(bool hard) {
   for(cit=_currenttree->incomingLines().begin();
       cit!=_currenttree->incomingLines().end();++cit)
     particlesToShower.push_back((*cit).first);
-  assert((particlesToShower.size()==1&&!hard)||(particlesToShower.size()==2&&hard));
+  assert((particlesToShower.size()==1&&!hard)
+	 ||(particlesToShower.size()==2&&hard));
   // outgoing particles
   for(cjt=_currenttree->outgoingLines().begin();
       cjt!=_currenttree->outgoingLines().end();++cjt)

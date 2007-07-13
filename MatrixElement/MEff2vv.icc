@@ -20,7 +20,7 @@ inline void MEff2vv::doinit() throw(InitException) {
   GeneralHardME::doinit();
   Energy mC = getParticleData(getOutgoing().first)->mass();
   Energy mD = getParticleData(getOutgoing().second)->mass();
-  bool masslVec = (mC == 0. && mD == 0.) ? true : false;
+  bool masslVec = (mC == 0.*MeV && mD == 0.*MeV);
   HPCount ndiags(numberOfDiags());
   theFerm.resize(ndiags);
   theVec.resize(ndiags);

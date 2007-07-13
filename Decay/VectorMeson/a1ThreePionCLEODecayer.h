@@ -329,7 +329,10 @@ private:
    * 
    */
   void formFactors(int iopt,int ichan,Energy2 q2,Energy2 s1,Energy2 s2,
-		   Energy2 s3,Complex & F1,Complex& F2,Complex& F3) const;
+		   Energy2 s3,
+		   complex<InvEnergy> & F1,
+		   complex<InvEnergy> & F2,
+		   complex<InvEnergy> & F3) const;
 
 private:
 
@@ -589,7 +592,7 @@ template <>
 struct ClassTraits<Herwig::a1ThreePionCLEODecayer>
   : public ClassTraitsBase<Herwig::a1ThreePionCLEODecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::a1ThreePionCLEODecayer"; }
+  static string className() { return "Herwig::a1ThreePionCLEODecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

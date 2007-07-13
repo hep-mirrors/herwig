@@ -24,7 +24,8 @@ inline IBPtr SimpleLHCAnalysis::fullclone() const {
 
 inline void SimpleLHCAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream outfile("SimpleLHCAnalysis.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream outfile(fname.c_str());
   string title;
   for(unsigned int ix=0;ix<4;++ix)
     {

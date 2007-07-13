@@ -1,0 +1,18 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSNFSVertex class.
+//
+
+namespace Herwig {
+
+inline IBPtr SSNFSVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSNFSVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+  
+}

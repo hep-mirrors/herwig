@@ -81,7 +81,7 @@ ParticleVector WeakPartonicDecayer::decay(const DecayMode & dm,
   for(unsigned int ix=0;ix<children.size();++ix)
     {
       Energy cmass=children[ix]->dataPtr()->constituentMass();
-      children[ix]->set5Momentum(Lorentz5Momentum(0.,0.,0.,cmass,cmass));
+      children[ix]->set5Momentum(Lorentz5Momentum(0.*GeV,0.*GeV,0.*GeV,cmass,cmass));
     }
   // 2-body decays
   if(children.size()==2) {
@@ -211,9 +211,9 @@ void WeakPartonicDecayer::Init() {
 
 }
 
-double WeakPartonicDecayer::VAWt(double *temp) 
-{return (temp[1]-temp[0])*(temp[0]-temp[2])*temp[3];}
-
+double WeakPartonicDecayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) {
+  return (t1-t0)*(t0-t2)*t3; 
+}
 
 }
 

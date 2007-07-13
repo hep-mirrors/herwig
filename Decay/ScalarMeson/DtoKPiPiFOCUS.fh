@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the DtoKPiPiFOCUS class.
+//
+#ifndef HERWIG_DtoKPiPiFOCUS_FH
+#define HERWIG_DtoKPiPiFOCUS_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class DtoKPiPiFOCUS;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::DtoKPiPiFOCUS,DtoKPiPiFOCUSPtr);
+
+}
+
+#endif

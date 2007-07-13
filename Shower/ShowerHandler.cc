@@ -11,7 +11,6 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Handlers/XComb.h"
-#include "ThePEG/Utilities/Timer.h"
 #include "Herwig++/Shower/Base/Evolver.h"
 #include "Herwig++/Shower/Base/ShowerParticle.h"
 #include "Herwig++/Utilities/EnumParticles.h"
@@ -136,7 +135,6 @@ void ShowerHandler::fillEventRecord() {
 } 
 
 void ShowerHandler::findShoweringParticles() {
-  Timer<1001> timer("ShowerHandler::findShoweringParticles");
   // clear the storage
   _hard=ShowerTreePtr();
   _decay.clear();
@@ -158,16 +156,13 @@ void ShowerHandler::findShoweringParticles() {
     bool isDecayProd=false;
     tPPtr parent;
     if(!(*taggedP)->parents().empty()) {
-	parent = (*taggedP)->parents()[0];
-	// check if from s channel decaying colourless particle
-	// (must be same as in findParent)
-	isDecayProd = !parent->dataPtr()->coloured() && parent->momentum().m2()>0.&&
-	  parent != eventHandler()->lastPartons().first &&
-	  parent != eventHandler()->lastPartons().second;
-      }
+      parent = (*taggedP)->parents()[0];
+      // check if from s channel decaying colourless particle
+      isDecayProd = decayProduct(parent);
+    }
     // add to list of outgoing hard particles if needed
     isHard |=(outgoingset.find(*taggedP) != outgoingset.end());
-    if(isDecayProd) hardParticles.insert(findParent(parent));
+    if(isDecayProd) hardParticles.insert(findParent(parent,isHard,outgoingset));
     else            hardParticles.insert(*taggedP);
   }
   // there must be something to shower
@@ -186,7 +181,8 @@ void ShowerHandler::findShoweringParticles() {
 }
 
 void ShowerHandler::cascade() {
-  Timer<1002> timer("ShowerHandler::cascade");
+  // set the current step
+  _current=currentStep();
   //  start of the try block for the whole showering process
   unsigned int countFailures=0;
   ShowerTreePtr hard;
@@ -212,8 +208,7 @@ void ShowerHandler::cascade() {
       // shower the decay products
       while(!_decay.empty()) {
 	multimap<Energy,ShowerTreePtr>::iterator dit=--_decay.end();
-	while(!dit->second->parent()->hasShowered() && dit!=_decay.begin())
-	  --dit;
+	while(!dit->second->parent()->hasShowered() && dit!=_decay.begin()) --dit;
 	// get the particle and the width
 	ShowerTreePtr decayingTree = dit->second;
 	// 	    Energy largestWidthDecayingSystem=(*_decay.rbegin()).first;
@@ -272,29 +267,37 @@ void ShowerHandler::makeRemnants() {
     pnew=in[ix]->momentum()-pnew;
     pnew.rescaleMass();
     // throw exception if gone wrong
-    if(prem.size()!=1) 
+    if(prem.size()!=1||pother.size()!=1) 
       throw Exception() 
 	<< "Must be one and only 1 remnant for beam in ShowerHandler::makeRemnants()"
 	<< Exception::eventerror;
     // remake the remnant
     if(prem[0]->id()==ExtraParticleID::Remnant) {
-	tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(prem[0]);
-	if(rem) rem->regenerate(pother[0],pnew);
-      }
+      tRemnantPtr rem=dynamic_ptr_cast<tRemnantPtr>(prem[0]);
+      if(rem) rem->regenerate(pother[0],pnew);
+    }
   }
 }
 
-PPtr ShowerHandler::findParent(PPtr original) const {
+PPtr ShowerHandler::findParent(PPtr original, bool & isHard, 
+			       set<PPtr> outgoingset) const {
   PPtr parent=original;
+  isHard |=(outgoingset.find(original) != outgoingset.end());
   if(!original->parents().empty()) {
-    // must be the same as in findShoweringParticles
     PPtr orig=original->parents()[0];
-    if(orig->momentum().m2() > 0. 
-       && !orig->dataPtr()->coloured()
-       && orig != eventHandler()->lastPartons().first 
-       && orig != eventHandler()->lastPartons().second
-       )
-      parent=findParent(original);
+    if(_current->find(orig)&&decayProduct(orig)) {
+      parent=findParent(orig,isHard,outgoingset);
+    }
   }
   return parent;
+}
+
+bool ShowerHandler::decayProduct(tPPtr particle) const{
+  return 
+    !(particle->dataPtr()->coloured()&&
+      (particle->parents()[0]==eventHandler()->lastPartons().first||
+       particle->parents()[0]==eventHandler()->lastPartons().second)) && 
+    particle->momentum().m2()>0.0*GeV2&&
+    particle != eventHandler()->lastPartons().first &&
+    particle != eventHandler()->lastPartons().second;
 }

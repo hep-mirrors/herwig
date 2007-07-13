@@ -7,9 +7,8 @@
 
 #include "ThePEG/Interface/Interfaced.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
-#include "ThePEG/CLHEPWrap/Matrix.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
-#include "ThePEG/CLHEPWrap/ThreeVector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+#include "ThePEG/Vectors/ThreeVector.h"
 #include "ThePEG/EventRecord/Particle.h"
 #include "EventShapes.fh"
 
@@ -84,17 +83,17 @@ public:
   /**
    *  The thrust axis
    */
-  inline Vector3 thrustAxis();
+  inline Axis thrustAxis();
 
   /**
    *  The major axis
    */ 
-  inline Vector3 majorAxis(); 
+  inline Axis majorAxis(); 
 
   /**
    *  The minor axis
    */
-  inline Vector3 minorAxis(); 
+  inline Axis minorAxis(); 
   //@}
 
   /**
@@ -119,7 +118,7 @@ public:
   /**
    *  The eigenvectors in order of descending eigenvalue
    */
-  inline vector<Vector3> linTenEigenVectors();
+  inline vector<Axis> linTenEigenVectors();
   //@}
 
   /**
@@ -144,7 +143,7 @@ public:
   /**
    *  The sphericity axis
    */
-  inline Vector3 sphericityAxis();
+  inline Axis sphericityAxis();
 
   /**
    *  The sphericity eigenvalues
@@ -154,7 +153,7 @@ public:
   /**
    *  The sphericity eigenvectors
    */
-  inline vector<Vector3> sphericityEigenVectors();
+  inline vector<Axis> sphericityEigenVectors();
   //@}
 
   /**
@@ -225,7 +224,7 @@ public:
   /**
    *  Rapidity with respect to the beam direction
    */
-  inline Energy getRapidity(const Lorentz5Momentum & p);
+  inline double getRapidity(const Lorentz5Momentum & p);
   //@}
 
   /**
@@ -432,18 +431,18 @@ private:
   /**
    *  Member to calculate the thrust
    * @param p The three vectors
-   * @param t The thrust
+   * @param t The thrust-squared (up to an Energy scale factor)
    * @param taxis The thrust axis
    */
-  void calcT(const vector<Vector3> &p, double &t, Vector3 &taxis);
+  void calcT(const vector<Momentum3> &p, Energy2 &t, Axis &taxis);
 
   /**
    *  Member to calculate the major
    * @param p The three vectors
-   * @param m The major
+   * @param m The major-squared (up to an Energy scale factor)
    * @param maxis The major axis
    */
-  void calcM(const vector<Vector3> &p, double &m, Vector3 &maxis);
+  void calcM(const vector<Momentum3> &p, Energy2 &m, Axis &maxis);
   //@}
 
 private:
@@ -474,17 +473,17 @@ private:
   /**
    *  The thrust related axes
    */
-  vector<Vector3> _thrustAxis;
+  vector<Axis> _thrustAxis;
 
   /**
    *  The sphericity related axes
    */
-  vector<Vector3> _spherAxis; 
+  vector<Axis> _spherAxis; 
 
   /**
    *  The linearised tensor axes
    */
-  vector<Vector3> _linTenAxis; 
+  vector<Axis> _linTenAxis; 
   //@}
 
   /**
@@ -590,7 +589,7 @@ template <>
 struct ClassTraits<Herwig::EventShapes>
   : public ClassTraitsBase<Herwig::EventShapes> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EventShapes"; }
+  static string className() { return "Herwig::EventShapes"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the EventShapes class and any other class on which it depends
    *  (except the base class). */

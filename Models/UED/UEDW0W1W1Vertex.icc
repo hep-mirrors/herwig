@@ -1,0 +1,17 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the UEDW0W1W1Vertex class.
+//
+
+namespace Herwig {
+
+inline IBPtr UEDW0W1W1Vertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr UEDW0W1W1Vertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

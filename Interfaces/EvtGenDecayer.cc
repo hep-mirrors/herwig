@@ -8,47 +8,55 @@
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/Switch.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EvtGenDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/DecayMode.h"
 
 namespace Herwig {
 using namespace ThePEG;
 
-EvtGenDecayer::~EvtGenDecayer() {}
-
 bool EvtGenDecayer::accept(const DecayMode & dm) const {
-  // this decayer should only be used if letting EvtGen pick the mode
-  if((_evtopt==0||_evtopt==2)&&dm.wildProductMatcher()&&
-     dm.wildProductMatcher()->name()=="MatchAny")
-    {return true;}
-  else if(_evtopt==1){return true;}
-  return false;
+  return true;
 }
 
 ParticleVector EvtGenDecayer::decay(const DecayMode & dm,
-				  const Particle & parent) const {
+				    const Particle & parent) const {
   ParticleVector output;
-  if(_evtopt==0){output=_evtgen->randomDecayAll(parent);}
-  else if(_evtopt==1){output=_evtgen->decayAll(dm,parent);}
-  else if(_evtopt==2){output=_evtgen->randomDecay(parent);}
-  else {throw Exception() << "Unknown option in EvtGenDecayer::decay() " 
-			  << Exception::runerror;}
+  if(_evtopt==0)      output=_evtgen->decay(parent,false,dm);
+  else if(_evtopt==1) output=_evtgen->decay(parent, true,dm);
+  else  throw Exception() << "Unknown option in EvtGenDecayer::decay() " 
+			  << Exception::runerror;
+  if(_check) {
+    Lorentz5Momentum ptotal=parent.momentum();
+    int charge=parent.dataPtr()->iCharge();
+    for(unsigned int ix=0;ix<output.size();++ix) {
+      ptotal-=output[ix]->momentum();
+      charge-=output[ix]->dataPtr()->iCharge();
+      checkDecay(output[ix]);
+    }
+    if(abs(ptotal.x())>0.001*MeV||abs(ptotal.y())>0.001*MeV||
+       abs(ptotal.z())>0.001*MeV||abs(ptotal.e())>0.001*MeV) {
+      generator()->log() << "Decay of " << parent.PDGName() 
+			 << " violates momentum conservation in"
+			 << "EvtGenDecayer::decay\n";
+    }
+    if(charge!=0) {
+      generator()->log() << "Decay of " << parent.PDGName() 
+			 << " violates charge conservation in"
+			 << "EvtGenDecayer::decay\n";
+    }
+  }
   return output;
 }
 
 
 void EvtGenDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _evtgen << _evtopt;
+  os << _evtgen << _evtopt << _check;
 }
 
 void EvtGenDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _evtgen >> _evtopt;  
+  is >> _evtgen >> _evtopt >> _check;  
 }
 
 ClassDescription<EvtGenDecayer> EvtGenDecayer::initEvtGenDecayer;
@@ -65,29 +73,56 @@ void EvtGenDecayer::Init() {
      "Pointer to the EvtGen object which encapsulates the EvtGen decay package.",
      &EvtGenDecayer::_evtgen, false, false, true, false, false);
 
-
   static Switch<EvtGenDecayer,unsigned int> interfaceOption
     ("Option",
      "The way in which EvtGen is used.",
      &EvtGenDecayer::_evtopt, 0, false, false);
-  static SwitchOption interfaceOptionEvtGenAll
+  static SwitchOption interfaceOptionParent
     (interfaceOption,
-     "EvtGenAll",
-     "vtGen selects the decay mode of the particle and decays all"
-     " the unstable particles produced in the decay.",
+     "Parent",
+     "EvtGen decays the particle and returns the decay products to be decayed by"
+     " Herwig++.",
      0);
-  static SwitchOption interfaceOptionHerwigModeEvtGenAll
+  static SwitchOption interfaceOptionAll
     (interfaceOption,
-     "HerwigModeEvtGenAll",
-     "Herwig++ selects the decay mode and then EvtGen decays the particle"
-     " and all the unstable particles produced in the decay.",
+     "All",
+     "EvtGen decays the particle and all the unstable particles produced in the decay.",
      1);
-  static SwitchOption interfaceOptionEvtGenMode
-    (interfaceOption,
-     "EvtGenMode",
-     "EvtGen selects the decay mode and then EvtGen decays the particle"
-     "but not the unstable particles produced in the decay.",
-     2);
+
+  static Switch<EvtGenDecayer,bool> interfaceCheck
+    ("Check",
+     "Perform some basic checks of the decay",
+     &EvtGenDecayer::_check, false, false, false);
+  static SwitchOption interfaceCheckCheck
+    (interfaceCheck,
+     "Check",
+     "Perform the checks",
+     true);
+  static SwitchOption interfaceCheckNoCheck
+    (interfaceCheck,
+     "NoCheck",
+     "Don't perform the checks",
+     false);
+}
+
+void EvtGenDecayer::checkDecay(PPtr in) const {
+  Lorentz5Momentum ptotal=in->momentum();
+  int charge = in->dataPtr()->iCharge();
+  if(in->children().empty()) return;
+  for(unsigned int ix=0;ix<in->children().size();++ix) {
+    checkDecay(in->children()[ix]);
+    ptotal-=in->children()[ix]->momentum();
+    charge-=in->children()[ix]->dataPtr()->iCharge();
+  }
+  if(abs(ptotal.x())>MeV||abs(ptotal.y())>MeV||
+     abs(ptotal.z())>MeV||abs(ptotal.e())>MeV) {
+    generator()->log() 
+      << "Decay of " << in->PDGName() << " violates momentum conservation"
+      << "in EvtGenDecayer::checkDecay";
+  }
+  if(charge!=0) generator()->log() << "Decay of " << in->PDGName() 
+				   << " violates charge conservation in "
+				   << "EvtGenDecayer::checkDecay\n";
 }
 
 }

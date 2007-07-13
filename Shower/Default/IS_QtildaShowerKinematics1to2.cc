@@ -54,11 +54,11 @@ updateParent(const tShowerParticlePtr theParent,
   theParent->addChild(theChildren[1]);
   theParent->x(theChildren[0]->x()/z());
   // create the storage for the shower variables
-  theParent->showerVariables().resize(3,0.);
-  theParent->showerParameters().resize(2,0.);
+  theParent->showerVariables().resize(3);
+  theParent->showerParameters().resize(2);
   if(theChildren[0]->showerVariables().empty()) {
-    theChildren[0]->showerVariables().resize(3,0.);
-    theChildren[0]->showerParameters().resize(2,0.);
+    theChildren[0]->showerVariables().resize(3);
+    theChildren[0]->showerParameters().resize(2);
   }
 }
 
@@ -94,7 +94,7 @@ updateLast( const tShowerParticlePtr theLast,Energy px,Energy py) const {
   theLast->showerParameters()[1]=0.5*pt2/theLast->showerParameters()[0]/p_dot_n();
   theLast->showerVariables().resize(3);
   theLast->showerParameters().resize(2);
-  for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=0.;
+  for(unsigned int ix=0;ix<3;++ix) theLast->showerVariables()[ix]=0.*MeV;
   theLast->set5Momentum(sudakov2Momentum(theLast->showerParameters()[0], 
 					 theLast->showerParameters()[1], 
 					 px,py,0));
@@ -106,8 +106,8 @@ void IS_QtildaShowerKinematics1to2::initialize(ShowerParticle & particle, PPtr p
   assert(particle.perturbative()!=2);
   if(particle.perturbative()==1) {
     pcm = parent->momentum();
-    p = Lorentz5Momentum(0.0, pcm.vect());
-    n = Lorentz5Momentum(0.0, -pcm.vect());
+    p = Lorentz5Momentum(0.0*MeV, pcm.vect());
+    n = Lorentz5Momentum(0.0*MeV, -pcm.vect());
   } 
   else {
     p = dynamic_ptr_cast<ShowerParticlePtr>(particle.children()[0])

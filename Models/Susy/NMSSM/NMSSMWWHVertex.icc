@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the NMSSMWWHVertex class.
+//
+
+namespace Herwig {
+
+inline IBPtr NMSSMWWHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr NMSSMWWHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+}

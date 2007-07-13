@@ -6,17 +6,17 @@
 //
 
 #include "Herwig++/MatrixElement/GeneralHardME.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
 #include "MEfv2vf.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using Helicity::ProductionMatrixElement;
+
 using Helicity::FFVVertexPtr;
 using Helicity::VVVVertexPtr;
 
@@ -80,6 +80,7 @@ public:
    * @param vecIn A vector of VectorWaveFunctions for the incoming boson
    * @param spbOut A vector of SpinorBarWaveFunctions for the outgoing fermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
+   * @param mesq The matrix element squared
   */
   ProductionMatrixElement
   fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn, VBVector & vecOut, 
@@ -87,10 +88,11 @@ public:
 
   /**
    * Calculate the matrix element for an incoming anti-fermion
-   * @param spIn A vector of SpinorBarWaveFunctions for the incoming anti-fermion
+   * @param spbIn A vector of SpinorBarWaveFunctions for the incoming anti-fermion
    * @param vecIn A vector of VectorWaveFunctions for the incoming boson
-   * @param spbOut A vector of Spinors for the outgoing antifermion
+   * @param spOut A vector of Spinors for the outgoing antifermion
    * @param vecOut A vector of VectorWaveFunctions for the outgoing boson
+   * @param mesq The matrix element squared
   */
   ProductionMatrixElement
   fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn, VBVector & vecOut, 
@@ -206,7 +208,7 @@ template <>
 struct ClassTraits<Herwig::MEfv2vf>
   : public ClassTraitsBase<Herwig::MEfv2vf> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEfv2vf"; }
+  static string className() { return "Herwig::MEfv2vf"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEfv2vf is implemented. It may also include several, space-separated,

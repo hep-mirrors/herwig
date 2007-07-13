@@ -21,6 +21,9 @@ using namespace ThePEG;
  */
 class DrellYanMECorrection: public QTildeMECorrection {
 
+/**
+ *  Typedef for BeamParticleData pointers
+ */
 typedef Ptr<BeamParticleData>::transient_const_pointer tcBeamPtr;
 
 public:
@@ -214,7 +217,7 @@ template <>
 struct ClassTraits<Herwig::DrellYanMECorrection>
   : public ClassTraitsBase<Herwig::DrellYanMECorrection> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DrellYanMECorrection"; }
+  static string className() { return "Herwig::DrellYanMECorrection"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DrellYanMECorrection is implemented. It may also include several, space-separated,

@@ -18,7 +18,7 @@ using namespace ThePEG;
  * splitting function for \f$q\to qg\f$. 
  *
  *  In this case the splitting function is given by
- * \f[P(z,t) =\frac{C_F}\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
+ * \f[P(z,t) =C_F\left(\frac{1+z^2}{1-z}-2\frac{m^2_q}{t}\right),\f]
  * where \f$C_F=\frac43\f$.
  * Our choice for the overestimate is 
  * \f[P_{\rm over}(z) = \frac{2C_F}{1-z},\f]
@@ -172,7 +172,7 @@ template <>
 struct ClassTraits<Herwig::QtoQGSplitFn>
   : public ClassTraitsBase<Herwig::QtoQGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QtoQGSplitFn"; }
+  static string className() { return "Herwig::QtoQGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QtoQGSplitFn is implemented. It may also include several, space-separated,
@@ -188,8 +188,5 @@ struct ClassTraits<Herwig::QtoQGSplitFn>
 }
 
 #include "QtoQGSplitFn.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "QtoQGSplitFn.tcc"
-#endif
 
 #endif /* HERWIG_QtoQGSplitFn_H */

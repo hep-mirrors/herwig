@@ -17,7 +17,7 @@ inline const Lorentz5Momentum & QtildaShowerKinematics1to2::nVector() const {
   return _nVector;
 }
 
-inline const double QtildaShowerKinematics1to2::p_dot_n() const {
+inline const Energy2 QtildaShowerKinematics1to2::p_dot_n() const {
   return _pVector*_nVector;
 }
 }

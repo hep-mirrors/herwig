@@ -7,12 +7,13 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
 #include "LEPFourJetsAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/Repository/CurrentGenerator.h"
 
 namespace Herwig {
 
@@ -224,7 +225,7 @@ template <>
 struct ClassTraits<Herwig::LEPFourJetsAnalysis>
   : public ClassTraitsBase<Herwig::LEPFourJetsAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LEPFourJetsAnalysis"; }
+  static string className() { return "Herwig::LEPFourJetsAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the LEPFourJetsAnalysis class and any other class on which it depends
    *  (except the base class). */

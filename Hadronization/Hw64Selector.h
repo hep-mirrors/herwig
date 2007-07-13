@@ -125,7 +125,7 @@ template <>
 struct ClassTraits<Herwig::Hw64Selector>
   : public ClassTraitsBase<Herwig::Hw64Selector> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Hw64Selector"; }
+  static string className() { return "Herwig::Hw64Selector"; }
 };
 
 /** @endcond */

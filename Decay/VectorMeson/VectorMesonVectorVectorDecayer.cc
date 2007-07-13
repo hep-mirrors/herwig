@@ -8,7 +8,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 #ifdef ThePEG_TEMPLATES_IN_CC_FILE
 // #include "VectorMesonVectorVectorDecayer.tcc"
@@ -166,9 +166,8 @@ double VectorMesonVectorVectorDecayer::me2(bool vertex, const int,
       eps[ix]=mytemp;
     }
   // work out the dot products we need for the matrix element
-  Complex p1p2((decay[0]->momentum())*(decay[1]->momentum()));
-  Complex p1eps2[3],p2eps1[3];
-  Complex eps1eps2;
+  Energy2 p1p2((decay[0]->momentum())*(decay[1]->momentum()));
+  complex<Energy> p1eps2[3],p2eps1[3];
   for(ix=0;ix<3;++ix)
     {
       p1eps2[ix]=eps[1][ix]*(decay[0]->momentum());
@@ -177,20 +176,20 @@ double VectorMesonVectorVectorDecayer::me2(bool vertex, const int,
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin1,PDT::Spin1);
   Lorentz5Momentum pdiff(decay[0]->momentum()-decay[1]->momentum());
-  Complex m12(decay[0]->mass()*decay[0]->mass()),m22(decay[1]->mass()*decay[1]->mass());
-  double fact(2.*_coupling[imode()]/(inpart.mass()*inpart.mass()*inpart.mass()));
+  Energy2 m12(decay[0]->mass()*decay[0]->mass()),m22(decay[1]->mass()*decay[1]->mass());
+  InvEnergy3 fact(2.*_coupling[imode()]/(inpart.mass()*inpart.mass()*inpart.mass()));
   LorentzPolarizationVector vtemp;
   for(ipol1=0;ipol1<3;++ipol1)
     {
       for(ipol2=0;ipol2<3;++ipol2)
 	{
-	  eps1eps2=eps[0][ipol1]*eps[1][ipol2];
+	  Complex eps1eps2=eps[0][ipol1].dot(eps[1][ipol2]);
 	  vtemp=fact*(p1eps2[ipol2]*p2eps1[ipol1]*pdiff
 		      +p1eps2[ipol2]*m22*eps[0][ipol1]
 		      -p2eps1[ipol1]*m12*eps[1][ipol2]
 		      +eps1eps2*(-p1p2*pdiff+m12*decay[1]->momentum()
 				 -m22*decay[0]->momentum()));
-	  for(inpol=0;inpol<3;++inpol){newME(inpol,ipol1,ipol2)=invec[inpol]*vtemp;}
+	  for(inpol=0;inpol<3;++inpol){newME(inpol,ipol1,ipol2)=invec[inpol].dot(vtemp);}
 	}
     }
   ME(newME);

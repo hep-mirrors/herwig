@@ -163,7 +163,7 @@ template <>
 struct ClassTraits<Herwig::ShowerAlphaQED>
   : public ClassTraitsBase<Herwig::ShowerAlphaQED> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerAlphaQED"; }
+  static string className() { return "Herwig::ShowerAlphaQED"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ShowerAlphaQED is implemented. It may also include several, space-separated,

@@ -59,12 +59,12 @@ vector<Energy> RunningMass::mass() const
     else
       {coeff=0.;}
     if ( p ){massf=p->mass();}
-    else{massf=0.;}
+    else{massf=Energy();}
     as = _theStandardModel->alphaS(massf*massf);
     if(as>0)
       {massf = massf/(1.+coeff*as)/pow(as,_thePower[f-1]);}
     else
-      {massf = 0.;}
+      {massf = Energy();}
     masses.push_back(massf);
   }
   return masses;

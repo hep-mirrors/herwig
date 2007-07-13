@@ -16,7 +16,8 @@ inline IBPtr IdentifiedParticleAnalysis::fullclone() const {
 
 inline void IdentifiedParticleAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("IdentifiedParticle.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   generator()->log() << "Output from SingleParticleAnalysis \n";
   // chisq
   double chisq;

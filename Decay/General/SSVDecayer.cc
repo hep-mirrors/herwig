@@ -10,16 +10,16 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 SSVDecayer::~SSVDecayer() {}
 
@@ -41,35 +41,49 @@ void SSVDecayer::Init() {
 
 }
 
-double SSVDecayer::me2(bool , const int , const Particle & inpart,
+double SSVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
+
   RhoDMatrix rhoin(PDT::Spin0);
   rhoin.average();
   ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),rhoin,incoming,
-			    true,true);
+			    true,vertex);
   unsigned int isc,ivec;
-  if((decay[0]->data()).iSpin() == PDT::Spin0) {
-    isc=0;
-    ivec=1;
+  if(decay[0]->dataPtr()->iSpin() == PDT::Spin0) {
+    isc = 0;
+    ivec = 1;
   }
   else {
-    isc=1;
-    ivec=0;
+    isc = 1;
+    ivec = 0;
   }
-  ScalarWaveFunction sca(decay[isc],outgoing,true,true);
+  ScalarWaveFunction sca(decay[isc],outgoing,true,vertex);
   vector<VectorWaveFunction> vecWave;
-  VectorWaveFunction(vecWave,decay[ivec],outgoing,true,false,true);
+  VectorWaveFunction(vecWave,decay[ivec],outgoing,true,false,vertex);
   Energy2 scale(inpart.mass()*inpart.mass());
-  DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
-  for(unsigned int ix=0;ix<3;++ix) {
-    newme(0,0,ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+  //make sure decay matrix element is in the correct order
+  double output(0.);
+  if(ivec == 0) {
+    DecayMatrixElement newme(PDT::Spin0,PDT::Spin1,PDT::Spin0);
+    for(unsigned int ix = 0; ix < 3; ++ix)
+      newme(0, ix, 0) = _theVSSPtr->evaluate(scale,vecWave[ix],sca, inwave);
+    
+    ME(newme);
+    output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   }
-  double output = (newme.contract(rhoin)).real()/scale;
+  else {
+    DecayMatrixElement newme(PDT::Spin0,PDT::Spin0,PDT::Spin1);
+    for(unsigned int ix = 0; ix < 3; ++ix)
+      newme(0, 0, ix) = _theVSSPtr->evaluate(scale,vecWave[ix],sca,inwave);
+    
+    ME(newme);
+    output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  }
   colourConnections(inpart, decay);
   return output;
 }
 
-double SSVDecayer::partialWidth(const PDPtr inpart,
+Energy SSVDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   double mu1sq(0.),mu2sq(0.);
@@ -96,6 +110,6 @@ double SSVDecayer::partialWidth(const PDPtr inpart,
   Complex norm2 = (_theVSSPtr->getNorm()*_theVSSPtr->getNorm());
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double output = pcm*me2*norm2.real()/8./Constants::pi;
+  Energy output = pcm*me2*norm2.real()/8./Constants::pi;
   return output;
 }

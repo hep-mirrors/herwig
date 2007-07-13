@@ -13,6 +13,7 @@
 namespace Herwig {
 using namespace ThePEG;
 using ThePEG::Helicity::LorentzPolarizationVector;
+using ThePEG::Helicity::LorentzPolarizationVectorE;
 
 /** \ingroup Decay
  *
@@ -26,20 +27,20 @@ using ThePEG::Helicity::LorentzPolarizationVector;
  * - createMode which takes a vector of partially completed DecayPhaseSpaceChannel 
  *   and adds the extra information required for the current. This method should
  *   assume that the particles from the current are the last ones specified in the
- *   DecayPhaseSpaceMode. This method with then construct the DecayPhaseSpaceMode
+ *   DecayPhaseSpaceMode. This method will then construct the DecayPhaseSpaceMode
  *   for the decay.
  *
- * - particles which returns the external particles produced by the current.
+ * - particles() which returns the external particles produced by the current.
  *
- * - current which given the decay products calculates the decay current
+ * - current() which given the decay products calculates the decay current
  *
- * - accept which uses the PDG codes for the particles in the current to 
+ * - accept() which uses the PDG codes for the particles in the current to 
  *   decide if a given mode is allowed.
  *
- * - decayMode which uses the PDG codes for the particles in the current to 
+ * - decayMode() which uses the PDG codes for the particles in the current to 
  *   workout which modes is being performed.
  *
- * - dataBaseOutput which should output the information on all the Interfaces so
+ * - dataBaseOutput() which should output the information on all the Interfaces so
  *   that the WeakDecayCurrent can be reconstructed by the Herwig++ particle
  *   properties database.
  *
@@ -50,41 +51,10 @@ class WeakDecayCurrent: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline WeakDecayCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline WeakDecayCurrent(const WeakDecayCurrent &);
-  //@}
-
-public:
-
-  /** @name Functions used by the persistent I/O system. */
-  //@{
-  /**
-   * Function used to write out object persistently.
-   * @param os the persistent output stream written to.
-   */
-  void persistentOutput(PersistentOStream & os) const;
-
-  /**
-   * Function used to read in object persistently.
-   * @param is the persistent input stream read from.
-   * @param version the version number of the object when written.
-   */
-  void persistentInput(PersistentIStream & is, int version);
-  //@}
-
-  /**
-   * Standard Init function used to initialize the interfaces.
-   */
-  static void Init();
 
 public:
 
@@ -137,9 +107,9 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
-						     const int ichan,Energy & scale, 
-						     const ParticleVector & decay) const=0;
+  virtual vector<LorentzPolarizationVectorE> current(bool vertex, const int imode,
+						    const int ichan,Energy & scale, 
+						    const ParticleVector & decay) const=0;
 
   /**
    * Accept the decay. This method is purely virtual and must be implemented in any class
@@ -174,7 +144,30 @@ public:
    */
   virtual void dataBaseOutput(ofstream & os,bool header,bool create) const;
 
- protected:
+public:
+
+  /** @name Functions used by the persistent I/O system. */
+  //@{
+  /**
+   * Function used to write out object persistently.
+   * @param os the persistent output stream written to.
+   */
+  void persistentOutput(PersistentOStream & os) const;
+
+  /**
+   * Function used to read in object persistently.
+   * @param is the persistent input stream read from.
+   * @param version the version number of the object when written.
+   */
+  void persistentInput(PersistentIStream & is, int version);
+  //@}
+
+  /**
+   * Standard Init function used to initialize the interfaces.
+   */
+  static void Init();
+
+protected:
 
   /**
    *  Add a decay mode to the list.
@@ -247,7 +240,7 @@ template <>
 struct ClassTraits<Herwig::WeakDecayCurrent>
   : public ClassTraitsBase<Herwig::WeakDecayCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::WeakDecayCurrent"; }
+  static string className() { return "Herwig::WeakDecayCurrent"; }
 };
 
 /** @endcond */

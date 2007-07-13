@@ -30,25 +30,10 @@ class ISGWFormFactor: public ScalarFormFactor {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   ISGWFormFactor();
-
-  /**
-   * Copy constructor
-   */
-  inline ISGWFormFactor(const ISGWFormFactor &);
-
-  /**
-   * Destructor
-   */
-  virtual ~ISGWFormFactor();
-  //@}
-
-public:
 
   /** @name Form-Factors */
   //@{
@@ -96,9 +81,11 @@ public:
    * @param bp The form-factor \f$b_+\f$.
    * @param bm The form-factor \f$b_-\f$.
    */
-  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,Energy m0,
-				      Energy m1, Complex & h,Complex & k,
-				      Complex & bp, Complex & bm) const;
+  virtual void ScalarTensorFormFactor(Energy2 q2,unsigned int iloc,int id0,int id1,
+				      Energy m0,
+				      Energy m1, complex<InvEnergy2> & h,
+				      Complex & k, complex<InvEnergy2> & bp,
+				      complex<InvEnergy2> & bm) const;
   //@}
 
   /**
@@ -173,47 +160,11 @@ protected:
   /** @name Standard Interfaced functions. */
   //@{
   /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
    * Initialize this object after the setup phase before saving and
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -222,7 +173,6 @@ private:
    * Describe a concrete class with persistent data.
    */
   static ClassDescription<ISGWFormFactor> initISGWFormFactor;
-
   /**
    * Private and non-existent assignment operator.
    */
@@ -265,7 +215,7 @@ private:
   /**
    * The masses of the quarks as a vector
    */
-  Energy _mquark[5];
+  vector<Energy> _mquark;
   //@}
 
 
@@ -294,16 +244,18 @@ private:
   /**
    * The s-wave variational parameters as a vector.
    */
-  Energy _betaS[5][5];
+  vector<vector<Energy> > _betaS;
 
   /**
    * The wavefunction p-wave \f$\beta\f$ variational parameters for  \f$u\bar{d}\f$ 
    */
   Energy _betaPud;
+
   /**
    * The wavefunction s-wave \f$\beta\f$ variational parameters for  \f$u\bar{s}\f$ 
    */
   Energy _betaPus;
+
   /**
    * The wavefunction s-wave \f$\beta\f$ variational parameters for  \f$u\bar{c}\f$ 
    */
@@ -312,7 +264,7 @@ private:
   /**
    * The p-wave variational parameters as a vector
    */
-  Energy _betaP[5][5];
+  vector<vector<Energy> > _betaP;
   //@}
 
   /**
@@ -347,7 +299,7 @@ template <>
 struct ClassTraits<Herwig::ISGWFormFactor>
   : public ClassTraitsBase<Herwig::ISGWFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ISGWFormFactor"; }
+  static string className() { return "Herwig::ISGWFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

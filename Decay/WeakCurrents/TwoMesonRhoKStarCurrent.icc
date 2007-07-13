@@ -22,20 +22,21 @@ inline double TwoMesonRhoKStarCurrent::GSModelhFunction(const unsigned int ix,
 					       const Energy q) const {
   Energy pq(pcm(ix,q));
   return _width[ix]*_mass2[ix]/(_mom[ix]*_mom[ix]*_mom[ix])
-    *2.*pq/pi/q*log((q+2.*pq)/(_massa[ix]+_massb[ix]));
+    *2.*pq/Constants::pi/q*log((q+2.*pq)/(_massa[ix]+_massb[ix]));
 }
 
 // the dh/dq2 in the GS model for the propagator
-inline double TwoMesonRhoKStarCurrent::
+inline InvEnergy2 TwoMesonRhoKStarCurrent::
 GSModeldhdq2Parameter(const unsigned int ix) const {
-  Energy mpi(0.5*(_massa[ix]+_massb[ix]));
-  return _width[ix]/pi/_mom[ix]/_mom[ix]/_mom[ix]*
-    (mpi*mpi/_mass[ix]/_mom[ix]*log(0.5*(_mass[ix]+2.*_mom[ix])/mpi)+0.5);
+  Energy mpi = 0.5 * (_massa[ix] + _massb[ix]);
+  return _width[ix] / Constants::pi / pow<3,1>(_mom[ix]) *
+    (sqr(mpi) / _mass[ix] / _mom[ix] * log(0.5 * (_mass[ix] + 2.*_mom[ix])/mpi) + 0.5);
 }
 
 // the D parameter of the GS model
 inline double TwoMesonRhoKStarCurrent::GSModelDParameter(const unsigned int ix) const {
   Energy mpi(0.5*(_massa[ix]+_massb[ix]));
+  using Constants::pi;
   return 3.*mpi*mpi/pi/_mom[ix]/_mom[ix]*log(0.5*(_mass[ix]+2.*_mom[ix])/mpi)
     +0.5*_mass[ix]/pi/_mom[ix]-mpi*mpi*_mass[ix]/pi/_mom[ix]/_mom[ix]/_mom[ix];
 }
@@ -47,7 +48,7 @@ inline Energy TwoMesonRhoKStarCurrent::pcm(const unsigned int ix,const  Energy q
   if(q>_massa[ix]+_massb[ix])
     {output =  0.5/q*sqrt((q2-(_massa[ix]+_massb[ix])*(_massa[ix]+_massb[ix]))*
 			  (q2-(_massa[ix]-_massb[ix])*(_massa[ix]-_massb[ix])));}
-  else{output=0;}
+  else{output=0*MeV;}
   return output;
 }
 
@@ -66,18 +67,18 @@ Complex TwoMesonRhoKStarCurrent::BreitWigner(Energy2 q2, unsigned int imodel,
   double ratio(pq/_mom[iy]);ratio=ratio*ratio*ratio;
   Energy gamrun(_width[iy]*_mass[iy]*ratio/q);
   // work out the denominator
-  complex<Energy2> denom;
-  Complex numer;
+  complex<Energy2> denom, numer;
   Complex ii(0.,1.);
   if(imodel==0) {
     denom=q2-_mass2[iy]+ii*_mass[iy]*gamrun;
     numer=-_mass2[iy];
   }
   else if(imodel==1) {
-    denom=q2-_mass2[iy]+ii*_mass[iy]*gamrun
-      -( pq*pq*(GSModelhFunction(iy,q)-_hm2[iy])
-	 -_mom[iy]*_mom[iy]*(q2-_mass2[iy])*_dhdq2[iy]);
-    numer=-(_mass2[iy]+_dparam[iy]*_mass[iy]*_width[iy]);
+    denom = q2 - _mass2[iy] + ii*_mass[iy]*gamrun
+      - ( sqr(pq) * (GSModelhFunction(iy,q)-_hm2[iy])
+	  - sqr(_mom[iy]) * (q2-_mass2[iy]) * _dhdq2[iy]);
+
+    numer = -(_mass2[iy]+_dparam[iy]*_mass[iy]*_width[iy]);
   }
   else {
     throw Exception() << "Unknown model in TwoMesonRhoKStarCurrent::BreitWigner" 

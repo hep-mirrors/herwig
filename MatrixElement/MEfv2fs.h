@@ -6,10 +6,26 @@
 //
 
 #include "GeneralHardME.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/FFSVertex.fh"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.fh"
 #include "MEfv2fs.fh"
 
 namespace Herwig {
 using namespace ThePEG;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::FFSVertexPtr;
+using ThePEG::Helicity::VSSVertexPtr;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+
 
 /**
  * This class is designed to implement the matrix element for 
@@ -21,6 +37,15 @@ using namespace ThePEG;
  * @see GeneralHardME
  */
 class MEfv2fs: public GeneralHardME {
+
+  /** Vector of SpinorWaveFunctions. */
+  typedef vector<SpinorWaveFunction> SpinorVector;
+
+  /** Vector of SpinorBarWaveFunctions. */
+  typedef vector<SpinorBarWaveFunction> SpinorBarVector;
+
+  /** Vector of VectorWaveFunctions. */
+  typedef vector<VectorWaveFunction> VecWFVector;
 
 public:
 
@@ -53,6 +78,45 @@ public:
   colourGeometries(tcDiagPtr diag) const;
   //@}
 
+  /**
+   * Construct the vertex information for the spin correlations
+   * @param subp Pointer to the relevent SubProcess
+   */
+  virtual void constructVertex(tSubProPtr subp);
+
+private:
+
+  /** @name Functions to calculate production matrix elements and me2. */
+  //@{
+  /**
+   * Calculate me2 and the production matrix element for the normal mode.
+   * @param spIn Vector of SpinorWaveFunction for the incoming fermion
+   * @param vecIn Vector of VectorWaveFunction for incoming boson
+   * @param spbOut Vector of SpinorBarWaveFunction for outgoing fermion
+   * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param full_me The value of me2 calculation
+   */
+  ProductionMatrixElement fv2fbsHeME(const SpinorVector & spIn, 
+				     const VecWFVector & vecIn,
+				     const SpinorBarVector & spbOut,
+				     const ScalarWaveFunction & scaOut,
+				     double & full_me) const;
+  
+  /**
+   * Calculate me2 and the production matrix element for the cc mode.
+   * @param spbIn Vector of SpinorBarWaveFunction for the incoming fermion
+   * @param vecIn Vector of VectorWaveFunction for incoming boson
+   * @param spOut Vector of SpinorWaveFunction for outgoing fermion
+   * @param scaOut ScalarWaveFunction for outgoing scalar.
+   * @param full_me The value of me2 calculation
+   */
+  ProductionMatrixElement fbv2fsHeME(const SpinorBarVector & spbIn, 
+				     const VecWFVector & vecIn,
+				     const SpinorVector & spOut,
+				     const ScalarWaveFunction & scaOut,
+				     double & full_me) const;
+  //@}
+  
 public:
 
   /** @name Functions used by the persistent I/O system. */
@@ -78,6 +142,18 @@ public:
    * when this class is dynamically loaded.
    */
   static void Init();
+
+protected:
+
+  /** @name Standard Interfaced functions. */
+  //@{
+  /**
+   * Initialize this object after the setup phase before saving an
+   * EventGenerator to disk.
+   * @throws InitException if object could not be initialized properly.
+   */
+  inline void doinit() throw(InitException);
+  //@}
 
 protected:
 
@@ -109,6 +185,19 @@ private:
    * In fact, it should not even be implemented.
    */
   MEfv2fs & operator=(const MEfv2fs &);
+
+private:
+
+  /**
+   * Store a pair of  FFSVertex and VSSVertex pointers  
+   */
+  vector<pair<FFSVertexPtr, VSSVertexPtr> > theScaV;
+
+  /**
+   * Store a pair of  FFSVertex and FFVVertex pointers  
+   */
+  vector<pair<FFSVertexPtr, FFVVertexPtr> > theFermV;
+  
 };
 
 }
@@ -117,7 +206,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of MEfv2fs. */
@@ -133,7 +222,7 @@ template <>
 struct ClassTraits<Herwig::MEfv2fs>
   : public ClassTraitsBase<Herwig::MEfv2fs> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEfv2fs"; }
+  static string className() { return "Herwig::MEfv2fs"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEfv2fs is implemented. It may also include several, space-separated,
@@ -144,7 +233,7 @@ struct ClassTraits<Herwig::MEfv2fs>
   static string library() { return "libGeneralHardME.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

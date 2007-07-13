@@ -171,7 +171,7 @@ template <>
 struct ClassTraits<Herwig::PhitoPhiGSplitFn>
   : public ClassTraitsBase<Herwig::PhitoPhiGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::PhitoPhiGSplitFn"; }
+  static string className() { return "Herwig::PhitoPhiGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * PhitoPhiGSplitFn is implemented. It may also include several, space-separated,

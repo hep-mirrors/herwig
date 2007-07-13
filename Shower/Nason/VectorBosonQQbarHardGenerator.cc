@@ -231,10 +231,10 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   Energy mass;
 
-  if( ( _quark[0] )(3) > ( _quark[1] )(3) && ( _quark[0] )(3) > _g(3) )
+  if( ( _quark[0] ).e() > ( _quark[1] ).e() && ( _quark[0] ).e() > _g.e() )
     mass = ( _quark[1] + _g ).mag();
 
-  else if( ( _quark[1] )(3) > ( _quark[0] )(3) && ( _quark[1] )(3) > _g(3) )
+  else if( ( _quark[1] ).e() > ( _quark[0] ).e() && ( _quark[1] ).e() > _g.e() )
     mass = ((_quark[0])+_g).mag();
 
   else mass = ( ( _quark[1] ) + ( _quark[0] ) ).mag();
@@ -428,7 +428,7 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
   }
 
  double VectorBosonQQbarHardGenerator::getResult() {
-   double res = 4. / 3. / pi * _pt / _s *
+   double res = 4. / 3. / Constants::pi * _pt / _s *
      ( sqr ( _x1 ) + sqr( _x2 ) ) / ( 1. - _x1 ) / ( 1. -_x2 ) * GeV;
    res *= _alphaS->value( sqr( _pt ) );
    return res;
@@ -466,16 +466,16 @@ LorentzRotation VectorBosonQQbarHardGenerator::getTransf(){
   LorentzRotation transf( ( _quark[0] + _quark[1] ).findBoostToCM() );
 
   Lorentz5Momentum q1 = transf * ( _quark[0] );
-  
-  if( q1(0) == 0.0 ) transf.rotateZ( -pi / 2. );
-  else transf.rotateZ( -atan( q1(1) / q1(0) ) );
+  using Constants::pi;
+  if( q1.x() == 0.0*MeV ) transf.rotateZ( -pi / 2. );
+  else transf.rotateZ( -atan( q1.y() / q1.x() ) );
 
-  if( q1(2) == 0.0) transf.rotateY( pi / 2. );
-  else transf.rotateY( atan ( sqrt( q1(0) * q1(0) + q1(1) * q1(1) ) / q1(2) ) );
+  if( q1.z() == 0.0*MeV ) transf.rotateY( pi / 2. );
+  else transf.rotateY( atan ( sqrt( q1.x() * q1.x() + q1.y() * q1.y() ) / q1.z() ) );
 
   Lorentz5Momentum q2 = transf * ( _quark[0] );
 
-  if( q2(2) < 0. )transf.rotateY( pi );
+  if( q2.z() < 0.*MeV )transf.rotateY( pi );
 
   transf.invert();
 
@@ -483,12 +483,15 @@ LorentzRotation VectorBosonQQbarHardGenerator::getTransf(){
 }
 
 void VectorBosonQQbarHardGenerator::azimuthal() {
+  using Constants::pi;
    if( UseRandom::rnd() < _x1 * _x1 / ( _x1 * _x1 + _x2 * _x2 ) ) {
-     _r.setRotate( UseRandom::rnd() * 2. * pi , _quark[0].vect());
+     _r.setRotate( UseRandom::rnd() * Constants::twopi , 
+		   _quark[0].vect().unit());
      _quark[1] = _r * _quark[1];
    }
    else{
-     _r.setRotate( UseRandom::rnd() * 2. * pi, _quark[1].vect());
+     _r.setRotate( UseRandom::rnd() * Constants::twopi, 
+		   _quark[1].vect().unit());
      _quark[0] = _r * _quark[0];
    }
     _g = _r * _g;
@@ -497,7 +500,7 @@ void VectorBosonQQbarHardGenerator::azimuthal() {
 
 void VectorBosonQQbarHardGenerator::constructVectors(){
 
-  _phi = UseRandom::rnd() * 2.* pi;
+  _phi = UseRandom::rnd() * Constants::twopi;
   //quark emitted
   if( _iemit == 0 ){
    _quark[0].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );
@@ -506,8 +509,8 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
    _quark[0].setZ( sqrt(_s) * ( _z - _k * _k / _z ) / 2. );
 
    _quark[1].setT( sqrt(_s) * ( 1. - _k * _k / _z / ( 1.-_z ) ) / 2.);
-   _quark[1].setX(0.);
-   _quark[1].setY(0.);
+   _quark[1].setX(0.*MeV);
+   _quark[1].setY(0.*MeV);
    _quark[1].setZ( sqrt(_s)*( -1. + _k * _k / _z / (1.-_z) ) / 2. );
     
    _g.setT( sqrt(_s) * ( 1. - _z + _k * _k / ( 1.- _z ) ) / 2. );
@@ -519,8 +522,8 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   //antiquark emitted
   else{
    _quark[0].setT( sqrt( _s ) * ( 1. - _k * _k / _z / ( 1. - _z ) ) / 2.);
-   _quark[0].setX(0.);
-   _quark[0].setY(0.);
+   _quark[0].setX(0.*MeV);
+   _quark[0].setY(0.*MeV);
    _quark[0].setZ( sqrt(_s) * ( 1. - _k * _k / _z / ( 1. - _z ) ) / 2.);
 
    _quark[1].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );

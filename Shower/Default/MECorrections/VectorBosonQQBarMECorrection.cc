@@ -94,7 +94,7 @@ applyHardMatrixElementCorrection(ShowerTreePtr tree) {
     return;
   // set masses
   for (int i=0; i<2; i++) newfs[i].setMass(qq[i]->mass());
-  newfs[2].setMass(0.);
+  newfs[2].setMass(0.*MeV);
   // decide which particle emits
   bool firstEmits=
     newfs[2].vect().perp2(newfs[0].vect())<
@@ -183,18 +183,18 @@ applyHard(const ParticleVector &p) {
     pq = p[1]->momentum(); 
   }
   // boost to boson rest frame
-  Vector3 beta = (pcm.findBoostToCM()); 
+  Boost beta = (pcm.findBoostToCM()); 
   pq.boost(beta);    
   pa.boost(beta);
   // return if fails ?????
   double xg = 2.-x-xbar; 
   if((1.-x)*(1.-xbar)*(1.-xg) < d_rho*xg*xg) return fs;
-  Vector3 u1, u2, u3;
+  Axis u1, u2, u3;
   // moduli of momenta in units of Q and cos theta
   // stick to q direction?
   // p1 is the one that is kept, p2 is the other fermion, p3 the gluon.
   Energy e1, e2, e3; 
-  double pp1, pp2, pp3;
+  Energy pp1, pp2, pp3;
   bool keepq = true; 
   if (UseRandom::rnd() > sqr(x)/(sqr(x)+sqr(xbar))) 
     keepq = false; 
@@ -218,14 +218,14 @@ applyHard(const ParticleVector &p) {
   u3 = u1.cross(u2);
   u3 /= u3.mag();
   double ct2=-2., ct3=-2.;
-  if (pp1 == 0 || pp2 == 0 || pp3 == 0) {
+  if (pp1 == Energy() || pp2 == Energy() || pp3 == Energy()) {
     bool touched = false;
-    if (pp1 == 0) {
+    if (pp1 == Energy()) {
       ct2 = 1; 
       ct3 = -1; 
       touched = true;
     } 
-    if (pp2 == 0 || pp3 == 0) {
+    if (pp2 == Energy() || pp3 == Energy()) {
       ct2 = 1; 
       ct3 = 1; 
       touched = true;
@@ -238,12 +238,12 @@ applyHard(const ParticleVector &p) {
     ct3 = (sqr(pp1)+sqr(pp3)-sqr(pp2))/(2.*pp1*pp3);
     ct2 = (sqr(pp1)+sqr(pp2)-sqr(pp3))/(2.*pp1*pp2);
   }
-  double phi = 2.*pi*UseRandom::rnd();
+  double phi = Constants::twopi*UseRandom::rnd();
   double cphi = cos(phi);
   double sphi = sin(phi); 
   double st2 = sqrt(1.-sqr(ct2));
   double st3 = sqrt(1.-sqr(ct3));
-  Vector3 pv1, pv2, pv3; 
+  Vector3<Energy> pv1, pv2, pv3; 
   pv1 = pp1*u1;
   pv2 = -ct2*pp2*u1 + st2*cphi*pp2*u2 + st2*sphi*pp2*u3;
   pv3 = -ct3*pp3*u1 - st3*cphi*pp3*u2 - st3*sphi*pp3*u3;
@@ -311,8 +311,9 @@ double VectorBosonQQBarMECorrection::getHard(double &x1, double &x2) {
     if (y1 < y2) w *= 2.*y1;
     else w *= 2.*y2;
   }
-  // alpha and colour factors (this hard wired alpha_S still needs removing)
-  w *= 1./3./pi*0.117997; 
+  // alpha and colour factors
+  // DGRELL  (this hard wired alpha_S still needs removing)
+  w *= 1./3./Constants::pi*0.117997; 
   return w; 
 }
 

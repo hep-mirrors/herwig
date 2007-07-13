@@ -1,0 +1,20 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the OmegaPhi3PionAnalysis class.
+//
+
+namespace Herwig {
+
+inline OmegaPhi3PionAnalysis::OmegaPhi3PionAnalysis() : _nmax(50000)
+{}
+
+inline IBPtr OmegaPhi3PionAnalysis::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr OmegaPhi3PionAnalysis::fullclone() const {
+  return new_ptr(*this);
+}
+
+}

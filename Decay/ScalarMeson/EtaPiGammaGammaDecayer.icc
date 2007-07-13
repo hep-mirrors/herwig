@@ -7,47 +7,6 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer() 
-{
-  // the coupling of the rho to omega and a pion
-  _grhoomega=12.924/GeV;
-  // the pion decay constant
-  _fpi=130.7*MeV;
-  // the mass and width of the rho 
-  _rhomass  =771.1*MeV;
-  _rhowidth =149.2*MeV;
-  _rhoconst=0.;_mpi=0.;
-  // the coupling for the conversion of a rho to a photon
-  _grho=_rhomass/_fpi;
-  // use local values of the rho mass and width
-  _localparameters=true;
-  // ratios of the decay constants
-  _ratiofpif8 =1./1.3;
-  _ratiofpif0 =1./1.04;
-  _theta = -pi/9.;
-  // the maximum weights for the different decays
-  _etamax  = 1.35;
-  _etapmax = 0.006;
-  // the constants for the matrix elements
-  for(unsigned int ix=0;ix<2;++ix){_Dconst[ix]=0.;_Econst[ix]=0.;}
-  // intermediates
-  generateIntermediates(false);
-}
-
-inline EtaPiGammaGammaDecayer::EtaPiGammaGammaDecayer(const EtaPiGammaGammaDecayer & x)
-  : DecayIntegrator(x), _grhoomega(x._grhoomega),_fpi(x._fpi),_grho(x._grho),
-    _rhomass(x._rhomass),_rhowidth(x._rhowidth),_mpi(x._mpi),
-    _rhoconst(x._rhoconst),_localparameters(x._localparameters),
-    _ratiofpif8(x._ratiofpif8),_ratiofpif0(x._ratiofpif0),_theta(x._theta),
-    _etamax(x._etamax),_etapmax(x._etapmax) 
- {
-   for(unsigned int ix=0;ix<2;++ix)
-     {
-       _Dconst[ix]=x._Dconst[ix];
-       _Econst[ix]=x._Econst[ix];
-     }
- }
-
 inline IBPtr EtaPiGammaGammaDecayer::clone() const {
   return new_ptr(*this);
 }
@@ -56,46 +15,12 @@ inline IBPtr EtaPiGammaGammaDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void EtaPiGammaGammaDecayer::doupdate() throw(UpdateException) {
-  DecayIntegrator::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void EtaPiGammaGammaDecayer::dofinish() {
-  DecayIntegrator::dofinish();
-}
-
 inline void EtaPiGammaGammaDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  if(initialize())
-    {
-      _etamax  = mode(0)->maxWeight();
-      _etapmax = mode(1)->maxWeight();
-    }
+  if(initialize()) {
+    _etamax  = mode(0)->maxWeight();
+    _etapmax = mode(1)->maxWeight();
+  }
 }
 
-inline void EtaPiGammaGammaDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  DecayIntegrator::rebind(trans);
-}
-
-inline IVector EtaPiGammaGammaDecayer::getReferences() {
-  IVector ret = DecayIntegrator::getReferences();
-  // ret.push_back(dummy);
-  return ret;
-}
 }

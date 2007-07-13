@@ -334,7 +334,7 @@ template <>
 struct ClassTraits<Herwig::ShowerParticle>
   : public ClassTraitsBase<Herwig::ShowerParticle> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerParticle"; }
+  static string className() { return "Herwig::ShowerParticle"; }
   /** Create a Event object. */
   static TPtr create() { return TPtr::Create(Herwig::ShowerParticle(tcEventPDPtr(),true)); }
 };

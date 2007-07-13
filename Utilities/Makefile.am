@@ -3,7 +3,7 @@ libHwUtils_la_SOURCES = \
 EnumParticles.h \
 HerwigRun.cc HerwigRun.h \
 HwDebug.cc HwDebug.h \
-Interpolator.cc Interpolator.fh Interpolator.h Interpolator.icc \
+Interpolator.tcc Interpolator.h \
 Kinematics.cc Kinematics.h Kinematics.icc \
 Smearing.cc Smearing.h Smearing.icc \
 Math.h Math.icc Math.cc \

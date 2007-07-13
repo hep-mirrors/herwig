@@ -15,8 +15,12 @@ using namespace ThePEG;
 
 /**
  * The EvtGenDecayer class is designed to allow the EvtGen decay package to be used
- * as a Decayer in the Herwig++ structure
+ * as a Decayer in the Herwig++ structure.
  *
+ * It is a simple wrapper which uses members of the Herwig++ EvtGen class to perform
+ * the decay
+ *
+ * @see EvtGen
  * @see \ref EvtGenDecayerInterfaces "The interfaces"
  * defined for EvtGenDecayer.
  */
@@ -24,25 +28,10 @@ class EvtGenDecayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline EvtGenDecayer();
-
-  /**
-   * The copy constructor.
-   */
-  inline EvtGenDecayer(const EvtGenDecayer &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~EvtGenDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -91,6 +80,15 @@ public:
 
 protected:
 
+  /**
+   *  Method to check conservation of charge and momentum in the decay
+   *  for testing only
+   * @param parent The decaying particle
+   */
+  void checkDecay(PPtr parent) const;
+
+protected:
+
   /** @name Clone Methods. */
   //@{
   /**
@@ -104,54 +102,6 @@ protected:
    * @return a pointer to the new object.
    */
   inline virtual IBPtr fullclone() const;
-  //@}
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
   //@}
 
 private:
@@ -179,6 +129,11 @@ private:
    *  Option for how EvtGen is used
    */
   unsigned int _evtopt;
+
+  /**
+   *  Perform checks ?
+   */
+  bool _check;
 };
 
 }
@@ -203,11 +158,11 @@ template <>
 struct ClassTraits<Herwig::EvtGenDecayer>
   : public ClassTraitsBase<Herwig::EvtGenDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::EvtGenDecayer"; }
+  static string className() { return "Herwig::EvtGenDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the EvtGenDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "libHwEvtGen.so"; }
+  static string library() { return "HwEvtGen.so"; }
 };
 
 /** @endcond */

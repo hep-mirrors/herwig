@@ -50,18 +50,10 @@ class EtaPiPiGammaDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   EtaPiPiGammaDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline EtaPiPiGammaDecayer(const EtaPiPiGammaDecayer &);
-  //@}
 
 public:
 
@@ -239,9 +231,14 @@ private:
   double _cconst;
 
   /**
-   * The \f$\rho\f$ mass and width .
+   * The \f$\rho\f$ mass
    */
-  Energy _mrho,_rhowidth;
+  Energy _mrho;
+
+  /**
+   * The \f$\rho\f$ width
+   */
+  Energy _rhowidth;
 
   /**
    * Constant for the running \f$rho\f$ width.
@@ -271,17 +268,17 @@ private:
   /**
    *  Energy values for the interpolation table for the Omnes function.
    */
-  vector<Energy> _Omnesenergy;
+  vector<Energy> _omnesenergy;
 
   /**
    * Real part of the Omnes function for the interpolation table
    */
-  vector<InvEnergy2> _Omnesfunctionreal;
+  vector<double> _omnesfunctionreal;
 
   /**
    * Imaginary part of the Omnes function for the interpolation table
    */
-  vector<InvEnergy2> _Omnesfunctionimag;
+  vector<double> _omnesfunctionimag;
 
   /**
    * set up of the interpolation table
@@ -296,7 +293,17 @@ private:
   /**
    * Interpolators for the experimental Omnes function.
    */
-  mutable InterpolatorPtr _Oreal,_Oimag;
+  //@{
+  /**
+   *  The interpolator for the real part
+   */
+  mutable Interpolator<double,Energy>::Ptr _oreal;
+
+  /**
+   *  The interpolator for the imaginary part
+   */
+  mutable Interpolator<double,Energy>::Ptr _oimag;
+  //@}
 
   /**
    *  Cut-off parameter for the integral of the experimental function
@@ -306,7 +313,7 @@ private:
   /**
    *  size parameters for the output
    */
-  unsigned int _nsize[2];
+  unsigned int _nsizea,_nsizeb;
  };
 
 }
@@ -336,7 +343,7 @@ template <>
 struct ClassTraits<Herwig::EtaPiPiGammaDecayer>
   : public ClassTraitsBase<Herwig::EtaPiPiGammaDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::EtaPiPiGammaDecayer"; }
+  static string className() { return "Herwig::EtaPiPiGammaDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
@@ -363,7 +370,7 @@ struct OmnesIntegrand {
    * @param inter The interpolator for the phase shift
    * @param cut   The cut-off
    */
-  inline OmnesIntegrand(InterpolatorPtr inter, Energy2 cut);
+  inline OmnesIntegrand(Interpolator<double,Energy>::Ptr inter, Energy2 cut);
 
   /**
    *  Set the scale
@@ -373,17 +380,24 @@ struct OmnesIntegrand {
   /**
    *  get the value
    */
-  inline double operator ()(double) const;
+  inline InvEnergy4 operator ()(Energy2) const;
+  typedef InvEnergy4 ValType;
+  typedef Energy2 ArgType;
   
   /**
    *  The interpolator
    */
-  InterpolatorPtr _interpolator;
+  Interpolator<double,Energy>::Ptr _interpolator;
 
   /**
-   *  The scale and precision.
+   *  The scale
    */
-  Energy2 _s,_precision; 
+  Energy2 _s;
+
+  /**
+   * The precision.
+   */
+  Energy2 _precision; 
 };
 }
 

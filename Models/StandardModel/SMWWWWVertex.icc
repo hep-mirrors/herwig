@@ -1,0 +1,62 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SMWWWWVertex class.
+//
+namespace Herwig {
+using namespace ThePEG;
+
+  inline SMWWWWVertex::SMWWWWVertex() 
+    : _couplast(0.0), _q2last(), 
+      _vfact(4,0.0), _sw2(0.), _cw2(0.)
+{
+  // particles
+  vector<int> first,second,third,fourth;
+  first.push_back(24);
+  first.push_back(23);
+  first.push_back(22);
+  first.push_back(22);
+  second.push_back(-24);
+  second.push_back(24);
+  second.push_back(24);
+  second.push_back(24);
+  third.push_back(24);
+  third.push_back(23);
+  third.push_back(22);
+  third.push_back(23);
+  fourth.push_back(-24);
+  fourth.push_back(-24);
+  fourth.push_back(-24);
+  fourth.push_back(-24);
+  setList(first,second,third,fourth);
+}
+
+inline IBPtr SMWWWWVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMWWWWVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void SMWWWWVertex::doinit() throw(InitException) {
+  orderInGem(2);
+  orderInGs(0);
+  VVVVVertex::doinit();
+  _theSM = generator()->standardModel();
+  // couplings
+  _sw2 = _theSM->sin2ThetaW();
+  _cw2 = 1.-_sw2;
+  double sw = sqrt(_sw2);
+  double cw = sqrt(_cw2);
+  _vfact[0] = -1./_sw2;
+  _vfact[1] = _cw2/_sw2;
+  _vfact[2] = 1.;
+  _vfact[3] = cw/sw;
+  // pointer for intermediate particles
+  _gamma  = getParticleData(ThePEG::ParticleID::gamma);
+  _Z0     = getParticleData(ThePEG::ParticleID::Z0);
+  _wplus  = getParticleData(ThePEG::ParticleID::Wplus);
+  _wminus = getParticleData(ThePEG::ParticleID::Wminus);
+}
+}

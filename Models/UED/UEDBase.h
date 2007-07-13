@@ -6,9 +6,9 @@
 //
 
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "UEDBase.fh"
 
 namespace Herwig {
@@ -16,7 +16,7 @@ using namespace ThePEG;
 
 /**
  * This class serves as a base class for all UED models. It stores the
- * values of the inverse radius and cut-off scale and has functions
+ * values of the inverse radius and the product \f$\Lambda R \f$  and has functions
  * to calculate the radiative corrections to the nth level KK excitations.
  *
  * To use this class for n > 1 simply inherit off it, calculate the necessary masses
@@ -36,17 +36,12 @@ public:
   /** Typedef for unsigned int/double map to store Weinburg angles.*/
   typedef map<unsigned int, double> WAMap;
 
-  /** VSSVertex pointer. */
-  typedef Ptr<Helicity::VSSVertex>::pointer VSSVertexPtr;
-
 public:
 
   /**
    * The default constructor.
    */
   inline UEDBase();
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -82,14 +77,14 @@ public:
   inline InvEnergy compactRadius() const;
 
   /**
-   * Return the cut-off scale
+   * Return the Weinburg mixing angle for any level.
    */
-  inline Energy cutOffScale() const;
+  double sinThetaN(const unsigned int n) const;
 
   /**
-   * Return the Weinburg mixing angle.
+   * Return the Weinburg mixing angle for \f$n = 1\f$
    */
-  inline double sinThetaN(const unsigned int n) const;
+  inline double sinThetaOne() const;
   //@}
 
 protected:
@@ -209,15 +204,25 @@ private:
   Energy theInvRadius;
   
   /**
-   * The cut-off scale
+   * The value of \f$\Lambda R \f$.
    */
-  Energy theCutOff;
+  double theLambdaR;
+
+  /**
+   * The boundary mass term for the Higgs.
+   */
+  Energy theMbarH;
 
   /**
    * The values of \f$\sin\theta_N\f$
    */
   WAMap theMixingAngles;
 
+  /**
+   * Store \f$\sin\theta_1\f$ for faster access
+   */
+  double theSinThetaOne;
+  
   /**
    * Store the masses of the new particles
    */
@@ -269,16 +274,6 @@ private:
    * The \f$\bar{f}^{(1)}f^{(1)}W\f$
    */
   Helicity::FFVVertexPtr theF1F1W0Vertex;
-
-  /**
-   * The \f$\bar{f}^{(1)}f^{(0)}\gamma^{(1)}\f$
-   */
-  Helicity::FFVVertexPtr theF1F0P1Vertex;
-
-  /**
-   * The \f$\bar{f}^{(1)}f^{(0)}Z^{(1)}\f$
-   */
-  Helicity::FFVVertexPtr theF1F0Z1Vertex;
 
   /**
    * The \f$\bar{f}^{(1)}f^{(0)}W^{(1)}\f$
@@ -335,7 +330,7 @@ template <>
 struct ClassTraits<Herwig::UEDBase>
   : public ClassTraitsBase<Herwig::UEDBase> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::UEDBase"; }
+  static string className() { return "Herwig::UEDBase"; }
   /**
    * The name of a file containing the dynamic library where the class
    * UEDBase is implemented. It may also include several, space-separated,

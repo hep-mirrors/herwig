@@ -5,8 +5,10 @@
 // This is the declaration of the BFragmentationAnalysisHandler class.
 //
 
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "Herwig++/Utilities/Histogram.h"
+#include "ThePEG/EventRecord/Event.h"
 #include "BFragmentationAnalysisHandler.fh"
 
 namespace Herwig {
@@ -63,6 +65,12 @@ public:
    * manipulated in some way since it was last presented.
    */
   virtual void analyze(tEventPtr event, long ieve, int loop, int state);
+
+  /**
+   *  Identifies which step(2) final state particles originate
+   *  from the b/bbar...
+   */
+  void analyze_bquarks(ParticleSet);
 
   /**
    * Transform the event to the desired Lorentz frame and return the
@@ -204,6 +212,12 @@ private:
   HistogramPtr _fragBxEa;
 
   /**
+   *  Histograms for quark energy fraction and b jet mass
+   */
+  HistogramPtr _fragbquarkxE;
+  HistogramPtr _fragbquarkjetmass;
+
+  /**
    *  Centre-of-mass energy of the collision
    */
   Energy _emax;
@@ -232,7 +246,7 @@ template <>
 struct ClassTraits<Herwig::BFragmentationAnalysisHandler>
   : public ClassTraitsBase<Herwig::BFragmentationAnalysisHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BFragmentationAnalysisHandler"; }
+  static string className() { return "Herwig::BFragmentationAnalysisHandler"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the BFragmentationAnalysisHandler class and any other class on which it depends
    *  (except the base class). */

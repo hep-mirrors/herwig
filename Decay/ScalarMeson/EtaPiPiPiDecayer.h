@@ -79,7 +79,7 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual double threeBodydGammads(const int imode, const Energy q2, const  Energy2 s,
+  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2, const  Energy2 s,
 				   const Energy m1, const Energy m2, 
 				   const Energy m3) const;
 
@@ -182,9 +182,24 @@ private:
   vector<double> _prefactor;
 
   /**
-   * the constants for the matrix elements
+   * The constants for the matrix elements
    */
-  vector<double> _a,_b,_c;
+  //*{
+  /**
+   * The \f$a\f$ constant
+   */
+  vector<double> _a;
+
+  /**
+   * The \f$a\f$ constant
+   */
+  vector<double> _b;
+
+  /**
+   * The \f$a\f$ constant
+   */
+  vector<double> _c;
+  //@}
 
   /**
    * maximum weights
@@ -224,7 +239,7 @@ template <>
 struct ClassTraits<Herwig::EtaPiPiPiDecayer>
   : public ClassTraitsBase<Herwig::EtaPiPiPiDecayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::EtaPiPiPiDecayer"; }
+  static string className() { return "Herwig::EtaPiPiPiDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -172,7 +172,7 @@ template <>
 struct ClassTraits<Herwig::GluinotoGluinoGSplitFn>
   : public ClassTraitsBase<Herwig::GluinotoGluinoGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GluinotoGluinoGSplitFn"; }
+  static string className() { return "Herwig::GluinotoGluinoGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GluinotoGluinoGSplitFn is implemented. It may also include several, space-separated,

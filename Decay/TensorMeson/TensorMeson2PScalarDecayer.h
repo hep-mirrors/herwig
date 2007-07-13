@@ -42,25 +42,10 @@ class TensorMeson2PScalarDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   TensorMeson2PScalarDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline TensorMeson2PScalarDecayer(const TensorMeson2PScalarDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~TensorMeson2PScalarDecayer();
-  //@}
-
-public: 
 
   /**
    * Which of the possible decays is required
@@ -227,7 +212,7 @@ template <>
 struct ClassTraits<Herwig::TensorMeson2PScalarDecayer>
   : public ClassTraitsBase<Herwig::TensorMeson2PScalarDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TensorMeson2PScalarDecayer"; }
+  static string className() { return "Herwig::TensorMeson2PScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

@@ -1,0 +1,103 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the OmegaPionsCurrent class.
+//
+
+namespace Herwig {
+
+inline OmegaPionsCurrent::OmegaPionsCurrent() {
+  // use local parameters by default
+  _localparameters=true;
+  // pion decay constant (strange normalisation)
+  _fpi=186*MeV;
+  // the g coupling
+  _gfact=0.39;
+  // the rho mass
+  _mrho=0.7699*GeV;
+  // a_1 mass
+  _ma1=1.200*GeV;
+  // zero the rest
+  _fa=0.;
+  _cfact=0.;
+  _mpi=0.;
+  // set up for the modes in the base class
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+  addDecayMode(2,-1);
+}
+
+inline IBPtr OmegaPionsCurrent::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr OmegaPionsCurrent::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void OmegaPionsCurrent::doinit() throw(InitException) {
+  WeakDecayCurrent::doinit();
+  // set the parameters
+  if(!_localparameters)
+    {
+      _mrho=getParticleData(ParticleID::rhoplus)->mass();
+      _ma1 =getParticleData(ParticleID::a_1plus)->mass();
+    }
+  // calculate the couplings
+  _cfact  = 0.5/_gfact*sqr(_fpi/_mrho);
+  _fa = 1./_gfact/sqrt(1.-0.5/sqr(pi*_gfact)); 
+  _Bcoup=-   _fa/(_fpi*pi*pi*_gfact)*(1.-2.*_cfact/_gfact);
+  _Dcoup=-2.*_fa/_fpi*(2.*_cfact/_gfact+1.5/sqr(pi*_gfact)*(1.-2.*_cfact/_gfact));
+  // pin mass
+  _mpi=getParticleData(ParticleID::piplus)->mass();
+}
+
+inline Complex OmegaPionsCurrent::a1BreitWigner(unsigned int iopt, Energy q2) const {
+  Energy q(sqrt(q2)),gamma(a1Width(q));
+  Complex ii(0.,1.),output;
+  if(iopt==0) output=(sqr(_gfact*_fa*_mrho)-ii*q*gamma)/(q2-sqr(_ma1)+ii*q*gamma);
+  else        output=1./(q2-sqr(_ma1)+ii*q*gamma);
+  return output;
+}
+
+inline Complex OmegaPionsCurrent::rhoBreitWigner(unsigned int iopt,Energy q2) const {
+  Energy q(sqrt(q2)),gamma(rhoWidth(q));
+  Complex ii(0.,1.),output;
+  if(iopt==0) output=(sqr(_mrho)-ii*q*gamma)/(q2-sqr(_mrho)+ii*q*gamma);
+  else        output=1./(q2-sqr(_mrho)+ii*q*gamma); 
+  return output;
+}
+
+inline Energy OmegaPionsCurrent::a1Width(Energy q) const {
+  Energy gamma(0.);
+  Energy2 q2(q*q);
+  if(q>_mrho+_mpi) {
+    // calculate the running width for the a_1
+    Energy2 mrho2(_mrho*_mrho);
+    Energy A(Acoupling(q2,mrho2));
+    Energy k(Kinematics::pstarTwoBodyDecay(q,_mrho,_mpi));
+    gamma=k/12./pi/_ma1/q*(A*A*(3.+sqr(k/_mrho))-sqr(k/_mrho)*A*_Bcoup*(q2+mrho2)
+			   +q2*sqr(k*k*_Bcoup/_mrho));
+  }
+  return gamma;
+}
+
+inline Energy OmegaPionsCurrent::rhoWidth(Energy q) const {
+  Energy gamma(0.);
+  Energy2 q2(q*q);
+  if(q>2.*_mpi) {
+    gamma =q/12./pi/_gfact/_gfact*sqr(1.+0.5*q2/sqr(pi*_fpi)*(sqr(1.-2.*_cfact/_gfact)
+							      -sqr(2.*pi*_cfact)))*
+      pow((1.-sqr(2.*_mpi/q)),1.5);
+  }
+  return gamma;
+}
+
+inline Energy OmegaPionsCurrent::Acoupling(Energy2 q2, Energy2 p2) const {
+  double fact(2.*_cfact/_gfact+0.75/sqr(pi*_gfact)*(1.-2.*_cfact/_gfact));
+  Energy A = 2./_fpi*_gfact*_fa*(sqr(_ma1/_gfact/_fa)-sqr(_mrho)
+				 +p2*fact+q2*(0.5/sqr(pi*_gfact)-fact));
+  return A;
+}
+}

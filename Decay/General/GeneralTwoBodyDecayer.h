@@ -7,7 +7,7 @@
 
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralTwoBodyDecayer.fh"
 
 namespace Herwig {
@@ -24,6 +24,8 @@ using Helicity::VertexBasePtr;
  * member should be called from inside me2() in the inheriting decayer
  * to set up the colour lines.
  *
+ * @see \ref GeneralTwoBodyDecayerInterfaces "The interfaces"
+ * defined for GeneralTwoBodyDecayer.
  * @see DecayIntegrator
  */
 class GeneralTwoBodyDecayer: public DecayIntegrator {
@@ -61,7 +63,7 @@ public:
    * @param outa Pointer to incoming particle data object
    * @param outb Pointer to incoming particle data object
    */
-  virtual double partialWidth(const PDPtr inpart, const PDPtr outa,
+  virtual Energy partialWidth(const PDPtr inpart, const PDPtr outa,
 			      const PDPtr outb) const = 0;
   //@}
 
@@ -203,7 +205,7 @@ template <>
 struct ClassTraits<Herwig::GeneralTwoBodyDecayer>
   : public ClassTraitsBase<Herwig::GeneralTwoBodyDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralTwoBodyDecayer"; }
+  static string className() { return "Herwig::GeneralTwoBodyDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the GeneralTwoBodyDecayer class and every other class it uses
    *  (except the base class). */

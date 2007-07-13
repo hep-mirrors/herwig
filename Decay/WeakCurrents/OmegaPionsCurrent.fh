@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the OmegaPionsCurrent class.
+//
+#ifndef HERWIG_OmegaPionsCurrent_FH
+#define HERWIG_OmegaPionsCurrent_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class OmegaPionsCurrent;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::OmegaPionsCurrent,OmegaPionsCurrentPtr);
+
+}
+
+#endif

@@ -339,7 +339,7 @@ struct BaseClassTrait<Herwig::MRST,1> {
 template <>
 struct ClassTraits<Herwig::MRST>: public ClassTraitsBase<Herwig::MRST> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MRST"; }
+  static string className() { return "Herwig::MRST"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MRST is implemented. It may also include several, space-separated,

@@ -1,65 +1,63 @@
-library HwSusyVertex.so
-
 # create the Z scalar-scalar vertex
-create /Herwig++/SSZSSVertex ZSFSFVertex
+create Herwig::SSZSSVertex ZSFSFVertex
 set /Defaults/Model:Vertex/ZSFSF ZSFSFVertex
 
 # create the photon scalar-scalar vertex
-create /Herwig++/SSPSSVertex PSFSFVertex
+create Herwig::SSPSSVertex PSFSFVertex
 set /Defaults/Model:Vertex/PSFSF PSFSFVertex
 
 # create the W scalar-scalar vertex
-create /Herwig++/SSWSSVertex WSFSFVertex
+create Herwig::SSWSSVertex WSFSFVertex
 set /Defaults/Model:Vertex/WSFSF WSFSFVertex
 
 # create the neutralino-fermion-scalar vertex
-create /Herwig++/SSNFSVertex NFSVertex
+create Herwig::SSNFSVertex NFSVertex
 set /Defaults/Model:Vertex/NFSF NFSVertex
 
 # create the gluino-fermion-scalar vertex
-create /Herwig++/SSGFSVertex GFSVertex
+create Herwig::SSGFSVertex GFSVertex
 set /Defaults/Model:Vertex/GFSF GFSVertex
 
 # create the first Higgs-scalar-scalar vertex
-create /Herwig++/SSH1SFSFVertex H1SSVertex
+create Herwig::SSH1SFSFVertex H1SSVertex
 set /Defaults/Model:Vertex/H1SFSF H1SSVertex
 
 # create the second Higgs-scalar-scalar vertex
-create /Herwig++/SSH2SFSFVertex H2SSVertex
+create Herwig::SSH2SFSFVertex H2SSVertex
 set /Defaults/Model:Vertex/H2SFSF H2SSVertex
 
 # create the third Higgs-scalar-scalar vertex
-create /Herwig++/SSH3SFSFVertex H3SSVertex
+create Herwig::SSH3SFSFVertex H3SSVertex
 set /Defaults/Model:Vertex/H3SFSF H3SSVertex
 
 # create the chargino-fermion-scalar vertex
-create /Herwig++/SSCFSVertex CFSVertex
+create Herwig::SSCFSVertex CFSVertex
 set /Defaults/Model:Vertex/CFSF CFSVertex
 
 # create gluon-scalar-scalar vertex
-create /Herwig++/SSGSSVertex GSSVertex
+create Herwig::SSGSSVertex GSSVertex
 set /Defaults/Model:Vertex/GSFSF GSSVertex
 
 # create 4point gluon-squark vertex
-create /Herwig++/SSGGSQSQVertex GGSQSQVertex
+create Herwig::SSGGSQSQVertex GGSQSQVertex
 set /Defaults/Model:Vertex/GGSQSQ GGSQSQVertex
 
 # create gluon-gluino-gluino vertex
-create /Herwig++/SSGSGSGVertex GSGSGVertex
+create Herwig::SSGSGSGVertex GSGSGVertex
 set /Defaults/Model:Vertex/GSGSG GSGSGVertex
 
 # create neutralino-neutralino-Z vertex
-create /Herwig++/SSNNZVertex NNZVertex
+create Herwig::SSNNZVertex NNZVertex
 set /Defaults/Model:Vertex/NNZ NNZVertex
 
 # create chargino-chargino-P vertex 
-create /Herwig++/SSCCPVertex CCPVertex
+create Herwig::SSCCPVertex CCPVertex
 set /Defaults/Model:Vertex/CCP CCPVertex
 
 # create chargino-chargino-Z vertex 
-create /Herwig++/SSCCZVertex CCZVertex
+create Herwig::SSCCZVertex CCZVertex
 set /Defaults/Model:Vertex/CCZ CCZVertex
 
 # create chargino-neutralino-W vertex
-create /Herwig++/SSCNWVertex CNWVertex
+create Herwig::SSCNWVertex CNWVertex
 set /Defaults/Model:Vertex/CNW CNWVertex

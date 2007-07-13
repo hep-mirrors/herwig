@@ -6,7 +6,7 @@
 //
 
 #include "WeakDecayCurrent.h"
-#include "Herwig++/Helicity/EpsFunction.h"
+#include "ThePEG/Helicity/epsilon.h"
 #include "FivePionCurrent.fh"
 
 namespace Herwig {
@@ -23,20 +23,10 @@ class FivePionCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   FivePionCurrent();
-
-  /**
-   * The copy constructor.
-   */
-  inline FivePionCurrent(const FivePionCurrent &);
-  //@}
-
-public:
 
   /** @name Methods for the construction of the phase space integrator. */
   //@{
@@ -79,7 +69,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale, 
 						     const ParticleVector & decay) const;
 
@@ -178,13 +168,14 @@ protected:
    * @param q4 The first momentum
    * @param q5 The first momentum
    */
-  inline LorentzPolarizationVector rhoOmegaCurrent(unsigned int iopt,
-						   const Lorentz5Momentum & Q,
-						   const Lorentz5Momentum & q1,
-						   const Lorentz5Momentum & q2,
-						   const Lorentz5Momentum & q3,
-						   const Lorentz5Momentum & q4,
-						   const Lorentz5Momentum & q5) const;
+  inline LorentzVector<complex<InvEnergy2> >
+  rhoOmegaCurrent(unsigned int iopt,
+		  const Lorentz5Momentum & Q,
+		  const Lorentz5Momentum & q1,
+		  const Lorentz5Momentum & q2,
+		  const Lorentz5Momentum & q3,
+		  const Lorentz5Momentum & q4,
+		  const Lorentz5Momentum & q5) const;
 
   /**
    *  The \f$a_1\sigma\f$ current
@@ -197,13 +188,14 @@ protected:
    * @param q4 The first momentum
    * @param q5 The first momentum
    */
-  inline LorentzPolarizationVector a1SigmaCurrent(unsigned int iopt,
-						  const Lorentz5Momentum & Q,
-						  const Lorentz5Momentum & q1,
-						  const Lorentz5Momentum & q2,
-						  const Lorentz5Momentum & q3,
-						  const Lorentz5Momentum & q4,
-						  const Lorentz5Momentum & q5) const;
+  inline LorentzVector<complex<InvEnergy2> > 
+  a1SigmaCurrent(unsigned int iopt,
+		 const Lorentz5Momentum & Q,
+		 const Lorentz5Momentum & q1,
+		 const Lorentz5Momentum & q2,
+		 const Lorentz5Momentum & q3,
+		 const Lorentz5Momentum & q4,
+		 const Lorentz5Momentum & q5) const;
   //@}
 
 protected:
@@ -232,7 +224,7 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
   //@}
 
 private:
@@ -302,13 +294,18 @@ private:
   bool _localparameters;
 
   /**
+   *  Option for the treatment of \f$\rho\f$ Breit-Wigners in \f$\omega\f$ decay
+   */
+  bool _rhoomega;
+
+  /**
    *  Normalisation parameters for the different currents
    */
   //@{
   /**
    *  The \f$c\f$ parameter
    */
-  double _c;
+  Energy2 _c;
 
   /**
    *  The \f$c_0\f$ parameter
@@ -328,17 +325,32 @@ private:
   /**
    * The \f$G_{a\rho\pi}\f$ parameter
    */
-  double _garhopi;
+  Energy _garhopi;
 
   /**
    *  The \f$f_{aaf}\f$ parameter
    */
-  double _faaf;
+  Energy _faaf;
 
   /**
    *  The \f$f_{f\pi\pi}\f$ parameter
    */
-  double _ffpipi;
+  Energy _ffpipi;
+  //@}
+
+  /**
+   *  Values cached to avoid unnessacary calculations
+   */
+  //@{
+  /**
+   *  Prefactor for the \f$\rho\omega\f$ current
+   */
+  InvEnergy7 _preomega;
+
+  /**
+   *  Prefactor for the \f$a_1\sigma\f$ current
+   */
+  InvEnergy3 _presigma;
   //@}
 };
 
@@ -364,7 +376,7 @@ template <>
 struct ClassTraits<Herwig::FivePionCurrent>
   : public ClassTraitsBase<Herwig::FivePionCurrent> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::FivePionCurrent"; }
+  static string className() { return "Herwig::FivePionCurrent"; }
   /**
    * The name of a file containing the dynamic library where the class
    * FivePionCurrent is implemented. It may also include several, space-separated,

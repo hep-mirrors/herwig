@@ -1,0 +1,51 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the MSSM class.
+//
+
+namespace Herwig {
+
+inline MSSM::MSSM() {}
+
+inline IBPtr MSSM::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr MSSM::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline double MSSM::higgsMixingAngle() const {
+  return theAlpha;
+}
+
+inline const complex<Energy> & MSSM::topTrilinear() const {
+  return theAtop;
+}
+
+inline const complex<Energy> & MSSM::bottomTrilinear() const {
+  return theAbottom;
+}
+
+inline const complex<Energy> & MSSM::tauTrilinear() const {
+  return theAtau;
+}
+  
+inline const MixingMatrixPtr & MSSM::stopMix() const {
+  return theStopMix;
+}
+  
+inline const MixingMatrixPtr & MSSM::sbottomMix() const {
+  return theSbotMix;
+}
+  
+inline const MixingMatrixPtr & MSSM::stauMix() const {
+  return theStauMix;
+}
+
+inline const MixingMatrixPtr & MSSM::CPevenHiggsMix() const {
+  return theHiggsMix;
+}
+
+}

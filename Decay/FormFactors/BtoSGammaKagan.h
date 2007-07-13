@@ -212,13 +212,13 @@ private:
    * The integrand for the smeared distribution
    * @param kp The integration variable
    */
-  inline double integrandPy(Energy kp);
+  inline InvEnergy integrandPy(Energy kp);
 
   /**
    *  Fermi motion function
    * @param kp The scale
    */
-  inline double fermiFunction(Energy kp);
+  inline InvEnergy fermiFunction(Energy kp);
   //@}
 
 private:
@@ -353,17 +353,17 @@ private:
   /**
    *  Interpolator for the \f$s_{22}\f$ function
    */
-  InterpolatorPtr _s22inter;
+  Interpolator<double,double>::Ptr _s22inter;
 
   /**
    *  Interpolator for the \f$s_{27}\f$ function
    */
-  InterpolatorPtr _s27inter;
+  Interpolator<double,double>::Ptr _s27inter;
 
   /**
    *  Interpolator for the spectrum
    */
-  InterpolatorPtr _pmHinter;
+  Interpolator<InvEnergy,Energy>::Ptr _pmHinter;
 
   /**
    *  Values of \f$m_H\f$ for the interpolation of the spectrum
@@ -465,7 +465,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaKagan>
   : public ClassTraitsBase<Herwig::BtoSGammaKagan> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaKagan"; }
+  static string className() { return "Herwig::BtoSGammaKagan"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaKagan class and every other class it uses
    *  (except the base class). */
@@ -480,9 +480,9 @@ namespace Herwig {
 
 /**
  *  A struct for the integrand which can access the integrands22
-   * and integrands27 members of the spectrum 
-   * of the BtoSGammaKagan class. This function can then
-   * be integrated to give the coefficients.
+ * and integrands27 members of the spectrum 
+ * of the BtoSGammaKagan class. This function can then
+ * be integrated to give the coefficients.
  */
 struct KaganIntegrand {
 
@@ -495,6 +495,8 @@ struct KaganIntegrand {
    * Get the function value
    */
   inline double operator ()(double argument) const;
+  typedef double ValType;
+  typedef double ArgType;
 
   /**
    *  A pointer to the form factor to supply the integrand.

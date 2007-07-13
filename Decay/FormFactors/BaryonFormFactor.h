@@ -428,7 +428,7 @@ template <>
  struct ClassTraits<Herwig::BaryonFormFactor>
   : public ClassTraitsBase<Herwig::BaryonFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::BaryonFormFactor"; }
+  static string className() { return "Herwig::BaryonFormFactor"; }
 };
 
 /** @endcond */

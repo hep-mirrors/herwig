@@ -12,13 +12,13 @@
 #include <numeric>
 
 using namespace Herwig;
-using Herwig::Helicity::FFVVertexPtr;
-using Herwig::Helicity::VVVVertexPtr;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::FFVVertexPtr;
+using ThePEG::Helicity::VVVVertexPtr;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
 
 double MEfv2vf::me2() const {
   //wavefunctions
@@ -36,7 +36,7 @@ double MEfv2vf::me2() const {
       spb[i] = SpinorBarWaveFunction(meMomenta()[3], mePartonData()[3], i, 
 				     outgoing);
     }
-    if(mePartonData()[2]->mass() > 0.0)
+    if(mePartonData()[2]->mass() > 0.0*MeV)
       vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
     fv2vfHeME(sp, vecIn, vecOut, spb, fullme);
@@ -51,7 +51,7 @@ double MEfv2vf::me2() const {
 				     outgoing);
       sp[i] = SpinorWaveFunction(meMomenta()[3], mePartonData()[3], i, outgoing);
     }
-    if(mePartonData()[2]->mass() > 0.0)
+    if(mePartonData()[2]->mass() > 0.0*MeV)
       vecOut[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, 
 				     outgoing);
     fbv2vfbHeME(spb, vecIn, vecOut, sp, fullme);
@@ -67,7 +67,7 @@ MEfv2vf::fv2vfHeME(SpinorVector & spIn,  VBVector & vecIn,
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
-  const bool masslessC = mePartonData()[2]->mass() == 0.0;
+  const bool masslessC = mePartonData()[2]->mass() == 0.0*MeV;
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
 				 PDT::Spin1Half);
   vector<Complex> diag(ndiags, Complex(0., 0.));
@@ -146,7 +146,7 @@ MEfv2vf::fbv2vfbHeME(SpinorBarVector & spbIn,  VBVector & vecIn,
   const size_t ncf(numberOfFlows());
   const vector<vector<double> > cfactors(getColourFactors());
   const Energy2 q2(scale());
-  const bool masslessC = mePartonData()[2]->mass() == 0.0;
+  const bool masslessC = mePartonData()[2]->mass() == 0.0*MeV;
   ProductionMatrixElement prodME(PDT::Spin1Half, PDT::Spin1, PDT::Spin1,
 				 PDT::Spin1Half);
   vector<Complex> diag(ndiags, Complex(0., 0.));
@@ -222,17 +222,17 @@ MEfv2vf::colourGeometries(tcDiagPtr diag) const {
   static vector<ColourLines> cf(10);
   //3 8->8 3
   cf[0] = ColourLines("1 4, -4 2 -3, 3 5");
-  cf[1] = ColourLines("1 2 -3, 4 -2 5, 3 4");
+  cf[1] = ColourLines("1 2 -3, -4 -2 5, 3 4");
   cf[2] = ColourLines("1 -2, 2 3 4, -4 5");
   //3b 8 -> 8 3b
-  cf[3] = ColourLines("-4 -1, 3 -2 4, -5 -3");
-  cf[4] = ColourLines("3 -2 -1, -5 2 4, -3 -4");
+  cf[3] = ColourLines("-4 -1, 3 2 4, -5 -3");
+  cf[4] = ColourLines("3 2 -1, -5 -2 4, -4 -3");
   cf[5] = ColourLines("2 -1, -4 -3 -2, -5 4");
   //3 8 -> 0 3
   cf[6] = ColourLines("1 2 -3, 3 5");
   cf[7] = ColourLines("1 -2, 2 3 5");
   //3b 8 -> 0 3b
-  cf[8] = ColourLines("3 -2 -1, -3 -5");
+  cf[8] = ColourLines("3 2 -1, -3 -5");
   cf[9] = ColourLines("2 -1, -5 -3 -2");
   
   HPDiagram current = getProcessInfo()[abs(diag->id()) - 1];
@@ -267,10 +267,12 @@ MEfv2vf::colourGeometries(tcDiagPtr diag) const {
 }
 
 
-void MEfv2vf::persistentOutput(PersistentOStream &) const {
+void MEfv2vf::persistentOutput(PersistentOStream & os) const {
+  os << theFerm << theVec;
 }
 
-void MEfv2vf::persistentInput(PersistentIStream &, int) {
+void MEfv2vf::persistentInput(PersistentIStream & is, int) {
+  is >> theFerm >> theVec;
 }
 
 ClassDescription<MEfv2vf> MEfv2vf::initMEfv2vf;

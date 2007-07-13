@@ -173,7 +173,7 @@ template <>
 struct ClassTraits<Herwig::GtoGGSplitFn>
   : public ClassTraitsBase<Herwig::GtoGGSplitFn> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GtoGGSplitFn"; }
+  static string className() { return "Herwig::GtoGGSplitFn"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GtoGGSplitFn is implemented. It may also include several, space-separated,

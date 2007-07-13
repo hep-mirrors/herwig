@@ -9,20 +9,19 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "ThePEG/StandardModel/StandardModelBase.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 SFFDecayer::~SFFDecayer() {}
 
@@ -59,8 +58,8 @@ double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
     else                           itype[ix] = 2;
   }
   if(itype[0]==0||itype[1]==1||(itype[0]==2&&itype[1]==2)) {
-    iferm=0;
-    ianti=1;
+    iferm = 0;
+    ianti = 1;
   }
 
   vector<SpinorWaveFunction> awave;
@@ -69,30 +68,30 @@ double SFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   SpinorBarWaveFunction(fwave,decay[iferm],outgoing,true,vertex);
   DecayMatrixElement newme(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
   Energy2 scale(inpart.mass()*inpart.mass());
-  unsigned int ifm,ia;
-  for(ifm=0;ifm<2;++ifm){
-    for(ia=0;ia<2;++ia) {
-      if(iferm>ianti){
-	newme(0,ia,ifm)=_theFFSPtr->evaluate(scale,awave[ia],
+  for(unsigned int ifm = 0; ifm < 2; ++ifm){
+    for(unsigned int ia = 0; ia < 2; ++ia) {
+      if(iferm > ianti){
+	newme(0, ia, ifm) = _theFFSPtr->evaluate(scale,awave[ia],
 					     fwave[ifm],inwave);
       }
       else {
-	newme(0,ifm,ia)=_theFFSPtr->evaluate(scale,awave[ia],
+	newme(0, ifm, ia) = _theFFSPtr->evaluate(scale,awave[ia],
 					     fwave[ifm],inwave);
 
       }
     }
   }
   ME(newme);
-  double output=(newme.contract(rhoin)).real()/scale;
-  if(decay[0]->coloured() && decay[1]->coloured()) {
-    output*=3.;
-  }
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
+  if(decay[0]->coloured() && decay[1]->coloured())
+    output *= 3.;  
+  if( decay[0]->id() == decay[1]->id() )
+    output *= 0.5;
   colourConnections(inpart, decay);
   return output;
 }
 
-double SFFDecayer::partialWidth(const PDPtr inpart,
+Energy SFFDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   double mu1(outa->mass()/inpart->mass()),mu2(outb->mass()/inpart->mass());
@@ -108,10 +107,12 @@ double SFFDecayer::partialWidth(const PDPtr inpart,
   matrixElement2 *= norm.real();
   Energy pcm(Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				    outb->mass()));
-  double output = matrixElement2*pcm/(8*Constants::pi);
+  Energy output = matrixElement2*pcm/(8*Constants::pi);
   if(outa->coloured() && outb->coloured()){
     output *= 3.;
   }
+  if( outa->id() == outb->id() )
+    output *= 0.5;
   return output;
 }
 

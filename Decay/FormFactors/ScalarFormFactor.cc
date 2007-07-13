@@ -7,11 +7,6 @@
 #include "ScalarFormFactor.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "ScalarFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
@@ -97,8 +92,9 @@ void ScalarFormFactor::ScalarVectorFormFactor(Energy2,unsigned int,int,int,Energ
 
 // form-factor for scalar to tensor
 void ScalarFormFactor::ScalarTensorFormFactor(Energy2,unsigned int,int,int,Energy,Energy,
-					      Complex &,Complex &,
-					      Complex &,Complex &) const
+					      complex<InvEnergy2> & ,
+					      Complex &, complex<InvEnergy2> &,
+					      complex<InvEnergy2> &) const
 {
   throw Exception() << "Error in ScalarFormFactor::ScalarTensorFormFactor"
 		    << " not implemented"
@@ -128,7 +124,7 @@ void  ScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create Herwig++::ScalarFormFactor " << fullName() << " \n";}
+    {output << "create Herwig::ScalarFormFactor " << fullName() << " \n";}
   for(unsigned int ix=0;ix<_incomingid.size();++ix)
     {
       if(ix<_numbermodes)

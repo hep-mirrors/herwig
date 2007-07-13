@@ -10,8 +10,8 @@ namespace Herwig {
     : _lambdaQCD(180.*MeV),
       _bcoeff(6,0.0),
       _ccoeff(6,0.0),
-      _lambdas(7,0.0),
-      _threshold(6,0.0),
+      _lambdas(7),
+      _threshold(6),
       _match(6,0.0),
       _copt(0) {}
 

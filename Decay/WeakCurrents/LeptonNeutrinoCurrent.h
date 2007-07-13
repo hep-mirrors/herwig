@@ -74,7 +74,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale, 
 						     const ParticleVector & decay) const;
 
@@ -165,7 +165,7 @@ template <>
 struct ClassTraits<Herwig::LeptonNeutrinoCurrent>
   : public ClassTraitsBase<Herwig::LeptonNeutrinoCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::LeptonNeutrinoCurrent"; }
+  static string className() { return "Herwig::LeptonNeutrinoCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

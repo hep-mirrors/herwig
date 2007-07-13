@@ -6,7 +6,6 @@
 //
 
 #include "ThePEG/Interface/Interfaced.h"
-#include "Interpolator.fh"
 
 namespace Herwig {
 
@@ -21,27 +20,40 @@ using namespace ThePEG;
  * @see \ref InterpolatorInterfaces "The interfaces"
  * defined for Interpolator.
  */
+
+template <typename ValT, typename ArgT>
 class Interpolator: public Interfaced {
 
 public:
+
+  typedef typename Ptr<Interpolator<ValT,ArgT> >::pointer Ptr;
 
   /** @name Standard constructors and destructors. */
   //@{
   /**
    * The default constructor.
    */
-  inline Interpolator();
+  Interpolator() : _order(3) {}
 
   /**
    * Constructor with data as vectors.
    */
-  Interpolator(vector<double> f, vector<double> x, int order);
+  Interpolator(vector<ValT> f, vector<ArgT> x, unsigned int order);
+  //@}
+
+  /**
+   * Constructor from bare arrays
+   */
+  Interpolator(size_t size, 
+	       double f[], ValT funit,
+	       double x[], ArgT xunit,
+	       unsigned int order);
   //@}
 
   /**
    *  Return the interpolated value
    */
-  double operator () (double) const;
+  ValT operator () (ArgT) const;
 
 public:
 
@@ -77,13 +89,13 @@ protected:
    * Make a simple clone of this object.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr clone() const;
+  virtual IBPtr clone() const { return new_ptr(*this); }
 
   /** Make a clone of this object, possibly modifying the cloned object
    * to make it sane.
    * @return a pointer to the new object.
    */
-  inline virtual IBPtr fullclone() const;
+  virtual IBPtr fullclone() const { return new_ptr(*this); }
   //@}
 
 private:
@@ -92,7 +104,7 @@ private:
    * The static object used to initialize the description of this class.
    * Indicates that this is a concrete class with persistent data.
    */
-  static ClassDescription<Interpolator> initInterpolator;
+  static ClassDescription<Interpolator<ValT,ArgT> > initInterpolator;
 
   /**
    * The assignment operator is private and must never be called.
@@ -103,21 +115,61 @@ private:
 private:
   
   /**
-   * The x values.
-   */
-  vector<double> _xval;
-
-  /**
    * the function values.
    */
   vector<double> _fun;
+
+  /**
+   * The x values.
+   */
+  vector<double> _xval;
 
   /**
    * the order of interpolation.
    */
   unsigned int _order;
 
+  /**
+   * The Unit of the function values
+   */
+  ValT _funit;
+
+  /**
+   * The Unit of the argument values
+   */
+  ArgT _xunit;
+
 };
+
+/**
+ * helper function to create InterpolatorPtr easily
+ * (analogous to make_pair() )
+ */
+template <typename ValT, typename ArgT>
+inline typename Interpolator<ValT,ArgT>::Ptr
+make_InterpolatorPtr(size_t size, 
+		     double f[], ValT funit,
+		     double x[], ArgT xunit,
+		     unsigned int order)
+{
+  return new_ptr(Interpolator<ValT,ArgT>(size,
+					 f,funit,
+					 x,xunit,
+					 order));
+}
+
+/**
+ * helper function to create InterpolatorPtr easily
+ * (analogous to make_pair() )
+ */
+template <typename ValT, typename ArgT>
+inline typename Interpolator<ValT,ArgT>::Ptr
+make_InterpolatorPtr(typename std::vector<ValT> f, 
+		     typename std::vector<ArgT> x, 
+		     unsigned int order)
+{
+  return new_ptr(Interpolator<ValT,ArgT>(f,x,order));
+}
 
 }
 
@@ -129,19 +181,21 @@ namespace ThePEG {
 
 /** This template specialization informs ThePEG about the
  *  base classes of Interpolator. */
-template <>
-struct BaseClassTrait<Herwig::Interpolator,1> {
+template <typename ValT, typename ArgT>
+struct BaseClassTrait<Herwig::Interpolator<ValT,ArgT>,1> {
   /** Typedef of the first base class of Interpolator. */
   typedef Interfaced NthBase;
 };
 
 /** This template specialization informs ThePEG about the name of
  *  the Interpolator class and the shared object where it is defined. */
-template <>
-struct ClassTraits<Herwig::Interpolator>
-  : public ClassTraitsBase<Herwig::Interpolator> {
+template <typename ValT, typename ArgT>
+struct ClassTraits<Herwig::Interpolator<ValT,ArgT> >
+  : public ClassTraitsBase<Herwig::Interpolator<ValT,ArgT> > {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::Interpolator"; }
+  static string className() { return "Herwig::Interpolator<"
+				+ ClassTraits<ValT>::className() + ","
+				+ ClassTraits<ArgT>::className() + ">"; }
   /**
    * The name of a file containing the dynamic library where the class
    * Interpolator is implemented. It may also include several, space-separated,
@@ -156,9 +210,8 @@ struct ClassTraits<Herwig::Interpolator>
 
 }
 
-#include "Interpolator.icc"
 #ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "Interpolator.tcc"
+#include "Interpolator.tcc"
 #endif
 
 #endif /* HERWIG_Interpolator_H */

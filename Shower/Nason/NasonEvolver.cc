@@ -438,7 +438,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
     }
     if(!emitted) {
       if(intrinsicpT().find(progenitor())==intrinsicpT().end()) {
-	kinematics->updateLast(newParent,0.,0.);
+	kinematics->updateLast(newParent,0.*MeV,0.*MeV);
       }
       else {
 	pair<Energy,double> kt=intrinsicpT()[progenitor()];
@@ -479,7 +479,7 @@ bool NasonEvolver::truncatedSpaceLikeShower(tShowerParticlePtr particle, PPtr be
   // now reconstruct the momentum
   if(!emitted) {
     if(intrinsicpT().find(progenitor())==intrinsicpT().end()) {
-      bb.kinematics->updateLast(newParent,0.,0.);
+      bb.kinematics->updateLast(newParent,0.*MeV,0.*MeV);
     }
     else {
       pair<Energy,double> kt=intrinsicpT()[progenitor()];

@@ -57,6 +57,7 @@ AC_REQUIRE([AC_CHECK_CLHEP])
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
 HEPMCLIBS="-lHepMC"
+hepmclinkname=HepMC
 AC_ARG_WITH(HepMC,
         AC_HELP_STRING([--with-HepMC=path],[location of HepMC installation]),
         [],
@@ -70,6 +71,7 @@ else
 			AC_MSG_RESULT([part of CLHEP])
 			HEPMCINCLUDE=$CLHEPINCLUDE/CLHEP
 			HEPMCLIBS=""
+			hepmclinkname=CLHEP
 		else
 			AC_MSG_RESULT([not found in CLHEP])
 		fi
@@ -103,6 +105,7 @@ fi
 AM_CONDITIONAL(HAVE_HEPMC,[test "x$with_HepMC" != "xno"])
 AC_SUBST(HEPMCINCLUDE)
 AC_SUBST(HEPMCLIBS)
+AC_CONFIG_LINKS([Config/HepMCHelper.h:Config/HepMCHelper_$hepmclinkname.h])
 ])
 
 AC_DEFUN([AC_CHECK_THEPEG],
@@ -151,7 +154,9 @@ AC_SUBST(THEPEGINCLUDE)
 ])
 
 
-AC_DEFUN([AC_CHECK_KTJET],[AC_MSG_CHECKING([KTJETPATH is])
+AC_DEFUN([AC_CHECK_KTJET],[
+AC_REQUIRE([AC_CHECK_CLHEP])
+AC_MSG_CHECKING([KTJETPATH is])
 LOAD_KTJET=""
 if test -z "$KTJETPATH"; then
   AC_MSG_RESULT([*** No KtJet path set... won't build KtJet interface ***])
@@ -160,14 +165,16 @@ else
 
   AC_MSG_CHECKING([KTJETLIBS is])
   if test -z "$KTJETLIBS"; then
-    KTJETLIBS="-L$KTJETPATH/lib -lKtEvent"
+    KTJETLIBS="-L$KTJETPATH/lib -R$KTJETPATH/lib -lKtEvent"
   fi
+  KTJETLIBS="$KTJETLIBS $CLHEPLDFLAGS $CLHEPLIB"
   AC_MSG_RESULT("$KTJETLIBS")
 
   AC_MSG_CHECKING([KTJETINCLUDE is])
   if test -z "$KTJETINCLUDE"; then
-    KTJETINCLUDE=-I$KTJETPATH/include
+    KTJETINCLUDE="-I$KTJETPATH/include"
   fi
+  KTJETINCLUDE="$KTJETINCLUDE $CLHEPINCLUDE"
   AC_MSG_RESULT("$KTJETINCLUDE")
   LOAD_KTJET="read KtJetAnalysis.in"
 fi
@@ -178,41 +185,6 @@ AM_CONDITIONAL(WANT_LIBKTJET,[test ! -z "$KTJETPATH"])
 AC_SUBST(KTJETPATH)
 AC_SUBST(KTJETLIBS)
 AC_SUBST(KTJETINCLUDE)
-])
-
-AC_DEFUN([AC_CHECK_AMEGIC],
-[
-AC_MSG_CHECKING([AMEGICPATH is])
-if test -z "$AMEGICPATH"; then	
-  AC_MSG_RESULT([*** No AMEGIC path set... won't build AMEGIC interface ***])
-else
-  AMEGICLIBS="-lAmegic -lAmplitude -lAmplTools -lISR -lModel -lPhasespace -lProcess -lString -lVector -lZfunctions"
-  AC_MSG_RESULT("$AMEGICPATH")
-fi
-
-AM_CONDITIONAL(WANT_LIBAMEGIC,[test ! -z "$AMEGICPATH"])
-
-AC_SUBST(AMEGICPATH)
-AC_SUBST(AMEGICLIBS)
-
-])
-
-AC_DEFUN([AC_CHECK_NEWDECAYERS],
-[
-AC_MSG_CHECKING([whether to build new decayers])
-AC_ARG_ENABLE(new-decayers,
-        AC_HELP_STRING([--enable-new-decayers],[build the new decayers.]),
-	[],
-	[enable_new_decayers=no]
-	)
-AC_MSG_RESULT([$enable_new_decayers])
-AM_CONDITIONAL(WANT_NEWDECAYERS,[test "x$enable_new_decayers" = "xyes"])
-
-LOAD_NEW_DECAYERS=""
-if test "x$enable_new_decayers" = "xyes" ; then
-  LOAD_NEW_DECAYERS="read NewDecayers.in"
-fi
-AC_SUBST(LOAD_NEW_DECAYERS)
 ])
 
 
@@ -266,13 +238,28 @@ if test "x$with_evtgen" = "xno"; then
 	AC_MSG_RESULT([not required])
 else
 	AC_MSG_RESULT([$with_evtgen])
+
+	oldLIBS="$LIBS"
+	oldLDFLAGS="$LDFLAGS"
+	oldCPPFLAGS="$CPPFLAGS"
+
+
+	# Now lets see if the libraries work properly
+	
+	LIBS="$LIBS $CLHEPLIB $HEPMCLIBS"
+	LDFLAGS="$LDFLAGS $CLHEPLDFLAGS"
+	CPPFLAGS="$CPPFLAGS $CLHEPINCLUDE $HEPMCINCLUDE"
 	tmpcxxflags=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS -L${with_evtgen}/lib"
-	AC_CHECK_LIB([EvtGen],[abort],
+
+	AC_CHECK_LIB([evtgenlhc],[abort],
 		[],
 		[
-			AC_MSG_ERROR([libEvtGen could not be found at ${with_evtgen}/lib])
+			AC_MSG_ERROR([libevtgenlhc could not be found at ${with_evtgen}/lib])
 		])
+	LIBS="$oldLIBS"
+	LDFLAGS="$oldLDFLAGS"
+	CPPFLAGS="$oldCPPFLAGS"
 	CXXFLAGS=$tmpcxxflags
 	EVTGENPATH=$with_evtgen
 fi

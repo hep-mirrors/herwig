@@ -14,22 +14,17 @@ namespace Herwig {
   /**
    * The MamboDecayer class inherits from the Decayer class in 
    * ThePEG and implements the algorithm of R.Kleiss and 
-   * W.J.Stirling for massive multi-particle phase-space
+   * W.J.Stirling NPB 385 (1992) 413-432 for massive multi-particle phase-space
    * decays 
    */
 class MamboDecayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline MamboDecayer();
-  //@}
-
-public:
 
   /** @name Virtual functions required by the Decayer class. */
   //@{
@@ -117,6 +112,7 @@ private:
      **/
   double calculateMomentum(vector<Lorentz5Momentum> & mom,
 			   const Energy & comEn) const;
+
   /**
    *Bessel function of first kind(n=0)
    *@param x Argument of Bessel Function 
@@ -180,7 +176,7 @@ template <>
 struct ClassTraits<Herwig::MamboDecayer>
   : public ClassTraitsBase<Herwig::MamboDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MamboDecayer"; }
+  static string className() { return "Herwig::MamboDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the MamboDecayer class and every other class it uses
    *  (except the base class). */

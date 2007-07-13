@@ -1,9 +1,8 @@
-pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwBSMAnalysis.la
-HwAnalysis_la_LDFLAGS = -module -version-info 3:0:0
-HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS)
-HwAnalysis_la_LIBADD =
+pkglib_LTLIBRARIES = HwAnalysis.la HwLEPAnalysis.la HwDecayAnalysis.la HwBSMAnalysis.la
+HwAnalysis_la_LDFLAGS = -module -version-info 3:0:0 $(CLHEPLDFLAGS)
+HwAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(CLHEPINCLUDE)
+HwAnalysis_la_LIBADD = $(CLHEPLIB)
 HwAnalysis_la_SOURCES = \
-EvtShapes.fh EvtShapes.icc EvtShapes.cc EvtShapes.h \
 EventShapes.cc EventShapes.fh EventShapes.h EventShapes.icc \
 EventShapesMasterAnalysis.cc EventShapesMasterAnalysis.fh \
 EventShapesMasterAnalysis.h EventShapesMasterAnalysis.icc \
@@ -44,11 +43,52 @@ IdentifiedParticleAnalysis.h IdentifiedParticleAnalysis.icc \
 DrellYanDalitzAnalysis.cc DrellYanDalitzAnalysis.fh \
 DrellYanDalitzAnalysis.h DrellYanDalitzAnalysis.icc 
 
+HwDecayAnalysis_la_LDFLAGS = -module
+HwDecayAnalysis_la_SOURCES = \
+TauTo2MesonAnalysis.h TauTo2MesonAnalysis.icc \
+TauTo2MesonAnalysis.fh TauTo2MesonAnalysis.cc \
+TauToLeptonsAnalysis.h TauToLeptonsAnalysis.icc \
+TauToLeptonsAnalysis.fh TauToLeptonsAnalysis.cc \
+TauTo3MesonAnalysis.h TauTo3MesonAnalysis.icc \
+TauTo3MesonAnalysis.fh TauTo3MesonAnalysis.cc \
+TauTo4MesonAnalysis.h TauTo4MesonAnalysis.icc \
+TauTo4MesonAnalysis.fh TauTo4MesonAnalysis.cc \
+Tau5Pion.h Tau5Pion.icc \
+Tau5Pion.fh Tau5Pion.cc \
+TauCorrelationAnalysis.h TauCorrelationAnalysis.icc \
+TauCorrelationAnalysis.fh TauCorrelationAnalysis.cc \
+EtaDecayAnalysis.h EtaDecayAnalysis.icc \
+EtaDecayAnalysis.fh EtaDecayAnalysis.cc \
+SemiLeptonicDecayAnalysis.h SemiLeptonicDecayAnalysis.icc \
+SemiLeptonicDecayAnalysis.fh SemiLeptonicDecayAnalysis.cc \
+OmegaPhi3PionAnalysis.h OmegaPhi3PionAnalysis.icc \
+OmegaPhi3PionAnalysis.fh OmegaPhi3PionAnalysis.cc \
+VffGammaAnalysis.h VffGammaAnalysis.icc \
+VffGammaAnalysis.fh VffGammaAnalysis.cc  \
+VPPGammaAnalysis.h VPPGammaAnalysis.icc \
+VPPGammaAnalysis.fh VPPGammaAnalysis.cc  \
+PScalarVectorFermionsAnalysis.h PScalarVectorFermionsAnalysis.icc \
+PScalarVectorFermionsAnalysis.fh PScalarVectorFermionsAnalysis.cc \
+VectorPScalarFermionsAnalysis.h VectorPScalarFermionsAnalysis.icc \
+VectorPScalarFermionsAnalysis.fh VectorPScalarFermionsAnalysis.cc \
+Pi4ElectronAnalysis.h Pi4ElectronAnalysis.icc \
+Pi4ElectronAnalysis.fh Pi4ElectronAnalysis.cc  \
+BtoSGammaAnalysis.h BtoSGammaAnalysis.icc \
+BtoSGammaAnalysis.fh BtoSGammaAnalysis.cc   \
+ZPhotonsAnalysis.h ZPhotonsAnalysis.icc \
+ZPhotonsAnalysis.fh ZPhotonsAnalysis.cc \
+DDalitzAnalysis.h DDalitzAnalysis.icc \
+DDalitzAnalysis.fh DDalitzAnalysis.cc  \
+SemiLeptonicDPiAnalysis.h SemiLeptonicDPiAnalysis.icc \
+SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc  \
+OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.icc \
+OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc 
+
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
 pkglib_LTLIBRARIES += HwLEPJetAnalysis.la
 HwLEPJetAnalysis_la_LDFLAGS = -module -version-info 3:0:0
-HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE)
+HwLEPJetAnalysis_la_CPPFLAGS = $(AM_CPPFLAGS) $(KTJETINCLUDE) -I$(KTJETPATH)
 HwLEPJetAnalysis_la_LIBADD = $(KTJETLIBS)
 HwLEPJetAnalysis_la_SOURCES = \
 LEPFourJetsAnalysis.cc LEPFourJetsAnalysis.fh \

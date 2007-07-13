@@ -6,17 +6,17 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "MEPP2GammaJet.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup MatrixElements
  * The MEPP2GammaJet class implements the matrix element for photon+jet 
@@ -289,7 +289,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2GammaJet>
   : public ClassTraitsBase<Herwig::MEPP2GammaJet> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2GammaJet"; }
+  static string className() { return "Herwig::MEPP2GammaJet"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2GammaJet is implemented. It may also include several, space-separated,

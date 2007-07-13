@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the MEee2VectorMeson class.
+//
+#ifndef THEPEG_MEee2VectorMeson_FH
+#define THEPEG_MEee2VectorMeson_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class MEee2VectorMeson;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::MEee2VectorMeson,MEee2VectorMesonPtr);
+
+}
+
+#endif

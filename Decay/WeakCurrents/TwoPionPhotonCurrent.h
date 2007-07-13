@@ -55,20 +55,10 @@ class TwoPionPhotonCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline TwoPionPhotonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline TwoPionPhotonCurrent(const TwoPionPhotonCurrent &);
-  //@}
-
-public:
 
   /** @name Functions used by the persistent I/O system. */
   //@{
@@ -136,7 +126,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan,Energy & scale, 
 						     const ParticleVector & decay) const;
 
@@ -211,7 +201,7 @@ private:
    * @param q2 The scale \f$q^2\f$.
    * @return The value of the function. 
    */
-  inline Complex FFunction(Energy2 q2) const;
+  inline complex<InvEnergy> FFunction(Energy2 q2) const;
 
   /**
    * Fixed width Breit wigner
@@ -220,7 +210,7 @@ private:
    * \f$\omega\f$.
    * @return The breit wigner
    */
-  inline Complex BreitWigner(Energy2 q2,unsigned int ires) const;
+  inline complex<InvEnergy2> BreitWigner(Energy2 q2,unsigned int ires) const;
   
 private:
   
@@ -311,7 +301,7 @@ template <>
 struct ClassTraits<Herwig::TwoPionPhotonCurrent>
   : public ClassTraitsBase<Herwig::TwoPionPhotonCurrent> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::TwoPionPhotonCurrent"; }
+  static string className() { return "Herwig::TwoPionPhotonCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

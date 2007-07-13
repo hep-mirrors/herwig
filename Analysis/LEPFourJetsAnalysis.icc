@@ -16,7 +16,8 @@ inline IBPtr LEPFourJetsAnalysis::fullclone() const {
 
 inline void LEPFourJetsAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  ofstream output("fourjets.top");
+  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  ofstream output(fname.c_str());
   _ca34->normaliseToData();
   _cchiBZ->normaliseToData();
   _cphiKSW->normaliseToData();
@@ -153,8 +154,8 @@ inline void LEPFourJetsAnalysis::doinitrun() {
 
 inline double LEPFourJetsAnalysis::cosChiBZ(vector<Lorentz5Momentum> p) {
   if (p.size() == 4) {
-    Hep3Vector v1 = p[0].vect().cross(p[1].vect());
-    Hep3Vector v2 = p[2].vect().cross(p[3].vect());
+    Vector3<Energy2> v1 = p[0].vect().cross(p[1].vect());
+    Vector3<Energy2> v2 = p[2].vect().cross(p[3].vect());
     return cos(v1.angle(v2)); 
   } else return 123;
 }
@@ -162,8 +163,8 @@ inline double LEPFourJetsAnalysis::cosChiBZ(vector<Lorentz5Momentum> p) {
 
 inline double LEPFourJetsAnalysis::cosPhiKSW(vector<Lorentz5Momentum> p) {
   if (p.size() == 4) {
-    Hep3Vector v1 = p[0].vect().cross(p[3].vect());
-    Hep3Vector v2 = p[1].vect().cross(p[2].vect());
+    Vector3<Energy2> v1 = p[0].vect().cross(p[3].vect());
+    Vector3<Energy2> v2 = p[1].vect().cross(p[2].vect());
     double alpha1 = v1.angle(v2);
     v1 = p[0].vect().cross(p[2].vect());
     v2 = p[1].vect().cross(p[3].vect());
@@ -175,8 +176,8 @@ inline double LEPFourJetsAnalysis::cosPhiKSW(vector<Lorentz5Momentum> p) {
 inline double LEPFourJetsAnalysis::cosThetaNR(vector<Lorentz5Momentum> p) 
 {
   if (p.size() == 4) {
-    Hep3Vector v1 = p[0].vect() - p[1].vect();
-    Hep3Vector v2 = p[2].vect() - p[3].vect();
+    Vector3<Energy> v1 = p[0].vect() - p[1].vect();
+    Vector3<Energy> v2 = p[2].vect() - p[3].vect();
     return cos(v1.angle(v2));
   }
   else return 123; 

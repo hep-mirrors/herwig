@@ -8,16 +8,23 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/StandardModel/SMHGGVertex.h"
-#include "Herwig++/Helicity/Vertex/StandardModel/SMHPPVertex.h"
+#include "Herwig++/Models/StandardModel/SMHGGVertex.h"
+#include "Herwig++/Models/StandardModel/SMHPPVertex.h"
 #include "SMHiggsGGHiggsPPDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
-typedef Ptr<Herwig::Helicity::SMHGGVertex>::pointer HGGPtr;
-typedef Ptr<Herwig::Helicity::SMHPPVertex>::pointer HPPPtr;
+/**
+ * Typedef for the \f$H\to gg\f$ vertex
+ */
+typedef Ptr<Herwig::SMHGGVertex>::pointer HGGPtr;
+
+/**
+ * Typedef for the \f$H\to \gamma\gamma\f$ vertex
+ */
+typedef Ptr<Herwig::SMHPPVertex>::pointer HPPPtr;
   
 /**
  * The <code>SMHiggsGGHiggsPPDecayer</code> class performs the
@@ -71,7 +78,7 @@ public:
    * @param cc Is this mode the charge conjugate
    * @param dm The decay mode
    */
-  virtual int modeNumber(bool &,const DecayMode &) const {return -1;}
+  virtual int modeNumber(bool &, const DecayMode &) const {return -1;}
   
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
@@ -197,11 +204,11 @@ template <>
 struct ClassTraits<Herwig::SMHiggsGGHiggsPPDecayer>
   : public ClassTraitsBase<Herwig::SMHiggsGGHiggsPPDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMHiggsGGHiggsPPDecayer"; }
+  static string className() { return "Herwig::SMHiggsGGHiggsPPDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMHiggsGGHiggsPPDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwSMVertex.so HwPerturbativeHiggsDecay.so"; }
+  static string library() { return "HwPerturbativeHiggsDecay.so"; }
 };
 
 /** @endcond */

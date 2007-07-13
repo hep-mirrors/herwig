@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-inline AlphaEM::AlphaEM() : _me(0.),_mmu(0.),_mtau(0.), _mtop(0.) 
+inline AlphaEM::AlphaEM() : _me(),_mmu(),_mtau(), _mtop() 
 {}
 
 inline IBPtr AlphaEM::clone() const {

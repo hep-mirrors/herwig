@@ -232,7 +232,7 @@ template <>
 struct ClassTraits<Herwig::ClusterHadronizationHandler>: 
     public ClassTraitsBase<Herwig::ClusterHadronizationHandler> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::ClusterHadronizationHandler"; }
+  static string className() { return "Herwig::ClusterHadronizationHandler"; }
 };
 
 /** @endcond */

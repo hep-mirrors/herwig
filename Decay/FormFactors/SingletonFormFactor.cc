@@ -21,7 +21,7 @@ void SingletonFormFactor::doinit() throw(InitException) {
 			  << Exception::abortnow;
   // calculate the constants for the form-factors
   int id0,id1;
-  _xi.resize(0);_NmM.resize(0);_mquark.resize(0);
+  _xi.clear();_NmM.clear();_mquark.clear();
   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
     // id codes for the particles
     particleID(ix,id0,id1);
@@ -66,13 +66,13 @@ void SingletonFormFactor::doinit() throw(InitException) {
 }
 
 void SingletonFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _mcharm << _mstrange <<  _thetalambda << _thetasigma << _thetaxi 
-     << _thetaxip << _polemass << _xi << _NmM << _mquark;
+  os << ounit(_mcharm,GeV) << ounit(_mstrange,GeV) <<  _thetalambda << _thetasigma << _thetaxi 
+     << _thetaxip << ounit(_polemass,GeV) << _xi << _NmM << ounit(_mquark,GeV);
 }
 
 void SingletonFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _mcharm >> _mstrange >>  _thetalambda >> _thetasigma >> _thetaxi 
-     >> _thetaxip >> _polemass >> _xi >> _NmM >> _mquark;
+  is >> iunit(_mcharm,GeV) >> iunit(_mstrange,GeV) >>  _thetalambda >> _thetasigma >> _thetaxi 
+     >> _thetaxip >> iunit(_polemass,GeV) >> _xi >> _NmM >> iunit(_mquark,GeV);
 }
 
 ClassDescription<SingletonFormFactor> SingletonFormFactor::initSingletonFormFactor;
@@ -125,7 +125,7 @@ void SingletonFormFactor::Init() {
     ("PoleMass",
      "The mass for the energy dependence of the form-factors.",
      &SingletonFormFactor::_polemass,
-     1.*GeV, 0, 0, -10.*GeV, 10.*GeV, false, false, true);
+     1.*GeV, 0, 0*GeV, -10.*GeV, 10.*GeV, false, false, true);
 }
 
 // form factor for spin-1/2 to spin-1/2
@@ -161,7 +161,7 @@ SpinHalfSpinHalfFormFactor(Energy2 q2,int iloc,int, int, Energy m0, Energy m1,
 {
   if(header){output << "update decayers set parameters=\"";}
   if(create)
-    {output << "create /Herwig++/SingletonFormFactor " << fullName() << " \n ";}
+    {output << "create Herwig::SingletonFormFactor " << fullName() << " \n ";}
   output << "set " << fullName() << ":CharmMass " << _mcharm/GeV << " \n";
   output << "set " << fullName() << ":StrangeMass " << _mstrange/GeV << " \n";
   output << "set " << fullName() << ":ThetaLambda " << _thetalambda << " \n";

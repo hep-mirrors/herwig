@@ -29,18 +29,10 @@ class ScalarMesonCurrent: public WeakDecayCurrent {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   ScalarMesonCurrent();
-
-  /**
-   * Copy constructor
-   */
-  inline ScalarMesonCurrent(const ScalarMesonCurrent &);
-  //@}
 
 public:
 
@@ -109,7 +101,7 @@ public:
    * @param decay The decay products
    * @return The current. 
    */
-  virtual vector<LorentzPolarizationVector>  current(bool vertex, const int imode,
+  virtual vector<LorentzPolarizationVectorE>  current(bool vertex, const int imode,
 						     const int ichan, Energy & scale, 
 						     const ParticleVector & decay) const;
 
@@ -182,7 +174,7 @@ private:
   /**
    * the pdg code for the meson
    */
-  vector<int> _id;
+  vector<long> _id;
 
   /**
    * the decay constant
@@ -228,7 +220,7 @@ template <>
 struct ClassTraits<Herwig::ScalarMesonCurrent>
   : public ClassTraitsBase<Herwig::ScalarMesonCurrent> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ScalarMesonCurrent"; }
+  static string className() { return "Herwig::ScalarMesonCurrent"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

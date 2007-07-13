@@ -6,16 +6,16 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.fh"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.fh"
 #include "MEqq2gZ2ff.fh"
 
 namespace Herwig {
 
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The MEqq2gZ2ff class implements the products of Standard Model
@@ -259,7 +259,7 @@ template <>
 struct ClassTraits<Herwig::MEqq2gZ2ff>
   : public ClassTraitsBase<Herwig::MEqq2gZ2ff> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEqq2gZ2ff"; }
+  static string className() { return "Herwig::MEqq2gZ2ff"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the MEqq2gZ2ff class and any other class on which it depends
    *  (except the base class). */
@@ -271,8 +271,5 @@ struct ClassTraits<Herwig::MEqq2gZ2ff>
 }
 
 #include "MEqq2gZ2ff.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MEqq2gZ2ff.tcc"
-#endif
 
 #endif /* HERWIG_MEqq2gZ2ff_H */

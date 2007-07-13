@@ -9,17 +9,17 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Handlers/StandardXComb.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Helicity/Vertex/Tensor/VVTVertex.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Tensor/VVTVertex.h"
 #include <numeric>
 
 using namespace Herwig;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::VVTVertexPtr;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::VVTVertexPtr;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 double MEvv2vv::me2() const {
   VBVector va(2), vb(2), vc(3), vd(3);  
@@ -33,9 +33,9 @@ double MEvv2vv::me2() const {
     vd[2*i] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 2*i, outgoing);
   }
   //massive vector, also 1
-  if(mePartonData()[2]->mass() > 0.0)
+  if(mePartonData()[2]->mass() > 0.0*MeV)
     vc[1] = VectorWaveFunction(meMomenta()[2], mePartonData()[2], 1, outgoing);
-  if(mePartonData()[3]->mass() > 0.0)
+  if(mePartonData()[3]->mass() > 0.0*MeV)
     vd[1] = VectorWaveFunction(meMomenta()[3], mePartonData()[3], 1, outgoing);
   double full_me(0.);
   vv2vvHeME(va, vb, vc, vd, full_me);
@@ -52,8 +52,8 @@ MEvv2vv::vv2vvHeME(VBVector & vin1, VBVector & vin2,
   const Energy2 q2(scale());
   vector<Complex> diag(ndiags, Complex(0.));
   vector<double> me(ndiags, 0.);
-  bool masslessC = (mePartonData()[2]->mass() == 0.0);
-  bool masslessD = (mePartonData()[3]->mass() == 0.0);
+  bool masslessC = (mePartonData()[2]->mass() == 0.0*MeV);
+  bool masslessD = (mePartonData()[3]->mass() == 0.0*MeV);
   ScalarWaveFunction interS; VectorWaveFunction interV;
   TensorWaveFunction interT;
   ProductionMatrixElement prodME(PDT::Spin1, PDT::Spin1, PDT::Spin1, PDT::Spin1);

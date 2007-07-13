@@ -7,7 +7,7 @@
 namespace Herwig {
 
 inline SudakovFormFactor::SudakovFormFactor() : _pdfmax(35.0), _z( 0.0 ), 
-						_phi(0.0), _pT(0.),
+						_phi(0.0), _pT(0.*MeV),
 						_a(0.3), _b(2.3), _c(0.3*GeV),
 						_kinCutoffScale( .75*GeV )
 {}
@@ -77,7 +77,7 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
 					 double enhance,bool ident) const {
   double c = 1./((_splittingFn->integOverP(_zlimits.second) -
 		  _splittingFn->integOverP(_zlimits.first))* 
-		 _alpha->overestimateValue()/(2.*pi)*enhance);
+		 _alpha->overestimateValue()/Constants::twopi*enhance);
   assert(iopt<=2);
   if(iopt==1) {
     c/=_pdfmax;
@@ -88,9 +88,12 @@ inline Energy2 SudakovFormFactor::guesst(Energy2 t1,unsigned int iopt,
     return t1*pow(UseRandom::rnd(),c);
   }
   else {
+    assert(false && "Units are dubious here.");
     int nm(splittingFn()->interactionOrder()-1);
-    c/=Math::powi(_alpha->overestimateValue()/(2.*pi),nm);
-    return t1/pow(1.-nm*c*log(UseRandom::rnd())*Math::powi(t1,nm),1./float(nm));
+    c/=Math::powi(_alpha->overestimateValue()/Constants::twopi,nm);
+    return t1 /       pow (1. - nm*c*log(UseRandom::rnd()) 
+			   * Math::powi(t1*UnitRemoval::InvE2,nm)
+			   ,1./double(nm));
   }
 }
 

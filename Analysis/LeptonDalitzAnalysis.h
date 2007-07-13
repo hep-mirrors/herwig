@@ -7,7 +7,7 @@
 
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "LeptonDalitzAnalysis.fh"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "Herwig++/Interfaces/KtJetInterface.h"
 #include "KtJet/KtJet.h"
 #include "KtJet/KtLorentzVector.h"
@@ -190,7 +190,7 @@ template <>
 struct ClassTraits<Herwig::LeptonDalitzAnalysis>
   : public ClassTraitsBase<Herwig::LeptonDalitzAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::LeptonDalitzAnalysis"; }
+  static string className() { return "Herwig::LeptonDalitzAnalysis"; }
   /**
    * The name of a file containing the dynamic library where the class
    * LeptonDalitzAnalysis is implemented. It may also include several, space-separated,

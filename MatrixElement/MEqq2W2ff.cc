@@ -10,7 +10,7 @@
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
@@ -18,7 +18,7 @@
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/PDT/EnumParticles.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include <cassert>
 
 using namespace Herwig;

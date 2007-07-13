@@ -50,17 +50,17 @@ int SU3BaryonDecupletOctetPhotonDecayer::modeNumber(bool & cc,const DecayMode & 
 }
 
 void SU3BaryonDecupletOctetPhotonDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _C << _parity << _proton << _neutron << _sigma0 << _sigmap 
+  os << ounit(_C,1./GeV) << _parity << _proton << _neutron << _sigma0 << _sigmap 
      << _sigmam << _lambda << _xi0 << _xim << _deltapp << _deltap << _delta0 << _deltam
      << _sigmasp << _sigmas0 << _sigmasm << _omega << _xism << _xis0 << _incomingB 
-     << _outgoingB << _maxweight << _prefactor;
+     << _outgoingB << _maxweight << ounit(_prefactor,1./GeV);
 }
 
 void SU3BaryonDecupletOctetPhotonDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _C >> _parity >> _proton >> _neutron >> _sigma0 >> _sigmap 
+  is >> iunit(_C,1./GeV) >> _parity >> _proton >> _neutron >> _sigma0 >> _sigmap 
      >> _sigmam >> _lambda >> _xi0 >> _xim >> _deltapp >> _deltap >> _delta0 >> _deltam
      >> _sigmasp >> _sigmas0 >> _sigmasm >> _omega >> _xism >> _xis0 >> _incomingB 
-     >> _outgoingB >> _maxweight >> _prefactor;
+     >> _outgoingB >> _maxweight >> iunit(_prefactor,1./GeV);
 }
 
 ClassDescription<SU3BaryonDecupletOctetPhotonDecayer> SU3BaryonDecupletOctetPhotonDecayer::initSU3BaryonDecupletOctetPhotonDecayer;
@@ -233,8 +233,8 @@ threeHalfHalfVectorCoupling(int imode,Energy m0,Energy m1,Energy,
 void SU3BaryonDecupletOctetPhotonDecayer::setupModes(unsigned int iopt) const
 {
   if(_incomingB.size()!=0&&iopt==0){return;}
-  if(iopt==1){_outgoingB.resize(0);_incomingB.resize(0);}
-  vector<double> factor;
+  if(iopt==1){_outgoingB.clear();_incomingB.clear();}
+  vector<InvEnergy> factor;
   vector<int> intemp,outtemp;
   double ortw(1./sqrt(12.)),orr(1./sqrt(3.));
   // decays of the delta+

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the OmegaPhi3PionAnalysis class.
+//
+#ifndef HERWIG_OmegaPhi3PionAnalysis_FH
+#define HERWIG_OmegaPhi3PionAnalysis_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class OmegaPhi3PionAnalysis;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::OmegaPhi3PionAnalysis,OmegaPhi3PionAnalysisPtr);
+
+}
+
+#endif

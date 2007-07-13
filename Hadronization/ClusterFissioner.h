@@ -325,9 +325,6 @@ private:
    */
   int _iopRem;
 
-  // until ThePEG supports Tension
-  typedef double Tension;
-
   /**
    * The string constant
    */
@@ -359,7 +356,7 @@ template <>
 struct ClassTraits<Herwig::ClusterFissioner>
   : public ClassTraitsBase<Herwig::ClusterFissioner> {
   /** Return the class name. */
-  static string className() { return "Herwig++::ClusterFissioner"; }
+  static string className() { return "Herwig::ClusterFissioner"; }
 };
 
 /** @endcond */

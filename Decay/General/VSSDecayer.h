@@ -6,7 +6,7 @@
 //
 
 #include "GeneralTwoBodyDecayer.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VSSVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VSSVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "VSSDecayer.fh"
 
@@ -61,7 +61,7 @@ public:
    * @param outa Pointer to incoming particle data object
    * @param outb Pointer to incoming particle data object
    */
-  virtual double partialWidth(const PDPtr inpart,
+  virtual Energy partialWidth(const PDPtr inpart,
 			      const PDPtr outa,
 			      const PDPtr outb) const;
   //@}
@@ -147,7 +147,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of VSSDecayer. */
@@ -163,7 +163,7 @@ template <>
 struct ClassTraits<Herwig::VSSDecayer>
   : public ClassTraitsBase<Herwig::VSSDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::VSSDecayer"; }
+  static string className() { return "Herwig::VSSDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * VSSDecayer is implemented. It may also include several, space-separated,
@@ -174,7 +174,7 @@ struct ClassTraits<Herwig::VSSDecayer>
   static string library() { return "libHwGeneralDecay.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

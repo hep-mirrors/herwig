@@ -5,9 +5,9 @@
 //
 
 #include "Kinematics.h"
-#include <ThePEG/CLHEPWrap/Lorentz5Vector.h>
-#include <ThePEG/CLHEPWrap/LorentzVector.h>
-#include <ThePEG/CLHEPWrap/LorentzRotation.h>
+#include <ThePEG/Vectors/Lorentz5Vector.h>
+#include <ThePEG/Vectors/LorentzVector.h>
+#include <ThePEG/Vectors/LorentzRotation.h>
 #include <ThePEG/Repository/EventGenerator.h>
 #include <ThePEG/Repository/CurrentGenerator.h>
 #include <ThePEG/EventRecord/Event.h>
@@ -18,27 +18,32 @@ using namespace ThePEG;
 Energy Kinematics::CMMomentum(const Energy M, 
 			      const Energy m1, 
 			      const Energy m2) {
-  return ( M <= 0.0  ||  m1 < 0.0  ||  m2 < 0.0  ||  M <= m1+m2  ?  0.0  : 
-	   sqrt(( M*M - (m1+m2)*(m1+m2) )*( M*M - (m1-m2)*(m1-m2) ))/(2.0*M)); 
+  return ( M <= Energy()  ||  m1 < Energy()  
+	   ||  m2 < Energy()  ||  M <= m1+m2  ?  
+	   Energy()  : 
+	   Energy(sqrt(( M*M - (m1+m2)*(m1+m2) )*( M*M - (m1-m2)*(m1-m2) ))
+	   /(2.0*M))); 
 }
 
 bool Kinematics::twoBodyDecay(const Lorentz5Momentum & p,
 			      const Energy m1, const Energy m2,
-			      const Vector3 & unitDir1,
+			      const Axis & unitDir1,
 			      Lorentz5Momentum & p1, Lorentz5Momentum & p2 ) {
-  if ( p.m() >= m1 + m2  &&  m1 >= 0.0  &&  m2 >= 0.0  ) {
-    Momentum3 pstarVector = unitDir1;
-    pstarVector *= pstarTwoBodyDecay(p.m(),m1,m2);
-    p1 = Lorentz5Momentum(m1,pstarVector);
+  Energy min=p.m();
+  if ( min >= m1 + m2  &&  m1 >= Energy()  &&  m2 >= Energy()  ) {
+    Momentum3 pstarVector = unitDir1 * pstarTwoBodyDecay(min,m1,m2);
+    p1 = Lorentz5Momentum(m1, pstarVector);
     p2 = Lorentz5Momentum(m2,-pstarVector);
-    p1.boost( p.boostVector() );   // boost from CM to LAB
-    p2.boost( p.boostVector() );
+    // boost from CM to LAB
+    Boost bv=p.boostVector();
+    p1.boost( bv );   
+    p2.boost( bv );
     return true;
   } else {
     CurrentGenerator::log() 
       << "Kinematics::twoBodyDecay() phase space problem\n" 
       << "p = " << p / GeV 
-      << " p.m() = " << p.m() / GeV
+      << " p.m() = " << min / GeV
       << " -> " << m1/GeV 
       << ' ' << m2/GeV << '\n';
     return false;
@@ -64,15 +69,13 @@ void Kinematics::generateAngles(double &ct, double &az) {
  ****/
 bool Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1, 
 				Lorentz5Momentum &p2, Lorentz5Momentum &p3,
-				double (*fcn)(double*)) {
-    // Variables needed in calculation...named same as fortran version
-   double a,b,c,d,aa,bb,cc,dd,ee,ff,pp,qq,ww,rr;   
-
-   a = p0.mass() + p1.mass();
-   b = p0.mass() - p1.mass();
-   c = p2.mass() + p3.mass();
-
-   if(b < c) {
+				double (*fcn)(Energy2,Energy2,Energy2,InvEnergy4)) {
+  // Variables needed in calculation...named same as fortran version
+  Energy a = p0.mass() + p1.mass();
+  Energy b = p0.mass() - p1.mass();
+  Energy c = p2.mass() + p3.mass();
+  
+  if(b < c) {
      CurrentGenerator::log() 
        << "Kinematics::threeBodyDecay() phase space problem\n"
        << p0.mass()/GeV << " -> "
@@ -80,48 +83,55 @@ bool Kinematics::threeBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1,
        << p2.mass()/GeV << ' '
        << p3.mass()/GeV << '\n';
      return false;
-   }
-
-   d = fabs(p2.mass()-p3.mass());
-   aa = sqr(a); bb = sqr(b); cc = sqr(c); dd = sqr(d); ee = (b-c)*(a-d);
-   a = 0.5 * (aa+bb);
-   b = 0.5 * (cc+dd);
-   c = 4./(sqr(a-b));
-
-   // Choose mass of subsystem 23 with prescribed distribution
-   do {
-      // ff is the mass squared of the 23 subsystem
-      ff = UseRandom::rnd()*(cc-bb)+bb;
-
-      // pp is ((m0+m1)^2 - m23^2)((m0-m1)^2-m23)
-      pp = (aa-ff)*(bb-ff);
-
-      // qq is ((m2+m3)^2 - m23^2)(|m2-m3|^2-m23^2)
-      qq = (cc-ff)*(dd-ff);
-
-      if(fcn != NULL) {
-	double temp[4] = {ff,a,b,c};
-	ww = (*fcn)(temp);
-      } else ww = 1.0;
-      //if(MECode == 100 || MECode == 101) ww = EMMasslessWt(ff,a,b,c);
-      //else ww =  PhaseSpaceWt();
-      ww = sqr(ww);
-      rr = ee*ff*UseRandom::rnd();
-   } while(pp*qq*ww < rr*rr);
-
-   // ff is the mass squared of subsystem 23
-   // do 2 body decays 0->1+23, 23->2+3
-   double CosAngle, AzmAngle;
-   Lorentz5Momentum p23;
-
-   p23.setMass(sqrt(ff));
-
-   generateAngles(CosAngle,AzmAngle);
-   bool status = twoBodyDecay(p0,p1.mass(),p23.mass(),CosAngle,AzmAngle,p1,p23);
-
-   generateAngles(CosAngle,AzmAngle);
-   status &= twoBodyDecay(p23,p2.mass(),p3.mass(),CosAngle,AzmAngle,p2,p3);
-   return status;
+  }
+  
+  Energy d = abs(p2.mass()-p3.mass());
+  Energy2 aa = sqr(a); 
+  Energy2 bb = sqr(b); 
+  Energy2 cc = sqr(c); 
+  Energy2 dd = sqr(d); 
+  Energy2 ee = (b-c)*(a-d);
+  
+  Energy2 a1 = 0.5 * (aa+bb);
+  Energy2 b1 = 0.5 * (cc+dd);
+  InvEnergy4 c1 = 4./(sqr(a1-b1));
+  
+  Energy2 ff; 
+  double ww; 
+  Energy4 pp,qq,rr;
+  // Choose mass of subsystem 23 with prescribed distribution
+  do {
+    // ff is the mass squared of the 23 subsystem
+    ff = UseRandom::rnd()*(cc-bb)+bb;
+    
+    // pp is ((m0+m1)^2 - m23^2)((m0-m1)^2-m23)
+    pp = (aa-ff)*(bb-ff);
+    
+    // qq is ((m2+m3)^2 - m23^2)(|m2-m3|^2-m23^2)
+    qq = (cc-ff)*(dd-ff);
+    
+    if(fcn != NULL) {
+      ww = (*fcn)(ff,a1,b1,c1);
+    } else ww = 1.0;
+    //if(MECode == 100 || MECode == 101) ww = EMMasslessWt(ff,a1,b1,c1);
+    //else ww =  PhaseSpaceWt();
+    ww = sqr(ww);
+    rr = ee*ff*UseRandom::rnd();
+  } while(pp*qq*ww < rr*rr);
+  
+  // ff is the mass squared of subsystem 23
+  // do 2 body decays 0->1+23, 23->2+3
+  double CosAngle, AzmAngle;
+  Lorentz5Momentum p23;
+  
+  p23.setMass(sqrt(ff));
+  
+  generateAngles(CosAngle,AzmAngle);
+  bool status = twoBodyDecay(p0,p1.mass(),p23.mass(),CosAngle,AzmAngle,p1,p23);
+  
+  generateAngles(CosAngle,AzmAngle);
+  status &= twoBodyDecay(p23,p2.mass(),p3.mass(),CosAngle,AzmAngle,p2,p3);
+  return status;
 }
 
 
@@ -134,23 +144,27 @@ bool Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       Lorentz5Momentum &p4) {
   // Again, for comparison, we use the same variables as used in fortran code
-  double b,c,aa,bb,cc,dd,ee,tt,s1,rs1,ff,s2,pp,qq,rr, temp;
+  //  double b,c,aa,bb,cc,dd,ee,tt,s1,rs1,ff,s2,pp,qq,rr, temp;
 
-  b = p0.mass() - p1.mass();
-  c = p2.mass() + p3.mass() + p4.mass();
+  Energy b = p0.mass() - p1.mass();
+  Energy c = p2.mass() + p3.mass() + p4.mass();
   if(b < c) {
     CurrentGenerator::log() 
       << "Kinematics::fourBodyDecay() phase space problem\n";
     return false;
   }
-  aa = sqr(p0.mass() + p1.mass());
-  bb = sqr(b);
-  cc = sqr(c);
-  dd = sqr(p3.mass()+p4.mass());
-  ee = sqr(p3.mass()-p4.mass());
-  tt = (b-c)*pow(p0.mass(),7)/16.;
+  Energy2 aa = sqr(p0.mass() + p1.mass());
+  Energy2 bb = sqr(b);
+  Energy2 cc = sqr(c);
+  Energy2 dd = sqr(p3.mass()+p4.mass());
+  Energy2 ee = sqr(p3.mass()-p4.mass());
+  Energy8 tt = (b-c)*pow<7,1>(p0.mass())/16.;
   
   // Select squared masses, S1 and S2 or 234 and 34 subsystems
+  Energy2 s1, ff, s2, qq, rr;
+  Energy rs1;
+  Energy4 pp;
+  double temp;
   do {
     s1 = bb + UseRandom::rnd()*(cc-bb);
     rs1 = sqrt(s1);
@@ -160,8 +174,6 @@ bool Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
     qq = (sqr(rs1+p2.mass())-s2)*(ff-s2)/s1;
     rr = (s2 - dd)*(s2-ee)/s2;
 
-    // Since sqr is a macro, need to store rnd() in variable before sqr,
-    // otherwise it will use two random numbers
     temp = UseRandom::rnd();
   } while(pp*qq*rr*sqr(ff-dd) < tt*s1*s2*sqr(temp));
 
@@ -192,21 +204,25 @@ bool Kinematics::fourBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 bool Kinematics::fiveBodyDecay(Lorentz5Momentum  p0, Lorentz5Momentum &p1,
 			       Lorentz5Momentum &p2, Lorentz5Momentum &p3,
 			       Lorentz5Momentum &p4, Lorentz5Momentum &p5) {
-  double b(p0.mass()-p1.mass());
-  double c(p2.mass()+p3.mass()+p4.mass()+p5.mass());
+  Energy b(p0.mass()-p1.mass());
+  Energy c(p2.mass()+p3.mass()+p4.mass()+p5.mass());
   if(b<c) {
     CurrentGenerator::log() 
       << "Kinematics::fiveBodyDecay() phase space problem\n";
     return false;
   }
-  double aa(sqr(p0.mass()+p1.mass()));
-  double bb(b*b),cc(c*c);
-  double dd(sqr(p3.mass()+p4.mass()+p5.mass()));
-  double ee(sqr(p4.mass()+p5.mass()));
-  double ff(sqr(p4.mass()-p5.mass()));
-  double tt((b-c)*pow(p0.mass(),11)/729.);
+  Energy2 aa(sqr(p0.mass()+p1.mass()));
+  Energy2 bb(b*b),cc(c*c);
+  Energy2 dd(sqr(p3.mass()+p4.mass()+p5.mass()));
+  Energy2 ee(sqr(p4.mass()+p5.mass()));
+  Energy2 ff(sqr(p4.mass()-p5.mass()));
+  Energy12 tt((b-c)*pow<11,1>(p0.mass())/729.);
   // Select squared masses S1, S2 and S3 of 2345, 345 and 45 subsystems
-  double s1,rs1,s2,rs2,gg,hh,s3,pp,qq,rr,ss,temp;
+  //double s1,rs1,s2,rs2,gg,hh,s3,pp,qq,rr,ss,temp;
+  Energy2 s1, gg, s2, hh, s3, qq, rr, ss;
+  Energy rs1, rs2;
+  Energy4 pp;
+  double temp;
   // protect against infinite loops
   static const unsigned int MAXTRY = 100;
   unsigned int count(0);

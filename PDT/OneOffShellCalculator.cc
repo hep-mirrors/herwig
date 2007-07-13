@@ -21,7 +21,7 @@ Energy OneOffShellCalculator::partialWidth(Energy2 q2) const {
   // the limits
   Energy upp=min(sqrt(q2)-otherMass(_themass),_massptr->upperLimit());
   Energy low=max(_minmass,_massptr->lowerLimit());
-  if(low>upp){return 0.;}
+  if(low>upp){return Energy();}
   // transform the limits of BW smoothing
   Energy2 mass2  =_massptr->nominalMass()*_massptr->nominalMass();
   Energy2 mwidth =_massptr->nominalMass()*_massptr->nominalWidth();

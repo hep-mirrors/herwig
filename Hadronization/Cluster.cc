@@ -105,7 +105,7 @@ Energy Cluster::sumConstituentMasses() const
            _component[2]->mass();
   } else if(_numComp == 2) 
     return _component[0]->mass() + _component[1]->mass();
-  else return 0.0;
+  else return Energy();
 }
 
 
@@ -133,31 +133,31 @@ void Cluster::calculateX() {
     LorentzPoint pos1 = _component[0]->vertex();
     Lorentz5Momentum p1 = _component[0]->momentum();
     LorentzDistance displace1 = -log( UseRandom::rnd() ) * 
-      hbarc * p1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2));
-    if ( fabs( displace1.mag() ) > dmax ) {
-      displace1 *= dmax / fabs( displace1.mag() );
+      hbarc * p1 * (1 / sqrt(sqr(p1.m2() - p1.mass2()) + sqr(vmin2)));
+    if ( abs( displace1.mag() ) > dmax ) {
+      displace1 *= dmax / abs( displace1.mag() );
     }
     LorentzPoint pos2 = _component[1]->vertex();
     Lorentz5Momentum p2 = _component[1]->momentum();
     LorentzDistance displace2 = -log( UseRandom::rnd() ) * 
-      hbarc * p2 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2));
-    if ( fabs( displace2.mag() ) > dmax ) {
-      displace2 *= dmax / fabs( displace2.mag() );
+      hbarc * p2 * (1 / sqrt(sqr(p2.m2() - p2.mass2()) + sqr(vmin2)));
+    if ( abs( displace2.mag() ) > dmax ) {
+      displace2 *= dmax / abs( displace2.mag() );
     }
     double s1 = 0.0, s2 = 0.0;
     Lorentz5Momentum pcl = p1 + p2;
-    if ( fabs( pcl.vect().dot( displace1.vect() ) ) > 1.0e-20  &&
-	 fabs( pcl.vect().dot( displace2.vect() ) ) > 1.0e-20  ) {
+    if ( abs( pcl.vect().dot( displace1.vect() ) ) > 1.0e-20*MeV*mm  &&
+	 abs( pcl.vect().dot( displace2.vect() ) ) > 1.0e-20*MeV*mm  ) {
       // The displacement with the smallest projection along pcl.vect()
       // is scaled up such that both displacements have equal projections
       // along pcl.vect().
-      double ratio = ( fabs( pcl.vect().dot( displace1.vect() ) ) / 
-		       fabs( pcl.vect().dot( displace2.vect() ) ) );
+      double ratio = ( abs( pcl.vect().dot( displace1.vect() ) ) / 
+		       abs( pcl.vect().dot( displace2.vect() ) ) );
       if ( pcl.vect().dot(displace1.vect()) * 
-	   pcl.vect().dot(displace2.vect())  <  0.0 ) {
+	   pcl.vect().dot(displace2.vect())  <  0.0*sqr(MeV*mm) ) {
 	ratio *= -1;
       }
-      if ( fabs( ratio ) > 1.0 ) {
+      if ( abs( ratio ) > 1.0 ) {
 	displace2 *= ratio;
       } else {
 	displace1 *= ratio;

@@ -6,9 +6,11 @@
 using namespace Herwig::Looptools;
 
 int main() {
+  std::cout << "before" << std::endl;
   ffini();
   std::cout << B0(1000.,50.,80.) << std::endl;
   std::cout << C0i(cc002,1000.,1000.,4500.,3.,5.,8.) << std::endl;
   ffexi();
+  std::cout << "after" << std::endl;
   return 0;
 }

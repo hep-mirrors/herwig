@@ -9,20 +9,20 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::LorentzTensor;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::LorentzTensor;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
  
 TFFDecayer::~TFFDecayer() {}
 
@@ -49,7 +49,7 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin2);
   rhoin.average();
-  vector<LorentzTensor> in;
+  vector<LorentzTensor<double> > in;
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);
   unsigned int iferm,ianti;
@@ -91,7 +91,7 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->coloured()) {
     output *= 3.;
   }
@@ -99,19 +99,19 @@ double TFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double TFFDecayer::partialWidth(const PDPtr inpart,
+Energy TFFDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theFFTPtr->setCoupling(scale,inpart,outa,outb);
   double musq = sqr(outa->mass()/inpart->mass());
   double b = sqrt(1- 4.*musq);
-  double me2 = b*b*(5-2*b*b)*scale/120;
+  double me2 = b*b*(5-2*b*b)*scale/120*UnitRemoval::InvE2;
   Complex norm(_theFFTPtr->getNorm()*_theFFTPtr->getNorm());
   me2 *= norm.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double pWidth = me2*pcm/(8.*Constants::pi);
+  Energy pWidth = me2*pcm/(8.*Constants::pi);
   if(outa->coloured()) {
     pWidth *= 3.;
   } 

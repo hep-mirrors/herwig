@@ -52,12 +52,13 @@ inline void a1ThreePionDecayer::doinitrun() {
   
 
 // breit-wigner for the sigma meson
-inline complex<InvEnergy2> a1ThreePionDecayer::sigmaBreitWigner(Energy2 q2) const
+inline Complex a1ThreePionDecayer::sigmaBreitWigner(Energy2 q2) const
 {
   Energy q=sqrt(q2);
   Energy width=_sigmawidth*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi)/_psigma;
   Energy2 msigma2=_sigmamass*_sigmamass;
-  Complex ii(0.,1.),denom;
+  Complex ii(0.,1.);
+  complex<Energy2> denom;
   if(q>2.*_mpi)
     {denom= q2-msigma2+ii*msigma2*width/q;}
   else
@@ -75,16 +76,16 @@ inline double a1ThreePionDecayer::a1FormFactor(Energy2 q2) const
 // the h function in the rho propagator
 inline Energy2 a1ThreePionDecayer::hFunction(const Energy q)const 
 {
-  double output;
-  static const Energy2 eps(0.01);
-  Energy q2=q*q;
+  Energy2 output;
+  static const Energy2 eps(0.01*MeV2);
+  Energy2 q2=q*q;
   double root = sqrt(1.-4.*_mpi2/q2);
   if(q2>4*_mpi2)
-    {output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/pi;}
+    {output=root*log((1.+root)/(1.-root))*(q2-4*_mpi2)/Constants::pi;}
   else if(q2>eps)
-    {output=0.;}
+    {output=0.*MeV2;}
   else
-    {output=-8.*_mpi2/pi;}
+    {output=-8.*_mpi2/Constants::pi;}
   return output;
 }
 
@@ -93,22 +94,23 @@ inline double a1ThreePionDecayer::dhdq2Parameter(int ires) const
 {
   Energy2 mrho2=_rhomass[ires]*_rhomass[ires];
   double root = sqrt(1.-4.*_mpi2/mrho2);
+  using Constants::pi;
   return root/pi*(root+(1.+2*_mpi2/mrho2)*log((1+root)/(1-root)));
 }
 
 // the numerator for the rho propagator
 inline Energy2 a1ThreePionDecayer::DParameter(int ires) const 
 {
-  double grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
+  Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
   return _rhomass[ires]*_rhomass[ires]+_rhowidth[ires]*_rhomass[ires]*
-    (hFunction(0.)-_hm2[ires]+_rhomass[ires]*_rhomass[ires]*_dhdq2m2[ires])/grhom;
+    (hFunction(0.*MeV)-_hm2[ires]+_rhomass[ires]*_rhomass[ires]*_dhdq2m2[ires])/grhom;
 }
 
 // the rho Breit-Wigner
 inline Complex a1ThreePionDecayer::rhoBreitWigner(Energy2 q2, int ires) const
 {
   Energy q=sqrt(q2);
-  double grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
+  Energy2 grhom = 8.*_prho[ires]*_prho[ires]*_prho[ires]/_rhomass[ires];
   complex<Energy2> denom;
   Complex ii(0.,1.);
   if(q2<4.*_mpi2)
@@ -120,7 +122,7 @@ inline Complex a1ThreePionDecayer::rhoBreitWigner(Energy2 q2, int ires) const
   else
     {
       Energy pcm=2.*Kinematics::pstarTwoBodyDecay(q,_mpi,_mpi);
-      double grho = pcm*pcm*pcm/q;
+      Energy2 grho = pcm*pcm*pcm/q;
       denom=q2-_rhomass[ires]*_rhomass[ires]
 	-_rhowidth[ires]*_rhomass[ires]*
 	(hFunction(q)-_hm2[ires]-(q2-_rhomass[ires]*_rhomass[ires])*_dhdq2m2[ires])/grhom

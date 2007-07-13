@@ -49,8 +49,10 @@ struct Outer {
   /**
    * Retreive function value
    */
-  inline double operator ()(double argument) const;
-  
+  inline Energy4 operator ()(double argument) const;
+  typedef double ArgType;
+  typedef Energy4 ValType;
+
   /**
    * pointer to the decay integrator
    */
@@ -78,6 +80,7 @@ public:
    * @param intype The types of the different integration channels.
    * @param inmass The mass for the Jacobian for the different channels.
    * @param inwidth The width for the Jacobian for the different channels.
+   * @param inpow the power for power-law smoothing for a given channel
    * @param inme The pointer to the function which gives the matrix element.
    * @param mode The mode to be integrated
    * @param m1 The mass of the first particle.
@@ -88,7 +91,8 @@ public:
 				  vector<int> intype,
 				  vector<Energy> inmass,
 				  vector<Energy> inwidth,
-				  T inme,int mode,
+				  vector<double> inpow,
+				  T inme, int mode,
 				  Energy m1,Energy m2,Energy m3);
 
   /**
@@ -128,7 +132,10 @@ public:
    * @param argument The mass squared for the inner integral
    * @return The value of the inner integrand.
    */
-  double operator ()(double argument) const;
+  Energy2 operator ()(Energy2 argument) const;
+  typedef Energy2 ArgType;
+  typedef Energy2 ValType;
+
 
 protected:
 
@@ -141,7 +148,7 @@ protected:
    * @param low The lower limit for the inner integral.
    * @param upp The upper limit for the inner integral.
    */
-  void outerVariables(const double & x, double & low, double & upp);
+  void outerVariables(const double & x, Energy2 & low, Energy2 & upp);
 
 private:
 
@@ -171,6 +178,11 @@ private:
    * the width of the resonance for a given channel
    */
   vector<Energy> _channelwidth;
+
+  /**
+   * the power for power-law smoothing for a given channel
+   */
+  vector<double> _channelpower;
 
   /**
    * Function giving the matrix element as a function of s12,s13,s23

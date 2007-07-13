@@ -6,17 +6,17 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "MEPP2QQ.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * The MEPP2QQ class implements the production of a heavy quark-antiquark
@@ -306,7 +306,7 @@ template <>
 struct ClassTraits<Herwig::MEPP2QQ>
   : public ClassTraitsBase<Herwig::MEPP2QQ> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEPP2QQ"; }
+  static string className() { return "Herwig::MEPP2QQ"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEPP2QQ is implemented. It may also include several, space-separated,

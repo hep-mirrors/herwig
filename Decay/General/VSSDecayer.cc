@@ -10,16 +10,16 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "Herwig++/Utilities/Kinematics.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 
 VSSDecayer::~VSSDecayer() {}
@@ -57,7 +57,7 @@ void VSSDecayer::Init() {
      newme(ix,0,0) = _theVSSPtr->evaluate(scale,inwave[ix],sca1,sca2);
    }
    ME(newme);
-   double output=(newme.contract(rhoin)).real()/scale;
+   double output=(newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
    if(decay[0]->id() == decay[1]->id()) {
      output /= 2.;
    }
@@ -68,7 +68,7 @@ void VSSDecayer::Init() {
    return output;
  }
 
-double VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
+Energy VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
   _theVSSPtr->setCoupling(scale,inpart,outa,outb);
@@ -80,7 +80,7 @@ double VSSDecayer::partialWidth(const PDPtr inpart,const PDPtr outa,
   me2 *= norm2.real();
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double output = me2*pcm/(8.*Constants::pi);
+  Energy output = me2*pcm/(8.*Constants::pi);
   if(outa->id() == outb->id()) {
     output /= 2.;
   }

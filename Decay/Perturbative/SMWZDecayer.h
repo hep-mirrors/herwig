@@ -5,13 +5,13 @@
 // This is the declaration of the SMWZDecayer class.
 //
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "SMWZDecayer.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /** \ingroup Decay
  *
@@ -187,13 +187,13 @@ template <>
  struct ClassTraits<Herwig::SMWZDecayer>
   : public ClassTraitsBase<Herwig::SMWZDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::SMWZDecayer"; }
+  static string className() { return "Herwig::SMWZDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
    */
-  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
+  static string library() { return "HwPerturbativeDecay.so"; }
 
 };
 

@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the Tau5Pion class.
+//
+#ifndef HERWIG_Tau5Pion_FH
+#define HERWIG_Tau5Pion_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class Tau5Pion;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::Tau5Pion,Tau5PionPtr);
+
+}
+
+#endif

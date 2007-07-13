@@ -62,7 +62,7 @@ inline void BaryonFactorizedDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
   DecayIntegrator::doinitrun();
-  _weights.resize(0);_wgtloc.resize(0);_wgtmax.resize(0);
+  _weights.clear();_wgtloc.clear();_wgtmax.clear();
   unsigned int ix,iy;
   for(ix=0;ix<numberModes();++ix)
     {

@@ -9,7 +9,7 @@
 #include "Herwig++/Utilities/Kinematics.h"
 #include "Herwig++/Utilities/Math.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
 #include "ThePEG/Interface/Interfaced.h"
 #include "IFDipole.fh"
 
@@ -172,7 +172,7 @@ protected:
    * the decaying particle's rest frame to the lab
    * @param children The decay products
    */
-  double makePhotons(Hep3Vector boost,ParticleVector children);
+  double makePhotons(Boost boost,ParticleVector children);
 
 private:
 
@@ -388,7 +388,7 @@ template <>
 struct ClassTraits<Herwig::IFDipole>
   : public ClassTraitsBase<Herwig::IFDipole> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::IFDipole"; }
+  static string className() { return "Herwig::IFDipole"; }
 };
 
 /** @endcond */

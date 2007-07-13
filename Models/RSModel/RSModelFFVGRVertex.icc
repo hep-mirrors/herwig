@@ -1,0 +1,59 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the RSModelFFVGRVertex class.
+//
+namespace Herwig{
+using namespace ThePEG;
+
+inline RSModelFFVGRVertex::RSModelFFVGRVertex() 
+    : _charge(17,0.), _couplast(2,0.), _q2last(2)
+{
+  vector<int> first,second,third,fourth;
+  for(unsigned int ix=1;ix<7;++ix)
+    {
+      first.push_back(-ix);second.push_back(ix);
+      third.push_back(22);fourth.push_back(39);
+    }
+  for(unsigned int ix=11;ix<17;++ix)
+    {
+      first.push_back(-ix);second.push_back(ix);
+      third.push_back(22);fourth.push_back(39);
+    }
+  for(unsigned int ix=1;ix<7;++ix)
+    {
+      first.push_back(-ix);second.push_back(ix);
+      third.push_back(21);fourth.push_back(39);
+    }
+  setList(first,second,third,fourth);
+  _theKappa=InvEnergy();
+}
+
+inline IBPtr RSModelFFVGRVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr RSModelFFVGRVertex::fullclone() const {
+  return new_ptr(*this);
+}
+
+inline void RSModelFFVGRVertex::doinit() throw(InitException) {
+  orderInGem(1);
+  FFVTVertex::doinit();
+  _theModel = generator()->standardModel();
+  tcHwRSPtr hwRS=dynamic_ptr_cast<tcHwRSPtr>(_theModel);
+  for(int ix=1;ix<4;++ix)
+    {
+      _charge[2*ix-1]  = (_theModel->ed());
+      _charge[2*ix ]   = (_theModel->eu());
+      _charge[2*ix+9 ] = (_theModel->ee());
+      _charge[2*ix+10] = (_theModel->enu());
+    }
+  for(int ix=0;ix<2;++ix)
+    {
+      _couplast[ix] = 0.;
+      _q2last[ix]=0.*GeV2;
+    }
+  if(hwRS){_theKappa=2./hwRS->lambda_pi();}
+}
+}

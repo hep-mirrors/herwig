@@ -4,11 +4,9 @@
 
 #include <ThePEG/Interface/Interfaced.h>
 #include "CluHadConfig.h"
-
+#include "ClusterFinder.fh"
 
 namespace Herwig {
-
-
 using namespace ThePEG;
 
 /*! \ingroup Hadronization
@@ -122,7 +120,7 @@ template <>
  */
 struct ClassTraits<Herwig::ClusterFinder>: public ClassTraitsBase<Herwig::ClusterFinder> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::ClusterFinder"; }
+  static string className() { return "Herwig::ClusterFinder"; }
 };
 
 /** @endcond */

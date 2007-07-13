@@ -8,18 +8,11 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "OmegaXiStarPionDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 namespace Herwig {
 using namespace ThePEG;
-
-OmegaXiStarPionDecayer::~OmegaXiStarPionDecayer() {}
 
 int OmegaXiStarPionDecayer::modeNumber(bool & cc,const DecayMode & dm) const
 {

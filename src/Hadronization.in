@@ -8,16 +8,16 @@ defaultparticle /Defaults/Particles/Cluster
 create ThePEG::ParticleData /Defaults/Particles/Remnant
 setup /Defaults/Particles/Remnant 82 Remnant 0.00990 0.0 0.0 0.0  0 0  0  0
 defaultparticle /Defaults/Particles/Remnant
-create Herwig++::ClusterHadronizationHandler stdCluHadHandler
-create Herwig++::PartonSplitter thePartonSplitter
-create Herwig++::ClusterFinder theClusterFinder
-create Herwig++::ColourReconnector theColourReconnector
-create Herwig++::ClusterFissioner theClusterFissioner
-create Herwig++::LightClusterDecayer theLightClusterDecayer
-create Herwig++::ClusterDecayer theClusterDecayer
-create Herwig++::HwppSelector theHadronSelector
-create Herwig++::PartonicHadronizer PartonicHadronizer
-create Herwig++::ForcedSplitting theForcedSplitting
+create Herwig::ClusterHadronizationHandler stdCluHadHandler
+create Herwig::PartonSplitter thePartonSplitter
+create Herwig::ClusterFinder theClusterFinder
+create Herwig::ColourReconnector theColourReconnector
+create Herwig::ClusterFissioner theClusterFissioner
+create Herwig::LightClusterDecayer theLightClusterDecayer
+create Herwig::ClusterDecayer theClusterDecayer
+create Herwig::HwppSelector theHadronSelector
+create Herwig::PartonicHadronizer PartonicHadronizer
+create Herwig::ForcedSplitting theForcedSplitting
 
 # create the underlying event stuff
 read UnderlyingEvent.in 

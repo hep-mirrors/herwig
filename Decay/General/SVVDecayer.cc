@@ -9,20 +9,20 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/Vertex/Scalar/VVSVertex.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/Vertex/Scalar/VVSVertex.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
-using Herwig::Helicity::VVSVertexPtr;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
+using ThePEG::Helicity::VVSVertexPtr;
 
 SVVDecayer::~SVVDecayer() {}
 
@@ -65,7 +65,7 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newME);
-  double matrixElement2 = newME.contract(rhoin).real()/scale;
+  double matrixElement2 = newME.contract(rhoin).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()){
     matrixElement2 /= 2.;
   } 
@@ -73,7 +73,7 @@ double SVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return matrixElement2;
 }
   
-double SVVDecayer::partialWidth(const PDPtr inpart,
+Energy SVVDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass());
@@ -86,7 +86,7 @@ double SVVDecayer::partialWidth(const PDPtr inpart,
   double mu2(outb->mass()/inpart->mass()),mu2sq(mu2*mu2);
   double matrixElement2 = 2 + (mu1sq/mu2sq) - (1/mu2sq) + (0.25/mu1sq/mu2sq);
   matrixElement2 *= norm.real();
-  double output = matrixElement2*pcm/(8*Constants::pi)/scale;
+  Energy output = matrixElement2*pcm/(8*Constants::pi)/scale*UnitRemoval::E2;
   if(outa->id() == outb->id()) 
     output /= 2.;
   return output;

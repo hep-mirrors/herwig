@@ -141,7 +141,7 @@ template <>
 struct ClassTraits<Herwig::KinematicsReconstructor>
   : public ClassTraitsBase<Herwig::KinematicsReconstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::KinematicsReconstructor"; }
+  static string className() { return "Herwig::KinematicsReconstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * KinematicsReconstructor is implemented. It may also include several, space-separated,

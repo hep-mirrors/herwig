@@ -1,0 +1,22 @@
+// -*- C++ -*-
+//
+// This is the forward declaration of the ColourReconnector class.
+//
+#ifndef HERWIG_ColourReconnector_FH
+#define HERWIG_ColourReconnector_FH
+
+#include "ThePEG/Config/Pointers.h"
+
+namespace Herwig {
+
+class ColourReconnector;
+
+}
+
+namespace ThePEG {
+
+ThePEG_DECLARE_POINTERS(Herwig::ColourReconnector,ColourReconnectorPtr);
+
+}
+
+#endif

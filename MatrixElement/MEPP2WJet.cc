@@ -13,12 +13,12 @@
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/MatrixElement/Tree2toNDiagram.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "ThePEG/Repository/EventGenerator.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "ThePEG/Utilities/SimplePhaseSpace.h"
 #include "ThePEG/Cuts/Cuts.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 
 using namespace Herwig;
 
@@ -32,7 +32,7 @@ void MEPP2WJet::doinit() throw(InitException) {
     ::transient_const_pointer>(standardModel());
   // do the initialisation
   if(!hwsm) 
-    throw InitException() << "Must be Herwig++::StandardModel in MEPP2WJet::doinit()"
+    throw InitException() << "Must be Herwig::StandardModel in MEPP2WJet::doinit()"
 			  << Exception::runerror;
   // set the vertex pointers
   _theFFWVertex = hwsm->vertexFFW();
@@ -369,7 +369,7 @@ Energy2 MEPP2WJet::scale() const {
 }
 
 CrossSection MEPP2WJet::dSigHatDR() const {
-  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat());
+  return me2()*jacobian()/(16.0*sqr(Constants::pi)*sHat())*sqr(hbarc);
 }
 
 bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
@@ -393,16 +393,16 @@ bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
   tcPDPtr wdata= icharge>0 ? _wplus :_wminus; 
   // generation of the mass
   Energy M=wdata->mass(),Gamma=wdata->width();
-  Energy M2=sqr(M),MG=(M*Gamma);
+  Energy2 M2=sqr(M),MG=(M*Gamma);
   double rhomin=atan((minMass2-M2)/MG);
   double rhomax=atan((maxMass2-M2)/MG);
   double rho=rhomin+UseRandom::rnd()*(rhomax-rhomin);
-  Energy mw2=M2+MG*tan(rho);
+  Energy2 mw2=M2+MG*tan(rho);
   Energy mw=sqrt(mw2);
   // jacobian
   jacobian(jacobian()*(sqr(mw2-M2)+sqr(MG))/MG*(rhomax-rhomin)/sHat());
   // set the masses of the outgoing particles in the 2-2 scattering
-  meMomenta()[2].setMass(0.);
+  meMomenta()[2].setMass(0.*MeV);
   Lorentz5Momentum pw(mw);
   // generate the polar angle of the hard scattering
   double ctmin = -1.0, ctmax = 1.0;
@@ -423,8 +423,8 @@ bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
   double cth = getCosTheta(ctmin, ctmax, r);
   Energy pt = q*sqrt(1.0-sqr(cth));
   double phi=UseRandom::rnd()*2.0*Constants::pi;
-  meMomenta()[2].setV(Momentum3( pt*sin(phi), pt*cos(phi), q*cth));
-  pw.setV(            Momentum3(-pt*sin(phi),-pt*cos(phi),-q*cth));
+  meMomenta()[2].setVect(Momentum3( pt*sin(phi), pt*cos(phi), q*cth));
+  pw.setVect(            Momentum3(-pt*sin(phi),-pt*cos(phi),-q*cth));
   meMomenta()[2].rescaleEnergy();
   pw.rescaleEnergy();
   // generate the momenta of the Z decay products
@@ -438,19 +438,19 @@ bool MEPP2WJet::generateKinematics(const double * r) {  // initialize jacobian
     return false;
   }
   double cth2 =-1.+2.*UseRandom::rnd();
-  double phi2=2.*pi*UseRandom::rnd();
-  double pt2 =q2*sqrt(1.-sqr(cth2));
-  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.,
+  double phi2=Constants::twopi*UseRandom::rnd();
+  Energy pt2 =q2*sqrt(1.-sqr(cth2));
+  Lorentz5Momentum pl[2]={Lorentz5Momentum( pt2*cos(phi2), pt2*sin(phi2), q2*cth2,0.*MeV,
 					    meMomenta()[3].mass()),
-			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.,
+			  Lorentz5Momentum(-pt2*cos(phi2),-pt2*sin(phi2),-q2*cth2,0.*MeV,
 					   meMomenta()[4].mass())};
   pl[0].rescaleEnergy();
   pl[1].rescaleEnergy();
-  Hep3Vector boostv(pw.boostVector());
+  Boost boostv(pw.boostVector());
   pl[0].boost(boostv);
   pl[1].boost(boostv);
-  meMomenta()[3].set(pl[0].x(),pl[0].y(),pl[0].z(),pl[0].t());
-  meMomenta()[4].set(pl[1].x(),pl[1].y(),pl[1].z(),pl[1].t());
+  meMomenta()[3] = pl[0];
+  meMomenta()[4] = pl[1]; 
   // check passes all the cuts
   vector<LorentzMomentum> out(3);
   out[0] = meMomenta()[2];
@@ -488,7 +488,7 @@ double MEPP2WJet::getCosTheta(double ctmin, double ctmax, const double * r) {
 
 double MEPP2WJet::me2() const {
   useMe();
-  InvEnergy2 output(0.);
+  InvEnergy2 output(0./MeV2);
   // construct spinors for the leptons (always the same)
   vector<SpinorBarWaveFunction> lm;
   vector<SpinorWaveFunction>    lp;
@@ -621,7 +621,7 @@ InvEnergy2 MEPP2WJet::qqbarME(vector<SpinorWaveFunction> & fin,
     if(ix>0) save.push_back(me[ix]);
   }
   meInfo(save);
-  return me[0];
+  return me[0] * UnitRemoval::InvE2;
 }
 
 InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
@@ -697,10 +697,10 @@ InvEnergy2 MEPP2WJet::qgME(vector<SpinorWaveFunction> & fin,
     if(ix>0) save.push_back(me[ix]);
   }
   meInfo(save);
-  return me[0];
+  return me[0] * UnitRemoval::InvE2;
 }
 
-InvEnergy MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
+InvEnergy2 MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
 			     vector<VectorWaveFunction> & gin,
 			     vector<SpinorWaveFunction> & fout,
 			     vector<SpinorBarWaveFunction> & lm,
@@ -773,7 +773,7 @@ InvEnergy MEPP2WJet::qbargME(vector<SpinorBarWaveFunction> & fin,
     if(ix>0) save.push_back(me[ix]);
   }
   meInfo(save);
-  return me[0];
+  return me[0] * UnitRemoval::InvE2;
 }
 
 void MEPP2WJet::constructVertex(tSubProPtr sub)

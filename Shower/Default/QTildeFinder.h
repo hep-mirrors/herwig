@@ -189,7 +189,7 @@ template <>
 struct ClassTraits<Herwig::QTildeFinder>
   : public ClassTraitsBase<Herwig::QTildeFinder> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::QTildeFinder"; }
+  static string className() { return "Herwig::QTildeFinder"; }
   /**
    * The name of a file containing the dynamic library where the class
    * QTildeFinder is implemented. It may also include several, space-separated,

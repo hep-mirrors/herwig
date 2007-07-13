@@ -31,6 +31,9 @@ public:
    */
   inline double random(){return _rand->rnd();}
 
+  /**
+   *  Destructor
+   */
   inline virtual ~EvtGenRandom(){;}
 
 private:

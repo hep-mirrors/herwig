@@ -9,19 +9,21 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/TensorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
+#include "ThePEG/Helicity/LorentzTensor.h"
+
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
 using ThePEG::Helicity::LorentzTensor;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::TensorWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::TensorWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 TVVDecayer::~TVVDecayer() {}
 
@@ -47,8 +49,8 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
 		       const ParticleVector & decay) const {
   RhoDMatrix rhoin(PDT::Spin2);
   rhoin.average();
-  vector<LorentzTensor> in;
-  bool massa(decay[0]->mass()==0),massb(decay[1]->mass()==0);
+  vector<LorentzTensor<double> > in;
+  bool massa(decay[0]->mass()==0*MeV),massb(decay[1]->mass()==0*MeV);
   TensorWaveFunction(in,rhoin,const_ptr_cast<tPPtr>(&inpart),
 		     incoming,true,false,vertex);
   vector<VectorWaveFunction> vec1,vec2;
@@ -77,7 +79,7 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newme);
-  double output = (newme.contract(rhoin)).real()/scale;
+  double output = (newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()) {
     output /= 2;
   }
@@ -89,7 +91,7 @@ double TVVDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
   
-double TVVDecayer::partialWidth(const PDPtr inpart,
+Energy TVVDecayer::partialWidth(const PDPtr inpart,
 				const PDPtr outa,
 				const PDPtr outb) const {
   Energy2 scale(inpart->mass()*inpart->mass()); 
@@ -98,8 +100,8 @@ double TVVDecayer::partialWidth(const PDPtr inpart,
   double b = sqrt(1 - 4.*mu2);
   Energy pcm = Kinematics::CMMomentum(inpart->mass(),outa->mass(),
 				      outb->mass());
-  double me2;
-  if(outa->mass() > 0. && outb->mass() > 0.) {
+  Energy2 me2;
+  if(outa->mass() > 0.*MeV && outb->mass() > 0.*MeV) {
     me2 = scale*(30 - 20.*b*b + 3.*pow(b,4))/120.; 
   }
   else {
@@ -107,7 +109,7 @@ double TVVDecayer::partialWidth(const PDPtr inpart,
   }
   Complex norm(_theVVTPtr->getNorm()*_theVVTPtr->getNorm());
   me2 *= norm.real();
-  double output = me2*pcm/(8.*Constants::pi);
+  Energy output = me2*pcm/(8.*Constants::pi)*UnitRemoval::InvE2;
   if(outa->id()==outb->id()) {
     output /=2;
   }

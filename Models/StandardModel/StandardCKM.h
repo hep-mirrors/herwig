@@ -197,7 +197,7 @@ struct BaseClassTrait<Herwig::StandardCKM,1> {
 template <>
 struct ClassTraits<Herwig::StandardCKM>: public ClassTraitsBase<Herwig::StandardCKM> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::StandardCKM"; }
+  static string className() { return "Herwig::StandardCKM"; }
 };
 
 /** @endcond */

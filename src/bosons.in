@@ -1,0 +1,22 @@
+#
+#  Taken from ThePEGParticles.in
+# 
+create ThePEG::ConstituentParticleData /Defaults/Particles/g 
+setup /Defaults/Particles/g 21 g 0.0 0.0 0.0 0.0 0 8 3 1 0.750 
+defaultparticle /Defaults/Particles/g 
+create ThePEG::ParticleData /Defaults/Particles/gamma 
+setup /Defaults/Particles/gamma 22 gamma 0.0 0.0 0.0 0.0 0 0 3 1
+defaultparticle /Defaults/Particles/gamma 
+create ThePEG::ParticleData /Defaults/Particles/Z0 
+setup /Defaults/Particles/Z0 23 Z0 91.1870 2.480090 24.80090 0.0 0 0 3 0
+defaultparticle /Defaults/Particles/Z0 
+create ThePEG::ParticleData /Defaults/Particles/W+ 
+setup /Defaults/Particles/W+ 24 W+ 80.330 2.070020 20.700150 0.0 3 0 3 0
+defaultparticle /Defaults/Particles/W+ 
+create ThePEG::ParticleData /Defaults/Particles/W- 
+setup /Defaults/Particles/W- -24 W- 80.330 2.070020 20.700150 0.0 -3 0 3 0
+defaultparticle /Defaults/Particles/W- 
+makeanti /Defaults/Particles/W+ /Defaults/Particles/W- 
+create ThePEG::ParticleData /Defaults/Particles/h0 
+setup /Defaults/Particles/h0 25 h0 115.0 0.003196 0.3196 0.0 0 0 1 0
+defaultparticle /Defaults/Particles/h0 

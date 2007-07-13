@@ -9,21 +9,21 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "Herwig++/Utilities/Kinematics.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::SpinorWaveFunction;
-using Herwig::Helicity::SpinorBarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::SpinorWaveFunction;
+using ThePEG::Helicity::SpinorBarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
  
 VFFDecayer::~VFFDecayer() {}
 
@@ -77,7 +77,7 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
     }
   }
   ME(newme);
-  double output=(newme.contract(rhoin)).real()/scale;
+  double output=(newme.contract(rhoin)).real()/scale*UnitRemoval::E2;
   if(decay[0]->coloured()){
     output*=3.;
   }
@@ -85,7 +85,7 @@ double VFFDecayer::me2(bool vertex, const int , const Particle & inpart,
   return output;
 }
 
-double VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
+Energy VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
 				const PDPtr ferm) const {
   //Use analytic expression for partial width
   double mu1 = ferm->mass()/inpart->mass();
@@ -100,7 +100,7 @@ double VFFDecayer::partialWidth(const PDPtr inpart, const PDPtr anti,
   double matrixElement2 = (cl*cl+cr*cr)*((mu1*mu1 + mu2*mu2 )*(mu1*mu1 + mu2*mu2) + mu2*mu2 + mu1*mu1 + 2);
   matrixElement2 += -12.*cl*cr*mu1*mu2;
   matrixElement2 *= norm.real()/3.;
-  double output = matrixElement2*pcm/(8*Constants::pi);
+  Energy output = matrixElement2*pcm/(8*Constants::pi);
   if(ferm->coloured())
     output *= 3.;
   return output;

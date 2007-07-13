@@ -342,7 +342,7 @@ template <>
 struct ClassTraits<Herwig::StrongHeavyBaryonDecayer>
   : public ClassTraitsBase<Herwig::StrongHeavyBaryonDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::StrongHeavyBaryonDecayer"; }
+  static string className() { return "Herwig::StrongHeavyBaryonDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

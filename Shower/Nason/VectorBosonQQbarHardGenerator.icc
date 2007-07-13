@@ -8,10 +8,9 @@
 #include <fstream>
 #include <cstdlib>
 #include <cmath>
-#include "ThePEG/CLHEPWrap/Lorentz5Vector.h"
-#include "ThePEG/CLHEPWrap/LorentzRotation.h"
+#include "ThePEG/Vectors/Lorentz5Vector.h"
+#include "ThePEG/Vectors/LorentzRotation.h"
 
-using namespace std;
 using namespace ThePEG;
 
 namespace Herwig {

@@ -52,39 +52,36 @@ void SimpleLHCAnalysis::analyze(tEventPtr event, long, int, int) {
 	     (**iter).children().size()==2)
 	    {
 	      pz=getMomentum(*iter);
-	      Energy pt = pz.perp()/GeV;
-	      Energy mz = pz.mass()/GeV;
+	      double pt = pz.perp()/GeV;
+	      double mz = pz.mass()/GeV;
 	      if(mz>20.&&mz<80.) (_ptZ[1])+=(pt);
 	      else if (mz>80.&&mz<100.) (_ptZ[2])+=(pt);
 	      else if (mz>100.) (_ptZ[3])+=(pt);
 	      (_ptZ[0])+=(pt);
 	      (_mZ)+=(mz);
-	      double rap = 0.5*log((pz.e()+pz.z())/(pz.e()-pz.z()));
-	      (_rapZ)+=(rap);
+	      (_rapZ)+=pz.rapidity();
 	      (_phiZ)+=pz.phi();
 	    } else if ((**iter).id()==ParticleID::Wplus) {
 	      pz=getMomentum(*iter);
-	      Energy pt = pz.perp()/GeV;
-	      Energy mz = pz.mass()/GeV;
+	      double pt = pz.perp()/GeV;
+	      double mz = pz.mass()/GeV;
 	      if(mz>20.&&mz<80.) (_ptWp[1])+=(pt);
 	      else if (mz>80.&&mz<100.) (_ptWp[2])+=(pt);
 	      else if (mz>100.) (_ptWp[3])+=(pt);
 	      (_ptWp[0])+=(pt);
 	      (_mWp)+=(mz);
-	      double rap = 0.5*log((pz.e()+pz.z())/(pz.e()-pz.z()));
-	      (_rapWp)+=(rap);
+	      (_rapWp)+=pz.rapidity();
 	      (_phiWp)+=pz.phi();
 	    } else if ((**iter).id()==ParticleID::Wminus) {
 	      pz=getMomentum(*iter);
-	      Energy pt = pz.perp()/GeV;
-	      Energy mz = pz.mass()/GeV;
+	      double pt = pz.perp()/GeV;
+	      double mz = pz.mass()/GeV;
 	      if(mz>20.&&mz<80.) (_ptWm[1])+=(pt);
 	      else if (mz>80.&&mz<100.) (_ptWm[2])+=(pt);
 	      else if (mz>100.) (_ptWm[3])+=(pt);
 	      (_ptWm[0])+=(pt);
 	      (_mWm)+=(mz);
-	      double rap = 0.5*log((pz.e()+pz.z())/(pz.e()-pz.z()));
-	      (_rapWm)+=(rap);
+	      (_rapWm)+=pz.rapidity();
 	      (_phiWm)+=pz.phi();
 	    }
 	}

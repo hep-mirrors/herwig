@@ -6,14 +6,14 @@
 //
 
 #include "Herwig++/Decay/DecayIntegrator.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "SMTopDecayer.fh"
 
 namespace Herwig {
   using namespace ThePEG;
-  using namespace Herwig::Helicity;
+  using namespace ThePEG::Helicity;
   
 /**
  * \ingroup Decay
@@ -26,13 +26,10 @@ class SMTopDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   SMTopDecayer();
-  //@}
 
   /**
    * Return the matrix element squared for a given mode and phase-space channel.
@@ -62,8 +59,7 @@ public:
    * @param cc Is this mode the charge conjugate
    * @param dm The decay mode
    */
-  virtual int modeNumber(bool &,const DecayMode &) const {return -1;}
-
+  virtual int modeNumber(bool &, const DecayMode &) const {return -1;}
 
   /**
    * Perform a decay for a given DecayMode and a given Particle instance.
@@ -187,11 +183,11 @@ template <>
 struct ClassTraits<Herwig::SMTopDecayer>
   : public ClassTraitsBase<Herwig::SMTopDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SMTopDecayer"; }
+  static string className() { return "Herwig::SMTopDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SMTopDecayer class and every other class it uses
    *  (except the base class). */
-  static string library() { return "HwSMVertex.so HwPerturbativeDecay.so"; }
+  static string library() { return "HwPerturbativeDecay.so"; }
 };
 
 /** @endcond */

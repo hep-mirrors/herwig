@@ -19,11 +19,13 @@
 using namespace Herwig;
 
 void ForcedSplitting::persistentOutput(PersistentOStream & os) const {
-  os << _kinCutoff << _range << _qspac << _zbin << _ybin << _nbinmax << _alpha;
+  os << ounit(_kinCutoff,GeV) << _range << ounit(_qspac,GeV) 
+     << _zbin << _ybin << _nbinmax << _alpha;
 }
 
 void ForcedSplitting::persistentInput(PersistentIStream & is, int) {
-  is >> _kinCutoff >> _range >> _qspac >> _zbin >> _ybin >> _nbinmax >> _alpha;
+  is >> iunit(_kinCutoff,GeV) >> _range >> iunit(_qspac,GeV) 
+     >> _zbin >> _ybin >> _nbinmax >> _alpha;
 }
 
 ClassDescription<ForcedSplitting> ForcedSplitting::initForcedSplitting;
@@ -134,10 +136,10 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
     ptotal=prem[0]+prem[1];
     ptotal.rescaleMass();
     // boost momenta to this frame
-    if(ptotal.m()<0) throw Exception() << "Space-Like Remnant in " 
+    if(ptotal.m()<Energy()) throw Exception() << "Space-Like Remnant in " 
 				       << "ForcedSplitting::handle() " 
 				       << Exception::eventerror;
-    Hep3Vector boostv(-ptotal.boostVector());
+    Boost boostv(-ptotal.boostVector());
     ptotal.boost(boostv);
     for(unsigned int ix=0;ix<2;++ix) {
       prem[ix].boost(boostv);
@@ -153,8 +155,8 @@ tPVector ForcedSplitting::split(const tPVector & tagged, tStepPtr pstep) {
     // boost the decay products
     Lorentz5Momentum ptemp; 
     for(unsigned int ix=0;ix<2;++ix) { 
-      Hep3Vector btorest(-pnew[ix].boostVector()); 
-      Hep3Vector bfmrest( prem[ix].boostVector()); 
+      Boost btorest(-pnew[ix].boostVector()); 
+      Boost bfmrest( prem[ix].boostVector()); 
       for(unsigned int iy=0;iy<rem[ix]->children().size();++iy) { 
 	ptemp=rem[ix]->children()[iy]->momentum(); 
 	ptemp.boost(btorest); 
@@ -210,7 +212,7 @@ void ForcedSplitting::split(const tPPtr rem,const tPPtr part,
   if(quarks[2] == 0) maxIdx = 2; // we have a meson
   
   // initial x and scale
-  Energy oldx = xin; 
+  double oldx = xin; 
   Energy oldQ=_qspac;
 
   // Look first at sea quarks, these must go to a gluon, we then handle
@@ -385,7 +387,7 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
     double zr=wr/ez;
     double wz=1./wr;
     double zz=wz*ez;
-    double az=wz*zz*_alpha->value(max(wz*q,_kinCutoff));
+    double az=wz*zz*_alpha->value(sqr(max(wz*q,_kinCutoff)));
     // g -> q qbar
     if(iopt==1) {
       // calculate splitting function
@@ -411,15 +413,15 @@ Lorentz5Momentum ForcedSplitting::emit(const Lorentz5Momentum &par,
   if(iz==prob.size()) --iz;
   double ey=exp(ymin+dely*(float(iz+1)-UseRandom::rnd()));
   double z=ey/(1.+ey);
-  Energy pt2=sqr((1.-z)*q)- z*sqr(_kinCutoff);
+  Energy2 pt2=sqr((1.-z)*q)- z*sqr(_kinCutoff);
   Energy2 emittedm2 = sqr(parton->dataPtr()->constituentMass());
   // Now boost pcm and pf to z only frame
-  Lorentz5Momentum p       = Lorentz5Momentum(0.0,  par.vect());
-  Lorentz5Momentum n       = Lorentz5Momentum(0.0, -par.vect());
+  Lorentz5Momentum p       = Lorentz5Momentum(0.0*MeV,  par.vect());
+  Lorentz5Momentum n       = Lorentz5Momentum(0.0*MeV, -par.vect());
   // generate phi and compute pt of branching
-  double phi = 2.*pi*UseRandom::rnd();
+  double phi = Constants::twopi*UseRandom::rnd();
   Energy pt=sqrt(pt2);
-  Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), 0.0, 0.0);
+  Lorentz5Momentum qt   = LorentzMomentum(pt*cos(phi), pt*sin(phi), 0.0*MeV, 0.0*MeV);
   // compute alpha for previous particle
   Energy2 p_dot_n  = p*n;
   double lastalpha = pf*n/p_dot_n;

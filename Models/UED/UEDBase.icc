@@ -6,8 +6,9 @@
 
 namespace Herwig {
 
-inline UEDBase::UEDBase() : theRadCorr(true), theInvRadius(1000.*GeV), 
-			    theCutOff(10000.*GeV), theSpectrum("UEDSpectrum.spc"),
+inline UEDBase::UEDBase() : theRadCorr(true), theInvRadius(500.*GeV), 
+			    theLambdaR(20.), theMbarH(), theSinThetaOne(0.),
+			    theSpectrum("UEDMassSpectrum.spc"), 
 			    theVeV(246.*GeV) {}
 
 inline IBPtr UEDBase::clone() const {
@@ -20,18 +21,6 @@ inline IBPtr UEDBase::fullclone() const {
 
 inline InvEnergy UEDBase::compactRadius() const {
   return 1./theInvRadius;
-}
-
-inline Energy UEDBase::cutOffScale() const {
-  return theCutOff;
-}
-
-inline double UEDBase::sinThetaN(const unsigned int n) const {
-  WAMap::const_iterator pos = theMixingAngles.find(n);
-  if(pos != theMixingAngles.end())
-    return pos->second;
-  else
-    return 0.0;
 }
 
 inline void UEDBase::addMassElement(IDMassPair elem) {
@@ -48,5 +37,8 @@ inline bool UEDBase::lowerMass(const pair<long, Energy> & p1,
   return p1.second < p2.second;
 }
 
+inline double UEDBase::sinThetaOne() const {
+  return theSinThetaOne;
+}
 
 }

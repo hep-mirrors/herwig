@@ -15,7 +15,6 @@
 namespace Herwig {
 
 using namespace ThePEG;
-
 /**\ingroup Hadronization
  *  \class HadronSelector
  *  \brief This class selects the hadron flavours of a cluster decay.
@@ -297,9 +296,9 @@ protected:
    * @param angleMix The mixing angle in degrees (not radians)
    * @param order is 0 for no mixing, 1 for the first resonance of a pair,
    *                 2 for the second one.
-   * The mixing is defined so that for example with $\eta-\eta'$ mixing where
-   * the mixing angle is $\theta=-23^0$ with $\eta$ as the first particle
-   * and $\eta'$ the second one.
+   * The mixing is defined so that for example with \f$\eta-\eta'\f$ mixing where
+   * the mixing angle is \f$\theta=-23^0$ with $\eta\f$ as the first particle
+   * and \f$\eta'\f$ the second one.
    * The convention used is 
    * \f[\eta  = \cos\theta|\eta_{\rm octet  }\rangle
    *           -\sin\theta|\eta_{\rm singlet}\rangle\f]
@@ -600,7 +599,7 @@ public:
    * @param swtin  The singlet/decuplet/orbital factor
    * @param massin The mass of the hadron
    */
-  HadronInfo(long idin=0,tPDPtr datain=tPDPtr(),double swtin=1.,Energy massin=0.);
+  HadronInfo(long idin=0,tPDPtr datain=tPDPtr(),double swtin=1.,Energy massin=0.*MeV);
 
   /**
    *  Comparision operator on mass
@@ -649,7 +648,7 @@ public:
    */
   friend PersistentOStream & operator<< (PersistentOStream & os, 
 					 const HadronInfo & hi ) {
-    os << hi.id << hi.ptrData << hi.swtef << hi.wt << hi.overallWeight << hi.mass;
+    os << hi.id << hi.ptrData << hi.swtef << hi.wt << hi.overallWeight << ounit(hi.mass,GeV);
     return os;
   }
   
@@ -658,7 +657,7 @@ public:
    */
   friend PersistentIStream & operator>> (PersistentIStream & is, 
 					 HadronInfo & hi ) {
-    is >> hi.id >> hi.ptrData >> hi.swtef >> hi.wt >> hi.overallWeight >> hi.mass;
+    is >> hi.id >> hi.ptrData >> hi.swtef >> hi.wt >> hi.overallWeight >> iunit(hi.mass,GeV);
     return is;
   }
 };
@@ -682,7 +681,7 @@ public:
    * @param inhad2 ParticleData for the second hadron produced.
    * @param inwgt  The weight for the hadron pair 
    */
-  inline Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2, double inwgt);
+  inline Kupco(long inidQ,tcPDPtr inhad1,tcPDPtr inhad2, Energy inwgt);
   
   /**
    * id of the quark drawn from the vacuum.

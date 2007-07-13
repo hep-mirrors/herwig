@@ -367,7 +367,7 @@ private:
   /**
    * The couplings for the different modes.
    */
-  mutable vector<double> _prefactor;
+  mutable vector<InvEnergy> _prefactor;
 };
 
 }
@@ -398,7 +398,7 @@ template <>
     /** Typedef of the base class of SU3BaryonOctetDecupletScalarDecayer. */
   : public ClassTraitsBase<Herwig::SU3BaryonOctetDecupletScalarDecayer> {
    /** Return the class name.*/
-  static string className() { return "Herwig++::SU3BaryonOctetDecupletScalarDecayer"; }
+  static string className() { return "Herwig::SU3BaryonOctetDecupletScalarDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

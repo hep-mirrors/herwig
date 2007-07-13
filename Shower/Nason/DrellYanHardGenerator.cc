@@ -83,7 +83,7 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
     incoming.push_back(cit->first->progenitor());
     _beams.push_back(cit->first->beam());
     _partons.push_back(cit->first->progenitor()->dataPtr());
-    if(cit->first->progenitor()->id()>0&&cit->first->progenitor()->momentum().z()<0)
+    if(cit->first->progenitor()->id()>0&&cit->first->progenitor()->momentum().z()<0*MeV)
       _quarkplus=false;
     particlesToShower.push_back(cit->first);
   }
@@ -96,8 +96,8 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
     boson=tree->outgoingLines().begin()->first->copy()->parents()[0];
   }
   // calculate the rapidity of the boson
-  _yb=0.5*log((boson->momentum().e()+boson->momentum().pz())/
-	      (boson->momentum().e()-boson->momentum().pz()));
+  _yb=0.5*log((boson->momentum().e()+boson->momentum().z())/
+	      (boson->momentum().e()-boson->momentum().z()));
   // take quark first
   _yb *= _quarkplus ? 1. : -1.;
   _mass=boson->mass();
@@ -134,7 +134,7 @@ NasonTreePtr DrellYanHardGenerator::generateHardest(ShowerTreePtr tree) {
     newparticles.push_back(new_ptr(ShowerParticle(_partons[0]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(_partons[1]      ,false)));
     newparticles.push_back(new_ptr(ShowerParticle(gluon            , true)));
-    iemit = pnew[0].z()/pnew[2].rapidity()>0 ? 0 : 1;
+    iemit = pnew[0].z()/pnew[2].rapidity()>0*MeV ? 0 : 1;
   }
   // q g    -> q V
   else if(emission_type==1) {
@@ -300,6 +300,7 @@ double DrellYanHardGenerator::getResult(int emis_type, Energy pt, double yj) {
   pdf[0]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],m2,x1);
   pdf[1]=_beams[1]->pdf()->xfx(_beams[1],_partons[1],m2,y1);
   //qqbar2Zg
+  using Constants::pi;
   if(emis_type==0) {
     pdf[2]=_beams[0]->pdf()->xfx(_beams[0],_partons[0],scale,x);
     pdf[3]=_beams[1]->pdf()->xfx(_beams[1],_partons[1],scale,y);
@@ -386,7 +387,7 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
   // hadron-hadron cmf
   Energy2 s=sqr(generator()->maximumCMEnergy());
   // transverse energy
-  Energy m2(sqr(_mass));
+  Energy2 m2(sqr(_mass));
   Energy et=sqrt(m2+sqr(_pt));
   // first calculate all the kinematic variables
   // longitudinal real correction fractions
@@ -407,41 +408,43 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
     if(UseRandom::rnd()<sqr(m2-th)/(sqr(m2-th)+sqr(m2-sh))) iemit=2;
   }
   // reconstruct the momenta in the rest frame of the gauge boson
-  Lorentz5Momentum pb(0.,0.,0.,_mass,_mass),pspect,pg,pemit;
+  Lorentz5Momentum pb(0.*MeV,0.*MeV,0.*MeV,_mass,_mass),pspect,pg,pemit;
   double cos3;
   if(emis_type==0) {
-    pg=Lorentz5Momentum(0.,0.,0.,0.5*(sh-m2)/_mass,0.);
+    pg=Lorentz5Momentum(0.*MeV,0.*MeV,0.*MeV,0.5*(sh-m2)/_mass,0.*MeV);
     Energy2 tp(th),up(uh);
     double zsign(-1.);
     if(iemit==2) {
       swap(tp,up);
       zsign=1;
     }
-    pspect = Lorentz5Momentum(0.,0.,zsign*0.5*(m2-tp)/_mass,0.5*(m2-tp)/_mass,0.);
+    pspect = Lorentz5Momentum(0.*MeV,0.*MeV
+			      ,zsign*0.5*(m2-tp)/_mass,0.5*(m2-tp)/_mass,
+			      0.*MeV);
     Energy eemit=0.5*(m2-up)/_mass;
-    cos3 = 0.5/pspect.pz()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
+    cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
   }
   else {
-    pg=Lorentz5Momentum(0.,0.,0.,0.5*(m2-uh)/_mass,0.);
+    pg=Lorentz5Momentum(0.*MeV,0.*MeV,0.*MeV,0.5*(m2-uh)/_mass,0.*MeV);
     double zsign(1.);
     if(iemit==1) {
       if(emis_type==1) zsign=-1.;
-      pspect=Lorentz5Momentum(0.,0.,0.5*zsign*(sh-m2)/_mass,0.5*(sh-m2)/_mass);
+      pspect=Lorentz5Momentum(0.*MeV,0.*MeV,0.5*zsign*(sh-m2)/_mass,0.5*(sh-m2)/_mass);
       Energy eemit=0.5*(m2-th)/_mass;
-      cos3 = 0.5/pspect.pz()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
+      cos3 = 0.5/pspect.z()/pg.e()*(sqr(pspect.e())+sqr(pg.e())-sqr(eemit));
     }
     else {
       if(emis_type==2) zsign=-1.;
-      pspect=Lorentz5Momentum(0.,0.,0.5*zsign*(m2-th)/_mass,0.5*(m2-th)/_mass);
+      pspect=Lorentz5Momentum(0.*MeV,0.*MeV,0.5*zsign*(m2-th)/_mass,0.5*(m2-th)/_mass);
       Energy eemit=0.5*(sh-m2)/_mass;
-      cos3 = 0.5/pspect.pz()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
+      cos3 = 0.5/pspect.z()/pg.e()*(-sqr(pspect.e())-sqr(pg.e())+sqr(eemit));
     }
   }
   // rotate the gluon
-  double sin3(sqrt(1.-sqr(cos3))),phi(2.*pi*UseRandom::rnd());
-  pg.setPx(pg.e()*sin3*cos(phi));
-  pg.setPy(pg.e()*sin3*sin(phi));
-  pg.setPz(pg.e()*cos3);
+  double sin3(sqrt(1.-sqr(cos3))),phi(Constants::twopi*UseRandom::rnd());
+  pg.setX(pg.e()*sin3*cos(phi));
+  pg.setY(pg.e()*sin3*sin(phi));
+  pg.setZ(pg.e()*cos3);
   if(emis_type==0) {
     pemit=pb+pg-pspect;
   }
@@ -449,9 +452,9 @@ bool DrellYanHardGenerator::getEvent(vector<Lorentz5Momentum> & pnew,
     if(iemit==1) pemit=pb+pspect-pg;
     else         pemit=pspect+pg-pb;
   }
-  pemit .setMass(0.);
-  pg    .setMass(0.);
-  pspect.setMass(0.);
+  pemit .setMass(0.*MeV);
+  pg    .setMass(0.*MeV);
+  pspect.setMass(0.*MeV);
   // find the new CMF
   Lorentz5Momentum pp[2];
   if(emis_type==0) {

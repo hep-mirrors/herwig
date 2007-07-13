@@ -7,7 +7,7 @@
 
 #include "GeneralTwoBodyDecayer.h"
 #include "ThePEG/Repository/EventGenerator.h"
-#include "Herwig++/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Scalar/GeneralSVVVertex.h"
 #include "SVVLoopDecayer.fh"
 
 namespace Herwig {
@@ -59,7 +59,7 @@ public:
    * @param outa Pointer to incoming particle data object
    * @param outb Pointer to incoming particle data object
    */
-  virtual double partialWidth(const PDPtr inpart,
+  virtual Energy partialWidth(const PDPtr inpart,
 			      const PDPtr outa,
 			      const PDPtr outb) const;
   //@}
@@ -154,7 +154,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of SVVLoopDecayer. */
@@ -170,14 +170,14 @@ template <>
 struct ClassTraits<Herwig::SVVLoopDecayer>
   : public ClassTraitsBase<Herwig::SVVLoopDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SVVLoopDecayer"; }
+  static string className() { return "Herwig::SVVLoopDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the SVVLoopDecayer class and every other class it uses
    *  (except the base class). */
   static string library() { return "libHwGeneralDecay.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

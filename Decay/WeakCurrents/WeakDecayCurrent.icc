@@ -7,27 +7,30 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline WeakDecayCurrent::WeakDecayCurrent() :_numbermodes(0) {}
+inline WeakDecayCurrent::WeakDecayCurrent() : _numbermodes(0) {}
 
-inline WeakDecayCurrent::WeakDecayCurrent(const WeakDecayCurrent & x)
-  : Interfaced(x), _quark(x._quark), _antiquark(x._antiquark), 
-    _numbermodes(x._numbermodes) 
-{}
+inline unsigned int WeakDecayCurrent::numberOfModes() const {
+  return _quark.size();
+}
 
-inline unsigned int WeakDecayCurrent::numberOfModes() const 
-{return _quark.size();}
-
-inline void WeakDecayCurrent::addDecayMode(int iq,int ia)
-{
+inline void WeakDecayCurrent::addDecayMode(int iq,int ia) {
   _quark.push_back(iq);
   _antiquark.push_back(ia);
 }
 
-inline void WeakDecayCurrent::decayModeInfo(unsigned int imode, int& iq, int& ia) const
-{
-  if(imode<_quark.size()){iq=_quark[imode];ia=_antiquark[imode];}
-  else{iq=0;ia=0;}
+inline void WeakDecayCurrent::decayModeInfo(unsigned int imode, int& iq, int& ia) const {
+  if(imode<_quark.size()) {
+    iq=_quark[imode];
+    ia=_antiquark[imode];
+  }
+  else {
+    iq=0;
+    ia=0;
+  }
 }
-inline void WeakDecayCurrent::setInitialModes(unsigned int nmodes)
-{_numbermodes=nmodes;}
+
+inline void WeakDecayCurrent::setInitialModes(unsigned int nmodes) {
+  _numbermodes=nmodes;
+}
+
 }

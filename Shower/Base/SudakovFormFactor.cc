@@ -16,12 +16,12 @@ using namespace Herwig;
 
 void SudakovFormFactor::persistentOutput(PersistentOStream & os) const {
   os << _splittingFn << _alpha << _pdfmax << _particles
-     << _a << _b << _c << _kinCutoffScale;
+     << _a << _b << ounit(_c,GeV) << ounit(_kinCutoffScale,GeV);
 }
 
 void SudakovFormFactor::persistentInput(PersistentIStream & is, int) {
   is >> _splittingFn >> _alpha >> _pdfmax >> _particles 
-     >> _a >> _b >> _c >> _kinCutoffScale;
+     >> _a >> _b >> iunit(_c,GeV) >> iunit(_kinCutoffScale,GeV);
 }
 
 AbstractClassDescription<SudakovFormFactor> SudakovFormFactor::initSudakovFormFactor;

@@ -134,7 +134,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaDecayer>
   : public ClassTraitsBase<Herwig::BtoSGammaDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaDecayer"; }
+  static string className() { return "Herwig::BtoSGammaDecayer"; }
   /** Return the name of the shared library be loaded to get
    *  access to the BtoSGammaDecayer class and every other class it uses
    *  (except the base class). */

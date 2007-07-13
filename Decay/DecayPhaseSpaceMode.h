@@ -9,7 +9,7 @@
 #include "DecayPhaseSpaceChannel.h"
 #include "Herwig++/PDT/GenericWidthGenerator.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
-#include <Herwig++/Helicity/Correlations/DecayVertex.h>
+#include <Herwig++/Decay/DecayVertex.h>
 #include "DecayIntegrator.h"
 
 namespace Herwig {
@@ -342,7 +342,7 @@ private:
   /**
    * the maximum weight for the decay
    */
-  mutable double _MaxWeight;
+  mutable double _maxweight;
 
   /**
    * Number of iterations for the initialization.
@@ -412,7 +412,7 @@ template <>
  struct ClassTraits<Herwig::DecayPhaseSpaceMode>
   : public ClassTraitsBase<Herwig::DecayPhaseSpaceMode> {
    /** Return the class name. */
-   static string className() { return "Herwig++::DecayPhaseSpaceMode"; }
+   static string className() { return "Herwig::DecayPhaseSpaceMode"; }
 };
 
 /** @endcond */

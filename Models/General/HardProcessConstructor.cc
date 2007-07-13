@@ -51,6 +51,8 @@ void HardProcessConstructor::doinit() throw(InitException) {
   Interfaced::doinit();
   theNout = theOutgoing.size();
   PDVector::size_type ninc = theIncoming.size();
+  // exit if nothing to do
+  if(theNout==0||ninc==0) return;
   //create vector of initial-state pairs
   for(PDVector::size_type i = 0; i < ninc; ++i) {
     for(PDVector::size_type j = 0; j < ninc; ++j) {
@@ -304,6 +306,7 @@ void HardProcessConstructor::makeFourPointDiagrams(long parta, long partb,
       nhp.outgoing = make_pair(partc, (*iter)->id());
       nhp.vertices = make_pair(vert, vert);
       nhp.channelType = HPDiagram::fourPoint;
+      fixFSOrder(nhp);
       if( !duplicate(nhp, theProcesses) ) {
 	assignToCF(nhp);
 	theProcesses.push_back(nhp);
@@ -431,15 +434,39 @@ HardProcessConstructor::search(VBPtr vertex, long part1, direction d1,
 }
 
 void HardProcessConstructor::fixFSOrder(HPDiagram & diag) {
+  tcPDPtr psa = getParticleData(diag.incoming.first);
+  tcPDPtr psb = getParticleData(diag.incoming.second);
   tcPDPtr psc = getParticleData(diag.outgoing.first);
   tcPDPtr psd = getParticleData(diag.outgoing.second);
 
+  //fix a spin order
   if( psc->iSpin() < psd->iSpin() ) {
     swap(diag.outgoing.first, diag.outgoing.second);
     if(diag.channelType == HPDiagram::tChannel) {
       diag.ordered.second = !diag.ordered.second;
     }
+    return;
   }
+  
+  //for diagrams with different flavour incoming states
+  if( psa->iSpin() == PDT::Spin1Half && psb->iSpin() == PDT::Spin1Half &&
+      !sameQuarkFlavour(psa->id(), psb->id()) &&
+      sameQuarkFlavour(psa->id(), psd->id()) ) {
+    swap(diag.outgoing.first, diag.outgoing.second);
+    if(diag.channelType == HPDiagram::tChannel) {
+      diag.ordered.second = !diag.ordered.second;
+    }
+    return;
+  }
+  
+  if(  psc->id() < 0 && psd->id() > 0 ) {
+    swap(diag.outgoing.first, diag.outgoing.second);
+    if(diag.channelType == HPDiagram::tChannel) {
+      diag.ordered.second = !diag.ordered.second;
+    }
+    return;
+  }
+
 }
 
 void HardProcessConstructor::assignToCF(HPDiagram & diag) {
@@ -459,14 +486,21 @@ void HardProcessConstructor::assignToCF(HPDiagram & diag) {
 }
 
 void HardProcessConstructor::tChannelCF(HPDiagram & diag) {
-  PDT::Colour offshell = diag.intermediate->iColour();
   vector<CFPair> cfv(1, make_pair(1, 1.));
-  
-  if(offshell == PDT::Colour0) {
-    if( !flavour(diag.incoming.first, diag.incoming.second) )
-      cfv[0].first = 2;
-    else
-      cfv[0].first = 3;
+  if(diag.intermediate->iColour() == PDT::Colour0) {
+    long id1 = abs(diag.incoming.first);
+    long id2 = abs(diag.incoming.second);
+    long id3 = abs(diag.outgoing.first);
+    long id4 = abs(diag.outgoing.second);
+    if( getParticleData(id1)->iColour() == PDT::Colour3 && 
+	getParticleData(id2)->iColour() == PDT::Colour3 &&
+	getParticleData(id3)->iColour() == PDT::Colour3 && 
+	getParticleData(id4)->iColour() == PDT::Colour3 ) {
+      if( !sameQuarkFlavour(diag.incoming.first, diag.incoming.second) )
+	cfv[0].first = 2;
+      else
+	cfv[0].first = 3;
+    }
   }
   diag.colourFlow = cfv;
 }
@@ -476,16 +510,25 @@ void HardProcessConstructor::uChannelCF(HPDiagram & diag) {
   PDT::Colour outa = getParticleData(diag.outgoing.first)->iColour();
   PDT::Colour outb = getParticleData(diag.outgoing.second)->iColour();
   vector<CFPair> cfv(1, make_pair(2, 1.));
-  
   if(offshell == PDT::Colour8 && (outa != outb) ) {
     cfv[0].first = 1;
     cfv.push_back(make_pair(2, -1.));
   }
-  else if(offshell == PDT::Colour0) {
-    if( flavour(diag.incoming.first, diag.incoming.second) )
-      cfv[0].first = 4;
-    else
-      cfv[0].first = 3;
+  else {
+    long id1 = abs(diag.incoming.first);
+    long id2 = abs(diag.incoming.second);
+    if( getParticleData(id1)->iColour() == PDT::Colour3 && 
+	getParticleData(id2)->iColour() == PDT::Colour3 &&
+	outa == PDT::Colour3 && outb == PDT::Colour3 ) {
+      if( offshell == PDT::Colour0 ) {
+	if( sameQuarkFlavour(id1, id2) ) 
+	  cfv[0].first = 4;
+	else
+	  cfv[0].first = 3;
+      }
+    }
+    if( outa == PDT::Colour0 || outb == PDT::Colour0 )
+      cfv[0].first = 1;
   }
   diag.colourFlow = cfv;
 }
@@ -516,7 +559,7 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
       cfv[0].second = -prefact;
       cfv.push_back(make_pair(2, prefact));
     }
-    else if( !flavour(diag.incoming.first, diag.outgoing.first) )
+    else if( !sameQuarkFlavour(diag.incoming.first, diag.outgoing.first) )
       cfv[0] = make_pair(1, 1);
     else
       cfv[0] = make_pair(2, 1);
@@ -526,8 +569,8 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	outa == PDT::Colour0 || outb == PDT::Colour0 )
       cfv[0] = make_pair(1, 1);
     else {
-      if( flavour(diag.incoming.first, diag.incoming.second) ) {
-	if( flavour(diag.incoming.first, diag.outgoing.first) )
+      if( sameQuarkFlavour(diag.incoming.first, diag.incoming.second) ) {
+	if( sameQuarkFlavour(diag.incoming.first, diag.outgoing.first) )
 	  cfv[0] = make_pair(4, 1);
 	else
 	  cfv[0] = make_pair(2, 1);
@@ -536,8 +579,12 @@ void HardProcessConstructor::sChannelCF(HPDiagram & diag) {
 	cfv[0] = make_pair(3, 1);
     }
   }
-  else 
-    cfv[0] = make_pair(2, 1);  
+  else {
+    if(outa == PDT::Colour0)
+      cfv[0] = make_pair(1, 1);
+    else
+      cfv[0] = make_pair(2, 1);
+  }
   
   diag.colourFlow = cfv; 
 }
@@ -571,6 +618,7 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
     }
   }
   cout << "---------------------------\n";
+  cout << flush;
   tcPDVector extpart(4);
   extpart[0] = getParticleData(process[0].incoming.first);
   extpart[1] = getParticleData(process[0].incoming.second);
@@ -591,10 +639,12 @@ HardProcessConstructor::createMatrixElement(const HPDVector & process) const {
   else 
     throw HardProcessConstructorError() 
       << "createMatrixElement - No matrix element object could be created for "
-      << "the process " << extpart[0]->PDGName() << "," 
-      << extpart[1]->PDGName() << "->" << extpart[2]->PDGName() 
-      << "," << extpart[3]->PDGName() << ".  No class for this spin-structure "
-      << "exists! \n"
+      << "the process " 
+      << extpart[0]->PDGName() << " " << extpart[0]->iSpin() << "," 
+      << extpart[1]->PDGName() << " " << extpart[1]->iSpin() << "->" 
+      << extpart[2]->PDGName() << " " << extpart[2]->iSpin() << "," 
+      << extpart[3]->PDGName() << " " << extpart[3]->iSpin() 
+      << ".  No class for this spin-structure exists! \n"
       << Exception::warning;
 }
 
@@ -624,8 +674,8 @@ getColourFactors(const tcPDVector & extpart, unsigned int & ncf) const {
       return the33bto88;
   }
   else {
-    if( flavour(extpart[0]->id(), extpart[1]->id()) &&
-	flavour(extpart[0]->id(), extpart[2]->id()) ) {
+    if( sameQuarkFlavour(extpart[0]->id(), extpart[1]->id()) &&
+	sameQuarkFlavour(extpart[0]->id(), extpart[2]->id()) ) {
       if(theAllDiagrams) ncf = 4;
       else ncf = 2;
       return the33bto33b;
@@ -655,7 +705,7 @@ bool HardProcessConstructor::duplicate(const HPDiagram & diag,
 
 string HardProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart, 
 					   string & objname) const {
- string classname("/Herwig++/ME");
+ string classname("Herwig::ME");
   for(vector<tcPDPtr>::size_type ix = 0; ix < extpart.size(); ++ix) {
     if(ix == 2) classname += "2";
     if(extpart[ix]->iSpin() == PDT::Spin0) classname += "s";
@@ -673,7 +723,10 @@ string HardProcessConstructor::MEClassname(const vector<tcPDPtr> & extpart,
   return classname;  
 }
 
-bool HardProcessConstructor::flavour(long id1, long id2) const {
+bool HardProcessConstructor::sameQuarkFlavour(long id1, long id2) const {
+  //if ids are not quarks or quark partners return false
+  if( getParticleData(abs(id1))->iColour() != PDT::Colour3 && 
+      getParticleData(abs(id2))->iColour() != PDT::Colour3 ) return false;
   long diff = abs(abs(id2) - abs(id1));
   if(diff == 0 || diff % 10 == 0) return true;
   return false;

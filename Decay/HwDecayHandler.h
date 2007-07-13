@@ -137,6 +137,11 @@ private:
    *  Number of tries to regenerate a partonic decay to sucessfully hadronize it
    */
   unsigned int _hadtry;
+
+  /**
+   *  Option for adding particles in a new Step
+   */
+  bool _newstep;
 };
 }
 
@@ -161,7 +166,7 @@ struct BaseClassTrait<Herwig::HwDecayHandler,1> {
 template <>
 struct ClassTraits<Herwig::HwDecayHandler>: public ClassTraitsBase<Herwig::HwDecayHandler> {
   /** Return the class name. */
-  static string className() { return "Herwig++::HwDecayHandler"; }
+  static string className() { return "Herwig::HwDecayHandler"; }
 };
 
 /** @endcond */

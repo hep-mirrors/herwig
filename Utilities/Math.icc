@@ -3,6 +3,17 @@
 namespace Herwig {
 
 namespace Math {
+double angleZeroTo2Pi(double angle) {
+  double ret = fmod(angle, 2 * M_PI);
+  if (ret < 0) ret += 2 * M_PI;
+  return ret;
+}
+
+double angleMinusPiToPi(double angle) {
+  double ret = angleZeroTo2Pi(angle);
+  if (ret > M_PI) ret -= 2 * M_PI;
+  return ret;
+}
 
 }
 }

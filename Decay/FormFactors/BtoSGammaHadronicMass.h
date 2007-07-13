@@ -119,8 +119,8 @@ protected:
    * @param norm The normalisation, \f$N\f$.
    * @param lambda1 Scale related to kinetic energy of b quark, \f$\lambda_1\f$.
    */
-  inline double exponentialFermiFunction(Energy scale,Energy lambda,
-					 double a,double norm,Energy2 lambda1 );
+  inline InvEnergy exponentialFermiFunction(Energy scale,Energy lambda,
+					    double a,InvEnergy norm,Energy2 lambda1 );
   //@}
 
 
@@ -222,7 +222,7 @@ template <>
 struct ClassTraits<Herwig::BtoSGammaHadronicMass>
   : public ClassTraitsBase<Herwig::BtoSGammaHadronicMass> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::BtoSGammaHadronicMass"; }
+  static string className() { return "Herwig::BtoSGammaHadronicMass"; }
 };
 
 /** @endcond */

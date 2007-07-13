@@ -104,12 +104,12 @@ private:
    * Perform a one body decay, used for \f$K^0,\bar{K}^0\to K_{L,S}\f$.
    * Two body decay is handled in static class Kinematics
    */
-  static void oneBodyDecay(Lorentz5Momentum, Lorentz5Momentum &);
+  static void oneBodyDecay(const Lorentz5Momentum &, Lorentz5Momentum &);
 
   /**
    * Weighting of phase space for V-A matrix elements
    */
-  static double VAWt(double*);
+  static double VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3);
 
   /**
    * Take an array of momenta and set the momentum member of the particles.
@@ -117,8 +117,8 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  void setParticleMomentum(ParticleVector & out, cPDVector particles, 
-			   vector<Lorentz5Momentum> moms) const;
+  void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
+			   const vector<Lorentz5Momentum> & moms) const;
 
   /**
    *  Describe a concrete class with persistant data.
@@ -166,7 +166,7 @@ struct BaseClassTrait<Herwig::Hw64Decayer,1> {
 template <>
 struct ClassTraits<Herwig::Hw64Decayer>: public ClassTraitsBase<Herwig::Hw64Decayer> {
   /** Return the class name. */
-  static string className() { return "Herwig++::Hw64Decayer"; }
+  static string className() { return "Herwig::Hw64Decayer"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).

@@ -58,10 +58,9 @@ inline Energy BtoSGammaHadronicMass::minMass() const {return _minMass;}
 
 inline Energy BtoSGammaHadronicMass::maxMass() const {return _maxMass;}
 
-inline double BtoSGammaHadronicMass::exponentialFermiFunction(Energy scale,Energy lambda,
-							      double a,double norm,
-							      Energy2 lambda1)
-{
+inline InvEnergy BtoSGammaHadronicMass::
+exponentialFermiFunction(Energy scale,Energy lambda,
+			 double a,InvEnergy norm,Energy2 lambda1) {
   double x(scale/lambda);
   return norm*pow(1.-x,a)*exp(-3.*lambda*lambda/lambda1*x);
 }

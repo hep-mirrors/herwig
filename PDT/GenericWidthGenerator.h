@@ -17,14 +17,20 @@
 namespace Herwig {
 using namespace ThePEG;
 
+/**
+ * Typedef to define a DecayMoap
+ */
+typedef Selector<tDMPtr> DecayMap;
+
+
 /** \ingroup PDT
  *
  * The <code>GenericWidthGenerator</code> class is designed to automatically
  * calculate the running width for a given particle using information from
  * the decayModes and the Decayers to construct the running width.
  *
- *  It also gives us the option of selecting the decay modes for a particle
- *  based on the mass.
+ * It also gives us the option of selecting the decay modes for a particle
+ * based on the mass.
  *
  * @see WidthGenerator
  * @see DecayIntegrator
@@ -33,11 +39,6 @@ using namespace ThePEG;
 class GenericWidthGenerator: public WidthGenerator {
 
 public:
-
-  /**
-   * Typedef to define a DecayMoap
-   */
-  typedef Selector<tDMPtr> DecayMap;
 
   /**
    * A friend class so the off-shell matrix elements can be integrated.
@@ -79,7 +80,7 @@ public:
    * @param part The particle data pointer of the particle.
    * @return True if this class can handle the particle and false otherwise
    */
-  virtual bool accept(const ParticleData & part) const;
+  inline virtual bool accept(const ParticleData & part) const;
 
   /** @name Members to calculate the width and decay modes. */
   //@{
@@ -96,7 +97,7 @@ public:
    * @param part The particle data pointer of the particle.
    * @return The decay map
    */
-  virtual DecayMap rate(const ParticleData & part) const;
+  inline virtual DecayMap rate(const ParticleData & part) const;
 
   /**
    * Return a decay map for a given particle instance. This allows us to
@@ -182,6 +183,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Finalize this object. Called in the run phase just after a
+   * run has ended. Used eg. to write out statistics.
+   */
+  virtual void dofinish();
   //@}
 
   /**
@@ -236,6 +243,11 @@ private:
    */
   vector<DMPtr> _decaymodes;
 
+  /**
+   *  The tags for the DecayMode s
+   */
+  vector<string> _decaytags;
+  
   /**
    *  The minimum mass of the decaying particle for which this decay mode is possible
    */
@@ -313,7 +325,7 @@ private:
   /**
    * intepolators for the running width
    */
-  vector<InterpolatorPtr> _interpolators;
+  vector<Interpolator<Energy,Energy>::Ptr> _interpolators;
 
   /**
    * minimum branching ratio for the inclusion in the total running width
@@ -348,7 +360,7 @@ template <>
  struct ClassTraits<Herwig::GenericWidthGenerator>
   : public ClassTraitsBase<Herwig::GenericWidthGenerator> {
    /** Return the class name. */
-   static string className() { return "Herwig++::GenericWidthGenerator"; }
+   static string className() { return "Herwig::GenericWidthGenerator"; }
 };
 
 /** @endcond */

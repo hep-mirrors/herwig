@@ -115,13 +115,20 @@ protected:
   /**
    * Find the final unstable time-like parent of a particle
    * @param parent The ultimate parent for the decaying particle
+   * @param isHard Whether nay particles in chain are from the hard process
+   * @param outgoing The outgoing particles from the hard process
    */
-  PPtr findParent(PPtr parent) const;
+  PPtr findParent(PPtr parent, bool & isHard, set<PPtr> outgoing) const;
 
   /**
    *  Make the remnant after the shower
    */
   void makeRemnants();
+
+  /**
+   *  Test for decay products
+   */
+  bool decayProduct(tPPtr) const;
 
 protected:
 
@@ -188,6 +195,11 @@ private:
    *  The ShowerTrees for which the initial shower 
    */
   vector<ShowerTreePtr> _done;
+
+  /**
+   *  Const pointer to the current step
+   */
+  tcStepPtr _current;
 };
 
 }
@@ -212,7 +224,7 @@ template <>
 struct ClassTraits<Herwig::ShowerHandler>
   : public ClassTraitsBase<Herwig::ShowerHandler> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::ShowerHandler"; }
+  static string className() { return "Herwig::ShowerHandler"; }
   /**
    * The name of a file containing the dynamic library where the class
    * ShowerHandler is implemented. It may also include several, space-separated,

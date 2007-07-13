@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the StandardModelFFWVertex class.
+//
+namespace Herwig {
+using namespace ThePEG;
+
+inline IBPtr SMFFWVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SMFFWVertex::fullclone() const {
+  return new_ptr(*this);
+}
+}

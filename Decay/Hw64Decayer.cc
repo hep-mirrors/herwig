@@ -59,7 +59,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    ParticleVector rval;
    unsigned int numProds(dm.products().size());
    // check that it is possible to kinematically perform the decay
-   Energy minmass(0.);
+   Energy minmass(0.*MeV);
    vector<Energy> minmasses(numProds);
    vector<tcGenericMassGeneratorPtr> massgen(numProds,tcGenericMassGeneratorPtr());
    tcMassGenPtr mtemp;
@@ -71,9 +71,9 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
        if(mtemp){massgen[ix]=dynamic_ptr_cast<tcGenericMassGeneratorPtr>(mtemp);}
      }
    // check not decaying a massless particle
-   if(p.mass() < 0.000001) {
+   if(p.mass() < 0.000001*MeV) {
      generator()->log() << "HwDecayer called on a particle with no mass " 
-			<< p.PDGName() << ", " << p.mass() << endl;
+			<< p.PDGName() << ", " << p.mass()/MeV << endl;
      throw Veto();
    }
    // throw a veto if not kinematically possible
@@ -84,7 +84,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
 	   		     << " for this particle instance as the minimum mass of "
 			     << "the decay products exceeds the mass of the particle"
 			     << endl;
-          generator()->log() << minmass << ' ' << p.mass() << endl;
+          generator()->log() << minmass/GeV << ' ' << p.mass()/GeV << endl;
        }
        throw Veto();
      }
@@ -101,7 +101,7 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
        do
 	 {
 	   unsigned int istart=UseRandom::irnd(numProds);
-	   outmass=0.;
+	   outmass=0.*MeV;
 	   for(unsigned int ix=istart;ix<numProds;++ix)
 	     {
 	       if(massgen[ix])
@@ -170,28 +170,31 @@ ParticleVector Hw64Decayer::decay(const DecayMode &dm, const Particle &p) const
    else if(numProds == 3) 
      {
        // Free Massless (V-A)*(V-A) ME
-       if(MECode == 100) 
-	 {Kinematics::threeBodyDecay(p.momentum(), products[0], products[1], 
-				     products[2], &VAWt);} 
+       if(MECode == 100) {
+	 Kinematics::threeBodyDecay(p.momentum(), products[0], products[1], 
+				     products[2], &VAWt);
+       } 
        // Bound Massless (V-A)*(V-A) ME
        else if(MECode == 101) 
 	 {
-	   double wtmx, wtmx2, xs, dot1, dot2;
-	   wtmx = ( (p.mass() - products[2][5])*(p.mass() + products[2][5])
-		    + (products[1][5] - products[0][5])*
-		    (products[1][5] + products[0][5]))/2.0;
+	   Energy2 wtmx, dot1, dot2;
+	   Energy4 wtmx2;
+	   double xs;
+	   wtmx = ( (p.mass() - products[2].mass())*(p.mass() + products[2].mass())
+		    + (products[1].mass() - products[0].mass())*
+		    (products[1].mass() + products[0].mass()))/2.0;
 	   wtmx2 = sqr(wtmx);
 	   
 	   // Find sum of masses of constituent particles 
 	   int IPDG = abs(p.id());
-	   double m1, m2, m3;
+	   Energy m1, m2, m3;
 	   if(IPDG >= 1000)
 	     m1 = generator()->getParticleData((IPDG/1000)%10)->mass();
 	   else
-	     m1 = 0.0;
+	     m1 = 0.0*MeV;
 	   m2 = generator()->getParticleData((IPDG/100)%10)->mass();
 	   m3 = generator()->getParticleData((IPDG/10)%10)->mass();
-	   xs = 1.0 - Math::absmax<double>(m1, Math::absmax<double>(m2, m3))/(m1+m2+m3);
+	   xs = 1.0 - Math::absmax<Energy>(m1, Math::absmax<Energy>(m2, m3))/(m1+m2+m3);
 	   
 	   // Do decay, repeat until meets condition
 	   do 
@@ -248,27 +251,31 @@ void Hw64Decayer::persistentInput(PersistentIStream &is, int)
  * This function takes the array of momentum generated and sets the momentum
  * to the particles.
  *****/
-void Hw64Decayer::setParticleMomentum(ParticleVector &out, cPDVector particles, 
-                                      vector<Lorentz5Momentum> moms) const 
+void Hw64Decayer::setParticleMomentum(ParticleVector &out, 
+				      const cPDVector & particles, 
+                                      const vector<Lorentz5Momentum> & moms) 
+const 
 {
    unsigned int numProds = particles.size();
-   for(unsigned int ix=0;ix<numProds;++ix)
-     {out.push_back(particles[ix]->produceParticle(moms[ix]));}
+   for(unsigned int ix=0;ix<numProds;++ix) {
+     out.push_back(particles[ix]->produceParticle(moms[ix]));
+   }
 }
 
-double Hw64Decayer::VAWt(double *temp) { 
+double Hw64Decayer::VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3) { 
   //double emsq, double a, double b, double c) const {
   // return (a-emsq)*(emsq-b)*c;
-  return (temp[1]-temp[0])*(temp[0]-temp[2])*temp[3];
+  return (t1-t0)*(t0-t2)*t3;
 }
 
 //double Hw64Decayer::PhaseSpaceWt() const {
 //   return 1.0;
 //}
 
-void Hw64Decayer::oneBodyDecay(Lorentz5Momentum p0, Lorentz5Momentum &p1)
+void Hw64Decayer::oneBodyDecay(const Lorentz5Momentum & p0, 
+			       Lorentz5Momentum & p1)
 {
-   p1 = static_cast<LorentzVector>(p0);
+   p1 = p0;
 }
 
 

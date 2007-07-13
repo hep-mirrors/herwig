@@ -15,7 +15,7 @@
 #include "Herwig++/Models/StandardModel/StandardModel.h"
 #include "ThePEG/Handlers/StandardXComb.h"
 #include "Herwig++/PDT/GenericMassGenerator.h"
-#include "Herwig++/Helicity/Correlations/HardVertex.h"
+#include "HardVertex.h"
 #include "ThePEG/Cuts/Cuts.h"
 
 using namespace Herwig;
@@ -190,7 +190,7 @@ bool MEPP2Higgs::generateKinematics(const double *) {
   Lorentz5Momentum pout=meMomenta()[0]+meMomenta()[1];
   pout.rescaleMass();
   meMomenta()[2].setMass(pout.mass());
-  meMomenta()[2].set(pout.x(),pout.y(),pout.z(),pout.t());
+  meMomenta()[2] = LorentzMomentum(pout.x(),pout.y(),pout.z(),pout.t());
   jacobian(1.0);
   // check passes all the cuts
   vector<LorentzMomentum> out(1,meMomenta()[2]);
@@ -202,16 +202,17 @@ bool MEPP2Higgs::generateKinematics(const double *) {
 CrossSection MEPP2Higgs::dSigHatDR() const {
   // compute the weight for the Breit-Wigner piece and final-state
   tcPDPtr h0=getParticleData(ParticleID::h0);
-  double wgt;
+  InvEnergy2 wgt;
   Energy  M(h0->mass()),G(h0->width());
   Energy2 M2(sqr(M)),GM(G*M);
   if(_massgen&&_lineshape) {
-    wgt =Constants::pi*_massgen->weight(sqrt(sHat()))/(sqr(sHat()-M2)+sqr(GM));
+    // DGRELL units?
+    wgt =Constants::pi*UnitRemoval::E2*_massgen->weight(sqrt(sHat()))/(sqr(sHat()-M2)+sqr(GM));
   }
   else {
     wgt = sHat()*G/M/(sqr(sHat()-M2)+sqr(sHat()*G/M));
   }
-  return me2()*jacobian()*wgt;                         
+  return me2()*jacobian()*wgt*sqr(hbarc);                         
 }
 
 double MEPP2Higgs::me2() const {
@@ -249,8 +250,8 @@ double MEPP2Higgs::me2() const {
   else
     throw Exception() << "Unknown subprocess in MEPP2Higgs::me2()" 
 		      << Exception::runerror;
-  // return the answer with factor to make dimensionless
-  return output/sHat();
+  // DGRELL return the answer with factor to make dimensionless
+  return UnitRemoval::E2*output/sHat();
 }
 
 double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1, 
@@ -269,21 +270,22 @@ double MEPP2Higgs::ggME(vector<VectorWaveFunction> g1,
     A1s+=A1(s,sqr(mf));
   }
   // prefactors
+  using Constants::pi;
   double g(sqrt(4.*pi*SM().alphaEM(et)/SM().sin2ThetaW()));
   double gs(sqrt(4.*pi*SM().alphaS(et)));
   Energy mw(getParticleData(ParticleID::Wplus)->mass());
-  double pre=g*s*sqr(gs)/mw/32/sqr(Constants::pi);
+  double pre=UnitRemoval::InvE*(g*s*sqr(gs)/mw/32/sqr(Constants::pi));
   // compute the matrix element
   double output(0.);
-  Complex w1p2[2],w2p1[2];
+  complex<Energy> w1p2[2],w2p1[2];
   for(unsigned int ihel=0;ihel<2;++ihel) {
-    w1p2[ihel]=g1[ihel].wave()*g2[0].getMomentum();
-    w2p1[ihel]=g2[ihel].wave()*g1[0].getMomentum();
+    w1p2[ihel]=g1[ihel].wave().dot(g2[0].getMomentum());
+    w2p1[ihel]=g2[ihel].wave().dot(g1[0].getMomentum());
   }
   Complex ii(0.,1.);
   for(unsigned int ihel1=0;ihel1<2;++ihel1) {
     for(unsigned int ihel2=0;ihel2<2;++ihel2) {
-      Complex wdot=g1[ihel1].wave()*g2[ihel2].wave();
+      Complex wdot=g1[ihel1].wave().dot(g2[ihel2].wave());
       Complex me=-ii*A1s*pre*(wdot-2.*w1p2[ihel1]*w2p1[ihel2]/s);
       output+=real(me*conj(me));
       // matrix element if needed

@@ -62,7 +62,6 @@ struct Branching {
   /**
    *  Constructor for the struct
    * @param a pointer to the ShowerKinematics object for the branching
-   * @param b pointer to the SudakovFormFactor object for the branching
    * @param c PDG codes of the particles in the branching
    * @param d The SudakovFormFactor for the branching
    */
@@ -456,7 +455,7 @@ template <>
 struct ClassTraits<Herwig::SplittingGenerator>
   : public ClassTraitsBase<Herwig::SplittingGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SplittingGenerator"; }
+  static string className() { return "Herwig::SplittingGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SplittingGenerator is implemented. It may also include several, space-separated,

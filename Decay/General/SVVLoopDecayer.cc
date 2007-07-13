@@ -9,18 +9,18 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
-#include "Herwig++/Helicity/WaveFunction/ScalarWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "Herwig++/Utilities/Kinematics.h"
 
 using namespace Herwig;
 using ThePEG::Helicity::RhoDMatrix;
-using Herwig::Helicity::VectorWaveFunction;
-using Herwig::Helicity::ScalarWaveFunction;
-using Herwig::Helicity::Direction;
-using Herwig::Helicity::incoming;
-using Herwig::Helicity::outgoing;
+using ThePEG::Helicity::VectorWaveFunction;
+using ThePEG::Helicity::ScalarWaveFunction;
+using ThePEG::Helicity::Direction;
+using ThePEG::Helicity::incoming;
+using ThePEG::Helicity::outgoing;
 
 SVVLoopDecayer::~SVVLoopDecayer() {}
 
@@ -50,8 +50,8 @@ double SVVLoopDecayer::me2(bool vertex, const int ,
   vector<VectorWaveFunction> vec1,vec2;
   ScalarWaveFunction inwave(const_ptr_cast<tPPtr>(&inpart),
 			    rhoin,incoming,true,vertex);
-  bool massa(decay[0]->mass()==0.);
-  bool massb(decay[1]->mass()==0.);
+  bool massa(decay[0]->mass()==0.*MeV);
+  bool massb(decay[1]->mass()==0.*MeV);
   VectorWaveFunction(vec1,decay[0],outgoing,true,massa,vertex);
   VectorWaveFunction(vec2,decay[1],outgoing,true,massb,vertex);
   //Set up decay matrix
@@ -68,7 +68,7 @@ double SVVLoopDecayer::me2(bool vertex, const int ,
     
   }
   ME(newME);
-  double output = newME.contract(rhoin).real()/scale;
+  double output = newME.contract(rhoin).real()/scale*UnitRemoval::E2;
   if(decay[0]->id() == decay[1]->id()) {
     output /=2;
   }
@@ -80,12 +80,12 @@ double SVVLoopDecayer::me2(bool vertex, const int ,
   return output;
 }
   
-double SVVLoopDecayer::partialWidth(const PDPtr inpart,
+Energy SVVLoopDecayer::partialWidth(const PDPtr inpart,
 				    const PDPtr outa,
 				    const PDPtr outb) const {
-  Lorentz5Momentum in(0.,0.,0.,inpart->mass()),out1,out2;
+  Lorentz5Momentum in(0.*MeV,0.*MeV,0.*MeV,inpart->mass()),out1,out2;
   Kinematics::twoBodyDecay(in,outa->mass(),outb->mass(),
-			   Vector3(0.,0.,1.),out1,out2);
+			   Axis(0.,0.,1.),out1,out2);
     _theSVVPtr->calculateKinematics(in,out1,out2);
   Energy2 scale(inpart->mass()*inpart->mass());
   _theSVVPtr->setCoupling(scale,inpart,outa,outb);
@@ -103,13 +103,15 @@ double SVVLoopDecayer::partialWidth(const PDPtr inpart,
     + 2.*mu2sq*(aEp*aEp +(aEp*aEp +(a11-a21)*(a21-a22))*mu1sq +a11*a22-a21*a22)
     + a11*a22 + a12*(mu1sq + mu2sq -1)*(-2.*a11*mu1sq +(a21-2.*a22)*mu2sq 
 					+a21*(mu1sq-1));
-  me2 *= scale*scale;
-  me2 += 2.*a00*scale*((2.*a11 - a12 - a21)*mu1sq - mu2sq*(a12+a21-2.*a22)
-		      + a21 + a12) + 8.*a00*a00;
+  me2 *= scale*scale*UnitRemoval::InvE4;
+  me2 += 2.*a00*double(scale*UnitRemoval::InvE2)*((2.*a11 - a12 - a21)*mu1sq
+					    - mu2sq*(a12+a21-2.*a22)
+					    + a21 + a12) + 8.*a00*a00;
   me2 /= 2;
   Complex norm(_theSVVPtr->getNorm()*_theSVVPtr->getNorm());
   me2 *= norm;
-  double pWidth = me2.real()*pcm/(8.*Constants::pi)/scale;
+
+  Energy pWidth = me2.real()*pcm/(8.*Constants::pi)/scale*UnitRemoval::E2;
   if(outa->id() == outb->id()) {
     pWidth /= 2;
   }

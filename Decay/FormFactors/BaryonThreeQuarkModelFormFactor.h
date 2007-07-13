@@ -303,7 +303,7 @@ template <>
  struct ClassTraits<Herwig::BaryonThreeQuarkModelFormFactor>
   : public ClassTraitsBase<Herwig::BaryonThreeQuarkModelFormFactor> {
   /** Return the class name. */
-  static string className() { return "Herwig++::BaryonThreeQuarkModelFormFactor"; }
+  static string className() { return "Herwig::BaryonThreeQuarkModelFormFactor"; }
   /** Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses
    * (except the base class).
@@ -334,6 +334,8 @@ struct BaryonCFunction {
    *  Return the value
    */
   inline double operator ()(double argument) const;
+  typedef double ArgType;
+  typedef double ValType;
   
   /**
    *  A pointer to the form factor to supply the integrand.

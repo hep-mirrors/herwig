@@ -8,7 +8,7 @@
 #include "Herwig++/Decay/DecayIntegrator.h"
 #include "Herwig++/Decay/WeakCurrents/WeakDecayCurrent.h"
 #include "Herwig++/Decay/DecayPhaseSpaceMode.h"
-#include "Herwig++/Helicity/Vertex/VertexBase.h"
+#include "ThePEG/Helicity/Vertex/VertexBase.h"
 #include "GeneralCurrentDecayer.fh"
 
 namespace Herwig {
@@ -53,10 +53,10 @@ public:
   /**
    * Function to return partial Width
    * @param inpart Pointer to incoming particle data object
-   * @param outa Pointer to incoming particle data object
-   * @param outb Pointer to incoming particle data object
+   * @param outa Pointer to first outgoing particle data object
+   * @param currout Pointer to particles in the current
    */
-  virtual double partialWidth(tPDPtr inpart, tPDPtr outa,
+  virtual Energy partialWidth(tPDPtr inpart, tPDPtr outa,
 			      vector<tPDPtr> currout) = 0;
   //@}
 
@@ -100,12 +100,27 @@ protected:
 
 protected:
 
-  int modeNumber(bool & cc, vector<long> ) const;
+  /**
+   *  The number of the mode
+   * @param cc Whether of not this is the charge conjugate of the defined mode
+   * @param id The PDG codes of the particles
+   */
+  int modeNumber(bool & cc, vector<long> id) const;
 
+  /**
+   *  Access to the map between the number of the mode and the modes in
+   *  the current
+   */
   inline vector<unsigned int> modeMap() const;
 
+  /**
+   *  Access to the weak current
+   */
   inline WeakDecayCurrentPtr weakCurrent() const;
 
+  /**
+   *  Access to the Fermi constant
+   */
   inline InvEnergy2 GF() const;  
 
   /**
@@ -176,9 +191,14 @@ private:
   vector<unsigned int> _modestart;
 
   /**
-   * the maximum weights and the maximums
+   * the maximum weight
    */
-  vector<double> _wgtmax,_weights;
+  vector<double> _wgtmax;
+
+  /**
+   *  The weights for the different channels
+   */
+  vector<double> _weights;
 };
 
 }
@@ -203,7 +223,7 @@ template <>
 struct ClassTraits<Herwig::GeneralCurrentDecayer>
   : public ClassTraitsBase<Herwig::GeneralCurrentDecayer> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::GeneralCurrentDecayer"; }
+  static string className() { return "Herwig::GeneralCurrentDecayer"; }
   /**
    * The name of a file containing the dynamic library where the class
    * GeneralCurrentDecayer is implemented. It may also include several, space-separated,

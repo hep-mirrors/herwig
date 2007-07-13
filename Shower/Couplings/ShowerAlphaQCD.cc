@@ -16,19 +16,17 @@
 using namespace Herwig;
 
 void ShowerAlphaQCD::persistentOutput(PersistentOStream & os) const {
-  os << _asType << _asMaxNP << _qmin << _nloop << _lambdaopt << _thresopt 
-     << _lambdain << _alphain << _inopt
-     << _tolerance << _maxtry << _alphamin;
-  for(unsigned int ix=0;ix<4;++ix)
-    os << _thresholds[ix] << _lambda[ix];
+  os << _asType << _asMaxNP << ounit(_qmin,GeV) << _nloop << _lambdaopt << _thresopt 
+     << ounit(_lambdain,GeV) << _alphain << _inopt
+     << _tolerance << _maxtry << _alphamin
+     << ounit(_thresholds,GeV) << ounit(_lambda,GeV);
 }
 
 void ShowerAlphaQCD::persistentInput(PersistentIStream & is, int) {
-  is >> _asType >> _asMaxNP >> _qmin >> _nloop >> _lambdaopt >> _thresopt
-     >> _lambdain >> _alphain >> _inopt
-     >> _tolerance >> _maxtry >> _alphamin;
-  for(unsigned int ix=0;ix<4;++ix)
-    is >> _thresholds[ix] >> _lambda[ix];
+  is >> _asType >> _asMaxNP >> iunit(_qmin,GeV) >> _nloop >> _lambdaopt >> _thresopt
+     >> iunit(_lambdain,GeV) >> _alphain >> _inopt
+     >> _tolerance >> _maxtry >> _alphamin
+     >> iunit(_thresholds,GeV) >> iunit(_lambda,GeV);
 }
 
 ClassDescription<ShowerAlphaQCD> ShowerAlphaQCD::initShowerAlphaQCD;
@@ -177,8 +175,8 @@ void ShowerAlphaQCD::doinit() throw(InitException) {
   // final threshold is qmin
   _thresholds[0]=_qmin;
   // compute the maximum value of as 
-  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8); // approx as = 1
-  else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8)); 
+  if ( _asType < 5 ) _alphamin = value(sqr(_qmin)+1.0e-8*sqr(MeV)); // approx as = 1
+  else _alphamin = max(_asMaxNP, value(sqr(_qmin)+1.0e-8*sqr(MeV))); 
   // check consistency lambda_3 < qmin
   if(_lambda[0]>_qmin)
     Throw<InitException>() << "The value of Qmin is less than Lambda_3 in"

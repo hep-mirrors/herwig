@@ -32,15 +32,15 @@ void MixingMatrix::Init() {
 
 void MixingMatrix::adjustPhase(long id) { 
   unsigned int irow(0);
-  while(irow < size() && _theIds[irow] != id) 
+  while(irow < size().first && _theIds[irow] != id) 
     ++irow;
-  for(unsigned int c = 0; c < _theSize; ++c)
+  for(unsigned int c = 0; c < _theSize.second; ++c)
     _theMixingMatrix[irow][c] *= Complex(0., 1.);
 }
 
 ostream & Herwig::operator<<(ostream & os,const MixingMatrix & mix) {
-  for(unsigned int ix=0;ix<mix.size();++ix) {
-    for(unsigned int iy=0;iy<mix.size();++iy) {
+  for(unsigned int ix=0;ix<mix.size().first;++ix) {
+    for(unsigned int iy=0;iy<mix.size().second;++iy) {
       cout << mix(ix,iy) << " ";
     }
     cout << "\n";

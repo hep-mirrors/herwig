@@ -1,0 +1,16 @@
+// -*- C++ -*-
+//
+// This is the implementation of the inlined member functions of
+// the SSGOGOHVertex class.
+//
+
+namespace Herwig {
+
+inline IBPtr SSGOGOHVertex::clone() const {
+  return new_ptr(*this);
+}
+
+inline IBPtr SSGOGOHVertex::fullclone() const {
+  return new_ptr(*this);
+}
+}

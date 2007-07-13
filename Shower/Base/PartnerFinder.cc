@@ -102,11 +102,53 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
 	isPartner = true;
       if(isPartner) partners.push_back(*cjt);
     }
-    if (partners.empty())
-      throw Exception() << "Failed to make colour connections in " 
-			<< "PartnerFinder::setQCDInitialEvolutionScales"
-			<< (**cit)
-			<< Exception::eventerror;
+    if (partners.empty()) {
+      // special for RPV
+      tColinePtr col = CL(cit); 
+      if(FS(*cit)&&col&&col->sourceNeighbours().first) {
+	tColinePair cpair = col->sourceNeighbours();
+	for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	  if(( FS(*cjt) && ( CL(cjt) == cpair.first || CL(cjt)  == cpair.second))||
+	     (!FS(*cjt) && (ACL(cjt) == cpair.first || ACL(cjt) == cpair.second ))) {
+	    partners.push_back(*cjt);
+	  }
+	}
+      }
+      else if(col&&col->sinkNeighbours().first) {
+	tColinePair cpair = col->sinkNeighbours();
+	for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	  if(( FS(*cjt) && (ACL(cjt) == cpair.first || ACL(cjt)  == cpair.second))||
+	     (!FS(*cjt) && ( CL(cjt) == cpair.first ||  CL(cjt) == cpair.second))) {
+	    partners.push_back(*cjt);
+	  }
+	}
+      }
+      col = ACL(cit);
+      if(FS(*cit)&&col&&col->sinkNeighbours().first) {
+	tColinePair cpair = col->sinkNeighbours();
+	for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	  if(( FS(*cjt) && (ACL(cjt) == cpair.first || ACL(cjt)  == cpair.second))||
+	     (!FS(*cjt) && ( CL(cjt) == cpair.first ||  CL(cjt) == cpair.second ))) {
+	    partners.push_back(*cjt);
+	  }
+	}
+      }
+      else if(col&&col->sourceNeighbours().first) {
+	tColinePair cpair = col->sourceNeighbours();
+	for(cjt=particles.begin();cjt!=particles.end();++cjt) {
+	  if(( FS(*cjt) && ( CL(cjt) == cpair.first || CL(cjt) == cpair.second))||
+	     (!FS(*cjt) && (ACL(cjt) == cpair.first ||ACL(cjt) == cpair.second))) {
+	    partners.push_back(*cjt);
+	  }
+	}
+      }
+      if(partners.empty()) {
+	throw Exception() << "`Failed to make colour connections in " 
+			  << "PartnerFinder::setQCDInitialEvolutionScales"
+			  << (**cit)
+			  << Exception::eventerror;
+      }
+    }
     // In the case of more than one candidate colour partners,
     //               our treatment is based on two assumptions:
     //               1) the choice of which is the colour partner is done
@@ -138,6 +180,7 @@ bool PartnerFinder::setQCDInitialEvolutionScales(const ShowerParticleVector &par
       }
       break;
     default:
+      exit(2);
       throw Exception() << "Invalid approach for setting colour partner in"
 			<< " PartnerFinder::setQCDInitialEvolutionScale()"
 			<< Exception::abortnow;

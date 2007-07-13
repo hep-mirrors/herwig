@@ -6,18 +6,18 @@
 //
 
 #include "ThePEG/MatrixElement/ME2to2Base.h"
-#include "Herwig++/Helicity/Correlations/ProductionMatrixElement.h"
-#include "Herwig++/Helicity/Vertex/Vector/FFVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVertex.h"
-#include "Herwig++/Helicity/Vertex/Vector/VVVVVertex.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/VectorWaveFunction.h"
-#include "Herwig++/Helicity/WaveFunction/SpinorBarWaveFunction.h"
+#include "ProductionMatrixElement.h"
+#include "ThePEG/Helicity/Vertex/Vector/FFVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVertex.h"
+#include "ThePEG/Helicity/Vertex/Vector/VVVVVertex.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "ThePEG/Helicity/WaveFunction/SpinorBarWaveFunction.h"
 #include "MEQCD2to2.fh"
 
 namespace Herwig {
 using namespace ThePEG;
-using namespace Herwig::Helicity;
+using namespace ThePEG::Helicity;
 
 /**
  * Here is the documentation of the MEQCD2to2 class.
@@ -396,7 +396,7 @@ template <>
 struct ClassTraits<Herwig::MEQCD2to2>
   : public ClassTraitsBase<Herwig::MEQCD2to2> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::MEQCD2to2"; }
+  static string className() { return "Herwig::MEQCD2to2"; }
   /**
    * The name of a file containing the dynamic library where the class
    * MEQCD2to2 is implemented. It may also include several, space-separated,

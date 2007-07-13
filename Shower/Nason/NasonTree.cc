@@ -42,7 +42,7 @@ void NasonBranching::setMomenta(LorentzRotation R,double aparent,
   double beta = ((_original*_p)-alpha*sqr(_p.mass()))/dot;
   _z=alpha/aparent;
   _qt=_original-alpha*_p-beta*_n-ptparent;
-  _pt=sqrt(max(-_qt*_qt,0.));
+  _pt=sqrt(max(-_qt*_qt,0.*MeV2));
   // reconstruct children
   for(unsigned int ix=0;ix<_children.size();++ix) {
     _children[ix]->_p=_p;
@@ -65,24 +65,25 @@ void NasonBranching::setMomenta(LorentzRotation R,double aparent,
     }
     // get the pt vector
     Lorentz5Momentum vect=_children[0]->_qt;
-    Hep3Vector beta_bb = -(_p+ _n).boostVector();
+    Boost beta_bb = -(_p+ _n).boostVector();
     Lorentz5Momentum p_bb = _p;
     vect.boost(beta_bb);
     p_bb.boost( beta_bb );
 
-    Hep3Vector axis(p_bb.vect().unit());
+    Axis axis(p_bb.vect().unit());
     if(axis.perp2()>0.) {
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate(-acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.setRotate(-acos(axis.z()),
+		    Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       vect.transform(rot);
     }
     else if(axis.z()<0.) {
-      vect.setPz(vect.pz());
+      vect.setZ(vect.z());
     }
     _phi= atan2(vect.y(),vect.x());
-    if(_phi<0.) _phi+=2.*pi;
-    if(_children[1]->_incoming) _phi+=pi;
+    if(_phi<0.) _phi+=Constants::twopi;
+    if(_children[1]->_incoming) _phi+=Constants::pi;
     
   }
 }

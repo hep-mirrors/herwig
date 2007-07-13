@@ -27,31 +27,31 @@ sudakov2Momentum(double alpha, double beta, Energy px,
 		 Energy py,unsigned int iopt) const {
   Lorentz5Momentum dq;
   if(iopt==0) {
-    const Hep3Vector beta_bb = -(_pVector + _nVector).boostVector();
+    const Boost beta_bb = -(_pVector + _nVector).boostVector();
     Lorentz5Momentum p_bb = _pVector;
     Lorentz5Momentum n_bb = _nVector; 
     p_bb.boost( beta_bb );
     n_bb.boost( beta_bb );
     // set first in b2b frame along z-axis (assuming that p and n are
     // b2b as checked above)
-    dq=Lorentz5Momentum(0.0, 0.0, (alpha - beta)*p_bb.vect().mag(), 
+    dq=Lorentz5Momentum(0.0*MeV, 0.0*MeV, (alpha - beta)*p_bb.vect().mag(), 
 			alpha*p_bb.t() + beta*n_bb.t());
     // add transverse components
-    dq.setPx(px);
-    dq.setPy(py);
+    dq.setX(px);
+    dq.setY(py);
     // rotate to have z-axis parallel to p
     // this rotation changed by PR to a different rotation with the same effect
     // but different azimuthal angle to make implementing spin correlations easier
-    //dq.rotateUz( p_bb.vect()/p_bb.vect().mag() );
-    Hep3Vector axis(p_bb.vect().unit());
+    //    dq.rotateUz( unitVector(p_bb.vect()) );
+    Axis axis(p_bb.vect().unit());
     if(axis.perp2()>0.) {
       LorentzRotation rot;
       double sinth(sqrt(1.-sqr(axis.z())));
-      rot.setRotate(acos(axis.z()),Hep3Vector(-axis.y()/sinth,axis.x()/sinth,0.));
+      rot.setRotate(acos(axis.z()),Axis(-axis.y()/sinth,axis.x()/sinth,0.));
       dq.transform(rot);
     }
     else if(axis.z()<0.) {
-      dq.setPz(-dq.pz());
+      dq.setZ(-dq.z());
     }
     // boost back 
     dq.boost( -beta_bb ); 
@@ -59,20 +59,20 @@ sudakov2Momentum(double alpha, double beta, Energy px,
     // return the momentum
   }
   else {
-    const Hep3Vector beta_bb = -pVector().boostVector();
+    const Boost beta_bb = -pVector().boostVector();
     Lorentz5Momentum p_bb = pVector();
     Lorentz5Momentum n_bb = nVector(); 
     p_bb.boost( beta_bb );
     n_bb.boost( beta_bb );
     // set first in b2b frame along z-axis (assuming that p and n are
     // b2b as checked above)
-    dq=Lorentz5Momentum (0.0, 0.0, 0.5*beta*pVector().mass(), 
+    dq=Lorentz5Momentum (0.0*MeV, 0.0*MeV, 0.5*beta*pVector().mass(), 
 			 alpha*pVector().mass() + 0.5*beta*pVector().mass());
     // add transverse components
-    dq.setPx(px);
-    dq.setPy(py);
+    dq.setX(px);
+    dq.setY(py);
     // rotate to have z-axis parallel to n
-    dq.rotateUz( n_bb.vect().unit());
+    dq.rotateUz( unitVector(n_bb.vect()) );
     // boost back 
     dq.boost( -beta_bb ); 
     dq.rescaleMass();

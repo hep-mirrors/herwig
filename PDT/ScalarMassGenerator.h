@@ -132,17 +132,32 @@ private:
   /**
    * calculated values to speed things up
    */
-  vector<Energy>  _mplus ,_mminus;
+  //@{
+  /**
+   *  Maximum mass
+   */
+  vector<Energy>  _mplus;
 
   /**
-   * calculated values to speed things up
+   *  Minimum mass
    */
-  vector<Energy2> _m2plus,_m2minus;
+  vector<Energy>  _mminus;
+
+  /**
+   *  Maximum mass squared
+   */
+  vector<Energy2> _m2plus;
+
+  /**
+   *  Minimum mass squared
+   */
+  vector<Energy2> _m2minus;
 
   /**
    * calculated values to speed things up
    */
   vector<Energy2> _term;
+  //@}
 
 };
 
@@ -173,7 +188,7 @@ template <>
 struct ClassTraits<Herwig::ScalarMassGenerator>
   : public ClassTraitsBase<Herwig::ScalarMassGenerator> {
   /** Return the class name. */
-  static string className() { return "/Herwig++/ScalarMassGenerator"; }
+  static string className() { return "Herwig::ScalarMassGenerator"; }
 };
 
 /** @endcond */

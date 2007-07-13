@@ -4,7 +4,8 @@
 //
 // This is the declaration of the TTbarAnalysis class.
 //
-
+       
+#include "ThePEG/Repository/CurrentGenerator.h"
 #include "ThePEG/Handlers/AnalysisHandler.h"
 #include "TTbarAnalysis.fh"
 #include "Herwig++/Utilities/Histogram.h"
@@ -202,7 +203,7 @@ template <>
 struct ClassTraits<Herwig::TTbarAnalysis>
   : public ClassTraitsBase<Herwig::TTbarAnalysis> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::TTbarAnalysis"; }
+  static string className() { return "Herwig::TTbarAnalysis"; }
   /** Return the name(s) of the shared library (or libraries) be loaded to get
    *  access to the TTbarAnalysis class and any other class on which it depends
    *  (except the base class). */

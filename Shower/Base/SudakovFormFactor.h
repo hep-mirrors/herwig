@@ -472,6 +472,7 @@ private:
    */
   pair<double,double> _zlimits;
 
+protected:
   /**
    *  Parameters for the \f$Q_g=\max(\frac{\delta-am_q}{b},c)\f$ kinematic cut-off
    */
@@ -520,7 +521,7 @@ template <>
 struct ClassTraits<Herwig::SudakovFormFactor>
   : public ClassTraitsBase<Herwig::SudakovFormFactor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::SudakovFormFactor"; }
+  static string className() { return "Herwig::SudakovFormFactor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * SudakovFormFactor is implemented. It may also include several, space-separated,

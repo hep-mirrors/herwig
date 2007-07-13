@@ -191,6 +191,7 @@ private:
    * @param inter pointer to particle data for intermediate
    * @param chan the channel type 
    * @param vertices pair of vertices for the diagram
+   * @param order The order
    */
   void makeDiagrams(IDPair in, long out1, const PDSet & out2, PDPtr inter,
 		    HPDiagram::Channel chan, VBPair vertices, BPair order);
@@ -233,7 +234,7 @@ private:
    * @param id1 The PDG code of the first particle
    * @param id2 The PDG code of the first particle
    */
-  bool flavour(long id1, long id2) const;
+  bool sameQuarkFlavour(long id1, long id2) const;
    //@}
   
   /** Functions to set up colour flows and matrix elements. */
@@ -362,7 +363,7 @@ private:
 
 namespace ThePEG {
 
-/// \if TRAITSPECIALIZATIONS
+/** @cond TRAITSPECIALIZATIONS */
 
 /** This template specialization informs ThePEG about the
  *  base classes of HardProcessConstructor. */
@@ -378,7 +379,7 @@ template <>
 struct ClassTraits<Herwig::HardProcessConstructor>
   : public ClassTraitsBase<Herwig::HardProcessConstructor> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HardProcessConstructor"; }
+  static string className() { return "Herwig::HardProcessConstructor"; }
   /**
    * The name of a file containing the dynamic library where the class
    * HardProcessConstructor is implemented. It may also include several,
@@ -390,7 +391,7 @@ struct ClassTraits<Herwig::HardProcessConstructor>
   static string library() { return "libHwModelGenerator.so"; }
 };
 
-/// \endif
+/** @endcond */
 
 }
 

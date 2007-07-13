@@ -38,25 +38,10 @@ class VectorMeson2FermionDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   VectorMeson2FermionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline VectorMeson2FermionDecayer(const VectorMeson2FermionDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~VectorMeson2FermionDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
@@ -222,7 +207,7 @@ template <>
 struct ClassTraits<Herwig::VectorMeson2FermionDecayer>
   : public ClassTraitsBase<Herwig::VectorMeson2FermionDecayer> {
   /** Return the class name.*/
-  static string className() { return "Herwig++::VectorMeson2FermionDecayer"; }
+  static string className() { return "Herwig::VectorMeson2FermionDecayer"; }
   /**
    * Return the name of the shared library to be loaded to get
    * access to this class and every other class it uses

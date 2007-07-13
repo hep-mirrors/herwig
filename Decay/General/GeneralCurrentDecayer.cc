@@ -15,13 +15,13 @@
 using namespace Herwig;
 
 void GeneralCurrentDecayer::persistentOutput(PersistentOStream & os) const {
-  os << _theVertex << _inpart << _outpart << _current << _maxmass
-     << _GF << _modemap << _modestart << _wgtloc << _wgtmax << _weights;
+  os << _theVertex << _inpart << _outpart << _current << ounit(_maxmass,GeV)
+     << ounit(_GF,1/GeV2) << _modemap << _modestart << _wgtloc << _wgtmax << _weights;
 }
 
 void GeneralCurrentDecayer::persistentInput(PersistentIStream & is, int) {
-  is >> _theVertex >> _inpart >> _outpart >> _current >> _maxmass
-     >> _GF >> _modemap >> _modestart >> _wgtloc >> _wgtmax >> _weights;
+  is >> _theVertex >> _inpart >> _outpart >> _current >> iunit(_maxmass,GeV)
+     >> iunit(_GF,1/GeV2) >> _modemap >> _modestart >> _wgtloc >> _wgtmax >> _weights;
 }
 
 AbstractClassDescription<GeneralCurrentDecayer> GeneralCurrentDecayer::initGeneralCurrentDecayer;
@@ -81,16 +81,16 @@ void GeneralCurrentDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // make sure the current got initialised
   _current->init();
-  _modemap.resize(0);
-  _modestart.resize(0);
+  _modemap.clear();
+  _modestart.clear();
   // extract the possible particles for the modes
   vector<PDPtr> all       = _theVertex->search(0,ParticleID::Wplus);
   vector<PDPtr> particles = _theVertex->search(1,ParticleID::Wplus);
   for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
   particles =_theVertex->search(2,ParticleID::Wplus);
   for(unsigned int ix=0;ix<particles.size();++ix) all.push_back(particles[ix]);
-  _inpart.resize(0);
-  _outpart.resize(0);
+  _inpart.clear();
+  _outpart.clear();
   while(!particles.empty()) {
     vector<tPDPtr> part;
     for(unsigned int ix=0;ix<3;++ix) {
@@ -147,7 +147,7 @@ void GeneralCurrentDecayer::doinit() throw(InitException) {
 	_modemap.push_back(ix);
 	// special for the two body modes
 	if(extpart.size()==3) {
-	  channelwgts.resize(0);
+	  channelwgts.clear();
 	  mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
 	}
 	addMode(mode,maxweight,channelwgts);

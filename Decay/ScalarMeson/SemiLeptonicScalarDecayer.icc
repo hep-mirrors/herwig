@@ -7,17 +7,10 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() 
-{
-  // default value of the fermi constant taken from PDG 2002
-  _GF = 1.16639E-5/GeV2;
+inline SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer() : _GF(1.16639E-5/GeV2) {
   // intermediates
   generateIntermediates(true);
 }
-
-inline SemiLeptonicScalarDecayer::SemiLeptonicScalarDecayer(const SemiLeptonicScalarDecayer & x)
-  : DecayIntegrator(x), _current(x._current), _form(x._form),_maxwgt(x._maxwgt),
-    _modemap(x._modemap), _GF(x._GF) {}
 
 inline IBPtr SemiLeptonicScalarDecayer::clone() const {
   return new_ptr(*this);
@@ -27,50 +20,16 @@ inline IBPtr SemiLeptonicScalarDecayer::fullclone() const {
   return new_ptr(*this);
 }
 
-inline void SemiLeptonicScalarDecayer::doupdate() throw(UpdateException) {
-  DecayIntegrator::doupdate();
-  // First update base class.
-  bool redo = touched();
-  // redo if touched.
-//  UpdateChecker::check(aDependentMember, redo);
-  // Update referenced objects on which this depends redo is set to true
-  // if the dependent object is touched.
-//  for_each(ContainerOfDependencies, UpdateChecker(redo));
-  // Update a container of references.
-//  for_each(MapOfDependencies, UpdateMapChecker(redo));
-  // Update a map of references.
-  if ( !redo ) return;
-  // return if nothing has been touched. Otherwise do the actual update.
-//  touch()
-  // Touch if anything has changed.
-}
-
-inline void SemiLeptonicScalarDecayer::dofinish() {
-  DecayIntegrator::dofinish();
-}
-
 inline void SemiLeptonicScalarDecayer::doinitrun() {
   _current->initrun();
   _form->initrun();
   DecayIntegrator::doinitrun();
-  if(initialize())
-    {
-      _maxwgt.resize(0);
-      for(unsigned int ix=0;ix<numberModes();++ix)
-	{_maxwgt.push_back(mode(ix)->maxWeight());}
+  if(initialize()) {
+    _maxwgt.clear();
+    for(unsigned int ix=0;ix<numberModes();++ix) {
+      _maxwgt.push_back(mode(ix)->maxWeight());
     }
-}
-
-inline void SemiLeptonicScalarDecayer::rebind(const TranslationMap & trans)
-  throw(RebindException) {
-  // dummy = trans.translate(dummy);
-  DecayIntegrator::rebind(trans);
-}
-
-inline IVector SemiLeptonicScalarDecayer::getReferences() {
-  IVector ret = DecayIntegrator::getReferences();
-  // ret.push_back(dummy);
-  return ret;
+  }
 }
 
 }
