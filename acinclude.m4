@@ -159,20 +159,40 @@ AC_REQUIRE([AC_CHECK_CLHEP])
 AC_MSG_CHECKING([KTJETPATH is])
 LOAD_KTJET=""
 if test -z "$KTJETPATH"; then
-  AC_MSG_RESULT([*** No KtJet path set... won't build KtJet interface ***])
+  AC_MSG_RESULT([not set. Won't build KtJet interface!])
 else
   AC_MSG_RESULT("$KTJETPATH")
 
+
   AC_MSG_CHECKING([KTJETLIBS is])
   if test -z "$KTJETLIBS"; then
-    KTJETLIBS="-L$KTJETPATH/lib -R$KTJETPATH/lib -lKtEvent"
+    if test -f "$KTJETPATH/lib/libKtJet.a"; then
+	ktjetname=KtJet
+    elif test -f "$KTJETPATH/lib/libKtEvent.a"; then
+	ktjetname=KtEvent
+    else
+	AC_MSG_RESULT([not found.])
+	AC_MSG_ERROR([Could not find KtJet library in $KTJETPATH/lib. Please set KTJETLIBS explicitly.])
+    fi
+    ktjetrpath=""
+    if test -e "$KTJETPATH/lib/lib$ktjetname.so"; then
+	ktjetrpath="-R$KTJETPATH/lib"
+    fi
+    KTJETLIBS="-L$KTJETPATH/lib $ktjetrpath -l$ktjetname"
   fi
   KTJETLIBS="$KTJETLIBS $CLHEPLDFLAGS $CLHEPLIB"
   AC_MSG_RESULT("$KTJETLIBS")
 
   AC_MSG_CHECKING([KTJETINCLUDE is])
   if test -z "$KTJETINCLUDE"; then
-    KTJETINCLUDE="-I$KTJETPATH/include"
+	if test -f "$KTJETPATH/include/KtJet/KtJet.h"; then
+		KTJETINCLUDE="-I$KTJETPATH/include"
+	elif test -f "$KTJETPATH/KtJet/KtJet.h"; then
+		KTJETINCLUDE="-I$KTJETPATH"
+	else
+		AC_MSG_RESULT([not found.])
+		AC_MSG_ERROR([Could not find KtJet headers. Please set KTJETINCLUDE explicitly.])
+	fi
   fi
   KTJETINCLUDE="$KTJETINCLUDE $CLHEPINCLUDE"
   AC_MSG_RESULT("$KTJETINCLUDE")
