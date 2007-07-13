@@ -19,14 +19,12 @@ inline IBPtr VectorMesonPScalarFermionsDecayer::fullclone() const {
 
 inline void VectorMesonPScalarFermionsDecayer::doinitrun() {
   DecayIntegrator::doinitrun();
-  if(initialize())
-    {
-      for(unsigned int ix=0;ix<_incoming.size();++ix)
-	{
-	  _maxweight[ix] = mode(ix)->maxWeight();
-	  _weight[ix]    = mode(ix)->channelWeight(1);
-	}
+  if(initialize()) {
+    for(unsigned int ix=0;ix<_incoming.size();++ix) {
+      _maxweight[ix] = mode(ix)->maxWeight();
+      _weight[ix]    = mode(ix)->channelWeight(1);
     }
+  }
 }
-
+  
 }
