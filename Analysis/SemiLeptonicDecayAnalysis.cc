@@ -73,14 +73,10 @@ void SemiLeptonicDecayAnalysis::analyze(tPPtr part) {
     _outgoing.push_back(part->children()[0]->id());
     _outgoingL.push_back(ilep);
     _energy.push_back(new_ptr(Histogram(0.0,
-					(part->nominalMass()+part->dataPtr()->widthUpCut()
-					-part->children()[0]->nominalMass()
-					+part->children()[0]->dataPtr()->widthLoCut())/MeV,
+					(part->mass()-part->children()[0]->mass())/MeV,
 					200)));
     _scale.push_back(new_ptr(Histogram(0.0,
-				       (part->nominalMass()+part->dataPtr()->widthUpCut()
-				       -part->children()[0]->nominalMass()
-				       +part->children()[0]->dataPtr()->widthLoCut())/MeV,
+				       (part->mass()-part->children()[0]->mass())/MeV,
 				       200)));
   }
   // add the results to the histogram

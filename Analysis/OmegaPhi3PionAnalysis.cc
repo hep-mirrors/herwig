@@ -41,28 +41,38 @@ void OmegaPhi3PionAnalysis::analyze(const tPVector & particles) {
 void OmegaPhi3PionAnalysis::analyze(tPPtr part) {
   Lorentz5Momentum pip,pim,pi0; unsigned int imode;
   bool allowed(false);
-  if(part->children().size()==3&&
-     part->children()[0]->id()==111&&part->children()[1]->id()==211
-     &&part->children()[2]->id()==-211) {
-    allowed=true;
-    pi0=part->children()[0]->momentum();
-    pip=part->children()[1]->momentum();
-    pim=part->children()[2]->momentum();
-  }
-  else if(part->children().size()==2&&
-	  (part->children()[0]->id()==113||abs(part->children()[0]->id())==213)&&
-	  (part->children()[1]->id()==111||abs(part->children()[1]->id())==211)) {
-    allowed=true;
-    vector<tPPtr> temp;
-    temp.push_back(part->children()[1]);
-    temp.push_back(part->children()[0]->children()[0]);
-    temp.push_back(part->children()[0]->children()[1]);
-    for(unsigned int ix=0;ix<3;++ix)
-      {
-	if(temp[ix]->id()== 111){pi0=temp[ix]->momentum();}
-	if(temp[ix]->id()== 211){pip=temp[ix]->momentum();}
-	if(temp[ix]->id()==-211){pim=temp[ix]->momentum();}
+  // reorder the particles
+  ParticleVector children=part->children();
+  if(children.size()==2) {
+    // vector first
+    if(abs(children[1]->id())%10==3) swap(children[0],children[1]);
+    if((children[0]->id()==113||abs(children[0]->id())==213)&&
+       (children[1]->id()==111||abs(children[1]->id())==211)) {
+      allowed=true;
+      vector<tPPtr> temp;
+      temp.push_back(children[1]);
+      temp.push_back(children[0]->children()[0]);
+      temp.push_back(children[0]->children()[1]);
+      for(unsigned int ix=0;ix<3;++ix) {
+	if(temp[ix]->id()== 111) pi0=temp[ix]->momentum();
+	if(temp[ix]->id()== 211) pip=temp[ix]->momentum();
+	if(temp[ix]->id()==-211) pim=temp[ix]->momentum();
       }
+    }
+  }
+  else if(children.size()==3) {
+    // neutral pion first
+    if(children[1]->id()==111) swap(children[0],children[1]);
+    if(children[2]->id()==111) swap(children[0],children[2]);
+    // postive pion second
+    if(children[2]->id()==211) swap(children[1],children[2]);
+    if(children[0]->id()== 111&&children[1]->id()==211&&
+       children[2]->id()==-211) {
+      allowed=true;
+      pi0=children[0]->momentum();
+      pip=children[1]->momentum();
+      pim=children[2]->momentum();
+    }
   }
   if(!allowed) return;
   if(part->id()==ParticleID::omega) imode=0;
@@ -128,7 +138,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
   _mplus[0]->topdrawOutput(output,true,true,false,true,
 			   "RED",
 			   "R2+3 mass in WRP2+3P2-3P203",
-			   "             GWGX XGX XGX X",
+			   "GX X         GWGX XGX XGX X",
 			   "1/SdS/dm0R2+31/GeV2-13",
 			   "  G G   XGX XX    X  X",
 			   "m0R2+31/MeV",
@@ -136,7 +146,7 @@ void OmegaPhi3PionAnalysis::dofinish() {
   _mminus[0]->topdrawOutput(output,true,true,false,true,
 			    "RED",
 			    "R2-3 mass in WRP2+3P2-3P203",
-			    "             GWGX XGX XGX X",
+			    "GX X         GWGX XGX XGX X",
 			    "1/SdS/dm0R2-31/GeV2-13",
 			    "  G G   XGX XX    X  X",
 			    "m0R2-31/MeV",
@@ -144,14 +154,14 @@ void OmegaPhi3PionAnalysis::dofinish() {
   _m0[0]->topdrawOutput(output,true,true,false,true,
 			    "RED",
 			    "R203 mass in WRP2+3P2-3P203",
-			    "             GWGX XGX XGX X",
+			    "GX X         GWGX XGX XGX X",
 			    "1/SdS/dm0R2031/GeV2-13",
 			    "  G G   XGX XX    X  X",
 			    "m0R2031/MeV",
 			    " XGX XX    ");
    output << "new frame\n";
    output << "set font duplex\n";
-   output << "set limits x -400 400 y 0 400";
+   output << "set limits x -250 250 y 0 250\n";
    output << "set order x y \n";
    output << "title top \"Dalitz plot for W\"\n";
    output << "case      \"                G\"\n"; 
@@ -175,35 +185,35 @@ void OmegaPhi3PionAnalysis::dofinish() {
 			   "  G G       X  X",
 			   "y/MeV",
 			   "     ");
-  _mplus[0]->topdrawOutput(output,true,true,false,true,
+  _mplus[1]->topdrawOutput(output,true,true,false,true,
 			   "RED",
 			   "R2+3 mass in FRP2+3P2-3P203",
-			   "             GWGX XGX XGX X",
+			   "GX X         GWGX XGX XGX X",
 			   "1/SdS/dm0R2+31/GeV2-13",
 			   "  G G   XGX XX    X  X",
 			   "m0R2+31/MeV",
 			   " XGX XX    ");
-  _mminus[0]->topdrawOutput(output,true,true,false,true,
+  _mminus[1]->topdrawOutput(output,true,true,false,true,
 			    "RED",
 			    "R2-3 mass in FRP2+3P2-3P203",
-			    "             GWGX XGX XGX X",
+			    "GX X         GWGX XGX XGX X",
 			    "1/SdS/dm0R2-31/GeV2-13",
 			    "  G G   XGX XX    X  X",
 			    "m0R2-31/MeV",
 			    " XGX XX    ");
-  _m0[0]->topdrawOutput(output,true,true,false,true,
+  _m0[1]->topdrawOutput(output,true,true,false,true,
 			    "RED",
 			    "R203 mass in FRP2+3P2-3P203",
-			    "             GWGX XGX XGX X",
+			    "GX X         GWGX XGX XGX X",
 			    "1/SdS/dm0R2031/GeV2-13",
 			    "  G G   XGX XX    X  X",
 			    "m0R2031/MeV",
 			    " XGX XX    ");
    output << "new frame\n";
    output << "set font duplex\n";
-   output << "set limits x -400 400 y 0 400";
+   output << "set limits x -400 400 y 0 400\n";
    output << "set order x y \n";
-   output << "title top \"Dalitz plot for W\"\n";
+   output << "title top \"Dalitz plot for F\"\n";
    output << "case      \"                G\"\n"; 
    for(unsigned int ix=0;ix<_xvalue[1].size();++ix) {
      output << _xvalue[1][ix]/MeV << "   " << _yvalue[1][ix]/MeV << "\n";
