@@ -977,7 +977,7 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
       appam = aptemp*(ms*betaX*betaX/(1.+wt)/mq/mQ/beta2XY*
 		      (1.-0.5*ms*betaX*betaX/mtildeY/beta2XY)
 		      +asopi/mtildeY*(-1.-chiji+4./3./(1.-zji)
-				      +2./3.*(1.+zji)/(1.-zji)/(1.-zji)*gamji));
+				      +2./3.*(1.+zji)/sqr(1.-zji)*gamji));
       apmam =-amtemp/mtildeX*(mtildeY/mQ
 			      -0.5*ms*betaX*betaX/mup/beta2XY
 			      +wt*ms*mtildeY*betaX*betaX/(wt+1.)/mq/mQ/beta2XY*
