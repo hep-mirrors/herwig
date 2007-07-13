@@ -53,25 +53,10 @@ class TensorMesonVectorVectorDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   TensorMesonVectorVectorDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline TensorMesonVectorVectorDecayer(const TensorMesonVectorVectorDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~TensorMesonVectorVectorDecayer();
-  //@}
-
-public:
 
   /**
    * Which of the possible decays is required
