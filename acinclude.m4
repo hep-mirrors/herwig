@@ -1,4 +1,4 @@
-AC_DEFUN([AC_CHECK_CLHEP],
+AC_DEFUN([HERWIG_CHECK_CLHEP],
 [
 AC_MSG_CHECKING([for CLHEPPATH])
 if test -z "$CLHEPPATH"; then
@@ -51,9 +51,9 @@ AC_SUBST(CLHEPLDFLAGS)
 AC_SUBST(CLHEPINCLUDE)
 ])
 
-AC_DEFUN([AC_CHECK_HEPMC],
+AC_DEFUN([HERWIG_CHECK_HEPMC],
 [
-AC_REQUIRE([AC_CHECK_CLHEP])
+AC_REQUIRE([HERWIG_CHECK_CLHEP])
 AC_MSG_CHECKING([for HepMC location])
 HEPMCINCLUDE=""
 HEPMCLIBS="-lHepMC"
@@ -108,9 +108,9 @@ AC_SUBST(HEPMCLIBS)
 AC_CONFIG_LINKS([Config/HepMCHelper.h:Config/HepMCHelper_$hepmclinkname.h])
 ])
 
-AC_DEFUN([AC_CHECK_THEPEG],
+AC_DEFUN([HERWIG_CHECK_THEPEG],
 [
-AC_REQUIRE([AC_CHECK_CLHEP])
+AC_REQUIRE([HERWIG_CHECK_CLHEP])
 AC_MSG_CHECKING([for THEPEGPATH])
 if test -z "$THEPEGPATH"; then
   AC_MSG_RESULT([none])
@@ -154,8 +154,8 @@ AC_SUBST(THEPEGINCLUDE)
 ])
 
 
-AC_DEFUN([AC_CHECK_KTJET],[
-AC_REQUIRE([AC_CHECK_CLHEP])
+AC_DEFUN([HERWIG_CHECK_KTJET],[
+AC_REQUIRE([HERWIG_CHECK_CLHEP])
 AC_MSG_CHECKING([KTJETPATH is])
 LOAD_KTJET=""
 if test -z "$KTJETPATH"; then
@@ -208,7 +208,7 @@ AC_SUBST(KTJETINCLUDE)
 ])
 
 
-AC_DEFUN([AC_LOOPTOOLS],
+AC_DEFUN([HERWIG_LOOPTOOLS],
 [
 AC_MSG_CHECKING([whether to build Looptools dependent parts])
 AC_ARG_ENABLE(looptools,
@@ -220,7 +220,7 @@ AC_MSG_RESULT([$enable_looptools])
 AM_CONDITIONAL(WANT_LOOPTOOLS,[test "x$enable_looptools" = "xyes"])
 ])
 
-AC_DEFUN([AC_PDF_PATH],
+AC_DEFUN([HERWIG_PDF_PATH],
 [
 AC_MSG_CHECKING([which Herwig++ PDF data to use])
 AC_ARG_WITH(PDF,
@@ -242,7 +242,7 @@ AM_CONDITIONAL(WANT_LOCAL_PDF,[test "x$localPDFneeded" = "xtrue"])
 AC_SUBST(HERWIG_PDF_DEFAULT)
 ])
 
-AC_DEFUN([AC_CHECK_EVTGEN],
+AC_DEFUN([HERWIG_CHECK_EVTGEN],
 [
 AC_MSG_CHECKING([for EVTGEN])
 AC_ARG_WITH(evtgen,
@@ -285,4 +285,43 @@ else
 fi
 AM_CONDITIONAL(WANT_EVTGEN,[test "x$with_evtgen" != "xno"])
 AC_SUBST(EVTGENPATH)
+])
+
+AC_DEFUN([HERWIG_CHECK_GSL],
+[
+AC_MSG_CHECKING([for gsl location])
+GSLINCLUDE=""
+GSLLIBS=""
+
+AC_ARG_WITH(gsl,
+        AC_HELP_STRING([--with-gsl=path],[location of gsl installation. Default: system lib]),
+        [],
+	[with_gsl=no])
+
+if test "x$with_gsl" = "xno"; then
+	AC_MSG_RESULT([in system libraries])
+	oldlibs="$LIBS"
+	AC_CHECK_LIB(m,main)
+	AC_CHECK_LIB(gslcblas,main)
+	AC_CHECK_LIB(gsl,main,[],
+			[
+			AC_MSG_ERROR([Cannot find libgsl. Please install the GNU scientific library.])
+			]
+		     )
+	GSLLIBS="$LIBS"
+	LIBS=$oldlibs
+else
+	if test -e "$with_gsl/lib/libgsl.a" -a -d "$with_gsl/include/gsl"; then
+		AC_MSG_RESULT([found in $with_gsl])
+		GSLLIBS="-L$with_gsl/lib -R$with_gsl/lib -lgslcblas -lgsl"
+		GSLINCLUDE="-I$with_gsl/include"
+	else
+		AC_MSG_RESULT([not found])
+		AC_MSG_ERROR([Can't find $with_gsl/lib/libgsl.a or the headers in $with_gsl/include])
+	fi
+fi
+
+dnl AM_CONDITIONAL(HAVE_GSL,[test "x$with_HepMC" != "xno"])
+AC_SUBST(GSLINCLUDE)
+AC_SUBST(GSLLIBS)
 ])
