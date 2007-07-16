@@ -8,308 +8,232 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/Interface/Parameter.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "WSBFormFactor.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-
 #include "ThePEG/StandardModel/StandardModelBase.h"
 #include "ThePEG/PDT/EnumParticles.h"
 #include "ThePEG/PDT/ParticleData.h"
 #include "ThePEG/Repository/EventGenerator.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
 WSBFormFactor::WSBFormFactor() 
-{
+  : _F0(51), _V(51), _A0(51), _A1(51), _A2(51), 
+    _mS0(51), _mS1(51), _mV0(51), _mV1(51) {
   // modes handled by this and the parameters model
-  // K to pi
-  _F0.push_back(0.992);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(0.494*GeV);_mV0.push_back(0.892*GeV);
-  _mS1.push_back(1.430*GeV);_mV1.push_back(1.273*GeV);
-  _F0.push_back(0.992);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(0.498*GeV);_mV0.push_back(0.896*GeV);
-  _mS1.push_back(1.430*GeV);_mV1.push_back(1.273*GeV);
-  addFormFactor(321, 111,0,2,-3,-2);
-  addFormFactor(311,-211,0,1,-3,-2);
-  // D to K
-  _F0.push_back(0.762);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
-  _F0.push_back(0.762);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
+  // K to pi 
+  addFormFactor(-321, 111,0,-2,3,2);
+  addFormFactor(-311, 211,0,-1,3,2);
+  addFormFactor(-321,-211,0,-2,3,1);
+  addFormFactor(-311, 111,0,-1,3,1);
+  for(unsigned int ix=0;ix<4;++ix) {
+    _F0[ix] = 0.992; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 0.494*GeV; _mV0[ix] = 0.892*GeV; 
+    _mS1[ix] = 1.430*GeV; _mV1[ix] = 1.273*GeV; 
+  }
+  // D to K 
   addFormFactor(421,-321,0,-2,4,3);
   addFormFactor(411,-311,0,-1,4,3);
+  for(unsigned int ix=4;ix<6;++ix) {
+    _F0[ix] = 0.762; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 1.97*GeV; _mV0[ix] = 2.11*GeV; 
+    _mS1[ix] = 2.60*GeV; _mV1[ix] = 2.53*GeV;
+  }
   // D to pi
-  _F0.push_back(0.692);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  _F0.push_back(0.692);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  _F0.push_back(0.692);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  _F0.push_back(0.692);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(421,-211,0,-2,4,1);
   addFormFactor(421, 111,0,-2,4,2);
   addFormFactor(411, 111,0,-1,4,1);
   addFormFactor(411, 211,0,-1,4,2);
+  for(unsigned int ix=6;ix<10;++ix) {
+    _F0[ix] = 0.692; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D to eta
-  _F0.push_back(0.681);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(421,221,0,-2,4,2);
-  _F0.push_back(0.681);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(411,221,0,-1,4,1);
+  for(unsigned int ix=10;ix<12;++ix) {
+    _F0[ix] = 0.681; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D to eta'
-  _F0.push_back(0.655);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(421,331,0,-2,4,2);
-  _F0.push_back(0.655);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(411,331,0,-1,4,1);
+  for(unsigned int ix=12;ix<14;++ix) {
+    _F0[ix] = 0.655; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D to K*
-  _F0.push_back(0.000);_V.push_back(1.226);_A0.push_back(0.733);
-  _A1.push_back(0.880);_A2.push_back(1.147);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
-  _F0.push_back(0.000);_V.push_back(1.226);_A0.push_back(0.733);
-  _A1.push_back(0.880);_A2.push_back(1.147);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
   addFormFactor(421,-323,1,-2,4,3);
   addFormFactor(411,-313,1,-1,4,3);
+  for(unsigned int ix=14;ix<16;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 1.226; _A0[ix] = 0.733; 
+    _A1[ix] = 0.880; _A2[ix] = 1.147; 
+    _mS0[ix] = 1.97*GeV; _mV0[ix] = 2.11*GeV; 
+    _mS1[ix] = 2.60*GeV; _mV1[ix] = 2.53*GeV;
+  } 
   // D to rho
-  _F0.push_back(0.000);_V.push_back(1.225);_A0.push_back(0.669);
-  _A1.push_back(0.775);_A2.push_back(0.923);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  _F0.push_back(0.000);_V.push_back(1.225);_A0.push_back(0.669);
-  _A1.push_back(0.775);_A2.push_back(0.923);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  _F0.push_back(0.000);_V.push_back(1.225);_A0.push_back(0.669);
-  _A1.push_back(0.775);_A2.push_back(0.923);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  _F0.push_back(0.000);_V.push_back(1.225);_A0.push_back(0.669);
-  _A1.push_back(0.775);_A2.push_back(0.923);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(421,-213,1,-2,4,1);
   addFormFactor(421, 113,1,-2,4,2);
   addFormFactor(411, 113,1,-1,4,1);
   addFormFactor(411, 213,1,-1,4,2);
+  for(unsigned int ix=16;ix<20;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 1.225; _A0[ix] = 0.669; 
+    _A1[ix] = 0.775; _A2[ix] = 0.923; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D to omega
-  _F0.push_back(0.000);_V.push_back(1.236);_A0.push_back(0.669);
-  _A1.push_back(0.772);_A2.push_back(0.920);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  addFormFactor(411,223,1,-1,4,1);
-  _F0.push_back(0.000);_V.push_back(1.236);_A0.push_back(0.669);
-  _A1.push_back(0.772);_A2.push_back(0.920);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
-  addFormFactor(421,223,1,-2,4,2);
+  addFormFactor(411,223,1,-1,4,1); 
+  addFormFactor(421,223,1,-2,4,2); 
+  for(unsigned int ix=20;ix<22;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 1.236; _A0[ix] = 0.669; 
+    _A1[ix] = 0.772; _A2[ix] = 0.920; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D_s to eta
-  _F0.push_back(0.723);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
   addFormFactor(431,221,0,-3,4,3);
+  _F0[22] = 0.723; _V[22]  = 0.000; _A0[22] = 0.000; 
+  _A1[22] = 0.000; _A2[22] = 0.000; 
+  _mS0[22] = 1.97*GeV; _mV0[22] = 2.11*GeV; 
+  _mS1[22] = 2.60*GeV; _mV1[22] = 2.53*GeV; 
   // D_s to eta'
-  _F0.push_back(0.704);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
   addFormFactor(431,331,0,-3,4,3);
+  _F0[23] = 0.704; _V[23]  = 0.000; _A0[23] = 0.000; 
+  _A1[23] = 0.000; _A2[23] = 0.000; 
+  _mS0[23] = 1.97*GeV; _mV0[23] = 2.11*GeV; 
+  _mS1[23] = 2.60*GeV; _mV1[23] = 2.53*GeV; 
   // D_s to K
-  _F0.push_back(0.643);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(431,311,0,-3,4,1);
-  _F0.push_back(0.643);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(431,321,0,-3,4,2);
+  for(unsigned int ix=24;ix<26;++ix) {
+    _F0[ix] = 0.643; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D_s to K*
-  _F0.push_back(0.000);_V.push_back(1.250);_A0.push_back(0.634);
-  _A1.push_back(0.717);_A2.push_back(0.853);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(431,313,1,-3,4,1);
-  _F0.push_back(0.000);_V.push_back(1.250);_A0.push_back(0.634);
-  _A1.push_back(0.717);_A2.push_back(0.853);
-  _mS0.push_back(1.87*GeV);_mV0.push_back(2.01*GeV);
-  _mS1.push_back(2.47*GeV);_mV1.push_back(2.42*GeV);
   addFormFactor(431,323,1,-3,4,2);
+  for(unsigned int ix=26;ix<28;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 1.250; _A0[ix] = 0.634; 
+    _A1[ix] = 0.717; _A2[ix] = 0.853; 
+    _mS0[ix] = 1.87*GeV; _mV0[ix] = 2.01*GeV; 
+    _mS1[ix] = 2.47*GeV; _mV1[ix] = 2.42*GeV;
+  }
   // D_s to phi
-  _F0.push_back(0.000);_V.push_back(1.319);_A0.push_back(0.700);
-  _A1.push_back(0.820);_A2.push_back(1.076);
-  _mS0.push_back(1.97*GeV);_mV0.push_back(2.11*GeV);
-  _mS1.push_back(2.60*GeV);_mV1.push_back(2.53*GeV);
   addFormFactor(431,333,1,-3,4,3);
+  _F0[28] = 0.000; _V[28]  = 1.319; _A0[28] = 0.700; 
+  _A1[28] = 0.820; _A2[28] = 1.076; 
+  _mS0[28] = 1.97*GeV; _mV0[28] = 2.11*GeV; 
+  _mS1[28] = 2.60*GeV; _mV1[28] = 2.53*GeV; 
   // B to D
-  _F0.push_back(0.690);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(6.30*GeV);_mV0.push_back(6.34*GeV);
-  _mS1.push_back(6.80*GeV);_mV1.push_back(6.73*GeV);
-  _F0.push_back(0.690);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(6.30*GeV);_mV0.push_back(6.34*GeV);
-  _mS1.push_back(6.80*GeV);_mV1.push_back(6.73*GeV);
-  addFormFactor(521,-421,0,2,-5,-4);
-  addFormFactor(511,-411,0,2,-5,-4);
+  addFormFactor(-521,421,0,-2,5,4);
+  addFormFactor(-511,411,0,-2,5,4);
+  for(unsigned int ix=29;ix<31;++ix) {
+    _F0[ix] = 0.690; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 6.30*GeV; _mV0[ix] = 6.34*GeV; 
+    _mS1[ix] = 6.80*GeV; _mV1[ix] = 6.73*GeV;
+  }
   // B to K 
-  _F0.push_back(0.379);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.38*GeV);_mV0.push_back(5.43*GeV);
-  _mS1.push_back(5.89*GeV);_mV1.push_back(5.82*GeV);
-  _F0.push_back(0.379);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.38*GeV);_mV0.push_back(5.43*GeV);
-  _mS1.push_back(5.89*GeV);_mV1.push_back(5.82*GeV);
-  addFormFactor(521,321,0,2,-5,-3);
-  addFormFactor(511,311,0,1,-5,-3);
+  addFormFactor(-521,-321,0,-2,5,3);
+  addFormFactor(-511,-311,0,-1,5,3);
+  for(unsigned int ix=31;ix<33;++ix) {
+    _F0[ix] = 0.379; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 5.38*GeV; _mV0[ix] = 5.43*GeV; 
+    _mS1[ix] = 5.89*GeV; _mV1[ix] = 5.82*GeV;
+  }
   // B to pi
-  _F0.push_back(0.333);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  _F0.push_back(0.333);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521, 111,0,2,-5,-2);
-  addFormFactor(511,-211,0,1,-5,-2);
-  _F0.push_back(0.333);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  _F0.push_back(0.333);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521, 211,0,2,-5,-1);
-  addFormFactor(511, 111,0,1,-5,-1);
+  addFormFactor(-521, 111,0,-2,5,2);
+  addFormFactor(-511, 211,0,-1,5,2);
+  addFormFactor(-521,-211,0,-2,5,1);
+  addFormFactor(-511, 111,0,-1,5,1);
+  for(unsigned int ix=33;ix<37;++ix) {
+    _F0[ix] = 0.333; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 5.27*GeV; _mV0[ix] = 5.32*GeV; 
+    _mS1[ix] = 5.78*GeV; _mV1[ix] = 5.71*GeV;
+  }
   // B to eta
-  _F0.push_back(0.307);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521,221,0,2,-5,-2);
-  _F0.push_back(0.307);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(511,221,0,1,-5,-1);
+  addFormFactor(-521,221,0,-2,5,2);
+  addFormFactor(-511,221,0,-1,5,1);
+  for(unsigned int ix=37;ix<39;++ix) {
+    _F0[ix] = 0.307; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 5.27*GeV; _mV0[ix] = 5.32*GeV; 
+    _mS1[ix] = 5.78*GeV; _mV1[ix] = 5.71*GeV;
+  }
   // B to eta'
-  _F0.push_back(0.254);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521,331,0,2,-5,2);
-  _F0.push_back(0.254);_V.push_back(0.000);_A0.push_back(0.000);
-  _A1.push_back(0.000);_A2.push_back(0.000);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(511,331,0,1,-5,1);
+  addFormFactor(-521,331,0,-2,5,2);
+  addFormFactor(-511,331,0,-1,5,1);
+  for(unsigned int ix=39;ix<41;++ix) {
+    _F0[ix] = 0.254; _V[ix]  = 0.000; _A0[ix] = 0.000; 
+    _A1[ix] = 0.000; _A2[ix] = 0.000; 
+    _mS0[ix] = 5.27*GeV; _mV0[ix] = 5.32*GeV; 
+    _mS1[ix] = 5.78*GeV; _mV1[ix] = 5.71*GeV;
+  }
   // B to D*
-  _F0.push_back(0.000);_V.push_back(0.705);_A0.push_back(0.623);
-  _A1.push_back(0.651);_A2.push_back(0.686);
-  _mS0.push_back(6.30*GeV);_mV0.push_back(6.34*GeV);
-  _mS1.push_back(6.80*GeV);_mV1.push_back(6.73*GeV);
-  _F0.push_back(0.000);_V.push_back(0.705);_A0.push_back(0.623);
-  _A1.push_back(0.651);_A2.push_back(0.686);
-  _mS0.push_back(6.30*GeV);_mV0.push_back(6.34*GeV);
-  _mS1.push_back(6.80*GeV);_mV1.push_back(6.73*GeV);
-  addFormFactor(521,-423,1,2,-5,-4);
-  addFormFactor(511,-413,1,1,-5,-4);
-  // B to K*
-  _F0.push_back(0.000);_V.push_back(0.369);_A0.push_back(0.321);
-  _A1.push_back(0.328);_A2.push_back(0.331);
-  _mS0.push_back(5.38*GeV);_mV0.push_back(5.43*GeV);
-  _mS1.push_back(5.89*GeV);_mV1.push_back(5.82*GeV);
-  _F0.push_back(0.000);_V.push_back(0.369);_A0.push_back(0.321);
-  _A1.push_back(0.328);_A2.push_back(0.331);
-  _mS0.push_back(5.38*GeV);_mV0.push_back(5.43*GeV);
-  _mS1.push_back(5.89*GeV);_mV1.push_back(5.82*GeV);
-  addFormFactor(521,323,1,2,-5,-3);
-  addFormFactor(511,313,1,1,-5,-3);
-  // B to rho 
-  _F0.push_back(0.000);_V.push_back(0.329);_A0.push_back(0.281);
-  _A1.push_back(0.283);_A2.push_back(0.283);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  _F0.push_back(0.000);_V.push_back(0.329);_A0.push_back(0.281);
-  _A1.push_back(0.283);_A2.push_back(0.283);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521, 113,1,2,-5,-2);
-  addFormFactor(511,-213,1,1,-5,-2);
-  _F0.push_back(0.000);_V.push_back(0.329);_A0.push_back(0.281);
-  _A1.push_back(0.283);_A2.push_back(0.283);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  _F0.push_back(0.000);_V.push_back(0.329);_A0.push_back(0.281);
-  _A1.push_back(0.283);_A2.push_back(0.283);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521, 213,1,2,-5,-1);
-  addFormFactor(511, 113,1,1,-5,-1);
+  addFormFactor(-521,423,1,-2,5,4);
+  addFormFactor(-511,413,1,-1,5,4);
+  for(unsigned int ix=41;ix<43;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 0.705; _A0[ix] = 0.623; 
+    _A1[ix] = 0.651; _A2[ix] = 0.686; 
+    _mS0[ix] = 6.30*GeV; _mV0[ix] = 6.34*GeV; 
+    _mS1[ix] = 6.80*GeV; _mV1[ix] = 6.73*GeV;
+  }
+  // B to K* 
+  addFormFactor(-521,-323,1,-2,5,3);
+  addFormFactor(-511,-313,1,-1,5,3);
+  for(unsigned int ix=43;ix<45;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 0.369; _A0[ix] = 0.321; 
+    _A1[ix] = 0.328; _A2[ix] = 0.331; 
+    _mS0[ix] = 5.38*GeV; _mV0[ix] = 5.43*GeV; 
+    _mS1[ix] = 5.89*GeV; _mV1[ix] = 5.82*GeV;
+  }
+  // B to rho
+  addFormFactor(-521, 113,1,-2,5,2);
+  addFormFactor(-511, 213,1,-1,5,2);
+  addFormFactor(-521,-213,1,-2,5,1);
+  addFormFactor(-511, 113,1,-1,5,1); 
+  for(unsigned int ix=45;ix<49;++ix) {
+    _F0[ix] = 0.000; _V[ix]  = 0.329; _A0[ix] = 0.281; 
+    _A1[ix] = 0.283; _A2[ix] = 0.283; 
+ _mS0[ix] = 5.27*GeV; _mV0[ix] = 5.32*GeV; 
+    _mS1[ix] = 5.78*GeV; _mV1[ix] = 5.71*GeV;
+  }
   // B to omega
-  _F0.push_back(0.000);_V.push_back(0.328);_A0.push_back(0.280);
-  _A1.push_back(0.281);_A2.push_back(0.281);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(521,223,1,2,-5,-2);
-  _F0.push_back(0.000);_V.push_back(0.328);_A0.push_back(0.280);
-  _A1.push_back(0.281);_A2.push_back(0.281);
-  _mS0.push_back(5.27*GeV);_mV0.push_back(5.32*GeV);
-  _mS1.push_back(5.78*GeV);_mV1.push_back(5.71*GeV);
-  addFormFactor(511,223,1,1,-5,-1);
+  addFormFactor(-521,223,1,-2,5,2); 
+  addFormFactor(-511,223,1,-1,5,1);
+  for(unsigned int ix=49;ix<51;++ix) {
+    _F0[ix] = 0.000; _V[ix] = 0.328; _A0[ix] = 0.280; 
+    _A1[ix] = 0.281; _A2[ix] = 0.281; 
+    _mS0[ix] = 5.27*GeV; _mV0[ix] = 5.32*GeV; 
+    _mS1[ix] = 5.78*GeV; _mV1[ix] = 5.71*GeV;
+  } 
   // set the initial number of modes
   initialModes(numberOfFactors());
   // eta-eta' mixing angle
   _thetaeta=-0.194;
 }
 
-WSBFormFactor::~WSBFormFactor() {}
-
 void WSBFormFactor::persistentOutput(PersistentOStream & os) const {
-  os << _F0 << _V << _A0 << _A1 << _A2 
-     << ounit(_mS0,GeV) << ounit(_mS1,GeV) << ounit(_mV0,GeV) << ounit(_mV1,GeV) << _thetaeta;
+  os << _F0 << _V << _A0 << _A1 << _A2 << ounit(_mS0,GeV) 
+     << ounit(_mS1,GeV) << ounit(_mV0,GeV) << ounit(_mV1,GeV) << _thetaeta;
 }
 
 void WSBFormFactor::persistentInput(PersistentIStream & is, int) {
-  is >> _F0 >> _V >> _A0 >> _A1 >> _A2 
-     >> iunit(_mS0,GeV) >> iunit(_mS1,GeV) >> iunit(_mV0,GeV) >> iunit(_mV1,GeV) >> _thetaeta;
+  is >> _F0 >> _V >> _A0 >> _A1 >> _A2 >> iunit(_mS0,GeV) 
+     >> iunit(_mS1,GeV) >> iunit(_mV0,GeV) >> iunit(_mV1,GeV) >> _thetaeta;
 }
 
 ClassDescription<WSBFormFactor> WSBFormFactor::initWSBFormFactor;
@@ -386,102 +310,94 @@ void WSBFormFactor::Init() {
 void WSBFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
 					   int,int id1,
 					   Energy, Energy,Complex & f0,
-					   Complex & fp) const
-{
-  f0 = _F0[mode]/(1.-q2/_mS1[mode]/_mS1[mode]);
-  fp = _F0[mode]/(1.-q2/_mV0[mode]/_mV0[mode]);
+					   Complex & fp) const {
+  f0 = _F0[mode]/(1.-q2/sqr(_mS1[mode]));
+  fp = _F0[mode]/(1.-q2/sqr(_mV0[mode]));
   int jspin,spect,inquark,outquark;
   formFactorInfo(mode,jspin,spect,inquark,outquark);
-  if(abs(outquark)==abs(spect))
-    {
-      double fact;
-      if(id1==ParticleID::eta)
-	{
-	  if(abs(outquark)==3){fact=-2.*cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
-	  else{fact=cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);}
-	}
-      else if(id1==ParticleID::etaprime)
-	{
-	  if(abs(outquark)==3){fact=-2.*sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
-	  else{fact=sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);}
-	}
-      else if(id1==ParticleID::pi0&&abs(outquark)==1){fact=-sqrt(0.5);}
-      else{fact= sqrt(0.5);}
-      f0*=fact;fp*=fact;
+  if(abs(outquark)==abs(spect)) {
+    double fact;
+    if(id1==ParticleID::eta) {
+      if(abs(outquark)==3) fact = -2.*cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);
+      else                 fact =     cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);
     }
+    else if(id1==ParticleID::etaprime) {
+      if(abs(outquark)==3) fact = -2.*sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);
+      else                 fact =     sin(_thetaeta)/sqrt(6.)+cos(_thetaeta)/sqrt(3.);
+    }
+    else if(id1==ParticleID::pi0&&abs(outquark)==1) fact=-sqrt(0.5);
+    else                                            fact= sqrt(0.5);
+    f0*=fact;
+    fp*=fact;
+  }
 }
 
 void WSBFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
 					   int, int id1, 
 					   Energy, Energy,Complex & A0,
-					   Complex & A1,Complex & A2,Complex & V) const
-{
+					   Complex & A1,Complex & A2,Complex & V) const {
   A0 = -_A0[mode]/(1.-q2/_mS0[mode]/_mS0[mode]);
   A1 = -_A1[mode]/(1.-q2/_mV1[mode]/_mV1[mode]);
   A2 = -_A2[mode]/(1.-q2/_mV1[mode]/_mV1[mode]);
-  V  = - _V[mode]/(1.-q2/_mV0[mode]/_mV0[mode]);
+  V  =   _V[mode]/(1.-q2/_mV0[mode]/_mV0[mode]);
   int jspin,spect,inquark,outquark;
   formFactorInfo(mode,jspin,spect,inquark,outquark);
-  if(abs(outquark)==abs(spect)&&abs(spect)<3)
-    {
-      double fact(sqrt(0.5));
-      if(id1==ParticleID::rho0&&abs(outquark)==1){fact=-fact;}
-      A0*=fact;A1*=fact;A2*=fact;V*=fact;
-    }
+  if(abs(outquark)==abs(spect)&&abs(spect)<3) {
+    double fact = id1==ParticleID::rho0&&abs(outquark)==1 ? -sqrt(0.5) : sqrt(0.5);
+    A0 *= fact;
+    A1 *= fact;
+    A2 *= fact;
+    V  *= fact;
+  }
 }
 
-void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const
-{
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig::WSBFormFactor " << fullName() << " \n";}
+void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::WSBFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";
-  for(unsigned int ix=0;ix<numberOfFactors();++ix)
-    {
-      if(ix<initialModes())
-	{
-	  output << "set " << fullName() << ":F0 " 
-		 << ix << "  " << _F0[ix] << endl;
-	  output << "set " << fullName() << ":V  " 
-		 << ix << "  " << _V[ix]  << endl;
-	  output << "set " << fullName() << ":A0 " 
-		 << ix << "  " << _A0[ix] << endl;
-	  output << "set " << fullName() << ":A1 " 
-		 << ix << "  " << _A1[ix] << endl;
-	  output << "set " << fullName() << ":A2 " 
-		 << ix << "  " << _A2[ix] << endl;
-	  output << "set " << fullName() << ":ScalarMass " 
-		 << ix << "  " << _mS0[ix]/GeV << endl;
-	  output << "set " << fullName() << ":PseudoScalarMass " 
-		 << ix << "  " << _mS1[ix]/GeV << endl;
-	  output << "set " << fullName() << ":VectorMass " 
-		 << ix << "  " << _mV0[ix]/GeV << endl;
-	  output << "set " << fullName() << ":PseudoVectorMass " 
-		 << ix << "  " << _mV1[ix]/GeV << endl;
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":F0 " 
-		 << ix << "  " << _F0[ix] << endl;
-	  output << "insert " << fullName() << ":V  " 
-		 << ix << "  " << _V[ix]  << endl;
-	  output << "insert " << fullName() << ":A0 " 
-		 << ix << "  " << _A0[ix] << endl;
-	  output << "insert " << fullName() << ":A1 " 
-		 << ix << "  " << _A1[ix] << endl;
-	  output << "insert " << fullName() << ":A2 " 
-		 << ix << "  " << _A2[ix] << endl;
-	  output << "insert " << fullName() << ":ScalarMass " 
-		 << ix << "  " << _mS0[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":PseudoScalarMass " 
-		 << ix << "  " << _mS1[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":VectorMass " 
-		 << ix << "  " << _mV0[ix]/GeV << endl;
-	  output << "insert " << fullName() << ":PseudoVectorMass " 
-		 << ix << "  " << _mV1[ix]/GeV << endl;
-	}
+  for(unsigned int ix=0;ix<numberOfFactors();++ix) {
+    if(ix<initialModes()) {
+      output << "set " << fullName() << ":F0 " 
+	     << ix << "  " << _F0[ix] << "\n";
+      output << "set " << fullName() << ":V  " 
+	     << ix << "  " << _V[ix]  << "\n";
+      output << "set " << fullName() << ":A0 " 
+	     << ix << "  " << _A0[ix] << "\n";
+      output << "set " << fullName() << ":A1 " 
+	     << ix << "  " << _A1[ix] << "\n";
+      output << "set " << fullName() << ":A2 " 
+	     << ix << "  " << _A2[ix] << "\n";
+      output << "set " << fullName() << ":ScalarMass " 
+	     << ix << "  " << _mS0[ix]/GeV << "\n";
+      output << "set " << fullName() << ":PseudoScalarMass " 
+	     << ix << "  " << _mS1[ix]/GeV << "\n";
+      output << "set " << fullName() << ":VectorMass " 
+	     << ix << "  " << _mV0[ix]/GeV << "\n";
+      output << "set " << fullName() << ":PseudoVectorMass " 
+	     << ix << "  " << _mV1[ix]/GeV << "\n";
     }
+    else {
+      output << "insert " << fullName() << ":F0 " 
+	     << ix << "  " << _F0[ix] << "\n";
+      output << "insert " << fullName() << ":V  " 
+	     << ix << "  " << _V[ix]  << "\n";
+      output << "insert " << fullName() << ":A0 " 
+	     << ix << "  " << _A0[ix] << "\n";
+      output << "insert " << fullName() << ":A1 " 
+	     << ix << "  " << _A1[ix] << "\n";
+      output << "insert " << fullName() << ":A2 " 
+	     << ix << "  " << _A2[ix] << "\n";
+      output << "insert " << fullName() << ":ScalarMass " 
+	     << ix << "  " << _mS0[ix]/GeV << "\n";
+      output << "insert " << fullName() << ":PseudoScalarMass " 
+	     << ix << "  " << _mS1[ix]/GeV << "\n";
+      output << "insert " << fullName() << ":VectorMass " 
+	     << ix << "  " << _mV0[ix]/GeV << "\n";
+      output << "insert " << fullName() << ":PseudoVectorMass " 
+	     << ix << "  " << _mV1[ix]/GeV << "\n";
+    }
+  }
   ScalarFormFactor::dataBaseOutput(output,false,false);
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
