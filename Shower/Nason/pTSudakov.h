@@ -240,7 +240,7 @@ template <>
 struct ClassTraits<Herwig::pTSudakov>
   : public ClassTraitsBase<Herwig::pTSudakov> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::pTSudakov"; }
+  static string className() { return "Herwig::pTSudakov"; }
   /**
    * The name of a file containing the dynamic library where the class
    * pTSudakov is implemented. It may also include several, space-separated,

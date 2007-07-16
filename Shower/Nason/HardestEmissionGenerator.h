@@ -161,7 +161,7 @@ template <>
 struct ClassTraits<Herwig::HardestEmissionGenerator>
   : public ClassTraitsBase<Herwig::HardestEmissionGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::HardestEmissionGenerator"; }
+  static string className() { return "Herwig::HardestEmissionGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * HardestEmissionGenerator is implemented. It may also include several, space-separated,

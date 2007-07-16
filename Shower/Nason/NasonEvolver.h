@@ -177,7 +177,7 @@ template <>
 struct ClassTraits<Herwig::NasonEvolver>
   : public ClassTraitsBase<Herwig::NasonEvolver> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::NasonEvolver"; }
+  static string className() { return "Herwig::NasonEvolver"; }
   /**
    * The name of a file containing the dynamic library where the class
    * NasonEvolver is implemented. It may also include several, space-separated,

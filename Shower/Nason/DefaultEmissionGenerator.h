@@ -245,7 +245,7 @@ template <>
 struct ClassTraits<Herwig::DefaultEmissionGenerator>
   : public ClassTraitsBase<Herwig::DefaultEmissionGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DefaultEmissionGenerator"; }
+  static string className() { return "Herwig::DefaultEmissionGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DefaultEmissionGenerator is implemented. It may also include several, space-separated,

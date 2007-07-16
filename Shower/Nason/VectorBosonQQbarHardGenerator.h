@@ -269,7 +269,7 @@ template <>
 struct ClassTraits<Herwig::VectorBosonQQbarHardGenerator>
   : public ClassTraitsBase<Herwig::VectorBosonQQbarHardGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::VectorBosonQQbarHardGenerator"; }
+  static string className() { return "Herwig::VectorBosonQQbarHardGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * VectorBosonQQbarHardGenerator is implemented. It may also include several, space-separated,

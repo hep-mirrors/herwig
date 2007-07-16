@@ -283,7 +283,7 @@ template <>
 struct ClassTraits<Herwig::DrellYanHardGenerator>
   : public ClassTraitsBase<Herwig::DrellYanHardGenerator> {
   /** Return a platform-independent class name */
-  static string className() { return "Herwig++::DrellYanHardGenerator"; }
+  static string className() { return "Herwig::DrellYanHardGenerator"; }
   /**
    * The name of a file containing the dynamic library where the class
    * DrellYanHardGenerator is implemented. It may also include several, space-separated,
