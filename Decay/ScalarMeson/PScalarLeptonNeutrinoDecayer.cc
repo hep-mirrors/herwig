@@ -16,45 +16,39 @@
 #include "ThePEG/Persistency/PersistentIStream.h"
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
-using ThePEG::Helicity::SpinorWaveFunction;
-using ThePEG::Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
 
-PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() {
-  // intermediates
-  generateIntermediates(false);
-  // the fermi constant
-  _GF=1.16637E-5/GeV2;
+PScalarLeptonNeutrinoDecayer::PScalarLeptonNeutrinoDecayer() 
+  : _incoming(6), _decayconstant(6), _leptons(6), _maxweighte(6), 
+    _maxweightmu(6), _maxweighttau(6), _GF(1.16637E-5/GeV2) {
   // pion decay
-  _incoming.push_back(211);_decayconstant.push_back(127.3*MeV);_leptons.push_back(2);
-  _maxweighte.push_back(0.000126639);_maxweightmu.push_back(0.986777);
-  _maxweighttau.push_back(0.0);
+  _incoming[0] = 211; _decayconstant[0] = 127.3*MeV; _leptons[0] = 2; 
+  _maxweighte[0] = 0.000126639; _maxweightmu[0] = 0.986777; 
+  _maxweighttau[0] = 0.0; 
   // kaon decay
-  _incoming.push_back(321);_decayconstant.push_back(36.31*MeV);_leptons.push_back(2);
-  _maxweighte.push_back(1.6599e-05);_maxweightmu.push_back(0.646136);
-  _maxweighttau.push_back(0.0);
+  _incoming[1] = 321; _decayconstant[1] = 36.31*MeV; _leptons[1] = 2; 
+  _maxweighte[1] = 1.6599e-05; _maxweightmu[1] = 0.646136; 
+  _maxweighttau[1] = 0.0; 
   // D_s decay
-  _incoming.push_back(431);_decayconstant.push_back(286.1*MeV);_leptons.push_back(3);
-  _maxweighte.push_back(8.29008e-08);_maxweightmu.push_back(0.00352387);
-  _maxweighttau.push_back(0.0342748);
+  _incoming[2] = 431; _decayconstant[2] = 286.1*MeV; _leptons[2] = 3; 
+  _maxweighte[2] = 8.29008e-08; _maxweightmu[2] = 0.00352387; 
+  _maxweighttau[2] = 0.0342748; 
   // D decay
-  _incoming.push_back(411);_decayconstant.push_back(50.55*MeV);_leptons.push_back(3);
-  _maxweighte.push_back(1.67007e-07);_maxweightmu.push_back(0.00709453);
-  _maxweighttau.push_back(0.0187692);
+  _incoming[3] = 411; _decayconstant[3] = 50.55*MeV; _leptons[3] = 3; 
+  _maxweighte[3] = 1.67007e-07; _maxweightmu[3] = 0.00709453; 
+  _maxweighttau[3] = 0.0187692; 
   // B_c decay
-  _incoming.push_back(541);_decayconstant.push_back(16.0*MeV);_leptons.push_back(3);
-  _maxweighte.push_back(1.61603e-09);_maxweightmu.push_back(6.90525e-05);
-  _maxweighttau.push_back(0.0166333);
+  _incoming[4] = 541; _decayconstant[4] = 16.0*MeV; _leptons[4] = 3; 
+  _maxweighte[4] = 1.61603e-09; _maxweightmu[4] = 6.90525e-05; 
+  _maxweighttau[4] = 0.0166333; 
   // B_u decays
-  _incoming.push_back(521);_decayconstant.push_back(0.6970*MeV);_leptons.push_back(3);
-  _maxweighte.push_back(1.07731e-11);_maxweightmu.push_back(4.60215e-07);
-  _maxweighttau.push_back(9.31156e-05);
+  _incoming[5] = 521; _decayconstant[5] = 0.6970*MeV; _leptons[5] = 3; 
+  _maxweighte[5] = 1.07731e-11; _maxweightmu[5] = 4.60215e-07; 
+  _maxweighttau[5] = 9.31156e-05; 
   // initial size of the vectors
   _initsize=_incoming.size();
+  // intermediates
+  generateIntermediates(false);
 }
 
 void PScalarLeptonNeutrinoDecayer::doinit() throw(InitException) {
@@ -200,7 +194,7 @@ void PScalarLeptonNeutrinoDecayer::Init() {
     ("DecayConstant",
      "The decay constant for the incoming pseudoscaalr meson.",
      &PScalarLeptonNeutrinoDecayer::_decayconstant,
-     GeV, 0, 0*GeV, 0*GeV, 10*GeV, false, false, true);
+     MeV, 0, 0*MeV, 0*MeV, 1000.*MeV, false, false, true);
 }
 
 double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
@@ -242,29 +236,24 @@ double PScalarLeptonNeutrinoDecayer::me2(bool vertex, const int,
   InvEnergy pre = premass * 2.*_decayconstant[icoup]*_GF/inpart.mass();
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin1Half,PDT::Spin1Half);
-
   vector<unsigned int> ispin(3,0);
-  for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1])
-    {
-      for(ispin[iferm+1]=0;ispin[iferm+1]<2;++ispin[iferm+1])
-	{
-	  if(idferm%2==0)
-	    {newME(ispin)=pre*wave[ispin[ianti+1]].rightScalar(wbar[ispin[iferm+1]]);}
-	  else
-	    {newME(ispin)=pre*wave[ispin[ianti+1]].leftScalar( wbar[ispin[iferm+1]]);}
-	}
+  for(ispin[ianti+1]=0;ispin[ianti+1]<2;++ispin[ianti+1]) {
+    for(ispin[iferm+1]=0;ispin[iferm+1]<2;++ispin[iferm+1]) {
+      newME(ispin)= idferm%2==0 ? 
+	pre*wave[ispin[ianti+1]].rightScalar(wbar[ispin[iferm+1]]) :
+	pre*wave[ispin[ianti+1]].leftScalar( wbar[ispin[iferm+1]]) ;
     }
+  }
   ME(newME);
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
-  /*
-  double me=newME.contract(rhoin).real();
-  // test of the matrix element
-  Energy mass;
-  if(idferm%2==0){mass=decay[ianti]->mass();}
-  else{mass=decay[iferm]->mass();}
-  cout << "testing the matrix element " 
-       << _decayconstant[icoup]*_decayconstant[icoup]*_GF*_GF*2.*mass*mass*(inpart.mass()*inpart.mass()-mass*mass) << "  " << 0.5*me*inpart.mass()*inpart.mass() << endl;
-  */
+//   // test of the matrix element
+//   double me=newME.contract(rhoin).real();
+//   Energy mass = idferm%2==0 ? decay[ianti]->mass() : decay[iferm]->mass();
+//   double test = sqr(_decayconstant[icoup]*_GF*2.*mass/inpart.mass())*
+//     (sqr(inpart.mass())-sqr(mass));
+//   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
+//        << me << " " << (me-test)/(me+test) << endl;
   return 0.5*newME.contract(rhoin).real();
 }
 

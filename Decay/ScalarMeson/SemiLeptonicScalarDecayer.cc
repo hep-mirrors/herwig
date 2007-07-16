@@ -21,8 +21,6 @@
 #include "ThePEG/Helicity/WaveFunction/TensorWaveFunction.h"
 
 using namespace Herwig;
-using namespace ThePEG;
-using namespace ThePEG::Helicity;
 using namespace ThePEG::Helicity;
 
 void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
@@ -73,15 +71,6 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
       }
     }
   }
-//   id0=511;
-//   id1=-411;
-//   Energy2 q2=5.22436*GeV2;
-//   bool cc(false);
-//   Energy m0(getParticleData(id0)->mass()),m1(getParticleData(id1)->mass());
-//   unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
-//   Complex f0,fp;
-//   _form->ScalarScalarFormFactor(q2,iloc,id0,id1,m0,m1,f0,fp);
-  //_form->ScalarVectorFormFactor(q2,iloc,id0,id1,MP,MV,A0,A1,A2,V);
 }
 
 bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {
@@ -213,7 +202,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
       hadron.push_back(-ii*msum*A1*vwave[ix]
 		       +ii*A2/msum*dot*sum
 		       +2.*ii*MV/q2*(A3-A0)*dot*q
-		       -2.*V/msum*Helicity::epsilon(vwave[ix],inpart.momentum(),
+		       +2.*V/msum*Helicity::epsilon(vwave[ix],inpart.momentum(),
 						    decay[0]->momentum()));
     }
   }
@@ -276,7 +265,7 @@ double SemiLeptonicScalarDecayer::me2(bool vertex, const int ichan,
   double ckm(1.);
   if(iq<=6) {
     if(iq%2==0) ckm = SM().CKM(abs(iq)/2-1,(abs(ia)-1)/2);
-  else          ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);
+    else        ckm = SM().CKM(abs(ia)/2-1,(abs(iq)-1)/2);
   }
   // return the answer
   return 0.5*(newME.contract(temp)).real()*ckm; 

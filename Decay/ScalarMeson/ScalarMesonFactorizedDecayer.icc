@@ -7,14 +7,9 @@
 namespace Herwig {
 using namespace ThePEG;
 
-inline ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer() {
-  // default value of the fermi constant taken from PDG 2002
-  _GF = 1.16639E-5/GeV2;
-  // default values of the couplings (taken from ZPC34, 103)
-  _a1c = 1.30;
-  _a2c =-0.55;
-  _a1b = 1.10;
-  _a2b =-0.24;
+inline ScalarMesonFactorizedDecayer::ScalarMesonFactorizedDecayer() 
+// default values of the couplings (taken from ZPC34, 103)
+  : _GF(1.16639E-5/GeV2), _a1b(1.10), _a2b(-0.24), _a1c(1.30), _a2c(-0.55) { 
   // intermediates
   generateIntermediates(true);
 }
@@ -25,23 +20,6 @@ inline IBPtr ScalarMesonFactorizedDecayer::clone() const {
 
 inline IBPtr ScalarMesonFactorizedDecayer::fullclone() const {
   return new_ptr(*this);
-}
-
-inline void ScalarMesonFactorizedDecayer::doinitrun() {
-  unsigned int ix,iy;
-  for(ix=0;ix<_current.size();++ix){_current[ix]->initrun();}
-  for(ix=0;ix<_form.size();++ix){_form[ix]->initrun();}
-  DecayIntegrator::doinitrun();
-  if(initialize()) {
-    _weights.clear();_wgtloc.clear();_wgtmax.clear();
-    for(ix=0;ix<numberModes();++ix) {
-      _wgtmax.push_back(mode(ix)->maxWeight());
-      _wgtloc.push_back(_weights.size());
-      for(iy=0;iy<mode(ix)->numberChannels();++iy) {
-	_weights.push_back(mode(ix)->channelWeight(iy));
-      }
-    }
-  }
 }
 
 }
