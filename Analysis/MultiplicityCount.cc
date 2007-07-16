@@ -10,15 +10,31 @@
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/EventRecord/StandardSelectors.h"
 #include "ThePEG/EventRecord/Event.h"
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "MultiplicityCount.tcc"
-#endif
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
+#include <iostream>
+#include <fstream>
 
 using namespace Herwig;
 using namespace ThePEG;
+
+string MultiplicityInfo::bargraph(long N)
+{
+  if (obsMultiplicity == 0.0) return "     ?     ";
+  else if (nSigma(N) >  5.0)   return "-----|---->";
+  else if (nSigma(N) >  4.0)   return "-----|----*";
+  else if (nSigma(N) >  3.0)   return "-----|--*--";
+  else if (nSigma(N) >  2.0)   return "-----|-*---";
+  else if (nSigma(N) >  1.0)   return "-----|*----";
+  else if (nSigma(N) >  0.0)   return "-----*-----";
+  else if (nSigma(N) > -1.0)   return "----*|-----";
+  else if (nSigma(N) > -2.0)   return "---*-|-----";
+  else if (nSigma(N) > -3.0)   return "--*--|-----";
+  else if (nSigma(N) > -4.0)   return "-*---|-----";
+  else if (nSigma(N) > -5.0)   return "*----|-----";
+  else                         return "<----|-----";
+}
 
 MultiplicityCount::MultiplicityCount() 
 {
@@ -63,20 +79,20 @@ MultiplicityCount::MultiplicityCount()
   _data[9000211] = MultiplicityInfo(0.27,0.11,other);
   _data[10221  ] = MultiplicityInfo(0.142,0.011,other);
   // B mesons
-  _data[511] = MultiplicityInfo(0.000,0.000,other); // B0
-  _data[521] = MultiplicityInfo(0.000,0.000,other); // B+
-  _data[531] = MultiplicityInfo(0.000,0.000,other); // B_s
-  _data[541] = MultiplicityInfo(0.000,0.000,other); // B_c
+  _data[511] = MultiplicityInfo(0.00,0.000,other); // B0
+  _data[521] = MultiplicityInfo(0.00,0.000,other); // B+
+  _data[531] = MultiplicityInfo(0.00,0.000,other); // B_s
+  _data[541] = MultiplicityInfo(0.00,0.000,other); // B_c
   // B baryons
-  _data[5122] = MultiplicityInfo(0.000,0.000,other); // Lambda_b
-  _data[5112] = MultiplicityInfo(0.000,0.000,other); // Sig_b-
-  _data[5212] = MultiplicityInfo(0.000,0.000,other); // Sig_b0
-  _data[5222] = MultiplicityInfo(0.000,0.000,other); // Sig_b+
-  _data[5132] = MultiplicityInfo(0.000,0.000,other); // Xi_b-
-  _data[5232] = MultiplicityInfo(0.000,0.000,other); // Xi_b0
-  _data[5312] = MultiplicityInfo(0.000,0.000,other); // Xi'_b-
-  _data[5322] = MultiplicityInfo(0.000,0.000,other); // Xi'_b0
-  _data[5332] = MultiplicityInfo(0.000,0.000,other); // Omega_b-
+  _data[5122] = MultiplicityInfo(0.00,0.000,other); // Lambda_b
+  _data[5112] = MultiplicityInfo(0.00,0.000,other); // Sig_b-
+  _data[5212] = MultiplicityInfo(0.00,0.000,other); // Sig_b0
+  _data[5222] = MultiplicityInfo(0.00,0.000,other); // Sig_b+
+  _data[5132] = MultiplicityInfo(0.00,0.000,other); // Xi_b-
+  _data[5232] = MultiplicityInfo(0.00,0.000,other); // Xi_b0
+  _data[5312] = MultiplicityInfo(0.00,0.000,other); // Xi'_b-
+  _data[5322] = MultiplicityInfo(0.00,0.000,other); // Xi'_b0
+  _data[5332] = MultiplicityInfo(0.00,0.000,other); // Omega_b-
 }
 
 void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
@@ -139,18 +155,67 @@ void MultiplicityCount::analyze(tEventPtr event, long, int, int) {
   }
 }
 
-LorentzRotation MultiplicityCount::transform(tEventPtr) const {
-  return LorentzRotation();
-  // Return the Rotation to the frame in which you want to perform the analysis.
+void MultiplicityCount::analyze(const tPVector & ) {}
+
+void MultiplicityCount::dofinish() {
+  string filename = generator()->filename() + ".mult";
+  ofstream outfile(filename.c_str());
+
+
+
+  outfile << 
+    "\nParticle multiplicities (compared to LEP data):\n"
+    "  ID       Name    simMult     obsMult       obsErr     Sigma\n";
+  for (map<long,MultiplicityInfo>::const_iterator it = _data.begin();
+       it != _data.end();
+       ++it) 
+    {
+      MultiplicityInfo multiplicity = it->second;
+      string name = (it->first==0 ? "All chgd" : 
+		     generator()->getParticleData(it->first)->PDGName() );
+      long N = generator()->currentEventNumber();
+
+      outfile << std::scientific << std::showpoint
+	      << std::setprecision(3)
+	      << setw(7) << it->first << ' '
+	      << setw(9) << name << ' ' 
+	//	      << setw(10) << multiplicity.actualCount << ' '
+	      << setw(2) << multiplicity.simMultiplicity(N) << " | " 
+	//	      << setw(2) << multiplicity.simError(N) << " | " 
+	      << setw(2) << multiplicity.obsMultiplicity << " +/- " 
+	      << setw(2) << multiplicity.obsError << ' '
+      //      if (multiplicity.serious(N)) 
+	      << std::showpos << std::setprecision(1)
+	      << multiplicity.nSigma(N) << ' ' 
+	      << multiplicity.bargraph(N)
+	      << std::noshowpos;
+
+      outfile << '\n';
+    }
+
+
+
+  outfile << "\nCount of particles involved in hard process:\n";
+  for (map<long,long>::const_iterator it = _collisioncount.begin();
+       it != _collisioncount.end(); ++ it) {
+    string name = generator()->getParticleData(it->first)->PDGName();
+    outfile << name << '\t' << it->second << '\n';
+  }
+
+
+
+  outfile << "\nFinal state particle count:\n";
+  for (map<long,long>::const_iterator it = _finalstatecount.begin();
+       it != _finalstatecount.end(); ++ it) {
+    string name = generator()->getParticleData(it->first)->PDGName();
+    outfile << name << '\t' << it->second << '\n';
+  }
+
+
+
+  outfile.close();
+  AnalysisHandler::dofinish();
 }
-
-void MultiplicityCount::analyze(const tPVector & particles) {
-  AnalysisHandler::analyze(particles);
-  // Calls analyze() for each particle.
-}
-
-void MultiplicityCount::analyze(tPPtr) {}
-
 
 NoPIOClassDescription<MultiplicityCount> MultiplicityCount::initMultiplicityCount;
 // Definition of the static class description member.
