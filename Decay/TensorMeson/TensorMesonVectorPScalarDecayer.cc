@@ -206,7 +206,6 @@ void TensorMesonVectorPScalarDecayer::Init() {
 
 }
 
-
 // matrix elememt for the process
 double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
 					    const Particle & inpart,
@@ -243,6 +242,14 @@ double TensorMesonVectorPScalarDecayer::me2(bool vertex, const int,
     }
   }
   ME(newME);
+//   // test of the answer
+//   double me = newME.contract(rhoin).real();
+//   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+// 					     decay[1]->mass());
+//   double test = Energy4(pow<4,1>(2*pcm))*sqr( _coupling[imode()])/80.;
+//   cout << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " " 
+//        << me << " " << test << " " << (me-test)/(me+test) << endl;
   // return the answer
   return newME.contract(rhoin).real();
 }
