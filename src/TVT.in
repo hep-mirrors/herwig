@@ -1,14 +1,54 @@
+##################################################
+# Example generator based on Tevatron parameters
+# usage: Herwig++ read TVT.in
+#
+# Since most parameters are identical to LHC,
+# we use the default LHCGenerator and adapt only
+# for the differences
+##################################################
+
+##################################################
+# Switch for soft underlying event.
+#
+# 'set' lines like this can be omitted if the 
+# default value is already okay.
+#
+# Any repository setting can be modified here
+##################################################
 cd /Defaults/Handlers/Hadronization/Cluster
 set stdCluHadHandler:OnOffSoftUnderlyingEventMode 1
-#
+
+##################################################
+# Technical parameters for this run
+##################################################
 cd /Defaults/Generators
 set LHCGenerator:NumberOfEvents 10000000
 set LHCGenerator:RandomNumberGenerator:Seed 31122001
 set LHCGenerator:DebugLevel 1
 set LHCGenerator:PrintEvent 10
 set LHCGenerator:MaxErrors 100000
-set LHCGenerator:Strategy /Defaults/ThePEGStrategy
+
+##################################################
+# Tevatron physics parameters (override defaults) 
+##################################################
 set LHCGenerator:EventHandler:LuminosityFunction:Energy 2000.0
 set LHCGenerator:EventHandler:BeamB /Defaults/Particles/pbar-
-#
+
+
+##################################################
+# Save run for later usage with 'Herwig++ run'
+##################################################
 saverun TVT LHCGenerator
+
+##################################################
+# uncomment this section for an example batch run
+# of two repeats with different parameters
+#
+# Note that a separate call of 'Herwig run' 
+# is not required
+##################################################
+# set LHCGenerator:NumberOfEvents 10
+# run TVT-2000 LHCGenerator
+#
+# set LHCGenerator:EventHandler:LuminosityFunction:Energy 1800.0
+# run TVT-1800 LHCGenerator

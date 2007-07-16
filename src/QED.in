@@ -1,3 +1,11 @@
+###########################################################
+# Setup of QED corrections to decays (hep-ph/0603034)
+#
+# No user switches here, but the QEDRadiationHandler is not
+# inserted into the list of handlers by default. 
+# (look for QEDRadiationHandler in HerwigDefaults.in)
+###########################################################
+
 # create the objects needed
 mkdir /Defaults/Handlers/QED
 cd /Defaults/Handlers/QED

@@ -1,9 +1,19 @@
+############################################################
+# Setup of default parton shower
+#
+# Useful switches for users are marked near the top of 
+# this file.
+#
+# Don't edit this file directly, but reset the switches
+# in your own input files!
+############################################################
 mkdir /Defaults/Handlers/Shower
 cd /Defaults/Handlers/Shower
 library HwShower.so
-#
-# create the main objects
-#
+
+#####################################
+# initial setup, don't change these!
+#####################################
 create Herwig::SplittingGenerator theSplittingGenerator
 create Herwig::ShowerAlphaQCD theShowerAlphaQCD
 create Herwig::ShowerAlphaQED theShowerAlphaQED
@@ -13,13 +23,61 @@ create Herwig::QTildeModel theShowerModel
 create Herwig::QTildeFinder thePartnerFinder
 create Herwig::QTildeReconstructor theKinematicsReconstructor
 #
-# Set the pointers to the relevant objects 
-#
 set stdShowerHandler:Evolver theEvolver
 set theShowerModel:PartnerFinder thePartnerFinder
 set theShowerModel:KinematicsReconstructor theKinematicsReconstructor
 set theEvolver:ShowerModel theShowerModel
 set theEvolver:SplittingGenerator theSplittingGenerator
+
+#############################################################
+# Main control switches for the parton shower.
+#
+# Read this as a 2x3 matrix with FSR/ISR being the rows 
+# and QCD/QED/EWK as columns. The switches allow detailed
+# control over whole rows and columns or individual entries.
+#############################################################
+
+# These switch a whole row on and off:
+set theSplittingGenerator:OnOffISRMode 1
+set theSplittingGenerator:OnOffFSRMode 1
+
+# These switch a whole column on and off (QED and EWK are not implemented):
+set theSplittingGenerator:OnOffQCDinteractionMode 1
+set theSplittingGenerator:OnOffQEDinteractionMode 0
+set theSplittingGenerator:OnOffEWKinteractionMode 0
+
+# These switches are for each entry individually.
+# If their column or row is 0, they are not considered.
+set theSplittingGenerator:OnOffISR_QCDMode 1
+set theSplittingGenerator:OnOffISR_QEDMode 1
+set theSplittingGenerator:OnOffISR_EWKMode 1
+
+set theSplittingGenerator:OnOffFSR_QCDMode 1
+set theSplittingGenerator:OnOffFSR_QEDMode 1
+set theSplittingGenerator:OnOffFSR_EWKMode 1
+#
+#############################################################
+
+
+#############################################################
+# End of interesting user servicable section.
+#
+# Anything that follows below should only be touched if you 
+# know what you're doing. 
+#
+# Really.
+#############################################################
+
+#
+
+#
+
+#
+
+#
+
+#
+
 #
 #  create the matrix element corrections
 # 
@@ -27,10 +85,12 @@ set theEvolver:SplittingGenerator theSplittingGenerator
 create Herwig::VectorBosonQQBarMECorrection qqbarg
 insert theShowerModel:MECorrections 0 qqbarg
 set qqbarg:Coupling theShowerAlphaQCD
+
 # top decay
 create Herwig::TopDecayMECorrection TopME
 insert theShowerModel:MECorrections 1  TopME
 set TopME:Coupling theShowerAlphaQCD
+
 # drell-yan
 create Herwig::DrellYanMECorrection DrellYan
 insert theShowerModel:MECorrections 2  DrellYan
@@ -50,30 +110,6 @@ set theEvolver:Iptrms 2.1*GeV
 set theEvolver:Beta  0
 set theEvolver:Gamma 0*GeV
 #
-#############################################################
-# read this as a 2x3 matrix with FSR/ISR being the rows 
-# and QCD/QED/EWK as columns
-#
-# these switch a whole column on and off
-set theSplittingGenerator:OnOffQCDinteractionMode 1
-set theSplittingGenerator:OnOffQEDinteractionMode 0
-set theSplittingGenerator:OnOffEWKinteractionMode 0
-
-# these switch a whole row on and off
-set theSplittingGenerator:OnOffISRMode 1
-set theSplittingGenerator:OnOffFSRMode 1
-
-# these switches are for each entry individually
-# if their column or row is 0, they are not looked at
-set theSplittingGenerator:OnOffISR_QCDMode 1
-set theSplittingGenerator:OnOffISR_QEDMode 1
-set theSplittingGenerator:OnOffISR_EWKMode 1
-
-set theSplittingGenerator:OnOffFSR_QCDMode 1
-set theSplittingGenerator:OnOffFSR_QEDMode 1
-set theSplittingGenerator:OnOffFSR_EWKMode 1
-#
-###########################################################
 #
 # Lets set up all the splittings
 create Herwig::QtoQGSplitFn theQtoQGSplitFn

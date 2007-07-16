@@ -1,3 +1,13 @@
+#######################################################
+# Setup of default decay handlers.
+#
+# Nothing interesting for users here. To set up or
+# modify decay modes in your own input files, use 
+# Hw64Decays.in as an example.
+#######################################################
+
+#
+
 # create the DecayHandler
 create Herwig::HwDecayHandler /Defaults/Handlers/DecayHandler
 set /Defaults/Handlers/DecayHandler:PartonicHadronizer /Defaults/Handlers/Hadronization/Cluster/PartonicHadronizer

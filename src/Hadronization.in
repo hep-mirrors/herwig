@@ -1,3 +1,18 @@
+############################################################
+# Setup of default hadronization 
+#
+# There are no user servicable parts inside.
+#
+# Anything that follows below should only be touched if you 
+# know what you're doing. 
+#
+# That's why the authors don't touch it either.
+#############################################################
+
+#
+
+#
+
 mkdir /Defaults/Handlers/Hadronization/Cluster
 cd /Defaults/Handlers/Hadronization/Cluster
 # from libHwHadronization.so

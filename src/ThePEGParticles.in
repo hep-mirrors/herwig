@@ -1,3 +1,10 @@
+############################################################
+# Default particle data. 
+# Changing these is entirely at your own risk!
+#
+# Despite the name, this file no longer matches the version 
+# found in ThePEG.
+############################################################
 create /ThePEG/ConstituentParticleData /Defaults/Particles/d 
 setup /Defaults/Particles/d 1 d 0.00990 0.0 0.0 0.0 -1 3 2 1 0.3250 
 defaultparticle /Defaults/Particles/d 

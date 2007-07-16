@@ -1,3 +1,10 @@
+###########################################################
+# Default cuts (applied to the hard subprocess)
+#
+# Don't change values here, re-set them in your own input 
+# files using these as examples.
+###########################################################
+
 # create some matchers for different types of objects to cut on
 # for any lepton
 create ThePEG::Matcher<Lepton> /Defaults/Matchers/MatchLepton

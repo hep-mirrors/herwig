@@ -1,8 +1,11 @@
-#################################################################################
-# This file contains the extra particle definitions that exist in HERWIG 6.4 but#
-# are not part of the ThePEG defaults particles.                               #
-# This file has been created automatically using scripts by Phil Stephens       #
-#################################################################################
+############################################################
+# Additional particle data of particles not found in ThePEG.
+# Changing these is entirely at your own risk!
+#
+# The distinction between this file and Herwig's version of
+# ThePEGParticles.in has become obsolete when the latter 
+# diverged from ThePEG's version.
+############################################################
 create ThePEG::ParticleData /Defaults/Particles/psi_d
 setup /Defaults/Particles/psi_d 30443 psi_d 3.770 0.0 0.0 0.0  0 0  2  0
 defaultparticle /Defaults/Particles/psi_d
@@ -149,3 +152,4 @@ defaultparticle /Defaults/Particles/eta_2H
 create ThePEG::ParticleData /Defaults/Particles/omega_H
 setup /Defaults/Particles/omega_H 30223 omega_H 1.649 0.0 0.0 0.0  0 0  2  0
 defaultparticle /Defaults/Particles/omega_H
+# This file has been created automatically using scripts by Phil Stephens
