@@ -306,6 +306,7 @@ bool Evolver::timeLikeShower(tShowerParticlePtr particle) {
 	&& fb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
       particle->setEvolutionScale(ShowerIndex::QCD, fb.kinematics->scale());
+      continue;
     }
 
     // apply vetos if needed
@@ -373,6 +374,7 @@ bool Evolver::spaceLikeShower(tShowerParticlePtr particle, PPtr beam) {
 	&& bb.kinematics->pT() > _progenitor->maxHardPt()) {
       vetoed = true;
       particle->setEvolutionScale(ShowerIndex::QCD, bb.kinematics->scale());
+      continue;
     }
 
     // apply the soft correction
