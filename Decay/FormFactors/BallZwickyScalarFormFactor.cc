@@ -17,50 +17,47 @@
 
 using namespace Herwig;
 
-BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()  {
-  double ort(1./sqrt(2.));
+BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()  
+  : _r10(7), _r20(7), _r1plus(7), _r2plus(7), _r1T(7), _r2T(7), _m120(7),
+    _mfit20(7), _m12plus(7), _mfit2plus(7), _m12T(7), _mfit2T(7) {
   // parameters for the B to pi  form-factors
-  // B+ to pi0
-  _r10.push_back(0.);_r20.push_back(ort*0.258);
-  _m120.push_back(-1.*GeV2);_mfit20.push_back(33.81*GeV2);
-  _r1plus.push_back(ort*0.744);_r2plus.push_back(-ort*0.486);
-  _m12plus.push_back(5.32*5.32*GeV2);_mfit2plus.push_back(40.73*GeV2);
-  _r1T.push_back(ort*1.387);_r2T.push_back(-ort*1.134);
-  _m12T.push_back(5.32*5.32*GeV2);_mfit2T.push_back(32.22*GeV2);
-  addFormFactor(521, 111,0,2,-5,-2);
-  // B0 to pi+
-  _r10.push_back(0.);_r20.push_back(0.258);
-  _m120.push_back(-1.*GeV2);_mfit20.push_back(33.81*GeV2);
-  _r1plus.push_back(0.744);_r2plus.push_back(-0.486);
-  _m12plus.push_back(5.32*5.32*GeV2);_mfit2plus.push_back(40.73*GeV2);
-  _r1T.push_back(1.387);_r2T.push_back(-1.134);
-  _m12T.push_back(5.32*5.32*GeV2);_mfit2T.push_back(32.22*GeV2);
-  addFormFactor(511,-211,0,2,-5,-2);
+  for(unsigned int ix=0;ix<4;++ix) {
+    _r10[ix]     = 0.            ; _r20[ix]       = 0.258; 
+    _m120[ix]    = -1.*GeV2      ; _mfit20[ix]    = 33.81*GeV2; 
+    _r1plus[ix]  = 0.744         ; _r2plus[ix]    = -0.486; 
+    _m12plus[ix] = sqr(5.32)*GeV2; _mfit2plus[ix] = 40.73*GeV2; 
+    _r1T[ix]     = 1.387         ; _r2T[ix]       = -1.134; 
+    _m12T[ix]    = sqr(5.32)*GeV2; _mfit2T[ix]    = 32.22*GeV2; 
+  }
+  addFormFactor(-521, 111,0,-2,5,2);
+  addFormFactor(-511, 111,0,-2,5,1);
+  addFormFactor(-511, 211,0,-2,5,2);  
+  addFormFactor(-521, 211,0,-2,5,1);
+  double fact(sqrt(0.5));
+  for(unsigned int ix=0;ix<2;++ix) {
+    if(ix==1) fact *= -1.;
+    _r20[0] *= fact; _r1plus[0] *= fact; _r2plus[0] *= fact; 
+    _r1T[0] *= fact; _r2T[0]    *= fact; 
+  }
   // parameters for the B to K   form-factors
-  // B+ to K+
-  _r10.push_back(0.);_r20.push_back(0.330);
-  _m120.push_back(-1.*GeV2);_mfit20.push_back(37.46*GeV2);
-  _r1plus.push_back(0.162);_r2plus.push_back(0.173);
-  _m12plus.push_back(5.41*5.41*GeV2);_mfit2plus.push_back(-1.*GeV2);
-  _r1T.push_back(0.161);_r2T.push_back(0.198);
-  _m12T.push_back(5.41*5.41*GeV2);_mfit2T.push_back(-1.*GeV2);
-  addFormFactor(521,321,0,2,-5,-3);
-  // B0 to K0
-  _r10.push_back(0.);_r20.push_back(0.330);
-  _m120.push_back(-1.*GeV2);_mfit20.push_back(37.46*GeV2);
-  _r1plus.push_back(0.162);_r2plus.push_back(0.173);
-  _m12plus.push_back(5.41*5.41*GeV2);_mfit2plus.push_back(-1.*GeV2);
-  _r1T.push_back(0.161);_r2T.push_back(0.198);
-  _m12T.push_back(5.41*5.41*GeV2);_mfit2T.push_back(-1.*GeV2);
-  addFormFactor(511,311,0,2,-5,-3);
+  addFormFactor(-521,-321,0,-2,5,3);
+  addFormFactor(-511,-311,0,-2,5,3);
+  for(unsigned int ix=4;ix<6;++ix) {
+    _r10[ix]     = 0.            ; _r20[ix]       = 0.330; 
+    _m120[ix]    = -1.*GeV2      ; _mfit20[ix]    = 37.46*GeV2; 
+    _r1plus[ix]  = 0.162         ; _r2plus[ix]    = 0.173; 
+    _m12plus[ix] = sqr(5.41)*GeV2; _mfit2plus[ix] = -1.*GeV2; 
+    _r1T[ix]     = 0.161         ; _r2T[ix]       = 0.198; 
+    _m12T[ix]    = sqr(5.41)*GeV2; _mfit2T[ix]    = -1.*GeV2; 
+  }
   // parameters for the B to eta form-factors
-  _r10.push_back(0.);_r20.push_back(ort*0.273);
-  _m120.push_back(-1.*GeV2);_mfit20.push_back(31.03*GeV2);
-  _r1plus.push_back(ort*0.122);_r2plus.push_back(ort*0.155);
-  _m12plus.push_back(5.32*5.32*GeV2);_mfit2plus.push_back(-1.*GeV2);
-  _r1T.push_back(ort*0.111);_r2T.push_back(ort*0.175);
-  _m12T.push_back(5.32*5.32*GeV2);_mfit2T.push_back(-1.*GeV2);
-  addFormFactor(521,221,0,2,-5,-2);
+  addFormFactor(521,221,0,2,-5,-2); 
+  _r10[6]     = 0.            ; _r20[6]       = 0.273; 
+  _m120[6]    = -1.*GeV2      ; _mfit20[6]    = 31.03*GeV2; 
+  _r1plus[6]  = 0.122         ; _r2plus[6]    = 0.155; 
+  _m12plus[6] = sqr(5.32)*GeV2; _mfit2plus[6] = -1.*GeV2; 
+  _r1T[6]     = 0.111         ; _r2T[6]       = 0.175; 
+  _m12T[6]    = sqr(5.32)*GeV2; _mfit2T[6]    = -1.*GeV2; 
   // initial number of modes
   initialModes(numberOfFactors());
   // eta-eta' mixing angle
@@ -80,40 +77,50 @@ void BallZwickyScalarFormFactor::doinit() throw(InitException) {
 			  << "BallZwickyScalarFormFactor::doinit()" 
 			  << Exception::abortnow;
   // output some graphs to check the answers
-  /*
-  int id0,id1;
-  unsigned int iz;
-  Energy m0,m1; 
-  Energy2 q2,step(14./100.*GeV2);
-  tcPDPtr in,out;
-  Complex f0,fp,ft;
-  ofstream output("Ball.top");
-  for(unsigned int ix=0;ix<numberOfFactors();++ix) {
-    particleID(ix,id0,id1);
-    in = getParticleData(id0);m0=in->mass();
-    out= getParticleData(id1);m1=out->mass();
-    output << "new frame " << endl;
-    output << "set font duplex" << endl;
-    output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
-	   << " scalar form factors \"" << endl;
-    output << "set limits x 0 14. y 0 1" << endl;
-    double rt(sqrt(2.));
-    for(iz=0;iz<3;++iz) {
-      q2=0.*MeV2;
-      for( ;q2<14.*GeV2+step;q2+=step) {
-	ScalarScalarFormFactor(q2,ix,id0,id1,m0,m1,f0,fp);
-	ScalarScalarSigmaFormFactor(q2,ix,id0,id1,m0,m1,ft);
-	if(id1==111||id1==221){f0*=rt;fp*=rt;ft*=rt;}
-	if(iz==0)      output << q2/GeV2 << "   " << f0.real() << "\n";
-	else if(iz==1) output << q2/GeV2 << "   " << fp.real() << "\n";
-	else if(iz==2) output << q2/GeV2 << "   " << ft.real() << "\n";
-      }
-      if(iz==0)      output << "join red  \n";
-      else if(iz==1) output << "join blue \n";
-      else if(iz==2) output << "join green\n";
-    }
-  }
-  */
+//   int id0,id1;
+//   unsigned int iz;
+//   Energy m0,m1; 
+//   Energy2 q2,step(14./100.*GeV2);
+//   tcPDPtr in,out;
+//   Complex f0,fp,ft;
+//   ofstream output("Ball.top");
+//   for(unsigned int ix=0;ix<numberOfFactors();++ix) {
+//     particleID(ix,id0,id1);
+//     in = getParticleData(id0);
+//     m0=in->mass();
+//     out= getParticleData(id1);
+//     m1=out->mass();
+//     output << "new frame " << endl;
+//     output << "set font duplex" << endl;
+//     output << "title top \"" << in->PDGName() << " to " << out->PDGName() 
+// 	   << " scalar form factors \"" << endl;
+//     output << "set limits x 0 14. y 0 1" << endl;
+//     double rt(sqrt(2.));
+//     for(iz=0;iz<3;++iz) {
+//       q2=0.*MeV2;
+//       for( ;q2<14.*GeV2+step;q2+=step) {
+// 	ScalarScalarFormFactor(q2,ix,id0,id1,m0,m1,f0,fp);
+// 	ScalarScalarSigmaFormFactor(q2,ix,id0,id1,m0,m1,ft);
+// 	if(id1==111) {
+// 	  f0*=rt;
+// 	  fp*=rt;
+// 	  ft*=rt;
+// 	}
+// 	else if(id1==221) {
+// 	  double fact(cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.));
+// 	  f0/=fact;
+// 	  fp/=fact;
+// 	  ft/=fact;
+// 	}
+// 	if(iz==0)      output << q2/GeV2 << "   " << f0.real() << "\n";
+// 	else if(iz==1) output << q2/GeV2 << "   " << fp.real() << "\n";
+// 	else if(iz==2) output << q2/GeV2 << "   " << ft.real() << "\n";
+//       }
+//       if(iz==0)      output << "join red  \n";
+//       else if(iz==1) output << "join blue \n";
+//       else if(iz==2) output << "join green\n";
+//     }
+//   }
 }
 
 void BallZwickyScalarFormFactor::persistentOutput(PersistentOStream & os) const {
@@ -227,7 +234,7 @@ void BallZwickyScalarFormFactor::Init() {
 // form-factor for scalar to scalar
 void BallZwickyScalarFormFactor::
 ScalarScalarFormFactor(Energy2 q2,unsigned  int mode,
-		       int id0, int,Energy, Energy,
+		       int, int id1, Energy, Energy,
 		       Complex & f0, Complex & fp) const {
   useMe();
   // the F_0 form-factor
@@ -250,27 +257,32 @@ ScalarScalarFormFactor(Energy2 q2,unsigned  int mode,
   else {
     fp =_r1plus[mode]/(1.-q2/_m12plus[mode])+_r2plus[mode]/(1.-q2/_mfit2plus[mode]);
   }
-  if(id0==ParticleID::eta) {
-    double fact(sqrt(1./3.)*cos(_thetaeta)-sqrt(2./3.)*sin(_thetaeta));
-    fp *=fact;f0*=fact;
+  if(id1==ParticleID::eta) {
+    double fact(cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.));
+    fp *= fact;
+    f0 *= fact;
   }
 }
 
 void BallZwickyScalarFormFactor::ScalarScalarSigmaFormFactor(Energy2 q2,
-							     unsigned int mode,int id0,
-							     int,Energy,
+							     unsigned int mode,int,
+							     int id1,Energy,
 							     Energy,
 							     Complex & fT) const {
   useMe();
   // the F_T form-factor
-  if(_m12T[mode]<0*GeV2)
-    {fT = _r2T[mode]/(1.-q2/_mfit2T[mode]);}
-  else if(_mfit2T[mode]<0*GeV2)
-    {fT = (_r1T[mode]+_r2T[mode]/(1.-q2/_m12T[mode]))/(1.-q2/_m12T[mode]);}
-  else
-    {fT =_r1T[mode]/(1.-q2/_m12T[mode])+_r2T[mode]/(1.-q2/_mfit2T[mode]);}
-  if(id0==ParticleID::eta)
-    {fT *=sqrt(1./3.)*cos(_thetaeta)-sqrt(2./3.)*sin(_thetaeta);}
+  if(_m12T[mode]<0*GeV2) {
+    fT = _r2T[mode]/(1.-q2/_mfit2T[mode]);
+  }
+  else if(_mfit2T[mode]<0*GeV2) {
+    fT = (_r1T[mode]+_r2T[mode]/(1.-q2/_m12T[mode]))/(1.-q2/_m12T[mode]);
+  }
+  else {
+    fT =_r1T[mode]/(1.-q2/_m12T[mode])+_r2T[mode]/(1.-q2/_mfit2T[mode]);
+  }
+  if(id1==ParticleID::eta) {
+    fT *=cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.);
+  }
 }
 
 void BallZwickyScalarFormFactor::dataBaseOutput(ofstream & output,bool header,
