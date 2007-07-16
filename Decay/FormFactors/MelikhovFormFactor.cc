@@ -116,7 +116,7 @@ void MelikhovFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
   // constants
   double r(mX/mY),y(q2/mY/mY);
   // V form-factor
-  V  = double((1.+r)*_RV0/pow((1.-q2/_MV/_MV),_nV));
+  V  =-double((1.+r)*_RV0/pow((1.-q2/_MV/_MV),_nV));
   // A_1 form-factor
   A1 = (1.+r*r-y)/(1.+r)*_R10/pow((1.-q2/_M1/_M1),_n1);
   // A_2 form-factor
