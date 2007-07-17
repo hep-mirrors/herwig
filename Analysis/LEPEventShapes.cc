@@ -34,7 +34,6 @@ LorentzRotation LEPEventShapes::transform(tEventPtr) const {
 }
 
 void LEPEventShapes::analyze(const tPVector & particles) {
-  cerr << '\n' << eventweight_ << '\n';
   _shapes->reset(particles);
   _omthr ->addWeighted( 1.-_shapes->thrust() ,eventweight_);
   _maj ->addWeighted( _shapes->thrustMajor() ,eventweight_);
