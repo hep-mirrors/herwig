@@ -35,23 +35,10 @@ class PVectorMesonVectorPScalarDecayer: public DecayIntegrator {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   PVectorMesonVectorPScalarDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline PVectorMesonVectorPScalarDecayer(const PVectorMesonVectorPScalarDecayer &);
-
-  /**
-   * Destructor.
-   */
-  virtual ~PVectorMesonVectorPScalarDecayer();
-  //@}
 
 public:
 

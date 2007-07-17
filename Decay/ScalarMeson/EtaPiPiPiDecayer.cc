@@ -3,59 +3,46 @@
 // This is the implementation of the non-inlined, non-templated member
 // functions of the EtaPiPiPiDecayer class.
 //
-
 #include "EtaPiPiPiDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
 #include "ThePEG/PDT/DecayMode.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "EtaPiPiPiDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "Herwig++/PDT/ThreeBodyAllOn1IntegralCalculator.h"
 #include "Herwig++/PDT/OneOffShellCalculator.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
-using ThePEG::Helicity::ScalarWaveFunction;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
-EtaPiPiPiDecayer::EtaPiPiPiDecayer() {
+EtaPiPiPiDecayer::EtaPiPiPiDecayer() 
+  : _incoming(6), _outgoing(6), _charged(6), _prefactor(6),
+    _a(6), _b(6), _c(6), _maxweight(6) {
   // eta to pi+pi-pi0
-  _incoming.push_back(221);_outgoing.push_back(111);_charged.push_back(true);
-  _prefactor.push_back(0.0404509);
-  _a.push_back(-1.17);_b.push_back(0.21);_c.push_back(0.06);
-  _maxweight.push_back(1.32);
+  _incoming[0] = 221; _outgoing[0] = 111; _charged[0] = true; 
+  _prefactor[0] = 0.0404509; _maxweight[0] = 1.32;
+  _a[0] = -1.17; _b[0] = 0.21; _c[0] = 0.06; 
   // eta to pi0pi0pi0
-  _incoming.push_back(221);_outgoing.push_back(111);_charged.push_back(false);
-  _prefactor.push_back(0.0883547);
-  _a.push_back(0.);_b.push_back(-0.062);_c.push_back(-0.062);
-  _maxweight.push_back(1.33);
+  _incoming[1] = 221; _outgoing[1] = 111; _charged[1] = false; 
+  _prefactor[1] = 0.0883547; _maxweight[1] = 1.33; 
+  _a[1] = 0.; _b[1] = -0.062; _c[1] = -0.062; 
   // eta' to pi+pi-pi0
-  _incoming.push_back(331);_outgoing.push_back(111);_charged.push_back(true);
-  _prefactor.push_back(0.037165);
-  _a.push_back(-3.08);_b.push_back(0.13);_c.push_back(0.62);
-  _maxweight.push_back(0.0227363);
+  _incoming[2] = 331; _outgoing[2] = 111; _charged[2] = true; 
+  _prefactor[2] = 0.037165; _maxweight[2] = 0.0227363;
+  _a[2] = -3.08; _b[2] = 0.13; _c[2] = 0.62; 
   // eta' to pi0pi0pi0
-  _incoming.push_back(331);_outgoing.push_back(111);_charged.push_back(false);
-  _prefactor.push_back(0.016203);
-  _a.push_back(0.0);_b.push_back(-0.86);_c.push_back(-0.86);
-  _maxweight.push_back(2.26);
+  _incoming[3] = 331; _outgoing[3] = 111; _charged[3] = false; 
+  _prefactor[3] = 0.016203; _maxweight[3] = 2.26; 
+  _a[3] = 0.0; _b[3] = -0.86; _c[3] = -0.86; 
   // eta' to pi+pi-eta
-  _incoming.push_back(331);_outgoing.push_back(221);_charged.push_back(true);
-  _prefactor.push_back(46.47);
-  _a.push_back(-0.093);_b.push_back(-0.059);_c.push_back(-0.003);
-  _maxweight.push_back(1.30);
+  _incoming[4] = 331; _outgoing[4] = 221; _charged[4] = true; 
+  _prefactor[4] = 46.47; _maxweight[4] = 1.30;
+  _a[4] = -0.093; _b[4] = -0.059; _c[4] = -0.003; 
   // eta' to pi0pi0eta
-  _incoming.push_back(331);_outgoing.push_back(221);_charged.push_back(false);
-  _prefactor.push_back(19.408225);
-  _a.push_back(-0.105);_b.push_back(-0.065);_c.push_back(-0.004);
-  _maxweight.push_back(1.30);
+  _incoming[5] = 331; _outgoing[5] = 221; _charged[5] = false; 
+  _prefactor[5] = 19.408225; _maxweight[5] = 1.30;
+  _a[5] = -0.105; _b[5] = -0.065; _c[5] = -0.004; 
   // initial size of the arrays
   _initsize=_maxweight.size();
   // intermediates
@@ -69,15 +56,15 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
   if(isize!=_outgoing.size()||isize!=_prefactor.size()||
      isize!=_charged.size()||isize!=_a.size()||
      isize!=_b.size()||isize!=_c.size()||isize!=_maxweight.size())
-    {throw InitException() << "Inconsistent parameters in EtaPiPiPiDecayer::doinit()"
-			   << Exception::runerror;}
+    throw InitException() << "Inconsistent parameters in EtaPiPiPiDecayer::doinit()"
+			  << Exception::runerror;
   // external particles for the modes
   PDVector extneut(4),extcharged(4);
   extneut[1]    = getParticleData(ParticleID::pi0);
   extneut[2]    = getParticleData(ParticleID::pi0);
   extcharged[1] = getParticleData(ParticleID::piplus);
   extcharged[2] = getParticleData(ParticleID::piminus);
-  tPDPtr sigma(getParticleData(9000221));
+  tPDPtr rho(getParticleData(113));
   DecayPhaseSpaceModePtr mode;
   DecayPhaseSpaceChannelPtr newchannel;
   vector<double> dummyweights(1,1.);
@@ -91,7 +78,7 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
       mode = new_ptr(DecayPhaseSpaceMode(extcharged,this));
       newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(extcharged[0],0, 0.0,-1,3);
-      newchannel->addIntermediate(sigma,1,0.0, 1,2);
+      newchannel->addIntermediate(rho,1,0.0, 1,2);
       mode->addChannel(newchannel);
     }
     else {
@@ -99,42 +86,41 @@ void EtaPiPiPiDecayer::doinit() throw(InitException) {
       mode = new_ptr(DecayPhaseSpaceMode(extneut,this));
       newchannel=new_ptr(DecayPhaseSpaceChannel(mode));
       newchannel->addIntermediate(extneut[0],0, 0.0,-1,3);
-      newchannel->addIntermediate(sigma,1,0.0, 1,2);
+      newchannel->addIntermediate(rho,1,0.0, 1,2);
       mode->addChannel(newchannel);
     }
     addMode(mode,_maxweight[ix],dummyweights);
   }
+  resetIntermediate(rho,600.*MeV,600.*MeV);
 }
 
 int EtaPiPiPiDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
-  int imode(-1);
-  if(dm.products().size()!=3){return imode;}
+  if(dm.products().size()!=3) return -1;
   unsigned int npi0(0),npip(0),npim(0); int id,iother(0);
   ParticleMSet::const_iterator pit = dm.products().begin();
-  for( ;pit!=dm.products().end();++pit)
-    {
-      id=(**pit).id();
-      if(id==ParticleID::piplus){++npip;}
-      else if(id==ParticleID::piminus){++npim;}
-      else if(id==ParticleID::pi0&&npi0<2){++npi0;}
-      else{iother=id;}
-    }
+  for( ;pit!=dm.products().end();++pit) {
+    id=(**pit).id();
+    if(id==ParticleID::piplus)           ++npip;
+    else if(id==ParticleID::piminus)     ++npim;
+    else if(id==ParticleID::pi0&&npi0<2) ++npi0;
+    else iother=id;
+  }
   bool charged;
-  if(npim==1&&npip==1)
-    {
-      charged=true;
-      if(npi0==1){iother=ParticleID::pi0;}
-    }
-  else if(npi0==2){charged=false;}
-  else {return imode;}
+  if(npim==1&&npip==1) {
+    charged=true;
+    if(npi0==1) iother=ParticleID::pi0;
+  }
+  else if(npi0==2) charged=false;
+  else return -1;
   // find the mode
   id=dm.parent()->id();
   unsigned int ix(0);
-  do 
-    {
-      if(id==_incoming[ix]&&iother==_outgoing[ix]&&_charged[ix]==charged){imode=ix;}
-      ++ix;
-    }
+  int imode(-1);
+  do {
+    if(id==_incoming[ix]&&iother==_outgoing[ix]&&_charged[ix]==charged) 
+      imode=ix;
+    ++ix;
+  }
   while(imode<0&&ix<_incoming.size());
   cc=false;
   return imode;
@@ -210,17 +196,16 @@ void EtaPiPiPiDecayer::Init() {
 }
 
 double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
-			     const ParticleVector & decay) const
-{
+			     const ParticleVector & decay) const {
   // workaround for gcc 3.2.3 bug
   // construct spin info objects (this is pretty much a waste of time)
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
   tPPtr mytempInpart = const_ptr_cast<tPPtr>(&inpart);
   ScalarWaveFunction(mytempInpart,incoming,true,vertex);
-  for(unsigned int ix=0;ix<decay.size();++ix)
-    //ALB {ScalarWaveFunction(decay[ix],outgoing,true,vertex);}
-    {PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);}
-
+  for(unsigned int ix=0;ix<decay.size();++ix) {
+    //ALB ScalarWaveFunction(decay[ix],outgoing,true,vertex);
+    PPtr mytemp = decay[ix]; ScalarWaveFunction(mytemp,outgoing,true,vertex);
+  }
   // calculate the matrix element
   // compute the variables we need
   Lorentz5Momentum ps(inpart.momentum()-decay[2]->momentum());ps.rescaleMass();
@@ -267,14 +252,15 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
   ParticleMSet::const_iterator pit(dm.products().begin());
   for( ;pit!=dm.products().end();++pit) {
     id=(**pit).id();
-    if(id==ParticleID::pi0&&npi0<2){++npi0;}
-    else if(id!=ParticleID::piplus&&id!=ParticleID::piminus){idout=id;}
+    if(id==ParticleID::pi0&&npi0<2)                            ++npi0;
+    else if(id!=ParticleID::piplus&&id!=ParticleID::piminus) idout=id;
   }
-  if(npi0==1){idout=ParticleID::pi0;}
+  if(npi0==1) idout=ParticleID::pi0;
   bool charged(npi0<2);
   id=dm.parent()->id();
   do {
-    if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged){imode=ix;}
+    if(id==_incoming[ix]&&idout==_outgoing[ix]&&_charged[ix]==charged) 
+      imode=ix;
     ++ix;
   }
   while(imode<0&&ix<_incoming.size());
@@ -302,52 +288,48 @@ EtaPiPiPiDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
 } 
   
 void EtaPiPiPiDecayer::dataBaseOutput(ofstream & output,
-				      bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+				      bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming   " << ix << " "
-		 << _incoming[ix]   << "\n";
-	  output << "set " << fullName() << ":Outgoing  " << ix << " "
-		 << _outgoing[ix]  << "\n";
-	  output << "set " << fullName() << ":Charged " << ix << " "
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":Incoming   " << ix << " "
+	     << _incoming[ix]   << "\n";
+      output << "set " << fullName() << ":Outgoing  " << ix << " "
+	     << _outgoing[ix]  << "\n";
+      output << "set " << fullName() << ":Charged " << ix << " "
 		 << _charged[ix]  << "\n";
-	  output << "set " << fullName() << ":Prefactor " << ix << " "
-		 << _prefactor[ix]  << "\n";
-	  output << "set " << fullName() << ":a " << ix << " "
-		 << _a[ix]  << "\n";
-	  output << "set " << fullName() << ":b " << ix << " "
-		 << _b[ix]  << "\n";
-	  output << "set " << fullName() << ":c " << ix << " "
-		 << _c[ix]  << "\n";
-	  output << "set " << fullName() << ":MaxWeight  " << ix << " "
-		 << _maxweight[ix]  << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming   " << ix << " "
-		 << _incoming[ix]   << "\n";
-	  output << "insert " << fullName() << ":Outgoing  " << ix << " "
-		 << _outgoing[ix]  << "\n";
-	  output << "insert " << fullName() << ":Charged " << ix << " "
-		 << _charged[ix]  << "\n";
-	  output << "insert " << fullName() << ":Prefactor " << ix << " "
-		 << _prefactor[ix]  << "\n";
-	  output << "insert " << fullName() << ":a " << ix << " "
-		 << _a[ix]  << "\n";
-	  output << "insert " << fullName() << ":b " << ix << " "
-		 << _b[ix]  << "\n";
-	  output << "insert " << fullName() << ":c " << ix << " "
-		 << _c[ix]  << "\n";
-	  output << "insert " << fullName() << ":MaxWeight  " << ix << " "
-		 << _maxweight[ix]  << "\n";
-	}
+      output << "set " << fullName() << ":Prefactor " << ix << " "
+	     << _prefactor[ix]  << "\n";
+      output << "set " << fullName() << ":a " << ix << " "
+	     << _a[ix]  << "\n";
+      output << "set " << fullName() << ":b " << ix << " "
+	     << _b[ix]  << "\n";
+      output << "set " << fullName() << ":c " << ix << " "
+	     << _c[ix]  << "\n";
+      output << "set " << fullName() << ":MaxWeight  " << ix << " "
+	     << _maxweight[ix]  << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+    else {
+      output << "insert " << fullName() << ":Incoming   " << ix << " "
+	     << _incoming[ix]   << "\n";
+      output << "insert " << fullName() << ":Outgoing  " << ix << " "
+	     << _outgoing[ix]  << "\n";
+      output << "insert " << fullName() << ":Charged " << ix << " "
+	     << _charged[ix]  << "\n";
+      output << "insert " << fullName() << ":Prefactor " << ix << " "
+	     << _prefactor[ix]  << "\n";
+      output << "insert " << fullName() << ":a " << ix << " "
+	     << _a[ix]  << "\n";
+      output << "insert " << fullName() << ":b " << ix << " "
+	     << _b[ix]  << "\n";
+      output << "insert " << fullName() << ":c " << ix << " "
+	     << _c[ix]  << "\n";
+      output << "insert " << fullName() << ":MaxWeight  " << ix << " "
+	     << _maxweight[ix]  << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

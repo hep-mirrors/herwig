@@ -71,6 +71,28 @@ void SemiLeptonicScalarDecayer::doinit() throw(InitException) {
       }
     }
   }
+//   id0=531;
+//   id1=-321;
+//   Energy2 q2=15.0797*GeV2;
+//   bool cc(false);
+//   Energy m0(getParticleData(id0)->mass()),m1(getParticleData(id1)->mass());
+//   cerr << "testing calling " << _form << "\n";
+//   unsigned int iloc(_form->formFactorNumber(id0,id1,cc));
+//   cerr << "testing iloc " << iloc << "\n";
+//   Complex f0,fp;
+//   _form->ScalarScalarFormFactor(q2,iloc,id0,id1,m0,m1,f0,fp);
+//   cerr << "testing form factor " << f0 << " " << fp << "\n";
+//   Complex A0,A1,A2,V;
+//   _form->ScalarVectorFormFactor(q2,iloc,id0,id1,m0,m1,A0,A1,A2,V);
+//   cerr << "testing form factor " 
+//        << q2/GeV2 << " " << A0 << " " << A1 << " " << A2 << " " << V << "\n";
+  cerr << "testing ckm matrix\n";
+  for(unsigned int ix=0;ix<3;++ix) {
+    for(unsigned int iy=0;iy<3;++iy) {
+      cerr << sqrt(SM().CKM(ix,iy)) << " ";
+    }
+    cerr << "\n";
+  }
 }
 
 bool SemiLeptonicScalarDecayer::accept(const DecayMode & dm) const {

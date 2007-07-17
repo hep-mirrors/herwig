@@ -7,104 +7,121 @@
 #include "PScalarPScalarVectorDecayer.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
 #include "ThePEG/Interface/ParVector.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "PScalarPScalarVectorDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using ThePEG::Helicity::ScalarWaveFunction;
-using ThePEG::Helicity::VectorWaveFunction;
-using ThePEG::Helicity::RhoDMatrix;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using ThePEG::Helicity::incoming;
-using ThePEG::Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 PScalarPScalarVectorDecayer::PScalarPScalarVectorDecayer() 
-{
+  : _incoming(19), _outgoingP(19), _outgoingV(19), 
+    _coupling(19), _maxweight(19) {
   // decay pi' to rho pi
-  _incoming.push_back( 100111);_outgoingV.push_back( 213);_outgoingP.push_back(-211);
-  _incoming.push_back( 100211);_outgoingV.push_back( 213);_outgoingP.push_back( 111);
-  _incoming.push_back( 100211);_outgoingV.push_back( 113);_outgoingP.push_back( 211);
-  _coupling.push_back(3.57);_maxweight.push_back(4.5);
-  _coupling.push_back(3.57);_maxweight.push_back(4.5);
-  _coupling.push_back(3.57);_maxweight.push_back(4.5);
+  _incoming[0] =  100111; _outgoingV[0] =  213; _outgoingP[0] = -211; 
+  _coupling[0] = 3.57; _maxweight[0] = 4.5; 
+  _incoming[1] =  100211; _outgoingV[1] =  213; _outgoingP[1] =  111; 
+  _coupling[1] = 3.57; _maxweight[1] = 4.5; 
+  _incoming[2] =  100211; _outgoingV[2] =  113; _outgoingP[2] =  211; 
+  _coupling[2] = 3.57; _maxweight[2] = 4.5; 
   // K' to K rho
-  _incoming.push_back( 100311);_outgoingP.push_back( 311);_outgoingV.push_back( 113);
-  _incoming.push_back( 100321);_outgoingP.push_back( 321);_outgoingV.push_back( 113);
-  _incoming.push_back( 100311);_outgoingP.push_back( 321);_outgoingV.push_back(-213);
-  _incoming.push_back( 100321);_outgoingP.push_back( 311);_outgoingV.push_back( 213);
-  _coupling.push_back(1.);_maxweight.push_back(4.);
-  _coupling.push_back(1.);_maxweight.push_back(4.);
-  _coupling.push_back(1.41);_maxweight.push_back(4.);
-  _coupling.push_back(1.41);_maxweight.push_back(4.);
+  _incoming[3] =  100311; _outgoingP[3] =  311; _outgoingV[3] =  113; 
+  _coupling[3] = 1.; _maxweight[3] = 4.; 
+  _incoming[4] =  100321; _outgoingP[4] =  321; _outgoingV[4] =  113; 
+  _coupling[4] = 1.; _maxweight[4] = 4.; 
+  _incoming[5] =  100311; _outgoingP[5] =  321; _outgoingV[5] = -213; 
+  _coupling[5] = 1.41; _maxweight[5] = 4.; 
+  _incoming[6] =  100321; _outgoingP[6] =  311; _outgoingV[6] =  213; 
+  _coupling[6] = 1.41; _maxweight[6] = 4.; 
   // K' to K* pi
-  _incoming.push_back( 100311);_outgoingV.push_back( 313);_outgoingP.push_back( 111);
-  _incoming.push_back( 100321);_outgoingV.push_back( 323);_outgoingP.push_back( 111);
-  _incoming.push_back( 100311);_outgoingV.push_back( 323);_outgoingP.push_back(-211);
-  _incoming.push_back( 100321);_outgoingV.push_back( 313);_outgoingP.push_back( 211);
-  _coupling.push_back(1.55);_maxweight.push_back(2.);
-  _coupling.push_back(1.55);_maxweight.push_back(2.);
-  _coupling.push_back(2.19);_maxweight.push_back(2.);
-  _coupling.push_back(2.19);_maxweight.push_back(2.);
+  _incoming[7] =  100311; _outgoingV[7] =  313; _outgoingP[7] =  111; 
+  _coupling[7] = 1.55; _maxweight[7] = 2.; 
+  _incoming[8] =  100321; _outgoingV[8] =  323; _outgoingP[8] =  111; 
+  _coupling[8] = 1.55; _maxweight[8] = 2.; 
+  _incoming[9] =  100311; _outgoingV[9] =  323; _outgoingP[9] = -211; 
+  _coupling[9] = 2.19; _maxweight[9] = 2.; 
+  _incoming[10] =  100321; _outgoingV[10] =  313; _outgoingP[10] =  211; 
+  _coupling[10] = 2.19; _maxweight[10] = 2.; 
   // eta (1475) to K* K
-  _incoming.push_back( 100331);_outgoingV.push_back( 323);_outgoingP.push_back(-321);
-  _incoming.push_back( 100331);_outgoingV.push_back( 313);_outgoingP.push_back(-311);
-  _coupling.push_back(2.80);_maxweight.push_back(3.5);
-  _coupling.push_back(2.80);_maxweight.push_back(3.5);
+  _incoming[11] =  100331; _outgoingV[11] =  323; _outgoingP[11] = -321; 
+  _coupling[11] = 2.80; _maxweight[11] = 3.5; 
+  _incoming[12] =  100331; _outgoingV[12] =  313; _outgoingP[12] = -311; 
+  _coupling[12] = 2.80; _maxweight[12] = 3.5; 
   // eta (1475) to K* K
-  _incoming.push_back( 9020221);_outgoingV.push_back( 323);_outgoingP.push_back(-321);
-  _incoming.push_back( 9020221);_outgoingV.push_back( 313);_outgoingP.push_back(-311);
-  _coupling.push_back(0.98);_maxweight.push_back(4.);
-  _coupling.push_back(0.98);_maxweight.push_back(4.);
+  _incoming[13] =  9020221; _outgoingV[13] =  323; _outgoingP[13] = -321; 
+  _coupling[13] = 0.98; _maxweight[13] = 4.; 
+  _incoming[14] =  9020221; _outgoingV[14] =  313; _outgoingP[14] = -311; 
+  _coupling[14] = 0.98; _maxweight[14] = 4.; 
   // decay f_0(1370) to a_1 pi
-  _incoming.push_back( 10221);_outgoingV.push_back(20213);_outgoingP.push_back(-211);
-  _incoming.push_back( 10221);_outgoingV.push_back(20113);_outgoingP.push_back( 111);
-  _coupling.push_back(3.57);_maxweight.push_back(4.5);
-  _coupling.push_back(3.57);_maxweight.push_back(4.5);
+  _incoming[15] =  10221; _outgoingV[15] = 20213; _outgoingP[15] = -211; 
+  _coupling[15] = 3.57; _maxweight[15] = 4.5; 
+  _incoming[16] =  10221; _outgoingV[16] = 20113; _outgoingP[16] =  111; 
+  _coupling[16] = 3.57; _maxweight[16] = 4.5; 
   // decay f_0(1500) to a_1 pi
-  _incoming.push_back( 9030221);_outgoingV.push_back(20213);_outgoingP.push_back(-211);
-  _incoming.push_back( 9030221);_outgoingV.push_back(20113);_outgoingP.push_back( 111);
-  _coupling.push_back(1.502);_maxweight.push_back(3.2);
-  _coupling.push_back(1.502);_maxweight.push_back(3.2);
+  _incoming[17] =  9030221; _outgoingV[17] = 20213; _outgoingP[17] = -211; 
+  _coupling[17] = 1.502; _maxweight[17] = 3.2; 
+  _incoming[18] =  9030221; _outgoingV[18] = 20113; _outgoingP[18] =  111; 
+  _coupling[18] = 1.502; _maxweight[18] = 3.2; 
   // initial size of the arrays
   _initsize=_incoming.size();
   // intermediates
   generateIntermediates(false);
 }
 
-PScalarPScalarVectorDecayer::~PScalarPScalarVectorDecayer() {}
+void PScalarPScalarVectorDecayer::doinit() throw(InitException) {
+  DecayIntegrator::doinit();
+  // check the parameters arew consistent
+  unsigned int isize=_coupling.size();
+  if(isize!=_incoming.size()  || isize!=_outgoingP.size()||
+     isize!=_outgoingV.size() || isize!=_maxweight.size())
+    throw InitException() << "Inconsistent parameters in PScalarPScalarVectorDecayer" 
+			  << Exception::abortnow;
+  // set up the integration channels
+  vector<double> wgt;
+  DecayPhaseSpaceModePtr mode;
+  PDVector extpart(3);
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    extpart[0] = getParticleData(_incoming[ix]);
+    extpart[1] = getParticleData(_outgoingP[ix]);
+    extpart[2] = getParticleData(_outgoingV[ix]);
+    if(extpart[0]&&extpart[1]&&extpart[2]) 
+      mode=new_ptr(DecayPhaseSpaceMode(extpart,this));
+    else
+      mode=DecayPhaseSpaceModePtr();
+    addMode(mode,_maxweight[ix],wgt);
+  }
+}
 
-int PScalarPScalarVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const
-{
-  int imode(-1);
-  int id(dm.parent()->id()),idbar(id);
-  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+int PScalarPScalarVectorDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
+  // must be two outgoing particles
+  if(dm.products().size()!=2) return -1;
+  int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
   ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
   ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0);
   cc=false;
-  do 
-    {
-      if(id   ==_incoming[ix])
-	{if((id1   ==_outgoingP[ix]&&id2   ==_outgoingV[ix])||
-	    (id2   ==_outgoingP[ix]&&id1   ==_outgoingV[ix])){imode=ix;}}
-      if(idbar==_incoming[ix])
-	{if((id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix])||
-	    (id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix])){imode=ix;cc=true;}}
-      ++ix;
+  int imode(-1);
+  do {
+    if(id   ==_incoming[ix]) {
+      if((id1   ==_outgoingP[ix]&&id2   ==_outgoingV[ix])||
+	 (id2   ==_outgoingP[ix]&&id1   ==_outgoingV[ix])) imode=ix;
     }
+    if(idbar==_incoming[ix]) {
+      if((id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix])||
+	 (id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix])) {
+	imode=ix;
+	cc=true;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   return imode;
 }
@@ -118,7 +135,8 @@ void PScalarPScalarVectorDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _coupling >> _incoming >> _outgoingP >> _outgoingV >> _maxweight;
 }
 
-ClassDescription<PScalarPScalarVectorDecayer> PScalarPScalarVectorDecayer::initPScalarPScalarVectorDecayer;
+ClassDescription<PScalarPScalarVectorDecayer> 
+PScalarPScalarVectorDecayer::initPScalarPScalarVectorDecayer;
 // Definition of the static class description member.
 
 void PScalarPScalarVectorDecayer::Init() {
@@ -161,8 +179,7 @@ void PScalarPScalarVectorDecayer::Init() {
 
 double PScalarPScalarVectorDecayer::me2(bool vertex, const int,
 					const Particle & inpart,
-					const ParticleVector & decay) const
-{
+					const ParticleVector & decay) const {
   // workaround for gcc 3.2.3 bug
   // set up spins for the incoming particles
   //ALB ScalarWaveFunction(const_ptr_cast<tPPtr>(&inpart),incoming,true,vertex);
@@ -173,46 +190,63 @@ double PScalarPScalarVectorDecayer::me2(bool vertex, const int,
   //ALB ScalarWaveFunction(decay[0],outgoing,true,vertex);
   PPtr mytemp = decay[0];
   ScalarWaveFunction(mytemp,outgoing,true,vertex);
-
   VectorWaveFunction(eps,decay[1],outgoing,true,false,vertex);
   // calculate the matrix element
   DecayMatrixElement newME(PDT::Spin0,PDT::Spin0,PDT::Spin1);
   Lorentz5Momentum psum(inpart.momentum()+decay[0]->momentum());
-  for(unsigned int ix=0;ix<3;++ix)
-    {newME(0,0,ix)=_coupling[imode()]/inpart.mass()*(eps[ix]*psum);}
+  for(unsigned int ix=0;ix<3;++ix) {
+    newME(0,0,ix)=_coupling[imode()]/inpart.mass()*(eps[ix]*psum);
+  }
   ME(newME);
   RhoDMatrix rhoin(PDT::Spin0);rhoin.average();
+  // test of the matrix element
+//   double me=newME.contract(rhoin).real();
+//   Energy pcm = Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+// 					     decay[1]->mass());
+//   double test = 4.*sqr(_coupling[imode()]*pcm/decay[1]->mass());
+//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << me << " " << (me-test)/(me+test) << "\n";
+  // output the answer
   return newME.contract(rhoin).real();
 }
 
 // specify the 1-2 matrix element to be used in the running width calculation
 bool PScalarPScalarVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & mecode,
-					       double & coupling) const
-{
+					       double & coupling) const {
   int imode(-1);
-  int id(dm.parent()->id()),idbar(id);
-  if(dm.parent()->CC()){idbar=dm.parent()->CC()->id();}
+  int id(dm.parent()->id());
+  int idbar = dm.parent()->CC() ? dm.parent()->CC()->id() : id;
   ParticleMSet::const_iterator pit(dm.products().begin());
-  int id1((**pit).id()),id1bar(id1);
-  if((**pit).CC()){id1bar=(**pit).CC()->id();}
+  int id1((**pit).id());
+  int id1bar = (**pit).CC() ? (**pit).CC()->id() : id1;
   ++pit;
-  int id2((**pit).id()),id2bar(id2);
-  if((**pit).CC()){id2bar=(**pit).CC()->id();}
+  int id2((**pit).id());
+  int id2bar = (**pit).CC() ? (**pit).CC()->id() : id2;
   unsigned int ix(0); bool order(true);
-  do 
-    {
-      if(id   ==_incoming[ix])
-	{
-	  if(id1==_outgoingP[ix]&&id2==_outgoingV[ix]){imode=ix;order=true;}
-	  if(id2==_outgoingP[ix]&&id1==_outgoingV[ix]){imode=ix;order=false;}
-	}
-      if(idbar==_incoming[ix]&&imode<0)
-	{
-	  if(id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix]){imode=ix;order=true;}
-	  if(id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix]){imode=ix;order=false;}
-	}
-      ++ix;
+  do {
+    if(id   ==_incoming[ix]) {
+      if(id1==_outgoingP[ix]&&id2==_outgoingV[ix]) {
+	imode=ix;
+	order=true;
+      }
+      if(id2==_outgoingP[ix]&&id1==_outgoingV[ix]) {
+	imode=ix;
+	order=false;
+      }
     }
+    if(idbar==_incoming[ix]&&imode<0) {
+      if(id1bar==_outgoingP[ix]&&id2bar==_outgoingV[ix]) {
+	imode=ix;
+	order=true;
+      }
+      if(id2bar==_outgoingP[ix]&&id1bar==_outgoingV[ix]) {
+	imode=ix;
+	order=false;
+      }
+    }
+    ++ix;
+  }
   while(ix<_incoming.size()&&imode<0);
   coupling=_coupling[imode];
   mecode=10;
@@ -221,41 +255,37 @@ bool PScalarPScalarVectorDecayer::twoBodyMEcode(const DecayMode & dm, int & meco
 
 // output the setup information for the particle database
 void PScalarPScalarVectorDecayer::dataBaseOutput(ofstream & output,
-						 bool header) const
-{
-  if(header){output << "update decayers set parameters=\"";}
+						 bool header) const {
+  if(header) output << "update decayers set parameters=\"";
   // parameters for the DecayIntegrator base class
   DecayIntegrator::dataBaseOutput(output,false);
   // the rest of the parameters
-  for(unsigned int ix=0;ix<_incoming.size();++ix)
-    {
-      if(ix<_initsize)
-	{
-	  output << "set " << fullName() << ":Incoming " << ix << " " 
-		 << _incoming[ix] << "\n";
-	  output << "set " << fullName() << ":OutgoingPScalar " << ix << " " 
-		 << _outgoingP[ix] << "\n";
-	  output << "set " << fullName() << ":OutgoingVector " << ix << " " 
-		 << _outgoingV[ix] << "\n";
-	  output << "set " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
-	  output << "set " << fullName() << ":MaxWeight " << ix << " " 
-		 << _maxweight[ix] << "\n";
-	}
-      else
-	{
-	  output << "insert " << fullName() << ":Incoming " << ix << " " 
-		 << _incoming[ix] << "\n";
-	  output << "insert " << fullName() << ":OutgoingPScalar " << ix << " " 
-		 << _outgoingP[ix] << "\n";
-	  output << "insert " << fullName() << ":OutgoingVector " << ix << " " 
-		 << _outgoingV[ix] << "\n";
-	  output << "insert " << fullName() << ":Coupling " << ix << " " 
-		 << _coupling[ix] << "\n";
-	  output << "insert " << fullName() << ":MaxWeight " << ix << " " 
-		 << _maxweight[ix] << "\n";
-	}
+  for(unsigned int ix=0;ix<_incoming.size();++ix) {
+    if(ix<_initsize) {
+      output << "set " << fullName() << ":Incoming " << ix << " " 
+	     << _incoming[ix] << "\n";
+      output << "set " << fullName() << ":OutgoingPScalar " << ix << " " 
+	     << _outgoingP[ix] << "\n";
+      output << "set " << fullName() << ":OutgoingVector " << ix << " " 
+	     << _outgoingV[ix] << "\n";
+      output << "set " << fullName() << ":Coupling " << ix << " " 
+	     << _coupling[ix] << "\n";
+      output << "set " << fullName() << ":MaxWeight " << ix << " " 
+	     << _maxweight[ix] << "\n";
     }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";" << endl;}
-}
+    else {
+      output << "insert " << fullName() << ":Incoming " << ix << " " 
+	     << _incoming[ix] << "\n";
+      output << "insert " << fullName() << ":OutgoingPScalar " << ix << " " 
+	     << _outgoingP[ix] << "\n";
+      output << "insert " << fullName() << ":OutgoingVector " << ix << " " 
+	     << _outgoingV[ix] << "\n";
+      output << "insert " << fullName() << ":Coupling " << ix << " " 
+	     << _coupling[ix] << "\n";
+      output << "insert " << fullName() << ":MaxWeight " << ix << " " 
+	     << _maxweight[ix] << "\n";
+    }
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
