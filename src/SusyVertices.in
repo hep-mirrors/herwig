@@ -19,16 +19,8 @@ create Herwig::SSGFSVertex GFSVertex
 set /Defaults/Model:Vertex/GFSF GFSVertex
 
 # create the first Higgs-scalar-scalar vertex
-create Herwig::SSH1SFSFVertex H1SSVertex
-set /Defaults/Model:Vertex/H1SFSF H1SSVertex
-
-# create the second Higgs-scalar-scalar vertex
-create Herwig::SSH2SFSFVertex H2SSVertex
-set /Defaults/Model:Vertex/H2SFSF H2SSVertex
-
-# create the third Higgs-scalar-scalar vertex
-create Herwig::SSH3SFSFVertex H3SSVertex
-set /Defaults/Model:Vertex/H3SFSF H3SSVertex
+create Herwig::SSHSFSFVertex HSSVertex
+set /Defaults/Model:Vertex/HSFSF HSSVertex
 
 # create the chargino-fermion-scalar vertex
 create Herwig::SSCFSVertex CFSVertex
@@ -61,3 +53,27 @@ set /Defaults/Model:Vertex/CCZ CCZVertex
 # create chargino-neutralino-W vertex
 create Herwig::SSCNWVertex CNWVertex
 set /Defaults/Model:Vertex/CNW CNWVertex
+
+# MSSM fermion-higgs vertex
+create Herwig::SSFFHVertex SSFFHVertex
+set /Defaults/Model:Vertex/SSFFH SSFFHVertex
+
+# MSSM gaugino-gaugino-higgs vertex
+create Herwig::SSGOGOHVertex GOGOHVertex
+set /Defaults/Model:Vertex/GOGOH GOGOHVertex
+
+# MSSM gauge-boson pair with higgs 
+create Herwig::SSWWHVertex SSWWHVertex
+set /Defaults/Model:Vertex/SSWWH SSWWHVertex
+
+# MSSM gauge-boson with a pair of higgs 
+create Herwig::SSWHHVertex SSWHHVertex
+set /Defaults/Model:Vertex/SSWHH SSWHHVertex
+
+# MSSM higgs self coupling
+create Herwig::SSHHHVertex SSHHHVertex
+set /Defaults/Model:Vertex/HHH SSHHHVertex
+
+# MSSM higgs gluon effective vertex
+create Herwig::SSHGGVertex SSHGGVertex
+set /Defaults/Model:Vertex/SSHGG SSHGGVertex
