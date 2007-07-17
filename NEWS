@@ -1,9 +1,18 @@
 Herwig++ News				(emacs -*- outline -*- format)
 
-* Herwig++-2.0.2 release: 2007-??-?? (tagged at SVN r????)
+* Herwig++-2.0.2 release: 2007-07-06 (tagged at SVN r1716)
 
 ** Bug #80
    Separation of HepMC from CLHEP is handled properly now.
+
+** Bug #83
+   Workaround for OS X header problem
+
+** unlisted
+   Veto on very hard emissions from Shower.
+
+** unlisted
+   Detailed documentation in .in files
 
 * Herwig++-2.0.1 release: 2006-12-05 (tagged at SVN r1195)
 

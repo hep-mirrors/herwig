@@ -8,5 +8,5 @@ SUBDIRS = include \
 
 noinst_HEADERS = Config/Herwig.h Config/HepMCHelper_CLHEP.h \
 	Config/HepMCHelper_HepMC.h
-
+EXTRA_DIST=GUIDELINES
 ## Doc # look at this later
