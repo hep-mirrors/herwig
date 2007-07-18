@@ -446,7 +446,7 @@ EvtId EvtGen::EvtGenID(int id, bool exception) const {
   else if((absid>100100&&absid<100600)&&ispin==3) {
     // special for kaons change 2s and 1d
     if((absid%1000)/100==3) output=EvtPDL::evtIdFromStdHep(id);
-    else                    output=EvtPDL::evtIdFromStdHep(isgn*(absid%1000+30000));
+    else                    output=EvtPDL::evtIdFromStdHep(isgn*(absid%1000+100000));
   }
   // 1 3p0 most same but some changes
   else if (absid>10100&&absid<10600&&ispin==1) {
@@ -900,8 +900,12 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
     part->setChannel(imode);
   }
   // must be a decayer
-  if(!decayer) throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
-				 << Exception::runerror;
+  if(!decayer) {
+    cout.rdbuf(temp[0]);
+    cerr.rdbuf(temp[1]);
+    throw Exception() << "Could find EvtGen decayer in EvtGen::decay()" 
+		      << Exception::runerror;
+  }
   // If there are already daughters, then this step is already done!
   // figure out the masses
   if ( part->getNDaug() == 0 ) {
