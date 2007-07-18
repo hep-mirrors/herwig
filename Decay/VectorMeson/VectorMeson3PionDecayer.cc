@@ -45,7 +45,7 @@ VectorMeson3PionDecayer::VectorMeson3PionDecayer()
   // phi decay
   _incoming[1] = 333;
   _coupling[1] = 9.424029/GeV;
-  _directcoupling[1] = 0.78;_directphase[1] = 2.47;
+  _directcoupling[1] = 0.78; _directphase[1] = -2.47;
   _rho2coupling[1] = 0.;_rho2phase[1] = 0.;
   _rho3coupling[1] = 0.;_rho3phase[1] = 0.;
   _maxwgt[1] = 5.62103;
