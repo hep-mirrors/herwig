@@ -275,13 +275,13 @@ ISGW2FormFactor::ISGW2FormFactor() {
   addFormFactor( 421,-20323,1,-2, 4, 3);
   addFormFactor( 421,-10321,0,-2, 4, 3);
   // D+ to d dbar I=0
-  addFormFactor( 411,-221  ,0,-1, 4, 1);
-  addFormFactor( 411,-331  ,0,-1, 4, 1);
-  addFormFactor( 411,-223  ,1,-1, 4, 1);
-  addFormFactor( 411,-225  ,2,-1, 4, 1);
-  addFormFactor( 411,-10223,1,-1, 4, 1);
-  addFormFactor( 411,-20223,1,-1, 4, 1);
-  addFormFactor( 411,-10221,0,-1, 4, 1);
+  addFormFactor( 411, 221  ,0,-1, 4, 1);
+  addFormFactor( 411, 331  ,0,-1, 4, 1);
+  addFormFactor( 411, 223  ,1,-1, 4, 1);
+  addFormFactor( 411, 225  ,2,-1, 4, 1);
+  addFormFactor( 411, 10223,1,-1, 4, 1);
+  addFormFactor( 411, 20223,1,-1, 4, 1);
+  addFormFactor( 411, 10221,0,-1, 4, 1);
   // D+ to d dbar I=1
   addFormFactor( 411, 111  ,0,-1, 4, 1);
   addFormFactor( 411, 113  ,1,-1, 4, 1);
