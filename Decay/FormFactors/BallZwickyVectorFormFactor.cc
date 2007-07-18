@@ -248,7 +248,12 @@ void BallZwickyVectorFormFactor::Init() {
   static ClassDocumentation<BallZwickyVectorFormFactor> documentation
     ("The BallZwickyVectorFormFactor class implements the vector form"
      " factors of hep-ph/0412079 for the form-factor for the decay of a B-meson to a"
-     " light pseudoscalar meson");
+     " light pseudoscalar meson",
+     "The form factors of \\cite{Ball:2004rg} for $B_{d,s}\\to\\rho,\\omega,K^*,\\phi$"
+     " were used.",
+     "\bibitem{Ball:2004rg} P.~Ball and R.~Zwicky, \n"
+     "Phys.\\ Rev.\\  D {\\bf 71} (2005) 014029 [arXiv:hep-ph/0412079].\n"
+     "%%CITATION = PHRVA,D71,014029;%%\n");
 
   static ParVector<BallZwickyVectorFormFactor,double> interfaceVr_1
     ("Vr_1",
