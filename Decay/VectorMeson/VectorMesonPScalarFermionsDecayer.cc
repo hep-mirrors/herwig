@@ -66,7 +66,6 @@ VectorMesonPScalarFermionsDecayer::VectorMesonPScalarFermionsDecayer()
 }
 
 void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
-  cerr << "testing in doinit A\n";
   DecayIntegrator::doinit();
   // check the parameters are consistent
   unsigned int isize(_coupling.size());
@@ -76,30 +75,25 @@ void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
      isize!=_weight.size())
     throw InitException() << "Inconsistent parameters in VectorMesonPScalar"
 			  << "FermionsDecayer" << Exception::abortnow;
-  cerr << "testing in doinit B\n";
   // create the integration channel for each mode 
   PDVector extpart(4);
   tPDPtr gamma(getParticleData(ParticleID::gamma)),rho;
   DecayPhaseSpaceChannelPtr newchannel;
   DecayPhaseSpaceModePtr newmode;
   vector<double> wgt(2,1.);
-  cerr << "testing in doinit C\n";
   for(unsigned int ix=0;ix<_incoming.size();++ix) {
-    cerr << "testing in doinit D " << ix << "\n";
     rho=getParticleData(_VMDid[ix]);
     extpart[0] = getParticleData(_incoming[ix]);
     extpart[1] = getParticleData(_outgoingP[ix]);
     extpart[2] = getParticleData(_outgoingf[ix]);
     extpart[3] = getParticleData(_outgoinga[ix]);
     newmode = new_ptr(DecayPhaseSpaceMode(extpart,this));
-    cerr << "testing in doinit E " << ix << "\n";
     // photon channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(newmode));
     newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
     newchannel->addIntermediate(gamma     ,1,-1.1, 2,3);
     newmode->addChannel(newchannel);
     wgt[0]=1.-_weight[ix];
-    cerr << "testing in doinit D " << ix << "\n";
     // vmd channel
     newchannel=new_ptr(DecayPhaseSpaceChannel(newmode));
     newchannel->addIntermediate(extpart[0],0, 0.0,-1,1);
@@ -107,18 +101,15 @@ void VectorMesonPScalarFermionsDecayer::doinit() throw(InitException) {
     newmode->addChannel(newchannel);
     wgt[1]=_weight[ix];
     addMode(newmode,_maxweight[ix],wgt);
-    cerr << "testing in doinit G " << ix << "\n";
   }
   // set up the values for the VMD factor if needed (copy the default mass and width 
   //                                                 into the array)
-  cerr << "testing in doinit H\n";
   for(unsigned ix=0;ix<isize;++ix) {
     if(_includeVMD[ix]==1) {
       _VMDmass[ix]=getParticleData(_VMDid[ix])->mass();
       _VMDwidth[ix]=getParticleData(_VMDid[ix])->width();
     }
   }
-  cerr << "testing in doinit J\n";
 }
 
 int VectorMesonPScalarFermionsDecayer::modeNumber(bool & cc,const DecayMode & dm) const {

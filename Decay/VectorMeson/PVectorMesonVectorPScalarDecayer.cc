@@ -328,13 +328,13 @@ double PVectorMesonVectorPScalarDecayer::me2(bool vertex, const int,
   }
   ME(newME);
   // test of the matrix element
-  double me = newME.contract(rhoin).real();
-  Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
-					   decay[1]->mass());
-  double test = sqr(_coupling[imode()])/3.*(2.*sqr(pcm)+3.*sqr(decay[0]->mass()));
-  cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
-       << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
-       << me << " " << test << " " << (me-test)/(me+test) << "\n";
+//   double me = newME.contract(rhoin).real();
+//   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+// 					   decay[1]->mass());
+//   double test = sqr(_coupling[imode()])/3.*(2.*sqr(pcm)+3.*sqr(decay[0]->mass()));
+//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
   return newME.contract(rhoin).real();
 }
