@@ -13,9 +13,6 @@
 
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
-#include "CLHEP/Matrix/Matrix.h"
-#include "CLHEP/Matrix/SymMatrix.h"
-using namespace CLHEP;
 
 using namespace Herwig;
 
@@ -39,12 +36,94 @@ void EventShapes::Init() {
 
 }
 
+vector<double> EventShapes::eigenvalues(const double T[3][3]) {
+
+  // b, c, d are the coefficients of the characteristic polynomial, 
+  // a lambda^3 + b lambda^2 + c lambda + d
+  // where a is chosen to be +1.
+  double t11, t12, t13, t22, t23, t33;
+  t11 = T[0][0]; t12 = T[0][1]; t13 = T[0][2]; 
+  t22 = T[1][1]; t23 = T[1][2]; t33 = T[2][2]; 
+  double b = -(t11 + t22 + t33);
+  double c = t11*t22 + t11*t33 + t22*t33 - sqr(t12) - sqr(t13) - sqr(t23);
+  double d = - t11*t22*t33 - 2.*t12*t23*t13 
+    + t11*sqr(t23) + t22*sqr(t13) + t33*sqr(t12); 
+  
+  // use Cardano's formula to compute the zeros 
+  double p = (3.*c - sqr(b))/3.;
+  double q = (2.*sqr(b)*b - 9.*b*c + 27.*d)/27.;
+  // check diskriminant
+  vector<double> lambda;
+  if (4.*p*sqr(p) + 27.*sqr(q) > 0) {
+    for (unsigned int i=0; i<3; i++) {
+      lambda.push_back(-1.);
+    }
+    cerr << "EventShapes::eigenvalues: found D > 0! \n"
+	 << "Matrix doesn't have real Eigenvalues in this case\n";
+  } else {
+    // get solutions
+    double alpha = acos(-q/2.*sqrt(-27./(p*p*p)))/3.;
+    double w = sqrt(-4.*p/3.);
+    lambda.push_back(w*cos(alpha) - b/3.);
+    lambda.push_back(-w*cos(alpha+M_PI/3.) - b/3.);
+    lambda.push_back(-w*cos(alpha-M_PI/3.) - b/3.);
+  }
+
+  // sort according to size of eigenvalues
+  // such that lambda[0] > lambda[1] > lambda[2]
+  if (lambda[0] < lambda[1]) {
+    swap(lambda[0], lambda[1]); 
+  }
+  if (lambda[0] < lambda[2]) {
+    swap(lambda[0], lambda[2]); 
+  }
+  if (lambda[1] < lambda[2]) {
+    swap(lambda[1], lambda[2]); 
+  }
+
+  return lambda;
+}
+
+
+Axis EventShapes::eigenvector(const double T[3][3], const double &lam) {
+  // set up matrix of system to be solved
+  double a11, a12, a13, a23, a33;
+  a11 = T[0][0] - lam; 
+  a12 = T[0][1]; 
+  a13 = T[0][2]; 
+  a23 = T[1][2]; 
+  a33 = T[2][2] - lam;
+
+  // intermediate steps from gauss type algorithm
+  double b1, b2, b4;
+  b1 = a11*a33 - sqr(a13); 
+  b2 = a12*a33 - a13*a23; 
+  b4 = a11*a23 - a12*a13;
+
+  // eigenvector
+  Axis u(b2, -b1, b4);
+
+  return u.unit();
+}
+
+
+vector<Axis> EventShapes::
+eigenvectors(const double T[3][3], const vector<double> &lam) {
+  vector<Axis> n;
+  for (unsigned int i=0; i<3; i++) {
+    n.push_back(eigenvector(T, lam[i]));
+  }
+  return n;
+}
+
 void EventShapes::diagonalizeTensors(bool linear, bool cmboost) {  
   // initialize
-  HepSymMatrix Theta = HepSymMatrix(3);
-  for(int i=0; i<3; i++) 
-    for(int j=0; j<3; j++) 
+  double Theta[3][3];
+  for(int i=0; i<3; i++) {
+    for(int j=0; j<3; j++) {
       Theta[i][j] = 0.0;
+    }
+  }
   double sum = 0.; 
   Momentum3 sumvec;
   vector<double> lam;
@@ -53,55 +132,47 @@ void EventShapes::diagonalizeTensors(bool linear, bool cmboost) {
   Lorentz5Momentum pcm = Lorentz5Momentum(); 
   Boost beta; 
   if (cmboost) {
-    for(unsigned int ix=0;ix<_pv.size();++ix) pcm += _pv[ix];    
+    for(unsigned int ix=0;ix<_pv.size();++ix) {
+      pcm += _pv[ix];    
+    }
     beta = pcm.findBoostToCM();
   }
   // get Theta_ij
-  for(unsigned int ix=0;ix<_pv.size();++ix)
-    {
-      Lorentz5Momentum dum(_pv[ix]);
-      if (cmboost) dum.boost( beta );
-      Momentum3 pvec = dum.vect();
-      double pvec_MeV[3] = {pvec.x()/MeV, pvec.y()/MeV, pvec.z()/MeV};
-      if (pvec.mag() > 0*MeV) 
-	{
-	  sumvec += pvec;
-	  if (linear) sum += pvec.mag()  * UnitRemoval::InvE;
-	  else        sum += pvec.mag2() * UnitRemoval::InvE2;
-	  for(int i=0; i<3; i++) 
-	    {
-	      for(int j=i; j<3; j++) 
-		{
-		  if (linear) 
-		    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j])*MeV/(pvec.mag());      
-		  else        
-		    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j]);
-		}
-	    }
-	}
+  for(unsigned int ix=0;ix<_pv.size();++ix) {
+    Lorentz5Momentum dum(_pv[ix]);
+    if (cmboost) {
+      dum.boost( beta );
     }
-  Theta /= sum;      
-  // diagonalize it
-  HepMatrix U = diagonalize(&Theta);
+    Momentum3 pvec = dum.vect();
+    double pvec_MeV[3] = {pvec.x()/MeV, pvec.y()/MeV, pvec.z()/MeV};
+    if (pvec.mag() > 0*MeV) {
+      sumvec += pvec;
+      if (linear) {
+	sum += pvec.mag()*UnitRemoval::InvE;
+      } else {
+	sum += pvec.mag2()*UnitRemoval::InvE2;
+      }
+      for(int i=0; i<3; i++) {
+	for(int j=i; j<3; j++) {
+	  if (linear) {
+	    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j])*MeV/(pvec.mag());      
+	  } else {
+	    Theta[i][j] += (pvec_MeV[i])*(pvec_MeV[j]);
+	  }
+	}
+      }
+    }
+  }
   for(int i=0; i<3; i++) {
-    lam.push_back( Theta[i][i] );
-    Axis ndum(U[0][i], U[1][i], U[2][i]);
-    n.push_back( ndum ); 
+    for(int j=0; j<3; j++) {
+      Theta[i][j] /= sum;
+    }
   }
-  // sort according to size of eigenvalues
-  // such that lam[0] > lam[1] > lam[2]
-  if (lam[0] < lam[1]) {
-    swap(lam[0], lam[1]); 
-    swap(n[0], n[1]);     
-  }
-  if (lam[0] < lam[2]) {
-    swap(lam[0], lam[2]); 
-    swap(n[0], n[2]);         
-  }
-  if (lam[1] < lam[2]) {
-    swap(lam[1], lam[2]); 
-    swap(n[1], n[2]);     
-  }
+  
+  // diagonalize it
+  lam = eigenvalues(Theta);
+  n = eigenvectors(Theta, lam);
+
   if (linear) {
     _linTen = lam; 
     _linTenAxis = n; 

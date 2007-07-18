@@ -393,7 +393,6 @@ private:
    *  Check if the linear tensor related variables have been calculated and if not do so
    */
   inline void checkLinTen();
-
   /**
    *  Check if the quadratic tensor related variables have been calculated and if not do so
    */
@@ -427,6 +426,27 @@ private:
    * momenta first, or not (default off, and no interface to this).
    */
   void diagonalizeTensors(bool linear, bool cmboost);
+
+  /**
+   * Quite general diagonalization of a symmetric Matrix @param T, given as
+   * an array of doubles.  The symmetry is not checked explicitly as
+   * this is clear in the context.  It uses an explicit generic
+   * solution of the eigenvalue problem and no numerical
+   * approximation, based on Cardano's formula. 
+   */
+  vector<double> eigenvalues(const double T[3][3]);
+
+  /**
+   * The eigenvector of @param T to a given eigenvalue @param lam 
+   */
+  Axis eigenvector(const double T[3][3], const double &lam);
+
+  /**
+   * The eigenvectors of @param T corresponding to the eigenvectors
+   * @param lam . The ordering of the vectors corresponds to the
+   * ordering of the eigenvalues.
+   */
+  vector<Axis> eigenvectors(const double T[3][3], const vector<double> &lam);
 
   /**
    *  Member to calculate the thrust
