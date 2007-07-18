@@ -165,10 +165,18 @@ void BallZwickyVectorFormFactor::doinit() throw(InitException) {
 //       for( ;q2<14.*GeV2+step;q2+=step) {
 // 	ScalarVectorFormFactor(q2,ix,id0,id1,m0,m1,A0,A1,A2,V);
 // 	if(id1==113||id1==223) {
-// 	  A0*=rt;
-// 	  A1*=rt;
-// 	  A2*=rt;
-// 	  V*=rt;
+//  	  if((abs(id0)%100)/10==1) {
+// 	    A0*=-rt;
+// 	    A1*=-rt;
+// 	    A2*=-rt;
+// 	    V *=-rt;
+// 	  }
+// 	  else {
+// 	    A0*=rt;
+// 	    A1*=rt;
+// 	    A2*=rt;
+// 	    V*=rt;
+// 	  }
 // 	}
 // 	if(iz==0)      output << q2/GeV2 << "   " << A0.real() << endl;
 // 	else if(iz==1) output << q2/GeV2 << "   " << A1.real() << endl;
@@ -190,9 +198,16 @@ void BallZwickyVectorFormFactor::doinit() throw(InitException) {
 //       for( ;q2<14.*GeV2+step;q2+=step) {
 // 	ScalarVectorSigmaFormFactor(q2,ix,id0,id1,m0,m1,A0,A1,A2);
 // 	if(id1==113||id1==223) {
-// 	  A0*=rt;
-// 	  A1*=rt;
-// 	  A2*=rt;
+//  	  if((abs(id0)%100)/10==1) {
+// 	    A0*=-rt;
+// 	    A1*=-rt;
+// 	    A2*=-rt;
+// 	  }
+// 	  else {
+// 	    A0*=rt;
+// 	    A1*=rt;
+// 	    A2*=rt;
+// 	  }
 // 	}
 // 	if(iz==0)      output << q2/GeV2 << "   " << A0.real() << endl;
 // 	else if(iz==1) output << q2/GeV2 << "   " << A1.real() << endl;

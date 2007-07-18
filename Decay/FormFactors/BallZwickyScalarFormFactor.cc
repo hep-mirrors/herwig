@@ -33,11 +33,11 @@ BallZwickyScalarFormFactor::BallZwickyScalarFormFactor()
   addFormFactor(-511, 111,0,-2,5,1);
   addFormFactor(-511, 211,0,-2,5,2);  
   addFormFactor(-521, 211,0,-2,5,1);
-  double fact(sqrt(0.5));
   for(unsigned int ix=0;ix<2;++ix) {
+    double fact(sqrt(0.5));
     if(ix==1) fact *= -1.;
-    _r20[0] *= fact; _r1plus[0] *= fact; _r2plus[0] *= fact; 
-    _r1T[0] *= fact; _r2T[0]    *= fact; 
+    _r20[ix] *= fact; _r1plus[ix] *= fact; _r2plus[ix] *= fact; 
+    _r1T[ix] *= fact; _r2T[ix]    *= fact; 
   }
   // parameters for the B to K   form-factors
   addFormFactor(-521,-321,0,-2,5,3);
@@ -102,9 +102,16 @@ void BallZwickyScalarFormFactor::doinit() throw(InitException) {
 // 	ScalarScalarFormFactor(q2,ix,id0,id1,m0,m1,f0,fp);
 // 	ScalarScalarSigmaFormFactor(q2,ix,id0,id1,m0,m1,ft);
 // 	if(id1==111) {
-// 	  f0*=rt;
-// 	  fp*=rt;
-// 	  ft*=rt;
+// 	  if((abs(id0)%100)/10==1) {
+// 	    f0*=-rt;
+// 	    fp*=-rt;
+// 	    ft*=-rt;
+// 	  }
+// 	  else {
+// 	    f0*=rt;
+// 	    fp*=rt;
+// 	    ft*=rt;
+// 	  }
 // 	}
 // 	else if(id1==221) {
 // 	  double fact(cos(_thetaeta)/sqrt(6.)-sin(_thetaeta)/sqrt(3.));
