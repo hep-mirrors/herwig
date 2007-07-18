@@ -2,7 +2,7 @@ pkglib_LTLIBRARIES =
 EXTRA_LTLIBRARIES =
 
 if WANT_LOOPTOOLS
-pkglib_LTLIBRARIES += libHwLooptools.la
+pkglib_LTLIBRARIES += libHwLooptools.la libHwLooptoolsHelper.la 
 EXTRA_LTLIBRARIES += libHwLooptoolsCheck.la
 endif
 
@@ -49,14 +49,15 @@ FFLAGS=-g -O0
 AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
-
 libHwLooptools_la_LDFLAGS = -version-info 2:0:0
 if NEED_APPLE_FIXES
 libHwLooptools_la_LDFLAGS += -Wl,-single_module
 endif
 
+libHwLooptoolsHelper_la_SOURCES = clooptools.cc
+
 libHwLooptoolsCheck_la_SOURCES = $(theFFSOURCES) $(theLTCHECKSOURCES)
 
 EXTRA_PROGRAMS = tester
 tester_SOURCES = tester.cc
-tester_LDADD = libHwLooptools.la 
+tester_LDADD = libHwLooptools.la libHwLooptoolsHelper.la

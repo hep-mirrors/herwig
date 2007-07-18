@@ -14,7 +14,6 @@
 
 #include <complex>
 typedef std::complex<double> double_complex;
-#include <cstdio>
 #include <string>
 
 // don't know why that line is here. The function is not declared anywhere.
@@ -43,21 +42,30 @@ extern "C" {
   void ca0sub_(dcomplex *, const dcomplex *);
 
   void b0sub_(dcomplex *, const double *, const double *, const double *);
-  void cb0sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cb0sub_(dcomplex *, const dcomplex *, 
+	       const dcomplex *, const dcomplex *);
   void db0sub_(dcomplex *, const double *, const double *, const double *);
-  void cdb0sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cdb0sub_(dcomplex *, const dcomplex *, 
+		const dcomplex *, const dcomplex *);
   void b1sub_(dcomplex *, const double *, const double *, const double *);
-  void cb1sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cb1sub_(dcomplex *, const dcomplex *, 
+	       const dcomplex *, const dcomplex *);
   void db1sub_(dcomplex *, const double *, const double *, const double *);
-  void cdb1sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cdb1sub_(dcomplex *, const dcomplex *, 
+		const dcomplex *, const dcomplex *);
   void b00sub_(dcomplex *, const double *, const double *, const double *);
-  void cb00sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cb00sub_(dcomplex *, const dcomplex *, 
+		const dcomplex *, const dcomplex *);
   void db00sub_(dcomplex *, const double *, const double *, const double *);
-  void cdb00sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cdb00sub_(dcomplex *, const dcomplex *, 
+		 const dcomplex *, const dcomplex *);
   void b11sub_(dcomplex *, const double *, const double *, const double *);
-  void cb11sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
-  void db11sub_(dcomplex *, const double *, const double *, const double *);
-  void cdb11sub_(dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+  void cb11sub_(dcomplex *, const dcomplex *, 
+		const dcomplex *, const dcomplex *);
+  void db11sub_(dcomplex *, const double *, 
+		const double *, const double *);
+  void cdb11sub_(dcomplex *, const dcomplex *, 
+		 const dcomplex *, const dcomplex *);
 
   void c0sub_(dcomplex *,
 	      const double *, const double *, const double *,
@@ -83,25 +91,35 @@ extern "C" {
 	      const double *, const double *,
 	      const double *, const double *, const double *, const double *);
   void cd0sub_(dcomplex *,
-	       const dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *,
+	       const dcomplex *, const dcomplex *, 
 	       const dcomplex *, const dcomplex *,
-	       const dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+	       const dcomplex *, const dcomplex *,
+	       const dcomplex *, const dcomplex *, 
+	       const dcomplex *, const dcomplex *);
   void d0isub_(dcomplex *, const int *,
-	       const double *, const double *, const double *, const double *,
+	       const double *, const double *, 
 	       const double *, const double *,
-	       const double *, const double *, const double *, const double *);
+	       const double *, const double *,
+	       const double *, const double *, 
+	       const double *, const double *);
   void cd0isub_(dcomplex *, const int *,
-		const dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *,
+		const dcomplex *, const dcomplex *, 
 		const dcomplex *, const dcomplex *,
-		const dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+		const dcomplex *, const dcomplex *,
+		const dcomplex *, const dcomplex *, 
+		const dcomplex *, const dcomplex *);
   int dget_(
-	    const double *, const double *, const double *, const double *,
+	    const double *, const double *, 
 	    const double *, const double *,
-	    const double *, const double *, const double *, const double *);
+	    const double *, const double *,
+	    const double *, const double *, 
+	    const double *, const double *);
   int cdget_(
-	     const dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *,
+	     const dcomplex *, const dcomplex *, 
 	     const dcomplex *, const dcomplex *,
-	     const dcomplex *, const dcomplex *, const dcomplex *, const dcomplex *);
+	     const dcomplex *, const dcomplex *,
+	     const dcomplex *, const dcomplex *, 
+	     const dcomplex *, const dcomplex *);
 
   void ffini_();
   void ffexi_();
@@ -130,19 +148,22 @@ namespace Herwig {
     /**
      * aliases for 3pt-function coefficient IDs
      */
-    enum CType {cc0=1,cc1=2,cc2=3,cc00=4,cc11=5,cc12=6,cc22=7,cc001=8,cc002=9,
-		cc111=10,cc112=11,cc122=12,cc222=13};
+    enum CType {cc0=1,cc1=2,cc2=3,
+		cc00=4,cc11=5,cc12=6,cc22=7,
+		cc001=8,cc002=9,cc111=10,cc112=11,cc122=12,cc222=13};
 
     /**
      * aliases for 4pt-function coefficient IDs
      */
-    enum DType {dd0=1,dd1=2,dd2=3,dd3=4,dd00=5,dd11=6,dd12=7,dd13=8,dd22=9,dd23=10,
-		dd33=11,dd001=12,dd002=13,dd003=14,dd111=15,dd112=16,dd113=17,
-		dd122=18,dd123=19,dd133=20,dd222=21,dd223=22,dd233=23,dd333=24,
+    enum DType {dd0=1,dd1=2,dd2=3,dd3=4,
+		dd00=5,dd11=6,dd12=7,dd13=8,dd22=9,dd23=10,dd33=11,
+		dd001=12,dd002=13,dd003=14,dd111=15,dd112=16,dd113=17,
+		dd122=18,dd123=19,dd133=20,dd222=21,dd223=22,dd233=23,
+		dd333=24,
 		dd0000=25,dd0011=26,dd0012=27,dd0013=28,dd0022=29,dd0023=30,
-		dd0033=31,dd1111=32,dd1112=33,dd1113=34,dd1122=35,dd1123=36,dd1133=37,
-		dd1222=38,dd1223=39,dd1233=40,dd1333=41,dd2222=42,dd2223=43,dd2233=44,
-		dd2333=45,dd3333=46};
+		dd0033=31,dd1111=32,dd1112=33,dd1113=34,dd1122=35,dd1123=36,
+		dd1133=37,dd1222=38,dd1223=39,dd1233=40,dd1333=41,dd2222=42,
+		dd2223=43,dd2233=44,dd2333=45,dd3333=46};
 
     // ========== C++ wrappers for Fortran functions =============
     // for some reason not all functions have a wrapper
@@ -375,50 +396,12 @@ namespace Herwig {
     /**
      *  Looptools initialisation
      */
-    inline void ffini(std::string logfilename 
-		      = std::string("Looptools.log")) {
-      // trying to redirect stdout --- unix specific solution!
-      // ======== C FAQ http://c-faq.com/stdio/undofreopen.html =======
-      int    fd;
-      fpos_t pos;
-      fflush(stdout);
-      fgetpos(stdout, &pos);
-      fd = dup(fileno(stdout));
-      freopen(logfilename.c_str(), "a", stdout);
-      // =====
-      ffini_();
-      // =====
-      fflush(stdout);
-      dup2(fd, fileno(stdout));
-      close(fd);
-      clearerr(stdout);
-      fsetpos(stdout, &pos);
-      // ==============================================================
-    }
+    void ffini(std::string logfilename = std::string("Looptools.log"));
 
     /**
      *  Looptools termination
      */
-    inline void ffexi(std::string logfilename 
-		      = std::string("Looptools.log")) {
-      // trying to redirect stdout --- unix specific solution!
-      // ======== C FAQ http://c-faq.com/stdio/undofreopen.html =======
-      int    fd;
-      fpos_t pos;
-      fflush(stdout);
-      fgetpos(stdout, &pos);
-      fd = dup(fileno(stdout));
-      freopen(logfilename.c_str(), "a", stdout);
-      // =====
-      ffexi_();
-      // =====
-      fflush(stdout);
-      dup2(fd, fileno(stdout));
-      close(fd);
-      clearerr(stdout);
-      fsetpos(stdout, &pos);
-      // ==============================================================
-    }
+    void ffexi(std::string logfilename = std::string("Looptools.log"));
 
     /**
      *  Set \f$\mu\f$
