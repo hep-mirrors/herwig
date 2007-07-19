@@ -199,14 +199,12 @@ void SusyBase::readSetup(istream &is) throw(SetupException) {
 	vector<MixingElement> vals = readMatrix(file,row,col);
 	_mixings[name] = make_pair(make_pair(row,col),vals);
       }
-      // decays
-      else if( name.find("decay") == 0 ) {
-	readDecay(file, line);
-      }
-      else if( name.find("info") == string::npos) {
+      else if( name.find("info") == string::npos)
 	readBlock(file,name);
-      }
     }
+    // decays
+    else if( line.find("decay") == 0 )
+      readDecay(file, line);
   }
   // extract the relevant parameters
   extractParameters();

@@ -27,10 +27,10 @@ SSNNZVertex::SSNNZVertex() : _sw(0.), _cw(0.), _id1last(0),
     else neu1 = 1000045;
     for(unsigned int j = 0; j < 5; ++j) {
       int neu2;
-      if(i == 0) neu2 = 1000022;
-      else if(i == 1) neu2 = 1000023;
-      else if(i == 2) neu2 = 1000025;
-      else if(i == 3)  neu2 = 1000035;
+      if(j == 0) neu2 = 1000022;
+      else if(j == 1) neu2 = 1000023;
+      else if(j == 2) neu2 = 1000025;
+      else if(j == 3)  neu2 = 1000035;
       else neu2 = 1000045;
       first.push_back(neu1);
       second.push_back(neu2);		      
