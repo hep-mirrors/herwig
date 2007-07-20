@@ -170,21 +170,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     for( set<NasonBranchingPtr>::const_iterator mit = hard.begin();
 	mit != hard.end(); ++mit ) {
       //if the particle in current nasonbranching is to be showered and both ingoing/outgoing
-      if( particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id()))
-	{
-	//connect the particle with that nason branching
-	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
-
-	if((*mit)->_incoming) {
-	  (*mit)->_beam = particlesToShower[ix]->original()->parents()[0];
-	}
-
-	NasonBranchingPtr parent=(*mit)->_parent;
-	while(parent) {
-	  parent->_beam = particlesToShower[ix]->original()->parents()[0];
-	  parent=parent->_parent;
-	};
-
+      //connect the particle with that nason branching
+      if( particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id())) {
+	  nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
+	  if((*mit)->_incoming) {
+	      (*mit)->_beam = particlesToShower[ix]->original()->parents()[0];
+	  }
       }
     }
   }
