@@ -218,7 +218,7 @@ private:
   double _phi;
 
   // iemit = 0 quark emission: =1 antiquark emission
-  int _iemit;
+  int _iemitter;
   int _ispectator;
 
   HistogramPtr  _hyb;
