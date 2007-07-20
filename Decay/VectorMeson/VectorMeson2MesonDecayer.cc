@@ -15,8 +15,7 @@
 
 using namespace Herwig; 
 using namespace ThePEG::Helicity;
-using namespace ThePEG::Helicity;
-  
+     
 void VectorMeson2MesonDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // check consistence of the parameters
@@ -237,7 +236,8 @@ void VectorMeson2MesonDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _incoming >> _outgoing1 >> _outgoing2 >> _maxweight >> _coupling;
 }
   
-ClassDescription<VectorMeson2MesonDecayer> VectorMeson2MesonDecayer::initVectorMeson2MesonDecayer;
+ClassDescription<VectorMeson2MesonDecayer> 
+VectorMeson2MesonDecayer::initVectorMeson2MesonDecayer;
   // Definition of the static class description member.
 
 void VectorMeson2MesonDecayer::Init() {
@@ -297,14 +297,21 @@ double VectorMeson2MesonDecayer::me2(bool vertex, const int,
   // difference of the momenta
   Lorentz5Vector<double> pdiff
     = (decay[0]->momentum()-decay[1]->momentum()) 
-    * _coupling[imode()]
-    /inpart.mass();
+    * _coupling[imode()]/inpart.mass();
   // compute the matrix element
   DecayMatrixElement newME(PDT::Spin1,PDT::Spin0,PDT::Spin0);
   for(unsigned int ix=0;ix<3;++ix) {
     newME(ix,0,0)=invec[ix].dot(pdiff);
   }
   ME(newME);
+  // test of the matrix element
+//   double me = newME.contract(rhoin).real();
+//   Energy pcm=Kinematics::pstarTwoBodyDecay(inpart.mass(),decay[0]->mass(),
+// 					   decay[1]->mass());
+//   double test = 4.*sqr(_coupling[imode()]*pcm/inpart.mass())/3.;
+//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
   return newME.contract(rhoin).real();
 }

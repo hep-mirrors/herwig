@@ -191,7 +191,8 @@ void VectorMeson2FermionDecayer::persistentInput(PersistentIStream & is, int) {
   is >> _coupling >> _incoming >> _outgoingf >> _outgoinga >> _maxweight;
 }
 
-ClassDescription<VectorMeson2FermionDecayer> VectorMeson2FermionDecayer::initVectorMeson2FermionDecayer;
+ClassDescription<VectorMeson2FermionDecayer> 
+VectorMeson2FermionDecayer::initVectorMeson2FermionDecayer;
 // Definition of the static class description member.
 
 void VectorMeson2FermionDecayer::Init() {
@@ -265,6 +266,13 @@ double VectorMeson2FermionDecayer::me2(bool vertex, const int,
     }
   }
   ME(newME);
+  // test of the matrix element
+//   double me = newME.contract(rhoin).real();
+//   double test = 4.*sqr(_coupling[imode()])/3.*
+//     (1.+2.*sqr(decay[0]->mass()/inpart.mass()));
+//   cerr << "testing matrix element for " << inpart.PDGName() << " -> " 
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << me << " " << test << " " << (me-test)/(me+test) << "\n";
   // return the answer
   return newME.contract(rhoin).real();
 }
