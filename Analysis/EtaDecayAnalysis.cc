@@ -274,14 +274,6 @@ void EtaDecayAnalysis::dofinish() {
 			     "  F F   XGX XGX XX    X  X",
 			     "m0P203P2-31/MeV",
 			     " XGX XGX XX    ");
-  _dpippim[0]->topdrawOutput(output,true,true,false,false,
-			     "RED",
-			     "P2-3P2+3 mass in HRP2+3P2-3P203",
-			     "GX XGX X         GWGX XGX XGX X",
-			     "1/GdG/dm0P2-3P2+31/MeV2-13",
-			     "  F F   XGX XGX XX    X  X",
-			     "m0P2-3P2+31/MeV",
-			     " XGX XGX XX    ");
   _dpi0pim[1]->topdrawOutput(output,true,true,false,false,
 			     "RED",
 			     "P203P2-3 mass in H'RP2+3P2-3P203",
@@ -359,14 +351,14 @@ void EtaDecayAnalysis::doinitrun() {
     _photonenergy.push_back(new_ptr(Histogram(0.,meta[ix],200)));
     _mpippim     .push_back(new_ptr(Histogram(0.,meta[ix],200)));
 
-    _dpippim     .push_back(new_ptr(Histogram(0.,meta[ix],200)));
-    _dpi0pi0     .push_back(new_ptr(Histogram(0.,meta[ix],200)));
-    _dpi0pip     .push_back(new_ptr(Histogram(0.,meta[ix],200)));
-    _dpi0pim     .push_back(new_ptr(Histogram(0.,meta[ix],200)));
+    _dpippim     .push_back(new_ptr(Histogram(200.,meta[ix],200)));
+    _dpi0pi0     .push_back(new_ptr(Histogram(200.,meta[ix],200)));
+    _dpi0pip     .push_back(new_ptr(Histogram(200.,meta[ix],200)));
+    _dpi0pim     .push_back(new_ptr(Histogram(200.,meta[ix],200)));
   }
-  _dpi0pi0.push_back(new_ptr(Histogram(0.,meta[1],200)));
-  _dpippim.push_back(new_ptr(Histogram(0.,meta[1],200)));
-  _dpipeta.push_back(new_ptr(Histogram(0.,meta[1],200)));
-  _dpimeta.push_back(new_ptr(Histogram(0.,meta[1],200)));
-  _dpi0eta.push_back(new_ptr(Histogram(0.,meta[1],200)));
+  _dpi0pi0.push_back(new_ptr(Histogram(200.,500.,200)));
+  _dpippim.push_back(new_ptr(Histogram(200.,500.,200)));
+  _dpipeta.push_back(new_ptr(Histogram(500.,meta[1],200)));
+  _dpimeta.push_back(new_ptr(Histogram(500.,meta[1],200)));
+  _dpi0eta.push_back(new_ptr(Histogram(500.,meta[1],200)));
 }
