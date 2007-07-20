@@ -212,8 +212,8 @@ double EtaPiPiPiDecayer::me2(bool vertex,const int,const Particle & inpart,
   Lorentz5Momentum pu(inpart.momentum()-decay[0]->momentum());pu.rescaleMass();
   Lorentz5Momentum pt(inpart.momentum()-decay[1]->momentum());pt.rescaleMass();
   Energy2 s(ps.mass2()),u(pu.mass2()),t(pt.mass2());
-  Energy m34(decay[0]->mass()+decay[1]->mass());
-  Energy msum(decay[2]->mass()+m34);
+  Energy m34(0.5*(decay[0]->mass()+decay[1]->mass()));
+  Energy msum(decay[2]->mass()+2.*m34);
   Energy Q(inpart.mass()-msum);
   Energy2 Mmm2((inpart.mass()-decay[2]->mass())*(inpart.mass()-decay[2]->mass()));
   // compute the variables
