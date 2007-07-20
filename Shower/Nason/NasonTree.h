@@ -100,6 +100,11 @@ public:
    */
   inline void addChild(NasonBranchingPtr child);
 
+  /**
+   * Return the ShowerParticlePtr of the branching particle.
+   */
+  inline ShowerParticlePtr branchingParticle();
+
   void setMomenta(LorentzRotation R,double alpha,Lorentz5Momentum pt);
 
   /**

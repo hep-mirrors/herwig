@@ -17,6 +17,10 @@ inline void NasonBranching::addChild(NasonBranchingPtr child) {
   _children.push_back(child);
 }
 
+inline ShowerParticlePtr NasonBranching::branchingParticle() {
+    return _particle;
+}
+
 inline map<ShowerParticlePtr,tNasonBranchingPtr> & NasonTree::particles() { 
   return _particles;
 }
