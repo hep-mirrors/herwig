@@ -52,14 +52,11 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
    // get the particles to be showered
   vector<tcPDPtr> partons;
-  // find the incoming particles
-  ShowerParticleVector incoming;
   vector<ShowerProgenitorPtr> particlesToShower;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
   _quark.resize(0);
   for ( cjt=tree->outgoingLines().begin();
 	cjt!=tree->outgoingLines().end(); ++cjt ) {
-    incoming.push_back( cjt->first->progenitor() );
     partons.push_back( cjt->first->progenitor()->dataPtr() );
     particlesToShower.push_back( cjt->first );
     _quark.push_back( cjt->first->copy()->momentum() );
