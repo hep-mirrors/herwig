@@ -27,4 +27,3 @@ FivePionCurrent.cc FivePionCurrent.fh FivePionCurrent.h FivePionCurrent.icc \
 KPiCurrent.cc KPiCurrent.fh KPiCurrent.h KPiCurrent.icc\
 KaonThreeMesonCurrent.cc KaonThreeMesonCurrent.fh \
 KaonThreeMesonCurrent.h KaonThreeMesonCurrent.icc 
-#OmegaPionsCurrent.cc OmegaPionsCurrent.fh OmegaPionsCurrent.h OmegaPionsCurrent.icc
