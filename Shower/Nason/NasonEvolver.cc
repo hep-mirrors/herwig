@@ -86,18 +86,19 @@ void NasonEvolver::showerDecay(ShowerTreePtr tree) {
     if(_nasontree) eit=_nasontree->particles().end();
     if(isFSRadiationON()) {
       for(unsigned int ix=0;ix<particlesToShower.size();++ix) {
- 	// only consider final-state particles
- 	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
- 	// perform shower
- 	progenitor(particlesToShower[ix]);
-	if(_nasontree) mit=_nasontree->particles().find(progenitor()->progenitor());
-	if(_nasontree&&mit!=eit&&!mit->second->_children.empty()) {
-	  progenitor()->
-	    hasEmitted(truncatedTimeLikeShower(particlesToShower[ix]->progenitor(),
-					       mit->second));
-	}
-	else {
-	  progenitor()->hasEmitted(timeLikeShower(particlesToShower[ix]->progenitor()));
+        // only consider final-state particles
+	if(!particlesToShower[ix]->progenitor()->isFinalState()) continue;
+	// perform shower
+	progenitor(particlesToShower[ix]);
+	if(_nasontree) {
+	  mit=_nasontree->particles().find(progenitor()->progenitor());
+	  if(mit!=eit&&!mit->second->_children.empty()) {
+	    progenitor()->hasEmitted(truncatedTimeLikeShower(
+		    particlesToShower[ix]->progenitor(),mit->second));
+	  } else {
+	    progenitor()->hasEmitted(
+		timeLikeShower(particlesToShower[ix]->progenitor()));
+	  }
 	}
       }
     }
