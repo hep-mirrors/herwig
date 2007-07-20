@@ -50,7 +50,7 @@ void VectorBosonQQbarHardGenerator::Init() {
 
 NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
 
-   // get the particles to be showered
+  // Get the particles to be showered
   vector<tcPDPtr> partons;
   vector<ShowerProgenitorPtr> particlesToShower;
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
@@ -140,16 +140,14 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   nasonin.push_back( new_ptr( NasonBranching( newparticles[3], SudakovPtr(),
 					    NasonBranchingPtr(), true ) ) );
   // outgoing particles from hard emission
+  NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(newparticles[4],sudakov,NasonBranchingPtr(),false)));
+  NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(newparticles[_ispectator], SudakovPtr(),NasonBranchingPtr(),false)));
   if( _iemitter == 0 ) {
-    nasonhard.push_back( new_ptr( NasonBranching( newparticles[4], sudakov,
-					        NasonBranchingPtr(), false)));
-    nasonhard.push_back( new_ptr( NasonBranching( newparticles[_ispectator], SudakovPtr(),
-					      NasonBranchingPtr(), false) ) );
+    nasonhard.push_back(emitterBranch);
+    nasonhard.push_back(spectatorBranch);
   } else {
-    nasonhard.push_back( new_ptr( NasonBranching( newparticles[_ispectator], SudakovPtr(),
-					        NasonBranchingPtr(), false ) ) );
-    nasonhard.push_back( new_ptr( NasonBranching( newparticles[4], sudakov,
-					        NasonBranchingPtr(), false ) ) );
+    nasonhard.push_back(spectatorBranch);
+    nasonhard.push_back(emitterBranch);
   }
   // add g and q(bar) emitted particles as children of emitting particle
   nasonhard[_iemitter]->addChild( new_ptr( NasonBranching( newparticles[_iemitter], SudakovPtr(), 
@@ -172,8 +170,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     for( set<NasonBranchingPtr>::const_iterator mit = hard.begin();
 	mit != hard.end(); ++mit ) {
       //if the particle in current nasonbranching is to be showered and both ingoing/outgoing
-      if( particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id()) &&
-	 particlesToShower[ix]->progenitor()->isFinalState() !=  ( *mit)->_incoming )
+      if( particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id()))
 	{
 	//connect the particle with that nason branching
 	nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
