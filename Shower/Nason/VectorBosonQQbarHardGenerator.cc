@@ -104,19 +104,19 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   for( unsigned int ix=0; ix < 4; ++ix ) newparticles[ix]->set5Momentum( pnew[ix] );
   
   // create the intermediate off-shell emitting particle
-  Lorentz5Momentum poff = pnew[_iemit] + pnew[2];
+  Lorentz5Momentum poff = pnew[_iemitter] + pnew[2];
   poff.rescaleMass();
-  newparticles.push_back( new_ptr( ShowerParticle( partons[_iemit], true ) ) );
+  newparticles.push_back( new_ptr( ShowerParticle( partons[_iemitter], true ) ) );
   newparticles.back()->set5Momentum( poff );
 
   // find the sudakov for the branching
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
-  long index = abs( partons[ _iemit]->id() ); 
+  long index = abs( partons[ _iemitter]->id() ); 
 
   IdList br(3);
   // types of particle in the branching
-  br[0] = abs( newparticles[_iemit]->id() );
+  br[0] = abs( newparticles[_iemitter]->id() );
   br[1] = abs( newparticles[4]->id() );
   br[2] = newparticles[2]->id();
 
@@ -137,29 +137,27 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 				 << "DrellYanHardGenerator::generateHardest()" 
 				 << Exception::runerror;
 
-
   // create the vectors of NasonBranchings to create the NasonTree
   vector<NasonBranchingPtr> nasonin, nasonhard;
   // incoming boson
   nasonin.push_back( new_ptr( NasonBranching( newparticles[3], SudakovPtr(),
 					    NasonBranchingPtr(), true ) ) );
   // outgoing particles from hard emission
-  if( _iemit == 0 ) {
+  if( _iemitter == 0 ) {
     nasonhard.push_back( new_ptr( NasonBranching( newparticles[4], sudakov,
 					        NasonBranchingPtr(), false)));
-    nasonhard.push_back( new_ptr( NasonBranching( newparticles[1], SudakovPtr(),
+    nasonhard.push_back( new_ptr( NasonBranching( newparticles[_ispectator], SudakovPtr(),
 					      NasonBranchingPtr(), false) ) );
-  }
-  else {
-    nasonhard.push_back( new_ptr( NasonBranching( newparticles[0], SudakovPtr(),
+  } else {
+    nasonhard.push_back( new_ptr( NasonBranching( newparticles[_ispectator], SudakovPtr(),
 					        NasonBranchingPtr(), false ) ) );
     nasonhard.push_back( new_ptr( NasonBranching( newparticles[4], sudakov,
 					        NasonBranchingPtr(), false ) ) );
   }
   // add g and q(bar) emitted particles as children of emitting particle
-  nasonhard[_iemit]->addChild( new_ptr( NasonBranching( newparticles[_iemit], SudakovPtr(), 
+  nasonhard[_iemitter]->addChild( new_ptr( NasonBranching( newparticles[_iemitter], SudakovPtr(), 
 							NasonBranchingPtr(), false) ) );
-  nasonhard[_iemit]->addChild( new_ptr ( NasonBranching( newparticles[2], SudakovPtr(),
+  nasonhard[_iemitter]->addChild( new_ptr ( NasonBranching( newparticles[2], SudakovPtr(),
 						     NasonBranchingPtr(), false) ) );
   // incoming boson add to nasonhard
   nasonhard.push_back( nasonin.back() );
@@ -203,7 +201,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
    ColinePtr greenLine = new_ptr( ColourLine() );
    
    //quark emits
-   if ( _iemit == 0) {
+   if ( _iemitter == 0) {
      blueLine->addColoured( newparticles[0] );
      blueLine->addAntiColoured( newparticles[2] );
      greenLine->addColoured( newparticles[2] );
@@ -226,7 +224,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   //calculate partonic event shapes from hard emission event.
 
   double thrust;
-  if(_iemit == 0) thrust = _x1;
+  if(_iemitter == 0) thrust = _x1;
   else thrust = _x2;
 
   Energy mass;
@@ -403,12 +401,14 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
 
   //generate herwig variables (need to choose 1->2 splitting type)
   if( _x2 > _x1 ){
-    _iemit = 0;
+    _iemitter   = 0;
+    _ispectator = 1;
     _z = ( _x1 + _x2 - 1. ) / _x2;
     _ktild = ( 1. - _x2 ) / _z / ( 1. - _z );
   }
   else{
-    _iemit = 1;
+    _iemitter   = 1;
+    _ispectator = 0;
     _z = ( _x2 + _x1 - 1. ) / _x1;
     _ktild = ( 1. - _x1 ) / _z / ( 1. - _z ); 
   }
@@ -502,7 +502,7 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
 
   _phi = UseRandom::rnd() * Constants::twopi;
   //quark emitted
-  if( _iemit == 0 ){
+  if( _iemitter == 0 ){
    _quark[0].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );
    _quark[0].setX( sqrt(_s) * _k * cos( _phi ) );
    _quark[0].setY( sqrt(_s) * _k * sin( _phi ) );

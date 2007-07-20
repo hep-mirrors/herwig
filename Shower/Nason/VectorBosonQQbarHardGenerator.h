@@ -219,6 +219,7 @@ private:
 
   // iemit = 0 quark emission: =1 antiquark emission
   int _iemit;
+  int _ispectator;
 
   HistogramPtr  _hyb;
   HistogramPtr  _hplow;
