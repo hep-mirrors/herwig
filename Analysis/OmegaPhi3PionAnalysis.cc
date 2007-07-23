@@ -117,7 +117,8 @@ void OmegaPhi3PionAnalysis::Init() {
 
 void OmegaPhi3PionAnalysis::dofinish() {
   AnalysisHandler::dofinish();
-  string fname = CurrentGenerator::current().filename() + string("-") + name() + string(".top");
+  string fname = CurrentGenerator::current().filename() + 
+    string("-") + name() + string(".top");
   ofstream output(fname.c_str());
   _xhist[0]->topdrawOutput(output,true,true,false,true,
 			   "RED",
