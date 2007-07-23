@@ -21,18 +21,19 @@ using namespace ThePEG;
 string MultiplicityInfo::bargraph(long N)
 {
   if (obsMultiplicity == 0.0) return "     ?     ";
-  else if (nSigma(N) >  5.0)   return "-----|---->";
-  else if (nSigma(N) >  4.0)   return "-----|----*";
-  else if (nSigma(N) >  3.0)   return "-----|--*--";
-  else if (nSigma(N) >  2.0)   return "-----|-*---";
-  else if (nSigma(N) >  1.0)   return "-----|*----";
-  else if (nSigma(N) >  0.0)   return "-----*-----";
-  else if (nSigma(N) > -1.0)   return "----*|-----";
-  else if (nSigma(N) > -2.0)   return "---*-|-----";
-  else if (nSigma(N) > -3.0)   return "--*--|-----";
-  else if (nSigma(N) > -4.0)   return "-*---|-----";
-  else if (nSigma(N) > -5.0)   return "*----|-----";
-  else                         return "<----|-----";
+  else if (nSigma(N) >= 6.0)  return "-----|---->";
+  else if (nSigma(N) >= 5.0)  return "-----|----*";
+  else if (nSigma(N) >= 4.0)  return "-----|---*-";
+  else if (nSigma(N) >= 3.0)  return "-----|--*--";
+  else if (nSigma(N) >= 2.0)  return "-----|-*---";
+  else if (nSigma(N) >= 1.0)  return "-----|*----";
+  else if (nSigma(N) > -1.0)  return "-----*-----";
+  else if (nSigma(N) > -2.0)  return "----*|-----";
+  else if (nSigma(N) > -3.0)  return "---*-|-----";
+  else if (nSigma(N) > -4.0)  return "--*--|-----";
+  else if (nSigma(N) > -5.0)  return "-*---|-----";
+  else if (nSigma(N) > -6.0)  return "*----|-----";
+  else                        return "<----|-----";
 }
 
 MultiplicityCount::MultiplicityCount() 
