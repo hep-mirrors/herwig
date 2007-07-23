@@ -130,9 +130,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     }
   }
   // check sudakov has been created
-  if( ! sudakov ) throw Exception() << "Can't find Sudakov for the hard emission in "
-				 << "DrellYanHardGenerator::generateHardest()" 
-				 << Exception::runerror;
+  if(!sudakov ) throw Exception() << "No Sudakov for the hard emission in "
+				  << "VectorBosonQQbarHardGenerator::generateHardest()" 
+				  << Exception::runerror;
 
   // create the vectors of NasonBranchings to create the NasonTree
   vector<NasonBranchingPtr> nasonin, nasonhard;
@@ -140,8 +140,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   nasonin.push_back( new_ptr( NasonBranching( newparticles[3], SudakovPtr(),
 					    NasonBranchingPtr(), true ) ) );
   // outgoing particles from hard emission
-  NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(newparticles[4],sudakov,NasonBranchingPtr(),false)));
   NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(newparticles[_ispectator], SudakovPtr(),NasonBranchingPtr(),false)));
+  NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(newparticles[4],sudakov,NasonBranchingPtr(),false)));
+  emitterBranch->addChild( new_ptr( NasonBranching( newparticles[_iemitter], SudakovPtr(), 
+							NasonBranchingPtr(), false) ) );
+  emitterBranch->addChild( new_ptr ( NasonBranching( newparticles[2], SudakovPtr(),
+						     NasonBranchingPtr(), false) ) );
   if( _iemitter == 0 ) {
     nasonhard.push_back(emitterBranch);
     nasonhard.push_back(spectatorBranch);
@@ -149,11 +153,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     nasonhard.push_back(spectatorBranch);
     nasonhard.push_back(emitterBranch);
   }
-  // add g and q(bar) emitted particles as children of emitting particle
-  nasonhard[_iemitter]->addChild( new_ptr( NasonBranching( newparticles[_iemitter], SudakovPtr(), 
-							NasonBranchingPtr(), false) ) );
-  nasonhard[_iemitter]->addChild( new_ptr ( NasonBranching( newparticles[2], SudakovPtr(),
-						     NasonBranchingPtr(), false) ) );
   // incoming boson add to nasonhard
   nasonhard.push_back( nasonin.back() );
   // make the tree
@@ -167,15 +166,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     //set the pt veto on both showers
     particlesToShower[ix]->maximumpT(_pt);
 
-    for( set<NasonBranchingPtr>::const_iterator mit = hard.begin();
-	mit != hard.end(); ++mit ) {
+    set<NasonBranchingPtr>::const_iterator mit;
+    for(mit = hard.begin(); mit != hard.end(); ++mit) {
       //if the particle in current nasonbranching is to be showered and both ingoing/outgoing
       //connect the particle with that nason branching
       if( particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id())) {
 	  nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
-	  if((*mit)->_incoming) {
-	      (*mit)->_beam = particlesToShower[ix]->original()->parents()[0];
-	  }
       }
     }
   }
