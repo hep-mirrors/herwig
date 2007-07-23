@@ -6,7 +6,7 @@
 
 namespace Herwig {
 
-inline map<pair<long,long>,HadronSelector::KupcoData> & HadronSelector::table() {
+inline HadronSelector::HadronTable & HadronSelector::table() {
   return _table;
 }
 
@@ -81,7 +81,7 @@ inline tcPDPtr HadronSelector::lightestHadron(const long id1, const long id2,
 			       << Exception::runerror;
   // find entry in the table
   pair<long,long> ids(abs(id1),abs(id2));
-  map<pair<long,long>,KupcoData>::const_iterator tit=_table.find(ids);
+  HadronTable::const_iterator tit=_table.find(ids);
   // throw exception if flavours wrong
   if(tit==_table.end()||tit->second.empty()) 
     throw Exception() << "HadronSelector::lightestHadron "
@@ -101,7 +101,7 @@ inline Energy HadronSelector::massLightestHadron(const long id1, const long id2,
 			       << Exception::runerror;
   // find entry in the table
   pair<long,long> ids(abs(id1),abs(id2));
-  map<pair<long,long>,KupcoData>::const_iterator tit=_table.find(ids);
+  HadronTable::const_iterator tit=_table.find(ids);
   // throw exception if flavours wrong
   if(tit==_table.end()||tit->second.empty()) {
     throw Exception() <<  "HadronSelector::massLightestHadron "
@@ -119,7 +119,7 @@ inline Energy HadronSelector::massLightestBaryonPair(const long id1,
   Energy currentSum = Constants::MaxEnergy; 
   for(unsigned int ix=0;ix<_partons.size();++ix) {
     if(!DiquarkMatcher::Check(_partons[ix])) continue;
-    map<pair<long,long>,KupcoData>::const_iterator 
+    HadronTable::const_iterator 
       tit1=_table.find(make_pair(abs(id1),_partons[ix])),
       tit2=_table.find(make_pair(_partons[ix],abs(id2)));
     if( tit1==_table.end() || tit2==_table.end()) continue;

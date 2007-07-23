@@ -38,7 +38,7 @@ using namespace ThePEG;
  */
 class HadronSelector: public Interfaced {
 
-protected:
+public:
 
   /**
    *  The helper classes, definitions are now external
@@ -60,8 +60,12 @@ protected:
   typedef set<HadronInfo> KupcoData;
   //@}
 
-public:
+  /**
+   * The hadron table type.
+   */
+  typedef map<pair<long,long>,KupcoData> HadronTable;
 
+public:
   /**
    * The default constructor.
    */
@@ -272,7 +276,7 @@ protected:
   /**
    *  Access to the table of hadrons
    */
-  inline map<pair<long,long>,KupcoData> & table();
+  inline HadronTable & table();
 
   /**
    *  Access to the list of partons
@@ -544,7 +548,7 @@ private:
   /**
    * The table of hadron data
    */
-  map<pair<long,long>,KupcoData> _table;
+  HadronTable _table;
 
   /**
    * Enums so arrays can be statically allocated
@@ -651,7 +655,12 @@ public:
     os << hi.id << hi.ptrData << hi.swtef << hi.wt << hi.overallWeight << ounit(hi.mass,GeV);
     return os;
   }
-  
+
+  /**
+   * debug output
+   */
+  friend ostream & operator<< (ostream & os, const HadronInfo & hi );
+
   /**
    * Friend method used to read in the value of a table element.
    */
