@@ -34,11 +34,14 @@
 #include <fstream>
 
 using namespace Herwig;
-using namespace ThePEG;
 using namespace ThePEG::Helicity;
 
 void EvtGen::doinitrun() {
   Interfaced::doinitrun();
+  std::streambuf *psbuf = generator()->log().rdbuf();
+  std::streambuf *temp[2] = {cout.rdbuf(),cerr.rdbuf()};
+  cout.rdbuf(psbuf);
+  cerr.rdbuf(psbuf);
   // output the EvtGen initialization info to the log file
   generator()->log() << "Initializing EvtGen \n";
   // set up the random number generator for EvtGen
@@ -69,6 +72,8 @@ void EvtGen::doinitrun() {
   }
   // that's the lot
   generator()->log() << "Finished initialisation of EvtGen \n";
+  cout.rdbuf(temp[0]);
+  cerr.rdbuf(temp[1]);
 }
 
 // persistent output
@@ -948,9 +953,9 @@ ParticleVector EvtGen::decay(const Particle &parent,bool recursive,
   string stemp2=stemp.str();
   if(stemp2.length()>0) 
     throw Exception() << "EvtGen report error in EvtGen::decay "
-		      << "killing event\n"
-		      << "Error was " << stemp2 
-		      << Exception::eventerror;
+  		      << "killing event\n"
+  		      << "Error was " << stemp2 
+  		      << Exception::eventerror;
   // return the decay products
   return output;
 }
