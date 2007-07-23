@@ -15,64 +15,129 @@ inline IBPtr MamboDecayer::clone() const {
 inline IBPtr MamboDecayer::fullclone() const {
   return new_ptr(*this);
 }
+
+inline void MamboDecayer::doinitrun() {
+  Decayer::doinitrun();
+  _a0[0] = 0.5;
+  _a0[1] = 0.375;
+  _a0[2] = 0.375;
+  _a0[3] = 0.4921875;
+  _a0[4] = 0.84375;
+  _a0[5] = 1.854492188,
+  _a0[6] = 5.0625;
+  _a0[7] = 16.58578491;
+  _a0[8] = 63.33398438; 
+  _a0[9] = 275.6161079;
+
+  _a1[0] = 0.5;
+  _a1[1] = 0.75;
+  _a1[2] = 1.125;
+  _a1[3] = 1.96875;
+  _a1[4] = 4.21875;
+  _a1[5] = 11.12695313;
+  _a1[6] = 35.4375;
+  _a1[7] = 132.6862793;
+  _a1[8] = 570.0058594;
+  _a1[9] = 2756.161079;
+}
+
     
-inline long double MamboDecayer::BessK0(const long double & x) const {
+inline long double MamboDecayer::BesselK0(const long double x) const {
   long double y,ans;
   if(x <= 2.0) {
-      y = x*x/4.0;
-      ans = (-log(x/2.0)*BessI0(x))-0.57721566+y*(0.42278420+y*(0.23069756+y*(0.03488590+y*(0.00262698+y*(0.00010750+y*0.00000740)))));
+    y = x*x/4.0;
+    ans = -log(x/2.0)*BesselI0(x) - 0.57721566 
+      + y*(0.42278420 + y*(0.23069756 
+      + y*(0.03488590 + y*(0.00262698 + y*(0.00010750+y*0.00000740)))));
   }
   else {
       y = 2.0/x;
-      ans = (1.25331414+y*(-0.07832358+y*(+0.02189568+y*(-0.01062446+y*(+0.00587872+y*(-0.00251540+y*0.00053208))))))*(exp(-x)/sqrt(x));
-  }
-  return ans;
-}
-  
-inline long double MamboDecayer::BessI0(const long double & x) const {
-  long double y,ans;
-  long double abx = abs(x);
-  if(abx < 3.75) {
-    y = (x/3.75)*(x/3.75);
-    ans = 1.+y*(3.5156229+y*(3.0899424+y*(1.2067492+y*(0.2659732+y*(0.0360768+y*0.0045813)))));
-  }
-  else {
-    y = (3.75/abx);
-    ans = (exp(abx)/sqrt(abx))*(0.39894228+y*(0.01328592+y*(0.00225319+y*(-0.00157565+y*(0.00916281+y*(-0.02057706+y*(0.02635537+y*(-0.01647633+y*0.00392377))))))));
+      ans = (1.25331414 + y*(-0.07832358 + y*(+0.02189568 
+      + y*(-0.01062446 + y*(0.00587872 
+      + y*(-0.00251540 + y*0.00053208))))))*(exp(-x)/sqrt(x));
   }
   return ans;
 }
 
-inline long double MamboDecayer::BessK1(const long double & x) const {
+inline long double MamboDecayer::BesselK1(const long double x) const {
   long double y,ans;
   if(x <= 2.0) {
     y = x*x/4.;
-    ans = (log(x/2.)*BessI1(x))+(1./x)*(1.+y*(0.15443144+y*(-0.67278579+y*(-0.18156897+y*(-0.01919402+y*(-0.00110404-(y*0.00004686)))))));
+    ans = log(x/2.)*BesselI1(x) + (1./x)*(1. + y*(0.15443144 
+      + y*(-0.67278579 + y*(-0.18156897 
+      + y*(-0.01919402+y*(-0.00110404-(y*0.00004686)))))));
   }
   else {
     y = 2./x;
-    ans = (exp(-x)/sqrt(x))*(1.25331414+y*(0.23498619+y*(-0.03655620+y*(0.01504268+y*(-0.00780353+y*(0.00325614+y*(-0.00068245)))))));
+    ans = (exp(-x)/sqrt(x))*(1.25331414 + y*(0.23498619 
+      + y*(-0.03655620 + y*(0.01504268 + y*(-0.00780353 
+      + y*(0.00325614+y*(-0.00068245)))))));
   }
   return ans;
 }
   
-inline long double MamboDecayer::BessI1(const long double & x) const {
+inline long double MamboDecayer::BesselI0(const long double x) const {
   long double y,ans;
-  long double abx = abs(x);
-    if(abx < 3.75) {
-      y = (x/3.75)*(x/3.75);
-      ans = abx*(0.5+y*(0.87890594+y*(0.51498869+y*(0.15084934+y*(0.02658733+y*(0.00301532+y*0.00032411))))));
+  if(x < 3.75) {
+    y = sqr(x/3.75);
+    ans = 1. + y*(3.5156229 + y*(3.0899424 + y*(1.2067492 
+      + y*(0.2659732 + y*(0.0360768+y*0.0045813)))));
+  }
+  else {
+    y = (3.75/x);
+    ans = (exp(x)/sqrt(x))*(0.39894228 + y*(0.01328592 
+      + y*(0.00225319 + y*(-0.00157565 + y*(0.00916281 
+      + y*(-0.02057706+y*(0.02635537+y*(-0.01647633+y*0.00392377))))))));
+  }
+  return ans;
+}
+  
+inline long double MamboDecayer::BesselI1(const long double x) const {
+  long double y,ans;
+  if(x < 3.75) {
+    y = sqr(x/3.75);
+    ans = x*(0.5 + y*(0.87890594 + y*(0.51498869 + y*(0.15084934 
+      + y*(0.02658733 + y*(0.00301532 + y*0.00032411))))));
     }
     else {
       y = 3.75/x;
-      ans = (0.39894228+y*(-0.03988024+y*(-0.00362018+y*(0.00163801+y*(-0.01031555+y*(0.02282967+y*(-0.02895312+y*(0.01787654-y*0.00420059))))))))*(exp(abx)/sqrt(abx));
+      ans = (0.39894228 + y*(-0.03988024 + y*(-0.00362018 
+        + y*(0.00163801 + y*(-0.01031555 + y*(0.02282967 
+	+ y*(-0.02895312 + y*(0.01787654-y*0.00420059))))))))*(exp(x)/sqrt(x));
     }
     return ans;
 }
   
-inline long double MamboDecayer::BessKPrime(const long double & x) const {
-  long double y = BessK0(x)/BessK1(x);
-  return y*y + (y/x) - 1;
+inline void MamboDecayer::BesselFns(const long double x,
+				    long double & f, 
+				    long double & fp) const {
+  if( x < 0. ) {
+    throw Exception() 
+      << "MamboDecayer::BesselelFns - Argument is negative "
+      << x << " . Besselel functions not defined for x < 0.0 "
+      << Exception::abortnow;
+    f = 0.0; fp = 0.0;
+    return;
+  }
+  if( x < 10. ) {
+    f = BesselK0(x)/BesselK1(x);
+    fp = ( sqr(f)*x + f - x )/x;
+  }
+  else
+    BesselIExpand(-x, f, fp);
+}
+
+inline void MamboDecayer::BesselIExpand(const long double x,
+					long double & f, 
+					long double & fp) const {
+  long double y = 1./x;
+  f = 1.+ y*(_a0[1] + y*(_a0[2] + y*(_a0[3] + y*(_a0[4] 
+     + y*(_a0[5] + y*(_a0[6] + y*(_a0[7] + y*(_a0[8] 
+     + y*(_a0[9] + y*_a0[10] )))))))));
+
+  fp = -y*y*(_a1[1] + y*(_a1[2] + y*(_a1[3] + y*(_a1[4] 
+     + y*(_a1[5] + y*(_a1[6] + y*(_a1[7] + y*(_a1[8] 
+     + y*(_a1[9] + y*_a1[10] )))))))));
 }
   
 }
