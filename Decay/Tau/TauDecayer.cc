@@ -21,17 +21,8 @@
 #include "ThePEG/Helicity/FermionSpinInfo.h"
 #include "ThePEG/StandardModel/StandardModelBase.h"
 
-namespace Herwig {
-using namespace ThePEG;
-using Helicity::SpinorWaveFunction;
-using Helicity::SpinorBarWaveFunction;
-using ThePEG::Helicity::LorentzPolarizationVector;
-using ThePEG::Helicity::LorentzSpinor;
-using ThePEG::Helicity::LorentzSpinorBar;
-using ThePEG::Helicity::RhoDMatrix;
-using Helicity::Direction;
-using Helicity::incoming;
-using Helicity::outgoing;
+using namespace Herwig;
+using namespace ThePEG::Helicity;
 
 void TauDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
@@ -278,5 +269,4 @@ void TauDecayer::dataBaseOutput(ofstream & output,bool header) const {
   _current->dataBaseOutput(output,false,true);
   output << "set " << fullName() << ":WeakCurrent " << _current->fullName() << " \n";
   output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
-}
 }
