@@ -18,9 +18,8 @@ using namespace ThePEG::Constants;
 
 /** \ingroup Decay
  *
- * The BtoSGammaKagan class implements he model of hep-ph/9805303 for the 
+ * The BtoSGammaKagan class implements the model of hep-ph/9805303 for the 
  * hadronic mass spectrum in \f$b\to s \gamma\f$ decays.
- *
  */
 class BtoSGammaKagan: public BtoSGammaHadronicMass {
 
@@ -79,6 +78,28 @@ public:
    */
   static void Init();
 
+public:
+
+  /**
+   *  Members which return integrands
+   */
+  //@{
+  /**
+   *  Operator to return the integrand for the \f$s_{22}(y)\f$ function
+   *  or \f$s_{27}(y)\f$ functions of hep-ph/9805303
+   *  depending on the value of _iopt to be integrated
+   */
+  inline double operator ()(double argument) const;
+  typedef double ValType;
+  typedef double ArgType;
+
+  /**
+   *  Operator to return the integrand of the smeared function or
+   *  Fermi function depending on the value of _iopt to be integrated
+   */
+  inline InvEnergy operator ()(Energy argument) const;
+  //@}
+
 protected:
 
   /** @name Clone Methods. */
@@ -106,6 +127,12 @@ protected:
    * @throws InitException if object could not be initialized properly.
    */
   virtual void doinit() throw(InitException);
+
+  /**
+   * Initialize this object. Called in the run phase just before
+   * a run begins.
+   */
+  inline virtual void doinitrun();
   //@}
 
 private:
@@ -131,66 +158,54 @@ private:
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    * @param alphaS The strong coupling, \f$\alpha_S\f$.
    */
-  inline double Delta(double y, double alphaS);
+  inline double Delta(double y, double alphaS) const;
 
   /**
    * Kinematic function from semi-leptonic decay for normaalisation
    */
-  inline double semiLeptonicf();
+  inline double semiLeptonicf() const;
 
   /**
    *  \f$s_{22}(y)\f$ function from hep-ph/9805303. Due to the integration
    * required this function is computed by interpolation.
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s22(double y);
+  inline double s22(double y) const;
 
   /**
    *  \f$s_{27}(y)\f$ function from hep-ph/9805303. Due to the integration
    * required this function is computed by interpolation.
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s27(double y);
+  inline double s27(double y) const;
 
   /**
    *  \f$s_{77}(y)\f$ function from hep-ph/9805303
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s77(double y);
+  inline double s77(double y) const;
 
   /**
    *  \f$s_{78}(y)\f$ function from hep-ph/9805303
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s78(double y);
+  inline double s78(double y) const;
 
   /**
    *  \f$s_{88}(y)\f$ function from hep-ph/9805303
    * @param y Ratio \f$E_\gamma/E^{\rm max}_\gamma\f$.
    */
-  inline double s88(double y);
+  inline double s88(double y) const;
 
   /**
    *  The real part of the \f$G(t)\f$ function from hep-ph/9805303
    */
-  inline double realG(double);
+  inline double realG(double) const;
 
   /**
    *  The imaginary part of the \f$G(t)\f$ function from hep-ph/9805303
    */
-  inline double imagG(double);
-
-  /**
-   * The integrand for the \f$s_{22}(y)\f$ function of hep-ph/9805303
-   * @param x The integrand variable
-   */
-  inline double integrands22(double x);
-
-  /**
-   * The integrand for the \f$s_{22}(y)\f$ function of hep-ph/9805303
-   * @param x The integrand variable
-   */
-  inline double integrands27(double x);
+  inline double imagG(double) const;
 
   /**
    *  Strong coupling \f$\alpha_S\f$ at the scale \f$Q\f$
@@ -206,19 +221,7 @@ private:
   /**
    * The \f$K'_{NLO}(1-y)\f$ function at parton level from hep-ph/9805303
    */
-  inline double KNLO(double);
-
-  /**
-   * The integrand for the smeared distribution
-   * @param kp The integration variable
-   */
-  inline InvEnergy integrandPy(Energy kp);
-
-  /**
-   *  Fermi motion function
-   * @param kp The scale
-   */
-  inline InvEnergy fermiFunction(Energy kp);
+  inline double KNLO(double) const;
   //@}
 
 private:
@@ -439,6 +442,11 @@ private:
    * Number of points for the interpolation of the spectrum
    */
   unsigned int _nspect;
+
+  /**
+   *  The function currently being integrated
+   */
+  unsigned int _iopt;
   //@}
 
 };
@@ -479,34 +487,27 @@ struct ClassTraits<Herwig::BtoSGammaKagan>
 namespace Herwig {
 
 /**
- *  A struct for the integrand which can access the integrands22
- * and integrands27 members of the spectrum 
- * of the BtoSGammaKagan class. This function can then
- * be integrated to give the coefficients.
+ *  A struct for the integrand which can access the dimensional value
+ *  member of the BtoSGammaKagan class
  */
 struct KaganIntegrand {
 
   /**
    *  The constructor
    */
-  inline KaganIntegrand(BtoSGammaKaganPtr,unsigned int);
+  inline KaganIntegrand(BtoSGammaKaganPtr in) : _kagan(in) {};
 
   /**
    * Get the function value
    */
-  inline double operator ()(double argument) const;
-  typedef double ValType;
-  typedef double ArgType;
+  inline InvEnergy operator ()(Energy arg) const {return (*_kagan)(arg);}
+  typedef InvEnergy ValType;
+  typedef Energy    ArgType;
 
   /**
    *  A pointer to the form factor to supply the integrand.
    */
   BtoSGammaKaganPtr _kagan;
-
-  /**
-   *  Option for which function to be integrated
-   */
-  unsigned int _iopt;
 };
 }
 

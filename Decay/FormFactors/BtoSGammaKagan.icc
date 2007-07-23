@@ -14,69 +14,68 @@ inline IBPtr BtoSGammaKagan::fullclone() const {
   return new_ptr(*this);
 }
 
-inline double BtoSGammaKagan::Delta(double y, double alphaS) {
-  double output(0.);
+inline double BtoSGammaKagan::Delta(double y, double alphaS) const {
   // goes to zero for large y
   if(y<=_ycut) {
     double ln(log(1.-y));
-    output = -4./3./pi/(1.-y)*alphaS*(ln+1.75)*exp(-2.*alphaS/3./pi*ln*(ln+3.5));
+    return -4./3./pi/(1.-y)*alphaS*(ln+1.75)*exp(-2.*alphaS/3./pi*ln*(ln+3.5));
   }
-  return output;
+  else return 0.;
 }
 
-inline double BtoSGammaKagan::semiLeptonicf() {
-  double z2=_zratio*_zratio;
-  return 1.-8.*_zratio*(1.-z2)-z2*z2-12.*z2*log(_zratio);
+inline double BtoSGammaKagan::semiLeptonicf() const {
+  double z2=sqr(_zratio);
+  return 1.-8.*_zratio*(1.-z2)-sqr(z2)-12.*z2*log(_zratio);
 }
 
-
-inline double BtoSGammaKagan::s22(double y) {
+inline double BtoSGammaKagan::s22(double y) const {
   return (*_s22inter)(y);
 }
 
-inline double BtoSGammaKagan::s27(double y) {
+inline double BtoSGammaKagan::s27(double y) const {
   return (*_s27inter)(y);
 }
 
-inline double BtoSGammaKagan::s77(double y) {
+inline double BtoSGammaKagan::s77(double y) const {
   if(y>_ycut){y=_ycut;}
   return 1./3.*(7.+y*(1.-2.*y)-2.*(1.+y)*log(1.-y));
 }
 
-inline double BtoSGammaKagan::s78(double y) {
-  if(y>_ycut){y=_ycut;}
+inline double BtoSGammaKagan::s78(double y) const {
+  if(y>_ycut) y=_ycut;
   return 8./9.*((1.-y)/y*log(1.-y)+1.+0.25*y*y);
 }
 
-inline double BtoSGammaKagan::s88(double y) {
-  double ratio(_mb/_ms);
+inline double BtoSGammaKagan::s88(double y) const {
+  double ratio(_mb/_ms),y2(sqr(y));
   if(y>_ycut){y=_ycut;}
-  return 1./27.*(2.*(2.-2.*y+y*y)/y*(log(1.-y)+2.*log(ratio))-2.*y*y-y-8.*(1.-y)/y);
+  return 1./27.*(2.*(2.-2.*y+y2)/y*(log(1.-y)+2.*log(ratio))-2.*y2-y-8.*(1.-y)/y);
 }
   
-inline double BtoSGammaKagan::realG(double t) {
+inline double BtoSGammaKagan::realG(double t) const {
   if(t<4.) {
     double at(atan(sqrt(t/(4.-t))));
-    return -2.*at*at;
+    return -2.*sqr(at);
   }
   else {
     double ln(log(0.5*(sqrt(t)+sqrt(t-4.))));
-    return 2.*(ln*ln-0.25*pi*pi);
+    return 2.*(sqr(ln)-0.25*sqr(pi));
   }
 }
 
-inline double BtoSGammaKagan::imagG(double t) {
+inline double BtoSGammaKagan::imagG(double t) const {
   if(t<4.) return 0.;
   else     return -2.*pi*log(0.5*(sqrt(t)+sqrt(t-4.)));
 }
 
-inline double BtoSGammaKagan::integrands22(double x) {
-  double reg(realG(x/_zratio)),img(imagG(x/_zratio));
-  return 16./27.*(1.-x)*(_zratio*_zratio/x/x*(reg*reg+img*img)+_zratio/x*reg+0.25);
-}
-
-inline double BtoSGammaKagan::integrands27(double x) {
-  return -8./9.*_zratio*(realG(x/_zratio)+0.5*x/_zratio);
+inline double BtoSGammaKagan::operator() (double x) const {
+  if(_iopt==0) {
+    double reg(realG(x/_zratio)),img(imagG(x/_zratio));
+    return 16./27.*(1.-x)*(_zratio*_zratio/x/x*(sqr(reg)+sqr(img))+_zratio/x*reg+0.25);
+  }
+  else {
+    return -8./9.*_zratio*(realG(x/_zratio)+0.5*x/_zratio);
+  }
 }
 
 inline double BtoSGammaKagan::alphaS(Energy Q) {
@@ -84,29 +83,23 @@ inline double BtoSGammaKagan::alphaS(Energy Q) {
   return _alphaSZ/lo*(1.-0.25*_beta1/_beta0*_alphaSZ/pi*log(lo)/lo);
 }
 
-inline double BtoSGammaKagan::KNLO(double y) {
-  return _delta*Delta(y,_alphaSM)+_alphaSM/pi*(s22(y)*_c20*_c20+s77(y)*_c70*_c70+
-					       s88(y)*_c80*_c80+s78(y)*_c70*_c80+
-					       s27(y)*_c20*(_c70-_c80/3.));
-}
-  
-inline InvEnergy BtoSGammaKagan::integrandPy(Energy kp) {
-  return KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp)*fermiFunction(kp);
+inline double BtoSGammaKagan::KNLO(double y) const {
+  return _delta*Delta(y,_alphaSM)
+    +_alphaSM/pi*(s22(y)*sqr(_c20)+s77(y)*sqr(_c70)
+    		  +s88(y)*sqr(_c80)+s78(y)*_c70*_c80
+    		  +s27(y)*_c20*(_c70-_c80/3.));
 }
 
-inline InvEnergy BtoSGammaKagan::fermiFunction(Energy kp) {
-  return exponentialFermiFunction(kp,_fermilambda,_fermia,_ferminorm,_fermilambda1);
+inline InvEnergy BtoSGammaKagan::operator() (Energy kp) const {
+  InvEnergy fermi = exponentialFermiFunction(kp,_fermilambda,_fermia,
+					     _ferminorm,_fermilambda1);
+  if(_iopt==1) fermi *=KNLO(_MB*_y/(_mb+kp))*_MB/(_mb+kp);
+  return fermi;
 }
 
-inline KaganIntegrand::KaganIntegrand(BtoSGammaKaganPtr in,unsigned int ioptin) 
-  : _kagan(in),_iopt(ioptin)
-{}
-
-// calculate the integrand  
-inline double KaganIntegrand::operator() (double x) const {
-  if(_iopt==0)      return _kagan->integrands22(x);
-  else if(_iopt==1) return _kagan->integrands27(x);
-  else if(_iopt==2) return _kagan->integrandPy(x*UnitRemoval::E)   * UnitRemoval::E;
-  else              return _kagan->fermiFunction(x*UnitRemoval::E) * UnitRemoval::E;
+inline void BtoSGammaKagan::doinitrun() {
+  BtoSGammaHadronicMass::doinitrun();
+  _pmHinter = new_ptr(Interpolator<InvEnergy,Energy>(_spectrum,_mHinter,3));
 }
+
 }

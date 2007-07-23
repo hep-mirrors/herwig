@@ -10,30 +10,24 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Interface/Reference.h"
 #include "ThePEG/Interface/ClassDocumentation.h"
-
-#ifdef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "BtoSGammaDecayer.tcc"
-#endif
-
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 
-namespace Herwig {
-using namespace ThePEG;
+using namespace Herwig;
 
 bool BtoSGammaDecayer::accept(const DecayMode & dm) const {
   // should be three decay products
-  if(dm.products().size()!=3){return false;}
+  if(dm.products().size()!=3) return false;
   // photon should be last
-  if(dm.orderedProducts()[2]->id()!=ParticleID::gamma){return false;}
+  if(dm.orderedProducts()[2]->id()!=ParticleID::gamma) return false;
   // strange should be first
-  if(abs(dm.orderedProducts()[0]->id())!=ParticleID::s){return false;}
+  if(abs(dm.orderedProducts()[0]->id())!=ParticleID::s) return false;
   // first and second should form a colour singlet
   if((dm.orderedProducts()[0]->iColour()==PDT::Colour3&&
       dm.orderedProducts()[1]->iColour()==PDT::Colour3bar)||
      (dm.orderedProducts()[1]->iColour()==PDT::Colour3&&
-      dm.orderedProducts()[0]->iColour()==PDT::Colour3bar)){return true;}
-  else{return false;}
+      dm.orderedProducts()[0]->iColour()==PDT::Colour3bar)) return true;
+  else return false;
 }
 
 ParticleVector BtoSGammaDecayer::decay(const DecayMode & dm,
@@ -59,17 +53,15 @@ ParticleVector BtoSGammaDecayer::decay(const DecayMode & dm,
   for(unsigned int ix=0;ix<3;++ix){children[ix]->setMomentum(pout[ix]);}
   // make the colour connections
   // quark first
-  if(children[0]->data().iColour()==PDT::Colour3)
-    {
-      children[0]->antiColourNeighbour(children[1]);
-      children[1]->colourNeighbour(children[0]);
-    }
+  if(children[0]->data().iColour()==PDT::Colour3) {
+    children[0]->antiColourNeighbour(children[1]);
+    children[1]->colourNeighbour(children[0]);
+  }
   // antiquark first
-  else
-    {
-      children[0]->colourNeighbour(children[1]);
-      children[1]->antiColourNeighbour(children[0]);
-    }
+  else {
+    children[0]->colourNeighbour(children[1]);
+    children[1]->antiColourNeighbour(children[0]);
+  }
   return children;
 }
 
@@ -102,14 +94,12 @@ void BtoSGammaDecayer::Init() {
  * @param os The stream to output the information to
  * @param header Whether or not to output the information for MySQL
  */
-void BtoSGammaDecayer::dataBaseOutput(ofstream & os,bool header) const
-{
+void BtoSGammaDecayer::dataBaseOutput(ofstream & os,bool header) const {
   // header for MySQL
-  if(header){os << "update decayers set parameters=\"";}
+  if(header) os << "update decayers set parameters=\"";
   _hadronicmass->dataBaseOutput(os,false,true);
   os << "set " << fullName() << ":HadronicMass " << _hadronicmass->fullName() 
-	 << " \n";
+     << " \n";
   // footer for MySQL
-  if(header){os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";}
-}
+  if(header) os << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";
 }

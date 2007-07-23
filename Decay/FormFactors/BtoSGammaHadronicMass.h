@@ -28,25 +28,10 @@ class BtoSGammaHadronicMass: public Interfaced {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * The default constructor.
    */
   inline BtoSGammaHadronicMass();
-
-  /**
-   * The copy constructor.
-   */
-  inline BtoSGammaHadronicMass(const BtoSGammaHadronicMass &);
-
-  /**
-   * The destructor.
-   */
-  virtual ~BtoSGammaHadronicMass();
-  //@}
-
-public:
 
   /**
    * Virtual member which must be implemented in classes inheriting from this
@@ -119,57 +104,8 @@ protected:
    * @param norm The normalisation, \f$N\f$.
    * @param lambda1 Scale related to kinetic energy of b quark, \f$\lambda_1\f$.
    */
-  inline InvEnergy exponentialFermiFunction(Energy scale,Energy lambda,
-					    double a,InvEnergy norm,Energy2 lambda1 );
-  //@}
-
-
-protected:
-
-  /** @name Standard Interfaced functions. */
-  //@{
-  /**
-   * Check sanity of the object during the setup phase.
-   */
-  inline virtual void doupdate() throw(UpdateException);
-
-  /**
-   * Initialize this object after the setup phase before saving an
-   * EventGenerator to disk.
-   * @throws InitException if object could not be initialized properly.
-   */
-  inline virtual void doinit() throw(InitException);
-
-  /**
-   * Initialize this object. Called in the run phase just before
-   * a run begins.
-   */
-  inline virtual void doinitrun();
-
-  /**
-   * Finalize this object. Called in the run phase just after a
-   * run has ended. Used eg. to write out statistics.
-   */
-  inline virtual void dofinish();
-
-  /**
-   * Rebind pointer to other Interfaced objects. Called in the setup phase
-   * after all objects used in an EventGenerator has been cloned so that
-   * the pointers will refer to the cloned objects afterwards.
-   * @param trans a TranslationMap relating the original objects to
-   * their respective clones.
-   * @throws RebindException if no cloned object was found for a given
-   * pointer.
-   */
-  inline virtual void rebind(const TranslationMap & trans)
-    throw(RebindException);
-
-  /**
-   * Return a vector of all pointers to Interfaced objects used in this
-   * object.
-   * @return a vector of pointers.
-   */
-  inline virtual IVector getReferences();
+  inline InvEnergy exponentialFermiFunction(Energy scale,Energy lambda, double a,
+					    InvEnergy norm,Energy2 lambda1 ) const;
   //@}
 
 private:

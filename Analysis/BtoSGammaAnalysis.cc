@@ -121,7 +121,7 @@ void BtoSGammaAnalysis::dofinish() {
 void BtoSGammaAnalysis::doinitrun() {
   AnalysisHandler::doinitrun();
   for(unsigned int ix=0;ix<4;++ix) {
-    _hadmass.push_back(new_ptr(Histogram(900.,4500.,100)));
+    _hadmass.push_back(new_ptr(Histogram(850.,4500.,100)));
     _spectrum.push_back(new_ptr(Histogram(0.,2800.,100)));
   }
 }

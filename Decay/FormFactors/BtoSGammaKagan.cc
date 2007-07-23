@@ -19,17 +19,17 @@
 using namespace Herwig;
 using Herwig::Math::Li2;
 
-BtoSGammaKagan::BtoSGammaKagan() : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
-				   _mc(1.392*GeV),_ms(0.*GeV),_msovermb(1./50.),_zratio(0.),
-				   _lambda2(0.12*GeV2),_mw(80.425*GeV),_mz(91.1876*GeV),
-				   _MB(5279.4*MeV),_c20(0.),_c70(0.),_c80(0.),
-				   _beta0(23./3.),_beta1(116./3.),_alpha(1./137.036),
-				   _alphaSZ(0.118),_mub(4.8*GeV),_alphaSM(0.),
-				   _ckm(0.976),_delta(0.),_spectmax(0./GeV),_maxtry(100),
-				   _fermilambda(0.*GeV),_fermia(0.),_ferminorm(1./GeV),
-				   _fermilambda1(-0.3*GeV2),_ycut(0.999999999),
-				   _y(0.),_deltacut(0.9),_nsfunct(100),_nspect (100)
-{
+BtoSGammaKagan::BtoSGammaKagan() 
+  : _initialize(false),_mt(175.*GeV),_mb(4.8*GeV),
+    _mc(1.392*GeV),_ms(0.*GeV),_msovermb(1./50.),_zratio(0.),
+    _lambda2(0.12*GeV2),_mw(80.425*GeV),_mz(91.1876*GeV),
+    _MB(5279.4*MeV),_c20(0.),_c70(0.),_c80(0.),
+    _beta0(23./3.),_beta1(116./3.),_alpha(1./137.036),
+    _alphaSZ(0.118),_mub(4.8*GeV),_alphaSM(0.),
+    _ckm(0.976),_delta(0.),_spectmax(0.00025/GeV),_maxtry(100),
+    _fermilambda(0.*GeV),_fermia(0.),_ferminorm(1./GeV),
+    _fermilambda1(-0.3*GeV2),_ycut(0.9999999999),
+    _y(0.),_deltacut(0.9),_nsfunct(100),_nspect (100) {
   Energy mHin[100]={0*GeV,0.0505907*GeV,0.101181*GeV,0.151772*GeV,0.202363*GeV,
 		    0.252953*GeV,0.303544*GeV,0.354135*GeV,0.404726*GeV,0.455316*GeV,
 		    0.505907*GeV,0.556498*GeV,0.607088*GeV,0.657679*GeV,0.70827*GeV,
@@ -88,7 +88,7 @@ void BtoSGammaKagan::persistentOutput(PersistentOStream & os) const {
      << ounit(_spectmax,1./GeV) << ounit(_fermilambda,GeV)
      << _fermia << ounit(_ferminorm,1./GeV) << ounit(_fermilambda1,GeV2)
      <<_ycut << _deltacut << _nsfunct 
-     << _nspect << _maxtry << _initialize << _pmHinter;
+     << _nspect << _maxtry << _initialize;
 }
 
 void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
@@ -99,9 +99,8 @@ void BtoSGammaKagan::persistentInput(PersistentIStream & is, int) {
      >> iunit(_mHinter,GeV) >> iunit(_spectrum,1./GeV)
      >> iunit(_spectmax,1./GeV) >> iunit(_fermilambda,GeV) 
      >> _fermia >> iunit(_ferminorm,1./GeV) >> iunit(_fermilambda1,GeV2)
-
      >>_ycut >> _deltacut >> _nsfunct 
-     >> _nspect >> _maxtry >> _initialize >> _pmHinter;
+     >> _nspect >> _maxtry >> _initialize;
 }
 
 ClassDescription<BtoSGammaKagan> BtoSGammaKagan::initBtoSGammaKagan;
@@ -245,7 +244,7 @@ void BtoSGammaKagan::Init() {
   static Parameter<BtoSGammaKagan,double> interfaceycut
     ("ycut",
      "Limit of the value of y to avoid singualarities in integrals",
-     &BtoSGammaKagan::_ycut, 0.999999999, 0.999, 1.,
+     &BtoSGammaKagan::_ycut, 0.9999999999, 0.999, 1.,
      false, false, Interface::limited);
 
   static Parameter<BtoSGammaKagan,unsigned int> interfaceNSpectrum
@@ -340,7 +339,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
   BtoSGammaHadronicMass::doinit();
   // quark masses
   _ms=_msovermb*_mb;
-  _zratio=pow(_mc/_mb,2);
+  _zratio=sqr(_mc/_mb);
   // parameters for the fermi motion function
   _fermilambda=_MB-_mb;
   _fermia=-3.*sqr(_fermilambda)/_fermilambda1-1.;
@@ -354,16 +353,16 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     double step(1./_nsfunct);
     _y=-0.5*step;
     // perform the integrals
-    KaganIntegrand integrand(this,0);
     GaussianIntegrator integrator;
+    _iopt=0;
     for(unsigned int ix=0;ix<_nsfunct;++ix) {
       _y+=step;
       yvalues.push_back(_y);
-      sfunct.push_back(integrator.value(integrand,0.,_y));
+      sfunct.push_back(integrator.value(*this,0.,_y));
     }
     _s22inter = new_ptr(Interpolator<double,double>(sfunct,yvalues,3));
     // s_27 function;
-    integrand=KaganIntegrand(this,1);
+    _iopt=1;
     sfunct.clear();yvalues.clear();
     sfunct.push_back(0.),yvalues.push_back(0.);
     _y=-0.5*step;
@@ -371,14 +370,13 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     for(unsigned int ix=0;ix<_nsfunct;++ix) {
       _y+=step;
       yvalues.push_back(_y);
-      sfunct.push_back(integrator.value(integrand,0.,_y));
+      sfunct.push_back(integrator.value(*this,0.,_y));
     }
     _s27inter = new_ptr(Interpolator<double,double>(sfunct,yvalues,3));
     // compute the normalisation constant
-    integrand=KaganIntegrand(this,3);
-    _ferminorm*=1./
-      integrator.value(integrand,(_MB*(1.-_deltacut)-_mb)*UnitRemoval::InvE,
-		       (_MB-_mb)*UnitRemoval::InvE);
+    KaganIntegrand integrand(this);
+    _iopt=0;
+    _ferminorm*=1./integrator.value(integrand,_MB*(1.-_deltacut)-_mb,_MB-_mb);
     // now for the spectrum
     _mHinter.clear();
     _spectrum.clear();
@@ -389,8 +387,8 @@ void BtoSGammaKagan::doinit() throw(InitException) {
     Energy maxhadronmass(min(maxMass(),sqrt(_MB*_MB-2.*_MB*minegamma)));
     Energy hstep=(maxhadronmass-minhadronmass)/(_nspect-1);
     Energy mhadron(minhadronmass);
-    // function to be integrated      
-    integrand=KaganIntegrand(this,2);
+    // function to be integrated
+    _iopt=1;
     // prefactor
     InvEnergy2 pre(6.*0.105*2./_MB/_MB*_alpha/pi/semiLeptonicf()*_ckm*_ckm);
     // compute the table
@@ -398,16 +396,13 @@ void BtoSGammaKagan::doinit() throw(InitException) {
       // calculate y
       _y=1.-mhadron*mhadron/_MB/_MB;
       // perform the integral
-      _spectrum.push_back(pre*mhadron*
-			  integrator.value(integrand,(_MB*_y-_mb)*UnitRemoval::InvE,
-					   (_MB-_mb)*UnitRemoval::InvE));
+      _spectrum.push_back(pre*mhadron*integrator.value(integrand,_MB*_y-_mb,_MB-_mb));
       _spectmax=max(_spectmax,_spectrum.back());
       _mHinter.push_back(mhadron);
       // increment the loop
       mhadron+=hstep;
     }
   }
-  _pmHinter = new_ptr(Interpolator<InvEnergy,Energy>(_spectrum,_mHinter,3));
 }
 
 Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
@@ -431,9 +426,8 @@ Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
 
 void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
 					   bool create) const {
-  if(header){output << "update decayers set parameters=\"";}
-  if(create)
-    {output << "create Herwig::BtoSGammaKagan " << fullName() << " \n";}
+  if(header) output << "update decayers set parameters=\"";
+  if(create) output << "create Herwig::BtoSGammaKagan " << fullName() << " \n";
   output << "set " << fullName() << ":TopMass "    << _mt/GeV << " \n";
   output << "set " << fullName() << ":BottomMass " << _mb/GeV << " \n";
   output << "set " << fullName() << ":CharmMass "  << _mc/GeV << " \n";
@@ -451,25 +445,18 @@ void BtoSGammaKagan::dataBaseOutput(ofstream & output,bool header,
   output << "set " << fullName() << ":MaximumTries " << _maxtry << " \n";
   output << "set " << fullName() << ":ycut " << _ycut << " \n";
   output << "set " << fullName() << ":NSpectrum " <<  _nspect << " \n";
-  for(unsigned int ix=0;ix<_mHinter.size();++ix)
-    {
-      if(ix<100)
-	{output << "set " << fullName() << ":mHValues " << ix << " " 
-		<< _mHinter[ix]/GeV << " \n";}
-      else
-	{output << "insert " << fullName() << ":mHValues " << ix << " " 
-		<< _mHinter[ix]/GeV << " \n";}
-    }
-  for(unsigned int ix=0;ix<_spectrum.size();++ix)
-    {
-      if(ix<100)
-	{output << "set " << fullName() << ":Spectrum " << ix << " " 
-		<< _spectrum[ix]*GeV 
-		<< " \n";}
-      else
-	{output << "insert " << fullName() << ":Spectrum " << ix << " " 
-		<< _spectrum[ix]*GeV 
-		<< " \n";}
-    }
-  if(header){output << "\n\" where BINARY ThePEGName=\"" << fullName() << "\";\n";}
+  for(unsigned int ix=0;ix<_mHinter.size();++ix) {
+    if(ix<100) output << "set " << fullName() << ":mHValues " << ix << " " 
+		      << _mHinter[ix]/GeV << " \n";
+    else       output << "insert " << fullName() << ":mHValues " << ix << " " 
+		      << _mHinter[ix]/GeV << " \n";
+  }
+  for(unsigned int ix=0;ix<_spectrum.size();++ix) {
+    if(ix<100) output << "set " << fullName() << ":Spectrum " << ix << " " 
+		      << _spectrum[ix]*GeV << " \n";
+    else       output << "insert " << fullName() << ":Spectrum " << ix << " " 
+		      << _spectrum[ix]*GeV << " \n";
+  }
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }
