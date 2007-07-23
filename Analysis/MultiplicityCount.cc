@@ -173,7 +173,7 @@ void MultiplicityCount::dofinish() {
       MultiplicityInfo multiplicity = it->second;
       string name = (it->first==0 ? "All chgd" : 
 		     generator()->getParticleData(it->first)->PDGName() );
-      long N = generator()->currentEventNumber();
+      long N = generator()->currentEventNumber() - 1;
 
       outfile << std::scientific << std::showpoint
 	      << std::setprecision(3)
