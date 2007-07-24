@@ -50,6 +50,26 @@ void VectorBosonQQbarHardGenerator::Init() {
 
 NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
 
+//   assert(tree->outgoingLines().size()==2);
+//   // Get the progenitors: Q and Qbar.
+//   vector<tcPDPtr> partons;
+//   vector<ShowerProgenitorPtr> particlesToShower;
+//   ShowerProgenitorPtr QProgenitor,QbarProgenitor;
+//   if(tree->outgoingLines().begin()->first->progenitor()->id()>0) {
+//       QProgenitor=tree->outgoingLines().begin()->first;
+//       QbarProgenitor=tree->outgoingLines().rbegin()->first;
+//   } else {
+//       QProgenitor=tree->outgoingLines().rbegin()->first;
+//       QbarProgenitor=tree->outgoingLines().begin()->first;
+//   }
+//   partons[0]=QProgenitor->progenitor()->dataPtr();
+//   partons[1]=QbarProgenitor->progenitor()->dataPtr();
+//   particlesToShower[0]=QProgenitor;
+//   particlesToShower[1]=QbarProgenitor;
+//   _quark.resize(0);
+//   _quark[0]=QProgenitor->copy()->momentum();
+//   _quark[1]=QbarProgenitor->copy()->momentum();
+
   // Get the particles to be showered
   vector<tcPDPtr> partons;
   vector<ShowerProgenitorPtr> particlesToShower;
@@ -81,20 +101,23 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   getEvent(); 
 
   // Make the particles for the NasonTree
-  ShowerParticleVector newparticles;
-  tcPDPtr gluon = getParticleData( ParticleID::g );
-  newparticles.push_back(new_ptr(ShowerParticle(partons[0],true)));
-  newparticles[0]->set5Momentum(_quark[0]);  
-  newparticles.push_back(new_ptr(ShowerParticle(partons[1],true)));
-  newparticles[1]->set5Momentum(_quark[1]);  
-  newparticles.push_back(new_ptr(ShowerParticle(gluon,true)));
-  newparticles[2]->set5Momentum(_g);  
-  newparticles.push_back(new_ptr(ShowerParticle(boson->dataPtr(),false)));
-  newparticles[3]->set5Momentum(boson->momentum());  
-  newparticles.push_back( new_ptr(ShowerParticle(partons[_iemitter],true)));
+  tcPDPtr gluon_data = getParticleData(ParticleID::g);
+  ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],false)));
+  emitter->set5Momentum(_quark[_iemitter]);  
+  ShowerParticlePtr spectator(new_ptr(ShowerParticle(partons[_ispectator],false)));
+  spectator->set5Momentum(_quark[_ispectator]);  
+  ShowerParticlePtr q(new_ptr(ShowerParticle(partons[0],false)));
+  q->set5Momentum(_quark[0]);  
+  ShowerParticlePtr qbar(new_ptr(ShowerParticle(partons[1],false)));
+  qbar->set5Momentum(_quark[1]);  
+  ShowerParticlePtr gluon(new_ptr(ShowerParticle(gluon_data,false)));
+  gluon->set5Momentum(_g);  
+  ShowerParticlePtr vboson(new_ptr(ShowerParticle(boson->dataPtr(),false)));
+  vboson->set5Momentum(boson->momentum());  
+  ShowerParticlePtr parent(new_ptr(ShowerParticle(partons[_iemitter],true)));
   Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
   parentMomentum.rescaleMass();
-  newparticles[4]->set5Momentum(parentMomentum);
+  parent->set5Momentum(parentMomentum);
 
   // find the sudakov for the branching
   BranchingList branchings = 
@@ -103,9 +126,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   IdList br(3);
   // types of particle in the branching
-  br[0] = abs( newparticles[_iemitter]->id() );
-  br[1] = abs( newparticles[4]->id() );
-  br[2] = newparticles[2]->id();
+  br[0] = abs(emitter->id());
+  br[1] = abs(parent->id());
+  br[2] = gluon->id();
 
   SudakovPtr sudakov;
   // for loop cycles through the Branchinglist - to find the sudakov
@@ -120,22 +143,25 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     }
   }
   // check sudakov has been created
-  if(!sudakov ) throw Exception() << "No Sudakov for the hard emission in "
-				  << "VectorBosonQQbarHardGenerator::generateHardest()" 
-				  << Exception::runerror;
+  if(!sudakov ) throw Exception() 
+      << "No Sudakov for the hard emission in "
+      << "VectorBosonQQbarHardGenerator::generateHardest()" 
+      << Exception::runerror;
 
   // create the vectors of NasonBranchings to create the NasonTree
   vector<NasonBranchingPtr> nasonin, nasonhard;
   // incoming boson
-  nasonin.push_back( new_ptr( NasonBranching( newparticles[3], SudakovPtr(),
-					    NasonBranchingPtr(), true ) ) );
+  nasonin.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
+					   NasonBranchingPtr(),true)));
   // outgoing particles from hard emission
-  NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(newparticles[_ispectator], SudakovPtr(),NasonBranchingPtr(),false)));
-  NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(newparticles[4],sudakov,NasonBranchingPtr(),false)));
-  emitterBranch->addChild( new_ptr( NasonBranching( newparticles[_iemitter], SudakovPtr(), 
-							NasonBranchingPtr(), false) ) );
-  emitterBranch->addChild( new_ptr ( NasonBranching( newparticles[2], SudakovPtr(),
-						     NasonBranchingPtr(), false) ) );
+  NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(spectator,
+			            SudakovPtr(),NasonBranchingPtr(),false)));
+  NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(parent,
+				    sudakov,NasonBranchingPtr(),false)));
+  emitterBranch->addChild(new_ptr(NasonBranching(emitter, 
+				  SudakovPtr(),NasonBranchingPtr(),false)));
+  emitterBranch->addChild(new_ptr(NasonBranching(gluon,
+				  SudakovPtr(),NasonBranchingPtr(),false)));
   if( _iemitter == 0 ) {
     nasonhard.push_back(emitterBranch);
     nasonhard.push_back(spectatorBranch);
@@ -172,19 +198,19 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
    ColinePtr greenLine = new_ptr( ColourLine() );
    
    //quark emits
-   if ( _iemitter == 0) {
-     blueLine->addColoured( newparticles[0] );
-     blueLine->addAntiColoured( newparticles[2] );
-     greenLine->addColoured( newparticles[2] );
-     greenLine->addAntiColoured( newparticles[1] );
-     greenLine->addColoured( newparticles[4] );
+   if (_iemitter == 0) {
+     blueLine->addColoured( q );
+     blueLine->addAntiColoured( gluon );
+     greenLine->addColoured( gluon );
+     greenLine->addAntiColoured( qbar );
+     greenLine->addColoured( parent );
    }
    else {
-     blueLine->addColoured( newparticles[2] );
-     blueLine->addAntiColoured( newparticles[1] );
-     greenLine->addAntiColoured( newparticles[2] );
-     greenLine->addAntiColoured( newparticles[4] );
-     greenLine->addColoured( newparticles[0] );
+     blueLine->addColoured(gluon);
+     blueLine->addAntiColoured(qbar);
+     greenLine->addAntiColoured(gluon);
+     greenLine->addAntiColoured(parent);
+     greenLine->addColoured(q);
    }
 
   // calculate the shower variables
