@@ -140,19 +140,19 @@ create /ThePEG/ParticleData /Defaults/Particles/reggeon
 setup /Defaults/Particles/reggeon 28 reggeon 0.0 0.0 0.0 0.0 0 0 0 1
 defaultparticle /Defaults/Particles/reggeon 
 create /ThePEG/ParticleData /Defaults/Particles/pomeron 
-setup /Defaults/Particles/pomeron 29 pomeron 0.0 0.0 0.0 0.0 0 0 0 1
+setup /Defaults/Particles/pomeron 29 pomeron 0.0 0.0 0.0 0.0 0 0 3 1
 defaultparticle /Defaults/Particles/pomeron 
 create /ThePEG/ParticleData /Defaults/Particles/Z'0 
-setup /Defaults/Particles/Z'0 32 Z'0 500.0 14.548480 145.484840 0.0 0 0 0 0
+setup /Defaults/Particles/Z'0 32 Z'0 500.0 14.548480 145.484840 0.0 0 0 3 0
 defaultparticle /Defaults/Particles/Z'0 
 create /ThePEG/ParticleData /Defaults/Particles/Z"0 
-setup /Defaults/Particles/Z"0 33 Z"0 900.0 0.0 0.0 0.0 0 0 0 1
+setup /Defaults/Particles/Z"0 33 Z"0 900.0 0.0 0.0 0.0 0 0 3 0
 defaultparticle /Defaults/Particles/Z"0 
 create /ThePEG/ParticleData /Defaults/Particles/W'+ 
-setup /Defaults/Particles/W'+ 34 W'+ 500.0 16.67080 166.708010 0.0 3 0 0 0
+setup /Defaults/Particles/W'+ 34 W'+ 500.0 16.67080 166.708010 0.0 3 0 3 0
 defaultparticle /Defaults/Particles/W'+ 
 create /ThePEG/ParticleData /Defaults/Particles/W'- 
-setup /Defaults/Particles/W'- -34 W'- 500.0 16.67080 166.708010 0.0 -3 0 0 0
+setup /Defaults/Particles/W'- -34 W'- 500.0 16.67080 166.708010 0.0 -3 0 3 0
 defaultparticle /Defaults/Particles/W'- 
 makeanti /Defaults/Particles/W'+ /Defaults/Particles/W'- 
 create /ThePEG/ParticleData /Defaults/Particles/H0 
