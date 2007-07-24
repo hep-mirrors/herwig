@@ -13,7 +13,7 @@
 #######################################################
 create Herwig::StandardModel /Defaults/Model
 create Herwig::ModelGenerator /Defaults/GeneralModel
-insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
+#insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/W+
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/Z0
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/t
 #insert /Defaults/GeneralModel:ModelParticles[0] /Defaults/Particles/h0
