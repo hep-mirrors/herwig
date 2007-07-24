@@ -87,6 +87,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   pnew.push_back( _quark[1] );
   pnew.push_back( _g );
   pnew.push_back( boson->momentum() );
+  pnew.push_back( pnew[_iemitter]+pnew[2]);
+  pnew[4].rescaleMass();
 
   ShowerParticleVector newparticles;
   tcPDPtr gluon = getParticleData( ParticleID::g );
@@ -96,15 +98,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   newparticles.push_back( new_ptr( ShowerParticle( partons[1], true ) ) );
   newparticles.push_back( new_ptr( ShowerParticle( gluon, true ) ) );
   newparticles.push_back( new_ptr( ShowerParticle( boson->dataPtr(), false ) ) );
+  newparticles.push_back( new_ptr( ShowerParticle( partons[_iemitter], true ) ) );
 
   // set the momenta
-  for( unsigned int ix=0; ix < 4; ++ix ) newparticles[ix]->set5Momentum( pnew[ix] );
+  for( unsigned int ix=0; ix < 5; ++ix ) newparticles[ix]->set5Momentum( pnew[ix] );
   
   // create the intermediate off-shell emitting particle
-  Lorentz5Momentum poff = pnew[_iemitter] + pnew[2];
-  poff.rescaleMass();
-  newparticles.push_back( new_ptr( ShowerParticle( partons[_iemitter], true ) ) );
-  newparticles.back()->set5Momentum( poff );
 
   // find the sudakov for the branching
   BranchingList branchings = 
