@@ -124,20 +124,14 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     evolver()->splittingGenerator()->finalStateBranchings();
   long index = abs( partons[ _iemitter]->id() ); 
 
-  IdList br(3);
-  // types of particle in the branching
-  br[0] = abs(emitter->id());
-  br[1] = abs(parent->id());
-  br[2] = gluon->id();
-
   SudakovPtr sudakov;
   // for loop cycles through the Branchinglist - to find the sudakov
   for( BranchingList::const_iterator cit = branchings.lower_bound(index); 
       cit != branchings.upper_bound(index); ++cit ) {
     IdList ids = cit->second.second;
-    if( ids[0] == br[0] &&
-	ids[1] == br[1] &&
-	ids[2] == br[2] ) {
+    if( ids[0] == abs(emitter->id()) &&
+	ids[1] == abs(parent->id())  &&
+	ids[2] == gluon->id() ) {
       sudakov = cit->second.first;
       break;
     }
@@ -184,8 +178,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
     set<NasonBranchingPtr>::const_iterator mit;
     for(mit = hard.begin(); mit != hard.end(); ++mit) {
-      //if the particle in current nasonbranching is to be showered and both ingoing/outgoing
-      //connect the particle with that nason branching
+      // if the particle in current nasonbranching is to be showered and both 
+      // ingoing/outgoing connect the particle with that nason branching
       if( particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id())) {
 	  nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
       }
@@ -199,13 +193,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
    
    //quark emits
    if (_iemitter == 0) {
-     blueLine->addColoured( q );
-     blueLine->addAntiColoured( gluon );
-     greenLine->addColoured( gluon );
-     greenLine->addAntiColoured( qbar );
-     greenLine->addColoured( parent );
-   }
-   else {
+     blueLine->addColoured(q);
+     blueLine->addAntiColoured(gluon);
+     greenLine->addColoured(gluon);
+     greenLine->addAntiColoured(qbar);
+     greenLine->addColoured(parent);
+   } else {
      blueLine->addColoured(gluon);
      blueLine->addAntiColoured(qbar);
      greenLine->addAntiColoured(gluon);
