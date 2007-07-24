@@ -76,34 +76,25 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Final particles are boosted by this in getEvent()
   _eventFrame = getTransf();
 
-  // vector to hold momenta of outgoingparticles
-  vector<Lorentz5Momentum> pnew;
-
   // Generate emission and change _quark[0,1] and _g to momenta
   // of q, qbar and g after the hardest emission.
   getEvent(); 
 
-  pnew.push_back( _quark[0] );
-  pnew.push_back( _quark[1] );
-  pnew.push_back( _g );
-  pnew.push_back( boson->momentum() );
-  pnew.push_back( pnew[_iemitter]+pnew[2]);
-  pnew[4].rescaleMass();
-
+  // Make the particles for the NasonTree
   ShowerParticleVector newparticles;
   tcPDPtr gluon = getParticleData( ParticleID::g );
-  
-  // make the particles for the NasonTree
-  newparticles.push_back( new_ptr( ShowerParticle( partons[0], true ) ) );
-  newparticles.push_back( new_ptr( ShowerParticle( partons[1], true ) ) );
-  newparticles.push_back( new_ptr( ShowerParticle( gluon, true ) ) );
-  newparticles.push_back( new_ptr( ShowerParticle( boson->dataPtr(), false ) ) );
-  newparticles.push_back( new_ptr( ShowerParticle( partons[_iemitter], true ) ) );
-
-  // set the momenta
-  for( unsigned int ix=0; ix < 5; ++ix ) newparticles[ix]->set5Momentum( pnew[ix] );
-  
-  // create the intermediate off-shell emitting particle
+  newparticles.push_back(new_ptr(ShowerParticle(partons[0],true)));
+  newparticles[0]->set5Momentum(_quark[0]);  
+  newparticles.push_back(new_ptr(ShowerParticle(partons[1],true)));
+  newparticles[1]->set5Momentum(_quark[1]);  
+  newparticles.push_back(new_ptr(ShowerParticle(gluon,true)));
+  newparticles[2]->set5Momentum(_g);  
+  newparticles.push_back(new_ptr(ShowerParticle(boson->dataPtr(),false)));
+  newparticles[3]->set5Momentum(boson->momentum());  
+  newparticles.push_back( new_ptr(ShowerParticle(partons[_iemitter],true)));
+  Lorentz5Momentum parentMomentum(_quark[_iemitter]+_g);
+  parentMomentum.rescaleMass();
+  newparticles[4]->set5Momentum(parentMomentum);
 
   // find the sudakov for the branching
   BranchingList branchings = 
