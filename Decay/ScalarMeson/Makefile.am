@@ -29,8 +29,6 @@ ScalarVectorVectorDecayer.h  ScalarVectorVectorDecayer.icc \
 ScalarVectorVectorDecayer.cc ScalarVectorVectorDecayer.fh \
 GoityRobertsDecayer.h  GoityRobertsDecayer.icc \
 GoityRobertsDecayer.fh GoityRobertsDecayer.cc \
-BtoBaryonsDecayer.h  BtoBaryonsDecayer.icc \
-BtoBaryonsDecayer.fh BtoBaryonsDecayer.cc \
 DtoKPiPiBaBar.h   DtoKPiPiBaBar.fh \
 DtoKPiPiBaBar.icc DtoKPiPiBaBar.cc\
 DtoKPiPiCLEO.h   DtoKPiPiCLEO.fh \
