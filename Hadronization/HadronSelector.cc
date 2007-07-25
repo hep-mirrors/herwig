@@ -253,7 +253,7 @@ void HadronSelector::Init() {
     ("21S0Mixing",
      "The mixing angle for the I=0 mesons from the 2 1S0 multiplet,"
      " i.e. eta(1475) and eta(1295).",
-     &HadronSelector::_etamix, idealAngleMix, -180., 180.,
+     &HadronSelector::_eta2Smix, idealAngleMix, -180., 180.,
      false, false, Interface::limited);
 
   static Parameter<HadronSelector,double> interface23S1Mixing
