@@ -207,7 +207,7 @@ bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
 
   map<ShowerProgenitorPtr,tShowerParticlePtr> outgoing=tree->outgoingLines();
   if(outgoing.size()!=2) return false;
-  if(abs(outgoing.begin()->first->progenitor()->id())<6)  return false;
+  if(abs(outgoing.begin()->first->progenitor()->id())>6)  return false;
   if(outgoing.begin()->first->progenitor()->id()!=
      -1*outgoing.rbegin()->first->progenitor()->id())     return false;
 
