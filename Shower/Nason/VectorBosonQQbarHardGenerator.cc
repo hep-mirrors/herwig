@@ -200,29 +200,17 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 }
 
 bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
+
   if(tree->incomingLines().size()!=1) return false;    
-  if(tree->outgoingLines().size()!=2) return false;
   if((tree->incomingLines().begin()->first->id()==22)&&
   (tree->incomingLines().begin()->first->progenitor()->id()==23)) return false;
 
-  unsigned int ix(0);
-  ShowerParticlePtr part[2];
- 
-  map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
+  map<ShowerProgenitorPtr,tShowerParticlePtr> outgoing=tree->outgoingLines();
+  if(outgoing.size()!=2) return false;
+  if(abs(outgoing.begin()->first->progenitor()->id())<6)  return false;
+  if(outgoing.begin()->first->progenitor()->id()!=
+     -1*outgoing.rbegin()->first->progenitor()->id())     return false;
 
-  for( cjt=tree->outgoingLines().begin();
-       cjt!=tree->outgoingLines().end(); ++cjt ) {
-    part[ix] = cjt->first->progenitor();
-    ++ix;
-  }   
-
-  // outgoing particles check q qbar
-  if( !( part[0]->id() > 0 && part[0]->id() < 6 && 
-       part[1]->id() < 0 && part[1]->id() > -6 )
-     && !( part[1]->id() > 0 && part[1]->id() < 6 && 
-	  part[0]->id() < 0 && part[0]->id() > -6 ) ) {
-    return false;
-  }
   return true;
 }
 
