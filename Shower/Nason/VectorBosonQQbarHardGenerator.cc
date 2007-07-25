@@ -52,7 +52,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   // Get the progenitors: Q and Qbar.
   vector<tcPDPtr> partons(2);
-  vector<ShowerProgenitorPtr> particlesToShower(2);
   ShowerProgenitorPtr QProgenitor,QbarProgenitor;
   if(tree->outgoingLines().begin()->first->progenitor()->id()>0) {
       QProgenitor=tree->outgoingLines().begin()->first;
@@ -63,8 +62,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   }
   partons[0]=QProgenitor->progenitor()->dataPtr();
   partons[1]=QbarProgenitor->progenitor()->dataPtr();
-  particlesToShower[0]=QProgenitor;
-  particlesToShower[1]=QbarProgenitor;
   _quark.resize(2);
   _quark[0]=QProgenitor->copy()->momentum();
   _quark[1]=QbarProgenitor->copy()->momentum();
@@ -132,7 +129,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 				  SudakovPtr(),NasonBranchingPtr(),false)));
   emitterBranch->addChild(new_ptr(NasonBranching(gluon,
 				  SudakovPtr(),NasonBranchingPtr(),false)));
-  if( _iemitter == 0 ) {
+  if(_iemitter== 0) {
     nasonhard.push_back(emitterBranch);
     nasonhard.push_back(spectatorBranch);
   } else {
@@ -148,20 +145,17 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // and set the maximum pt for the radiation
   set<NasonBranchingPtr> hard = nasontree->branchings();
 
-  for( unsigned int ix=0 ; ix < particlesToShower.size() ; ++ix ) {
-    //set the pt veto on both showers
-    particlesToShower[ix]->maximumpT(_pt);
-    
-    set<NasonBranchingPtr>::const_iterator mit;
-    for(mit = hard.begin(); mit != hard.end(); ++mit) {
-      // if the particle in current nasonbranching is to be showered and both 
-      // ingoing/outgoing connect the particle with that nason branching
-      if(particlesToShower[ix]->progenitor()->id() == ((*mit)->_particle->id())) {
-	  nasontree->connect(particlesToShower[ix]->progenitor(),*mit);
-      }
-    }
+  QProgenitor->maximumpT(_pt);
+  QbarProgenitor->maximumpT(_pt);
+  set<NasonBranchingPtr>::const_iterator mit;
+  for(mit = hard.begin(); mit != hard.end(); ++mit) {
+    // Connect the Q/Qbar progenitors to the Nason branchings.
+    if(QProgenitor->progenitor()->id()==(*mit)->_particle->id())
+        nasontree->connect(QProgenitor->progenitor(),*mit);
+    if(QbarProgenitor->progenitor()->id()==(*mit)->_particle->id())
+        nasontree->connect(QbarProgenitor->progenitor(),*mit);
   }
-  
+
   // Create the two colour lines
   ColinePtr blueLine = new_ptr( ColourLine() );
   ColinePtr greenLine = new_ptr( ColourLine() );
@@ -206,21 +200,13 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 }
 
 bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
-  if( tree->incomingLines().size() !=1 ){
-    return false;    
-  }
-  if( ( tree->incomingLines().begin()->first->id() == 22 )
-      && ( tree->incomingLines().begin()->first->progenitor()->id() == 23 ) )
-    { 
-    return false;
-  }
-
-  if( (tree->outgoingLines().size() != 2) )
-    return false;
+  if(tree->incomingLines().size()!=1) return false;    
+  if(tree->outgoingLines().size()!=2) return false;
+  if((tree->incomingLines().begin()->first->id()==22)&&
+  (tree->incomingLines().begin()->first->progenitor()->id()==23)) return false;
 
   unsigned int ix(0);
   ShowerParticlePtr part[2];
-  ix = 0;
  
   map<ShowerProgenitorPtr,tShowerParticlePtr>::const_iterator cjt;
 
