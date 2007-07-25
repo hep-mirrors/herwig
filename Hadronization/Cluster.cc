@@ -225,14 +225,6 @@ void Cluster::setBeamRemnant(int i, bool b) {
     _isBeamRemnant[i] = b;
 }
 
-PPtr Cluster::clone() const {
-  return dynamic_ptr_cast<PPtr>(ptr_new<ClusterPtr>(*this));
-}
-
-PPtr Cluster::fullclone() const {
-  return clone();
-}
-
 bool Cluster::initPerturbative(tPPtr p) {
   assert(_clusterHadHandler);
   Energy Q0 = _clusterHadHandler->

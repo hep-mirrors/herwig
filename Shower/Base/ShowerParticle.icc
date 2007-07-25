@@ -96,7 +96,7 @@ inline const tcPPtr ShowerParticle::getThePEGBase() const {
 }
 
 inline PPtr ShowerParticle::clone() const {
-  return dynamic_ptr_cast<PPtr>(ptr_new<ShowerParticlePtr>(*this));
+  return new_ptr(*this);
 }
 
 inline PPtr ShowerParticle::fullclone() const {
