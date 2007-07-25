@@ -909,12 +909,12 @@ void ISGW2FormFactor::formFactor(Energy2 q2, unsigned int iloc, int, int id1,
     mbarX=_massPoh[ifl1-1][ifls-1];
   }
   // 1 3/2 P 1 (1 P1)
-  else if(ispin==10&&jspin==1) {
+  else if((ispin==0&&jspin==2)||(ispin==10&&jspin==1)) {
     betaX = _beta1P[ifl1-1][ifls-1];
     mbarX=_massPth[ifl1-1][ifls-1];
   }
   // 1 1/2 P1 ( 3 P1) 
-  else if((ispin==0&&jspin==2)||(ispin==20&&jspin==1)) {
+  else if(ispin==20&&jspin==1) {
     betaX = _beta1P[ifl1-1][ifls-1];
     mbarX=_massPoh[ifl1-1][ifls-1];
   }
