@@ -102,15 +102,15 @@ inline void TauTo2MesonAnalysis::doinitrun() {
   error = vector<double>(evalCLEO ,evalCLEO +43);
   _mpipiCLEO= new_ptr(Histogram(bins,data,error));
   _m2KpiA=new_ptr(Histogram(0.,3.15,200));
-  _mKpiA =new_ptr(Histogram(0.,1.7,200));
+  _mKpiA =new_ptr(Histogram(0.,1.8,200));
   _m2KpiB=new_ptr(Histogram(0.,3.15,200));
-  _mKpiB =new_ptr(Histogram(0.,1.7,200));
+  _mKpiB =new_ptr(Histogram(0.,1.8,200));
   _m2KpiC=new_ptr(Histogram(0.,3.15,200));
   _m2KpiD=new_ptr(Histogram(0.,3.15,200));
   _m2Keta=new_ptr(Histogram(0.,3.15,200));
-  _mKeta =new_ptr(Histogram(0.,1.7,200));
+  _mKeta =new_ptr(Histogram(0.,1.8,200));
   _m2KK  =new_ptr(Histogram(0.,3.15,200));
-  _mKK   =new_ptr(Histogram(0.,1.7,200));
+  _mKK   =new_ptr(Histogram(0.,1.8,200));
 }
 
 void TauTo2MesonAnalysis::analyze(tEventPtr event, long ieve, int loop, int state) {
