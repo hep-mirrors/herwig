@@ -49,7 +49,6 @@ void VectorBosonQQbarHardGenerator::Init() {
 
 
 NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) {
-
   // Get the progenitors: Q and Qbar.
   vector<tcPDPtr> partons(2);
   ShowerProgenitorPtr QProgenitor,QbarProgenitor;
@@ -115,9 +114,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
       << Exception::runerror;
 		
   // Create the vectors of NasonBranchings to create the NasonTree:
-  vector<NasonBranchingPtr> oldBranchings, newBranchings;
+  vector<NasonBranchingPtr> spaceBranchings,allBranchings;
   // Incoming boson:
-  oldBranchings.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
+  spaceBranchings.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
 						 NasonBranchingPtr(),true)));
   // Outgoing particles from hard emission:
   NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(spectator,
@@ -129,16 +128,16 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   emitterBranch->addChild(new_ptr(NasonBranching(gluon,
 				    SudakovPtr(),NasonBranchingPtr(),false)));
   if(_iemitter== 0) {
-    newBranchings.push_back(emitterBranch);
-    newBranchings.push_back(spectatorBranch);
+    allBranchings.push_back(emitterBranch);
+    allBranchings.push_back(spectatorBranch);
   } else {
-    newBranchings.push_back(spectatorBranch);
-    newBranchings.push_back(emitterBranch);
+    allBranchings.push_back(spectatorBranch);
+    allBranchings.push_back(emitterBranch);
   }
-  // Incoming boson add to newBranchings
-  newBranchings.push_back(oldBranchings.back());
+  // Incoming boson add to allBranchings
+  allBranchings.push_back(spaceBranchings.back());
   // Make the tree
-  NasonTreePtr nasontree = new_ptr(NasonTree(newBranchings,oldBranchings));
+  NasonTreePtr nasontree = new_ptr(NasonTree(allBranchings,spaceBranchings));
 	
   // Connect the particles with the branchings
   // and set the maximum pt for the radiation
@@ -162,7 +161,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   greenLine->addColoured(gluon,_iemitter);
   greenLine->addColoured(parent,_iemitter);
   greenLine->addColoured(spectator,_ispectator);
-	
+
   // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
       reconstructDecayShower(nasontree,evolver());
@@ -388,30 +387,23 @@ void VectorBosonQQbarHardGenerator::azimuthal() {
 }
 
 void VectorBosonQQbarHardGenerator::constructVectors(){
-
+  // Construct momenta in boson COM frame with spectator along +/-Z axis: 
   _phi = UseRandom::rnd() * Constants::twopi;
-  if( _iemitter == 0 ){
-   //quark emitted
-   _quark[0].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );
-   _quark[0].setX( sqrt(_s) * _k * cos( _phi ) );
-   _quark[0].setY( sqrt(_s) * _k * sin( _phi ) );
-   _quark[0].setZ( sqrt(_s) * ( _z - _k * _k / _z ) / 2. );
 
-   _quark[1].setT( sqrt(_s) * ( 1. - _k * _k / _z / ( 1.-_z ) ) / 2.);
-   _quark[1].setX(0.*MeV);
-   _quark[1].setY(0.*MeV);
-   _quark[1].setZ( sqrt(_s)*( -1. + _k * _k / _z / (1.-_z) ) / 2. );
-  } else{
-   //antiquark emitted
-   _quark[0].setT( sqrt( _s ) * ( 1. - _k * _k / _z / ( 1. - _z ) ) / 2.);
-   _quark[0].setX(0.*MeV);
-   _quark[0].setY(0.*MeV);
-   _quark[0].setZ( sqrt(_s) * ( 1. - _k * _k / _z / ( 1. - _z ) ) / 2.);
+  _quark[_iemitter].setT(sqrt(_s)*(_z+_k*_k/_z)/2.);
+  _quark[_iemitter].setX(sqrt(_s)*_k*cos(_phi));
+  _quark[_iemitter].setY(sqrt(_s)*_k*sin(_phi));
+  _quark[_iemitter].setZ(sqrt(_s)*(_z-_k*_k/_z)/2.);
 
-   _quark[1].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );
-   _quark[1].setX( sqrt(_s) * _k * cos( _phi ) );
-   _quark[1].setY( sqrt(_s) * _k * sin( _phi ) );
-   _quark[1].setZ( sqrt(_s) * ( -_z + _k * _k / _z ) / 2. );
+  _quark[_ispectator].setT(sqrt(_s)*(1.-_k*_k/_z/(1.-_z ))/2.);
+  _quark[_ispectator].setX(0.*MeV);
+  _quark[_ispectator].setY(0.*MeV);
+  _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
+  
+// If Qbar emits then reflect the z components of emitter & spectator.
+  if(_iemitter==1) { 
+    _quark[_iemitter].setZ(-1.*sqrt(_s)*(_z-_k*_k/_z)/2.);
+    _quark[_ispectator].setZ(-1.*sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
   }
 
   _g=-_quark[0]-_quark[1];
