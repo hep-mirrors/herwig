@@ -416,8 +416,8 @@ void VectorBosonQQbarHardGenerator::azimuthal() {
 void VectorBosonQQbarHardGenerator::constructVectors(){
 
   _phi = UseRandom::rnd() * Constants::twopi;
-  //quark emitted
   if( _iemitter == 0 ){
+   //quark emitted
    _quark[0].setT( sqrt(_s) * ( _z + _k * _k / _z ) / 2. );
    _quark[0].setX( sqrt(_s) * _k * cos( _phi ) );
    _quark[0].setY( sqrt(_s) * _k * sin( _phi ) );
@@ -427,15 +427,8 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
    _quark[1].setX(0.*MeV);
    _quark[1].setY(0.*MeV);
    _quark[1].setZ( sqrt(_s)*( -1. + _k * _k / _z / (1.-_z) ) / 2. );
-    
-   _g.setT( sqrt(_s) * ( 1. - _z + _k * _k / ( 1.- _z ) ) / 2. );
-   _g.setX( sqrt(_s) * -_k * cos ( _phi ) );
-   _g.setY( sqrt(_s) * -_k * sin( _phi ) );
-   _g.setZ( sqrt(_s) * ( 1. - _z - _k * _k / ( 1. - _z) ) / 2. );
-
-  }
-  //antiquark emitted
-  else{
+  } else{
+   //antiquark emitted
    _quark[0].setT( sqrt( _s ) * ( 1. - _k * _k / _z / ( 1. - _z ) ) / 2.);
    _quark[0].setX(0.*MeV);
    _quark[0].setY(0.*MeV);
@@ -445,14 +438,11 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
    _quark[1].setX( sqrt(_s) * _k * cos( _phi ) );
    _quark[1].setY( sqrt(_s) * _k * sin( _phi ) );
    _quark[1].setZ( sqrt(_s) * ( -_z + _k * _k / _z ) / 2. );
-    
-   _g.setT( sqrt(_s) * ( ( 1. - _z ) + _k * _k / ( 1. - _z ) ) / 2. );
-   _g.setX( sqrt(_s) * -_k * cos( _phi ) );
-   _g.setY( sqrt(_s) * -_k * sin( _phi ) );
-   _g.setZ( sqrt(_s) * ( -( 1. - _z ) + _k * _k / ( 1. - _z ) ) / 2.);
-
   }
- 
+
+  _g=-_quark[0]-_quark[1];
+  _g.setT(sqrt(_s)+_g.t());
+
   return;  
 }
 
