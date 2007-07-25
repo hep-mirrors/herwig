@@ -69,14 +69,14 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   PPtr boson = tree->incomingLines().begin()->first->copy();
 
   // Finds the boost to lab frame that should be applied to particles
-  // generated in c.o.m frame by getEvent(). 
+  // generated in c.o.m frame by getEvent():
   _eventFrame = getTransf();
 
   // Generate emission and change _quark[0,1] and _g to momenta
-  // of q, qbar and g after the hardest emission.
+  // of q, qbar and g after the hardest emission:
   getEvent(); 
 
-  // Make the particles for the NasonTree
+  // Make the particles for the NasonTree:
   tcPDPtr gluon_data = getParticleData(ParticleID::g);
   ShowerParticlePtr emitter(new_ptr(ShowerParticle(partons[_iemitter],true)));
   emitter->set5Momentum(_quark[_iemitter]); 
@@ -91,13 +91,13 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   parentMomentum.rescaleMass();
   parent->set5Momentum(parentMomentum);
 
-  // Find the sudakov for the branching
+  // Find the sudakov for the branching:
   BranchingList branchings = 
     evolver()->splittingGenerator()->finalStateBranchings();
   long index = abs(emitter->id()); 
 		
   SudakovPtr sudakov;
-  // for loop cycles through the Branchinglist - to find the sudakov
+  // For loop cycles through the Branchinglist - to find the sudakov:
   for(BranchingList::const_iterator cit = branchings.lower_bound(index);
       cit != branchings.upper_bound(index); ++cit ) {
     IdList ids = cit->second.second;
@@ -108,18 +108,18 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 	break; 	    
     }
   }
-  // check sudakov has been created
+  // Check sudakov has been created:
   if(!sudakov ) throw Exception() 
       << "No Sudakov for the hard emission in "
       << "VectorBosonQQbarHardGenerator::generateHardest()" 
       << Exception::runerror;
 		
-  // create the vectors of NasonBranchings to create the NasonTree
+  // Create the vectors of NasonBranchings to create the NasonTree:
   vector<NasonBranchingPtr> nasonin, nasonhard;
-  // incoming boson
+  // Incoming boson:
   nasonin.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
 					   NasonBranchingPtr(),true)));
-  // outgoing particles from hard emission
+  // Outgoing particles from hard emission:
   NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(spectator,
 			            SudakovPtr(),NasonBranchingPtr(),false)));
   NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(parent,
@@ -135,12 +135,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
     nasonhard.push_back(spectatorBranch);
     nasonhard.push_back(emitterBranch);
   }
-  // incoming boson add to nasonhard
+  // Incoming boson add to nasonhard
   nasonhard.push_back( nasonin.back() );
-  // make the tree
+  // Make the tree
   NasonTreePtr nasontree = new_ptr(NasonTree(nasonhard,nasonin));
 	
-  // connect the ShowerParticles with the branchings
+  // Connect the particles with the branchings
   // and set the maximum pt for the radiation
   set<NasonBranchingPtr> hard = nasontree->branchings();
   set<NasonBranchingPtr>::const_iterator mit;
@@ -154,23 +154,21 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
         nasontree->connect(QbarProgenitor->progenitor(),*mit);
   }
 
-  // Create the two colour lines
+  // Create the two colour lines and connect the particles:
   ColinePtr blueLine  = new_ptr(ColourLine());
   ColinePtr greenLine = new_ptr(ColourLine());
-
-  //quark emits	
   blueLine->addColoured(emitter,_iemitter);
   blueLine->addColoured(gluon,_ispectator);
   greenLine->addColoured(gluon,_iemitter);
   greenLine->addColoured(parent,_iemitter);
   greenLine->addColoured(spectator,_ispectator);
 	
-  // calculate the shower variables
+  // Calculate the shower variables:
   evolver()->showerModel()->kinematicsReconstructor()->
       reconstructDecayShower(nasontree,evolver());
   return nasontree;
 
-  //calculate partonic event shapes from hard emission event.
+  // Calculate partonic event shapes from hard emission event?
   double thrust;
   if(_iemitter == 0) thrust=_x1;
   else thrust=_x2;
