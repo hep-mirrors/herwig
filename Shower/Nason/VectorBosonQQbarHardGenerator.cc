@@ -115,30 +115,30 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
       << Exception::runerror;
 		
   // Create the vectors of NasonBranchings to create the NasonTree:
-  vector<NasonBranchingPtr> nasonin, nasonhard;
+  vector<NasonBranchingPtr> oldBranchings, newBranchings;
   // Incoming boson:
-  nasonin.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
-					   NasonBranchingPtr(),true)));
+  oldBranchings.push_back(new_ptr(NasonBranching(vboson,SudakovPtr(),
+						 NasonBranchingPtr(),true)));
   // Outgoing particles from hard emission:
   NasonBranchingPtr spectatorBranch(new_ptr(NasonBranching(spectator,
-			            SudakovPtr(),NasonBranchingPtr(),false)));
+				    SudakovPtr(),NasonBranchingPtr(),false)));
   NasonBranchingPtr emitterBranch(new_ptr(NasonBranching(parent,
 				    sudakov,NasonBranchingPtr(),false)));
   emitterBranch->addChild(new_ptr(NasonBranching(emitter, 
-				  SudakovPtr(),NasonBranchingPtr(),false)));
+				    SudakovPtr(),NasonBranchingPtr(),false)));
   emitterBranch->addChild(new_ptr(NasonBranching(gluon,
-				  SudakovPtr(),NasonBranchingPtr(),false)));
+				    SudakovPtr(),NasonBranchingPtr(),false)));
   if(_iemitter== 0) {
-    nasonhard.push_back(emitterBranch);
-    nasonhard.push_back(spectatorBranch);
+    newBranchings.push_back(emitterBranch);
+    newBranchings.push_back(spectatorBranch);
   } else {
-    nasonhard.push_back(spectatorBranch);
-    nasonhard.push_back(emitterBranch);
+    newBranchings.push_back(spectatorBranch);
+    newBranchings.push_back(emitterBranch);
   }
-  // Incoming boson add to nasonhard
-  nasonhard.push_back( nasonin.back() );
+  // Incoming boson add to newBranchings
+  newBranchings.push_back(oldBranchings.back());
   // Make the tree
-  NasonTreePtr nasontree = new_ptr(NasonTree(nasonhard,nasonin));
+  NasonTreePtr nasontree = new_ptr(NasonTree(newBranchings,oldBranchings));
 	
   // Connect the particles with the branchings
   // and set the maximum pt for the radiation
