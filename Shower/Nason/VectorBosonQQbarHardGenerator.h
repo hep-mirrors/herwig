@@ -136,12 +136,6 @@ private:
   LorentzRotation getTransf();
  
   /**
-   * Finds the Maximum value of the cross section to use as g(x) in
-   * veto algorithm.
-   */
-  double getMax(int num);
-
-  /**
    * Constructs the post-emission momenta of q, qbar, g
    */
   void constructVectors();
@@ -191,11 +185,6 @@ private:
   * The power (GeV/pt)^_power of overestimate distribution
   */
   double _power;
-  
-  /**
-   * The maximum value of the 'prefactor' of the actual distribution
-   */
-  double _max;
   
   /**
    *The dalitz variables (x1,x2)

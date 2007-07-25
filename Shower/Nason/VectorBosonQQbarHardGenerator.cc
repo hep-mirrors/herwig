@@ -349,32 +349,6 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
    return res;
  }
 
-double VectorBosonQQbarHardGenerator::getMax(int num){
-  
-  double res;   
-  Energy minp = 0.1 * GeV;  
-  Energy maxp = sqrt(0.5) * generator()->maximumCMEnergy();
-  double miny = -8.;
-  double maxy = 8.;
-  _max = 0.;
-
-  for( int i = 0; i < num; i++ ) {
-    do{
-      _pt = UseRandom::rnd() * ( maxp - minp ) + minp;
-      _y = UseRandom::rnd() * ( maxy - miny )+ miny;
-      _x1 = 1.-_pt / sqrt(_s) * exp(-_y);
-      _x2 = 1.-_pt / sqrt(_s) * exp(_y);
-      res = getResult();
-    }while( ! inRange() );
-    if ( res * pow( ( _pt / GeV ), _power ) > _max ) 
-      _max = res * pow( ( _pt / GeV ),_power );
-  }
-
-  _prefactor = _max;
-  return _max;
-}
-
-
 //momentum construction
 LorentzRotation VectorBosonQQbarHardGenerator::getTransf(){
  
@@ -445,4 +419,3 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
 
   return;  
 }
-
