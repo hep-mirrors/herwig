@@ -70,7 +70,6 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 
   // Finds the boost to lab frame that should be applied to particles
   // generated in c.o.m frame by getEvent(). 
-  // Final particles are boosted by this in getEvent()
   _eventFrame = getTransf();
 
   // Generate emission and change _quark[0,1] and _g to momenta
@@ -144,10 +143,9 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // connect the ShowerParticles with the branchings
   // and set the maximum pt for the radiation
   set<NasonBranchingPtr> hard = nasontree->branchings();
-
+  set<NasonBranchingPtr>::const_iterator mit;
   QProgenitor->maximumpT(_pt);
   QbarProgenitor->maximumpT(_pt);
-  set<NasonBranchingPtr>::const_iterator mit;
   for(mit = hard.begin(); mit != hard.end(); ++mit) {
     // Connect the Q/Qbar progenitors to the Nason branchings.
     if(QProgenitor->progenitor()->id()==(*mit)->_particle->id())
@@ -157,8 +155,8 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   }
 
   // Create the two colour lines
-  ColinePtr blueLine = new_ptr( ColourLine() );
-  ColinePtr greenLine = new_ptr( ColourLine() );
+  ColinePtr blueLine  = new_ptr(ColourLine());
+  ColinePtr greenLine = new_ptr(ColourLine());
 
   //quark emits	
   blueLine->addColoured(emitter,_iemitter);
@@ -173,30 +171,18 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   return nasontree;
 
   //calculate partonic event shapes from hard emission event.
-
   double thrust;
-  if(_iemitter == 0) thrust = _x1;
-  else thrust = _x2;
-
-  Energy mass;
-
-  if( ( _quark[0] ).e() > ( _quark[1] ).e() && ( _quark[0] ).e() > _g.e() )
-    mass = ( _quark[1] + _g ).mag();
-
-  else if( ( _quark[1] ).e() > ( _quark[0] ).e() && ( _quark[1] ).e() > _g.e() )
-    mass = ((_quark[0])+_g).mag();
-
-  else mass = ( ( _quark[1] ) + ( _quark[0] ) ).mag();
-
-  _ptplot.push_back( _pt / GeV );
+  if(_iemitter == 0) thrust=_x1;
+  else thrust=_x2;
+  _ptplot.push_back(_pt/GeV);
   _yplot.push_back(_y);
   _x1plot.push_back(_x1);
   _x2plot.push_back(_x2);
-  (*_hthrust) += 1. - thrust;
-  (*_hthrustlow) += 1. - thrust;
+  (*_hthrust) += 1.-thrust;
+  (*_hthrustlow) += 1.-thrust;
   (*_hy) += _y;
-  (*_hplow) += _pt / GeV;
-  (*_hphigh) += _pt / GeV;
+  (*_hplow) += _pt/GeV;
+  (*_hphigh) += _pt/GeV;
 }
 
 bool VectorBosonQQbarHardGenerator::canHandle(ShowerTreePtr tree) {
