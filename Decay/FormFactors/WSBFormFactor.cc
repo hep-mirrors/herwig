@@ -243,7 +243,15 @@ void WSBFormFactor::Init() {
 
   static ClassDocumentation<WSBFormFactor> documentation
     ("The WSBFormFactor class is the implementation of the form-factors of "
-     "Z.Phys.C29,637.");
+     "Z.Phys.C29,637.",
+     "The form factor model of \\cite{Bauer:1986bm,Wirbel:1985ji} was used"
+     " for either semi-leptonic or hadronic weak decays",
+     "\\bibitem{Bauer:1986bm} M.~Bauer, B.~Stech and M.~Wirbel,\n"
+     "Z.\\ Phys.\\  C {\\bf 34} (1987) 103.\n"
+     "%%CITATION = ZEPYA,C34,103;%%\n"
+     "\\bibitem{Wirbel:1985ji} M.~Wirbel, B.~Stech and M.~Bauer,"
+     "Z.\\ Phys.\\  C {\\bf 29} (1985) 637.\n"
+     "%%CITATION = ZEPYA,C29,637;%%\n");
 
   static ParVector<WSBFormFactor,double> interfaceF0
     ("F0",
@@ -311,6 +319,7 @@ void WSBFormFactor::ScalarScalarFormFactor(Energy2 q2,unsigned int mode,
 					   int,int id1,
 					   Energy, Energy,Complex & f0,
 					   Complex & fp) const {
+  useMe();
   f0 = _F0[mode]/(1.-q2/sqr(_mS1[mode]));
   fp = _F0[mode]/(1.-q2/sqr(_mV0[mode]));
   int jspin,spect,inquark,outquark;
@@ -352,6 +361,7 @@ void WSBFormFactor::ScalarVectorFormFactor(Energy2 q2,unsigned int mode,
 }
 
 void WSBFormFactor::dataBaseOutput(ofstream & output,bool header,bool create) const {
+  useMe();
   if(header) output << "update decayers set parameters=\"";
   if(create) output << "create Herwig::WSBFormFactor " << fullName() << " \n";
   output << "set " << fullName() << ":ThetaEtaEtaPrime " << _thetaeta  << "\n";

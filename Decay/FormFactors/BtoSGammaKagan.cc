@@ -110,7 +110,12 @@ void BtoSGammaKagan::Init() {
 
   static ClassDocumentation<BtoSGammaKagan> documentation
     ("The BtoSGammaKagan class implements the calculation of hep-ph/9805303 for the"
-     " hadronic mass spectrum in b to s gamma decays");
+     " hadronic mass spectrum in b to s gamma decays.",
+     "The decay $b\\to s\\gamma$ was simulated using the hadronic mass spectrum from"
+     "\\cite{Kagan:1998ym}.\n",
+     "\\bibitem{Kagan:1998ym} A.~L.~Kagan and M.~Neubert,\n"
+     "Eur.\\ Phys.\\ J.\\  C {\\bf 7} (1999) 5 [arXiv:hep-ph/9805303].\n"
+     "%%CITATION = EPHJA,C7,5;%%\n");
 
   static Switch<BtoSGammaKagan,bool> interfaceInitialize
     ("Initialize",
@@ -406,6 +411,7 @@ void BtoSGammaKagan::doinit() throw(InitException) {
 }
 
 Energy BtoSGammaKagan::hadronicMass(Energy mb,Energy mquark) {
+  useMe();
   Energy minmass(max(minMass(),mquark)),maxmass(min(maxMass(),mb)),mass;
   Energy minegamma(0.5*_MB*(1. - _deltacut)),maxegamma(0.5*_MB);
   minmass=max(minmass,sqrt(_MB*_MB-2.*_MB*maxegamma));
