@@ -341,22 +341,12 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
  }
 
 //momentum construction
-LorentzRotation VectorBosonQQbarHardGenerator::getTransf(){
+LorentzRotation VectorBosonQQbarHardGenerator::getTransf() {
  
-  LorentzRotation transf( ( _quark[0] + _quark[1] ).findBoostToCM() );
-
-  Lorentz5Momentum q1 = transf * ( _quark[0] );
-  using Constants::pi;
-  if( q1.x() == 0.0*MeV ) transf.rotateZ( -pi / 2. );
-  else transf.rotateZ( -atan( q1.y() / q1.x() ) );
-
-  if( q1.z() == 0.0*MeV ) transf.rotateY( pi / 2. );
-  else transf.rotateY( atan ( sqrt( q1.x() * q1.x() + q1.y() * q1.y() ) / q1.z() ) );
-
-  Lorentz5Momentum q2 = transf * ( _quark[0] );
-
-  if( q2.z() < 0.*MeV )transf.rotateY( pi );
-
+  LorentzRotation transf((_quark[0]+_quark[1]).findBoostToCM() );
+  Lorentz5Momentum quark = transf*_quark[0];
+  transf.rotateZ(-quark.phi());
+  transf.rotateY(-quark.theta());
   transf.invert();
 
   return transf;
@@ -365,7 +355,7 @@ LorentzRotation VectorBosonQQbarHardGenerator::getTransf(){
 void VectorBosonQQbarHardGenerator::azimuthal() {
   using Constants::pi;
   _r.setRotate( UseRandom::rnd() * Constants::twopi, 
-		_quark[_ispectator].vect().unit());
+	_quark[_ispectator].vect().unit());
   _quark[_iemitter] = _r*_quark[_iemitter];
   _g = _r*_g;
   return;
@@ -385,7 +375,7 @@ void VectorBosonQQbarHardGenerator::constructVectors(){
   _quark[_ispectator].setY(0.*MeV);
   _quark[_ispectator].setZ(sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
   
-// If Qbar emits then reflect the z components of emitter & spectator.
+  // If Qbar emits then reflect the z components of emitter & spectator.
   if(_iemitter==1) { 
     _quark[_iemitter].setZ(-1.*sqrt(_s)*(_z-_k*_k/_z)/2.);
     _quark[_ispectator].setZ(-1.*sqrt(_s)*(-1.+_k*_k/_z/(1.-_z))/2.);
