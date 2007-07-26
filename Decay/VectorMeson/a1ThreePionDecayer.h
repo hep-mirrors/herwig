@@ -97,25 +97,10 @@ class a1ThreePionDecayer: public DecayIntegrator {
   
 public:
   
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline a1ThreePionDecayer();
-
-  /**
-   * Copy-constructor.
-   */
-  inline a1ThreePionDecayer(const a1ThreePionDecayer &);
-
-  /**
-   * Standard ctors and dtor.
-   */
-  virtual ~a1ThreePionDecayer();
-  //@}
-  
-public:
   
   /**
    * Which of the possible decays is required
@@ -184,12 +169,12 @@ protected:
    * EventGenerator to disk.
    * @throws InitException if object could not be initialized properly.
    */
-  inline virtual void doinit() throw(InitException);
+  virtual void doinit() throw(InitException);
 
   /**
    * Initialize this object to the begining of the run phase.
    */
-  inline virtual void doinitrun();
+  virtual void doinitrun();
   //@}
 
 private:

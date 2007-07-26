@@ -2,6 +2,8 @@ pkglib_LTLIBRARIES = HwVMDecay.la
 
 HwVMDecay_la_SOURCES = \
 a1ThreePionCLEODecayer.cc a1ThreePionCLEODecayer.h a1ThreePionCLEODecayer.icc \
+a1SimpleDecayer.cc a1SimpleDecayer.h \
+a1SimpleDecayer.icc a1SimpleDecayer.fh\
 a1ThreePionDecayer.cc a1ThreePionDecayer.h a1ThreePionDecayer.icc \
 PVectorMesonVectorPScalarDecayer.cc PVectorMesonVectorPScalarDecayer.fh \
 PVectorMesonVectorPScalarDecayer.h PVectorMesonVectorPScalarDecayer.icc \
