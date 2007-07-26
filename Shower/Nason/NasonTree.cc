@@ -57,6 +57,7 @@ void NasonBranching::setMomenta(LorentzRotation R,double aparent,
     ids[0]=_particle->id();
     ids[1]=_children[0]->_particle->id();
     ids[2]=_children[1]->_particle->id();
+	// KMH - the next bit looks stupid.
     if(_incoming) {
       _scale=_sudakov->calculateScale(z,pt,ids,1);
     }

@@ -127,7 +127,7 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
 				    SudakovPtr(),NasonBranchingPtr(),false)));
   emitterBranch->addChild(new_ptr(NasonBranching(gluon,
 				    SudakovPtr(),NasonBranchingPtr(),false)));
-  if(_iemitter== 0) {
+  if(_iemitter==0) {
     allBranchings.push_back(emitterBranch);
     allBranchings.push_back(spectatorBranch);
   } else {
@@ -139,19 +139,12 @@ NasonTreePtr VectorBosonQQbarHardGenerator::generateHardest(ShowerTreePtr tree) 
   // Make the tree
   NasonTreePtr nasontree = new_ptr(NasonTree(allBranchings,spaceBranchings));
 	
-  // Connect the particles with the branchings
+  // Connect the particles with the branchings in the NasonTree
   // and set the maximum pt for the radiation
-  set<NasonBranchingPtr> hard = nasontree->branchings();
-  set<NasonBranchingPtr>::const_iterator mit;
   QProgenitor->maximumpT(_pt);
   QbarProgenitor->maximumpT(_pt);
-  for(mit = hard.begin(); mit != hard.end(); ++mit) {
-    // Connect the Q/Qbar progenitors to the Nason branchings.
-    if(QProgenitor->progenitor()->id()==(*mit)->_particle->id())
-        nasontree->connect(QProgenitor->progenitor(),*mit);
-    if(QbarProgenitor->progenitor()->id()==(*mit)->_particle->id())
-        nasontree->connect(QbarProgenitor->progenitor(),*mit);
-  }
+  nasontree->connect(QProgenitor->progenitor(),allBranchings[0]);
+  nasontree->connect(QbarProgenitor->progenitor(),allBranchings[1]);
 
   // Create the two colour lines and connect the particles:
   ColinePtr blueLine  = new_ptr(ColourLine());
@@ -311,23 +304,22 @@ Lorentz5Momentum VectorBosonQQbarHardGenerator::getEvent(){
        _y = -10;
        reject = false;
      }
-  }while ( reject );
+  } while (reject);
 
-  //generate herwig variables (need to choose 1->2 splitting type)
-  if( _x2 > _x1 ){
-    _iemitter   = 0;
-    _ispectator = 1;
-    _z = ( _x1 + _x2 - 1. ) / _x2;
-    _ktild = ( 1. - _x2 ) / _z / ( 1. - _z );
-  }
-  else{
+  if(UseRandom::rnd()<_x1*_x1/(_x1*_x1+_x2*_x2)) {
     _iemitter   = 1;
     _ispectator = 0;
-    _z = ( _x2 + _x1 - 1. ) / _x1;
-    _ktild = ( 1. - _x1 ) / _z / ( 1. - _z ); 
+    _z = (_x2+_x1-1.)/_x1;
+    _ktild = (1.-_x1)/_z/(1.-_z); 
+  }
+  else{
+    _iemitter   = 0;
+    _ispectator = 1;
+    _z = (_x1+_x2-1.)/_x2;
+    _ktild = (1.-_x2)/_z/(1.-_z);
   }
 
-  _k = sqrt( _z * _z * ( 1. - _z ) * ( 1. - _z ) * _ktild );
+  _k = sqrt(_z*_z*(1.-_z)*(1.-_z)*_ktild);
 
   //construct vectors in com z frame
   constructVectors();
@@ -372,18 +364,11 @@ LorentzRotation VectorBosonQQbarHardGenerator::getTransf(){
 
 void VectorBosonQQbarHardGenerator::azimuthal() {
   using Constants::pi;
-   if( UseRandom::rnd() < _x1 * _x1 / ( _x1 * _x1 + _x2 * _x2 ) ) {
-     _r.setRotate( UseRandom::rnd() * Constants::twopi , 
-		   _quark[0].vect().unit());
-     _quark[1] = _r * _quark[1];
-   }
-   else{
-     _r.setRotate( UseRandom::rnd() * Constants::twopi, 
-		   _quark[1].vect().unit());
-     _quark[0] = _r * _quark[0];
-   }
-    _g = _r * _g;
-    return;
+  _r.setRotate( UseRandom::rnd() * Constants::twopi, 
+		_quark[_ispectator].vect().unit());
+  _quark[_iemitter] = _r*_quark[_iemitter];
+  _g = _r*_g;
+  return;
 }
 
 void VectorBosonQQbarHardGenerator::constructVectors(){
