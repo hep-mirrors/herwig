@@ -17,12 +17,7 @@ using namespace ThePEG;
 
 /** \ingroup Decay
  *
- * <code>QuarkoniumDecayer</code> is a class that defines all the general routines 
- * used in HERWIG++ to imitate the HERWIG 6.4 decays. The goal is to have an exact
- * copy of HERWIG 6.4 decay routines. This will allow for easy 'callibration'
- * of the new C++ code with the old Fortran code.
- *
- *  This particular class is designed for the partonic decay of bottom and charmonium
+ * The QuarkoniumDecayer class is designed for the partonic decay of bottom and charmonium
  *  resonances. In general it is used for decays of the type:
  *    - \f$q,\bar{q}\f$ decay to a quark-antiquark pair generally using phase space,
  *      \e i.e. MECode=0.
@@ -43,8 +38,7 @@ using namespace ThePEG;
  *  - MECode=0   flat-phase space
  *  - MECode=130 The Ore-Powell onium matrix element.
  *
- *  The Ore-Powell matrix element is only for a three-body decay and this
- *  class only supports two and three body phase-space decays.
+ *  This is designed to be the same as the FORTRAN HERWGI routine.
  *
  * @see HeavyDecayer
  * @see Hw64Decayer
@@ -60,8 +54,6 @@ public:
    */
   inline QuarkoniumDecayer();
 
-public:
-
   /**
    * return true if this decayer can perfom the decay specified by the
    * given decay mode.
@@ -74,16 +66,20 @@ public:
    */
   virtual ParticleVector decay(const DecayMode &, const Particle &) const;
 
+public:
+
   /**
    * Standard Init function used to initialize the interface.
    */
   static void Init();
+
   /**
-   * Standard Persisten stream methods
+   * Standard Persistent stream methods
    */
   void persistentOutput(PersistentOStream &) const;
+
   /**
-   * Standard Persisten stream methods
+   * Standard Persistent stream methods
    */
   void persistentInput(PersistentIStream &, int);
 
@@ -91,7 +87,12 @@ public:
     * Standard clone methods
     */
 protected:
+
+   /**
+    * Standard clone methods
+    */
    inline virtual IBPtr clone() const;
+
    /**
     * Standard clone methods
     */
@@ -100,24 +101,21 @@ protected:
 private:
 
   /**
-   *  The code for the type of matrix element being used.
-   */
-  int MECode;
-
-  /**
    * Describe a concrete class with persistant decay
    */
   static ClassDescription<QuarkoniumDecayer> initQuarkoniumDecayer;
 
   /**
-   * Variable which control the adding of handlers, no longer used
-   */
-  static long lastAddedNumber;
-
-  /**
    *  Private and non-existent assignment operator.
    */
   const QuarkoniumDecayer & operator=(const QuarkoniumDecayer &);
+
+private:
+
+  /**
+   *  The code for the type of matrix element being used.
+   */
+  int MECode;
 };
 
 }
@@ -141,7 +139,8 @@ struct BaseClassTrait<Herwig::QuarkoniumDecayer,1> {
  * QuarkoniumDecayer class.
  */
 template <>
-struct ClassTraits<Herwig::QuarkoniumDecayer>: public ClassTraitsBase<Herwig::QuarkoniumDecayer> {
+struct ClassTraits<Herwig::QuarkoniumDecayer>: 
+    public ClassTraitsBase<Herwig::QuarkoniumDecayer> {
   /** Return the class name. */
   static string className() { return "Herwig::QuarkoniumDecayer"; }
   /** Return the name of the shared library to be loaded to get

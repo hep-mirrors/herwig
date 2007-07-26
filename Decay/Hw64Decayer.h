@@ -38,15 +38,10 @@ class Hw64Decayer: public Decayer {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor
    */
   inline Hw64Decayer();
-  //@}
-
-public:
 
   /**
    * return true if this decayer can perfom the decay specified by the
@@ -59,6 +54,8 @@ public:
    * decay and return the decay products.
    */
   virtual ParticleVector decay(const DecayMode &, const Particle &) const;
+
+public:
 
   /**
    * Standard Init function used to initialize the interface.
@@ -101,12 +98,6 @@ protected:
 private:
 
   /**
-   * Perform a one body decay, used for \f$K^0,\bar{K}^0\to K_{L,S}\f$.
-   * Two body decay is handled in static class Kinematics
-   */
-  static void oneBodyDecay(const Lorentz5Momentum &, Lorentz5Momentum &);
-
-  /**
    * Weighting of phase space for V-A matrix elements
    */
   static double VAWt(Energy2 t0, Energy2 t1, Energy2 t2, InvEnergy4 t3);
@@ -117,8 +108,10 @@ private:
    * @param particles The particles whose momenta is to be set.
    * @param out The particles outputted with their momenta set.
    */
-  void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
-			   const vector<Lorentz5Momentum> & moms) const;
+  inline void setParticleMomentum(ParticleVector & out, const cPDVector & particles, 
+				  const vector<Lorentz5Momentum> & moms) const;
+
+private:
 
   /**
    *  Describe a concrete class with persistant data.

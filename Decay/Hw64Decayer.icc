@@ -18,4 +18,12 @@ inline IBPtr Hw64Decayer::fullclone() const {
   return new_ptr(*this);
 }
 
+inline void 
+Hw64Decayer::setParticleMomentum(ParticleVector &out, const cPDVector & particles, 
+				 const vector<Lorentz5Momentum> & moms) const  {
+  unsigned int numProds = particles.size();
+  for(unsigned int ix=0;ix<numProds;++ix)
+    out.push_back(particles[ix]->produceParticle(moms[ix]));
+}
+
 }
