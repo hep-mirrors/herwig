@@ -8,11 +8,8 @@
 #include "DecayPhaseSpaceChannel.h"
 #include <ThePEG/PDT/EnumParticles.h>
 #include <Herwig++/Decay/DecayVertex.h>
-#include "ThePEG/Utilities/Timer.h"
-#include <ThePEG/Helicity/SpinInfo.h>
 #include "DecayPhaseSpaceMode.fh"
-#include "Herwig++/PDT/WidthCalculatorBase.h"
-#include <iostream>
+#include "Herwig++/PDT/WidthCalculatorBase.fh"
 #include "Radiation/DecayRadiationGenerator.h"
 #include "HwDecayerBase.h"
 #include "DecayIntegrator.fh"
@@ -62,15 +59,10 @@ class DecayIntegrator: public HwDecayerBase {
 
 public:
 
-  /** @name Standard constructors and destructors. */
-  //@{
   /**
    * Default constructor.
    */
   inline DecayIntegrator();
-  //@}
-      
-public:
   
   /**
    * Accept member which is called at initialization to see if this Decayer can
@@ -80,7 +72,7 @@ public:
    * @return Whether the mode can be handled.
    *
    */
-  virtual bool accept(const DecayMode & dm) const;
+  inline virtual bool accept(const DecayMode & dm) const;
   
   /**
    * For a given decay mode and a given particle instance, perform the
@@ -134,8 +126,8 @@ public:
    * @param coupling The coupling for the matrix element.
    * @return True or False if this mode can be handled.
    */
-  virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
-			     double & coupling) const;
+  inline virtual bool twoBodyMEcode(const DecayMode & dm, int & mecode,
+				    double & coupling) const;
   
   /**
    * Method to return an object to calculate the 3 (or higher body) partial width
@@ -157,10 +149,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The matrix element
    */
-  virtual double threeBodyMatrixElement(const int imode,  const Energy2 q2,
-					const Energy2 s3, const Energy2 s2, 
-					const Energy2 s1, const Energy  m1, 
-					const Energy  m2, const Energy  m3) const;
+  inline virtual double threeBodyMatrixElement(const int imode,  const Energy2 q2,
+					       const Energy2 s3, const Energy2 s2, 
+					       const Energy2 s1, const Energy  m1, 
+					       const Energy  m2, const Energy  m3) const;
   
   /**
    * The differential three body decay rate with one integral performed.
@@ -172,9 +164,10 @@ public:
    * @param m3 The mass of the third  outgoing particle.
    * @return The differential rate \f$\frac{d\Gamma}{ds}\f$
    */
-  virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2, const Energy2 s,
-				   const Energy m1, const Energy m2, 
-				   const Energy m3) const;
+  inline virtual InvEnergy threeBodydGammads(const int imode, const Energy2 q2,
+					     const Energy2 s,
+					     const Energy m1, const Energy m2, 
+					     const Energy m3) const;
   
   /**
    * Set the code for the partial width. Finds the partial width in the
@@ -210,7 +203,7 @@ public:
    * @return A particle vector containing the decay products after the generation
    * of photons.
    */
-  ParticleVector generatePhotons(const Particle & p,ParticleVector children);
+  inline ParticleVector generatePhotons(const Particle & p,ParticleVector children);
 
   /**
    *  check if photons can be generated in the decay
@@ -225,8 +218,9 @@ public:
    * @param products The decay products including the radiated photon.
    * @return Whether the correction is implemented
    */
-  virtual bool oneLoopVirtualME(double & output, unsigned int imode,
-				const Particle & part, const ParticleVector & products);
+  inline virtual bool oneLoopVirtualME(double & output, unsigned int imode,
+				       const Particle & part, 
+				       const ParticleVector & products);
   
   /**
    *  The real emission matrix element
@@ -236,8 +230,9 @@ public:
    * @param products The decay products including the radiated photon
    * @return Whether the correction is implemented
    */
-  virtual bool realEmmisionME(double & output, unsigned int imode,
-  			      const Particle & part, const ParticleVector & products);
+  inline virtual bool realEmmisionME(double & output, unsigned int imode,
+				     const Particle & part, 
+				     const ParticleVector & products);
   //@}
   
 public:
