@@ -84,7 +84,9 @@ SemiLeptonicDPiAnalysis.fh SemiLeptonicDPiAnalysis.cc  \
 OniumToOniumPiPiAnalysis.h OniumToOniumPiPiAnalysis.icc \
 OniumToOniumPiPiAnalysis.fh OniumToOniumPiPiAnalysis.cc\
 BeamCorrelationAnalysis.h BeamCorrelationAnalysis.icc \
-BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc 
+BeamCorrelationAnalysis.fh BeamCorrelationAnalysis.cc  \
+a1DecayAnalysis.h a1DecayAnalysis.icc \
+a1DecayAnalysis.fh a1DecayAnalysis.cc 
 
 # analysis code which depends on ktjet
 if WANT_LIBKTJET
