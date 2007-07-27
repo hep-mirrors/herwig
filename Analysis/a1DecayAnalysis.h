@@ -211,7 +211,7 @@ struct ClassTraits<Herwig::a1DecayAnalysis>
    * excepted). In this case the listed libraries will be dynamically
    * linked in the order they are specified.
    */
-  static string library() { return "a1DecayAnalysis.so"; }
+  static string library() { return "HwDecayAnalysis.so"; }
 };
 
 /** @endcond */
@@ -219,8 +219,5 @@ struct ClassTraits<Herwig::a1DecayAnalysis>
 }
 
 #include "a1DecayAnalysis.icc"
-#ifndef ThePEG_TEMPLATES_IN_CC_FILE
-// #include "a1DecayAnalysis.tcc"
-#endif
 
 #endif /* HERWIG_a1DecayAnalysis_H */

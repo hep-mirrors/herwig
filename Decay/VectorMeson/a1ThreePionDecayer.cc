@@ -119,6 +119,8 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(sigma,0,0.0,1,2);
     mode->addChannel(newchannel);
   }
+  if(_zerowgts.size()!=mode->numberChannels()) 
+    _zerowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_zeromax,_zerowgts);
   // decay mode a_1+ -> pi+ pi0 pi0
   extpart[0]=a1p;
@@ -127,6 +129,7 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
   extpart[3]=pip;
   mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   for(unsigned int ix=0;ix<3;++ix) {
+    if(!rhop[ix]) continue;
     // first rho+ channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a1p,0,0.0,-1,1);
@@ -145,6 +148,8 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(sigma,0,0.0,1,2);
     mode->addChannel(newchannel);
   }
+  if(_onewgts.size()!=mode->numberChannels()) 
+    _onewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_onemax,_onewgts);
   // decay mode a_1 -> pi+ pi- pi0
   extpart[0]=a10;
@@ -153,6 +158,7 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
   extpart[3]=pi0;
   mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   for(unsigned int ix=0;ix<3;++ix) {
+    if(!rhop[ix]) continue;
     // first rho channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,1);
@@ -171,6 +177,8 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(sigma,0,0.0,1,2);
     mode->addChannel(newchannel);
   }
+  if(_twowgts.size()!=mode->numberChannels()) 
+    _twowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_twomax,_twowgts);
   // decay mode a_1+ -> pi+ pi+ pi-
   extpart[0]=a1p;
@@ -180,6 +188,7 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
   mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   for(unsigned int ix=0;ix<3;++ix) {
     // the neutral rho channels
+    if(!rho0[ix]) continue;
     // first channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a1p,0,0.0,-1,1);
@@ -189,7 +198,7 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a1p,0,0.0,-1,2);
     newchannel->addIntermediate(rho0[ix],0,0.0,1,3);
-    mode->addChannel(newchannel);      
+    mode->addChannel(newchannel);
   }
   // the sigma channels
   if(sigma) {
@@ -202,6 +211,8 @@ void a1ThreePionDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(sigma,0,0.0,1,3);
     mode->addChannel(newchannel);
   }
+  if(_threewgts.size()!=mode->numberChannels()) 
+    _threewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_threemax,_threewgts);
   // set up the parameters 
   _mpi=getParticleData(ParticleID::piplus)->mass();
@@ -280,8 +291,8 @@ int a1ThreePionDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   // a_0 modes
   else if(id==ParticleID::a_10) {
     cc=false;
-    if(npiminus==1&&npiplus==1&&npi0==1) imode=0;
-    else if(npi0==3)                     imode=2;
+    if(npiminus==1&&npiplus==1&&npi0==1) imode=2;
+    else if(npi0==3)                     imode=0;
   }
   return imode;
 }

@@ -18,6 +18,16 @@
 using namespace Herwig;
 using namespace ThePEG::Helicity;
 
+a1SimpleDecayer::a1SimpleDecayer() 
+  : _rhomass(3), _rhowidth(3), _rhowgts(3),_localparameters(true), 
+    _coupling(1./GeV), _onemax(1.), _twomax(1.), _threemax(1.), _onewgts(0), 
+    _twowgts(0), _threewgts(0), _mpi(0.*MeV) {
+  // rho masses, widths and weights
+  _rhomass[0] = 0.773*GeV; _rhowidth[0] = 0.145*GeV; _rhowgts[0] =  1.0;  
+  _rhomass[1] = 1.370*GeV; _rhowidth[1] = 0.510*GeV; _rhowgts[1] = -0.145;
+  _rhomass[2] = 1.750*GeV; _rhowidth[2] = 0.120*GeV; _rhowgts[2] =  0.;
+}
+
 void a1SimpleDecayer::doinit() throw(InitException) {
   DecayIntegrator::doinit();
   // pointers to the particles we need as external particles
@@ -43,6 +53,7 @@ void a1SimpleDecayer::doinit() throw(InitException) {
   extpart[3]=pip;
   mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   for(unsigned int ix=0;ix<3;++ix) {
+    if(!rhop[ix]) continue;
     // first rho+ channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a1p,0,0.0,-1,2);
@@ -54,6 +65,8 @@ void a1SimpleDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
     mode->addChannel(newchannel);
   }
+  if(_onewgts.size()!=mode->numberChannels()) 
+    _onewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_onemax,_onewgts);
   // decay mode a_10 -> pi+ pi- pi0
   extpart[0]=a10;
@@ -62,6 +75,7 @@ void a1SimpleDecayer::doinit() throw(InitException) {
   extpart[3]=pi0;
   mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   for(unsigned int ix=0;ix<3;++ix) {
+    if(!rhop[ix]) continue;
     // first rho channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
     newchannel->addIntermediate(a10,0,0.0,-1,2);
@@ -73,6 +87,8 @@ void a1SimpleDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(rhop[ix],0,0.0,2,3);
     mode->addChannel(newchannel);
   }
+  if(_twowgts.size()!=mode->numberChannels()) 
+    _twowgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_twomax,_twowgts);
   // decay mode a_1+ -> pi+ pi+ pi-
   extpart[0]=a1p;
@@ -81,6 +97,7 @@ void a1SimpleDecayer::doinit() throw(InitException) {
   extpart[3]=pim;
   mode = new_ptr(DecayPhaseSpaceMode(extpart,this));
   for(unsigned int ix=0;ix<3;++ix) {
+    if(!rho0[ix]) continue;
     // the neutral rho channels
     // first channel
     newchannel = new_ptr(DecayPhaseSpaceChannel(mode));
@@ -93,6 +110,8 @@ void a1SimpleDecayer::doinit() throw(InitException) {
     newchannel->addIntermediate(rho0[ix],0,0.0,2,3);
     mode->addChannel(newchannel);      
   }
+  if(_threewgts.size()!=mode->numberChannels()) 
+    _threewgts=vector<double>(mode->numberChannels(),1./mode->numberChannels());
   addMode(mode,_threemax,_threewgts);
   // if using local parameters set the values in the phase space channels
   if(_localparameters) {
@@ -114,6 +133,7 @@ void a1SimpleDecayer::doinit() throw(InitException) {
     // masses and widths for the particles
     _rhomass.resize(3);_rhowidth.resize(3);
     for(unsigned int ix=0;ix<3;++ix) {
+      if(!rhop[ix]) continue;
       _rhomass[ix]=rhop[ix]->mass();
       _rhowidth[ix]=rhop[ix]->width();
     }
@@ -276,7 +296,7 @@ int a1SimpleDecayer::modeNumber(bool & cc,const DecayMode & dm) const {
   // a_0 modes
   else if(id==ParticleID::a_10) {
     cc=false;
-    if(npi0==3)                     imode=1;
+    if(npiminus==1&&npiplus==1&&npi0==1) imode=1;
   }
   return imode;
 }

@@ -42,6 +42,37 @@ void a1DecayAnalysis::analyze(tPPtr part) {
   ParticleVector pions;
   findPions(part,pions);
   if(pions.size()!=3) return;
+  vector<Lorentz5Momentum> pip,pim,pi0;
+  long idp = part->id()>0 ? 211 : -211;
+  for(unsigned int ix=0;ix<pions.size();++ix) {
+    if(pions[ix]->id()==idp)       pip.push_back(pions[ix]->momentum());
+    else if(pions[ix]->id()==111)  pi0.push_back(pions[ix]->momentum());
+    else if(pions[ix]->id()==-idp) pim.push_back(pions[ix]->momentum());
+  }
+  // a_1+ -> pi+pi+pi-
+  if(pip.size()==2&&pim.size()==1) {
+    *_hist3A += (pip[0]+pip[1]).m()/MeV;
+    *_hist3B += (pip[0]+pim[0]).m()/MeV;
+    *_hist3B += (pip[1]+pim[0]).m()/MeV;
+  }
+  // a_1+ -> pi0pi0pi+
+  else if(pip.size()==1&&pi0.size()==2) {
+    *_hist1A +=(pi0[0]+pi0[1]).m()/MeV;
+    *_hist1B +=(pip[0]+pi0[0]).m()/MeV;
+    *_hist1B +=(pip[0]+pi0[1]).m()/MeV;
+  }
+  // a_10 -> pi0pi0pi0
+  else if(pi0.size()==3) { 
+    *_hist0 +=(pi0[0]+pi0[1]).m()/MeV;
+    *_hist0 +=(pi0[0]+pi0[2]).m()/MeV;
+    *_hist0 +=(pi0[1]+pi0[2]).m()/MeV;
+  }
+  // a_10 -> pi+pi-pi0
+  else if(pi0.size()==1&&pip.size()==1&&pim.size()==1) {
+    *_hist2A +=(pim[0]+pip[0]).m()/MeV;
+    *_hist2B +=(pip[0]+pi0[0]).m()/MeV;
+    *_hist2C +=(pim[0]+pi0[0]).m()/MeV;
+  }
 }
 
 NoPIOClassDescription<a1DecayAnalysis> a1DecayAnalysis::inita1DecayAnalysis;
@@ -74,42 +105,42 @@ void a1DecayAnalysis::dofinish() {
 			 "m0P203P2031/MeV",
 			 " XGX XGX XX    ");
   _hist1B->topdrawOutput(output,true,true,false,false,"RED",
-			 "P203P203 mass in A0112+3RP203P203P2+3",
+			 "P203P2+3 mass in A0112+3RP203P203P2+3",
 			 "GX XGX X          X XX XWGX XGX XGX X",
 			 "1/GdG/dm0P203P2+31/MeV2-13",
 			 "  F F   XGX XGX XX    X  X",
 			 "m0P203P2+31/MeV",
 			 " XGX XGX XX    ");
   _hist2A->topdrawOutput(output,true,true,false,false,"RED",
-			"P203P203 mass in A011203RP2+3P2-3P203",
+			"P2+3P2-3 mass in A011203RP2+3P2-3P203",
 			"GX XGX X          X XX XWGX XGX XGX X",
 			"1/GdG/dm0P2+3P2-31/MeV2-13",
 			"  F F   XGX XGX XX    X  X",
 			"m0P2+3P2-31/MeV",
 			" XGX XGX XX    ");
   _hist2B->topdrawOutput(output,true,true,false,false,"RED",
-			"P203P203 mass in A011203RP2+3P2-3P203",
+			"P2+3P203 mass in A011203RP2+3P2-3P203",
 			"GX XGX X          X XX XWGX XGX XGX X",
 			"1/GdG/dm0P2+3P2031/MeV2-13",
 			"  F F   XGX XGX XX    X  X",
 			"m0P2+3P2031/MeV",
 			" XGX XGX XX    ");
   _hist2C->topdrawOutput(output,true,true,false,false,"RED",
-			"P203P203 mass in A011203RP2+3P2-3P203",
+			"P2-3P203 mass in A011203RP2+3P2-3P203",
 			"GX XGX X          X XX XWGX XGX XGX X",
 			"1/GdG/dm0P2-3P2031/MeV2-13",
 			"  F F   XGX XGX XX    X  X",
 			"m0P2-3P2031/MeV",
 			" XGX XGX XX    ");
   _hist3A->topdrawOutput(output,true,true,false,false,"RED",
-			 "P203P203 mass in A0112+3RP2+3P2+3P2-3",
+			 "P2+3P2+3 mass in A0112+3RP2+3P2+3P2-3",
 			 "GX XGX X          X XX XWGX XGX XGX X",
 			 "1/GdG/dm0P2+3P2+31/MeV2-13",
 			 "  F F   XGX XGX XX    X  X",
 			 "m0P2+3P2+31/MeV",
 			 " XGX XGX XX    ");
-  _hist3A->topdrawOutput(output,true,true,false,false,"RED",
-			 "P203P203 mass in A0112+3RP2+3P2+3P2-3",
+  _hist3B->topdrawOutput(output,true,true,false,false,"RED",
+			 "P2+3P2-3 mass in A0112+3RP2+3P2+3P2-3",
 			 "GX XGX X          X XX XWGX XGX XGX X",
 			 "1/GdG/dm0P2+3P2-31/MeV2-13",
 			 "  F F   XGX XGX XX    X  X",
