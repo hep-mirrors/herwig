@@ -162,7 +162,7 @@ ISGWFormFactor::ISGWFormFactor() {
   addFormFactor( 411,-315  ,2,-1, 4, 3);
   addFormFactor( 411,-10313,1,-1, 4, 3);
   addFormFactor( 411,-20313,1,-1, 4, 3);
-  addFormFactor( 411,-10311,0,-1, 4, 4);
+  addFormFactor( 411,-10311,0,-1, 4, 3);
   // set the initial number of modes
   initialModes(numberOfFactors());
 }
