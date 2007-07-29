@@ -15,21 +15,21 @@
 namespace Herwig {
 using namespace ThePEG;
 
-/*@name Some convenient typedefs. */
-//@{
-
+  /*@name Some convenient typedefs. */
+  //@{
   /** 
    * Map to hold key, parameter pairs. 
    */
   typedef map<long, double> ParamMap;
+  //@}
 
-//@}
-  
 /** \ingroup Models
-   * This class is designed to be a base class for SUSY models. It implements
-   * the readSetup function from InterfacedBase to open a LesHouches file and
-   * contains other member functions to read in the data.
+   * This class is designed to be a base class for SUSY models. There is
+   * an interface to set the name of the spectrum file to read in 
+   * the necessary parameters for a SUSY model.
    *
+   * @see \ref SusyBaseInterfaces "The interfaces"
+   * defined for SusyBase.
    * @see StandardModel
    */  
 
@@ -113,6 +113,12 @@ public:
    */
   static void Init();
 
+  /**
+   * Tell EventGenerator::init() that this is an object that wants to
+   * create new interfaced objects in the read step
+   */
+  virtual bool preInitialize() const;
+
   /**@name Functions to access specific vertices.*/
   //@{
   /**
@@ -132,14 +138,13 @@ public:
   //@}
 
 
-protected:
+private:
   
   /**
-   * Function to read information from setup file
-   * @param is istream object to be read from 
+   * Read the SLHA file with the name set by an interface.
    */
-  virtual void readSetup(istream & is) throw(SetupException);
-
+  void readSLHA() throw(InitException);
+  
 private:
   
   /**@name Functions to help file read-in. */
@@ -149,7 +154,7 @@ private:
    * @param ifs input stream containg data
    * @param name The name of the block
    */
-  void readBlock(ifstream & ifs,string name) throw(SetupException);
+  void readBlock(ifstream & ifs,string name) throw(InitException);
 
   /**
    * Function to read mixing matrix from LHA file
@@ -157,16 +162,15 @@ private:
    * @param row Number of rows
    * @param col Number of columns
    */
-  const vector<MixingElement> readMatrix(ifstream & ifs, unsigned int & row,
-				   unsigned int & col)
-    throw(SetupException);
+  const MixingVector readMatrix(ifstream & ifs, unsigned int & row,
+				unsigned int & col) throw(InitException);
 
   /**
    * Read decaymodes from LHA file
    * @param ifs input stream containg data
    * @param decay string containing name of parent and value of total width
    */
-  void readDecay(ifstream & ifs, string decay) const throw(SetupException);
+  void readDecay(ifstream & ifs, string decay) const throw(InitException);
 
   /**
    * Create a DecayMode object in the repository
@@ -197,8 +201,8 @@ protected:
    * @param size The size of the matrix
    */
   void createMixingMatrix(MixingMatrixPtr & matrix, string name, 
-			  const vector<MixingElement> & values,
-			  pair<unsigned int,unsigned int> size);
+			  const MixingVector & values,
+			  MatrixSize size);
 
   /**
    * Reset masses in the repository to values read from LHA file.
@@ -224,8 +228,7 @@ protected:
   /**
    *  Mixing blocks
    */
-  inline const map<string,pair<pair<unsigned int,unsigned int>, 
-			       vector<MixingElement> > >& mixings() const;
+  inline const map<string,pair<MatrixSize,MixingVector> > & mixings() const;
   //@}
   
 protected:
@@ -285,7 +288,8 @@ private:
   /**
    *  Mixing blocks
    */
-  map<string,pair<pair<unsigned int,unsigned int>, vector<MixingElement> > > _mixings;
+  map<string,pair<MatrixSize, MixingVector> > _mixings;
+
   /**
    *  \f$\tan\beta\f$
    */
@@ -312,6 +316,11 @@ private:
   Energy theMthree;  
   //@}
 
+  /**
+   * The name of the SLHA file
+   */
+  string theSLHAName;
+  
   /**
    *  Neutralino and Chargino mixing matrices
    */

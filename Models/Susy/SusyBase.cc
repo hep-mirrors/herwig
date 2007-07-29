@@ -9,12 +9,18 @@
 #include "ThePEG/Persistency/PersistentOStream.h"
 #include "ThePEG/Persistency/PersistentIStream.h"
 #include "ThePEG/Interface/Reference.h"
+#include "ThePEG/Interface/Parameter.h"
 #include "ThePEG/Repository/Repository.h"
 #include "ThePEG/Utilities/StringUtils.h"
 
 using namespace Herwig;
 
+bool SusyBase::preInitialize() const {
+  return true;
+}    
+
 void SusyBase::doinit() throw(InitException) {
+  readSLHA();
   addVertex(theZSFSFVertex);
   addVertex(thePSFSFVertex);
   addVertex(theWSFSFVertex);
@@ -44,7 +50,8 @@ void SusyBase::persistentOutput(PersistentOStream & os) const {
      << theCCZVertex << theCNWVertex << theSSFFHVertex << theGOGOHVertex
      << theSSWWHVertex << theWHHVertex << theHHHVertex << theSSHGGVertex
      << _tanbeta << ounit(_mu,GeV) 
-     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV);
+     << ounit(theMone,GeV) << ounit(theMtwo,GeV) << ounit(theMthree,GeV)
+     << theSLHAName;
 }
 
 void SusyBase::persistentInput(PersistentIStream & is, int) {
@@ -56,7 +63,8 @@ void SusyBase::persistentInput(PersistentIStream & is, int) {
      >> theSSFFHVertex >> theGOGOHVertex >> theSSWWHVertex >> theWHHVertex
      >> theHHHVertex >> theSSHGGVertex
      >> _tanbeta >> iunit(_mu,GeV) 
-     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV);
+     >> iunit(theMone,GeV) >> iunit(theMtwo,GeV) >> iunit(theMthree,GeV)
+     >> theSLHAName;
 }
 
 ClassDescription<SusyBase> SusyBase::initSusyBase;
@@ -66,6 +74,11 @@ void SusyBase::Init() {
 
   static ClassDocumentation<SusyBase> documentation
     ("This is the base class for any SUSY model.");
+
+  static Parameter<SusyBase,string> interfaceSLHA
+    ("SLHA",
+     "The name of the spectrum file",
+     &SusyBase::theSLHAName, "", false, false);
 
   static Reference<SusyBase,Helicity::VSSVertex> interfaceVertexZSS
     ("Vertex/ZSFSF",
@@ -81,7 +94,6 @@ void SusyBase::Init() {
     ("Vertex/WSFSF",
      "Reference to Susy W SF SF vertex",
      &SusyBase::theWSFSFVertex, false, false, true, false);
-
   
   static Reference<SusyBase,Helicity::FFSVertex> interfaceVertexNFSF
     ("Vertex/NFSF",
@@ -170,54 +182,52 @@ void SusyBase::Init() {
 
 }
 
-void SusyBase::readSetup(istream &is) throw(SetupException) {
-  string name = dynamic_ptr_cast<istringstream*>(&is)->str();
-  ifstream file(name.c_str());
+void SusyBase::readSLHA() throw(InitException) {
+  ifstream file(theSLHAName.c_str());
   if(!file)
-     throw SetupException() << "A problem occurred in opening the file: "
-			    << name;
-  string line;
-  //function pointer for putting all characters to lower case.
-  int (*pf)(int) = tolower;
-  //Create a directory for the mixing matrices
-  BaseRepository::CreateDirectory("/Defaults/MixingMatrices/");
-  //Start to read in the file
-  while(getline(file, line)) {
-    // ignore comment lines
-    if(line[0] == '#') continue;
-    // make everything lower case
-    transform(line.begin(), line.end(), line.begin(), pf);
-    // start of a block
-    if(line.find("block") == 0) {
-      string name = StringUtils::car(StringUtils::cdr(line), " #");
-      // mixing matrix
-      if((name.find("mix")  != string::npos && 
-	  name.find("hmix") != 0)||
-	 name.find("au") == 0||name.find("ad") == 0||
-	 name.find("ae") == 0 ) {
-	unsigned int row(0),col(0);
-	vector<MixingElement> vals = readMatrix(file,row,col);
-	_mixings[name] = make_pair(make_pair(row,col),vals);
-      }
-      else if( name.find("info") == string::npos)
-	readBlock(file,name);
-    }
-    // decays
-    else if( line.find("decay") == 0 )
-      readDecay(file, line);
-  }
-  // extract the relevant parameters
-  extractParameters();
-  // create the mixing matrices we need
-  createMixingMatrices();
-  // set the masses, this has to be done after the 
-  // mixing matrices
-  resetRepositoryMasses();
+    throw InitException() 
+      << "SusyBase::readSLHA() - An error occurred while trying to open "
+      << "the spectrum file: " << theSLHAName << Exception::abortnow;
+   string line;
+   //function pointer for putting all characters to lower case.
+   int (*pf)(int) = tolower;
+   //Start to read in the file
+   while(getline(file, line)) {
+     // ignore comment lines
+     if(line[0] == '#') continue;
+     // make everything lower case
+     transform(line.begin(), line.end(), line.begin(), pf);
+     // start of a block
+     if(line.find("block") == 0) {
+       string name = StringUtils::car(StringUtils::cdr(line), " #");
+       // mixing matrix
+       if((name.find("mix")  != string::npos && 
+	   name.find("hmix") != 0)||
+	  name.find("au") == 0||name.find("ad") == 0||
+	  name.find("ae") == 0 ) {
+	 unsigned int row(0),col(0);
+	 MixingVector vals = readMatrix(file,row,col);
+	 _mixings[name] = make_pair(make_pair(row,col),vals);
+       }
+       else if( name.find("info") == string::npos)
+	 readBlock(file,name);
+     }
+     // decays
+     else if( line.find("decay") == 0 )
+       readDecay(file, line);
+   }
+   // extract the relevant parameters
+   extractParameters();
+   // create the mixing matrices we need
+   createMixingMatrices();
+   // set the masses, this has to be done after the 
+   // mixing matrices
+   resetRepositoryMasses();
 }
 
-void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {
+void SusyBase::readBlock(ifstream & ifs,string name) throw(InitException) {
   if(!ifs)
-    throw SetupException() << "The input stream is in a bad state"
+    throw InitException() << "The input stream is in a bad state"
 			   << Exception::runerror;
   string line;
   ParamMap store;
@@ -250,9 +260,10 @@ void SusyBase::readBlock(ifstream & ifs,string name) throw(SetupException) {
 }
 
 void SusyBase::readDecay(ifstream & ifs, 
-			 string decay) const throw(SetupException){
+			 string decay) const throw(InitException){
   if(!ifs)
-    throw SetupException() <<"The input stream is in a bad state";
+    throw InitException() 
+      <<"SusyBase::readDecay - The input stream is in a bad state";
   //if the particle is stable then next line will be the start of a 
   //new decaymode or a new block so just return if this is found
   if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -262,14 +273,13 @@ void SusyBase::readDecay(ifstream & ifs,
   long parent;
   double width;
   iss >> dummy >> parent >> width;
-  //set the width
-  tPDPtr inpart = getParticleData(parent);
-  if(!inpart) throw SetupException() << "Decaying particle with PDG code "
+  PDPtr inpart = getParticleData(parent);
+  if(!inpart) throw InitException() << "Decaying particle with PDG code "
 				     << parent << " does not exist in "
 				     << "SusyBase::readDecay()" 
 				     << Exception::runerror;
   inpart->width(width*GeV);
-  string tag = "decaymode " + inpart->PDGName() + "->";
+  string tag = inpart->PDGName() + "->";
   string line;
   while(getline(ifs, line)) {
     if(line[0] == '#') {
@@ -285,21 +295,27 @@ void SusyBase::readDecay(ifstream & ifs,
     vector<long>::size_type i(0);
     while(is && ++i < nda + 1)
       is >> products[i - 1];
-    if( products.size() > 0 )
+    if( products.size() > 0 ) {
+      inpart->stable(false);
       createDecayMode(tag, products, brat);
-     if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
-         ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
+    }
+    if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
+	ifs.peek() == 'd' || ifs.peek() == 'b' ) break;
   }
+  inpart->touch();
+  inpart->update();
+  if(inpart->CC())
+    inpart->CC()->synchronize();
 }
 
-const vector<MixingElement>
+const MixingVector
 SusyBase::readMatrix(ifstream & ifs, 
-		     unsigned int & row, unsigned int & col) throw(SetupException) {
+		     unsigned int & row, unsigned int & col) throw(InitException) {
   if(!ifs)
-    throw SetupException() << "The input stream is in a bad state";
+    throw InitException() << "The input stream is in a bad state";
   string line;
   unsigned int rowmax(0), colmax(0);
-  vector<MixingElement> values;
+  MixingVector values;
   while(getline(ifs, line)) {
     if(line[0] == '#') {
       if( ifs.peek() == 'D' || ifs.peek() == 'B' ||
@@ -323,91 +339,87 @@ SusyBase::readMatrix(ifstream & ifs,
 
 void SusyBase::createDecayMode(string tag, vector<long> products,
 			       double brat) const {
-  ostringstream cmd;
-  cmd << tag;
   vector<long>::size_type nda = products.size();
   for(vector<long>::size_type i = 0; i < nda; ++i) {
-    tPDPtr prod = getParticleData(products[i]);
-    if(!prod) throw SetupException() << "Unknown decay product with PDG code "
-				     << products[i] << " in SusyBase::createDecayMode()"
-				     << Exception::runerror;
-    cmd << prod->PDGName();
-    if(i != nda - 1) cmd << ",";
-    else cmd << "; ";
+    tcPDPtr prod = getParticleData(products[i]);
+    if( !prod ) 
+      throw InitException() 
+	<< "Unknown decay product with PDG code "
+	<< products[i] << " in SusyBase::createDecayMode()"
+	<< Exception::runerror;
+    tag += prod->PDGName();
+    if(i != nda - 1) tag += ",";
+    else tag += ";";
   }
-  cmd << brat << " 1 /Defaults/Decays/Mambo";
-  Repository::exec(cmd.str(), cerr);
+  tDMPtr ndm = generator()->preinitCreateDecayMode(tag);
+  if(ndm) {
+    generator()->preinitInterface(ndm, "Decayer", "set",
+				  "/Defaults/Decays/Mambo");
+    generator()->preinitInterface(ndm, "OnOff", "set", "1");
+    ostringstream br;
+    br << brat;
+    generator()->preinitInterface(ndm, "BranchingRatio",
+				  "set", br.str());
+  }
 }
 
 void SusyBase::createMixingMatrix(MixingMatrixPtr & matrix,
-				  string name, const vector<MixingElement> & values,
-				  pair<unsigned int,unsigned int> size) {
-  string dir = "/Defaults/MixingMatrices/";
-  MixingMatrixPtr mix = new_ptr(MixingMatrix(size.first,size.second));
-  for(unsigned int ix=0; ix<values.size();++ix) {
-    (*mix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
-  }
+				  string name, const MixingVector & values,
+				  MatrixSize size) {
+  matrix = new_ptr(MixingMatrix(size.first,size.second));
+  for(unsigned int ix=0; ix < values.size(); ++ix)
+    (*matrix)(values[ix].row-1,values[ix].col-1) = values[ix].value;
+  
   if(name == "nmix") {
-    matrix = mix;
     vector<long> ids(4);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035; 
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "nmnmix") {
-    matrix = mix;
     vector<long> ids(5);
     ids[0] = 1000022; ids[1] = 1000023; 
     ids[2] = 1000025; ids[3] = 1000035;
     ids[4] = 1000045; 
-    (*mix).setIds(ids);
   }
   else if(name == "umix") {
-    matrix = mix;
     vector<long> ids(2);
     ids[0] = 1000024; ids[1] = 1000037; 
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "vmix") {
-    matrix = mix;
     vector<long> ids(2);
     ids[0] = 1000024; ids[1] = 1000037; 
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "stopmix") {
-    matrix = mix;
     vector<long> ids(2);
     ids[0] = 1000006; ids[1] = 2000006; 
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "sbotmix") {
-    matrix = mix;
     vector<long> ids(2);
     ids[0] = 1000005; ids[1] = 2000005; 
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "staumix") {
-    matrix = mix;
     vector<long> ids(2);
     ids[0] = 1000015; ids[1] = 2000015; 
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "nmhmix") {
-    matrix = mix;
     vector<long> ids(3);
     ids[0] = 25; ids[1] = 35; ids[2] = 45;
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else if(name == "nmamix") {
-    matrix = mix;
     vector<long> ids(2);
     ids[0] = 36; ids[1] = 46;
-    (*mix).setIds(ids);
+    matrix->setIds(ids);
   }
   else
-    throw SetupException() << "Cannot find correct title for mixing matrix "
+    throw InitException() << "Cannot find correct title for mixing matrix "
 			   << name << Exception::runerror;
-  BaseRepository::Register(mix, dir + name);
 }
 
 void SusyBase::resetRepositoryMasses() {
@@ -422,20 +434,16 @@ void SusyBase::resetRepositoryMasses() {
     double mass = it->second;
     //a negative mass requires an adjustment to the associated mixing matrix 
     if(mass < 0.0) adjustMixingMatrix(id);
-    ostringstream cmd;
-    tPDPtr part=getParticleData(id);
+    PDPtr part = getParticleData(id);
     if(!part) throw Exception() << "Particle with PDG code " << id 
 				<< " not found in SusyBase::"
 				<< "resetRepositoryMasses()"
 				<< Exception::runerror;
-    cmd << "set /Defaults/Particles/" << part->PDGName() 
-	<< ":NominalMass " << abs(it->second);
-    if(!cmd) 
-      throw SetupException() << "SusyBase::resetRepositoryMasses - "
-			     << "The stream constructed to reset particle "
-			     << "masses is not usuable. " 
-			     << Exception::runerror;
-    Repository::exec(cmd.str(), cerr);
+    //Find interface nominal mass interface
+    const InterfaceBase * ifb = BaseRepository::FindInterface(part, "NominalMass");
+    ostringstream os;
+    os << abs(it->second);
+    ifb->exec(*part, "set", os.str());
     //no need to store all masses after this stage
     theMasses.erase(it++);
   }
@@ -452,7 +460,7 @@ void SusyBase::adjustMixingMatrix(long id) {
     if(theNMix)
       theNMix->adjustPhase(id);
     else 
-      throw SetupException() << "SusyBase::adjustMixingMatrix - "
+      throw InitException() << "SusyBase::adjustMixingMatrix - "
 			     << "The neutralino mixing matrix pointer "
 			     << "is null!" << Exception::runerror;
     break;
@@ -461,18 +469,18 @@ void SusyBase::adjustMixingMatrix(long id) {
     if(theUMix)
       theUMix->adjustPhase(id);
     else 
-      throw SetupException() << "SusyBase::adjustMixingMatrix - "
+      throw InitException() << "SusyBase::adjustMixingMatrix - "
 			     << "The U-Type chargino mixing matrix pointer "
 			     << "is null!" << Exception::runerror;
     if(theVMix)
       theVMix->adjustPhase(id);
     else 
-      throw SetupException() << "SusyBase::adjustMixingMatrix - "
+      throw InitException() << "SusyBase::adjustMixingMatrix - "
 			     << "The V-Type chargino mixing matrix pointer "
 			     << "is null!" << Exception::runerror;
     break;
   default : 
-    throw SetupException() << "SusyBase::adjustMixingMatrix - "
+    throw InitException() << "SusyBase::adjustMixingMatrix - "
 			   << "PDG code does not correspond to anything that "
 			   << "has a mixing matrix associated with it"
 			   << Exception::runerror;
@@ -480,8 +488,7 @@ void SusyBase::adjustMixingMatrix(long id) {
 }
 
 void SusyBase::createMixingMatrices() {
-  map<string,pair<pair<unsigned int,unsigned int>, vector<MixingElement> > >
-    ::const_iterator it;
+  map<string,pair<MatrixSize, MixingVector > >::const_iterator it;
   for(it=_mixings.begin();it!=_mixings.end();++it) {
     string name=it->first;
     // create the gaugino mixing matrices

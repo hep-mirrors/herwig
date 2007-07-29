@@ -73,8 +73,7 @@ void NMSSM::extractParameters(bool checkmodel) {
 }
 
 void NMSSM::createMixingMatrices() {
-  map<string,pair<pair<unsigned int,unsigned int>, 
-    vector<MixingElement> > >::const_iterator it;
+  map<string,pair<MatrixSize, MixingVector> >::const_iterator it;
   for(it=mixings().begin();it!=mixings().end();++it) {
     string name=it->first;
     // pseudo-scalar higgs mixing
