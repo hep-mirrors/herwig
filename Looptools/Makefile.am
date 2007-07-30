@@ -41,12 +41,8 @@ theLTCHECKSOURCES = ltcheck/auxB.F ltcheck/auxCD.F ltcheck/check.F \
 noinst_HEADERS = include/clooptools.h
 
 ## no optimization allowed, see LoopTools homepage
-## this must be set as FFLAGS to avoid user switching on opt accidentally
-## ignore the automake warning!
-FFLAGS=-g -O0 
-
 ## -DQEXT=DBLE should really be checked in configure script
-AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE
+AM_FFLAGS = -I$(srcdir)/ff -I$(srcdir)/lt -DQEXT=DBLE -g -O0 
 
 libHwLooptools_la_SOURCES = $(theFFSOURCES) $(theLTSOURCES)
 libHwLooptools_la_LDFLAGS = -version-info 2:0:0
