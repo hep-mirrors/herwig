@@ -373,3 +373,11 @@ dnl AM_CONDITIONAL(HAVE_GSL,[test "x$with_hepmc" != "xno"])
 AC_SUBST(GSLINCLUDE)
 AC_SUBST(GSLLIBS)
 ])
+
+AC_DEFUN([HERWIG_VERSIONSTRING],
+[
+if test -d $srcdir/.svn; then
+	AC_CHECK_PROG(have_svnversion,[svnversion],[yes],[no])
+fi
+AM_CONDITIONAL(USE_SVNVERSION,[test "x$have_svnversion" = "xyes"])
+])

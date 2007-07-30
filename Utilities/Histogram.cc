@@ -14,7 +14,6 @@
 using namespace Herwig;
 NoPIOClassDescription<Histogram> Histogram::initHistogram;
 // Definition of the static class description member.
-
 void Histogram::Init() {
 
   static ClassDocumentation<Histogram> documentation
@@ -22,6 +21,8 @@ void Histogram::Init() {
      " points for comparision with experimental results.");
 
 }
+
+string Histogram::versionstring = "";
 
 void Histogram::topdrawOutput(ostream & out,
 			      bool frame,
@@ -44,6 +45,10 @@ void Histogram::topdrawOutput(ostream & out,
       out << "CASE       \""   << leftcase  << "\"\n";
       out << "TITLE BOTTOM \"" << bottom     << "\"\n";
       out << "CASE        \""  << bottomcase << "\"\n";
+      if (versionstring != "") {
+	out << "TITLE RIGHT \"" << versionstring << "\"\n";
+	out << "CASE        \"\"\n";
+      }
       if (errorbars) out << "SET ORDER X Y DX DY \n";
       else out << "SET ORDER X Y DX\n";
     }
