@@ -62,6 +62,8 @@ HERWIG_CHECK_KTJET
 
 HERWIG_CHECK_EVTGEN
 
+HERWIG_VERSIONSTRING
+
 AM_CONDITIONAL(NEED_APPLE_FIXES,
 		[test "xx${host/darwin/foundit}xx" != "xx${host}xx"])
 

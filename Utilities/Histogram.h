@@ -7,6 +7,7 @@
 
 #include "Statistic.h"
 #include "Histogram.fh"
+#include <string>
 
 // workaround for OS X bug where isnan() and isinf() are hidden
 // when <iostream> is included
@@ -208,6 +209,10 @@ private:
    * In fact, it should not even be implemented.
    */
   Histogram & operator=(const Histogram &);
+
+public:
+
+  static string versionstring;
 
 private:
 
