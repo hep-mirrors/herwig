@@ -82,4 +82,8 @@ inline Complex a1ThreePionDecayer::rhoBreitWigner(Energy2 q2, int ires) const {
   return _rhoD[ires]/denom;
 }
 
+inline Energy4 a1ThreePionDecayer::lambda(Energy2 a, Energy2 b, Energy2 c) const {
+  return sqr(a)+sqr(b)+sqr(c)-2.*a*b-2.*a*c-2.*b*c;
+}
+
 }

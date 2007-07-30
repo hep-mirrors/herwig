@@ -654,8 +654,18 @@ double a1ThreePionCLEODecayer::me2(bool vertex, const int ichan,
   for(unsigned int ix=0;ix<3;++ix) 
     newME(ix,0,0,0)=output.dot(invec[ix]);
   ME(newME);
+  // answer
+  double out = newME.contract(rhoin).real();
+  // test of the answer
+//   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),
+// 				       s3,s2,s1,decay[0]->mass(),decay[1]->mass(), 
+// 				       decay[2]->mass());
+//   if(ichan<0) cerr << "testing matrix element " << inpart.PDGName() << " -> "
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << decay[2]->PDGName() << out << " " << test << " " 
+//        << (out-test)/(out+test) << "\n";  
   // return the answer
-  return newME.contract(rhoin).real();
+  return out;
 }
 
 // matrix element for the running a_1 width
@@ -1008,6 +1018,7 @@ void a1ThreePionCLEODecayer::formFactors(int iopt,int ichan,
   FF2 = F2 * fact;
   FF3 = F3 * fact;
 } 
+
 // output the setup information for the particle database
 void a1ThreePionCLEODecayer::dataBaseOutput(ofstream & output,
 					    bool header) const {

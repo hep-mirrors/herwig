@@ -14,6 +14,7 @@
 #include "ThePEG/PDT/DecayMode.h"
 #include "ThePEG/Helicity/WaveFunction/ScalarWaveFunction.h"
 #include "ThePEG/Helicity/WaveFunction/VectorWaveFunction.h"
+#include "Herwig++/PDT/ThreeBodyAllOnCalculator.h"
 
 using namespace Herwig;
 using namespace ThePEG::Helicity;
@@ -457,53 +458,44 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
   }
   // momentum of the incoming particle
   Lorentz5Momentum Q=inpart.momentum();
+  // momenta of the intermediates
+  Energy2 s1=(decay[1]->momentum()+decay[2]->momentum()).m2();
+  Energy2 s2=(decay[0]->momentum()+decay[2]->momentum()).m2();
+  Energy2 s3=(decay[0]->momentum()+decay[1]->momentum()).m2();
+  Energy2 dot01=Q*decay[0]->momentum();
+  Energy2 dot02=Q*decay[1]->momentum();
+  Energy2 dot03=Q*decay[2]->momentum();
   // vector for the output
   LorentzVector<complex<Energy3> > output;
   // a_10 -> pi0pi0pi0
   if(imode()==0) {
-    // the momenta
-    Lorentz5Momentum pa=decay[1]->momentum()+decay[2]->momentum();
-    pa.rescaleMass();
-    Lorentz5Momentum pb=decay[0]->momentum()+decay[2]->momentum();
-    pb.rescaleMass();
-    Lorentz5Momentum pc=decay[0]->momentum()+decay[1]->momentum();
-    pc.rescaleMass();
     //the breit-wigners
-    Complex sig1=sigmaBreitWigner(pa.mass2());
-    Complex sig2=sigmaBreitWigner(pb.mass2());
-    Complex sig3=sigmaBreitWigner(pc.mass2());
+    Complex sig1=sigmaBreitWigner(s1);
+    Complex sig2=sigmaBreitWigner(s2);
+    Complex sig3=sigmaBreitWigner(s3);
     // compute the vector
     LorentzPolarizationVectorE tmpoutput;
     if(ichan<0) {
       tmpoutput= sig1*(decay[0]->momentum())+sig2*(decay[1]->momentum())
 	+sig3*(decay[2]->momentum());
     }
-    else if(ichan==15) tmpoutput=sig1*(decay[0]->momentum());
-    else if(ichan==16) tmpoutput=sig2*(decay[1]->momentum());
-    else if(ichan==17) tmpoutput=sig3*(decay[2]->momentum());
+    else if(ichan==0) tmpoutput=sig1*(decay[0]->momentum());
+    else if(ichan==1) tmpoutput=sig2*(decay[1]->momentum());
+    else if(ichan==2) tmpoutput=sig3*(decay[2]->momentum());
     // the coupling z and identical particle factor
     output = tmpoutput * _zsigma* 1./sqrt(6.) *Q.mass2();
   }
   // a_1+ -> pi0pi0pi+
   else if(imode()==1) {
-    Lorentz5Momentum pa=decay[2]->momentum()+decay[0]->momentum();
-    pa.rescaleMass();
-    Lorentz5Momentum pb=decay[2]->momentum()+decay[1]->momentum();
-    pb.rescaleMass();
-    Lorentz5Momentum pc=decay[0]->momentum()+decay[1]->momentum();
-    pc.rescaleMass();
     // scalar propagator
-    Complex sig1 = sigmaBreitWigner(pc.mass2());
+    Complex sig1 = sigmaBreitWigner(s3);
     // sigma terms
     if(ichan<0||ichan==14) 
       output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();
     // the rho terms
-    complex<Energy2> dot01=Q*decay[0]->momentum();
-    complex<Energy2> dot02=Q*decay[1]->momentum();
-    complex<Energy2> dot03=Q*decay[2]->momentum();
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
-      Complex rho1=_rhocoupling[ix]*rhoBreitWigner(pa.mass2(),ix);
-      Complex rho2=_rhocoupling[ix]*rhoBreitWigner(pb.mass2(),ix);
+      Complex rho1=_rhocoupling[ix]*rhoBreitWigner(s1,ix);
+      Complex rho2=_rhocoupling[ix]*rhoBreitWigner(s2,ix);
       if(ichan<0||ichan==8+2*ix) {
 	output +=rho1*(dot03*(decay[1]->momentum())-
 		       dot02*(decay[2]->momentum()));
@@ -518,58 +510,38 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
   }
   // a_10->pi+pi-pi0
   else if(imode()==2) {
-      // the momenta
-      Lorentz5Momentum pa=decay[2]->momentum()+decay[1]->momentum();
-      pa.rescaleMass();
-      Lorentz5Momentum pb=decay[2]->momentum()+decay[0]->momentum();
-      pb.rescaleMass();
-      Lorentz5Momentum pc=decay[0]->momentum()+decay[1]->momentum();
-      pc.rescaleMass();
-      // the sigma terms
-      Complex sig1=sigmaBreitWigner(pc.mass2());
-      if(ichan<0||ichan==24)
-	{output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();}
-      // rho terms
-      complex<Energy2> dot01=Q*decay[0]->momentum();
-      complex<Energy2> dot02=Q*decay[1]->momentum();
-      complex<Energy2> dot03=Q*decay[2]->momentum();
-      for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
-	Complex rho1=_rhocoupling[ix]*rhoBreitWigner(pa.mass2(),ix);
-	Complex rho2=_rhocoupling[ix]*rhoBreitWigner(pb.mass2(),ix);
-	if(ichan<0||ichan==18+2*ix) {
-	  output+=rho1*(dot03*(decay[1]->momentum())
-			-dot02*(decay[2]->momentum()));
-	}
-	if(ichan<0||ichan==19+2*ix) {
-	  output+=rho2*(dot03*(decay[0]->momentum())
-			-dot01*(decay[2]->momentum()));
-	}
+    // the sigma terms
+    Complex sig1=sigmaBreitWigner(s3);
+    if(ichan<0||ichan==24)
+      {output = _zsigma*Q.mass2()*sig1*decay[2]->momentum();}
+    // rho terms
+    for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
+      Complex rho1=_rhocoupling[ix]*rhoBreitWigner(s1,ix);
+      Complex rho2=_rhocoupling[ix]*rhoBreitWigner(s2,ix);
+      if(ichan<0||ichan==18+2*ix) {
+	output+=rho1*(dot03*(decay[1]->momentum())
+		      -dot02*(decay[2]->momentum()));
       }
+      if(ichan<0||ichan==19+2*ix) {
+	output+=rho2*(dot03*(decay[0]->momentum())
+		      -dot01*(decay[2]->momentum()));
+      }
+    }
   }
   // a1+ -> pi+pi+pi-
   else if(imode()==3) {
-    // momenta of the intermediates
-    Lorentz5Momentum pa=decay[1]->momentum()+decay[2]->momentum();
-    pa.rescaleMass();
-    Lorentz5Momentum pb=decay[0]->momentum()+decay[2]->momentum();
-    pb.rescaleMass();
-    Lorentz5Momentum pc=decay[0]->momentum()+decay[1]->momentum();
-    pc.rescaleMass();
     // the scalar propagators 
-    Complex sig1=sigmaBreitWigner(pa.mass2());
-    Complex sig2=sigmaBreitWigner(pb.mass2());
+    Complex sig1=sigmaBreitWigner(s1);
+    Complex sig2=sigmaBreitWigner(s2);
     // sigma terms
     LorentzPolarizationVectorE tmpoutput;
     if(ichan<0||ichan==6) tmpoutput+=sig1*(decay[0]->momentum());
     if(ichan<0||ichan==7) tmpoutput+=sig2*(decay[1]->momentum());
     output = tmpoutput * _zsigma * Q.mass2();
     // rho terms
-    complex<Energy2> dot01=Q*decay[0]->momentum();
-    complex<Energy2> dot02=Q*decay[1]->momentum();
-    complex<Energy2> dot03=Q*decay[2]->momentum();
     for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
-      Complex rho1 = _rhocoupling[ix]*rhoBreitWigner(pa.mass2(),ix);
-      Complex rho2 = _rhocoupling[ix]*rhoBreitWigner(pb.mass2(),ix);
+      Complex rho1 = _rhocoupling[ix]*rhoBreitWigner(s1,ix);
+      Complex rho2 = _rhocoupling[ix]*rhoBreitWigner(s2,ix);
       if(ichan<0||ichan==2*ix) {
 	output-=rho1*( dot03*(decay[1]->momentum())-
 		       dot02*(decay[2]->momentum()));
@@ -590,5 +562,114 @@ double a1ThreePionDecayer::me2(bool vertex, const int ichan,
   for(unsigned int ix=0;ix<3;++ix){newME(ix,0,0,0)=outputFinal.dot(invec[ix]);}
   ME(newME);
   // return the answer
-  return newME.contract(rhoin).real();
+  double out = newME.contract(rhoin).real();
+  // test of the answer
+//   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),s3,s2,s1,
+// 				       decay[0]->mass(),decay[1]->mass(), 
+// 				       decay[2]->mass());
+//   if(ichan<0) cerr << "testing matrix element " << inpart.PDGName() << " -> "
+// 		   << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+// 		   << decay[2]->PDGName() << " " << out << " " << test << " " 
+// 		   << (out-test)/(out+test) << "\n"; 
+  return out;
+}
+
+// matrix element for the running a_1 width
+double a1ThreePionDecayer::
+threeBodyMatrixElement(const int iopt,const Energy2 q2, const Energy2 s3,
+		       const Energy2 s2,const Energy2 s1, const Energy m1, 
+		       const Energy m2 ,const Energy m3) const {
+  Energy6 meout(0.*pow<3,1>(GeV2));
+  Energy2 m12(sqr(m1)),m22(sqr(m2)),m32(sqr(m3));
+  Energy2 dot01(q2-s1+m12),dot02(q2-s2+m22),dot03(q2-s3+m32),
+    dot12(s3-m12-m22),dot13(s2-m12-m32),dot23(s1-m22-m32);
+  if(iopt==0) {
+    Complex sig1=sigmaBreitWigner(s1);
+    Complex sig2=sigmaBreitWigner(s2);
+    Complex sig3=sigmaBreitWigner(s3);
+    Energy2 metemp = 
+      real(0.25*sig1*conj(sig1)*lambda(q2,s1,m12)/q2+
+	   0.25*sig2*conj(sig2)*lambda(q2,s2,m22)/q2+
+	   0.25*sig3*conj(sig3)*lambda(q2,s3,m32)/q2+
+ 	   sig1*conj(sig2)*(-dot12+0.5*dot01*dot02/q2)+
+ 	   sig1*conj(sig3)*(-dot13+0.5*dot01*dot03/q2)+
+ 	   sig2*conj(sig3)*(-dot23+0.5*dot02*dot03/q2));
+    meout = metemp*real(_zsigma*conj(_zsigma))/6.*sqr(q2);
+  }
+  else if(iopt==1||iopt==2) {
+    // the sigma terms
+    Complex sig=sigmaBreitWigner(s3);
+    Complex rho1,rho2;
+    for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
+      rho1 += _rhocoupling[ix]*rhoBreitWigner(s1,ix);
+      rho2 += _rhocoupling[ix]*rhoBreitWigner(s2,ix);
+    }
+    meout =
+      0.25*lambda(q2,m32,s3)*q2*norm(_zsigma*sig)+
+      0.25*norm(rho1)*(dot23*dot02*dot03-m32*sqr(dot02)-m22*sqr(dot03))+
+      0.25*norm(rho2)*(dot13*dot01*dot03-m32*sqr(dot01)-m12*sqr(dot03))-
+      0.5*real(_zsigma*sig*conj(rho1))*q2*(dot03*dot23-2.*m32*dot02)-
+      0.5*real(_zsigma*sig*conj(rho2))*q2*(dot03*dot13-2.*m32*dot01)-
+      0.25*real(rho1*conj(rho2))*(sqr(dot03)*dot12-dot03*dot02*dot13
+				  -dot03*dot01*dot23+2.*m32*dot02*dot01);
+    if(iopt==1) meout *= 0.5;
+  }
+  else if(iopt==3) {
+    Complex sig1=sigmaBreitWigner(s1);
+    Complex sig2=sigmaBreitWigner(s2);
+    Complex rho1,rho2;
+    for(int ix=0,N=_rhocoupling.size();ix<N;++ix) {
+      rho1 += _rhocoupling[ix]*rhoBreitWigner(s1,ix);
+      rho2 += _rhocoupling[ix]*rhoBreitWigner(s2,ix);
+    }
+    meout =
+      0.25*lambda(q2,m12,s1)*q2*norm(_zsigma*sig1)+
+      0.25*lambda(q2,m22,s2)*q2*norm(_zsigma*sig2)+
+      0.25*norm(rho1)*(dot23*dot02*dot03-m32*sqr(dot02)-m22*sqr(dot03))+
+      0.25*norm(rho2)*(dot13*dot01*dot03-m32*sqr(dot01)-m12*sqr(dot03))-
+      0.25*real(rho1*conj(rho2))*(sqr(dot03)*dot12-dot03*dot02*dot13
+				  -dot03*dot01*dot23+2.*m32*dot02*dot01)-
+      real(_zsigma*sig1*conj(_zsigma*sig2))*q2*(q2*dot12-0.5*dot02*dot01)+
+      0.5*real(_zsigma*sig1*conj(rho1))*q2*(dot03*dot12-dot02*dot13)+
+      0.5*real(_zsigma*sig2*conj(rho1))*q2*(2.*dot03*m22-dot02*dot23)+
+      0.5*real(_zsigma*sig1*conj(rho2))*q2*(2.*dot03*m12-dot01*dot13)+
+      0.5*real(_zsigma*sig2*conj(rho2))*q2*(dot03*dot12-dot01*dot23);
+    meout *= 0.5;
+  }
+  return meout*a1FormFactor(q2)*sqr(_coupling/sqr(_rhomass[0]))/q2/3.;
+}
+
+WidthCalculatorBasePtr 
+a1ThreePionDecayer::threeBodyMEIntegrator(const DecayMode & dm) const {
+  ParticleMSet::const_iterator pit  = dm.products().begin();
+  ParticleMSet::const_iterator pend = dm.products().end();
+  int ncharged=0;
+  for( ; pit!=pend;++pit) {
+    if(abs((**pit).id())==ParticleID::piplus) ++ncharged;
+  }
+  // integrator to perform the integral
+  vector<double> inweights;inweights.push_back(0.5);inweights.push_back(0.5);
+  vector<int> intype;intype.push_back(2);intype.push_back(3);
+  Energy mrho=getParticleData(ParticleID::rhoplus)->mass();
+  Energy wrho=getParticleData(ParticleID::rhoplus)->width();
+  vector<Energy> inmass(2,_rhomass[0]),inwidth(2,_rhowidth[0]);
+  vector<double> inpow(2,0.0);
+  Energy m[3];
+  Energy mpi0=getParticleData(ParticleID::pi0)->mass();
+  Energy mpic=getParticleData(ParticleID::piplus)->mass();
+  m[0] = ncharged<2 ? mpi0 : mpic;
+  m[1] = m[0];
+  m[2] = (ncharged==0||ncharged==2) ? mpi0 : mpic;
+  return new_ptr(ThreeBodyAllOnCalculator<a1ThreePionDecayer>
+		 (inweights,intype,inmass,inwidth,inpow,*this,ncharged,m[0],m[1],m[2]));
+}
+
+// output the setup information for the particle database
+void a1ThreePionDecayer::dataBaseOutput(ofstream & output,
+					    bool header) const {
+  if(header) output << "update decayers set parameters=\"";
+  // parameters for the DecayIntegrator base class
+  DecayIntegrator::dataBaseOutput(output,false);
+  if(header) output << "\n\" where BINARY ThePEGName=\"" 
+		    << fullName() << "\";" << endl;
 }

@@ -323,9 +323,8 @@ double a1SimpleDecayer::me2(bool vertex, const int ichan,
   Energy2 s2 = (decay[0]->momentum()+decay[2]->momentum()).m2();
   Energy2 s3 = (decay[0]->momentum()+decay[1]->momentum()).m2();
   if(ichan<0) {
-    current = 
-      rhoFormFactor(s2,-1)*(decay[0]->momentum()-decay[2]->momentum())+
-      rhoFormFactor(s1,-1)*(decay[1]->momentum()-decay[2]->momentum());
+    current = rhoFormFactor(s2,-1)*(decay[0]->momentum()-decay[2]->momentum())
+    +rhoFormFactor(s1,-1)*(decay[1]->momentum()-decay[2]->momentum());
   }
   else if(ichan<3) {
     current = 
@@ -344,6 +343,14 @@ double a1SimpleDecayer::me2(bool vertex, const int ichan,
   // matrix element and identical particle factor
   double output=newME.contract(rhoin).real();
   if(imode()!=1) output*=0.5;
+  // test the output
+//   double test = threeBodyMatrixElement(imode(),sqr(inpart.mass()),
+// 				       s3,s2,s1,decay[0]->mass(),decay[1]->mass(), 
+// 				       decay[2]->mass());
+//   if(ichan<0) cerr << "testing matrix element " << inpart.PDGName() << " -> "
+//        << decay[0]->PDGName() << " " << decay[1]->PDGName() << " "
+//        << decay[2]->PDGName() << output << " " << test << " " 
+//        << (output-test)/(output+test) << "\n";  
   // return the answer
   return output;
 }
@@ -357,8 +364,8 @@ threeBodyMatrixElement(const int iopt,const Energy2 q2, const Energy2 s3,
   Energy2 v1v2 = (0.5*q2-s3-0.5*(3*sqr(m3)-sqr(m1)-sqr(m2)))
     +0.25*(s1-s3-sqr(m1)+sqr(m3))*(s2-s3-sqr(m2)+sqr(m3))/q2;
   Complex rho1=rhoFormFactor(s2,-1);
-  Complex rho2=rhoFormFactor(s2,-1);
-  double me = sqr(_coupling)*real(v12*rho1*conj(rho1)+v22*rho2*conj(rho2)
+  Complex rho2=rhoFormFactor(s1,-1);
+  double me = sqr(_coupling)*real(v12*rho1*conj(rho1)+v22*rho2*1conj(rho2)
 				  +2.*v1v2*rho1*conj(rho2))/3.;
   if(iopt!=1) me *= 0.5;
   return me;
